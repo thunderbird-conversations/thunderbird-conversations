@@ -1,0 +1,2 @@
+content gconversation content/
+overlay chrome://messenger/content/messenger.xul chrome://gconversation/content/overlay.xul

@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+
+
+<RDF xmlns="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+     xmlns:em="http://www.mozilla.org/2004/em-rdf#">
+
+  <Description about="urn:mozilla:install-manifest">
+    <em:id>gconversation@xulforum.org</em:id>
+    <em:version>0.1pre.091104</em:version>
+    
+    <!-- Target Application this theme can install into, 
+        with minimum and maximum supported versions. --> 
+    <em:targetApplication>
+      <Description>
+        <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
+        <em:minVersion>3.0b4</em:minVersion>
+        <em:maxVersion>3.1a1pre</em:maxVersion>
+      </Description>
+    </em:targetApplication>
+    
+    <!-- Front End MetaData -->
+    <em:name>GMail Conversation View</em:name>
+    <em:description>Display your own emails in thread summaries.</em:description>
+    <!--<em:optionsURL>chrome://tblatex/content/options.xul</em:optionsURL>-->
+
+
+    <em:creator>Jonathan Protzenko</em:creator>
+  </Description>      
+
+</RDF>

@@ -1,0 +1,5 @@
+- Garder une référence au dossier du premier message (le dossier courant) pour
+améliorer le lien quand les messages ne sont pas dans le dossier courant
+(comparaison facile lors de la boucle for).
+- Lancer la seconde requête ASAP (onItemsAdded et non pas onQueryCompleted)
+- Faire une option pour un vrai style GMail où on voit vraiment tous les messages
