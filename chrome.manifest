@@ -1,2 +1,5 @@
 content gconversation content/
+skin gconversation classic/1.0 skin/
 overlay chrome://messenger/content/messenger.xul chrome://gconversation/content/overlay.xul
+#style chrome://messenger/content/multimessageview.xhtml chrome://gconversation/skin/mmv.css
+override chrome://messenger/content/multimessageview.xhtml chrome://gconversation/content/multimessageview.xhtml

@@ -1,0 +1,18 @@
+.message {
+  border: 1px solid #888;
+  -moz-border-radius: 3px 0 3px 0;
+  /*-moz-box-shadow: 2px 2px 5px #888;*/
+}
+
+.header {
+  margin-left: 0;
+}
+
+.wrappedsender, .wrappedsubject, .snippet {
+  padding-left: 19px;
+}
+
+.wrappedsender, .wrappedsubject {
+  border-bottom: 1px solid #888;
+  margin-bottom: 1em;
+}

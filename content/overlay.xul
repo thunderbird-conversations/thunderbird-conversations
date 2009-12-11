@@ -1,5 +1,15 @@
 <?xml version="1.0"?>
-<!DOCTYPE window SYSTEM "chrome://tbsortfolders/locale/main.dtd">
+<?xml-stylesheet href="chrome://gconversation/skin/overlay.css" type="text/css" ?>
+<?xml-stylesheet href="chrome://gconversation/skin/msg.css" type="text/css" ?>
+<!--<!DOCTYPE window SYSTEM "chrome://tbsortfolders/locale/main.dtd">-->
 <overlay id="messengerWindow" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <script type="application/x-javascript" src="selectionsummaries.js" />
+  <toolbarpalette id="header-view-toolbar-palette">
+    <toolbarbutton id="gconv-button-1"
+      class="gconv-button-1 toolbarbutton-1 msgHeaderView-button customize-header-toolbar-button"
+      label="View full conversation"
+      tooltiptext="Search all messages to build up the complete conversation, including your own."
+      oncommand="gconversation.on_header_button_clicked();"
+    />
+  </toolbarpalette>
 </overlay>

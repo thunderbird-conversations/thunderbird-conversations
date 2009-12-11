@@ -13,7 +13,7 @@ upload:
 
 debug_template:
 	cp -f install.rdf.template install.rdf
-	sed -i s/__REPLACEME__/pre\.$(shell date +%y%m%d)/ install.rdf
+	sed -i s/__REPLACEME__/\.$(shell date +%y%m%d)pre/ install.rdf
 
 release_template:
 	cp -f install.rdf.template install.rdf

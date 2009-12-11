@@ -6,7 +6,7 @@
 
   <Description about="urn:mozilla:install-manifest">
     <em:id>gconversation@xulforum.org</em:id>
-    <em:version>0.1pre.091104</em:version>
+    <em:version>0.1</em:version>
     
     <!-- Target Application this theme can install into, 
         with minimum and maximum supported versions. --> 

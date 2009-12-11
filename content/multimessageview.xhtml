@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+
+<!-- ***** BEGIN LICENSE BLOCK *****
+   - Version: MPL 1.1/GPL 2.0/LGPL 2.1
+   -
+   - The contents of this file are subject to the Mozilla Public License Version
+   - 1.1 (the "License"); you may not use this file except in compliance with
+   - the License. You may obtain a copy of the License at
+   - http://www.mozilla.org/MPL/
+   -
+   - Software distributed under the License is distributed on an "AS IS" basis,
+   - WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+   - for the specific language governing rights and limitations under the
+   - License.
+   -
+   - The Original Code is Thunderbird multiple message summary pane.
+   -
+   - The Initial Developer of the Original Code is
+   - Mozilla Messaging.
+   - Portions created by the Initial Developer are Copyright (C) 2009
+   - the Initial Developer. All Rights Reserved.
+   -
+   - Contributor(s):
+   -   David Ascher <dascher@mozillamessaging.com>
+   -
+   - Alternatively, the contents of this file may be used under the terms of
+   - either the GNU General Public License Version 2 or later (the "GPL"), or
+   - the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+   - in which case the provisions of the GPL or the LGPL are applicable instead
+   - of those above. If you wish to allow use of your version of this file only
+   - under the terms of either the GPL or the LGPL, and not to allow others to
+   - use your version of this file under the terms of the MPL, indicate your
+   - decision by deleting the provisions above and replace them with the notice
+   - and other provisions required by the LGPL or the GPL. If you do not delete
+   - the provisions above, a recipient may use your version of this file under
+   - the terms of any one of the MPL, the GPL or the LGPL.
+   -
+   - ***** END LICENSE BLOCK ***** -->
+
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.1//EN"
+                      "http://www.w3.org/TR/xhtml11/DTD/xhtml11.dtd"
+  [
+  <!ENTITY % brandDTD SYSTEM "chrome://branding/locale/brand.dtd">
+  %brandDTD;
+  <!ENTITY % globalDTD SYSTEM "chrome://global/locale/global.dtd">
+  %globalDTD;
+  <!ENTITY % startDTD SYSTEM "chrome://messenger/locale/multimessageview.dtd">
+  %startDTD;
+  ]>
+
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+    <head>
+        <link rel="stylesheet" media="screen" type="text/css"
+              href="chrome://messenger/skin/messageHeader.css"/>
+        <link rel="stylesheet" media="screen" type="text/css"
+              href="chrome://messenger/skin/multimessageview.css"/>
+        <link rel="stylesheet" media="screen" type="text/css"
+              href="chrome://messenger/skin/tagColors.css"/>
+        <link rel="stylesheet" media="screen" type="text/css"
+              href="chrome://gconversation/skin/mmv.css"/>
+        <title>&window.title;</title>
+        <script type="application/x-javascript;version=1.8"><![CDATA[
+            Components.utils.import("resource://app/modules/errUtils.js");
+            function adjustHeadingSize() {
+              let content = document.getElementById('content');
+              let heading = document.getElementById('heading');
+              let buttonbox = document.getElementById('buttonbox');
+              content.style.top = Math.max(
+                buttonbox.getBoundingClientRect().height,
+                heading.getBoundingClientRect().height) + 'px';
+            }
+            function hookResize() {
+              // we need to hook into the resize event on the header to make the #content
+              // node shift down as it reflows.
+              window.addEventListener('resize', adjustHeadingSize, false);
+            }
+        ]]>
+        </script>
+    </head>
+<body onload="hookResize()">
+    <div id="headingwrappertable">
+        <div id="headingwrapper">
+            <div id="buttonbox"
+                 xmlns:html="http://www.w3.org/1999/xhtml"
+                 xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+                <hbox id="buttonhbox" align="start">
+                    <button id="archive"
+                            class="button msgHeaderView-button hdrArchiveButton"
+                            onclick="if (event.button == 0) window.top.MsgArchiveSelectedMessages(null);" label="&archive.label;"/>
+                    <button id="trash"
+                            class="button msgHeaderView-button hdrTrashButton"
+                            label="&delete.label;"
+                            onclick="if (event.button == 0) window.top.DefaultController.doCommand('cmd_delete');"/>
+                </hbox>
+            </div>
+            <div class="heading" id="heading">&selectedmessages.label;</div>
+        </div>
+    </div>
+    <div id="content">
+        <div id="messagelist"/>
+        <div class="notice">
+            <span class="info" id="size"></span> <span class="info" id="notice"></span>
+        </div>
+    </div>
+</body>
+</html>

@@ -1,5 +1,13 @@
-- Garder une référence au dossier du premier message (le dossier courant) pour
-améliorer le lien quand les messages ne sont pas dans le dossier courant
-(comparaison facile lors de la boucle for).
 - Lancer la seconde requête ASAP (onItemsAdded et non pas onQueryCompleted)
-- Faire une option pour un vrai style GMail où on voit vraiment tous les messages
+- Messages dupliqués -> les sauter
+- Lent -> faire de l'asynchrone : la première vague remplit les messages
+  "normaux" et la seconde rajoute les messages supplémentaires trouvés par la
+  requête
+- Ajouter du folding des citations (- show quoted text -)
+- Faire en sorte que l'on puisse voir les messages en HTML et non pas
+  nécessairement en texte (pomper le code d'affichage d'un message)
+- Faire en sorte que l'on puisse plier les messages (comme avec GMail).
+- Faire une règle : plier tous les messages qui sont lus, ne jamais plier le
+  dernier
+- Marquer le fil comme lu lorsqu'on l'affiche (contrairement à la politique
+  actuelle)
