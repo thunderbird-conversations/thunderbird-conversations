@@ -9,7 +9,11 @@
       class="gconv-button-1 toolbarbutton-1 msgHeaderView-button customize-header-toolbar-button"
       label="View full conversation"
       tooltiptext="Search all messages to build up the complete conversation, including your own."
-      oncommand="gconversation.on_header_button_clicked();"
-    />
+      oncommand="gconversation.on_load_thread();"
+      >
+      <menupopup>
+        <menuitem label="Open thread in new tab" oncommand="gconversation.on_load_thread_tab();" />
+      </menupopup>
+    </toolbarbutton>
   </toolbarpalette>
 </overlay>

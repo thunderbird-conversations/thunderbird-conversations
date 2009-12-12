@@ -1,9 +1,11 @@
 var gconversation = {
-  on_header_button_clicked: null
+  on_load_thread: null,
+  on_load_thread_tab: null
 };
 
 (function () {
   const nsMsgViewIndex_None = 0xffffffff;
+
   /* Some functions useful for us */
   function getMessageBody(aMessageHeader) {  
     let messenger = Components.classes["@mozilla.org/messenger;1"].createInstance(Components.interfaces.nsIMessenger);  
@@ -173,17 +175,10 @@ var gconversation = {
     }
   };
 
-  /* The summarizeThread function overwrites the default one, searches for more
-   * messages, and passes them to our instance of ThreadSummary. This design is
-   * more convenient as it follows Thunderbird's more closely, which allows me
-   * to track changes to the ThreadSummary code in Thunderbird more easily. */
-  var q1, q2;
-  summarizeThread = function(aSelectedMessages) {
-    if (aSelectedMessages.length == 0) {
-      dump("No selected messages\n");
-      return;
-    }
-
+  /* This function is the core search function. It pulls a GMail-like
+   * conversation from messages aSelectedMessages, then calls k when the
+   * messages have all been found */
+  function pullConversation(aSelectedMessages, k) {
     try {
       q1 = Gloda.getMessageCollectionForHeaders(aSelectedMessages, {
         onItemsAdded: function (aItems) {
@@ -196,21 +191,7 @@ var gconversation = {
             },
             onItemsModified: function () {},
             onItemsRemoved: function () {},
-            onQueryCompleted: function (aCollection) {
-              let selectedMessages = [];
-              let knownMessages = {};
-              for (let i = 0; i < aCollection.items.length; ++i) {
-                let item = aCollection.items[i];
-                let id = item.headerMessageID;
-                if (!knownMessages[id]) {
-                  knownMessages[id] = true;
-                  selectedMessages.push(item.folderMessage);
-                }
-              }
-              gSummary = new ThreadSummary(selectedMessages);
-              gSummary.init();
-              return;
-            },
+            onQueryCompleted: k,
           }, true);
         },
         onItemsModified: function () {},
@@ -224,10 +205,42 @@ var gconversation = {
       Components.utils.reportError(e);
       throw(e);
     }
+  }
+
+
+  /* The summarizeThread function overwrites the default one, searches for more
+   * messages, and passes them to our instance of ThreadSummary. This design is
+   * more convenient as it follows Thunderbird's more closely, which allows me
+   * to track changes to the ThreadSummary code in Thunderbird more easily. */
+  var q1, q2;
+  summarizeThread = function(aSelectedMessages) {
+    if (aSelectedMessages.length == 0) {
+      dump("No selected messages\n");
+      return;
+    }
+
+    pullConversation(
+      aSelectedMessages,
+      function (aCollection) {
+        let selectedMessages = [];
+        let knownMessages = {};
+        for (let i = 0; i < aCollection.items.length; ++i) {
+          let item = aCollection.items[i];
+          let id = item.headerMessageID;
+          if (!knownMessages[id]) {
+            knownMessages[id] = true;
+            selectedMessages.push(item.folderMessage);
+          }
+        }
+        gSummary = new ThreadSummary(selectedMessages);
+        gSummary.init();
+        return;
+      }
+    );
   };
 
   /* Register event handlers through the global variable */
-  gconversation.on_header_button_clicked = function() {
+  gconversation.on_load_thread = function() {
     //document.getElementById("singlemessage").hidden = true;
     //document.getElementById("multimessage").hidden = false;
     summarizeThread(gFolderDisplay.selectedMessages);
