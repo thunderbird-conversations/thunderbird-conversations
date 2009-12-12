@@ -253,8 +253,9 @@ var gconversation = {
       gFolderDisplay.selectedMessages,
       function (aCollection, aMsg) {
         let tabmail = document.getElementById("tabmail");
+        aCollection.items = removeDuplicates(aCollection.items);
         tabmail.openTab("glodaList", {
-          conversation: aCollection.items[0].conversation,
+          collection: aCollection,
           message: aMsg,
           title: aMsg.subject,
           background: false
