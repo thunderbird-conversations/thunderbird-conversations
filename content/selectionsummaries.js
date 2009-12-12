@@ -3,6 +3,7 @@ var gconversation = {
 };
 
 (function () {
+  const nsMsgViewIndex_None = 0xffffffff;
   /* Some functions useful for us */
   function getMessageBody(aMessageHeader) {  
     let messenger = Components.classes["@mozilla.org/messenger;1"].createInstance(Components.interfaces.nsIMessenger);  
@@ -139,19 +140,25 @@ var gconversation = {
 
         let sender = msgNode.getElementsByClassName("sender")[0];
         sender.msgHdr = msgHdr;
+        sender.folder = msgHdr.folder;
+        sender.msgKey = msgHdr.messageKey;
         sender.addEventListener("click", function(e) {
           // if the msg is the first message in a collapsed thread, we need to
           // uncollapse it.
           /*let origRowCount = gDBView.rowCount;
-          let viewIndex = gDBView.findIndexOfMsgHdr(e.target.msgHdr, true);
           gDBView.selectFolderMsgByKey(this.folder, this.msgKey);
           if (gDBView.rowCount != origRowCount)
             gDBView.selectionChanged();*/
-          gFolderTreeView.selectFolder(this.folder);
+
+          /* If we already have the message in the current view, then it's not
+           * necessary to change folders (otherwise, we would change from the
+           * Smart Folder "Inbox" to a specific Inbox, which is bad */
+          let viewIndex = gDBView.findIndexOfMsgHdr(e.target.msgHdr, true);
+          if (viewIndex == nsMsgViewIndex_None) {
+            gFolderTreeView.selectFolder(this.folder); //issue here see bug #10
+          }
           gFolderDisplay.selectMessage(this.msgHdr);
         }, true);
-        sender.folder = msgHdr.folder;
-        sender.msgKey = msgHdr.messageKey;
 
         this._msgNodes[key] = msgNode;
 

@@ -1,13 +1,16 @@
-- Lancer la seconde requête ASAP (onItemsAdded et non pas onQueryCompleted)
-- Messages dupliqués -> les sauter
-- Lent -> faire de l'asynchrone : la première vague remplit les messages
+#2 Ajouter du folding des citations (- show quoted text -)
+#3 Faire en sorte que l'on puisse plier les messages (comme avec GMail).
+#4 Faire une règle : plier tous les messages qui sont lus, ne jamais plier le
+  dernier
+#5 Faire une option (genre menupopup sur le bouton) pour ouvrir le thread dans un
+  nouvel onglet (le thread complet comme dans les résultats d'une recherche)
+#6 Lancer la seconde requête ASAP (onItemsAdded et non pas onQueryCompleted)
+#7 Lent -> faire de l'asynchrone : la première vague remplit les messages
   "normaux" et la seconde rajoute les messages supplémentaires trouvés par la
   requête
-- Ajouter du folding des citations (- show quoted text -)
-- Faire en sorte que l'on puisse voir les messages en HTML et non pas
+#8 Faire en sorte que l'on puisse voir les messages en HTML et non pas
   nécessairement en texte (pomper le code d'affichage d'un message)
-- Faire en sorte que l'on puisse plier les messages (comme avec GMail).
-- Faire une règle : plier tous les messages qui sont lus, ne jamais plier le
-  dernier
-- Marquer le fil comme lu lorsqu'on l'affiche (contrairement à la politique
+#9 Marquer le fil comme lu lorsqu'on l'affiche (contrairement à la politique
   actuelle)
+#10 Impossible de sauter au dossier "Envoyés" si en mode "Smart Folders" le
+  dossier "Sent" n'est pas ouvert.
