@@ -2,8 +2,6 @@
 #3 Faire en sorte que l'on puisse plier les messages (comme avec GMail).
 #4 Faire une règle : plier tous les messages qui sont lus, ne jamais plier le
   dernier
-#5 Faire une option (genre menupopup sur le bouton) pour ouvrir le thread dans un
-  nouvel onglet (le thread complet comme dans les résultats d'une recherche)
 #6 Lancer la seconde requête ASAP (onItemsAdded et non pas onQueryCompleted)
 #7 Lent -> faire de l'asynchrone : la première vague remplit les messages
   "normaux" et la seconde rajoute les messages supplémentaires trouvés par la

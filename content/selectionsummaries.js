@@ -191,7 +191,7 @@ var gconversation = {
             },
             onItemsModified: function () {},
             onItemsRemoved: function () {},
-            onQueryCompleted: k,
+            onQueryCompleted: function (aCollection) k(aCollection, msg),
           }, true);
         },
         onItemsModified: function () {},
@@ -207,6 +207,20 @@ var gconversation = {
     }
   }
 
+  /* Remove messages with the same Message-Id header from a collection */
+  function removeDuplicates(items) {
+    let selectedMessages = [];
+    let knownMessages = {};
+    for (let i = 0; i < items.length; ++i) {
+      let item = items[i];
+      let id = item.headerMessageID;
+      if (!knownMessages[id]) {
+        knownMessages[id] = true;
+        selectedMessages.push(item);
+      }
+    }
+    return selectedMessages;
+  }
 
   /* The summarizeThread function overwrites the default one, searches for more
    * messages, and passes them to our instance of ThreadSummary. This design is
@@ -222,17 +236,7 @@ var gconversation = {
     pullConversation(
       aSelectedMessages,
       function (aCollection) {
-        let selectedMessages = [];
-        let knownMessages = {};
-        for (let i = 0; i < aCollection.items.length; ++i) {
-          let item = aCollection.items[i];
-          let id = item.headerMessageID;
-          if (!knownMessages[id]) {
-            knownMessages[id] = true;
-            selectedMessages.push(item.folderMessage);
-          }
-        }
-        gSummary = new ThreadSummary(selectedMessages);
+        gSummary = new ThreadSummary([item.folderMessage for each (item in removeDuplicates(aCollection.items))]);
         gSummary.init();
         return;
       }
@@ -241,10 +245,22 @@ var gconversation = {
 
   /* Register event handlers through the global variable */
   gconversation.on_load_thread = function() {
-    //document.getElementById("singlemessage").hidden = true;
-    //document.getElementById("multimessage").hidden = false;
     summarizeThread(gFolderDisplay.selectedMessages);
     gMessageDisplay.singleMessageDisplay = false;
+  };
+  gconversation.on_load_thread_tab = function() {
+    pullConversation(
+      gFolderDisplay.selectedMessages,
+      function (aCollection, aMsg) {
+        let tabmail = document.getElementById("tabmail");
+        tabmail.openTab("glodaList", {
+          conversation: aCollection.items[0].conversation,
+          message: aMsg,
+          title: aMsg.subject,
+          background: false
+        });
+      }
+    );
   };
 
 })();
