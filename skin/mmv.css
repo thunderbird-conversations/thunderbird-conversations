@@ -16,3 +16,11 @@
   border-bottom: 1px solid #888;
   margin-bottom: 1em;
 }
+
+.moz-txt-tag {
+  display: none;
+}
+
+a {
+  font-weight: normal;
+}

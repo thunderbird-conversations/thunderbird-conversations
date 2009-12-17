@@ -5,17 +5,44 @@ var gconversation = {
 
 (function () {
   const nsMsgViewIndex_None = 0xffffffff;
+  const Ci = Components.interfaces;
+  const Cc = Components.classes;
 
-  /* Some functions useful for us */
+  /* Some utility functions */
   function getMessageBody(aMessageHeader) {  
-    let messenger = Components.classes["@mozilla.org/messenger;1"].createInstance(Components.interfaces.nsIMessenger);  
-    let listener = Components.classes["@mozilla.org/network/sync-stream-listener;1"]
-                             .createInstance(Components.interfaces.nsISyncStreamListener);  
+    let messenger = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);  
+    let listener = Cc["@mozilla.org/network/sync-stream-listener;1"].createInstance(Ci.nsISyncStreamListener);  
     let uri = aMessageHeader.folder.getUriForMsg(aMessageHeader);  
     messenger.messageServiceFromURI(uri).streamMessage(uri, listener, null, null, false, "");  
     let folder = aMessageHeader.folder;  
-    return folder.getMsgTextFromStream(listener.inputStream, aMessageHeader.Charset, 65536, 32768, false, true, { });  
+    return folder.getMsgTextFromStream(listener.inputStream, aMessageHeader.Charset, 65536, 32768, false, false, { });  
   }  
+
+  function getMessageBody2(aMsgHdr) {
+    let folder = aMsgHdr.folder;
+    let key = aMsgHdr.messageKey;
+    if (folder.hasMsgOffline(key)) {
+      let offset = new Object();
+      let messageSize = new Object();
+      let is;
+      let bodyAndHdr;
+      try {
+        is = folder.getOfflineFileStream(key, offset, messageSize);
+        let sis = Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream);
+        sis.init(is);
+        while (sis.available()) {
+          bodyAndHdr += sis.read(2048);
+        }
+      } catch(e) {
+        dump("getMessageBody2"+e+"\n"+e.message+"\n");
+      }
+      return bodyAndHdr;
+    } else {
+      return "";
+    }
+  }
+
+  let txttohtmlconv = Cc["@mozilla.org/txttohtmlconv;1"].createInstance(Ci.mozITXTToHTMLConv);
 
   function nl2br(str) {
     // Converts newlines to HTML line breaks  
@@ -65,8 +92,7 @@ var gconversation = {
       while (messagesElt.firstChild)
         messagesElt.removeChild(messagesElt.firstChild);
 
-      let headerParser = Components.classes["@mozilla.org/messenger/headerparser;1"]
-                                      .getService(Components.interfaces.nsIMsgHeaderParser);
+      let headerParser = Cc["@mozilla.org/messenger/headerparser;1"].getService(Ci.nsIMsgHeaderParser);
       let count = 0;
       const MAX_THREADS = 100;
       const SNIPPET_LENGTH = 300;
@@ -119,10 +145,58 @@ var gconversation = {
             if (meta.author)
               senderNode.textContent = meta.author;
             let body = aMimeMsg.coerceBodyToPlaintext(aMsgHdr.folder);
-            while (body[0] == "\r" || body[0] == "\n")
-              body = body.substr(1, body.length - 1);
-            body = body.replace(/[<]/g, '&lt;').replace(/[>]/g, '&gt;');
-            snippetNode.innerHTML = nl2br(body);
+            let i = 0;
+            while (body[i] == "\r" || body[i] == "\n")
+              ++i;
+            body = body.substr(i, body.length - i);
+            //body = body.replace(/[<]/g, '&lt;').replace(/[>]/g, '&gt;');
+            let whatToDo = txttohtmlconv.kEntities + txttohtmlconv.kURLs
+              + txttohtmlconv.kGlyphSubstitution 
+              + txttohtmlconv.kStructPhrase; 
+            let lines = body.split(/\r?\n|\r/g);
+            let buf = [];
+            let flushBuf = function() {
+              if (!buf.length)
+                return;
+              let div = htmlpane.contentDocument.createElement("div");
+              div.innerHTML = buf.join("<br />");
+              if (buf.length > 3) {
+                div.style.display = "none";
+                let link = htmlpane.contentDocument.createElement("div");
+                link.textContent = "show quoted text";
+                link.style.color = "#512a45";
+                _mm_addClass(link, "link");
+                //link.setAttribute("onclick", "dump('YYY');");
+                link.addEventListener("click", function() { dump("XXX\n"); }, false);
+                link.addEventListener("click", function (event) {
+                    dump("YYY\n");
+                    dump(div.style.display+"\n");
+                    if (div.style.display == "none") {
+                      link.textContent = "hide quoted text";
+                      div.style.display = "block";
+                    } else {
+                      link.textContent = "show quoted text";
+                      div.style.display = "none";
+                    }
+                  }, true);
+                snippetNode.appendChild(link);
+              }
+              buf = [];
+              snippetNode.appendChild(div);
+            };
+            for each (let [, line] in Iterator(lines)) {
+              let i = Object();
+              let quote = txttohtmlconv.citeLevelTXT(line, i);
+              let html = txttohtmlconv.scanTXT(line, whatToDo);
+              if (quote > 0) {
+                buf.push(html);
+              } else {
+                flushBuf();
+                snippetNode.innerHTML += html;
+                snippetNode.innerHTML += "<br />";
+              }
+            }
+            flushBuf();
           });
         } catch (e if e.result == Components.results.NS_ERROR_FAILURE) {
           // Offline messages generate exceptions, which is unfortunate.  When
@@ -154,7 +228,7 @@ var gconversation = {
 
           /* If we already have the message in the current view, then it's not
            * necessary to change folders (otherwise, we would change from the
-           * Smart Folder "Inbox" to a specific Inbox, which is bad */
+           * Smart Folder "Inbox" to a specific Inbox, which is bad) */
           let viewIndex = gDBView.findIndexOfMsgHdr(e.target.msgHdr, true);
           if (viewIndex == nsMsgViewIndex_None) {
             gFolderTreeView.selectFolder(this.folder); //issue here see bug #10
@@ -230,7 +304,7 @@ var gconversation = {
   summarizeThread = function(aSelectedMessages) {
     if (aSelectedMessages.length == 0) {
       dump("No selected messages\n");
-      return;
+      return false;
     }
 
     pullConversation(
@@ -241,14 +315,19 @@ var gconversation = {
         return;
       }
     );
+
+    return true;
   };
 
   /* Register event handlers through the global variable */
   gconversation.on_load_thread = function() {
-    summarizeThread(gFolderDisplay.selectedMessages);
-    gMessageDisplay.singleMessageDisplay = false;
+    if (summarizeThread(gFolderDisplay.selectedMessages))
+      gMessageDisplay.singleMessageDisplay = false;
   };
   gconversation.on_load_thread_tab = function() {
+    if (!gFolderDisplay.selectedMessages.length)
+      return;
+
     pullConversation(
       gFolderDisplay.selectedMessages,
       function (aCollection, aMsg) {

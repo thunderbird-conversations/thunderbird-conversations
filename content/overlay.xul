@@ -17,4 +17,17 @@
       </menupopup>
     </toolbarbutton>
   </toolbarpalette>
+  <toolbarpalette id="MailToolbarPalette">
+    <toolbarbutton id="gconv-button-2"
+      class="gconv-button-2 toolbarbutton-1"
+      label="View full conversation"
+      type="menu-button"
+      tooltiptext="Search all messages to build up the complete conversation, including your own."
+      oncommand="gconversation.on_load_thread();"
+      >
+      <menupopup>
+        <menuitem label="Open thread in new tab" oncommand="gconversation.on_load_thread_tab();" />
+      </menupopup>
+    </toolbarbutton>
+  </toolbarpalette>
 </overlay>

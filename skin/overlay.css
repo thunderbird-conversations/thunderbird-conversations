@@ -2,6 +2,6 @@
   list-style-image: url("chrome://gconversation/skin/button.png");
 }
 
-[iconsize="small"] #gconv-button-1 {
-  list-style-image: url("chrome://gconversation/skin/buttonsmall.png");
+#gconv-button-2 {
+  list-style-image: url("chrome://gconversation/skin/buttonbig.png");
 }
