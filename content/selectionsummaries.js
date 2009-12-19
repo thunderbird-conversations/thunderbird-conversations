@@ -163,22 +163,10 @@ var gconversation = {
               if (buf.length > 3) {
                 div.style.display = "none";
                 let link = htmlpane.contentDocument.createElement("div");
-                link.textContent = "show quoted text";
+                link.textContent = "- show quoted text -";
                 link.style.color = "#512a45";
                 _mm_addClass(link, "link");
-                //link.setAttribute("onclick", "dump('YYY');");
-                link.addEventListener("click", function() { dump("XXX\n"); }, false);
-                link.addEventListener("click", function (event) {
-                    dump("YYY\n");
-                    dump(div.style.display+"\n");
-                    if (div.style.display == "none") {
-                      link.textContent = "hide quoted text";
-                      div.style.display = "block";
-                    } else {
-                      link.textContent = "show quoted text";
-                      div.style.display = "none";
-                    }
-                  }, true);
+                link.setAttribute("onclick", "toggleQuote(event);");
                 snippetNode.appendChild(link);
               }
               buf = [];
@@ -186,8 +174,13 @@ var gconversation = {
             };
             for each (let [, line] in Iterator(lines)) {
               let i = Object();
-              let quote = txttohtmlconv.citeLevelTXT(line, i);
+              /* citeLevelTXT returns 0 on string ">"... which happens to be
+              quite common (it's simply a new line) so we add a space to make
+              sure that citeLevelTXT returns 1 on such a string (otherwise a
+              big quote is understood as separate quotes) */
+              let quote = txttohtmlconv.citeLevelTXT(line+" ", i);
               let html = txttohtmlconv.scanTXT(line, whatToDo);
+              //dump(quote+" "+line+"\n");
               if (quote > 0) {
                 buf.push(html);
               } else {

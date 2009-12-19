@@ -17,3 +17,5 @@
 #13 Re-bug changement de dossier inutile (caml-list -> Archives)
 #14 Faire en sorte que l'on puisse avoir des couleurs pour chaque personne
   (devrait être OK, c'est dans la partie synchrone)
+#15 Ajouter une préférence pour savoir si on veut en monospaced ou en regular
+  par défaut

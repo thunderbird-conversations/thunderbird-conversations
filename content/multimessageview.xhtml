@@ -71,10 +71,23 @@
                 buttonbox.getBoundingClientRect().height,
                 heading.getBoundingClientRect().height) + 'px';
             }
+
             function hookResize() {
               // we need to hook into the resize event on the header to make the #content
               // node shift down as it reflows.
               window.addEventListener('resize', adjustHeadingSize, false);
+            }
+
+            function toggleQuote(event) {
+              let link = event.target;
+              let div = link.nextSibling;
+              if (div.style.display == "none") {
+                link.textContent = "- hide quoted text -";
+                div.style.display = "block";
+              } else {
+                link.textContent = "- show quoted text -";
+                div.style.display = "none";
+              }
             }
         ]]>
         </script>
