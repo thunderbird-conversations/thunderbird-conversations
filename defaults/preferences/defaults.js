@@ -1,0 +1,1 @@
+pref("gconversation.monospaced", false);

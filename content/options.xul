@@ -1,0 +1,42 @@
+<?xml version="1.0"?>
+<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+ 
+<prefwindow id="gconversation-prefs"
+     title="GMail Conversation View Options"
+     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+ 
+  <prefpane id="tblatex-paths" label="Message display" image="chrome://messenger/skin/preferences/general.png">
+    <preferences>
+      <preference id="monospaced" name="gconversation.monospaced" type="bool" />
+    </preferences>
+   
+    <grid align="center">
+      <columns>
+        <column />
+        <column />
+      </columns>
+      <rows>
+        <row>
+          <label control="monospaced_checkbox" value="Use monospaced font" />
+          <checkbox preference="monospaced" id="monospaced_textbox" />
+        </row>
+      </rows>
+    </grid>
+  </prefpane>
+  
+  <!--<prefpane id="tblatex-template" label="LaTeX template to use" image="chrome://messenger/skin/preferences/advanced.png">
+    <preferences>
+      <preference id="latex_template" name="tblatex.template" type="string" />
+    </preferences>
+   
+    <hbox>
+      <label control="template_textbox" value="Template to use to generate LaTeX parts "/>
+      <label style="text-decoration: underline; color: navy;" value="Help ?"
+        onclick="window.openDialog('chrome://tblatex/content/help.html', '',
+          'all,chrome,dialog=no,status,toolbar,width=640,height=480');" />
+    </hbox>
+    <textbox preference="latex_template" id="template_textbox" multiline="true"
+      rows="12" />
+  </prefpane>-->
+
+</prefwindow>
