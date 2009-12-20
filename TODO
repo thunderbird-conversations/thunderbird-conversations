@@ -1,5 +1,4 @@
 # vim:ft=none 
-#2 Ajouter du folding des citations (- show quoted text -)
 #3 Faire en sorte que l'on puisse plier les messages (comme avec GMail).
 #4 Faire une règle : plier tous les messages qui sont lus, ne jamais plier le
   dernier
@@ -19,3 +18,7 @@
   (devrait être OK, c'est dans la partie synchrone)
 #15 Ajouter une préférence pour savoir si on veut en monospaced ou en regular
   par défaut
+#16 Les liens automatiquement générés par mozTXTToHTML ouvrent dans le <browser>
+  courant
+#17 Virer les lignes en trop à la fin des emails
+#18 Préférence méthode de folding (jamais, non lus + dernier)

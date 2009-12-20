@@ -7,6 +7,8 @@ var gconversation = {
   const nsMsgViewIndex_None = 0xffffffff;
   const Ci = Components.interfaces;
   const Cc = Components.classes;
+  const prefs = Cc["@mozilla.org/preferences-service;1"]
+    .getService(Ci.nsIPrefService).getBranch("gconversation.");
 
   /* Some utility functions */
   function getMessageBody(aMessageHeader) {  
@@ -122,7 +124,6 @@ var gconversation = {
                                 <div class="date">{date}</div>
                                 <div class="tags"></div>
                               </div>
-                              <div class="snippet"></div>
                             </div>
                           </div>;
 
@@ -133,8 +134,16 @@ var gconversation = {
         _mm_addClass(msgNode, msg_classes);
         messagesElt.appendChild(msgNode);
 
+        let snippetNode;
+        if (prefs.getBoolPref("monospaced"))
+          snippetNode = htmlpane.contentDocument.createElement("pre");
+        else
+          snippetNode = htmlpane.contentDocument.createElement("div");
+        _mm_addClass(snippetNode, "snippet");
+        msgNode.getElementsByClassName("header")[0].appendChild(snippetNode);
+
+
         let key = msgHdr.messageKey + msgHdr.folder.URI;
-        let snippetNode = msgNode.getElementsByClassName("snippet")[0];
         let senderNode = msgNode.getElementsByClassName("sender")[0];
         try {
           MsgHdrToMimeMessage(msgHdr, null, function(aMsgHdr, aMimeMsg) {
@@ -145,16 +154,25 @@ var gconversation = {
             if (meta.author)
               senderNode.textContent = meta.author;
             let body = aMimeMsg.coerceBodyToPlaintext(aMsgHdr.folder);
+            //remove leading new lines
             let i = 0;
-            while (body[i] == "\r" || body[i] == "\n")
+            while (i < body.length && (body[i] == "\r" || body[i] == "\n"))
               ++i;
             body = body.substr(i, body.length - i);
-            //body = body.replace(/[<]/g, '&lt;').replace(/[>]/g, '&gt;');
+            //remove trailing new lines
+            i = body.length;
+            while (i > 0 && (body[i-1] == "\r" || body[i-1] == "\n"))
+              --i;
+            body = body.substr(0, i);
+
             let whatToDo = txttohtmlconv.kEntities + txttohtmlconv.kURLs
               + txttohtmlconv.kGlyphSubstitution 
               + txttohtmlconv.kStructPhrase; 
+            //XXX find a more efficient way to do that
             let lines = body.split(/\r?\n|\r/g);
             let buf = [];
+            /* When leaving a quoted section, this function is called. It adds
+             * the - show quoted text - link and hide the quote if relevant */
             let flushBuf = function() {
               if (!buf.length)
                 return;
@@ -164,8 +182,8 @@ var gconversation = {
                 div.style.display = "none";
                 let link = htmlpane.contentDocument.createElement("div");
                 link.textContent = "- show quoted text -";
-                link.style.color = "#512a45";
                 _mm_addClass(link, "link");
+                _mm_addClass(link, "showhidequote");
                 link.setAttribute("onclick", "toggleQuote(event);");
                 snippetNode.appendChild(link);
               }
@@ -176,8 +194,7 @@ var gconversation = {
               let i = Object();
               /* citeLevelTXT returns 0 on string ">"... which happens to be
               quite common (it's simply a new line) so we add a space to make
-              sure that citeLevelTXT returns 1 on such a string (otherwise a
-              big quote is understood as separate quotes) */
+              sure that citeLevelTXT returns 1 on such a string */
               let quote = txttohtmlconv.citeLevelTXT(line+" ", i);
               let html = txttohtmlconv.scanTXT(line, whatToDo);
               //dump(quote+" "+line+"\n");

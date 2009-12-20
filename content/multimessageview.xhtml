@@ -61,6 +61,7 @@
         <link rel="stylesheet" media="screen" type="text/css"
               href="chrome://gconversation/skin/mmv.css"/>
         <title>&window.title;</title>
+        <script type="application/x-javascript" src="chrome://messenger/content/jquery.js" />
         <script type="application/x-javascript;version=1.8"><![CDATA[
             Components.utils.import("resource://app/modules/errUtils.js");
             function adjustHeadingSize() {
@@ -80,14 +81,13 @@
 
             function toggleQuote(event) {
               let link = event.target;
-              let div = link.nextSibling;
-              if (div.style.display == "none") {
-                link.textContent = "- hide quoted text -";
-                div.style.display = "block";
-              } else {
+              let $div = $(link.nextSibling);
+              if ($div.is(":visible")) {
                 link.textContent = "- show quoted text -";
-                div.style.display = "none";
+              } else {
+                link.textContent = "- hide quoted text -";
               }
+              $div.toggle("slow");
             }
         ]]>
         </script>
