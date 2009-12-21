@@ -15,7 +15,10 @@
 #12 Marche pas avec les news (exception lancée)
 #13 Re-bug changement de dossier inutile (caml-list -> Archives)
 #14 Faire en sorte que l'on puisse avoir des couleurs pour chaque personne
-  (devrait être OK, c'est dans la partie synchrone)
-#16 Les liens automatiquement générés par mozTXTToHTML ouvrent dans le <browser>
-  courant
+  (devrait être OK, c'est dans la partie synchrone) -> voir si on peut utiliser
+  un truc plus robuste que juste le nom de la personne
 #18 Préférence méthode de folding (jamais, non lus + dernier)
+#19 Mettre automatiquement la bonne taille du texte en fonction de la langue et
+  des préférences de l'utilisateur
+#20 Faire une préférence pour les couleurs par défaut
+#21 Hide quote longer than X lines (préférence)

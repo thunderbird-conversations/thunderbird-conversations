@@ -9,9 +9,11 @@ var gconversation = {
   const Cc = Components.classes;
   const prefs = Cc["@mozilla.org/preferences-service;1"]
     .getService(Ci.nsIPrefService).getBranch("gconversation.");
+  const txttohtmlconv = Cc["@mozilla.org/txttohtmlconv;1"].createInstance(Ci.mozITXTToHTMLConv);
 
   /* Some utility functions */
-  function getMessageBody(aMessageHeader) {  
+
+  /*function getMessageBody(aMessageHeader) {  
     let messenger = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);  
     let listener = Cc["@mozilla.org/network/sync-stream-listener;1"].createInstance(Ci.nsISyncStreamListener);  
     let uri = aMessageHeader.folder.getUriForMsg(aMessageHeader);  
@@ -42,30 +44,7 @@ var gconversation = {
     } else {
       return "";
     }
-  }
-
-  let txttohtmlconv = Cc["@mozilla.org/txttohtmlconv;1"].createInstance(Ci.mozITXTToHTMLConv);
-
-  function nl2br(str) {
-    // Converts newlines to HTML line breaks  
-    // 
-    // version: 911.1619
-    // discuss at: http://phpjs.org/functions/nl2br    // +   original by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-    // +   improved by: Philip Peterson
-    // +   improved by: Onno Marsman
-    // +   improved by: Atli Þór
-    // +   bugfixed by: Onno Marsman    // +      input by: Brett Zamir (http://brett-zamir.me)
-    // +   bugfixed by: Kevin van Zonneveld (http://kevin.vanzonneveld.net)
-    // +   improved by: Brett Zamir (http://brett-zamir.me)
-    // +   improved by: Maximusya
-    // *     example 1: nl2br('Kevin\nvan\nZonneveld');    // *     returns 1: 'Kevin\nvan\nZonneveld'
-    // *     example 2: nl2br("\nOne\nTwo\n\nThree\n", false);
-    // *     returns 2: '<br>\nOne<br>\nTwo<br>\n<br>\nThree<br>\n'
-    // *     example 3: nl2br("\nOne\nTwo\n\nThree\n", true);
-    // *     returns 3: '\nOne\nTwo\n\nThree\n'
- 
-    return (str + '').replace(/([^>\r\n]?)(\r\n|\n\r|\r|\n)/g, '$1<br />$2');
-  }
+  }*/
 
   /* We override the usual ThreadSummary class to provide our own. Our own
    * displays full messages, plus other extra features */
@@ -77,6 +56,21 @@ var gconversation = {
     __proto__: MultiMessageSummary.prototype,
 
     summarize: function() {
+
+      const predefinedColors = ["#204a87", "#5c3566", "#8f5902", "#a40000", "#c4a000", "#4e9a06", "#ce5c00"]; 
+      let gColorCount = 0;
+      function newColor() {
+        if (gColorCount < predefinedColors.length) {
+          return predefinedColors[gColorCount++];
+        } else {
+          let rand = function () Math.round(Math.random()*255);
+          let r = rand();
+          let g = rand();
+          let b = rand();
+          return "rgb("+r+","+g+","+b+")";
+        }
+      }
+
       this._msgNodes = {};
 
       let htmlpane = document.getElementById('multimessage');
@@ -99,6 +93,7 @@ var gconversation = {
       const MAX_THREADS = 100;
       const SNIPPET_LENGTH = 300;
       let maxCountExceeded = false;
+      let id2color = {};
       for (let i = 0; i < numMessages; ++i) {
         count += 1;
         if (count > MAX_THREADS) {
@@ -124,6 +119,7 @@ var gconversation = {
                                 <div class="date">{date}</div>
                                 <div class="tags"></div>
                               </div>
+                              <div class="snippet"></div>
                             </div>
                           </div>;
 
@@ -134,17 +130,25 @@ var gconversation = {
         _mm_addClass(msgNode, msg_classes);
         messagesElt.appendChild(msgNode);
 
-        let snippetNode;
+        let senderNode = msgNode.getElementsByClassName("sender")[0];
+        if (id2color[senderNode.textContent])
+          senderNode.style.color = id2color[senderNode.textContent];
+        else
+          senderNode.style.color = id2color[senderNode.textContent] = newColor();
+
+        /*let snippetNode;
         if (prefs.getBoolPref("monospaced"))
           snippetNode = htmlpane.contentDocument.createElement("pre");
         else
           snippetNode = htmlpane.contentDocument.createElement("div");
         _mm_addClass(snippetNode, "snippet");
-        msgNode.getElementsByClassName("header")[0].appendChild(snippetNode);
+        msgNode.getElementsByClassName("header")[0].appendChild(snippetNode);*/
 
+        let snippetNode = msgNode.getElementsByClassName("snippet")[0];
+        if (prefs.getBoolPref("monospaced"))
+          snippetNode.style.fontFamily = "-moz-fixed";
 
         let key = msgHdr.messageKey + msgHdr.folder.URI;
-        let senderNode = msgNode.getElementsByClassName("sender")[0];
         try {
           MsgHdrToMimeMessage(msgHdr, null, function(aMsgHdr, aMimeMsg) {
             if (aMimeMsg == null) /* shouldn't happen, but sometimes does? */ {
@@ -207,6 +211,13 @@ var gconversation = {
               }
             }
             flushBuf();
+            /* Attach the required event handlers so that links open in the
+             * external browser */
+            for each ([, a] in Iterator(snippetNode.getElementsByTagName("a"))) {
+              a.addEventListener("click", function (event) {
+                  return specialTabs.siteClickHandler(event, /^mailto:/);
+                }, true);
+            }
           });
         } catch (e if e.result == Components.results.NS_ERROR_FAILURE) {
           // Offline messages generate exceptions, which is unfortunate.  When

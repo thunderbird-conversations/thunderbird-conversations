@@ -8,6 +8,16 @@
   margin-left: 0;
 }
 
+.sender {
+  font-weight: bold;
+}
+
+.snippet {
+  /* FIXME should be set dynamically to the default for x-western... but there
+   * should be a canonical way of doing this, see message display code */
+  font-size: 12px;
+}
+
 .wrappedsender, .wrappedsubject, .snippet {
   padding-left: 19px;
 }

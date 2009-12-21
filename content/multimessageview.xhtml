@@ -62,6 +62,8 @@
               href="chrome://gconversation/skin/mmv.css"/>
         <title>&window.title;</title>
         <script type="application/x-javascript" src="chrome://messenger/content/jquery.js" />
+        <script type="application/x-javascript;version=1.8" src="chrome://messenger/content/contentAreaClick.js" />
+        <script type="application/x-javascript;version=1.8" src="chrome://messenger/content/specialTabs.js" />
         <script type="application/x-javascript;version=1.8"><![CDATA[
             Components.utils.import("resource://app/modules/errUtils.js");
             function adjustHeadingSize() {
@@ -88,6 +90,10 @@
                 link.textContent = "- hide quoted text -";
               }
               $div.toggle("slow");
+            }
+
+            function launchExternalURI(event) {
+              return specialTabs.siteClickHandler(event, "^mailto:");
             }
         ]]>
         </script>
