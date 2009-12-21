@@ -8,20 +8,38 @@
   <prefpane id="tblatex-paths" label="Message display" image="chrome://messenger/skin/preferences/general.png">
     <preferences>
       <preference id="monospaced" name="gconversation.monospaced" type="bool" />
+      <preference id="hide_quote_length" name="gconversation.hide_quote_length" type="int" />
     </preferences>
    
-    <grid align="center">
-      <columns>
-        <column />
-        <column />
-      </columns>
-      <rows>
-        <row>
+    <groupbox>
+      <caption><description>Message display</description></caption>
+      <hbox>
+        <checkbox preference="monospaced" id="monospaced_textbox" />
+        <vbox>
+          <spacer flex="1" />
           <label control="monospaced_checkbox" value="Use monospaced font" />
-          <checkbox preference="monospaced" id="monospaced_textbox" />
-        </row>
-      </rows>
-    </grid>
+          <spacer flex="1" />
+        </vbox>
+        <spacer flex="1" />
+      </hbox>
+    </groupbox>
+    <groupbox>
+      <caption><description>Quoting</description></caption>
+      <hbox>
+        <vbox>
+          <spacer flex="1" />
+          <label control="hide_quote_length_textbox" value="Hide quoted parts longer than" />
+          <spacer flex="1" />
+        </vbox>
+        <textbox type="number" preference="hide_quote_length"
+          id="hide_quote_length_textbox" size="2" />
+        <vbox>
+          <spacer flex="1" />
+          <label control="hide_quote_length_textbox" value="lines" />
+          <spacer flex="1" />
+        </vbox>
+      </hbox>
+    </groupbox>
   </prefpane>
   
   <!--<prefpane id="tblatex-template" label="LaTeX template to use" image="chrome://messenger/skin/preferences/advanced.png">

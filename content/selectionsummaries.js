@@ -177,12 +177,13 @@ var gconversation = {
             let buf = [];
             /* When leaving a quoted section, this function is called. It adds
              * the - show quoted text - link and hide the quote if relevant */
+            let hide_quote_length = prefs.getIntPref("hide_quote_length");
             let flushBuf = function() {
               if (!buf.length)
                 return;
               let div = htmlpane.contentDocument.createElement("div");
               div.innerHTML = buf.join("<br />");
-              if (buf.length > 3) {
+              if (buf.length > hide_quote_length) {
                 div.style.display = "none";
                 let link = htmlpane.contentDocument.createElement("div");
                 link.textContent = "- show quoted text -";
