@@ -1,7 +1,20 @@
 .message {
+  position: relative;
   border: 1px solid #888;
   -moz-border-radius: 3px 0 3px 0;
+  /* box-shadow slows scrolling too much, disabling */
   /*-moz-box-shadow: 2px 2px 5px #888;*/
+  margin-bottom: 2ex;
+  padding-bottom: 12px;
+}
+
+.messagearrow {
+  width: 100%;
+  height: 16px;
+  position: absolute;
+  bottom: -8px;
+  left: 0;
+  text-align: center;
 }
 
 .header {
@@ -37,4 +50,8 @@ a {
 
 .showhidequote {
   color: #512a45;
+}
+
+.flip {
+  -moz-transform: rotate(180deg);
 }

@@ -1,23 +1,34 @@
 # vim:ft=none 
-#3 Faire en sorte que l'on puisse plier les messages (comme avec GMail).
-#4 Faire une règle : plier tous les messages qui sont lus, ne jamais plier le
-  dernier
-#6 Lancer la seconde requête ASAP (onItemsAdded et non pas onQueryCompleted)
-#7 Lent -> faire de l'asynchrone : la première vague remplit les messages
-  "normaux" et la seconde rajoute les messages supplémentaires trouvés par la
-  requête
-#8 Faire en sorte que l'on puisse voir les messages en HTML et non pas
-  nécessairement en texte (pomper le code d'affichage d'un message)
-#9 Marquer le fil comme lu lorsqu'on l'affiche (contrairement à la politique
-  actuelle)
-#10 Impossible de sauter au dossier "Envoyés" si en mode "Smart Folders" le
-  dossier "Sent" n'est pas ouvert (Bug Tb?)
-#12 Marche pas avec les news (exception lancée)
-#13 Re-bug changement de dossier inutile (caml-list -> Archives)
-#14 Faire en sorte que l'on puisse avoir des couleurs pour chaque personne
-  (devrait être OK, c'est dans la partie synchrone) -> voir si on peut utiliser
-  un truc plus robuste que juste le nom de la personne
-#18 Préférence méthode de folding (jamais, non lus + dernier)
-#19 Mettre automatiquement la bonne taille du texte en fonction de la langue et
-  des préférences de l'utilisateur
-#20 Faire une préférence pour les couleurs par défaut
+#3 Make messages foldable, just like GMail
+#4 Add a default rule: leave a message unfolded if it is unread or the last one
+  in the thread
+#18 Add a preference for folding messages: always, never, rule above
+#6 Launch the second Gloda request ASAP (in onItemsAdded, not onQueryCompleted)
+#7 SLOW: make everything asynchronous. Start filling in messages for the first
+  query, then launch the extended query that fetches more messages, and then
+  asynchronously insert those in the right place.
+  +) Performance bottleneck when iterating of the messages' lines. Investigate
+  options.
+#8 Add an option to display messages as HTML and not text only
+  a) Preferences dialog
+  b) Steal code from message display (jsmimeemitter.js sees the HTML go by, find
+    a way to catch it with a GlodaMimeMsg)
+  c) Adapt "- hide quoted text -" code
+#9 Add an option to mark a thread as read when it is displayed
+  a) Preferences dialog
+  b) Improve it by only marking a message as read when it is scrolled into view
+#10 When clicking on the sender to display a given message, if the message is
+  sent by me, and the "Sent" Smart Folder is not collapsed, cannot jump to the
+  right Sent folder.
+#12 Extension does not work with newsgroups (throws an exception).
+#13 On GMail, useless change of folders (on my account, useless jump from
+  caml-list to Archives) when jumping from the conversation view to a specific
+  message
+#14 Assign a unique color to each recipient
+  a) Currently using the sender's name as the key, check if there's something
+  more elaborate using GlodaIdentity
+#19 Font size is set as 12px. Use the Thunderbird-wide preference that depends
+  on the lang of the message.
+#20 Add a preference to choose the default set of colors for recipients.
+#21 Some conversations are erroneously recognized as multiple conversations.
+  Probably a bug in Thunderbird but check anyway.

@@ -123,10 +123,15 @@ var gconversation = {
                             </div>
                           </div>;
 
+        let msgExtraContents = <div class="messagearrow">
+                                 <img class="flip" src="chrome://gconversation/skin/down.png" />
+                               </div>;
+
         let msgNode = htmlpane.contentDocument.createElement("div");
         // innerHTML is safe here because all of the data in msgContents is
         // either generated from integers or escaped to be safe.
         msgNode.innerHTML = msgContents.toXMLString();
+        msgNode.innerHTML += msgExtraContents.toXMLString();
         _mm_addClass(msgNode, msg_classes);
         messagesElt.appendChild(msgNode);
 
@@ -176,7 +181,7 @@ var gconversation = {
             let lines = body.split(/\r?\n|\r/g);
             let buf = [];
             /* When leaving a quoted section, this function is called. It adds
-             * the - show quoted text - link and hide the quote if relevant */
+             * the - show quoted text - link and hides the quote if relevant */
             let hide_quote_length = prefs.getIntPref("hide_quote_length");
             let flushBuf = function() {
               if (!buf.length)

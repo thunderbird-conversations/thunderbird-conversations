@@ -9,7 +9,7 @@ dist:
 	zip gconversation.xpi --exclude Makefile --exclude oldext --exclude tests --exclude TODO --exclude install.rdf.template -r *
 
 upload:
-	echo "cd jonathan/files\nput gconversation.xpi" | ftp xulforum@ftp.xulforum.org
+	echo "cd jonathan/files\nput gconversation.xpi\nput TODO TODO_GConversation\nput Changelog Changelog_GConversation" | ftp xulforum@ftp.xulforum.org
 
 debug_template:
 	cp -f install.rdf.template install.rdf
