@@ -111,6 +111,9 @@ var gconversation = {
         let senderName = headerParser.extractHeaderAddressName(msgHdr.mime2DecodedAuthor);
         let date = makeFriendlyDateAgo(new Date(msgHdr.date/1000));
 
+        /* the snippet class really has a bad name but that allows us to keep
+         * the style from the original multimessageview.css without rewriting
+         * everything */
         let msgContents = <div class="row">
                             <div class="star"/>
                             <div class="header">
@@ -119,12 +122,13 @@ var gconversation = {
                                 <div class="date">{date}</div>
                                 <div class="tags"></div>
                               </div>
-                              <div class="snippet"></div>
+                              <div class="snippet fullmsg"></div>
+                              <div class="snippet snippetmsg" style="display: none"></div>
                             </div>
                           </div>;
 
         let msgExtraContents = <div class="messagearrow">
-                                 <img class="flip" src="chrome://gconversation/skin/down.png" />
+                                 <img class="msgarrow" src="chrome://gconversation/skin/up.png" onclick="toggleMessage(event);" />
                                </div>;
 
         let msgNode = htmlpane.contentDocument.createElement("div");
@@ -141,17 +145,10 @@ var gconversation = {
         else
           senderNode.style.color = id2color[senderNode.textContent] = newColor();
 
-        /*let snippetNode;
+        let fullMsgNode = msgNode.getElementsByClassName("fullmsg")[0];
+        let snippetMsgNode = msgNode.getElementsByClassName("snippetmsg")[0];
         if (prefs.getBoolPref("monospaced"))
-          snippetNode = htmlpane.contentDocument.createElement("pre");
-        else
-          snippetNode = htmlpane.contentDocument.createElement("div");
-        _mm_addClass(snippetNode, "snippet");
-        msgNode.getElementsByClassName("header")[0].appendChild(snippetNode);*/
-
-        let snippetNode = msgNode.getElementsByClassName("snippet")[0];
-        if (prefs.getBoolPref("monospaced"))
-          snippetNode.style.fontFamily = "-moz-fixed";
+          fullMsgNode.style.fontFamily = "-moz-fixed";
 
         let key = msgHdr.messageKey + msgHdr.folder.URI;
         try {
@@ -159,9 +156,14 @@ var gconversation = {
             if (aMimeMsg == null) /* shouldn't happen, but sometimes does? */ {
               return;
             }
-            let [_, meta] = mimeMsgToContentAndMeta(aMimeMsg, aMsgHdr.folder, SNIPPET_LENGTH);
+            let [snippet, meta] = mimeMsgToContentSnippetAndMeta(aMimeMsg, aMsgHdr.folder, SNIPPET_LENGTH);
             if (meta.author)
               senderNode.textContent = meta.author;
+
+            /* Fill the snippetmsg first */
+            snippetMsgNode.textContent = snippet;
+
+            /* Deal with the full message */
             let body = aMimeMsg.coerceBodyToPlaintext(aMsgHdr.folder);
             //remove leading new lines
             let i = 0;
@@ -195,10 +197,10 @@ var gconversation = {
                 _mm_addClass(link, "link");
                 _mm_addClass(link, "showhidequote");
                 link.setAttribute("onclick", "toggleQuote(event);");
-                snippetNode.appendChild(link);
+                fullMsgNode.appendChild(link);
               }
               buf = [];
-              snippetNode.appendChild(div);
+              fullMsgNode.appendChild(div);
             };
             for each (let [, line] in Iterator(lines)) {
               let i = Object();
@@ -212,14 +214,14 @@ var gconversation = {
                 buf.push(html);
               } else {
                 flushBuf();
-                snippetNode.innerHTML += html;
-                snippetNode.innerHTML += "<br />";
+                fullMsgNode.innerHTML += html;
+                fullMsgNode.innerHTML += "<br />";
               }
             }
             flushBuf();
             /* Attach the required event handlers so that links open in the
              * external browser */
-            for each ([, a] in Iterator(snippetNode.getElementsByTagName("a"))) {
+            for each ([, a] in Iterator(fullMsgNode.getElementsByTagName("a"))) {
               a.addEventListener("click", function (event) {
                   return specialTabs.siteClickHandler(event, /^mailto:/);
                 }, true);
@@ -228,7 +230,7 @@ var gconversation = {
         } catch (e if e.result == Components.results.NS_ERROR_FAILURE) {
           // Offline messages generate exceptions, which is unfortunate.  When
           // that's fixed, this code should adapt. XXX
-          snippetNode.textContent = "...";
+          fullMsgNode.textContent = "...";
         }
         let tagsNode = msgNode.getElementsByClassName("tags")[0];
         let tags = this.getTagsForMsg(msgHdr);

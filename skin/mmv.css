@@ -52,6 +52,6 @@ a {
   color: #512a45;
 }
 
-.flip {
-  -moz-transform: rotate(180deg);
+.msgarrow {
+  cursor: pointer;
 }

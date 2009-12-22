@@ -89,6 +89,15 @@
               }
               $div.toggle("slow");
             }
+
+            function toggleMessage(event) {
+              let $arrow = $(event.target);
+              if ($arrow.attr("src") == "chrome://gconversation/skin/up.png")
+                $arrow.attr("src", "chrome://gconversation/skin/down.png");
+              else
+                $arrow.attr("src", "chrome://gconversation/skin/up.png");
+              $(event.target.parentNode.previousSibling.querySelectorAll(".snippet")).toggle("slow");
+            }
         ]]>
         </script>
     </head>
