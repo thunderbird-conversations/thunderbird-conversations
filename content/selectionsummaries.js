@@ -147,6 +147,8 @@ var gconversation = {
 
         let fullMsgNode = msgNode.getElementsByClassName("fullmsg")[0];
         let snippetMsgNode = msgNode.getElementsByClassName("snippetmsg")[0];
+
+        /* Style according to the preferences */
         if (prefs.getBoolPref("monospaced"))
           fullMsgNode.style.fontFamily = "-moz-fixed";
         let fold_rule = prefs.getCharPref("fold_rule");

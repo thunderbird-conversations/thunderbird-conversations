@@ -22,7 +22,7 @@
 }
 
 .sender {
-  font-weight: bold;
+  /*font-weight: bold;*/
 }
 
 .snippet {
@@ -55,3 +55,19 @@ a {
 .msgarrow {
   cursor: pointer;
 }
+
+.header {
+  padding-top: 0;
+}
+
+/*.unread > .row > .header > .snippet {
+  color: black;
+}
+
+.unread > .row > .header > .wrappedsender {
+  border-color: black;
+}
+
+.unread {
+  border-color: black;
+}*/
