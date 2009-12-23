@@ -111,9 +111,9 @@ var gconversation = {
         let senderName = headerParser.extractHeaderAddressName(msgHdr.mime2DecodedAuthor);
         let date = makeFriendlyDateAgo(new Date(msgHdr.date/1000));
 
-        /* the snippet class really has a bad name but that allows us to keep
-         * the style from the original multimessageview.css without rewriting
-         * everything */
+        /* the snippet class really has a counter-intuitive name but that allows
+         * us to keep the style from the original multimessageview.css without
+         * rewriting everything */
         let msgContents = <div class="row">
                             <div class="star"/>
                             <div class="header">
@@ -164,6 +164,7 @@ var gconversation = {
         let key = msgHdr.messageKey + msgHdr.folder.URI;
         try {
           MsgHdrToMimeMessage(msgHdr, null, function(aMsgHdr, aMimeMsg) {
+            let j = i;
             if (aMimeMsg == null) /* shouldn't happen, but sometimes does? */ {
               return;
             }
@@ -199,6 +200,7 @@ var gconversation = {
             let flushBuf = function() {
               if (!buf.length)
                 return;
+              buf.reverse();
               let div = htmlpane.contentDocument.createElement("div");
               div.innerHTML = buf.join("<br />");
               if (buf.length > hide_quote_length) {
@@ -213,22 +215,26 @@ var gconversation = {
               buf = [];
               fullMsgNode.appendChild(div);
             };
+            dump("\n");
             for each (let [, line] in Iterator(lines)) {
-              let i = Object();
+              dump("\r"+k+"/"+lines.length);
+              let line = lines[k];
+              let p = Object();
               /* citeLevelTXT returns 0 on string ">"... which happens to be
               quite common (it's simply a new line) so we add a space to make
               sure that citeLevelTXT returns 1 on such a string */
-              let quote = txttohtmlconv.citeLevelTXT(line+" ", i);
+              let quote = txttohtmlconv.citeLevelTXT(line+" ", p);
               let html = txttohtmlconv.scanTXT(line, whatToDo);
               //dump(quote+" "+line+"\n");
               if (quote > 0) {
-                buf.push(html);
+                buf.unshift(html);
               } else {
                 flushBuf();
                 fullMsgNode.innerHTML += html;
                 fullMsgNode.innerHTML += "<br />";
               }
             }
+            dump("\n");
             flushBuf();
             /* Attach the required event handlers so that links open in the
              * external browser */
