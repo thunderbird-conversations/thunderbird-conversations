@@ -9,6 +9,7 @@
     <preferences>
       <preference id="monospaced" name="gconversation.monospaced" type="bool" />
       <preference id="hide_quote_length" name="gconversation.hide_quote_length" type="int" />
+      <preference id="fold_rule" name="gconversation.fold_rule" type="string" />
     </preferences>
    
     <groupbox>
@@ -21,6 +22,20 @@
           <spacer flex="1" />
         </vbox>
         <spacer flex="1" />
+      </hbox>
+      <hbox>
+        <vbox>
+          <spacer flex="1" />
+          <description control="fold_rule_menulist">By default, unfold</description>
+          <spacer flex="1" />
+        </vbox>
+        <menulist preference="fold_rule" id="fold_rule_menulist">
+          <menupopup>
+            <menuitem value="unread_and_last" label="last or unread messages" />
+            <menuitem value="all" label="all messages" />
+            <menuitem value="none" label="no messages" />
+          </menupopup>
+        </menulist>
       </hbox>
     </groupbox>
     <groupbox>

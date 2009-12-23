@@ -1,8 +1,4 @@
 # vim:ft=none 
-#3 Make messages foldable, just like GMail
-#4 Add a default rule: leave a message unfolded if it is unread or the last one
-  in the thread
-#18 Add a preference for folding messages: always, never, rule above
 #6 Launch the second Gloda request ASAP (in onItemsAdded, not onQueryCompleted)
 #7 SLOW: make everything asynchronous. Start filling in messages for the first
   query, then launch the extended query that fetches more messages, and then

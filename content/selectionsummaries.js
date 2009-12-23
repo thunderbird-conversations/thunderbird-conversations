@@ -103,7 +103,7 @@ var gconversation = {
         let msgHdr = this._msgHdrs[i];
 
         let msg_classes = "message ";
-        if (! msgHdr.isRead)
+        if (!msgHdr.isRead)
           msg_classes += " unread";
         if (msgHdr.isFlagged)
           msg_classes += " starred";
@@ -122,13 +122,13 @@ var gconversation = {
                                 <div class="date">{date}</div>
                                 <div class="tags"></div>
                               </div>
-                              <div class="snippet fullmsg"></div>
-                              <div class="snippet snippetmsg" style="display: none"></div>
+                              <div class="snippet fullmsg" style="display: none"></div>
+                              <div class="snippet snippetmsg"></div>
                             </div>
                           </div>;
 
         let msgExtraContents = <div class="messagearrow">
-                                 <img class="msgarrow" src="chrome://gconversation/skin/up.png" onclick="toggleMessage(event);" />
+                                 <img class="msgarrow" src="chrome://gconversation/skin/down.png" onclick="toggleMessage(event);" />
                                </div>;
 
         let msgNode = htmlpane.contentDocument.createElement("div");
@@ -149,6 +149,15 @@ var gconversation = {
         let snippetMsgNode = msgNode.getElementsByClassName("snippetmsg")[0];
         if (prefs.getBoolPref("monospaced"))
           fullMsgNode.style.fontFamily = "-moz-fixed";
+        let fold_rule = prefs.getCharPref("fold_rule");
+        if ((fold_rule == "unread_and_last" && (!msgHdr.isRead || i == (numMessages - 1)))
+             || fold_rule == "all") {
+          snippetMsgNode.style.display = "none";
+          fullMsgNode.style.display = "block";
+          msgNode.getElementsByClassName("msgarrow")[0].setAttribute(
+            "src",
+            "chrome://gconversation/skin/up.png");
+        }
 
         let key = msgHdr.messageKey + msgHdr.folder.URI;
         try {
