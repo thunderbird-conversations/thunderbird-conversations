@@ -28,7 +28,6 @@
 #21 Some conversations are erroneously recognized as multiple conversations.
   Probably a bug in Thunderbird but check anyway.
 #22 Localize
-#23 Remove constant querying of preference. Use a global and an observer.
 #24 Gloda message body might be empty... check and use alternate method to
   retrieve messages.
 #26

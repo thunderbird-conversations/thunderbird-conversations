@@ -11,6 +11,39 @@ var gconversation = {
     .getService(Ci.nsIPrefService).getBranch("gconversation.");
   const txttohtmlconv = Cc["@mozilla.org/txttohtmlconv;1"].createInstance(Ci.mozITXTToHTMLConv);
 
+  let g_prefs = {};
+  g_prefs["monospaced"] = prefs.getBoolPref("monospaced");
+  g_prefs["hide_quote_length"] = prefs.getIntPref("hide_quote_length");
+  g_prefs["fold_rule"] = prefs.getCharPref("fold_rule");
+
+  let myPrefObserver = {
+    register: function () {
+      prefs.QueryInterface(Components.interfaces.nsIPrefBranch2);
+      prefs.addObserver("", this, false);
+    },
+
+    unregister: function () {
+      if (!prefs) return;
+        prefs.removeObserver("", this);
+    },
+
+    observe: function (aSubject, aTopic, aData) {
+      if (aTopic != "nsPref:changed") return;
+      switch (aData) {
+        case "monospaced":
+          g_prefs["monospaced"] = prefs.getBoolPref("monospaced");
+          break;
+        case "hide_quote_length":
+          g_prefs["hide_quote_length"] = prefs.getIntPref("hide_quote_length");
+          break;
+        case "fold_rule":
+          g_prefs["fold_rule"] = prefs.getIntPref("fold_rule");
+          break;
+      }
+    }
+  };
+  myPrefObserver.register();
+
   /* Some utility functions */
 
   /*function getMessageBody(aMessageHeader) {  
@@ -149,11 +182,10 @@ var gconversation = {
         let snippetMsgNode = msgNode.getElementsByClassName("snippetmsg")[0];
 
         /* Style according to the preferences */
-        if (prefs.getBoolPref("monospaced"))
+        if (g_prefs["monospaced"])
           fullMsgNode.style.fontFamily = "-moz-fixed";
-        let fold_rule = prefs.getCharPref("fold_rule");
-        if ((fold_rule == "unread_and_last" && (!msgHdr.isRead || i == (numMessages - 1)))
-             || fold_rule == "all") {
+        if ((g_prefs["fold_rule"] == "unread_and_last" && (!msgHdr.isRead || i == (numMessages - 1)))
+             || g_prefs["fold_rule"] == "all") {
           snippetMsgNode.style.display = "none";
           fullMsgNode.style.display = "block";
           msgNode.getElementsByClassName("msgarrow")[0].setAttribute(
@@ -197,14 +229,13 @@ var gconversation = {
             let buf = [];
             let buf_i = 0;
             let gbuf_i = 0;
-            let hide_quote_length = prefs.getIntPref("hide_quote_length");
             /* When leaving a quoted section, this function is called. It adds
              * the - show quoted text - link and hides the quote if relevant */
             let flushBufQuote = function() {
               if (!buf.length)
                 return;
               let divAttr = "";
-              if (buf.length > hide_quote_length) {
+              if (buf.length > g_prefs["hide_quote_length"]) {
                 divAttr = "style=\"display: none;\"";
                 let link = "<div class=\"link showhidequote\""+
                   " onclick=\"toggleQuote(event);\">- show quoted text -</div>";

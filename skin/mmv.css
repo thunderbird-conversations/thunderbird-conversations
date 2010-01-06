@@ -1,3 +1,14 @@
+/* Toolbar */
+#unfold_all {
+  list-style-image: url("chrome://gconversation/skin/down.png");
+}
+
+#fold_all {
+  list-style-image: url("chrome://gconversation/skin/up.png");
+}
+
+/* General stuff */
+
 .message {
   position: relative;
   -moz-border-radius: 3px 0 3px 0;
@@ -25,6 +36,8 @@
   border-bottom: 1px solid #888;
   margin-bottom: 1em;
 }
+
+/* Inside the messages' bodies */
 
 .moz-txt-tag {
   display: none;

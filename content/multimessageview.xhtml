@@ -66,8 +66,30 @@
             Components.utils.import("resource://app/modules/errUtils.js");
             const Ci = Components.interfaces;
             const Cc = Components.classes;
-            const prefs = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService)
-              .getBranch("gconversation.");
+            const prefs = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService);
+            let buttonBranch = prefs.getBranch("gconversation.button.");
+
+            let myPrefObserver = {
+              register: function () {
+                buttonBranch.QueryInterface(Components.interfaces.nsIPrefBranch2);
+                buttonBranch.addObserver("", this, false);
+              },
+
+              unregister: function () {
+                if (!buttonBranch) return;
+                  buttonBranch.removeObserver("", this);
+              },
+
+              observe: function (aSubject, aTopic, aData) {
+                if (aTopic != "nsPref:changed") return;
+                if (buttonBranch.getBoolPref(aData))
+                  document.getElementById(aData).style.display = "";
+                else
+                  document.getElementById(aData).style.display = "none";
+              }
+            };
+            myPrefObserver.register();
+
 
             function adjustHeadingSize() {
               let content = document.getElementById('content');
@@ -86,7 +108,7 @@
 
             function customizeToolbar() {
               for each (let l in ["archive", "trash", "fold_all", "unfold_all", "mark_as_read"])
-                if (!prefs.getBoolPref("button."+l))
+                if (!buttonBranch.getBoolPref(l))
                   document.getElementById(l).style.display = "none";
             }
 
@@ -134,12 +156,12 @@
                             onclick="if (event.button == 0) window.top.DefaultController.doCommand('cmd_markThreadAsRead');"/>
                     <button id="unfold_all"
                             class="button msgHeaderView-button"
-                            label="unfold all"
-                            onclick="if (event.button == 0) unfoldAll();"/>
+                            onclick="if (event.button == 0) unfoldAll();"
+                            label="unfold all" />
                     <button id="fold_all"
                             class="button msgHeaderView-button"
-                            label="fold all"
-                            onclick="if (event.button == 0) foldAll();"/>
+                            onclick="if (event.button == 0) foldAll();"
+                            label="fold all" />
                     <button id="archive"
                             class="button msgHeaderView-button hdrArchiveButton"
                             onclick="if (event.button == 0) window.top.MsgArchiveSelectedMessages(null);" label="&archive.label;"/>

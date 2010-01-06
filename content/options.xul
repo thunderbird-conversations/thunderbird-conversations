@@ -45,8 +45,6 @@
     </groupbox>
     <groupbox>
       <caption><description>Toolbar buttons</description></caption>
-      <description style="font-style: italic">You need to restart Thunderbird
-        for these to take effect</description>
       <checkbox label="Display &quot;archive&quot; button" preference="button.archive" id="archive_checkbox" />
       <checkbox label="Display &quot;delete&quot; button" preference="button.trash" id="delete_checkbox" />
       <checkbox label="Display &quot;unfold all&quot; button" preference="button.unfold_all" id="unfold_all_checkbox" />
