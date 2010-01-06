@@ -193,32 +193,39 @@ var gconversation = {
               + txttohtmlconv.kStructPhrase; 
             //XXX find a more efficient way to do that
             let lines = body.split(/\r?\n|\r/g);
+            let gbuf = [];
             let buf = [];
+            let buf_i = 0;
+            let gbuf_i = 0;
+            let hide_quote_length = prefs.getIntPref("hide_quote_length");
             /* When leaving a quoted section, this function is called. It adds
              * the - show quoted text - link and hides the quote if relevant */
-            let hide_quote_length = prefs.getIntPref("hide_quote_length");
-            let flushBuf = function() {
+            let flushBufQuote = function() {
               if (!buf.length)
                 return;
-              buf.reverse();
-              let div = htmlpane.contentDocument.createElement("div");
-              div.innerHTML = buf.join("<br />");
+              let divAttr = "";
               if (buf.length > hide_quote_length) {
-                div.style.display = "none";
-                let link = htmlpane.contentDocument.createElement("div");
-                link.textContent = "- show quoted text -";
-                _mm_addClass(link, "link");
-                _mm_addClass(link, "showhidequote");
-                link.setAttribute("onclick", "toggleQuote(event);");
-                fullMsgNode.appendChild(link);
+                divAttr = "style=\"display: none;\"";
+                let link = "<div class=\"link showhidequote\""+
+                  " onclick=\"toggleQuote(event);\">- show quoted text -</div>";
+                gbuf[gbuf_i++] = link;
               }
+              gbuf[gbuf_i++] = "<div "+divAttr+">"+buf.join("<br />")+"</div>";
               buf = [];
-              fullMsgNode.appendChild(div);
+              buf_i = 0;
             };
-            dump("\n");
+            /* This just flushes the buffer when changing sections */
+            let flushBufRegular = function () {
+              gbuf[gbuf_i++] = buf.join("<br />");
+              buf = [];
+              buf_i = 0;
+            };
+            //dump("\n"); //REMOVEME
+            let mode = 0; //0 = normal, 1 = in quote
+            let k = 0; //REMOVEME
             for each (let [, line] in Iterator(lines)) {
-              dump("\r"+k+"/"+lines.length);
-              let line = lines[k];
+              //dump("\r"+k+"/"+(lines.length-1)); //REMOVEME
+              k++; //REMOVEME
               let p = Object();
               /* citeLevelTXT returns 0 on string ">"... which happens to be
               quite common (it's simply a new line) so we add a space to make
@@ -227,15 +234,24 @@ var gconversation = {
               let html = txttohtmlconv.scanTXT(line, whatToDo);
               //dump(quote+" "+line+"\n");
               if (quote > 0) {
-                buf.unshift(html);
+                if (mode == 0)
+                  flushBufRegular();
+                mode = 1;
               } else {
-                flushBuf();
-                fullMsgNode.innerHTML += html;
-                fullMsgNode.innerHTML += "<br />";
+                if (mode == 1)
+                  flushBufQuote();
+                mode = 0;
               }
+              buf[buf_i++] = html;
             }
-            dump("\n");
-            flushBuf();
+            if (mode == 1)
+              flushBufQuote();
+            else
+              flushBufRegular();
+            //dump(gbuf.join("\n")+"\n"); //REMOVEME
+            fullMsgNode.innerHTML += gbuf.join("");
+            //dump("\n"); //REMOVEME
+
             /* Attach the required event handlers so that links open in the
              * external browser */
             for each ([, a] in Iterator(fullMsgNode.getElementsByTagName("a"))) {

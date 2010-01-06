@@ -1,3 +1,5 @@
+EXCLUDES = $(addprefix --exclude , $(shell find . -iname '.*.sw*'))
+
 all: debug_template package
 
 release: release_template package
@@ -6,7 +8,7 @@ package: dist upload
 
 dist:
 	rm -f gconversation.xpi
-	zip gconversation.xpi --exclude Makefile --exclude oldext --exclude tests --exclude TODO --exclude install.rdf.template -r *
+	zip gconversation.xpi $(EXCLUDES) --exclude Makefile --exclude oldext --exclude tests --exclude TODO --exclude install.rdf.template -r *
 
 upload:
 	echo "cd jonathan/files\nput gconversation.xpi\nput TODO TODO_GConversation\nput Changelog Changelog_GConversation" | ftp xulforum@ftp.xulforum.org

@@ -64,6 +64,11 @@
         <script type="application/x-javascript" src="chrome://messenger/content/jquery.js" />
         <script type="application/x-javascript;version=1.8"><![CDATA[
             Components.utils.import("resource://app/modules/errUtils.js");
+            const Ci = Components.interfaces;
+            const Cc = Components.classes;
+            const prefs = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService)
+              .getBranch("gconversation.");
+
             function adjustHeadingSize() {
               let content = document.getElementById('content');
               let heading = document.getElementById('heading');
@@ -77,6 +82,12 @@
               // we need to hook into the resize event on the header to make the #content
               // node shift down as it reflows.
               window.addEventListener('resize', adjustHeadingSize, false);
+            }
+
+            function customizeToolbar() {
+              for each (let l in ["archive", "trash", "fold_all", "unfold_all", "mark_as_read"])
+                if (!prefs.getBoolPref("button."+l))
+                  document.getElementById(l).style.display = "none";
             }
 
             function toggleQuote(event) {
@@ -96,18 +107,39 @@
                 $arrow.attr("src", "chrome://gconversation/skin/down.png");
               else
                 $arrow.attr("src", "chrome://gconversation/skin/up.png");
-              $(event.target.parentNode.previousSibling.querySelectorAll(".snippet")).toggle("slow");
+              //$(event.target.parentNode.previousSibling.querySelectorAll(".snippet")).toggle("slow");
+              $(event.target.parentNode.previousSibling.querySelectorAll(".snippet")).toggle();
+            }
+
+            function unfoldAll(event) {
+              $(".msgarrow[src=chrome://gconversation/skin/down.png]").click();
+            }
+
+            function foldAll(event) {
+              $(".msgarrow[src=chrome://gconversation/skin/up.png]").click();
             }
         ]]>
         </script>
     </head>
-<body onload="hookResize()">
+<body onload="hookResize(); customizeToolbar()">
     <div id="headingwrappertable">
         <div id="headingwrapper">
             <div id="buttonbox"
                  xmlns:html="http://www.w3.org/1999/xhtml"
                  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
                 <hbox id="buttonhbox" align="start">
+                    <button id="mark_as_read"
+                            class="button msgHeaderView-button"
+                            label="mark all read"
+                            onclick="if (event.button == 0) window.top.DefaultController.doCommand('cmd_markThreadAsRead');"/>
+                    <button id="unfold_all"
+                            class="button msgHeaderView-button"
+                            label="unfold all"
+                            onclick="if (event.button == 0) unfoldAll();"/>
+                    <button id="fold_all"
+                            class="button msgHeaderView-button"
+                            label="fold all"
+                            onclick="if (event.button == 0) foldAll();"/>
                     <button id="archive"
                             class="button msgHeaderView-button hdrArchiveButton"
                             onclick="if (event.button == 0) window.top.MsgArchiveSelectedMessages(null);" label="&archive.label;"/>

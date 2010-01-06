@@ -10,6 +10,11 @@
       <preference id="monospaced" name="gconversation.monospaced" type="bool" />
       <preference id="hide_quote_length" name="gconversation.hide_quote_length" type="int" />
       <preference id="fold_rule" name="gconversation.fold_rule" type="string" />
+      <preference id="button.archive" name="gconversation.button.archive" type="bool" />
+      <preference id="button.trash" name="gconversation.button.trash" type="bool" />
+      <preference id="button.fold_all" name="gconversation.button.fold_all" type="bool" />
+      <preference id="button.unfold_all" name="gconversation.button.unfold_all" type="bool" />
+      <preference id="button.mark_as_read" name="gconversation.button.mark_as_read" type="bool" />
     </preferences>
    
     <groupbox>
@@ -37,6 +42,16 @@
           </menupopup>
         </menulist>
       </hbox>
+    </groupbox>
+    <groupbox>
+      <caption><description>Toolbar buttons</description></caption>
+      <description style="font-style: italic">You need to restart Thunderbird
+        for these to take effect</description>
+      <checkbox label="Display &quot;archive&quot; button" preference="button.archive" id="archive_checkbox" />
+      <checkbox label="Display &quot;delete&quot; button" preference="button.trash" id="delete_checkbox" />
+      <checkbox label="Display &quot;unfold all&quot; button" preference="button.unfold_all" id="unfold_all_checkbox" />
+      <checkbox label="Display &quot;fold all&quot; button" preference="button.fold_all" id="fold_all_checkbox" />
+      <checkbox label="Display &quot;mark all read&quot; button" preference="button.mark_as_read" id="mark_as_read_checkbox" />
     </groupbox>
     <groupbox>
       <caption><description>Quoting</description></caption>
