@@ -82,6 +82,12 @@ var gconversation = {
   /* We override the usual ThreadSummary class to provide our own. Our own
    * displays full messages, plus other extra features */
   ThreadSummary = function (messages) {
+    /* messages =
+     *  [
+     *    [GlodaMessage1, GlodaMessage2, ... (all share the same MessageId Header],
+     *    [Same for 2nd message in thread]
+     *  ]
+     * */
     this._msgHdrs = messages;
   }
 
@@ -108,7 +114,7 @@ var gconversation = {
 
       let htmlpane = document.getElementById('multimessage');
 
-      let firstMsgHdr = this._msgHdrs[0];
+      let firstMsgHdr = this._msgHdrs[0][0].folderMessage;
       let numMessages = this._msgHdrs.length;
       let subject = (firstMsgHdr.mime2DecodedSubject || gSelectionSummaryStrings["noSubject"])
          + " "
@@ -133,7 +139,7 @@ var gconversation = {
           maxCountExceeded = true;
           break;
         }
-        let msgHdr = this._msgHdrs[i];
+        let msgHdr = this._msgHdrs[i][0].folderMessage;
 
         let msg_classes = "message ";
         if (!msgHdr.isRead)
@@ -144,7 +150,7 @@ var gconversation = {
         let senderName = headerParser.extractHeaderAddressName(msgHdr.mime2DecodedAuthor);
         let date = makeFriendlyDateAgo(new Date(msgHdr.date/1000));
 
-        /* the snippet class really has a counter-intuitive name but that allows
+        /* The snippet class really has a counter-intuitive name but that allows
          * us to keep the style from the original multimessageview.css without
          * rewriting everything */
         let msgContents = <div class="row">
@@ -181,7 +187,8 @@ var gconversation = {
         let fullMsgNode = msgNode.getElementsByClassName("fullmsg")[0];
         let snippetMsgNode = msgNode.getElementsByClassName("snippetmsg")[0];
 
-        /* Style according to the preferences */
+        /* Style according to the preferences. Preferences have an observer, see
+         * above for details. */
         if (g_prefs["monospaced"])
           fullMsgNode.style.fontFamily = "-moz-fixed";
         if ((g_prefs["fold_rule"] == "unread_and_last" && (!msgHdr.isRead || i == (numMessages - 1)))
@@ -209,17 +216,22 @@ var gconversation = {
 
             /* Deal with the full message */
             let body = aMimeMsg.coerceBodyToPlaintext(aMsgHdr.folder);
-            //remove leading new lines
+            /* First remove leading new lines */
             let i = 0;
             while (i < body.length && (body[i] == "\r" || body[i] == "\n"))
               ++i;
             body = body.substr(i, body.length - i);
-            //remove trailing new lines
+            /* Then remove trailing new lines */
             i = body.length;
             while (i > 0 && (body[i-1] == "\r" || body[i-1] == "\n"))
               --i;
             body = body.substr(0, i);
 
+            /* Iterate over the lines, feeding them in buf, and then calling
+             * either flushBufQuote when leaving a quoted section, or
+             * flushBufRegular when leaving a regular text section. The small
+             * bufffer in buf is .join("\n")'d and goes to gbuf. We keep track
+             * of indices to optimize array accesses. */
             let whatToDo = txttohtmlconv.kEntities + txttohtmlconv.kURLs
               + txttohtmlconv.kGlyphSubstitution 
               + txttohtmlconv.kStructPhrase; 
@@ -251,19 +263,14 @@ var gconversation = {
               buf = [];
               buf_i = 0;
             };
-            //dump("\n"); //REMOVEME
             let mode = 0; //0 = normal, 1 = in quote
-            let k = 0; //REMOVEME
             for each (let [, line] in Iterator(lines)) {
-              //dump("\r"+k+"/"+(lines.length-1)); //REMOVEME
-              k++; //REMOVEME
               let p = Object();
               /* citeLevelTXT returns 0 on string ">"... which happens to be
               quite common (it's simply a new line) so we add a space to make
               sure that citeLevelTXT returns 1 on such a string */
               let quote = txttohtmlconv.citeLevelTXT(line+" ", p);
               let html = txttohtmlconv.scanTXT(line, whatToDo);
-              //dump(quote+" "+line+"\n");
               if (quote > 0) {
                 if (mode == 0)
                   flushBufRegular();
@@ -279,9 +286,7 @@ var gconversation = {
               flushBufQuote();
             else
               flushBufRegular();
-            //dump(gbuf.join("\n")+"\n"); //REMOVEME
             fullMsgNode.innerHTML += gbuf.join("");
-            //dump("\n"); //REMOVEME
 
             /* Attach the required event handlers so that links open in the
              * external browser */
@@ -311,21 +316,28 @@ var gconversation = {
         sender.msgHdr = msgHdr;
         sender.folder = msgHdr.folder;
         sender.msgKey = msgHdr.messageKey;
+        sender.similar = this._msgHdrs[i];
+        /* There is always a value at that key. Most of time, it's [] */
         sender.addEventListener("click", function(e) {
-          // if the msg is the first message in a collapsed thread, we need to
-          // uncollapse it.
-          /*let origRowCount = gDBView.rowCount;
-          gDBView.selectFolderMsgByKey(this.folder, this.msgKey);
-          if (gDBView.rowCount != origRowCount)
-            gDBView.selectionChanged();*/
-
-          /* If we already have the message in the current view, then it's not
-           * necessary to change folders (otherwise, we would change from the
-           * Smart Folder "Inbox" to a specific Inbox, which is bad) */
-          let viewIndex = gDBView.findIndexOfMsgHdr(e.target.msgHdr, true);
-          if (viewIndex == nsMsgViewIndex_None) {
-            gFolderTreeView.selectFolder(this.folder); //issue here see bug #10
+          /* Now this._msgHdrs[i] contains a list of all messages sharing the
+           * same Message-Id header. Most of the time the list will have length
+           * 1, but because of GMail and its multiple-IMAP-folders policy, we
+           * need to iterate until we find the nsIMsgDBHdr that matches the
+           * message in the current folder. */
+          for each (let msg in this.similar) {
+            let msgHdr = msg.folderMessage;
+            let viewIndex = gFolderDisplay.view.getViewIndexForMsgHdr(msgHdr);
+            /*dump("hdr: "+viewIndex+" "+msgHdr.mime2DecodedAuthor+" ["+msgHdr.mime2DecodedSubject+"]\n");
+            dump((msgHdr.folder == gDBView.msgFolder)+"\n");*/
+            if (viewIndex != nsMsgViewIndex_None) {
+              gFolderDisplay.selectMessage(msgHdr);
+              return;
+            }
           }
+
+          /* None of this worked, let's go to the folder's message and select it. */
+          // selectFolder doesn't work somestimes, issue fixed in Lanikai as of 2010-01-05, see bug 536042
+          gFolderTreeView.selectFolder(this.folder, true); 
           gFolderDisplay.selectMessage(this.msgHdr);
         }, true);
 
@@ -334,7 +346,8 @@ var gconversation = {
         messagesElt.appendChild(msgNode);
       }
       // stash somewhere so it doesn't get GC'ed
-      this._glodaQueries.push(Gloda.getMessageCollectionForHeaders(this._msgHdrs, this));
+      this._glodaQueries.push(
+        Gloda.getMessageCollectionForHeaders([x[0].folderMessage for each (x in this._msgHdrs)], this));
       this.notifyMaxCountExceeded(htmlpane.contentDocument, numMessages, MAX_THREADS);
 
       this.computeSize(htmlpane);
@@ -349,6 +362,7 @@ var gconversation = {
     try {
       q1 = Gloda.getMessageCollectionForHeaders(aSelectedMessages, {
         onItemsAdded: function (aItems) {
+          //FIXME this might returns zero items in case we haven't indexed anything yet
           let msg = aItems[0];
           /*let query = Gloda.newQuery(Gloda.NOUN_MESSAGE)
           query.conversation(msg.conversation);
@@ -362,8 +376,7 @@ var gconversation = {
           }, true);
         },
         onItemsModified: function () {},
-        onItemsRemoved: function () {},
-        onQueryCompleted: function (aCollection) {
+        onItemsRemoved: function () {}, onQueryCompleted: function (aCollection) {
         },
       }, true);
     } catch (e) {
@@ -374,19 +387,24 @@ var gconversation = {
     }
   }
 
-  /* Remove messages with the same Message-Id header from a collection */
+  /* Remove messages with the same Message-Id header from a collection.
+   * Return an object with, for each message in selectedMessages, the duplicates
+   * that have been found. */
   function removeDuplicates(items) {
-    let selectedMessages = [];
-    let knownMessages = {};
+    //let info = function (hdr) hdr.mime2DecodedAuthor+" ["+hdr.mime2DecodedSubject+"]";
+    let similar = {};
+    let orderedIds = [];
     for (let i = 0; i < items.length; ++i) {
       let item = items[i];
       let id = item.headerMessageID;
-      if (!knownMessages[id]) {
-        knownMessages[id] = true;
-        selectedMessages.push(item);
+      if (!similar[id]) {
+        similar[id] = [item];
+        orderedIds.push(id);
+      } else {
+        similar[id].push(item);
       }
     }
-    return selectedMessages;
+    return [similar[id] for each (id in orderedIds)];
   }
 
   /* The summarizeThread function overwrites the default one, searches for more
@@ -403,7 +421,7 @@ var gconversation = {
     pullConversation(
       aSelectedMessages,
       function (aCollection) {
-        gSummary = new ThreadSummary([item.folderMessage for each (item in removeDuplicates(aCollection.items))]);
+        gSummary = new ThreadSummary(removeDuplicates(aCollection.items));
         gSummary.init();
         return;
       }

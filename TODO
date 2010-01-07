@@ -1,23 +1,16 @@
 # vim:ft=none 
-#6 Launch the second Gloda request ASAP (in onItemsAdded, not onQueryCompleted)
 #7 SLOW: make everything asynchronous. Start filling in messages for the first
   query, then launch the extended query that fetches more messages, and then
-  asynchronously insert those in the right place.
+  asynchronously insert those in the right place as they arrive (i.e.
+  onItemsAdded, not onQueryCompleted).
 #8 Add an option to display messages as HTML and not text only
   a) Preferences dialog
   b) Steal code from message display (jsmimeemitter.js sees the HTML go by, find
     a way to catch it with a GlodaMimeMsg)
   c) Adapt "- hide quoted text -" code
 #9 Add an option to mark a thread as read when it is displayed
-  a) Preferences dialog
   b) Improve it by only marking a message as read when it is scrolled into view
-#10 When clicking on the sender to display a given message, if the message is
-  sent by me, and the "Sent" Smart Folder is not collapsed, cannot jump to the
-  right Sent folder.
 #12 Extension does not work with newsgroups (throws an exception).
-#13 On GMail, useless change of folders (on my account, useless jump from
-  caml-list to Archives) when jumping from the conversation view to a specific
-  message
 #14 Assign a unique color to each recipient
   a) Currently using the sender's name as the key, check if there's something
   more elaborate using GlodaIdentity
@@ -25,9 +18,18 @@
   on the lang of the message. --> Do not set 12px but set font to -moz-fixed
   when viewing message with monospace font.
 #20 Add a preference to choose the default set of colors for recipients.
-#21 Some conversations are erroneously recognized as multiple conversations.
-  Probably a bug in Thunderbird but check anyway.
 #22 Localize
 #24 Gloda message body might be empty... check and use alternate method to
   retrieve messages.
 #26
+
+
+BUGS DUE TO THUNDERBIRD
+=======================
+#10 When clicking on the sender to display a given message, if the message is
+  sent by me, and the "Sent" Smart Folder is not collapsed, cannot jump to the
+  right Sent folder. WONTFIX (bug in Thunderbird, fixed in 3.1 series, should be
+  fixed in the next 3.0 series see
+  https://bugzilla.mozilla.org/show_bug.cgi?id=536042)
+#21 Some conversations are erroneously recognized as multiple conversations.
+  Probably a bug in Thunderbird but check anyway.
