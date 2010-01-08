@@ -3,6 +3,9 @@
 <?xml-stylesheet href="chrome://gconversation/skin/msg.css" type="text/css" ?>
 <!--<!DOCTYPE window SYSTEM "chrome://tbsortfolders/locale/main.dtd">-->
 <overlay id="messengerWindow" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <stringbundleset id="stringbundleset">
+    <stringbundle id="gconv-string-bundle" src="chrome://gconversation/locale/main.properties"/>
+  </stringbundleset>
   <script type="application/x-javascript" src="selectionsummaries.js" />
   <toolbarpalette id="header-view-toolbar-palette">
     <toolbarbutton id="gconv-button-1"

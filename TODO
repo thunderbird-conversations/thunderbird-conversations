@@ -18,9 +18,9 @@
   on the lang of the message. --> Do not set 12px but set font to -moz-fixed
   when viewing message with monospace font.
 #20 Add a preference to choose the default set of colors for recipients.
-#22 Localize
 #24 Gloda message body might be empty... check and use alternate method to
-  retrieve messages.
+  retrieve messages (the bug reporter needs to confirm this with a recent
+  version)
 #28
 
 
@@ -32,4 +32,3 @@ BUGS DUE TO THUNDERBIRD
   fixed in the next 3.0 series see
   https://bugzilla.mozilla.org/show_bug.cgi?id=536042)
 #21 Some conversations are erroneously recognized as multiple conversations.
-  Probably a bug in Thunderbird but check anyway.

@@ -3,7 +3,7 @@ var gconversation = {
   on_load_thread_tab: null
 };
 
-(function () {
+document.addEventListener("load", function () {
   const nsMsgViewIndex_None       = 0xffffffff;
   /* from mailnews/base/public/nsMsgFolderFlags.idl */
   const nsMsgFolderFlags_SentMail = 0x00000200;
@@ -12,6 +12,7 @@ var gconversation = {
   const Cc = Components.classes;
   const prefs = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService).getBranch("gconversation.");
   const txttohtmlconv = Cc["@mozilla.org/txttohtmlconv;1"].createInstance(Ci.mozITXTToHTMLConv);
+  const stringBundle = document.getElementById("gconv-string-bundle");
 
   let g_prefs = {};
   g_prefs["monospaced"] = prefs.getBoolPref("monospaced");
@@ -81,6 +82,39 @@ var gconversation = {
     }
   }*/
 
+  function selectRightMessage(similar) {
+    let msgHdr;
+    /* NB: this will return false for the "Inbox" Smart Folder for instance */
+      for each (let m in similar) {
+        if (gDBView.msgFolder && m.folderMessage.folder.URI == gDBView.msgFolder.URI) {
+          dump("Found a corresponding message in the current folder\n");
+          msgHdr = m;
+          break;
+        }
+      }
+      if (!msgHdr) {
+        for each (let m in similar) {
+          if (m.folderMessage.folder.getFlag(nsMsgFolderFlags_SentMail)) {
+            dump("Found a corresponding message in the sent folder\n");
+            msgHdr = m;
+            break;
+          }
+        }
+      }
+      if (!msgHdr) {
+        for each (let m in similar) {
+          if (!m.folderMessage.folder.getFlag(nsMsgFolderFlags_Archive)) {
+            dump("Found a corresponding message that's not in an Archive folder\n");
+            msgHdr = m;
+            break;
+          }
+        }
+      }
+      if (!msgHdr)
+        msgHdr = similar[0];
+      return msgHdr;
+  }
+
   /* We override the usual ThreadSummary class to provide our own. Our own
    * displays full messages, plus other extra features */
   ThreadSummary = function (messages) {
@@ -147,35 +181,7 @@ var gconversation = {
          * - or the one that's in the sent folder
          * - or the one that's not in an Archive folder
          * */
-        let msgHdr;
-        /* NB: this will return false for the "Inbox" Smart Folder for instance */
-        for each (let m in this._msgHdrs[i]) {
-          if (m.folderMessage.folder.URI == gDBView.msgFolder.URI) {
-            dump("Found a corresponding message in the current folder\n");
-            msgHdr = m.folderMessage;
-            break;
-          }
-        }
-        if (!msgHdr) {
-          for each (let m in this._msgHdrs[i]) {
-            if (m.folderMessage.folder.getFlag(nsMsgFolderFlags_SentMail)) {
-              dump("Found a corresponding message in the sent folder\n");
-              msgHdr = m.folderMessage;
-              break;
-            }
-          }
-        }
-        if (!msgHdr) {
-          for each (let m in this._msgHdrs[i]) {
-            if (!m.folderMessage.folder.getFlag(nsMsgFolderFlags_Archive)) {
-              dump("Found a corresponding message that's not in an Archive folder\n");
-              msgHdr = m.folderMessage;
-              break;
-            }
-          }
-        }
-        if (!msgHdr)
-          msgHdr = this._msgHdrs[i][0].folderMessage;
+        let msgHdr = selectRightMessage(this._msgHdrs[i]).folderMessage;
 
         let msg_classes = "message ";
         if (!msgHdr.isRead)
@@ -214,6 +220,10 @@ var gconversation = {
         _mm_addClass(msgNode, msg_classes);
         messagesElt.appendChild(msgNode);
 
+        /* For displaying debugging info */
+        let debugNode = htmlpane.contentDocument.createElement("pre");
+        msgNode.appendChild(debugNode);
+
         let senderNode = msgNode.getElementsByClassName("sender")[0];
         if (id2color[senderNode.textContent])
           senderNode.style.color = id2color[senderNode.textContent];
@@ -241,9 +251,11 @@ var gconversation = {
           MsgHdrToMimeMessage(msgHdr, null, function(aMsgHdr, aMimeMsg) {
             let j = i;
             if (aMimeMsg == null) /* shouldn't happen, but sometimes does? */ {
+              debugNode.textContent += "aMimeMsg == null\n";
               return;
             }
             let [snippet, meta] = mimeMsgToContentSnippetAndMeta(aMimeMsg, aMsgHdr.folder, SNIPPET_LENGTH);
+            debugNode.textContent += "snippet has length"+snippet.length+"\n";
             if (meta.author)
               senderNode.textContent = meta.author;
 
@@ -252,6 +264,7 @@ var gconversation = {
 
             /* Deal with the full message */
             let body = aMimeMsg.coerceBodyToPlaintext(aMsgHdr.folder);
+            debugNode.textContent += "body has length"+body.length+"\n";
             /* First remove leading new lines */
             let i = 0;
             while (i < body.length && (body[i] == "\r" || body[i] == "\n"))
@@ -285,8 +298,9 @@ var gconversation = {
               let divAttr = "";
               if (buf.length > g_prefs["hide_quote_length"]) {
                 divAttr = "style=\"display: none;\"";
+                let showquotedtext = stringBundle.getString("showquotedtext");
                 let link = "<div class=\"link showhidequote\""+
-                  " onclick=\"toggleQuote(event);\">- show quoted text -</div>";
+                  " onclick=\"toggleQuote(event);\">- "+showquotedtext+" -</div>";
                 gbuf[gbuf_i++] = link;
               }
               gbuf[gbuf_i++] = "<div "+divAttr+">"+buf.join("<br />")+"</div>";
@@ -336,6 +350,7 @@ var gconversation = {
           // Offline messages generate exceptions, which is unfortunate.  When
           // that's fixed, this code should adapt. XXX
           fullMsgNode.textContent = "...";
+          snippetMsgNode.textContent = "...";
         }
         let tagsNode = msgNode.getElementsByClassName("tags")[0];
         let tags = this.getTagsForMsg(msgHdr);
@@ -398,8 +413,10 @@ var gconversation = {
     try {
       q1 = Gloda.getMessageCollectionForHeaders(aSelectedMessages, {
         onItemsAdded: function (aItems) {
-          //FIXME this might returns zero items in case we haven't indexed anything yet
           let msg = aItems[0];
+          //FIXME do something better...
+          if (!msg)
+            return;
           /*let query = Gloda.newQuery(Gloda.NOUN_MESSAGE)
           query.conversation(msg.conversation);
           //query.getCollection({*/
@@ -479,7 +496,7 @@ var gconversation = {
       gFolderDisplay.selectedMessages,
       function (aCollection, aMsg) {
         let tabmail = document.getElementById("tabmail");
-        aCollection.items = removeDuplicates(aCollection.items);
+        aCollection.items = [selectRightMessage(m) for each (m in removeDuplicates(aCollection.items))];
         tabmail.openTab("glodaList", {
           collection: aCollection,
           message: aMsg,
@@ -490,4 +507,4 @@ var gconversation = {
     );
   };
 
-})();
+}, true);
