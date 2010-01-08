@@ -4,11 +4,13 @@ var gconversation = {
 };
 
 (function () {
-  const nsMsgViewIndex_None = 0xffffffff;
+  const nsMsgViewIndex_None       = 0xffffffff;
+  /* from mailnews/base/public/nsMsgFolderFlags.idl */
+  const nsMsgFolderFlags_SentMail = 0x00000200;
+  const nsMsgFolderFlags_Archive  = 0x00004000;
   const Ci = Components.interfaces;
   const Cc = Components.classes;
-  const prefs = Cc["@mozilla.org/preferences-service;1"]
-    .getService(Ci.nsIPrefService).getBranch("gconversation.");
+  const prefs = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService).getBranch("gconversation.");
   const txttohtmlconv = Cc["@mozilla.org/txttohtmlconv;1"].createInstance(Ci.mozITXTToHTMLConv);
 
   let g_prefs = {};
@@ -139,7 +141,41 @@ var gconversation = {
           maxCountExceeded = true;
           break;
         }
-        let msgHdr = this._msgHdrs[i][0].folderMessage;
+
+        /* We might have different candidates for a given message. We prefer:
+         * - the one that's in the current folder
+         * - or the one that's in the sent folder
+         * - or the one that's not in an Archive folder
+         * */
+        let msgHdr;
+        /* NB: this will return false for the "Inbox" Smart Folder for instance */
+        for each (let m in this._msgHdrs[i]) {
+          if (m.folderMessage.folder.URI == gDBView.msgFolder.URI) {
+            dump("Found a corresponding message in the current folder\n");
+            msgHdr = m.folderMessage;
+            break;
+          }
+        }
+        if (!msgHdr) {
+          for each (let m in this._msgHdrs[i]) {
+            if (m.folderMessage.folder.getFlag(nsMsgFolderFlags_SentMail)) {
+              dump("Found a corresponding message in the sent folder\n");
+              msgHdr = m.folderMessage;
+              break;
+            }
+          }
+        }
+        if (!msgHdr) {
+          for each (let m in this._msgHdrs[i]) {
+            if (!m.folderMessage.folder.getFlag(nsMsgFolderFlags_Archive)) {
+              dump("Found a corresponding message that's not in an Archive folder\n");
+              msgHdr = m.folderMessage;
+              break;
+            }
+          }
+        }
+        if (!msgHdr)
+          msgHdr = this._msgHdrs[i][0].folderMessage;
 
         let msg_classes = "message ";
         if (!msgHdr.isRead)
@@ -290,7 +326,7 @@ var gconversation = {
 
             /* Attach the required event handlers so that links open in the
              * external browser */
-            for each ([, a] in Iterator(fullMsgNode.getElementsByTagName("a"))) {
+            for each (let [, a] in Iterator(fullMsgNode.getElementsByTagName("a"))) {
               a.addEventListener("click", function (event) {
                   return specialTabs.siteClickHandler(event, /^mailto:/);
                 }, true);
