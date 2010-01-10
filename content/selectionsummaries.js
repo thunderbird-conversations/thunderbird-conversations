@@ -1,19 +1,44 @@
+/* This file modifies threadsummaries.js by overriding a large part of the
+ * original code (mainly ThreadSummary.summarize). Our functions are the result
+ * of incremental modifications to the original ones, so that we can backport
+ * the changes from main Thunderbird code more easily.
+ *
+ * Original comments are C++-style, mine are C-style.
+ *
+ * The Original Code is multiple message preview pane
+ *
+ * The Initial Developer of the Original Code is
+ *   Mozilla Messaging
+ * Portions created by the Initial Developer are Copyright (C) 2009
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *   David Ascher <dascher@mozillamessaging.com>
+ *   Jonathan Protzenko <jonathan.protzenko@gmail.com>
+ *
+ * */
+
+/* That's for event handlers */
 var gconversation = {
   on_load_thread: null,
   on_load_thread_tab: null
 };
 
+/* That's for global namespace pollution + because we need the document's
+ * <stringbundle> to be accessible. */
 document.addEventListener("load", function () {
+  const Ci = Components.interfaces;
+  const Cc = Components.classes;
+  /* Various magic values */
   const nsMsgViewIndex_None       = 0xffffffff;
   /* from mailnews/base/public/nsMsgFolderFlags.idl */
   const nsMsgFolderFlags_SentMail = 0x00000200;
   const nsMsgFolderFlags_Archive  = 0x00004000;
-  const Ci = Components.interfaces;
-  const Cc = Components.classes;
   const prefs = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService).getBranch("gconversation.");
   const txttohtmlconv = Cc["@mozilla.org/txttohtmlconv;1"].createInstance(Ci.mozITXTToHTMLConv);
   const stringBundle = document.getElementById("gconv-string-bundle");
 
+  /* Preferences are loaded once and then observed */
   let g_prefs = {};
   g_prefs["monospaced"] = prefs.getBoolPref("monospaced");
   g_prefs["hide_quote_length"] = prefs.getIntPref("hide_quote_length");
@@ -47,41 +72,32 @@ document.addEventListener("load", function () {
   };
   myPrefObserver.register();
 
-  /* Some utility functions */
-
-  /*function getMessageBody(aMessageHeader) {  
+  /* Do a "old-style" retrieval of a message's body given its nsIMsgDBHdr. This
+   * is useful when MsgHdrToMimeMessage fails. */
+  function getMessageBody(aMessageHeader, aStripHtml) {  
     let messenger = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);  
     let listener = Cc["@mozilla.org/network/sync-stream-listener;1"].createInstance(Ci.nsISyncStreamListener);  
     let uri = aMessageHeader.folder.getUriForMsg(aMessageHeader);  
     messenger.messageServiceFromURI(uri).streamMessage(uri, listener, null, null, false, "");  
     let folder = aMessageHeader.folder;  
-    return folder.getMsgTextFromStream(listener.inputStream, aMessageHeader.Charset, 65536, 32768, false, false, { });  
+    /*
+     * AUTF8String getMsgTextFromStream(in nsIInputStream aStream, in ACString aCharset,
+                                        in unsigned long aBytesToRead, in unsigned long aMaxOutputLen, 
+                                        in boolean aCompressQuotes, in boolean aStripHTMLTags,
+                                        out ACString aContentType);
+    */
+    return folder.getMsgTextFromStream(listener.inputStream, aMessageHeader.Charset, 65536, 32768, false, aStripHtml, { });  
   }  
 
-  function getMessageBody2(aMsgHdr) {
-    let folder = aMsgHdr.folder;
-    let key = aMsgHdr.messageKey;
-    if (folder.hasMsgOffline(key)) {
-      let offset = new Object();
-      let messageSize = new Object();
-      let is;
-      let bodyAndHdr;
-      try {
-        is = folder.getOfflineFileStream(key, offset, messageSize);
-        let sis = Cc["@mozilla.org/scriptableinputstream;1"].createInstance(Ci.nsIScriptableInputStream);
-        sis.init(is);
-        while (sis.available()) {
-          bodyAndHdr += sis.read(2048);
-        }
-      } catch(e) {
-        dump("getMessageBody2"+e+"\n"+e.message+"\n");
-      }
-      return bodyAndHdr;
-    } else {
-      return "";
-    }
-  }*/
-
+  /* In the case of GMail accounts, several messages with the same Message-Id
+   * header will be returned when we search for all message related to the
+   * conversation we will display. We have multiple alternatives to choose from,
+   * so prefer :
+   * - the message that's in the current folder
+   * - the message that's in the "Sent" folder (GMail sent messages also appear
+   *   in "All Mail")
+   * - the message that's not in the Archives
+   */
   function selectRightMessage(similar) {
     let msgHdr;
     /* NB: this will return false for the "Inbox" Smart Folder for instance */
@@ -118,7 +134,8 @@ document.addEventListener("load", function () {
   /* We override the usual ThreadSummary class to provide our own. Our own
    * displays full messages, plus other extra features */
   ThreadSummary = function (messages) {
-    /* messages =
+    /* Structure of the parameter:
+     * messages =
      *  [
      *    [GlodaMessage1, GlodaMessage2, ... (all share the same MessageId Header],
      *    [Same for 2nd message in thread]
@@ -150,6 +167,7 @@ document.addEventListener("load", function () {
 
       let htmlpane = document.getElementById('multimessage');
 
+      /* Fill the heading */
       let firstMsgHdr = this._msgHdrs[0][0].folderMessage;
       let numMessages = this._msgHdrs.length;
       let subject = (firstMsgHdr.mime2DecodedSubject || gSelectionSummaryStrings["noSubject"])
@@ -159,10 +177,12 @@ document.addEventListener("load", function () {
       heading.setAttribute("class", "heading");
       heading.textContent = subject;
 
+      /* Remove messages leftover from a previous conversation */
       let messagesElt = htmlpane.contentDocument.getElementById('messagelist');
       while (messagesElt.firstChild)
         messagesElt.removeChild(messagesElt.firstChild);
 
+      /* Useful for stripping the email from mime2DecodedAuthor for instance */
       let headerParser = Cc["@mozilla.org/messenger/headerparser;1"].getService(Ci.nsIMsgHeaderParser);
       let count = 0;
       const MAX_THREADS = 100;
@@ -176,11 +196,6 @@ document.addEventListener("load", function () {
           break;
         }
 
-        /* We might have different candidates for a given message. We prefer:
-         * - the one that's in the current folder
-         * - or the one that's in the sent folder
-         * - or the one that's not in an Archive folder
-         * */
         let msgHdr = selectRightMessage(this._msgHdrs[i]).folderMessage;
 
         let msg_classes = "message ";
@@ -220,10 +235,6 @@ document.addEventListener("load", function () {
         _mm_addClass(msgNode, msg_classes);
         messagesElt.appendChild(msgNode);
 
-        /* For displaying debugging info */
-        let debugNode = htmlpane.contentDocument.createElement("pre");
-        msgNode.appendChild(debugNode);
-
         let senderNode = msgNode.getElementsByClassName("sender")[0];
         if (id2color[senderNode.textContent])
           senderNode.style.color = id2color[senderNode.textContent];
@@ -247,110 +258,125 @@ document.addEventListener("load", function () {
         }
 
         let key = msgHdr.messageKey + msgHdr.folder.URI;
-        try {
-          MsgHdrToMimeMessage(msgHdr, null, function(aMsgHdr, aMimeMsg) {
-            let j = i;
-            if (aMimeMsg == null) /* shouldn't happen, but sometimes does? */ {
-              debugNode.textContent += "aMimeMsg == null\n";
+        /* Fill the current message's node based on given parameters.
+         * @param snippet
+         *        the text that's displayed when the message is folded
+         * @param body
+         *        the plain/text body that will be processed to proper HTML
+         * @param author
+         *        (can be left out) a more refined version of the author's name
+         *        but anyway meta.author is always empty so that's pretty much
+         *        useless
+         */ 
+        let fillSnippetAndMsg = function (snippet, body, author) {
+          if (author)
+            senderNode.textContent = author;
+          snippetMsgNode.textContent = snippet;
+
+          /* Deal with the message's body
+             First remove leading new lines */
+          let j = 0;
+          while (j < body.length && (body[j] == "\r" || body[j] == "\n"))
+            ++j;
+          body = body.substr(j, body.length - j);
+          /* Then remove trailing new lines */
+          j = body.length;
+          while (j > 0 && (body[j-1] == "\r" || body[j-1] == "\n"))
+            --j;
+          body = body.substr(0, j);
+
+          /* Iterate over the lines, feeding them in buf, and then calling
+           * either flushBufQuote when leaving a quoted section, or
+           * flushBufRegular when leaving a regular text section. The small
+           * bufffer in buf is .join("\n")'d and goes to gbuf. We keep track
+           * of indices to optimize array accesses. */
+          let whatToDo = txttohtmlconv.kEntities + txttohtmlconv.kURLs
+            + txttohtmlconv.kGlyphSubstitution 
+            + txttohtmlconv.kStructPhrase; 
+          let lines = body.split(/\r?\n|\r/g);
+          let gbuf = [];
+          let buf = [];
+          let buf_j = 0;
+          let gbuf_j = 0;
+          /* When leaving a quoted section, this function is called. It adds
+           * the - show quoted text - link and hides the quote if relevant */
+          let flushBufQuote = function() {
+            if (!buf.length)
               return;
+            let divAttr = "";
+            if (buf.length > g_prefs["hide_quote_length"]) {
+              divAttr = "style=\"display: none;\"";
+              let showquotedtext = stringBundle.getString("showquotedtext");
+              let link = "<div class=\"link showhidequote\""+
+                " onclick=\"toggleQuote(event);\">- "+showquotedtext+" -</div>";
+              gbuf[gbuf_j++] = link;
             }
+            gbuf[gbuf_j++] = "<div "+divAttr+">"+buf.join("<br />")+"</div>";
+            buf = [];
+            buf_j = 0;
+          };
+          /* This just flushes the buffer when changing sections */
+          let flushBufRegular = function () {
+            gbuf[gbuf_j++] = buf.join("<br />");
+            buf = [];
+            buf_j = 0;
+          };
+          let mode = 0; /* 0 = normal, 1 = in quote */
+          for each (let [, line] in Iterator(lines)) {
+            let p = Object();
+            /* citeLevelTXT returns 0 on string ">"... which happens to be
+            quite common (it's simply a new line) so we add a space to make
+            sure that citeLevelTXT returns 1 on such a string */
+            let quote = txttohtmlconv.citeLevelTXT(line+" ", p);
+            let html = txttohtmlconv.scanTXT(line, whatToDo);
+            if (quote > 0) {
+              if (mode == 0)
+                flushBufRegular();
+              mode = 1;
+            } else {
+              if (mode == 1)
+                flushBufQuote();
+              mode = 0;
+            }
+            buf[buf_j++] = html;
+          }
+          if (mode == 1)
+            flushBufQuote();
+          else
+            flushBufRegular();
+          fullMsgNode.innerHTML += gbuf.join("");
+
+          /* Attach the required event handlers so that links open in the
+           * external browser */
+          for each (let [, a] in Iterator(fullMsgNode.getElementsByTagName("a"))) {
+            a.addEventListener("click", function (event) {
+                return specialTabs.siteClickHandler(event, /^mailto:/);
+              }, true);
+          }
+        };
+        try {
+          /* throw { result: Components.results.NS_ERROR_FAILURE }; */
+          MsgHdrToMimeMessage(msgHdr, null, function(aMsgHdr, aMimeMsg) {
+            if (aMimeMsg == null) // shouldn't happen, but sometimes does?
+              return;
             let [snippet, meta] = mimeMsgToContentSnippetAndMeta(aMimeMsg, aMsgHdr.folder, SNIPPET_LENGTH);
-            debugNode.textContent += "snippet has length"+snippet.length+"\n";
-            if (meta.author)
-              senderNode.textContent = meta.author;
-
-            /* Fill the snippetmsg first */
-            snippetMsgNode.textContent = snippet;
-
-            /* Deal with the full message */
             let body = aMimeMsg.coerceBodyToPlaintext(aMsgHdr.folder);
-            debugNode.textContent += "body has length"+body.length+"\n";
-            /* First remove leading new lines */
-            let i = 0;
-            while (i < body.length && (body[i] == "\r" || body[i] == "\n"))
-              ++i;
-            body = body.substr(i, body.length - i);
-            /* Then remove trailing new lines */
-            i = body.length;
-            while (i > 0 && (body[i-1] == "\r" || body[i-1] == "\n"))
-              --i;
-            body = body.substr(0, i);
-
-            /* Iterate over the lines, feeding them in buf, and then calling
-             * either flushBufQuote when leaving a quoted section, or
-             * flushBufRegular when leaving a regular text section. The small
-             * bufffer in buf is .join("\n")'d and goes to gbuf. We keep track
-             * of indices to optimize array accesses. */
-            let whatToDo = txttohtmlconv.kEntities + txttohtmlconv.kURLs
-              + txttohtmlconv.kGlyphSubstitution 
-              + txttohtmlconv.kStructPhrase; 
-            //XXX find a more efficient way to do that
-            let lines = body.split(/\r?\n|\r/g);
-            let gbuf = [];
-            let buf = [];
-            let buf_i = 0;
-            let gbuf_i = 0;
-            /* When leaving a quoted section, this function is called. It adds
-             * the - show quoted text - link and hides the quote if relevant */
-            let flushBufQuote = function() {
-              if (!buf.length)
-                return;
-              let divAttr = "";
-              if (buf.length > g_prefs["hide_quote_length"]) {
-                divAttr = "style=\"display: none;\"";
-                let showquotedtext = stringBundle.getString("showquotedtext");
-                let link = "<div class=\"link showhidequote\""+
-                  " onclick=\"toggleQuote(event);\">- "+showquotedtext+" -</div>";
-                gbuf[gbuf_i++] = link;
-              }
-              gbuf[gbuf_i++] = "<div "+divAttr+">"+buf.join("<br />")+"</div>";
-              buf = [];
-              buf_i = 0;
-            };
-            /* This just flushes the buffer when changing sections */
-            let flushBufRegular = function () {
-              gbuf[gbuf_i++] = buf.join("<br />");
-              buf = [];
-              buf_i = 0;
-            };
-            let mode = 0; //0 = normal, 1 = in quote
-            for each (let [, line] in Iterator(lines)) {
-              let p = Object();
-              /* citeLevelTXT returns 0 on string ">"... which happens to be
-              quite common (it's simply a new line) so we add a space to make
-              sure that citeLevelTXT returns 1 on such a string */
-              let quote = txttohtmlconv.citeLevelTXT(line+" ", p);
-              let html = txttohtmlconv.scanTXT(line, whatToDo);
-              if (quote > 0) {
-                if (mode == 0)
-                  flushBufRegular();
-                mode = 1;
-              } else {
-                if (mode == 1)
-                  flushBufQuote();
-                mode = 0;
-              }
-              buf[buf_i++] = html;
-            }
-            if (mode == 1)
-              flushBufQuote();
-            else
-              flushBufRegular();
-            fullMsgNode.innerHTML += gbuf.join("");
-
-            /* Attach the required event handlers so that links open in the
-             * external browser */
-            for each (let [, a] in Iterator(fullMsgNode.getElementsByTagName("a"))) {
-              a.addEventListener("click", function (event) {
-                  return specialTabs.siteClickHandler(event, /^mailto:/);
-                }, true);
-            }
+            fillSnippetAndMsg(snippet, body, meta.author);
           });
         } catch (e if e.result == Components.results.NS_ERROR_FAILURE) {
-          // Offline messages generate exceptions, which is unfortunate.  When
-          // that's fixed, this code should adapt. XXX
-          fullMsgNode.textContent = "...";
-          snippetMsgNode.textContent = "...";
+          try {
+            // Offline messages generate exceptions, which is unfortunate.  When
+            // that's fixed, this code should adapt. XXX
+            /* --> Try to deal with that */
+            let body = getMessageBody(msgHdr, true);
+            let snippet = body.substring(0, SNIPPET_LENGTH-3)+"...";
+            fillSnippetAndMsg(snippet, body);
+            dump("Got an \"offline message\"");
+          } catch (e) {
+            /* Ok, that failed too... */
+            fullMsgNode.textContent = "...";
+            snippetMsgNode.textContent = "...";
+          }
         }
         let tagsNode = msgNode.getElementsByClassName("tags")[0];
         let tags = this.getTagsForMsg(msgHdr);
@@ -368,26 +394,16 @@ document.addEventListener("load", function () {
         sender.folder = msgHdr.folder;
         sender.msgKey = msgHdr.messageKey;
         sender.similar = this._msgHdrs[i];
-        /* There is always a value at that key. Most of time, it's [] */
         sender.addEventListener("click", function(e) {
-          /* Now this._msgHdrs[i] contains a list of all messages sharing the
-           * same Message-Id header. Most of the time the list will have length
-           * 1, but because of GMail and its multiple-IMAP-folders policy, we
-           * need to iterate until we find the nsIMsgDBHdr that matches the
-           * message in the current folder. */
-          for each (let msg in this.similar) {
-            let msgHdr = msg.folderMessage;
-            let viewIndex = gFolderDisplay.view.getViewIndexForMsgHdr(msgHdr);
-            /*dump("hdr: "+viewIndex+" "+msgHdr.mime2DecodedAuthor+" ["+msgHdr.mime2DecodedSubject+"]\n");
-            dump((msgHdr.folder == gDBView.msgFolder)+"\n");*/
-            if (viewIndex != nsMsgViewIndex_None) {
-              gFolderDisplay.selectMessage(msgHdr);
-              return;
-            }
+          /* msgHdr is "the right message" (see the beginning of the loop) */
+          let viewIndex = gFolderDisplay.view.getViewIndexForMsgHdr(this.msgHdr);
+          if (viewIndex != nsMsgViewIndex_None) {
+            gFolderDisplay.selectMessage(this.msgHdr);
+            return;
           }
 
-          /* None of this worked, let's go to the folder's message and select it. */
-          // selectFolder doesn't work somestimes, issue fixed in Lanikai as of 2010-01-05, see bug 536042
+          /* msgHdr is still the best candidate for "the message we want" */
+          /* selectFolder doesn't work somestimes, issue fixed in Lanikai as of 2010-01-05, see bug 536042 */
           gFolderTreeView.selectFolder(this.folder, true); 
           gFolderDisplay.selectMessage(this.msgHdr);
         }, true);
