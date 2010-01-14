@@ -63,8 +63,8 @@
         <link rel="stylesheet" media="screen" type="text/css"
               href="chrome://gconversation/skin/mmv.css"/>
         <title>&window.title;</title>
-        <script type="application/x-javascript" src="chrome://messenger/content/jquery.js" />
-        <script type="application/x-javascript;version=1.8"><![CDATA[
+        <script type="application/javascript" src="chrome://messenger/content/jquery.js" />
+        <script type="application/javascript;version=1.8"><![CDATA[
             Components.utils.import("resource://app/modules/errUtils.js");
             const Ci = Components.interfaces;
             const Cc = Components.classes;
@@ -145,6 +145,14 @@
             function foldAll(event) {
               $(".msgarrow[src=chrome://gconversation/skin/up.png]").click();
             }
+
+            function disableExtraButtons() {
+              [x.setAttribute("disabled", "true") for each ([,x] in Iterator(document.getElementsByClassName("extra-button")))];
+            }
+
+            function enableExtraButtons() {
+              [x.setAttribute("disabled", "false") for each ([,x] in Iterator(document.getElementsByClassName("extra-button")))];
+            }
         ]]>
         </script>
     </head>
@@ -156,19 +164,19 @@
                  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
                 <hbox id="buttonhbox" align="start">
                     <button id="open_in_new_tab"
-                            class="button msgHeaderView-button"
+                            class="button msgHeaderView-button extra-button"
                             label="&button.open_in_new_tab;"
                             onclick="if (event.button == 0) window.top.gconversation.on_load_thread_tab();"/>
                     <button id="mark_as_read"
-                            class="button msgHeaderView-button"
+                            class="button msgHeaderView-button extra-button"
                             label="&button.mark_all_read;"
                             onclick="if (event.button == 0) window.top.DefaultController.doCommand('cmd_markThreadAsRead');"/>
                     <button id="unfold_all"
-                            class="button msgHeaderView-button"
+                            class="button msgHeaderView-button extra-button"
                             onclick="if (event.button == 0) unfoldAll();"
                             label="&button.unfold_all;" />
                     <button id="fold_all"
-                            class="button msgHeaderView-button"
+                            class="button msgHeaderView-button extra-button"
                             onclick="if (event.button == 0) foldAll();"
                             label="&button.fold_all;" />
                     <button id="archive"

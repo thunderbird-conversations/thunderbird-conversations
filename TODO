@@ -1,10 +1,9 @@
 # vim:ft=none 
-#28 Display the custom buttons [open in new tab, mark all read, (un|)fold all]
-  ONLY if we are viewing a thread, not a conversation.
+
 #9 Add an option to mark a thread as read when it is displayed
   b) Improve it by only marking a message as read when it is scrolled into view
 #12 Extension does not work with newsgroups (throws an exception) (see bug
-  478167).
+  478167) --> temporary workaround + check other types of non-mail accounts
 #29 Encoding issues (Chinese not ok, Czech not ok either)
 #30 Add "reply - reply to all - ..." and other links at the bottom of the
   message, see http://www.flickr.com/photos/davidascher/3095078638/
@@ -13,6 +12,9 @@
   b) Steal code from message display (jsmimeemitter.js sees the HTML go by, find
     a way to catch it with a GlodaMimeMsg)
   c) Adapt "- hide quoted text -" code
+
+#31 Create a real @media(print) stylesheet to print a whole conversation
+#32 Detect hotmail-style quoted parts (optional)
 #7 SLOW: make everything asynchronous. Start filling in messages for the first
   query, then launch the extended query that fetches more messages, and then
   asynchronously insert those in the right place as they arrive (i.e.

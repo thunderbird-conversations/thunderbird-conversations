@@ -29,11 +29,12 @@ var gconversation = {
 document.addEventListener("load", function () {
   const Ci = Components.interfaces;
   const Cc = Components.classes;
+  const Cu = Components.utils;
+  Components.utils.import("resource://gconversation/MailUtils.jsm");
+
   /* Various magic values */
-  const nsMsgViewIndex_None       = 0xffffffff;
-  /* from mailnews/base/public/nsMsgFolderFlags.idl */
-  const nsMsgFolderFlags_SentMail = 0x00000200;
-  const nsMsgFolderFlags_Archive  = 0x00004000;
+  const nsMsgViewIndex_None = 0xffffffff;
+
   const prefs = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService).getBranch("gconversation.");
   const txttohtmlconv = Cc["@mozilla.org/txttohtmlconv;1"].createInstance(Ci.mozITXTToHTMLConv);
   const stringBundle = document.getElementById("gconv-string-bundle");
@@ -71,65 +72,6 @@ document.addEventListener("load", function () {
     }
   };
   myPrefObserver.register();
-
-  /* Do a "old-style" retrieval of a message's body given its nsIMsgDBHdr. This
-   * is useful when MsgHdrToMimeMessage fails. */
-  function getMessageBody(aMessageHeader, aStripHtml) {  
-    let messenger = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);  
-    let listener = Cc["@mozilla.org/network/sync-stream-listener;1"].createInstance(Ci.nsISyncStreamListener);  
-    let uri = aMessageHeader.folder.getUriForMsg(aMessageHeader);  
-    messenger.messageServiceFromURI(uri).streamMessage(uri, listener, null, null, false, "");  
-    let folder = aMessageHeader.folder;  
-    /*
-     * AUTF8String getMsgTextFromStream(in nsIInputStream aStream, in ACString aCharset,
-                                        in unsigned long aBytesToRead, in unsigned long aMaxOutputLen, 
-                                        in boolean aCompressQuotes, in boolean aStripHTMLTags,
-                                        out ACString aContentType);
-    */
-    return folder.getMsgTextFromStream(listener.inputStream, aMessageHeader.Charset, 65536, 32768, false, aStripHtml, { });  
-  }  
-
-  /* In the case of GMail accounts, several messages with the same Message-Id
-   * header will be returned when we search for all message related to the
-   * conversation we will display. We have multiple alternatives to choose from,
-   * so prefer :
-   * - the message that's in the current folder
-   * - the message that's in the "Sent" folder (GMail sent messages also appear
-   *   in "All Mail")
-   * - the message that's not in the Archives
-   */
-  function selectRightMessage(similar) {
-    let msgHdr;
-    /* NB: this will return false for the "Inbox" Smart Folder for instance */
-      for each (let m in similar) {
-        if (gDBView.msgFolder && m.folderMessage.folder.URI == gDBView.msgFolder.URI) {
-          dump("Found a corresponding message in the current folder\n");
-          msgHdr = m;
-          break;
-        }
-      }
-      if (!msgHdr) {
-        for each (let m in similar) {
-          if (m.folderMessage.folder.getFlag(nsMsgFolderFlags_SentMail)) {
-            dump("Found a corresponding message in the sent folder\n");
-            msgHdr = m;
-            break;
-          }
-        }
-      }
-      if (!msgHdr) {
-        for each (let m in similar) {
-          if (!m.folderMessage.folder.getFlag(nsMsgFolderFlags_Archive)) {
-            dump("Found a corresponding message that's not in an Archive folder\n");
-            msgHdr = m;
-            break;
-          }
-        }
-      }
-      if (!msgHdr)
-        msgHdr = similar[0];
-      return msgHdr;
-  }
 
   /* We override the usual ThreadSummary class to provide our own. Our own
    * displays full messages, plus other extra features */
@@ -196,7 +138,7 @@ document.addEventListener("load", function () {
           break;
         }
 
-        let msgHdr = selectRightMessage(this._msgHdrs[i]).folderMessage;
+        let msgHdr = selectRightMessage(this._msgHdrs[i], gDBView.msgFolder).folderMessage;
 
         let msg_classes = "message ";
         if (!msgHdr.isRead)
@@ -371,8 +313,9 @@ document.addEventListener("load", function () {
             let body = getMessageBody(msgHdr, true);
             let snippet = body.substring(0, SNIPPET_LENGTH-3)+"...";
             fillSnippetAndMsg(snippet, body);
-            dump("Got an \"offline message\"");
+            dump("Got an \"offline message\"\n");
           } catch (e) {
+            Application.console.log("Error fetching the message: "+e);
             /* Ok, that failed too... */
             fullMsgNode.textContent = "...";
             snippetMsgNode.textContent = "...";
@@ -456,26 +399,6 @@ document.addEventListener("load", function () {
     }
   }
 
-  /* Remove messages with the same Message-Id header from a collection.
-   * Return an object with, for each message in selectedMessages, the duplicates
-   * that have been found. */
-  function removeDuplicates(items) {
-    //let info = function (hdr) hdr.mime2DecodedAuthor+" ["+hdr.mime2DecodedSubject+"]";
-    let similar = {};
-    let orderedIds = [];
-    for (let i = 0; i < items.length; ++i) {
-      let item = items[i];
-      let id = item.headerMessageID;
-      if (!similar[id]) {
-        similar[id] = [item];
-        orderedIds.push(id);
-      } else {
-        similar[id].push(item);
-      }
-    }
-    return [similar[id] for each (id in orderedIds)];
-  }
-
   /* The summarizeThread function overwrites the default one, searches for more
    * messages, and passes them to our instance of ThreadSummary. This design is
    * more convenient as it follows Thunderbird's more closely, which allows me
@@ -486,6 +409,7 @@ document.addEventListener("load", function () {
       dump("No selected messages\n");
       return false;
     }
+    document.getElementById('multimessage').contentWindow.enableExtraButtons();
 
     pullConversation(
       aSelectedMessages,
@@ -497,6 +421,24 @@ document.addEventListener("load", function () {
     );
 
     return true;
+  };
+
+  /* We must catch the call to summarizeMultipleSelection to hide the buttons in
+   * multimessageview.xhtml */
+  /* XXX figure out why I can't do let old = ... and then summarize... = old(); */
+  summarizeMultipleSelection = function (aSelectedMessages) {
+    if (aSelectedMessages.length == 0)
+      return;
+    try {
+      gSummary = new MultiMessageSummary(aSelectedMessages);
+      gSummary.init();
+    } catch (e) {
+      dump("Exception in summarizeMultipleSelection" + e + "\n");
+      Components.utils.reportError(e);
+      throw(e);
+    }
+
+    document.getElementById('multimessage').contentWindow.disableExtraButtons();
   };
 
   /* Register event handlers through the global variable */
@@ -522,5 +464,14 @@ document.addEventListener("load", function () {
       }
     );
   };
+
+  /* Register "print" functionnality */
+  gconversation.print = function () {
+    document.getElementById("multimessage").contentWindow.print();
+  };
+
+  /* We need to attach our custom context menu to multimessage, that's simpler
+   * than using an overlay. */
+  document.getElementById("multimessage").setAttribute("context", "gConvMenu");
 
 }, true);

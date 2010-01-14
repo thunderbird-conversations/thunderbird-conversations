@@ -1,7 +1,7 @@
 <?xml version="1.0"?>
 <?xml-stylesheet href="chrome://gconversation/skin/overlay.css" type="text/css" ?>
 <?xml-stylesheet href="chrome://gconversation/skin/msg.css" type="text/css" ?>
-<!--<!DOCTYPE window SYSTEM "chrome://tbsortfolders/locale/main.dtd">-->
+<!DOCTYPE window SYSTEM "chrome://messenger/locale/messenger.dtd">
 <overlay id="messengerWindow" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <stringbundleset id="stringbundleset">
     <stringbundle id="gconv-string-bundle" src="chrome://gconversation/locale/main.properties"/>
@@ -29,8 +29,15 @@
       oncommand="gconversation.on_load_thread();"
       >
       <menupopup>
-        <menuitem label="Open thread in new tab" oncommand="gconversation.on_load_thread_tab();" />
+        <menuitem label="Open thread in new tab"
+          oncommand="gconversation.on_load_thread_tab();"
+          insertAfter="mailContext" />
       </menupopup>
     </toolbarbutton>
   </toolbarpalette>
+  <popupset id="mainPopupSet">
+    <popup id="gConvMenu">
+      <menuitem label="&printButton.label;" oncommand="gconversation.print()" />
+    </popup>
+  </popupset>
 </overlay>

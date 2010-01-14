@@ -22,8 +22,7 @@
     <em:name>GMail Conversation View</em:name>
     <em:description>Display your own emails in thread summaries.</em:description>
     <em:optionsURL>chrome://gconversation/content/options.xul</em:optionsURL>
-
-
+    <em:iconURL>chrome://gconversation/content/icon.png</em:iconURL>
     <em:creator>Jonathan Protzenko</em:creator>
   </Description>      
 
