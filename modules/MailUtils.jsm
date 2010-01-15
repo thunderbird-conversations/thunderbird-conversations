@@ -86,3 +86,27 @@ function removeDuplicates(items) {
   }
   return [similar[id] for each (id in orderedIds)];
 }
+
+/* Recursively walk down a MimeMessage and its parts to extract the text/html
+ * parts of MimeBody */
+function MimeMessageToHTML(aMsg) {
+  if (aMsg.parts) { // is this a container ?
+    let buf;
+    let buf_i;
+    for (let p in aMsg.parts) {
+      let [isHtml, html] = MimeMessageToHTML(p);
+      if (!isHtml) // if we haven't been able to convert a part, fail
+        return [false, ""];
+      else
+        buf[buf_i++] = html;
+    }
+    return [true, buf.join("")];
+  } else if (aMsg instanceof MimeBody) { // we only want to examinate bodies
+    if (aMsg.contentType == "text/html")
+      return [true, aMsg.body];
+    else
+      return [false, ""]; // we fail here
+  } else { // other parts don't make the conversion fail, just return nothing
+    return [true, ""];
+  }
+}

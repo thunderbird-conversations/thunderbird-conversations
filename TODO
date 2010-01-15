@@ -12,9 +12,9 @@
   b) Steal code from message display (jsmimeemitter.js sees the HTML go by, find
     a way to catch it with a GlodaMimeMsg)
   c) Adapt "- hide quoted text -" code
+#33 Broken "These message take " NaN "bytes"
 
-#31 Create a real @media(print) stylesheet to print a whole conversation
-#32 Detect hotmail-style quoted parts (optional)
+#32 Detect hotmail-style quoted parts (optional) --> with mime + html ?
 #7 SLOW: make everything asynchronous. Start filling in messages for the first
   query, then launch the extended query that fetches more messages, and then
   asynchronously insert those in the right place as they arrive (i.e.

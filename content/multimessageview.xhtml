@@ -61,16 +61,20 @@
         <link rel="stylesheet" media="screen" type="text/css"
               href="chrome://messenger/skin/tagColors.css"/>
         <link rel="stylesheet" media="screen" type="text/css"
-              href="chrome://gconversation/skin/mmv.css"/>
+              href="chrome://gconversation/skin/multimessageview.css"/>
+        <link rel="stylesheet" media="print" type="text/css"
+              href="chrome://gconversation/skin/multimessageview_print.css"/>
+        <link rel="stylesheet" media="print" type="text/css"
+              href="chrome://gconversation/locale/print.css"/>
         <title>&window.title;</title>
         <script type="application/javascript" src="chrome://messenger/content/jquery.js" />
         <script type="application/javascript;version=1.8"><![CDATA[
             Components.utils.import("resource://app/modules/errUtils.js");
             const Ci = Components.interfaces;
             const Cc = Components.classes;
+            const stringBundle = window.top.document.getElementById("gconv-string-bundle");
             const prefs = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService);
             let buttonBranch = prefs.getBranch("gconversation.button.");
-            const stringBundle = window.top.document.getElementById("gconv-string-bundle");
 
             let myPrefObserver = {
               register: function () {

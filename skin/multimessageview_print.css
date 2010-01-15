@@ -1,0 +1,48 @@
+@page {
+  margin: 1cm;
+}
+
+/* Heading */
+
+#buttonhbox {
+  display: none;
+}
+
+.heading {
+  font-variant: small-caps;
+  margin-bottom: 1em;
+  font-weight: bold;
+  font-size: large;
+  font-family: sans-serif;
+}
+
+/* Message header */
+
+.sender:before, .date:before {
+  font-weight: bold;
+}
+
+.wrappedsender {
+  padding: .5em;
+  border-bottom: 1px solid black;
+}
+
+/* Message contents */
+
+.message {
+  border: 1px solid black;
+  margin-bottom: 1em;
+}
+
+.snippetmsg {
+  display: none !important; /* There's inline styles on these... */
+}
+
+.fullmsg {
+  display: block !important;
+  padding: .5em;
+}
+
+.messagearrow {
+  display: none;
+}
