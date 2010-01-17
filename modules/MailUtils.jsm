@@ -1,5 +1,5 @@
 var EXPORTED_SYMBOLS = ['getMessageBody', 'selectRightMessage',
-  'removeDuplicates']
+  'removeDuplicates', 'MimeMessageToHTML']
 
 const Ci = Components.interfaces;
 const Cc = Components.classes;
@@ -39,7 +39,6 @@ function selectRightMessage(similar, currentFolder) {
   /* NB: this won't find anything for the "Inbox" Smart Folder for instance */
   for each (let m in similar) {
     if (currentFolder && m.folderMessage.folder.URI == currentFolder.URI) {
-      dump("Found a corresponding message in the current folder\n");
       msgHdr = m;
       break;
     }
@@ -47,7 +46,6 @@ function selectRightMessage(similar, currentFolder) {
   if (!msgHdr) {
     for each (let m in similar) {
       if (m.folderMessage.folder.getFlag(nsMsgFolderFlags_SentMail)) {
-        dump("Found a corresponding message in the sent folder\n");
         msgHdr = m;
         break;
       }
@@ -56,7 +54,6 @@ function selectRightMessage(similar, currentFolder) {
   if (!msgHdr) {
     for each (let m in similar) {
       if (!m.folderMessage.folder.getFlag(nsMsgFolderFlags_Archive)) {
-        dump("Found a corresponding message that's not in an Archive folder\n");
         msgHdr = m;
         break;
       }
@@ -88,12 +85,13 @@ function removeDuplicates(items) {
 }
 
 /* Recursively walk down a MimeMessage and its parts to extract the text/html
- * parts of MimeBody */
+ * parts of MimeBody. TODO: figure out a way to use else if (aMsg instanceof
+ * MimeMsg) instead of that stupid test with toString below. */
 function MimeMessageToHTML(aMsg) {
   if (aMsg.parts) { // is this a container ?
-    let buf;
+    let buf = [];
     let buf_i;
-    for (let p in aMsg.parts) {
+    for each (let p in aMsg.parts) {
       let [isHtml, html] = MimeMessageToHTML(p);
       if (!isHtml) // if we haven't been able to convert a part, fail
         return [false, ""];
@@ -101,7 +99,8 @@ function MimeMessageToHTML(aMsg) {
         buf[buf_i++] = html;
     }
     return [true, buf.join("")];
-  } else if (aMsg instanceof MimeBody) { // we only want to examinate bodies
+  } else if (aMsg.toString().substring(0, 5) == "Body:") { // we only want to examinate bodies
+    dump(aMsg.contentType+"\n");
     if (aMsg.contentType == "text/html")
       return [true, aMsg.body];
     else

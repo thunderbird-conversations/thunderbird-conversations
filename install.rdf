@@ -6,7 +6,7 @@
 
   <Description about="urn:mozilla:install-manifest">
     <em:id>gconversation@xulforum.org</em:id>
-    <em:version>0.3.100109pre</em:version>
+    <em:version>0.3.100115pre</em:version>
     
     <!-- Target Application this theme can install into, 
         with minimum and maximum supported versions. --> 
@@ -22,7 +22,8 @@
     <em:name>GMail Conversation View</em:name>
     <em:description>Display your own emails in thread summaries.</em:description>
     <em:optionsURL>chrome://gconversation/content/options.xul</em:optionsURL>
-    <em:iconURL>chrome://gconversation/content/icon.png</em:iconURL>
+
+
     <em:creator>Jonathan Protzenko</em:creator>
   </Description>      
 

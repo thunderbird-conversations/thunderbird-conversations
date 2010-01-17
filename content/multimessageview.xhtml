@@ -47,7 +47,7 @@
   %globalDTD;
   <!ENTITY % startDTD SYSTEM "chrome://messenger/locale/multimessageview.dtd">
   %startDTD;
-  <!ENTITY % gconversationDTD SYSTEM "chrome://gconversation/locale/mmv.dtd">
+  <!ENTITY % gconversationDTD SYSTEM "chrome://gconversation/locale/multimessageview.dtd">
   %gconversationDTD;
   ]>
 
@@ -114,7 +114,7 @@
             }
 
             function customizeToolbar() {
-              for each (let l in ["archive", "trash", "fold_all", "unfold_all", "mark_as_read"])
+              for each (let l in ["archive", "trash", "fold_all", "unfold_all", "mark_as_read", "print"])
                 if (!buttonBranch.getBoolPref(l))
                   document.getElementById(l).style.display = "none";
             }
@@ -143,10 +143,12 @@
             }
 
             function unfoldAll(event) {
+              dump("XXX\n");
               $(".msgarrow[src=chrome://gconversation/skin/down.png]").click();
             }
 
             function foldAll(event) {
+              dump("XXX\n");
               $(".msgarrow[src=chrome://gconversation/skin/up.png]").click();
             }
 
@@ -183,6 +185,10 @@
                             class="button msgHeaderView-button extra-button"
                             onclick="if (event.button == 0) foldAll();"
                             label="&button.fold_all;" />
+                    <button id="print"
+                            class="button msgHeaderView-button extra-button"
+                            label="&button.print;"
+                            onclick="if (event.button == 0) gconversation.print();"/>
                     <button id="archive"
                             class="button msgHeaderView-button hdrArchiveButton"
                             onclick="if (event.button == 0) window.top.MsgArchiveSelectedMessages(null);" label="&archive.label;"/>

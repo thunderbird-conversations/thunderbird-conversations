@@ -1,0 +1,24 @@
+--- v0.3 development series ---
+
+- Added a context-menu to the multi message view, that allows you to *print*
+conversations. There's an associated "print style". Other various actions are
+available throught the context menu.
+- Added extra buttons (+ preferences) when viewing a conversation : unfold all,
+fold all, mark all read, open in new tab. There buttons only appear if viewing a
+conversation, not a summary of messages scattered accross different threads.
+- Added an option that allows you to focus the first unread message when viewing
+a conversation (if all messages are read, focuses to the last message).
+- Fixed a bug when the add-on failed to retrieve certain messages and displays
+"..." instead of the message's text.
+- Fix some performance issues (optimize array accesses, remove jQuery animations
+as it would considerably slow down unfolding of long emails).
+- For GMail accounts, since the same message is in multiple folders, useless
+changes of folders were performed when trying to display a specific message by
+clicking on the sender's name. This is now fixed.
+- For GMail accounts, clicking on a message *you* had sent would take you to the
+"Archives" folder. This is now fixed and sends you to the "Sent" folder.
+- Fixed some inconsistencies for GMail, such as: in the folder corresponding to
+a label, the thread would select the messages in "Archives" instead of the
+messages in the current folder, thus sometimes creating inconsistencies
+regarding the read/unread status.
+- Localized (only en-US for now)

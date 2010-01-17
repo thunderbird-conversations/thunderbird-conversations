@@ -7,6 +7,10 @@
   list-style-image: url("chrome://gconversation/skin/up.png");
 }
 
+#print {
+  list-style-image: url("moz-icon://stock/gtk-print?size=menu");
+}
+
 /* General stuff */
 
 .message {

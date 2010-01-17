@@ -1,4 +1,5 @@
 # vim:ft=none 
+# let nextbug = 39 in
 
 #9 Add an option to mark a thread as read when it is displayed
   b) Improve it by only marking a message as read when it is scrolled into view
@@ -12,10 +13,15 @@
   b) Steal code from message display (jsmimeemitter.js sees the HTML go by, find
     a way to catch it with a GlodaMimeMsg)
   c) Adapt "- hide quoted text -" code
-#33 Broken "These message take " NaN "bytes"
+#37 KB shortcuts for common operations -> use a global <key /> and
+  if ($("#multimessage").is(":visible"))
+    $("#multimessage").contentDocument.unfoldAll();
 
+#39 The "Mark all read" command is buggy. Reimplement my own that also marks
+messages other than in the current folder as read. MINOR
+#38 Add small icon if email has attachment
 #32 Detect hotmail-style quoted parts (optional) --> with mime + html ?
-#7 SLOW: make everything asynchronous. Start filling in messages for the first
+#7 Make everything asynchronous. Start filling in messages for the first
   query, then launch the extended query that fetches more messages, and then
   asynchronously insert those in the right place as they arrive (i.e.
   onItemsAdded, not onQueryCompleted).

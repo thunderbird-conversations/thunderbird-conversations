@@ -44,6 +44,8 @@ document.addEventListener("load", function () {
   g_prefs["monospaced"] = prefs.getBoolPref("monospaced");
   g_prefs["hide_quote_length"] = prefs.getIntPref("hide_quote_length");
   g_prefs["fold_rule"] = prefs.getCharPref("fold_rule");
+  g_prefs["focus_first"] = prefs.getBoolPref("focus_first");
+  g_prefs["html"] = prefs.getBoolPref("html");
 
   let myPrefObserver = {
     register: function () {
@@ -110,7 +112,7 @@ document.addEventListener("load", function () {
       let htmlpane = document.getElementById('multimessage');
 
       /* Fill the heading */
-      let firstMsgHdr = this._msgHdrs[0][0].folderMessage;
+      let firstMsgHdr = this._msgHdrs[0];
       let numMessages = this._msgHdrs.length;
       let subject = (firstMsgHdr.mime2DecodedSubject || gSelectionSummaryStrings["noSubject"])
          + " "
@@ -131,6 +133,24 @@ document.addEventListener("load", function () {
       const SNIPPET_LENGTH = 300;
       let maxCountExceeded = false;
       let id2color = {};
+
+      /* Determine which message is going to be focused */
+      let needsFocus = -1;
+      if (g_prefs["focus_first"]) {
+        needsFocus = numMessages - 1;
+        for (let i = 0; i < numMessages; ++i) {
+          if (!this._msgHdrs[i].isRead) {
+            needsFocus = i;
+            break;
+          }
+        }
+      }
+      /* completedBeforeFocus will be --'d every time a message's snippet/body
+       * is filled, with the message's index being < needsFocus. When it's 0, we
+       * scroll into view (and the layout above the wanted message won't be
+       * disrupted) */
+      let completedBeforeFocus = needsFocus+1;
+
       for (let i = 0; i < numMessages; ++i) {
         count += 1;
         if (count > MAX_THREADS) {
@@ -138,7 +158,7 @@ document.addEventListener("load", function () {
           break;
         }
 
-        let msgHdr = selectRightMessage(this._msgHdrs[i], gDBView.msgFolder).folderMessage;
+        let msgHdr = this._msgHdrs[i];
 
         let msg_classes = "message ";
         if (!msgHdr.isRead)
@@ -296,6 +316,28 @@ document.addEventListener("load", function () {
               }, true);
           }
         };
+        let msgHdrs = this._msgHdrs;
+        let msgNodes = this._msgNodes;
+        /* If message n is to be scrolled into view, we need to wait for the n-1
+         * messages to be filled, and then for the last one (not necessarily the
+         * message we're going to scroll into view because it's async) we
+         * actually scroll. */
+        let scrollIfNeeded = i <= needsFocus ? function () {
+          dump(completedBeforeFocus+"/"+needsFocus+"\n");
+          completedBeforeFocus--;
+          if (completedBeforeFocus == 0) {
+            let tKey = msgHdrs[needsFocus].messageKey + msgHdrs[needsFocus].folder.URI;
+            msgNodes[tKey].scrollIntoView(true);
+            dump(msgNodes[tKey].scrollTop+"\n");
+            /* Because of the header that hides the beginning of the message,
+             * scroll a bit more */
+            document.getElementById("multimessage").contentWindow.scrollBy(0, - 5 -
+              document.getElementById("multimessage")
+              .contentDocument.getElementById("headingwrappertable")
+              .getBoundingClientRect().height);
+          }
+        } : function () {};
+
         try {
           /* throw { result: Components.results.NS_ERROR_FAILURE }; */
           MsgHdrToMimeMessage(msgHdr, null, function(aMsgHdr, aMimeMsg) {
@@ -304,6 +346,15 @@ document.addEventListener("load", function () {
             let [snippet, meta] = mimeMsgToContentSnippetAndMeta(aMimeMsg, aMsgHdr.folder, SNIPPET_LENGTH);
             let body = aMimeMsg.coerceBodyToPlaintext(aMsgHdr.folder);
             fillSnippetAndMsg(snippet, body, meta.author);
+            scrollIfNeeded();
+
+            /* START REMOVEME [test section] */
+            let [hasHtml, html] = MimeMessageToHTML(aMimeMsg);
+            if (hasHtml)
+              dump("This message has HTML\n---\n"+html+"---\n");
+            else
+              dump("This message doesn't have HTML\n");
+            /* END REMOVEME */
           });
         } catch (e if e.result == Components.results.NS_ERROR_FAILURE) {
           try {
@@ -313,6 +364,7 @@ document.addEventListener("load", function () {
             let body = getMessageBody(msgHdr, true);
             let snippet = body.substring(0, SNIPPET_LENGTH-3)+"...";
             fillSnippetAndMsg(snippet, body);
+            scrollIfNeeded();
             dump("Got an \"offline message\"\n");
           } catch (e) {
             Application.console.log("Error fetching the message: "+e);
@@ -336,7 +388,6 @@ document.addEventListener("load", function () {
         sender.msgHdr = msgHdr;
         sender.folder = msgHdr.folder;
         sender.msgKey = msgHdr.messageKey;
-        sender.similar = this._msgHdrs[i];
         sender.addEventListener("click", function(e) {
           /* msgHdr is "the right message" (see the beginning of the loop) */
           let viewIndex = gFolderDisplay.view.getViewIndexForMsgHdr(this.msgHdr);
@@ -357,7 +408,7 @@ document.addEventListener("load", function () {
       }
       // stash somewhere so it doesn't get GC'ed
       this._glodaQueries.push(
-        Gloda.getMessageCollectionForHeaders([x[0].folderMessage for each (x in this._msgHdrs)], this));
+        Gloda.getMessageCollectionForHeaders(this._msgHdrs, this));
       this.notifyMaxCountExceeded(htmlpane.contentDocument, numMessages, MAX_THREADS);
 
       this.computeSize(htmlpane);
@@ -414,7 +465,9 @@ document.addEventListener("load", function () {
     pullConversation(
       aSelectedMessages,
       function (aCollection) {
-        gSummary = new ThreadSummary(removeDuplicates(aCollection.items));
+        gSummary = new ThreadSummary(
+          [selectRightMessage(x, gDBView.msgFolder).folderMessage for each (x in removeDuplicates(aCollection.items))]
+        );
         gSummary.init();
         return;
       }

@@ -1,0 +1,10 @@
+<!ENTITY button.open_in_new_tab "open in new tab">
+<!ENTITY button.mark_all_read "mark all read">
+<!ENTITY button.unfold_all "unfold all">
+<!ENTITY button.fold_all "fold all">
+<!ENTITY button.print "print">
+<!ENTITY menu.open_in_new_tab "Open in new tab">
+<!ENTITY menu.mark_all_read "Mark all read">
+<!ENTITY menu.unfold_all "Unfold all">
+<!ENTITY menu.fold_all "Fold all">
+<!ENTITY menu.delete "Delete messages">

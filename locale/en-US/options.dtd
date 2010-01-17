@@ -1,17 +1,21 @@
 <!ENTITY window.title "GMail Conversation View Options">
 <!ENTITY title.message_display "Message display">
-<!ENTITY option.monospaced "Use monospaced font">
+<!ENTITY option.monospaced "Use monospaced font for plain text messages">
+<!ENTITY option.html "Use HTML to display messages whenever possible">
+<!ENTITY option.focus_first "Scroll the first unread message or last message into view">
 <!ENTITY optiondesc.unfold "By default, unfold">
 <!ENTITY option.last_or_unread "last or unread messages">
 <!ENTITY option.all_messages "all messages">
 <!ENTITY option.no_messages "no messages">
 <!ENTITY title.toolbar "Toolbar buttons">
+<!ENTITY buttons.info "All these commands are also accessible through the contextual menu of the thread summary (right-click).">
 <!ENTITY option.button.archive "Display &quot;archive&quot; button">
 <!ENTITY option.button.trash "Display &quot;delete&quot; button">
+<!ENTITY option.button.print "Display &quot;print&quot; button">
 <!ENTITY option.button.unfold_all "Display &quot;unfold all&quot; button">
 <!ENTITY option.button.fold_all "Display &quot;fold all&quot; button">
 <!ENTITY option.button.mark_as_read "Display &quot;mark all read&quot; button">
 <!ENTITY option.button.open_in_new_tab "Display &quot;open in new tab&quot; button">
-<!ENTITY title.quoting "Quoting">
+<!ENTITY title.quoting "Quoting and folding">
 <!ENTITY option.hide_longer_than "Hide quoted parts longer than">
 <!ENTITY option.lines "lines">

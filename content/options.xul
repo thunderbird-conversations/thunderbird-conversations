@@ -3,52 +3,52 @@
 <!DOCTYPE window SYSTEM "chrome://gconversation/locale/options.dtd">
  
 <prefwindow id="gconversation-prefs"
-     title="&window.title;"
-     xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  title="&window.title;"
+  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  >
  
-  <prefpane id="tblatex-paths" label="&title.message_display;" image="chrome://messenger/skin/preferences/general.png">
+  <prefpane id="tblatex-paths" label="&title.message_display;"
+    image="chrome://messenger/skin/preferences/general.png"
+    flex="1">
     <preferences>
       <preference id="monospaced" name="gconversation.monospaced" type="bool" />
       <preference id="hide_quote_length" name="gconversation.hide_quote_length" type="int" />
       <preference id="fold_rule" name="gconversation.fold_rule" type="string" />
       <preference id="button.archive" name="gconversation.button.archive" type="bool" />
       <preference id="button.trash" name="gconversation.button.trash" type="bool" />
+      <preference id="button.print" name="gconversation.button.print" type="bool" />
       <preference id="button.fold_all" name="gconversation.button.fold_all" type="bool" />
       <preference id="button.unfold_all" name="gconversation.button.unfold_all" type="bool" />
       <preference id="button.mark_as_read" name="gconversation.button.mark_as_read" type="bool" />
       <preference id="button.open_in_new_tab" name="gconversation.button.open_in_new_tab" type="bool" />
+      <preference id="html" name="gconversation.html" type="bool" />
+      <preference id="focus_first" name="gconversation.focus_first" type="bool" />
     </preferences>
    
     <groupbox>
       <caption><description>&title.message_display;</description></caption>
-      <hbox>
-        <checkbox preference="monospaced" id="monospaced_textbox" />
-        <vbox>
-          <spacer flex="1" />
-          <label control="monospaced_checkbox" value="&option.monospaced;" />
-          <spacer flex="1" />
-        </vbox>
+      <hbox align="center">
+        <checkbox preference="html" id="html_textbox" />
+        <label control="html_checkbox" value="&option.html;" />
         <spacer flex="1" />
       </hbox>
-      <hbox>
-        <vbox>
-          <spacer flex="1" />
-          <description control="fold_rule_menulist">&optiondesc.unfold;</description>
-          <spacer flex="1" />
-        </vbox>
-        <menulist preference="fold_rule" id="fold_rule_menulist">
-          <menupopup>
-            <menuitem value="unread_and_last" label="&option.last_or_unread;" />
-            <menuitem value="all" label="&option.all_messages;" />
-            <menuitem value="none" label="&option.no_messages;" />
-          </menupopup>
-        </menulist>
+      <hbox align="center">
+        <checkbox preference="monospaced" id="monospaced_textbox" />
+        <label control="monospaced_checkbox" value="&option.monospaced;" />
+        <spacer flex="1" />
+      </hbox>
+      <hbox align="center">
+        <checkbox preference="focus_first" id="focus_first_textbox" />
+        <label control="focus_first_checkbox" value="&option.focus_first;" />
+        <spacer flex="1" />
       </hbox>
     </groupbox>
     <groupbox>
       <caption><description>&title.toolbar;</description></caption>
+      <description style="width: 0; height: 2em;">&buttons.info;</description>
       <checkbox label="&option.button.archive;" preference="button.archive" id="archive_checkbox" />
       <checkbox label="&option.button.trash;" preference="button.trash" id="delete_checkbox" />
+      <checkbox label="&option.button.print;" preference="button.print" id="print_checkbox" />
       <checkbox label="&option.button.unfold_all;" preference="button.unfold_all" id="unfold_all_checkbox" />
       <checkbox label="&option.button.fold_all;" preference="button.fold_all" id="fold_all_checkbox" />
       <checkbox label="&option.button.mark_as_read;" preference="button.mark_as_read" id="mark_as_read_checkbox" />
@@ -56,18 +56,20 @@
     </groupbox>
     <groupbox>
       <caption><description>&title.quoting;</description></caption>
-      <hbox>
-        <vbox>
-          <spacer flex="1" />
-          <label control="hide_quote_length_textbox" value="&option.hide_longer_than;" />
-          <spacer flex="1" />
-        </vbox>
+      <hbox align="center">
+        <label control="hide_quote_length_textbox" value="&option.hide_longer_than;" />
         <textbox type="number" preference="hide_quote_length" id="hide_quote_length_textbox" size="2" />
-        <vbox>
-          <spacer flex="1" />
-          <label control="hide_quote_length_textbox" value="&option.lines;" />
-          <spacer flex="1" />
-        </vbox>
+        <label control="hide_quote_length_textbox" value="&option.lines;" />
+      </hbox>
+      <hbox align="center">
+        <description control="fold_rule_menulist">&optiondesc.unfold;</description>
+        <menulist preference="fold_rule" id="fold_rule_menulist">
+          <menupopup>
+            <menuitem value="unread_and_last" label="&option.last_or_unread;" />
+            <menuitem value="all" label="&option.all_messages;" />
+            <menuitem value="none" label="&option.no_messages;" />
+          </menupopup>
+        </menulist>
       </hbox>
     </groupbox>
   </prefpane>

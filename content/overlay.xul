@@ -1,7 +1,12 @@
 <?xml version="1.0"?>
 <?xml-stylesheet href="chrome://gconversation/skin/overlay.css" type="text/css" ?>
 <?xml-stylesheet href="chrome://gconversation/skin/msg.css" type="text/css" ?>
-<!DOCTYPE window SYSTEM "chrome://messenger/locale/messenger.dtd">
+<!DOCTYPE overlay [
+  <!ENTITY % messengerDTD SYSTEM "chrome://messenger/locale/messenger.dtd">
+  %messengerDTD;
+  <!ENTITY % gconversationDTD SYSTEM "chrome://gconversation/locale/multimessageview.dtd">
+  %gconversationDTD;
+]>
 <overlay id="messengerWindow" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <stringbundleset id="stringbundleset">
     <stringbundle id="gconv-string-bundle" src="chrome://gconversation/locale/main.properties"/>
@@ -37,7 +42,18 @@
   </toolbarpalette>
   <popupset id="mainPopupSet">
     <popup id="gConvMenu">
-      <menuitem label="&printButton.label;" oncommand="gconversation.print()" />
+      <menuitem label="&printButton.label;" oncommand="gconversation.print()"
+        style="list-style-image: url(&quot;moz-icon://stock/gtk-print?size=menu&quot;);" />
+      <menuitem label="&menu.delete;" command="cmd_delete" />
+      <menuitem label="&archiveMsgCmd.label;" command="cmd_archive" />
+      <menuitem label="&menu.mark_all_read;" command="cmd_markThreadAsRead" />
+      <menuseparator />
+      <menuitem label="&menu.open_in_new_tab;"
+        oncommand="gconversation.on_load_thread_tab();" />
+      <menuitem label="&menu.unfold_all;"
+        oncommand="document.getElementById('multimessage').contentWindow.unfoldAll();" />
+      <menuitem label="&menu.fold_all;"
+        oncommand="document.getElementById('multimessage').contentWindow.foldAll();" />
     </popup>
   </popupset>
 </overlay>
