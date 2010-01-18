@@ -41,6 +41,13 @@
   margin-bottom: 1em;
 }
 
+.htmlmsg {
+  border-width: 0;
+  width: 100%;
+  margin-left: 0;
+  padding: 0;
+}
+
 /* Inside the messages' bodies */
 
 .moz-txt-tag {

@@ -2,7 +2,7 @@
 
 - Added a context-menu to the multi message view, that allows you to *print*
 conversations. There's an associated "print style". Other various actions are
-available throught the context menu.
+available through the context menu.
 - Added extra buttons (+ preferences) when viewing a conversation : unfold all,
 fold all, mark all read, open in new tab. There buttons only appear if viewing a
 conversation, not a summary of messages scattered accross different threads.

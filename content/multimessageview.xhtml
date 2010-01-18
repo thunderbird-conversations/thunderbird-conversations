@@ -139,17 +139,21 @@
               else
                 $arrow.attr("src", "chrome://gconversation/skin/up.png");
               //$(event.target.parentNode.previousSibling.querySelectorAll(".snippet")).toggle("slow");
-              $(event.target.parentNode.previousSibling.querySelectorAll(".snippet")).toggle();
+              $(event.target.parentNode.previousSibling.getElementsByClassName("snippet")).toggle();
             }
 
             function unfoldAll(event) {
-              dump("XXX\n");
-              $(".msgarrow[src=chrome://gconversation/skin/down.png]").click();
+              let e = document.createEvent("UIEvents");
+              e.initUIEvent("click", true, true, window, 1);
+              for each (let [, x] in Iterator(document.querySelectorAll(".msgarrow[src='chrome://gconversation/skin/down.png']")))
+                x.dispatchEvent(e);
             }
 
             function foldAll(event) {
-              dump("XXX\n");
-              $(".msgarrow[src=chrome://gconversation/skin/up.png]").click();
+              let e = document.createEvent("UIEvents");
+              e.initUIEvent("click", true, true, window, 1);
+              for each (let [, x] in Iterator(document.querySelectorAll(".msgarrow[src='chrome://gconversation/skin/up.png']")))
+                x.dispatchEvent(e);
             }
 
             function disableExtraButtons() {

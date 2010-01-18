@@ -39,13 +39,14 @@ document.addEventListener("load", function () {
   const txttohtmlconv = Cc["@mozilla.org/txttohtmlconv;1"].createInstance(Ci.mozITXTToHTMLConv);
   const stringBundle = document.getElementById("gconv-string-bundle");
 
-  /* Preferences are loaded once and then observed */
+  /* Preferences are loaded once and then observed. For a new pref, add an entry
+   * here + a case in the switch below. */
   let g_prefs = {};
   g_prefs["monospaced"] = prefs.getBoolPref("monospaced");
-  g_prefs["hide_quote_length"] = prefs.getIntPref("hide_quote_length");
-  g_prefs["fold_rule"] = prefs.getCharPref("fold_rule");
   g_prefs["focus_first"] = prefs.getBoolPref("focus_first");
   g_prefs["html"] = prefs.getBoolPref("html");
+  g_prefs["hide_quote_length"] = prefs.getIntPref("hide_quote_length");
+  g_prefs["fold_rule"] = prefs.getCharPref("fold_rule");
 
   let myPrefObserver = {
     register: function () {
@@ -62,7 +63,9 @@ document.addEventListener("load", function () {
       if (aTopic != "nsPref:changed") return;
       switch (aData) {
         case "monospaced":
-          g_prefs["monospaced"] = prefs.getBoolPref("monospaced");
+        case "focus_first":
+        case "html":
+          g_prefs[aData] = prefs.getBoolPref(aData);
           break;
         case "hide_quote_length":
           g_prefs["hide_quote_length"] = prefs.getIntPref("hide_quote_length");
@@ -180,13 +183,14 @@ document.addEventListener("load", function () {
                                 <div class="date">{date}</div>
                                 <div class="tags"></div>
                               </div>
-                              <div class="snippet fullmsg" style="display: none"></div>
                               <div class="snippet snippetmsg"></div>
+                              <div class="snippet fullmsg" style="display: none"></div>
+                              <iframe class="snippet htmlmsg" style="display: none"></iframe>
                             </div>
                           </div>;
 
         let msgExtraContents = <div class="messagearrow">
-                                 <img class="msgarrow" src="chrome://gconversation/skin/down.png" onclick="toggleMessage(event);" />
+                                 <img class="msgarrow" src="chrome://gconversation/skin/down.png" />
                                </div>;
 
         let msgNode = htmlpane.contentDocument.createElement("div");
@@ -204,6 +208,7 @@ document.addEventListener("load", function () {
           senderNode.style.color = id2color[senderNode.textContent] = newColor();
 
         let fullMsgNode = msgNode.getElementsByClassName("fullmsg")[0];
+        let htmlMsgNode = msgNode.getElementsByClassName("htmlmsg")[0];
         let snippetMsgNode = msgNode.getElementsByClassName("snippetmsg")[0];
 
         /* Style according to the preferences. Preferences have an observer, see
@@ -214,10 +219,15 @@ document.addEventListener("load", function () {
              || g_prefs["fold_rule"] == "all") {
           snippetMsgNode.style.display = "none";
           fullMsgNode.style.display = "block";
+          htmlMsgNode.style.display = "block";
           msgNode.getElementsByClassName("msgarrow")[0].setAttribute(
             "src",
             "chrome://gconversation/skin/up.png");
-        }
+        } 
+        msgNode.getElementsByClassName("msgarrow")[0].addEventListener(
+          "click",
+          function (event) htmlpane.contentWindow.toggleMessage(event),
+          true);
 
         let key = msgHdr.messageKey + msgHdr.folder.URI;
         /* Fill the current message's node based on given parameters.
@@ -315,6 +325,54 @@ document.addEventListener("load", function () {
                 return specialTabs.siteClickHandler(event, /^mailto:/);
               }, true);
           }
+
+          /* Remove the unused node, as it makes UI JS simpler in
+           * multimessageview.xhtml */
+          htmlMsgNode.parentNode.removeChild(htmlMsgNode);
+        };
+        let fillSnippetAndHTML = function (snippet, html, author) {
+          if (author)
+            senderNode.textContent = author;
+          snippetMsgNode.textContent = snippet;
+
+          let iframe = msgNode.getElementsByClassName("htmlmsg")[0];
+          /* This is supposed to sanitize
+          let parser = Cc["@mozilla.org/xmlextras/domparser;1"].createInstance(Ci.nsIDOMParser);
+          let doc = parser.parseFromString(html, "text/html");
+          iframe.contentDocument = doc;
+          */
+          let arrow = msgNode.getElementsByClassName("msgarrow")[0];
+          let f1 = function () { iframe.style.height = iframe.contentDocument.body.scrollHeight+"px"; };
+          let f2 = function () {
+            dump("f2()\n");
+            let h = iframe.contentDocument.body.scrollHeight;
+            if (h > 0) {
+              iframe.style.height = h+"px";
+              arrow.removeEventListener("click", f2, true);
+            } else {
+              dump("Height is 0, deferring...\n");
+              setTimeout(f2, 200);
+            }
+          };
+          if (iframe.style.display != "none")
+            iframe.contentWindow.addEventListener("load", f1, true);
+          else
+            arrow.addEventListener("click", f2, true);
+          /* The charset is the way internal JS strings are represented which is
+           * UTF8. (Check this actually works, otherwise might be the aMsg.charset) */
+          iframe.setAttribute("src", "data:text/html;charset=utf-8,"+html.replace(/\r?\n|\r/g, " "));
+
+          /* Attach the required event handlers so that links open in the
+           * external browser */
+          for each (let [, a] in Iterator(iframe.contentDocument.getElementsByTagName("a"))) {
+            a.addEventListener("click", function (event) {
+                return specialTabs.siteClickHandler(event, /^mailto:/);
+              }, true);
+          }
+
+          /* Remove the unused node, as it makes UI JS simpler in
+           * multimessageview.xhtml */
+          fullMsgNode.parentNode.removeChild(fullMsgNode);
         };
         let msgHdrs = this._msgHdrs;
         let msgNodes = this._msgNodes;
@@ -345,16 +403,13 @@ document.addEventListener("load", function () {
               return;
             let [snippet, meta] = mimeMsgToContentSnippetAndMeta(aMimeMsg, aMsgHdr.folder, SNIPPET_LENGTH);
             let body = aMimeMsg.coerceBodyToPlaintext(aMsgHdr.folder);
-            fillSnippetAndMsg(snippet, body, meta.author);
-            scrollIfNeeded();
 
-            /* START REMOVEME [test section] */
             let [hasHtml, html] = MimeMessageToHTML(aMimeMsg);
-            if (hasHtml)
-              dump("This message has HTML\n---\n"+html+"---\n");
+            if (hasHtml && g_prefs["html"])
+              fillSnippetAndHTML(snippet, html, meta.author);
             else
-              dump("This message doesn't have HTML\n");
-            /* END REMOVEME */
+              fillSnippetAndMsg(snippet, body, meta.author);
+            scrollIfNeeded();
           });
         } catch (e if e.result == Components.results.NS_ERROR_FAILURE) {
           try {

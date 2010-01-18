@@ -4,6 +4,7 @@ var EXPORTED_SYMBOLS = ['getMessageBody', 'selectRightMessage',
 const Ci = Components.interfaces;
 const Cc = Components.classes;
 const Cu = Components.utils;
+Components.utils.import("resource://app/modules/gloda/mimemsg.js");
 /* from mailnews/base/public/nsMsgFolderFlags.idl */
 const nsMsgFolderFlags_SentMail = 0x00000200;
 const nsMsgFolderFlags_Archive  = 0x00004000;
@@ -84,28 +85,31 @@ function removeDuplicates(items) {
   return [similar[id] for each (id in orderedIds)];
 }
 
-/* Recursively walk down a MimeMessage and its parts to extract the text/html
- * parts of MimeBody. TODO: figure out a way to use else if (aMsg instanceof
- * MimeMsg) instead of that stupid test with toString below. */
+/* Recursively walk down a MimeMessage trying to find a text/html MessageBody.
+ * TODO: figure out a way to use else if (aMsg instanceof MimeMsg) instead of
+ * that stupid test with toString below. */
 function MimeMessageToHTML(aMsg) {
-  if (aMsg.parts) { // is this a container ?
+  if (aMsg instanceof MimeMessage || aMsg instanceof MimeContainer) { // is this a container ?
     let buf = [];
-    let buf_i;
-    for each (let p in aMsg.parts) {
+    let buf_i = 0;
+    for each (p in aMsg.parts) {
       let [isHtml, html] = MimeMessageToHTML(p);
-      if (!isHtml) // if we haven't been able to convert a part, fail
-        return [false, ""];
-      else
+      if (isHtml)
         buf[buf_i++] = html;
     }
-    return [true, buf.join("")];
-  } else if (aMsg.toString().substring(0, 5) == "Body:") { // we only want to examinate bodies
-    dump(aMsg.contentType+"\n");
-    if (aMsg.contentType == "text/html")
-      return [true, aMsg.body];
+    if (buf_i > 0)
+      return [true, buf.join("")];
     else
+      return [false, ""]
+  } else if (aMsg instanceof MimeBody) { // we only want to examinate bodies
+    if (aMsg.contentType == "text/html") {
+      /*for (let i in aMsg)
+        dump(i+":"+aMsg[i]+"\n");*/
+      return [true, aMsg.body];
+    } else {
       return [false, ""]; // we fail here
-  } else { // other parts don't make the conversion fail, just return nothing
-    return [true, ""];
+    }
+  } else {
+    return [false, ""];
   }
 }

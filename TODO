@@ -1,5 +1,5 @@
 # vim:ft=none 
-# let nextbug = 39 in
+# let nextbug = 41 in
 
 #9 Add an option to mark a thread as read when it is displayed
   b) Improve it by only marking a message as read when it is scrolled into view
@@ -9,13 +9,16 @@
 #30 Add "reply - reply to all - ..." and other links at the bottom of the
   message, see http://www.flickr.com/photos/davidascher/3095078638/
 #8 Add an option to display messages as HTML and not text only
-  a) Preferences dialog
-  b) Steal code from message display (jsmimeemitter.js sees the HTML go by, find
-    a way to catch it with a GlodaMimeMsg)
-  c) Adapt "- hide quoted text -" code
+  c) Adapt "- hide quoted text -" code to take into account <blockquote>
+  elements
+  d) !!! Javascript issue, sync with javascript.allow.mailnews global pref and
+  find out how to disable JS for an iframe
+  e) Set plain/text bodies as black
+  f) Consistent margins for regular bodies and html bodies
 #37 KB shortcuts for common operations -> use a global <key /> and
   if ($("#multimessage").is(":visible"))
     $("#multimessage").contentDocument.unfoldAll();
+#40 Focusing a given message (scroll computations) doesn't work very well
 
 #39 The "Mark all read" command is buggy. Reimplement my own that also marks
 messages other than in the current folder as read. MINOR
