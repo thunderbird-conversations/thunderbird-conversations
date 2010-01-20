@@ -1,5 +1,5 @@
 var EXPORTED_SYMBOLS = ['getMessageBody', 'selectRightMessage',
-  'removeDuplicates', 'MimeMessageToHTML']
+  'removeDuplicates', 'MimeMessageToHTML', 'MimeMessageHasAttachment']
 
 const Ci = Components.interfaces;
 const Cc = Components.classes;
@@ -111,5 +111,20 @@ function MimeMessageToHTML(aMsg) {
     }
   } else {
     return [false, ""];
+  }
+}
+
+function MimeMessageHasAttachment(aMsg) {
+  let f = function (aMsg) {
+    if (aMsg instanceof MimeMessageAttachment)
+      throw { found: true };
+    else
+      [f(x) for each (x in aMsg.parts)];
+  };
+  try {
+    f(aMsg);
+    return false;
+  } catch (e if e.found) {
+    return true;
   }
 }

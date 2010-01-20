@@ -1,5 +1,9 @@
 --- v0.3 development series ---
 
+- Rough HTML message support (improvements to come)
+- Added a small icon next to messages that have non-message attachments
+(a message attachment is an attachment you can display in the conversation view
+such as texts, forwarded emails, old emails, etc.)
 - Added a context-menu to the multi message view, that allows you to *print*
 conversations. There's an associated "print style". Other various actions are
 available through the context menu.

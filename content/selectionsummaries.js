@@ -182,6 +182,7 @@ document.addEventListener("load", function () {
                                 <div class="sender link">{senderName}</div>
                                 <div class="date">{date}</div>
                                 <div class="tags"></div>
+                                <div class="attachment" style="display: none"><img src="chrome://messenger/skin/icons/attachment-col.png" /></div>
                               </div>
                               <div class="snippet snippetmsg"></div>
                               <div class="snippet fullmsg" style="display: none"></div>
@@ -210,6 +211,7 @@ document.addEventListener("load", function () {
         let fullMsgNode = msgNode.getElementsByClassName("fullmsg")[0];
         let htmlMsgNode = msgNode.getElementsByClassName("htmlmsg")[0];
         let snippetMsgNode = msgNode.getElementsByClassName("snippetmsg")[0];
+        let arrowNode = msgNode.getElementsByClassName("msgarrow")[0];
 
         /* Style according to the preferences. Preferences have an observer, see
          * above for details. */
@@ -220,14 +222,9 @@ document.addEventListener("load", function () {
           snippetMsgNode.style.display = "none";
           fullMsgNode.style.display = "block";
           htmlMsgNode.style.display = "block";
-          msgNode.getElementsByClassName("msgarrow")[0].setAttribute(
-            "src",
-            "chrome://gconversation/skin/up.png");
+          arrowNode.setAttribute("src", "chrome://gconversation/skin/up.png");
         } 
-        msgNode.getElementsByClassName("msgarrow")[0].addEventListener(
-          "click",
-          function (event) htmlpane.contentWindow.toggleMessage(event),
-          true);
+        arrowNode.addEventListener("click", function (event) htmlpane.contentWindow.toggleMessage(event), true);
 
         let key = msgHdr.messageKey + msgHdr.folder.URI;
         /* Fill the current message's node based on given parameters.
@@ -341,14 +338,20 @@ document.addEventListener("load", function () {
           let doc = parser.parseFromString(html, "text/html");
           iframe.contentDocument = doc;
           */
-          let arrow = msgNode.getElementsByClassName("msgarrow")[0];
-          let f1 = function () { iframe.style.height = iframe.contentDocument.body.scrollHeight+"px"; };
-          let f2 = function () {
-            dump("f2()\n");
+          let f1 = function () {
             let h = iframe.contentDocument.body.scrollHeight;
+            dump("f1() "+h+"\n");
+            if (h > 0)
+              iframe.style.height = h+"px";
+            else
+              setTimeout(f1, 200);
+          };
+          let f2 = function () {
+            let h = iframe.contentDocument.body.scrollHeight;
+            dump("f2() "+h+"\n");
             if (h > 0) {
               iframe.style.height = h+"px";
-              arrow.removeEventListener("click", f2, true);
+              arrowNode.removeEventListener("click", f2, true);
             } else {
               dump("Height is 0, deferring...\n");
               setTimeout(f2, 200);
@@ -357,7 +360,7 @@ document.addEventListener("load", function () {
           if (iframe.style.display != "none")
             iframe.contentWindow.addEventListener("load", f1, true);
           else
-            arrow.addEventListener("click", f2, true);
+            arrowNode.addEventListener("click", f2, true);
           /* The charset is the way internal JS strings are represented which is
            * UTF8. (Check this actually works, otherwise might be the aMsg.charset) */
           iframe.setAttribute("src", "data:text/html;charset=utf-8,"+html.replace(/\r?\n|\r/g, " "));
@@ -403,6 +406,9 @@ document.addEventListener("load", function () {
               return;
             let [snippet, meta] = mimeMsgToContentSnippetAndMeta(aMimeMsg, aMsgHdr.folder, SNIPPET_LENGTH);
             let body = aMimeMsg.coerceBodyToPlaintext(aMsgHdr.folder);
+            let hasAttachment = MimeMessageHasAttachment(aMimeMsg);
+            if (hasAttachment)
+              msgNode.getElementsByClassName("attachment")[0].style.display = "";
 
             let [hasHtml, html] = MimeMessageToHTML(aMimeMsg);
             if (hasHtml && g_prefs["html"])
@@ -510,7 +516,7 @@ document.addEventListener("load", function () {
    * more convenient as it follows Thunderbird's more closely, which allows me
    * to track changes to the ThreadSummary code in Thunderbird more easily. */
   var q1, q2;
-  summarizeThread = function(aSelectedMessages) {
+  summarizeThread = function(aSelectedMessages, aSwitchMessageDisplay) {
     if (aSelectedMessages.length == 0) {
       dump("No selected messages\n");
       return false;
@@ -524,6 +530,8 @@ document.addEventListener("load", function () {
           [selectRightMessage(x, gDBView.msgFolder).folderMessage for each (x in removeDuplicates(aCollection.items))]
         );
         gSummary.init();
+        if (aSwitchMessageDisplay)
+          gMessageDisplay.singleMessageDisplay = false;
         return;
       }
     );
@@ -551,8 +559,7 @@ document.addEventListener("load", function () {
 
   /* Register event handlers through the global variable */
   gconversation.on_load_thread = function() {
-    if (summarizeThread(gFolderDisplay.selectedMessages))
-      gMessageDisplay.singleMessageDisplay = false;
+    summarizeThread(gFolderDisplay.selectedMessages, true);
   };
   gconversation.on_load_thread_tab = function() {
     if (!gFolderDisplay.selectedMessages.length)

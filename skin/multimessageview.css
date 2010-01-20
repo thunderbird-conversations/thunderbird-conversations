@@ -11,6 +11,10 @@
   list-style-image: url("moz-icon://stock/gtk-print?size=menu");
 }
 
+.attachment {
+  display: inline;
+}
+
 /* General stuff */
 
 .message {
@@ -41,11 +45,16 @@
   margin-bottom: 1em;
 }
 
+.fullmsg {
+  color: black;
+}
+
 .htmlmsg {
   border-width: 0;
   width: 100%;
   margin-left: 0;
   padding: 0;
+  overflow: hidden;
 }
 
 /* Inside the messages' bodies */

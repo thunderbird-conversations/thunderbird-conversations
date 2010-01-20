@@ -1,29 +1,26 @@
 # vim:ft=none 
-# let nextbug = 41 in
+# let nextbug = 42 in
 
 #9 Add an option to mark a thread as read when it is displayed
   b) Improve it by only marking a message as read when it is scrolled into view
-#12 Extension does not work with newsgroups (throws an exception) (see bug
-  478167) --> temporary workaround + check other types of non-mail accounts
 #29 Encoding issues (Chinese not ok, Czech not ok either)
 #30 Add "reply - reply to all - ..." and other links at the bottom of the
   message, see http://www.flickr.com/photos/davidascher/3095078638/
 #8 Add an option to display messages as HTML and not text only
   c) Adapt "- hide quoted text -" code to take into account <blockquote>
   elements
-  d) !!! Javascript issue, sync with javascript.allow.mailnews global pref and
-  find out how to disable JS for an iframe
-  e) Set plain/text bodies as black
+  d) Strip JS from HTML emails.
   f) Consistent margins for regular bodies and html bodies
+  g) Images as attachments do not work.
+  h) Find out how that works with getMessageBody in the catch block
 #37 KB shortcuts for common operations -> use a global <key /> and
   if ($("#multimessage").is(":visible"))
     $("#multimessage").contentDocument.unfoldAll();
 #40 Focusing a given message (scroll computations) doesn't work very well
-
 #39 The "Mark all read" command is buggy. Reimplement my own that also marks
 messages other than in the current folder as read. MINOR
-#38 Add small icon if email has attachment
-#32 Detect hotmail-style quoted parts (optional) --> with mime + html ?
+#32 Detect hotmail-style quoted parts (optional) --> the <hr>s have a special id
+
 #7 Make everything asynchronous. Start filling in messages for the first
   query, then launch the extended query that fetches more messages, and then
   asynchronously insert those in the right place as they arrive (i.e.
@@ -39,6 +36,8 @@ messages other than in the current folder as read. MINOR
 
 BUGS DUE TO THUNDERBIRD
 =======================
+#12 Extension does not work with newsgroups (see bug 478167) and possibly other
+types of accounts
 #10 When clicking on the sender to display a given message, if the message is
   sent by me, and the "Sent" Smart Folder is not collapsed, cannot jump to the
   right Sent folder. WONTFIX (bug in Thunderbird, fixed in 3.1 series, should be

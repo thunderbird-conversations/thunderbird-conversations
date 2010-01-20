@@ -35,12 +35,18 @@
 }
 
 .snippetmsg {
-  display: none !important; /* There's inline styles on these... */
+  /* display: none !important; /* There's inline styles on these... */
+  padding: .5em;
 }
 
 .fullmsg {
-  display: block !important;
+  /* display: block !important; */
   padding: .5em;
+}
+
+.htmlmsg {
+  border-width: 0;
+  width: 100%;
 }
 
 .messagearrow {
