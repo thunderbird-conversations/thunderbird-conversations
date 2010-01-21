@@ -1,5 +1,5 @@
 # vim:ft=none 
-# let nextbug = 42 in
+# let nextbug = 43 in
 
 #9 Add an option to mark a thread as read when it is displayed
   b) Improve it by only marking a message as read when it is scrolled into view
@@ -10,7 +10,6 @@
   c) Adapt "- hide quoted text -" code to take into account <blockquote>
   elements
   d) Strip JS from HTML emails.
-  f) Consistent margins for regular bodies and html bodies
   g) Images as attachments do not work.
   h) Find out how that works with getMessageBody in the catch block
 #37 KB shortcuts for common operations -> use a global <key /> and

@@ -49,7 +49,7 @@
   color: black;
 }
 
-.htmlmsg {
+.htmlmsg > iframe {
   border-width: 0;
   width: 100%;
   margin-left: 0;

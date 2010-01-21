@@ -148,11 +148,30 @@ document.addEventListener("load", function () {
           }
         }
       }
-      /* completedBeforeFocus will be --'d every time a message's snippet/body
-       * is filled, with the message's index being < needsFocus. When it's 0, we
-       * scroll into view (and the layout above the wanted message won't be
-       * disrupted) */
-      let completedBeforeFocus = needsFocus+1;
+      let msgHdrs = this._msgHdrs;
+      let msgNodes = this._msgNodes;
+      function scrollAfterReflow () {
+        if (needsFocus > 0) {
+          let tKey = msgHdrs[needsFocus].messageKey + msgHdrs[needsFocus].folder.URI;
+          /* Because of the header that hides the beginning of the message,
+           * scroll a bit more */
+          dump("Scrolling to the message from "+msgHdrs[needsFocus].mime2DecodedAuthor+"\n");
+          let h = document.getElementById("multimessage")
+            .contentDocument.getElementById("headingwrappertable")
+            .getBoundingClientRect().height;
+          document.getElementById("multimessage").contentWindow.scrollTo(0, msgNodes[tKey].offsetTop - 5);
+        }
+      }
+
+      /* Small utilities */
+      let nMessagesDone = numMessages;
+      function messageDone() {
+        nMessagesDone--;
+        if (nMessagesDone == 0) {
+          dump("All messages are properly loaded, scrolling...\n");
+          scrollAfterReflow();
+        }
+      }
 
       for (let i = 0; i < numMessages; ++i) {
         count += 1;
@@ -186,7 +205,9 @@ document.addEventListener("load", function () {
                               </div>
                               <div class="snippet snippetmsg"></div>
                               <div class="snippet fullmsg" style="display: none"></div>
-                              <iframe class="snippet htmlmsg" style="display: none"></iframe>
+                              <div class="snippet htmlmsg" style="display: none">
+                                <iframe></iframe>
+                              </div>
                             </div>
                           </div>;
 
@@ -326,25 +347,34 @@ document.addEventListener("load", function () {
           /* Remove the unused node, as it makes UI JS simpler in
            * multimessageview.xhtml */
           htmlMsgNode.parentNode.removeChild(htmlMsgNode);
+
+          messageDone();
         };
         let fillSnippetAndHTML = function (snippet, html, author) {
           if (author)
             senderNode.textContent = author;
           snippetMsgNode.textContent = snippet;
 
-          let iframe = msgNode.getElementsByClassName("htmlmsg")[0];
+          let iframe = msgNode.getElementsByClassName("htmlmsg")[0].firstElementChild;
           /* This is supposed to sanitize
           let parser = Cc["@mozilla.org/xmlextras/domparser;1"].createInstance(Ci.nsIDOMParser);
           let doc = parser.parseFromString(html, "text/html");
           iframe.contentDocument = doc;
           */
+          let fixMargins = function () {
+            iframe.contentDocument.body.style.padding = "0";
+            iframe.contentDocument.body.style.margin = "0";
+          };
           let f1 = function () {
             let h = iframe.contentDocument.body.scrollHeight;
             dump("f1() "+h+"\n");
-            if (h > 0)
+            if (h > 0) {
               iframe.style.height = h+"px";
-            else
+              fixMargins();
+              messageDone();
+            } else {
               setTimeout(f1, 200);
+            }
           };
           let f2 = function () {
             let h = iframe.contentDocument.body.scrollHeight;
@@ -352,53 +382,36 @@ document.addEventListener("load", function () {
             if (h > 0) {
               iframe.style.height = h+"px";
               arrowNode.removeEventListener("click", f2, true);
+              fixMargins();
             } else {
               dump("Height is 0, deferring...\n");
               setTimeout(f2, 200);
             }
           };
-          if (iframe.style.display != "none")
+          if (htmlMsgNode.style.display != "none") {
             iframe.contentWindow.addEventListener("load", f1, true);
-          else
+          } else {
             arrowNode.addEventListener("click", f2, true);
+            messageDone();
+          }
+          /* percents (%) are treated as markers for special HTML entities... */
+          html = html.replace(/\%/g, "%25");
+          /* Newlines are not recognized as we're inside an attribute's value */
+          html = html.replace(/\r?\n|\r/g, "%0A");
           /* The charset is the way internal JS strings are represented which is
            * UTF8. (Check this actually works, otherwise might be the aMsg.charset) */
-          iframe.setAttribute("src", "data:text/html;charset=utf-8,"+html.replace(/\r?\n|\r/g, " "));
+          iframe.setAttribute("src", "data:text/html;charset=utf-8,"+html);
 
           /* Attach the required event handlers so that links open in the
            * external browser */
           for each (let [, a] in Iterator(iframe.contentDocument.getElementsByTagName("a"))) {
-            a.addEventListener("click", function (event) {
-                return specialTabs.siteClickHandler(event, /^mailto:/);
-              }, true);
+            a.addEventListener("click", function (event) specialTabs.siteClickHandler(event, /^mailto:/), true);
           }
 
           /* Remove the unused node, as it makes UI JS simpler in
            * multimessageview.xhtml */
           fullMsgNode.parentNode.removeChild(fullMsgNode);
         };
-        let msgHdrs = this._msgHdrs;
-        let msgNodes = this._msgNodes;
-        /* If message n is to be scrolled into view, we need to wait for the n-1
-         * messages to be filled, and then for the last one (not necessarily the
-         * message we're going to scroll into view because it's async) we
-         * actually scroll. */
-        let scrollIfNeeded = i <= needsFocus ? function () {
-          dump(completedBeforeFocus+"/"+needsFocus+"\n");
-          completedBeforeFocus--;
-          if (completedBeforeFocus == 0) {
-            let tKey = msgHdrs[needsFocus].messageKey + msgHdrs[needsFocus].folder.URI;
-            msgNodes[tKey].scrollIntoView(true);
-            dump(msgNodes[tKey].scrollTop+"\n");
-            /* Because of the header that hides the beginning of the message,
-             * scroll a bit more */
-            document.getElementById("multimessage").contentWindow.scrollBy(0, - 5 -
-              document.getElementById("multimessage")
-              .contentDocument.getElementById("headingwrappertable")
-              .getBoundingClientRect().height);
-          }
-        } : function () {};
-
         try {
           /* throw { result: Components.results.NS_ERROR_FAILURE }; */
           MsgHdrToMimeMessage(msgHdr, null, function(aMsgHdr, aMimeMsg) {
@@ -411,11 +424,11 @@ document.addEventListener("load", function () {
               msgNode.getElementsByClassName("attachment")[0].style.display = "";
 
             let [hasHtml, html] = MimeMessageToHTML(aMimeMsg);
-            if (hasHtml && g_prefs["html"])
+            if (hasHtml && g_prefs["html"]) {
               fillSnippetAndHTML(snippet, html, meta.author);
-            else
+            } else {
               fillSnippetAndMsg(snippet, body, meta.author);
-            scrollIfNeeded();
+            }
           });
         } catch (e if e.result == Components.results.NS_ERROR_FAILURE) {
           try {
@@ -425,7 +438,6 @@ document.addEventListener("load", function () {
             let body = getMessageBody(msgHdr, true);
             let snippet = body.substring(0, SNIPPET_LENGTH-3)+"...";
             fillSnippetAndMsg(snippet, body);
-            scrollIfNeeded();
             dump("Got an \"offline message\"\n");
           } catch (e) {
             Application.console.log("Error fetching the message: "+e);
@@ -474,6 +486,7 @@ document.addEventListener("load", function () {
 
       this.computeSize(htmlpane);
       htmlpane.contentDocument.defaultView.adjustHeadingSize();
+      dump("--- End ThreadSummary::summarize\n");
     }
   };
 
