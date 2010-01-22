@@ -11,7 +11,8 @@ available through the context menu.
 fold all, mark all read, open in new tab. There buttons only appear if viewing a
 conversation, not a summary of messages scattered accross different threads.
 - Added an option that allows you to focus the first unread message when viewing
-a conversation (if all messages are read, focuses to the last message).
+a conversation (if all messages are read, focuses to the last message). This
+should be working perfectly now.
 - Fixed a bug when the add-on failed to retrieve certain messages and displays
 "..." instead of the message's text.
 - Fix some performance issues (optimize array accesses, remove jQuery animations

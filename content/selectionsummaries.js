@@ -365,7 +365,7 @@ document.addEventListener("load", function () {
             iframe.contentDocument.body.style.padding = "0";
             iframe.contentDocument.body.style.margin = "0";
           };
-          let f1 = function () {
+          /*let f1 = function () {
             let h = iframe.contentDocument.body.scrollHeight;
             dump("f1() "+h+"\n");
             if (h > 0) {
@@ -373,6 +373,7 @@ document.addEventListener("load", function () {
               fixMargins();
               messageDone();
             } else {
+              dump("!!! Height is 0, deferring...\n");
               setTimeout(f1, 200);
             }
           };
@@ -384,14 +385,22 @@ document.addEventListener("load", function () {
               arrowNode.removeEventListener("click", f2, true);
               fixMargins();
             } else {
-              dump("Height is 0, deferring...\n");
+              dump("!!! Height is 0, deferring...\n");
               setTimeout(f2, 200);
             }
-          };
+          };*/
           if (htmlMsgNode.style.display != "none") {
-            iframe.contentWindow.addEventListener("load", f1, true);
+            iframe.contentWindow.addEventListener("load", function () {
+                iframe.style.height = iframe.contentDocument.body.scrollHeight+"px";
+                fixMargins();
+                messageDone();
+              }, true);
           } else {
-            arrowNode.addEventListener("click", f2, true);
+            arrowNode.addEventListener("click", function () {
+                iframe.style.height = iframe.contentDocument.body.scrollHeight+"px";
+                arrowNode.removeEventListener("click", f2, true);
+                fixMargins();
+              }, true);
             messageDone();
           }
           /* percents (%) are treated as markers for special HTML entities... */
@@ -486,7 +495,7 @@ document.addEventListener("load", function () {
 
       this.computeSize(htmlpane);
       htmlpane.contentDocument.defaultView.adjustHeadingSize();
-      dump("--- End ThreadSummary::summarize\n");
+      dump("--- End ThreadSummary::summarize\n\n");
     }
   };
 

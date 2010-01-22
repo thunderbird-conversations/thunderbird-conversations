@@ -8,18 +8,17 @@
   message, see http://www.flickr.com/photos/davidascher/3095078638/
 #8 Add an option to display messages as HTML and not text only
   c) Adapt "- hide quoted text -" code to take into account <blockquote>
-  elements
+  elements and <hr id="stopSpelling">s from Hotmail messages (maybe add more
+  strategies to detect folded parts)
   d) Strip JS from HTML emails.
   g) Images as attachments do not work.
   h) Find out how that works with getMessageBody in the catch block
+#39 The "Mark all read" command is buggy. Reimplement my own that also marks
+messages other than in the current folder as read. MINOR
+
 #37 KB shortcuts for common operations -> use a global <key /> and
   if ($("#multimessage").is(":visible"))
     $("#multimessage").contentDocument.unfoldAll();
-#40 Focusing a given message (scroll computations) doesn't work very well
-#39 The "Mark all read" command is buggy. Reimplement my own that also marks
-messages other than in the current folder as read. MINOR
-#32 Detect hotmail-style quoted parts (optional) --> the <hr>s have a special id
-
 #7 Make everything asynchronous. Start filling in messages for the first
   query, then launch the extended query that fetches more messages, and then
   asynchronously insert those in the right place as they arrive (i.e.
@@ -39,9 +38,11 @@ BUGS DUE TO THUNDERBIRD
 types of accounts
 #10 When clicking on the sender to display a given message, if the message is
   sent by me, and the "Sent" Smart Folder is not collapsed, cannot jump to the
-  right Sent folder. WONTFIX (bug in Thunderbird, fixed in 3.1 series, should be
-  fixed in the next 3.0 series see
+  right Sent folder. WONTFIX (bug in Thunderbird, fixed in 3.1 and 3.0.1, see
   https://bugzilla.mozilla.org/show_bug.cgi?id=536042)
 #?? Dates are incorrectly translated (some are, some are not) see bug 537401
+#?? Nasty flickering when scrolling messages with HTML display on. See
+  https://bugzilla.mozilla.org/show_bug.cgi?id=540911
 #21 Some conversations are erroneously recognized as multiple conversations
   (esp. when you change addresses when replying).
+  https://bugzilla.mozilla.org/show_bug.cgi?id=538750
