@@ -54,7 +54,7 @@
   width: 100%;
   margin-left: 0;
   padding: 0;
-  overflow: hidden;
+  /*overflow: hidden;*/
 }
 
 /* Inside the messages' bodies */

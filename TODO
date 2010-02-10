@@ -1,21 +1,30 @@
 # vim:ft=none 
-# let nextbug = 43 in
+# let nextbug = 47 in
 
+#46 Still has issues regarding the height of iframes
 #9 Add an option to mark a thread as read when it is displayed
   b) Improve it by only marking a message as read when it is scrolled into view
-#29 Encoding issues (Chinese not ok, Czech not ok either)
 #30 Add "reply - reply to all - ..." and other links at the bottom of the
   message, see http://www.flickr.com/photos/davidascher/3095078638/
 #8 Add an option to display messages as HTML and not text only
   c) Adapt "- hide quoted text -" code to take into account <blockquote>
   elements and <hr id="stopSpelling">s from Hotmail messages (maybe add more
-  strategies to detect folded parts)
+  strategies to detect folded parts... newer hotmails use #text BR #text BR
+  #text BR)
   d) Strip JS from HTML emails.
-  g) Images as attachments do not work.
+  g) Images as attachments do not work (bad mime path)
   h) Find out how that works with getMessageBody in the catch block
 #39 The "Mark all read" command is buggy. Reimplement my own that also marks
 messages other than in the current folder as read. MINOR
+#29 Encoding issues (Chinese not ok, Czech not ok either)
+#44 Add an option to reverse the order of messages (beware, this can break
+things such as auto scrolling...)
+#45 Some conversations involving multiples identities are erroneously recognized
+as multiple conversations (although in the message list it's detected as one
+thread only). We should be able to detect through the message list whether we're
+dealing with a single thread or not and do a full conversation summary.
 
+#45 Sometimes Thunderbird has not indexed a message... can we force indexing ?
 #37 KB shortcuts for common operations -> use a global <key /> and
   if ($("#multimessage").is(":visible"))
     $("#multimessage").contentDocument.unfoldAll();

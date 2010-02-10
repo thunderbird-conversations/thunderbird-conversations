@@ -1,5 +1,7 @@
 var EXPORTED_SYMBOLS = ['getMessageBody', 'selectRightMessage',
-  'removeDuplicates', 'MimeMessageToHTML', 'MimeMessageHasAttachment']
+  'removeDuplicates', 'MimeMessageToHTML', 'MimeMessageHasAttachment',
+  'convertHotmailQuotingToBlockquote1', 'convertHotmailQuotingToBlockquote2',
+  'convertOutlookQuotingToBlockquote']
 
 const Ci = Components.interfaces;
 const Cc = Components.classes;
@@ -127,4 +129,37 @@ function MimeMessageHasAttachment(aMsg) {
   } catch (e if e.found) {
     return true;
   }
+}
+
+function insertAfter(newElement, referenceElt) {
+  if (referenceElt.nextSibling)
+    referenceElt.parentNode.insertBefore(newElement, referenceElt.nextSibling);
+  else
+    referenceElt.parentNode.appendChild(newElement);
+}
+
+function makeBlockquote(aDoc, marker) {
+  let blockquote = aDoc.createElement("blockquote");
+  blockquote.setAttribute("type", "cite");
+  insertAfter(blockquote, marker);
+  while (blockquote.nextSibling)
+    blockquote.appendChild(blockquote.nextSibling);
+  marker.parentNode.removeChild(marker);
+}
+
+function convertHotmailQuotingToBlockquote1(aDoc) {
+  /* Ok, no one serious uses a <hr> in their emails except for quoting...
+   * anyway, TODO check that the MUA header contains hotmail */
+  let marker =  aDoc.getElementsByTagName("hr")[0];
+  if (marker)
+    makeBlockquote(aDoc, marker);
+}
+
+function convertOutlookQuotingToBlockquote(aDoc) {
+  let marker = aDoc.getElementsByClassName("OutlookMessageHeader")[0];
+  if (marker)
+    makeBlockquote(aDoc, marker);
+}
+
+function convertHotmailQuotingToBlockquote2(aDoc) {
 }

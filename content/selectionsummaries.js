@@ -81,15 +81,8 @@ document.addEventListener("load", function () {
   /* We override the usual ThreadSummary class to provide our own. Our own
    * displays full messages, plus other extra features */
   ThreadSummary = function (messages) {
-    /* Structure of the parameter:
-     * messages =
-     *  [
-     *    [GlodaMessage1, GlodaMessage2, ... (all share the same MessageId Header],
-     *    [Same for 2nd message in thread]
-     *  ]
-     * */
     this._msgHdrs = messages;
-  }
+  };
 
   ThreadSummary.prototype = {
     __proto__: MultiMessageSummary.prototype,
@@ -150,8 +143,7 @@ document.addEventListener("load", function () {
       }
       let msgHdrs = this._msgHdrs;
       let msgNodes = this._msgNodes;
-      function scrollAfterReflow () {
-        if (needsFocus > 0) {
+      let scrollAfterReflow = needsFocus > 0 ? function () {
           let tKey = msgHdrs[needsFocus].messageKey + msgHdrs[needsFocus].folder.URI;
           /* Because of the header that hides the beginning of the message,
            * scroll a bit more */
@@ -160,8 +152,7 @@ document.addEventListener("load", function () {
             .contentDocument.getElementById("headingwrappertable")
             .getBoundingClientRect().height;
           document.getElementById("multimessage").contentWindow.scrollTo(0, msgNodes[tKey].offsetTop - 5);
-        }
-      }
+      } : function () {};
 
       /* Small utilities */
       let nMessagesDone = numMessages;
@@ -365,41 +356,51 @@ document.addEventListener("load", function () {
             iframe.contentDocument.body.style.padding = "0";
             iframe.contentDocument.body.style.margin = "0";
           };
-          /*let f1 = function () {
-            let h = iframe.contentDocument.body.scrollHeight;
-            dump("f1() "+h+"\n");
-            if (h > 0) {
-              iframe.style.height = h+"px";
-              fixMargins();
-              messageDone();
-            } else {
-              dump("!!! Height is 0, deferring...\n");
-              setTimeout(f1, 200);
-            }
+          let extraFormatting = function (aDoc) {
+            convertOutlookQuotingToBlockquote(aDoc);
+            convertHotmailQuotingToBlockquote1(aDoc);
+            convertHotmailQuotingToBlockquote2(aDoc);
+            let walk = function (elt) {
+              for (let i = elt.childNodes.length - 1; i >= 0; --i) {
+                let c = elt.childNodes[i];
+                /* GMail uses class="gmail_quote", other MUA use type="cite"...
+                 * so just search for a regular blockquote */
+                if (c.tagName && c.tagName.toLowerCase() == "blockquote") {
+                  let div = aDoc.createElement("div");
+                  div.setAttribute("class", "link showhidequote");
+                  div.setAttribute("onclick", "toggleQuote(event);");
+                  div.setAttribute("style", "color: #512a45; cursor: pointer;");
+                  div.appendChild(document.createTextNode("- "+
+                    stringBundle.getString("showquotedtext")+" -"));
+                  elt.insertBefore(div, c);
+                  c.style.display = "none";
+                } else {
+                  walk(c);
+                }
+              }
+            };
+            walk(aDoc);
           };
-          let f2 = function () {
-            let h = iframe.contentDocument.body.scrollHeight;
-            dump("f2() "+h+"\n");
-            if (h > 0) {
-              iframe.style.height = h+"px";
-              arrowNode.removeEventListener("click", f2, true);
+          /* Register some useful stuff for us inside the iframe */
+          /* FIXME doesn't work so well, just refactor the utility functions in
+           * a separate JS and load it in the htmlpane and also each one of the
+           * iframes. Also add extra event listeners that will resize the iframe
+           * when needed (just like below) every time we fold/unfold. */
+          iframe.contentWindow["toggleQuote"] = htmlpane.contentWindow["toggleQuote"];
+
+          iframe.contentWindow.addEventListener("load", function () {
               fixMargins();
-            } else {
-              dump("!!! Height is 0, deferring...\n");
-              setTimeout(f2, 200);
-            }
-          };*/
+              extraFormatting(iframe.contentDocument);
+            }, true);
           if (htmlMsgNode.style.display != "none") {
             iframe.contentWindow.addEventListener("load", function () {
                 iframe.style.height = iframe.contentDocument.body.scrollHeight+"px";
-                fixMargins();
                 messageDone();
               }, true);
           } else {
-            arrowNode.addEventListener("click", function () {
+            arrowNode.addEventListener("click", function f_temp () {
+                arrowNode.removeEventListener("click", f_temp, true);
                 iframe.style.height = iframe.contentDocument.body.scrollHeight+"px";
-                arrowNode.removeEventListener("click", f2, true);
-                fixMargins();
               }, true);
             messageDone();
           }
