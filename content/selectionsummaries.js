@@ -193,11 +193,12 @@ document.addEventListener("load", function () {
                                 <div class="date">{date}</div>
                                 <div class="tags"></div>
                                 <div class="attachment" style="display: none"><img src="chrome://messenger/skin/icons/attachment-col.png" /></div>
+                                <div class="toggle-font link"><img src="chrome://gconversation/skin/font.png" /></div>
                               </div>
                               <div class="snippet snippetmsg"></div>
                               <div class="snippet fullmsg" style="display: none"></div>
                               <div class="snippet htmlmsg" style="display: none">
-                                <iframe></iframe>
+                                <iframe style="height: 20px"></iframe>
                               </div>
                             </div>
                           </div>;
@@ -221,14 +222,17 @@ document.addEventListener("load", function () {
           senderNode.style.color = id2color[senderNode.textContent] = newColor();
 
         let fullMsgNode = msgNode.getElementsByClassName("fullmsg")[0];
+        if (!fullMsgNode)
+          dump("WTF???\n");
         let htmlMsgNode = msgNode.getElementsByClassName("htmlmsg")[0];
         let snippetMsgNode = msgNode.getElementsByClassName("snippetmsg")[0];
         let arrowNode = msgNode.getElementsByClassName("msgarrow")[0];
+        let toggleFontNode = msgNode.getElementsByClassName("toggle-font")[0];
 
         /* Style according to the preferences. Preferences have an observer, see
          * above for details. */
         if (g_prefs["monospaced"])
-          fullMsgNode.style.fontFamily = "-moz-fixed";
+          _mm_addClass(fullMsgNode, "monospaced-message");
         if ((g_prefs["fold_rule"] == "unread_and_last" && (!msgHdr.isRead || i == (numMessages - 1)))
              || g_prefs["fold_rule"] == "all") {
           snippetMsgNode.style.display = "none";
@@ -237,6 +241,10 @@ document.addEventListener("load", function () {
           arrowNode.setAttribute("src", "chrome://gconversation/skin/up.png");
         } 
         arrowNode.addEventListener("click", function (event) htmlpane.contentWindow.toggleMessage(event), true);
+        
+        /* Add an event listener for the button that toggles the style of the
+         * font */
+        toggleFontNode.addEventListener("click", function (event) _mm_toggleClass(fullMsgNode, "monospaced-message"), true);
 
         let key = msgHdr.messageKey + msgHdr.folder.URI;
         /* Fill the current message's node based on given parameters.
@@ -299,6 +307,10 @@ document.addEventListener("load", function () {
           /* This just flushes the buffer when changing sections */
           let flushBufRegular = function () {
             gbuf[gbuf_j++] = buf.join("<br />");
+            /*for each (x in buf) {
+              dump(x+"\n\n");
+              fullMsgNode.innerHTML += x;
+            }*/
             buf = [];
             buf_j = 0;
           };
@@ -325,7 +337,12 @@ document.addEventListener("load", function () {
             flushBufQuote();
           else
             flushBufRegular();
-          fullMsgNode.innerHTML += gbuf.join("");
+          try {
+            fullMsgNode.innerHTML += gbuf.join("");
+          } catch (e) {
+            fullMsgNode.innerHTML = "An error has occured, we are unable to display this message.<br />"+
+              "Please report this as a bug";
+          }
 
           /* Attach the required event handlers so that links open in the
            * external browser */
@@ -355,11 +372,16 @@ document.addEventListener("load", function () {
           let fixMargins = function () {
             iframe.contentDocument.body.style.padding = "0";
             iframe.contentDocument.body.style.margin = "0";
+            iframe.contentDocument.body.style.fontSize = "small";
           };
           let extraFormatting = function (aDoc) {
+            /* Launch various heuristics to convert most common quoting styles
+             * to real blockquotes. */
             convertOutlookQuotingToBlockquote(aDoc);
             convertHotmailQuotingToBlockquote1(aDoc);
             convertHotmailQuotingToBlockquote2(aDoc);
+            /* This function adds a show/hide quoted text link to every topmost
+             * blockquote. Nested blockquotes are not taken into account. */
             let walk = function (elt) {
               for (let i = elt.childNodes.length - 1; i >= 0; --i) {
                 let c = elt.childNodes[i];
@@ -382,24 +404,22 @@ document.addEventListener("load", function () {
             walk(aDoc);
           };
           /* Register some useful stuff for us inside the iframe */
-          /* FIXME doesn't work so well, just refactor the utility functions in
-           * a separate JS and load it in the htmlpane and also each one of the
-           * iframes. Also add extra event listeners that will resize the iframe
-           * when needed (just like below) every time we fold/unfold. */
           iframe.contentWindow["toggleQuote"] = htmlpane.contentWindow["toggleQuote"];
 
-          iframe.contentWindow.addEventListener("load", function () {
-              fixMargins();
-              extraFormatting(iframe.contentDocument);
-            }, true);
           if (htmlMsgNode.style.display != "none") {
             iframe.contentWindow.addEventListener("load", function () {
+                /* Must be in this order */
+                fixMargins();
+                extraFormatting(iframe.contentDocument);
                 iframe.style.height = iframe.contentDocument.body.scrollHeight+"px";
                 messageDone();
               }, true);
           } else {
             arrowNode.addEventListener("click", function f_temp () {
                 arrowNode.removeEventListener("click", f_temp, true);
+                /* Same remark */
+                fixMargins();
+                extraFormatting(iframe.contentDocument);
                 iframe.style.height = iframe.contentDocument.body.scrollHeight+"px";
               }, true);
             messageDone();
@@ -436,6 +456,7 @@ document.addEventListener("load", function () {
             let [hasHtml, html] = MimeMessageToHTML(aMimeMsg);
             if (hasHtml && g_prefs["html"]) {
               fillSnippetAndHTML(snippet, html, meta.author);
+              toggleFontNode.style.display = "none";
             } else {
               fillSnippetAndMsg(snippet, body, meta.author);
             }
@@ -569,15 +590,23 @@ document.addEventListener("load", function () {
     if (aSelectedMessages.length == 0)
       return;
     try {
-      gSummary = new MultiMessageSummary(aSelectedMessages);
-      gSummary.init();
+      let threadKeys = [
+        gDBView.getThreadContainingIndex(i).getChildHdrAt(0).messageKey
+        for each ([, i] in Iterator(gFolderDisplay.selectedIndices))
+      ];
+      let isSameThread = threadKeys.every(function (x) x == threadKeys[0]);
+      if (isSameThread) {
+        summarizeThread(aSelectedMessages);
+      } else {
+        gSummary = new MultiMessageSummary(aSelectedMessages);
+        gSummary.init();
+        document.getElementById('multimessage').contentWindow.disableExtraButtons();
+      }
     } catch (e) {
       dump("Exception in summarizeMultipleSelection" + e + "\n");
       Components.utils.reportError(e);
       throw(e);
     }
-
-    document.getElementById('multimessage').contentWindow.disableExtraButtons();
   };
 
   /* Register event handlers through the global variable */

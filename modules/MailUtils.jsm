@@ -1,7 +1,7 @@
 var EXPORTED_SYMBOLS = ['getMessageBody', 'selectRightMessage',
   'removeDuplicates', 'MimeMessageToHTML', 'MimeMessageHasAttachment',
   'convertHotmailQuotingToBlockquote1', 'convertHotmailQuotingToBlockquote2',
-  'convertOutlookQuotingToBlockquote']
+  'convertOutlookQuotingToBlockquote', '_mm_toggleClass']
 
 const Ci = Components.interfaces;
 const Cc = Components.classes;
@@ -148,8 +148,6 @@ function makeBlockquote(aDoc, marker) {
 }
 
 function convertHotmailQuotingToBlockquote1(aDoc) {
-  /* Ok, no one serious uses a <hr> in their emails except for quoting...
-   * anyway, TODO check that the MUA header contains hotmail */
   let marker =  aDoc.getElementsByTagName("hr")[0];
   if (marker)
     makeBlockquote(aDoc, marker);
@@ -163,3 +161,17 @@ function convertOutlookQuotingToBlockquote(aDoc) {
 
 function convertHotmailQuotingToBlockquote2(aDoc) {
 }
+
+/* arg... */
+function _mm_toggleClass(node, classname) {
+  let classes = [];
+  if (node.hasAttribute('class'))
+    classes = node.getAttribute('class').split(' ');
+
+  if (classes.indexOf(classname) >= 0)
+    classes = classes.filter(function (x) x != classname);
+  else
+    classes.push(classname);
+  node.setAttribute('class', classes.join(' '));
+}
+

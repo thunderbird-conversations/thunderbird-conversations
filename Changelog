@@ -1,5 +1,14 @@
 --- v0.3 development series ---
+- Added folding support for HTML emails.
+- Fixes a bug where a thread would be incorrectly summarized as one
+conversation.
+- Added a small button that allows you to toggle between monospaced and regular
+font for viewing plain/text messages.
+- Fixed a bug that would render tabs incorrectly in plain/text messages with
+fixed-width fonts.
 
+GMail Conversation View 0.3alpha1
+---------------------------------
 - Rough HTML message support (slight improvements)
 - Added a small paperclip icon next to messages that have "real" attachments (a
 "false" attachment is an attachment you can display in the conversation view

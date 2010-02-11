@@ -13,9 +13,20 @@
 
 .attachment {
   display: inline;
+  vertical-align: middle;
+}
+
+.toggle-font {
+  display: inline;
+  vertical-align: middle;
 }
 
 /* General stuff */
+
+.monospaced-message {
+  font-family: -moz-fixed;
+  white-space: pre;
+}
 
 .message {
   position: relative;
