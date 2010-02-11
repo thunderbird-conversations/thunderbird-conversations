@@ -49,6 +49,13 @@
   width: 100%;
 }
 
-.messagearrow {
+.messagearrow, .toggle-font, .tags {
   display: none;
+}
+
+.htmlmsg > iframe {
+  border-width: 0;
+  width: 100%;
+  margin-left: 0;
+  padding: 0;
 }

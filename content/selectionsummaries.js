@@ -307,10 +307,6 @@ document.addEventListener("load", function () {
           /* This just flushes the buffer when changing sections */
           let flushBufRegular = function () {
             gbuf[gbuf_j++] = buf.join("<br />");
-            /*for each (x in buf) {
-              dump(x+"\n\n");
-              fullMsgNode.innerHTML += x;
-            }*/
             buf = [];
             buf_j = 0;
           };
@@ -337,6 +333,9 @@ document.addEventListener("load", function () {
             flushBufQuote();
           else
             flushBufRegular();
+
+          /* Sometimes fails with weird Unicode characters, find a way to strip
+           * them off. */
           try {
             fullMsgNode.innerHTML += gbuf.join("");
           } catch (e) {
@@ -364,11 +363,12 @@ document.addEventListener("load", function () {
           snippetMsgNode.textContent = snippet;
 
           let iframe = msgNode.getElementsByClassName("htmlmsg")[0].firstElementChild;
-          /* This is supposed to sanitize
-          let parser = Cc["@mozilla.org/xmlextras/domparser;1"].createInstance(Ci.nsIDOMParser);
+
+          /* Sanitize HTML */
+          /*let parser = Cc["@mozilla.org/xmlextras/domparser;1"].createInstance(Ci.nsIDOMParser);
           let doc = parser.parseFromString(html, "text/html");
-          iframe.contentDocument = doc;
-          */
+          dump(doc.innerHTML);*/
+
           let fixMargins = function () {
             iframe.contentDocument.body.style.padding = "0";
             iframe.contentDocument.body.style.margin = "0";

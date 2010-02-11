@@ -6,6 +6,7 @@ conversation.
 font for viewing plain/text messages.
 - Fixed a bug that would render tabs incorrectly in plain/text messages with
 fixed-width fonts.
+- Improve the look of printed messages
 
 GMail Conversation View 0.3alpha1
 ---------------------------------
