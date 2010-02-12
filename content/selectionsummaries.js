@@ -39,6 +39,7 @@ document.addEventListener("load", function () {
   const txttohtmlconv = Cc["@mozilla.org/txttohtmlconv;1"].createInstance(Ci.mozITXTToHTMLConv);
   const stringBundle = document.getElementById("gconv-string-bundle");
 
+
   /* Preferences are loaded once and then observed. For a new pref, add an entry
    * here + a case in the switch below. */
   let g_prefs = {};
@@ -197,8 +198,8 @@ document.addEventListener("load", function () {
                               </div>
                               <div class="snippet snippetmsg"></div>
                               <div class="snippet fullmsg" style="display: none"></div>
-                              <div class="snippet htmlmsg" style="display: none">
-                                <iframe style="height: 20px"></iframe>
+                              <div xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" class="snippet htmlmsg" style="display: none">
+                                <xul:iframe style="height: 20px" type="content"></xul:iframe>
                               </div>
                             </div>
                           </div>;
@@ -363,84 +364,94 @@ document.addEventListener("load", function () {
           snippetMsgNode.textContent = snippet;
 
           let iframe = msgNode.getElementsByClassName("htmlmsg")[0].firstElementChild;
+          iframe.addEventListener("load", function f_temp2(event) {
+              iframe.removeEventListener("load", f_temp2, true);
 
-          /* Sanitize HTML */
-          /*let parser = Cc["@mozilla.org/xmlextras/domparser;1"].createInstance(Ci.nsIDOMParser);
-          let doc = parser.parseFromString(html, "text/html");
-          dump(doc.innerHTML);*/
+              iframe.addEventListener("load", function f_temp(event) {
+                  iframe.removeEventListener("load", f_temp, true);
 
-          let fixMargins = function () {
-            iframe.contentDocument.body.style.padding = "0";
-            iframe.contentDocument.body.style.margin = "0";
-            iframe.contentDocument.body.style.fontSize = "small";
-          };
-          let extraFormatting = function (aDoc) {
-            /* Launch various heuristics to convert most common quoting styles
-             * to real blockquotes. */
-            convertOutlookQuotingToBlockquote(aDoc);
-            convertHotmailQuotingToBlockquote1(aDoc);
-            convertHotmailQuotingToBlockquote2(aDoc);
-            /* This function adds a show/hide quoted text link to every topmost
-             * blockquote. Nested blockquotes are not taken into account. */
-            let walk = function (elt) {
-              for (let i = elt.childNodes.length - 1; i >= 0; --i) {
-                let c = elt.childNodes[i];
-                /* GMail uses class="gmail_quote", other MUA use type="cite"...
-                 * so just search for a regular blockquote */
-                if (c.tagName && c.tagName.toLowerCase() == "blockquote") {
-                  let div = aDoc.createElement("div");
-                  div.setAttribute("class", "link showhidequote");
-                  div.setAttribute("onclick", "toggleQuote(event);");
-                  div.setAttribute("style", "color: #512a45; cursor: pointer;");
-                  div.appendChild(document.createTextNode("- "+
-                    stringBundle.getString("showquotedtext")+" -"));
-                  elt.insertBefore(div, c);
-                  c.style.display = "none";
-                } else {
-                  walk(c);
-                }
-              }
-            };
-            walk(aDoc);
-          };
-          /* Register some useful stuff for us inside the iframe */
-          iframe.contentWindow["toggleQuote"] = htmlpane.contentWindow["toggleQuote"];
+                  let fixMargins = function () {
+                    iframe.contentDocument.body.style.padding = "0";
+                    iframe.contentDocument.body.style.margin = "0";
+                    iframe.contentDocument.body.style.fontSize = "small";
+                  };
+                  let extraFormatting = function (aDoc) {
+                    /* Launch various heuristics to convert most common quoting styles
+                     * to real blockquotes. */
+                    convertOutlookQuotingToBlockquote(aDoc);
+                    convertHotmailQuotingToBlockquote1(aDoc);
+                    convertHotmailQuotingToBlockquote2(aDoc);
+                    /* This function adds a show/hide quoted text link to every topmost
+                     * blockquote. Nested blockquotes are not taken into account. */
+                    let walk = function (elt) {
+                      for (let i = elt.childNodes.length - 1; i >= 0; --i) {
+                        let c = elt.childNodes[i];
+                        /* GMail uses class="gmail_quote", other MUA use type="cite"...
+                         * so just search for a regular blockquote */
+                        if (c.tagName && c.tagName.toLowerCase() == "blockquote") {
+                          let div = aDoc.createElement("div");
+                          div.setAttribute("class", "link showhidequote");
+                          div.setAttribute("onclick", "toggleQuote(event);");
+                          div.setAttribute("style", "color: #512a45; cursor: pointer;");
+                          div.appendChild(document.createTextNode("- "+
+                            stringBundle.getString("showquotedtext")+" -"));
+                          elt.insertBefore(div, c);
+                          c.style.display = "none";
+                        } else {
+                          walk(c);
+                        }
+                      }
+                    };
+                    walk(aDoc);
+                  };
+                  /* Register some useful stuff for us inside the iframe */
+                  iframe.contentWindow["toggleQuote"] = htmlpane.contentWindow["toggleQuote"];
 
-          if (htmlMsgNode.style.display != "none") {
-            iframe.contentWindow.addEventListener("load", function () {
-                /* Must be in this order */
-                fixMargins();
-                extraFormatting(iframe.contentDocument);
-                iframe.style.height = iframe.contentDocument.body.scrollHeight+"px";
-                messageDone();
-              }, true);
-          } else {
-            arrowNode.addEventListener("click", function f_temp () {
-                arrowNode.removeEventListener("click", f_temp, true);
-                /* Same remark */
-                fixMargins();
-                extraFormatting(iframe.contentDocument);
-                iframe.style.height = iframe.contentDocument.body.scrollHeight+"px";
-              }, true);
-            messageDone();
-          }
-          /* percents (%) are treated as markers for special HTML entities... */
-          html = html.replace(/\%/g, "%25");
-          /* Newlines are not recognized as we're inside an attribute's value */
-          html = html.replace(/\r?\n|\r/g, "%0A");
-          /* The charset is the way internal JS strings are represented which is
-           * UTF8. (Check this actually works, otherwise might be the aMsg.charset) */
-          iframe.setAttribute("src", "data:text/html;charset=utf-8,"+html);
+                  if (htmlMsgNode.style.display != "none") {
+                    iframe.contentWindow.addEventListener("load", function () {
+                        /* Must be in this order */
+                        fixMargins();
+                        extraFormatting(iframe.contentDocument);
+                        iframe.style.height = iframe.contentDocument.body.scrollHeight+"px";
+                        messageDone();
+                      }, true);
+                  } else {
+                    arrowNode.addEventListener("click", function f_temp () {
+                        arrowNode.removeEventListener("click", f_temp, true);
+                        /* Same remark */
+                        fixMargins();
+                        extraFormatting(iframe.contentDocument);
+                        iframe.style.height = iframe.contentDocument.body.scrollHeight+"px";
+                      }, true);
+                    messageDone();
+                  }
 
-          /* Attach the required event handlers so that links open in the
-           * external browser */
-          for each (let [, a] in Iterator(iframe.contentDocument.getElementsByTagName("a"))) {
-            a.addEventListener("click", function (event) specialTabs.siteClickHandler(event, /^mailto:/), true);
-          }
+                  /* Attach the required event handlers so that links open in the
+                   * external browser */
+                  for each (let [, a] in Iterator(iframe.contentDocument.getElementsByTagName("a"))) {
+                    a.addEventListener("click", function (event) specialTabs.siteClickHandler(event, /^mailto:/), true);
+                  }
 
-          /* Remove the unused node, as it makes UI JS simpler in
-           * multimessageview.xhtml */
-          fullMsgNode.parentNode.removeChild(fullMsgNode);
+                  /* Remove the unused node, as it makes UI JS simpler in
+                   * multimessageview.xhtml */
+                  fullMsgNode.parentNode.removeChild(fullMsgNode);
+                }, true);
+
+              let uri = msgHdr.folder.getUriForMsg(msgHdr);
+              let neckoURL = {};
+              let msgService = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger).messageServiceFromURI(uri);
+              msgService.GetUrlForUri(uri, neckoURL, null);
+
+              iframe.docShell.appType = Components.interfaces.nsIDocShell.APP_TYPE_MAIL;
+              /* FIXME check on #maildev this is the best way to do that */
+              let cv = iframe.docShell.contentViewer;
+              cv.QueryInterface(Ci.nsIMarkupDocumentViewer);
+              cv.forceCharacterSet = "UTF-8";
+              iframe.webNavigation.loadURI(neckoURL.value.spec+"?header=quotebody", iframe.webNavigation.LOAD_FLAGS_IS_LINK, null, null, null);
+            }, true);
+          try {
+          iframe.setAttribute("src", "data:text/html;charset=UTF-8,<html></html>");
+          } catch (e) { dump(e); }
         };
         try {
           /* throw { result: Components.results.NS_ERROR_FAILURE }; */

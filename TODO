@@ -1,5 +1,5 @@
 # vim:ft=none 
-# let nextbug = 49 in
+# let nextbug = 52 in
 
 #9 Add an option to mark a thread as read when it is displayed
   b) Improve it by only marking a message as read when it is scrolled into view
@@ -8,16 +8,19 @@
 #8 Add an option to display messages as HTML and not text only
   c) Add more strategies to detect folded parts... newer hotmails use #text BR
   #text BR #text BR with #text = > Quoted text)
-  d) Strip JS from HTML emails.
-  g) Images as attachments do not work (bad mime path)
   h) Find out how that works with getMessageBody in the catch block
 #39 The "Mark all read" command is buggy. Reimplement my own that also marks
 messages other than in the current folder as read. MINOR
 #29 Encoding issues (Chinese not ok, Czech not ok either)
 #44 Add an option to reverse the order of messages (beware, this can break
 things such as auto scrolling...)
-#46 Need to resize the iframes when hiding / showing quoted text
-#48 Add an option to switch a message (plain/text one) to monospaced
+#46 Need to resize the iframes when hiding / showing quoted text --> xul:flex=?
+#49 Regressions on #8:
+ ii) - show quoted text - not working anymore in HTML emails
+#50 Refactor message display (esp. plain/text) --> use a Necko URL (and use the
+ HTML show/hide quoted text code)
+#51 For a blockquote, blockquote.getElementsByTagName("br").length >= 3 ? hide :
+don't hide.
 
 #47 0x0019 unicode char makes the innerHTML insertion phase fail
 #45 Sometimes Thunderbird has not indexed a message... can we force indexing ?
