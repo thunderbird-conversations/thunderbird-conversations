@@ -67,7 +67,6 @@
         <link rel="stylesheet" media="print" type="text/css"
               href="chrome://gconversation/locale/print.css"/>
         <title>&window.title;</title>
-        <script type="application/javascript" src="chrome://messenger/content/jquery.js" />
         <script type="application/javascript;version=1.8"><![CDATA[
             Components.utils.import("resource://app/modules/errUtils.js");
             const Ci = Components.interfaces;
@@ -124,12 +123,17 @@
             function toggleQuote(event) {
               let link = event.target;
               let div = link.nextSibling;
+              let cs = window.getComputedStyle(div, null);
               if (div.style.display == "none") {
                 link.textContent = "- "+hidequotedtext+" -";
                 div.style.display = "";
-                return div.getBoundingClientRect().height;
+                let h = div.getBoundingClientRect().height +
+                  parseInt(cs.marginTop) + parseInt(cs.marginBottom);
+                return h;
               } else {
                 let h = div.getBoundingClientRect().height;
+                h += parseInt(cs.marginTop);
+                h += parseInt(cs.marginBottom);
                 link.textContent = "- "+showquotedtext+" -";
                 div.style.display = "none";
                 return -h;
@@ -137,13 +141,19 @@
             }
 
             function toggleMessage(event) {
-              let $arrow = $(event.target);
-              if ($arrow.attr("src") == "chrome://gconversation/skin/up.png")
-                $arrow.attr("src", "chrome://gconversation/skin/down.png");
+              let arrow = event.target;
+              if (arrow.getAttribute("src") == "chrome://gconversation/skin/up.png")
+                arrow.setAttribute("src", "chrome://gconversation/skin/down.png");
               else
-                $arrow.attr("src", "chrome://gconversation/skin/up.png");
+                arrow.setAttribute("src", "chrome://gconversation/skin/up.png");
               //$(event.target.parentNode.previousSibling.querySelectorAll(".snippet")).toggle("slow");
-              $(event.target.parentNode.previousSibling.getElementsByClassName("snippet")).toggle();
+              let snippets = event.target.parentNode.previousSibling.getElementsByClassName("snippet");
+              for each (let [, snippet] in Iterator(snippets)) {
+                if (snippet.style.display == "none")
+                  snippet.style.display = "";
+                else
+                  snippet.style.display = "none";
+              }
             }
 
             function unfoldAll(event) {
