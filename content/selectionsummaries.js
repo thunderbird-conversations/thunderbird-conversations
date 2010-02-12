@@ -392,7 +392,11 @@ document.addEventListener("load", function () {
                         if (c.tagName && c.tagName.toLowerCase() == "blockquote") {
                           let div = aDoc.createElement("div");
                           div.setAttribute("class", "link showhidequote");
-                          div.setAttribute("onclick", "toggleQuote(event);");
+                          div.addEventListener("click", function(event) {
+                              let h = htmlpane.contentWindow.toggleQuote(event);
+                              iframe.style.height = (parseInt(iframe.style.height) + h)+"px";
+                            }, true);
+                          //div.setAttribute("onclick", "toggleQuote(event);");
                           div.setAttribute("style", "color: #512a45; cursor: pointer;");
                           div.appendChild(document.createTextNode("- "+
                             stringBundle.getString("showquotedtext")+" -"));
@@ -406,7 +410,7 @@ document.addEventListener("load", function () {
                     walk(aDoc);
                   };
                   /* Register some useful stuff for us inside the iframe */
-                  iframe.contentWindow["toggleQuote"] = htmlpane.contentWindow["toggleQuote"];
+                  //iframe.contentWindow["toggleQuote"] = htmlpane.contentWindow["toggleQuote"];
 
                   if (htmlMsgNode.style.display != "none") {
                     iframe.contentWindow.addEventListener("load", function () {
@@ -457,9 +461,7 @@ document.addEventListener("load", function () {
               iframe.docShell.appType = Components.interfaces.nsIDocShell.APP_TYPE_MAIL;
               iframe.webNavigation.loadURI(neckoURL.value.spec+"?header=quotebody", iframe.webNavigation.LOAD_FLAGS_IS_LINK, null, null, null);
             }, true);
-          try {
-          iframe.setAttribute("src", "data:text/html;charset=UTF-8,<html></html>");
-          } catch (e) { dump(e); }
+          iframe.setAttribute("src", "about:blank");
         };
         try {
           /* throw { result: Components.results.NS_ERROR_FAILURE }; */

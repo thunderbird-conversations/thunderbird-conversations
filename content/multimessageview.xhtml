@@ -123,13 +123,17 @@
             let hidequotedtext = stringBundle.getString("hidequotedtext");
             function toggleQuote(event) {
               let link = event.target;
-              let $div = $(link.nextSibling);
-              if ($div.is(":visible")) {
-                link.textContent = "- "+showquotedtext+" -";
-              } else {
+              let div = link.nextSibling;
+              if (div.style.display == "none") {
                 link.textContent = "- "+hidequotedtext+" -";
+                div.style.display = "";
+                return div.getBoundingClientRect().height;
+              } else {
+                let h = div.getBoundingClientRect().height;
+                link.textContent = "- "+showquotedtext+" -";
+                div.style.display = "none";
+                return -h;
               }
-              $div.toggle("slow");
             }
 
             function toggleMessage(event) {
