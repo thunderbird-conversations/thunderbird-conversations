@@ -34,6 +34,7 @@ document.addEventListener("load", function () {
 
   /* Various magic values */
   const nsMsgViewIndex_None = 0xffffffff;
+  const kCharsetFromMetaTag = 10;
 
   const prefs = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService).getBranch("gconversation.");
   const txttohtmlconv = Cc["@mozilla.org/txttohtmlconv;1"].createInstance(Ci.mozITXTToHTMLConv);
@@ -437,16 +438,23 @@ document.addEventListener("load", function () {
                   fullMsgNode.parentNode.removeChild(fullMsgNode);
                 }, true);
 
+              /* Unbelievable as it may seem, the code below works.
+               * Some references :
+               * - http://mxr.mozilla.org/comm-central/source/mailnews/base/src/nsMessenger.cpp#564
+               * - http://mxr.mozilla.org/comm-central/source/mailnews/base/src/nsMessenger.cpp#388
+               * - https://developer.mozilla.org/@api/deki/files/3579/=MessageRepresentations.png
+               * */
               let uri = msgHdr.folder.getUriForMsg(msgHdr);
               let neckoURL = {};
               let msgService = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger).messageServiceFromURI(uri);
               msgService.GetUrlForUri(uri, neckoURL, null);
 
-              iframe.docShell.appType = Components.interfaces.nsIDocShell.APP_TYPE_MAIL;
               /* FIXME check on #maildev this is the best way to do that */
               let cv = iframe.docShell.contentViewer;
               cv.QueryInterface(Ci.nsIMarkupDocumentViewer);
-              cv.forceCharacterSet = "UTF-8";
+              cv.hintCharacterSet = "UTF-8";
+              cv.hintCharacterSetSource = kCharsetFromMetaTag;
+              iframe.docShell.appType = Components.interfaces.nsIDocShell.APP_TYPE_MAIL;
               iframe.webNavigation.loadURI(neckoURL.value.spec+"?header=quotebody", iframe.webNavigation.LOAD_FLAGS_IS_LINK, null, null, null);
             }, true);
           try {
