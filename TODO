@@ -1,22 +1,27 @@
 # vim:ft=none 
-# let nextbug = 52 in
+# let nextbug = 55 in
 
-#9 Add an option to mark a thread as read when it is displayed
-  b) Improve it by only marking a message as read when it is scrolled into view
-#30 Add "reply - reply to all - ..." and other links at the bottom of the
-  message, see http://www.flickr.com/photos/davidascher/3095078638/
 #8 Add an option to display messages as HTML and not text only
   c) Add more strategies to detect folded parts... newer hotmails use #text BR
   #text BR #text BR with #text = > Quoted text)
   h) Find out how that works with getMessageBody in the catch block
 #39 The "Mark all read" command is buggy. Reimplement my own that also marks
 messages other than in the current folder as read. MINOR
+#53 Put adjacent blockquotes together
+#51 For a blockquote, blockquote.getElementsByTagName("br").length < 3 ? don't
+hide : hide.
+#9 Add an option to mark a thread as read when it is displayed
+  b) Improve it by only marking a message as read when it is scrolled into view
+#30 Add "reply - reply to all - ..." and other links at the bottom of the
+  message, see http://www.flickr.com/photos/davidascher/3095078638/
 #29 Encoding issues (Chinese not ok, Czech not ok either)
 #44 Add an option to reverse the order of messages (beware, this can break
 things such as auto scrolling...)
-#51 For a blockquote, blockquote.getElementsByTagName("br").length >= 3 ? hide :
-don't hide.
 
+#54 Automatically switch to the conversation view when there's more than one
+message. Just add an event listener on messagepane for the "load" event, launch
+a request and refactor a little to add an extra parameter that switches to
+multimessage if we ask for it.
 #50 Refactor message display (esp. plain/text) --> use a Necko URL (and use the
  HTML show/hide quoted text code)
 #47 0x0019 unicode char makes the innerHTML insertion phase fail

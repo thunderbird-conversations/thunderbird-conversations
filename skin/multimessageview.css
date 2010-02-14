@@ -1,3 +1,5 @@
+@import url(chrome://gconversation/skin/multimessageview_common.css);
+
 /* Toolbar */
 #unfold_all {
   list-style-image: url("chrome://gconversation/skin/down.png");
@@ -11,35 +13,7 @@
   list-style-image: url("moz-icon://stock/gtk-print?size=menu");
 }
 
-.attachment {
-  display: inline;
-  vertical-align: middle;
-}
-
-.toggle-font {
-  display: inline;
-  vertical-align: middle;
-}
-
 /* General stuff */
-
-.monospaced-message {
-  font-family: -moz-fixed;
-  white-space: pre;
-}
-
-.message {
-  position: relative;
-  -moz-border-radius: 3px 0 3px 0;
-  border: 1px solid #888;
-  margin-bottom: 2ex;
-  padding-bottom: 12px;
-}
-
-.header {
-  margin-left: 0;
-  padding-top: 0;
-}
 
 .snippet {
   /* FIXME should be set dynamically to the default for x-western... but there
@@ -47,40 +21,7 @@
   font-size: 12px;
 }
 
-.wrappedsender, .wrappedsubject, .snippet {
-  padding-left: 19px;
-}
-
-.wrappedsender, .wrappedsubject {
-  border-bottom: 1px solid #888;
-  margin-bottom: 1em;
-}
-
-.fullmsg {
-  color: black;
-}
-
-.htmlmsg > iframe {
-  border-width: 0;
-  width: 100%;
-  margin-left: 0;
-  padding: 0;
-  overflow: hidden;
-}
-
 /* Inside the messages' bodies */
-
-.moz-txt-tag {
-  display: none;
-}
-
-a {
-  font-weight: normal;
-}
-
-.showhidequote {
-  color: #512a45;
-}
 
 .messagearrow {
   width: 100%;
