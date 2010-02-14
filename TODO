@@ -1,10 +1,6 @@
 # vim:ft=none 
 # let nextbug = 55 in
 
-#8 Add an option to display messages as HTML and not text only
-  c) Add more strategies to detect folded parts... newer hotmails use #text BR
-  #text BR #text BR with #text = > Quoted text)
-  h) Find out how that works with getMessageBody in the catch block
 #39 The "Mark all read" command is buggy. Reimplement my own that also marks
 messages other than in the current folder as read. MINOR
 #53 Put adjacent blockquotes together

@@ -447,8 +447,8 @@ document.addEventListener("load", function () {
                         messageDone();
                       }, true);
                   } else {
-                    arrowNode.addEventListener("click", function f_temp () {
-                        arrowNode.removeEventListener("click", f_temp, true);
+                    arrowNode.addEventListener("click", function f_temp3 () {
+                        arrowNode.removeEventListener("click", f_temp3, true);
                         /* Same remark */
                         fixMargins();
                         extraFormatting(iframe.contentDocument);

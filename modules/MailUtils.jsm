@@ -11,6 +11,8 @@ Components.utils.import("resource://app/modules/gloda/mimemsg.js");
 const nsMsgFolderFlags_SentMail = 0x00000200;
 const nsMsgFolderFlags_Archive  = 0x00004000;
 
+const txttohtmlconv = Cc["@mozilla.org/txttohtmlconv;1"].createInstance(Ci.mozITXTToHTMLConv);
+
 /* Do a "old-style" retrieval of a message's body given its nsIMsgDBHdr. This
  * is useful when MsgHdrToMimeMessage fails. */
 function getMessageBody(aMessageHeader, aStripHtml) {  
@@ -148,21 +150,52 @@ function makeBlockquote(aDoc, marker) {
 }
 
 function convertHotmailQuotingToBlockquote1(aDoc) {
+  /* We make the assumption that no one uses a <hr> in their emails except for
+   * separating a quoted message from the rest */
   let marker =  aDoc.getElementsByTagName("hr")[0];
   if (marker)
     makeBlockquote(aDoc, marker);
 }
 
 function convertOutlookQuotingToBlockquote(aDoc) {
+  /* Outlook uses a special thing for that */
   let marker = aDoc.getElementsByClassName("OutlookMessageHeader")[0];
   if (marker)
     makeBlockquote(aDoc, marker);
 }
 
-function convertHotmailQuotingToBlockquote2(aDoc) {
+function convertHotmailQuotingToBlockquote2(aDocument) {
+  /* Actually that's not specific to Hotmail... */
+  let walk = function (aNode, inBlockquote, depth) {
+    let p = Object();
+    if (aNode.nodeType == aNode.TEXT_NODE && txttohtmlconv.citeLevelTXT(aNode.textContent+" ", p) > 0) {
+      if (!inBlockquote) {
+        let blockquote = aDocument.createElement("blockquote");
+        blockquote.setAttribute("type", "cite");
+        aNode.parentNode.insertBefore(blockquote, aNode);
+      }
+      let next = aNode.nextSibling;
+      aNode.previousSibling.appendChild(aNode);
+      if (next)
+        walk(next, true, depth);
+    } else if (aNode.tagName && aNode.tagName.toLowerCase() == "br"
+            || aNode.nodeType == aNode.TEXT_NODE && !aNode.textContent.trim().length) {
+      let next = aNode.nextSibling;
+      if (inBlockquote)
+        aNode.previousSibling.appendChild(aNode);
+      if (next)
+        walk(next, inBlockquote, depth);
+    } else {
+      if (aNode.firstChild && depth < 4) /* Try to mitigate the performance hit... */
+        walk(aNode.firstChild, false, depth + 1);
+      if (aNode.nextSibling)
+        walk(aNode.nextSibling, false, depth);
+    }
+  };
+  walk(aDocument.body, false, 0);
 }
 
-/* arg... */
+/* (no comment) */
 function _mm_toggleClass(node, classname) {
   let classes = [];
   if (node.hasAttribute('class'))
