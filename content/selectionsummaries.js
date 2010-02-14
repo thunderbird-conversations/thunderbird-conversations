@@ -91,12 +91,16 @@ document.addEventListener("load", function () {
 
     summarize: function() {
 
+      /* This function returns a fresh color everytime it is called. After some
+       * time, it starts inventing new colors of its own. */
       const predefinedColors = ["#204a87", "#5c3566", "#8f5902", "#a40000", "#c4a000", "#4e9a06", "#ce5c00"]; 
       let gColorCount = 0;
       function newColor() {
         if (gColorCount < predefinedColors.length) {
           return predefinedColors[gColorCount++];
         } else {
+          /* XXX we can probably do better here (avoid colors that are too
+           * "light") */
           let rand = function () Math.round(Math.random()*255);
           let r = rand();
           let g = rand();
@@ -156,7 +160,10 @@ document.addEventListener("load", function () {
           document.getElementById("multimessage").contentWindow.scrollTo(0, msgNodes[tKey].offsetTop - 5);
       } : function () {};
 
-      /* Small utilities */
+      /* For each message, once the message has been properly set up in the
+       * conversation view (either folded or unfolded), this function is called.
+       * When all the messages have been filled, it scrolls to the one we want.
+       * That way, no more reflows after we have scrolled to the right message. */
       let nMessagesDone = numMessages;
       function messageDone() {
         nMessagesDone--;
@@ -235,8 +242,8 @@ document.addEventListener("load", function () {
          * above for details. */
         if (g_prefs["monospaced"])
           _mm_addClass(fullMsgNode, "monospaced-message");
-        if ((g_prefs["fold_rule"] == "unread_and_last" && (!msgHdr.isRead || i == (numMessages - 1)))
-             || g_prefs["fold_rule"] == "all") {
+        if (    (g_prefs["fold_rule"] == "unread_and_last" && (!msgHdr.isRead || i == (numMessages - 1)))
+             || (g_prefs["fold_rule"] == "all")) {
           snippetMsgNode.style.display = "none";
           fullMsgNode.style.display = "block";
           htmlMsgNode.style.display = "block";
@@ -245,7 +252,8 @@ document.addEventListener("load", function () {
         arrowNode.addEventListener("click", function (event) htmlpane.contentWindow.toggleMessage(event), true);
         
         /* Add an event listener for the button that toggles the style of the
-         * font */
+         * font. This will be hidden later if we want and find a suitable HTML
+         * message for display. */
         toggleFontNode.addEventListener("click", function (event) _mm_toggleClass(fullMsgNode, "monospaced-message"), true);
 
         let key = msgHdr.messageKey + msgHdr.folder.URI;
@@ -359,15 +367,26 @@ document.addEventListener("load", function () {
 
           messageDone();
         };
+        /* Same thing but for HTML messages. The HTML is heavily processed to
+         * detect extra quoted parts using different heuristics, the "- show/hide
+         * quoted text -" links are added. */
         let fillSnippetAndHTML = function (snippet, html, author) {
           if (author)
             senderNode.textContent = author;
           snippetMsgNode.textContent = snippet;
 
           let iframe = msgNode.getElementsByClassName("htmlmsg")[0].firstElementChild;
+          /* The code below is triggered by setAttribute("src", "about:blank").
+           *
+           * Why do we do that ? Basically because we want the <xul:iframe> to
+           * have a docShell and a webNavigation. If we don't do that, and we
+           * set directly src="about:blank" in the XML above, sometimes we are
+           * too fast and the docShell isn't ready by the time we get there. */
           iframe.addEventListener("load", function f_temp2(event) {
               iframe.removeEventListener("load", f_temp2, true);
 
+              /* The second load event is triggered by loadURI with the URL
+               * being the necko URL to the given message. */
               iframe.addEventListener("load", function f_temp(event) {
                   iframe.removeEventListener("load", f_temp, true);
 
@@ -409,9 +428,16 @@ document.addEventListener("load", function () {
                     };
                     walk(aDoc);
                   };
-                  /* Register some useful stuff for us inside the iframe */
-                  //iframe.contentWindow["toggleQuote"] = htmlpane.contentWindow["toggleQuote"];
 
+                  /* We must modify the iframe's height so that there are no
+                   * scrollbars visible. If the iframe is immediately visible,
+                   * we need to wait for the document to be loaded. If the
+                   * iframe is hidden, we add an event listener on the small
+                   * arrow. We the message is shown for the first time, the
+                   * first callback is called (the one that "unfolds" the
+                   * message). That sets the scrollHeight property to the right
+                   * value. Then the event handler below is called and sets the
+                   * iframe's height accordingly. */
                   if (htmlMsgNode.style.display != "none") {
                     iframe.contentWindow.addEventListener("load", function () {
                         /* Must be in this order */
@@ -440,27 +466,33 @@ document.addEventListener("load", function () {
                   /* Remove the unused node, as it makes UI JS simpler in
                    * multimessageview.xhtml */
                   fullMsgNode.parentNode.removeChild(fullMsgNode);
-                }, true);
+                }, true); /* end document.addEventListener */
 
               /* Unbelievable as it may seem, the code below works.
                * Some references :
                * - http://mxr.mozilla.org/comm-central/source/mailnews/base/src/nsMessenger.cpp#564
                * - http://mxr.mozilla.org/comm-central/source/mailnews/base/src/nsMessenger.cpp#388
                * - https://developer.mozilla.org/@api/deki/files/3579/=MessageRepresentations.png
+               *
+               * According to dmose, we should get the regular content policy
+               * for free (regarding image loading, JS...) by using a content
+               * iframe with a classical call to loadURI. AFAICT, this works
+               * pretty well (no JS is executed, the images are loaded IFF we
+               * authorized that recipient).
                * */
               let uri = msgHdr.folder.getUriForMsg(msgHdr);
               let neckoURL = {};
               let msgService = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger).messageServiceFromURI(uri);
               msgService.GetUrlForUri(uri, neckoURL, null);
 
-              /* FIXME check on #maildev this is the best way to do that */
+              /* FIXME check on #maildev ?header=quotebody is the best way to do that */
               let cv = iframe.docShell.contentViewer;
               cv.QueryInterface(Ci.nsIMarkupDocumentViewer);
               cv.hintCharacterSet = "UTF-8";
               cv.hintCharacterSetSource = kCharsetFromMetaTag;
               iframe.docShell.appType = Components.interfaces.nsIDocShell.APP_TYPE_MAIL;
               iframe.webNavigation.loadURI(neckoURL.value.spec+"?header=quotebody", iframe.webNavigation.LOAD_FLAGS_IS_LINK, null, null, null);
-            }, true);
+            }, true); /* end document.addEventListener */
           iframe.setAttribute("src", "about:blank");
         };
         try {
@@ -486,7 +518,8 @@ document.addEventListener("load", function () {
           try {
             // Offline messages generate exceptions, which is unfortunate.  When
             // that's fixed, this code should adapt. XXX
-            /* --> Try to deal with that */
+            /* --> Try to deal with that. We don't try to get an HTML email, we
+             * just fallback to a regular plain/text version of it. */
             let body = getMessageBody(msgHdr, true);
             let snippet = body.substring(0, SNIPPET_LENGTH-3)+"...";
             fillSnippetAndMsg(snippet, body);
