@@ -112,6 +112,9 @@ document.addEventListener("load", function () {
       this._msgNodes = {};
 
       let htmlpane = document.getElementById('multimessage');
+      /*htmlpane.addEventListener("scroll", function (event) {
+        dump(event.target+"\n");
+      }, true);*/
 
       /* Fill the heading */
       let firstMsgHdr = this._msgHdrs[0];
@@ -207,7 +210,6 @@ document.addEventListener("load", function () {
                               <div class="snippet snippetmsg"></div>
                               <div class="snippet fullmsg" style="display: none"></div>
                               <div xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" class="snippet htmlmsg" style="display: none">
-                                <xul:iframe style="height: 20px" type="content"></xul:iframe>
                               </div>
                             </div>
                           </div>;
@@ -374,9 +376,15 @@ document.addEventListener("load", function () {
           if (author)
             senderNode.textContent = author;
           snippetMsgNode.textContent = snippet;
+          let originalScroll; /* This is shared by multiple event listeners below */
 
-          let iframe = msgNode.getElementsByClassName("htmlmsg")[0].firstElementChild;
-          /* The code below is triggered by setAttribute("src", "about:blank").
+          let iframe = htmlpane.contentDocument.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "iframe");
+          iframe.setAttribute("style", "height: 20px");
+          iframe.setAttribute("type", "content");
+          iframe.addEventListener("load", function () { dump("load event on the iframe for "+senderName+"\n"); }, true);
+          /* The xul:iframe automatically loads about:blank when it is added
+           * into the tree. We need to wait for the document to be loaded before
+           * doing things.
            *
            * Why do we do that ? Basically because we want the <xul:iframe> to
            * have a docShell and a webNavigation. If we don't do that, and we
@@ -429,33 +437,12 @@ document.addEventListener("load", function () {
                     walk(aDoc);
                   };
 
-                  /* We must modify the iframe's height so that there are no
-                   * scrollbars visible. If the iframe is immediately visible,
-                   * we need to wait for the document to be loaded. If the
-                   * iframe is hidden, we add an event listener on the small
-                   * arrow. We the message is shown for the first time, the
-                   * first callback is called (the one that "unfolds" the
-                   * message). That sets the scrollHeight property to the right
-                   * value. Then the event handler below is called and sets the
-                   * iframe's height accordingly. */
-                  if (htmlMsgNode.style.display != "none") {
-                    iframe.contentWindow.addEventListener("load", function () {
-                        /* Must be in this order */
-                        fixMargins();
-                        extraFormatting(iframe.contentDocument);
-                        iframe.style.height = iframe.contentDocument.body.scrollHeight+"px";
-                        messageDone();
-                      }, true);
-                  } else {
-                    arrowNode.addEventListener("click", function f_temp3 () {
-                        arrowNode.removeEventListener("click", f_temp3, true);
-                        /* Same remark */
-                        fixMargins();
-                        extraFormatting(iframe.contentDocument);
-                        iframe.style.height = iframe.contentDocument.body.scrollHeight+"px";
-                      }, true);
-                    messageDone();
-                  }
+                  /* The load event is bubbling up : now the message is loaded
+                   * so we can fiddle with it safely. */
+                  fixMargins();
+                  extraFormatting(iframe.contentDocument);
+                  iframe.style.height = iframe.contentDocument.body.scrollHeight+"px";
+                  messageDone();
 
                   /* Attach the required event handlers so that links open in the
                    * external browser */
@@ -466,6 +453,10 @@ document.addEventListener("load", function () {
                   /* Remove the unused node, as it makes UI JS simpler in
                    * multimessageview.xhtml */
                   fullMsgNode.parentNode.removeChild(fullMsgNode);
+
+                  dump("Restoring "+originalScroll+"\n");
+                  htmlpane.contentDocument.documentElement.scrollTop = originalScroll;
+                  /* END HERE*/
                 }, true); /* end document.addEventListener */
 
               /* Unbelievable as it may seem, the code below works.
@@ -493,7 +484,21 @@ document.addEventListener("load", function () {
               iframe.docShell.appType = Components.interfaces.nsIDocShell.APP_TYPE_MAIL;
               iframe.webNavigation.loadURI(neckoURL.value.spec+"?header=quotebody", iframe.webNavigation.LOAD_FLAGS_IS_LINK, null, null, null);
             }, true); /* end document.addEventListener */
-          iframe.setAttribute("src", "about:blank");
+
+          if (htmlMsgNode.style.display != "none") {
+            /* We can proceed as the xul:iframe is visible. */
+            htmlMsgNode.appendChild(iframe);
+          } else {
+            /* Beware, the xul:iframe is not visible so we might no have a
+             * docShell in some very wicked cases. We need to start working
+             * after the xul:iframe has been made visible. */
+            arrowNode.addEventListener("click", function f_temp3 () {
+                arrowNode.removeEventListener("click", f_temp3, true);
+                originalScroll = htmlpane.contentDocument.documentElement.scrollTop;
+                dump("Saving scroll "+originalScroll+"\n");
+                htmlMsgNode.appendChild(iframe);
+              }, true);
+          }
         };
         try {
           /* throw { result: Components.results.NS_ERROR_FAILURE }; */

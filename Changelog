@@ -1,10 +1,10 @@
 --- v0.3 development series ---
 - Added support for viewing messages as HTML (now enabled by default)
 - Added folding support for HTML emails.
-- Many improvements in the way HTML messages are displayed: JS, displaying
+- Many improvements to the way HTML messages are displayed: JS, displaying
 images now follow the global content policy, inline images are properly
 displayed, HTML is sanitized, and many more.
-- Fixes a bug where a thread would be incorrectly summarized as one
+- Fixes a bug where a thread would be incorrectly summarized as more than one
 conversation.
 - Added a small button that allows you to toggle between monospaced and regular
 font for viewing plain/text messages.
