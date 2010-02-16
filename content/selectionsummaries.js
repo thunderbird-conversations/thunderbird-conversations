@@ -21,8 +21,11 @@
 /* That's for event handlers */
 var gconversation = {
   on_load_thread: null,
-  on_load_thread_tab: null
+  on_load_thread_tab: null,
+  mark_all_read: null
 };
+
+var gMsgHdrs;
 
 /* That's for global namespace pollution + because we need the document's
  * <stringbundle> to be accessible. */
@@ -80,16 +83,14 @@ document.addEventListener("load", function () {
   };
   myPrefObserver.register();
 
-  /* We override the usual ThreadSummary class to provide our own. Our own
-   * displays full messages, plus other extra features */
-  ThreadSummary = function (messages) {
-    this._msgHdrs = messages;
-  };
-
+  /* Actually we don't need to change the constructor, only members */
   ThreadSummary.prototype = {
     __proto__: MultiMessageSummary.prototype,
 
     summarize: function() {
+      /* We need to keep them at hand for the "Mark all read" command to work
+       * properly */
+      gMsgHdrs = this._msgHdrs;
 
       /* This function returns a fresh color everytime it is called. After some
        * time, it starts inventing new colors of its own. */
@@ -619,7 +620,7 @@ document.addEventListener("load", function () {
    * more convenient as it follows Thunderbird's more closely, which allows me
    * to track changes to the ThreadSummary code in Thunderbird more easily. */
   var q1, q2;
-  summarizeThread = function(aSelectedMessages, aSwitchMessageDisplay) {
+  summarizeThread = function(aSelectedMessages, aListener, aSwitchMessageDisplay) {
     if (aSelectedMessages.length == 0) {
       dump("No selected messages\n");
       return false;
@@ -630,7 +631,8 @@ document.addEventListener("load", function () {
       aSelectedMessages,
       function (aCollection) {
         gSummary = new ThreadSummary(
-          [selectRightMessage(x, gDBView.msgFolder).folderMessage for each (x in removeDuplicates(aCollection.items))]
+          [selectRightMessage(x, gDBView.msgFolder).folderMessage for each (x in removeDuplicates(aCollection.items))],
+          aListener
         );
         gSummary.init();
         if (aSwitchMessageDisplay)
@@ -670,7 +672,7 @@ document.addEventListener("load", function () {
 
   /* Register event handlers through the global variable */
   gconversation.on_load_thread = function() {
-    summarizeThread(gFolderDisplay.selectedMessages, true);
+    summarizeThread(gFolderDisplay.selectedMessages, null, true);
   };
   gconversation.on_load_thread_tab = function() {
     if (!gFolderDisplay.selectedMessages.length)
@@ -694,6 +696,13 @@ document.addEventListener("load", function () {
   /* Register "print" functionnality */
   gconversation.print = function () {
     document.getElementById("multimessage").contentWindow.print();
+  };
+
+  /* The button as well as the menu item are hidden and disabled respectively
+   * when we're viewing a MultiMessageSummary, so fear not marking wrong
+   * messages as read. */
+  gconversation.mark_all_read = function () {
+    [m.markRead(true) for each (m in gMsgHdrs)];
   };
 
   /* We need to attach our custom context menu to multimessage, that's simpler

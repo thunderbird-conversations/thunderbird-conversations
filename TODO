@@ -1,11 +1,9 @@
 # vim:ft=none 
 # let nextbug = 56 in
 
-#39 The "Mark all read" command is buggy. Reimplement my own that also marks
-messages other than in the current folder as read. MINOR
 #53 Put adjacent blockquotes together
 #51 For a blockquote, blockquote.getElementsByTagName("br").length < 3 ? don't
-hide : hide.
+hide : hide --> doesn't work (there might be just one <div> inside) --> find sth
 #9 Add an option to mark a thread as read when it is displayed
   b) Improve it by only marking a message as read when it is scrolled into view
 #30 Add "reply - reply to all - ..." and other links at the bottom of the

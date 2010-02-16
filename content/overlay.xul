@@ -46,13 +46,14 @@
         style="list-style-image: url(&quot;moz-icon://stock/gtk-print?size=menu&quot;);" />
       <menuitem label="&menu.delete;" command="cmd_delete" />
       <menuitem label="&archiveMsgCmd.label;" command="cmd_archive" />
-      <menuitem label="&menu.mark_all_read;" command="cmd_markThreadAsRead" />
+      <menuitem label="&menu.mark_all_read;" class="extra-menuitem"
+        oncommand="gconversation.mark_all_read();" />
       <menuseparator />
-      <menuitem label="&menu.open_in_new_tab;"
+      <menuitem label="&menu.open_in_new_tab;" class="extra-menuitem"
         oncommand="gconversation.on_load_thread_tab();" />
-      <menuitem label="&menu.unfold_all;"
+      <menuitem label="&menu.unfold_all;" class="extra-menuitem"
         oncommand="document.getElementById('multimessage').contentWindow.unfoldAll();" />
-      <menuitem label="&menu.fold_all;"
+      <menuitem label="&menu.fold_all;" class="extra-menuitem"
         oncommand="document.getElementById('multimessage').contentWindow.foldAll();" />
     </popup>
   </popupset>

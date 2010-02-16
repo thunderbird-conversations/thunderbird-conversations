@@ -172,10 +172,12 @@
 
             function disableExtraButtons() {
               [x.setAttribute("disabled", "true") for each ([,x] in Iterator(document.getElementsByClassName("extra-button")))];
+              [x.setAttribute("disabled", "true") for each ([,x] in Iterator(window.top.document.getElementById("gConvMenu").getElementsByClassName("extra-menuitem")))];
             }
 
             function enableExtraButtons() {
               [x.setAttribute("disabled", "false") for each ([,x] in Iterator(document.getElementsByClassName("extra-button")))];
+              [x.setAttribute("disabled", "false") for each ([,x] in Iterator(window.top.document.getElementById("gConvMenu").getElementsByClassName("extra-menuitem")))];
             }
         ]]>
         </script>
@@ -194,7 +196,7 @@
                     <button id="mark_as_read"
                             class="button msgHeaderView-button extra-button"
                             label="&button.mark_all_read;"
-                            onclick="if (event.button == 0) window.top.DefaultController.doCommand('cmd_markThreadAsRead');"/>
+                            onclick="if (event.button == 0) window.top.gconversation.mark_all_read()"/>
                     <button id="unfold_all"
                             class="button msgHeaderView-button extra-button"
                             onclick="if (event.button == 0) unfoldAll();"
