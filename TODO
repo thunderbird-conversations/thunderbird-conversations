@@ -1,15 +1,15 @@
 # vim:ft=none 
-# let nextbug = 56 in
+# let nextbug = 58 in
 
-#53 Put adjacent blockquotes together
-#51 For a blockquote, blockquote.getElementsByTagName("br").length < 3 ? don't
-hide : hide --> doesn't work (there might be just one <div> inside) --> find sth
-#9 Add an option to mark a thread as read when it is displayed
-  b) Improve it by only marking a message as read when it is scrolled into view
+#57 Regression: scroll to the first unread message sometimes does not work.
 #30 Add "reply - reply to all - ..." and other links at the bottom of the
   message, see http://www.flickr.com/photos/davidascher/3095078638/
+#9 Add an option to mark a thread as read when it is displayed
+  b) Improve it by only marking a message as read when it is scrolled into view
 #44 Add an option to reverse the order of messages (beware, this can break
 things such as auto scrolling...)
+#53 Put adjacent blockquotes together (does this ever happen?)
+#51 Find a way to hide short quotes in HTML (i.e. less than 3 lines)
 #29 Encoding issues (Chinese not ok, Czech not ok either)
 
 #54 Automatically switch to the conversation view when there's more than one

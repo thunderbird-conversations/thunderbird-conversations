@@ -164,14 +164,16 @@ function convertOutlookQuotingToBlockquote(aDoc) {
     makeBlockquote(aDoc, marker);
 }
 
-function convertHotmailQuotingToBlockquote2(aDocument) {
+function convertHotmailQuotingToBlockquote2(aDocument, aHideQuoteLength) {
   /* Actually that's not specific to Hotmail... */
+  let brCount = 0;
   let walk = function (aNode, inBlockquote, depth) {
     let p = Object();
     if (aNode.nodeType == aNode.TEXT_NODE && txttohtmlconv.citeLevelTXT(aNode.textContent+" ", p) > 0) {
       if (!inBlockquote) {
         let blockquote = aDocument.createElement("blockquote");
         blockquote.setAttribute("type", "cite");
+        blockquote.setUserData("hideme", false, null);
         aNode.parentNode.insertBefore(blockquote, aNode);
       }
       let next = aNode.nextSibling;
@@ -181,8 +183,13 @@ function convertHotmailQuotingToBlockquote2(aDocument) {
     } else if (aNode.tagName && aNode.tagName.toLowerCase() == "br"
             || aNode.nodeType == aNode.TEXT_NODE && !aNode.textContent.trim().length) {
       let next = aNode.nextSibling;
-      if (inBlockquote)
+      if (inBlockquote) {
+        if (aNode.tagName && aNode.tagName.toLowerCase() == "br")
+          brCount++;
+        if (brCount == aHideQuoteLength + 1)
+          blockquote.setUserData("hideme", true, null);
         aNode.previousSibling.appendChild(aNode);
+      }
       if (next)
         walk(next, inBlockquote, depth);
     } else {

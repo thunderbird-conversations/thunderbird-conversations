@@ -35,3 +35,24 @@
 .msgarrow {
   cursor: pointer;
 }
+
+.fastreply {
+  position: absolute;
+  bottom: -12px;
+  right: 0;
+  border: 1px solid #888;
+  border-width: 1px 0 0 1px;
+  -moz-border-radius: 3px 0 0 0;
+  z-index: 1000;
+}
+
+.fastreply > a {
+  color: #888;
+  font-size: small;
+  padding: 5px;
+}
+
+.fastreply > a:hover {
+  color: black;
+  text-decoration: none;
+}

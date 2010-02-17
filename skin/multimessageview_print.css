@@ -26,6 +26,6 @@
 
 /* Message contents */
 
-.messagearrow, .toggle-font, .tags {
+.messagearrow, .toggle-font, .tags, .fastreply {
   display: none;
 }

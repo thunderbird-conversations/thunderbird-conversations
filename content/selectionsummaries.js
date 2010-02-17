@@ -151,6 +151,7 @@ document.addEventListener("load", function () {
           }
         }
       }
+      dump("needsFocus "+needsFocus+"\n");
       let msgHdrs = this._msgHdrs;
       let msgNodes = this._msgNodes;
       let scrollAfterReflow = needsFocus > 0 ? function () {
@@ -198,6 +199,9 @@ document.addEventListener("load", function () {
         /* The snippet class really has a counter-intuitive name but that allows
          * us to keep the style from the original multimessageview.css without
          * rewriting everything */
+        let replyTxt = stringBundle.getString("reply");
+        let replyAllTxt = stringBundle.getString("reply_all");
+        let forwardTxt = stringBundle.getString("forward");
         let msgContents = <div class="row">
                             <div class="star"/>
                             <div class="header">
@@ -205,12 +209,18 @@ document.addEventListener("load", function () {
                                 <div class="sender link">{senderName}</div>
                                 <div class="date">{date}</div>
                                 <div class="tags"></div>
-                                <div class="attachment" style="display: none"><img src="chrome://messenger/skin/icons/attachment-col.png" /></div>
+                                <div class="attachment" style="display: none">
+                                  <img src="chrome://messenger/skin/icons/attachment-col.png" />
+                                </div>
                                 <div class="toggle-font link"><img src="chrome://gconversation/skin/font.png" /></div>
                               </div>
                               <div class="snippet snippetmsg"></div>
                               <div class="snippet fullmsg" style="display: none"></div>
-                              <div xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" class="snippet htmlmsg" style="display: none">
+                              <div xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" class="snippet htmlmsg" style="display: none"></div>
+                              <div class="fastreply">
+                                <a href="#" class="link-reply">{replyTxt}</a> - 
+                                <a href="#" class="link-reply">{replyAllTxt}</a> - 
+                                <a href="#" class="link-reply">{forwardTxt}</a>
                               </div>
                             </div>
                           </div>;
@@ -409,7 +419,7 @@ document.addEventListener("load", function () {
                      * to real blockquotes. */
                     convertOutlookQuotingToBlockquote(aDoc);
                     convertHotmailQuotingToBlockquote1(aDoc);
-                    convertHotmailQuotingToBlockquote2(aDoc);
+                    convertHotmailQuotingToBlockquote2(aDoc, g_prefs["hide_quote_length"]);
                     /* This function adds a show/hide quoted text link to every topmost
                      * blockquote. Nested blockquotes are not taken into account. */
                     let walk = function (elt) {
@@ -418,18 +428,20 @@ document.addEventListener("load", function () {
                         /* GMail uses class="gmail_quote", other MUA use type="cite"...
                          * so just search for a regular blockquote */
                         if (c.tagName && c.tagName.toLowerCase() == "blockquote") {
-                          let div = aDoc.createElement("div");
-                          div.setAttribute("class", "link showhidequote");
-                          div.addEventListener("click", function(event) {
-                              let h = htmlpane.contentWindow.toggleQuote(event);
-                              iframe.style.height = (parseInt(iframe.style.height) + h)+"px";
-                            }, true);
-                          //div.setAttribute("onclick", "toggleQuote(event);");
-                          div.setAttribute("style", "color: #512a45; cursor: pointer;");
-                          div.appendChild(document.createTextNode("- "+
-                            stringBundle.getString("showquotedtext")+" -"));
-                          elt.insertBefore(div, c);
-                          c.style.display = "none";
+                          if (c.getUserData("hideme") !== false) { /* null is ok, true is ok too */
+                            let div = aDoc.createElement("div");
+                            div.setAttribute("class", "link showhidequote");
+                            div.addEventListener("click", function(event) {
+                                let h = htmlpane.contentWindow.toggleQuote(event);
+                                iframe.style.height = (parseInt(iframe.style.height) + h)+"px";
+                              }, true);
+                            //div.setAttribute("onclick", "toggleQuote(event);");
+                            div.setAttribute("style", "color: #512a45; cursor: pointer;");
+                            div.appendChild(document.createTextNode("- "+
+                              stringBundle.getString("showquotedtext")+" -"));
+                            elt.insertBefore(div, c);
+                            c.style.display = "none";
+                          }
                         } else {
                           walk(c);
                         }
@@ -443,7 +455,6 @@ document.addEventListener("load", function () {
                   fixMargins();
                   extraFormatting(iframe.contentDocument);
                   iframe.style.height = iframe.contentDocument.body.scrollHeight+"px";
-                  messageDone();
 
                   /* Attach the required event handlers so that links open in the
                    * external browser */
@@ -455,9 +466,20 @@ document.addEventListener("load", function () {
                    * multimessageview.xhtml */
                   fullMsgNode.parentNode.removeChild(fullMsgNode);
 
+                  /* Sometimes setting the iframe's content and height changes
+                   * the scroll value */
                   dump("Restoring "+originalScroll+"\n");
                   htmlpane.contentDocument.documentElement.scrollTop = originalScroll;
-                  /* END HERE*/
+                  
+                  /* If it's an immediate display, fire the messageDone event
+                   * now (we're done with the iframe). If we're delayed, the
+                   * code that attached the event listener on the "click" event
+                   * has already fired the messageDone event, so don't do it. */
+                  if (htmlMsgNode.style.display != "none")
+                    messageDone();
+
+                  /* Here ends the chain of event listener, nothing happens
+                   * after this. */
                 }, true); /* end document.addEventListener */
 
               /* Unbelievable as it may seem, the code below works.
@@ -499,6 +521,9 @@ document.addEventListener("load", function () {
                 dump("Saving scroll "+originalScroll+"\n");
                 htmlMsgNode.appendChild(iframe);
               }, true);
+            /* Well, nothing will happen in the load process after that, so no
+             * more reflows for this message -> the message is done. */
+            messageDone();
           }
         };
         try {
@@ -651,18 +676,24 @@ document.addEventListener("load", function () {
     if (aSelectedMessages.length == 0)
       return;
     try {
+      /* Remove this when bug 538750 is fixed. And bump the version requirement
+       * in install.rdf.template */
+      /* ------ cut here ----- */
       let threadKeys = [
         gDBView.getThreadContainingIndex(i).getChildHdrAt(0).messageKey
         for each ([, i] in Iterator(gFolderDisplay.selectedIndices))
       ];
       let isSameThread = threadKeys.every(function (x) x == threadKeys[0]);
       if (isSameThread) {
+      /* ------ end cut here ----- */
         summarizeThread(aSelectedMessages);
+      /* ------ cut here ----- */
       } else {
         gSummary = new MultiMessageSummary(aSelectedMessages);
         gSummary.init();
         document.getElementById('multimessage').contentWindow.disableExtraButtons();
       }
+      /* ------ end cut here ----- */
     } catch (e) {
       dump("Exception in summarizeMultipleSelection" + e + "\n");
       Components.utils.reportError(e);
@@ -702,7 +733,22 @@ document.addEventListener("load", function () {
    * when we're viewing a MultiMessageSummary, so fear not marking wrong
    * messages as read. */
   gconversation.mark_all_read = function () {
-    [m.markRead(true) for each (m in gMsgHdrs)];
+    let pending = {};
+    for each (msgHdr in gMsgHdrs) {
+      if (msgHdr.isRead)
+        continue;
+      if (!pending[msgHdr.folder.URI]) {
+        pending[msgHdr.folder.URI] = {
+          folder: msgHdr.folder,
+          msgs: Cc["@mozilla.org/array;1"].createInstance(Ci.nsIMutableArray)
+        };
+      }
+      pending[msgHdr.folder.URI].msgs.appendElement(msgHdr, false);
+    }
+    for each (let { folder, msgs } in pending) {
+      folder.markMessagesRead(msgs, true);
+      folder.msgDatabase = null; /* don't leak */
+    }
   };
 
   /* We need to attach our custom context menu to multimessage, that's simpler
