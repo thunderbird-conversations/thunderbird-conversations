@@ -19,3 +19,4 @@
 <!ENTITY title.quoting "Quoting and folding">
 <!ENTITY option.hide_longer_than "Hide quoted parts longer than">
 <!ENTITY option.lines "lines">
+<!ENTITY option.reverse_order "Reverse order (last → first)">

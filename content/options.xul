@@ -23,25 +23,15 @@
       <preference id="button.open_in_new_tab" name="gconversation.button.open_in_new_tab" type="bool" />
       <preference id="html" name="gconversation.html" type="bool" />
       <preference id="focus_first" name="gconversation.focus_first" type="bool" />
+      <preference id="reverse_order" name="gconversation.reverse_order" type="bool" />
     </preferences>
    
     <groupbox>
       <caption><description>&title.message_display;</description></caption>
-      <hbox align="center">
-        <checkbox preference="html" id="html_textbox" />
-        <label control="html_checkbox" value="&option.html;" />
-        <spacer flex="1" />
-      </hbox>
-      <hbox align="center">
-        <checkbox preference="monospaced" id="monospaced_textbox" />
-        <label control="monospaced_checkbox" value="&option.monospaced;" />
-        <spacer flex="1" />
-      </hbox>
-      <hbox align="center">
-        <checkbox preference="focus_first" id="focus_first_textbox" />
-        <label control="focus_first_checkbox" value="&option.focus_first;" />
-        <spacer flex="1" />
-      </hbox>
+      <checkbox preference="html" id="html_textbox" label="&option.html;" />
+      <checkbox preference="monospaced" id="monospaced_textbox" label="&option.monospaced;"/>
+      <checkbox preference="focus_first" id="focus_first_textbox" label="&option.focus_first;" />
+      <checkbox preference="reverse_order" id="reverse_order_textbox" label="&option.reverse_order;" />
     </groupbox>
     <groupbox>
       <caption><description>&title.toolbar;</description></caption>

@@ -53,6 +53,7 @@ document.addEventListener("load", function () {
   g_prefs["html"] = prefs.getBoolPref("html");
   g_prefs["hide_quote_length"] = prefs.getIntPref("hide_quote_length");
   g_prefs["fold_rule"] = prefs.getCharPref("fold_rule");
+  g_prefs["reverse_order"] = prefs.getBoolPref("reverse_order");
 
   let myPrefObserver = {
     register: function () {
@@ -71,6 +72,7 @@ document.addEventListener("load", function () {
         case "monospaced":
         case "focus_first":
         case "html":
+        case "reverse_order":
           g_prefs[aData] = prefs.getBoolPref(aData);
           break;
         case "hide_quote_length":
@@ -243,8 +245,13 @@ document.addEventListener("load", function () {
         // either generated from integers or escaped to be safe.
         msgNode.innerHTML = msgContents.toXMLString();
         msgNode.innerHTML += msgExtraContents.toXMLString();
+        msg_classes += " "+i;
         _mm_addClass(msgNode, msg_classes);
-        messagesElt.appendChild(msgNode);
+        if (g_prefs["reverse_order"]) {
+          messagesElt.insertBefore(msgNode, messagesElt.firstChild);
+        } else {
+          messagesElt.appendChild(msgNode);
+        }
 
         let senderNode = msgNode.getElementsByClassName("sender")[0];
         if (id2color[senderNode.textContent])
@@ -253,8 +260,6 @@ document.addEventListener("load", function () {
           senderNode.style.color = id2color[senderNode.textContent] = newColor();
 
         let fullMsgNode = msgNode.getElementsByClassName("fullmsg")[0];
-        if (!fullMsgNode)
-          dump("WTF???\n");
         let htmlMsgNode = msgNode.getElementsByClassName("htmlmsg")[0];
         let snippetMsgNode = msgNode.getElementsByClassName("snippetmsg")[0];
         let arrowNode = msgNode.getElementsByClassName("msgarrow")[0];
@@ -656,8 +661,6 @@ document.addEventListener("load", function () {
           }, true);
 
         this._msgNodes[key] = msgNode;
-
-        messagesElt.appendChild(msgNode);
       }
       // stash somewhere so it doesn't get GC'ed
       this._glodaQueries.push(

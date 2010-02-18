@@ -7,8 +7,6 @@ a request and refactor a little to add an extra parameter that switches to
 multimessage if we ask for it.
 #9 Add an option to mark a thread as read when it is displayed
   b) Improve it by only marking a message as read when it is scrolled into view
-#44 Add an option to reverse the order of messages (beware, this can break
-things such as auto scrolling...)
 #53 Put adjacent blockquotes together (does this ever happen?)
 #51 Find a way to hide short quotes in HTML (i.e. less than 3 lines)
 #29 Encoding issues (Chinese not ok, Czech not ok either)
