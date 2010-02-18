@@ -1,9 +1,13 @@
 --- v0.3 development series ---
+- Added links to reply (and other actions) to an email in the conversation
+directly (it's not necessary to open the message first anymore). You can hold
+shift while clicking the links, it will work as expected.
 - Added support for viewing messages as HTML (now enabled by default). Many
 rounds of improvement. This should be perfectly usable now modulo bug 540911.
 - Added folding support for HTML emails, added some heuristics to detect more
 types of quotes than Thunderbird does by default (Hotmail-style,
-Outlook-style...)
+Outlook-style, "----- Original message -----"-style...). Please report any false
+positives.
 - Many improvements to the way HTML messages are displayed: JS, displaying
 images now follow the global content policy, inline images are properly
 displayed, HTML is sanitized, and many more...
@@ -15,7 +19,7 @@ font for viewing plain/text messages. Useful for Bugzilla emails for instance.
 messages with fixed-width fonts.
 - "Mark all read" now also marks your own messages as read. The menuitem was
 sometimes incorrectly grayed out. This is now fixed.
-- Improve the look of printed messages (more improvements).
+- Improve the look of printed messages (many more improvements).
 
 GMail Conversation View 0.3alpha1
 ---------------------------------

@@ -39,6 +39,7 @@ document.addEventListener("load", function () {
   const nsMsgViewIndex_None = 0xffffffff;
   const kCharsetFromMetaTag = 10;
 
+  const gPrefBranch = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService).getBranch(null);
   const prefs = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService).getBranch("gconversation.");
   const txttohtmlconv = Cc["@mozilla.org/txttohtmlconv;1"].createInstance(Ci.mozITXTToHTMLConv);
   const stringBundle = document.getElementById("gconv-string-bundle");
@@ -202,6 +203,8 @@ document.addEventListener("load", function () {
         let replyTxt = stringBundle.getString("reply");
         let replyAllTxt = stringBundle.getString("reply_all");
         let forwardTxt = stringBundle.getString("forward");
+        let replyList = stringBundle.getString("reply_list");
+        let editNew = stringBundle.getString("edit_new");
         let msgContents = <div class="row">
                             <div class="star"/>
                             <div class="header">
@@ -218,9 +221,15 @@ document.addEventListener("load", function () {
                               <div class="snippet fullmsg" style="display: none"></div>
                               <div xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" class="snippet htmlmsg" style="display: none"></div>
                               <div class="fastreply">
-                                <a href="#" class="link-reply">{replyTxt}</a> - 
-                                <a href="#" class="link-reply">{replyAllTxt}</a> - 
-                                <a href="#" class="link-reply">{forwardTxt}</a>
+                                <span class="fastlink link-reply">{replyTxt}</span> - 
+                                <span class="fastlink link-reply-all">{replyAllTxt}</span> - 
+                                <span class="fastlink link-forward">{forwardTxt}</span>
+                                <span class="fastlink link-more">...</span>
+                                <span style="display: none;">
+                                  -
+                                  <span class="fastlink link-reply-list">{replyList}</span> -
+                                  <span class="fastlink link-edit-new">{editNew}</span>
+                                </span>
                               </div>
                             </div>
                           </div>;
@@ -420,6 +429,7 @@ document.addEventListener("load", function () {
                     convertOutlookQuotingToBlockquote(aDoc);
                     convertHotmailQuotingToBlockquote1(aDoc);
                     convertHotmailQuotingToBlockquote2(aDoc, g_prefs["hide_quote_length"]);
+                    convertForwardedToBlockquote(aDoc);
                     /* This function adds a show/hide quoted text link to every topmost
                      * blockquote. Nested blockquotes are not taken into account. */
                     let walk = function (elt) {
@@ -573,12 +583,15 @@ document.addEventListener("load", function () {
           tagsNode.appendChild(tagNode);
         }
 
+        /* Attach various event handlers. Here: open a message when the user
+         * clicks on the sender's name. */
         let sender = msgNode.getElementsByClassName("sender")[0];
         sender.msgHdr = msgHdr;
         sender.folder = msgHdr.folder;
         sender.msgKey = msgHdr.messageKey;
         sender.addEventListener("click", function(e) {
-          /* msgHdr is "the right message" (see the beginning of the loop) */
+          /* msgHdr is "the right message" (we pre-selected message before
+           * giving them to the ThreadSummary) */
           let viewIndex = gFolderDisplay.view.getViewIndexForMsgHdr(this.msgHdr);
           if (viewIndex != nsMsgViewIndex_None) {
             gFolderDisplay.selectMessage(this.msgHdr);
@@ -590,6 +603,57 @@ document.addEventListener("load", function () {
           gFolderTreeView.selectFolder(this.folder, true); 
           gFolderDisplay.selectMessage(this.msgHdr);
         }, true);
+
+        /* The reply, reply to all, forward links. For reference, start reading
+         * http://mxr.mozilla.org/comm-central/source/mail/base/content/messageWindow.js#949
+         * and follow the function definitions. */
+        let uri = msgHdr.folder.getUriForMsg(msgHdr);
+        dump("Uri of the message: "+uri+"\n");
+        let compose = function (aCompType, aEvent) {
+          if (aEvent.shiftKey) {
+            ComposeMessage(aCompType, Ci.nsIMsgCompFormat.OppositeOfDefault, msgHdr.folder, [uri]);
+          } else {
+            ComposeMessage(aCompType, Ci.nsIMsgCompFormat.Default, msgHdr.folder, [uri]);
+          }
+        };
+        let linkReply = msgNode.getElementsByClassName("link-reply")[0];
+        linkReply.addEventListener("click", function (event) {
+            /* XXX this code should adapt when news messages have a JS
+             * representation. See
+             * http://mxr.mozilla.org/comm-central/source/mail/base/content/mailWindowOverlay.js#1259
+             * */
+            compose(Ci.nsIMsgCompType.ReplyToSender, event);
+          }, true);
+        let linkReplyAll = msgNode.getElementsByClassName("link-reply-all")[0];
+        linkReplyAll.addEventListener("click", function (event) {
+            compose(Ci.nsIMsgCompType.ReplyAll, event);
+          }, true);
+        let linkReplyList = msgNode.getElementsByClassName("link-reply-list")[0];
+        linkReplyList.addEventListener("click", function (event) {
+            compose(Ci.nsIMsgCompType.ReplyToList, event);
+          }, true);
+        let linkEditNew = msgNode.getElementsByClassName("link-edit-new")[0];
+        linkEditNew.addEventListener("click", function (event) {
+            compose(Ci.nsIMsgCompType.Template, event);
+          }, true);
+        let linkForward = msgNode.getElementsByClassName("link-forward")[0];
+        linkForward.addEventListener("click", function (event) {
+            let forwardType = 0;
+            try {
+              forwardType = gPrefBranch.getIntPref("mail.forward_message_mode");
+            } catch (e) {
+              dump("Unable to fetch preferred forward mode\n");
+            }
+            if (forwardType == 0)
+              compose(Ci.nsIMsgCompType.ForwardAsAttachment, event);
+            else
+              compose(Ci.nsIMsgCompType.ForwardInline, event);
+          }, true);
+        let linkMore = msgNode.getElementsByClassName("link-more")[0];
+        linkMore.addEventListener("click", function (event) {
+            event.target.style.display = "none";
+            event.target.nextElementSibling.style.display = "";
+          }, true);
 
         this._msgNodes[key] = msgNode;
 

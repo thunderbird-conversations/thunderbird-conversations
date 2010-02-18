@@ -1,7 +1,8 @@
 var EXPORTED_SYMBOLS = ['getMessageBody', 'selectRightMessage',
   'removeDuplicates', 'MimeMessageToHTML', 'MimeMessageHasAttachment',
   'convertHotmailQuotingToBlockquote1', 'convertHotmailQuotingToBlockquote2',
-  'convertOutlookQuotingToBlockquote', '_mm_toggleClass']
+  'convertOutlookQuotingToBlockquote', '_mm_toggleClass',
+  'convertForwardedToBlockquote']
 
 const Ci = Components.interfaces;
 const Cc = Components.classes;
@@ -140,13 +141,14 @@ function insertAfter(newElement, referenceElt) {
     referenceElt.parentNode.appendChild(newElement);
 }
 
-function makeBlockquote(aDoc, marker) {
+function makeBlockquote(aDoc, marker, remove) {
   let blockquote = aDoc.createElement("blockquote");
   blockquote.setAttribute("type", "cite");
   insertAfter(blockquote, marker);
   while (blockquote.nextSibling)
     blockquote.appendChild(blockquote.nextSibling);
-  marker.parentNode.removeChild(marker);
+  if (remove)
+    marker.parentNode.removeChild(marker);
 }
 
 function convertHotmailQuotingToBlockquote1(aDoc) {
@@ -154,7 +156,7 @@ function convertHotmailQuotingToBlockquote1(aDoc) {
    * separating a quoted message from the rest */
   let marker =  aDoc.getElementsByTagName("hr")[0];
   if (marker)
-    makeBlockquote(aDoc, marker);
+    makeBlockquote(aDoc, marker, true);
 }
 
 function convertOutlookQuotingToBlockquote(aDoc) {
@@ -200,6 +202,23 @@ function convertHotmailQuotingToBlockquote2(aDocument, aHideQuoteLength) {
     }
   };
   walk(aDocument.body, false, 0);
+}
+
+function convertForwardedToBlockquote(aDoc) {
+  let re = /\s*(-+)\s+(?:\w+\s+)+\1\s*/m;
+  let walk = function (aNode) {
+    for each (let [, child] in Iterator(aNode.childNodes)) {
+      if (child.nodeType == child.TEXT_NODE && re.test(child.textContent)) {
+        makeBlockquote(aDoc, child);
+        throw { found: true };
+      } else {
+        walk(child);
+      }
+    }
+  };
+  try {
+    walk(aDoc.body);
+  } catch ( { found } if found) { }
 }
 
 /* (no comment) */

@@ -46,13 +46,14 @@
   z-index: 1000;
 }
 
-.fastreply > a {
+.fastreply .fastlink {
   color: #888;
   font-size: small;
   padding: 5px;
+  cursor: pointer;
 }
 
-.fastreply > a:hover {
+.fastreply .fastlink:hover {
   color: black;
   text-decoration: none;
 }
