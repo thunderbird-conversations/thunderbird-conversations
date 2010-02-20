@@ -1,5 +1,5 @@
 # vim:ft=none 
-# let nextbug = 59 in
+# let nextbug = 60 in
 
 #54 Automatically switch to the conversation view when there's more than one
 message. Just add an event listener on messagepane for the "load" event, launch
@@ -10,6 +10,13 @@ multimessage if we ask for it.
 #53 Put adjacent blockquotes together (does this ever happen?)
 #51 Find a way to hide short quotes in HTML (i.e. less than 3 lines)
 
+#59 Improve quote folding code.
+  - ----- Forwarded message ----- is not folded in plain/text
+  - ----- XXX XXX ----- does not work optimally. Do sth like
+    while (node.parentNode.nextSibling && node.parentNode.firstChild == node)
+      node = node.parentNode
+    and then put everything in the blockquote (really think hard about the best
+    way to do that).
 #45 Sometimes Thunderbird has not indexed a message... can we force indexing ?
 #50 Refactor message display (esp. plain/text) --> use a Necko URL (and use the
  HTML show/hide quoted text code)

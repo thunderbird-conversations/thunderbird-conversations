@@ -70,9 +70,8 @@ function selectRightMessage(similar, currentFolder) {
   return msgHdr;
 }
 
-/* Remove messages with the same Message-Id header from a collection.
- * Return an object with, for each message in selectedMessages, the duplicates
- * that have been found. */
+/* Group messages by Message-Id header.
+ * Returns an array [[similar items], [other similar items], ...]. */
 function removeDuplicates(items) {
   //let info = function (hdr) hdr.mime2DecodedAuthor+" ["+hdr.mime2DecodedSubject+"]";
   let similar = {};

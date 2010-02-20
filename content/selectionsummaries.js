@@ -33,16 +33,20 @@ var gconversation = {
 document.addEventListener("load", function f_temp0 () {
   document.removeEventListener("load", f_temp0, true); /* otherwise it's called 20+ times */
 
+  /* Classic */
   const Ci = Components.interfaces;
   const Cc = Components.classes;
   const Cu = Components.utils;
+  const Cr = Components.results;
   Components.utils.import("resource://gconversation/MailUtils.jsm");
 
   /* Various magic values */
   const nsMsgViewIndex_None = 0xffffffff;
   const kCharsetFromMetaTag = 10;
 
+  /* Don't instanciate too many components */
   const gPrefBranch = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService).getBranch(null);
+  const gMessenger = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
   const prefs = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService).getBranch("gconversation.");
   const txttohtmlconv = Cc["@mozilla.org/txttohtmlconv;1"].createInstance(Ci.mozITXTToHTMLConv);
   const stringBundle = document.getElementById("gconv-string-bundle");
@@ -514,7 +518,7 @@ document.addEventListener("load", function f_temp0 () {
                * */
               let uri = msgHdr.folder.getUriForMsg(msgHdr);
               let neckoURL = {};
-              let msgService = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger).messageServiceFromURI(uri);
+              let msgService = gMessenger.messageServiceFromURI(uri);
               msgService.GetUrlForUri(uri, neckoURL, null);
 
               /* FIXME check on #maildev ?header=quotebody is the best way to do that */
@@ -838,16 +842,38 @@ document.addEventListener("load", function f_temp0 () {
     onSecurityChange: function () {},
     onStatusChange: function () {},
     onLocationChange: function (aWebProgress, aRequest, aLocation) {
-      dump(aLocation.spec+"\n");
       /* msgService.getMsgHdrForUri ...
        * In order not to do this after a user clicked a sender's name in the
        * multimessageview, check if we can add a special parameter to the URI
        * like ... &gconv=1 */
+      let msgService;
+      try {
+        msgService = gMessenger.messageServiceFromURI(aLocation.spec);
+      } catch ( { result } if result == Cr.NS_ERROR_FACTORY_NOT_REGISTERED ) {
+        dump("*** Not a message ("+aLocation.spec+")\n");
+        return;
+      }
+      let msgHdr = msgService.messageURIToMsgHdr(aLocation.QueryInterface(Ci.nsIMsgMessageUrl).uri);
+      pullConversation(
+        [msgHdr],
+        function (aCollection) {
+          let items = removeDuplicates(aCollection.items);
+          if (items.length <= 1)
+            return;
+          gSummary = new ThreadSummary(
+            [selectRightMessage(x, gDBView.msgFolder).folderMessage for each (x in items)],
+            null
+          );
+          gSummary.init();
+          gMessageDisplay.singleMessageDisplay = false;
+          return;
+      });
+
     },
     QueryInterface: XPCOMUtils.generateQI([Ci.nsISupports, Ci.nsISupportsWeakReference, Ci.nsIWebProgressListener])
   };
   messagepane.addProgressListener(gconversation.stash.uriWatcher);
 
-  dump("gConversation loaded\n");
+  dump("*** gConversation loaded\n");
 
 }, true);
