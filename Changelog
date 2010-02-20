@@ -18,6 +18,7 @@ font for viewing plain/text messages. Useful for Bugzilla emails for instance.
 conversation. This is actually a bug in Thunderbird, see bug 538750.
 - Fixed a bug that would render tab characters incorrectly in plain/text
 messages with fixed-width fonts.
+- Fixed a nasty bug where dates were displayed using a wrong character set.
 - "Mark all read" now also marks your own messages as read. The menuitem was
 sometimes incorrectly grayed out. This is now fixed.
 - Improve the look of printed messages (many more improvements).

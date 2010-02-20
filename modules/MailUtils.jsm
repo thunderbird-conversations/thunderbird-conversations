@@ -205,7 +205,7 @@ function convertHotmailQuotingToBlockquote2(aDocument, aHideQuoteLength) {
 }
 
 function convertForwardedToBlockquote(aDoc) {
-  let re = /\s*(-+)\s+(?:\w+\s+)+\1\s*/m;
+  let re = /\s*(-{5,})\s+(?:\S+\s+)+\1\s*/m;
   let walk = function (aNode) {
     for each (let [, child] in Iterator(aNode.childNodes)) {
       if (child.nodeType == child.TEXT_NODE && re.test(child.textContent)) {

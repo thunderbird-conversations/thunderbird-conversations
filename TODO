@@ -1,5 +1,5 @@
 # vim:ft=none 
-# let nextbug = 58 in
+# let nextbug = 59 in
 
 #54 Automatically switch to the conversation view when there's more than one
 message. Just add an event listener on messagepane for the "load" event, launch
@@ -9,19 +9,20 @@ multimessage if we ask for it.
   b) Improve it by only marking a message as read when it is scrolled into view
 #53 Put adjacent blockquotes together (does this ever happen?)
 #51 Find a way to hide short quotes in HTML (i.e. less than 3 lines)
-#29 Encoding issues (Chinese not ok, Czech not ok either)
 
+#45 Sometimes Thunderbird has not indexed a message... can we force indexing ?
 #50 Refactor message display (esp. plain/text) --> use a Necko URL (and use the
  HTML show/hide quoted text code)
 #47 0x0019 unicode char makes the innerHTML insertion phase fail
-#45 Sometimes Thunderbird has not indexed a message... can we force indexing ?
 #37 KB shortcuts for common operations -> use a global <key /> and
   if ($("#multimessage").is(":visible"))
     $("#multimessage").contentDocument.unfoldAll();
 #7 Make everything asynchronous. Start filling in messages for the first
   query, then launch the extended query that fetches more messages, and then
   asynchronously insert those in the right place as they arrive (i.e.
-  onItemsAdded, not onQueryCompleted).
+  onItemsAdded, not onQueryCompleted). There's already that kind of logic in
+  selectionsummaries.js and we're currently duplicating it, so maybe check with
+  davida or asuth if I can refactor selectionsummaries.js to suit my needs.
 #14 Assign a unique color to each recipient
   a) Currently using the sender's name as the key, check if there's something
   more elaborate using GlodaIdentity
@@ -33,6 +34,12 @@ multimessage if we ask for it.
 
 BUGS DUE TO THUNDERBIRD
 =======================
+#?? Sent messages do not appear in conversations until you open the "Sent"
+  folder yourself. Bug 534449.
+#29 Encoding issues (Chinese not ok, Czech not ok either, French not ok either).
+  Especially the dates. We'll that's a Thunderbird issue (a
+  XPConnect/storage-related one) that will hopefully be fixed in the next
+  release. See bug 547088.
 #12 Extension does not work with newsgroups (see bug 478167) and possibly other
 types of accounts
 #10 When clicking on the sender to display a given message, if the message is
@@ -44,4 +51,5 @@ types of accounts
   https://bugzilla.mozilla.org/show_bug.cgi?id=540911
 #21 Some conversations are erroneously recognized as multiple conversations
   (esp. when you change addresses when replying).
-  https://bugzilla.mozilla.org/show_bug.cgi?id=538750
+  https://bugzilla.mozilla.org/show_bug.cgi?id=538750, fixed by the extension,
+  Thunderbird patch pending.

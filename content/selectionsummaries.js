@@ -18,18 +18,21 @@
  *
  * */
 
-/* That's for event handlers */
+/* That's for event handlers. The stash is just a convenient way to store data
+ * that needs to be made available to the event handlers. We also store in the
+ * stash variables we don't want to be GC'd. */
 var gconversation = {
   on_load_thread: null,
   on_load_thread_tab: null,
-  mark_all_read: null
+  mark_all_read: null,
+  stash: {},
 };
-
-var gMsgHdrs;
 
 /* That's for global namespace pollution + because we need the document's
  * <stringbundle> to be accessible. */
-document.addEventListener("load", function () {
+document.addEventListener("load", function f_temp0 () {
+  document.removeEventListener("load", f_temp0, true); /* otherwise it's called 20+ times */
+
   const Ci = Components.interfaces;
   const Cc = Components.classes;
   const Cu = Components.utils;
@@ -93,7 +96,7 @@ document.addEventListener("load", function () {
     summarize: function() {
       /* We need to keep them at hand for the "Mark all read" command to work
        * properly */
-      gMsgHdrs = this._msgHdrs;
+      gconversation.stash.msgHdrs = this._msgHdrs;
 
       /* This function returns a fresh color everytime it is called. After some
        * time, it starts inventing new colors of its own. */
@@ -525,6 +528,8 @@ document.addEventListener("load", function () {
 
           if (htmlMsgNode.style.display != "none") {
             /* We can proceed as the xul:iframe is visible. */
+            /* NB: this currently triggers bug 540911, nothing we can do about
+             * it right now. */
             htmlMsgNode.appendChild(iframe);
           } else {
             /* Beware, the xul:iframe is not visible so we might no have a
@@ -604,7 +609,7 @@ document.addEventListener("load", function () {
           }
 
           /* msgHdr is still the best candidate for "the message we want" */
-          /* selectFolder doesn't work somestimes, issue fixed in Lanikai as of 2010-01-05, see bug 536042 */
+          /* selectFolder doesn't work sometimes, issue fixed in Lanikai as of 2010-01-05, see bug 536042 */
           gFolderTreeView.selectFolder(this.folder, true); 
           gFolderDisplay.selectMessage(this.msgHdr);
         }, true);
@@ -678,7 +683,7 @@ document.addEventListener("load", function () {
    * messages have all been found */
   function pullConversation(aSelectedMessages, k) {
     try {
-      q1 = Gloda.getMessageCollectionForHeaders(aSelectedMessages, {
+      gconversation.stash.q1 = Gloda.getMessageCollectionForHeaders(aSelectedMessages, {
         onItemsAdded: function (aItems) {
           let msg = aItems[0];
           //FIXME do something better...
@@ -687,12 +692,15 @@ document.addEventListener("load", function () {
           /*let query = Gloda.newQuery(Gloda.NOUN_MESSAGE)
           query.conversation(msg.conversation);
           //query.getCollection({*/
-          q2 = msg.conversation.getMessagesCollection({
+          gconversation.stash.q2 = msg.conversation.getMessagesCollection({
             onItemsAdded: function (aItems) {
             },
             onItemsModified: function () {},
             onItemsRemoved: function () {},
-            onQueryCompleted: function (aCollection) k(aCollection, msg),
+            /* That's a XPConnect bug. bug 547088, so track the
+             * bug and remove the setTimeout when it's fixed and bump the
+             * version requirements in install.rdf.template */
+            onQueryCompleted: function (aCollection) setTimeout(function () k(aCollection, msg), 0),
           }, true);
         },
         onItemsModified: function () {},
@@ -711,7 +719,6 @@ document.addEventListener("load", function () {
    * messages, and passes them to our instance of ThreadSummary. This design is
    * more convenient as it follows Thunderbird's more closely, which allows me
    * to track changes to the ThreadSummary code in Thunderbird more easily. */
-  var q1, q2;
   summarizeThread = function(aSelectedMessages, aListener, aSwitchMessageDisplay) {
     if (aSelectedMessages.length == 0) {
       dump("No selected messages\n");
@@ -801,7 +808,7 @@ document.addEventListener("load", function () {
    * messages as read. */
   gconversation.mark_all_read = function () {
     let pending = {};
-    for each (msgHdr in gMsgHdrs) {
+    for each (msgHdr in gconversation.stash.msgHdrs) {
       if (msgHdr.isRead)
         continue;
       if (!pending[msgHdr.folder.URI]) {
@@ -821,5 +828,26 @@ document.addEventListener("load", function () {
   /* We need to attach our custom context menu to multimessage, that's simpler
    * than using an overlay. */
   document.getElementById("multimessage").setAttribute("context", "gConvMenu");
+
+  /* Watch the location changes in the messagepane (single message view) to
+   * display a conversation if relevant. Beware of infinite loops! */
+  let messagepane = document.getElementById("messagepane");
+  gconversation.stash.uriWatcher = {
+    onStateChange: function () {},
+    onProgressChange: function () {},
+    onSecurityChange: function () {},
+    onStatusChange: function () {},
+    onLocationChange: function (aWebProgress, aRequest, aLocation) {
+      dump(aLocation.spec+"\n");
+      /* msgService.getMsgHdrForUri ...
+       * In order not to do this after a user clicked a sender's name in the
+       * multimessageview, check if we can add a special parameter to the URI
+       * like ... &gconv=1 */
+    },
+    QueryInterface: XPCOMUtils.generateQI([Ci.nsISupports, Ci.nsISupportsWeakReference, Ci.nsIWebProgressListener])
+  };
+  messagepane.addProgressListener(gconversation.stash.uriWatcher);
+
+  dump("gConversation loaded\n");
 
 }, true);
