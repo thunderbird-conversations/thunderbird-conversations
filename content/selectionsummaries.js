@@ -27,8 +27,6 @@ var gconversation = {
   mark_all_read: null,
   stash: {
     wantedUrl: null,
-    wantedThreadId: null,
-    wantedFolderUri: null,
     q1: null,
     q2: null
   },
@@ -852,32 +850,20 @@ document.addEventListener("load", function f_temp0 () {
       /* The logic is as follows.
        * i) The event handler stores the URI of the message we're jumping to.
        * ii) We catch that message loading: we don't load a conversation.
-       * iii) Plus: we store the current folder and the current thread id.
-       * iv) That way, when we want to view other messages in the same thread,
-       * individually, we don't search for a conversation. */
-      dump("stash.wantedUrl "+gconversation.stash.wantedUrl+"\n");
-      dump("loading         "+aLocation.spec+"\n");
-      if (gconversation.stash.wantedUrl) {
-        let wantedUrl = gconversation.stash.wantedUrl;
-        gconversation.stash.wantedUrl = null;
-        if (aLocation.spec == wantedUrl) {
-          let msgIndex = gFolderDisplay.selectedIndices[0];
-          gconversation.stash.wantedThreadId = gDBView.getThreadContainingIndex(msgIndex).getChildHdrAt(0).messageKey;
-          gconversation.stash.wantedFolderUri = gFolderDisplay.displayedFolder.URI;
-          return;
-        }
-      } else if (gconversation.stash.wantedThreadId) {
-        let msgIndex = gFolderDisplay.selectedIndices[0];
-        let currentThreadId = gDBView.getThreadContainingIndex(msgIndex).getChildHdrAt(0).messageKey;
-        let currentFolderUri = gFolderDisplay.displayedFolder.URI;
-        if (currentThreadId == gconversation.stash.wantedThreadId
-         && currentFolderUri == gconversation.stash.wantedFolderUri) {
-          return;
-        } else {
-          gconversation.stash.wantedThreadId = null;
-          gconversation.stash.wantedFolderUrl = null;
-        }
-      } /* else if we're seeing an unfolded thread -> return */
+       * iii) We don't want to load a conversation if we're viewing a message
+       * that's in an expanded thread. */
+      let wantedUrl = gconversation.stash.wantedUrl;
+      gconversation.stash.wantedUrl = null;
+      let isExpanded = false;
+      let msgIndex = gFolderDisplay ? gFolderDisplay.selectedIndices[0] : -1;
+      if (msgIndex >= 0) {
+        let rootIndex = gDBView.findIndexOfMsgHdr(gDBView.getThreadContainingIndex(msgIndex).getChildHdrAt(0), false);
+        if (rootIndex >= 0)
+          isExpanded = gDBView.isContainer(rootIndex) && !gFolderDisplay.view.isCollapsedThreadAtIndex(rootIndex);
+      }
+      if (aLocation.spec == wantedUrl || isExpanded)
+        return;
+
       let msgService;
       try {
         msgService = gMessenger.messageServiceFromURI(aLocation.spec);
