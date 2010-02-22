@@ -2,7 +2,7 @@ var EXPORTED_SYMBOLS = ['getMessageBody', 'selectRightMessage',
   'removeDuplicates', 'MimeMessageToHTML', 'MimeMessageHasAttachment',
   'convertHotmailQuotingToBlockquote1', 'convertHotmailQuotingToBlockquote2',
   'convertOutlookQuotingToBlockquote', '_mm_toggleClass',
-  'convertForwardedToBlockquote']
+  'convertForwardedToBlockquote', 'msgHdrToNeckoURL']
 
 const Ci = Components.interfaces;
 const Cc = Components.classes;
@@ -89,9 +89,7 @@ function removeDuplicates(items) {
   return [similar[id] for each (id in orderedIds)];
 }
 
-/* Recursively walk down a MimeMessage trying to find a text/html MessageBody.
- * TODO: figure out a way to use else if (aMsg instanceof MimeMsg) instead of
- * that stupid test with toString below. */
+/* Recursively walk down a MimeMessage trying to find a text/html MessageBody. */
 function MimeMessageToHTML(aMsg) {
   if (aMsg instanceof MimeMessage || aMsg instanceof MimeContainer) { // is this a container ?
     let buf = [];
@@ -118,6 +116,9 @@ function MimeMessageToHTML(aMsg) {
   }
 }
 
+/* Recursively walk down a MimeMessage to find something that looks like an
+ * attachment. Returns true for "real" attachments only (that is, not forwarded
+ * messages). (Is that what we want?) */
 function MimeMessageHasAttachment(aMsg) {
   let f = function (aMsg) {
     if (aMsg instanceof MimeMessageAttachment)
@@ -133,6 +134,7 @@ function MimeMessageHasAttachment(aMsg) {
   }
 }
 
+/* (sigh...) */
 function insertAfter(newElement, referenceElt) {
   if (referenceElt.nextSibling)
     referenceElt.parentNode.insertBefore(newElement, referenceElt.nextSibling);
@@ -140,6 +142,8 @@ function insertAfter(newElement, referenceElt) {
     referenceElt.parentNode.appendChild(newElement);
 }
 
+/* Create a blockquote before "marker" and insert all elements after that into
+ * the blockquote. if (remove) then marker is removed. */
 function makeBlockquote(aDoc, marker, remove) {
   let blockquote = aDoc.createElement("blockquote");
   blockquote.setAttribute("type", "cite");
@@ -150,6 +154,7 @@ function makeBlockquote(aDoc, marker, remove) {
     marker.parentNode.removeChild(marker);
 }
 
+/* Hotmails use a <hr> to mark the start of the quoted part. */
 function convertHotmailQuotingToBlockquote1(aDoc) {
   /* We make the assumption that no one uses a <hr> in their emails except for
    * separating a quoted message from the rest */
@@ -158,6 +163,7 @@ function convertHotmailQuotingToBlockquote1(aDoc) {
     makeBlockquote(aDoc, marker, true);
 }
 
+/* There's a special message header for that. */
 function convertOutlookQuotingToBlockquote(aDoc) {
   /* Outlook uses a special thing for that */
   let marker = aDoc.getElementsByClassName("OutlookMessageHeader")[0];
@@ -165,6 +171,7 @@ function convertOutlookQuotingToBlockquote(aDoc) {
     makeBlockquote(aDoc, marker);
 }
 
+/* For #text <br /> #text ... when text nodes are quotes */
 function convertHotmailQuotingToBlockquote2(aDocument, aHideQuoteLength) {
   /* Actually that's not specific to Hotmail... */
   let brCount = 0;
@@ -203,6 +210,9 @@ function convertHotmailQuotingToBlockquote2(aDocument, aHideQuoteLength) {
   walk(aDocument.body, false, 0);
 }
 
+/* Stupid regexp that matches:
+ * ----- Something that supposedly says this is quoted -----
+ * Fails 9 times out of 10. */
 function convertForwardedToBlockquote(aDoc) {
   let re = /\s*(-{5,})\s+(?:\S+\s+)+\1\s*/m;
   let walk = function (aNode) {
@@ -233,3 +243,11 @@ function _mm_toggleClass(node, classname) {
   node.setAttribute('class', classes.join(' '));
 }
 
+/* Returns a nsIURI from a nsIMsgDBHdr */
+function msgHdrToNeckoURL(aMsgHdr, gMessenger) {
+  let uri = aMsgHdr.folder.getUriForMsg(aMsgHdr);
+  let neckoURL = {};
+  let msgService = gMessenger.messageServiceFromURI(uri);
+  msgService.GetUrlForUri(uri, neckoURL, null);
+  return neckoURL.value;
+}

@@ -1,15 +1,21 @@
 # vim:ft=none 
-# let nextbug = 60 in
+# let nextbug = 61 in
 
 #54 Automatically switch to the conversation view when there's more than one
 message. Just add an event listener on messagepane for the "load" event, launch
 a request and refactor a little to add an extra parameter that switches to
 multimessage if we ask for it.
+  -> subbug: use the db view's thread id to determine if we should disable
+  conversation lookup or not (instead of just a message URL) + if the thread is
+  unfolded, don't start looking for a conversation view. See paper flowchart.
 #9 Add an option to mark a thread as read when it is displayed
   b) Improve it by only marking a message as read when it is scrolled into view
 #53 Put adjacent blockquotes together (does this ever happen?)
 #51 Find a way to hide short quotes in HTML (i.e. less than 3 lines)
 
+#60 Add an option to set each message's background the same color as the sender
+(maybe lighter). set r = r / sqrt(r² + g² + b²) (same for g & b) and multiply by
+a lightness factor.
 #59 Improve quote folding code.
   - ----- Forwarded message ----- is not folded in plain/text
   - ----- XXX XXX ----- does not work optimally. Do sth like
@@ -48,11 +54,7 @@ BUGS DUE TO THUNDERBIRD
   XPConnect/storage-related one) that will hopefully be fixed in the next
   release. See bug 547088.
 #12 Extension does not work with newsgroups (see bug 478167) and possibly other
-types of accounts
-#10 When clicking on the sender to display a given message, if the message is
-  sent by me, and the "Sent" Smart Folder is not collapsed, cannot jump to the
-  right Sent folder. WONTFIX (bug in Thunderbird, fixed in 3.1 and 3.0.1, see
-  https://bugzilla.mozilla.org/show_bug.cgi?id=536042)
+types of accounts.
 #?? Dates are incorrectly translated (some are, some are not) see bug 537401
 #?? Nasty flickering when scrolling messages with HTML display on. See
   https://bugzilla.mozilla.org/show_bug.cgi?id=540911

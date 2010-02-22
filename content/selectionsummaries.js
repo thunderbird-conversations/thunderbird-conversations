@@ -161,7 +161,6 @@ document.addEventListener("load", function f_temp0 () {
           }
         }
       }
-      dump("needsFocus "+needsFocus+"\n");
       let msgHdrs = this._msgHdrs;
       let msgNodes = this._msgNodes;
       let scrollAfterReflow = needsFocus > 0 ? function () {
@@ -516,10 +515,7 @@ document.addEventListener("load", function f_temp0 () {
                * pretty well (no JS is executed, the images are loaded IFF we
                * authorized that recipient).
                * */
-              let uri = msgHdr.folder.getUriForMsg(msgHdr);
-              let neckoURL = {};
-              let msgService = gMessenger.messageServiceFromURI(uri);
-              msgService.GetUrlForUri(uri, neckoURL, null);
+              let url = msgHdrToNeckoURL(msgHdr, gMessenger);
 
               /* FIXME check on #maildev ?header=quotebody is the best way to do that */
               let cv = iframe.docShell.contentViewer;
@@ -527,7 +523,7 @@ document.addEventListener("load", function f_temp0 () {
               cv.hintCharacterSet = "UTF-8";
               cv.hintCharacterSetSource = kCharsetFromMetaTag;
               iframe.docShell.appType = Components.interfaces.nsIDocShell.APP_TYPE_MAIL;
-              iframe.webNavigation.loadURI(neckoURL.value.spec+"?header=quotebody", iframe.webNavigation.LOAD_FLAGS_IS_LINK, null, null, null);
+              iframe.webNavigation.loadURI(url.spec+"?header=quotebody", iframe.webNavigation.LOAD_FLAGS_IS_LINK, null, null, null);
             }, true); /* end document.addEventListener */
 
           if (htmlMsgNode.style.display != "none") {
@@ -561,6 +557,7 @@ document.addEventListener("load", function f_temp0 () {
             if (hasAttachment)
               msgNode.getElementsByClassName("attachment")[0].style.display = "";
 
+            /* XXX the html variable is unused here */
             let [hasHtml, html] = MimeMessageToHTML(aMimeMsg);
             if (hasHtml && g_prefs["html"]) {
               fillSnippetAndHTML(snippet, html, meta.author);
@@ -604,6 +601,10 @@ document.addEventListener("load", function f_temp0 () {
         sender.folder = msgHdr.folder;
         sender.msgKey = msgHdr.messageKey;
         sender.addEventListener("click", function(e) {
+          /* Don't try to detect a conversation */
+          let url = msgHdrToNeckoURL(msgHdr, gMessenger);
+          gconversation.stash.wantedUrl = url.spec;
+
           /* msgHdr is "the right message" (we pre-selected message before
            * giving them to the ThreadSummary) */
           let viewIndex = gFolderDisplay.view.getViewIndexForMsgHdr(this.msgHdr);
@@ -842,10 +843,13 @@ document.addEventListener("load", function f_temp0 () {
     onSecurityChange: function () {},
     onStatusChange: function () {},
     onLocationChange: function (aWebProgress, aRequest, aLocation) {
-      /* msgService.getMsgHdrForUri ...
-       * In order not to do this after a user clicked a sender's name in the
-       * multimessageview, check if we can add a special parameter to the URI
-       * like ... &gconv=1 */
+      /* The event handler tells us which message it switched to. If we just
+       * asked for a single message, don't try to detect a conversation. */
+      if (aLocation.spec == gconversation.stash.wantedUrl) {
+        return;
+      } else {
+        gconversation.stash.wantedUrl = null;
+      }
       let msgService;
       try {
         msgService = gMessenger.messageServiceFromURI(aLocation.spec);
