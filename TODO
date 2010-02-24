@@ -1,28 +1,37 @@
 # vim:ft=none 
-# let nextbug = 61 in
+# let nextbug = 63 in
 
-#54 Automatically switch to the conversation view when there's more than one
-message. Just add an event listener on messagepane for the "load" event, launch
-a request and refactor a little to add an extra parameter that switches to
-multimessage if we ask for it.
-  -> subbug: use the db view's thread id to determine if we should disable
-  conversation lookup or not (instead of just a message URL) + if the thread is
-  unfolded, don't start looking for a conversation view. See paper flowchart.
-#9 Add an option to mark a thread as read when it is displayed
-  b) Improve it by only marking a message as read when it is scrolled into view
-#53 Put adjacent blockquotes together (does this ever happen?)
+OUTSTANDING BUGS
+================
+#9 Add an option to automatically mark a thread as read when it is displayed.
+  Add an option to automatically mark messages as read as they are scrolled into
+  view.
+#63 Properly warn users that this isn't going to work when gloda isn't enabled
+  (maybe a popup?, or something in the options dialog?).
+
+QUOTING BUGS
+============
 #51 Find a way to hide short quotes in HTML (i.e. less than 3 lines)
-
-#60 Add an option to set each message's background the same color as the sender
-(maybe lighter). set r = r / sqrt(r² + g² + b²) (same for g & b) and multiply by
-a lightness factor.
 #59 Improve quote folding code.
-  - ----- Forwarded message ----- is not folded in plain/text
   - ----- XXX XXX ----- does not work optimally. Do sth like
     while (node.parentNode.nextSibling && node.parentNode.firstChild == node)
       node = node.parentNode
     and then put everything in the blockquote (really think hard about the best
     way to do that).
+
+LOW-KEY BUGS
+============
+#63 Add visual feedback for messages that are drafts.
+#64 Add automated tests in my Makefiles to detect untranslated strings.
+#60 Add an option to set each message's background the same color as the sender
+(maybe lighter). set r = r / sqrt(r² + g² + b²) (same for g & b) and multiply by
+a lightness factor.
+#14 Assign a unique color to each recipient
+  a) Currently using the sender's name as the key, check if there's something
+  more elaborate using GlodaIdentity
+#20 Add a preference to choose the default set of colors for recipients.
+
+#61 Forwarded emails are incorrectly understood as attachments (check fix works)
 #45 Sometimes Thunderbird has not indexed a message... can we force indexing ?
 #50 Refactor message display (esp. plain/text) --> use a Necko URL (and use the
  HTML show/hide quoted text code)
@@ -36,13 +45,9 @@ a lightness factor.
   onItemsAdded, not onQueryCompleted). There's already that kind of logic in
   selectionsummaries.js and we're currently duplicating it, so maybe check with
   davida or asuth if I can refactor selectionsummaries.js to suit my needs.
-#14 Assign a unique color to each recipient
-  a) Currently using the sender's name as the key, check if there's something
-  more elaborate using GlodaIdentity
 #19 Font size is set as 12px. Use the Thunderbird-wide preference that depends
   on the lang of the message. --> Do not set 12px but set font to -moz-fixed
   when viewing message with monospace font.
-#20 Add a preference to choose the default set of colors for recipients.
 
 
 BUGS DUE TO THUNDERBIRD

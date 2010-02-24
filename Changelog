@@ -1,4 +1,17 @@
 --- v0.3 development series ---
+
+GMail Conversation View 0.3alpha3
+---------------------------------
+- Warn people when "Global search and indexer" is disabled (this prevents the
+extension from working).
+
+GMail Conversation View 0.3alpha2
+---------------------------------
+- Conversations are now automatically pulled by default (this can be disabled in
+the options dialog). This means that if you reply to someone's message, although
+there is no thread in your inbox, the conversation view will appear whenever you
+select that message. This adds some extra stress on Thunderbird so this can be
+disabled in the add-on's options.
 - Added links to reply (and other actions) to an email in the conversation
 directly (it's not necessary to open the message first anymore). You can hold
 shift while clicking the links, it will work as expected.

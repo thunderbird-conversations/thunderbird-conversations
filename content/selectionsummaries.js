@@ -65,6 +65,7 @@ document.addEventListener("load", function f_temp0 () {
   g_prefs["hide_quote_length"] = prefs.getIntPref("hide_quote_length");
   g_prefs["fold_rule"] = prefs.getCharPref("fold_rule");
   g_prefs["reverse_order"] = prefs.getBoolPref("reverse_order");
+  g_prefs["auto_fetch"] = prefs.getBoolPref("auto_fetch");
 
   let myPrefObserver = {
     register: function () {
@@ -84,6 +85,7 @@ document.addEventListener("load", function f_temp0 () {
         case "focus_first":
         case "html":
         case "reverse_order":
+        case "auto_fetch":
           g_prefs[aData] = prefs.getBoolPref(aData);
           break;
         case "hide_quote_length":
@@ -127,9 +129,6 @@ document.addEventListener("load", function f_temp0 () {
       this._msgNodes = {};
 
       let htmlpane = document.getElementById('multimessage');
-      /*htmlpane.addEventListener("scroll", function (event) {
-        dump(event.target+"\n");
-      }, true);*/
 
       /* Fill the heading */
       let firstMsgHdr = this._msgHdrs[0];
@@ -171,7 +170,6 @@ document.addEventListener("load", function f_temp0 () {
           let tKey = msgHdrs[needsFocus].messageKey + msgHdrs[needsFocus].folder.URI;
           /* Because of the header that hides the beginning of the message,
            * scroll a bit more */
-          dump("Scrolling to the message from "+msgHdrs[needsFocus].mime2DecodedAuthor+"\n");
           let h = document.getElementById("multimessage")
             .contentDocument.getElementById("headingwrappertable")
             .getBoundingClientRect().height;
@@ -185,10 +183,8 @@ document.addEventListener("load", function f_temp0 () {
       let nMessagesDone = numMessages;
       function messageDone() {
         nMessagesDone--;
-        if (nMessagesDone == 0) {
-          dump("All messages are properly loaded, scrolling...\n");
+        if (nMessagesDone == 0)
           scrollAfterReflow();
-        }
       }
 
       for (let i = 0; i < numMessages; ++i) {
@@ -416,7 +412,6 @@ document.addEventListener("load", function f_temp0 () {
           let iframe = htmlpane.contentDocument.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "iframe");
           iframe.setAttribute("style", "height: 20px");
           iframe.setAttribute("type", "content");
-          iframe.addEventListener("load", function () { dump("load event on the iframe for "+senderName+"\n"); }, true);
           /* The xul:iframe automatically loads about:blank when it is added
            * into the tree. We need to wait for the document to be loaded before
            * doing things.
@@ -443,8 +438,9 @@ document.addEventListener("load", function f_temp0 () {
                      * to real blockquotes. */
                     convertOutlookQuotingToBlockquote(aDoc);
                     convertHotmailQuotingToBlockquote1(aDoc);
-                    convertHotmailQuotingToBlockquote2(aDoc, g_prefs["hide_quote_length"]);
+                    convertHotmailQuotingToBlockquote2(iframe.contentWindow, aDoc, g_prefs["hide_quote_length"]);
                     convertForwardedToBlockquote(aDoc);
+                    fusionBlockquotes(aDoc);
                     /* This function adds a show/hide quoted text link to every topmost
                      * blockquote. Nested blockquotes are not taken into account. */
                     let walk = function (elt) {
@@ -460,7 +456,6 @@ document.addEventListener("load", function f_temp0 () {
                                 let h = htmlpane.contentWindow.toggleQuote(event);
                                 iframe.style.height = (parseInt(iframe.style.height) + h)+"px";
                               }, true);
-                            //div.setAttribute("onclick", "toggleQuote(event);");
                             div.setAttribute("style", "color: #512a45; cursor: pointer;");
                             div.appendChild(document.createTextNode("- "+
                               stringBundle.getString("showquotedtext")+" -"));
@@ -493,7 +488,6 @@ document.addEventListener("load", function f_temp0 () {
 
                   /* Sometimes setting the iframe's content and height changes
                    * the scroll value */
-                  dump("Restoring "+originalScroll+"\n");
                   htmlpane.contentDocument.documentElement.scrollTop = originalScroll;
                   
                   /* If it's an immediate display, fire the messageDone event
@@ -521,7 +515,10 @@ document.addEventListener("load", function f_temp0 () {
                * */
               let url = msgHdrToNeckoURL(msgHdr, gMessenger);
 
-              /* FIXME check on #maildev ?header=quotebody is the best way to do that */
+              /* FIXME check on #maildev ?header=quotebody is the best way to do that.
+               * Start searching at
+               * http://mxr.mozilla.org/comm-central/source/mailnews/imap/src/nsImapService.cpp#454
+               * for pointers on how the "real code" is doing that. */
               let cv = iframe.docShell.contentViewer;
               cv.QueryInterface(Ci.nsIMarkupDocumentViewer);
               cv.hintCharacterSet = "UTF-8";
@@ -542,7 +539,6 @@ document.addEventListener("load", function f_temp0 () {
             arrowNode.addEventListener("click", function f_temp3 () {
                 arrowNode.removeEventListener("click", f_temp3, true);
                 originalScroll = htmlpane.contentDocument.documentElement.scrollTop;
-                dump("Saving scroll "+originalScroll+"\n");
                 htmlMsgNode.appendChild(iframe);
               }, true);
             /* Well, nothing will happen in the load process after that, so no
@@ -579,7 +575,7 @@ document.addEventListener("load", function f_temp0 () {
             let body = getMessageBody(msgHdr, true);
             let snippet = body.substring(0, SNIPPET_LENGTH-3)+"...";
             fillSnippetAndMsg(snippet, body);
-            dump("Got an \"offline message\"\n");
+            dump("*** Got an \"offline message\"\n");
           } catch (e) {
             Application.console.log("Error fetching the message: "+e);
             /* Ok, that failed too... */
@@ -627,7 +623,6 @@ document.addEventListener("load", function f_temp0 () {
          * http://mxr.mozilla.org/comm-central/source/mail/base/content/messageWindow.js#949
          * and follow the function definitions. */
         let uri = msgHdr.folder.getUriForMsg(msgHdr);
-        dump("Uri of the message: "+uri+"\n");
         let compose = function (aCompType, aEvent) {
           if (aEvent.shiftKey) {
             ComposeMessage(aCompType, Ci.nsIMsgCompFormat.OppositeOfDefault, msgHdr.folder, [uri]);
@@ -713,8 +708,8 @@ document.addEventListener("load", function f_temp0 () {
           }, true);
         },
         onItemsModified: function () {},
-        onItemsRemoved: function () {}, onQueryCompleted: function (aCollection) {
-        },
+        onItemsRemoved: function () {},
+        onQueryCompleted: function (aCollection) { },
       }, true);
     } catch (e) {
       dump("Exception in summarizeThread" + e + "\n");
@@ -784,12 +779,27 @@ document.addEventListener("load", function f_temp0 () {
     }
   };
 
+  let checkGlodaEnabled = function() {
+    let enabled = gPrefBranch.getBoolPref("mailnews.database.global.indexer.enabled");
+    if (enabled) {
+      return true;
+    } else {
+      gMessageDisplay.singleMessageDisplay = false;
+      let htmlpane = document.getElementById('multimessage');
+      htmlpane.contentDocument.location.href = "chrome://gconversation/content/glodadisabled.xhtml";
+    }
+  };
+
   /* Register event handlers through the global variable */
   gconversation.on_load_thread = function() {
+    if (!checkGlodaEnabled())
+      return;
     summarizeThread(gFolderDisplay.selectedMessages, null, true);
   };
   gconversation.on_load_thread_tab = function() {
     if (!gFolderDisplay.selectedMessages.length)
+      return;
+    if (!checkGlodaEnabled())
       return;
 
     pullConversation(
@@ -839,7 +849,7 @@ document.addEventListener("load", function f_temp0 () {
   document.getElementById("multimessage").setAttribute("context", "gConvMenu");
 
   /* Watch the location changes in the messagepane (single message view) to
-   * display a conversation if relevant. Beware of infinite loops! */
+   * display a conversation if relevant. */
   let messagepane = document.getElementById("messagepane");
   gconversation.stash.uriWatcher = {
     onStateChange: function () {},
@@ -847,6 +857,12 @@ document.addEventListener("load", function f_temp0 () {
     onSecurityChange: function () {},
     onStatusChange: function () {},
     onLocationChange: function (aWebProgress, aRequest, aLocation) {
+      /* By testing here for the pref, we allow the pref to be changed at
+       * run-time and we do not require to restart Thunderbird to take the
+       * change into account. */
+      if (!g_prefs["auto_fetch"])
+        return;
+
       /* The logic is as follows.
        * i) The event handler stores the URI of the message we're jumping to.
        * ii) We catch that message loading: we don't load a conversation.

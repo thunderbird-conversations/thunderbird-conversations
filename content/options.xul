@@ -24,6 +24,7 @@
       <preference id="html" name="gconversation.html" type="bool" />
       <preference id="focus_first" name="gconversation.focus_first" type="bool" />
       <preference id="reverse_order" name="gconversation.reverse_order" type="bool" />
+      <preference id="auto_fetch" name="gconversation.auto_fetch" type="bool" />
     </preferences>
    
     <groupbox>
@@ -62,21 +63,11 @@
         </menulist>
       </hbox>
     </groupbox>
-  </prefpane>
-  
-  <!--<prefpane id="tblatex-template" label="LaTeX template to use" image="chrome://messenger/skin/preferences/advanced.png">
-    <preferences>
-      <preference id="latex_template" name="tblatex.template" type="string" />
-    </preferences>
-   
-    <hbox>
-      <label control="template_textbox" value="Template to use to generate LaTeX parts "/>
-      <label style="text-decoration: underline; color: navy;" value="Help ?"
-        onclick="window.openDialog('chrome://tblatex/content/help.html', '',
-          'all,chrome,dialog=no,status,toolbar,width=640,height=480');" />
-    </hbox>
-    <textbox preference="latex_template" id="template_textbox" multiline="true"
-      rows="12" />
-  </prefpane>-->
-
+    <groupbox>
+      <caption><description>&title.general;</description></caption>
+      <description style="width: 0; height: 7em;">&auto_fetch.info;</description>
+      <checkbox label="&option.auto_fetch;" preference="auto_fetch" id="auto_fetch_checkbox" />
+    </groupbox>
+   </prefpane>
+ 
 </prefwindow>

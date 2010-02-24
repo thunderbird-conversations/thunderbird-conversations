@@ -1,0 +1,7 @@
+<!ENTITY window.title "GMail conversation view cannot work">
+<!ENTITY explanations "You need to enable the global database for this add-on to
+work properly. Please go to Tools &gt; Options (or Edit &gt; Preferences). In
+the &quot;Advanced&quot; section, look for the &quot;General&quot; tab. Check
+&quot;Enable global search and indexer&quot;. You're done! You just need to
+wait for Thunderbird to index all your messages (this might take a while).">
+<!ENTITY help "Need more help?">

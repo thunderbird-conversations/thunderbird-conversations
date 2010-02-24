@@ -2,7 +2,8 @@ var EXPORTED_SYMBOLS = ['getMessageBody', 'selectRightMessage',
   'removeDuplicates', 'MimeMessageToHTML', 'MimeMessageHasAttachment',
   'convertHotmailQuotingToBlockquote1', 'convertHotmailQuotingToBlockquote2',
   'convertOutlookQuotingToBlockquote', '_mm_toggleClass',
-  'convertForwardedToBlockquote', 'msgHdrToNeckoURL']
+  'convertForwardedToBlockquote', 'msgHdrToNeckoURL',
+  'fusionBlockquotes']
 
 const Ci = Components.interfaces;
 const Cc = Components.classes;
@@ -14,22 +15,26 @@ const nsMsgFolderFlags_Archive  = 0x00004000;
 
 const txttohtmlconv = Cc["@mozilla.org/txttohtmlconv;1"].createInstance(Ci.mozITXTToHTMLConv);
 
-/* Do a "old-style" retrieval of a message's body given its nsIMsgDBHdr. This
- * is useful when MsgHdrToMimeMessage fails. */
-function getMessageBody(aMessageHeader, aStripHtml) {  
-  let messenger = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);  
-  let listener = Cc["@mozilla.org/network/sync-stream-listener;1"].createInstance(Ci.nsISyncStreamListener);  
-  let uri = aMessageHeader.folder.getUriForMsg(aMessageHeader);  
-  messenger.messageServiceFromURI(uri).streamMessage(uri, listener, null, null, false, "");  
-  let folder = aMessageHeader.folder;  
-  /*
-   * AUTF8String getMsgTextFromStream(in nsIInputStream aStream, in ACString aCharset,
-                                      in unsigned long aBytesToRead, in unsigned long aMaxOutputLen, 
-                                      in boolean aCompressQuotes, in boolean aStripHTMLTags,
-                                      out ACString aContentType);
-  */
-  return folder.getMsgTextFromStream(listener.inputStream, aMessageHeader.Charset, 65536, 32768, false, aStripHtml, { });  
-}  
+/* (no comment) */
+function _mm_toggleClass(node, classname) {
+  let classes = [];
+  if (node.hasAttribute('class'))
+    classes = node.getAttribute('class').split(' ');
+
+  if (classes.indexOf(classname) >= 0)
+    classes = classes.filter(function (x) x != classname);
+  else
+    classes.push(classname);
+  node.setAttribute('class', classes.join(' '));
+}
+
+/* (sigh...) */
+function insertAfter(newElement, referenceElt) {
+  if (referenceElt.nextSibling)
+    referenceElt.parentNode.insertBefore(newElement, referenceElt.nextSibling);
+  else
+    referenceElt.parentNode.appendChild(newElement);
+}
 
 /* In the case of GMail accounts, several messages with the same Message-Id
  * header will be returned when we search for all message related to the
@@ -44,6 +49,8 @@ function selectRightMessage(similar, currentFolder) {
   let msgHdr;
   /* NB: this won't find anything for the "Inbox" Smart Folder for instance */
   for each (let m in similar) {
+    if (!m.folderMessage)
+      continue;
     if (currentFolder && m.folderMessage.folder.URI == currentFolder.URI) {
       msgHdr = m;
       break;
@@ -51,6 +58,8 @@ function selectRightMessage(similar, currentFolder) {
   }
   if (!msgHdr) {
     for each (let m in similar) {
+      if (!m.folderMessage)
+        continue;
       if (m.folderMessage.folder.getFlag(nsMsgFolderFlags_SentMail)) {
         msgHdr = m;
         break;
@@ -59,6 +68,8 @@ function selectRightMessage(similar, currentFolder) {
   }
   if (!msgHdr) {
     for each (let m in similar) {
+      if (!m.folderMessage)
+        continue;
       if (!m.folderMessage.folder.getFlag(nsMsgFolderFlags_Archive)) {
         msgHdr = m;
         break;
@@ -87,6 +98,32 @@ function removeDuplicates(items) {
     }
   }
   return [similar[id] for each (id in orderedIds)];
+}
+
+/* Do a "old-style" retrieval of a message's body given its nsIMsgDBHdr. This
+ * is useful when MsgHdrToMimeMessage fails. */
+function getMessageBody(aMessageHeader, aStripHtml) {  
+  let messenger = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);  
+  let listener = Cc["@mozilla.org/network/sync-stream-listener;1"].createInstance(Ci.nsISyncStreamListener);  
+  let uri = aMessageHeader.folder.getUriForMsg(aMessageHeader);  
+  messenger.messageServiceFromURI(uri).streamMessage(uri, listener, null, null, false, "");  
+  let folder = aMessageHeader.folder;  
+  /*
+   * AUTF8String getMsgTextFromStream(in nsIInputStream aStream, in ACString aCharset,
+                                      in unsigned long aBytesToRead, in unsigned long aMaxOutputLen, 
+                                      in boolean aCompressQuotes, in boolean aStripHTMLTags,
+                                      out ACString aContentType);
+  */
+  return folder.getMsgTextFromStream(listener.inputStream, aMessageHeader.Charset, 65536, 32768, false, aStripHtml, { });  
+}  
+
+/* Returns a nsIURI from a nsIMsgDBHdr */
+function msgHdrToNeckoURL(aMsgHdr, gMessenger) {
+  let uri = aMsgHdr.folder.getUriForMsg(aMsgHdr);
+  let neckoURL = {};
+  let msgService = gMessenger.messageServiceFromURI(uri);
+  msgService.GetUrlForUri(uri, neckoURL, null);
+  return neckoURL.value;
 }
 
 /* Recursively walk down a MimeMessage trying to find a text/html MessageBody. */
@@ -120,7 +157,7 @@ function MimeMessageToHTML(aMsg) {
  * attachment. Returns true for "real" attachments only (that is, not forwarded
  * messages). (Is that what we want?) */
 function MimeMessageHasAttachment(aMsg) {
-  let f = function (aMsg) {
+  /*let f = function (aMsg) {
     if (aMsg instanceof MimeMessageAttachment)
       throw { found: true };
     else
@@ -131,15 +168,8 @@ function MimeMessageHasAttachment(aMsg) {
     return false;
   } catch (e if e.found) {
     return true;
-  }
-}
-
-/* (sigh...) */
-function insertAfter(newElement, referenceElt) {
-  if (referenceElt.nextSibling)
-    referenceElt.parentNode.insertBefore(newElement, referenceElt.nextSibling);
-  else
-    referenceElt.parentNode.appendChild(newElement);
+  }*/
+  return aMsg.allAttachments.some(function (x) x.isRealAttachment);
 }
 
 /* Create a blockquote before "marker" and insert all elements after that into
@@ -172,30 +202,40 @@ function convertOutlookQuotingToBlockquote(aDoc) {
 }
 
 /* For #text <br /> #text ... when text nodes are quotes */
-function convertHotmailQuotingToBlockquote2(aDocument, aHideQuoteLength) {
+function convertHotmailQuotingToBlockquote2(aWindow, aDocument, aHideQuoteLength) {
   /* Actually that's not specific to Hotmail... */
   let brCount = 0;
   let walk = function (aNode, inBlockquote, depth) {
     let p = Object();
-    if (aNode.nodeType == aNode.TEXT_NODE && txttohtmlconv.citeLevelTXT(aNode.textContent+" ", p) > 0) {
+    let parentIsBlock = aNode.parentNode && aWindow.getComputedStyle(aNode.parentNode, null).display == "block";
+    if (aNode.nodeType == aNode.TEXT_NODE && txttohtmlconv.citeLevelTXT(aNode.textContent+" ", p) > 0 && parentIsBlock) {
+      /* Strip the leading > > > ...s */
+      if (p.value <= aNode.textContent.length)
+        aNode.textContent = aNode.textContent.substring(p.value, aNode.textContent.length);
+      /* Create the <blockquote> if needed */
       if (!inBlockquote) {
         let blockquote = aDocument.createElement("blockquote");
         blockquote.setAttribute("type", "cite");
         blockquote.setUserData("hideme", false, null);
         aNode.parentNode.insertBefore(blockquote, aNode);
       }
+      /* Put the text node inside the blockquote */
       let next = aNode.nextSibling;
       aNode.previousSibling.appendChild(aNode);
+      /* Move on if possible */
       if (next)
         walk(next, true, depth);
     } else if (aNode.tagName && aNode.tagName.toLowerCase() == "br"
             || aNode.nodeType == aNode.TEXT_NODE && !aNode.textContent.trim().length) {
       let next = aNode.nextSibling;
+      /* Inside the <blockquote> we accept <br>s and empty text nodes */
       if (inBlockquote) {
+        /* Count the <br>'s */
         if (aNode.tagName && aNode.tagName.toLowerCase() == "br")
           brCount++;
+        /* If we've seen enough, mark this node for folding */
         if (brCount == aHideQuoteLength + 1)
-          blockquote.setUserData("hideme", true, null);
+          aNode.previousSibling.setUserData("hideme", true, null);
         aNode.previousSibling.appendChild(aNode);
       }
       if (next)
@@ -211,7 +251,7 @@ function convertHotmailQuotingToBlockquote2(aDocument, aHideQuoteLength) {
 }
 
 /* Stupid regexp that matches:
- * ----- Something that supposedly says this is quoted -----
+ * ----- Something that supposedly says the text below is quoted -----
  * Fails 9 times out of 10. */
 function convertForwardedToBlockquote(aDoc) {
   let re = /\s*(-{5,})\s+(?:\S+\s+)+\1\s*/m;
@@ -230,24 +270,19 @@ function convertForwardedToBlockquote(aDoc) {
   } catch ( { found } if found) { }
 }
 
-/* (no comment) */
-function _mm_toggleClass(node, classname) {
-  let classes = [];
-  if (node.hasAttribute('class'))
-    classes = node.getAttribute('class').split(' ');
-
-  if (classes.indexOf(classname) >= 0)
-    classes = classes.filter(function (x) x != classname);
-  else
-    classes.push(classname);
-  node.setAttribute('class', classes.join(' '));
-}
-
-/* Returns a nsIURI from a nsIMsgDBHdr */
-function msgHdrToNeckoURL(aMsgHdr, gMessenger) {
-  let uri = aMsgHdr.folder.getUriForMsg(aMsgHdr);
-  let neckoURL = {};
-  let msgService = gMessenger.messageServiceFromURI(uri);
-  msgService.GetUrlForUri(uri, neckoURL, null);
-  return neckoURL.value;
+/* Fusion together two adjacent blockquotes */
+function fusionBlockquotes(aDoc) {
+  let blockquotes = aDoc.getElementsByTagName("blockquote");
+  for (let i = blockquotes.length - 1; i >= 0; i--) {
+    let blockquote = blockquotes[i];
+    if ( blockquote
+      && blockquote.nextElementSibling
+      && blockquote.nextElementSibling.tagName
+      && blockquote.nextElementSibling.tagName.toLowerCase() == "blockquote") {
+      let b = blockquote.nextElementSibling;
+      while (b.firstChild)
+        blockquote.appendChild(b.firstChild);
+      blockquote.parentNode.removeChild(b);
+    }
+  }
 }

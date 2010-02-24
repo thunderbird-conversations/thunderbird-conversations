@@ -1,7 +1,7 @@
 <!ENTITY window.title "GMail Conversation View Options">
 <!ENTITY title.message_display "Message display">
 <!ENTITY option.monospaced "Use monospaced font for plain text messages">
-<!ENTITY option.html "Use HTML to display messages whenever possible">
+<!ENTITY option.html "Display messages using HTML whenever possible">
 <!ENTITY option.focus_first "Scroll the first unread message or last message into view">
 <!ENTITY optiondesc.unfold "By default, unfold">
 <!ENTITY option.last_or_unread "last or unread messages">
@@ -20,3 +20,6 @@
 <!ENTITY option.hide_longer_than "Hide quoted parts longer than">
 <!ENTITY option.lines "lines">
 <!ENTITY option.reverse_order "Reverse order (last → first)">
+<!ENTITY title.general "General">
+<!ENTITY option.auto_fetch "Always search for conversations">
+<!ENTITY auto_fetch.info "Sometimes there is no visible thread in the message pane, but there is an underlying conversation (if you reply to someone's mail, for instance). This option allows you to automatically display the conversation view for these messages.">

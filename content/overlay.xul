@@ -15,26 +15,26 @@
   <toolbarpalette id="header-view-toolbar-palette">
     <toolbarbutton id="gconv-button-1"
       class="gconv-button-1 toolbarbutton-1 msgHeaderView-button customize-header-toolbar-button"
-      label="View full conversation"
+      label="&toolbar.view_full;"
       type="menu-button"
-      tooltiptext="Search all messages to build up the complete conversation, including your own."
+      tooltiptext="&toolbar.view_full_tooltip;"
       oncommand="gconversation.on_load_thread();"
       >
       <menupopup>
-        <menuitem label="Open thread in new tab" oncommand="gconversation.on_load_thread_tab();" />
+        <menuitem label="&toolbar.view_tab;" oncommand="gconversation.on_load_thread_tab();" />
       </menupopup>
     </toolbarbutton>
   </toolbarpalette>
   <toolbarpalette id="MailToolbarPalette">
     <toolbarbutton id="gconv-button-2"
       class="gconv-button-2 toolbarbutton-1"
-      label="View full conversation"
+      label="&toolbar.view_full;"
       type="menu-button"
-      tooltiptext="Search all messages to build up the complete conversation, including your own."
+      tooltiptext="&toolbar.view_full_tooltip;"
       oncommand="gconversation.on_load_thread();"
       >
       <menupopup>
-        <menuitem label="Open thread in new tab"
+        <menuitem label="&toolbar.view_tab;"
           oncommand="gconversation.on_load_thread_tab();"
           insertAfter="mailContext" />
       </menupopup>
