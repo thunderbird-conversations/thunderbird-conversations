@@ -57,3 +57,28 @@
   color: black;
   text-decoration: none;
 }
+
+/* Error */
+
+.error {
+  background-color: #f47a7a;
+  margin: 2em;
+  -moz-border-radius: 20px;
+  font-size: small;
+  padding: 2em;
+  margin-top: 100px;
+  border: 3px solid #b13939;
+}
+
+.error > .close {
+  text-align: center;
+}
+
+.error > .close > span {
+  cursor: pointer;
+  color: navy;
+}
+
+.error > .close > span:hover {
+  text-decoration: underline;
+}

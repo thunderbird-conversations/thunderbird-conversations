@@ -1,13 +1,13 @@
 # vim:ft=none 
-# let nextbug = 63 in
+# let nextbug = 68 in
 
 OUTSTANDING BUGS
 ================
-#9 Add an option to automatically mark a thread as read when it is displayed.
-  Add an option to automatically mark messages as read as they are scrolled into
-  view.
-#63 Properly warn users that this isn't going to work when gloda isn't enabled
-  (maybe a popup?, or something in the options dialog?).
+#9 Add an option to automatically mark messages as read as they are scrolled
+  into view.
+#64 Add an arrow on top of an email (or sth) to fold it back.
+#65 Integrate French translation...
+#63 Add visual feedback for messages that are drafts.
 
 QUOTING BUGS
 ============
@@ -21,7 +21,6 @@ QUOTING BUGS
 
 LOW-KEY BUGS
 ============
-#63 Add visual feedback for messages that are drafts.
 #64 Add automated tests in my Makefiles to detect untranslated strings.
 #60 Add an option to set each message's background the same color as the sender
 (maybe lighter). set r = r / sqrt(r² + g² + b²) (same for g & b) and multiply by

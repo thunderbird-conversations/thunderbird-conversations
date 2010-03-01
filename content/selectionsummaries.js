@@ -66,6 +66,8 @@ document.addEventListener("load", function f_temp0 () {
   g_prefs["fold_rule"] = prefs.getCharPref("fold_rule");
   g_prefs["reverse_order"] = prefs.getBoolPref("reverse_order");
   g_prefs["auto_fetch"] = prefs.getBoolPref("auto_fetch");
+  g_prefs["auto_mark_read"] = prefs.getBoolPref("auto_mark_read");
+  g_prefs["disable_error_empty_collection"] = prefs.getBoolPref("disable_error_empty_collection");
 
   let myPrefObserver = {
     register: function () {
@@ -86,6 +88,8 @@ document.addEventListener("load", function f_temp0 () {
         case "html":
         case "reverse_order":
         case "auto_fetch":
+        case "auto_mark_read":
+        case "disable_error_empty_collection":
           g_prefs[aData] = prefs.getBoolPref(aData);
           break;
         case "hide_quote_length":
@@ -684,18 +688,20 @@ document.addEventListener("load", function f_temp0 () {
 
   /* This function is the core search function. It pulls a GMail-like
    * conversation from messages aSelectedMessages, then calls k when the
-   * messages have all been found */
+   * messages have all been found. If it fails to retrieve GlodaMessages, it
+   * calls k(null, [list of msgHdrs]). The third parameter is only used when we
+   * display the thread in a new tab and represents the message that was
+   * originally selected. */
   function pullConversation(aSelectedMessages, k) {
     try {
       gconversation.stash.q1 = Gloda.getMessageCollectionForHeaders(aSelectedMessages, {
         onItemsAdded: function (aItems) {
-          let msg = aItems[0];
-          //FIXME do something better...
-          if (!msg)
+          if (!aItems.length) {
+            dump("!!! GConversation: gloda query returned no messages!\n");
+            k(null, aSelectedMessages, aSelectedMessages[0]);
             return;
-          /*let query = Gloda.newQuery(Gloda.NOUN_MESSAGE)
-          query.conversation(msg.conversation);
-          //query.getCollection({*/
+          }
+          let msg = aItems[0];
           gconversation.stash.q2 = msg.conversation.getMessagesCollection({
             onItemsAdded: function (aItems) {
             },
@@ -704,7 +710,7 @@ document.addEventListener("load", function f_temp0 () {
             /* That's a XPConnect bug. bug 547088, so track the
              * bug and remove the setTimeout when it's fixed and bump the
              * version requirements in install.rdf.template */
-            onQueryCompleted: function (aCollection) setTimeout(function () k(aCollection, msg), 0),
+            onQueryCompleted: function (aCollection) setTimeout(function () k(aCollection, aCollection.items, msg), 0),
           }, true);
         },
         onItemsModified: function () {},
@@ -723,23 +729,29 @@ document.addEventListener("load", function f_temp0 () {
    * messages, and passes them to our instance of ThreadSummary. This design is
    * more convenient as it follows Thunderbird's more closely, which allows me
    * to track changes to the ThreadSummary code in Thunderbird more easily. */
-  summarizeThread = function(aSelectedMessages, aListener, aSwitchMessageDisplay) {
+  summarizeThread = function(aSelectedMessages, aListener) {
     if (aSelectedMessages.length == 0) {
       dump("No selected messages\n");
       return false;
     }
-    document.getElementById('multimessage').contentWindow.enableExtraButtons();
+    let htmlpane = document.getElementById('multimessage');
+    htmlpane.contentWindow.enableExtraButtons();
 
     pullConversation(
       aSelectedMessages,
-      function (aCollection) {
-        gSummary = new ThreadSummary(
-          [selectRightMessage(x, gDBView.msgFolder).folderMessage for each (x in removeDuplicates(aCollection.items))],
-          aListener
-        );
+      function (aCollection, aItems, aMsg) {
+        let items;
+        if (aCollection) {
+          items = [selectRightMessage(x, gDBView.msgFolder).folderMessage for each (x in removeDuplicates(aCollection.items))];
+        } else {
+          if (!g_prefs["disable_error_empty_collection"])
+            htmlpane.contentWindow.errorEmptyCollection();
+          items = aItems;
+        }
+        gSummary = new ThreadSummary(items, aListener);
         gSummary.init();
-        if (aSwitchMessageDisplay)
-          gMessageDisplay.singleMessageDisplay = false;
+        if (g_prefs["auto_mark_read"])
+          gconversation.mark_all_read();
         return;
       }
     );
@@ -786,7 +798,7 @@ document.addEventListener("load", function f_temp0 () {
     } else {
       gMessageDisplay.singleMessageDisplay = false;
       let htmlpane = document.getElementById('multimessage');
-      htmlpane.contentDocument.location.href = "chrome://gconversation/content/glodadisabled.xhtml";
+      htmlpane.contentWindow.errorGlodaDisabled();
     }
   };
 
@@ -795,6 +807,7 @@ document.addEventListener("load", function f_temp0 () {
     if (!checkGlodaEnabled())
       return;
     summarizeThread(gFolderDisplay.selectedMessages, null, true);
+    gMessageDisplay.singleMessageDisplay = false;
   };
   gconversation.on_load_thread_tab = function() {
     if (!gFolderDisplay.selectedMessages.length)
@@ -804,15 +817,22 @@ document.addEventListener("load", function f_temp0 () {
 
     pullConversation(
       gFolderDisplay.selectedMessages,
-      function (aCollection, aMsg) {
+      function (aCollection, aItems, aMsg) {
         let tabmail = document.getElementById("tabmail");
-        aCollection.items = [selectRightMessage(m) for each (m in removeDuplicates(aCollection.items))];
-        tabmail.openTab("glodaList", {
-          collection: aCollection,
-          message: aMsg,
-          title: aMsg.subject,
-          background: false
-        });
+        if (aCollection) {
+          aCollection.items = [selectRightMessage(m) for each (m in removeDuplicates(aCollection.items))];
+          tabmail.openTab("glodaList", {
+            collection: aCollection,
+            message: aMsg,
+            title: aMsg.subject,
+            background: false
+          });
+        } else {
+          gMessageDisplay.singleMessageDisplay = false;
+          let htmlpane = document.getElementById('multimessage');
+          if (!g_prefs["disable_error_empty_collection"])
+            htmlpane.contentWindow.errorEmptyCollection();
+        }
       }
     );
   };
@@ -890,17 +910,19 @@ document.addEventListener("load", function f_temp0 () {
       let msgHdr = msgService.messageURIToMsgHdr(aLocation.QueryInterface(Ci.nsIMsgMessageUrl).uri);
       pullConversation(
         [msgHdr],
-        function (aCollection) {
-          let items = removeDuplicates(aCollection.items);
-          if (items.length <= 1)
+        function (aCollection, aItems, aMsg) {
+          if (aCollection) {
+            let items = removeDuplicates(aCollection.items);
+            if (items.length <= 1)
+              return;
+            gSummary = new ThreadSummary(
+              [selectRightMessage(x, gDBView.msgFolder).folderMessage for each (x in items)],
+              null
+            );
+            gSummary.init();
+            gMessageDisplay.singleMessageDisplay = false;
             return;
-          gSummary = new ThreadSummary(
-            [selectRightMessage(x, gDBView.msgFolder).folderMessage for each (x in items)],
-            null
-          );
-          gSummary.init();
-          gMessageDisplay.singleMessageDisplay = false;
-          return;
+          }
       });
 
     },

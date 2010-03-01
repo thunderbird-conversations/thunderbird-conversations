@@ -1,7 +1,17 @@
 --- v0.3 development series ---
 
+- Added an option (disabled by default) to mark the whole thread as read when
+the conversation view is loaded.
+- The extension now uses a jar file for better performance.
+- Revamped options dialog (much better).
+- The extension's icon is now visible in Thunderbird 3.0.x (only in 3.1 before)
+
 GMail Conversation View 0.3alpha3
 ---------------------------------
+- Make the extension still work when the "Global search and indexer" is
+disabled. You won't get all the features but it should improve your experience
+anyway.
+- Added more meaningful error messages.
 - Warn people when "Global search and indexer" is disabled (this prevents the
 extension from working).
 

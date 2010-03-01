@@ -49,6 +49,8 @@
   %startDTD;
   <!ENTITY % gconversationDTD SYSTEM "chrome://gconversation/locale/multimessageview.dtd">
   %gconversationDTD;
+  <!ENTITY % errorDTD SYSTEM "chrome://gconversation/locale/error.dtd">
+  %errorDTD;
   ]>
 
 <html xmlns="http://www.w3.org/1999/xhtml"
@@ -179,6 +181,21 @@
               [x.setAttribute("disabled", "false") for each ([,x] in Iterator(document.getElementsByClassName("extra-button")))];
               [x.setAttribute("disabled", "false") for each ([,x] in Iterator(window.top.document.getElementById("gConvMenu").getElementsByClassName("extra-menuitem")))];
             }
+
+            function errorEmptyCollection() {
+              document.getElementById("error_gloda_disabled").style.display = "none";
+              document.getElementById("error_empty_collection").style.display = "";
+            }
+
+            function errorGlodaDisabled() {
+              document.getElementById("error_empty_collection").style.display = "none";
+              document.getElementById("error_gloda_disabled").style.display = "";
+            }
+
+            function disableErrorEmptyCollection() {
+              let prefs = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService).getBranch("gconversation.");
+              prefs.setBoolPref("disable_error_empty_collection", true);
+            }
         ]]>
         </script>
     </head>
@@ -220,6 +237,24 @@
             </div>
             <div class="heading" id="heading">&selectedmessages.label;</div>
         </div>
+    </div>
+    <div id="error_empty_collection" class="error" style="display: none">
+      <h3>&error.title;</h3>
+      &error_empty_collection;
+      <p><a href="mailto:jonathan.protzenko+gconversation@gmail.com">&error.help;</a></p>
+      <p class="close">
+        <span onclick="disableErrorEmptyCollection(); this.parentNode.parentNode.style.display = 'none';">&error.disable;</span>
+        -
+        <span onclick="this.parentNode.parentNode.style.display = 'none';">&error.close;</span>
+      </p>
+    </div>
+    <div id="error_gloda_disabled" class="error" style="display: none">
+      <h3>&error.title;</h3>
+      &error_gloda_disabled;
+      <p><a href="mailto:jonathan.protzenko+gconversation@gmail.com">&error.help;</a></p>
+      <p class="close">
+        <span onclick="this.parentNode.parentNode.style.display = 'none';">&error.close;</span>
+      </p>
     </div>
     <div id="content">
         <div id="messagelist"/>

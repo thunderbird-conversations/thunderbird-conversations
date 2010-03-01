@@ -84,7 +84,6 @@ function selectRightMessage(similar, currentFolder) {
 /* Group messages by Message-Id header.
  * Returns an array [[similar items], [other similar items], ...]. */
 function removeDuplicates(items) {
-  //let info = function (hdr) hdr.mime2DecodedAuthor+" ["+hdr.mime2DecodedSubject+"]";
   let similar = {};
   let orderedIds = [];
   for (let i = 0; i < items.length; ++i) {

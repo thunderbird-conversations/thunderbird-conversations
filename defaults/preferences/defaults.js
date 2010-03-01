@@ -12,3 +12,5 @@ pref("gconversation.html", true);
 pref("gconversation.focus_first", false);
 pref("gconversation.reverse_order", false);
 pref("gconversation.auto_fetch", true);
+pref("gconversation.disable_error_empty_collection", false);
+pref("gconversation.auto_mark_read", false);

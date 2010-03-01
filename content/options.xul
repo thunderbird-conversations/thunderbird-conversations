@@ -1,13 +1,15 @@
 <?xml version="1.0"?>
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
+<?xml-stylesheet href="chrome://gconversation/skin/options.css" type="text/css"?>
 <!DOCTYPE window SYSTEM "chrome://gconversation/locale/options.dtd">
  
 <prefwindow id="gconversation-prefs"
   title="&window.title;"
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+  onload="sizeToContent();"
   >
  
-  <prefpane id="tblatex-paths" label="&title.message_display;"
+  <prefpane id="message-display" label="&title.message_display;"
     image="chrome://messenger/skin/preferences/general.png"
     flex="1">
     <preferences>
@@ -24,29 +26,40 @@
       <preference id="html" name="gconversation.html" type="bool" />
       <preference id="focus_first" name="gconversation.focus_first" type="bool" />
       <preference id="reverse_order" name="gconversation.reverse_order" type="bool" />
-      <preference id="auto_fetch" name="gconversation.auto_fetch" type="bool" />
     </preferences>
    
     <groupbox>
-      <caption><description>&title.message_display;</description></caption>
-      <checkbox preference="html" id="html_textbox" label="&option.html;" />
-      <checkbox preference="monospaced" id="monospaced_textbox" label="&option.monospaced;"/>
-      <checkbox preference="focus_first" id="focus_first_textbox" label="&option.focus_first;" />
-      <checkbox preference="reverse_order" id="reverse_order_textbox" label="&option.reverse_order;" />
+      <caption label="&title.message_display;"/>
+      <hbox>
+        <vbox flex="1">
+          <checkbox preference="html" id="html_textbox" label="&option.html;" />
+          <checkbox preference="monospaced" id="monospaced_textbox" label="&option.monospaced;"/>
+        </vbox>
+        <vbox flex="1">
+          <checkbox preference="focus_first" id="focus_first_textbox" label="&option.focus_first;" />
+          <checkbox preference="reverse_order" id="reverse_order_textbox" label="&option.reverse_order;" />
+        </vbox>
+      </hbox>
     </groupbox>
     <groupbox>
-      <caption><description>&title.toolbar;</description></caption>
+      <caption label="&title.toolbar;"/>
       <description style="width: 0; height: 2em;">&buttons.info;</description>
-      <checkbox label="&option.button.archive;" preference="button.archive" id="archive_checkbox" />
-      <checkbox label="&option.button.trash;" preference="button.trash" id="delete_checkbox" />
-      <checkbox label="&option.button.print;" preference="button.print" id="print_checkbox" />
-      <checkbox label="&option.button.unfold_all;" preference="button.unfold_all" id="unfold_all_checkbox" />
-      <checkbox label="&option.button.fold_all;" preference="button.fold_all" id="fold_all_checkbox" />
-      <checkbox label="&option.button.mark_as_read;" preference="button.mark_as_read" id="mark_as_read_checkbox" />
-      <checkbox label="&option.button.open_in_new_tab;" preference="button.open_in_new_tab" id="open_in_new_tab_checkbox" />
+      <hbox>
+        <vbox flex="1">
+          <checkbox label="&option.button.archive;" preference="button.archive" id="archive_checkbox" />
+          <checkbox label="&option.button.trash;" preference="button.trash" id="delete_checkbox" />
+          <checkbox label="&option.button.print;" preference="button.print" id="print_checkbox" />
+          <checkbox label="&option.button.unfold_all;" preference="button.unfold_all" id="unfold_all_checkbox" />
+        </vbox>
+        <vbox flex="1">
+          <checkbox label="&option.button.fold_all;" preference="button.fold_all" id="fold_all_checkbox" />
+          <checkbox label="&option.button.mark_as_read;" preference="button.mark_as_read" id="mark_as_read_checkbox" />
+          <checkbox label="&option.button.open_in_new_tab;" preference="button.open_in_new_tab" id="open_in_new_tab_checkbox" />
+        </vbox>
+      </hbox>
     </groupbox>
     <groupbox>
-      <caption><description>&title.quoting;</description></caption>
+      <caption label="&title.quoting;"/>
       <hbox align="center">
         <label control="hide_quote_length_textbox" value="&option.hide_longer_than;" />
         <textbox type="number" preference="hide_quote_length" id="hide_quote_length_textbox" size="2" />
@@ -63,11 +76,26 @@
         </menulist>
       </hbox>
     </groupbox>
-    <groupbox>
-      <caption><description>&title.general;</description></caption>
-      <description style="width: 0; height: 7em;">&auto_fetch.info;</description>
-      <checkbox label="&option.auto_fetch;" preference="auto_fetch" id="auto_fetch_checkbox" />
-    </groupbox>
+    <spacer flex="1" style="min-height: 4em" />
+   </prefpane>
+
+   <prefpane id="advanced" label="&title.advanced;" image="chrome://messenger/skin/preferences/advanced.png">
+     <preferences>
+       <preference id="disable_error_empty_collection" name="gconversation.disable_error_empty_collection" type="bool" />
+       <preference id="auto_fetch" name="gconversation.auto_fetch" type="bool" />
+       <preference id="auto_mark_read" name="gconversation.auto_mark_read" type="bool" />
+     </preferences>
+    
+     <groupbox style="height: 8em;">
+       <caption label="&title.general;"/>
+       <description style="width: 0;">&auto_fetch.info;</description>
+       <checkbox label="&option.auto_fetch;" preference="auto_fetch" id="auto_fetch_checkbox" />
+       <checkbox label="&option.auto_mark_read;" preference="auto_mark_read" id="auto_mark_read_checkbox" />
+     </groupbox>
+     <groupbox>
+       <caption label="&title.error_messages;"/>
+       <checkbox label="&option.disable_error_empty_collection;" preference="disable_error_empty_collection" id="disable_error_empty_collection_checkbox" />
+     </groupbox>
    </prefpane>
  
 </prefwindow>

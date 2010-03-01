@@ -1,14 +1,22 @@
 EXCLUDES = $(addprefix --exclude , $(shell find . -iname '.*.sw*'))
 
-all: debug_template package
+all: debug_template package upload
 
-release: release_template package
+release: release_template package upload
 
-package: dist upload
+package: jarify dist
+
+jarify:
+	rm -f gconv.jar
+	zip gconv.jar $(EXCLUDES) -r content/ skin/ modules/ locale/
 
 dist:
 	rm -f gconversation.xpi
-	zip gconversation.xpi $(EXCLUDES) --exclude Makefile --exclude oldext --exclude tests --exclude TODO --exclude install.rdf.template -r *
+	mv chrome.manifest chrome.manifest.dev
+	mv chrome.manifest.release chrome.manifest
+	zip gconversation.xpi gconv.jar chrome.manifest -r defaults/ icon.png install.rdf
+	mv chrome.manifest chrome.manifest.release
+	mv chrome.manifest.dev chrome.manifest
 
 upload:
 	echo "cd jonathan/files\nput gconversation.xpi\nput TODO TODO_GConversation\nput Changelog Changelog_GConversation" | ftp xulforum@ftp.xulforum.org
