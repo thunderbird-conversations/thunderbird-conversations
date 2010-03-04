@@ -1,5 +1,5 @@
 # vim:ft=none 
-# let nextbug = 68 in
+# let nextbug = 69 in
 
 OUTSTANDING BUGS
 ================
@@ -21,16 +21,21 @@ QUOTING BUGS
 
 LOW-KEY BUGS
 ============
+#69 More subtle error message (maybe a ! in the upper right corner? that
+displays the full error message when clicked?) + remove the error message when
+we switch conversations.
+#68 The "View full conversation" button in the customize header toolbar does not
+  have the right visual appearance (esp. on Windows). Check and fix.
 #64 Add automated tests in my Makefiles to detect untranslated strings.
 #60 Add an option to set each message's background the same color as the sender
-(maybe lighter). set r = r / sqrt(r² + g² + b²) (same for g & b) and multiply by
-a lightness factor.
+  (maybe lighter). set r = r / sqrt(r² + g² + b²) (same for g & b) and multiply
+  by a lightness factor.
 #14 Assign a unique color to each recipient
   a) Currently using the sender's name as the key, check if there's something
   more elaborate using GlodaIdentity
 #20 Add a preference to choose the default set of colors for recipients.
 
-#61 Forwarded emails are incorrectly understood as attachments (check fix works)
+#61 Forwarded emails are incorrectly understood as attachments
 #45 Sometimes Thunderbird has not indexed a message... can we force indexing ?
 #50 Refactor message display (esp. plain/text) --> use a Necko URL (and use the
  HTML show/hide quoted text code)
@@ -64,5 +69,5 @@ types of accounts.
   https://bugzilla.mozilla.org/show_bug.cgi?id=540911
 #21 Some conversations are erroneously recognized as multiple conversations
   (esp. when you change addresses when replying).
-  https://bugzilla.mozilla.org/show_bug.cgi?id=538750, fixed by the extension,
-  Thunderbird patch pending.
+  https://bugzilla.mozilla.org/show_bug.cgi?id=538750, partly fixed by the
+  extension, Thunderbird patch pending.
