@@ -741,15 +741,23 @@ document.addEventListener("load", function f_temp0 () {
       aSelectedMessages,
       function (aCollection, aItems, aMsg) {
         let items;
+        let clearErrors = function () {
+          for each (let [,e] in Iterator(htmlpane.contentDocument.getElementsByClassName("error")))
+            e.style.display = "none" 
+        };
         if (aCollection) {
+          clearErrors();
           items = [selectRightMessage(x, gDBView.msgFolder).folderMessage for each (x in removeDuplicates(aCollection.items))];
         } else {
           if (!g_prefs["disable_error_empty_collection"])
             htmlpane.contentWindow.errorEmptyCollection();
+          else
+            clearErrors();
           items = aItems;
         }
         gSummary = new ThreadSummary(items, aListener);
         gSummary.init();
+
         if (g_prefs["auto_mark_read"])
           gconversation.mark_all_read();
         return;
