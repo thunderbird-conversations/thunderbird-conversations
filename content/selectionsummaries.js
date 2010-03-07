@@ -749,10 +749,14 @@ document.addEventListener("load", function f_temp0 () {
           clearErrors();
           items = [selectRightMessage(x, gDBView.msgFolder).folderMessage for each (x in removeDuplicates(aCollection.items))];
         } else {
+          /* Actually I'm pretty sure the else code path is never taken because
+           * when the pref is set, the error message is hidden by the event
+           * handler. So the next time a conversation is loaded, we don't need
+           * to clear errors. */
           if (!g_prefs["disable_error_empty_collection"])
             htmlpane.contentWindow.errorEmptyCollection();
-          else
-            clearErrors();
+          /* else
+            clearErrors(); */
           items = aItems;
         }
         gSummary = new ThreadSummary(items, aListener);

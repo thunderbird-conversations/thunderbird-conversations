@@ -8,13 +8,13 @@ package: jarify dist
 
 jarify:
 	rm -f gconv.jar
-	zip gconv.jar $(EXCLUDES) -r content/ skin/ modules/ locale/
+	zip gconv.jar $(EXCLUDES) -r content/ skin/ locale/
 
 dist:
 	rm -f gconversation.xpi
 	mv chrome.manifest chrome.manifest.dev
 	mv chrome.manifest.release chrome.manifest
-	zip gconversation.xpi gconv.jar chrome.manifest -r defaults/ icon.png install.rdf
+	zip gconversation.xpi gconv.jar chrome.manifest -r defaults/ modules/ icon.png install.rdf
 	mv chrome.manifest chrome.manifest.release
 	mv chrome.manifest.dev chrome.manifest
 
