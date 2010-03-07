@@ -14,14 +14,14 @@
   <script type="application/x-javascript" src="selectionsummaries.js" />
   <toolbarpalette id="header-view-toolbar-palette">
     <toolbarbutton id="gconv-button-1"
-      class="gconv-button-1 toolbarbutton-1 msgHeaderView-button customize-header-toolbar-button"
-      label="&toolbar.view_full;"
+      class="gconv-button-1 toolbarbutton-1 msgHeaderView-button customize-header-toolbar-button hdrReplyButton"
+      label="&ctoolbar.view_full;"
       type="menu-button"
-      tooltiptext="&toolbar.view_full_tooltip;"
+      tooltiptext="&ctoolbar.view_full_tooltip;"
       oncommand="gconversation.on_load_thread();"
       >
       <menupopup>
-        <menuitem label="&toolbar.view_tab;" oncommand="gconversation.on_load_thread_tab();" />
+        <menuitem label="&ctoolbar.view_tab;" oncommand="gconversation.on_load_thread_tab();" />
       </menupopup>
     </toolbarbutton>
   </toolbarpalette>

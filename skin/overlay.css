@@ -1,5 +1,10 @@
 #gconv-button-1 {
-  list-style-image: url("chrome://gconversation/skin/button.png");
+  /* Ok, the trick here to gain the "right" appearance is to "steal" the
+   * hdrReplyButton class from CustomizeHeaderToolbar (see overlay.xul).
+   * However, there are two properties we must set and which we don't want CHT
+   * to override... */
+  list-style-image: url("chrome://gconversation/skin/button.png") !important;
+  -moz-image-region: auto !important;
 }
 
 #gconv-button-2 {
