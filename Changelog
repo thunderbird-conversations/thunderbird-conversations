@@ -1,5 +1,7 @@
 --- v0.3 development series ---
 
+- Fix packaging bug. All development builds between 03/01 and 03/07 won't work.
+- Fix the visual appearance of the button in the mail header toolbar.
 - Fix a bug where error messages would remain stuck on the screen.
 - Added an option (disabled by default) to mark the whole thread as read when
 the conversation view is loaded.
