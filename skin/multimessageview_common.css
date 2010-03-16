@@ -11,6 +11,10 @@
   white-space: pre;
 }
 
+.monospaced-snippet {
+  font-family: -moz-fixed;
+}
+
 .message {
   position: relative;
   -moz-border-radius: 3px 0 3px 0;
@@ -32,6 +36,12 @@
 .wrappedsender, .wrappedsubject {
   border-bottom: 1px solid #888;
   margin-bottom: 1em;
+}
+
+.draft-warning {
+  color: #991010;
+  margin: 0 1em;
+  display: inline;
 }
 
 .fullmsg {

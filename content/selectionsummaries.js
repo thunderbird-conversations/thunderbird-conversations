@@ -60,6 +60,7 @@ document.addEventListener("load", function f_temp0 () {
    * here + a case in the switch below. */
   let g_prefs = {};
   g_prefs["monospaced"] = prefs.getBoolPref("monospaced");
+  g_prefs["monospaced_snippets"] = prefs.getBoolPref("monospaced_snippets");
   g_prefs["focus_first"] = prefs.getBoolPref("focus_first");
   g_prefs["html"] = prefs.getBoolPref("html");
   g_prefs["hide_quote_length"] = prefs.getIntPref("hide_quote_length");
@@ -84,6 +85,7 @@ document.addEventListener("load", function f_temp0 () {
       if (aTopic != "nsPref:changed") return;
       switch (aData) {
         case "monospaced":
+        case "monospaced_snippets":
         case "focus_first":
         case "html":
         case "reverse_order":
@@ -286,6 +288,8 @@ document.addEventListener("load", function f_temp0 () {
          * above for details. */
         if (g_prefs["monospaced"])
           _mm_addClass(fullMsgNode, "monospaced-message");
+        if (g_prefs["monospaced_snippets"])
+          _mm_addClass(snippetMsgNode, "monospaced-snippet");
         if (    (g_prefs["fold_rule"] == "unread_and_last" && (!msgHdr.isRead || i == (numMessages - 1)))
              || (g_prefs["fold_rule"] == "all")) {
           snippetMsgNode.style.display = "none";

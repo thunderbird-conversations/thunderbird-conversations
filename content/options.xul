@@ -14,6 +14,7 @@
     flex="1">
     <preferences>
       <preference id="monospaced" name="gconversation.monospaced" type="bool" />
+      <preference id="monospaced_snippets" name="gconversation.monospaced_snippets" type="bool" />
       <preference id="hide_quote_length" name="gconversation.hide_quote_length" type="int" />
       <preference id="fold_rule" name="gconversation.fold_rule" type="string" />
       <preference id="button.archive" name="gconversation.button.archive" type="bool" />
@@ -32,12 +33,13 @@
       <caption label="&title.message_display;"/>
       <hbox>
         <vbox flex="1">
-          <checkbox preference="html" id="html_textbox" label="&option.html;" />
-          <checkbox preference="monospaced" id="monospaced_textbox" label="&option.monospaced;"/>
+          <checkbox preference="html" id="html_checkbox" label="&option.html;" />
+          <checkbox preference="monospaced" id="monospaced_checkbox" label="&option.monospaced;"/>
+          <checkbox preference="monospaced_snippets" id="monospaced_snippets_checkbox" label="&option.monospaced_snippets;"/>
         </vbox>
         <vbox flex="1">
-          <checkbox preference="focus_first" id="focus_first_textbox" label="&option.focus_first;" />
-          <checkbox preference="reverse_order" id="reverse_order_textbox" label="&option.reverse_order;" />
+          <checkbox preference="focus_first" id="focus_first_checkbox" label="&option.focus_first;" />
+          <checkbox preference="reverse_order" id="reverse_order_checkbox" label="&option.reverse_order;" />
         </vbox>
       </hbox>
     </groupbox>

@@ -21,12 +21,6 @@
   font-size: 12px;
 }
 
-.draft-warning {
-  color: #991010;
-  margin: 0 1em;
-  display: inline;
-}
-
 /* Inside the messages' bodies */
 
 .messagearrow {
