@@ -85,14 +85,12 @@ function selectRightMessage(similar, currentFolder) {
   return msgHdr;
 }
 
-/* Group messages by Message-Id header.
- * Returns an array [[similar items], [other similar items], ...]. */
-function removeDuplicates(items) {
+function _removeDuplicates(f, items) {
   let similar = {};
   let orderedIds = [];
   for (let i = 0; i < items.length; ++i) {
     let item = items[i];
-    let id = item.headerMessageID;
+    let id = f(item);
     if (!similar[id]) {
       similar[id] = [item];
       orderedIds.push(id);
@@ -102,6 +100,14 @@ function removeDuplicates(items) {
   }
   return [similar[id] for each (id in orderedIds)];
 }
+
+/* Group GlodaMessages by Message-Id header.
+ * Returns an array [[similar items], [other similar items], ...]. */
+function removeDuplicates(items) _removeDuplicates(function (item) item.headerMessageID, items)
+
+/* Group nsIMsgDbHdrs by Message-Id header.
+ * Returns an array [[similar items], [other similar items], ...]. */
+/* function removeHdrDuplicates(items) _removeDuplicates(function (item) item.messageId, items) */
 
 /* Do a "old-style" retrieval of a message's body given its nsIMsgDBHdr. This
  * is useful when MsgHdrToMimeMessage fails. */

@@ -1,5 +1,8 @@
 --- v0.3 development series ---
 
+- Be compatible to some degree with options mail.correct_threading and
+mail.strict_threading (the "open in new tab" feature won't work though).
+- Add an option to display message snippets using a monospaced font.
 - Possibly fix issues with the options dialog size on Mac.
 - Display proper icons in the "Customize palette" dialogs.
 - There is now an indication for messages that are drafts.

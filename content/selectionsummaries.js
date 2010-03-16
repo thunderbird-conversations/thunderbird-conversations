@@ -736,6 +736,22 @@ document.addEventListener("load", function f_temp0 () {
     }
   }
 
+  function addPossiblyMissingHeaders(items, aSelectedMessages) {
+    let oldLength = items.length;
+    let seen = {};
+    for each (let [, item] in Iterator(items))
+      seen[item.messageId] = true;
+    for each (let [, item] in Iterator(aSelectedMessages)) {
+      if (!seen[item.messageId]) {
+        items.push(item);
+        seen[item.messageId] = true;
+      }
+    }
+    if (items.length != oldLength) {
+      items.sort(function (a, b) a.date - b.date);
+    }
+  }
+
   /* The summarizeThread function overwrites the default one, searches for more
    * messages, and passes them to our instance of ThreadSummary. This design is
    * more convenient as it follows Thunderbird's more closely, which allows me
@@ -759,6 +775,7 @@ document.addEventListener("load", function f_temp0 () {
         if (aCollection) {
           clearErrors();
           items = [selectRightMessage(x, gDBView.msgFolder).folderMessage for each (x in removeDuplicates(aCollection.items))];
+          addPossiblyMissingHeaders(items, aSelectedMessages);
         } else {
           /* Actually I'm pretty sure the else code path is never taken because
            * when the pref is set, the error message is hidden by the event
@@ -838,6 +855,7 @@ document.addEventListener("load", function f_temp0 () {
     if (!checkGlodaEnabled())
       return;
 
+    let aSelectedMessages = gFolderDisplay.selectedMessages;
     pullConversation(
       gFolderDisplay.selectedMessages,
       function (aCollection, aItems, aMsg) {
