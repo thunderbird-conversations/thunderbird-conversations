@@ -228,6 +228,7 @@ document.addEventListener("load", function f_temp0 () {
                                   <img src="chrome://messenger/skin/icons/attachment-col.png" />
                                 </div>
                                 <div class="toggle-font link"><img src="chrome://gconversation/skin/font.png" /></div>
+                                <div class="draft-warning"></div>
                               </div>
                               <div class="snippet snippetmsg"></div>
                               <div class="snippet fullmsg" style="display: none"></div>
@@ -261,6 +262,12 @@ document.addEventListener("load", function f_temp0 () {
           messagesElt.insertBefore(msgNode, messagesElt.firstChild);
         } else {
           messagesElt.appendChild(msgNode);
+        }
+
+        /* Warn the user if this is a draft */
+        if (msgHdrIsDraft(msgHdr)) {
+          let draftTxt = stringBundle.getString("draft");
+          msgNode.getElementsByClassName("draft-warning")[0].textContent = draftTxt;
         }
 
         let senderNode = msgNode.getElementsByClassName("sender")[0];

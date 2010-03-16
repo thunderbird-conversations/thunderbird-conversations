@@ -3,7 +3,7 @@ var EXPORTED_SYMBOLS = ['getMessageBody', 'selectRightMessage',
   'convertHotmailQuotingToBlockquote1', 'convertHotmailQuotingToBlockquote2',
   'convertOutlookQuotingToBlockquote', '_mm_toggleClass',
   'convertForwardedToBlockquote', 'msgHdrToNeckoURL',
-  'fusionBlockquotes']
+  'fusionBlockquotes', 'msgHdrIsDraft']
 
 const Ci = Components.interfaces;
 const Cc = Components.classes;
@@ -11,6 +11,7 @@ const Cu = Components.utils;
 Components.utils.import("resource://app/modules/gloda/mimemsg.js");
 /* from mailnews/base/public/nsMsgFolderFlags.idl */
 const nsMsgFolderFlags_SentMail = 0x00000200;
+const nsMsgFolderFlags_Drafts   = 0x00000400;
 const nsMsgFolderFlags_Archive  = 0x00004000;
 
 const txttohtmlconv = Cc["@mozilla.org/txttohtmlconv;1"].createInstance(Ci.mozITXTToHTMLConv);
@@ -35,6 +36,9 @@ function insertAfter(newElement, referenceElt) {
   else
     referenceElt.parentNode.appendChild(newElement);
 }
+
+/* Précis et concis */
+function msgHdrIsDraft(msgHdr) msgHdr.folder.getFlag(nsMsgFolderFlags_Drafts)
 
 /* In the case of GMail accounts, several messages with the same Message-Id
  * header will be returned when we search for all message related to the

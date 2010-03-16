@@ -1,5 +1,9 @@
 --- v0.3 development series ---
 
+- Possibly fix issues with the options dialog size on Mac.
+- Display proper icons in the "Customize palette" dialogs.
+- There is now an indication for messages that are drafts.
+
 GMail Conversation View 0.3beta1
 ---------------------------------
 - Fix packaging bug. All development builds between 03/01 and 03/07 won't work.
