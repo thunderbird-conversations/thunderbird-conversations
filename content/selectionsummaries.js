@@ -37,6 +37,12 @@ var gconversation = {
 document.addEventListener("load", function f_temp0 () {
   document.removeEventListener("load", f_temp0, true); /* otherwise it's called 20+ times */
 
+  /* For debugging purposes */
+  let consoleService = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
+  function myDump(aMsg) {
+    consoleService.logStringMessage("GConversation: "+aMsg);
+  };
+
   /* Classic */
   const Ci = Components.interfaces;
   const Cc = Components.classes;
@@ -590,7 +596,7 @@ document.addEventListener("load", function f_temp0 () {
             let body = getMessageBody(msgHdr, true);
             let snippet = body.substring(0, SNIPPET_LENGTH-3)+"...";
             fillSnippetAndMsg(snippet, body);
-            dump("*** Got an \"offline message\"\n");
+            myDump("*** Got an \"offline message\"\n");
           } catch (e) {
             Application.console.log("Error fetching the message: "+e);
             /* Ok, that failed too... */
@@ -671,7 +677,7 @@ document.addEventListener("load", function f_temp0 () {
             try {
               forwardType = gPrefBranch.getIntPref("mail.forward_message_mode");
             } catch (e) {
-              dump("Unable to fetch preferred forward mode\n");
+              myDump("Unable to fetch preferred forward mode\n");
             }
             if (forwardType == 0)
               compose(Ci.nsIMsgCompType.ForwardAsAttachment, event);
@@ -693,7 +699,7 @@ document.addEventListener("load", function f_temp0 () {
 
       this.computeSize(htmlpane);
       htmlpane.contentDocument.defaultView.adjustHeadingSize();
-      dump("--- End ThreadSummary::summarize\n\n");
+      myDump("--- End ThreadSummary::summarize\n\n");
     }
   };
 
@@ -708,7 +714,7 @@ document.addEventListener("load", function f_temp0 () {
       gconversation.stash.q1 = Gloda.getMessageCollectionForHeaders(aSelectedMessages, {
         onItemsAdded: function (aItems) {
           if (!aItems.length) {
-            dump("!!! GConversation: gloda query returned no messages!\n");
+            myDump("!!! GConversation: gloda query returned no messages!\n");
             k(null, aSelectedMessages, aSelectedMessages[0]);
             return;
           }
@@ -729,7 +735,7 @@ document.addEventListener("load", function f_temp0 () {
         onQueryCompleted: function (aCollection) { },
       }, true);
     } catch (e) {
-      dump("Exception in summarizeThread" + e + "\n");
+      myDump("Exception in summarizeThread" + e + "\n");
       logException(e);
       Components.utils.reportError(e);
       throw(e);
@@ -758,7 +764,7 @@ document.addEventListener("load", function f_temp0 () {
    * to track changes to the ThreadSummary code in Thunderbird more easily. */
   summarizeThread = function(aSelectedMessages, aListener) {
     if (aSelectedMessages.length == 0) {
-      dump("No selected messages\n");
+      myDump("No selected messages\n");
       return false;
     }
     let htmlpane = document.getElementById('multimessage');
@@ -825,7 +831,7 @@ document.addEventListener("load", function f_temp0 () {
       }
       /* ------ end cut here ----- */
     } catch (e) {
-      dump("Exception in summarizeMultipleSelection" + e + "\n");
+      myDump("Exception in summarizeMultipleSelection" + e + "\n");
       Components.utils.reportError(e);
       throw(e);
     }
@@ -945,7 +951,7 @@ document.addEventListener("load", function f_temp0 () {
       try {
         msgService = gMessenger.messageServiceFromURI(aLocation.spec);
       } catch ( { result } if result == Cr.NS_ERROR_FACTORY_NOT_REGISTERED ) {
-        dump("*** Not a message ("+aLocation.spec+")\n");
+        myDump("*** Not a message ("+aLocation.spec+")\n");
         return;
       }
       let msgHdr = msgService.messageURIToMsgHdr(aLocation.QueryInterface(Ci.nsIMsgMessageUrl).uri);
@@ -971,6 +977,6 @@ document.addEventListener("load", function f_temp0 () {
   };
   messagepane.addProgressListener(gconversation.stash.uriWatcher);
 
-  dump("*** gConversation loaded\n");
+  myDump("*** gConversation loaded\n");
 
 }, true);
