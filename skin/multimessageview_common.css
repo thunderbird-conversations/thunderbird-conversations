@@ -1,7 +1,14 @@
 /* Toolbar */
-.attachment, .toggle-font {
+.attachment {
   display: inline;
   vertical-align: middle;
+}
+
+.message > .row > .header > .wrappedsender > .toggle-font {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  background-image: url(chrome://gconversation/skin/font.png);
 }
 
 /* General stuff */
@@ -68,4 +75,17 @@ a {
 
 .showhidequote {
   color: #512a45;
+}
+
+/* Extra-colored unread headers */
+.message.unread.extra-unread-color > .row > .header > .wrappedsender > .date {
+  color: black;
+}
+
+.message.unread.extra-unread-color > .row > .header > .wrappedsender {
+  background-color: rgb(114, 159, 207);
+}
+
+.message.unread.extra-unread-color > .row > .header > .wrappedsender > .toggle-font {
+  background: url(chrome://gconversation/skin/font_light.png);
 }

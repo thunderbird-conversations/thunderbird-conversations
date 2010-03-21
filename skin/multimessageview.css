@@ -53,7 +53,7 @@
   text-align: left;
 }
 
-.fastreply .fastlink {
+/*.fastreply*/ .fastlink {
   color: #888;
   font-size: small;
   padding: 0 5px;
@@ -61,7 +61,7 @@
   display: inline-block;
 }
 
-.fastreply .fastlink:hover {
+/*.fastreply*/ .fastlink:hover {
   color: black;
   text-decoration: none;
 }

@@ -27,6 +27,7 @@
       <preference id="html" name="gconversation.html" type="bool" />
       <preference id="focus_first" name="gconversation.focus_first" type="bool" />
       <preference id="reverse_order" name="gconversation.reverse_order" type="bool" />
+      <preference id="extra_unread_color" name="gconversation.extra_unread_color" type="bool" />
     </preferences>
    
     <groupbox>
@@ -40,6 +41,7 @@
         <vbox flex="1">
           <checkbox preference="focus_first" id="focus_first_checkbox" label="&option.focus_first;" />
           <checkbox preference="reverse_order" id="reverse_order_checkbox" label="&option.reverse_order;" />
+          <checkbox preference="extra_unread_color" id="extra_unread_color_checkbox" label="&option.extra_unread_color;" />
         </vbox>
       </hbox>
     </groupbox>
