@@ -40,7 +40,7 @@ document.addEventListener("load", function f_temp0 () {
   /* For debugging purposes */
   let consoleService = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
   function myDump(aMsg) {
-    consoleService.logStringMessage("GConversation: "+aMsg);
+    dump(aMsg);
   };
 
   /* Classic */
@@ -710,6 +710,14 @@ document.addEventListener("load", function f_temp0 () {
    * display the thread in a new tab and represents the message that was
    * originally selected. */
   function pullConversation(aSelectedMessages, k) {
+    /* XXX tentative algorithm for dealing with non-strict threads.
+     *
+     * Get the first conversation. Mark in a Hashtbl all the messages we've
+     * found according to their messageId. Move on to the remaining messages
+     * from aItems. If they haven't been marked in the Hashtbl, re-launch a
+     * conversation search for them too. Repeat the process until all messages
+     * in aItems have been marked or aItems is empty.
+     * */
     try {
       gconversation.stash.q1 = Gloda.getMessageCollectionForHeaders(aSelectedMessages, {
         onItemsAdded: function (aItems) {
