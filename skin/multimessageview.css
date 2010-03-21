@@ -31,7 +31,8 @@
 }
 
 .messagearrow {
-  width: 100%;
+  width: 10%;
+  margin: auto 45%;
   height: 16px;
   position: absolute;
   bottom: -8px;
@@ -47,7 +48,6 @@
   border: 1px solid #888;
   border-width: 1px 0 0 1px;
   -moz-border-radius: 3px 0 0 0;
-  z-index: 1000;
   display: inline-block;
   max-width: 45%;
   text-align: left;
