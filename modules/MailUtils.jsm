@@ -218,7 +218,15 @@ function convertHotmailQuotingToBlockquote2(aWindow, aDocument, aHideQuoteLength
     let p = Object();
     let parentIsBlock = aNode.parentNode && aWindow.getComputedStyle(aNode.parentNode, null).display == "block";
     if (aNode.nodeType == aNode.TEXT_NODE && txttohtmlconv.citeLevelTXT(aNode.textContent+" ", p) > 0 && parentIsBlock) {
-      /* Strip the leading > > > ...s */
+      /* Strip the leading > > > ...s.
+       * NB: this might actually be wrong since we might transform
+       *    > blah
+       *    > > duh
+       * into
+       *    blah
+       *    duh
+       * (with a single blockquote). However, Hotmail doesn't nest comments that
+       * way and switches to <hr />s when there is more than one quoting level. */
       if (p.value <= aNode.textContent.length)
         aNode.textContent = aNode.textContent.substring(p.value, aNode.textContent.length);
       /* Create the <blockquote> if needed */

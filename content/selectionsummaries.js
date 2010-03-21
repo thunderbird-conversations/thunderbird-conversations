@@ -241,30 +241,29 @@ document.addEventListener("load", function f_temp0 () {
                               <div class="snippet snippetmsg"></div>
                               <div class="snippet fullmsg" style="display: none"></div>
                               <div xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" class="snippet htmlmsg" style="display: none"></div>
-                              <div class="fastreply">
-                                <span class="fastlink link-reply">{replyTxt}</span> - 
-                                <span class="fastlink link-reply-all">{replyAllTxt}</span> - 
-                                <span class="fastlink link-forward">{forwardTxt}</span>
-                                <span class="fastlink link-more">...</span>
-                                <span style="display: none;">
-                                  -
-                                  <span class="fastlink link-reply-list">{replyList}</span> -
-                                  <span class="fastlink link-edit-new">{editNew}</span>
-                                </span>
+                              <div class="bottombox">
+                                <div class="fastreply">
+                                  <span class="fastlink link-reply">{replyTxt}</span> - 
+                                  <span class="fastlink link-reply-all">{replyAllTxt}</span> - 
+                                  <span class="fastlink link-forward">{forwardTxt}</span>
+                                  <span class="fastlink link-more">...</span>
+                                  <span style="display: none;">
+                                    -
+                                    <span class="fastlink link-reply-list">{replyList}</span> -
+                                    <span class="fastlink link-edit-new">{editNew}</span>
+                                  </span>
+                                </div>
+                                <div class="messagearrow">
+                                 <img class="msgarrow" src="chrome://gconversation/skin/down.png" />
+                               </div>
                               </div>
                             </div>
                           </div>;
-
-        let msgExtraContents = <div class="messagearrow">
-                                 <img class="msgarrow" src="chrome://gconversation/skin/down.png" />
-                               </div>;
 
         let msgNode = htmlpane.contentDocument.createElement("div");
         // innerHTML is safe here because all of the data in msgContents is
         // either generated from integers or escaped to be safe.
         msgNode.innerHTML = msgContents.toXMLString();
-        msgNode.innerHTML += msgExtraContents.toXMLString();
-        msg_classes += " "+i;
         _mm_addClass(msgNode, msg_classes);
         if (g_prefs["reverse_order"]) {
           messagesElt.insertBefore(msgNode, messagesElt.firstChild);
