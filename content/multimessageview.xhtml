@@ -149,7 +149,7 @@
               else
                 arrow.setAttribute("src", "chrome://gconversation/skin/up.png");
               //$(event.target.parentNode.previousSibling.querySelectorAll(".snippet")).toggle("slow");
-              let snippets = event.target.parentNode.previousSibling.getElementsByClassName("snippet");
+              let snippets = event.target.parentNode.parentNode.parentNode.getElementsByClassName("snippet");
               for each (let [, snippet] in Iterator(snippets)) {
                 if (snippet.style.display == "none")
                   snippet.style.display = "";
