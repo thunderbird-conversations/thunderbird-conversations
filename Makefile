@@ -1,4 +1,5 @@
-EXCLUDES = $(addprefix --exclude , $(shell find . -iname '.*.sw*'))
+#EXCLUDES = $(addprefix -x , $(shell find . -iname '.*.sw*'))
+EXCLUDES = $(shell find . -iname '.*.sw*')
 
 all: debug_template package upload
 
@@ -8,7 +9,7 @@ package: jarify dist
 
 jarify:
 	rm -f gconv.jar
-	zip gconv.jar $(EXCLUDES) -r content/ skin/ locale/
+	zip gconv.jar -r content/ skin/ locale/ -x $(EXCLUDES)
 
 dist:
 	rm -f gconversation.xpi

@@ -463,11 +463,15 @@ document.addEventListener("load", function f_temp0 () {
                   let extraFormatting = function (aDoc) {
                     /* Launch various heuristics to convert most common quoting styles
                      * to real blockquotes. */
-                    convertOutlookQuotingToBlockquote(aDoc);
-                    convertHotmailQuotingToBlockquote1(aDoc);
-                    convertHotmailQuotingToBlockquote2(iframe.contentWindow, aDoc, g_prefs["hide_quote_length"]);
-                    convertForwardedToBlockquote(aDoc);
-                    fusionBlockquotes(aDoc);
+                    try {
+                      convertOutlookQuotingToBlockquote(aDoc);
+                      convertHotmailQuotingToBlockquote1(aDoc);
+                      convertHotmailQuotingToBlockquote2(iframe.contentWindow, aDoc, g_prefs["hide_quote_length"]);
+                      convertForwardedToBlockquote(aDoc);
+                      fusionBlockquotes(aDoc);
+                    } catch (e) {
+                      Application.console.log("GConversation error while parsing quoted parts: "+e);
+                    }
                     /* This function adds a show/hide quoted text link to every topmost
                      * blockquote. Nested blockquotes are not taken into account. */
                     let walk = function (elt) {
