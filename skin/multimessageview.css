@@ -13,6 +13,10 @@
   list-style-image: url("moz-icon://stock/gtk-print?size=menu");
 }
 
+.message {
+  min-width: 500px;
+}
+
 /* General stuff */
 
 .snippet {
@@ -47,24 +51,34 @@
 .fastreply {
   border: 1px solid #888;
   border-width: 1px 0 0 1px;
-  -moz-border-radius: 3px 0 0 0;
+  -moz-border-radius: 3px 0 3px 0;
   display: inline-block;
-  max-width: 45%;
+  /*max-width: 45%;*/
   text-align: left;
+  background: #d7d6d7 url(fastreply_bg.png) repeat-x;
+  color: transparent;
+  font-size: 0px;
 }
 
 /*.fastreply*/ .fastlink {
   color: #888;
-  font-size: small;
-  padding: 0 5px;
+  padding: 1px 5px;
   cursor: pointer;
   display: inline-block;
+  font-size: small;
+  border-left: 1px solid rgba(0,0,0,.5);
+  border-right: 1px solid rgba(255,255,255,.5);
 }
 
 /*.fastreply*/ .fastlink:hover {
   color: black;
   text-decoration: none;
 }
+
+.fastreply > .fastlink:first-child {
+  border-left: none;
+}
+
 
 /* Error */
 
