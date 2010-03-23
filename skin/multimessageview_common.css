@@ -15,7 +15,7 @@
 
 .monospaced-message {
   font-family: -moz-fixed;
-  white-space: pre;
+  white-space: pre-wrap;
 }
 
 .monospaced-snippet {
@@ -43,6 +43,12 @@
 .wrappedsender, .wrappedsubject {
   border-bottom: 1px solid #888;
   margin-bottom: 1em;
+  background-color: rgba(114,159,207,.1);
+}
+
+.message.unread .wrappedsender,
+.message.unread .wrappedsubject {
+	background-color: rgba(114,159,207,.3);
 }
 
 .draft-warning {
