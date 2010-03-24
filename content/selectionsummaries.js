@@ -519,6 +519,7 @@ document.addEventListener("load", function f_temp0 () {
              * just fallback to a regular plain/text version of it. */
             let body = getMessageBody(msgHdr, true);
             let snippet = body.substring(0, SNIPPET_LENGTH-3)+"...";
+            /* XXX FIXME change that too */
             fillSnippetAndMsg(snippet, body);
             myDump("*** Got an \"offline message\"\n");
           } catch (e) {
