@@ -7,6 +7,9 @@ release: release_template package upload
 
 package: jarify dist
 
+clean:
+	rm -f gconv.jar gconversation.xpi install.rdf
+
 jarify:
 	rm -f gconv.jar
 	zip gconv.jar -r content/ skin/ locale/ -x $(EXCLUDES)
