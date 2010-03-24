@@ -1,5 +1,5 @@
 #EXCLUDES = $(addprefix -x , $(shell find . -iname '.*.sw*'))
-EXCLUDES = $(shell find . -iname '.*.sw*')
+EXCLUDES = ignoreme $(shell find . -iname '.*.sw*')
 
 all: debug_template package upload
 
