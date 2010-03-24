@@ -67,7 +67,6 @@ document.addEventListener("load", function f_temp0 () {
   let g_prefs = {};
   g_prefs["monospaced"] = prefs.getBoolPref("monospaced");
   g_prefs["monospaced_snippets"] = prefs.getBoolPref("monospaced_snippets");
-  g_prefs["extra_unread_color"] = prefs.getBoolPref("extra_unread_color");
   g_prefs["focus_first"] = prefs.getBoolPref("focus_first");
   g_prefs["html"] = prefs.getBoolPref("html");
   g_prefs["hide_quote_length"] = prefs.getIntPref("hide_quote_length");
@@ -99,7 +98,6 @@ document.addEventListener("load", function f_temp0 () {
         case "auto_fetch":
         case "auto_mark_read":
         case "disable_error_empty_collection":
-        case "extra_unread_color":
           g_prefs[aData] = prefs.getBoolPref(aData);
           break;
         case "hide_quote_length":
@@ -271,11 +269,6 @@ document.addEventListener("load", function f_temp0 () {
           messagesElt.insertBefore(msgNode, messagesElt.firstChild);
         } else {
           messagesElt.appendChild(msgNode);
-        }
-
-        /* Deal with the extra color pref */
-        if (g_prefs["extra_unread_color"]) {
-          _mm_addClass(msgNode, "extra-unread-color");
         }
 
         /* Warn the user if this is a draft */
