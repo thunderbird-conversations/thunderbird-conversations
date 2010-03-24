@@ -270,13 +270,12 @@ document.addEventListener("load", function f_temp0 () {
                               <div xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" class="snippet htmlmsg" style="display: none"></div>
                               <div class="bottombox">
                                 <div class="fastreply">
-                                  <span class="fastlink link-reply">{replyTxt}</span> - 
-                                  <span class="fastlink link-reply-all">{replyAllTxt}</span> - 
+                                  <span class="fastlink link-reply">{replyTxt}</span>
+                                  <span class="fastlink link-reply-all">{replyAllTxt}</span>
                                   <span class="fastlink link-forward">{forwardTxt}</span>
                                   <span class="fastlink link-more">...</span>
                                   <span style="display: none;">
-                                    -
-                                    <span class="fastlink link-reply-list">{replyList}</span> -
+                                    <span class="fastlink link-reply-list">{replyList}</span>
                                     <span class="fastlink link-edit-new">{editNew}</span>
                                   </span>
                                 </div>
@@ -296,6 +295,16 @@ document.addEventListener("load", function f_temp0 () {
           messagesElt.insertBefore(msgNode, messagesElt.firstChild);
         } else {
           messagesElt.appendChild(msgNode);
+        }
+
+        /* XXX fixme this just sucks but the empty #text nodes between <span>s
+         * take space, does anyone have a better solution? */
+        let needsFix = msgNode.querySelectorAll(".fastreply .fastlink");
+        for (let i = needsFix.length - 1; i >= 0; --i) {
+          if (needsFix[i].nextSibling.nodeType == msgNode.TEXT_NODE)
+            needsFix[i].parentNode.removeChild(needsFix[i].nextSibling);
+          if (needsFix[i].previousSibling.nodeType == msgNode.TEXT_NODE)
+            needsFix[i].parentNode.removeChild(needsFix[i].previousSibling);
         }
 
         /* Warn the user if this is a draft */
