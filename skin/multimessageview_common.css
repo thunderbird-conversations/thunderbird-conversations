@@ -36,6 +36,10 @@
   position: relative;
 }
 
+.header .date {
+  color: black;
+}
+
 .wrappedsender, .wrappedsubject, .snippet {
   padding-left: 19px;
 }
@@ -48,7 +52,7 @@
 
 .message.unread .wrappedsender,
 .message.unread .wrappedsubject {
-	background-color: rgba(114,159,207,.3);
+  background-color: rgba(114,159,207,.3);
 }
 
 .draft-warning {
