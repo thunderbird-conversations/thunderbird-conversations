@@ -56,12 +56,6 @@
   min-width: 500px;
 }
 
-.snippet {
-  /* FIXME should be set dynamically to the default for x-western... but there
-   * should be a canonical way of doing this, see message display code */
-  font-size: 12px;
-}
-
 /* Inside the messages' bodies */
 
 .bottombox {
@@ -91,10 +85,8 @@
   -moz-border-radius: 3px 0 3px 0;
   display: inline-block;
   /*max-width: 45%;*/
-  text-align: left;
   background: #d7d6d7 url(fastreply_bg.png) repeat-x;
   color: transparent;
-  font-size: 0px;
 }
 
 /*.fastreply*/ .fastlink {
@@ -104,7 +96,6 @@
   display: inline-block;
   font-size: small;
   border-left: 1px solid rgba(0,0,0,.5);
-  border-right: 1px solid rgba(255,255,255,.5);
 }
 
 /*.fastreply*/ .fastlink:hover {

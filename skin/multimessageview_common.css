@@ -51,8 +51,7 @@
 /* General stuff */
 
 .monospaced-message {
-  font-family: -moz-fixed;
-  white-space: pre-wrap;
+  font-size: 12px;
 }
 
 .monospaced-snippet {
