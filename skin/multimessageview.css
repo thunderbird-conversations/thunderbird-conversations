@@ -13,11 +13,11 @@
   list-style-image: url("moz-icon://stock/gtk-print?size=menu");
 }
 
+/* General stuff */
+
 .message {
   min-width: 500px;
 }
-
-/* General stuff */
 
 .snippet {
   /* FIXME should be set dynamically to the default for x-western... but there
