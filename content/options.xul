@@ -61,7 +61,6 @@
       <preference id="button.unfold_all" name="gconversation.button.unfold_all" type="bool" />
       <preference id="button.mark_as_read" name="gconversation.button.mark_as_read" type="bool" />
       <preference id="button.open_in_new_tab" name="gconversation.button.open_in_new_tab" type="bool" />
-      <preference id="html" name="gconversation.html" type="bool" />
       <preference id="focus_first" name="gconversation.focus_first" type="bool" />
       <preference id="reverse_order" name="gconversation.reverse_order" type="bool" />
     </preferences>
@@ -70,7 +69,6 @@
       <caption label="&title.message_display;"/>
       <hbox>
         <vbox flex="1">
-          <checkbox preference="html" id="html_checkbox" label="&option.html;" />
           <checkbox preference="monospaced" id="monospaced_checkbox" label="&option.monospaced;"/>
           <checkbox preference="monospaced_snippets" id="monospaced_snippets_checkbox" label="&option.monospaced_snippets;"/>
         </vbox>

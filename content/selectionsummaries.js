@@ -15,7 +15,7 @@
  *
  * The Initial Developer of the Original Code is
  * Mozilla messaging
- * Portions created by the Initial Developer are Copyright (C) 2___
+ * Portions created by the Initial Developer are Copyright (C) 2010
  * the Initial Developer. All Rights Reserved.
  *
  * Contributor(s):
@@ -412,22 +412,21 @@ document.addEventListener("load", function f_temp0 () {
                    * font. This will be hidden later if we want and find a suitable HTML
                    * message for display. */
                   if (!hasHtml) {
-                    let isMonospaced = true;
+                    /* Ugly hack (once again) to get the style inside the
+                     * <iframe>. I don't think we can use a chrome:// url for
+                     * the stylesheet because the iframe has a type="content" */
+                    let style = aDoc.createElement("style");
+                    style.appendChild(aDoc.createTextNode(
+                      ".pre-as-regular {"+
+                      "  font-size: small;"+
+                      "  font-family: sans;"+
+                      "  white-space: normal;"+
+                      "}"));
+                    aDoc.body.previousSibling.appendChild(style);
+
                     let toggleFontStyle = function (event) {
-                      isMonospaced = !isMonospaced;
-                      if (isMonospaced) {
-                        for each (let [, elt] in Iterator(aDoc.querySelectorAll("pre"))) {
-                          elt.style.fontSize = "";
-                          elt.style.whiteSpace = "pre-wrap";
-                          elt.style.fontFamily = "-moz-fixed";
-                        }
-                      } else {
-                        for each (let [, elt] in Iterator(aDoc.querySelectorAll("pre"))) {
-                          elt.style.fontSize = "small";
-                          elt.style.whiteSpace = "normal";
-                          elt.style.fontFamily = "sans";
-                        }
-                      }
+                      for each (let [, elt] in Iterator(aDoc.getElementsByTagName("pre")))
+                        _mm_toggleClass(elt, "pre-as-regular");
                       iframe.style.height = iframe.contentDocument.body.scrollHeight+"px";
                     };
                     if (!g_prefs["monospaced"])
