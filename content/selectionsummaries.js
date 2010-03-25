@@ -360,75 +360,83 @@ document.addEventListener("load", function f_temp0 () {
               iframe.addEventListener("load", function f_temp(event) {
                   iframe.removeEventListener("load", f_temp, true);
 
-                  let fixMargins = function () {
-                    iframe.contentDocument.body.style.padding = "0";
-                    iframe.contentDocument.body.style.margin = "0";
+                  /* Do some reformatting */
+                  iframe.contentDocument.body.style.padding = "0";
+                  iframe.contentDocument.body.style.margin = "0";
+
+                  /* The default size for HTML messages' content is too big! */
+                  let hasHtml = iframe.contentDocument.body.firstElementChild.tagName.toLowerCase() != "pre";
+                  if (hasHtml)
                     iframe.contentDocument.body.style.fontSize = "small";
-                  };
-                  let extraFormatting = function (aDoc) {
-                    /* Launch various heuristics to convert most common quoting styles
-                     * to real blockquotes. */
-                    convertOutlookQuotingToBlockquote(aDoc);
-                    convertHotmailQuotingToBlockquote1(aDoc);
-                    convertHotmailQuotingToBlockquote2(iframe.contentWindow, aDoc, g_prefs["hide_quote_length"]);
-                    convertForwardedToBlockquote(aDoc);
-                    fusionBlockquotes(aDoc);
-                    /* This function adds a show/hide quoted text link to every topmost
-                     * blockquote. Nested blockquotes are not taken into account. */
-                    let walk = function (elt) {
-                      for (let i = elt.childNodes.length - 1; i >= 0; --i) {
-                        let c = elt.childNodes[i];
-                        /* GMail uses class="gmail_quote", other MUA use type="cite"...
-                         * so just search for a regular blockquote */
-                        if (c.tagName && c.tagName.toLowerCase() == "blockquote") {
-                          if (c.getUserData("hideme") !== false) { /* null is ok, true is ok too */
-                            let div = aDoc.createElement("div");
-                            div.setAttribute("class", "link showhidequote");
-                            div.addEventListener("click", function(event) {
-                                let h = htmlpane.contentWindow.toggleQuote(event);
-                                iframe.style.height = (parseInt(iframe.style.height) + h)+"px";
-                              }, true);
-                            div.setAttribute("style", "color: #512a45; cursor: pointer;");
-                            div.appendChild(document.createTextNode("- "+
-                              stringBundle.getString("showquotedtext")+" -"));
-                            elt.insertBefore(div, c);
-                            c.style.display = "none";
-                          }
-                        } else {
-                          walk(c);
+
+                  /* The part below is all about quoting */
+                  let aDoc = iframe.contentDocument;
+                  /* Launch various heuristics to convert most common quoting styles
+                   * to real blockquotes. */
+                  convertOutlookQuotingToBlockquote(aDoc);
+                  convertHotmailQuotingToBlockquote1(aDoc);
+                  convertHotmailQuotingToBlockquote2(iframe.contentWindow, aDoc, g_prefs["hide_quote_length"]);
+                  convertForwardedToBlockquote(aDoc);
+                  fusionBlockquotes(aDoc);
+                  /* This function adds a show/hide quoted text link to every topmost
+                   * blockquote. Nested blockquotes are not taken into account. */
+                  let walk = function (elt) {
+                    for (let i = elt.childNodes.length - 1; i >= 0; --i) {
+                      let c = elt.childNodes[i];
+                      /* GMail uses class="gmail_quote", other MUA use type="cite"...
+                       * so just search for a regular blockquote */
+                      if (c.tagName && c.tagName.toLowerCase() == "blockquote") {
+                        if (c.getUserData("hideme") !== false) { /* null is ok, true is ok too */
+                          let div = aDoc.createElement("div");
+                          div.setAttribute("class", "link showhidequote");
+                          div.addEventListener("click", function(event) {
+                              let h = htmlpane.contentWindow.toggleQuote(event);
+                              iframe.style.height = (parseInt(iframe.style.height) + h)+"px";
+                            }, true);
+                          div.setAttribute("style", "color: #512a45; cursor: pointer;");
+                          if (!hasHtml)
+                            div.style.fontSize = "small";
+                          div.appendChild(document.createTextNode("- "+
+                            stringBundle.getString("showquotedtext")+" -"));
+                          elt.insertBefore(div, c);
+                          c.style.display = "none";
                         }
+                      } else {
+                        walk(c);
                       }
-                    };
-                    walk(aDoc);
+                    }
                   };
+                  walk(aDoc);
 
                   /* Add an event listener for the button that toggles the style of the
                    * font. This will be hidden later if we want and find a suitable HTML
                    * message for display. */
-                  if (false) {
+                  if (!hasHtml) {
                     let isMonospaced = true;
-                    iframe.contentDocument.body.firstElementChild.style.fontSize = "12px";
-                    toggleFontNode.addEventListener("click",
-                      function (event) {
-                        isMonospaced = !isMonospaced;
-                        if (isMonospaced) {
-                          iframe.contentDocument.body.firstElementChild.style.fontSize = "12px";
-                          iframe.contentDocument.body.firstElementChild.style.whiteSpace = "pre-wrap";
-                          iframe.contentDocument.body.firstElementChild.style.fontFamily = "-moz-fixed";
-                        } else {
-                          iframe.contentDocument.body.firstElementChild.style.fontSize = "";
-                          iframe.contentDocument.body.firstElementChild.style.whiteSpace = "normal";
-                          iframe.contentDocument.body.firstElementChild.style.fontFamily = "sans";
+                    let toggleFontStyle = function (event) {
+                      isMonospaced = !isMonospaced;
+                      if (isMonospaced) {
+                        for each (let [, elt] in Iterator(aDoc.querySelectorAll("pre"))) {
+                          elt.style.fontSize = "";
+                          elt.style.whiteSpace = "pre-wrap";
+                          elt.style.fontFamily = "-moz-fixed";
                         }
-                      },
-                      true);
+                      } else {
+                        for each (let [, elt] in Iterator(aDoc.querySelectorAll("pre"))) {
+                          elt.style.fontSize = "small";
+                          elt.style.whiteSpace = "normal";
+                          elt.style.fontFamily = "sans";
+                        }
+                      }
+                      iframe.style.height = iframe.contentDocument.body.scrollHeight+"px";
+                    };
+                    if (!g_prefs["monospaced"])
+                      toggleFontStyle();
+                    toggleFontNode.addEventListener("click", toggleFontStyle, true);
                     toggleFontNode.style.display = "";
                   }
 
-                  /* The load event is bubbling up : now the message is loaded
-                   * so we can fiddle with it safely. */
-                  fixMargins();
-                  extraFormatting(iframe.contentDocument);
+                  /* Everything's done, so now we're able to settle for a height. */
                   iframe.style.height = iframe.contentDocument.body.scrollHeight+"px";
 
                   /* Attach the required event handlers so that links open in the
@@ -519,7 +527,7 @@ document.addEventListener("load", function f_temp0 () {
              * just fallback to a regular plain/text version of it. */
             let body = getMessageBody(msgHdr, true);
             let snippet = body.substring(0, SNIPPET_LENGTH-3)+"...";
-            /* XXX FIXME change that too */
+            /* XXX FIXME change that too this function doesn't exist anymore */
             fillSnippetAndMsg(snippet, body);
             myDump("*** Got an \"offline message\"\n");
           } catch (e) {
