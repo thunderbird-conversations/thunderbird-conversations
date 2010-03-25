@@ -365,7 +365,8 @@ document.addEventListener("load", function f_temp0 () {
                   iframe.contentDocument.body.style.margin = "0";
 
                   /* The default size for HTML messages' content is too big! */
-                  let hasHtml = iframe.contentDocument.body.firstElementChild.tagName.toLowerCase() != "pre";
+                  let hasHtml = !iframe.contentDocument.body.firstElementChild ||
+                    iframe.contentDocument.body.firstElementChild.tagName.toLowerCase() != "pre";
                   if (hasHtml)
                     iframe.contentDocument.body.style.fontSize = "small";
 
@@ -420,13 +421,13 @@ document.addEventListener("load", function f_temp0 () {
                       ".pre-as-regular {"+
                       "  font-size: small;"+
                       "  font-family: sans;"+
-                      "  white-space: normal;"+
                       "}"));
                     aDoc.body.previousSibling.appendChild(style);
 
                     let toggleFontStyle = function (event) {
                       for each (let [, elt] in Iterator(aDoc.getElementsByTagName("pre")))
                         _mm_toggleClass(elt, "pre-as-regular");
+                      /* XXX This doesn't woooooork */
                       iframe.style.height = iframe.contentDocument.body.scrollHeight+"px";
                     };
                     if (!g_prefs["monospaced"])
