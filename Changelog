@@ -1,5 +1,8 @@
 --- v0.3 development series ---
 
+GMail Conversation View 0.3beta2
+--------------------------------
+
 - Various bugfixes from Justin Hileman: Makefile fixes, monospaced text
 wrapping...
 - Visual refresh of the conversation view, many thanks to Justin Hileman.
@@ -12,7 +15,7 @@ mail.strict_threading (the "open in new tab" feature won't work though).
 - There is now an indication for messages that are drafts.
 
 GMail Conversation View 0.3beta1
----------------------------------
+--------------------------------
 - Fix packaging bug. All development builds between 03/01 and 03/07 won't work.
 - Fix the visual appearance of the button in the mail header toolbar.
 - Fix a bug where error messages would remain stuck on the screen.
