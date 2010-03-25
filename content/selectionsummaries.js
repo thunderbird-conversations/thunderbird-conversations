@@ -510,14 +510,14 @@ document.addEventListener("load", function f_temp0 () {
           MsgHdrToMimeMessage(msgHdr, null, function(aMsgHdr, aMimeMsg) {
             if (aMimeMsg == null) // shouldn't happen, but sometimes does?
               return;
+            /* The advantage here is that the snippet is properly stripped of
+             * quoted text */
             let [snippet, meta] = mimeMsgToContentSnippetAndMeta(aMimeMsg, aMsgHdr.folder, SNIPPET_LENGTH);
-            let body = aMimeMsg.coerceBodyToPlaintext(aMsgHdr.folder);
             let hasAttachment = MimeMessageHasAttachment(aMimeMsg);
             if (hasAttachment)
               msgNode.getElementsByClassName("attachment")[0].style.display = "";
 
             snippetMsgNode.textContent = snippet;
-            fillSnippetAndHTML();
           });
         } catch (e if e.result == Components.results.NS_ERROR_FAILURE) {
           try {
@@ -527,8 +527,7 @@ document.addEventListener("load", function f_temp0 () {
              * just fallback to a regular plain/text version of it. */
             let body = getMessageBody(msgHdr, true);
             let snippet = body.substring(0, SNIPPET_LENGTH-3)+"...";
-            /* XXX FIXME change that too this function doesn't exist anymore */
-            fillSnippetAndMsg(snippet, body);
+            snippetMsgNode.textContent = snippet;
             myDump("*** Got an \"offline message\"\n");
           } catch (e) {
             Application.console.log("Error fetching the message: "+e);
@@ -538,6 +537,7 @@ document.addEventListener("load", function f_temp0 () {
               snippetMsgNode.textContent = "...";
           }
         }
+        fillSnippetAndHTML();
         let tagsNode = msgNode.getElementsByClassName("tags")[0];
         let tags = this.getTagsForMsg(msgHdr);
         for each (let [,tag] in Iterator(tags)) {
