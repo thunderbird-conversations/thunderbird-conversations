@@ -1,5 +1,8 @@
 --- v0.3 development series ---
 
+- Various bugfixes from Justin Hileman: Makefile fixes, monospaced text
+wrapping...
+- Visual refresh of the conversation view, many thanks to Justin Hileman.
 - Fix the Makefile to be compatible with older versions of zip.
 - Be compatible to some degree with options mail.correct_threading and
 mail.strict_threading (the "open in new tab" feature won't work though).

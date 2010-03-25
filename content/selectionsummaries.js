@@ -1,20 +1,47 @@
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is multiple message preview pane
+ *
+ * The Initial Developer of the Original Code is
+ * Mozilla messaging
+ * Portions created by the Initial Developer are Copyright (C) 2___
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *   David Ascher <dascher@mozillamessaging.com>
+ *   Jonathan Protzenko <jonathan.protzenko@gmail.com>
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
+
 /* This file modifies threadsummaries.js by overriding a large part of the
  * original code (mainly ThreadSummary.summarize). Our functions are the result
  * of incremental modifications to the original ones, so that we can backport
  * the changes from main Thunderbird code more easily.
  *
  * Original comments are C++-style, mine are C-style.
- *
- * The Original Code is multiple message preview pane
- *
- * The Initial Developer of the Original Code is
- *   Mozilla Messaging
- * Portions created by the Initial Developer are Copyright (C) 2009
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- *   David Ascher <dascher@mozillamessaging.com>
- *   Jonathan Protzenko <jonathan.protzenko@gmail.com>
  *
  * */
 
@@ -243,13 +270,12 @@ document.addEventListener("load", function f_temp0 () {
                               <div xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" class="snippet htmlmsg" style="display: none"></div>
                               <div class="bottombox">
                                 <div class="fastreply">
-                                  <span class="fastlink link-reply">{replyTxt}</span> - 
-                                  <span class="fastlink link-reply-all">{replyAllTxt}</span> - 
+                                  <span class="fastlink link-reply">{replyTxt}</span>
+                                  <span class="fastlink link-reply-all">{replyAllTxt}</span>
                                   <span class="fastlink link-forward">{forwardTxt}</span>
                                   <span class="fastlink link-more">...</span>
                                   <span style="display: none;">
-                                    -
-                                    <span class="fastlink link-reply-list">{replyList}</span> -
+                                    <span class="fastlink link-reply-list">{replyList}</span>
                                     <span class="fastlink link-edit-new">{editNew}</span>
                                   </span>
                                 </div>
@@ -269,6 +295,16 @@ document.addEventListener("load", function f_temp0 () {
           messagesElt.insertBefore(msgNode, messagesElt.firstChild);
         } else {
           messagesElt.appendChild(msgNode);
+        }
+
+        /* XXX fixme this just sucks but the empty #text nodes between <span>s
+         * take space, does anyone have a better solution? */
+        let needsFix = msgNode.querySelectorAll(".fastreply .fastlink");
+        for (let i = needsFix.length - 1; i >= 0; --i) {
+          if (needsFix[i].nextSibling.nodeType == msgNode.TEXT_NODE)
+            needsFix[i].parentNode.removeChild(needsFix[i].nextSibling);
+          if (needsFix[i].previousSibling.nodeType == msgNode.TEXT_NODE)
+            needsFix[i].parentNode.removeChild(needsFix[i].previousSibling);
         }
 
         /* Warn the user if this is a draft */
