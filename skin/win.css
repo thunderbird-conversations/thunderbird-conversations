@@ -1,0 +1,13 @@
+#open_in_new_tab {
+  list-style-image: url(chrome://gconversation/skin/newtab_win.png);
+  -moz-image-region: rect(0, 18px, 18px, 0);
+}
+
+#archive {
+  list-style-image: url("chrome://messenger/skin/icons/mail-toolbar-small.png");
+  -moz-image-region: rect(0px 320px 16px 304px);
+}
+
+#mark_as_read {
+  list-style-image: url("chrome://messenger/skin/icons/readcol.png");
+}

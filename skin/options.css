@@ -34,6 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#message-display checkbox {
+#message-display checkbox:not(.fullwidth) {
   max-width: 280px;
 }

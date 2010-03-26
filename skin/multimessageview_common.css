@@ -35,6 +35,39 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/* Header details (close) */
+
+.wrappedsender {
+  position: relative;
+}
+
+.messageclosebox {
+  position: absolute;
+  width: 100%;
+  height: 13px;
+  left: 0;
+  bottom: 0;
+  text-align: center;
+}
+
+.messageclose {
+  display: inline-block;
+  height: 13px;
+  line-height: 13px;
+  font-size: 10px;
+  padding: 0 5px;
+  border: 1px solid #888;
+  border-bottom-width: 0;
+  -moz-border-radius: 2px 2px 0 0;
+  background-color: white;
+  color: #888;
+  cursor: pointer;
+}
+
+.messageclose:hover {
+  color: black;
+}
+
 /* Toolbar */
 .attachment {
   display: inline;
@@ -118,4 +151,3 @@ a {
 .showhidequote {
   color: #512a45;
 }
-

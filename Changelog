@@ -1,5 +1,10 @@
 --- v0.3 development series ---
 
+- Added an "icons-only" mode for the buttons in the conversation view. This
+should make it easier for narrow screens to properly display the conversation
+title.
+- Added a "back" button to easily switch back to the single message view that
+was displayed before the conversation.
 - Dropped large parts of the code, in order to simplify maintenance. plain/text
 messages are now displayed using the standard Thunderbird display code. This
 means they will use the default font, they will have standard <blockquote>s

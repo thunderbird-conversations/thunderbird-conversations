@@ -1,10 +1,6 @@
 # vim:ft=none 
 # let nextbug = 69 in
 
-OUTSTANDING BUGS
-================
-#65 Integrate French translation...
-
 LOW-KEY BUGS
 ============
 #64 Add automated tests in my Makefiles to detect untranslated strings.
