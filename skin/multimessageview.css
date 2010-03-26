@@ -46,21 +46,8 @@
   list-style-image: url("chrome://gconversation/skin/up.png");
 }
 
-#print {
-  list-style-image: url("moz-icon://stock/gtk-print?size=menu");
-}
-
-#archive {
-  list-style-image: url("chrome://messenger/skin/icons/folder-pane.png");
-  -moz-image-region: rect(192px 16px 208px 0px);
-}
-
 #mark_as_read {
   list-style-image: url("chrome://messenger/skin/icons/readcol.png");
-}
-
-#open_in_new_tab {
-  list-style-image: url("moz-icon://stock/gtk-add?size=menu");
 }
 
 #buttonhbox.icons-only > button > hbox > label {
