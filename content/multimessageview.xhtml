@@ -75,8 +75,9 @@
             const Ci = Components.interfaces;
             const Cc = Components.classes;
             const stringBundle = window.top.document.getElementById("gconv-string-bundle");
-            const prefs = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService);
-            let buttonBranch = prefs.getBranch("gconversation.button.");
+            const prefsService = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService);
+            let buttonBranch = prefsService.getBranch("gconversation.button.");
+            let prefsBranch = prefsService.getBranch("gconversation.");
 
             let myPrefObserver = {
               register: function () {
@@ -119,6 +120,10 @@
               for each (let l in ["archive", "trash", "fold_all", "unfold_all", "mark_as_read", "print"])
                 if (!buttonBranch.getBoolPref(l))
                   document.getElementById(l).style.display = "none";
+              if (prefsBranch.getBoolPref("toolbar_icons_only")) {
+                let bb = document.getElementById("buttonhbox");
+                bb.setAttribute("class", bb.getAttribute("class")+" icons-only");
+              }
             }
 
             let showquotedtext = stringBundle.getString("showquotedtext");
@@ -195,8 +200,7 @@
             }
 
             function disableErrorEmptyCollection() {
-              let prefs = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService).getBranch("gconversation.");
-              prefs.setBoolPref("disable_error_empty_collection", true);
+              prefsBranch.setBoolPref("disable_error_empty_collection", true);
             }
         ]]>
         </script>
