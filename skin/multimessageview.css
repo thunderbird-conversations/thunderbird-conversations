@@ -50,6 +50,22 @@
   list-style-image: url("chrome://messenger/skin/icons/readcol.png");
 }
 
+/* The icons below work on Linux only... see
+ * http://mxr.mozilla.org/comm-central/find?text=&string=folderPane.css for the
+ * full details for each platform */
+#print {
+  list-style-image: url("moz-icon://stock/gtk-print?size=menu");
+}
+
+#open_in_new_tab {
+  list-style-image: url("moz-icon://stock/gtk-add?size=menu");
+}
+
+#archive {
+  list-style-image: url("chrome://messenger/skin/icons/folder-pane.png");
+  -moz-image-region: rect(192px 16px 208px 0px);
+}
+
 #buttonhbox.icons-only > button > hbox > label {
   display: none;
 }
