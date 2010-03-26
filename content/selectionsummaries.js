@@ -202,6 +202,7 @@ document.addEventListener("load", function f_temp0 () {
           }
         }
       }
+      myDump(numMessages+" message total, focusing "+needsFocus+"\n");
       let msgHdrs = this._msgHdrs;
       let msgNodes = this._msgNodes;
       let scrollAfterReflow = needsFocus > 0 ? function () {
@@ -211,6 +212,11 @@ document.addEventListener("load", function f_temp0 () {
           let h = document.getElementById("multimessage")
             .contentDocument.getElementById("headingwrappertable")
             .getBoundingClientRect().height;
+          myDump("Scrolling to "+tKey+"\n");
+          /* BEWARE BEWARE BEWARE DO NOT ACCESS AN IFRAME THAT'S NOT BEEN
+           * DISPLAYED AT LEAST ONCE FIRST */
+          for (k in msgNodes)
+            dump("We know message "+k+"\n");
           document.getElementById("multimessage").contentWindow.scrollTo(0, msgNodes[tKey].offsetTop - 5);
       } : function () {};
 
@@ -226,6 +232,7 @@ document.addEventListener("load", function f_temp0 () {
       }
 
       for (let i = 0; i < numMessages; ++i) {
+        myDump("*** Treating message "+i+"\n");
         count += 1;
         if (count > MAX_THREADS) {
           maxCountExceeded = true;
@@ -233,6 +240,7 @@ document.addEventListener("load", function f_temp0 () {
         }
 
         let msgHdr = this._msgHdrs[i];
+        myDump("Registering "+key+"\n");
 
         let msg_classes = "message ";
         if (!msgHdr.isRead)
@@ -263,6 +271,9 @@ document.addEventListener("load", function f_temp0 () {
                                 </div>
                                 <div class="toggle-font link" style="display: none"></div>
                                 <div class="draft-warning"></div>
+                                <div class="messageclosebox">
+                                  <div class="messageclose" style="display: none"></div>
+                                </div>
                               </div>
                               <div class="snippet snippetmsg"></div>
                               <div xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" class="snippet htmlmsg" style="display: none"></div>
@@ -284,7 +295,9 @@ document.addEventListener("load", function f_temp0 () {
                             </div>
                           </div>;
 
+        let key = msgHdr.messageKey + msgHdr.folder.URI;
         let msgNode = htmlpane.contentDocument.createElement("div");
+        this._msgNodes[key] = msgNode;
         // innerHTML is safe here because all of the data in msgContents is
         // either generated from integers or escaped to be safe.
         msgNode.innerHTML = msgContents.toXMLString();
@@ -320,6 +333,7 @@ document.addEventListener("load", function f_temp0 () {
         let htmlMsgNode = msgNode.getElementsByClassName("htmlmsg")[0];
         let snippetMsgNode = msgNode.getElementsByClassName("snippetmsg")[0];
         let arrowNode = msgNode.getElementsByClassName("msgarrow")[0];
+        let closeNode = msgNode.getElementsByClassName("messageclose")[0];
         let toggleFontNode = msgNode.getElementsByClassName("toggle-font")[0];
 
         /* Style according to the preferences. Preferences have an observer, see
@@ -328,13 +342,37 @@ document.addEventListener("load", function f_temp0 () {
           _mm_addClass(htmlMsgNode, "monospaced-message");
         if (g_prefs["monospaced_snippets"])
           _mm_addClass(snippetMsgNode, "monospaced-snippet");
+
+        /* Do stuff for folding/unfolding messages */
+        arrowNode.addEventListener("click", function (event) {
+            htmlpane.contentWindow.toggleMessage(event)
+            if (closeNode.style.display == "none")
+              closeNode.style.display = "";
+            else
+              closeNode.style.display = "none";
+          }, true);
+        closeNode.addEventListener("click", function (event) {
+            let e = document.createEvent("UIEvents");
+            e.initUIEvent("click", true, true, window, 1);
+            arrowNode.dispatchEvent(e);
+            event.target.style.display = "none";
+          }, true);
+        let closeTxt = stringBundle.getString("close");
+        closeNode.textContent = closeTxt;
+ 
+        /* Now we're registered the event listeners, the message is folded by
+         * default. If we're supposed to unfold it, do it now */
         if (    (g_prefs["fold_rule"] == "unread_and_last" && (!msgHdr.isRead || i == (numMessages - 1)))
              || (g_prefs["fold_rule"] == "all")) {
-          snippetMsgNode.style.display = "none";
-          htmlMsgNode.style.display = "block";
-          arrowNode.setAttribute("src", "chrome://gconversation/skin/up.png");
+          try {
+            let e = document.createEvent("UIEvents");
+            e.initUIEvent("click", true, true, window, 1);
+            arrowNode.dispatchEvent(e);
+          } catch (e) {
+            myDump("Error "+e+"\n");
+          }
         } 
-        arrowNode.addEventListener("click", function (event) htmlpane.contentWindow.toggleMessage(event), true);
+       
         
         /* Same thing but for HTML messages. The HTML is heavily processed to
          * detect extra quoted parts using different heuristics, the "- show/hide
@@ -625,8 +663,7 @@ document.addEventListener("load", function f_temp0 () {
             event.target.nextElementSibling.style.display = "";
           }, true);
 
-        let key = msgHdr.messageKey + msgHdr.folder.URI;
-        this._msgNodes[key] = msgNode;
+        myDump("*** Completed message "+i+"\n");
       }
       // stash somewhere so it doesn't get GC'ed
       this._glodaQueries.push(
