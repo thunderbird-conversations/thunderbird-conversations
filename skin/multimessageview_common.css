@@ -36,6 +36,10 @@
   position: relative;
 }
 
+.header .date {
+  color: black;
+}
+
 .wrappedsender, .wrappedsubject, .snippet {
   padding-left: 19px;
 }
@@ -48,7 +52,7 @@
 
 .message.unread .wrappedsender,
 .message.unread .wrappedsubject {
-	background-color: rgba(114,159,207,.3);
+  background-color: rgba(114,159,207,.3);
 }
 
 .draft-warning {
@@ -81,17 +85,4 @@ a {
 
 .showhidequote {
   color: #512a45;
-}
-
-/* Extra-colored unread headers */
-.message.unread.extra-unread-color > .row > .header > .wrappedsender > .date {
-  color: black;
-}
-
-.message.unread.extra-unread-color > .row > .header > .wrappedsender {
-  background-color: rgb(114, 159, 207);
-}
-
-.message.unread.extra-unread-color > .row > .header > .wrappedsender > .toggle-font {
-  background: url(chrome://gconversation/skin/font_light.png);
 }
