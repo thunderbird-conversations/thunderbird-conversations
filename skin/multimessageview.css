@@ -1,5 +1,9 @@
 @import url(chrome://gconversation/skin/multimessageview_common.css);
 
+body {
+	background-color: #F3F3F3;
+}
+
 /* Toolbar */
 #unfold_all {
   list-style-image: url("chrome://gconversation/skin/down.png");
@@ -15,6 +19,7 @@
 
 .message {
   min-width: 500px;
+  background-color: #FFF;
 }
 
 /* General stuff */
