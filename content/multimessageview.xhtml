@@ -151,6 +151,7 @@
                 arrow.setAttribute("src", "chrome://gconversation/skin/up.png");
               //$(event.target.parentNode.previousSibling.querySelectorAll(".snippet")).toggle("slow");
               let snippets = event.target.parentNode.parentNode.parentNode.getElementsByClassName("snippet");
+              /* XXX i can haz simplifying this */
               for each (let [, snippet] in Iterator(snippets)) {
                 if (snippet.style.display == "none")
                   snippet.style.display = "";

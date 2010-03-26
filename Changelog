@@ -1,5 +1,13 @@
 --- v0.3 development series ---
 
+- Dropped large parts of the code, in order to simplify maintenance. plain/text
+messages are now displayed using the standard Thunderbird display code. This
+means they will use the default font, they will have standard <blockquote>s
+around quotations instead of >s.
+- Dropped support for "use HTML for viewing messages whenever possible". The
+extension now follows the Thunderbird global policy: select View > Message Body
+As > [whatever you want] to achieve the same effect.
+
 GMail Conversation View 0.3beta2
 --------------------------------
 

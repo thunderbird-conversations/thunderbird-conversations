@@ -56,12 +56,6 @@
   min-width: 500px;
 }
 
-.snippet {
-  /* FIXME should be set dynamically to the default for x-western... but there
-   * should be a canonical way of doing this, see message display code */
-  font-size: 12px;
-}
-
 /* Inside the messages' bodies */
 
 .bottombox {

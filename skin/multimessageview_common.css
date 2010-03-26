@@ -50,11 +50,6 @@
 
 /* General stuff */
 
-.monospaced-message {
-  font-family: -moz-fixed;
-  white-space: pre-wrap;
-}
-
 .monospaced-snippet {
   font-family: -moz-fixed;
 }
@@ -123,3 +118,4 @@ a {
 .showhidequote {
   color: #512a45;
 }
+
