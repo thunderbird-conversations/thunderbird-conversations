@@ -1,0 +1,8 @@
+#open_in_new_tab {
+  list-style-image: url(chrome://gconversation/skin/newtab_mac.png);
+  -moz-image-region: rect(0, 18px, 20px, 0);
+}
+
+#archive {
+  list-style-image: url("chrome://messenger/skin/icons/folder-archive.png");
+}

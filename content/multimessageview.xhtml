@@ -69,8 +69,27 @@
               href="chrome://gconversation/skin/multimessageview_print.css"/>
         <link rel="stylesheet" media="print" type="text/css"
               href="chrome://gconversation/locale/print.css"/>
+        <link rel="stylesheet" media="screen" type="text/css"
+              id="platformStylesheet" />
         <title>&window.title;</title>
         <script type="application/javascript;version=1.8"><![CDATA[
+            function addPlatformStyle() {
+              let styleElt = document.getElementById("platformStylesheet");
+              switch (navigator.platform) {
+                case "Win32":
+                  styleElt.setAttribute("href", "chrome://gconversation/skin/win.css");
+                  break;
+                case "MacPPC":
+                case "MacIntel":
+                  styleElt.setAttribute("href", "chrome://gconversation/skin/mac.css");
+                  break;
+                case "Linux i686":
+                default:
+                  styleElt.setAttribute("href", "chrome://gconversation/skin/linux.css");
+                  break;
+              }
+            }
+
             Components.utils.import("resource://app/modules/errUtils.js");
             const Ci = Components.interfaces;
             const Cc = Components.classes;
@@ -205,7 +224,7 @@
         ]]>
         </script>
     </head>
-<body onload="hookResize(); customizeToolbar()">
+<body onload="hookResize(); customizeToolbar(); addPlatformStyle();">
     <div id="headingwrappertable">
         <div id="headingwrapper">
             <div id="buttonbox"
