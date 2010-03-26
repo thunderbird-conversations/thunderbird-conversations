@@ -1,5 +1,19 @@
 --- v0.3 development series ---
 
+- Dropped large parts of the code, in order to simplify maintenance. plain/text
+messages are now displayed using the standard Thunderbird display code. This
+means they will use the default font, they will have standard <blockquote>s
+around quotations instead of >s.
+- Dropped support for "use HTML for viewing messages whenever possible". The
+extension now follows the Thunderbird global policy: select View > Message Body
+As > [whatever you want] to achieve the same effect.
+
+GMail Conversation View 0.3beta2
+--------------------------------
+
+- Various bugfixes from Justin Hileman: Makefile fixes, monospaced text
+wrapping...
+- Visual refresh of the conversation view, many thanks to Justin Hileman.
 - Fix the Makefile to be compatible with older versions of zip.
 - Be compatible to some degree with options mail.correct_threading and
 mail.strict_threading (the "open in new tab" feature won't work though).
@@ -9,7 +23,7 @@ mail.strict_threading (the "open in new tab" feature won't work though).
 - There is now an indication for messages that are drafts.
 
 GMail Conversation View 0.3beta1
----------------------------------
+--------------------------------
 - Fix packaging bug. All development builds between 03/01 and 03/07 won't work.
 - Fix the visual appearance of the button in the mail header toolbar.
 - Fix a bug where error messages would remain stuck on the screen.

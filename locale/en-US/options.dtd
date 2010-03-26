@@ -2,7 +2,6 @@
 <!ENTITY title.message_display "Message display">
 <!ENTITY option.monospaced "Use monospaced font for plain text messages">
 <!ENTITY option.monospaced_snippets "Use monospaced font for message snippets">
-<!ENTITY option.html "Display messages using HTML whenever possible">
 <!ENTITY option.focus_first "Scroll the first unread message or last message into view">
 <!ENTITY optiondesc.unfold "By default, unfold">
 <!ENTITY option.last_or_unread "last or unread messages">

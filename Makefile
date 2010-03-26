@@ -1,9 +1,11 @@
 #EXCLUDES = $(addprefix -x , $(shell find . -iname '.*.sw*'))
 EXCLUDES = ignoreme $(shell find . -iname '.*.sw*')
 
-all: debug_template package upload
+all: debug_package
 
-release: release_template package upload
+release_package: release_template package
+
+debug_package: debug_template package
 
 package: jarify dist
 
