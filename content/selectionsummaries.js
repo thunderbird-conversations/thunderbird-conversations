@@ -51,6 +51,7 @@
 var gconversation = {
   on_load_thread: null,
   on_load_thread_tab: null,
+  on_back: null,
   mark_all_read: null,
   stash: {
     wantedUrl: null,
@@ -852,6 +853,11 @@ document.addEventListener("load", function f_temp0 () {
       folder.markMessagesRead(msgs, true);
       folder.msgDatabase = null; /* don't leak */
     }
+  };
+
+  gconversation.on_back = function (event) {
+    gMessageDisplay.singleMessageDisplay = true;
+    gFolderDisplay.selectMessage(gFolderDisplay.selectedMessages[0]);
   };
 
   /* We need to attach our custom context menu to multimessage, that's simpler

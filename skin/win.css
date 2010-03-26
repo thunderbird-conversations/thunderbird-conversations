@@ -7,3 +7,7 @@
   list-style-image: url("chrome://messenger/skin/icons/mail-toolbar-small.png");
   -moz-image-region: rect(0px 320px 16px 304px);
 }
+
+#mark_as_read {
+  list-style-image: url("chrome://messenger/skin/icons/readcol.png");
+}

@@ -6,3 +6,7 @@
 #archive {
   list-style-image: url("chrome://messenger/skin/icons/folder-archive.png");
 }
+
+#mark_as_read {
+  list-style-image: url("chrome://messenger/skin/icons/readcol.png");
+}

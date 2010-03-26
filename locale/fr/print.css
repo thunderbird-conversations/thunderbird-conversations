@@ -1,0 +1,7 @@
+.sender:before {
+  content: "De: ";
+}
+
+.date:before {
+  content: "Reçu le: ";
+}

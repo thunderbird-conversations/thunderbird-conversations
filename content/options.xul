@@ -57,6 +57,7 @@
       <preference id="button.archive" name="gconversation.button.archive" type="bool" />
       <preference id="button.trash" name="gconversation.button.trash" type="bool" />
       <preference id="button.print" name="gconversation.button.print" type="bool" />
+      <preference id="button.back" name="gconversation.button.back" type="bool" />
       <preference id="button.fold_all" name="gconversation.button.fold_all" type="bool" />
       <preference id="button.unfold_all" name="gconversation.button.unfold_all" type="bool" />
       <preference id="button.mark_as_read" name="gconversation.button.mark_as_read" type="bool" />
@@ -94,6 +95,7 @@
           <checkbox label="&option.button.fold_all;" preference="button.fold_all" id="fold_all_checkbox" />
           <checkbox label="&option.button.mark_as_read;" preference="button.mark_as_read" id="mark_as_read_checkbox" />
           <checkbox label="&option.button.open_in_new_tab;" preference="button.open_in_new_tab" id="open_in_new_tab_checkbox" />
+          <checkbox label="&option.button.back;" preference="button.back" id="back_checkbox" />
         </vbox>
       </hbox>
     </groupbox>

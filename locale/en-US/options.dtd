@@ -13,6 +13,7 @@
 <!ENTITY option.button.archive "Display &quot;archive&quot; button">
 <!ENTITY option.button.trash "Display &quot;delete&quot; button">
 <!ENTITY option.button.print "Display &quot;print&quot; button">
+<!ENTITY option.button.back "Display &quot;back&quot; button">
 <!ENTITY option.button.unfold_all "Display &quot;unfold all&quot; button">
 <!ENTITY option.button.fold_all "Display &quot;fold all&quot; button">
 <!ENTITY option.button.mark_as_read "Display &quot;mark all read&quot; button">

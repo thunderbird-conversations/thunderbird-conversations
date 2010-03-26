@@ -136,7 +136,7 @@
             }
 
             function customizeToolbar() {
-              for each (let l in ["archive", "trash", "fold_all", "unfold_all", "mark_as_read", "print"])
+              for each (let l in ["archive", "trash", "fold_all", "unfold_all", "mark_as_read", "print", "back"])
                 if (!buttonBranch.getBoolPref(l))
                   document.getElementById(l).style.display = "none";
               if (prefsBranch.getBoolPref("toolbar_icons_only")) {
@@ -231,32 +231,45 @@
                  xmlns:html="http://www.w3.org/1999/xhtml"
                  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
                 <hbox id="buttonhbox" align="start">
+                    <button id="back"
+                            class="button msgHeaderView-button extra-button"
+                            label="&button.back;"
+                            tooltiptext="&button.back;"
+                            onclick="if (event.button == 0) window.top.gconversation.on_back();"/>
                     <button id="open_in_new_tab"
                             class="button msgHeaderView-button extra-button"
                             label="&button.open_in_new_tab;"
+                            tooltiptext="&button.open_in_new_tab;"
                             onclick="if (event.button == 0) window.top.gconversation.on_load_thread_tab();"/>
                     <button id="mark_as_read"
                             class="button msgHeaderView-button extra-button"
                             label="&button.mark_all_read;"
+                            tooltiptext="&button.mark_all_read;"
                             onclick="if (event.button == 0) window.top.gconversation.mark_all_read()"/>
                     <button id="unfold_all"
                             class="button msgHeaderView-button extra-button"
                             onclick="if (event.button == 0) unfoldAll();"
-                            label="&button.unfold_all;" />
+                            label="&button.unfold_all;"
+                            tooltiptext="&button.unfold_all;" />
                     <button id="fold_all"
                             class="button msgHeaderView-button extra-button"
                             onclick="if (event.button == 0) foldAll();"
-                            label="&button.fold_all;" />
+                            label="&button.fold_all;"
+                            tooltiptext="&button.fold_all;" />
                     <button id="print"
                             class="button msgHeaderView-button extra-button"
                             label="&button.print;"
+                            tooltiptext="&button.print;"
                             onclick="if (event.button == 0) window.print();"/>
                     <button id="archive"
                             class="button msgHeaderView-button hdrArchiveButton"
-                            onclick="if (event.button == 0) window.top.MsgArchiveSelectedMessages(null);" label="&archive.label;"/>
+                            onclick="if (event.button == 0) window.top.MsgArchiveSelectedMessages(null);"
+                            label="&archive.label;"
+                            tooltiptext="&archive.label;"/>
                     <button id="trash"
                             class="button msgHeaderView-button hdrTrashButton"
                             label="&delete.label;"
+                            tooltiptext="&delete.label;"
                             onclick="if (event.button == 0) window.top.DefaultController.doCommand('cmd_delete');"/>
                 </hbox>
             </div>

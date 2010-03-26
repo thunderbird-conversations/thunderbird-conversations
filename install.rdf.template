@@ -24,6 +24,14 @@
     <em:optionsURL>chrome://gconversation/content/options.xul</em:optionsURL>
     <em:iconURL>chrome://gconversation/content/icon.png</em:iconURL>
 
+    <em:localized>
+      <Description>
+        <em:locale>fr</em:locale>
+        <em:name>Affichage de conversations GMail</em:name>
+        <em:description>Affiche vos emails sous la forme de "conversations" comme sur GMail. Vos emails sont regroupés et s'affichent sous forme de résumés de fils de discussion.</em:description>
+        <em:translator>Eric B</em:translator>
+      </Description>
+    </em:localized>
 
     <em:creator>Jonathan Protzenko</em:creator>
   </Description>      
