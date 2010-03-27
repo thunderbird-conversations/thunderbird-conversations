@@ -14,3 +14,12 @@
   list-style-image: url(chrome://messenger/skin/icons/mail-toolbar-small.png);
   -moz-image-region: rect(0px 144px 16px 128px);
 }
+
+#print {
+  list-style-image: url("moz-icon://stock/gtk-print?size=menu");
+}
+
+#back {
+  list-style-image: url("moz-icon://stock/gtk-go-back-ltr?size=menu");
+}
+
