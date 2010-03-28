@@ -1,0 +1,21 @@
+<!ENTITY window.title "GMail Konversation Anzeige Optionen">
+<!ENTITY title.message_display "Nachrichtenanzeige">
+<!ENTITY option.monospaced "Monospace Schriftart für Nur-Text Nachrichten verwenden">
+<!ENTITY option.html "HTML für die Nachrichtenanzeige wann immer möglich verwenden">
+<!ENTITY option.focus_first "Die erste ungelesene oder die letzte Nachricht in die Anzeige scrollen">
+<!ENTITY optiondesc.unfold "Standard, eingeklappt">
+<!ENTITY option.last_or_unread "Letzte oder ungelesene Nachrichten">
+<!ENTITY option.all_messages "Alle Nachrichtem">
+<!ENTITY option.no_messages "Keine Nachrichten">
+<!ENTITY title.toolbar "Symbolleistenbuttons">
+<!ENTITY buttons.info "Alle diese Einstellungen sind auch über das Kontextmenü des Themenbaumes erreichbar (Rechtsklick).">
+<!ENTITY option.button.archive "&quot;Archivieren&quot; Button anzeigen">
+<!ENTITY option.button.trash "&quot;Löschen&quot; Button anzeigen">
+<!ENTITY option.button.print "&quot;Drucken&quot; Button anzeigen">
+<!ENTITY option.button.unfold_all "&quot;Alle ausklappen&quot; Button anzeigen">
+<!ENTITY option.button.fold_all "&quot;Alle Einklappen&quot; Button anzeigen">
+<!ENTITY option.button.mark_as_read "&quot;Alle als gelesen markieren&quot; Button anzeigen">
+<!ENTITY option.button.open_in_new_tab "&quot;In neuem Tab öffnen&quot; Button anzeigen">
+<!ENTITY title.quoting "Zitieren und Einklappen">
+<!ENTITY option.hide_longer_than "Zitate verstecken, die länger sind als">
+<!ENTITY option.lines "Linien">

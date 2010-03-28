@@ -1,0 +1,10 @@
+<!ENTITY button.open_in_new_tab "In einem neuen Tab öffnen">
+<!ENTITY button.mark_all_read "Alle als gelesen kennzeichnen">
+<!ENTITY button.unfold_all "Alle aufklappen">
+<!ENTITY button.fold_all "Alle einklappen">
+<!ENTITY button.print "Drucken">
+<!ENTITY menu.open_in_new_tab "In einem neuen Tab öffnen">
+<!ENTITY menu.mark_all_read "Alle als gelesen kennzeichnen">
+<!ENTITY menu.unfold_all "Alle aufklappen">
+<!ENTITY menu.fold_all "Alle einklappen">
+<!ENTITY menu.delete "Nachrichten löschen">

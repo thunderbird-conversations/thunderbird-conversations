@@ -259,6 +259,7 @@ document.addEventListener("load", function f_temp0 () {
         let forwardTxt = stringBundle.getString("forward");
         let replyList = stringBundle.getString("reply_list");
         let editNew = stringBundle.getString("edit_new");
+        let closeTxt = stringBundle.getString("close");
         let msgContents = <div class="row">
                             <div class="star"/>
                             <div class="header">
@@ -272,7 +273,7 @@ document.addEventListener("load", function f_temp0 () {
                                 <div class="toggle-font link" style="display: none"></div>
                                 <div class="draft-warning"></div>
                                 <div class="messageclosebox">
-                                  <div class="messageclose" style="display: none"></div>
+                                  <div class="messageclose" style="display: none">{closeTxt}</div>
                                 </div>
                               </div>
                               <div class="snippet snippetmsg"></div>
@@ -357,8 +358,6 @@ document.addEventListener("load", function f_temp0 () {
             arrowNode.dispatchEvent(e);
             event.target.style.display = "none";
           }, true);
-        let closeTxt = stringBundle.getString("close");
-        closeNode.textContent = closeTxt;
  
         /* Now we're registered the event listeners, the message is folded by
          * default. If we're supposed to unfold it, do it now */
