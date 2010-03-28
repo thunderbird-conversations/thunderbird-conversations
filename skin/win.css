@@ -1,6 +1,5 @@
 #open_in_new_tab {
   list-style-image: url(chrome://gconversation/skin/newtab_win.png);
-  -moz-image-region: rect(0, 18px, 18px, 0);
 }
 
 #archive {
@@ -9,5 +8,16 @@
 }
 
 #mark_as_read {
-  list-style-image: url("chrome://messenger/skin/icons/readcol.png");
+  list-style-image: url(chrome://gconversation/skin/mail-toolbar-small.png);
+  -moz-image-region: rect(0px 144px 16px 128px);
 }
+
+
+#print {
+  list-style-image: url("chrome://gconversation/skin/print.png");
+}
+
+#back {
+  list-style-image: url("chrome://gconversation/skin/back.png");
+}
+

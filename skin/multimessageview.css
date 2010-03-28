@@ -50,15 +50,6 @@ body {
   list-style-image: url("chrome://gconversation/skin/up.png");
 }
 
-/* Looks like linux-only for this one :( */
-#print {
-  list-style-image: url("moz-icon://stock/gtk-print?size=menu");
-}
-
-#back {
-  list-style-image: url("chrome://gconversation/skin/back.png");
-}
-
 #buttonhbox.icons-only > button > hbox > label {
   display: none;
 }
