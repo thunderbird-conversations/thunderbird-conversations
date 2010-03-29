@@ -1,8 +1,11 @@
 --- v0.3 development series ---
 
+- Added a keyboard navigation mode. Use tab to jump from the message list to the
+individual messages in the conversation. Use the O key to open/close a given
+message. Use tab/shift-tab to move to next/previous message in the conversation.
 - Added an "icons-only" mode for the buttons in the conversation view. This
 should make it easier for narrow screens to properly display the conversation
-title.
+title. Added native buttons on Linux, Mac and Windows.
 - Added a "back" button to easily switch back to the single message view that
 was displayed before the conversation.
 - Dropped large parts of the code, in order to simplify maintenance. plain/text

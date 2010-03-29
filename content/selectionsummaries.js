@@ -57,7 +57,7 @@ var gconversation = {
     wantedUrl: null,
     q1: null,
     q2: null
-  },
+  }
 };
 
 /* That's for global namespace pollution + because we need the document's
@@ -192,6 +192,8 @@ document.addEventListener("load", function f_temp0 () {
       let id2color = {};
 
       /* Determine which message is going to be focused */
+      /* TODO take into account the case where the order is reversed, the logic
+       * is different then */
       let needsFocus = -1;
       if (g_prefs["focus_first"]) {
         needsFocus = numMessages - 1;
@@ -205,7 +207,8 @@ document.addEventListener("load", function f_temp0 () {
       myDump(numMessages+" message total, focusing "+needsFocus+"\n");
       let msgHdrs = this._msgHdrs;
       let msgNodes = this._msgNodes;
-      let scrollAfterReflow = needsFocus > 0 ? function () {
+      let scrollMessageIntoView = function (needsFocus) {
+          myDump("I'm asked to focus message "+needsFocus+"\n");
           let tKey = msgHdrs[needsFocus].messageKey + msgHdrs[needsFocus].folder.URI;
           /* Because of the header that hides the beginning of the message,
            * scroll a bit more */
@@ -218,7 +221,7 @@ document.addEventListener("load", function f_temp0 () {
           for (k in msgNodes)
             dump("We know message "+k+"\n");
           document.getElementById("multimessage").contentWindow.scrollTo(0, msgNodes[tKey].offsetTop - 5);
-      } : function () {};
+      };
 
       /* For each message, once the message has been properly set up in the
        * conversation view (either folded or unfolded), this function is called.
@@ -227,8 +230,8 @@ document.addEventListener("load", function f_temp0 () {
       let nMessagesDone = numMessages;
       function messageDone() {
         nMessagesDone--;
-        if (nMessagesDone == 0)
-          scrollAfterReflow();
+        if (nMessagesDone == 0 && needsFocus > 0)
+          scrollMessageIntoView(needsFocus);
       }
 
       for (let i = 0; i < numMessages; ++i) {
@@ -325,12 +328,8 @@ document.addEventListener("load", function f_temp0 () {
           msgNode.getElementsByClassName("draft-warning")[0].textContent = draftTxt;
         }
 
+        /* Various useful DOM nodes */
         let senderNode = msgNode.getElementsByClassName("sender")[0];
-        if (id2color[senderNode.textContent])
-          senderNode.style.color = id2color[senderNode.textContent];
-        else
-          senderNode.style.color = id2color[senderNode.textContent] = newColor();
-
         let htmlMsgNode = msgNode.getElementsByClassName("htmlmsg")[0];
         let snippetMsgNode = msgNode.getElementsByClassName("snippetmsg")[0];
         let arrowNode = msgNode.getElementsByClassName("msgarrow")[0];
@@ -343,8 +342,12 @@ document.addEventListener("load", function f_temp0 () {
           _mm_addClass(htmlMsgNode, "monospaced-message");
         if (g_prefs["monospaced_snippets"])
           _mm_addClass(snippetMsgNode, "monospaced-snippet");
+        if (id2color[senderNode.textContent])
+          senderNode.style.color = id2color[senderNode.textContent];
+        else
+          senderNode.style.color = id2color[senderNode.textContent] = newColor();
 
-        /* Do stuff for folding/unfolding messages */
+        /* Register event listeners for folding/unfolding the message */
         arrowNode.addEventListener("click", function (event) {
             htmlpane.contentWindow.toggleMessage(event)
             if (closeNode.style.display == "none")
@@ -357,6 +360,50 @@ document.addEventListener("load", function f_temp0 () {
             e.initUIEvent("click", true, true, window, 1);
             arrowNode.dispatchEvent(e);
             event.target.style.display = "none";
+          }, true);
+
+        /* Try to enable at least some keyboard navigation */
+        let tabIndex;
+        if (g_prefs["reverse_order"])
+          tabIndex = numMessages - i;
+        else
+          tabIndex = i;
+        /* I don't know why but Tb doesn't seem to like tabindex 0 */
+        tabIndex++;
+        msgNode.setAttribute("tabindex", tabIndex);
+        
+        /* This object is used by the event listener below to pass information
+         * to the event listeners far below whose task is to setup the iframe.
+         * */
+        let focusInformation = {
+          i: i,
+          delayed: false,
+          keyboardOpening: false,
+          iFrameWasLoaded: false
+        };
+        msgNode.addEventListener("keypress", function (event) {
+            if (event.charCode == 'o'.charCodeAt(0)) {
+              myDump("i is "+focusInformation.i+"\n");
+
+              /* If the iframe hasn't been loaded yet, this will trigger a
+               * refocus as soon as the iframe is done loading. */
+              focusInformation.keyboardOpening = true;
+
+              /* Otherwise, if the iframe's already setup, we wait for the event
+               * listeners to unfold the node and then our freshly added event
+               * listener will do the scroll. */
+              if (focusInformation.iFrameWasLoaded)
+                arrowNode.addEventListener("click", function f_temp4 (event) {
+                    myDump("iFrameWasLoaded\n");
+                    arrowNode.removeEventListener("click", f_temp4, true);
+                    scrollMessageIntoView(focusInformation.i);
+                  }, true);
+              
+              /* Let's go */
+              let e = document.createEvent("UIEvents");
+              e.initUIEvent("click", true, true, window, 1);
+              arrowNode.dispatchEvent(e);
+            }
           }, true);
  
         /* Now we're registered the event listeners, the message is folded by
@@ -395,8 +442,8 @@ document.addEventListener("load", function f_temp0 () {
 
               /* The second load event is triggered by loadURI with the URL
                * being the necko URL to the given message. */
-              iframe.addEventListener("load", function f_temp(event) {
-                  iframe.removeEventListener("load", f_temp, true);
+              iframe.addEventListener("load", function f_temp1(event) {
+                  iframe.removeEventListener("load", f_temp1, true);
 
                   /* Do some reformatting */
                   iframe.contentDocument.body.style.padding = "0";
@@ -485,14 +532,23 @@ document.addEventListener("load", function f_temp0 () {
 
                   /* Sometimes setting the iframe's content and height changes
                    * the scroll value */
-                  htmlpane.contentDocument.documentElement.scrollTop = originalScroll;
+                  if (focusInformation.delayed && originalScroll)
+                    htmlpane.contentDocument.documentElement.scrollTop = originalScroll;
                   
                   /* If it's an immediate display, fire the messageDone event
                    * now (we're done with the iframe). If we're delayed, the
                    * code that attached the event listener on the "click" event
                    * has already fired the messageDone event, so don't do it. */
-                  if (htmlMsgNode.style.display != "none")
+                  if (!focusInformation.delayed)
                     messageDone();
+
+                  /* This means that the first opening of the iframe is done
+                   * using the keyboard shortcut. */
+                  if (focusInformation.delayed && focusInformation.keyboardOpening)
+                    scrollMessageIntoView(focusInformation.i);
+
+                  /* Don't go to such lengths to make it work next time */
+                  focusInformation.iFrameWasLoaded = true;
 
                   /* Here ends the chain of event listener, nothing happens
                    * after this. */
@@ -525,11 +581,13 @@ document.addEventListener("load", function f_temp0 () {
             }, true); /* end document.addEventListener */
 
           if (htmlMsgNode.style.display != "none") {
-            /* We can proceed as the xul:iframe is visible. */
+            focusInformation.delayed = false;
+            /* The iframe is to be displayed, let's go. */
             /* NB: this currently triggers bug 540911, nothing we can do about
              * it right now. */
             htmlMsgNode.appendChild(iframe);
           } else {
+            focusInformation.delayed = true;
             /* Beware, the xul:iframe is not visible so we might no have a
              * docShell in some very wicked cases. We need to start working
              * after the xul:iframe has been made visible. */
