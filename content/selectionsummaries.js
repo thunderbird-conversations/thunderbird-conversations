@@ -404,6 +404,9 @@ document.addEventListener("load", function f_temp0 () {
               e.initUIEvent("click", true, true, window, 1);
               arrowNode.dispatchEvent(e);
             }
+            if (event.keyCode == '8') {
+              gconversation.on_back();
+            }
           }, true);
  
         /* Now we're registered the event listeners, the message is folded by
@@ -952,6 +955,7 @@ document.addEventListener("load", function f_temp0 () {
   gconversation.on_back = function (event) {
     gMessageDisplay.singleMessageDisplay = true;
     gFolderDisplay.selectMessage(gFolderDisplay.selectedMessages[0]);
+    document.getElementById("threadTree").focus();
   };
 
   /* We need to attach our custom context menu to multimessage, that's simpler
