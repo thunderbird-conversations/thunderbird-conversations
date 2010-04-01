@@ -34,13 +34,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var EXPORTED_SYMBOLS = ['getMessageBody', 'selectRightMessage',
-  'removeDuplicates', 'MimeMessageToHTML', 'MimeMessageHasAttachment',
-  'convertHotmailQuotingToBlockquote1', 'convertHotmailQuotingToBlockquote2',
-  'convertOutlookQuotingToBlockquote', '_mm_toggleClass',
-  'convertForwardedToBlockquote', 'msgHdrToNeckoURL',
-  'fusionBlockquotes', 'msgHdrIsDraft',
-  'msgHdrsMarkAsRead']
+var EXPORTED_SYMBOLS = ['selectRightMessage', 'removeDuplicates',
+'convertHotmailQuotingToBlockquote1', 'convertHotmailQuotingToBlockquote2',
+'convertOutlookQuotingToBlockquote', '_mm_toggleClass',
+'convertForwardedToBlockquote', 'fusionBlockquotes']
 
 const Ci = Components.interfaces;
 const Cc = Components.classes;
@@ -73,9 +70,6 @@ function insertAfter(newElement, referenceElt) {
   else
     referenceElt.parentNode.appendChild(newElement);
 }
-
-/* Précis et concis */
-function msgHdrIsDraft(msgHdr) msgHdr.folder.getFlag(nsMsgFolderFlags_Drafts)
 
 /* In the case of GMail accounts, several messages with the same Message-Id
  * header will be returned when we search for all message related to the
@@ -145,78 +139,6 @@ function removeDuplicates(items) _removeDuplicates(function (item) item.headerMe
 /* Group nsIMsgDbHdrs by Message-Id header.
  * Returns an array [[similar items], [other similar items], ...]. */
 /* function removeHdrDuplicates(items) _removeDuplicates(function (item) item.messageId, items) */
-
-/* Do a "old-style" retrieval of a message's body given its nsIMsgDBHdr. This
- * is useful when MsgHdrToMimeMessage fails. */
-function getMessageBody(aMessageHeader, aStripHtml) {  
-  let messenger = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);  
-  let listener = Cc["@mozilla.org/network/sync-stream-listener;1"].createInstance(Ci.nsISyncStreamListener);  
-  let uri = aMessageHeader.folder.getUriForMsg(aMessageHeader);  
-  messenger.messageServiceFromURI(uri).streamMessage(uri, listener, null, null, false, "");  
-  let folder = aMessageHeader.folder;  
-  /*
-   * AUTF8String getMsgTextFromStream(in nsIInputStream aStream, in ACString aCharset,
-                                      in unsigned long aBytesToRead, in unsigned long aMaxOutputLen, 
-                                      in boolean aCompressQuotes, in boolean aStripHTMLTags,
-                                      out ACString aContentType);
-  */
-  return folder.getMsgTextFromStream(listener.inputStream, aMessageHeader.Charset, 65536, 32768, false, aStripHtml, { });  
-}  
-
-/* Returns a nsIURI from a nsIMsgDBHdr */
-function msgHdrToNeckoURL(aMsgHdr, gMessenger) {
-  let uri = aMsgHdr.folder.getUriForMsg(aMsgHdr);
-  let neckoURL = {};
-  let msgService = gMessenger.messageServiceFromURI(uri);
-  msgService.GetUrlForUri(uri, neckoURL, null);
-  return neckoURL.value;
-}
-
-/* Recursively walk down a MimeMessage trying to find a text/html MessageBody. */
-function MimeMessageToHTML(aMsg) {
-  if (aMsg instanceof MimeMessage || aMsg instanceof MimeContainer) { // is this a container ?
-    let buf = [];
-    let buf_i = 0;
-    for each (p in aMsg.parts) {
-      let [isHtml, html] = MimeMessageToHTML(p);
-      if (isHtml)
-        buf[buf_i++] = html;
-    }
-    if (buf_i > 0)
-      return [true, buf.join("")];
-    else
-      return [false, ""]
-  } else if (aMsg instanceof MimeBody) { // we only want to examinate bodies
-    if (aMsg.contentType == "text/html") {
-      /*for (let i in aMsg)
-        dump(i+":"+aMsg[i]+"\n");*/
-      return [true, aMsg.body];
-    } else {
-      return [false, ""]; // we fail here
-    }
-  } else {
-    return [false, ""];
-  }
-}
-
-/* Recursively walk down a MimeMessage to find something that looks like an
- * attachment. Returns true for "real" attachments only (that is, not forwarded
- * messages). (Is that what we want?) */
-function MimeMessageHasAttachment(aMsg) {
-  /*let f = function (aMsg) {
-    if (aMsg instanceof MimeMessageAttachment)
-      throw { found: true };
-    else
-      [f(x) for each (x in aMsg.parts)];
-  };
-  try {
-    f(aMsg);
-    return false;
-  } catch (e if e.found) {
-    return true;
-  }*/
-  return aMsg.allAttachments.some(function (x) x.isRealAttachment);
-}
 
 /* Create a blockquote before "marker" and insert all elements after that into
  * the blockquote. if (remove) then marker is removed. */
@@ -338,24 +260,5 @@ function fusionBlockquotes(aDoc) {
         blockquote.appendChild(b.firstChild);
       blockquote.parentNode.removeChild(b);
     }
-  }
-}
-
-function msgHdrsMarkAsRead(msgHdrs, read) {
-  let pending = {};
-  for each (msgHdr in msgHdrs) {
-    if (msgHdr.isRead == read)
-      continue;
-    if (!pending[msgHdr.folder.URI]) {
-      pending[msgHdr.folder.URI] = {
-        folder: msgHdr.folder,
-        msgs: Cc["@mozilla.org/array;1"].createInstance(Ci.nsIMutableArray)
-      };
-    }
-    pending[msgHdr.folder.URI].msgs.appendElement(msgHdr, false);
-  }
-  for each (let { folder, msgs } in pending) {
-    folder.markMessagesRead(msgs, read);
-    folder.msgDatabase = null; /* don't leak */
   }
 }
