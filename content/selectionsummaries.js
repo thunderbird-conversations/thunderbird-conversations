@@ -92,16 +92,16 @@ document.addEventListener("load", function f_temp0 () {
 
   /* Preferences are loaded once and then observed. For a new pref, add an entry
    * here + a case in the switch below. */
-  let g_prefs = {};
-  g_prefs["monospaced"] = prefs.getBoolPref("monospaced");
-  g_prefs["monospaced_snippets"] = prefs.getBoolPref("monospaced_snippets");
-  g_prefs["focus_first"] = prefs.getBoolPref("focus_first");
-  g_prefs["hide_quote_length"] = prefs.getIntPref("hide_quote_length");
-  g_prefs["fold_rule"] = prefs.getCharPref("fold_rule");
-  g_prefs["reverse_order"] = prefs.getBoolPref("reverse_order");
-  g_prefs["auto_fetch"] = prefs.getBoolPref("auto_fetch");
-  g_prefs["auto_mark_read"] = prefs.getBoolPref("auto_mark_read");
-  g_prefs["disable_error_empty_collection"] = prefs.getBoolPref("disable_error_empty_collection");
+  let gPrefs = {};
+  gPrefs["monospaced"] = prefs.getBoolPref("monospaced");
+  gPrefs["monospaced_snippets"] = prefs.getBoolPref("monospaced_snippets");
+  gPrefs["focus_first"] = prefs.getBoolPref("focus_first");
+  gPrefs["hide_quote_length"] = prefs.getIntPref("hide_quote_length");
+  gPrefs["fold_rule"] = prefs.getCharPref("fold_rule");
+  gPrefs["reverse_order"] = prefs.getBoolPref("reverse_order");
+  gPrefs["auto_fetch"] = prefs.getBoolPref("auto_fetch");
+  gPrefs["auto_mark_read"] = prefs.getBoolPref("auto_mark_read");
+  gPrefs["disable_error_empty_collection"] = prefs.getBoolPref("disable_error_empty_collection");
 
   let myPrefObserver = {
     register: function () {
@@ -124,13 +124,13 @@ document.addEventListener("load", function f_temp0 () {
         case "auto_fetch":
         case "auto_mark_read":
         case "disable_error_empty_collection":
-          g_prefs[aData] = prefs.getBoolPref(aData);
+          gPrefs[aData] = prefs.getBoolPref(aData);
           break;
         case "hide_quote_length":
-          g_prefs["hide_quote_length"] = prefs.getIntPref("hide_quote_length");
+          gPrefs["hide_quote_length"] = prefs.getIntPref("hide_quote_length");
           break;
         case "fold_rule":
-          g_prefs["fold_rule"] = prefs.getIntPref("fold_rule");
+          gPrefs["fold_rule"] = prefs.getIntPref("fold_rule");
           break;
       }
     }
@@ -150,6 +150,9 @@ document.addEventListener("load", function f_temp0 () {
        * time, it starts inventing new colors of its own. */
       const predefinedColors = ["#204a87", "#5c3566", "#8f5902", "#a40000", "#c4a000", "#4e9a06", "#ce5c00"]; 
       let gColorCount = 0;
+
+      /* Filled as we go. key = "Jonathan Protzenko", value = "#ff0562" */
+      let id2color = {};
       function newColor() {
         if (gColorCount < predefinedColors.length) {
           return predefinedColors[gColorCount++];
@@ -189,13 +192,10 @@ document.addEventListener("load", function f_temp0 () {
       const MAX_THREADS = 100;
       const SNIPPET_LENGTH = 300;
       let maxCountExceeded = false;
-      let id2color = {};
 
       /* Determine which message is going to be focused */
-      /* TODO take into account the case where the order is reversed, the logic
-       * is different then */
       let needsFocus = -1;
-      if (g_prefs["focus_first"]) {
+      if (gPrefs["focus_first"]) {
         needsFocus = numMessages - 1;
         for (let i = 0; i < numMessages; ++i) {
           if (!this._msgHdrs[i].isRead) {
@@ -204,6 +204,10 @@ document.addEventListener("load", function f_temp0 () {
           }
         }
       }
+
+      /* Create a closure that can be called later when all the messages have
+       * been properly loaded, all the iframes resized to fit. When the page
+       * won't scroll anymore, we manually set the message we want into view. */
       myDump(numMessages+" message total, focusing "+needsFocus+"\n");
       let msgHdrs = this._msgHdrs;
       let msgNodes = this._msgNodes;
@@ -218,8 +222,6 @@ document.addEventListener("load", function f_temp0 () {
           myDump("Scrolling to "+tKey+"\n");
           /* BEWARE BEWARE BEWARE DO NOT ACCESS AN IFRAME THAT'S NOT BEEN
            * DISPLAYED AT LEAST ONCE FIRST */
-          for (k in msgNodes)
-            dump("We know message "+k+"\n");
           document.getElementById("multimessage").contentWindow.scrollTo(0, msgNodes[tKey].offsetTop - 5);
       };
 
@@ -234,6 +236,7 @@ document.addEventListener("load", function f_temp0 () {
           scrollMessageIntoView(needsFocus);
       }
 
+      /* Now this is for every message */
       for (let i = 0; i < numMessages; ++i) {
         myDump("*** Treating message "+i+"\n");
         count += 1;
@@ -306,7 +309,7 @@ document.addEventListener("load", function f_temp0 () {
         // either generated from integers or escaped to be safe.
         msgNode.innerHTML = msgContents.toXMLString();
         _mm_addClass(msgNode, msg_classes);
-        if (g_prefs["reverse_order"]) {
+        if (gPrefs["reverse_order"]) {
           messagesElt.insertBefore(msgNode, messagesElt.firstChild);
         } else {
           messagesElt.appendChild(msgNode);
@@ -338,9 +341,9 @@ document.addEventListener("load", function f_temp0 () {
 
         /* Style according to the preferences. Preferences have an observer, see
          * above for details. */
-        if (g_prefs["monospaced"])
+        if (gPrefs["monospaced"])
           _mm_addClass(htmlMsgNode, "monospaced-message");
-        if (g_prefs["monospaced_snippets"])
+        if (gPrefs["monospaced_snippets"])
           _mm_addClass(snippetMsgNode, "monospaced-snippet");
         if (id2color[senderNode.textContent])
           senderNode.style.color = id2color[senderNode.textContent];
@@ -364,7 +367,7 @@ document.addEventListener("load", function f_temp0 () {
 
         /* Try to enable at least some keyboard navigation */
         let tabIndex;
-        if (g_prefs["reverse_order"])
+        if (gPrefs["reverse_order"])
           tabIndex = numMessages - i;
         else
           tabIndex = i;
@@ -411,8 +414,8 @@ document.addEventListener("load", function f_temp0 () {
  
         /* Now we're registered the event listeners, the message is folded by
          * default. If we're supposed to unfold it, do it now */
-        if (    (g_prefs["fold_rule"] == "unread_and_last" && (!msgHdr.isRead || i == (numMessages - 1)))
-             || (g_prefs["fold_rule"] == "all")) {
+        if ((gPrefs["fold_rule"] == "unread_and_last" && (!msgHdr.isRead || i == (numMessages - 1))) ||
+            (gPrefs["fold_rule"] == "all")) {
           try {
             let e = document.createEvent("UIEvents");
             e.initUIEvent("click", true, true, window, 1);
@@ -427,7 +430,7 @@ document.addEventListener("load", function f_temp0 () {
          * detect extra quoted parts using different heuristics, the "- show/hide
          * quoted text -" links are added. */
         let fillSnippetAndHTML = function () {
-          let originalScroll; /* This is shared by multiple event listeners below */
+          let originalScroll; /* This is shared by the nested event listeners below */
 
           let iframe = htmlpane.contentDocument.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "iframe");
           iframe.setAttribute("style", "height: 20px");
@@ -464,7 +467,7 @@ document.addEventListener("load", function f_temp0 () {
                    * to real blockquotes. */
                   convertOutlookQuotingToBlockquote(aDoc);
                   convertHotmailQuotingToBlockquote1(aDoc);
-                  convertHotmailQuotingToBlockquote2(iframe.contentWindow, aDoc, g_prefs["hide_quote_length"]);
+                  convertHotmailQuotingToBlockquote2(iframe.contentWindow, aDoc, gPrefs["hide_quote_length"]);
                   convertForwardedToBlockquote(aDoc);
                   fusionBlockquotes(aDoc);
                   /* This function adds a show/hide quoted text link to every topmost
@@ -498,8 +501,8 @@ document.addEventListener("load", function f_temp0 () {
                   walk(aDoc);
 
                   /* Add an event listener for the button that toggles the style of the
-                   * font. This will be hidden later if we want and find a suitable HTML
-                   * message for display. */
+                   * font. Only if we seem to be able to implement it (i.e. we
+                   * see a <pre>). */
                   if (!hasHtml) {
                     /* Ugly hack (once again) to get the style inside the
                      * <iframe>. I don't think we can use a chrome:// url for
@@ -515,12 +518,18 @@ document.addEventListener("load", function f_temp0 () {
                     let toggleFontStyle = function (event) {
                       for each (let [, elt] in Iterator(aDoc.getElementsByTagName("pre")))
                         _mm_toggleClass(elt, "pre-as-regular");
-                      /* XXX This doesn't woooooork */
+                      /* XXX The height of the iframe isn't updated as we change
+                       * fonts. This is usually unimportant, as it will grow
+                       * once if the initial font was smaller, and then remain
+                       * high. */
                       iframe.style.height = iframe.contentDocument.body.scrollHeight+"px";
                     };
-                    if (!g_prefs["monospaced"])
+                    /* By default, plain/text messages are displayed using a
+                     * monospaced font. */
+                    if (!gPrefs["monospaced"])
                       toggleFontStyle();
                     toggleFontNode.addEventListener("click", toggleFontStyle, true);
+                    /* Show the small icon */
                     toggleFontNode.style.display = "";
                   }
 
@@ -553,7 +562,7 @@ document.addEventListener("load", function f_temp0 () {
                   /* Don't go to such lengths to make it work next time */
                   focusInformation.iFrameWasLoaded = true;
 
-                  /* Here ends the chain of event listener, nothing happens
+                  /* Here ends the chain of event listeners, nothing happens
                    * after this. */
                 }, true); /* end document.addEventListener */
 
@@ -591,9 +600,14 @@ document.addEventListener("load", function f_temp0 () {
             htmlMsgNode.appendChild(iframe);
           } else {
             focusInformation.delayed = true;
-            /* Beware, the xul:iframe is not visible so we might no have a
-             * docShell in some very wicked cases. We need to start working
-             * after the xul:iframe has been made visible. */
+            /* The height information that allows us to perform auto-resize is
+             * only available if the iframe has been displayed at least once. In
+             * this case, we start with the iframe hidden, so there's no way we
+             * can perform styling, auto-resizing, etc. right now. We need to
+             * wait for the iframe to be loaded first. To simplify things, the
+             * whole process of adding the iframe into the tree and styling it
+             * will be done when it is made visible for the first time. That is,
+             * when we click arrowNode. */
             arrowNode.addEventListener("click", function f_temp3 () {
                 arrowNode.removeEventListener("click", f_temp3, true);
                 originalScroll = htmlpane.contentDocument.documentElement.scrollTop;
@@ -604,6 +618,9 @@ document.addEventListener("load", function f_temp0 () {
             messageDone();
           }
         };
+
+        /* That part tries to extract extra information about the message using
+         * Gloda */
         try {
           /* throw { result: Components.results.NS_ERROR_FAILURE }; */
           MsgHdrToMimeMessage(msgHdr, null, function(aMsgHdr, aMimeMsg) {
@@ -622,21 +639,24 @@ document.addEventListener("load", function f_temp0 () {
           try {
             // Offline messages generate exceptions, which is unfortunate.  When
             // that's fixed, this code should adapt. XXX
-            /* --> Try to deal with that. We don't try to get an HTML email, we
-             * just fallback to a regular plain/text version of it. */
+            /* --> Try to deal with that. Try to come up with something that
+             * remotely looks like a snippet. */
             let body = getMessageBody(msgHdr, true);
             let snippet = body.substring(0, SNIPPET_LENGTH-3)+"...";
             snippetMsgNode.textContent = snippet;
             myDump("*** Got an \"offline message\"\n");
           } catch (e) {
             Application.console.log("Error fetching the message: "+e);
-            /* Ok, that failed too... */
+            /* Ok, that failed too... I'm out of ideas! */
             htmlMsgNode.textContent = "...";
             if (!snippetMsgNode.textContent)
               snippetMsgNode.textContent = "...";
           }
         }
+        /* This actually setups the iframe to point to the given message */
         fillSnippetAndHTML();
+
+        /* Handle tags associated to messages */
         let tagsNode = msgNode.getElementsByClassName("tags")[0];
         let tags = this.getTagsForMsg(msgHdr);
         for each (let [,tag] in Iterator(tags)) {
@@ -655,19 +675,19 @@ document.addEventListener("load", function f_temp0 () {
         sender.folder = msgHdr.folder;
         sender.msgKey = msgHdr.messageKey;
         sender.addEventListener("click", function(e) {
-          /* Don't try to detect a conversation */
+          /* Cancel the next attempt to load a conversation, we explicitely
+           * requested this message. */
           let url = msgHdrToNeckoURL(msgHdr, gMessenger);
           gconversation.stash.wantedUrl = url.spec;
 
-          /* msgHdr is "the right message" (we pre-selected message before
-           * giving them to the ThreadSummary) */
+          /* msgHdr is "the right message" so jump to it (see
+           * selectRightMessage) */
           let viewIndex = gFolderDisplay.view.getViewIndexForMsgHdr(this.msgHdr);
           if (viewIndex != nsMsgViewIndex_None) {
             gFolderDisplay.selectMessage(this.msgHdr);
             return;
           }
 
-          /* msgHdr is still the best candidate for "the message we want" */
           /* selectFolder doesn't work sometimes, issue fixed in Lanikai as of 2010-01-05, see bug 536042 */
           gFolderTreeView.selectFolder(this.folder, true); 
           gFolderDisplay.selectMessage(this.msgHdr);
@@ -739,9 +759,7 @@ document.addEventListener("load", function f_temp0 () {
   /* This function is the core search function. It pulls a GMail-like
    * conversation from messages aSelectedMessages, then calls k when the
    * messages have all been found. If it fails to retrieve GlodaMessages, it
-   * calls k(null, [list of msgHdrs]). The third parameter is only used when we
-   * display the thread in a new tab and represents the message that was
-   * originally selected. */
+   * calls k(null, [list of msgHdrs]). */
   function pullConversation(aSelectedMessages, k) {
     /* XXX tentative algorithm for dealing with non-strict threads.
      *
@@ -828,7 +846,7 @@ document.addEventListener("load", function f_temp0 () {
            * when the pref is set, the error message is hidden by the event
            * handler. So the next time a conversation is loaded, we don't need
            * to clear errors. */
-          if (!g_prefs["disable_error_empty_collection"])
+          if (!gPrefs["disable_error_empty_collection"])
             htmlpane.contentWindow.errorEmptyCollection();
           /* else
             clearErrors(); */
@@ -837,7 +855,7 @@ document.addEventListener("load", function f_temp0 () {
         gSummary = new ThreadSummary(items, aListener);
         gSummary.init();
 
-        if (g_prefs["auto_mark_read"])
+        if (gPrefs["auto_mark_read"])
           gconversation.mark_all_read();
         return;
       }
@@ -896,6 +914,7 @@ document.addEventListener("load", function f_temp0 () {
     summarizeThread(gFolderDisplay.selectedMessages, null, true);
     gMessageDisplay.singleMessageDisplay = false;
   };
+
   gconversation.on_load_thread_tab = function() {
     if (!gFolderDisplay.selectedMessages.length)
       return;
@@ -918,14 +937,14 @@ document.addEventListener("load", function f_temp0 () {
         } else {
           gMessageDisplay.singleMessageDisplay = false;
           let htmlpane = document.getElementById('multimessage');
-          if (!g_prefs["disable_error_empty_collection"])
+          if (!gPrefs["disable_error_empty_collection"])
             htmlpane.contentWindow.errorEmptyCollection();
         }
       }
     );
   };
 
-  /* Register "print" functionnality */
+  /* Register "print" functionnality. Now that's easy! */
   gconversation.print = function () {
     document.getElementById("multimessage").contentWindow.print();
   };
@@ -937,6 +956,7 @@ document.addEventListener("load", function f_temp0 () {
     msgHdrsMarkAsRead(gconversation.stash.msgHdrs, true);
   };
 
+  /* This actually does what we want. It also expands threads as needed. */
   gconversation.on_back = function (event) {
     gMessageDisplay.singleMessageDisplay = true;
     gFolderDisplay.selectMessage(gFolderDisplay.selectedMessages[0]);
@@ -959,7 +979,7 @@ document.addEventListener("load", function f_temp0 () {
       /* By testing here for the pref, we allow the pref to be changed at
        * run-time and we do not require to restart Thunderbird to take the
        * change into account. */
-      if (!g_prefs["auto_fetch"])
+      if (!gPrefs["auto_fetch"])
         return;
 
       /* The logic is as follows.
