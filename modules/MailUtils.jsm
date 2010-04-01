@@ -39,7 +39,8 @@ var EXPORTED_SYMBOLS = ['getMessageBody', 'selectRightMessage',
   'convertHotmailQuotingToBlockquote1', 'convertHotmailQuotingToBlockquote2',
   'convertOutlookQuotingToBlockquote', '_mm_toggleClass',
   'convertForwardedToBlockquote', 'msgHdrToNeckoURL',
-  'fusionBlockquotes', 'msgHdrIsDraft']
+  'fusionBlockquotes', 'msgHdrIsDraft',
+  'msgHdrsMarkAsRead']
 
 const Ci = Components.interfaces;
 const Cc = Components.classes;
@@ -337,5 +338,24 @@ function fusionBlockquotes(aDoc) {
         blockquote.appendChild(b.firstChild);
       blockquote.parentNode.removeChild(b);
     }
+  }
+}
+
+function msgHdrsMarkAsRead(msgHdrs, read) {
+  let pending = {};
+  for each (msgHdr in msgHdrs) {
+    if (msgHdr.isRead)
+      continue;
+    if (!pending[msgHdr.folder.URI]) {
+      pending[msgHdr.folder.URI] = {
+        folder: msgHdr.folder,
+        msgs: Cc["@mozilla.org/array;1"].createInstance(Ci.nsIMutableArray)
+      };
+    }
+    pending[msgHdr.folder.URI].msgs.appendElement(msgHdr, false);
+  }
+  for each (let { folder, msgs } in pending) {
+    folder.markMessagesRead(msgs, read);
+    folder.msgDatabase = null; /* don't leak */
   }
 }

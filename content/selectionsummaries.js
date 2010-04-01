@@ -934,22 +934,7 @@ document.addEventListener("load", function f_temp0 () {
    * when we're viewing a MultiMessageSummary, so fear not marking wrong
    * messages as read. */
   gconversation.mark_all_read = function () {
-    let pending = {};
-    for each (msgHdr in gconversation.stash.msgHdrs) {
-      if (msgHdr.isRead)
-        continue;
-      if (!pending[msgHdr.folder.URI]) {
-        pending[msgHdr.folder.URI] = {
-          folder: msgHdr.folder,
-          msgs: Cc["@mozilla.org/array;1"].createInstance(Ci.nsIMutableArray)
-        };
-      }
-      pending[msgHdr.folder.URI].msgs.appendElement(msgHdr, false);
-    }
-    for each (let { folder, msgs } in pending) {
-      folder.markMessagesRead(msgs, true);
-      folder.msgDatabase = null; /* don't leak */
-    }
+    msgHdrsMarkAsRead(gconversation.stash.msgHdrs, true);
   };
 
   gconversation.on_back = function (event) {
