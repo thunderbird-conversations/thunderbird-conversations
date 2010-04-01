@@ -81,15 +81,17 @@ function MimeMessageToHTML(aMsg) {
  *  been found */
 function MimeMessageGetAttachments(aMsg) {
   let attachments = aMsg.allAttachments;
-  let isntEml = function (aAttachment) {
+  let isReal = function (aAttachment) {
     let name = aAttachment.name;
+    if (!name)
+      return false;
     let l = name.length;
     let ext = name.substr(l-4, l-1);
-    return ext != ".eml";
+    return (l > 0 && ext != ".eml");
   }
   /* This first step filters out "Part 1.2"-like attachments. */
   attachments = attachments.filter(function (x) x.isRealAttachment);
-  attachments = attachments.filter(function (x) isntEml(x));
+  attachments = attachments.filter(function (x) isReal(x));
   return attachments;
 }
 
