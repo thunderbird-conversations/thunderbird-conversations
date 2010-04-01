@@ -265,6 +265,8 @@ document.addEventListener("load", function f_temp0 () {
         let forwardTxt = stringBundle.getString("forward");
         let replyList = stringBundle.getString("reply_list");
         let editNew = stringBundle.getString("edit_new");
+        let markRead = stringBundle.getString("mark_read");
+        let markUnread = stringBundle.getString("mark_unread");
         let closeTxt = stringBundle.getString("close");
         let msgContents = <div class="row">
                             <div class="star"/>
@@ -293,6 +295,8 @@ document.addEventListener("load", function f_temp0 () {
                                   <span style="display: none;">
                                     <span class="fastlink link-reply-list">{replyList}</span>
                                     <span class="fastlink link-edit-new">{editNew}</span>
+                                    <span class="fastlink link-mark-read">{markRead}</span>
+                                    <span class="fastlink link-mark-unread">{markUnread}</span>
                                   </span>
                                 </div>
                                 <div class="messagearrow">
@@ -697,6 +701,28 @@ document.addEventListener("load", function f_temp0 () {
          * http://mxr.mozilla.org/comm-central/source/mail/base/content/messageWindow.js#949
          * and follow the function definitions. */
         let uri = msgHdr.folder.getUriForMsg(msgHdr);
+        let markMsgRead = function() {
+          /* mark the message read */
+          msgHdrsMarkAsRead([msgHdr], true);
+          
+          /* collapse the message */
+          if (closeNode.style.display == "") {
+	        let e = document.createEvent("UIEvents");
+    	    e.initUIEvent("click", true, true, window, 1);
+    	    arrowNode.dispatchEvent(e);
+    	  }
+        };
+        let markMsgUnread = function() {
+          /* mark the message unread */
+          msgHdrsMarkAsRead([msgHdr], false);
+          
+          /* expand the message */
+          if (closeNode.style.display == "none") {
+	        let e = document.createEvent("UIEvents");
+    	    e.initUIEvent("click", true, true, window, 1);
+    	    arrowNode.dispatchEvent(e);
+    	  }
+        };
         let compose = function (aCompType, aEvent) {
           if (aEvent.shiftKey) {
             ComposeMessage(aCompType, Ci.nsIMsgCompFormat.OppositeOfDefault, msgHdr.folder, [uri]);
@@ -723,6 +749,15 @@ document.addEventListener("load", function f_temp0 () {
         let linkEditNew = msgNode.getElementsByClassName("link-edit-new")[0];
         linkEditNew.addEventListener("click", function (event) {
             compose(Ci.nsIMsgCompType.Template, event);
+          }, true);
+        let linkMarkRead = msgNode.getElementsByClassName("link-mark-read")[0];
+        linkMarkRead.addEventListener("click", function (event) {
+            markMsgRead();
+          }, true);
+          
+        let linkMarkUnread = msgNode.getElementsByClassName("link-mark-unread")[0];
+        linkMarkUnread.addEventListener("click", function (event) {
+            markMsgUnread();
           }, true);
         let linkForward = msgNode.getElementsByClassName("link-forward")[0];
         linkForward.addEventListener("click", function (event) {

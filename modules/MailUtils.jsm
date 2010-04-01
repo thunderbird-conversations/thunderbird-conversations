@@ -344,7 +344,7 @@ function fusionBlockquotes(aDoc) {
 function msgHdrsMarkAsRead(msgHdrs, read) {
   let pending = {};
   for each (msgHdr in msgHdrs) {
-    if (msgHdr.isRead)
+    if (msgHdr.isRead == read)
       continue;
     if (!pending[msgHdr.folder.URI]) {
       pending[msgHdr.folder.URI] = {
