@@ -246,6 +246,7 @@ document.addEventListener("load", function f_temp0 () {
         }
 
         let msgHdr = this._msgHdrs[i];
+        let key = msgHdr.messageKey + msgHdr.folder.URI;
         myDump("Registering "+key+"\n");
 
         let msg_classes = "message ";
@@ -306,7 +307,6 @@ document.addEventListener("load", function f_temp0 () {
                             </div>
                           </div>;
 
-        let key = msgHdr.messageKey + msgHdr.folder.URI;
         let msgNode = htmlpane.contentDocument.createElement("div");
         this._msgNodes[key] = msgNode;
         // innerHTML is safe here because all of the data in msgContents is
@@ -1011,11 +1011,13 @@ document.addEventListener("load", function f_temp0 () {
     onSecurityChange: function () {},
     onStatusChange: function () {},
     onLocationChange: function (aWebProgress, aRequest, aLocation) {
+      myDump("AAA\n");
       /* By testing here for the pref, we allow the pref to be changed at
        * run-time and we do not require to restart Thunderbird to take the
        * change into account. */
       if (!gPrefs["auto_fetch"])
         return;
+      myDump("BBB\n");
 
       /* The logic is as follows.
        * i) The event handler stores the URI of the message we're jumping to.
@@ -1041,7 +1043,9 @@ document.addEventListener("load", function f_temp0 () {
         myDump("*** Not a message ("+aLocation.spec+")\n");
         return;
       }
+      dump("CCC\n");
       let msgHdr = msgService.messageURIToMsgHdr(aLocation.QueryInterface(Ci.nsIMsgMessageUrl).uri);
+      dump("DDD\n");
       pullConversation(
         [msgHdr],
         function (aCollection, aItems, aMsg) {
@@ -1049,12 +1053,19 @@ document.addEventListener("load", function f_temp0 () {
             let items = removeDuplicates(aCollection.items);
             if (items.length <= 1)
               return;
-            gSummary = new ThreadSummary(
+            dump("EEE\n");
+            let gSummary = new ThreadSummary(
               [selectRightMessage(x, gDBView.msgFolder).folderMessage for each (x in items)],
               null
             );
-            gSummary.init();
             gMessageDisplay.singleMessageDisplay = false;
+            dump("FFF\n");
+            try {
+              gSummary.init();
+            } catch (e) {
+              myDump("!!! "+e+"\n");
+              throw e;
+            }
             return;
           }
       });
