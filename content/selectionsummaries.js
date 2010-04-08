@@ -76,7 +76,9 @@ document.addEventListener("load", function f_temp0 () {
   const Cc = Components.classes;
   const Cu = Components.utils;
   const Cr = Components.results;
-  Components.utils.import("resource://gconversation/MailUtils.jsm");
+  Components.utils.import("resource://gconversation/VariousUtils.jsm");
+  Components.utils.import("resource://gconversation/GlodaUtils.jsm");
+  Components.utils.import("resource://gconversation/MsgHdrUtils.jsm");
 
   /* Various magic values */
   const nsMsgViewIndex_None = 0xffffffff;
@@ -633,9 +635,14 @@ document.addEventListener("load", function f_temp0 () {
             /* The advantage here is that the snippet is properly stripped of
              * quoted text */
             let [snippet, meta] = mimeMsgToContentSnippetAndMeta(aMimeMsg, aMsgHdr.folder, SNIPPET_LENGTH);
-            let hasAttachment = MimeMessageHasAttachment(aMimeMsg);
-            if (hasAttachment)
-              msgNode.getElementsByClassName("attachment")[0].style.display = "";
+            let attachments = MimeMessageGetAttachments(aMimeMsg);
+            if (attachments.length > 0) {
+              let attachmentsDesc = attachments.map(function (att) att.name);
+              attachmentsDesc = attachmentsDesc.length+" attachment(s): "+attachmentsDesc.join(", ");
+              let attachmentNode = msgNode.getElementsByClassName("attachment")[0];
+              attachmentNode.style.display = "";
+              attachmentNode.firstElementChild.setAttribute("alt", attachmentsDesc);
+            }
 
             snippetMsgNode.textContent = snippet;
           });
@@ -645,7 +652,7 @@ document.addEventListener("load", function f_temp0 () {
             // that's fixed, this code should adapt. XXX
             /* --> Try to deal with that. Try to come up with something that
              * remotely looks like a snippet. */
-            let body = getMessageBody(msgHdr, true);
+            let body = messageBodyFromMsgHdr(msgHdr, true);
             let snippet = body.substring(0, SNIPPET_LENGTH-3)+"...";
             snippetMsgNode.textContent = snippet;
             myDump("*** Got an \"offline message\"\n");
