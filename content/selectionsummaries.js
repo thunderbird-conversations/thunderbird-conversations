@@ -84,7 +84,7 @@ document.addEventListener("load", function f_temp0 () {
   const nsMsgViewIndex_None = 0xffffffff;
   const kCharsetFromMetaTag = 10;
 
-  /* Don't instanciate too many components */
+  /* Cache component instanciation. */
   const gPrefBranch = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService).getBranch(null);
   const gMessenger = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
   const prefs = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService).getBranch("gconversation.");
@@ -415,6 +415,9 @@ document.addEventListener("load", function f_temp0 () {
             }
             if (event.keyCode == '8') {
               gconversation.on_back();
+            }
+            if (event.charCode == 'h'.charCodeAt(0)) {
+              msgNode.style.display = "none";
             }
           }, true);
  
