@@ -49,11 +49,16 @@
  * that needs to be made available to the event handlers. We also store in the
  * stash variables we don't want to be GC'd. */
 var gconversation = {
+  /* Event handlers */
   on_load_thread: null,
   on_load_thread_tab: null,
   on_back: null,
+  /* Used by both the in-conversation toolbar and the right-click menu */
   mark_all_read: null,
+  archive_all: null,
+  delete_all: null,
   print: null,
+  /* Prevent GC */
   stash: {
     wantedUrl: null,
     q1: null,
@@ -976,33 +981,39 @@ document.addEventListener("load", function f_temp0 () {
     gMessageDisplay.singleMessageDisplay = false;
   };
 
-  gconversation.on_load_thread_tab = function() {
+  gconversation.on_load_thread_tab = function(event) {
     if (!gFolderDisplay.selectedMessages.length)
       return;
     if (!checkGlodaEnabled())
       return;
 
     let aSelectedMessages = gFolderDisplay.selectedMessages;
-    pullConversation(
-      gFolderDisplay.selectedMessages,
-      function (aCollection, aItems, aMsg) {
-        let tabmail = document.getElementById("tabmail");
-        if (aCollection) {
-          aCollection.items = [selectRightMessage(m) for each (m in removeDuplicates(aCollection.items))];
-          tabmail.openTab("glodaList", {
-            collection: aCollection,
-            message: aMsg,
-            title: aMsg.subject,
-            background: false
-          });
-        } else {
-          gMessageDisplay.singleMessageDisplay = false;
-          let htmlpane = document.getElementById('multimessage');
-          if (!gPrefs["disable_error_empty_collection"])
-            htmlpane.contentWindow.errorEmptyCollection();
+    if (event.shiftKey) {
+      let tabmail = document.getElementById("tabmail");
+      tabmail.openTab("message", {msgHdr: aSelectedMessages[0], background: false});
+      gconversation.on_load_thread();
+    } else {
+      pullConversation(
+        gFolderDisplay.selectedMessages,
+        function (aCollection, aItems, aMsg) {
+          let tabmail = document.getElementById("tabmail");
+          if (aCollection) {
+            aCollection.items = [selectRightMessage(m) for each (m in removeDuplicates(aCollection.items))];
+            tabmail.openTab("glodaList", {
+              collection: aCollection,
+              message: aMsg,
+              title: aMsg.subject,
+              background: false
+            });
+          } else {
+            gMessageDisplay.singleMessageDisplay = false;
+            let htmlpane = document.getElementById('multimessage');
+            if (!gPrefs["disable_error_empty_collection"])
+              htmlpane.contentWindow.errorEmptyCollection();
+          }
         }
-      }
-    );
+      );
+    }
   };
 
   /* Register "print" functionnality. Now that's easy! */
@@ -1045,7 +1056,7 @@ document.addEventListener("load", function f_temp0 () {
       }
       let stub = pDoc.getElementsByClassName("message")[0];
       stub.parentNode.removeChild(stub);
-      setTimeout(function () w.print(), 1000);
+      setTimeout(function () w.print(), 0);
     }, true);
   };
 
@@ -1054,6 +1065,15 @@ document.addEventListener("load", function f_temp0 () {
    * messages as read. */
   gconversation.mark_all_read = function () {
     msgHdrsMarkAsRead(gconversation.stash.msgHdrs, true);
+  };
+
+  gconversation.archive_all = function () {
+    MsgArchiveSelectedMessages(null);
+    //msgHdrsArchive(gconversation.stash.msgHdrs);
+  };
+
+  gconversation.delete_all = function () {
+    msgHdrsDelete(gconversation.stash.msgHdrs);
   };
 
   /* This actually does what we want. It also expands threads as needed. */

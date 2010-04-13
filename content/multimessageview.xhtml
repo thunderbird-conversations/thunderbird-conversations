@@ -235,7 +235,7 @@
                             class="button msgHeaderView-button extra-button"
                             label="&button.open_in_new_tab;"
                             tooltiptext="&button.open_in_new_tab;"
-                            onclick="if (event.button == 0) window.top.gconversation.on_load_thread_tab();"/>
+                            onclick="if (event.button == 0) window.top.gconversation.on_load_thread_tab(event);"/>
                     <button id="mark_as_read"
                             class="button msgHeaderView-button extra-button"
                             label="&button.mark_all_read;"
@@ -258,14 +258,14 @@
                             onclick="if (event.button == 0) window.top.gconversation.print();"/>
                     <button id="archive"
                             class="button msgHeaderView-button hdrArchiveButton"
-                            onclick="if (event.button == 0) window.top.MsgArchiveSelectedMessages(null);"
+                            onclick="if (event.button == 0) window.top.gconversation.archive_all();"
                             label="&archive.label;"
                             tooltiptext="&archive.label;"/>
                     <button id="trash"
                             class="button msgHeaderView-button hdrTrashButton"
                             label="&delete.label;"
                             tooltiptext="&delete.label;"
-                            onclick="if (event.button == 0) window.top.DefaultController.doCommand('cmd_delete');"/>
+                            onclick="if (event.button == 0) window.top.gconversation.delete_all();"/>
                 </hbox>
             </div>
             <div class="heading" id="heading">&selectedmessages.label;</div>

@@ -1,5 +1,15 @@
 --- v0.3 development series ---
 
+- New keyboard shortcut: hold "shift" while clicking the "open thread in new
+tab" button (either in the main toolbar, the message header toolbar or the
+conversation toolbar) to display the conversation full-screen (without the
+message list).
+- Deleting a conversation using the conversation toolbar now also deletes
+messages that aren't in the current folder.
+- Revamp printing. Messages now flow properly accross pages (warning: no HTML
+message printing).
+- New keyboard shortcut: h to hide a given message (before printing a whole
+conversation, for instance).
 - More visual improvements.
 - Added a keyboard navigation mode. Use tab to jump from the message list to the
 individual messages in the conversation. Use the O key to open/close a given

@@ -8,7 +8,8 @@
 <!ENTITY menu.mark_all_read "Mark all read">
 <!ENTITY menu.unfold_all "Unfold all">
 <!ENTITY menu.fold_all "Fold all">
-<!ENTITY menu.delete "Delete messages">
+<!ENTITY menu.delete "Delete all messages">
+<!ENTITY menu.archive "Archive all messages">
 <!ENTITY toolbar.view_full "Fetch conversation">
 <!ENTITY toolbar.view_full_tooltip "Search all messages to build up the complete conversation, including your own.">
 <!ENTITY toolbar.view_tab "Open thread in a new tab">

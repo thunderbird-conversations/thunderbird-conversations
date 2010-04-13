@@ -58,7 +58,7 @@
       oncommand="gconversation.on_load_thread();"
       >
       <menupopup>
-        <menuitem label="&ctoolbar.view_tab;" oncommand="gconversation.on_load_thread_tab();" />
+        <menuitem label="&ctoolbar.view_tab;" oncommand="gconversation.on_load_thread_tab(event);" />
       </menupopup>
     </toolbarbutton>
   </toolbarpalette>
@@ -72,22 +72,24 @@
       >
       <menupopup>
         <menuitem label="&toolbar.view_tab;"
-          oncommand="gconversation.on_load_thread_tab();"
+          oncommand="gconversation.on_load_thread_tab(event);"
           insertAfter="mailContext" />
       </menupopup>
     </toolbarbutton>
   </toolbarpalette>
   <popupset id="mainPopupSet">
     <popup id="gConvMenu">
-      <menuitem label="&printButton.label;" oncommand="gconversation.print()"
-        style="list-style-image: url(&quot;moz-icon://stock/gtk-print?size=menu&quot;);" />
-      <menuitem label="&menu.delete;" command="cmd_delete" />
-      <menuitem label="&archiveMsgCmd.label;" command="cmd_archive" />
+      <menuitem label="&printButton.label;"
+        oncommand="gconversation.print()" />
+      <menuitem label="&menu.delete;"
+        oncommand="gconversation.delete_all();" />
+      <menuitem label="&menu.archive;"
+        oncommand="gconversation.archive_all();" />
       <menuitem label="&menu.mark_all_read;" class="extra-menuitem"
         oncommand="gconversation.mark_all_read();" />
       <menuseparator />
       <menuitem label="&menu.open_in_new_tab;" class="extra-menuitem"
-        oncommand="gconversation.on_load_thread_tab();" />
+        oncommand="gconversation.on_load_thread_tab(event);" />
       <menuitem label="&menu.unfold_all;" class="extra-menuitem"
         oncommand="document.getElementById('multimessage').contentWindow.unfoldAll();" />
       <menuitem label="&menu.fold_all;" class="extra-menuitem"

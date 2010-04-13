@@ -35,7 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 var EXPORTED_SYMBOLS = ['messageBodyFromMsgHdr', 'msgHdrToNeckoURL', 'msgHdrIsDraft',
-'msgHdrsMarkAsRead']
+'msgHdrsMarkAsRead', 'msgHdrsArchive', 'msgHdrsDelete']
 
 const Ci = Components.interfaces;
 const Cc = Components.classes;
@@ -124,4 +124,38 @@ function msgHdrsMarkAsRead(msgHdrs, read) {
     folder.markMessagesRead(msgs, read);
     folder.msgDatabase = null; /* don't leak */
   }
+}
+
+/**
+ * Delete a set of messages.
+ * @param {nsIMsgDbHdr array} msgHdrs The message headers
+ * */
+function msgHdrsDelete(msgHdrs) {
+  let pending = {};
+  for each (msgHdr in msgHdrs) {
+    if (!pending[msgHdr.folder.URI]) {
+      pending[msgHdr.folder.URI] = {
+        folder: msgHdr.folder,
+        msgs: Cc["@mozilla.org/array;1"].createInstance(Ci.nsIMutableArray)
+      };
+    }
+    pending[msgHdr.folder.URI].msgs.appendElement(msgHdr, false);
+  }
+  for each (let { folder, msgs } in pending) {
+    folder.deleteMessages(msgs, null, false, false, null, true);
+    folder.msgDatabase = null; /* don't leak */
+  }
+}
+
+/**
+ * Archive a set of messages
+ * @param {nsIMsgDbHdr array} msgHdrs The message headers
+ * */
+function msgHdrsArchive(msgHdrs) {
+  /* See
+   * http://mxr.mozilla.org/comm-central/source/suite/mailnews/mailWindowOverlay.js#1337
+   * */
+  let uris = [x.folder.getUriForMsg(x) for each (x in msgHdrs)];
+  let batchMover = new BatchMessageMover();
+  batchMover.archiveSelectedMessages(uris);
 }
