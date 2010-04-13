@@ -42,11 +42,7 @@
 
 /* Heading */
 
-#buttonhbox {
-  display: none;
-}
-
-.heading {
+#heading {
   font-variant: small-caps;
   margin-bottom: 1em;
   font-weight: bold;
@@ -60,8 +56,25 @@
   font-weight: bold;
 }
 
-/* Message contents */
+/* Message body */
+.message {
+  padding: .5em;
+}
 
-.messagearrow, .toggle-font, .tags, .fastreply {
-  display: none;
+.date {
+  padding-bottom: .5em;
+}
+
+.header {
+  border-bottom: 1px solid #888;
+}
+
+.snippetmsg {
+  padding-top: .5em;
+  font-style: italic;
+}
+
+.plaintextmsg {
+  padding-top: .5em;
+  white-space: pre-wrap;
 }

@@ -65,10 +65,6 @@
               href="chrome://messenger/skin/tagColors.css"/>
         <link rel="stylesheet" media="screen" type="text/css"
               href="chrome://gconversation/skin/multimessageview.css"/>
-        <link rel="stylesheet" media="print" type="text/css"
-              href="chrome://gconversation/skin/multimessageview_print.css"/>
-        <link rel="stylesheet" media="print" type="text/css"
-              href="chrome://gconversation/locale/print.css"/>
         <link rel="stylesheet" media="screen" type="text/css"
               id="platformStylesheet" />
         <title>&window.title;</title>
@@ -259,7 +255,7 @@
                             class="button msgHeaderView-button extra-button"
                             label="&button.print;"
                             tooltiptext="&button.print;"
-                            onclick="if (event.button == 0) window.print();"/>
+                            onclick="if (event.button == 0) window.top.gconversation.print();"/>
                     <button id="archive"
                             class="button msgHeaderView-button hdrArchiveButton"
                             onclick="if (event.button == 0) window.top.MsgArchiveSelectedMessages(null);"

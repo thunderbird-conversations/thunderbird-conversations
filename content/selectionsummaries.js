@@ -53,6 +53,7 @@ var gconversation = {
   on_load_thread_tab: null,
   on_back: null,
   mark_all_read: null,
+  print: null,
   stash: {
     wantedUrl: null,
     q1: null,
@@ -288,6 +289,7 @@ document.addEventListener("load", function f_temp0 () {
                                 </div>
                               </div>
                               <div class="snippet snippetmsg"></div>
+                              <div class="plaintextmsg" style="display: none;"></div>
                               <div xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" class="snippet htmlmsg" style="display: none"></div>
                               <div class="bottombox">
                                 <div class="fastreply">
@@ -340,6 +342,7 @@ document.addEventListener("load", function f_temp0 () {
         /* Various useful DOM nodes */
         let senderNode = msgNode.getElementsByClassName("sender")[0];
         let htmlMsgNode = msgNode.getElementsByClassName("htmlmsg")[0];
+        let plainTextMsgNode = msgNode.getElementsByClassName("plaintextmsg")[0];
         let snippetMsgNode = msgNode.getElementsByClassName("snippetmsg")[0];
         let arrowNode = msgNode.getElementsByClassName("msgarrow")[0];
         let closeNode = msgNode.getElementsByClassName("messageclose")[0];
@@ -638,6 +641,7 @@ document.addEventListener("load", function f_temp0 () {
             /* The advantage here is that the snippet is properly stripped of
              * quoted text */
             let [snippet, meta] = mimeMsgToContentSnippetAndMeta(aMimeMsg, aMsgHdr.folder, SNIPPET_LENGTH);
+            let [plainTextBody, ] = mimeMsgToContentAndMeta(aMimeMsg, aMsgHdr.folder);
             let attachments = MimeMessageGetAttachments(aMimeMsg);
             if (attachments.length > 0) {
               let attachmentsDesc = attachments.map(function (att) att.name);
@@ -647,6 +651,7 @@ document.addEventListener("load", function f_temp0 () {
               attachmentNode.firstElementChild.setAttribute("alt", attachmentsDesc);
             }
 
+            plainTextMsgNode.textContent = plainTextBody.getContentString();
             snippetMsgNode.textContent = snippet;
           });
         } catch (e if e.result == Components.results.NS_ERROR_FAILURE) {
@@ -991,7 +996,46 @@ document.addEventListener("load", function f_temp0 () {
 
   /* Register "print" functionnality. Now that's easy! */
   gconversation.print = function () {
-    document.getElementById("multimessage").contentWindow.print();
+    //document.getElementById("multimessage").contentWindow.print();
+    let w = window.open("chrome://gconversation/content/printstub.xhtml", "", "width=640,height=480,chrome");
+    w.addEventListener("load", function (event) {
+      let pDoc = w.document;
+      let htmlpane = document.getElementById('multimessage').contentDocument;
+      pDoc.getElementById("heading").textContent = htmlpane.getElementById("heading").textContent;
+      for each (let [,msgNode] in Iterator(htmlpane.getElementsByClassName("message"))) {
+        if (msgNode.style.display == "none")
+          continue;
+
+        let pMsgNode = pDoc.getElementsByClassName("message")[0].cloneNode(true);
+        let clone = function (klass, f) {
+          let node = msgNode.getElementsByClassName(klass)[0];
+          let pNode = pMsgNode.getElementsByClassName(klass)[0];
+          f(node, pNode);
+        };
+        clone("sender", function (sender, pSender) {
+          pSender.textContent = sender.textContent;
+          pSender.style.color = sender.style.color;
+        });
+        clone("date", function (node, pNode) {
+          pNode.textContent = node.textContent;
+        });
+        clone("snippetmsg", function (snippet, pSnippet) {
+          if (snippet.style.display != "none") {
+            pSnippet.textContent = snippet.textContent;
+            pMsgNode.getElementsByClassName("plaintextmsg")[0].style.display = "none";
+          } else {
+            pSnippet.style.display = "none";
+          }
+        });
+        clone("plaintextmsg", function (msg, pMsg) {
+          pMsg.textContent = msg.textContent;
+        });
+        pDoc.body.appendChild(pMsgNode);
+      }
+      let stub = pDoc.getElementsByClassName("message")[0];
+      stub.parentNode.removeChild(stub);
+      setTimeout(function () w.print(), 1000);
+    }, true);
   };
 
   /* The button as well as the menu item are hidden and disabled respectively
