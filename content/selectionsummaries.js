@@ -58,11 +58,14 @@ var gconversation = {
   archive_all: null,
   delete_all: null,
   print: null,
+  /* Wrap what would be globals */
+  main_window_is_focused: false,
   /* Prevent GC */
   stash: {
     wantedUrl: null,
     q1: null,
-    q2: null
+    q2: null,
+    msgHdrs: null
   }
 };
 
@@ -922,7 +925,7 @@ document.addEventListener("load", function f_temp0 () {
         gSummary = new ThreadSummary(items, aListener);
         gSummary.init();
 
-        if (gPrefs["auto_mark_read"])
+        if (gPrefs["auto_mark_read"] && gconversation.main_window_is_focused)
           gconversation.mark_all_read();
         return;
       }
@@ -1089,7 +1092,7 @@ document.addEventListener("load", function f_temp0 () {
   document.getElementById("multimessage").setAttribute("context", "gConvMenu");
 
   /* Watch the location changes in the messagepane (single message view) to
-   * display a conversation if relevant. */
+   * display a conversation if relevant. This is the "auto-fetch" feature. */
   let messagepane = document.getElementById("messagepane");
   gconversation.stash.uriWatcher = {
     onStateChange: function () {},
@@ -1160,6 +1163,19 @@ document.addEventListener("load", function f_temp0 () {
     QueryInterface: XPCOMUtils.generateQI([Ci.nsISupports, Ci.nsISupportsWeakReference, Ci.nsIWebProgressListener])
   };
   messagepane.addProgressListener(gconversation.stash.uriWatcher);
+
+  /* This is needed to know if we can mark a conversation as read when it is
+   * opened. If we don't do that, then if a conversation is selected, when a new
+   * message arrives in the conversation, the conversation is automatically
+   * reloaded, marked as read instantly, and the user is not notified. */
+  window.addEventListener("focus", function (event) {
+    if (event.target == window)
+      gconversation.main_window_is_focused = true;
+  }, true);
+  window.addEventListener("blur", function (event) {
+    if (event.target == window)
+      gconversation.main_window_is_focused = false;
+  }, true);
 
   myDump("*** gConversation loaded\n");
 
