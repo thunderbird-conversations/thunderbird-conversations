@@ -491,6 +491,10 @@ document.addEventListener("load", function f_temp0 () {
                        * so just search for a regular blockquote */
                       if (c.tagName && c.tagName.toLowerCase() == "blockquote") {
                         if (c.getUserData("hideme") !== false) { /* null is ok, true is ok too */
+                          /* Compute the approximate number of lines while the element is still visible */
+                          let style = iframe.contentWindow.getComputedStyle(c, null);
+                          let numLines = parseInt(style.height) / parseInt(style.lineHeight);
+
                           let div = aDoc.createElement("div");
                           div.setAttribute("class", "link showhidequote");
                           div.addEventListener("click", function(event) {
@@ -504,6 +508,13 @@ document.addEventListener("load", function f_temp0 () {
                             stringBundle.getString("showquotedtext")+" -"));
                           elt.insertBefore(div, c);
                           c.style.display = "none";
+
+                          /* If it's a small quote, well, let's show it */
+                          if (numLines <= gPrefs["hide_quote_length"]) {
+                            let e = document.createEvent("UIEvents");
+                            e.initUIEvent("click", true, true, window, 1);
+                            div.dispatchEvent(e);
+                          }
                         }
                       } else {
                         walk(c);
