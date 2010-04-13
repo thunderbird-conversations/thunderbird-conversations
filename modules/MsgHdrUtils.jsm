@@ -151,11 +151,17 @@ function msgHdrsDelete(msgHdrs) {
  * Archive a set of messages
  * @param {nsIMsgDbHdr array} msgHdrs The message headers
  * */
-function msgHdrsArchive(msgHdrs) {
+function msgHdrsArchive(msgHdrs, aWindow) {
   /* See
    * http://mxr.mozilla.org/comm-central/source/suite/mailnews/mailWindowOverlay.js#1337
+   *
+   * The window is here because otherwise we don't have access to
+   * BatchMessageMover.
    * */
-  let uris = [x.folder.getUriForMsg(x) for each (x in msgHdrs)];
-  let batchMover = new BatchMessageMover();
-  batchMover.archiveSelectedMessages(uris);
+  let batchMover = new aWindow.BatchMessageMover();
+  /* So that this works both when my fix is there and when it is not. */
+  if (batchMover.archiveMessages)
+    batchMover.archiveMessages(msgHdrs);
+  else
+    batchMover.archiveSelectedMessages();
 }

@@ -151,7 +151,8 @@ document.addEventListener("load", function f_temp0 () {
 
     summarize: function() {
       /* We need to keep them at hand for the "Mark all read" command to work
-       * properly */
+       * properly (and others). THis is set by the original constructor that
+       * we're not overriding here, see the original selectionsummaries.js */
       gconversation.stash.msgHdrs = this._msgHdrs;
 
       /* This function returns a fresh color everytime it is called. After some
@@ -1068,8 +1069,8 @@ document.addEventListener("load", function f_temp0 () {
   };
 
   gconversation.archive_all = function () {
-    MsgArchiveSelectedMessages(null);
-    //msgHdrsArchive(gconversation.stash.msgHdrs);
+    //MsgArchiveSelectedMessages(null);
+    msgHdrsArchive(gconversation.stash.msgHdrs, window);
   };
 
   gconversation.delete_all = function () {
