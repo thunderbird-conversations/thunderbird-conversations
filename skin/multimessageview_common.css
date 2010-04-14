@@ -137,17 +137,3 @@
   padding: 0;
   overflow: hidden;
 }
-
-/* Inside the messages' bodies */
-
-.moz-txt-tag {
-  display: none;
-}
-
-a {
-  font-weight: normal;
-}
-
-.showhidequote {
-  color: #512a45;
-}

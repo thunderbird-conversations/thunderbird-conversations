@@ -500,26 +500,20 @@ document.addEventListener("load", function f_temp0 () {
                           /* Compute the approximate number of lines while the element is still visible */
                           let style = iframe.contentWindow.getComputedStyle(c, null);
                           let numLines = parseInt(style.height) / parseInt(style.lineHeight);
-
-                          let div = aDoc.createElement("div");
-                          div.setAttribute("class", "link showhidequote");
-                          div.addEventListener("click", function(event) {
-                              let h = htmlpane.contentWindow.toggleQuote(event);
-                              iframe.style.height = (parseInt(iframe.style.height) + h)+"px";
-                            }, true);
-                          div.setAttribute("style", "color: #512a45; cursor: pointer;");
-                          if (!hasHtml)
-                            div.style.fontSize = "small";
-                          div.appendChild(document.createTextNode("- "+
-                            stringBundle.getString("showquotedtext")+" -"));
-                          elt.insertBefore(div, c);
-                          c.style.display = "none";
-
-                          /* If it's a small quote, well, let's show it */
-                          if (numLines <= gPrefs["hide_quote_length"]) {
-                            let e = document.createEvent("UIEvents");
-                            e.initUIEvent("click", true, true, window, 1);
-                            div.dispatchEvent(e);
+                          if (numLines > gPrefs["hide_quote_length"]) {
+                            let div = aDoc.createElement("div");
+                            div.setAttribute("class", "link showhidequote");
+                            div.addEventListener("click", function(event) {
+                                let h = htmlpane.contentWindow.toggleQuote(event);
+                                iframe.style.height = (parseInt(iframe.style.height) + h)+"px";
+                              }, true);
+                            div.setAttribute("style", "color: #512a45; cursor: pointer; font-size: x-small;");
+                            if (!hasHtml)
+                              div.style.fontSize = "small";
+                            div.appendChild(document.createTextNode("- "+
+                              stringBundle.getString("showquotedtext")+" -"));
+                            elt.insertBefore(div, c);
+                            c.style.display = "none";
                           }
                         }
                       } else {

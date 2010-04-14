@@ -1,6 +1,6 @@
 pref("gconversation.monospaced", false);
 pref("gconversation.monospaced_snippets", false);
-pref("gconversation.hide_quote_length", 3);
+pref("gconversation.hide_quote_length", 5);
 pref("gconversation.fold_rule", "unread_and_last");
 pref("gconversation.button.archive", true);
 pref("gconversation.button.trash", true);
