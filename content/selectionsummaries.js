@@ -508,8 +508,6 @@ document.addEventListener("load", function f_temp0 () {
                                 iframe.style.height = (parseInt(iframe.style.height) + h)+"px";
                               }, true);
                             div.setAttribute("style", "color: #512a45; cursor: pointer; font-size: x-small;");
-                            if (!hasHtml)
-                              div.style.fontSize = "small";
                             div.appendChild(document.createTextNode("- "+
                               stringBundle.getString("showquotedtext")+" -"));
                             elt.insertBefore(div, c);
