@@ -38,10 +38,11 @@
 @import url(chrome://gconversation/skin/multimessageview_common.css);
 
 body {
-	background-color: #F3F3F3;
+  background-color: #fbfbfc;
 }
 
 /* Toolbar */
+
 #unfold_all {
   list-style-image: url("chrome://gconversation/skin/down.png");
 }
@@ -57,11 +58,181 @@ body {
 /* General stuff */
 
 .message {
-  min-width: 500px;
-  background-color: #FFF;
+  border: 1px outset #999;
+  border-bottom: 2px outset #bbb;
+  -moz-border-radius: 5px;
+  position: relative;
+  padding: 1em;
+  margin-bottom: 2ex;
+  background-color: white;
+}
+
+.message.unread {
+  -moz-box-shadow: 0px 0px 5px red;
+  border-width: 0;
+}
+
+.row {
+  position: static;
+}
+
+#content {
+  font-size: 100%;
+  font-family: Verdana, "Bitstream Vera Sans", sans-serif;
+}
+
+/* Links */
+
+.link-action-area {
+  position: absolute;
+  right: .5em;
+  top: .3em;
+  z-index: 2;
+}
+
+a.action { 
+  cursor: pointer;
+  font-weight: normal;
+  text-decoration: none; 
+  color: #06d; 
+  padding: 0.2em 0.5em; 
+  border: 1px solid transparent;
+}
+
+a.action:hover { 
+  background-color: #90b4de; 
+  color: #ffffff; 
+  border: 1px solid #6fa3de;
+}
+
+/* Message header */
+
+.header {
+  margin-left: 0;
+  padding-top: 0;
+}
+
+.star {
+  position: absolute;
+  margin: 0;
+  padding: 0;
+  top: .3em;
+  left: .3em;
+}
+
+.wrappedsender {
+  position: relative;
+  margin: 0;
+  padding: 0;
+  margin-top: .5em;
+  padding-top: .2em;
+  margin-bottom: 3em;
+}
+
+.sender {
+  font-weight: bold;
+}
+
+.to-text {
+  display: inline-block;
+  color: #999;
+}
+
+.recipients {
+  color: #111;
+  display: inline-block;
+}
+
+.msgheader-subject-date {
+  width: 100%;
+  position: relative;
+  margin: 0.2em 0;
+}
+
+.subject {
+  color: #444;
+  display: inline-block;
+}
+
+.date {
+  color: #999;
+  display: inline-block;
+  position: absolute;
+  top: 0;
+  right: 0;
+  padding: 0;
+  margin: 0;
+}
+
+.draft-warning {
+  color: #991010;
+  margin: 0 .3em;
+  display: inline;
+}
+
+.attachment {
+  display: inline;
+  vertical-align: middle;
+}
+
+.tag {
+  color: #444;
+  border-style: solid;
+  border-width: 2px;
+  font-size: small;
+  background-image: none;
+  background-color: white !important;
+}
+
+/* Header details */
+
+.messageclosebox {
+  display: none;
+  position: absolute;
+  width: 100%;
+  height: 13px;
+  left: 0;
+  bottom: 0;
+  text-align: center;
+}
+
+.messageclose {
+  display: inline-block;
+  height: 13px;
+  line-height: 13px;
+  font-size: 10px;
+  padding: 0 5px;
+  border: 1px solid #888;
+  border-bottom-width: 0;
+  -moz-border-radius: 2px 2px 0 0;
+  background-color: white;
+  color: #888;
+  cursor: pointer;
+}
+
+.messageclose:hover {
+  color: black;
 }
 
 /* Inside the messages' bodies */
+
+.fullmsg {
+  color: black;
+}
+
+.monospaced-snippet {
+  font-family: -moz-fixed;
+}
+
+.htmlmsg > iframe {
+  border-width: 0;
+  width: 100%;
+  margin-left: 0;
+  padding: 0;
+  overflow: hidden;
+}
+
+/* Message footer */
 
 .bottombox {
   width: 100%;
@@ -84,33 +255,6 @@ body {
   cursor: pointer;
 }
 
-.fastreply {
-  border: 1px solid #888;
-  border-width: 1px 0 0 1px;
-  -moz-border-radius: 3px 0 3px 0;
-  display: inline-block;
-  /*max-width: 45%;*/
-  background: #d7d6d7 url(fastreply_bg.png) repeat-x;
-  color: transparent;
-}
-
-/*.fastreply*/ .fastlink {
-  color: #888;
-  padding: 1px 5px;
-  cursor: pointer;
-  display: inline-block;
-  font-size: small;
-  border-left: 1px solid rgba(0,0,0,.5);
-}
-
-/*.fastreply*/ .fastlink:hover {
-  color: black;
-  text-decoration: none;
-}
-
-.fastreply > .fastlink:first-child {
-  border-left: none;
-}
 
 
 /* Error */
@@ -137,3 +281,4 @@ body {
 .error > .close > span:hover {
   text-decoration: underline;
 }
+

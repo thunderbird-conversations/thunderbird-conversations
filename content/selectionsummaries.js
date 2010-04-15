@@ -267,6 +267,8 @@ document.addEventListener("load", function f_temp0 () {
           msg_classes += " starred";
 
         let senderName = headerParser.extractHeaderAddressName(msgHdr.mime2DecodedAuthor);
+        let recipientsNames = headerParser.extractHeaderAddressNames(msgHdr.mime2DecodedRecipients);
+        let theSubject = msgHdr.mime2DecodedSubject;
         let date = makeFriendlyDateAgo(new Date(msgHdr.date/1000));
 
         /* The snippet class really has a counter-intuitive name but that allows
@@ -277,21 +279,39 @@ document.addEventListener("load", function f_temp0 () {
         let forwardTxt = stringBundle.getString("forward");
         let replyList = stringBundle.getString("reply_list");
         let editNew = stringBundle.getString("edit_new");
-        let markRead = stringBundle.getString("mark_read");
-        let markUnread = stringBundle.getString("mark_unread");
         let closeTxt = stringBundle.getString("close");
+        let toTxt = "to"; /* XXX fixme */
         let msgContents = <div class="row">
                             <div class="star"/>
+                            <div class="link-action-area">
+                              <a class="action link-reply">{replyTxt}</a>
+                              <a class="action link-reply-all">{replyAllTxt}</a>
+                              <a class="action link-forward">{forwardTxt}</a>
+                              <a class="action toggle-font link" style="display: none">
+                                <img src="chrome://gconversation/skin/font.png" />
+                              </a>
+                              <a class="action mark-read link">
+                                <img src="chrome://gconversation/skin/readcol.png" />
+                              </a>
+                              <a class="action delete-msg link">
+                                <img src="chrome://gconversation/skin/trash.gif" />
+                              </a>
+                            </div>
                             <div class="header">
                               <div class="wrappedsender">
-                                <div class="sender link">{senderName}</div>
-                                <div class="date">{date}</div>
-                                <div class="tags"></div>
+                                <div class="msgheader-from-to">
+                                  <div class="sender link">{senderName}</div>
+                                  <div class="to-text">{toTxt}</div>
+                                  <div class="recipients">{recipientsNames}</div>
+                                  <div class="draft-warning"></div>
+                                </div>
+                                <div class="msgheader-subject-date">
+                                  <div class="tags"></div>
+                                  <div class="date">{date}</div>
+                                </div>
                                 <div class="attachment" style="display: none">
                                   <img src="chrome://messenger/skin/icons/attachment-col.png" />
                                 </div>
-                                <div class="toggle-font link" style="display: none"></div>
-                                <div class="draft-warning"></div>
                                 <div class="messageclosebox">
                                   <div class="messageclose" style="display: none">{closeTxt}</div>
                                 </div>
@@ -300,18 +320,6 @@ document.addEventListener("load", function f_temp0 () {
                               <div class="plaintextmsg" style="display: none;"></div>
                               <div xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" class="snippet htmlmsg" style="display: none"></div>
                               <div class="bottombox">
-                                <div class="fastreply">
-                                  <span class="fastlink link-reply">{replyTxt}</span>
-                                  <span class="fastlink link-reply-all">{replyAllTxt}</span>
-                                  <span class="fastlink link-forward">{forwardTxt}</span>
-                                  <span class="fastlink link-more">...</span>
-                                  <span style="display: none;">
-                                    <span class="fastlink link-reply-list">{replyList}</span>
-                                    <span class="fastlink link-edit-new">{editNew}</span>
-                                    <span class="fastlink link-mark-read">{markRead}</span>
-                                    <span class="fastlink link-mark-unread">{markUnread}</span>
-                                  </span>
-                                </div>
                                 <div class="messagearrow">
                                  <img class="msgarrow" src="chrome://gconversation/skin/down.png" />
                                </div>
@@ -331,16 +339,6 @@ document.addEventListener("load", function f_temp0 () {
           messagesElt.appendChild(msgNode);
         }
 
-        /* XXX fixme this just sucks but the empty #text nodes between <span>s
-         * take space, does anyone have a better solution? */
-        let needsFix = msgNode.querySelectorAll(".fastreply .fastlink");
-        for (let i = needsFix.length - 1; i >= 0; --i) {
-          if (needsFix[i].nextSibling.nodeType == msgNode.TEXT_NODE)
-            needsFix[i].parentNode.removeChild(needsFix[i].nextSibling);
-          if (needsFix[i].previousSibling.nodeType == msgNode.TEXT_NODE)
-            needsFix[i].parentNode.removeChild(needsFix[i].previousSibling);
-        }
-
         /* Warn the user if this is a draft */
         if (msgHdrIsDraft(msgHdr)) {
           let draftTxt = stringBundle.getString("draft");
@@ -355,6 +353,18 @@ document.addEventListener("load", function f_temp0 () {
         let arrowNode = msgNode.getElementsByClassName("msgarrow")[0];
         let closeNode = msgNode.getElementsByClassName("messageclose")[0];
         let toggleFontNode = msgNode.getElementsByClassName("toggle-font")[0];
+        let deleteNode = msgNode.getElementsByClassName("delete-msg")[0];
+        let markReadNode=  msgNode.getElementsByClassName("mark-read")[0];
+
+        /* Do the delete */
+        deleteNode.addEventListener("click", function (event) {
+          msgHdrsDelete([msgHdr]);
+        }, true);
+
+        /* Do the delete */
+        markReadNode.addEventListener("click", function (event) {
+          msgHdrsMarkAsRead([msgHdr], !msgHdr.isRead);
+        }, true);
 
         /* Style according to the preferences. Preferences have an observer, see
          * above for details. */
@@ -478,8 +488,6 @@ document.addEventListener("load", function f_temp0 () {
                   /* The default size for HTML messages' content is too big! */
                   let hasHtml = !iframe.contentDocument.body.firstElementChild ||
                     iframe.contentDocument.body.firstElementChild.tagName.toLowerCase() != "pre";
-                  if (hasHtml)
-                    iframe.contentDocument.body.style.fontSize = "small";
 
                   /* The part below is all about quoting */
                   let aDoc = iframe.contentDocument;
@@ -509,7 +517,7 @@ document.addEventListener("load", function f_temp0 () {
                                 let h = htmlpane.contentWindow.toggleQuote(event);
                                 iframe.style.height = (parseInt(iframe.style.height) + h)+"px";
                               }, true);
-                            div.setAttribute("style", "color: #512a45; cursor: pointer; font-size: x-small;");
+                            div.setAttribute("style", "color: #512a45; cursor: pointer; font-size: small;");
                             div.appendChild(document.createTextNode("- "+
                               stringBundle.getString("showquotedtext")+" -"));
                             elt.insertBefore(div, c);
@@ -533,7 +541,6 @@ document.addEventListener("load", function f_temp0 () {
                     let style = aDoc.createElement("style");
                     style.appendChild(aDoc.createTextNode(
                       ".pre-as-regular {"+
-                      "  font-size: small;"+
                       "  font-family: sans;"+
                       "}"));
                     aDoc.body.previousSibling.appendChild(style);
@@ -768,23 +775,6 @@ document.addEventListener("load", function f_temp0 () {
         linkReplyAll.addEventListener("click", function (event) {
             compose(Ci.nsIMsgCompType.ReplyAll, event);
           }, true);
-        let linkReplyList = msgNode.getElementsByClassName("link-reply-list")[0];
-        linkReplyList.addEventListener("click", function (event) {
-            compose(Ci.nsIMsgCompType.ReplyToList, event);
-          }, true);
-        let linkEditNew = msgNode.getElementsByClassName("link-edit-new")[0];
-        linkEditNew.addEventListener("click", function (event) {
-            compose(Ci.nsIMsgCompType.Template, event);
-          }, true);
-        let linkMarkRead = msgNode.getElementsByClassName("link-mark-read")[0];
-        linkMarkRead.addEventListener("click", function (event) {
-            markMsgRead();
-          }, true);
-          
-        let linkMarkUnread = msgNode.getElementsByClassName("link-mark-unread")[0];
-        linkMarkUnread.addEventListener("click", function (event) {
-            markMsgUnread();
-          }, true);
         let linkForward = msgNode.getElementsByClassName("link-forward")[0];
         linkForward.addEventListener("click", function (event) {
             let forwardType = 0;
@@ -798,11 +788,14 @@ document.addEventListener("load", function f_temp0 () {
             else
               compose(Ci.nsIMsgCompType.ForwardInline, event);
           }, true);
-        let linkMore = msgNode.getElementsByClassName("link-more")[0];
-        linkMore.addEventListener("click", function (event) {
-            event.target.style.display = "none";
-            event.target.nextElementSibling.style.display = "";
+        /* let linkReplyList = msgNode.getElementsByClassName("link-reply-list")[0];
+        linkReplyList.addEventListener("click", function (event) {
+            compose(Ci.nsIMsgCompType.ReplyToList, event);
           }, true);
+        let linkEditNew = msgNode.getElementsByClassName("link-edit-new")[0];
+        linkEditNew.addEventListener("click", function (event) {
+            compose(Ci.nsIMsgCompType.Template, event);
+          }, true); */
 
         myDump("*** Completed message "+i+"\n");
       }

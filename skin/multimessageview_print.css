@@ -34,8 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-@import url(chrome://gconversation/skin/multimessageview_common.css);
-
 @page {
   margin: 1cm;
 }
@@ -59,6 +57,8 @@
 /* Message body */
 .message {
   padding: .5em;
+  border: 1px solid #888;
+  margin-bottom: 2ex;
 }
 
 .date {
