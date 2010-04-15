@@ -175,7 +175,8 @@ function convertHotmailQuotingToBlockquote2(aWindow, aDocument, aHideQuoteLength
   let brCount = 0;
   let walk = function (aNode, inBlockquote, depth) {
     let p = Object();
-    let parentIsBlock = aNode.parentNode && aWindow.getComputedStyle(aNode.parentNode, null).display == "block";
+    let computedStyle = aNode.parentNode && aWindow.getComputedStyle(aNode.parentNode, null);
+    let parentIsBlock = computedStyle && computedStyle.display == "block";
     if (aNode.nodeType == aNode.TEXT_NODE && txttohtmlconv.citeLevelTXT(aNode.textContent+" ", p) > 0 && parentIsBlock) {
       /* Strip the leading > > > ...s.
        * NB: this might actually be wrong since we might transform

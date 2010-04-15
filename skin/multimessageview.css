@@ -35,10 +35,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-@import url(chrome://gconversation/skin/multimessageview_common.css);
-
 body {
-  background-color: #fbfbfc;
+  background-color: #fafafb;
 }
 
 /* Toolbar */
@@ -58,6 +56,8 @@ body {
 /* General stuff */
 
 .message {
+  /* It's tempting to use -moz-box-shadow but it really slows things down on
+   * lower-end computers, so let's not get netbook users like me mad. */
   border: 1px outset #999;
   border-bottom: 2px outset #bbb;
   -moz-border-radius: 5px;
@@ -68,8 +68,7 @@ body {
 }
 
 .message.unread {
-  -moz-box-shadow: 0px 0px 5px red;
-  border-width: 0;
+  background-color: rgba(114,159,207,.02);
 }
 
 .row {

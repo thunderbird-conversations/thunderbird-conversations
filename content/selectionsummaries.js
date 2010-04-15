@@ -95,6 +95,8 @@ document.addEventListener("load", function f_temp0 () {
   /* Cache component instanciation. */
   const gPrefBranch = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService).getBranch(null);
   const gMessenger = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
+  const gAccountManager  = Cc["@mozilla.org/messenger/account-manager;1"].getService(Ci.nsIMsgAccountManager);
+  const gHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"].getService(Ci.nsIMsgHeaderParser);
   const prefs = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService).getBranch("gconversation.");
   const txttohtmlconv = Cc["@mozilla.org/txttohtmlconv;1"].createInstance(Ci.mozITXTToHTMLConv);
   const stringBundle = document.getElementById("gconv-string-bundle");
@@ -147,6 +149,42 @@ document.addEventListener("load", function f_temp0 () {
   };
   myPrefObserver.register();
 
+  /* Mark once and for all all of the user's email addresses */
+  let gIdentities = {};
+  for each (let identity in fixIterator(gAccountManager.allIdentities, Ci.nsIMsgIdentity)) {
+    if (identity.email)
+      gIdentities[identity.email] = true;
+  }
+
+  /* See
+   * http://mxr.mozilla.org/comm-central/source/mail/base/content/msgHdrViewOverlay.js#1060
+   * for reference */
+  let processEmails = function (emailAddresses) {
+    let addresses = {};
+    let fullNames = {};
+    let names = {};
+    let numAddresses =  0;
+    let decodedAddresses = [];
+
+    numAddresses = gHeaderParser.parseHeadersWithArray(emailAddresses, addresses, names, fullNames);
+    for (let i = 0; i < numAddresses; ++i) {
+      let address = {};
+      address.emailAddress = addresses.value[i];
+      address.fullAddress = fullNames.value[i];
+      address.displayName = names.value[i];
+      /* OMG ITS ME */
+      if (gIdentities[address.emailAddress]) {
+        /* See
+         * http://mxr.mozilla.org/comm-central/source/mail/base/content/msgHdrViewOverlay.js#1130
+         * for reference */
+        address.displayName = stringBundle.getString("me");
+      }
+      decodedAddresses.push(address);
+    }
+
+    return [a.displayName || a.emailAddress for each ([, a] in Iterator(decodedAddresses))].join(", ");
+  };
+
   /* Actually we don't need to change the constructor, only members */
   ThreadSummary.prototype = {
     __proto__: MultiMessageSummary.prototype,
@@ -159,7 +197,7 @@ document.addEventListener("load", function f_temp0 () {
 
       /* This function returns a fresh color everytime it is called. After some
        * time, it starts inventing new colors of its own. */
-      const predefinedColors = ["#204a87", "#5c3566", "#8f5902", "#a40000", "#c4a000", "#4e9a06", "#ce5c00"]; 
+      const predefinedColors = ["#204a87", "#5c3566", "#8f5902", "#a40000", "#c4a000", "#4e9a06", "#ce5c00"];
       let gColorCount = 0;
 
       /* Filled as we go. key = "Jonathan Protzenko", value = "#ff0562" */
@@ -198,7 +236,6 @@ document.addEventListener("load", function f_temp0 () {
         messagesElt.removeChild(messagesElt.firstChild);
 
       /* Useful for stripping the email from mime2DecodedAuthor for instance */
-      let headerParser = Cc["@mozilla.org/messenger/headerparser;1"].getService(Ci.nsIMsgHeaderParser);
       let count = 0;
       const MAX_THREADS = 100;
       const SNIPPET_LENGTH = 300;
@@ -266,8 +303,8 @@ document.addEventListener("load", function f_temp0 () {
         if (msgHdr.isFlagged)
           msg_classes += " starred";
 
-        let senderName = headerParser.extractHeaderAddressName(msgHdr.mime2DecodedAuthor);
-        let recipientsNames = headerParser.extractHeaderAddressNames(msgHdr.mime2DecodedRecipients);
+        let senderName = gHeaderParser.extractHeaderAddressName(msgHdr.mime2DecodedAuthor);
+        let recipientsNames = processEmails(msgHdr.mime2DecodedRecipients);
         let theSubject = msgHdr.mime2DecodedSubject;
         let date = makeFriendlyDateAgo(new Date(msgHdr.date/1000));
 
@@ -354,14 +391,12 @@ document.addEventListener("load", function f_temp0 () {
         let closeNode = msgNode.getElementsByClassName("messageclose")[0];
         let toggleFontNode = msgNode.getElementsByClassName("toggle-font")[0];
         let deleteNode = msgNode.getElementsByClassName("delete-msg")[0];
-        let markReadNode=  msgNode.getElementsByClassName("mark-read")[0];
+        let markReadNode = msgNode.getElementsByClassName("mark-read")[0];
 
-        /* Do the delete */
+        /* Register small event listeners */
         deleteNode.addEventListener("click", function (event) {
           msgHdrsDelete([msgHdr]);
         }, true);
-
-        /* Do the delete */
         markReadNode.addEventListener("click", function (event) {
           msgHdrsMarkAsRead([msgHdr], !msgHdr.isRead);
         }, true);
@@ -401,7 +436,7 @@ document.addEventListener("load", function f_temp0 () {
         /* I don't know why but Tb doesn't seem to like tabindex 0 */
         tabIndex++;
         msgNode.setAttribute("tabindex", tabIndex);
-        
+
         /* This object is used by the event listener below to pass information
          * to the event listeners far below whose task is to setup the iframe.
          * */
@@ -428,7 +463,7 @@ document.addEventListener("load", function f_temp0 () {
                     arrowNode.removeEventListener("click", f_temp4, true);
                     scrollMessageIntoView(focusInformation.i);
                   }, true);
-              
+
               /* Let's go */
               let e = document.createEvent("UIEvents");
               e.initUIEvent("click", true, true, window, 1);
@@ -441,7 +476,7 @@ document.addEventListener("load", function f_temp0 () {
               msgNode.style.display = "none";
             }
           }, true);
- 
+
         /* Now we're registered the event listeners, the message is folded by
          * default. If we're supposed to unfold it, do it now */
         if ((gPrefs["fold_rule"] == "unread_and_last" && (!msgHdr.isRead || i == (numMessages - 1))) ||
@@ -453,9 +488,9 @@ document.addEventListener("load", function f_temp0 () {
           } catch (e) {
             myDump("Error "+e+"\n");
           }
-        } 
-       
-        
+        }
+
+
         /* Same thing but for HTML messages. The HTML is heavily processed to
          * detect extra quoted parts using different heuristics, the "- show/hide
          * quoted text -" links are added. */
@@ -576,7 +611,7 @@ document.addEventListener("load", function f_temp0 () {
                    * the scroll value */
                   if (focusInformation.delayed && originalScroll)
                     htmlpane.contentDocument.documentElement.scrollTop = originalScroll;
-                  
+
                   /* If it's an immediate display, fire the messageDone event
                    * now (we're done with the iframe). If we're delayed, the
                    * code that attached the event listener on the "click" event
@@ -726,7 +761,7 @@ document.addEventListener("load", function f_temp0 () {
           }
 
           /* selectFolder doesn't work sometimes, issue fixed in Lanikai as of 2010-01-05, see bug 536042 */
-          gFolderTreeView.selectFolder(this.folder, true); 
+          gFolderTreeView.selectFolder(this.folder, true);
           gFolderDisplay.selectMessage(this.msgHdr);
         }, true);
 
@@ -737,7 +772,7 @@ document.addEventListener("load", function f_temp0 () {
         let markMsgRead = function() {
           /* mark the message read */
           msgHdrsMarkAsRead([msgHdr], true);
-          
+
           /* collapse the message */
           if (closeNode.style.display == "") {
 	        let e = document.createEvent("UIEvents");
@@ -748,7 +783,7 @@ document.addEventListener("load", function f_temp0 () {
         let markMsgUnread = function() {
           /* mark the message unread */
           msgHdrsMarkAsRead([msgHdr], false);
-          
+
           /* expand the message */
           if (closeNode.style.display == "none") {
 	        let e = document.createEvent("UIEvents");
@@ -890,7 +925,7 @@ document.addEventListener("load", function f_temp0 () {
         let items;
         let clearErrors = function () {
           for each (let [,e] in Iterator(htmlpane.contentDocument.getElementsByClassName("error")))
-            e.style.display = "none" 
+            e.style.display = "none";
         };
         if (aCollection) {
           clearErrors();
@@ -1114,9 +1149,13 @@ document.addEventListener("load", function f_temp0 () {
       let isExpanded = false;
       let msgIndex = gFolderDisplay ? gFolderDisplay.selectedIndices[0] : -1;
       if (msgIndex >= 0) {
-        let rootIndex = gDBView.findIndexOfMsgHdr(gDBView.getThreadContainingIndex(msgIndex).getChildHdrAt(0), false);
-        if (rootIndex >= 0)
-          isExpanded = gDBView.isContainer(rootIndex) && !gFolderDisplay.view.isCollapsedThreadAtIndex(rootIndex);
+        try {
+          let rootIndex = gDBView.findIndexOfMsgHdr(gDBView.getThreadContainingIndex(msgIndex).getChildHdrAt(0), false);
+          if (rootIndex >= 0)
+            isExpanded = gDBView.isContainer(rootIndex) && !gFolderDisplay.view.isCollapsedThreadAtIndex(rootIndex);
+        } catch (e) {
+          myDump("Error in the onLocationChange handler "+e+"\n");
+        }
       }
       if (aLocation.spec == wantedUrl || isExpanded)
         return;
