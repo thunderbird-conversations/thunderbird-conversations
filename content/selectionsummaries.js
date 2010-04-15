@@ -159,6 +159,16 @@ document.addEventListener("load", function f_temp0 () {
   /* See
    * http://mxr.mozilla.org/comm-central/source/mail/base/content/msgHdrViewOverlay.js#1060
    * for reference */
+  let knownCards = {};
+  let getCard = function (email) {
+    if (knownCards[email]) {
+      return knownCards[email];
+    } else {
+      let cardDetails = getCardForEmail(email);
+      knownCards[email] = cardDetails;
+      return cardDetails;
+    }
+  };
   let processEmails = function (emailAddresses) {
     let addresses = {};
     let fullNames = {};
@@ -172,12 +182,15 @@ document.addEventListener("load", function f_temp0 () {
       address.emailAddress = addresses.value[i];
       address.fullAddress = fullNames.value[i];
       address.displayName = names.value[i];
-      /* OMG ITS ME */
-      if (gIdentities[address.emailAddress]) {
+      let cardDetails = getCard(address.emailAddress);
+      if (gIdentities[address.emailAddress]) { /* OMG ITS ME */
         /* See
          * http://mxr.mozilla.org/comm-central/source/mail/base/content/msgHdrViewOverlay.js#1130
          * for reference */
         address.displayName = stringBundle.getString("me");
+      } else if (cardDetails.card) { /* We know the guy */
+        myDump("Got a card for "+address.emailAddress+"!\n");
+        address.displayName = cardDetails.card.displayName;
       }
       decodedAddresses.push(address);
     }
@@ -303,7 +316,7 @@ document.addEventListener("load", function f_temp0 () {
         if (msgHdr.isFlagged)
           msg_classes += " starred";
 
-        let senderName = gHeaderParser.extractHeaderAddressName(msgHdr.mime2DecodedAuthor);
+        let senderName = processEmails(msgHdr.mime2DecodedAuthor);
         let recipientsNames = processEmails(msgHdr.mime2DecodedRecipients);
         let theSubject = msgHdr.mime2DecodedSubject;
         let date = makeFriendlyDateAgo(new Date(msgHdr.date/1000));
@@ -1131,13 +1144,11 @@ document.addEventListener("load", function f_temp0 () {
     onSecurityChange: function () {},
     onStatusChange: function () {},
     onLocationChange: function (aWebProgress, aRequest, aLocation) {
-      myDump("AAA\n");
       /* By testing here for the pref, we allow the pref to be changed at
        * run-time and we do not require to restart Thunderbird to take the
        * change into account. */
       if (!gPrefs["auto_fetch"])
         return;
-      myDump("BBB\n");
 
       /* The logic is as follows.
        * i) The event handler stores the URI of the message we're jumping to.
@@ -1167,9 +1178,7 @@ document.addEventListener("load", function f_temp0 () {
         myDump("*** Not a message ("+aLocation.spec+")\n");
         return;
       }
-      dump("CCC\n");
       let msgHdr = msgService.messageURIToMsgHdr(aLocation.QueryInterface(Ci.nsIMsgMessageUrl).uri);
-      dump("DDD\n");
       pullConversation(
         [msgHdr],
         function (aCollection, aItems, aMsg) {
@@ -1177,13 +1186,11 @@ document.addEventListener("load", function f_temp0 () {
             let items = removeDuplicates(aCollection.items);
             if (items.length <= 1)
               return;
-            dump("EEE\n");
             let gSummary = new ThreadSummary(
               [selectRightMessage(x, gDBView.msgFolder).folderMessage for each (x in items)],
               null
             );
             gMessageDisplay.singleMessageDisplay = false;
-            dump("FFF\n");
             try {
               gSummary.init();
             } catch (e) {
