@@ -917,7 +917,7 @@ document.addEventListener("load", function f_temp0 () {
         gSummary = new ThreadSummary(items, aListener);
         gSummary.init();
 
-        if (gPrefs["auto_mark_read"])
+        if (gPrefs["auto_mark_read"] && document.hasFocus())
           gconversation.mark_all_read();
         return;
       }
@@ -1064,7 +1064,9 @@ document.addEventListener("load", function f_temp0 () {
    * when we're viewing a MultiMessageSummary, so fear not marking wrong
    * messages as read. */
   gconversation.mark_all_read = function () {
+    /* XXX optimize here and do a union beforehand */
     msgHdrsMarkAsRead(gconversation.stash.msgHdrs, true);
+    msgHdrsMarkAsRead(gFolderDisplay.selectedMessages, true);
   };
 
   gconversation.archive_all = function () {

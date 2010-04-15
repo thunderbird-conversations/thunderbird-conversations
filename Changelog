@@ -17,7 +17,7 @@ message. Use tab/shift-tab to move to next/previous message in the conversation.
 Use backspace to move back to the conversation view.
 - Added an "icons-only" mode for the buttons in the conversation view. This
 should make it easier for narrow screens to properly display the conversation
-title. Added native buttons on Linux, Mac and Windows.
+title. Added native icons on Linux, Mac and Windows.
 - Added a "back" button to easily switch back to the single message view that
 was displayed before the conversation.
 - Dropped large parts of the code, in order to simplify maintenance. plain/text
