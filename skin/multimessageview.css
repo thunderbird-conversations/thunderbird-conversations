@@ -104,6 +104,16 @@ a.action:hover {
   border: 1px solid #6fa3de;
 }
 
+.message a.action {
+  opacity: 0.1;
+  -moz-transition: opacity .5s ease;
+}
+
+.message:hover a.action {
+  opacity: 1.0;
+  -moz-transition: opacity .2s linear;
+}
+
 /* Message header */
 
 .header {

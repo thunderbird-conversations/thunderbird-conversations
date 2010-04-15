@@ -189,7 +189,7 @@ document.addEventListener("load", function f_temp0 () {
          * for reference */
         address.displayName = stringBundle.getString("me");
       } else if (cardDetails.card) { /* We know the guy */
-        myDump("Got a card for "+address.emailAddress+"!\n");
+        //myDump("Got a card for "+address.emailAddress+"!\n");
         address.displayName = cardDetails.card.displayName;
       }
       decodedAddresses.push(address);
@@ -308,7 +308,7 @@ document.addEventListener("load", function f_temp0 () {
 
         let msgHdr = this._msgHdrs[i];
         let key = msgHdr.messageKey + msgHdr.folder.URI;
-        myDump("Registering "+key+"\n");
+        //myDump("Registering "+key+"\n");
 
         let msg_classes = "message ";
         if (!msgHdr.isRead)
@@ -330,7 +330,7 @@ document.addEventListener("load", function f_temp0 () {
         let replyList = stringBundle.getString("reply_list");
         let editNew = stringBundle.getString("edit_new");
         let closeTxt = stringBundle.getString("close");
-        let toTxt = "to"; /* XXX fixme */
+        let toTxt = stringBundle.getString("to");
         let msgContents = <div class="row">
                             <div class="star"/>
                             <div class="link-action-area">
@@ -405,6 +405,7 @@ document.addEventListener("load", function f_temp0 () {
         let toggleFontNode = msgNode.getElementsByClassName("toggle-font")[0];
         let deleteNode = msgNode.getElementsByClassName("delete-msg")[0];
         let markReadNode = msgNode.getElementsByClassName("mark-read")[0];
+        let actionNode = msgNode.getElementsByClassName("link-action-area")[0];
 
         /* Register small event listeners */
         deleteNode.addEventListener("click", function (event) {
