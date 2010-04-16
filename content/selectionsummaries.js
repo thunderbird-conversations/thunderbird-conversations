@@ -347,11 +347,12 @@ document.addEventListener("load", function f_temp0 () {
         let editNew = stringBundle.getString("edit_new");
         let closeTxt = stringBundle.getString("close");
         let toTxt = stringBundle.getString("to");
+        let detailsTxt = stringBundle.getString("details");
         let msgContents = <div class="row">
                             <div class="notification-icons">
                               <div class="star"/>
-                              <div class="attachment" style="display: none">
-                              </div>
+                              <div class="attachment" style="display: none"></div>
+                              <div class="tags"></div>
                             </div>
                             <div class="link-action-area">
                               <a class="action link-reply">{replyTxt}</a>
@@ -369,6 +370,9 @@ document.addEventListener("load", function f_temp0 () {
                             </div>
                             <div class="header">
                               <div class="wrappedsender">
+                                <div class="msgheader-details-toggle">
+                                  {detailsTxt}
+                                </div>
                                 <div class="msgheader-from-to">
                                   <div class="sender link"></div>
                                   <div class="to-text">{toTxt}</div>
@@ -376,8 +380,9 @@ document.addEventListener("load", function f_temp0 () {
                                   <div class="draft-warning"></div>
                                 </div>
                                 <div class="msgheader-subject-date">
-                                  <div class="tags"></div>
                                   <div class="date">{date}</div>
+                                </div>
+                                <div class="attachments-area">
                                 </div>
                                 <div class="messageclosebox">
                                   <div class="messageclose" style="display: none">{closeTxt}</div>
@@ -733,11 +738,20 @@ document.addEventListener("load", function f_temp0 () {
             let [plainTextBody, ] = mimeMsgToContentAndMeta(aMimeMsg, aMsgHdr.folder);
             let attachments = MimeMessageGetAttachments(aMimeMsg);
             if (attachments.length > 0) {
-              let attachmentsDesc = attachments.map(function (att) att.name);
-              attachmentsDesc = attachmentsDesc.length+" attachment(s): "+attachmentsDesc.join(", ");
+              /* That's for the short paperclip icon */
               let attachmentNode = msgNode.getElementsByClassName("attachment")[0];
               attachmentNode.style.display = "";
-              attachmentNode.firstElementChild.setAttribute("alt", attachmentsDesc);
+              /* And for the longer description */
+              let attachmentsTxt = stringBundle.getString("attachments");
+              let areaNode = msgNode.getElementsByClassName("attachments-area")[0];
+              areaNode.textContent = attachmentsTxt + " ("+attachments.length+")";
+              let ul = htmlpane.contentDocument.createElement("ul");
+              for each (let [, att] in Iterator(attachments)) {
+                let li = htmlpane.contentDocument.createElement("li");
+                li.textContent = att.name;
+                ul.appendChild(li);
+              }
+              areaNode.appendChild(ul);
             }
 
             plainTextMsgNode.textContent = plainTextBody.getContentString();

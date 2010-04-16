@@ -122,15 +122,21 @@ a.action:hover {
 }
 
 .notification-icons {
-  margin-left: -.7em;
+  margin-left: -.3em;
   margin-top: -.5em;
 }
 
 .star {
-  display: inline-block;
+  display: none;
   position: static;
   margin: 0;
   padding: 0;
+  border: 0;
+  vertical-align: middle;
+}
+
+.starred .star {
+  display: inline-block;
 }
 
 .attachment {
@@ -139,6 +145,14 @@ a.action:hover {
   width: 12px;
   background-image: url(chrome://messenger/skin/icons/attachment-col.png);
   background-repeat: no-repeat;
+  vertical-align: middle;
+}
+
+.msgheader-details-toggle {
+  color: #04b;
+  cursor: pointer;
+  float: right;
+  font-family: monospace;
 }
 
 .wrappedsender {
@@ -195,12 +209,25 @@ a.action:hover {
   color: #444;
   border-style: solid;
   border-width: 2px;
-  font-size: small;
+  font-size: x-small;
   background-image: none;
   background-color: white !important;
 }
 
 /* Header details */
+
+.attachments-area {
+  color: #999;
+  margin-top: 1em;
+  font-size: small;
+}
+
+.attachments-area > ul {
+  list-style: none;
+  padding: 0px 0px 0px 1em;
+  font-size: x-small;
+  margin: 0px;
+}
 
 .messageclosebox {
   display: none;
