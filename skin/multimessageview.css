@@ -124,6 +124,7 @@ a.action:hover {
 .notification-icons {
   margin-left: -.3em;
   margin-top: -.5em;
+  min-height: 14px;
 }
 
 .star {
@@ -277,11 +278,13 @@ a.action:hover {
 
 /* Message footer */
 
-.bottombox {
+.button-action-area {
   width: 100%;
-  min-height: 8px;
-  text-align: right;
   position: relative;
+}
+
+.button-action-area > .button {
+  min-width: 2em;
 }
 
 .messagearrow {

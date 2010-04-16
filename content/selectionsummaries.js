@@ -343,9 +343,11 @@ document.addEventListener("load", function f_temp0 () {
         let replyTxt = stringBundle.getString("reply");
         let replyAllTxt = stringBundle.getString("reply_all");
         let forwardTxt = stringBundle.getString("forward");
+        let markSpamTxt = stringBundle.getString("mark_spam");
+        let archiveTxt = stringBundle.getString("archive");
+        let deleteTxt = stringBundle.getString("delete");
         let replyList = stringBundle.getString("reply_list");
         let editNew = stringBundle.getString("edit_new");
-        let closeTxt = stringBundle.getString("close");
         let toTxt = stringBundle.getString("to");
         let detailsTxt = stringBundle.getString("details");
         let msgContents = <div class="row">
@@ -385,17 +387,30 @@ document.addEventListener("load", function f_temp0 () {
                                 <div class="attachments-area">
                                 </div>
                                 <div class="messageclosebox">
-                                  <div class="messageclose" style="display: none">{closeTxt}</div>
+                                  <div class="messageclose" style="display: none"></div>
                                 </div>
                               </div>
                               <div class="snippet snippetmsg"></div>
                               <div class="plaintextmsg" style="display: none;"></div>
-                              <div xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" class="snippet htmlmsg" style="display: none"></div>
-                              <div class="bottombox">
-                                <div class="messagearrow">
-                                 <img class="msgarrow" src="chrome://gconversation/skin/down.png" />
-                                </div>
-                              </div>
+                              <div class="snippet htmlmsg" style="display: none" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"></div>
+                              <hbox class="button-action-area" align="start" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:html="http://www.w3.org/1999/xhtml">
+                                <button class="button">{replyTxt}</button>
+                                <button class="button">{forwardTxt}</button>
+                                <button class="button" type="menu">
+                                  More Actions
+                                  <menupopup>
+                                    <menuitem>{editNew}</menuitem>
+                                    <menuitem>{replyList}</menuitem>
+                                  </menupopup>
+                                </button>
+                                <spacer flex="1" />
+                                <button class="button">{markSpamTxt}</button>
+                                <button class="button">{archiveTxt}</button>
+                                <button class="button">{deleteTxt}</button>
+                                <html:div class="messagearrow">
+                                 <html:img class="msgarrow" src="chrome://gconversation/skin/down.png" />
+                                </html:div>
+                              </hbox>
                             </div>
                           </div>;
 
