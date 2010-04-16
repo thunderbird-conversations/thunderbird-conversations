@@ -428,8 +428,10 @@ document.addEventListener("load", function f_temp0 () {
         /* Insert fancy colored html */
         let senderName = processEmails(msgHdr.mime2DecodedAuthor);
         let recipientsNames = processEmails(msgHdr.mime2DecodedRecipients);
+        let ccNames = processEmails(msgHdr.ccList);
         senderNode.innerHTML = senderName;
-        recipientsNode.innerHTML = recipientsNames;
+        recipientsNode.innerHTML =
+          ccNames ? recipientsNames + ", " + ccNames : recipientsNames;
 
         /* Register small event listeners */
         deleteNode.addEventListener("click", function (event) {
