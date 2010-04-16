@@ -348,7 +348,11 @@ document.addEventListener("load", function f_temp0 () {
         let closeTxt = stringBundle.getString("close");
         let toTxt = stringBundle.getString("to");
         let msgContents = <div class="row">
-                            <div class="star"/>
+                            <div class="notification-icons">
+                              <div class="star"/>
+                              <div class="attachment" style="display: none">
+                              </div>
+                            </div>
                             <div class="link-action-area">
                               <a class="action link-reply">{replyTxt}</a>
                               <a class="action link-reply-all">{replyAllTxt}</a>
@@ -375,9 +379,6 @@ document.addEventListener("load", function f_temp0 () {
                                   <div class="tags"></div>
                                   <div class="date">{date}</div>
                                 </div>
-                                <div class="attachment" style="display: none">
-                                  <img src="chrome://messenger/skin/icons/attachment-col.png" />
-                                </div>
                                 <div class="messageclosebox">
                                   <div class="messageclose" style="display: none">{closeTxt}</div>
                                 </div>
@@ -388,7 +389,7 @@ document.addEventListener("load", function f_temp0 () {
                               <div class="bottombox">
                                 <div class="messagearrow">
                                  <img class="msgarrow" src="chrome://gconversation/skin/down.png" />
-                               </div>
+                                </div>
                               </div>
                             </div>
                           </div>;

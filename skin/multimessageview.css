@@ -121,12 +121,24 @@ a.action:hover {
   padding-top: 0;
 }
 
+.notification-icons {
+  margin-left: -.7em;
+  margin-top: -.5em;
+}
+
 .star {
-  position: absolute;
+  display: inline-block;
+  position: static;
   margin: 0;
   padding: 0;
-  top: .3em;
-  left: .3em;
+}
+
+.attachment {
+  display: inline-block;
+  height: 12px;
+  width: 12px;
+  background-image: url(chrome://messenger/skin/icons/attachment-col.png);
+  background-repeat: no-repeat;
 }
 
 .wrappedsender {
@@ -177,11 +189,6 @@ a.action:hover {
   color: #991010;
   margin: 0 .3em;
   display: inline;
-}
-
-.attachment {
-  display: inline;
-  vertical-align: middle;
 }
 
 .tag {
