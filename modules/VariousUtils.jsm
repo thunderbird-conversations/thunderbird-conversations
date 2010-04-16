@@ -36,7 +36,7 @@
 
 var EXPORTED_SYMBOLS = ['selectRightMessage', 'removeDuplicates',
 'convertHotmailQuotingToBlockquote1', 'convertHotmailQuotingToBlockquote2',
-'convertOutlookQuotingToBlockquote', '_mm_toggleClass',
+'convertOutlookQuotingToBlockquote', '_mm_toggleClass', '_mm_hasClass',
 'convertForwardedToBlockquote', 'fusionBlockquotes']
 
 const Ci = Components.interfaces;
@@ -61,6 +61,16 @@ function _mm_toggleClass(node, classname) {
   else
     classes.push(classname);
   node.setAttribute('class', classes.join(' '));
+}
+
+function _mm_hasClass(node, classname) {
+  let classes = [];
+  if (node.hasAttribute('class'))
+    classes = node.getAttribute('class').split(' ');
+  for (let i = 0; i < classes.length; ++i)
+    if (classes[i] == classname)
+      return true;
+  return false;
 }
 
 /* (sigh...) */

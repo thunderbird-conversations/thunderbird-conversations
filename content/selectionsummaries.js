@@ -149,6 +149,36 @@ document.addEventListener("load", function f_temp0 () {
   };
   myPrefObserver.register();
 
+  const predefinedColors = ["#204a87", "#5c3566", "#8f5902", "#a40000", "#c4a000", "#4e9a06", "#ce5c00"];
+  let gColorCount = 0;
+  /* Filled as we go. key = "Jonathan Protzenko", value = "#ff0562" */
+  let id2color = {};
+  function resetColors () {
+    id2color = {};
+    gColorCount = 0;
+  }
+  /* This function returns a fresh color everytime it is called. After some
+   * time, it starts inventing new colors of its own. */
+  function newColor() {
+    if (gColorCount < predefinedColors.length) {
+      return predefinedColors[gColorCount++];
+    } else {
+      /* XXX we can probably do better here (avoid colors that are too
+       * "light") */
+      let rand = function () Math.round(Math.random()*255);
+      let r = rand();
+      let g = rand();
+      let b = rand();
+      return "rgb("+r+","+g+","+b+")";
+    }
+  }
+  /* Return the color for a given person or create it */
+  function colorFor(person) {
+    if (!id2color[person])
+      id2color[person] = newColor();
+    return id2color[person];
+  }
+
   /* Mark once and for all all of the user's email addresses */
   let gIdentities = {};
   for each (let identity in fixIterator(gAccountManager.allIdentities, Ci.nsIMsgIdentity)) {
@@ -160,7 +190,7 @@ document.addEventListener("load", function f_temp0 () {
    * http://mxr.mozilla.org/comm-central/source/mail/base/content/msgHdrViewOverlay.js#1060
    * for reference */
   let knownCards = {};
-  let getCard = function (email) {
+  function getCard (email) {
     if (knownCards[email]) {
       return knownCards[email];
     } else {
@@ -168,8 +198,8 @@ document.addEventListener("load", function f_temp0 () {
       knownCards[email] = cardDetails;
       return cardDetails;
     }
-  };
-  let processEmails = function (emailAddresses) {
+  }
+  function processEmails (emailAddresses) {
     let addresses = {};
     let fullNames = {};
     let names = {};
@@ -195,39 +225,27 @@ document.addEventListener("load", function f_temp0 () {
       decodedAddresses.push(address);
     }
 
-    return [a.displayName || a.emailAddress for each ([, a] in Iterator(decodedAddresses))].join(", ");
-  };
+    function colorize(name) {
+      if (name)
+        return "<span style=\"color:"+colorFor(name)+"\">"+name+"</span>";
+      else
+        return name;
+    }
+    return [colorize(a.displayName) || colorize(a.emailAddress) for each ([, a] in Iterator(decodedAddresses))].join(", ");
+  }
 
   /* Actually we don't need to change the constructor, only members */
   ThreadSummary.prototype = {
     __proto__: MultiMessageSummary.prototype,
 
-    summarize: function() {
+    summarize: function ThreadSummary_summarize() {
       /* We need to keep them at hand for the "Mark all read" command to work
        * properly (and others). THis is set by the original constructor that
        * we're not overriding here, see the original selectionsummaries.js */
       gconversation.stash.msgHdrs = this._msgHdrs;
 
-      /* This function returns a fresh color everytime it is called. After some
-       * time, it starts inventing new colors of its own. */
-      const predefinedColors = ["#204a87", "#5c3566", "#8f5902", "#a40000", "#c4a000", "#4e9a06", "#ce5c00"];
-      let gColorCount = 0;
-
-      /* Filled as we go. key = "Jonathan Protzenko", value = "#ff0562" */
-      let id2color = {};
-      function newColor() {
-        if (gColorCount < predefinedColors.length) {
-          return predefinedColors[gColorCount++];
-        } else {
-          /* XXX we can probably do better here (avoid colors that are too
-           * "light") */
-          let rand = function () Math.round(Math.random()*255);
-          let r = rand();
-          let g = rand();
-          let b = rand();
-          return "rgb("+r+","+g+","+b+")";
-        }
-      }
+      /* Reset the set of known colors */
+      resetColors();
 
       this._msgNodes = {};
 
@@ -272,7 +290,7 @@ document.addEventListener("load", function f_temp0 () {
       myDump(numMessages+" message total, focusing "+needsFocus+"\n");
       let msgHdrs = this._msgHdrs;
       let msgNodes = this._msgNodes;
-      let scrollMessageIntoView = function (needsFocus) {
+      function scrollMessageIntoView (needsFocus) {
           myDump("I'm asked to focus message "+needsFocus+"\n");
           let tKey = msgHdrs[needsFocus].messageKey + msgHdrs[needsFocus].folder.URI;
           /* Because of the header that hides the beginning of the message,
@@ -284,7 +302,7 @@ document.addEventListener("load", function f_temp0 () {
           /* BEWARE BEWARE BEWARE DO NOT ACCESS AN IFRAME THAT'S NOT BEEN
            * DISPLAYED AT LEAST ONCE FIRST */
           document.getElementById("multimessage").contentWindow.scrollTo(0, msgNodes[tKey].offsetTop - 5);
-      };
+      }
 
       /* For each message, once the message has been properly set up in the
        * conversation view (either folded or unfolded), this function is called.
@@ -316,8 +334,6 @@ document.addEventListener("load", function f_temp0 () {
         if (msgHdr.isFlagged)
           msg_classes += " starred";
 
-        let senderName = processEmails(msgHdr.mime2DecodedAuthor);
-        let recipientsNames = processEmails(msgHdr.mime2DecodedRecipients);
         let theSubject = msgHdr.mime2DecodedSubject;
         let date = makeFriendlyDateAgo(new Date(msgHdr.date/1000));
 
@@ -350,9 +366,9 @@ document.addEventListener("load", function f_temp0 () {
                             <div class="header">
                               <div class="wrappedsender">
                                 <div class="msgheader-from-to">
-                                  <div class="sender link">{senderName}</div>
+                                  <div class="sender link"></div>
                                   <div class="to-text">{toTxt}</div>
-                                  <div class="recipients">{recipientsNames}</div>
+                                  <div class="recipients"></div>
                                   <div class="draft-warning"></div>
                                 </div>
                                 <div class="msgheader-subject-date">
@@ -397,6 +413,7 @@ document.addEventListener("load", function f_temp0 () {
 
         /* Various useful DOM nodes */
         let senderNode = msgNode.getElementsByClassName("sender")[0];
+        let recipientsNode = msgNode.getElementsByClassName("recipients")[0];
         let htmlMsgNode = msgNode.getElementsByClassName("htmlmsg")[0];
         let plainTextMsgNode = msgNode.getElementsByClassName("plaintextmsg")[0];
         let snippetMsgNode = msgNode.getElementsByClassName("snippetmsg")[0];
@@ -406,6 +423,12 @@ document.addEventListener("load", function f_temp0 () {
         let deleteNode = msgNode.getElementsByClassName("delete-msg")[0];
         let markReadNode = msgNode.getElementsByClassName("mark-read")[0];
         let actionNode = msgNode.getElementsByClassName("link-action-area")[0];
+
+        /* Insert fancy colored html */
+        let senderName = processEmails(msgHdr.mime2DecodedAuthor);
+        let recipientsNames = processEmails(msgHdr.mime2DecodedRecipients);
+        senderNode.innerHTML = senderName;
+        recipientsNode.innerHTML = recipientsNames;
 
         /* Register small event listeners */
         deleteNode.addEventListener("click", function (event) {
@@ -421,10 +444,6 @@ document.addEventListener("load", function f_temp0 () {
           _mm_addClass(htmlMsgNode, "monospaced-message");
         if (gPrefs["monospaced_snippets"])
           _mm_addClass(snippetMsgNode, "monospaced-snippet");
-        if (id2color[senderNode.textContent])
-          senderNode.style.color = id2color[senderNode.textContent];
-        else
-          senderNode.style.color = id2color[senderNode.textContent] = newColor();
 
         /* Register event listeners for folding/unfolding the message */
         arrowNode.addEventListener("click", function (event) {
