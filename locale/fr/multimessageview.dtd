@@ -9,5 +9,5 @@
 <!ENTITY menu.fold_all "Tout replier">
 <!ENTITY menu.delete "Supprimer les messages">
 <!ENTITY toolbar.view_full "Voir la conversation complète">
-<!ENTITY toolbar.view_full_tooltip "Chercher dans tous les messages, les vôtres inclus, pour reconstruire la conversation compl�te.">
+<!ENTITY toolbar.view_full_tooltip "Chercher dans tous les messages, les vôtres inclus, pour reconstruire la conversation complète.">
 <!ENTITY toolbar.view_tab "Ouvrir le fil de discussion dans un nouvel onglet">
