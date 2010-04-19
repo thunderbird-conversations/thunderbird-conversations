@@ -9,7 +9,7 @@
 <!ENTITY option.no_messages "no messages">
 <!ENTITY title.toolbar "Toolbar buttons">
 <!ENTITY buttons.info "All these commands are also accessible through the contextual menu of the thread summary (right-click).">
-<!ENTITY option.toolbar_icons_only "Display only icons for these buttons (requires restart)">
+<!ENTITY option.toolbar_text_plus_icons "Display text beside icons for these buttons">
 <!ENTITY option.button.archive "Display &quot;archive&quot; button">
 <!ENTITY option.button.trash "Display &quot;delete&quot; button">
 <!ENTITY option.button.print "Display &quot;print&quot; button">

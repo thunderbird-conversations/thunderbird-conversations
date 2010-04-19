@@ -142,6 +142,11 @@ document.addEventListener("load", function f_temp0 () {
         case "fold_rule":
           gPrefs["fold_rule"] = prefs.getIntPref("fold_rule");
           break;
+        /* Warning this one has no key in gPrefs */
+        case "toolbar_text_plus_icons":
+          let htmlpane = document.getElementById('multimessage');
+          _mm_toggleClass(htmlpane.contentDocument.getElementById("buttonhbox"), "text-plus-icons");
+          break;
       }
     }
   };
