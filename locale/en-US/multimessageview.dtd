@@ -1,13 +1,13 @@
 <!ENTITY button.open_in_new_tab "open in new tab">
 <!ENTITY button.mark_all_read "mark all read">
-<!ENTITY button.unfold_all "unfold all">
-<!ENTITY button.fold_all "fold all">
+<!ENTITY button.expand_all "expand all">
+<!ENTITY button.collapse_all "collapse all">
 <!ENTITY button.print "print">
 <!ENTITY button.back "back">
 <!ENTITY menu.open_in_new_tab "Open in new tab">
 <!ENTITY menu.mark_all_read "Mark all read">
-<!ENTITY menu.unfold_all "Unfold all">
-<!ENTITY menu.fold_all "Fold all">
+<!ENTITY menu.expand_all "Expand all">
+<!ENTITY menu.collapse_all "Collapse all">
 <!ENTITY menu.delete "Delete all messages">
 <!ENTITY menu.archive "Archive all messages">
 <!ENTITY toolbar.view_full "Fetch conversation">

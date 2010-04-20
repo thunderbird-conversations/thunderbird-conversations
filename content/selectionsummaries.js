@@ -53,6 +53,8 @@ var gconversation = {
   on_load_thread: null,
   on_load_thread_tab: null,
   on_back: null,
+  on_collapse_all: null,
+  on_expand_all: null,
   /* Used by both the in-conversation toolbar and the right-click menu */
   mark_all_read: null,
   archive_all: null,
@@ -65,6 +67,8 @@ var gconversation = {
     q2: null,
     msgHdrs: null,
     multiple_selection: false,
+    expand_all: [],
+    collapse_all: []
   }
 };
 
@@ -243,6 +247,8 @@ document.addEventListener("load", function f_temp0 () {
        * properly (and others). THis is set by the original constructor that
        * we're not overriding here, see the original selectionsummaries.js */
       gconversation.stash.msgHdrs = this._msgHdrs;
+      gconversation.stash.expand_all = [];
+      gconversation.stash.collapse_all = [];
 
       /* Reset the set of known colors */
       resetColors();
@@ -403,7 +409,7 @@ document.addEventListener("load", function f_temp0 () {
                 </button>
                 <spacer flex="1" />
                 <button class="button">{markSpamTxt}</button>
-                <button class="button">{archiveTxt}</button>
+                <button class="button button-archive">{archiveTxt}</button>
                 <button class="button">{deleteTxt}</button>
               </hbox>
             </div>
@@ -437,6 +443,14 @@ document.addEventListener("load", function f_temp0 () {
         let callOnceAfterToggle = function callOnceAfterToggle_ (f) {
           toCall.push(f);
         };
+        gconversation.stash.expand_all.push(function () {
+          if (messageIsCollapsed())
+            toggleMessage();
+        });
+        gconversation.stash.collapse_all.push(function () {
+          if (!messageIsCollapsed())
+            toggleMessage();
+        });
 
         /* Warn the user if this is a draft */
         if (msgHdrIsDraft(msgHdr)) {
@@ -672,6 +686,12 @@ document.addEventListener("load", function f_temp0 () {
 
                   /* Don't go to such lengths to make it work next time */
                   focusInformation.iFrameWasLoaded = true;
+
+                  /* Ok let's be nice to other extensions. */
+                  /* if (InstallBrowserHandler) { // That's BiDi UI
+                    dump("### BiDi UI detected\n");
+                    InstallBrowserHandler(iframe);
+                  } */
 
                   /* Here ends the chain of event listeners, nothing happens
                    * after this. */
@@ -1148,6 +1168,16 @@ document.addEventListener("load", function f_temp0 () {
     gMessageDisplay.singleMessageDisplay = true;
     gFolderDisplay.selectMessage(gFolderDisplay.selectedMessages[0]);
     document.getElementById("threadTree").focus();
+  };
+
+  gconversation.on_expand_all = function (event) {
+    for each (let [, f] in Iterator(gconversation.stash.expand_all))
+      f();
+  };
+
+  gconversation.on_collapse_all = function (event) {
+    for each (let [, f] in Iterator(gconversation.stash.collapse_all))
+      f();
   };
 
   /* We need to attach our custom context menu to multimessage, that's simpler

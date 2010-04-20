@@ -41,11 +41,11 @@ body {
 
 /* Toolbar */
 
-#unfold_all {
+#expand_all {
   list-style-image: url("chrome://gconversation/skin/down.png");
 }
 
-#fold_all {
+#collapse_all {
   list-style-image: url("chrome://gconversation/skin/up.png");
 }
 
@@ -352,10 +352,15 @@ a.action:hover {
 .button-action-area {
   width: 100%;
   position: relative;
+  margin-top: 2em;
 }
 
 .button-action-area > .button {
   min-width: 2em;
+}
+
+.button-action-area > .button-archive {
+  font-weight: bold;
 }
 
 .messagearrow {

@@ -1,5 +1,10 @@
 --- v0.3 development series ---
 
+- New design, based on mockups from the Thunderbird UI team. Added: attachments
+description, colors for recipients, display names from the address book, use
+"Me" when the message is sent to me, and much more.
+- Don't silently mark a conversation as read when the conversation is selected
+and Thunderbird does not have the focus.
 - New keyboard shortcut: hold "shift" while clicking the "open thread in new
 tab" button (either in the main toolbar, the message header toolbar or the
 conversation toolbar) to display the conversation full-screen (without the

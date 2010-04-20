@@ -90,10 +90,10 @@
       <menuseparator />
       <menuitem label="&menu.open_in_new_tab;" class="extra-menuitem"
         oncommand="gconversation.on_load_thread_tab(event);" />
-      <menuitem label="&menu.unfold_all;" class="extra-menuitem"
-        oncommand="document.getElementById('multimessage').contentWindow.unfoldAll();" />
-      <menuitem label="&menu.fold_all;" class="extra-menuitem"
-        oncommand="document.getElementById('multimessage').contentWindow.foldAll();" />
+      <menuitem label="&menu.expand_all;" class="extra-menuitem"
+        oncommand="gconversation.on_expand_all();" />
+      <menuitem label="&menu.collapse_all;" class="extra-menuitem"
+        oncommand="gconversation.on_collapse_all();" />
     </popup>
   </popupset>
 </overlay>
