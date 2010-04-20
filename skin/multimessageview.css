@@ -220,6 +220,15 @@ a.action:hover {
   vertical-align: middle;
 }
 
+.enigmail-ok {
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  background-image: url(chrome://enigmail/skin/enigEncOk.png);
+  background-repeat: no-repeat;
+  vertical-align: middle;
+}
+
 .msgheader-details-toggle {
   color: #04b;
   cursor: pointer;

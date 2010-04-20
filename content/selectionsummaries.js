@@ -77,6 +77,39 @@ var gconversation = {
 document.addEventListener("load", function f_temp0 () {
   document.removeEventListener("load", f_temp0, true); /* otherwise it's called 20+ times */
 
+  /* Enigmail support, thanks to Patrick Brunschwig ! */
+  let hasEnigmail = (typeof(GetEnigmailSvc) == "function");
+  function tryEnigmail(bodyElement) {
+    var enigmailSvc = GetEnigmailSvc();
+    if (!enigmailSvc)
+      return "";
+
+    if (bodyElement.textContent.indexOf("-----BEGIN PGP MESSAGE") < 0)
+      return "";
+
+    var signatureObj       = new Object();
+    var exitCodeObj        = new Object();
+    var statusFlagsObj     = new Object();
+    var keyIdObj           = new Object();
+    var userIdObj          = new Object();
+    var sigDetailsObj      = new Object();
+    var errorMsgObj        = new Object();
+    var blockSeparationObj = new Object();
+
+    try {
+      var decryptedText =
+        enigmailSvc.decryptMessage(window, 0, bodyElement.textContent,
+          signatureObj, exitCodeObj,
+          statusFlagsObj, keyIdObj, userIdObj, sigDetailsObj,
+          errorMsgObj, blockSeparationObj);
+      if (exitCodeObj.value == 0)
+        return decryptedText;
+    } catch (ex) {
+      dump("Enigmail error: "+ex+" --- "+errorMsgObj.value+"\n");
+      return "";
+    }
+  }
+
   /* For debugging purposes */
   let consoleService = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
   function myDump(aMsg) {
@@ -153,7 +186,7 @@ document.addEventListener("load", function f_temp0 () {
   };
   myPrefObserver.register();
 
-  const predefinedColors = ["#204a87", "#5c3566", "#8f5902", "#a40000", "#c4a000", "#4e9a06", "#ce5c00"];
+  const predefinedColors = ["#204a87", "#5c3566", "#8f5902", "#a40000", "#4e9a06", "#ce5c00"];
   let gColorCount = 0;
   /* Filled as we go. key = "Jonathan Protzenko", value = "#ff0562" */
   let id2color = {};
@@ -334,7 +367,7 @@ document.addEventListener("load", function f_temp0 () {
 
         let msgHdr = this._msgHdrs[i];
         let key = msgHdr.messageKey + msgHdr.folder.URI;
-        //myDump("Registering "+key+"\n");
+        myDump("Registering "+key+"\n");
 
         let msg_classes = "message collapsed";
         if (!msgHdr.isRead)
@@ -362,6 +395,7 @@ document.addEventListener("load", function f_temp0 () {
           <div class="row">
             <div class="notification-icons">
               <div class="star"/>
+              <div class="enigmail-ok" style="display: none" />
               <div class="attachment" style="display: none"></div>
               <div class="tags"></div>
             </div>
@@ -550,7 +584,6 @@ document.addEventListener("load", function f_temp0 () {
           }
         }
 
-
         /* Same thing but for HTML messages. The HTML is heavily processed to
          * detect extra quoted parts using different heuristics, the "- show/hide
          * quoted text -" links are added. */
@@ -585,14 +618,14 @@ document.addEventListener("load", function f_temp0 () {
                     iframe.contentDocument.body.firstElementChild.tagName.toLowerCase() != "pre";
 
                   /* The part below is all about quoting */
-                  let aDoc = iframe.contentDocument;
+                  let iframeDoc = iframe.contentDocument;
                   /* Launch various heuristics to convert most common quoting styles
                    * to real blockquotes. */
-                  convertOutlookQuotingToBlockquote(aDoc);
-                  convertHotmailQuotingToBlockquote1(aDoc);
-                  convertHotmailQuotingToBlockquote2(iframe.contentWindow, aDoc, gPrefs["hide_quote_length"]);
-                  convertForwardedToBlockquote(aDoc);
-                  fusionBlockquotes(aDoc);
+                  convertOutlookQuotingToBlockquote(iframeDoc);
+                  convertHotmailQuotingToBlockquote1(iframeDoc);
+                  convertHotmailQuotingToBlockquote2(iframe.contentWindow, iframeDoc, gPrefs["hide_quote_length"]);
+                  convertForwardedToBlockquote(iframeDoc);
+                  fusionBlockquotes(iframeDoc);
                   /* This function adds a show/hide quoted text link to every topmost
                    * blockquote. Nested blockquotes are not taken into account. */
                   let walk = function walk_ (elt) {
@@ -606,7 +639,7 @@ document.addEventListener("load", function f_temp0 () {
                           let style = iframe.contentWindow.getComputedStyle(c, null);
                           let numLines = parseInt(style.height) / parseInt(style.lineHeight);
                           if (numLines > gPrefs["hide_quote_length"]) {
-                            let div = aDoc.createElement("div");
+                            let div = iframeDoc.createElement("div");
                             div.setAttribute("class", "link showhidequote");
                             div.addEventListener("click", function div_listener (event) {
                                 let h = htmlpane.contentWindow.toggleQuote(event);
@@ -624,7 +657,7 @@ document.addEventListener("load", function f_temp0 () {
                       }
                     }
                   };
-                  walk(aDoc);
+                  walk(iframeDoc);
 
                   /* Add an event listener for the button that toggles the style of the
                    * font. Only if we seem to be able to implement it (i.e. we
@@ -633,21 +666,21 @@ document.addEventListener("load", function f_temp0 () {
                     /* Ugly hack (once again) to get the style inside the
                      * <iframe>. I don't think we can use a chrome:// url for
                      * the stylesheet because the iframe has a type="content" */
-                    let style = aDoc.createElement("style");
-                    style.appendChild(aDoc.createTextNode(
+                    let style = iframeDoc.createElement("style");
+                    style.appendChild(iframeDoc.createTextNode(
                       ".pre-as-regular {"+
                       "  font-family: sans;"+
                       "}"));
-                    aDoc.body.previousSibling.appendChild(style);
+                    iframeDoc.body.previousSibling.appendChild(style);
 
                     let toggleFontStyle = function togglefont_listener (event) {
-                      for each (let [, elt] in Iterator(aDoc.getElementsByTagName("pre")))
+                      for each (let [, elt] in Iterator(iframeDoc.getElementsByTagName("pre")))
                         _mm_toggleClass(elt, "pre-as-regular");
                       /* XXX The height of the iframe isn't updated as we change
                        * fonts. This is usually unimportant, as it will grow
                        * once if the initial font was smaller, and then remain
                        * high. */
-                      iframe.style.height = iframe.contentDocument.body.scrollHeight+"px";
+                      iframe.style.height = iframeDoc.body.scrollHeight+"px";
                     };
                     /* By default, plain/text messages are displayed using a
                      * monospaced font. */
@@ -658,12 +691,22 @@ document.addEventListener("load", function f_temp0 () {
                     toggleFontNode.style.display = "";
                   }
 
+                  /* Hello, Enigmail. Do that now, because decrypting a message
+                   * will change its height. */
+                  if (iframeDoc.body.textContent.length > 0 && hasEnigmail) {
+                    let decryptedText = tryEnigmail(iframeDoc.body);
+                    if (decryptedText.length > 0) {
+                      iframe.contentDocument.body.textContent = decryptedText;
+                      msgNode.getElementsByClassName("enigmail-ok")[0].style.display = "";
+                    }
+                  }
+
                   /* Everything's done, so now we're able to settle for a height. */
-                  iframe.style.height = iframe.contentDocument.body.scrollHeight+"px";
+                  iframe.style.height = iframeDoc.body.scrollHeight+"px";
 
                   /* Attach the required event handlers so that links open in the
                    * external browser */
-                  for each (let [, a] in Iterator(iframe.contentDocument.getElementsByTagName("a"))) {
+                  for each (let [, a] in Iterator(iframeDoc.getElementsByTagName("a"))) {
                     a.addEventListener("click", function link_listener (event) specialTabs.siteClickHandler(event, /^mailto:/), true);
                   }
 
@@ -686,12 +729,6 @@ document.addEventListener("load", function f_temp0 () {
 
                   /* Don't go to such lengths to make it work next time */
                   focusInformation.iFrameWasLoaded = true;
-
-                  /* Ok let's be nice to other extensions. */
-                  /* if (InstallBrowserHandler) { // That's BiDi UI
-                    dump("### BiDi UI detected\n");
-                    InstallBrowserHandler(iframe);
-                  } */
 
                   /* Here ends the chain of event listeners, nothing happens
                    * after this. */
