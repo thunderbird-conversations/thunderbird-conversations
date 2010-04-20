@@ -4,5 +4,7 @@ resource gconversation modules/
 overlay chrome://messenger/content/messenger.xul chrome://gconversation/content/overlay.xul
 override chrome://messenger/content/multimessageview.xhtml chrome://gconversation/content/multimessageview.xhtml
 locale gconversation en-US locale/en-US/
-locale gconversation fr locale/fr/
+#locale gconversation fr locale/fr/
+#locale gconversation de locale/de/
+#locale gconversation zh-CN locale/zh-CN/
 style chrome://global/content/customizeToolbar.xul chrome://gconversation/skin/overlay.css

@@ -4,8 +4,6 @@
 LOW-KEY BUGS
 ============
 #64 Add automated tests in my Makefiles to detect untranslated strings.
-#50 Refactor message display (esp. plain/text) --> use a Necko URL (and use the
- HTML show/hide quoted text code)
 #47 0x0019 unicode char makes the innerHTML insertion phase fail
 #7 Make everything asynchronous. Start filling in messages for the first
   query, then launch the extended query that fetches more messages, and then

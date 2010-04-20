@@ -49,7 +49,7 @@ body {
   list-style-image: url("chrome://gconversation/skin/up.png");
 }
 
-#buttonhbox.icons-only > button > hbox > label {
+#buttonhbox:not(.text-plus-icons) > button > hbox > label {
   display: none;
 }
 

@@ -15,4 +15,4 @@ pref("gconversation.reverse_order", false);
 pref("gconversation.auto_fetch", true);
 pref("gconversation.disable_error_empty_collection", false);
 pref("gconversation.auto_mark_read", false);
-pref("gconversation.toolbar_icons_only", true);
+pref("gconversation.toolbar_text_plus_icons", false);

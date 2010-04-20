@@ -1,0 +1,6 @@
+<!ENTITY error.title "GMail conversation view cannot work">
+<!ENTITY error_gloda_disabled "You need to enable the global database for this add-on to work properly. Please go to Tools &gt; Options (or Edit &gt; Preferences). In the &quot;Advanced&quot; section, look for the &quot;General&quot; tab. Check &quot;Enable global search and indexer&quot;. You're done! You just need to wait for Thunderbird to index all your messages (this might take a while).">
+<!ENTITY error.help "Need more help?">
+<!ENTITY error_empty_collection "Thunderbird has not indexed this thread yet.  This is normal if the message just arrived, if Thunderbird has a lot of messages to index or if you are trying to get a conversation view for a newsgroup/RSS message. If this persists, please check in Tools &gt; Options (or Edit &gt; Preferences) &gt; Advanced &gt; General that the global search and indexer is activated.">
+<!ENTITY error.close "Close this message">
+<!ENTITY error.disable "Permanently disable this error message">

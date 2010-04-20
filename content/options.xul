@@ -64,7 +64,7 @@
       <preference id="button.open_in_new_tab" name="gconversation.button.open_in_new_tab" type="bool" />
       <preference id="focus_first" name="gconversation.focus_first" type="bool" />
       <preference id="reverse_order" name="gconversation.reverse_order" type="bool" />
-      <preference id="toolbar_icons_only" name="gconversation.toolbar_icons_only" type="bool" />
+      <preference id="toolbar_text_plus_icons" name="gconversation.toolbar_text_plus_icons" type="bool" />
     </preferences>
    
     <groupbox>
@@ -83,7 +83,7 @@
     <groupbox>
       <caption label="&title.toolbar;"/>
       <description style="width: 0; height: 2em;">&buttons.info;</description>
-      <checkbox class="fullwidth" label="&option.toolbar_icons_only;" preference="toolbar_icons_only" id="toolbar_icons_only_checkbox" />
+      <checkbox class="fullwidth" label="&option.toolbar_text_plus_icons;" preference="toolbar_text_plus_icons" id="toolbar_text_plus_icons_checkbox" />
       <hbox>
         <vbox flex="1">
           <checkbox label="&option.button.archive;" preference="button.archive" id="archive_checkbox" />
