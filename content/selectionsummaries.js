@@ -145,6 +145,8 @@ document.addEventListener("load", function f_temp0 () {
         /* Warning this one has no key in gPrefs */
         case "toolbar_text_plus_icons":
           let htmlpane = document.getElementById('multimessage');
+          /* We toggle it because we know that multimessageview.xhtml has set it
+           * in the right position. */
           _mm_toggleClass(htmlpane.contentDocument.getElementById("buttonhbox"), "text-plus-icons");
           break;
       }

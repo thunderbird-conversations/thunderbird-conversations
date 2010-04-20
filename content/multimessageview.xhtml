@@ -135,6 +135,9 @@
               for each (let l in ["archive", "trash", "fold_all", "unfold_all", "mark_as_read", "print", "back"])
                 if (!buttonBranch.getBoolPref(l))
                   document.getElementById(l).style.display = "none";
+              /* That pref is watched from selectionsummaries.js so
+                 as not that register a ton of observers here.
+                 selectionsummaries.js takes care of toggling the class for us */
               if (prefsBranch.getBoolPref("toolbar_text_plus_icons")) {
                 let bb = document.getElementById("buttonhbox");
                 bb.setAttribute("class", bb.getAttribute("class")+" text-plus-icons");
