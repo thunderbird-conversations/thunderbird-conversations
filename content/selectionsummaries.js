@@ -68,8 +68,8 @@ var gconversation = {
   }
 };
 
-/* That's for global namespace pollution + because we need the document's
- * <stringbundle> to be accessible. */
+/* We use a function because of global namespace pollution. We use "onload"
+ * because we need the <stringbundle> to be available. */
 document.addEventListener("load", function f_temp0 () {
   document.removeEventListener("load", f_temp0, true); /* otherwise it's called 20+ times */
 
@@ -116,17 +116,17 @@ document.addEventListener("load", function f_temp0 () {
   gPrefs["disable_error_empty_collection"] = prefs.getBoolPref("disable_error_empty_collection");
 
   let myPrefObserver = {
-    register: function () {
+    register: function mpo_register () {
       prefs.QueryInterface(Components.interfaces.nsIPrefBranch2);
       prefs.addObserver("", this, false);
     },
 
-    unregister: function () {
+    unregister: function mpo_unregister () {
       if (!prefs) return;
         prefs.removeObserver("", this);
     },
 
-    observe: function (aSubject, aTopic, aData) {
+    observe: function mpo_observe (aSubject, aTopic, aData) {
       if (aTopic != "nsPref:changed") return;
       switch (aData) {
         case "monospaced":
@@ -315,7 +315,9 @@ document.addEventListener("load", function f_temp0 () {
           scrollMessageIntoView(needsFocus);
       }
 
-      /* Now this is for every message */
+      /* Now this is for every message. Note to self: all functions defined
+       * inside the loop must be defined using let f = ... (otherwise the last
+       * definition is always called !). */
       for (let i = 0; i < numMessages; ++i) {
         myDump("*** Treating message "+i+"\n");
         count += 1;
@@ -328,7 +330,7 @@ document.addEventListener("load", function f_temp0 () {
         let key = msgHdr.messageKey + msgHdr.folder.URI;
         //myDump("Registering "+key+"\n");
 
-        let msg_classes = "message ";
+        let msg_classes = "message collapsed";
         if (!msgHdr.isRead)
           msg_classes += " unread";
         if (msgHdr.isFlagged)
@@ -350,69 +352,62 @@ document.addEventListener("load", function f_temp0 () {
         let editNew = stringBundle.getString("edit_new");
         let toTxt = stringBundle.getString("to");
         let detailsTxt = stringBundle.getString("details");
-        let msgContents = <div class="row">
-                            <div class="notification-icons">
-                              <div class="star"/>
-                              <div class="attachment" style="display: none"></div>
-                              <div class="tags"></div>
-                            </div>
-                            <div class="link-action-area">
-                              <a class="action link-reply">{replyTxt}</a>
-                              <a class="action link-reply-all">{replyAllTxt}</a>
-                              <a class="action link-forward">{forwardTxt}</a>
-                              <a class="action toggle-font link" style="display: none">
-                                <img src="chrome://gconversation/skin/font.png" />
-                              </a>
-                              <a class="action mark-read link">
-                                <img src="chrome://gconversation/skin/readcol.png" />
-                              </a>
-                              <a class="action delete-msg link">
-                                <img src="chrome://gconversation/skin/trash.gif" />
-                              </a>
-                            </div>
-                            <div class="header">
-                              <div class="wrappedsender">
-                                <div class="msgheader-details-toggle">
-                                  {detailsTxt}
-                                </div>
-                                <div class="msgheader-from-to">
-                                  <div class="sender link"></div>
-                                  <div class="to-text">{toTxt}</div>
-                                  <div class="recipients"></div>
-                                  <div class="draft-warning"></div>
-                                </div>
-                                <div class="msgheader-subject-date">
-                                  <div class="date">{date}</div>
-                                </div>
-                                <div class="attachments-area">
-                                </div>
-                                <div class="messageclosebox">
-                                  <div class="messageclose" style="display: none"></div>
-                                </div>
-                              </div>
-                              <div class="snippet snippetmsg"></div>
-                              <div class="plaintextmsg" style="display: none;"></div>
-                              <div class="snippet htmlmsg" style="display: none" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"></div>
-                              <hbox class="button-action-area" align="start" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:html="http://www.w3.org/1999/xhtml">
-                                <button class="button">{replyTxt}</button>
-                                <button class="button">{forwardTxt}</button>
-                                <button class="button" type="menu">
-                                  More Actions
-                                  <menupopup>
-                                    <menuitem>{editNew}</menuitem>
-                                    <menuitem>{replyList}</menuitem>
-                                  </menupopup>
-                                </button>
-                                <spacer flex="1" />
-                                <button class="button">{markSpamTxt}</button>
-                                <button class="button">{archiveTxt}</button>
-                                <button class="button">{deleteTxt}</button>
-                                <html:div class="messagearrow">
-                                 <html:img class="msgarrow" src="chrome://gconversation/skin/down.png" />
-                                </html:div>
-                              </hbox>
-                            </div>
-                          </div>;
+        let msgContents =
+          <div class="row">
+            <div class="notification-icons">
+              <div class="star"/>
+              <div class="attachment" style="display: none"></div>
+              <div class="tags"></div>
+            </div>
+            <div class="link-action-area">
+              <a class="action link-reply">{replyTxt}</a>
+              <a class="action link-reply-all">{replyAllTxt}</a>
+              <a class="action link-forward">{forwardTxt}</a>
+              <a class="action toggle-font link" style="display: none">
+                <img src="chrome://gconversation/skin/font.png" />
+              </a>
+              <a class="action mark-read link">
+                <img src="chrome://gconversation/skin/readcol.png" />
+              </a>
+              <a class="action delete-msg link">
+                <img src="chrome://gconversation/skin/trash.gif" />
+              </a>
+            </div>
+            <div class="header">
+              <div class="wrappedsender">
+                <div class="msgheader-details-toggle">{detailsTxt}</div>
+                <div class="msgheader-from-to">
+                  <div class="sender link"></div>
+                  <div class="to-text">{toTxt}</div>
+                  <div class="recipients"></div>
+                  <div class="draft-warning"></div>
+                </div>
+                <div class="msgheader-subject-date">
+                  <div class="date">{date}</div>
+                </div>
+                <div class="attachments-area">
+                </div>
+              </div>
+              <div class="snippet snippetmsg"></div>
+              <div class="plaintextmsg" style="display: none;"></div>
+              <div class="snippet htmlmsg" style="" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"></div>
+              <hbox class="button-action-area" align="start" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:html="http://www.w3.org/1999/xhtml">
+                <button class="button">{replyTxt}</button>
+                <button class="button">{forwardTxt}</button>
+                <button class="button" type="menu">
+                  More Actions
+                  <menupopup>
+                    <menuitem>{editNew}</menuitem>
+                    <menuitem>{replyList}</menuitem>
+                  </menupopup>
+                </button>
+                <spacer flex="1" />
+                <button class="button">{markSpamTxt}</button>
+                <button class="button">{archiveTxt}</button>
+                <button class="button">{deleteTxt}</button>
+              </hbox>
+            </div>
+          </div>;
 
         let msgNode = htmlpane.contentDocument.createElement("div");
         this._msgNodes[key] = msgNode;
@@ -426,6 +421,23 @@ document.addEventListener("load", function f_temp0 () {
           messagesElt.appendChild(msgNode);
         }
 
+        /* This function is central. It takes care of collapsing / expanding a
+         * single message. The message is initially collapsed. The let-style
+         * bindings are mandatory, otherwise the definitions are overwritten at
+         * each iteration and we end up always calling the last definition. */
+        let toCall = [];
+        let toggleMessage = function toggleMessage_ () {
+          _mm_toggleClass(msgNode, "collapsed");
+          while (toCall.length > 0)
+            (toCall.pop())();
+        };
+        let messageIsCollapsed = function messageIsCollapsed_ () {
+          return _mm_hasClass(msgNode, "collapsed");
+        };
+        let callOnceAfterToggle = function callOnceAfterToggle_ (f) {
+          toCall.push(f);
+        };
+
         /* Warn the user if this is a draft */
         if (msgHdrIsDraft(msgHdr)) {
           let draftTxt = stringBundle.getString("draft");
@@ -438,12 +450,13 @@ document.addEventListener("load", function f_temp0 () {
         let htmlMsgNode = msgNode.getElementsByClassName("htmlmsg")[0];
         let plainTextMsgNode = msgNode.getElementsByClassName("plaintextmsg")[0];
         let snippetMsgNode = msgNode.getElementsByClassName("snippetmsg")[0];
-        let arrowNode = msgNode.getElementsByClassName("msgarrow")[0];
-        let closeNode = msgNode.getElementsByClassName("messageclose")[0];
         let toggleFontNode = msgNode.getElementsByClassName("toggle-font")[0];
         let deleteNode = msgNode.getElementsByClassName("delete-msg")[0];
         let markReadNode = msgNode.getElementsByClassName("mark-read")[0];
         let actionNode = msgNode.getElementsByClassName("link-action-area")[0];
+
+        /* Register collapse/expand handlers */
+        snippetMsgNode.addEventListener("click", toggleMessage, true);
 
         /* Insert fancy colored html */
         let senderName = processEmails(msgHdr.mime2DecodedAuthor);
@@ -454,10 +467,10 @@ document.addEventListener("load", function f_temp0 () {
           ccNames ? recipientsNames + ", " + ccNames : recipientsNames;
 
         /* Register small event listeners */
-        deleteNode.addEventListener("click", function (event) {
+        deleteNode.addEventListener("click", function deletenode_listener (event) {
           msgHdrsDelete([msgHdr]);
         }, true);
-        markReadNode.addEventListener("click", function (event) {
+        markReadNode.addEventListener("click", function markreadnode_listener (event) {
           msgHdrsMarkAsRead([msgHdr], !msgHdr.isRead);
         }, true);
 
@@ -467,21 +480,6 @@ document.addEventListener("load", function f_temp0 () {
           _mm_addClass(htmlMsgNode, "monospaced-message");
         if (gPrefs["monospaced_snippets"])
           _mm_addClass(snippetMsgNode, "monospaced-snippet");
-
-        /* Register event listeners for folding/unfolding the message */
-        arrowNode.addEventListener("click", function (event) {
-            htmlpane.contentWindow.toggleMessage(event)
-            if (closeNode.style.display == "none")
-              closeNode.style.display = "";
-            else
-              closeNode.style.display = "none";
-          }, true);
-        closeNode.addEventListener("click", function (event) {
-            let e = document.createEvent("UIEvents");
-            e.initUIEvent("click", true, true, window, 1);
-            arrowNode.dispatchEvent(e);
-            event.target.style.display = "none";
-          }, true);
 
         /* Try to enable at least some keyboard navigation */
         let tabIndex;
@@ -502,7 +500,7 @@ document.addEventListener("load", function f_temp0 () {
           keyboardOpening: false,
           iFrameWasLoaded: false
         };
-        msgNode.addEventListener("keypress", function (event) {
+        msgNode.addEventListener("keypress", function keypress_listener (event) {
             if (event.charCode == 'o'.charCodeAt(0)) {
               myDump("i is "+focusInformation.i+"\n");
 
@@ -510,20 +508,14 @@ document.addEventListener("load", function f_temp0 () {
                * refocus as soon as the iframe is done loading. */
               focusInformation.keyboardOpening = true;
 
-              /* Otherwise, if the iframe's already setup, we wait for the event
-               * listeners to unfold the node and then our freshly added event
-               * listener will do the scroll. */
-              if (focusInformation.iFrameWasLoaded)
-                arrowNode.addEventListener("click", function f_temp4 (event) {
-                    myDump("iFrameWasLoaded\n");
-                    arrowNode.removeEventListener("click", f_temp4, true);
-                    scrollMessageIntoView(focusInformation.i);
-                  }, true);
-
               /* Let's go */
-              let e = document.createEvent("UIEvents");
-              e.initUIEvent("click", true, true, window, 1);
-              arrowNode.dispatchEvent(e);
+              toggleMessage();
+
+              /* Since toggleMessage() is now immediate, we can focus the thing
+               * right now (otherwise the iframe code will take care of focusing
+               * it for us thanks to keyboardOpening). */
+              if (focusInformation.iFrameWasLoaded)
+                scrollMessageIntoView(focusInformation.i);
             }
             if (event.keyCode == '8') {
               gconversation.on_back();
@@ -538,9 +530,7 @@ document.addEventListener("load", function f_temp0 () {
         if ((gPrefs["fold_rule"] == "unread_and_last" && (!msgHdr.isRead || i == (numMessages - 1))) ||
             (gPrefs["fold_rule"] == "all")) {
           try {
-            let e = document.createEvent("UIEvents");
-            e.initUIEvent("click", true, true, window, 1);
-            arrowNode.dispatchEvent(e);
+            toggleMessage();
           } catch (e) {
             myDump("Error "+e+"\n");
           }
@@ -550,7 +540,7 @@ document.addEventListener("load", function f_temp0 () {
         /* Same thing but for HTML messages. The HTML is heavily processed to
          * detect extra quoted parts using different heuristics, the "- show/hide
          * quoted text -" links are added. */
-        let fillSnippetAndHTML = function () {
+        let fillSnippetAndHTML = function fillSnippetAndHTML_ () {
           let originalScroll; /* This is shared by the nested event listeners below */
 
           let iframe = htmlpane.contentDocument.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "iframe");
@@ -591,7 +581,7 @@ document.addEventListener("load", function f_temp0 () {
                   fusionBlockquotes(aDoc);
                   /* This function adds a show/hide quoted text link to every topmost
                    * blockquote. Nested blockquotes are not taken into account. */
-                  let walk = function (elt) {
+                  let walk = function walk_ (elt) {
                     for (let i = elt.childNodes.length - 1; i >= 0; --i) {
                       let c = elt.childNodes[i];
                       /* GMail uses class="gmail_quote", other MUA use type="cite"...
@@ -604,7 +594,7 @@ document.addEventListener("load", function f_temp0 () {
                           if (numLines > gPrefs["hide_quote_length"]) {
                             let div = aDoc.createElement("div");
                             div.setAttribute("class", "link showhidequote");
-                            div.addEventListener("click", function(event) {
+                            div.addEventListener("click", function div_listener (event) {
                                 let h = htmlpane.contentWindow.toggleQuote(event);
                                 iframe.style.height = (parseInt(iframe.style.height) + h)+"px";
                               }, true);
@@ -636,7 +626,7 @@ document.addEventListener("load", function f_temp0 () {
                       "}"));
                     aDoc.body.previousSibling.appendChild(style);
 
-                    let toggleFontStyle = function (event) {
+                    let toggleFontStyle = function togglefont_listener (event) {
                       for each (let [, elt] in Iterator(aDoc.getElementsByTagName("pre")))
                         _mm_toggleClass(elt, "pre-as-regular");
                       /* XXX The height of the iframe isn't updated as we change
@@ -660,7 +650,7 @@ document.addEventListener("load", function f_temp0 () {
                   /* Attach the required event handlers so that links open in the
                    * external browser */
                   for each (let [, a] in Iterator(iframe.contentDocument.getElementsByTagName("a"))) {
-                    a.addEventListener("click", function (event) specialTabs.siteClickHandler(event, /^mailto:/), true);
+                    a.addEventListener("click", function link_listener (event) specialTabs.siteClickHandler(event, /^mailto:/), true);
                   }
 
                   /* Sometimes setting the iframe's content and height changes
@@ -713,7 +703,7 @@ document.addEventListener("load", function f_temp0 () {
               iframe.webNavigation.loadURI(url.spec+"?header=quotebody", iframe.webNavigation.LOAD_FLAGS_IS_LINK, null, null, null);
             }, true); /* end document.addEventListener */
 
-          if (htmlMsgNode.style.display != "none") {
+          if (!messageIsCollapsed()) {
             focusInformation.delayed = false;
             /* The iframe is to be displayed, let's go. */
             /* NB: this currently triggers bug 540911, nothing we can do about
@@ -728,12 +718,11 @@ document.addEventListener("load", function f_temp0 () {
              * wait for the iframe to be loaded first. To simplify things, the
              * whole process of adding the iframe into the tree and styling it
              * will be done when it is made visible for the first time. That is,
-             * when we click arrowNode. */
-            arrowNode.addEventListener("click", function f_temp3 () {
-                arrowNode.removeEventListener("click", f_temp3, true);
+             * when we toggle the message for the first time. */
+            callOnceAfterToggle(function f_temp3 () {
                 originalScroll = htmlpane.contentDocument.documentElement.scrollTop;
                 htmlMsgNode.appendChild(iframe);
-              }, true);
+              });
             /* Well, nothing will happen in the load process after that, so no
              * more reflows for this message -> the message is done. */
             messageDone();
@@ -744,7 +733,7 @@ document.addEventListener("load", function f_temp0 () {
          * Gloda */
         try {
           /* throw { result: Components.results.NS_ERROR_FAILURE }; */
-          MsgHdrToMimeMessage(msgHdr, null, function(aMsgHdr, aMimeMsg) {
+          MsgHdrToMimeMessage(msgHdr, null, function (aMsgHdr, aMimeMsg) {
             if (aMimeMsg == null) // shouldn't happen, but sometimes does?
               return;
             /* The advantage here is that the snippet is properly stripped of
@@ -834,29 +823,7 @@ document.addEventListener("load", function f_temp0 () {
          * http://mxr.mozilla.org/comm-central/source/mail/base/content/messageWindow.js#949
          * and follow the function definitions. */
         let uri = msgHdr.folder.getUriForMsg(msgHdr);
-        let markMsgRead = function() {
-          /* mark the message read */
-          msgHdrsMarkAsRead([msgHdr], true);
-
-          /* collapse the message */
-          if (closeNode.style.display == "") {
-	        let e = document.createEvent("UIEvents");
-    	    e.initUIEvent("click", true, true, window, 1);
-    	    arrowNode.dispatchEvent(e);
-    	  }
-        };
-        let markMsgUnread = function() {
-          /* mark the message unread */
-          msgHdrsMarkAsRead([msgHdr], false);
-
-          /* expand the message */
-          if (closeNode.style.display == "none") {
-	        let e = document.createEvent("UIEvents");
-    	    e.initUIEvent("click", true, true, window, 1);
-    	    arrowNode.dispatchEvent(e);
-    	  }
-        };
-        let compose = function (aCompType, aEvent) {
+        let compose = function compose_ (aCompType, aEvent) {
           if (aEvent.shiftKey) {
             ComposeMessage(aCompType, Ci.nsIMsgCompFormat.OppositeOfDefault, msgHdr.folder, [uri]);
           } else {
@@ -1134,7 +1101,7 @@ document.addEventListener("load", function f_temp0 () {
             pNode.textContent = node.textContent;
           });
           clone("snippetmsg", function (snippet, pSnippet) {
-            if (snippet.style.display != "none") {
+            if (messageIsCollapsed()) {
               pSnippet.textContent = snippet.textContent;
               pMsgNode.getElementsByClassName("plaintextmsg")[0].style.display = "none";
             } else {

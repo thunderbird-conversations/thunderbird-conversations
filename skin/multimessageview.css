@@ -80,6 +80,77 @@ body {
   font-family: Verdana, "Bitstream Vera Sans", sans-serif;
 }
 
+/* Hide the right things when collapsed */
+
+.htmlmsg {
+  display: block;
+}
+
+.message.collapsed .htmlmsg {
+  display: none;
+}
+
+.snippetmsg {
+  display: none;
+  cursor: pointer;
+}
+
+.message.collapsed .snippetmsg {
+  display: block;
+  font-size: smaller;
+}
+
+.message.collapsed {
+  padding: .1em 1em;
+}
+
+.message.collapsed .button-action-area,
+.message.collapsed .link-action-area,
+.message.collapsed .attachments-area,
+.message.collapsed .msgheader-details-toggle {
+  display: none;
+}
+
+.message.collapsed .wrappedsender {
+  margin: 0;
+  padding: 0;
+}
+
+.message.collapsed .header,
+.message.collapsed .wrappedsender,
+.message.collapsed .msgheader-subject-date,
+.message.collapsed .msgheader-subject-date .date,
+.message.collapsed .msgheader-from-to,
+.message.collapsed .notification-icons {
+  display: inline;
+}
+
+.message.collapsed .notification-icons {
+  margin: 0;
+  font-size: large;
+}
+
+.message.collapsed .msgheader-subject-date,
+.message.collapsed .msgheader-from-to,
+.message.collapsed .notification-icons {
+  vertical-align: middle;
+}
+
+.message.collapsed .msgheader-subject-date .date {
+  position: static;
+}
+
+.message.collapsed .tag {
+  display: inline-block;
+  vertical-align: middle;
+  width: 0px;
+  height: 0px;
+  border-width: 3px;
+  -moz-border-radius: 3px;
+  font-size: 0px;
+}
+
+
 /* Links */
 
 .link-action-area {
