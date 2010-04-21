@@ -1174,7 +1174,7 @@ document.addEventListener("load", function f_temp0 () {
             pNode.textContent = node.textContent;
           });
           clone("snippetmsg", function (snippet, pSnippet) {
-            if (messageIsCollapsed()) {
+            if (_mm_hasClass(pMsgNode, "collapsed")) {
               pSnippet.textContent = snippet.textContent;
               pMsgNode.getElementsByClassName("plaintextmsg")[0].style.display = "none";
             } else {
