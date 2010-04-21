@@ -79,13 +79,16 @@ document.addEventListener("load", function f_temp0 () {
 
   /* Enigmail support, thanks to Patrick Brunschwig ! */
   let hasEnigmail = (typeof(GetEnigmailSvc) == "function");
+  let enigmailSvc;
+  if (hasEnigmail)
+    enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc) {
+    myDump("Error loading the Enigmail service.\n");
+    hasEnigmail = false;
+  }
   function tryEnigmail(bodyElement) {
-    var enigmailSvc = GetEnigmailSvc();
-    if (!enigmailSvc)
-      return "";
-
-    if (bodyElement.textContent.indexOf("-----BEGIN PGP MESSAGE") < 0)
-      return "";
+    if (bodyElement.textContent.indexOf("-----BEGIN PGP") < 0)
+      return [];
 
     var signatureObj       = new Object();
     var exitCodeObj        = new Object();
@@ -102,11 +105,16 @@ document.addEventListener("load", function f_temp0 () {
           signatureObj, exitCodeObj,
           statusFlagsObj, keyIdObj, userIdObj, sigDetailsObj,
           errorMsgObj, blockSeparationObj);
-      if (exitCodeObj.value == 0)
-        return decryptedText;
+      if (exitCodeObj.value == 0) {
+        if (decryptedText.length > 0) {
+          bodyElement.textContent = decryptedText;
+          bodyElement.style.whiteSpace = "pre-wrap";
+        }
+        return statusFlagsObj.value;
+      }
     } catch (ex) {
       dump("Enigmail error: "+ex+" --- "+errorMsgObj.value+"\n");
-      return "";
+      return null;
     }
   }
 
@@ -402,7 +410,8 @@ document.addEventListener("load", function f_temp0 () {
           <div class="row">
             <div class="notification-icons">
               <div class="star"/>
-              <div class="enigmail-ok" style="display: none" />
+              <div class="enigmail-enc-ok" style="display: none" />
+              <div class="enigmail-sig-ok" style="display: none" />
               <div class="attachment" style="display: none"></div>
               <div class="tags"></div>
             </div>
@@ -687,7 +696,7 @@ document.addEventListener("load", function f_temp0 () {
                        * fonts. This is usually unimportant, as it will grow
                        * once if the initial font was smaller, and then remain
                        * high. */
-                      iframe.style.height = iframeDoc.body.scrollHeight+"px";
+                      iframe.style.height = iframeDoc.body.offsetHeight+"px";
                     };
                     /* By default, plain/text messages are displayed using a
                      * monospaced font. */
@@ -701,15 +710,15 @@ document.addEventListener("load", function f_temp0 () {
                   /* Hello, Enigmail. Do that now, because decrypting a message
                    * will change its height. */
                   if (iframeDoc.body.textContent.length > 0 && hasEnigmail) {
-                    let decryptedText = tryEnigmail(iframeDoc.body);
-                    if (decryptedText.length > 0) {
-                      iframe.contentDocument.body.textContent = decryptedText;
-                      msgNode.getElementsByClassName("enigmail-ok")[0].style.display = "";
-                    }
+                    let status = tryEnigmail(iframeDoc.body);
+                    if (status & Ci.nsIEnigmail.DECRYPTION_OKAY)
+                      msgNode.getElementsByClassName("enigmail-enc-ok")[0].style.display = "";
+                    if (status & Ci.nsIEnigmail.GOOD_SIGNATURE)
+                      msgNode.getElementsByClassName("enigmail-sig-ok")[0].style.display = "";
                   }
 
                   /* Everything's done, so now we're able to settle for a height. */
-                  iframe.style.height = iframeDoc.body.scrollHeight+"px";
+                  iframe.style.height = iframeDoc.body.offsetHeight+"px";
 
                   /* Attach the required event handlers so that links open in the
                    * external browser */

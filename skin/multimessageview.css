@@ -220,7 +220,16 @@ a.action:hover {
   vertical-align: middle;
 }
 
-.enigmail-ok {
+.enigmail-sig-ok {
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  background-image: url(chrome://enigmail/skin/enigSignOk.png);
+  background-repeat: no-repeat;
+  vertical-align: middle;
+}
+
+.enigmail-enc-ok {
   display: inline-block;
   height: 16px;
   width: 16px;

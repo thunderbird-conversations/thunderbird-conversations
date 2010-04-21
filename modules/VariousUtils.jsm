@@ -52,6 +52,9 @@ const txttohtmlconv = Cc["@mozilla.org/txttohtmlconv;1"].createInstance(Ci.mozIT
 
 /* (no comment) */
 function _mm_toggleClass(node, classname) {
+  if (!node)
+    return;
+
   let classes = [];
   if (node.hasAttribute('class'))
     classes = node.getAttribute('class').split(' ');

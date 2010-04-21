@@ -1,5 +1,6 @@
 --- v0.3 development series ---
 
+- Basic compatibility with Enigmail for signatures and encrypted emails.
 - New design, based on mockups from the Thunderbird UI team. Added: attachments
 description, colors for recipients, display names from the address book, use
 "Me" when the message is sent to me, and much more.
