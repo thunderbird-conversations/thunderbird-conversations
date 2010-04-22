@@ -1,5 +1,7 @@
 --- v0.3 development series ---
 
+- Improve message display code
+- New option to display messages using a monospaced font for specific senders
 - Basic compatibility with Enigmail for signatures and encrypted emails.
 - New design, based on mockups from the Thunderbird UI team. Added: attachments
 description, colors for recipients, display names from the address book, use
