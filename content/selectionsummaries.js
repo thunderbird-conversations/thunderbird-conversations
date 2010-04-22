@@ -411,7 +411,8 @@ document.addEventListener("load", function f_temp0 () {
             <div class="notification-icons">
               <div class="star"/>
               <div class="enigmail-enc-ok" style="display: none" />
-              <div class="enigmail-sig-ok" style="display: none" />
+              <div class="enigmail-sign-ok" style="display: none" />
+              <div class="enigmail-sign-unknown" style="display: none" />
               <div class="attachment" style="display: none"></div>
               <div class="tags"></div>
             </div>
@@ -714,7 +715,9 @@ document.addEventListener("load", function f_temp0 () {
                     if (status & Ci.nsIEnigmail.DECRYPTION_OKAY)
                       msgNode.getElementsByClassName("enigmail-enc-ok")[0].style.display = "";
                     if (status & Ci.nsIEnigmail.GOOD_SIGNATURE)
-                      msgNode.getElementsByClassName("enigmail-sig-ok")[0].style.display = "";
+                      msgNode.getElementsByClassName("enigmail-sign-ok")[0].style.display = "";
+                    if (status & Ci.nsIEnigmail.UNKNOWN_SIGNATURE)
+                      msgNode.getElementsByClassName("enigmail-sign-unknown")[0].style.display = "";
                   }
 
                   /* Everything's done, so now we're able to settle for a height. */

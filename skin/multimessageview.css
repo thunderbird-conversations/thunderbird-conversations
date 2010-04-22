@@ -101,7 +101,7 @@ body {
 }
 
 .message.collapsed {
-  padding: .1em 1em;
+  padding: .1em 1em; /* The date's position must have the same values */
 }
 
 .message.collapsed .button-action-area,
@@ -114,6 +114,17 @@ body {
 .message.collapsed .wrappedsender {
   margin: 0;
   padding: 0;
+  position: static; /* So that we can position the date relative to the .message */
+}
+
+.message.collapsed .msgheader-subject-date {
+  position: static;
+}
+
+.message.collapsed .msgheader-subject-date .date {
+  position: absolute;
+  right: 1em;
+  top: .1em;
 }
 
 .message.collapsed .header,
@@ -134,10 +145,6 @@ body {
 .message.collapsed .msgheader-from-to,
 .message.collapsed .notification-icons {
   vertical-align: middle;
-}
-
-.message.collapsed .msgheader-subject-date .date {
-  position: static;
 }
 
 .message.collapsed .tag {
@@ -220,7 +227,16 @@ a.action:hover {
   vertical-align: middle;
 }
 
-.enigmail-sig-ok {
+.enigmail-sign-unknown {
+  display: inline-block;
+  height: 16px;
+  width: 16px;
+  background-image: url(chrome://enigmail/skin/enigSignUnknown.png);
+  background-repeat: no-repeat;
+  vertical-align: middle;
+}
+
+.enigmail-sign-ok {
   display: inline-block;
   height: 16px;
   width: 16px;
