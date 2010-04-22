@@ -26,10 +26,11 @@ dist:
 
 BRANCH = $(shell git branch | egrep "\\* (.*)" | cut -c 3-)
 DATE = $(shell date +%y%m%d)
-FILENAME = "gconversation-$(BRANCH)-$(DATE).xpi"
+FILENAME = "$(DATE)-$(BRANCH).xpi"
 
 upload:
-	echo "cd jonathan/files\nput gconversation.xpi gcv-nightlies/$(FILENAME)\nput Changelog Changelog_GConversation" | ftp xulforum@ftp.xulforum.org
+	echo "cd jonathan/files\nput gconversation.xpi gcv-nightlies/$(FILENAME)\n\
+	      put Changelog gcv-nightlies/Changelog_$(BRANCH)" | ftp xulforum@ftp.xulforum.org
 
 debug_template:
 	sed s/__REPLACEME__/\.$(DATE)pre/ install.rdf.template > install.rdf
