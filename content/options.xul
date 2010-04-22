@@ -125,6 +125,7 @@
        <preference id="disable_error_empty_collection" name="gconversation.disable_error_empty_collection" type="bool" />
        <preference id="auto_fetch" name="gconversation.auto_fetch" type="bool" />
        <preference id="auto_mark_read" name="gconversation.auto_mark_read" type="bool" />
+       <preference id="monospaced_senders" name="gconversation.monospaced_senders" type="string" />
      </preferences>
     
      <groupbox style="height: 8em;">
@@ -132,6 +133,8 @@
        <description style="width: 0;">&auto_fetch.info;</description>
        <checkbox label="&option.auto_fetch;" preference="auto_fetch" id="auto_fetch_checkbox" />
        <checkbox label="&option.auto_mark_read;" preference="auto_mark_read" id="auto_mark_read_checkbox" />
+       <description style="width: 0;">&option.monospaced_senders;</description>
+       <textbox multiline="true" preference="monospaced_senders" />
      </groupbox>
      <groupbox>
        <caption label="&title.error_messages;"/>

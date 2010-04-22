@@ -159,6 +159,7 @@ document.addEventListener("load", function f_temp0 () {
   gPrefs["auto_fetch"] = prefs.getBoolPref("auto_fetch");
   gPrefs["auto_mark_read"] = prefs.getBoolPref("auto_mark_read");
   gPrefs["disable_error_empty_collection"] = prefs.getBoolPref("disable_error_empty_collection");
+  gPrefs["monospaced_senders"] = prefs.getCharPref("monospaced_senders").split(",");
 
   let myPrefObserver = {
     register: function mpo_register () {
@@ -195,6 +196,9 @@ document.addEventListener("load", function f_temp0 () {
           /* We toggle it because we know that multimessageview.xhtml has set it
            * in the right position. */
           _mm_toggleClass(htmlpane.contentDocument.getElementById("buttonhbox"), "text-plus-icons");
+          break;
+        case "monospaced_senders":
+          gPrefs["monospaced_senders"] = prefs.getCharPref("monospaced_senders").split(",");
           break;
       }
     }
@@ -251,11 +255,21 @@ document.addEventListener("load", function f_temp0 () {
       return cardDetails;
     }
   }
+  function authorEmail(aMsgHdr) {
+    let emails = {};
+    let fullNames = {};
+    let names = {};
+    let numAddresses = gHeaderParser.parseHeadersWithArray(aMsgHdr.mime2DecodedAuthor, emails, names, fullNames);
+    if (numAddresses > 0)
+      return emails.value[0];
+    else
+      return "";
+  }
   function processEmails (emailAddresses) {
     let addresses = {};
     let fullNames = {};
     let names = {};
-    let numAddresses =  0;
+    let numAddresses = 0;
     let decodedAddresses = [];
 
     numAddresses = gHeaderParser.parseHeadersWithArray(emailAddresses, addresses, names, fullNames);
@@ -701,7 +715,7 @@ document.addEventListener("load", function f_temp0 () {
                     };
                     /* By default, plain/text messages are displayed using a
                      * monospaced font. */
-                    if (!gPrefs["monospaced"])
+                    if (!gPrefs["monospaced"] && gPrefs["monospaced_senders"].indexOf(authorEmail(msgHdr)) < 0)
                       toggleFontStyle();
                     toggleFontNode.addEventListener("click", toggleFontStyle, true);
                     /* Show the small icon */

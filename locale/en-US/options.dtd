@@ -30,3 +30,4 @@
 <!ENTITY title.advanced "Advanced">
 <!ENTITY title.error_messages "Error messages">
 <!ENTITY option.disable_error_empty_collection "Disable the warning about empty collections">
+<!ENTITY option.monospaced_senders "Messages from those addresses should be displayed in monospaced fonts (separate using commas)">
