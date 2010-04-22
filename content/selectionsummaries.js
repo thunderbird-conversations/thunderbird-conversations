@@ -639,17 +639,19 @@ document.addEventListener("load", function f_temp0 () {
                * being the necko URL to the given message. */
               iframe.addEventListener("load", function f_temp1(event) {
                   iframe.removeEventListener("load", f_temp1, true);
+                  let iframeDoc = iframe.contentDocument;
 
                   /* Do some reformatting */
-                  iframe.contentDocument.body.style.padding = "0";
-                  iframe.contentDocument.body.style.margin = "0";
+                  iframeDoc.body.style.padding = "0";
+                  iframeDoc.body.style.margin = "0";
 
                   /* The default size for HTML messages' content is too big! */
-                  let hasHtml = !iframe.contentDocument.body.firstElementChild ||
-                    iframe.contentDocument.body.firstElementChild.tagName.toLowerCase() != "pre";
+                  let hasHtml = !(
+                    iframeDoc.body.firstElementChild &&
+                    (_mm_hasClass(iframeDoc.body.firstElementChild, "moz-text-flowed") ||
+                     _mm_hasClass(iframeDoc.body.firstElementChild, "moz-text-plain")));
 
                   /* The part below is all about quoting */
-                  let iframeDoc = iframe.contentDocument;
                   /* Launch various heuristics to convert most common quoting styles
                    * to real blockquotes. */
                   convertOutlookQuotingToBlockquote(iframeDoc);
@@ -690,32 +692,44 @@ document.addEventListener("load", function f_temp0 () {
                   };
                   walk(iframeDoc);
 
+                  /* Ugly hack (once again) to get the style inside the
+                   * <iframe>. I don't think we can use a chrome:// url for
+                   * the stylesheet because the iframe has a type="content" */
+                  let style = iframeDoc.createElement("style");
+                  style.appendChild(iframeDoc.createTextNode(
+                    ".pre-as-regular {\n"+
+                    "  font-family: sans !important;\n"+
+                    "  font-size: medium !important;\n"+
+                    "}\n"+
+                    "fieldset.mimeAttachmentHeader,\n"+
+                    "fieldset.mimeAttachmentHeader + br,\n"+
+                    "fieldset.mimeAttachmentHeader + br + p,\n"+
+                    "fieldset.mimeAttachmentHeader + br + p + center,\n"+
+                    "fieldset.mimeAttachmentHeader + br + p + center + p {\n"+
+                    "  display: none;\n"+
+                    "}\n"
+                    ));
+                  iframeDoc.body.previousSibling.appendChild(style);
+
+
                   /* Add an event listener for the button that toggles the style of the
                    * font. Only if we seem to be able to implement it (i.e. we
                    * see a <pre>). */
                   if (!hasHtml) {
-                    /* Ugly hack (once again) to get the style inside the
-                     * <iframe>. I don't think we can use a chrome:// url for
-                     * the stylesheet because the iframe has a type="content" */
-                    let style = iframeDoc.createElement("style");
-                    style.appendChild(iframeDoc.createTextNode(
-                      ".pre-as-regular {"+
-                      "  font-family: sans;"+
-                      "}"));
-                    iframeDoc.body.previousSibling.appendChild(style);
-
                     let toggleFontStyle = function togglefont_listener (event) {
-                      for each (let [, elt] in Iterator(iframeDoc.getElementsByTagName("pre")))
+                      let elts = iframeDoc.querySelectorAll("pre, body > *:first-child")
+                      for each (let [, elt] in Iterator(elts)) {
                         _mm_toggleClass(elt, "pre-as-regular");
+                      }
                       /* XXX The height of the iframe isn't updated as we change
                        * fonts. This is usually unimportant, as it will grow
                        * once if the initial font was smaller, and then remain
                        * high. */
-                      iframe.style.height = iframeDoc.body.offsetHeight+"px";
+                      iframe.style.height = iframeDoc.body.scrollHeight+"px";
                     };
                     /* By default, plain/text messages are displayed using a
                      * monospaced font. */
-                    if (!gPrefs["monospaced"] && gPrefs["monospaced_senders"].indexOf(authorEmail(msgHdr)) < 0)
+                    if (!gPrefs["monospaced"] && !(gPrefs["monospaced_senders"].indexOf(authorEmail(msgHdr)) >= 0))
                       toggleFontStyle();
                     toggleFontNode.addEventListener("click", toggleFontStyle, true);
                     /* Show the small icon */
@@ -735,7 +749,7 @@ document.addEventListener("load", function f_temp0 () {
                   }
 
                   /* Everything's done, so now we're able to settle for a height. */
-                  iframe.style.height = iframeDoc.body.offsetHeight+"px";
+                  iframe.style.height = iframeDoc.body.scrollHeight+"px";
 
                   /* Attach the required event handlers so that links open in the
                    * external browser */
@@ -798,7 +812,7 @@ document.addEventListener("load", function f_temp0 () {
               cv.hintCharacterSet = "UTF-8";
               cv.hintCharacterSetSource = kCharsetFromMetaTag;
               iframe.docShell.appType = Components.interfaces.nsIDocShell.APP_TYPE_MAIL;
-              iframe.webNavigation.loadURI(url.spec+"?header=quotebody", iframe.webNavigation.LOAD_FLAGS_IS_LINK, null, null, null);
+              iframe.webNavigation.loadURI(url.spec+"?header=none", iframe.webNavigation.LOAD_FLAGS_IS_LINK, null, null, null);
             }, true); /* end document.addEventListener */
 
           if (!messageIsCollapsed()) {
