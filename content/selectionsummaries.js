@@ -781,10 +781,18 @@ document.addEventListener("load", function f_temp0 () {
                * */
               let url = msgHdrToNeckoURL(msgHdr, gMessenger);
 
-              /* FIXME check on #maildev ?header=quotebody is the best way to do that.
-               * Start searching at
-               * http://mxr.mozilla.org/comm-central/source/mailnews/imap/src/nsImapService.cpp#454
-               * for pointers on how the "real code" is doing that. */
+              /* quotebody seems to be the best compromise (strips out both the
+               * header and the attachments). Other possibly useful values for
+               * the header parameter:
+               *  - none (just like a regular message, but displays attachments
+               *    inside, include inline images, which makes the conversations
+               *    sloooooooow)
+               *  - quote (is that useful?)
+               *
+               * See
+               * http://mxr.mozilla.org/comm-central/source/mailnews/mime/src/nsStreamConverter.cpp#467
+               * for other possible values.
+               * */
               let cv = iframe.docShell.contentViewer;
               cv.QueryInterface(Ci.nsIMarkupDocumentViewer);
               cv.hintCharacterSet = "UTF-8";
@@ -844,6 +852,13 @@ document.addEventListener("load", function f_temp0 () {
                 let li = htmlpane.contentDocument.createElement("li");
                 li.textContent = att.name;
                 ul.appendChild(li);
+
+                /* Deal with images */
+                /* if (att.contentType.indexOf("image/") === 0) {
+                  let img = htmlpane.contentDocument.createElement("img");
+                  img.setAttribute("src", att.url);
+                  msgNode.appendChild(img);
+                } */
               }
               areaNode.appendChild(ul);
             }
