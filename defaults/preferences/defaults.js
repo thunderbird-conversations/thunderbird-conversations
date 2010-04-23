@@ -10,7 +10,7 @@ pref("gconversation.button.expand_all", true);
 pref("gconversation.button.collapse_all", true);
 pref("gconversation.button.mark_as_read", true);
 pref("gconversation.button.open_in_new_tab", true);
-pref("gconversation.focus_first", false);
+pref("gconversation.focus_first", true);
 pref("gconversation.reverse_order", false);
 pref("gconversation.auto_fetch", true);
 pref("gconversation.disable_error_empty_collection", false);

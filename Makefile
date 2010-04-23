@@ -25,7 +25,7 @@ dist:
 	mv chrome.manifest.dev chrome.manifest
 
 BRANCH = $(shell git branch | egrep "\\* (.*)" | cut -c 3-)
-DATE = $(shell date +%y%m%d)
+DATE = $(shell date +%Y%m%d%H%M)
 FILENAME = "$(DATE)-$(BRANCH).xpi"
 
 upload:

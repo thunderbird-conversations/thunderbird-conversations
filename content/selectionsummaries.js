@@ -113,16 +113,10 @@ document.addEventListener("load", function f_temp0 () {
         return statusFlagsObj.value;
       }
     } catch (ex) {
-      dump("Enigmail error: "+ex+" --- "+errorMsgObj.value+"\n");
+      myDump("Enigmail error: "+ex+" --- "+errorMsgObj.value+"\n");
       return null;
     }
   }
-
-  /* For debugging purposes */
-  let consoleService = Components.classes["@mozilla.org/consoleservice;1"].getService(Components.interfaces.nsIConsoleService);
-  function myDump(aMsg) {
-    dump(aMsg);
-  };
 
   /* Classic */
   const Ci = Components.interfaces;
@@ -132,6 +126,13 @@ document.addEventListener("load", function f_temp0 () {
   Components.utils.import("resource://gconversation/VariousUtils.jsm");
   Components.utils.import("resource://gconversation/GlodaUtils.jsm");
   Components.utils.import("resource://gconversation/MsgHdrUtils.jsm");
+
+  /* For debugging purposes */
+  let consoleService = Cc["@mozilla.org/consoleservice;1"].getService(Ci.nsIConsoleService);
+  function myDump(aMsg) {
+    dump(aMsg);
+    consoleService.logStringMessage("GCV: "+aMsg);
+  };
 
   /* Various magic values */
   const nsMsgViewIndex_None = 0xffffffff;
@@ -153,8 +154,8 @@ document.addEventListener("load", function f_temp0 () {
   gPrefs["monospaced"] = prefs.getBoolPref("monospaced");
   gPrefs["monospaced_snippets"] = prefs.getBoolPref("monospaced_snippets");
   gPrefs["focus_first"] = prefs.getBoolPref("focus_first");
-  gPrefs["hide_quote_length"] = prefs.getIntPref("hide_quote_length");
   gPrefs["fold_rule"] = prefs.getCharPref("fold_rule");
+  gPrefs["hide_quote_length"] = prefs.getIntPref("hide_quote_length");
   gPrefs["reverse_order"] = prefs.getBoolPref("reverse_order");
   gPrefs["auto_fetch"] = prefs.getBoolPref("auto_fetch");
   gPrefs["auto_mark_read"] = prefs.getBoolPref("auto_mark_read");
@@ -188,7 +189,7 @@ document.addEventListener("load", function f_temp0 () {
           gPrefs["hide_quote_length"] = prefs.getIntPref("hide_quote_length");
           break;
         case "fold_rule":
-          gPrefs["fold_rule"] = prefs.getIntPref("fold_rule");
+          gPrefs["fold_rule"] = prefs.getCharPref("fold_rule");
           break;
         /* Warning this one has no key in gPrefs */
         case "toolbar_text_plus_icons":
@@ -370,14 +371,16 @@ document.addEventListener("load", function f_temp0 () {
           myDump("I'm asked to focus message "+needsFocus+"\n");
           let tKey = msgHdrs[needsFocus].messageKey + msgHdrs[needsFocus].folder.URI;
           /* Because of the header that hides the beginning of the message,
-           * scroll a bit more */
-          let h = document.getElementById("multimessage")
+           * scroll a bit more. XXX unused ? */
+          /* let h = document.getElementById("multimessage")
             .contentDocument.getElementById("headingwrappertable")
-            .getBoundingClientRect().height;
+            .getBoundingClientRect().height; */
           myDump("Scrolling to "+tKey+"\n");
-          /* BEWARE BEWARE BEWARE DO NOT ACCESS AN IFRAME THAT'S NOT BEEN
-           * DISPLAYED AT LEAST ONCE FIRST */
-          document.getElementById("multimessage").contentWindow.scrollTo(0, msgNodes[tKey].offsetTop - 5);
+          /* Don't ask */
+          setTimeout(
+            function ()
+              document.getElementById("multimessage").contentWindow.scrollTo(0, msgNodes[tKey].offsetTop - 5),
+            0);
       }
 
       /* For each message, once the message has been properly set up in the
@@ -1089,7 +1092,9 @@ document.addEventListener("load", function f_temp0 () {
         if (aCollection) {
           clearErrors();
           items = [selectRightMessage(x, gDBView.msgFolder).folderMessage for each (x in removeDuplicates(aCollection.items))];
+          myDump("aCollection is non-null, "+items.length+" messages found\n");
           addPossiblyMissingHeaders(items, aSelectedMessages);
+          myDump("Added missing headers, now "+items.length+" messages found\n");
         } else {
           /* Actually I'm pretty sure the else code path is never taken because
            * when the pref is set, the error message is hidden by the event
@@ -1100,6 +1105,8 @@ document.addEventListener("load", function f_temp0 () {
           /* else
             clearErrors(); */
           items = aItems;
+          myDump("aCollection is null, "+items.length+" messages found\n");
+          myDump("In aSelectedMessages, we have, "+aSelectedMessages.length+" messages\n");
         }
         gSummary = new ThreadSummary(items, aListener);
         gSummary.init();
