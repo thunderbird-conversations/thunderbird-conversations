@@ -352,9 +352,12 @@ document.addEventListener("load", function f_temp0 () {
           }
         }
       } else {
-        let key = gFolderDisplay.selectedMessage.messageKey;
+        let uri = function (msg) msg.folder.getUriForMsg(msg);
+        let key = uri(gFolderDisplay.selectedMessage);
+        myDump("Currently selected message key is "+key+"\n");
         for (let i = 0; i < numMessages; ++i) {
-          if (this._msgHdrs[i].messageKey == key) {
+          myDump("Examining "+uri(this._msgHdrs[i])+"\n");
+          if (uri(this._msgHdrs[i]) == key) {
             needsFocus = i;
             break;
           }
@@ -364,7 +367,7 @@ document.addEventListener("load", function f_temp0 () {
       /* Create a closure that can be called later when all the messages have
        * been properly loaded, all the iframes resized to fit. When the page
        * won't scroll anymore, we manually set the message we want into view. */
-      myDump(numMessages+" message total, focusing "+needsFocus+"\n");
+      myDump(numMessages+" messages total, focusing "+needsFocus+"\n");
       let msgHdrs = this._msgHdrs;
       let msgNodes = this._msgNodes;
       function scrollMessageIntoView (needsFocus) {
@@ -389,8 +392,9 @@ document.addEventListener("load", function f_temp0 () {
        * That way, no more reflows after we have scrolled to the right message. */
       let nMessagesDone = numMessages;
       function messageDone() {
+        myDump("messageDone()\n");
         nMessagesDone--;
-        if (nMessagesDone == 0 && needsFocus > 0)
+        if (nMessagesDone == 0 && needsFocus >= 0)
           scrollMessageIntoView(needsFocus);
       }
 
