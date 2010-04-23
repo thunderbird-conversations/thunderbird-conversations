@@ -350,6 +350,14 @@ document.addEventListener("load", function f_temp0 () {
             break;
           }
         }
+      } else {
+        let key = gFolderDisplay.selectedMessage.messageKey;
+        for (let i = 0; i < numMessages; ++i) {
+          if (this._msgHdrs[i].messageKey == key) {
+            needsFocus = i;
+            break;
+          }
+        }
       }
 
       /* Create a closure that can be called later when all the messages have
@@ -606,7 +614,7 @@ document.addEventListener("load", function f_temp0 () {
 
         /* Now we're registered the event listeners, the message is folded by
          * default. If we're supposed to unfold it, do it now */
-        if ((gPrefs["fold_rule"] == "unread_and_last" && (!msgHdr.isRead || i == (numMessages - 1))) ||
+        if ((gPrefs["fold_rule"] == "unread_and_last" && (!msgHdr.isRead || i == needsFocus)) ||
             (gPrefs["fold_rule"] == "all")) {
           try {
             toggleMessage();
