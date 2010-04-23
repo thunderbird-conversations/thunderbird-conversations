@@ -34,7 +34,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var EXPORTED_SYMBOLS = ['selectRightMessage', 'removeDuplicates',
+var EXPORTED_SYMBOLS = ['selectRightMessage', 'groupMessages',
 'convertHotmailQuotingToBlockquote1', 'convertHotmailQuotingToBlockquote2',
 'convertOutlookQuotingToBlockquote', '_mm_toggleClass', '_mm_hasClass',
 'convertForwardedToBlockquote', 'fusionBlockquotes']
@@ -92,6 +92,9 @@ function insertAfter(newElement, referenceElt) {
  * - the message that's in the "Sent" folder (GMail sent messages also appear
  *   in "All Mail")
  * - the message that's not in the Archives
+ *
+ * Warniiiiiiiiiiiiiiiiiiiiiiiiiiiiiing this may return null (now, cry with me).
+ * But the non-null messages also have non-null folderMessage(s)
  */
 function selectRightMessage(similar, currentFolder) {
   let msgHdr;
@@ -124,8 +127,14 @@ function selectRightMessage(similar, currentFolder) {
       }
     }
   }
-  if (!msgHdr)
-    msgHdr = similar[0];
+  if (!msgHdr) {
+    for each (let m in similar) {
+      if (m.folderMessage) {
+        msgHdr = m;
+        break;
+      }
+    }
+  }
   return msgHdr;
 }
 
@@ -142,12 +151,12 @@ function _removeDuplicates(f, items) {
       similar[id].push(item);
     }
   }
-  return [similar[id] for each (id in orderedIds)];
+  return [similar[id] for each ([, id] in Iterator(orderedIds))];
 }
 
 /* Group GlodaMessages by Message-Id header.
  * Returns an array [[similar items], [other similar items], ...]. */
-function removeDuplicates(items) _removeDuplicates(function (item) item.headerMessageID, items)
+function groupMessages(items) _removeDuplicates(function (item) item.headerMessageID, items)
 
 /* Group nsIMsgDbHdrs by Message-Id header.
  * Returns an array [[similar items], [other similar items], ...]. */

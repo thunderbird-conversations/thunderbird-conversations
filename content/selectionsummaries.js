@@ -1095,7 +1095,9 @@ document.addEventListener("load", function f_temp0 () {
         };
         if (aCollection) {
           clearErrors();
-          items = [selectRightMessage(x, gDBView.msgFolder).folderMessage for each (x in removeDuplicates(aCollection.items))];
+          items = [selectRightMessage(x, gDBView.msgFolder) for each ([, x] in Iterator(groupMessages(aCollection.items)))];
+          items = items.filter(function (x) x);
+          items = items.map(function (x) x.folderMessage);
           myDump("aCollection is non-null, "+items.length+" messages found\n");
           addPossiblyMissingHeaders(items, aSelectedMessages);
           myDump("Added missing headers, now "+items.length+" messages found\n");
@@ -1193,7 +1195,8 @@ document.addEventListener("load", function f_temp0 () {
         function (aCollection, aItems, aMsg) {
           let tabmail = document.getElementById("tabmail");
           if (aCollection) {
-            aCollection.items = [selectRightMessage(m) for each (m in removeDuplicates(aCollection.items))];
+            aCollection.items = [selectRightMessage(m) for each ([, m] in Iterator(groupMessages(aCollection.items)))];
+            aCollection.items = aCollection.items.filter(function (x) x);
             tabmail.openTab("glodaList", {
               collection: aCollection,
               message: aMsg,
@@ -1346,17 +1349,20 @@ document.addEventListener("load", function f_temp0 () {
         return;
       }
       let msgHdr = msgService.messageURIToMsgHdr(aLocation.QueryInterface(Ci.nsIMsgMessageUrl).uri);
+      /* We need to fork the code a little bit here because we can't activate
+       * the multimessage view unless we're really sure that we've got more than
+       * one message */
       pullConversation(
         [msgHdr],
         function (aCollection, aItems, aMsg) {
           if (aCollection) {
-            let items = removeDuplicates(aCollection.items);
+            let items = groupMessages(aCollection.items);
             if (items.length <= 1)
               return;
-            let gSummary = new ThreadSummary(
-              [selectRightMessage(x, gDBView.msgFolder).folderMessage for each (x in items)],
-              null
-            );
+            let rightMessages = [selectRightMessage(x, gDBView.msgFolder) for each ([, x] in Iterator(items))];
+            rightMessages = rightMessages.filter(function (x) x);
+            rightMessages = rightMessages.map(function (x) x.folderMessage);
+            let gSummary = new ThreadSummary(rightMessages, null);
             gMessageDisplay.singleMessageDisplay = false;
             try {
               gSummary.init();
