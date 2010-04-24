@@ -35,7 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 var EXPORTED_SYMBOLS = ['messageBodyFromMsgHdr', 'msgHdrToNeckoURL', 'msgHdrIsDraft',
-'msgHdrsMarkAsRead', 'msgHdrsArchive', 'msgHdrsDelete']
+'msgHdrsMarkAsRead', 'msgHdrsArchive', 'msgHdrsDelete', 'msgHdrMarkAsJunk']
 
 const Ci = Components.interfaces;
 const Cc = Components.classes;
@@ -164,4 +164,55 @@ function msgHdrsArchive(msgHdrs, aWindow) {
     batchMover.archiveMessages(msgHdrs);
   else
     batchMover.archiveSelectedMessages();
+}
+
+function msgHdrMarkAsJunk(msgHdr) {
+/* 2733   nsCOMPtr<nsIJunkMailPlugin> junkPlugin;
+2734 
+2735   // if this is a junk command, get the junk plugin.
+2736   if (command == nsMsgViewCommandType::junk ||
+2737       command == nsMsgViewCommandType::unjunk)
+2738   {
+2739     // get the folder from the first item; we assume that
+2740     // all messages in the view are from the same folder (no
+2741     // more junk status column in the 'search messages' dialog
+2742     // like in earlier versions...)
+2743 
+2744      nsCOMPtr<nsIMsgIncomingServer> server;
+2745      rv = folder->GetServer(getter_AddRefs(server));
+2746      NS_ENSURE_SUCCESS(rv, rv);
+2747 
+2748     nsCOMPtr<nsIMsgFilterPlugin> filterPlugin;
+2749     rv = server->GetSpamFilterPlugin(getter_AddRefs(filterPlugin));
+2750     NS_ENSURE_SUCCESS(rv, rv);
+2751 
+2752     junkPlugin = do_QueryInterface(filterPlugin, &rv);
+2753     NS_ENSURE_SUCCESS(rv, rv);
+2754     if (!mJunkHdrs)
+2755     {
+2756       mJunkHdrs = do_CreateInstance(NS_ARRAY_CONTRACTID, &rv);
+2757       NS_ENSURE_SUCCESS(rv,rv);
+2758     }
+2759   }
+
+
+  2817       case nsMsgViewCommandType::junk:
+2818         mNumMessagesRemainingInBatch++;
+2819         mJunkHdrs->AppendElement(msgHdr, PR_FALSE);
+2820         rv = SetMsgHdrJunkStatus(junkPlugin.get(), msgHdr,
+2821                                  nsIJunkMailPlugin::JUNK);
+2822         break;
+
+  2837     // Provide junk-related batch notifications
+2838     if ((command == nsMsgViewCommandType::junk) &&
+2839         (command == nsMsgViewCommandType::unjunk)) {
+2840       nsCOMPtr<nsIMsgFolderNotificationService>
+2841         notifier(do_GetService(NS_MSGNOTIFICATIONSERVICE_CONTRACTID));
+2842       if (notifier)
+2843         notifier->NotifyItemEvent(messages,
+2844                                   NS_LITERAL_CSTRING("JunkStatusChanged"),
+2845                                   (command == nsMsgViewCommandType::junk) ?
+2846                                     kJunkMsgAtom : kNotJunkMsgAtom);
+2847     } */
+
 }

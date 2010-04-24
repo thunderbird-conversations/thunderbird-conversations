@@ -131,7 +131,8 @@ document.addEventListener("load", function f_temp0 () {
   let consoleService = Cc["@mozilla.org/consoleservice;1"].getService(Ci.nsIConsoleService);
   function myDump(aMsg) {
     dump(aMsg);
-    consoleService.logStringMessage("GCV: "+aMsg);
+    if (consoleService)
+      consoleService.logStringMessage("GCV: "+aMsg);
   };
 
   /* Various magic values */
@@ -478,19 +479,19 @@ document.addEventListener("load", function f_temp0 () {
               <div class="plaintextmsg" style="display: none;"></div>
               <div class="snippet htmlmsg" style="" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"></div>
               <hbox class="button-action-area" align="start" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:html="http://www.w3.org/1999/xhtml">
-                <button class="button">{replyTxt}</button>
-                <button class="button">{forwardTxt}</button>
+                <button class="button button-reply">{replyTxt}</button>
+                <button class="button button-forward">{forwardTxt}</button>
                 <button class="button" type="menu">
                   More Actions
                   <menupopup>
-                    <menuitem>{editNew}</menuitem>
-                    <menuitem>{replyList}</menuitem>
+                    <menuitem class="menu-editNew">{editNew}</menuitem>
+                    <menuitem class="menu-replyList">{replyList}</menuitem>
                   </menupopup>
                 </button>
                 <spacer flex="1" />
-                <button class="button">{markSpamTxt}</button>
-                <button class="button button-archive">{archiveTxt}</button>
-                <button class="button">{deleteTxt}</button>
+                <button class="button button-markSpam">{markSpamTxt}</button>
+                <button disabled="true" class="button button-archive">{archiveTxt}</button>
+                <button class="button button-delete">{deleteTxt}</button>
               </hbox>
             </div>
           </div>;
@@ -545,8 +546,6 @@ document.addEventListener("load", function f_temp0 () {
         let plainTextMsgNode = msgNode.getElementsByClassName("plaintextmsg")[0];
         let snippetMsgNode = msgNode.getElementsByClassName("snippetmsg")[0];
         let toggleFontNode = msgNode.getElementsByClassName("toggle-font")[0];
-        let deleteNode = msgNode.getElementsByClassName("delete-msg")[0];
-        let markReadNode = msgNode.getElementsByClassName("mark-read")[0];
         let actionNode = msgNode.getElementsByClassName("link-action-area")[0];
 
         /* Register collapse/expand handlers */
@@ -559,14 +558,6 @@ document.addEventListener("load", function f_temp0 () {
         senderNode.innerHTML = senderName;
         recipientsNode.innerHTML =
           ccNames ? recipientsNames + ", " + ccNames : recipientsNames;
-
-        /* Register small event listeners */
-        deleteNode.addEventListener("click", function deletenode_listener (event) {
-          msgHdrsDelete([msgHdr]);
-        }, true);
-        markReadNode.addEventListener("click", function markreadnode_listener (event) {
-          msgHdrsMarkAsRead([msgHdr], !msgHdr.isRead);
-        }, true);
 
         /* Style according to the preferences. Preferences have an observer, see
          * above for details. */
@@ -883,6 +874,10 @@ document.addEventListener("load", function f_temp0 () {
                 ul.appendChild(li);
 
                 /* Deal with images */
+                /* See
+                 * http://mxr.mozilla.org/comm-central/source/mail/base/content/msgHdrViewOverlay.js#1993
+                 * http://mxr.mozilla.org/comm-central/source/mail/base/content/msgHdrViewOverlay.xul#76
+                 * for the relevant actions */
                 /* if (att.contentType.indexOf("image/") === 0) {
                   let img = htmlpane.contentDocument.createElement("img");
                   img.setAttribute("src", att.url);
@@ -964,20 +959,23 @@ document.addEventListener("load", function f_temp0 () {
             ComposeMessage(aCompType, Ci.nsIMsgCompFormat.Default, msgHdr.folder, [uri]);
           }
         };
-        let linkReply = msgNode.getElementsByClassName("link-reply")[0];
-        linkReply.addEventListener("click", function (event) {
+        let register = function register_ (selector, f, action) {
+          if (!action)
+            action = "click";
+          for each (let [, node] in Iterator(msgNode.querySelectorAll(selector)))
+            node.addEventListener(action, f, true);
+        }
+        register(".link-reply, .button-reply", function (event) {
             /* XXX this code should adapt when news messages have a JS
              * representation. See
              * http://mxr.mozilla.org/comm-central/source/mail/base/content/mailWindowOverlay.js#1259
              * */
             compose(Ci.nsIMsgCompType.ReplyToSender, event);
-          }, true);
-        let linkReplyAll = msgNode.getElementsByClassName("link-reply-all")[0];
-        linkReplyAll.addEventListener("click", function (event) {
+          });
+        register(".link-reply-all", function (event) {
             compose(Ci.nsIMsgCompType.ReplyAll, event);
-          }, true);
-        let linkForward = msgNode.getElementsByClassName("link-forward")[0];
-        linkForward.addEventListener("click", function (event) {
+          });
+        register(".link-forward, .button-forward", function (event) {
             let forwardType = 0;
             try {
               forwardType = gPrefBranch.getIntPref("mail.forward_message_mode");
@@ -988,15 +986,23 @@ document.addEventListener("load", function f_temp0 () {
               compose(Ci.nsIMsgCompType.ForwardAsAttachment, event);
             else
               compose(Ci.nsIMsgCompType.ForwardInline, event);
-          }, true);
-        /* let linkReplyList = msgNode.getElementsByClassName("link-reply-list")[0];
-        linkReplyList.addEventListener("click", function (event) {
+          });
+        register(".menu-replyList", function (event) {
             compose(Ci.nsIMsgCompType.ReplyToList, event);
-          }, true);
-        let linkEditNew = msgNode.getElementsByClassName("link-edit-new")[0];
-        linkEditNew.addEventListener("click", function (event) {
+          });
+        register(".menu-editNew", function (event) {
             compose(Ci.nsIMsgCompType.Template, event);
-          }, true); */
+          });
+        register(".action.delete-msg, .button-delete", function deletenode_listener (event) {
+            msgHdrsDelete([msgHdr]);
+          });
+        register(".action.mark-read", function markreadnode_listener (event) {
+            msgHdrsMarkAsRead([msgHdr], !msgHdr.isRead);
+          });
+        register(".button-markSpam", function markspam_listener (event) {
+            msgHdrMarkAsJunk(msgHdr);
+          }),
+
 
         myDump("*** Completed message "+i+"\n");
       }
