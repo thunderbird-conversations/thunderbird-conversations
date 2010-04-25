@@ -231,7 +231,8 @@ a.action:hover {
   display: inline-block;
   height: 16px;
   width: 16px;
-  background-image: url(chrome://enigmail/skin/enigSignUnknown.png);
+  /* Yes the original Enigmail image DOES HAVE a typo */
+  background-image: url(chrome://enigmail/skin/enigSignUnkown.png);
   background-repeat: no-repeat;
   vertical-align: middle;
 }

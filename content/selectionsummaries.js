@@ -131,7 +131,7 @@ document.addEventListener("load", function f_temp0 () {
   let consoleService = Cc["@mozilla.org/consoleservice;1"].getService(Ci.nsIConsoleService);
   function myDump(aMsg) {
     dump(aMsg);
-    if (consoleService)
+    if (false && consoleService)
       consoleService.logStringMessage("GCV: "+aMsg);
   };
 
@@ -676,19 +676,21 @@ document.addEventListener("load", function f_temp0 () {
                         if (c.getUserData("hideme") !== false) { /* null is ok, true is ok too */
                           /* Compute the approximate number of lines while the element is still visible */
                           let style = iframe.contentWindow.getComputedStyle(c, null);
-                          let numLines = parseInt(style.height) / parseInt(style.lineHeight);
-                          if (numLines > gPrefs["hide_quote_length"]) {
-                            let div = iframeDoc.createElement("div");
-                            div.setAttribute("class", "link showhidequote");
-                            div.addEventListener("click", function div_listener (event) {
-                                let h = htmlpane.contentWindow.toggleQuote(event);
-                                iframe.style.height = (parseInt(iframe.style.height) + h)+"px";
-                              }, true);
-                            div.setAttribute("style", "color: #512a45; cursor: pointer; font-size: small;");
-                            div.appendChild(document.createTextNode("- "+
-                              stringBundle.getString("showquotedtext")+" -"));
-                            elt.insertBefore(div, c);
-                            c.style.display = "none";
+                          if (style) {
+                            let numLines = parseInt(style.height) / parseInt(style.lineHeight);
+                            if (numLines > gPrefs["hide_quote_length"]) {
+                              let div = iframeDoc.createElement("div");
+                              div.setAttribute("class", "link showhidequote");
+                              div.addEventListener("click", function div_listener (event) {
+                                  let h = htmlpane.contentWindow.toggleQuote(event);
+                                  iframe.style.height = (parseInt(iframe.style.height) + h)+"px";
+                                }, true);
+                              div.setAttribute("style", "color: #512a45; cursor: pointer; font-size: small;");
+                              div.appendChild(document.createTextNode("- "+
+                                stringBundle.getString("showquotedtext")+" -"));
+                              elt.insertBefore(div, c);
+                              c.style.display = "none";
+                            }
                           }
                         }
                       } else {
@@ -717,6 +719,17 @@ document.addEventListener("load", function f_temp0 () {
                     ));
                   iframeDoc.body.previousSibling.appendChild(style);
 
+                  /* Hello, Enigmail. Do that now, because decrypting a message
+                   * will change its height. */
+                  if (iframeDoc.body.textContent.length > 0 && hasEnigmail) {
+                    let status = tryEnigmail(iframeDoc.body);
+                    if (status & Ci.nsIEnigmail.DECRYPTION_OKAY)
+                      msgNode.getElementsByClassName("enigmail-enc-ok")[0].style.display = "";
+                    if (status & Ci.nsIEnigmail.GOOD_SIGNATURE)
+                      msgNode.getElementsByClassName("enigmail-sign-ok")[0].style.display = "";
+                    if (status & Ci.nsIEnigmail.UNKNOWN_SIGNATURE)
+                      msgNode.getElementsByClassName("enigmail-sign-unknown")[0].style.display = "";
+                  }
 
                   /* Add an event listener for the button that toggles the style of the
                    * font. Only if we seem to be able to implement it (i.e. we
@@ -740,18 +753,6 @@ document.addEventListener("load", function f_temp0 () {
                     toggleFontNode.addEventListener("click", toggleFontStyle, true);
                     /* Show the small icon */
                     toggleFontNode.style.display = "";
-                  }
-
-                  /* Hello, Enigmail. Do that now, because decrypting a message
-                   * will change its height. */
-                  if (iframeDoc.body.textContent.length > 0 && hasEnigmail) {
-                    let status = tryEnigmail(iframeDoc.body);
-                    if (status & Ci.nsIEnigmail.DECRYPTION_OKAY)
-                      msgNode.getElementsByClassName("enigmail-enc-ok")[0].style.display = "";
-                    if (status & Ci.nsIEnigmail.GOOD_SIGNATURE)
-                      msgNode.getElementsByClassName("enigmail-sign-ok")[0].style.display = "";
-                    if (status & Ci.nsIEnigmail.UNKNOWN_SIGNATURE)
-                      msgNode.getElementsByClassName("enigmail-sign-unknown")[0].style.display = "";
                   }
 
                   /* Everything's done, so now we're able to settle for a height. */
