@@ -494,6 +494,7 @@ document.addEventListener("load", function f_temp0 () {
                 <button class="button button-delete">{deleteTxt}</button>
               </hbox>
             </div>
+            <div class="grip" />
           </div>;
 
         let msgNode = htmlpane.contentDocument.createElement("div");
@@ -546,7 +547,6 @@ document.addEventListener("load", function f_temp0 () {
         let plainTextMsgNode = msgNode.getElementsByClassName("plaintextmsg")[0];
         let snippetMsgNode = msgNode.getElementsByClassName("snippetmsg")[0];
         let toggleFontNode = msgNode.getElementsByClassName("toggle-font")[0];
-        let actionNode = msgNode.getElementsByClassName("link-action-area")[0];
 
         /* Register collapse/expand handlers */
         snippetMsgNode.addEventListener("click", toggleMessage, true);
@@ -1003,6 +1003,8 @@ document.addEventListener("load", function f_temp0 () {
         register(".button-markSpam", function markspam_listener (event) {
             msgHdrMarkAsJunk(msgHdr);
           }),
+        register(".grip", toggleMessage);
+        register(".row", toggleMessage, "dblclick");
 
 
         myDump("*** Completed message "+i+"\n");

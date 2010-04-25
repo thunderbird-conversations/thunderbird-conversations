@@ -398,21 +398,22 @@ a.action:hover {
   font-weight: bold;
 }
 
-.messagearrow {
-  width: 10%;
-  margin: auto 45%;
-  height: 16px;
+.grip {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
   position: absolute;
-  bottom: -8px;
-  left: 0;
-  text-align: center;
-}
-
-.msgarrow {
+  bottom: 0;
+  right: 0;
   cursor: pointer;
+  background-image: url(chrome://gconversation/skin/grip.png);
+  background-repeat: none;
+  background-position: top left;
 }
 
-
+.message.collapsed .grip {
+  display: none;
+}
 
 /* Error */
 
