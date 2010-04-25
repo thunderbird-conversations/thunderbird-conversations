@@ -407,12 +407,71 @@ a.action:hover {
   right: 0;
   cursor: pointer;
   background-image: url(chrome://gconversation/skin/grip.png);
-  background-repeat: none;
+  background-repeat: no-repeat;
   background-position: top left;
 }
 
 .message.collapsed .grip {
   display: none;
+}
+
+/* Attachments Box */
+
+.message.collapsed .attachments-box {
+  display: none;
+}
+
+.attachment-box {
+  width: 350px;
+  -moz-border-radius: 3px;
+  background-color: lightsteelblue;
+  margin: 1em 0em;
+  border: 1px solid steelblue;
+  padding: 1em;
+}
+
+.image-attachment-box {
+  width: 600px; /* Change the td's width too if you change this */
+}
+
+.attachment-box > table {
+  width:		100%;
+  font-size: 		small;
+  color: 		#fefefe;
+}
+
+.attachment-box > table > tbody > tr {
+  vertical-align:	middle;
+}
+
+.attachment-box > table > tbody > tr > td {
+  text-align:		center;
+}
+
+.image-attachment-box > table > tbody > tr > td:first-child {
+  width: 360px; /* Calculated relative to .image-attachment-box */
+}
+
+.image-attachment-box > table > tbody > tr > td:nth-child(2) {
+  width: 240px;
+}
+
+.image-attachment-box > table > tbody > tr > td > img {
+  max-width: 360px;
+}
+
+.attachment-box > table > tbody > tr > td > p > .attachment-link {
+  color:		#222;
+  font-weight:		bold;
+}
+
+.single-attachment-actions {
+  text-align: center;
+}
+
+.attachments-box > hr {
+  border: 1px solid #eee;
+  background-color: #eee;
 }
 
 /* Error */

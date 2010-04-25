@@ -154,13 +154,13 @@ document.addEventListener("load", function f_temp0 () {
   let gPrefs = {};
   gPrefs["monospaced"] = prefs.getBoolPref("monospaced");
   gPrefs["monospaced_snippets"] = prefs.getBoolPref("monospaced_snippets");
-  gPrefs["focus_first"] = prefs.getBoolPref("focus_first");
-  gPrefs["fold_rule"] = prefs.getCharPref("fold_rule");
   gPrefs["hide_quote_length"] = prefs.getIntPref("hide_quote_length");
+  gPrefs["fold_rule"] = prefs.getCharPref("fold_rule");
+  gPrefs["focus_first"] = prefs.getBoolPref("focus_first");
   gPrefs["reverse_order"] = prefs.getBoolPref("reverse_order");
   gPrefs["auto_fetch"] = prefs.getBoolPref("auto_fetch");
-  gPrefs["auto_mark_read"] = prefs.getBoolPref("auto_mark_read");
   gPrefs["disable_error_empty_collection"] = prefs.getBoolPref("disable_error_empty_collection");
+  gPrefs["auto_mark_read"] = prefs.getBoolPref("auto_mark_read");
   gPrefs["monospaced_senders"] = prefs.getCharPref("monospaced_senders").split(",");
 
   let myPrefObserver = {
@@ -478,6 +478,7 @@ document.addEventListener("load", function f_temp0 () {
               <div class="snippet snippetmsg"></div>
               <div class="plaintextmsg" style="display: none;"></div>
               <div class="snippet htmlmsg" style="" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"></div>
+              <div class="attachments-box-handler" />
               <hbox class="button-action-area" align="start" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:html="http://www.w3.org/1999/xhtml">
                 <button class="button button-reply">{replyTxt}</button>
                 <button class="button button-forward">{forwardTxt}</button>
@@ -489,7 +490,7 @@ document.addEventListener("load", function f_temp0 () {
                   </menupopup>
                 </button>
                 <spacer flex="1" />
-                <button class="button button-markSpam">{markSpamTxt}</button>
+                <button disabled="true" class="button button-markSpam">{markSpamTxt}</button>
                 <button disabled="true" class="button button-archive">{archiveTxt}</button>
                 <button class="button button-delete">{deleteTxt}</button>
               </hbox>
@@ -860,12 +861,12 @@ document.addEventListener("load", function f_temp0 () {
             let [snippet, meta] = mimeMsgToContentSnippetAndMeta(aMimeMsg, aMsgHdr.folder, SNIPPET_LENGTH);
             let [plainTextBody, ] = mimeMsgToContentAndMeta(aMimeMsg, aMsgHdr.folder);
             let attachments = MimeMessageGetAttachments(aMimeMsg);
+            let attachmentsTxt = stringBundle.getString("attachments");
             if (attachments.length > 0) {
               /* That's for the short paperclip icon */
               let attachmentNode = msgNode.getElementsByClassName("attachment")[0];
               attachmentNode.style.display = "";
               /* And for the longer description */
-              let attachmentsTxt = stringBundle.getString("attachments");
               let areaNode = msgNode.getElementsByClassName("attachments-area")[0];
               areaNode.textContent = attachmentsTxt + " ("+attachments.length+")";
               let ul = htmlpane.contentDocument.createElement("ul");
@@ -873,19 +874,98 @@ document.addEventListener("load", function f_temp0 () {
                 let li = htmlpane.contentDocument.createElement("li");
                 li.textContent = att.name;
                 ul.appendChild(li);
-
-                /* Deal with images */
-                /* See
-                 * http://mxr.mozilla.org/comm-central/source/mail/base/content/msgHdrViewOverlay.js#1993
-                 * http://mxr.mozilla.org/comm-central/source/mail/base/content/msgHdrViewOverlay.xul#76
-                 * for the relevant actions */
-                /* if (att.contentType.indexOf("image/") === 0) {
-                  let img = htmlpane.contentDocument.createElement("img");
-                  img.setAttribute("src", att.url);
-                  msgNode.appendChild(img);
-                } */
               }
               areaNode.appendChild(ul);
+
+              /* Since this triggers a lot of downloads, we have to be lazy
+               * about it */
+              let displayFullAttachments = function () {
+                let saveTxt = stringBundle.getString("attachment-save");
+                let saveAllTxt = stringBundle.getString("attachment-saveall");
+                /* Create a box at the bottom for attachments */
+                let attachmentsBox =
+                  <div class="attachments-box">
+                    <hr />
+                    <div class="attachment-actions-box">
+                      <span class="attachments-summary" />
+                      <button class="save-all">{saveAllTxt}</button>
+                    </div>
+                  </div>;
+                msgNode.getElementsByClassName("attachments-box-handler")[0].innerHTML =
+                  attachmentsBox.toXMLString();
+                let attBoxNode = msgNode.getElementsByClassName("attachments-box")[0];
+                attBoxNode.getElementsByClassName("attachments-summary")[0].textContent =
+                  attachments.length + " " + attachmentsTxt;
+
+                let theAttachments = [];
+                for each (let [, att] in Iterator(attachments)) {
+                  /* Gather a lot of information about that attachment */
+                  let ioService = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
+                  let neckoURL = null;
+                  neckoURL = ioService.newURI(att.url, null, null);
+                  neckoURL.QueryInterface(Ci.nsIMsgMessageUrl);
+                  let uri = neckoURL.uri;
+                  let size = "0 mb";
+
+                  /* Keep track of all the given attachments to a single message */
+                  let attInfo = new createNewAttachmentInfo(
+                    att.contentType, att.url, att.name, uri, att.isExternal
+                    );
+                  theAttachments.push(attInfo);
+
+                  let singleBox = htmlpane.contentDocument.createElement("div");
+                  /* See
+                   * http://mxr.mozilla.org/comm-central/source/mail/base/content/msgHdrViewOverlay.js#1993
+                   * http://mxr.mozilla.org/comm-central/source/mail/base/content/msgHdrViewOverlay.xul#76
+                   * for the relevant actions */
+                  if (att.contentType.indexOf("image/") === 0) {
+                    singleBoxContents =
+                      <div class="attachment-box image-attachment-box">
+                        <table><tbody><tr>
+                        <td><img src={att.url} /></td>
+                        <td>
+                          <p><span class="attachment-link link">{att.name}</span></p>
+                          <p>{size}</p>
+                          <p>
+                            <button class="save">{saveTxt}</button>
+                          </p>
+                        </td>
+                        </tr></tbody></table>
+                      </div>;
+                  } else {
+                    singleBoxContents =
+                      <div class="attachment-box">
+                        <table><tbody><tr>
+                        <td>
+                          <p><span class="attachment-link link">{att.name}</span></p>
+                          <p>{size}</p>
+                          <p>
+                            <button class="save">{saveTxt}</button>
+                          </p>
+                        </td>
+                        </tr></tbody></table>
+                      </div>;
+                  }
+                  singleBox.innerHTML = singleBoxContents.toXMLString();
+                  attBoxNode.appendChild(singleBox);
+                  singleBox.getElementsByClassName("attachment-link")[0].addEventListener("click",
+                    function (event) {
+                      HandleMultipleAttachments([attInfo], "open");
+                    }, true);
+                  singleBox.getElementsByClassName("save")[0].addEventListener("click",
+                    function (event) {
+                      HandleMultipleAttachments([attInfo], "save");
+                    }, true);
+                }
+                attBoxNode.getElementsByClassName("save-all")[0].addEventListener("click",
+                  function (event) {
+                    HandleMultipleAttachments(theAttachments, "save");
+                  }, true);
+              };
+              if (messageIsCollapsed())
+                callOnceAfterToggle(displayFullAttachments);
+              else
+                displayFullAttachments();
             }
 
             plainTextMsgNode.textContent = plainTextBody.getContentString();
@@ -896,7 +976,8 @@ document.addEventListener("load", function f_temp0 () {
             // Offline messages generate exceptions, which is unfortunate.  When
             // that's fixed, this code should adapt. XXX
             /* --> Try to deal with that. Try to come up with something that
-             * remotely looks like a snippet. */
+             * remotely looks like a snippet. Don't link attachments, do
+             * nothing, I won't duplicate my code here, let's stay sane. */
             let body = messageBodyFromMsgHdr(msgHdr, true);
             let snippet = body.substring(0, SNIPPET_LENGTH-3)+"...";
             snippetMsgNode.textContent = snippet;
@@ -963,7 +1044,8 @@ document.addEventListener("load", function f_temp0 () {
         let register = function register_ (selector, f, action) {
           if (!action)
             action = "click";
-          for each (let [, node] in Iterator(msgNode.querySelectorAll(selector)))
+          let nodes = selector ? msgNode.querySelectorAll(selector) : [msgNode];
+          for each (let [, node] in Iterator(nodes))
             node.addEventListener(action, f, true);
         }
         register(".link-reply, .button-reply", function (event) {
@@ -1004,7 +1086,7 @@ document.addEventListener("load", function f_temp0 () {
             msgHdrMarkAsJunk(msgHdr);
           }),
         register(".grip", toggleMessage);
-        register(".row", toggleMessage, "dblclick");
+        register(null, toggleMessage, "dblclick");
 
 
         myDump("*** Completed message "+i+"\n");
