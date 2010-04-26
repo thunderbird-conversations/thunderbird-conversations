@@ -136,6 +136,10 @@ body {
   display: inline;
 }
 
+.message.collapsed .msgheader-from-to {
+  padding-right: 5em; /* That should leave some space for the date */
+}
+
 .message.collapsed .notification-icons {
   margin: 0;
   font-size: large;

@@ -933,9 +933,11 @@ document.addEventListener("load", function f_temp0 () {
                         </tr></tbody></table>
                       </div>;
                   } else {
+                    let imgSrc = "moz-icon://" + att.displayName + "?size=" + 32 + "&contentType=" + att.contentType;
                     singleBoxContents =
                       <div class="attachment-box">
                         <table><tbody><tr>
+                        <td><img src={imgSrc} /></td>
                         <td>
                           <p><span class="attachment-link link">{att.name}</span></p>
                           <p>{size}</p>
@@ -957,13 +959,14 @@ document.addEventListener("load", function f_temp0 () {
                       HandleMultipleAttachments([attInfo], "save");
                     }, true);
                   if (att.contentType.indexOf("image/") === 0) {
+                    let url = att.url;
                     singleBox.getElementsByClassName("image-attachment-preview")[0].addEventListener("click",
                       function (event) {
                         Cc['@mozilla.org/appshell/window-mediator;1'].getService(Ci.nsIWindowMediator).
                         getMostRecentWindow("mail:3pane").
                         document.getElementById("tabmail").openTab(
                           "contentTab",
-                          { contentPage: att.url });
+                          { contentPage: url });
                       }, true);
                   }
                 }
