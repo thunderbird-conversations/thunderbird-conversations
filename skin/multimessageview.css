@@ -421,6 +421,10 @@ a.action:hover {
   display: none;
 }
 
+.attachments-summary {
+  margin-right: 1em;
+}
+
 .attachment-box {
   width: 350px;
   -moz-border-radius: 3px;
@@ -431,7 +435,7 @@ a.action:hover {
 }
 
 .image-attachment-box {
-  width: 600px; /* Change the td's width too if you change this */
+  width: 500px; /* Change the td's width too if you change this */
 }
 
 .attachment-box > table {
@@ -449,15 +453,19 @@ a.action:hover {
 }
 
 .image-attachment-box > table > tbody > tr > td:first-child {
-  width: 360px; /* Calculated relative to .image-attachment-box */
+  width: 300px; /* Calculated relative to .image-attachment-box */
 }
 
 .image-attachment-box > table > tbody > tr > td:nth-child(2) {
-  width: 240px;
+  width: 200px;
 }
 
 .image-attachment-box > table > tbody > tr > td > img {
-  max-width: 360px;
+  max-width: 300px;
+}
+
+.image-attachment-preview {
+  cursor: pointer;
 }
 
 .attachment-box > table > tbody > tr > td > p > .attachment-link {

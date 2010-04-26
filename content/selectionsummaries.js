@@ -922,7 +922,7 @@ document.addEventListener("load", function f_temp0 () {
                     singleBoxContents =
                       <div class="attachment-box image-attachment-box">
                         <table><tbody><tr>
-                        <td><img src={att.url} /></td>
+                        <td><img src={att.url} class="image-attachment-preview" /></td>
                         <td>
                           <p><span class="attachment-link link">{att.name}</span></p>
                           <p>{size}</p>
@@ -956,6 +956,16 @@ document.addEventListener("load", function f_temp0 () {
                     function (event) {
                       HandleMultipleAttachments([attInfo], "save");
                     }, true);
+                  if (att.contentType.indexOf("image/") === 0) {
+                    singleBox.getElementsByClassName("image-attachment-preview")[0].addEventListener("click",
+                      function (event) {
+                        Cc['@mozilla.org/appshell/window-mediator;1'].getService(Ci.nsIWindowMediator).
+                        getMostRecentWindow("mail:3pane").
+                        document.getElementById("tabmail").openTab(
+                          "contentTab",
+                          { contentPage: att.url });
+                      }, true);
+                  }
                 }
                 attBoxNode.getElementsByClassName("save-all")[0].addEventListener("click",
                   function (event) {
