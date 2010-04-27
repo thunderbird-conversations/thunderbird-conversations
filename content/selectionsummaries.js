@@ -380,8 +380,16 @@ document.addEventListener("load", function f_temp0 () {
           myDump("Scrolling to "+tKey+"\n");
           /* Don't ask */
           setTimeout(
-            function ()
-              document.getElementById("multimessage").contentWindow.scrollTo(0, msgNodes[tKey].offsetTop - 5),
+            function () {
+              let mm = document.getElementById("multimessage");
+              mm.contentWindow.scrollTo(0, msgNodes[tKey].offsetTop - 5);
+              //msgNodes[tKey].focus();
+              _mm_addClass(msgNodes[tKey], "selected");
+              mm.addEventListener("focus", function on_focus (event) {
+                mm.removeEventListener("focus", on_focus, true);
+                _mm_removeClass(msgNodes[tKey], "selected");
+              }, true);
+            },
             0);
       }
 
@@ -436,6 +444,7 @@ document.addEventListener("load", function f_temp0 () {
         let detailsTxt = stringBundle.getString("details");
         let msgContents =
           <div class="row">
+            <div class="pointer" />
             <div class="notification-icons">
               <div class="star"/>
               <div class="enigmail-enc-ok" style="display: none" />

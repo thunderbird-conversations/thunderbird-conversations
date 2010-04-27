@@ -486,6 +486,28 @@ a.action:hover {
   background-color: #eee;
 }
 
+/* Focus handling */
+
+.pointer {
+  display: none;
+  width: 16px;
+  height: 16px;
+  background-image: url(chrome://gconversation/skin/resultset_next.png);
+  background-repeat: no-repeat;
+  position: absolute;
+  left: -16px;
+  top: 0;
+}
+
+.message:focus {
+  outline-width: 0;
+  border-color: black;
+}
+
+.message:focus .pointer, .message.selected .pointer {
+  display: block;
+}
+
 /* Error */
 
 .error {
