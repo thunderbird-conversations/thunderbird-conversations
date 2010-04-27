@@ -362,36 +362,40 @@ document.addEventListener("load", function f_temp0 () {
           }
         }
       }
+      myDump(numMessages+" messages total, focusing "+needsFocus+"\n");
 
       /* Create a closure that can be called later when all the messages have
        * been properly loaded, all the iframes resized to fit. When the page
        * won't scroll anymore, we manually set the message we want into view. */
-      myDump(numMessages+" messages total, focusing "+needsFocus+"\n");
       let msgHdrs = this._msgHdrs;
       let msgNodes = this._msgNodes;
-      function scrollMessageIntoView (needsFocus) {
-          myDump("I'm asked to focus message "+needsFocus+"\n");
-          let tKey = msgHdrs[needsFocus].messageKey + msgHdrs[needsFocus].folder.URI;
-          /* Because of the header that hides the beginning of the message,
-           * scroll a bit more. XXX unused ? */
-          /* let h = document.getElementById("multimessage")
-            .contentDocument.getElementById("headingwrappertable")
-            .getBoundingClientRect().height; */
-          myDump("Scrolling to "+tKey+"\n");
-          /* Don't ask */
-          setTimeout(
-            function () {
-              let mm = document.getElementById("multimessage");
-              let theNode = msgNodes[tKey];
-              _mm_addClass(theNode, "selected");
-              mm.contentWindow.scrollTo(0, theNode.offsetTop - 5);
-              mm.addEventListener("focus", function on_focus (event) {
-                mm.removeEventListener("focus", on_focus, true);
-                _mm_removeClass(theNode, "selected");
-                setTimeout(function () theNode.focus(), 100);
-              }, true);
-            },
-            100);
+      function scrollMessageIntoView (aMsgNode) {
+        myDump("I'm asked to focus message "+needsFocus+"\n");
+        setTimeout(
+          function () {
+            let mm = document.getElementById("multimessage");
+            mm.contentWindow.scrollTo(0, aMsgNode.offsetTop - 5);
+          },
+          100);
+      }
+
+      /* Deal with the currently selected message */
+      function variousFocusHacks(aMsgNode) {
+        let mm = document.getElementById("multimessage");
+        /* This node is selected --> display the pointer without focusing */
+        _mm_addClass(aMsgNode, "selected");
+        /* However, when the thread summary gains focus, we need to
+         * remove that class */
+        mm.contentDocument.addEventListener("focus", function on_focus (event) {
+            mm.contentDocument.removeEventListener("focus", on_focus, true);
+            _mm_removeClass(aMsgNode, "selected");
+            /* And make sure we focus that very node */
+            setTimeout(function () {
+                aMsgNode.focus();
+                /* Restore the same scroll so as not to disturb the view */
+                mm.contentWindow.scrollTo(0, aMsgNode.offsetTop - 5);
+              }, 100);
+          }, true);
       }
 
       /* For each message, once the message has been properly set up in the
@@ -402,8 +406,11 @@ document.addEventListener("load", function f_temp0 () {
       function messageDone() {
         myDump("messageDone()\n");
         nMessagesDone--;
-        if (nMessagesDone == 0 && needsFocus >= 0)
-          scrollMessageIntoView(needsFocus);
+        if (nMessagesDone == 0 && needsFocus >= 0) {
+          let tKey = msgHdrs[needsFocus].messageKey + msgHdrs[needsFocus].folder.URI;
+          scrollMessageIntoView(msgNodes[tKey]);
+          variousFocusHacks(msgNodes[tKey]);
+        }
       }
 
       /* Now this is for every message. Note to self: all functions defined
@@ -747,7 +754,7 @@ document.addEventListener("load", function f_temp0 () {
                       msgNode.getElementsByClassName("enigmail-enc-ok")[0].style.display = "";
                     if (status & Ci.nsIEnigmail.GOOD_SIGNATURE)
                       msgNode.getElementsByClassName("enigmail-sign-ok")[0].style.display = "";
-                    if (status & Ci.nsIEnigmail.UNKNOWN_SIGNATURE)
+                    if (status & Ci.nsIEnigmail.UNVERIFIED_SIGNATURE)
                       msgNode.getElementsByClassName("enigmail-sign-unknown")[0].style.display = "";
                   }
 
