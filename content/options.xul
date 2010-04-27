@@ -69,18 +69,7 @@
    
     <groupbox>
       <caption label="&title.message_display;"/>
-      <label value="&option.focus_what;" />
-      <radiogroup preference="focus_first" style="margin-left: 2em">
-        <radio value="true" label="&option.focus_first;" />
-        <radio value="false" label="&option.focus_selected;" />
-      </radiogroup>
-      <label control="fold_rule_menulist" value="&optiondesc.unfold;" />
-      <radiogroup preference="fold_rule" id="fold_rule_menulist" style="margin-left: 2em">
-        <radio value="unread_and_last" label="&option.last_or_unread;" />
-        <radio value="all" label="&option.all_messages;" />
-        <radio value="none" label="&option.no_messages;" />
-      </radiogroup>
-       <hbox>
+      <hbox>
         <vbox flex="1">
           <checkbox preference="monospaced" id="monospaced_checkbox" label="&option.monospaced;"/>
           <checkbox preference="monospaced_snippets" id="monospaced_snippets_checkbox" label="&option.monospaced_snippets;"/>
@@ -89,6 +78,21 @@
           <checkbox preference="reverse_order" id="reverse_order_checkbox" label="&option.reverse_order;" />
         </vbox>
       </hbox>
+    </groupbox>
+    <groupbox>
+      <caption label="&option.focus_what;" />
+      <radiogroup preference="focus_first">
+        <radio value="true" label="&option.focus_first;" />
+        <radio value="false" label="&option.focus_selected;" />
+      </radiogroup>
+    </groupbox>
+    <groupbox>
+      <caption label="&optiondesc.unfold;" />
+      <radiogroup preference="fold_rule" id="fold_rule_menulist">
+        <radio value="unread_and_last" label="&option.last_or_unread;" />
+        <radio value="all" label="&option.all_messages;" />
+        <radio value="none" label="&option.no_messages;" />
+      </radiogroup>
     </groupbox>
     <groupbox>
       <caption label="&title.toolbar;"/>

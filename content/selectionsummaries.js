@@ -641,6 +641,16 @@ document.addEventListener("load", function f_temp0 () {
             if (event.charCode == 'h'.charCodeAt(0)) {
               msgNode.style.display = "none";
             }
+            if (event.charCode == 'n'.charCodeAt(0)) {
+              if (msgNode.nextElementSibling)
+                msgNode.nextElementSibling.focus();
+              event.preventDefault();
+            }
+            if (event.charCode == 'p'.charCodeAt(0)) {
+              if (msgNode.previousElementSibling)
+                msgNode.previousElementSibling.focus();
+              event.preventDefault();
+            }
           }, true);
 
         /* Now we're registered the event listeners, the message is folded by

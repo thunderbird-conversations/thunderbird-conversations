@@ -53,6 +53,11 @@ body {
   display: none;
 }
 
+#back {
+  list-style-image: url("chrome://gconversation/skin/back.png");
+}
+
+
 /* General stuff */
 
 .message {
@@ -457,7 +462,7 @@ a.action:hover {
 }
 
 .image-attachment-box > table > tbody > tr > td:first-child {
-  width: 300px; /* Calculated relative to .image-attachment-box */
+  width: 400px; /* Calculated relative to .image-attachment-box */
 }
 
 .image-attachment-box > table > tbody > tr > td:nth-child(2) {

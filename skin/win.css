@@ -16,8 +16,3 @@
 #print {
   list-style-image: url("chrome://gconversation/skin/print.png");
 }
-
-#back {
-  list-style-image: url("chrome://gconversation/skin/back.png");
-}
-

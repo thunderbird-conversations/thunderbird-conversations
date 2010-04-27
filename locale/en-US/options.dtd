@@ -15,7 +15,7 @@
 <!ENTITY option.button.archive "Display &quot;archive&quot; button">
 <!ENTITY option.button.trash "Display &quot;delete&quot; button">
 <!ENTITY option.button.print "Display &quot;print&quot; button">
-<!ENTITY option.button.back "Display &quot;back&quot; button">
+<!ENTITY option.button.back "Display &quot;single message view&quot; button">
 <!ENTITY option.button.expand_all "Display &quot;expand all&quot; button">
 <!ENTITY option.button.collapse_all "Display &quot;collapse all&quot; button">
 <!ENTITY option.button.mark_as_read "Display &quot;mark all read&quot; button">

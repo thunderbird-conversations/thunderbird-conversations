@@ -18,8 +18,3 @@
 #print {
   list-style-image: url("moz-icon://stock/gtk-print?size=menu");
 }
-
-#back {
-  list-style-image: url("moz-icon://stock/gtk-go-back-ltr?size=menu");
-}
-
