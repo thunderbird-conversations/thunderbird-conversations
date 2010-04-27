@@ -167,6 +167,7 @@ function msgHdrsArchive(msgHdrs, aWindow) {
 }
 
 function msgHdrMarkAsJunk(msgHdr) {
+  //starts here http://mxr.mozilla.org/comm-central/source/mailnews/base/content/junkCommands.js#384
 /* 2733   nsCOMPtr<nsIJunkMailPlugin> junkPlugin;
 2734 
 2735   // if this is a junk command, get the junk plugin.
@@ -214,5 +215,10 @@ function msgHdrMarkAsJunk(msgHdr) {
 2845                                   (command == nsMsgViewCommandType::junk) ?
 2846                                     kJunkMsgAtom : kNotJunkMsgAtom);
 2847     } */
+
+//check OnMessageClassified for the rest of the actions
+//http://mxr.mozilla.org/comm-central/source/mailnews/base/content/junkCommands.js#241
+//the listener is for automatic classification, for manual marking, the
+//junkstatusorigin needs to be changed
 
 }
