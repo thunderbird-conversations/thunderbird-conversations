@@ -267,7 +267,7 @@ document.addEventListener("load", function f_temp0 () {
     else
       return "";
   }
-  function processEmails (emailAddresses) {
+  function processEmails (emailAddresses, aDoc) {
     let addresses = {};
     let fullNames = {};
     let names = {};
@@ -295,9 +295,12 @@ document.addEventListener("load", function f_temp0 () {
 
     function colorize(card) {
       let name = card.displayName ? card.displayName : card.emailAddress;
-      return "<span style=\"color:"+colorFor(card.emailAddress)+"\">"+name+"</span>";
+      let span = aDoc.createElement("span");
+      span.style.color = colorFor(card.emailAddress);
+      span.textContent = name;
+      return span;
     }
-    return [colorize(a) for each ([, a] in Iterator(decodedAddresses))].join(", ");
+    return [colorize(a) for each ([, a] in Iterator(decodedAddresses))];
   }
 
   /* Actually we don't need to change the constructor, only members */
@@ -370,11 +373,12 @@ document.addEventListener("load", function f_temp0 () {
       let msgHdrs = this._msgHdrs;
       let msgNodes = this._msgNodes;
       function scrollMessageIntoView (aMsgNode) {
-        myDump("I'm asked to focus message "+needsFocus+"\n");
+        dump("I'm focusing message "+aMsgNode.getAttribute("tabindex")+"\n");
         setTimeout(
           function () {
             let mm = document.getElementById("multimessage");
-            mm.contentWindow.scrollTo(0, aMsgNode.offsetTop - 5);
+            if (aMsgNode.offsetTop)
+              mm.contentWindow.scrollTo(0, aMsgNode.offsetTop - 5);
           },
           100);
       }
@@ -568,12 +572,25 @@ document.addEventListener("load", function f_temp0 () {
         snippetMsgNode.addEventListener("click", toggleMessage, true);
 
         /* Insert fancy colored html */
-        let senderName = processEmails(msgHdr.mime2DecodedAuthor);
-        let recipientsNames = processEmails(msgHdr.mime2DecodedRecipients);
-        let ccNames = processEmails(msgHdr.ccList);
-        senderNode.innerHTML = senderName;
-        recipientsNode.innerHTML =
-          ccNames ? recipientsNames + ", " + ccNames : recipientsNames;
+        let senderSpans = processEmails(msgHdr.mime2DecodedAuthor, htmlpane.contentDocument);
+        let recipientsSpans = processEmails(msgHdr.mime2DecodedRecipients, htmlpane.contentDocument);
+        let ccSpans = processEmails(msgHdr.ccList, htmlpane.contentDocument);
+        if (senderSpans.length)
+          senderNode.appendChild(senderSpans[0]);
+        let lastComma;
+        for each (let [, span] in Iterator(recipientsSpans)) {
+          recipientsNode.appendChild(span);
+          let comma = htmlpane.contentDocument.createTextNode(", ");
+          recipientsNode.appendChild(comma);
+          lastComma = comma;
+        }
+        for each (let [, span] in Iterator(ccSpans)) {
+          recipientsNode.appendChild(span);
+          let comma = htmlpane.contentDocument.createTextNode(", ");
+          recipientsNode.appendChild(comma);
+          lastComma = comma;
+        }
+        recipientsNode.removeChild(lastComma);
 
         /* Style according to the preferences. Preferences have an observer, see
          * above for details. */
@@ -616,7 +633,7 @@ document.addEventListener("load", function f_temp0 () {
                * right now (otherwise the iframe code will take care of focusing
                * it for us thanks to keyboardOpening). */
               if (focusInformation.iFrameWasLoaded)
-                scrollMessageIntoView(focusInformation.i);
+                scrollMessageIntoView(msgNode);
             }
             if (event.keyCode == '8') {
               gconversation.on_back();
@@ -806,7 +823,7 @@ document.addEventListener("load", function f_temp0 () {
                   /* This means that the first opening of the iframe is done
                    * using the keyboard shortcut. */
                   if (focusInformation.delayed && focusInformation.keyboardOpening)
-                    scrollMessageIntoView(focusInformation.i);
+                    scrollMessageIntoView(msgNode);
 
                   /* Don't go to such lengths to make it work next time */
                   focusInformation.iFrameWasLoaded = true;
