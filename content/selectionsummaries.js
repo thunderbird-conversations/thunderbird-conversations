@@ -395,9 +395,9 @@ document.addEventListener("load", function f_temp0 () {
             _mm_removeClass(aMsgNode, "selected");
             /* And make sure we focus that very node */
             setTimeout(function () {
-                aMsgNode.focus();
-                /* Restore the same scroll so as not to disturb the view */
-                mm.contentWindow.scrollTo(0, aMsgNode.offsetTop - 5);
+                let tabIndex = gPrefs["reverse_order"] ? numMessages - needsFocus : needsFocus;
+                tabIndex++; tabIndex++;
+                aMsgNode.setAttribute("tabindex", tabIndex);
               }, 100);
           }, true);
       }
@@ -600,14 +600,13 @@ document.addEventListener("load", function f_temp0 () {
           _mm_addClass(snippetMsgNode, "monospaced-snippet");
 
         /* Try to enable at least some keyboard navigation */
-        let tabIndex;
-        if (gPrefs["reverse_order"])
-          tabIndex = numMessages - i;
-        else
-          tabIndex = i;
+        let tabIndex = gPrefs["reverse_order"] ? numMessages - i : i;
         /* I don't know why but Tb doesn't seem to like tabindex 0 */
-        tabIndex++;
-        msgNode.setAttribute("tabindex", tabIndex);
+        tabIndex++; tabIndex++;
+        if (i == needsFocus)
+          msgNode.setAttribute("tabindex", 1);
+        else
+          msgNode.setAttribute("tabindex", tabIndex);
 
         /* This object is used by the event listener below to pass information
          * to the event listeners far below whose task is to setup the iframe.
@@ -971,11 +970,12 @@ document.addEventListener("load", function f_temp0 () {
                    * http://mxr.mozilla.org/comm-central/source/mail/base/content/msgHdrViewOverlay.js#1993
                    * http://mxr.mozilla.org/comm-central/source/mail/base/content/msgHdrViewOverlay.xul#76
                    * for the relevant actions */
+                  let altTxt = stringBundle.getString("open_attachment").replace("%s", att.name);
                   if (att.contentType.indexOf("image/") === 0) {
                     singleBoxContents =
                       <div class="attachment-box image-attachment-box">
                         <table><tbody><tr>
-                        <td><img src={att.url} /></td>
+                        <td><img title={altTxt} src={att.url} /></td>
                         <td>
                           <p><span class="attachment-link link">{att.name}</span></p>
                           <p>{size}</p>
@@ -990,7 +990,7 @@ document.addEventListener("load", function f_temp0 () {
                     singleBoxContents =
                       <div class="attachment-box">
                         <table><tbody><tr>
-                        <td><img src={imgSrc} /></td>
+                        <td><img title={altTxt} src={imgSrc} /></td>
                         <td>
                           <p><span class="attachment-link link">{att.name}</span></p>
                           <p>{size}</p>
