@@ -382,15 +382,16 @@ document.addEventListener("load", function f_temp0 () {
           setTimeout(
             function () {
               let mm = document.getElementById("multimessage");
-              mm.contentWindow.scrollTo(0, msgNodes[tKey].offsetTop - 5);
-              //msgNodes[tKey].focus();
-              _mm_addClass(msgNodes[tKey], "selected");
+              let theNode = msgNodes[tKey];
+              _mm_addClass(theNode, "selected");
+              mm.contentWindow.scrollTo(0, theNode.offsetTop - 5);
               mm.addEventListener("focus", function on_focus (event) {
                 mm.removeEventListener("focus", on_focus, true);
-                _mm_removeClass(msgNodes[tKey], "selected");
+                _mm_removeClass(theNode, "selected");
+                setTimeout(function () theNode.focus(), 100);
               }, true);
             },
-            0);
+            100);
       }
 
       /* For each message, once the message has been properly set up in the

@@ -496,7 +496,7 @@ a.action:hover {
   background-repeat: no-repeat;
   position: absolute;
   left: -16px;
-  top: 0;
+  top: 3px;
 }
 
 .message:focus {
