@@ -293,13 +293,11 @@ document.addEventListener("load", function f_temp0 () {
       decodedAddresses.push(address);
     }
 
-    function colorize(name) {
-      if (name)
-        return "<span style=\"color:"+colorFor(name)+"\">"+name+"</span>";
-      else
-        return name;
+    function colorize(card) {
+      let name = card.displayName ? card.displayName : card.emailAddress;
+      return "<span style=\"color:"+colorFor(card.emailAddress)+"\">"+name+"</span>";
     }
-    return [colorize(a.displayName) || colorize(a.emailAddress) for each ([, a] in Iterator(decodedAddresses))].join(", ");
+    return [colorize(a) for each ([, a] in Iterator(decodedAddresses))].join(", ");
   }
 
   /* Actually we don't need to change the constructor, only members */
@@ -711,14 +709,25 @@ document.addEventListener("load", function f_temp0 () {
                     "  font-size: medium !important;\n"+
                     "}\n"+
                     "fieldset.mimeAttachmentHeader,\n"+
-                    "fieldset.mimeAttachmentHeader + br,\n"+
-                    "fieldset.mimeAttachmentHeader + br + p,\n"+
-                    "fieldset.mimeAttachmentHeader + br + p + center,\n"+
-                    "fieldset.mimeAttachmentHeader + br + p + center + p {\n"+
+                    "fieldset.mimeAttachmentHeader + *,\n"+
+                    "fieldset.mimeAttachmentHeader + * + *,\n"+
+                    "fieldset.mimeAttachmentHeader + * + * + *,\n"+
+                    "fieldset.mimeAttachmentHeader + * + * + * + * {\n"+
                     "  display: none;\n"+
                     "}\n"
                     ));
                   iframeDoc.body.previousSibling.appendChild(style);
+
+                  /* Remove the attachments if the user has not set View >
+                   * Display Attachments Inline */
+                  for each (let [, node] in Iterator(iframeDoc.getElementsByClassName("mimeAttachmentHeader"))) {
+                    /* We might have removed it already */
+                    if (node) {
+                      while (node.nextSibling)
+                        node.parentNode.removeChild(node.nextSibling);
+                      node.parentNode.removeChild(node);
+                    }
+                  }
 
                   /* Hello, Enigmail. Do that now, because decrypting a message
                    * will change its height. */
@@ -922,7 +931,7 @@ document.addEventListener("load", function f_temp0 () {
                     singleBoxContents =
                       <div class="attachment-box image-attachment-box">
                         <table><tbody><tr>
-                        <td><img src={att.url} class="image-attachment-preview" /></td>
+                        <td><img src={att.url} /></td>
                         <td>
                           <p><span class="attachment-link link">{att.name}</span></p>
                           <p>{size}</p>
@@ -958,9 +967,13 @@ document.addEventListener("load", function f_temp0 () {
                     function (event) {
                       HandleMultipleAttachments([attInfo], "save");
                     }, true);
-                  if (att.contentType.indexOf("image/") === 0) {
+                  /* We should be able to display those in a tab */
+                  if (att.contentType.indexOf("image/") === 0 || att.contentType.indexOf("text/") === 0) {
+                    /* Display the cursor pointer */
+                    _mm_addClass(singleBox.getElementsByTagName("img")[0], "image-attachment-preview");
+                    /* Add the event listener */
                     let url = att.url;
-                    singleBox.getElementsByClassName("image-attachment-preview")[0].addEventListener("click",
+                    singleBox.getElementsByTagName("img")[0].addEventListener("click",
                       function (event) {
                         Cc['@mozilla.org/appshell/window-mediator;1'].getService(Ci.nsIWindowMediator).
                         getMostRecentWindow("mail:3pane").
