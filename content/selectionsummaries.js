@@ -1520,6 +1520,10 @@ document.addEventListener("load", function f_temp0 () {
             let items = groupMessages(aCollection.items);
             if (items.length <= 1)
               return;
+            /* Don't forget to show the right buttons */
+            let htmlpane = document.getElementById('multimessage');
+            htmlpane.contentWindow.enableExtraButtons();
+
             let rightMessages = [selectRightMessage(x, gDBView.msgFolder) for each ([, x] in Iterator(items))];
             rightMessages = rightMessages.filter(function (x) x);
             rightMessages = rightMessages.map(function (x) x.folderMessage);
