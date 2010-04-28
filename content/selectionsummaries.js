@@ -635,7 +635,7 @@ document.addEventListener("load", function f_temp0 () {
           iFrameWasLoaded: false
         };
         msgNode.addEventListener("keypress", function keypress_listener (event) {
-            if (event.charCode == 'o'.charCodeAt(0)) {
+            if (event.charCode == 'o'.charCodeAt(0) || event.keyCode == 13) {
               myDump("i is "+focusInformation.i+"\n");
 
               /* If the iframe hasn't been loaded yet, this will trigger a
@@ -651,7 +651,7 @@ document.addEventListener("load", function f_temp0 () {
               if (focusInformation.iFrameWasLoaded)
                 scrollMessageIntoView(msgNode);
             }
-            if (event.keyCode == '8') {
+            if (event.keyCode == 8) {
               gconversation.on_back();
             }
             if (event.charCode == 'h'.charCodeAt(0)) {
