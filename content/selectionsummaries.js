@@ -383,22 +383,39 @@ document.addEventListener("load", function f_temp0 () {
           100);
       }
 
+      /*                    TODAY'S GORY DETAILS
+       *
+       * How do we make sure we jump to the needsFocus-th message when we tab to
+       * the conversation view?
+       * - tabindexes for each .message range from 2 to numMessages + 1 EXCEPT THAT
+       * - the message that needs focus has index 1 so that it is selected first
+       *   when we tab-jump to the conversation view
+       * - however, we need to modify this tabindex so that when we hit tab or
+       *   shift-tab afterwards, the results are correct
+       * - we cannot do it at once, otherwise all our efforts are made in vain
+       *   (and the newly modified tabindex value is read) which is why...
+       * - we use setTimeout so that subsequent calls to tab and shift-tab have
+       *   the tabindexes in order
+       * - this DOESN'T work for Gecko 1.9.1 (now cry with me) because the
+       *   tabindexes are cached in some way and even though the tabindex
+       *   attribute has been updated, the old value is taken into account to
+       *   compute which <div> to focus when we hit tab or shift-tab
+       * - but it works for later versions...
+       * */
+
       /* Deal with the currently selected message */
       function variousFocusHacks(aMsgNode) {
-        let mm = document.getElementById("multimessage");
         /* This node is selected --> display the pointer without focusing */
         _mm_addClass(aMsgNode, "selected");
         /* However, when the thread summary gains focus, we need to
          * remove that class */
-        mm.contentDocument.addEventListener("focus", function on_focus (event) {
-            mm.contentDocument.removeEventListener("focus", on_focus, true);
+        htmlpane.contentDocument.addEventListener("focus", function on_focus (event) {
+            htmlpane.contentDocument.removeEventListener("focus", on_focus, true);
             _mm_removeClass(aMsgNode, "selected");
             /* And make sure we focus that very node */
-            setTimeout(function () {
-                let tabIndex = gPrefs["reverse_order"] ? numMessages - needsFocus : needsFocus;
-                tabIndex++; tabIndex++;
-                aMsgNode.setAttribute("tabindex", tabIndex);
-              }, 100);
+            let tabIndex = gPrefs["reverse_order"] ? numMessages - needsFocus : needsFocus;
+            tabIndex++; tabIndex++;
+            aMsgNode.setAttribute("tabindex", tabIndex);
           }, true);
       }
 
@@ -646,8 +663,12 @@ document.addEventListener("load", function f_temp0 () {
               event.preventDefault();
             }
             if (event.charCode == 'p'.charCodeAt(0)) {
-              if (msgNode.previousElementSibling)
-                msgNode.previousElementSibling.focus();
+              let prev = msgNode.previousElementSibling;
+              if (prev) {
+                prev.focus();
+                if (htmlpane.contentDocument.documentElement.scrollTop > prev.offsetTop - 5)
+                  htmlpane.contentWindow.scrollTo(0, prev.offsetTop - 5);
+              }
               event.preventDefault();
             }
           }, true);
