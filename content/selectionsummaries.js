@@ -74,8 +74,8 @@ var gconversation = {
 
 /* We use a function because of global namespace pollution. We use "onload"
  * because we need the <stringbundle> to be available. */
-document.addEventListener("load", function f_temp0 () {
-  document.removeEventListener("load", f_temp0, true); /* otherwise it's called 20+ times */
+window.addEventListener("load", function f_temp0 () {
+  window.removeEventListener("load", f_temp0, true); /* otherwise it's called 20+ times */
 
   /* Enigmail support, thanks to Patrick Brunschwig ! */
   let hasEnigmail = (typeof(GetEnigmailSvc) == "function");
@@ -691,6 +691,8 @@ document.addEventListener("load", function f_temp0 () {
           let originalScroll; /* This is shared by the nested event listeners below */
 
           let iframe = htmlpane.contentDocument.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "iframe");
+          /* Big hack to workaround bug 540911 */
+          iframe.setAttribute("transparent", "transparent");
           iframe.setAttribute("style", "height: 20px");
           iframe.setAttribute("type", "content");
           /* The xul:iframe automatically loads about:blank when it is added
@@ -805,6 +807,7 @@ document.addEventListener("load", function f_temp0 () {
                       msgNode.getElementsByClassName("enigmail-sign-unknown")[0].style.display = "";
                   }
 
+
                   /* Add an event listener for the button that toggles the style of the
                    * font. Only if we seem to be able to implement it (i.e. we
                    * see a <pre>). */
@@ -861,6 +864,10 @@ document.addEventListener("load", function f_temp0 () {
                   /* Here ends the chain of event listeners, nothing happens
                    * after this. */
                 }, true); /* end document.addEventListener */
+
+              /* For bidiUI */
+              if (window.browserOnLoadHandler)
+                iframe.addEventListener("load", browserOnLoadHandler, true);
 
               /* Unbelievable as it may seem, the code below works.
                * Some references :
@@ -1496,6 +1503,7 @@ document.addEventListener("load", function f_temp0 () {
     onSecurityChange: function () {},
     onStatusChange: function () {},
     onLocationChange: function (aWebProgress, aRequest, aLocation) {
+      dump("OnLocationChange\n");
       /* By testing here for the pref, we allow the pref to be changed at
        * run-time and we do not require to restart Thunderbird to take the
        * change into account. */
@@ -1563,8 +1571,8 @@ document.addEventListener("load", function f_temp0 () {
     },
     QueryInterface: XPCOMUtils.generateQI([Ci.nsISupports, Ci.nsISupportsWeakReference, Ci.nsIWebProgressListener])
   };
-  messagepane.addProgressListener(gconversation.stash.uriWatcher);
+  messagepane.addProgressListener(gconversation.stash.uriWatcher, Ci.nsIWebProgress.NOTIFY_ALL);
 
   myDump("*** gConversation loaded\n");
 
-}, true);
+}, false);
