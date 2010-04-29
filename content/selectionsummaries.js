@@ -75,7 +75,7 @@ var gconversation = {
 /* We use a function because of global namespace pollution. We use "onload"
  * because we need the <stringbundle> to be available. */
 window.addEventListener("load", function f_temp0 () {
-  window.removeEventListener("load", f_temp0, true); /* otherwise it's called 20+ times */
+  window.removeEventListener("load", f_temp0, false); /* just to make sure */
 
   /* Enigmail support, thanks to Patrick Brunschwig ! */
   let hasEnigmail = (typeof(GetEnigmailSvc) == "function");
@@ -83,7 +83,7 @@ window.addEventListener("load", function f_temp0 () {
   if (hasEnigmail)
     enigmailSvc = GetEnigmailSvc();
   if (!enigmailSvc) {
-    myDump("Error loading the Enigmail service.\n");
+    myDump("Error loading the Enigmail service. Is Enigmail disabled?\n");
     hasEnigmail = false;
   }
   function tryEnigmail(bodyElement) {
@@ -469,6 +469,7 @@ window.addEventListener("load", function f_temp0 () {
         let deleteTxt = stringBundle.getString("delete");
         let replyList = stringBundle.getString("reply_list");
         let editNew = stringBundle.getString("edit_new");
+        let moreActionsTxt = stringBundle.getString("more_actions");
         let toTxt = stringBundle.getString("to");
         let detailsTxt = stringBundle.getString("details");
         let msgContents =
@@ -516,19 +517,19 @@ window.addEventListener("load", function f_temp0 () {
               <div class="snippet htmlmsg" style="" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"></div>
               <div class="attachments-box-handler" />
               <hbox class="button-action-area" align="start" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:html="http://www.w3.org/1999/xhtml">
-                <button class="button button-reply">{replyTxt}</button>
-                <button class="button button-forward">{forwardTxt}</button>
-                <button class="button" type="menu">
-                  More Actions
+                <button class="button msgHeaderView-button button-regular button-reply">{replyTxt}</button>
+                <button class="button msgHeaderView-button button-regular button-forward">{forwardTxt}</button>
+                <button class="button msgHeaderView-button button-regular" type="menu">
+                 {moreActionsTxt}
                   <menupopup>
                     <menuitem class="menu-editNew">{editNew}</menuitem>
                     <menuitem class="menu-replyList">{replyList}</menuitem>
                   </menupopup>
                 </button>
                 <spacer flex="1" />
-                <button disabled="true" class="button button-markSpam">{markSpamTxt}</button>
-                <button disabled="true" class="button button-archive">{archiveTxt}</button>
-                <button class="button button-delete">{deleteTxt}</button>
+                <button disabled="true" class="button msgHeaderView-button button-regular button-markSpam">{markSpamTxt}</button>
+                <button disabled="true" class="button msgHeaderView-button button-regular button-archive">{archiveTxt}</button>
+                <button class="button msgHeaderView-button button-regular button-delete">{deleteTxt}</button>
               </hbox>
             </div>
             <div class="grip" />
@@ -968,7 +969,7 @@ window.addEventListener("load", function f_temp0 () {
                     <hr />
                     <div class="attachment-actions-box">
                       <span class="attachments-summary" />
-                      <button class="save-all">{saveAllTxt}</button>
+                      <button class="button msgHdrView-button button-regular save-all">{saveAllTxt}</button>
                     </div>
                   </div>;
                 msgNode.getElementsByClassName("attachments-box-handler")[0].innerHTML =
@@ -1008,7 +1009,7 @@ window.addEventListener("load", function f_temp0 () {
                           <p><span class="attachment-link link">{att.name}</span></p>
                           <p>{size}</p>
                           <p>
-                            <button class="save">{saveTxt}</button>
+                            <button class="button msgHdrView-button button-regular save">{saveTxt}</button>
                           </p>
                         </td>
                         </tr></tbody></table>
@@ -1023,7 +1024,7 @@ window.addEventListener("load", function f_temp0 () {
                           <p><span class="attachment-link link">{att.name}</span></p>
                           <p>{size}</p>
                           <p>
-                            <button class="save">{saveTxt}</button>
+                            <button class="button msgHdrView-button button-regular save">{saveTxt}</button>
                           </p>
                         </td>
                         </tr></tbody></table>

@@ -399,8 +399,14 @@ a.action:hover {
   margin-top: 2em;
 }
 
-.button-action-area > .button {
-  min-width: 2em;
+.button-regular {
+  min-width: 2em !important;
+  margin-left: .8em;
+  padding: 0 6px !important;
+}
+
+.button-regular:first-child {
+  margin-left: 0;
 }
 
 .button-action-area > .button-archive {
