@@ -221,13 +221,14 @@ window.addEventListener("load", function f_temp0 () {
     if (gColorCount < predefinedColors.length) {
       return predefinedColors[gColorCount++];
     } else {
-      /* XXX we can probably do better here (avoid colors that are too
-       * "light") */
-      let rand = function () Math.round(Math.random()*255);
-      let r = rand();
-      let g = rand();
-      let b = rand();
-      return "rgb("+r+","+g+","+b+")";
+      let r, g, b;
+      /* Avoid colors that are too light or too dark */
+      do {
+        r = Math.random();
+        g = Math.random();
+        b = Math.random();
+      } while (Math.sqrt(r*r + b*b + g*g) > .8 || Math.sqrt(r*r + b*b + g*g) < .2)
+      return "rgb("+parseInt(r*255)+","+parseInt(g*255)+","+parseInt(b*255)+")";
     }
   }
   /* Return the color for a given person or create it */
