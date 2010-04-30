@@ -717,6 +717,8 @@ window.addEventListener("load", function f_temp0 () {
                   /* Do some reformatting */
                   iframeDoc.body.style.padding = "0";
                   iframeDoc.body.style.margin = "0";
+                  iframeDoc.body.style.color = "black";
+                  iframeDoc.body.style.backgroundColor = "white";
 
                   /* The default size for HTML messages' content is too big! */
                   let hasHtml = !(
