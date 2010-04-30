@@ -617,17 +617,14 @@ window.addEventListener("load", function f_temp0 () {
         if (senderSpans.length)
           senderNode.appendChild(senderSpans[0]);
         let lastComma;
-        for each (let [, span] in Iterator(recipientsSpans)) {
-          recipientsNode.appendChild(span);
-          let comma = htmlpane.contentDocument.createTextNode(", ");
-          recipientsNode.appendChild(comma);
-          lastComma = comma;
-        }
-        for each (let [, span] in Iterator(ccSpans)) {
-          recipientsNode.appendChild(span);
-          let comma = htmlpane.contentDocument.createTextNode(", ");
-          recipientsNode.appendChild(comma);
-          lastComma = comma;
+        for each (let [, spanList] in Iterator([recipientsSpans, ccSpans])) {
+          for each (let [, span] in Iterator(spanList)) {
+            recipientsNode.appendChild(span);
+            let comma = htmlpane.contentDocument.createElement("span");
+            comma.textContent= ", ";
+            recipientsNode.appendChild(comma);
+            lastComma = comma;
+          }
         }
         recipientsNode.removeChild(lastComma);
 
