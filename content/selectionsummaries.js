@@ -338,7 +338,6 @@ window.addEventListener("load", function f_temp0 () {
       while (messagesElt.firstChild)
         messagesElt.removeChild(messagesElt.firstChild);
 
-      /* Useful for stripping the email from mime2DecodedAuthor for instance */
       let count = 0;
       const MAX_THREADS = 100;
       const SNIPPET_LENGTH = 300;
@@ -375,6 +374,13 @@ window.addEventListener("load", function f_temp0 () {
       let msgNodes = this._msgNodes;
       function scrollMessageIntoView (aMsgNode) {
         dump("I'm focusing message "+aMsgNode.getAttribute("tabindex")+"\n");
+        /* If someone could explain to me why I need this timeout, I'd be
+         * grateful. Basically, the scrolling is wrong with the following setup:
+         * - by default, expand no messages
+         * - by default, scroll to the currently selected message
+         * But this function is actually called after all the message snippets
+         * have been added... XXX check this still happens with Gecko 1.9.2
+         * */
         setTimeout(
           function () {
             let mm = document.getElementById("multimessage");
@@ -386,34 +392,43 @@ window.addEventListener("load", function f_temp0 () {
 
       /*                    TODAY'S GORY DETAILS
        *
+       * Semantics: when we first use tab to jump to the message list to the
+       * conversation view, we want either the first selected message in the
+       * folder view, or the first unread message / last message (depending on
+       * the preference) to gain focus. Afterwards, we want tab/shift-tab to
+       * cycle through the messages normally. Shift-tab with the 0-th message
+       * focused will send you back to the message list. Tab from the message
+       * list will send you to the 0-th message. The special behaviour is for
+       * the first tab-jump only.
+       *
        * How do we make sure we jump to the needsFocus-th message when we tab to
        * the conversation view?
        * - tabindexes for each .message range from 2 to numMessages + 1 EXCEPT THAT
        * - the message that needs focus has index 1 so that it is selected first
        *   when we tab-jump to the conversation view
        * - however, we need to modify this tabindex so that when we hit tab or
-       *   shift-tab afterwards, the results are correct
-       * - we cannot do it at once, otherwise all our efforts are made in vain
-       *   (and the newly modified tabindex value is read) which is why...
-       * - we use setTimeout so that subsequent calls to tab and shift-tab have
-       *   the tabindexes in order
+       *   shift-tab afterwards, the results are "normal"
        * - this DOESN'T work for Gecko 1.9.1 (now cry with me) because the
        *   tabindexes are cached in some way and even though the tabindex
        *   attribute has been updated, the old value is taken into account to
        *   compute which <div> to focus when we hit tab or shift-tab
-       * - but it works for later versions...
+       * - but it works for 1.9.2...
        * */
 
       /* Deal with the currently selected message */
       function variousFocusHacks(aMsgNode) {
-        /* This node is selected --> display the pointer without focusing */
+        /* We want the node that's been expanded (the one that has index
+         * needsFocus) to also have the visual appearance with the cursor. */
         _mm_addClass(aMsgNode, "selected");
-        /* However, when the thread summary gains focus, we need to
-         * remove that class */
         htmlpane.contentDocument.addEventListener("focus", function on_focus (event) {
             htmlpane.contentDocument.removeEventListener("focus", on_focus, true);
+            /* However, when the thread summary gains focus, we need to
+             * remove that class because :focus will take care of that */
             _mm_removeClass(aMsgNode, "selected");
-            /* And make sure we focus that very node */
+            /* Restore the proper tab order. This event is fired *after* the
+             * right message has been focused in Gecko 1.9.2, *before* the right
+             * message has been focused in Gecko 1.9.1 (so it's basically
+             * useless). */
             let tabIndex = gPrefs["reverse_order"] ? numMessages - needsFocus : needsFocus;
             tabIndex++; tabIndex++;
             aMsgNode.setAttribute("tabindex", tabIndex);
@@ -421,9 +436,10 @@ window.addEventListener("load", function f_temp0 () {
       }
 
       /* For each message, once the message has been properly set up in the
-       * conversation view (either folded or unfolded), this function is called.
+       * conversation view (either collapsed or expanded), this function is called.
        * When all the messages have been filled, it scrolls to the one we want.
-       * That way, no more reflows after we have scrolled to the right message. */
+       * That way, we don't have to be afraid of further reflows after we have
+       * scrolled to the right message. */
       let nMessagesDone = numMessages;
       function messageDone() {
         myDump("messageDone()\n");
@@ -437,7 +453,8 @@ window.addEventListener("load", function f_temp0 () {
 
       /* Now this is for every message. Note to self: all functions defined
        * inside the loop must be defined using let f = ... (otherwise the last
-       * definition is always called !). */
+       * definition is always called !). Note to self: i is shared accross all
+       * the loop executions. Note to self: don't rely on [this]. */
       for (let i = 0; i < numMessages; ++i) {
         myDump("*** Treating message "+i+"\n");
         count += 1;
@@ -460,7 +477,7 @@ window.addEventListener("load", function f_temp0 () {
         let date = makeFriendlyDateAgo(new Date(msgHdr.date/1000));
 
         /* The snippet class really has a counter-intuitive name but that allows
-         * us to keep the style from the original multimessageview.css without
+         * us to keep some style from the original multimessageview.css without
          * rewriting everything */
         let replyTxt = stringBundle.getString("reply");
         let replyAllTxt = stringBundle.getString("reply_all");
@@ -542,6 +559,9 @@ window.addEventListener("load", function f_temp0 () {
         // either generated from integers or escaped to be safe.
         msgNode.innerHTML = msgContents.toXMLString();
         _mm_addClass(msgNode, msg_classes);
+
+        /* That only changes the order in which the nodes are inserted, not the
+         * index they have in this._msgHdrs */
         if (gPrefs["reverse_order"]) {
           messagesElt.insertBefore(msgNode, messagesElt.firstChild);
         } else {
@@ -620,7 +640,9 @@ window.addEventListener("load", function f_temp0 () {
 
         /* Try to enable at least some keyboard navigation */
         let tabIndex = gPrefs["reverse_order"] ? numMessages - i : i;
-        /* I don't know why but Tb doesn't seem to like tabindex 0 */
+        /* 0 is not a valid tabIndex, and 1 is for the message that we want to
+         * jump to the first time we use tab to jump from the message list to
+         * the conversation view */
         tabIndex++; tabIndex++;
         if (i == needsFocus)
           msgNode.setAttribute("tabindex", 1);
@@ -629,7 +651,7 @@ window.addEventListener("load", function f_temp0 () {
 
         /* This object is used by the event listener below to pass information
          * to the event listeners far below whose task is to setup the iframe.
-         * */
+         * DON'T TOUCH!!! It works, draw the flowchart if you don't believe me. */
         let focusInformation = {
           i: i,
           delayed: false,
@@ -647,9 +669,12 @@ window.addEventListener("load", function f_temp0 () {
               /* Let's go */
               toggleMessage();
 
-              /* Since toggleMessage() is now immediate, we can focus the thing
-               * right now (otherwise the iframe code will take care of focusing
-               * it for us thanks to keyboardOpening). */
+              /* In case the first opening of this message is done using the
+               * keyboard, FillMessageSnippetAndHTML will re-call
+               * scrollMessageIntoView when it's done. Rationale: the user is
+               * using the keyboard, the mouse is far away, so we set the
+               * message to use as much screen space as possible by scrolling it
+               * to the top of the viewport. */
               if (focusInformation.iFrameWasLoaded)
                 scrollMessageIntoView(msgNode);
             }
@@ -668,6 +693,8 @@ window.addEventListener("load", function f_temp0 () {
               let prev = msgNode.previousElementSibling;
               if (prev) {
                 prev.focus();
+                /* This is why this works better than shift-tab. We make sure
+                 * the message is not hidden by the header! */
                 if (htmlpane.contentDocument.documentElement.scrollTop > prev.offsetTop - 5)
                   htmlpane.contentWindow.scrollTo(0, prev.offsetTop - 5);
               }
@@ -686,9 +713,9 @@ window.addEventListener("load", function f_temp0 () {
           }
         }
 
-        /* Same thing but for HTML messages. The HTML is heavily processed to
-         * detect extra quoted parts using different heuristics, the "- show/hide
-         * quoted text -" links are added. */
+        /* The HTML is heavily processed to detect extra quoted parts using
+         * different heuristics, the "- show/hide quoted text -" links are
+         * added. */
         let fillSnippetAndHTML = function fillSnippetAndHTML_ () {
           let originalScroll; /* This is shared by the nested event listeners below */
 
@@ -703,8 +730,8 @@ window.addEventListener("load", function f_temp0 () {
            *
            * Why do we do that ? Basically because we want the <xul:iframe> to
            * have a docShell and a webNavigation. If we don't do that, and we
-           * set directly src="about:blank" in the XML above, sometimes we are
-           * too fast and the docShell isn't ready by the time we get there. */
+           * set directly src="about:blank" above, sometimes we are too fast and
+           * the docShell isn't ready by the time we get there. */
           iframe.addEventListener("load", function f_temp2(event) {
               iframe.removeEventListener("load", f_temp2, true);
 
@@ -717,10 +744,11 @@ window.addEventListener("load", function f_temp0 () {
                   /* Do some reformatting */
                   iframeDoc.body.style.padding = "0";
                   iframeDoc.body.style.margin = "0";
+                  /* Deal with people who have bad taste */
                   iframeDoc.body.style.color = "black";
                   iframeDoc.body.style.backgroundColor = "white";
 
-                  /* The default size for HTML messages' content is too big! */
+                  /* Our super-advanced heuristic ;-) */
                   let hasHtml = !(
                     iframeDoc.body.firstElementChild &&
                     (_mm_hasClass(iframeDoc.body.firstElementChild, "moz-text-flowed") ||
@@ -728,7 +756,7 @@ window.addEventListener("load", function f_temp0 () {
 
                   /* The part below is all about quoting */
                   /* Launch various heuristics to convert most common quoting styles
-                   * to real blockquotes. */
+                   * to real blockquotes. Spoiler: most of them suck. */
                   convertOutlookQuotingToBlockquote(iframeDoc);
                   convertHotmailQuotingToBlockquote1(iframeDoc);
                   convertHotmailQuotingToBlockquote2(iframe.contentWindow, iframeDoc, gPrefs["hide_quote_length"]);
@@ -786,6 +814,7 @@ window.addEventListener("load", function f_temp0 () {
                     "  display: none;\n"+
                     "}\n"
                     ));
+                  /* Oh baby that was so subtle */
                   iframeDoc.body.previousSibling.appendChild(style);
 
                   /* Remove the attachments if the user has not set View >
@@ -800,7 +829,8 @@ window.addEventListener("load", function f_temp0 () {
                   }
 
                   /* Hello, Enigmail. Do that now, because decrypting a message
-                   * will change its height. */
+                   * will change its height. If you've got nothing better to do,
+                   * test for the remaining 4572 possible statuses. */
                   if (iframeDoc.body.textContent.length > 0 && hasEnigmail) {
                     let status = tryEnigmail(iframeDoc.body);
                     if (status & Ci.nsIEnigmail.DECRYPTION_OKAY)
@@ -810,7 +840,6 @@ window.addEventListener("load", function f_temp0 () {
                     if (status & Ci.nsIEnigmail.UNVERIFIED_SIGNATURE)
                       msgNode.getElementsByClassName("enigmail-sign-unknown")[0].style.display = "";
                   }
-
 
                   /* Add an event listener for the button that toggles the style of the
                    * font. Only if we seem to be able to implement it (i.e. we
@@ -824,7 +853,8 @@ window.addEventListener("load", function f_temp0 () {
                       /* XXX The height of the iframe isn't updated as we change
                        * fonts. This is usually unimportant, as it will grow
                        * once if the initial font was smaller, and then remain
-                       * high. */
+                       * high. XXX check if offsetHeight works better with Gecko
+                       * 1.9.2 */
                       iframe.style.height = iframeDoc.body.scrollHeight+"px";
                     };
                     /* By default, plain/text messages are displayed using a
@@ -846,14 +876,14 @@ window.addEventListener("load", function f_temp0 () {
                   }
 
                   /* Sometimes setting the iframe's content and height changes
-                   * the scroll value */
+                   * the scroll value, don't know why. */
                   if (focusInformation.delayed && originalScroll)
                     htmlpane.contentDocument.documentElement.scrollTop = originalScroll;
 
                   /* If it's an immediate display, fire the messageDone event
                    * now (we're done with the iframe). If we're delayed, the
-                   * code that attached the event listener on the "click" event
-                   * has already fired the messageDone event, so don't do it. */
+                   * code that attached the event listener to the "click" event
+                   * already fired the messageDone event, so don't do it. */
                   if (!focusInformation.delayed)
                     messageDone();
 
@@ -887,13 +917,12 @@ window.addEventListener("load", function f_temp0 () {
                * */
               let url = msgHdrToNeckoURL(msgHdr, gMessenger);
 
-              /* quotebody seems to be the best compromise (strips out both the
-               * header and the attachments). Other possibly useful values for
-               * the header parameter:
-               *  - none (just like a regular message, but displays attachments
-               *    inside, include inline images, which makes the conversations
-               *    sloooooooow)
-               *  - quote (is that useful?)
+              /* Previously, we used quotebody. However, there's too many
+               * drawbacks (strips off signatures, doesn't render everything
+               * properly, rendering bugs...). So now we user ?header=none.
+               * There's drawbacks too, by default it displays images and
+               * possibly other types of attachments inline, which is
+               * slooooooooooooooow.
                *
                * See
                * http://mxr.mozilla.org/comm-central/source/mailnews/mime/src/nsStreamConverter.cpp#467
@@ -901,6 +930,7 @@ window.addEventListener("load", function f_temp0 () {
                * */
               let cv = iframe.docShell.contentViewer;
               cv.QueryInterface(Ci.nsIMarkupDocumentViewer);
+              /* über-important */
               cv.hintCharacterSet = "UTF-8";
               cv.hintCharacterSetSource = kCharsetFromMetaTag;
               iframe.docShell.appType = Components.interfaces.nsIDocShell.APP_TYPE_MAIL;
@@ -916,13 +946,13 @@ window.addEventListener("load", function f_temp0 () {
           } else {
             focusInformation.delayed = true;
             /* The height information that allows us to perform auto-resize is
-             * only available if the iframe has been displayed at least once. In
-             * this case, we start with the iframe hidden, so there's no way we
-             * can perform styling, auto-resizing, etc. right now. We need to
-             * wait for the iframe to be loaded first. To simplify things, the
-             * whole process of adding the iframe into the tree and styling it
-             * will be done when it is made visible for the first time. That is,
-             * when we toggle the message for the first time. */
+             * only available if the iframe has been displayed at least once.
+             * Here, we start with the iframe hidden, so there's no way we can
+             * perform styling, auto-resizing, etc. right now. We need to wait
+             * for the iframe to be loaded first. To simplify things, the whole
+             * process of adding the iframe into the tree and styling it will be
+             * done when it is made visible for the first time. That is, when we
+             * toggle the message for the first time. */
             callOnceAfterToggle(function f_temp3 () {
                 originalScroll = htmlpane.contentDocument.documentElement.scrollTop;
                 htmlMsgNode.appendChild(iframe);
@@ -944,13 +974,16 @@ window.addEventListener("load", function f_temp0 () {
              * quoted text */
             let [snippet, meta] = mimeMsgToContentSnippetAndMeta(aMimeMsg, aMsgHdr.folder, SNIPPET_LENGTH);
             let [plainTextBody, ] = mimeMsgToContentAndMeta(aMimeMsg, aMsgHdr.folder);
+
+            /* Ok, let's have fun with attachments now */
             let attachments = MimeMessageGetAttachments(aMimeMsg);
             let attachmentsTxt = stringBundle.getString("attachments");
             if (attachments.length > 0) {
               /* That's for the short paperclip icon */
               let attachmentNode = msgNode.getElementsByClassName("attachment")[0];
               attachmentNode.style.display = "";
-              /* And for the longer description */
+
+              /* That's for the small list of attachments below the sender */
               let areaNode = msgNode.getElementsByClassName("attachments-area")[0];
               areaNode.textContent = attachmentsTxt + " ("+attachments.length+")";
               let ul = htmlpane.contentDocument.createElement("ul");
@@ -961,8 +994,8 @@ window.addEventListener("load", function f_temp0 () {
               }
               areaNode.appendChild(ul);
 
-              /* Since this triggers a lot of downloads, we have to be lazy
-               * about it */
+              /* That's for the boxes below the message body that contain a
+               * description for each attachment */
               let displayFullAttachments = function () {
                 let saveTxt = stringBundle.getString("attachment-save");
                 let saveAllTxt = stringBundle.getString("attachment-saveall");
@@ -987,6 +1020,7 @@ window.addEventListener("load", function f_temp0 () {
                   let ioService = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
                   let neckoURL = null;
                   neckoURL = ioService.newURI(att.url, null, null);
+                  /* I'm still surprised that this magically works */
                   neckoURL.QueryInterface(Ci.nsIMsgMessageUrl);
                   let uri = neckoURL.uri;
                   let size = "0 mb";
@@ -1043,7 +1077,11 @@ window.addEventListener("load", function f_temp0 () {
                     function (event) {
                       HandleMultipleAttachments([attInfo], "save");
                     }, true);
-                  /* We should be able to display those in a tab */
+                  /* We should be able to display those in a tab... except, try
+                   * sending yourself a .ml file for instance. Detected as
+                   * text/plain, displayed inline with the regular message code.
+                   * Try to open it, you get "This file has type
+                   * application/ocaml" or whatever. WTF? */
                   if (att.contentType.indexOf("image/") === 0 || att.contentType.indexOf("text/") === 0) {
                     /* Display the cursor pointer */
                     _mm_addClass(singleBox.getElementsByTagName("img")[0], "image-attachment-preview");
@@ -1051,6 +1089,8 @@ window.addEventListener("load", function f_temp0 () {
                     let url = att.url;
                     singleBox.getElementsByTagName("img")[0].addEventListener("click",
                       function (event) {
+                        /* Of course that will leave us with a blank tab in the
+                         * case of a .ml file */
                         Cc['@mozilla.org/appshell/window-mediator;1'].getService(Ci.nsIWindowMediator).
                         getMostRecentWindow("mail:3pane").
                         document.getElementById("tabmail").openTab(
@@ -1059,11 +1099,15 @@ window.addEventListener("load", function f_temp0 () {
                       }, true);
                   }
                 }
+                /* Save all attachments. We can do that now since we have a
+                 * pointer towards all the attachments. */
                 attBoxNode.getElementsByClassName("save-all")[0].addEventListener("click",
                   function (event) {
                     HandleMultipleAttachments(theAttachments, "save");
                   }, true);
               };
+              /* Since this triggers a lot of downloads, we have to be lazy
+               * about it, so do it only when necessary. */
               if (messageIsCollapsed())
                 callOnceAfterToggle(displayFullAttachments);
               else
@@ -1095,7 +1139,8 @@ window.addEventListener("load", function f_temp0 () {
         /* This actually setups the iframe to point to the given message */
         fillSnippetAndHTML();
 
-        /* Handle tags associated to messages */
+        /* Handle tags associated to messages. The default styles are ugly,
+         * fortunately, we do something about it in the css. */
         let tagsNode = msgNode.getElementsByClassName("tags")[0];
         let tags = this.getTagsForMsg(msgHdr);
         for each (let [,tag] in Iterator(tags)) {
@@ -1152,7 +1197,7 @@ window.addEventListener("load", function f_temp0 () {
         }
         register(".link-reply, .button-reply", function (event) {
             /* XXX this code should adapt when news messages have a JS
-             * representation. See
+             * representation. It don't think this will ever happen. See
              * http://mxr.mozilla.org/comm-central/source/mail/base/content/mailWindowOverlay.js#1259
              * */
             compose(Ci.nsIMsgCompType.ReplyToSender, event);
