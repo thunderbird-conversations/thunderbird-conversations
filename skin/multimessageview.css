@@ -170,6 +170,8 @@ body {
   display: none;
 }
 
+/* If there's a sixth element (it's a comma) this means there's at least a
+ * seventh one so it's legitimate to add an ellipsis after that. */
 .message.collapsed .recipients span:nth-child(1),
 .message.collapsed .recipients span:nth-child(2),
 .message.collapsed .recipients span:nth-child(3),
@@ -538,15 +540,40 @@ a.action:hover {
 
 /* Error */
 
+.error, .infomsg {
+  position: fixed;
+  top: 1em;
+  left: 5em;
+  right: 5em;
+  bottom: 1em;
+  padding: 1em;
+  -moz-border-radius: 20px;
+  border-width: 3px;
+  border-style: solid;
+  font-size: small;
+  overflow: auto;
+}
+
 .error {
   background-color: #f47a7a;
-  margin: 2em;
-  -moz-border-radius: 20px;
-  font-size: small;
-  padding: 2em;
-  margin-top: 100px;
-  border: 3px solid #b13939;
+  border-color: #b13939;
 }
+
+.infomsg {
+  background-color: #fce94f;
+  border-color: #c4a000;
+}
+
+.info_buttons {
+  overflow: auto;
+  margin-top: 2em;
+}
+
+.info_af_yes, .info_af_no {
+  float: right;
+  margin-left: 1em;
+}
+
 
 .error > .close {
   text-align: center;

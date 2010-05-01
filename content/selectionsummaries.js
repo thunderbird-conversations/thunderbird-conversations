@@ -162,6 +162,7 @@ window.addEventListener("load", function f_temp0 () {
   gPrefs["disable_error_empty_collection"] = prefs.getBoolPref("disable_error_empty_collection");
   gPrefs["auto_mark_read"] = prefs.getBoolPref("auto_mark_read");
   gPrefs["monospaced_senders"] = prefs.getCharPref("monospaced_senders").split(",");
+  gPrefs["info_af_shown"] = prefs.getBoolPref("info_af_shown");
 
   let myPrefObserver = {
     register: function mpo_register () {
@@ -184,6 +185,7 @@ window.addEventListener("load", function f_temp0 () {
         case "auto_fetch":
         case "auto_mark_read":
         case "disable_error_empty_collection":
+        case "info_af_shown":
           gPrefs[aData] = prefs.getBoolPref(aData);
           break;
         case "hide_quote_length":
@@ -897,7 +899,7 @@ window.addEventListener("load", function f_temp0 () {
                 }, true); /* end document.addEventListener */
 
               /* For bidiUI */
-              if (window.browserOnLoadHandler)
+              if (window["browserOnLoadHandler"])
                 iframe.addEventListener("load", browserOnLoadHandler, true);
 
               /* Unbelievable as it may seem, the code below works.
@@ -1328,6 +1330,8 @@ window.addEventListener("load", function f_temp0 () {
           for each (let [,e] in Iterator(htmlpane.contentDocument.getElementsByClassName("error")))
             e.style.display = "none";
         };
+        /* Don't confuse users with this message, it's not relevant in this case */
+        htmlpane.contentDocument.getElementById("info_af_box").style.display = "none";
         if (aCollection) {
           clearErrors();
           items = [selectRightMessage(x, gDBView.msgFolder) for each ([, x] in Iterator(groupMessages(aCollection.items)))];
@@ -1605,6 +1609,21 @@ window.addEventListener("load", function f_temp0 () {
             let gSummary = new ThreadSummary(rightMessages, null);
             gMessageDisplay.singleMessageDisplay = false;
             try {
+              if (!gPrefs["info_af_shown"]) {
+                let info_af_box = htmlpane.contentDocument.getElementById("info_af_box");
+                info_af_box.style.display = "block";
+                let yes = info_af_box.getElementsByClassName("info_af_yes")[0];
+                let no = info_af_box.getElementsByClassName("info_af_no")[0];
+                yes.addEventListener("click", function (event) {
+                    info_af_box.style.display = "none";
+                    prefs.setBoolPref("info_af_shown", true);
+                  }, true);
+                no.addEventListener("click", function (event) {
+                    info_af_box.style.display = "none";
+                    prefs.setBoolPref("info_af_shown", true);
+                    prefs.setBoolPref("auto_fetch", false);
+                  }, true);
+              }
               gSummary.init();
             } catch (e) {
               myDump("!!! "+e+"\n");

@@ -1,12 +1,26 @@
 --- v0.3 development series ---
 
+HIGHLIGHTS
+- New design, based on mockups from the Thunderbird UX team. Improved
+readibility and usability, more actions available. You can view images inline,
+open images in a new Thunderbird tab, open text attachments in a new Thunderbird
+tab. Recipients now also have colors.
+- Compatible with Enigmail!
+- Fully revamped keyboard navigation. Use tab to jump from the message list to
+the conversation view. Use p and n to move between messages. Use o to open
+messages. Use h to hide certain messages before printing.
+- Revamped printing. Messages now flow properly accross pages.
+- Added more options regarding which message in the conversation should be
+opened first.
+- Dozens of bug fixes...
+
+FULL LIST
+- Compatible with Thunderbird 3.1
+- Fix auto-load not working in certain setups
 - Better control over how messages should be displayed in the conversation
 - Improve message display code
 - New option to display messages using a monospaced font for specific senders
 - Basic compatibility with Enigmail for signatures and encrypted emails.
-- New design, based on mockups from the Thunderbird UI team. Added: attachments
-description, colors for recipients, display names from the address book, use
-"Me" when the message is sent to me, and much more.
 - Don't silently mark a conversation as read when the conversation is selected
 and Thunderbird does not have the focus.
 - New keyboard shortcut: hold "shift" while clicking the "open thread in new
@@ -15,13 +29,11 @@ conversation toolbar) to display the conversation full-screen (without the
 message list).
 - Deleting a conversation using the conversation toolbar now also deletes
 messages that aren't in the current folder.
-- Revamp printing. Messages now flow properly accross pages (warning: no HTML
-message printing).
 - New keyboard shortcut: h to hide a given message (before printing a whole
 conversation, for instance).
 - More visual improvements.
 - Added a keyboard navigation mode. Use tab to jump from the message list to the
-individual messages in the conversation. Use the O key to open/close a given
+individual messages in the conversation. Use the o key to open/close a given
 message. Use tab/shift-tab to move to next/previous message in the conversation.
 Use backspace to move back to the conversation view.
 - Added an "icons-only" mode for the buttons in the conversation view. This

@@ -17,3 +17,4 @@ pref("gconversation.disable_error_empty_collection", false);
 pref("gconversation.auto_mark_read", false);
 pref("gconversation.toolbar_text_plus_icons", false);
 pref("gconversation.monospaced_senders", "bugzilla-daemon@mozilla.org");
+pref("gconversation.info_af_shown", false);
