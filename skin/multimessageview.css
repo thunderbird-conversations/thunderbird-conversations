@@ -176,7 +176,7 @@ body {
 .message.collapsed .recipients span:nth-child(2),
 .message.collapsed .recipients span:nth-child(3),
 .message.collapsed .recipients span:nth-child(4),
-.message.collapsed .recipients span:nth-child(5)
+.message.collapsed .recipients span:nth-child(5),
 .message.collapsed .recipients span:nth-child(6) {
   display: inline;
 }
