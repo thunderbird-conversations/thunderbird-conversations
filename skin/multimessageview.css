@@ -542,10 +542,10 @@ a.action:hover {
 
 #error_info_box {
   position: fixed;
-  top: 1em;
+  top: 0em;
   left: 5em;
   right: 5em;
-  bottom: 1em;
+  max-height: 100%;
   overflow: auto;
 }
 
@@ -555,7 +555,7 @@ a.action:hover {
   border-width: 3px;
   border-style: solid;
   font-size: small;
-  margin-bottom: 1em;
+  margin: 1em 0;
 }
 
 .error {

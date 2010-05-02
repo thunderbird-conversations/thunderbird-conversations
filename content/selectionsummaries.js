@@ -376,20 +376,9 @@ window.addEventListener("load", function f_temp0 () {
       let msgNodes = this._msgNodes;
       function scrollMessageIntoView (aMsgNode) {
         dump("I'm focusing message "+aMsgNode.getAttribute("tabindex")+"\n");
-        /* If someone could explain to me why I need this timeout, I'd be
-         * grateful. Basically, the scrolling is wrong with the following setup:
-         * - by default, expand no messages
-         * - by default, scroll to the currently selected message
-         * But this function is actually called after all the message snippets
-         * have been added... XXX check this still happens with Gecko 1.9.2
-         * */
-        setTimeout(
-          function () {
-            let mm = document.getElementById("multimessage");
-            if (aMsgNode.offsetTop)
-              mm.contentWindow.scrollTo(0, aMsgNode.offsetTop - 5);
-          },
-          100);
+        let mm = document.getElementById("multimessage");
+        if (aMsgNode.offsetTop)
+          mm.contentWindow.scrollTo(0, aMsgNode.offsetTop - 5);
       }
 
       /*                    TODAY'S GORY DETAILS
@@ -441,8 +430,11 @@ window.addEventListener("load", function f_temp0 () {
        * conversation view (either collapsed or expanded), this function is called.
        * When all the messages have been filled, it scrolls to the one we want.
        * That way, we don't have to be afraid of further reflows after we have
-       * scrolled to the right message. */
-      let nMessagesDone = numMessages;
+       * scrolled to the right message. Actually, count two for each message.
+       * One for the completion of the async FillSnippetAndHTML. The other one,
+       * for the completion of the async MsgHdrToMimeMessage. It fails if we
+       * don't do that. */
+      let nMessagesDone = 2 * numMessages;
       function messageDone() {
         myDump("messageDone()\n");
         nMessagesDone--;
@@ -1115,6 +1107,8 @@ window.addEventListener("load", function f_temp0 () {
 
             plainTextMsgNode.textContent = plainTextBody.getContentString();
             snippetMsgNode.textContent = snippet;
+
+            messageDone();
           });
         } catch (e if e.result == Components.results.NS_ERROR_FAILURE) {
           try {
@@ -1123,16 +1117,18 @@ window.addEventListener("load", function f_temp0 () {
             /* --> Try to deal with that. Try to come up with something that
              * remotely looks like a snippet. Don't link attachments, do
              * nothing, I won't duplicate my code here, let's stay sane. */
+            myDump("*** Got an \"offline message\"\n");
             let body = messageBodyFromMsgHdr(msgHdr, true);
             let snippet = body.substring(0, SNIPPET_LENGTH-3)+"...";
             snippetMsgNode.textContent = snippet;
-            myDump("*** Got an \"offline message\"\n");
+            messageDone();
           } catch (e) {
-            Application.console.log("Error fetching the message: "+e);
+            Application.console.log("GCV: Error fetching the message: "+e);
             /* Ok, that failed too... I'm out of ideas! */
             htmlMsgNode.textContent = "...";
             if (!snippetMsgNode.textContent)
               snippetMsgNode.textContent = "...";
+            messageDone();
           }
         }
         /* This actually setups the iframe to point to the given message */
