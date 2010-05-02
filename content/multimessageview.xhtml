@@ -246,31 +246,33 @@
             <div class="heading" id="heading">&selectedmessages.label;</div>
         </div>
     </div>
-    <div id="error_empty_collection" class="error" style="display: none">
-      <h3>&error.title;</h3>
-      &error_empty_collection;
-      <p><a href="mailto:jonathan.protzenko+gconversation@gmail.com">&error.help;</a></p>
-      <p class="close">
-        <span onclick="disableErrorEmptyCollection(); this.parentNode.parentNode.style.display = 'none';">&error.disable;</span>
-        -
-        <span onclick="this.parentNode.parentNode.style.display = 'none';">&error.close;</span>
-      </p>
-    </div>
-    <div id="error_gloda_disabled" class="error" style="display: none">
-      <h3>&error.title;</h3>
-      &error_gloda_disabled;
-      <p><a href="mailto:jonathan.protzenko+gconversation@gmail.com">&error.help;</a></p>
-      <p class="close">
-        <span onclick="this.parentNode.parentNode.style.display = 'none';">&error.close;</span>
-      </p>
-    </div>
-    <div id="info_af_box" class="infomsg" style="display: none">
-      <h3>&info_af.title;</h3>
-      <p>&info_af.body;</p>
-      <p>&info_af.body2;</p>
-      <div class="info_buttons">
-        <button class="info_af_yes">&info_af.yes;</button>
-        <button class="info_af_no">&info_af.no;</button>
+    <div id="error_info_box">
+      <div id="error_empty_collection" class="error" style="display: none">
+        <h3>&error.title;</h3>
+        &error_empty_collection;
+        <p><a href="mailto:jonathan.protzenko+gconversation@gmail.com">&error.help;</a></p>
+        <p class="close">
+          <span onclick="disableErrorEmptyCollection(); this.parentNode.parentNode.style.display = 'none';">&error.disable;</span>
+          -
+          <span onclick="this.parentNode.parentNode.style.display = 'none';">&error.close;</span>
+        </p>
+      </div>
+      <div id="error_gloda_disabled" class="error" style="display: none">
+        <h3>&error.title;</h3>
+        &error_gloda_disabled;
+        <p><a href="mailto:jonathan.protzenko+gconversation@gmail.com">&error.help;</a></p>
+        <p class="close">
+          <span onclick="this.parentNode.parentNode.style.display = 'none';">&error.close;</span>
+        </p>
+      </div>
+      <div id="info_af_box" class="infomsg" style="display: none">
+        <h3>&info_af.title;</h3>
+        <p>&info_af.body;</p>
+        <p>&info_af.body2;</p>
+        <div class="info_buttons">
+          <button class="info_af_yes">&info_af.yes;</button>
+          <button class="info_af_no">&info_af.no;</button>
+        </div>
       </div>
     </div>
     <div id="content">

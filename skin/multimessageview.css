@@ -540,18 +540,22 @@ a.action:hover {
 
 /* Error */
 
-.error, .infomsg {
+#error_info_box {
   position: fixed;
   top: 1em;
   left: 5em;
   right: 5em;
   bottom: 1em;
+  overflow: auto;
+}
+
+.error, .infomsg {
   padding: 1em;
   -moz-border-radius: 20px;
   border-width: 3px;
   border-style: solid;
   font-size: small;
-  overflow: auto;
+  margin-bottom: 1em;
 }
 
 .error {
