@@ -62,14 +62,14 @@ var gconversation = {
   print: null,
   /* Prevent GC */
   stash: {
-    wantedUrl: null,
-    q1: null,
+    wantedUrl: null, /* To disable the autoload handler if we explicitely requested that message */
+    q1: null, /* Don't GC Gloda queries */
     q2: null,
-    msgHdrs: [],
-    multiple_selection: false,
-    expand_all: [],
+    msgHdrs: [], /* To mark them read, to determine if it's a different conversation, and many more */
+    multiple_selection: false, /* Printing and archiving depend on these */
+    expand_all: [], /* A list of closures */
     collapse_all: [],
-    needsFocus: -1
+    needsFocus: -1 /* We can't regain that information back once the conversation has been loaded */
   }
 };
 
@@ -312,7 +312,12 @@ window.addEventListener("load", function f_temp0 () {
 
   /* Create a closure that can be called later when all the messages have
    * been properly loaded, all the iframes resized to fit. When the page
-   * won't scroll anymore, we manually set the message we want into view. */
+   * won't scroll anymore, we manually set the message we want into view.
+   *
+   * This function is now also used by summarizeThread and the autoload event
+   * handler. When the conversation is the same, we don't rebuild it. However,
+   * all focus information has been lost, so we need to re-trigger this function
+   * to scroll back the right message into view. */
   function scrollMessageIntoView (aMsgNode) {
     dump("I'm focusing message with tabindex "+aMsgNode.getAttribute("tabindex")+"\n");
     if (aMsgNode.offsetTop)
@@ -378,9 +383,16 @@ window.addEventListener("load", function f_temp0 () {
           }
         }
       }
+      /* Why do we keep this information? Basically, if we need to rebuild a
+       * conversation with the exact same set of message headers, we just do
+       * nothing, except that all focus information has been lost, so we need to
+       * rescroll the right message into view. We can't do that if don't have
+       * access to the index of the message that needs to be scrolled back into
+       * view. */
       gconversation.stash.needsFocus = needsFocus;
       myDump(numMessages+" messages total, focusing "+needsFocus+"\n");
 
+      /* We can't really trust this to remain valid. */
       let msgHdrs = this._msgHdrs;
       let msgNodes = this._msgNodes;
 
@@ -410,22 +422,28 @@ window.addEventListener("load", function f_temp0 () {
        * */
 
       /* Deal with the currently selected message */
-      function variousFocusHacks(aMsgNode) {
+      function variousFocusHacks (aMsgNode) {
         /* We want the node that's been expanded (the one that has index
          * needsFocus) to also have the visual appearance with the cursor. */
         _mm_addClass(aMsgNode, "selected");
         htmlpane.contentDocument.addEventListener("focus", function on_focus (event) {
-            htmlpane.contentDocument.removeEventListener("focus", on_focus, true);
-            /* However, when the thread summary gains focus, we need to
-             * remove that class because :focus will take care of that */
-            _mm_removeClass(aMsgNode, "selected");
-            /* Restore the proper tab order. This event is fired *after* the
-             * right message has been focused in Gecko 1.9.2, *before* the right
-             * message has been focused in Gecko 1.9.1 (so it's basically
-             * useless). */
-            let tabIndex = gPrefs["reverse_order"] ? numMessages - needsFocus : needsFocus;
-            tabIndex++; tabIndex++;
-            aMsgNode.setAttribute("tabindex", tabIndex);
+            /* This is a persistent event listener. It can operate multiple
+             * times. Actually, since we don't rebuild conversations when the
+             * message set is the same, we restore the tabindex hack and the
+             * selected state, so this handler must still be able to operate
+             * properly. */
+            if (_mm_hasClass(aMsgNode, "selected")) {
+              /* However, when the thread summary gains focus, we need to
+               * remove that class because :focus will take care of that */
+              _mm_removeClass(aMsgNode, "selected");
+              /* Restore the proper tab order. This event is fired *after* the
+               * right message has been focused in Gecko 1.9.2, *before* the right
+               * message has been focused in Gecko 1.9.1 (so it's basically
+               * useless). */
+              let tabIndex = gPrefs["reverse_order"] ? numMessages - needsFocus : needsFocus;
+              tabIndex++; tabIndex++;
+              aMsgNode.setAttribute("tabindex", tabIndex);
+            }
           }, true);
       }
 
@@ -1381,10 +1399,14 @@ window.addEventListener("load", function f_temp0 () {
            * lost there, so our best guess is to set back the focus to the
            * message that was originally supposed to be selected. If we haven't
            * focused to the conversation in the past, the needsFocus-th node
-           * still has class selected, so we're doing no harm there. */
+           * still has class selected, so we're doing no harm there.
+           *
+           * We also restore the tabindex hack. Might be useless (just like
+           * .selected), might be not. */
           let msgNode = htmlpane.contentDocument.getElementsByClassName("message")[gconversation.stash.needsFocus];
           dump("Same conversation, showing message "+gconversation.stash.needsFocus+"\n");
           _mm_addClass(msgNode, "selected");
+          msgNode.setAttribute("tabindex", "1");
           scrollMessageIntoView(msgNode);
         }
         return;
@@ -1661,6 +1683,7 @@ window.addEventListener("load", function f_temp0 () {
               let msgNode = htmlpane.contentDocument.getElementsByClassName("message")[gconversation.stash.needsFocus];
               dump("Same conversation, showing message "+gconversation.stash.needsFocus+"\n");
               _mm_addClass(msgNode, "selected");
+              msgNode.setAttribute("tabindex", "1");
               scrollMessageIntoView(msgNode);
             }
             return;
