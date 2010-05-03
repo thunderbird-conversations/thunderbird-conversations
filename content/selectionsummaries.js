@@ -53,9 +53,9 @@ var gconversation = {
   on_load_thread: null,
   on_load_thread_tab: null,
   on_back: null,
+  /* Used by both the in-conversation toolbar and the right-click menu */
   on_collapse_all: null,
   on_expand_all: null,
-  /* Used by both the in-conversation toolbar and the right-click menu */
   mark_all_read: null,
   archive_all: null,
   delete_all: null,
@@ -65,10 +65,11 @@ var gconversation = {
     wantedUrl: null,
     q1: null,
     q2: null,
-    msgHdrs: null,
+    msgHdrs: [],
     multiple_selection: false,
     expand_all: [],
-    collapse_all: []
+    collapse_all: [],
+    needsFocus: -1
   }
 };
 
@@ -76,6 +77,10 @@ var gconversation = {
  * because we need the <stringbundle> to be available. */
 window.addEventListener("load", function f_temp0 () {
   window.removeEventListener("load", f_temp0, false); /* just to make sure */
+
+  /* This one we use all the time, stop redefining it everywhere, just assume it
+   * will be available anywhere from now on */
+  let htmlpane = document.getElementById('multimessage');
 
   /* Enigmail support, thanks to Patrick Brunschwig ! */
   let hasEnigmail = (typeof(GetEnigmailSvc) == "function");
@@ -196,7 +201,6 @@ window.addEventListener("load", function f_temp0 () {
           break;
         /* Warning this one has no key in gPrefs */
         case "toolbar_text_plus_icons":
-          let htmlpane = document.getElementById('multimessage');
           /* We toggle it because we know that multimessageview.xhtml has set it
            * in the right position. */
           _mm_toggleClass(htmlpane.contentDocument.getElementById("buttonhbox"), "text-plus-icons");
@@ -306,6 +310,15 @@ window.addEventListener("load", function f_temp0 () {
     return [colorize(a) for each ([, a] in Iterator(decodedAddresses))];
   }
 
+  /* Create a closure that can be called later when all the messages have
+   * been properly loaded, all the iframes resized to fit. When the page
+   * won't scroll anymore, we manually set the message we want into view. */
+  function scrollMessageIntoView (aMsgNode) {
+    dump("I'm focusing message with tabindex "+aMsgNode.getAttribute("tabindex")+"\n");
+    if (aMsgNode.offsetTop)
+      htmlpane.contentWindow.scrollTo(0, aMsgNode.offsetTop - 5);
+  }
+
   /* Actually we don't need to change the constructor, only members */
   ThreadSummary.prototype = {
     __proto__: MultiMessageSummary.prototype,
@@ -322,8 +335,6 @@ window.addEventListener("load", function f_temp0 () {
       resetColors();
 
       this._msgNodes = {};
-
-      let htmlpane = document.getElementById('multimessage');
 
       /* Fill the heading */
       let firstMsgHdr = this._msgHdrs[0];
@@ -367,19 +378,11 @@ window.addEventListener("load", function f_temp0 () {
           }
         }
       }
+      gconversation.stash.needsFocus = needsFocus;
       myDump(numMessages+" messages total, focusing "+needsFocus+"\n");
 
-      /* Create a closure that can be called later when all the messages have
-       * been properly loaded, all the iframes resized to fit. When the page
-       * won't scroll anymore, we manually set the message we want into view. */
       let msgHdrs = this._msgHdrs;
       let msgNodes = this._msgNodes;
-      function scrollMessageIntoView (aMsgNode) {
-        dump("I'm focusing message "+aMsgNode.getAttribute("tabindex")+"\n");
-        let mm = document.getElementById("multimessage");
-        if (aMsgNode.offsetTop)
-          mm.contentWindow.scrollTo(0, aMsgNode.offsetTop - 5);
-      }
 
       /*                    TODAY'S GORY DETAILS
        *
@@ -1305,6 +1308,25 @@ window.addEventListener("load", function f_temp0 () {
     }
   }
 
+  function isNewConversation(items) {
+    /* What we do here is basically compare the new set of message headers
+     * to the one we used last time to build the conversation view. If the
+     * message set is the same, it is useless to rebuild exactly the same
+     * conversation. This is sometimes necessary (rebuilding a
+     * conversation that has two unread messages in a row marks them read
+     * the first time and only collapses the last one on the second load,
+     * thus hiding an unread message). */
+    let newConversation = false;
+    for (let i = 0; i < Math.max(items.length, gconversation.stash.msgHdrs.length); ++i) {
+      if (i >= items.length || i >= gconversation.stash.msgHdrs.length ||
+          items[i].messageId != gconversation.stash.msgHdrs[i].messageId) {
+        newConversation = true;
+        break;
+      }
+    }
+    return newConversation;
+  }
+
   /* The summarizeThread function overwrites the default one, searches for more
    * messages, and passes them to our instance of ThreadSummary. This design is
    * more convenient as it follows Thunderbird's more closely, which allows me
@@ -1314,7 +1336,6 @@ window.addEventListener("load", function f_temp0 () {
       myDump("No selected messages\n");
       return false;
     }
-    let htmlpane = document.getElementById('multimessage');
     htmlpane.contentWindow.enableExtraButtons();
     gconversation.stash.multiple_selection = false;
 
@@ -1349,11 +1370,23 @@ window.addEventListener("load", function f_temp0 () {
           myDump("aCollection is null, "+items.length+" messages found\n");
           myDump("In aSelectedMessages, we have, "+aSelectedMessages.length+" messages\n");
         }
-        gSummary = new ThreadSummary(items, aListener);
-        gSummary.init();
 
-        if (gPrefs["auto_mark_read"] && document.hasFocus())
-          gconversation.mark_all_read();
+        if (isNewConversation(items)) {
+          gSummary = new ThreadSummary(items, aListener);
+          gSummary.init();
+          if (gPrefs["auto_mark_read"] && document.hasFocus())
+            gconversation.mark_all_read();
+        } else {
+          /* Try to restore at least some selection. The focus information is
+           * lost there, so our best guess is to set back the focus to the
+           * message that was originally supposed to be selected. If we haven't
+           * focused to the conversation in the past, the needsFocus-th node
+           * still has class selected, so we're doing no harm there. */
+          let msgNode = htmlpane.contentDocument.getElementsByClassName("message")[gconversation.stash.needsFocus];
+          dump("Same conversation, showing message "+gconversation.stash.needsFocus+"\n");
+          _mm_addClass(msgNode, "selected");
+          scrollMessageIntoView(msgNode);
+        }
         return;
       }
     );
@@ -1400,7 +1433,6 @@ window.addEventListener("load", function f_temp0 () {
       return true;
     } else {
       gMessageDisplay.singleMessageDisplay = false;
-      let htmlpane = document.getElementById('multimessage');
       htmlpane.contentWindow.errorGlodaDisabled();
     }
   };
@@ -1440,7 +1472,6 @@ window.addEventListener("load", function f_temp0 () {
             });
           } else {
             gMessageDisplay.singleMessageDisplay = false;
-            let htmlpane = document.getElementById('multimessage');
             if (!gPrefs["disable_error_empty_collection"])
               htmlpane.contentWindow.errorEmptyCollection();
           }
@@ -1457,9 +1488,8 @@ window.addEventListener("load", function f_temp0 () {
       let w = window.open("chrome://gconversation/content/printstub.xhtml", "", "width=640,height=480,chrome");
       w.addEventListener("load", function (event) {
         let pDoc = w.document;
-        let htmlpane = document.getElementById('multimessage').contentDocument;
-        pDoc.getElementById("heading").textContent = htmlpane.getElementById("heading").textContent;
-        for each (let [,msgNode] in Iterator(htmlpane.getElementsByClassName("message"))) {
+        pDoc.getElementById("heading").textContent = htmlpane.contentDocument.getElementById("heading").textContent;
+        for each (let [,msgNode] in Iterator(htmlpane.contentDocument.getElementsByClassName("message"))) {
           if (msgNode.style.display == "none")
             continue;
 
@@ -1596,39 +1626,46 @@ window.addEventListener("load", function f_temp0 () {
             if (items.length <= 1)
               return;
             /* Don't forget to show the right buttons */
-            let htmlpane = document.getElementById('multimessage');
             htmlpane.contentWindow.enableExtraButtons();
 
             let rightMessages = [selectRightMessage(x, gDBView.msgFolder) for each ([, x] in Iterator(items))];
             rightMessages = rightMessages.filter(function (x) x);
             rightMessages = rightMessages.map(function (x) x.folderMessage);
-            let gSummary = new ThreadSummary(rightMessages, null);
             gMessageDisplay.singleMessageDisplay = false;
-            try {
-              if (!gPrefs["info_af_shown"]) {
-                let info_af_box = htmlpane.contentDocument.getElementById("info_af_box");
-                info_af_box.style.display = "block";
-                let yes = info_af_box.getElementsByClassName("info_af_yes")[0];
-                let no = info_af_box.getElementsByClassName("info_af_no")[0];
-                yes.addEventListener("click", function (event) {
-                    info_af_box.style.display = "none";
-                    prefs.setBoolPref("info_af_shown", true);
-                  }, true);
-                no.addEventListener("click", function (event) {
-                    info_af_box.style.display = "none";
-                    prefs.setBoolPref("info_af_shown", true);
-                    prefs.setBoolPref("auto_fetch", false);
-                  }, true);
+            if (isNewConversation(rightMessages)) {
+              let gSummary = new ThreadSummary(rightMessages, null);
+              try {
+                if (!gPrefs["info_af_shown"]) {
+                  let info_af_box = htmlpane.contentDocument.getElementById("info_af_box");
+                  info_af_box.style.display = "block";
+                  let yes = info_af_box.getElementsByClassName("info_af_yes")[0];
+                  let no = info_af_box.getElementsByClassName("info_af_no")[0];
+                  yes.addEventListener("click", function (event) {
+                      info_af_box.style.display = "none";
+                      prefs.setBoolPref("info_af_shown", true);
+                    }, true);
+                  no.addEventListener("click", function (event) {
+                      info_af_box.style.display = "none";
+                      prefs.setBoolPref("info_af_shown", true);
+                      prefs.setBoolPref("auto_fetch", false);
+                    }, true);
+                }
+                gSummary.init();
+              } catch (e) {
+                myDump("!!! "+e+"\n");
+                throw e;
               }
-              gSummary.init();
-            } catch (e) {
-              myDump("!!! "+e+"\n");
-              throw e;
+            } else {
+              /* See explanations in summarizeThread, we're basically doing the
+               * same here */
+              let msgNode = htmlpane.contentDocument.getElementsByClassName("message")[gconversation.stash.needsFocus];
+              dump("Same conversation, showing message "+gconversation.stash.needsFocus+"\n");
+              _mm_addClass(msgNode, "selected");
+              scrollMessageIntoView(msgNode);
             }
             return;
           }
       });
-
     },
     QueryInterface: XPCOMUtils.generateQI([Ci.nsISupports, Ci.nsISupportsWeakReference, Ci.nsIWebProgressListener])
   };
