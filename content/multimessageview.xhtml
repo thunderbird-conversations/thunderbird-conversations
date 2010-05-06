@@ -71,19 +71,14 @@
         <script type="application/javascript;version=1.8"><![CDATA[
             function addPlatformStyle() {
               let styleElt = document.getElementById("platformStylesheet");
-              switch (navigator.platform) {
-                case "Win32":
+              if (navigator.platform.indexOf("Win") === 0)
                   styleElt.setAttribute("href", "chrome://gconversation/skin/win.css");
-                  break;
-                case "MacPPC":
-                case "MacIntel":
+              else if (navigator.platform.indexOf("Mac") === 0)
                   styleElt.setAttribute("href", "chrome://gconversation/skin/mac.css");
-                  break;
-                case "Linux i686":
-                default:
+              else if (navigator.platform.indexOf("Linux") === 0)
                   styleElt.setAttribute("href", "chrome://gconversation/skin/linux.css");
-                  break;
-              }
+              else
+                  styleElt.setAttribute("href", "chrome://gconversation/skin/linux.css");
             }
 
             Components.utils.import("resource:///modules/errUtils.js");
