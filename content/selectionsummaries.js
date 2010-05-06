@@ -625,11 +625,8 @@ window.addEventListener("load", function f_temp0 () {
         snippetMsgNode.addEventListener("click", toggleMessage, true);
 
         /* Insert fancy colored html */
-        let senderSpans = processEmails(msgHdr.mime2DecodedAuthor, htmlpane.contentDocument);
         let recipientsSpans = processEmails(msgHdr.mime2DecodedRecipients, htmlpane.contentDocument);
         let ccSpans = processEmails(msgHdr.ccList, htmlpane.contentDocument);
-        if (senderSpans.length)
-          senderNode.appendChild(senderSpans[0]);
         let lastComma;
         for each (let [, spanList] in Iterator([recipientsSpans, ccSpans])) {
           for each (let [, span] in Iterator(spanList)) {
@@ -641,6 +638,8 @@ window.addEventListener("load", function f_temp0 () {
           }
         }
         recipientsNode.removeChild(lastComma);
+        /* We don't fill the sender here, as we may prefer more relevant
+         * information with the MimeMessage */
 
         /* Style according to the preferences. Preferences have an observer, see
          * above for details. */
@@ -976,11 +975,21 @@ window.addEventListener("load", function f_temp0 () {
 
         /* That part tries to extract extra information about the message using
          * Gloda */
+        let fillAuthor = function (author) {
+          let senderSpans = processEmails(author, htmlpane.contentDocument);
+          if (senderSpans.length)
+            senderNode.appendChild(senderSpans[0]);
+        };
         try {
           /* throw { result: Components.results.NS_ERROR_FAILURE }; */
           MsgHdrToMimeMessage(msgHdr, null, function (aMsgHdr, aMimeMsg) {
             if (aMimeMsg == null) // shouldn't happen, but sometimes does?
               return;
+
+            /* Deal with the sender */
+            let author = aMimeMsg.headers["x-bugzilla-who"] || msgHdr.mime2DecodedAuthor;
+            fillAuthor(author);
+
             /* The advantage here is that the snippet is properly stripped of
              * quoted text */
             let [snippet, meta] = mimeMsgToContentSnippetAndMeta(aMimeMsg, aMsgHdr.folder, SNIPPET_LENGTH);
@@ -1138,6 +1147,10 @@ window.addEventListener("load", function f_temp0 () {
              * remotely looks like a snippet. Don't link attachments, do
              * nothing, I won't duplicate my code here, let's stay sane. */
             myDump("*** Got an \"offline message\"\n");
+
+            /* At least fill the sender! */
+            fillAuthor(msgHdr.mime2DecodedAuthor);
+
             let body = messageBodyFromMsgHdr(msgHdr, true);
             let snippet = body.substring(0, SNIPPET_LENGTH-3)+"...";
             snippetMsgNode.textContent = snippet;
