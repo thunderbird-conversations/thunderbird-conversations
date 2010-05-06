@@ -324,7 +324,6 @@ window.addEventListener("load", function f_temp0 () {
       htmlpane.contentWindow.scrollTo(0, aMsgNode.offsetTop - 5);
   }
 
-  /* Actually we don't need to change the constructor, only members */
   ThreadSummary.prototype = {
     __proto__: MultiMessageSummary.prototype,
 
@@ -1310,6 +1309,9 @@ window.addEventListener("load", function f_temp0 () {
     }
   }
 
+  /* The first parameter is usually what we've retrieved from the Gloda query.
+   * However, some of the selected messages might not have been indexed yet, so
+   * add them here. */
   function addPossiblyMissingHeaders(items, aSelectedMessages) {
     let oldLength = items.length;
     let seen = {};
@@ -1326,14 +1328,14 @@ window.addEventListener("load", function f_temp0 () {
     }
   }
 
+  /* What we do here is basically compare the new set of message headers to the
+   * one we used last time to build the conversation view. If the message set is
+   * the same, it is useless to rebuild exactly the same conversation. This is
+   * sometimes mandatory not to rebuild it (rebuilding a conversation that has
+   * two unread messages in a row marks them read the first time and only
+   * expands the last one on the second load, thus hiding an unread message).
+   * */
   function isNewConversation(items) {
-    /* What we do here is basically compare the new set of message headers
-     * to the one we used last time to build the conversation view. If the
-     * message set is the same, it is useless to rebuild exactly the same
-     * conversation. This is sometimes necessary (rebuilding a
-     * conversation that has two unread messages in a row marks them read
-     * the first time and only collapses the last one on the second load,
-     * thus hiding an unread message). */
     let newConversation = false;
     for (let i = 0; i < Math.max(items.length, gconversation.stash.msgHdrs.length); ++i) {
       if (i >= items.length || i >= gconversation.stash.msgHdrs.length ||
@@ -1432,14 +1434,14 @@ window.addEventListener("load", function f_temp0 () {
       ];
       let isSameThread = threadKeys.every(function (x) x == threadKeys[0]);
       if (isSameThread) {
-      /* ------ end cut here ----- */
         summarizeThread(aSelectedMessages);
-      /* ------ cut here ----- */
       } else {
+      /* ------ end cut here ----- */
         gSummary = new MultiMessageSummary(aSelectedMessages);
         gSummary.init();
         document.getElementById('multimessage').contentWindow.disableExtraButtons();
         gconversation.stash.multiple_selection = true;
+      /* ------ cut here ----- */
       }
       /* ------ end cut here ----- */
     } catch (e) {
@@ -1695,5 +1697,4 @@ window.addEventListener("load", function f_temp0 () {
   messagepane.addProgressListener(gconversation.stash.uriWatcher, Ci.nsIWebProgress.NOTIFY_ALL);
 
   myDump("*** gConversation loaded\n");
-
 }, false);

@@ -67,17 +67,21 @@ body {
   border-bottom: 2px outset #bbb;
   -moz-border-radius: 5px;
   position: relative;
-  padding: 1em;
+  padding: 0;
+  padding-left: .5em;
   margin-bottom: 2ex;
   background-color: white;
 }
 
 .message.unread {
-  background-color: rgba(114,159,207,.02);
+  background-color: #729FCF; /* Same blue as .heading */
 }
 
 .row {
   position: static;
+  border: 1em solid white;
+  border-left-width: .5em;
+  background-color: white;
 }
 
 #content {
@@ -103,10 +107,6 @@ body {
 .message.collapsed .snippetmsg {
   display: block;
   font-size: smaller;
-}
-
-.message.collapsed {
-  padding: .1em 1em; /* The date's position must have the same values */
 }
 
 .message.collapsed .button-action-area,
