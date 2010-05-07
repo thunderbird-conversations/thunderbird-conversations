@@ -34,47 +34,33 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-@page {
-  margin: 1cm;
-}
-
-/* Heading */
-
-#heading {
-  font-variant: small-caps;
-  margin-bottom: 1em;
-  font-weight: bold;
-  font-size: large;
-  font-family: sans-serif;
-}
-
-/* Message header */
-
-.sender:before, .date:before {
-  font-weight: bold;
-}
-
-/* Message body */
-.message {
-  padding: .5em;
-  border: 1px solid #888;
-  margin-bottom: 2ex;
-}
-
-.date {
-  padding-bottom: .5em;
-}
-
-.header {
-  border-bottom: 1px solid #888;
-}
-
-.snippetmsg {
-  padding-top: .5em;
-  font-style: italic;
+.htmlmsg {
+  display: none;
 }
 
 .plaintextmsg {
-  padding-top: .5em;
+  display: block !important;
   white-space: pre-wrap;
+}
+
+.message.collapsed .plaintextmsg {
+  display: none !important;
+}
+
+.button-action-area {
+  display: none;
+}
+
+.link-action-area {
+  display: none;
+}
+
+#buttonbox {
+  display: none;
+}
+
+.heading {
+  font-size: large;
+  font-variant: small-caps;
+  margin-bottom: .3em;
 }

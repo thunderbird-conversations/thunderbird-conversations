@@ -1521,48 +1521,7 @@ window.addEventListener("load", function f_temp0 () {
 
   /* Register "print" functionnality. Now that's easy! */
   gconversation.print = function () {
-    if (gconversation.stash.multiple_selection) {
-      document.getElementById("multimessage").contentWindow.print();
-    } else {
-      let w = window.open("chrome://gconversation/content/printstub.xhtml", "", "width=640,height=480,chrome");
-      w.addEventListener("load", function (event) {
-        let pDoc = w.document;
-        pDoc.getElementById("heading").textContent = htmlpane.contentDocument.getElementById("heading").textContent;
-        for each (let [,msgNode] in Iterator(htmlpane.contentDocument.getElementsByClassName("message"))) {
-          if (msgNode.style.display == "none")
-            continue;
-
-          let pMsgNode = pDoc.getElementsByClassName("message")[0].cloneNode(true);
-          let clone = function (klass, f) {
-            let node = msgNode.getElementsByClassName(klass)[0];
-            let pNode = pMsgNode.getElementsByClassName(klass)[0];
-            f(node, pNode);
-          };
-          clone("sender", function (sender, pSender) {
-            pSender.textContent = sender.textContent;
-            pSender.style.color = sender.style.color;
-          });
-          clone("date", function (node, pNode) {
-            pNode.textContent = node.textContent;
-          });
-          clone("snippetmsg", function (snippet, pSnippet) {
-            if (_mm_hasClass(pMsgNode, "collapsed")) {
-              pSnippet.textContent = snippet.textContent;
-              pMsgNode.getElementsByClassName("plaintextmsg")[0].style.display = "none";
-            } else {
-              pSnippet.style.display = "none";
-            }
-          });
-          clone("plaintextmsg", function (msg, pMsg) {
-            pMsg.textContent = msg.textContent;
-          });
-          pDoc.body.appendChild(pMsgNode);
-        }
-        let stub = pDoc.getElementsByClassName("message")[0];
-        stub.parentNode.removeChild(stub);
-        setTimeout(function () w.print(), 0);
-      }, true);
-    }
+    document.getElementById("multimessage").contentWindow.print();
   };
 
   /* The button as well as the menu item are hidden and disabled respectively
