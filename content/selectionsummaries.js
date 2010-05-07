@@ -69,7 +69,11 @@ var gconversation = {
     multiple_selection: false, /* Printing and archiving depend on these */
     expand_all: [], /* A list of closures */
     collapse_all: [],
-    needsFocus: -1 /* We can't regain that information back once the conversation has been loaded */
+    /* We can't regain that information back once the conversation has been
+     * loaded. Beware, this is the node index in the DOM list, not in the
+     * msgHdrs array used in the code. This does not depend on
+     * gPrefs["reserve"], unlike the regular needsFocus. */
+    needsFocusNodeIndex: -1
   }
 };
 
@@ -389,7 +393,8 @@ window.addEventListener("load", function f_temp0 () {
        * rescroll the right message into view. We can't do that if don't have
        * access to the index of the message that needs to be scrolled back into
        * view. */
-      gconversation.stash.needsFocus = needsFocus;
+      gconversation.stash.needsFocusNodeIndex = gPrefs["reverse_order"] ? numMessages - 1 - needsFocus : needsFocus;
+;
       myDump(numMessages+" messages total, focusing "+needsFocus+"\n");
 
       /* We can't really trust this to remain valid. */
@@ -1420,8 +1425,9 @@ window.addEventListener("load", function f_temp0 () {
            *
            * We also restore the tabindex hack. Might be useless (just like
            * .selected), might be not. */
-          let msgNode = htmlpane.contentDocument.getElementsByClassName("message")[gconversation.stash.needsFocus];
-          dump("Same conversation, showing message "+gconversation.stash.needsFocus+"\n");
+          let index = gconversation.stash.needsFocusNodeIndex;
+          let msgNode = htmlpane.contentDocument.getElementsByClassName("message")[index];
+          dump("Same conversation, showing message "+index+"\n");
           _mm_addClass(msgNode, "selected");
           msgNode.setAttribute("tabindex", "1");
           scrollMessageIntoView(msgNode);
@@ -1656,8 +1662,9 @@ window.addEventListener("load", function f_temp0 () {
             } else {
               /* See explanations in summarizeThread, we're basically doing the
                * same here */
-              let msgNode = htmlpane.contentDocument.getElementsByClassName("message")[gconversation.stash.needsFocus];
-              dump("Same conversation, showing message "+gconversation.stash.needsFocus+"\n");
+              let index = gconversation.stash.needsFocusNodeIndex;
+              let msgNode = htmlpane.contentDocument.getElementsByClassName("message")[index];
+              dump("Same conversation, showing message "+index+"\n");
               _mm_addClass(msgNode, "selected");
               msgNode.setAttribute("tabindex", "1");
               scrollMessageIntoView(msgNode);
