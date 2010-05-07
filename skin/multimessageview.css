@@ -99,6 +99,11 @@ body {
   display: none;
 }
 
+.message.collapsed .row {
+  border-bottom-width: 0;
+  border-top-width: .2em;
+}
+
 .snippetmsg {
   display: none;
   cursor: pointer;
