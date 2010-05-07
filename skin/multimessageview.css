@@ -82,6 +82,7 @@ body {
   border: 1em solid white;
   border-left-width: .5em;
   background-color: white;
+  -moz-border-radius: 0 5px 5px 0;
 }
 
 #content {
@@ -369,43 +370,7 @@ a.action:hover {
   margin: 0px;
 }
 
-.messageclosebox {
-  display: none;
-  position: absolute;
-  width: 100%;
-  height: 13px;
-  left: 0;
-  bottom: 0;
-  text-align: center;
-}
-
-.messageclose {
-  display: inline-block;
-  height: 13px;
-  line-height: 13px;
-  font-size: 10px;
-  padding: 0 5px;
-  border: 1px solid #888;
-  border-bottom-width: 0;
-  -moz-border-radius: 2px 2px 0 0;
-  background-color: white;
-  color: #888;
-  cursor: pointer;
-}
-
-.messageclose:hover {
-  color: black;
-}
-
 /* Inside the messages' bodies */
-
-.fullmsg {
-  color: black;
-}
-
-.monospaced-snippet {
-  font-family: -moz-fixed;
-}
 
 .htmlmsg > iframe {
   border-width: 0;
