@@ -1,7 +1,0 @@
-.sender:before {
-  content: "From: ";
-}
-
-.date:before {
-  content: "Received on: ";
-}
