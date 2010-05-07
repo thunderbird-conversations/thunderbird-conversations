@@ -319,9 +319,8 @@ a.action:hover {
 }
 
 .msgheader-subject-date {
-  width: 100%;
-  position: relative;
-  margin: 0.2em 0;
+  float: right;
+  padding: 0.3em 0;
 }
 
 .subject {
