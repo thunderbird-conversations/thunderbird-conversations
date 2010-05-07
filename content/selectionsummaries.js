@@ -239,9 +239,10 @@ window.addEventListener("load", function f_temp0 () {
   }
   /* Return the color for a given person or create it */
   function colorFor(person) {
-    if (!id2color[person])
-      id2color[person] = newColor();
-    return id2color[person];
+    let lPerson = person.toLowerCase();
+    if (!id2color[lPerson])
+      id2color[lPerson] = newColor();
+    return id2color[lPerson];
   }
 
   /* Mark once and for all all of the user's email addresses */
@@ -811,9 +812,10 @@ window.addEventListener("load", function f_temp0 () {
                    * <iframe>. I don't think we can use a chrome:// url for
                    * the stylesheet because the iframe has a type="content" */
                   let style = iframeDoc.createElement("style");
+                  let defaultFont = gPrefBranch.getCharPref("font.default");
                   style.appendChild(iframeDoc.createTextNode(
                     ".pre-as-regular {\n"+
-                    "  font-family: sans !important;\n"+
+                    "  font-family: "+defaultFont+" !important;\n"+
                     "  font-size: medium !important;\n"+
                     "}\n"+
                     "fieldset.mimeAttachmentHeader,\n"+
