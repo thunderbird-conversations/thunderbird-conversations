@@ -532,7 +532,7 @@ window.addEventListener("load", function f_temp0 () {
             </div>
             <div class="header">
               <div class="wrappedsender">
-                <div class="msgheader-details-toggle">{detailsTxt}</div>
+                <div class="msgheader-details-toggle" style="display: none">{detailsTxt}</div>
                 <div class="msgheader-from-to">
                   <div class="sender link"></div>
                   <div class="to-text">{toTxt}</div>
@@ -1066,7 +1066,7 @@ window.addEventListener("load", function f_temp0 () {
                         <td><img title={altTxt} src={att.url} /></td>
                         <td>
                           <p><span class="attachment-link link">{att.name}</span></p>
-                          <p>{size}</p>
+                          <p style="display: none">{size}</p>
                           <p>
                             <button class="button msgHdrView-button button-regular save">{saveTxt}</button>
                           </p>
