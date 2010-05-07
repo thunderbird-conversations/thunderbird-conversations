@@ -1,4 +1,4 @@
---- v0.3 development series ---
+--- 1.0 release ---
 
 HIGHLIGHTS
 - New design, based on mockups from the Thunderbird UX team. Improved
@@ -16,31 +16,38 @@ opened first.
 
 FULL LIST
 - Compatible with Thunderbird 3.1
-- Fix auto-load not working in certain setups
-- Better control over how messages should be displayed in the conversation
-- Improve message display code
-- New option to display messages using a monospaced font for specific senders
-- Basic compatibility with Enigmail for signatures and encrypted emails.
-- Don't silently mark a conversation as read when the conversation is selected
-and Thunderbird does not have the focus.
+- Compatible with Bugzilla setups (uses X-Mozilla-Who when available)
+
+- Added a keyboard navigation mode.
+  * Use tab to jump from the message list to the individual messages in the
+    conversation.
+  * Use o or Enter key to open/close a given message.
+  * Use n/p to move to next/previous message in the conversation.
+  * Use h to hide a message before printing the whole conversation.
+  * Use backspace to move back to the conversation view.
 - New keyboard shortcut: hold "shift" while clicking the "open thread in new
 tab" button (either in the main toolbar, the message header toolbar or the
 conversation toolbar) to display the conversation full-screen (without the
-message list).
-- Deleting a conversation using the conversation toolbar now also deletes
-messages that aren't in the current folder.
-- New keyboard shortcut: h to hide a given message (before printing a whole
-conversation, for instance).
-- More visual improvements.
-- Added a keyboard navigation mode. Use tab to jump from the message list to the
-individual messages in the conversation. Use the o key to open/close a given
-message. Use tab/shift-tab to move to next/previous message in the conversation.
-Use backspace to move back to the conversation view.
+
+- More options to determine which messages to open first when displaying a
+  conversation.
+- New option to display messages using a monospaced font for specific senders
 - Added an "icons-only" mode for the buttons in the conversation view. This
 should make it easier for narrow screens to properly display the conversation
 title. Added native icons on Linux, Mac and Windows.
 - Added a "back" button to easily switch back to the single message view that
 was displayed before the conversation.
+
+- Improve message display code
+- Basic compatibility with Enigmail for signatures and encrypted emails.
+
+- Fix auto-load not working in certain setups
+- Fix: don't silently mark a conversation as read when the conversation is
+  selected and Thunderbird does not have the focus.
+message list).
+- Fix: deleting a conversation using the conversation toolbar now also deletes
+  messages that aren't in the current folder.
+
 - Dropped large parts of the code, in order to simplify maintenance. plain/text
 messages are now displayed using the standard Thunderbird display code. This
 means they will use the default font, they will have standard <blockquote>s
