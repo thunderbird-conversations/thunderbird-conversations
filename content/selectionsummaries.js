@@ -557,7 +557,7 @@ window.addEventListener("load", function f_temp0 () {
               <hbox class="button-action-area" align="start" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:html="http://www.w3.org/1999/xhtml">
                 <button class="button msgHeaderView-button button-regular button-reply">{replyTxt}</button>
                 <button class="button msgHeaderView-button button-regular button-forward">{forwardTxt}</button>
-                <button class="button msgHeaderView-button button-regular" type="menu">
+                <button class="button msgHeaderView-button button-regular button-more-actions" type="menu">
                  {moreActionsTxt}
                   <menupopup>
                     <menuitem class="menu-editNew">{editNew}</menuitem>

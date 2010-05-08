@@ -370,6 +370,21 @@ a.action:hover {
   margin: 0px;
 }
 
+/* For RSS */
+
+.message.rss .to-text,
+.message.rss .recipients,
+.message.rss .button-reply,
+.message.rss .button-more-actions,
+.message.rss .link-reply,
+.message.rss .link-reply-all {
+  display: none;
+}
+
+.message.rss .button-forward {
+  margin-left: 0;
+}
+
 /* Inside the messages' bodies */
 
 .htmlmsg > iframe {
