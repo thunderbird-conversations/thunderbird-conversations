@@ -5,6 +5,10 @@
   list-style-image: url("moz-icon://stock/gtk-add?size=menu");
 }
 
+#trash {
+  list-style-image: url("moz-icon://stock/gtk-delete?size=menu");
+}
+
 #archive {
   list-style-image: url("chrome://messenger/skin/icons/folder-pane.png");
   -moz-image-region: rect(192px 16px 208px 0px);
