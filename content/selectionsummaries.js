@@ -643,7 +643,10 @@ window.addEventListener("load", function f_temp0 () {
             lastComma = comma;
           }
         }
-        recipientsNode.removeChild(lastComma);
+        if (lastComma)
+          recipientsNode.removeChild(lastComma);
+        else /* No recipients at all */
+          msgNode.getElementsByClassName("to-text")[0].style.display = "none";
         /* We don't fill the sender here, as we may prefer more relevant
          * information with the MimeMessage */
 
