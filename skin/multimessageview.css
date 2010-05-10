@@ -49,10 +49,6 @@ body {
   list-style-image: url("chrome://gconversation/skin/up.png");
 }
 
-#buttonhbox:not(.text-plus-icons) > button > hbox > label {
-  display: none;
-}
-
 #back {
   list-style-image: url("chrome://gconversation/skin/back.png");
 }

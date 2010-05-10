@@ -204,10 +204,11 @@ window.addEventListener("load", function f_temp0 () {
           gPrefs["fold_rule"] = prefs.getCharPref("fold_rule");
           break;
         /* Warning this one has no key in gPrefs */
-        case "toolbar_text_plus_icons":
-          /* We toggle it because we know that multimessageview.xhtml has set it
-           * in the right position. */
-          _mm_toggleClass(htmlpane.contentDocument.getElementById("buttonhbox"), "text-plus-icons");
+        case "toolbar_mode":
+          /* No need to store it anywhere. mmv.xhtml sets it on load, we process
+           * the updates. */
+          htmlpane.contentDocument.getElementById("header-view-toolbox").setAttribute("mode",
+            prefs.getCharPref("toolbar_mode"));
           break;
         case "monospaced_senders":
           gPrefs["monospaced_senders"] = prefs.getCharPref("monospaced_senders").split(",");
