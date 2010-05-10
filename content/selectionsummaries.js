@@ -394,7 +394,7 @@ window.addEventListener("load", function f_temp0 () {
        * access to the index of the message that needs to be scrolled back into
        * view. */
       gconversation.stash.needsFocusNodeIndex = gPrefs["reverse_order"] ? numMessages - 1 - needsFocus : needsFocus;
-;
+
       myDump(numMessages+" messages total, focusing "+needsFocus+"\n");
 
       /* We can't really trust this to remain valid. */
@@ -1159,7 +1159,7 @@ window.addEventListener("load", function f_temp0 () {
             fillAuthor(msgHdr.mime2DecodedAuthor);
 
             let body = messageBodyFromMsgHdr(msgHdr, true);
-            let snippet = body.substring(0, SNIPPET_LENGTH-3)+"...";
+            let snippet = body.substring(0, SNIPPET_LENGTH-1)+"…";
             snippetMsgNode.textContent = snippet;
             messageDone();
           } catch (e) {
@@ -1411,7 +1411,7 @@ window.addEventListener("load", function f_temp0 () {
           myDump("In aSelectedMessages, we have, "+aSelectedMessages.length+" messages\n");
         }
 
-        if (isNewConversation(items)) {
+        if (isNewConversation(items) || !gPrefs["focus_first"]) {
           gSummary = new ThreadSummary(items, aListener);
           gSummary.init();
           if (gPrefs["auto_mark_read"] && document.hasFocus())
@@ -1636,7 +1636,7 @@ window.addEventListener("load", function f_temp0 () {
             rightMessages = rightMessages.filter(function (x) x);
             rightMessages = rightMessages.map(function (x) x.folderMessage);
             gMessageDisplay.singleMessageDisplay = false;
-            if (isNewConversation(rightMessages)) {
+            if (isNewConversation(rightMessages) || !gPrefs["focus_first"]) {
               let gSummary = new ThreadSummary(rightMessages, null);
               try {
                 if (!gPrefs["info_af_shown"]) {

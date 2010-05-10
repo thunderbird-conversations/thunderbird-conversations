@@ -28,6 +28,7 @@ FULL LIST
 - New keyboard shortcut: hold "shift" while clicking the "open thread in new
 tab" button (either in the main toolbar, the message header toolbar or the
 conversation toolbar) to display the conversation full-screen (without the
+message list).
 
 - More options to determine which messages to open first when displaying a
   conversation.
@@ -44,7 +45,6 @@ was displayed before the conversation.
 - Fix auto-load not working in certain setups
 - Fix: don't silently mark a conversation as read when the conversation is
   selected and Thunderbird does not have the focus.
-message list).
 - Fix: deleting a conversation using the conversation toolbar now also deletes
   messages that aren't in the current folder.
 
