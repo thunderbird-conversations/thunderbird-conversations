@@ -1426,10 +1426,14 @@ window.addEventListener("load", function f_temp0 () {
       let msgHdr = gconversation.stash.msgHdrs[i];
       if ((gPrefs["fold_rule"] == "unread_and_last" && (!msgHdr.isRead || i == arrayIndex))
           || (gPrefs["fold_rule"] == "all")) {
-        let ev = htmlpane.contentDocument.createEvent("UIEvents");
-        ev.initUIEvent("keypress", true, true, htmlpane.contentWindow, 1);
-        ev.charCode = 'o'.charCodeAt(0);
-        msgNodes[i].dispatchEvent(ev);
+        if (i == arrayIndex) {
+          let ev = document.createEvent("UIEvents");
+          ev.initUIEvent("keypress", true, true, htmlpane.contentWindow, 1);
+          ev.charCode = 'o'.charCodeAt(0);
+          msgNodes[index].dispatchEvent(ev);
+        } else {
+          gconversation.stash.expand_all[i]();
+        }
       }
     }
   }
