@@ -170,7 +170,7 @@ window.addEventListener("load", function f_temp0 () {
   gPrefs["auto_fetch"] = prefs.getBoolPref("auto_fetch");
   gPrefs["disable_error_empty_collection"] = prefs.getBoolPref("disable_error_empty_collection");
   gPrefs["auto_mark_read"] = prefs.getBoolPref("auto_mark_read");
-  gPrefs["monospaced_senders"] = prefs.getCharPref("monospaced_senders").split(",");
+  gPrefs["monospaced_senders"] = Array.map(prefs.getCharPref("monospaced_senders").split(","), String.trim);
   gPrefs["info_af_shown"] = prefs.getBoolPref("info_af_shown");
 
   let myPrefObserver = {
@@ -211,7 +211,7 @@ window.addEventListener("load", function f_temp0 () {
             prefs.getCharPref("toolbar_mode"));
           break;
         case "monospaced_senders":
-          gPrefs["monospaced_senders"] = prefs.getCharPref("monospaced_senders").split(",");
+          gPrefs["monospaced_senders"] = Array.map(prefs.getCharPref("monospaced_senders").split(","), String.trim);
           break;
       }
     }
@@ -396,7 +396,6 @@ window.addEventListener("load", function f_temp0 () {
        * access to the index of the message that needs to be scrolled back into
        * view. */
       gconversation.stash.needsFocusNodeIndex = gPrefs["reverse_order"] ? numMessages - 1 - needsFocus : needsFocus;
-;
       myDump(numMessages+" messages total, focusing "+needsFocus+"\n");
 
       /* We can't really trust this to remain valid. */
