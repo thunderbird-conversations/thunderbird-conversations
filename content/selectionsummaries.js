@@ -218,7 +218,8 @@ window.addEventListener("load", function f_temp0 () {
   };
   myPrefObserver.register();
 
-  const predefinedColors = ["#204a87", "#5c3566", "#8f5902", "#a40000", "#4e9a06", "#ce5c00"];
+  const predefinedColors = ["#204a87", "#5c3566", "#8f5902", "#a40000", "#4e9a06", "#db2c92",
+                            "#662e25", "#4b958d", "#e9b96e", "#8ae234", "#f57900"]
   let gColorCount = 0;
   /* Filled as we go. key = "Jonathan Protzenko", value = "#ff0562" */
   let id2color = {};
@@ -1018,10 +1019,20 @@ window.addEventListener("load", function f_temp0 () {
               let areaNode = msgNode.getElementsByClassName("attachments-area")[0];
               areaNode.textContent = attachmentsTxt + " ("+attachments.length+")";
               let ul = htmlpane.contentDocument.createElement("ul");
+              let j = 0;
               for each (let [, att] in Iterator(attachments)) {
+                let k = j;
                 let li = htmlpane.contentDocument.createElement("li");
-                li.textContent = att.name;
+                let a = htmlpane.contentDocument.createElement("span");
+                _mm_addClass(a, "link");
+                a.textContent = att.name;
+                a.addEventListener("click", function () {
+                  dump("Asking for att"+k+"\n");
+                  msgNode.getElementsByClassName("att"+k)[0].scrollIntoView();
+                }, true);
+                li.appendChild(a);
                 ul.appendChild(li);
+                j++;
               }
               areaNode.appendChild(ul);
 
@@ -1046,6 +1057,7 @@ window.addEventListener("load", function f_temp0 () {
                   attachments.length + " " + attachmentsTxt;
 
                 let theAttachments = [];
+                let j = 0;
                 for each (let [, att] in Iterator(attachments)) {
                   /* Gather a lot of information about that attachment */
                   let ioService = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
@@ -1100,6 +1112,7 @@ window.addEventListener("load", function f_temp0 () {
                   }
                   singleBox.innerHTML = singleBoxContents.toXMLString();
                   attBoxNode.appendChild(singleBox);
+                  _mm_addClass(singleBox, "att"+j);
                   singleBox.getElementsByClassName("attachment-link")[0].addEventListener("click",
                     function (event) {
                       HandleMultipleAttachments([attInfo], "open");
@@ -1129,14 +1142,16 @@ window.addEventListener("load", function f_temp0 () {
                           { contentPage: url });
                       }, true);
                   }
-                }
+
+                  j++;
+                } // end for each (attachment)
                 /* Save all attachments. We can do that now since we have a
                  * pointer towards all the attachments. */
                 attBoxNode.getElementsByClassName("save-all")[0].addEventListener("click",
                   function (event) {
                     HandleMultipleAttachments(theAttachments, "save");
                   }, true);
-              };
+              }; // end displayFullAttachments ()
               /* Since this triggers a lot of downloads, we have to be lazy
                * about it, so do it only when necessary. */
               if (messageIsCollapsed())
