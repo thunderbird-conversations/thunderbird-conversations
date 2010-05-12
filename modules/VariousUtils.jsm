@@ -67,6 +67,8 @@ function _mm_toggleClass(node, classname) {
 }
 
 function _mm_hasClass(node, classname) {
+  if (!node)
+    return;
   let classes = [];
   if (node.hasAttribute('class'))
     classes = node.getAttribute('class').split(' ');

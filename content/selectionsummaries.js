@@ -320,8 +320,7 @@ window.addEventListener("load", function f_temp0 () {
    * handler. When the conversation is the same, we don't rebuild it. However,
    * all focus information has been lost, so we need to re-trigger this function
    * to scroll back the right message into view. */
-  function scrollMessageIntoView (aMsgNode) {
-    dump("I'm focusing message with tabindex "+aMsgNode.getAttribute("tabindex")+"\n");
+  function scrollNodeIntoView (aMsgNode) {
     if (aMsgNode.offsetTop)
       htmlpane.contentWindow.scrollTo(0, aMsgNode.offsetTop - 5);
   }
@@ -424,8 +423,6 @@ window.addEventListener("load", function f_temp0 () {
        * - but it works for 1.9.2...
        * */
 
-      let { needsFocus, needsFocusDOMIndex } = tellMeWhoToFocus(this._msgHdrs);
-
       /* Deal with the currently selected message */
       function variousFocusHacks (aMsgNode) {
         /* We want the node that's been expanded (the one that has index
@@ -433,29 +430,29 @@ window.addEventListener("load", function f_temp0 () {
         _mm_addClass(aMsgNode, "selected");
         aMsgNode.setAttribute("tabindex", 1);
         htmlpane.contentDocument.addEventListener("focus", function on_focus (event) {
-            let msgNode = htmlpane.contentDocument.querySelector(".message:focus");
-            if (!msgNode) {
-              dump("!!! This shouldn't happen (no selected message)\n");
+            let msgNode = htmlpane.contentDocument.querySelector(".message.selected");
+            /* We're getting the event from the HTMLDocument element */
+            if (!msgNode)
               return;
-            }
 
             /* This is a persistent event listener. It can operate multiple
              * times. Actually, since we don't rebuild conversations when the
              * message set is the same, we restore the tabindex hack and the
              * selected state, so this handler must still be able to operate
              * properly. */
-            if (_mm_hasClass(msgNode, "selected")) {
-              /* However, when the thread summary gains focus, we need to
-               * remove that class because :focus will take care of that */
-              _mm_removeClass(msgNode, "selected");
-              /* Restore the proper tab order. This event is fired *after* the
-               * right message has been focused in Gecko 1.9.2, *before* the right
-               * message has been focused in Gecko 1.9.1 (so it's basically
-               * useless). */
-              let tabIndex = gPrefs["reverse_order"] ? numMessages - needsFocus : needsFocus;
-              tabIndex++; tabIndex++;
-              msgNode.setAttribute("tabindex", tabIndex);
-            }
+
+            /* However, when the thread summary gains focus, we need to
+             * remove that class because :focus will take care of that */
+            _mm_removeClass(msgNode, "selected");
+            /* Restore the proper tab order. This event is fired *after* the
+             * right message has been focused in Gecko 1.9.2, *before* the right
+             * message has been focused in Gecko 1.9.1 (so it's basically
+             * useless). */
+            if (msgNode.previousElementSibling)
+              msgNode.setAttribute("tabindex",
+                parseInt(msgNode.previousElementSibling.getAttribute("tabindex"))+1);
+            else /* It's the first one in the list */
+              msgNode.setAttribute("tabindex", 2);
           }, true);
       }
 
@@ -467,13 +464,14 @@ window.addEventListener("load", function f_temp0 () {
        * One for the completion of the async FillSnippetAndHTML. The other one,
        * for the completion of the async MsgHdrToMimeMessage. It fails if we
        * don't do that. */
+      let { needsFocus, needsFocusDOMIndex } = tellMeWhoToFocus(this._msgHdrs);
       let nMessagesDone = 2 * numMessages;
       function messageDone() {
         myDump("messageDone()\n");
         nMessagesDone--;
         if (nMessagesDone == 0 && needsFocus >= 0) {
           let tKey = msgHdrs[needsFocus].messageKey + msgHdrs[needsFocus].folder.URI;
-          scrollMessageIntoView(msgNodes[tKey]);
+          scrollNodeIntoView(msgNodes[tKey]);
           variousFocusHacks(msgNodes[tKey]);
         }
       }
@@ -694,12 +692,12 @@ window.addEventListener("load", function f_temp0 () {
 
               /* In case the first opening of this message is done using the
                * keyboard, FillMessageSnippetAndHTML will re-call
-               * scrollMessageIntoView when it's done. Rationale: the user is
+               * scrollNodeIntoView when it's done. Rationale: the user is
                * using the keyboard, the mouse is far away, so we set the
                * message to use as much screen space as possible by scrolling it
                * to the top of the viewport. */
               if (focusInformation.iFrameWasLoaded)
-                scrollMessageIntoView(msgNode);
+                scrollNodeIntoView(msgNode);
             }
             if (event.keyCode == 8) {
               gconversation.on_back();
@@ -914,7 +912,7 @@ window.addEventListener("load", function f_temp0 () {
                   /* This means that the first opening of the iframe is done
                    * using the keyboard shortcut. */
                   if (focusInformation.delayed && focusInformation.keyboardOpening)
-                    scrollMessageIntoView(msgNode);
+                    scrollNodeIntoView(msgNode);
 
                   /* Don't go to such lengths to make it work next time */
                   focusInformation.iFrameWasLoaded = true;
@@ -1030,9 +1028,7 @@ window.addEventListener("load", function f_temp0 () {
                 a.textContent = att.name;
                 a.addEventListener("click", function () {
                   dump("Asking for att"+k+"\n");
-                  /* Yeah that's not supposed to be used that way, I'll refactor
-                   * later */
-                  scrollMessageIntoView(msgNode.getElementsByClassName("att"+k)[0]);
+                  scrollNodeIntoView(msgNode.getElementsByClassName("att"+k)[0]);
                 }, true);
                 li.appendChild(a);
                 ul.appendChild(li);
@@ -1398,27 +1394,44 @@ window.addEventListener("load", function f_temp0 () {
    *   message that triggered the conversation. This node has .selected AND
    *   tabindex=1. */
   function restorePreviousConversation() {
+    /* I have never seen leftover focus on my Linux box but we're never sure */
     let badMsg = htmlpane.contentDocument.querySelector(".message:focus");
     if (badMsg)
       badMsg.blur();
 
+    /* Remove all previous focus-me-first hooks */
     let badMsgs = htmlpane.contentDocument.querySelectorAll(".message.selected, .message[tabindex=\"1\"]");
     if (badMsgs.length > 1)
       dump("!!! This should not happen\n");
     for each (let [, msgNode] in Iterator(badMsgs)) {
       _mm_removeClass(msgNode, "selected");
       if (msgNode.previousElementSibling)
-        msgNode.setAttribute("tabindex", msgNode.previousElementSibling.getAttribute("tabindex")+1);
+        msgNode.setAttribute("tabindex", parseInt(msgNode.previousElementSibling.getAttribute("tabindex"))+1);
       else /* It's the first one in the list */
         msgNode.setAttribute("tabindex", 2);
     }
 
-    let { needsFocusDOMIndex: index } = tellMeWhoToFocus(gconversation.stash.msgHdrs);
-    let msgNode = htmlpane.contentDocument.getElementsByClassName("message")[index];
+    let { needsFocusDOMIndex: index, needsFocus: arrayIndex } = tellMeWhoToFocus(gconversation.stash.msgHdrs);
+    let msgNodes = htmlpane.contentDocument.getElementsByClassName("message");
+    let msgNode = msgNodes[index];
     dump("Same conversation, showing message "+index+"\n");
     _mm_addClass(msgNode, "selected");
     msgNode.setAttribute("tabindex", "1");
-    scrollMessageIntoView(msgNode);
+
+    /* Now restore the proper collapsed/expanded state */
+    gconversation.on_collapse_all();
+
+    /* Re-do all the maybe-expand stuff */
+    for (let i = 0; i < gconversation.stash.msgHdrs.length; ++i) {
+      let msgHdr = gconversation.stash.msgHdrs[i];
+      if ((gPrefs["fold_rule"] == "unread_and_last" && (!msgHdr.isRead || i == arrayIndex))
+          || (gPrefs["fold_rule"] == "all")) {
+        let ev = htmlpane.contentDocument.createEvent("UIEvents");
+        ev.initUIEvent("keypress", true, true, htmlpane.contentWindow, 1);
+        ev.charCode = 'o'.charCodeAt(0);
+        msgNodes[i].dispatchEvent(ev);
+      }
+    }
   }
 
   /* The summarizeThread function overwrites the default one, searches for more
