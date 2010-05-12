@@ -369,6 +369,11 @@ a.action:hover {
   margin: 0px;
 }
 
+.attachments-area a {
+  color: #999;
+  font-weight: normal;
+}
+
 /* Inside the messages' bodies */
 
 .htmlmsg > iframe {
