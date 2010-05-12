@@ -68,12 +68,7 @@ var gconversation = {
     msgHdrs: [], /* To mark them read, to determine if it's a different conversation, and many more */
     multiple_selection: false, /* Printing and archiving depend on these */
     expand_all: [], /* A list of closures */
-    collapse_all: [],
-    /* We can't regain that information back once the conversation has been
-     * loaded. Beware, this is the node index in the DOM list, not in the
-     * msgHdrs array used in the code. This does not depend on
-     * gPrefs["reserve"], unlike the regular needsFocus. */
-    needsFocusNodeIndex: -1
+    collapse_all: []
   }
 };
 
@@ -331,6 +326,39 @@ window.addEventListener("load", function f_temp0 () {
       htmlpane.contentWindow.scrollTo(0, aMsgNode.offsetTop - 5);
   }
 
+  /* From a set of message headers, return the index of the message that needs
+   * focus (in the msgHdrs list) and the DOM index this message has (that takes
+   * care of gPrefs["reverse_order"]) */
+  function tellMeWhoToFocus(aMsgHdrs) {
+    /* Determine which message is going to be focused */
+    let needsFocus = -1;
+    if (gPrefs["focus_first"]) {
+      needsFocus = aMsgHdrs.length - 1;
+      for (let i = 0; i < aMsgHdrs.length; ++i) {
+        if (!aMsgHdrs[i].isRead) {
+          needsFocus = i;
+          break;
+        }
+      }
+    } else {
+      let uri = function (msg) msg.folder.getUriForMsg(msg);
+      let key = uri(gFolderDisplay.selectedMessage);
+      myDump("Currently selected message key is "+key+"\n");
+      for (let i = 0; i < aMsgHdrs.length; ++i) {
+        myDump("Examining "+uri(aMsgHdrs[i])+"\n");
+        if (uri(aMsgHdrs[i]) == key) {
+          needsFocus = i;
+          break;
+        }
+      }
+    }
+
+    let needsFocusDOMIndex = gPrefs["reverse_order"] ? aMsgHdrs.length - 1 - needsFocus : needsFocus;
+    myDump(aMsgHdrs.length+" messages total, focusing "+needsFocus+"\n");
+
+    return { needsFocus: needsFocus, needsFocusDOMIndex: needsFocusDOMIndex };
+  }
+
   ThreadSummary.prototype = {
     __proto__: MultiMessageSummary.prototype,
 
@@ -367,37 +395,6 @@ window.addEventListener("load", function f_temp0 () {
       const SNIPPET_LENGTH = 300;
       let maxCountExceeded = false;
 
-      /* Determine which message is going to be focused */
-      let needsFocus = -1;
-      if (gPrefs["focus_first"]) {
-        needsFocus = numMessages - 1;
-        for (let i = 0; i < numMessages; ++i) {
-          if (!this._msgHdrs[i].isRead) {
-            needsFocus = i;
-            break;
-          }
-        }
-      } else {
-        let uri = function (msg) msg.folder.getUriForMsg(msg);
-        let key = uri(gFolderDisplay.selectedMessage);
-        myDump("Currently selected message key is "+key+"\n");
-        for (let i = 0; i < numMessages; ++i) {
-          myDump("Examining "+uri(this._msgHdrs[i])+"\n");
-          if (uri(this._msgHdrs[i]) == key) {
-            needsFocus = i;
-            break;
-          }
-        }
-      }
-      /* Why do we keep this information? Basically, if we need to rebuild a
-       * conversation with the exact same set of message headers, we just do
-       * nothing, except that all focus information has been lost, so we need to
-       * rescroll the right message into view. We can't do that if don't have
-       * access to the index of the message that needs to be scrolled back into
-       * view. */
-      gconversation.stash.needsFocusNodeIndex = gPrefs["reverse_order"] ? numMessages - 1 - needsFocus : needsFocus;
-      myDump(numMessages+" messages total, focusing "+needsFocus+"\n");
-
       /* We can't really trust this to remain valid. */
       let msgHdrs = this._msgHdrs;
       let msgNodes = this._msgNodes;
@@ -427,28 +424,37 @@ window.addEventListener("load", function f_temp0 () {
        * - but it works for 1.9.2...
        * */
 
+      let { needsFocus, needsFocusDOMIndex } = tellMeWhoToFocus(this._msgHdrs);
+
       /* Deal with the currently selected message */
       function variousFocusHacks (aMsgNode) {
         /* We want the node that's been expanded (the one that has index
          * needsFocus) to also have the visual appearance with the cursor. */
         _mm_addClass(aMsgNode, "selected");
+        aMsgNode.setAttribute("tabindex", 1);
         htmlpane.contentDocument.addEventListener("focus", function on_focus (event) {
+            let msgNode = htmlpane.contentDocument.querySelector(".message:focus");
+            if (!msgNode) {
+              dump("!!! This shouldn't happen (no selected message)\n");
+              return;
+            }
+
             /* This is a persistent event listener. It can operate multiple
              * times. Actually, since we don't rebuild conversations when the
              * message set is the same, we restore the tabindex hack and the
              * selected state, so this handler must still be able to operate
              * properly. */
-            if (_mm_hasClass(aMsgNode, "selected")) {
+            if (_mm_hasClass(msgNode, "selected")) {
               /* However, when the thread summary gains focus, we need to
                * remove that class because :focus will take care of that */
-              _mm_removeClass(aMsgNode, "selected");
+              _mm_removeClass(msgNode, "selected");
               /* Restore the proper tab order. This event is fired *after* the
                * right message has been focused in Gecko 1.9.2, *before* the right
                * message has been focused in Gecko 1.9.1 (so it's basically
                * useless). */
               let tabIndex = gPrefs["reverse_order"] ? numMessages - needsFocus : needsFocus;
               tabIndex++; tabIndex++;
-              aMsgNode.setAttribute("tabindex", tabIndex);
+              msgNode.setAttribute("tabindex", tabIndex);
             }
           }, true);
       }
@@ -664,10 +670,7 @@ window.addEventListener("load", function f_temp0 () {
          * jump to the first time we use tab to jump from the message list to
          * the conversation view */
         tabIndex++; tabIndex++;
-        if (i == needsFocus)
-          msgNode.setAttribute("tabindex", 1);
-        else
-          msgNode.setAttribute("tabindex", tabIndex);
+        msgNode.setAttribute("tabindex", tabIndex);
 
         /* This object is used by the event listener below to pass information
          * to the event listeners far below whose task is to setup the iframe.
@@ -1027,7 +1030,9 @@ window.addEventListener("load", function f_temp0 () {
                 a.textContent = att.name;
                 a.addEventListener("click", function () {
                   dump("Asking for att"+k+"\n");
-                  msgNode.getElementsByClassName("att"+k)[0].scrollIntoView();
+                  /* Yeah that's not supposed to be used that way, I'll refactor
+                   * later */
+                  scrollMessageIntoView(msgNode.getElementsByClassName("att"+k)[0]);
                 }, true);
                 li.appendChild(a);
                 ul.appendChild(li);
@@ -1385,6 +1390,37 @@ window.addEventListener("load", function f_temp0 () {
     return newConversation;
   }
 
+  /* Actually it's more tricky than it seems because of the "focus currently
+   * selected message" option. It has the wicked side effect that:
+   * - we when reload the exact same conversation, maybe we want to focus a
+   *   different node
+   * - maybe we have a leftover "focus-me-first" node from a previously selected
+   *   message that triggered the conversation. This node has .selected AND
+   *   tabindex=1. */
+  function restorePreviousConversation() {
+    let badMsg = htmlpane.contentDocument.querySelector(".message:focus");
+    if (badMsg)
+      badMsg.blur();
+
+    let badMsgs = htmlpane.contentDocument.querySelectorAll(".message.selected, .message[tabindex=\"1\"]");
+    if (badMsgs.length > 1)
+      dump("!!! This should not happen\n");
+    for each (let [, msgNode] in Iterator(badMsgs)) {
+      _mm_removeClass(msgNode, "selected");
+      if (msgNode.previousElementSibling)
+        msgNode.setAttribute("tabindex", msgNode.previousElementSibling.getAttribute("tabindex")+1);
+      else /* It's the first one in the list */
+        msgNode.setAttribute("tabindex", 2);
+    }
+
+    let { needsFocusDOMIndex: index } = tellMeWhoToFocus(gconversation.stash.msgHdrs);
+    let msgNode = htmlpane.contentDocument.getElementsByClassName("message")[index];
+    dump("Same conversation, showing message "+index+"\n");
+    _mm_addClass(msgNode, "selected");
+    msgNode.setAttribute("tabindex", "1");
+    scrollMessageIntoView(msgNode);
+  }
+
   /* The summarizeThread function overwrites the default one, searches for more
    * messages, and passes them to our instance of ThreadSummary. This design is
    * more convenient as it follows Thunderbird's more closely, which allows me
@@ -1435,20 +1471,7 @@ window.addEventListener("load", function f_temp0 () {
           if (gPrefs["auto_mark_read"] && document.hasFocus())
             gconversation.mark_all_read();
         } else {
-          /* Try to restore at least some selection. The focus information is
-           * lost there, so our best guess is to set back the focus to the
-           * message that was originally supposed to be selected. If we haven't
-           * focused to the conversation in the past, the needsFocus-th node
-           * still has class selected, so we're doing no harm there.
-           *
-           * We also restore the tabindex hack. Might be useless (just like
-           * .selected), might be not. */
-          let index = gconversation.stash.needsFocusNodeIndex;
-          let msgNode = htmlpane.contentDocument.getElementsByClassName("message")[index];
-          dump("Same conversation, showing message "+index+"\n");
-          _mm_addClass(msgNode, "selected");
-          msgNode.setAttribute("tabindex", "1");
-          scrollMessageIntoView(msgNode);
+          restorePreviousConversation();
         }
         return;
       }
@@ -1678,14 +1701,7 @@ window.addEventListener("load", function f_temp0 () {
                 throw e;
               }
             } else {
-              /* See explanations in summarizeThread, we're basically doing the
-               * same here */
-              let index = gconversation.stash.needsFocusNodeIndex;
-              let msgNode = htmlpane.contentDocument.getElementsByClassName("message")[index];
-              dump("Same conversation, showing message "+index+"\n");
-              _mm_addClass(msgNode, "selected");
-              msgNode.setAttribute("tabindex", "1");
-              scrollMessageIntoView(msgNode);
+              restorePreviousConversation();
             }
             return;
           }
