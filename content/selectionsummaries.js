@@ -326,8 +326,17 @@ window.addEventListener("load", function f_temp0 () {
    * to scroll back the right message into view. */
   function scrollMessageIntoView (aMsgNode) {
     dump("I'm focusing message with tabindex "+aMsgNode.getAttribute("tabindex")+"\n");
-    if (aMsgNode.offsetTop)
-      htmlpane.contentWindow.scrollTo(0, aMsgNode.offsetTop - 5);
+    if (aMsgNode.offsetTop) {
+      let offset = aMsgNode.offsetTop;
+      let parent = aMsgNode.parentNode;
+      while (parent && !(parent instanceof HTMLDocument)) {
+        let style = htmlpane.contentWindow.getComputedStyle(parent, null);
+        if (style.position == "relative")
+          offset += parent.offsetTop;
+        parent = parent.parentNode;
+      }
+      htmlpane.contentWindow.scrollTo(0, offset - 5);
+    }
   }
 
   ThreadSummary.prototype = {
