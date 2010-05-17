@@ -37,7 +37,7 @@
 var EXPORTED_SYMBOLS = ['selectRightMessage', 'groupMessages',
 'convertHotmailQuotingToBlockquote1', 'convertHotmailQuotingToBlockquote2',
 'convertOutlookQuotingToBlockquote', '_mm_toggleClass', '_mm_hasClass',
-'convertForwardedToBlockquote', 'fusionBlockquotes']
+'convertForwardedToBlockquote', 'fusionBlockquotes', 'parseShortName']
 
 const Ci = Components.interfaces;
 const Cc = Components.classes;
@@ -287,4 +287,68 @@ function fusionBlockquotes(aDoc) {
       blockquote.parentNode.removeChild(b);
     }
   }
+}
+
+/* Get a short name out of an email address or a name, suitable for condensed
+ * display */
+function _parseShortName(str) {
+  if (str.indexOf("@") >= 0) { //firstname.lastname
+    var j = str.lastIndexOf("@");
+    var before = str.substring(0, str.lastIndexOf("@"));
+    if (before.indexOf(".") >= 0) {
+      var i = before.lastIndexOf(".");
+      var fst = before.substring(0, i);
+      var last = before.substring(i + 1, before.length);
+      if (fst.length > 1)
+        return fst;
+      else
+        return before;
+    } else {
+      return before;
+    }
+  } else {
+    var words = str.split(" ");
+    var found = false;
+    for (var i = 0; i < words.length; i++) {
+      if (words[0].toUpperCase() === words[0]) {
+        words.shift();
+        found = true;
+      }
+      else {
+        break;
+      }
+    }
+    if (words.length > 0 && found) { // PROTZENKO Jonathan
+      return words.join(" ");
+    } else {
+      var words = str.split(" ");
+      var found = false;
+      for (var i = words.length - 1; i >= 0; i--) {
+        if (words[words.length - 1].toUpperCase() === words[words.length - 1]) {
+          words.pop();
+          found = true;
+        }
+        else {
+          break;
+        }
+      }
+      if (words.length > 0 && found) { // Jonathan PROTZENKO
+        return words.join(" ");
+      } else { // Split on last space
+        var j = str.lastIndexOf(" ");
+        if (j >= 0 && words.length == 2) // we're conservative here
+          return str.substring(0, j);
+        else
+          return str;
+      }
+    }
+  }
+}
+
+function parseShortName(str) {
+  var r = _parseShortName(str);
+  if (r.length > 40) // please...
+    return r.substring(0, 40)+"…";
+  else
+    return r;
 }

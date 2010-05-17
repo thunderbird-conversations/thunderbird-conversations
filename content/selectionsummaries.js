@@ -214,7 +214,7 @@ window.addEventListener("load", function f_temp0 () {
   myPrefObserver.register();
 
   const predefinedColors = ["#204a87", "#5c3566", "#8f5902", "#a40000", "#4e9a06", "#db2c92",
-                            "#662e25", "#4b958d", "#e9b96e", "#8ae234", "#f57900"]
+                            "#662e25", "#4b958d", "#8ae234", "#f57900"]
   let gColorCount = 0;
   /* Filled as we go. key = "Jonathan Protzenko", value = "#ff0562" */
   let id2color = {};
@@ -298,15 +298,26 @@ window.addEventListener("load", function f_temp0 () {
       } else if (cardDetails.card) { /* We know the guy */
         //myDump("Got a card for "+address.emailAddress+"!\n");
         address.displayName = cardDetails.card.displayName;
+        address.firstName = cardDetails.card.firstName;
       }
       decodedAddresses.push(address);
     }
 
     function colorize(card) {
-      let name = card.displayName ? card.displayName : card.emailAddress;
+      let name = card.displayName || card.emailAddress;
+
+      let shortName = aDoc.createElement("span");
+      shortName.textContent = card.firstName || parseShortName(name);
+      _mm_addClass(shortName, "short-name");
+
+      let fullName = aDoc.createElement("span");
+      fullName.textContent = name;
+      _mm_addClass(fullName, "full-name");
+
       let span = aDoc.createElement("span");
       span.style.color = colorFor(card.emailAddress);
-      span.textContent = name;
+      span.appendChild(shortName);
+      span.appendChild(fullName);
       return span;
     }
     return [colorize(a) for each ([, a] in Iterator(decodedAddresses))];

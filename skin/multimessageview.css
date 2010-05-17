@@ -172,23 +172,44 @@ body {
   font-size: 0px;
 }
 
-.message.collapsed .recipients span {
+.message.collapsed .recipients > span {
   display: none;
 }
 
 /* If there's a sixth element (it's a comma) this means there's at least a
  * seventh one so it's legitimate to add an ellipsis after that. */
-.message.collapsed .recipients span:nth-child(1),
-.message.collapsed .recipients span:nth-child(2),
-.message.collapsed .recipients span:nth-child(3),
-.message.collapsed .recipients span:nth-child(4),
-.message.collapsed .recipients span:nth-child(5),
-.message.collapsed .recipients span:nth-child(6) {
+.message.collapsed .recipients > span:nth-child(1),
+.message.collapsed .recipients > span:nth-child(2),
+.message.collapsed .recipients > span:nth-child(3),
+.message.collapsed .recipients > span:nth-child(4),
+.message.collapsed .recipients > span:nth-child(5),
+.message.collapsed .recipients > span:nth-child(6),
+.message.collapsed .recipients > span:nth-child(7),
+.message.collapsed .recipients > span:nth-child(8),
+.message.collapsed .recipients > span:nth-child(9),
+.message.collapsed .recipients > span:nth-child(10) {
   display: inline;
 }
 
-.message.collapsed .recipients span:nth-child(6):after {
+.message.collapsed .recipients > span:nth-child(10):after {
   content: "...";
+}
+
+/* Use short names in condensed view, use full names otherwise */
+.short-name {
+  display: none;
+}
+
+.full-name {
+  display: inline;
+}
+
+.message.collapsed .short-name {
+  display: inline;
+}
+
+.message.collapsed .full-name {
+  display: none;
 }
 
 
