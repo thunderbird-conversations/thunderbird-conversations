@@ -332,8 +332,17 @@ window.addEventListener("load", function f_temp0 () {
    * all focus information has been lost, so we need to re-trigger this function
    * to scroll back the right message into view. */
   function scrollNodeIntoView (aMsgNode) {
-    if (aMsgNode.offsetTop)
-      htmlpane.contentWindow.scrollTo(0, aMsgNode.offsetTop - 5);
+    if (aMsgNode.offsetTop) {
+      let offset = aMsgNode.offsetTop;
+      let parent = aMsgNode.parentNode;
+      while (parent && !(parent instanceof HTMLDocument)) {
+        let style = htmlpane.contentWindow.getComputedStyle(parent, null);
+        if (style.position == "relative")
+          offset += parent.offsetTop;
+        parent = parent.parentNode;
+      }
+      htmlpane.contentWindow.scrollTo(0, offset - 5);
+    }
   }
 
   /* From a set of message headers, return the index of the message that needs
