@@ -1178,7 +1178,7 @@ window.addEventListener("load", function f_temp0 () {
             fillAuthor(msgHdr.mime2DecodedAuthor);
 
             let body = messageBodyFromMsgHdr(msgHdr, true);
-            let snippet = body.substring(0, SNIPPET_LENGTH-3)+"...";
+            let snippet = body.substring(0, SNIPPET_LENGTH-1)+"…";
             snippetMsgNode.textContent = snippet;
             messageDone();
           } catch (e) {

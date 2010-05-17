@@ -86,6 +86,10 @@ body {
   font-family: Verdana, "Bitstream Vera Sans", sans-serif;
 }
 
+.monospaced-message, .monospaced-snippet {
+  font-family: -moz-fixed;
+}
+
 /* Hide the right things when collapsed */
 
 .htmlmsg {
