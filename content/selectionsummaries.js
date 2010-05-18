@@ -666,6 +666,7 @@ window.addEventListener("load", function f_temp0 () {
         snippetMsgNode.addEventListener("click", toggleMessage, true);
 
         /* Insert fancy colored html */
+        dump(msgHdr.mime2DecodedAuthor+"\n");
         let recipientsSpans = processEmails(msgHdr.mime2DecodedRecipients, htmlpane.contentDocument);
         let ccSpans = processEmails(msgHdr.ccList, htmlpane.contentDocument);
         let lastComma;
@@ -1022,11 +1023,38 @@ window.addEventListener("load", function f_temp0 () {
           if (senderSpans.length)
             senderNode.appendChild(senderSpans[0]);
         };
+        let fallbackNoGloda = function () {
+          try {
+            // Offline messages generate exceptions, which is unfortunate.  When
+            // that's fixed, this code should adapt. XXX
+            /* --> Try to deal with that. Try to come up with something that
+             * remotely looks like a snippet. Don't link attachments, do
+             * nothing, I won't duplicate my code here, let's stay sane. */
+            myDump("*** Got an \"offline message\"\n");
+
+            /* At least fill the sender! */
+            fillAuthor(msgHdr.mime2DecodedAuthor);
+
+            let body = messageBodyFromMsgHdr(msgHdr, true);
+            let snippet = body.substring(0, SNIPPET_LENGTH-1)+"…";
+            snippetMsgNode.textContent = snippet;
+            messageDone();
+          } catch (e) {
+            Application.console.log("GCV: Error fetching the message: "+e);
+            /* Ok, that failed too... I'm out of ideas! */
+            htmlMsgNode.textContent = "...";
+            if (!snippetMsgNode.textContent)
+              snippetMsgNode.textContent = "...";
+            messageDone();
+          }
+        };
         try {
-          /* throw { result: Components.results.NS_ERROR_FAILURE }; */
           MsgHdrToMimeMessage(msgHdr, null, function (aMsgHdr, aMimeMsg) {
-            if (aMimeMsg == null) // shouldn't happen, but sometimes does?
+            /* Yes it happens with newsgroup messages */
+            if (aMimeMsg == null) { // shouldn't happen, but sometimes does?
+              fallbackNoGloda();
               return;
+            }
 
             /* Deal with the sender */
             let author = aMimeMsg.headers["x-bugzilla-who"] || msgHdr.mime2DecodedAuthor;
@@ -1197,29 +1225,7 @@ window.addEventListener("load", function f_temp0 () {
             messageDone();
           });
         } catch (e if e.result == Components.results.NS_ERROR_FAILURE) {
-          try {
-            // Offline messages generate exceptions, which is unfortunate.  When
-            // that's fixed, this code should adapt. XXX
-            /* --> Try to deal with that. Try to come up with something that
-             * remotely looks like a snippet. Don't link attachments, do
-             * nothing, I won't duplicate my code here, let's stay sane. */
-            myDump("*** Got an \"offline message\"\n");
-
-            /* At least fill the sender! */
-            fillAuthor(msgHdr.mime2DecodedAuthor);
-
-            let body = messageBodyFromMsgHdr(msgHdr, true);
-            let snippet = body.substring(0, SNIPPET_LENGTH-1)+"…";
-            snippetMsgNode.textContent = snippet;
-            messageDone();
-          } catch (e) {
-            Application.console.log("GCV: Error fetching the message: "+e);
-            /* Ok, that failed too... I'm out of ideas! */
-            htmlMsgNode.textContent = "...";
-            if (!snippetMsgNode.textContent)
-              snippetMsgNode.textContent = "...";
-            messageDone();
-          }
+          fallbackNoGloda();
         }
         /* This actually setups the iframe to point to the given message */
         fillSnippetAndHTML();
@@ -1490,6 +1496,8 @@ window.addEventListener("load", function f_temp0 () {
     if (aSelectedMessages.length == 0) {
       myDump("No selected messages\n");
       return false;
+    } else {
+      myDump(aSelectedMessages.length + " selected messages\n");
     }
     htmlpane.contentWindow.enableExtraButtons();
     gconversation.stash.multiple_selection = false;
@@ -1528,7 +1536,12 @@ window.addEventListener("load", function f_temp0 () {
 
         if (isNewConversation(items)) {
           gSummary = new ThreadSummary(items, aListener);
-          gSummary.init();
+          try {
+            gSummary.init();
+          } catch (e) {
+            dump(e+"\n");
+            throw e;
+          }
           if (gPrefs["auto_mark_read"] && document.hasFocus())
             gconversation.mark_all_read();
         } else {
