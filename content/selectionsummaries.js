@@ -305,6 +305,7 @@ window.addEventListener("load", function f_temp0 () {
 
     function colorize(card) {
       let name = card.displayName || card.emailAddress;
+      let title = card.displayName ? card.emailAddress : "";
 
       let shortName = aDoc.createElement("span");
       shortName.textContent = card.firstName || parseShortName(name);
@@ -318,6 +319,7 @@ window.addEventListener("load", function f_temp0 () {
       span.style.color = colorFor(card.emailAddress);
       span.appendChild(shortName);
       span.appendChild(fullName);
+      span.setAttribute("title", title);
       return span;
     }
     return [colorize(a) for each ([, a] in Iterator(decodedAddresses))];
@@ -535,6 +537,8 @@ window.addEventListener("load", function f_temp0 () {
         let moreActionsTxt = stringBundle.getString("more_actions");
         let toTxt = stringBundle.getString("to");
         let detailsTxt = stringBundle.getString("details");
+        let toggleRead = stringBundle.getString("toggle_read");
+        let toggleFont = stringBundle.getString("toggle_font");
         let msgContents =
           <div class="row">
             <div class="pointer" />
@@ -550,13 +554,13 @@ window.addEventListener("load", function f_temp0 () {
               <a class="action link-reply">{replyTxt}</a>
               <a class="action link-reply-all">{replyAllTxt}</a>
               <a class="action link-forward">{forwardTxt}</a>
-              <a class="action toggle-font link" style="display: none">
+              <a class="action toggle-font link" style="display: none" title={toggleFont}>
                 <img src="chrome://gconversation/skin/font.png" />
               </a>
-              <a class="action mark-read link">
+              <a class="action mark-read link" title={toggleRead}>
                 <img src="chrome://gconversation/skin/readcol.png" />
               </a>
-              <a class="action delete-msg link">
+              <a class="action delete-msg link" title={deleteTxt}>
                 <img src="chrome://gconversation/skin/trash.gif" />
               </a>
             </div>
@@ -1034,6 +1038,9 @@ window.addEventListener("load", function f_temp0 () {
               /* That's for the short paperclip icon */
               let attachmentNode = msgNode.getElementsByClassName("attachment")[0];
               attachmentNode.style.display = "";
+              attachmentNode.setAttribute("title",
+                attachments.length + " " + attachmentsTxt + " : " +
+                attachments.map(function (x) x.name).join(", "));
 
               /* That's for the small list of attachments below the sender */
               let areaNode = msgNode.getElementsByClassName("attachments-area")[0];
