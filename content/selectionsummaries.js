@@ -576,7 +576,7 @@ window.addEventListener("load", function f_temp0 () {
                 </button>
                 <spacer flex="1" />
                 <button disabled="true" class="button msgHeaderView-button button-regular button-markSpam">{markSpamTxt}</button>
-                <button disabled="true" class="button msgHeaderView-button button-regular button-archive">{archiveTxt}</button>
+                <button class="button msgHeaderView-button button-regular button-archive">{archiveTxt}</button>
                 <button class="button msgHeaderView-button button-regular button-delete">{deleteTxt}</button>
               </hbox>
             </div>
@@ -1286,7 +1286,20 @@ window.addEventListener("load", function f_temp0 () {
             compose(Ci.nsIMsgCompType.Template, event);
           });
         register(".action.delete-msg, .button-delete", function deletenode_listener (event) {
+            /* Includes messages hidden by a collapsed thread */
+            let selectedMessages = gFolderDisplay.selectedMessages;
+            /* Does not */
+            let l = gFolderDisplay.selectedIndices.length;
             msgHdrsDelete([msgHdr]);
+            if (l > 1)
+              gFolderDisplay.selectMessages(selectedMessages.filter(function (x) x.messageId != msgHdr.messageId));
+          });
+        register(".button-archive", function archive_listener (event) {
+            let selectedMessages = gFolderDisplay.selectedMessages;
+            let l = gFolderDisplay.selectedIndices.length;
+            msgHdrsArchive([msgHdr], window);
+            if (l > 1)
+              gFolderDisplay.selectMessages(selectedMessages.filter(function (x) x.messageId != msgHdr.messageId));
           });
         register(".action.mark-read", function markreadnode_listener (event) {
             msgHdrsMarkAsRead([msgHdr], !msgHdr.isRead);
@@ -1570,14 +1583,14 @@ window.addEventListener("load", function f_temp0 () {
     if (gconversation.stash.multiple_selection)
       MsgArchiveSelectedMessages(null);
     else
-      msgHdrsArchive(gconversation.stash.msgHdrs, window);
+      msgHdrsArchive(gconversation.stash.msgHdrs.concat(gFolderDisplay.selectedMessages), window);
   };
 
   gconversation.delete_all = function () {
     if (gconversation.stash.multiple_selection)
       msgHdrsDelete(gFolderDisplay.selectedMessages);
     else
-      msgHdrsDelete(gconversation.stash.msgHdrs);
+      msgHdrsDelete(gconversation.stash.msgHdrs.concat(gFolderDisplay.selectedMessages));
   };
 
   /* This actually does what we want. It also expands threads as needed. */
