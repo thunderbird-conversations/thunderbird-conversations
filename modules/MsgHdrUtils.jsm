@@ -159,11 +159,7 @@ function msgHdrsArchive(msgHdrs, aWindow) {
    * BatchMessageMover.
    * */
   let batchMover = new aWindow.BatchMessageMover();
-  /* So that this works both when my fix is there and when it is not. */
-  if (batchMover.archiveMessages)
-    batchMover.archiveMessages(msgHdrs);
-  else
-    batchMover.archiveSelectedMessages();
+  batchMover.archiveMessages(msgHdrs);
 }
 
 function msgHdrMarkAsJunk(msgHdr) {

@@ -266,6 +266,9 @@ window.addEventListener("load", function f_temp0 () {
       return cardDetails;
     }
   }
+  function resetCards() {
+    knownCards = {};
+  }
   function authorEmail(aMsgHdr) {
     let emails = {};
     let fullNames = {};
@@ -394,6 +397,10 @@ window.addEventListener("load", function f_temp0 () {
       /* Reset the set of known colors */
       resetColors();
 
+      /* Reset the cards. That way, if I add someone in the adress book, the
+       * next time this conversation is loaded, we use their first name. */
+      resetCards();
+
       this._msgNodes = {};
 
       /* Fill the heading */
@@ -453,7 +460,6 @@ window.addEventListener("load", function f_temp0 () {
         aMsgNode.setAttribute("tabindex", 1);
         htmlpane.contentDocument.addEventListener("focus", function on_focus (event) {
             let msgNode = htmlpane.contentDocument.querySelector(".message.selected");
-            /* We're getting the event from the HTMLDocument element */
             if (!msgNode)
               return;
 
@@ -595,7 +601,7 @@ window.addEventListener("load", function f_temp0 () {
                 </button>
                 <spacer flex="1" />
                 <button disabled="true" class="button msgHeaderView-button button-regular button-markSpam">{markSpamTxt}</button>
-                <button disabled="true" class="button msgHeaderView-button button-regular button-archive">{archiveTxt}</button>
+                <button class="button msgHeaderView-button button-regular button-archive">{archiveTxt}</button>
                 <button class="button msgHeaderView-button button-regular button-delete">{deleteTxt}</button>
               </hbox>
             </div>
@@ -1054,7 +1060,7 @@ window.addEventListener("load", function f_temp0 () {
                 _mm_addClass(a, "link");
                 a.textContent = att.name;
                 a.addEventListener("click", function () {
-                  dump("Asking for att"+k+"\n");
+                  myDump("Asking for att"+k+"\n");
                   scrollNodeIntoView(msgNode.getElementsByClassName("att"+k)[0]);
                 }, true);
                 li.appendChild(a);
@@ -1305,7 +1311,20 @@ window.addEventListener("load", function f_temp0 () {
             compose(Ci.nsIMsgCompType.Template, event);
           });
         register(".action.delete-msg, .button-delete", function deletenode_listener (event) {
+            /* Includes messages hidden by a collapsed thread */
+            let selectedMessages = gFolderDisplay.selectedMessages;
+            /* Does not */
+            let l = gFolderDisplay.selectedIndices.length;
             msgHdrsDelete([msgHdr]);
+            if (l > 1)
+              gFolderDisplay.selectMessages(selectedMessages.filter(function (x) x.messageId != msgHdr.messageId));
+          });
+        register(".button-archive", function archive_listener (event) {
+            let selectedMessages = gFolderDisplay.selectedMessages;
+            let l = gFolderDisplay.selectedIndices.length;
+            msgHdrsArchive([msgHdr], window);
+            if (l > 1)
+              gFolderDisplay.selectMessages(selectedMessages.filter(function (x) x.messageId != msgHdr.messageId));
           });
         register(".action.mark-read", function markreadnode_listener (event) {
             msgHdrsMarkAsRead([msgHdr], !msgHdr.isRead);
@@ -1429,7 +1448,7 @@ window.addEventListener("load", function f_temp0 () {
     /* Remove all previous focus-me-first hooks */
     let badMsgs = htmlpane.contentDocument.querySelectorAll(".message.selected, .message[tabindex=\"1\"]");
     if (badMsgs.length > 1)
-      dump("!!! This should not happen\n");
+      myDump("!!! This should not happen\n");
     for each (let [, msgNode] in Iterator(badMsgs)) {
       _mm_removeClass(msgNode, "selected");
       if (msgNode.previousElementSibling)
@@ -1441,7 +1460,7 @@ window.addEventListener("load", function f_temp0 () {
     let { needsFocusDOMIndex: index, needsFocus: arrayIndex } = tellMeWhoToFocus(gconversation.stash.msgHdrs);
     let msgNodes = htmlpane.contentDocument.getElementsByClassName("message");
     let msgNode = msgNodes[index];
-    dump("Same conversation, showing message "+index+"\n");
+    myDump("Same conversation, showing message "+index+"\n");
     _mm_addClass(msgNode, "selected");
     msgNode.setAttribute("tabindex", "1");
 
@@ -1628,14 +1647,14 @@ window.addEventListener("load", function f_temp0 () {
     if (gconversation.stash.multiple_selection)
       MsgArchiveSelectedMessages(null);
     else
-      msgHdrsArchive(gconversation.stash.msgHdrs, window);
+      msgHdrsArchive(gconversation.stash.msgHdrs.concat(gFolderDisplay.selectedMessages), window);
   };
 
   gconversation.delete_all = function () {
     if (gconversation.stash.multiple_selection)
       msgHdrsDelete(gFolderDisplay.selectedMessages);
     else
-      msgHdrsDelete(gconversation.stash.msgHdrs);
+      msgHdrsDelete(gconversation.stash.msgHdrs.concat(gFolderDisplay.selectedMessages));
   };
 
   /* This actually does what we want. It also expands threads as needed. */
@@ -1668,7 +1687,7 @@ window.addEventListener("load", function f_temp0 () {
     onSecurityChange: function () {},
     onStatusChange: function () {},
     onLocationChange: function (aWebProgress, aRequest, aLocation) {
-      dump("OnLocationChange\n");
+      myDump("OnLocationChange\n");
       /* By testing here for the pref, we allow the pref to be changed at
        * run-time and we do not require to restart Thunderbird to take the
        * change into account. */
