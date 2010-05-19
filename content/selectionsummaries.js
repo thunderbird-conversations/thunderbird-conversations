@@ -1052,20 +1052,18 @@ window.addEventListener("load", function f_temp0 () {
               let areaNode = msgNode.getElementsByClassName("attachments-area")[0];
               areaNode.textContent = attachmentsTxt + " ("+attachments.length+")";
               let ul = htmlpane.contentDocument.createElement("ul");
-              let j = 0;
-              for each (let [, att] in Iterator(attachments)) {
-                let k = j;
+              for each (let [k, att] in Iterator(attachments)) {
                 let li = htmlpane.contentDocument.createElement("li");
                 let a = htmlpane.contentDocument.createElement("span");
                 _mm_addClass(a, "link");
                 a.textContent = att.name;
+                let j = k;
                 a.addEventListener("click", function () {
-                  myDump("Asking for att"+k+"\n");
-                  scrollNodeIntoView(msgNode.getElementsByClassName("att"+k)[0]);
+                  myDump("Asking for att"+j+"\n");
+                  scrollNodeIntoView(msgNode.getElementsByClassName("att"+j)[0]);
                 }, true);
                 li.appendChild(a);
                 ul.appendChild(li);
-                j++;
               }
               areaNode.appendChild(ul);
 
@@ -1090,8 +1088,7 @@ window.addEventListener("load", function f_temp0 () {
                   attachments.length + " " + attachmentsTxt;
 
                 let theAttachments = [];
-                let j = 0;
-                for each (let [, att] in Iterator(attachments)) {
+                for each (let [j, att] in Iterator(attachments)) {
                   /* Gather a lot of information about that attachment */
                   let ioService = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
                   let neckoURL = null;
@@ -1112,14 +1109,15 @@ window.addEventListener("load", function f_temp0 () {
                    * http://mxr.mozilla.org/comm-central/source/mail/base/content/msgHdrViewOverlay.js#1993
                    * http://mxr.mozilla.org/comm-central/source/mail/base/content/msgHdrViewOverlay.xul#76
                    * for the relevant actions */
-                  let altTxt = stringBundle.getString("open_attachment").replace("%s", att.name);
+                  let altTxt = stringBundle.getString("open_att_tab").replace("%s", att.name);
+                  let altTxt2 = stringBundle.getString("open_attachment").replace("%s", att.name);
                   if (att.contentType.indexOf("image/") === 0) {
                     singleBoxContents =
                       <div class="attachment-box image-attachment-box">
                         <table><tbody><tr>
                         <td><img title={altTxt} src={att.url} /></td>
                         <td>
-                          <p><span class="attachment-link link">{att.name}</span></p>
+                          <p><span class="attachment-link link" title={altTxt2}>{att.name}</span></p>
                           <p>{size}</p>
                           <p>
                             <button class="button msgHdrView-button button-regular save">{saveTxt}</button>
@@ -1134,7 +1132,7 @@ window.addEventListener("load", function f_temp0 () {
                         <table><tbody><tr>
                         <td><img title={altTxt} src={imgSrc} /></td>
                         <td>
-                          <p><span class="attachment-link link">{att.name}</span></p>
+                          <p><span class="attachment-link link" title={altTxt2}>{att.name}</span></p>
                           <p>{size}</p>
                           <p>
                             <button class="button msgHdrView-button button-regular save">{saveTxt}</button>
@@ -1174,9 +1172,9 @@ window.addEventListener("load", function f_temp0 () {
                           "contentTab",
                           { contentPage: url });
                       }, true);
+                  } else { /* Actually we don't want the "Open [file.txt]" */
+                    singleBox.getElementsByTagName("img")[0].setAttribute("title", "");
                   }
-
-                  j++;
                 } // end for each (attachment)
                 /* Save all attachments. We can do that now since we have a
                  * pointer towards all the attachments. */
