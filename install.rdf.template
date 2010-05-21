@@ -13,14 +13,14 @@
     <em:targetApplication>
       <Description>
         <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
-        <em:minVersion>3.1b1</em:minVersion>
+        <em:minVersion>3.1b2</em:minVersion>
         <em:maxVersion>3.1.*</em:maxVersion>
       </Description>
     </em:targetApplication>
     
     <!-- Front End MetaData -->
     <em:name>GMail Conversation View</em:name>
-    <em:description>Display your own emails in thread summaries.</em:description>
+    <em:description>Display your own emails in thread summaries, and view full threads, just like GMail.</em:description>
     <em:optionsURL>chrome://gconversation/content/options.xul</em:optionsURL>
     <em:iconURL>chrome://gconversation/content/icon.png</em:iconURL>
 
@@ -30,6 +30,25 @@
         <em:name>Affichage de conversations GMail</em:name>
         <em:description>Affiche vos emails sous la forme de "conversations" comme sur GMail. Vos emails sont regroupés et s'affichent sous forme de résumés de fils de discussion.</em:description>
         <em:translator>Eric B</em:translator>
+      </Description>
+    </em:localized>
+
+    <em:localized>
+      <Description>
+        <em:locale>zh-CN</em:locale>
+        <em:name>GMail 会话视图</em:name>
+        <em:description>按邮件话题集中显示相关邮件（包括你自己发出的邮件）, 同Gmail目前的邮件显示方式一致</em:description>
+        <em:translator>Wellown</em:translator>
+        <em:author>夏若朗 (Jonathan Protzenko)</em:author>
+      </Description>
+    </em:localized> 
+
+    <em:localized>
+      <Description>
+        <em:locale>de</em:locale>
+        <em:name>Better Conversation View</em:name>
+        <em:description>Gruppiert Ihre Nachrichen (inklusive Ihrer gesendeten) in Konversationen; wie bei Googlemail.</em:description>
+        <em:translator>Sebastian Kronenwerth</em:translator>
       </Description>
     </em:localized>
 
