@@ -1,7 +1,6 @@
 <!ENTITY window.title "Options de GMail Conversation View">
 <!ENTITY title.message_display "Affichage des messages">
 <!ENTITY option.monospaced "Utiliser une fonte monospace pour les messages au format texte">
-<!ENTITY option.html "Utiliser le HTML pour afficher les messages lorsque c'est possible">
 <!ENTITY option.focus_first "Faire défiler la fenêtre jusqu'au premier message non lu ou au dernier message">
 <!ENTITY optiondesc.unfold "Par défaut, déplier">
 <!ENTITY option.last_or_unread "Dernier message ou messages non lus">
@@ -12,8 +11,6 @@
 <!ENTITY option.button.archive "Afficher le bouton &quot;archiver&quot;">
 <!ENTITY option.button.trash "Afficher le bouton &quot;supprimer&quot;">
 <!ENTITY option.button.print "Afficher le bouton &quot;imprimer&quot;">
-<!ENTITY option.button.unfold_all "Afficher le bouton &quot;tout déplier&quot;">
-<!ENTITY option.button.fold_all "Afficher le bouton &quot;tout replier&quot;">
 <!ENTITY option.button.mark_as_read "Afficher le bouton &quot;tout marquer comme lu&quot;">
 <!ENTITY option.button.open_in_new_tab "Afficher le bouton &quot;ouvrir dans un nouvel onglet&quot;">
 <!ENTITY title.quoting "Citations et arborescence">
