@@ -27,9 +27,9 @@
 <!ENTITY title.general "General">
 <!ENTITY option.auto_fetch "Always search for conversations">
 <!ENTITY option.auto_mark_read "Always mark the whole thread as read when the conversation is displayed.">
-<!ENTITY auto_fetch.info "Sometimes there is no visible thread in the message pane, but there is an underlying conversation (if you reply to someone's mail, for instance). This option allows you to automatically display the conversation view for these messages.">
+<!ENTITY auto_fetch.info "Sometimes there is no visible thread in the thread pane, but there is an underlying conversation (if you reply to someone's mail, for instance). This option allows you to automatically display the conversation view for these messages.">
 
 <!ENTITY title.advanced "Advanced">
 <!ENTITY title.error_messages "Error messages">
-<!ENTITY option.disable_error_empty_collection "Disable the warning about empty collections">
+<!ENTITY option.disable_error_empty_collection "Disable the &quot;Thunderbird has not indexed this thread yet&quot; warning">
 <!ENTITY option.monospaced_senders "Messages from those addresses should be displayed in monospaced fonts (separate using commas)">
