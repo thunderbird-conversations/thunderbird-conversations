@@ -1,6 +1,11 @@
-<!ENTITY error.title "GMail conversation view cannot work">
-<!ENTITY error_gloda_disabled "You need to enable the global database for this add-on to work properly. Please go to Tools &gt; Options (or Edit &gt; Preferences). In the &quot;Advanced&quot; section, look for the &quot;General&quot; tab. Check &quot;Enable global search and indexer&quot;. You're done! You just need to wait for Thunderbird to index all your messages (this might take a while).">
-<!ENTITY error.help "Need more help?">
-<!ENTITY error_empty_collection "Thunderbird has not indexed this thread yet.  This is normal if the message just arrived, if Thunderbird has a lot of messages to index or if you are trying to get a conversation view for a newsgroup/RSS message. If this persists, please check in Tools &gt; Options (or Edit &gt; Preferences) &gt; Advanced &gt; General that the global search and indexer is activated.">
-<!ENTITY error.close "Close this message">
-<!ENTITY error.disable "Permanently disable this error message">
+<!ENTITY error.title "GMail会话视图无法工作">
+<!ENTITY error_gloda_disabled "本插件需要激活全局数据库方能正常工作。请至菜单项 工具&gt;选项（或编辑&gt;选项）修改。在“高级”栏目中，查看“常规”页面，勾选“启用全局搜索以及索引”。OK，现在你可能需要等待Thunderbird完成邮件索引工作（这可能会需要一点时间）">
+<!ENTITY error.help "需要进一步帮助？">
+<!ENTITY error_empty_collection "Thunderbird尚未完成此邮件话题的索引工作。这通常是由于邮件刚刚收下来，或Thunderbird正在对大量邮件做索引，或正在试图对新闻组/RSS消息建立会话视图。如果无不断出现，请检查菜单项 工具&gt;选项（或编辑&gt;选项）修改。在“高级”栏目中，查看“常规”页面，是否已勾选“启用全局搜索以及索引”">
+<!ENTITY error.close "关闭本邮件">
+<!ENTITY error.disable "永久禁用此错误消息">
+<!ENTITY info_af.title "Hi, 这是GMail会话视图">
+<!ENTITY info_af.body "你所选择的邮件是一个邮件会话中的一部分。尽管在邮件列表中没标记为同一邮件话题，但我们相信你应该喜欢将这类邮件自动收集并集中显示。">
+<!ENTITY info_af.body2 "需要激活这项功能吗？此功能可以在随后在本插件的选项中，&quot;高级&quot;栏目中进行调整">
+<!ENTITY info_af.yes "当然，多谢！">
+<!ENTITY info_af.no "不了。多谢！">

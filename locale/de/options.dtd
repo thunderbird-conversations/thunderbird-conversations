@@ -1,0 +1,34 @@
+<!ENTITY window.title "GMail Conservation View Optionen">
+<!ENTITY title.message_display "Nachrichtenanzeige">
+<!ENTITY option.monospaced "Unproportionale Schriftart für Reintextnachrichten verwenden">
+<!ENTITY option.monospaced_snippets "Unproportionale Schriftart für Nachrichtenquelltext verwenden">
+<!ENTITY option.focus_what "Beim Anzeigen einer Konversation, scrollen zu:">
+<!ENTITY option.focus_first "Der ersten ungelesenen oder der letzten Nachricht">
+<!ENTITY option.focus_selected "Der Nachricht, die als letztes ausgewählt wurde">
+<!ENTITY optiondesc.unfold "Standardmäßig ausklappen:">
+<!ENTITY option.last_or_unread "Alle ungelesenen Nachrichten inkl. derjenigen, zu der gescrollt wurde (siehe oben)">
+<!ENTITY option.all_messages "Alle Nachrichten">
+<!ENTITY option.no_messages "Keine Nachrichten">
+<!ENTITY title.toolbar "Buttons der Symbolleiste">
+<!ENTITY buttons.info "All diese Befehle sind auch über das Kontextmenü der Konversation zugänglich (Rechtsklick).">
+<!ENTITY option.toolbar_text_plus_icons "Die Funktion der Buttons neben deren Symbolen anzeigen">
+<!ENTITY option.button.archive "&quot;Archiv&quot;-Button anzeigen">
+<!ENTITY option.button.trash "&quot;Löschen&quot;-Button anzeigen">
+<!ENTITY option.button.print "&quot;Drucken&quot;-Button anzeigen">
+<!ENTITY option.button.back "&quot;Einzelansicht&quot;-Button anzeigen">
+<!ENTITY option.button.expand_all "&quot;Alle ausklappen&quot;-Button anzeigen">
+<!ENTITY option.button.collapse_all "&quot;Alle einklappen&quot;-Button anzeigen">
+<!ENTITY option.button.mark_as_read "&quot;Alle als gelesen markieren&quot;-Button anzeigen">
+<!ENTITY option.button.open_in_new_tab "&quot;In neuem Tab öffnen&quot;-Button anzeigen">
+<!ENTITY title.quoting "Zitieren">
+<!ENTITY option.hide_longer_than "Zitierte Teile länger als">
+<!ENTITY option.lines "Zeilen verbergen">
+<!ENTITY option.reverse_order "Rückwärts sortieren (letzte --&gt; erste)">
+<!ENTITY title.general "Allgemein">
+<!ENTITY option.auto_fetch "Immer nach Konversationen suchen">
+<!ENTITY option.auto_mark_read "Immer den ganzen Thread als gelesen markieren, wenn die Konversation angezeigt wird">
+<!ENTITY auto_fetch.info "Manchman wird im Nachrichtenbereich kein Thread angezeigt, obwohl es eine Konversation gibt (wenn Sie Beispielsweise auf eine E-Mail geantwortet haben). Diese Option erlaubt Ihnen, auotomatisch diese Nachrichten in Ihrer Konversationsansicht anzeigen zu lassen.">
+<!ENTITY title.advanced "Erweitert">
+<!ENTITY title.error_messages "Fehlermeldungen">
+<!ENTITY option.disable_error_empty_collection "Die Warnung über unvollständige Konversationen deaktivieren">
+<!ENTITY option.monospaced_senders "Nachrichten von diesen Adressen sollen in unproportionaler Schriftart angezeigt werden (durch Kommas trennen)">

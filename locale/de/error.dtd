@@ -1,0 +1,11 @@
+<!ENTITY error.title "GMail Conversation View funktioniert nicht">
+<!ENTITY error_gloda_disabled "Damit dieses Add-On funktioniert, mÃ¼ssen Sie die globale Datenbank aktivierten. Bitte gehen Sie auf Extras --&gt; Optionen, um in den erweiterten Einstellungen den Punkt &quot;Nachrichten indizieren&quot; zu aktivieren. Wenn Sie dies getan haben, mÃ¼ssen Sie einige Zeit warten bis Ihre Nachrichten komplett indiziert wurden.">
+<!ENTITY error.help "Brauchen Sie mehr Hilfe?">
+<!ENTITY error_empty_collection "Thunderbird hat diesen Thread noch nicht indiziert. Das ist normal, falls die Nachricht gerade angekommen ist, falls Thunderbird sehr viele Nachrichten indizieren muss oder falls sie versuchen, eine Konversationsansicht entweder fÃ¼r eine Newsgroup/RSS-Nachricht oder eine Nachricht zu bekommen, die sich im Papierkorb befindet. Wenn dieses Problem bestehen bleibt, Ã¼berprÃ¼fen Sie bitte in Extras &gt; Einstellungen &gt; Erweitert &gt; Allgemein, ob der Punkt &quot;Globale Suche und Nachrichtenindizierung aktivieren&quot; aktiviert ist.">
+<!ENTITY error.close "Diese Nachricht schlieÃŸen">
+<!ENTITY error.disable "Diese Fehlermeldung dauerhaft ausblenden">
+<!ENTITY info_af.title "Hi, hier ist GMail Conversation View!">
+<!ENTITY info_af.body "Die Nachricht, die sie gerade ausgewählt haben, ist Teil einer grÃ¶ÃŸeren Konversation. Obwohl kein wirklicher Thread in der Nachrichtenliste dargestellt wird, nehmen wir an, dass Sie Nachrichten wie diese gerne automatisch abgerufen und angezeigt bekommen wÃ¼rden.">
+<!ENTITY info_af.body2 "Möchten sie dieses Feature? Dies können Sie später in den Einstellungen dieses Add-Ons unter Erweitert ändern.">
+<!ENTITY info_af.yes "Ja gerne!">
+<!ENTITY info_af.no "Nein danke">

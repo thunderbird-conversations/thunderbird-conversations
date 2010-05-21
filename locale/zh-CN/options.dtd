@@ -2,19 +2,22 @@
 <!ENTITY title.message_display "消息显示">
 <!ENTITY option.monospaced "使用等宽字体显示纯文本邮件">
 <!ENTITY option.monospaced_snippets "使用等宽字体显示邮件摘要">
-<!ENTITY option.html "可能时，使用HTML显示邮件内容">
+<!ENTITY option.focus_what "当显示会话时，滚动到：">
 <!ENTITY option.focus_first "自动显示最新的邮件或第一封未读邮件">
+<!ENTITY option.focus_selected "当前邮件列表中选中的邮件">
 <!ENTITY optiondesc.unfold "默认：展开">
 <!ENTITY option.last_or_unread "最新或未读邮件">
 <!ENTITY option.all_messages "所有邮件">
 <!ENTITY option.no_messages "没有邮件">
 <!ENTITY title.toolbar "工具条按钮">
 <!ENTITY buttons.info "所有命令均可从会话概要区上下文菜单中访问(鼠标右键点击).">
+<!ENTITY option.toolbar_text_plus_icons "在按钮图标旁显示文字">
 <!ENTITY option.button.archive "显示 &quot;归档&quot; 按钮">
 <!ENTITY option.button.trash "显示 &quot;删除&quot; 按钮">
 <!ENTITY option.button.print "显示 &quot;打印&quot; 按钮">
-<!ENTITY option.button.unfold_all "显示 &quot;全部展开&quot; 按钮">
-<!ENTITY option.button.fold_all "显示 &quot;全部折叠&quot; 按钮">
+<!ENTITY option.button.back "显示&quot;单邮件视图&quot;按钮">
+<!ENTITY option.button.expand_all "显示&quot;全部展开&quot;按钮">
+<!ENTITY option.button.collapse_all "显示&quot;全部折叠&quot;按钮">
 <!ENTITY option.button.mark_as_read "显示 &quot;标记所有为已读&quot; 按钮">
 <!ENTITY option.button.open_in_new_tab "显示 &quot;在新标签页中打开&quot; 按钮">
 <!ENTITY title.quoting "引用和折叠">
@@ -28,3 +31,4 @@
 <!ENTITY title.advanced "高级">
 <!ENTITY title.error_messages "错误消息">
 <!ENTITY option.disable_error_empty_collection "Disable the warning about empty collections">
+<!ENTITY option.monospaced_senders "下列邮件地址发来的邮件以等宽字体显示（使用半角逗号分隔）">
