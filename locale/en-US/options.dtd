@@ -1,4 +1,4 @@
-<!ENTITY window.title "GMail Conversation View Options">
+<!ENTITY window.title "Gmail Conversation View Options">
 <!ENTITY title.message_display "Message display">
 <!ENTITY option.monospaced "Use monospaced font for plain text messages">
 <!ENTITY option.monospaced_snippets "Use monospaced font for message snippets">
