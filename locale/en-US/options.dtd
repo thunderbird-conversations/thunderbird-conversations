@@ -21,7 +21,7 @@
 <!ENTITY option.button.mark_as_read "Display &quot;mark all read&quot; button">
 <!ENTITY option.button.open_in_new_tab "Display &quot;open in new tab&quot; button">
 <!ENTITY title.quoting "Quoting">
-<!ENTITY option.hide_longer_than "Hide quoted parts longer than">
+<!ENTITY option.hide_longer_than "Hide quoted text higher than">
 <!ENTITY option.lines "lines">
 <!ENTITY option.reverse_order "Reverse order (last → first)">
 <!ENTITY title.general "General">
