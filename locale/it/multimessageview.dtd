@@ -1,0 +1,18 @@
+<!ENTITY button.open_in_new_tab "Apri in una nuova scheda">
+<!ENTITY button.mark_all_read "Segna tutti come letti">
+<!ENTITY button.expand_all "Espandi tutto">
+<!ENTITY button.collapse_all "Contrai tutto">
+<!ENTITY button.print "Stampa">
+<!ENTITY button.back "Vedi singola e-mail">
+<!ENTITY menu.open_in_new_tab "Apri in una nuova scheda">
+<!ENTITY menu.mark_all_read "Segna tutti come letti">
+<!ENTITY menu.expand_all "Espandi tutto">
+<!ENTITY menu.collapse_all "Contrai tutto">
+<!ENTITY menu.delete "Elimina tutti i messaggi">
+<!ENTITY menu.archive "Archivia tutti i messaggi">
+<!ENTITY toolbar.view_full "GMail Conversation View">
+<!ENTITY toolbar.view_full_tooltip "Cerca tutti i messaggi per creare una conversazione completa, includendo il messaggio selezionato">
+<!ENTITY toolbar.view_tab "Visualizza l&apos;argomento in una nuova scheda">
+<!ENTITY ctoolbar.view_full "GMail Conversation View">
+<!ENTITY ctoolbar.view_full_tooltip "Cerca tutti i messaggi per creare una conversazione completa, includendo il messaggio selezionato">
+<!ENTITY ctoolbar.view_tab "Visualizza l&apos;argomento in una nuova scheda">

@@ -15,9 +15,9 @@
 <!ENTITY option.button.archive "显示 &quot;归档&quot; 按钮">
 <!ENTITY option.button.trash "显示 &quot;删除&quot; 按钮">
 <!ENTITY option.button.print "显示 &quot;打印&quot; 按钮">
-<!ENTITY option.button.back "显示&quot;单邮件视图&quot;按钮">
-<!ENTITY option.button.expand_all "显示&quot;全部展开&quot;按钮">
-<!ENTITY option.button.collapse_all "显示&quot;全部折叠&quot;按钮">
+<!ENTITY option.button.back "显示 &quot;单邮件视图&quot; 按钮">
+<!ENTITY option.button.expand_all "显示 &quot;全部展开&quot; 按钮">
+<!ENTITY option.button.collapse_all "显示 &quot;全部折叠&quot; 按钮">
 <!ENTITY option.button.mark_as_read "显示 &quot;标记所有为已读&quot; 按钮">
 <!ENTITY option.button.open_in_new_tab "显示 &quot;在新标签页中打开&quot; 按钮">
 <!ENTITY title.quoting "引用和折叠">
@@ -30,5 +30,5 @@
 <!ENTITY auto_fetch.info "有时，仅存在潜在的会话（例如你回复了某人的邮件），在邮件预览窗中却没有可见线程。这个选项允许自动显示这些会话中的相关邮件。">
 <!ENTITY title.advanced "高级">
 <!ENTITY title.error_messages "错误消息">
-<!ENTITY option.disable_error_empty_collection "Disable the warning about empty collections">
+<!ENTITY option.disable_error_empty_collection "禁用 &quot;Thunderbird尚未完成索引&quot; 告警">
 <!ENTITY option.monospaced_senders "下列邮件地址发来的邮件以等宽字体显示（使用半角逗号分隔）">

@@ -1,0 +1,34 @@
+<!ENTITY window.title "GMail Conversation View オプション">
+<!ENTITY title.message_display "メッセージ表示">
+<!ENTITY option.monospaced "テキスト形式のメッセージを等幅で表示する">
+<!ENTITY option.monospaced_snippets "部分的なメッセージを等幅フォントで表示する">
+<!ENTITY option.focus_what "会話を表示する際のスクロール：">
+<!ENTITY option.focus_first "最初の未読メッセージか最後のメッセージ">
+<!ENTITY option.focus_selected "メッセージ一覧で選択されているメッセージ">
+<!ENTITY optiondesc.unfold "初期状態の展開：">
+<!ENTITY option.last_or_unread "すべての未読メッセージとスクロール先メッセージ (上記参照)">
+<!ENTITY option.all_messages "すべてのメッセージ">
+<!ENTITY option.no_messages "展開しない">
+<!ENTITY title.toolbar "ツールバーボタン">
+<!ENTITY buttons.info "すべての機能はスレッドサマリーのコンテキストメニュー (右クリック) からも実行できます。">
+<!ENTITY option.toolbar_text_plus_icons "アイコンの横にテキストを表示する">
+<!ENTITY option.button.archive "&quot;アーカイブ&quot; ボタン">
+<!ENTITY option.button.trash "&quot;削除&quot; ボタン">
+<!ENTITY option.button.print "&quot;印刷&quot; ボタン">
+<!ENTITY option.button.back "&quot;個別表示&quot; ボタン">
+<!ENTITY option.button.expand_all "&quot;すべて展開&quot; ボタン">
+<!ENTITY option.button.collapse_all "&quot;すべて畳む&quot; ボタン">
+<!ENTITY option.button.mark_as_read "&quot;すべて既読&quot; ボタン">
+<!ENTITY option.button.open_in_new_tab "&quot;新しいタブで開く&quot; ボタン">
+<!ENTITY title.quoting "引用">
+<!ENTITY option.hide_longer_than "引用が">
+<!ENTITY option.lines "行よりも長い場合は隠す">
+<!ENTITY option.reverse_order "逆順 (最後 → 最初)">
+<!ENTITY title.general "一般">
+<!ENTITY option.auto_fetch "常に会話を検索">
+<!ENTITY option.auto_mark_read "会話を表示したらスレッド全体を既読にする">
+<!ENTITY auto_fetch.info "たまに、会話が存在するのにスレッドが表示されないことがあります (例えばメールに返信する時)。そのようなメッセージの会話を自動的に表示するにはこのオプションを使用します。">
+<!ENTITY title.advanced "詳細">
+<!ENTITY title.error_messages "エラーメッセージ">
+<!ENTITY option.disable_error_empty_collection "&quot;Thunderbird がまだスレッドの索引を作成していない&quot; 警告を表示しない">
+<!ENTITY option.monospaced_senders "次の送信者のメッセージを等幅フォントで表示する (半角コンマ区切り)">
