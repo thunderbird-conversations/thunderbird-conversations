@@ -4,10 +4,8 @@
 <!ENTITY error_empty_collection "Thunderbird has not indexed this thread yet. This is normal if the message just arrived, if Thunderbird has a lot of messages to index or if you are trying to get a conversation view for either a newsgroup/RSS message or a message that's in the Trash folder. If this persists, please check in Tools &gt; Options (or Edit &gt; Preferences) &gt; Advanced &gt; General that the global search and indexer is activated.">
 <!ENTITY error.close "Close this message">
 <!ENTITY error.disable "Permanently disable this error message">
-
 <!ENTITY info_af.title "Hi, this is GMail Conversation View!">
 <!ENTITY info_af.body "The message you just selected was determined to be part of a larger conversation. Although there's no real thread displayed in the message list, we believed you might like conversations like this to be automatically fetched and displayed.">
 <!ENTITY info_af.body2 "Do you want this feature? This can be changed later in the Preferences of this add-on, under the &quot;Advanced&quot; section">
 <!ENTITY info_af.yes "Sure, keep it like that!">
 <!ENTITY info_af.no "No, thanks">
-

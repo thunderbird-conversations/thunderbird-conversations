@@ -19,29 +19,10 @@
     </em:targetApplication>
     
     <!-- Front End MetaData -->
-    <em:name>GMail Conversation View</em:name>
-    <em:description>Display your own emails in thread summaries, and view full threads, just like GMail.</em:description>
+    <em:name>Gmail Conversation View</em:name>
+    <em:description>Display your own emails in thread summaries, and view full threads, just like Gmail.</em:description>
     <em:optionsURL>chrome://gconversation/content/options.xul</em:optionsURL>
     <em:iconURL>chrome://gconversation/content/icon.png</em:iconURL>
-
-    <em:localized>
-      <Description>
-        <em:locale>fr</em:locale>
-        <em:name>Affichage de conversations GMail</em:name>
-        <em:description>Affiche vos emails sous la forme de "conversations" comme sur GMail. Vos emails sont regroupés et s'affichent sous forme de résumés de fils de discussion.</em:description>
-        <em:translator>Eric B</em:translator>
-      </Description>
-    </em:localized>
-
-    <em:localized>
-      <Description>
-        <em:locale>zh-CN</em:locale>
-        <em:name>GMail 会话视图</em:name>
-        <em:description>按邮件话题集中显示相关邮件（包括你自己发出的邮件）, 同Gmail目前的邮件显示方式一致</em:description>
-        <em:translator>Wellown</em:translator>
-        <em:author>夏若朗 (Jonathan Protzenko)</em:author>
-      </Description>
-    </em:localized> 
 
     <em:localized>
       <Description>
@@ -51,6 +32,43 @@
         <em:translator>Sebastian Kronenwerth</em:translator>
       </Description>
     </em:localized>
+
+    <em:localized>
+      <Description>
+        <em:locale>fr</em:locale>
+        <em:name>Affichage de conversations Gmail</em:name>
+        <em:description>Affiche vos emails sous la forme de "conversations" comme sur Gmail. Vos emails sont regroupés et s'affichent sous forme de résumés de fils de discussion.</em:description>
+        <em:translator>Eric B</em:translator>
+      </Description>
+    </em:localized>
+
+    <em:localized>
+      <Description>
+        <em:locale>ja-JP</em:locale>
+        <em:name>Gmail Conversation View</em:name>
+        <em:description>関連するメールをGmail風に一連の会話としてまとめます。自分で出したメールも含まれます。</em:description>
+        <em:translator>SATO Kentaro</em:translator>
+      </Description>
+    </em:localized>
+
+    <em:localized>
+      <Description>
+        <em:locale>sr</em:locale>
+        <em:name>Gmail преглед разговора</em:name>
+        <em:description>Групише е-поруке у разговоре, укључујући и Ваше поруке, као што то чини Gmail.</em:description>
+        <em:translator>Charmed94</em:translator>
+      </Description>
+    </em:localized>
+
+    <em:localized>
+      <Description>
+        <em:locale>zh-CN</em:locale>
+        <em:name>Gmail 会话视图</em:name>
+        <em:description>按邮件话题集中显示相关邮件（包括你自己发出的邮件）, 同Gmail目前的邮件显示方式一致</em:description>
+        <em:translator>Wellown</em:translator>
+        <em:author>夏若朗 (Jonathan Protzenko)</em:author>
+      </Description>
+    </em:localized> 
 
     <em:creator>Jonathan Protzenko</em:creator>
   </Description>      

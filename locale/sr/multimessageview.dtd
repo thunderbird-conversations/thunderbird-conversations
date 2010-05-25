@@ -1,0 +1,18 @@
+<!ENTITY button.open_in_new_tab "отвори у новом језичку">
+<!ENTITY button.mark_all_read "означи све као прочитано">
+<!ENTITY button.expand_all "прошири све">
+<!ENTITY button.collapse_all "скупи све">
+<!ENTITY button.print "одштампај">
+<!ENTITY button.back "приказ поруке">
+<!ENTITY menu.open_in_new_tab "Отвори у новом језичку">
+<!ENTITY menu.mark_all_read "Означи све као прочитано">
+<!ENTITY menu.expand_all "Прошири све">
+<!ENTITY menu.collapse_all "Скупи све">
+<!ENTITY menu.delete "Обриши све поруке">
+<!ENTITY menu.archive "Архивирај све поруке">
+<!ENTITY toolbar.view_full "Преузми разговор">
+<!ENTITY toolbar.view_full_tooltip "Претражи све поруке за израду целокупног разговора, укључујући и твог.">
+<!ENTITY toolbar.view_tab "Отвори нит у новом језичку">
+<!ENTITY ctoolbar.view_full "преузми разговор">
+<!ENTITY ctoolbar.view_full_tooltip "претражи све поруке за израду целокупног разговора, укључујући и твог.">
+<!ENTITY ctoolbar.view_tab "отвори нит у новом језичку">

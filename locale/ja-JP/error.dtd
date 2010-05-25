@@ -1,0 +1,11 @@
+<!ENTITY error.title "GMail conversation viewは動作しません">
+<!ENTITY error_gloda_disabled "このアドオンが正しく動作するにはグローバルデータベースを有効にする必要があります。ツール &gt; オプション (または 編集 &gt; 設定)を開いてください。&quot;詳細&quot; sectionより&quot;一般&quot;タブを開きます。&quot;グローバル検索と索引データベースを有効にする&quot;をチェックすれば完了です。Thunderbirdがすべてのメッセージの索引を作成するまで待つ必要があります。(少し時間がかかるかもしれません)">
+<!ENTITY error.help "助けが必要ですか？">
+<!ENTITY error_empty_collection "Thunderbirdがこのスレッドの索引をまだ作成していません。次にあてはまる場合は正常な動作です：このメッセージを受信したばかり・索引を作成するメッセージが大量にある・ニュースグループやRSSの会話一覧を表示しようとしている・メッセージがごみ箱にある。もしこの問題が続く場合は ツール &gt; オプション (または 編集 &gt; 設定) &gt; 詳細 &gt; 一般 より グローバル検索と索引データベース が有効か確認してください。">
+<!ENTITY error.close "このメッセージを閉じる">
+<!ENTITY error.disable "このメッセージを次回から表示しない">
+<!ENTITY info_af.title "こんにちは、GMail Conversation Viewです！">
+<!ENTITY info_af.body "選択したメッセージは長い会話の一部です。メッセージ一覧には表示されていませんが、このような会話を自動的に探して表示することができます。">
+<!ENTITY info_af.body2 "この機能を有効にしますか？ この設定は後から、アドオン設定の &quot;詳細&quot; より変更できます。">
+<!ENTITY info_af.yes "有効にする">
+<!ENTITY info_af.no "無効にする">

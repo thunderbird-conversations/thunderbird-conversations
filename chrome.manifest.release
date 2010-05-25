@@ -3,8 +3,12 @@ skin gconversation classic/1.0 jar:gconv.jar!/skin/
 resource gconversation modules/
 overlay chrome://messenger/content/messenger.xul chrome://gconversation/content/overlay.xul
 override chrome://messenger/content/multimessageview.xhtml chrome://gconversation/content/multimessageview.xhtml
+style chrome://global/content/customizeToolbar.xul chrome://gconversation/skin/overlay.css
+
+#locale gconversation de jar:gconv.jar!/locale/de/
 locale gconversation en-US jar:gconv.jar!/locale/en-US/
 #locale gconversation fr jar:gconv.jar!/locale/fr/
-#locale gconversation de jar:gconv.jar!/locale/de/
+#locale gconversation it jar:gconv.jar!/locale/it/
+#locale gconversation ja-JP jar:gconv.jar!/locale/ja-JP/
+#locale gconversation sr jar:gconv.jar!/locale/sr/
 #locale gconversation zh-CN jar:gconv.jar!/locale/zh-CN/
-style chrome://global/content/customizeToolbar.xul chrome://gconversation/skin/overlay.css
