@@ -279,7 +279,9 @@ window.addEventListener("load", function f_temp0 () {
     else
       return "";
   }
-  function processEmails (emailAddresses, aDoc) {
+  let meTo = stringBundle.getString("me_as_in_me_to");
+  let toMe = stringBundle.getString("me_as_in_to_me");
+  function processEmails (emailAddresses, isSender, aDoc) {
     let addresses = {};
     let fullNames = {};
     let names = {};
@@ -297,7 +299,7 @@ window.addEventListener("load", function f_temp0 () {
         /* See
          * http://mxr.mozilla.org/comm-central/source/mail/base/content/msgHdrViewOverlay.js#1130
          * for reference */
-        address.displayName = stringBundle.getString("me");
+        address.displayName = isSender ? meTo : toMe;
       } else if (cardDetails.card) { /* We know the guy */
         //myDump("Got a card for "+address.emailAddress+"!\n");
         address.displayName = cardDetails.card.displayName;
@@ -666,9 +668,8 @@ window.addEventListener("load", function f_temp0 () {
         snippetMsgNode.addEventListener("click", toggleMessage, true);
 
         /* Insert fancy colored html */
-        dump(msgHdr.mime2DecodedAuthor+"\n");
-        let recipientsSpans = processEmails(msgHdr.mime2DecodedRecipients, htmlpane.contentDocument);
-        let ccSpans = processEmails(msgHdr.ccList, htmlpane.contentDocument);
+        let recipientsSpans = processEmails(msgHdr.mime2DecodedRecipients, false, htmlpane.contentDocument);
+        let ccSpans = processEmails(msgHdr.ccList, false, htmlpane.contentDocument);
         let lastComma;
         for each (let [, spanList] in Iterator([recipientsSpans, ccSpans])) {
           for each (let [, span] in Iterator(spanList)) {
@@ -1019,7 +1020,7 @@ window.addEventListener("load", function f_temp0 () {
         /* That part tries to extract extra information about the message using
          * Gloda */
         let fillAuthor = function (author) {
-          let senderSpans = processEmails(author, htmlpane.contentDocument);
+          let senderSpans = processEmails(author, true, htmlpane.contentDocument);
           if (senderSpans.length)
             senderNode.appendChild(senderSpans[0]);
         };
@@ -1067,7 +1068,8 @@ window.addEventListener("load", function f_temp0 () {
 
             /* Ok, let's have fun with attachments now */
             let attachments = MimeMessageGetAttachments(aMimeMsg);
-            let attachmentsTxt = stringBundle.getString("attachments");
+            let attachmentsTopTxt = stringBundle.getString("attachments_top");
+            let attachmentsBottomTxt = stringBundle.getString("attachments_bottom");
             if (attachments.length > 0) {
               /* That's for the short paperclip icon */
               let attachmentNode = msgNode.getElementsByClassName("attachment")[0];
@@ -1078,7 +1080,7 @@ window.addEventListener("load", function f_temp0 () {
 
               /* That's for the small list of attachments below the sender */
               let areaNode = msgNode.getElementsByClassName("attachments-area")[0];
-              areaNode.textContent = attachmentsTxt + " ("+attachments.length+")";
+              areaNode.textContent = attachmentsTopTxt.replace("%s", attachments.length);
               let ul = htmlpane.contentDocument.createElement("ul");
               for each (let [k, att] in Iterator(attachments)) {
                 let li = htmlpane.contentDocument.createElement("li");
@@ -1113,7 +1115,7 @@ window.addEventListener("load", function f_temp0 () {
                   attachmentsBox.toXMLString();
                 let attBoxNode = msgNode.getElementsByClassName("attachments-box")[0];
                 attBoxNode.getElementsByClassName("attachments-summary")[0].textContent =
-                  attachments.length + " " + attachmentsTxt;
+                  attachmentsBottomTxt.replace("%s", attachments.length);
 
                 let theAttachments = [];
                 for each (let [j, att] in Iterator(attachments)) {
