@@ -28,7 +28,7 @@
       <Description>
         <em:locale>de</em:locale>
         <em:name>Better Conversation View</em:name>
-        <em:description>Gruppiert Ihre Nachrichen (inklusive Ihrer gesendeten) in Konversationen; wie bei Googlemail.</em:description>
+        <em:description>Gruppiert Ihre Nachrichten (inklusive Ihrer gesendeten) in Konversationen, ähnlich wie Googlemail es tut.</em:description>
         <em:translator>Sebastian Kronenwerth</em:translator>
       </Description>
     </em:localized>
