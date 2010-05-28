@@ -127,9 +127,10 @@ window.addEventListener("load", function f_temp0 () {
   const Cc = Components.classes;
   const Cu = Components.utils;
   const Cr = Components.results;
-  Components.utils.import("resource://gconversation/VariousUtils.jsm");
-  Components.utils.import("resource://gconversation/GlodaUtils.jsm");
-  Components.utils.import("resource://gconversation/MsgHdrUtils.jsm");
+  Cu.import("resource://gconversation/VariousUtils.jsm");
+  Cu.import("resource://gconversation/GlodaUtils.jsm");
+  Cu.import("resource://gconversation/MsgHdrUtils.jsm");
+  Cu.import("resource://gre/modules/PluralForm.jsm");
 
   /* For debugging purposes */
   let consoleService = Cc["@mozilla.org/consoleservice;1"].getService(Ci.nsIConsoleService);
@@ -1068,19 +1069,22 @@ window.addEventListener("load", function f_temp0 () {
 
             /* Ok, let's have fun with attachments now */
             let attachments = MimeMessageGetAttachments(aMimeMsg);
+            let [makePlural, ] = PluralForm.makeGetter(stringBundle.getString("plural_rule"));
             let attachmentsTopTxt = stringBundle.getString("attachments_top");
             let attachmentsBottomTxt = stringBundle.getString("attachments_bottom");
+            let numAttachments = attachments.length;
             if (attachments.length > 0) {
               /* That's for the short paperclip icon */
               let attachmentNode = msgNode.getElementsByClassName("attachment")[0];
+              let attachmentsTxt = makePlural(numAttachments, attachmentsTopTxt).replace("#1", numAttachments);
               attachmentNode.style.display = "";
               attachmentNode.setAttribute("title",
-                attachments.length + " " + attachmentsTxt + " : " +
+                attachmentsTxt + ": " +
                 attachments.map(function (x) x.name).join(", "));
 
               /* That's for the small list of attachments below the sender */
               let areaNode = msgNode.getElementsByClassName("attachments-area")[0];
-              areaNode.textContent = attachmentsTopTxt.replace("%s", attachments.length);
+              areaNode.textContent = attachmentsTxt;
               let ul = htmlpane.contentDocument.createElement("ul");
               for each (let [k, att] in Iterator(attachments)) {
                 let li = htmlpane.contentDocument.createElement("li");
@@ -1100,8 +1104,8 @@ window.addEventListener("load", function f_temp0 () {
               /* That's for the boxes below the message body that contain a
                * description for each attachment */
               let displayFullAttachments = function () {
-                let saveTxt = stringBundle.getString("attachment-save");
-                let saveAllTxt = stringBundle.getString("attachment-saveall");
+                let saveTxt = stringBundle.getString("attachment_save");
+                let saveAllTxt = stringBundle.getString("attachment_saveall");
                 /* Create a box at the bottom for attachments */
                 let attachmentsBox =
                   <div class="attachments-box">
@@ -1115,7 +1119,7 @@ window.addEventListener("load", function f_temp0 () {
                   attachmentsBox.toXMLString();
                 let attBoxNode = msgNode.getElementsByClassName("attachments-box")[0];
                 attBoxNode.getElementsByClassName("attachments-summary")[0].textContent =
-                  attachmentsBottomTxt.replace("%s", attachments.length);
+                  makePlural(numAttachments, attachmentsBottomTxt).replace("#1", attachments.length);
 
                 let theAttachments = [];
                 for each (let [j, att] in Iterator(attachments)) {
@@ -1139,8 +1143,8 @@ window.addEventListener("load", function f_temp0 () {
                    * http://mxr.mozilla.org/comm-central/source/mail/base/content/msgHdrViewOverlay.js#1993
                    * http://mxr.mozilla.org/comm-central/source/mail/base/content/msgHdrViewOverlay.xul#76
                    * for the relevant actions */
-                  let altTxt = stringBundle.getString("open_att_tab").replace("%s", att.name);
-                  let altTxt2 = stringBundle.getString("open_attachment").replace("%s", att.name);
+                  let altTxt = stringBundle.getString("open_att_tab").replace("#1", att.name);
+                  let altTxt2 = stringBundle.getString("open_attachment").replace("#1", att.name);
                   if (att.contentType.indexOf("image/") === 0) {
                     singleBoxContents =
                       <div class="attachment-box image-attachment-box">
