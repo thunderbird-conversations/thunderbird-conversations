@@ -20,15 +20,15 @@ proper tools if you are on Windows. Anyway, it isn't that hard, it's just a set
 of commands to automate uploading to my website and generating fresh versions.
 To build the .xpi, just do:
 
-make package
+    make package
 
 If you want to develop and see your changes in real-time (assuming you have a
 proper setup in your profile and you restart Thunderbird), you can link this
 extension in your global thunderbird setup.
 
-cd thunderbird
-cd extensions
-ln -s /path/to/this/folder
+    cd thunderbird
+    cd extensions
+    ln -s /path/to/this/folder
 
 Alternatively, in your profile, you can create an empty file called
 "gconversation@xulforum.org" in the extensions directory. This file should only
