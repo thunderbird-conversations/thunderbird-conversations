@@ -11,7 +11,7 @@
 <!ENTITY option.no_messages "Keine Nachrichten">
 <!ENTITY title.toolbar "Buttons der Symbolleiste">
 <!ENTITY buttons.info "All diese Befehle sind auch über das Kontextmenü der Konversation zugänglich (Rechtsklick).">
-<!ENTITY option.toolbar_text_plus_icons "Die Funktionnamen der Buttons neben deren Symbolen anzeigen">
+<!ENTITY option.toolbar_text_plus_icons "Die Funktion der Buttons neben deren Symbolen anzeigen">
 <!ENTITY option.button.archive "&quot;Archiv&quot;-Button anzeigen">
 <!ENTITY option.button.trash "&quot;Löschen&quot;-Button anzeigen">
 <!ENTITY option.button.print "&quot;Drucken&quot;-Button anzeigen">

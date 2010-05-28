@@ -1,0 +1,4 @@
+<!ENTITY error.title "Exibição de conversa do Gmail não pode funcionar">
+<!ENTITY error_gloda_disabled "Você precisa habilitar o banco de dados global para que esta extensão funcione corretamente. Por favor, vá para Ferramentas &gt; Opções (ou Editar &gt; Preferências). Na seção &quot;Avançado&quot;, procure a aba &quot;Geral&quot;. Marque &quot;Ativar pesquisa global e indexação&quot;. Está pronto! Você só precisa esperar o Thunderbird indexar todas as suas mensagens (isso pode demorar um pouco).">
+<!ENTITY error.help "Precisa de mais ajuda?">
+<!ENTITY error.close "Fechar esta mensagem">
