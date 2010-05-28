@@ -1360,14 +1360,9 @@ window.addEventListener("load", function f_temp0 () {
    * messages have all been found. If it fails to retrieve GlodaMessages, it
    * calls k(null, [list of msgHdrs]). */
   function pullConversation(aSelectedMessages, k) {
-    /* XXX tentative algorithm for dealing with non-strict threads.
-     *
-     * Get the first conversation. Mark in a Hashtbl all the messages we've
-     * found according to their messageId. Move on to the remaining messages
-     * from aItems. If they haven't been marked in the Hashtbl, re-launch a
-     * conversation search for them too. Repeat the process until all messages
-     * in aItems have been marked or aItems is empty.
-     * */
+    /* Let's hope the user hasn't changed selection by the time we get there...
+     * this should minimize race conditions but not solve them. */
+    let firstMessageId = gFolderDisplay.selectedMessage.messageId;
     try {
       gconversation.stash.q1 = Gloda.getMessageCollectionForHeaders(aSelectedMessages, {
         onItemsAdded: function (aItems) {
@@ -1385,7 +1380,12 @@ window.addEventListener("load", function f_temp0 () {
             /* That's a XPConnect bug. bug 547088, so track the
              * bug and remove the setTimeout when it's fixed and bump the
              * version requirements in install.rdf.template */
-            onQueryCompleted: function (aCollection) setTimeout(function () k(aCollection, aCollection.items, msg), 0),
+            onQueryCompleted: function (aCollection)
+              setTimeout(function ()
+                gFolderDisplay.selectedMessage.messageId == firstMessageId
+                  ? k(aCollection, aCollection.items, msg)
+                  : myDump("Canceled because we changed conversations too fast\n"),
+                0),
           }, true);
         },
         onItemsModified: function () {},
