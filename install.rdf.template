@@ -21,8 +21,10 @@
     <!-- Front End MetaData -->
     <em:name>Gmail Conversation View</em:name>
     <em:description>Display your own emails in thread summaries, and view full threads, just like Gmail.</em:description>
+    <em:creator>Jonathan Protzenko</em:creator>
     <em:optionsURL>chrome://gconversation/content/options.xul</em:optionsURL>
     <em:iconURL>chrome://gconversation/content/icon.png</em:iconURL>
+    <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL><++>
 
     <em:localized>
       <Description>
@@ -69,8 +71,6 @@
         <em:author>夏若朗 (Jonathan Protzenko)</em:author>
       </Description>
     </em:localized> 
-
-    <em:creator>Jonathan Protzenko</em:creator>
   </Description>      
 
 </RDF>
