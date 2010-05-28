@@ -1,11 +1,12 @@
 --- 1.0 release ---
 
 HIGHLIGHTS
-- German and Chinese translations
+- German, Italian, Serbian, French, Portugese and Chinese translations
 - New design, based on mockups from the Thunderbird UX team. Improved
 readibility and usability, more actions available. You can view images inline,
 open images in a new Thunderbird tab, open text attachments in a new Thunderbird
-tab. Recipients now also have colors.
+tab, archive messages individually.
+- Assign colors to participants in the conversation.
 - Compatible with Enigmail!
 - Fully revamped keyboard navigation. Use tab to jump from the message list to
 the conversation view. Use p and n to move between messages. Use o to open
