@@ -413,7 +413,8 @@ a.action:hover {
   width: 100%;
   margin-left: 0;
   padding: 0;
-  overflow: hidden;
+  overflow-y: hidden;
+  overflow-x: auto;
 }
 
 /* Message footer */
