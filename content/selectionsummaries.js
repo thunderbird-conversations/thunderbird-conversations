@@ -155,6 +155,7 @@ window.addEventListener("load", function f_temp0 () {
   const gHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"].getService(Ci.nsIMsgHeaderParser);
   const prefs = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService).getBranch("gconversation.");
   const txttohtmlconv = Cc["@mozilla.org/txttohtmlconv;1"].createInstance(Ci.mozITXTToHTMLConv);
+  const i18nDateFormatter = Cc["@mozilla.org/intl/scriptabledateformat;1"].createInstance(Ci.nsIScriptableDateFormat);
   const stringBundle = document.getElementById("gconv-string-bundle");
 
 
@@ -172,6 +173,7 @@ window.addEventListener("load", function f_temp0 () {
   gPrefs["auto_mark_read"] = prefs.getBoolPref("auto_mark_read");
   gPrefs["monospaced_senders"] = prefs.getCharPref("monospaced_senders").split(",");
   gPrefs["info_af_shown"] = prefs.getBoolPref("info_af_shown");
+  gPrefs["no_friendly_date"] = prefs.getBoolPref("no_friendly_date");
 
   let myPrefObserver = {
     register: function mpo_register () {
@@ -195,6 +197,7 @@ window.addEventListener("load", function f_temp0 () {
         case "auto_mark_read":
         case "disable_error_empty_collection":
         case "info_af_shown":
+        case "no_friendly_date":
           gPrefs[aData] = prefs.getBoolPref(aData);
           break;
         case "hide_quote_length":
@@ -506,7 +509,24 @@ window.addEventListener("load", function f_temp0 () {
           msg_classes += " starred";
 
         let theSubject = msgHdr.mime2DecodedSubject;
-        let date = makeFriendlyDateAgo(new Date(msgHdr.date/1000));
+        let dateObject = new Date(msgHdr.date/1000);
+        let date;
+        if (gPrefs["no_friendly_date"]) {
+          let format = dateObject.toLocaleDateString("%x") == (new Date()).toLocaleDateString("%x")
+            ? Ci.nsIScriptableDateFormat.dateFormatNone
+            : Ci.nsIScriptableDateFormat.dateFormatShort;
+          date = i18nDateFormatter.FormatDateTime("",
+                                                  format,
+                                                  Ci.nsIScriptableDateFormat.timeFormatNoSeconds,
+                                                  dateObject.getFullYear(),
+                                                  dateObject.getMonth(),
+                                                  dateObject.getDate(),
+                                                  dateObject.getHours(),
+                                                  dateObject.getMinutes(),
+                                                  dateObject.getSeconds());
+        } else {
+          date = makeFriendlyDateAgo(dateObject);
+        }
 
         /* The snippet class really has a counter-intuitive name but that allows
          * us to keep some style from the original multimessageview.css without
