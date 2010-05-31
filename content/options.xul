@@ -140,6 +140,7 @@
        <preference id="auto_fetch" name="gconversation.auto_fetch" type="bool" />
        <preference id="auto_mark_read" name="gconversation.auto_mark_read" type="bool" />
        <preference id="monospaced_senders" name="gconversation.monospaced_senders" type="string" />
+       <preference id="no_friendly_date" name="gconversation.no_friendly_date" type="bool" />
      </preferences>
     
      <groupbox style="height: 8em;">
@@ -153,6 +154,10 @@
      <groupbox>
        <caption label="&title.error_messages;"/>
        <checkbox label="&option.disable_error_empty_collection;" preference="disable_error_empty_collection" id="disable_error_empty_collection_checkbox" />
+     </groupbox>
+     <groupbox>
+       <caption label="&title.advanced_display;" />
+       <checkbox label="&option.no_friendly_date;" preference="no_friendly_date" />
      </groupbox>
      <spacer flex="1" style="min-height: 4em" />
    </prefpane>

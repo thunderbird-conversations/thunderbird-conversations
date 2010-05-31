@@ -35,3 +35,5 @@
 <!ENTITY title.error_messages "Error messages">
 <!ENTITY option.disable_error_empty_collection "Disable the &quot;Thunderbird has not indexed this thread yet&quot; warning">
 <!ENTITY option.monospaced_senders "Messages from those addresses should be displayed in monospaced fonts (separate using commas)">
+<!ENTITY title.advanced_display "Conversation display">
+<!ENTITY option.no_friendly_date "Use &quot;normal&quot; dates, just like the message list">
