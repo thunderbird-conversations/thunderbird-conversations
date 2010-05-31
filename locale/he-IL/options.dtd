@@ -1,0 +1,5 @@
+<!ENTITY title.message_display "תצוגת הודעה">
+<!ENTITY option.monospaced "להשתמש בגופן רוחב-קבוע עבור הודעות של טקסט פשוט">
+<!ENTITY option.monospaced_snippets "להשתמש בגופן רוחב-קבוע עבור קטעי הודעות">
+<!ENTITY option.focus_what "בתצוגת שיחה, גלגל ל־:">
+<!ENTITY option.focus_first "הודעה הלא-נקרא הראשון או הודעה האחרונה">

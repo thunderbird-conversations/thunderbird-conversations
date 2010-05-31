@@ -1,0 +1,11 @@
+<!ENTITY error.title "Gmail conversation view ne peut fonctionner.">
+<!ENTITY error_gloda_disabled "Vous devez activer la base de données globale pour que ce module complémentaire fonctionne correctement. Allez s'il vous plaît dans Outils &gt; Options (ou Éditions &gt; Préférences). Dans la section &quot;Avancé&quot; , chercher l'onglet &quot;Général&quot;. Cochez &quot;Activer la recherche globale et l'indexation&quot;. C'est terminé ! Vous avez juste à attendre que Thunderbird indexe tous vos messages (ceci peut prendre un moment).">
+<!ENTITY error.help "Besoin de plus d'aide?">
+<!ENTITY error_empty_collection "Thunderbird n'a pas encore indexé ce fil. C'est normal si ce message vient d'arriver, si Thunderbird a beaucoup de messages à indexer ou si vous essayez d'avoir une vue sous forme de conversation pour soit un message de newsgroup, d'un fil RSS ou un message présent dans la corbeille. Si ceci persiste, vérifiez dans Outils &gt; Options (ou Édition &gt; Préférences) &gt; Avancé &gt; Général que la recherche globale et l'indexation sont activées.">
+<!ENTITY error.close "Fermer ce message">
+<!ENTITY error.disable "Désactiver définitivement ce message d'erreur">
+<!ENTITY info_af.title "Bonjour, voici la vue des conversations façon Gmail !">
+<!ENTITY info_af.body "Le message que vous venez de sélectionner devait faire partie d'une plus importante conversation. Bien qu'il n'y ait pas de réel fil affiché dans la liste des messages, nous pensons que vous pourriez aimer que des conversations comme celle-ci soient automatiquement synchronisées et affichées.">
+<!ENTITY info_af.body2 "Voulez vous de cette fonction ? Ceci peut être modifié plus tard dans les préférences de ce module complémentaire, dans la section &quot;Avancé&quot;">
+<!ENTITY info_af.yes "Oui, la conserver !">
+<!ENTITY info_af.no "Non, merci">

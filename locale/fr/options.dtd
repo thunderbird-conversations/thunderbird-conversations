@@ -1,16 +1,23 @@
-<!ENTITY window.title "Options de GMail Conversation View">
+<!ENTITY window.title "Options de &quot;GMail Conversation View&quot;">
 <!ENTITY title.message_display "Affichage des messages">
 <!ENTITY option.monospaced "Utiliser une fonte monospace pour les messages au format texte">
+<!ENTITY option.monospaced_snippets "Utiliser une fonte monospace pour les fragments de message">
+<!ENTITY option.focus_what "Lors de l'affichage d'une conversation, faire défiler jusqu'à:">
 <!ENTITY option.focus_first "Faire défiler la fenêtre jusqu'au premier message non lu ou au dernier message">
-<!ENTITY optiondesc.unfold "Par défaut, déplier">
-<!ENTITY option.last_or_unread "Dernier message ou messages non lus">
+<!ENTITY option.focus_selected "Le message actuellement sélectionné dans la liste de messages.">
+<!ENTITY optiondesc.unfold "Par défaut, déplier:">
+<!ENTITY option.last_or_unread "Tous les messages non lus plus le dernier message (voir au dessus)">
 <!ENTITY option.all_messages "Tous les messages">
 <!ENTITY option.no_messages "Aucun message">
 <!ENTITY title.toolbar "Boutons de la barre d'outils">
-<!ENTITY buttons.info "Toutes ces commandes sont également accessibles depuis le menu contextuel du résumé de la conversation (clic-droit).">
+<!ENTITY buttons.info "Toutes ces commandes sont également accessibles depuis le menu contextuel du résumé du fil de la conversation (clic-droit).">
+<!ENTITY option.toolbar_text_plus_icons "Afficher le texte à côté des icônes pour ces boutons">
 <!ENTITY option.button.archive "Afficher le bouton &quot;archiver&quot;">
 <!ENTITY option.button.trash "Afficher le bouton &quot;supprimer&quot;">
 <!ENTITY option.button.print "Afficher le bouton &quot;imprimer&quot;">
+<!ENTITY option.button.back "Afficher le bouton &quot;vue message seul&quot;">
+<!ENTITY option.button.expand_all "Afficher le bouton &quot;tout déplier&quot;">
+<!ENTITY option.button.collapse_all "Afficher le bouton &quot;tout replier&quot;">
 <!ENTITY option.button.mark_as_read "Afficher le bouton &quot;tout marquer comme lu&quot;">
 <!ENTITY option.button.open_in_new_tab "Afficher le bouton &quot;ouvrir dans un nouvel onglet&quot;">
 <!ENTITY title.quoting "Citations et arborescence">
@@ -19,4 +26,9 @@
 <!ENTITY option.reverse_order "Ordre inversé (dernier → premier)">
 <!ENTITY title.general "Général">
 <!ENTITY option.auto_fetch "Toujours chercher les conversations">
+<!ENTITY option.auto_mark_read "Toujours marquer le fil entier comme lu lorsque la conversation est affichée.">
 <!ENTITY auto_fetch.info "Parfois il n'y a pas de fil de discussion visible dans le panneau des messages, mais il y a une conversation sous-jacente (si vous répondez au mail de quelqu'un, par exemple). Cette option vous permet d'afficher automatiquement la vue sous forme de conversation pour ces messages.">
+<!ENTITY title.advanced "Avancé">
+<!ENTITY title.error_messages "Messages d'erreurs">
+<!ENTITY option.disable_error_empty_collection "Désactiver l'avertissement &quot;Thunderbird n'a pas encore indexé ce fil&quot;">
+<!ENTITY option.monospaced_senders "Les messages provenant de ces adresses devraient être affichés en utilisant des polices monospace (séparer en utilisant des virgules)">
