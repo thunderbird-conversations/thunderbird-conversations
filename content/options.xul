@@ -141,6 +141,7 @@
        <preference id="auto_mark_read" name="gconversation.auto_mark_read" type="bool" />
        <preference id="monospaced_senders" name="gconversation.monospaced_senders" type="string" />
        <preference id="no_friendly_date" name="gconversation.no_friendly_date" type="bool" />
+       <preference id="guess_first_names" name="gconversation.guess_first_names" type="bool" />
      </preferences>
     
      <groupbox style="height: 8em;">
@@ -158,6 +159,7 @@
      <groupbox>
        <caption label="&title.advanced_display;" />
        <checkbox label="&option.no_friendly_date;" preference="no_friendly_date" />
+       <checkbox label="&option.guess_first_names;" preference="guess_first_names" />
      </groupbox>
      <spacer flex="1" style="min-height: 4em" />
    </prefpane>

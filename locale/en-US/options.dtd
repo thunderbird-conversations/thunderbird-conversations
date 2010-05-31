@@ -37,3 +37,4 @@
 <!ENTITY option.monospaced_senders "Messages from those addresses should be displayed in monospaced fonts (separate using commas)">
 <!ENTITY title.advanced_display "Conversation display">
 <!ENTITY option.no_friendly_date "Use &quot;normal&quot; dates, just like the message list">
+<!ENTITY option.guess_first_names "Guess and display participant's first names only">

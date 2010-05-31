@@ -170,6 +170,7 @@ window.addEventListener("load", function f_temp0 () {
   gPrefs["monospaced_senders"] = Array.map(prefs.getCharPref("monospaced_senders").split(","), String.trim);
   gPrefs["info_af_shown"] = prefs.getBoolPref("info_af_shown");
   gPrefs["no_friendly_date"] = prefs.getBoolPref("no_friendly_date");
+  gPrefs["guess_first_names"] = prefs.getBoolPref("guess_first_names");
 
   let myPrefObserver = {
     register: function mpo_register () {
@@ -194,6 +195,7 @@ window.addEventListener("load", function f_temp0 () {
         case "disable_error_empty_collection":
         case "info_af_shown":
         case "no_friendly_date":
+        case "guess_first_names":
           gPrefs[aData] = prefs.getBoolPref(aData);
           break;
         case "hide_quote_length":
@@ -317,7 +319,9 @@ window.addEventListener("load", function f_temp0 () {
       let title = card.displayName ? card.emailAddress : "";
 
       let shortName = aDoc.createElement("span");
-      shortName.textContent = card.firstName || parseShortName(name);
+      shortName.textContent = gPrefs["guess_first_names"]
+        ? card.firstName || parseShortName(name)
+        : name;
       _mm_addClass(shortName, "short-name");
 
       let fullName = aDoc.createElement("span");
