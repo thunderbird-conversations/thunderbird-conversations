@@ -35,12 +35,15 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-#message-display checkbox:not(.fullwidth) {
-  max-width: 280px;
-}
+function openLink(uri) {
 
-.link {
-  color: navy;
-  text-decoration: underline;
-  cursor: pointer;
+  if (!(uri instanceof Components.interfaces.nsIURI))
+    uri = Components.classes["@mozilla.org/network/io-service;1"]
+      .getService(Components.interfaces.nsIIOService)
+      .newURI(uri, null, null);
+
+  Components.classes["@mozilla.org/uriloader/external-protocol-service;1"]
+    .getService(Components.interfaces.nsIExternalProtocolService)
+    .loadUrl(uri);
+
 }

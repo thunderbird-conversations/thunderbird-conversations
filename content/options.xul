@@ -46,6 +46,8 @@
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
   onload="sizeToContent();"
   >
+
+  <script type="application/javascript" src="chrome://gconversation/content/options.js" />
  
   <prefpane id="message-display" label="&title.message_display;"
     image="chrome://messenger/skin/preferences/general.png"
@@ -158,6 +160,7 @@
      </groupbox>
      <groupbox>
        <caption label="&title.advanced_display;" />
+       <label class="link" onclick="openLink('http://wiki.github.com/protz/GMail-Conversation-View/displaying-your-own-messages-in-the-inbox');" value="&option.my_messages_in_inbox;" />
        <checkbox label="&option.no_friendly_date;" preference="no_friendly_date" />
        <checkbox label="&option.guess_first_names;" preference="guess_first_names" />
      </groupbox>
