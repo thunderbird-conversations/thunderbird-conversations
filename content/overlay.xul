@@ -51,7 +51,7 @@
   <script type="application/x-javascript" src="selectionsummaries.js" />
   <toolbarpalette id="header-view-toolbar-palette">
     <toolbarbutton id="gconv-button-1"
-      class="gconv-button-1 toolbarbutton-1 msgHeaderView-button customize-header-toolbar-button hdrReplyButton"
+      class="gconv-button-1 toolbarbutton-1 msgHeaderView-button customize-header-toolbar-button"
       label="&ctoolbar.view_full;"
       type="menu-button"
       tooltiptext="&ctoolbar.view_full_tooltip;"
