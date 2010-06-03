@@ -69,7 +69,25 @@
               href="chrome://gconversation/skin/multimessageview_print.css"/>
         <link rel="stylesheet" media="screen" type="text/css"
               id="platformStylesheet" />
+        <link rel="stylesheet" media="screen" type="text/css"
+              href="chrome://gconversation/skin/jqueryui/ui-lightness/jquery-ui-1.7.3.custom.css" />
+        <link rel="stylesheet" media="screen" type="text/css"
+              href="chrome://gconversation/skin/jqueryui/ui-lightness/jquery-ui.button.css" />
+        <link rel="stylesheet" media="screen" type="text/css"
+              href="chrome://gconversation/skin/jqueryui/ui-lightness/jquery-ui.menu.css" />
         <title>&window.title;</title>
+        <script type="application/javascript;version=1.8"
+          src="chrome://gconversation/content/jqueryui/jquery-1.3.2.min.js" />
+        <script type="application/javascript;version=1.8"
+          src="chrome://gconversation/content/jqueryui/jquery-ui-1.7.3.custom.min.js" />
+        <script type="application/javascript;version=1.8"
+          src="chrome://gconversation/content/jqueryui/jquery-ui.button.js" />
+        <script type="application/javascript;version=1.8"
+          src="chrome://gconversation/content/jqueryui/jquery-ui.buttonset.js" />
+        <script type="application/javascript;version=1.8"
+          src="chrome://gconversation/content/jqueryui/jquery-ui.classnameoptions.js" />
+        <script type="application/javascript;version=1.8"
+          src="chrome://gconversation/content/jqueryui/jquery-ui.menu.js" />
         <script type="application/javascript;version=1.8"><![CDATA[
             function addPlatformStyle() {
               let styleElt = document.getElementById("platformStylesheet");
@@ -185,6 +203,23 @@
 
             function disableErrorEmptyCollection() {
               prefsBranch.setBoolPref("disable_error_empty_collection", true);
+            }
+
+            function styleMsgNode(aMsgNode) {
+              let $aMsgNode = $(aMsgNode);
+              let $menu = $aMsgNode.find(".button-more-actions");
+              $menu.menu({
+                content: $menu.next().html()
+              });
+              let $buttons = $aMsgNode.find("button");
+              $buttons.hover(
+                function(){ 
+                        $(this).addClass("ui-state-hover"); 
+                },
+                function(){ 
+                        $(this).removeClass("ui-state-hover"); 
+                }
+              );
             }
         ]]>
         </script>

@@ -423,20 +423,23 @@ a.action:hover {
   width: 100%;
   position: relative;
   margin-top: 2em;
+  overflow: auto;
 }
 
-.button-regular {
-  min-width: 2em !important;
-  margin-left: .8em;
-  padding: 0 6px !important;
+.button-area-right {
+  float: right;
 }
 
-.button-regular:first-child {
-  margin-left: 0;
+.button-area-left {
+  float: left;
 }
 
-.button-action-area > .button-archive {
-  font-weight: bold;
+.button-archive {
+  font-weight: 900 !important;
+}
+
+.menu-more-actions {
+  font-size: small;
 }
 
 .grip {

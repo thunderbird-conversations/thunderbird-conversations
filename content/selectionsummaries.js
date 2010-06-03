@@ -616,21 +616,36 @@ window.addEventListener("load", function f_temp0 () {
               <div class="plaintextmsg" style="display: none;"></div>
               <div class="snippet htmlmsg" style="" xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"></div>
               <div class="attachments-box-handler" />
-              <hbox class="button-action-area" align="start" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul" xmlns:html="http://www.w3.org/1999/xhtml">
-                <button class="button msgHeaderView-button button-regular button-reply">{replyTxt}</button>
-                <button class="button msgHeaderView-button button-regular button-forward">{forwardTxt}</button>
-                <button class="button msgHeaderView-button button-regular button-more-actions" type="menu">
-                 {moreActionsTxt}
-                  <menupopup>
-                    <menuitem class="menu-editNew">{editNew}</menuitem>
-                    <menuitem class="menu-replyList">{replyList}</menuitem>
-                  </menupopup>
-                </button>
-                <spacer flex="1" />
-                <button disabled="true" class="button msgHeaderView-button button-regular button-markSpam">{markSpamTxt}</button>
-                <button class="button msgHeaderView-button button-regular button-archive">{archiveTxt}</button>
-                <button class="button msgHeaderView-button button-regular button-delete">{deleteTxt}</button>
-              </hbox>
+              <div class="button-action-area">
+                <div class="button-area-left fg-buttonset">
+                  <button class="link fg-button ui-state-default ui-corner-all button-reply">
+                    {replyTxt}
+                  </button>
+                  <button class="link fg-button ui-state-default ui-corner-all button-forward">
+                    {forwardTxt}
+                  </button>
+                  <button class="link fg-button ui-state-default ui-corner-all button-more-actions">
+                    {moreActionsTxt}
+                  </button>
+                  <div style="display: none;">
+                    <ul class="menu-more-actions">
+                      <li><a href="#" class="link menu-editNew">{editNew}</a></li>
+                      <li><a href="#" class="link menu-replyList">{replyList}</a></li>
+                    </ul>
+                  </div>
+                </div>
+                <div class="button-area-right fg-buttonset">
+                  <button disabled="true" class="link fg-button ui-state-default ui-corner-all ui-state-disabled button-markSpam">
+                    {markSpamTxt}
+                  </button>
+                  <button class="link fg-button ui-state-default ui-corner-all button-archive">
+                    {archiveTxt}
+                  </button>
+                  <button class="link fg-button ui-state-default ui-corner-all button-delete">
+                    {deleteTxt}
+                  </button>
+                </div>
+              </div>
             </div>
             <div class="grip" />
           </div>;
@@ -973,6 +988,9 @@ window.addEventListener("load", function f_temp0 () {
 
                   /* Don't go to such lengths to make it work next time */
                   focusInformation.iFrameWasLoaded = true;
+
+                  /* jQuery, go! */
+                  htmlpane.contentWindow.styleMsgNode(msgNode);
 
                   /* Here ends the chain of event listeners, nothing happens
                    * after this. */
@@ -1339,9 +1357,11 @@ window.addEventListener("load", function f_temp0 () {
               compose(Ci.nsIMsgCompType.ForwardInline, event);
           });
         register(".menu-replyList", function (event) {
+            myDump("coucou\n");
             compose(Ci.nsIMsgCompType.ReplyToList, event);
           });
         register(".menu-editNew", function (event) {
+            myDump("coucou\n");
             compose(Ci.nsIMsgCompType.Template, event);
           });
         register(".action.delete-msg, .button-delete", function deletenode_listener (event) {
