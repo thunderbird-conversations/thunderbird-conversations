@@ -1,0 +1,95 @@
+.ui-buttonset{
+	display:inline-block;
+	margin:0 1em;
+	vertical-align:bottom;
+	white-space:nowrap;
+}
+
+.ui-button-inlineBlockFix{
+	display:inline !important;
+}
+
+.ui-button, button.ui-button{
+	position:relative;
+	zoom:1; /** ie hasLayout trigger */
+	text-decoration:none;
+	cursor:pointer;
+	margin:0 0.1em;
+	padding: 0.2em 0.8em;
+	text-align:center;
+	display:inline-block;
+	vertical-align:bottom;
+	white-space:nowrap;
+	outline:none;
+	font-size:1em;
+}
+/*button.ui-button{
+	padding:0.1525em 0.6em; /* this look offer pretty good consistency for firefox but will broke opera and perhaps midori/chrome/safari ie still a problem * /
+}*/
+.ui-buttonset .ui-button,.ui-buttonset button.ui-button{
+	margin:0;
+}
+
+.ui-button-size-tiny, button.ui-button-size-tiny    {font-size:0.75em !important;}
+.ui-button-size-small, button.ui-button-size-small  {font-size:0.9em !important;}
+.ui-button-size-normal, button.ui-button-size-normal{font-size:1em !important;}
+.ui-button-size-big, button.ui-button-size-big      {font-size:1.1em !important;}
+.ui-button-size-huge, button.ui-button-size-huge    {font-size:1.25em !important;}
+
+/** labels **/
+.ui-button-label{
+	font-size:1em;
+	display:inline-block;
+	padding:0.2em;
+	vertical-align:middle;
+	white-space:nowrap;
+	margin:auto;
+}
+
+.ui-button-label.ui-button-label-empty{
+	width:0px;
+	zoom:1;
+	overflow:visible;
+	text-indent:-99999px;
+	white-space:nowrap;
+	padding:0.2em 0;
+	margin:0 !important;
+}
+
+/** icons **/
+.ui-button-icon {
+	position:relative;
+	zoom:1;
+	font-size:1em;
+	vertical-align:middle;
+	margin:auto;
+	text-align:center;
+}
+
+.ui-button-icon img{
+	border:none;
+	display:block;
+	margin:0 auto;
+}
+
+.ui-button-orientation-t .ui-button-icon { display:block !important; margin:0 auto;}
+.ui-button-orientation-b .ui-button-icon { display:block !important; margin:0 auto;}
+.ui-button-orientation-l .ui-button-icon { display:inline-block !important;}
+.ui-button-orientation-r .ui-button-icon { display:inline-block !important;}
+
+.ui-button-orientation-t .ui-icon, .ui-button-orientation-b .ui-icon{ margin:0 auto;}
+.ui-button-orientation-b .ui-icon-none, .ui-button-orientation-t .ui-icon-none { background:none !important;}
+.ui-button-orientation-r .ui-icon-none, .ui-button-orientation-l .ui-icon-none { width:0;background:none;}
+.ui-button-inlineBlockFix.ui-button-orientation-t .ui-button-icon { width:16px;}
+.ui-button-inlineBlockFix.ui-button-orientation-b .ui-button-icon { width:16px;}
+
+.ui-button-inlineBlockFix .ui-button-icon{ margin:0;}
+
+/*
+ @todo should think to use zoom when possible must do some work on that
+.ui-button-size-tiny .ui-icon   {zoom:0.5;}
+.ui-button-size-small .ui-icon  {zoom:0.75;}
+.ui-button-size-normal .ui-icon {zoom:1;}
+.ui-button-size-big .ui-icon    {zoom:1.5;}
+.ui-button-size-huge .ui-icon   {zoom:2;}
+*/
