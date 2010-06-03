@@ -629,8 +629,8 @@ window.addEventListener("load", function f_temp0 () {
                   </button>
                   <div style="display: none;">
                     <ul class="menu-more-actions">
-                      <li><a href="#" class="link menu-editNew">{editNew}</a></li>
-                      <li><a href="#" class="link menu-replyList">{replyList}</a></li>
+                      <li><a href="javascript:" class="link menu-editNew">{editNew}</a></li>
+                      <li><a href="javascript:" class="link menu-replyList">{replyList}</a></li>
                     </ul>
                   </div>
                 </div>

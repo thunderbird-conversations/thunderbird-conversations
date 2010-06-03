@@ -209,7 +209,7 @@
               let $aMsgNode = $(aMsgNode);
               let $menu = $aMsgNode.find(".button-more-actions");
               $menu.menu({
-                content: $menu.next().html()
+                content: $menu.next().children()
               });
               let $buttons = $aMsgNode.find("button");
               $buttons.hover(
