@@ -10,6 +10,13 @@ Copyright (c) 2009 Filament Group
 Dual licensed under the MIT (filamentgroup.com/examples/mit-license.txt) and GPL (filamentgroup.com/examples/gpl-license.txt) licenses.
 --------------------------------------------------------------------*/
 
+/* 2010/06/03 (Jonathan Protzenko)
+ *
+ * Changed the content option to be an Element instead of a string. This
+ * prevents event handlers from being canceled, and doesn't uselessly duplicate
+ * elements.
+ * */
+
 
 var allUIMenus = [];
 

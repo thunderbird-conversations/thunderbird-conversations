@@ -39,6 +39,11 @@ body {
   background-color: #f3f3f4;
 }
 
+/* Cancels the style from sharedsummary.css */
+a {
+  font-weight: normal;
+}
+
 /* Toolbar */
 
 #expand_all {
@@ -440,6 +445,7 @@ a.action:hover {
 
 .menu-more-actions {
   font-size: small;
+  font-weight: normal;
 }
 
 .grip {

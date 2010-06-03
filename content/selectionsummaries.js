@@ -626,6 +626,8 @@ window.addEventListener("load", function f_temp0 () {
                   </button>
                   <button class="link fg-button ui-state-default ui-corner-all button-more-actions">
                     {moreActionsTxt}
+                    <div style="display: inline-block; vertical-align: middle"
+                      class="ui-icon ui-icon-triangle-1-s"></div>
                   </button>
                   <div style="display: none;">
                     <ul class="menu-more-actions">
