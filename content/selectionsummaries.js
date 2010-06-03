@@ -599,7 +599,17 @@ window.addEventListener("load", function f_temp0 () {
             </div>
             <div class="header">
               <div class="wrappedsender">
-                <div class="msgheader-details-toggle">{detailsTxt}</div>
+                <div class="fg-tooltip fg-tooltip-right ui-widget ui-state-highlight ui-corner-all" style="display: none">
+                  <b>From</b>: Jonathan Protzenko &lt;jonathan.protzenko@gmail.com&gt;<br />
+                  <b>To</b>: Jane Mazzocato &lt;jane.mazzocato@gmail.com&gt;<br />
+                  <b>Folder</b>: Archives<br />
+                  <b>Mailed-By</b>: mail.google.com<br />
+                  <b>Date</b>: Thursday, August 7th, 2008 at 3:00pm<br />
+                  <div class="fg-tooltip-pointer-up ui-state-highlight">
+                    <div class="fg-tooltip-pointer-up-inner"></div>
+                  </div>
+                </div>
+                <div class="tooltip msgheader-details-toggle">{detailsTxt}</div>
                 <div class="msgheader-from-to">
                   <div class="sender link"></div>
                   <div class="to-text">{toTxt}</div>
@@ -649,7 +659,7 @@ window.addEventListener("load", function f_temp0 () {
                 </div>
               </div>
             </div>
-            <div class="grip" />
+            <div class="grip ui-icon ui-icon-grip-diagonal-se" />
           </div>;
 
         let msgNode = htmlpane.contentDocument.createElement("div");

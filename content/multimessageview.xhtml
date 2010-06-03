@@ -57,6 +57,14 @@
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
     <head>
+        <link rel="stylesheet" media="screen" type="text/css"
+              href="chrome://gconversation/skin/jqueryui/ui-lightness/jquery-ui-1.7.3.custom.css" />
+        <link rel="stylesheet" media="screen" type="text/css"
+              href="chrome://gconversation/skin/jqueryui/ui-lightness/jquery-ui.button.css" />
+        <link rel="stylesheet" media="screen" type="text/css"
+              href="chrome://gconversation/skin/jqueryui/ui-lightness/jquery-ui.menu.css" />
+        <link rel="stylesheet" media="screen" type="text/css"
+              href="chrome://gconversation/skin/jqueryui/ui-lightness/jquery-ui.tooltip.css" />
         <link rel="stylesheet" media="screen, print" type="text/css"
               href="chrome://messenger/skin/messageHeader.css"/>
         <link rel="stylesheet" media="screen, print" type="text/css"
@@ -69,12 +77,6 @@
               href="chrome://gconversation/skin/multimessageview_print.css"/>
         <link rel="stylesheet" media="screen" type="text/css"
               id="platformStylesheet" />
-        <link rel="stylesheet" media="screen" type="text/css"
-              href="chrome://gconversation/skin/jqueryui/ui-lightness/jquery-ui-1.7.3.custom.css" />
-        <link rel="stylesheet" media="screen" type="text/css"
-              href="chrome://gconversation/skin/jqueryui/ui-lightness/jquery-ui.button.css" />
-        <link rel="stylesheet" media="screen" type="text/css"
-              href="chrome://gconversation/skin/jqueryui/ui-lightness/jquery-ui.menu.css" />
         <title>&window.title;</title>
         <script type="application/javascript;version=1.8"
           src="chrome://gconversation/content/jqueryui/jquery-1.3.2.min.js" />
@@ -207,10 +209,14 @@
 
             function styleMsgNode(aMsgNode) {
               let $aMsgNode = $(aMsgNode);
+
+              /* The menu, with our hack. */
               let $menu = $aMsgNode.find(".button-more-actions");
               $menu.menu({
                 content: $menu.next().children()
               });
+
+              /* The buttons */
               let $buttons = $aMsgNode.find("button");
               $buttons.hover(
                 function(){ 
@@ -220,6 +226,22 @@
                         $(this).removeClass("ui-state-hover"); 
                 }
               );
+
+              /* The tooltip */
+              $aMsgNode.find('.fg-tooltip-pointer-up-inner').each(function(){
+                var bWidth = $aMsgNode.find('.fg-tooltip-pointer-up-inner').css('borderBottomWidth');
+                var bColor = $(this).parents('.fg-tooltip').css('backgroundColor')
+                $(this).css('border-bottom', bWidth+' solid '+bColor);
+              });
+              $aMsgNode.find('.tooltip').hover(
+                function(){ $(this).prev(':hidden').fadeIn(); },
+                function(){ $(this).prev(':visible').fadeOut(); }
+              );
+              let $tooltip = $aMsgNode.find(".fg-tooltip");
+              let $details = $aMsgNode.find(".tooltip");
+              let pos = $details.position();
+              $tooltip.css("left", pos.left - $tooltip.width() - 20);
+              $tooltip.css("top", pos.top + $details.height() + 12);
             }
         ]]>
         </script>

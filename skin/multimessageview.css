@@ -396,6 +396,12 @@ a.action:hover {
   margin: 0px;
 }
 
+.fg-tooltip {
+  width: 400px;
+  font-family: -moz-default;
+  font-size: small;
+}
+
 /* For RSS */
 
 .message.rss .to-text,
@@ -424,6 +430,10 @@ a.action:hover {
 
 /* Message footer */
 
+.fg-button {
+  padding: .3em;
+}
+
 .button-action-area {
   width: 100%;
   position: relative;
@@ -450,15 +460,10 @@ a.action:hover {
 
 .grip {
   display: inline-block;
-  width: 14px;
-  height: 14px;
   position: absolute;
   bottom: 0;
   right: 0;
   cursor: pointer;
-  background-image: url(chrome://gconversation/skin/grip.png);
-  background-repeat: no-repeat;
-  background-position: top left;
 }
 
 .message.collapsed .grip {
