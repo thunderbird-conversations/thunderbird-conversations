@@ -1070,13 +1070,17 @@ window.addEventListener("load", function f_temp0 () {
           }
         };
 
-        /* That part tries to extract extra information about the message using
-         * Gloda */
         let fillAuthor = function (author) {
           let senderSpans = processEmails(author, true, htmlpane.contentDocument);
           if (senderSpans.length)
             senderNode.appendChild(senderSpans[0]);
         };
+        /* This part is the fallback version of the try-block below in case:
+         * - there's no gloda message associated
+         * - there's a newsgroup message which DOES trigger a call to
+         *   MsgHdrToMimeMessage but DOES NOT have any relevant information in
+         *   it (yay!)
+         * */
         let fallbackNoGloda = function () {
           try {
             // Offline messages generate exceptions, which is unfortunate.  When
@@ -1102,6 +1106,8 @@ window.addEventListener("load", function f_temp0 () {
             messageDone();
           }
         };
+        /* This part of the code fills various information regarding the message
+         * (attachments, header details, sender, snippet...) through Gloda. */
         try {
           MsgHdrToMimeMessage(msgHdr, null, function (aMsgHdr, aMimeMsg) {
             /* Yes it happens with newsgroup messages */
@@ -1125,7 +1131,9 @@ window.addEventListener("load", function f_temp0 () {
                 let span = htmlpane.contentDocument.createElement("span");
                 let headerNode = htmlpane.contentDocument.createElement("b");
                 headerNode.textContent = header+": ";
-                let value = GlodaUtils.deMime(aMimeMsg.headers[header]);
+                let value = aMimeMsg.headers[header];
+                if (header != "folder")
+                  value = GlodaUtils.deMime(value);
                 let valueNode = htmlpane.contentDocument.createTextNode(value);
                 tooltip.appendChild(headerNode);
                 tooltip.appendChild(valueNode);
@@ -1134,7 +1142,21 @@ window.addEventListener("load", function f_temp0 () {
             }
             tooltip.removeChild(tooltip.children[tooltip.children.length - 1]);
 
-            /* Deal with the sender */
+            /* Add the view source link */
+            let viewSource = htmlpane.contentDocument.createElement("div");
+            viewSource.classList.add("view-source");
+            tooltip.appendChild(viewSource);
+            let viewSourceLink = htmlpane.contentDocument.createElement("span");
+            viewSourceLink.classList.add("link");
+            viewSourceLink.classList.add("view-source-link");
+            viewSourceLink.textContent = stringBundle.getString("view_source");
+            let uri = msgHdr.folder.getUriForMsg(msgHdr);
+            viewSourceLink.addEventListener("click", function(event) {
+                ViewPageSource([uri]);
+              }, true);
+            viewSource.appendChild(viewSourceLink);
+
+            /* Make a guess at the sender */
             let author = aMimeMsg.headers["x-bugzilla-who"] || msgHdr.mime2DecodedAuthor;
             fillAuthor(author);
 

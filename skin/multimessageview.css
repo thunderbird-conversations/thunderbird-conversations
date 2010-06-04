@@ -402,6 +402,14 @@ a.action:hover {
   font-size: small;
 }
 
+.view-source {
+  text-align: right;
+}
+
+.view-source-link {
+  font-size: 85%;
+}
+
 /* For RSS */
 
 .message.rss .to-text,
