@@ -12,9 +12,11 @@ Dual licensed under the MIT (filamentgroup.com/examples/mit-license.txt) and GPL
 
 /* 2010/06/03 (Jonathan Protzenko)
  *
- * Changed the content option to be an Element instead of a string. This
- * prevents event handlers from being canceled, and doesn't uselessly duplicate
- * elements.
+ * - Changed the content option to be an Element instead of a string. This
+ *   prevents event handlers from being canceled, and doesn't uselessly
+ *   duplicate elements.
+ * - Reposition the menu each it's opened, because elements might be inserted
+ *   above the menu and may change its distance from the top of the viewport.
  * */
 
 
@@ -196,6 +198,8 @@ function Menu(caller, options){
           break;
       };      
     });
+
+    menu.setPosition(container, caller, options, true); //we're repositioning
   };
   
   this.create = function(){ 
@@ -467,7 +471,10 @@ Menu.prototype.drilldown = function(container, options) {
     - detectH/V: detect the viewport horizontally / vertically
     - linkToFront: copy the menu link and place it on top of the menu (visual effect to make it look like it overlaps the object) */
 
-Menu.prototype.setPosition = function(widget, caller, options) { 
+//@Jonathan Protzenko added an extra repos parameter to reposition the menu in
+//subsequent calls
+
+Menu.prototype.setPosition = function(widget, caller, options, repos) { 
   var el = widget;
   var referrer = caller;
   var dims = {
@@ -479,9 +486,14 @@ Menu.prototype.setPosition = function(widget, caller, options) {
   var options = options;
   var xVal, yVal;
   
-  var helper = $('<div class="positionHelper"></div>');
+  var helper;
+  if (repos) {
+    helper = el.parent();
+  } else {
+    helper = $('<div class="positionHelper"></div>');
+    el.wrap(helper);
+  }
   helper.css({ position: 'absolute', left: dims.refX, top: dims.refY, width: dims.refW, height: dims.refH });
-  el.wrap(helper);
   
   // get X pos
   switch(options.positionOpts.posX) {
@@ -536,7 +548,7 @@ Menu.prototype.setPosition = function(widget, caller, options) {
   };
   
   // if specified, clone the referring element and position it so that it appears on top of the menu
-  if (options.positionOpts.linkToFront) {
+  if (options.positionOpts.linkToFront && !repos) {
     referrer.clone().addClass('linkClone').css({
       position: 'absolute', 
       top: 0, 

@@ -2,6 +2,8 @@
 
 FULL LIST
 
+- Switched the buttons to jQuery-ui widgets, for better visual integration.
+- Implemented a "details" pane, with more information from the message headers.
 - Prevent certain cases where the conversation arrives too late and the user has
 already switched to another message (issue #75).
 - Use a real toolbar for buttons, with more options.
