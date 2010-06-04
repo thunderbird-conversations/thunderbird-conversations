@@ -602,7 +602,7 @@ window.addEventListener("load", function f_temp0 () {
             <div class="header">
               <div class="wrappedsender">
                 <div class="fg-tooltip fg-tooltip-right ui-widget ui-state-highlight ui-corner-all" style="display: none">
-                  {noGlodaTxt}
+                  <span>{noGlodaTxt}</span>
                   <div class="fg-tooltip-pointer-up ui-state-highlight">
                     <div class="fg-tooltip-pointer-up-inner"></div>
                   </div>
@@ -1112,7 +1112,7 @@ window.addEventListener("load", function f_temp0 () {
 
             /* Fill the extended headers */
             let tooltip = msgNode.getElementsByClassName("fg-tooltip")[0];
-            tooltip.innerHTML = ""; /* remove gloda warning */
+            tooltip.removeChild(tooltip.firstElementChild); /* remove gloda warning */
             let folderStr = msgHdr.folder.prettiestName;
             let folder = msgHdr.folder;
             while (folder.parent) {
