@@ -131,6 +131,7 @@ window.addEventListener("load", function f_temp0 () {
   Cu.import("resource://gconversation/GlodaUtils.jsm");
   Cu.import("resource://gconversation/MsgHdrUtils.jsm");
   Cu.import("resource://gre/modules/PluralForm.jsm");
+  Cu.import("resource:///modules/gloda/utils.js");
 
   /* For debugging purposes */
   let consoleService = Cc["@mozilla.org/consoleservice;1"].getService(Ci.nsIConsoleService);
@@ -572,6 +573,7 @@ window.addEventListener("load", function f_temp0 () {
         let detailsTxt = stringBundle.getString("details");
         let toggleRead = stringBundle.getString("toggle_read");
         let toggleFont = stringBundle.getString("toggle_font");
+        let noGlodaTxt = stringBundle.getString("no_gloda");
         let msgContents =
           <div class="row">
             <div class="pointer" />
@@ -600,11 +602,7 @@ window.addEventListener("load", function f_temp0 () {
             <div class="header">
               <div class="wrappedsender">
                 <div class="fg-tooltip fg-tooltip-right ui-widget ui-state-highlight ui-corner-all" style="display: none">
-                  <b>From</b>: Jonathan Protzenko &lt;jonathan.protzenko@gmail.com&gt;<br />
-                  <b>To</b>: Jane Mazzocato &lt;jane.mazzocato@gmail.com&gt;<br />
-                  <b>Folder</b>: Archives<br />
-                  <b>Mailed-By</b>: mail.google.com<br />
-                  <b>Date</b>: Thursday, August 7th, 2008 at 3:00pm<br />
+                  {noGlodaTxt}
                   <div class="fg-tooltip-pointer-up ui-state-highlight">
                     <div class="fg-tooltip-pointer-up-inner"></div>
                   </div>
@@ -1111,6 +1109,30 @@ window.addEventListener("load", function f_temp0 () {
               fallbackNoGloda();
               return;
             }
+
+            /* Fill the extended headers */
+            let tooltip = msgNode.getElementsByClassName("fg-tooltip")[0];
+            tooltip.innerHTML = ""; /* remove gloda warning */
+            let folderStr = msgHdr.folder.prettiestName;
+            let folder = msgHdr.folder;
+            while (folder.parent) {
+              folder = folder.parent;
+              folderStr = folder.name + "/" + folderStr;
+            }
+            aMimeMsg.headers["folder"] = folderStr;
+            for each (let [, header] in Iterator(["folder", "from", "subject", "reply-to", "to", "cc", "mailed-by", "date"])) {
+              if (aMimeMsg.headers[header] && String.trim(aMimeMsg.headers[header]).length > 0) {
+                let span = htmlpane.contentDocument.createElement("span");
+                let headerNode = htmlpane.contentDocument.createElement("b");
+                headerNode.textContent = header+": ";
+                let value = GlodaUtils.deMime(aMimeMsg.headers[header]);
+                let valueNode = htmlpane.contentDocument.createTextNode(value);
+                tooltip.appendChild(headerNode);
+                tooltip.appendChild(valueNode);
+                tooltip.appendChild(htmlpane.contentDocument.createElement("br"));
+              }
+            }
+            tooltip.removeChild(tooltip.children[tooltip.children.length - 1]);
 
             /* Deal with the sender */
             let author = aMimeMsg.headers["x-bugzilla-who"] || msgHdr.mime2DecodedAuthor;

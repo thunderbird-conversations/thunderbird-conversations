@@ -233,10 +233,18 @@
                 var bColor = $(this).parents('.fg-tooltip').css('backgroundColor')
                 $(this).css('border-bottom', bWidth+' solid '+bColor);
               });
+              let sticky = false;
               $aMsgNode.find('.tooltip').hover(
-                function(){ $(this).prev(':hidden').fadeIn(); },
-                function(){ $(this).prev(':visible').fadeOut(); }
+                function(){
+                  if (!sticky)
+                    $(this).prev(':hidden').fadeIn();
+                },
+                function(){
+                  if (!sticky)
+                    $(this).prev(':visible').fadeOut();
+                }
               );
+              $aMsgNode.find('.tooltip').click(function () { sticky = !sticky; });
               let $tooltip = $aMsgNode.find(".fg-tooltip");
               let $details = $aMsgNode.find(".tooltip");
               let pos = $details.position();
