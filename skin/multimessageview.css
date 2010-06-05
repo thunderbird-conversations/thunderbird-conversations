@@ -402,6 +402,10 @@ a.action:hover {
   font-size: small;
 }
 
+.message.collapsed .fg-tooltip {
+  display: none;
+}
+
 .view-source {
   text-align: right;
 }
