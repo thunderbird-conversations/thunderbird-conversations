@@ -154,6 +154,8 @@ window.addEventListener("load", function f_temp0 () {
   const txttohtmlconv = Cc["@mozilla.org/txttohtmlconv;1"].createInstance(Ci.mozITXTToHTMLConv);
   const i18nDateFormatter = Cc["@mozilla.org/intl/scriptabledateformat;1"].createInstance(Ci.nsIScriptableDateFormat);
   const stringBundle = document.getElementById("gconv-string-bundle");
+  const ioService = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
+  const msgComposeService = Cc["@mozilla.org/messengercompose;1"].getService(Ci.nsIMsgComposeService);  
 
 
   /* Preferences are loaded once and then observed. For a new pref, add an entry
@@ -567,10 +569,11 @@ window.addEventListener("load", function f_temp0 () {
         let deleteTxt = stringBundle.getString("delete");
         let replyList = stringBundle.getString("reply_list");
         let editNew = stringBundle.getString("edit_new");
+        let composeAll = stringBundle.getString("compose_all");
         let moreActionsTxt = stringBundle.getString("more_actions");
         let toTxt = stringBundle.getString("to");
         let detailsTxt = stringBundle.getString("details");
-        let toggleRead = stringBundle.getString("toggle_read");
+        let toggleRead = stringBundle.getString("toggle_read2");
         let toggleFont = stringBundle.getString("toggle_font");
         let noGlodaTxt = stringBundle.getString("no_gloda");
         let msgContents =
@@ -640,6 +643,7 @@ window.addEventListener("load", function f_temp0 () {
                     <ul class="menu-more-actions">
                       <li><a href="javascript:" class="link menu-editNew">{editNew}</a></li>
                       <li><a href="javascript:" class="link menu-replyList">{replyList}</a></li>
+                      <li><a href="javascript:" class="link menu-composeAll">{composeAll}</a></li>
                     </ul>
                   </div>
                 </div>
@@ -1033,10 +1037,6 @@ window.addEventListener("load", function f_temp0 () {
                    * after this. */
                 }, true); /* end document.addEventListener */
 
-              /* For bidiUI */
-              if (window["browserOnLoadHandler"])
-                iframe.addEventListener("load", browserOnLoadHandler, true);
-
               /* Unbelievable as it may seem, the code below works.
                * Some references :
                * - http://mxr.mozilla.org/comm-central/source/mailnews/base/src/nsMessenger.cpp#564
@@ -1192,8 +1192,8 @@ window.addEventListener("load", function f_temp0 () {
             /* Ok, let's have fun with attachments now */
             let attachments = MimeMessageGetAttachments(aMimeMsg);
             let [makePlural, ] = PluralForm.makeGetter(stringBundle.getString("plural_rule"));
-            let attachmentsTopTxt = stringBundle.getString("attachments_top");
-            let attachmentsBottomTxt = stringBundle.getString("attachments_bottom");
+            let attachmentsTopTxt = stringBundle.getString("attachments_top2");
+            let attachmentsBottomTxt = stringBundle.getString("attachments_bottom2");
             let numAttachments = attachments.length;
             if (attachments.length > 0) {
               /* That's for the short paperclip icon */
@@ -1234,7 +1234,7 @@ window.addEventListener("load", function f_temp0 () {
                     <hr />
                     <div class="attachment-actions-box">
                       <span class="attachments-summary" />
-                      <button class="button msgHdrView-button button-regular save-all">{saveAllTxt}</button>
+                      <button class="link fg-button ui-state-default ui-corner-all save-all">{saveAllTxt}</button>
                     </div>
                   </div>;
                 msgNode.getElementsByClassName("attachments-box-handler")[0].innerHTML =
@@ -1246,7 +1246,6 @@ window.addEventListener("load", function f_temp0 () {
                 let theAttachments = [];
                 for each (let [j, att] in Iterator(attachments)) {
                   /* Gather a lot of information about that attachment */
-                  let ioService = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
                   let neckoURL = null;
                   neckoURL = ioService.newURI(att.url, null, null);
                   /* I'm still surprised that this magically works */
@@ -1265,8 +1264,8 @@ window.addEventListener("load", function f_temp0 () {
                    * http://mxr.mozilla.org/comm-central/source/mail/base/content/msgHdrViewOverlay.js#1993
                    * http://mxr.mozilla.org/comm-central/source/mail/base/content/msgHdrViewOverlay.xul#76
                    * for the relevant actions */
-                  let altTxt = stringBundle.getString("open_att_tab").replace("#1", att.name);
-                  let altTxt2 = stringBundle.getString("open_attachment").replace("#1", att.name);
+                  let altTxt = stringBundle.getString("open_att_tab2").replace("#1", att.name);
+                  let altTxt2 = stringBundle.getString("open_attachment2").replace("#1", att.name);
                   if (att.contentType.indexOf("image/") === 0) {
                     singleBoxContents =
                       <div class="attachment-box image-attachment-box">
@@ -1276,7 +1275,7 @@ window.addEventListener("load", function f_temp0 () {
                           <p><span class="attachment-link link" title={altTxt2}>{att.name}</span></p>
                           <p>{size}</p>
                           <p>
-                            <button class="button msgHdrView-button button-regular save">{saveTxt}</button>
+                            <button class="link fg-button ui-state-default ui-corner-all save">{saveTxt}</button>
                           </p>
                         </td>
                         </tr></tbody></table>
@@ -1291,7 +1290,7 @@ window.addEventListener("load", function f_temp0 () {
                           <p><span class="attachment-link link" title={altTxt2}>{att.name}</span></p>
                           <p>{size}</p>
                           <p>
-                            <button class="button msgHdrView-button button-regular save">{saveTxt}</button>
+                            <button class="link fg-button ui-state-default ui-corner-all save">{saveTxt}</button>
                           </p>
                         </td>
                         </tr></tbody></table>
@@ -1443,6 +1442,24 @@ window.addEventListener("load", function f_temp0 () {
         register(".menu-editNew", function (event) {
             myDump("coucou\n");
             compose(Ci.nsIMsgCompType.Template, event);
+          });
+        register(".menu-composeAll", function (event) {
+            let allEmails = [msgHdr.mime2DecodedAuthor]
+                .concat(msgHdr.mime2DecodedRecipients)
+                .concat(msgHdr.ccList);
+            let emailAddresses = {};
+            numAddresses = gHeaderParser.parseHeadersWithArray(allEmails, emailAddresses, {}, {});
+            for (let i = 0; i < numAddresses; ++i) {
+              if (gIdentities[emailAddresses.value[i]])
+                allEmails[i] = null;
+            }
+            let composeAllUri = "mailto:" +
+              allEmails
+                .filter(function (x) x != null)
+                .join(",");
+
+            aURI = ioService.newURI(composeAllUri, null, null);  
+            msgComposeService.OpenComposeWindowWithURI(null, aURI);
           });
         register(".action.delete-msg, .button-delete", function deletenode_listener (event) {
             /* Includes messages hidden by a collapsed thread */
