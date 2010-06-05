@@ -35,7 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 var EXPORTED_SYMBOLS = ['messageBodyFromMsgHdr', 'msgHdrToNeckoURL', 'msgHdrIsDraft',
-'msgHdrsMarkAsRead', 'msgHdrsArchive', 'msgHdrsDelete', 'msgHdrMarkAsJunk']
+'msgHdrsMarkAsRead', 'msgHdrsArchive', 'msgHdrsDelete']
 
 const Ci = Components.interfaces;
 const Cc = Components.classes;

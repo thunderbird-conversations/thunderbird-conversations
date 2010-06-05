@@ -563,7 +563,6 @@ window.addEventListener("load", function f_temp0 () {
         let replyTxt = stringBundle.getString("reply");
         let replyAllTxt = stringBundle.getString("reply_all");
         let forwardTxt = stringBundle.getString("forward");
-        let markSpamTxt = stringBundle.getString("mark_spam");
         let archiveTxt = stringBundle.getString("archive");
         let deleteTxt = stringBundle.getString("delete");
         let replyList = stringBundle.getString("reply_list");
@@ -645,9 +644,6 @@ window.addEventListener("load", function f_temp0 () {
                   </div>
                 </div>
                 <div class="button-area-right fg-buttonset">
-                  <button disabled="true" class="link fg-button ui-state-default ui-corner-all ui-state-disabled button-markSpam">
-                    {markSpamTxt}
-                  </button>
                   <button class="link fg-button ui-state-default ui-corner-all button-archive">
                     {archiveTxt}
                   </button>
@@ -717,25 +713,56 @@ window.addEventListener("load", function f_temp0 () {
         /* Register collapse/expand handlers */
         snippetMsgNode.addEventListener("click", toggleMessage, true);
 
-        /* Insert fancy colored html */
+        /* We need to do this now because we're still collapsed AND we're
+         * guaranteed to be synchronous here. The callback from
+         * MsgHdrToMimeMessage might come later and changed the senders' value
+         * to something more meaningful, but in this case, there was only one
+         * recipient (because it's a Bugzilla) so that doesn't trigger overflow.
+         * */
+        let senderSpans = processEmails(msgHdr.mime2DecodedAuthor, true, htmlpane.contentDocument);
+        if (senderSpans.length)
+          senderNode.appendChild(senderSpans[0]);
+
+        /* Deal with recipients */
         let recipientsSpans = processEmails(msgHdr.mime2DecodedRecipients, false, htmlpane.contentDocument);
         let ccSpans = processEmails(msgHdr.ccList, false, htmlpane.contentDocument);
+        let overflowed = false;
         let lastComma;
-        for each (let [, spanList] in Iterator([recipientsSpans, ccSpans])) {
-          for each (let [, span] in Iterator(spanList)) {
-            recipientsNode.appendChild(span);
-            let comma = htmlpane.contentDocument.createElement("span");
-            comma.textContent= ", ";
-            recipientsNode.appendChild(comma);
-            lastComma = comma;
+        /* Ok, we're being a bit picky here, but if we don't overflow, we might
+         * re-trigger overflow because we add " ..." as extra length. So create
+         * a fake node at the beginning which will have the same width, and
+         * remove it at the end. Please note that this works because we added
+         * overflow-y: scroll to the body. Otherwise, that would shrink the
+         * messages width AFTER our computations and invalidate our overflow
+         * computations. */
+        let fakeNode = htmlpane.contentDocument.createElement("span");
+        fakeNode.textContent = " … ";
+        recipientsNode.appendChild(fakeNode);
+        //let gottago;
+        for each (let [, span] in Iterator(recipientsSpans.concat(ccSpans))) {
+          recipientsNode.appendChild(span);
+          let comma = htmlpane.contentDocument.createElement("span");
+          comma.textContent= ", ";
+          recipientsNode.appendChild(comma);
+
+          let justOverflowed = function () recipientsNode.offsetTop > senderNode.offsetTop;
+          if (overflowed || justOverflowed()) {
+            comma.classList.add("too-long");
+            span.classList.add("too-long");
+            //gottago = true; break;
+            if (!overflowed && lastComma)
+              lastComma.classList.add("last-comma");
+            overflowed = true;
           }
+          lastComma = comma;
         }
+        //if (gottago)
+        //  continue;
         if (lastComma)
           recipientsNode.removeChild(lastComma);
         else /* No recipients at all */
           msgNode.getElementsByClassName("to-text")[0].style.display = "none";
-        /* We don't fill the sender here, as we may prefer more relevant
-         * information with the MimeMessage */
+        recipientsNode.removeChild(fakeNode);
 
         /* Style according to the preferences. Preferences have an observer, see
          * above for details. */
@@ -1070,11 +1097,6 @@ window.addEventListener("load", function f_temp0 () {
           }
         };
 
-        let fillAuthor = function (author) {
-          let senderSpans = processEmails(author, true, htmlpane.contentDocument);
-          if (senderSpans.length)
-            senderNode.appendChild(senderSpans[0]);
-        };
         /* This part is the fallback version of the try-block below in case:
          * - there's no gloda message associated
          * - there's a newsgroup message which DOES trigger a call to
@@ -1089,9 +1111,6 @@ window.addEventListener("load", function f_temp0 () {
              * remotely looks like a snippet. Don't link attachments, do
              * nothing, I won't duplicate my code here, let's stay sane. */
             myDump("*** Got an \"offline message\"\n");
-
-            /* At least fill the sender! */
-            fillAuthor(msgHdr.mime2DecodedAuthor);
 
             let body = messageBodyFromMsgHdr(msgHdr, true);
             let snippet = body.substring(0, SNIPPET_LENGTH-1)+"…";
@@ -1157,8 +1176,13 @@ window.addEventListener("load", function f_temp0 () {
             viewSource.appendChild(viewSourceLink);
 
             /* Make a guess at the sender */
-            let author = aMimeMsg.headers["x-bugzilla-who"] || msgHdr.mime2DecodedAuthor;
-            fillAuthor(author);
+            if (aMimeMsg.headers["x-bugzilla-who"]) {
+              let senderSpans = processEmails(aMimeMsg.headers["x-bugzilla-who"], true, htmlpane.contentDocument);
+              if (senderSpans.length) {
+                senderNode.removeChild(senderNode.firstChild);
+                senderNode.appendChild(senderSpans[0]);
+              }
+            }
 
             /* The advantage here is that the snippet is properly stripped of
              * quoted text */
@@ -1439,9 +1463,6 @@ window.addEventListener("load", function f_temp0 () {
         register(".action.mark-read", function markreadnode_listener (event) {
             msgHdrsMarkAsRead([msgHdr], !msgHdr.isRead);
           });
-        register(".button-markSpam", function markspam_listener (event) {
-            msgHdrMarkAsJunk(msgHdr);
-          }),
         register(".grip", toggleMessage);
         register(null, toggleMessage, "dblclick");
 
