@@ -43,6 +43,10 @@
   -moz-image-region: auto !important;
 }
 
+#gconv-button-1.msgHeaderView-flat-button-out:hover {
+  -moz-appearance: none !important;
+}
+
 #gconv-button-2, [place="palette"] > #gconv-button-1 {
   list-style-image: url("chrome://gconversation/skin/buttonbig.png") !important;
 }
