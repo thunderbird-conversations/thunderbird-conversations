@@ -865,7 +865,7 @@ window.addEventListener("load", function f_temp0 () {
            * have a docShell and a webNavigation. If we don't do that, and we
            * set directly src="about:blank" above, sometimes we are too fast and
            * the docShell isn't ready by the time we get there. */
-          iframe.addEventListener("load", function f_temp2(event) {
+          iframe.addEventListener("load", function f_temp2(event, aCharset) {
               iframe.removeEventListener("load", f_temp2, true);
 
               /* The second load event is triggered by loadURI with the URL
@@ -1032,6 +1032,37 @@ window.addEventListener("load", function f_temp0 () {
                   /* jQuery, go! */
                   htmlpane.contentWindow.styleMsgNode(msgNode);
 
+                  /* For bidiUI */
+                  if (typeof(BDMActionPhase_htmlNumericEntitiesDecoding) == "function") {
+                    try {
+                      let domDocument = iframe.docShell.contentViewer.DOMDocument;
+                      let body = domDocument.body;
+                      let cv = iframe.docShell.contentViewer;
+                      cv.QueryInterface(Ci.nsIMarkupDocumentViewer);
+
+                      let BDMCharsetPhaseParams = {
+                        body: body,
+                        charsetOverrideInEffect: false,
+                        currentCharset: cv.defaultCharacterSet,
+                        needCharsetForcing: false,
+                        charsetToForce: null
+                      };
+                      BDMActionPhase_charsetMisdetectionCorrection(BDMCharsetPhaseParams);
+                      if (BDMCharsetPhaseParams.needCharsetForcing && !aCharset) {
+                        dump("Reloading with "+BDMCharsetPhaseParams.charsetToForce+"\n");
+                        f_temp2(null, BDMCharsetPhaseParams.charsetToForce);
+                        return;
+                      }
+                      BDMActionPhase_htmlNumericEntitiesDecoding(body);
+                      BDMActionPhase_quoteBarsCSSFix(domDocument);
+                      BDMActionPhase_directionAutodetection(body);
+                    }
+                    catch (ex) {
+                      myDump(ex);
+                      throw ex;
+                    }
+                  }
+
                   /* Here ends the chain of event listeners, nothing happens
                    * after this. */
                 }, true); /* end document.addEventListener */
@@ -1070,14 +1101,6 @@ window.addEventListener("load", function f_temp0 () {
               /* Now that's about the input encoding */
               //http://mxr.mozilla.org/comm-central/source/mailnews/base/public/nsIMsgMailNewsUrl.idl#172
               //https://www.mozdev.org/bugs/show_bug.cgi?id=22775
-              //This is temporary to test out what's required for Hebrew to
-              //display propperly.
-              //XXX figure out what's really needed from the steps above, and
-              //add a aCharset parameter to f_temp2 then
-              //make the routines above call f_temp2 with aCharset when BiDiUI
-              //says we need to recode.
-              url.QueryInterface(Ci.nsIMsgI18NUrl);
-              url.charsetOverRide = "windows-1255";
               iframe.docShell.appType = Components.interfaces.nsIDocShell.APP_TYPE_MAIL;
               //iframe.webNavigation.loadURI(url.spec+"?header=none", iframe.webNavigation.LOAD_FLAGS_CHARSET_CHANGE, null, null, null);
               let messageService = gMessenger.messageServiceFromURI(url.spec);
@@ -1094,7 +1117,7 @@ window.addEventListener("load", function f_temp0 () {
               messageService.DisplayMessage(
                 uri+"?header=none",
                 iframe.docShell,
-                msgWindow, urlListener, "windows-1255", {});
+                msgWindow, urlListener, aCharset, {});
 
             }, true); /* end document.addEventListener */
 
