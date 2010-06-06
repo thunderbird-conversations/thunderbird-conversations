@@ -1081,43 +1081,66 @@ window.addEventListener("load", function f_temp0 () {
                * */
               let url = msgHdrToNeckoURL(msgHdr, gMessenger);
 
-              /* Previously, we used quotebody. However, there's too many
-               * drawbacks (strips off signatures, doesn't render everything
-               * properly, rendering bugs...). So now we user ?header=none.
-               * There's drawbacks too, by default it displays images and
-               * possibly other types of attachments inline, which is
-               * slooooooooooooooow.
-               *
-               * See
-               * http://mxr.mozilla.org/comm-central/source/mailnews/mime/src/nsStreamConverter.cpp#467
-               * for other possible values.
-               * */
+              /* These steps are mandatory. Basically, the code that loads the
+               * messages will always output UTF-8 as the OUTPUT ENCODING, so
+               * we need to tell the iframe's docshell about it. */
               let cv = iframe.docShell.contentViewer;
               cv.QueryInterface(Ci.nsIMarkupDocumentViewer);
-              /* über-important; this is NOT related to the input encoding, it's
-               * just required for display */
               cv.hintCharacterSet = "UTF-8";
               cv.hintCharacterSetSource = kCharsetFromMetaTag;
-              /* Now that's about the input encoding */
-              //http://mxr.mozilla.org/comm-central/source/mailnews/base/public/nsIMsgMailNewsUrl.idl#172
-              //https://www.mozdev.org/bugs/show_bug.cgi?id=22775
+              /* Is this even remotely useful? */
               iframe.docShell.appType = Components.interfaces.nsIDocShell.APP_TYPE_MAIL;
-              //iframe.webNavigation.loadURI(url.spec+"?header=none", iframe.webNavigation.LOAD_FLAGS_CHARSET_CHANGE, null, null, null);
+
+              /* Now that's about the input encoding. Here's the catch: the
+               * right way to do that would be to query nsIMsgI18NUrl [1] and
+               * set charsetOverRide on it. For this parameter to take effect,
+               * we would have to pass the nsIURI to LoadURI, not a string as in
+               * url.spec, but a real nsIURI. Next step:
+               * nsIWebNavigation.loadURI only takes a string... so let's have a
+               * look ad nsIDocShell... good, loadURI takes a a nsIURI there.
+               * BUT IT'S [noscript]!!! I'm doomed.
+               *
+               * Workaround: call DisplayMessage that in turns calls the
+               * docShell from C++ code. Oh and why are we doing this? Oh, yes,
+               * see [2].
+               *
+               * Some remarks: I don't know if the nsIUrlListener [3] is useful,
+               * but let's leave it like that, it might come in handy later. And
+               * we're querying the messageService that we _cannot instanciate
+               * directly_, we must ask nsIMessenger for it, so that it
+               * instanciates the right component.
+               *
+              [1] http://mxr.mozilla.org/comm-central/source/mailnews/base/public/nsIMsgMailNewsUrl.idl#172
+              [2] https://www.mozdev.org/bugs/show_bug.cgi?id=22775
+              [3] http://mxr.mozilla.org/comm-central/source/mailnews/base/public/nsIUrlListener.idl#48
+              [4] http://mxr.mozilla.org/comm-central/source/mailnews/base/public/nsIMsgMessageService.idl#112
+              */
               let messageService = gMessenger.messageServiceFromURI(url.spec);
               let msgWindow = Cc["@mozilla.org/messenger/msgwindow;1"].createInstance(Ci.nsIMsgWindow);
-              //http://mxr.mozilla.org/comm-central/source/mailnews/base/public/nsIUrlListener.idl#48
               let urlListener = {
                 OnStartRunningUrl: function () {},
                 OnStopRunningUrl: function () {},
                 QueryInterface: XPCOMUtils.generateQI([Ci.nsISupports, Ci.nsIUrlListener])
               };
               let uri = msgHdr.folder.getUriForMsg(msgHdr);
-
-              //http://mxr.mozilla.org/comm-central/source/mailnews/base/public/nsIMsgMessageService.idl#112
-              messageService.DisplayMessage(
-                uri+"?header=none",
-                iframe.docShell,
-                msgWindow, urlListener, aCharset, {});
+              /**
+              * When you want a message displayed....
+              *
+              * @param aMessageURI Is a uri representing the message to display.
+              * @param aDisplayConsumer Is (for now) an nsIDocShell which we'll use to load 
+              *                         the message into.
+              *                         XXXbz Should it be an nsIWebNavigation or something?
+              * @param aMsgWindow
+              * @param aUrlListener
+              * @param aCharsetOverride (optional) character set over ride to force the message to use.
+              * @param aURL
+              */
+              messageService.DisplayMessage(uri+"?header=none",
+                                            iframe.docShell,
+                                            msgWindow,
+                                            urlListener,
+                                            aCharset,
+                                            {});
 
             }, true); /* end document.addEventListener */
 
