@@ -1068,12 +1068,21 @@ window.addEventListener("load", function f_temp0 () {
               cv.hintCharacterSet = "UTF-8";
               cv.hintCharacterSetSource = kCharsetFromMetaTag;
               /* Now that's about the input encoding */
+              //http://mxr.mozilla.org/comm-central/source/mailnews/base/public/nsIMsgMailNewsUrl.idl#172
+              //https://www.mozdev.org/bugs/show_bug.cgi?id=22775
+              //This is temporary to test out what's required for Hebrew to
+              //display propperly.
+              //XXX figure out what's really needed from the steps above, and
+              //add a aCharset parameter to f_temp2 then
+              //make the routines above call f_temp2 with aCharset when BiDiUI
+              //says we need to recode.
               url.QueryInterface(Ci.nsIMsgI18NUrl);
               url.charsetOverRide = "windows-1255";
               iframe.docShell.appType = Components.interfaces.nsIDocShell.APP_TYPE_MAIL;
               //iframe.webNavigation.loadURI(url.spec+"?header=none", iframe.webNavigation.LOAD_FLAGS_CHARSET_CHANGE, null, null, null);
               let messageService = gMessenger.messageServiceFromURI(url.spec);
               let msgWindow = Cc["@mozilla.org/messenger/msgwindow;1"].createInstance(Ci.nsIMsgWindow);
+              //http://mxr.mozilla.org/comm-central/source/mailnews/base/public/nsIUrlListener.idl#48
               let urlListener = {
                 OnStartRunningUrl: function () {},
                 OnStopRunningUrl: function () {},
@@ -1081,6 +1090,7 @@ window.addEventListener("load", function f_temp0 () {
               };
               let uri = msgHdr.folder.getUriForMsg(msgHdr);
 
+              //http://mxr.mozilla.org/comm-central/source/mailnews/base/public/nsIMsgMessageService.idl#112
               messageService.DisplayMessage(
                 uri+"?header=none",
                 iframe.docShell,
