@@ -915,7 +915,7 @@ window.addEventListener("load", function f_temp0 () {
                                   let h = htmlpane.contentWindow.toggleQuote(event);
                                   iframe.style.height = (parseInt(iframe.style.height) + h)+"px";
                                 }, true);
-                              div.setAttribute("style", "color: #512a45; cursor: pointer; font-size: small;");
+                              div.setAttribute("style", "color: #512a45; cursor: pointer; font-size: 90%;");
                               div.appendChild(document.createTextNode("- "+
                                 stringBundle.getString("showquotedtext")+" -"));
                               elt.insertBefore(div, c);
@@ -1000,6 +1000,36 @@ window.addEventListener("load", function f_temp0 () {
                     toggleFontNode.style.display = "";
                   }
 
+                  /* For bidiUI. Do that now because the DOM manipulations are
+                   * over. We can't do this before because BidiUI screws up the
+                   * DOM. */
+                  if (typeof(BDMActionPhase_htmlNumericEntitiesDecoding) == "function") {
+                    try {
+                      let domDocument = iframe.docShell.contentViewer.DOMDocument;
+                      let body = domDocument.body;
+
+                      let BDMCharsetPhaseParams = {
+                        body: body,
+                        charsetOverrideInEffect: msgWindow.charsetOverride,
+                        currentCharset: msgWindow.mailCharacterSet,
+                        needCharsetForcing: false,
+                        charsetToForce: null
+                      };
+                      BDMActionPhase_charsetMisdetectionCorrection(BDMCharsetPhaseParams);
+                      if (BDMCharsetPhaseParams.needCharsetForcing) {
+                        dump("Reloading with "+BDMCharsetPhaseParams.charsetToForce+"\n");
+                        f_temp2(null, BDMCharsetPhaseParams.charsetToForce);
+                        return;
+                      }
+                      BDMActionPhase_htmlNumericEntitiesDecoding(body);
+                      BDMActionPhase_quoteBarsCSSFix(domDocument);
+                      BDMActionPhase_directionAutodetection(body);
+                    } catch (e) {
+                      myDump(e);
+                      throw e;
+                    }
+                  }
+
                   /* Everything's done, so now we're able to settle for a height. */
                   iframe.style.height = iframeDoc.body.scrollHeight+"px";
 
@@ -1031,37 +1061,6 @@ window.addEventListener("load", function f_temp0 () {
 
                   /* jQuery, go! */
                   htmlpane.contentWindow.styleMsgNode(msgNode);
-
-                  /* For bidiUI */
-                  if (typeof(BDMActionPhase_htmlNumericEntitiesDecoding) == "function") {
-                    try {
-                      let domDocument = iframe.docShell.contentViewer.DOMDocument;
-                      let body = domDocument.body;
-                      let cv = iframe.docShell.contentViewer;
-                      cv.QueryInterface(Ci.nsIMarkupDocumentViewer);
-
-                      let BDMCharsetPhaseParams = {
-                        body: body,
-                        charsetOverrideInEffect: false,
-                        currentCharset: cv.defaultCharacterSet,
-                        needCharsetForcing: false,
-                        charsetToForce: null
-                      };
-                      BDMActionPhase_charsetMisdetectionCorrection(BDMCharsetPhaseParams);
-                      if (BDMCharsetPhaseParams.needCharsetForcing && !aCharset) {
-                        dump("Reloading with "+BDMCharsetPhaseParams.charsetToForce+"\n");
-                        f_temp2(null, BDMCharsetPhaseParams.charsetToForce);
-                        return;
-                      }
-                      BDMActionPhase_htmlNumericEntitiesDecoding(body);
-                      BDMActionPhase_quoteBarsCSSFix(domDocument);
-                      BDMActionPhase_directionAutodetection(body);
-                    }
-                    catch (ex) {
-                      myDump(ex);
-                      throw ex;
-                    }
-                  }
 
                   /* Here ends the chain of event listeners, nothing happens
                    * after this. */
@@ -1116,7 +1115,6 @@ window.addEventListener("load", function f_temp0 () {
               [4] http://mxr.mozilla.org/comm-central/source/mailnews/base/public/nsIMsgMessageService.idl#112
               */
               let messageService = gMessenger.messageServiceFromURI(url.spec);
-              let msgWindow = Cc["@mozilla.org/messenger/msgwindow;1"].createInstance(Ci.nsIMsgWindow);
               let urlListener = {
                 OnStartRunningUrl: function () {},
                 OnStopRunningUrl: function () {},
@@ -1135,6 +1133,7 @@ window.addEventListener("load", function f_temp0 () {
               * @param aCharsetOverride (optional) character set over ride to force the message to use.
               * @param aURL
               */
+              //XXX header=none doesn't work for IMAP.
               messageService.DisplayMessage(uri+"?header=none",
                                             iframe.docShell,
                                             msgWindow,
