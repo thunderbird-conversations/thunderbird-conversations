@@ -1032,6 +1032,37 @@ window.addEventListener("load", function f_temp0 () {
                   /* jQuery, go! */
                   htmlpane.contentWindow.styleMsgNode(msgNode);
 
+                  /* For bidiUI */
+                  if (typeof(BDMActionPhase_htmlNumericEntitiesDecoding) == "function") {
+                    try {
+                      myDump("BIDI UI detected\n");
+                      let domDocument = iframe.docShell.contentViewer.DOMDocument;
+                      let body = domDocument.body;
+                      let cv = iframe.docShell.contentViewer;
+                      cv.QueryInterface(Ci.nsIMarkupDocumentViewer);
+
+                      let BDMCharsetPhaseParams = {
+                        body: body,
+                        charsetOverrideInEffect: false,
+                        currentCharset: cv.defaultCharacterSet,
+                        needCharsetForcing: false,
+                        charsetToForce: null
+                      };
+                      BDMActionPhase_charsetMisdetectionCorrection(BDMCharsetPhaseParams);
+                      if (BDMCharsetPhaseParams.needCharsetForcing) {
+                        dump("Needs to reload with "+BDMCharsetPhaseParams.charsetToForce+"\n");
+                        //return;
+                      }
+                      BDMActionPhase_htmlNumericEntitiesDecoding(body);
+                      BDMActionPhase_quoteBarsCSSFix(domDocument);
+                      BDMActionPhase_directionAutodetection(body);
+                    }
+                    catch (ex) {
+                      myDump(ex);
+                      throw ex;
+                    }
+                  }
+
                   /* Here ends the chain of event listeners, nothing happens
                    * after this. */
                 }, true); /* end document.addEventListener */
