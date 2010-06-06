@@ -1032,37 +1032,6 @@ window.addEventListener("load", function f_temp0 () {
                   /* jQuery, go! */
                   htmlpane.contentWindow.styleMsgNode(msgNode);
 
-                  /* For bidiUI */
-                  if (typeof(BDMActionPhase_htmlNumericEntitiesDecoding) == "function") {
-                    try {
-                      myDump("BIDI UI detected\n");
-                      let domDocument = iframe.docShell.contentViewer.DOMDocument;
-                      let body = domDocument.body;
-                      let cv = iframe.docShell.contentViewer;
-                      cv.QueryInterface(Ci.nsIMarkupDocumentViewer);
-
-                      let BDMCharsetPhaseParams = {
-                        body: body,
-                        charsetOverrideInEffect: false,
-                        currentCharset: cv.defaultCharacterSet,
-                        needCharsetForcing: false,
-                        charsetToForce: null
-                      };
-                      BDMActionPhase_charsetMisdetectionCorrection(BDMCharsetPhaseParams);
-                      if (BDMCharsetPhaseParams.needCharsetForcing) {
-                        dump("Needs to reload with "+BDMCharsetPhaseParams.charsetToForce+"\n");
-                        //return;
-                      }
-                      BDMActionPhase_htmlNumericEntitiesDecoding(body);
-                      BDMActionPhase_quoteBarsCSSFix(domDocument);
-                      BDMActionPhase_directionAutodetection(body);
-                    }
-                    catch (ex) {
-                      myDump(ex);
-                      throw ex;
-                    }
-                  }
-
                   /* Here ends the chain of event listeners, nothing happens
                    * after this. */
                 }, true); /* end document.addEventListener */
@@ -1094,11 +1063,29 @@ window.addEventListener("load", function f_temp0 () {
                * */
               let cv = iframe.docShell.contentViewer;
               cv.QueryInterface(Ci.nsIMarkupDocumentViewer);
-              /* über-important */
+              /* über-important; this is NOT related to the input encoding, it's
+               * just required for display */
               cv.hintCharacterSet = "UTF-8";
               cv.hintCharacterSetSource = kCharsetFromMetaTag;
+              /* Now that's about the input encoding */
+              url.QueryInterface(Ci.nsIMsgI18NUrl);
+              url.charsetOverRide = "windows-1255";
               iframe.docShell.appType = Components.interfaces.nsIDocShell.APP_TYPE_MAIL;
-              iframe.webNavigation.loadURI(url.spec+"?header=none", iframe.webNavigation.LOAD_FLAGS_IS_LINK, null, null, null);
+              //iframe.webNavigation.loadURI(url.spec+"?header=none", iframe.webNavigation.LOAD_FLAGS_CHARSET_CHANGE, null, null, null);
+              let messageService = gMessenger.messageServiceFromURI(url.spec);
+              let msgWindow = Cc["@mozilla.org/messenger/msgwindow;1"].createInstance(Ci.nsIMsgWindow);
+              let urlListener = {
+                OnStartRunningUrl: function () {},
+                OnStopRunningUrl: function () {},
+                QueryInterface: XPCOMUtils.generateQI([Ci.nsISupports, Ci.nsIUrlListener])
+              };
+              let uri = msgHdr.folder.getUriForMsg(msgHdr);
+
+              messageService.DisplayMessage(
+                uri+"?header=none",
+                iframe.docShell,
+                msgWindow, urlListener, "windows-1255", {});
+
             }, true); /* end document.addEventListener */
 
           if (!messageIsCollapsed()) {
