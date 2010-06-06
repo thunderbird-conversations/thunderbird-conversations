@@ -1016,7 +1016,8 @@ window.addEventListener("load", function f_temp0 () {
                         charsetToForce: null
                       };
                       BDMActionPhase_charsetMisdetectionCorrection(BDMCharsetPhaseParams);
-                      if (BDMCharsetPhaseParams.needCharsetForcing) {
+                      if (BDMCharsetPhaseParams.needCharsetForcing
+                          && BDMCharsetPhaseParams.charsetToForce != aCharset) {
                         dump("Reloading with "+BDMCharsetPhaseParams.charsetToForce+"\n");
                         f_temp2(null, BDMCharsetPhaseParams.charsetToForce);
                         return;
