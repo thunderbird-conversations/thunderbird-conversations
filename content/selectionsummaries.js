@@ -576,14 +576,17 @@ window.addEventListener("load", function f_temp0 () {
         let toggleRead = stringBundle.getString("toggle_read2");
         let toggleFont = stringBundle.getString("toggle_font");
         let noGlodaTxt = stringBundle.getString("no_gloda");
+        let enigEncOk = stringBundle.getString("enig_enc_ok");
+        let enigSignOk = stringBundle.getString("enig_sign_ok");
+        let enigSignUnknown = stringBundle.getString("enig_sign_unknown");
         let msgContents =
           <div class="row">
             <div class="pointer" />
             <div class="notification-icons">
               <div class="star"/>
-              <div class="enigmail-enc-ok" style="display: none" />
-              <div class="enigmail-sign-ok" style="display: none" />
-              <div class="enigmail-sign-unknown" style="display: none" />
+              <div class="enigmail-enc-ok" title={enigEncOk} style="display: none" />
+              <div class="enigmail-sign-ok" title={enigSignOk} style="display: none" />
+              <div class="enigmail-sign-unknown" title={enigSignUnknown} style="display: none" />
               <div class="attachment" style="display: none"></div>
               <div class="tags"></div>
             </div>
