@@ -37,6 +37,15 @@
 
     <em:localized>
       <Description>
+        <em:locale>he-IL</em:locale>
+        <em:name>תצוגת שיחה</em:name>
+        <em:description>כווץ את הודעות הדוא"ל בשיחות, כולל ההודעות שלך, בדומה לג'יימל.‏</em:description>
+        <em:translator>Dotan Cohen</em:translator>
+      </Description>
+    </em:localized>
+
+    <em:localized>
+      <Description>
         <em:locale>fr</em:locale>
         <em:name>Affichage de conversations Gmail</em:name>
         <em:description>Affiche vos emails sous la forme de "conversations" comme sur Gmail. Vos emails sont regroupés et s'affichent sous forme de résumés de fils de discussion.</em:description>

@@ -6,7 +6,7 @@
 
   <Description about="urn:mozilla:install-manifest">
     <em:id>gconversation@xulforum.org</em:id>
-    <em:version>1.0.201005311341pre</em:version>
+    <em:version>1.0.201006081726pre</em:version>
     
     <!-- Target Application this theme can install into, 
         with minimum and maximum supported versions. --> 
@@ -32,6 +32,15 @@
         <em:name>Better Conversation View</em:name>
         <em:description>Gruppiert Ihre Nachrichten (inklusive Ihrer gesendeten) in Konversationen, ähnlich wie Googlemail es tut.</em:description>
         <em:translator>Sebastian Kronenwerth</em:translator>
+      </Description>
+    </em:localized>
+
+    <em:localized>
+      <Description>
+        <em:locale>he-IL</em:locale>
+        <em:name>תצוגת שיחה</em:name>
+        <em:description>כווץ את הודעות הדוא"ל בשיחות, כולל ההודעות שלך, בדומה לג'יימל.‏</em:description>
+        <em:translator>Dotan Cohen</em:translator>
       </Description>
     </em:localized>
 
