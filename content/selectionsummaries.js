@@ -92,7 +92,7 @@ window.addEventListener("load", function f_temp0 () {
   }
   function tryEnigmail(bodyElement) {
     if (bodyElement.textContent.indexOf("-----BEGIN PGP") < 0)
-      return [];
+      return null;
 
     var signatureObj       = new Object();
     var exitCodeObj        = new Object();
@@ -745,7 +745,6 @@ window.addEventListener("load", function f_temp0 () {
         let fakeNode = htmlpane.contentDocument.createElement("span");
         fakeNode.textContent = " … ";
         recipientsNode.appendChild(fakeNode);
-        //let gottago;
         for each (let [, span] in Iterator(recipientsSpans.concat(ccSpans))) {
           recipientsNode.appendChild(span);
           let comma = htmlpane.contentDocument.createElement("span");
@@ -756,15 +755,12 @@ window.addEventListener("load", function f_temp0 () {
           if (overflowed || justOverflowed()) {
             comma.classList.add("too-long");
             span.classList.add("too-long");
-            //gottago = true; break;
             if (!overflowed && lastComma)
               lastComma.classList.add("last-comma");
             overflowed = true;
           }
           lastComma = comma;
         }
-        //if (gottago)
-        //  continue;
         if (lastComma)
           recipientsNode.removeChild(lastComma);
         else /* No recipients at all */
@@ -1249,8 +1245,7 @@ window.addEventListener("load", function f_temp0 () {
                 let theAttachments = [];
                 for each (let [j, att] in Iterator(attachments)) {
                   /* Gather a lot of information about that attachment */
-                  let neckoURL = null;
-                  neckoURL = ioService.newURI(att.url, null, null);
+                  let neckoURL = ioService.newURI(att.url, null, null);
                   /* I'm still surprised that this magically works */
                   neckoURL.QueryInterface(Ci.nsIMsgMessageUrl);
                   let uri = neckoURL.uri;
