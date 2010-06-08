@@ -519,7 +519,7 @@ window.addEventListener("load", function f_temp0 () {
                                                   format,
                                                   Ci.nsIScriptableDateFormat.timeFormatNoSeconds,
                                                   dateObject.getFullYear(),
-                                                  dateObject.getMonth(),
+                                                  dateObject.getMonth() + 1,
                                                   dateObject.getDate(),
                                                   dateObject.getHours(),
                                                   dateObject.getMinutes(),
