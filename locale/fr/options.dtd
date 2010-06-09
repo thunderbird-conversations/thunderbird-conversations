@@ -1,10 +1,13 @@
 <!ENTITY window.title "Options de GMail Conversation View">
 <!ENTITY title.message_display "Affichage des messages">
-<!ENTITY option.monospaced "Utiliser une fonte monospace pour les messages au format texte">
-<!ENTITY option.html "Utiliser le HTML pour afficher les messages lorsque c'est possible">
-<!ENTITY option.focus_first "Faire défiler la fenêtre jusqu'au premier message non lu ou au dernier message">
-<!ENTITY optiondesc.unfold "Par défaut, déplier">
-<!ENTITY option.last_or_unread "Dernier message ou messages non lus">
+<!ENTITY option.monospaced "Utiliser une fonte à largeur fixe pour les messages au format texte">
+<!ENTITY option.monospaced_snippets "Utiliser une fonte à largeur fixe pour les fragments de message">
+<!ENTITY option.focus_what "Lors de l'affichage d'une conversation, faire défiler...">
+<!ENTITY option.focus_first "Jusqu'au premier message non lu ou, à défaut, le dernier message">
+<!ENTITY option.focus_selected "Jusqu'au message actuellement sélectionné dans la liste des messages.">
+<!ENTITY optiondesc.unfold "Par défaut, déplier:">
+<!ENTITY option.last_or_unread "Tous les messages non lus ainsi que le message défilé (voir ci-dessus)">
+>>>>>>> 522f775... Last-minute fix for the options dialog.
 <!ENTITY option.all_messages "Tous les messages">
 <!ENTITY option.no_messages "Aucun message">
 <!ENTITY title.toolbar "Boutons de la barre d'outils">
@@ -19,7 +22,12 @@
 <!ENTITY title.quoting "Citations et arborescence">
 <!ENTITY option.hide_longer_than "Cacher les citations plus longues que">
 <!ENTITY option.lines "lignes">
-<!ENTITY option.reverse_order "Ordre inversé (dernier → premier)">
+<!ENTITY option.reverse_order "Inverser l'ordre des messages (dernier → premier)">
 <!ENTITY title.general "Général">
-<!ENTITY option.auto_fetch "Toujours chercher les conversations">
+<!ENTITY option.auto_fetch "Toujours chercher des conversations">
+<!ENTITY option.auto_mark_read "Toujours marquer le fil entier comme lu lorsque la conversation est affichée.">
 <!ENTITY auto_fetch.info "Parfois il n'y a pas de fil de discussion visible dans le panneau des messages, mais il y a une conversation sous-jacente (si vous répondez au mail de quelqu'un, par exemple). Cette option vous permet d'afficher automatiquement la vue sous forme de conversation pour ces messages.">
+<!ENTITY title.advanced "Avancé">
+<!ENTITY title.error_messages "Messages d'erreurs">
+<!ENTITY option.disable_error_empty_collection "Désactiver l'avertissement &quot;Thunderbird n'a pas encore indexé ce fil&quot;">
+<!ENTITY option.monospaced_senders "Les messages provenant de ces adresses devraient être affichés en utilisant des polices à largeur fixe (séparer en utilisant des virgules)">

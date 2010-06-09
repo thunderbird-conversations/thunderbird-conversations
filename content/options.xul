@@ -133,7 +133,7 @@
         <label control="hide_quote_length_textbox" value="&option.lines;" />
       </hbox>
     </groupbox>
-    <spacer flex="1" style="min-height: 4em" />
+    <spacer flex="1" style="min-height: 6em" />
    </prefpane>
 
    <prefpane id="advanced" label="&title.advanced;" image="chrome://messenger/skin/preferences/advanced.png">
@@ -164,7 +164,7 @@
        <checkbox label="&option.no_friendly_date;" preference="no_friendly_date" />
        <checkbox label="&option.guess_first_names;" preference="guess_first_names" />
      </groupbox>
-     <spacer flex="1" style="min-height: 4em" />
+     <spacer flex="1" style="min-height: 6em" />
    </prefpane>
  
 </prefwindow>
