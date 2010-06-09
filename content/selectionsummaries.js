@@ -1144,7 +1144,8 @@ window.addEventListener("load", function f_temp0 () {
               folderStr = folder.name + "/" + folderStr;
             }
             aMimeMsg.headers["folder"] = folderStr;
-            for each (let [, header] in Iterator(["folder", "from", "sender", "subject", "reply-to", "to", "cc", "mailed-by", "date"])) {
+            for each (let [, header] in Iterator(["folder", "from", "sender", "subject", "reply-to",
+                  "to", "cc", "bcc", "mailed-by", "x-mailer", "mailer", "user-agent", "date"])) {
               if (aMimeMsg.headers[header] && String.trim(aMimeMsg.headers[header]).length > 0) {
                 let span = htmlpane.contentDocument.createElement("span");
                 let headerNode = htmlpane.contentDocument.createElement("b");

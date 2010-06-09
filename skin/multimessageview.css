@@ -45,6 +45,10 @@ a {
   font-weight: normal;
 }
 
+#header-view-toolbox {
+  padding-top: 0;
+}
+
 /* Toolbar */
 
 #expand_all {
