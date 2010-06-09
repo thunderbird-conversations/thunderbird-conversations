@@ -121,7 +121,7 @@
         <label control="hide_quote_length_textbox" value="&option.lines;" />
       </hbox>
     </groupbox>
-    <spacer flex="1" style="min-height: 4em" />
+    <spacer flex="1" style="min-height: 6em" />
    </prefpane>
 
    <prefpane id="advanced" label="&title.advanced;" image="chrome://messenger/skin/preferences/advanced.png">
@@ -144,7 +144,7 @@
        <caption label="&title.error_messages;"/>
        <checkbox label="&option.disable_error_empty_collection;" preference="disable_error_empty_collection" id="disable_error_empty_collection_checkbox" />
      </groupbox>
-     <spacer flex="1" style="min-height: 4em" />
+     <spacer flex="1" style="min-height: 6em" />
    </prefpane>
  
 </prefwindow>

@@ -36,4 +36,5 @@
 
 #message-display checkbox:not(.fullwidth) {
   max-width: 280px;
+  overflow: display;
 }
