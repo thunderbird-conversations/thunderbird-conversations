@@ -1002,7 +1002,7 @@ window.addEventListener("load", function f_temp0 () {
 
                   /* For bidiUI. Do that now because the DOM manipulations are
                    * over. We can't do this before because BidiUI screws up the
-                   * DOM. */
+                   * DOM. Don't know why :(. */
                   if (typeof(BDMActionPhase_htmlNumericEntitiesDecoding) == "function") {
                     try {
                       let domDocument = iframe.docShell.contentViewer.DOMDocument;
@@ -1018,6 +1018,9 @@ window.addEventListener("load", function f_temp0 () {
                       BDMActionPhase_charsetMisdetectionCorrection(BDMCharsetPhaseParams);
                       if (BDMCharsetPhaseParams.needCharsetForcing
                           && BDMCharsetPhaseParams.charsetToForce != aCharset) {
+                        //XXX this doesn't take into account the case where we
+                        //have a cycle with length > 0 in the reloadings.
+                        //Currently, I only see UTF8 -> UTF8 cycles.
                         dump("Reloading with "+BDMCharsetPhaseParams.charsetToForce+"\n");
                         f_temp2(null, BDMCharsetPhaseParams.charsetToForce);
                         return;
@@ -1092,12 +1095,12 @@ window.addEventListener("load", function f_temp0 () {
               iframe.docShell.appType = Components.interfaces.nsIDocShell.APP_TYPE_MAIL;
 
               /* Now that's about the input encoding. Here's the catch: the
-               * right way to do that would be to query nsIMsgI18NUrl [1] and
-               * set charsetOverRide on it. For this parameter to take effect,
-               * we would have to pass the nsIURI to LoadURI, not a string as in
-               * url.spec, but a real nsIURI. Next step:
+               * right way to do that would be to query nsIMsgI18NUrl [1] on the
+               * nsIURI and set charsetOverRide on it. For this parameter to
+               * take effect, we would have to pass the nsIURI to LoadURI, not a
+               * string as in url.spec, but a real nsIURI. Next step:
                * nsIWebNavigation.loadURI only takes a string... so let's have a
-               * look ad nsIDocShell... good, loadURI takes a a nsIURI there.
+               * look at nsIDocShell... good, loadURI takes a a nsIURI there.
                * BUT IT'S [noscript]!!! I'm doomed.
                *
                * Workaround: call DisplayMessage that in turns calls the
@@ -1106,9 +1109,10 @@ window.addEventListener("load", function f_temp0 () {
                *
                * Some remarks: I don't know if the nsIUrlListener [3] is useful,
                * but let's leave it like that, it might come in handy later. And
-               * we're querying the messageService that we _cannot instanciate
-               * directly_, we must ask nsIMessenger for it, so that it
-               * instanciates the right component.
+               * we're we _cannot instanciate directly_ because there are
+               * different ones for each type of account. So we must ask
+               * nsIMessenger for it, so that it instanciates the right
+               * component.
                *
               [1] http://mxr.mozilla.org/comm-central/source/mailnews/base/public/nsIMsgMailNewsUrl.idl#172
               [2] https://www.mozdev.org/bugs/show_bug.cgi?id=22775
@@ -1125,16 +1129,15 @@ window.addEventListener("load", function f_temp0 () {
               /**
               * When you want a message displayed....
               *
-              * @param aMessageURI Is a uri representing the message to display.
-              * @param aDisplayConsumer Is (for now) an nsIDocShell which we'll use to load 
+              * @param in aMessageURI Is a uri representing the message to display.
+              * @param in aDisplayConsumer Is (for now) an nsIDocShell which we'll use to load 
               *                         the message into.
               *                         XXXbz Should it be an nsIWebNavigation or something?
-              * @param aMsgWindow
-              * @param aUrlListener
-              * @param aCharsetOverride (optional) character set over ride to force the message to use.
-              * @param aURL
+              * @param in aMsgWindow
+              * @param in aUrlListener
+              * @param in aCharsetOverride (optional) character set over ride to force the message to use.
+              * @param out aURL
               */
-              //XXX header=none doesn't work for IMAP.
               messageService.DisplayMessage(uri+"?header=none",
                                             iframe.docShell,
                                             msgWindow,
@@ -1146,7 +1149,7 @@ window.addEventListener("load", function f_temp0 () {
 
           if (!messageIsCollapsed()) {
             focusInformation.delayed = false;
-            /* The iframe is to be displayed, let's go. */
+            /* The iframe is to be displayed, let's go. Now. Go go go! */
             /* NB: this currently triggers bug 540911, nothing we can do about
              * it right now. */
             htmlMsgNode.appendChild(iframe);
@@ -1182,7 +1185,8 @@ window.addEventListener("load", function f_temp0 () {
             // that's fixed, this code should adapt. XXX
             /* --> Try to deal with that. Try to come up with something that
              * remotely looks like a snippet. Don't link attachments, do
-             * nothing, I won't duplicate my code here, let's stay sane. */
+             * nothing, I won't duplicate the gloda code here, let's stay sane.
+             * */
             myDump("*** Got an \"offline message\"\n");
 
             let body = messageBodyFromMsgHdr(msgHdr, true);
@@ -1226,7 +1230,7 @@ window.addEventListener("load", function f_temp0 () {
                 headerNode.textContent = header+": ";
                 let value = aMimeMsg.headers[header];
                 if (header != "folder")
-                  value = GlodaUtils.deMime(value);
+                  value = GlodaUtils.deMime(value); /* I <3 gloda */
                 let valueNode = htmlpane.contentDocument.createTextNode(value);
                 tooltip.appendChild(headerNode);
                 tooltip.appendChild(valueNode);
@@ -1245,7 +1249,7 @@ window.addEventListener("load", function f_temp0 () {
             viewSourceLink.textContent = stringBundle.getString("view_source");
             let uri = msgHdr.folder.getUriForMsg(msgHdr);
             viewSourceLink.addEventListener("click", function(event) {
-                ViewPageSource([uri]);
+                ViewPageSource([uri]); /* mailCommands.js, maybe */
               }, true);
             viewSource.appendChild(viewSourceLink);
 
@@ -1667,18 +1671,21 @@ window.addEventListener("load", function f_temp0 () {
       badMsg.blur();
 
     /* Remove all previous focus-me-first hooks */
-    let badMsgs = htmlpane.contentDocument.querySelectorAll(".message.selected, .message[tabindex=\"1\"]");
+    let badMsgs = htmlpane.contentDocument
+      .querySelectorAll(".message.selected, .message[tabindex=\"1\"]");
     if (badMsgs.length > 1)
       myDump("!!! This should not happen\n");
     for each (let [, msgNode] in Iterator(badMsgs)) {
       _mm_removeClass(msgNode, "selected");
       if (msgNode.previousElementSibling)
-        msgNode.setAttribute("tabindex", parseInt(msgNode.previousElementSibling.getAttribute("tabindex"))+1);
+        msgNode.setAttribute("tabindex",
+          parseInt(msgNode.previousElementSibling.getAttribute("tabindex"))+1);
       else /* It's the first one in the list */
         msgNode.setAttribute("tabindex", 2);
     }
 
-    let { needsFocusDOMIndex: index, needsFocus: arrayIndex } = tellMeWhoToFocus(gconversation.stash.msgHdrs);
+    let { needsFocusDOMIndex: index, needsFocus: arrayIndex } =
+      tellMeWhoToFocus(gconversation.stash.msgHdrs);
     let msgNodes = htmlpane.contentDocument.getElementsByClassName("message");
     let msgNode = msgNodes[index];
     myDump("Same conversation, showing message "+index+"\n");
@@ -1771,8 +1778,8 @@ window.addEventListener("load", function f_temp0 () {
     return true;
   };
 
-  /* We must catch the call to summarizeMultipleSelection to hide the buttons in
-   * multimessageview.xhtml */
+  /* We must catch the call to summarizeMultipleSelection to hide the extra
+   * buttons in multimessageview.xhtml that are for conversation view only */
   /* XXX figure out why I can't do let old = ... and then summarize... = old(); */
   summarizeMultipleSelection = function (aSelectedMessages) {
     if (aSelectedMessages.length == 0)
@@ -1780,7 +1787,7 @@ window.addEventListener("load", function f_temp0 () {
     try {
       /* Remove this when bug 538750 is fixed. And bump the version requirement
        * in install.rdf.template */
-      /* ------ cut here ----- */
+      /* -8<--- cut here --8<- */
       let threadKeys = [
         gDBView.getThreadContainingIndex(i).getChildHdrAt(0).messageKey
         for each ([, i] in Iterator(gFolderDisplay.selectedIndices))
@@ -1789,14 +1796,14 @@ window.addEventListener("load", function f_temp0 () {
       if (isSameThread) {
         summarizeThread(aSelectedMessages);
       } else {
-      /* ------ end cut here ----- */
+      /* --8<-- end cut here -8<-- */
         gSummary = new MultiMessageSummary(aSelectedMessages);
         gSummary.init();
         document.getElementById('multimessage').contentWindow.disableExtraButtons();
         gconversation.stash.multiple_selection = true;
-      /* ------ cut here ----- */
+      /* --8<-- cut here --8<- */
       }
-      /* ------ end cut here ----- */
+      /* --8<-- end cut here -8<-- */
     } catch (e) {
       myDump("Exception in summarizeMultipleSelection" + e + "\n");
       Components.utils.reportError(e);

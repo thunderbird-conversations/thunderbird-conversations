@@ -1,15 +1,27 @@
 --- v1.1 development series ---
 
-FULL LIST
+HIGHLIGHTS
+- Compatible with BidiUI
+- jquery-ui integration to give buttons a better, uniform appearance
+- More improvements to message display
+- Improved handling of attachments
+- New "detail" pane to view extra message headers
 
-- Switched the buttons to jQuery-ui widgets, for better visual integration.
-- Implemented a "details" pane, with more information from the message headers.
-- Prevent certain cases where the conversation arrives too late and the user has
-already switched to another message (issue #75).
-- Use a real toolbar for buttons, with more options.
-- Fix plurals in localizations (issue #76).
-- More compatibility with newsgroup messages.
+FULL LIST
+- Compatible with BidiUI
+- "Display the messages you sent in the Inbox" tutorial (see wiki or options)
+- Added an option to display first names only, disabled by default.
+- Added an option to display regular dates, not "yesterday" or "two days ago".
+- Added icons matching the file type for attachments.
+- Added a "Compose to all" action.
+- Added a "details" pane, with more information from the message headers (click to make sticky).
+- Don't truncate very wide messages.
+- Don't reload the conversation when the message set is the same (this should prevent constant reflows).
 - Improve tooltiptexts.
-- Use first names only when enabled.
-- Don't reload the conversation when the message set is the same (this should
-prevent constant reflows).
+- Improve compatibility with newsgroup messages.
+- Always truncate the recipients when collapsed so that they fit on one line.
+- Fixed the "fetch conv." button appearance in the mail header toolbar.
+- Fixed plurals in localizations (issue #76).
+- Fixed certain cases where the conversation arrives too late and the user has already switched to another message (issue #75).
+- Switched the buttons to jQuery-ui widgets, for better visual integration.
+- Use a real toolbar for conversation buttons, with text / icons + text / icons options.
