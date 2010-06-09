@@ -1,4 +1,5 @@
 <!ENTITY button.open_in_new_tab "ouvrir dans un nouvel onglet">
+<!ENTITY button.open_in_new_tab_tooltip "voir ce fil dans un nouvel onglet (astuce: maintenez maj appuyé)">
 <!ENTITY button.mark_all_read "tout marquer comme lu">
 <!ENTITY button.expand_all "tout déplier">
 <!ENTITY button.collapse_all "tout replier">
