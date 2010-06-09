@@ -24,7 +24,7 @@
     <em:creator>Jonathan Protzenko</em:creator>
     <em:optionsURL>chrome://gconversation/content/options.xul</em:optionsURL>
     <em:iconURL>chrome://gconversation/content/icon.png</em:iconURL>
-    <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL><++>
+    <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
 
     <em:localized>
       <Description>
@@ -32,6 +32,8 @@
         <em:name>Better Conversation View</em:name>
         <em:description>Gruppiert Ihre Nachrichten (inklusive Ihrer gesendeten) in Konversationen, ähnlich wie Googlemail es tut.</em:description>
         <em:translator>Sebastian Kronenwerth</em:translator>
+        <em:creator>Jonathan Protzenko</em:creator>
+        <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
       </Description>
     </em:localized>
 
@@ -41,6 +43,19 @@
         <em:name>תצוגת שיחה</em:name>
         <em:description>כווץ את הודעות הדוא"ל בשיחות, כולל ההודעות שלך, בדומה לג'יימל.‏</em:description>
         <em:translator>Dotan Cohen</em:translator>
+        <em:creator>Jonathan Protzenko</em:creator>
+        <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
+      </Description>
+    </em:localized>
+
+    <em:localized>
+      <Description>
+        <em:locale>it</em:locale>
+        <em:name>Gmail Conversation View</em:name>
+        <em:description>Permette di visualizzare le e-mail sotto forma di conversazioni in modo analogo al sito web di Gmail</em:description>
+        <em:translator>Luana Di Muzio - BabelZilla</em:translator>
+        <em:creator>Jonathan Protzenko</em:creator>
+        <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
       </Description>
     </em:localized>
 
@@ -50,6 +65,8 @@
         <em:name>Affichage de conversations Gmail</em:name>
         <em:description>Affiche vos emails sous la forme de "conversations" comme sur Gmail. Vos emails sont regroupés et s'affichent sous forme de résumés de fils de discussion.</em:description>
         <em:translator>Eric B</em:translator>
+        <em:creator>Jonathan Protzenko</em:creator>
+        <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
       </Description>
     </em:localized>
 
@@ -59,6 +76,8 @@
         <em:name>Gmail Conversation View</em:name>
         <em:description>関連するメールをGmail風に一連の会話としてまとめます。自分で出したメールも含まれます。</em:description>
         <em:translator>SATO Kentaro</em:translator>
+        <em:creator>Jonathan Protzenko</em:creator>
+        <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
       </Description>
     </em:localized>
 
@@ -68,6 +87,8 @@
         <em:name>Gmail преглед разговора</em:name>
         <em:description>Групише е-поруке у разговоре, укључујући и Ваше поруке, као што то чини Gmail.</em:description>
         <em:translator>Charmed94</em:translator>
+        <em:creator>Jonathan Protzenko</em:creator>
+        <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
       </Description>
     </em:localized>
 
@@ -77,7 +98,8 @@
         <em:name>Gmail 会话视图</em:name>
         <em:description>按邮件话题集中显示相关邮件（包括你自己发出的邮件）, 同Gmail目前的邮件显示方式一致</em:description>
         <em:translator>Wellown</em:translator>
-        <em:author>夏若朗 (Jonathan Protzenko)</em:author>
+        <em:creator>夏若朗 (Jonathan Protzenko)</em:creator>
+        <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
       </Description>
     </em:localized> 
   </Description>      
