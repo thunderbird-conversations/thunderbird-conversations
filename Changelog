@@ -1,19 +1,13 @@
 --- 1.0 release ---
 
 HIGHLIGHTS
-- German, Italian, Serbian, French, Portugese and Chinese translations
-- New design, based on mockups from the Thunderbird UX team. Improved
-readibility and usability, more actions available. You can view images inline,
-open images in a new Thunderbird tab, open text attachments in a new Thunderbird
-tab, archive messages individually.
+- German, Italian, Serbian, Hebrew, French, Japanese and Chinese translations
+- New design, based on mockups from the Thunderbird UX team. Improved readibility and usability, more actions available. You can view images inline, open images in a new Thunderbird tab, open text attachments in a new Thunderbird tab, archive messages individually.
 - Assign colors to participants in the conversation.
 - Compatible with Enigmail!
-- Fully revamped keyboard navigation. Use tab to jump from the message list to
-the conversation view. Use p and n to move between messages. Use o to open
-messages. Use h to hide certain messages before printing.
+- Fully revamped keyboard navigation. Use tab to jump from the message list to the conversation view. Use p and n to move between messages. Use o to open messages. Use h to hide certain messages before printing.
 - Revamped printing. Messages now flow properly accross pages.
-- Added more options regarding which message in the conversation should be
-opened first.
+- Added more options regarding which message in the conversation should be opened first.
 - Dozens of bug fixes...
 
 FULL LIST
@@ -27,36 +21,22 @@ FULL LIST
   * Use n/p to move to next/previous message in the conversation.
   * Use h to hide a message before printing the whole conversation.
   * Use backspace to move back to the conversation view.
-- New keyboard shortcut: hold "shift" while clicking the "open thread in new
-tab" button (either in the main toolbar, the message header toolbar or the
-conversation toolbar) to display the conversation full-screen (without the
-message list).
+- New keyboard shortcut: hold "shift" while clicking the "open thread in new tab" button (either in the main toolbar, the message header toolbar or the conversation toolbar) to display the conversation full-screen (without the message list).
 
-- More options to determine which messages to open first when displaying a
-  conversation.
+- More options to determine which messages to open first when displaying a   conversation.
 - New option to display messages using a monospaced font for specific senders
-- Added an "icons-only" mode for the buttons in the conversation view. This
-should make it easier for narrow screens to properly display the conversation
-title. Added native icons on Linux, Mac and Windows.
-- Added a "back" button to easily switch back to the single message view that
-was displayed before the conversation.
+- Added an "icons-only" mode for the buttons in the conversation view. This should make it easier for narrow screens to properly display the conversation title. Added native icons on Linux, Mac and Windows.
+- Added a "back" button to easily switch back to the single message view that was displayed before the conversation.
 
 - Improve message display code
 - Basic compatibility with Enigmail for signatures and encrypted emails.
 
 - Fix auto-load not working in certain setups
-- Fix: don't silently mark a conversation as read when the conversation is
-  selected and Thunderbird does not have the focus.
-- Fix: deleting a conversation using the conversation toolbar now also deletes
-  messages that aren't in the current folder.
+- Fix: don't silently mark a conversation as read when the conversation is   selected and Thunderbird does not have the focus.
+- Fix: deleting a conversation using the conversation toolbar now also deletes messages that aren't in the current folder.
 
-- Dropped large parts of the code, in order to simplify maintenance. plain/text
-messages are now displayed using the standard Thunderbird display code. This
-means they will use the default font, they will have standard <blockquote>s
-around quotations instead of >s.
-- Dropped support for "use HTML for viewing messages whenever possible". The
-extension now follows the Thunderbird global policy: select View > Message Body
-As > [whatever you want] to achieve the same effect.
+- Dropped large parts of the code, in order to simplify maintenance. plain/text messages are now displayed using the standard Thunderbird display code. This means they will use the default font, they will have standard <blockquote>s around quotations instead of >s.
+- Dropped support for "use HTML for viewing messages whenever possible". The extension now follows the Thunderbird global policy: select View > Message Body As > [whatever you want] to achieve the same effect.
 
 GMail Conversation View 0.3beta2
 --------------------------------
