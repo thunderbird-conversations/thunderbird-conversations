@@ -11,6 +11,6 @@ locale gconversation fr locale/fr/
 locale gconversation he-IL locale/he-IL/
 locale gconversation it locale/it/
 locale gconversation ja-JP locale/ja-JP/
-locale gconversation pt-BR locale/pt-BR/
+#locale gconversation pt-BR locale/pt-BR/
 locale gconversation sr locale/sr/
 locale gconversation zh-CN locale/zh-CN/
