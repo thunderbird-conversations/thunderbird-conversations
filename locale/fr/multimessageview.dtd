@@ -13,6 +13,6 @@
 <!ENTITY toolbar.view_full "Voir la conversation complète">
 <!ENTITY toolbar.view_full_tooltip "Rapatrier tous les messages, les vôtres inclus, pour reconstruire la conversation complète.">
 <!ENTITY toolbar.view_tab "Ouvrir le fil de discussion dans un nouvel onglet">
-<!ENTITY ctoolbar.view_full "Synchroniser la conversation">
-<!ENTITY ctoolbar.view_full_tooltip "Rapatrier tous les messages, les vôtres inclus, pour reconstruire la conversation complète.">
-<!ENTITY ctoolbar.view_tab "Ouvrir le fil de discussion dans un nouvel onglet">
+<!ENTITY ctoolbar.view_full "voir conv.">
+<!ENTITY ctoolbar.view_full_tooltip "rapatrier tous les messages, les vôtres inclus, pour reconstruire la conversation complète.">
+<!ENTITY ctoolbar.view_tab "ouvrir le fil de discussion dans un nouvel onglet">
