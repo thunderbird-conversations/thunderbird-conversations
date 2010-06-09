@@ -1,0 +1,11 @@
+<!ENTITY error.title "Gmail conversation view ne peut fonctionner correctement.">
+<!ENTITY error_gloda_disabled "Vous devez activer l'indexation globale pour que ce module complémentaire fonctionne correctement. Dans les menus, naviguez à Outils &gt; Options (ou Édition &gt; Préférences). Dans la section &quot;Avancé&quot;, à l'onglet &quot;Général&quot;, cochez &quot;Activer la recherche et l'indexation globales&quot;. C'est bon ! Vous n'avez plus qu'à attendre que Thunderbird indexe tous vos messages (ceci peut prendre un moment).">
+<!ENTITY error.help "Besoin d'aide?">
+<!ENTITY error_empty_collection "Thunderbird n'a pas encore indexé ce fil. Ceci peut se produire dans les cas suivants: ce message vient d'arriver, Thunderbird a beaucoup de messages à indexer, ou vous avez demandé une conversation depuis un groupe de discussion, un fil RSS ou la corbeille. Si le phénomène persiste, vérifiez dans Outils &gt; Options (ou Édition &gt; Préférences) &gt; Avancé &gt; Général que la recherche et l'indexation globales sont activées.">
+<!ENTITY error.close "Fermer ce message">
+<!ENTITY error.disable "Désactiver définitivement ce message d'erreur">
+<!ENTITY info_af.title "Bonjour, voici la vue des conversations façon Gmail !">
+<!ENTITY info_af.body "Le message que vous venez de sélectionner fait partie d'une conversation. Bien qu'il n'y a pas de fil affiché dans la liste des messages, nous avons pensé que aimeriez que les conversations comme celle-ci soient automatiquement construites et affichées.">
+<!ENTITY info_af.body2 "Voulez vous de cette fonction ? Vous pouvez modifier votre choix plus tard dans les préférences de ce module complémentaire, dans la section &quot;Avancé&quot;">
+<!ENTITY info_af.yes "Oui, avec plaisir !">
+<!ENTITY info_af.no "Non, merci">

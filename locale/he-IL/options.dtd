@@ -1,0 +1,34 @@
+<!ENTITY window.title "הגדרות של תצוגת שיחה">
+<!ENTITY title.message_display "תצוגת הודעה">
+<!ENTITY option.monospaced "להשתמש בגופן רוחב-קבוע עבור הודעות של טקסט פשוט">
+<!ENTITY option.monospaced_snippets "להשתמש בגופן רוחב-קבוע עבור קטעי הודעות">
+<!ENTITY option.focus_what "בתצוגת שיחה, גלגל ל־:">
+<!ENTITY option.focus_first "הודעה הלא-נקרא הראשון או הודעה האחרונה">
+<!ENTITY option.focus_selected "ההודעה המסומנת">
+<!ENTITY optiondesc.unfold "הרחב כברירת מחדל:">
+<!ENTITY option.last_or_unread "כל ההודעות ובנוסף את ההודעה הנראית (ראה מעלה)‏">
+<!ENTITY option.all_messages "כל ההודעות">
+<!ENTITY option.no_messages "אף הודעה">
+<!ENTITY title.toolbar "מקשי פס הכלים">
+<!ENTITY buttons.info "כל פקודות אלו זמינות בתפריט תמצית החוט (לחיצה ימינית)‏">
+<!ENTITY option.toolbar_text_plus_icons "הראה טקסט ליד סמלים עבור מקשים אלו">
+<!ENTITY option.button.archive "הצג מקש &quot;שלח לארכיון&quot;‏">
+<!ENTITY option.button.trash "הצג מקש &quot;מחק&quot;‏">
+<!ENTITY option.button.print "הצג מקש &quot;הדפס&quot;‏">
+<!ENTITY option.button.back "הצג מקש &quot;תצוגת הודעה בודדת&quot;‏">
+<!ENTITY option.button.expand_all "הצג מקש &quot;הרחב הכל&quot;‏">
+<!ENTITY option.button.collapse_all "הצג מקש &quot;כווץ הכל&quot;‏">
+<!ENTITY option.button.mark_as_read "הצג מקש &quot;סמן כל ההודעות כנקרא&quot;‏">
+<!ENTITY option.button.open_in_new_tab "הצג מקש &quot;פלח בתוית חדשה&quot;‏">
+<!ENTITY title.quoting "ציטוט">
+<!ENTITY option.hide_longer_than "החבא ציטוטים גבוה מאשר">
+<!ENTITY option.lines "שורות">
+<!ENTITY option.reverse_order "סדר הפוח (מאחרון עד לראשון)‏">
+<!ENTITY title.general "כללי">
+<!ENTITY option.auto_fetch "תמיד לחפש שיחות">
+<!ENTITY option.auto_mark_read "תמיד לסמן את החוט כנקרא כשהשיחה מוצגת.‏">
+<!ENTITY auto_fetch.info "לפעמים חל מצב שבו לא קיים חוט ברשימת ההודעות, אך קיים שיחה תחתית (כשמשיבים להודעה, למשל). אפשרות זאת מאפשר תצוגת שיחה עבור הודעות אלו.">
+<!ENTITY title.advanced "מתקדם">
+<!ENTITY title.error_messages "הודעות לשגיאות">
+<!ENTITY option.disable_error_empty_collection "נטרל את ההזהרה כשת'נדרבירד עוד לא הספיק להכין מפתח עבור חוט הנוכחי.‏">
+<!ENTITY option.monospaced_senders "להציג הודעות מכתובות אלו בגופן רחב קבוע (הפרד עם פסיקים)‏">

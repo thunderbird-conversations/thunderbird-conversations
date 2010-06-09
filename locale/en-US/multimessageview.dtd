@@ -1,5 +1,4 @@
 <!ENTITY button.open_in_new_tab "open in new tab">
-<!ENTITY button.open_in_new_tab_tooltip "open this thread in a new tab (hint: hold shift)">
 <!ENTITY button.mark_all_read "mark all read">
 <!ENTITY button.expand_all "expand all">
 <!ENTITY button.collapse_all "collapse all">

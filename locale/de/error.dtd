@@ -1,11 +1,11 @@
 <!ENTITY error.title "Better Conversation View funktioniert nicht!">
 <!ENTITY error_gloda_disabled "Damit dieses Add-On funktioniert, müssen Sie die globale Datenbank aktivierten. Bitte gehen Sie auf Extras → Einstellungen, um unter Erweitert → Allgemein den Punkt &quot;Globale Suche und Nachrichtenindizierung aktivieren&quot; zu aktivieren. Wenn Sie dies getan haben, müssen Sie einige Zeit warten bis Ihre Nachrichten komplett indiziert wurden.">
 <!ENTITY error.help "Brauchen Sie mehr Hilfe?">
-<!ENTITY error_empty_collection "Thunderbird hat diesen Thread noch nicht indiziert. Das ist normal, falls die Nachricht gerade angekommen ist, falls Thunderbird sehr viele Nachrichten indizieren muss oder falls sie versuchen, eine Konversationsansicht entweder für eine Newsgroup/RSS-Nachricht oder eine Nachricht zu bekommen, die sich im Papierkorb befindet. Wenn dieses Problem bestehen bleibt, überprüfen Sie bitte in Extras &gt; Einstellungen &gt; Erweitert &gt; Allgemein, ob der Punkt &quot;Globale Suche und Nachrichtenindizierung aktivieren&quot; aktiviert ist.">
+<!ENTITY error_empty_collection "Thunderbird hat diesen Thread noch nicht indiziert. Das ist normal, falls die Nachricht gerade angekommen ist, Thunderbird sehr viele Nachrichten indizieren muss oder falls sie versuchen, eine Konversationsansicht für eine Newsgroup/RSS-Nachricht oder eine Nachricht, welche sich im Papierkorb befindet, zu erhalten. Wenn dieses Problem bestehen bleibt, überprüfen Sie bitte in Extras → Einstellungen → Erweitert → Allgemein, ob der Punkt &quot;Globale Suche und Nachrichtenindizierung aktivieren&quot; aktiviert ist.">
 <!ENTITY error.close "Diese Nachricht schließen">
 <!ENTITY error.disable "Diese Fehlermeldung dauerhaft ausblenden">
 <!ENTITY info_af.title "Hi, hier ist Better Conversation View!">
 <!ENTITY info_af.body "Die Nachricht, die sie gerade ausgewählt haben, ist Teil einer größeren Konversation. Obwohl kein wirklicher Thread in der Nachrichtenliste dargestellt wird, nehmen wir an, dass Sie Nachrichten wie diese gerne automatisch als Konversation abgerufen und angezeigt bekommen würden.">
 <!ENTITY info_af.body2 "Möchten sie dieses Feature? Dies können Sie später jeder Zeit in den Einstellungen dieses Add-Ons unter Erweitert ändern.">
 <!ENTITY info_af.yes "Ja gerne!">
-<!ENTITY info_af.no "Nein danke">
+<!ENTITY info_af.no "Nein danke!">

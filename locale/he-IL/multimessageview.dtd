@@ -1,0 +1,18 @@
+<!ENTITY button.open_in_new_tab "פתח בתוית חדשה">
+<!ENTITY button.mark_all_read "סמן הכל כנקרא">
+<!ENTITY button.expand_all "הרחב הכל">
+<!ENTITY button.collapse_all "כווץ הכל">
+<!ENTITY button.print "הדפס">
+<!ENTITY button.back "תצוגת הודאה נפרדת">
+<!ENTITY menu.open_in_new_tab "פתח בתוית חדשה">
+<!ENTITY menu.mark_all_read "סמן הכל כנקרא">
+<!ENTITY menu.expand_all "הרכב הכל">
+<!ENTITY menu.collapse_all "כווץ הכל">
+<!ENTITY menu.delete "מחק כל ההודאות">
+<!ENTITY menu.archive "שלח את כל ההודאות לארכיון">
+<!ENTITY toolbar.view_full "אסוף שיחה">
+<!ENTITY toolbar.view_full_tooltip "חפס כל ההודעות כדי לבנות שיחה מלאה, כולל הודעות ממך.">
+<!ENTITY toolbar.view_tab "פתח חוט בתוית חדשה">
+<!ENTITY ctoolbar.view_full "אסוף שיחה">
+<!ENTITY ctoolbar.view_full_tooltip "חפס כל ההודעות כדי לבנות שיחה מלאה, כולל הודעות ממך.">
+<!ENTITY ctoolbar.view_tab "פתח חוט בתוית חדשה">

@@ -11,10 +11,7 @@
 <!ENTITY option.no_messages "No messages">
 <!ENTITY title.toolbar "Toolbar buttons">
 <!ENTITY buttons.info "All these commands are also accessible through the contextual menu of the thread summary (right-click).">
-<!ENTITY option.toolbar_mode "Show:">
-<!ENTITY option.toolbar_mode_icons "Icons">
-<!ENTITY option.toolbar_mode_text "Text">
-<!ENTITY option.toolbar_mode_text_plus_icons "Icons beside Text">
+<!ENTITY option.toolbar_text_plus_icons "Show text beside icons for these buttons">
 <!ENTITY option.button.archive "Display &quot;archive&quot; button">
 <!ENTITY option.button.trash "Display &quot;delete&quot; button">
 <!ENTITY option.button.print "Display &quot;print&quot; button">
@@ -35,7 +32,3 @@
 <!ENTITY title.error_messages "Error messages">
 <!ENTITY option.disable_error_empty_collection "Disable the &quot;Thunderbird has not indexed this thread yet&quot; warning">
 <!ENTITY option.monospaced_senders "Messages from those addresses should be displayed in monospaced fonts (separate using commas)">
-<!ENTITY title.advanced_display "Conversation display">
-<!ENTITY option.no_friendly_date "Use &quot;normal&quot; dates, just like the message list">
-<!ENTITY option.guess_first_names "Guess and display participants' first names only">
-<!ENTITY option.my_messages_in_inbox "How to display the messages I sent in the Inbox">

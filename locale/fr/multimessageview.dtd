@@ -1,13 +1,18 @@
 <!ENTITY button.open_in_new_tab "ouvrir dans un nouvel onglet">
 <!ENTITY button.mark_all_read "tout marquer comme lu">
-<!ENTITY button.unfold_all "tout déplier">
-<!ENTITY button.fold_all "tout replier">
+<!ENTITY button.expand_all "tout déplier">
+<!ENTITY button.collapse_all "tout replier">
 <!ENTITY button.print "imprimer">
+<!ENTITY button.back "vue message seul">
 <!ENTITY menu.open_in_new_tab "Ouvrir dans un nouvel onglet">
 <!ENTITY menu.mark_all_read "Tout marquer comme lu">
-<!ENTITY menu.unfold_all "Tout déplier">
-<!ENTITY menu.fold_all "Tout replier">
+<!ENTITY menu.expand_all "Tout déplier">
+<!ENTITY menu.collapse_all "Tout replier">
 <!ENTITY menu.delete "Supprimer les messages">
+<!ENTITY menu.archive "Archiver tous les messages">
 <!ENTITY toolbar.view_full "Voir la conversation complète">
-<!ENTITY toolbar.view_full_tooltip "Chercher dans tous les messages, les vôtres inclus, pour reconstruire la conversation complète.">
+<!ENTITY toolbar.view_full_tooltip "Rapatrier tous les messages, les vôtres inclus, pour reconstruire la conversation complète.">
 <!ENTITY toolbar.view_tab "Ouvrir le fil de discussion dans un nouvel onglet">
+<!ENTITY ctoolbar.view_full "Synchroniser la conversation">
+<!ENTITY ctoolbar.view_full_tooltip "Rapatrier tous les messages, les vôtres inclus, pour reconstruire la conversation complète.">
+<!ENTITY ctoolbar.view_tab "Ouvrir le fil de discussion dans un nouvel onglet">

@@ -23,7 +23,7 @@
 <!ENTITY title.quoting "Zitieren">
 <!ENTITY option.hide_longer_than "Zitierte Nachrichtenteile länger als">
 <!ENTITY option.lines "Zeilen verbergen">
-<!ENTITY option.reverse_order "Rückwärts sortieren (letzte --&gt; erste)">
+<!ENTITY option.reverse_order "Rückwärts sortieren (letzte → erste)">
 <!ENTITY title.general "Allgemein">
 <!ENTITY option.auto_fetch "Immer nach Konversationen suchen">
 <!ENTITY option.auto_mark_read "Immer den ganzen Thread als gelesen markieren, wenn die Konversation angezeigt wird">
@@ -31,4 +31,4 @@
 <!ENTITY title.advanced "Erweitert">
 <!ENTITY title.error_messages "Fehlermeldungen">
 <!ENTITY option.disable_error_empty_collection "Die Warnung über unvollständige Konversationen deaktivieren">
-<!ENTITY option.monospaced_senders "Nachrichten von diesen Adressen sollen in unproportionaler Schriftart angezeigt werden (durch Kommas trennen)">
+<!ENTITY option.monospaced_senders "Nachrichten von diesen Adressen sollen in unproportionaler Schriftart angezeigt werden (durch Kommas trennen):">

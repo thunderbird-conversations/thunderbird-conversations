@@ -1,0 +1,12 @@
+<!ENTITY button.open_in_new_tab "abrir em nova aba">
+<!ENTITY button.mark_all_read "marcar todas lidas">
+<!ENTITY button.expand_all "expandir tudo">
+<!ENTITY button.collapse_all "recolher tudo">
+<!ENTITY button.print "imprimir">
+<!ENTITY button.back "visualização de mensagens únicas">
+<!ENTITY menu.open_in_new_tab "Abrir em nova aba">
+<!ENTITY menu.mark_all_read "Marcar todas lidas">
+<!ENTITY menu.expand_all "Expandir tudo">
+<!ENTITY menu.collapse_all "Recolher tudo">
+<!ENTITY menu.delete "Apagar todas as mensagens">
+<!ENTITY menu.archive "Arquivar todas as mensagens">
