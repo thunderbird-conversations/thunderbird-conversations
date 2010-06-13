@@ -188,6 +188,13 @@ window.addEventListener("load", function f_temp0 () {
 
     observe: function mpo_observe (aSubject, aTopic, aData) {
       if (aTopic != "nsPref:changed") return;
+      /* Don't try to be subtle here. If we changed a pref, make sure we rebuild
+       * the whole conversation. There are implicit assumptions in
+       * restorePreviousConversation that the prefs haven't changed, and also if
+       * we don't do this, prefs such as "use monospaced font"... or things like
+       * that don't take effect until we load another conversation which is bad
+       * for the user. */
+      gconversation.stash.msgHdrs = [];
       switch (aData) {
         case "monospaced":
         case "monospaced_snippets":
