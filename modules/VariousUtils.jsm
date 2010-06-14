@@ -167,6 +167,8 @@ function groupMessages(items) _removeDuplicates(function (item) item.headerMessa
 /* Create a blockquote before "marker" and insert all elements after that into
  * the blockquote. if (remove) then marker is removed. */
 function makeBlockquote(aDoc, marker, remove) {
+  if (!marker.nextSibling)
+    return;
   let blockquote = aDoc.createElement("blockquote");
   blockquote.setAttribute("type", "cite");
   insertAfter(blockquote, marker);
