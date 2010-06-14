@@ -1,11 +1,13 @@
 --- v1.1 development series ---
 
 HIGHLIGHTS
-- Compatible with BidiUI
-- jquery-ui integration to give buttons a better, uniform appearance
-- More improvements to message display
+- Compatible with BidiUI v0.9.5
+- jquery-ui integration to give buttons a better, uniform appearance on all
+platforms
 - Improved handling of attachments
-- New "detail" pane to view extra message headers
+- New "details" pane to view extra message headers
+- Better message display: signatures are now greyed out, smileys are recognized
+in messages
 
 FULL LIST
 - Compatible with BidiUI

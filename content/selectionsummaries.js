@@ -716,6 +716,19 @@ window.addEventListener("load", function f_temp0 () {
           msgNode.getElementsByClassName("draft-warning")[0].textContent = draftTxt;
         }
 
+        /* Handle tags associated to messages. The default styles are ugly,
+         * fortunately, we do something about it in the css. */
+        let tagsNode = msgNode.getElementsByClassName("tags")[0];
+        let tags = this.getTagsForMsg(msgHdr);
+        for each (let [,tag] in Iterator(tags)) {
+          let tagNode = tagsNode.ownerDocument.createElement('span');
+          // see tagColors.css
+          let colorClass = "blc-" + this._msgTagService.getColorForKey(tag.key).substr(1);
+          _mm_addClass(tagNode, "tag " + tag.tag + " " + colorClass);
+          tagNode.textContent = tag.tag;
+          tagsNode.appendChild(tagNode);
+        }
+
         /* Various useful DOM nodes */
         let senderNode = msgNode.getElementsByClassName("sender")[0];
         let recipientsNode = msgNode.getElementsByClassName("recipients")[0];
@@ -1234,7 +1247,10 @@ window.addEventListener("load", function f_temp0 () {
               if (aMimeMsg.headers[header] && String.trim(aMimeMsg.headers[header]).length > 0) {
                 let span = htmlpane.contentDocument.createElement("span");
                 let headerNode = htmlpane.contentDocument.createElement("b");
-                headerNode.textContent = header+": ";
+                if (header == "folder")
+                  headerNode.textContent = stringBundle.getString("folder")+": ";
+                else
+                  headerNode.textContent = header+": ";
                 let value = aMimeMsg.headers[header];
                 if (header != "folder")
                   value = GlodaUtils.deMime(value); /* I <3 gloda */
@@ -1440,19 +1456,6 @@ window.addEventListener("load", function f_temp0 () {
         }
         /* This actually setups the iframe to point to the given message */
         fillSnippetAndHTML();
-
-        /* Handle tags associated to messages. The default styles are ugly,
-         * fortunately, we do something about it in the css. */
-        let tagsNode = msgNode.getElementsByClassName("tags")[0];
-        let tags = this.getTagsForMsg(msgHdr);
-        for each (let [,tag] in Iterator(tags)) {
-          let tagNode = tagsNode.ownerDocument.createElement('span');
-          // see tagColors.css
-          let colorClass = "blc-" + this._msgTagService.getColorForKey(tag.key).substr(1);
-          _mm_addClass(tagNode, "tag " + tag.tag + " " + colorClass);
-          tagNode.textContent = tag.tag;
-          tagsNode.appendChild(tagNode);
-        }
 
         /* Attach various event handlers. Here: open a message when the user
          * clicks on the sender's name. */
