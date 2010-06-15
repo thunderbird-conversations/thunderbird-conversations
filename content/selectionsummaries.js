@@ -805,6 +805,98 @@ window.addEventListener("load", function f_temp0 () {
         tabIndex++; tabIndex++;
         msgNode.setAttribute("tabindex", tabIndex);
 
+        /* Register event handler for reply, reply to all, forward links. For
+         * reference, start reading
+         * http://mxr.mozilla.org/comm-central/source/mail/base/content/messageWindow.js#949
+         * and follow the function definitions. */
+        let uri = msgHdr.folder.getUriForMsg(msgHdr);
+        let compose = function compose_ (aCompType, aEvent) {
+          if (aEvent.shiftKey) {
+            ComposeMessage(aCompType, Ci.nsIMsgCompFormat.OppositeOfDefault, msgHdr.folder, [uri]);
+          } else {
+            ComposeMessage(aCompType, Ci.nsIMsgCompFormat.Default, msgHdr.folder, [uri]);
+          }
+        };
+        let register = function register_ (selector, f, action) {
+          if (!action)
+            action = "click";
+          let nodes = selector ? msgNode.querySelectorAll(selector) : [msgNode];
+          for each (let [, node] in Iterator(nodes))
+            node.addEventListener(action, f, true);
+        }
+        register(".link-reply, .button-reply", function (event) {
+            /* XXX this code should adapt when news messages have a JS
+             * representation. It don't think this will ever happen. See
+             * http://mxr.mozilla.org/comm-central/source/mail/base/content/mailWindowOverlay.js#1259
+             * */
+            compose(Ci.nsIMsgCompType.ReplyToSender, event);
+          });
+        register(".link-reply-all", function (event) {
+            compose(Ci.nsIMsgCompType.ReplyAll, event);
+          });
+        let forward = function (event) {
+            let forwardType = 0;
+            try {
+              forwardType = gPrefBranch.getIntPref("mail.forward_message_mode");
+            } catch (e) {
+              myDump("Unable to fetch preferred forward mode\n");
+            }
+            if (forwardType == 0)
+              compose(Ci.nsIMsgCompType.ForwardAsAttachment, event);
+            else
+              compose(Ci.nsIMsgCompType.ForwardInline, event);
+          };
+        register(".link-forward, .button-forward", forward);
+        register(".menu-replyList", function (event) {
+            myDump("coucou\n");
+            compose(Ci.nsIMsgCompType.ReplyToList, event);
+          });
+        register(".menu-editNew", function (event) {
+            myDump("coucou\n");
+            compose(Ci.nsIMsgCompType.Template, event);
+          });
+        register(".menu-composeAll", function (event) {
+            let allEmails = [msgHdr.mime2DecodedAuthor]
+                .concat(msgHdr.mime2DecodedRecipients)
+                .concat(msgHdr.ccList);
+            let emailAddresses = {};
+            numAddresses = gHeaderParser.parseHeadersWithArray(allEmails, emailAddresses, {}, {});
+            for (let i = 0; i < numAddresses; ++i) {
+              if (gIdentities[emailAddresses.value[i]])
+                allEmails[i] = null;
+            }
+            let composeAllUri = "mailto:" +
+              allEmails
+                .filter(function (x) x != null)
+                .join(",");
+
+            aURI = ioService.newURI(composeAllUri, null, null);  
+            msgComposeService.OpenComposeWindowWithURI(null, aURI);
+          });
+        register(".action.delete-msg, .button-delete", function deletenode_listener (event) {
+            /* Includes messages hidden by a collapsed thread */
+            let selectedMessages = gFolderDisplay.selectedMessages;
+            /* Does not */
+            let l = gFolderDisplay.selectedIndices.length;
+            msgHdrsDelete([msgHdr]);
+            if (l > 1)
+              gFolderDisplay.selectMessages(selectedMessages.filter(function (x) x.messageId != msgHdr.messageId));
+          });
+        register(".button-archive", function archive_listener (event) {
+            let selectedMessages = gFolderDisplay.selectedMessages;
+            let l = gFolderDisplay.selectedIndices.length;
+            msgHdrsArchive([msgHdr], window);
+            if (l > 1)
+              gFolderDisplay.selectMessages(selectedMessages.filter(function (x) x.messageId != msgHdr.messageId));
+          });
+        register(".action.mark-read", function markreadnode_listener (event) {
+            msgHdrsMarkAsRead([msgHdr], !msgHdr.isRead);
+          });
+        register(".grip", toggleMessage);
+        register(null, toggleMessage, "dblclick");
+
+
+
         /* This object is used by the event listener below to pass information
          * to the event listeners far below whose task is to setup the iframe.
          * DON'T TOUCH!!! It works, draw the flowchart if you don't believe me. */
@@ -854,6 +946,18 @@ window.addEventListener("load", function f_temp0 () {
                 if (htmlpane.contentDocument.documentElement.scrollTop > prev.offsetTop - 5)
                   htmlpane.contentWindow.scrollTo(0, prev.offsetTop - 5);
               }
+              event.preventDefault();
+            }
+            if (event.charCode == 'r'.charCodeAt(0)) {
+              compose(Ci.nsIMsgCompType.ReplyToSender, event);
+              event.preventDefault();
+            }
+            if (event.charCode == 'a'.charCodeAt(0)) {
+              compose(Ci.nsIMsgCompType.ReplyAll, event);
+              event.preventDefault();
+            }
+            if (event.charCode == 'f'.charCodeAt(0)) {
+              forward(event);
               event.preventDefault();
             }
           }, true);
@@ -1484,95 +1588,6 @@ window.addEventListener("load", function f_temp0 () {
           gFolderTreeView.selectFolder(this.folder, true);
           gFolderDisplay.selectMessage(this.msgHdr);
         }, true);
-
-        /* The reply, reply to all, forward links. For reference, start reading
-         * http://mxr.mozilla.org/comm-central/source/mail/base/content/messageWindow.js#949
-         * and follow the function definitions. */
-        let uri = msgHdr.folder.getUriForMsg(msgHdr);
-        let compose = function compose_ (aCompType, aEvent) {
-          if (aEvent.shiftKey) {
-            ComposeMessage(aCompType, Ci.nsIMsgCompFormat.OppositeOfDefault, msgHdr.folder, [uri]);
-          } else {
-            ComposeMessage(aCompType, Ci.nsIMsgCompFormat.Default, msgHdr.folder, [uri]);
-          }
-        };
-        let register = function register_ (selector, f, action) {
-          if (!action)
-            action = "click";
-          let nodes = selector ? msgNode.querySelectorAll(selector) : [msgNode];
-          for each (let [, node] in Iterator(nodes))
-            node.addEventListener(action, f, true);
-        }
-        register(".link-reply, .button-reply", function (event) {
-            /* XXX this code should adapt when news messages have a JS
-             * representation. It don't think this will ever happen. See
-             * http://mxr.mozilla.org/comm-central/source/mail/base/content/mailWindowOverlay.js#1259
-             * */
-            compose(Ci.nsIMsgCompType.ReplyToSender, event);
-          });
-        register(".link-reply-all", function (event) {
-            compose(Ci.nsIMsgCompType.ReplyAll, event);
-          });
-        register(".link-forward, .button-forward", function (event) {
-            let forwardType = 0;
-            try {
-              forwardType = gPrefBranch.getIntPref("mail.forward_message_mode");
-            } catch (e) {
-              myDump("Unable to fetch preferred forward mode\n");
-            }
-            if (forwardType == 0)
-              compose(Ci.nsIMsgCompType.ForwardAsAttachment, event);
-            else
-              compose(Ci.nsIMsgCompType.ForwardInline, event);
-          });
-        register(".menu-replyList", function (event) {
-            myDump("coucou\n");
-            compose(Ci.nsIMsgCompType.ReplyToList, event);
-          });
-        register(".menu-editNew", function (event) {
-            myDump("coucou\n");
-            compose(Ci.nsIMsgCompType.Template, event);
-          });
-        register(".menu-composeAll", function (event) {
-            let allEmails = [msgHdr.mime2DecodedAuthor]
-                .concat(msgHdr.mime2DecodedRecipients)
-                .concat(msgHdr.ccList);
-            let emailAddresses = {};
-            numAddresses = gHeaderParser.parseHeadersWithArray(allEmails, emailAddresses, {}, {});
-            for (let i = 0; i < numAddresses; ++i) {
-              if (gIdentities[emailAddresses.value[i]])
-                allEmails[i] = null;
-            }
-            let composeAllUri = "mailto:" +
-              allEmails
-                .filter(function (x) x != null)
-                .join(",");
-
-            aURI = ioService.newURI(composeAllUri, null, null);  
-            msgComposeService.OpenComposeWindowWithURI(null, aURI);
-          });
-        register(".action.delete-msg, .button-delete", function deletenode_listener (event) {
-            /* Includes messages hidden by a collapsed thread */
-            let selectedMessages = gFolderDisplay.selectedMessages;
-            /* Does not */
-            let l = gFolderDisplay.selectedIndices.length;
-            msgHdrsDelete([msgHdr]);
-            if (l > 1)
-              gFolderDisplay.selectMessages(selectedMessages.filter(function (x) x.messageId != msgHdr.messageId));
-          });
-        register(".button-archive", function archive_listener (event) {
-            let selectedMessages = gFolderDisplay.selectedMessages;
-            let l = gFolderDisplay.selectedIndices.length;
-            msgHdrsArchive([msgHdr], window);
-            if (l > 1)
-              gFolderDisplay.selectMessages(selectedMessages.filter(function (x) x.messageId != msgHdr.messageId));
-          });
-        register(".action.mark-read", function markreadnode_listener (event) {
-            msgHdrsMarkAsRead([msgHdr], !msgHdr.isRead);
-          });
-        register(".grip", toggleMessage);
-        register(null, toggleMessage, "dblclick");
-
 
         myDump("*** Completed message "+i+"\n");
       }

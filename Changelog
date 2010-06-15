@@ -2,12 +2,10 @@
 
 HIGHLIGHTS
 - Compatible with BidiUI v0.9.5
-- jquery-ui integration to give buttons a better, uniform appearance on all
-platforms
+- jquery-ui integration to give buttons a better, uniform appearance on all platforms
 - Improved handling of attachments
 - New "details" pane to view extra message headers
-- Better message display: signatures are now greyed out, smileys are recognized
-in messages
+- Better message display: signatures are now greyed out, smileys are recognized in messages
 
 FULL LIST
 - Compatible with BidiUI
