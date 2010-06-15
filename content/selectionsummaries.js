@@ -744,7 +744,9 @@ window.addEventListener("load", function f_temp0 () {
          * guaranteed to be synchronous here. The callback from
          * MsgHdrToMimeMessage might come later and changed the senders' value
          * to something more meaningful, but in this case, there was only one
-         * recipient (because it's a Bugzilla) so that doesn't trigger overflow.
+         * recipient (because it's a Bugzilla) so that doesn't trigger overflow
+         * (because the user is not insane and doesn't have a 100px-wide message
+         * reader. if he does, screw him).
          * */
         let senderSpans = processEmails(msgHdr.mime2DecodedAuthor, true, htmlpane.contentDocument);
         if (senderSpans.length)
@@ -756,12 +758,13 @@ window.addEventListener("load", function f_temp0 () {
         let overflowed = false;
         let lastComma;
         /* Ok, we're being a bit picky here, but if we don't overflow, we might
-         * re-trigger overflow because we add " ..." as extra length. So create
-         * a fake node at the beginning which will have the same width, and
-         * remove it at the end. Please note that this works because we added
-         * overflow-y: scroll to the body. Otherwise, that would shrink the
-         * messages width AFTER our computations and invalidate our overflow
-         * computations. */
+         * re-trigger overflow because we add " ..." at the end through CSS
+         * which in turn causes extra length to be added. So create a fake node
+         * at the beginning which will have the same width, and remove it when
+         * we're done. Please note that this works because we added overflow-y:
+         * scroll to the body. Otherwise, the scrollbar would appear later and
+         * that would shrink the messages width AFTER our computations and
+         * invalidate our overflow computations. */
         let fakeNode = htmlpane.contentDocument.createElement("span");
         fakeNode.textContent = " … ";
         recipientsNode.appendChild(fakeNode);
@@ -1656,6 +1659,9 @@ window.addEventListener("load", function f_temp0 () {
    * expands the last one on the second load, thus hiding an unread message).
    * */
   function isNewConversation(items) {
+    /* Happens in wicked cases */
+    if (gconversation.stash.multiple_selection)
+      return true;
     let newConversation = false;
     for (let i = 0; i < Math.max(items.length, gconversation.stash.msgHdrs.length); ++i) {
       if (i >= items.length || i >= gconversation.stash.msgHdrs.length ||
