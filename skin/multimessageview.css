@@ -64,6 +64,11 @@ a {
   list-style-image: url("chrome://gconversation/skin/back.png");
 }
 
+.msgHeaderView-button {
+  padding: 0 !important;
+  min-width: 24px;
+}
+
 
 /* General stuff */
 

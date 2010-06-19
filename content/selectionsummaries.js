@@ -895,8 +895,6 @@ window.addEventListener("load", function f_temp0 () {
         register(".grip", toggleMessage);
         register(null, toggleMessage, "dblclick");
 
-
-
         /* This object is used by the event listener below to pass information
          * to the event listeners far below whose task is to setup the iframe.
          * DON'T TOUCH!!! It works, draw the flowchart if you don't believe me. */
