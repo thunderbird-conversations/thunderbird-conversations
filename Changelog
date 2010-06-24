@@ -8,8 +8,8 @@ HIGHLIGHTS
 - Better message display: signatures are now greyed out, smileys are recognized in messages
 
 FULL LIST
-- Compatible with BidiUI
 - "Display the messages you sent in the Inbox" tutorial (see wiki or options)
+- Added new keyboard shortcuts: r (reply), a (reply to all), f (forward), just like Gmail
 - Added an option to display first names only, disabled by default.
 - Added an option to display regular dates, not "yesterday" or "two days ago".
 - Added icons matching the file type for attachments.

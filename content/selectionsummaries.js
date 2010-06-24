@@ -1456,7 +1456,7 @@ window.addEventListener("load", function f_temp0 () {
                   /* I'm still surprised that this magically works */
                   neckoURL.QueryInterface(Ci.nsIMsgMessageUrl);
                   let uri = neckoURL.uri;
-                  let size = "0 mb";
+                  let contentType = att.contentType;
 
                   /* Keep track of all the given attachments to a single message */
                   let attInfo = new createNewAttachmentInfo(
@@ -1478,7 +1478,7 @@ window.addEventListener("load", function f_temp0 () {
                         <td><img title={altTxt} src={att.url} /></td>
                         <td>
                           <p><span class="attachment-link link" title={altTxt2}>{att.name}</span></p>
-                          <p>{size}</p>
+                          <p>{contentType}</p>
                           <p>
                             <button class="link fg-button ui-state-default ui-corner-all save">{saveTxt}</button>
                           </p>
@@ -1493,7 +1493,7 @@ window.addEventListener("load", function f_temp0 () {
                         <td><img title={altTxt} src={imgSrc} /></td>
                         <td>
                           <p><span class="attachment-link link" title={altTxt2}>{att.name}</span></p>
-                          <p>{size}</p>
+                          <p>{contentType}</p>
                           <p>
                             <button class="link fg-button ui-state-default ui-corner-all save">{saveTxt}</button>
                           </p>
