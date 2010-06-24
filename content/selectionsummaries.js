@@ -1078,13 +1078,13 @@ window.addEventListener("load", function f_temp0 () {
 
                   /* Remove the attachments if the user has not set View >
                    * Display Attachments Inline */
-                  for each (let [, node] in Iterator(iframeDoc.getElementsByClassName("mimeAttachmentHeader"))) {
-                    /* We might have removed it already */
-                    if (node) {
-                      while (node.nextSibling)
-                        node.parentNode.removeChild(node.nextSibling);
-                      node.parentNode.removeChild(node);
-                    }
+                  let fieldsets = iframeDoc.getElementsByClassName("mimeAttachmentHeader");
+                  for (let i = fieldsets.length - 1; i >= 0; i--) {
+                    dump("Found an attachment, removing... please uncheck View > Display attachments inline.\n");
+                    let node = fieldsets[i];
+                    while (node.nextSibling)
+                      node.parentNode.removeChild(node.nextSibling);
+                    node.parentNode.removeChild(node);
                   }
 
                   /* Hello, Enigmail. Do that now, because decrypting a message
