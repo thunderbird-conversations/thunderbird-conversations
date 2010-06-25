@@ -1000,7 +1000,12 @@ window.addEventListener("load", function f_temp0 () {
 
         /* Now the expand collapse and stuff */
         register(".grip", gconversation.stash.collapse_all[iCopy]);
-        register(null, gconversation.stash.expand_all[iCopy], "dblclick");
+        register(null, function dblclick_listener () {
+            if (msgNode.classList.contains("collapsed"))
+              gconversation.stash.expand_all[iCopy]();
+            else
+              gconversation.stash.collapse_all[iCopy]();
+          }, "dblclick");
         register(".snippetmsg", gconversation.stash.expand_all[iCopy]);
         msgNode.addEventListener("keypress", function keypress_listener (event) {
             if (event.charCode == 'o'.charCodeAt(0) || event.keyCode == 13) {
