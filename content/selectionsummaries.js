@@ -979,9 +979,19 @@ window.addEventListener("load", function f_temp0 () {
         let iCopy = i;
         msgNode.addEventListener("keypress", function keypress_listener (event) {
             if (event.charCode == 'o'.charCodeAt(0) || event.keyCode == 13) {
-              /* Iframe expansion preserves scroll value */
-              scrollNodeIntoView(msgNode);
-              gconversation.stash.expand_all[iCopy]();
+              if (msgNode.classList.contains("collapsed")) {
+                /* Although iframe expansion preserves scroll value, we must do
+                 * that *after* the iframe has been expanded, otherwise, the
+                 * viewport might be too short and won't allow scrolling to the
+                 * right value already. */
+                gconversation.stash.runOnceAfterNSignals(
+                  1,
+                  function () scrollNodeIntoView(msgNode)
+                );
+                gconversation.stash.expand_all[iCopy]();
+              } else {
+                gconversation.stash.collapse_all[iCopy]();
+              }
             }
             if (event.keyCode == 8) {
               gconversation.on_back();
@@ -2006,7 +2016,6 @@ window.addEventListener("load", function f_temp0 () {
     onSecurityChange: function () {},
     onStatusChange: function () {},
     onLocationChange: function (aWebProgress, aRequest, aLocation) {
-      myDump("OnLocationChange\n");
       /* By testing here for the pref, we allow the pref to be changed at
        * run-time and we do not require to restart Thunderbird to take the
        * change into account. */
