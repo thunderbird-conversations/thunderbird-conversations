@@ -592,21 +592,45 @@ window.addEventListener("load", function f_temp0 () {
       let msgHdrs = this._msgHdrs;
       let msgNodes = this._msgNodes;
 
-      /* For each message, once the message has been properly set up in the
-       * conversation view (either collapsed or expanded), this function is called.
-       * When all the messages have been filled, it scrolls to the one we want.
-       * That way, we don't have to be afraid of further reflows after we have
-       * scrolled to the right message. Actually, count two for each message.
-       * One for the completion of the async FillSnippetAndHTML. The other one,
-       * for the completion of the async MsgHdrToMimeMessage. It fails if we
-       * don't do that. */
+      /* First step: will wait for all the calls to MsgHdrToMimeMessage to
+       * terminate, which fills the references to expandAttachments (if we don't
+       * do that, we might call expand_all[i] before expandAttachments is
+       * complete, which in turn would result in no attachments at all
+       * displayed. */
       let needsFocus = tellMeWhoToFocus(msgHdrs);
       runOnceAfterNSignals(
-        2 * numMessages,
-        function f_temp6() {
-          let msgNode = msgHdrToMsgNode(msgHdrs[needsFocus]);
-          scrollNodeIntoView(msgNode);
-          variousFocusHacks(msgNode);
+        numMessages,
+        function collapseExpandAsNeeded_ () {
+
+          /* Final step: scroll the right message into view, and set it as
+           * selected */
+          runOnceAfterNSignals(
+            numMessages,
+            function scrollToTheRightNode_ () {
+              let msgNode = msgHdrToMsgNode(msgHdrs[needsFocus]);
+              scrollNodeIntoView(msgNode);
+              variousFocusHacks(msgNode);
+            });
+
+          /* Second step: expand all the messages that need to be expanded. All
+           * messages are collapsed by default, we enforce this. */
+          let actionList = tellMeWhoToExpand(msgHdrs, needsFocus);
+          for each (let [i, action] in Iterator(actionList)) {
+            switch (action) {
+              case kActionDoNothing:
+                signal();
+                break;
+              case kActionCollapse:
+                throw "Why collapse a message?";
+                break;
+              case kActionExpand:
+                gconversation.stash.expand_all[i]();
+                break;
+              default:
+                throw "Never happens";
+                break;
+            }
+          }
         }
       );
 
@@ -615,6 +639,8 @@ window.addEventListener("load", function f_temp0 () {
        * definition is always called !). Note to self: i is shared accross all
        * the loop executions. Note to self: don't rely on [this]. */
       for (let i = 0; i < numMessages; ++i) {
+        let iCopy = i; /* Jonathan, we're not in OCaml, i is NOT immutable */
+
         myDump("*** Treating message "+i+"\n");
         count += 1;
         if (count > MAX_THREADS) {
@@ -772,8 +798,8 @@ window.addEventListener("load", function f_temp0 () {
         }
 
         /* We're using some forward references here. */
-        let expandIframe = function () {};
-        let expandAttachments = function () {};
+        let expandIframe = function () { dump("YOU SHOULD NOT SEE THIS\n"); };
+        let expandAttachments = function () { dump("No attachments found ("+iCopy+")\n"); };
         let toggleMessage = function toggleMessage_ () {
           _mm_toggleClass(msgNode, "collapsed");
         };
@@ -972,7 +998,6 @@ window.addEventListener("load", function f_temp0 () {
           });
 
         /* Now the expand collapse and stuff */
-        let iCopy = i; /* Jonathan, we're not in OCaml, i is NOT immutable */
         register(".grip", gconversation.stash.collapse_all[iCopy]);
         register(null, gconversation.stash.expand_all[iCopy], "dblclick");
         register(".snippetmsg", gconversation.stash.expand_all[iCopy]);
@@ -1029,306 +1054,304 @@ window.addEventListener("load", function f_temp0 () {
         /* The HTML is heavily processed to detect extra quoted parts using
          * different heuristics, the "- show/hide quoted text -" links are
          * added. */
-        let fillSnippetAndHTML = function fillSnippetAndHTML_ () {
-          let originalScroll; /* This is shared by the nested event listeners below */
+        let originalScroll; /* This is shared by the nested event listeners below */
 
-          let iframe = htmlpane.contentDocument.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "iframe");
-          /* Big hack to workaround bug 540911 */
-          iframe.setAttribute("transparent", "transparent");
-          iframe.setAttribute("style", "height: 20px");
-          iframe.setAttribute("type", "content");
-          /* The xul:iframe automatically loads about:blank when it is added
-           * into the tree. We need to wait for the document to be loaded before
-           * doing things.
-           *
-           * Why do we do that ? Basically because we want the <xul:iframe> to
-           * have a docShell and a webNavigation. If we don't do that, and we
-           * set directly src="about:blank" above, sometimes we are too fast and
-           * the docShell isn't ready by the time we get there. */
-          iframe.addEventListener("load", function f_temp2(event, aCharset) {
-              iframe.removeEventListener("load", f_temp2, true);
+        let iframe = htmlpane.contentDocument.createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "iframe");
+        /* Big hack to workaround bug 540911 */
+        iframe.setAttribute("transparent", "transparent");
+        iframe.setAttribute("style", "height: 20px");
+        iframe.setAttribute("type", "content");
+        /* The xul:iframe automatically loads about:blank when it is added
+         * into the tree. We need to wait for the document to be loaded before
+         * doing things.
+         *
+         * Why do we do that ? Basically because we want the <xul:iframe> to
+         * have a docShell and a webNavigation. If we don't do that, and we
+         * set directly src="about:blank" above, sometimes we are too fast and
+         * the docShell isn't ready by the time we get there. */
+        iframe.addEventListener("load", function f_temp2(event, aCharset) {
+            iframe.removeEventListener("load", f_temp2, true);
 
-              /* The second load event is triggered by loadURI with the URL
-               * being the necko URL to the given message. */
-              iframe.addEventListener("load", function f_temp1(event) {
-                  iframe.removeEventListener("load", f_temp1, true);
-                  let iframeDoc = iframe.contentDocument;
+            /* The second load event is triggered by loadURI with the URL
+             * being the necko URL to the given message. */
+            iframe.addEventListener("load", function f_temp1(event) {
+                iframe.removeEventListener("load", f_temp1, true);
+                let iframeDoc = iframe.contentDocument;
 
-                  /* Do some reformatting */
-                  iframeDoc.body.style.padding = "0";
-                  iframeDoc.body.style.margin = "0";
-                  /* Deal with people who have bad taste */
-                  iframeDoc.body.style.color = "black";
-                  iframeDoc.body.style.backgroundColor = "white";
+                /* Do some reformatting */
+                iframeDoc.body.style.padding = "0";
+                iframeDoc.body.style.margin = "0";
+                /* Deal with people who have bad taste */
+                iframeDoc.body.style.color = "black";
+                iframeDoc.body.style.backgroundColor = "white";
 
-                  /* Our super-advanced heuristic ;-) */
-                  let hasHtml = !(
-                    iframeDoc.body.firstElementChild &&
-                    (_mm_hasClass(iframeDoc.body.firstElementChild, "moz-text-flowed") ||
-                     _mm_hasClass(iframeDoc.body.firstElementChild, "moz-text-plain")));
+                /* Our super-advanced heuristic ;-) */
+                let hasHtml = !(
+                  iframeDoc.body.firstElementChild &&
+                  (_mm_hasClass(iframeDoc.body.firstElementChild, "moz-text-flowed") ||
+                   _mm_hasClass(iframeDoc.body.firstElementChild, "moz-text-plain")));
 
-                  /* The part below is all about quoting */
-                  /* Launch various heuristics to convert most common quoting styles
-                   * to real blockquotes. Spoiler: most of them suck. */
-                  convertOutlookQuotingToBlockquote(iframeDoc);
-                  convertHotmailQuotingToBlockquote1(iframeDoc);
-                  convertHotmailQuotingToBlockquote2(iframe.contentWindow, iframeDoc, gPrefs["hide_quote_length"]);
-                  convertForwardedToBlockquote(iframeDoc);
-                  fusionBlockquotes(iframeDoc);
-                  /* This function adds a show/hide quoted text link to every topmost
-                   * blockquote. Nested blockquotes are not taken into account. */
-                  let walk = function walk_ (elt) {
-                    for (let i = elt.childNodes.length - 1; i >= 0; --i) {
-                      let c = elt.childNodes[i];
-                      /* GMail uses class="gmail_quote", other MUA use type="cite"...
-                       * so just search for a regular blockquote */
-                      if (c.tagName && c.tagName.toLowerCase() == "blockquote") {
-                        if (c.getUserData("hideme") !== false) { /* null is ok, true is ok too */
-                          /* Compute the approximate number of lines while the element is still visible */
-                          let style = iframe.contentWindow.getComputedStyle(c, null);
-                          if (style) {
-                            let numLines = parseInt(style.height) / parseInt(style.lineHeight);
-                            if (numLines > gPrefs["hide_quote_length"]) {
-                              let div = iframeDoc.createElement("div");
-                              div.setAttribute("class", "link showhidequote");
-                              div.addEventListener("click", function div_listener (event) {
-                                  let h = htmlpane.contentWindow.toggleQuote(event);
-                                  iframe.style.height = (parseInt(iframe.style.height) + h)+"px";
-                                }, true);
-                              div.setAttribute("style", "color: #512a45; cursor: pointer; font-size: 90%;");
-                              div.appendChild(document.createTextNode("- "+
-                                stringBundle.getString("showquotedtext")+" -"));
-                              elt.insertBefore(div, c);
-                              c.style.display = "none";
-                            }
+                /* The part below is all about quoting */
+                /* Launch various heuristics to convert most common quoting styles
+                 * to real blockquotes. Spoiler: most of them suck. */
+                convertOutlookQuotingToBlockquote(iframeDoc);
+                convertHotmailQuotingToBlockquote1(iframeDoc);
+                convertHotmailQuotingToBlockquote2(iframe.contentWindow, iframeDoc, gPrefs["hide_quote_length"]);
+                convertForwardedToBlockquote(iframeDoc);
+                fusionBlockquotes(iframeDoc);
+                /* This function adds a show/hide quoted text link to every topmost
+                 * blockquote. Nested blockquotes are not taken into account. */
+                let walk = function walk_ (elt) {
+                  for (let i = elt.childNodes.length - 1; i >= 0; --i) {
+                    let c = elt.childNodes[i];
+                    /* GMail uses class="gmail_quote", other MUA use type="cite"...
+                     * so just search for a regular blockquote */
+                    if (c.tagName && c.tagName.toLowerCase() == "blockquote") {
+                      if (c.getUserData("hideme") !== false) { /* null is ok, true is ok too */
+                        /* Compute the approximate number of lines while the element is still visible */
+                        let style = iframe.contentWindow.getComputedStyle(c, null);
+                        if (style) {
+                          let numLines = parseInt(style.height) / parseInt(style.lineHeight);
+                          if (numLines > gPrefs["hide_quote_length"]) {
+                            let div = iframeDoc.createElement("div");
+                            div.setAttribute("class", "link showhidequote");
+                            div.addEventListener("click", function div_listener (event) {
+                                let h = htmlpane.contentWindow.toggleQuote(event);
+                                iframe.style.height = (parseInt(iframe.style.height) + h)+"px";
+                              }, true);
+                            div.setAttribute("style", "color: #512a45; cursor: pointer; font-size: 90%;");
+                            div.appendChild(document.createTextNode("- "+
+                              stringBundle.getString("showquotedtext")+" -"));
+                            elt.insertBefore(div, c);
+                            c.style.display = "none";
                           }
                         }
-                      } else {
-                        walk(c);
                       }
+                    } else {
+                      walk(c);
                     }
+                  }
+                };
+                walk(iframeDoc);
+
+                /* Ugly hack (once again) to get the style inside the
+                 * <iframe>. I don't think we can use a chrome:// url for
+                 * the stylesheet because the iframe has a type="content" */
+                let style = iframeDoc.createElement("style");
+                let defaultFont = gPrefBranch.getCharPref("font.default");
+                style.appendChild(iframeDoc.createTextNode(
+                  ".pre-as-regular {\n"+
+                  "  font-family: "+defaultFont+" !important;\n"+
+                  "  font-size: medium !important;\n"+
+                  "}\n"+
+                  "fieldset.mimeAttachmentHeader,\n"+
+                  "fieldset.mimeAttachmentHeader + *,\n"+
+                  "fieldset.mimeAttachmentHeader + * + *,\n"+
+                  "fieldset.mimeAttachmentHeader + * + * + *,\n"+
+                  "fieldset.mimeAttachmentHeader + * + * + * + * {\n"+
+                  "  display: none;\n"+
+                  "}\n"
+                  ));
+                /* Oh baby that was so subtle */
+                iframeDoc.body.previousSibling.appendChild(style);
+
+                /* Remove the attachments if the user has not set View >
+                 * Display Attachments Inline */
+                let fieldsets = iframeDoc.getElementsByClassName("mimeAttachmentHeader");
+                for (let i = fieldsets.length - 1; i >= 0; i--) {
+                  dump("Found an attachment, removing... please uncheck View > Display attachments inline.\n");
+                  let node = fieldsets[i];
+                  while (node.nextSibling)
+                    node.parentNode.removeChild(node.nextSibling);
+                  node.parentNode.removeChild(node);
+                }
+
+                /* Hello, Enigmail. Do that now, because decrypting a message
+                 * will change its height. If you've got nothing better to do,
+                 * test for the remaining 4572 possible statuses. */
+                if (iframeDoc.body.textContent.length > 0 && hasEnigmail) {
+                  let status = tryEnigmail(iframeDoc.body);
+                  if (status & Ci.nsIEnigmail.DECRYPTION_OKAY)
+                    msgNode.getElementsByClassName("enigmail-enc-ok")[0].style.display = "";
+                  if (status & Ci.nsIEnigmail.GOOD_SIGNATURE)
+                    msgNode.getElementsByClassName("enigmail-sign-ok")[0].style.display = "";
+                  if (status & Ci.nsIEnigmail.UNVERIFIED_SIGNATURE)
+                    msgNode.getElementsByClassName("enigmail-sign-unknown")[0].style.display = "";
+                }
+
+                /* Add an event listener for the button that toggles the style of the
+                 * font. Only if we seem to be able to implement it (i.e. we
+                 * see a <pre>). */
+                if (!hasHtml) {
+                  let toggleFontStyle = function togglefont_listener (event) {
+                    let elts = iframeDoc.querySelectorAll("pre, body > *:first-child")
+                    for each (let [, elt] in Iterator(elts)) {
+                      _mm_toggleClass(elt, "pre-as-regular");
+                    }
+                    /* XXX The height of the iframe isn't updated as we change
+                     * fonts. This is usually unimportant, as it will grow
+                     * once if the initial font was smaller, and then remain
+                     * high. XXX check if offsetHeight works better with Gecko
+                     * 1.9.2 */
+                    iframe.style.height = iframeDoc.body.scrollHeight+"px";
                   };
-                  walk(iframeDoc);
+                  /* By default, plain/text messages are displayed using a
+                   * monospaced font. */
+                  if (!gPrefs["monospaced"] && !(gPrefs["monospaced_senders"].indexOf(authorEmail(msgHdr)) >= 0))
+                    toggleFontStyle();
+                  toggleFontNode.addEventListener("click", toggleFontStyle, true);
+                  /* Show the small icon */
+                  toggleFontNode.style.display = "";
+                }
 
-                  /* Ugly hack (once again) to get the style inside the
-                   * <iframe>. I don't think we can use a chrome:// url for
-                   * the stylesheet because the iframe has a type="content" */
-                  let style = iframeDoc.createElement("style");
-                  let defaultFont = gPrefBranch.getCharPref("font.default");
-                  style.appendChild(iframeDoc.createTextNode(
-                    ".pre-as-regular {\n"+
-                    "  font-family: "+defaultFont+" !important;\n"+
-                    "  font-size: medium !important;\n"+
-                    "}\n"+
-                    "fieldset.mimeAttachmentHeader,\n"+
-                    "fieldset.mimeAttachmentHeader + *,\n"+
-                    "fieldset.mimeAttachmentHeader + * + *,\n"+
-                    "fieldset.mimeAttachmentHeader + * + * + *,\n"+
-                    "fieldset.mimeAttachmentHeader + * + * + * + * {\n"+
-                    "  display: none;\n"+
-                    "}\n"
-                    ));
-                  /* Oh baby that was so subtle */
-                  iframeDoc.body.previousSibling.appendChild(style);
+                /* For bidiUI. Do that now because the DOM manipulations are
+                 * over. We can't do this before because BidiUI screws up the
+                 * DOM. Don't know why :(. */
+                if (typeof(BDMActionPhase_htmlNumericEntitiesDecoding) == "function") {
+                  try {
+                    let domDocument = iframe.docShell.contentViewer.DOMDocument;
+                    let body = domDocument.body;
 
-                  /* Remove the attachments if the user has not set View >
-                   * Display Attachments Inline */
-                  let fieldsets = iframeDoc.getElementsByClassName("mimeAttachmentHeader");
-                  for (let i = fieldsets.length - 1; i >= 0; i--) {
-                    dump("Found an attachment, removing... please uncheck View > Display attachments inline.\n");
-                    let node = fieldsets[i];
-                    while (node.nextSibling)
-                      node.parentNode.removeChild(node.nextSibling);
-                    node.parentNode.removeChild(node);
-                  }
-
-                  /* Hello, Enigmail. Do that now, because decrypting a message
-                   * will change its height. If you've got nothing better to do,
-                   * test for the remaining 4572 possible statuses. */
-                  if (iframeDoc.body.textContent.length > 0 && hasEnigmail) {
-                    let status = tryEnigmail(iframeDoc.body);
-                    if (status & Ci.nsIEnigmail.DECRYPTION_OKAY)
-                      msgNode.getElementsByClassName("enigmail-enc-ok")[0].style.display = "";
-                    if (status & Ci.nsIEnigmail.GOOD_SIGNATURE)
-                      msgNode.getElementsByClassName("enigmail-sign-ok")[0].style.display = "";
-                    if (status & Ci.nsIEnigmail.UNVERIFIED_SIGNATURE)
-                      msgNode.getElementsByClassName("enigmail-sign-unknown")[0].style.display = "";
-                  }
-
-                  /* Add an event listener for the button that toggles the style of the
-                   * font. Only if we seem to be able to implement it (i.e. we
-                   * see a <pre>). */
-                  if (!hasHtml) {
-                    let toggleFontStyle = function togglefont_listener (event) {
-                      let elts = iframeDoc.querySelectorAll("pre, body > *:first-child")
-                      for each (let [, elt] in Iterator(elts)) {
-                        _mm_toggleClass(elt, "pre-as-regular");
-                      }
-                      /* XXX The height of the iframe isn't updated as we change
-                       * fonts. This is usually unimportant, as it will grow
-                       * once if the initial font was smaller, and then remain
-                       * high. XXX check if offsetHeight works better with Gecko
-                       * 1.9.2 */
-                      iframe.style.height = iframeDoc.body.scrollHeight+"px";
+                    let BDMCharsetPhaseParams = {
+                      body: body,
+                      charsetOverrideInEffect: msgWindow.charsetOverride,
+                      currentCharset: msgWindow.mailCharacterSet,
+                      needCharsetForcing: false,
+                      charsetToForce: null
                     };
-                    /* By default, plain/text messages are displayed using a
-                     * monospaced font. */
-                    if (!gPrefs["monospaced"] && !(gPrefs["monospaced_senders"].indexOf(authorEmail(msgHdr)) >= 0))
-                      toggleFontStyle();
-                    toggleFontNode.addEventListener("click", toggleFontStyle, true);
-                    /* Show the small icon */
-                    toggleFontNode.style.display = "";
-                  }
-
-                  /* For bidiUI. Do that now because the DOM manipulations are
-                   * over. We can't do this before because BidiUI screws up the
-                   * DOM. Don't know why :(. */
-                  if (typeof(BDMActionPhase_htmlNumericEntitiesDecoding) == "function") {
-                    try {
-                      let domDocument = iframe.docShell.contentViewer.DOMDocument;
-                      let body = domDocument.body;
-
-                      let BDMCharsetPhaseParams = {
-                        body: body,
-                        charsetOverrideInEffect: msgWindow.charsetOverride,
-                        currentCharset: msgWindow.mailCharacterSet,
-                        needCharsetForcing: false,
-                        charsetToForce: null
-                      };
-                      BDMActionPhase_charsetMisdetectionCorrection(BDMCharsetPhaseParams);
-                      if (BDMCharsetPhaseParams.needCharsetForcing
-                          && BDMCharsetPhaseParams.charsetToForce != aCharset) {
-                        //XXX this doesn't take into account the case where we
-                        //have a cycle with length > 0 in the reloadings.
-                        //Currently, I only see UTF8 -> UTF8 cycles.
-                        dump("Reloading with "+BDMCharsetPhaseParams.charsetToForce+"\n");
-                        f_temp2(null, BDMCharsetPhaseParams.charsetToForce);
-                        return;
-                      }
-                      BDMActionPhase_htmlNumericEntitiesDecoding(body);
-                      BDMActionPhase_quoteBarsCSSFix(domDocument);
-                      BDMActionPhase_directionAutodetection(body);
-                    } catch (e) {
-                      myDump(e);
-                      throw e;
+                    BDMActionPhase_charsetMisdetectionCorrection(BDMCharsetPhaseParams);
+                    if (BDMCharsetPhaseParams.needCharsetForcing
+                        && BDMCharsetPhaseParams.charsetToForce != aCharset) {
+                      //XXX this doesn't take into account the case where we
+                      //have a cycle with length > 0 in the reloadings.
+                      //Currently, I only see UTF8 -> UTF8 cycles.
+                      dump("Reloading with "+BDMCharsetPhaseParams.charsetToForce+"\n");
+                      f_temp2(null, BDMCharsetPhaseParams.charsetToForce);
+                      return;
                     }
+                    BDMActionPhase_htmlNumericEntitiesDecoding(body);
+                    BDMActionPhase_quoteBarsCSSFix(domDocument);
+                    BDMActionPhase_directionAutodetection(body);
+                  } catch (e) {
+                    myDump(e);
+                    throw e;
                   }
+                }
 
-                  /* Everything's done, so now we're able to settle for a height. */
-                  iframe.style.height = iframeDoc.body.scrollHeight+"px";
+                /* Everything's done, so now we're able to settle for a height. */
+                iframe.style.height = iframeDoc.body.scrollHeight+"px";
 
-                  /* Attach the required event handlers so that links open in the
-                   * external browser */
-                  for each (let [, a] in Iterator(iframeDoc.getElementsByTagName("a"))) {
-                    a.addEventListener("click", function link_listener (event) specialTabs.siteClickHandler(event, /^mailto:/), true);
-                  }
+                /* Attach the required event handlers so that links open in the
+                 * external browser */
+                for each (let [, a] in Iterator(iframeDoc.getElementsByTagName("a"))) {
+                  a.addEventListener("click", function link_listener (event) specialTabs.siteClickHandler(event, /^mailto:/), true);
+                }
 
-                  /* Sometimes setting the iframe's content and height changes
-                   * the scroll value, don't know why. */
-                  if (originalScroll)
-                    htmlpane.contentDocument.documentElement.scrollTop = originalScroll;
+                /* Sometimes setting the iframe's content and height changes
+                 * the scroll value, don't know why. */
+                if (originalScroll)
+                  htmlpane.contentDocument.documentElement.scrollTop = originalScroll;
 
-                  /* jQuery, go! */
-                  htmlpane.contentWindow.styleMsgNode(msgNode);
+                /* jQuery, go! */
+                htmlpane.contentWindow.styleMsgNode(msgNode);
 
-                  signal();
-                }, true); /* end document.addEventListener */
+                signal();
+              }, true); /* end document.addEventListener */
 
-              /* Unbelievable as it may seem, the code below works.
-               * Some references :
-               * - http://mxr.mozilla.org/comm-central/source/mailnews/base/src/nsMessenger.cpp#564
-               * - http://mxr.mozilla.org/comm-central/source/mailnews/base/src/nsMessenger.cpp#388
-               * - https://developer.mozilla.org/@api/deki/files/3579/=MessageRepresentations.png
-               *
-               * According to dmose, we should get the regular content policy
-               * for free (regarding image loading, JS...) by using a content
-               * iframe with a classical call to loadURI. AFAICT, this works
-               * pretty well (no JS is executed, the images are loaded IFF we
-               * authorized that recipient).
-               * */
-              let url = msgHdrToNeckoURL(msgHdr, gMessenger);
+            /* Unbelievable as it may seem, the code below works.
+             * Some references :
+             * - http://mxr.mozilla.org/comm-central/source/mailnews/base/src/nsMessenger.cpp#564
+             * - http://mxr.mozilla.org/comm-central/source/mailnews/base/src/nsMessenger.cpp#388
+             * - https://developer.mozilla.org/@api/deki/files/3579/=MessageRepresentations.png
+             *
+             * According to dmose, we should get the regular content policy
+             * for free (regarding image loading, JS...) by using a content
+             * iframe with a classical call to loadURI. AFAICT, this works
+             * pretty well (no JS is executed, the images are loaded IFF we
+             * authorized that recipient).
+             * */
+            let url = msgHdrToNeckoURL(msgHdr, gMessenger);
 
-              /* These steps are mandatory. Basically, the code that loads the
-               * messages will always output UTF-8 as the OUTPUT ENCODING, so
-               * we need to tell the iframe's docshell about it. */
-              let cv = iframe.docShell.contentViewer;
-              cv.QueryInterface(Ci.nsIMarkupDocumentViewer);
-              cv.hintCharacterSet = "UTF-8";
-              cv.hintCharacterSetSource = kCharsetFromMetaTag;
-              /* Is this even remotely useful? */
-              iframe.docShell.appType = Components.interfaces.nsIDocShell.APP_TYPE_MAIL;
+            /* These steps are mandatory. Basically, the code that loads the
+             * messages will always output UTF-8 as the OUTPUT ENCODING, so
+             * we need to tell the iframe's docshell about it. */
+            let cv = iframe.docShell.contentViewer;
+            cv.QueryInterface(Ci.nsIMarkupDocumentViewer);
+            cv.hintCharacterSet = "UTF-8";
+            cv.hintCharacterSetSource = kCharsetFromMetaTag;
+            /* Is this even remotely useful? */
+            iframe.docShell.appType = Components.interfaces.nsIDocShell.APP_TYPE_MAIL;
 
-              /* Now that's about the input encoding. Here's the catch: the
-               * right way to do that would be to query nsIMsgI18NUrl [1] on the
-               * nsIURI and set charsetOverRide on it. For this parameter to
-               * take effect, we would have to pass the nsIURI to LoadURI, not a
-               * string as in url.spec, but a real nsIURI. Next step:
-               * nsIWebNavigation.loadURI only takes a string... so let's have a
-               * look at nsIDocShell... good, loadURI takes a a nsIURI there.
-               * BUT IT'S [noscript]!!! I'm doomed.
-               *
-               * Workaround: call DisplayMessage that in turns calls the
-               * docShell from C++ code. Oh and why are we doing this? Oh, yes,
-               * see [2].
-               *
-               * Some remarks: I don't know if the nsIUrlListener [3] is useful,
-               * but let's leave it like that, it might come in handy later. And
-               * we're we _cannot instanciate directly_ because there are
-               * different ones for each type of account. So we must ask
-               * nsIMessenger for it, so that it instanciates the right
-               * component.
-               *
-              [1] http://mxr.mozilla.org/comm-central/source/mailnews/base/public/nsIMsgMailNewsUrl.idl#172
-              [2] https://www.mozdev.org/bugs/show_bug.cgi?id=22775
-              [3] http://mxr.mozilla.org/comm-central/source/mailnews/base/public/nsIUrlListener.idl#48
-              [4] http://mxr.mozilla.org/comm-central/source/mailnews/base/public/nsIMsgMessageService.idl#112
-              */
-              let messageService = gMessenger.messageServiceFromURI(url.spec);
-              let urlListener = {
-                OnStartRunningUrl: function () {},
-                OnStopRunningUrl: function () {},
-                QueryInterface: XPCOMUtils.generateQI([Ci.nsISupports, Ci.nsIUrlListener])
-              };
-              let uri = msgHdr.folder.getUriForMsg(msgHdr);
-              /**
-              * When you want a message displayed....
-              *
-              * @param in aMessageURI Is a uri representing the message to display.
-              * @param in aDisplayConsumer Is (for now) an nsIDocShell which we'll use to load 
-              *                         the message into.
-              *                         XXXbz Should it be an nsIWebNavigation or something?
-              * @param in aMsgWindow
-              * @param in aUrlListener
-              * @param in aCharsetOverride (optional) character set over ride to force the message to use.
-              * @param out aURL
-              */
-              messageService.DisplayMessage(uri+"?header=none",
-                                            iframe.docShell,
-                                            msgWindow,
-                                            urlListener,
-                                            aCharset,
-                                            {});
+            /* Now that's about the input encoding. Here's the catch: the
+             * right way to do that would be to query nsIMsgI18NUrl [1] on the
+             * nsIURI and set charsetOverRide on it. For this parameter to
+             * take effect, we would have to pass the nsIURI to LoadURI, not a
+             * string as in url.spec, but a real nsIURI. Next step:
+             * nsIWebNavigation.loadURI only takes a string... so let's have a
+             * look at nsIDocShell... good, loadURI takes a a nsIURI there.
+             * BUT IT'S [noscript]!!! I'm doomed.
+             *
+             * Workaround: call DisplayMessage that in turns calls the
+             * docShell from C++ code. Oh and why are we doing this? Oh, yes,
+             * see [2].
+             *
+             * Some remarks: I don't know if the nsIUrlListener [3] is useful,
+             * but let's leave it like that, it might come in handy later. And
+             * we're we _cannot instanciate directly_ because there are
+             * different ones for each type of account. So we must ask
+             * nsIMessenger for it, so that it instanciates the right
+             * component.
+             *
+            [1] http://mxr.mozilla.org/comm-central/source/mailnews/base/public/nsIMsgMailNewsUrl.idl#172
+            [2] https://www.mozdev.org/bugs/show_bug.cgi?id=22775
+            [3] http://mxr.mozilla.org/comm-central/source/mailnews/base/public/nsIUrlListener.idl#48
+            [4] http://mxr.mozilla.org/comm-central/source/mailnews/base/public/nsIMsgMessageService.idl#112
+            */
+            let messageService = gMessenger.messageServiceFromURI(url.spec);
+            let urlListener = {
+              OnStartRunningUrl: function () {},
+              OnStopRunningUrl: function () {},
+              QueryInterface: XPCOMUtils.generateQI([Ci.nsISupports, Ci.nsIUrlListener])
+            };
+            let uri = msgHdr.folder.getUriForMsg(msgHdr);
+            /**
+            * When you want a message displayed....
+            *
+            * @param in aMessageURI Is a uri representing the message to display.
+            * @param in aDisplayConsumer Is (for now) an nsIDocShell which we'll use to load 
+            *                         the message into.
+            *                         XXXbz Should it be an nsIWebNavigation or something?
+            * @param in aMsgWindow
+            * @param in aUrlListener
+            * @param in aCharsetOverride (optional) character set over ride to force the message to use.
+            * @param out aURL
+            */
+            messageService.DisplayMessage(uri+"?header=none",
+                                          iframe.docShell,
+                                          msgWindow,
+                                          urlListener,
+                                          aCharset,
+                                          {});
 
-            }, true); /* end document.addEventListener */
+          }, true); /* end document.addEventListener */
 
-          /* The height information that allows us to perform auto-resize is
-           * only available if the iframe has been displayed at least once.
-           * Here, we start with the iframe hidden, so there's no way we can
-           * perform styling, auto-resizing, etc. right now. We need to wait
-           * for the iframe to be loaded first. To simplify things, the whole
-           * process of adding the iframe into the tree and styling it will be
-           * done when it is made visible for the first time. That is, when we
-           * toggle the message for the first time. */
-          let firstRun = true;
-          expandIframe = function expandIframe_ () {
-            if (firstRun) {
-              originalScroll = htmlpane.contentDocument.documentElement.scrollTop;
-              htmlMsgNode.appendChild(iframe); /* Triggers the signal at the end */
-              firstRun = false;
-            } else {
-              signal();
-            }
-          };
+        /* The height information that allows us to perform auto-resize is
+         * only available if the iframe has been displayed at least once.
+         * Here, we start with the iframe hidden, so there's no way we can
+         * perform styling, auto-resizing, etc. right now. We need to wait
+         * for the iframe to be loaded first. To simplify things, the whole
+         * process of adding the iframe into the tree and styling it will be
+         * done when it is made visible for the first time. That is, when we
+         * toggle the message for the first time. */
+        let firstRun = true;
+        expandIframe = function expandIframe_ () {
+          if (firstRun) {
+            originalScroll = htmlpane.contentDocument.documentElement.scrollTop;
+            htmlMsgNode.appendChild(iframe); /* Triggers the signal at the end */
+            firstRun = false;
+          } else {
+            signal();
+          }
         };
 
         /* This part is the fallback version of the try-block below in case:
@@ -1350,20 +1373,20 @@ window.addEventListener("load", function f_temp0 () {
             let body = messageBodyFromMsgHdr(msgHdr, true);
             let snippet = body.substring(0, SNIPPET_LENGTH-1)+"…";
             snippetMsgNode.textContent = snippet;
-            signal();
           } catch (e) {
             Application.console.log("GCV: Error fetching the message: "+e);
             /* Ok, that failed too... I'm out of ideas! */
             htmlMsgNode.textContent = "...";
             if (!snippetMsgNode.textContent)
               snippetMsgNode.textContent = "...";
-            signal();
           }
+          signal();
         };
+
         /* This part of the code fills various information regarding the message
          * (attachments, header details, sender, snippet...) through Gloda. */
         try {
-          MsgHdrToMimeMessage(msgHdr, null, function (aMsgHdr, aMimeMsg) {
+          MsgHdrToMimeMessage(msgHdr, null, function MsgHdrToMimeMessageCallback_ (aMsgHdr, aMimeMsg) {
             /* Yes it happens with newsgroup messages */
             if (aMimeMsg == null) { // shouldn't happen, but sometimes does?
               fallbackNoGloda();
@@ -1427,6 +1450,9 @@ window.addEventListener("load", function f_temp0 () {
              * quoted text */
             let [snippet, meta] = mimeMsgToContentSnippetAndMeta(aMimeMsg, aMsgHdr.folder, SNIPPET_LENGTH);
             let [plainTextBody, ] = mimeMsgToContentAndMeta(aMimeMsg, aMsgHdr.folder);
+
+            plainTextMsgNode.textContent = plainTextBody.getContentString();
+            snippetMsgNode.textContent = snippet;
 
             /* Ok, let's have fun with attachments now */
             let attachments = MimeMessageGetAttachments(aMimeMsg);
@@ -1575,23 +1601,19 @@ window.addEventListener("load", function f_temp0 () {
                   function (event) {
                     HandleMultipleAttachments(theAttachments, "save");
                   }, true);
-              }; // end displayFullAttachments ()
+              }; /* end displayFullAttachments () */
               /* Since this triggers a lot of downloads, we have to be lazy
                * about it, so do it only when necessary. We're filling a forward
                * reference here. */
+              dump("Registering expandAttachments "+iCopy+"\n");
               expandAttachments = displayFullAttachments;
-            }
-
-            plainTextMsgNode.textContent = plainTextBody.getContentString();
-            snippetMsgNode.textContent = snippet;
+            } /* end if (attachments.length > 0) */
 
             signal();
-          });
+          }); /* end MsgHdrToMimeMessageCallback_ */
         } catch (e if e.result == Components.results.NS_ERROR_FAILURE) {
           fallbackNoGloda();
         }
-        /* This actually setups the iframe to point to the given message */
-        fillSnippetAndHTML();
 
         /* Attach various event handlers. Here: open a message when the user
          * clicks on the sender's name. */
@@ -1619,26 +1641,6 @@ window.addEventListener("load", function f_temp0 () {
         }, true);
 
         myDump("*** Completed message "+i+"\n");
-      }
-
-      /* Final step: expand all the messages that need to be expanded. All
-       * messages are collapsed by default, we enforce this. */
-      let actionList = tellMeWhoToExpand(msgHdrs, needsFocus);
-      for each (let [i, action] in Iterator(actionList)) {
-        switch (action) {
-          case kActionDoNothing:
-            signal();
-            break;
-          case kActionCollapse:
-            throw "Why collapse a message?";
-            break;
-          case kActionExpand:
-            gconversation.stash.expand_all[i]();
-            break;
-          default:
-            throw "Never happens";
-            break;
-        }
       }
 
       // stash somewhere so it doesn't get GC'ed
