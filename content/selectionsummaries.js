@@ -66,9 +66,11 @@ var gconversation = {
     q1: null, /* Don't GC Gloda queries */
     q2: null,
     msgHdrs: [], /* To mark them read, to determine if it's a different conversation, and many more */
+    msgNodes: {}, /* tKey => DOMNode */
     multiple_selection: false, /* Printing and archiving depend on these */
     expand_all: [], /* A list of closures */
-    collapse_all: []
+    collapse_all: [],
+    runOnceAfterNSignals: function () {}
   }
 };
 
@@ -157,6 +159,10 @@ window.addEventListener("load", function f_temp0 () {
   const ioService = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
   const msgComposeService = Cc["@mozilla.org/messengercompose;1"].getService(Ci.nsIMsgComposeService);  
 
+  /* How I wish Javascript had algebraic data types */
+  const kActionDoNothing = 0;
+  const kActionExpand = 1;
+  const kActionCollapse = 2;
 
   /* Preferences are loaded once and then observed. For a new pref, add an entry
    * here + a case in the switch below. */
@@ -403,6 +409,53 @@ window.addEventListener("load", function f_temp0 () {
     return { needsFocus: needsFocus, needsFocusDOMIndex: needsFocusDOMIndex };
   }
 
+  /* Do the mapping */
+  function msgHdrToMsgNode(aMsgHdr) {
+    let tKey = aMsgHdr.messageKey + aMsgHdr.folder.URI;
+    return gconversation.stash.msgNodes[tKey];
+  }
+
+  /* From a set of message headers, tell which ones should be expanded */
+  function tellMeWhoToExpand(aMsgHdrs, aNeedsFocus) {
+    let actions = [];
+    let collapse = function (msgNode) {
+      if ("collapsed" in msgNode.classList)
+        actions.push(kActionDoNothing);
+      else
+        actions.push(kActionCollapse);
+    };
+    let expand = function (msgNode) {
+      if ("collapsed" in msgNode.classList)
+        actions.push(kActionExpand);
+      else
+        actions.push(kActionDoNothing);
+    };
+    switch (gPrefs["fold_rule"]) {
+      case "unread_and_last":
+        for each (let [i, msgHdr] in aMsgHdrs) {
+          let msgNode = msgHdrToMsgNode(msgHdr);
+          if (!msgHdr.isRead || i == aNeedsFocus)
+            expand(msgNode);
+          else
+            collapse(msgNode);
+        }
+        break;
+      case "all":
+        for each (let [, msgHdr] in aMsgHdrs) {
+          let msgNode = msgHdrToMsgNode(msgHdr);
+          expand(msgNode);
+        }
+        break;
+      case "none":
+        for each (let [, msgHdr] in aMsgHdrs) {
+          let msgNode = msgHdrToMsgNode(msgHdr);
+          collapse(msgNode);
+        }
+        break;
+    }
+    return actions;
+  }
+
   ThreadSummary.prototype = {
     __proto__: MultiMessageSummary.prototype,
 
@@ -411,6 +464,7 @@ window.addEventListener("load", function f_temp0 () {
        * properly (and others). THis is set by the original constructor that
        * we're not overriding here, see the original selectionsummaries.js */
       gconversation.stash.msgHdrs = this._msgHdrs;
+      gconversation.stash.msgNodes = this._msgNodes;
       gconversation.stash.expand_all = [];
       gconversation.stash.collapse_all = [];
 
@@ -504,6 +558,29 @@ window.addEventListener("load", function f_temp0 () {
           }, true);
       }
 
+      /* Ok, deal with signals. The semantics are as follows:
+       * - when you expand a message, a signal is sent as soon as the message is
+       *   fully displayed (this *might* be asynchronous)
+       * - when you collapse a message, a signal is sent as well
+       * - once the expected numbers of signals have been triggered, launch the
+       *   final function
+       * - when the mime summary and extra information have been added too, a
+       *   signal is sent (so take that into account for the first load)
+       * */
+      let nSignals = -1;
+      let fSignals = function () {};
+      let signal = function () {
+        nSignals--;
+        if (nSignals == 0) {
+          fSignals();
+          fSignals = function () {};
+        }
+      };
+      gconversation.stash.runOnceAfterNSignals = function (n, f) {
+        nSignals = n;
+        fSignals = f;
+      };
+
       /* For each message, once the message has been properly set up in the
        * conversation view (either collapsed or expanded), this function is called.
        * When all the messages have been filled, it scrolls to the one we want.
@@ -513,16 +590,14 @@ window.addEventListener("load", function f_temp0 () {
        * for the completion of the async MsgHdrToMimeMessage. It fails if we
        * don't do that. */
       let { needsFocus, needsFocusDOMIndex } = tellMeWhoToFocus(this._msgHdrs);
-      let nMessagesDone = 2 * numMessages;
-      function messageDone() {
-        myDump("messageDone()\n");
-        nMessagesDone--;
-        if (nMessagesDone == 0 && needsFocus >= 0) {
-          let tKey = msgHdrs[needsFocus].messageKey + msgHdrs[needsFocus].folder.URI;
-          scrollNodeIntoView(msgNodes[tKey]);
-          variousFocusHacks(msgNodes[tKey]);
+      gconversation.stash.runOnceAfterNSignals(
+        2 * numMessages,
+        function f_temp6() {
+          let msgNode = msgHdrToMsgNode(msgHdrs[needsFocus]);
+          scrollNodeIntoView(msgNode);
+          variousFocusHacks(msgNode);
         }
-      }
+      );
 
       /* Now this is for every message. Note to self: all functions defined
        * inside the loop must be defined using let f = ... (otherwise the last
@@ -685,29 +760,24 @@ window.addEventListener("load", function f_temp0 () {
           messagesElt.appendChild(msgNode);
         }
 
-        /* This function is central. It takes care of collapsing / expanding a
-         * single message. The message is initially collapsed. The let-style
-         * bindings are mandatory, otherwise the definitions are overwritten at
-         * each iteration and we end up always calling the last definition. */
-        let toCall = [];
+        /* We're using some forward references here. */
+        let expandIframe = function () {};
+        let expandAttachments = function () {};
         let toggleMessage = function toggleMessage_ () {
           _mm_toggleClass(msgNode, "collapsed");
-          while (toCall.length > 0)
-            (toCall.pop())();
-        };
-        let messageIsCollapsed = function messageIsCollapsed_ () {
-          return _mm_hasClass(msgNode, "collapsed");
-        };
-        let callOnceAfterToggle = function callOnceAfterToggle_ (f) {
-          toCall.push(f);
         };
         gconversation.stash.expand_all.push(function () {
-          if (messageIsCollapsed())
-            toggleMessage();
+          if (_mm_hasClass(msgNode, "collapsed")) {
+            toggleMessage(),
+            expandAttachments();
+            expandIframe(); /* takes care of the signal */
+          }
         });
         gconversation.stash.collapse_all.push(function () {
-          if (!messageIsCollapsed())
-            toggleMessage();
+          if (!_mm_hasClass(msgNode, "collapsed")) {
+            toggleMessage(),
+            signal();
+          }
         });
 
         /* Warn the user if this is a draft */
@@ -895,34 +965,12 @@ window.addEventListener("load", function f_temp0 () {
         register(".grip", toggleMessage);
         register(null, toggleMessage, "dblclick");
 
-        /* This object is used by the event listener below to pass information
-         * to the event listeners far below whose task is to setup the iframe.
-         * DON'T TOUCH!!! It works, draw the flowchart if you don't believe me. */
-        let focusInformation = {
-          i: i,
-          delayed: false,
-          keyboardOpening: false,
-          iFrameWasLoaded: false
-        };
+        let iCopy = i;
         msgNode.addEventListener("keypress", function keypress_listener (event) {
             if (event.charCode == 'o'.charCodeAt(0) || event.keyCode == 13) {
-              myDump("i is "+focusInformation.i+"\n");
-
-              /* If the iframe hasn't been loaded yet, this will trigger a
-               * refocus as soon as the iframe is done loading. */
-              focusInformation.keyboardOpening = true;
-
-              /* Let's go */
-              toggleMessage();
-
-              /* In case the first opening of this message is done using the
-               * keyboard, FillMessageSnippetAndHTML will re-call
-               * scrollNodeIntoView when it's done. Rationale: the user is
-               * using the keyboard, the mouse is far away, so we set the
-               * message to use as much screen space as possible by scrolling it
-               * to the top of the viewport. */
-              if (focusInformation.iFrameWasLoaded)
-                scrollNodeIntoView(msgNode);
+              /* Iframe expansion preserves scroll value */
+              scrollNodeIntoView(msgNode);
+              gconversation.stash.expand_all[iCopy]();
             }
             if (event.keyCode == 8) {
               gconversation.on_back();
@@ -960,16 +1008,6 @@ window.addEventListener("load", function f_temp0 () {
             }
           }, true);
 
-        /* Now we're registered the event listeners, the message is folded by
-         * default. If we're supposed to unfold it, do it now */
-        if ((gPrefs["fold_rule"] == "unread_and_last" && (!msgHdr.isRead || i == needsFocus)) ||
-            (gPrefs["fold_rule"] == "all")) {
-          try {
-            toggleMessage();
-          } catch (e) {
-            myDump("Error "+e+"\n");
-          }
-        }
 
         /* The HTML is heavily processed to detect extra quoted parts using
          * different heuristics, the "- show/hide quoted text -" links are
@@ -1170,29 +1208,13 @@ window.addEventListener("load", function f_temp0 () {
 
                   /* Sometimes setting the iframe's content and height changes
                    * the scroll value, don't know why. */
-                  if (focusInformation.delayed && originalScroll)
+                  if (originalScroll)
                     htmlpane.contentDocument.documentElement.scrollTop = originalScroll;
-
-                  /* If it's an immediate display, fire the messageDone event
-                   * now (we're done with the iframe). If we're delayed, the
-                   * code that attached the event listener to the "click" event
-                   * already fired the messageDone event, so don't do it. */
-                  if (!focusInformation.delayed)
-                    messageDone();
-
-                  /* This means that the first opening of the iframe is done
-                   * using the keyboard shortcut. */
-                  if (focusInformation.delayed && focusInformation.keyboardOpening)
-                    scrollNodeIntoView(msgNode);
-
-                  /* Don't go to such lengths to make it work next time */
-                  focusInformation.iFrameWasLoaded = true;
 
                   /* jQuery, go! */
                   htmlpane.contentWindow.styleMsgNode(msgNode);
 
-                  /* Here ends the chain of event listeners, nothing happens
-                   * after this. */
+                  signal();
                 }, true); /* end document.addEventListener */
 
               /* Unbelievable as it may seem, the code below works.
@@ -1272,30 +1294,24 @@ window.addEventListener("load", function f_temp0 () {
 
             }, true); /* end document.addEventListener */
 
-          if (!messageIsCollapsed()) {
-            focusInformation.delayed = false;
-            /* The iframe is to be displayed, let's go. Now. Go go go! */
-            /* NB: this currently triggers bug 540911, nothing we can do about
-             * it right now. */
-            htmlMsgNode.appendChild(iframe);
-          } else {
-            focusInformation.delayed = true;
-            /* The height information that allows us to perform auto-resize is
-             * only available if the iframe has been displayed at least once.
-             * Here, we start with the iframe hidden, so there's no way we can
-             * perform styling, auto-resizing, etc. right now. We need to wait
-             * for the iframe to be loaded first. To simplify things, the whole
-             * process of adding the iframe into the tree and styling it will be
-             * done when it is made visible for the first time. That is, when we
-             * toggle the message for the first time. */
-            callOnceAfterToggle(function f_temp3 () {
-                originalScroll = htmlpane.contentDocument.documentElement.scrollTop;
-                htmlMsgNode.appendChild(iframe);
-              });
-            /* Well, nothing will happen in the load process after that, so no
-             * more reflows for this message -> the message is done. */
-            messageDone();
-          }
+          /* The height information that allows us to perform auto-resize is
+           * only available if the iframe has been displayed at least once.
+           * Here, we start with the iframe hidden, so there's no way we can
+           * perform styling, auto-resizing, etc. right now. We need to wait
+           * for the iframe to be loaded first. To simplify things, the whole
+           * process of adding the iframe into the tree and styling it will be
+           * done when it is made visible for the first time. That is, when we
+           * toggle the message for the first time. */
+          let firstRun = true;
+          expandIframe = function expandIframe_ () {
+            if (firstRun) {
+              originalScroll = htmlpane.contentDocument.documentElement.scrollTop;
+              htmlMsgNode.appendChild(iframe); /* Triggers the signal at the end */
+              firstRun = false;
+            } else {
+              signal();
+            }
+          };
         };
 
         /* This part is the fallback version of the try-block below in case:
@@ -1317,14 +1333,14 @@ window.addEventListener("load", function f_temp0 () {
             let body = messageBodyFromMsgHdr(msgHdr, true);
             let snippet = body.substring(0, SNIPPET_LENGTH-1)+"…";
             snippetMsgNode.textContent = snippet;
-            messageDone();
+            signal();
           } catch (e) {
             Application.console.log("GCV: Error fetching the message: "+e);
             /* Ok, that failed too... I'm out of ideas! */
             htmlMsgNode.textContent = "...";
             if (!snippetMsgNode.textContent)
               snippetMsgNode.textContent = "...";
-            messageDone();
+            signal();
           }
         };
         /* This part of the code fills various information regarding the message
@@ -1544,17 +1560,15 @@ window.addEventListener("load", function f_temp0 () {
                   }, true);
               }; // end displayFullAttachments ()
               /* Since this triggers a lot of downloads, we have to be lazy
-               * about it, so do it only when necessary. */
-              if (messageIsCollapsed())
-                callOnceAfterToggle(displayFullAttachments);
-              else
-                displayFullAttachments();
+               * about it, so do it only when necessary. We're filling a forward
+               * reference here. */
+              expandAttachments = displayFullAttachments;
             }
 
             plainTextMsgNode.textContent = plainTextBody.getContentString();
             snippetMsgNode.textContent = snippet;
 
-            messageDone();
+            signal();
           });
         } catch (e if e.result == Components.results.NS_ERROR_FAILURE) {
           fallbackNoGloda();
@@ -1589,6 +1603,27 @@ window.addEventListener("load", function f_temp0 () {
 
         myDump("*** Completed message "+i+"\n");
       }
+
+      /* Final step: expand all the messages that need to be expanded. All
+       * messages are collapsed by default, we enforce this. */
+      let actionList = tellMeWhoToExpand(this._msgHdrs, needsFocus);
+      for each (let [i, action] in Iterator(actionList)) {
+        switch (action) {
+          case kActionDoNothing:
+            signal();
+            break;
+          case kActionCollapse:
+            throw "Why collapse a message?";
+            break;
+          case kActionExpand:
+            gconversation.stash.expand_all[i]();
+            break;
+          default:
+            throw "Never happens";
+            break;
+        }
+      }
+
       // stash somewhere so it doesn't get GC'ed
       this._glodaQueries.push(
         Gloda.getMessageCollectionForHeaders(this._msgHdrs, this));
@@ -1715,28 +1750,33 @@ window.addEventListener("load", function f_temp0 () {
 
     let { needsFocusDOMIndex: index, needsFocus: arrayIndex } =
       tellMeWhoToFocus(gconversation.stash.msgHdrs);
-    let msgNodes = htmlpane.contentDocument.getElementsByClassName("message");
-    let msgNode = msgNodes[index];
-    myDump("Same conversation, showing message "+index+"\n");
-    _mm_addClass(msgNode, "selected");
-    msgNode.setAttribute("tabindex", "1");
 
-    /* Now restore the proper collapsed/expanded state */
-    gconversation.on_collapse_all();
+    gconversation.stash.runOnceAfterNSignals(
+      gconversation.stash.msgHdrs.length,
+      function f_temp5() {
+        let msgNode = msgHdrToMsgNode(msgHdrs[arrayIndex]);
+        /* Don't call variousFocusHacks here, it's already been called when the
+         * conversation was loaded for the first time and its event handler is
+         * persistent. */
+        scrollNodeIntoView(msgNode);
+      }
+    );
 
-    /* Re-do all the maybe-expand stuff */
-    for (let i = 0; i < gconversation.stash.msgHdrs.length; ++i) {
-      let msgHdr = gconversation.stash.msgHdrs[i];
-      if ((gPrefs["fold_rule"] == "unread_and_last" && (!msgHdr.isRead || i == arrayIndex))
-          || (gPrefs["fold_rule"] == "all")) {
-        if (i == arrayIndex) {
-          let ev = document.createEvent("UIEvents");
-          ev.initUIEvent("keypress", true, true, htmlpane.contentWindow, 1);
-          ev.charCode = 'o'.charCodeAt(0);
-          msgNodes[index].dispatchEvent(ev);
-        } else {
+    let actionList = tellMeWhoToExpand(gconversation.stash.msgHdrs, arrayIndex);
+    for each (let [i, action] in Iterator(actionList)) {
+      switch (action) {
+        case kActionDoNothing:
+          signal();
+          break;
+        case kActionCollapse:
+          gconversation.stash.collapse_all[i]();
+          break;
+        case kActionExpand:
           gconversation.stash.expand_all[i]();
-        }
+          break;
+        default:
+          throw "Never happens";
+          break;
       }
     }
   }
