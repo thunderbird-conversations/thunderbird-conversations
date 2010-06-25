@@ -537,7 +537,6 @@ window.addEventListener("load", function f_temp0 () {
     nSignals--;
     if (nSignals == 0) {
       fSignals();
-      fSignals = function () {};
     }
   };
   let runOnceAfterNSignals = function runOnceAfterNSignals_ (n, f) {
@@ -598,15 +597,18 @@ window.addEventListener("load", function f_temp0 () {
        * complete, which in turn would result in no attachments at all
        * displayed. */
       let needsFocus = tellMeWhoToFocus(msgHdrs);
+      myDump("                                                PART 1/3\n");
       runOnceAfterNSignals(
         numMessages,
         function collapseExpandAsNeeded_ () {
+          myDump("                                                PART 2/3\n");
 
           /* Final step: scroll the right message into view, and set it as
            * selected */
           runOnceAfterNSignals(
             numMessages,
             function scrollToTheRightNode_ () {
+              myDump("                                                PART 3/3\n");
               let msgNode = msgHdrToMsgNode(msgHdrs[needsFocus]);
               scrollNodeIntoView(msgNode);
               variousFocusHacks(msgNode);
@@ -650,7 +652,6 @@ window.addEventListener("load", function f_temp0 () {
 
         let msgHdr = this._msgHdrs[i];
         let key = msgHdr.messageKey + msgHdr.folder.URI;
-        myDump("Registering "+key+"\n");
 
         let msg_classes = "message collapsed";
         if (!msgHdr.isRead)
@@ -1639,8 +1640,6 @@ window.addEventListener("load", function f_temp0 () {
           gFolderTreeView.selectFolder(this.folder, true);
           gFolderDisplay.selectMessage(this.msgHdr);
         }, true);
-
-        myDump("*** Completed message "+i+"\n");
       }
 
       // stash somewhere so it doesn't get GC'ed
