@@ -69,8 +69,7 @@ var gconversation = {
     msgNodes: {}, /* tKey => DOMNode */
     multiple_selection: false, /* Printing and archiving depend on these */
     expand_all: [], /* A list of closures */
-    collapse_all: [],
-    runOnceAfterNSignals: function () {}
+    collapse_all: []
   }
 };
 
@@ -465,6 +464,91 @@ window.addEventListener("load", function f_temp0 () {
     return actions;
   }
 
+
+  /*                    TODAY'S GORY DETAILS
+   *
+   * Semantics: when we first use tab to jump to the message list to the
+   * conversation view, we want either the first selected message in the
+   * folder view, or the first unread message / last message (depending on
+   * the preference) to gain focus. Afterwards, we want tab/shift-tab to
+   * cycle through the messages normally. Shift-tab with the 0-th message
+   * focused will send you back to the message list. Tab from the message
+   * list will send you to the 0-th message. The special behaviour is for
+   * the first tab-jump only.
+   *
+   * How do we make sure we jump to the needsFocus-th message when we tab to
+   * the conversation view?
+   * - tabindexes for each .message range from 2 to numMessages + 1 EXCEPT THAT
+   * - the message that needs focus has index 1 so that it is selected first
+   *   when we tab-jump to the conversation view
+   * - however, we need to modify this tabindex so that when we hit tab or
+   *   shift-tab afterwards, the results are "normal"
+   * - this DOESN'T work for Gecko 1.9.1 (now cry with me) because the
+   *   tabindexes are cached in some way and even though the tabindex
+   *   attribute has been updated, the old value is taken into account to
+   *   compute which <div> to focus when we hit tab or shift-tab
+   * - but it works for 1.9.2...
+   * */
+
+  /* Deal with the currently selected message */
+  function variousFocusHacks (aMsgNode) {
+    /* We want the node that's been expanded (the one that has index
+     * needsFocus) to also have the visual appearance with the cursor. */
+    _mm_addClass(aMsgNode, "selected");
+    aMsgNode.setAttribute("tabindex", 1);
+    htmlpane.contentDocument.addEventListener("focus", function on_focus (event) {
+        htmlpane.contentDocument.removeEventListener("focus", on_focus, true);
+        let msgNode = htmlpane.contentDocument.querySelector(".message.selected");
+        if (!msgNode)
+          return;
+
+        /* This is a persistent event listener. It can operate multiple
+         * times. Actually, since we don't rebuild conversations when the
+         * message set is the same, we restore the tabindex hack and the
+         * selected state, so this handler must still be able to operate
+         * properly. */
+
+        /* However, when the thread summary gains focus, we need to
+         * remove that class because :focus will take care of that */
+        _mm_removeClass(msgNode, "selected");
+        /* Restore the proper tab order. This event is fired *after* the
+         * right message has been focused in Gecko 1.9.2, *before* the right
+         * message has been focused in Gecko 1.9.1 (so it's basically
+         * useless). */
+        if (msgNode.previousElementSibling)
+          msgNode.setAttribute("tabindex",
+            parseInt(msgNode.previousElementSibling.getAttribute("tabindex"))+1);
+        else /* It's the first one in the list */
+          msgNode.setAttribute("tabindex", 2);
+      }, true);
+  }
+
+
+  /* Ok, deal with signals. The semantics are as follows:
+   * - when you expand a message, a signal is sent as soon as the message is
+   *   fully displayed (this *might* be asynchronous)
+   * - when you collapse a message, a signal is sent as well
+   * - once the expected numbers of signals have been triggered, launch the
+   *   final function
+   * - when the mime summary and extra information have been added too, a
+   *   signal is sent (so take that into account for the first load)
+   * */
+  let nSignals = -1;
+  let fSignals = function () {};
+  let signal = function () {
+    nSignals--;
+    if (nSignals == 0) {
+      fSignals();
+      fSignals = function () {};
+    }
+  };
+  let runOnceAfterNSignals = function runOnceAfterNSignals_ (n, f) {
+    /* This trick takes care of the case n === 0 */
+    fSignals = f;
+    nSignals = n + 1;
+    signal();
+  };
+
   ThreadSummary.prototype = {
     __proto__: MultiMessageSummary.prototype,
 
@@ -510,88 +594,6 @@ window.addEventListener("load", function f_temp0 () {
       let msgHdrs = this._msgHdrs;
       let msgNodes = this._msgNodes;
 
-      /*                    TODAY'S GORY DETAILS
-       *
-       * Semantics: when we first use tab to jump to the message list to the
-       * conversation view, we want either the first selected message in the
-       * folder view, or the first unread message / last message (depending on
-       * the preference) to gain focus. Afterwards, we want tab/shift-tab to
-       * cycle through the messages normally. Shift-tab with the 0-th message
-       * focused will send you back to the message list. Tab from the message
-       * list will send you to the 0-th message. The special behaviour is for
-       * the first tab-jump only.
-       *
-       * How do we make sure we jump to the needsFocus-th message when we tab to
-       * the conversation view?
-       * - tabindexes for each .message range from 2 to numMessages + 1 EXCEPT THAT
-       * - the message that needs focus has index 1 so that it is selected first
-       *   when we tab-jump to the conversation view
-       * - however, we need to modify this tabindex so that when we hit tab or
-       *   shift-tab afterwards, the results are "normal"
-       * - this DOESN'T work for Gecko 1.9.1 (now cry with me) because the
-       *   tabindexes are cached in some way and even though the tabindex
-       *   attribute has been updated, the old value is taken into account to
-       *   compute which <div> to focus when we hit tab or shift-tab
-       * - but it works for 1.9.2...
-       * */
-
-      /* Deal with the currently selected message */
-      function variousFocusHacks (aMsgNode) {
-        /* We want the node that's been expanded (the one that has index
-         * needsFocus) to also have the visual appearance with the cursor. */
-        _mm_addClass(aMsgNode, "selected");
-        aMsgNode.setAttribute("tabindex", 1);
-        htmlpane.contentDocument.addEventListener("focus", function on_focus (event) {
-            let msgNode = htmlpane.contentDocument.querySelector(".message.selected");
-            if (!msgNode)
-              return;
-
-            /* This is a persistent event listener. It can operate multiple
-             * times. Actually, since we don't rebuild conversations when the
-             * message set is the same, we restore the tabindex hack and the
-             * selected state, so this handler must still be able to operate
-             * properly. */
-
-            /* However, when the thread summary gains focus, we need to
-             * remove that class because :focus will take care of that */
-            _mm_removeClass(msgNode, "selected");
-            /* Restore the proper tab order. This event is fired *after* the
-             * right message has been focused in Gecko 1.9.2, *before* the right
-             * message has been focused in Gecko 1.9.1 (so it's basically
-             * useless). */
-            if (msgNode.previousElementSibling)
-              msgNode.setAttribute("tabindex",
-                parseInt(msgNode.previousElementSibling.getAttribute("tabindex"))+1);
-            else /* It's the first one in the list */
-              msgNode.setAttribute("tabindex", 2);
-          }, true);
-      }
-
-      /* Ok, deal with signals. The semantics are as follows:
-       * - when you expand a message, a signal is sent as soon as the message is
-       *   fully displayed (this *might* be asynchronous)
-       * - when you collapse a message, a signal is sent as well
-       * - once the expected numbers of signals have been triggered, launch the
-       *   final function
-       * - when the mime summary and extra information have been added too, a
-       *   signal is sent (so take that into account for the first load)
-       * */
-      let nSignals = -1;
-      let fSignals = function () {};
-      let signal = function () {
-        nSignals--;
-        if (nSignals == 0) {
-          fSignals();
-          fSignals = function () {};
-        }
-      };
-      gconversation.stash.runOnceAfterNSignals = function (n, f) {
-        /* This trick takes care of the case n === 0 */
-        nSignals = n + 1;
-        signal();
-        fSignals = f;
-      };
-
       /* For each message, once the message has been properly set up in the
        * conversation view (either collapsed or expanded), this function is called.
        * When all the messages have been filled, it scrolls to the one we want.
@@ -601,7 +603,7 @@ window.addEventListener("load", function f_temp0 () {
        * for the completion of the async MsgHdrToMimeMessage. It fails if we
        * don't do that. */
       let { needsFocus, needsFocusDOMIndex } = tellMeWhoToFocus(msgHdrs);
-      gconversation.stash.runOnceAfterNSignals(
+      runOnceAfterNSignals(
         2 * numMessages,
         function f_temp6() {
           let msgNode = msgHdrToMsgNode(msgHdrs[needsFocus]);
@@ -976,7 +978,7 @@ window.addEventListener("load", function f_temp0 () {
         register(".grip", toggleMessage);
         register(null, toggleMessage, "dblclick");
 
-        let iCopy = i;
+        let iCopy = i; /* Jonathan, we're not in OCaml, i is NOT immutable */
         msgNode.addEventListener("keypress", function keypress_listener (event) {
             if (event.charCode == 'o'.charCodeAt(0) || event.keyCode == 13) {
               if (msgNode.classList.contains("collapsed")) {
@@ -984,10 +986,7 @@ window.addEventListener("load", function f_temp0 () {
                  * that *after* the iframe has been expanded, otherwise, the
                  * viewport might be too short and won't allow scrolling to the
                  * right value already. */
-                gconversation.stash.runOnceAfterNSignals(
-                  1,
-                  function () scrollNodeIntoView(msgNode)
-                );
+                runOnceAfterNSignals(1, function () scrollNodeIntoView(msgNode));
                 gconversation.stash.expand_all[iCopy]();
               } else {
                 gconversation.stash.collapse_all[iCopy]();
@@ -1772,26 +1771,21 @@ window.addEventListener("load", function f_temp0 () {
     let { needsFocusDOMIndex: index, needsFocus: arrayIndex } =
       tellMeWhoToFocus(gconversation.stash.msgHdrs);
 
-    let count = gconversation.stash.msgHdrs.length;
-    let actionList = tellMeWhoToExpand(gconversation.stash.msgHdrs, arrayIndex);
-    actionList.map(function (x) { if (x == kActionDoNothing) count-- });
-
-    gconversation.stash.runOnceAfterNSignals(
-      count,
+    runOnceAfterNSignals(
+      gconversation.stash.msgHdrs.length,
       function f_temp5() {
+        dump("f_temp5 is HERE\n");
         let msgNode = msgHdrToMsgNode(gconversation.stash.msgHdrs[arrayIndex]);
-        /* Don't call variousFocusHacks here, it's already been called when the
-         * conversation was loaded for the first time and its event handler is
-         * persistent. */
         scrollNodeIntoView(msgNode);
+        variousFocusHacks(msgNode);
       }
     );
 
+    let actionList = tellMeWhoToExpand(gconversation.stash.msgHdrs, arrayIndex);
     for each (let [i, action] in Iterator(actionList)) {
       switch (action) {
         case kActionDoNothing:
-          /* We already did count-- for this case in the first pass (see
-           * actionList.map above) */
+          signal();
           break;
         case kActionCollapse:
           gconversation.stash.collapse_all[i]();
