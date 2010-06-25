@@ -411,10 +411,8 @@ window.addEventListener("load", function f_temp0 () {
       }
     }
 
-    let needsFocusDOMIndex = gPrefs["reverse_order"] ? aMsgHdrs.length - 1 - needsFocus : needsFocus;
     myDump(aMsgHdrs.length+" messages total, focusing "+needsFocus+"\n");
-
-    return { needsFocus: needsFocus, needsFocusDOMIndex: needsFocusDOMIndex };
+    return needsFocus;
   }
 
   /* Do the mapping */
@@ -602,7 +600,7 @@ window.addEventListener("load", function f_temp0 () {
        * One for the completion of the async FillSnippetAndHTML. The other one,
        * for the completion of the async MsgHdrToMimeMessage. It fails if we
        * don't do that. */
-      let { needsFocus, needsFocusDOMIndex } = tellMeWhoToFocus(msgHdrs);
+      let needsFocus = tellMeWhoToFocus(msgHdrs);
       runOnceAfterNSignals(
         2 * numMessages,
         function f_temp6() {
@@ -820,9 +818,6 @@ window.addEventListener("load", function f_temp0 () {
         let snippetMsgNode = msgNode.getElementsByClassName("snippetmsg")[0];
         let toggleFontNode = msgNode.getElementsByClassName("toggle-font")[0];
 
-        /* Register collapse/expand handlers */
-        snippetMsgNode.addEventListener("click", toggleMessage, true);
-
         /* We need to do this now because we're still collapsed AND we're
          * guaranteed to be synchronous here. The callback from
          * MsgHdrToMimeMessage might come later and changed the senders' value
@@ -975,10 +970,12 @@ window.addEventListener("load", function f_temp0 () {
         register(".action.mark-read", function markreadnode_listener (event) {
             msgHdrsMarkAsRead([msgHdr], !msgHdr.isRead);
           });
-        register(".grip", toggleMessage);
-        register(null, toggleMessage, "dblclick");
 
+        /* Now the expand collapse and stuff */
         let iCopy = i; /* Jonathan, we're not in OCaml, i is NOT immutable */
+        register(".grip", gconversation.stash.collapse_all[iCopy]);
+        register(null, gconversation.stash.expand_all[iCopy], "dblclick");
+        register(".snippetmsg", gconversation.stash.expand_all[iCopy]);
         msgNode.addEventListener("keypress", function keypress_listener (event) {
             if (event.charCode == 'o'.charCodeAt(0) || event.keyCode == 13) {
               if (msgNode.classList.contains("collapsed")) {
@@ -1768,20 +1765,19 @@ window.addEventListener("load", function f_temp0 () {
         msgNode.setAttribute("tabindex", 2);
     }
 
-    let { needsFocusDOMIndex: index, needsFocus: arrayIndex } =
-      tellMeWhoToFocus(gconversation.stash.msgHdrs);
+    let needsFocus = tellMeWhoToFocus(gconversation.stash.msgHdrs);
 
     runOnceAfterNSignals(
       gconversation.stash.msgHdrs.length,
       function f_temp5() {
         dump("f_temp5 is HERE\n");
-        let msgNode = msgHdrToMsgNode(gconversation.stash.msgHdrs[arrayIndex]);
+        let msgNode = msgHdrToMsgNode(gconversation.stash.msgHdrs[needsFocus]);
         scrollNodeIntoView(msgNode);
         variousFocusHacks(msgNode);
       }
     );
 
-    let actionList = tellMeWhoToExpand(gconversation.stash.msgHdrs, arrayIndex);
+    let actionList = tellMeWhoToExpand(gconversation.stash.msgHdrs, needsFocus);
     for each (let [i, action] in Iterator(actionList)) {
       switch (action) {
         case kActionDoNothing:
