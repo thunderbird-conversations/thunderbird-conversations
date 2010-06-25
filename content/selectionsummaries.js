@@ -595,7 +595,7 @@ window.addEventListener("load", function f_temp0 () {
        * terminate, which fills the references to expandAttachments (if we don't
        * do that, we might call expand_all[i] before expandAttachments is
        * complete, which in turn would result in no attachments at all
-       * displayed. */
+       * displayed). */
       let needsFocus = tellMeWhoToFocus(msgHdrs);
       myDump("                                                PART 1/3\n");
       runOnceAfterNSignals(
@@ -806,19 +806,20 @@ window.addEventListener("load", function f_temp0 () {
         };
         gconversation.stash.expand_all.push(function () {
           if (_mm_hasClass(msgNode, "collapsed")) {
-            toggleMessage(),
+            toggleMessage();
             expandAttachments();
-            expandIframe(); /* takes care of the signal */
+            expandIframe(); /* takes care of calling signal() */
           }
         });
         gconversation.stash.collapse_all.push(function () {
           if (!_mm_hasClass(msgNode, "collapsed")) {
-            toggleMessage(),
+            toggleMessage(); /* Immediate */
             signal();
           }
         });
 
-        /* Warn the user if this is a draft */
+        /* Warn the user if this is a draft.
+         * XXX we should probably provide a way to start editing said Draft */
         if (msgHdrIsDraft(msgHdr)) {
           let draftTxt = stringBundle.getString("draft");
           msgNode.getElementsByClassName("draft-warning")[0].textContent = draftTxt;
@@ -847,11 +848,11 @@ window.addEventListener("load", function f_temp0 () {
 
         /* We need to do this now because we're still collapsed AND we're
          * guaranteed to be synchronous here. The callback from
-         * MsgHdrToMimeMessage might come later and changed the senders' value
-         * to something more meaningful, but in this case, there was only one
-         * recipient (because it's a Bugzilla) so that doesn't trigger overflow
-         * (because the user is not insane and doesn't have a 100px-wide message
-         * reader. if he does, screw him).
+         * MsgHdrToMimeMessage might come later and maybe it changed the
+         * senders' value to something more meaningful, but in this case, there
+         * was only one recipient (because it's a Bugzilla) so that doesn't
+         * trigger overflow (because the user is not insane and doesn't have a
+         * 100px-wide message reader. if he does, screw him).
          * */
         let senderSpans = processEmails(msgHdr.mime2DecodedAuthor, true, htmlpane.contentDocument);
         if (senderSpans.length)
@@ -867,7 +868,7 @@ window.addEventListener("load", function f_temp0 () {
          * which in turn causes extra length to be added. So create a fake node
          * at the beginning which will have the same width, and remove it when
          * we're done. Please note that this works because we added overflow-y:
-         * scroll to the body. Otherwise, the scrollbar would appear later and
+         * scroll to the window. Otherwise, the scrollbar would appear later and
          * that would shrink the messages width AFTER our computations and
          * invalidate our overflow computations. */
         let fakeNode = htmlpane.contentDocument.createElement("span");
@@ -906,7 +907,8 @@ window.addEventListener("load", function f_temp0 () {
         let tabIndex = gPrefs["reverse_order"] ? numMessages - i : i;
         /* 0 is not a valid tabIndex, and 1 is for the message that we want to
          * jump to the first time we use tab to jump from the message list to
-         * the conversation view */
+         * the conversation view. variousFocusHacks will reset the value when
+         * we're done with everything. */
         tabIndex++; tabIndex++;
         msgNode.setAttribute("tabindex", tabIndex);
 
@@ -931,7 +933,7 @@ window.addEventListener("load", function f_temp0 () {
         }
         register(".link-reply, .button-reply", function (event) {
             /* XXX this code should adapt when news messages have a JS
-             * representation. It don't think this will ever happen. See
+             * representation. I don't think this will ever happen. See
              * http://mxr.mozilla.org/comm-central/source/mail/base/content/mailWindowOverlay.js#1259
              * */
             compose(Ci.nsIMsgCompType.ReplyToSender, event);
@@ -953,11 +955,9 @@ window.addEventListener("load", function f_temp0 () {
           };
         register(".link-forward, .button-forward", forward);
         register(".menu-replyList", function (event) {
-            myDump("coucou\n");
             compose(Ci.nsIMsgCompType.ReplyToList, event);
           });
         register(".menu-editNew", function (event) {
-            myDump("coucou\n");
             compose(Ci.nsIMsgCompType.Template, event);
           });
         register(".menu-composeAll", function (event) {
@@ -1066,7 +1066,7 @@ window.addEventListener("load", function f_temp0 () {
          * into the tree. We need to wait for the document to be loaded before
          * doing things.
          *
-         * Why do we do that ? Basically because we want the <xul:iframe> to
+         * Why do we do that? Basically because we want the <xul:iframe> to
          * have a docShell and a webNavigation. If we don't do that, and we
          * set directly src="about:blank" above, sometimes we are too fast and
          * the docShell isn't ready by the time we get there. */
@@ -1462,7 +1462,7 @@ window.addEventListener("load", function f_temp0 () {
             let attachmentsBottomTxt = stringBundle.getString("attachments_bottom2");
             let numAttachments = attachments.length;
             if (attachments.length > 0) {
-              /* That's for the short paperclip icon */
+              /* That's for the small paperclip icon */
               let attachmentNode = msgNode.getElementsByClassName("attachment")[0];
               let attachmentsTxt = makePlural(numAttachments, attachmentsTopTxt).replace("#1", numAttachments);
               attachmentNode.style.display = "";
