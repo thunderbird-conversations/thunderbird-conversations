@@ -83,6 +83,15 @@ window.addEventListener("load", function f_temp0 () {
    * will be available anywhere from now on */
   let htmlpane = document.getElementById('multimessage');
 
+  /* Better debug function */
+  let dumpCallStack = function dumpCallStack_ () {
+    let frame = Components.stack;
+    while (frame) {
+      dump(frame+"\n");
+      frame = frame.caller;
+    }
+  }
+
   /* Enigmail support, thanks to Patrick Brunschwig ! */
   let hasEnigmail = (typeof(GetEnigmailSvc) == "function");
   let enigmailSvc;
@@ -418,21 +427,21 @@ window.addEventListener("load", function f_temp0 () {
   /* From a set of message headers, tell which ones should be expanded */
   function tellMeWhoToExpand(aMsgHdrs, aNeedsFocus) {
     let actions = [];
-    let collapse = function (msgNode) {
-      if ("collapsed" in msgNode.classList)
+    let collapse = function collapse_ (msgNode) {
+      if (msgNode.classList.contains("collapsed"))
         actions.push(kActionDoNothing);
       else
         actions.push(kActionCollapse);
     };
-    let expand = function (msgNode) {
-      if ("collapsed" in msgNode.classList)
+    let expand = function expand_ (msgNode) {
+      if (msgNode.classList.contains("collapsed"))
         actions.push(kActionExpand);
       else
         actions.push(kActionDoNothing);
     };
     switch (gPrefs["fold_rule"]) {
       case "unread_and_last":
-        for each (let [i, msgHdr] in aMsgHdrs) {
+        for each (let [i, msgHdr] in Iterator(aMsgHdrs)) {
           let msgNode = msgHdrToMsgNode(msgHdr);
           if (!msgHdr.isRead || i == aNeedsFocus)
             expand(msgNode);
@@ -441,13 +450,13 @@ window.addEventListener("load", function f_temp0 () {
         }
         break;
       case "all":
-        for each (let [, msgHdr] in aMsgHdrs) {
+        for each (let [, msgHdr] in Iterator(aMsgHdrs)) {
           let msgNode = msgHdrToMsgNode(msgHdr);
           expand(msgNode);
         }
         break;
       case "none":
-        for each (let [, msgHdr] in aMsgHdrs) {
+        for each (let [, msgHdr] in Iterator(aMsgHdrs)) {
           let msgNode = msgHdrToMsgNode(msgHdr);
           collapse(msgNode);
         }
@@ -460,6 +469,8 @@ window.addEventListener("load", function f_temp0 () {
     __proto__: MultiMessageSummary.prototype,
 
     summarize: function ThreadSummary_summarize() {
+      this._msgNodes = {};
+
       /* We need to keep them at hand for the "Mark all read" command to work
        * properly (and others). THis is set by the original constructor that
        * we're not overriding here, see the original selectionsummaries.js */
@@ -474,8 +485,6 @@ window.addEventListener("load", function f_temp0 () {
       /* Reset the cards. That way, if I add someone in the adress book, the
        * next time this conversation is loaded, we use their first name. */
       resetCards();
-
-      this._msgNodes = {};
 
       /* Fill the heading */
       let firstMsgHdr = this._msgHdrs[0];
@@ -497,7 +506,7 @@ window.addEventListener("load", function f_temp0 () {
       const SNIPPET_LENGTH = 300;
       let maxCountExceeded = false;
 
-      /* We can't really trust this to remain valid. */
+      /* We can't really trust "this" to remain valid. */
       let msgHdrs = this._msgHdrs;
       let msgNodes = this._msgNodes;
 
@@ -577,7 +586,9 @@ window.addEventListener("load", function f_temp0 () {
         }
       };
       gconversation.stash.runOnceAfterNSignals = function (n, f) {
-        nSignals = n;
+        /* This trick takes care of the case n === 0 */
+        nSignals = n + 1;
+        signal();
         fSignals = f;
       };
 
@@ -589,7 +600,7 @@ window.addEventListener("load", function f_temp0 () {
        * One for the completion of the async FillSnippetAndHTML. The other one,
        * for the completion of the async MsgHdrToMimeMessage. It fails if we
        * don't do that. */
-      let { needsFocus, needsFocusDOMIndex } = tellMeWhoToFocus(this._msgHdrs);
+      let { needsFocus, needsFocusDOMIndex } = tellMeWhoToFocus(msgHdrs);
       gconversation.stash.runOnceAfterNSignals(
         2 * numMessages,
         function f_temp6() {
@@ -1606,7 +1617,7 @@ window.addEventListener("load", function f_temp0 () {
 
       /* Final step: expand all the messages that need to be expanded. All
        * messages are collapsed by default, we enforce this. */
-      let actionList = tellMeWhoToExpand(this._msgHdrs, needsFocus);
+      let actionList = tellMeWhoToExpand(msgHdrs, needsFocus);
       for each (let [i, action] in Iterator(actionList)) {
         switch (action) {
           case kActionDoNothing:
@@ -1660,8 +1671,8 @@ window.addEventListener("load", function f_temp0 () {
             /* That's a XPConnect bug. bug 547088, so track the
              * bug and remove the setTimeout when it's fixed and bump the
              * version requirements in install.rdf.template */
-            onQueryCompleted: function (aCollection)
-              setTimeout(function ()
+            onQueryCompleted: function pullConversationOnQueryCompleted_ (aCollection)
+              setTimeout(function pullConversationInternalCallback2_ ()
                 gFolderDisplay.selectedMessage.messageId == firstMessageId
                   ? k(aCollection, aCollection.items, msg)
                   : myDump("Canceled because we changed conversations too fast\n"),
@@ -1738,7 +1749,7 @@ window.addEventListener("load", function f_temp0 () {
     let badMsgs = htmlpane.contentDocument
       .querySelectorAll(".message.selected, .message[tabindex=\"1\"]");
     if (badMsgs.length > 1)
-      myDump("!!! This should not happen\n");
+      myDump("!!! SEVERE MISTAKE JONATHAN LOOK INTO THIS RIGHT NOW\n");
     for each (let [, msgNode] in Iterator(badMsgs)) {
       _mm_removeClass(msgNode, "selected");
       if (msgNode.previousElementSibling)
@@ -1751,10 +1762,14 @@ window.addEventListener("load", function f_temp0 () {
     let { needsFocusDOMIndex: index, needsFocus: arrayIndex } =
       tellMeWhoToFocus(gconversation.stash.msgHdrs);
 
+    let count = gconversation.stash.msgHdrs.length;
+    let actionList = tellMeWhoToExpand(gconversation.stash.msgHdrs, arrayIndex);
+    actionList.map(function (x) { if (x == kActionDoNothing) count-- });
+
     gconversation.stash.runOnceAfterNSignals(
-      gconversation.stash.msgHdrs.length,
+      count,
       function f_temp5() {
-        let msgNode = msgHdrToMsgNode(msgHdrs[arrayIndex]);
+        let msgNode = msgHdrToMsgNode(gconversation.stash.msgHdrs[arrayIndex]);
         /* Don't call variousFocusHacks here, it's already been called when the
          * conversation was loaded for the first time and its event handler is
          * persistent. */
@@ -1762,11 +1777,11 @@ window.addEventListener("load", function f_temp0 () {
       }
     );
 
-    let actionList = tellMeWhoToExpand(gconversation.stash.msgHdrs, arrayIndex);
     for each (let [i, action] in Iterator(actionList)) {
       switch (action) {
         case kActionDoNothing:
-          signal();
+          /* We already did count-- for this case in the first pass (see
+           * actionList.map above) */
           break;
         case kActionCollapse:
           gconversation.stash.collapse_all[i]();
@@ -2032,7 +2047,7 @@ window.addEventListener("load", function f_temp0 () {
        * one message */
       pullConversation(
         [msgHdr],
-        function (aCollection, aItems, aMsg) {
+        function pullConversationAutoFetchCallback_ (aCollection, aItems, aMsg) {
           if (aCollection) {
             let items = groupMessages(aCollection.items);
             if (items.length <= 1)
