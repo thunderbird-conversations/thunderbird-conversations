@@ -39,3 +39,5 @@
 <!ENTITY option.no_friendly_date "Utiliser des dates au format standard, comme dans la liste des messages">
 <!ENTITY option.guess_first_names "Essayer de deviner le prénom des interlocuteurs">
 <!ENTITY option.my_messages_in_inbox "Comment afficher les messages que j'ai envoyés dans la boîte de réception">
+<!ENTITY option.scroll_to_new_message "Dans la liste des messages, déplier le premier fil de discussion non lu lorsque j'arrive dans un nouveau dossier">
+<!ENTITY title.message_list "Liste des messages">
