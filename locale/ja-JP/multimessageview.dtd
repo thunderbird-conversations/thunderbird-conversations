@@ -1,4 +1,5 @@
 <!ENTITY button.open_in_new_tab "新しいタブで開く">
+<!ENTITY button.open_in_new_tab_tooltip "スレッドを新しいタブで開く (ヒント:シフトキー)">
 <!ENTITY button.mark_all_read "すべて既読">
 <!ENTITY button.expand_all "すべて展開">
 <!ENTITY button.collapse_all "すべて畳む">

@@ -1,0 +1,33 @@
+<!ENTITY window.title "Opções do Gmail Conversation View">
+<!ENTITY option.monospaced "Usar fonte mono-espaçada em mensagens de texto simples">
+<!ENTITY option.monospaced_snippets "Usar fonte mono-espaçada em trechos de mensagens">
+<!ENTITY option.focus_what "Ao exibir uma conversa, deslocar para exibir:">
+<!ENTITY option.focus_first "A primeira mensagem não lida ou a última mensagem">
+<!ENTITY option.focus_selected "A mensagem atualmente selecionada na lista de mensagens">
+<!ENTITY optiondesc.unfold "Por padrão, expandir:">
+<!ENTITY option.all_messages "Todas as mensagens">
+<!ENTITY option.no_messages "Nenhuma mensagem">
+<!ENTITY title.toolbar "Botões da barra de ferramentas">
+<!ENTITY option.toolbar_mode "Exibir:">
+<!ENTITY option.toolbar_mode_icons "Ícones">
+<!ENTITY option.toolbar_mode_text "Texto">
+<!ENTITY option.toolbar_mode_text_plus_icons "Ícones ao lado de texto">
+<!ENTITY option.button.archive "Exibir botão &quot;arquivar&quot;">
+<!ENTITY option.button.trash "Exibir botão &quot;apagar&quot;">
+<!ENTITY option.button.print "Exibir botão &quot;imprimir&quot;">
+<!ENTITY option.button.expand_all "Exibir botão &quot;expandir tudo&quot;">
+<!ENTITY option.button.collapse_all "Exibir botão &quot;recolher tudo&quot;">
+<!ENTITY option.button.mark_as_read "Exibir botão &quot;Marcar todos os lidos&quot;">
+<!ENTITY option.button.open_in_new_tab "Exibir botão &quot;abrir em nova aba&quot;">
+<!ENTITY title.quoting "Citação">
+<!ENTITY option.hide_longer_than "Ocultar texto citado maior que">
+<!ENTITY option.lines "linhas">
+<!ENTITY option.reverse_order "Ordem inversa (último → primeiro)">
+<!ENTITY title.general "Geral">
+<!ENTITY option.auto_fetch "Sempre procurar conversas">
+<!ENTITY title.advanced "Avançado">
+<!ENTITY title.error_messages "Mensagens de erro">
+<!ENTITY option.monospaced_senders "Mensagens destes endereços devem ser exibidas em fontes monoespaçados (separar por vírgulas)">
+<!ENTITY title.advanced_display "Exibição de conversas">
+<!ENTITY option.no_friendly_date "Usar datas &quot;normais&quot;, assim como na lista de mensagens">
+<!ENTITY option.guess_first_names "Adivinhar e exibir apenas o primeiro nome dos participantes">

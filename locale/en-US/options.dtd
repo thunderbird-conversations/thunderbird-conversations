@@ -42,3 +42,5 @@
 <!ENTITY option.no_friendly_date "Use &quot;normal&quot; dates, just like the message list">
 <!ENTITY option.guess_first_names "Guess and display participants' first names only">
 <!ENTITY option.my_messages_in_inbox "How to display the messages I sent in the Inbox">
+<!ENTITY option.scroll_to_new_message "In the message list, expand the first unread thread when changing folders">
+<!ENTITY title.message_list "Message list">

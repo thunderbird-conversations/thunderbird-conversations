@@ -68,6 +68,7 @@
       <preference id="focus_first" name="gconversation.focus_first" type="bool" />
       <preference id="reverse_order" name="gconversation.reverse_order" type="bool" />
       <preference id="toolbar_mode" name="gconversation.toolbar_mode" type="string" />
+      <preference id="scroll_to_new_message" name="mailnews.scroll_to_new_message" type="bool" />
     </preferences>
    
     <groupbox>
@@ -150,19 +151,23 @@
        <caption label="&title.general;"/>
        <description style="width: 0;">&auto_fetch.info;</description>
        <checkbox label="&option.auto_fetch;" preference="auto_fetch" id="auto_fetch_checkbox" />
+     </groupbox>
+     <groupbox>
+       <caption label="&title.message_list;" />
        <checkbox label="&option.auto_mark_read;" preference="auto_mark_read" id="auto_mark_read_checkbox" />
+       <checkbox label="&option.scroll_to_new_message;" preference="scroll_to_new_message" id="scroll_to_new_message_checkbox" />
+       <label class="link" onclick="openLink('http://wiki.github.com/protz/GMail-Conversation-View/displaying-your-own-messages-in-the-inbox');" value="&option.my_messages_in_inbox;" />
+     </groupbox>
+     <groupbox>
+       <caption label="&title.advanced_display;" />
+       <checkbox label="&option.no_friendly_date;" preference="no_friendly_date" />
+       <checkbox label="&option.guess_first_names;" preference="guess_first_names" />
        <description style="width: 0;">&option.monospaced_senders;</description>
        <textbox multiline="true" preference="monospaced_senders" />
      </groupbox>
      <groupbox>
        <caption label="&title.error_messages;"/>
        <checkbox label="&option.disable_error_empty_collection;" preference="disable_error_empty_collection" id="disable_error_empty_collection_checkbox" />
-     </groupbox>
-     <groupbox>
-       <caption label="&title.advanced_display;" />
-       <label class="link" onclick="openLink('http://wiki.github.com/protz/GMail-Conversation-View/displaying-your-own-messages-in-the-inbox');" value="&option.my_messages_in_inbox;" />
-       <checkbox label="&option.no_friendly_date;" preference="no_friendly_date" />
-       <checkbox label="&option.guess_first_names;" preference="guess_first_names" />
      </groupbox>
      <spacer flex="1" style="min-height: 6em" />
    </prefpane>

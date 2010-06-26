@@ -1,3 +1,8 @@
+<!-- Please open the "Preferences" window and DO check that your text is not too
+     long. This can cause the contents to overflow and be hidden, so make sure
+     everything is displayed properly. 
+
+-->
 <!ENTITY window.title "Impostazioni di Gmail Conversation View">
 <!ENTITY title.message_display "Aspetto dei messaggi">
 <!ENTITY option.monospaced "Utilizza i caratteri a larghezza fissa per i messaggi in testo semplice">
@@ -11,7 +16,10 @@
 <!ENTITY option.no_messages "Non espandere alcun messaggio">
 <!ENTITY title.toolbar "Pulsanti per la barra del sommario della discussione">
 <!ENTITY buttons.info "È possibile accedere ai comandi qui sotto anche tramite il menu contestuale (clic con tasto destro del mouse) del sommario della discussione">
-<!ENTITY option.toolbar_text_plus_icons "Mostra il testo a destra delle icone dei pulsanti selezionati">
+<!ENTITY option.toolbar_mode "Mostra:">
+<!ENTITY option.toolbar_mode_icons "solo le icone">
+<!ENTITY option.toolbar_mode_text "solo il testo">
+<!ENTITY option.toolbar_mode_text_plus_icons "il testo a destra delle icone dei pulsanti selezionati">
 <!ENTITY option.button.archive "Mostra il pulsante &quot;Archivia&quot;">
 <!ENTITY option.button.trash "Mostra il pulsante &quot;Elimina&quot;">
 <!ENTITY option.button.print "Mostra il pulsante &quot;Stampa…&quot;">
@@ -32,3 +40,7 @@
 <!ENTITY title.error_messages "Messaggi di errore">
 <!ENTITY option.disable_error_empty_collection "Non visualizzare i messaggi di errore inerenti a conversazioni vuote">
 <!ENTITY option.monospaced_senders "È possibile utilizzare i caratteri a larghezza fissa per i messaggi provenienti da determinati indirizzi e-mail aggiungendoli qui sotto (separati con una virgola)">
+<!ENTITY title.advanced_display "Aspetto delle discussioni">
+<!ENTITY option.no_friendly_date "Utilizza date normali, come nella lista dei messaggi">
+<!ENTITY option.guess_first_names "Rileva e visualizza solamente il nome dei partecipanti">
+<!ENTITY option.my_messages_in_inbox "Come visualizzare i messaggi inviati nella cartella &apos;Posta in arrivo&apos;">

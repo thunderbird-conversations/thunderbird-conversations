@@ -11,7 +11,6 @@
 <!ENTITY option.no_messages "אף הודעה">
 <!ENTITY title.toolbar "מקשי פס הכלים">
 <!ENTITY buttons.info "כל פקודות אלו זמינות בתפריט תמצית החוט (לחיצה ימינית)‏">
-<!ENTITY option.toolbar_text_plus_icons "הראה טקסט ליד סמלים עבור מקשים אלו">
 <!ENTITY option.button.archive "הצג מקש &quot;שלח לארכיון&quot;‏">
 <!ENTITY option.button.trash "הצג מקש &quot;מחק&quot;‏">
 <!ENTITY option.button.print "הצג מקש &quot;הדפס&quot;‏">

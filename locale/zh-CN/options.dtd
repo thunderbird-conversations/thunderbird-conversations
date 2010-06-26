@@ -11,7 +11,10 @@
 <!ENTITY option.no_messages "没有邮件">
 <!ENTITY title.toolbar "工具条按钮">
 <!ENTITY buttons.info "所有命令均可从会话概要区上下文菜单中访问(鼠标右键点击).">
-<!ENTITY option.toolbar_text_plus_icons "在按钮图标旁显示文字">
+<!ENTITY option.toolbar_mode "显示：">
+<!ENTITY option.toolbar_mode_icons "图标">
+<!ENTITY option.toolbar_mode_text "文字">
+<!ENTITY option.toolbar_mode_text_plus_icons "图标+文字">
 <!ENTITY option.button.archive "显示 &quot;归档&quot; 按钮">
 <!ENTITY option.button.trash "显示 &quot;删除&quot; 按钮">
 <!ENTITY option.button.print "显示 &quot;打印&quot; 按钮">
@@ -32,3 +35,7 @@
 <!ENTITY title.error_messages "错误消息">
 <!ENTITY option.disable_error_empty_collection "禁用 &quot;Thunderbird尚未完成索引&quot; 告警">
 <!ENTITY option.monospaced_senders "下列邮件地址发来的邮件以等宽字体显示（使用半角逗号分隔）">
+<!ENTITY title.advanced_display "会话显示">
+<!ENTITY option.no_friendly_date "使用&quot;正常&quot;日期。与邮件列表中相同">
+<!ENTITY option.guess_first_names "推测并仅显示相关人员的姓氏">
+<!ENTITY option.my_messages_in_inbox "如何在收件箱中显示我发出的邮件">

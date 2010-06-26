@@ -1,6 +1,3 @@
-
-
-
 <!ENTITY window.title "Options de &quot;GMail Conversation View&quot;">
 <!ENTITY title.message_display "Affichage des messages">
 <!ENTITY option.monospaced "Utiliser une fonte à largeur fixe pour les messages au format texte">
@@ -37,7 +34,7 @@
 <!ENTITY title.advanced "Avancé">
 <!ENTITY title.error_messages "Messages d'erreurs">
 <!ENTITY option.disable_error_empty_collection "Désactiver l'avertissement &quot;Thunderbird n'a pas encore indexé ce fil&quot;">
-<!ENTITY option.monospaced_senders "Utiliser une police à largeur fixe pour afficher les messages provenant des adresses suivantes (séparer par des virgules):">
+<!ENTITY option.monospaced_senders "Utiliser une police à largeur fixe pour afficher les messages provenant des adresses suivantes (séparer par des virgules)">
 <!ENTITY title.advanced_display "Apparence des conversations">
 <!ENTITY option.no_friendly_date "Utiliser des dates au format standard, comme dans la liste des messages">
 <!ENTITY option.guess_first_names "Essayer de deviner le prénom des interlocuteurs">

@@ -11,7 +11,10 @@
 <!ENTITY option.no_messages "Нема порука">
 <!ENTITY title.toolbar "Алатница">
 <!ENTITY buttons.info "Све ове наредбе су такође приступачне у контектсном менију кратког прегледа нити (десни клик).">
-<!ENTITY option.toolbar_text_plus_icons "Прикажи текст поред икона за ове дугмиће">
+<!ENTITY option.toolbar_mode "Прикажи:">
+<!ENTITY option.toolbar_mode_icons "Иконе">
+<!ENTITY option.toolbar_mode_text "Текст">
+<!ENTITY option.toolbar_mode_text_plus_icons "Иконе поред текста">
 <!ENTITY option.button.archive "Прикажи дугме „архивирај“">
 <!ENTITY option.button.trash "Прикажи дугме „обриши“">
 <!ENTITY option.button.print "Прикажи дугме „одштампај“">
@@ -32,3 +35,7 @@
 <!ENTITY title.error_messages "Грешке">
 <!ENTITY option.disable_error_empty_collection "Онемогући упозорење „Тандерберд још увек није индексирао ову тему“">
 <!ENTITY option.monospaced_senders "Поруке с тих адреса би требало бити приказане у штампаним фонтовима (зарез за одвајање)">
+<!ENTITY title.advanced_display "Приказ разговора">
+<!ENTITY option.no_friendly_date "Користи &quot;нормалне&quot; датуме, исто као списак порука">
+<!ENTITY option.guess_first_names "Претпостави и прикажи само имена учесника">
+<!ENTITY option.my_messages_in_inbox "Како да се приказују поруке које сам послао/ла">

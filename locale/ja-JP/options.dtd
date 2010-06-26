@@ -2,16 +2,19 @@
 <!ENTITY title.message_display "メッセージ表示">
 <!ENTITY option.monospaced "テキスト形式のメッセージを等幅で表示する">
 <!ENTITY option.monospaced_snippets "部分的なメッセージを等幅フォントで表示する">
-<!ENTITY option.focus_what "会話を表示する際のスクロール：">
+<!ENTITY option.focus_what "会話を表示する際のスクロール先:">
 <!ENTITY option.focus_first "最初の未読メッセージか最後のメッセージ">
 <!ENTITY option.focus_selected "メッセージ一覧で選択されているメッセージ">
-<!ENTITY optiondesc.unfold "初期状態の展開：">
+<!ENTITY optiondesc.unfold "初期状態の展開:">
 <!ENTITY option.last_or_unread "すべての未読メッセージとスクロール先メッセージ (上記参照)">
 <!ENTITY option.all_messages "すべてのメッセージ">
 <!ENTITY option.no_messages "展開しない">
 <!ENTITY title.toolbar "ツールバーボタン">
 <!ENTITY buttons.info "すべての機能はスレッドサマリーのコンテキストメニュー (右クリック) からも実行できます。">
-<!ENTITY option.toolbar_text_plus_icons "アイコンの横にテキストを表示する">
+<!ENTITY option.toolbar_mode "表示:">
+<!ENTITY option.toolbar_mode_icons "アイコンのみ">
+<!ENTITY option.toolbar_mode_text "テキストのみ">
+<!ENTITY option.toolbar_mode_text_plus_icons "アイコンの横にテキスト">
 <!ENTITY option.button.archive "&quot;アーカイブ&quot; ボタン">
 <!ENTITY option.button.trash "&quot;削除&quot; ボタン">
 <!ENTITY option.button.print "&quot;印刷&quot; ボタン">
@@ -25,10 +28,14 @@
 <!ENTITY option.lines "行よりも長い場合は隠す">
 <!ENTITY option.reverse_order "逆順 (最後 → 最初)">
 <!ENTITY title.general "一般">
-<!ENTITY option.auto_fetch "常に会話を検索">
+<!ENTITY option.auto_fetch "常に会話を検索する">
 <!ENTITY option.auto_mark_read "会話を表示したらスレッド全体を既読にする">
 <!ENTITY auto_fetch.info "たまに、会話が存在するのにスレッドが表示されないことがあります (例えばメールに返信する時)。そのようなメッセージの会話を自動的に表示するにはこのオプションを使用します。">
 <!ENTITY title.advanced "詳細">
 <!ENTITY title.error_messages "エラーメッセージ">
 <!ENTITY option.disable_error_empty_collection "&quot;このスレッドの索引を Thunderbird が未作成&quot; という警告を表示しない">
-<!ENTITY option.monospaced_senders "次の送信者のメッセージを等幅フォントで表示する (半角コンマ区切り)">
+<!ENTITY option.monospaced_senders "次の送信者のメッセージを等幅フォントで表示する (半角カンマ区切り)">
+<!ENTITY title.advanced_display "会話の表示">
+<!ENTITY option.no_friendly_date "メッセージ一覧と同じ &quot;標準の&quot; 日付表記を使用する">
+<!ENTITY option.guess_first_names "姓を推測して省略する">
+<!ENTITY option.my_messages_in_inbox "自分で送ったメッセージを受信トレイに表示するには">

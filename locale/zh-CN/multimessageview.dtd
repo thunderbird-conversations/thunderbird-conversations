@@ -1,4 +1,5 @@
 <!ENTITY button.open_in_new_tab "在新标签页中打开">
+<!ENTITY button.open_in_new_tab_tooltip "在新标签页中打开会话（提示：按住Shift键）">
 <!ENTITY button.mark_all_read "标记所有为已读">
 <!ENTITY button.expand_all "全部展开">
 <!ENTITY button.collapse_all "全部折叠">

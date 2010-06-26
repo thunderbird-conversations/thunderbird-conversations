@@ -1,4 +1,5 @@
 <!ENTITY button.open_in_new_tab "отвори у новом језичку">
+<!ENTITY button.open_in_new_tab_tooltip "отвори ову нит у новом језичку (савет: држите shift)">
 <!ENTITY button.mark_all_read "означи све као прочитано">
 <!ENTITY button.expand_all "прошири све">
 <!ENTITY button.collapse_all "скупи све">

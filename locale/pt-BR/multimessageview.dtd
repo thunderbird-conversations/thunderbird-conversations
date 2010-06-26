@@ -1,4 +1,5 @@
 <!ENTITY button.open_in_new_tab "abrir em nova aba">
+<!ENTITY button.open_in_new_tab_tooltip "abrir esta discussão em uma nova aba (dica: pressione Shift)">
 <!ENTITY button.mark_all_read "marcar todas lidas">
 <!ENTITY button.expand_all "expandir tudo">
 <!ENTITY button.collapse_all "recolher tudo">
@@ -10,3 +11,9 @@
 <!ENTITY menu.collapse_all "Recolher tudo">
 <!ENTITY menu.delete "Apagar todas as mensagens">
 <!ENTITY menu.archive "Arquivar todas as mensagens">
+<!ENTITY toolbar.view_full "Buscar conversa">
+<!ENTITY toolbar.view_full_tooltip "Busca todas as mensagens para construir a conversa completa, incluindo suas próprias.">
+<!ENTITY toolbar.view_tab "Abrir discussão em uma nova aba">
+<!ENTITY ctoolbar.view_full "Buscar conversa">
+<!ENTITY ctoolbar.view_full_tooltip "busca todas as mensagens para construir a conversa completa, incluindo suas próprias.">
+<!ENTITY ctoolbar.view_tab "abrir discussão em nova aba">
