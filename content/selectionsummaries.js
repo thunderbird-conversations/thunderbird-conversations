@@ -612,6 +612,16 @@ window.addEventListener("load", function f_temp0 () {
               let msgNode = msgHdrToMsgNode(msgHdrs[needsFocus]);
               scrollNodeIntoView(msgNode);
               variousFocusHacks(msgNode);
+
+              /* Doing that just now helps, but if a reflow occurs, and the
+               * summary code is called again, then the messages will be marked
+               * as read and collapsed, which is bad. This happens because most
+               * of the time, when we open a new thread, Gloda has not indexed
+               * it yet, which means it starts indexing it when we display it,
+               * and the summary code is reloaded once new messages have been
+               * indexed. */
+              if (gPrefs["auto_mark_read"] && document.hasFocus())
+                gconversation.mark_all_read();
             });
 
           /* Second step: expand all the messages that need to be expanded. All
@@ -1856,8 +1866,6 @@ window.addEventListener("load", function f_temp0 () {
             dump(e+"\n");
             throw e;
           }
-          if (gPrefs["auto_mark_read"] && document.hasFocus())
-            gconversation.mark_all_read();
         } else {
           restorePreviousConversation();
         }
