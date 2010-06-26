@@ -1762,10 +1762,14 @@ window.addEventListener("load", function f_temp0 () {
    *   message that triggered the conversation. This node has .selected AND
    *   tabindex=1. */
   function restorePreviousConversation() {
-    /* I have never seen leftover focus on my Linux box but we're never sure */
-    let badMsg = htmlpane.contentDocument.querySelector(".message:focus");
-    if (badMsg)
+    /* This can happen if we open a conversation in a new tab, focus message A,
+     * close the tab, and leave focus in the conversation area when switching
+     * back to the 3-pane view, and message B should be focused. */
+    let badMsg = htmlpane.contentDocument.activeElement;
+    if (badMsg && badMsg.classList.contains("message")) {
+      dump("Found leftover focus\n");
       badMsg.blur();
+    }
 
     /* Remove all previous focus-me-first hooks */
     let badMsgs = htmlpane.contentDocument
