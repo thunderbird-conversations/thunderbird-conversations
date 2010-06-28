@@ -1631,8 +1631,6 @@ window.addEventListener("load", function f_temp0 () {
           fallbackNoGloda();
         }
 
-        /* Attach various event handlers. Here: open a message when the user
-         * clicks on the sender's name. */
         let sender = msgNode.getElementsByClassName("sender")[0];
         sender.msgHdr = msgHdr;
         sender.folder = msgHdr.folder;
