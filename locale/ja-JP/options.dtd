@@ -4,7 +4,7 @@
 <!ENTITY option.monospaced_snippets "部分的なメッセージを等幅フォントで表示する">
 <!ENTITY option.focus_what "会話を表示する際のスクロール先:">
 <!ENTITY option.focus_first "最初の未読メッセージか最後のメッセージ">
-<!ENTITY option.focus_selected "メッセージ一覧で選択されているメッセージ">
+<!ENTITY option.focus_selected "メッセージリストで選択されているメッセージ">
 <!ENTITY optiondesc.unfold "初期状態の展開:">
 <!ENTITY option.last_or_unread "すべての未読メッセージとスクロール先メッセージ (上記参照)">
 <!ENTITY option.all_messages "すべてのメッセージ">
@@ -36,6 +36,8 @@
 <!ENTITY option.disable_error_empty_collection "&quot;このスレッドの索引を Thunderbird が未作成&quot; という警告を表示しない">
 <!ENTITY option.monospaced_senders "次の送信者のメッセージを等幅フォントで表示する (半角カンマ区切り)">
 <!ENTITY title.advanced_display "会話の表示">
-<!ENTITY option.no_friendly_date "メッセージ一覧と同じ &quot;標準の&quot; 日付表記を使用する">
+<!ENTITY option.no_friendly_date "メッセージリストと同じ &quot;標準の&quot; 日付表記を使用する">
 <!ENTITY option.guess_first_names "姓を推測して省略する">
 <!ENTITY option.my_messages_in_inbox "自分で送ったメッセージを受信トレイに表示するには">
+<!ENTITY option.scroll_to_new_message "フォルダを切り替えた際に最初の未読スレッドを展開する">
+<!ENTITY title.message_list "メッセージリスト">

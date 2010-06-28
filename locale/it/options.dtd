@@ -44,3 +44,5 @@
 <!ENTITY option.no_friendly_date "Utilizza date normali, come nella lista dei messaggi">
 <!ENTITY option.guess_first_names "Rileva e visualizza solamente il nome dei partecipanti">
 <!ENTITY option.my_messages_in_inbox "Come visualizzare i messaggi inviati nella cartella &apos;Posta in arrivo&apos;">
+<!ENTITY option.scroll_to_new_message "Espandi la prima discussione non letta nella lista dei messaggi quando si cambia cartella">
+<!ENTITY title.message_list "Lista dei messaggi">
