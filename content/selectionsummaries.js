@@ -78,60 +78,6 @@ var gconversation = {
 window.addEventListener("load", function f_temp0 () {
   window.removeEventListener("load", f_temp0, false); /* just to make sure */
 
-  /* This one we use all the time, stop redefining it everywhere, just assume it
-   * will be available anywhere from now on */
-  let htmlpane = document.getElementById('multimessage');
-
-  /* Better debug function */
-  let dumpCallStack = function dumpCallStack_ () {
-    let frame = Components.stack;
-    while (frame) {
-      dump(frame+"\n");
-      frame = frame.caller;
-    }
-  }
-
-  /* Enigmail support, thanks to Patrick Brunschwig ! */
-  let hasEnigmail = (typeof(GetEnigmailSvc) == "function");
-  let enigmailSvc;
-  if (hasEnigmail)
-    enigmailSvc = GetEnigmailSvc();
-  if (!enigmailSvc) {
-    myDump("Error loading the Enigmail service. Is Enigmail disabled?\n");
-    hasEnigmail = false;
-  }
-  function tryEnigmail(bodyElement) {
-    if (bodyElement.textContent.indexOf("-----BEGIN PGP") < 0)
-      return null;
-
-    var signatureObj       = new Object();
-    var exitCodeObj        = new Object();
-    var statusFlagsObj     = new Object();
-    var keyIdObj           = new Object();
-    var userIdObj          = new Object();
-    var sigDetailsObj      = new Object();
-    var errorMsgObj        = new Object();
-    var blockSeparationObj = new Object();
-
-    try {
-      var decryptedText =
-        enigmailSvc.decryptMessage(window, 0, bodyElement.textContent,
-          signatureObj, exitCodeObj,
-          statusFlagsObj, keyIdObj, userIdObj, sigDetailsObj,
-          errorMsgObj, blockSeparationObj);
-      if (exitCodeObj.value == 0) {
-        if (decryptedText.length > 0) {
-          bodyElement.textContent = decryptedText;
-          bodyElement.style.whiteSpace = "pre-wrap";
-        }
-        return statusFlagsObj.value;
-      }
-    } catch (ex) {
-      myDump("Enigmail error: "+ex+" --- "+errorMsgObj.value+"\n");
-      return null;
-    }
-  }
-
   /* Classic */
   const Ci = Components.interfaces;
   const Cc = Components.classes;
@@ -142,14 +88,6 @@ window.addEventListener("load", function f_temp0 () {
   Cu.import("resource://gconversation/MsgHdrUtils.jsm");
   Cu.import("resource://gre/modules/PluralForm.jsm");
   Cu.import("resource:///modules/gloda/utils.js");
-
-  /* For debugging purposes */
-  let consoleService = Cc["@mozilla.org/consoleservice;1"].getService(Ci.nsIConsoleService);
-  function myDump(aMsg) {
-    dump(aMsg);
-    if (false && consoleService)
-      consoleService.logStringMessage("GCV: "+aMsg);
-  };
 
   /* Various magic values */
   const nsMsgViewIndex_None = 0xffffffff;
@@ -171,6 +109,27 @@ window.addEventListener("load", function f_temp0 () {
   const kActionDoNothing = 0;
   const kActionExpand = 1;
   const kActionCollapse = 2;
+
+  /* For debugging purposes */
+  let consoleService = Cc["@mozilla.org/consoleservice;1"].getService(Ci.nsIConsoleService);
+  function myDump(aMsg) {
+    dump(aMsg);
+    if (false && consoleService)
+      consoleService.logStringMessage("GCV: "+aMsg);
+  };
+
+  /* This one we use all the time, stop redefining it everywhere, just assume it
+   * will be available anywhere from now on */
+  let htmlpane = document.getElementById('multimessage');
+
+  /* Better debug function */
+  let dumpCallStack = function dumpCallStack_ () {
+    let frame = Components.stack;
+    while (frame) {
+      myDump(frame+"\n");
+      frame = frame.caller;
+    }
+  }
 
   /* Preferences are loaded once and then observed. For a new pref, add an entry
    * here + a case in the switch below. */
@@ -242,6 +201,47 @@ window.addEventListener("load", function f_temp0 () {
     }
   };
   myPrefObserver.register();
+
+  /* Enigmail support, thanks to Patrick Brunschwig ! */
+  let hasEnigmail = (typeof(GetEnigmailSvc) == "function");
+  let enigmailSvc;
+  if (hasEnigmail)
+    enigmailSvc = GetEnigmailSvc();
+  if (!enigmailSvc) {
+    myDump("Error loading the Enigmail service. Is Enigmail disabled?\n");
+    hasEnigmail = false;
+  }
+  function tryEnigmail(bodyElement) {
+    if (bodyElement.textContent.indexOf("-----BEGIN PGP") < 0)
+      return null;
+
+    var signatureObj       = new Object();
+    var exitCodeObj        = new Object();
+    var statusFlagsObj     = new Object();
+    var keyIdObj           = new Object();
+    var userIdObj          = new Object();
+    var sigDetailsObj      = new Object();
+    var errorMsgObj        = new Object();
+    var blockSeparationObj = new Object();
+
+    try {
+      var decryptedText =
+        enigmailSvc.decryptMessage(window, 0, bodyElement.textContent,
+          signatureObj, exitCodeObj,
+          statusFlagsObj, keyIdObj, userIdObj, sigDetailsObj,
+          errorMsgObj, blockSeparationObj);
+      if (exitCodeObj.value == 0) {
+        if (decryptedText.length > 0) {
+          bodyElement.textContent = decryptedText;
+          bodyElement.style.whiteSpace = "pre-wrap";
+        }
+        return statusFlagsObj.value;
+      }
+    } catch (ex) {
+      myDump("Enigmail error: "+ex+" --- "+errorMsgObj.value+"\n");
+      return null;
+    }
+  }
 
   const predefinedColors = ["#204a87", "#5c3566", "#8f5902", "#a40000", "#4e9a06", "#db2c92",
                             "#662e25", "#4b958d", "#8ae234", "#f57900"]
@@ -809,8 +809,8 @@ window.addEventListener("load", function f_temp0 () {
         }
 
         /* We're using some forward references here. */
-        let expandIframe = function () { dump("YOU SHOULD NOT SEE THIS\n"); };
-        let expandAttachments = function () { dump("No attachments found ("+iCopy+")\n"); };
+        let expandIframe = function () { myDump("YOU SHOULD NOT SEE THIS\n"); };
+        let expandAttachments = function () { myDump("No attachments found ("+iCopy+")\n"); };
         let toggleMessage = function toggleMessage_ () {
           _mm_toggleClass(msgNode, "collapsed");
         };
@@ -1175,7 +1175,7 @@ window.addEventListener("load", function f_temp0 () {
                  * Display Attachments Inline */
                 let fieldsets = iframeDoc.getElementsByClassName("mimeAttachmentHeader");
                 for (let i = fieldsets.length - 1; i >= 0; i--) {
-                  dump("Found an attachment, removing... please uncheck View > Display attachments inline.\n");
+                  myDump("Found an attachment, removing... please uncheck View > Display attachments inline.\n");
                   let node = fieldsets[i];
                   while (node.nextSibling)
                     node.parentNode.removeChild(node.nextSibling);
@@ -1241,7 +1241,7 @@ window.addEventListener("load", function f_temp0 () {
                       //XXX this doesn't take into account the case where we
                       //have a cycle with length > 0 in the reloadings.
                       //Currently, I only see UTF8 -> UTF8 cycles.
-                      dump("Reloading with "+BDMCharsetPhaseParams.charsetToForce+"\n");
+                      myDump("Reloading with "+BDMCharsetPhaseParams.charsetToForce+"\n");
                       f_temp2(null, BDMCharsetPhaseParams.charsetToForce);
                       return;
                     }
@@ -1621,7 +1621,7 @@ window.addEventListener("load", function f_temp0 () {
               /* Since this triggers a lot of downloads, we have to be lazy
                * about it, so do it only when necessary. We're filling a forward
                * reference here. */
-              dump("Registering expandAttachments "+iCopy+"\n");
+              myDump("Registering expandAttachments "+iCopy+"\n");
               expandAttachments = displayFullAttachments;
             } /* end if (attachments.length > 0) */
 
@@ -1767,7 +1767,7 @@ window.addEventListener("load", function f_temp0 () {
      * back to the 3-pane view, and message B should be focused. */
     let badMsg = htmlpane.contentDocument.activeElement;
     if (badMsg && badMsg.classList.contains("message")) {
-      dump("Found leftover focus\n");
+      myDump("Found leftover focus\n");
       badMsg.blur();
     }
 
@@ -1790,7 +1790,6 @@ window.addEventListener("load", function f_temp0 () {
     runOnceAfterNSignals(
       gconversation.stash.msgHdrs.length,
       function f_temp5() {
-        dump("f_temp5 is HERE\n");
         let msgNode = msgHdrToMsgNode(gconversation.stash.msgHdrs[needsFocus]);
         scrollNodeIntoView(msgNode);
         variousFocusHacks(msgNode);
@@ -1867,7 +1866,7 @@ window.addEventListener("load", function f_temp0 () {
           try {
             gSummary.init();
           } catch (e) {
-            dump(e+"\n");
+            myDump(e+"\n");
             throw e;
           }
         } else {
