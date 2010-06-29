@@ -288,13 +288,23 @@ function convertHotmailQuotingToBlockquote2(aWindow, aDocument, aHideQuoteLength
  * ----- Something that supposedly says the text below is quoted -----
  * Fails 9 times out of 10. */
 function convertForwardedToBlockquote(aDoc) {
-  let re = /^\s*(-{5,15})(\s+)(?:\S+\s+)*\S+\2\1\s*/;
+  let re = /^\s*(-{5,15})(\s*)(?:[^ \f\n\r\t\v\u00A0\u2028\u2029-]+\s+)*[^ \f\n\r\t\v\u00A0\u2028\u2029-]+\2\1\s*/mg;
   let walk = function (aNode) {
     for each (let [, child] in Iterator(aNode.childNodes)) {
+      let m = child.textContent.match(re);
       if (child.nodeType == child.TEXT_NODE && !(child.textContent.indexOf("-----BEGIN PGP") >= 0) 
-          && re.test(child.textContent)) {
-        dump("Found matching text "+child.textContent+"\n");
-        encloseInBlockquote(aDoc, child);
+          && m && m.length) {
+        let marker = m[0];
+        dump("Found matching text "+marker+"\n");
+        let i = child.textContent.indexOf(marker);
+        let t1 = child.textContent.substring(0, i);
+        let t2 = child.textContent.substring(i + 1, child.textContent.length);
+        let tn1 = aDoc.createTextNode(t1);
+        let tn2 = aDoc.createTextNode(t2);
+        child.parentNode.insertBefore(tn1, child);
+        child.parentNode.insertBefore(tn2, child);
+        child.parentNode.removeChild(child);
+        encloseInBlockquote(aDoc, tn2);
         throw { found: true };
       } else {
         walk(child);
