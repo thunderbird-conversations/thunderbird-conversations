@@ -1119,7 +1119,7 @@ window.addEventListener("load", function f_temp0 () {
                 /* The part below is all about quoting */
                 /* Launch various heuristics to convert most common quoting styles
                  * to real blockquotes. Spoiler: most of them suck. */
-                convertOutlookQuotingToBlockquote(iframeDoc);
+                convertOutlookQuotingToBlockquote(iframe.contentWindow, iframeDoc);
                 convertHotmailQuotingToBlockquote1(iframeDoc);
                 convertHotmailQuotingToBlockquote2(iframe.contentWindow, iframeDoc, gPrefs["hide_quote_length"]);
                 convertForwardedToBlockquote(iframeDoc);

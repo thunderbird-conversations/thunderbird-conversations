@@ -209,10 +209,20 @@ function convertHotmailQuotingToBlockquote1(aDoc) {
 }
 
 /* There's a special message header for that. */
-function convertOutlookQuotingToBlockquote(aDoc) {
+function convertOutlookQuotingToBlockquote(aWin, aDoc) {
   /* Outlook uses a special thing for that */
-      trySel(aDoc, ".OutlookMessageHeader")
-  ||  trySel(aDoc, "div[style=\"border-right: medium none; border-width: 1pt medium medium; border-style: solid none none; border-color: rgb(181, 196, 223) -moz-use-text-color -moz-use-text-color; padding: 3pt 0cm 0cm;\"]", true);
+  trySel(aDoc, ".OutlookMessageHeader");
+  for each (let [, div] in Iterator(aDoc.getElementsByTagName("div"))) {
+    let style = aWin.getComputedStyle(div, null);
+    if (style.borderTopColor == "rgb(181, 196, 223)"
+        && style.borderTopStyle == "solid"
+        && style.borderLeftWidth == "0px"
+        && style.borderRightWidth == "0px"
+        && style.borderBottomWidth == "0px") {
+      encloseInBlockquote(aDoc, div);
+      div.parentNode.removeChild(div);
+    }
+  }
 }
 
 /* For #text <br /> #text ... when text nodes are quotes */
