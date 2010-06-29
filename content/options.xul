@@ -93,9 +93,10 @@
     <groupbox>
       <caption label="&optiondesc.unfold;" />
       <radiogroup preference="fold_rule" id="fold_rule_menulist">
+        <radio value="none" label="&option.no_messages;" />
+        <radio value="focused" label="&option.focused;" />
         <radio value="unread_and_last" label="&option.last_or_unread;" />
         <radio value="all" label="&option.all_messages;" />
-        <radio value="none" label="&option.no_messages;" />
       </radiogroup>
     </groupbox>
     <groupbox>

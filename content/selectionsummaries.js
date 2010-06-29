@@ -437,6 +437,15 @@ window.addEventListener("load", function f_temp0 () {
         actions.push(kActionDoNothing);
     };
     switch (gPrefs["fold_rule"]) {
+      case "focused":
+        for each (let [i, msgHdr] in Iterator(aMsgHdrs)) {
+          let msgNode = msgHdrToMsgNode(msgHdr);
+          if (i == aNeedsFocus)
+            expand(msgNode);
+          else
+            collapse(msgNode);
+        }
+        break;
       case "unread_and_last":
         for each (let [i, msgHdr] in Iterator(aMsgHdrs)) {
           let msgNode = msgHdrToMsgNode(msgHdr);

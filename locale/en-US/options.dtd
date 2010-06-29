@@ -9,9 +9,10 @@
 <!ENTITY option.focus_first "The first unread message or the last message">
 <!ENTITY option.focus_selected "The message currently selected in the message list">
 <!ENTITY optiondesc.unfold "By default, expand:">
+<!ENTITY option.no_messages "No messages">
+<!ENTITY option.focused "Only the message scrolled to (see above)">
 <!ENTITY option.last_or_unread "All unread messages plus the message scrolled to (see above)">
 <!ENTITY option.all_messages "All messages">
-<!ENTITY option.no_messages "No messages">
 <!ENTITY title.toolbar "Toolbar buttons">
 <!ENTITY buttons.info "All these commands are also accessible through the contextual menu of the thread summary (right-click).">
 <!ENTITY option.toolbar_mode "Show:">
