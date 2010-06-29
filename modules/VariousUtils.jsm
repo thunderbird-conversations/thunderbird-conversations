@@ -221,6 +221,7 @@ function convertOutlookQuotingToBlockquote(aWin, aDoc) {
         && style.borderBottomWidth == "0px") {
       encloseInBlockquote(aDoc, div);
       div.parentNode.removeChild(div);
+      break;
     }
   }
 }
@@ -293,7 +294,7 @@ function convertForwardedToBlockquote(aDoc) {
       if (child.nodeType == child.TEXT_NODE && !(child.textContent.indexOf("-----BEGIN PGP") >= 0) 
           && re.test(child.textContent)) {
         dump("Found matching text "+child.textContent+"\n");
-        makeBlockquote(aDoc, child);
+        encloseInBlockquote(aDoc, child);
         throw { found: true };
       } else {
         walk(child);
