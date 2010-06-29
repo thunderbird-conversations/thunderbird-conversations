@@ -164,35 +164,53 @@ function groupMessages(items) _removeDuplicates(function (item) item.headerMessa
  * Returns an array [[similar items], [other similar items], ...]. */
 /* function removeHdrDuplicates(items) _removeDuplicates(function (item) item.messageId, items) */
 
+function canInclude(aNode) {
+  let v = aNode.tagName && aNode.tagName.toLowerCase() == "br"
+    || aNode.nodeType == aNode.TEXT_NODE && String.trim(aNode.textContent) === "";
+  if (v) dump("Including "+aNode+"\n");
+  return v;
+}
+
 /* Create a blockquote before "marker" and insert all elements after that into
  * the blockquote. if (remove) then marker is removed. */
-function makeBlockquote(aDoc, marker, remove) {
-  if (!marker.nextSibling)
-    return;
-  let blockquote = aDoc.createElement("blockquote");
-  blockquote.setAttribute("type", "cite");
-  insertAfter(blockquote, marker);
-  while (blockquote.nextSibling)
-    blockquote.appendChild(blockquote.nextSibling);
-  if (remove)
-    marker.parentNode.removeChild(marker);
+function makeBlockquote(aDoc, marker) {
+  if (marker.previousSibling && canInclude(marker.previousSibling)) {
+    makeBlockquote(aDoc, marker.previousSibling);
+  } else if (!marker.previousSibling) {
+    makeBlockquote(aDoc, marker.parentNode);
+  } else {
+    if (!marker.nextSibling)
+      return;
+    let blockquote = aDoc.createElement("blockquote");
+    blockquote.setAttribute("type", "cite");
+    insertAfter(blockquote, marker);
+    while (blockquote.nextSibling)
+      blockquote.appendChild(blockquote.nextSibling);
+  }
+}
+
+function trySel (aDoc, sel, remove) {
+  let marker = aDoc.querySelector(sel);
+  if (marker) {
+    makeBlockquote(aDoc, marker);
+    if (remove)
+      marker.parentNode.removeChild(marker);
+  }
+  return marker != null;
 }
 
 /* Hotmails use a <hr> to mark the start of the quoted part. */
 function convertHotmailQuotingToBlockquote1(aDoc) {
   /* We make the assumption that no one uses a <hr> in their emails except for
    * separating a quoted message from the rest */
-  let marker =  aDoc.getElementsByTagName("hr")[0];
-  if (marker)
-    makeBlockquote(aDoc, marker, true);
+  trySel(aDoc, "hr", true);
 }
 
 /* There's a special message header for that. */
 function convertOutlookQuotingToBlockquote(aDoc) {
   /* Outlook uses a special thing for that */
-  let marker = aDoc.getElementsByClassName("OutlookMessageHeader")[0];
-  if (marker)
-    makeBlockquote(aDoc, marker);
+      trySel(aDoc, ".OutlookMessageHeader")
+  ||  trySel(aDoc, "div[style=\"border-right: medium none; border-width: 1pt medium medium; border-style: solid none none; border-color: rgb(181, 196, 223) -moz-use-text-color -moz-use-text-color; padding: 3pt 0cm 0cm;\"]", true);
 }
 
 /* For #text <br /> #text ... when text nodes are quotes */
@@ -257,7 +275,7 @@ function convertHotmailQuotingToBlockquote2(aWindow, aDocument, aHideQuoteLength
  * ----- Something that supposedly says the text below is quoted -----
  * Fails 9 times out of 10. */
 function convertForwardedToBlockquote(aDoc) {
-  let re = /^\s*(-{5,15})\s+(?:\S+\s+)+\1\s*/;
+  let re = /^\s*(-{5,15})(\s*)(?:\S+\s+)*\S+\2\1\s*/;
   let walk = function (aNode) {
     for each (let [, child] in Iterator(aNode.childNodes)) {
       if (child.nodeType == child.TEXT_NODE && !(child.textContent.indexOf("-----BEGIN PGP") >= 0) 

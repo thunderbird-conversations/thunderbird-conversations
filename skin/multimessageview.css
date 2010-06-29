@@ -400,7 +400,7 @@ a.action:hover {
 }
 
 .message.collapsed .fg-tooltip {
-  display: none;
+  display: none !important;
 }
 
 .view-source {
