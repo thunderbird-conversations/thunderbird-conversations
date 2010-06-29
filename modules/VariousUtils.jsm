@@ -288,7 +288,7 @@ function convertHotmailQuotingToBlockquote2(aWindow, aDocument, aHideQuoteLength
  * ----- Something that supposedly says the text below is quoted -----
  * Fails 9 times out of 10. */
 function convertForwardedToBlockquote(aDoc) {
-  let re = /^\s*(-{5,15})(\s*)(?:[^ \f\n\r\t\v\u00A0\u2028\u2029-]+\s+)*[^ \f\n\r\t\v\u00A0\u2028\u2029-]+\2\1\s*/mg;
+  let re = /^\s*(-{5,15})(?:\s*)(?:[^ \f\n\r\t\v\u00A0\u2028\u2029-]+\s+)*[^ \f\n\r\t\v\u00A0\u2028\u2029-]+(\s*)\1\s*/mg;
   let walk = function (aNode) {
     for each (let [, child] in Iterator(aNode.childNodes)) {
       let m = child.textContent.match(re);
