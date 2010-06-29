@@ -171,19 +171,21 @@ function canInclude(aNode) {
   return v;
 }
 
-/* Create a blockquote before "marker" and insert all elements after that into
- * the blockquote. if (remove) then marker is removed. */
-function makeBlockquote(aDoc, marker) {
+function isBody(aNode) {
+  return aNode.parentNode.parentNode.nodeType == aNode.NODE_DOCUMENT;
+}
+
+/* Create a blockquote that encloses everything relevant, starting from marker.
+ * Marker is included by default, remove it later if you need to. */
+function encloseInBlockquote(aDoc, marker) {
   if (marker.previousSibling && canInclude(marker.previousSibling)) {
-    makeBlockquote(aDoc, marker.previousSibling);
-  } else if (!marker.previousSibling) {
-    makeBlockquote(aDoc, marker.parentNode);
+    encloseInBlockquote(aDoc, marker.previousSibling);
+  } else if (!marker.previousSibling && !isBody(marker.parentNode)) {
+    encloseInBlockquote(aDoc, marker.parentNode);
   } else {
-    if (!marker.nextSibling)
-      return;
     let blockquote = aDoc.createElement("blockquote");
     blockquote.setAttribute("type", "cite");
-    insertAfter(blockquote, marker);
+    marker.parentNode.insertBefore(blockquote, marker);
     while (blockquote.nextSibling)
       blockquote.appendChild(blockquote.nextSibling);
   }
@@ -192,7 +194,7 @@ function makeBlockquote(aDoc, marker) {
 function trySel (aDoc, sel, remove) {
   let marker = aDoc.querySelector(sel);
   if (marker) {
-    makeBlockquote(aDoc, marker);
+    encloseInBlockquote(aDoc, marker);
     if (remove)
       marker.parentNode.removeChild(marker);
   }
