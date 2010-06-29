@@ -275,7 +275,7 @@ function convertHotmailQuotingToBlockquote2(aWindow, aDocument, aHideQuoteLength
  * ----- Something that supposedly says the text below is quoted -----
  * Fails 9 times out of 10. */
 function convertForwardedToBlockquote(aDoc) {
-  let re = /^\s*(-{5,15})(\s*)(?:\S+\s+)*\S+\2\1\s*/;
+  let re = /^\s*(-{5,15})(\s+)(?:\S+\s+)*\S+\2\1\s*/;
   let walk = function (aNode) {
     for each (let [, child] in Iterator(aNode.childNodes)) {
       if (child.nodeType == child.TEXT_NODE && !(child.textContent.indexOf("-----BEGIN PGP") >= 0) 
