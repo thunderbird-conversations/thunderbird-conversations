@@ -1183,7 +1183,7 @@ window.addEventListener("load", function f_temp0 () {
                   "  display: none;\n"+
                   "}\n"
                   ));
-                iframeDoc.body.previousSibling.appendChild(style);
+                iframeDoc.body.previousElementSibling.appendChild(style);
 
                 /* Hello, Enigmail. Do that now, because decrypting a message
                  * will change its height. If you've got nothing better to do,
