@@ -1107,6 +1107,18 @@ window.addEventListener("load", function f_temp0 () {
                   (_mm_hasClass(iframeDoc.body.firstElementChild, "moz-text-flowed") ||
                    _mm_hasClass(iframeDoc.body.firstElementChild, "moz-text-plain")));
 
+                /* Remove the attachments if the user has not set View >
+                 * Display Attachments Inline. Do that right now, otherwise the
+                 * quoted text detection will mess up the markup. */
+                let fieldsets = iframeDoc.getElementsByClassName("mimeAttachmentHeader");
+                for (let i = fieldsets.length - 1; i >= 0; i--) {
+                  myDump("Found an attachment, removing... please uncheck View > Display attachments inline.\n");
+                  let node = fieldsets[i];
+                  while (node.nextSibling)
+                    node.parentNode.removeChild(node.nextSibling);
+                  node.parentNode.removeChild(node);
+                }
+
                 /* The part below is all about quoting */
                 /* Launch various heuristics to convert most common quoting styles
                  * to real blockquotes. Spoiler: most of them suck. */
@@ -1168,19 +1180,7 @@ window.addEventListener("load", function f_temp0 () {
                   "  display: none;\n"+
                   "}\n"
                   ));
-                /* Oh baby that was so subtle */
                 iframeDoc.body.previousSibling.appendChild(style);
-
-                /* Remove the attachments if the user has not set View >
-                 * Display Attachments Inline */
-                let fieldsets = iframeDoc.getElementsByClassName("mimeAttachmentHeader");
-                for (let i = fieldsets.length - 1; i >= 0; i--) {
-                  myDump("Found an attachment, removing... please uncheck View > Display attachments inline.\n");
-                  let node = fieldsets[i];
-                  while (node.nextSibling)
-                    node.parentNode.removeChild(node.nextSibling);
-                  node.parentNode.removeChild(node);
-                }
 
                 /* Hello, Enigmail. Do that now, because decrypting a message
                  * will change its height. If you've got nothing better to do,
@@ -1342,7 +1342,7 @@ window.addEventListener("load", function f_temp0 () {
             * @param in aCharsetOverride (optional) character set over ride to force the message to use.
             * @param out aURL
             */
-            messageService.DisplayMessage(uri+"?header=none",
+            messageService.DisplayMessage(uri,
                                           iframe.docShell,
                                           msgWindow,
                                           urlListener,

@@ -260,7 +260,9 @@ function convertForwardedToBlockquote(aDoc) {
   let re = /^\s*(-{5,15})\s+(?:\S+\s+)+\1\s*/;
   let walk = function (aNode) {
     for each (let [, child] in Iterator(aNode.childNodes)) {
-      if (child.nodeType == child.TEXT_NODE && !(child.textContent.indexOf("-----BEGIN PGP") >= 0) 
+      if (child.nodeType == child.TEXT_NODE
+          && child.textContent.indexOf("-----BEGIN PGP") < 0
+          && child.textContent.indexOf("----END PGP") < 0
           && re.test(child.textContent)) {
         dump("Found matching text "+child.textContent+"\n");
         makeBlockquote(aDoc, child);
