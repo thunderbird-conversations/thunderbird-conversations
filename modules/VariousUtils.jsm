@@ -292,7 +292,9 @@ function convertForwardedToBlockquote(aDoc) {
   let walk = function (aNode) {
     for each (let [, child] in Iterator(aNode.childNodes)) {
       let m = child.textContent.match(re);
-      if (child.nodeType == child.TEXT_NODE && !(child.textContent.indexOf("-----BEGIN PGP") >= 0) 
+      if (child.nodeType == child.TEXT_NODE
+          && child.textContent.indexOf("-----BEGIN PGP") < 0
+          && child.textContent.indexOf("----END PGP") < 0
           && m && m.length) {
         let marker = m[0];
         dump("Found matching text "+marker+"\n");
