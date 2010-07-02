@@ -1693,7 +1693,8 @@ window.addEventListener("load", function f_temp0 () {
              * version requirements in install.rdf.template */
             onQueryCompleted: function pullConversationOnQueryCompleted_ (aCollection)
               setTimeout(function pullConversationInternalCallback2_ ()
-                gFolderDisplay.selectedMessage.messageId == firstMessageId
+                (gFolderDisplay.selectedMessage
+                 && gFolderDisplay.selectedMessage.messageId == firstMessageId)
                   ? k(aCollection, aCollection.items, msg)
                   : myDump("Canceled because we changed conversations too fast\n"),
                 0),
