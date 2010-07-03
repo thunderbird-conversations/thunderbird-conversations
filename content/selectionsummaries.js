@@ -86,6 +86,7 @@ window.addEventListener("load", function f_temp0 () {
   Cu.import("resource://gconversation/VariousUtils.jsm");
   Cu.import("resource://gconversation/GlodaUtils.jsm");
   Cu.import("resource://gconversation/MsgHdrUtils.jsm");
+  Cu.import("resource://gconversation/Crypto.jsm");
   Cu.import("resource://gre/modules/PluralForm.jsm");
   Cu.import("resource:///modules/gloda/utils.js");
 
@@ -362,11 +363,7 @@ window.addEventListener("load", function f_temp0 () {
     return [colorize(a) for each ([, a] in Iterator(decodedAddresses))];
   }
 
-  /* Create a closure that can be called later when all the messages have
-   * been properly loaded, all the iframes resized to fit. When the page
-   * won't scroll anymore, we manually set the message we want into view.
-   *
-   * This function is now also used by summarizeThread and the autoload event
+  /* This function is now also used by summarizeThread and the autoload event
    * handler. When the conversation is the same, we don't rebuild it. However,
    * all focus information has been lost, so we need to re-trigger this function
    * to scroll back the right message into view. */
@@ -417,6 +414,8 @@ window.addEventListener("load", function f_temp0 () {
 
   /* Do the mapping */
   function msgHdrToMsgNode(aMsgHdr) {
+    if (!aMsgHdr)
+      dumpCallStack();
     let tKey = aMsgHdr.messageKey + aMsgHdr.folder.URI;
     return gconversation.stash.msgNodes[tKey];
   }
@@ -880,6 +879,10 @@ window.addEventListener("load", function f_temp0 () {
         /* Deal with recipients */
         let recipientsSpans = processEmails(msgHdr.mime2DecodedRecipients, false, htmlpane.contentDocument);
         let ccSpans = processEmails(msgHdr.ccList, false, htmlpane.contentDocument);
+        let bccSpans = processEmails(msgHdr.bccList, false, htmlpane.contentDocument);
+        for each (let [, span] in Iterator(bccSpans)) {
+          span.classList.add("bcc-recipient");
+        }
         let overflowed = false;
         let lastComma;
         /* Ok, we're being a bit picky here, but if we don't overflow, we might
@@ -893,7 +896,7 @@ window.addEventListener("load", function f_temp0 () {
         let fakeNode = htmlpane.contentDocument.createElement("span");
         fakeNode.textContent = " … ";
         recipientsNode.appendChild(fakeNode);
-        for each (let [, span] in Iterator(recipientsSpans.concat(ccSpans))) {
+        for each (let [, span] in Iterator(recipientsSpans.concat(ccSpans).concat(bccSpans))) {
           recipientsNode.appendChild(span);
           let comma = htmlpane.contentDocument.createElement("span");
           comma.textContent= ", ";
