@@ -214,6 +214,10 @@ a {
   display: none;
 }
 
+.bcc-recipient {
+  font-style: italic;
+}
+
 
 /* Links */
 
