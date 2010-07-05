@@ -69,7 +69,8 @@ var gconversation = {
     msgNodes: {}, /* tKey => DOMNode */
     multiple_selection: false, /* Printing and archiving depend on these */
     expand_all: [], /* A list of closures */
-    collapse_all: []
+    collapse_all: [],
+    all_went_well: false /* Set to false before PART 1/3 and set to true after we received all signals. If not true, then isNewConversation == true always. */
   }
 };
 
@@ -596,6 +597,7 @@ window.addEventListener("load", function f_temp0 () {
        * complete, which in turn would result in no attachments at all
        * displayed). */
       let needsFocus = tellMeWhoToFocus(msgHdrs);
+      gconversation.stash.all_went_well = false;
       myDump("                                                PART 1/3\n");
       runOnceAfterNSignals(
         numMessages,
@@ -621,6 +623,24 @@ window.addEventListener("load", function f_temp0 () {
                * indexed. */
               if (gPrefs["auto_mark_read"] && document.hasFocus())
                 gconversation.mark_all_read();
+
+              /* This is the end of it all, so be confident our conversation is
+               * properly built and complete. This is specifically to avoid the
+               * following sequence of events:
+               * - pullConversation is launched
+               * - user switches back to single message view
+               * - multimessageview.xhtml is not visible anymore
+               * - the fillMessageSnippetAndHTML callback kicks in
+               * - tries to set a height on the iframe (auto-resizing issue,
+               *   again)
+               * - fails because the height is not available since it's never
+               *   been displayed (remember, the conversation is not visible
+               *   anymore)
+               * - the user comes backs to the exact same conversation
+               * - isNewConversation == false
+               * - the conversation's messages are 20px high... good!
+               **/
+              gconversation.stash.all_went_well = true;
             });
 
           /* Second step: expand all the messages that need to be expanded. All
@@ -1743,7 +1763,7 @@ window.addEventListener("load", function f_temp0 () {
    * */
   function isNewConversation(items) {
     /* Happens in wicked cases */
-    if (gconversation.stash.multiple_selection)
+    if (gconversation.stash.multiple_selection || !gconversation.stash.all_went_well)
       return true;
     let newConversation = false;
     try {
