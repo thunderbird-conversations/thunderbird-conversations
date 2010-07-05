@@ -1746,14 +1746,19 @@ window.addEventListener("load", function f_temp0 () {
     if (gconversation.stash.multiple_selection)
       return true;
     let newConversation = false;
-    for (let i = 0; i < Math.max(items.length, gconversation.stash.msgHdrs.length); ++i) {
-      if (i >= items.length || i >= gconversation.stash.msgHdrs.length ||
-          items[i].messageId != gconversation.stash.msgHdrs[i].messageId) {
-        newConversation = true;
-        break;
+    try {
+      for (let i = 0; i < Math.max(items.length, gconversation.stash.msgHdrs.length); ++i) {
+        if (i >= items.length || i >= gconversation.stash.msgHdrs.length ||
+            items[i].messageId != gconversation.stash.msgHdrs[i].messageId) {
+          newConversation = true;
+          break;
+        }
       }
+      return newConversation;
+    } catch (e if e.result == Components.results.NS_ERROR_INVALID_POINTER) {
+      /* This is bug 520115 hitting us */
+      return true;
     }
-    return newConversation;
   }
 
   /* Actually it's more tricky than it seems because of the "focus currently
