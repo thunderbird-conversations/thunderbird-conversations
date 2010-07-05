@@ -165,12 +165,12 @@
                 link.textContent = "- "+hidequotedtext+" -";
                 div.style.display = "";
                 let h = div.getBoundingClientRect().height +
-                  parseInt(cs.marginTop) + parseInt(cs.marginBottom);
+                  parseFloat(cs.marginTop) + parseFloat(cs.marginBottom);
                 return h;
               } else {
                 let h = div.getBoundingClientRect().height;
-                h += parseInt(cs.marginTop);
-                h += parseInt(cs.marginBottom);
+                h += parseFloat(cs.marginTop);
+                h += parseFloat(cs.marginBottom);
                 link.textContent = "- "+showquotedtext+" -";
                 div.style.display = "none";
                 return -h;

@@ -1170,7 +1170,7 @@ window.addEventListener("load", function f_temp0 () {
                             div.setAttribute("class", "link showhidequote");
                             div.addEventListener("click", function div_listener (event) {
                                 let h = htmlpane.contentWindow.toggleQuote(event);
-                                iframe.style.height = (parseInt(iframe.style.height) + h)+"px";
+                                iframe.style.height = (parseFloat(iframe.style.height) + h)+"px";
                               }, true);
                             div.setAttribute("style", "color: #512a45; cursor: pointer; font-size: 90%;");
                             div.appendChild(document.createTextNode("- "+
