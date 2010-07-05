@@ -101,7 +101,6 @@ window.addEventListener("load", function f_temp0 () {
   const gHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"].getService(Ci.nsIMsgHeaderParser);
   const prefs = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService).getBranch("gconversation.");
   const txttohtmlconv = Cc["@mozilla.org/txttohtmlconv;1"].createInstance(Ci.mozITXTToHTMLConv);
-  const i18nDateFormatter = Cc["@mozilla.org/intl/scriptabledateformat;1"].createInstance(Ci.nsIScriptableDateFormat);
   const stringBundle = document.getElementById("gconv-string-bundle");
   const ioService = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
   const msgComposeService = Cc["@mozilla.org/messengercompose;1"].getService(Ci.nsIMsgComposeService);  
@@ -347,11 +346,11 @@ window.addEventListener("load", function f_temp0 () {
       shortName.textContent = gPrefs["guess_first_names"]
         ? card.firstName || parseShortName(name)
         : name;
-      _mm_addClass(shortName, "short-name");
+      shortName.classList.add("short-name");
 
       let fullName = aDoc.createElement("span");
       fullName.textContent = name;
-      _mm_addClass(fullName, "full-name");
+      fullName.classList.add("full-name");
 
       /* let gravatar = aDoc.createElement("img");
       let url = "http://www.gravatar.com/avatar/"
@@ -507,7 +506,7 @@ window.addEventListener("load", function f_temp0 () {
   function variousFocusHacks (aMsgNode) {
     /* We want the node that's been expanded (the one that has index
      * needsFocus) to also have the visual appearance with the cursor. */
-    _mm_addClass(aMsgNode, "selected");
+    aMsgNode.classList.add("selected");
     aMsgNode.setAttribute("tabindex", 1);
     htmlpane.contentDocument.addEventListener("focus", function on_focus (event) {
         htmlpane.contentDocument.removeEventListener("focus", on_focus, true);
@@ -523,7 +522,7 @@ window.addEventListener("load", function f_temp0 () {
 
         /* However, when the thread summary gains focus, we need to
          * remove that class because :focus will take care of that */
-        _mm_removeClass(msgNode, "selected");
+        msgNode.classList.remove("selected");
         /* Restore the proper tab order. This event is fired *after* the
          * right message has been focused in Gecko 1.9.2, *before* the right
          * message has been focused in Gecko 1.9.1 (so it's basically
@@ -697,31 +696,11 @@ window.addEventListener("load", function f_temp0 () {
         let msgHdr = this._msgHdrs[i];
         let key = msgHdr.messageKey + msgHdr.folder.URI;
 
-        let msg_classes = "message collapsed";
-        if (!msgHdr.isRead)
-          msg_classes += " unread";
-        if (msgHdr.isFlagged)
-          msg_classes += " starred";
-
         let theSubject = msgHdr.mime2DecodedSubject;
         let dateObject = new Date(msgHdr.date/1000);
-        let date;
-        if (gPrefs["no_friendly_date"]) {
-          let format = dateObject.toLocaleDateString("%x") == (new Date()).toLocaleDateString("%x")
-            ? Ci.nsIScriptableDateFormat.dateFormatNone
-            : Ci.nsIScriptableDateFormat.dateFormatShort;
-          date = i18nDateFormatter.FormatDateTime("",
-                                                  format,
-                                                  Ci.nsIScriptableDateFormat.timeFormatNoSeconds,
-                                                  dateObject.getFullYear(),
-                                                  dateObject.getMonth() + 1,
-                                                  dateObject.getDate(),
-                                                  dateObject.getHours(),
-                                                  dateObject.getMinutes(),
-                                                  dateObject.getSeconds());
-        } else {
-          date = makeFriendlyDateAgo(dateObject);
-        }
+        let date = gPrefs["no_friendly_date"])
+          ? dateAsInMessageList(dateObject)
+          : makeFriendlyDateAgo(dateObject);
 
         /* The snippet class really has a counter-intuitive name but that allows
          * us to keep some style from the original multimessageview.css without
@@ -832,7 +811,13 @@ window.addEventListener("load", function f_temp0 () {
         // innerHTML is safe here because all of the data in msgContents is
         // either generated from integers or escaped to be safe.
         msgNode.innerHTML = msgContents.toXMLString();
-        _mm_addClass(msgNode, msg_classes);
+
+        msgNode.classList.add("message");
+        msgNode.classList.add("collapsed");
+        if (!msgHdr.isRead)
+          msgNode.classList.add("unread");
+        if (msgHdr.isFlagged)
+          msgNode.classList.add("starred");
 
         /* That only changes the order in which the nodes are inserted, not the
          * index they have in this._msgHdrs */
@@ -846,17 +831,17 @@ window.addEventListener("load", function f_temp0 () {
         let expandIframe = function () { myDump("YOU SHOULD NOT SEE THIS\n"); };
         let expandAttachments = function () { myDump("No attachments found ("+iCopy+")\n"); };
         let toggleMessage = function toggleMessage_ () {
-          _mm_toggleClass(msgNode, "collapsed");
+          msgNode.classList.toggle("collapsed");
         };
         gconversation.stash.expand_all.push(function () {
-          if (_mm_hasClass(msgNode, "collapsed")) {
+          if (msgNode.classList.contains("collapsed")) {
             toggleMessage();
             expandAttachments();
             expandIframe(); /* takes care of calling signal() */
           }
         });
         gconversation.stash.collapse_all.push(function () {
-          if (!_mm_hasClass(msgNode, "collapsed")) {
+          if (!msgNode.classList.contains("collapsed")) {
             toggleMessage(); /* Immediate */
             signal();
           }
@@ -877,7 +862,9 @@ window.addEventListener("load", function f_temp0 () {
           let tagNode = tagsNode.ownerDocument.createElement('span');
           // see tagColors.css
           let colorClass = "blc-" + this._msgTagService.getColorForKey(tag.key).substr(1);
-          _mm_addClass(tagNode, "tag " + tag.tag + " " + colorClass);
+          tagNode.classList.add("tag");
+          tagNode.classList.add(tag.tag);
+          tagNode.classList.add(colorClass);
           tagNode.textContent = tag.tag;
           tagsNode.appendChild(tagNode);
         }
@@ -947,9 +934,9 @@ window.addEventListener("load", function f_temp0 () {
         /* Style according to the preferences. Preferences have an observer, see
          * above for details. */
         if (gPrefs["monospaced"])
-          _mm_addClass(htmlMsgNode, "monospaced-message");
+          htmlMsgNode.classList.add("monospaced-message");
         if (gPrefs["monospaced_snippets"])
-          _mm_addClass(snippetMsgNode, "monospaced-snippet");
+          snippetMsgNode.classList.add("monospaced-snippet");
 
         /* Try to enable at least some keyboard navigation */
         let tabIndex = gPrefs["reverse_order"] ? numMessages - i : i;
@@ -1142,8 +1129,8 @@ window.addEventListener("load", function f_temp0 () {
                 /* Our super-advanced heuristic ;-) */
                 let hasHtml = !(
                   iframeDoc.body.firstElementChild &&
-                  (_mm_hasClass(iframeDoc.body.firstElementChild, "moz-text-flowed") ||
-                   _mm_hasClass(iframeDoc.body.firstElementChild, "moz-text-plain")));
+                  (iframeDoc.body.firstElementChild.classList.contains("moz-text-flowed") ||
+                   iframeDoc.body.firstElementChild.classList.contains("moz-text-plain")));
 
                 /* Remove the attachments if the user has not set View >
                  * Display Attachments Inline. Do that right now, otherwise the
@@ -1240,7 +1227,7 @@ window.addEventListener("load", function f_temp0 () {
                   let toggleFontStyle = function togglefont_listener (event) {
                     let elts = iframeDoc.querySelectorAll("pre, body > *:first-child")
                     for each (let [, elt] in Iterator(elts)) {
-                      _mm_toggleClass(elt, "pre-as-regular");
+                      elt.classList.toggle("pre-as-regular");
                     }
                     /* XXX The height of the iframe isn't updated as we change
                      * fonts. This is usually unimportant, as it will grow
@@ -1530,7 +1517,7 @@ window.addEventListener("load", function f_temp0 () {
               for each (let [k, att] in Iterator(attachments)) {
                 let li = htmlpane.contentDocument.createElement("li");
                 let a = htmlpane.contentDocument.createElement("span");
-                _mm_addClass(a, "link");
+                a.classList.add("link");
                 a.textContent = att.name;
                 let j = k;
                 a.addEventListener("click", function () {
@@ -1616,7 +1603,7 @@ window.addEventListener("load", function f_temp0 () {
                   }
                   singleBox.innerHTML = singleBoxContents.toXMLString();
                   attBoxNode.appendChild(singleBox);
-                  _mm_addClass(singleBox, "att"+j);
+                  singleBox.classList.add("att"+j);
                   singleBox.getElementsByClassName("attachment-link")[0].addEventListener("click",
                     function (event) {
                       HandleMultipleAttachments([attInfo], "open");
@@ -1632,7 +1619,8 @@ window.addEventListener("load", function f_temp0 () {
                    * application/ocaml" or whatever. WTF? */
                   if (att.contentType.indexOf("image/") === 0 || att.contentType.indexOf("text/") === 0) {
                     /* Display the cursor pointer */
-                    _mm_addClass(singleBox.getElementsByTagName("img")[0], "image-attachment-preview");
+                    singleBox.getElementsByTagName("img")[0]
+                      .classList.add("image-attachment-preview");
                     /* Add the event listener */
                     let url = att.url;
                     singleBox.getElementsByTagName("img")[0].addEventListener("click",
@@ -1819,7 +1807,7 @@ window.addEventListener("load", function f_temp0 () {
     if (badMsgs.length > 1)
       myDump("!!! SEVERE MISTAKE JONATHAN LOOK INTO THIS RIGHT NOW\n");
     for each (let [, msgNode] in Iterator(badMsgs)) {
-      _mm_removeClass(msgNode, "selected");
+      msgNode.classList.remove("selected");
       if (msgNode.previousElementSibling)
         msgNode.setAttribute("tabindex",
           parseInt(msgNode.previousElementSibling.getAttribute("tabindex"))+1);
