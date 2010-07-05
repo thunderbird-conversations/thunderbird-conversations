@@ -1,9 +1,14 @@
+<!-- These strings are for the conversation menu. They must start with
+     lowercase. 
+-->
 <!ENTITY button.open_in_new_tab "In neuem Tab öffnen">
+<!ENTITY button.open_in_new_tab_tooltip "open this thread in a new tab (hint: hold shift)">
 <!ENTITY button.mark_all_read "Alle als gelesen markieren">
 <!ENTITY button.expand_all "Alle ausklappen">
 <!ENTITY button.collapse_all "Alle einklappen">
 <!ENTITY button.print "Drucken">
 <!ENTITY button.back "Einzelansicht">
+<!-- These strings are for the right-click menu. Use normal case -->
 <!ENTITY menu.open_in_new_tab "In neuem Tab öffnen">
 <!ENTITY menu.mark_all_read "Alle als gelesen markieren">
 <!ENTITY menu.expand_all "Alle ausklappen">
@@ -13,6 +18,9 @@
 <!ENTITY toolbar.view_full "Konversation anzeigen">
 <!ENTITY toolbar.view_full_tooltip "Alle Nachrichten (inklusive Ihrer eigenen) suchen, um die komplette Konversation aufzubauen">
 <!ENTITY toolbar.view_tab "Thread in neuem Tab öffnen">
+<!-- The three strings below are for Compact Header. They must start with
+     lowercase and ctoolbar.view_full must be SHORT 
+-->
 <!ENTITY ctoolbar.view_full "Konversation abrufen">
 <!ENTITY ctoolbar.view_full_tooltip "Alle Nachrichten (inklusive Ihrer eigenen) suchen, um die komplette Konversation aufzubauen">
 <!ENTITY ctoolbar.view_tab "Thread in neuem Tab öffnen">

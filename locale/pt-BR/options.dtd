@@ -1,13 +1,20 @@
+<!-- Please open the "Preferences" window and DO check that your text is not too
+     long. This can cause the contents to overflow and be hidden, so make sure
+     everything is displayed properly. 
+-->
 <!ENTITY window.title "Opções do Gmail Conversation View">
+<!ENTITY title.message_display "Message display">
 <!ENTITY option.monospaced "Usar fonte mono-espaçada em mensagens de texto simples">
 <!ENTITY option.monospaced_snippets "Usar fonte mono-espaçada em trechos de mensagens">
 <!ENTITY option.focus_what "Ao exibir uma conversa, deslocar para exibir:">
 <!ENTITY option.focus_first "A primeira mensagem não lida ou a última mensagem">
 <!ENTITY option.focus_selected "A mensagem atualmente selecionada na lista de mensagens">
 <!ENTITY optiondesc.unfold "Por padrão, expandir:">
+<!ENTITY option.last_or_unread "All unread messages plus the message scrolled to (see above)">
 <!ENTITY option.all_messages "Todas as mensagens">
 <!ENTITY option.no_messages "Nenhuma mensagem">
 <!ENTITY title.toolbar "Botões da barra de ferramentas">
+<!ENTITY buttons.info "All these commands are also accessible through the contextual menu of the thread summary (right-click).">
 <!ENTITY option.toolbar_mode "Exibir:">
 <!ENTITY option.toolbar_mode_icons "Ícones">
 <!ENTITY option.toolbar_mode_text "Texto">
@@ -15,6 +22,7 @@
 <!ENTITY option.button.archive "Exibir botão &quot;arquivar&quot;">
 <!ENTITY option.button.trash "Exibir botão &quot;apagar&quot;">
 <!ENTITY option.button.print "Exibir botão &quot;imprimir&quot;">
+<!ENTITY option.button.back "Display &quot;single message view&quot; button">
 <!ENTITY option.button.expand_all "Exibir botão &quot;expandir tudo&quot;">
 <!ENTITY option.button.collapse_all "Exibir botão &quot;recolher tudo&quot;">
 <!ENTITY option.button.mark_as_read "Exibir botão &quot;Marcar todos os lidos&quot;">
@@ -25,9 +33,15 @@
 <!ENTITY option.reverse_order "Ordem inversa (último → primeiro)">
 <!ENTITY title.general "Geral">
 <!ENTITY option.auto_fetch "Sempre procurar conversas">
+<!ENTITY option.auto_mark_read "Always mark the whole thread as read when the conversation is displayed.">
+<!ENTITY auto_fetch.info "Sometimes there is no visible thread in the message list, but there is an underlying conversation (if you reply to someone's mail, for instance). This option allows you to automatically display the conversation view for these messages.">
 <!ENTITY title.advanced "Avançado">
 <!ENTITY title.error_messages "Mensagens de erro">
+<!ENTITY option.disable_error_empty_collection "Disable the &quot;Thunderbird has not indexed this thread yet&quot; warning">
 <!ENTITY option.monospaced_senders "Mensagens destes endereços devem ser exibidas em fontes monoespaçados (separar por vírgulas)">
 <!ENTITY title.advanced_display "Exibição de conversas">
 <!ENTITY option.no_friendly_date "Usar datas &quot;normais&quot;, assim como na lista de mensagens">
 <!ENTITY option.guess_first_names "Adivinhar e exibir apenas o primeiro nome dos participantes">
+<!ENTITY option.my_messages_in_inbox "How to display the messages I sent in the Inbox">
+<!ENTITY option.scroll_to_new_message "In the message list, expand the first unread thread when changing folders">
+<!ENTITY title.message_list "Message list">

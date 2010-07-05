@@ -1,3 +1,6 @@
+<!-- These strings are for the conversation menu. They must start with
+     lowercase. 
+-->
 <!ENTITY button.open_in_new_tab "отвори у новом језичку">
 <!ENTITY button.open_in_new_tab_tooltip "отвори ову нит у новом језичку (савет: држите shift)">
 <!ENTITY button.mark_all_read "означи све као прочитано">
@@ -5,6 +8,7 @@
 <!ENTITY button.collapse_all "скупи све">
 <!ENTITY button.print "одштампај">
 <!ENTITY button.back "приказ поруке">
+<!-- These strings are for the right-click menu. Use normal case -->
 <!ENTITY menu.open_in_new_tab "Отвори у новом језичку">
 <!ENTITY menu.mark_all_read "Означи све као прочитано">
 <!ENTITY menu.expand_all "Прошири све">
@@ -14,6 +18,9 @@
 <!ENTITY toolbar.view_full "Преузми разговор">
 <!ENTITY toolbar.view_full_tooltip "Претражи све поруке за израду целокупног разговора, укључујући и твог.">
 <!ENTITY toolbar.view_tab "Отвори нит у новом језичку">
+<!-- The three strings below are for Compact Header. They must start with
+     lowercase and ctoolbar.view_full must be SHORT 
+-->
 <!ENTITY ctoolbar.view_full "преузми разговор">
 <!ENTITY ctoolbar.view_full_tooltip "претражи све поруке за израду целокупног разговора, укључујући и твог.">
 <!ENTITY ctoolbar.view_tab "отвори нит у новом језичку">

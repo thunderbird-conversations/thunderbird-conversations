@@ -1,3 +1,6 @@
+<!-- These strings are for the conversation menu. They must start with
+     lowercase. 
+-->
 <!ENTITY button.open_in_new_tab "ouvrir dans un nouvel onglet">
 <!ENTITY button.open_in_new_tab_tooltip "voir ce fil dans un nouvel onglet (astuce: maintenez maj appuyé)">
 <!ENTITY button.mark_all_read "tout marquer comme lu">
@@ -5,6 +8,7 @@
 <!ENTITY button.collapse_all "tout replier">
 <!ENTITY button.print "imprimer">
 <!ENTITY button.back "vue message seul">
+<!-- These strings are for the right-click menu. Use normal case -->
 <!ENTITY menu.open_in_new_tab "Ouvrir dans un nouvel onglet">
 <!ENTITY menu.mark_all_read "Tout marquer comme lu">
 <!ENTITY menu.expand_all "Tout déplier">
@@ -14,6 +18,9 @@
 <!ENTITY toolbar.view_full "Voir la conversation complète">
 <!ENTITY toolbar.view_full_tooltip "Rapatrier tous les messages, les vôtres inclus, pour reconstruire la conversation complète">
 <!ENTITY toolbar.view_tab "Ouvrir le fil de discussion dans un nouvel onglet">
+<!-- The three strings below are for Compact Header. They must start with
+     lowercase and ctoolbar.view_full must be SHORT 
+-->
 <!ENTITY ctoolbar.view_full "voir conv.">
 <!ENTITY ctoolbar.view_full_tooltip "rapatrier tous les messages, les vôtres inclus, pour reconstruire la conversation complète">
 <!ENTITY ctoolbar.view_tab "ouvrir le fil de discussion dans un nouvel onglet">

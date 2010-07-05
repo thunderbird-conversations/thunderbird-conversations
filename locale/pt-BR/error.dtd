@@ -1,9 +1,11 @@
 <!ENTITY error.title "Exibição de conversa do Gmail não pode funcionar">
 <!ENTITY error_gloda_disabled "Você precisa habilitar o banco de dados global para que esta extensão funcione corretamente. Por favor, vá para Ferramentas &gt; Opções (ou Editar &gt; Preferências). Na seção &quot;Avançado&quot;, procure a aba &quot;Geral&quot;. Marque &quot;Ativar pesquisa global e indexação&quot;. Está pronto! Você só precisa esperar o Thunderbird indexar todas as suas mensagens (isso pode demorar um pouco).">
 <!ENTITY error.help "Precisa de mais ajuda?">
+<!ENTITY error_empty_collection "Thunderbird has not indexed this thread yet. This is normal if the message just arrived, if Thunderbird has a lot of messages to index or if you are trying to get a conversation view for either a newsgroup/RSS message or a message that's in the Trash folder. If this persists, please check in Tools &gt; Options (or Edit &gt; Preferences) &gt; Advanced &gt; General that the global search and indexer is activated.">
 <!ENTITY error.close "Fechar esta mensagem">
 <!ENTITY error.disable "Inibir permanentemente esta mensagem de erro">
 <!ENTITY info_af.title "Oi, este é o Gmail Conversation View!">
+<!ENTITY info_af.body "The message you just selected was determined to be part of a larger conversation. Although there's no real thread displayed in the message list, we believed you might like conversations like this to be automatically fetched and displayed.">
 <!ENTITY info_af.body2 "Você quer esse recurso? Pode ser alterado posteriormente nas Preferências desta extensão, na seção &quot;Avançado&quot;">
 <!ENTITY info_af.yes "Claro, mantenha assim!">
 <!ENTITY info_af.no "Não, obrigado">

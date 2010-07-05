@@ -1,3 +1,7 @@
+<!-- Please open the "Preferences" window and DO check that your text is not too
+     long. This can cause the contents to overflow and be hidden, so make sure
+     everything is displayed properly. 
+-->
 <!ENTITY window.title "הגדרות של תצוגת שיחה">
 <!ENTITY title.message_display "תצוגת הודעה">
 <!ENTITY option.monospaced "להשתמש בגופן רוחב-קבוע עבור הודעות של טקסט פשוט">
@@ -11,6 +15,10 @@
 <!ENTITY option.no_messages "אף הודעה">
 <!ENTITY title.toolbar "מקשי פס הכלים">
 <!ENTITY buttons.info "כל פקודות אלו זמינות בתפריט תמצית החוט (לחיצה ימינית)‏">
+<!ENTITY option.toolbar_mode "הצג:‏">
+<!ENTITY option.toolbar_mode_icons "סמלים">
+<!ENTITY option.toolbar_mode_text "טקסט">
+<!ENTITY option.toolbar_mode_text_plus_icons "סמלים לצד הטקסט">
 <!ENTITY option.button.archive "הצג מקש &quot;שלח לארכיון&quot;‏">
 <!ENTITY option.button.trash "הצג מקש &quot;מחק&quot;‏">
 <!ENTITY option.button.print "הצג מקש &quot;הדפס&quot;‏">
@@ -31,3 +39,9 @@
 <!ENTITY title.error_messages "הודעות לשגיאות">
 <!ENTITY option.disable_error_empty_collection "נטרל את ההזהרה כשת'נדרבירד עוד לא הספיק להכין מפתח עבור חוט הנוכחי.‏">
 <!ENTITY option.monospaced_senders "להציג הודעות מכתובות אלו בגופן רחב קבוע (הפרד עם פסיקים)‏">
+<!ENTITY title.advanced_display "תצוגת שיחה">
+<!ENTITY option.no_friendly_date "תשתמש בתאריכים &quot;רגילים&quot;, כמו ברשימת ההודעות">
+<!ENTITY option.guess_first_names "נחש והצג שמות פרטיים בלבד">
+<!ENTITY option.my_messages_in_inbox "איך להציג את ההודעות שאני שלחתי בתיבת כניסה">
+<!ENTITY option.scroll_to_new_message "ברשימת ההודעות, פרוס את החוט הלא-נקרא הראשון כשמחליפים תקייות">
+<!ENTITY title.message_list "רשימת ההודעות">

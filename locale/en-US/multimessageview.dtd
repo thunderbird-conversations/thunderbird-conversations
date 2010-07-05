@@ -1,5 +1,6 @@
 <!-- These strings are for the conversation menu. They must start with
-     lowercase. -->
+     lowercase. 
+-->
 <!ENTITY button.open_in_new_tab "open in new tab">
 <!ENTITY button.open_in_new_tab_tooltip "open this thread in a new tab (hint: hold shift)">
 <!ENTITY button.mark_all_read "mark all read">
@@ -18,7 +19,8 @@
 <!ENTITY toolbar.view_full_tooltip "Search all messages to build up the complete conversation, including your own.">
 <!ENTITY toolbar.view_tab "Open thread in a new tab">
 <!-- The three strings below are for Compact Header. They must start with
-     lowercase and ctoolbar.view_full must be SHORT -->
+     lowercase and ctoolbar.view_full must be SHORT 
+-->
 <!ENTITY ctoolbar.view_full "fetch conv.">
 <!ENTITY ctoolbar.view_full_tooltip "search all messages to build up the complete conversation, including your own.">
 <!ENTITY ctoolbar.view_tab "open thread in a new tab">
