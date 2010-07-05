@@ -372,6 +372,7 @@ a.action:hover {
   color: #991010;
   margin: 0 .3em;
   display: inline;
+  cursor: pointer;
 }
 
 .tag {

@@ -716,6 +716,7 @@ window.addEventListener("load", function f_temp0 () {
         let moreActionsTxt = stringBundle.getString("more_actions");
         let toTxt = stringBundle.getString("to");
         let detailsTxt = stringBundle.getString("details");
+        let editDraftTxt = stringBundle.getString("edit_draft");
         let toggleRead = stringBundle.getString("toggle_read2");
         let toggleFont = stringBundle.getString("toggle_font");
         let noGlodaTxt = stringBundle.getString("no_gloda");
@@ -760,7 +761,7 @@ window.addEventListener("load", function f_temp0 () {
                   <div class="sender link"></div>
                   <div class="to-text">{toTxt}</div>
                   <div class="recipients"></div>
-                  <div class="draft-warning"></div>
+                  <div class="draft-warning" title={editDraftTxt}></div>
                 </div>
                 <div class="msgheader-subject-date">
                   <div class="date">{date}</div>
@@ -966,6 +967,9 @@ window.addEventListener("load", function f_temp0 () {
           for each (let [, node] in Iterator(nodes))
             node.addEventListener(action, f, true);
         }
+        register(".draft-warning", function (event) {
+            compose(Ci.nsIMsgCompType.Draft, event);
+          });
         register(".link-reply, .button-reply", function (event) {
             /* XXX this code should adapt when news messages have a JS
              * representation. I don't think this will ever happen. See
@@ -1119,12 +1123,10 @@ window.addEventListener("load", function f_temp0 () {
                 iframe.removeEventListener("load", f_temp1, true);
                 let iframeDoc = iframe.contentDocument;
 
-                /* Do some reformatting */
-                iframeDoc.body.style.padding = "0";
-                iframeDoc.body.style.margin = "0";
-                /* Deal with people who have bad taste */
-                iframeDoc.body.style.color = "black";
-                iframeDoc.body.style.backgroundColor = "white";
+                /* Do some reformatting + deal with people who have bad taste */
+                iframeDoc.body.setAttribute("style", "padding: 0; margin: 0; "+
+                  "color: black; background-color: white; "+
+                  "-moz-user-focus: none !important; ");
 
                 /* Our super-advanced heuristic ;-) */
                 let hasHtml = !(
