@@ -698,7 +698,7 @@ window.addEventListener("load", function f_temp0 () {
 
         let theSubject = msgHdr.mime2DecodedSubject;
         let dateObject = new Date(msgHdr.date/1000);
-        let date = gPrefs["no_friendly_date"])
+        let date = gPrefs["no_friendly_date"]
           ? dateAsInMessageList(dateObject)
           : makeFriendlyDateAgo(dateObject);
 
@@ -863,7 +863,7 @@ window.addEventListener("load", function f_temp0 () {
           // see tagColors.css
           let colorClass = "blc-" + this._msgTagService.getColorForKey(tag.key).substr(1);
           tagNode.classList.add("tag");
-          tagNode.classList.add(tag.tag);
+          //tagNode.classList.add(tag.tag);
           tagNode.classList.add(colorClass);
           tagNode.textContent = tag.tag;
           tagsNode.appendChild(tagNode);
