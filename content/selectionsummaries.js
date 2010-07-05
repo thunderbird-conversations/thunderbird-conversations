@@ -353,8 +353,15 @@ window.addEventListener("load", function f_temp0 () {
       fullName.textContent = name;
       _mm_addClass(fullName, "full-name");
 
+      /* let gravatar = aDoc.createElement("img");
+      let url = "http://www.gravatar.com/avatar/"
+        + GlodaUtils.md5HashString(card.emailAddress.trim().toLowerCase())
+        + "?r=pg&d=wavatar&s=20";
+      gravatar.setAttribute("src", url); */
+
       let span = aDoc.createElement("span");
       span.style.color = colorFor(card.emailAddress);
+      //span.appendChild(gravatar);
       span.appendChild(shortName);
       span.appendChild(fullName);
       span.setAttribute("title", title);
