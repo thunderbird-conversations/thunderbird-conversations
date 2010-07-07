@@ -228,14 +228,40 @@
                 $(this).css('border-bottom', bWidth+' solid '+bColor);
               });
               let sticky = false;
+              let timeout;
               $aMsgNode.find('.tooltip').hover(
                 function(){
-                  if (!sticky)
+                  if (!sticky) {
+                    clearTimeout(timeout);
                     $(this).prev(':hidden').fadeIn();
+                  }
                 },
                 function(){
-                  if (!sticky)
-                    $(this).prev(':visible').fadeOut();
+                  var self = this;
+                  if (!sticky) {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(
+                      function () {
+                        $(self).prev(':visible').fadeOut()
+                      },
+                      400);
+                    }
+                }
+              );
+              $aMsgNode.find('.tooltip').prev().hover(
+                function () {
+                  clearTimeout(timeout);
+                },
+                function () {
+                  var self = this;
+                  if ($(this).is(":visible") && !sticky) {
+                    clearTimeout(timeout);
+                    timeout = setTimeout(
+                      function () {
+                        $(self).fadeOut();
+                      },
+                      400);
+                  }
                 }
               );
               $aMsgNode.find('.tooltip').click(function () { sticky = !sticky; });
