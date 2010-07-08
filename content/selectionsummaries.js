@@ -287,15 +287,6 @@ window.addEventListener("load", function f_temp0 () {
    * http://mxr.mozilla.org/comm-central/source/mail/base/content/msgHdrViewOverlay.js#1060
    * for reference */
   let knownCards = {};
-  function getCard (email) {
-    if (knownCards[email]) {
-      return knownCards[email];
-    } else {
-      let cardDetails = getCardForEmail(email);
-      knownCards[email] = cardDetails;
-      return cardDetails;
-    }
-  }
   function resetCards() {
     knownCards = {};
   }
@@ -320,50 +311,131 @@ window.addEventListener("load", function f_temp0 () {
 
     numAddresses = gHeaderParser.parseHeadersWithArray(emailAddresses, addresses, names, fullNames);
     for (let i = 0; i < numAddresses; ++i) {
-      let address = {};
-      address.emailAddress = addresses.value[i];
-      address.fullAddress = fullNames.value[i];
-      address.displayName = names.value[i];
-      let cardDetails = getCard(address.emailAddress);
-      if (gIdentities[address.emailAddress]) { /* OMG ITS ME */
-        /* See
-         * http://mxr.mozilla.org/comm-central/source/mail/base/content/msgHdrViewOverlay.js#1130
-         * for reference */
-        address.displayName = isSender ? meTo : toMe;
-      } else if (cardDetails.card) { /* We know the guy */
-        //myDump("Got a card for "+address.emailAddress+"!\n");
-        address.displayName = cardDetails.card.displayName;
-        address.firstName = cardDetails.card.firstName;
+      let email = addresses.value[i];
+      if (knownCards[email]) {
+        decodedAddresses.push(knownCards[email]);
+      } else {
+        let card = {};
+        card.emailAddress = email;
+        card.fullAddress = fullNames.value[i];
+        card.displayName = names.value[i];
+        let cardDetails = getCardForEmail(card.emailAddress);
+        if (cardDetails.card) { /* We know the guy */
+          //myDump("Got a card for "+address.emailAddress+"!\n");
+          card.inAB = true;
+          card.displayName = cardDetails.card.displayName;
+          card.firstName = cardDetails.card.firstName;
+          card.phone =
+               cardDetails.card.getProperty("CellularNumber", "")
+            || cardDetails.card.getProperty("WorkPhone", "")
+            || cardDetails.card.getProperty("HomePhone", "")
+          ;
+          card.address =
+              [cardDetails.card.getProperty("HomeAddress", ""),
+               cardDetails.card.getProperty("HomeAddress2", ""),
+               cardDetails.card.getProperty("HomeCity", ""),
+               cardDetails.card.getProperty("HomeZipCode", "")]
+              .filter(function (x) x.length > 0)
+              .join("\n")
+            ||
+              [cardDetails.card.getProperty("WorkAddress", ""),
+               cardDetails.card.getProperty("WorkAddress2", ""),
+               cardDetails.card.getProperty("WorkCity", ""),
+               cardDetails.card.getProperty("WorkZipCode", "")]
+              .filter(function (x) x.length > 0)
+              .join("\n")
+          ;
+          let birthday = new Date();
+          let bDay = cardDetails.card.getProperty("BirthDay", null);
+          let bMonth = cardDetails.card.getProperty("BirthMonth", null);
+          if (bDay && bMonth) {
+            birthday.setMonth(bMonth - 1); /* I hate this!!! */
+            birthday.setDate(bDay);
+            card.birthday = birthday.toLocaleFormat("%B %d");
+          }
+        }
+        if (gIdentities[card.emailAddress]) { /* OMG ITS ME */
+          /* See
+           * http://mxr.mozilla.org/comm-central/source/mail/base/content/msgHdrViewOverlay.js#1130
+           * for reference */
+          card.displayName = isSender ? meTo : toMe;
+        }
+        decodedAddresses.push(card);
+        knownCards[email] = card;
       }
-      decodedAddresses.push(address);
     }
 
     function colorize(card) {
       let name = card.displayName || card.emailAddress;
       let title = card.displayName ? card.emailAddress : "";
 
-      let shortName = aDoc.createElement("span");
-      shortName.textContent = gPrefs["guess_first_names"]
+      let shortName = gPrefs["guess_first_names"]
         ? card.firstName || parseShortName(name)
         : name;
-      shortName.classList.add("short-name");
 
-      let fullName = aDoc.createElement("span");
-      fullName.textContent = name;
-      fullName.classList.add("full-name");
+      let fullName = name;
 
-      /* let gravatar = aDoc.createElement("img");
-      let url = "http://www.gravatar.com/avatar/"
+      let gravatarUrl = "http://www.gravatar.com/avatar/"
         + GlodaUtils.md5HashString(card.emailAddress.trim().toLowerCase())
-        + "?r=pg&d=wavatar&s=20";
-      gravatar.setAttribute("src", url); */
+        + "?r=pg&d=wavatar&s=50";
 
-      let span = aDoc.createElement("span");
-      span.style.color = colorFor(card.emailAddress);
-      //span.appendChild(gravatar);
-      span.appendChild(shortName);
-      span.appendChild(fullName);
-      span.setAttribute("title", title);
+      let colorStyle = "display: inline; color: "+colorFor(card.emailAddress);
+      let theNode = 
+        <div style="display: inline; font-weight: normal">
+          <div class="fg-tooltip fg-tooltip-left ui-widget ui-state-highlight ui-corner-all"
+            style="display: none; width: 300px">
+            <div style="overflow: auto">
+              <img src={gravatarUrl} style="vertical-align: middle; margin-right: 5px; margin-bottom: 5px" />
+              <div style="text-overflow: ellipsis; display: inline-block; vertical-align: middle">
+                <span class="display-name" style="font-weight: bold; font-size: 120%;">{card.displayName}<br /></span>
+                <span style="color: #666">{card.emailAddress}</span>
+              </div>
+            </div>
+            <div class="info-popup-contact-info" style="margin-top: 1em">
+              <span class="phone"><img src="chrome://gconversation/skin/phone.png" />{card.phone}<br /></span>
+              <span class="address">
+                <img src="chrome://gconversation/skin/house.png" />
+                <span style="white-space: pre-wrap">{card.address}</span>
+                <br />
+              </span>
+              <span class="birthday"><img src="chrome://gconversation/skin/cake.png" />{card.birthday}<br /></span>
+            </div>
+            <div class="info-popup-links" style="margin-top: 1em">
+              <a href="javascript:" class="link-action-add-ab">Add to address book</a> -
+              <a href="javascript:">Compose message to</a> -
+              <a href="javascript:">Copy email address</a> -
+              <a href="javascript:">Show messages involving</a>
+            </div>
+            <div class="fg-tooltip-pointer-up ui-state-highlight">
+              <div class="fg-tooltip-pointer-up-inner"></div>
+            </div>
+          </div>
+          <div class="tooltip link" style={colorStyle}>
+            <span class="short-name">{shortName}</span>
+            <span class="full-name">{fullName}</span>
+          </div>
+        </div>;
+
+      let span = aDoc.createElement("div");
+      span.style.display = "inline";
+      span.innerHTML = theNode.toXMLString();
+
+      if (!card.displayName)
+        span.getElementsByClassName("display-name")[0].style.display = "none";
+      if (!card.phone)
+        span.getElementsByClassName("phone")[0].style.display = "none";
+      if (!card.address)
+        span.getElementsByClassName("address")[0].style.display = "none";
+      if (!card.birthday)
+        span.getElementsByClassName("birthday")[0].style.display = "none";
+      if (!card.address && !card.phone && !card.birthday)
+        span.getElementsByClassName("info-popup-contact-info")[0].style.display = "none";
+      if (card.inAB) {
+        let linkAB = span.getElementsByClassName("link-action-add-ab")[0];
+        linkAB.style.display = "none";
+        linkAB.nextSibling.textContent = "";
+      }
+
       return span;
     }
     return [colorize(a) for each ([, a] in Iterator(decodedAddresses))];
@@ -758,7 +830,7 @@ window.addEventListener("load", function f_temp0 () {
                 </div>
                 <div class="tooltip msgheader-details-toggle">{detailsTxt}</div>
                 <div class="msgheader-from-to">
-                  <div class="sender link"></div>
+                  <div class="sender"></div>
                   <div class="to-text">{toTxt}</div>
                   <div class="recipients"></div>
                   <div class="draft-warning" title={editDraftTxt}></div>
@@ -1659,7 +1731,7 @@ window.addEventListener("load", function f_temp0 () {
           fallbackNoGloda();
         }
 
-        let sender = msgNode.getElementsByClassName("sender")[0];
+        let sender = msgNode.getElementsByClassName("sender")[0].getElementsByClassName("tooltip")[0];
         sender.msgHdr = msgHdr;
         sender.folder = msgHdr.folder;
         sender.msgKey = msgHdr.messageKey;

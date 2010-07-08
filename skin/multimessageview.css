@@ -219,6 +219,17 @@ a {
   font-style: italic;
 }
 
+/* The popups that give information on a participant */
+
+.info-popup-links a {
+  font-size: 80%;
+  color: #666;
+}
+
+.info-popup-contact-info img {
+  vertical-align: middle;
+}
+
 
 /* Links */
 

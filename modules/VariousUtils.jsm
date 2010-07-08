@@ -64,7 +64,6 @@ function dateAsInMessageList(dateObject) {
                                           dateObject.getHours(),
                                           dateObject.getMinutes(),
                                           dateObject.getSeconds());
-
 }
 
 /* (sigh...) */

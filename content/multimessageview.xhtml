@@ -227,49 +227,55 @@
                 var bColor = $(this).parents('.fg-tooltip').css('backgroundColor')
                 $(this).css('border-bottom', bWidth+' solid '+bColor);
               });
-              let sticky = false;
-              let timeout;
-              $aMsgNode.find('.tooltip').hover(
-                function(){
-                  if (!sticky) {
-                    clearTimeout(timeout);
-                    $(this).prev(':hidden').fadeIn();
-                  }
-                },
-                function(){
-                  var self = this;
-                  if (!sticky) {
-                    clearTimeout(timeout);
-                    timeout = setTimeout(
-                      function () {
-                        $(self).prev(':visible').fadeOut()
-                      },
-                      400);
+              $aMsgNode.find('.tooltip').each(function (i) {
+                let $details = $(this);
+                let $tooltip = $details.prev(".fg-tooltip");
+                let pos = $details.position();
+                if ($tooltip.hasClass("fg-tooltip-right")) {
+                  $tooltip.css("left", pos.left - $tooltip.width() - 20);
+                  $tooltip.css("top", pos.top + $details.height() + 12);
+                } else {
+                  $tooltip.css("left", pos.left + 20);
+                  $tooltip.css("top", pos.top + $details.height() + 12);
+                }
+
+                let sticky = false;
+                let timeout;
+                $details.click(function () { sticky = !sticky; });
+                $details.hover(
+                  function(){
+                    if (!sticky) {
+                      clearTimeout(timeout);
+                      $(this).prev(':hidden').fadeIn();
                     }
-                }
-              );
-              $aMsgNode.find('.tooltip').prev().hover(
-                function () {
-                  clearTimeout(timeout);
-                },
-                function () {
-                  var self = this;
-                  if ($(this).is(":visible") && !sticky) {
+                  },
+                  function(){
+                    var self = this;
+                    if (!sticky) {
+                      clearTimeout(timeout);
+                      timeout = setTimeout(
+                        function () {
+                          $(self).prev(':visible').fadeOut()
+                        },
+                        400);
+                      }
+                  });
+                $tooltip.hover(
+                  function () {
                     clearTimeout(timeout);
-                    timeout = setTimeout(
-                      function () {
-                        $(self).fadeOut();
-                      },
-                      400);
-                  }
-                }
-              );
-              $aMsgNode.find('.tooltip').click(function () { sticky = !sticky; });
-              let $tooltip = $aMsgNode.find(".fg-tooltip");
-              let $details = $aMsgNode.find(".tooltip");
-              let pos = $details.position();
-              $tooltip.css("left", pos.left - $tooltip.width() - 20);
-              $tooltip.css("top", pos.top + $details.height() + 12);
+                  },
+                  function () {
+                    var self = this;
+                    if ($(this).is(":visible") && !sticky) {
+                      clearTimeout(timeout);
+                      timeout = setTimeout(
+                        function () {
+                          $(self).fadeOut();
+                        },
+                        400);
+                    }
+                  });
+              });
             }
         ]]>
         </script>
