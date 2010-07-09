@@ -221,13 +221,42 @@ a {
 
 /* The popups that give information on a participant */
 
+.info-popup-gravatar {
+  vertical-align: middle;
+  margin-right: 5px;
+  margin-bottom: 5px;
+}
+
+.info-popup-name-email {
+  text-overflow: ellipsis;
+  display: inline-block;
+  vertical-align: middle
+}
+
+.info-popup-display-name {
+  font-weight: bold;
+  font-size: 120%;
+}
+
+.info-popup-display-email {
+  color: #666;
+}
+
 .info-popup-links a {
   font-size: 80%;
   color: #666;
 }
 
+.info-popup-contact-info, .info-popup-links {
+  margin-top: 1em;
+}
+
 .info-popup-contact-info img {
   vertical-align: middle;
+}
+
+.display-as-inline {
+  display: inline;
 }
 
 

@@ -385,22 +385,29 @@ window.addEventListener("load", function f_temp0 () {
           <div class="fg-tooltip fg-tooltip-left ui-widget ui-state-highlight ui-corner-all"
             style="display: none; width: 300px">
             <div style="overflow: auto">
-              <img src={gravatarUrl} style="vertical-align: middle; margin-right: 5px; margin-bottom: 5px" />
-              <div style="text-overflow: ellipsis; display: inline-block; vertical-align: middle">
-                <span class="display-name" style="font-weight: bold; font-size: 120%;">{card.displayName}<br /></span>
-                <span style="color: #666">{card.emailAddress}</span>
+              <img src={gravatarUrl} class="info-popup-gravatar" />
+              <div class="info-popup-name-email">
+                <span class="info-popup-display-name">{card.displayName}<br /></span>
+                <span class="info-popup-display-email">{card.emailAddress}</span>
               </div>
             </div>
-            <div class="info-popup-contact-info" style="margin-top: 1em">
-              <span class="phone"><img src="chrome://gconversation/skin/phone.png" />{card.phone}<br /></span>
+            <div class="info-popup-contact-info">
+              <span class="phone"><img src="chrome://gconversation/skin/phone.png" />
+                {card.phone}
+                <br />
+              </span>
               <span class="address">
                 <img src="chrome://gconversation/skin/house.png" />
                 <span style="white-space: pre-wrap">{card.address}</span>
                 <br />
               </span>
-              <span class="birthday"><img src="chrome://gconversation/skin/cake.png" />{card.birthday}<br /></span>
+              <span class="birthday">
+                <img src="chrome://gconversation/skin/cake.png" />
+                {card.birthday}
+                <br />
+              </span>
             </div>
-            <div class="info-popup-links" style="margin-top: 1em">
+            <div class="info-popup-links">
               <a href="javascript:" class="link-action-add-ab">Add to address book</a> -
               <a href="javascript:">Compose message to</a> -
               <a href="javascript:">Copy email address</a> -
@@ -417,11 +424,11 @@ window.addEventListener("load", function f_temp0 () {
         </div>;
 
       let span = aDoc.createElement("div");
-      span.style.display = "inline";
+      span.classList.add("display-as-inline");
       span.innerHTML = theNode.toXMLString();
 
       if (!card.displayName)
-        span.getElementsByClassName("display-name")[0].style.display = "none";
+        span.getElementsByClassName("info-popup-display-name")[0].style.display = "none";
       if (!card.phone)
         span.getElementsByClassName("phone")[0].style.display = "none";
       if (!card.address)
@@ -435,6 +442,16 @@ window.addEventListener("load", function f_temp0 () {
         linkAB.style.display = "none";
         linkAB.nextSibling.textContent = "";
       }
+
+      let removeTrailingTextNode = function (klass) {
+        let link = span.getElementsByClassName(klass)[0];
+        if (link.nextSibling && link.nextSibling.nodeType == link.nextSibling.TEXT_NODE
+            && link.nextSibling.textContent.trim().length === 0)
+          link.parentNode.removeChild(link.nextSibling);
+      };
+      removeTrailingTextNode("full-name");
+      removeTrailingTextNode("short-name");
+      removeTrailingTextNode("link");
 
       return span;
     }

@@ -244,6 +244,8 @@
                 $details.click(function () { sticky = !sticky; });
                 $details.hover(
                   function(){
+                    if ($(this).closest(".message").is(".collapsed"))
+                      return;
                     if (!sticky) {
                       clearTimeout(timeout);
                       $(this).prev(':hidden').fadeIn();
