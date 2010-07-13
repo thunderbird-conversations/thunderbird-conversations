@@ -201,6 +201,8 @@
               prefsBranch.setBoolPref("disable_error_empty_collection", true);
             }
 
+            const kPopupTimeout = 300;
+
             function styleMsgNode(aMsgNode) {
               let $aMsgNode = $(aMsgNode);
 
@@ -214,10 +216,10 @@
               let $buttons = $aMsgNode.find("button");
               $buttons.hover(
                 function(){ 
-                        $(this).addClass("ui-state-hover"); 
+                  $(this).addClass("ui-state-hover"); 
                 },
                 function(){ 
-                        $(this).removeClass("ui-state-hover"); 
+                  $(this).removeClass("ui-state-hover"); 
                 }
               );
 
@@ -252,14 +254,15 @@
                     }
                   },
                   function(){
+                    dump("details -- mouseleave\n");
                     var self = this;
                     if (!sticky) {
                       clearTimeout(timeout);
                       timeout = setTimeout(
                         function () {
-                          $(self).prev(':visible').fadeOut()
+                          $(self).prev(/*':visible'*/).fadeOut()
                         },
-                        400);
+                        kPopupTimeout);
                       }
                   });
                 $tooltip.hover(
@@ -267,6 +270,7 @@
                     clearTimeout(timeout);
                   },
                   function () {
+                    dump("fg-tooltip -- mouseleave\n");
                     var self = this;
                     if ($(this).is(":visible") && !sticky) {
                       clearTimeout(timeout);
@@ -274,10 +278,14 @@
                         function () {
                           $(self).fadeOut();
                         },
-                        400);
+                        kPopupTimeout);
                     }
                   });
               });
+            }
+
+            function mouseOut(aNode) {
+              $(aNode).mouseleave();
             }
         ]]>
         </script>

@@ -417,7 +417,7 @@ window.addEventListener("load", function f_temp0 () {
               <div class="fg-tooltip-pointer-up-inner"></div>
             </div>
           </div>
-          <div class="tooltip link" style={colorStyle}>
+          <div class="tooltip" style={colorStyle}>
             <span class="short-name">{shortName}</span>
             <span class="full-name">{fullName}</span>
           </div>
@@ -443,6 +443,9 @@ window.addEventListener("load", function f_temp0 () {
         linkAB.nextSibling.textContent = "";
       }
 
+      if (isSender)
+        span.getElementsByClassName("tooltip")[0].classList.add("link");
+
       let removeTrailingTextNode = function (klass) {
         let link = span.getElementsByClassName(klass)[0];
         if (link.nextSibling && link.nextSibling.nodeType == link.nextSibling.TEXT_NODE
@@ -451,7 +454,7 @@ window.addEventListener("load", function f_temp0 () {
       };
       removeTrailingTextNode("full-name");
       removeTrailingTextNode("short-name");
-      removeTrailingTextNode("link");
+      removeTrailingTextNode("tooltip");
 
       return span;
     }
@@ -1753,6 +1756,13 @@ window.addEventListener("load", function f_temp0 () {
         sender.folder = msgHdr.folder;
         sender.msgKey = msgHdr.messageKey;
         sender.addEventListener("click", function(e) {
+          /* Hide all the tooltips, because the mouseout event might not be fired
+           * properly */
+          for each (let [, t] in Iterator(msgNode.getElementsByClassName("fg-tooltip")))
+            htmlpane.contentWindow.mouseOut(t);
+          for each (let [, t] in Iterator(msgNode.getElementsByClassName("tooltip")))
+            htmlpane.contentWindow.mouseOut(t);
+
           /* Cancel the next attempt to load a conversation, we explicitely
            * requested this message. */
           let url = msgHdrToNeckoURL(msgHdr, gMessenger);
