@@ -87,7 +87,6 @@ window.addEventListener("load", function f_temp0 () {
   Cu.import("resource://gconversation/VariousUtils.jsm");
   Cu.import("resource://gconversation/GlodaUtils.jsm");
   Cu.import("resource://gconversation/MsgHdrUtils.jsm");
-  Cu.import("resource://gconversation/Crypto.jsm");
   Cu.import("resource://gre/modules/PluralForm.jsm");
   Cu.import("resource:///modules/gloda/utils.js");
 
