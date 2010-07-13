@@ -5,7 +5,7 @@ overlay chrome://messenger/content/messenger.xul chrome://gconversation/content/
 override chrome://messenger/content/multimessageview.xhtml chrome://gconversation/content/multimessageview.xhtml
 style chrome://global/content/customizeToolbar.xul chrome://gconversation/skin/overlay.css
 
-#locale gconversation de locale/de/
+locale gconversation de locale/de/
 locale gconversation en-US locale/en-US/
 locale gconversation fr locale/fr/
 #locale gconversation he-IL locale/he-IL/
@@ -13,4 +13,4 @@ locale gconversation it locale/it/
 locale gconversation ja-JP locale/ja-JP/
 #locale gconversation pt-BR locale/pt-BR/
 #locale gconversation sr locale/sr/
-#locale gconversation zh-CN locale/zh-CN/
+locale gconversation zh-CN locale/zh-CN/

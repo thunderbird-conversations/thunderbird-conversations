@@ -15,10 +15,10 @@
 <!ENTITY option.no_messages "Keine Nachrichten">
 <!ENTITY title.toolbar "Buttons der Symbolleiste">
 <!ENTITY buttons.info "All diese Befehle sind auch über das Kontextmenü der Konversation zugänglich (Rechtsklick).">
-<!ENTITY option.toolbar_mode "Show:">
+<!ENTITY option.toolbar_mode "Zeige:">
 <!ENTITY option.toolbar_mode_icons "Icons">
 <!ENTITY option.toolbar_mode_text "Text">
-<!ENTITY option.toolbar_mode_text_plus_icons "Icons beside Text">
+<!ENTITY option.toolbar_mode_text_plus_icons "Icons neben dem Text">
 <!ENTITY option.button.archive "&quot;Archiv&quot;-Button anzeigen">
 <!ENTITY option.button.trash "&quot;Löschen&quot;-Button anzeigen">
 <!ENTITY option.button.print "&quot;Drucken&quot;-Button anzeigen">
@@ -28,7 +28,7 @@
 <!ENTITY option.button.mark_as_read "&quot;Alle als gelesen markieren&quot;-Button anzeigen">
 <!ENTITY option.button.open_in_new_tab "&quot;In neuem Tab öffnen&quot;-Button anzeigen">
 <!ENTITY title.quoting "Zitieren">
-<!ENTITY option.hide_longer_than "Zitierte Nachrichtenteile länger als">
+<!ENTITY option.hide_longer_than "Zitierten Text länger als">
 <!ENTITY option.lines "Zeilen verbergen">
 <!ENTITY option.reverse_order "Rückwärts sortieren (letzte → erste)">
 <!ENTITY title.general "Allgemein">
@@ -39,9 +39,9 @@
 <!ENTITY title.error_messages "Fehlermeldungen">
 <!ENTITY option.disable_error_empty_collection "Die Warnung über unvollständige Konversationen deaktivieren">
 <!ENTITY option.monospaced_senders "Nachrichten von diesen Adressen sollen in unproportionaler Schriftart angezeigt werden (durch Kommas trennen):">
-<!ENTITY title.advanced_display "Conversation display">
-<!ENTITY option.no_friendly_date "Use &quot;normal&quot; dates, just like the message list">
-<!ENTITY option.guess_first_names "Guess and display participants' first names only">
-<!ENTITY option.my_messages_in_inbox "How to display the messages I sent in the Inbox">
-<!ENTITY option.scroll_to_new_message "In the message list, expand the first unread thread when changing folders">
-<!ENTITY title.message_list "Message list">
+<!ENTITY title.advanced_display "Konversationsanzeige">
+<!ENTITY option.no_friendly_date "&quot;Normales&quot; Datum wie in der Nachrichtenliste anzeigen">
+<!ENTITY option.guess_first_names "Zeige nur die Vornamen der Teilnehmer an">
+<!ENTITY option.my_messages_in_inbox "Wie sollen von mir gesendete Nachrichten im Posteingang angezeigt werden?">
+<!ENTITY option.scroll_to_new_message "Bei Ordnerwechsel, klappe den ersten ungelesenen Thread in der Nachrichtenliste auf">
+<!ENTITY title.message_list "Nachrichtenliste">

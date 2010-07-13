@@ -2,7 +2,7 @@
      lowercase. 
 -->
 <!ENTITY button.open_in_new_tab "In neuem Tab öffnen">
-<!ENTITY button.open_in_new_tab_tooltip "open this thread in a new tab (hint: hold shift)">
+<!ENTITY button.open_in_new_tab_tooltip "Öffne diesen Thread in neuem Tab">
 <!ENTITY button.mark_all_read "Alle als gelesen markieren">
 <!ENTITY button.expand_all "Alle ausklappen">
 <!ENTITY button.collapse_all "Alle einklappen">

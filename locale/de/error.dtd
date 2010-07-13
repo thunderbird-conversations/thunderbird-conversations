@@ -7,5 +7,5 @@
 <!ENTITY info_af.title "Hi, hier ist Better Conversation View!">
 <!ENTITY info_af.body "Die Nachricht, die sie gerade ausgewählt haben, ist Teil einer größeren Konversation. Obwohl kein wirklicher Thread in der Nachrichtenliste dargestellt wird, nehmen wir an, dass Sie Nachrichten wie diese gerne automatisch als Konversation abgerufen und angezeigt bekommen würden.">
 <!ENTITY info_af.body2 "Möchten sie dieses Feature? Dies können Sie später jeder Zeit in den Einstellungen dieses Add-Ons unter Erweitert ändern.">
-<!ENTITY info_af.yes "Ja gerne!">
-<!ENTITY info_af.no "Nein danke!">
+<!ENTITY info_af.yes "Ja, gerne!">
+<!ENTITY info_af.no "Nein, danke!">

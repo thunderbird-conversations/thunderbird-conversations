@@ -43,5 +43,5 @@
 <!ENTITY option.no_friendly_date "使用&quot;正常&quot;日期。与邮件列表中相同">
 <!ENTITY option.guess_first_names "推测并仅显示相关人员的姓氏">
 <!ENTITY option.my_messages_in_inbox "如何在收件箱中显示我发出的邮件">
-<!ENTITY option.scroll_to_new_message "In the message list, expand the first unread thread when changing folders">
-<!ENTITY title.message_list "Message list">
+<!ENTITY option.scroll_to_new_message "在邮件列表中，当更换目录时自动显示第一条未读会话">
+<!ENTITY title.message_list "邮件列表">
