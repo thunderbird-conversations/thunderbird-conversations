@@ -104,6 +104,7 @@ window.addEventListener("load", function f_temp0 () {
   const stringBundle = document.getElementById("gconv-string-bundle");
   const ioService = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
   const msgComposeService = Cc["@mozilla.org/messengercompose;1"].getService(Ci.nsIMsgComposeService);  
+  const clipboardService = Cc["@mozilla.org/widget/clipboardhelper;1"].getService(Ci.nsIClipboardHelper);
 
   /* How I wish Javascript had algebraic data types */
   const kActionDoNothing = 0;
@@ -321,6 +322,7 @@ window.addEventListener("load", function f_temp0 () {
         if (cardDetails.card) { /* We know the guy */
           //myDump("Got a card for "+address.emailAddress+"!\n");
           card.inAB = true;
+          card.cardDetails = cardDetails; /* A bit weird, I agree */
           card.displayName = cardDetails.card.displayName;
           card.firstName = cardDetails.card.firstName;
           card.phone =
@@ -364,20 +366,19 @@ window.addEventListener("load", function f_temp0 () {
     }
 
     function colorize(card) {
+      /* Compute various values */
       let name = card.displayName || card.emailAddress;
       let title = card.displayName ? card.emailAddress : "";
-
+      let fullName = name;
       let shortName = gPrefs["guess_first_names"]
         ? card.firstName || parseShortName(name)
         : name;
-
-      let fullName = name;
-
       let gravatarUrl = "http://www.gravatar.com/avatar/"
         + GlodaUtils.md5HashString(card.emailAddress.trim().toLowerCase())
         + "?r=pg&d=wavatar&s=50";
-
       let colorStyle = "display: inline; color: "+colorFor(card.emailAddress);
+
+      /* Fill the dialog <div> with them */
       let dialogNode = 
         <div style="width: 300px; display: none" class="contact-dialog">
           <div>
@@ -417,22 +418,26 @@ window.addEventListener("load", function f_temp0 () {
           </div>
           <div class="info-popup-links">
             <a href="javascript:" class="link-action-add-ab">Add to address book</a> -
-            <a href="javascript:">Compose message to</a> -
-            <a href="javascript:">Copy email address</a> -
-            <a href="javascript:">Show messages involving</a>
+            <a href="javascript:" class="link-action-edit-ab">Edit details</a> -
+            <a href="javascript:" class="link-action-compose-to">Compose message to</a> -
+            <a href="javascript:" class="link-action-copy-email">Copy email address</a> -
+            <a href="javascript:" class="link-action-show-involving">Show messages involving</a>
           </div>
         </div>;
 
+      /* Create the small <div> that olds the short name and the full name */
       let linkNode =
         <div class="link contact-link" style={colorStyle}>
           <span class="short-name">{shortName}</span>
           <span class="full-name">{fullName}</span>
         </div>;
 
+      /* Wrap them both in a bigger <div> */
       let span = aDoc.createElement("div");
       span.classList.add("display-as-inline");
       span.innerHTML = linkNode.toXMLString() + dialogNode.toXMLString();
 
+      /* Hide unnecessary UI items */
       if (!card.displayName)
         span.getElementsByClassName("info-popup-display-name")[0].style.display = "none";
       if (!card.phone)
@@ -443,12 +448,56 @@ window.addEventListener("load", function f_temp0 () {
         span.getElementsByClassName("birthday")[0].style.display = "none";
       if (!card.address && !card.phone && !card.birthday)
         span.getElementsByClassName("info-popup-contact-info")[0].style.display = "none";
+
+      /* Register the "show involving" action */
+      let showLink = span.getElementsByClassName("link-action-show-involving")[0];
+      showLink.addEventListener("click", function (event) {
+        }, true);
+
+      /* Register the "copy email address" action */
+      let copyLink = span.getElementsByClassName("link-action-copy-email")[0];
+      copyLink.addEventListener("click", function (event) {
+          clipboardService.copyString(card.emailAddress);
+        }, true);
+
+      /* Register the compose message to action */
+      let composeLink = span.getElementsByClassName("link-action-compose-to")[0];
+      composeLink.addEventListener("click", function (event) {
+          let URI = ioService.newURI("mailto:"+card.emailAddress, null, null);  
+          msgComposeService.OpenComposeWindowWithURI(null, URI);
+        }, true);
+
+      /* Register the edit details / add to address book actions */
       if (card.inAB) {
-        let linkAB = span.getElementsByClassName("link-action-add-ab")[0];
-        linkAB.style.display = "none";
-        linkAB.nextSibling.textContent = "";
+        let addAb = span.getElementsByClassName("link-action-add-ab")[0];
+        addAb.style.display = "none";
+        addAb.nextSibling.textContent = "";
+        let editAb = span.getElementsByClassName("link-action-edit-ab")[0];
+        editAb.addEventListener("click", function (event) {
+          window.openDialog("chrome://messenger/content/addressbook/abEditCardDialog.xul",
+                            "",
+                            "chrome,modal,resizable=no,centerscreen",
+                            { abURI: card.cardDetails.book.URI,
+                              card: card.cardDetails.card });
+
+          }, true);
+      } else {
+        let editAb = span.getElementsByClassName("link-action-edit-ab")[0];
+        editAb.style.display = "none";
+        editAb.nextSibling.textContent = "";
+        let addAb = span.getElementsByClassName("link-action-add-ab")[0];
+        addAb.addEventListener("click", function (event) {
+            let args = {
+              primaryEmail: card.emailAddress,
+              displayName: card.displayName,
+              allowRemoteContent: true
+            };
+            window.openDialog("chrome://messenger/content/addressbook/abNewCardDialog.xul",
+                              "", "chrome,resizable=no,titlebar,modal,centerscreen", args);
+          }, true);
       }
 
+      /* Small cleanups */
       let removeTrailingTextNode = function (klass) {
         let link = span.getElementsByClassName(klass)[0];
         if (link.nextSibling && link.nextSibling.nodeType == link.nextSibling.TEXT_NODE

@@ -246,6 +246,9 @@
                         return;
                       $dialog.dialog('open');
                     });
+                  $dialog.find(".info-popup-links > a").click(function () {
+                      $dialog.dialog('close');
+                    });
                 });
 
               /* The tooltip */
