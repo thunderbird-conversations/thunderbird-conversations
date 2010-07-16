@@ -48,7 +48,7 @@
 /* That's for event handlers. The stash is just a convenient way to store data
  * that needs to be made available to the event handlers. We also store in the
  * stash variables we don't want to be GC'd. */
-var gconversation = {
+let GCV = {
   /* Event handlers */
   on_load_thread: null,
   on_load_thread_tab: null,
@@ -84,11 +84,11 @@ window.addEventListener("load", function f_temp0 () {
   const Cc = Components.classes;
   const Cu = Components.utils;
   const Cr = Components.results;
-  Cu.import("resource://gconversation/VariousUtils.jsm");
-  Cu.import("resource://gconversation/GlodaUtils.jsm");
-  Cu.import("resource://gconversation/MsgHdrUtils.jsm");
-  Cu.import("resource://gre/modules/PluralForm.jsm");
-  Cu.import("resource:///modules/gloda/utils.js");
+  Cu.import("resource://gconversation/VariousUtils.jsm", GCV);
+  Cu.import("resource://gconversation/GlodaUtils.jsm", GCV);
+  Cu.import("resource://gconversation/MsgHdrUtils.jsm", GCV);
+  Cu.import("resource://gre/modules/PluralForm.jsm", GCV);
+  Cu.import("resource:///modules/gloda/utils.js", GCV);
 
   /* Various magic values */
   const nsMsgViewIndex_None = 0xffffffff;
@@ -167,7 +167,7 @@ window.addEventListener("load", function f_temp0 () {
        * we don't do this, prefs such as "use monospaced font"... or things like
        * that don't take effect until we load another conversation which is bad
        * for the user. */
-      gconversation.stash.msgHdrs = [];
+      GCV.stash.msgHdrs = [];
       switch (aData) {
         case "monospaced":
         case "monospaced_snippets":
@@ -369,9 +369,16 @@ window.addEventListener("load", function f_temp0 () {
       /* Compute various values */
       let name = card.displayName || card.emailAddress;
       let title = card.displayName ? card.emailAddress : "";
+<<<<<<< HEAD
       let fullName = name;
       let shortName = gPrefs["guess_first_names"]
         ? card.firstName || parseShortName(name)
+=======
+
+      let shortName = aDoc.createElement("span");
+      shortName.textContent = gPrefs["guess_first_names"]
+        ? card.firstName || GCV.parseShortName(name)
+>>>>>>> a483c2b... AMO Compliance.
         : name;
       let gravatarUrl = "http://www.gravatar.com/avatar/"
         + GlodaUtils.md5HashString(card.emailAddress.trim().toLowerCase())
@@ -567,7 +574,7 @@ window.addEventListener("load", function f_temp0 () {
     if (!aMsgHdr)
       dumpCallStack();
     let tKey = aMsgHdr.messageKey + aMsgHdr.folder.URI;
-    return gconversation.stash.msgNodes[tKey];
+    return GCV.stash.msgNodes[tKey];
   }
 
   /* From a set of message headers, tell which ones should be expanded */
@@ -713,10 +720,10 @@ window.addEventListener("load", function f_temp0 () {
       /* We need to keep them at hand for the "Mark all read" command to work
        * properly (and others). THis is set by the original constructor that
        * we're not overriding here, see the original selectionsummaries.js */
-      gconversation.stash.msgHdrs = this._msgHdrs;
-      gconversation.stash.msgNodes = this._msgNodes;
-      gconversation.stash.expand_all = [];
-      gconversation.stash.collapse_all = [];
+      GCV.stash.msgHdrs = this._msgHdrs;
+      GCV.stash.msgNodes = this._msgNodes;
+      GCV.stash.expand_all = [];
+      GCV.stash.collapse_all = [];
 
       /* Reset the set of known colors */
       resetColors();
@@ -730,7 +737,7 @@ window.addEventListener("load", function f_temp0 () {
       let numMessages = this._msgHdrs.length;
       let subject = (firstMsgHdr.mime2DecodedSubject || gSelectionSummaryStrings["noSubject"])
          + " "
-         + PluralForm.get(numMessages, gSelectionSummaryStrings["Nmessages"]).replace('#1', numMessages);
+         + GCV.PluralForm.get(numMessages, gSelectionSummaryStrings["Nmessages"]).replace('#1', numMessages);
       let heading = htmlpane.contentDocument.getElementById('heading');
       heading.setAttribute("class", "heading");
       heading.textContent = subject;
@@ -755,7 +762,7 @@ window.addEventListener("load", function f_temp0 () {
        * complete, which in turn would result in no attachments at all
        * displayed). */
       let needsFocus = tellMeWhoToFocus(msgHdrs);
-      gconversation.stash.all_went_well = false;
+      GCV.stash.all_went_well = false;
       myDump("                                                PART 1/3\n");
       runOnceAfterNSignals(
         numMessages,
@@ -780,7 +787,7 @@ window.addEventListener("load", function f_temp0 () {
                * and the summary code is reloaded once new messages have been
                * indexed. */
               if (gPrefs["auto_mark_read"] && document.hasFocus())
-                gconversation.mark_all_read();
+                GCV.mark_all_read();
 
               /* This is the end of it all, so be confident our conversation is
                * properly built and complete. This is specifically to avoid the
@@ -798,7 +805,7 @@ window.addEventListener("load", function f_temp0 () {
                * - isNewConversation == false
                * - the conversation's messages are 20px high... good!
                **/
-              gconversation.stash.all_went_well = true;
+              GCV.stash.all_went_well = true;
             });
 
           /* Second step: expand all the messages that need to be expanded. All
@@ -813,7 +820,7 @@ window.addEventListener("load", function f_temp0 () {
                 throw "Why collapse a message?";
                 break;
               case kActionExpand:
-                gconversation.stash.expand_all[i]();
+                GCV.stash.expand_all[i]();
                 break;
               default:
                 throw "Never happens";
@@ -982,14 +989,14 @@ window.addEventListener("load", function f_temp0 () {
         let toggleMessage = function toggleMessage_ () {
           msgNode.classList.toggle("collapsed");
         };
-        gconversation.stash.expand_all.push(function () {
+        GCV.stash.expand_all.push(function () {
           if (msgNode.classList.contains("collapsed")) {
             toggleMessage();
             expandAttachments();
             expandIframe(); /* takes care of calling signal() */
           }
         });
-        gconversation.stash.collapse_all.push(function () {
+        GCV.stash.collapse_all.push(function () {
           if (!msgNode.classList.contains("collapsed")) {
             toggleMessage(); /* Immediate */
             signal();
@@ -998,7 +1005,7 @@ window.addEventListener("load", function f_temp0 () {
 
         /* Warn the user if this is a draft.
          * XXX we should probably provide a way to start editing said Draft */
-        if (msgHdrIsDraft(msgHdr)) {
+        if (GCV.msgHdrIsDraft(msgHdr)) {
           let draftTxt = stringBundle.getString("draft");
           msgNode.getElementsByClassName("draft-warning")[0].textContent = draftTxt;
         }
@@ -1170,30 +1177,30 @@ window.addEventListener("load", function f_temp0 () {
             let selectedMessages = gFolderDisplay.selectedMessages;
             /* Does not */
             let l = gFolderDisplay.selectedIndices.length;
-            msgHdrsDelete([msgHdr]);
+            GCV.msgHdrsDelete([msgHdr]);
             if (l > 1)
               gFolderDisplay.selectMessages(selectedMessages.filter(function (x) x.messageId != msgHdr.messageId));
           });
         register(".button-archive", function archive_listener (event) {
             let selectedMessages = gFolderDisplay.selectedMessages;
             let l = gFolderDisplay.selectedIndices.length;
-            msgHdrsArchive([msgHdr], window);
+            GCV.msgHdrsArchive([msgHdr], window);
             if (l > 1)
               gFolderDisplay.selectMessages(selectedMessages.filter(function (x) x.messageId != msgHdr.messageId));
           });
         register(".action.mark-read", function markreadnode_listener (event) {
-            msgHdrsMarkAsRead([msgHdr], !msgHdr.isRead);
+            GCV.msgHdrsMarkAsRead([msgHdr], !msgHdr.isRead);
           });
 
         /* Now the expand collapse and stuff */
-        register(".grip", gconversation.stash.collapse_all[iCopy]);
+        register(".grip", GCV.stash.collapse_all[iCopy]);
         register(null, function dblclick_listener () {
             if (msgNode.classList.contains("collapsed"))
-              gconversation.stash.expand_all[iCopy]();
+              GCV.stash.expand_all[iCopy]();
             else
-              gconversation.stash.collapse_all[iCopy]();
+              GCV.stash.collapse_all[iCopy]();
           }, "dblclick");
-        register(".snippetmsg", gconversation.stash.expand_all[iCopy]);
+        register(".snippetmsg", GCV.stash.expand_all[iCopy]);
         msgNode.addEventListener("keypress", function keypress_listener (event) {
             switch (event.which) {
               case 'o'.charCodeAt(0):
@@ -1204,9 +1211,9 @@ window.addEventListener("load", function f_temp0 () {
                    * viewport might be too short and won't allow scrolling to the
                    * right value already. */
                   runOnceAfterNSignals(1, function () scrollNodeIntoView(msgNode));
-                  gconversation.stash.expand_all[iCopy]();
+                  GCV.stash.expand_all[iCopy]();
                 } else {
-                  gconversation.stash.collapse_all[iCopy]();
+                  GCV.stash.collapse_all[iCopy]();
                 }
                 break;
 
@@ -1248,7 +1255,7 @@ window.addEventListener("load", function f_temp0 () {
                 break;
 
               case 'e'.charCodeAt(0):
-                gconversation.archive_all();
+                GCV.archive_all();
                 break;
 
               case 'u'.charCodeAt(0):
@@ -1256,7 +1263,7 @@ window.addEventListener("load", function f_temp0 () {
                 break;
 
               case '#'.charCodeAt(0):
-                gconversation.delete_all();
+                GCV.delete_all();
                 break;
             }
           }, true);
@@ -1297,8 +1304,13 @@ window.addEventListener("load", function f_temp0 () {
                 /* Our super-advanced heuristic ;-) */
                 let hasHtml = !(
                   iframeDoc.body.firstElementChild &&
+<<<<<<< HEAD
                   (iframeDoc.body.firstElementChild.classList.contains("moz-text-flowed") ||
                    iframeDoc.body.firstElementChild.classList.contains("moz-text-plain")));
+=======
+                  (GCV._mm_hasClass(iframeDoc.body.firstElementChild, "moz-text-flowed") ||
+                   GCV._mm_hasClass(iframeDoc.body.firstElementChild, "moz-text-plain")));
+>>>>>>> a483c2b... AMO Compliance.
 
                 /* Remove the attachments if the user has not set View >
                  * Display Attachments Inline. Do that right now, otherwise the
@@ -1315,11 +1327,19 @@ window.addEventListener("load", function f_temp0 () {
                 /* The part below is all about quoting */
                 /* Launch various heuristics to convert most common quoting styles
                  * to real blockquotes. Spoiler: most of them suck. */
+<<<<<<< HEAD
                 convertOutlookQuotingToBlockquote(iframe.contentWindow, iframeDoc);
                 convertHotmailQuotingToBlockquote1(iframeDoc);
                 convertHotmailQuotingToBlockquote2(iframe.contentWindow, iframeDoc, gPrefs["hide_quote_length"]);
                 convertForwardedToBlockquote(iframeDoc);
                 fusionBlockquotes(iframeDoc);
+=======
+                GCV.convertOutlookQuotingToBlockquote(iframeDoc);
+                GCV.convertHotmailQuotingToBlockquote1(iframeDoc);
+                GCV.convertHotmailQuotingToBlockquote2(iframe.contentWindow, iframeDoc, gPrefs["hide_quote_length"]);
+                GCV.convertForwardedToBlockquote(iframeDoc);
+                GCV.fusionBlockquotes(iframeDoc);
+>>>>>>> a483c2b... AMO Compliance.
                 /* This function adds a show/hide quoted text link to every topmost
                  * blockquote. Nested blockquotes are not taken into account. */
                 let walk = function walk_ (elt) {
@@ -1395,7 +1415,11 @@ window.addEventListener("load", function f_temp0 () {
                   let toggleFontStyle = function togglefont_listener (event) {
                     let elts = iframeDoc.querySelectorAll("pre, body > *:first-child")
                     for each (let [, elt] in Iterator(elts)) {
+<<<<<<< HEAD
                       elt.classList.toggle("pre-as-regular");
+=======
+                      GCV._mm_toggleClass(elt, "pre-as-regular");
+>>>>>>> a483c2b... AMO Compliance.
                     }
                     /* XXX The height of the iframe isn't updated as we change
                      * fonts. This is usually unimportant, as it will grow
@@ -1479,7 +1503,7 @@ window.addEventListener("load", function f_temp0 () {
              * pretty well (no JS is executed, the images are loaded IFF we
              * authorized that recipient).
              * */
-            let url = msgHdrToNeckoURL(msgHdr, gMessenger);
+            let url = GCV.msgHdrToNeckoURL(msgHdr, gMessenger);
 
             /* These steps are mandatory. Basically, the code that loads the
              * messages will always output UTF-8 as the OUTPUT ENCODING, so
@@ -1579,7 +1603,7 @@ window.addEventListener("load", function f_temp0 () {
              * */
             myDump("*** Got an \"offline message\"\n");
 
-            let body = messageBodyFromMsgHdr(msgHdr, true);
+            let body = GCV.messageBodyFromMsgHdr(msgHdr, true);
             let snippet = body.substring(0, SNIPPET_LENGTH-1)+"…";
             snippetMsgNode.textContent = snippet;
           } catch (e) {
@@ -1623,7 +1647,7 @@ window.addEventListener("load", function f_temp0 () {
                   headerNode.textContent = header+": ";
                 let value = aMimeMsg.headers[header];
                 if (header != "folder")
-                  value = GlodaUtils.deMime(value); /* I <3 gloda */
+                  value = GCV.GlodaUtils.deMime(value); /* I <3 gloda */
                 let valueNode = htmlpane.contentDocument.createTextNode(value);
                 tooltip.appendChild(headerNode);
                 tooltip.appendChild(valueNode);
@@ -1664,8 +1688,8 @@ window.addEventListener("load", function f_temp0 () {
             snippetMsgNode.textContent = snippet;
 
             /* Ok, let's have fun with attachments now */
-            let attachments = MimeMessageGetAttachments(aMimeMsg);
-            let [makePlural, ] = PluralForm.makeGetter(stringBundle.getString("plural_rule"));
+            let attachments = GCV.MimeMessageGetAttachments(aMimeMsg);
+            let [makePlural, ] = GCV.PluralForm.makeGetter(stringBundle.getString("plural_rule"));
             let attachmentsTopTxt = stringBundle.getString("attachments_top2");
             let attachmentsBottomTxt = stringBundle.getString("attachments_bottom2");
             let numAttachments = attachments.length;
@@ -1832,8 +1856,8 @@ window.addEventListener("load", function f_temp0 () {
         stdReader.addEventListener("click", function(e) {
           /* Cancel the next attempt to load a conversation, we explicitely
            * requested this message. */
-          let url = msgHdrToNeckoURL(msgHdr, gMessenger);
-          gconversation.stash.wantedUrl = url.spec;
+          let url = GCV.msgHdrToNeckoURL(msgHdr, gMessenger);
+          GCV.stash.wantedUrl = url.spec;
 
           /* msgHdr is "the right message" so jump to it (see
            * selectRightMessage) */
@@ -1869,7 +1893,7 @@ window.addEventListener("load", function f_temp0 () {
      * this should minimize race conditions but not solve them. */
     let firstMessageId = gFolderDisplay.selectedMessage.messageId;
     try {
-      gconversation.stash.q1 = Gloda.getMessageCollectionForHeaders(aSelectedMessages, {
+      GCV.stash.q1 = Gloda.getMessageCollectionForHeaders(aSelectedMessages, {
         onItemsAdded: function (aItems) {
           if (!aItems.length) {
             myDump("!!! GConversation: gloda query returned no messages!\n");
@@ -1877,7 +1901,7 @@ window.addEventListener("load", function f_temp0 () {
             return;
           }
           let msg = aItems[0];
-          gconversation.stash.q2 = msg.conversation.getMessagesCollection({
+          GCV.stash.q2 = msg.conversation.getMessagesCollection({
             onItemsAdded: function (aItems) {
             },
             onItemsModified: function () {},
@@ -1934,13 +1958,13 @@ window.addEventListener("load", function f_temp0 () {
    * */
   function isNewConversation(items) {
     /* Happens in wicked cases */
-    if (gconversation.stash.multiple_selection || !gconversation.stash.all_went_well)
+    if (GCV.stash.multiple_selection || !GCV.stash.all_went_well)
       return true;
     let newConversation = false;
     try {
-      for (let i = 0; i < Math.max(items.length, gconversation.stash.msgHdrs.length); ++i) {
-        if (i >= items.length || i >= gconversation.stash.msgHdrs.length ||
-            items[i].messageId != gconversation.stash.msgHdrs[i].messageId) {
+      for (let i = 0; i < Math.max(items.length, GCV.stash.msgHdrs.length); ++i) {
+        if (i >= items.length || i >= GCV.stash.msgHdrs.length ||
+            items[i].messageId != GCV.stash.msgHdrs[i].messageId) {
           newConversation = true;
           break;
         }
@@ -1983,28 +2007,28 @@ window.addEventListener("load", function f_temp0 () {
         msgNode.setAttribute("tabindex", 2);
     }
 
-    let needsFocus = tellMeWhoToFocus(gconversation.stash.msgHdrs);
+    let needsFocus = tellMeWhoToFocus(GCV.stash.msgHdrs);
 
     runOnceAfterNSignals(
-      gconversation.stash.msgHdrs.length,
+      GCV.stash.msgHdrs.length,
       function f_temp5() {
-        let msgNode = msgHdrToMsgNode(gconversation.stash.msgHdrs[needsFocus]);
+        let msgNode = msgHdrToMsgNode(GCV.stash.msgHdrs[needsFocus]);
         scrollNodeIntoView(msgNode);
         variousFocusHacks(msgNode);
       }
     );
 
-    let actionList = tellMeWhoToExpand(gconversation.stash.msgHdrs, needsFocus);
+    let actionList = tellMeWhoToExpand(GCV.stash.msgHdrs, needsFocus);
     for each (let [i, action] in Iterator(actionList)) {
       switch (action) {
         case kActionDoNothing:
           signal();
           break;
         case kActionCollapse:
-          gconversation.stash.collapse_all[i]();
+          GCV.stash.collapse_all[i]();
           break;
         case kActionExpand:
-          gconversation.stash.expand_all[i]();
+          GCV.stash.expand_all[i]();
           break;
         default:
           throw "Never happens";
@@ -2022,7 +2046,7 @@ window.addEventListener("load", function f_temp0 () {
       return false;
 
     htmlpane.contentWindow.enableExtraButtons();
-    gconversation.stash.multiple_selection = false;
+    GCV.stash.multiple_selection = false;
 
     pullConversation(
       aSelectedMessages,
@@ -2040,8 +2064,8 @@ window.addEventListener("load", function f_temp0 () {
         /* Actual logic */
         if (aCollection) {
           clearErrors();
-          items = [selectRightMessage(x, gDBView.msgFolder)
-            for each ([, x] in Iterator(groupMessages(aCollection.items)))];
+          items = [GCV.selectRightMessage(x, gDBView.msgFolder)
+            for each ([, x] in Iterator(GCV.groupMessages(aCollection.items)))];
           items = items.filter(function (x) x);
           items = items.map(function (x) x.folderMessage);
           myDump("aCollection is non-null, "+items.length+" messages found\n");
@@ -2100,7 +2124,7 @@ window.addEventListener("load", function f_temp0 () {
         gSummary = new MultiMessageSummary(aSelectedMessages);
         gSummary.init();
         document.getElementById('multimessage').contentWindow.disableExtraButtons();
-        gconversation.stash.multiple_selection = true;
+        GCV.stash.multiple_selection = true;
       /* --8<-- cut here --8<- */
       }
       /* --8<-- end cut here -8<-- */
@@ -2122,14 +2146,14 @@ window.addEventListener("load", function f_temp0 () {
   };
 
   /* Register event handlers through the global variable */
-  gconversation.on_load_thread = function() {
+  GCV.on_load_thread = function() {
     if (!checkGlodaEnabled())
       return;
     summarizeThread(gFolderDisplay.selectedMessages, null, true);
     gMessageDisplay.singleMessageDisplay = false;
   };
 
-  gconversation.on_load_thread_tab = function(event) {
+  GCV.on_load_thread_tab = function(event) {
     if (!gFolderDisplay.selectedMessages.length)
       return;
     if (!checkGlodaEnabled())
@@ -2139,14 +2163,14 @@ window.addEventListener("load", function f_temp0 () {
     if (event.shiftKey) {
       let tabmail = document.getElementById("tabmail");
       tabmail.openTab("message", {msgHdr: aSelectedMessages[0], background: false});
-      gconversation.on_load_thread();
+      GCV.on_load_thread();
     } else {
       pullConversation(
         gFolderDisplay.selectedMessages,
         function (aCollection, aItems, aMsg) {
           let tabmail = document.getElementById("tabmail");
           if (aCollection) {
-            aCollection.items = [selectRightMessage(m) for each ([, m] in Iterator(groupMessages(aCollection.items)))];
+            aCollection.items = [GCV.selectRightMessage(m) for each ([, m] in Iterator(GCV.groupMessages(aCollection.items)))];
             aCollection.items = aCollection.items.filter(function (x) x);
             tabmail.openTab("glodaList", {
               collection: aCollection,
@@ -2165,47 +2189,47 @@ window.addEventListener("load", function f_temp0 () {
   };
 
   /* Register "print" functionnality. Now that's easy! */
-  gconversation.print = function () {
+  GCV.print = function () {
     document.getElementById("multimessage").contentWindow.print();
   };
 
   /* The button as well as the menu item are hidden and disabled respectively
    * when we're viewing a MultiMessageSummary, so fear not marking wrong
    * messages as read. */
-  gconversation.mark_all_read = function () {
+  GCV.mark_all_read = function () {
     /* XXX optimize here and do a union beforehand */
-    msgHdrsMarkAsRead(gconversation.stash.msgHdrs, true);
-    msgHdrsMarkAsRead(gFolderDisplay.selectedMessages, true);
+    GCV.msgHdrsMarkAsRead(GCV.stash.msgHdrs, true);
+    GCV.msgHdrsMarkAsRead(gFolderDisplay.selectedMessages, true);
   };
 
-  gconversation.archive_all = function () {
-    if (gconversation.stash.multiple_selection)
+  GCV.archive_all = function () {
+    if (GCV.stash.multiple_selection)
       MsgArchiveSelectedMessages(null);
     else
-      msgHdrsArchive(gconversation.stash.msgHdrs.concat(gFolderDisplay.selectedMessages), window);
+      GCV.msgHdrsArchive(GCV.stash.msgHdrs.concat(gFolderDisplay.selectedMessages), window);
   };
 
-  gconversation.delete_all = function () {
-    if (gconversation.stash.multiple_selection)
-      msgHdrsDelete(gFolderDisplay.selectedMessages);
+  GCV.delete_all = function () {
+    if (GCV.stash.multiple_selection)
+      GCV.msgHdrsDelete(gFolderDisplay.selectedMessages);
     else
-      msgHdrsDelete(gconversation.stash.msgHdrs.concat(gFolderDisplay.selectedMessages));
+      GCV.msgHdrsDelete(GCV.stash.msgHdrs.concat(gFolderDisplay.selectedMessages));
   };
 
   /* This actually does what we want. It also expands threads as needed. */
-  gconversation.on_back = function (event) {
+  GCV.on_back = function (event) {
     gMessageDisplay.singleMessageDisplay = true;
     gFolderDisplay.selectMessage(gFolderDisplay.selectedMessages[0]);
     document.getElementById("threadTree").focus();
   };
 
-  gconversation.on_expand_all = function (event) {
-    for each (let [, f] in Iterator(gconversation.stash.expand_all))
+  GCV.on_expand_all = function (event) {
+    for each (let [, f] in Iterator(GCV.stash.expand_all))
       f();
   };
 
-  gconversation.on_collapse_all = function (event) {
-    for each (let [, f] in Iterator(gconversation.stash.collapse_all))
+  GCV.on_collapse_all = function (event) {
+    for each (let [, f] in Iterator(GCV.stash.collapse_all))
       f();
   };
 
@@ -2239,8 +2263,8 @@ window.addEventListener("load", function f_temp0 () {
       } else if (selectedCount == 1) {
         /* Here starts the part where we modify the original code. */
         let msgHdr = this.folderDisplay.selectedMessage;
-        let wantedUrl = gconversation.stash.wantedUrl;
-        gconversation.stash.wantedUrl = null;
+        let wantedUrl = GCV.stash.wantedUrl;
+        GCV.stash.wantedUrl = null;
 
         /* We can't display NTTP messages and RSS messages properly yet, so
          * leave it up to the standard message reader. If the user explicitely
@@ -2267,6 +2291,5 @@ window.addEventListener("load", function f_temp0 () {
       dump(e+"\n");
     }
   };
-
   myDump("*** gConversation loaded\n");
 }, false);
