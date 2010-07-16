@@ -378,6 +378,12 @@ window.addEventListener("load", function f_temp0 () {
         + "?r=pg&d=wavatar&s=50";
       let colorStyle = "display: inline; color: "+colorFor(card.emailAddress);
 
+      let addAbTxt = stringBundle.getString("add_address_book");
+      let editDetailsTxt = stringBundle.getString("edit_details");
+      let composeToTxt = stringBundle.getString("compose_to");
+      let copyEmailTxt = stringBundle.getString("copy_email");
+      let showInvolvingTxt = stringBundle.getString("show_involving");
+
       /* Fill the dialog <div> with them */
       let dialogNode = 
         <div style="width: 300px; display: none" class="contact-dialog">
@@ -417,11 +423,11 @@ window.addEventListener("load", function f_temp0 () {
             </table>
           </div>
           <div class="info-popup-links">
-            <a href="javascript:" class="link-action-add-ab">Add to address book</a> -
-            <a href="javascript:" class="link-action-edit-ab">Edit details</a> -
-            <a href="javascript:" class="link-action-compose-to">Compose message to</a> -
-            <a href="javascript:" class="link-action-copy-email">Copy email address</a> -
-            <a href="javascript:" class="link-action-show-involving">Show messages involving</a>
+            <a href="javascript:" class="link-action-add-ab">{addAbTxt}</a> -
+            <a href="javascript:" class="link-action-edit-ab">{editDetailsTxt}</a> -
+            <a href="javascript:" class="link-action-compose-to">{composeToTxt}</a> -
+            <a href="javascript:" class="link-action-copy-email">{copyEmailTxt}</a> -
+            <a href="javascript:" class="link-action-show-involving">{showInvolvingTxt}</a>
           </div>
         </div>;
 
