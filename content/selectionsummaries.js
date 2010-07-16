@@ -369,19 +369,12 @@ window.addEventListener("load", function f_temp0 () {
       /* Compute various values */
       let name = card.displayName || card.emailAddress;
       let title = card.displayName ? card.emailAddress : "";
-<<<<<<< HEAD
       let fullName = name;
       let shortName = gPrefs["guess_first_names"]
-        ? card.firstName || parseShortName(name)
-=======
-
-      let shortName = aDoc.createElement("span");
-      shortName.textContent = gPrefs["guess_first_names"]
         ? card.firstName || GCV.parseShortName(name)
->>>>>>> a483c2b... AMO Compliance.
         : name;
       let gravatarUrl = "http://www.gravatar.com/avatar/"
-        + GlodaUtils.md5HashString(card.emailAddress.trim().toLowerCase())
+        + GCV.GlodaUtils.md5HashString(card.emailAddress.trim().toLowerCase())
         + "?r=pg&d=wavatar&s=50";
       let colorStyle = "display: inline; color: "+colorFor(card.emailAddress);
 
@@ -459,6 +452,38 @@ window.addEventListener("load", function f_temp0 () {
       /* Register the "show involving" action */
       let showLink = span.getElementsByClassName("link-action-show-involving")[0];
       showLink.addEventListener("click", function (event) {
+          let q1 = Gloda.newQuery(Gloda.NOUN_IDENTITY);
+          q1.kind("email");
+          q1.value(card.emailAddress);
+          GCV.stash.q1 = q1.getCollection({
+              onItemsAdded: function _onItemsAdded(aItems, aCollection) {  },
+              onItemsModified: function _onItemsModified(aItems, aCollection) { },
+              onItemsRemoved: function _onItemsRemoved(aItems, aCollection) { },
+              onQueryCompleted: function _onQueryCompleted(aCollection) {
+                if (!aCollection.items.length)
+                  return;  
+
+                let q2 = Gloda.newQuery(Gloda.NOUN_MESSAGE);
+                q2.involves.apply(q2, aCollection.items);
+                GCV.stash.q2 = q2.getCollection({
+                  onItemsAdded: function _onItemsAdded(aItems, aCollection) {  },
+                  onItemsModified: function _onItemsModified(aItems, aCollection) {  },
+                  onItemsRemoved: function _onItemsRemoved(aItems, aCollection) {  },
+                  onQueryCompleted: function _onQueryCompleted(aCollection) {  
+                    let tabmail = document.getElementById("tabmail");
+                    aCollection.items =
+                      [GCV.selectRightMessage(m)
+                      for each ([, m] in Iterator(GCV.groupMessages(aCollection.items)))];
+                    aCollection.items = aCollection.items.filter(function (x) x);
+                    tabmail.openTab("glodaList", {
+                      collection: aCollection,
+                      title: stringBundle.getString("involving").replace("#1", card.displayName),
+                      background: false
+                    });
+                  }
+                });
+              }
+            });
         }, true);
 
       /* Register the "copy email address" action */
@@ -852,7 +877,7 @@ window.addEventListener("load", function f_temp0 () {
         let theSubject = msgHdr.mime2DecodedSubject;
         let dateObject = new Date(msgHdr.date/1000);
         let date = gPrefs["no_friendly_date"]
-          ? dateAsInMessageList(dateObject)
+          ? GCV.dateAsInMessageList(dateObject)
           : makeFriendlyDateAgo(dateObject);
 
         /* The snippet class really has a counter-intuitive name but that allows
@@ -1304,13 +1329,8 @@ window.addEventListener("load", function f_temp0 () {
                 /* Our super-advanced heuristic ;-) */
                 let hasHtml = !(
                   iframeDoc.body.firstElementChild &&
-<<<<<<< HEAD
                   (iframeDoc.body.firstElementChild.classList.contains("moz-text-flowed") ||
                    iframeDoc.body.firstElementChild.classList.contains("moz-text-plain")));
-=======
-                  (GCV._mm_hasClass(iframeDoc.body.firstElementChild, "moz-text-flowed") ||
-                   GCV._mm_hasClass(iframeDoc.body.firstElementChild, "moz-text-plain")));
->>>>>>> a483c2b... AMO Compliance.
 
                 /* Remove the attachments if the user has not set View >
                  * Display Attachments Inline. Do that right now, otherwise the
@@ -1327,19 +1347,11 @@ window.addEventListener("load", function f_temp0 () {
                 /* The part below is all about quoting */
                 /* Launch various heuristics to convert most common quoting styles
                  * to real blockquotes. Spoiler: most of them suck. */
-<<<<<<< HEAD
-                convertOutlookQuotingToBlockquote(iframe.contentWindow, iframeDoc);
-                convertHotmailQuotingToBlockquote1(iframeDoc);
-                convertHotmailQuotingToBlockquote2(iframe.contentWindow, iframeDoc, gPrefs["hide_quote_length"]);
-                convertForwardedToBlockquote(iframeDoc);
-                fusionBlockquotes(iframeDoc);
-=======
-                GCV.convertOutlookQuotingToBlockquote(iframeDoc);
+                GCV.convertOutlookQuotingToBlockquote(iframe.contentWindow, iframeDoc);
                 GCV.convertHotmailQuotingToBlockquote1(iframeDoc);
                 GCV.convertHotmailQuotingToBlockquote2(iframe.contentWindow, iframeDoc, gPrefs["hide_quote_length"]);
                 GCV.convertForwardedToBlockquote(iframeDoc);
                 GCV.fusionBlockquotes(iframeDoc);
->>>>>>> a483c2b... AMO Compliance.
                 /* This function adds a show/hide quoted text link to every topmost
                  * blockquote. Nested blockquotes are not taken into account. */
                 let walk = function walk_ (elt) {
@@ -1415,11 +1427,7 @@ window.addEventListener("load", function f_temp0 () {
                   let toggleFontStyle = function togglefont_listener (event) {
                     let elts = iframeDoc.querySelectorAll("pre, body > *:first-child")
                     for each (let [, elt] in Iterator(elts)) {
-<<<<<<< HEAD
                       elt.classList.toggle("pre-as-regular");
-=======
-                      GCV._mm_toggleClass(elt, "pre-as-regular");
->>>>>>> a483c2b... AMO Compliance.
                     }
                     /* XXX The height of the iframe isn't updated as we change
                      * fonts. This is usually unimportant, as it will grow
@@ -2269,8 +2277,8 @@ window.addEventListener("load", function f_temp0 () {
         /* We can't display NTTP messages and RSS messages properly yet, so
          * leave it up to the standard message reader. If the user explicitely
          * asked for the old message reader, we give up as well. */
-        if (msgHdrIsRss(msgHdr) || msgHdrIsNntp(msgHdr)
-            || wantedUrl == msgHdrToNeckoURL(msgHdr, gMessenger).spec) {
+        if (GCV.msgHdrIsRss(msgHdr) || GCV.msgHdrIsNntp(msgHdr)
+            || wantedUrl == GCV.msgHdrToNeckoURL(msgHdr, gMessenger).spec) {
           dump("Not displaying RSS/NNTP messages\n");
           this.singleMessageDisplay = true;
           return false;

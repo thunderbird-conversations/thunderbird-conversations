@@ -43,6 +43,7 @@ const Ci = Components.interfaces;
 const Cc = Components.classes;
 const Cu = Components.utils;
 Cu.import("resource://app/modules/gloda/mimemsg.js");
+
 /* from mailnews/base/public/nsMsgFolderFlags.idl */
 const nsMsgFolderFlags_SentMail = 0x00000200;
 const nsMsgFolderFlags_Drafts   = 0x00000400;
