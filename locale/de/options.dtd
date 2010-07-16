@@ -6,7 +6,7 @@
 <!ENTITY title.message_display "Nachrichtenanzeige">
 <!ENTITY option.monospaced "Unproportionale Schriftart für Reintextnachrichten verwenden">
 <!ENTITY option.monospaced_snippets "Unproportionale Schriftart für Nachrichtenquelltext verwenden">
-<!ENTITY option.focus_what "Beim Anzeigen einer Konversation, scrollen zu:">
+<!ENTITY option.focus_what "Beim Anzeigen einer Konversation scrollen zu:">
 <!ENTITY option.focus_first "Der ersten ungelesenen oder der letzten Nachricht">
 <!ENTITY option.focus_selected "Der Nachricht, die als letztes ausgewählt wurde">
 <!ENTITY optiondesc.unfold "Standardmäßig ausklappen:">
