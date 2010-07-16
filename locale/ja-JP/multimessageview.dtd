@@ -1,5 +1,6 @@
 <!-- These strings are for the conversation menu. They must start with
      lowercase. 
+
 -->
 <!ENTITY button.open_in_new_tab "新しいタブで開く">
 <!ENTITY button.open_in_new_tab_tooltip "スレッドを新しいタブで開く (ヒント:シフトキー)">
@@ -20,6 +21,7 @@
 <!ENTITY toolbar.view_tab "スレッドを新しいタブで開く">
 <!-- The three strings below are for Compact Header. They must start with
      lowercase and ctoolbar.view_full must be SHORT 
+
 -->
 <!ENTITY ctoolbar.view_full "会話を取得">
 <!ENTITY ctoolbar.view_full_tooltip "あなた自身によるものを含むすべてのメッセージを検索して完全な会話を構築します。">

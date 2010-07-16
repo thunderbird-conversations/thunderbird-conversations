@@ -1,5 +1,6 @@
 <!-- These strings are for the conversation menu. They must start with
      lowercase. 
+
 -->
 <!ENTITY button.open_in_new_tab "отвори у новом језичку">
 <!ENTITY button.open_in_new_tab_tooltip "отвори ову нит у новом језичку (савет: држите shift)">
@@ -20,6 +21,7 @@
 <!ENTITY toolbar.view_tab "Отвори нит у новом језичку">
 <!-- The three strings below are for Compact Header. They must start with
      lowercase and ctoolbar.view_full must be SHORT 
+
 -->
 <!ENTITY ctoolbar.view_full "преузми разговор">
 <!ENTITY ctoolbar.view_full_tooltip "претражи све поруке за израду целокупног разговора, укључујући и твог.">

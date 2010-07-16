@@ -1,5 +1,6 @@
 <!-- These strings are for the conversation menu. They must start with
      lowercase. 
+
 -->
 <!ENTITY button.open_in_new_tab "在新标签页中打开">
 <!ENTITY button.open_in_new_tab_tooltip "在新标签页中打开会话（提示：按住Shift键）">
@@ -20,6 +21,7 @@
 <!ENTITY toolbar.view_tab "在新标签页中打开会话">
 <!-- The three strings below are for Compact Header. They must start with
      lowercase and ctoolbar.view_full must be SHORT 
+
 -->
 <!ENTITY ctoolbar.view_full "建立会话">
 <!ENTITY ctoolbar.view_full_tooltip "检索所有邮件以建立完整的邮件会话（包括你自己的）">

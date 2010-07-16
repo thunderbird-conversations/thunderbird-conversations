@@ -2,6 +2,7 @@
      lowercase. 
 
 
+
 -->
 <!ENTITY button.open_in_new_tab "Apri in una nuova scheda">
 <!ENTITY button.open_in_new_tab_tooltip "Visualizza la discussione in una nuova scheda (anche mantenendo premuto il tasto Maiusc)">
@@ -22,6 +23,7 @@
 <!ENTITY toolbar.view_tab "Visualizza la discussione in una nuova scheda">
 <!-- The three strings below are for Compact Header. They must start with
      lowercase and ctoolbar.view_full must be SHORT 
+
 
 
 -->

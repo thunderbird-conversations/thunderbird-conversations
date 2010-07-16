@@ -1,5 +1,6 @@
 <!-- These strings are for the conversation menu. They must start with
      lowercase. 
+
 -->
 <!ENTITY button.open_in_new_tab "פתח בתוית חדשה">
 <!ENTITY button.open_in_new_tab_tooltip "פתח את החוט הזה בתוית חדשה (רמז: לחץ על מקש &quot;שיפט&quot;)‏">
@@ -20,6 +21,7 @@
 <!ENTITY toolbar.view_tab "פתח חוט בתוית חדשה">
 <!-- The three strings below are for Compact Header. They must start with
      lowercase and ctoolbar.view_full must be SHORT 
+
 -->
 <!ENTITY ctoolbar.view_full "אסוף שיחה">
 <!ENTITY ctoolbar.view_full_tooltip "חפס כל ההודעות כדי לבנות שיחה מלאה, כולל הודעות ממך.">

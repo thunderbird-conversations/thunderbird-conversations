@@ -1,5 +1,6 @@
 <!-- These strings are for the conversation menu. They must start with
      lowercase. 
+
 -->
 <!ENTITY button.open_in_new_tab "In neuem Tab öffnen">
 <!ENTITY button.open_in_new_tab_tooltip "Öffne diesen Thread in neuem Tab">
@@ -20,6 +21,7 @@
 <!ENTITY toolbar.view_tab "Thread in neuem Tab öffnen">
 <!-- The three strings below are for Compact Header. They must start with
      lowercase and ctoolbar.view_full must be SHORT 
+
 -->
 <!ENTITY ctoolbar.view_full "Konversation abrufen">
 <!ENTITY ctoolbar.view_full_tooltip "Alle Nachrichten (inklusive Ihrer eigenen) suchen, um die komplette Konversation aufzubauen">
