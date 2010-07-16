@@ -2286,6 +2286,7 @@ window.addEventListener("load", function f_temp0 () {
         if (GCV.msgHdrIsRss(msgHdr) || GCV.msgHdrIsNntp(msgHdr)
             || wantedUrl == GCV.msgHdrToNeckoURL(msgHdr, gMessenger).spec) {
           dump("Not displaying RSS/NNTP messages\n");
+          GCV.msgHdrsMarkAsRead([msgHdr], true);
           this.singleMessageDisplay = true;
           return false;
         } else {
