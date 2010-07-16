@@ -776,6 +776,8 @@ window.addEventListener("load", function f_temp0 () {
         }
       );
 
+      myDump("*** We have "+numMessages+" messages to process\n");
+
       /* Now this is for every message. Note to self: all functions defined
        * inside the loop must be defined using let f = ... (otherwise the last
        * definition is always called !). Note to self: i is shared accross all
@@ -783,7 +785,7 @@ window.addEventListener("load", function f_temp0 () {
       for (let i = 0; i < numMessages; ++i) {
         let iCopy = i; /* Jonathan, we're not in OCaml, i is NOT immutable */
 
-        myDump("*** Treating message "+i+"\n");
+        myDump("*** Dealing with message "+i+"\n");
         count += 1;
         if (count > MAX_THREADS) {
           maxCountExceeded = true;
@@ -2172,6 +2174,8 @@ window.addEventListener("load", function f_temp0 () {
     onSecurityChange: function () {},
     onStatusChange: function () {},
     onLocationChange: function (aWebProgress, aRequest, aLocation) {
+      dump("onLocationChange\n");
+
       /* The logic is as follows.
        * i) The event handler stores the URI of the message we're jumping to.
        * ii) We catch that message loading: we don't load a conversation.
@@ -2179,77 +2183,80 @@ window.addEventListener("load", function f_temp0 () {
        * that's in an expanded thread. */
       let wantedUrl = gconversation.stash.wantedUrl;
       gconversation.stash.wantedUrl = null;
-      let isExpanded = false;
-      let msgIndex = gFolderDisplay ? gFolderDisplay.selectedIndices[0] : -1;
-      if (msgIndex >= 0) {
-        try {
-          let rootIndex = gDBView.findIndexOfMsgHdr(gDBView.getThreadContainingIndex(msgIndex).getChildHdrAt(0), false);
-          if (rootIndex >= 0)
-            isExpanded = gDBView.isContainer(rootIndex) && !gFolderDisplay.view.isCollapsedThreadAtIndex(rootIndex);
-        } catch (e) {
-          myDump("Error in the onLocationChange handler "+e+"\n");
-        }
-      }
-      if (aLocation.spec == wantedUrl || isExpanded)
+      if (aLocation.spec == wantedUrl)
         return;
 
       let msgService;
       try {
         msgService = gMessenger.messageServiceFromURI(aLocation.spec);
+        myDump("*** Found a message ("+aLocation.spec+")\n");
       } catch ( { result } if result == Cr.NS_ERROR_FACTORY_NOT_REGISTERED ) {
         myDump("*** Not a message ("+aLocation.spec+")\n");
         return;
       }
       let msgHdr = msgService.messageURIToMsgHdr(aLocation.QueryInterface(Ci.nsIMsgMessageUrl).uri);
+
+      /* We can't display NTTP messages and RSS messages properly yet. */
+      if (msgHdrIsRss(msgHdr) || msgHdrIsNntp(msgHdr)) {
+        myDump("Not displaying RSS/NNTP messages\n");
+        return;
+      }
+
       /* We need to fork the code a little bit here because we can't activate
        * the multimessage view unless we're really sure that we've got more than
        * one message */
       pullConversation(
         [msgHdr],
         function pullConversationAutoFetchCallback_ (aCollection, aItems, aMsg) {
+          let rightMessages;
+
           if (aCollection) {
+            myDump("URL Listener: Gloda query returned at least a message!\n");
             let items = groupMessages(aCollection.items);
 
-            /* By testing here for the pref, we allow the pref to be changed at
-             * run-time and we do not require to restart Thunderbird to take the
-             * change into account. */
-            if (!gPrefs["auto_fetch"] && items.length <= 1 && gPrefs["info_af_shown"])
-              return;
-
-            /* Don't forget to show the right buttons */
-            htmlpane.contentWindow.enableExtraButtons();
-
-            let rightMessages = [selectRightMessage(x, gDBView.msgFolder) for each ([, x] in Iterator(items))];
+            rightMessages = [selectRightMessage(x, gDBView.msgFolder) for each ([, x] in Iterator(items))];
             rightMessages = rightMessages.filter(function (x) x);
             rightMessages = rightMessages.map(function (x) x.folderMessage);
-            gMessageDisplay.singleMessageDisplay = false;
-            if (isNewConversation(rightMessages)) {
-              let gSummary = new ThreadSummary(rightMessages, null);
-              try {
-                if (!gPrefs["info_af_shown"]) {
-                  let info_af_box = htmlpane.contentDocument.getElementById("info_af_box");
-                  info_af_box.style.display = "block";
-                  let yes = info_af_box.getElementsByClassName("info_af_yes")[0];
-                  let no = info_af_box.getElementsByClassName("info_af_no")[0];
-                  yes.addEventListener("click", function (event) {
-                      info_af_box.style.display = "none";
-                      prefs.setBoolPref("info_af_shown", true);
-                    }, true);
-                  no.addEventListener("click", function (event) {
-                      info_af_box.style.display = "none";
-                      prefs.setBoolPref("info_af_shown", true);
-                      prefs.setBoolPref("auto_fetch", false);
-                    }, true);
-                }
-                gSummary.init();
-              } catch (e) {
-                myDump("!!! "+e+"\n");
-                throw e;
-              }
-            } else {
-              restorePreviousConversation();
-            }
+          } else {
+            myDump("URL Listener: we're probably dealing with a RSS or NNTP msg\n");
+            rightMessages = aItems;
+          }
+
+          /* By testing here for the pref, we allow the pref to be changed at
+           * run-time and we do not require to restart Thunderbird to take the
+           * change into account. */
+          if (!gPrefs["auto_fetch"] && items.length <= 1 && gPrefs["info_af_shown"])
             return;
+
+          /* Don't forget to show the right buttons */
+          htmlpane.contentWindow.enableExtraButtons();
+          gMessageDisplay.singleMessageDisplay = false;
+
+          if (isNewConversation(rightMessages)) {
+            let gSummary = new ThreadSummary(rightMessages, null);
+            try {
+              if (!gPrefs["info_af_shown"]) {
+                let info_af_box = htmlpane.contentDocument.getElementById("info_af_box");
+                info_af_box.style.display = "block";
+                let yes = info_af_box.getElementsByClassName("info_af_yes")[0];
+                let no = info_af_box.getElementsByClassName("info_af_no")[0];
+                yes.addEventListener("click", function (event) {
+                    info_af_box.style.display = "none";
+                    prefs.setBoolPref("info_af_shown", true);
+                  }, true);
+                no.addEventListener("click", function (event) {
+                    info_af_box.style.display = "none";
+                    prefs.setBoolPref("info_af_shown", true);
+                    prefs.setBoolPref("auto_fetch", false);
+                  }, true);
+              }
+              gSummary.init();
+            } catch (e) {
+              myDump("!!! "+e+"\n");
+              throw e;
+            }
+          } else {
+            restorePreviousConversation();
           }
       });
     },
