@@ -1,7 +1,12 @@
 --- v1.2 development series ---
 
+- Make conversation view the default
+- Improve the message reader with more actions
+- Add the ability to manage contacts (address book integration, gravatar support, etc.)
+- More keyboard shortcuts: 'e', 'u', '#'
+- Added a link to edit drafts
+- More aggressive quote recognition
 - Fix appearance on Windows systems
 - Fix some strange cases where the conversation view was broken until you
 restart Thunderbird, or when messages were almost hidden.
-- More quoted text recognized.
 - New pref: only expand the message scrolled to
