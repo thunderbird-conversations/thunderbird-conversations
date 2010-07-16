@@ -85,6 +85,41 @@
         <script type="application/javascript;version=1.8"
           src="chrome://gconversation/content/jqueryui/jquery-ui.menu.js" />
         <script type="application/javascript;version=1.8"><![CDATA[
+
+            const Ci = Components.interfaces;
+            const Cc = Components.classes;
+            const Cu = Components.utils;
+            const stringBundle = window.top.document.getElementById("gconv-string-bundle");
+            const prefsService = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService);
+
+            Cu.import("resource:///modules/errUtils.js");
+            Cu.import("resource://gconversation/VariousUtils.jsm");
+            let buttonBranch = prefsService.getBranch("gconversation.button.");
+            let prefsBranch = prefsService.getBranch("gconversation.");
+
+            let myPrefObserver = {
+              register: function () {
+                buttonBranch.QueryInterface(Components.interfaces.nsIPrefBranch2);
+                buttonBranch.addObserver("", this, false);
+              },
+
+              unregister: function () {
+                if (!buttonBranch)
+                  return;
+                buttonBranch.removeObserver("", this);
+              },
+
+              observe: function (aSubject, aTopic, aData) {
+                if (aTopic != "nsPref:changed")
+                  return;
+                if (buttonBranch.getBoolPref(aData))
+                  document.getElementById(aData).style.display = "";
+                else
+                  document.getElementById(aData).style.display = "none";
+              }
+            };
+            myPrefObserver.register();
+
             function addPlatformStyle() {
               let styleElt = document.getElementById("platformStylesheet");
               if (navigator.platform.indexOf("Win") === 0)
@@ -96,37 +131,6 @@
               else
                   styleElt.setAttribute("href", "chrome://gconversation/skin/linux.css");
             }
-
-            Components.utils.import("resource:///modules/errUtils.js");
-            Components.utils.import("resource://gconversation/VariousUtils.jsm");
-
-            const Ci = Components.interfaces;
-            const Cc = Components.classes;
-            const stringBundle = window.top.document.getElementById("gconv-string-bundle");
-            const prefsService = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService);
-            let buttonBranch = prefsService.getBranch("gconversation.button.");
-            let prefsBranch = prefsService.getBranch("gconversation.");
-
-            let myPrefObserver = {
-              register: function () {
-                buttonBranch.QueryInterface(Components.interfaces.nsIPrefBranch2);
-                buttonBranch.addObserver("", this, false);
-              },
-
-              unregister: function () {
-                if (!buttonBranch) return;
-                  buttonBranch.removeObserver("", this);
-              },
-
-              observe: function (aSubject, aTopic, aData) {
-                if (aTopic != "nsPref:changed") return;
-                if (buttonBranch.getBoolPref(aData))
-                  document.getElementById(aData).style.display = "";
-                else
-                  document.getElementById(aData).style.display = "none";
-              }
-            };
-            myPrefObserver.register();
 
 
             function adjustHeadingSize() {
@@ -203,6 +207,7 @@
 
             const kPopupTimeout = 300;
 
+            let contactInformation = stringBundle.getString("contact_information");
             function styleMsgNode(aMsgNode) {
               let $aMsgNode = $(aMsgNode);
 
@@ -222,6 +227,22 @@
                   $(this).removeClass("ui-state-hover"); 
                 }
               );
+
+              /* The contact dialogs */
+              $aMsgNode.find(".contact-link").each(function (i) {
+                  let $this = $(this); 
+                  let $dialog = $this.next(".contact-dialog");
+                  $dialog.dialog({
+                    autoOpen: false,
+                    title: contactInformation,
+                    modal: true
+                  });
+                  $this.click(function () {
+                      if ($(this).closest(".message").is(".collapsed"))
+                        return;
+                      $dialog.dialog('open');
+                    });
+                });
 
               /* The tooltip */
               $aMsgNode.find('.fg-tooltip-pointer-up-inner').each(function(){
@@ -254,7 +275,6 @@
                     }
                   },
                   function(){
-                    dump("details -- mouseleave\n");
                     var self = this;
                     if (!sticky) {
                       clearTimeout(timeout);
@@ -270,7 +290,6 @@
                     clearTimeout(timeout);
                   },
                   function () {
-                    dump("fg-tooltip -- mouseleave\n");
                     var self = this;
                     if ($(this).is(":visible") && !sticky) {
                       clearTimeout(timeout);
@@ -284,8 +303,14 @@
               });
             }
 
-            function mouseOut(aNode) {
-              $(aNode).mouseleave();
+            function openInNewTab(url) {
+              // Try opening new tabs in an existing 3pane window  
+              let mail3PaneWindow = Components.classes["@mozilla.org/appshell/window-mediator;1"]  
+                                              .getService(Components.interfaces.nsIWindowMediator)  
+                                              .getMostRecentWindow("mail:3pane");  
+              let tabmail = mail3PaneWindow.document.getElementById("tabmail");  
+              mail3PaneWindow.focus();  
+              tabmail.openTab("contentTab", {contentPage: url});
             }
         ]]>
         </script>
@@ -363,11 +388,21 @@
       </div>
       <div id="info_af_box" class="infomsg" style="display: none">
         <h3>&info_af.title;</h3>
-        <p>&info_af.body;</p>
-        <p>&info_af.body2;</p>
+        <p>&info_af.body3;</p>
+        <p>&info_af.body4;</p>
         <div class="info_buttons">
           <button class="info_af_yes">&info_af.yes;</button>
           <button class="info_af_no">&info_af.no;</button>
+        </div>
+        <br />
+        <div>
+          <p>
+            &info.recommended_settings;
+            <a href="javascript:"
+              onclick="openInNewTab('http://wiki.github.com/protz/GMail-Conversation-View/');">
+              &link.recommended_settings;
+            </a>
+          </p>
         </div>
       </div>
     </div>

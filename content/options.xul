@@ -150,8 +150,8 @@
     
      <groupbox style="height: 8em;">
        <caption label="&title.general;"/>
-       <description style="width: 0;">&auto_fetch.info;</description>
-       <checkbox label="&option.auto_fetch;" preference="auto_fetch" id="auto_fetch_checkbox" />
+       <description style="width: 0;">&auto_fetch2.info;</description>
+       <checkbox label="&option.auto_fetch2;" preference="auto_fetch" id="auto_fetch_checkbox" />
      </groupbox>
      <groupbox>
        <caption label="&title.message_list;" />

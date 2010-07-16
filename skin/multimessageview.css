@@ -221,6 +221,14 @@ a {
 
 /* The popups that give information on a participant */
 
+.ui-dialog {
+  font-size: small;
+}
+
+.info-popup-contact-info td {
+  vertical-align: top;
+}
+
 .info-popup-gravatar {
   vertical-align: middle;
   margin-right: 5px;
@@ -262,6 +270,11 @@ a {
 
 /* Links */
 
+.message.collapsed .link.contact-link {
+  cursor: auto;
+  text-decoration: none;
+}
+
 .link-action-area {
   position: absolute;
   right: .5em;
@@ -295,6 +308,14 @@ a.action:hover {
 }
 
 /* Message header */
+
+.std-reader {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background-image: url(chrome://gconversation/skin/email_go.png);
+  vertical-align: middle;
+}
 
 .header {
   margin-left: 0;

@@ -380,52 +380,60 @@ window.addEventListener("load", function f_temp0 () {
         + "?r=pg&d=wavatar&s=50";
 
       let colorStyle = "display: inline; color: "+colorFor(card.emailAddress);
-      let theNode = 
-        <div style="display: inline; font-weight: normal">
-          <div class="fg-tooltip fg-tooltip-left ui-widget ui-state-highlight ui-corner-all"
-            style="display: none; width: 300px">
-            <div style="overflow: auto">
-              <img src={gravatarUrl} class="info-popup-gravatar" />
-              <div class="info-popup-name-email">
-                <span class="info-popup-display-name">{card.displayName}<br /></span>
-                <span class="info-popup-display-email">{card.emailAddress}</span>
-              </div>
-            </div>
-            <div class="info-popup-contact-info">
-              <span class="phone"><img src="chrome://gconversation/skin/phone.png" />
-                {card.phone}
-                <br />
-              </span>
-              <span class="address">
-                <img src="chrome://gconversation/skin/house.png" />
-                <span style="white-space: pre-wrap">{card.address}</span>
-                <br />
-              </span>
-              <span class="birthday">
-                <img src="chrome://gconversation/skin/cake.png" />
-                {card.birthday}
-                <br />
-              </span>
-            </div>
-            <div class="info-popup-links">
-              <a href="javascript:" class="link-action-add-ab">Add to address book</a> -
-              <a href="javascript:">Compose message to</a> -
-              <a href="javascript:">Copy email address</a> -
-              <a href="javascript:">Show messages involving</a>
-            </div>
-            <div class="fg-tooltip-pointer-up ui-state-highlight">
-              <div class="fg-tooltip-pointer-up-inner"></div>
+      let dialogNode = 
+        <div style="width: 300px; display: none" class="contact-dialog">
+          <div>
+            <img src={gravatarUrl} class="info-popup-gravatar" />
+            <div class="info-popup-name-email">
+              <span class="info-popup-display-name">{card.displayName}<br /></span>
+              <span class="info-popup-display-email">{card.emailAddress}</span>
             </div>
           </div>
-          <div class="tooltip" style={colorStyle}>
-            <span class="short-name">{shortName}</span>
-            <span class="full-name">{fullName}</span>
+          <div class="info-popup-contact-info">
+            <table>
+              <tr class="phone">
+                <td>
+                  <img src="chrome://gconversation/skin/phone.png" />
+                </td>
+                <td>
+                  {card.phone}
+                </td>
+              </tr>
+              <tr class="address">
+                <td>
+                  <img src="chrome://gconversation/skin/house.png" />
+                </td>
+                <td>
+                  <span style="white-space: pre-wrap">{card.address}</span>
+                </td>
+              </tr>
+              <tr class="birthday">
+                <td>
+                  <img src="chrome://gconversation/skin/cake.png" />
+                </td>
+                <td>
+                  {card.birthday}
+                </td>
+              </tr>
+            </table>
           </div>
+          <div class="info-popup-links">
+            <a href="javascript:" class="link-action-add-ab">Add to address book</a> -
+            <a href="javascript:">Compose message to</a> -
+            <a href="javascript:">Copy email address</a> -
+            <a href="javascript:">Show messages involving</a>
+          </div>
+        </div>;
+
+      let linkNode =
+        <div class="link contact-link" style={colorStyle}>
+          <span class="short-name">{shortName}</span>
+          <span class="full-name">{fullName}</span>
         </div>;
 
       let span = aDoc.createElement("div");
       span.classList.add("display-as-inline");
-      span.innerHTML = theNode.toXMLString();
+      span.innerHTML = linkNode.toXMLString() + dialogNode.toXMLString();
 
       if (!card.displayName)
         span.getElementsByClassName("info-popup-display-name")[0].style.display = "none";
@@ -443,9 +451,6 @@ window.addEventListener("load", function f_temp0 () {
         linkAB.nextSibling.textContent = "";
       }
 
-      if (isSender)
-        span.getElementsByClassName("tooltip")[0].classList.add("link");
-
       let removeTrailingTextNode = function (klass) {
         let link = span.getElementsByClassName(klass)[0];
         if (link.nextSibling && link.nextSibling.nodeType == link.nextSibling.TEXT_NODE
@@ -454,7 +459,7 @@ window.addEventListener("load", function f_temp0 () {
       };
       removeTrailingTextNode("full-name");
       removeTrailingTextNode("short-name");
-      removeTrailingTextNode("tooltip");
+      removeTrailingTextNode("link");
 
       return span;
     }
@@ -797,6 +802,7 @@ window.addEventListener("load", function f_temp0 () {
         /* The snippet class really has a counter-intuitive name but that allows
          * us to keep some style from the original multimessageview.css without
          * rewriting everything */
+        let stdReaderText = stringBundle.getString("std_reader");
         let replyTxt = stringBundle.getString("reply");
         let replyAllTxt = stringBundle.getString("reply_all");
         let forwardTxt = stringBundle.getString("forward");
@@ -819,6 +825,7 @@ window.addEventListener("load", function f_temp0 () {
           <div class="row">
             <div class="pointer" />
             <div class="notification-icons">
+              <div class="std-reader link" title={stdReaderText} />
               <div class="star"/>
               <div class="enigmail-enc-ok" title={enigEncOk} style="display: none" />
               <div class="enigmail-sign-ok" title={enigSignOk} style="display: none" />
@@ -1139,51 +1146,69 @@ window.addEventListener("load", function f_temp0 () {
           }, "dblclick");
         register(".snippetmsg", gconversation.stash.expand_all[iCopy]);
         msgNode.addEventListener("keypress", function keypress_listener (event) {
-            if (event.charCode == 'o'.charCodeAt(0) || event.keyCode == 13) {
-              if (msgNode.classList.contains("collapsed")) {
-                /* Although iframe expansion preserves scroll value, we must do
-                 * that *after* the iframe has been expanded, otherwise, the
-                 * viewport might be too short and won't allow scrolling to the
-                 * right value already. */
-                runOnceAfterNSignals(1, function () scrollNodeIntoView(msgNode));
-                gconversation.stash.expand_all[iCopy]();
-              } else {
-                gconversation.stash.collapse_all[iCopy]();
-              }
-            }
-            if (event.keyCode == 8) {
-              gconversation.on_back();
-            }
-            if (event.charCode == 'h'.charCodeAt(0)) {
-              msgNode.style.display = "none";
-            }
-            if (event.charCode == 'n'.charCodeAt(0)) {
-              if (msgNode.nextElementSibling)
-                msgNode.nextElementSibling.focus();
-              event.preventDefault();
-            }
-            if (event.charCode == 'p'.charCodeAt(0)) {
-              let prev = msgNode.previousElementSibling;
-              if (prev) {
-                prev.focus();
-                /* This is why this works better than shift-tab. We make sure
-                 * the message is not hidden by the header! */
-                if (htmlpane.contentDocument.documentElement.scrollTop > prev.offsetTop - 5)
-                  htmlpane.contentWindow.scrollTo(0, prev.offsetTop - 5);
-              }
-              event.preventDefault();
-            }
-            if (event.charCode == 'r'.charCodeAt(0)) {
-              compose(Ci.nsIMsgCompType.ReplyToSender, event);
-              event.preventDefault();
-            }
-            if (event.charCode == 'a'.charCodeAt(0)) {
-              compose(Ci.nsIMsgCompType.ReplyAll, event);
-              event.preventDefault();
-            }
-            if (event.charCode == 'f'.charCodeAt(0)) {
-              forward(event);
-              event.preventDefault();
+            switch (event.which) {
+              case 'o'.charCodeAt(0):
+              case 13:
+                if (msgNode.classList.contains("collapsed")) {
+                  /* Although iframe expansion preserves scroll value, we must do
+                   * that *after* the iframe has been expanded, otherwise, the
+                   * viewport might be too short and won't allow scrolling to the
+                   * right value already. */
+                  runOnceAfterNSignals(1, function () scrollNodeIntoView(msgNode));
+                  gconversation.stash.expand_all[iCopy]();
+                } else {
+                  gconversation.stash.collapse_all[iCopy]();
+                }
+                break;
+
+              case 'h'.charCodeAt(0):
+                msgNode.style.display = "none";
+                break;
+
+              case 'n'.charCodeAt(0):
+                if (msgNode.nextElementSibling)
+                  msgNode.nextElementSibling.focus();
+                event.preventDefault();
+                break;
+
+              case 'p'.charCodeAt(0):
+                let prev = msgNode.previousElementSibling;
+                if (prev) {
+                  prev.focus();
+                  /* This is why this works better than shift-tab. We make sure
+                   * the message is not hidden by the header! */
+                  if (htmlpane.contentDocument.documentElement.scrollTop > prev.offsetTop - 5)
+                    htmlpane.contentWindow.scrollTo(0, prev.offsetTop - 5);
+                }
+                event.preventDefault();
+                break;
+            
+              case 'r':
+                compose(Ci.nsIMsgCompType.ReplyToSender, event);
+                event.preventDefault();
+                break;
+
+              case 'a'.charCodeAt(0):
+                compose(Ci.nsIMsgCompType.ReplyAll, event);
+                event.preventDefault();
+                break;
+
+              case 'f'.charCodeAt(0):
+                forward(event);
+                event.preventDefault();
+                break;
+
+              case 'e'.charCodeAt(0):
+                gconversation.archive_all();
+                break;
+
+              case 'u'.charCodeAt(0):
+                SetFocusThreadPane(event);
+                break;
+
+              case '#'.charCodeAt(0):
+                gconversation.delete_all();
+                break;
             }
           }, true);
 
@@ -1751,18 +1776,11 @@ window.addEventListener("load", function f_temp0 () {
           fallbackNoGloda();
         }
 
-        let sender = msgNode.getElementsByClassName("sender")[0].getElementsByClassName("tooltip")[0];
-        sender.msgHdr = msgHdr;
-        sender.folder = msgHdr.folder;
-        sender.msgKey = msgHdr.messageKey;
-        sender.addEventListener("click", function(e) {
-          /* Hide all the tooltips, because the mouseout event might not be fired
-           * properly */
-          for each (let [, t] in Iterator(msgNode.getElementsByClassName("fg-tooltip")))
-            htmlpane.contentWindow.mouseOut(t);
-          for each (let [, t] in Iterator(msgNode.getElementsByClassName("tooltip")))
-            htmlpane.contentWindow.mouseOut(t);
-
+        let stdReader = msgNode.getElementsByClassName("std-reader")[0];
+        stdReader.msgHdr = msgHdr;
+        stdReader.folder = msgHdr.folder;
+        stdReader.msgKey = msgHdr.messageKey;
+        stdReader.addEventListener("click", function(e) {
           /* Cancel the next attempt to load a conversation, we explicitely
            * requested this message. */
           let url = msgHdrToNeckoURL(msgHdr, gMessenger);
@@ -2154,12 +2172,6 @@ window.addEventListener("load", function f_temp0 () {
     onSecurityChange: function () {},
     onStatusChange: function () {},
     onLocationChange: function (aWebProgress, aRequest, aLocation) {
-      /* By testing here for the pref, we allow the pref to be changed at
-       * run-time and we do not require to restart Thunderbird to take the
-       * change into account. */
-      if (!gPrefs["auto_fetch"])
-        return;
-
       /* The logic is as follows.
        * i) The event handler stores the URI of the message we're jumping to.
        * ii) We catch that message loading: we don't load a conversation.
@@ -2197,8 +2209,13 @@ window.addEventListener("load", function f_temp0 () {
         function pullConversationAutoFetchCallback_ (aCollection, aItems, aMsg) {
           if (aCollection) {
             let items = groupMessages(aCollection.items);
-            if (items.length <= 1)
+
+            /* By testing here for the pref, we allow the pref to be changed at
+             * run-time and we do not require to restart Thunderbird to take the
+             * change into account. */
+            if (!gPrefs["auto_fetch"] && items.length <= 1 && gPrefs["info_af_shown"])
               return;
+
             /* Don't forget to show the right buttons */
             htmlpane.contentWindow.enableExtraButtons();
 
