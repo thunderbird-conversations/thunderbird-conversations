@@ -31,10 +31,7 @@
 <!ENTITY option.hide_longer_than "Hide quoted text higher than">
 <!ENTITY option.lines "lines">
 <!ENTITY option.reverse_order "Reverse order (last → first)">
-<!ENTITY title.general "General">
 <!ENTITY option.auto_mark_read "Always mark the whole thread as read when the conversation is displayed.">
-<!ENTITY option.auto_fetch2 "Always display the conversation view">
-<!ENTITY auto_fetch2.info "This allows you to always display the conversation view, regardless of whether there are more than one message in the conversation or not.">
 <!ENTITY title.advanced "Advanced">
 <!ENTITY title.error_messages "Error messages">
 <!ENTITY option.disable_error_empty_collection "Disable the &quot;Thunderbird has not indexed this thread yet&quot; warning">

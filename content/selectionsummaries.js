@@ -140,7 +140,6 @@ window.addEventListener("load", function f_temp0 () {
   gPrefs["fold_rule"] = prefs.getCharPref("fold_rule");
   gPrefs["focus_first"] = prefs.getBoolPref("focus_first");
   gPrefs["reverse_order"] = prefs.getBoolPref("reverse_order");
-  gPrefs["auto_fetch"] = prefs.getBoolPref("auto_fetch");
   gPrefs["disable_error_empty_collection"] = prefs.getBoolPref("disable_error_empty_collection");
   gPrefs["auto_mark_read"] = prefs.getBoolPref("auto_mark_read");
   gPrefs["monospaced_senders"] = Array.map(prefs.getCharPref("monospaced_senders").split(","), String.trim);
@@ -173,7 +172,6 @@ window.addEventListener("load", function f_temp0 () {
         case "monospaced_snippets":
         case "focus_first":
         case "reverse_order":
-        case "auto_fetch":
         case "auto_mark_read":
         case "disable_error_empty_collection":
         case "info_af_shown":
@@ -1971,28 +1969,30 @@ window.addEventListener("load", function f_temp0 () {
    * more convenient as it follows Thunderbird's more closely, which allows me
    * to track changes to the ThreadSummary code in Thunderbird more easily. */
   summarizeThread = function(aSelectedMessages, aListener) {
-    if (aSelectedMessages.length == 0) {
-      myDump("No selected messages\n");
+    if (aSelectedMessages.length == 0)
       return false;
-    } else {
-      myDump(aSelectedMessages.length + " selected messages\n");
-    }
+
     htmlpane.contentWindow.enableExtraButtons();
     gconversation.stash.multiple_selection = false;
 
     pullConversation(
       aSelectedMessages,
       function (aCollection, aItems, aMsg) {
+        /* First-time info box. */
+        if (!gPrefs["info_af_shown"])
+          htmlpane.contentDocument.getElementById("info_af_box").style.display = "block";
+
         let items;
         let clearErrors = function () {
           for each (let [,e] in Iterator(htmlpane.contentDocument.getElementsByClassName("error")))
             e.style.display = "none";
         };
-        /* Don't confuse users with this message, it's not relevant in this case */
-        htmlpane.contentDocument.getElementById("info_af_box").style.display = "none";
+
+        /* Actual logic */
         if (aCollection) {
           clearErrors();
-          items = [selectRightMessage(x, gDBView.msgFolder) for each ([, x] in Iterator(groupMessages(aCollection.items)))];
+          items = [selectRightMessage(x, gDBView.msgFolder)
+            for each ([, x] in Iterator(groupMessages(aCollection.items)))];
           items = items.filter(function (x) x);
           items = items.map(function (x) x.folderMessage);
           myDump("aCollection is non-null, "+items.length+" messages found\n");
@@ -2023,11 +2023,10 @@ window.addEventListener("load", function f_temp0 () {
         } else {
           restorePreviousConversation();
         }
+
         return;
       }
     );
-
-    return true;
   };
 
   /* We must catch the call to summarizeMultipleSelection to hide the extra
@@ -2165,104 +2164,60 @@ window.addEventListener("load", function f_temp0 () {
    * than using an overlay. */
   document.getElementById("multimessage").setAttribute("context", "gConvMenu");
 
-  /* Watch the location changes in the messagepane (single message view) to
-   * display a conversation if relevant. */
-  let messagepane = document.getElementById("messagepane");
-  gconversation.stash.uriWatcher = {
-    onStateChange: function () {},
-    onProgressChange: function () {},
-    onSecurityChange: function () {},
-    onStatusChange: function () {},
-    onLocationChange: function (aWebProgress, aRequest, aLocation) {
-      dump("onLocationChange\n");
+  /* New method for always displaying the new UI. Beware, this is only modifying
+   * the MessageDisplayWidget instance for the main window, but that's ok.
+   * Besides, it has the nice side-effect that gloda search tabs do not fetch
+   * the conversation view by default, which is imho nicer. */
+  gMessageDisplay.onSelectedMessagesChanged = function () {
+    try {
+      if (!this.active)
+        return true;
+      ClearPendingReadTimer();
 
-      /* The logic is as follows.
-       * i) The event handler stores the URI of the message we're jumping to.
-       * ii) We catch that message loading: we don't load a conversation.
-       * iii) We don't want to load a conversation if we're viewing a message
-       * that's in an expanded thread. */
-      let wantedUrl = gconversation.stash.wantedUrl;
-      gconversation.stash.wantedUrl = null;
-      if (aLocation.spec == wantedUrl)
-        return;
+      let selectedCount = this.folderDisplay.selectedCount;
+      myDump("*** Intercepted message load, "+selectedCount+" messages selected\n");
 
-      let msgService;
-      try {
-        msgService = gMessenger.messageServiceFromURI(aLocation.spec);
-        myDump("*** Found a message ("+aLocation.spec+")\n");
-      } catch ( { result } if result == Cr.NS_ERROR_FACTORY_NOT_REGISTERED ) {
-        myDump("*** Not a message ("+aLocation.spec+")\n");
-        return;
+      if (selectedCount == 0) {
+        this.clearDisplay();
+        // Once in our lifetime is plenty.
+        if (!this._haveDisplayedStartPage) {
+          loadStartPage(false);
+          this._haveDisplayedStartPage = true;
+        }
+        this.singleMessageDisplay = true;
+        return true;
+
+      } else if (selectedCount == 1) {
+        /* Here starts the part where we modify the original code. */
+        let msgHdr = this.folderDisplay.selectedMessage;
+        let wantedUrl = gconversation.stash.wantedUrl;
+        gconversation.stash.wantedUrl = null;
+
+        /* We can't display NTTP messages and RSS messages properly yet, so
+         * leave it up to the standard message reader. If the user explicitely
+         * asked for the old message reader, we give up as well. */
+        if (msgHdrIsRss(msgHdr) || msgHdrIsNntp(msgHdr)
+            || wantedUrl == msgHdrToNeckoURL(msgHdr, gMessenger).spec) {
+          dump("Not displaying RSS/NNTP messages\n");
+          this.singleMessageDisplay = true;
+          return false;
+        } else {
+          /* Otherwise, we create a thread summary.
+           * We don't want to call this._showSummary because it has a built-in check
+           * for this.folderDisplay.selectedCount and returns immediately if
+           * selectedCount == 1 */
+          this.singleMessageDisplay = false;
+          summarizeThread(this.folderDisplay.selectedMessages, this);
+          return true;
+        }
       }
-      let msgHdr = msgService.messageURIToMsgHdr(aLocation.QueryInterface(Ci.nsIMsgMessageUrl).uri);
 
-      /* We can't display NTTP messages and RSS messages properly yet. */
-      if (msgHdrIsRss(msgHdr) || msgHdrIsNntp(msgHdr)) {
-        myDump("Not displaying RSS/NNTP messages\n");
-        return;
-      }
-
-      /* We need to fork the code a little bit here because we can't activate
-       * the multimessage view unless we're really sure that we've got more than
-       * one message */
-      pullConversation(
-        [msgHdr],
-        function pullConversationAutoFetchCallback_ (aCollection, aItems, aMsg) {
-          let rightMessages;
-
-          if (aCollection) {
-            myDump("URL Listener: Gloda query returned at least a message!\n");
-            let items = groupMessages(aCollection.items);
-
-            rightMessages = [selectRightMessage(x, gDBView.msgFolder) for each ([, x] in Iterator(items))];
-            rightMessages = rightMessages.filter(function (x) x);
-            rightMessages = rightMessages.map(function (x) x.folderMessage);
-          } else {
-            myDump("URL Listener: we're probably dealing with a RSS or NNTP msg\n");
-            rightMessages = aItems;
-          }
-
-          /* By testing here for the pref, we allow the pref to be changed at
-           * run-time and we do not require to restart Thunderbird to take the
-           * change into account. */
-          if (!gPrefs["auto_fetch"] && items.length <= 1 && gPrefs["info_af_shown"])
-            return;
-
-          /* Don't forget to show the right buttons */
-          htmlpane.contentWindow.enableExtraButtons();
-          gMessageDisplay.singleMessageDisplay = false;
-
-          if (isNewConversation(rightMessages)) {
-            let gSummary = new ThreadSummary(rightMessages, null);
-            try {
-              if (!gPrefs["info_af_shown"]) {
-                let info_af_box = htmlpane.contentDocument.getElementById("info_af_box");
-                info_af_box.style.display = "block";
-                let yes = info_af_box.getElementsByClassName("info_af_yes")[0];
-                let no = info_af_box.getElementsByClassName("info_af_no")[0];
-                yes.addEventListener("click", function (event) {
-                    info_af_box.style.display = "none";
-                    prefs.setBoolPref("info_af_shown", true);
-                  }, true);
-                no.addEventListener("click", function (event) {
-                    info_af_box.style.display = "none";
-                    prefs.setBoolPref("info_af_shown", true);
-                    prefs.setBoolPref("auto_fetch", false);
-                  }, true);
-              }
-              gSummary.init();
-            } catch (e) {
-              myDump("!!! "+e+"\n");
-              throw e;
-            }
-          } else {
-            restorePreviousConversation();
-          }
-      });
-    },
-    QueryInterface: XPCOMUtils.generateQI([Ci.nsISupports, Ci.nsISupportsWeakReference, Ci.nsIWebProgressListener])
+      // Else defer to showSummary to work it out based on thread selection.
+      return this._showSummary();
+    } catch (e) {
+      dump(e+"\n");
+    }
   };
-  messagepane.addProgressListener(gconversation.stash.uriWatcher, Ci.nsIWebProgress.NOTIFY_ALL);
 
   myDump("*** gConversation loaded\n");
 }, false);

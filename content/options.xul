@@ -141,18 +141,12 @@
    <prefpane id="advanced" label="&title.advanced;" image="chrome://messenger/skin/preferences/advanced.png">
      <preferences>
        <preference id="disable_error_empty_collection" name="gconversation.disable_error_empty_collection" type="bool" />
-       <preference id="auto_fetch" name="gconversation.auto_fetch" type="bool" />
        <preference id="auto_mark_read" name="gconversation.auto_mark_read" type="bool" />
        <preference id="monospaced_senders" name="gconversation.monospaced_senders" type="string" />
        <preference id="no_friendly_date" name="gconversation.no_friendly_date" type="bool" />
        <preference id="guess_first_names" name="gconversation.guess_first_names" type="bool" />
      </preferences>
-    
-     <groupbox style="height: 8em;">
-       <caption label="&title.general;"/>
-       <description style="width: 0;">&auto_fetch2.info;</description>
-       <checkbox label="&option.auto_fetch2;" preference="auto_fetch" id="auto_fetch_checkbox" />
-     </groupbox>
+
      <groupbox>
        <caption label="&title.message_list;" />
        <checkbox label="&option.auto_mark_read;" preference="auto_mark_read" id="auto_mark_read_checkbox" />

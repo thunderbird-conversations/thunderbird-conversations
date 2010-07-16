@@ -201,6 +201,10 @@
               document.getElementById("error_gloda_disabled").style.display = "";
             }
 
+            function disableFirstTimeMessage() {
+              prefsBranch.setBoolPref("info_af_shown", true);
+            }
+
             function disableErrorEmptyCollection() {
               prefsBranch.setBoolPref("disable_error_empty_collection", true);
             }
@@ -383,22 +387,14 @@
       </div>
       <div id="info_af_box" class="infomsg" style="display: none">
         <h3>&info_af.title;</h3>
-        <p>&info_af.body3;</p>
+        <p>&info_af.body3; <img src="chrome://gconversation/skin/email_go.png" style="vertical-align: center" /></p>
         <p>&info_af.body4;</p>
-        <div class="info_buttons">
-          <button class="info_af_yes">&info_af.yes;</button>
-          <button class="info_af_no">&info_af.no;</button>
-        </div>
-        <br />
-        <div>
-          <p>
-            &info.recommended_settings;
-            <a href="javascript:"
-              onclick="openInNewTab('http://wiki.github.com/protz/GMail-Conversation-View/');">
-              &link.recommended_settings;
-            </a>
-          </p>
-        </div>
+        <p>&info.recommended_settings;</p>
+        <p style="text-align: center">
+          <a href="javascript:" onclick="openInNewTab('http://wiki.github.com/protz/GMail-Conversation-View/');"> &link.recommended_settings; </a>
+          -
+          <a href="javascript:" onclick="disableFirstTimeMessage(); this.parentNode.parentNode.style.display = 'none';">&error.close;</a>
+        </p>
       </div>
     </div>
     <div id="content">
