@@ -132,22 +132,6 @@
                   styleElt.setAttribute("href", "chrome://gconversation/skin/linux.css");
             }
 
-
-            function adjustHeadingSize() {
-              let content = document.getElementById('content');
-              let heading = document.getElementById('heading');
-              let buttonbox = document.getElementById('buttonbox');
-              content.style.top = Math.max(
-                buttonbox.getBoundingClientRect().height,
-                heading.getBoundingClientRect().height) + 'px';
-            }
-
-            function hookResize() {
-              // we need to hook into the resize event on the header to make the #content
-              // node shift down as it reflows.
-              window.addEventListener('resize', adjustHeadingSize, false);
-            }
-
             function customizeToolbar() {
               for each (let l in ["archive", "trash", "collapse_all", "expand_all", "mark_as_read", "print", "back"])
                 if (!buttonBranch.getBoolPref(l))
@@ -318,6 +302,33 @@
               let tabmail = mail3PaneWindow.document.getElementById("tabmail");  
               mail3PaneWindow.focus();  
               tabmail.openTab("contentTab", {contentPage: url});
+            }
+
+            function adjustToolbarSize() {
+              let box = document.getElementById('buttonbox');
+              let toolbar = document.getElementById('header-view-toolbox');
+              let margin = box.getBoundingClientRect().height -
+                toolbar.getBoundingClientRect().height;
+              //XXX On Mac the marginTop is too high by 1px, other platforms too?
+              toolbar.style.marginTop = (margin/2) + "px";
+              toolbar.style.marginBottom = (margin/2) + "px";
+            }
+
+            function adjustHeadingSize() {
+              let content = document.getElementById('content');
+              let heading = document.getElementById('heading');
+              let buttonbox = document.getElementById('buttonbox');
+              content.style.top = Math.max(
+                buttonbox.getBoundingClientRect().height,
+                heading.getBoundingClientRect().height) + 'px';
+
+              adjustToolbarSize();
+            }
+
+            function hookResize() {
+              // we need to hook into the resize event on the header to make the #content
+              // node shift down as it reflows.
+              window.addEventListener('resize', adjustHeadingSize, false);
             }
         ]]>
         </script>
