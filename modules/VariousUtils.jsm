@@ -34,48 +34,37 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var EXPORTED_SYMBOLS = ['selectRightMessage', 'groupMessages',
-'convertHotmailQuotingToBlockquote1', 'convertHotmailQuotingToBlockquote2',
-'convertOutlookQuotingToBlockquote', '_mm_toggleClass', '_mm_hasClass',
+var EXPORTED_SYMBOLS = ['dateAsInMessageList', 'selectRightMessage',
+'groupMessages', 'convertHotmailQuotingToBlockquote1',
+'convertHotmailQuotingToBlockquote2', 'convertOutlookQuotingToBlockquote',
 'convertForwardedToBlockquote', 'fusionBlockquotes', 'parseShortName']
 
 const Ci = Components.interfaces;
 const Cc = Components.classes;
 const Cu = Components.utils;
-Components.utils.import("resource://app/modules/gloda/mimemsg.js");
+Cu.import("resource://app/modules/gloda/mimemsg.js");
+
 /* from mailnews/base/public/nsMsgFolderFlags.idl */
 const nsMsgFolderFlags_SentMail = 0x00000200;
 const nsMsgFolderFlags_Drafts   = 0x00000400;
 const nsMsgFolderFlags_Archive  = 0x00004000;
 
 const txttohtmlconv = Cc["@mozilla.org/txttohtmlconv;1"].createInstance(Ci.mozITXTToHTMLConv);
+const i18nDateFormatter = Cc["@mozilla.org/intl/scriptabledateformat;1"].createInstance(Ci.nsIScriptableDateFormat);
 
-/* (no comment) */
-function _mm_toggleClass(node, classname) {
-  if (!node)
-    return;
-
-  let classes = [];
-  if (node.hasAttribute('class'))
-    classes = node.getAttribute('class').split(' ');
-
-  if (classes.indexOf(classname) >= 0)
-    classes = classes.filter(function (x) x != classname);
-  else
-    classes.push(classname);
-  node.setAttribute('class', classes.join(' '));
-}
-
-function _mm_hasClass(node, classname) {
-  if (!node)
-    return;
-  let classes = [];
-  if (node.hasAttribute('class'))
-    classes = node.getAttribute('class').split(' ');
-  for (let i = 0; i < classes.length; ++i)
-    if (classes[i] == classname)
-      return true;
-  return false;
+function dateAsInMessageList(dateObject) {
+  let format = dateObject.toLocaleDateString("%x") == (new Date()).toLocaleDateString("%x")
+    ? Ci.nsIScriptableDateFormat.dateFormatNone
+    : Ci.nsIScriptableDateFormat.dateFormatShort;
+  return i18nDateFormatter.FormatDateTime("",
+                                          format,
+                                          Ci.nsIScriptableDateFormat.timeFormatNoSeconds,
+                                          dateObject.getFullYear(),
+                                          dateObject.getMonth() + 1,
+                                          dateObject.getDate(),
+                                          dateObject.getHours(),
+                                          dateObject.getMinutes(),
+                                          dateObject.getSeconds());
 }
 
 /* (sigh...) */
@@ -96,7 +85,8 @@ function insertAfter(newElement, referenceElt) {
  * - the message that's not in the Archives
  *
  * Warniiiiiiiiiiiiiiiiiiiiiiiiiiiiiing this may return null (now, cry with me).
- * But the non-null messages also have non-null folderMessage(s)
+ * But if it returns a non-null MimeMsg, then this MimeMsg's folderMessage is
+ * also non-null.
  */
 function selectRightMessage(similar, currentFolder) {
   let msgHdr;

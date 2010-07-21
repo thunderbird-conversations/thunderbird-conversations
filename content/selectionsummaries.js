@@ -48,7 +48,7 @@
 /* That's for event handlers. The stash is just a convenient way to store data
  * that needs to be made available to the event handlers. We also store in the
  * stash variables we don't want to be GC'd. */
-var gconversation = {
+let GCV = {
   /* Event handlers */
   on_load_thread: null,
   on_load_thread_tab: null,
@@ -69,7 +69,8 @@ var gconversation = {
     msgNodes: {}, /* tKey => DOMNode */
     multiple_selection: false, /* Printing and archiving depend on these */
     expand_all: [], /* A list of closures */
-    collapse_all: []
+    collapse_all: [],
+    all_went_well: false /* Set to false before PART 1/3 and set to true after we received all signals. If not true, then isNewConversation == true always. */
   }
 };
 
@@ -83,12 +84,11 @@ window.addEventListener("load", function f_temp0 () {
   const Cc = Components.classes;
   const Cu = Components.utils;
   const Cr = Components.results;
-  Cu.import("resource://gconversation/VariousUtils.jsm");
-  Cu.import("resource://gconversation/GlodaUtils.jsm");
-  Cu.import("resource://gconversation/MsgHdrUtils.jsm");
-  Cu.import("resource://gconversation/Crypto.jsm");
-  Cu.import("resource://gre/modules/PluralForm.jsm");
-  Cu.import("resource:///modules/gloda/utils.js");
+  Cu.import("resource://gconversation/VariousUtils.jsm", GCV);
+  Cu.import("resource://gconversation/GlodaUtils.jsm", GCV);
+  Cu.import("resource://gconversation/MsgHdrUtils.jsm", GCV);
+  Cu.import("resource://gre/modules/PluralForm.jsm", GCV);
+  Cu.import("resource:///modules/gloda/utils.js", GCV);
 
   /* Various magic values */
   const nsMsgViewIndex_None = 0xffffffff;
@@ -101,10 +101,10 @@ window.addEventListener("load", function f_temp0 () {
   const gHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"].getService(Ci.nsIMsgHeaderParser);
   const prefs = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService).getBranch("gconversation.");
   const txttohtmlconv = Cc["@mozilla.org/txttohtmlconv;1"].createInstance(Ci.mozITXTToHTMLConv);
-  const i18nDateFormatter = Cc["@mozilla.org/intl/scriptabledateformat;1"].createInstance(Ci.nsIScriptableDateFormat);
   const stringBundle = document.getElementById("gconv-string-bundle");
   const ioService = Cc["@mozilla.org/network/io-service;1"].getService(Ci.nsIIOService);
   const msgComposeService = Cc["@mozilla.org/messengercompose;1"].getService(Ci.nsIMsgComposeService);  
+  const clipboardService = Cc["@mozilla.org/widget/clipboardhelper;1"].getService(Ci.nsIClipboardHelper);
 
   /* How I wish Javascript had algebraic data types */
   const kActionDoNothing = 0;
@@ -141,7 +141,6 @@ window.addEventListener("load", function f_temp0 () {
   gPrefs["fold_rule"] = prefs.getCharPref("fold_rule");
   gPrefs["focus_first"] = prefs.getBoolPref("focus_first");
   gPrefs["reverse_order"] = prefs.getBoolPref("reverse_order");
-  gPrefs["auto_fetch"] = prefs.getBoolPref("auto_fetch");
   gPrefs["disable_error_empty_collection"] = prefs.getBoolPref("disable_error_empty_collection");
   gPrefs["auto_mark_read"] = prefs.getBoolPref("auto_mark_read");
   gPrefs["monospaced_senders"] = Array.map(prefs.getCharPref("monospaced_senders").split(","), String.trim);
@@ -168,13 +167,12 @@ window.addEventListener("load", function f_temp0 () {
        * we don't do this, prefs such as "use monospaced font"... or things like
        * that don't take effect until we load another conversation which is bad
        * for the user. */
-      gconversation.stash.msgHdrs = [];
+      GCV.stash.msgHdrs = [];
       switch (aData) {
         case "monospaced":
         case "monospaced_snippets":
         case "focus_first":
         case "reverse_order":
-        case "auto_fetch":
         case "auto_mark_read":
         case "disable_error_empty_collection":
         case "info_af_shown":
@@ -288,15 +286,6 @@ window.addEventListener("load", function f_temp0 () {
    * http://mxr.mozilla.org/comm-central/source/mail/base/content/msgHdrViewOverlay.js#1060
    * for reference */
   let knownCards = {};
-  function getCard (email) {
-    if (knownCards[email]) {
-      return knownCards[email];
-    } else {
-      let cardDetails = getCardForEmail(email);
-      knownCards[email] = cardDetails;
-      return cardDetails;
-    }
-  }
   function resetCards() {
     knownCards = {};
   }
@@ -321,43 +310,242 @@ window.addEventListener("load", function f_temp0 () {
 
     numAddresses = gHeaderParser.parseHeadersWithArray(emailAddresses, addresses, names, fullNames);
     for (let i = 0; i < numAddresses; ++i) {
-      let address = {};
-      address.emailAddress = addresses.value[i];
-      address.fullAddress = fullNames.value[i];
-      address.displayName = names.value[i];
-      let cardDetails = getCard(address.emailAddress);
-      if (gIdentities[address.emailAddress]) { /* OMG ITS ME */
-        /* See
-         * http://mxr.mozilla.org/comm-central/source/mail/base/content/msgHdrViewOverlay.js#1130
-         * for reference */
-        address.displayName = isSender ? meTo : toMe;
-      } else if (cardDetails.card) { /* We know the guy */
-        //myDump("Got a card for "+address.emailAddress+"!\n");
-        address.displayName = cardDetails.card.displayName;
-        address.firstName = cardDetails.card.firstName;
+      let email = addresses.value[i];
+      if (knownCards[email]) {
+        decodedAddresses.push(knownCards[email]);
+      } else {
+        let card = {};
+        card.emailAddress = email;
+        card.fullAddress = fullNames.value[i];
+        card.displayName = names.value[i];
+        let cardDetails = getCardForEmail(card.emailAddress);
+        if (cardDetails.card) { /* We know the guy */
+          //myDump("Got a card for "+address.emailAddress+"!\n");
+          card.inAB = true;
+          card.cardDetails = cardDetails; /* A bit weird, I agree */
+          card.displayName = cardDetails.card.displayName;
+          card.firstName = cardDetails.card.firstName;
+          card.phone =
+               cardDetails.card.getProperty("CellularNumber", "")
+            || cardDetails.card.getProperty("WorkPhone", "")
+            || cardDetails.card.getProperty("HomePhone", "")
+          ;
+          card.address =
+              [cardDetails.card.getProperty("HomeAddress", ""),
+               cardDetails.card.getProperty("HomeAddress2", ""),
+               cardDetails.card.getProperty("HomeCity", ""),
+               cardDetails.card.getProperty("HomeZipCode", "")]
+              .filter(function (x) x.length > 0)
+              .join("\n")
+            ||
+              [cardDetails.card.getProperty("WorkAddress", ""),
+               cardDetails.card.getProperty("WorkAddress2", ""),
+               cardDetails.card.getProperty("WorkCity", ""),
+               cardDetails.card.getProperty("WorkZipCode", "")]
+              .filter(function (x) x.length > 0)
+              .join("\n")
+          ;
+          let birthday = new Date();
+          let bDay = cardDetails.card.getProperty("BirthDay", null);
+          let bMonth = cardDetails.card.getProperty("BirthMonth", null);
+          if (bDay && bMonth) {
+            birthday.setMonth(bMonth - 1); /* I hate this!!! */
+            birthday.setDate(bDay);
+            card.birthday = birthday.toLocaleFormat("%B %d");
+          }
+        }
+        if (gIdentities[card.emailAddress]) { /* OMG ITS ME */
+          /* See
+           * http://mxr.mozilla.org/comm-central/source/mail/base/content/msgHdrViewOverlay.js#1130
+           * for reference */
+          card.displayName = isSender ? meTo : toMe;
+        }
+        decodedAddresses.push(card);
+        knownCards[email] = card;
       }
-      decodedAddresses.push(address);
     }
 
     function colorize(card) {
+      /* Compute various values */
       let name = card.displayName || card.emailAddress;
       let title = card.displayName ? card.emailAddress : "";
-
-      let shortName = aDoc.createElement("span");
-      shortName.textContent = gPrefs["guess_first_names"]
-        ? card.firstName || parseShortName(name)
+      let fullName = name;
+      let shortName = gPrefs["guess_first_names"]
+        ? card.firstName || GCV.parseShortName(name)
         : name;
-      _mm_addClass(shortName, "short-name");
+      let gravatarUrl = "http://www.gravatar.com/avatar/"
+        + GCV.GlodaUtils.md5HashString(card.emailAddress.trim().toLowerCase())
+        + "?r=pg&d=wavatar&s=50";
+      let colorStyle = "display: inline; color: "+colorFor(card.emailAddress);
 
-      let fullName = aDoc.createElement("span");
-      fullName.textContent = name;
-      _mm_addClass(fullName, "full-name");
+      let addAbTxt = stringBundle.getString("add_address_book");
+      let editDetailsTxt = stringBundle.getString("edit_details");
+      let composeToTxt = stringBundle.getString("compose_to");
+      let copyEmailTxt = stringBundle.getString("copy_email");
+      let showInvolvingTxt = stringBundle.getString("show_involving");
 
-      let span = aDoc.createElement("span");
-      span.style.color = colorFor(card.emailAddress);
-      span.appendChild(shortName);
-      span.appendChild(fullName);
-      span.setAttribute("title", title);
+      /* Fill the dialog <div> with them */
+      let dialogNode = 
+        <div style="width: 300px; display: none" class="contact-dialog">
+          <div>
+            <img src={gravatarUrl} class="info-popup-gravatar" />
+            <div class="info-popup-name-email">
+              <span class="info-popup-display-name">{card.displayName}<br /></span>
+              <span class="info-popup-display-email">{card.emailAddress}</span>
+            </div>
+          </div>
+          <div class="info-popup-contact-info">
+            <table>
+              <tr class="phone">
+                <td>
+                  <img src="chrome://gconversation/skin/phone.png" />
+                </td>
+                <td>
+                  {card.phone}
+                </td>
+              </tr>
+              <tr class="address">
+                <td>
+                  <img src="chrome://gconversation/skin/house.png" />
+                </td>
+                <td>
+                  <span style="white-space: pre-wrap">{card.address}</span>
+                </td>
+              </tr>
+              <tr class="birthday">
+                <td>
+                  <img src="chrome://gconversation/skin/cake.png" />
+                </td>
+                <td>
+                  {card.birthday}
+                </td>
+              </tr>
+            </table>
+          </div>
+          <div class="info-popup-links">
+            <a href="javascript:" class="link-action-add-ab">{addAbTxt}</a> -
+            <a href="javascript:" class="link-action-edit-ab">{editDetailsTxt}</a> -
+            <a href="javascript:" class="link-action-compose-to">{composeToTxt}</a> -
+            <a href="javascript:" class="link-action-copy-email">{copyEmailTxt}</a> -
+            <a href="javascript:" class="link-action-show-involving">{showInvolvingTxt}</a>
+          </div>
+        </div>;
+
+      /* Create the small <div> that olds the short name and the full name */
+      let linkNode =
+        <div class="link contact-link" style={colorStyle}>
+          <span class="short-name">{shortName}</span>
+          <span class="full-name">{fullName}</span>
+        </div>;
+
+      /* Wrap them both in a bigger <div> */
+      let span = aDoc.createElement("div");
+      span.classList.add("display-as-inline");
+      span.innerHTML = linkNode.toXMLString() + dialogNode.toXMLString();
+
+      /* Hide unnecessary UI items */
+      if (!card.displayName)
+        span.getElementsByClassName("info-popup-display-name")[0].style.display = "none";
+      if (!card.phone)
+        span.getElementsByClassName("phone")[0].style.display = "none";
+      if (!card.address)
+        span.getElementsByClassName("address")[0].style.display = "none";
+      if (!card.birthday)
+        span.getElementsByClassName("birthday")[0].style.display = "none";
+      if (!card.address && !card.phone && !card.birthday)
+        span.getElementsByClassName("info-popup-contact-info")[0].style.display = "none";
+
+      /* Register the "show involving" action */
+      let showLink = span.getElementsByClassName("link-action-show-involving")[0];
+      showLink.addEventListener("click", function (event) {
+          let q1 = Gloda.newQuery(Gloda.NOUN_IDENTITY);
+          q1.kind("email");
+          q1.value(card.emailAddress);
+          GCV.stash.q1 = q1.getCollection({
+              onItemsAdded: function _onItemsAdded(aItems, aCollection) {  },
+              onItemsModified: function _onItemsModified(aItems, aCollection) { },
+              onItemsRemoved: function _onItemsRemoved(aItems, aCollection) { },
+              onQueryCompleted: function _onQueryCompleted(aCollection) {
+                if (!aCollection.items.length)
+                  return;  
+
+                let q2 = Gloda.newQuery(Gloda.NOUN_MESSAGE);
+                q2.involves.apply(q2, aCollection.items);
+                GCV.stash.q2 = q2.getCollection({
+                  onItemsAdded: function _onItemsAdded(aItems, aCollection) {  },
+                  onItemsModified: function _onItemsModified(aItems, aCollection) {  },
+                  onItemsRemoved: function _onItemsRemoved(aItems, aCollection) {  },
+                  onQueryCompleted: function _onQueryCompleted(aCollection) {  
+                    let tabmail = document.getElementById("tabmail");
+                    aCollection.items =
+                      [GCV.selectRightMessage(m)
+                      for each ([, m] in Iterator(GCV.groupMessages(aCollection.items)))];
+                    aCollection.items = aCollection.items.filter(function (x) x);
+                    tabmail.openTab("glodaList", {
+                      collection: aCollection,
+                      title: stringBundle.getString("involving").replace("#1", card.displayName),
+                      background: false
+                    });
+                  }
+                });
+              }
+            });
+        }, true);
+
+      /* Register the "copy email address" action */
+      let copyLink = span.getElementsByClassName("link-action-copy-email")[0];
+      copyLink.addEventListener("click", function (event) {
+          clipboardService.copyString(card.emailAddress);
+        }, true);
+
+      /* Register the compose message to action */
+      let composeLink = span.getElementsByClassName("link-action-compose-to")[0];
+      composeLink.addEventListener("click", function (event) {
+          let URI = ioService.newURI("mailto:"+card.emailAddress, null, null);  
+          msgComposeService.OpenComposeWindowWithURI(null, URI);
+        }, true);
+
+      /* Register the edit details / add to address book actions */
+      if (card.inAB) {
+        let addAb = span.getElementsByClassName("link-action-add-ab")[0];
+        addAb.style.display = "none";
+        addAb.nextSibling.textContent = "";
+        let editAb = span.getElementsByClassName("link-action-edit-ab")[0];
+        editAb.addEventListener("click", function (event) {
+          window.openDialog("chrome://messenger/content/addressbook/abEditCardDialog.xul",
+                            "",
+                            "chrome,modal,resizable=no,centerscreen",
+                            { abURI: card.cardDetails.book.URI,
+                              card: card.cardDetails.card });
+
+          }, true);
+      } else {
+        let editAb = span.getElementsByClassName("link-action-edit-ab")[0];
+        editAb.style.display = "none";
+        editAb.nextSibling.textContent = "";
+        let addAb = span.getElementsByClassName("link-action-add-ab")[0];
+        addAb.addEventListener("click", function (event) {
+            let args = {
+              primaryEmail: card.emailAddress,
+              displayName: card.displayName,
+              allowRemoteContent: true
+            };
+            window.openDialog("chrome://messenger/content/addressbook/abNewCardDialog.xul",
+                              "", "chrome,resizable=no,titlebar,modal,centerscreen", args);
+          }, true);
+      }
+
+      /* Small cleanups */
+      let removeTrailingTextNode = function (klass) {
+        let link = span.getElementsByClassName(klass)[0];
+        if (link.nextSibling && link.nextSibling.nodeType == link.nextSibling.TEXT_NODE
+            && link.nextSibling.textContent.trim().length === 0)
+          link.parentNode.removeChild(link.nextSibling);
+      };
+      removeTrailingTextNode("full-name");
+      removeTrailingTextNode("short-name");
+      removeTrailingTextNode("link");
+
       return span;
     }
     return [colorize(a) for each ([, a] in Iterator(decodedAddresses))];
@@ -417,7 +605,7 @@ window.addEventListener("load", function f_temp0 () {
     if (!aMsgHdr)
       dumpCallStack();
     let tKey = aMsgHdr.messageKey + aMsgHdr.folder.URI;
-    return gconversation.stash.msgNodes[tKey];
+    return GCV.stash.msgNodes[tKey];
   }
 
   /* From a set of message headers, tell which ones should be expanded */
@@ -500,7 +688,7 @@ window.addEventListener("load", function f_temp0 () {
   function variousFocusHacks (aMsgNode) {
     /* We want the node that's been expanded (the one that has index
      * needsFocus) to also have the visual appearance with the cursor. */
-    _mm_addClass(aMsgNode, "selected");
+    aMsgNode.classList.add("selected");
     aMsgNode.setAttribute("tabindex", 1);
     htmlpane.contentDocument.addEventListener("focus", function on_focus (event) {
         htmlpane.contentDocument.removeEventListener("focus", on_focus, true);
@@ -516,7 +704,7 @@ window.addEventListener("load", function f_temp0 () {
 
         /* However, when the thread summary gains focus, we need to
          * remove that class because :focus will take care of that */
-        _mm_removeClass(msgNode, "selected");
+        msgNode.classList.remove("selected");
         /* Restore the proper tab order. This event is fired *after* the
          * right message has been focused in Gecko 1.9.2, *before* the right
          * message has been focused in Gecko 1.9.1 (so it's basically
@@ -563,10 +751,10 @@ window.addEventListener("load", function f_temp0 () {
       /* We need to keep them at hand for the "Mark all read" command to work
        * properly (and others). THis is set by the original constructor that
        * we're not overriding here, see the original selectionsummaries.js */
-      gconversation.stash.msgHdrs = this._msgHdrs;
-      gconversation.stash.msgNodes = this._msgNodes;
-      gconversation.stash.expand_all = [];
-      gconversation.stash.collapse_all = [];
+      GCV.stash.msgHdrs = this._msgHdrs;
+      GCV.stash.msgNodes = this._msgNodes;
+      GCV.stash.expand_all = [];
+      GCV.stash.collapse_all = [];
 
       /* Reset the set of known colors */
       resetColors();
@@ -580,7 +768,7 @@ window.addEventListener("load", function f_temp0 () {
       let numMessages = this._msgHdrs.length;
       let subject = (firstMsgHdr.mime2DecodedSubject || gSelectionSummaryStrings["noSubject"])
          + " "
-         + PluralForm.get(numMessages, gSelectionSummaryStrings["Nmessages"]).replace('#1', numMessages);
+         + GCV.PluralForm.get(numMessages, gSelectionSummaryStrings["Nmessages"]).replace('#1', numMessages);
       let heading = htmlpane.contentDocument.getElementById('heading');
       heading.setAttribute("class", "heading");
       heading.textContent = subject;
@@ -605,6 +793,7 @@ window.addEventListener("load", function f_temp0 () {
        * complete, which in turn would result in no attachments at all
        * displayed). */
       let needsFocus = tellMeWhoToFocus(msgHdrs);
+      GCV.stash.all_went_well = false;
       myDump("                                                PART 1/3\n");
       runOnceAfterNSignals(
         numMessages,
@@ -629,7 +818,25 @@ window.addEventListener("load", function f_temp0 () {
                * and the summary code is reloaded once new messages have been
                * indexed. */
               if (gPrefs["auto_mark_read"] && document.hasFocus())
-                gconversation.mark_all_read();
+                GCV.mark_all_read();
+
+              /* This is the end of it all, so be confident our conversation is
+               * properly built and complete. This is specifically to avoid the
+               * following sequence of events:
+               * - pullConversation is launched
+               * - user switches back to single message view
+               * - multimessageview.xhtml is not visible anymore
+               * - the fillMessageSnippetAndHTML callback kicks in
+               * - tries to set a height on the iframe (auto-resizing issue,
+               *   again)
+               * - fails because the height is not available since it's never
+               *   been displayed (remember, the conversation is not visible
+               *   anymore)
+               * - the user comes backs to the exact same conversation
+               * - isNewConversation == false
+               * - the conversation's messages are 20px high... good!
+               **/
+              GCV.stash.all_went_well = true;
             });
 
           /* Second step: expand all the messages that need to be expanded. All
@@ -644,7 +851,7 @@ window.addEventListener("load", function f_temp0 () {
                 throw "Why collapse a message?";
                 break;
               case kActionExpand:
-                gconversation.stash.expand_all[i]();
+                GCV.stash.expand_all[i]();
                 break;
               default:
                 throw "Never happens";
@@ -654,6 +861,8 @@ window.addEventListener("load", function f_temp0 () {
         }
       );
 
+      myDump("*** We have "+numMessages+" messages to process\n");
+
       /* Now this is for every message. Note to self: all functions defined
        * inside the loop must be defined using let f = ... (otherwise the last
        * definition is always called !). Note to self: i is shared accross all
@@ -661,7 +870,7 @@ window.addEventListener("load", function f_temp0 () {
       for (let i = 0; i < numMessages; ++i) {
         let iCopy = i; /* Jonathan, we're not in OCaml, i is NOT immutable */
 
-        myDump("*** Treating message "+i+"\n");
+        myDump("*** Dealing with message "+i+"\n");
         count += 1;
         if (count > MAX_THREADS) {
           maxCountExceeded = true;
@@ -671,35 +880,16 @@ window.addEventListener("load", function f_temp0 () {
         let msgHdr = this._msgHdrs[i];
         let key = msgHdr.messageKey + msgHdr.folder.URI;
 
-        let msg_classes = "message collapsed";
-        if (!msgHdr.isRead)
-          msg_classes += " unread";
-        if (msgHdr.isFlagged)
-          msg_classes += " starred";
-
         let theSubject = msgHdr.mime2DecodedSubject;
         let dateObject = new Date(msgHdr.date/1000);
-        let date;
-        if (gPrefs["no_friendly_date"]) {
-          let format = dateObject.toLocaleDateString("%x") == (new Date()).toLocaleDateString("%x")
-            ? Ci.nsIScriptableDateFormat.dateFormatNone
-            : Ci.nsIScriptableDateFormat.dateFormatShort;
-          date = i18nDateFormatter.FormatDateTime("",
-                                                  format,
-                                                  Ci.nsIScriptableDateFormat.timeFormatNoSeconds,
-                                                  dateObject.getFullYear(),
-                                                  dateObject.getMonth() + 1,
-                                                  dateObject.getDate(),
-                                                  dateObject.getHours(),
-                                                  dateObject.getMinutes(),
-                                                  dateObject.getSeconds());
-        } else {
-          date = makeFriendlyDateAgo(dateObject);
-        }
+        let date = gPrefs["no_friendly_date"]
+          ? GCV.dateAsInMessageList(dateObject)
+          : makeFriendlyDateAgo(dateObject);
 
         /* The snippet class really has a counter-intuitive name but that allows
          * us to keep some style from the original multimessageview.css without
          * rewriting everything */
+        let stdReaderText = stringBundle.getString("std_reader");
         let replyTxt = stringBundle.getString("reply");
         let replyAllTxt = stringBundle.getString("reply_all");
         let forwardTxt = stringBundle.getString("forward");
@@ -711,6 +901,7 @@ window.addEventListener("load", function f_temp0 () {
         let moreActionsTxt = stringBundle.getString("more_actions");
         let toTxt = stringBundle.getString("to");
         let detailsTxt = stringBundle.getString("details");
+        let editDraftTxt = stringBundle.getString("edit_draft");
         let toggleRead = stringBundle.getString("toggle_read2");
         let toggleFont = stringBundle.getString("toggle_font");
         let noGlodaTxt = stringBundle.getString("no_gloda");
@@ -721,6 +912,7 @@ window.addEventListener("load", function f_temp0 () {
           <div class="row">
             <div class="pointer" />
             <div class="notification-icons">
+              <div class="std-reader link" title={stdReaderText} />
               <div class="star"/>
               <div class="enigmail-enc-ok" title={enigEncOk} style="display: none" />
               <div class="enigmail-sign-ok" title={enigSignOk} style="display: none" />
@@ -752,10 +944,10 @@ window.addEventListener("load", function f_temp0 () {
                 </div>
                 <div class="tooltip msgheader-details-toggle">{detailsTxt}</div>
                 <div class="msgheader-from-to">
-                  <div class="sender link"></div>
+                  <div class="sender"></div>
                   <div class="to-text">{toTxt}</div>
                   <div class="recipients"></div>
-                  <div class="draft-warning"></div>
+                  <div class="draft-warning" title={editDraftTxt}></div>
                 </div>
                 <div class="msgheader-subject-date">
                   <div class="date">{date}</div>
@@ -806,7 +998,13 @@ window.addEventListener("load", function f_temp0 () {
         // innerHTML is safe here because all of the data in msgContents is
         // either generated from integers or escaped to be safe.
         msgNode.innerHTML = msgContents.toXMLString();
-        _mm_addClass(msgNode, msg_classes);
+
+        msgNode.classList.add("message");
+        msgNode.classList.add("collapsed");
+        if (!msgHdr.isRead)
+          msgNode.classList.add("unread");
+        if (msgHdr.isFlagged)
+          msgNode.classList.add("starred");
 
         /* That only changes the order in which the nodes are inserted, not the
          * index they have in this._msgHdrs */
@@ -820,17 +1018,17 @@ window.addEventListener("load", function f_temp0 () {
         let expandIframe = function () { myDump("YOU SHOULD NOT SEE THIS\n"); };
         let expandAttachments = function () { myDump("No attachments found ("+iCopy+")\n"); };
         let toggleMessage = function toggleMessage_ () {
-          _mm_toggleClass(msgNode, "collapsed");
+          msgNode.classList.toggle("collapsed");
         };
-        gconversation.stash.expand_all.push(function () {
-          if (_mm_hasClass(msgNode, "collapsed")) {
+        GCV.stash.expand_all.push(function () {
+          if (msgNode.classList.contains("collapsed")) {
             toggleMessage();
             expandAttachments();
             expandIframe(); /* takes care of calling signal() */
           }
         });
-        gconversation.stash.collapse_all.push(function () {
-          if (!_mm_hasClass(msgNode, "collapsed")) {
+        GCV.stash.collapse_all.push(function () {
+          if (!msgNode.classList.contains("collapsed")) {
             toggleMessage(); /* Immediate */
             signal();
           }
@@ -838,7 +1036,7 @@ window.addEventListener("load", function f_temp0 () {
 
         /* Warn the user if this is a draft.
          * XXX we should probably provide a way to start editing said Draft */
-        if (msgHdrIsDraft(msgHdr)) {
+        if (GCV.msgHdrIsDraft(msgHdr)) {
           let draftTxt = stringBundle.getString("draft");
           msgNode.getElementsByClassName("draft-warning")[0].textContent = draftTxt;
         }
@@ -851,7 +1049,9 @@ window.addEventListener("load", function f_temp0 () {
           let tagNode = tagsNode.ownerDocument.createElement('span');
           // see tagColors.css
           let colorClass = "blc-" + this._msgTagService.getColorForKey(tag.key).substr(1);
-          _mm_addClass(tagNode, "tag " + tag.tag + " " + colorClass);
+          tagNode.classList.add("tag");
+          //tagNode.classList.add(tag.tag);
+          tagNode.classList.add(colorClass);
           tagNode.textContent = tag.tag;
           tagsNode.appendChild(tagNode);
         }
@@ -921,9 +1121,9 @@ window.addEventListener("load", function f_temp0 () {
         /* Style according to the preferences. Preferences have an observer, see
          * above for details. */
         if (gPrefs["monospaced"])
-          _mm_addClass(htmlMsgNode, "monospaced-message");
+          htmlMsgNode.classList.add("monospaced-message");
         if (gPrefs["monospaced_snippets"])
-          _mm_addClass(snippetMsgNode, "monospaced-snippet");
+          snippetMsgNode.classList.add("monospaced-snippet");
 
         /* Try to enable at least some keyboard navigation */
         let tabIndex = gPrefs["reverse_order"] ? numMessages - i : i;
@@ -953,6 +1153,9 @@ window.addEventListener("load", function f_temp0 () {
           for each (let [, node] in Iterator(nodes))
             node.addEventListener(action, f, true);
         }
+        register(".draft-warning", function (event) {
+            compose(Ci.nsIMsgCompType.Draft, event);
+          });
         register(".link-reply, .button-reply", function (event) {
             /* XXX this code should adapt when news messages have a JS
              * representation. I don't think this will ever happen. See
@@ -1005,76 +1208,94 @@ window.addEventListener("load", function f_temp0 () {
             let selectedMessages = gFolderDisplay.selectedMessages;
             /* Does not */
             let l = gFolderDisplay.selectedIndices.length;
-            msgHdrsDelete([msgHdr]);
+            GCV.msgHdrsDelete([msgHdr]);
             if (l > 1)
               gFolderDisplay.selectMessages(selectedMessages.filter(function (x) x.messageId != msgHdr.messageId));
           });
         register(".button-archive", function archive_listener (event) {
             let selectedMessages = gFolderDisplay.selectedMessages;
             let l = gFolderDisplay.selectedIndices.length;
-            msgHdrsArchive([msgHdr], window);
+            GCV.msgHdrsArchive([msgHdr], window);
             if (l > 1)
               gFolderDisplay.selectMessages(selectedMessages.filter(function (x) x.messageId != msgHdr.messageId));
           });
         register(".action.mark-read", function markreadnode_listener (event) {
-            msgHdrsMarkAsRead([msgHdr], !msgHdr.isRead);
+            GCV.msgHdrsMarkAsRead([msgHdr], !msgHdr.isRead);
           });
 
         /* Now the expand collapse and stuff */
-        register(".grip", gconversation.stash.collapse_all[iCopy]);
+        register(".grip", GCV.stash.collapse_all[iCopy]);
         register(null, function dblclick_listener () {
             if (msgNode.classList.contains("collapsed"))
-              gconversation.stash.expand_all[iCopy]();
+              GCV.stash.expand_all[iCopy]();
             else
-              gconversation.stash.collapse_all[iCopy]();
+              GCV.stash.collapse_all[iCopy]();
           }, "dblclick");
-        register(".snippetmsg", gconversation.stash.expand_all[iCopy]);
+        register(".snippetmsg", GCV.stash.expand_all[iCopy]);
         msgNode.addEventListener("keypress", function keypress_listener (event) {
-            if (event.charCode == 'o'.charCodeAt(0) || event.keyCode == 13) {
-              if (msgNode.classList.contains("collapsed")) {
-                /* Although iframe expansion preserves scroll value, we must do
-                 * that *after* the iframe has been expanded, otherwise, the
-                 * viewport might be too short and won't allow scrolling to the
-                 * right value already. */
-                runOnceAfterNSignals(1, function () scrollNodeIntoView(msgNode));
-                gconversation.stash.expand_all[iCopy]();
-              } else {
-                gconversation.stash.collapse_all[iCopy]();
-              }
-            }
-            if (event.keyCode == 8) {
-              gconversation.on_back();
-            }
-            if (event.charCode == 'h'.charCodeAt(0)) {
-              msgNode.style.display = "none";
-            }
-            if (event.charCode == 'n'.charCodeAt(0)) {
-              if (msgNode.nextElementSibling)
-                msgNode.nextElementSibling.focus();
-              event.preventDefault();
-            }
-            if (event.charCode == 'p'.charCodeAt(0)) {
-              let prev = msgNode.previousElementSibling;
-              if (prev) {
-                prev.focus();
-                /* This is why this works better than shift-tab. We make sure
-                 * the message is not hidden by the header! */
-                if (htmlpane.contentDocument.documentElement.scrollTop > prev.offsetTop - 5)
-                  htmlpane.contentWindow.scrollTo(0, prev.offsetTop - 5);
-              }
-              event.preventDefault();
-            }
-            if (event.charCode == 'r'.charCodeAt(0)) {
-              compose(Ci.nsIMsgCompType.ReplyToSender, event);
-              event.preventDefault();
-            }
-            if (event.charCode == 'a'.charCodeAt(0)) {
-              compose(Ci.nsIMsgCompType.ReplyAll, event);
-              event.preventDefault();
-            }
-            if (event.charCode == 'f'.charCodeAt(0)) {
-              forward(event);
-              event.preventDefault();
+            switch (event.which) {
+              case 'o'.charCodeAt(0):
+              case 13:
+                if (msgNode.classList.contains("collapsed")) {
+                  /* Although iframe expansion preserves scroll value, we must do
+                   * that *after* the iframe has been expanded, otherwise, the
+                   * viewport might be too short and won't allow scrolling to the
+                   * right value already. */
+                  runOnceAfterNSignals(1, function () scrollNodeIntoView(msgNode));
+                  GCV.stash.expand_all[iCopy]();
+                } else {
+                  GCV.stash.collapse_all[iCopy]();
+                }
+                break;
+
+              case 'h'.charCodeAt(0):
+                msgNode.style.display = "none";
+                break;
+
+              case 'n'.charCodeAt(0):
+                if (msgNode.nextElementSibling)
+                  msgNode.nextElementSibling.focus();
+                event.preventDefault();
+                break;
+
+              case 'p'.charCodeAt(0):
+                let prev = msgNode.previousElementSibling;
+                if (prev) {
+                  prev.focus();
+                  /* This is why this works better than shift-tab. We make sure
+                   * the message is not hidden by the header! */
+                  if (htmlpane.contentDocument.documentElement.scrollTop > prev.offsetTop - 5)
+                    htmlpane.contentWindow.scrollTo(0, prev.offsetTop - 5);
+                }
+                event.preventDefault();
+                break;
+            
+              case 'r':
+                compose(Ci.nsIMsgCompType.ReplyToSender, event);
+                event.preventDefault();
+                break;
+
+              case 'a'.charCodeAt(0):
+                compose(Ci.nsIMsgCompType.ReplyAll, event);
+                event.preventDefault();
+                break;
+
+              case 'f'.charCodeAt(0):
+                forward(event);
+                event.preventDefault();
+                break;
+
+              case 'e'.charCodeAt(0):
+                GCV.archive_all();
+                break;
+
+              case 'u'.charCodeAt(0):
+                SetFocusThreadPane(event);
+                break;
+
+              case '#'.charCodeAt(0):
+                GCV.delete_all();
+                break;
             }
           }, true);
 
@@ -1106,18 +1327,16 @@ window.addEventListener("load", function f_temp0 () {
                 iframe.removeEventListener("load", f_temp1, true);
                 let iframeDoc = iframe.contentDocument;
 
-                /* Do some reformatting */
-                iframeDoc.body.style.padding = "0";
-                iframeDoc.body.style.margin = "0";
-                /* Deal with people who have bad taste */
-                iframeDoc.body.style.color = "black";
-                iframeDoc.body.style.backgroundColor = "white";
+                /* Do some reformatting + deal with people who have bad taste */
+                iframeDoc.body.setAttribute("style", "padding: 0; margin: 0; "+
+                  "color: black; background-color: white; "+
+                  "-moz-user-focus: none !important; ");
 
                 /* Our super-advanced heuristic ;-) */
                 let hasHtml = !(
                   iframeDoc.body.firstElementChild &&
-                  (_mm_hasClass(iframeDoc.body.firstElementChild, "moz-text-flowed") ||
-                   _mm_hasClass(iframeDoc.body.firstElementChild, "moz-text-plain")));
+                  (iframeDoc.body.firstElementChild.classList.contains("moz-text-flowed") ||
+                   iframeDoc.body.firstElementChild.classList.contains("moz-text-plain")));
 
                 /* Remove the attachments if the user has not set View >
                  * Display Attachments Inline. Do that right now, otherwise the
@@ -1134,11 +1353,11 @@ window.addEventListener("load", function f_temp0 () {
                 /* The part below is all about quoting */
                 /* Launch various heuristics to convert most common quoting styles
                  * to real blockquotes. Spoiler: most of them suck. */
-                convertOutlookQuotingToBlockquote(iframe.contentWindow, iframeDoc);
-                convertHotmailQuotingToBlockquote1(iframeDoc);
-                convertHotmailQuotingToBlockquote2(iframe.contentWindow, iframeDoc, gPrefs["hide_quote_length"]);
-                convertForwardedToBlockquote(iframeDoc);
-                fusionBlockquotes(iframeDoc);
+                GCV.convertOutlookQuotingToBlockquote(iframe.contentWindow, iframeDoc);
+                GCV.convertHotmailQuotingToBlockquote1(iframeDoc);
+                GCV.convertHotmailQuotingToBlockquote2(iframe.contentWindow, iframeDoc, gPrefs["hide_quote_length"]);
+                GCV.convertForwardedToBlockquote(iframeDoc);
+                GCV.fusionBlockquotes(iframeDoc);
                 /* This function adds a show/hide quoted text link to every topmost
                  * blockquote. Nested blockquotes are not taken into account. */
                 let walk = function walk_ (elt) {
@@ -1157,7 +1376,7 @@ window.addEventListener("load", function f_temp0 () {
                             div.setAttribute("class", "link showhidequote");
                             div.addEventListener("click", function div_listener (event) {
                                 let h = htmlpane.contentWindow.toggleQuote(event);
-                                iframe.style.height = (parseInt(iframe.style.height) + h)+"px";
+                                iframe.style.height = (parseFloat(iframe.style.height) + h)+"px";
                               }, true);
                             div.setAttribute("style", "color: #512a45; cursor: pointer; font-size: 90%;");
                             div.appendChild(document.createTextNode("- "+
@@ -1214,7 +1433,7 @@ window.addEventListener("load", function f_temp0 () {
                   let toggleFontStyle = function togglefont_listener (event) {
                     let elts = iframeDoc.querySelectorAll("pre, body > *:first-child")
                     for each (let [, elt] in Iterator(elts)) {
-                      _mm_toggleClass(elt, "pre-as-regular");
+                      elt.classList.toggle("pre-as-regular");
                     }
                     /* XXX The height of the iframe isn't updated as we change
                      * fonts. This is usually unimportant, as it will grow
@@ -1298,7 +1517,7 @@ window.addEventListener("load", function f_temp0 () {
              * pretty well (no JS is executed, the images are loaded IFF we
              * authorized that recipient).
              * */
-            let url = msgHdrToNeckoURL(msgHdr, gMessenger);
+            let url = GCV.msgHdrToNeckoURL(msgHdr, gMessenger);
 
             /* These steps are mandatory. Basically, the code that loads the
              * messages will always output UTF-8 as the OUTPUT ENCODING, so
@@ -1398,7 +1617,7 @@ window.addEventListener("load", function f_temp0 () {
              * */
             myDump("*** Got an \"offline message\"\n");
 
-            let body = messageBodyFromMsgHdr(msgHdr, true);
+            let body = GCV.messageBodyFromMsgHdr(msgHdr, true);
             let snippet = body.substring(0, SNIPPET_LENGTH-1)+"…";
             snippetMsgNode.textContent = snippet;
           } catch (e) {
@@ -1442,7 +1661,7 @@ window.addEventListener("load", function f_temp0 () {
                   headerNode.textContent = header+": ";
                 let value = aMimeMsg.headers[header];
                 if (header != "folder")
-                  value = GlodaUtils.deMime(value); /* I <3 gloda */
+                  value = GCV.GlodaUtils.deMime(value); /* I <3 gloda */
                 let valueNode = htmlpane.contentDocument.createTextNode(value);
                 tooltip.appendChild(headerNode);
                 tooltip.appendChild(valueNode);
@@ -1483,8 +1702,8 @@ window.addEventListener("load", function f_temp0 () {
             snippetMsgNode.textContent = snippet;
 
             /* Ok, let's have fun with attachments now */
-            let attachments = MimeMessageGetAttachments(aMimeMsg);
-            let [makePlural, ] = PluralForm.makeGetter(stringBundle.getString("plural_rule"));
+            let attachments = GCV.MimeMessageGetAttachments(aMimeMsg);
+            let [makePlural, ] = GCV.PluralForm.makeGetter(stringBundle.getString("plural_rule"));
             let attachmentsTopTxt = stringBundle.getString("attachments_top2");
             let attachmentsBottomTxt = stringBundle.getString("attachments_bottom2");
             let numAttachments = attachments.length;
@@ -1504,7 +1723,7 @@ window.addEventListener("load", function f_temp0 () {
               for each (let [k, att] in Iterator(attachments)) {
                 let li = htmlpane.contentDocument.createElement("li");
                 let a = htmlpane.contentDocument.createElement("span");
-                _mm_addClass(a, "link");
+                a.classList.add("link");
                 a.textContent = att.name;
                 let j = k;
                 a.addEventListener("click", function () {
@@ -1590,7 +1809,7 @@ window.addEventListener("load", function f_temp0 () {
                   }
                   singleBox.innerHTML = singleBoxContents.toXMLString();
                   attBoxNode.appendChild(singleBox);
-                  _mm_addClass(singleBox, "att"+j);
+                  singleBox.classList.add("att"+j);
                   singleBox.getElementsByClassName("attachment-link")[0].addEventListener("click",
                     function (event) {
                       HandleMultipleAttachments([attInfo], "open");
@@ -1606,7 +1825,8 @@ window.addEventListener("load", function f_temp0 () {
                    * application/ocaml" or whatever. WTF? */
                   if (att.contentType.indexOf("image/") === 0 || att.contentType.indexOf("text/") === 0) {
                     /* Display the cursor pointer */
-                    _mm_addClass(singleBox.getElementsByTagName("img")[0], "image-attachment-preview");
+                    singleBox.getElementsByTagName("img")[0]
+                      .classList.add("image-attachment-preview");
                     /* Add the event listener */
                     let url = att.url;
                     singleBox.getElementsByTagName("img")[0].addEventListener("click",
@@ -1643,15 +1863,15 @@ window.addEventListener("load", function f_temp0 () {
           fallbackNoGloda();
         }
 
-        let sender = msgNode.getElementsByClassName("sender")[0];
-        sender.msgHdr = msgHdr;
-        sender.folder = msgHdr.folder;
-        sender.msgKey = msgHdr.messageKey;
-        sender.addEventListener("click", function(e) {
+        let stdReader = msgNode.getElementsByClassName("std-reader")[0];
+        stdReader.msgHdr = msgHdr;
+        stdReader.folder = msgHdr.folder;
+        stdReader.msgKey = msgHdr.messageKey;
+        stdReader.addEventListener("click", function(e) {
           /* Cancel the next attempt to load a conversation, we explicitely
            * requested this message. */
-          let url = msgHdrToNeckoURL(msgHdr, gMessenger);
-          gconversation.stash.wantedUrl = url.spec;
+          let url = GCV.msgHdrToNeckoURL(msgHdr, gMessenger);
+          GCV.stash.wantedUrl = url.spec;
 
           /* msgHdr is "the right message" so jump to it (see
            * selectRightMessage) */
@@ -1687,7 +1907,7 @@ window.addEventListener("load", function f_temp0 () {
      * this should minimize race conditions but not solve them. */
     let firstMessageId = gFolderDisplay.selectedMessage.messageId;
     try {
-      gconversation.stash.q1 = Gloda.getMessageCollectionForHeaders(aSelectedMessages, {
+      GCV.stash.q1 = Gloda.getMessageCollectionForHeaders(aSelectedMessages, {
         onItemsAdded: function (aItems) {
           if (!aItems.length) {
             myDump("!!! GConversation: gloda query returned no messages!\n");
@@ -1695,7 +1915,7 @@ window.addEventListener("load", function f_temp0 () {
             return;
           }
           let msg = aItems[0];
-          gconversation.stash.q2 = msg.conversation.getMessagesCollection({
+          GCV.stash.q2 = msg.conversation.getMessagesCollection({
             onItemsAdded: function (aItems) {
             },
             onItemsModified: function () {},
@@ -1752,17 +1972,22 @@ window.addEventListener("load", function f_temp0 () {
    * */
   function isNewConversation(items) {
     /* Happens in wicked cases */
-    if (gconversation.stash.multiple_selection)
+    if (GCV.stash.multiple_selection || !GCV.stash.all_went_well)
       return true;
     let newConversation = false;
-    for (let i = 0; i < Math.max(items.length, gconversation.stash.msgHdrs.length); ++i) {
-      if (i >= items.length || i >= gconversation.stash.msgHdrs.length ||
-          items[i].messageId != gconversation.stash.msgHdrs[i].messageId) {
-        newConversation = true;
-        break;
+    try {
+      for (let i = 0; i < Math.max(items.length, GCV.stash.msgHdrs.length); ++i) {
+        if (i >= items.length || i >= GCV.stash.msgHdrs.length ||
+            items[i].messageId != GCV.stash.msgHdrs[i].messageId) {
+          newConversation = true;
+          break;
+        }
       }
+      return newConversation;
+    } catch (e if e.result == Components.results.NS_ERROR_INVALID_POINTER) {
+      /* This is bug 520115 hitting us */
+      return true;
     }
-    return newConversation;
   }
 
   /* Actually it's more tricky than it seems because of the "focus currently
@@ -1788,7 +2013,7 @@ window.addEventListener("load", function f_temp0 () {
     if (badMsgs.length > 1)
       myDump("!!! SEVERE MISTAKE JONATHAN LOOK INTO THIS RIGHT NOW\n");
     for each (let [, msgNode] in Iterator(badMsgs)) {
-      _mm_removeClass(msgNode, "selected");
+      msgNode.classList.remove("selected");
       if (msgNode.previousElementSibling)
         msgNode.setAttribute("tabindex",
           parseInt(msgNode.previousElementSibling.getAttribute("tabindex"))+1);
@@ -1796,28 +2021,28 @@ window.addEventListener("load", function f_temp0 () {
         msgNode.setAttribute("tabindex", 2);
     }
 
-    let needsFocus = tellMeWhoToFocus(gconversation.stash.msgHdrs);
+    let needsFocus = tellMeWhoToFocus(GCV.stash.msgHdrs);
 
     runOnceAfterNSignals(
-      gconversation.stash.msgHdrs.length,
+      GCV.stash.msgHdrs.length,
       function f_temp5() {
-        let msgNode = msgHdrToMsgNode(gconversation.stash.msgHdrs[needsFocus]);
+        let msgNode = msgHdrToMsgNode(GCV.stash.msgHdrs[needsFocus]);
         scrollNodeIntoView(msgNode);
         variousFocusHacks(msgNode);
       }
     );
 
-    let actionList = tellMeWhoToExpand(gconversation.stash.msgHdrs, needsFocus);
+    let actionList = tellMeWhoToExpand(GCV.stash.msgHdrs, needsFocus);
     for each (let [i, action] in Iterator(actionList)) {
       switch (action) {
         case kActionDoNothing:
           signal();
           break;
         case kActionCollapse:
-          gconversation.stash.collapse_all[i]();
+          GCV.stash.collapse_all[i]();
           break;
         case kActionExpand:
-          gconversation.stash.expand_all[i]();
+          GCV.stash.expand_all[i]();
           break;
         default:
           throw "Never happens";
@@ -1831,28 +2056,30 @@ window.addEventListener("load", function f_temp0 () {
    * more convenient as it follows Thunderbird's more closely, which allows me
    * to track changes to the ThreadSummary code in Thunderbird more easily. */
   summarizeThread = function(aSelectedMessages, aListener) {
-    if (aSelectedMessages.length == 0) {
-      myDump("No selected messages\n");
+    if (aSelectedMessages.length == 0)
       return false;
-    } else {
-      myDump(aSelectedMessages.length + " selected messages\n");
-    }
+
     htmlpane.contentWindow.enableExtraButtons();
-    gconversation.stash.multiple_selection = false;
+    GCV.stash.multiple_selection = false;
 
     pullConversation(
       aSelectedMessages,
       function (aCollection, aItems, aMsg) {
+        /* First-time info box. */
+        if (!gPrefs["info_af_shown"])
+          htmlpane.contentDocument.getElementById("info_af_box").style.display = "block";
+
         let items;
         let clearErrors = function () {
           for each (let [,e] in Iterator(htmlpane.contentDocument.getElementsByClassName("error")))
             e.style.display = "none";
         };
-        /* Don't confuse users with this message, it's not relevant in this case */
-        htmlpane.contentDocument.getElementById("info_af_box").style.display = "none";
+
+        /* Actual logic */
         if (aCollection) {
           clearErrors();
-          items = [selectRightMessage(x, gDBView.msgFolder) for each ([, x] in Iterator(groupMessages(aCollection.items)))];
+          items = [GCV.selectRightMessage(x, gDBView.msgFolder)
+            for each ([, x] in Iterator(GCV.groupMessages(aCollection.items)))];
           items = items.filter(function (x) x);
           items = items.map(function (x) x.folderMessage);
           myDump("aCollection is non-null, "+items.length+" messages found\n");
@@ -1883,11 +2110,10 @@ window.addEventListener("load", function f_temp0 () {
         } else {
           restorePreviousConversation();
         }
+
         return;
       }
     );
-
-    return true;
   };
 
   /* We must catch the call to summarizeMultipleSelection to hide the extra
@@ -1912,7 +2138,7 @@ window.addEventListener("load", function f_temp0 () {
         gSummary = new MultiMessageSummary(aSelectedMessages);
         gSummary.init();
         document.getElementById('multimessage').contentWindow.disableExtraButtons();
-        gconversation.stash.multiple_selection = true;
+        GCV.stash.multiple_selection = true;
       /* --8<-- cut here --8<- */
       }
       /* --8<-- end cut here -8<-- */
@@ -1934,14 +2160,14 @@ window.addEventListener("load", function f_temp0 () {
   };
 
   /* Register event handlers through the global variable */
-  gconversation.on_load_thread = function() {
+  GCV.on_load_thread = function() {
     if (!checkGlodaEnabled())
       return;
     summarizeThread(gFolderDisplay.selectedMessages, null, true);
     gMessageDisplay.singleMessageDisplay = false;
   };
 
-  gconversation.on_load_thread_tab = function(event) {
+  GCV.on_load_thread_tab = function(event) {
     if (!gFolderDisplay.selectedMessages.length)
       return;
     if (!checkGlodaEnabled())
@@ -1951,14 +2177,14 @@ window.addEventListener("load", function f_temp0 () {
     if (event.shiftKey) {
       let tabmail = document.getElementById("tabmail");
       tabmail.openTab("message", {msgHdr: aSelectedMessages[0], background: false});
-      gconversation.on_load_thread();
+      GCV.on_load_thread();
     } else {
       pullConversation(
         gFolderDisplay.selectedMessages,
         function (aCollection, aItems, aMsg) {
           let tabmail = document.getElementById("tabmail");
           if (aCollection) {
-            aCollection.items = [selectRightMessage(m) for each ([, m] in Iterator(groupMessages(aCollection.items)))];
+            aCollection.items = [GCV.selectRightMessage(m) for each ([, m] in Iterator(GCV.groupMessages(aCollection.items)))];
             aCollection.items = aCollection.items.filter(function (x) x);
             tabmail.openTab("glodaList", {
               collection: aCollection,
@@ -1977,47 +2203,47 @@ window.addEventListener("load", function f_temp0 () {
   };
 
   /* Register "print" functionnality. Now that's easy! */
-  gconversation.print = function () {
+  GCV.print = function () {
     document.getElementById("multimessage").contentWindow.print();
   };
 
   /* The button as well as the menu item are hidden and disabled respectively
    * when we're viewing a MultiMessageSummary, so fear not marking wrong
    * messages as read. */
-  gconversation.mark_all_read = function () {
+  GCV.mark_all_read = function () {
     /* XXX optimize here and do a union beforehand */
-    msgHdrsMarkAsRead(gconversation.stash.msgHdrs, true);
-    msgHdrsMarkAsRead(gFolderDisplay.selectedMessages, true);
+    GCV.msgHdrsMarkAsRead(GCV.stash.msgHdrs, true);
+    GCV.msgHdrsMarkAsRead(gFolderDisplay.selectedMessages, true);
   };
 
-  gconversation.archive_all = function () {
-    if (gconversation.stash.multiple_selection)
+  GCV.archive_all = function () {
+    if (GCV.stash.multiple_selection)
       MsgArchiveSelectedMessages(null);
     else
-      msgHdrsArchive(gconversation.stash.msgHdrs.concat(gFolderDisplay.selectedMessages), window);
+      GCV.msgHdrsArchive(GCV.stash.msgHdrs.concat(gFolderDisplay.selectedMessages), window);
   };
 
-  gconversation.delete_all = function () {
-    if (gconversation.stash.multiple_selection)
-      msgHdrsDelete(gFolderDisplay.selectedMessages);
+  GCV.delete_all = function () {
+    if (GCV.stash.multiple_selection)
+      GCV.msgHdrsDelete(gFolderDisplay.selectedMessages);
     else
-      msgHdrsDelete(gconversation.stash.msgHdrs.concat(gFolderDisplay.selectedMessages));
+      GCV.msgHdrsDelete(GCV.stash.msgHdrs.concat(gFolderDisplay.selectedMessages));
   };
 
   /* This actually does what we want. It also expands threads as needed. */
-  gconversation.on_back = function (event) {
+  GCV.on_back = function (event) {
     gMessageDisplay.singleMessageDisplay = true;
     gFolderDisplay.selectMessage(gFolderDisplay.selectedMessages[0]);
     document.getElementById("threadTree").focus();
   };
 
-  gconversation.on_expand_all = function (event) {
-    for each (let [, f] in Iterator(gconversation.stash.expand_all))
+  GCV.on_expand_all = function (event) {
+    for each (let [, f] in Iterator(GCV.stash.expand_all))
       f();
   };
 
-  gconversation.on_collapse_all = function (event) {
-    for each (let [, f] in Iterator(gconversation.stash.collapse_all))
+  GCV.on_collapse_all = function (event) {
+    for each (let [, f] in Iterator(GCV.stash.collapse_all))
       f();
   };
 
@@ -2025,100 +2251,60 @@ window.addEventListener("load", function f_temp0 () {
    * than using an overlay. */
   document.getElementById("multimessage").setAttribute("context", "gConvMenu");
 
-  /* Watch the location changes in the messagepane (single message view) to
-   * display a conversation if relevant. */
-  let messagepane = document.getElementById("messagepane");
-  gconversation.stash.uriWatcher = {
-    onStateChange: function () {},
-    onProgressChange: function () {},
-    onSecurityChange: function () {},
-    onStatusChange: function () {},
-    onLocationChange: function (aWebProgress, aRequest, aLocation) {
-      /* By testing here for the pref, we allow the pref to be changed at
-       * run-time and we do not require to restart Thunderbird to take the
-       * change into account. */
-      if (!gPrefs["auto_fetch"])
-        return;
+  /* New method for always displaying the new UI. Beware, this is only modifying
+   * the MessageDisplayWidget instance for the main window, but that's ok.
+   * Besides, it has the nice side-effect that gloda search tabs do not fetch
+   * the conversation view by default, which is imho nicer. */
+  gMessageDisplay.onSelectedMessagesChanged = function () {
+    try {
+      if (!this.active)
+        return true;
+      ClearPendingReadTimer();
 
-      /* The logic is as follows.
-       * i) The event handler stores the URI of the message we're jumping to.
-       * ii) We catch that message loading: we don't load a conversation.
-       * iii) We don't want to load a conversation if we're viewing a message
-       * that's in an expanded thread. */
-      let wantedUrl = gconversation.stash.wantedUrl;
-      gconversation.stash.wantedUrl = null;
-      let isExpanded = false;
-      let msgIndex = gFolderDisplay ? gFolderDisplay.selectedIndices[0] : -1;
-      if (msgIndex >= 0) {
-        try {
-          let rootIndex = gDBView.findIndexOfMsgHdr(gDBView.getThreadContainingIndex(msgIndex).getChildHdrAt(0), false);
-          if (rootIndex >= 0)
-            isExpanded = gDBView.isContainer(rootIndex) && !gFolderDisplay.view.isCollapsedThreadAtIndex(rootIndex);
-        } catch (e) {
-          myDump("Error in the onLocationChange handler "+e+"\n");
+      let selectedCount = this.folderDisplay.selectedCount;
+      myDump("*** Intercepted message load, "+selectedCount+" messages selected\n");
+
+      if (selectedCount == 0) {
+        this.clearDisplay();
+        // Once in our lifetime is plenty.
+        if (!this._haveDisplayedStartPage) {
+          loadStartPage(false);
+          this._haveDisplayedStartPage = true;
+        }
+        this.singleMessageDisplay = true;
+        return true;
+
+      } else if (selectedCount == 1) {
+        /* Here starts the part where we modify the original code. */
+        let msgHdr = this.folderDisplay.selectedMessage;
+        let wantedUrl = GCV.stash.wantedUrl;
+        GCV.stash.wantedUrl = null;
+
+        /* We can't display NTTP messages and RSS messages properly yet, so
+         * leave it up to the standard message reader. If the user explicitely
+         * asked for the old message reader, we give up as well. */
+        if (GCV.msgHdrIsRss(msgHdr) || GCV.msgHdrIsNntp(msgHdr)
+            || wantedUrl == GCV.msgHdrToNeckoURL(msgHdr, gMessenger).spec) {
+          dump("Not displaying RSS/NNTP messages\n");
+          GCV.msgHdrsMarkAsRead([msgHdr], true);
+          this.singleMessageDisplay = true;
+          return false;
+        } else {
+          /* Otherwise, we create a thread summary.
+           * We don't want to call this._showSummary because it has a built-in check
+           * for this.folderDisplay.selectedCount and returns immediately if
+           * selectedCount == 1 */
+          this.singleMessageDisplay = false;
+          summarizeThread(this.folderDisplay.selectedMessages, this);
+          return true;
         }
       }
-      if (aLocation.spec == wantedUrl || isExpanded)
-        return;
 
-      let msgService;
-      try {
-        msgService = gMessenger.messageServiceFromURI(aLocation.spec);
-      } catch ( { result } if result == Cr.NS_ERROR_FACTORY_NOT_REGISTERED ) {
-        myDump("*** Not a message ("+aLocation.spec+")\n");
-        return;
-      }
-      let msgHdr = msgService.messageURIToMsgHdr(aLocation.QueryInterface(Ci.nsIMsgMessageUrl).uri);
-      /* We need to fork the code a little bit here because we can't activate
-       * the multimessage view unless we're really sure that we've got more than
-       * one message */
-      pullConversation(
-        [msgHdr],
-        function pullConversationAutoFetchCallback_ (aCollection, aItems, aMsg) {
-          if (aCollection) {
-            let items = groupMessages(aCollection.items);
-            if (items.length <= 1)
-              return;
-            /* Don't forget to show the right buttons */
-            htmlpane.contentWindow.enableExtraButtons();
-
-            let rightMessages = [selectRightMessage(x, gDBView.msgFolder) for each ([, x] in Iterator(items))];
-            rightMessages = rightMessages.filter(function (x) x);
-            rightMessages = rightMessages.map(function (x) x.folderMessage);
-            gMessageDisplay.singleMessageDisplay = false;
-            if (isNewConversation(rightMessages)) {
-              let gSummary = new ThreadSummary(rightMessages, null);
-              try {
-                if (!gPrefs["info_af_shown"]) {
-                  let info_af_box = htmlpane.contentDocument.getElementById("info_af_box");
-                  info_af_box.style.display = "block";
-                  let yes = info_af_box.getElementsByClassName("info_af_yes")[0];
-                  let no = info_af_box.getElementsByClassName("info_af_no")[0];
-                  yes.addEventListener("click", function (event) {
-                      info_af_box.style.display = "none";
-                      prefs.setBoolPref("info_af_shown", true);
-                    }, true);
-                  no.addEventListener("click", function (event) {
-                      info_af_box.style.display = "none";
-                      prefs.setBoolPref("info_af_shown", true);
-                      prefs.setBoolPref("auto_fetch", false);
-                    }, true);
-                }
-                gSummary.init();
-              } catch (e) {
-                myDump("!!! "+e+"\n");
-                throw e;
-              }
-            } else {
-              restorePreviousConversation();
-            }
-            return;
-          }
-      });
-    },
-    QueryInterface: XPCOMUtils.generateQI([Ci.nsISupports, Ci.nsISupportsWeakReference, Ci.nsIWebProgressListener])
+      // Else defer to showSummary to work it out based on thread selection.
+      return this._showSummary();
+    } catch (e) {
+      dump(e+"\n");
+    }
   };
-  messagepane.addProgressListener(gconversation.stash.uriWatcher, Ci.nsIWebProgress.NOTIFY_ALL);
-
   myDump("*** gConversation loaded\n");
 }, false);

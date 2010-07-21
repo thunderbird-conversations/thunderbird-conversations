@@ -5,7 +5,7 @@
 <!ENTITY error.close "Close this message">
 <!ENTITY error.disable "Permanently disable this error message">
 <!ENTITY info_af.title "Hi, this is Gmail Conversation View!">
-<!ENTITY info_af.body "The message you just selected was determined to be part of a larger conversation. Although there's no real thread displayed in the message list, we believed you might like conversations like this to be automatically fetched and displayed.">
-<!ENTITY info_af.body2 "Do you want this feature? This can be changed later in the Preferences of this add-on, under the &quot;Advanced&quot; section">
-<!ENTITY info_af.yes "Sure, keep it like that!">
-<!ENTITY info_af.no "No, thanks">
+<!ENTITY info_af.body3 "What you're currently seeing is the new design for the message reader. If you want to temporarily switch back to the old message reader, please click this icon in the top left corner of a message: ">
+<!ENTITY info_af.body4 "Please note that newsgroup messages and RSS feed items still use the old message reader.">
+<!ENTITY info.recommended_settings "We strongly encourage you to check out the recommended settings for an optimal Gmail Conversation View experience!">
+<!ENTITY link.recommended_settings "Recommended settings">

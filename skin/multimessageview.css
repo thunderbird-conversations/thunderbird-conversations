@@ -219,8 +219,61 @@ a {
   font-style: italic;
 }
 
+/* The popups that give information on a participant */
+
+.ui-dialog {
+  font-size: small;
+}
+
+.info-popup-contact-info td {
+  vertical-align: top;
+}
+
+.info-popup-gravatar {
+  vertical-align: middle;
+  margin-right: 5px;
+  margin-bottom: 5px;
+}
+
+.info-popup-name-email {
+  text-overflow: ellipsis;
+  display: inline-block;
+  vertical-align: middle
+}
+
+.info-popup-display-name {
+  font-weight: bold;
+  font-size: 120%;
+}
+
+.info-popup-display-email {
+  color: #666;
+}
+
+.info-popup-links a {
+  font-size: 80%;
+  color: #666;
+}
+
+.info-popup-contact-info, .info-popup-links {
+  margin-top: 1em;
+}
+
+.info-popup-contact-info img {
+  vertical-align: middle;
+}
+
+.display-as-inline {
+  display: inline;
+}
+
 
 /* Links */
+
+.message.collapsed .link.contact-link {
+  cursor: auto;
+  text-decoration: none;
+}
 
 .link-action-area {
   position: absolute;
@@ -256,6 +309,14 @@ a.action:hover {
 
 /* Message header */
 
+.std-reader {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background-image: url(chrome://gconversation/skin/email_go.png);
+  vertical-align: middle;
+}
+
 .header {
   margin-left: 0;
   padding-top: 0;
@@ -284,7 +345,7 @@ a.action:hover {
   display: inline-block;
   height: 12px;
   width: 12px;
-  background-image: url(chrome://messenger/skin/icons/attachment-col.png);
+  background-image: url(chrome://gconversation/skin/paperclip.png);
   background-repeat: no-repeat;
   vertical-align: middle;
 }
@@ -372,6 +433,7 @@ a.action:hover {
   color: #991010;
   margin: 0 .3em;
   display: inline;
+  cursor: pointer;
 }
 
 .tag {

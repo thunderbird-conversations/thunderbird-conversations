@@ -35,11 +35,12 @@
  * ***** END LICENSE BLOCK ***** */
 
 var EXPORTED_SYMBOLS = ['messageBodyFromMsgHdr', 'msgHdrToNeckoURL', 'msgHdrIsDraft',
-'msgHdrsMarkAsRead', 'msgHdrsArchive', 'msgHdrsDelete']
+'msgHdrsMarkAsRead', 'msgHdrsArchive', 'msgHdrsDelete', 'msgHdrIsRss', 'msgHdrIsNntp']
 
 const Ci = Components.interfaces;
 const Cc = Components.classes;
 const Cu = Components.utils;
+const Cr = Components.results;
 
 /* from mailnews/base/public/nsMsgFolderFlags.idl */
 const nsMsgFolderFlags_SentMail = 0x00000200;
@@ -160,6 +161,32 @@ function msgHdrsArchive(msgHdrs, aWindow) {
    * */
   let batchMover = new aWindow.BatchMessageMover();
   batchMover.archiveMessages(msgHdrs);
+}
+
+/**
+ * Tell if a message is an RSS feed iteme
+ * @param {nsIMsgDbHdr} msgHdr The message header
+ * */
+function msgHdrIsRss(msgHdr) {
+  try {
+    msgHdr.folder.server.QueryInterface(Ci.nsIRssIncomingServer);
+    return true;
+  } catch (e if e.result == Cr.NS_NOINTERFACE) {
+    return false;
+  }
+}
+
+/**
+ * Tell if a message is a NNTP message
+ * @param {nsIMsgDbHdr} msgHdr The message header
+ * */
+function msgHdrIsNntp(msgHdr) {
+  try {
+    msgHdr.folder.server.QueryInterface(Ci.nsINntpIncomingServer);
+    return true;
+  } catch (e if e.result == Cr.NS_NOINTERFACE) {
+    return false;
+  }
 }
 
 function msgHdrMarkAsJunk(msgHdr) {

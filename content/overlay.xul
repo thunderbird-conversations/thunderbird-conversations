@@ -54,10 +54,10 @@
       label="&ctoolbar.view_full;"
       type="menu-button"
       tooltiptext="&ctoolbar.view_full_tooltip;"
-      oncommand="gconversation.on_load_thread();"
+      oncommand="GCV.on_load_thread();"
       >
       <menupopup>
-        <menuitem label="&ctoolbar.view_tab;" oncommand="gconversation.on_load_thread_tab(event);" />
+        <menuitem label="&ctoolbar.view_tab;" oncommand="GCV.on_load_thread_tab(event);" />
       </menupopup>
     </toolbarbutton>
   </toolbarpalette>
@@ -67,11 +67,11 @@
       label="&toolbar.view_full;"
       type="menu-button"
       tooltiptext="&toolbar.view_full_tooltip;"
-      oncommand="gconversation.on_load_thread();"
+      oncommand="GCV.on_load_thread();"
       >
       <menupopup>
         <menuitem label="&toolbar.view_tab;"
-          oncommand="gconversation.on_load_thread_tab(event);"
+          oncommand="GCV.on_load_thread_tab(event);"
           insertAfter="mailContext" />
       </menupopup>
     </toolbarbutton>
@@ -79,20 +79,20 @@
   <popupset id="mainPopupSet">
     <popup id="gConvMenu">
       <menuitem label="&printButton.label;"
-        oncommand="gconversation.print()" />
+        oncommand="GCV.print()" />
       <menuitem label="&menu.delete;"
-        oncommand="gconversation.delete_all();" />
+        oncommand="GCV.delete_all();" />
       <menuitem label="&menu.archive;"
-        oncommand="gconversation.archive_all();" />
+        oncommand="GCV.archive_all();" />
       <menuitem label="&menu.mark_all_read;" class="extra-menuitem"
-        oncommand="gconversation.mark_all_read();" />
+        oncommand="GCV.mark_all_read();" />
       <menuseparator />
       <menuitem label="&menu.open_in_new_tab;" class="extra-menuitem"
-        oncommand="gconversation.on_load_thread_tab(event);" />
+        oncommand="GCV.on_load_thread_tab(event);" />
       <menuitem label="&menu.expand_all;" class="extra-menuitem"
-        oncommand="gconversation.on_expand_all();" />
+        oncommand="GCV.on_expand_all();" />
       <menuitem label="&menu.collapse_all;" class="extra-menuitem"
-        oncommand="gconversation.on_collapse_all();" />
+        oncommand="GCV.on_collapse_all();" />
     </popup>
   </popupset>
 </overlay>

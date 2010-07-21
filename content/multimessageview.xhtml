@@ -83,14 +83,43 @@
         <script type="application/javascript;version=1.8"
           src="chrome://gconversation/content/jqueryui/jquery-ui-1.7.3.custom.min.js" />
         <script type="application/javascript;version=1.8"
-          src="chrome://gconversation/content/jqueryui/jquery-ui.button.js" />
-        <script type="application/javascript;version=1.8"
-          src="chrome://gconversation/content/jqueryui/jquery-ui.buttonset.js" />
-        <script type="application/javascript;version=1.8"
-          src="chrome://gconversation/content/jqueryui/jquery-ui.classnameoptions.js" />
-        <script type="application/javascript;version=1.8"
           src="chrome://gconversation/content/jqueryui/jquery-ui.menu.js" />
         <script type="application/javascript;version=1.8"><![CDATA[
+
+            const Ci = Components.interfaces;
+            const Cc = Components.classes;
+            const Cu = Components.utils;
+            const stringBundle = window.top.document.getElementById("gconv-string-bundle");
+            const prefsService = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService);
+
+            Cu.import("resource:///modules/errUtils.js");
+            Cu.import("resource://gconversation/VariousUtils.jsm");
+            let buttonBranch = prefsService.getBranch("gconversation.button.");
+            let prefsBranch = prefsService.getBranch("gconversation.");
+
+            let myPrefObserver = {
+              register: function () {
+                buttonBranch.QueryInterface(Components.interfaces.nsIPrefBranch2);
+                buttonBranch.addObserver("", this, false);
+              },
+
+              unregister: function () {
+                if (!buttonBranch)
+                  return;
+                buttonBranch.removeObserver("", this);
+              },
+
+              observe: function (aSubject, aTopic, aData) {
+                if (aTopic != "nsPref:changed")
+                  return;
+                if (buttonBranch.getBoolPref(aData))
+                  document.getElementById(aData).style.display = "";
+                else
+                  document.getElementById(aData).style.display = "none";
+              }
+            };
+            myPrefObserver.register();
+
             function addPlatformStyle() {
               let styleElt = document.getElementById("platformStylesheet");
               if (navigator.platform.indexOf("Win") === 0)
@@ -102,37 +131,6 @@
               else
                   styleElt.setAttribute("href", "chrome://gconversation/skin/linux.css");
             }
-
-            Components.utils.import("resource:///modules/errUtils.js");
-            Components.utils.import("resource://gconversation/VariousUtils.jsm");
-
-            const Ci = Components.interfaces;
-            const Cc = Components.classes;
-            const stringBundle = window.top.document.getElementById("gconv-string-bundle");
-            const prefsService = Cc["@mozilla.org/preferences-service;1"].getService(Ci.nsIPrefService);
-            let buttonBranch = prefsService.getBranch("gconversation.button.");
-            let prefsBranch = prefsService.getBranch("gconversation.");
-
-            let myPrefObserver = {
-              register: function () {
-                buttonBranch.QueryInterface(Components.interfaces.nsIPrefBranch2);
-                buttonBranch.addObserver("", this, false);
-              },
-
-              unregister: function () {
-                if (!buttonBranch) return;
-                  buttonBranch.removeObserver("", this);
-              },
-
-              observe: function (aSubject, aTopic, aData) {
-                if (aTopic != "nsPref:changed") return;
-                if (buttonBranch.getBoolPref(aData))
-                  document.getElementById(aData).style.display = "";
-                else
-                  document.getElementById(aData).style.display = "none";
-              }
-            };
-            myPrefObserver.register();
 
 
             function adjustHeadingSize() {
@@ -171,12 +169,12 @@
                 link.textContent = "- "+hidequotedtext+" -";
                 div.style.display = "";
                 let h = div.getBoundingClientRect().height +
-                  parseInt(cs.marginTop) + parseInt(cs.marginBottom);
+                  parseFloat(cs.marginTop) + parseFloat(cs.marginBottom);
                 return h;
               } else {
                 let h = div.getBoundingClientRect().height;
-                h += parseInt(cs.marginTop);
-                h += parseInt(cs.marginBottom);
+                h += parseFloat(cs.marginTop);
+                h += parseFloat(cs.marginBottom);
                 link.textContent = "- "+showquotedtext+" -";
                 div.style.display = "none";
                 return -h;
@@ -203,10 +201,17 @@
               document.getElementById("error_gloda_disabled").style.display = "";
             }
 
+            function disableFirstTimeMessage() {
+              prefsBranch.setBoolPref("info_af_shown", true);
+            }
+
             function disableErrorEmptyCollection() {
               prefsBranch.setBoolPref("disable_error_empty_collection", true);
             }
 
+            const kPopupTimeout = 300;
+
+            let contactInformation = stringBundle.getString("contact_information");
             function styleMsgNode(aMsgNode) {
               let $aMsgNode = $(aMsgNode);
 
@@ -220,12 +225,31 @@
               let $buttons = $aMsgNode.find("button");
               $buttons.hover(
                 function(){ 
-                        $(this).addClass("ui-state-hover"); 
+                  $(this).addClass("ui-state-hover"); 
                 },
                 function(){ 
-                        $(this).removeClass("ui-state-hover"); 
+                  $(this).removeClass("ui-state-hover"); 
                 }
               );
+
+              /* The contact dialogs */
+              $aMsgNode.find(".contact-link").each(function (i) {
+                  let $this = $(this); 
+                  let $dialog = $this.next(".contact-dialog");
+                  $dialog.dialog({
+                    autoOpen: false,
+                    title: contactInformation,
+                    modal: true
+                  });
+                  $this.click(function () {
+                      if ($(this).closest(".message").is(".collapsed"))
+                        return;
+                      $dialog.dialog('open');
+                    });
+                  $dialog.find(".info-popup-links > a").click(function () {
+                      $dialog.dialog('close');
+                    });
+                });
 
               /* The tooltip */
               $aMsgNode.find('.fg-tooltip-pointer-up-inner').each(function(){
@@ -233,23 +257,67 @@
                 var bColor = $(this).parents('.fg-tooltip').css('backgroundColor')
                 $(this).css('border-bottom', bWidth+' solid '+bColor);
               });
-              let sticky = false;
-              $aMsgNode.find('.tooltip').hover(
-                function(){
-                  if (!sticky)
-                    $(this).prev(':hidden').fadeIn();
-                },
-                function(){
-                  if (!sticky)
-                    $(this).prev(':visible').fadeOut();
+              $aMsgNode.find('.tooltip').each(function (i) {
+                let $details = $(this);
+                let $tooltip = $details.prev(".fg-tooltip");
+                let pos = $details.position();
+                if ($tooltip.hasClass("fg-tooltip-right")) {
+                  $tooltip.css("left", pos.left - $tooltip.width() - 20);
+                  $tooltip.css("top", pos.top + $details.height() + 12);
+                } else {
+                  $tooltip.css("left", pos.left + 20);
+                  $tooltip.css("top", pos.top + $details.height() + 12);
                 }
-              );
-              $aMsgNode.find('.tooltip').click(function () { sticky = !sticky; });
-              let $tooltip = $aMsgNode.find(".fg-tooltip");
-              let $details = $aMsgNode.find(".tooltip");
-              let pos = $details.position();
-              $tooltip.css("left", pos.left - $tooltip.width() - 20);
-              $tooltip.css("top", pos.top + $details.height() + 12);
+
+                let sticky = false;
+                let timeout;
+                $details.click(function () { sticky = !sticky; });
+                $details.hover(
+                  function(){
+                    if ($(this).closest(".message").is(".collapsed"))
+                      return;
+                    if (!sticky) {
+                      clearTimeout(timeout);
+                      $(this).prev(':hidden').fadeIn();
+                    }
+                  },
+                  function(){
+                    var self = this;
+                    if (!sticky) {
+                      clearTimeout(timeout);
+                      timeout = setTimeout(
+                        function () {
+                          $(self).prev(/*':visible'*/).fadeOut()
+                        },
+                        kPopupTimeout);
+                      }
+                  });
+                $tooltip.hover(
+                  function () {
+                    clearTimeout(timeout);
+                  },
+                  function () {
+                    var self = this;
+                    if ($(this).is(":visible") && !sticky) {
+                      clearTimeout(timeout);
+                      timeout = setTimeout(
+                        function () {
+                          $(self).fadeOut();
+                        },
+                        kPopupTimeout);
+                    }
+                  });
+              });
+            }
+
+            function openInNewTab(url) {
+              // Try opening new tabs in an existing 3pane window  
+              let mail3PaneWindow = Components.classes["@mozilla.org/appshell/window-mediator;1"]  
+                                              .getService(Components.interfaces.nsIWindowMediator)  
+                                              .getMostRecentWindow("mail:3pane");  
+              let tabmail = mail3PaneWindow.document.getElementById("tabmail");  
+              mail3PaneWindow.focus();  
+              tabmail.openTab("contentTab", {contentPage: url});
             }
         ]]>
         </script>
@@ -261,46 +329,41 @@
                  xmlns:html="http://www.w3.org/1999/xhtml"
                  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
                 <toolbar id="header-view-toolbox" align="start" iconsize="small">
-                    <toolbarbutton id="back"
-                            class="msgHeaderView-button extra-button"
-                            label="&button.back;"
-                            tooltiptext="&button.back;"
-                            onclick="if (event.button == 0) window.top.gconversation.on_back();"/>
                     <toolbarbutton id="open_in_new_tab"
                             class="msgHeaderView-button extra-button"
                             label="&button.open_in_new_tab;"
                             tooltiptext="&button.open_in_new_tab_tooltip;"
-                            onclick="if (event.button == 0) window.top.gconversation.on_load_thread_tab(event);"/>
+                            onclick="if (event.button == 0) window.top.GCV.on_load_thread_tab(event);"/>
                     <toolbarbutton id="mark_as_read"
                             class="msgHeaderView-button extra-button"
                             label="&button.mark_all_read;"
                             tooltiptext="&button.mark_all_read;"
-                            onclick="if (event.button == 0) window.top.gconversation.mark_all_read()"/>
+                            onclick="if (event.button == 0) window.top.GCV.mark_all_read()"/>
                     <toolbarbutton id="expand_all"
                             class="msgHeaderView-button extra-button"
-                            onclick="if (event.button == 0) window.top.gconversation.on_expand_all()"
+                            onclick="if (event.button == 0) window.top.GCV.on_expand_all()"
                             label="&button.expand_all;"
                             tooltiptext="&button.expand_all;" />
                     <toolbarbutton id="collapse_all"
                             class="msgHeaderView-button extra-button"
-                            onclick="if (event.button == 0) window.top.gconversation.on_collapse_all()"
+                            onclick="if (event.button == 0) window.top.GCV.on_collapse_all()"
                             label="&button.collapse_all;"
                             tooltiptext="&button.collapse_all;" />
                     <toolbarbutton id="print"
                             class="msgHeaderView-button extra-button"
                             label="&button.print;"
                             tooltiptext="&button.print;"
-                            onclick="if (event.button == 0) window.top.gconversation.print();"/>
+                            onclick="if (event.button == 0) window.top.GCV.print();"/>
                     <toolbarbutton id="archive"
                             class="msgHeaderView-button hdrArchiveButton"
-                            onclick="if (event.button == 0) window.top.gconversation.archive_all();"
+                            onclick="if (event.button == 0) window.top.GCV.archive_all();"
                             label="&archive.label;"
                             tooltiptext="&archive.label;"/>
                     <toolbarbutton id="trash"
                             class="msgHeaderView-button hdrTrashButton"
                             label="&delete.label;"
                             tooltiptext="&delete.label;"
-                            onclick="if (event.button == 0) window.top.gconversation.delete_all();"/>
+                            onclick="if (event.button == 0) window.top.GCV.delete_all();"/>
                 </toolbar>
             </div>
             <div class="heading" id="heading">&selectedmessages.label;</div>
@@ -327,12 +390,14 @@
       </div>
       <div id="info_af_box" class="infomsg" style="display: none">
         <h3>&info_af.title;</h3>
-        <p>&info_af.body;</p>
-        <p>&info_af.body2;</p>
-        <div class="info_buttons">
-          <button class="info_af_yes">&info_af.yes;</button>
-          <button class="info_af_no">&info_af.no;</button>
-        </div>
+        <p>&info_af.body3; <img src="chrome://gconversation/skin/email_go.png" style="vertical-align: center" /></p>
+        <p>&info_af.body4;</p>
+        <p>&info.recommended_settings;</p>
+        <p style="text-align: center">
+          <a href="javascript:" onclick="openInNewTab('http://wiki.github.com/protz/GMail-Conversation-View/');"> &link.recommended_settings; </a>
+          -
+          <a href="javascript:" onclick="disableFirstTimeMessage(); this.parentNode.parentNode.style.display = 'none';">&error.close;</a>
+        </p>
       </div>
     </div>
     <div id="content">

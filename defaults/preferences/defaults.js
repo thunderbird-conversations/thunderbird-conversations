@@ -12,7 +12,6 @@ pref("gconversation.button.mark_as_read", true);
 pref("gconversation.button.open_in_new_tab", true);
 pref("gconversation.focus_first", true);
 pref("gconversation.reverse_order", false);
-pref("gconversation.auto_fetch", true);
 pref("gconversation.disable_error_empty_collection", false);
 pref("gconversation.auto_mark_read", false);
 pref("gconversation.toolbar_mode", "icons");
