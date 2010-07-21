@@ -70,6 +70,23 @@ a {
   min-width: 28px;
 }
 
+#heading {
+  font-weight: 100%;
+  font-family: condensed;
+  font-size: 14px;
+  line-height: 30px;
+  padding: 0;
+  margin: 0;
+  border-width: 0;
+  padding-left: 8px;
+}
+
+#buttonbox {
+  height: 30px;
+  margin: 0;
+  padding: 0;
+  border-width: 0;
+}
 
 /* General stuff */
 
