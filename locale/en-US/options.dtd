@@ -34,6 +34,7 @@
 <!ENTITY option.reverse_order "Reverse order (last → first)">
 <!ENTITY option.auto_mark_read "Mark the whole conversation as read after the conversation view has been displayed.">
 <!ENTITY option.auto_mark_read_mailnews "Mark the message list thread as read before the conversation is displayed (uncheck if you checked the preference above).">
+<!ENTITY option.auto_mark_read_explanation "What's this mark as read stuff?">
 <!ENTITY title.advanced "Advanced">
 <!ENTITY title.error_messages "Error messages">
 <!ENTITY option.disable_error_empty_collection "Disable the &quot;Thunderbird has not indexed this thread yet&quot; warning">

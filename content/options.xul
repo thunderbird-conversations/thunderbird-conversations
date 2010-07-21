@@ -152,7 +152,8 @@
 
      <groupbox>
        <caption label="&title.message_list;" />
-       <checkbox label="&option.auto_mark_read;" preference="auto_mark_read" id="auto_mark_read_checkbox" />
+       <label class="link" onclick="openLink('http://wiki.github.com/protz/GMail-Conversation-View/let-gmail-conversation-view-mark-the-threads-as-read');" value="&option.auto_mark_read_explanation;" />
+       <checkbox style="width: 0;" label="&option.auto_mark_read;" preference="auto_mark_read" id="auto_mark_read_checkbox" />
        <checkbox style="width: 0;" label="&option.auto_mark_read_mailnews;" preference="auto_mark_read_mailnews" id="auto_mark_read_checkbox_mailnews" />
        <checkbox style="width: 0;" label="&option.scroll_to_new_message;" preference="scroll_to_new_message" id="scroll_to_new_message_checkbox" />
        <label class="link" onclick="openLink('http://wiki.github.com/protz/GMail-Conversation-View/displaying-your-own-messages-in-the-inbox');" value="&option.my_messages_in_inbox;" />
