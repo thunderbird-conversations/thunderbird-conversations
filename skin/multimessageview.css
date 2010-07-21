@@ -74,11 +74,13 @@ a {
   font-weight: 100%;
   font-family: condensed;
   font-size: 14px;
-  line-height: 30px;
+  line-height: 17px;
   padding: 0;
   margin: 0;
   border-width: 0;
   padding-left: 8px;
+  padding-top: 5px;
+  padding-bottom: 5px;
 }
 
 #buttonbox {
@@ -86,6 +88,10 @@ a {
   margin: 0;
   padding: 0;
   border-width: 0;
+}
+
+#headingwrapper {
+  min-height: 30px;
 }
 
 /* General stuff */
