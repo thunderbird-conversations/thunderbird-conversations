@@ -938,21 +938,23 @@ window.addEventListener("load", function f_temp0 () {
             </div>
             <div class="header">
               <div class="wrappedsender">
-                <div class="fg-tooltip fg-tooltip-right ui-widget ui-state-highlight ui-corner-all" style="display: none">
-                  <span>{noGlodaTxt}</span>
-                  <div class="fg-tooltip-pointer-up ui-state-highlight">
-                    <div class="fg-tooltip-pointer-up-inner"></div>
-                  </div>
-                </div>
-                <div class="tooltip msgheader-details-toggle">{detailsTxt}</div>
                 <div class="msgheader-from-to">
                   <div class="sender"></div>
                   <div class="to-text">{toTxt}</div>
                   <div class="recipients"></div>
                   <div class="draft-warning" title={editDraftTxt}></div>
                 </div>
-                <div class="msgheader-subject-date">
+                <div class="msgheader-details-date">
                   <div class="date">{date}</div>
+                  <div class="fg-tooltip fg-tooltip-right ui-widget ui-state-highlight ui-corner-all" style="display: none">
+                    <span>{noGlodaTxt}</span>
+                    <div class="fg-tooltip-pointer-up ui-state-highlight">
+                      <div class="fg-tooltip-pointer-up-inner"></div>
+                    </div>
+                  </div>
+                  <div class="tooltip msgheader-details-toggle">
+                    - {detailsTxt}
+                  </div>
                 </div>
                 <div class="attachments-area">
                 </div>
