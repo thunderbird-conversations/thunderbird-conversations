@@ -124,16 +124,11 @@ a {
   -moz-border-radius: 0 5px 5px 0;
 }
 
-#content {
-  font-size: 100%;
-  font-family: Verdana, "Bitstream Vera Sans", sans-serif;
-}
-
 .monospaced-message, .monospaced-snippet {
   font-family: -moz-fixed;
 }
 
-/* Hide the right things when collapsed */
+/* When collapsed, show the .snippetmsg. When expanded, show the .htmlmsg */
 
 .htmlmsg {
   display: block;
@@ -141,11 +136,6 @@ a {
 
 .message.collapsed .htmlmsg {
   display: none;
-}
-
-.message.collapsed .row {
-  border-bottom-width: 0;
-  border-top-width: .2em;
 }
 
 .snippetmsg {
@@ -156,6 +146,13 @@ a {
 .message.collapsed .snippetmsg {
   display: block;
   font-size: smaller;
+}
+
+/* Style collapsed messages */
+
+.message.collapsed .row {
+  border-bottom-width: 0;
+  border-top-width: .2em;
 }
 
 .message.collapsed .button-action-area,
@@ -211,7 +208,7 @@ a {
   font-size: 0px;
 }
 
-/* Use short names in condensed view, use full names otherwise */
+/* Cut the names when collapsed */
 
 .message.collapsed .too-long {
   display: none;
@@ -220,6 +217,8 @@ a {
 .message.collapsed .last-comma:after {
   content: " …";
 }
+
+/* Display short name when collapsed, full name otherwise */
 
 .short-name {
   display: none;
@@ -235,10 +234,6 @@ a {
 
 .message.collapsed .full-name {
   display: none;
-}
-
-.bcc-recipient {
-  font-style: italic;
 }
 
 /* The popups that give information on a participant */
@@ -331,6 +326,11 @@ a.action:hover {
 
 /* Message header */
 
+#content {
+  font-size: 100%;
+  font-family: sans-serif;
+}
+
 .std-reader {
   display: inline-block;
   width: 16px;
@@ -400,8 +400,8 @@ a.action:hover {
   vertical-align: middle;
 }
 
-.msgheader-from-to {
-  display: inline-block;
+.msgheader-from-to, .sender, .to-text, .recipients, .draft-warning, .date {
+  display: inline;
 }
 
 .msgheader-details-toggle {
@@ -424,14 +424,12 @@ a.action:hover {
   font-weight: bold;
 }
 
-.to-text {
-  display: inline-block;
-  color: #999;
+.bcc-recipient {
+  font-style: italic;
 }
 
-.recipients {
-  color: #111;
-  display: inline-block;
+.to-text {
+  color: #999;
 }
 
 .msgheader-details-date {
@@ -440,16 +438,13 @@ a.action:hover {
   float: right;
 }
 
-.subject {
+/* .subject {
   color: #444;
   display: inline-block;
-}
+} */
 
 .date {
   color: #999;
-  display: inline;
-  top: 0;
-  right: 0;
   padding: 0;
   margin: 0;
   float: none;
@@ -458,7 +453,6 @@ a.action:hover {
 .draft-warning {
   color: #991010;
   margin: 0 .3em;
-  display: inline;
   cursor: pointer;
 }
 
