@@ -53,7 +53,7 @@
     image="chrome://messenger/skin/preferences/general.png"
     flex="1">
     <preferences>
-      <preference id="standard-single-message-view" name="gconversation.standard-single-message-view" type="bool" />
+      <preference id="standard_single_message_view" name="gconversation.standard_single_message_view" type="bool" />
       <preference id="monospaced" name="gconversation.monospaced" type="bool" />
       <preference id="monospaced_snippets" name="gconversation.monospaced_snippets" type="bool" />
       <preference id="hide_quote_length" name="gconversation.hide_quote_length" type="int" />
@@ -79,7 +79,7 @@
           <checkbox preference="monospaced_snippets" id="monospaced_snippets_checkbox" label="&option.monospaced_snippets;"/>
         </vbox>
         <vbox flex="1">
-          <checkbox preference="standard-single-message-view" id="standard-single-message-view_checkbox" label="&option.standard-single-message-view;" />
+          <checkbox preference="standard_single_message_view" id="standard_single_message_view_checkbox" label="&option.standard_single_message_view;" />
           <checkbox preference="reverse_order" id="reverse_order_checkbox" label="&option.reverse_order;" />
         </vbox>
       </hbox>

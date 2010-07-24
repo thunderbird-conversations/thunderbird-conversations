@@ -135,7 +135,7 @@ window.addEventListener("load", function f_temp0 () {
   /* Preferences are loaded once and then observed. For a new pref, add an entry
    * here + a case in the switch below. */
   let gPrefs = {};
-  gPrefs["standard-single-message-view"] = prefs.getBoolPref("standard-single-message-view");
+  gPrefs["standard_single_message_view"] = prefs.getBoolPref("standard_single_message_view");
   gPrefs["monospaced"] = prefs.getBoolPref("monospaced");
   gPrefs["monospaced_snippets"] = prefs.getBoolPref("monospaced_snippets");
   gPrefs["hide_quote_length"] = prefs.getIntPref("hide_quote_length");
@@ -170,7 +170,7 @@ window.addEventListener("load", function f_temp0 () {
        * for the user. */
       GCV.stash.msgHdrs = [];
       switch (aData) {
-        case "standard-single-message-view":
+        case "standard_single_message_view":
         case "monospaced":
         case "monospaced_snippets":
         case "focus_first":
@@ -2289,7 +2289,7 @@ window.addEventListener("load", function f_temp0 () {
          * asked for the old message reader, we give up as well. */
         if (GCV.msgHdrIsRss(msgHdr) || GCV.msgHdrIsNntp(msgHdr)
             || wantedUrl == GCV.msgHdrToNeckoURL(msgHdr, gMessenger).spec
-            || gPrefs["standard-single-message-view"]) {
+            || gPrefs["standard_single_message_view"]) {
           dump("Not displaying messages\n");
           GCV.msgHdrsMarkAsRead([msgHdr], true);
           this.singleMessageDisplay = true;

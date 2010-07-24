@@ -3,7 +3,7 @@
      everything is displayed properly. -->
 <!ENTITY window.title "Gmail Conversation View Options">
 <!ENTITY title.message_display "Message display">
-<!ENTITY option.standard-single-message-view "Use built-in single message viewer">
+<!ENTITY option.standard_single_message_view "Use built-in single message viewer">
 <!ENTITY option.monospaced "Use monospaced font for plain text messages">
 <!ENTITY option.monospaced_snippets "Use monospaced font for message snippets">
 <!ENTITY option.focus_what "When displaying a conversation, scroll to:">
