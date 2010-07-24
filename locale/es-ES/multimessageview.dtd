@@ -1,0 +1,28 @@
+<!-- These strings are for the conversation menu. They must start with
+     lowercase. 
+
+-->
+<!ENTITY button.open_in_new_tab "abrir en una pestaña nueva">
+<!ENTITY button.open_in_new_tab_tooltip "abre este hilo en una pestaña nueva (pulsar mayúsculas)">
+<!ENTITY button.mark_all_read "marcar todos como leídos">
+<!ENTITY button.expand_all "expandir todos">
+<!ENTITY button.collapse_all "contraer todos">
+<!ENTITY button.print "imprimir">
+<!ENTITY button.back "vista simple">
+<!-- These strings are for the right-click menu. Use normal case -->
+<!ENTITY menu.open_in_new_tab "Abrir en una pestaña nueva">
+<!ENTITY menu.mark_all_read "Marcar todos como leídos">
+<!ENTITY menu.expand_all "Expandir todos">
+<!ENTITY menu.collapse_all "Contraer todos">
+<!ENTITY menu.delete "Borrar todos los mensajes">
+<!ENTITY menu.archive "Archivar todos los mensajes">
+<!ENTITY toolbar.view_full "Buscar conversación">
+<!ENTITY toolbar.view_full_tooltip "Busca todos los mensajes para construir la conversación completa, incluyendo el suyo propio.">
+<!ENTITY toolbar.view_tab "Abrir el hilo en una pestaña nueva">
+<!-- The three strings below are for Compact Header. They must start with
+     lowercase and ctoolbar.view_full must be SHORT 
+
+-->
+<!ENTITY ctoolbar.view_full "buscar conv.">
+<!ENTITY ctoolbar.view_full_tooltip "busca todos los mensajes para construir la conversación completa, incluyendo el suyo propio.">
+<!ENTITY ctoolbar.view_tab "abrir el hilo en una pestaña nueva">

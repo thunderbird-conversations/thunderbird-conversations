@@ -7,6 +7,7 @@ style chrome://global/content/customizeToolbar.xul chrome://gconversation/skin/o
 
 locale gconversation de jar:gconv.jar!/locale/de/
 locale gconversation en-US jar:gconv.jar!/locale/en-US/
+locale gconversation es jar:gconv.jar!/locale/es/
 locale gconversation fr jar:gconv.jar!/locale/fr/
 locale gconversation he-IL jar:gconv.jar!/locale/he-IL/
 locale gconversation it jar:gconv.jar!/locale/it/

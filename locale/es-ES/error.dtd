@@ -1,0 +1,11 @@
+<!ENTITY error.title "La vista de conversaciones de Gmail no puede funcionar">
+<!ENTITY error_gloda_disabled "Tiene que habilitar la base de datos global para que este complemento funcione correctamente. Vaya a Herramientas &gt; Opciones (o bien Editar &gt; Preferencias). En la sección &quot;Avanzadas&quot; busque la pestaña &quot;General&quot;. Compruebe &quot;Habilitar la búsqueda global&quot;.Tendrá que esperar a que Thunderbird indexe todos sus mensajes (puede tardar un tiempo).">
+<!ENTITY error.help "¿Necesita más ayuda?">
+<!ENTITY error_empty_collection "Thunderbird no ha indexado este hilo aún. Esto es normal si el mensaje acaba de llegar, si Thunderbird tiene muchos mensajes para indexar o si está intentando tener una vista de conversación para un mensaje de grupos de noticias/RSS o un mensaje que está en la papelera. Si persiste, compruebe que ha activado la búsqueda global en Herramientas &gt; Opciones (o Editar &gt; Preferencias) &gt; Avanzado &gt; General.">
+<!ENTITY error.close "Cerrar este mensaje">
+<!ENTITY error.disable "Deshabilitar este mensaje de error permanentemente">
+<!ENTITY info_af.title "¡Esta es la vista de conversación de Gmail!">
+<!ENTITY info_af.body "El mensaje que ha seleccionado es parte de una conversación mayor. Aunque no hay un hilo real, creemos que le gustará que las conversaciones como esta sean automáticamente buscadas y mostradas.">
+<!ENTITY info_af.body2 "¿Quiere mantener esta característica? Puede cambiarlo posteriormente en las opciones del complemento, en la sección &quot;Avanzadas&quot;">
+<!ENTITY info_af.yes "Sí, ¡dejarlo así!">
+<!ENTITY info_af.no "No, gracias">

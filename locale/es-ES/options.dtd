@@ -1,0 +1,48 @@
+<!-- Please open the "Preferences" window and DO check that your text is not too
+     long. This can cause the contents to overflow and be hidden, so make sure
+     everything is displayed properly. 
+
+-->
+<!ENTITY window.title "Gmail Conversation View - Opciones">
+<!ENTITY title.message_display "Vista de mensajes">
+<!ENTITY option.monospaced "Usar fuente simple para mensajes de texto plano">
+<!ENTITY option.monospaced_snippets "Usar fuente simple para los resúmenes">
+<!ENTITY option.focus_what "Cuando se muestre una conversación, ir a:">
+<!ENTITY option.focus_first "Primer mensaje no leído o el último">
+<!ENTITY option.focus_selected "Mensaje seleccionado en la lista">
+<!ENTITY optiondesc.unfold "Por defecto, expandir:">
+<!ENTITY option.last_or_unread "Todos los mensajes no leídos y los desplazados">
+<!ENTITY option.all_messages "Todos los mensajes">
+<!ENTITY option.no_messages "Ninguno">
+<!ENTITY title.toolbar "Botones">
+<!ENTITY buttons.info "Todos los comandos son accesibles desde el menú contextual del resumen (botón derecho).">
+<!ENTITY option.toolbar_mode "Mostrar:">
+<!ENTITY option.toolbar_mode_icons "Iconos">
+<!ENTITY option.toolbar_mode_text "Texto">
+<!ENTITY option.toolbar_mode_text_plus_icons "Iconos bajo el texto">
+<!ENTITY option.button.archive "Mostrar el botón &quot;archivar&quot;">
+<!ENTITY option.button.trash "Mostrar el botón &quot;borrar&quot;">
+<!ENTITY option.button.print "Mostrar el botón &quot;imprimir&quot;">
+<!ENTITY option.button.back "Mostrar el botón &quot;vista simple&quot;">
+<!ENTITY option.button.expand_all "Mostrar el botón &quot;expandir todo&quot;">
+<!ENTITY option.button.collapse_all "Mostrar el botón &quot;contraer todo&quot;">
+<!ENTITY option.button.mark_as_read "Mostrar el botón &quot;marcar como leído&quot;">
+<!ENTITY option.button.open_in_new_tab "Mostrar el botón &quot;abrir en pestaña nueva&quot;">
+<!ENTITY title.quoting "Citas">
+<!ENTITY option.hide_longer_than "Ocultar el texto citado mayor de">
+<!ENTITY option.lines "líneas">
+<!ENTITY option.reverse_order "Orden inverso (último → primero)">
+<!ENTITY title.general "General">
+<!ENTITY option.auto_fetch "Buscar siempre conversaciones">
+<!ENTITY option.auto_mark_read "Marcar la conversación entera como leída cuando se muestra.">
+<!ENTITY auto_fetch.info "Algunas veces, no hay un hilo visible en la lista de mensajes, pero hay una conversación (si responde a un correo). Esta opción le permite mostrar la vista de conversación automáticamente para estos mensajes.">
+<!ENTITY title.advanced "Avanzadas">
+<!ENTITY title.error_messages "Mensajes de error">
+<!ENTITY option.disable_error_empty_collection "Deshabilitar el aviso &quot;Thunderbird no ha indexado este hilo aún&quot;">
+<!ENTITY option.monospaced_senders "Los mensajes de estas direcciones se mostrarán en fuentes monoespaciadas (separadas con comas)">
+<!ENTITY title.advanced_display "Vista de conversación">
+<!ENTITY option.no_friendly_date "Usar fechas &quot;normales&quot; como en la lista de mensajes">
+<!ENTITY option.guess_first_names "Sólo nombre de invitados y participantes">
+<!ENTITY option.my_messages_in_inbox "Cómo mostrar mis mensajes en la bandeja de entrada">
+<!ENTITY option.scroll_to_new_message "En la lista de mensajes, expandir el primer hilo no leído al cambiar">
+<!ENTITY title.message_list "Lista de mensajes">
