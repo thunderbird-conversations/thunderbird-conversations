@@ -195,7 +195,8 @@ function trySel (aDoc, sel, remove) {
 function convertHotmailQuotingToBlockquote1(aDoc) {
   /* We make the assumption that no one uses a <hr> in their emails except for
    * separating a quoted message from the rest */
-  trySel(aDoc, "hr#stopSpelling", true);
+  trySel(aDoc,
+    "body > hr, body > div > hr, body > pre > hr, body > div > div > hr", true);
 }
 
 /* There's a special message header for that. */
