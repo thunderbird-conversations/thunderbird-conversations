@@ -182,7 +182,6 @@ a {
 .message.collapsed .wrappedsender,
 .message.collapsed .msgheader-details-date,
 .message.collapsed .msgheader-details-date .date,
-.message.collapsed .msgheader-from-to,
 .message.collapsed .notification-icons {
   display: inline;
 }
@@ -193,7 +192,8 @@ a {
 }
 
 .message.collapsed .msgheader-subject-date,
-.message.collapsed .msgheader-from-to,
+.message.collapsed .msgheader-from,
+.message.collapsed .msgheader-to,
 .message.collapsed .notification-icons {
   vertical-align: middle;
 }
@@ -400,8 +400,13 @@ a.action:hover {
   vertical-align: middle;
 }
 
-.msgheader-from-to, .sender, .to-text, .recipients, .draft-warning, .date {
+.sender, .to-text, .recipients,
+.draft-warning, .date, .tooltip {
   display: inline;
+}
+
+.msgheader-from, .msgheader-to {
+  display: inline-block;
 }
 
 .msgheader-details-toggle {
@@ -435,6 +440,8 @@ a.action:hover {
 .msgheader-details-date {
   position: static;
   margin: 0;
+  padding: 0;
+  padding-left: 2em; /* Make sure it's not stuck to one of the recipients */
   float: right;
 }
 
