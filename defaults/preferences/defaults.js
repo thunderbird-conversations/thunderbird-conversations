@@ -1,3 +1,4 @@
+pref("gconversation.standard_single_message_view", false);
 pref("gconversation.monospaced", false);
 pref("gconversation.monospaced_snippets", false);
 pref("gconversation.hide_quote_length", 5);
