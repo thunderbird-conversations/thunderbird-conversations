@@ -48,6 +48,7 @@ a {
 #header-view-toolbox {
   padding-top: 0;
   -moz-appearance: none;
+  border: 0;
 }
 
 /* Toolbar */

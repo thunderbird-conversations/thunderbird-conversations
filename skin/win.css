@@ -12,7 +12,16 @@
   -moz-image-region: rect(0px 144px 16px 128px);
 }
 
-
 #print {
   list-style-image: url("chrome://gconversation/skin/print.png");
 }
+
+.msgHeaderView-button {
+  padding: 0 3px !important;
+  min-width: 28px;
+}
+
+.msgHeaderView-button > .toolbarbutton-icon {
+  margin: 0;
+}
+
