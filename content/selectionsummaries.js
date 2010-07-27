@@ -1384,7 +1384,7 @@ window.addEventListener("load", function f_temp0 () {
                                 let h = htmlpane.contentWindow.toggleQuote(event);
                                 iframe.style.height = (parseFloat(iframe.style.height) + h)+"px";
                               }, true);
-                            div.setAttribute("style", "color: #512a45; cursor: pointer; font-size: 90%;");
+                            div.setAttribute("style", "color: #06d; cursor: pointer; font-size: 90%;");
                             div.appendChild(document.createTextNode("- "+
                               stringBundle.getString("showquotedtext")+" -"));
                             elt.insertBefore(div, c);
