@@ -902,7 +902,7 @@ window.addEventListener("load", function f_temp0 () {
         let composeAll = stringBundle.getString("compose_all");
         let moreActionsTxt = stringBundle.getString("more_actions");
         let toTxt = stringBundle.getString("to");
-        let detailsTxt = stringBundle.getString("details");
+        let detailsTxt = stringBundle.getString("more");
         let editDraftTxt = stringBundle.getString("edit_draft");
         let toggleRead = stringBundle.getString("toggle_read2");
         let toggleFont = stringBundle.getString("toggle_font");
@@ -947,7 +947,7 @@ window.addEventListener("load", function f_temp0 () {
                     </div>
                   </div>
                   <div class="tooltip msgheader-details-toggle">
-                    - {detailsTxt}
+                    {detailsTxt}
                   </div>
                 </div>
                 <div class="msgheader-from">

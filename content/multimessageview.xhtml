@@ -246,7 +246,7 @@
                 let $tooltip = $details.prev(".fg-tooltip");
                 let pos = $details.position();
                 if ($tooltip.hasClass("fg-tooltip-right")) {
-                  $tooltip.css("left", pos.left - $tooltip.width() - 20);
+                  $tooltip.css("left", pos.left - $tooltip.width());
                   $tooltip.css("top", pos.top + $details.height() + 12);
                 } else {
                   $tooltip.css("left", pos.left + 20);
