@@ -39,6 +39,17 @@
 
     <em:localized>
       <Description>
+        <em:locale>es</em:locale>
+        <em:name>Gmail Conversation View</em:name>
+        <em:description>Permite visualizar los mensajes en modo de conversación, de igual manera que en GMail</em:description>
+        <em:translator>Proyecto Nave</em:translator>
+        <em:creator>Jonathan Protzenko</em:creator>
+        <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
+      </Description>
+    </em:localized>
+
+    <em:localized>
+      <Description>
         <em:locale>he-IL</em:locale>
         <em:name>תצוגת שיחה</em:name>
         <em:description>כווץ את הודעות הדוא"ל בשיחות, כולל ההודעות שלך, בדומה לג'יימל.‏</em:description>
@@ -102,17 +113,6 @@
         <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
       </Description>
     </em:localized> 
-
-    <em:localized>
-      <Description>
-        <em:locale>es</em:locale>
-        <em:name>Gmail Conversation View</em:name>
-        <em:description>Permite visualizar los mensajes en modo de conversación, de igual manera que en GMail</em:description>
-        <em:translator>Proyecto Nave</em:translator>
-        <em:creator>Jonathan Protzenko</em:creator>
-        <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
-      </Description>
-    </em:localized>
 
   </Description>      
 

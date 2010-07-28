@@ -23,6 +23,6 @@
      lowercase and ctoolbar.view_full must be SHORT 
 
 -->
-<!ENTITY ctoolbar.view_full "voir conv.">
-<!ENTITY ctoolbar.view_full_tooltip "rapatrier tous les messages, les vôtres inclus, pour reconstruire la conversation complète">
+<!ENTITY ctoolbar.view_full "conversation">
+<!ENTITY ctoolbar.view_full_tooltip "reconstruire la conversation complète en incluant vos messages">
 <!ENTITY ctoolbar.view_tab "ouvrir le fil de discussion dans un nouvel onglet">
