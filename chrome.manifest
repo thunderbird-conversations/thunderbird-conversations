@@ -7,7 +7,7 @@ style chrome://global/content/customizeToolbar.xul chrome://gconversation/skin/o
 
 #locale gconversation de locale/de/
 locale gconversation en-US locale/en-US/
-#locale gconversation es locale/es/
+#locale gconversation es-ES locale/es-ES/
 #locale gconversation fr locale/fr/
 #locale gconversation he-IL locale/he-IL/
 #locale gconversation it locale/it/
