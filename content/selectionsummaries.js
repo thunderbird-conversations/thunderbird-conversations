@@ -1650,7 +1650,12 @@ window.addEventListener("load", function f_temp0 () {
             signal();
           }); /* end MsgHdrToMimeMessageCallback_ */
         } catch (e if e.result == Components.results.NS_ERROR_FAILURE) {
-          fallbackNoGloda();
+          /* If we don't do that, we slow down the conversation fillup process
+           * terribly, which means that we're still iterating through messages
+           * by the time we have changed conversations, which means messages
+           * snippets keep arriving from the previous conversation. Long story
+           * short: it's bad. */
+          setTimeout(fallbackNoGloda, 0);
         }
 
         let sender = msgNode.getElementsByClassName("sender")[0];
