@@ -71,7 +71,9 @@ let GCV = {
     expand_all: [], /* A list of closures */
     collapse_all: [],
     all_went_well: false /* Set to false before PART 1/3 and set to true after we received all signals. If not true, then isNewConversation == true always. */
-  }
+  },
+  /* The timeout number for the delayed "mark all read" call */
+  mark_read_timeout: null
 };
 
 /* We use a function because of global namespace pollution. We use "onload"
@@ -796,6 +798,7 @@ window.addEventListener("load", function f_temp0 () {
        * displayed). */
       let needsFocus = tellMeWhoToFocus(msgHdrs);
       GCV.stash.all_went_well = false;
+      let self = this;
       myDump("                                                PART 1/3\n");
       runOnceAfterNSignals(
         numMessages,
@@ -812,15 +815,21 @@ window.addEventListener("load", function f_temp0 () {
               scrollNodeIntoView(msgNode);
               variousFocusHacks(msgNode);
 
-              /* Doing that just now helps, but if a reflow occurs, and the
-               * summary code is called again, then the messages will be marked
-               * as read and collapsed, which is bad. This happens because most
-               * of the time, when we open a new thread, Gloda has not indexed
-               * it yet, which means it starts indexing it when we display it,
-               * and the summary code is reloaded once new messages have been
-               * indexed. */
-              if (gPrefs["auto_mark_read"] && document.hasFocus())
-                GCV.mark_all_read();
+              /* There's at least three reasons why we want to delay that call.
+               * - We want the gloda query that's been launched before to be
+               *   ready to watch for read/unread change events, so the delay
+               *   leaves it time to complete
+               * - In case a reflow occurs, we kill the previous pending "mark
+               *   as read" timeout, and wait once more --> mitigates the risks
+               *   of the first reflow marking all messages as read, and the
+               *   second one coming right after because of a message list
+               *   refresh and missing unread messages
+               * - Be consistent with the global policy. */
+              GCV.mark_read_timeout = setTimeout(function () {
+                  if (gPrefs["auto_mark_read"] && document.hasFocus())
+                    GCV.mark_all_read();
+                }, 250);
+              /* XXX use mailnews.threadpane_select_delay's real value */
 
               /* This is the end of it all, so be confident our conversation is
                * properly built and complete. This is specifically to avoid the
@@ -840,6 +849,10 @@ window.addEventListener("load", function f_temp0 () {
                **/
               GCV.stash.all_went_well = true;
             });
+
+          // stash somewhere so it doesn't get GC'ed
+          self._glodaQueries.push(
+            Gloda.getMessageCollectionForHeaders(self._msgHdrs, self));
 
           /* Second step: expand all the messages that need to be expanded. All
            * messages are collapsed by default, we enforce this. */
@@ -1898,9 +1911,6 @@ window.addEventListener("load", function f_temp0 () {
         }, true);
       }
 
-      // stash somewhere so it doesn't get GC'ed
-      this._glodaQueries.push(
-        Gloda.getMessageCollectionForHeaders(this._msgHdrs, this));
       this.notifyMaxCountExceeded(htmlpane.contentDocument, numMessages, MAX_THREADS);
 
       this.computeSize(htmlpane);
@@ -2070,6 +2080,13 @@ window.addEventListener("load", function f_temp0 () {
     if (aSelectedMessages.length == 0)
       return false;
 
+    /* First thing to do: we've been called again, so don't try to mark the
+     * previous conversation as read, we've switched too fast. Of course, the
+     * timeout might have been exceeded already, which means this call does
+     * nothing. */
+    clearTimeout(GCV.mark_read_timeout);
+
+    /* Various uninteresting stuff */
     htmlpane.contentWindow.enableExtraButtons();
     GCV.stash.multiple_selection = false;
 
