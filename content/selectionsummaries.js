@@ -910,6 +910,7 @@ window.addEventListener("load", function f_temp0 () {
         let enigEncOk = stringBundle.getString("enig_enc_ok");
         let enigSignOk = stringBundle.getString("enig_sign_ok");
         let enigSignUnknown = stringBundle.getString("enig_sign_unknown");
+        let viewSourceTxt = stringBundle.getString("view_source");
         let msgContents =
           <div class="row">
             <div class="pointer" />
@@ -941,7 +942,12 @@ window.addEventListener("load", function f_temp0 () {
                 <div class="msgheader-details-date">
                   <div class="date">{date}</div>
                   <div class="fg-tooltip fg-tooltip-right ui-widget ui-state-highlight ui-corner-all" style="display: none">
-                    <span>{noGlodaTxt}</span>
+                    <span class="remove-me">{noGlodaTxt}</span>
+                    <div class="view-source">
+                      <div class="link view-source-link">
+                        {viewSourceTxt}
+                      </div>
+                    </div>
                     <div class="fg-tooltip-pointer-up ui-state-highlight">
                       <div class="fg-tooltip-pointer-up-inner"></div>
                     </div>
@@ -1159,6 +1165,10 @@ window.addEventListener("load", function f_temp0 () {
           for each (let [, node] in Iterator(nodes))
             node.addEventListener(action, f, true);
         }
+
+        register(".view-source-link", function(event) {
+            ViewPageSource([uri]); /* mailCommands.js, maybe */
+          });
         register(".draft-warning", function (event) {
             compose(Ci.nsIMsgCompType.Draft, event);
           });
@@ -1648,7 +1658,7 @@ window.addEventListener("load", function f_temp0 () {
 
             /* Fill the extended headers */
             let tooltip = msgNode.getElementsByClassName("fg-tooltip")[0];
-            tooltip.removeChild(tooltip.firstElementChild); /* remove gloda warning */
+            tooltip.removeChild(tooltip.getElementsByClassName("remove-me")[0]);
             let folderStr = msgHdr.folder.prettiestName;
             let folder = msgHdr.folder;
             while (folder.parent) {
@@ -1674,21 +1684,11 @@ window.addEventListener("load", function f_temp0 () {
                 tooltip.appendChild(htmlpane.contentDocument.createElement("br"));
               }
             }
+            /* Remove trailing <br /> */
             tooltip.removeChild(tooltip.children[tooltip.children.length - 1]);
+            /* Move back the view-source link at the end */
+            tooltip.appendChild(tooltip.getElementsByClassName("view-source")[0]);
 
-            /* Add the view source link */
-            let viewSource = htmlpane.contentDocument.createElement("div");
-            viewSource.classList.add("view-source");
-            tooltip.appendChild(viewSource);
-            let viewSourceLink = htmlpane.contentDocument.createElement("span");
-            viewSourceLink.classList.add("link");
-            viewSourceLink.classList.add("view-source-link");
-            viewSourceLink.textContent = stringBundle.getString("view_source");
-            let uri = msgHdr.folder.getUriForMsg(msgHdr);
-            viewSourceLink.addEventListener("click", function(event) {
-                ViewPageSource([uri]); /* mailCommands.js, maybe */
-              }, true);
-            viewSource.appendChild(viewSourceLink);
 
             /* Make a guess at the sender */
             if (aMimeMsg.headers["x-bugzilla-who"]) {
