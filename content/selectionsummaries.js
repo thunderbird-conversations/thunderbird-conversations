@@ -1261,6 +1261,9 @@ window.addEventListener("load", function f_temp0 () {
               GCV.stash.collapse_all[iCopy]();
           }, "dblclick");
         register(".snippetmsg", GCV.stash.expand_all[iCopy]);
+        let isAccel = function (event)
+          (navigator.platform.indexOf("mac") === 0 && event.metaKey
+            || event.ctrlKey);
         msgNode.addEventListener("keypress", function keypress_listener (event) {
             switch (event.which) {
               case 'o'.charCodeAt(0):
@@ -1299,22 +1302,28 @@ window.addEventListener("load", function f_temp0 () {
                 event.preventDefault();
                 break;
             
-              case 'r':
-                compose(Ci.nsIMsgCompType.ReplyToSender, event);
-                event.preventDefault();
+              case 'r'.charCodeAt(0):
+                if (isAccel(event)) {
+                  compose(Ci.nsIMsgCompType.ReplyToSender, event);
+                  event.preventDefault();
+                }
+                break;
+
+              case 'R'.charCodeAt(0):
+                if (isAccel(event)) {
+                  compose(Ci.nsIMsgCompType.ReplyAll, event);
+                  event.preventDefault();
+                }
+                break;
+
+              case 'l'.charCodeAt(0):
+                if (isAccel(event)) {
+                  forward(event);
+                  event.preventDefault();
+                }
                 break;
 
               case 'a'.charCodeAt(0):
-                compose(Ci.nsIMsgCompType.ReplyAll, event);
-                event.preventDefault();
-                break;
-
-              case 'f'.charCodeAt(0):
-                forward(event);
-                event.preventDefault();
-                break;
-
-              case 'e'.charCodeAt(0):
                 GCV.archive_all();
                 break;
 
