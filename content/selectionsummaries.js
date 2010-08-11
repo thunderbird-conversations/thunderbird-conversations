@@ -1835,6 +1835,7 @@ window.addEventListener("load", function f_temp0 () {
                    * for the relevant actions */
                   let altTxt = stringBundle.getString("open_att_tab2").replace("#1", att.name);
                   let altTxt2 = stringBundle.getString("open_attachment2").replace("#1", att.name);
+                  let size = Math.round(att.size/1024)+"k";
                   if (att.contentType.indexOf("image/") === 0) {
                     singleBoxContents =
                       <div class="attachment-box image-attachment-box">
@@ -1842,7 +1843,7 @@ window.addEventListener("load", function f_temp0 () {
                         <td><img title={altTxt} src={att.url} /></td>
                         <td>
                           <p><span class="attachment-link link" title={altTxt2}>{att.name}</span></p>
-                          <p>{contentType}</p>
+                          <p>{contentType} - {size}</p>
                           <p>
                             <button class="link fg-button ui-state-default ui-corner-all save">{saveTxt}</button>
                           </p>
@@ -1857,7 +1858,7 @@ window.addEventListener("load", function f_temp0 () {
                         <td><img title={altTxt} src={imgSrc} /></td>
                         <td>
                           <p><span class="attachment-link link" title={altTxt2}>{att.name}</span></p>
-                          <p>{contentType}</p>
+                          <p>{contentType} - {size}</p>
                           <p>
                             <button class="link fg-button ui-state-default ui-corner-all save">{saveTxt}</button>
                           </p>
