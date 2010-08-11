@@ -80,7 +80,9 @@ function MimeMessageToHTML(aMsg) {
  * @return {MimeMessageAttachment list} All the "real" attachments that have
  *  been found */
 function MimeMessageGetAttachments(aMsg) {
-  let attachments = aMsg.allAttachments;
+  /* This for newer glodas that include this special hook (otherwise
+   * message/rfc822 inner parts are not treated as attachments. */
+  let attachments = aMsg.allUserAttachments || aMsg.allAttachments;
   /* This first step filters out "Part 1.2"-like attachments. */
   attachments = attachments.filter(function (x) x.isRealAttachment);
   return attachments;
