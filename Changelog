@@ -3,7 +3,9 @@
 - Make conversation view the default
 - Improve the message reader with more actions
 - Add the ability to manage contacts (address book integration, gravatar support, etc.)
-- More keyboard shortcuts: 'e', 'u', '#'
+- More keyboard shortcuts (archive, move focus back to thread pane -> 'u',
+delete conversation -> '#'). Other keyboard shortcuts now follow standard
+Thunderbird conventions for more consistency.
 - Added a link to edit drafts
 - More aggressive quote recognition
 - Fix appearance on Windows systems
