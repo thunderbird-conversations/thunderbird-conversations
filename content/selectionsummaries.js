@@ -1380,185 +1380,192 @@ window.addEventListener("load", function f_temp0 () {
             /* The second load event is triggered by loadURI with the URL
              * being the necko URL to the given message. */
             iframe.addEventListener("load", function f_temp1(event) {
-                iframe.removeEventListener("load", f_temp1, true);
-                let iframeDoc = iframe.contentDocument;
+                try {
+                  iframe.removeEventListener("load", f_temp1, true);
+                  let iframeDoc = iframe.contentDocument;
 
-                /* Do some reformatting + deal with people who have bad taste */
-                iframeDoc.body.setAttribute("style", "padding: 0; margin: 0; "+
-                  "color: black; background-color: white; "+
-                  "-moz-user-focus: none !important; ");
+                  /* Do some reformatting + deal with people who have bad taste */
+                  iframeDoc.body.setAttribute("style", "padding: 0; margin: 0; "+
+                    "color: black; background-color: white; "+
+                    "-moz-user-focus: none !important; ");
 
-                /* Our super-advanced heuristic ;-) */
-                let hasHtml = !(
-                  iframeDoc.body.firstElementChild &&
-                  (iframeDoc.body.firstElementChild.classList.contains("moz-text-flowed") ||
-                   iframeDoc.body.firstElementChild.classList.contains("moz-text-plain")));
+                  /* Our super-advanced heuristic ;-) */
+                  let hasHtml = !(
+                    iframeDoc.body.firstElementChild &&
+                    (iframeDoc.body.firstElementChild.classList.contains("moz-text-flowed") ||
+                     iframeDoc.body.firstElementChild.classList.contains("moz-text-plain")));
 
-                /* Remove the attachments if the user has not set View >
-                 * Display Attachments Inline. Do that right now, otherwise the
-                 * quoted text detection will mess up the markup. */
-                let fieldsets = iframeDoc.getElementsByClassName("mimeAttachmentHeader");
-                for (let i = fieldsets.length - 1; i >= 0; i--) {
-                  myDump("Found an attachment, removing... please uncheck View > Display attachments inline.\n");
-                  let node = fieldsets[i];
-                  while (node.nextSibling)
-                    node.parentNode.removeChild(node.nextSibling);
-                  node.parentNode.removeChild(node);
-                }
+                  /* Remove the attachments if the user has not set View >
+                   * Display Attachments Inline. Do that right now, otherwise the
+                   * quoted text detection will mess up the markup. */
+                  let fieldsets = iframeDoc.getElementsByClassName("mimeAttachmentHeader");
+                  for (let i = fieldsets.length - 1; i >= 0; i--) {
+                    myDump("Found an attachment, removing... please uncheck View > Display attachments inline.\n");
+                    let node = fieldsets[i];
+                    while (node.nextSibling)
+                      node.parentNode.removeChild(node.nextSibling);
+                    node.parentNode.removeChild(node);
+                  }
 
-                /* The part below is all about quoting */
-                /* Launch various heuristics to convert most common quoting styles
-                 * to real blockquotes. Spoiler: most of them suck. */
-                GCV.convertOutlookQuotingToBlockquote(iframe.contentWindow, iframeDoc);
-                GCV.convertHotmailQuotingToBlockquote1(iframeDoc);
-                GCV.convertHotmailQuotingToBlockquote2(iframe.contentWindow, iframeDoc, gPrefs["hide_quote_length"]);
-                GCV.convertForwardedToBlockquote(iframeDoc);
-                GCV.fusionBlockquotes(iframeDoc);
-                /* This function adds a show/hide quoted text link to every topmost
-                 * blockquote. Nested blockquotes are not taken into account. */
-                let walk = function walk_ (elt) {
-                  for (let i = elt.childNodes.length - 1; i >= 0; --i) {
-                    let c = elt.childNodes[i];
-                    /* GMail uses class="gmail_quote", other MUA use type="cite"...
-                     * so just search for a regular blockquote */
-                    if (c.tagName && c.tagName.toLowerCase() == "blockquote") {
-                      if (c.getUserData("hideme") !== false) { /* null is ok, true is ok too */
-                        /* Compute the approximate number of lines while the element is still visible */
-                        let style = iframe.contentWindow.getComputedStyle(c, null);
-                        if (style) {
-                          let numLines = parseInt(style.height) / parseInt(style.lineHeight);
-                          if (numLines > gPrefs["hide_quote_length"]) {
-                            let div = iframeDoc.createElement("div");
-                            div.setAttribute("class", "link showhidequote");
-                            div.addEventListener("click", function div_listener (event) {
-                                let h = htmlpane.contentWindow.toggleQuote(event);
-                                iframe.style.height = (parseFloat(iframe.style.height) + h)+"px";
-                              }, true);
-                            div.setAttribute("style", "color: #06d; cursor: pointer; font-size: 90%;");
-                            div.appendChild(document.createTextNode("- "+
-                              stringBundle.getString("showquotedtext")+" -"));
-                            elt.insertBefore(div, c);
-                            c.style.display = "none";
+                  /* The part below is all about quoting */
+                  /* Launch various heuristics to convert most common quoting styles
+                   * to real blockquotes. Spoiler: most of them suck. */
+                  GCV.convertOutlookQuotingToBlockquote(iframe.contentWindow, iframeDoc);
+                  GCV.convertHotmailQuotingToBlockquote1(iframeDoc);
+                  GCV.convertHotmailQuotingToBlockquote2(iframe.contentWindow, iframeDoc, gPrefs["hide_quote_length"]);
+                  GCV.convertForwardedToBlockquote(iframeDoc);
+                  GCV.fusionBlockquotes(iframeDoc);
+                  /* This function adds a show/hide quoted text link to every topmost
+                   * blockquote. Nested blockquotes are not taken into account. */
+                  let walk = function walk_ (elt) {
+                    for (let i = elt.childNodes.length - 1; i >= 0; --i) {
+                      let c = elt.childNodes[i];
+                      /* GMail uses class="gmail_quote", other MUA use type="cite"...
+                       * so just search for a regular blockquote */
+                      if (c.tagName && c.tagName.toLowerCase() == "blockquote") {
+                        if (c.getUserData("hideme") !== false) { /* null is ok, true is ok too */
+                          /* Compute the approximate number of lines while the element is still visible */
+                          let style = iframe.contentWindow.getComputedStyle(c, null);
+                          if (style) {
+                            let numLines = parseInt(style.height) / parseInt(style.lineHeight);
+                            if (numLines > gPrefs["hide_quote_length"]) {
+                              let div = iframeDoc.createElement("div");
+                              div.setAttribute("class", "link showhidequote");
+                              div.addEventListener("click", function div_listener (event) {
+                                  let h = htmlpane.contentWindow.toggleQuote(event);
+                                  iframe.style.height = (parseFloat(iframe.style.height) + h)+"px";
+                                }, true);
+                              div.setAttribute("style", "color: #06d; cursor: pointer; font-size: 90%;");
+                              div.appendChild(document.createTextNode("- "+
+                                stringBundle.getString("showquotedtext")+" -"));
+                              elt.insertBefore(div, c);
+                              c.style.display = "none";
+                            }
                           }
                         }
+                      } else {
+                        walk(c);
                       }
-                    } else {
-                      walk(c);
                     }
-                  }
-                };
-                walk(iframeDoc);
-
-                /* Ugly hack (once again) to get the style inside the
-                 * <iframe>. I don't think we can use a chrome:// url for
-                 * the stylesheet because the iframe has a type="content" */
-                let style = iframeDoc.createElement("style");
-                let defaultFont = gPrefBranch.getCharPref("font.default");
-                style.appendChild(iframeDoc.createTextNode(
-                  ".pre-as-regular {\n"+
-                  "  font-family: "+defaultFont+" !important;\n"+
-                  "  font-size: medium !important;\n"+
-                  "}\n"+
-                  "fieldset.mimeAttachmentHeader,\n"+
-                  "fieldset.mimeAttachmentHeader + *,\n"+
-                  "fieldset.mimeAttachmentHeader + * + *,\n"+
-                  "fieldset.mimeAttachmentHeader + * + * + *,\n"+
-                  "fieldset.mimeAttachmentHeader + * + * + * + * {\n"+
-                  "  display: none;\n"+
-                  "}\n"
-                  ));
-                iframeDoc.body.previousElementSibling.appendChild(style);
-
-                /* Hello, Enigmail. Do that now, because decrypting a message
-                 * will change its height. If you've got nothing better to do,
-                 * test for the remaining 4572 possible statuses. */
-                if (iframeDoc.body.textContent.length > 0 && hasEnigmail) {
-                  let status = tryEnigmail(iframeDoc.body);
-                  if (status & Ci.nsIEnigmail.DECRYPTION_OKAY)
-                    msgNode.getElementsByClassName("enigmail-enc-ok")[0].style.display = "";
-                  if (status & Ci.nsIEnigmail.GOOD_SIGNATURE)
-                    msgNode.getElementsByClassName("enigmail-sign-ok")[0].style.display = "";
-                  if (status & Ci.nsIEnigmail.UNVERIFIED_SIGNATURE)
-                    msgNode.getElementsByClassName("enigmail-sign-unknown")[0].style.display = "";
-                }
-
-                /* Add an event listener for the button that toggles the style of the
-                 * font. Only if we seem to be able to implement it (i.e. we
-                 * see a <pre>). */
-                if (!hasHtml) {
-                  let toggleFontStyle = function togglefont_listener (event) {
-                    let elts = iframeDoc.querySelectorAll("pre, body > *:first-child")
-                    for each (let [, elt] in Iterator(elts)) {
-                      elt.classList.toggle("pre-as-regular");
-                    }
-                    /* XXX The height of the iframe isn't updated as we change
-                     * fonts. This is usually unimportant, as it will grow
-                     * once if the initial font was smaller, and then remain
-                     * high. XXX check if offsetHeight works better with Gecko
-                     * 1.9.2 */
-                    iframe.style.height = iframeDoc.body.scrollHeight+"px";
                   };
-                  /* By default, plain/text messages are displayed using a
-                   * monospaced font. */
-                  if (!gPrefs["monospaced"] && !(gPrefs["monospaced_senders"].indexOf(authorEmail(msgHdr)) >= 0))
-                    toggleFontStyle();
-                  toggleFontNode.addEventListener("click", toggleFontStyle, true);
-                  /* Show the small icon */
-                  toggleFontNode.style.display = "";
-                }
+                  walk(iframeDoc);
 
-                /* For bidiUI. Do that now because the DOM manipulations are
-                 * over. We can't do this before because BidiUI screws up the
-                 * DOM. Don't know why :(. */
-                if (typeof(BDMActionPhase_htmlNumericEntitiesDecoding) == "function") {
-                  try {
-                    let domDocument = iframe.docShell.contentViewer.DOMDocument;
-                    let body = domDocument.body;
+                  /* Ugly hack (once again) to get the style inside the
+                   * <iframe>. I don't think we can use a chrome:// url for
+                   * the stylesheet because the iframe has a type="content" */
+                  let style = iframeDoc.createElement("style");
+                  let defaultFont = gPrefBranch.getCharPref("font.default");
+                  style.appendChild(iframeDoc.createTextNode(
+                    ".pre-as-regular {\n"+
+                    "  font-family: "+defaultFont+" !important;\n"+
+                    "  font-size: medium !important;\n"+
+                    "}\n"+
+                    "fieldset.mimeAttachmentHeader,\n"+
+                    "fieldset.mimeAttachmentHeader + *,\n"+
+                    "fieldset.mimeAttachmentHeader + * + *,\n"+
+                    "fieldset.mimeAttachmentHeader + * + * + *,\n"+
+                    "fieldset.mimeAttachmentHeader + * + * + * + * {\n"+
+                    "  display: none;\n"+
+                    "}\n"
+                    ));
+                  iframeDoc.body.previousElementSibling.appendChild(style);
 
-                    let BDMCharsetPhaseParams = {
-                      body: body,
-                      charsetOverrideInEffect: msgWindow.charsetOverride,
-                      currentCharset: msgWindow.mailCharacterSet,
-                      needCharsetForcing: false,
-                      charsetToForce: null
-                    };
-                    BDMActionPhase_charsetMisdetectionCorrection(BDMCharsetPhaseParams);
-                    if (BDMCharsetPhaseParams.needCharsetForcing
-                        && BDMCharsetPhaseParams.charsetToForce != aCharset) {
-                      //XXX this doesn't take into account the case where we
-                      //have a cycle with length > 0 in the reloadings.
-                      //Currently, I only see UTF8 -> UTF8 cycles.
-                      myDump("Reloading with "+BDMCharsetPhaseParams.charsetToForce+"\n");
-                      f_temp2(null, BDMCharsetPhaseParams.charsetToForce);
-                      return;
-                    }
-                    BDMActionPhase_htmlNumericEntitiesDecoding(body);
-                    BDMActionPhase_quoteBarsCSSFix(domDocument);
-                    BDMActionPhase_directionAutodetection(body);
-                  } catch (e) {
-                    myDump(e);
-                    throw e;
+                  /* Hello, Enigmail. Do that now, because decrypting a message
+                   * will change its height. If you've got nothing better to do,
+                   * test for the remaining 4572 possible statuses. */
+                  if (iframeDoc.body.textContent.length > 0 && hasEnigmail) {
+                    let status = tryEnigmail(iframeDoc.body);
+                    if (status & Ci.nsIEnigmail.DECRYPTION_OKAY)
+                      msgNode.getElementsByClassName("enigmail-enc-ok")[0].style.display = "";
+                    if (status & Ci.nsIEnigmail.GOOD_SIGNATURE)
+                      msgNode.getElementsByClassName("enigmail-sign-ok")[0].style.display = "";
+                    if (status & Ci.nsIEnigmail.UNVERIFIED_SIGNATURE)
+                      msgNode.getElementsByClassName("enigmail-sign-unknown")[0].style.display = "";
                   }
+
+                  /* Add an event listener for the button that toggles the style of the
+                   * font. Only if we seem to be able to implement it (i.e. we
+                   * see a <pre>). */
+                  if (!hasHtml) {
+                    let toggleFontStyle = function togglefont_listener (event) {
+                      let elts = iframeDoc.querySelectorAll("pre, body > *:first-child")
+                      for each (let [, elt] in Iterator(elts)) {
+                        elt.classList.toggle("pre-as-regular");
+                      }
+                      /* XXX The height of the iframe isn't updated as we change
+                       * fonts. This is usually unimportant, as it will grow
+                       * once if the initial font was smaller, and then remain
+                       * high. XXX check if offsetHeight works better with Gecko
+                       * 1.9.2 */
+                      iframe.style.height = iframeDoc.body.scrollHeight+"px";
+                    };
+                    /* By default, plain/text messages are displayed using a
+                     * monospaced font. */
+                    if (!gPrefs["monospaced"] && !(gPrefs["monospaced_senders"].indexOf(authorEmail(msgHdr)) >= 0))
+                      toggleFontStyle();
+                    toggleFontNode.addEventListener("click", toggleFontStyle, true);
+                    /* Show the small icon */
+                    toggleFontNode.style.display = "";
+                  }
+
+                  /* For bidiUI. Do that now because the DOM manipulations are
+                   * over. We can't do this before because BidiUI screws up the
+                   * DOM. Don't know why :(. */
+                  if (typeof(BDMActionPhase_htmlNumericEntitiesDecoding) == "function") {
+                    try {
+                      let domDocument = iframe.docShell.contentViewer.DOMDocument;
+                      let body = domDocument.body;
+
+                      let BDMCharsetPhaseParams = {
+                        body: body,
+                        charsetOverrideInEffect: msgWindow.charsetOverride,
+                        currentCharset: msgWindow.mailCharacterSet,
+                        needCharsetForcing: false,
+                        charsetToForce: null
+                      };
+                      BDMActionPhase_charsetMisdetectionCorrection(BDMCharsetPhaseParams);
+                      if (BDMCharsetPhaseParams.needCharsetForcing
+                          && BDMCharsetPhaseParams.charsetToForce != aCharset) {
+                        //XXX this doesn't take into account the case where we
+                        //have a cycle with length > 0 in the reloadings.
+                        //Currently, I only see UTF8 -> UTF8 cycles.
+                        myDump("Reloading with "+BDMCharsetPhaseParams.charsetToForce+"\n");
+                        f_temp2(null, BDMCharsetPhaseParams.charsetToForce);
+                        return;
+                      }
+                      BDMActionPhase_htmlNumericEntitiesDecoding(body);
+                      BDMActionPhase_quoteBarsCSSFix(domDocument);
+                      BDMActionPhase_directionAutodetection(body);
+                    } catch (e) {
+                      myDump(e);
+                      throw e;
+                    }
+                  }
+
+                  /* Everything's done, so now we're able to settle for a height. */
+                  iframe.style.height = iframeDoc.body.scrollHeight+"px";
+
+                  /* Attach the required event handlers so that links open in the
+                   * external browser */
+                  for each (let [, a] in Iterator(iframeDoc.getElementsByTagName("a"))) {
+                    a.addEventListener("click", function link_listener (event) specialTabs.siteClickHandler(event, /^mailto:/), true);
+                  }
+
+                  /* Sometimes setting the iframe's content and height changes
+                   * the scroll value, don't know why. */
+                  if (originalScroll)
+                    htmlpane.contentDocument.documentElement.scrollTop = originalScroll;
+
+                  /* jQuery, go! */
+                  htmlpane.contentWindow.styleMsgNode(msgNode);
+
+                  signal();
+                      
+                } catch (e) {
+                  dump(e+" (are you running comm-central?)\n");
+                  dump("Running signal once more to make sure we move on with our life... (warning, this WILL cause bugs)\n");
+                  signal();
                 }
-
-                /* Everything's done, so now we're able to settle for a height. */
-                iframe.style.height = iframeDoc.body.scrollHeight+"px";
-
-                /* Attach the required event handlers so that links open in the
-                 * external browser */
-                for each (let [, a] in Iterator(iframeDoc.getElementsByTagName("a"))) {
-                  a.addEventListener("click", function link_listener (event) specialTabs.siteClickHandler(event, /^mailto:/), true);
-                }
-
-                /* Sometimes setting the iframe's content and height changes
-                 * the scroll value, don't know why. */
-                if (originalScroll)
-                  htmlpane.contentDocument.documentElement.scrollTop = originalScroll;
-
-                /* jQuery, go! */
-                htmlpane.contentWindow.styleMsgNode(msgNode);
-
-                signal();
               }, true); /* end document.addEventListener */
 
             /* Unbelievable as it may seem, the code below works.
