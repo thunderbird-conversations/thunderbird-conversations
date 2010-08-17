@@ -6,7 +6,7 @@
 
   <Description about="urn:mozilla:install-manifest">
     <em:id>gconversation@xulforum.org</em:id>
-    <em:version>1.2.201007161817pre</em:version>
+    <em:version>1.2.201008111016pre</em:version>
     
     <!-- Target Application this theme can install into, 
         with minimum and maximum supported versions. --> 
@@ -102,6 +102,18 @@
         <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
       </Description>
     </em:localized> 
+
+    <em:localized>
+      <Description>
+        <em:locale>es</em:locale>
+        <em:name>Gmail Conversation View</em:name>
+        <em:description>Permite visualizar los mensajes en modo de conversación, de igual manera que en GMail</em:description>
+        <em:translator>Proyecto Nave</em:translator>
+        <em:creator>Jonathan Protzenko</em:creator>
+        <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
+      </Description>
+    </em:localized>
+
   </Description>      
 
 </RDF>

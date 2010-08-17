@@ -73,7 +73,9 @@ let GCV = {
     all_went_well: false /* Set to false before PART 1/3 and set to true after we received all signals. If not true, then isNewConversation == true always. */
   },
   /* The timeout number for the delayed "mark all read" call */
-  mark_read_timeout: null
+  mark_read_timeout: null,
+  /* "Profiling" */
+  t: 0,
 };
 
 /* We use a function because of global namespace pollution. We use "onload"
@@ -121,11 +123,18 @@ window.addEventListener("load", function f_temp0 () {
       consoleService.logStringMessage("GCV: "+aMsg);
   };
 
-  /* This one we use all the time, stop redefining it everywhere, just assume it
-   * will be available anywhere from now on */
-  let htmlpane = document.getElementById('multimessage');
+  let tMime;
+  function tick() {
+    let t0 = GCV.t;
+    let t = Date.now();
+    let delta = t - t0;
+    GCV.t = t;
+    if (t0 > 0)
+      dump("\033[01;36mδ="+delta+" @"+Components.stack.caller+"\033[00m\n");
+    else
+      dump("\033[01;36mHomemade profiling started ["+t+"]\033[00m\n");
+  };
 
-  /* Better debug function */
   let dumpCallStack = function dumpCallStack_ () {
     let frame = Components.stack;
     while (frame) {
@@ -133,6 +142,10 @@ window.addEventListener("load", function f_temp0 () {
       frame = frame.caller;
     }
   }
+
+  /* This one we use all the time, stop redefining it everywhere, just assume it
+   * will be available anywhere from now on */
+  let htmlpane = document.getElementById('multimessage');
 
   /* Preferences are loaded once and then observed. For a new pref, add an entry
    * here + a case in the switch below. */
@@ -783,7 +796,7 @@ window.addEventListener("load", function f_temp0 () {
         messagesElt.removeChild(messagesElt.firstChild);
 
       let count = 0;
-      const MAX_THREADS = 100;
+      const MAX_THREADS = 300;
       const SNIPPET_LENGTH = 300;
       let maxCountExceeded = false;
 
@@ -800,10 +813,12 @@ window.addEventListener("load", function f_temp0 () {
       GCV.stash.all_went_well = false;
       let self = this;
       myDump("                                                PART 1/3\n");
+      tick();
       runOnceAfterNSignals(
         numMessages,
         function collapseExpandAsNeeded_ () {
           myDump("                                                PART 2/3\n");
+          tick();
 
           /* Final step: scroll the right message into view, and set it as
            * selected */
@@ -811,6 +826,8 @@ window.addEventListener("load", function f_temp0 () {
             numMessages,
             function scrollToTheRightNode_ () {
               myDump("                                                PART 3/3\n");
+              tick();
+              dump("\033[01;35mtMime = "+tMime+"\033[00m\n");
               let msgNode = msgHdrToMsgNode(msgHdrs[needsFocus]);
               scrollNodeIntoView(msgNode);
               variousFocusHacks(msgNode);
@@ -877,6 +894,7 @@ window.addEventListener("load", function f_temp0 () {
       );
 
       myDump("*** We have "+numMessages+" messages to process\n");
+      tMime = 0;
 
       /* Now this is for every message. Note to self: all functions defined
        * inside the loop must be defined using let f = ... (otherwise the last
@@ -1668,10 +1686,15 @@ window.addEventListener("load", function f_temp0 () {
           signal();
         };
 
+        let t0 = Date.now();
+
         /* This part of the code fills various information regarding the message
          * (attachments, header details, sender, snippet...) through Gloda. */
         try {
           MsgHdrToMimeMessage(msgHdr, null, function MsgHdrToMimeMessageCallback_ (aMsgHdr, aMimeMsg) {
+            let delta = Date.now() - t0;
+            dump("\033[01;35mδ_tMime = "+delta+"\033[00m\n");
+            tMime += delta;
             /* Yes it happens with newsgroup messages */
             if (aMimeMsg == null) { // shouldn't happen, but sometimes does?
               fallbackNoGloda();
@@ -1933,6 +1956,8 @@ window.addEventListener("load", function f_temp0 () {
    * messages have all been found. If it fails to retrieve GlodaMessages, it
    * calls k(null, [list of msgHdrs]). */
   function pullConversation(aSelectedMessages, k) {
+    tick();
+
     /* Let's hope the user hasn't changed selection by the time we get there...
      * this should minimize race conditions but not solve them. */
     let firstMessageId = gFolderDisplay.selectedMessage.messageId;
@@ -2095,62 +2120,75 @@ window.addEventListener("load", function f_temp0 () {
      * nothing. */
     clearTimeout(GCV.mark_read_timeout);
 
-    /* Various uninteresting stuff */
-    htmlpane.contentWindow.enableExtraButtons();
+    let proceed = function _proceed (overwritten) { 
+      if (overwritten)
+        htmlpane.contentWindow.removeEventListener("load", _proceed, true);
+      pullConversation(
+        aSelectedMessages,
+        function _summarizeThread_callback (aCollection, aItems, aMsg) {
+          tick();
+
+          /* First-time info box. */
+          if (!gPrefs["info_af_shown"])
+            htmlpane.contentDocument.getElementById("info_af_box").style.display = "block";
+
+          let items;
+          let clearErrors = function () {
+            for each (let [,e] in Iterator(htmlpane.contentDocument.getElementsByClassName("error")))
+              e.style.display = "none";
+          };
+
+          /* Actual logic */
+          if (aCollection) {
+            clearErrors();
+            items = [GCV.selectRightMessage(x, gDBView.msgFolder)
+              for each ([, x] in Iterator(GCV.groupMessages(aCollection.items)))];
+            items = items.filter(function (x) x);
+            items = items.map(function (x) x.folderMessage);
+            myDump("aCollection is non-null, "+items.length+" messages found\n");
+            addPossiblyMissingHeaders(items, aSelectedMessages);
+            myDump("Added missing headers, now "+items.length+" messages found\n");
+          } else {
+            /* Actually I'm pretty sure the else code path is never taken because
+             * when the pref is set, the error message is hidden by the event
+             * handler. So the next time a conversation is loaded, we don't need
+             * to clear errors. */
+            if (!gPrefs["disable_error_empty_collection"])
+              htmlpane.contentWindow.errorEmptyCollection();
+            /* else
+              clearErrors(); */
+            items = aItems;
+            myDump("aCollection is null, "+items.length+" messages found\n");
+            myDump("In aSelectedMessages, we have, "+aSelectedMessages.length+" messages\n");
+          }
+
+          if (overwritten || isNewConversation(items)) {
+            gSummary = new ThreadSummary(items, aListener);
+            try {
+              gSummary.init();
+            } catch (e) {
+              myDump(e+"\n");
+              throw e;
+            }
+          } else {
+            restorePreviousConversation();
+          }
+
+          return;
+        }
+    )};
+
+    /* Various uninteresting stuff. The extra precaution is in case someone else
+     * did something with the multimessage pane (e.g. overview) */
+    if (htmlpane.contentDocument.location.href.indexOf("multimessageview.xhtml") >= 0) {
+      htmlpane.contentWindow.enableExtraButtons();
+      proceed(false);
+    } else {
+      htmlpane.addEventListener("load", function () proceed(true), true);
+      htmlpane.contentDocument.location.href = "chrome://gconversation/content/multimessageview.xhtml";
+    }
     GCV.stash.multiple_selection = false;
 
-    pullConversation(
-      aSelectedMessages,
-      function (aCollection, aItems, aMsg) {
-        /* First-time info box. */
-        if (!gPrefs["info_af_shown"])
-          htmlpane.contentDocument.getElementById("info_af_box").style.display = "block";
-
-        let items;
-        let clearErrors = function () {
-          for each (let [,e] in Iterator(htmlpane.contentDocument.getElementsByClassName("error")))
-            e.style.display = "none";
-        };
-
-        /* Actual logic */
-        if (aCollection) {
-          clearErrors();
-          items = [GCV.selectRightMessage(x, gDBView.msgFolder)
-            for each ([, x] in Iterator(GCV.groupMessages(aCollection.items)))];
-          items = items.filter(function (x) x);
-          items = items.map(function (x) x.folderMessage);
-          myDump("aCollection is non-null, "+items.length+" messages found\n");
-          addPossiblyMissingHeaders(items, aSelectedMessages);
-          myDump("Added missing headers, now "+items.length+" messages found\n");
-        } else {
-          /* Actually I'm pretty sure the else code path is never taken because
-           * when the pref is set, the error message is hidden by the event
-           * handler. So the next time a conversation is loaded, we don't need
-           * to clear errors. */
-          if (!gPrefs["disable_error_empty_collection"])
-            htmlpane.contentWindow.errorEmptyCollection();
-          /* else
-            clearErrors(); */
-          items = aItems;
-          myDump("aCollection is null, "+items.length+" messages found\n");
-          myDump("In aSelectedMessages, we have, "+aSelectedMessages.length+" messages\n");
-        }
-
-        if (isNewConversation(items)) {
-          gSummary = new ThreadSummary(items, aListener);
-          try {
-            gSummary.init();
-          } catch (e) {
-            myDump(e+"\n");
-            throw e;
-          }
-        } else {
-          restorePreviousConversation();
-        }
-
-        return;
-      }
-    );
   };
 
   /* We must catch the call to summarizeMultipleSelection to hide the extra
@@ -2312,6 +2350,8 @@ window.addEventListener("load", function f_temp0 () {
         return true;
 
       } else if (selectedCount == 1) {
+        GCV.t = 0;
+        tick();
         /* Here starts the part where we modify the original code. */
         let msgHdr = this.folderDisplay.selectedMessage;
         let wantedUrl = GCV.stash.wantedUrl;
