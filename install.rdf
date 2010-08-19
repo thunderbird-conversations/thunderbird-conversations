@@ -6,14 +6,14 @@
 
   <Description about="urn:mozilla:install-manifest">
     <em:id>gconversation@xulforum.org</em:id>
-    <em:version>1.2.201008171025pre</em:version>
+    <em:version>2.0alpha1.201008191053pre</em:version>
     
     <!-- Target Application this theme can install into, 
         with minimum and maximum supported versions. --> 
     <em:targetApplication>
       <Description>
         <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
-        <em:minVersion>3.1</em:minVersion>
+        <em:minVersion>3.2a1pre</em:minVersion>
         <em:maxVersion>3.2</em:maxVersion>
       </Description>
     </em:targetApplication>
@@ -32,6 +32,17 @@
         <em:name>Better Conversation View</em:name>
         <em:description>Gruppiert Ihre Nachrichten (inklusive Ihrer gesendeten) in Konversationen, ähnlich wie Googlemail es tut.</em:description>
         <em:translator>Sebastian Kronenwerth</em:translator>
+        <em:creator>Jonathan Protzenko</em:creator>
+        <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
+      </Description>
+    </em:localized>
+
+    <em:localized>
+      <Description>
+        <em:locale>es</em:locale>
+        <em:name>Gmail Conversation View</em:name>
+        <em:description>Permite visualizar los mensajes en modo de conversación, de igual manera que en GMail</em:description>
+        <em:translator>Proyecto Nave</em:translator>
         <em:creator>Jonathan Protzenko</em:creator>
         <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
       </Description>
@@ -102,17 +113,6 @@
         <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
       </Description>
     </em:localized> 
-
-    <em:localized>
-      <Description>
-        <em:locale>es</em:locale>
-        <em:name>Gmail Conversation View</em:name>
-        <em:description>Permite visualizar los mensajes en modo de conversación, de igual manera que en GMail</em:description>
-        <em:translator>Proyecto Nave</em:translator>
-        <em:creator>Jonathan Protzenko</em:creator>
-        <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
-      </Description>
-    </em:localized>
 
   </Description>      
 
