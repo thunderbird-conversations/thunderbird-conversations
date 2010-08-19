@@ -2122,7 +2122,7 @@ window.addEventListener("load", function f_temp0 () {
 
     let proceed = function _proceed (overwritten) { 
       if (overwritten)
-        htmlpane.contentWindow.removeEventListener("load", _proceed, true);
+        try { htmlpane.contentWindow.removeEventListener("load", _proceed, true); } catch (e) { }
       pullConversation(
         aSelectedMessages,
         function _summarizeThread_callback (aCollection, aItems, aMsg) {
