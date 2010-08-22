@@ -11,10 +11,10 @@
  * for the specific language governing rights and limitations under the
  * License.
  *
- * The Original Code is Mail utility functions for GMail Conversation View
+ * The Original Code is Gmail Conversation View
  *
  * The Initial Developer of the Original Code is
- * Jonathan Protzenko
+ * Mozilla messaging
  * Portions created by the Initial Developer are Copyright (C) 2010
  * the Initial Developer. All Rights Reserved.
  *
@@ -34,13 +34,19 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-body {
-  background-color: white;
-  font-family: sans-serif;
-  margin: 1em;
-}
+let GCV = {
+  monkeyPatch: null,
+  currentConversation: null,
+};
 
-a {
-  color: blue;
-  text-decoration: underline;
-}
+window.addEventListener("load", function _overlay_eventListener () {
+  let NS = {};
+  Components.utils.import("chrome://conversations/modules/monkeypatch.js", NS);
+  Components.utils.import("chrome://conversations/modules/conversation.js", NS);
+
+  // We instanciate the Monkey-Patch for the given Conversation object.
+  let monkeyPatch = new NS.MonkeyPatch(window, NS.Conversation);
+  // And then we seize the window and insert our code into it
+  monkeyPatch.apply();
+  GCV.monkeyPatch = monkeyPatch;
+}, false);
