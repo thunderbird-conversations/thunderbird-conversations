@@ -36,17 +36,17 @@
    -
    - ***** END LICENSE BLOCK ***** -->
 
-<!DOCTYPE overlay [
+<!--<!DOCTYPE overlay [
   <!ENTITY % messengerDTD SYSTEM "chrome://messenger/locale/messenger.dtd">
   %messengerDTD;
   <!ENTITY % gconversationDTD SYSTEM "chrome://gconversation/locale/multimessageview.dtd">
   %gconversationDTD;
-]>
+]>-->
 <overlay id="messengerWindow" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-  <stringbundleset id="stringbundleset">
+  <script type="application/x-javascript" src="overlay.js" />
+  <!--<stringbundleset id="stringbundleset">
     <stringbundle id="gconv-string-bundle" src="chrome://gconversation/locale/main.properties"/>
   </stringbundleset>
-  <script type="application/x-javascript" src="selectionsummaries.js" />
   <toolbarpalette id="header-view-toolbar-palette">
     <toolbarbutton id="gconv-button-1"
       class="gconv-button-1 toolbarbutton-1 hdrReplyButton msgHeaderView-button
@@ -94,5 +94,5 @@
       <menuitem label="&menu.collapse_all;" class="extra-menuitem"
         oncommand="GCV.on_collapse_all();" />
     </popup>
-  </popupset>
+  </popupset>-->
 </overlay>

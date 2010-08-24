@@ -5,9 +5,9 @@ const Cc = Components.classes;
 const Cu = Components.utils;
 const Cr = Components.results;
 
-Cu.import("chrome://conversations/modules/MsgHdrUtils.js");
-Cu.import("chrome://conversations/modules/prefs.js");
-Cu.import("chrome://conversations/modules/log.js");
+Cu.import("resource://conversations/MsgHdrUtils.jsm");
+Cu.import("resource://conversations/prefs.js");
+Cu.import("resource://conversations/log.js");
 
 const Log = setupLogging();
 
@@ -20,34 +20,42 @@ function MonkeyPatch(aWindow, aConversation) {
 MonkeyPatch.prototype = {
 
   apply: function () {
-    let mmPane = this._window.document.getElementById("multimessage");
+    let window = this._window;
+    let self = this;
+    let htmlpane = window.document.getElementById("multimessage");
 
     // This one completely nukes the original summarizeThread function, which is
     // actually the entry point to the original ThreadSummary class.
-    aWindow.summarizeThread =
+    window.summarizeThread =
       function _summarizeThread_patched (aSelectedMessages, aListener) {
         if (!aSelectedMessages.length)
           return;
 
-        let moveOn = mmPane.document.location.href == "chrome://conversations/content/stub.html"
+        let moveOn = htmlpane.contentDocument.location.href == "chrome://conversations/content/stub.html"
           ? function (f)
               f()
           : function (f) {
-              mmPane.addEventListener("load", function _g (event) {
-                mmPane.removeEventListener("load", _g, true);
+              htmlpane.addEventListener("load", function _g (event) {
+                htmlpane.removeEventListener("load", _g, true);
                   f();
               }, true);
+              htmlpane.contentDocument.location.href = "chrome://conversations/content/stub.html";
             }
           ;
         moveOn (function () {
-          let conversation = new this._Conversation(aSelectedMessages);
-          let messagesList = mmPane.contentDocument.getElementById("messagesList");
-          conversation.outputInto(messagesList);
-          // So that we have a global root --> conversation --> persistent query
-          // chain to prevent the Conversation object (and its inner query) to
-          // be collected. The Conversation keeps watching the Gloda query for
-          // modified items (read/unread, starred, tags...).
-          this._window.GCV.currentConversation = conversation;
+          try {
+            let conversation = new self._Conversation(window, aSelectedMessages);
+            let messageList = htmlpane.contentDocument.getElementById("messageList");
+            conversation.outputInto(messageList);
+            // Make sure we have a global root --> conversation --> persistent
+            // query chain to prevent the Conversation object (and its inner
+            // query) to be collected. The Conversation keeps watching the Gloda
+            // query for modified items (read/unread, starred, tags...).
+            window.Conversations.currentConversation = conversation;
+          } catch (e) {
+            Log.error(e);
+            dumpCallStack(e);
+          }
         });
       };
 
@@ -57,12 +65,12 @@ MonkeyPatch.prototype = {
     // intercept the calls to the thread summary in regular situations (where a
     // normal thread summary would kick in) as a side-effect. That means we
     // don't need to hack into gMessageDisplay too much.
-    aWindow.gMessageDisplay.onSelectedMessagesChanged =
+    window.gMessageDisplay.onSelectedMessagesChanged =
       function _onSelectedMessagesChanged_patched () {
         try {
           if (!this.active)
             return true;
-          this._window.ClearPendingReadTimer();
+          window.ClearPendingReadTimer();
 
           let selectedCount = this.folderDisplay.selectedCount;
           Log.debug("Intercepted message load, ", selectedCount, " message(s) selected\n");
@@ -71,7 +79,7 @@ MonkeyPatch.prototype = {
             this.clearDisplay();
             // Once in our lifetime is plenty.
             if (!this._haveDisplayedStartPage) {
-              this._window.loadStartPage(false);
+              window.loadStartPage(false);
               this._haveDisplayedStartPage = true;
             }
             this.singleMessageDisplay = true;
@@ -80,14 +88,14 @@ MonkeyPatch.prototype = {
           } else if (selectedCount == 1) {
             // Here starts the part where we modify the original code.
             let msgHdr = this.folderDisplay.selectedMessage;
-            let wantedUrl = this._wantedUrl;
-            this._wantedUrl = null;
+            let wantedUrl = self._wantedUrl;
+            self._wantedUrl = null;
 
             // We can't display NTTP messages and RSS messages properly yet, so
             // leave it up to the standard message reader. If the user explicitely
             // asked for the old message reader, we give up as well.
             if (msgHdrIsRss(msgHdr) || msgHdrIsNntp(msgHdr) ||
-                wantedUrl == msgHdrToNeckoURL(msgHdr, aWindow.gMessenger).spec) {
+                wantedUrl == msgHdrToNeckoURL(msgHdr).spec) {
               // FIXME should use global prefs not to mark as read immediately
               Log.debug("Don't want to handle this message, deferring");
               msgHdrsMarkAsRead([msgHdr], true);
@@ -100,7 +108,7 @@ MonkeyPatch.prototype = {
               // selectedCount == 1
               Log.debug("Handling this message, firing summarizeThread");
               this.singleMessageDisplay = false;
-              aWindow.summarizeThread(this.folderDisplay.selectedMessages, this);
+              window.summarizeThread(this.folderDisplay.selectedMessages, this);
               return true;
             }
           }

@@ -34,38 +34,149 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var EXPORTED_SYMBOLS = ['dateAsInMessageList', 'selectRightMessage',
-'groupMessages', 'convertHotmailQuotingToBlockquote1',
-'convertHotmailQuotingToBlockquote2', 'convertOutlookQuotingToBlockquote',
-'convertForwardedToBlockquote', 'fusionBlockquotes', 'parseShortName']
+var EXPORTED_SYMBOLS = [
+  // miscellaneous functions
+  'dateAsInMessageList', 'selectRightMessage', 'groupArray', 'extractNameAndEmail',
+  'escapeHtml', 'MixIn',
+  // heuristics for finding quoted parts
+  'convertHotmailQuotingToBlockquote1', 'convertHotmailQuotingToBlockquote2',
+  'convertOutlookQuotingToBlockquote', 'convertForwardedToBlockquote',
+  'fusionBlockquotes',
+  // a very stupid function that tries to figure out, given a full name, what is
+  // the guy's first name
+  'parseShortName',
+]
 
 const Ci = Components.interfaces;
 const Cc = Components.classes;
 const Cu = Components.utils;
-Cu.import("resource://app/modules/gloda/mimemsg.js");
-
-/* from mailnews/base/public/nsMsgFolderFlags.idl */
-const nsMsgFolderFlags_SentMail = 0x00000200;
-const nsMsgFolderFlags_Drafts   = 0x00000400;
-const nsMsgFolderFlags_Archive  = 0x00004000;
+Cu.import("resource:///modules/gloda/mimemsg.js");
+Cu.import("resource://conversations/MsgHdrUtils.jsm");
 
 const txttohtmlconv = Cc["@mozilla.org/txttohtmlconv;1"].createInstance(Ci.mozITXTToHTMLConv);
 const i18nDateFormatter = Cc["@mozilla.org/intl/scriptabledateformat;1"].createInstance(Ci.nsIScriptableDateFormat);
+const headerParser = Cc["@mozilla.org/messenger/headerparser;1"].getService(Ci.nsIMsgHeaderParser);
 
-function dateAsInMessageList(dateObject) {
-  let format = dateObject.toLocaleDateString("%x") == (new Date()).toLocaleDateString("%x")
+/**
+ * A stupid formatting function that uses the i18nDateFormatter XPCOM component
+ * to format a date just like in the message list
+ * @param aDate a javascript Date object
+ * @return a string containing the formatted date
+ */
+function dateAsInMessageList(aDate) {
+  // Is it today? (Less stupid tests are welcome!)
+  let format = aDate.toLocaleDateString("%x") == (new Date()).toLocaleDateString("%x")
     ? Ci.nsIScriptableDateFormat.dateFormatNone
     : Ci.nsIScriptableDateFormat.dateFormatShort;
-  return i18nDateFormatter.FormatDateTime("",
-                                          format,
-                                          Ci.nsIScriptableDateFormat.timeFormatNoSeconds,
-                                          dateObject.getFullYear(),
-                                          dateObject.getMonth() + 1,
-                                          dateObject.getDate(),
-                                          dateObject.getHours(),
-                                          dateObject.getMinutes(),
-                                          dateObject.getSeconds());
+  // That is an ugly XPCOM call!
+  return i18nDateFormatter.FormatDateTime(
+    "", format, Ci.nsIScriptableDateFormat.timeFormatNoSeconds,
+    aDate.getFullYear(), aDate.getMonth() + 1, aDate.getDate(),
+    aDate.getHours(), aDate.getMinutes(), aDate.getSeconds());
 }
+
+/**
+ * From a given selection of "messages", return, by order of preference:
+ * - the message that's in the preferred folder
+ * - the message that's in the "Inbox" folder
+ * - the message that's in the "Sent" folder
+ * - the message that's not in the Archives
+ * - any message that has a valid associated message header.
+ * @param aSimilarMessages a set of "messages" (whatever that means)
+ * @param aPreferredFolder usually, the current folder
+ * @param aToMsgHdr extract the nsIMsgDbHdr from a given element belonging to
+ *  aSimilarMessages
+ * @return one element from aSimilarMessages
+ */
+function selectRightMessage(aSimilarMessages, aPreferredFolder, aToMsgHdr) {
+  let findForCriterion = function (aCriterion) {
+    let bestChoice;
+    for each (let [i, msg] in Iterator(aSimilarMessages)) {
+      if (!aToMsgHdr(msg))
+        continue;
+      if (aCriterion(aToMsgHdr(msg))) {
+        bestChoice = msg;
+        break;
+      }
+    }
+    return bestChoice;
+  };
+  let r =
+    findForCriterion(function (aMsgHdr)
+      (aPreferredFolder && aMsgHdr.folder.URI == aPreferredFolder.URI)) ||
+    findForCriterion(msgHdrIsInbox) ||
+    findForCriterion(msgHdrIsSent) ||
+    findForCriterion(function (aMsgHdr) !msgHdrIsArchive(aMsgHdr)) ||
+    findForCriterion(function (aMsgHdr) true);
+  return r;
+}
+
+function MixIn(aConstructor, aMixIn) {
+  let proto = aConstructor.prototype;
+  for (let [name, func] in Iterator(aMixIn)) {
+    if (name.substring(0, 4) == "get_")
+      proto.__defineGetter__(name.substring(4), func);
+    else
+      proto[name] = func;
+  }
+}
+
+/**
+ * Helper function to escape some XML chars, so they display properly in
+ * innerHTML.
+ *
+ * @param s
+ *        input text
+ * @return The string with <, >, and & replaced by the corresponding entities.
+ */
+function escapeHtml(s) {
+  s += "";
+  // stolen from selectionsummaries.js (thanks davida!)
+  return s.replace(/[<>&]/g, function(s) {
+      switch (s) {
+          case "<": return "&lt;";
+          case ">": return "&gt;";
+          case "&": return "&amp;";
+          default: throw Error("Unexpected match");
+          }
+      }
+  );
+}
+
+function extractNameAndEmail(aMimePerson) {
+  let emails = {};
+  let fullNames = {};
+  let names = {};
+  let numAddresses = headerParser.parseHeadersWithArray(aMimePerson, emails, names, fullNames);
+  if (numAddresses > 0)
+    return [names.value[0], emails.value[0]];
+  else
+    return [null, null];
+}
+
+/**
+ * Group some array elements according to a key function
+ * @param aItems The array elements (or anything Iterable)
+ * @param aFn The function that take an element from the array and returns an id
+ * @return an array of arrays, with each inner array containing all elements
+ *  sharing the same key
+ */
+function groupArray(aItems, aFn) {
+  let groups = {};
+  let orderedIds = [];
+  for each (let [i, item] in Iterator(aItems)) {
+    let id = aFn(item);
+    if (!groups[id]) {
+      groups[id] = [item];
+      orderedIds.push(id);
+    } else {
+      groups[id].push(item);
+    }
+  }
+  return [groups[id] for each ([, id] in Iterator(orderedIds))];
+}
+
+/* Below are hacks^W heuristics for finding quoted in a given email */
 
 /* (sigh...) */
 function insertAfter(newElement, referenceElt) {
@@ -74,85 +185,6 @@ function insertAfter(newElement, referenceElt) {
   else
     referenceElt.parentNode.appendChild(newElement);
 }
-
-/* In the case of GMail accounts, several messages with the same Message-Id
- * header will be returned when we search for all message related to the
- * conversation we will display. We have multiple alternatives to choose from,
- * so prefer :
- * - the message that's in the current folder
- * - the message that's in the "Sent" folder (GMail sent messages also appear
- *   in "All Mail")
- * - the message that's not in the Archives
- *
- * Warniiiiiiiiiiiiiiiiiiiiiiiiiiiiiing this may return null (now, cry with me).
- * But if it returns a non-null MimeMsg, then this MimeMsg's folderMessage is
- * also non-null.
- */
-function selectRightMessage(similar, currentFolder) {
-  let msgHdr;
-  /* NB: this won't find anything for the "Inbox" Smart Folder for instance */
-  for each (let m in similar) {
-    if (!m.folderMessage)
-      continue;
-    if (currentFolder && m.folderMessage.folder.URI == currentFolder.URI) {
-      msgHdr = m;
-      break;
-    }
-  }
-  if (!msgHdr) {
-    for each (let m in similar) {
-      if (!m.folderMessage)
-        continue;
-      if (m.folderMessage.folder.getFlag(nsMsgFolderFlags_SentMail)) {
-        msgHdr = m;
-        break;
-      }
-    }
-  }
-  if (!msgHdr) {
-    for each (let m in similar) {
-      if (!m.folderMessage)
-        continue;
-      if (!m.folderMessage.folder.getFlag(nsMsgFolderFlags_Archive)) {
-        msgHdr = m;
-        break;
-      }
-    }
-  }
-  if (!msgHdr) {
-    for each (let m in similar) {
-      if (m.folderMessage) {
-        msgHdr = m;
-        break;
-      }
-    }
-  }
-  return msgHdr;
-}
-
-function _removeDuplicates(f, items) {
-  let similar = {};
-  let orderedIds = [];
-  for (let i = 0; i < items.length; ++i) {
-    let item = items[i];
-    let id = f(item);
-    if (!similar[id]) {
-      similar[id] = [item];
-      orderedIds.push(id);
-    } else {
-      similar[id].push(item);
-    }
-  }
-  return [similar[id] for each ([, id] in Iterator(orderedIds))];
-}
-
-/* Group GlodaMessages by Message-Id header.
- * Returns an array [[similar items], [other similar items], ...]. */
-function groupMessages(items) _removeDuplicates(function (item) item.headerMessageID, items)
-
-/* Group nsIMsgDbHdrs by Message-Id header.
- * Returns an array [[similar items], [other similar items], ...]. */
-/* function removeHdrDuplicates(items) _removeDuplicates(function (item) item.messageId, items) */
 
 function canInclude(aNode) {
   let v = aNode.tagName && aNode.tagName.toLowerCase() == "br"

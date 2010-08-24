@@ -4,7 +4,7 @@
 
 <head>
   <title>Conversation Reader</title>
-  <link rel="stylesheet" type="text/css" href="chrome://gconversation/skin/style.css">
+  <link rel="stylesheet" type="text/css" href="chrome://conversations/skin/conversation.css">
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
 </head>
 
@@ -23,58 +23,7 @@
         </div>
       </div>
     </div>
-    <ul id="messagesList">
-      
-      <li class="message">
-        <div class="messageHeader hbox" onClick="$(this).parent().toggleClass('collapsed')">
-          <div class="involved boxFlex">
-            <span class="author"><img src="i/star.png"> Andy Chung</span>
-            <span class="to">to Roland Tanglao, David Ascher, Bryan Clark and James Burke</span>
-            <span class="snippet">Hey all, Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent mollis sollicitudin augue nec pretium. Nunc at leo quam, nec imperdiet felis.Mauris urna diam, ultrices ut hendrerit nec, sollicitudin sed sapien. Nam ac leo eros. Nullam egestas orci ac justo imperdie t aliquet. Suspendisse neque tortor, fermentum vel </span>
-          </div>
-          <div class="options">
-            <span class="date">Oct 1</span>
-            <span class="details">| <a href="#">details</a> |</span> 
-            <span class="dropDown"><a href="#">more...</a></span>
-          </div>
-        </div>
-        <div class="messageBody">
-          <p>Hey all,</p>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent mollis sollicitudin augue nec pretium. Nunc at leo quam, nec imperdiet felis. Mauris urna diam, ultrices ut hendrerit nec, sollicitudin sed sapien. Nam ac leo eros. Nullam egestas orci ac justo imperdiet aliquet. Suspendisse neque tortor, fermentum vel vestibulum et, fringilla tempor urna. Pellentesque sit amet dui felis. Ut non felis sem, sed pharetra sem. Aenean bibendum ultricies ligula, nec pharetra odio interdum in. In id ipsum sit amet tortor luctus congue eget a tellus. Nullam ac nibh nec nisi sollicitudin molestie. Cras mollis euismod orci id gravida. Cras lacus massa, tristique non faucibus eget, convallis ac odio. Suspendisse id tortor tortor. In a justo quam, eget pulvinar leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed consectetur turpis nec lectus rutrum dignissim. Integer at libero sit amet ante iaculis lacinia quis vel enim. Pellentesque eleifend sagittis ligula ullamcorper lobortis. Nunc sapien leo, eleifend sed feugiat porta, molestie sit amet risus.</p>
-        </div>
-        <div class="messageFooter">
-          <button>reply</button>
-          <button>reply all</button>
-          <button>forward</button>
-          <button style="float:right;margin: 0 0 0 0;">more...</button>
-        </div>
-      </li>
-
-      <li class="message">
-        <div class="messageHeader hbox">
-          <div class="involved boxFlex">
-            <span class="author"><img src="i/star.png"> Andy Chung</span>
-            <span class="to">to Roland Tanglao, David Ascher, Bryan Clark and James Burke</span>
-          </div>
-          <div class="options">
-            <span class="date">Oct 1</span> |
-            <span class="details"><a href="#">details</a></span> | 
-            <span class="dropDown"><a href="#">more...</a></span>
-          </div>
-        </div>
-        <div class="messageBody">
-          <p>Hey All,</p>
-          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Praesent mollis sollicitudin augue nec pretium. Nunc at leo quam, nec imperdiet felis. Mauris urna diam, ultrices ut hendrerit nec, sollicitudin sed sapien. Nam ac leo eros. Nullam egestas orci ac justo imperdiet aliquet. Suspendisse neque tortor, fermentum vel vestibulum et, fringilla tempor urna. Pellentesque sit amet dui felis. Ut non felis sem, sed pharetra sem. Aenean bibendum ultricies ligula, nec pharetra odio interdum in. In id ipsum sit amet tortor luctus congue eget a tellus. Nullam ac nibh nec nisi sollicitudin molestie. Cras mollis euismod orci id gravida. Cras lacus massa, tristique non faucibus eget, convallis ac odio. Suspendisse id tortor tortor. In a justo quam, eget pulvinar leo. Class aptent taciti sociosqu ad litora torquent per conubia nostra, per inceptos himenaeos. Sed consectetur turpis nec lectus rutrum dignissim. Integer at libero sit amet ante iaculis lacinia quis vel enim. Pellentesque eleifend sagittis ligula ullamcorper lobortis. Nunc sapien leo, eleifend sed feugiat porta, molestie sit amet risus.</p>
-          
-          <p>In imperdiet ligula eget leo dapibus lobortis. Praesent vel rhoncus ante. Mauris suscipit neque vel purus pretium ut tincidunt turpis hendrerit. Aliquam massa enim, vulputate quis consequat et, molestie quis augue. Suspendisse nibh quam, tempus non tristique vel, dictum ac odio. Morbi accumsan, lectus et faucibus vestibulum, ipsum nunc dignissim ante, quis auctor dolor massa et massa. Phasellus dapibus, elit sed hendrerit sagittis, leo mauris venenatis lectus, quis iaculis metus nibh nec nisl. Aliquam condimentum luctus nisl, ut pellentesque turpis tempor eget. Vivamus a turpis et nisi vulputate vestibulum in sed neque. Duis lacinia tristique dui, eleifend ultrices elit fringilla sed.</p>
-        </div>
-        <div class="messageFooter">
-          <button>reply</button>
-          <button>reply all</button>
-          <button>forward</button>
-          <button style="float:right;margin: 0 0 0 0;">more...</button>
-        </div>
-      </li>
+    <ul id="messageList">
     </ul>
   </div>
 </body>

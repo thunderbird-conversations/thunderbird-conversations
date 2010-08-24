@@ -5,31 +5,31 @@
      xmlns:em="http://www.mozilla.org/2004/em-rdf#">
 
   <Description about="urn:mozilla:install-manifest">
-    <em:id>gconversation@xulforum.org</em:id>
-    <em:version>2.0alpha1.201008191405pre</em:version>
+    <em:id>conversations@xulforum.org</em:id>
+    <em:version>2.0alpha1.201008231614pre</em:version>
     
     <!-- Target Application this theme can install into, 
         with minimum and maximum supported versions. --> 
     <em:targetApplication>
       <Description>
         <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
-        <em:minVersion>3.2a1pre</em:minVersion>
+        <em:minVersion>3.1</em:minVersion>
         <em:maxVersion>3.2</em:maxVersion>
       </Description>
     </em:targetApplication>
     
     <!-- Front End MetaData -->
-    <em:name>Gmail Conversation View</em:name>
-    <em:description>Display your own emails in thread summaries, and view full threads, just like Gmail.</em:description>
+    <em:name>Thunderbird Conversations</em:name>
+    <em:description>Brings a conversation view to a Thunderbird near you!</em:description>
     <em:creator>Jonathan Protzenko</em:creator>
-    <em:optionsURL>chrome://gconversation/content/options.xul</em:optionsURL>
-    <em:iconURL>chrome://gconversation/content/icon.png</em:iconURL>
+    <em:optionsURL>chrome://conversations/content/options.xul</em:optionsURL>
+    <em:iconURL>chrome://conversations/content/icon.png</em:iconURL>
     <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
 
     <em:localized>
       <Description>
         <em:locale>de</em:locale>
-        <em:name>Better Conversation View</em:name>
+        <em:name>Thunderbird Conversations</em:name>
         <em:description>Gruppiert Ihre Nachrichten (inklusive Ihrer gesendeten) in Konversationen, ähnlich wie Googlemail es tut.</em:description>
         <em:translator>Sebastian Kronenwerth</em:translator>
         <em:creator>Jonathan Protzenko</em:creator>
@@ -40,7 +40,7 @@
     <em:localized>
       <Description>
         <em:locale>es</em:locale>
-        <em:name>Gmail Conversation View</em:name>
+        <em:name>Thunderbird Conversations</em:name>
         <em:description>Permite visualizar los mensajes en modo de conversación, de igual manera que en GMail</em:description>
         <em:translator>Proyecto Nave</em:translator>
         <em:creator>Jonathan Protzenko</em:creator>
@@ -51,7 +51,7 @@
     <em:localized>
       <Description>
         <em:locale>he-IL</em:locale>
-        <em:name>תצוגת שיחה</em:name>
+        <em:name>Thunderbird Conversations</em:name>
         <em:description>כווץ את הודעות הדוא"ל בשיחות, כולל ההודעות שלך, בדומה לג'יימל.‏</em:description>
         <em:translator>Dotan Cohen</em:translator>
         <em:creator>Jonathan Protzenko</em:creator>
@@ -62,7 +62,7 @@
     <em:localized>
       <Description>
         <em:locale>it</em:locale>
-        <em:name>Gmail Conversation View</em:name>
+        <em:name>Thunderbird Conversations</em:name>
         <em:description>Permette di visualizzare le e-mail sotto forma di conversazioni in modo analogo al sito web di Gmail</em:description>
         <em:translator>Luana Di Muzio - BabelZilla</em:translator>
         <em:creator>Jonathan Protzenko</em:creator>
@@ -73,7 +73,7 @@
     <em:localized>
       <Description>
         <em:locale>fr</em:locale>
-        <em:name>Affichage de conversations Gmail</em:name>
+        <em:name>Thunderbird Conversations</em:name>
         <em:description>Affiche vos emails sous la forme de "conversations" comme sur Gmail. Vos emails sont regroupés et s'affichent sous forme de résumés de fils de discussion.</em:description>
         <em:translator>Eric B</em:translator>
         <em:creator>Jonathan Protzenko</em:creator>
@@ -84,7 +84,7 @@
     <em:localized>
       <Description>
         <em:locale>ja-JP</em:locale>
-        <em:name>Gmail Conversation View</em:name>
+        <em:name>Thunderbird Conversations</em:name>
         <em:description>関連するメールをGmail風に一連の会話としてまとめます。自分で出したメールも含まれます。</em:description>
         <em:translator>SATO Kentaro</em:translator>
         <em:creator>Jonathan Protzenko</em:creator>
@@ -95,7 +95,7 @@
     <em:localized>
       <Description>
         <em:locale>sr</em:locale>
-        <em:name>Gmail преглед разговора</em:name>
+        <em:name>Thunderbird Conversations</em:name>
         <em:description>Групише е-поруке у разговоре, укључујући и Ваше поруке, као што то чини Gmail.</em:description>
         <em:translator>Charmed94</em:translator>
         <em:creator>Jonathan Protzenko</em:creator>
@@ -106,7 +106,7 @@
     <em:localized>
       <Description>
         <em:locale>zh-CN</em:locale>
-        <em:name>Gmail 会话视图</em:name>
+        <em:name>Thunderbird Conversations</em:name>
         <em:description>按邮件话题集中显示相关邮件（包括你自己发出的邮件）, 同Gmail目前的邮件显示方式一致</em:description>
         <em:translator>Wellown</em:translator>
         <em:creator>夏若朗 (Jonathan Protzenko)</em:creator>

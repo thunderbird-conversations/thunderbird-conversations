@@ -1,718 +1,427 @@
-/* ***** BEGIN LICENSE BLOCK *****
- * Version: MPL 1.1/GPL 2.0/LGPL 2.1
- *
- * The contents of this file are subject to the Mozilla Public License Version
- * 1.1 (the "License"); you may not use this file except in compliance with
- * the License. You may obtain a copy of the License at
- * http://www.mozilla.org/MPL/
- *
- * Software distributed under the License is distributed on an "AS IS" basis,
- * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
- * for the specific language governing rights and limitations under the
- * License.
- *
- * The Original Code is Mail utility functions for GMail Conversation View
- *
- * The Initial Developer of the Original Code is
- * Jonathan Protzenko
- * Portions created by the Initial Developer are Copyright (C) 2010
- * the Initial Developer. All Rights Reserved.
- *
- * Contributor(s):
- * Justin Hileman
- *
- * Alternatively, the contents of this file may be used under the terms of
- * either the GNU General Public License Version 2 or later (the "GPL"), or
- * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
- * in which case the provisions of the GPL or the LGPL are applicable instead
- * of those above. If you wish to allow use of your version of this file only
- * under the terms of either the GPL or the LGPL, and not to allow others to
- * use your version of this file under the terms of the MPL, indicate your
- * decision by deleting the provisions above and replace them with the notice
- * and other provisions required by the GPL or the LGPL. If you do not delete
- * the provisions above, a recipient may use your version of this file under
- * the terms of any one of the MPL, the GPL or the LGPL.
- *
- * ***** END LICENSE BLOCK ***** */
+* {
+  -moz-box-sizing: border-box;
+  -webkit-box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
 
 body {
-  background-color: #f3f3f4;
-  overflow-y: scroll; /* See comments in selectionsummaries.js */
-}
-
-/* Cancels the style from sharedsummary.css */
-a {
-  font-weight: normal;
-}
-
-#header-view-toolbox {
-  padding-top: 0;
-  -moz-appearance: none;
-  border: 0;
-}
-
-/* Toolbar */
-
-#expand_all {
-  list-style-image: url("chrome://gconversation/skin/down.png");
-}
-
-#collapse_all {
-  list-style-image: url("chrome://gconversation/skin/up.png");
-}
-
-#back {
-  list-style-image: url("chrome://gconversation/skin/back.png");
-}
-
-.msgHeaderView-button {
-  padding: 0 !important;
-  min-width: 28px;
-}
-
-#heading {
-  font-weight: 100%;
-  font-family: "DejaVu Sans Condensed", condensed;
-  letter-spacing: -1px;
-  font-size: 14px;
-  line-height: 17px;
-  vertical-align: center;
-
-  padding: 0;
-  margin: 0;
-  border-width: 0;
-  padding-left: 8px;
-  padding-top: 5px;
-  padding-bottom: 5px;
-}
-
-#buttonbox {
-  height: 30px;
+  font-family: "lucida grande";
+  font-size: 12px;
+  line-height: 18px;
+  background-color: #ECF3FE;
   margin: 0;
   padding: 0;
-  border-width: 0;
 }
 
-#headingwrapper {
-  min-height: 30px;
+p {
+  margin-bottom: 18px;
 }
 
-/* General stuff */
+button::-moz-focus-inner { border: 0; }
 
-.message {
-  /* It's tempting to use -moz-box-shadow but it really slows things down on
-   * lower-end computers, so let's not get netbook users like me mad. */
-  border: 1px outset #999;
-  border-bottom: 2px outset #bbb;
-  -moz-border-radius: 5px;
-  position: relative;
-  padding: 0;
-  padding-left: .5em;
-  margin-bottom: 2ex;
-  background-color: white;
-}
-
-.message.unread {
-  background-color: #729FCF; /* Same blue as .heading */
-}
-
-.row {
-  position: static;
-  border: 1em solid white;
-  border-left-width: .5em;
-  background-color: white;
-  -moz-border-radius: 0 5px 5px 0;
-}
-
-.monospaced-message, .monospaced-snippet {
-  font-family: -moz-fixed;
-}
-
-/* When collapsed, show the .snippetmsg. When expanded, show the .htmlmsg */
-
-.htmlmsg {
-  display: block;
-}
-
-.message.collapsed .htmlmsg {
-  display: none;
-}
-
-.snippetmsg {
-  display: none;
-  cursor: pointer;
-}
-
-.message.collapsed .snippetmsg {
-  display: block;
-  font-size: smaller;
-}
-
-/* Style collapsed messages */
-
-.message.collapsed .row {
-  border-bottom-width: 0;
-  border-top-width: .2em;
-}
-
-.message.collapsed .button-action-area,
-.message.collapsed .link-action-area,
-.message.collapsed .attachments-area,
-.message.collapsed .msgheader-details-toggle {
-  display: none;
-}
-
-.message.collapsed .wrappedsender {
-  margin: 0;
-  padding: 0;
-  position: static; /* So that we can position the date relative to the .message */
-}
-
-.message.collapsed .msgheader-subject-date {
-  position: static;
-}
-
-.message.collapsed .msgheader-subject-date .date {
-  position: absolute;
-  right: 1em;
-  top: .1em;
-}
-
-.message.collapsed .header,
-.message.collapsed .wrappedsender,
-.message.collapsed .msgheader-details-date,
-.message.collapsed .msgheader-details-date .date,
-.message.collapsed .notification-icons {
-  display: inline;
-}
-
-.message.collapsed .notification-icons {
-  margin: 0;
-  font-size: large;
-}
-
-.message.collapsed .msgheader-subject-date,
-.message.collapsed .msgheader-from,
-.message.collapsed .msgheader-to,
-.message.collapsed .notification-icons {
-  vertical-align: middle;
-}
-
-.message.collapsed .tag {
-  display: inline-block;
-  vertical-align: middle;
-  width: 0px;
-  height: 0px;
-  border-width: 3px;
+button {
+  background-image: -moz-linear-gradient(top, #fefefe 0%, #d5d5d5 100%);
+  border: 1px solid #919191;
+  -moz-box-shadow: 0 1px 0 rgba(255,255,255,0.55);
   -moz-border-radius: 3px;
-  font-size: 0px;
-}
-
-/* Cut the names when collapsed */
-
-.message.collapsed .too-long {
-  display: none;
-}
-
-.message.collapsed .last-comma:after {
-  content: " …";
-}
-
-/* Display short name when collapsed, full name otherwise */
-
-.short-name {
-  display: none;
-}
-
-.full-name {
-  display: inline;
-}
-
-.message.collapsed .short-name {
-  display: inline;
-}
-
-.message.collapsed .full-name {
-  display: none;
-}
-
-/* The popups that give information on a participant */
-
-.ui-dialog {
-  font-size: small;
-}
-
-.info-popup-contact-info td {
-  vertical-align: top;
-}
-
-.info-popup-gravatar {
-  vertical-align: middle;
-  margin-right: 5px;
-  margin-bottom: 5px;
-}
-
-.info-popup-name-email {
-  text-overflow: ellipsis;
-  display: inline-block;
-  vertical-align: middle
-}
-
-.info-popup-display-name {
-  font-weight: bold;
-  font-size: 120%;
-}
-
-.info-popup-display-email {
-  color: #666;
-}
-
-.info-popup-links a {
-  font-size: 80%;
-  color: #666;
-}
-
-.info-popup-contact-info, .info-popup-links {
-  margin-top: 1em;
-}
-
-.info-popup-contact-info img {
-  vertical-align: middle;
-}
-
-.display-as-inline {
-  display: inline;
-}
-
-
-/* Links */
-
-.message.collapsed .link.contact-link {
-  cursor: auto;
-  text-decoration: none;
-}
-
-.link-action-area {
-  position: absolute;
-  right: .5em;
-  top: .3em;
-  z-index: 2;
-}
-
-a.action { 
-  cursor: pointer;
-  font-weight: normal;
-  text-decoration: none; 
-  color: #06d; 
-  padding: 0.2em 0.5em; 
-  border: 1px solid transparent;
-}
-
-a.action:hover { 
-  background-color: #90b4de; 
-  color: #ffffff; 
-  border: 1px solid #6fa3de;
-}
-
-.message a.action {
-  opacity: 0.1;
-  -moz-transition: opacity .5s ease;
-}
-
-.message:hover a.action {
-  opacity: 1.0;
-  -moz-transition: opacity .2s linear;
-}
-
-/* Message header */
-
-#content {
-  font-size: 100%;
-  font-family: sans-serif;
-}
-
-.std-reader {
-  display: inline-block;
-  width: 16px;
-  height: 16px;
-  background-image: url(chrome://gconversation/skin/email_go.png);
-  vertical-align: middle;
-}
-
-.header {
-  margin-left: 0;
-  padding-top: 0;
-}
-
-.notification-icons {
-  margin-left: -.3em;
-  margin-top: -.5em;
-  min-height: 14px;
-}
-
-.star {
-  display: none;
-  position: static;
-  margin: 0;
-  padding: 0;
-  border: 0;
-  vertical-align: middle;
-}
-
-.starred .star {
-  display: inline-block;
-}
-
-.attachment {
-  display: inline-block;
-  height: 12px;
-  width: 12px;
-  background-image: url(chrome://gconversation/skin/paperclip.png);
-  background-repeat: no-repeat;
-  vertical-align: middle;
-}
-
-.enigmail-sign-unknown {
-  display: inline-block;
-  height: 16px;
-  width: 16px;
-  /* Yes the original Enigmail image DOES HAVE a typo */
-  background-image: url(chrome://enigmail/skin/enigSignUnkown.png);
-  background-repeat: no-repeat;
-  vertical-align: middle;
-}
-
-.enigmail-sign-ok {
-  display: inline-block;
-  height: 16px;
-  width: 16px;
-  background-image: url(chrome://enigmail/skin/enigSignOk.png);
-  background-repeat: no-repeat;
-  vertical-align: middle;
-}
-
-.enigmail-enc-ok {
-  display: inline-block;
-  height: 16px;
-  width: 16px;
-  background-image: url(chrome://enigmail/skin/enigEncOk.png);
-  background-repeat: no-repeat;
-  vertical-align: middle;
-}
-
-.sender, .to-text, .recipients,
-.draft-warning, .date, .tooltip {
-  display: inline;
-}
-
-.msgheader-from, .msgheader-to {
-  display: inline-block;
-}
-
-.msgheader-details-toggle {
-  color: #04b;
-  cursor: pointer;
-  display: inline;
-  font-size: x-small;
-}
-
-.wrappedsender {
-  position: relative;
-  margin: 0;
-  padding: 0;
-  margin-top: .5em;
-  padding-top: .2em;
-  margin-bottom: 2em;
-}
-
-.sender {
-  font-weight: bold;
-}
-
-.bcc-recipient {
-  font-style: italic;
-}
-
-.to-text {
-  color: #999;
-}
-
-.msgheader-details-date {
-  position: static;
-  margin: 0;
-  padding: 0;
-  padding-left: 2em; /* Make sure it's not stuck to one of the recipients */
-  float: right;
-}
-
-/* .subject {
-  color: #444;
-  display: inline-block;
-} */
-
-.date {
-  color: #999;
-  padding: 0;
-  margin: 0;
-  float: none;
-}
-
-.draft-warning {
-  color: #991010;
-  margin: 0 .3em;
+  text-align: center;
+  outline: none;
+  height: 22px;
   cursor: pointer;
 }
 
-.tag {
-  color: #444;
-  border-style: solid;
-  border-width: 2px;
-  font-size: x-small;
+button:active {
   background-image: none;
-  background-color: white !important;
+  background-color: #d5d5d5;
+  -moz-box-shadow: inset 0 0 2px #666;
+  border: 1px solid #666;
 }
 
-/* Header details */
-
-.attachments-area {
-  color: #999;
-  margin-top: 1em;
-  font-size: small;
+button img {
+  vertical-align: middle;
 }
 
-.attachments-area > ul {
-  list-style: none;
-  padding: 0px 0px 0px 1em;
-  font-size: x-small;
-  margin: 0px;
-}
-
-.fg-tooltip {
-  width: 400px;
-  font-family: -moz-default;
-  font-size: small;
-}
-
-.message.collapsed .fg-tooltip {
-  display: none !important;
-}
-
-.view-source {
-  text-align: right;
-}
-
-.view-source-link {
-  font-size: 85%;
-}
-
-/* For RSS */
-
-.message.rss .to-text,
-.message.rss .recipients,
-.message.rss .button-reply,
-.message.rss .button-more-actions,
-.message.rss .link-reply,
-.message.rss .link-reply-all {
-  display: none;
-}
-
-.message.rss .button-forward {
-  margin-left: 0;
-}
-
-/* Inside the messages' bodies */
-
-.htmlmsg > iframe {
-  border-width: 0;
+#wrapper #conversationHeaderWrapper {
+  position: fixed;
+  top: 0;
+  left: 0;
   width: 100%;
-  margin-left: 0;
-  padding: 0;
-  overflow-y: hidden;
-  overflow-x: auto;
+  z-index: 100;
 }
 
-/* Message footer */
-
-.fg-button {
-  padding: .3em;
-}
-
-.button-action-area {
+#wrapper #conversationHeader {
   width: 100%;
-  position: relative;
-  margin-top: 1em;
-  overflow: auto;
+  padding: 5px 10px;
+  background-image: -moz-linear-gradient(top, #fcfcfc 0%, #e6e6e6 100%);
+  border-bottom: 1px solid #bebebe;
+  color: #0a0a0a;
 }
 
-.button-area-right {
+#wrapper #conversationHeader .subject {
+  font-size: 12px;
+  font-weight: bold;
+  line-height: 22px;
+  height: 22px;
+  overflow: hidden;
+}
+
+#wrapper #conversationHeader .actions {
+}
+
+#wrapper #conversationHeader .actions button {
+  width: 28px;
   float: right;
+  margin: 0 0 0 3px;
 }
 
-.button-area-left {
-  float: left;
-}
-
-.button-archive {
-  font-weight: 900 !important;
-}
-
-.menu-more-actions {
-  font-size: small;
-  font-weight: normal;
-}
-
-.grip {
-  display: inline-block;
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  cursor: pointer;
-}
-
-.message.collapsed .grip {
-  display: none;
-}
-
-/* Attachments Box */
-
-.message.collapsed .attachments-box {
-  display: none;
-}
-
-.attachments-summary {
-  margin-right: 1em;
-}
-
-.attachment-box {
-  width: 250px;
-  -moz-border-radius: 3px;
-  background-color: lightsteelblue;
-  margin: 1em 0em;
-  border: 1px solid steelblue;
-  padding: 1em;
-}
-
-.image-attachment-box {
-  width: 500px; /* Change the td's width too if you change this */
-}
-
-.attachment-box > table {
-  width:		100%;
-  font-size: 		small;
-  color: 		#fefefe;
-}
-
-.attachment-box > table > tbody > tr {
-  vertical-align:	middle;
-}
-
-.attachment-box > table > tbody > tr > td {
-  text-align:		center;
-}
-
-.image-attachment-box > table > tbody > tr > td:first-child {
-  width: 400px; /* Calculated relative to .image-attachment-box */
-}
-
-.image-attachment-box > table > tbody > tr > td:nth-child(2) {
-  width: 200px;
-}
-
-.image-attachment-box > table > tbody > tr > td > img {
-  max-width: 300px;
-}
-
-.image-attachment-preview {
-  cursor: pointer;
-}
-
-.attachment-box > table > tbody > tr > td > p > .attachment-link {
-  color:		#222;
-  font-weight:		bold;
-}
-
-.single-attachment-actions {
-  text-align: center;
-}
-
-.attachments-box > hr {
-  border: 1px solid #eee;
-  background-color: #eee;
-}
-
-/* Focus handling */
-
-.pointer {
-  display: none;
+#wrapper #conversationHeader .actions button span {
   width: 16px;
   height: 16px;
-  background-image: url(chrome://gconversation/skin/resultset_next.png);
+  margin: auto;
+  display: block;
   background-repeat: no-repeat;
+  background-position: center center;
+}
+
+#wrapper #conversationHeader .actions button span.read {
+  background-image: url("i/read.png");
+}
+
+#wrapper #conversationHeader .actions button span.read.unread {
+  background-image: url("i/unread.png");
+}
+
+#wrapper #conversationHeader .actions button span.mode {
+  background-image: url("i/mode.png");
+}
+
+#wrapper #conversationHeader .actions button span.mode.classic {
+  background-image: url("i/classicMode.png");
+}
+
+#wrapper #conversationHeader .actions button span.expand {
+  background-image: url("i/collapse.png");
+}
+
+#wrapper #conversationHeader .actions button span.expand.collapse {
+  background-image: url("i/expand.png");
+}
+
+
+#wrapper ul {
+  margin-top: 44px;
+}
+
+#wrapper li.message {
+  margin: 0 10px 10px 10px;
+  background-color: #fff;
+  background-image: -moz-linear-gradient(top,#fff 0%,#fafafa 100%);
+  border: 1px solid #bebebe;
+  -moz-border-radius: 5px;
+  -moz-box-shadow: 0 1px 2px #CCE0FF;
+  list-style-type: none;
+}
+
+#wrapper li.message.highlight {
+  position: relative;
+  border: 1px solid #bebebe;
+  -moz-box-shadow: none;
+}
+
+#wrapper li.message.highlight:after {
+  width: 100%;
+  height: 100%;
   position: absolute;
-  left: -16px;
-  top: 3px;
+  top: -5px;
+  left: -5px;
+  content: ' ';
+  border: 5px solid rgba(0,0,0,0.15); 
+  -moz-border-radius: 5px;
 }
 
-.message:focus {
-  outline-width: 0;
-  border-color: black;
+#wrapper li.message .messageHeader {
+  width: 100%;
+  padding: 5px 10px;
+  cursor: pointer
 }
 
-.message:focus .pointer, .message.selected .pointer {
+#wrapper li.message .messageHeader .involved {
+  height: 18px;
+  overflow: hidden;
+}
+
+#wrapper li.message .messageHeader img {
+  vertical-align: text-top;
+}
+
+#wrapper li.message .messageHeader .author {
+  color: #ff5959;
+  font-weight: bold;
+  position: relative;
+  margin-right: 3px;
+}
+
+#wrapper li.message .messageHeader .author .tooltip {
+  position: absolute;
+  width: 302px;
+  top: 24px;
+  left: 16px;
+  background-color: #fff;
+  border: 1px solid #aaa;
+  -moz-box-shadow: 0 1px 2px #aaa;
+  -moz-border-radius: 5px;
+  display: none;
+}
+
+#wrapper li.message.collapsed .messageHeader .author:hover .tooltip {
+  display: none;
+}
+
+#wrapper li.message .messageHeader .author:hover .tooltip {
   display: block;
 }
 
-/* Error */
-
-#error_info_box {
-  position: fixed;
-  top: 0em;
-  left: 5em;
-  right: 5em;
-  max-height: 100%;
-  overflow: auto;
-}
-
-.error, .infomsg {
-  padding: 1em;
-  -moz-border-radius: 20px;
-  border-width: 3px;
+#wrapper li.message .messageHeader .author .tooltip .arrow {
+  border-color: transparent transparent #666 transparent;
   border-style: solid;
-  font-size: small;
-  margin: 1em 0;
+  border-width: 7px;
+  height: 0;
+  left: 10px;
+  top: -14px;
+  position: absolute;
+  width: 0;
 }
 
-.error {
-  background-color: #f47a7a;
-  border-color: #b13939;
+#wrapper li.message .messageHeader .author .tooltip .arrow.inside {
+  border-color: transparent transparent #fff transparent;
+  top: -13px;
 }
 
-.infomsg {
-  background-color: #fce94f;
-  border-color: #c4a000;
+#wrapper li.message .messageHeader .author .tooltip .authorInfo {
+  display: inline-block;
+  font-weight: normal;
+  float: left;
+  width: 200px;
+  padding: 10px;
+  color: #333;
 }
 
-.info_buttons {
-  overflow: auto;
-  margin-top: 2em;
+#wrapper li.message .messageHeader .author .tooltip .authorInfo .name {
+  font-size: 14px;
 }
 
-.info_af_yes, .info_af_no {
-  float: right;
-  margin-left: 1em;
+#wrapper li.message .messageHeader .author .tooltip .authorInfo .authorEmail {
+  color: #888;
 }
 
-
-.error > .close {
-  text-align: center;
+#wrapper li.message .messageHeader .author .tooltip .authorPicture {
+  display: inline-block;
+  float: left;
+  width: 100px;
+  padding: 10px;
 }
 
-.error > .close > span {
-  cursor: pointer;
-  color: navy;
+#wrapper li.message .messageHeader .author .tooltip .tipFooter {
+  width: 100%;
+  padding: 5px 10px;
+  background-color: #f6f6f6;
+  border-top: 1px solid #E6E6E6;
+  float: left;
+  -moz-border-radius: 0 0 5px 5px;
 }
 
-.error > .close > span:hover {
-  text-decoration: underline;
+#wrapper li.message .messageHeader .involved .to {
+  color: #666;
 }
 
+#wrapper li.message .messageHeader .options a {
+  text-decoration: none;
+  color: highlight;
+}
+
+#wrapper li.message.collapsed {
+  height: 34px;
+  -moz-border-radius: 5px 5px 0 0;
+  margin: 10px 10px -4px 10px;
+  border-bottom: none;
+  overflow: hidden;
+}
+
+#wrapper li.message.collapsed .messageHeader .involved .to, 
+#wrapper li.message.collapsed .messageHeader .options .details,
+#wrapper li.message.collapsed .messageHeader .options .dropDown,
+#wrapper li.message.collapsed .messageBody ul.tags,
+#wrapper li.message.collapsed .messageBody p,
+#wrapper li.message .messageHeader .involved .snippet {
+  display: none;
+}
+
+#wrapper li.message.collapsed .messageHeader .involved .snippet {
+  display: inline;
+  color: #666;
+}
+
+#wrapper li.message .messageBody {
+  padding: 0 10px 5px 10px;
+  color: #0a0a0a;
+}
+
+#wrapper li.message .messageBody iframe {
+  width: 100%;
+}
+
+#wrapper li.message .messageHeader ul.tags {
+  padding: 0;
+  margin: 0;
+  display: inline;
+}
+
+#wrapper li.message .messageBody ul.tags {
+  padding: 0 0 5px 0;
+  margin: 0;
+}
+
+#wrapper li.message .messageHeader ul.tags li.tag,
+#wrapper li.message .messageBody ul.tags li.tag {
+  display: inline;
+  font-size: 10px;
+  font-weight: bold;
+  background-color: #68AB57;
+  padding: 1px 5px;
+  -moz-border-radius: 3px;
+  color: #fff;
+}
+
+#wrapper li.message .messageHeader ul.tags li.tag.red,
+#wrapper li.message .messageBody ul.tags li.tag.red {
+  background-color: #ED6666;
+}
+
+#wrapper li.message .messageFooter {
+  padding: 5px 10px;
+  background-color: #f6f6f6;
+  border-top: 1px solid #e6e6e6;
+  -moz-border-radius: 0 0 5px 5px;
+}
+
+#wrapper li.message .messageFooter:after {
+  content: " ";
+  display: block;
+  height: 0; 
+  clear: both;
+  visibility: hidden;
+}
+
+#wrapper li.message .messageHeader .author .tooltip .tipFooter button ,
+#wrapper li.message .messageFooter button {
+  padding: 0 5px;
+  float: left;
+  margin: 0 3px 0 0;
+}
+
+/* START hbox/vbox normalization from http://alex.dojotoolkit.org/2009/08/css-3-progress/ */
+/* hbox and vbox classes */
+ 
+.hbox {
+	display: -webkit-box;
+	-webkit-box-orient: horizontal;
+	-webkit-box-align: stretch;
+ 
+	display: -moz-box;
+	-moz-box-orient: horizontal;
+	-moz-box-align: stretch;
+ 
+	display: box;
+	box-orient: horizontal;
+	box-align: stretch;
+}
+ 
+.hbox > * {
+	-webkit-box-flex: 0;
+	-moz-box-flex: 0;
+	box-flex: 0;
+	display: block;
+}
+ 
+.vbox {
+	display: -webkit-box;
+	-webkit-box-orient: vertical;
+	-webkit-box-align: stretch;
+ 
+	display: -moz-box;
+	-moz-box-orient: vertical;
+	-moz-box-align: stretch;
+ 
+	display: box;
+	box-orient: vertical;
+	box-align: stretch;
+}
+ 
+.vbox > * {
+	-webkit-box-flex: 0;
+	-moz-box-flex: 0;
+	box-flex: 0;
+	display: block;
+}
+ 
+.spacer {
+	-webkit-box-flex: 1;
+	-moz-box-flex: 1;
+	box-flex: 1;
+}
+ 
+.reverse {
+	-webkit-box-direction: reverse;
+	-moz-box-direction: reverse;
+	box-direction: reverse;
+}
+ 
+.boxFlex0 {
+	-webkit-box-flex: 0;
+	-moz-box-flex: 0;
+	box-flex: 0;
+}
+ 
+.boxFlex1, .boxFlex {
+	-webkit-box-flex: 1;
+	-moz-box-flex: 1;
+	box-flex: 1;
+}
+ 
+.boxFlex2 {
+	-webkit-box-flex: 2;
+	-moz-box-flex: 2;
+	box-flex: 2;
+}
+ 
+.boxGroup1 {
+	-webkit-box-flex-group: 1;
+	-moz-box-flex-group: 1;
+	box-flex-group: 1;
+}
+ 
+.boxGroup2 {
+	-webkit-box-flex-group: 2;
+	-moz-box-flex-group: 2;
+	box-flex-group: 2;
+}
+ 
+.start {
+	-webkit-box-pack: start;
+	-moz-box-pack: start;
+	box-pack: start;
+}
+ 
+.end {
+	-webkit-box-pack: end;
+	-moz-box-pack: end;
+	box-pack: end;
+}
+ 
+.center {
+	-webkit-box-pack: center;
+	-moz-box-pack: center;
+	box-pack: center;
+}
+/* END hbox/vbox normalization from http://alex.dojotoolkit.org/2009/08/css-3-progress/ */

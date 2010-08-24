@@ -1,17 +1,16 @@
-content gconversation content/
-skin gconversation classic/1.0 skin/
-resource gconversation modules/
-overlay chrome://messenger/content/messenger.xul chrome://gconversation/content/overlay.xul
-override chrome://messenger/content/multimessageview.xhtml chrome://gconversation/content/multimessageview.xhtml
-style chrome://global/content/customizeToolbar.xul chrome://gconversation/skin/overlay.css
+content conversations content/
+skin conversations classic/1.0 skin/
+resource conversations modules/
+overlay chrome://messenger/content/messenger.xul chrome://conversations/content/overlay.xul
+#style chrome://global/content/customizeToolbar.xul chrome://conversations/skin/overlay.css
 
-#locale gconversation de locale/de/
-locale gconversation en-US locale/en-US/
-#locale gconversation es-ES locale/es-ES/
-#locale gconversation fr locale/fr/
-#locale gconversation he-IL locale/he-IL/
-#locale gconversation it locale/it/
-#locale gconversation ja-JP locale/ja-JP/
-#locale gconversation pt-BR locale/pt-BR/
-#locale gconversation sr locale/sr/
-#locale gconversation zh-CN locale/zh-CN/
+#locale conversations de locale/de/
+locale conversations en-US locale/en-US/
+#locale conversations es-ES locale/es-ES/
+#locale conversations fr locale/fr/
+#locale conversations he-IL locale/he-IL/
+#locale conversations it locale/it/
+#locale conversations ja-JP locale/ja-JP/
+#locale conversations pt-BR locale/pt-BR/
+#locale conversations sr locale/sr/
+#locale conversations zh-CN locale/zh-CN/

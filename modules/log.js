@@ -1,11 +1,11 @@
 var EXPORTED_SYMBOLS = ["setupLogging", "dumpCallStack"]
 
-Cu.import("resource:///modules/gloda/log4moz.js");
+Components.utils.import("resource:///modules/gloda/log4moz.js");
 
 let Log;
 
 function setupLogging() {
-  if (!logger) {
+  if (!Log) {
     // The basic formatter will output lines like:
     // DATE/TIME	LoggerName	LEVEL	(log message) 
     let formatter = new Log4Moz.BasicFormatter();
@@ -24,8 +24,8 @@ function setupLogging() {
     dapp.level = Log4Moz.Level["All"];
     root.addAppender(dapp);
 
-    logger = Log4Moz.repository.getLogger("MyExtension.MyClass");
-    logger.level = Log4Moz.Level["Debug"];
+    Log = Log4Moz.repository.getLogger("MyExtension.MyClass");
+    Log.level = Log4Moz.Level["Debug"];
     Log.debug("Logging enabled");
 
     Log.assert = function (aBool, aStr) {
@@ -41,7 +41,7 @@ function dumpCallStack(e) {
 
   let frame = e ? e.stack : Components.stack;
   while (frame) {
-    Log.debug("\033[01;36m", frame, "\033[00m");
+    Log.debug("\n"+frame);
     frame = frame.caller;
   }
 };

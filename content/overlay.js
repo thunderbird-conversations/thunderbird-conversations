@@ -34,19 +34,19 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-let GCV = {
+var Conversations = {
   monkeyPatch: null,
   currentConversation: null,
 };
 
 window.addEventListener("load", function _overlay_eventListener () {
   let NS = {};
-  Components.utils.import("chrome://conversations/modules/monkeypatch.js", NS);
-  Components.utils.import("chrome://conversations/modules/conversation.js", NS);
+  Components.utils.import("resource://conversations/monkeypatch.js", NS);
+  Components.utils.import("resource://conversations/conversation.js", NS);
 
   // We instanciate the Monkey-Patch for the given Conversation object.
   let monkeyPatch = new NS.MonkeyPatch(window, NS.Conversation);
   // And then we seize the window and insert our code into it
   monkeyPatch.apply();
-  GCV.monkeyPatch = monkeyPatch;
+  Conversations.monkeyPatch = monkeyPatch;
 }, false);

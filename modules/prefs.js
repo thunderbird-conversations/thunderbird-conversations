@@ -7,11 +7,11 @@ const Cr = Components.results;
 
 const prefsService = Cc["@mozilla.org/preferences-service;1"]
   .getService(Ci.nsIPrefService)
-  .getBranch("gcv.");
+  .getBranch("conversations.");
 
 function PrefManager() {
-  this.expand_who = prefsService.getCharPref("fold_rule");
-  this.scroll_who = prefsService.getCharPref("focus_first");
+  this.expand_who = prefsService.getIntPref("expand_who");
+  this.scroll_who = prefsService.getIntPref("scroll_who");
   this.reverse_order = prefsService.getBoolPref("reverse_order");
   this.no_friendly_date = prefsService.getBoolPref("no_friendly_date");
   this.guess_first_names = prefsService.getBoolPref("guess_first_names");
@@ -44,11 +44,6 @@ PrefManager.prototype = {
       return;
 
     switch (aData) {
-      case "expand_who":
-      case "scroll_who":
-        this[aData] = prefsService.getCharPref(aData);
-        break;
-
       case "reverse_order":
       case "no_friendly_date":
       case "guess_first_names":
@@ -56,6 +51,8 @@ PrefManager.prototype = {
         this[aData] = prefsService.getBoolPref(aData);
         break;
 
+      case "expand_who":
+      case "scroll_who":
       case "hide_quote_length":
         this[aData] = prefsService.getIntPref(aData);
         break;
