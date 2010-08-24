@@ -53,7 +53,7 @@ const Cr = Components.results;
 const nsMsgFolderFlags_SentMail = 0x00000200;
 const nsMsgFolderFlags_Drafts   = 0x00000400;
 const nsMsgFolderFlags_Archive  = 0x00004000;
-const nsMsgFolderFlagType_Inbox = 0x00001000;
+const nsMsgFolderFlags_Inbox    = 0x00001000;
 
 const gMessenger = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
 

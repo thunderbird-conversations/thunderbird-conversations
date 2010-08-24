@@ -36,7 +36,7 @@
 
 var EXPORTED_SYMBOLS = [
   // miscellaneous functions
-  'dateAsInMessageList', 'selectRightMessage', 'groupArray', 'extractNameAndEmail',
+  'dateAsInMessageList', 'selectRightMessage', 'groupArray', 'range',
   'escapeHtml', 'MixIn',
   // heuristics for finding quoted parts
   'convertHotmailQuotingToBlockquote1', 'convertHotmailQuotingToBlockquote2',
@@ -143,15 +143,10 @@ function escapeHtml(s) {
   );
 }
 
-function extractNameAndEmail(aMimePerson) {
-  let emails = {};
-  let fullNames = {};
-  let names = {};
-  let numAddresses = headerParser.parseHeadersWithArray(aMimePerson, emails, names, fullNames);
-  if (numAddresses > 0)
-    return [names.value[0], emails.value[0]];
-  else
-    return [null, null];
+function range(begin, end) {
+  for (let i = begin; i < end; ++i) {
+    yield i;
+  }
 }
 
 /**

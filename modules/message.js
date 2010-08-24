@@ -7,9 +7,17 @@ const Cr = Components.results;
 
 Cu.import("resource:///modules/templateUtils.js"); // for makeFriendlyDateAgo
 Cu.import("resource:///modules/XPCOMUtils.jsm");
-const gMessenger = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
+const gMessenger = Cc["@mozilla.org/messenger;1"]
+  .createInstance(Ci.nsIMessenger);
 const gPrefBranch = Cc["@mozilla.org/preferences-service;1"]
   .getService(Ci.nsIPrefService).getBranch(null);
+const gHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"]
+  .getService(Ci.nsIMsgHeaderParser);
+const stringBundleService = Cc["@mozilla.org/intl/stringbundle;1"]
+  .getService(Ci.nsIStringBundleService);
+const stringBundle = stringBundleService
+  .createBundle("chrome://conversations/locale/main.properties");
+
 const kCharsetFromMetaTag = 10;
 
 Cu.import("resource://conversations/VariousUtils.jsm");
@@ -29,10 +37,11 @@ function Message(aWindow, aSignalFn) {
 
   let date = new Date(this._msgHdr.date/1000);
   this._date = Prefs["no_friendly_date"] ? dateAsInMessageList(date) : makeFriendlyDateAgo(date);
-  this._from = [this._msgHdr.mime2DecodedAuthor];
-  this._to = [].concat(this._msgHdr.mime2DecodedRecipients);
-  this._cc = [].concat(this._msgHdr.ccList);
-  this._bcc = [].concat(this._msgHdr.bccList);
+  let [from] = this.parse(this._msgHdr.mime2DecodedAuthor);
+  this._from = from;
+  this._to = this.parse(this._msgHdr.mime2DecodedRecipients);
+  this._cc = this.parse(this._msgHdr.ccList);
+  this._bcc = this.parse(this._msgHdr.bccList);
   this._subject = this._msgHdr.mime2DecodedSubject;
 }
 
@@ -52,10 +61,22 @@ Message.prototype = {
     }
   },
 
+  parse: function (aMimeLine) {
+    let emails = {};
+    let fullNames = {};
+    let names = {};
+    let numAddresses = gHeaderParser.parseHeadersWithArray(aMimeLine, emails, names, fullNames);
+    return [{ email: emails.value[i], name: names.value[i], fullName: fullNames.value[i] }
+      for each (i in range(0, numAddresses))];
+  },
+
+  format: function (p) {
+    return escapeHtml(p.name || p.email || p.fullName);
+  },
+
   toHtmlString: function () {
-    let from = escapeHtml(this._from);
-    let to = this.join(this._to.map(escapeHtml));
-    let ccBcc = this.join(this._cc.concat(this._bcc).map(escapeHtml));
+    let from = this.format(this._from);
+    let to = this.join(this._to.concat(this._cc).concat(this._bcc).map(this.format));
     let snippet = escapeHtml(this._snippet);
     let date = escapeHtml(this._date);
 
@@ -64,8 +85,8 @@ Message.prototype = {
       "  <div class=\"messageHeader hbox\">\n"+
       "    <div class=\"involved boxFlex\">\n"+
       "      <span class=\"author\"><img src=\"i/star.png\"> "+from+"</span>\n"+
-      "      <span class=\"to\">to "+ccBcc+"</span>\n"+
-      "      <span class=\"snippet\">"+snippet+"</span>\n"+
+      "      <span class=\"to\">to "+to+"</span>\n"+
+      "      <span class=\"snippet\">"+snippet+"&hellip;</span>\n"+
       "    </div>\n"+
       "    <div class=\"options\">\n"+
       "      <span class=\"date\">"+date+"</span>\n"+
@@ -194,7 +215,7 @@ Message.prototype = {
                     let style = iframe.contentWindow.getComputedStyle(c, null);
                     if (style) {
                       let numLines = parseInt(style.height) / parseInt(style.lineHeight);
-                      if (numLines > gPrefs["hide_quote_length"]) {
+                      if (numLines > Prefs["hide_quote_length"]) {
                         let div = iframeDoc.createElement("div");
                         div.setAttribute("class", "link showhidequote");
                         div.addEventListener("click", function div_listener (event) {
@@ -202,8 +223,8 @@ Message.prototype = {
                             iframe.style.height = (parseFloat(iframe.style.height) + h)+"px";
                           }, true);
                         div.setAttribute("style", "color: orange; cursor: pointer; font-size: 11px;");
-                        div.appendChild(document.createTextNode("- "+
-                          stringBundle.getString("showquotedtext")+" -"));
+                        div.appendChild(self._domNode.ownerDocument.createTextNode("- "+
+                          stringBundle.GetStringFromName("showquotedtext")+" -"));
                         elt.insertBefore(div, c);
                         c.style.display = "none";
                       }
@@ -253,7 +274,7 @@ Message.prototype = {
             if (isPlainText) {
               // Unless the user specifically asked for this message to be
               // dislayed with a monospaced font...
-              let [name, email] = extractNameAndEmail(self._msgHdr.mime2DecodedAuthor);
+              let [{name, email}] = self.parse(self._msgHdr.mime2DecodedAuthor);
               if (Prefs["monospaced_senders"].indexOf(email) < 0) {
                 let elts = iframeDoc.querySelectorAll("pre, body > *:first-child")
                 for each (let [, elt] in Iterator(elts))
@@ -413,7 +434,7 @@ function MessageFromGloda(aWindow, aSignalFn, aGlodaMsg) {
   Message.apply(this, arguments);
 
   this._glodaMsg = aGlodaMsg;
-  this._snippet = this._glodaMsg._indexedBodyText.substring(0, snippetLength-1)+"…";
+  this._snippet = this._glodaMsg._indexedBodyText.substring(0, snippetLength-1);
   this._signal();
 }
 
@@ -440,7 +461,7 @@ function MessageFromDbHdr(aWindow, aSignalFn, aMsgHdr) {
         // XXX consider calling signal right away not to block the conversation
         Log.warn("Gloda failed to stream the message properly, this is VERY BAD");
         let body = msgHdrToMessageBody(msgHdr, true, snippetLength);
-        self._snippet = body.substring(0, snipetLength-1)+"…";
+        self._snippet = body.substring(0, snippetLength-1);
         self._signal();
       } else {
         let [text, meta] = mimeMsgToContentSnippetAndMeta(aMimeMsg, aMsgHdr.folder, snippetLength);

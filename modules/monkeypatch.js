@@ -73,7 +73,7 @@ MonkeyPatch.prototype = {
           window.ClearPendingReadTimer();
 
           let selectedCount = this.folderDisplay.selectedCount;
-          Log.debug("Intercepted message load, ", selectedCount, " message(s) selected\n");
+          Log.debug("Intercepted message load, ", selectedCount, " message(s) selected");
 
           if (selectedCount == 0) {
             this.clearDisplay();
