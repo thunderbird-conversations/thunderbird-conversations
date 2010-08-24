@@ -44,17 +44,17 @@ Conversation.prototype = {
     Gloda.getMessageCollectionForHeaders(this._initialSet, {
       onItemsAdded: function (aItems) {
         if (!aItems.length) {
-          if (this._selectionChanged()) {
+          if (self._selectionChanged()) {
             Log.debug("Selection changed, aborting...");
             return;
           }
           Log.warn("Warning: gloda query returned no messages"); 
-          this._messages = [{
+          self._messages = [{
               type: kMsgDbHdr,
               message: new MessageFromDbHdr(self._window, function () self._signal(), msgHdr),
               msgHdr: msgHdr,
-            } for each ([, msgHdr] in Iterator(this._initialSet))];
-          this._outputMessages();
+            } for each ([, msgHdr] in Iterator(self._initialSet))];
+          self._outputMessages();
         } else {
           let gmsg = aItems[0];
           this._query = gmsg.conversation.getMessagesCollection(self, true);

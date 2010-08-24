@@ -7,6 +7,7 @@ const Cr = Components.results;
 
 Cu.import("resource:///modules/templateUtils.js"); // for makeFriendlyDateAgo
 Cu.import("resource:///modules/XPCOMUtils.jsm");
+Cu.import("resource:///modules/gloda/mimemsg.js");
 const gMessenger = Cc["@mozilla.org/messenger;1"]
   .createInstance(Ci.nsIMessenger);
 const gPrefBranch = Cc["@mozilla.org/preferences-service;1"]
@@ -55,7 +56,7 @@ Message.prototype = {
     else if (l == 1)
       return aElements[0];
     else {
-      let hd = aElements.splice(0, l - 2);
+      let hd = aElements.slice(0, l - 1);
       let tl = aElements[l-1];
       return hd.join(", ") + " and " + tl;
     }
@@ -66,12 +67,12 @@ Message.prototype = {
     let fullNames = {};
     let names = {};
     let numAddresses = gHeaderParser.parseHeadersWithArray(aMimeLine, emails, names, fullNames);
-    return [{ email: emails.value[i], name: names.value[i], fullName: fullNames.value[i] }
+    return [{ email: emails.value[i], name: names.value[i] }
       for each (i in range(0, numAddresses))];
   },
 
   format: function (p) {
-    return escapeHtml(p.name || p.email || p.fullName);
+    return escapeHtml(p.name || p.email);
   },
 
   toHtmlString: function () {
@@ -80,29 +81,30 @@ Message.prototype = {
     let snippet = escapeHtml(this._snippet);
     let date = escapeHtml(this._date);
 
-    let r =
-      "<li class=\"message collapsed\">\n"+
-      "  <div class=\"messageHeader hbox\">\n"+
-      "    <div class=\"involved boxFlex\">\n"+
-      "      <span class=\"author\"><img src=\"i/star.png\"> "+from+"</span>\n"+
-      "      <span class=\"to\">to "+to+"</span>\n"+
-      "      <span class=\"snippet\">"+snippet+"&hellip;</span>\n"+
-      "    </div>\n"+
-      "    <div class=\"options\">\n"+
-      "      <span class=\"date\">"+date+"</span>\n"+
-      "      <span class=\"details\">| <a href=\"#\">details</a> |</span> \n"+
-      "      <span class=\"dropDown\"><a href=\"#\">more...</a></span>\n"+
-      "    </div>\n"+
-      "  </div>\n"+
-      "  <div class=\"messageBody\">\n"+
-      "  </div>\n"+
-      "  <div class=\"messageFooter\">\n"+
-      "    <button>reply</button>\n"+
-      "    <button>reply all</button>\n"+
-      "    <button>forward</button>\n"+
-      "    <button style=\"float:right;margin: 0 0 0 0;\">more...</button>\n"+
-      "  </div>\n"+
-      "</li>\n";
+    let r = [
+      "<li class=\"message collapsed\">\n",
+      "  <div class=\"messageHeader hbox\">\n",
+      "    <div class=\"involved boxFlex\">\n",
+      "      <span class=\"author\"><img src=\"i/star.png\"> ", from, "</span>\n",
+      "      <span class=\"to\">to ", to, "</span>\n",
+      "      <span class=\"snippet\">", snippet, "</span>\n",
+      "    </div>\n",
+      "    <div class=\"options\">\n",
+      "      <span class=\"date\">",date,"</span>\n",
+      "      <span class=\"details\">| <a href=\"#\">details</a> |</span> \n",
+      "      <span class=\"dropDown\"><a href=\"#\">more...</a></span>\n",
+      "    </div>\n",
+      "  </div>\n",
+      "  <div class=\"messageBody\">\n",
+      "  </div>\n",
+      "  <div class=\"messageFooter\">\n",
+      "    <button>reply</button>\n",
+      "    <button>reply all</button>\n",
+      "    <button>forward</button>\n",
+      "    <button style=\"float:right;margin: 0 0 0 0;\">more...</button>\n",
+      "  </div>\n",
+      "</li>\n"
+    ].join("");
     return r;
   },
 
@@ -434,7 +436,9 @@ function MessageFromGloda(aWindow, aSignalFn, aGlodaMsg) {
   Message.apply(this, arguments);
 
   this._glodaMsg = aGlodaMsg;
-  this._snippet = this._glodaMsg._indexedBodyText.substring(0, snippetLength-1);
+  this._snippet = this._glodaMsg._indexedBodyText
+    ? this._glodaMsg._indexedBodyText.substring(0, snippetLength-1)
+    : "..."; // it's probably an Enigmail message
   this._signal();
 }
 
