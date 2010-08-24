@@ -184,7 +184,7 @@ function insertAfter(newElement, referenceElt) {
 function canInclude(aNode) {
   let v = aNode.tagName && aNode.tagName.toLowerCase() == "br"
     || aNode.nodeType == aNode.TEXT_NODE && String.trim(aNode.textContent) === "";
-  if (v) dump("Including "+aNode+"\n");
+  //if (v) dump("Including "+aNode+"\n");
   return v;
 }
 
@@ -315,7 +315,7 @@ function convertForwardedToBlockquote(aDoc) {
           && child.textContent.indexOf("----END PGP") < 0
           && m && m.length) {
         let marker = m[0];
-        dump("Found matching text "+marker+"\n");
+        //dump("Found matching text "+marker+"\n");
         let i = child.textContent.indexOf(marker);
         let t1 = child.textContent.substring(0, i);
         let t2 = child.textContent.substring(i + 1, child.textContent.length);

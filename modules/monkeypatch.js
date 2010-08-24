@@ -15,9 +15,16 @@ function MonkeyPatch(aWindow, aConversation) {
   this._Conversation = aConversation;
   this._wantedUrl = "";
   this._window = aWindow;
+  this._markReadTimeout = null;
 }
 
 MonkeyPatch.prototype = {
+
+  clearTimer: function () {
+    // If we changed conversations fast, clear the timeout
+    if (this.markReadTimeout)
+      this._window.clearTimeout(this.markReadTimeout);
+  },
 
   apply: function () {
     let window = this._window;
@@ -45,7 +52,13 @@ MonkeyPatch.prototype = {
         moveOn (function () {
           try {
             let conversation = new self._Conversation(window, aSelectedMessages);
-            conversation.outputInto(htmlpane);
+            conversation.outputInto(htmlpane, function () {
+              self.markReadTimeout = window.setTimeout(function () {
+                conversation.read = true;
+                self.markReadTimeout = null;
+              }, Prefs.getInt("mailnews.mark_message_read.delay.interval")
+                * Prefs.getBool("mailnews.mark_message_read.delay") * 1000);
+            });
             // Make sure we have a global root --> conversation --> persistent
             // query chain to prevent the Conversation object (and its inner
             // query) to be collected. The Conversation keeps watching the Gloda
@@ -70,6 +83,7 @@ MonkeyPatch.prototype = {
           if (!this.active)
             return true;
           window.ClearPendingReadTimer();
+          self.clearTimer();
 
           let selectedCount = this.folderDisplay.selectedCount;
           Log.debug("Intercepted message load, ", selectedCount, " message(s) selected");
@@ -95,9 +109,13 @@ MonkeyPatch.prototype = {
             // asked for the old message reader, we give up as well.
             if (msgHdrIsRss(msgHdr) || msgHdrIsNntp(msgHdr) ||
                 wantedUrl == msgHdrToNeckoURL(msgHdr).spec) {
-              // FIXME should use global prefs not to mark as read immediately
               Log.debug("Don't want to handle this message, deferring");
-              msgHdrsMarkAsRead([msgHdr], true);
+              // Use the default pref.
+              self.markReadTimeout = window.setTimeout(function () {
+                msgHdrsMarkAsRead([msgHdr], true);
+                self.markReadTimeout = null;
+              }, Prefs.getInt("mailnews.mark_message_read.delay.interval")
+                * Prefs.getBool("mailnews.mark_message_read.delay") * 1000);
               this.singleMessageDisplay = true;
               return false;
             } else {
@@ -114,6 +132,7 @@ MonkeyPatch.prototype = {
 
           // Else defer to showSummary to work it out based on thread selection.
           // (This might be a MultiMessageSummary after all!)
+          // XXX FIXME Multiple message summary is br0ken now.
           Log.debug("This is a real multiple selection, deferring to _showSummary()");
           return this._showSummary();
         } catch (e) {

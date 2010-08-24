@@ -10,6 +10,7 @@ Cu.import("resource://conversations/log.js");
 Cu.import("resource://conversations/prefs.js");
 const Log = setupLogging();
 
+Cu.import("resource://conversations/MsgHdrUtils.jsm");
 Cu.import("resource://conversations/VariousUtils.jsm");
 Cu.import("resource://conversations/message.js");
 
@@ -38,6 +39,7 @@ function Conversation(aWindow, aSelectedMessages) {
   this._query = null;
   this._domElement = null;
   this._toRun = null;
+  this._onComplete = null;
 }
 
 Conversation.prototype = {
@@ -57,7 +59,8 @@ Conversation.prototype = {
           self._getReady(self._initialSet.length);
           self._messages = [{
               type: kMsgDbHdr,
-              message: new MessageFromDbHdr(self._window, function () self._signal.apply(self), msgHdr),
+              message: new MessageFromDbHdr(self._window, self._htmlPane,
+                function () self._signal.apply(self), msgHdr),
               msgHdr: msgHdr,
             } for each ([, msgHdr] in Iterator(self._initialSet))];
           self._outputMessages();
@@ -103,7 +106,8 @@ Conversation.prototype = {
         self._getReady(aCollection.items.length);
         self._messages = [{
           type: kMsgGloda,
-          message: new MessageFromGloda(self._window, function () self._signal.apply(self), glodaMsg),
+          message: new MessageFromGloda(self._window, self._htmlPane,
+            function () self._signal.apply(self), glodaMsg),
           glodaMsg: glodaMsg,
         } for each ([, glodaMsg] in Iterator(aCollection.items))];
         self._filterOutDuplicates();
@@ -182,6 +186,8 @@ Conversation.prototype = {
 
   _runOnceAfterNSignals: function (f, n) {
     Log.debug("Will wait for", n, "signals");
+    if (this._toRun !== null)
+      Log.error("You failed to call signal enough times. Bad developer, bad! Go fix your code!");
     this._toRun = [f, n+1];
     try {
       this._signal();
@@ -192,6 +198,10 @@ Conversation.prototype = {
   },
 
   _signal: function _Conversation_signal() {
+    // This is normal, expanding a message after the conversation has been built
+    // will trigger a signal the first time. We can safely discard these.
+    if (!this._toRun)
+      return;
     let [f, n] = this._toRun;
     n--;
     if (n == 0) {
@@ -290,6 +300,7 @@ Conversation.prototype = {
     this._runOnceAfterNSignals(function () {
       self._htmlPane.contentWindow.scrollNodeIntoView(
         self._domElement.getElementsByClassName(Message.prototype.cssClass)[focusThis]);
+      self._onComplete();
     }, this._messages.length);
 
     for each (let [i, action] in Iterator(expandThese)) {
@@ -312,10 +323,15 @@ Conversation.prototype = {
 
   // This is the starting point, this is where the Monkey-Patched threadSummary
   // or the event handlers ask for a conversation.
-  outputInto: function _Conversation_outputInto (aHtmlPane) {
+  outputInto: function _Conversation_outputInto (aHtmlPane, k) {
     this._htmlPane = aHtmlPane;
     this._domElement = this._htmlPane.contentDocument.getElementById("messageList");
     this._fetchMessages();
+    this._onComplete = k;
+  },
+
+  set read (read) {
+    msgHdrsMarkAsRead([m.message._msgHdr for each ([, m] in Iterator(this._messages))], read);
   },
 }
 

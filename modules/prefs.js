@@ -8,6 +8,9 @@ const Cr = Components.results;
 const prefsService = Cc["@mozilla.org/preferences-service;1"]
   .getService(Ci.nsIPrefService)
   .getBranch("conversations.");
+const gPrefBranch = Cc["@mozilla.org/preferences-service;1"]
+  .getService(Ci.nsIPrefService)
+  .getBranch(null);
 
 function PrefManager() {
   this.expand_who = prefsService.getIntPref("expand_who");
@@ -61,6 +64,18 @@ PrefManager.prototype = {
         this.monospaced_senders = this.split(prefsService.getCharPref("monospaced_senders"));
         break;
     }
+  },
+
+  getChar: function (p) {
+    return gPrefBranch.getCharPref(p);
+  },
+
+  getInt: function (p) {
+    return gPrefBranch.getIntPref(p);
+  },
+
+  getBool: function (p) {
+    return gPrefBranch.getBoolPref(p);
   },
 
   kScrollUnreadOrLast: 0,

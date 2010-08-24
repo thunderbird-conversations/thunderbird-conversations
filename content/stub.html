@@ -8,16 +8,35 @@
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
   <script type="application/javascript;version=1.8">
     function scrollNodeIntoView (aNode) {
-      if (aNode.offsetTop) {
-        let offset = aNode.offsetTop;
-        let parent = aNode.parentNode;
-        while (parent && !(parent instanceof HTMLDocument)) {
-          let style = window.getComputedStyle(parent, null);
-          if (style.position == "relative")
-            offset += parent.offsetTop;
-          parent = parent.parentNode;
-        }
-        window.scrollTo(0, offset - 5);
+      let offset = aNode.offsetTop || 0;
+      let parent = aNode.parentNode;
+      while (parent && !(parent instanceof HTMLDocument)) {
+        let style = window.getComputedStyle(parent, null);
+        if (style.position == "relative")
+          offset += parent.offsetTop;
+        parent = parent.parentNode;
+      }
+      // the header is 44px high (yes, this is ugly)
+      window.scrollTo(0, offset + 5 - 44);
+    }
+
+    function toggleQuote(event, showquotedtext, hidequotedtext) {
+      let link = event.target;
+      let div = link.nextSibling;
+      let cs = window.getComputedStyle(div, null);
+      if (div.style.display == "none") {
+        link.textContent = "- "+hidequotedtext+" -";
+        div.style.display = "";
+        let h = div.getBoundingClientRect().height +
+          parseFloat(cs.marginTop) + parseFloat(cs.marginBottom);
+        return h;
+      } else {
+        let h = div.getBoundingClientRect().height;
+        h += parseFloat(cs.marginTop);
+        h += parseFloat(cs.marginBottom);
+        link.textContent = "- "+showquotedtext+" -";
+        div.style.display = "none";
+        return -h;
       }
     }
   </script>

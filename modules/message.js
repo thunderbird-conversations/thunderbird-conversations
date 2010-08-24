@@ -12,8 +12,6 @@ Cu.import("resource:///modules/gloda/connotent.js"); // for mimeMsgToContentSnip
 
 const gMessenger = Cc["@mozilla.org/messenger;1"]
   .createInstance(Ci.nsIMessenger);
-const gPrefBranch = Cc["@mozilla.org/preferences-service;1"]
-  .getService(Ci.nsIPrefService).getBranch(null);
 const gHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"]
   .getService(Ci.nsIMsgHeaderParser);
 const stringBundleService = Cc["@mozilla.org/intl/stringbundle;1"]
@@ -31,12 +29,13 @@ const Log = setupLogging();
 const snippetLength = 300;
 
 // Call that one after setting this._msgHdr;
-function Message(aWindow, aSignalFn) {
+function Message(aWindow, aHtmlPane, aSignalFn) {
   this._signal = aSignalFn;
   this._didStream = false;
   this._domNode = null;
   this._snippet = "";
   this._window = aWindow;
+  this._htmlPane = aHtmlPane;
 
   let date = new Date(this._msgHdr.date/1000);
   this._date = Prefs["no_friendly_date"] ? dateAsInMessageList(date) : makeFriendlyDateAgo(date);
@@ -135,7 +134,7 @@ Message.prototype = {
     let forward = function _forward (event) {
       let forwardType = 0;
       try {
-        forwardType = gPrefBranch.getIntPref("mail.forward_message_mode");
+        forwardType = Prefs.getInt("mail.forward_message_mode");
       } catch (e) {
         Log.error("Unable to fetch preferred forward mode\n");
       }
@@ -257,16 +256,17 @@ Message.prototype = {
                     if (style) {
                       let numLines = parseInt(style.height) / parseInt(style.lineHeight);
                       if (numLines > Prefs["hide_quote_length"]) {
+                        let showText = stringBundle.GetStringFromName("showquotedtext");
+                        let hideText = stringBundle.GetStringFromName("hidequotedtext");
                         let div = iframeDoc.createElement("div");
                         div.setAttribute("class", "link showhidequote");
                         div.addEventListener("click", function div_listener (event) {
-                          // XXX FIXME
-                          let h = htmlpane.contentWindow.toggleQuote(event);
+                          let h = self._htmlPane.contentWindow.toggleQuote(event, showText, hideText);
                           iframe.style.height = (parseFloat(iframe.style.height) + h)+"px";
                         }, true);
                         div.setAttribute("style", "color: orange; cursor: pointer; font-size: 11px;");
-                        div.appendChild(self._domNode.ownerDocument.createTextNode("- "+
-                          stringBundle.GetStringFromName("showquotedtext")+" -"));
+                        div.appendChild(self._domNode.ownerDocument
+                          .createTextNode("- "+showText+" -"));
                         elt.insertBefore(div, c);
                         c.style.display = "none";
                       }
@@ -296,7 +296,7 @@ Message.prototype = {
             // <iframe>. I don't think we can use a chrome:// url for
             // the stylesheet because the iframe has a type="content"
             let style = iframeDoc.createElement("style");
-            let defaultFont = gPrefBranch.getCharPref("font.default");
+            let defaultFont = Prefs.getChar("font.default");
             style.appendChild(iframeDoc.createTextNode(
               ".pre-as-regular {\n"+
               "  font-family: "+defaultFont+" !important;\n"+
@@ -365,7 +365,7 @@ Message.prototype = {
             for each (let [, a] in Iterator(iframeDoc.getElementsByTagName("a"))) {
               a.addEventListener("click",
                 function link_listener (event)
-                  specialTabs.siteClickHandler(event, /^mailto:/), true);
+                  self._window.specialTabs.siteClickHandler(event, /^mailto:/), true);
             }
 
             // Sometimes setting the iframe's content and height changes
@@ -466,7 +466,7 @@ Message.prototype = {
   }
 }
 
-function MessageFromGloda(aWindow, aSignalFn, aGlodaMsg) {
+function MessageFromGloda(aWindow, aHtmlPane, aSignalFn, aGlodaMsg) {
   this._msgHdr = aGlodaMsg.folderMessage;
   Message.apply(this, arguments);
 
@@ -483,7 +483,7 @@ MessageFromGloda.prototype = {
 
 MixIn(MessageFromGloda, Message);
 
-function MessageFromDbHdr(aWindow, aSignalFn, aMsgHdr) {
+function MessageFromDbHdr(aWindow, aHtmlPane, aSignalFn, aMsgHdr) {
   this._msgHdr = aMsgHdr;
   Message.apply(this, arguments);
 
