@@ -61,7 +61,15 @@ PrefManager.prototype = {
         this.monospaced_senders = this.split(prefsService.getCharPref("monospaced_senders"));
         break;
     }
-  }
+  },
+
+  kScrollUnreadOrLast: 0,
+  kScrollSelected: 1,
+
+  kExpandUnreadAndLast: 0,
+  kExpandNone: 1,
+  kExpandScrolled: 2,
+  kExpandAll: 3,
 }
 
 // Prefs is a singleton.

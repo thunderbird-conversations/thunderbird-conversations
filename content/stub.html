@@ -6,6 +6,21 @@
   <title>Conversation Reader</title>
   <link rel="stylesheet" type="text/css" href="chrome://conversations/skin/conversation.css">
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+  <script type="application/javascript;version=1.8">
+    function scrollNodeIntoView (aNode) {
+      if (aNode.offsetTop) {
+        let offset = aNode.offsetTop;
+        let parent = aNode.parentNode;
+        while (parent && !(parent instanceof HTMLDocument)) {
+          let style = window.getComputedStyle(parent, null);
+          if (style.position == "relative")
+            offset += parent.offsetTop;
+          parent = parent.parentNode;
+        }
+        window.scrollTo(0, offset - 5);
+      }
+    }
+  </script>
 </head>
 
 <body>

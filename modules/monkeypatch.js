@@ -45,8 +45,7 @@ MonkeyPatch.prototype = {
         moveOn (function () {
           try {
             let conversation = new self._Conversation(window, aSelectedMessages);
-            let messageList = htmlpane.contentDocument.getElementById("messageList");
-            conversation.outputInto(messageList);
+            conversation.outputInto(htmlpane);
             // Make sure we have a global root --> conversation --> persistent
             // query chain to prevent the Conversation object (and its inner
             // query) to be collected. The Conversation keeps watching the Gloda
@@ -115,7 +114,7 @@ MonkeyPatch.prototype = {
 
           // Else defer to showSummary to work it out based on thread selection.
           // (This might be a MultiMessageSummary after all!)
-          Log.debug("Multiple selection, deferring to _showSummary()");
+          Log.debug("This is a real multiple selection, deferring to _showSummary()");
           return this._showSummary();
         } catch (e) {
           Log.error(e);

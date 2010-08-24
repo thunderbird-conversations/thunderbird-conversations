@@ -150,6 +150,10 @@ Message.prototype = {
     register(".forward", function (event) forward(event));
   },
 
+  get read () {
+    return this._msgHdr.isRead;
+  },
+
   get collapsed () {
     return this._domNode.classList.contains("collapsed");
   },
@@ -256,9 +260,10 @@ Message.prototype = {
                         let div = iframeDoc.createElement("div");
                         div.setAttribute("class", "link showhidequote");
                         div.addEventListener("click", function div_listener (event) {
-                            let h = htmlpane.contentWindow.toggleQuote(event);
-                            iframe.style.height = (parseFloat(iframe.style.height) + h)+"px";
-                          }, true);
+                          // XXX FIXME
+                          let h = htmlpane.contentWindow.toggleQuote(event);
+                          iframe.style.height = (parseFloat(iframe.style.height) + h)+"px";
+                        }, true);
                         div.setAttribute("style", "color: orange; cursor: pointer; font-size: 11px;");
                         div.appendChild(self._domNode.ownerDocument.createTextNode("- "+
                           stringBundle.GetStringFromName("showquotedtext")+" -"));
@@ -371,7 +376,7 @@ Message.prototype = {
             self._didStream = true;
             self._signal();
           } catch (e) {
-            Log.warn(e+" (are you running comm-central?)");
+            Log.warn(e, "(are you running comm-central?)");
             Log.warn("Running signal once more to make sure we move on with our life... (warning, this WILL cause bugs)");
             self._didStream = true;
             self._signal();
@@ -442,15 +447,11 @@ Message.prototype = {
         *                         XXXbz Should it be an nsIWebNavigation or something?
         * @param in aMsgWindow
         * @param in aUrlListener
-        * @param in aCharsetOverride (optional) character set over ride to force the message to use.
+        * @param in aCharsetOverride (optional) character set override to force the message to use.
         * @param out aURL
         */
-        messageService.DisplayMessage(self._uri,
-                                      iframe.docShell,
-                                      msgWindow,
-                                      urlListener,
-                                      aCharset,
-                                      {});
+        messageService.DisplayMessage(self._uri, iframe.docShell, msgWindow,
+                                      urlListener, aCharset, {});
       } catch (e) {
         Log.error(e);
         dumpCallStack(e);
