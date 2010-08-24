@@ -253,6 +253,7 @@ button img {
 #wrapper li.message.collapsed .messageHeader .options .dropDown,
 #wrapper li.message.collapsed .messageBody ul.tags,
 #wrapper li.message.collapsed .messageBody p,
+#wrapper li.message.collapsed .messageBody iframe,
 #wrapper li.message .messageHeader .involved .snippet {
   display: none;
 }

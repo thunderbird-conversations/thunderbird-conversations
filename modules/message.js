@@ -5,9 +5,11 @@ const Cc = Components.classes;
 const Cu = Components.utils;
 const Cr = Components.results;
 
-Cu.import("resource:///modules/templateUtils.js"); // for makeFriendlyDateAgo
 Cu.import("resource:///modules/XPCOMUtils.jsm");
+Cu.import("resource:///modules/templateUtils.js"); // for makeFriendlyDateAgo
 Cu.import("resource:///modules/gloda/mimemsg.js");
+Cu.import("resource:///modules/gloda/connotent.js"); // for mimeMsgToContentSnippetAndMeta
+
 const gMessenger = Cc["@mozilla.org/messenger;1"]
   .createInstance(Ci.nsIMessenger);
 const gPrefBranch = Cc["@mozilla.org/preferences-service;1"]
@@ -43,7 +45,9 @@ function Message(aWindow, aSignalFn) {
   this._to = this.parse(this._msgHdr.mime2DecodedRecipients);
   this._cc = this.parse(this._msgHdr.ccList);
   this._bcc = this.parse(this._msgHdr.bccList);
-  this._subject = this._msgHdr.mime2DecodedSubject;
+  this.subject = this._msgHdr.mime2DecodedSubject;
+
+  this._uri = this._msgHdr.folder.getUriForMsg(this._msgHdr);
 }
 
 Message.prototype = {
@@ -90,7 +94,7 @@ Message.prototype = {
       "      <span class=\"snippet\">", snippet, "</span>\n",
       "    </div>\n",
       "    <div class=\"options\">\n",
-      "      <span class=\"date\">",date,"</span>\n",
+      "      <span class=\"date\">", date, "</span>\n",
       "      <span class=\"details\">| <a href=\"#\">details</a> |</span> \n",
       "      <span class=\"dropDown\"><a href=\"#\">more...</a></span>\n",
       "    </div>\n",
@@ -98,9 +102,9 @@ Message.prototype = {
       "  <div class=\"messageBody\">\n",
       "  </div>\n",
       "  <div class=\"messageFooter\">\n",
-      "    <button>reply</button>\n",
-      "    <button>reply all</button>\n",
-      "    <button>forward</button>\n",
+      "    <button class=\"reply\">reply</button>\n",
+      "    <button class=\"replyAll\">reply all</button>\n",
+      "    <button class=\"forward\">forward</button>\n",
       "    <button style=\"float:right;margin: 0 0 0 0;\">more...</button>\n",
       "  </div>\n",
       "</li>\n"
@@ -112,7 +116,38 @@ Message.prototype = {
     this._domNode = aDomNode;
     let msgHeaderNode = this._domNode.getElementsByClassName("messageHeader")[0];
     let self = this;
-    msgHeaderNode.addEventListener("click", function () self.toggle(), false);
+
+    // Register all the needed event handlers. Nice wrappers below.
+    let compose = function _compose (aCompType, aEvent) {
+      if (aEvent.shiftKey) {
+        self._window.ComposeMessage(aCompType, Ci.nsIMsgCompFormat.OppositeOfDefault, self._msgHdr.folder, [self._uri]);
+      } else {
+        self._window.ComposeMessage(aCompType, Ci.nsIMsgCompFormat.Default, self._msgHdr.folder, [self._uri]);
+      }
+    };
+    let register = function _register (selector, f, action) {
+      if (!action)
+        action = "click";
+      let nodes = selector ? self._domNode.querySelectorAll(selector) : [self._domNode];
+      for each (let [, node] in Iterator(nodes))
+        node.addEventListener(action, f, true);
+    };
+    let forward = function _forward (event) {
+      let forwardType = 0;
+      try {
+        forwardType = gPrefBranch.getIntPref("mail.forward_message_mode");
+      } catch (e) {
+        Log.error("Unable to fetch preferred forward mode\n");
+      }
+      if (forwardType == 0)
+        compose(Ci.nsIMsgCompType.ForwardAsAttachment, event);
+      else
+        compose(Ci.nsIMsgCompType.ForwardInline, event);
+    };
+    register(".messageHeader", function () self.toggle());
+    register(".reply", function (event) compose(Ci.nsIMsgCompType.ReplyToSender, event));
+    register(".replyAll", function (event) compose(Ci.nsIMsgCompType.ReplyAll, event));
+    register(".forward", function (event) forward(event));
   },
 
   get collapsed () {
@@ -398,7 +433,6 @@ Message.prototype = {
           OnStopRunningUrl: function () {},
           QueryInterface: XPCOMUtils.generateQI([Ci.nsISupports, Ci.nsIUrlListener])
         };
-        let uri = self._msgHdr.folder.getUriForMsg(self._msgHdr);
         /**
         * When you want a message displayed....
         *
@@ -411,7 +445,7 @@ Message.prototype = {
         * @param in aCharsetOverride (optional) character set over ride to force the message to use.
         * @param out aURL
         */
-        messageService.DisplayMessage(uri,
+        messageService.DisplayMessage(self._uri,
                                       iframe.docShell,
                                       msgWindow,
                                       urlListener,

@@ -146,10 +146,17 @@ Conversation.prototype = {
       for each ([i, m] in Iterator(this._messages))];
     innerHtml = innerHtml.join("\n");
     this._domElement.innerHTML = innerHtml;
+
+    // Notify each message that it's been added to the DOM and that it can do
+    // event registration and stuff...
     let domNodes = this._domElement.getElementsByClassName(Message.prototype.cssClass);
     Log.debug("Got", domNodes.length, "dom nodes");
     for each (let [i, m] in Iterator(this._messages))
       m.message.onAddedToDom(domNodes[i]);
+
+    // Set the subject properly
+    this._domElement.ownerDocument.getElementsByClassName("subject")[0].textContent =
+      this._messages[0].message.subject;
   },
 
   _signal: function _Conversation_signal() {
