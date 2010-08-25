@@ -18,11 +18,12 @@ const kMsgDbHdr = 0;
 const kMsgGloda = 1;
 
 const kActionDoNothing = 0;
-const kActionExpand = 1;
-const kActionCollapse = 2;
+const kActionExpand    = 1;
+const kActionCollapse  = 2;
 
 // We maintain the invariant that, once the conversation is built, this._messages
-// matches exactly the DOM nodes with class "message" inside this._domElement
+// matches exactly the DOM nodes with class "message" inside this._domElement.
+// So the i-th _message is also the i-th DOM node.
 function Conversation(aWindow, aSelectedMessages) {
   this._window = aWindow;
   this._initialSet = aSelectedMessages;
@@ -43,6 +44,12 @@ function Conversation(aWindow, aSelectedMessages) {
 }
 
 Conversation.prototype = {
+
+  // Just an efficient way to mark a whole conversation as read
+  set read (read) {
+    msgHdrsMarkAsRead([m.message._msgHdr for each ([, m] in Iterator(this._messages))], read);
+  },
+
   // This function contains the logic that uses Gloda to query a set of messages
   // to obtain the conversation. It takes care of filling this._messages with
   // the right set of messages, and then moves on to _outputMessages.
@@ -89,10 +96,13 @@ Conversation.prototype = {
   // This is the observer for the second Gloda query, the one that returns a
   // conversation.
   onItemsAdded: function () {},
+
   onItemsModified: function _Conversation_onItemsModified (aItems) {
     // TODO dispatch info to Message instances accordingly
   },
+
   onItemsRemoved: function () {},
+
   onQueryCompleted: function _Conversation_onQueryCompleted (aCollection) {
     if (this._selectionChanged()) {
       Log.debug("Selection changed, aborting...");
@@ -184,6 +194,14 @@ Conversation.prototype = {
     this._signal();
   },
 
+  // Because fetching snippets is possibly asynchronous (in the case of a
+  // MessageFromDbHdr), each message calls "signal" once it's done. After we've
+  // seen N signals pass by, we wait for the N+1-th signal that says that nodes
+  // have all been inserted into the DOM, and then we move on.
+  //
+  // Once again, we wait for N signals, because message loading is a
+  // asynchronous. Once we've done what's right for each message (expand,
+  // collapse, or do nothing), we do the final cleanup (mark as read, etc.).
   _runOnceAfterNSignals: function (f, n) {
     Log.debug("Will wait for", n, "signals");
     if (this._toRun !== null)
@@ -197,6 +215,7 @@ Conversation.prototype = {
     }
   },
 
+  // This is the helper function that each of the messages is supposed to call.
   _signal: function _Conversation_signal() {
     // This is normal, expanding a message after the conversation has been built
     // will trigger a signal the first time. We can safely discard these.
@@ -326,12 +345,8 @@ Conversation.prototype = {
   outputInto: function _Conversation_outputInto (aHtmlPane, k) {
     this._htmlPane = aHtmlPane;
     this._domElement = this._htmlPane.contentDocument.getElementById("messageList");
-    this._fetchMessages();
     this._onComplete = k;
-  },
-
-  set read (read) {
-    msgHdrsMarkAsRead([m.message._msgHdr for each ([, m] in Iterator(this._messages))], read);
+    this._fetchMessages();
   },
 }
 

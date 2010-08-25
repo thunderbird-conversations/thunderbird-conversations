@@ -5,21 +5,17 @@ const Cc = Components.classes;
 const Cu = Components.utils;
 const Cr = Components.results;
 
-Cu.import("resource:///modules/XPCOMUtils.jsm");
+Cu.import("resource:///modules/XPCOMUtils.jsm"); // for generateQI
+Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
 Cu.import("resource:///modules/templateUtils.js"); // for makeFriendlyDateAgo
 Cu.import("resource:///modules/gloda/mimemsg.js");
 Cu.import("resource:///modules/gloda/connotent.js"); // for mimeMsgToContentSnippetAndMeta
 
-const gMessenger = Cc["@mozilla.org/messenger;1"]
-  .createInstance(Ci.nsIMessenger);
-const gHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"]
-  .getService(Ci.nsIMsgHeaderParser);
-const stringBundleService = Cc["@mozilla.org/intl/stringbundle;1"]
-  .getService(Ci.nsIStringBundleService);
-const stringBundle = stringBundleService
-  .createBundle("chrome://conversations/locale/main.properties");
-
+const gMessenger = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
+const gHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"].getService(Ci.nsIMsgHeaderParser);
 const kCharsetFromMetaTag = 10;
+
+let strings = new StringBundle("chrome://conversations/locale/main.properties");
 
 Cu.import("resource://conversations/VariousUtils.jsm");
 Cu.import("resource://conversations/MsgHdrUtils.jsm");
@@ -52,6 +48,7 @@ function Message(aWindow, aHtmlPane, aSignalFn) {
 Message.prototype = {
   cssClass: "message",
 
+  // Joins together names and format them as "John, Jane and Julie"
   join: function (aElements) {
     let l = aElements.length;
     if (l == 0)
@@ -65,6 +62,9 @@ Message.prototype = {
     }
   },
 
+  // Wraps the low-level header parser stuff.
+  //  @param aMimeLine a line that looks like "John <john@cheese.com>, Jane <jane@wine.com>"
+  //  @return a list of { email, name } objects
   parse: function (aMimeLine) {
     let emails = {};
     let fullNames = {};
@@ -74,10 +74,13 @@ Message.prototype = {
       for each (i in range(0, numAddresses))];
   },
 
+  // Picks whatever's available from an { email, name } and return it as
+  // suitable for insertion into HTML
   format: function (p) {
     return escapeHtml(p.name || p.email);
   },
 
+  // Output this message as a whole bunch of HTML
   toHtmlString: function () {
     let from = this.format(this._from);
     let to = this.join(this._to.concat(this._cc).concat(this._bcc).map(this.format));
@@ -111,6 +114,8 @@ Message.prototype = {
     return r;
   },
 
+  // Once the conversation has added us into the DOM, we're notified about it
+  // (aDomNode is us), and we can start registering event handlers and stuff
   onAddedToDom: function (aDomNode) {
     this._domNode = aDomNode;
     let msgHeaderNode = this._domNode.getElementsByClassName("messageHeader")[0];
@@ -149,6 +154,7 @@ Message.prototype = {
     register(".forward", function (event) forward(event));
   },
 
+  // Convenience properties
   get read () {
     return this._msgHdr.isRead;
   },
@@ -162,7 +168,6 @@ Message.prototype = {
   },
 
   toggle: function () {
-    Log.debug("Toggling...");
     if (this.collapsed)
       this.expand();
     else if (this.expanded)
@@ -256,8 +261,8 @@ Message.prototype = {
                     if (style) {
                       let numLines = parseInt(style.height) / parseInt(style.lineHeight);
                       if (numLines > Prefs["hide_quote_length"]) {
-                        let showText = stringBundle.GetStringFromName("showquotedtext");
-                        let hideText = stringBundle.GetStringFromName("hidequotedtext");
+                        let showText = strings.get("showquotedtext");
+                        let hideText = strings.get("hidequotedtext");
                         let div = iframeDoc.createElement("div");
                         div.setAttribute("class", "link showhidequote");
                         div.addEventListener("click", function div_listener (event) {
@@ -491,33 +496,38 @@ function MessageFromDbHdr(aWindow, aHtmlPane, aSignalFn, aMsgHdr) {
   // fail with messages that just arrived, or more generally, messages that
   // haven't been stored on disk yet. I don't know why. In that case, the
   // fallback is to just get the body text and wait for it to be ready. This can
-  // be SLOW (like, real slow).
+  // be SLOW (like, real slow). But at least it works.
   let self = this;
-  MsgHdrToMimeMessage(aMsgHdr, null, function(aMsgHdr, aMimeMsg) {
-    Log.warn("Streaming the message because Gloda has not indexed it, this is BAD");
-    try {
+  Log.warn("Streaming the message because Gloda has not indexed it, this is BAD");
+  try {
+    MsgHdrToMimeMessage(aMsgHdr, null, function(aMsgHdr, aMimeMsg) {
       if (aMimeMsg == null) {
-        // XXX consider calling signal right away not to block the conversation
-        Log.warn("Gloda failed to stream the message properly, this is VERY BAD");
-        let body = msgHdrToMessageBody(msgHdr, true, snippetLength);
-        self._snippet = body.substring(0, snippetLength-1);
-        self._signal();
-      } else {
-        let [text, meta] = mimeMsgToContentSnippetAndMeta(aMimeMsg, aMsgHdr.folder, snippetLength);
-        self._snippet = text;
-        self._signal();
+        self._fallbackSnippet();
+        return;
       }
-    } catch (e) {
-      // Remember: these exceptions don't make it out of the callback (XPConnect
-      // death trap, can't fight it until we reach level 3 and gain 1200 exp
-      // points, so keep training)
-      Log.error(e);
-    }
-  });
+      let [text, meta] = mimeMsgToContentSnippetAndMeta(aMimeMsg, aMsgHdr.folder, snippetLength);
+      self._snippet = text;
+      self._signal();
+    });
+  } catch (e) {
+    // Remember: these exceptions don't make it out of the callback (XPConnect
+    // death trap, can't fight it until we reach level 3 and gain 1200 exp
+    // points, so keep training)
+    Log.warn("Gloda failed to stream the message properly, this is VERY BAD");
+    Log.warn(e);
+    this._fallbackSnippet();
+  }
 }
 
 MessageFromDbHdr.prototype = {
   __proto__: Message.prototype,
+
+  _fallbackSnippet: function _MessageFromDbHdr_fallbackSnippet () {
+    // XXX consider calling signal right away not to block the conversation
+    let body = msgHdrToMessageBody(this._msgHdr, true, snippetLength);
+    this._snippet = body.substring(0, snippetLength-1);
+    this._signal();
+  },
 }
 
 MixIn(MessageFromDbHdr, Message);
