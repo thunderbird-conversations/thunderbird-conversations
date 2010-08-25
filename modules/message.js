@@ -179,7 +179,9 @@ Message.prototype = {
   expand: function () {
     this._domNode.classList.remove("collapsed");
     if (!this._didStream)
-      this.streamMessage();
+      this.streamMessage(); // will call _signal
+    else
+      this._signal();
   },
 
   collapse: function () {
@@ -529,5 +531,3 @@ MessageFromDbHdr.prototype = {
     this._signal();
   },
 }
-
-MixIn(MessageFromDbHdr, Message);
