@@ -54,7 +54,8 @@ MonkeyPatch.prototype = {
             let conversation = new self._Conversation(window, aSelectedMessages);
             conversation.outputInto(htmlpane, function () {
               self.markReadTimeout = window.setTimeout(function () {
-                conversation.read = true;
+                if (window.document.hasFocus())
+                  conversation.read = true;
                 self.markReadTimeout = null;
               }, Prefs.getInt("mailnews.mark_message_read.delay.interval")
                 * Prefs.getBool("mailnews.mark_message_read.delay") * 1000);
