@@ -8,7 +8,6 @@ const Cr = Components.results;
 Cu.import("resource:///modules/gloda/gloda.js");
 Cu.import("resource://conversations/log.js");
 Cu.import("resource://conversations/prefs.js");
-const Log = setupLogging();
 
 Cu.import("resource://conversations/MsgHdrUtils.jsm");
 Cu.import("resource://conversations/VariousUtils.jsm");
@@ -76,9 +75,9 @@ let OracleMixIn = {
     // Determine which message is going to be Scrolled
     let needsScroll = -1;
     if (Prefs["scroll_who"] == Prefs.kScrollUnreadOrLast) {
-      needsScroll = this._messages.length - 1;
-      for (let i = 0; i < this._messages.length; ++i) {
-        if (!this._messages[i].message.read) {
+      needsScroll = this.messages.length - 1;
+      for (let i = 0; i < this.messages.length; ++i) {
+        if (!this.messages[i].message.read) {
           needsScroll = i;
           break;
         }
@@ -86,8 +85,8 @@ let OracleMixIn = {
     } else if (Prefs["scroll_who"] == Prefs.kScrollSelected) {
       let uri = function (msg) msg.folder.getUriForMsg(msg);
       let key = uri(gFolderDisplay.selectedMessage);
-      for (let i = 0; i < this._messages.length; ++i) {
-        if (this._messages[i].message._uri == key) {
+      for (let i = 0; i < this.messages.length; ++i) {
+        if (this.messages[i].message._uri == key) {
           needsScroll = i;
           break;
         }
@@ -118,7 +117,7 @@ let OracleMixIn = {
     };
     switch (Prefs["expand_who"]) {
       case Prefs.kExpandScrolled:
-        for each (let [i, { message }] in Iterator(this._messages)) {
+        for each (let [i, { message }] in Iterator(this.messages)) {
           if (i == aNeedsFocus)
             expand(message);
           else
@@ -126,19 +125,19 @@ let OracleMixIn = {
         }
         break;
       case Prefs.kExpandUnreadAndLast:
-        for each (let [i, { message }] in Iterator(this._messages)) {
-          if (!message.read || i == this._messages.length - 1)
+        for each (let [i, { message }] in Iterator(this.messages)) {
+          if (!message.read || i == this.messages.length - 1)
             expand(message);
           else
             collapse(message);
         }
         break;
       case Prefs.kExpandAll:
-        for each (let [, { message }] in Iterator(this._messages))
+        for each (let [, { message }] in Iterator(this.messages))
           expand(message);
         break;
       case Prefs.kExpandNone:
-        for each (let [, { message }] in Iterator(this._messages))
+        for each (let [, { message }] in Iterator(this.messages))
           collapse(message);
         break;
       default:
@@ -148,13 +147,48 @@ let OracleMixIn = {
   },
 }
 
-// We maintain the invariant that, once the conversation is built, this._messages
-// matches exactly the DOM nodes with class "message" inside this._domElement.
+// -- Some helpers for our message type
+
+// Get the message-id of a message, be it a msgHdr or a glodaMsg.
+function getMessageId ({ type, message, msgHdr, glodaMsg }) {
+  if (type == kMsgGloda)
+    return glodaMsg.headerMessageID;
+  else if (type == kMsgDbHdr)
+    return msgHdr.messageId;
+  else
+    Log.error("Bad message type");
+}
+
+// Get the underlying msgHdr of a message. Might return undefined if Gloda
+//  remembers dead messages (and YES this happens).
+function toMsgHdr ({ type, message, msgHdr, glodaMsg }) {
+  if (type == kMsgGloda)
+    return glodaMsg.folderMessage;
+  else if (type == kMsgDbHdr)
+    return msgHdr;
+  else
+    Log.error("Bad message type");
+}
+
+// Get a Date instance for the given message.
+function msgDate ({ type, message, msgHdr, glodaMsg }) {
+  if (type == kMsgDbHdr)
+    return new Date(msgHdr.date/1000);
+  else if (type == kMsgGloda)
+    return new Date(glodaMsg.date);
+  else
+    Log.error("Bad message type");
+}
+
+// -- The actual conversation object
+
+// We maintain the invariant that, once the conversation is built, this.messages
+//  matches exactly the DOM nodes with class "message" inside this._domElement.
 // So the i-th _message is also the i-th DOM node.
-function Conversation(aWindow, aSelectedMessages) {
+function Conversation(aWindow, aSelectedMessages, aCounter) {
   this._window = aWindow;
   this._initialSet = aSelectedMessages;
-  // this._messages = [
+  // this.messages = [
   //  {
   //    type: one of the consts above
   //    message: the Message instance
@@ -163,7 +197,8 @@ function Conversation(aWindow, aSelectedMessages) {
   //  },
   //  ...
   // ]
-  this._messages = [];
+  this.messages = [];
+  this.counter = aCounter; // RO
   this._query = null;
   this._domElement = null;
   this._onComplete = null;
@@ -183,7 +218,7 @@ Conversation.prototype = {
   },
 
   // This function contains the logic that uses Gloda to query a set of messages
-  // to obtain the conversation. It takes care of filling this._messages with
+  // to obtain the conversation. It takes care of filling this.messages with
   // the right set of messages, and then moves on to _outputMessages.
   _fetchMessages: function _Conversation_fetchMessages () {
     let self = this;
@@ -191,16 +226,17 @@ Conversation.prototype = {
       onItemsAdded: function (aItems) {
         if (!aItems.length) {
           Log.warn("Warning: gloda query returned no messages"); 
-          self._getReady(self._initialSet.length);
-          self._messages = [{
+          self._getReady(self._initialSet.length + 1);
+          self.messages = [{
               type: kMsgDbHdr,
               message: new MessageFromDbHdr(self._window, self._htmlPane,
-                function () self._signal.apply(self), msgHdr),
+                function () self._signal.apply(self), msgHdr), // will run signal
               msgHdr: msgHdr,
             } for each ([, msgHdr] in Iterator(self._initialSet))];
+          self._signal();
         } else {
           let gmsg = aItems[0];
-          this._query = gmsg.conversation.getMessagesCollection(self, true);
+          self._query = gmsg.conversation.getMessagesCollection(self, true);
         }
       },
       onItemsModified: function () {},
@@ -228,17 +264,17 @@ Conversation.prototype = {
         // When the right number of signals has been fired, move on...
         self._getReady(aCollection.items.length + self._initialSet.length + 1);
         // We want at least all messages from the Gloda collection
-        self._messages = [{
+        self.messages = [{
           type: kMsgGloda,
           message: new MessageFromGloda(self._window, self._htmlPane,
-            function () self._signal.apply(self), glodaMsg),
+            function () self._signal.apply(self), glodaMsg), // will fire signal when done
           glodaMsg: glodaMsg,
         } for each ([, glodaMsg] in Iterator(aCollection.items))];
         // Here's the message IDs we know
         let messageIds = {};
         [messageIds[m.glodaMsg.headerMessageID] = true
-          for each ([i, m] in Iterator(self._messages))];
-        // But might also miss some message headers
+          for each ([i, m] in Iterator(self.messages))];
+        // But Gloda might also miss some message headers
         for each (let [, msgHdr] in Iterator(self._initialSet)) {
           // Although _filterOutDuplicates is called eventually, don't uselessly
           // create messages. The typical use case is when the user has a
@@ -247,10 +283,10 @@ Conversation.prototype = {
           // hasn't indexed yet...
           if (!(messageIds[msgHdr.messageId])) {
             Log.debug("Message with message-id", msgHdr.messageId, "was not in the gloda collection");
-            self._messages.push({
+            self.messages.push({
               type: kMsgDbHdr,
               message: new MessageFromDbHdr(self._window, self._htmlPane,
-                function () self._signal.apply(self), msgHdr),
+                function () self._signal.apply(self), msgHdr), // will call signal when done
               msgHdr: msgHdr,
             });
           } else {
@@ -259,17 +295,11 @@ Conversation.prototype = {
         }
         // Sort all the messages according to the date so that they are inserted
         // in the right order.
-        let msgDate = function ({ type, message, msgHdr, glodaMsg }) {
-          if (type == kMsgDbHdr)
-            return new Date(msgHdr.date/1000);
-          else if (type == kMsgGloda)
-            return new Date(glodaMsg.date);
-          else
-            Log.error("Bad message type");
-        };
         let compare = function (m1, m2) msgDate(m1) - msgDate(m2);
-        self._messages.sort(compare);
-        // Move on!
+        // We can sort now because we don't need the Message instance to be
+        // fully created to get the date of a message.
+        self.messages.sort(compare);
+        // Move on! (Actually, will move on when all messages are ready)
         self._signal();
       } catch (e) {
         Log.error(e);
@@ -280,9 +310,6 @@ Conversation.prototype = {
 
   // This is the function that waits for everyone to be ready
   _getReady: function _Conversation_getReady(n) {
-    // Count 1 for each snippet that's ready (hopefully, these are Gloda
-    // messages and it is instantaneous), and then we can start outputting HTML
-    // into the DOM
     let self = this;
     this._runOnceAfterNSignals(function () {
       self._filterOutDuplicates();
@@ -291,62 +318,141 @@ Conversation.prototype = {
   },
 
   // This is a core function. It decides which messages to keep and which
-  // messages to filter out. Because Gloda might return many copies of a single
-  // message, each in a different folder, we use the messageId as the key.
+  //  messages to filter out. Because Gloda might return many copies of a single
+  //  message, each in a different folder, we use the messageId as the key.
   _filterOutDuplicates: function _Conversation_filterOutDuplicates () {
-    let getMessageId = function ({ type, message, msgHdr, glodaMsg }) {
-      if (type == kMsgGloda)
-        return glodaMsg.headerMessageID;
-      else if (type == kMsgDbHdr)
-        return msgHdr.messageId;
-      else
-        Log.error("Malformed item in this._messages!");
-    };
-    let toMsgHdr = function ({ type, message, msgHdr, glodaMsg }) {
-      if (type == kMsgGloda)
-        return glodaMsg.folderMessage;
-      else if (type == kMsgDbHdr)
-        return msgHdr;
-      else
-        Log.error("Malformed item in this._messages!");
-    };
-
     // Select right message will try to pick the message that has a
-    // corresponding msgHdr.
-    let messages = groupArray(this._messages, getMessageId);
+    //  corresponding msgHdr.
+    let messages = this.messages;
+    // Wicked cases, when we're asked to display a draft that's half-saved...
+    messages = messages.filter(function (x) (toMsgHdr(x) && toMsgHdr(x).messageId));
+    messages = groupArray(this.messages, getMessageId);
     messages = [selectRightMessage(group, this._window.gDBView.msgFolder, toMsgHdr)
       for each ([i, group] in Iterator(messages))];
     // But sometimes it just fails, and gloda remembers dead messages...
     messages = messages.filter(function (x) x.msgHdr || (x.glodaMsg && x.glodaMsg.folderMessage));
-    this._messages = messages;
+    this.messages = messages;
   },
 
-  // Once we're confident our set of _messages is the right one, we actually
+  // If a new conversation was launched, and that conversation finds out it can
+  //  reuse us, it will call this method with the set of messages to append at the
+  //  end of this conversation
+  appendMessages: function _Conversation_appendMessages (aMessages) {
+    // This is normal, it just means the stupid folder tree view reflowed the
+    //  whole thing and asked for a new threadsummary but the user hasn't
+    //  actually changed selections.
+    if (!aMessages.length)
+      return;
+
+    // All your messages are belong to us.
+    this.messages = this.messages.concat(aMessages);
+
+    // We can't do this._domElement.innerHTML += because it will recreate all
+    //  previous elements and reset all iframes (that's obviously bad!).
+    let innerHtml = [m.message.toHtmlString()
+      for each ([_i, m] in Iterator(aMessages))];
+    innerHtml = innerHtml.join("\n");
+    let div = this._domElement.ownerDocument.createElement("div");
+    this._domElement.appendChild(div);
+    div.innerHTML = innerHtml;
+
+    // Notify each message that it's been added to the DOM and that it can do
+    //  event registration and stuff...
+    let domNodes = this._domElement.getElementsByClassName(Message.prototype.cssClass);
+    for each (let i in range(this.messages.length - aMessages.length, this.messages.length)) {
+      Log.debug("Appending node", i, "to the conversation");
+      this.messages[i].message.onAddedToDom(domNodes[i]);
+      this.messages[i].message.expand();
+    }
+
+    // XXX add some visual feedback, like "1 new message in this conversation"
+  },
+
+  // Once we're confident our set of messages is the right one, we actually
   // start outputting them inside the DOM element we were given.
   _outputMessages: function _Conversation_outputMessages () {
+    // XXX I think this test is still valid because of the thread summary
+    // stabilization interval (we might have changed selection and still be
+    // waiting to fire the new conversation).
     if (this._selectionChanged()) {
       Log.debug("Selection changed, aborting...");
       return;
     }
+    // In some pathological cases, the folder tree view will fire two consecutive
+    //  thread summaries very fast. This will MITIGATE race conditions, not solve
+    //  them. To solve them, we would need to make sure the two lines below are
+    //  atomic.
+    // This happens sometimes for drafts, a conversation is fired for the old
+    //  thread, a message in the thread is replaced, a new conversation is
+    //  fired. If the old conversation is conversation #2, and the new one is
+    //  conversation #3, then #3 succeeds and then #2 succeeds. In that case,
+    //  #2 gives up at that point.
+    // The invariant is that if one conversation has been fired while we were
+    //  fetching our messages, we give up, which implies that #3's output takes
+    //  precedence. If #3 decided to reuse an old conversation, it necessarily
+    //  reused conversation #1, because currentConversation is only set when a
+    //  conversation reaches completion (and #2 never reaches completion).
+    // I hope I will understand this when I read it again in a few days.
+    if (this._window.Conversations.counter != this.counter) {
+      //Log.debug("Race condition,", this.counter, "dying for", this._window.Conversations.counter);
+      return;
+    }
+
+    // Try to reuse the previous conversation if possible
+    if (this._window.Conversations.currentConversation) {
+      let currentMsgSet = this._window.Conversations.currentConversation.messages;
+      let currentMsgIds = [getMessageId(x) for each ([, x] in Iterator(currentMsgSet))];
+      // Is a1 a prefix of a2? (I wish JS had pattern matching!)
+      let isPrefix = function _isPrefix (a1, a2) {
+        if (!a1.length) {
+          return [true, a2];
+        } else if (a1.length && !a2.length) {
+          return [false, null];
+        } else {
+          let hd1 = a1[0];
+          let hd2 = a2[0];
+          if (hd1 == hd2)
+            return isPrefix(a1.slice(1, a1.length), a2.slice(1, a2.length));
+          else
+            return [false, null];
+        }
+      };
+      let myMsgIds = [getMessageId(x) for each ([, x] in Iterator(this.messages))];
+      let [shouldRecycle, _whichMessageIds] = isPrefix(currentMsgIds, myMsgIds);
+      Log.assert(currentMsgSet.length > 0, "There's no such thing as an empty conversation");
+      if (shouldRecycle) {
+        // Just get the extra messages
+        let whichMessages = this.messages.slice(currentMsgSet.length, this.messages.length);
+        let currentConversation = this._window.Conversations.currentConversation;
+        // And pass them to the old conversation
+        Log.debug("Recycling conversation! We are eco-responsible.", whichMessages.length,
+          "new messages");
+        currentConversation.appendMessages(whichMessages);
+        // Don't call k (i.e. don't mark the newly arrived messages as read and
+        // keep the old conversation as the current one), don't blow away the
+        // previous conversation, don't do anything. Goodbye!
+        return;
+      }
+    }
 
     // Fill in the HTML right away. The has the nice side-effect of erasing the
     // previous conversation (but not the conversation-wide event handlers!)
-    // XXX this does not take the "reverse_order" pref into account
+    // XXX this does not take the "reverse_order" pref into account.
     let innerHtml = [m.message.toHtmlString()
-      for each ([i, m] in Iterator(this._messages))];
+      for each ([i, m] in Iterator(this.messages))];
     innerHtml = innerHtml.join("\n");
     this._domElement.innerHTML = innerHtml;
 
     // Notify each message that it's been added to the DOM and that it can do
     // event registration and stuff...
     let domNodes = this._domElement.getElementsByClassName(Message.prototype.cssClass);
-    Log.debug("Got", domNodes.length+"/"+this._messages.length, "dom nodes");
-    for each (let [i, m] in Iterator(this._messages))
+    Log.debug("Got", domNodes.length+"/"+this.messages.length, "dom nodes");
+    for each (let [i, m] in Iterator(this.messages))
       m.message.onAddedToDom(domNodes[i]);
 
     // Set the subject properly
     this._domElement.ownerDocument.getElementsByClassName("subject")[0].textContent =
-      this._messages[0].message.subject;
+      this.messages[0].message.subject;
 
     // Move on to the next step
     this._expandAndScroll();
@@ -363,15 +469,15 @@ Conversation.prototype = {
       self._htmlPane.contentWindow.scrollNodeIntoView(
         self._domElement.getElementsByClassName(Message.prototype.cssClass)[focusThis]);
       self._onComplete();
-    }, this._messages.length);
+    }, this.messages.length);
 
     for each (let [i, action] in Iterator(expandThese)) {
       switch (action) {
         case kActionExpand:
-          this._messages[i].message.expand();
+          this.messages[i].message.expand();
           break;      
         case kActionCollapse:
-          this._messages[i].message.collapse();
+          this.messages[i].message.collapse();
           this._signal();
           break;      
         case kActionDoNothing:
@@ -388,25 +494,16 @@ Conversation.prototype = {
   outputInto: function _Conversation_outputInto (aHtmlPane, k) {
     this._htmlPane = aHtmlPane;
     this._domElement = this._htmlPane.contentDocument.getElementById("messageList");
-    this._onComplete = k;
+    this._onComplete = function () k(this);
     this._fetchMessages();
   },
 
   // Just an efficient way to mark a whole conversation as read
   set read (read) {
-    msgHdrsMarkAsRead([m.message._msgHdr for each ([, m] in Iterator(this._messages))], read);
+    msgHdrsMarkAsRead([m.message._msgHdr for each ([, m] in Iterator(this.messages))], read);
+    msgHdrsMarkAsRead(this._initialSet, read);
   },
 }
 
 MixIn(Conversation, SignalManagerMixIn);
 MixIn(Conversation, OracleMixIn);
-
-function createOrRecycleConversation(aWindow, aSelectedMessages) {
-  // TODO: poke into aWindow.Conversations.currentConversation, and see if
-  // the conversation we obtain from aSelectedMessages is a superset of the
-  // current conversation's messages. In that case, just add a method to
-  // Conversation (addMessage), and add the messages with the right indexes, and
-  // make sure we maintain the invariant that Conversation._messages reflects
-  // exactly what's in the DOM (we might need to wrap the new message inside an
-  // extra <div>)
-}

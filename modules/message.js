@@ -21,7 +21,7 @@ Cu.import("resource://conversations/VariousUtils.jsm");
 Cu.import("resource://conversations/MsgHdrUtils.jsm");
 Cu.import("resource://conversations/prefs.js");
 Cu.import("resource://conversations/log.js");
-const Log = setupLogging();
+
 const snippetLength = 300;
 
 // Call that one after setting this._msgHdr;
@@ -77,7 +77,7 @@ Message.prototype = {
   // Picks whatever's available from an { email, name } and return it as
   // suitable for insertion into HTML
   format: function (p) {
-    return escapeHtml(p.name || p.email);
+    return (p ? escapeHtml(p.name || p.email) : "");
   },
 
   // Output this message as a whole bunch of HTML
@@ -89,6 +89,7 @@ Message.prototype = {
 
     let r = [
       "<li class=\"message collapsed\">\n",
+      "  <!-- Message-ID: ", this._msgHdr.messageId, " -->\n",
       "  <div class=\"messageHeader hbox\">\n",
       "    <div class=\"involved boxFlex\">\n",
       "      <span class=\"author\"><img src=\"i/star.png\"> ", from, "</span>\n",
@@ -494,11 +495,12 @@ function MessageFromDbHdr(aWindow, aHtmlPane, aSignalFn, aMsgHdr) {
   this._msgHdr = aMsgHdr;
   Message.apply(this, arguments);
 
-  // Gloda is not with us, so stream the message... streaming the message can
-  // fail with messages that just arrived, or more generally, messages that
-  // haven't been stored on disk yet. I don't know why. In that case, the
-  // fallback is to just get the body text and wait for it to be ready. This can
-  // be SLOW (like, real slow). But at least it works.
+  // Gloda is not with us, so stream the message... the MimeMsg API says that
+  // the streaming will fail and the underlying exception will be re-thrown in
+  // case the message is not on disk. In that case, the fallback is to just get
+  // the body text and wait for it to be ready. This can be SLOW (like, real
+  // slow). But at least it works. (Setting the fourth parameter to true just
+  // leads an empty snippet).
   let self = this;
   Log.warn("Streaming the message because Gloda has not indexed it, this is BAD");
   try {
