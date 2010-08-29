@@ -459,10 +459,6 @@ Conversation.prototype = {
     let subjectNode = this._domElement.ownerDocument.getElementsByClassName("subject")[0];
     subjectNode.textContent = this.messages[0].message.subject;
     subjectNode.setAttribute("title", this.messages[0].message.subject);
-    // HACK ALERT! This basically recreates the DOM node for the subject, which
-    //  has the side effect of rendering the previous jQuery interval timer
-    //  inefficient...
-    subjectNode.parentNode.innerHTML += "";
     this._htmlPane.contentWindow.killOverflowSubject();
 
     // Move on to the next step

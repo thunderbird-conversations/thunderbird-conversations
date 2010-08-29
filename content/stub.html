@@ -17,7 +17,7 @@
           offset += parent.offsetTop;
         parent = parent.parentNode;
       }
-      // the header is 44px high (yes, this is ugly)
+      // The header is 44px high (yes, this is harcodeadly ugly).
       window.scrollTo(0, offset + 5 - 44);
     }
 
@@ -41,12 +41,14 @@
       }
     }
 
+    // Setting the second parameter to false means don't fire a stupid timer
+    //  that lives forever everytime we call this function.
     function killOverflowSubject() {
-      $(".subject").textOverflow(null, true);
+      $(".subject").textOverflow(null, false);
     }
 
     function killOverflowInvolved(aMsgNode) {
-      $(aMsgNode).find(".involved").textOverflow(null, true);
+      $(aMsgNode).find(".involved").textOverflow(null, false);
     }
   </script>
 </head>
