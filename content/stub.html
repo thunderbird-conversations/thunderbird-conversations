@@ -6,6 +6,7 @@
   <title>Conversation Reader</title>
   <link rel="stylesheet" type="text/css" href="chrome://conversations/skin/conversation.css">
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
+  <script type="text/javascript" src="js/jquery.text-overflow.js"></script>
   <script type="application/javascript;version=1.8">
     function scrollNodeIntoView (aNode) {
       let offset = aNode.offsetTop || 0;
@@ -39,6 +40,14 @@
         return -h;
       }
     }
+
+    function killOverflowSubject() {
+      $(".subject").textOverflow(null, true);
+    }
+
+    function killOverflowInvolved(aMsgNode) {
+      $(aMsgNode).find(".involved").textOverflow(null, true);
+    }
   </script>
 </head>
 
@@ -50,10 +59,10 @@
         <div class="actions">
           <button><img src="i/trash.png"></button>
           <button><img src="i/archive.png"></button>
-          <button onClick="$(this).children().toggleClass('collapse'),$('li.message:first-child').toggleClass('collapsed')"><span class="expand"></span></button>
-          <button onClick="$(this).children().toggleClass('unread')"><span class="read"></span></button>
+          <button><span class="expand"></span></button>
+          <button><span class="read"></span></button>
           <button><img src="i/tab.png"></button>
-          <button onClick="$(this).children().toggleClass('classic')"><span class="mode"></span></button>
+          <button><span class="mode"></span></button>
         </div>
       </div>
     </div>

@@ -308,7 +308,8 @@ Conversation.prototype = {
     }, 0);
   },
 
-  // This is the function that waits for everyone to be ready
+  // This is the function that waits for everyone to be ready (that was a useful
+  //  comment)
   _getReady: function _Conversation_getReady(n) {
     let self = this;
     this._runOnceAfterNSignals(function () {
@@ -321,12 +322,12 @@ Conversation.prototype = {
   //  messages to filter out. Because Gloda might return many copies of a single
   //  message, each in a different folder, we use the messageId as the key.
   _filterOutDuplicates: function _Conversation_filterOutDuplicates () {
-    // Select right message will try to pick the message that has a
-    //  corresponding msgHdr.
     let messages = this.messages;
     // Wicked cases, when we're asked to display a draft that's half-saved...
     messages = messages.filter(function (x) (toMsgHdr(x) && toMsgHdr(x).messageId));
     messages = groupArray(this.messages, getMessageId);
+    // Select right message will try to pick the message that has a
+    //  corresponding msgHdr.
     messages = [selectRightMessage(group, this._window.gDBView.msgFolder, toMsgHdr)
       for each ([i, group] in Iterator(messages))];
     // But sometimes it just fails, and gloda remembers dead messages...
@@ -336,10 +337,12 @@ Conversation.prototype = {
 
   // If a new conversation was launched, and that conversation finds out it can
   //  reuse us, it will call this method with the set of messages to append at the
-  //  end of this conversation
+  //  end of this conversation. This only works if the new messages arrive at
+  //  the end of the conversation, I don't support the pathological case of new
+  //  messages arriving in the middle of the conversation.
   appendMessages: function _Conversation_appendMessages (aMessages) {
     // This is normal, it just means the stupid folder tree view reflowed the
-    //  whole thing and asked for a new threadsummary but the user hasn't
+    //  whole thing and asked for a new ThreadSummary but the user hasn't
     //  actually changed selections.
     if (!aMessages.length)
       return;
@@ -348,7 +351,8 @@ Conversation.prototype = {
     this.messages = this.messages.concat(aMessages);
 
     // We can't do this._domElement.innerHTML += because it will recreate all
-    //  previous elements and reset all iframes (that's obviously bad!).
+    //  previous elements and reset all iframes (that's obviously bad!). It's ok
+    //  to use a div since we're using getElementsByClassName everywhere.
     let innerHtml = [m.message.toHtmlString()
       for each ([_i, m] in Iterator(aMessages))];
     innerHtml = innerHtml.join("\n");
@@ -437,7 +441,8 @@ Conversation.prototype = {
 
     // Fill in the HTML right away. The has the nice side-effect of erasing the
     // previous conversation (but not the conversation-wide event handlers!)
-    // XXX this does not take the "reverse_order" pref into account.
+    // XXX this does not take the "reverse_order" pref into account. Screw this,
+    // I'm never going to handle that now, it's too fscking complicated anyway.
     let innerHtml = [m.message.toHtmlString()
       for each ([i, m] in Iterator(this.messages))];
     innerHtml = innerHtml.join("\n");
@@ -451,8 +456,14 @@ Conversation.prototype = {
       m.message.onAddedToDom(domNodes[i]);
 
     // Set the subject properly
-    this._domElement.ownerDocument.getElementsByClassName("subject")[0].textContent =
-      this.messages[0].message.subject;
+    let subjectNode = this._domElement.ownerDocument.getElementsByClassName("subject")[0];
+    subjectNode.textContent = this.messages[0].message.subject;
+    subjectNode.setAttribute("title", this.messages[0].message.subject);
+    // HACK ALERT! This basically recreates the DOM node for the subject, which
+    //  has the side effect of rendering the previous jQuery interval timer
+    //  inefficient...
+    subjectNode.parentNode.innerHTML += "";
+    this._htmlPane.contentWindow.killOverflowSubject();
 
     // Move on to the next step
     this._expandAndScroll();
@@ -501,6 +512,11 @@ Conversation.prototype = {
   // Just an efficient way to mark a whole conversation as read
   set read (read) {
     msgHdrsMarkAsRead([m.message._msgHdr for each ([, m] in Iterator(this.messages))], read);
+    // It is confusing to actually mark a whole conversation as read and not see
+    //  the messages in the current view being marked as read... so mark them as
+    //  read anyway. XXX this shouldn't be necessary anymore after
+    //  selectRightMessage is fixed to always select messages inside the current
+    //  view thread.
     msgHdrsMarkAsRead(this._initialSet, read);
   },
 }

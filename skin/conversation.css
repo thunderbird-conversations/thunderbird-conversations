@@ -85,27 +85,27 @@ button img {
 }
 
 #wrapper #conversationHeader .actions button span.read {
-  background-image: url("i/read.png");
+  background-image: url("chrome://conversations/content/i/read.png");
 }
 
 #wrapper #conversationHeader .actions button span.read.unread {
-  background-image: url("i/unread.png");
+  background-image: url("chrome://conversations/content/i/unread.png");
 }
 
 #wrapper #conversationHeader .actions button span.mode {
-  background-image: url("i/mode.png");
+  background-image: url("chrome://conversations/content/i/mode.png");
 }
 
 #wrapper #conversationHeader .actions button span.mode.classic {
-  background-image: url("i/classicMode.png");
+  background-image: url("chrome://conversations/content/i/classicMode.png");
 }
 
 #wrapper #conversationHeader .actions button span.expand {
-  background-image: url("i/collapse.png");
+  background-image: url("chrome://conversations/content/i/collapse.png");
 }
 
 #wrapper #conversationHeader .actions button span.expand.collapse {
-  background-image: url("i/expand.png");
+  background-image: url("chrome://conversations/content/i/expand.png");
 }
 
 
@@ -148,6 +148,7 @@ button img {
 
 #wrapper li.message .messageHeader .involved {
   height: 18px;
+  padding: 0 5px 0 0;
   overflow: hidden;
 }
 
@@ -235,9 +236,10 @@ button img {
   color: #666;
 }
 
-#wrapper li.message .messageHeader .options a {
+#wrapper li.message .messageHeader .options a,
+#wrapper li.message .messageBody .attachments a {
   text-decoration: none;
-  color: highlight;
+  color: #3875d7;
 }
 
 #wrapper li.message.collapsed {
@@ -253,7 +255,7 @@ button img {
 #wrapper li.message.collapsed .messageHeader .options .dropDown,
 #wrapper li.message.collapsed .messageBody ul.tags,
 #wrapper li.message.collapsed .messageBody p,
-#wrapper li.message.collapsed .messageBody iframe,
+#wrapper li.message.collapsed .messageBody .attachments,
 #wrapper li.message .messageHeader .involved .snippet {
   display: none;
 }
@@ -266,6 +268,10 @@ button img {
 #wrapper li.message .messageBody {
   padding: 0 10px 5px 10px;
   color: #0a0a0a;
+}
+
+#wrapper li.message.collapsed .messageBody iframe {
+  display: none;
 }
 
 #wrapper li.message .messageBody iframe {
@@ -297,6 +303,50 @@ button img {
 #wrapper li.message .messageHeader ul.tags li.tag.red,
 #wrapper li.message .messageBody ul.tags li.tag.red {
   background-color: #ED6666;
+}
+
+#wrapper li.message .messageBody .attachments {
+  padding: 10px 0 0 0;
+  margin: 0 0 18px 0;
+}
+
+#wrapper li.message .messageBody .attachments .attachHeader {
+  display: inline;
+  padding-top: 10px;
+  border-top: 1px solid #e6e6e6;
+}
+
+#wrapper li.message .messageBody .attachments li {
+  margin: 10px 0 0 0;
+  width: 100%;
+  list-style-type: none;
+}
+
+#wrapper li.message .messageBody .attachments li .attachmentThumb {
+  width: 130px;
+  padding: 4px;
+  border: 1px solid #ccc;
+  background-color: #fff;
+  background-image: -moz-linear-gradient(top,#fff 0%,#f2f2f2 100%);
+  margin: 0 20px 0 0;
+  display: inline-block;
+  float: left;
+  text-align: center;
+}
+
+#wrapper li.message .messageBody .attachments li .attachmentThumb img {
+  float: left;
+}
+
+#wrapper li.message .messageBody .attachments li .attachmentInfo {
+  display: inline-block;
+  float: left;
+  height: 90px;
+}
+
+#wrapper li.message .messageBody .attachments li .attachmentInfo span.filename {
+  display: block;
+  font-weight: bold;
 }
 
 #wrapper li.message .messageFooter {
@@ -426,3 +476,22 @@ button img {
 	box-pack: center;
 }
 /* END hbox/vbox normalization from http://alex.dojotoolkit.org/2009/08/css-3-progress/ */
+
+/* clearfix */
+
+.clearfix:after {
+	content: ".";
+	display: block;
+	clear: both;
+	visibility: hidden;
+	line-height: 0;
+	height: 0;
+}
+ 
+html[xmlns] .clearfix {
+	display: block;
+}
+ 
+* html .clearfix {
+	height: 1%;
+}

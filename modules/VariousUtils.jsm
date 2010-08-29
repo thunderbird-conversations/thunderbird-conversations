@@ -53,9 +53,12 @@ const Cu = Components.utils;
 Cu.import("resource:///modules/gloda/mimemsg.js");
 Cu.import("resource://conversations/MsgHdrUtils.jsm");
 
-const txttohtmlconv = Cc["@mozilla.org/txttohtmlconv;1"].createInstance(Ci.mozITXTToHTMLConv);
-const i18nDateFormatter = Cc["@mozilla.org/intl/scriptabledateformat;1"].createInstance(Ci.nsIScriptableDateFormat);
-const headerParser = Cc["@mozilla.org/messenger/headerparser;1"].getService(Ci.nsIMsgHeaderParser);
+const txttohtmlconv = Cc["@mozilla.org/txttohtmlconv;1"]
+                        .createInstance(Ci.mozITXTToHTMLConv);
+const i18nDateFormatter = Cc["@mozilla.org/intl/scriptabledateformat;1"]
+                            .createInstance(Ci.nsIScriptableDateFormat);
+const headerParser = Cc["@mozilla.org/messenger/headerparser;1"]
+                       .getService(Ci.nsIMsgHeaderParser);
 
 /**
  * A stupid formatting function that uses the i18nDateFormatter XPCOM component
@@ -76,7 +79,10 @@ function dateAsInMessageList(aDate) {
 }
 
 /**
- * From a given selection of "messages", return, by order of preference:
+ * XXX should use getThreadContainingMsgHdr and take a preferred threadId as
+ *  well (a VIEW THREAD id) --> will solve the problem of not actually being
+ *  able to deal with smart folders such as smart inbox.
+ * From a given set of "messages", return, by order of preference:
  * - the message that's in the preferred folder
  * - the message that's in the "Inbox" folder
  * - the message that's in the "Sent" folder
@@ -101,6 +107,7 @@ function selectRightMessage(aSimilarMessages, aPreferredFolder, aToMsgHdr) {
     }
     return bestChoice;
   };
+  // for the record, writing return \n return value FAILS
   let r =
     findForCriterion(function (aMsgHdr)
       (aPreferredFolder && aMsgHdr.folder.URI == aPreferredFolder.URI)) ||
@@ -111,6 +118,7 @@ function selectRightMessage(aSimilarMessages, aPreferredFolder, aToMsgHdr) {
   return r;
 }
 
+// thanks :asuth
 function MixIn(aConstructor, aMixIn) {
   let proto = aConstructor.prototype;
   for (let [name, func] in Iterator(aMixIn)) {
@@ -143,6 +151,7 @@ function escapeHtml(s) {
   );
 }
 
+// thanks :asuth
 function range(begin, end) {
   for (let i = begin; i < end; ++i) {
     yield i;
@@ -171,7 +180,7 @@ function groupArray(aItems, aFn) {
   return [groups[id] for each ([, id] in Iterator(orderedIds))];
 }
 
-/* Below are hacks^W heuristics for finding quoted in a given email */
+/* Below are hacks^W heuristics for finding quoted parts in a given email */
 
 /* (sigh...) */
 function insertAfter(newElement, referenceElt) {

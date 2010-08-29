@@ -179,10 +179,12 @@ Message.prototype = {
 
   expand: function () {
     this._domNode.classList.remove("collapsed");
-    if (!this._didStream)
+    if (!this._didStream) {
+      this._htmlPane.contentWindow.killOverflowInvolved(this._domNode);
       this.streamMessage(); // will call _signal
-    else
+    } else {
       this._signal();
+    }
   },
 
   collapse: function () {
@@ -224,6 +226,7 @@ Message.prototype = {
         iframe.addEventListener("load", function f_temp1(event) {
           try {
             iframe.removeEventListener("load", f_temp1, true);
+            // XXX cut this off and turn into a this._onMessageStreamed
             let iframeDoc = iframe.contentDocument;
 
             // Do some reformatting + deal with people who have bad taste
@@ -334,7 +337,7 @@ Message.prototype = {
 
             // For bidiUI. Do that now because the DOM manipulations are
             // over. We can't do this before because BidiUI screws up the
-            // DOM. Don't know why :(.
+            // DOM. Don't know why :(. XXX does this still work?
             if (typeof(BDMActionPhase_htmlNumericEntitiesDecoding) == "function") {
               try {
                 let domDocument = iframe.docShell.contentViewer.DOMDocument;

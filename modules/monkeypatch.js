@@ -30,7 +30,7 @@ MonkeyPatch.prototype = {
     let htmlpane = window.document.getElementById("multimessage");
 
     // This one completely nukes the original summarizeThread function, which is
-    // actually the entry point to the original ThreadSummary class.
+    //  actually the entry point to the original ThreadSummary class.
     window.summarizeThread =
       function _summarizeThread_patched (aSelectedMessages, aListener) {
         if (!aSelectedMessages.length)
@@ -68,7 +68,7 @@ MonkeyPatch.prototype = {
               //  new conversation as parameter.
               // The conversation knows what this callback is all about, and
               //  will decide not to call it if recycling a previous
-              //  conversation.
+              //  conversation (so that kind of defeats what I'm saying above).
               window.Conversations.currentConversation = aConversation;
               // Make sure we respect the user's preferences.
               self.markReadTimeout = window.setTimeout(function () {
@@ -79,9 +79,9 @@ MonkeyPatch.prototype = {
                 * Prefs.getBool("mailnews.mark_message_read.delay") * 1000);
             });
             // Make sure we have a global root --> conversation --> persistent
-            // query chain to prevent the Conversation object (and its inner
-            // query) to be collected. The Conversation keeps watching the Gloda
-            // query for modified items (read/unread, starred, tags...).
+            //  query chain to prevent the Conversation object (and its inner
+            //  query) to be collected. The Conversation keeps watching the
+            //  Gloda query for modified items (read/unread, starred, tags...).
           } catch (e) {
             Log.error(e);
             dumpCallStack(e);
@@ -90,11 +90,12 @@ MonkeyPatch.prototype = {
       };
 
     // Because we want to replace the standard message reader, we need to always
-    // fire up the conversation view instead of deferring to the regular display
-    // code. The trick is that re-using the original function's name allows us to
-    // intercept the calls to the thread summary in regular situations (where a
-    // normal thread summary would kick in) as a side-effect. That means we
-    // don't need to hack into gMessageDisplay too much.
+    //  fire up the conversation view instead of deferring to the regular
+    //  display code. The trick is that re-using the original function's name
+    //  allows us to intercept the calls to the thread summary in regular
+    //  situations (where a normal thread summary would kick in) as a
+    //  side-effect. That means we don't need to hack into gMessageDisplay too
+    //  much.
     window.gMessageDisplay.onSelectedMessagesChanged =
       function _onSelectedMessagesChanged_patched () {
         try {
@@ -119,6 +120,7 @@ MonkeyPatch.prototype = {
           } else if (selectedCount == 1) {
             // Here starts the part where we modify the original code.
             let msgHdr = this.folderDisplay.selectedMessage;
+            // XXX unused right now
             let wantedUrl = self._wantedUrl;
             self._wantedUrl = null;
 
