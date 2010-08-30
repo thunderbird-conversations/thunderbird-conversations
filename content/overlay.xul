@@ -44,6 +44,7 @@
 ]>-->
 <overlay id="messengerWindow" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <script type="application/x-javascript" src="overlay.js" />
+  <browser id="multimessage" context="mailContext" />
   <!--<stringbundleset id="stringbundleset">
     <stringbundle id="gconv-string-bundle" src="chrome://gconversation/locale/main.properties"/>
   </stringbundleset>

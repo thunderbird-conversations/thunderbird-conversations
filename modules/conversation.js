@@ -250,11 +250,23 @@ Conversation.prototype = {
   onItemsAdded: function () {},
 
   onItemsModified: function _Conversation_onItemsModified (aItems) {
-    // We might have not been GC'd yet!
+    // We might have not been GC'd yet! So don't do stupid things...
+    // XXX "this._window.Conversations.currentConversation != this" might be a
+    //  better test
     if (this._window.Conversations.counter != this.counter)
       return;
-    this._updateConversationButtons();
-    // TODO dispatch info to Message instances accordingly
+    // This listener gets called very early, when the DOM nodes haven't been
+    //  built yet. So trying to access the message's properties causes all sorts
+    //  of exceptions, which are OK, since in the end, we call
+    //  _updateConversationButtons when we're ready.
+    // TODO don't catch all exceptions
+    try {
+      this._updateConversationButtons();
+    } catch (e) {
+      ;
+    }
+    // TODO dispatch info to Message instances accordingly (new tags, starred
+    //  status)...
   },
 
   onItemsRemoved: function () {},
