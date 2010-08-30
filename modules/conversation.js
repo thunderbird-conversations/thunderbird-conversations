@@ -187,11 +187,16 @@ function msgDate ({ type, message, msgHdr, glodaMsg }) {
 // So the i-th _message is also the i-th DOM node.
 function Conversation(aWindow, aSelectedMessages, aCounter) {
   this._window = aWindow;
+  // We have the COOL invariant that this._initialSet is a subset of
+  //   [toMsgHdr(x) for each ([, x] in Iterator(this.messages))]
+  // This is made possible by David's patch in bug 572094 that allows us to
+  //  always favor the message that's in the current view (and I'm not talking
+  //  of the current folder) in VariousUtils.jsm:selectRightMessage()
   this._initialSet = aSelectedMessages;
   // this.messages = [
   //  {
-  //    type: one of the consts above
-  //    message: the Message instance
+  //    type: kMsgGloda or kMsgDbHdr
+  //    message: the Message instance (see message.js)
   //    msgHdr: non-null if type == kMsgDbHdr
   //    glodaMsg: non-null if type == kMsgGloda
   //  },
@@ -251,8 +256,6 @@ Conversation.prototype = {
 
   onItemsModified: function _Conversation_onItemsModified (aItems) {
     // We might have not been GC'd yet! So don't do stupid things...
-    // XXX "this._window.Conversations.currentConversation != this" might be a
-    //  better test
     if (this._window.Conversations.counter != this.counter)
       return;
     // This listener gets called very early, when the DOM nodes haven't been
@@ -273,7 +276,8 @@ Conversation.prototype = {
 
   onQueryCompleted: function _Conversation_onQueryCompleted (aCollection) {
     // That's XPConnect bug 547088, so remove the setTimeout when it's fixed and
-    // bump the version requirements in install.rdf.template
+    //  bump the version requirements in install.rdf.template (this will
+    //  probably be fixed in time for Gecko 8, if we're lucky)
     let self = this;
     this._window.setTimeout(function _Conversation_onQueryCompleted_bug547088 () {
       try {
@@ -361,40 +365,39 @@ Conversation.prototype = {
   //  the end of the conversation, I don't support the pathological case of new
   //  messages arriving in the middle of the conversation.
   appendMessages: function _Conversation_appendMessages (aMessages) {
+    // This is normal, the stupid folder tree view often reflows the
+    //  whole thing and asks for a new ThreadSummary but the user hasn't
+    //  actually changed selections.
+    if (aMessages.length) {
+      // All your messages are belong to us.
+      this.messages = this.messages.concat(aMessages);
+
+      // We can't do this._domElement.innerHTML += because it will recreate all
+      //  previous elements and reset all iframes (that's obviously bad!). It's ok
+      //  to use a div since we're using getElementsByClassName everywhere.
+      let innerHtml = [m.message.toHtmlString()
+        for each ([_i, m] in Iterator(aMessages))];
+      innerHtml = innerHtml.join("\n");
+      let div = this._domElement.ownerDocument.createElement("div");
+      this._domElement.appendChild(div);
+      div.innerHTML = innerHtml;
+
+      // Notify each message that it's been added to the DOM and that it can do
+      //  event registration and stuff...
+      let domNodes = this._domElement.getElementsByClassName(Message.prototype.cssClass);
+      for each (let i in range(this.messages.length - aMessages.length, this.messages.length)) {
+        Log.debug("Appending node", i, "to the conversation");
+        this.messages[i].message.onAddedToDom(domNodes[i]);
+        this.messages[i].message.expand();
+      }
+
+      // XXX add some visual feedback, like "1 new message in this conversation"
+    }
+
     // Don't forget to update the conversation buttons, even if we have no new
     //  messages: the reflow might be because some message became unread or
     //  whatever.
     this._updateConversationButtons();
-
-    // This is normal, it just means the stupid folder tree view reflowed the
-    //  whole thing and asked for a new ThreadSummary but the user hasn't
-    //  actually changed selections.
-    if (!aMessages.length)
-      return;
-
-    // All your messages are belong to us.
-    this.messages = this.messages.concat(aMessages);
-
-    // We can't do this._domElement.innerHTML += because it will recreate all
-    //  previous elements and reset all iframes (that's obviously bad!). It's ok
-    //  to use a div since we're using getElementsByClassName everywhere.
-    let innerHtml = [m.message.toHtmlString()
-      for each ([_i, m] in Iterator(aMessages))];
-    innerHtml = innerHtml.join("\n");
-    let div = this._domElement.ownerDocument.createElement("div");
-    this._domElement.appendChild(div);
-    div.innerHTML = innerHtml;
-
-    // Notify each message that it's been added to the DOM and that it can do
-    //  event registration and stuff...
-    let domNodes = this._domElement.getElementsByClassName(Message.prototype.cssClass);
-    for each (let i in range(this.messages.length - aMessages.length, this.messages.length)) {
-      Log.debug("Appending node", i, "to the conversation");
-      this.messages[i].message.onAddedToDom(domNodes[i]);
-      this.messages[i].message.expand();
-    }
-
-    // XXX add some visual feedback, like "1 new message in this conversation"
   },
 
   // Once we're confident our set of messages is the right one, we actually
@@ -467,7 +470,7 @@ Conversation.prototype = {
     // Fill in the HTML right away. The has the nice side-effect of erasing the
     // previous conversation (but not the conversation-wide event handlers!)
     // XXX this does not take the "reverse_order" pref into account. Screw this,
-    // I'm never going to handle that now, it's too fscking complicated anyway.
+    // I'm never going to handle that anyway, it's too fscking complicated.
     let innerHtml = [m.message.toHtmlString()
       for each ([i, m] in Iterator(this.messages))];
     innerHtml = innerHtml.join("\n");

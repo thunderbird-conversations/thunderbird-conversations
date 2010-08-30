@@ -34,6 +34,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+// Dear AMO reviewer, please note that this file has var EXPORTED_SYMBOLS = [];
+Components.utils.import("resource://conversations/plugins/bugzilla.js");
+
 var Conversations = {
   monkeyPatch: null,
   currentConversation: null,

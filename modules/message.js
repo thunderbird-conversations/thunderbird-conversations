@@ -35,8 +35,7 @@ function Message(aWindow, aHtmlPane, aSignalFn) {
 
   let date = new Date(this._msgHdr.date/1000);
   this._date = Prefs["no_friendly_date"] ? dateAsInMessageList(date) : makeFriendlyDateAgo(date);
-  let [from] = this.parse(this._msgHdr.mime2DecodedAuthor);
-  this._from = from;
+  this._from = this.parse(this._msgHdr.mime2DecodedAuthor)[0];
   this._to = this.parse(this._msgHdr.mime2DecodedRecipients);
   this._cc = this.parse(this._msgHdr.ccList);
   this._bcc = this.parse(this._msgHdr.bccList);
@@ -480,6 +479,8 @@ function MessageFromGloda(aWindow, aHtmlPane, aSignalFn, aGlodaMsg) {
   this._msgHdr = aGlodaMsg.folderMessage;
   Message.apply(this, arguments);
 
+  if (aGlodaMsg.alternativeSender)
+    this._from = this.parse(aGlodaMsg.alternativeSender)[0];
   this._glodaMsg = aGlodaMsg;
   this._snippet = this._glodaMsg._indexedBodyText
     ? this._glodaMsg._indexedBodyText.substring(0, snippetLength-1)
@@ -513,6 +514,8 @@ function MessageFromDbHdr(aWindow, aHtmlPane, aSignalFn, aMsgHdr) {
       }
       let [text, meta] = mimeMsgToContentSnippetAndMeta(aMimeMsg, aMsgHdr.folder, snippetLength);
       self._snippet = text;
+      if ("x-bugzilla-who" in aMimeMsg.headers)
+        self._from = self.parse(aMimeMsg.headers["x-bugzilla-who"])[0];
       self._signal();
     });
   } catch (e) {
@@ -535,3 +538,5 @@ MessageFromDbHdr.prototype = {
     this._signal();
   },
 }
+
+MixIn(MessageFromDbHdr, Message);
