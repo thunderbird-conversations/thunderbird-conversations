@@ -41,14 +41,39 @@
       }
     }
 
-    // Setting the second parameter to false means don't fire a stupid timer
-    //  that lives forever everytime we call this function.
-    function killOverflowSubject() {
-      $(".subject").textOverflow(null, false);
+    let Conversations = window.top.Conversations;
+
+    // Mark the current conversation as read/unread. The conversation driver
+    //  takes care of setting the right class on us whenever the state
+    //  changes...
+    function toggleRead(event) {
+      let $span = $(event.target).find("span.read");
+      if ($span.hasClass("unread")) {
+        Conversations.currentConversation.read = true;
+        $span.removeClass("unread");
+      } else {
+        Conversations.currentConversation.read = false;
+        $span.addClass("unread");
+      }
     }
 
-    function killOverflowInvolved(aMsgNode) {
-      $(aMsgNode).find(".involved").textOverflow(null, false);
+    function expandCollapse(event) {
+      let $span = $(event.target).find("span.expand");
+      if ($span.hasClass("collapse")) {
+        [message.collapse()
+          for each ([, { message }] in Iterator(Conversations.currentConversation.messages))];
+        $span.removeClass("collapse");
+      } else {
+        [message.expand()
+          for each ([, { message }] in Iterator(Conversations.currentConversation.messages))];
+        $span.addClass("collapse");
+      }
+    }
+
+    // Setting the second parameter to false means don't fire a stupid timer
+    //  that lives forever everytime we call this function.
+    function fakeTextOverflowSubject() {
+      $(".subject").textOverflow(null, false);
     }
   </script>
 </head>
@@ -61,8 +86,8 @@
         <div class="actions">
           <button><img src="i/trash.png"></button>
           <button><img src="i/archive.png"></button>
-          <button><span class="expand"></span></button>
-          <button><span class="read"></span></button>
+          <button onclick="expandCollapse(event);"><span class="expand"></span></button>
+          <button onclick="toggleRead(event);"><span class="read"></span></button>
           <button><img src="i/tab.png"></button>
           <button><span class="mode"></span></button>
         </div>

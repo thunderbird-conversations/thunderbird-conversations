@@ -180,7 +180,6 @@ Message.prototype = {
   expand: function () {
     this._domNode.classList.remove("collapsed");
     if (!this._didStream) {
-      this._htmlPane.contentWindow.killOverflowInvolved(this._domNode);
       this.streamMessage(); // will call _signal
     } else {
       this._signal();

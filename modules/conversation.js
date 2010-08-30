@@ -251,6 +251,7 @@ Conversation.prototype = {
 
   onItemsModified: function _Conversation_onItemsModified (aItems) {
     // TODO dispatch info to Message instances accordingly
+    this._updateConversationButtons();
   },
 
   onItemsRemoved: function () {},
@@ -341,6 +342,11 @@ Conversation.prototype = {
   //  the end of the conversation, I don't support the pathological case of new
   //  messages arriving in the middle of the conversation.
   appendMessages: function _Conversation_appendMessages (aMessages) {
+    // Don't forget to update the conversation buttons, even if we have no new
+    //  messages: the reflow might be because some message became unread or
+    //  whatever.
+    this._updateConversationButtons();
+
     // This is normal, it just means the stupid folder tree view reflowed the
     //  whole thing and asked for a new ThreadSummary but the user hasn't
     //  actually changed selections.
@@ -459,10 +465,26 @@ Conversation.prototype = {
     let subjectNode = this._domElement.ownerDocument.getElementsByClassName("subject")[0];
     subjectNode.textContent = this.messages[0].message.subject;
     subjectNode.setAttribute("title", this.messages[0].message.subject);
-    this._htmlPane.contentWindow.killOverflowSubject();
+    this._htmlPane.contentWindow.fakeTextOverflowSubject();
 
     // Move on to the next step
     this._expandAndScroll();
+  },
+
+  _updateConversationButtons: function _Conversation_updateConversationButtons () {
+    // Make sure the toggle read/unread button is in the right state
+    let markReadButton = this._htmlPane.contentDocument.querySelector("span.read");
+    if (this.messages.filter(function (x) !x.message.read).length)
+      markReadButton.classList.add("unread");
+    else
+      markReadButton.classList.remove("unread");
+
+    // If some message is collapsed, then the initial state is "expand"
+    let collapseExpandButton = this._htmlPane.contentDocument.querySelector("span.expand");
+    if (this.messages.filter(function (x) x.message.collapsed).length)
+      collapseExpandButton.classList.remove("collapse");
+    else
+      collapseExpandButton.classList.add("collapse");
   },
 
   // Do all the penible stuff about scrolling to the right message and expanding
@@ -494,6 +516,10 @@ Conversation.prototype = {
           Log.error("Unknown action");
       }
     }
+
+    // Do this at the very end, because the result depends on who's expanded and
+    //  read/unread.
+    this._updateConversationButtons();
   },
 
   // This is the starting point, this is where the Monkey-Patched threadSummary
@@ -504,6 +530,8 @@ Conversation.prototype = {
     this._onComplete = function () k(this);
     this._fetchMessages();
   },
+
+  get msgHdrs () [toMsgHdr(x) for each ([, x] in Iterator(this.messages))],
 
   // Just an efficient way to mark a whole conversation as read
   set read (read) {
