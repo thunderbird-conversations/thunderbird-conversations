@@ -79,9 +79,6 @@ function dateAsInMessageList(aDate) {
 }
 
 /**
- * XXX should use getThreadContainingMsgHdr and take a preferred threadId as
- *  well (a VIEW THREAD id) --> will solve the problem of not actually being
- *  able to deal with smart folders such as smart inbox.
  * From a given set of "messages", return, by order of preference:
  * - the message that's in the preferred folder
  * - the message that's in the "Inbox" folder
@@ -89,12 +86,13 @@ function dateAsInMessageList(aDate) {
  * - the message that's not in the Archives
  * - any message that has a valid associated message header.
  * @param aSimilarMessages a set of "messages" (whatever that means)
- * @param aPreferredFolder usually, the current folder
  * @param aToMsgHdr extract the nsIMsgDbHdr from a given element belonging to
  *  aSimilarMessages
+ * @param aPreferredX some preferred value X
+ * @param aMsgHdrToX how to convert a "message" to an X value
  * @return one element from aSimilarMessages
  */
-function selectRightMessage(aSimilarMessages, aPreferredFolder, aToMsgHdr) {
+function selectRightMessage(aSimilarMessages, aToMsgHdr, aPreferredX, aMsgHdrToX) {
   let findForCriterion = function (aCriterion) {
     let bestChoice;
     for each (let [i, msg] in Iterator(aSimilarMessages)) {
@@ -110,7 +108,7 @@ function selectRightMessage(aSimilarMessages, aPreferredFolder, aToMsgHdr) {
   // for the record, writing return \n return value FAILS
   let r =
     findForCriterion(function (aMsgHdr)
-      (aPreferredFolder && aMsgHdr.folder.URI == aPreferredFolder.URI)) ||
+      (aPreferredX && aMsgHdrToX(aMsgHdr) == aPreferredX)) ||
     findForCriterion(msgHdrIsInbox) ||
     findForCriterion(msgHdrIsSent) ||
     findForCriterion(function (aMsgHdr) !msgHdrIsArchive(aMsgHdr)) ||

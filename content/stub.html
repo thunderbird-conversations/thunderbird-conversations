@@ -42,6 +42,7 @@
     }
 
     let Conversations = window.top.Conversations;
+    Components.utils.import("resource://conversations/MsgHdrUtils.jsm");
 
     // Mark the current conversation as read/unread. The conversation driver
     //  takes care of setting the right class on us whenever the state
@@ -70,6 +71,14 @@
       }
     }
 
+    function archiveConversation(event) {
+      msgHdrsArchive(Conversations.currentConversation.msgHdrs, window.top);
+    }
+
+    function deleteConversation(event) {
+      msgHdrsDelete(Conversations.currentConversation.msgHdrs);
+    }
+
     // Setting the second parameter to false means don't fire a stupid timer
     //  that lives forever everytime we call this function.
     function fakeTextOverflowSubject() {
@@ -84,11 +93,11 @@
       <div id="conversationHeader" class="hbox">
         <div class="subject boxFlex">This is an example of a subject</div>
         <div class="actions">
-          <button><img src="i/trash.png"></button>
-          <button><img src="i/archive.png"></button>
+          <button onclick="deleteConversation(event);"><img src="i/trash.png" /></button>
+          <button onclick="archiveConversation(event);"><img src="i/archive.png" /></button>
           <button onclick="expandCollapse(event);"><span class="expand"></span></button>
           <button onclick="toggleRead(event);"><span class="read"></span></button>
-          <button><img src="i/tab.png"></button>
+          <button><img src="i/tab.png" /></button>
           <button><span class="mode"></span></button>
         </div>
       </div>

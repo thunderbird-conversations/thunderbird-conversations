@@ -250,8 +250,11 @@ Conversation.prototype = {
   onItemsAdded: function () {},
 
   onItemsModified: function _Conversation_onItemsModified (aItems) {
-    // TODO dispatch info to Message instances accordingly
+    // We might have not been GC'd yet!
+    if (this._window.Conversations.counter != this.counter)
+      return;
     this._updateConversationButtons();
+    // TODO dispatch info to Message instances accordingly
   },
 
   onItemsRemoved: function () {},
@@ -327,9 +330,13 @@ Conversation.prototype = {
     // Wicked cases, when we're asked to display a draft that's half-saved...
     messages = messages.filter(function (x) (toMsgHdr(x) && toMsgHdr(x).messageId));
     messages = groupArray(this.messages, getMessageId);
-    // Select right message will try to pick the message that has a
-    //  corresponding msgHdr.
-    messages = [selectRightMessage(group, this._window.gDBView.msgFolder, toMsgHdr)
+    // Select right message will try to pick the message that has an
+    //  existing msgHdr.
+    let self = this;
+    let getThread = function (aMsgHdr) self._window.gDBView.getThreadContainingMsgHdr(aMsgHdr);
+    let msgHdrToThreadKey = function (aMsgHdr) getThread(aMsgHdr).threadKey;
+    let threadKey = msgHdrToThreadKey(this._initialSet[0]);
+    messages = [selectRightMessage(group, toMsgHdr, threadKey, msgHdrToThreadKey)
       for each ([i, group] in Iterator(messages))];
     // But sometimes it just fails, and gloda remembers dead messages...
     messages = messages.filter(function (x) x.msgHdr || (x.glodaMsg && x.glodaMsg.folderMessage));
@@ -531,17 +538,13 @@ Conversation.prototype = {
     this._fetchMessages();
   },
 
-  get msgHdrs () [toMsgHdr(x) for each ([, x] in Iterator(this.messages))],
+  get msgHdrs () {
+    return [toMsgHdr(x) for each ([, x] in Iterator(this.messages))];
+  },
 
   // Just an efficient way to mark a whole conversation as read
   set read (read) {
-    msgHdrsMarkAsRead([m.message._msgHdr for each ([, m] in Iterator(this.messages))], read);
-    // It is confusing to actually mark a whole conversation as read and not see
-    //  the messages in the current view being marked as read... so mark them as
-    //  read anyway. XXX this shouldn't be necessary anymore after
-    //  selectRightMessage is fixed to always select messages inside the current
-    //  view thread.
-    msgHdrsMarkAsRead(this._initialSet, read);
+    msgHdrsMarkAsRead(this.msgHdrs, read);
   },
 }
 
