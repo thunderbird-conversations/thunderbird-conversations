@@ -255,19 +255,7 @@ Conversation.prototype = {
   onItemsAdded: function () {},
 
   onItemsModified: function _Conversation_onItemsModified (aItems) {
-    // We might have not been GC'd yet! So don't do stupid things...
-    if (this._window.Conversations.counter != this.counter)
-      return;
-    // This listener gets called very early, when the DOM nodes haven't been
-    //  built yet. So trying to access the message's properties causes all sorts
-    //  of exceptions, which are OK, since in the end, we call
-    //  _updateConversationButtons when we're ready.
-    // TODO don't catch all exceptions
-    try {
-      this._updateConversationButtons();
-    } catch (e) {
-      ;
-    }
+    this._updateConversationButtons();
     // TODO dispatch info to Message instances accordingly (new tags, starred
     //  status)...
   },
@@ -281,6 +269,9 @@ Conversation.prototype = {
     let self = this;
     this._window.setTimeout(function _Conversation_onQueryCompleted_bug547088 () {
       try {
+        // The MessageFromGloda constructor cannot work with gloda messages that
+        //  don't have a message header
+        aCollection.items = aCollection.items.filter(function (glodaMsg) glodaMsg.folderMessage);
         // When the right number of signals has been fired, move on...
         self._getReady(aCollection.items.length + self._initialSet.length + 1);
         // We want at least all messages from the Gloda collection
@@ -349,7 +340,13 @@ Conversation.prototype = {
     // Select right message will try to pick the message that has an
     //  existing msgHdr.
     let self = this;
-    let getThread = function (aMsgHdr) self._window.gDBView.getThreadContainingMsgHdr(aMsgHdr);
+    let getThread = function (aMsgHdr) {
+      try {
+        return self._window.gDBView.getThreadContainingMsgHdr(aMsgHdr);
+      } catch (e) {
+        return -1;
+      }
+    };
     let msgHdrToThreadKey = function (aMsgHdr) getThread(aMsgHdr).threadKey;
     let threadKey = msgHdrToThreadKey(this._initialSet[0]);
     messages = [selectRightMessage(group, toMsgHdr, threadKey, msgHdrToThreadKey)
@@ -460,6 +457,8 @@ Conversation.prototype = {
         Log.debug("Recycling conversation! We are eco-responsible.", whichMessages.length,
           "new messages");
         currentConversation.appendMessages(whichMessages);
+
+        this.messages = null;
         // Don't call k (i.e. don't mark the newly arrived messages as read and
         // keep the old conversation as the current one), don't blow away the
         // previous conversation, don't do anything. Goodbye!

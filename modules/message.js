@@ -117,6 +117,9 @@ Message.prototype = {
   // Once the conversation has added us into the DOM, we're notified about it
   // (aDomNode is us), and we can start registering event handlers and stuff
   onAddedToDom: function (aDomNode) {
+    if (!aDomNode) {
+      Log.error("onAddedToDom() && !aDomNode", this.from, this.to, this.subject);
+    }
     this._domNode = aDomNode;
     let msgHeaderNode = this._domNode.getElementsByClassName("messageHeader")[0];
     let self = this;
@@ -261,7 +264,13 @@ Message.prototype = {
                 if (c.tagName && c.tagName.toLowerCase() == "blockquote") {
                   if (c.getUserData("hideme") !== false) { // null is ok, true is ok too
                     // Compute the approximate number of lines while the element is still visible
-                    let style = iframe.contentWindow.getComputedStyle(c, null);
+                    let style;
+                    try {
+                      style = iframe.contentWindow.getComputedStyle(c, null);
+                    } catch (e) {
+                      // message arrived and window is not displayed, arg,
+                      // cannot get the computed style, BAD
+                    }
                     if (style) {
                       let numLines = parseInt(style.height) / parseInt(style.lineHeight);
                       if (numLines > Prefs["hide_quote_length"]) {
