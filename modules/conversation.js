@@ -493,6 +493,8 @@ Conversation.prototype = {
   },
 
   _updateConversationButtons: function _Conversation_updateConversationButtons () {
+    Log.debug("Updating conversation", this.counter, "global state...");
+
     // Make sure the toggle read/unread button is in the right state
     let markReadButton = this._htmlPane.contentDocument.querySelector("span.read");
     if (this.messages.filter(function (x) !x.message.read).length)
@@ -518,7 +520,11 @@ Conversation.prototype = {
     this._runOnceAfterNSignals(function () {
       self._htmlPane.contentWindow.scrollNodeIntoView(
         self._domElement.getElementsByClassName(Message.prototype.cssClass)[focusThis]);
+
       self._onComplete();
+      // In theory, we could call this *before* _onComplete, and pray for Gloda
+      //  to call onItemsModified properly, and in time. We could. But we won't.
+      self._updateConversationButtons();
     }, this.messages.length);
 
     for each (let [i, action] in Iterator(expandThese)) {
@@ -537,10 +543,6 @@ Conversation.prototype = {
           Log.error("Unknown action");
       }
     }
-
-    // Do this at the very end, because the result depends on who's expanded and
-    //  read/unread.
-    this._updateConversationButtons();
   },
 
   // This is the starting point, this is where the Monkey-Patched threadSummary

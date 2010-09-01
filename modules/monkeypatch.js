@@ -69,6 +69,7 @@ MonkeyPatch.prototype = {
               // The conversation knows what this callback is all about, and
               //  will decide not to call it if recycling a previous
               //  conversation (so that kind of defeats what I'm saying above).
+              Log.debug("Conversation", aConversation.counter, "is the new one.");
               window.Conversations.currentConversation = aConversation;
               // Make sure we respect the user's preferences.
               self.markReadTimeout = window.setTimeout(function () {
