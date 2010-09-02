@@ -88,7 +88,7 @@ Message.prototype = {
 
     let r = [
       "<li class=\"message collapsed\">\n",
-      "  <!-- Message-ID: ", this._msgHdr.messageId, " -->\n",
+      //"  <!-- Message-ID: ", this._msgHdr.messageId, " -->\n",
       "  <div class=\"messageHeader hbox\">\n",
       "    <div class=\"involved boxFlex\">\n",
       "      <span class=\"author\"><img src=\"i/star.png\"> ", from, "</span>\n",
