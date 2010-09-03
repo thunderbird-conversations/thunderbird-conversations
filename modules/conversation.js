@@ -463,6 +463,9 @@ Conversation.prototype = {
         // keep the old conversation as the current one), don't blow away the
         // previous conversation, don't do anything. Goodbye!
         return;
+      } else {
+        // We'll be replacing the old conversation
+        this._window.Conversations.currentConversation.messages = [];
       }
     }
 
