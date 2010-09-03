@@ -494,6 +494,8 @@ Conversation.prototype = {
 
   _updateConversationButtons: function _Conversation_updateConversationButtons () {
     Log.debug("Updating conversation", this.counter, "global state...");
+    if (!this.messages.length)
+      return;
 
     // Make sure the toggle read/unread button is in the right state
     let markReadButton = this._htmlPane.contentDocument.querySelector("span.read");
