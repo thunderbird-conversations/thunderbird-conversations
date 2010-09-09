@@ -448,6 +448,11 @@ Conversation.prototype = {
       };
       let myMsgIds = [getMessageId(x) for each ([, x] in Iterator(this.messages))];
       let [shouldRecycle, _whichMessageIds] = isPrefix(currentMsgIds, myMsgIds);
+      if (currentMsgSet.length == 0) {
+        // Seems to happen sometimes. Why? Dunno. XXX investigate this
+        Log.error("Empty conversation, WTF?");
+        shouldRecycle = false;
+      }
       Log.assert(currentMsgSet.length > 0, "There's no such thing as an empty conversation");
       if (shouldRecycle) {
         // Just get the extra messages
