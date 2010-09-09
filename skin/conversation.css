@@ -12,6 +12,7 @@ body {
   background-color: #ECF3FE;
   margin: 0;
   padding: 0;
+  overflow-y: scroll;
 }
 
 p {
