@@ -453,7 +453,6 @@ Conversation.prototype = {
         Log.error("Empty conversation, WTF?");
         shouldRecycle = false;
       }
-      Log.assert(currentMsgSet.length > 0, "There's no such thing as an empty conversation");
       if (shouldRecycle) {
         // Just get the extra messages
         let whichMessages = this.messages.slice(currentMsgSet.length, this.messages.length);
