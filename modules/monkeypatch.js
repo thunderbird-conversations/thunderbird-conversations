@@ -28,6 +28,26 @@ MonkeyPatch.prototype = {
     let window = this._window;
     let self = this;
     let htmlpane = window.document.getElementById("multimessage");
+    let oldSummarizeMultipleSelection = window["summarizeMultipleSelection"];
+
+    let ensureLoadedAndRun = function (aLocation, k) {
+      if (htmlpane.contentDocument.location.href == aLocation) {
+        k();
+      } else {
+        htmlpane.addEventListener("load", function _g (event) {
+          htmlpane.removeEventListener("load", _g, true);
+            k();
+        }, true);
+        htmlpane.contentDocument.location.href = aLocation;
+      }
+    };
+
+    window.summarizeMultipleSelection =
+      function _summarizeMultiple_patched (aSelectedMessages, aListener) {
+        ensureLoadedAndRun("chrome://messenger/content/multimessageview.xhtml", function () {
+          oldSummarizeMultipleSelection(aSelectedMessages, aListener);
+        });
+      };
 
     // This one completely nukes the original summarizeThread function, which is
     //  actually the entry point to the original ThreadSummary class.
@@ -36,21 +56,10 @@ MonkeyPatch.prototype = {
         if (!aSelectedMessages.length)
           return;
 
-        let moveOn = htmlpane.contentDocument.location.href == "chrome://conversations/content/stub.html"
-          ? function (f)
-              f()
-          : function (f) {
-              htmlpane.addEventListener("load", function _g (event) {
-                htmlpane.removeEventListener("load", _g, true);
-                  // Invalidate any remaining conversation
-                  window.Conversations.currentConversation = null;
-                  // And do stuff
-                  f();
-              }, true);
-              htmlpane.contentDocument.location.href = "chrome://conversations/content/stub.html";
-            }
-          ;
-        moveOn (function () {
+        ensureLoadedAndRun("chrome://conversations/content/stub.html", function () {
+          // Invalidate any remaining conversation
+          window.Conversations.currentConversation = null;
+
           try {
             let freshConversation = new self._Conversation(
               window, aSelectedMessages, ++window.Conversations.counter);

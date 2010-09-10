@@ -51,6 +51,11 @@ window.addEventListener("load", function _overlay_eventListener () {
   // We instanciate the Monkey-Patch for the given Conversation object.
   let monkeyPatch = new NS.MonkeyPatch(window, NS.Conversation);
   // And then we seize the window and insert our code into it
-  monkeyPatch.apply();
+  try {
+    monkeyPatch.apply();
+  } catch (e) {
+    dump(e+"\n");
+    dump(e.stack+"\n");
+  }
   Conversations.monkeyPatch = monkeyPatch;
 }, false);
