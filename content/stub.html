@@ -41,6 +41,56 @@
       }
     }
 
+    const kPopupTimeout = 300;
+
+    function enableTooltips(aMsg) {
+      let $aMsgNode = $(aMsg._domNode);
+      $aMsgNode.find('.tooltip').each(function (i) {
+        // "details" is a hypothetical "details" link that, when
+        //   hovered/clicked, starts the interaction with the tooltip
+        let $tooltip = $(this);
+        let $details = $tooltip.prev();
+
+        let sticky = false;
+        let timeout;
+        $details.get(0).addEventListener("click", function (event) {
+          sticky = !sticky;
+          event.stopPropagation();
+        }, false);
+        $details.hover(
+          function(){
+            if (aMsg.collapsed)
+              return;
+            if (!sticky) {
+              clearTimeout(timeout);
+              $(this).next(':hidden').fadeIn();
+            }
+          },
+          function(){
+            var self = this;
+            if (!sticky) {
+              clearTimeout(timeout);
+              timeout = setTimeout(function () {
+                $(self).next(/*':visible'*/).fadeOut()
+              }, kPopupTimeout);
+            }
+          });
+        $tooltip.hover(
+          function () {
+            clearTimeout(timeout);
+          },
+          function () {
+            var self = this;
+            if ($(this).is(":visible") && !sticky) {
+              clearTimeout(timeout);
+              timeout = setTimeout(function () {
+                $(self).fadeOut();
+              }, kPopupTimeout);
+            }
+          });
+      });
+    }
+
     let Conversations = window.top.Conversations;
     Components.utils.import("resource://conversations/MsgHdrUtils.jsm");
 

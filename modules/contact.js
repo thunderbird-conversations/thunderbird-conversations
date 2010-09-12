@@ -5,6 +5,11 @@ const Cc = Components.classes;
 const Cu = Components.utils;
 const Cr = Components.results;
 
+const ioService = Cc["@mozilla.org/network/io-service;1"]
+                  .getService(Ci.nsIIOService);
+const msgComposeService = Cc["@mozilla.org/messengercompose;1"]
+                          .getService(Ci.nsIMsgComposeService);
+
 Cu.import("resource:///modules/gloda/utils.js");
 Cu.import("resource://conversations/VariousUtils.jsm");
 
@@ -15,6 +20,8 @@ try {
 } catch (e) {
   gHasPeople = false;
 }
+
+gHasPeople = false; // XXX remove this when we do contacts for real
 
 function ContactManager() {
   this._cache = {};
@@ -61,13 +68,42 @@ ContactManager.prototype = {
 }
 
 let ContactMixIn = {
-  toInlineHtml: function _ContactMixIn_toInlineHtml () {
+  toHtmlString: function _ContactMixIn_toInlineHtml () {
+    let tooltipName = (this.name != this._email)
+      ? this.name
+      : ""
+    ;
     let r = [
       "<span style=\"color:", this.color, "\">",
-        escapeHtml(this.name),
-      "</span>\n"
+         escapeHtml(this.name),
+      "</span>\n",
+      "<div class=\"tooltip\">\n",
+      "  <div class=\"arrow\"></div>\n",
+      "  <div class=\"arrow inside\"></div>\n",
+      "  <div class=\"authorInfo\">\n",
+      "    <span class=\"name\">", tooltipName, "</span>\n",
+      "    <span class=\"authorEmail\">", this._email, "</span>\n",
+      "  </div>\n",
+      "  <div class=\"authorPicture\">\n",
+      "    <img src=\"", this.avatar, "\">\n",
+      "  </div>\n",
+      "  <div class=\"tipFooter\">\n",
+      "    <button class=\"sendEmail\">send email</button>\n",
+      "    <button>more</button>\n",
+      "  </div>\n",
+      "</div>\n",
     ].join("");
     return r;
+  },
+
+  onAddedToDom: function _ContactMixIn_onAddedToDom(aDomNode) {
+    let uri = "mailto:" + this._email;
+    aURI = ioService.newURI(uri, null, null);
+    aDomNode.getElementsByClassName("sendEmail")[0].addEventListener(
+      "click", function (event) {
+        msgComposeService.OpenComposeWindowWithURI(null, aURI);
+        event.stopPropagation();
+      }, false);
   },
 };
 

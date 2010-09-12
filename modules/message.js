@@ -41,6 +41,7 @@ function Message(aConversation, aSignalFn) {
   this.subject = this._msgHdr.mime2DecodedSubject;
 
   this._uri = this._msgHdr.folder.getUriForMsg(this._msgHdr);
+  this._contacts = [];
 }
 
 Message.prototype = {
@@ -82,6 +83,7 @@ Message.prototype = {
   toHtmlString: function () {
     let contactFrom = this._conversation._contactManager
       .getContactFromNameAndEmail(this._from.name, this._from.email);
+    this._contacts.push(contactFrom);
     //let from = this.format(this._from);
     let to = this.join(this._to.concat(this._cc).concat(this._bcc).map(this.format));
     let snippet = escapeHtml(this._snippet);
@@ -95,22 +97,7 @@ Message.prototype = {
       "      <img src=\"i/star.png\" />&nbsp;\n",
       "    </div>\n",
       "    <div class=\"author\">\n",
-      "      ", contactFrom.toInlineHtml(), "\n",
-      "      <div class=\"tooltip\">\n",
-      "        <div class=\"arrow\"></div>\n",
-      "        <div class=\"arrow inside\"></div>\n",
-      "        <div class=\"authorInfo\">\n",
-      "          <span class=\"name\">Andy Chung</span>\n",
-      "          <span class=\"authorEmail\">me@andychung.ca</span>\n",
-      "        </div>\n",
-      "        <div class=\"authorPicture\">\n",
-      "          <img src=\"i/avatar.png\">\n",
-      "        </div>\n",
-      "        <div class=\"tipFooter\">\n",
-      "          <button>send email</button>\n",
-      "          <button>more</button>\n",
-      "        </div>\n",
-      "      </div>\n",
+      "      ", contactFrom.toHtmlString(), "\n",
       "    </div>\n",
       "    <div class=\"involved boxFlex\">\n",
       "      <span class=\"to\">to ", to, "</span>\n",
@@ -118,19 +105,19 @@ Message.prototype = {
       "    </div>\n",
       "    <div class=\"options\">\n",
       "      <span class=\"date\">", date, "</span>\n",
-      "      <span class=\"details\">| <a href=\"#\">details</a> |</span> \n",
-      "      <span class=\"dropDown\"><a href=\"#\">more...</a></span>\n",
+      "      <span class=\"details\">| <a href=\"javascript:\">details</a> |</span> \n",
       "      <span class=\"dropDown\">\n",
-      "        <a href=\"#\">more <span class=\"downwardArrow\">&#x25bc;</span></a>\n",
+      "        <a href=\"javascript:\">more <span class=\"downwardArrow\">&#x25bc;</span></a>\n",
       "        <div class=\"tooltip\">\n",
       "          <ul>\n",
-      "            <li>mark as unread\n",
+      "            <li>archive this message\n",
       "              <div class=\"arrow\"></div>\n",
       "              <div class=\"arrow inside\"></div>\n",
       "            </li>\n",
-      "            <li>add star</li>\n",
-      "            <li>show in plain text</li>\n",
-      "            <li>move conversation</li>\n",
+      "            <li>delete this message</li>\n",
+      "            <li>this sender sends monospace</li>\n",
+      "            <li>view using the classic reader</li>\n",
+      "            <li>view message source</li>\n",
       "          </ul>\n",
       "        </div>\n",
       "      </span>\n",
@@ -159,6 +146,14 @@ Message.prototype = {
     let msgHeaderNode = this._domNode.getElementsByClassName("messageHeader")[0];
     let self = this;
 
+    // Forward the calls to each contact. XXX will be changed if we have
+    //  tooltips for all recipients.
+    let people = aDomNode.getElementsByClassName("author");
+    [x.onAddedToDom(people[i]) for each ([i, x] in Iterator(this._contacts))];
+
+    // Let the UI do its stuff with the tooltips
+    this._conversation._htmlPane.contentWindow.enableTooltips(this);
+
     // Register all the needed event handlers. Nice wrappers below.
     let compose = function _compose (aCompType, aEvent) {
       if (aEvent.shiftKey) {
@@ -172,7 +167,7 @@ Message.prototype = {
         action = "click";
       let nodes = selector ? self._domNode.querySelectorAll(selector) : [self._domNode];
       for each (let [, node] in Iterator(nodes))
-        node.addEventListener(action, f, true);
+        node.addEventListener(action, f, false);
     };
     let forward = function _forward (event) {
       let forwardType = 0;

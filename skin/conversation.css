@@ -221,7 +221,7 @@ span.downwardArrow {
 
 #wrapper li.message .messageHeader .author:hover .tooltip,
 #wrapper li.message .messageHeader .options .dropDown:hover .tooltip {
-  display: block;
+  /* display: block; */
 }
 
 #wrapper li.message .messageHeader .author .tooltip .arrow,
