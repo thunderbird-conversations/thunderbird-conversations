@@ -110,14 +110,14 @@ Message.prototype = {
       "        <a href=\"javascript:\">more <span class=\"downwardArrow\">&#x25bc;</span></a>\n",
       "        <div class=\"tooltip\">\n",
       "          <ul>\n",
-      "            <li>archive this message\n",
+      "            <li class=\"action-archive\">archive this message\n",
       "              <div class=\"arrow\"></div>\n",
       "              <div class=\"arrow inside\"></div>\n",
       "            </li>\n",
-      "            <li>delete this message</li>\n",
-      "            <li>this sender sends monospace</li>\n",
-      "            <li>view using the classic reader</li>\n",
-      "            <li>view message source</li>\n",
+      "            <li class=\"action-delete\">delete this message</li>\n",
+      "            <li class=\"action-monospace\">this sender sends monospace</li>\n",
+      "            <li class=\"action-classic\">view using the classic reader</li>\n",
+      "            <li class=\"action-source\">view message source</li>\n",
       "          </ul>\n",
       "        </div>\n",
       "      </span>\n",
@@ -143,12 +143,18 @@ Message.prototype = {
       Log.error("onAddedToDom() && !aDomNode", this.from, this.to, this.subject);
     }
     this._domNode = aDomNode;
+    let self = this;
+    this._domNode.getElementsByClassName("messageHeader")[0]
+      .addEventListener("click", function () self.toggle(), false);
+  },
+
+  registerActions: function _Message_registerActions() {
     let msgHeaderNode = this._domNode.getElementsByClassName("messageHeader")[0];
     let self = this;
 
     // Forward the calls to each contact. XXX will be changed if we have
     //  tooltips for all recipients.
-    let people = aDomNode.getElementsByClassName("author");
+    let people = this._domNode.getElementsByClassName("author");
     [x.onAddedToDom(people[i]) for each ([i, x] in Iterator(this._contacts))];
 
     // Let the UI do its stuff with the tooltips
@@ -181,7 +187,6 @@ Message.prototype = {
       else
         compose(Ci.nsIMsgCompType.ForwardInline, event);
     };
-    register(".messageHeader", function () self.toggle());
     register(".reply", function (event) compose(Ci.nsIMsgCompType.ReplyToSender, event));
     register(".replyAll", function (event) compose(Ci.nsIMsgCompType.ReplyAll, event));
     register(".forward", function (event) forward(event));
@@ -212,6 +217,7 @@ Message.prototype = {
   expand: function () {
     this._domNode.classList.remove("collapsed");
     if (!this._didStream) {
+      this.registerActions();
       this.streamMessage(); // will call _signal
     } else {
       this._signal();
