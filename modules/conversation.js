@@ -12,6 +12,7 @@ Cu.import("resource://conversations/prefs.js");
 Cu.import("resource://conversations/MsgHdrUtils.jsm");
 Cu.import("resource://conversations/VariousUtils.jsm");
 Cu.import("resource://conversations/message.js");
+Cu.import("resource://conversations/contact.js");
 
 const kMsgDbHdr = 0;
 const kMsgGloda = 1;
@@ -183,15 +184,16 @@ function msgDate ({ type, message, msgHdr, glodaMsg }) {
 // -- The actual conversation object
 
 // We maintain the invariant that, once the conversation is built, this.messages
-//  matches exactly the DOM nodes with class "message" inside this._domElement.
+//  matches exactly the DOM nodes with class "message" inside this._domNode.
 // So the i-th _message is also the i-th DOM node.
 function Conversation(aWindow, aSelectedMessages, aCounter) {
+  this._contactManager = new ContactManager();
   this._window = aWindow;
   // We have the COOL invariant that this._initialSet is a subset of
   //   [toMsgHdr(x) for each ([, x] in Iterator(this.messages))]
   // This is made possible by David's patch in bug 572094 that allows us to
-  //  always favor the message that's in the current view (and I'm not talking
-  //  of the current folder) in VariousUtils.jsm:selectRightMessage()
+  //  always prefer the message that's in the current *view* (and I'm not
+  //  talking of the current *folder*) in VariousUtils.jsm:selectRightMessage()
   this._initialSet = aSelectedMessages;
   // this.messages = [
   //  {
@@ -205,7 +207,7 @@ function Conversation(aWindow, aSelectedMessages, aCounter) {
   this.messages = [];
   this.counter = aCounter; // RO
   this._query = null;
-  this._domElement = null;
+  this._domNode = null;
   this._onComplete = null;
 }
 
@@ -234,7 +236,7 @@ Conversation.prototype = {
           self._getReady(self._initialSet.length + 1);
           self.messages = [{
               type: kMsgDbHdr,
-              message: new MessageFromDbHdr(self._window, self._htmlPane,
+              message: new MessageFromDbHdr(self,
                 function () self._signal.apply(self), msgHdr), // will run signal
               msgHdr: msgHdr,
             } for each ([, msgHdr] in Iterator(self._initialSet))];
@@ -277,7 +279,7 @@ Conversation.prototype = {
         // We want at least all messages from the Gloda collection
         self.messages = [{
           type: kMsgGloda,
-          message: new MessageFromGloda(self._window, self._htmlPane,
+          message: new MessageFromGloda(self,
             function () self._signal.apply(self), glodaMsg), // will fire signal when done
           glodaMsg: glodaMsg,
         } for each ([, glodaMsg] in Iterator(aCollection.items))];
@@ -296,7 +298,7 @@ Conversation.prototype = {
             Log.debug("Message with message-id", msgHdr.messageId, "was not in the gloda collection");
             self.messages.push({
               type: kMsgDbHdr,
-              message: new MessageFromDbHdr(self._window, self._htmlPane,
+              message: new MessageFromDbHdr(self,
                 function () self._signal.apply(self), msgHdr), // will call signal when done
               msgHdr: msgHdr,
             });
@@ -369,19 +371,19 @@ Conversation.prototype = {
       // All your messages are belong to us.
       this.messages = this.messages.concat(aMessages);
 
-      // We can't do this._domElement.innerHTML += because it will recreate all
+      // We can't do this._domNode.innerHTML += because it will recreate all
       //  previous elements and reset all iframes (that's obviously bad!). It's ok
       //  to use a div since we're using getElementsByClassName everywhere.
       let innerHtml = [m.message.toHtmlString()
         for each ([_i, m] in Iterator(aMessages))];
       innerHtml = innerHtml.join("\n");
-      let div = this._domElement.ownerDocument.createElement("div");
-      this._domElement.appendChild(div);
+      let div = this._domNode.ownerDocument.createElement("div");
+      this._domNode.appendChild(div);
       div.innerHTML = innerHtml;
 
       // Notify each message that it's been added to the DOM and that it can do
       //  event registration and stuff...
-      let domNodes = this._domElement.getElementsByClassName(Message.prototype.cssClass);
+      let domNodes = this._domNode.getElementsByClassName(Message.prototype.cssClass);
       for each (let i in range(this.messages.length - aMessages.length, this.messages.length)) {
         Log.debug("Appending node", i, "to the conversation");
         this.messages[i].message.onAddedToDom(domNodes[i]);
@@ -480,17 +482,17 @@ Conversation.prototype = {
     let innerHtml = [m.message.toHtmlString()
       for each ([i, m] in Iterator(this.messages))];
     innerHtml = innerHtml.join("\n");
-    this._domElement.innerHTML = innerHtml;
+    this._domNode.innerHTML = innerHtml;
 
     // Notify each message that it's been added to the DOM and that it can do
     // event registration and stuff...
-    let domNodes = this._domElement.getElementsByClassName(Message.prototype.cssClass);
+    let domNodes = this._domNode.getElementsByClassName(Message.prototype.cssClass);
     Log.debug("Got", domNodes.length+"/"+this.messages.length, "dom nodes");
     for each (let [i, m] in Iterator(this.messages))
       m.message.onAddedToDom(domNodes[i]);
 
     // Set the subject properly
-    let subjectNode = this._domElement.ownerDocument.getElementsByClassName("subject")[0];
+    let subjectNode = this._domNode.ownerDocument.getElementsByClassName("subject")[0];
     subjectNode.textContent = this.messages[0].message.subject;
     subjectNode.setAttribute("title", this.messages[0].message.subject);
     this._htmlPane.contentWindow.fakeTextOverflowSubject();
@@ -528,7 +530,7 @@ Conversation.prototype = {
     let self = this;
     this._runOnceAfterNSignals(function () {
       self._htmlPane.contentWindow.scrollNodeIntoView(
-        self._domElement.getElementsByClassName(Message.prototype.cssClass)[focusThis]);
+        self._domNode.getElementsByClassName(Message.prototype.cssClass)[focusThis]);
 
       self._onComplete();
       // In theory, we could call this *before* _onComplete, and pray for Gloda
@@ -558,7 +560,7 @@ Conversation.prototype = {
   // or the event handlers ask for a conversation.
   outputInto: function _Conversation_outputInto (aHtmlPane, k) {
     this._htmlPane = aHtmlPane;
-    this._domElement = this._htmlPane.contentDocument.getElementById("messageList");
+    this._domNode = this._htmlPane.contentDocument.getElementById("messageList");
     this._onComplete = function () k(this);
     this._fetchMessages();
   },

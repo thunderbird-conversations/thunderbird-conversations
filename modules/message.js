@@ -25,13 +25,12 @@ Cu.import("resource://conversations/log.js");
 const snippetLength = 300;
 
 // Call that one after setting this._msgHdr;
-function Message(aWindow, aHtmlPane, aSignalFn) {
+function Message(aConversation, aSignalFn) {
   this._signal = aSignalFn;
   this._didStream = false;
   this._domNode = null;
   this._snippet = "";
-  this._window = aWindow;
-  this._htmlPane = aHtmlPane;
+  this._conversation = aConversation;
 
   let date = new Date(this._msgHdr.date/1000);
   this._date = Prefs["no_friendly_date"] ? dateAsInMessageList(date) : makeFriendlyDateAgo(date);
@@ -81,7 +80,9 @@ Message.prototype = {
 
   // Output this message as a whole bunch of HTML
   toHtmlString: function () {
-    let from = this.format(this._from);
+    let contactFrom = this._conversation._contactManager
+      .getContactFromNameAndEmail(this._from.name, this._from.email);
+    //let from = this.format(this._from);
     let to = this.join(this._to.concat(this._cc).concat(this._bcc).map(this.format));
     let snippet = escapeHtml(this._snippet);
     let date = escapeHtml(this._date);
@@ -90,8 +91,28 @@ Message.prototype = {
       "<li class=\"message collapsed\">\n",
       //"  <!-- Message-ID: ", this._msgHdr.messageId, " -->\n",
       "  <div class=\"messageHeader hbox\">\n",
+      "    <div class=\"star\">\n",
+      "      <img src=\"i/star.png\" />&nbsp;\n",
+      "    </div>\n",
+      "    <div class=\"author\">\n",
+      "      ", contactFrom.toInlineHtml(), "\n",
+      "      <div class=\"tooltip\">\n",
+      "        <div class=\"arrow\"></div>\n",
+      "        <div class=\"arrow inside\"></div>\n",
+      "        <div class=\"authorInfo\">\n",
+      "          <span class=\"name\">Andy Chung</span>\n",
+      "          <span class=\"authorEmail\">me@andychung.ca</span>\n",
+      "        </div>\n",
+      "        <div class=\"authorPicture\">\n",
+      "          <img src=\"i/avatar.png\">\n",
+      "        </div>\n",
+      "        <div class=\"tipFooter\">\n",
+      "          <button>send email</button>\n",
+      "          <button>more</button>\n",
+      "        </div>\n",
+      "      </div>\n",
+      "    </div>\n",
       "    <div class=\"involved boxFlex\">\n",
-      "      <span class=\"author\"><img src=\"i/star.png\"> ", from, "</span>\n",
       "      <span class=\"to\">to ", to, "</span>\n",
       "      <span class=\"snippet\">", snippet, "</span>\n",
       "    </div>\n",
@@ -99,6 +120,20 @@ Message.prototype = {
       "      <span class=\"date\">", date, "</span>\n",
       "      <span class=\"details\">| <a href=\"#\">details</a> |</span> \n",
       "      <span class=\"dropDown\"><a href=\"#\">more...</a></span>\n",
+      "      <span class=\"dropDown\">\n",
+      "        <a href=\"#\">more <span class=\"downwardArrow\">&#x25bc;</span></a>\n",
+      "        <div class=\"tooltip\">\n",
+      "          <ul>\n",
+      "            <li>mark as unread\n",
+      "              <div class=\"arrow\"></div>\n",
+      "              <div class=\"arrow inside\"></div>\n",
+      "            </li>\n",
+      "            <li>add star</li>\n",
+      "            <li>show in plain text</li>\n",
+      "            <li>move conversation</li>\n",
+      "          </ul>\n",
+      "        </div>\n",
+      "      </span>\n",
       "    </div>\n",
       "  </div>\n",
       "  <div class=\"messageBody\">\n",
@@ -127,9 +162,9 @@ Message.prototype = {
     // Register all the needed event handlers. Nice wrappers below.
     let compose = function _compose (aCompType, aEvent) {
       if (aEvent.shiftKey) {
-        self._window.ComposeMessage(aCompType, Ci.nsIMsgCompFormat.OppositeOfDefault, self._msgHdr.folder, [self._uri]);
+        self._conversation._window.ComposeMessage(aCompType, Ci.nsIMsgCompFormat.OppositeOfDefault, self._msgHdr.folder, [self._uri]);
       } else {
-        self._window.ComposeMessage(aCompType, Ci.nsIMsgCompFormat.Default, self._msgHdr.folder, [self._uri]);
+        self._conversation._window.ComposeMessage(aCompType, Ci.nsIMsgCompFormat.Default, self._msgHdr.folder, [self._uri]);
       }
     };
     let register = function _register (selector, f, action) {
@@ -201,7 +236,7 @@ Message.prototype = {
     Log.assert(this.expanded, "Cannot stream a message if not expanded first!");
 
     let originalScroll = this._domNode.ownerDocument.documentElement.scrollTop;
-    let msgWindow = this._window.msgWindow;
+    let msgWindow = this._conversation._window.msgWindow;
 
     let iframe = this._domNode.ownerDocument
       .createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "iframe");
@@ -279,7 +314,7 @@ Message.prototype = {
                         let div = iframeDoc.createElement("div");
                         div.setAttribute("class", "link showhidequote");
                         div.addEventListener("click", function div_listener (event) {
-                          let h = self._htmlPane.contentWindow.toggleQuote(event, showText, hideText);
+                          let h = self._conversation._htmlPane.contentWindow.toggleQuote(event, showText, hideText);
                           iframe.style.height = (parseFloat(iframe.style.height) + h)+"px";
                         }, true);
                         div.setAttribute("style", "color: orange; cursor: pointer; font-size: 11px;");
@@ -383,7 +418,7 @@ Message.prototype = {
             for each (let [, a] in Iterator(iframeDoc.getElementsByTagName("a"))) {
               a.addEventListener("click",
                 function link_listener (event)
-                  self._window.specialTabs.siteClickHandler(event, /^mailto:/), true);
+                  self._conversation._window.specialTabs.siteClickHandler(event, /^mailto:/), true);
             }
 
             // Sometimes setting the iframe's content and height changes
@@ -484,7 +519,7 @@ Message.prototype = {
   }
 }
 
-function MessageFromGloda(aWindow, aHtmlPane, aSignalFn, aGlodaMsg) {
+function MessageFromGloda(aConversation, aSignalFn, aGlodaMsg) {
   this._msgHdr = aGlodaMsg.folderMessage;
   Message.apply(this, arguments);
 
@@ -503,7 +538,7 @@ MessageFromGloda.prototype = {
 
 MixIn(MessageFromGloda, Message);
 
-function MessageFromDbHdr(aWindow, aHtmlPane, aSignalFn, aMsgHdr) {
+function MessageFromDbHdr(aConversation, aSignalFn, aMsgHdr) {
   this._msgHdr = aMsgHdr;
   Message.apply(this, arguments);
 
