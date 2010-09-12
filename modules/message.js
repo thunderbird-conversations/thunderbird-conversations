@@ -229,8 +229,8 @@ Message.prototype = {
     });
 
     // Actually we might not need that one
-    if (Prefs["monospaced_senders"].filter(function (x) x == self._from.email).length) {
-      let node = this._domNode.getElementsByClassName("action-monospace");
+    if (Prefs["monospaced_senders"].filter(function (x) x == String.trim(self._from.email)).length) {
+      let node = this._domNode.getElementsByClassName("action-monospace")[0];
       node.parentNode.removeChild(node);
     }
   },
