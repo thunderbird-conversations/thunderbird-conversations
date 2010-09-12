@@ -78,6 +78,18 @@ PrefManager.prototype = {
     return gPrefBranch.getBoolPref(p);
   },
 
+  setChar: function (p, v) {
+    return gPrefBranch.setCharPref(p, v);
+  },
+
+  setInt: function (p, v) {
+    return gPrefBranch.setIntPref(p, v);
+  },
+
+  setBool: function (p, v) {
+    return gPrefBranch.setBoolPref(p, v);
+  },
+
   kScrollUnreadOrLast: 0,
   kScrollSelected: 1,
 

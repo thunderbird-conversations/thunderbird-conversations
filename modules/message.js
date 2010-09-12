@@ -137,7 +137,7 @@ Message.prototype = {
   },
 
   // Once the conversation has added us into the DOM, we're notified about it
-  // (aDomNode is us), and we can start registering event handlers and stuff
+  //  (aDomNode is us), and we can start registering event handlers and stuff
   onAddedToDom: function (aDomNode) {
     if (!aDomNode) {
       Log.error("onAddedToDom() && !aDomNode", this.from, this.to, this.subject);
@@ -148,6 +148,8 @@ Message.prototype = {
       .addEventListener("click", function () self.toggle(), false);
   },
 
+  // Actually, we only do these expensive DOM calls when we need to, i.e. when
+  //  we're expanded for the first time (expand calls us).
   registerActions: function _Message_registerActions() {
     let msgHeaderNode = this._domNode.getElementsByClassName("messageHeader")[0];
     let self = this;
@@ -190,6 +192,31 @@ Message.prototype = {
     register(".reply", function (event) compose(Ci.nsIMsgCompType.ReplyToSender, event));
     register(".replyAll", function (event) compose(Ci.nsIMsgCompType.ReplyAll, event));
     register(".forward", function (event) forward(event));
+    register(".action-archive", function (event) {
+      msgHdrsArchive([self._msgHdr], self._conversation._window)
+      event.stopPropagation();
+    });
+    register(".action-delete", function (event) {
+      msgHdrsDelete([self._msgHdr])
+      event.stopPropagation();
+    });
+    register(".action-monospace", function (event) {
+      let senders = Prefs["monospaced_senders"] || [];
+      let email = self._contacts[0]._email; // 0 is "from"
+      if (!senders.filter(function (x) x == email).length) {
+        Prefs.setChar("conversations.monospaced_senders", senders.concat([email]).join(","));
+      }
+      event.stopPropagation();
+    });
+    register(".action-classic", function (event) {
+      let tabmail = self._conversation._window.document.getElementById("tabmail");
+      tabmail.openTab("message", { msgHdr: self._msgHdr, background: false });
+      event.stopPropagation();
+    });
+    register(".action-source", function (event) {
+      self._conversation._window.ViewPageSource([self._uri])
+      event.stopPropagation();
+    });
   },
 
   // Convenience properties
