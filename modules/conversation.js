@@ -221,7 +221,7 @@ Conversation.prototype = {
     let messageIds = [x.messageId for each ([, x] in Iterator(this._initialSet))];
     return
       !gFolderDisplay.selectedMessage ||
-      !(gFolderDisplay.selectedMessage.messageId in messageIds);
+      !messageIds.filter(function (x) x == gFolderDisplay.selectedMessage.messageId).length;
   },
 
   // This function contains the logic that uses Gloda to query a set of messages
@@ -257,9 +257,17 @@ Conversation.prototype = {
   onItemsAdded: function () {},
 
   onItemsModified: function _Conversation_onItemsModified (aItems) {
+    Log.debug("Updating conversation", this.counter, "global state...");
+
     this._updateConversationButtons();
-    // TODO dispatch info to Message instances accordingly (new tags, starred
-    //  status)...
+
+    let byMessageId = {};
+    [byMessageId[getMessageId(x)] = x.message
+      for each ([, x] in Iterator(this.messages))];
+    for each (let [, glodaMsg] in Iterator(aItems)) {
+      let message = byMessageId[glodaMsg.headerMessageID];
+      message.onAttributesChanged(glodaMsg);
+    }
   },
 
   onItemsRemoved: function () {},
@@ -425,7 +433,7 @@ Conversation.prototype = {
     //  conversation reaches completion (and #2 never reaches completion).
     // I hope I will understand this when I read it again in a few days.
     if (this._window.Conversations.counter != this.counter) {
-      //Log.debug("Race condition,", this.counter, "dying for", this._window.Conversations.counter);
+      Log.debug("Race condition,", this.counter, "dying for", this._window.Conversations.counter);
       return;
     }
 
@@ -470,6 +478,7 @@ Conversation.prototype = {
         // previous conversation, don't do anything. Goodbye!
         return;
       } else {
+        Log.debug("Not recycling conversation");
         // We'll be replacing the old conversation
         this._window.Conversations.currentConversation.messages = [];
       }
@@ -502,7 +511,6 @@ Conversation.prototype = {
   },
 
   _updateConversationButtons: function _Conversation_updateConversationButtons () {
-    Log.debug("Updating conversation", this.counter, "global state...");
     if (!this.messages.length)
       return;
 

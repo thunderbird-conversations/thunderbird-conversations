@@ -88,13 +88,13 @@ Message.prototype = {
     let to = this.join(this._to.concat(this._cc).concat(this._bcc).map(this.format));
     let snippet = escapeHtml(this._snippet);
     let date = escapeHtml(this._date);
+    let starredClass = this.starred ? "starred" : "";
 
     let r = [
       "<li class=\"message collapsed\">\n",
       //"  <!-- Message-ID: ", this._msgHdr.messageId, " -->\n",
       "  <div class=\"messageHeader hbox\">\n",
-      "    <div class=\"star\">\n",
-      "      <img src=\"i/star.png\" />&nbsp;\n",
+      "    <div class=\"star ", starredClass, "\">\n",
       "    </div>\n",
       "    <div class=\"author\">\n",
       "      ", contactFrom.toHtmlString(), "\n",
@@ -151,7 +151,6 @@ Message.prototype = {
   // Actually, we only do these expensive DOM calls when we need to, i.e. when
   //  we're expanded for the first time (expand calls us).
   registerActions: function _Message_registerActions() {
-    let msgHeaderNode = this._domNode.getElementsByClassName("messageHeader")[0];
     let self = this;
 
     // Forward the calls to each contact. XXX will be changed if we have
@@ -192,6 +191,10 @@ Message.prototype = {
     register(".reply", function (event) compose(Ci.nsIMsgCompType.ReplyToSender, event));
     register(".replyAll", function (event) compose(Ci.nsIMsgCompType.ReplyAll, event));
     register(".forward", function (event) forward(event));
+    // These event listeners are all in the header, which happens to have an
+    //  event listener set on the click event for toggling the message. So we
+    //  make sure that event listener is bubbling, and we register these with
+    //  the bubbling model as well.
     register(".action-archive", function (event) {
       msgHdrsArchive([self._msgHdr], self._conversation._window)
       event.stopPropagation();
@@ -202,7 +205,7 @@ Message.prototype = {
     });
     register(".action-monospace", function (event) {
       let senders = Prefs["monospaced_senders"] || [];
-      let email = self._contacts[0]._email; // 0 is "from"
+      let email = self._from.email;
       if (!senders.filter(function (x) x == email).length) {
         Prefs.setChar("conversations.monospaced_senders", senders.concat([email]).join(","));
       }
@@ -217,11 +220,39 @@ Message.prototype = {
       self._conversation._window.ViewPageSource([self._uri])
       event.stopPropagation();
     });
+    register(".star", function (event) {
+      self.starred = !self.starred;
+      // Don't trust gloda. Big hack, self also has the "starred" property, so
+      //  we don't have to create a new object.
+      self.onAttributesChanged(self);
+      event.stopPropagation();
+    });
+
+    // Actually we might not need that one
+    if (Prefs["monospaced_senders"].filter(function (x) x == self._from.email).length) {
+      let node = this._domNode.getElementsByClassName("action-monospace");
+      node.parentNode.removeChild(node);
+    }
+  },
+
+  onAttributesChanged: function _Message_onAttributesChanged({ starred }) {
+    if (starred)
+      this._domNode.getElementsByClassName("star")[0].classList.add("starred");
+    else
+      this._domNode.getElementsByClassName("star")[0].classList.remove("starred");
   },
 
   // Convenience properties
   get read () {
     return this._msgHdr.isRead;
+  },
+
+  get starred () {
+    return this._msgHdr.isFlagged;
+  },
+
+  set starred (v) {
+    this._msgHdr.markFlagged(v);
   },
 
   get collapsed () {

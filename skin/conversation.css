@@ -427,6 +427,20 @@ span.downwardArrow {
   margin: 0 3px 0 0;
 }
 
+
+.star {
+  display: inline-block;
+  height: 14px;
+  width: 14px;
+  background-image: url(chrome://conversations/content/i/unstarred.png);
+  background-repeat: no-repeat;
+  margin-right: 3px;
+}
+
+.star.starred {
+  background-image: url(chrome://conversations/content/i/star.png);
+}
+
 /* START hbox/vbox normalization from http://alex.dojotoolkit.org/2009/08/css-3-progress/ */
 /* hbox and vbox classes */
  
