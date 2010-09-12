@@ -30,12 +30,17 @@ MonkeyPatch.prototype = {
     let htmlpane = window.document.getElementById("multimessage");
     let oldSummarizeMultipleSelection = window["summarizeMultipleSelection"];
 
-    let ensureLoadedAndRun = function (aLocation, k) {
+    // This nice little wrapper makes sure that the multimessagepane points to
+    //  the given URL before moving on. It takes a continuation, and an optional
+    //  third arguments that is to be run in case we loaded a fresh page.
+    let ensureLoadedAndRun = function (aLocation, k, onRefresh) {
       if (htmlpane.contentDocument.location.href == aLocation) {
         k();
       } else {
         htmlpane.addEventListener("load", function _g (event) {
           htmlpane.removeEventListener("load", _g, true);
+            if (onRefresh)
+              onRefresh();
             k();
         }, true);
         htmlpane.contentDocument.location.href = aLocation;
@@ -57,9 +62,6 @@ MonkeyPatch.prototype = {
           return;
 
         ensureLoadedAndRun("chrome://conversations/content/stub.html", function () {
-          // Invalidate any remaining conversation
-          window.Conversations.currentConversation = null;
-
           try {
             let freshConversation = new self._Conversation(
               window, aSelectedMessages, ++window.Conversations.counter);
@@ -96,6 +98,9 @@ MonkeyPatch.prototype = {
             Log.error(e);
             dumpCallStack(e);
           }
+        }, function () {
+          // Invalidate any remaining conversation
+          window.Conversations.currentConversation = null;
         });
       };
 
