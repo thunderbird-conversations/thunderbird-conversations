@@ -345,21 +345,31 @@ span.downwardArrow {
   margin: 0;
 }
 
+#wrapper li.message .messageBody ul.tags:empty {
+  padding: 0;
+}
+
 #wrapper li.message .messageHeader ul.tags li.tag,
 #wrapper li.message .messageBody ul.tags li.tag {
   display: inline;
   font-size: 10px;
   font-weight: bold;
-  background-color: #68AB57;
+  /*background-color: #68AB57;*/
   padding: 1px 5px;
+  margin-right: 5px;
   -moz-border-radius: 3px;
   color: #fff;
 }
 
-#wrapper li.message .messageHeader ul.tags li.tag.red,
+#wrapper li.message .messageHeader ul.tags li.tag:last-child,
+#wrapper li.message .messageBody ul.tags li.tag:last-child {
+  margin-right: 0;
+}
+
+/*#wrapper li.message .messageHeader ul.tags li.tag.red,
 #wrapper li.message .messageBody ul.tags li.tag.red {
   background-color: #ED6666;
-}
+}*/
 
 #wrapper li.message .messageBody .attachments {
   padding: 10px 0 0 0;

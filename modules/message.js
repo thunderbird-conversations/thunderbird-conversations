@@ -11,8 +11,12 @@ Cu.import("resource:///modules/templateUtils.js"); // for makeFriendlyDateAgo
 Cu.import("resource:///modules/gloda/mimemsg.js");
 Cu.import("resource:///modules/gloda/connotent.js"); // for mimeMsgToContentSnippetAndMeta
 
-const gMessenger = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
-const gHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"].getService(Ci.nsIMsgHeaderParser);
+const gMessenger = Cc["@mozilla.org/messenger;1"]
+                   .createInstance(Ci.nsIMessenger);
+const gHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"]
+                      .getService(Ci.nsIMsgHeaderParser);
+const gMsgTagService = Cc["@mozilla.org/messenger/tagservice;1"]
+                       .getService(Ci.nsIMsgTagService);
 const kCharsetFromMetaTag = 10;
 
 let strings = new StringBundle("chrome://conversations/locale/main.properties");
@@ -88,20 +92,19 @@ Message.prototype = {
     let to = this.join(this._to.concat(this._cc).concat(this._bcc).map(this.format));
     let snippet = escapeHtml(this._snippet);
     let date = escapeHtml(this._date);
-    let starredClass = this.starred ? "starred" : "";
 
     let r = [
       "<li class=\"message collapsed\">\n",
       //"  <!-- Message-ID: ", this._msgHdr.messageId, " -->\n",
       "  <div class=\"messageHeader hbox\">\n",
-      "    <div class=\"star ", starredClass, "\">\n",
+      "    <div class=\"star\">\n",
       "    </div>\n",
       "    <div class=\"author\">\n",
       "      ", contactFrom.toHtmlString(), "\n",
       "    </div>\n",
       "    <div class=\"involved boxFlex\">\n",
       "      <span class=\"to\">to ", to, "</span>\n",
-      "      <span class=\"snippet\">", snippet, "</span>\n",
+      "      <span class=\"snippet\"><ul class=\"tags\"></ul>", snippet, "</span>\n",
       "    </div>\n",
       "    <div class=\"options\">\n",
       "      <span class=\"date\">", date, "</span>\n",
@@ -124,6 +127,7 @@ Message.prototype = {
       "    </div>\n",
       "  </div>\n",
       "  <div class=\"messageBody\">\n",
+      "    <ul class=\"tags\"></ul>\n",
       "  </div>\n",
       "  <div class=\"messageFooter\">\n",
       "    <button class=\"reply\">reply</button>\n",
@@ -142,7 +146,12 @@ Message.prototype = {
     if (!aDomNode) {
       Log.error("onAddedToDom() && !aDomNode", this.from, this.to, this.subject);
     }
+
+    // This allows us to pre-set the star and the tags in the right original
+    //  state
     this._domNode = aDomNode;
+    this.onAttributesChanged(this);
+
     let self = this;
     this._domNode.getElementsByClassName("messageHeader")[0]
       .addEventListener("click", function () self.toggle(), false);
@@ -235,11 +244,31 @@ Message.prototype = {
     }
   },
 
-  onAttributesChanged: function _Message_onAttributesChanged({ starred }) {
+  // {
+  //  starred: bool,
+  //  tags: nsIMsgTag list,
+  // } --> both Message and GlodaMessage implement these attributes
+  onAttributesChanged: function _Message_onAttributesChanged({ starred, tags }) {
+    // Update "starred" attribute
     if (starred)
       this._domNode.getElementsByClassName("star")[0].classList.add("starred");
     else
       this._domNode.getElementsByClassName("star")[0].classList.remove("starred");
+
+    // Update tags
+    let tagList = this._domNode.getElementsByClassName("tags")[0];
+    while (tagList.firstChild)
+      tagList.removeChild(tagList.firstChild);
+    for each (let [, tag] in Iterator(tags)) {
+      let colorClass = "blc-" + gMsgTagService.getColorForKey(tag.key).substr(1);
+      let tagName = tag.tag;
+      let tagNode = this._domNode.ownerDocument.createElement("li");
+      tagNode.classList.add("tag");
+      tagNode.classList.add(colorClass);
+      tagNode.textContent = tagName;
+      tagList.appendChild(tagNode);
+    }
+    this._domNode.getElementsByClassName("tags")[1].innerHTML = tagList.innerHTML;
   },
 
   // Convenience properties
@@ -253,6 +282,10 @@ Message.prototype = {
 
   set starred (v) {
     this._msgHdr.markFlagged(v);
+  },
+
+  get tags () {
+    return msgHdrGetTags(this._msgHdr);
   },
 
   get collapsed () {

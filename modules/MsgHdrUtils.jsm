@@ -36,7 +36,7 @@
 
 var EXPORTED_SYMBOLS = [
   // Low-level XPCOM boring stuff
-  'msgHdrToMessageBody', 'msgHdrToNeckoURL',
+  'msgHdrToMessageBody', 'msgHdrToNeckoURL', 'msgHdrGetTags',
   // Quickly identify a message
   'msgHdrIsDraft', 'msgHdrIsSent', 'msgHdrIsArchive', 'msgHdrIsInbox',
   'msgHdrIsRss', 'msgHdrIsNntp',
@@ -55,7 +55,10 @@ const nsMsgFolderFlags_Drafts   = 0x00000400;
 const nsMsgFolderFlags_Archive  = 0x00004000;
 const nsMsgFolderFlags_Inbox    = 0x00001000;
 
-const gMessenger = Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
+const gMessenger = Cc["@mozilla.org/messenger;1"]
+                   .createInstance(Ci.nsIMessenger);
+const gMsgTagService = Cc["@mozilla.org/messenger/tagservice;1"]
+                       .getService(Ci.nsIMsgTagService);
 
 /**
  * Tells if the message is in the account's inbox
@@ -118,6 +121,34 @@ function msgHdrToNeckoURL(aMsgHdr) {
   let msgService = gMessenger.messageServiceFromURI(uri);
   msgService.GetUrlForUri(uri, neckoURL, null);
   return neckoURL.value;
+}
+
+/**
+ * Given a msgHdr, return a list of tag objects. This function
+ * just does the messy work of understanding how tags are
+ * stored in nsIMsgDBHdrs.  It would be a good candidate for
+ * a utility library.
+ *
+ * @param aMsgHdr: the msgHdr whose tags we want
+ * @return a list of tag objects.
+ */
+function msgHdrGetTags (aMsgHdr) {
+  let keywords = aMsgHdr.getStringProperty("keywords");
+  let keywordList = keywords.split(' ');
+  let keywordMap = {};
+  for (let iKeyword = 0; iKeyword < keywordList.length; iKeyword++) {
+    let keyword = keywordList[iKeyword];
+    keywordMap[keyword] = true;
+  }
+
+  let tagArray = gMsgTagService.getAllTags({});
+  let tags = [];
+  for (let iTag = 0; iTag < tagArray.length; iTag++) {
+    let tag = tagArray[iTag];
+    if (tag.key in keywordMap)
+      tags.push(tag);
+  }
+  return tags;
 }
 
 /**

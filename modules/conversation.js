@@ -265,6 +265,7 @@ Conversation.prototype = {
     [byMessageId[getMessageId(x)] = x.message
       for each ([, x] in Iterator(this.messages))];
     for each (let [, glodaMsg] in Iterator(aItems)) {
+      // I can see failures coming for the two lines below...
       let message = byMessageId[glodaMsg.headerMessageID];
       message.onAttributesChanged(glodaMsg);
     }
@@ -350,16 +351,20 @@ Conversation.prototype = {
     // Select right message will try to pick the message that has an
     //  existing msgHdr.
     let self = this;
-    let getThread = function (aMsgHdr) {
+    let getThreadKey = function (aMsgHdr) {
       try {
-        return self._window.gDBView.getThreadContainingMsgHdr(aMsgHdr);
+        return self._window.gDBView.getThreadContainingMsgHdr(aMsgHdr).threadKey;
       } catch (e) {
-        return -1;
+        // The trick is that by returning a random value instead of a constant
+        //  value, people who are running 3.1 will never have a message that
+        //  matches the "in the original view thread" criterion. Returning a
+        //  constant value would result in picking the first candidate message
+        //  always, which is bad.
+        return Math.random();
       }
     };
-    let msgHdrToThreadKey = function (aMsgHdr) getThread(aMsgHdr).threadKey;
-    let threadKey = msgHdrToThreadKey(this._initialSet[0]);
-    messages = [selectRightMessage(group, toMsgHdr, threadKey, msgHdrToThreadKey)
+    let threadKey = getThreadKey(this._initialSet[0]);
+    messages = [selectRightMessage(group, toMsgHdr, threadKey, getThreadKey)
       for each ([i, group] in Iterator(messages))];
     // But sometimes it just fails, and gloda remembers dead messages...
     messages = messages.filter(function (x) x.msgHdr || (x.glodaMsg && x.glodaMsg.folderMessage));

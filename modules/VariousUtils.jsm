@@ -80,7 +80,7 @@ function dateAsInMessageList(aDate) {
 
 /**
  * From a given set of "messages", return, by order of preference:
- * - the message that's in the preferred folder
+ * - the message that matches a custom "preferred" value
  * - the message that's in the "Inbox" folder
  * - the message that's in the "Sent" folder
  * - the message that's not in the Archives
@@ -105,14 +105,15 @@ function selectRightMessage(aSimilarMessages, aToMsgHdr, aPreferredX, aMsgHdrToX
     }
     return bestChoice;
   };
-  // for the record, writing return \n return value FAILS
+  // for the record, writing return \n "blah blah blah" FAILS
   let r =
     findForCriterion(function (aMsgHdr)
       (aPreferredX && aMsgHdrToX(aMsgHdr) == aPreferredX)) ||
     findForCriterion(msgHdrIsInbox) ||
     findForCriterion(msgHdrIsSent) ||
     findForCriterion(function (aMsgHdr) !msgHdrIsArchive(aMsgHdr)) ||
-    findForCriterion(function (aMsgHdr) true);
+    findForCriterion(function (aMsgHdr) true)
+  ;
   return r;
 }
 

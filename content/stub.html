@@ -4,6 +4,7 @@
 
 <head>
   <title>Conversation Reader</title>
+  <link rel="stylesheet" type="text/css" href="chrome://messenger/skin/tagColors.css"/>
   <link rel="stylesheet" type="text/css" href="chrome://conversations/skin/conversation.css">
   <script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1.4.2/jquery.min.js"></script>
   <script type="text/javascript" src="chrome://conversations/content/js/jquery.text-overflow.js"></script>
@@ -58,15 +59,18 @@
           event.stopPropagation();
         }, false);
         $details.hover(
-          function(){
+          function() {
             if (aMsg.collapsed)
               return;
             if (!sticky) {
               clearTimeout(timeout);
-              $(this).next(':hidden').fadeIn();
+              let self = this;
+              timeout = setTimeout(function () {
+                $(self).next(':hidden').fadeIn();
+              }, kPopupTimeout);
             }
           },
-          function(){
+          function() {
             var self = this;
             if (!sticky) {
               clearTimeout(timeout);
