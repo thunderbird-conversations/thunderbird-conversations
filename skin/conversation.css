@@ -47,7 +47,7 @@ button img {
   vertical-align: middle;
 }
 
-#wrapper #conversationHeaderWrapper {
+#conversationHeaderWrapper {
   position: fixed;
   top: 0;
   left: 0;
@@ -56,7 +56,7 @@ button img {
   -moz-box-shadow: 0 0 2px rgba(0,0,0,0.25);
 }
 
-#wrapper #conversationHeader {
+#conversationHeader {
   width: 100%;
   padding: 5px 10px;
   background-image: -moz-linear-gradient(top, #fcfcfc 0%, #e6e6e6 100%);
@@ -64,7 +64,7 @@ button img {
   color: #0a0a0a;
 }
 
-#wrapper #conversationHeader .subject {
+.subject {
   font-size: 12px;
   font-weight: bold;
   line-height: 22px;
@@ -72,16 +72,16 @@ button img {
   overflow: hidden;
 }
 
-#wrapper #conversationHeader .actions {
+.actions {
 }
 
-#wrapper #conversationHeader .actions button {
+.actions button {
   width: 28px;
   float: right;
   margin: 0 0 0 3px;
 }
 
-#wrapper #conversationHeader .actions button span {
+.actions button span {
   width: 16px;
   height: 16px;
   margin: auto;
@@ -90,36 +90,36 @@ button img {
   background-position: center center;
 }
 
-#wrapper #conversationHeader .actions button span.read {
+.actions button span.read {
   background-image: url("chrome://conversations/content/i/read.png");
 }
 
-#wrapper #conversationHeader .actions button span.read.unread {
+.actions button span.read.unread {
   background-image: url("chrome://conversations/content/i/unread.png");
 }
 
-#wrapper #conversationHeader .actions button span.mode {
+.actions button span.mode {
   background-image: url("chrome://conversations/content/i/mode.png");
 }
 
-#wrapper #conversationHeader .actions button span.mode.classic {
+.actions button span.mode.classic {
   background-image: url("chrome://conversations/content/i/classicMode.png");
 }
 
-#wrapper #conversationHeader .actions button span.expand {
+.actions button span.expand {
   background-image: url("chrome://conversations/content/i/expand.png");
 }
 
-#wrapper #conversationHeader .actions button span.expand.collapse {
+.actions button span.expand.collapse {
   background-image: url("chrome://conversations/content/i/collapse.png");
 }
 
 
-#wrapper ul {
+#messageList {
   margin-top: 44px;
 }
 
-#wrapper li.message {
+li.message {
   margin: 0 10px 10px 10px;
   background-color: #fff;
   background-image: -moz-linear-gradient(top,#fff 0%,#fafafa 100%);
@@ -129,22 +129,21 @@ button img {
   list-style-type: none;
 }
 
-#wrapper li.message.highlight {
+li.message.highlight {
   position: relative;
   border: 1px solid #bebebe;
   -moz-box-shadow: 0 0 0 5px rgba(0,0,0,0.15);
 }
 
-#wrapper li.message .messageHeader {
+.messageHeader {
   width: 100%;
   padding: 5px 10px;
   cursor: pointer
 }
 
-#wrapper li.message .messageHeader .involved {
+.messageHeader .involved {
   height: 18px;
   padding: 0 5px 0 0;
-  overflow: hidden;
 }
 
 span.downwardArrow {
@@ -152,19 +151,21 @@ span.downwardArrow {
   vertical-align: baseline;
 }
 
-#wrapper li.message .messageHeader img {
+.messageHeader img {
   vertical-align: text-top;
 }
 
-#wrapper li.message .messageHeader .author {
+.author {
   color: #ff5959;
   font-weight: bold;
-  position: relative;
   margin-right: 3px;
 }
 
-#wrapper li.message .messageHeader .author .tooltip,
-#wrapper li.message .messageHeader .options .dropDown .tooltip {
+.tooltipWrapper {
+  position: relative;
+}
+
+.tooltip {
   position: absolute;
   width: 302px;
   top: 24px;
@@ -176,56 +177,49 @@ span.downwardArrow {
   display: none;
 }
 
-#wrapper li.message .messageHeader .options .dropDown {
+.dropDown {
   position: relative;
 }
 
-#wrapper li.message .messageHeader .options .dropDown .tooltip {
+.dropDown .tooltip {
   width: 152px;
   left: -110px;
 }
 
-#wrapper li.message .messageHeader .options .dropDown .tooltip ul {
+.dropDown ul {
   margin-top: 0;
   list-style-type: none;
   font-size: 11px;
 }
 
-#wrapper li.message .messageHeader .options .dropDown .tooltip ul li {
+.dropDown li {
   padding: 3px 5px;
 }
 
-#wrapper li.message .messageHeader .options .dropDown .tooltip ul li:hover,
-#wrapper li.message .messageHeader .options .dropDown .tooltip ul li:nth-child(2n):hover {
+.dropDown li:hover,
+.dropDown li:nth-child(2n):hover {
   background-image: -moz-linear-gradient(top, #3875D7 0%, #396BBD 100%);
   color: #fff;
   font-weight: bold;
 }
 
-#wrapper li.message .messageHeader .options .dropDown .tooltip ul li:last-child {
+.dropDown li:last-child {
   -moz-border-radius: 0 0 5px 5px;
 }
 
-#wrapper li.message .messageHeader .options .dropDown .tooltip ul li:first-child {
+.dropDown li:first-child {
   -moz-border-radius: 5px 5px 0 0;
 }
 
-#wrapper li.message .messageHeader .options .dropDown .tooltip ul li:nth-child(2n) {
+.dropDown li:nth-child(2n) {
   background-color: #ECF3FE;
 }
 
-#wrapper li.message.collapsed .messageHeader .author:hover .tooltip,
-#wrapper li.message.collapsed .messageHeader .options .dropDown .tooltip {
+.tooltip {
   display: none;
 }
 
-#wrapper li.message .messageHeader .author:hover .tooltip,
-#wrapper li.message .messageHeader .options .dropDown:hover .tooltip {
-  /* display: block; */
-}
-
-#wrapper li.message .messageHeader .author .tooltip .arrow,
-#wrapper li.message .messageHeader .options .dropDown .tooltip .arrow {
+.arrow {
   border-color: transparent transparent #666 transparent;
   border-style: solid;
   border-width: 7px;
@@ -236,21 +230,20 @@ span.downwardArrow {
   width: 0;
 }
 
-#wrapper li.message .messageHeader .options .dropDown .tooltip .arrow {
+.dropDown .arrow {
   left: 120px;
 }
 
-#wrapper li.message .messageHeader .author .tooltip .arrow.inside,
-#wrapper li.message .messageHeader .options .dropDown .tooltip .arrow.inside {
+.arrow.inside {
   border-color: transparent transparent #fff transparent;
   top: -13px;
 }
 
-#wrapper li.message .messageHeader .options .dropDown .tooltip li:hover .arrow.inside {
+.dropDown li:hover .arrow.inside {
   border-color: transparent transparent #3875D7 transparent;
 }
 
-#wrapper li.message .messageHeader .author .tooltip .authorInfo {
+.authorInfo {
   display: inline-block;
   font-weight: normal;
   float: left;
@@ -259,22 +252,22 @@ span.downwardArrow {
   color: #333;
 }
 
-#wrapper li.message .messageHeader .author .tooltip .authorInfo .name {
+.name {
   font-size: 14px;
 }
 
-#wrapper li.message .messageHeader .author .tooltip .authorInfo .authorEmail {
+.authorEmail {
   color: #888;
 }
 
-#wrapper li.message .messageHeader .author .tooltip .authorPicture {
+.authorPicture {
   display: inline-block;
   float: left;
   width: 100px;
   padding: 10px;
 }
 
-#wrapper li.message .messageHeader .author .tooltip .tipFooter {
+.tipFooter {
   width: 100%;
   padding: 5px 10px;
   background-color: #f6f6f6;
@@ -283,22 +276,22 @@ span.downwardArrow {
   -moz-border-radius: 0 0 5px 5px;
 }
 
-#wrapper li.message .messageHeader .involved .to {
+.to {
   color: #666;
 }
 
-#wrapper li.message .messageHeader .options a,
-#wrapper li.message .messageBody .attachments a {
+.options a,
+.attachments a {
   text-decoration: none;
   color: #3875d7;
 }
 
-#wrapper li.message .messageHeader .options a:hover,
-#wrapper li.message .messageBody .attachments a:hover {
+.options a:hover,
+.attachments a:hover {
   text-decoration: underline;
 }
 
-#wrapper li.message.collapsed {
+.message.collapsed {
   height: 36px;
   -moz-border-radius: 5px;
   margin: 0 10px -6px 10px;
@@ -306,51 +299,52 @@ span.downwardArrow {
   overflow: hidden;
 }
 
-#wrapper li.message.collapsed .messageHeader .involved .to, 
-#wrapper li.message.collapsed .messageHeader .options .details,
-#wrapper li.message.collapsed .messageHeader .options .dropDown,
-#wrapper li.message.collapsed .messageBody ul.tags,
-#wrapper li.message.collapsed .messageBody p,
-#wrapper li.message.collapsed .messageBody .attachments,
-#wrapper li.message .messageHeader .involved .snippet {
+.message.collapsed .to, 
+.message.collapsed .details,
+.message.collapsed .dropDown,
+.message.collapsed .messageBody .tags,
+.message.collapsed p,
+.message.collapsed .attachments,
+.message .snippet {
   display: none;
 }
 
-#wrapper li.message.collapsed .messageHeader .involved .snippet {
-  display: inline;
+.message.collapsed .snippet {
+  display: inline-block;
+  height: 18px;
+  overflow: hidden;
   color: #666;
 }
 
-#wrapper li.message .messageBody {
+.message .messageBody {
   padding: 0 10px 5px 10px;
   color: #0a0a0a;
 }
 
-#wrapper li.message.collapsed .messageBody iframe {
+.message.collapsed iframe {
   display: none;
 }
 
-#wrapper li.message .messageBody iframe {
+.message iframe {
   width: 100%;
 }
 
-#wrapper li.message .messageHeader ul.tags {
+.messageHeader .tags {
   padding: 0;
   margin: 0;
   display: inline;
 }
 
-#wrapper li.message .messageBody ul.tags {
+.messageBody .tags {
   padding: 0 0 5px 0;
   margin: 0;
 }
 
-#wrapper li.message .messageBody ul.tags:empty {
+.messageBody .tags:empty {
   padding: 0;
 }
 
-#wrapper li.message .messageHeader ul.tags li.tag,
-#wrapper li.message .messageBody ul.tags li.tag {
+.tag {
   display: inline;
   font-size: 10px;
   font-weight: bold;
@@ -361,34 +355,28 @@ span.downwardArrow {
   color: #fff;
 }
 
-#wrapper li.message .messageHeader ul.tags li.tag:last-child,
-#wrapper li.message .messageBody ul.tags li.tag:last-child {
+.tag:last-child {
   margin-right: 0;
 }
 
-/*#wrapper li.message .messageHeader ul.tags li.tag.red,
-#wrapper li.message .messageBody ul.tags li.tag.red {
-  background-color: #ED6666;
-}*/
-
-#wrapper li.message .messageBody .attachments {
+.attachments {
   padding: 10px 0 0 0;
   margin: 0 0 18px 0;
 }
 
-#wrapper li.message .messageBody .attachments .attachHeader {
+.attachHeader {
   display: inline;
   padding-top: 10px;
   border-top: 1px solid #e6e6e6;
 }
 
-#wrapper li.message .messageBody .attachments li {
+.attachments li {
   margin: 10px 0 0 0;
   width: 100%;
   list-style-type: none;
 }
 
-#wrapper li.message .messageBody .attachments li .attachmentThumb {
+.attachmentThumb {
   width: 130px;
   padding: 4px;
   border: 1px solid #ccc;
@@ -400,29 +388,29 @@ span.downwardArrow {
   text-align: center;
 }
 
-#wrapper li.message .messageBody .attachments li .attachmentThumb img {
+.attachmentThumb img {
   float: left;
 }
 
-#wrapper li.message .messageBody .attachments li .attachmentInfo {
+.attachmentInfo {
   display: inline-block;
   float: left;
   height: 90px;
 }
 
-#wrapper li.message .messageBody .attachments li .attachmentInfo span.filename {
+.filename {
   display: block;
   font-weight: bold;
 }
 
-#wrapper li.message .messageFooter {
+.messageFooter {
   padding: 5px 10px;
   background-color: #f6f6f6;
   border-top: 1px solid #e6e6e6;
   -moz-border-radius: 0 0 5px 5px;
 }
 
-#wrapper li.message .messageFooter:after {
+.messageFooter:after {
   content: " ";
   display: block;
   height: 0; 
@@ -430,8 +418,8 @@ span.downwardArrow {
   visibility: hidden;
 }
 
-#wrapper li.message .messageHeader .author .tooltip .tipFooter button ,
-#wrapper li.message .messageFooter button {
+.tipFooter button ,
+.messageFooter button {
   padding: 0 5px;
   float: left;
   margin: 0 3px 0 0;

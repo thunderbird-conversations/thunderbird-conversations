@@ -68,30 +68,37 @@ ContactManager.prototype = {
 }
 
 let ContactMixIn = {
-  toHtmlString: function _ContactMixIn_toInlineHtml () {
+  toHtmlString: function _ContactMixIn_toInlineHtml (aUseColor) {
     let tooltipName = (this.name != this._email)
       ? this.name
       : ""
     ;
+    // Parameter aUseColor is optional, and undefined means true
+    let colorStyle = (aUseColor === false)
+      ? ""
+      : ("color :" + this.color)
+    ;
     let r = [
-      "<span style=\"color:", this.color, "\">",
-         escapeHtml(this.name),
+      "<span class=\"tooltipWrapper\">\n",
+      "  <span style=\"", colorStyle, "\">",
+           escapeHtml(String.trim(this.name)),
+      "  </span>\n",
+      "  <div class=\"tooltip\">\n",
+      "    <div class=\"arrow\"></div>\n",
+      "    <div class=\"arrow inside\"></div>\n",
+      "    <div class=\"authorInfo\">\n",
+      "      <span class=\"name\">", tooltipName, "</span>\n",
+      "      <span class=\"authorEmail\">", this._email, "</span>\n",
+      "    </div>\n",
+      "    <div class=\"authorPicture\">\n",
+      "      <img src=\"", this.avatar, "\">\n",
+      "    </div>\n",
+      "    <div class=\"tipFooter\">\n",
+      "      <button class=\"sendEmail\">send email</button>\n",
+      "      <button>more</button>\n",
+      "    </div>\n",
+      "  </div>\n",
       "</span>\n",
-      "<div class=\"tooltip\">\n",
-      "  <div class=\"arrow\"></div>\n",
-      "  <div class=\"arrow inside\"></div>\n",
-      "  <div class=\"authorInfo\">\n",
-      "    <span class=\"name\">", tooltipName, "</span>\n",
-      "    <span class=\"authorEmail\">", this._email, "</span>\n",
-      "  </div>\n",
-      "  <div class=\"authorPicture\">\n",
-      "    <img src=\"", this.avatar, "\">\n",
-      "  </div>\n",
-      "  <div class=\"tipFooter\">\n",
-      "    <button class=\"sendEmail\">send email</button>\n",
-      "    <button>more</button>\n",
-      "  </div>\n",
-      "</div>\n",
     ].join("");
     return r;
   },

@@ -42,7 +42,7 @@
       }
     }
 
-    const kPopupTimeout = 300;
+    const kPopupTimeout = 500;
 
     function enableTooltips(aMsg) {
       let $aMsgNode = $(aMsg._domNode);
@@ -54,10 +54,10 @@
 
         let sticky = false;
         let timeout;
-        $details.get(0).addEventListener("click", function (event) {
+        /* $details.get(0).addEventListener("click", function (event) {
           sticky = !sticky;
           event.stopPropagation();
-        }, false);
+        }, false); */
         $details.hover(
           function() {
             if (aMsg.collapsed)

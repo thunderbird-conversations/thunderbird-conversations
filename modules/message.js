@@ -85,11 +85,22 @@ Message.prototype = {
 
   // Output this message as a whole bunch of HTML
   toHtmlString: function () {
+    let self = this;
+
     let contactFrom = this._conversation._contactManager
       .getContactFromNameAndEmail(this._from.name, this._from.email);
     this._contacts.push(contactFrom);
-    //let from = this.format(this._from);
-    let to = this.join(this._to.concat(this._cc).concat(this._bcc).map(this.format));
+    let fromStr = contactFrom.toHtmlString();
+
+    let to = this._to.concat(this._cc).concat(this._bcc);
+    let contactsTo = to.map(function (x) {
+      return self._conversation._contactManager
+        .getContactFromNameAndEmail(x.name, x.email);
+    });
+    this._contacts = this._contacts.concat(contactsTo);
+    // false means "no colors"
+    let toStr = this.join(contactsTo.map(function (x) x.toHtmlString(false)));
+
     let snippet = escapeHtml(this._snippet);
     let date = escapeHtml(this._date);
 
@@ -100,10 +111,10 @@ Message.prototype = {
       "    <div class=\"star\">\n",
       "    </div>\n",
       "    <div class=\"author\">\n",
-      "      ", contactFrom.toHtmlString(), "\n",
+      "      ", fromStr, "\n",
       "    </div>\n",
       "    <div class=\"involved boxFlex\">\n",
-      "      <span class=\"to\">to ", to, "</span>\n",
+      "      <span class=\"to\">to ", toStr, "</span>\n",
       "      <span class=\"snippet\"><ul class=\"tags\"></ul>", snippet, "</span>\n",
       "    </div>\n",
       "    <div class=\"options\">\n",
@@ -162,9 +173,8 @@ Message.prototype = {
   registerActions: function _Message_registerActions() {
     let self = this;
 
-    // Forward the calls to each contact. XXX will be changed if we have
-    //  tooltips for all recipients.
-    let people = this._domNode.getElementsByClassName("author");
+    // Forward the calls to each contact.
+    let people = this._domNode.getElementsByClassName("tooltip");
     [x.onAddedToDom(people[i]) for each ([i, x] in Iterator(this._contacts))];
 
     // Let the UI do its stuff with the tooltips
@@ -236,8 +246,12 @@ Message.prototype = {
       self.onAttributesChanged(self);
       event.stopPropagation();
     });
+    register(".tooltip", function (event) {
+      // Clicking inside a tooltip must not collapse the message.
+      event.stopPropagation();
+    });
 
-    // Actually we might not need that one
+    // Actually we might not need that list item, so possibly remove it!
     if (Prefs["monospaced_senders"].filter(function (x) x == String.trim(self._from.email)).length) {
       let node = this._domNode.getElementsByClassName("action-monospace")[0];
       node.parentNode.removeChild(node);
