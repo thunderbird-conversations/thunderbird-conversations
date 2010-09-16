@@ -84,6 +84,7 @@ let OracleMixIn = {
         }
       }
     } else if (Prefs["scroll_who"] == Prefs.kScrollSelected) {
+      let gFolderDisplay = this._window.gFolderDisplay;
       let uri = function (msg) msg.folder.getUriForMsg(msg);
       let key = uri(gFolderDisplay.selectedMessage);
       for (let i = 0; i < this.messages.length; ++i) {
@@ -410,6 +411,10 @@ Conversation.prototype = {
     //  messages: the reflow might be because some message became unread or
     //  whatever.
     this._updateConversationButtons();
+
+    // Re-do the expand/collapse + scroll to the right node stuff, but this time
+    //  specify it's an update so that we don't notify listeners.
+    this._expandAndScroll(true);
   },
 
   // Once we're confident our set of messages is the right one, we actually
@@ -536,7 +541,7 @@ Conversation.prototype = {
 
   // Do all the penible stuff about scrolling to the right message and expanding
   // the right message
-  _expandAndScroll: function _Conversation_expandAndScroll () {
+  _expandAndScroll: function _Conversation_expandAndScroll (isUpdate) {
     let focusThis = this._tellMeWhoToScroll();
     let expandThese = this._tellMeWhoToExpand(focusThis);
 
@@ -545,10 +550,12 @@ Conversation.prototype = {
       self._htmlPane.contentWindow.scrollNodeIntoView(
         self._domNode.getElementsByClassName(Message.prototype.cssClass)[focusThis]);
 
-      self._onComplete();
-      // In theory, we could call this *before* _onComplete, and pray for Gloda
-      //  to call onItemsModified properly, and in time. We could. But we won't.
-      self._updateConversationButtons();
+      if (!isUpdate) {
+        self._onComplete();
+        // In theory, we could call this *before* _onComplete, and pray for Gloda
+        //  to call onItemsModified properly, and in time. We could. But we won't.
+        self._updateConversationButtons();
+      }
     }, this.messages.length);
 
     for each (let [i, action] in Iterator(expandThese)) {
