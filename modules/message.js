@@ -39,6 +39,9 @@ function Message(aConversation, aSignalFn) {
   let date = new Date(this._msgHdr.date/1000);
   this._date = Prefs["no_friendly_date"] ? dateAsInMessageList(date) : makeFriendlyDateAgo(date);
   this._from = this.parse(this._msgHdr.mime2DecodedAuthor)[0];
+  // Might be filled to something more meaningful later, in case we replace the
+  //  sender with something more relevant, like X-Bugzilla-Who.
+  this._realFrom = "";
   this._to = this.parse(this._msgHdr.mime2DecodedRecipients);
   this._cc = this.parse(this._msgHdr.ccList);
   this._bcc = this.parse(this._msgHdr.bccList);
@@ -224,7 +227,7 @@ Message.prototype = {
     });
     register(".action-monospace", function (event) {
       let senders = Prefs["monospaced_senders"] || [];
-      let email = self._from.email;
+      let email = self._realFrom.email || self._from.email;
       if (!senders.filter(function (x) x == email).length) {
         Prefs.setChar("conversations.monospaced_senders", senders.concat([email]).join(","));
       }
@@ -251,8 +254,10 @@ Message.prototype = {
       event.stopPropagation();
     });
 
+    // ("" || "blah") == "blah" (empty string evaluates to false)
+    let realFrom = String.trim(this._realFrom.email || this._from.email);
     // Actually we might not need that list item, so possibly remove it!
-    if (Prefs["monospaced_senders"].filter(function (x) x == String.trim(self._from.email)).length) {
+    if (Prefs["monospaced_senders"].filter(function (x) x == realFrom).length) {
       let node = this._domNode.getElementsByClassName("action-monospace")[0];
       node.parentNode.removeChild(node);
     }
@@ -629,8 +634,10 @@ function MessageFromGloda(aConversation, aSignalFn, aGlodaMsg) {
   this._msgHdr = aGlodaMsg.folderMessage;
   Message.apply(this, arguments);
 
-  if (aGlodaMsg.alternativeSender)
+  if (aGlodaMsg.alternativeSender) {
+    this._realFrom = this._from;
     this._from = this.parse(aGlodaMsg.alternativeSender)[0];
+  }
   this._glodaMsg = aGlodaMsg;
   this._snippet = this._glodaMsg._indexedBodyText
     ? this._glodaMsg._indexedBodyText.substring(0, snippetLength-1)
@@ -649,11 +656,11 @@ function MessageFromDbHdr(aConversation, aSignalFn, aMsgHdr) {
   Message.apply(this, arguments);
 
   // Gloda is not with us, so stream the message... the MimeMsg API says that
-  // the streaming will fail and the underlying exception will be re-thrown in
-  // case the message is not on disk. In that case, the fallback is to just get
-  // the body text and wait for it to be ready. This can be SLOW (like, real
-  // slow). But at least it works. (Setting the fourth parameter to true just
-  // leads an empty snippet).
+  //  the streaming will fail and the underlying exception will be re-thrown in
+  //  case the message is not on disk. In that case, the fallback is to just get
+  //  the body text and wait for it to be ready. This can be SLOW (like, real
+  //  slow). But at least it works. (Setting the fourth parameter to true just
+  //  leads to an empty snippet).
   let self = this;
   Log.warn("Streaming the message because Gloda has not indexed it, this is BAD");
   try {
@@ -664,8 +671,10 @@ function MessageFromDbHdr(aConversation, aSignalFn, aMsgHdr) {
       }
       let [text, meta] = mimeMsgToContentSnippetAndMeta(aMimeMsg, aMsgHdr.folder, snippetLength);
       self._snippet = text;
-      if ("x-bugzilla-who" in aMimeMsg.headers)
+      if ("x-bugzilla-who" in aMimeMsg.headers) {
+        self._realFrom = self._from;
         self._from = self.parse(aMimeMsg.headers["x-bugzilla-who"])[0];
+      }
       self._signal();
     });
   } catch (e) {
