@@ -3,45 +3,31 @@
      everything is displayed properly. -->
 <!ENTITY window.title "Gmail Conversation View Options">
 <!ENTITY title.message_display "Message display">
-<!ENTITY option.standard_single_message_view "Use built-in single message viewer">
-<!ENTITY option.monospaced "Use monospaced font for plain text messages">
-<!ENTITY option.monospaced_snippets "Use monospaced font for message snippets">
-<!ENTITY option.focus_what "When displaying a conversation, scroll to:">
-<!ENTITY option.focus_first "The first unread message or the last message">
-<!ENTITY option.focus_selected "The message currently selected in the message list">
-<!ENTITY optiondesc.unfold "By default, expand:">
-<!ENTITY option.no_messages "No messages">
-<!ENTITY option.focused "Only the message scrolled to (see above)">
-<!ENTITY option.last_or_unread "All unread messages plus the message scrolled to (see above)">
-<!ENTITY option.all_messages "All messages">
-<!ENTITY title.toolbar "Toolbar buttons">
-<!ENTITY buttons.info "All these commands are also accessible through the contextual menu of the thread summary (right-click).">
-<!ENTITY option.toolbar_mode "Show:">
-<!ENTITY option.toolbar_mode_icons "Icons">
-<!ENTITY option.toolbar_mode_text "Text">
-<!ENTITY option.toolbar_mode_text_plus_icons "Icons beside Text">
-<!ENTITY option.button.archive "Display &quot;archive&quot; button">
-<!ENTITY option.button.trash "Display &quot;delete&quot; button">
-<!ENTITY option.button.print "Display &quot;print&quot; button">
-<!ENTITY option.button.back "Display &quot;single message view&quot; button">
-<!ENTITY option.button.expand_all "Display &quot;expand all&quot; button">
-<!ENTITY option.button.collapse_all "Display &quot;collapse all&quot; button">
-<!ENTITY option.button.mark_as_read "Display &quot;mark all read&quot; button">
-<!ENTITY option.button.open_in_new_tab "Display &quot;open in new tab&quot; button">
+
+<!ENTITY option.scroll_who "When displaying a conversation, scroll to:">
+<!ENTITY option.scroll_unread_or_last "The first unread message or the last message">
+<!ENTITY option.scroll_selected "The message currently selected in the message list">
+
+<!ENTITY option.expand_who "By default, expand:">
+<!ENTITY option.expand_none "No messages">
+<!ENTITY option.expand_scrolled "Only the message scrolled to (see above)">
+<!ENTITY option.expand_unread_and_last "All unread messages plus the message scrolled to (see above)">
+<!ENTITY option.expand_all "All messages">
+
 <!ENTITY title.quoting "Quoting">
 <!ENTITY option.hide_longer_than "Hide quoted text higher than">
 <!ENTITY option.lines "lines">
+
 <!ENTITY option.reverse_order "Reverse order (last → first)">
-<!ENTITY option.auto_mark_read "Mark the whole conversation as read after the conversation view has been displayed.">
+
 <!ENTITY option.auto_mark_read_mailnews "Mark the message list thread as read before the conversation is displayed (uncheck if you checked the preference above).">
 <!ENTITY option.auto_mark_read_explanation "What's this mark as read stuff?">
-<!ENTITY title.advanced "Advanced">
-<!ENTITY title.error_messages "Error messages">
-<!ENTITY option.disable_error_empty_collection "Disable the &quot;Thunderbird has not indexed this thread yet&quot; warning">
-<!ENTITY option.monospaced_senders "Messages from those addresses should be displayed in monospaced fonts (separate using commas)">
-<!ENTITY title.advanced_display "Conversation display">
-<!ENTITY option.no_friendly_date "Use &quot;normal&quot; dates, just like the message list">
-<!ENTITY option.guess_first_names "Guess and display participants' first names only">
-<!ENTITY option.my_messages_in_inbox "How to display the messages I sent in the Inbox">
 <!ENTITY option.scroll_to_new_message "In the message list, expand the first unread thread when changing folders">
 <!ENTITY title.message_list "Message list">
+<!ENTITY option.my_messages_in_inbox "How to display the messages I sent in the Inbox">
+
+<!ENTITY title.advanced "Advanced">
+<!ENTITY option.monospaced_senders "Messages from those addresses should be displayed in monospaced fonts (separate using commas)">
+
+<!ENTITY title.advanced_display "Conversation display">
+<!ENTITY option.no_friendly_date "Use &quot;normal&quot; dates, just like the message list">

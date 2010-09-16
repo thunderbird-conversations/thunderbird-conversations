@@ -263,6 +263,25 @@ Message.prototype = {
     }
   },
 
+  cosmeticFixups: function _Message_cosmeticFixups() {
+    // XXX this is too brutal, do something more elaborate, like add a specific
+    //  class
+    let window = this._conversation._htmlPane.contentWindow;
+    let toNode = this._domNode.getElementsByClassName("to")[0];
+    let style = window.getComputedStyle(toNode, null);
+    Log.debug("Removing extra recipients", style.height);
+    while (parseInt(style.height) > 18 && toNode.childNodes.length > 1) {
+      toNode.removeChild(toNode.childNodes[toNode.childNodes.length - 1]);
+      style = window.getComputedStyle(toNode, null);
+    }
+    let dots = toNode.ownerDocument.createTextNode("...");
+    toNode.appendChild(dots);
+    while (parseInt(style.height) > 18 && toNode.childNodes.length > 2) {
+      toNode.removeChild(toNode.childNodes[toNode.childNodes.length - 2]);
+      style = window.getComputedStyle(toNode, null);
+    }
+  },
+
   // {
   //  starred: bool,
   //  tags: nsIMsgTag list,
@@ -327,8 +346,14 @@ Message.prototype = {
   expand: function () {
     this._domNode.classList.remove("collapsed");
     if (!this._didStream) {
-      this.registerActions();
-      this.streamMessage(); // will call _signal
+      try {
+        this.registerActions();
+        this.cosmeticFixups();
+        this.streamMessage(); // will call _signal
+      } catch (e) {
+        Log.error(e);
+        dumpCallStack(e);
+      }
     } else {
       this._signal();
     }

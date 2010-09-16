@@ -278,6 +278,9 @@ span.downwardArrow {
 
 .to {
   color: #666;
+  /* We enforce inline-block display so that we can compute the height and
+   * possibly remove extra recipients that trigger an overflow. */
+  display: inline-block;
 }
 
 .options a,
@@ -353,10 +356,6 @@ span.downwardArrow {
   margin-right: 5px;
   -moz-border-radius: 3px;
   color: #fff;
-}
-
-.tag:last-child {
-  margin-right: 0;
 }
 
 .attachments {

@@ -138,6 +138,10 @@
     function fakeTextOverflowSubject() {
       $(".subject").textOverflow(null, false);
     }
+
+    function fakeTextOverflowParticipants(aMsgNode) {
+      $(aMsgNode).find(".to").textOverflow(null, false);
+    }
   </script>
 </head>
 

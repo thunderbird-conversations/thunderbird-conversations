@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
-<?xml-stylesheet href="chrome://gconversation/skin/options.css" type="text/css"?>
+<?xml-stylesheet href="chrome://conversations/skin/options.css" type="text/css"?>
 
 <!-- ***** BEGIN LICENSE BLOCK *****
    - Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -39,85 +39,40 @@
    -
    - ***** END LICENSE BLOCK ***** -->
 
-<!DOCTYPE window SYSTEM "chrome://gconversation/locale/options.dtd">
+<!DOCTYPE window SYSTEM "chrome://conversations/locale/options.dtd">
  
-<prefwindow id="gconversation-prefs"
+<prefwindow id="conversations-prefs"
   title="&window.title;"
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
   onload="sizeToContent();"
   >
 
-  <script type="application/javascript" src="chrome://gconversation/content/options.js" />
+  <script type="application/javascript" src="chrome://conversations/content/options.js" />
  
   <prefpane id="message-display" label="&title.message_display;"
     image="chrome://messenger/skin/preferences/general.png"
     flex="1">
     <preferences>
-      <preference id="standard_single_message_view" name="gconversation.standard_single_message_view" type="bool" />
-      <preference id="monospaced" name="gconversation.monospaced" type="bool" />
-      <preference id="monospaced_snippets" name="gconversation.monospaced_snippets" type="bool" />
-      <preference id="hide_quote_length" name="gconversation.hide_quote_length" type="int" />
-      <preference id="fold_rule" name="gconversation.fold_rule" type="string" />
-      <preference id="button.archive" name="gconversation.button.archive" type="bool" />
-      <preference id="button.trash" name="gconversation.button.trash" type="bool" />
-      <preference id="button.print" name="gconversation.button.print" type="bool" />
-      <preference id="button.back" name="gconversation.button.back" type="bool" />
-      <preference id="button.collapse_all" name="gconversation.button.collapse_all" type="bool" />
-      <preference id="button.expand_all" name="gconversation.button.expand_all" type="bool" />
-      <preference id="button.mark_as_read" name="gconversation.button.mark_as_read" type="bool" />
-      <preference id="button.open_in_new_tab" name="gconversation.button.open_in_new_tab" type="bool" />
-      <preference id="focus_first" name="gconversation.focus_first" type="bool" />
-      <preference id="reverse_order" name="gconversation.reverse_order" type="bool" />
-      <preference id="toolbar_mode" name="gconversation.toolbar_mode" type="string" />
+      <preference id="hide_quote_length" name="conversations.hide_quote_length" type="int" />
+      <preference id="expand_who" name="conversations.expand_who" type="int" />
+      <preference id="scroll_who" name="conversations.scroll_who" type="int" />
     </preferences>
    
     <groupbox>
-      <caption label="&title.message_display;"/>
-      <checkbox preference="reverse_order" id="reverse_order_checkbox" label="&option.reverse_order;" />
-    </groupbox>
-    <groupbox>
-      <caption label="&option.focus_what;" />
-      <radiogroup preference="focus_first">
-        <radio value="true" label="&option.focus_first;" />
-        <radio value="false" label="&option.focus_selected;" />
+      <caption label="&option.scroll_who;" />
+      <radiogroup preference="scroll_who">
+        <radio value="0" label="&option.scroll_unread_or_last;" />
+        <radio value="1" label="&option.scroll_selected;" />
       </radiogroup>
     </groupbox>
     <groupbox>
-      <caption label="&optiondesc.unfold;" />
-      <radiogroup preference="fold_rule" id="fold_rule_menulist">
-        <radio value="none" label="&option.no_messages;" />
-        <radio value="focused" label="&option.focused;" />
-        <radio value="unread_and_last" label="&option.last_or_unread;" />
-        <radio value="all" label="&option.all_messages;" />
+      <caption label="&option.expand_who;" />
+      <radiogroup preference="expand_who">
+        <radio value="0" label="&option.expand_unread_and_last;" />
+        <radio value="1" label="&option.expand_none;" />
+        <radio value="2" label="&option.expand_scrolled;" />
+        <radio value="3" label="&option.expand_all;" />
       </radiogroup>
-    </groupbox>
-    <groupbox>
-      <caption label="&title.toolbar;"/>
-      <description style="width: 0; height: 2em;">&buttons.info;</description>
-      <hbox align="center">
-        <label value="&option.toolbar_mode;" />
-        <menulist preference="toolbar_mode" id="toolbar_mode_menulist">
-          <menupopup>
-            <menuitem label="&option.toolbar_mode_icons;" value="icons" />
-            <menuitem label="&option.toolbar_mode_text_plus_icons;" value="full" />
-            <menuitem label="&option.toolbar_mode_text;" value="text" />
-          </menupopup>
-        </menulist>
-      </hbox>
-      <hbox>
-        <vbox flex="1">
-          <checkbox label="&option.button.archive;" preference="button.archive" id="archive_checkbox" />
-          <checkbox label="&option.button.trash;" preference="button.trash" id="delete_checkbox" />
-          <checkbox label="&option.button.print;" preference="button.print" id="print_checkbox" />
-          <checkbox label="&option.button.expand_all;" preference="button.expand_all" id="expand_all_checkbox" />
-        </vbox>
-        <vbox flex="1">
-          <checkbox label="&option.button.collapse_all;" preference="button.collapse_all" id="collapse_all_checkbox" />
-          <checkbox label="&option.button.mark_as_read;" preference="button.mark_as_read" id="mark_as_read_checkbox" />
-          <checkbox label="&option.button.open_in_new_tab;" preference="button.open_in_new_tab" id="open_in_new_tab_checkbox" />
-          <checkbox label="&option.button.back;" preference="button.back" id="back_checkbox" />
-        </vbox>
-      </hbox>
     </groupbox>
     <groupbox>
       <caption label="&title.quoting;"/>
@@ -132,11 +87,8 @@
 
    <prefpane id="advanced" label="&title.advanced;" image="chrome://messenger/skin/preferences/advanced.png">
      <preferences>
-       <preference id="disable_error_empty_collection" name="gconversation.disable_error_empty_collection" type="bool" />
-       <preference id="auto_mark_read" name="gconversation.auto_mark_read" type="bool" />
-       <preference id="monospaced_senders" name="gconversation.monospaced_senders" type="string" />
-       <preference id="no_friendly_date" name="gconversation.no_friendly_date" type="bool" />
-       <preference id="guess_first_names" name="gconversation.guess_first_names" type="bool" />
+       <preference id="monospaced_senders" name="conversations.monospaced_senders" type="string" />
+       <preference id="no_friendly_date" name="conversations.no_friendly_date" type="bool" />
        <preference id="scroll_to_new_message" name="mailnews.scroll_to_new_message" type="bool" />
        <preference id="auto_mark_read_mailnews" name="mailnews.mark_message_read.auto" type="bool" />
      </preferences>
@@ -144,7 +96,6 @@
      <groupbox>
        <caption label="&title.message_list;" />
        <label class="link" onclick="openLink('http://wiki.github.com/protz/GMail-Conversation-View/let-gmail-conversation-view-mark-the-threads-as-read');" value="&option.auto_mark_read_explanation;" />
-       <checkbox style="width: 0;" label="&option.auto_mark_read;" preference="auto_mark_read" id="auto_mark_read_checkbox" />
        <checkbox style="width: 0;" label="&option.auto_mark_read_mailnews;" preference="auto_mark_read_mailnews" id="auto_mark_read_checkbox_mailnews" />
        <checkbox style="width: 0;" label="&option.scroll_to_new_message;" preference="scroll_to_new_message" id="scroll_to_new_message_checkbox" />
        <label class="link" onclick="openLink('http://wiki.github.com/protz/GMail-Conversation-View/displaying-your-own-messages-in-the-inbox');" value="&option.my_messages_in_inbox;" />
@@ -152,13 +103,8 @@
      <groupbox>
        <caption label="&title.advanced_display;" />
        <checkbox label="&option.no_friendly_date;" preference="no_friendly_date" />
-       <checkbox label="&option.guess_first_names;" preference="guess_first_names" />
        <description style="width: 0;">&option.monospaced_senders;</description>
        <textbox multiline="true" preference="monospaced_senders" />
-     </groupbox>
-     <groupbox>
-       <caption label="&title.error_messages;"/>
-       <checkbox label="&option.disable_error_empty_collection;" preference="disable_error_empty_collection" id="disable_error_empty_collection_checkbox" />
      </groupbox>
      <spacer flex="1" style="min-height: 7em" />
    </prefpane>
