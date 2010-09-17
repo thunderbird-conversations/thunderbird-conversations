@@ -15,8 +15,15 @@
     const Cu = Components.utils;
     const Cr = Components.results;
 
+    const nsMsgFolderFlags_SentMail = 0x00000200;
+    const nsMsgFolderFlags_Inbox    = 0x00001000;
+    const nsMsgFolderFlags_Offline  = 0x08000000;
+    const msgAccountManager = Cc["@mozilla.org/messenger/account-manager;1"]
+                                .getService(Ci.nsIMsgAccountManager);
+
     Cu.import("resource://conversations/prefs.js");
     Cu.import("resource://conversations/log.js");
+    Cu.import("resource:///modules/iteratorUtils.jsm"); // for fixIterator
 
     function onCustomSetup(event) {
       $(".more").fadeIn("slow");
@@ -96,7 +103,31 @@
         },
 
         actionOfflineDownload: function () {
-          // TODO
+          for each (let account in fixIterator(msgAccountManager.accounts, Ci.nsIMsgAccount)) {
+            if (!account.incomingServer)
+              continue;
+
+            let isImap;
+            try {
+              account.incomingServer.QueryInterface(Ci.nsIImapIncomingServer);
+              isImap = true;
+            } catch (e if e.result == Cr.NS_NOINTERFACE) {
+              isImap = false;
+            }
+            if (!isImap)
+              continue;
+
+            let rootFolder = account.incomingServer.rootFolder;
+            let allFolders = Cc["@mozilla.org/supports-array;1"].createInstance(Ci.nsISupportsArray);
+            rootFolder.ListDescendents(allFolders);
+            for each (let folder in fixIterator(allFolders, Ci.nsIMsgFolder)) {
+              if ((folder.getFlag(nsMsgFolderFlags_SentMail) || folder.getFlag(nsMsgFolderFlags_Inbox))
+                  && !folder.getFlag(nsMsgFolderFlags_Offline)) {
+                Log.debug("Marking folder", folder.folderURL, "for offline use");
+                folder.setFlag(nsMsgFolderFlags_Offline);
+              }
+            }
+          }
         },
 
         actionAttachmentsInline: function () {
@@ -193,7 +224,7 @@
         </li>
         <li>
           <input type="checkbox" checked="checked" id="actionOfflineDownload" />
-          Inbox and Sent are synchronized for offline storage (TODO)
+          Inbox and Sent are synchronized for offline storage
           (<strong>strongly</strong> recommended).
         </li>
         <li>

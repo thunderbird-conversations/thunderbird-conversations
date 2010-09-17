@@ -60,11 +60,7 @@ window.addEventListener("load", function _overlay_eventListener () {
   }
   Conversations.monkeyPatch = monkeyPatch;
 
-  // Assistant. The setTimeout is here to ensure a smoother experience (this
-  //  leaves the main window some to load properly).
-  if (NS.Prefs.getInt("conversations.version") < 1) {
-    setTimeout(function () {
-      window.openDialog("chrome://conversations/content/assistant/assistant.html", "", "chrome,width=800,height=500");
-    }, 2000);
-  }
+  // Assistant.
+  if (NS.Prefs.getInt("conversations.version") < 1)
+    window.openDialog("chrome://conversations/content/assistant/assistant.html", "", "chrome,width=800,height=500");
 }, false);
