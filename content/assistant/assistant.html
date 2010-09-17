@@ -42,7 +42,7 @@
       return smartServer.rootFolder.getChildNamed(aFolderName);
     }
 
-    let expected = 3;
+    let expected = 1;
     function top () {
       if (--expected == 0) {
         Prefs.setInt("conversations.version", 1);
@@ -51,6 +51,8 @@
     }
 
     function onFinish() {
+      $(".working").show();
+
       let checkboxes = document.querySelectorAll("input[type=\"checkbox\"]");
       let mainWindow = Cc['@mozilla.org/appshell/window-mediator;1']
                        .getService(Ci.nsIWindowMediator)
@@ -102,6 +104,7 @@
               moveOn();
             }
           }
+          expected++;
           waitForIt(); // will top()
         },
 
@@ -207,7 +210,9 @@
             };
             return listener;
           };
+
           let query1 = Gloda.newQuery(Gloda.NOUN_IDENTITY);
+          expected++;
           query1.kind("email");
           query1.value("bugzilla-daemon@mozilla.org");
           query1.getCollection({
@@ -227,6 +232,7 @@
           });
 
           let query3 = Gloda.newQuery(Gloda.NOUN_MESSAGE);
+          expected++;
           query3.attachmentTypes();
           query3.getCollection(reIndexListener()); // will top()
         },
@@ -242,15 +248,18 @@
       for each (let [, checkbox] in Iterator(checkboxes)) {
         if (!(checkbox.id in actions)) {
           Log.error("No suitable action for", checkbox.id);
-        } else {
+        } else if (checkbox.checked) {
           try {
             actions[checkbox.id]();
           } catch (e) {
             Log.error(e);
             dumpCallStack(e);
           }
+        } else {
+          Log.debug("User declined", checkbox.id);
         }
       }
+      top();
     }
   </script>
 </head>
@@ -273,6 +282,9 @@
           enjoy Thunderbird Conversations, we will revert any preference change we
           made as soon as you uninstall the extension. (<span style="font-weight:
             bold; color: red">XXX Not implemented yet</span>)
+        </p>
+        <p class="working" style="text-align: left; margin-top: 50px">
+          Working...  <img src="loader.gif" />
         </p>
       </div>
     </div>
@@ -341,6 +353,10 @@
       <p>
         Should you wish to enable more options later, you can access this wizard
         through the addon's preferences, under the "advanced" section.
+      </p>
+
+      <p class="working">
+        Working...  <img src="loader.gif" />
       </p>
 
       <div id="footer">

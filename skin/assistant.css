@@ -54,6 +54,11 @@ body {
   display: none;
 }
 
+.working {
+  text-align: right;
+  display: none;
+}
+
 #footer {
   background: url("chrome://conversations/content/assistant/tile.jpg") repeat-x scroll center top #394345;
   clear: both;
