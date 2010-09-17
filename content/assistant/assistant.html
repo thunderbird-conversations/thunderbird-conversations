@@ -25,6 +25,8 @@
     Cu.import("resource://conversations/log.js");
     Cu.import("resource:///modules/iteratorUtils.jsm"); // for fixIterator
     Cu.import("resource:///modules/virtualFolderWrapper.js");
+    Cu.import("resource:///modules/gloda/index_msg.js");
+    Cu.import("resource:///modules/gloda/public.js");
 
     function onCustomSetup(event) {
       $(".more").fadeIn("slow");
@@ -38,6 +40,14 @@
                       .getService(Ci.nsIMsgAccountManager);
       let smartServer = acctMgr.FindServer("nobody", "smart mailboxes", "none");
       return smartServer.rootFolder.getChildNamed(aFolderName);
+    }
+
+    let expected = 3;
+    function top () {
+      if (--expected == 0) {
+        Prefs.setInt("conversations.version", 1);
+        window.close();
+      }
     }
 
     function onFinish() {
@@ -82,16 +92,17 @@
             mainWindow.MsgSortDescending();
             mainWindow.goDoCommand('cmd_collapseAllThreads');
             eid("unreadCol").setAttribute("hidden", "false");
+            top();
           };
           let i = 0;
           let waitForIt = function () {
             if (mainWindow.gFolderDisplay.displayedFolder != smartInbox && i++ < 10) {
-              mainWindow.setTimeout(waitForIt, 150);
+              setTimeout(waitForIt, 150);
             } else {
               moveOn();
             }
           }
-          waitForIt();
+          waitForIt(); // will top()
         },
 
         actionChangeFontSize: function () {
@@ -131,6 +142,7 @@
 
           // And do some magic to make it all work.
           vFolder.searchFolders = vFolder.searchFolders.concat(extraSearchFolders);
+          vFolder.cleanUpMessageDatabase();
           msgAccountManager.saveVirtualFolders();
         },
 
@@ -171,7 +183,52 @@
         },
 
         actionReindexAttachments: function () {
-          // TODO
+          let reIndexListener = function () {
+            let listener = {
+              /* called when new items are returned by the database query or freshly indexed */
+              onItemsAdded: function myListener_onItemsAdded(aItems, aCollection) {
+              },
+              /* called when items that are already in our collection get re-indexed */
+              onItemsModified: function myListener_onItemsModified(aItems, aCollection) {
+              },
+              /* called when items that are in our collection are purged from the system */
+              onItemsRemoved: function myListener_onItemsRemoved(aItems, aCollection) {
+              },
+              /* called when our database query completes */
+              onQueryCompleted: function myListener_onQueryCompleted(aCollection) {
+                Log.debug("Found", aCollection.items.length, "messages to reindex");
+                GlodaMsgIndexer.indexMessages([
+                  [x.folderMessage.folder, x.folderMessage.messageKey]
+                  for each ([, x] in Iterator(aCollection.items))
+                  if (x.folderMessage)
+                ]);
+                top();
+              }
+            };
+            return listener;
+          };
+          let query1 = Gloda.newQuery(Gloda.NOUN_IDENTITY);
+          query1.kind("email");
+          query1.value("bugzilla-daemon@mozilla.org");
+          query1.getCollection({
+            onItemsAdded: function _onItemsAdded(aItems, aCollection) {  },
+            onItemsModified: function _onItemsModified(aItems, aCollection) { },
+            onItemsRemoved: function _onItemsRemoved(aItems, aCollection) { },
+            onQueryCompleted: function _onQueryCompleted(aCollection) {
+              if (!aCollection.items.length) {
+                Log.debug("Looks like there is no bugmail for this account...");
+                top();
+              } else {
+                let query2 = Gloda.newQuery(Gloda.NOUN_MESSAGE);
+                query2.from(aCollection.items[0]);
+                query2.getCollection(reIndexListener()); // will top()
+              }
+            }
+          });
+
+          let query3 = Gloda.newQuery(Gloda.NOUN_MESSAGE);
+          query3.attachmentTypes();
+          query3.getCollection(reIndexListener()); // will top()
         },
 
         actionDisableAutoread: function () {
@@ -194,8 +251,6 @@
           }
         }
       }
-      Prefs.setInt("conversations.version", 1);
-      window.close();
     }
   </script>
 </head>
@@ -243,7 +298,7 @@
         </li>
         <li>
           <input type="checkbox" disabled="disabled" checked="checked" id="actionReindexAttachments" />
-          Re-index messages containing attachments (TODO).
+          Re-index messages containing attachments as well as all Mozilla bugmail.
         </li>
         <li>
           <input type="checkbox" disabled="disabled" checked="checked" id="actionDontExpand" />
@@ -282,6 +337,11 @@
           Make sure the message pane is visible.
         </li>
       </ul>
+
+      <p>
+        Should you wish to enable more options later, you can access this wizard
+        through the addon's preferences, under the "advanced" section.
+      </p>
 
       <div id="footer">
       </div>
