@@ -22,18 +22,17 @@ const kActionExpand    = 1;
 const kActionCollapse  = 2;
 
 // The SignalManager class handles stuff related to spawing asynchronous
-// requests and waiting for all of them to complete. Basic, but works well.
-// Warning: sometimes yells at the developer.
+//  requests and waiting for all of them to complete. Basic, but works well.
+//  Warning: sometimes yells at the developer.
 
 let SignalManagerMixIn = {
   // Because fetching snippets is possibly asynchronous (in the case of a
-  // MessageFromDbHdr), each message calls "signal" once it's done. After we've
-  // seen N signals pass by, we wait for the N+1-th signal that says that nodes
-  // have all been inserted into the DOM, and then we move on.
-  //
-  // Once again, we wait for N signals, because message loading is a
-  // asynchronous. Once we've done what's right for each message (expand,
-  // collapse, or do nothing), we do the final cleanup (mark as read, etc.).
+  //  MessageFromDbHdr), each message calls "signal" once it's done. After we've
+  //  seen N signals pass by, we wait for the N+1-th signal that says that nodes
+  //  have all been inserted into the DOM, and then we move on.
+  // Once more, we wait for N signals, because message loading is a
+  //  asynchronous. Once we've done what's right for each message (expand,
+  //  collapse, or do nothing), we do the final cleanup (mark as read, etc.).
   _runOnceAfterNSignals: function (f, n) {
     Log.debug("Will wait for", n, "signals");
     if (this._toRun !== null && this._toRun !== undefined)
@@ -50,7 +49,7 @@ let SignalManagerMixIn = {
   // This is the helper function that each of the messages is supposed to call.
   _signal: function _Conversation_signal() {
     // This is normal, expanding a message after the conversation has been built
-    // will trigger a signal the first time. We can safely discard these.
+    //  will trigger a signal the first time. We can safely discard these.
     if (!this._toRun)
       return;
     let [f, n] = this._toRun;
@@ -66,14 +65,14 @@ let SignalManagerMixIn = {
 }
 
 // The Oracle just decides who to expand and who to scroll into view. As this is
-// quite obscure logic and does not really belong to the main control flow, I
-// thought it would be better to have it in a separate class
+//  quite obscure logic and does not really belong to the main control flow, I
+//  thought it would be better to have it in a separate class
 //
 let OracleMixIn = {
   // Go through all the messages and determine which one is going to be focused
-  // according to the prefs
+  //  according to the prefs
   _tellMeWhoToScroll: function _Conversation_tellMeWhoToScroll () {
-    // Determine which message is going to be Scrolled
+    // Determine which message is going to be scrolled into view
     let needsScroll = -1;
     if (Prefs["scroll_who"] == Prefs.kScrollUnreadOrLast) {
       needsScroll = this.messages.length - 1;
@@ -93,6 +92,12 @@ let OracleMixIn = {
           break;
         }
       }
+      // I can't see why we wouldn't break at some point in the loop below, but
+      //  just in case...
+      if (needsScroll < 0) {
+        Log.error("kScrollSelected && didn't find the selected message");
+        needsScroll = this.messages.length - 1;
+      }
     } else {
       Log.error("Unknown value for pref scroll_who");
     }
@@ -102,7 +107,7 @@ let OracleMixIn = {
   },
 
   // Go through all the messages and for each one of them, give the expected
-  // action
+  //  action
   _tellMeWhoToExpand: function _Conversation_tellMeWhoToExpand (aNeedsFocus) {
     let actions = [];
     let collapse = function _collapse (message) {
@@ -260,8 +265,11 @@ Conversation.prototype = {
   onItemsModified: function _Conversation_onItemsModified (aItems) {
     Log.debug("Updating conversation", this.counter, "global state...");
 
+    // This updates conversation-wide buttons (the conversation "read" status,
+    //  for instance).
     this._updateConversationButtons();
 
+    // Now we forward individual updates to each messages (e.g. tags, starred)
     let byMessageId = {};
     [byMessageId[getMessageId(x)] = x.message
       for each ([, x] in Iterator(this.messages))];
@@ -276,8 +284,8 @@ Conversation.prototype = {
 
   onQueryCompleted: function _Conversation_onQueryCompleted (aCollection) {
     // That's XPConnect bug 547088, so remove the setTimeout when it's fixed and
-    //  bump the version requirements in install.rdf.template (this will
-    //  probably be fixed in time for Gecko 8, if we're lucky)
+    //  bump the version requirements in install.rdf.template (might be fixed in
+    //  time for Gecko 42, if we're lucky)
     let self = this;
     this._window.setTimeout(function _Conversation_onQueryCompleted_bug547088 () {
       try {

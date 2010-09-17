@@ -5,3 +5,4 @@ pref("conversations.reverse_order", false);
 pref("conversations.monospaced_senders", "bugzilla-daemon@mozilla.org");
 pref("conversations.no_friendly_date", false);
 pref("conversations.guess_first_names", false);
+pref("conversations.version", 0);

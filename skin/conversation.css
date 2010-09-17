@@ -119,7 +119,7 @@ button img {
   margin-top: 44px;
 }
 
-li.message {
+.message {
   margin: 0 10px 10px 10px;
   background-color: #fff;
   background-image: -moz-linear-gradient(top,#fff 0%,#fafafa 100%);
@@ -129,7 +129,7 @@ li.message {
   list-style-type: none;
 }
 
-li.message.highlight {
+.message.highlight, .message:focus {
   position: relative;
   border: 1px solid #bebebe;
   -moz-box-shadow: 0 0 0 5px rgba(0,0,0,0.15);

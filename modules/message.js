@@ -269,16 +269,19 @@ Message.prototype = {
     let window = this._conversation._htmlPane.contentWindow;
     let toNode = this._domNode.getElementsByClassName("to")[0];
     let style = window.getComputedStyle(toNode, null);
-    Log.debug("Removing extra recipients", style.height);
+    let overflowed = false;
     while (parseInt(style.height) > 18 && toNode.childNodes.length > 1) {
       toNode.removeChild(toNode.childNodes[toNode.childNodes.length - 1]);
+      overflowed = true;
       style = window.getComputedStyle(toNode, null);
     }
-    let dots = toNode.ownerDocument.createTextNode("...");
-    toNode.appendChild(dots);
-    while (parseInt(style.height) > 18 && toNode.childNodes.length > 2) {
-      toNode.removeChild(toNode.childNodes[toNode.childNodes.length - 2]);
-      style = window.getComputedStyle(toNode, null);
+    if (overflowed) {
+      let dots = toNode.ownerDocument.createTextNode("...");
+      toNode.appendChild(dots);
+      while (parseInt(style.height) > 18 && toNode.childNodes.length > 2) {
+        toNode.removeChild(toNode.childNodes[toNode.childNodes.length - 2]);
+        style = window.getComputedStyle(toNode, null);
+      }
     }
   },
 
@@ -627,6 +630,24 @@ Message.prototype = {
           OnStopRunningUrl: function () {},
           QueryInterface: XPCOMUtils.generateQI([Ci.nsISupports, Ci.nsIUrlListener])
         };
+        // XXX in order to properly handle all kind of notifications, we should
+        //  be providing our own nsIMsgWindow here, in particular, one that also
+        //  has a GetMsgContentSink (or whatever) method, so that the C++
+        //  content policy code can call GetMsgContentSink on it and tell us if
+        //  remote content was blocked.
+        //
+        // http://mxr.mozilla.org/comm-central/source/mailnews/base/src/nsMsgContentPolicy.cpp#579
+        // http://mxr.mozilla.org/comm-central/source/mail/base/content/msgHdrViewOverlay.js#620
+        // mail/base/content/mailWindow.js (View Hg log or Hg annotations)
+        //   line 146 -- msgWindow.msgHeaderSink = messageHeaderSink; 
+        //
+        // But maybe it isn't such a good idea after all, since we will lose all
+        //  kinds of standard error handling code (bad certs, and stuff). A
+        //  better solution might be to monkey-patch msgHeaderSink right at the
+        //  beginning of the conversation and to replace it once the
+        //  conversation's built... OR we could forward calls to the original
+        //  nsIMsgWindow except for the one that we're interested in...
+
         /**
         * When you want a message displayed....
         *
