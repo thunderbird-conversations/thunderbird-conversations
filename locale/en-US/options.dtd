@@ -20,11 +20,8 @@
 
 <!ENTITY option.reverse_order "Reverse order (last → first)">
 
-<!ENTITY option.auto_mark_read_mailnews "Mark the message list thread as read before the conversation is displayed (uncheck if you checked the preference above).">
-<!ENTITY option.auto_mark_read_explanation "What's this mark as read stuff?">
-<!ENTITY option.scroll_to_new_message "In the message list, expand the first unread thread when changing folders">
-<!ENTITY title.message_list "Message list">
-<!ENTITY option.my_messages_in_inbox "How to display the messages I sent in the Inbox">
+<!ENTITY title.assistant "Setup assistant">
+<!ENTITY option.assistant "Start the setup assistant">
 
 <!ENTITY title.advanced "Advanced">
 <!ENTITY option.monospaced_senders "Messages from those addresses should be displayed in monospaced fonts (separate using commas)">

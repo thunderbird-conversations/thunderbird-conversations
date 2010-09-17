@@ -89,16 +89,13 @@
      <preferences>
        <preference id="monospaced_senders" name="conversations.monospaced_senders" type="string" />
        <preference id="no_friendly_date" name="conversations.no_friendly_date" type="bool" />
-       <preference id="scroll_to_new_message" name="mailnews.scroll_to_new_message" type="bool" />
-       <preference id="auto_mark_read_mailnews" name="mailnews.mark_message_read.auto" type="bool" />
      </preferences>
 
      <groupbox>
-       <caption label="&title.message_list;" />
-       <label class="link" onclick="openLink('http://wiki.github.com/protz/GMail-Conversation-View/let-gmail-conversation-view-mark-the-threads-as-read');" value="&option.auto_mark_read_explanation;" />
-       <checkbox style="width: 0;" label="&option.auto_mark_read_mailnews;" preference="auto_mark_read_mailnews" id="auto_mark_read_checkbox_mailnews" />
-       <checkbox style="width: 0;" label="&option.scroll_to_new_message;" preference="scroll_to_new_message" id="scroll_to_new_message_checkbox" />
-       <label class="link" onclick="openLink('http://wiki.github.com/protz/GMail-Conversation-View/displaying-your-own-messages-in-the-inbox');" value="&option.my_messages_in_inbox;" />
+       <caption label="&title.assistant;" />
+       <label class="link"
+         onclick="window.openDialog('chrome://conversations/content/assistant/assistant.html',
+         '', 'chrome,width=800,height=500');" value="&option.assistant;" />
      </groupbox>
      <groupbox>
        <caption label="&title.advanced_display;" />

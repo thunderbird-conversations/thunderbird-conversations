@@ -64,7 +64,7 @@ window.addEventListener("load", function _overlay_eventListener () {
   //  leaves the main window some to load properly).
   if (NS.Prefs.getInt("conversations.version") < 1) {
     setTimeout(function () {
-      window.openDialog("chrome://conversations/content/assistant/assistant.html", "", "chrome,width=980,height=500");
+      window.openDialog("chrome://conversations/content/assistant/assistant.html", "", "chrome,width=800,height=500");
     }, 2000);
   }
 }, false);

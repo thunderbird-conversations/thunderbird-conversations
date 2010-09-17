@@ -18,10 +18,10 @@
     Cu.import("resource://conversations/prefs.js");
     Cu.import("resource://conversations/log.js");
 
-    function onCustomSetup() {
+    function onCustomSetup(event) {
       $(".more").fadeIn("slow");
       $(".more").get(0).scrollIntoView();
-      $(this).hide();
+      $(event.target).hide();
     }
 
     // Thanks, Andrew!
@@ -140,7 +140,7 @@
 <body>
   <div id="wrapper">
     <div class="main">
-      <h1 class="title">Thunderbird <span class="orange">Conversations</span></h1>
+      <h1 class="title">Thunderbird <span class="orange">Conversations</span> 2.0</h1>
       <div class="text">
         <p>
           Hi, this is <strong>Thunderbird Conversations</strong>!
@@ -160,8 +160,8 @@
     </div>
 
     <div class="buttonBox">
-      <button onclick="onCustomSetup();">Let me check first</button>
-      <button onclick="onFinish();">Ok, go ahead!</button>
+      <button onclick="onCustomSetup(event);">Let me check first</button>
+      <button onclick="onFinish(event);">Ok, go ahead!</button>
     </div>
 
     <div class="more">
