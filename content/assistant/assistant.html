@@ -24,6 +24,7 @@
     Cu.import("resource://conversations/prefs.js");
     Cu.import("resource://conversations/log.js");
     Cu.import("resource:///modules/iteratorUtils.jsm"); // for fixIterator
+    Cu.import("resource:///modules/virtualFolderWrapper.js");
 
     function onCustomSetup(event) {
       $(".more").fadeIn("slow");
@@ -99,7 +100,38 @@
         },
 
         actionUnifiedInboxSearchesSent: function () {
-          // TODO
+          // Get a handle onto the virtual inbox, and mark all the folders it
+          //  already searches.
+          let smartInbox = get_smart_folder_named("Inbox");
+          let vFolder = VirtualFolderHelper.wrapVirtualFolder(smartInbox);
+          let searchFolders = {};
+          for each (let [, folder] in Iterator(vFolder.searchFolders)) {
+            Log.debug("Folder", folder.folderURL, "is in the unified inbox already");
+            searchFolders[folder.folderURL] = true;
+          }
+          let extraSearchFolders = [];
+
+          // Go through all accounts and through all folders, and add each one
+          //  that's either an inbox or a sent folder to the global inbox.
+          for each (let account in fixIterator(msgAccountManager.accounts, Ci.nsIMsgAccount)) {
+            if (!account.incomingServer)
+              continue;
+
+            let rootFolder = account.incomingServer.rootFolder;
+            let allFolders = Cc["@mozilla.org/supports-array;1"].createInstance(Ci.nsISupportsArray);
+            rootFolder.ListDescendents(allFolders);
+            for each (let folder in fixIterator(allFolders, Ci.nsIMsgFolder)) {
+              if ((folder.getFlag(nsMsgFolderFlags_SentMail) || folder.getFlag(nsMsgFolderFlags_Inbox))
+                  && !searchFolders[folder.folderURL]) {
+                Log.debug("Searching folder", folder.folderURL, "inside Global Inbox");
+                extraSearchFolders.push(folder);
+              }
+            }
+          }
+
+          // And do some magic to make it all work.
+          vFolder.searchFolders = vFolder.searchFolders.concat(extraSearchFolders);
+          msgAccountManager.saveVirtualFolders();
         },
 
         actionOfflineDownload: function () {
@@ -229,7 +261,7 @@
         </li>
         <li>
           <input type="checkbox" checked="checked" id="actionUnifiedInboxSearchesSent" />
-          The Unified Inbox also searches Sent folders (TODO)
+          The Unified Inbox also searches Sent folders
           (<strong>strongly</strong> recommended).
         </li>
         <li>
