@@ -47,6 +47,7 @@ window.addEventListener("load", function _overlay_eventListener () {
   let NS = {};
   Components.utils.import("resource://conversations/monkeypatch.js", NS);
   Components.utils.import("resource://conversations/conversation.js", NS);
+  Components.utils.import("resource://conversations/prefs.js", NS);
 
   // We instanciate the Monkey-Patch for the given Conversation object.
   let monkeyPatch = new NS.MonkeyPatch(window, NS.Conversation);
@@ -58,4 +59,12 @@ window.addEventListener("load", function _overlay_eventListener () {
     dump(e.stack+"\n");
   }
   Conversations.monkeyPatch = monkeyPatch;
+
+  // Assistant. The setTimeout is here to ensure a smoother experience (this
+  //  leaves the main window some to load properly).
+  if (NS.Prefs.getInt("conversations.version") < 1) {
+    setTimeout(function () {
+      window.openDialog("chrome://conversations/content/assistant/assistant.html", "", "chrome,width=980,height=500");
+    }, 2000);
+  }
 }, false);

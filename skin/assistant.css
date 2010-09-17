@@ -1,0 +1,63 @@
+html, body {
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: "DejaVu Sans", "Lucida Grande", "Tahoma", sans;
+  color: #4b4742;
+}
+
+#wrapper {
+  background-image: url("chrome://conversations/content/assistant/feature-background.jpg");
+  background-position: center top;
+  background-repeat: no-repeat;
+}
+
+.title {
+  margin-top: 0;
+}
+
+.orange {
+  color: #c2550a;
+}
+
+.main {
+  height: 300px;
+  padding: 20px;
+  padding-bottom: 60px;
+}
+
+.more ul, .more p {
+  margin: 20px;
+}
+
+.more ul {
+  list-style-type: none;
+}
+
+.buttonBox {
+  padding: 20px;
+  padding-left: 60px;
+  padding-bottom: 60px;
+}
+
+.p1 {
+  width: 500px;
+}
+
+.p2 {
+  width: 400px;
+}
+
+.more {
+  display: none;
+}
+
+#footer {
+  background: url("chrome://conversations/content/assistant/tile.jpg") repeat-x scroll center top #394345;
+  clear: both;
+  color: #EEEEEE;
+  min-height: 34px;
+  text-align: center;
+}

@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <title>First run assistant</title>
+  <link rel="stylesheet" type="text/css" href="chrome://conversations/skin/assistant.css">
+  <link rel="stylesheet" type="text/css" href="../../skin/assistant.css">
+  <script type="text/javascript" src="chrome://conversations/content/js/jquery-1.4.2.min.js"></script>
+  <script type="text/javascript" src="../js/jquery-1.4.2.min.js"></script>
+  <script type="application/javascript;version=1.8">
+
+    const Ci = Components.interfaces;
+    const Cc = Components.classes;
+    const Cu = Components.utils;
+    const Cr = Components.results;
+
+    Cu.import("resource://conversations/prefs.js");
+    Cu.import("resource://conversations/log.js");
+
+    function onCustomSetup() {
+      $(".more").fadeIn("slow");
+      $(".more").get(0).scrollIntoView();
+      $(this).hide();
+    }
+
+    // Thanks, Andrew!
+    function get_smart_folder_named(aFolderName) {
+      let acctMgr = Cc["@mozilla.org/messenger/account-manager;1"]
+                      .getService(Ci.nsIMsgAccountManager);
+      let smartServer = acctMgr.FindServer("nobody", "smart mailboxes", "none");
+      return smartServer.rootFolder.getChildNamed(aFolderName);
+    }
+
+    function onFinish() {
+      let checkboxes = document.querySelectorAll("input[type=\"checkbox\"]");
+      let mainWindow = Cc['@mozilla.org/appshell/window-mediator;1']
+                       .getService(Ci.nsIWindowMediator)
+                       .getMostRecentWindow("mail:3pane");
+      // The nice idiom below is not possible because of... [Exception...
+      //  "Illegal operation on WrappedNative prototype object"  nsresult:
+      //  "0x8057000c (NS_ERROR_XPC_BAD_OP_ON_WN_PROTO)"
+      //
+      // let eid = mainWindow.document.getElementById;
+      //
+      // So we do a round of eta-expansion.
+      let eid = function (id) mainWindow.document.getElementById(id);
+      let actions = {
+        actionEnsureMessagePaneVisible: function () {
+          let splitter = eid("threadpane-splitter");
+          if (splitter.getAttribute("state") == "collapsed") {
+            Log.debug("Assistant: cmd_toggleMessagePane");
+            mainWindow.goDoCommand('cmd_toggleMessagePane');
+          }
+        },
+
+        actionSetupViewDefaults: function () {
+          // Descending
+          Prefs.setInt("mailnews.default_sort_order", 2);
+          // By Date
+          Prefs.setInt("mailnews.default_sort_type", 18);
+          // Threaded
+          Prefs.setInt("mailnews.default_view_flags", 1);
+        },
+
+        actionSetupView: function () {
+          mainWindow.gFolderTreeView.mode = "smart";
+          let smartInbox = get_smart_folder_named("Inbox");
+          mainWindow.gFolderTreeView.selectFolder(smartInbox);
+
+          let moveOn = function () {
+            mainWindow.MsgSortThreaded();
+            mainWindow.MsgSortThreadPane('byDate');
+            mainWindow.MsgSortDescending();
+            mainWindow.goDoCommand('cmd_collapseAllThreads');
+            eid("unreadCol").setAttribute("hidden", "false");
+          };
+          let i = 0;
+          let waitForIt = function () {
+            if (mainWindow.gFolderDisplay.displayedFolder != smartInbox && i++ < 10) {
+              mainWindow.setTimeout(waitForIt, 150);
+            } else {
+              moveOn();
+            }
+          }
+          waitForIt();
+        },
+
+        actionChangeFontSize: function () {
+          Prefs.setInt("font.size.variable.x-western", 12);
+          Prefs.setChar("font.default", "sans-serif");
+        },
+
+        actionUnifiedInboxSearchesSent: function () {
+          // TODO
+        },
+
+        actionOfflineDownload: function () {
+          // TODO
+        },
+
+        actionAttachmentsInline: function () {
+          Prefs.setBool("mail.inline_attachments", false);
+        },
+
+        actionDontExpand: function () {
+          Prefs.setBool("mailnews.scroll_to_new_message", false);
+        },
+
+        actionReindexAttachments: function () {
+          // TODO
+        },
+
+        actionDisableAutoread: function () {
+          Prefs.setBool("mailnews.mark_message_read.auto", false);
+        },
+
+        actionEnableGloda: function () {
+          Prefs.setBool("mailnews.database.global.indexer.enabled", true);
+        },
+      };
+      for each (let [, checkbox] in Iterator(checkboxes)) {
+        if (!(checkbox.id in actions)) {
+          Log.error("No suitable action for", checkbox.id);
+        } else {
+          try {
+            actions[checkbox.id]();
+          } catch (e) {
+            Log.error(e);
+            dumpCallStack(e);
+          }
+        }
+      }
+      Prefs.setInt("conversations.version", 1);
+      window.close();
+    }
+  </script>
+</head>
+
+<body>
+  <div id="wrapper">
+    <div class="main">
+      <h1 class="title">Thunderbird <span class="orange">Conversations</span></h1>
+      <div class="text">
+        <p>
+          Hi, this is <strong>Thunderbird Conversations</strong>!
+        </p>
+        <p class="p1">
+          In order to make your life easier, this assistant will tweak your
+          Thunderbird setup to ensure you enjoy the optimal experience. We don't
+          want you to feel dissatisfied!
+        </p>
+        <p class="p2">
+          The tweaks we make are all reversible, so don't worry: should you not
+          enjoy Thunderbird Conversations, we will revert any preference change we
+          made as soon as you uninstall the extension. (<span style="font-weight:
+            bold; color: red">XXX Not implemented yet</span>)
+        </p>
+      </div>
+    </div>
+
+    <div class="buttonBox">
+      <button onclick="onCustomSetup();">Let me check first</button>
+      <button onclick="onFinish();">Ok, go ahead!</button>
+    </div>
+
+    <div class="more">
+      <p>
+        Some settings are mandatory for Thunderbird Conversations to work
+        properly. Some are strongly recommended, and some are optional.
+      </p>
+      <ul>
+        <li>
+          <input type="checkbox" disabled="disabled" checked="checked" id="actionEnableGloda" />
+          Make sure Global Search and Indexer is enabled.
+        </li>
+        <li>
+          <input type="checkbox" disabled="disabled" checked="checked" id="actionDisableAutoread" />
+          Let Thunderbird Conversations mark messages as read.
+        </li>
+        <li>
+          <input type="checkbox" disabled="disabled" checked="checked" id="actionReindexAttachments" />
+          Re-index messages containing attachments (TODO).
+        </li>
+        <li>
+          <input type="checkbox" disabled="disabled" checked="checked" id="actionDontExpand" />
+          In the message list, don't expand threads containing unread messages.
+        </li>
+        <li>
+          <input type="checkbox" checked="checked" id="actionAttachmentsInline" />
+          Don't display attachments inline
+          (<strong>strongly</strong> recommended).
+        </li>
+        <li>
+          <input type="checkbox" checked="checked" id="actionOfflineDownload" />
+          Inbox and Sent are synchronized for offline storage (TODO)
+          (<strong>strongly</strong> recommended).
+        </li>
+        <li>
+          <input type="checkbox" checked="checked" id="actionUnifiedInboxSearchesSent" />
+          The Unified Inbox also searches Sent folders (TODO)
+          (<strong>strongly</strong> recommended).
+        </li>
+        <li>
+          <input type="checkbox" checked="checked" id="actionChangeFontSize" />
+          Use a 12px sans-serif font by default (<strong>strongly</strong> recommended).
+        </li>
+        <li>
+          <input type="checkbox" checked="checked" id="actionSetupView" />
+          Switch to Global Inbox, make display threaded, sort by date, enable
+          unread count column (<strong>strongly</strong> recommended).
+        </li>
+        <li>
+          <input type="checkbox" checked="checked" id="actionSetupViewDefaults" />
+          Use these custom sort settings for all folders.
+        </li>
+        <li>
+          <input type="checkbox" checked="checked" id="actionEnsureMessagePaneVisible" />
+          Make sure the message pane is visible.
+        </li>
+      </ul>
+
+      <div id="footer">
+      </div>
+    </div>
+
+  </div>
+</body>
+
+</html>
