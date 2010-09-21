@@ -12,16 +12,17 @@ const msgComposeService = Cc["@mozilla.org/messengercompose;1"]
 
 Cu.import("resource:///modules/gloda/utils.js");
 Cu.import("resource://conversations/VariousUtils.jsm");
+Cu.import("resource://conversations/log.js");
 
 let gHasPeople;
 try {
   Cu.import("resource://people/modules/people.js");
+  Log.debug("You have contacts, attaboy!");
   gHasPeople = true;
 } catch (e) {
   gHasPeople = false;
+  Log.debug("You don't have contacts, bad boy!");
 }
-
-gHasPeople = false; // XXX remove this when we do contacts for real
 
 function ContactManager() {
   this._cache = {};
@@ -156,11 +157,37 @@ ContactFromAB.prototype = {
 
 MixIn(ContactFromAB, ContactMixIn);
 
-function ContactFromPeople(name, email) {
-  this.emails = [];
+function ContactFromPeople(manager, name, email) {
+  this.name = name;
+  this.emails = [email];
+  this.color = manager.freshColor();
+
+  this._manager = manager;
+  this._name = name;
+  this._email = email;
+  this.avatar = "";
+
+  this.fetch();
 }
 
 ContactFromPeople.prototype = {
+  fetch: function _ContactFromPeople_fetch() {
+    let self = this;
+    People.find({ emails: this._email }).forEach(function (person) {
+      Log.debug("Found a match in contacts");
+
+      let photos = person.getProperty("photos");
+      for each (let photo in photos) {
+        if (photo.type == "thumbnail") {
+          self.avatar = photo.value;
+          break;
+        }
+      }
+
+      self.name = person.displayName;
+      self.emails = person.getProperty("emails");
+    });
+  },
 }
 
 MixIn(ContactFromPeople, ContactMixIn);
