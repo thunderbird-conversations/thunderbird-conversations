@@ -411,8 +411,6 @@ Conversation.prototype = {
         this.messages[i].message.onAddedToDom(domNodes[i]);
         this.messages[i].message.expand();
       }
-
-      // XXX add some visual feedback, like "1 new message in this conversation"
     }
 
     // Don't forget to update the conversation buttons, even if we have no new
@@ -476,11 +474,14 @@ Conversation.prototype = {
       };
       let myMsgIds = [getMessageId(x) for each ([, x] in Iterator(this.messages))];
       let [shouldRecycle, _whichMessageIds] = isPrefix(currentMsgIds, myMsgIds);
-      if (currentMsgSet.length == 0) {
-        // Seems to happen sometimes. Why? Dunno. XXX investigate this
-        Log.error("Empty conversation, WTF?");
+      // Ok, some explanation needed. How can this possibly happen?
+      // - Click on a conversation
+      // - Conversation is built, becomes the global current conversation
+      // - The message takes forever to stream (happens...)
+      // - User gets fed up, picks another conversation
+      // - Bang! Current conversation has no messages.
+      if (currentMsgSet.length == 0)
         shouldRecycle = false;
-      }
       if (shouldRecycle) {
         // Just get the extra messages
         let whichMessages = this.messages.slice(currentMsgSet.length, this.messages.length);
@@ -529,7 +530,8 @@ Conversation.prototype = {
   },
 
   _updateConversationButtons: function _Conversation_updateConversationButtons () {
-    if (!this.messages.length)
+    // Bail if we're notified too early.
+    if (!this.messages.length || !this._domNode)
       return;
 
     // Make sure the toggle read/unread button is in the right state

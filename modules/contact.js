@@ -105,7 +105,7 @@ let ContactMixIn = {
 
   onAddedToDom: function _ContactMixIn_onAddedToDom(aDomNode) {
     let uri = "mailto:" + this._email;
-    aURI = ioService.newURI(uri, null, null);
+    let aURI = ioService.newURI(uri, null, null);
     aDomNode.getElementsByClassName("sendEmail")[0].addEventListener(
       "click", function (event) {
         msgComposeService.OpenComposeWindowWithURI(null, aURI);
