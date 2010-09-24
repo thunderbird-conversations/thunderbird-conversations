@@ -252,6 +252,14 @@ span.downwardArrow {
   color: #333;
 }
 
+.authorLinks {
+  width: auto;
+}
+
+a img {
+  border-color: transparent;
+}
+
 .name {
   font-size: 14px;
 }
@@ -262,9 +270,14 @@ span.downwardArrow {
 
 .authorPicture {
   display: inline-block;
-  float: left;
+  float: right;
   width: 100px;
   padding: 10px;
+}
+
+.authorPicture img {
+  width: 80px;
+  height: 80px;
 }
 
 .tipFooter {
