@@ -112,7 +112,8 @@ MonkeyPatch.prototype = {
     //  situations (where a normal thread summary would kick in) as a
     //  side-effect. That means we don't need to hack into gMessageDisplay too
     //  much.
-    window.gMessageDisplay.onSelectedMessagesChanged =
+    window.document.getElementById("tabmail")
+        .tabInfo[0].messageDisplay.onSelectedMessagesChanged =
       function _onSelectedMessagesChanged_patched () {
         try {
           if (!this.active)

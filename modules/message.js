@@ -280,7 +280,7 @@ Message.prototype = {
       style = window.getComputedStyle(toNode, null);
     }
     if (overflowed) {
-      let dots = toNode.ownerDocument.createTextNode("...");
+      let dots = toNode.ownerDocument.createTextNode("…");
       toNode.appendChild(dots);
       while (parseInt(style.height) > 18 && toNode.childNodes.length > 2) {
         toNode.removeChild(toNode.childNodes[toNode.childNodes.length - 2]);
