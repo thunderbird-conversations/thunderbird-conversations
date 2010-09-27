@@ -38,6 +38,7 @@ function Message(aConversation, aSignalFn) {
 
   let date = new Date(this._msgHdr.date/1000);
   this._date = Prefs["no_friendly_date"] ? dateAsInMessageList(date) : makeFriendlyDateAgo(date);
+  // This one is for display purposes
   this._from = this.parse(this._msgHdr.mime2DecodedAuthor)[0];
   // Might be filled to something more meaningful later, in case we replace the
   //  sender with something more relevant, like X-Bugzilla-Who.
@@ -421,8 +422,9 @@ Message.prototype = {
               node.parentNode.removeChild(node);
             }
 
-            // Launch various heuristics to convert most common quoting styles
-            // to real blockquotes. Spoiler: most of them suck.
+            // Launch various crappy pieces of code^W^W^W^W heuristics to
+            //  convert most common quoting styles to real blockquotes. Spoiler:
+            //  most of them suck.
             convertOutlookQuotingToBlockquote(iframe.contentWindow, iframeDoc);
             convertHotmailQuotingToBlockquote1(iframeDoc);
             convertHotmailQuotingToBlockquote2(iframe.contentWindow, iframeDoc, Prefs["hide_quote_length"]);
@@ -518,8 +520,9 @@ Message.prototype = {
 
             // For bidiUI. Do that now because the DOM manipulations are
             // over. We can't do this before because BidiUI screws up the
-            // DOM. Don't know why :(. XXX does this still work?
-            if (typeof(BDMActionPhase_htmlNumericEntitiesDecoding) == "function") {
+            // DOM. Don't know why :(.
+            if ("BiDiMailUI" in self._conversation._window) {
+              let ActionPhases = self._conversation._window.BiDiMailUI.Display.ActionPhases;
               try {
                 let domDocument = iframe.docShell.contentViewer.DOMDocument;
                 let body = domDocument.body;
@@ -528,24 +531,28 @@ Message.prototype = {
                   body: body,
                   charsetOverrideInEffect: msgWindow.charsetOverride,
                   currentCharset: msgWindow.mailCharacterSet,
+                  messageHeader: self._msgHdr,
+                  unusableCharsetHandler: self._conversation._window
+                    .BiDiMailUI.MessageOverlay.promptForDefaultCharsetChange,
                   needCharsetForcing: false,
                   charsetToForce: null
                 };
-                BDMActionPhase_charsetMisdetectionCorrection(BDMCharsetPhaseParams);
+                ActionPhases.charsetMisdetectionCorrection(BDMCharsetPhaseParams);
                 if (BDMCharsetPhaseParams.needCharsetForcing
                     && BDMCharsetPhaseParams.charsetToForce != aCharset) {
                   // XXX this doesn't take into account the case where we
                   // have a cycle with length > 0 in the reloadings.
                   // Currently, I only see UTF8 -> UTF8 cycles.
-                  Error.debug("Reloading with "+BDMCharsetPhaseParams.charsetToForce);
+                  Log.debug("Reloading with "+BDMCharsetPhaseParams.charsetToForce);
                   f_temp2(null, BDMCharsetPhaseParams.charsetToForce);
                   return;
                 }
-                BDMActionPhase_htmlNumericEntitiesDecoding(body);
-                BDMActionPhase_quoteBarsCSSFix(domDocument);
-                BDMActionPhase_directionAutodetection(body);
+                ActionPhases.htmlNumericEntitiesDecoding(body);
+                ActionPhases.quoteBarsCSSFix(domDocument);
+                ActionPhases.directionAutodetection(domDocument);
               } catch (e) {
                 Log.error(e);
+                dumpCallStack(e);
               }
             }
 

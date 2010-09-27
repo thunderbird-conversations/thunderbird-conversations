@@ -84,8 +84,7 @@ MonkeyPatch.prototype = {
               window.Conversations.currentConversation = aConversation;
               // Make sure we respect the user's preferences.
               self.markReadTimeout = window.setTimeout(function () {
-                if (window.document.hasFocus())
-                  aConversation.read = true;
+                aConversation.read = true;
                 self.markReadTimeout = null;
               }, Prefs.getInt("mailnews.mark_message_read.delay.interval")
                 * Prefs.getBool("mailnews.mark_message_read.delay") * 1000);
