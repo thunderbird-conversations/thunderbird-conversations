@@ -24,8 +24,10 @@ let strings = new StringBundle("chrome://conversations/locale/main.properties");
 Cu.import("resource://conversations/VariousUtils.jsm");
 Cu.import("resource://conversations/MsgHdrUtils.jsm");
 Cu.import("resource://conversations/prefs.js");
+Cu.import("resource://conversations/hook.js");
 Cu.import("resource://conversations/log.js");
 
+let Log = setupLogging("Conversations.Message");
 const snippetLength = 300;
 
 // Call that one after setting this._msgHdr;
@@ -473,19 +475,6 @@ Message.prototype = {
             };
             walk(iframeDoc);
 
-            // Hello, Enigmail. Do that now, because decrypting a message
-            // will change its height. If you've got nothing better to do,
-            // test for the remaining 4572 possible statuses.
-            /* if (iframeDoc.body.textContent.length > 0 && hasEnigmail) {
-              let status = tryEnigmail(iframeDoc.body);
-              if (status & Ci.nsIEnigmail.DECRYPTION_OKAY)
-                self._domNode.getElementsByClassName("enigmail-enc-ok")[0].style.display = "";
-              if (status & Ci.nsIEnigmail.GOOD_SIGNATURE)
-                self._domNode.getElementsByClassName("enigmail-sign-ok")[0].style.display = "";
-              if (status & Ci.nsIEnigmail.UNVERIFIED_SIGNATURE)
-                self._domNode.getElementsByClassName("enigmail-sign-unknown")[0].style.display = "";
-            } */
-
             // Ugly hack (once again) to get the style inside the
             // <iframe>. I don't think we can use a chrome:// url for
             // the stylesheet because the iframe has a type="content"
@@ -518,9 +507,15 @@ Message.prototype = {
               }
             }
 
+            // Notify hooks that we just finished displaying a message. Must be
+            //  performed now, not later.
+            [h.onMessageStreamed(self._msgHdr, iframe) for each ([, h] in Iterator(getHooks()))];
+
             // For bidiUI. Do that now because the DOM manipulations are
-            // over. We can't do this before because BidiUI screws up the
-            // DOM. Don't know why :(.
+            //  over. We can't do this before because BidiUI screws up the
+            //  DOM. Don't know why :(.
+            // We can't do this as a plugin (I wish I could!) because this is
+            //  too entangled with the display logic.
             if ("BiDiMailUI" in self._conversation._window) {
               let ActionPhases = self._conversation._window.BiDiMailUI.Display.ActionPhases;
               try {
@@ -556,16 +551,16 @@ Message.prototype = {
               }
             }
 
-            // Everything's done, so now we're able to settle for a height.
-            iframe.style.height = iframeDoc.body.scrollHeight+"px";
-
             // Attach the required event handlers so that links open in the
-            // external browser
+            // external browser.
             for each (let [, a] in Iterator(iframeDoc.getElementsByTagName("a"))) {
               a.addEventListener("click",
                 function link_listener (event)
                   self._conversation._window.specialTabs.siteClickHandler(event, /^mailto:/), true);
             }
+
+            // Everything's done, so now we're able to settle for a height.
+            iframe.style.height = iframeDoc.body.scrollHeight+"px";
 
             // Sometimes setting the iframe's content and height changes
             // the scroll value, don't know why.

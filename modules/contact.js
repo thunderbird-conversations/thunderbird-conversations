@@ -14,6 +14,8 @@ Cu.import("resource:///modules/gloda/utils.js");
 Cu.import("resource://conversations/VariousUtils.jsm");
 Cu.import("resource://conversations/log.js");
 
+let Log = setupLogging("Conversations.Contact");
+
 let gHasPeople;
 try {
   Cu.import("resource://people/modules/people.js");

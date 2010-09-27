@@ -34,8 +34,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Dear AMO reviewer, please note that this file has var EXPORTED_SYMBOLS = [];
+// Dear AMO reviewer, please note that these files have var EXPORTED_SYMBOLS = [];
 Components.utils.import("resource://conversations/plugins/bugzilla.js");
+Components.utils.import("resource://conversations/plugins/enigmail.js");
 
 var Conversations = {
   monkeyPatch: null,
@@ -44,6 +45,7 @@ var Conversations = {
 };
 
 window.addEventListener("load", function _overlay_eventListener () {
+  dump("XXXXXXXX\n\n");
   let NS = {};
   Components.utils.import("resource://conversations/monkeypatch.js", NS);
   Components.utils.import("resource://conversations/conversation.js", NS);

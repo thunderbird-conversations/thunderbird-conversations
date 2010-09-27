@@ -9,6 +9,8 @@ Cu.import("resource://conversations/MsgHdrUtils.jsm");
 Cu.import("resource://conversations/prefs.js");
 Cu.import("resource://conversations/log.js");
 
+let Log = setupLogging("Conversations.MonkeyPatch");
+
 function MonkeyPatch(aWindow, aConversation) {
   this._Conversation = aConversation;
   this._wantedUrl = "";

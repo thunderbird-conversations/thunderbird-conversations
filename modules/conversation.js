@@ -14,6 +14,8 @@ Cu.import("resource://conversations/VariousUtils.jsm");
 Cu.import("resource://conversations/message.js");
 Cu.import("resource://conversations/contact.js");
 
+let Log = setupLogging("Conversations.Conversation");
+
 const kMsgDbHdr = 0;
 const kMsgGloda = 1;
 

@@ -1,15 +1,29 @@
-var EXPORTED_SYMBOLS = ["Log", "dumpCallStack"]
+var EXPORTED_SYMBOLS = ["setupLogging", "dumpCallStack"]
 
 Components.utils.import("resource:///modules/gloda/log4moz.js");
 
-let Log;
+function setupLogging(name) {
+  let Log = Log4Moz.repository.getLogger(name);
 
-function setupLogging() {
+  Log.assert = function (aBool, aStr) {
+    if (!aBool) {
+      this.error("\n!!!!!!!!!!!!!!!!!!!!!!"+
+                 "\n    ASSERT FAILURE    "+
+                 "\n!!!!!!!!!!!!!!!!!!!!!!\n"+aStr);
+      throw Error("Assert failures are fatal, man");
+    }
+  };
+
+  return Log;
+}
+
+function setupFullLogging(name) {
+  dump(name+"\n\n");
   // The basic formatter will output lines like:
   // DATE/TIME	LoggerName	LEVEL	(log message) 
   let formatter = new Log4Moz.BasicFormatter();
 
-  Log = Log4Moz.repository.getLogger("Conversations.Main");
+  let Log = Log4Moz.repository.getLogger(name);
 
   // Loggers are hierarchical, lowering this log level will affect all output
   let root = Log;
@@ -35,14 +49,17 @@ function setupLogging() {
   };
 
   Log.debug("Logging enabled");
+
+  return Log;
 }
 
-setupLogging();
+// Must call this once to setup the root logger
+let MyLog = setupFullLogging("Conversations");
 
 function dumpCallStack(e) {
   let frame = e ? e.stack : Components.stack;
   while (frame) {
-    Log.debug("\n"+frame);
+    MyLog.debug("\n"+frame);
     frame = frame.caller;
   }
 };
