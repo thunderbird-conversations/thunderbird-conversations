@@ -96,12 +96,17 @@ let enigmailHook = {
     let iframeDoc = aIframe.contentDocument;
     if (iframeDoc.body.textContent.length > 0 && hasEnigmail) {
       let status = tryEnigmail(iframeDoc.body);
-      /* if (status & Ci.nsIEnigmail.DECRYPTION_OKAY)
-        self._domNode.getElementsByClassName("enigmail-enc-ok")[0].style.display = "";
+      let addPic = function _addPic(url) {
+        let img = aIframe.ownerDocument.createElement("img");
+        img.setAttribute("src", url);
+        aIframe.parentNode.firstElementChild.appendChild(img);
+      };
+      if (status & Ci.nsIEnigmail.DECRYPTION_OKAY)
+        addPic("chrome://enigmail/skin/enigEncOk.png");
       if (status & Ci.nsIEnigmail.GOOD_SIGNATURE)
-        self._domNode.getElementsByClassName("enigmail-sign-ok")[0].style.display = "";
+        addPic("chrome://enigmail/skin/enigSignOk.png");
       if (status & Ci.nsIEnigmail.UNVERIFIED_SIGNATURE)
-        self._domNode.getElementsByClassName("enigmail-sign-unknown")[0].style.display = ""; */
+        addPic("chrome://enigmail/skin/enigSignUnkown.png");
     }
 
   },

@@ -321,6 +321,7 @@ a img {
 .message.collapsed .messageBody .tags,
 .message.collapsed p,
 .message.collapsed .attachments,
+.message.collapsed .iconBox,
 .message .snippet {
   display: none;
 }

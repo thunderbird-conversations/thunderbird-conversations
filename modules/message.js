@@ -144,6 +144,7 @@ Message.prototype = {
       "    </div>\n",
       "  </div>\n",
       "  <div class=\"messageBody\">\n",
+      "    <span class=\"iconBox\"></span>\n",
       "    <ul class=\"tags\"></ul>\n",
       "  </div>\n",
       "  <div class=\"messageFooter\">\n",

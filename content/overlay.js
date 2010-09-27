@@ -45,7 +45,6 @@ var Conversations = {
 };
 
 window.addEventListener("load", function _overlay_eventListener () {
-  dump("XXXXXXXX\n\n");
   let NS = {};
   Components.utils.import("resource://conversations/monkeypatch.js", NS);
   Components.utils.import("resource://conversations/conversation.js", NS);
