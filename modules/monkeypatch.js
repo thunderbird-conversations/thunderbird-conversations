@@ -169,7 +169,6 @@ MonkeyPatch.prototype = {
 
           // Else defer to showSummary to work it out based on thread selection.
           // (This might be a MultiMessageSummary after all!)
-          // XXX FIXME Multiple message summary is br0ken now.
           Log.debug("This is a real multiple selection, deferring to _showSummary()");
           return this._showSummary();
         } catch (e) {
@@ -181,6 +180,7 @@ MonkeyPatch.prototype = {
     Log.debug("Monkey patch successfully applied.");
   },
 
+  // XXX dead
   expectUrl: function (aUrl) {
     Log.debug("Expecting "+aUrl+" to be loaded soon");
     this._wantedUrl = aUrl;

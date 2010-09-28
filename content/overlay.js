@@ -59,6 +59,7 @@ window.addEventListener("load", function _overlay_eventListener () {
     dump(e+"\n");
     dump(e.stack+"\n");
   }
+  // XXX no good reason to do this
   Conversations.monkeyPatch = monkeyPatch;
 
   // Assistant.

@@ -97,6 +97,9 @@
 
     let Conversations = window.top.Conversations;
     Components.utils.import("resource://conversations/MsgHdrUtils.jsm");
+    Components.utils.import("resource://conversations/log.js");
+
+    let Log = setupLogging("Conversations.Stub");
 
     // Mark the current conversation as read/unread. The conversation driver
     //  takes care of setting the right class on us whenever the state
@@ -126,7 +129,7 @@
     }
 
     function archiveConversation(event) {
-      msgHdrsArchive(Conversations.currentConversation.msgHdrs, window.top);
+      msgHdrsArchive(Conversations.currentConversation.msgHdrs);
     }
 
     function deleteConversation(event) {
@@ -142,6 +145,24 @@
     function fakeTextOverflowParticipants(aMsgNode) {
       $(aMsgNode).find(".to").textOverflow(null, false);
     }
+
+    document.addEventListener("focus", function (event) {
+      /* This is a persistent event listener. It can operate multiple
+       * times.*/
+      let msgNode = document.querySelector(".message[tabindex=\"1\"]");
+      if (!msgNode)
+        return;
+
+      /* Restore the proper tab order. This event is fired *after* the
+       * right message has been focused in Gecko 1.9.2, *before* the right
+       * message has been focused in Gecko 1.9.1 (so it's basically
+       * useless). */
+      if (msgNode.previousElementSibling)
+        msgNode.setAttribute("tabindex",
+          parseInt(msgNode.previousElementSibling.getAttribute("tabindex"))+1);
+      else /* It's the first one in the list */
+        msgNode.setAttribute("tabindex", 2);
+    }, true);
   </script>
 </head>
 
