@@ -412,6 +412,8 @@ Conversation.prototype = {
         Log.debug("Appending node", i, "to the conversation");
         this.messages[i].message.onAddedToDom(domNodes[i]);
         this.messages[i].message.expand();
+        Log.debug("Appending message", i, "setting tabindex", i+2);
+        domNodes[i].setAttribute("tabindex", (i+2)+"");
       }
     }
 
@@ -556,13 +558,19 @@ Conversation.prototype = {
   _expandAndScroll: function _Conversation_expandAndScroll (isUpdate) {
     let focusThis = this._tellMeWhoToScroll();
     let expandThese = this._tellMeWhoToExpand(focusThis);
+    let messageNodes = this._domNode.getElementsByClassName(Message.prototype.cssClass);
 
     let self = this;
     this._runOnceAfterNSignals(function () {
-      self._htmlPane.contentWindow.scrollNodeIntoView(
-        self._domNode.getElementsByClassName(Message.prototype.cssClass)[focusThis]);
+      let focusedNode = messageNodes[focusThis];
+      self._htmlPane.contentWindow.scrollNodeIntoView(focusedNode);
 
       if (!isUpdate) {
+        for each (let [i, node] in Iterator(messageNodes)) {
+          node.setAttribute("tabindex", i+2);
+        }
+        focusedNode.setAttribute("tabindex", "1");
+
         self._onComplete();
         // In theory, we could call this *before* _onComplete, and pray for Gloda
         //  to call onItemsModified properly, and in time. We could. But we won't.

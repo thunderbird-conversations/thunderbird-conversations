@@ -30,6 +30,100 @@ Cu.import("resource://conversations/log.js");
 let Log = setupLogging("Conversations.Message");
 const snippetLength = 300;
 
+function KeyListener(aMessage) {
+  this.message = aMessage;
+  let mail3PaneWindow = Cc["@mozilla.org/appshell/window-mediator;1"]
+                          .getService(Ci.nsIWindowMediator)
+                          .getMostRecentWindow("mail:3pane");
+  this.KeyEvent = mail3PaneWindow.KeyEvent;
+  this.navigator = mail3PaneWindow.navigator;
+}
+
+KeyListener.prototype = {
+  onKeyPress: function _KeyListener_onKeyPressed (event) {
+    let self = this;
+    let isAccel = function (event) (
+       self.navigator.platform.indexOf("mac") === 0 && event.metaKey
+       || event.ctrlKey
+    );
+    let findMsgNode = function (msgNode) {
+      let msgNodes = self.message._domNode.ownerDocument
+        .getElementsByClassName(Message.prototype.cssClass);
+      msgNodes = [x for each ([, x] in Iterator(msgNodes))];
+      let index = msgNodes.indexOf(msgNode);
+      return [msgNodes, index];
+    };
+    switch (event.which) {
+      case this.KeyEvent.DOM_VK_ENTER:
+      case 'o'.charCodeAt(0):
+        this.message.toggle();
+        event.preventDefault();
+        break;
+
+      case 'n'.charCodeAt(0):
+        {
+          let [msgNodes, index] = findMsgNode(this.message._domNode);
+          if (index < msgNodes.length) {
+            let next = msgNodes[index+1];
+            next.focus();
+            this.message._conversation._htmlPane
+              .contentWindow.scrollNodeIntoView(next);
+          }
+          event.preventDefault();
+        }
+        break;
+
+      case 'p'.charCodeAt(0):
+        {
+          let [msgNodes, index] = findMsgNode(this.message._domNode);
+          if (index > 0) {
+            let prev = msgNodes[index-1];
+            prev.focus();
+            this.message._conversation._htmlPane
+              .contentWindow.scrollNodeIntoView(prev);
+          }
+          event.preventDefault();
+        }
+        break;
+
+      case 'r'.charCodeAt(0):
+        if (isAccel(event))
+          this.message.compose(Ci.nsIMsgCompType.ReplyToSender, event);
+        event.preventDefault();
+        break;
+
+      case 'R'.charCodeAt(0):
+        if (isAccel(event))
+          this.message.compose(Ci.nsIMsgCompType.ReplyAll, event);
+        event.preventDefault();
+        break;
+
+      case 'l'.charCodeAt(0):
+        this.message.forward(event);
+        event.preventDefault();
+        break;
+
+      case 'u'.charCodeAt(0):
+        // Hey, let's move back to this message next time!
+        this.message._domNode.setAttribute("tabindex", "1");
+        this.message._conversation._window
+          .SetFocusThreadPane(event);
+        event.preventDefault();
+        break;
+
+      case 'a'.charCodeAt(0):
+        msgHdrsArchive(this.message._conversation.msgHdrs);
+        event.preventDefault();
+        break;
+
+      case '#'.charCodeAt(0):
+        msgHdrsDelete(this.message._conversation.msgHdrs);
+        event.preventDefault();
+        break;
+    }
+  },
+}
+
 // Call that one after setting this._msgHdr;
 function Message(aConversation, aSignalFn) {
   this._signal = aSignalFn;
@@ -173,6 +267,32 @@ Message.prototype = {
     let self = this;
     this._domNode.getElementsByClassName("messageHeader")[0]
       .addEventListener("click", function () self.toggle(), false);
+
+    let keyListener = new KeyListener(this);
+    this._domNode.addEventListener("keypress", function (event) {
+      keyListener.onKeyPress(event);
+    }, false);
+  },
+
+  compose: function _Message_compose (aCompType, aEvent) {
+    if (aEvent.shiftKey) {
+      this._conversation._window.ComposeMessage(aCompType, Ci.nsIMsgCompFormat.OppositeOfDefault, this._msgHdr.folder, [this._uri]);
+    } else {
+      this._conversation._window.ComposeMessage(aCompType, Ci.nsIMsgCompFormat.Default, this._msgHdr.folder, [this._uri]);
+    }
+  },
+
+  forward: function _Message_forward (event) {
+    let forwardType = 0;
+    try {
+      forwardType = Prefs.getInt("mail.forward_message_mode");
+    } catch (e) {
+      Log.error("Unable to fetch preferred forward mode\n");
+    }
+    if (forwardType == 0)
+      this.compose(Ci.nsIMsgCompType.ForwardAsAttachment, event);
+    else
+      this.compose(Ci.nsIMsgCompType.ForwardInline, event);
   },
 
   // Actually, we only do these expensive DOM calls when we need to, i.e. when
@@ -188,13 +308,6 @@ Message.prototype = {
     this._conversation._htmlPane.contentWindow.enableTooltips(this);
 
     // Register all the needed event handlers. Nice wrappers below.
-    let compose = function _compose (aCompType, aEvent) {
-      if (aEvent.shiftKey) {
-        self._conversation._window.ComposeMessage(aCompType, Ci.nsIMsgCompFormat.OppositeOfDefault, self._msgHdr.folder, [self._uri]);
-      } else {
-        self._conversation._window.ComposeMessage(aCompType, Ci.nsIMsgCompFormat.Default, self._msgHdr.folder, [self._uri]);
-      }
-    };
     let register = function _register (selector, f, action) {
       if (!action)
         action = "click";
@@ -202,21 +315,9 @@ Message.prototype = {
       for each (let [, node] in Iterator(nodes))
         node.addEventListener(action, f, false);
     };
-    let forward = function _forward (event) {
-      let forwardType = 0;
-      try {
-        forwardType = Prefs.getInt("mail.forward_message_mode");
-      } catch (e) {
-        Log.error("Unable to fetch preferred forward mode\n");
-      }
-      if (forwardType == 0)
-        compose(Ci.nsIMsgCompType.ForwardAsAttachment, event);
-      else
-        compose(Ci.nsIMsgCompType.ForwardInline, event);
-    };
-    register(".reply", function (event) compose(Ci.nsIMsgCompType.ReplyToSender, event));
-    register(".replyAll", function (event) compose(Ci.nsIMsgCompType.ReplyAll, event));
-    register(".forward", function (event) forward(event));
+    register(".reply", function (event) self.compose(Ci.nsIMsgCompType.ReplyToSender, event));
+    register(".replyAll", function (event) self.compose(Ci.nsIMsgCompType.ReplyAll, event));
+    register(".forward", function (event) self.forward(event));
     // These event listeners are all in the header, which happens to have an
     //  event listener set on the click event for toggling the message. So we
     //  make sure that event listener is bubbling, and we register these with

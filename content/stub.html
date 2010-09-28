@@ -148,7 +148,8 @@
 
     document.addEventListener("focus", function (event) {
       /* This is a persistent event listener. It can operate multiple
-       * times.*/
+       * times. We have the invariant that for a given conversation, there's at
+       * most one such element (recycling doesn't use tabindex 1). */
       let msgNode = document.querySelector(".message[tabindex=\"1\"]");
       if (!msgNode)
         return;
@@ -157,11 +158,18 @@
        * right message has been focused in Gecko 1.9.2, *before* the right
        * message has been focused in Gecko 1.9.1 (so it's basically
        * useless). */
-      if (msgNode.previousElementSibling)
-        msgNode.setAttribute("tabindex",
-          parseInt(msgNode.previousElementSibling.getAttribute("tabindex"))+1);
-      else /* It's the first one in the list */
-        msgNode.setAttribute("tabindex", 2);
+      let msgNodes = document.getElementsByClassName("message");
+      let index;
+      for each (let [i, k] in Iterator(msgNodes)) {
+        if (k == msgNode) {
+          index = i;
+          break;
+        }
+      }
+      if (!index)
+        Log.error("Couldn't find the given msgNode???");
+      else
+        msgNode.setAttribute("tabindex", index+2);
     }, true);
   </script>
 </head>

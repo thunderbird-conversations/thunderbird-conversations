@@ -200,14 +200,17 @@ function msgHdrsDelete(msgHdrs) {
  * Archive a set of messages
  * @param {nsIMsgDbHdr array} msgHdrs The message headers
  */
-function msgHdrsArchive(msgHdrs, aWindow) {
+function msgHdrsArchive(msgHdrs) {
   /* See
    * http://mxr.mozilla.org/comm-central/source/suite/mailnews/mailWindowOverlay.js#1337
    *
    * The window is here because otherwise we don't have access to
    * BatchMessageMover.
    * */
-  let batchMover = new aWindow.BatchMessageMover();
+  let mail3PaneWindow = Cc["@mozilla.org/appshell/window-mediator;1"]
+                          .getService(Ci.nsIWindowMediator)
+                          .getMostRecentWindow("mail:3pane");
+  let batchMover = new mail3PaneWindow.BatchMessageMover();
   batchMover.archiveMessages(msgHdrs);
 }
 
