@@ -28,6 +28,8 @@
     Cu.import("resource:///modules/gloda/index_msg.js");
     Cu.import("resource:///modules/gloda/public.js");
 
+    let Log = setupLogging("Conversations.Assistant");
+
     function onCustomSetup(event) {
       $(".more").fadeIn("slow");
       $(".more").get(0).scrollIntoView();

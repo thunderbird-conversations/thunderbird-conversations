@@ -244,7 +244,7 @@ ContactFromPeople.prototype = {
       }
 
       self.name = person.displayName;
-      self.emails = person.getProperty("emails");
+      self.emails = self.emails.concat(person.getProperty("emails"));
     });
   },
 }

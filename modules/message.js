@@ -54,7 +54,7 @@ KeyListener.prototype = {
       return [msgNodes, index];
     };
     switch (event.which) {
-      case this.KeyEvent.DOM_VK_ENTER:
+      case this.KeyEvent.DOM_VK_RETURN:
       case 'o'.charCodeAt(0):
         this.message.toggle();
         event.preventDefault();
