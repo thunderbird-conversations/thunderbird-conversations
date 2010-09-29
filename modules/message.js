@@ -18,6 +18,7 @@ const gHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"]
 const gMsgTagService = Cc["@mozilla.org/messenger/tagservice;1"]
                        .getService(Ci.nsIMsgTagService);
 const kCharsetFromMetaTag = 10;
+const kAllowRemoteContent = 2;
 
 let strings = new StringBundle("chrome://conversations/locale/main.properties");
 
@@ -29,6 +30,19 @@ Cu.import("resource://conversations/log.js");
 
 let Log = setupLogging("Conversations.Message");
 const snippetLength = 300;
+
+function addMsgListener(aMessage) {
+  let window = Cc["@mozilla.org/appshell/window-mediator;1"]
+                 .getService(Ci.nsIWindowMediator)
+                 .getMostRecentWindow("mail:3pane");
+  let weakPtr = Cu.getWeakReference(aMessage);
+  let msgListeners = window.Conversations.msgListeners;
+  let messageId = aMessage._msgHdr.messageId;
+  if (!(messageId in msgListeners))
+    msgListeners[messageId] = [];
+  msgListeners[messageId].push(weakPtr);
+  Log.debug("Added listener for", messageId);
+}
 
 function KeyListener(aMessage) {
   this.message = aMessage;
@@ -239,6 +253,7 @@ Message.prototype = {
       "  </div>\n",
       "  <div class=\"messageBody\">\n",
       "    <span class=\"iconBox\"></span>\n",
+      "    <a href=\"javascript:\" class=\"show-remote-content\">show remote content</a>\n",
       "    <ul class=\"tags\"></ul>\n",
       "  </div>\n",
       "  <div class=\"messageFooter\">\n",
@@ -272,6 +287,20 @@ Message.prototype = {
     this._domNode.addEventListener("keypress", function (event) {
       keyListener.onKeyPress(event);
     }, false);
+  },
+
+  notifiedRemoteContentAlready: false,
+
+  // The global monkey-patch finds us inside the current conversation and
+  //  notifies us.
+  onMsgHasRemoteContent: function _Message_onMsgHasRemoteContent () {
+    if (this.notifiedRemoteContentAlready)
+      return;
+    this.notifiedRemoteContentAlready = true;
+    Log.debug("This message's remote content was blocked");
+
+    let link = this._domNode.getElementsByClassName("show-remote-content")[0];
+    link.style.display = "inline";
   },
 
   compose: function _Message_compose (aCompType, aEvent) {
@@ -366,6 +395,14 @@ Message.prototype = {
       let node = this._domNode.getElementsByClassName("action-monospace")[0];
       node.parentNode.removeChild(node);
     }
+
+    register(".show-remote-content", function (event) {
+      event.target.style.display = "none";
+      self._msgHdr.setUint32Property("remoteContentPolicy", kAllowRemoteContent);
+      let iframe = self._domNode.getElementsByTagName("iframe")[0];
+      iframe.parentNode.removeChild(iframe);
+      self.streamMessage();
+    });
   },
 
   cosmeticFixups: function _Message_cosmeticFixups() {
@@ -381,7 +418,9 @@ Message.prototype = {
       style = window.getComputedStyle(toNode, null);
     }
     if (overflowed) {
-      let dots = toNode.ownerDocument.createTextNode("…");
+      // Don't use unicode ellipsis here (…) -- will display garbage, don't know
+      //  why
+      let dots = toNode.ownerDocument.createTextNode("...");
       toNode.appendChild(dots);
       while (parseInt(style.height) > 18 && toNode.childNodes.length > 2) {
         toNode.removeChild(toNode.childNodes[toNode.childNodes.length - 2]);
@@ -772,6 +811,10 @@ Message.prototype = {
       }
     }, true); /* end document.addEventListener */
 
+    // Ok, brace ourselves for notifications happening during the message load
+    //  process.
+    addMsgListener(this);
+
     // This triggers the whole process. We assume (see beginning) that the
     // message is expanded which means the <iframe> will be visible right away
     // which means we can use offsetHeight, getComputedStyle and stuff on it.
@@ -842,6 +885,7 @@ MessageFromDbHdr.prototype = {
 
   _fallbackSnippet: function _MessageFromDbHdr_fallbackSnippet () {
     // XXX consider calling signal right away not to block the conversation
+    // XXX doesn't seem to work somehow???
     let body = msgHdrToMessageBody(this._msgHdr, true, snippetLength);
     this._snippet = body.substring(0, snippetLength-1);
     this._signal();

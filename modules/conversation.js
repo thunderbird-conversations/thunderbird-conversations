@@ -276,9 +276,13 @@ Conversation.prototype = {
     [byMessageId[getMessageId(x)] = x.message
       for each ([, x] in Iterator(this.messages))];
     for each (let [, glodaMsg] in Iterator(aItems)) {
-      // I can see failures coming for the two lines below...
+      // I can see failures coming for the two lines below... ok, they did come.
+      // Possible explanation: old conversation hasn't been GC'd yet and still
+      //  receives notifications from gloda (and the new conversation cleared its
+      //  messages array).
       let message = byMessageId[glodaMsg.headerMessageID];
-      message.onAttributesChanged(glodaMsg);
+      if (message)
+        message.onAttributesChanged(glodaMsg);
     }
   },
 

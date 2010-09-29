@@ -296,15 +296,25 @@ a img {
   display: inline-block;
 }
 
+.show-remote-content {
+  display: none;
+}
+
 .options a,
-.attachments a {
+.attachments a,
+.show-remote-content {
   text-decoration: none;
   color: #3875d7;
 }
 
 .options a:hover,
-.attachments a:hover {
+.attachments a:hover,
+.show-remote-content:hover {
   text-decoration: underline;
+}
+
+.show-remote-content {
+  font-size: 10px;
 }
 
 .message.collapsed {

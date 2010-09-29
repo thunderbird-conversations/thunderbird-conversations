@@ -42,6 +42,7 @@ var Conversations = {
   monkeyPatch: null,
   currentConversation: null,
   counter: 0,
+  msgListeners: {},
 };
 
 window.addEventListener("load", function _overlay_eventListener () {

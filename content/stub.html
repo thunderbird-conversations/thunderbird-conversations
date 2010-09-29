@@ -166,9 +166,7 @@
           break;
         }
       }
-      if (!index)
-        Log.error("Couldn't find the given msgNode???");
-      else
+      if (index)
         msgNode.setAttribute("tabindex", index+2);
     }, true);
   </script>

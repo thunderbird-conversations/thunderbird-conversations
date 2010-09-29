@@ -177,6 +177,31 @@ MonkeyPatch.prototype = {
         }
       };
 
+    // Ok, this is slightly tricky. The C++ code notifies the global msgWindow
+    //  when content has been blocked, and we can't really afford to just
+    //  replace the code, because that would defeat the standard reader (e.g. in
+    //  a new tab). So we must find the message in the conversation and notify
+    //  it if needed.
+    let oldOnMsgHasRemoteContent = window.messageHeaderSink.onMsgHasRemoteContent;
+    window.messageHeaderSink.onMsgHasRemoteContent = function _onMsgHasRemoteContent_patched (aMsgHdr) {
+      let msgListeners = window.Conversations.msgListeners;
+      let messageId = aMsgHdr.messageId;
+      Log.debug("Content blocked for", messageId);
+      if (messageId in msgListeners) {
+        for each (let [i, listener] in Iterator(msgListeners[messageId])) {
+          try {
+            listener.get().onMsgHasRemoteContent();
+          } catch (e) { // null
+            Log.debug(e, "(this is probably normal)");
+          }
+        }
+        msgListeners[messageId] = msgListeners[messageId].filter(function (x) (x != null));
+      }
+      // Wicked case: we have the conversation and another tab with a message
+      //  from the conversation in that tab. So to be safe, forward the call.
+      oldOnMsgHasRemoteContent(aMsgHdr);
+    };
+
     Log.debug("Monkey patch successfully applied.");
   },
 
