@@ -1,4 +1,4 @@
-var EXPORTED_SYMBOLS = ['ContactManager']
+var EXPORTED_SYMBOLS = ['ContactManager', 'Contacts']
 
 const Ci = Components.interfaces;
 const Cc = Components.classes;
@@ -9,10 +9,18 @@ const ioService = Cc["@mozilla.org/network/io-service;1"]
                   .getService(Ci.nsIIOService);
 const msgComposeService = Cc["@mozilla.org/messengercompose;1"]
                           .getService(Ci.nsIMsgComposeService);
+const msgAccountManager = Cc["@mozilla.org/messenger/account-manager;1"]
+                             .getService(Ci.nsIMsgAccountManager);
 
+Cu.import("resource:///modules/iteratorUtils.jsm"); // for fixIterator
 Cu.import("resource:///modules/gloda/utils.js");
 Cu.import("resource://conversations/VariousUtils.jsm");
 Cu.import("resource://conversations/log.js");
+
+const Contacts = {
+  kFrom: 0,
+  kTo: 1
+}
 
 let Log = setupLogging("Conversations.Contact");
 
@@ -26,13 +34,22 @@ try {
   Log.debug("You don't have contacts, bad boy!");
 }
 
+let gIdentities = {};
+function fillIdentities () {
+  for each (let id in fixIterator(msgAccountManager.allIdentities, Ci.nsIMsgIdentity)) {
+    // id.fullName
+    gIdentities[id.email] = true;
+  }
+}
+fillIdentities();
+
 function ContactManager() {
   this._cache = {};
   this._count = 0;
 }
 
 ContactManager.prototype = {
-  getContactFromNameAndEmail: function _ContactManager_getContactFromEmail(name, email) {
+  getContactFromNameAndEmail: function _ContactManager_getContactFromEmail(name, email, position) {
     let self = this;
     let cache = function _cache (contact) {
       for each (let [, email] in Iterator(contact.emails)) {
@@ -42,11 +59,11 @@ ContactManager.prototype = {
     if (email in this._cache) {
       return this._cache[email];
     } else if (gHasPeople) {
-      let contact = new ContactFromPeople(this, name, email);
+      let contact = new ContactFromPeople(this, name, email, position);
       cache(contact);
       return contact;
     } else {
-      let contact = new ContactFromAB(this, name, email);
+      let contact = new ContactFromAB(this, name, email, position);
       cache(contact);
       return contact;
     }
@@ -71,11 +88,9 @@ ContactManager.prototype = {
 }
 
 let ContactMixIn = {
-  toHtmlString: function _ContactMixIn_toInlineHtml (aUseColor) {
-    let tooltipName = (this.name != this._email)
-      ? this.name
-      : ""
-    ;
+  toHtmlString: function _ContactMixIn_toInlineHtml (aUseColor, aPosition) {
+    let name = this.getName(aPosition);
+    let tooltipName = (name != this._email) ? name : "";
     // Parameter aUseColor is optional, and undefined means true
     let colorStyle = (aUseColor === false)
       ? ""
@@ -97,7 +112,7 @@ let ContactMixIn = {
     let r = [
       "<span class=\"tooltipWrapper\">",
       "<span style=\"", colorStyle, "\">",
-           escapeHtml(String.trim(this.name)),
+           escapeHtml(String.trim(name)),
       "</span>",
       "<div class=\"tooltip\">",
       "    <div class=\"arrow\"></div>",
@@ -145,15 +160,24 @@ let ContactMixIn = {
         true);
     }
   },
+
+  getName: function _ContactMixIn_getName (aPosition) {
+    Log.assert(aPosition === Contacts.kFrom || aPosition === Contacts.kTo,
+      "Someone did not set the 'position' properly");
+    // This will be changed later when we localize
+    if (this._email in gIdentities)
+      return (aPosition === Contacts.kFrom) ? "Me" : "Me";
+    else
+      return this._name || this._email;
+  },
 };
 
 function ContactFromAB(manager, name, email) {
-  this.name = "";
   this.emails = [];
   this.color = manager.freshColor();
 
   this._manager = manager;
-  this._name = name;
+  this._name = name; // Initially, the displayed name. Might be enhanced later.
   this._email = email; // The original email. Use to pick a gravatar.
   this._profiles = {};
 
@@ -170,13 +194,13 @@ ContactFromAB.prototype = {
       // - firstName lastName (if one of these is non-empty)
       // - the parsed name
       // - the email
-      this.name = card.displayName
+      this._name = card.displayName
         || ((card.firstName || card.lastName)
         ? (card.firstName + " " + card.lastName)
         : this._name || this._email);
     } else {
       this.emails = [this._email];
-      this.name = this._name || this._email;
+      this._name = this._name || this._email;
     }
   },
 
@@ -191,7 +215,6 @@ ContactFromAB.prototype = {
 MixIn(ContactFromAB, ContactMixIn);
 
 function ContactFromPeople(manager, name, email) {
-  this.name = name || email;
   this.emails = [email];
   this.color = manager.freshColor();
 
@@ -243,7 +266,7 @@ ContactFromPeople.prototype = {
         self._profiles[svcName] = [k for (k in svc)];
       }
 
-      self.name = person.displayName;
+      self._name = person.displayName;
       self.emails = self.emails.concat(person.getProperty("emails"));
     });
   },

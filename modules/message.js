@@ -25,6 +25,7 @@ let strings = new StringBundle("chrome://conversations/locale/main.properties");
 Cu.import("resource://conversations/VariousUtils.jsm");
 Cu.import("resource://conversations/MsgHdrUtils.jsm");
 Cu.import("resource://conversations/prefs.js");
+Cu.import("resource://conversations/contact.js");
 Cu.import("resource://conversations/hook.js");
 Cu.import("resource://conversations/log.js");
 
@@ -207,7 +208,8 @@ Message.prototype = {
     let contactFrom = this._conversation._contactManager
       .getContactFromNameAndEmail(this._from.name, this._from.email);
     this._contacts.push(contactFrom);
-    let fromStr = contactFrom.toHtmlString();
+    // with color
+    let fromStr = contactFrom.toHtmlString(true, Contacts.kFrom);
 
     let to = this._to.concat(this._cc).concat(this._bcc);
     let contactsTo = to.map(function (x) {
@@ -216,7 +218,7 @@ Message.prototype = {
     });
     this._contacts = this._contacts.concat(contactsTo);
     // false means "no colors"
-    let toStr = this.join(contactsTo.map(function (x) x.toHtmlString(false)));
+    let toStr = this.join(contactsTo.map(function (x) x.toHtmlString(false, Contacts.kTo)));
 
     let snippet = escapeHtml(this._snippet);
     let date = escapeHtml(this._date);
