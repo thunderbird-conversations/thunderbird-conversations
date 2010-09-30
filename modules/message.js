@@ -31,6 +31,10 @@ Cu.import("resource://conversations/log.js");
 let Log = setupLogging("Conversations.Message");
 const snippetLength = 300;
 
+// Add in the global message listener table a weak reference to the given
+//  Message object. The monkey-patch which intercepts the "remote content
+//  blocked" notification will then look for a suitable listener on notify it of
+//  the aforementioned event.
 function addMsgListener(aMessage) {
   let window = Cc["@mozilla.org/appshell/window-mediator;1"]
                  .getService(Ci.nsIWindowMediator)
@@ -41,7 +45,6 @@ function addMsgListener(aMessage) {
   if (!(messageId in msgListeners))
     msgListeners[messageId] = [];
   msgListeners[messageId].push(weakPtr);
-  Log.debug("Added listener for", messageId);
 }
 
 function KeyListener(aMessage) {
@@ -365,6 +368,7 @@ Message.prototype = {
       if (!senders.filter(function (x) x == email).length) {
         Prefs.setChar("conversations.monospaced_senders", senders.concat([email]).join(","));
       }
+      self._reloadMessage();
       event.stopPropagation();
     });
     register(".action-classic", function (event) {
@@ -399,10 +403,17 @@ Message.prototype = {
     register(".show-remote-content", function (event) {
       event.target.style.display = "none";
       self._msgHdr.setUint32Property("remoteContentPolicy", kAllowRemoteContent);
-      let iframe = self._domNode.getElementsByTagName("iframe")[0];
-      iframe.parentNode.removeChild(iframe);
-      self.streamMessage();
+      self._reloadMessage();
     });
+  },
+
+  _reloadMessage: function _Message_reloadMessage () {
+    this.iframe.parentNode.removeChild(this.iframe);
+    this.streamMessage();
+  },
+
+  get iframe () {
+    return this._domNode.getElementsByTagName("iframe")[0];
   },
 
   cosmeticFixups: function _Message_cosmeticFixups() {

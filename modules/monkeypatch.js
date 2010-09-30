@@ -186,14 +186,13 @@ MonkeyPatch.prototype = {
     window.messageHeaderSink.onMsgHasRemoteContent = function _onMsgHasRemoteContent_patched (aMsgHdr) {
       let msgListeners = window.Conversations.msgListeners;
       let messageId = aMsgHdr.messageId;
-      Log.debug("Content blocked for", messageId);
       if (messageId in msgListeners) {
         for each (let [i, listener] in Iterator(msgListeners[messageId])) {
-          try {
-            listener.get().onMsgHasRemoteContent();
-          } catch (e) { // null
-            Log.debug(e, "(this is probably normal)");
-          }
+          let obj = listener.get();
+          if (obj)
+            obj.onMsgHasRemoteContent();
+          else
+            Log.debug("Yay! Weak references actually work.");
         }
         msgListeners[messageId] = msgListeners[messageId].filter(function (x) (x != null));
       }
