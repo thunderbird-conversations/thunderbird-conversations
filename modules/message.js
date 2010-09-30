@@ -81,7 +81,7 @@ KeyListener.prototype = {
       case 'n'.charCodeAt(0):
         {
           let [msgNodes, index] = findMsgNode(this.message._domNode);
-          if (index < msgNodes.length) {
+          if (index < (msgNodes.length - 1)) {
             let next = msgNodes[index+1];
             next.focus();
             this.message._conversation._htmlPane
