@@ -42,6 +42,8 @@ var EXPORTED_SYMBOLS = [
   'msgHdrIsRss', 'msgHdrIsNntp',
   // Actions on a set of message headers
   'msgHdrsMarkAsRead', 'msgHdrsArchive', 'msgHdrsDelete',
+  // Doesn't really belong here
+  'getMail3Pane',
 ]
 
 const Ci = Components.interfaces;
@@ -196,6 +198,12 @@ function msgHdrsDelete(msgHdrs) {
   }
 }
 
+function getMail3Pane() {
+  return Cc["@mozilla.org/appshell/window-mediator;1"]
+           .getService(Ci.nsIWindowMediator)
+           .getMostRecentWindow("mail:3pane");
+}
+
 /**
  * Archive a set of messages
  * @param {nsIMsgDbHdr array} msgHdrs The message headers
@@ -207,9 +215,7 @@ function msgHdrsArchive(msgHdrs) {
    * The window is here because otherwise we don't have access to
    * BatchMessageMover.
    * */
-  let mail3PaneWindow = Cc["@mozilla.org/appshell/window-mediator;1"]
-                          .getService(Ci.nsIWindowMediator)
-                          .getMostRecentWindow("mail:3pane");
+  let mail3PaneWindow = getMail3Pane();
   let batchMover = new mail3PaneWindow.BatchMessageMover();
   batchMover.archiveMessages(msgHdrs);
 }

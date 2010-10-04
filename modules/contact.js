@@ -15,6 +15,7 @@ const msgAccountManager = Cc["@mozilla.org/messenger/account-manager;1"]
 Cu.import("resource:///modules/iteratorUtils.jsm"); // for fixIterator
 Cu.import("resource:///modules/gloda/utils.js");
 Cu.import("resource://conversations/VariousUtils.jsm");
+Cu.import("resource://conversations/MsgHdrUtils.jsm"); // for getMail3Pane
 Cu.import("resource://conversations/log.js");
 
 const Contacts = {
@@ -149,9 +150,7 @@ let ContactMixIn = {
         event.stopPropagation();
       }, false);
 
-    let mainWindow = Cc["@mozilla.org/appshell/window-mediator;1"]
-                            .getService(Ci.nsIWindowMediator)
-                            .getMostRecentWindow("mail:3pane");
+    let mainWindow = getMail3Pane();
     /* The links to various profiles */
     for each (let [, a] in Iterator(aDomNode.getElementsByTagName("a"))) {
       a.addEventListener("click",

@@ -9,7 +9,188 @@ Cu.import("resource://conversations/MsgHdrUtils.jsm");
 Cu.import("resource://conversations/prefs.js");
 Cu.import("resource://conversations/log.js");
 
+const kStubUrl = "chrome://conversations/content/stub.html";
+
 let Log = setupLogging("Conversations.MonkeyPatch");
+
+let conversationTabType = {
+  name: "conversationTab",
+  perTabPanel: "vbox",
+  lastId: 0,
+
+  modes: {
+    conversationTab: {
+      type: "conversationTab",
+      maxTabs: 10
+    }
+  },
+
+  // Always open new conversation windows. Not true if we try to edit a draft that
+  // already has an associated conversation window open, but that's for later...
+  shouldSwitchTo: function onSwitchTo() {
+    return -1;
+  },
+
+  openTab: function onTabOpened(aTab, aArgs) {
+    let window = getMail3Pane();
+
+    // First clone the page and set up the basics.
+    let browser = window.document.getElementById("dummychromebrowser").cloneNode(true);
+    browser.setAttribute("tooltip", "aHTMLTooltip");
+    browser.setAttribute("id", "conversationTab-" + this.lastId);
+    browser.setAttribute("onclick", "specialTabs.defaultClickHandler(event);");
+    browser.data = aArgs;
+    browser.data.tabObject = aTab;
+
+    // Done.
+    aTab.panel.appendChild(browser);
+    aTab.browser = browser;
+
+    // Now set up the listeners.
+    this._setUpTitleListener(aTab);
+    this._setUpCloseWindowListener(aTab);
+
+    // Now start loading the content.
+    aTab.title = "Conversation View";
+    browser.addEventListener("load", function _onload (event) {
+      browser.removeEventListener("load", _onload, true);
+      aArgs.onLoad(event, browser);
+    }, true);
+    browser.loadURI(kStubUrl);
+
+    this.lastId++;
+  },
+
+  closeTab: function onTabClosed(aTab) {
+    aTab.browser.removeEventListener("DOMTitleChanged",
+                                     aTab.titleListener, true);
+    aTab.browser.removeEventListener("DOMWindowClose",
+                                     aTab.closeListener, true);
+    aTab.browser.destroy();
+  },
+
+  saveTabState: function onSaveTabState(aTab) {
+  },
+
+  showTab: function onShowTab(aTab) {
+  },
+
+  persistTab: function onPersistTab(aTab) {
+    // TODO save the current tab's status. Save the msgHdr through its URI
+  },
+
+  restoreTab: function onRestoreTab(aTabmail, aPersistedState) {
+    // TODO create a new tab with the same status...
+  },
+
+  onTitleChanged: function onTitleChanged(aTab) {
+    aTab.title = aTab.browser.contentDocument.title;
+  },
+
+  supportsCommand: function supportsCommand(aCommand, aTab) {
+    switch (aCommand) {
+      case "cmd_fullZoomReduce":
+      case "cmd_fullZoomEnlarge":
+      case "cmd_fullZoomReset":
+      case "cmd_fullZoomToggle":
+      case "cmd_printSetup":
+      case "cmd_print":
+      case "button_print":
+      // XXX print preview not currently supported - bug 497994 to implement.
+      // case "cmd_printpreview":
+        return true;
+      default:
+        return false;
+    }
+  },
+
+  isCommandEnabled: function isCommandEnabled(aCommand, aTab) {
+    switch (aCommand) {
+      case "cmd_fullZoomReduce":
+      case "cmd_fullZoomEnlarge":
+      case "cmd_fullZoomReset":
+      case "cmd_fullZoomToggle":
+      case "cmd_printSetup":
+      case "cmd_print":
+      case "button_print":
+      // XXX print preview not currently supported - bug 497994 to implement.
+      // case "cmd_printpreview":
+        return true;
+      default:
+        return false;
+    }
+  },
+
+  doCommand: function isCommandEnabled(aCommand, aTab) {
+    switch (aCommand) {
+      case "cmd_fullZoomReduce":
+        ZoomManager.reduce();
+        break;
+      case "cmd_fullZoomEnlarge":
+        ZoomManager.enlarge();
+        break;
+      case "cmd_fullZoomReset":
+        ZoomManager.reset();
+        break;
+      case "cmd_fullZoomToggle":
+        ZoomManager.toggleZoom();
+        break;
+      case "cmd_printSetup":
+        PrintUtils.showPageSetup();
+        break;
+      case "cmd_print":
+        PrintUtils.print();
+        break;
+      // XXX print preview not currently supported - bug 497994 to implement.
+      //case "cmd_printpreview":
+      //  PrintUtils.printPreview();
+      //  break;
+    }
+  },
+
+  getBrowser: function getBrowser(aTab) {
+    return aTab.browser;
+  },
+
+  // Internal function used to set up the title listener on a content tab.
+  _setUpTitleListener: function setUpTitleListener(aTab) {
+    function onDOMTitleChanged(aEvent) {
+      getMail3Pane()
+        .document.getElementById("tabmail").setTabTitle(aTab);
+    }
+    // Save the function we'll use as listener so we can remove it later.
+    aTab.titleListener = onDOMTitleChanged;
+    // Add the listener.
+    aTab.browser.addEventListener("DOMTitleChanged",
+                                  aTab.titleListener, true);
+  },
+  /**
+   * Internal function used to set up the close window listener on a content
+   * tab.
+   */
+  _setUpCloseWindowListener: function setUpCloseWindowListener(aTab) {
+    function onDOMWindowClose(aEvent) {
+      try {
+        if (!aEvent.isTrusted)
+          return;
+
+        // Redirect any window.close events to closing the tab. As a 3-pane tab
+        // must be open, we don't need to worry about being the last tab open.
+        
+        getMail3Pane()
+          document.getElementById("tabmail").closeTab(aTab);
+        aEvent.preventDefault();
+      } catch (e) {
+        logException(e);
+      }
+    }
+    // Save the function we'll use as listener so we can remove it later.
+    aTab.closeListener = onDOMWindowClose;
+    // Add the listener.
+    aTab.browser.addEventListener("DOMWindowClose",
+                                  aTab.closeListener, true);
+  }
+};
 
 function MonkeyPatch(aWindow, aConversation) {
   this._Conversation = aConversation;
@@ -31,6 +212,10 @@ MonkeyPatch.prototype = {
     let self = this;
     let htmlpane = window.document.getElementById("multimessage");
     let oldSummarizeMultipleSelection = window["summarizeMultipleSelection"];
+
+    // Register our new tab type
+    let tabmail = window.document.getElementById("tabmail");
+    tabmail.registerTabType(conversationTabType);
 
     // This nice little wrapper makes sure that the multimessagepane points to
     //  the given URL before moving on. It takes a continuation, and an optional
@@ -63,7 +248,7 @@ MonkeyPatch.prototype = {
         if (!aSelectedMessages.length)
           return;
 
-        ensureLoadedAndRun("chrome://conversations/content/stub.html", function () {
+        ensureLoadedAndRun(kStubUrl, function () {
           try {
             let freshConversation = new self._Conversation(
               window, aSelectedMessages, ++window.Conversations.counter);
@@ -102,6 +287,9 @@ MonkeyPatch.prototype = {
         }, function () {
           // Invalidate any remaining conversation
           window.Conversations.currentConversation = null;
+          // Make the stub aware of the Conversations object it's currently
+          //  representing.
+          htmlpane.contentWindow.Conversations = window.Conversations;
         });
       };
 

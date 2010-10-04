@@ -37,9 +37,7 @@ const snippetLength = 300;
 //  blocked" notification will then look for a suitable listener on notify it of
 //  the aforementioned event.
 function addMsgListener(aMessage) {
-  let window = Cc["@mozilla.org/appshell/window-mediator;1"]
-                 .getService(Ci.nsIWindowMediator)
-                 .getMostRecentWindow("mail:3pane");
+  let window = getMail3Pane();
   let weakPtr = Cu.getWeakReference(aMessage);
   let msgListeners = window.Conversations.msgListeners;
   let messageId = aMessage._msgHdr.messageId;
@@ -50,9 +48,7 @@ function addMsgListener(aMessage) {
 
 function KeyListener(aMessage) {
   this.message = aMessage;
-  let mail3PaneWindow = Cc["@mozilla.org/appshell/window-mediator;1"]
-                          .getService(Ci.nsIWindowMediator)
-                          .getMostRecentWindow("mail:3pane");
+  let mail3PaneWindow = getMail3Pane();
   this.KeyEvent = mail3PaneWindow.KeyEvent;
   this.navigator = mail3PaneWindow.navigator;
 }
@@ -532,7 +528,7 @@ Message.prototype = {
     Log.assert(this.expanded, "Cannot stream a message if not expanded first!");
 
     let originalScroll = this._domNode.ownerDocument.documentElement.scrollTop;
-    let msgWindow = this._conversation._window.msgWindow;
+    let msgWindow = getMail3Pane().msgWindow;
 
     let iframe = this._domNode.ownerDocument
       .createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "iframe");

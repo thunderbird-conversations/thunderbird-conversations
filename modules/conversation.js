@@ -529,9 +529,11 @@ Conversation.prototype = {
 
     // Set the subject properly
     let subjectNode = this._domNode.ownerDocument.getElementsByClassName("subject")[0];
-    subjectNode.textContent = this.messages[0].message.subject;
-    subjectNode.setAttribute("title", this.messages[0].message.subject);
+    let subject = this.messages[0].message.subject;
+    subjectNode.textContent = subject;
+    subjectNode.setAttribute("title", subject);
     this._htmlPane.contentWindow.fakeTextOverflowSubject();
+    this._htmlPane.contentDocument.title = subject;
 
     // Move on to the next step
     this._expandAndScroll();

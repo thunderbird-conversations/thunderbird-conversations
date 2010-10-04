@@ -95,7 +95,9 @@
       });
     }
 
-    let Conversations = window.top.Conversations;
+    // This property is now set from the outside. This allows stub.html to
+    //  be used either in a standalone tab or in the multimessage pane.
+    // let Conversations = window.top.Conversations;
     Components.utils.import("resource://conversations/MsgHdrUtils.jsm");
     Components.utils.import("resource://conversations/log.js");
 
@@ -134,6 +136,32 @@
 
     function deleteConversation(event) {
       msgHdrsDelete(Conversations.currentConversation.msgHdrs);
+    }
+
+    function detachTab(event) {
+      let mainWindow = getMail3Pane();
+      let tabmail = mainWindow.document.getElementById("tabmail");
+      tabmail.openTab("conversationTab", {
+        onLoad: function _detachTab_onLoad (event, browser) {
+          try {
+            browser.contentWindow.Conversations = {
+              currentConversation: null,
+              counter: 0,
+            };
+            let freshConversation = new mainWindow.Conversations.monkeyPatch._Conversation(
+              browser.contentWindow,
+              Conversations.currentConversation.msgHdrs,
+              ++browser.contentWindow.Conversations.counter
+            );
+            freshConversation.outputInto(browser, function (aConversation) {
+              browser.contentWindow.Conversations.currentConversation = aConversation;
+            });
+          } catch (e) {
+            Log.debug(e);
+            dumpCallStack(e);
+          }
+        }
+      });
     }
 
     // Setting the second parameter to false means don't fire a stupid timer
@@ -178,11 +206,21 @@
       <div id="conversationHeader" class="hbox">
         <div class="subject boxFlex">This is an example of a subject</div>
         <div class="actions">
-          <button onclick="deleteConversation(event);"><img src="i/trash.png" /></button>
-          <button onclick="archiveConversation(event);"><img src="i/archive.png" /></button>
-          <button onclick="expandCollapse(event);"><span class="expand"></span></button>
-          <button onclick="toggleRead(event);"><span class="read"></span></button>
-          <button><img src="i/tab.png" /></button>
+          <button title="Delete this conversation" onclick="deleteConversation(event);">
+            <img src="i/trash.png" />
+          </button>
+          <button title="Archive this conversation" onclick="archiveConversation(event);">
+            <img src="i/archive.png" />
+          </button>
+          <button title="Expand/collapse all messages" onclick="expandCollapse(event);">
+            <span class="expand"></span>
+          </button>
+          <button title="Toggle read/unread all messages" onclick="toggleRead(event);">
+            <span class="read"></span>
+          </button>
+          <button title="Save this conversation in a new tab" onclick="detachTab(event);">
+            <img src="i/tab.png" />
+          </button>
           <!--<button><span class="mode"></span></button>-->
         </div>
       </div>
