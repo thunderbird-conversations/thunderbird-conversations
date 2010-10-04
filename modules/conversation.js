@@ -85,7 +85,7 @@ let OracleMixIn = {
         }
       }
     } else if (Prefs["scroll_who"] == Prefs.kScrollSelected) {
-      let gFolderDisplay = this._window.gFolderDisplay;
+      let gFolderDisplay = getMail3Pane().gFolderDisplay;
       let uri = function (msg) msg.folder.getUriForMsg(msg);
       let key = uri(gFolderDisplay.selectedMessage);
       for (let i = 0; i < this.messages.length; ++i) {
@@ -225,7 +225,7 @@ Conversation.prototype = {
   // output a conversation unless we're really sure the user hasn't changed his
   // mind.
   _selectionChanged: function _Conversation_selectionChanged () {
-    let gFolderDisplay = this._window.gFolderDisplay;
+    let gFolderDisplay = getMail3Pane().gFolderDisplay;
     let messageIds = [x.messageId for each ([, x] in Iterator(this._initialSet))];
     return
       !gFolderDisplay.selectedMessage ||
@@ -368,7 +368,7 @@ Conversation.prototype = {
     let self = this;
     let getThreadKey = function (aMsgHdr) {
       try {
-        return self._window.gDBView.getThreadContainingMsgHdr(aMsgHdr).threadKey;
+        return getMail3Pane().gDBView.getThreadContainingMsgHdr(aMsgHdr).threadKey;
       } catch (e) {
         // The trick is that by returning a random value instead of a constant
         //  value, people who are running 3.1 will never have a message that

@@ -198,10 +198,13 @@ function msgHdrsDelete(msgHdrs) {
   }
 }
 
+let w = null;
 function getMail3Pane() {
-  return Cc["@mozilla.org/appshell/window-mediator;1"]
-           .getService(Ci.nsIWindowMediator)
-           .getMostRecentWindow("mail:3pane");
+  if (!w)
+    w = Cc["@mozilla.org/appshell/window-mediator;1"]
+          .getService(Ci.nsIWindowMediator)
+          .getMostRecentWindow("mail:3pane");
+  return w;
 }
 
 /**

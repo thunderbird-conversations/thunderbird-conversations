@@ -305,10 +305,11 @@ Message.prototype = {
   },
 
   compose: function _Message_compose (aCompType, aEvent) {
+    let window = getMail3Pane();
     if (aEvent.shiftKey) {
-      this._conversation._window.ComposeMessage(aCompType, Ci.nsIMsgCompFormat.OppositeOfDefault, this._msgHdr.folder, [this._uri]);
+      window.ComposeMessage(aCompType, Ci.nsIMsgCompFormat.OppositeOfDefault, this._msgHdr.folder, [this._uri]);
     } else {
-      this._conversation._window.ComposeMessage(aCompType, Ci.nsIMsgCompFormat.Default, this._msgHdr.folder, [this._uri]);
+      window.ComposeMessage(aCompType, Ci.nsIMsgCompFormat.Default, this._msgHdr.folder, [this._uri]);
     }
   },
 
@@ -353,11 +354,11 @@ Message.prototype = {
     //  make sure that event listener is bubbling, and we register these with
     //  the bubbling model as well.
     register(".action-archive", function (event) {
-      msgHdrsArchive([self._msgHdr], self._conversation._window)
+      msgHdrsArchive([self._msgHdr]);
       event.stopPropagation();
     });
     register(".action-delete", function (event) {
-      msgHdrsDelete([self._msgHdr])
+      msgHdrsDelete([self._msgHdr]);
       event.stopPropagation();
     });
     register(".action-monospace", function (event) {
@@ -370,12 +371,12 @@ Message.prototype = {
       event.stopPropagation();
     });
     register(".action-classic", function (event) {
-      let tabmail = self._conversation._window.document.getElementById("tabmail");
+      let tabmail = getMail3Pane().document.getElementById("tabmail");
       tabmail.openTab("message", { msgHdr: self._msgHdr, background: false });
       event.stopPropagation();
     });
     register(".action-source", function (event) {
-      self._conversation._window.ViewPageSource([self._uri])
+      getMail3Pane().ViewPageSource([self._uri])
       event.stopPropagation();
     });
     register(".star", function (event) {
@@ -666,8 +667,9 @@ Message.prototype = {
             //  DOM. Don't know why :(.
             // We can't do this as a plugin (I wish I could!) because this is
             //  too entangled with the display logic.
-            if ("BiDiMailUI" in self._conversation._window) {
-              let ActionPhases = self._conversation._window.BiDiMailUI.Display.ActionPhases;
+            let mainWindow = getMail3Pane();
+            if ("BiDiMailUI" in mainWindow) {
+              let ActionPhases = mainWindow.BiDiMailUI.Display.ActionPhases;
               try {
                 let domDocument = iframe.docShell.contentViewer.DOMDocument;
                 let body = domDocument.body;
@@ -677,7 +679,7 @@ Message.prototype = {
                   charsetOverrideInEffect: msgWindow.charsetOverride,
                   currentCharset: msgWindow.mailCharacterSet,
                   messageHeader: self._msgHdr,
-                  unusableCharsetHandler: self._conversation._window
+                  unusableCharsetHandler: mainWindow
                     .BiDiMailUI.MessageOverlay.promptForDefaultCharsetChange,
                   needCharsetForcing: false,
                   charsetToForce: null
@@ -706,7 +708,7 @@ Message.prototype = {
             for each (let [, a] in Iterator(iframeDoc.getElementsByTagName("a"))) {
               a.addEventListener("click",
                 function link_listener (event)
-                  self._conversation._window.specialTabs.siteClickHandler(event, /^mailto:/), true);
+                  mainWindow.specialTabs.siteClickHandler(event, /^mailto:/), true);
             }
 
             // Everything's done, so now we're able to settle for a height.
