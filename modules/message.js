@@ -201,6 +201,7 @@ Message.prototype = {
   toHtmlString: function () {
     let self = this;
 
+    // 1) Generate Contact objects
     let contactFrom = this._conversation._contactManager
       .getContactFromNameAndEmail(this._from.name, this._from.email);
     this._contacts.push(contactFrom);
@@ -216,9 +217,11 @@ Message.prototype = {
     // false means "no colors"
     let toStr = this.join(contactsTo.map(function (x) x.toHtmlString(false, Contacts.kTo)));
 
+    // 2) Generate extra information: snippet, date
     let snippet = escapeHtml(this._snippet);
     let date = escapeHtml(this._date);
 
+    // 3) Custom tag telling the user if the message is not in the current view
     let folderTag = "";
     let threadKey = getMail3Pane().gDBView
       .getThreadContainingMsgHdr(this._conversation._initialSet[0]).threadKey;
@@ -237,6 +240,12 @@ Message.prototype = {
         folderStr = folder.name + "/" + folderStr;
       }
       folderTag = "<li class=\"keep-tag in-folder\">In "+folderStr+"</li>";
+    }
+
+    // 4) Custom tag telling the user if this is a draft
+    let editDraft = "";
+    if (msgHdrIsDraft(this._msgHdr)) {
+      editDraft = "<li class=\"keep-tag edit-draft\">Draft (edit)</li>";
     }
 
     let r = [
@@ -274,8 +283,10 @@ Message.prototype = {
         "</div>",
         "<div class=\"messageBody\">",
           "<ul class=\"tags special-tags\">",
-            "<li class=\"keep-tag show-remote-content\"><a href=\"javascript:\">show remote content</a></li>",
+            "<li class=\"keep-tag show-remote-content\">show remote content</li>",
+            "<li class=\"keep-tag always-display\">always display remote content</li>",
             folderTag,
+            editDraft,
           "</ul>",
           "<ul class=\"tags regular-tags\"></ul>",
         "</div>",
@@ -322,8 +333,8 @@ Message.prototype = {
     this.notifiedRemoteContentAlready = true;
     Log.debug("This message's remote content was blocked");
 
-    let link = this._domNode.getElementsByClassName("show-remote-content")[0];
-    link.style.display = "inline";
+    this._domNode.getElementsByClassName("show-remote-content")[0].style.display = "inline";
+    this._domNode.getElementsByClassName("always-display")[0].style.display = "inline";
   },
 
   compose: function _Message_compose (aCompType, aEvent) {
@@ -370,6 +381,7 @@ Message.prototype = {
     };
     register(".reply", function (event) self.compose(Ci.nsIMsgCompType.ReplyToSender, event));
     register(".replyAll", function (event) self.compose(Ci.nsIMsgCompType.ReplyAll, event));
+    register(".edit-draft", function (event) self.compose(Ci.nsIMsgCompType.Draft, event));
     register(".forward", function (event) self.forward(event));
     // These event listeners are all in the header, which happens to have an
     //  event listener set on the click event for toggling the message. So we
@@ -422,9 +434,36 @@ Message.prototype = {
     }
 
     register(".show-remote-content", function (event) {
-      event.target.parentNode.style.display = "none";
+      event.target.style.display = "none";
       self._msgHdr.setUint32Property("remoteContentPolicy", kAllowRemoteContent);
       self._reloadMessage();
+    });
+    register(".always-display", function (event) {
+      event.target.style.display = "none";
+      event.target.previousElementSibling.style.display = "none";
+
+      let { card, book } = getMail3Pane().getCardForEmail(self._from.email);
+      let allowRemoteContent = false;
+      if (card) {
+        // set the property for remote content
+        card.setProperty("AllowRemoteContent", true);
+        book.modifyCard(card);
+        allowRemoteContent = true;
+      } else {
+        let args = {
+          primaryEmail: self._from.email,
+          displayName: self._from.name,
+          allowRemoteContent: true,
+        };
+        // create a new card and set the property
+        getMail3Pane().openDialog("chrome://messenger/content/addressbook/abNewCardDialog.xul",
+                          "", "chrome,resizable=no,titlebar,modal,centerscreen", args);
+        allowRemoteContent = args.allowRemoteContent;
+      }
+ 
+      // Reload the message if we've updated the remote content policy for the sender.
+      if (allowRemoteContent)
+        self._reloadMessage();
     });
     register(".in-folder", function (event) {
       getMail3Pane().gFolderTreeView.selectFolder(self._msgHdr.folder, true);

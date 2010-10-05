@@ -297,20 +297,14 @@ a img {
 }
 
 .options a,
-.attachments a,
-.show-remote-content {
+.attachments a {
   text-decoration: none;
   color: #3875d7;
 }
 
 .options a:hover,
-.attachments a:hover,
-.show-remote-content:hover {
+.attachments a:hover {
   text-decoration: underline;
-}
-
-.show-remote-content {
-  font-size: 10px;
 }
 
 .message.collapsed {
@@ -382,7 +376,8 @@ ul.special-tags li {
   background-color: #3F5381;
 }
 
-ul.special-tags li.show-remote-content {
+ul.special-tags li.show-remote-content,
+ul.special-tags li.always-display {
   display: none;
 }
 
@@ -390,7 +385,7 @@ ul.special-tags img {
   vertical-align: text-top;
 }
 
-.in-folder {
+.in-folder, .edit-draft, .show-remote-content, .always-display {
   cursor: pointer;
 }
 
