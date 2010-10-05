@@ -296,10 +296,6 @@ a img {
   display: inline-block;
 }
 
-.show-remote-content {
-  display: none;
-}
-
 .options a,
 .attachments a,
 .show-remote-content {
@@ -331,7 +327,6 @@ a img {
 .message.collapsed .messageBody .tags,
 .message.collapsed p,
 .message.collapsed .attachments,
-.message.collapsed .iconBox,
 .message .snippet {
   display: none;
 }
@@ -372,7 +367,7 @@ a img {
   padding: 0;
 }
 
-.tag {
+ul.tags li {
   display: inline;
   font-size: 10px;
   font-weight: bold;
@@ -381,6 +376,18 @@ a img {
   margin-right: 5px;
   -moz-border-radius: 3px;
   color: #fff;
+}
+
+ul.special-tags li {
+  background-color: #3F5381;
+}
+
+ul.special-tags li.show-remote-content {
+  display: none;
+}
+
+ul.special-tags img {
+  vertical-align: text-top;
 }
 
 .attachments {

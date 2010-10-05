@@ -94,19 +94,20 @@ function tryEnigmail(bodyElement) {
 let enigmailHook = {
   onMessageStreamed: function _enigmailHook_onMessageStreamed(aMsgHdr, aIframe) {
     let iframeDoc = aIframe.contentDocument;
+    let specialTags = aIframe.parentNode.getElementsByClassName("special-tags")[0];
     if (iframeDoc.body.textContent.length > 0 && hasEnigmail) {
       let status = tryEnigmail(iframeDoc.body);
-      let addPic = function _addPic(url) {
-        let img = aIframe.ownerDocument.createElement("img");
-        img.setAttribute("src", url);
-        aIframe.parentNode.firstElementChild.appendChild(img);
+      let addTag = function _addTag(url, txt) {
+        let li = aIframe.ownerDocument.createElement("li");
+        li.innerHTML = ["<img src=\"", url, "\" />", txt].join("");
+        specialTags.appendChild(li);
       };
       if (status & Ci.nsIEnigmail.DECRYPTION_OKAY)
-        addPic("chrome://enigmail/skin/enigEncOk.png");
+        addTag("chrome://conversations/content/i/enc.png", "encrypted");
       if (status & Ci.nsIEnigmail.GOOD_SIGNATURE)
-        addPic("chrome://enigmail/skin/enigSignOk.png");
+        addTag("chrome://conversations/content/i/sign.png", "signed");
       if (status & Ci.nsIEnigmail.UNVERIFIED_SIGNATURE)
-        addPic("chrome://enigmail/skin/enigSignUnkown.png");
+        addTag("chrome://conversations/content/i/sign.png", "unknown good signature");
     }
 
   },

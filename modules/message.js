@@ -220,50 +220,51 @@ Message.prototype = {
     let date = escapeHtml(this._date);
 
     let r = [
-      "<li class=\"message collapsed\">\n",
-      //"  <!-- Message-ID: ", this._msgHdr.messageId, " -->\n",
-      "  <div class=\"messageHeader hbox\">\n",
-      "    <div class=\"star\">\n",
-      "    </div>\n",
-      "    <div class=\"author\">\n",
-      "      ", fromStr, "\n",
-      "    </div>\n",
-      "    <div class=\"involved boxFlex\">\n",
-      "      <span class=\"to\">to ", toStr, "</span>\n",
-      "      <span class=\"snippet\"><ul class=\"tags\"></ul>", snippet, "</span>\n",
-      "    </div>\n",
-      "    <div class=\"options\">\n",
-      "      <span class=\"date\">", date, "</span>\n",
-      "      <span class=\"details\">| <a href=\"javascript:\">details</a> |</span> \n",
-      "      <span class=\"dropDown\">\n",
-      "        <a href=\"javascript:\">more <span class=\"downwardArrow\">&#x25bc;</span></a>\n",
-      "        <div class=\"tooltip\">\n",
-      "          <ul>\n",
-      "            <li class=\"action-archive\">archive this message\n",
-      "              <div class=\"arrow\"></div>\n",
-      "              <div class=\"arrow inside\"></div>\n",
-      "            </li>\n",
-      "            <li class=\"action-delete\">delete this message</li>\n",
-      "            <li class=\"action-monospace\">this sender sends monospace</li>\n",
-      "            <li class=\"action-classic\">view using the classic reader</li>\n",
-      "            <li class=\"action-source\">view message source</li>\n",
-      "          </ul>\n",
-      "        </div>\n",
-      "      </span>\n",
-      "    </div>\n",
-      "  </div>\n",
-      "  <div class=\"messageBody\">\n",
-      "    <span class=\"iconBox\"></span>\n",
-      "    <a href=\"javascript:\" class=\"show-remote-content\">show remote content</a>\n",
-      "    <ul class=\"tags\"></ul>\n",
-      "  </div>\n",
-      "  <div class=\"messageFooter\">\n",
-      "    <button class=\"reply\">reply</button>\n",
-      "    <button class=\"replyAll\">reply all</button>\n",
-      "    <button class=\"forward\">forward</button>\n",
-      "    <button style=\"float:right;margin: 0 0 0 0;\">more...</button>\n",
-      "  </div>\n",
-      "</li>\n"
+      "<li class=\"message collapsed\">",
+      //"  <!-- Message-ID: ", this._msgHdr.messageId, " -->",
+        "<div class=\"messageHeader hbox\">",
+          "<div class=\"star\">",
+          "</div>",
+          "<div class=\"author\">",
+            "", fromStr, "",
+          "</div>",
+          "<div class=\"involved boxFlex\">",
+            "<span class=\"to\">to ", toStr, "</span>",
+            "<span class=\"snippet\"><ul class=\"tags regular-tags\"></ul>", snippet, "</span>",
+          "</div>",
+          "<div class=\"options\">",
+            "<span class=\"date\">", date, "</span>",
+            "<span class=\"details\">| <a href=\"javascript:\">details</a> |</span> ",
+            "<span class=\"dropDown\">",
+              "<a href=\"javascript:\">more <span class=\"downwardArrow\">&#x25bc;</span></a>",
+              "<div class=\"tooltip\">",
+                "<ul>",
+                  "<li class=\"action-archive\">archive this message",
+                    "<div class=\"arrow\"></div>",
+                    "<div class=\"arrow inside\"></div>",
+                  "</li>",
+                  "<li class=\"action-delete\">delete this message</li>",
+                  "<li class=\"action-monospace\">this sender sends monospace</li>",
+                  "<li class=\"action-classic\">view using the classic reader</li>",
+                  "<li class=\"action-source\">view message source</li>",
+                "</ul>",
+              "</div>",
+            "</span>",
+          "</div>",
+        "</div>",
+        "<div class=\"messageBody\">",
+          "<ul class=\"tags special-tags\">",
+            "<li class=\"show-remote-content\"><a href=\"javascript:\">show remote content</a></li>",
+          "</ul>",
+          "<ul class=\"tags regular-tags\"></ul>",
+        "</div>",
+        "<div class=\"messageFooter\">",
+          "<button class=\"reply\">reply</button>",
+          "<button class=\"replyAll\">reply all</button>",
+          "<button class=\"forward\">forward</button>",
+          "<button style=\"float:right;margin: 0 0 0 0;\">more...</button>",
+        "</div>",
+      "</li>"
     ].join("");
     return r;
   },
@@ -400,13 +401,18 @@ Message.prototype = {
     }
 
     register(".show-remote-content", function (event) {
-      event.target.style.display = "none";
+      event.target.parentNode.style.display = "none";
       self._msgHdr.setUint32Property("remoteContentPolicy", kAllowRemoteContent);
       self._reloadMessage();
     });
   },
 
   _reloadMessage: function _Message_reloadMessage () {
+    let specialTags = this._domNode.getElementsByClassName("special-tags")[0];
+    // Remove any extra tags because they will be re-added after reload, but
+    //  leave the "show remote content" tag.
+    while (specialTags.children.length > 1)
+      specialTags.removeChild(specialTags.children[1]);
     this.iframe.parentNode.removeChild(this.iframe);
     this.streamMessage();
   },
@@ -451,7 +457,7 @@ Message.prototype = {
       this._domNode.getElementsByClassName("star")[0].classList.remove("starred");
 
     // Update tags
-    let tagList = this._domNode.getElementsByClassName("tags")[0];
+    let tagList = this._domNode.getElementsByClassName("regular-tags")[0];
     while (tagList.firstChild)
       tagList.removeChild(tagList.firstChild);
     for each (let [, tag] in Iterator(tags)) {
@@ -463,7 +469,7 @@ Message.prototype = {
       tagNode.textContent = tagName;
       tagList.appendChild(tagNode);
     }
-    this._domNode.getElementsByClassName("tags")[1].innerHTML = tagList.innerHTML;
+    this._domNode.getElementsByClassName("regular-tags")[1].innerHTML = tagList.innerHTML;
   },
 
   // Convenience properties
@@ -784,24 +790,7 @@ Message.prototype = {
           OnStopRunningUrl: function () {},
           QueryInterface: XPCOMUtils.generateQI([Ci.nsISupports, Ci.nsIUrlListener])
         };
-        // XXX in order to properly handle all kind of notifications, we should
-        //  be providing our own nsIMsgWindow here, in particular, one that also
-        //  has a GetMsgContentSink (or whatever) method, so that the C++
-        //  content policy code can call GetMsgContentSink on it and tell us if
-        //  remote content was blocked.
-        //
-        // http://mxr.mozilla.org/comm-central/source/mailnews/base/src/nsMsgContentPolicy.cpp#579
-        // http://mxr.mozilla.org/comm-central/source/mail/base/content/msgHdrViewOverlay.js#620
-        // mail/base/content/mailWindow.js (View Hg log or Hg annotations)
-        //   line 146 -- msgWindow.msgHeaderSink = messageHeaderSink; 
-        //
-        // But maybe it isn't such a good idea after all, since we will lose all
-        //  kinds of standard error handling code (bad certs, and stuff). A
-        //  better solution might be to monkey-patch msgHeaderSink right at the
-        //  beginning of the conversation and to replace it once the
-        //  conversation's built... OR we could forward calls to the original
-        //  nsIMsgWindow except for the one that we're interested in...
-
+ 
         /**
         * When you want a message displayed....
         *
