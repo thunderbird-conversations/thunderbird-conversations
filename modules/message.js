@@ -219,6 +219,26 @@ Message.prototype = {
     let snippet = escapeHtml(this._snippet);
     let date = escapeHtml(this._date);
 
+    let folderTag = "";
+    let threadKey = getMail3Pane().gDBView
+      .getThreadContainingMsgHdr(this._conversation._initialSet[0]).threadKey;
+    let myThreadKey;
+    try {
+      myThreadKey = getMail3Pane().gDBView
+        .getThreadContainingMsgHdr(this._msgHdr).threadKey;
+    } catch (e) {
+      myThreadKey = -1;
+    }
+    if (threadKey != myThreadKey) {
+      let folderStr = this._msgHdr.folder.prettiestName;
+      let folder = this._msgHdr.folder;
+      while (folder.parent) {
+        folder = folder.parent;
+        folderStr = folder.name + "/" + folderStr;
+      }
+      folderTag = "<li class=\"keep-tag in-folder\">In "+folderStr+"</li>";
+    }
+
     let r = [
       "<li class=\"message collapsed\">",
       //"  <!-- Message-ID: ", this._msgHdr.messageId, " -->",
@@ -254,7 +274,8 @@ Message.prototype = {
         "</div>",
         "<div class=\"messageBody\">",
           "<ul class=\"tags special-tags\">",
-            "<li class=\"show-remote-content\"><a href=\"javascript:\">show remote content</a></li>",
+            "<li class=\"keep-tag show-remote-content\"><a href=\"javascript:\">show remote content</a></li>",
+            folderTag,
           "</ul>",
           "<ul class=\"tags regular-tags\"></ul>",
         "</div>",
@@ -405,14 +426,21 @@ Message.prototype = {
       self._msgHdr.setUint32Property("remoteContentPolicy", kAllowRemoteContent);
       self._reloadMessage();
     });
+    register(".in-folder", function (event) {
+      getMail3Pane().gFolderTreeView.selectFolder(self._msgHdr.folder, true);
+      getMail3Pane().gFolderDisplay.selectMessage(self._msgHdr);
+    });
   },
 
   _reloadMessage: function _Message_reloadMessage () {
     let specialTags = this._domNode.getElementsByClassName("special-tags")[0];
     // Remove any extra tags because they will be re-added after reload, but
     //  leave the "show remote content" tag.
-    while (specialTags.children.length > 1)
-      specialTags.removeChild(specialTags.children[1]);
+    for (let i = specialTags.children.length - 1; i >= 0; i--) {
+      let child = specialTags.children[i];
+      if (!child.classList.contains("keep-tag"))
+        specialTags.removeChild(child);
+    }
     this.iframe.parentNode.removeChild(this.iframe);
     this.streamMessage();
   },

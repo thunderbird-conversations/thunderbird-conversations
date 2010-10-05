@@ -148,9 +148,11 @@
               currentConversation: null,
               counter: 0,
             };
+            // Pick _initialSet and not msgHdrs so as to enforce the invariant
+            //  that the messages from _initialSet are in the current view.
             let freshConversation = new mainWindow.Conversations.monkeyPatch._Conversation(
               browser.contentWindow,
-              Conversations.currentConversation.msgHdrs,
+              Conversations.currentConversation._initialSet,
               ++browser.contentWindow.Conversations.counter
             );
             freshConversation.outputInto(browser, function (aConversation) {
