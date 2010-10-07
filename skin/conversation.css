@@ -298,13 +298,16 @@ a img {
 }
 
 .options a,
-.attachments a {
+.attachments a,
+.link {
   text-decoration: none;
   color: #3875d7;
+  cursor: pointer;
 }
 
 .options a:hover,
-.attachments a:hover {
+.attachments a:hover ,
+.link:hover {
   text-decoration: underline;
 }
 
@@ -421,6 +424,23 @@ ul.special-tags img {
 
 .attachmentThumb img {
   float: left;
+  image-rendering: optimizeQuality;
+}
+
+/* For moz-icons */
+.attachmentThumb img.center-me {
+  margin-left: 28px; /* That's (120-64)/2 */
+  margin-top: 8px;
+}
+
+/* For thumbnails */
+.attachmentThumb img.resize-me {
+  width: 120px;
+  height: 80px;
+}
+
+.view-attachment {
+  cursor: pointer;
 }
 
 .attachmentInfo {

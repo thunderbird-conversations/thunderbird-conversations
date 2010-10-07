@@ -247,11 +247,11 @@ Conversation.prototype = {
               message: new MessageFromDbHdr(self,
                 function () self._signal.apply(self), msgHdr), // will run signal
               msgHdr: msgHdr,
+              glodaMsg: null,
             } for each ([, msgHdr] in Iterator(self._initialSet))];
           self._signal();
         } else {
-          let gmsg = aItems[0];
-          self._query = gmsg.conversation.getMessagesCollection(self, true);
+          self._query = aItems[0].conversation.getMessagesCollection(self, true);
         }
       },
       onItemsModified: function () {},
@@ -306,6 +306,7 @@ Conversation.prototype = {
           message: new MessageFromGloda(self,
             function () self._signal.apply(self), glodaMsg), // will fire signal when done
           glodaMsg: glodaMsg,
+          msgHdr: null,
         } for each ([, glodaMsg] in Iterator(aCollection.items))];
         // Here's the message IDs we know
         let messageIds = {};
@@ -325,6 +326,7 @@ Conversation.prototype = {
               message: new MessageFromDbHdr(self,
                 function () self._signal.apply(self), msgHdr), // will call signal when done
               msgHdr: msgHdr,
+              glodaMsg: null,
             });
           } else {
             self._signal();
@@ -397,6 +399,7 @@ Conversation.prototype = {
     //  actually changed selections.
     if (aMessages.length) {
       // All your messages are belong to us.
+      [(x._conversation = this) for each ([, x] in Iterator(aMessages))];
       this.messages = this.messages.concat(aMessages);
 
       // We can't do this._domNode.innerHTML += because it will recreate all

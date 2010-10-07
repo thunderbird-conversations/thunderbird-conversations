@@ -71,8 +71,8 @@ ContactManager.prototype = {
   },
 
   freshColor: function _ContactManager_freshColor() {
-    let predefinedColors = [ "#ED6666", "#ED8866", "#CCC15E", "#9EC269",
-      "#69C2AC", "#66B7ED", "#668CED", "#8866ED", "#CB66ED", "#ED66D9"];
+    let predefinedColors = [ "#ed6666", "#ed8866", "#ccc15e", "#9ec269",
+      "#69c2ac", "#66b7ed", "#668ced", "#8866ed", "#cb66ed", "#ed66d9"];
     if (this._count < predefinedColors.length) {
       return predefinedColors[this._count++];
     } else {

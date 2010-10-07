@@ -39,10 +39,14 @@ Components.utils.import("resource://conversations/plugins/bugzilla.js");
 Components.utils.import("resource://conversations/plugins/enigmail.js");
 
 var Conversations = {
+  // These two belong here, use getMail3Pane().Conversations to access them
   monkeyPatch: null,
+  msgListeners: {},
+
+  // These two are replicated in the case of a conversation tab, so use
+  //  Conversation._window.Conversations to access the right instance
   currentConversation: null,
   counter: 0,
-  msgListeners: {},
 };
 
 window.addEventListener("load", function _overlay_eventListener () {

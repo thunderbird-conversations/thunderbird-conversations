@@ -9,6 +9,26 @@
   <script type="text/javascript" src="chrome://conversations/content/js/jquery-1.4.2.min.js"></script>
   <script type="text/javascript" src="chrome://conversations/content/js/jquery.text-overflow.js"></script>
   <script type="application/javascript;version=1.8">
+    (function ($) {
+      $.fn.vAlign = function(container) {
+        return this.each(function(i){
+          if(container == null) {
+            container = 'div';
+          }
+          $(this).html("<" + container + ">" + $(this).html() + "</" + container + ">");
+          var el = $(this).children(container + ":first");
+          var elh = $(el).height(); //new element height
+          var ph = $(this).height(); //parent height
+          var nh = (ph - elh) / 2; //new height to apply
+          $(el).css('margin-top', nh);
+        });
+      };
+    })(jQuery);
+
+    function alignAttachments(aMsgNode) {
+      $(aMsgNode._domNode).find(".align").vAlign();
+    }
+
     function scrollNodeIntoView (aNode) {
       let offset = aNode.offsetTop || 0;
       let parent = aNode.parentNode;
