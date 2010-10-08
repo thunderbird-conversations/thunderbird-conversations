@@ -413,7 +413,7 @@ Conversation.prototype = {
     if (aMessages.length) {
       // All your messages are belong to us. This is especially important so
       // that contacts query the right _contactManager
-      [(x._conversation = this) for each ([, x] in Iterator(aMessages))];
+      [(x.message._conversation = this) for each ([, x] in Iterator(aMessages))];
       this.messages = this.messages.concat(aMessages);
 
       // We can't do this._domNode.innerHTML += because it will recreate all
