@@ -226,9 +226,9 @@ MonkeyPatch.prototype = {
       } else {
         htmlpane.addEventListener("load", function _g (event) {
           htmlpane.removeEventListener("load", _g, true);
-            if (onRefresh)
-              onRefresh();
-            k();
+          if (onRefresh)
+            onRefresh();
+          k();
         }, true);
         htmlpane.contentDocument.location.href = aLocation;
       }

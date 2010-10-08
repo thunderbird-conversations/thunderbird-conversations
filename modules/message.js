@@ -239,7 +239,7 @@ Message.prototype = {
       for each (let [i, att] in Iterator(this._attachments)) {
         let [thumb, imgClass] = (att.contentType.indexOf("image/") === 0)
           ? [att.url, "resize-me"]
-          : ["moz-icon://" + att.displayName + "?size=" + 64 + "&contentType=" + att.contentType, "center-me"]
+          : ["moz-icon://" + att.name + "?size=" + 64 + "&contentType=" + att.contentType, "center-me"]
         ;
         let formattedSize = gMessenger.formatFileSize(att.size);
         // XXX remove this when bug 559559 is fixed!
