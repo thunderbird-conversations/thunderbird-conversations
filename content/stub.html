@@ -119,6 +119,7 @@
     //  be used either in a standalone tab or in the multimessage pane.
     // let Conversations = window.top.Conversations;
     Components.utils.import("resource://conversations/MsgHdrUtils.jsm");
+    Components.utils.import("resource://conversations/prefs.js");
     Components.utils.import("resource://conversations/log.js");
 
     let Log = setupLogging("Conversations.Stub");
@@ -173,6 +174,7 @@
             let freshConversation = new mainWindow.Conversations.monkeyPatch._Conversation(
               browser.contentWindow,
               Conversations.currentConversation._initialSet,
+              Prefs.kScrollUnreadOrLast,
               ++browser.contentWindow.Conversations.counter
             );
             freshConversation.outputInto(browser, function (aConversation) {
@@ -197,7 +199,7 @@
     }
 
     function cleanup() {
-      Log.debug("Cleanup up jquery's mess...");
+      Log.debug("Cleaning up jquery's mess...");
       // These shouldn't be necessary because we're blasting away everything by
       //  setting .innerHTML BUT jQuery won't remove its persistent event
       //  listeners if we don't do that which will in turn cause memory leaks!

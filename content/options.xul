@@ -55,23 +55,14 @@
     <preferences>
       <preference id="hide_quote_length" name="conversations.hide_quote_length" type="int" />
       <preference id="expand_who" name="conversations.expand_who" type="int" />
-      <preference id="scroll_who" name="conversations.scroll_who" type="int" />
     </preferences>
    
     <groupbox>
-      <caption label="&option.scroll_who;" />
-      <radiogroup preference="scroll_who">
-        <radio value="0" label="&option.scroll_unread_or_last;" />
-        <radio value="1" label="&option.scroll_selected;" />
-      </radiogroup>
-    </groupbox>
-    <groupbox>
       <caption label="&option.expand_who;" />
       <radiogroup preference="expand_who">
-        <radio value="0" label="&option.expand_unread_and_last;" />
         <radio value="1" label="&option.expand_none;" />
-        <radio value="2" label="&option.expand_scrolled;" />
         <radio value="3" label="&option.expand_all;" />
+        <radio value="4" label="&option.expand_auto;" />
       </radiogroup>
     </groupbox>
     <groupbox>

@@ -902,6 +902,7 @@ Message.prototype = {
           } catch (e) {
             Log.warn(e, "(are you running comm-central?)");
             Log.warn("Running signal once more to make sure we move on with our life... (warning, this WILL cause bugs)");
+            dumpCallStack(e);
             self._didStream = true;
             self._signal();
           }

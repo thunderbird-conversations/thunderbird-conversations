@@ -207,6 +207,39 @@ MonkeyPatch.prototype = {
       this._window.clearTimeout(this.markReadTimeout);
   },
 
+  determineScrollMode: function () {
+    let window = this._window;
+    let scrollMode = Prefs.kScrollUnreadOrLast;
+
+    let isExpanded = false;
+    let msgIndex = window.gFolderDisplay ? window.gFolderDisplay.selectedIndices[0] : -1;
+    if (msgIndex >= 0) {
+      try {
+        let rootIndex = window.gDBView
+          .findIndexOfMsgHdr(window.gDBView.getThreadContainingIndex(msgIndex).getChildHdrAt(0), false);
+        if (rootIndex >= 0) {
+          isExpanded = window.gDBView.isContainer(rootIndex)
+            && !window.gFolderDisplay.view.isCollapsedThreadAtIndex(rootIndex);
+        }
+      } catch (e) {
+        Log.debug("Error in the onLocationChange handler "+e+"\n");
+        dumpCallStack(e);
+      }
+    } 
+    if (window.gFolderDisplay.view.showThreaded) {
+      if (isExpanded)
+        scrollMode = Prefs.kScrollSelected;
+      else
+        scrollMode = Prefs.kScrollUnreadOrLast;
+    } else {
+      scrollMode = Prefs.kScrollSelected;
+    }
+
+    Log.debug("Scroll mode", scrollMode, "is expanded?", isExpanded);
+
+    return scrollMode;
+  },
+
   apply: function () {
     let window = this._window;
     let self = this;
@@ -250,8 +283,13 @@ MonkeyPatch.prototype = {
 
         ensureLoadedAndRun(kStubUrl, function () {
           try {
+            let scrollMode = self.determineScrollMode();
             let freshConversation = new self._Conversation(
-              window, aSelectedMessages, ++window.Conversations.counter);
+              window,
+              aSelectedMessages,
+              scrollMode,
+              ++window.Conversations.counter
+            );
             freshConversation.outputInto(htmlpane, function (aConversation) {
               // One nasty behavior of the folder tree view is that it calls us
               //  every time a new message has been downloaded. So if you open
@@ -264,14 +302,34 @@ MonkeyPatch.prototype = {
               //  the new conversation. So because we're not sure
               //  freshConversation will actually end up being used, we take the
               //  new conversation as parameter.
-              // The conversation knows what this callback is all about, and
-              //  will decide not to call it if recycling a previous
-              //  conversation (so that kind of defeats what I'm saying above).
-              Log.debug("Conversation", aConversation.counter, "is the new one.");
+              Log.debug("Conversation", aConversation.counter, "is the new one. Scroll mode:", aConversation.scrollMode);
+              Log.assert(aConversation.scrollMode == scrollMode, "Someone forgot to put the right scroll mode!");
+              // So we force a GC cycle if we change conversations, so that the
+              //  previous collection is actually deleted and we don't vomit a
+              //  ton of errors from the listener that tries to modify the DOM
+              //  nodes and fails at it because they don't exist anymore.
+              let needsGC = window.Conversations.currentConversation
+                && (window.Conversations.currentConversation.counter != aConversation.counter);
               window.Conversations.currentConversation = aConversation;
+              if (needsGC)
+                Cu.forceGC();
+
               // Make sure we respect the user's preferences.
               self.markReadTimeout = window.setTimeout(function () {
-                aConversation.read = true;
+                // The idea is that usually, we're selecting a thread (so we
+                // have kScrollUnreadOrLast). This means we mark the whole
+                // conversation as read. However, sometimes the user selects
+                // individual messages. In that case, don't do something weird!
+                // Just mark the selected messages as read.
+                if (scrollMode == Prefs.kScrollUnreadOrLast) {
+                  Log.debug("Marking the whole conversation as read");
+                  aConversation.read = true;
+                } else if (scrollMode == Prefs.kScrollSelected) {
+                  Log.debug("Marking selected messages as read");
+                  msgHdrsMarkAsRead(aSelectedMessages, true);
+                } else {
+                  Log.assert(false, "GIVE ME ALGEBRAIC DATA TYPES!!!");
+                }
                 self.markReadTimeout = null;
               }, Prefs.getInt("mailnews.mark_message_read.delay.interval")
                 * Prefs.getBool("mailnews.mark_message_read.delay") * 1000);

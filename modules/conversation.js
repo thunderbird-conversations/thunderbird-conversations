@@ -76,7 +76,7 @@ let OracleMixIn = {
   _tellMeWhoToScroll: function _Conversation_tellMeWhoToScroll () {
     // Determine which message is going to be scrolled into view
     let needsScroll = -1;
-    if (Prefs["scroll_who"] == Prefs.kScrollUnreadOrLast) {
+    if (this.scrollMode == Prefs.kScrollUnreadOrLast) {
       needsScroll = this.messages.length - 1;
       for (let i = 0; i < this.messages.length; ++i) {
         if (!this.messages[i].message.read) {
@@ -84,7 +84,7 @@ let OracleMixIn = {
           break;
         }
       }
-    } else if (Prefs["scroll_who"] == Prefs.kScrollSelected) {
+    } else if (this.scrollMode == Prefs.kScrollSelected) {
       let gFolderDisplay = getMail3Pane().gFolderDisplay;
       let uri = function (msg) msg.folder.getUriForMsg(msg);
       let key = uri(gFolderDisplay.selectedMessage);
@@ -101,7 +101,7 @@ let OracleMixIn = {
         needsScroll = this.messages.length - 1;
       }
     } else {
-      Log.error("Unknown value for pref scroll_who");
+      Log.assert(false, "Unknown value for pref scroll_who");
     }
 
     Log.debug("Will scroll the following index into view", needsScroll);
@@ -125,21 +125,30 @@ let OracleMixIn = {
         actions.push(kActionDoNothing);
     };
     switch (Prefs["expand_who"]) {
-      case Prefs.kExpandScrolled:
-        for each (let [i, { message }] in Iterator(this.messages)) {
-          if (i == aNeedsFocus)
-            expand(message);
-          else
-            collapse(message);
+      case Prefs.kExpandAuto:
+        // In this mode, we scroll to the first unread message (or the last
+        //  message if all messages are read), and we expand all unread messages
+        //  + the last one (which will probably be unread as well).
+        if (this.scrollMode == Prefs.kScrollUnreadOrLast) {
+          for each (let [i, { message }] in Iterator(this.messages)) {
+            if (!message.read || i == this.messages.length - 1)
+              expand(message);
+            else
+              collapse(message);
+          }
+        // In this mode, we scroll to the selected message, and we only expand
+        //  the selected message.
+        } else if (this.scrollMode == Prefs.kScrollSelected) {
+          for each (let [i, { message }] in Iterator(this.messages)) {
+            if (i == aNeedsFocus)
+              expand(message);
+            else
+              collapse(message);
+          }
+        } else {
+          Log.assert(false, "Unknown value for pref scroll_who");
         }
-        break;
-      case Prefs.kExpandUnreadAndLast:
-        for each (let [i, { message }] in Iterator(this.messages)) {
-          if (!message.read || i == this.messages.length - 1)
-            expand(message);
-          else
-            collapse(message);
-        }
+
         break;
       case Prefs.kExpandAll:
         for each (let [, { message }] in Iterator(this.messages))
@@ -150,8 +159,9 @@ let OracleMixIn = {
           collapse(message);
         break;
       default:
-        Log.error("Unknown value for pref expand_who");
+        Log.assert(false, "Unknown value for pref expand_who");
     }
+    Log.debug("expand who?", actions);
     return actions;
   },
 }
@@ -194,9 +204,12 @@ function msgDate ({ type, message, msgHdr, glodaMsg }) {
 // We maintain the invariant that, once the conversation is built, this.messages
 //  matches exactly the DOM nodes with class "message" inside this._domNode.
 // So the i-th _message is also the i-th DOM node.
-function Conversation(aWindow, aSelectedMessages, aCounter) {
+function Conversation(aWindow, aSelectedMessages, aScrollMode, aCounter) {
   this._contactManager = new ContactManager();
   this._window = aWindow;
+  // This is set by the monkey-patch which knows whether we were viewing a
+  //  message inside a thread or viewing a closed thread.
+  this.scrollMode = aScrollMode;
   // We have the COOL invariant that this._initialSet is a subset of
   //   [toMsgHdr(x) for each ([, x] in Iterator(this.messages))]
   // This is made possible by David's patch in bug 572094 that allows us to
@@ -398,7 +411,8 @@ Conversation.prototype = {
     //  whole thing and asks for a new ThreadSummary but the user hasn't
     //  actually changed selections.
     if (aMessages.length) {
-      // All your messages are belong to us.
+      // All your messages are belong to us. This is especially important so
+      // that contacts query the right _contactManager
       [(x._conversation = this) for each ([, x] in Iterator(aMessages))];
       this.messages = this.messages.concat(aMessages);
 
@@ -429,9 +443,8 @@ Conversation.prototype = {
     //  whatever.
     this._updateConversationButtons();
 
-    // Re-do the expand/collapse + scroll to the right node stuff, but this time
-    //  specify it's an update so that we don't notify listeners.
-    this._expandAndScroll(true);
+    // Re-do the expand/collapse + scroll to the right node stuff.
+    this._expandAndScroll();
   },
 
   // Once we're confident our set of messages is the right one, we actually
@@ -494,18 +507,27 @@ Conversation.prototype = {
       if (currentMsgSet.length == 0)
         shouldRecycle = false;
       if (shouldRecycle) {
+        // NB: we get here even if there's 0 new messages, understood?
         // Just get the extra messages
         let whichMessages = this.messages.slice(currentMsgSet.length, this.messages.length);
         let currentConversation = this._window.Conversations.currentConversation;
-        // And pass them to the old conversation
+        // Modify the old conversation in-place. BEWARE: don't forget anything
         Log.debug("Recycling conversation! We are eco-responsible.", whichMessages.length,
           "new messages");
+        currentConversation.scrollMode = this.scrollMode;
+        currentConversation._initialSet = this._initialSet;
+        // - KEEP the old contact manager (we don't want fresh colors!)
+        // - KEEP the counter
+        // - _domNode, _window are the same because we can't only recycle a
+        //    conversation from the main mail:3pane
+        // - Line below strictly necessary only if more than 0 new messages
+        currentConversation._query = this._query;
+        currentConversation._onComplete = this._onComplete;
+        // And pass them to the old conversation. It will take care of setting
+        // _conversation properly on Message instances.
         currentConversation.appendMessages(whichMessages);
 
         this.messages = null;
-        // Don't call k (i.e. don't mark the newly arrived messages as read and
-        // keep the old conversation as the current one), don't blow away the
-        // previous conversation, don't do anything. Goodbye!
         return;
       } else {
         Log.debug("Not recycling conversation");
@@ -568,7 +590,7 @@ Conversation.prototype = {
 
   // Do all the penible stuff about scrolling to the right message and expanding
   // the right message
-  _expandAndScroll: function _Conversation_expandAndScroll (isUpdate) {
+  _expandAndScroll: function _Conversation_expandAndScroll () {
     let focusThis = this._tellMeWhoToScroll();
     let expandThese = this._tellMeWhoToExpand(focusThis);
     let messageNodes = this._domNode.getElementsByClassName(Message.prototype.cssClass);
@@ -578,17 +600,15 @@ Conversation.prototype = {
       let focusedNode = messageNodes[focusThis];
       self._htmlPane.contentWindow.scrollNodeIntoView(focusedNode);
 
-      if (!isUpdate) {
-        for each (let [i, node] in Iterator(messageNodes)) {
-          node.setAttribute("tabindex", i+2);
-        }
-        focusedNode.setAttribute("tabindex", "1");
-
-        self._onComplete();
-        // In theory, we could call this *before* _onComplete, and pray for Gloda
-        //  to call onItemsModified properly, and in time. We could. But we won't.
-        self._updateConversationButtons();
+      for each (let [i, node] in Iterator(messageNodes)) {
+        node.setAttribute("tabindex", i+2);
       }
+      focusedNode.setAttribute("tabindex", "1");
+
+      // It doesn't matter if it's an update after all, we will just set
+      // currentConversation to the same value in the _onComplete handler.
+      self._onComplete();
+      self._updateConversationButtons();
     }, this.messages.length);
 
     for each (let [i, action] in Iterator(expandThese)) {

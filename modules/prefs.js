@@ -14,10 +14,7 @@ const gPrefBranch = Cc["@mozilla.org/preferences-service;1"]
 
 function PrefManager() {
   this.expand_who = prefsService.getIntPref("expand_who");
-  this.scroll_who = prefsService.getIntPref("scroll_who");
-  this.reverse_order = prefsService.getBoolPref("reverse_order");
   this.no_friendly_date = prefsService.getBoolPref("no_friendly_date");
-  this.guess_first_names = prefsService.getBoolPref("guess_first_names");
   this.hide_quote_length = prefsService.getIntPref("hide_quote_length");
   this.monospaced_senders = this.split(prefsService.getCharPref("monospaced_senders"));
 
@@ -47,15 +44,11 @@ PrefManager.prototype = {
       return;
 
     switch (aData) {
-      case "reverse_order":
       case "no_friendly_date":
-      case "guess_first_names":
-      case "disable_error_empty_collection":
         this[aData] = prefsService.getBoolPref(aData);
         break;
 
       case "expand_who":
-      case "scroll_who":
       case "hide_quote_length":
         this[aData] = prefsService.getIntPref(aData);
         break;
@@ -93,10 +86,9 @@ PrefManager.prototype = {
   kScrollUnreadOrLast: 0,
   kScrollSelected: 1,
 
-  kExpandUnreadAndLast: 0,
   kExpandNone: 1,
-  kExpandScrolled: 2,
   kExpandAll: 3,
+  kExpandAuto: 4,
 }
 
 // Prefs is a singleton.

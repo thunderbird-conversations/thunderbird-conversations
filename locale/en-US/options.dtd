@@ -1,24 +1,17 @@
 <!-- Please open the "Preferences" window and DO check that your text is not too
      long. This can cause the contents to overflow and be hidden, so make sure
      everything is displayed properly. -->
-<!ENTITY window.title "Gmail Conversation View Options">
+<!ENTITY window.title "Thunderbird Conversations Options">
 <!ENTITY title.message_display "Message display">
 
-<!ENTITY option.scroll_who "When displaying a conversation, scroll to:">
-<!ENTITY option.scroll_unread_or_last "The first unread message or the last message">
-<!ENTITY option.scroll_selected "The message currently selected in the message list">
-
 <!ENTITY option.expand_who "By default, expand:">
+<!ENTITY option.expand_auto "The message you had in mind (automatic)">
 <!ENTITY option.expand_none "No messages">
-<!ENTITY option.expand_scrolled "Only the message scrolled to (see above)">
-<!ENTITY option.expand_unread_and_last "All unread messages plus the message scrolled to (see above)">
 <!ENTITY option.expand_all "All messages">
 
 <!ENTITY title.quoting "Quoting">
 <!ENTITY option.hide_longer_than "Hide quoted text higher than">
 <!ENTITY option.lines "lines">
-
-<!ENTITY option.reverse_order "Reverse order (last → first)">
 
 <!ENTITY title.assistant "Setup assistant">
 <!ENTITY option.assistant "Start the setup assistant">
