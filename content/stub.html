@@ -196,6 +196,17 @@
       $(aMsgNode).find(".to").textOverflow(null, false);
     }
 
+    function cleanup() {
+      Log.debug("Cleanup up jquery's mess...");
+      // These shouldn't be necessary because we're blasting away everything by
+      //  setting .innerHTML BUT jQuery won't remove its persistent event
+      //  listeners if we don't do that which will in turn cause memory leaks!
+      // Indeed, the listeners are actually closures on Message instances. These
+      //  contain a pointer to their parent Conversation, so that would prevent
+      //  the GC from collecting anything! Argh!
+      $("#messageList").empty();
+    }
+
     document.addEventListener("focus", function (event) {
       /* This is a persistent event listener. It can operate multiple
        * times. We have the invariant that for a given conversation, there's at

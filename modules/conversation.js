@@ -521,6 +521,10 @@ Conversation.prototype = {
     let innerHtml = [m.message.toHtmlString()
       for each ([i, m] in Iterator(this.messages))];
     innerHtml = innerHtml.join("\n");
+    // We must do this if we are to ever release the previous Conversation
+    //  object. See comments in stub.html for the nice details.
+    this._htmlPane.contentWindow.cleanup();
+    // Go!
     this._domNode.innerHTML = innerHtml;
 
     // Notify each message that it's been added to the DOM and that it can do
