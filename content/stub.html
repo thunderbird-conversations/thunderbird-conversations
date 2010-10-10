@@ -11,16 +11,16 @@
   <script type="application/javascript;version=1.8">
     (function ($) {
       $.fn.vAlign = function(container) {
-        return this.each(function(i){
-          if(container == null) {
-            container = 'div';
-          }
-          $(this).html("<" + container + ">" + $(this).html() + "</" + container + ">");
-          var el = $(this).children(container + ":first");
-          var elh = $(el).height(); //new element height
-          var ph = $(this).height(); //parent height
+        if (!container)
+          container = "div";
+
+        return this.each(function(i) {
+          $(this).wrap("<div />");
+          var el = $(this);
+          var elh = el.height(); //new element height
+          var ph = el.parent().height(); //parent height
           var nh = (ph - elh) / 2; //new height to apply
-          $(el).css('margin-top', nh);
+          el.css('margin-top', nh);
         });
       };
     })(jQuery);

@@ -231,7 +231,7 @@ Message.prototype = {
       attachmentsHtml = [
         "<ul class=\"attachments\">",
           "<div class=\"attachHeader\">", plural,
-            " | <span class=\"link download-all\">download all</span>",
+            " | <a href=\"javascript:\" class=\"link download-all\">download all</a>",
             //" | <a href=\"javascript:\" class=\"view-all\">view all</a>"
           "</div>"
       ];
@@ -246,11 +246,11 @@ Message.prototype = {
         attachmentsHtml = attachmentsHtml.concat([
           "<li class=\"clearfix hbox attachment\">",
             "<div class=\"attachmentThumb\"><img class=\"", imgClass, "\" src=\"", thumb, "\"></div>",
-            "<div class=\"attachmentInfo align boxFlex\">",
+            "<div class=\"attachmentInfo align\">",
               "<span class=\"filename\">", att.name, "</span>",
               "<div class=\"attachActions\">", formattedSize,
-                " | <span class=\"link open-attachment\">open</span>",
-                " | <span class=\"link download-attachment\">download</span>",
+                " | <a href=\"javascript:\" class=\"link open-attachment\">open</a>",
+                " | <a href=\"javascript:\" class=\"link download-attachment\">download</a>",
               "</div>",
             "</div>",
           "</li>",
