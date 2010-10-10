@@ -141,8 +141,7 @@ KeyListener.prototype = {
 }
 
 // Call that one after setting this._msgHdr;
-function Message(aConversation, aSignalFn) {
-  this._signal = aSignalFn;
+function Message(aConversation) {
   this._didStream = false;
   this._domNode = null;
   this._snippet = "";
@@ -249,10 +248,10 @@ Message.prototype = {
             "<div class=\"attachmentThumb\"><img class=\"", imgClass, "\" src=\"", thumb, "\"></div>",
             "<div class=\"attachmentInfo align boxFlex\">",
               "<span class=\"filename\">", att.name, "</span>",
-              "<span class=\"attachActions\">", formattedSize,
+              "<div class=\"attachActions\">", formattedSize,
                 " | <span class=\"link open-attachment\">open</span>",
                 " | <span class=\"link download-attachment\">download</span>",
-              "</span>",
+              "</div>",
             "</div>",
           "</li>",
         ]);
@@ -431,8 +430,10 @@ Message.prototype = {
       else
         nodes = [selector];
 
-      for each (let [, node] in Iterator(nodes))
+      for each (let [, node] in Iterator(nodes)) {
+        Log.debug(node, node.classList, action, f);
         node.addEventListener(action, f, false);
+      }
     };
     register(".reply", function (event) self.compose(Ci.nsIMsgCompType.ReplyToSender, event));
     register(".replyAll", function (event) self.compose(Ci.nsIMsgCompType.ReplyAll, event));
@@ -525,6 +526,11 @@ Message.prototype = {
       getMail3Pane().gFolderDisplay.selectMessage(self._msgHdr);
     });
 
+    // debug
+    register(null, function (event) {
+      Log.debug("event", event.target, event.target.classList);
+    });
+
     let attachmentNodes = this._domNode.getElementsByClassName("attachment");
     let attachmentInfos = [];
     let mainWindow = getMail3Pane();
@@ -540,9 +546,11 @@ Message.prototype = {
         att.contentType, att.url, att.name, uri, att.isExternal
       );
       register(attNode.getElementsByClassName("open-attachment")[0], function (event) {
+        Log.debug("Opening attachment");
         mainWindow.HandleMultipleAttachments([attInfo], "open");
       });
       register(attNode.getElementsByClassName("download-attachment")[0], function (event) {
+        Log.debug("Downloading attachment");
         mainWindow.HandleMultipleAttachments([attInfo], "save");
       });
 
@@ -676,6 +684,10 @@ Message.prototype = {
       this.collapse();
     else
       Log.error("WTF???");
+  },
+
+  _signal: function _Message_signal () {
+    this._conversation._signal();
   },
 
   expand: function () {
@@ -995,7 +1007,7 @@ Message.prototype = {
   }
 }
 
-function MessageFromGloda(aConversation, aSignalFn, aGlodaMsg) {
+function MessageFromGloda(aConversation, aGlodaMsg) {
   this._msgHdr = aGlodaMsg.folderMessage;
   this._glodaMsg = aGlodaMsg;
   Message.apply(this, arguments);
@@ -1023,7 +1035,7 @@ MessageFromGloda.prototype = {
 
 MixIn(MessageFromGloda, Message);
 
-function MessageFromDbHdr(aConversation, aSignalFn, aMsgHdr) {
+function MessageFromDbHdr(aConversation, aMsgHdr) {
   this._msgHdr = aMsgHdr;
   Message.apply(this, arguments);
 

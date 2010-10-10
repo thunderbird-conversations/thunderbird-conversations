@@ -310,6 +310,8 @@ MonkeyPatch.prototype = {
               //  nodes and fails at it because they don't exist anymore.
               let needsGC = window.Conversations.currentConversation
                 && (window.Conversations.currentConversation.counter != aConversation.counter);
+              let isDifferentConversation = !window.Conversations.currentConversation
+                  || (window.Conversations.currentConversation.counter != aConversation.counter);
               window.Conversations.currentConversation = aConversation;
               if (needsGC)
                 Cu.forceGC();
@@ -317,14 +319,21 @@ MonkeyPatch.prototype = {
               // Make sure we respect the user's preferences.
               self.markReadTimeout = window.setTimeout(function () {
                 // The idea is that usually, we're selecting a thread (so we
-                // have kScrollUnreadOrLast). This means we mark the whole
-                // conversation as read. However, sometimes the user selects
-                // individual messages. In that case, don't do something weird!
-                // Just mark the selected messages as read.
+                //  have kScrollUnreadOrLast). This means we mark the whole
+                //  conversation as read. However, sometimes the user selects
+                //  individual messages. In that case, don't do something weird!
+                //  Just mark the selected messages as read.
                 if (scrollMode == Prefs.kScrollUnreadOrLast) {
-                  Log.debug("Marking the whole conversation as read");
-                  aConversation.read = true;
+                  // Did we juste change conversations? If we did, it's ok to
+                  //  mark as read. Otherwise, it's not, since we may silently
+                  //  mark new messages as read.
+                  if (isDifferentConversation) {
+                    Log.debug("Marking the whole conversation as read");
+                    aConversation.read = true;
+                  }
                 } else if (scrollMode == Prefs.kScrollSelected) {
+                  // We don't seem to have a reflow when the thread is expanded
+                  //  so no risk of silently marking conversations as read.
                   Log.debug("Marking selected messages as read");
                   msgHdrsMarkAsRead(aSelectedMessages, true);
                 } else {

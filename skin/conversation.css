@@ -439,6 +439,10 @@ ul.special-tags img {
   height: 80px;
 }
 
+.attachActions {
+  display: inline;
+}
+
 .view-attachment {
   cursor: pointer;
 }

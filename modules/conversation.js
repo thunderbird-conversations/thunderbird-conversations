@@ -257,8 +257,7 @@ Conversation.prototype = {
           self._getReady(self._initialSet.length + 1);
           self.messages = [{
               type: kMsgDbHdr,
-              message: new MessageFromDbHdr(self,
-                function () self._signal.apply(self), msgHdr), // will run signal
+              message: new MessageFromDbHdr(self, msgHdr), // will run signal
               msgHdr: msgHdr,
               glodaMsg: null,
             } for each ([, msgHdr] in Iterator(self._initialSet))];
@@ -316,8 +315,7 @@ Conversation.prototype = {
         // We want at least all messages from the Gloda collection
         self.messages = [{
           type: kMsgGloda,
-          message: new MessageFromGloda(self,
-            function () self._signal.apply(self), glodaMsg), // will fire signal when done
+          message: new MessageFromGloda(self, glodaMsg), // will fire signal when done
           glodaMsg: glodaMsg,
           msgHdr: null,
         } for each ([, glodaMsg] in Iterator(aCollection.items))];
@@ -336,8 +334,7 @@ Conversation.prototype = {
             Log.debug("Message with message-id", msgHdr.messageId, "was not in the gloda collection");
             self.messages.push({
               type: kMsgDbHdr,
-              message: new MessageFromDbHdr(self,
-                function () self._signal.apply(self), msgHdr), // will call signal when done
+              message: new MessageFromDbHdr(self, msgHdr), // will call signal when done
               msgHdr: msgHdr,
               glodaMsg: null,
             });
@@ -612,6 +609,7 @@ Conversation.prototype = {
     }, this.messages.length);
 
     for each (let [i, action] in Iterator(expandThese)) {
+      Log.debug(i, action);
       switch (action) {
         case kActionExpand:
           this.messages[i].message.expand();
