@@ -430,10 +430,8 @@ Message.prototype = {
       else
         nodes = [selector];
 
-      for each (let [, node] in Iterator(nodes)) {
-        Log.debug(node, node.classList, action, f);
+      for each (let [, node] in Iterator(nodes))
         node.addEventListener(action, f, false);
-      }
     };
     register(".reply", function (event) self.compose(Ci.nsIMsgCompType.ReplyToSender, event));
     register(".replyAll", function (event) self.compose(Ci.nsIMsgCompType.ReplyAll, event));
@@ -524,11 +522,6 @@ Message.prototype = {
     register(".in-folder", function (event) {
       getMail3Pane().gFolderTreeView.selectFolder(self._msgHdr.folder, true);
       getMail3Pane().gFolderDisplay.selectMessage(self._msgHdr);
-    });
-
-    // debug
-    register(null, function (event) {
-      Log.debug("event", event.target, event.target.classList);
     });
 
     let attachmentNodes = this._domNode.getElementsByClassName("attachment");
@@ -768,11 +761,16 @@ Message.prototype = {
             // Launch various crappy pieces of code^W^W^W^W heuristics to
             //  convert most common quoting styles to real blockquotes. Spoiler:
             //  most of them suck.
-            convertOutlookQuotingToBlockquote(iframe.contentWindow, iframeDoc);
-            convertHotmailQuotingToBlockquote1(iframeDoc);
-            convertHotmailQuotingToBlockquote2(iframe.contentWindow, iframeDoc, Prefs["hide_quote_length"]);
-            convertForwardedToBlockquote(iframeDoc);
-            fusionBlockquotes(iframeDoc);
+            try {
+              convertOutlookQuotingToBlockquote(iframe.contentWindow, iframeDoc);
+              convertHotmailQuotingToBlockquote1(iframeDoc);
+              convertHotmailQuotingToBlockquote2(iframe.contentWindow, iframeDoc, Prefs["hide_quote_length"]);
+              convertForwardedToBlockquote(iframeDoc);
+              fusionBlockquotes(iframeDoc);
+            } catch (e) {
+              Log.warn(e);
+              dumpCallStack(e);
+            }
             // this function adds a show/hide quoted text link to every topmost
             // blockquote. Nested blockquotes are not taken into account.
             let walk = function walk_ (elt) {
@@ -1065,7 +1063,7 @@ function MessageFromDbHdr(aConversation, aMsgHdr) {
         .filter(function (x) x.isRealAttachment);
 
       self._signal();
-    });
+    }, true);
   } catch (e) {
     // Remember: these exceptions don't make it out of the callback (XPConnect
     // death trap, can't fight it until we reach level 3 and gain 1200 exp
