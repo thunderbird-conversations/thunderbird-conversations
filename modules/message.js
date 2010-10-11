@@ -848,7 +848,12 @@ Message.prototype = {
 
             // Notify hooks that we just finished displaying a message. Must be
             //  performed now, not later.
-            [h.onMessageStreamed(self._msgHdr, iframe) for each ([, h] in Iterator(getHooks()))];
+            try {
+              [h.onMessageStreamed(self._msgHdr, self._domNode) for each ([, h] in Iterator(getHooks()))];
+            } catch (e) {
+              Log.warn("Plugin returned an error:", e);
+              dumpCallStack(e);
+            }
 
             // For bidiUI. Do that now because the DOM manipulations are
             //  over. We can't do this before because BidiUI screws up the

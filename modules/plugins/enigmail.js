@@ -2,11 +2,17 @@ var EXPORTED_SYMBOLS = [];
 
 /*
  * A typical "Thunderbird conversations" plugin would be as follows:
- * - a overlay.xul on whatever is loaded at startup (say, messenger.xul), with
- *   the.xul file including...
- * - ... a overlay.js file that basically does
+ *
+ * - An overlay.xul on whatever is loaded at startup (say, messenger.xul), that
+ *   contains a script pointoing to overlay.js
+ *
+ * - The overlay.js should just do:
  *    Components.utils.import("resource://yourext/conv-plugin.js");
- * - in conv-plugin.js:
+ *
+ * - The main work will be done in conv-plugin.js. For instance:
+ *
+ *    var EXPORTED_SYMBOLS = [];
+ *
  *    let hasConversations;
  *    try {
  *      Components.utils.import("resource://conversations/hook.js");
@@ -92,13 +98,14 @@ function tryEnigmail(bodyElement) {
 }
 
 let enigmailHook = {
-  onMessageStreamed: function _enigmailHook_onMessageStreamed(aMsgHdr, aIframe) {
-    let iframeDoc = aIframe.contentDocument;
-    let specialTags = aIframe.parentNode.getElementsByClassName("special-tags")[0];
+  onMessageStreamed: function _enigmailHook_onMessageStreamed(aMsgHdr, aDomNode) {
+    let iframe = aDomNode.getElementsByTagName("iframe")[0];
+    let iframeDoc = iframe.contentDocument;
+    let specialTags = aDomNode.getElementsByClassName("special-tags")[0];
     if (iframeDoc.body.textContent.length > 0 && hasEnigmail) {
       let status = tryEnigmail(iframeDoc.body);
       let addTag = function _addTag(url, txt) {
-        let li = aIframe.ownerDocument.createElement("li");
+        let li = iframe.ownerDocument.createElement("li");
         li.innerHTML = ["<img src=\"", url, "\" />", txt].join("");
         specialTags.appendChild(li);
       };

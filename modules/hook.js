@@ -5,9 +5,11 @@ var EXPORTED_SYMBOLS = ['registerHook', 'getHooks'];
  *
  * let hook = {
  *  // Called when the given message has been displayed.
- *  onMessageStreamed (aMsgHdr, aIframe) {
+ *  onMessageStreamed (aMsgHdr, aDomNode) {
  *  },
  * }
+ *
+ * If you need something else, just ask!
  * */
 let hooks = [];
 
