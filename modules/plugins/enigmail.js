@@ -55,7 +55,7 @@ let window = Cc['@mozilla.org/appshell/window-mediator;1']
 let hasEnigmail;
 let enigmailSvc;
 window.addEventListener("load", function () {
-  hasEnigmail = (typeof(window.GetEnigmailSvc) == "function");
+  hasEnigmail = (("GetEnigmailSvc" in window) && typeof(window.GetEnigmailSvc) == "function");
   if (hasEnigmail) {
     enigmailSvc = window.GetEnigmailSvc();
     if (!enigmailSvc) {
