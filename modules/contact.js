@@ -51,13 +51,17 @@ function ContactManager() {
 
 ContactManager.prototype = {
   getContactFromNameAndEmail: function _ContactManager_getContactFromEmail(name, email, position) {
+    email = email.toLowerCase();
     let self = this;
     let cache = function _cache (contact) {
       for each (let [, email] in Iterator(contact.emails)) {
+        email = email.toLowerCase();
         self._cache[email] = contact;
       }
     };
     if (email in this._cache) {
+      if (name)
+        this._cache[email].enrichWithName(name);
       return this._cache[email];
     } else if (gHasPeople) {
       let contact = new ContactFromPeople(this, name, email, position);
@@ -168,6 +172,11 @@ let ContactMixIn = {
       return (aPosition === Contacts.kFrom) ? "Me" : "Me";
     else
       return this._name || this._email;
+  },
+
+  enrichWithName: function _ContactMixIn_enrichWithName (aName) {
+    if (this._name == this._email)
+      this._name = aName;
   },
 };
 
