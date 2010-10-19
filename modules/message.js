@@ -9,6 +9,7 @@ Cu.import("resource:///modules/XPCOMUtils.jsm"); // for generateQI
 Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
 Cu.import("resource:///modules/PluralForm.jsm");
 Cu.import("resource:///modules/templateUtils.js"); // for makeFriendlyDateAgo
+Cu.import("resource:///modules/gloda/utils.js");
 Cu.import("resource:///modules/gloda/mimemsg.js");
 Cu.import("resource:///modules/gloda/connotent.js"); // for mimeMsgToContentSnippetAndMeta
 
@@ -20,6 +21,8 @@ const gMsgTagService = Cc["@mozilla.org/messenger/tagservice;1"]
                        .getService(Ci.nsIMsgTagService);
 const ioService = Cc["@mozilla.org/network/io-service;1"]
                   .getService(Ci.nsIIOService);
+const msgComposeService = Cc["@mozilla.org/messengercompose;1"]
+                          .getService(Ci.nsIMsgComposeService);
 const kCharsetFromMetaTag = 10;
 const kAllowRemoteContent = 2;
 
@@ -318,6 +321,8 @@ Message.prototype = {
                     "<div class=\"arrow inside\"></div>",
                   "</li>",
                   "<li class=\"action-delete\">delete this message</li>",
+                  "<li class=\"action-edit-new\">edit as new</li>",
+                  "<li class=\"action-compose-all\">new email to these people</li>",
                   "<li class=\"action-monospace\">this sender sends monospace</li>",
                   "<li class=\"action-classic\">view using the classic reader</li>",
                   "<li class=\"action-source\">view message source</li>",
@@ -436,6 +441,28 @@ Message.prototype = {
     register(".reply", function (event) self.compose(Ci.nsIMsgCompType.ReplyToSender, event));
     register(".replyAll", function (event) self.compose(Ci.nsIMsgCompType.ReplyAll, event));
     register(".edit-draft", function (event) self.compose(Ci.nsIMsgCompType.Draft, event));
+    register(".action-edit-new", function (event) self.compose(Ci.nsIMsgCompType.Template, event));
+    register(".action-compose-all", function (event) {
+      let allEmails =
+        self._msgHdr.author + "," +
+        self._msgHdr.recipients + "," +
+        self._msgHdr.ccList + "," +
+        self._msgHdr.bccList
+      ;
+      allEmails = gHeaderParser.removeDuplicateAddresses(allEmails, "");
+      let emailAddresses = {};
+      let names = {};
+      let numAddresses = gHeaderParser.parseHeadersWithArray(allEmails, emailAddresses, names, {});
+      allEmails = [
+        (names.value[i] ? (names.value[i] + " <" + x + ">") : x)
+        for each ([i, x] in Iterator(emailAddresses.value))
+        if (!gIdentities[x.toLowerCase()])
+      ];
+      let composeAllUri = "mailto:" + allEmails.join(",");
+      Log.debug("URI:", composeAllUri);
+      let uri = ioService.newURI(composeAllUri, null, null);
+      msgComposeService.OpenComposeWindowWithURI(null, uri);
+    });
     register(".forward", function (event) self.forward(event));
     // These event listeners are all in the header, which happens to have an
     //  event listener set on the click event for toggling the message. So we

@@ -35,6 +35,8 @@
  * ***** END LICENSE BLOCK ***** */
 
 var EXPORTED_SYMBOLS = [
+  // don't fetch the data 20 times
+  'gIdentities', 'fillIdentities',
   // miscellaneous functions
   'dateAsInMessageList', 'selectRightMessage', 'groupArray', 'range',
   'escapeHtml', 'MixIn',
@@ -52,6 +54,7 @@ const Cc = Components.classes;
 const Cu = Components.utils;
 Cu.import("resource:///modules/gloda/mimemsg.js");
 Cu.import("resource://conversations/MsgHdrUtils.jsm");
+Cu.import("resource:///modules/iteratorUtils.jsm"); // for fixIterator
 
 const txttohtmlconv = Cc["@mozilla.org/txttohtmlconv;1"]
                         .createInstance(Ci.mozITXTToHTMLConv);
@@ -59,6 +62,22 @@ const i18nDateFormatter = Cc["@mozilla.org/intl/scriptabledateformat;1"]
                             .createInstance(Ci.nsIScriptableDateFormat);
 const headerParser = Cc["@mozilla.org/messenger/headerparser;1"]
                        .getService(Ci.nsIMsgHeaderParser);
+const msgAccountManager = Cc["@mozilla.org/messenger/account-manager;1"]
+                             .getService(Ci.nsIMsgAccountManager);
+
+/**
+ * A global pointer to all the identities known for the user. Feel free to call
+ * fillIdentities again if you feel that the user has updated them!
+ */
+let gIdentities = {};
+function fillIdentities () {
+  gIdentities = {};
+  for each (let id in fixIterator(msgAccountManager.allIdentities, Ci.nsIMsgIdentity)) {
+    // id.fullName
+    gIdentities[id.email] = true;
+  }
+}
+fillIdentities();
 
 /**
  * A stupid formatting function that uses the i18nDateFormatter XPCOM component

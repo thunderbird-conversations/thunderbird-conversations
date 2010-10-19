@@ -19,8 +19,6 @@ p {
   margin-bottom: 18px;
 }
 
-button::-moz-focus-inner { border: 0; }
-
 button {
   background-image: -moz-linear-gradient(top, #fefefe 0%, #d5d5d5 100%);
   border: 1px solid #919191;

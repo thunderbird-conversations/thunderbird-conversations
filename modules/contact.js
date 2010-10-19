@@ -9,8 +9,6 @@ const ioService = Cc["@mozilla.org/network/io-service;1"]
                   .getService(Ci.nsIIOService);
 const msgComposeService = Cc["@mozilla.org/messengercompose;1"]
                           .getService(Ci.nsIMsgComposeService);
-const msgAccountManager = Cc["@mozilla.org/messenger/account-manager;1"]
-                             .getService(Ci.nsIMsgAccountManager);
 
 Cu.import("resource:///modules/iteratorUtils.jsm"); // for fixIterator
 Cu.import("resource:///modules/gloda/utils.js");
@@ -34,15 +32,6 @@ try {
   gHasPeople = false;
   Log.debug("You don't have contacts, bad boy!");
 }
-
-let gIdentities = {};
-function fillIdentities () {
-  for each (let id in fixIterator(msgAccountManager.allIdentities, Ci.nsIMsgIdentity)) {
-    // id.fullName
-    gIdentities[id.email] = true;
-  }
-}
-fillIdentities();
 
 function ContactManager() {
   this._cache = {};
