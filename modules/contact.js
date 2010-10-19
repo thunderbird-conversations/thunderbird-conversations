@@ -164,7 +164,7 @@ let ContactMixIn = {
   },
 
   enrichWithName: function _ContactMixIn_enrichWithName (aName) {
-    if (this._name == this._email)
+    if (this._name == this._email || !this._name)
       this._name = aName;
   },
 };
