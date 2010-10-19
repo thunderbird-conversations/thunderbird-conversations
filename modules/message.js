@@ -180,7 +180,7 @@ Message.prototype = {
     else {
       let hd = aElements.slice(0, l - 1);
       let tl = aElements[l-1];
-      return hd.join(", ") + " and " + tl;
+      return hd.join("<span>, </span>") + "<span> and </span>" + tl;
     }
   },
 
@@ -310,8 +310,8 @@ Message.prototype = {
             "<span class=\"snippet\"><ul class=\"tags regular-tags\"></ul>", snippet, "</span>",
           "</div>",
           "<div class=\"options\">",
-            "<span class=\"date\">", paperclip, date, "</span>",
-            "<span class=\"details\"> | <a href=\"javascript:\">details</a> |</span> ",
+            "<span class=\"date\">", paperclip, date, " |</span>",
+            "<span class=\"details\"> <a href=\"javascript:\">details</a> |</span> ",
             "<span class=\"dropDown\">",
               "<a href=\"javascript:\">more <span class=\"downwardArrow\">&#x25bc;</span></a>",
               "<div class=\"tooltip\">",
@@ -438,6 +438,10 @@ Message.prototype = {
       for each (let [, node] in Iterator(nodes))
         node.addEventListener(action, f, false);
     };
+    register(".details", function (event) {
+      self._domNode.classList.add("with-details");
+      event.stopPropagation();
+    });
     register(".reply", function (event) self.compose(Ci.nsIMsgCompType.ReplyToSender, event));
     register(".replyAll", function (event) self.compose(Ci.nsIMsgCompType.ReplyAll, event));
     register(".edit-draft", function (event) self.compose(Ci.nsIMsgCompType.Draft, event));
@@ -628,19 +632,23 @@ Message.prototype = {
     let toNode = this._domNode.getElementsByClassName("to")[0];
     let style = window.getComputedStyle(toNode, null);
     let overflowed = false;
-    while (parseInt(style.height) > 18 && toNode.childNodes.length > 1) {
-      toNode.removeChild(toNode.childNodes[toNode.childNodes.length - 1]);
+    let i = toNode.childNodes.length - 1;
+    while (parseInt(style.height) > 18 && i >= 0) {
+      toNode.childNodes[i].classList.add("show-with-details");
       overflowed = true;
       style = window.getComputedStyle(toNode, null);
+      i--;
     }
     if (overflowed) {
-      // Don't use unicode ellipsis here (…) -- will display garbage, don't know
-      //  why
-      let dots = toNode.ownerDocument.createTextNode("...");
+      let dots = toNode.ownerDocument.createElement("span");
+      dots.textContent = "...";
+      dots.classList.add("hide-with-details");
       toNode.appendChild(dots);
-      while (parseInt(style.height) > 18 && toNode.childNodes.length > 2) {
-        toNode.removeChild(toNode.childNodes[toNode.childNodes.length - 2]);
+      let i = toNode.childNodes.length - 2;
+      while (parseInt(style.height) > 18 && i >= 0) {
+        toNode.childNodes[i].classList.add("show-with-details");
         style = window.getComputedStyle(toNode, null);
+        i--;
       }
     }
   },

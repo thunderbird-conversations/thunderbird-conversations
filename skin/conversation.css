@@ -309,6 +309,14 @@ a img {
   text-decoration: underline;
 }
 
+.message:not(.with-details) .show-with-details {
+  display: none;
+}
+
+.message.with-details .hide-with-details {
+  display: none;
+}
+
 .message.collapsed {
   height: 36px;
   -moz-border-radius: 5px;

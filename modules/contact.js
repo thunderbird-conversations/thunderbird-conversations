@@ -40,11 +40,11 @@ function ContactManager() {
 
 ContactManager.prototype = {
   getContactFromNameAndEmail: function _ContactManager_getContactFromEmail(name, email, position) {
-    email = email.toLowerCase();
+    email = (email+"").toLowerCase();
     let self = this;
     let cache = function _cache (contact) {
       for each (let [, email] in Iterator(contact.emails)) {
-        email = email.toLowerCase();
+        email = (email+"").toLowerCase();
         self._cache[email] = contact;
       }
     };
