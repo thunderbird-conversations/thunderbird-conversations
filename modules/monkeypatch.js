@@ -340,6 +340,10 @@ MonkeyPatch.prototype = {
                   Log.assert(false, "GIVE ME ALGEBRAIC DATA TYPES!!!");
                 }
                 self.markReadTimeout = null;
+                // Hehe, do that now, because the conversation potentially
+                //  includes messages that are not in the gloda collection and
+                //  that do not trigger the "conversation updated" notification.
+                aConversation._updateConversationButtons();
               }, Prefs.getInt("mailnews.mark_message_read.delay.interval")
                 * Prefs.getBool("mailnews.mark_message_read.delay") * 1000);
             });

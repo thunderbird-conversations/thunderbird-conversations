@@ -605,10 +605,8 @@ Conversation.prototype = {
       // It doesn't matter if it's an update after all, we will just set
       // currentConversation to the same value in the _onComplete handler.
       self._onComplete();
-      // Doing it at once sometimes fails
-      self._window.setTimeout(function () {
-        self._updateConversationButtons();
-      }, 1000);
+      // _onComplete will potentially set a timeout that, when fired, takes care
+      //  of notifying us that we should update the conversation buttons.
     }, this.messages.length);
 
     for each (let [i, action] in Iterator(expandThese)) {

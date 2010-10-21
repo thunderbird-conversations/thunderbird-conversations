@@ -373,6 +373,16 @@ Message.prototype = {
     this._domNode.addEventListener("keypress", function (event) {
       keyListener.onKeyPress(event);
     }, false);
+
+    // Do this now because the star is visible even if we haven't been expanded
+    // yet.
+    this.register(".star", function (event) {
+      self.starred = !self.starred;
+      // Don't trust gloda. Big hack, self also has the "starred" property, so
+      //  we don't have to create a new object.
+      self.onAttributesChanged(self);
+      event.stopPropagation();
+    });
   },
 
   notifiedRemoteContentAlready: false,
@@ -411,6 +421,21 @@ Message.prototype = {
       this.compose(Ci.nsIMsgCompType.ForwardInline, event);
   },
 
+  register: function _Message_register (selector, f, action) {
+    if (!action)
+      action = "click";
+    let nodes;
+    if (selector === null)
+      nodes = [this._domNode];
+    else if (typeof(selector) == "string")
+      nodes = this._domNode.querySelectorAll(selector);
+    else
+      nodes = [selector];
+
+    for each (let [, node] in Iterator(nodes))
+      node.addEventListener(action, f, false);
+  },
+
   // Actually, we only do these expensive DOM calls when we need to, i.e. when
   //  we're expanded for the first time (expand calls us).
   registerActions: function _Message_registerActions() {
@@ -424,29 +449,15 @@ Message.prototype = {
     this._conversation._htmlPane.contentWindow.enableTooltips(this);
 
     // Register all the needed event handlers. Nice wrappers below.
-    let register = function _register (selector, f, action) {
-      if (!action)
-        action = "click";
-      let nodes;
-      if (selector === null)
-        nodes = [self._domNode];
-      else if (typeof(selector) == "string")
-        nodes = self._domNode.querySelectorAll(selector);
-      else
-        nodes = [selector];
-
-      for each (let [, node] in Iterator(nodes))
-        node.addEventListener(action, f, false);
-    };
-    register(".details", function (event) {
+    this.register(".details", function (event) {
       self._domNode.classList.add("with-details");
       event.stopPropagation();
     });
-    register(".reply", function (event) self.compose(Ci.nsIMsgCompType.ReplyToSender, event));
-    register(".replyAll", function (event) self.compose(Ci.nsIMsgCompType.ReplyAll, event));
-    register(".edit-draft", function (event) self.compose(Ci.nsIMsgCompType.Draft, event));
-    register(".action-edit-new", function (event) self.compose(Ci.nsIMsgCompType.Template, event));
-    register(".action-compose-all", function (event) {
+    this.register(".reply", function (event) self.compose(Ci.nsIMsgCompType.ReplyToSender, event));
+    this.register(".replyAll", function (event) self.compose(Ci.nsIMsgCompType.ReplyAll, event));
+    this.register(".edit-draft", function (event) self.compose(Ci.nsIMsgCompType.Draft, event));
+    this.register(".action-edit-new", function (event) self.compose(Ci.nsIMsgCompType.Template, event));
+    this.register(".action-compose-all", function (event) {
       let allEmails =
         self._msgHdr.author + "," +
         self._msgHdr.recipients + "," +
@@ -467,20 +478,20 @@ Message.prototype = {
       let uri = ioService.newURI(composeAllUri, null, null);
       msgComposeService.OpenComposeWindowWithURI(null, uri);
     });
-    register(".forward", function (event) self.forward(event));
+    this.register(".forward", function (event) self.forward(event));
     // These event listeners are all in the header, which happens to have an
     //  event listener set on the click event for toggling the message. So we
     //  make sure that event listener is bubbling, and we register these with
     //  the bubbling model as well.
-    register(".action-archive", function (event) {
+    this.register(".action-archive", function (event) {
       msgHdrsArchive([self._msgHdr]);
       event.stopPropagation();
     });
-    register(".action-delete", function (event) {
+    this.register(".action-delete", function (event) {
       msgHdrsDelete([self._msgHdr]);
       event.stopPropagation();
     });
-    register(".action-monospace", function (event) {
+    this.register(".action-monospace", function (event) {
       let senders = Prefs["monospaced_senders"] || [];
       let email = self._realFrom.email || self._from.email;
       if (!senders.filter(function (x) x == email).length) {
@@ -489,23 +500,16 @@ Message.prototype = {
       self._reloadMessage();
       event.stopPropagation();
     });
-    register(".action-classic", function (event) {
+    this.register(".action-classic", function (event) {
       let tabmail = getMail3Pane().document.getElementById("tabmail");
       tabmail.openTab("message", { msgHdr: self._msgHdr, background: false });
       event.stopPropagation();
     });
-    register(".action-source", function (event) {
+    this.register(".action-source", function (event) {
       getMail3Pane().ViewPageSource([self._uri])
       event.stopPropagation();
     });
-    register(".star", function (event) {
-      self.starred = !self.starred;
-      // Don't trust gloda. Big hack, self also has the "starred" property, so
-      //  we don't have to create a new object.
-      self.onAttributesChanged(self);
-      event.stopPropagation();
-    });
-    register(".tooltip", function (event) {
+    this.register(".tooltip", function (event) {
       // Clicking inside a tooltip must not collapse the message.
       event.stopPropagation();
     });
@@ -518,12 +522,12 @@ Message.prototype = {
       node.parentNode.removeChild(node);
     }
 
-    register(".show-remote-content", function (event) {
+    this.register(".show-remote-content", function (event) {
       event.target.style.display = "none";
       self._msgHdr.setUint32Property("remoteContentPolicy", kAllowRemoteContent);
       self._reloadMessage();
     });
-    register(".always-display", function (event) {
+    this.register(".always-display", function (event) {
       event.target.style.display = "none";
       event.target.previousElementSibling.style.display = "none";
 
@@ -550,7 +554,7 @@ Message.prototype = {
       if (allowRemoteContent)
         self._reloadMessage();
     });
-    register(".in-folder", function (event) {
+    this.register(".in-folder", function (event) {
       getMail3Pane().gFolderTreeView.selectFolder(self._msgHdr.folder, true);
       getMail3Pane().gFolderDisplay.selectMessage(self._msgHdr);
     });
@@ -569,11 +573,11 @@ Message.prototype = {
       let attInfo = new mainWindow.createNewAttachmentInfo(
         att.contentType, att.url, att.name, uri, att.isExternal
       );
-      register(attNode.getElementsByClassName("open-attachment")[0], function (event) {
+      this.register(attNode.getElementsByClassName("open-attachment")[0], function (event) {
         Log.debug("Opening attachment");
         mainWindow.HandleMultipleAttachments([attInfo], "open");
       });
-      register(attNode.getElementsByClassName("download-attachment")[0], function (event) {
+      this.register(attNode.getElementsByClassName("download-attachment")[0], function (event) {
         Log.debug("Downloading attachment");
         mainWindow.HandleMultipleAttachments([attInfo], "save");
       });
@@ -586,7 +590,7 @@ Message.prototype = {
         let img = attNode.getElementsByTagName("img")[0];
         img.classList.add("view-attachment");
         img.setAttribute("title", "View this attachment in a new tab");
-        register(img, function (event) {
+        this.register(img, function (event) {
           mainWindow.document.getElementById("tabmail").openTab(
             "contentTab",
             { contentPage: att.url }
@@ -596,10 +600,10 @@ Message.prototype = {
 
       attachmentInfos.push(attInfo);
     }
-    register(".open-all", function (event) {
+    this.register(".open-all", function (event) {
       mainWindow.HandleMultipleAttachments(attachmentInfos, "open");
     });
-    register(".download-all", function (event) {
+    this.register(".download-all", function (event) {
       mainWindow.HandleMultipleAttachments(attachmentInfos, "save");
     });
   },
