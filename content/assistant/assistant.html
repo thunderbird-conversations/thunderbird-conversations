@@ -15,20 +15,65 @@
     const Cu = Components.utils;
     const Cr = Components.results;
 
-    const nsMsgFolderFlags_SentMail = 0x00000200;
-    const nsMsgFolderFlags_Inbox    = 0x00001000;
-    const nsMsgFolderFlags_Offline  = 0x08000000;
-    const msgAccountManager = Cc["@mozilla.org/messenger/account-manager;1"]
-                                .getService(Ci.nsIMsgAccountManager);
-
     Cu.import("resource://conversations/prefs.js");
     Cu.import("resource://conversations/log.js");
-    Cu.import("resource:///modules/iteratorUtils.jsm"); // for fixIterator
-    Cu.import("resource:///modules/virtualFolderWrapper.js");
-    Cu.import("resource:///modules/gloda/index_msg.js");
-    Cu.import("resource:///modules/gloda/public.js");
+    Cu.import("resource://conversations/assistant.js");
 
-    let Log = setupLogging("Conversations.Assistant");
+    let Log = setupLogging("Conversations.AssistantUI");
+    let uninstallInfos = JSON.parse(Prefs.getString("conversations.uninstall_infos"));
+
+    function install(aKey) {
+      if (!(aKey in Customizations)) {
+        Log.warn("Couldn't find a suitable customization for", aKey);
+      } else {
+        try {
+          let uninstallInfo = Customizations[aKey].install();
+          uninstallInfos[aKey] = uninstallInfo;
+        } catch (e) {
+          Log.error("Error in customization", aKey);
+          Log.error(e);
+          dumpCallStack(e);
+        }
+      }
+    }
+
+    function finish() {
+      let str = JSON.stringify(uninstallInfos);
+      Log.debug("Saving JSON uninstall information", str);
+      Prefs.setString("conversations.uninstall_infos", str);
+      Prefs.setInt("conversations.version", 1);
+      window.removeEventListener("unload", finish, true);
+      window.close();
+    }
+
+    // This is the usual API: if you launch something asynchronous, just do
+    // expect () and call top () when you're done.
+    let expected = 1;
+    function top() {
+      if (--expected == 0)
+        finish();
+    }
+    Customizations.expect = function () expected++;
+    Customizations.top = top;
+
+    // If the user decides to close the window, don't prompt again... too bad
+    // for him! He won't get support...
+    window.addEventListener("unload", finish, true);
+
+    // --- UI event handlers
+
+    function onFinish() {
+      $(".working").show();
+
+      let checkboxes = document.querySelectorAll("input[type=\"checkbox\"]");
+      for each (let [, checkbox] in Iterator(checkboxes)) {
+        if (checkbox.checked)
+          install(checkbox.id);
+        else
+          Log.debug("User declined", checkbox.id);
+      }
+      top();
+    }
 
     function onCustomSetup(event) {
       $(".more").fadeIn("slow");
@@ -36,233 +81,6 @@
       $(event.target).hide();
     }
 
-    // Thanks, Andrew!
-    function get_smart_folder_named(aFolderName) {
-      let acctMgr = Cc["@mozilla.org/messenger/account-manager;1"]
-                      .getService(Ci.nsIMsgAccountManager);
-      let smartServer = acctMgr.FindServer("nobody", "smart mailboxes", "none");
-      return smartServer.rootFolder.getChildNamed(aFolderName);
-    }
-
-    let expected = 1;
-    function top () {
-      if (--expected == 0) {
-        Prefs.setInt("conversations.version", 1);
-        window.close();
-      }
-    }
-
-    function onFinish() {
-      $(".working").show();
-
-      let checkboxes = document.querySelectorAll("input[type=\"checkbox\"]");
-      let mainWindow = Cc['@mozilla.org/appshell/window-mediator;1']
-                       .getService(Ci.nsIWindowMediator)
-                       .getMostRecentWindow("mail:3pane");
-      // The nice idiom below is not possible because of... [Exception...
-      //  "Illegal operation on WrappedNative prototype object"  nsresult:
-      //  "0x8057000c (NS_ERROR_XPC_BAD_OP_ON_WN_PROTO)"
-      //
-      // let eid = mainWindow.document.getElementById;
-      //
-      // So we do a round of eta-expansion.
-      let eid = function (id) mainWindow.document.getElementById(id);
-      let actions = {
-        actionEnsureMessagePaneVisible: function () {
-          let splitter = eid("threadpane-splitter");
-          if (splitter.getAttribute("state") == "collapsed") {
-            Log.debug("Assistant: cmd_toggleMessagePane");
-            mainWindow.goDoCommand('cmd_toggleMessagePane');
-          }
-        },
-
-        actionSetupViewDefaults: function () {
-          // Descending
-          Prefs.setInt("mailnews.default_sort_order", 2);
-          // By Date
-          Prefs.setInt("mailnews.default_sort_type", 18);
-          // Threaded
-          Prefs.setInt("mailnews.default_view_flags", 1);
-        },
-
-        actionSetupView: function () {
-          mainWindow.gFolderTreeView.mode = "smart";
-          let smartInbox = get_smart_folder_named("Inbox");
-          mainWindow.gFolderTreeView.selectFolder(smartInbox);
-
-          let moveOn = function () {
-            mainWindow.MsgSortThreaded();
-            mainWindow.MsgSortThreadPane('byDate');
-            mainWindow.MsgSortDescending();
-            mainWindow.goDoCommand('cmd_collapseAllThreads');
-            eid("unreadCol").setAttribute("hidden", "false");
-            top();
-          };
-          let i = 0;
-          let waitForIt = function () {
-            if (mainWindow.gFolderDisplay.displayedFolder != smartInbox && i++ < 10) {
-              setTimeout(waitForIt, 150);
-            } else {
-              moveOn();
-            }
-          }
-          expected++;
-          waitForIt(); // will top()
-        },
-
-        actionChangeFontSize: function () {
-          Prefs.setInt("font.size.variable.x-western", 12);
-          Prefs.setChar("font.default", "sans-serif");
-        },
-
-        actionUnifiedInboxSearchesSent: function () {
-          // Get a handle onto the virtual inbox, and mark all the folders it
-          //  already searches.
-          let smartInbox = get_smart_folder_named("Inbox");
-          let vFolder = VirtualFolderHelper.wrapVirtualFolder(smartInbox);
-          let searchFolders = {};
-          for each (let [, folder] in Iterator(vFolder.searchFolders)) {
-            Log.debug("Folder", folder.folderURL, "is in the unified inbox already");
-            searchFolders[folder.folderURL] = true;
-          }
-          let extraSearchFolders = [];
-
-          // Go through all accounts and through all folders, and add each one
-          //  that's either an inbox or a sent folder to the global inbox.
-          for each (let account in fixIterator(msgAccountManager.accounts, Ci.nsIMsgAccount)) {
-            if (!account.incomingServer)
-              continue;
-
-            let rootFolder = account.incomingServer.rootFolder;
-            let allFolders = Cc["@mozilla.org/supports-array;1"].createInstance(Ci.nsISupportsArray);
-            rootFolder.ListDescendents(allFolders);
-            for each (let folder in fixIterator(allFolders, Ci.nsIMsgFolder)) {
-              if ((folder.getFlag(nsMsgFolderFlags_SentMail) || folder.getFlag(nsMsgFolderFlags_Inbox))
-                  && !searchFolders[folder.folderURL]) {
-                Log.debug("Searching folder", folder.folderURL, "inside Global Inbox");
-                extraSearchFolders.push(folder);
-              }
-            }
-          }
-
-          // And do some magic to make it all work.
-          vFolder.searchFolders = vFolder.searchFolders.concat(extraSearchFolders);
-          vFolder.cleanUpMessageDatabase();
-          msgAccountManager.saveVirtualFolders();
-        },
-
-        actionOfflineDownload: function () {
-          for each (let account in fixIterator(msgAccountManager.accounts, Ci.nsIMsgAccount)) {
-            if (!account.incomingServer)
-              continue;
-
-            let isImap;
-            try {
-              account.incomingServer.QueryInterface(Ci.nsIImapIncomingServer);
-              isImap = true;
-            } catch (e if e.result == Cr.NS_NOINTERFACE) {
-              isImap = false;
-            }
-            if (!isImap)
-              continue;
-
-            let rootFolder = account.incomingServer.rootFolder;
-            let allFolders = Cc["@mozilla.org/supports-array;1"].createInstance(Ci.nsISupportsArray);
-            rootFolder.ListDescendents(allFolders);
-            for each (let folder in fixIterator(allFolders, Ci.nsIMsgFolder)) {
-              if ((folder.getFlag(nsMsgFolderFlags_SentMail) || folder.getFlag(nsMsgFolderFlags_Inbox))
-                  && !folder.getFlag(nsMsgFolderFlags_Offline)) {
-                Log.debug("Marking folder", folder.folderURL, "for offline use");
-                folder.setFlag(nsMsgFolderFlags_Offline);
-              }
-            }
-          }
-        },
-
-        actionAttachmentsInline: function () {
-          Prefs.setBool("mail.inline_attachments", false);
-        },
-
-        actionDontExpand: function () {
-          Prefs.setBool("mailnews.scroll_to_new_message", false);
-        },
-
-        actionReindexAttachments: function () {
-          let reIndexListener = function () {
-            let listener = {
-              /* called when new items are returned by the database query or freshly indexed */
-              onItemsAdded: function myListener_onItemsAdded(aItems, aCollection) {
-              },
-              /* called when items that are already in our collection get re-indexed */
-              onItemsModified: function myListener_onItemsModified(aItems, aCollection) {
-              },
-              /* called when items that are in our collection are purged from the system */
-              onItemsRemoved: function myListener_onItemsRemoved(aItems, aCollection) {
-              },
-              /* called when our database query completes */
-              onQueryCompleted: function myListener_onQueryCompleted(aCollection) {
-                Log.debug("Found", aCollection.items.length, "messages to reindex");
-                GlodaMsgIndexer.indexMessages([
-                  [x.folderMessage.folder, x.folderMessage.messageKey]
-                  for each ([, x] in Iterator(aCollection.items))
-                  if (x.folderMessage)
-                ]);
-                top();
-              }
-            };
-            return listener;
-          };
-
-          let query1 = Gloda.newQuery(Gloda.NOUN_IDENTITY);
-          expected++;
-          query1.kind("email");
-          query1.value("bugzilla-daemon@mozilla.org");
-          query1.getCollection({
-            onItemsAdded: function _onItemsAdded(aItems, aCollection) {  },
-            onItemsModified: function _onItemsModified(aItems, aCollection) { },
-            onItemsRemoved: function _onItemsRemoved(aItems, aCollection) { },
-            onQueryCompleted: function _onQueryCompleted(aCollection) {
-              if (!aCollection.items.length) {
-                Log.debug("Looks like there is no bugmail for this account...");
-                top();
-              } else {
-                let query2 = Gloda.newQuery(Gloda.NOUN_MESSAGE);
-                query2.from(aCollection.items[0]);
-                query2.getCollection(reIndexListener()); // will top()
-              }
-            }
-          });
-
-          let query3 = Gloda.newQuery(Gloda.NOUN_MESSAGE);
-          expected++;
-          query3.attachmentTypes();
-          query3.getCollection(reIndexListener()); // will top()
-        },
-
-        actionDisableAutoread: function () {
-          Prefs.setBool("mailnews.mark_message_read.auto", false);
-        },
-
-        actionEnableGloda: function () {
-          Prefs.setBool("mailnews.database.global.indexer.enabled", true);
-        },
-      };
-      for each (let [, checkbox] in Iterator(checkboxes)) {
-        if (!(checkbox.id in actions)) {
-          Log.error("No suitable action for", checkbox.id);
-        } else if (checkbox.checked) {
-          try {
-            actions[checkbox.id]();
-          } catch (e) {
-            Log.error(e);
-            dumpCallStack(e);
-          }
-        } else {
-          Log.debug("User declined", checkbox.id);
-        }
-      }
-      top();
-    }
   </script>
 </head>
 
@@ -282,8 +100,11 @@
         <p class="p2">
           The tweaks we make are all reversible, so don't worry: should you not
           enjoy Thunderbird Conversations, we will revert any preference change we
-          made as soon as you uninstall the extension. (<span style="font-weight:
-            bold; color: red">XXX Not implemented yet</span>)
+          made as soon as you uninstall the extension.
+        </p>
+        <p class="p3">
+         <span class="orange">This can take up to 15 minutes! You may close the
+         window in the meanwhile...</span>
         </p>
         <p class="working" style="text-align: left; margin-top: 50px">
           Working...  <img src="loader.gif" />

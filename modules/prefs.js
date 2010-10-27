@@ -71,6 +71,10 @@ PrefManager.prototype = {
     return gPrefBranch.getBoolPref(p);
   },
 
+  getString: function (p) {
+    return gPrefBranch.getComplexValue(p, Ci.nsISupportsString).data;
+  },
+
   setChar: function (p, v) {
     return gPrefBranch.setCharPref(p, v);
   },
@@ -81,6 +85,13 @@ PrefManager.prototype = {
 
   setBool: function (p, v) {
     return gPrefBranch.setBoolPref(p, v);
+  },
+
+  setString: function (p, v) {
+    let str = Cc["@mozilla.org/supports-string;1"]
+              .createInstance(Ci.nsISupportsString);
+    str.data = v;
+    return gPrefBranch.setComplexValue(p, Ci.nsISupportsString, str);
   },
 
   kScrollUnreadOrLast: 0,
