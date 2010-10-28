@@ -275,8 +275,8 @@ a img {
 }
 
 .authorPicture img {
-  width: 80px;
-  height: 80px;
+  max-width: 80px;
+  max-height: 80px;
 }
 
 .tipFooter {
@@ -426,10 +426,10 @@ ul.special-tags img {
   display: inline-block;
   float: left;
   text-align: center;
+  line-height: 0px; /* Needed, otherwise there's an extra padding at the bottom... */
 }
 
 .attachmentThumb img {
-  float: left;
   image-rendering: optimizeQuality;
 }
 
@@ -441,8 +441,8 @@ ul.special-tags img {
 
 /* For thumbnails */
 .attachmentThumb img.resize-me {
-  width: 120px;
-  height: 80px;
+  max-width: 120px;
+  max-height: 80px;
 }
 
 .attachActions {

@@ -255,7 +255,8 @@ let Customizations = {
     },
 
     uninstall: function ({ ftvMode, }) {
-      mainWindow.gFolderTreeView.mode = ftvMode;
+      if (mainWindow.gFolderTreeView.mode == "smart")
+        mainWindow.gFolderTreeView.mode = ftvMode;
     },
   },
 
