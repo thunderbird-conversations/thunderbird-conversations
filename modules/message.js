@@ -323,10 +323,13 @@ Message.prototype = {
             "</span>",
           "</div>",
         "</div>",
+        "<div class=\"remoteContent\" style=\"display: none\">",
+          "Remote content was hidden: ",
+          "<span class=\"show-remote-content\"><a href=\"javascript:\">show remote content</a> - </span>",
+          "<span class=\"always-display\"><a href=\"javascript:\">always show remote content</a></span>",
+        "</div>",
         "<div class=\"messageBody\">",
           "<ul class=\"tags special-tags\">",
-            "<li class=\"keep-tag show-remote-content\">show remote content</li>",
-            "<li class=\"keep-tag always-display\">always display remote content</li>",
             folderTag,
             editDraft,
           "</ul>",
@@ -387,8 +390,7 @@ Message.prototype = {
     this.notifiedRemoteContentAlready = true;
     Log.debug("This message's remote content was blocked");
 
-    this._domNode.getElementsByClassName("show-remote-content")[0].style.display = "inline";
-    this._domNode.getElementsByClassName("always-display")[0].style.display = "inline";
+    this._domNode.getElementsByClassName("remoteContent")[0].style.display = "block";
   },
 
   compose: function _Message_compose (aCompType, aEvent) {
@@ -516,13 +518,12 @@ Message.prototype = {
     }
 
     this.register(".show-remote-content", function (event) {
-      event.target.style.display = "none";
+      self._domNode.getElementsByClassName("show-remote-content")[0].style.display = "none";
       self._msgHdr.setUint32Property("remoteContentPolicy", kAllowRemoteContent);
       self._reloadMessage();
     });
     this.register(".always-display", function (event) {
-      event.target.style.display = "none";
-      event.target.previousElementSibling.style.display = "none";
+      self._domNode.getElementsByClassName("remoteContent")[0].style.display = "none";
 
       let { card, book } = mainWindow.getCardForEmail(self._from.email);
       let allowRemoteContent = false;

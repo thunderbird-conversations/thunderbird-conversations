@@ -386,17 +386,36 @@ ul.special-tags li {
   background-color: #3F5381;
 }
 
-ul.special-tags li.show-remote-content,
-ul.special-tags li.always-display {
-  display: none;
-}
-
 ul.special-tags img {
   vertical-align: text-top;
 }
 
-.in-folder, .edit-draft, .show-remote-content, .always-display {
+.in-folder, .edit-draft {
   cursor: pointer;
+}
+
+.message .remoteContent {
+  padding: 10px;
+  background-color: rgba(0,255,0, 0.15);
+  -moz-box-shadow: 0 0 3px rgba(0,0,0,0.15) inset;
+  margin: 0 0 10px 0;
+  border-width: 1px 0;
+  border-style: solid;
+  border-color: #ccc;
+  color: #666;
+}
+
+.message .remoteContent a {
+  text-decoration: none;
+  color: #3875D7;
+}
+
+.message .remoteContent a:hover {
+  text-decoration: underline;
+}
+
+.message.collapsed .remoteContent {
+  display: none;
 }
 
 .attachments {
