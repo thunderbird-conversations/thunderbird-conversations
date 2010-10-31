@@ -23,6 +23,8 @@ const kActionDoNothing = 0;
 const kActionExpand    = 1;
 const kActionCollapse  = 2;
 
+const nsMsgViewIndex_None = 0xffffffff;
+
 // The SignalManager class handles stuff related to spawing asynchronous
 //  requests and waiting for all of them to complete. Basic, but works well.
 //  Warning: sometimes yells at the developer.
@@ -161,7 +163,6 @@ let OracleMixIn = {
       default:
         Log.assert(false, "Unknown value for pref expand_who");
     }
-    Log.debug("expand who?", actions);
     return actions;
   },
 }
@@ -212,10 +213,13 @@ function Conversation(aWindow, aSelectedMessages, aScrollMode, aCounter) {
   this.scrollMode = aScrollMode;
   // We have the COOL invariant that this._initialSet is a subset of
   //   [toMsgHdr(x) for each ([, x] in Iterator(this.messages))]
-  // This is made possible by David's patch in bug 572094 that allows us to
-  //  always prefer the message that's in the current *view* (and I'm not
-  //  talking of the current *folder*) in VariousUtils.jsm:selectRightMessage()
+  // This is actually trickier than it seems because of the different view modes
+  //  and because we can't directly tell whether a message is in the view if
+  //  it's under a collapsed thread. See the lengthy discussion in
+  //  _filterOutDuplicates
   this._initialSet = aSelectedMessages;
+  // === Our "message" composite type ==
+  //
   // this.messages = [
   //  {
   //    type: kMsgGloda or kMsgDbHdr
@@ -223,7 +227,7 @@ function Conversation(aWindow, aSelectedMessages, aScrollMode, aCounter) {
   //    msgHdr: non-null if type == kMsgDbHdr
   //    glodaMsg: non-null if type == kMsgGloda
   //  },
-  //  ...
+  //  ... (moar messages) ...
   // ]
   this.messages = [];
   this.counter = aCounter; // RO
@@ -237,6 +241,7 @@ Conversation.prototype = {
   // Before the Gloda query returns, the user might change selection. Don't
   // output a conversation unless we're really sure the user hasn't changed his
   // mind.
+  // XXX this logic is weird. Shouldn't we just compare a list of URLs?
   _selectionChanged: function _Conversation_selectionChanged () {
     let gFolderDisplay = getMail3Pane().gFolderDisplay;
     let messageIds = [x.messageId for each ([, x] in Iterator(this._initialSet))];
@@ -245,9 +250,10 @@ Conversation.prototype = {
       !messageIds.filter(function (x) x == gFolderDisplay.selectedMessage.messageId).length;
   },
 
-  // This function contains the logic that uses Gloda to query a set of messages
-  // to obtain the conversation. It takes care of filling this.messages with
-  // the right set of messages, and then moves on to _outputMessages.
+  // This function contains the logic that runs a Gloda query on the initial set
+  //  of messages in order to obtain the conversation. It takes care of filling
+  //  this.messages with the right set of messages, and then moves on to
+  //  _outputMessages.
   _fetchMessages: function _Conversation_fetchMessages () {
     let self = this;
     Gloda.getMessageCollectionForHeaders(this._initialSet, {
@@ -288,10 +294,10 @@ Conversation.prototype = {
     [byMessageId[getMessageId(x)] = x.message
       for each ([, x] in Iterator(this.messages))];
     for each (let [, glodaMsg] in Iterator(aItems)) {
-      // I can see failures coming for the two lines below... ok, they did come.
-      // Possible explanation: old conversation hasn't been GC'd yet and still
-      //  receives notifications from gloda (and the new conversation cleared its
-      //  messages array).
+      // If you see big failures coming from the lines below, don't worry: it's
+      //  just that an old conversation hasn't been GC'd and still receives
+      //  notifications from Gloda. However, its DOM nodes are long gone, so the
+      //  call to onAttributesChanged fails.
       let message = byMessageId[glodaMsg.headerMessageID];
       if (message)
         message.onAttributesChanged(glodaMsg);
@@ -370,31 +376,47 @@ Conversation.prototype = {
   // This is a core function. It decides which messages to keep and which
   //  messages to filter out. Because Gloda might return many copies of a single
   //  message, each in a different folder, we use the messageId as the key.
+  // Then, for different candidates for a single message id, we need to pick the
+  //  best one, giving precedence to those which are selected and/or in the
+  //  current view.
   _filterOutDuplicates: function _Conversation_filterOutDuplicates () {
     let messages = this.messages;
+    let mainWindow = getMail3Pane();
     // Wicked cases, when we're asked to display a draft that's half-saved...
     messages = messages.filter(function (x) (toMsgHdr(x) && toMsgHdr(x).messageId));
     messages = groupArray(this.messages, getMessageId);
-    // Select right message will try to pick the message that has an
-    //  existing msgHdr.
-    let self = this;
-    let getThreadKey = function (aMsgHdr) {
-      try {
-        return getMail3Pane().gDBView.getThreadContainingMsgHdr(aMsgHdr).threadKey;
-      } catch (e) {
-        // The trick is that by returning a random value instead of a constant
-        //  value, people who are running 3.1 will never have a message that
-        //  matches the "in the original view thread" criterion. Returning a
-        //  constant value would result in picking the first candidate message
-        //  always, which is bad.
-        return Math.random();
+    // The trick is, if a thread is collapsed, this._initialSet contains all the
+    //  messages in the thread. We want these to be selected. If a thread is
+    //  expanded, we want messages which are in the current view to be selected.
+    // We cannot compare messages by message-id (they have the same!), we cannot
+    //  compare them by messageKey (not reliable), but URLs should be enough.
+    let byUrl = {};
+    let url = function (x) x.folder.getUriForMsg(x);
+    [byUrl[url(x)] = true
+      for each ([, x] in Iterator(this._initialSet))];
+    // Ok, this function assumes a specific behavior from selectRightMessage,
+    //  that is, that isPreferred is called first and that the search stops as
+    //  soon as isPreferred returns true, and the selected message is the one
+    //  for which isPreferred said "true".
+    let isPreferred = function (aMsg) {
+      // NB: selectRightMessage does check for non-null msgHdrs before calling
+      //  us.
+      let msgHdr = toMsgHdr(aMsg);
+      // And a nice side-effect!
+      if ((url(msgHdr) in byUrl) ||
+          mainWindow.gFolderDisplay.view.getViewIndexForMsgHdr(msgHdr) != nsMsgViewIndex_None) {
+        aMsg.message.inView = true;
+        return true;
+      } else {
+        return false;
       }
     };
-    let threadKey = getThreadKey(this._initialSet[0]);
-    messages = [selectRightMessage(group, toMsgHdr, threadKey, getThreadKey)
+    // Select right message will try to pick the message that has an
+    //  existing msgHdr.
+    messages = [selectRightMessage(group, toMsgHdr, isPreferred)
       for each ([i, group] in Iterator(messages))];
     // But sometimes it just fails, and gloda remembers dead messages...
-    messages = messages.filter(function (x) x.msgHdr || (x.glodaMsg && x.glodaMsg.folderMessage));
+    messages = messages.filter(toMsgHdr);
     this.messages = messages;
   },
 
@@ -515,9 +537,8 @@ Conversation.prototype = {
         currentConversation._initialSet = this._initialSet;
         // - KEEP the old contact manager (we don't want fresh colors!)
         // - KEEP the counter
-        // - _domNode, _window are the same because we can't only recycle a
+        // - _domNode, _window are the same because we can only recycle a
         //    conversation from the main mail:3pane
-        // - Line below strictly necessary only if more than 0 new messages
         currentConversation._query = this._query;
         currentConversation._onComplete = this._onComplete;
         // And pass them to the old conversation. It will take care of setting
@@ -610,7 +631,6 @@ Conversation.prototype = {
     }, this.messages.length);
 
     for each (let [i, action] in Iterator(expandThese)) {
-      Log.debug(i, action);
       switch (action) {
         case kActionExpand:
           this.messages[i].message.expand();

@@ -161,6 +161,7 @@ function Message(aConversation) {
   this._cc = this.parse(this._msgHdr.ccList);
   this._bcc = this.parse(this._msgHdr.bccList);
   this.subject = this._msgHdr.mime2DecodedSubject;
+  this.inView = false; // set from the outside by the conversation
 
   this._uri = this._msgHdr.folder.getUriForMsg(this._msgHdr);
   this._contacts = [];
@@ -244,7 +245,7 @@ Message.prototype = {
           : ["moz-icon://" + att.name + "?size=" + 64 + "&contentType=" + att.contentType, "center-me"]
         ;
         let formattedSize = gMessenger.formatFileSize(att.size);
-        // XXX remove this when bug 559559 is fixed!
+        // XXX remove this when the \0 sprintf bug is backported to gecko 1.9.2
         formattedSize = formattedSize.substring(0, formattedSize.length - 1);
         attachmentsHtml = attachmentsHtml.concat([
           "<li class=\"clearfix hbox attachment\">",
@@ -270,17 +271,8 @@ Message.prototype = {
     let date = escapeHtml(this._date);
 
     // 4) Custom tag telling the user if the message is not in the current view
-    let folderTag = "";
-    let threadKey = getMail3Pane().gDBView
-      .getThreadContainingMsgHdr(this._conversation._initialSet[0]).threadKey;
-    let myThreadKey;
-    try {
-      myThreadKey = getMail3Pane().gDBView
-        .getThreadContainingMsgHdr(this._msgHdr).threadKey;
-    } catch (e) {
-      myThreadKey = -1;
-    }
-    if (threadKey != myThreadKey) {
+    let folderTag;
+    if (!this.inView) {
       let folderStr = this._msgHdr.folder.prettiestName;
       let folder = this._msgHdr.folder;
       while (folder.parent) {
@@ -440,6 +432,7 @@ Message.prototype = {
   //  we're expanded for the first time (expand calls us).
   registerActions: function _Message_registerActions() {
     let self = this;
+    let mainWindow = getMail3Pane();
 
     // Forward the calls to each contact.
     let people = this._domNode.getElementsByClassName("tooltip");
@@ -501,12 +494,12 @@ Message.prototype = {
       event.stopPropagation();
     });
     this.register(".action-classic", function (event) {
-      let tabmail = getMail3Pane().document.getElementById("tabmail");
+      let tabmail = mainWindow.document.getElementById("tabmail");
       tabmail.openTab("message", { msgHdr: self._msgHdr, background: false });
       event.stopPropagation();
     });
     this.register(".action-source", function (event) {
-      getMail3Pane().ViewPageSource([self._uri])
+      mainWindow.ViewPageSource([self._uri])
       event.stopPropagation();
     });
     this.register(".tooltip", function (event) {
@@ -531,7 +524,7 @@ Message.prototype = {
       event.target.style.display = "none";
       event.target.previousElementSibling.style.display = "none";
 
-      let { card, book } = getMail3Pane().getCardForEmail(self._from.email);
+      let { card, book } = mainWindow.getCardForEmail(self._from.email);
       let allowRemoteContent = false;
       if (card) {
         // set the property for remote content
@@ -545,7 +538,7 @@ Message.prototype = {
           allowRemoteContent: true,
         };
         // create a new card and set the property
-        getMail3Pane().openDialog("chrome://messenger/content/addressbook/abNewCardDialog.xul",
+        mainWindow.openDialog("chrome://messenger/content/addressbook/abNewCardDialog.xul",
                           "", "chrome,resizable=no,titlebar,modal,centerscreen", args);
         allowRemoteContent = args.allowRemoteContent;
       }
@@ -555,13 +548,12 @@ Message.prototype = {
         self._reloadMessage();
     });
     this.register(".in-folder", function (event) {
-      getMail3Pane().gFolderTreeView.selectFolder(self._msgHdr.folder, true);
-      getMail3Pane().gFolderDisplay.selectMessage(self._msgHdr);
+      mainWindow.gFolderTreeView.selectFolder(self._msgHdr.folder, true);
+      mainWindow.gFolderDisplay.selectMessage(self._msgHdr);
     });
 
     let attachmentNodes = this._domNode.getElementsByClassName("attachment");
     let attachmentInfos = [];
-    let mainWindow = getMail3Pane();
     for each (let [i, attNode] in Iterator(attachmentNodes)) {
       let att = this._attachments[i];
 

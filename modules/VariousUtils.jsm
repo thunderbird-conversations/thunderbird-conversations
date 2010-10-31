@@ -107,31 +107,29 @@ function dateAsInMessageList(aDate) {
  * @param aSimilarMessages a set of "messages" (whatever that means)
  * @param aToMsgHdr extract the nsIMsgDbHdr from a given element belonging to
  *  aSimilarMessages
- * @param aPreferredX some preferred value X
- * @param aMsgHdrToX how to convert a "message" to an X value
+ * @param aCustom a function that takes a message and that returns true is that
+ *  message should be preferred over the other ones
  * @return one element from aSimilarMessages
  */
-function selectRightMessage(aSimilarMessages, aToMsgHdr, aPreferredX, aMsgHdrToX) {
+function selectRightMessage(aSimilarMessages, aToMsgHdr, aCustom) {
   let findForCriterion = function (aCriterion) {
     let bestChoice;
     for each (let [i, msg] in Iterator(aSimilarMessages)) {
       if (!aToMsgHdr(msg))
         continue;
-      if (aCriterion(aToMsgHdr(msg))) {
+      if (aCriterion(msg)) {
         bestChoice = msg;
         break;
       }
     }
     return bestChoice;
   };
-  // for the record, writing return \n "blah blah blah" FAILS
   let r =
-    findForCriterion(function (aMsgHdr)
-      (aPreferredX && aMsgHdrToX(aMsgHdr) == aPreferredX)) ||
-    findForCriterion(msgHdrIsInbox) ||
-    findForCriterion(msgHdrIsSent) ||
-    findForCriterion(function (aMsgHdr) !msgHdrIsArchive(aMsgHdr)) ||
-    findForCriterion(function (aMsgHdr) true)
+    findForCriterion(function (aMsg) aCustom(aMsg)) ||
+    findForCriterion(function (aMsg) msgHdrIsInbox(aToMsgHdr(aMsg))) ||
+    findForCriterion(function (aMsg) msgHdrIsSent(aToMsgHdr(aMsg))) ||
+    findForCriterion(function (aMsg) !msgHdrIsArchive(aToMsgHdr(aMsg))) ||
+    aSimilarMessages[0]
   ;
   return r;
 }
