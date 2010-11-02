@@ -28,6 +28,7 @@ const kAllowRemoteContent = 2;
 
 let strings = new StringBundle("chrome://conversations/locale/main.properties");
 
+Cu.import("resource://conversations/AddressBookUtils.jsm");
 Cu.import("resource://conversations/VariousUtils.jsm");
 Cu.import("resource://conversations/MsgHdrUtils.jsm");
 Cu.import("resource://conversations/prefs.js");
@@ -303,8 +304,8 @@ Message.prototype = {
           "</div>",
           "<div class=\"options\">",
             "<span class=\"date\">", paperclip, date, "</span>",
-            "<span class=\"details\"> | <a href=\"javascript:\">details</a></span> | ",
-            "<span class=\"dropDown\">",
+            "<span class=\"details\"> | <a href=\"javascript:\">details</a></span>",
+            "<span class=\"dropDown\"> | ",
               "<a href=\"javascript:\">more <span class=\"downwardArrow\">&#x25bc;</span></a>",
               "<div class=\"tooltip\">",
                 "<ul>",
@@ -510,9 +511,8 @@ Message.prototype = {
       event.stopPropagation();
     });
 
-    // ("" || "blah") == "blah" (empty string evaluates to false)
-    let realFrom = String.trim(this._realFrom.email || this._from.email);
     // Actually we might not need that list item, so possibly remove it!
+    let realFrom = String.trim(this._realFrom.email || this._from.email);
     if (Prefs["monospaced_senders"].filter(function (x) x == realFrom).length) {
       let node = this._domNode.getElementsByClassName("action-monospace")[0];
       node.parentNode.removeChild(node);
@@ -527,27 +527,18 @@ Message.prototype = {
       self._domNode.getElementsByClassName("remoteContent")[0].style.display = "none";
 
       let { card, book } = mainWindow.getCardForEmail(self._from.email);
-      let allowRemoteContent = false;
       if (card) {
         // set the property for remote content
         card.setProperty("AllowRemoteContent", true);
         book.modifyCard(card);
-        allowRemoteContent = true;
       } else {
-        let args = {
-          primaryEmail: self._from.email,
-          displayName: self._from.name,
-          allowRemoteContent: true,
-        };
-        // create a new card and set the property
-        mainWindow.openDialog("chrome://messenger/content/addressbook/abNewCardDialog.xul",
-                          "", "chrome,resizable=no,titlebar,modal,centerscreen", args);
-        allowRemoteContent = args.allowRemoteContent;
+        saveEmailInAddressBook(
+          getAddressBookFromUri(kCollectedAddressBookUri),
+          self._from.email,
+          self._from.name
+        );
       }
- 
-      // Reload the message if we've updated the remote content policy for the sender.
-      if (allowRemoteContent)
-        self._reloadMessage();
+      self._reloadMessage();
     });
     this.register(".in-folder", function (event) {
       mainWindow.gFolderTreeView.selectFolder(self._msgHdr.folder, true);
