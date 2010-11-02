@@ -404,7 +404,7 @@ Conversation.prototype = {
       let msgHdr = toMsgHdr(aMsg);
       // And a nice side-effect!
       if ((url(msgHdr) in byUrl) ||
-          mainWindow.gFolderDisplay.view.getViewIndexForMsgHdr(msgHdr) != nsMsgViewIndex_None) {
+          mainWindow.gDBView.findIndexOfMsgHdr(msgHdr, false) != nsMsgViewIndex_None) {
         aMsg.message.inView = true;
         return true;
       } else {

@@ -242,7 +242,7 @@ Message.prototype = {
       for each (let [i, att] in Iterator(this._attachments)) {
         let [thumb, imgClass] = (att.contentType.indexOf("image/") === 0)
           ? [att.url, "resize-me"]
-          : ["moz-icon://" + att.name + "?size=" + 64 + "&contentType=" + att.contentType, "center-me"]
+          : ["moz-icon://" + att.name + "?size=32&contentType=" + att.contentType, ""]
         ;
         let formattedSize = gMessenger.formatFileSize(att.size);
         // XXX remove this when the \0 sprintf bug is backported to gecko 1.9.2

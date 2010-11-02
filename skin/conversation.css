@@ -454,8 +454,6 @@ ul.special-tags img {
 
 /* For moz-icons */
 .attachmentThumb img.center-me {
-  margin-left: 28px; /* That's (120-64)/2 */
-  margin-top: 8px;
 }
 
 /* For thumbnails */
