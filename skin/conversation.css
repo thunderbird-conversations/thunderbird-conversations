@@ -6,7 +6,7 @@
 }
 
 body {
-  font-family: "lucida grande";
+  font-family: "Lucida Grande", "DejaVu Sans", "Tahoma", sans-serif;
   font-size: 12px;
   line-height: 18px;
   background-color: #ECF3FE;
@@ -128,7 +128,6 @@ button img {
 }
 
 .message.highlight, .message:focus {
-  position: relative;
   border: 1px solid #bebebe;
   -moz-box-shadow: 0 0 0 5px rgba(0,0,0,0.15);
 }
@@ -170,7 +169,7 @@ span.downwardArrow {
   left: 16px;
   background-color: #fff;
   border: 1px solid #aaa;
-  -moz-box-shadow: 0 1px 2px #aaa;
+  -moz-box-shadow: 0 0 0 6px rgba(0,0,0,0.25);
   -moz-border-radius: 5px;
   z-index: 1;
   display: none;
@@ -270,7 +269,7 @@ a img {
 .authorPicture {
   display: inline-block;
   float: right;
-  width: 100px;
+  max-width: 100px;
   padding: 10px;
 }
 
@@ -380,11 +379,11 @@ a img {
 .messageBody .tags {
   padding: 0 0 5px 0;
   margin: 0;
-  display: inline;
+  display: inline-block;
 }
 
 .messageBody .tags:empty {
-  padding: 0;
+  display: none; /* Because otherwise it leaves a blank space */
 }
 
 ul.tags li {
@@ -436,7 +435,7 @@ ul.special-tags img {
 
 .attachments {
   padding: 10px 0 0 0;
-  margin: 18px 0;
+  margin: 0 0 18px 0;
 }
 
 .attachHeader {
