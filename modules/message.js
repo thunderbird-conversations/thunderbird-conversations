@@ -303,7 +303,7 @@ Message.prototype = {
           "</div>",
           "<div class=\"options\">",
             "<span class=\"date\">", paperclip, date, "</span>",
-            "<span class=\"details\"> | <a href=\"javascript:\">details</a> |</span> ",
+            "<span class=\"details\"> | <a href=\"javascript:\">details</a></span> | ",
             "<span class=\"dropDown\">",
               "<a href=\"javascript:\">more <span class=\"downwardArrow\">&#x25bc;</span></a>",
               "<div class=\"tooltip\">",
@@ -625,25 +625,19 @@ Message.prototype = {
     window.alignAttachments(this);
 
     // XXX this is too brutal, do something more elaborate, like add a specific
-    //  class
+    //  class. Plus, it doesn't always work properly.
     let toNode = this._domNode.getElementsByClassName("to")[0];
     let style = window.getComputedStyle(toNode, null);
-    let overflowed = false;
-    let i = toNode.childNodes.length - 1;
-    while (parseInt(style.height) > 18 && i >= 0) {
-      toNode.childNodes[i].classList.add("show-with-details");
-      overflowed = true;
-      style = window.getComputedStyle(toNode, null);
-      i--;
-    }
+    let overflowed = parseInt(style.height) > 18;
     if (overflowed) {
+      this._domNode.classList.add("too-many-recipients");
       let dots = toNode.ownerDocument.createElement("span");
       dots.textContent = "...";
       dots.classList.add("hide-with-details");
       toNode.appendChild(dots);
-      let i = toNode.childNodes.length - 2;
+      let i = toNode.children.length - 2;
       while (parseInt(style.height) > 18 && i >= 0) {
-        toNode.childNodes[i].classList.add("show-with-details");
+        toNode.children[i].classList.add("show-with-details");
         style = window.getComputedStyle(toNode, null);
         i--;
       }
