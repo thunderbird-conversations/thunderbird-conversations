@@ -5,6 +5,7 @@ const Cc = Components.classes;
 const Cu = Components.utils;
 const Cr = Components.results;
 
+Cu.import("resource://conversations/VariousUtils.jsm");
 Cu.import("resource://conversations/MsgHdrUtils.jsm");
 Cu.import("resource://conversations/prefs.js");
 Cu.import("resource://conversations/log.js");
@@ -201,6 +202,87 @@ function MonkeyPatch(aWindow, aConversation) {
 
 MonkeyPatch.prototype = {
 
+  registerColumn: function _MonkeyPatch_registerColumn () {
+    // This has to be the first time that the documentation on MDC
+    //  1) exists and
+    //  2) is actually relevant!
+    // 
+    //            OMG !
+    //
+    // https://developer.mozilla.org/en/Extensions/Thunderbird/Creating_a_Custom_Column
+    let window = this._window;
+
+    let participants = function (msgHdr) {
+      let format = function (x) {
+        if (x.email in gIdentities)
+          return "Me"
+        else
+          return x.name || x.email;
+      };
+      let seenAlready = {};
+      let r = [
+        [format(x) for each (x in parseMimeLine(msgHdr[prop]))]
+        for each (prop in ["mime2DecodedAuthor", "mime2DecodedRecipients", "ccList", "bccList"])
+      ].filter(function (x) {
+        // Wow, a nice side-effect, I just hope the implementation of filter is
+        //  as I think it is. Yes, I live dangerously!
+        let r = !(x in seenAlready);
+        seenAlready[x] = true;
+        return r;
+      }).reduce(function (x, y) x.concat(y));
+      return joinWordList(r);
+    };
+
+    let columnHandler = {
+      getCellText: function(row, col) {
+        let msgHdr = window.gDBView.getMsgHdrAt(row);
+        return participants(msgHdr);    
+      },
+      getSortStringForRow: function(hdr) {
+        return participants(msgHdr);
+      },
+      isString: function() {
+        return true;
+      },
+      getCellProperties: function(row, col, props) {},
+      getRowProperties: function(row, props) {},
+      getImageSrc: function(row, col) {
+        return null;
+      },
+      getSortLongForRow: function(hdr) {
+        return 0;
+      }
+    };
+
+    // The main window is loaded when the monkey-patch is applied
+    let observerService = Cc["@mozilla.org/observer-service;1"]
+                          .getService(Ci.nsIObserverService);
+    observerService.addObserver({
+      observe: function(aMsgFolder, aTopic, aData) {  
+        Log.debug("MsgCreateDBView -- registering our custom column handler");
+        window.gDBView.addColumnHandler("betweenCol", columnHandler);
+      }
+    }, "MsgCreateDBView", false);
+    try {
+      window.gDBView.addColumnHandler("betweenCol", columnHandler);
+    } catch (e) {
+      // This is really weird, but rkent does it for junquilla, and this solves
+      //  the issue of enigmail breaking us... don't wanna know why it works,
+      //  but it works.
+      // After investigating, it turns out that without enigmail, we have the
+      //  following sequence of events:
+      // - jsm load
+      // - onload
+      // - msgcreatedbview
+      // With enigmail, this sequence is modified
+      // - jsm load
+      // - msgcreatedbview
+      // - onlaod
+      // So our solution kinda works, but registering the thing at jsm load-time
+      //  would work as well.
+    }
+  },
+
   clearTimer: function () {
     // If we changed conversations fast, clear the timeout
     if (this.markReadTimeout)
@@ -249,6 +331,9 @@ MonkeyPatch.prototype = {
     // Register our new tab type
     let tabmail = window.document.getElementById("tabmail");
     tabmail.registerTabType(conversationTabType);
+
+    // Register our new column type
+    this.registerColumn();
 
     // This nice little wrapper makes sure that the multimessagepane points to
     //  the given URL before moving on. It takes a continuation, and an optional

@@ -46,7 +46,7 @@ var EXPORTED_SYMBOLS = [
   'fusionBlockquotes',
   // a very stupid function that tries to figure out, given a full name, what is
   // the guy's first name
-  'parseShortName',
+  'parseShortName', 'joinWordList', 'parseMimeLine'
 ]
 
 const Ci = Components.interfaces;
@@ -440,4 +440,34 @@ function parseShortName(str) {
     return r.substring(0, 40)+"…";
   else
     return r;
+}
+
+// Joins together names and format them as "John, Jane and Julie"
+function joinWordList (aElements, aInsertHtml) {
+  let wrap = aInsertHtml
+    ? function (x) "<span>" + x + "</span>"
+    : function (x) x
+  ;
+  let l = aElements.length;
+  if (l == 0)
+    return "";
+  else if (l == 1)
+    return aElements[0];
+  else {
+    let hd = aElements.slice(0, l - 1);
+    let tl = aElements[l-1];
+    return hd.join(wrap(", ")) + wrap(" and ") + tl;
+  }
+}
+
+// Wraps the low-level header parser stuff.
+//  @param aMimeLine a line that looks like "John <john@cheese.com>, Jane <jane@wine.com>"
+//  @return a list of { email, name } objects
+function parseMimeLine (aMimeLine) {
+  let emails = {};
+  let fullNames = {};
+  let names = {};
+  let numAddresses = headerParser.parseHeadersWithArray(aMimeLine, emails, names, fullNames);
+  return [{ email: emails.value[i], name: names.value[i], fullName: fullNames.value[i] }
+    for each (i in range(0, numAddresses))];
 }

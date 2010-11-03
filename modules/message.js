@@ -174,28 +174,14 @@ Message.prototype = {
 
   // Joins together names and format them as "John, Jane and Julie"
   join: function (aElements) {
-    let l = aElements.length;
-    if (l == 0)
-      return "";
-    else if (l == 1)
-      return aElements[0];
-    else {
-      let hd = aElements.slice(0, l - 1);
-      let tl = aElements[l-1];
-      return hd.join("<span>, </span>") + "<span> and </span>" + tl;
-    }
+    return joinWordList(aElements, true);
   },
 
   // Wraps the low-level header parser stuff.
   //  @param aMimeLine a line that looks like "John <john@cheese.com>, Jane <jane@wine.com>"
   //  @return a list of { email, name } objects
   parse: function (aMimeLine) {
-    let emails = {};
-    let fullNames = {};
-    let names = {};
-    let numAddresses = gHeaderParser.parseHeadersWithArray(aMimeLine, emails, names, fullNames);
-    return [{ email: emails.value[i], name: names.value[i] }
-      for each (i in range(0, numAddresses))];
+    return parseMimeLine(aMimeLine);
   },
 
   // Picks whatever's available from an { email, name } and return it as

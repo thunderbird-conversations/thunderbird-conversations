@@ -238,6 +238,8 @@ let Customizations = {
         mainWindow.MsgSortDescending();
         mainWindow.goDoCommand('cmd_collapseAllThreads');
         eid("unreadCol").setAttribute("hidden", "false");
+        eid("senderCol").setAttribute("hidden", "true");
+        eid("betweenCol").setAttribute("hidden", "false");
         Customizations.top();
       };
       let i = 0;
@@ -255,8 +257,10 @@ let Customizations = {
     },
 
     uninstall: function ({ ftvMode, }) {
-      if (mainWindow.gFolderTreeView.mode == "smart")
+      if (mainWindow.gFolderTreeView.mode == "smart") {
+        eid("senderCol").setAttribute("hidden", "false");
         mainWindow.gFolderTreeView.mode = ftvMode;
+      }
     },
   },
 

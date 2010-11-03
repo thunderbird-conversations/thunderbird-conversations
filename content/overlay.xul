@@ -45,55 +45,17 @@
 <overlay id="messengerWindow" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <script type="application/x-javascript" src="overlay.js" />
   <browser id="multimessage" context="mailContext" />
+  <tree id="threadTree">
+    <treecols id="threadCols">
+      <splitter class="tree-splitter" insertbefore="senderCol" />
+      <treecol id="betweenCol" insertbefore="senderCol"
+        persist="width" 
+        hidden="false"
+        flex="4"
+        label="Between" tooltiptext="Click to sort by participants" />
+    </treecols>
+  </tree>
   <!--<stringbundleset id="stringbundleset">
     <stringbundle id="gconv-string-bundle" src="chrome://gconversation/locale/main.properties"/>
-  </stringbundleset>
-  <toolbarpalette id="header-view-toolbar-palette">
-    <toolbarbutton id="gconv-button-1"
-      class="gconv-button-1 toolbarbutton-1 hdrReplyButton msgHeaderView-button
-        customize-header-toolbar-button customize-header-toolbar-hdrReplyButton"
-      label="&ctoolbar.view_full;"
-      type="menu-button"
-      tooltiptext="&ctoolbar.view_full_tooltip;"
-      oncommand="GCV.on_load_thread();"
-      >
-      <menupopup>
-        <menuitem label="&ctoolbar.view_tab;" oncommand="GCV.on_load_thread_tab(event);" />
-      </menupopup>
-    </toolbarbutton>
-  </toolbarpalette>
-  <toolbarpalette id="MailToolbarPalette">
-    <toolbarbutton id="gconv-button-2"
-      class="gconv-button-2 toolbarbutton-1"
-      label="&toolbar.view_full;"
-      type="menu-button"
-      tooltiptext="&toolbar.view_full_tooltip;"
-      oncommand="GCV.on_load_thread();"
-      >
-      <menupopup>
-        <menuitem label="&toolbar.view_tab;"
-          oncommand="GCV.on_load_thread_tab(event);"
-          insertAfter="mailContext" />
-      </menupopup>
-    </toolbarbutton>
-  </toolbarpalette>
-  <popupset id="mainPopupSet">
-    <popup id="gConvMenu">
-      <menuitem label="&printButton.label;"
-        oncommand="GCV.print()" />
-      <menuitem label="&menu.delete;"
-        oncommand="GCV.delete_all();" />
-      <menuitem label="&menu.archive;"
-        oncommand="GCV.archive_all();" />
-      <menuitem label="&menu.mark_all_read;" class="extra-menuitem"
-        oncommand="GCV.mark_all_read();" />
-      <menuseparator />
-      <menuitem label="&menu.open_in_new_tab;" class="extra-menuitem"
-        oncommand="GCV.on_load_thread_tab(event);" />
-      <menuitem label="&menu.expand_all;" class="extra-menuitem"
-        oncommand="GCV.on_expand_all();" />
-      <menuitem label="&menu.collapse_all;" class="extra-menuitem"
-        oncommand="GCV.on_collapse_all();" />
-    </popup>
-  </popupset>-->
+  </stringbundleset>-->
 </overlay>
