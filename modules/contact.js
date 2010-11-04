@@ -94,7 +94,7 @@ let ContactMixIn = {
     let replace = function _replace (svc, url) {
       if (svc in self._profiles) {
         let r = [
-          "<a href=\"", url.replace("#1", self._profiles[svc]), "\">",
+          "<a href=\"", url.replace("#1", self._profiles[svc]), "\" class=\"profile-link\">",
             "<img src=\"chrome://conversations/content/i/", svc, ".ico\" />",
           "</a>"
         ];
@@ -147,9 +147,19 @@ let ContactMixIn = {
     /* The links to various profiles */
     for each (let [, a] in Iterator(aDomNode.getElementsByTagName("a"))) {
       a.addEventListener("click",
-        function _link_listener (event)
-          mainWindow.specialTabs.siteClickHandler(event, /^mailto:/),
-        true);
+        a.classList.contains("profile-link")
+        ? function _link_listener (event) (
+            mainWindow.document.getElementById("tabmail").openTab("contentTab", {
+              contentPage: a.href,  
+              clickHandler: "specialTabs.defaultClickHandler(event);"
+            }),
+            event.preventDefault()
+          )
+        : function _link_listener (event) (
+            mainWindow.specialTabs.siteClickHandler(event, /^mailto:/),
+            event.preventDefault()
+          ),
+        false);
     }
   },
 
