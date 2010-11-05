@@ -750,18 +750,6 @@ Message.prototype = {
               "color: rgb(10, 10, 10); background-color: transparent; "+
               "-moz-user-focus: none !important; ");
 
-            // Remove the attachments if the user has not set View >
-            // Display Attachments Inline. Do that right now, otherwise the
-            // quoted text detection will mess up the markup.
-            let fieldsets = iframeDoc.getElementsByClassName("mimeAttachmentHeader");
-            for (let i = fieldsets.length - 1; i >= 0; i--) {
-              Log.warn("Found an attachment, removing... please uncheck View > Display attachments inline.");
-              let node = fieldsets[i];
-              while (node.nextSibling)
-                node.parentNode.removeChild(node.nextSibling);
-              node.parentNode.removeChild(node);
-            }
-
             // Launch various crappy pieces of code^W^W^W^W heuristics to
             //  convert most common quoting styles to real blockquotes. Spoiler:
             //  most of them suck.
