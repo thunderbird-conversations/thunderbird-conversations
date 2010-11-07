@@ -435,15 +435,10 @@ Conversation.prototype = {
       [(x.message._conversation = this) for each ([, x] in Iterator(aMessages))];
       this.messages = this.messages.concat(aMessages);
 
-      // We can't do this._domNode.innerHTML += because it will recreate all
-      //  previous elements and reset all iframes (that's obviously bad!). It's ok
-      //  to use a div since we're using getElementsByClassName everywhere.
-      let innerHtml = [m.message.toHtmlString()
+      let $ = this._htmlPane.contentWindow.$;
+      let tmplData = [m.message.toTmplData()
         for each ([_i, m] in Iterator(aMessages))];
-      innerHtml = innerHtml.join("\n");
-      let div = this._domNode.ownerDocument.createElement("div");
-      this._domNode.appendChild(div);
-      div.innerHTML = innerHtml;
+      $("#messageTemplate").tmpl(tmplData).appendTo($(this._domNode));
 
       // Notify each message that it's been added to the DOM and that it can do
       //  event registration and stuff...
@@ -558,14 +553,15 @@ Conversation.prototype = {
     // previous conversation (but not the conversation-wide event handlers!)
     // XXX this does not take the "reverse_order" pref into account. Screw this,
     // I'm never going to handle that anyway, it's too fscking complicated.
-    let innerHtml = [m.message.toHtmlString()
-      for each ([i, m] in Iterator(this.messages))];
-    innerHtml = innerHtml.join("\n");
+    let $ = this._htmlPane.contentWindow.$;
+    let tmplData = [m.message.toTmplData()
+      for each ([_i, m] in Iterator(this.messages))];
     // We must do this if we are to ever release the previous Conversation
     //  object. See comments in stub.html for the nice details.
     this._htmlPane.contentWindow.cleanup();
     // Go!
-    this._domNode.innerHTML = innerHtml;
+    debugger;
+    $("#messageTemplate").tmpl(tmplData).appendTo($(this._domNode));
 
     // Notify each message that it's been added to the DOM and that it can do
     // event registration and stuff...

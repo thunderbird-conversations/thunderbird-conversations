@@ -172,11 +172,6 @@ function Message(aConversation) {
 Message.prototype = {
   cssClass: "message",
 
-  // Joins together names and format them as "John, Jane and Julie"
-  join: function (aElements) {
-    return joinWordList(aElements, true);
-  },
-
   // Wraps the low-level header parser stuff.
   //  @param aMimeLine a line that looks like "John <john@cheese.com>, Jane <jane@wine.com>"
   //  @return a list of { email, name } objects
@@ -184,22 +179,28 @@ Message.prototype = {
     return parseMimeLine(aMimeLine);
   },
 
-  // Picks whatever's available from an { email, name } and return it as
-  // suitable for insertion into HTML
-  format: function (p) {
-    return (p ? escapeHtml(p.name || p.email) : "");
-  },
-
   // Output this message as a whole bunch of HTML
-  toHtmlString: function () {
+  toTmplData: function () {
+    let $ = this._conversation._htmlPane.contentWindow.$;
     let self = this;
+    let data = {
+      dataContactFrom: null,
+      dataContactsTo: null,
+      snippet: null,
+      date: null,
+      attachmentsPlural: null,
+      attachments: [],
+      folderName: null,
+      draft: null,
+    };
 
     // 1) Generate Contact objects
     let contactFrom = this._conversation._contactManager
       .getContactFromNameAndEmail(this._from.name, this._from.email);
     this._contacts.push(contactFrom);
     // true means "with colors"
-    let fromStr = contactFrom.toHtmlString(true, Contacts.kFrom);
+    data.dataContactFrom = contactFrom.toTmplData(true, Contacts.kFrom);
+    data.dataContactFrom.separator = "";
 
     let to = this._to.concat(this._cc).concat(this._bcc);
     let contactsTo = to.map(function (x) {
@@ -208,57 +209,41 @@ Message.prototype = {
     });
     this._contacts = this._contacts.concat(contactsTo);
     // false means "no colors"
-    let toStr = this.join(contactsTo.map(function (x) x.toHtmlString(false, Contacts.kTo)));
+    data.dataContactsTo = contactsTo.map(function (x) x.toTmplData(false, Contacts.kTo));
+    let l = data.dataContactsTo.length;
+    for each (let [i, data] in Iterator(data.dataContactsTo)) {
+      if (i == 0)
+        data.separator = "";
+      else if (i < l - 1)
+        data.separator = ", ";
+      else
+        data.separator = " and ";
+    }
 
     // 2) Generate Attachment objects
-    let attachmentsHtml = "";
-    let paperclip = "";
-    if (this._attachments.length) {
-      paperclip = "<img src=\"chrome://conversations/content/i/attachment.png\" /> ";
-
-      let l = this._attachments.length;
-      let [makePlural, ] = PluralForm.makeGetter("1");
-      let plural = makePlural(l, "one attachment;#1 attachments").replace("#1", l);
-      attachmentsHtml = [
-        "<ul class=\"attachments\">",
-          "<div class=\"attachHeader\">", plural,
-            " | <a href=\"javascript:\" class=\"link download-all\">download all</a>",
-            //" | <a href=\"javascript:\" class=\"view-all\">view all</a>"
-          "</div>"
-      ];
-      for each (let [i, att] in Iterator(this._attachments)) {
-        let [thumb, imgClass] = (att.contentType.indexOf("image/") === 0)
-          ? [att.url, "resize-me"]
-          : ["moz-icon://" + att.name + "?size=32&contentType=" + att.contentType, ""]
-        ;
-        let formattedSize = gMessenger.formatFileSize(att.size);
+    l = this._attachments.length;
+    let [makePlural, ] = PluralForm.makeGetter("1");
+    data.attachmentsPlural = makePlural(l, "one attachment;#1 attachments").replace("#1", l);
+    for each (let [i, att] in Iterator(this._attachments)) {
+      let [thumb, imgClass] = (att.contentType.indexOf("image/") === 0)
+        ? [att.url, "resize-me"]
+        : ["moz-icon://" + att.name + "?size=32&contentType=" + att.contentType, ""]
+      ;
+      let formattedSize = gMessenger.formatFileSize(att.size);
+      data.attachments.push({
         // XXX remove this when the \0 sprintf bug is backported to gecko 1.9.2
-        formattedSize = formattedSize.substring(0, formattedSize.length - 1);
-        attachmentsHtml = attachmentsHtml.concat([
-          "<li class=\"clearfix hbox attachment\">",
-            "<div class=\"attachmentThumb\"><img class=\"", imgClass, "\" src=\"", thumb, "\"></div>",
-            "<div class=\"attachmentInfo align\">",
-              "<span class=\"filename\">", att.name, "</span>",
-              "<div class=\"attachActions\">", formattedSize,
-                " | <a href=\"javascript:\" class=\"link open-attachment\">open</a>",
-                " | <a href=\"javascript:\" class=\"link download-attachment\">download</a>",
-              "</div>",
-            "</div>",
-          "</li>",
-        ]);
-      }
-      attachmentsHtml = attachmentsHtml.concat([
-        "</ul>",
-      ]);
-      attachmentsHtml = attachmentsHtml.join("");
+        formattedSize: formattedSize.substring(0, formattedSize.length - 1),
+        thumb: thumb,
+        imgClass: imgClass,
+        name: att.name,
+      });
     }
 
     // 3) Generate extra information: snippet, date
-    let snippet = escapeHtml(this._snippet);
-    let date = escapeHtml(this._date);
+    data.snippet = this._snippet;
+    data.date = this._date;
 
     // 4) Custom tag telling the user if the message is not in the current view
-    let folderTag;
     if (!this.inView) {
       let folderStr = this._msgHdr.folder.prettiestName;
       let folder = this._msgHdr.folder;
@@ -266,74 +251,13 @@ Message.prototype = {
         folder = folder.parent;
         folderStr = folder.name + "/" + folderStr;
       }
-      folderTag = "<li class=\"keep-tag in-folder\">In "+folderStr+"</li>";
+      data.folderName = folderStr;
     }
 
     // 5) Custom tag telling the user if this is a draft
-    let editDraft = "";
-    if (msgHdrIsDraft(this._msgHdr)) {
-      editDraft = "<li class=\"keep-tag edit-draft\">Draft (edit)</li>";
-    }
+    data.draft = msgHdrIsDraft(this._msgHdr);
 
-    let r = [
-      "<li class=\"message collapsed\">",
-      //"  <!-- Message-ID: ", this._msgHdr.messageId, " -->",
-        "<div class=\"messageHeader hbox\">",
-          "<div class=\"star\">",
-          "</div>",
-          "<div class=\"author\">",
-            "", fromStr, "",
-          "</div>",
-          "<div class=\"involved boxFlex\">",
-            "<span class=\"to\">to ", toStr, "</span>",
-            "<span class=\"snippet\"><ul class=\"tags regular-tags\"></ul>", snippet, "</span>",
-          "</div>",
-          "<div class=\"options\">",
-            "<span class=\"date\">", paperclip, date, "</span>",
-            "<span class=\"details\"> | <a href=\"javascript:\">details</a></span>",
-            "<span class=\"dropDown\"> | ",
-              "<a href=\"javascript:\">more <span class=\"downwardArrow\">&#x25bc;</span></a>",
-              "<div class=\"tooltip\">",
-                "<ul>",
-                  "<li class=\"action-compose-all\">start new thread with these people",
-                    "<div class=\"arrow\"></div>",
-                    "<div class=\"arrow inside\"></div>",
-                  "</li>",
-                  "<li class=\"action-edit-new\">edit as new</li>",
-                  "<li class=\"action-archive\">archive this message",
-                  "</li>",
-                  "<li class=\"action-delete\">delete this message</li>",
-                  "<li class=\"action-monospace\">this sender sends monospace</li>",
-                  "<li class=\"action-classic\">view using the classic reader</li>",
-                  "<li class=\"action-source\">view message source</li>",
-                "</ul>",
-              "</div>",
-            "</span>",
-          "</div>",
-        "</div>",
-        "<div class=\"remoteContent\" style=\"display: none\">",
-          "Remote content was hidden: ",
-          "<span class=\"show-remote-content\"><a href=\"javascript:\">show remote content</a> - </span>",
-          "<span class=\"always-display\"><a href=\"javascript:\">always show remote content</a></span>",
-        "</div>",
-        "<div class=\"messageBody\">",
-          "<ul class=\"tags special-tags\">",
-            folderTag,
-            editDraft,
-          "</ul>",
-          "<ul class=\"tags regular-tags\"></ul>",
-          "<div class=\"iframe-container\"></div>",
-          attachmentsHtml,
-        "</div>",
-        "<div class=\"messageFooter\">",
-          "<button class=\"reply\">reply</button>",
-          "<button class=\"replyAll\">reply all</button>",
-          "<button class=\"forward\">forward</button>",
-          "<button style=\"float:right;margin: 0 0 0 0;\">more...</button>",
-        "</div>",
-      "</li>"
-    ].join("");
-    return r;
+    return data;
   },
 
   // Once the conversation has added us into the DOM, we're notified about it
@@ -597,8 +521,6 @@ Message.prototype = {
   },
 
   cosmeticFixups: function _Message_cosmeticFixups() {
-    // Can do this only when expanded, otherwise jQuery won't be able to compute
-    //  the height.
     let window = this._conversation._htmlPane.contentWindow;
     window.alignAttachments(this);
 

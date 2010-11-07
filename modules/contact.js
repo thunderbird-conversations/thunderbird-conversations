@@ -82,55 +82,20 @@ ContactManager.prototype = {
 }
 
 let ContactMixIn = {
-  toHtmlString: function _ContactMixIn_toInlineHtml (aUseColor, aPosition) {
+  toTmplData: function _ContactMixIn_toInlineHtml (aUseColor, aPosition) {
     let name = this.getName(aPosition);
-    let tooltipName = (name != this._email) ? name : "";
-    // Parameter aUseColor is optional, and undefined means true
-    let colorStyle = (aUseColor === false)
-      ? ""
-      : ("color :" + this.color)
-    ;
-    let self = this;
-    let replace = function _replace (svc, url) {
-      if (svc in self._profiles) {
-        let r = [
-          "<a href=\"", url.replace("#1", self._profiles[svc]), "\" class=\"profile-link\">",
-            "<img src=\"chrome://conversations/content/i/", svc, ".ico\" />",
-          "</a>"
-        ];
-        return r.join("");
-      } else {
-        return "";
-      }
+    let data = {
+      name: name,
+      tooltipName: (name != this._email) ? name : "",
+      email: this._email,
+      avatar: this.avatar,
+      profiles: this._profiles,
+      // Parameter aUseColor is optional, and undefined means true
+      colorStyle: ((aUseColor === false)
+        ? ""
+        : ("color :" + this.color)),
     };
-    let r = [
-      "<span class=\"tooltipWrapper\">",
-      "<span style=\"", colorStyle, "\">",
-           escapeHtml(String.trim(name)),
-      "</span>",
-      "<div class=\"tooltip\">",
-      "    <div class=\"arrow\"></div>",
-      "    <div class=\"arrow inside\"></div>",
-      "    <div class=\"authorInfo\">",
-      "      <span class=\"name\">", tooltipName, "</span>",
-      "      <span class=\"authorEmail\">", this._email, "</span>",
-      "    </div>",
-      "    <div class=\"authorPicture\">",
-      "      <img src=\"", this.avatar, "\">",
-      "    </div>",
-      "    <div class=\"authorInfo authorLinks\">",
-            replace("facebook", "http://www.facebook.com/profile.php?id=#1"),
-            //replace("google", "http://www.google.com/profiles/#1"),
-            replace("twitter", "http://www.twitter.com/#1"),
-      "    </div>",
-      "    <div class=\"tipFooter\">",
-      "      <button class=\"sendEmail\">send email</button>",
-      "      <button>more</button>",
-      "    </div>",
-      "</div>",
-      "</span>",
-    ].join("");
-    return r;
+    return data;
   },
 
   onAddedToDom: function _ContactMixIn_onAddedToDom(aDomNode) {
@@ -146,20 +111,22 @@ let ContactMixIn = {
     let mainWindow = getMail3Pane();
     /* The links to various profiles */
     for each (let [, a] in Iterator(aDomNode.getElementsByTagName("a"))) {
-      a.addEventListener("click",
-        a.classList.contains("profile-link")
-        ? function _link_listener (event) (
-            mainWindow.document.getElementById("tabmail").openTab("contentTab", {
-              contentPage: a.href,  
-              clickHandler: "specialTabs.defaultClickHandler(event);"
-            }),
-            event.preventDefault()
-          )
-        : function _link_listener (event) (
-            mainWindow.specialTabs.siteClickHandler(event, /^mailto:/),
-            event.preventDefault()
-          ),
-        false);
+      let (a = a) { // I hate you Javascript! I hate you!!!
+        a.addEventListener("click",
+          a.classList.contains("profile-link")
+          ? function _link_listener (event) (
+              mainWindow.document.getElementById("tabmail").openTab("contentTab", {
+                contentPage: a.href, // ^^ (cf. supra)
+                clickHandler: "specialTabs.defaultClickHandler(event);"
+              }),
+              event.preventDefault()
+            )
+          : function _link_listener (event) (
+              mainWindow.specialTabs.siteClickHandler(event, /^mailto:/),
+              event.preventDefault()
+            ),
+          false);
+      }
     }
   },
 
