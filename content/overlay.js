@@ -54,6 +54,7 @@ window.addEventListener("load", function _overlay_eventListener () {
   Components.utils.import("resource://conversations/monkeypatch.js", NS);
   Components.utils.import("resource://conversations/conversation.js", NS);
   Components.utils.import("resource://conversations/prefs.js", NS);
+  Components.utils.import("resource://conversations/config.js", NS);
 
   // We instanciate the Monkey-Patch for the given Conversation object.
   let monkeyPatch = new NS.MonkeyPatch(window, NS.Conversation);
@@ -69,6 +70,6 @@ window.addEventListener("load", function _overlay_eventListener () {
   Conversations.monkeyPatch = monkeyPatch;
 
   // Assistant.
-  if (NS.Prefs.getInt("conversations.version") < 1)
+  if (NS.Prefs.getInt("conversations.version") < NS.conversationsCurrentVersion)
     window.openDialog("chrome://conversations/content/assistant/assistant.html", "", "chrome,width=800,height=500");
 }, false);

@@ -539,7 +539,7 @@ Conversation.prototype = {
         // - KEEP the counter
         // - _domNode, _window are the same because we can only recycle a
         //    conversation from the main mail:3pane
-        currentConversation._query = this._query;
+        // currentConversation._query = this._query;
         currentConversation._onComplete = this._onComplete;
         // And pass them to the old conversation. It will take care of setting
         // _conversation properly on Message instances.
@@ -577,7 +577,7 @@ Conversation.prototype = {
     // Set the subject properly
     let subjectNode = this._domNode.ownerDocument.getElementsByClassName("subject")[0];
     let subject = this.messages[0].message.subject;
-    subjectNode.textContent = subject;
+    subjectNode.textContent = subject || "(no subject)";
     subjectNode.setAttribute("title", subject);
     this._htmlPane.contentWindow.fakeTextOverflowSubject();
     this._htmlPane.contentDocument.title = subject;

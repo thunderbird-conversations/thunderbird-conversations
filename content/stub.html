@@ -194,6 +194,7 @@
       $(".subject").textOverflow(null, false);
     }
 
+    // XXX I don't think this is used anymore...
     function fakeTextOverflowParticipants(aMsgNode) {
       $(aMsgNode).find(".to").textOverflow(null, false);
     }
@@ -239,7 +240,7 @@
   <div id="wrapper">
     <div id="conversationHeaderWrapper">
       <div id="conversationHeader" class="hbox">
-        <div class="subject boxFlex">This is an example of a subject</div>
+        <div class="subject boxFlex">Loading...</div>
         <div class="actions">
           <button title="Delete this conversation" onclick="deleteConversation(event);">
             <img src="i/trash.png" />
