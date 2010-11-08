@@ -531,81 +531,122 @@ ul.special-tags img {
   background-image: url(chrome://conversations/content/i/star.png);
 }
 
-/* START hbox/vbox normalization from http://alex.dojotoolkit.org/2009/08/css-3-progress/ */
-/* hbox and vbox classes */
- 
-.hbox {
-  display: -moz-box;
-  -moz-box-orient: horizontal;
-  -moz-box-align: stretch;
+/* Quick reply */
 
-  /*display: box;*/
-  /*box-orient: horizontal;*/
-  /*box-align: stretch;*/
+.quickReply {
+  padding: 5px 10px 10px;
+  background-color: #f6f6f6;
+  -moz-border-radius: 0 0 5px 5px;
 }
 
-.hbox > * {
-  -moz-box-flex: 0;
-  /*box-flex: 0;*/
+.quickReplyRecipients {
+  width: 100%;
+  margin: 0 0 5px 0;
+  display: none;
+}
+
+.quickReply .label {
+  -moz-border-radius: 3px 0 0 3px;
+  background-image: -moz-linear-gradient(top, #fff 0%, #fff 50%, #fafafa 50%, #fafafa 100%);
+  border-color: #AAAAAA;
+  border-style: solid;
+  border-width: 1px 0 1px 1px;
+  color: #666;
+  padding: 3px 5px 0 0;
+  text-align: right;
+  width: 75px;
+}
+
+.quickReply input {
+  width: 100%;
+  border: 1px solid #aaa;
+  padding: 5px;
+}
+
+.editRecipientList {
+  display:none;
+  margin: 0 0 5px 0;
+}
+
+.quickReplyRecipients.edit .editRecipientList {
+  display: -moz-box;
+  width: 100%;
+}
+
+.quickReplyRecipients.edit ul.recipientList {
+  display: none;
+}
+
+.quickReplyRecipients ul {
+  margin: 0;
+  display: block;
+  list-style-type: none;
+  margin: 0 0 5px 0;
+}
+
+.quickReplyRecipients li {
+  display: inline-block;
+  color: #666;
+}
+
+.quickReplyRecipients a {
+  color: #3875D7;
+  text-decoration: none;
+}
+
+.quickReplyRecipients a:hover {
+  text-decoration: underline;
+}
+
+.quickReplyHeader {
+  padding: 5px 10px;
+  background-image: -moz-linear-gradient(top, #fff 0%, #fff 50%, #fafafa 50%, #fafafa 100%);
+  border-width: 1px 1px 0;
+  border-color: #aaa;
+  border-style: solid;
+  width: 100%;
+  color: #666;
+  -moz-border-radius: 3px 3px 0 0;
+  display: none;
+}
+
+.quickReply textarea {
+  width: 100%;
+  height: 50px;
+  font-family: "lucida grande", sans-serif;
+  font-size: 12px;
+  padding: 5px;
+  border: 1px solid #bebebe;  
+}
+
+.quickReply.expand textarea {
+  height: 150px;
+  border: 1px solid #aaa;
+}
+
+.quickReply input:focus,
+.quickReply.expand textarea:focus {
+  -moz-box-shadow: 0 0 0 3px #ECF3FE inset;
+}
+
+.quickReplyFooter {
+  width: 100%;
+  display: none;
+  padding: 5px 0 0 0; 
+}
+
+.quickReply.expand .quickReplyRecipients,
+.quickReply.expand .quickReplyFooter,
+.quickReply.expand .quickReplyHeader {
   display: block;
 }
 
-.vbox {
-  display: -moz-box;
-  -moz-box-orient: vertical;
-  -moz-box-align: stretch;
-
-  /*display: box;*/
-  /*box-orient: vertical;*/
-  /*box-align: stretch;*/
+.tipFooter button,
+.messageFooter button {
+  padding: 0 5px;
+  float: left;
+  margin: 0 3px 0 0;
 }
-
-.vbox > * {
-  -moz-box-flex: 0;
-  /*box-flex: 0;*/
-  display: block;
-}
-
-.spacer {
-  -moz-box-flex: 1;
-  /*box-flex: 1;*/
-}
-
-.reverse {
-  -moz-box-direction: reverse;
-  /*box-direction: reverse;*/
-}
-
-.boxFlex0 {
-  -moz-box-flex: 0;
-  /*box-flex: 0;*/
-}
-
-.boxFlex1, .boxFlex {
-  -moz-box-flex: 1;
-  /*box-flex: 1;*/
-}
-
-.boxFlex2 {
-  -moz-box-flex: 2;
-  /*box-flex: 2;*/
-}
-
-.start {
-  -moz-box-pack: start;
-  /*box-pack: start;*/
-}
- 
-.end {
-  -moz-box-pack: end;
-  /*box-pack: end;*/
-}
- 
-.center {
-  -moz-box-pack: center;
-  /*box-pack: center;*/
-}
-/* END hbox/vbox normalization from http://alex.dojotoolkit.org/2009/08/css-3-progress/ */
 
 /* clearfix */
 

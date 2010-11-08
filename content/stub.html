@@ -5,10 +5,13 @@
 <head>
   <title>Conversation Reader</title>
   <link rel="stylesheet" type="text/css" href="chrome://messenger/skin/tagColors.css"/>
+  <link rel="stylesheet" type="text/css" href="chrome://conversations/skin/boxflex.css">
   <link rel="stylesheet" type="text/css" href="chrome://conversations/skin/conversation.css">
   <script type="text/javascript" src="chrome://conversations/content/js/jquery-1.4.3.min.js"></script>
   <script type="text/javascript" src="chrome://conversations/content/js/jquery.text-overflow.js"></script>
   <script type="text/javascript" src="chrome://conversations/content/js/jquery.tmpl.js"></script>
+  <script type="application/javascript;version=1.8"
+    src="chrome://conversations/content/stub.compose-ui.js"></script>
   <script type="application/javascript;version=1.8">
     (function ($) {
       $.fn.vAlign = function(container) {
@@ -245,135 +248,171 @@
 
 <body>
   <script id="messageTemplate" type="text/x-jquery-tmpl">
-  <li class="message collapsed">
-    <div class="messageHeader hbox">
-      <div class="star"></div>
-      <div class="author">{{tmpl(dataContactFrom) "#contactTemplate"}}</div>
-      <div class="involved boxFlex">
-        <span class="to">to {{tmpl(dataContactsTo) "#contactTemplate"}}</span>
-        <span class="snippet"><ul class="tags regular-tags"></ul>${snippet}</span>
-      </div>
-      <div class="options">
-        <span class="date">
-          {{if attachments.length}}
-            <img src="chrome://conversations/content/i/attachment.png" />
-          {{/if}}
-          ${date}
-        </span>
-        <span class="details"> | <a href="javascript:">details</a></span>
-        <span class="dropDown"> |
-          <a href="javascript:">more <span class="downwardArrow">&#x25bc;</span></a>
-          <div class="tooltip">
-            <ul>
-              <li class="action-compose-all">start new thread with these people
-                <div class="arrow"></div>
-                <div class="arrow inside"></div>
-              </li>
-              <li class="action-edit-new">edit as new</li>
-              <li class="action-archive">archive this message
-              </li>
-              <li class="action-delete">delete this message</li>
-              <li class="action-monospace">this sender sends monospace</li>
-              <li class="action-classic">view using the classic reader</li>
-              <li class="action-source">view message source</li>
-            </ul>
-          </div>
-        </span>
-      </div>
-    </div>
-    <div class="remoteContent" style="display: none">
-      Remote content was hidden:
-      <span class="show-remote-content">
-        <a href="javascript:">show remote content</a> -
-      </span>
-      <span class="always-display">
-        <a href="javascript:">always show remote content</a>
-      </span>
-    </div>
-    <div class="messageBody">
-      <!-- Weird markup to deal with whitespace DOM nodes -->
-      <ul class="tags special-tags"
-        >{{if folderName}}<li
-          class="keep-tag in-folder"
-          >In ${folderName}</li
-        >{{/if}}{{if draft}}<li
-          class="keep-tag edit-draft"
-          >Draft (edit)</li
-        >{{/if}}</ul
-      >
-      <ul class="tags regular-tags"></ul>
-      <div class="iframe-container"></div>
-      {{if attachments.length}}
-        <ul class="attachments">
-          <div class="attachHeader">
-            ${attachmentsPlural}
-            | <a href="javascript:" class="link download-all">download all</a>
-            {{if false}}| <a href="javascript:" class="view-all">view all</a>{{/if}}
-          </div>
-          {{each(i, att) attachments}}
-          <li class="clearfix hbox attachment">
-            <div class="attachmentThumb">
-              <img onload="$(this).closest('.attachment').find('.align').vAlign()"
-                class="${att.imgClass}" src="${att.thumb}"
-              />
+    <li class="message collapsed">
+      <div class="messageHeader hbox">
+        <div class="star"></div>
+        <div class="author">{{tmpl(dataContactFrom) "#contactTemplate"}}</div>
+        <div class="involved boxFlex">
+          <span class="to">to {{tmpl(dataContactsTo) "#contactTemplate"}}</span>
+          <span class="snippet"><ul class="tags regular-tags"></ul>${snippet}</span>
+        </div>
+        <div class="options">
+          <span class="date">
+            {{if attachments.length}}
+              <img src="chrome://conversations/content/i/attachment.png" />
+            {{/if}}
+            ${date}
+          </span>
+          <span class="details"> | <a href="javascript:">details</a></span>
+          <span class="dropDown"> |
+            <a href="javascript:">more <span class="downwardArrow">&#x25bc;</span></a>
+            <div class="tooltip">
+              <ul>
+                <li class="action-compose-all">start new thread with these people
+                  <div class="arrow"></div>
+                  <div class="arrow inside"></div>
+                </li>
+                <li class="action-edit-new">edit as new</li>
+                <li class="action-archive">archive this message
+                </li>
+                <li class="action-delete">delete this message</li>
+                <li class="action-monospace">this sender sends monospace</li>
+                <li class="action-classic">view using the classic reader</li>
+                <li class="action-source">view message source</li>
+              </ul>
             </div>
-            <div class="attachmentInfo align">
-              <span class="filename">${att.name}</span>
-              <div class="attachActions">
-                ${att.formattedSize}
-                 | <a href="javascript:" class="link open-attachment">open</a>
-                 | <a href="javascript:" class="link download-attachment">download</a>
+          </span>
+        </div>
+      </div>
+      <div class="remoteContent" style="display: none">
+        Remote content was hidden:
+        <span class="show-remote-content">
+          <a href="javascript:">show remote content</a> -
+        </span>
+        <span class="always-display">
+          <a href="javascript:">always show remote content</a>
+        </span>
+      </div>
+      <div class="messageBody">
+        <!-- Weird markup to deal with whitespace DOM nodes -->
+        <ul class="tags special-tags"
+          >{{if folderName}}<li
+            class="keep-tag in-folder"
+            >In ${folderName}</li
+          >{{/if}}{{if draft}}<li
+            class="keep-tag edit-draft"
+            >Draft (edit)</li
+          >{{/if}}</ul
+        >
+        <ul class="tags regular-tags"></ul>
+        <div class="iframe-container"></div>
+        {{if attachments.length}}
+          <ul class="attachments">
+            <div class="attachHeader">
+              ${attachmentsPlural}
+              | <a href="javascript:" class="link download-all">download all</a>
+              {{if false}}| <a href="javascript:" class="view-all">view all</a>{{/if}}
+            </div>
+            {{each(i, att) attachments}}
+            <li class="clearfix hbox attachment">
+              <div class="attachmentThumb">
+                <img onload="$(this).closest('.attachment').find('.align').vAlign()"
+                  class="${att.imgClass}" src="${att.thumb}"
+                />
               </div>
-            </div>
-          </li>
-          {{/each}}
-        </ul>
+              <div class="attachmentInfo align">
+                <span class="filename">${att.name}</span>
+                <div class="attachActions">
+                  ${att.formattedSize}
+                   | <a href="javascript:" class="link open-attachment">open</a>
+                   | <a href="javascript:" class="link download-attachment">download</a>
+                </div>
+              </div>
+            </li>
+            {{/each}}
+          </ul>
+        {{/if}}
+      </div>
+      <div class="messageFooter">
+        <button class="reply">reply</button>
+        <button class="replyAll">reply all</button>
+        <button class="forward">forward</button>
+        <button style="float:right;margin: 0 0 0 0;">more...</button>
+      </div>
+      {{if quickReply}}
+        {{tmpl "#quickReplyTemplate"}}
       {{/if}}
-    </div>
-    <div class="messageFooter">
-      <button class="reply">reply</button>
-      <button class="replyAll">reply all</button>
-      <button class="forward">forward</button>
-      <button style="float:right;margin: 0 0 0 0;">more...</button>
-    </div>
-  </li>
+    </li>
   </script>
   <!-- Weird markup again, otherwise, the comma is separated from the name by a
     space because of the #text whitespace-only nodes that end up in the DOM.
   -->
   <script id="contactTemplate" type="text/x-jquery-tmpl"><span
-  >${separator}</span
-  ><span class="tooltipWrapper"
-    ><span style="${colorStyle}">${String.trim(name)}</span
-    ><div class="tooltip">
-      <div class="arrow"></div>
-      <div class="arrow inside"></div>
-      <div class="authorInfo">
-        <span class="name">${tooltipName}</span>
-        <span class="authorEmail">${email}</span>
-      </div>
-      <div class="authorPicture">
-        <img src="${avatar}">
-      </div>
-      <div class="authorInfo authorLinks">
-        {{if ("facebook" in profiles)}}
-        <a href="http://www.facebook.com/profile.php?id=${profiles.facebook}" class="profile-link">
-          <img src="chrome://conversations/content/i/facebook.ico" />
-        </a>
-        {{/if}}
-        {{if ("twitter" in profiles)}}
-        <a href="http://www.twitter.com/${profiles.twitter}" class="profile-link">
-          <img src="chrome://conversations/content/i/twitter.ico" />
-        </a>
-        {{/if}}
-      </div>
-      <div class="tipFooter">
-        <button class="sendEmail">send email</button>
-        <button>more</button>
-      </div>
-    </div
-  ></span
+    >${separator}</span
+    ><span class="tooltipWrapper"
+      ><span style="${colorStyle}">${String.trim(name)}</span
+      ><div class="tooltip">
+        <div class="arrow"></div>
+        <div class="arrow inside"></div>
+        <div class="authorInfo">
+          <span class="name">${tooltipName}</span>
+          <span class="authorEmail">${email}</span>
+        </div>
+        <div class="authorPicture">
+          <img src="${avatar}">
+        </div>
+        <div class="authorInfo authorLinks">
+          {{if ("facebook" in profiles)}}
+          <a href="http://www.facebook.com/profile.php?id=${profiles.facebook}" class="profile-link">
+            <img src="chrome://conversations/content/i/facebook.ico" />
+          </a>
+          {{/if}}
+          {{if ("twitter" in profiles)}}
+          <a href="http://www.twitter.com/${profiles.twitter}" class="profile-link">
+            <img src="chrome://conversations/content/i/twitter.ico" />
+          </a>
+          {{/if}}
+        </div>
+        <div class="tipFooter">
+          <button class="sendEmail">send email</button>
+          <button>more</button>
+        </div>
+      </div
+    ></span
   ></script>
+  <script id="quickReplyTemplate" type="text/x-jquery-tmpl">
+    <div class="quickReply">
+      <div class="quickReplyRecipients">
+        <ul>
+          <li><a href="javascript:">add cc</a></li> |
+          <li><a href="javascript:">add bcc</a></li> |
+          <li><a href="javascript:">edit subject</a></li> |
+          <li><a href="javascript:">attach a file</a></li>
+        </ul>
+        <div class="editRecipientList hbox">
+          <div class="label">to:</div>
+          <div class="boxFlex"><input type="text" value="Roland Tanglao, David Ascher, Bryan Clark, James Burke"></div>
+        </div>
+        <ul class="recipientList">
+          to:
+          <li>Roland Tanglao, </li>
+          <li>David Ascher, </li>
+          <li>Bryan Clark, </li>
+          <li>James Burke</li> -
+          <li><a href="javascript:" onClick="$(this).parent().parent().parent().addClass('edit')">add more</a></li>
+        </ul>
+      </div>
+      <div class="quickReplyHeader">
+        insert formatting options here
+      </div>
+      <textarea onClick="$(this).parent().addClass('expand')"></textarea>
+      <div class="quickReplyFooter">
+        <button onClick="$(this).parent().parent().toggleClass('expand')">discard</button>
+        <button style="float:right;margin-left:3px;">send</button>
+        <button style="float:right">save</button>
+      </div>
+    </div>
+  </script>
   <div id="wrapper">
     <div id="conversationHeaderWrapper">
       <div id="conversationHeader" class="hbox">

@@ -436,7 +436,7 @@ Conversation.prototype = {
       this.messages = this.messages.concat(aMessages);
 
       let $ = this._htmlPane.contentWindow.$;
-      let tmplData = [m.message.toTmplData()
+      let tmplData = [m.message.toTmplData(false)
         for each ([_i, m] in Iterator(aMessages))];
       $("#messageTemplate").tmpl(tmplData).appendTo($(this._domNode));
 
@@ -554,8 +554,8 @@ Conversation.prototype = {
     // XXX this does not take the "reverse_order" pref into account. Screw this,
     // I'm never going to handle that anyway, it's too fscking complicated.
     let $ = this._htmlPane.contentWindow.$;
-    let tmplData = [m.message.toTmplData()
-      for each ([_i, m] in Iterator(this.messages))];
+    let tmplData = [m.message.toTmplData(i == this.messages.length - 1)
+      for each ([i, m] in Iterator(this.messages))];
     // We must do this if we are to ever release the previous Conversation
     //  object. See comments in stub.html for the nice details.
     this._htmlPane.contentWindow.cleanup();

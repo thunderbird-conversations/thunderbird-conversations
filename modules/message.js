@@ -180,7 +180,7 @@ Message.prototype = {
   },
 
   // Output this message as a whole bunch of HTML
-  toTmplData: function () {
+  toTmplData: function (aQuickReply) {
     let $ = this._conversation._htmlPane.contentWindow.$;
     let self = this;
     let data = {
@@ -192,6 +192,7 @@ Message.prototype = {
       attachments: [],
       folderName: null,
       draft: null,
+      quickReply: aQuickReply,
     };
 
     // 1) Generate Contact objects
@@ -327,9 +328,12 @@ Message.prototype = {
       this.compose(Ci.nsIMsgCompType.ForwardInline, event);
   },
 
-  register: function _Message_register (selector, f, action) {
-    if (!action)
+  register: function _Message_register (selector, f, options) {
+    let action;
+    if (typeof(options) == "undefined" || typeof(options.action) == "undefined")
       action = "click";
+    else
+      action = options.action;
     let nodes;
     if (selector === null)
       nodes = [this._domNode];
@@ -501,6 +505,9 @@ Message.prototype = {
     this.register(".download-all", function (event) {
       mainWindow.HandleMultipleAttachments(attachmentInfos, "save");
     });
+    this.register(".quickReply textarea", function (event) {
+      event.stopPropagation();
+    }, { action: "keypress" });
   },
 
   _reloadMessage: function _Message_reloadMessage () {
