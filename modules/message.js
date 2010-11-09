@@ -505,7 +505,7 @@ Message.prototype = {
     this.register(".download-all", function (event) {
       mainWindow.HandleMultipleAttachments(attachmentInfos, "save");
     });
-    this.register(".quickReply textarea", function (event) {
+    this.register(".quickReply", function (event) {
       event.stopPropagation();
     }, { action: "keypress" });
   },

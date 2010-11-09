@@ -648,6 +648,11 @@ ul.special-tags img {
   margin: 0 3px 0 0;
 }
 
+.autocomplete-thumb {
+  height: 22px;
+  vertical-align: middle;
+}
+
 /* clearfix */
 
 .clearfix:after {

@@ -431,7 +431,8 @@ Conversation.prototype = {
     //  actually changed selections.
     if (aMessages.length) {
       // All your messages are belong to us. This is especially important so
-      // that contacts query the right _contactManager
+      //  that contacts query the right _contactManager through their parent
+      //  Message.
       [(x.message._conversation = this) for each ([, x] in Iterator(aMessages))];
       this.messages = this.messages.concat(aMessages);
 
@@ -439,6 +440,11 @@ Conversation.prototype = {
       let tmplData = [m.message.toTmplData(false)
         for each ([_i, m] in Iterator(aMessages))];
       $("#messageTemplate").tmpl(tmplData).appendTo($(this._domNode));
+
+
+      // Important: don't forget to move the quick reply part into the last
+      //  message.
+      $(".quickReply").appendTo($(".message:last"));
 
       // Notify each message that it's been added to the DOM and that it can do
       //  event registration and stuff...
@@ -560,7 +566,6 @@ Conversation.prototype = {
     //  object. See comments in stub.html for the nice details.
     this._htmlPane.contentWindow.cleanup();
     // Go!
-    debugger;
     $("#messageTemplate").tmpl(tmplData).appendTo($(this._domNode));
 
     // Notify each message that it's been added to the DOM and that it can do

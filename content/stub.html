@@ -7,9 +7,11 @@
   <link rel="stylesheet" type="text/css" href="chrome://messenger/skin/tagColors.css"/>
   <link rel="stylesheet" type="text/css" href="chrome://conversations/skin/boxflex.css">
   <link rel="stylesheet" type="text/css" href="chrome://conversations/skin/conversation.css">
+  <link rel="stylesheet" type="text/css" href="chrome://conversations/skin/tokeninput.css">
   <script type="text/javascript" src="chrome://conversations/content/js/jquery-1.4.3.min.js"></script>
   <script type="text/javascript" src="chrome://conversations/content/js/jquery.text-overflow.js"></script>
   <script type="text/javascript" src="chrome://conversations/content/js/jquery.tmpl.js"></script>
+  <script type="text/javascript" src="chrome://conversations/content/js/jquery.tokeninput.js"></script>
   <script type="application/javascript;version=1.8"
     src="chrome://conversations/content/stub.compose-ui.js"></script>
   <script type="application/javascript;version=1.8">
@@ -384,28 +386,56 @@
     <div class="quickReply">
       <div class="quickReplyRecipients">
         <ul>
-          <li><a href="javascript:">add cc</a></li> |
-          <li><a href="javascript:">add bcc</a></li> |
+          <li class="showCc"><a onclick="showCc(); editFields();" href="javascript:">add cc</a> |</li>
+          <li class="showBcc"><a onclick="showBcc(); editFields();" href="javascript:">add bcc</a> |</li>
           <li><a href="javascript:">edit subject</a></li> |
           <li><a href="javascript:">attach a file</a></li>
         </ul>
-        <div class="editRecipientList hbox">
+        <ul>
+          from:
+          <li class="senderName"></li>
+        </ul>
+        <div class="editRecipientList editToList hbox">
           <div class="label">to:</div>
-          <div class="boxFlex"><input type="text" value="Roland Tanglao, David Ascher, Bryan Clark, James Burke"></div>
+          <div class="boxFlex"><input type="text" id="to"></div>
         </div>
-        <ul class="recipientList">
+        <div class="editRecipientList editCcList hbox" style="display: none">
+          <div class="label">cc:</div>
+          <div class="boxFlex"><input type="text" id="cc"></div>
+        </div>
+        <div class="editRecipientList editBccList hbox" style="display: none">
+          <div class="label">bcc:</div>
+          <div class="boxFlex"><input type="text" id="bcc"></div>
+        </div>
+        <ul class="recipientList toList">
           to:
           <li>Roland Tanglao, </li>
           <li>David Ascher, </li>
           <li>Bryan Clark, </li>
-          <li>James Burke</li> -
-          <li><a href="javascript:" onClick="$(this).parent().parent().parent().addClass('edit')">add more</a></li>
+          <li>James Burke</li>
+          <li class="add-more">&nbsp;- <a href="javascript:" onClick="editFields();">add more</a></li>
+        </ul>
+        <ul class="recipientList ccList" style="display: none;">
+          cc:
+          <li>Roland Tanglao, </li>
+          <li>David Ascher, </li>
+          <li>Bryan Clark, </li>
+          <li>James Burke</li>
+          <li class="add-more">&nbsp;- <a href="javascript:" onClick="editFields();">add more</a></li>
+        </ul>
+        <ul class="recipientList bccList" style="display: none;">
+          bcc:
+          <li>Roland Tanglao, </li>
+          <li>David Ascher, </li>
+          <li>Bryan Clark, </li>
+          <li>James Burke</li>
+          <li class="add-more">&nbsp;- <a href="javascript:" onClick="editFields();">add more</a></li>
         </ul>
       </div>
       <div class="quickReplyHeader">
         insert formatting options here
       </div>
-      <textarea onClick="$(this).parent().addClass('expand')"></textarea>
+      <textarea onclick="onTextareaClicked(event);"></textarea>
       <div class="quickReplyFooter">
         <button onClick="$(this).parent().parent().toggleClass('expand')">discard</button>
         <button style="float:right;margin-left:3px;">send</button>

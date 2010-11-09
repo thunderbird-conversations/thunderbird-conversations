@@ -74,7 +74,7 @@ function fillIdentities () {
   gIdentities = {};
   for each (let id in fixIterator(msgAccountManager.allIdentities, Ci.nsIMsgIdentity)) {
     // id.fullName
-    gIdentities[id.email] = true;
+    gIdentities[id.email] = id;
   }
 }
 fillIdentities();
