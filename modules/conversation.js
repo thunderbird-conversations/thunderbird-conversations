@@ -559,14 +559,27 @@ Conversation.prototype = {
     // previous conversation (but not the conversation-wide event handlers!)
     // XXX this does not take the "reverse_order" pref into account. Screw this,
     // I'm never going to handle that anyway, it's too fscking complicated.
+    let t0  = (new Date()).getTime();
     let $ = this._htmlPane.contentWindow.$;
     let tmplData = [m.message.toTmplData(i == this.messages.length - 1)
       for each ([i, m] in Iterator(this.messages))];
     // We must do this if we are to ever release the previous Conversation
     //  object. See comments in stub.html for the nice details.
     this._htmlPane.contentWindow.cleanup();
+    // We need to split the big array in small chunks because jquery-tmpl chokes
+    //  on big outputs... Snarky remark: that didn't happen with my innerHTML
+    //  solution. On my computer, jquery-tmpl chokes at 93 messages.
+    let chunkSize = 50;
+    let nChunks = Math.ceil(tmplData.length/chunkSize);
+    let chunks = [];
+    for (let i = 0; i <= nChunks; ++i) {
+      chunks.push(tmplData.slice(i*chunkSize, (i+1)*chunkSize));
+    }
+    Log.debug(tmplData.length, "data objects total, splitting into", nChunks, "chunks");
     // Go!
-    $("#messageTemplate").tmpl(tmplData).appendTo($(this._domNode));
+    for (let i = 0; i < chunks.length; ++i)
+      $("#messageTemplate").tmpl(chunks[i]).appendTo($(this._domNode));
+    Log.debug("Template generation took", (new Date()).getTime() - t0, "ms");
 
     // Notify each message that it's been added to the DOM and that it can do
     // event registration and stuff...
