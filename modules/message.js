@@ -181,7 +181,6 @@ Message.prototype = {
 
   // Output this message as a whole bunch of HTML
   toTmplData: function (aQuickReply) {
-    let $ = this._conversation._htmlPane.contentWindow.$;
     let self = this;
     let data = {
       dataContactFrom: null,
