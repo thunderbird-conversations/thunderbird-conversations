@@ -398,6 +398,12 @@ Conversation.prototype = {
     //  that is, that isPreferred is called first and that the search stops as
     //  soon as isPreferred returns true, and the selected message is the one
     //  for which isPreferred said "true".
+    // XXX we should have a mechanism here that says we prefer the message
+    //  that's selected and then, if we can't find one, take the one that's in
+    //  the current view. The order is RIGHT in the || below but really we
+    //  should be making two passes.
+    // Solution: really write selectRightMessage here, it's not really a library
+    //  function.
     let isPreferred = function (aMsg) {
       // NB: selectRightMessage does check for non-null msgHdrs before calling
       //  us.
@@ -445,6 +451,9 @@ Conversation.prototype = {
       // Important: don't forget to move the quick reply part into the last
       //  message.
       $(".quickReply").appendTo($(".message:last"));
+      // Invalidate the last quick reply settings so that we make sure the
+      //  composition fields are updated to match the last message that arrived.
+      this._htmlPane.contentWindow.gComposeParams.msgHdr = null;
 
       // Notify each message that it's been added to the DOM and that it can do
       //  event registration and stuff...
@@ -563,6 +572,7 @@ Conversation.prototype = {
     let $ = this._htmlPane.contentWindow.$;
     let tmplData = [m.message.toTmplData(i == this.messages.length - 1)
       for each ([i, m] in Iterator(this.messages))];
+    Log.debug("So far, ", (new Date()).getTime() - t0, "ms");
     // We must do this if we are to ever release the previous Conversation
     //  object. See comments in stub.html for the nice details.
     this._htmlPane.contentWindow.cleanup();
@@ -577,6 +587,7 @@ Conversation.prototype = {
     }
     Log.debug(tmplData.length, "data objects total, splitting into", nChunks, "chunks");
     // Go!
+    Log.debug("So far, ", (new Date()).getTime() - t0, "ms");
     for (let i = 0; i < chunks.length; ++i)
       $("#messageTemplate").tmpl(chunks[i]).appendTo($(this._domNode));
     Log.debug("Template generation took", (new Date()).getTime() - t0, "ms");

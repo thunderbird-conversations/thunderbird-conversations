@@ -398,6 +398,8 @@ Message.prototype = {
       event.stopPropagation();
     });
     this.register(".action-delete", function (event) {
+      // XXX we should rebuild the conversation here, because if the message is
+      //  not in the current view, we won't be recreated
       msgHdrsDelete([self._msgHdr]);
       event.stopPropagation();
     });

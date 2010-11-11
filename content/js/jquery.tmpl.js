@@ -286,6 +286,9 @@
 		// top-level template
 		ret = ret.join("");
 
+		// The regexp thing really slows us down and I don't feel like it's strictly necessary, so I'm removing it for now
+		return frag ? frag : unencode( ret );
+
 		// Support templates which have initial or final text nodes, or consist only of text
 		// Also support HTML entities within the HTML markup.
 		ret.replace( /^\s*([^<\s][^<]*)?(<[\w\W]+>)([^>]*[^>\s])?\s*$/, function( all, before, middle, after) {

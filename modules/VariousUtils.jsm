@@ -39,7 +39,7 @@ var EXPORTED_SYMBOLS = [
   'gIdentities', 'fillIdentities',
   // miscellaneous functions
   'dateAsInMessageList', 'selectRightMessage', 'groupArray', 'range',
-  'escapeHtml', 'MixIn',
+  'escapeHtml', 'MixIn', 'NS_FAILED', 'NS_SUCCEEDED',
   // heuristics for finding quoted parts
   'convertHotmailQuotingToBlockquote1', 'convertHotmailQuotingToBlockquote2',
   'convertOutlookQuotingToBlockquote', 'convertForwardedToBlockquote',
@@ -65,6 +65,14 @@ const headerParser = Cc["@mozilla.org/messenger/headerparser;1"]
 const msgAccountManager = Cc["@mozilla.org/messenger/account-manager;1"]
                              .getService(Ci.nsIMsgAccountManager);
 
+function NS_FAILED(v) {
+  return (v & 0x80000000);
+}
+
+function NS_SUCCEEDED(v) {
+  return !NS_FAILED(v);
+}
+
 /**
  * A global pointer to all the identities known for the user. Feel free to call
  * fillIdentities again if you feel that the user has updated them!
@@ -76,6 +84,7 @@ function fillIdentities () {
     // id.fullName
     gIdentities[id.email] = id;
   }
+  gIdentities["default"] = msgAccountManager.defaultAccount.defaultIdentity;
 }
 fillIdentities();
 

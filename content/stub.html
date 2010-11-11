@@ -432,13 +432,14 @@
           <li class="add-more">&nbsp;- <a href="javascript:" onClick="editFields();">add more</a></li>
         </ul>
       </div>
-      <div class="quickReplyHeader">
-        insert formatting options here
+      <div class="quickReplyHeader" style="display: none; overflow: auto">
+        <span class="statusMessage" style="float: left;"></span>
+        <span class="statusPercentage" style="float: right;"></span>
       </div>
       <textarea onclick="onTextareaClicked(event);"></textarea>
       <div class="quickReplyFooter">
-        <button onClick="$(this).parent().parent().toggleClass('expand')">discard</button>
-        <button style="float:right;margin-left:3px;">send</button>
+        <button onclick="onDiscard();">discard</button>
+        <button style="float:right;margin-left:3px;" onclick="onSend(event);">send</button>
         <button style="float:right">save</button>
       </div>
     </div>

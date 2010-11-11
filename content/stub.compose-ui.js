@@ -5,26 +5,15 @@ const Cr = Components.results;
 
 Cu.import("resource:///modules/XPCOMUtils.jsm"); // for generateQI
 
-// XXX remove the useless ones when done with the file
 const gMessenger = Cc["@mozilla.org/messenger;1"]
                    .createInstance(Ci.nsIMessenger);
 const gHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"]
                       .getService(Ci.nsIMsgHeaderParser);
-const gMsgTagService = Cc["@mozilla.org/messenger/tagservice;1"]
-                       .getService(Ci.nsIMsgTagService);
-const ioService = Cc["@mozilla.org/network/io-service;1"]
-                  .getService(Ci.nsIIOService);
-const msgComposeService = Cc["@mozilla.org/messengercompose;1"]
-                          .getService(Ci.nsIMsgComposeService);
-const accountManager = Cc["@mozilla.org/messenger/account-manager;1"]
-                        .getService(Ci.nsIMsgAccountManager);
 
-// XXX same remark
 Cu.import("resource://conversations/AddressBookUtils.jsm");
 Cu.import("resource://conversations/VariousUtils.jsm");
 Cu.import("resource://conversations/MsgHdrUtils.jsm");
-Cu.import("resource://conversations/prefs.js");
-Cu.import("resource://conversations/contact.js");
+Cu.import("resource://conversations/send.js");
 Cu.import("resource://conversations/log.js");
 
 let Log = setupLogging("Conversations.Stub.Compose");
@@ -35,10 +24,12 @@ try {
 }
 
 let gComposeParams = {
+  msgHdr: null,
   identity: null,
   to: null,
   cc: null,
   bcc: null,
+  subject: null,
 };
 
 // ----- Event listeners
@@ -48,6 +39,8 @@ function onTextareaClicked(event) {
   // Do it just once
   if (!$(event.target).parent().hasClass('expand')) {
     $(event.target).parent().addClass('expand');
+  }
+  if (!gComposeParams.msgHdr) { // first time
     let messages = Conversations.currentConversation.messages;
     setupReplyForMsgHdr(messages[messages.length - 1].message._msgHdr);
     scrollNodeIntoView(document.querySelector(".quickReply"));
@@ -69,6 +62,30 @@ function editFields(event) {
   $('.quickReplyRecipients').addClass('edit');
 }
 
+function onDiscard(event) {
+  $(".quickReply").removeClass('expand');
+  $("textarea").val("");
+}
+
+function onSend(event) {
+  let textarea = document.getElementsByTagName("textarea")[0];
+  sendMessage({
+      msgHdr: gComposeParams.msgHdr,
+      identity: gComposeParams.identity,
+      to: $("#to").val(),
+      cc: $("#cc").val(),
+      bcc: $("#bcc").val(),
+      subject: gComposeParams.subject,
+    }, {
+      compType: Ci.nsIMsgCompType.ReplyAll,
+      deliverType: Ci.nsIMsgCompDeliverMode.Now,
+    }, textarea, {
+      progressListener: progressListener,
+      sendListener: sendListener,
+    }
+  );
+}
+
 // ----- Helpers
 
 // Just get the email and/or name from a MIME-style "John Doe <john@blah.com>"
@@ -87,12 +104,22 @@ function parse(aMimeLine) {
 function setupReplyForMsgHdr(aMsgHdr) {
   // Standard procedure for finding which identity to send with, as per
   // http://mxr.mozilla.org/comm-central/source/mail/base/content/mailCommands.js#210
-  let folder = aMsgHdr.folder;
-  let identity = folder.customIdentity;
-  if (!identity)
-    identity = getMail3Pane().getIdentityForServer(folder.server);
-  // Set the global parameter
+  // XXX something's wrong but I don't know what
+  let mainWindow = getMail3Pane();
+  let identityForFolder = function (folder) {
+    let identity = folder.customIdentity;
+    let server = folder.server;
+    if (!identity)
+      identity = mainWindow.getIdentityForServer(folder.server);
+    return identity;
+  }
+  let identity = ((identityForFolder(mainWindow.GetFirstSelectedMsgFolder())
+      || identityForFolder(aMsgHdr.folder))
+    || gIdentities.default);
+  // Set the global parameters
   gComposeParams.identity = identity;
+  gComposeParams.msgHdr = aMsgHdr;
+  gComposeParams.subject = "Re: "+aMsgHdr.mime2DecodedSubject;
 
   // Do the whole shebang to find out who to send to...
   let [author, authorEmailAddress] = parse(aMsgHdr.mime2DecodedAuthor);
@@ -211,6 +238,8 @@ let autoCompleteClasses = {
 }
 
 function setupAutocomplete() {
+  // XXX this function can't be called twice, make sure we thrash the previous
+  // #to, #cc, etc.
   let fill = function (aInput, aList, aData) {
     $(aInput).tokenInput(peopleAutocomplete, {
       classes: autoCompleteClasses,
@@ -242,4 +271,179 @@ function setupAutocomplete() {
     showBcc();
 }
 
+// ----- Listeners.
+//
+// These are notified about the outcome of the send process and take the right
+//  action accordingly (close window on success, etc. etc.)
 
+function pValue (v) {
+  $(".statusPercentage")
+    .show()
+    .text(v+"%")
+}
+
+function pUndetermined () {
+  $(".statusPercentage")
+    .hide()
+}
+
+function pText (t) {
+  $(".statusMessage").text(t);
+}
+
+// all progress notifications are done through the nsIWebProgressListener implementation...
+let progressListener = {
+  onStateChange: function (aWebProgress, aRequest, aStateFlags, aStatus) {
+    Log.debug("onStateChange", aWebProgress, aRequest, aStateFlags, aStatus);
+    if (aStateFlags & Ci.nsIWebProgressListener.STATE_START) {
+      pUndetermined();
+      $(".quickReplyHeader").show();
+    }
+
+    if (aStateFlags & Ci.nsIWebProgressListener.STATE_STOP) {
+      pValue(0);
+      pText('');
+      $(".quickReplyHeader").hide();
+      $(".quickReply").removeClass('expand');
+      $("textarea").val("");
+    }
+  },
+
+  onProgressChange: function(aWebProgress, aRequest, aCurSelfProgress, aMaxSelfProgress, aCurTotalProgress, aMaxTotalProgress) {
+    Log.debug("onProgressChange", aWebProgress, aRequest, aCurSelfProgress, aMaxSelfProgress, aCurTotalProgress, aMaxTotalProgress);
+    // Calculate percentage.
+    var percent;
+    if (aMaxTotalProgress > 0) {
+      percent = Math.round( (aCurTotalProgress*100)/aMaxTotalProgress );
+      if (percent > 100)
+        percent = 100;
+
+      // Advance progress meter.
+      pValue(percent);
+    } else {
+      // Progress meter should be barber-pole in this case.
+      pUndetermined();
+    }
+  },
+
+  onLocationChange: function(aWebProgress, aRequest, aLocation) {
+    // we can ignore this notification
+  },
+
+  onStatusChange: function(aWebProgress, aRequest, aStatus, aMessage) {
+    pText(aMessage);
+  },
+
+  onSecurityChange: function(aWebProgress, aRequest, state) {
+    // we can ignore this notification
+  },
+
+  QueryInterface: XPCOMUtils.generateQI([
+    Ci.nsIWebProgressListener,
+    Ci.nsISupports
+  ]),
+};
+
+let sendListener = {
+  /**
+   * Notify the observer that the message has started to be delivered. This method is
+   * called only once, at the beginning of a message send operation.
+   *
+   * @return The return value is currently ignored.  In the future it may be
+   * used to cancel the URL load..
+   */
+  onStartSending: function (aMsgID, aMsgSize) {
+    pText("Sending message...");
+    Log.debug("onStartSending", aMsgID, aMsgSize);
+  },
+
+  /**
+   * Notify the observer that progress as occurred for the message send
+   */
+  onProgress: function (aMsgID, aProgress, aProgressMax) {
+    Log.debug("onProgress", aMsgID, aProgress, aProgressMax);
+  },
+
+  /**
+   * Notify the observer with a status message for the message send
+   */
+  onStatus: function (aMsgID, aMsg) {
+    Log.debug("onStatus", aMsgID, aMsg);
+  },
+
+  /**
+   * Notify the observer that the message has been sent.  This method is 
+   * called once when the networking library has finished processing the 
+   * message.
+   * 
+   * This method is called regardless of whether the the operation was successful.
+   * aMsgID   The message id for the mail message
+   * status   Status code for the message send.
+   * msg      A text string describing the error.
+   * returnFileSpec The returned file spec for save to file operations.
+   */
+  onStopSending: function (aMsgID, aStatus, aMsg, aReturnFile) {
+    // if (aExitCode == NS_ERROR_SMTP_SEND_FAILED_UNKNOWN_SERVER ||
+    //     aExitCode == NS_ERROR_SMTP_SEND_FAILED_UNKNOWN_REASON ||
+    //     aExitCode == NS_ERROR_SMTP_SEND_FAILED_REFUSED ||
+    //     aExitCode == NS_ERROR_SMTP_SEND_FAILED_INTERRUPTED ||
+    //     aExitCode == NS_ERROR_SMTP_SEND_FAILED_TIMEOUT ||
+    //     aExitCode == NS_ERROR_SMTP_PASSWORD_UNDEFINED ||
+    //     aExitCode == NS_ERROR_SMTP_AUTH_FAILURE ||
+    //     aExitCode == NS_ERROR_SMTP_AUTH_GSSAPI ||
+    //     aExitCode == NS_ERROR_SMTP_AUTH_MECH_NOT_SUPPORTED ||
+    //     aExitCode == NS_ERROR_SMTP_AUTH_NOT_SUPPORTED ||
+    //     aExitCode == NS_ERROR_SMTP_AUTH_CHANGE_ENCRYPT_TO_PLAIN_NO_SSL ||
+    //     aExitCode == NS_ERROR_SMTP_AUTH_CHANGE_ENCRYPT_TO_PLAIN_SSL ||
+    //     aExitCode == NS_ERROR_SMTP_AUTH_CHANGE_PLAIN_TO_ENCRYPT ||
+    //     aExitCode == NS_ERROR_STARTTLS_FAILED_EHLO_STARTTLS)
+    //
+    // Moar in mailnews/compose/src/nsComposeStrings.h
+    Log.debug("onStopSending", aMsgID, aStatus, aMsg, aReturnFile);
+    // This function is called only when the actual send has been performed,
+    //  i.e. is not called when saving a draft (although msgCompose.SendMsg is
+    //  called...)
+    if (NS_SUCCEEDED(aStatus)) {
+      //if (gOldDraftToDelete)
+      //  msgHdrsDelete([gOldDraftToDelete]);
+      pText("Message "+aMsgID+" sent successfully"); 
+    } else {
+      Log.debug("NS_FAILED onStopSending");
+    }
+  },
+
+  /**
+   * Notify the observer with the folder uri before the draft is copied.
+   */
+  onGetDraftFolderURI: function (aFolderURI) {
+    Log.debug("onGetDraftFolderURI", aFolderURI);
+  },
+
+  /**
+   * Notify the observer when the user aborts the send without actually doing the send
+   * eg : by closing the compose window without Send.
+   */
+  onSendNotPerformed: function (aMsgID, aStatus) {
+    Log.debug("onSendNotPerformed", aMsgID, aStatus);
+  },
+
+  QueryInterface: XPCOMUtils.generateQI([
+    Ci.nsIMsgSendListener,
+    Ci.nsISupports
+  ]),
+}
+
+let copyListener = {
+  onStopCopy: function (aStatus) {
+    Log.debug("onStopCopy", aStatus);
+    if (NS_SUCCEEDED(aStatus)) {
+      //if (gOldDraftToDelete)
+      //  msgHdrsDelete(gOldDraftToDelete);
+    }
+  },
+
+  QueryInterface: XPCOMUtils.generateQI([
+    Ci.nsIMsgCopyServiceListener,
+    Ci.nsISupports
+  ]),
+}

@@ -1,0 +1,130 @@
+var EXPORTED_SYMBOLS = ['sendMessage']
+
+const Ci = Components.interfaces;
+const Cc = Components.classes;
+const Cu = Components.utils;
+const Cr = Components.results;
+
+Cu.import("resource:///modules/XPCOMUtils.jsm"); // for generateQI
+Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
+Cu.import("resource:///modules/PluralForm.jsm");
+
+const gMessenger = Cc["@mozilla.org/messenger;1"]
+                   .createInstance(Ci.nsIMessenger);
+const gHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"]
+                      .getService(Ci.nsIMsgHeaderParser);
+const gMsgTagService = Cc["@mozilla.org/messenger/tagservice;1"]
+                       .getService(Ci.nsIMsgTagService);
+const ioService = Cc["@mozilla.org/network/io-service;1"]
+                  .getService(Ci.nsIIOService);
+const msgComposeService = Cc["@mozilla.org/messengercompose;1"]
+                          .getService(Ci.nsIMsgComposeService);
+const mCompType = Ci.nsIMsgCompType;
+
+let strings = new StringBundle("chrome://conversations/locale/main.properties");
+
+Cu.import("resource://conversations/AddressBookUtils.jsm");
+Cu.import("resource://conversations/VariousUtils.jsm");
+Cu.import("resource://conversations/MsgHdrUtils.jsm");
+Cu.import("resource://conversations/prefs.js");
+Cu.import("resource://conversations/contact.js");
+Cu.import("resource://conversations/hook.js");
+Cu.import("resource://conversations/log.js");
+
+let Log = setupLogging("Conversations.Send");
+
+/**
+ * Actually send the message based on the given parameters.
+ */
+function sendMessage({ msgHdr, identity, to, cc, bcc, subject },
+    { deliverType, compType },
+    aNode, { progressListener, sendListener }) {
+
+  // Here is the part where we do all the stuff related to filling proper
+  //  headers, adding references, making sure all the composition fields are
+  //  properly set before assembling the message.
+  let fields = Cc["@mozilla.org/messengercompose/composefields;1"]
+                  .createInstance(Ci.nsIMsgCompFields);
+  fields.from = identity.fullName + " <" + identity.email + ">";
+  fields.to = to;
+  fields.cc = cc;
+  fields.bcc = bcc;
+  fields.subject = subject;
+
+  let references = [];
+  switch (compType) {
+    case mCompType.New:
+      break;
+
+    case mCompType.Reply:
+    case mCompType.ReplyAll:
+    case mCompType.ReplyToSender:
+    case mCompType.ReplyToGroup:
+    case mCompType.ReplyToSenderAndGroup:
+    case mCompType.ReplyWithTemplate:
+    case mCompType.ReplyToList:
+      references = [msgHdr.getStringReference(i)
+        for each (i in range(0, msgHdr.numReferences))];
+      references.push(msgHdr.messageId);
+      break;
+
+    case mCompType.ForwardAsAttachment:
+    case mCompType.ForwardInline:
+      references.push(msgHdr.messageId);
+      break;
+  }
+  references = ["<"+x+">" for each ([, x] in Iterator(references))];
+  fields.references = references.join(", ");
+
+  // TODO:
+  // - fields.addAttachment (when attachments taken into account)
+
+  // See suite/mailnews/compose/MsgComposeCommands.js#1783
+  // We're explicitly forcing plaintext here. There editor's not fancy yet, so
+  //  no reason to send HTML. Plus, from what I (think I) understood, when
+  //  switching to a HTML-style composition, fields.body is discarded and the
+  //  serialization (possibly performed by the editor) of the HTML is used
+  //  instead, so that would require us to implement our very own HTML
+  //  serializer (there might exist some already, though).
+  fields.forcePlainText = true;
+  fields.useMultipartAlternative = false;
+  fields.body = aNode.value+"\n"; // doesn't work without the newline. weird.
+  fields.ConvertBodyToPlainText();
+
+  // We trick the composition service into thinking that we fired a plaintext
+  //  composition window, so that it doesn't try to run the HTML serializer or
+  //  whatever.
+  let params = Cc["@mozilla.org/messengercompose/composeparams;1"]
+                  .createInstance(Ci.nsIMsgComposeParams);
+  params.composeFields = fields;
+  params.identity = identity;
+  params.type = compType;
+  params.format = Ci.nsIMsgCompFormat.PlainText;
+  params.sendListener = sendListener;
+
+  // This part initializes a nsIMsgCompose instance. This is useless, because
+  //  that component is supposed to talk to the "real" compose window, set the
+  //  encoding, set the composition mode... we're only doing that because we
+  //  can't send the message ourselves because of too many [noscript]s.
+  let msgCompose;
+  if ("InitCompose" in msgComposeService) // comm-1.9.2
+    msgCompose = msgComposeService.InitCompose (null, params);
+  else // comm-central
+    msgCompose = msgComposeService.initCompose(params);
+
+  // We create a progress listener...
+  var progress = Cc["@mozilla.org/messenger/progress;1"]
+                   .createInstance(Ci.nsIMsgProgress);
+  if (progress) {
+    progress.registerListener(progressListener);
+  }
+  //msgCompose.RegisterStateListener(stateListener);
+
+  try {
+    msgCompose.SendMsg (deliverType, identity, "", null, progress);
+  } catch (e) {
+    Log.error(e);
+    dumpCallStack(e);
+  }
+  return true;
+}
