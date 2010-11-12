@@ -32,6 +32,18 @@ let gComposeParams = {
   subject: null,
 };
 
+// bug 495747 #c10
+let url = "http://www.xulforum.org";
+let ios = Components.classes["@mozilla.org/network/io-service;1"]
+  .getService(Components.interfaces.nsIIOService);
+let ssm = Components.classes["@mozilla.org/scriptsecuritymanager;1"]
+  .getService(Components.interfaces.nsIScriptSecurityManager);
+let dsm = Components.classes["@mozilla.org/dom/storagemanager;1"]
+  .getService(Components.interfaces.nsIDOMStorageManager);
+let uri = ios.newURI(url, "", null);
+let principal = ssm.getCodebasePrincipal(uri);
+let storage = dsm.getLocalStorageForPrincipal(principal, "");
+
 // ----- Event listeners
 
 // Called when we need to expand the textarea and start editing a new message
@@ -63,8 +75,17 @@ function editFields(event) {
 }
 
 function onDiscard(event) {
-  $(".quickReply").removeClass('expand');
   $("textarea").val("");
+  onSave(event);
+}
+
+function onSave(event) {
+  storage.setItem("conversation", $("textarea").val());
+  $(".quickReply").removeClass('expand');
+}
+
+function loadDraft() {
+  $("textarea").val(storage.getItem("conversation"));
 }
 
 function onSend(event) {
@@ -116,6 +137,7 @@ function setupReplyForMsgHdr(aMsgHdr) {
   let identity = ((identityForFolder(mainWindow.GetFirstSelectedMsgFolder())
       || identityForFolder(aMsgHdr.folder))
     || gIdentities.default);
+  Log.debug("We picked", identity.email, "for sending");
   // Set the global parameters
   gComposeParams.identity = identity;
   gComposeParams.msgHdr = aMsgHdr;
@@ -308,8 +330,7 @@ let progressListener = {
       pValue(0);
       pText('');
       $(".quickReplyHeader").hide();
-      $(".quickReply").removeClass('expand');
-      $("textarea").val("");
+      onDiscard();
     }
   },
 
