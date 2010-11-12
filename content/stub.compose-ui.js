@@ -238,9 +238,13 @@ let autoCompleteClasses = {
 }
 
 function setupAutocomplete() {
-  // XXX this function can't be called twice, make sure we thrash the previous
-  // #to, #cc, etc.
+  // This function assumes aInput is #something
   let fill = function (aInput, aList, aData) {
+    // Cleanup the mess left by tokenInput.
+    let $parent = $(aInput).parent();
+    $parent.empty();
+    $parent.append($("<input type=\"text\" id=\""+aInput.substring(1)+"\" />"));
+    // No we can start fresh.
     $(aInput).tokenInput(peopleAutocomplete, {
       classes: autoCompleteClasses,
       prePopulate: aData,

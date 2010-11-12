@@ -512,6 +512,10 @@ Conversation.prototype = {
     // Try to reuse the previous conversation if possible
     if (this._window.Conversations.currentConversation) {
       let currentMsgSet = this._window.Conversations.currentConversation.messages;
+      // We gotta use URIs, because using Message-IDs can create inconsistencies
+      //  when different messages with the same Message-ID are present in the
+      //  current, expanded thread (breaks the invariant that the selected
+      //  message is also the one that's in this.messages).
       let currentMsgUris = [uri(toMsgHdr(x)) for each ([, x] in Iterator(currentMsgSet))];
       // Is a1 a prefix of a2? (I wish JS had pattern matching!)
       let isPrefix = function _isPrefix (a1, a2) {
