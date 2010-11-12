@@ -722,8 +722,7 @@ Message.prototype = {
                           iframe.style.height = (parseFloat(iframe.style.height) + h)+"px";
                         }, true);
                         div.setAttribute("style", "color: orange; cursor: pointer; font-size: 11px;");
-                        div.appendChild(self._domNode.ownerDocument
-                          .createTextNode("- "+showText+" -"));
+                        div.appendChild(iframeDoc.createTextNode("- "+showText+" -"));
                         elt.insertBefore(div, c);
                         c.style.display = "none";
                       }

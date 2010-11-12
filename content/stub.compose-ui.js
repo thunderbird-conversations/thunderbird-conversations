@@ -80,12 +80,21 @@ function onDiscard(event) {
 }
 
 function onSave(event) {
-  storage.setItem("conversation", $("textarea").val());
+  let id = Conversations.currentConversation.id; // Gloda ID
+  if (id) {
+    storage.setItem("conversation"+id, $("textarea").val());
+  }
   $(".quickReply").removeClass('expand');
 }
 
 function loadDraft() {
-  $("textarea").val(storage.getItem("conversation"));
+  let id = Conversations.currentConversation.id; // Gloda ID
+  if (id) {
+    $("textarea").val(storage.getItem("conversation"+id));
+    $("#discard, #save").attr("disabled", "");
+  } else {
+    $("#discard, #save").attr("disabled", "disabled");
+  }
 }
 
 function onSend(event) {

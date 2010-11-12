@@ -398,6 +398,8 @@ MonkeyPatch.prototype = {
               let isDifferentConversation = !window.Conversations.currentConversation
                   || (window.Conversations.currentConversation.counter != aConversation.counter);
               window.Conversations.currentConversation = aConversation;
+              if (isDifferentConversation)
+                htmlpane.contentWindow.loadDraft();
               if (needsGC)
                 Cu.forceGC();
 

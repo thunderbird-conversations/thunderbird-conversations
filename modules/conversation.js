@@ -235,6 +235,7 @@ function Conversation(aWindow, aSelectedMessages, aScrollMode, aCounter) {
   this._query = null;
   this._domNode = null;
   this._onComplete = null;
+  this.id = null;
 }
 
 Conversation.prototype = {
@@ -317,6 +318,8 @@ Conversation.prototype = {
         // The MessageFromGloda constructor cannot work with gloda messages that
         //  don't have a message header
         aCollection.items = aCollection.items.filter(function (glodaMsg) glodaMsg.folderMessage);
+        // Register our id
+        self.id = aCollection.items[0].conversation.id; // all the same
         // When the right number of signals has been fired, move on...
         self._getReady(aCollection.items.length + self._initialSet.length + 1);
         // We want at least all messages from the Gloda collection
@@ -616,7 +619,6 @@ Conversation.prototype = {
     // Invalidate the msgHdr so that the compose-ui.js can setup the fields next
     //  time.
     this._htmlPane.contentWindow.gComposeParams.msgHdr = null;
-    this._htmlPane.contentWindow.loadDraft();
 
     // Move on to the next step
     this._expandAndScroll();
@@ -648,13 +650,18 @@ Conversation.prototype = {
     let focusThis = this._tellMeWhoToScroll();
     let expandThese = this._tellMeWhoToExpand(focusThis);
     let messageNodes = this._domNode.getElementsByClassName(Message.prototype.cssClass);
+    Log.assert(messageNodes.length == this.messages.length, "WTF?");
 
     let self = this;
     this._runOnceAfterNSignals(function () {
       let focusedNode = messageNodes[focusThis];
       self._htmlPane.contentWindow.scrollNodeIntoView(focusedNode);
 
+      Log.debug(messageNodes.length);
       for each (let [i, node] in Iterator(messageNodes)) {
+        // XXX big workaround gecko iterator bug in 2.0
+        if (i >= messageNodes.length)
+          break;
         node.setAttribute("tabindex", i+2);
       }
       focusedNode.setAttribute("tabindex", "1");
