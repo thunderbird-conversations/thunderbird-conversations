@@ -613,6 +613,10 @@ Conversation.prototype = {
     subjectNode.setAttribute("title", subject);
     this._htmlPane.contentWindow.fakeTextOverflowSubject();
     this._htmlPane.contentDocument.title = subject;
+    // Invalidate the msgHdr so that the compose-ui.js can setup the fields next
+    //  time.
+    this._htmlPane.contentWindow.gComposeParams.msgHdr = null;
+    this._htmlPane.contentWindow.loadDraft();
 
     // Move on to the next step
     this._expandAndScroll();
