@@ -25,6 +25,8 @@ const kActionCollapse  = 2;
 
 const nsMsgViewIndex_None = 0xffffffff;
 
+let uri = function (msg) msg.folder.getUriForMsg(msg);
+
 // The SignalManager class handles stuff related to spawing asynchronous
 //  requests and waiting for all of them to complete. Basic, but works well.
 //  Warning: sometimes yells at the developer.
@@ -88,7 +90,6 @@ let OracleMixIn = {
       }
     } else if (this.scrollMode == Prefs.kScrollSelected) {
       let gFolderDisplay = getMail3Pane().gFolderDisplay;
-      let uri = function (msg) msg.folder.getUriForMsg(msg);
       let key = uri(gFolderDisplay.selectedMessage);
       for (let i = 0; i < this.messages.length; ++i) {
         if (this.messages[i].message._uri == key) {
@@ -390,36 +391,38 @@ Conversation.prototype = {
     //  expanded, we want messages which are in the current view to be selected.
     // We cannot compare messages by message-id (they have the same!), we cannot
     //  compare them by messageKey (not reliable), but URLs should be enough.
-    let byUrl = {};
-    let url = function (x) x.folder.getUriForMsg(x);
-    [byUrl[url(x)] = true
+    let byUri = {};
+    [byUri[uri(x)] = true
       for each ([, x] in Iterator(this._initialSet))];
-    // Ok, this function assumes a specific behavior from selectRightMessage,
-    //  that is, that isPreferred is called first and that the search stops as
-    //  soon as isPreferred returns true, and the selected message is the one
-    //  for which isPreferred said "true".
-    // XXX we should have a mechanism here that says we prefer the message
-    //  that's selected and then, if we can't find one, take the one that's in
-    //  the current view. The order is RIGHT in the || below but really we
-    //  should be making two passes.
-    // Solution: really write selectRightMessage here, it's not really a library
-    //  function.
-    let isPreferred = function (aMsg) {
-      // NB: selectRightMessage does check for non-null msgHdrs before calling
-      //  us.
-      let msgHdr = toMsgHdr(aMsg);
-      // And a nice side-effect!
-      if ((url(msgHdr) in byUrl) ||
-          mainWindow.gDBView.findIndexOfMsgHdr(msgHdr, false) != nsMsgViewIndex_None) {
-        aMsg.message.inView = true;
-        return true;
-      } else {
-        return false;
-      }
-    };
+    // The message that's selected has the highest priority to avoid
+    //  inconsistencies in case multiple identical messages are present in the
+    //  same thread (e.g. message from to me).
+    let selectRightMessage = function (aSimilarMessages) {
+      let findForCriterion = function (aCriterion) {
+        let bestChoice;
+        for each (let [i, msg] in Iterator(aSimilarMessages)) {
+          if (!toMsgHdr(msg))
+            continue;
+          if (aCriterion(msg)) {
+            bestChoice = msg;
+            break;
+          }
+        }
+        return bestChoice;
+      };
+      let r =
+        findForCriterion(function (aMsg) ((uri(toMsgHdr(aMsg)) in byUri) && (aMsg.message.inView = true))) ||
+        findForCriterion(function (aMsg) ((mainWindow.gDBView.findIndexOfMsgHdr(toMsgHdr(aMsg), false) != nsMsgViewIndex_None) && (aMsg.message.inView = true))) ||
+        findForCriterion(function (aMsg) msgHdrIsInbox(toMsgHdr(aMsg))) ||
+        findForCriterion(function (aMsg) msgHdrIsSent(toMsgHdr(aMsg))) ||
+        findForCriterion(function (aMsg) !msgHdrIsArchive(toMsgHdr(aMsg))) ||
+        aSimilarMessages[0]
+      ;
+      return r;
+    }
     // Select right message will try to pick the message that has an
     //  existing msgHdr.
-    messages = [selectRightMessage(group, toMsgHdr, isPreferred)
+    messages = [selectRightMessage(group)
       for each ([i, group] in Iterator(messages))];
     // But sometimes it just fails, and gloda remembers dead messages...
     messages = messages.filter(toMsgHdr);
@@ -509,7 +512,7 @@ Conversation.prototype = {
     // Try to reuse the previous conversation if possible
     if (this._window.Conversations.currentConversation) {
       let currentMsgSet = this._window.Conversations.currentConversation.messages;
-      let currentMsgIds = [getMessageId(x) for each ([, x] in Iterator(currentMsgSet))];
+      let currentMsgUris = [uri(toMsgHdr(x)) for each ([, x] in Iterator(currentMsgSet))];
       // Is a1 a prefix of a2? (I wish JS had pattern matching!)
       let isPrefix = function _isPrefix (a1, a2) {
         if (!a1.length) {
@@ -525,8 +528,8 @@ Conversation.prototype = {
             return [false, null];
         }
       };
-      let myMsgIds = [getMessageId(x) for each ([, x] in Iterator(this.messages))];
-      let [shouldRecycle, _whichMessageIds] = isPrefix(currentMsgIds, myMsgIds);
+      let myMsgUris = [uri(toMsgHdr(x)) for each ([, x] in Iterator(this.messages))];
+      let [shouldRecycle, _whichMessageUris] = isPrefix(currentMsgUris, myMsgUris);
       // Ok, some explanation needed. How can this possibly happen?
       // - Click on a conversation
       // - Conversation is built, becomes the global current conversation

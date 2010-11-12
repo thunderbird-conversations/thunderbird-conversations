@@ -80,20 +80,33 @@ function sendMessage({ msgHdr, identity, to, cc, bcc, subject },
   // - fields.addAttachment (when attachments taken into account)
 
   // See suite/mailnews/compose/MsgComposeCommands.js#1783
-  // We're explicitly forcing plaintext here. There editor's not fancy yet, so
-  //  no reason to send HTML. Plus, from what I (think I) understood, when
-  //  switching to a HTML-style composition, fields.body is discarded and the
-  //  serialization (possibly performed by the editor) of the HTML is used
-  //  instead, so that would require us to implement our very own HTML
-  //  serializer (there might exist some already, though).
+  // We're explicitly forcing plaintext here. SendMsg is thought-out well enough
+  //  and checks whether we're composing html. If we're not, it uses either the
+  //  contents of the nsPlainTextEditor::OutputToString if we have an editor, or
+  //  the original contents of the fields if we have no editor. That suits us
+  //  well.
+  // http://mxr.mozilla.org/comm-central/source/mailnews/compose/src/nsMsgCompose.cpp#1102
+  // 
+  // What we could do (better) is call msgCompose.InitEditor with a fake editor
+  //  that implements nsIMailEditorSupport and has an OutputToString method.
+  //  We would also lift the requirement on forcePlainText, and allow
+  //  multipart/alternative, which would result in the mozITXTToHTMLConv being
+  //  run to convert *bold* to <b>bold</b> and so on.
+  // Please note that querying the editor for its contents is the responsibility
+  //  of nsMsgSend.
+  // http://mxr.mozilla.org/comm-central/source/mailnews/compose/src/nsMsgSend.cpp#1615
+  //
+  // See also nsMsgSend:620 for a vague explanation on how the editor's HTML
+  //  ends up being converted as text/plain.
   fields.forcePlainText = true;
   fields.useMultipartAlternative = false;
   fields.body = aNode.value+"\n"; // doesn't work without the newline. weird.
   fields.ConvertBodyToPlainText();
 
-  // We trick the composition service into thinking that we fired a plaintext
-  //  composition window, so that it doesn't try to run the HTML serializer or
-  //  whatever.
+  // We init the composition service with the right parameters, and we make sure
+  //  we're announcing that we're about to compose in plaintext, so that it
+  //  doesn't assume anything about having an editor (composing HTML implies
+  //  having an editor instance for the compose service).
   let params = Cc["@mozilla.org/messengercompose/composeparams;1"]
                   .createInstance(Ci.nsIMsgComposeParams);
   params.composeFields = fields;

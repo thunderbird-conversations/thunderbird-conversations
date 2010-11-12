@@ -38,7 +38,7 @@ var EXPORTED_SYMBOLS = [
   // don't fetch the data 20 times
   'gIdentities', 'fillIdentities',
   // miscellaneous functions
-  'dateAsInMessageList', 'selectRightMessage', 'groupArray', 'range',
+  'dateAsInMessageList', 'groupArray', 'range',
   'escapeHtml', 'MixIn', 'NS_FAILED', 'NS_SUCCEEDED',
   // heuristics for finding quoted parts
   'convertHotmailQuotingToBlockquote1', 'convertHotmailQuotingToBlockquote2',
@@ -104,43 +104,6 @@ function dateAsInMessageList(aDate) {
     "", format, Ci.nsIScriptableDateFormat.timeFormatNoSeconds,
     aDate.getFullYear(), aDate.getMonth() + 1, aDate.getDate(),
     aDate.getHours(), aDate.getMinutes(), aDate.getSeconds());
-}
-
-/**
- * From a given set of "messages", return, by order of preference:
- * - the message that matches a custom "preferred" value
- * - the message that's in the "Inbox" folder
- * - the message that's in the "Sent" folder
- * - the message that's not in the Archives
- * - any message that has a valid associated message header.
- * @param aSimilarMessages a set of "messages" (whatever that means)
- * @param aToMsgHdr extract the nsIMsgDbHdr from a given element belonging to
- *  aSimilarMessages
- * @param aCustom a function that takes a message and that returns true is that
- *  message should be preferred over the other ones
- * @return one element from aSimilarMessages
- */
-function selectRightMessage(aSimilarMessages, aToMsgHdr, aCustom) {
-  let findForCriterion = function (aCriterion) {
-    let bestChoice;
-    for each (let [i, msg] in Iterator(aSimilarMessages)) {
-      if (!aToMsgHdr(msg))
-        continue;
-      if (aCriterion(msg)) {
-        bestChoice = msg;
-        break;
-      }
-    }
-    return bestChoice;
-  };
-  let r =
-    findForCriterion(function (aMsg) aCustom(aMsg)) ||
-    findForCriterion(function (aMsg) msgHdrIsInbox(aToMsgHdr(aMsg))) ||
-    findForCriterion(function (aMsg) msgHdrIsSent(aToMsgHdr(aMsg))) ||
-    findForCriterion(function (aMsg) !msgHdrIsArchive(aToMsgHdr(aMsg))) ||
-    aSimilarMessages[0]
-  ;
-  return r;
 }
 
 // thanks :asuth
