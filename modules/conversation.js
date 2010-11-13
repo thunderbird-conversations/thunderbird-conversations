@@ -523,7 +523,14 @@ Conversation.prototype = {
       //  when different messages with the same Message-ID are present in the
       //  current, expanded thread (breaks the invariant that the selected
       //  message is also the one that's in this.messages).
-      let currentMsgUris = [uri(toMsgHdr(x)) for each ([, x] in Iterator(currentMsgSet))];
+      // The extra check on valid msgHdrs is required, because some messages
+      //  might have been moved / have disappeared in the meanwhile, and if we
+      //  throw an exception here, we're fucked, and we can't recover ever,
+      //  because every test trying to determine whether we can recycle will end
+      //  up running over the buggy set of messages.
+      let currentMsgUris = [uri(toMsgHdr(x))
+        for each ([, x] in Iterator(currentMsgSet))
+        if (toMsgHdr(x))];
       // Is a1 a prefix of a2? (I wish JS had pattern matching!)
       let isPrefix = function _isPrefix (a1, a2) {
         if (!a1.length) {
@@ -539,7 +546,9 @@ Conversation.prototype = {
             return [false, null];
         }
       };
-      let myMsgUris = [uri(toMsgHdr(x)) for each ([, x] in Iterator(this.messages))];
+      let myMsgUris = [uri(toMsgHdr(x))
+        for each ([, x] in Iterator(this.messages))
+        if (toMsgHdr(x))];
       let [shouldRecycle, _whichMessageUris] = isPrefix(currentMsgUris, myMsgUris);
       // Ok, some explanation needed. How can this possibly happen?
       // - Click on a conversation
