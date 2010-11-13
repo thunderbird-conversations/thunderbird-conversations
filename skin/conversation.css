@@ -566,11 +566,11 @@ ul.special-tags img {
 .editRecipientList {
   display:none;
   margin: 0 0 5px 0;
+  width: 100%;
 }
 
 .quickReplyRecipients.edit .editRecipientList {
   display: -moz-box;
-  width: 100%;
 }
 
 .quickReplyRecipients.edit ul.recipientList {
@@ -651,6 +651,10 @@ ul.special-tags img {
 .autocomplete-thumb {
   height: 22px;
   vertical-align: middle;
+}
+
+.token-input-list-facebook {
+  width: 100%;
 }
 
 /* clearfix */

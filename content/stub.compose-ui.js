@@ -97,17 +97,26 @@ function loadDraft() {
   }
 }
 
+function onNewThreadClicked() {
+  if ($("#startNewThread:checked").length) {
+    $(".editSubject").css("display", "-moz-box");
+  } else {
+    $(".editSubject").css("display", "none");
+  }
+}
+
 function onSend(event) {
   let textarea = document.getElementsByTagName("textarea")[0];
+  let isNewThread = $("#startNewThread:checked").length;
   sendMessage({
       msgHdr: gComposeParams.msgHdr,
       identity: gComposeParams.identity,
       to: $("#to").val(),
       cc: $("#cc").val(),
       bcc: $("#bcc").val(),
-      subject: gComposeParams.subject,
+      subject: isNewThread ? $("#subject").val() : gComposeParams.subject,
     }, {
-      compType: Ci.nsIMsgCompType.ReplyAll,
+      compType: isNewThread ? Ci.nsIMsgCompType.New : Ci.nsIMsgCompType.ReplyAll,
       deliverType: Ci.nsIMsgCompDeliverMode.Now,
     }, textarea, {
       progressListener: progressListener,
@@ -151,6 +160,7 @@ function setupReplyForMsgHdr(aMsgHdr) {
   gComposeParams.identity = identity;
   gComposeParams.msgHdr = aMsgHdr;
   gComposeParams.subject = "Re: "+aMsgHdr.mime2DecodedSubject;
+  $("#subject").val(gComposeParams.subject);
 
   // Do the whole shebang to find out who to send to...
   let [author, authorEmailAddress] = parse(aMsgHdr.mime2DecodedAuthor);
