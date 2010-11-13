@@ -87,21 +87,22 @@ function sendMessage({ msgHdr, identity, to, cc, bcc, subject },
   //  well.
   // http://mxr.mozilla.org/comm-central/source/mailnews/compose/src/nsMsgCompose.cpp#1102
   // 
-  // What we could do (better) is call msgCompose.InitEditor with a fake editor
-  //  that implements nsIMailEditorSupport and has an OutputToString method.
-  //  We would also lift the requirement on forcePlainText, and allow
-  //  multipart/alternative, which would result in the mozITXTToHTMLConv being
-  //  run to convert *bold* to <b>bold</b> and so on.
+  // What we could do (better) is call msgCompose.InitEditor with a fake
+  //  plaintext editor that implements nsIMailEditorSupport and has an
+  //  OutputToString method.  We would also lift the requirement on
+  //  forcePlainText, and allow multipart/alternative, which would result in the
+  //  mozITXTToHTMLConv being run to convert *bold* to <b>bold</b> and so on.
   // Please note that querying the editor for its contents is the responsibility
   //  of nsMsgSend.
   // http://mxr.mozilla.org/comm-central/source/mailnews/compose/src/nsMsgSend.cpp#1615
   //
   // See also nsMsgSend:620 for a vague explanation on how the editor's HTML
-  //  ends up being converted as text/plain.
+  //  ends up being converted as text/plain, for the case where we would like to
+  //  offer HTML editing.
   fields.forcePlainText = true;
   fields.useMultipartAlternative = false;
-  fields.body = aNode.value+"\n"; // doesn't work without the newline. weird.
-  fields.ConvertBodyToPlainText();
+  fields.body = aNode.value+"\n"; // Doesn't work without the newline. Weird. IMAP stuff.
+  fields.ConvertBodyToPlainText(); // This takes care of wrapping at 70 characters.
 
   // We init the composition service with the right parameters, and we make sure
   //  we're announcing that we're about to compose in plaintext, so that it

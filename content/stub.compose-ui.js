@@ -105,6 +105,10 @@ function onNewThreadClicked() {
   }
 }
 
+function useEditor() {
+
+}
+
 function onSend(event) {
   let textarea = document.getElementsByTagName("textarea")[0];
   let isNewThread = $("#startNewThread:checked").length;
@@ -145,16 +149,8 @@ function setupReplyForMsgHdr(aMsgHdr) {
   // http://mxr.mozilla.org/comm-central/source/mail/base/content/mailCommands.js#210
   // XXX something's wrong but I don't know what
   let mainWindow = getMail3Pane();
-  let identityForFolder = function (folder) {
-    let identity = folder.customIdentity;
-    let server = folder.server;
-    if (!identity)
-      identity = mainWindow.getIdentityForServer(folder.server);
-    return identity;
-  }
-  let identity = ((identityForFolder(mainWindow.GetFirstSelectedMsgFolder())
-      || identityForFolder(aMsgHdr.folder))
-    || gIdentities.default);
+  let identity = mainWindow.getIdentityForHeader(aMsgHdr, Ci.nsIMsgCompType.ReplyAll)
+    || gIdentities.default;
   Log.debug("We picked", identity.email, "for sending");
   // Set the global parameters
   gComposeParams.identity = identity;

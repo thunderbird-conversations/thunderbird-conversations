@@ -392,8 +392,8 @@
         <ul>
           <li class="showCc"><a onclick="showCc(); editFields();" href="javascript:">add cc</a> |</li>
           <li class="showBcc"><a onclick="showBcc(); editFields();" href="javascript:">add bcc</a> |</li>
-          <li><a href="javascript:">use editor</a></li>
-          | <li>
+          <li><a onclick="useEditor();" href="javascript:">use editor</a></li> |
+          <li>
             <input id="startNewThread" type="checkbox" style="vertical-align: text-top"
               onclick="onNewThreadClicked();" />
             start a new thread
@@ -421,7 +421,7 @@
           <li>David Ascher, </li>
           <li>Bryan Clark, </li>
           <li>James Burke</li>
-          <li class="add-more">&nbsp;- <a href="javascript:" onClick="editFields();">edit</a></li>
+          <li class="add-more">&nbsp;- <a href="javascript:" onclick="editFields();">edit</a></li>
         </ul>
         <ul class="recipientList ccList" style="display: none;">
           cc:
@@ -429,7 +429,7 @@
           <li>David Ascher, </li>
           <li>Bryan Clark, </li>
           <li>James Burke</li>
-          <li class="add-more">&nbsp;- <a href="javascript:" onClick="editFields();">edit</a></li>
+          <li class="add-more">&nbsp;- <a href="javascript:" onclick="editFields();">edit</a></li>
         </ul>
         <ul class="recipientList bccList" style="display: none;">
           bcc:
@@ -437,7 +437,7 @@
           <li>David Ascher, </li>
           <li>Bryan Clark, </li>
           <li>James Burke</li>
-          <li class="add-more">&nbsp;- <a href="javascript:" onClick="editFields();">edit</a></li>
+          <li class="add-more">&nbsp;- <a href="javascript:" onclick="editFields();">edit</a></li>
         </ul>
         <div class="editRecipientList editSubject hbox" style="display: none">
           <div class="label">subject:</div>
