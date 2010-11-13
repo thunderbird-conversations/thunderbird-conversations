@@ -38,7 +38,7 @@ var EXPORTED_SYMBOLS = [
   // don't fetch the data 20 times
   'gIdentities', 'fillIdentities',
   // miscellaneous functions
-  'dateAsInMessageList', 'groupArray', 'range',
+  'dateAsInMessageList', 'groupArray', 'range', 'uri',
   'escapeHtml', 'MixIn', 'NS_FAILED', 'NS_SUCCEEDED',
   // heuristics for finding quoted parts
   'convertHotmailQuotingToBlockquote1', 'convertHotmailQuotingToBlockquote2',
@@ -72,6 +72,8 @@ function NS_FAILED(v) {
 function NS_SUCCEEDED(v) {
   return !NS_FAILED(v);
 }
+
+let uri = function (msg) msg.folder.getUriForMsg(msg);
 
 /**
  * A global pointer to all the identities known for the user. Feel free to call

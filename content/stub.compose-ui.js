@@ -125,6 +125,7 @@ function onSend(event) {
     }, textarea, {
       progressListener: progressListener,
       sendListener: sendListener,
+      stateListener: stateListener,
     }
   );
 }
@@ -316,6 +317,19 @@ function setupAutocomplete() {
 //
 // These are notified about the outcome of the send process and take the right
 //  action accordingly (close window on success, etc. etc.)
+//  
+// This process is inherently FLAWED because we can't listen for the end of the
+//  "save sent message" event which would actually tell us that we're done. From
+//  what I understand from
+//  http://mxr.mozilla.org/comm-central/source/mailnews/compose/src/nsMsgCompose.cpp#3520,
+//  the onStopSending event tells us that we're done if and only if we're not
+//  copying the message to the sent folder.
+// Otherwise, we need to listen for the OnStopCopy event.
+//  http://mxr.mozilla.org/comm-central/source/mailnews/compose/src/nsMsgSend.cpp#4149
+//  But this is harcoded and mListener is nsMsgComposeSendListener in
+//  nsMsgCompose.cpp (bad!).
+// There's a thing called a state listener that might be what we're looking
+//  for...
 
 function pValue (v) {
   $(".statusPercentage")
@@ -344,8 +358,6 @@ let progressListener = {
     if (aStateFlags & Ci.nsIWebProgressListener.STATE_STOP) {
       pValue(0);
       pText('');
-      $(".quickReplyHeader").hide();
-      onDiscard();
     }
   },
 
@@ -487,3 +499,26 @@ let copyListener = {
     Ci.nsISupports
   ]),
 }
+
+let stateListener = {
+  NotifyComposeFieldsReady: function() {
+    // ComposeFieldsReady();
+  },
+
+  NotifyComposeBodyReady: function() {
+    // if (gMsgCompose.composeHTML)
+    //   loadHTMLMsgPrefs();
+    // AdjustFocus();
+  },
+
+  ComposeProcessDone: function(aResult) {
+    if (NS_SUCCEEDED(aResult)) {
+      $(".quickReplyHeader").hide();
+      onDiscard();
+    }
+  },
+
+  SaveInFolderDone: function(folderURI) {
+    // DisplaySaveFolderDlg(folderURI);
+  }
+};

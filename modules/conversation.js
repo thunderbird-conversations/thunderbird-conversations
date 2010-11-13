@@ -25,8 +25,6 @@ const kActionCollapse  = 2;
 
 const nsMsgViewIndex_None = 0xffffffff;
 
-let uri = function (msg) msg.folder.getUriForMsg(msg);
-
 // The SignalManager class handles stuff related to spawing asynchronous
 //  requests and waiting for all of them to complete. Basic, but works well.
 //  Warning: sometimes yells at the developer.
@@ -430,6 +428,12 @@ Conversation.prototype = {
     // But sometimes it just fails, and gloda remembers dead messages...
     messages = messages.filter(toMsgHdr);
     this.messages = messages;
+  },
+
+  removeMessage: function _Conversation_removeMessage (aMessage) {
+    let badUri = uri(aMessage._msgHdr);
+    this.messages = this.messages.filter(function (x) uri(toMsgHdr(x)) != badUri);
+    this._domNode.removeChild(aMessage._domNode);
   },
 
   // If a new conversation was launched, and that conversation finds out it can

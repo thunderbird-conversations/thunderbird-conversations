@@ -38,7 +38,7 @@ let Log = setupLogging("Conversations.Send");
  */
 function sendMessage({ msgHdr, identity, to, cc, bcc, subject },
     { deliverType, compType },
-    aNode, { progressListener, sendListener }) {
+    aNode, { progressListener, sendListener, stateListener }) {
 
   // Here is the part where we do all the stuff related to filling proper
   //  headers, adding references, making sure all the composition fields are
@@ -132,7 +132,7 @@ function sendMessage({ msgHdr, identity, to, cc, bcc, subject },
   if (progress) {
     progress.registerListener(progressListener);
   }
-  //msgCompose.RegisterStateListener(stateListener);
+  msgCompose.RegisterStateListener(stateListener);
 
   try {
     msgCompose.SendMsg (deliverType, identity, "", null, progress);

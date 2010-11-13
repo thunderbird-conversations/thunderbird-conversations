@@ -53,6 +53,10 @@ function addMsgListener(aMessage) {
   msgListeners[messageId].push(weakPtr);
 }
 
+let isOSX = ("nsILocalFileMac" in Components.interfaces);
+
+function isAccel (event) (isOSX && event.metaKey || event.ctrlKey)
+
 function KeyListener(aMessage) {
   this.message = aMessage;
   let mail3PaneWindow = getMail3Pane();
@@ -63,10 +67,6 @@ function KeyListener(aMessage) {
 KeyListener.prototype = {
   onKeyPress: function _KeyListener_onKeyPressed (event) {
     let self = this;
-    let isAccel = function (event) (
-       self.navigator.platform.indexOf("Mac") === 0 && event.metaKey
-       || event.ctrlKey
-    );
     let findMsgNode = function (msgNode) {
       let msgNodes = self.message._domNode.ownerDocument
         .getElementsByClassName(Message.prototype.cssClass);
@@ -398,8 +398,10 @@ Message.prototype = {
       event.stopPropagation();
     });
     this.register(".action-delete", function (event) {
-      // XXX we should rebuild the conversation here, because if the message is
-      //  not in the current view, we won't be recreated
+      // We do this, otherwise we end up with messages in the conversation that
+      //  don't have a message header, and that breaks pretty much all the
+      //  assumptions...
+      self._conversation.removeMessage(self);
       msgHdrsDelete([self._msgHdr]);
       event.stopPropagation();
     });
@@ -507,6 +509,17 @@ Message.prototype = {
       mainWindow.HandleMultipleAttachments(attachmentInfos, "save");
     });
     this.register(".quickReply", function (event) {
+      switch (event.keyCode) {
+        case mainWindow.KeyEvent.DOM_VK_RETURN:
+          if (isAccel(event))
+            self._conversation._htmlPane.contentWindow.onSend();
+          break;
+
+        case mainWindow.KeyEvent.DOM_VK_ESCAPE:
+          Log.debug("Escape from quickReply");
+          self._domNode.focus();
+          break;
+      }
       event.stopPropagation();
     }, { action: "keypress" });
   },
