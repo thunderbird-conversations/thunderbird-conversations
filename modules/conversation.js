@@ -659,7 +659,7 @@ Conversation.prototype = {
 
       Log.debug(messageNodes.length);
       for each (let [i, node] in Iterator(messageNodes)) {
-        // XXX big workaround gecko iterator bug in 2.0
+        // XXX This is bug 611957
         if (i >= messageNodes.length)
           break;
         node.setAttribute("tabindex", i+2);

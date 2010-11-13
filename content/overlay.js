@@ -66,7 +66,7 @@ window.addEventListener("load", function _overlay_eventListener () {
     dump(e.stack+"\n");
     throw(e);
   }
-  // XXX no good reason to do this
+  // Used by the in-stub.html detachTab function
   Conversations.monkeyPatch = monkeyPatch;
 
   // Assistant.

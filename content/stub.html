@@ -174,6 +174,9 @@
     function detachTab(event) {
       let mainWindow = getMail3Pane();
       let tabmail = mainWindow.document.getElementById("tabmail");
+      // Save the current draft in case the user is actually trying to get more
+      //  space to edit it...
+      onSave();
       tabmail.openTab("conversationTab", {
         onLoad: function _detachTab_onLoad (event, browser) {
           try {
@@ -191,6 +194,7 @@
             );
             freshConversation.outputInto(browser, function (aConversation) {
               browser.contentWindow.Conversations.currentConversation = aConversation;
+              browser.contentWindow.loadDraft();
             });
           } catch (e) {
             Log.debug(e);
@@ -413,7 +417,7 @@
           <li>David Ascher, </li>
           <li>Bryan Clark, </li>
           <li>James Burke</li>
-          <li class="add-more">&nbsp;- <a href="javascript:" onClick="editFields();">add more</a></li>
+          <li class="add-more">&nbsp;- <a href="javascript:" onClick="editFields();">edit</a></li>
         </ul>
         <ul class="recipientList ccList" style="display: none;">
           cc:
@@ -421,7 +425,7 @@
           <li>David Ascher, </li>
           <li>Bryan Clark, </li>
           <li>James Burke</li>
-          <li class="add-more">&nbsp;- <a href="javascript:" onClick="editFields();">add more</a></li>
+          <li class="add-more">&nbsp;- <a href="javascript:" onClick="editFields();">edit</a></li>
         </ul>
         <ul class="recipientList bccList" style="display: none;">
           bcc:
@@ -429,7 +433,7 @@
           <li>David Ascher, </li>
           <li>Bryan Clark, </li>
           <li>James Burke</li>
-          <li class="add-more">&nbsp;- <a href="javascript:" onClick="editFields();">add more</a></li>
+          <li class="add-more">&nbsp;- <a href="javascript:" onClick="editFields();">edit</a></li>
         </ul>
       </div>
       <div class="quickReplyHeader" style="display: none; overflow: auto">
