@@ -102,6 +102,8 @@ function sendMessage({ msgHdr, identity, to, cc, bcc, subject },
   fields.forcePlainText = true;
   fields.useMultipartAlternative = false;
   fields.body = aNode.value+"\n"; // Doesn't work without the newline. Weird. IMAP stuff.
+  fields.body = escapeHtml(fields.body);
+  fields.body = fields.body.replace(/\r?\n/g, "<br>");
   fields.ConvertBodyToPlainText(); // This takes care of wrapping at 70 characters.
 
   // We init the composition service with the right parameters, and we make sure
