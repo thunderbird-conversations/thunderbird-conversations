@@ -74,7 +74,7 @@ function sendMessage({ msgHdr, identity, to, cc, bcc, subject },
       break;
   }
   references = ["<"+x+">" for each ([, x] in Iterator(references))];
-  fields.references = references.join(", ");
+  fields.references = references.join(" ");
 
   // TODO:
   // - fields.addAttachment (when attachments taken into account)
