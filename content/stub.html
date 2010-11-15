@@ -195,7 +195,7 @@
             );
             freshConversation.outputInto(browser, function (aConversation) {
               browser.contentWindow.Conversations.currentConversation = aConversation;
-              browser.contentWindow.loadDraft();
+              transferQuickReplyToNewWindow(browser.contentWindow);
             });
           } catch (e) {
             Log.debug(e);

@@ -53,6 +53,7 @@ function onTextareaClicked(event) {
     $(event.target).parent().addClass('expand');
   }
   if (!gComposeParams.msgHdr) { // first time
+    Log.debug("Setting up the initial quick reply compose parameters...");
     let messages = Conversations.currentConversation.messages;
     setupReplyForMsgHdr(messages[messages.length - 1].message._msgHdr);
     scrollNodeIntoView(document.querySelector(".quickReply"));
@@ -129,6 +130,54 @@ function onSend(event, aPopOut) {
       stateListener: stateListener,
     }, aPopOut
   );
+}
+
+function transferQuickReplyToNewWindow(aWindow) {
+  // The handler from stub.html called onSave before, and since saving/loading
+  //  is synchronous, it works. When we make saving/loading asynchronous, we'll
+  //  probably have to come up with something else.
+  aWindow.loadDraft();
+  // ^^ We have to load the draft anyways since the draft is not necessarily
+  //  from this very editing session, it might be a leftover draft from before,
+  //  so in any case it should be restored.
+  if (!gComposeParams.msgHdr) {
+    Log.debug("No quick reply session to transfer to the new tab");
+    return;
+  }
+  try {
+    Log.debug("Transferring our quick reply session over to the new tab...");
+    // Now we've forwarded the contents. The two lines below setup from, to, cc,
+    //  bcc properly.
+    let [toNames, toEmails] = parse($("#to").val());
+    let [ccNames, ccEmails] = parse($("#cc").val());
+    let [bccNames, bccEmails] = parse($("#bcc").val());
+    aWindow.gComposeParams = {
+      msgHdr: gComposeParams.msgHdr,
+      identity: gComposeParams.identity,
+      to: [asToken(null, toName, toEmails[i], null)
+        for each ([i, toName] in Iterator(toNames))],
+      cc: [asToken(null, ccName, ccEmails[i], null)
+        for each ([i, ccName] in Iterator(ccNames))],
+      bcc: [asToken(null, bccName, bccEmails[i], null)
+        for each ([i, bccName] in Iterator(bccNames))],
+      subject: gComposeParams.subject,
+    };
+    aWindow.updateUI();
+    // Special code for the subject.
+    let isNewThread = $("#startNewThread:checked").length;
+    if (isNewThread) {
+      aWindow.$("#startNewThread")[0].checked = true;
+      aWindow.onNewThreadClicked();
+      aWindow.$("#subject").val($("#subject").val());
+    }
+    // Open if already opened
+    if ($("textarea").parent().hasClass("expand"))
+      aWindow.$("textarea").parent().addClass('expand');
+    // That should be pretty much all.
+  } catch (e) {
+    Log.error(e);
+    dumpCallStack(e);
+  }
 }
 
 // ----- Helpers
