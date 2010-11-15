@@ -431,12 +431,18 @@ Conversation.prototype = {
   },
 
   removeMessage: function _Conversation_removeMessage (aMessage) {
-    Log.debug("Removing message", this.messages.length, this._initialSet.length);
+    // Move the quick reply to the previous message
+    let i = [uri(toMsgHdr(x)) for each ([, x] in Iterator(this.messages))].indexOf(uri(aMessage._msgHdr));
+    Log.debug("Removing message", i);
+    if (i == this.messages.length - 1 && this.messages.length > 1) {
+      let $ = this._htmlPane.contentWindow.$;
+      $(".message:last").prev().append($(".quickReply"));
+    }
+
     let badUri = uri(aMessage._msgHdr);
     this.messages = this.messages.filter(function (x) uri(toMsgHdr(x)) != badUri);
     this._initialSet = this._initialSet.filter(function (x) uri(x) != badUri);
     this._domNode.removeChild(aMessage._domNode);
-    Log.debug("Removed message", this.messages.length, this._initialSet.length);
   },
 
   // If a new conversation was launched, and that conversation finds out it can
