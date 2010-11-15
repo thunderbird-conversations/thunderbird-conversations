@@ -227,27 +227,17 @@ function msgHdrsArchive(msgHdrs) {
  * Tell if a message is an RSS feed iteme
  * @param {nsIMsgDbHdr} msgHdr The message header
  */
-function msgHdrIsRss(msgHdr) {
-  try {
-    msgHdr.folder.server.QueryInterface(Ci.nsIRssIncomingServer);
-    return true;
-  } catch (e if e.result == Cr.NS_NOINTERFACE) {
-    return false;
-  }
-}
+function msgHdrIsRss(msgHdr) (
+  msgHdr.folder.server instanceof Ci.nsIRssIncomingServer
+)
 
 /**
  * Tell if a message is a NNTP message
  * @param {nsIMsgDbHdr} msgHdr The message header
  */
-function msgHdrIsNntp(msgHdr) {
-  try {
-    msgHdr.folder.server.QueryInterface(Ci.nsINntpIncomingServer);
-    return true;
-  } catch (e if e.result == Cr.NS_NOINTERFACE) {
-    return false;
-  }
-}
+function msgHdrIsNntp(msgHdr) (
+  msgHdr.folder.server instanceof Ci.nsINntpIncomingServer
+)
 
 // XXX implement some day
 function msgHdrMarkAsJunk(msgHdr) {

@@ -431,12 +431,12 @@ Conversation.prototype = {
   },
 
   removeMessage: function _Conversation_removeMessage (aMessage) {
-    // Log.debug("Removing message", this.messages.length, this._initialSet.length);
+    Log.debug("Removing message", this.messages.length, this._initialSet.length);
     let badUri = uri(aMessage._msgHdr);
     this.messages = this.messages.filter(function (x) uri(toMsgHdr(x)) != badUri);
     this._initialSet = this._initialSet.filter(function (x) uri(x) != badUri);
     this._domNode.removeChild(aMessage._domNode);
-    // Log.debug("Removed message", this.messages.length, this._initialSet.length);
+    Log.debug("Removed message", this.messages.length, this._initialSet.length);
   },
 
   // If a new conversation was launched, and that conversation finds out it can
@@ -720,7 +720,7 @@ Conversation.prototype = {
   },
 
   get msgHdrs () {
-    return [toMsgHdr(x) for each ([, x] in Iterator(this.messages))];
+    return [toMsgHdr(x) for each ([, x] in Iterator(this.messages)) if (toMsgHdr(x))];
   },
 
   // Just an efficient way to mark a whole conversation as read
