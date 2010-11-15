@@ -38,7 +38,9 @@ let Log = setupLogging("Conversations.Send");
  */
 function sendMessage({ msgHdr, identity, to, cc, bcc, subject },
     { deliverType, compType },
-    aNode, { progressListener, sendListener, stateListener }) {
+    aNode,
+    { progressListener, sendListener, stateListener },
+    aPopOut) {
 
   // Here is the part where we do all the stuff related to filling proper
   //  headers, adding references, making sure all the composition fields are
@@ -99,12 +101,10 @@ function sendMessage({ msgHdr, identity, to, cc, bcc, subject },
   // See also nsMsgSend:620 for a vague explanation on how the editor's HTML
   //  ends up being converted as text/plain, for the case where we would like to
   //  offer HTML editing.
-  fields.forcePlainText = true;
   fields.useMultipartAlternative = false;
   fields.body = aNode.value+"\n"; // Doesn't work without the newline. Weird. IMAP stuff.
   fields.body = escapeHtml(fields.body);
   fields.body = fields.body.replace(/\r?\n/g, "<br>");
-  fields.ConvertBodyToPlainText(); // This takes care of wrapping at 70 characters.
 
   // We init the composition service with the right parameters, and we make sure
   //  we're announcing that we're about to compose in plaintext, so that it
@@ -115,32 +115,51 @@ function sendMessage({ msgHdr, identity, to, cc, bcc, subject },
   params.composeFields = fields;
   params.identity = identity;
   params.type = compType;
-  params.format = Ci.nsIMsgCompFormat.PlainText;
   params.sendListener = sendListener;
 
-  // This part initializes a nsIMsgCompose instance. This is useless, because
-  //  that component is supposed to talk to the "real" compose window, set the
-  //  encoding, set the composition mode... we're only doing that because we
-  //  can't send the message ourselves because of too many [noscript]s.
-  let msgCompose;
-  if ("InitCompose" in msgComposeService) // comm-1.9.2
-    msgCompose = msgComposeService.InitCompose (null, params);
-  else // comm-central
-    msgCompose = msgComposeService.initCompose(params);
+  // If we want to switch to the external editor, we assembled all the
+  //  composition fields properly. Pass them to a compose window, and move on.
+  if (aPopOut) {
+    // We set all the fields ourselves, force New so that the compose code
+    //  doesn't try to figure out the parameters by itself.
+    // XXX maybe we should just use New everywhere since we're setting the
+    //  parameters ourselves anyway...
+    fields.forcePlainText = false;
+    fields.characterSet = "UTF-8";
+    fields.bodyIsAsciiOnly = false;
+    params.format = Ci.nsIMsgCompFormat.HTML;
+    params.type = mCompType.New;
+    msgComposeService.OpenComposeWindowWithParams(null, params);
+    return true;
+  } else {
+    fields.forcePlainText = true;
+    fields.ConvertBodyToPlainText(); // This takes care of wrapping at 70 characters. Expects HTML.
+    params.format = Ci.nsIMsgCompFormat.PlainText;
 
-  // We create a progress listener...
-  var progress = Cc["@mozilla.org/messenger/progress;1"]
-                   .createInstance(Ci.nsIMsgProgress);
-  if (progress) {
-    progress.registerListener(progressListener);
-  }
-  msgCompose.RegisterStateListener(stateListener);
+    // This part initializes a nsIMsgCompose instance. This is useless, because
+    //  that component is supposed to talk to the "real" compose window, set the
+    //  encoding, set the composition mode... we're only doing that because we
+    //  can't send the message ourselves because of too many [noscript]s.
+    let msgCompose;
+    if ("InitCompose" in msgComposeService) // comm-1.9.2
+      msgCompose = msgComposeService.InitCompose (null, params);
+    else // comm-central
+      msgCompose = msgComposeService.initCompose(params);
 
-  try {
-    msgCompose.SendMsg (deliverType, identity, "", null, progress);
-  } catch (e) {
-    Log.error(e);
-    dumpCallStack(e);
+    // We create a progress listener...
+    var progress = Cc["@mozilla.org/messenger/progress;1"]
+                     .createInstance(Ci.nsIMsgProgress);
+    if (progress) {
+      progress.registerListener(progressListener);
+    }
+    msgCompose.RegisterStateListener(stateListener);
+
+    try {
+      msgCompose.SendMsg (deliverType, identity, "", null, progress);
+    } catch (e) {
+      Log.error(e);
+      dumpCallStack(e);
+    }
+    return true;
   }
-  return true;
 }

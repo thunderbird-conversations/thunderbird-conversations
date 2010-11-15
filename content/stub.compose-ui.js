@@ -106,13 +106,14 @@ function onNewThreadClicked() {
 }
 
 function useEditor() {
-
+  if (onSend(null, true))
+    onDiscard();
 }
 
-function onSend(event) {
+function onSend(event, aPopOut) {
   let textarea = document.getElementsByTagName("textarea")[0];
   let isNewThread = $("#startNewThread:checked").length;
-  sendMessage({
+  return sendMessage({
       msgHdr: gComposeParams.msgHdr,
       identity: gComposeParams.identity,
       to: $("#to").val(),
@@ -126,7 +127,7 @@ function onSend(event) {
       progressListener: progressListener,
       sendListener: sendListener,
       stateListener: stateListener,
-    }
+    }, aPopOut
   );
 }
 
