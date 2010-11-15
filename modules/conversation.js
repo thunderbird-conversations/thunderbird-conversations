@@ -431,9 +431,12 @@ Conversation.prototype = {
   },
 
   removeMessage: function _Conversation_removeMessage (aMessage) {
+    // Log.debug("Removing message", this.messages.length, this._initialSet.length);
     let badUri = uri(aMessage._msgHdr);
     this.messages = this.messages.filter(function (x) uri(toMsgHdr(x)) != badUri);
+    this._initialSet = this._initialSet.filter(function (x) uri(x) != badUri);
     this._domNode.removeChild(aMessage._domNode);
+    // Log.debug("Removed message", this.messages.length, this._initialSet.length);
   },
 
   // If a new conversation was launched, and that conversation finds out it can
@@ -556,7 +559,10 @@ Conversation.prototype = {
       // - The message takes forever to stream (happens...)
       // - User gets fed up, picks another conversation
       // - Bang! Current conversation has no messages.
-      if (currentMsgSet.length == 0)
+      // Beware, if the previous conversation's messages have been deleted, we
+      //  need to test for currentMsgUri's length, which removes dead msgHdrs,
+      //  not just currentMsgset.
+      if (currentMsgUris.length == 0)
         shouldRecycle = false;
       if (shouldRecycle) {
         // NB: we get here even if there's 0 new messages, understood?
