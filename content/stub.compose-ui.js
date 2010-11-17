@@ -132,7 +132,7 @@ function onSend(event, aPopOut) {
   );
 }
 
-function transferQuickReplyToNewWindow(aWindow) {
+function transferQuickReplyToNewWindow(aWindow, aExpand) {
   // The handler from stub.html called onSave before, and since saving/loading
   //  is synchronous, it works. When we make saving/loading asynchronous, we'll
   //  probably have to come up with something else.
@@ -171,7 +171,7 @@ function transferQuickReplyToNewWindow(aWindow) {
       aWindow.$("#subject").val($("#subject").val());
     }
     // Open if already opened
-    if ($("textarea").parent().hasClass("expand"))
+    if (aExpand)
       aWindow.$("textarea").parent().addClass('expand');
     // That should be pretty much all.
   } catch (e) {

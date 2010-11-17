@@ -596,13 +596,17 @@ Conversation.prototype = {
         Log.debug("Not recycling conversation");
         // We'll be replacing the old conversation
         this._window.Conversations.currentConversation.messages = [];
+        // Gotta save the quick reply, if there's one! Please note that
+        //  contentWindow.Conversations is still wired onto the old
+        //  conversation. Updating the global Conversations object and loading
+        //  the new conversation's draft is not our responsibility, it's that of
+        //  the monkey-patch, and it's done at the very end of the process.
+        this._htmlPane.contentWindow.onSave();
       }
     }
 
     // Fill in the HTML right away. The has the nice side-effect of erasing the
     // previous conversation (but not the conversation-wide event handlers!)
-    // XXX this does not take the "reverse_order" pref into account. Screw this,
-    // I'm never going to handle that anyway, it's too fscking complicated.
     let t0  = (new Date()).getTime();
     let $ = this._htmlPane.contentWindow.$;
     let tmplData = [m.message.toTmplData(i == this.messages.length - 1)

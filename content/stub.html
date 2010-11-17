@@ -177,6 +177,7 @@
       let tabmail = mainWindow.document.getElementById("tabmail");
       // Save the current draft in case the user is actually trying to get more
       //  space to edit it...
+      let willExpand = $("textarea").parent().hasClass("expand");
       onSave();
       tabmail.openTab("conversationTab", {
         onLoad: function _detachTab_onLoad (event, browser) {
@@ -195,7 +196,7 @@
             );
             freshConversation.outputInto(browser, function (aConversation) {
               browser.contentWindow.Conversations.currentConversation = aConversation;
-              transferQuickReplyToNewWindow(browser.contentWindow);
+              transferQuickReplyToNewWindow(browser.contentWindow, willExpand);
             });
           } catch (e) {
             Log.debug(e);
