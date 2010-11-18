@@ -748,37 +748,45 @@ Message.prototype = {
             };
             walk(iframeDoc);
 
+            // Assuming 16px is the default (like on, say, Linux), this gives
+            //  18px and 12px, which what Andy had in mind.
+            // We're applying the style at the beginning of the <head> tag and
+            //  on the body element so that it can be easily overridden by the
+            //  html.
+            // This is for HTML messages only.
+            let styleRules = [];
+            if (iframeDoc.querySelectorAll(":not(.mimemail-body) > .moz-text-html").length) {
+              styleRules = [
+                "body {",
+                //"  line-height: 112.5%;",
+                "  font-size: "+Prefs.getInt("font.size.variable.x-western")*.75+"px !important;",
+                "}",
+              ];
+            }
+
+            // Unless the user specifically asked for this message to be
+            //  dislayed with a monospaced font...
+            let [{name, email}] = self.parse(self._msgHdr.mime2DecodedAuthor);
+            if (Prefs["monospaced_senders"].indexOf(email) < 0) {
+              styleRules = styleRules.concat([
+                ".moz-text-flowed, .moz-text-plain {",
+                "  font-family: "+Prefs.getChar("font.default")+" !important;",
+                "  font-size: "+Prefs.getInt("font.size.variable.x-western")*.75+"px !important;",
+                "  line-height: 112.5% !important;",
+                "}"
+              ]);
+            }
+
             // Ugly hack (once again) to get the style inside the
             // <iframe>. I don't think we can use a chrome:// url for
             // the stylesheet because the iframe has a type="content"
             let style = iframeDoc.createElement("style");
-            let defaultFont = Prefs.getChar("font.default");
-            style.appendChild(iframeDoc.createTextNode(
-              ".pre-as-regular {\n"+
-              "  font-family: "+defaultFont+" !important;\n"+
-              "  font-size: 12px !important;\n"+
-              "  line-height: 18px !important;\n"+
-              "}\n"
-            ));
-            iframeDoc.body.previousElementSibling.appendChild(style);
-
-            // Our super-advanced heuristic ;-)
-            let isPlainText =
-              iframeDoc.body.firstElementChild &&
-              (iframeDoc.body.firstElementChild.classList.contains("moz-text-flowed") ||
-               iframeDoc.body.firstElementChild.classList.contains("moz-text-plain"));
-
-            // The manipulations below are only valid for plain/text messages
-            if (isPlainText) {
-              // Unless the user specifically asked for this message to be
-              // dislayed with a monospaced font...
-              let [{name, email}] = self.parse(self._msgHdr.mime2DecodedAuthor);
-              if (Prefs["monospaced_senders"].indexOf(email) < 0) {
-                let elts = iframeDoc.querySelectorAll("pre, body > *:first-child")
-                for each (let [, elt] in Iterator(elts))
-                  elt.classList.toggle("pre-as-regular");
-              }
-            }
+            style.appendChild(iframeDoc.createTextNode(styleRules.join("\n")));
+            let head = iframeDoc.body.previousElementSibling;
+            if (head.firstChild)
+              head.insertBefore(style, head.firstChild);
+            else
+              head.appendChild(style);
 
             // Notify hooks that we just finished displaying a message. Must be
             //  performed now, not later.
