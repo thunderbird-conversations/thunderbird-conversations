@@ -759,7 +759,7 @@ Message.prototype = {
               styleRules = [
                 "body {",
                 //"  line-height: 112.5%;",
-                "  font-size: "+Prefs.getInt("font.size.variable.x-western")*.75+"px !important;",
+                "  font-size: "+Prefs.getInt("font.size.variable.x-western")*.75+"px;",
                 "}",
               ];
             }

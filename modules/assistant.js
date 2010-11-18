@@ -123,11 +123,6 @@ let Customizations = {
     { name: "mailnews.default_view_flags", type: kPrefInt, value: 1 }
   ]),
 
-  actionChangeFontSize: new MultipleCustomization([
-    { name: "font.size.variable.x-western", type: kPrefInt, value: 12 },
-    { name: "font.default", type: kPrefChar, value: "sans-serif" }
-  ]),
-
   actionAttachmentsInline: new PrefCustomization({
     name: "mail.inline_attachments", type: kPrefBool, value: false
   }),

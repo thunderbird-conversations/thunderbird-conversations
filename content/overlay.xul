@@ -47,12 +47,13 @@
   <browser id="multimessage" context="mailContext" />
   <tree id="threadTree">
     <treecols id="threadCols">
-      <splitter class="tree-splitter" insertbefore="senderCol" />
       <treecol id="betweenCol" insertbefore="senderCol"
-        persist="width" 
+        persist="width hidden ordinal"
         hidden="false"
         flex="4"
+        ordinal="14"
         label="Between" tooltiptext="Click to sort by participants" />
+      <splitter class="tree-splitter" insertbefore="senderCol" />
     </treecols>
   </tree>
   <!--<stringbundleset id="stringbundleset">
