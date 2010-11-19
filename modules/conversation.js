@@ -280,7 +280,9 @@ Conversation.prototype = {
 
   // This is the observer for the second Gloda query, the one that returns a
   // conversation.
-  onItemsAdded: function () {},
+  onItemsAdded: function (aItems) {
+    Log.debug("onItemsAdded", [x.headerMessageID for each ([, x] in Iterator(aItems))]);
+  },
 
   onItemsModified: function _Conversation_onItemsModified (aItems) {
     Log.debug("Updating conversation", this.counter, "global state...");
