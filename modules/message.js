@@ -231,8 +231,7 @@ Message.prototype = {
       ;
       let formattedSize = gMessenger.formatFileSize(att.size);
       data.attachments.push({
-        // XXX remove this when the \0 sprintf bug is backported to gecko 1.9.2
-        formattedSize: formattedSize.substring(0, formattedSize.length - 1),
+        formattedSize: formattedSize,
         thumb: thumb,
         imgClass: imgClass,
         name: att.name,
@@ -288,6 +287,9 @@ Message.prototype = {
       // Don't trust gloda. Big hack, self also has the "starred" property, so
       //  we don't have to create a new object.
       self.onAttributesChanged(self);
+      event.stopPropagation();
+    });
+    this.register(".top-right-more", function (event) {
       event.stopPropagation();
     });
   },
