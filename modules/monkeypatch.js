@@ -5,8 +5,11 @@ const Cc = Components.classes;
 const Cu = Components.utils;
 const Cr = Components.results;
 
+Cu.import("resource:///modules/AddonManager.jsm");
+
 Cu.import("resource://conversations/VariousUtils.jsm");
 Cu.import("resource://conversations/MsgHdrUtils.jsm");
+Cu.import("resource://conversations/assistant.js");
 Cu.import("resource://conversations/prefs.js");
 Cu.import("resource://conversations/log.js");
 
@@ -322,6 +325,46 @@ MonkeyPatch.prototype = {
     return scrollMode;
   },
 
+  watchUninstall: function () {
+    AddonManager.addAddonListener(this);
+  },
+
+  onEnabling: function (addon, needsRestart) {
+  },
+  onEnabled: function (addon) {
+  },
+  onDisabling: function (addon, needsRestart) {
+  },
+  onDisabled: function (addon) {
+  },
+  onInstalling: function (addon, needsRestart) {
+  },
+  onInstalled: function (addon) {
+  },
+  onUninstalling: function (addon, needsRestart) {
+    if (addon.id == "gconversation@xulforum.org") {
+      let uninstallInfos = JSON.parse(Prefs.getString("conversations.uninstall_infos"));
+      for each (let [k, v] in Iterator(Customizations)) {
+        if (k in uninstallInfos) {
+          try {
+            Log.debug("Uninstalling", k, uninstallInfos[k]);
+            v.uninstall(uninstallInfos[k]);
+          } catch (e) {
+            Log.error("Failed to uninstall", k, e);
+            dumpCallStack(e);
+          }
+        }
+      }
+    }
+    Prefs.setString("conversations.uninstall_infos", "{}");
+  },
+  onUninstalled: function (addon) {
+  },
+  onOperationCancelled: function (addon) {
+  },
+  onPropertyChanged: function (addon, properties) {
+  },
+
   apply: function () {
     let window = this._window;
     let self = this;
@@ -335,9 +378,18 @@ MonkeyPatch.prototype = {
     // Register our new column type
     this.registerColumn();
 
+    // Register the uninstall handler
+    this.watchUninstall();
+    /* window.setTimeout(function () {
+      self.onUninstalled({ id: "gconversation@xulforum.org" })
+    }, 1000); // XXX debug */
+
+    // Below is the code that intercepts the message display logic, and reroutes
+    //  the control flow to our conversation reader.
+
     // This nice little wrapper makes sure that the multimessagepane points to
     //  the given URL before moving on. It takes a continuation, and an optional
-    //  third arguments that is to be run in case we loaded a fresh page.
+    //  third argument that is to be run in case we loaded a fresh page.
     let ensureLoadedAndRun = function (aLocation, k, onRefresh) {
       if (htmlpane.contentDocument.location.href == aLocation) {
         k();

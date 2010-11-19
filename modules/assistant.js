@@ -10,6 +10,8 @@ const nsMsgFolderFlags_Inbox    = 0x00001000;
 const nsMsgFolderFlags_Offline  = 0x08000000;
 const msgAccountManager = Cc["@mozilla.org/messenger/account-manager;1"]
                             .getService(Ci.nsIMsgAccountManager);
+const ioService = Cc["@mozilla.org/network/io-service;1"]
+                  .getService(Ci.nsIIOService);
 
 const kPrefInt = 0, kPrefBool = 1, kPrefChar = 42;
 
@@ -366,10 +368,18 @@ let Customizations = {
         if (folder)
           folder.clearFlag(nsMsgFolderFlags_Offline);
       }
-      for each (let uri in aChangedServers) {
+      for each (let aUri in aChangedServers) {
+        let uri = ioService.newURI(aUri, null, null);
         let server = msgAccountManager.findServerByURI(uri, false);
-        if (server)
-          server.offlineDownload = false;
+        if (server) {
+          try {
+            server.QueryInterface(Ci.nsIImapIncomingServer);
+            server.offlineDownload = false;
+          } catch (e) {
+            Log.error(e);
+            dumpCallStack(e);
+          }
+        }
       }
     },
   },
