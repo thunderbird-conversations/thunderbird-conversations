@@ -220,7 +220,13 @@ let Customizations = {
       state.ftvMode = ftv.mode;
       mainWindow.gFolderTreeView.mode = "smart";
 
-      let smartInbox = get_smart_folder_named("Inbox");
+      let smartInbox = null;
+      try {
+        smartInbox = get_smart_folder_named("Inbox");
+      } catch (e) {
+        Log.warn(e);
+        Log.warn("Is there only one account?");
+      }
       // Might not be created yet if only one account
       if (smartInbox)
         ftv.selectFolder(smartInbox);
@@ -267,7 +273,13 @@ let Customizations = {
 
       // Get a handle onto the virtual inbox, and mark all the folders it
       //  already searches.
-      let smartInbox = get_smart_folder_named("Inbox");
+      let smartInbox = null;
+      try {
+        smartInbox = get_smart_folder_named("Inbox");
+      } catch (e) {
+        Log.warn(e);
+        Log.warn("Is there only one account?");
+      }
       if (!smartInbox)
         return changedFolders;
 

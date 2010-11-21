@@ -15,6 +15,9 @@ Cu.import("resource://conversations/log.js");
 
 const kStubUrl = "chrome://conversations/content/stub.html";
 
+const observerService = Cc["@mozilla.org/observer-service;1"]
+                        .getService(Ci.nsIObserverService);
+
 let Log = setupLogging("Conversations.MonkeyPatch");
 
 let conversationTabType = {
@@ -201,6 +204,7 @@ function MonkeyPatch(aWindow, aConversation) {
   this._wantedUrl = "";
   this._window = aWindow;
   this._markReadTimeout = null;
+  this._beingUninstalled = false;
 }
 
 MonkeyPatch.prototype = {
@@ -327,8 +331,32 @@ MonkeyPatch.prototype = {
 
   watchUninstall: function () {
     AddonManager.addAddonListener(this);
+    observerService.addObserver(this, "profile-before-change", false);
   },
 
+  doUninstall: function () {
+    let uninstallInfos = JSON.parse(Prefs.getString("conversations.uninstall_infos"));
+    for each (let [k, v] in Iterator(Customizations)) {
+      if (k in uninstallInfos) {
+        try {
+          Log.debug("Uninstalling", k, uninstallInfos[k]);
+          v.uninstall(uninstallInfos[k]);
+        } catch (e) {
+          Log.error("Failed to uninstall", k, e);
+          dumpCallStack(e);
+        }
+      }
+    }
+    Prefs.setString("conversations.uninstall_infos", "{}");
+  },
+
+  // nsIObserver
+  observe: function (aSubject, aTopic, aData) {
+    if (aTopic == "profile-before-change" && this._beingUninstalled)
+      this.doUninstall();
+  },
+
+  // AddonListener
   onEnabling: function (addon, needsRestart) {
   },
   onEnabled: function (addon) {
@@ -341,26 +369,20 @@ MonkeyPatch.prototype = {
   },
   onInstalled: function (addon) {
   },
-  onUninstalling: function (addon, needsRestart) {
+  onUninstalled: function(addon) {
+  },
+  onUninstalling: function(addon) {
+    Log.debug(addon.id);
     if (addon.id == "gconversation@xulforum.org") {
-      let uninstallInfos = JSON.parse(Prefs.getString("conversations.uninstall_infos"));
-      for each (let [k, v] in Iterator(Customizations)) {
-        if (k in uninstallInfos) {
-          try {
-            Log.debug("Uninstalling", k, uninstallInfos[k]);
-            v.uninstall(uninstallInfos[k]);
-          } catch (e) {
-            Log.error("Failed to uninstall", k, e);
-            dumpCallStack(e);
-          }
-        }
-      }
+      this._beingUninstalled = true;
+      Log.debug("Being uninstalled ?", this._beingUninstalled);
     }
-    Prefs.setString("conversations.uninstall_infos", "{}");
   },
-  onUninstalled: function (addon) {
-  },
-  onOperationCancelled: function (addon) {
+  onOperationCancelled: function(addon) {
+    if (addon.id == "gconversation@xulforum.org") {
+      this._beingUninstalled = (addon.pendingOperations & AddonManager.PENDING_UNINSTALL) != 0;
+      Log.debug("Being uninstalled ?", this._beingUninstalled);
+    }
   },
   onPropertyChanged: function (addon, properties) {
   },
