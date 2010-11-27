@@ -46,7 +46,7 @@ var EXPORTED_SYMBOLS = [
   'fusionBlockquotes',
   // a very stupid function that tries to figure out, given a full name, what is
   // the guy's first name
-  'parseShortName', 'joinWordList', 'parseMimeLine'
+  'parseShortName', 'joinWordList', 'parseMimeLine', 'iconForMimeType'
 ]
 
 const Ci = Components.interfaces;
@@ -444,4 +444,32 @@ function parseMimeLine (aMimeLine) {
   let numAddresses = headerParser.parseHeadersWithArray(aMimeLine, emails, names, fullNames);
   return [{ email: emails.value[i], name: names.value[i], fullName: fullNames.value[i] }
     for each (i in range(0, numAddresses))];
+}
+
+let mapping = {
+  "application/msword": "x-office-document",
+  "application/vnd.ms-excel": "x-office-spreadsheet",
+  "application/vnd.ms-powerpoint": "x-office-presentation",
+  "application/rtf": "x-office-document",
+  "video/": "video-x-generic",
+  "audio/": "audio-x-generic",
+  "image/": "image-x-generic",
+  //"message/": "email",
+  "text/": "text-x-generic",
+  "text/x-vcalendar": "x-office-calendar",
+  "text/x-vcard": "x-office-address-book",
+  "text/html": "text-html",
+  "application/zip": "package-x-generic",
+  "application/bzip2": "package-x-generic",
+  "application/x-gzip": "package-x-generic",
+  "application/x-tar": "package-x-generic",
+  "application/x-compressed": "package-x-generic",
+};
+
+function iconForMimeType (aMimeType) {
+  for each (let [k, v] in Iterator(mapping)) {
+    if (aMimeType.indexOf(k) === 0)
+      return v+".svg";
+  }
+  return "gtk-file.png";
 }

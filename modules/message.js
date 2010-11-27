@@ -41,8 +41,8 @@ const snippetLength = 300;
 
 // Add in the global message listener table a weak reference to the given
 //  Message object. The monkey-patch which intercepts the "remote content
-//  blocked" notification will then look for a suitable listener on notify it of
-//  the aforementioned event.
+//  blocked" notification will then look for a suitable listener and notify it
+//  of the aforementioned event.
 function addMsgListener(aMessage) {
   let window = getMail3Pane();
   let weakPtr = Cu.getWeakReference(aMessage);
@@ -227,7 +227,7 @@ Message.prototype = {
     for each (let [i, att] in Iterator(this._attachments)) {
       let [thumb, imgClass] = (att.contentType.indexOf("image/") === 0)
         ? [att.url, "resize-me"]
-        : ["moz-icon://" + att.name + "?size=32&contentType=" + att.contentType, ""]
+        : ["chrome://conversations/skin/icons/"+iconForMimeType(att.contentType), "icon"]
       ;
       let formattedSize = gMessenger.formatFileSize(att.size);
       data.attachments.push({
@@ -689,6 +689,9 @@ Message.prototype = {
             iframe.removeEventListener("load", f_temp1, true);
             // XXX cut this off and turn into a this._onMessageStreamed
             let iframeDoc = iframe.contentDocument;
+            let defaultSize = Prefs.getInt("font.size.variable.x-western");
+            let textSize = defaultSize * 12 / 16;
+            let smallSize = defaultSize * 11 / 16;
 
             // Do some reformatting + deal with people who have bad taste
             iframeDoc.body.setAttribute("style", "padding: 0; margin: 0; "+
@@ -736,7 +739,7 @@ Message.prototype = {
                           let h = self._conversation._htmlPane.contentWindow.toggleQuote(event, showText, hideText);
                           iframe.style.height = (parseFloat(iframe.style.height) + h)+"px";
                         }, true);
-                        div.setAttribute("style", "color: orange; cursor: pointer; font-size: 11px;");
+                        div.setAttribute("style", "color: orange; cursor: pointer; font-size: "+smallSize+"px;");
                         div.appendChild(iframeDoc.createTextNode("- "+showText+" -"));
                         elt.insertBefore(div, c);
                         c.style.display = "none";
@@ -761,7 +764,7 @@ Message.prototype = {
               styleRules = [
                 "body {",
                 //"  line-height: 112.5%;",
-                "  font-size: "+Prefs.getInt("font.size.variable.x-western")*.75+"px;",
+                "  font-size: "+textSize+"px;",
                 "}",
               ];
             }
@@ -773,7 +776,7 @@ Message.prototype = {
               styleRules = styleRules.concat([
                 ".moz-text-flowed, .moz-text-plain {",
                 "  font-family: "+Prefs.getChar("font.default")+" !important;",
-                "  font-size: "+Prefs.getInt("font.size.variable.x-western")*.75+"px !important;",
+                "  font-size: "+textSize+"px !important;",
                 "  line-height: 112.5% !important;",
                 "}"
               ]);
