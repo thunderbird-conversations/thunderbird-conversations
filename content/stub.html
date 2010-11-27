@@ -451,10 +451,11 @@
         <span class="statusPercentage" style="float: right;"></span>
       </div>
       <textarea onclick="onTextareaClicked(event);"></textarea>
-      <div class="quickReplyFooter" style="overflow: auto">
+      <div class="quickReplyFooter" style="overflow: auto" tabindex="-1">
         <button style="float:right;margin-left:3px;" onclick="onSend(event);">send</button>
         <button id="save" style="float:right" onclick="onSave(event);">save</button>
-        <button id="discard" style="float: left;" onclick="if (confirm('Are you sure you wish to discard this message ?')) onDiscard();">discard</button>
+        <button id="discard" style="float: left;"
+          onclick="if (!$('textarea').val().length || confirm('Are you sure you wish to discard this message ?')) onDiscard();">discard</button>
       </div>
     </div>
   </script>

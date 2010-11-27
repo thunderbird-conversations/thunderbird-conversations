@@ -3,13 +3,12 @@ var EXPORTED_SYMBOLS = [];
 /*
  * A typical "Thunderbird conversations" plugin would be as follows:
  *
- * - An overlay.xul on whatever is loaded at startup (say, messenger.xul), that
- *   contains a script pointoing to overlay.js
+ * - An overlay.xul that overlays whatever is loaded at startup (say,
+ *   messenger.xul), with a <script> in it that reads
  *
- * - The overlay.js should just do:
  *    Components.utils.import("resource://yourext/conv-plugin.js");
  *
- * - The main work will be done in conv-plugin.js. For instance:
+ * - The main work will happen in conv-plugin.js. For instance:
  *
  *    var EXPORTED_SYMBOLS = [];
  *
@@ -43,7 +42,8 @@ let Log = setupLogging("Conversations.Modules.Enigmail");
 //  Enigmail compatibility layer to make sure we use Enigmail to decrypt
 //  messages whenever possible.
 
-// If you need more notifications, please ask! (Really!)
+// If you need to listen to more events (conversation loaded, conversation
+//  wiped)... just ask!
 Log.debug("Enigmail plugin for Thunderbird Conversations loaded!");
 
 // GetEnigmailSvc needs window to be defined in the scope...
