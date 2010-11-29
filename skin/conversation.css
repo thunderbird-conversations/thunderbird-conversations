@@ -557,7 +557,7 @@ ul.special-tags img {
   width: 75px;
 }
 
-.quickReply input {
+.quickReply input:moz-any(#to, #cc, #bcc, #subject) {
   width: 100%;
   border: 1px solid #aaa;
   padding: 5px;
