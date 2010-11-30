@@ -23,7 +23,8 @@ const ioService = Cc["@mozilla.org/network/io-service;1"]
                   .getService(Ci.nsIIOService);
 const msgComposeService = Cc["@mozilla.org/messengercompose;1"]
                           .getService(Ci.nsIMsgComposeService);
-const kCharsetFromMetaTag = 10;
+const kCharsetFromMetaTag = 9;
+const kCharsetFromChannel = 11;
 const kAllowRemoteContent = 2;
 
 let strings = new StringBundle("chrome://conversations/locale/main.properties");
@@ -890,7 +891,7 @@ Message.prototype = {
         let cv = iframe.docShell.contentViewer;
         cv.QueryInterface(Ci.nsIMarkupDocumentViewer);
         cv.hintCharacterSet = "UTF-8";
-        cv.hintCharacterSetSource = kCharsetFromMetaTag;
+        cv.hintCharacterSetSource = kCharsetFromChannel;
         /* Is this even remotely useful? */
         iframe.docShell.appType = Components.interfaces.nsIDocShell.APP_TYPE_MAIL;
 
