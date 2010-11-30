@@ -251,7 +251,7 @@ span.downwardArrow {
 }
 
 .authorLinks {
-  width: auto;
+  clear: left;
 }
 
 a img {
@@ -260,10 +260,14 @@ a img {
 
 .name {
   font-size: 14px;
+  float: left;
+  clear: left;
 }
 
 .authorEmail {
   color: #888;
+  float: left;
+  clear: left;
 }
 
 .authorPicture {
