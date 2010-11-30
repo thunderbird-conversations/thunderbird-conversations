@@ -276,12 +276,9 @@
             <a href="javascript:" class="top-right-more">more <span class="downwardArrow">&#x25bc;</span></a>
             <div class="tooltip">
               <ul>
-                <li class="action-compose-all">start new thread with these people
+                <li class="action-archive">archive this message
                   <div class="arrow"></div>
                   <div class="arrow inside"></div>
-                </li>
-                <li class="action-edit-new">edit as new</li>
-                <li class="action-archive">archive this message
                 </li>
                 <li class="action-delete">delete this message</li>
                 <li class="action-monospace">this sender sends monospace</li>
@@ -345,7 +342,8 @@
         <button class="reply">reply</button>
         <button class="replyAll">reply all</button>
         <button class="forward">forward</button>
-        <button style="float:right;margin: 0 0 0 0;">more...</button>
+        <button class="action-compose-all" style="float:right; margin-right: 0;">start new thread</button>
+        <button class="action-edit-new" style="float:right;">edit as new</button>
       </div>
       {{if quickReply}}
         {{tmpl "#quickReplyTemplate"}}
@@ -364,7 +362,12 @@
         <div class="arrow inside"></div>
         <div class="authorInfo">
           <span class="name">${tooltipName}</span>
-          <span class="authorEmail">${email}</span>
+          <span class="authorEmail">
+            ${email}
+            <button class="copyEmail" title="Copy email address to clipboard">
+              <img src="chrome://conversations/content/i/clipboard.png" />
+            </button>
+          </span>
         </div>
         <div class="authorPicture">
           <img src="${avatar}">
@@ -383,7 +386,7 @@
         </div>
         <div class="tipFooter">
           <button class="sendEmail">send email</button>
-          <button>more</button>
+          <button class="showInvolving">show involving</button>
         </div>
       </div
     ></span
@@ -393,13 +396,12 @@
       <div class="quickReplyRecipients">
         <ul>
           <li class="showCc"><a onclick="showCc(); editFields();" href="javascript:">add cc</a> |</li>
-          <li class="showBcc"><a onclick="showBcc(); editFields();" href="javascript:">add bcc</a> |</li>
-          <li><a onclick="useEditor();" href="javascript:">use editor</a></li> |
-          <li>
+          <li class="showBcc"><a onclick="showBcc(); editFields();" href="javascript:">add bcc</a></li>
+          <!-- |<li>
             <input id="startNewThread" type="checkbox" style="vertical-align: text-top"
               onclick="onNewThreadClicked();" />
             start a new thread
-          </li>
+          </li>-->
         </ul>
         <ul>
           from:
@@ -456,6 +458,8 @@
         <button id="save" style="float:right" onclick="onSave(event);">save</button>
         <button id="discard" style="float: left;"
           onclick="if (!$('textarea').val().length || confirm('Are you sure you wish to discard this message ?')) onDiscard();">discard</button>
+        <button style="float: left; margin-left: 3px"
+          onclick="useEditor();">continue using editor</button>
       </div>
     </div>
   </script>

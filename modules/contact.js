@@ -9,9 +9,12 @@ const ioService = Cc["@mozilla.org/network/io-service;1"]
                   .getService(Ci.nsIIOService);
 const msgComposeService = Cc["@mozilla.org/messengercompose;1"]
                           .getService(Ci.nsIMsgComposeService);
+const clipboardService = Cc["@mozilla.org/widget/clipboardhelper;1"]
+                         .getService(Ci.nsIClipboardHelper);
 
 Cu.import("resource:///modules/iteratorUtils.jsm"); // for fixIterator
 Cu.import("resource:///modules/gloda/utils.js");
+Cu.import("resource:///modules/gloda/gloda.js");
 Cu.import("resource://conversations/VariousUtils.jsm");
 Cu.import("resource://conversations/MsgHdrUtils.jsm"); // for getMail3Pane
 Cu.import("resource://conversations/log.js");
@@ -108,7 +111,48 @@ let ContactMixIn = {
         event.stopPropagation();
       }, false);
 
+    let self = this;
     let mainWindow = getMail3Pane();
+    aDomNode.getElementsByClassName("copyEmail")[0].addEventListener(
+      "click", function (event) {
+        clipboardService.copyString(self._email);
+      }, false);
+    aDomNode.getElementsByClassName("showInvolving")[0].addEventListener(
+      "click", function (event) {
+        let q1 = Gloda.newQuery(Gloda.NOUN_IDENTITY);
+        q1.kind("email");
+        q1.value(self._email);
+        q1.getCollection({
+          onItemsAdded: function _onItemsAdded(aItems, aCollection) {  },
+          onItemsModified: function _onItemsModified(aItems, aCollection) { },
+          onItemsRemoved: function _onItemsRemoved(aItems, aCollection) { },
+          onQueryCompleted: function _onQueryCompleted(aCollection) {
+            if (!aCollection.items.length)
+              return;  
+
+            let q2 = Gloda.newQuery(Gloda.NOUN_MESSAGE);
+            q2.involves.apply(q2, aCollection.items);
+            q2.getCollection({
+              onItemsAdded: function _onItemsAdded(aItems, aCollection) {  },
+              onItemsModified: function _onItemsModified(aItems, aCollection) {  },
+              onItemsRemoved: function _onItemsRemoved(aItems, aCollection) {  },
+              onQueryCompleted: function _onQueryCompleted(aCollection) {  
+                let tabmail = mainWindow.document.getElementById("tabmail");
+                /*aCollection.items =
+                  [GCV.selectRightMessage(m)
+                  for each ([, m] in Iterator(GCV.groupMessages(aCollection.items)))];
+                aCollection.items = aCollection.items.filter(function (x) x);*/
+                tabmail.openTab("glodaList", {
+                  collection: aCollection,
+                  title: "Messages involving #1".replace("#1", self._name),
+                  background: false
+                });
+              }
+            });
+          }
+        });
+      }, false);
+
     /* The links to various profiles */
     for each (let [, a] in Iterator(aDomNode.getElementsByTagName("a"))) {
       let (a = a) { // I hate you Javascript! I hate you!!!
