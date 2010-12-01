@@ -51,7 +51,6 @@
         persist="width hidden ordinal"
         hidden="false"
         flex="4"
-        ordinal="14"
         label="Between" tooltiptext="Click to sort by participants" />
       <splitter class="tree-splitter" insertbefore="senderCol" />
     </treecols>

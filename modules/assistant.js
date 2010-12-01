@@ -212,7 +212,8 @@ let Customizations = {
     install: function () {
       let state = {
         ftvMode: null,
-        //unreadCol: null,
+        unreadCol: null,
+        senderCol: null,
       };
 
       let ftv = mainWindow.gFolderTreeView;
@@ -232,14 +233,14 @@ let Customizations = {
         ftv.selectFolder(smartInbox);
 
       let moveOn = function () {
-        // If the user was *not* in Smart Inbox, then we will simply revert
-        // to the previous mode, and these setttings won't take effect anymore
-        // since we're in a different folder. If the user was in Smart Inbox,
-        // let's say he's smart enough to revert these by himself...
+        let tabmail = mainWindow.document.getElementById("tabmail");
+        tabmail.switchToTab(0);
         mainWindow.MsgSortThreaded();
         mainWindow.MsgSortThreadPane('byDate');
         mainWindow.MsgSortDescending();
         mainWindow.goDoCommand('cmd_collapseAllThreads');
+        state.unreadCol = eid("unreadCol").getAttribute("hidden");
+        state.senderCol = eid("senderCol").getAttribute("hidden");
         eid("unreadCol").setAttribute("hidden", "false");
         eid("senderCol").setAttribute("hidden", "true");
         eid("betweenCol").setAttribute("hidden", "false");
@@ -259,11 +260,12 @@ let Customizations = {
       return state;
     },
 
-    uninstall: function ({ ftvMode, }) {
-      if (mainWindow.gFolderTreeView.mode == "smart") {
-        eid("senderCol").setAttribute("hidden", "false");
-        mainWindow.gFolderTreeView.mode = ftvMode;
-      }
+    uninstall: function ({ ftvMode, senderCol, unreadCol }) {
+      if (eid("senderCol").getAttribute("hidden") == "true")
+        eid("senderCol").setAttribute("hidden", senderCol);
+      if (eid("unreadCol").getAttribute("hidden") == "false")
+        eid("unreadCol").setAttribute("hidden", unreadCol);
+      mainWindow.gFolderTreeView.mode = ftvMode;
     },
   },
 

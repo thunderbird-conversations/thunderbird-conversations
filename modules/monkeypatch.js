@@ -331,7 +331,8 @@ MonkeyPatch.prototype = {
 
   watchUninstall: function () {
     AddonManager.addAddonListener(this);
-    observerService.addObserver(this, "profile-before-change", false);
+    observerService.addObserver(this, "quit-application-granted", false);
+    observerService.addObserver(this, "quit-application-requested", false);
   },
 
   doUninstall: function () {
@@ -348,11 +349,38 @@ MonkeyPatch.prototype = {
       }
     }
     Prefs.setString("conversations.uninstall_infos", "{}");
+    Prefs.setInt("conversations.version", 0);
   },
 
   // nsIObserver
   observe: function (aSubject, aTopic, aData) {
-    if (aTopic == "profile-before-change" && this._beingUninstalled)
+    Log.debug("Observing", aTopic, aData);
+    // Why do we need such a convoluted shutdown procedure? The thing is, unless
+    //  the current tab is the standard folder view, customizations such as the
+    //  folder view columns won't take effect. So we need to switch to the first
+    //  tab.
+    // Next issue: this takes some time, so we must do this while we can still
+    //  cancel the shutdown procedure, and then do the shutdown again, after a
+    //  small timeout, the time for Thunderbird to switch to the correct tab.
+    if (aTopic == "quit-application-requested" && this._beingUninstalled) {
+      let mainWindow = getMail3Pane();
+      let tabmail = mainWindow.document.getElementById("tabmail");
+      if (tabmail.tabContainer.selectedIndex != 0) {
+        tabmail.tabContainer.selectedIndex = 0;
+        aSubject.QueryInterface(Ci.nsISupportsPRBool);
+        // Cancel shutdown, and leave some time for Thunderbird to setup the
+        //  view.
+        aSubject.data = true;
+        if (aData == "restart")
+          mainWindow.setTimeout(function () { mainWindow.Application.restart(); }, 1000);
+        else
+          mainWindow.setTimeout(function () { mainWindow.Application.quit(); }, 1000);
+      }
+    }
+
+    // Now we assume the view is setup, and we can actually do our little
+    //  uninstall stuff.
+    if (aTopic == "quit-application-granted" && this._beingUninstalled)
       this.doUninstall();
   },
 
