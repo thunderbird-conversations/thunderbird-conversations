@@ -37,11 +37,18 @@
       }
     }
 
+    let finishedAlready = false;
     function finish() {
+      // The user closed the window, so we ran finish() already, and now we're
+      //  running it again because indexed just finished. Abort abort abort.
+      if (finishedAlready)
+        return;
+
       let str = JSON.stringify(uninstallInfos);
       Log.debug("Saving JSON uninstall information", str);
       Prefs.setString("conversations.uninstall_infos", str);
       Prefs.setInt("conversations.version", conversationsCurrentVersion);
+      finishedAlready = true;
       window.removeEventListener("unload", finish, true);
       window.close();
     }
@@ -56,13 +63,13 @@
     Customizations.expect = function () expected++;
     Customizations.top = top;
 
-    // If the user decides to close the window, don't prompt again... too bad
-    // for him! He won't get support...
-    window.addEventListener("unload", finish, true);
-
     // --- UI event handlers
 
     function onFinish() {
+      // If the user decides to close the window, don't prompt again... too bad
+      // for him! He won't get support...
+      window.addEventListener("unload", finish, true);
+
       $(".working").show();
 
       let checkboxes = document.querySelectorAll("input[type=\"checkbox\"]");
