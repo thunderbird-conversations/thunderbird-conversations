@@ -37,6 +37,13 @@
       }
     }
 
+    // In all cases, closing the window once should prevent it from ever opening
+    //  again.
+    function upgrade() {
+      Prefs.setInt("conversations.version", conversationsCurrentVersion);
+    }
+    window.addEventListener("unload", upgrade, true);
+
     let finishedAlready = false;
     function finish() {
       // The user closed the window, so we ran finish() already, and now we're
@@ -47,8 +54,8 @@
       let str = JSON.stringify(uninstallInfos);
       Log.debug("Saving JSON uninstall information", str);
       Prefs.setString("conversations.uninstall_infos", str);
-      Prefs.setInt("conversations.version", conversationsCurrentVersion);
       finishedAlready = true;
+      upgrade();
       window.removeEventListener("unload", finish, true);
       window.close();
     }
@@ -66,8 +73,7 @@
     // --- UI event handlers
 
     function onFinish() {
-      // If the user decides to close the window, don't prompt again... too bad
-      // for him! He won't get support...
+      // Register uninstall information if the user closes the window now.
       window.addEventListener("unload", finish, true);
 
       $(".working").show();
