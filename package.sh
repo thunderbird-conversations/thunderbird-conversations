@@ -9,7 +9,7 @@ if [ -f "$GNUFILE" ]; then
 fi;
 
 template() {
-  sed s/__REPLACEME__/.$1/ install.rdf.template > install.rdf
+  sed s/__REPLACEME__/$1/ install.rdf.template > install.rdf
 }
 
 upload() {
@@ -22,7 +22,7 @@ if [ "$1" = "official" ]; then
   ./build.sh
   upload;
 else
-  template "$DATE"pre;
+  template ."$DATE"pre;
   ./build.sh
   upload;
   rm -f conversations.xpi;
