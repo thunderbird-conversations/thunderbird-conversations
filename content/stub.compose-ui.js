@@ -271,13 +271,13 @@ function updateUI() {
 //  facebook-style autocomplete.
 function asToken(thumb, name, email, guid) {
   let hasName = name && (String.trim(name).length > 0);
-  let data = hasName ? name + " <" + email + ">" : email;
+  let data = hasName ? gHeaderParser.makeFullAddress(name, email) : email;
   let thumbStr = thumb ? "<img class='autocomplete-thumb' src=\""+thumb+"\" /> " : "";
   let nameStr = hasName ? name + " &lt;" + email + "&gt;" : email;
   let listItem = thumbStr + nameStr;
   let id = guid;
   let displayName = hasName ? name : email;
-  return { name: displayName, listItem: listItem, data: data, id: guid }
+  return { name: displayName, listItem: listItem, data: data, email: email, id: guid }
 }
 
 const MAX_POPULAR_CONTACTS = 200;
@@ -536,7 +536,7 @@ function setupAutocomplete() {
       prePopulate: aData,
     });
     $(aList+" li:not(.add-more)").remove();
-    for each (let [i, { name, data: email }] in Iterator(aData)) {
+    for each (let [i, { name, email }] in Iterator(aData)) {
       if (!email)
         continue;
       let sep;

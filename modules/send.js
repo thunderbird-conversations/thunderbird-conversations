@@ -47,7 +47,7 @@ function sendMessage({ msgHdr, identity, to, cc, bcc, subject },
   //  properly set before assembling the message.
   let fields = Cc["@mozilla.org/messengercompose/composefields;1"]
                   .createInstance(Ci.nsIMsgCompFields);
-  fields.from = identity.fullName + " <" + identity.email + ">";
+  fields.from = gHeaderParser.makeFullAddress(identity.fullName, identity.email);
   fields.to = to;
   fields.cc = cc;
   fields.bcc = bcc;
