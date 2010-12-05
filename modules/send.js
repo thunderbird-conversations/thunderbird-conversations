@@ -33,6 +33,8 @@ Cu.import("resource://conversations/log.js");
 
 let Log = setupLogging("Conversations.Send");
 
+let gProgressListener;
+
 /**
  * Actually send the message based on the given parameters.
  */
@@ -142,20 +144,20 @@ function sendMessage({ msgHdr, identity, to, cc, bcc, subject },
     //  can't send the message ourselves because of too many [noscript]s.
     let msgCompose;
     if ("InitCompose" in msgComposeService) // comm-1.9.2
-      msgCompose = msgComposeService.InitCompose (null, params);
+      msgCompose = msgComposeService.InitCompose(null, params);
     else // comm-central
       msgCompose = msgComposeService.initCompose(params);
 
     // We create a progress listener...
-    var progress = Cc["@mozilla.org/messenger/progress;1"]
-                     .createInstance(Ci.nsIMsgProgress);
-    if (progress) {
-      progress.registerListener(progressListener);
+    gProgressListener = Cc["@mozilla.org/messenger/progress;1"]
+                        .createInstance(Ci.nsIMsgProgress);
+    if (gProgressListener {
+      gProgressListener.registerListener(progressListener);
     }
     msgCompose.RegisterStateListener(stateListener);
 
     try {
-      msgCompose.SendMsg (deliverType, identity, "", null, progress);
+      msgCompose.SendMsg(deliverType, identity, "", null, gProgressListener);
     } catch (e) {
       Log.error(e);
       dumpCallStack(e);
