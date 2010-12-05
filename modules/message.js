@@ -66,6 +66,12 @@ function KeyListener(aMessage) {
 }
 
 KeyListener.prototype = {
+  // Any event that's handled *must* be stopped from bubbling upwards, because
+  //  there's a topmost event listener on the DOM window that re-fires any
+  //  keypress (that one is not capturing) into the main window. We have to do
+  //  this because otherwise event's dont make it out of the <browser
+  //  id="multimessage"> that holds us when the conversation view has focus.
+  // That's what makes cmd/ctrl-n work properly.
   onKeyPress: function _KeyListener_onKeyPressed (event) {
     let self = this;
     let findMsgNode = function (msgNode) {
@@ -78,12 +84,15 @@ KeyListener.prototype = {
     switch (event.which) {
       case this.KeyEvent.DOM_VK_RETURN:
       case 'o'.charCodeAt(0):
-        this.message.toggle();
-        event.preventDefault();
+        if (!isAccel(event)) {
+          this.message.toggle();
+          event.preventDefault();
+          event.stopPropagation();
+        }
         break;
 
       case 'n'.charCodeAt(0):
-        {
+        if (!isAccel(event)) {
           let [msgNodes, index] = findMsgNode(this.message._domNode);
           if (index < (msgNodes.length - 1)) {
             let next = msgNodes[index+1];
@@ -92,11 +101,12 @@ KeyListener.prototype = {
               .contentWindow.scrollNodeIntoView(next);
           }
           event.preventDefault();
+          event.stopPropagation();
         }
         break;
 
       case 'p'.charCodeAt(0):
-        {
+        if (!isAccel(event)) {
           let [msgNodes, index] = findMsgNode(this.message._domNode);
           if (index > 0) {
             let prev = msgNodes[index-1];
@@ -105,41 +115,58 @@ KeyListener.prototype = {
               .contentWindow.scrollNodeIntoView(prev);
           }
           event.preventDefault();
+          event.stopPropagation();
         }
         break;
 
       case 'r'.charCodeAt(0):
-        if (isAccel(event))
+        if (isAccel(event)) {
           this.message.compose(Ci.nsIMsgCompType.ReplyToSender, event);
-        event.preventDefault();
+          event.preventDefault();
+          event.stopPropagation();
+        }
         break;
 
       case 'R'.charCodeAt(0):
-        if (isAccel(event))
+        if (isAccel(event)) {
           this.message.compose(Ci.nsIMsgCompType.ReplyAll, event);
-        event.preventDefault();
+          event.preventDefault();
+          event.stopPropagation();
+        }
         break;
 
       case 'l'.charCodeAt(0):
-        this.message.forward(event);
-        event.preventDefault();
+        if (isAccel(event)) {
+          this.message.forward(event);
+          event.preventDefault();
+          event.stopPropagation();
+        }
         break;
 
       case 'u'.charCodeAt(0):
-        // Hey, let's move back to this message next time!
-        this.message._domNode.setAttribute("tabindex", "1");
-        getMail3Pane().SetFocusThreadPane(event);
-        event.preventDefault();
+        if (!isAccel(event)) {
+          // Hey, let's move back to this message next time!
+          this.message._domNode.setAttribute("tabindex", "1");
+          getMail3Pane().SetFocusThreadPane(event);
+          event.preventDefault();
+          event.stopPropagation();
+        }
         break;
 
       case 'a'.charCodeAt(0):
-        msgHdrsArchive(this.message._conversation.msgHdrs);
-        event.preventDefault();
+        if (!isAccel(event)) {
+          msgHdrsArchive(this.message._conversation.msgHdrs);
+          event.preventDefault();
+          event.stopPropagation();
+        }
         break;
 
-      case '#'.charCodeAt(0):
-        msgHdrsDelete(this.message._conversation.msgHdrs);
-        event.preventDefault();
+      case this.KeyEvent.DOM_VK_DELETE:
+        if (!isAccel(event)) {
+          msgHdrsDelete(this.message._conversation.msgHdrs);
+          event.preventDefault();
+          event.stopPropagation();
+        }
         break;
     }
   },
@@ -279,7 +306,7 @@ Message.prototype = {
     let keyListener = new KeyListener(this);
     this._domNode.addEventListener("keypress", function (event) {
       keyListener.onKeyPress(event);
-    }, false);
+    }, false); // über-important: don't capture
 
     // Do this now because the star is visible even if we haven't been expanded
     // yet.

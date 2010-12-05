@@ -550,6 +550,15 @@ MonkeyPatch.prototype = {
           // Make the stub aware of the Conversations object it's currently
           //  representing.
           htmlpane.contentWindow.Conversations = window.Conversations;
+          // The DOM window is fresh, it needs an event listener to forward
+          //  keyboard shorcuts to the main window when the conversation view
+          //  has focus.
+          // It's crucial we register a non-capturing event listener here,
+          //  otherwise the individual message nodes get no opportunity to do
+          //  their own processing.
+          htmlpane.contentWindow.addEventListener("keypress", function (event) {
+            window.dispatchEvent(event);
+          }, false);
         });
       };
 
