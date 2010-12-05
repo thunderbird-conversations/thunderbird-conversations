@@ -4,3 +4,5 @@
 contained commas.
 - Make standard keyboard shortcuts work even when the conversation view has
 focus (forward them to the main window).
+- Make sure we mark message as "replied to" (small blue arrow in the message
+list).

@@ -763,6 +763,11 @@ let stateListener = {
     if (NS_SUCCEEDED(aResult)) {
       $(".quickReplyHeader").hide();
       onDiscard();
+      // Well we assume the user hasn't changed the quick reply parameters in
+      //  the meanwhile... FIXME
+      let msgHdr = gComposeParams.msgHdr;
+      msgHdr.folder.addMessageDispositionState(msgHdr, Ci.nsIMsgFolder.nsMsgDispositionState_Replied);
+      msgHdr.folder.msgDatabase = null;
     }
   },
 
