@@ -1,14 +1,4 @@
---- v1.2 development series ---
+--- Changes since 2.0alpha1 ---
 
-- Make conversation view the default
-- Improve the message reader with more actions
-- Add the ability to manage contacts (address book integration, gravatar support, etc.)
-- More keyboard shortcuts (archive, move focus back to thread pane -> 'u',
-delete conversation -> '#'). Other keyboard shortcuts now follow standard
-Thunderbird conventions for more consistency.
-- Added a link to edit drafts
-- More aggressive quote recognition
-- Fix appearance on Windows systems
-- Fix some strange cases where the conversation view was broken until you
-restart Thunderbird, or when messages were almost hidden.
-- New pref: only expand the message scrolled to
+- Fixed issue where you could not use quick reply for recipients whose names
+contained commas.
