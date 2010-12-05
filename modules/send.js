@@ -151,7 +151,7 @@ function sendMessage({ msgHdr, identity, to, cc, bcc, subject },
     // We create a progress listener...
     gProgressListener = Cc["@mozilla.org/messenger/progress;1"]
                         .createInstance(Ci.nsIMsgProgress);
-    if (gProgressListener {
+    if (gProgressListener) {
       gProgressListener.registerListener(progressListener);
     }
     msgCompose.RegisterStateListener(stateListener);
