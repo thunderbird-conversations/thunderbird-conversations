@@ -1,5 +1,6 @@
 --- Changes since 2.0alpha1 ---
 
+- Fix "Copy Complete" issue.
 - Fixed issue where you could not use quick reply for recipients whose names
 contained commas.
 - Make standard keyboard shortcuts work even when the conversation view has

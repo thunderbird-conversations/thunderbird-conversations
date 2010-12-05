@@ -33,7 +33,14 @@ Cu.import("resource://conversations/log.js");
 
 let Log = setupLogging("Conversations.Send");
 
-let gProgressListener;
+// This has to be a root because once the msgCompose has deferred the treatment
+//  of the send process to nsMsgSend.cpp, the nsMsgSend holds a reference to
+//  nsMsgCopySendListener (nsMsgCompose.cpp). nsMsgCopySendListener holds a
+//  *weak* reference to its corresponding nsIMsgCompose object, that in turns
+//  forwards the notifications to our own little progressListener.
+// So if no one holds a firm reference to gMsgCompose, then it might end up
+//  being collected before the send process terminates, and then, it's BAD.
+let gMsgCompose;
 
 /**
  * Actually send the message based on the given parameters.
@@ -142,22 +149,21 @@ function sendMessage({ msgHdr, identity, to, cc, bcc, subject },
     //  that component is supposed to talk to the "real" compose window, set the
     //  encoding, set the composition mode... we're only doing that because we
     //  can't send the message ourselves because of too many [noscript]s.
-    let msgCompose;
     if ("InitCompose" in msgComposeService) // comm-1.9.2
-      msgCompose = msgComposeService.InitCompose(null, params);
+      gMsgCompose = msgComposeService.InitCompose (null, params);
     else // comm-central
-      msgCompose = msgComposeService.initCompose(params);
+      gMsgCompose = msgComposeService.initCompose(params);
 
     // We create a progress listener...
-    gProgressListener = Cc["@mozilla.org/messenger/progress;1"]
-                        .createInstance(Ci.nsIMsgProgress);
-    if (gProgressListener) {
-      gProgressListener.registerListener(progressListener);
+    var progress = Cc["@mozilla.org/messenger/progress;1"]
+                     .createInstance(Ci.nsIMsgProgress);
+    if (progress) {
+      progress.registerListener(progressListener);
     }
-    msgCompose.RegisterStateListener(stateListener);
+    gMsgCompose.RegisterStateListener(stateListener);
 
     try {
-      msgCompose.SendMsg(deliverType, identity, "", null, gProgressListener);
+      gMsgCompose.SendMsg (deliverType, identity, "", null, progress);
     } catch (e) {
       Log.error(e);
       dumpCallStack(e);
