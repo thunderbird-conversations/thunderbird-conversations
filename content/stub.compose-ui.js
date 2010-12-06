@@ -8,6 +8,7 @@ Cu.import("resource:///modules/errUtils.js");
 Cu.import("resource:///modules/gloda/gloda.js");
 Cu.import("resource:///modules/gloda/public.js");
 Cu.import("resource:///modules/gloda/utils.js");
+Cu.import("resource:///modules/gloda/mimemsg.js");
 Cu.import("resource:///modules/gloda/suffixtree.js");
 Cu.import("resource:///modules/gloda/noun_tag.js");
 Cu.import("resource:///modules/gloda/noun_freetag.js");
@@ -253,8 +254,22 @@ function setupReplyForMsgHdr(aMsgHdr) {
   gComposeParams.bcc = [asToken(null, bcc, bccListEmailAddresses[i], null)
     for each ([i, bcc] in Iterator(bccList))];
 
-  // And update our nice composition UI
-  updateUI();
+  // We're streaming the message just to get the reply-to header... kind of a
+  //  shame...
+  try {
+    MsgHdrToMimeMessage(aMsgHdr, null, function (aMsgHdr, aMimeMsg) {
+      if ("reply-to" in aMimeMsg.headers) {
+        let [name, email] = parse(aMimeMsg.headers["reply-to"]);
+        if (email) {
+          gComposeParams.to = [asToken(null, name, email, null)];
+        }
+      }
+      updateUI();
+    }, false); // don't download
+  } catch (e if e.result == Cr.NS_ERROR_FAILURE) { // Message not available offline.
+    // And update our nice composition UI
+    updateUI();
+  }
 }
 
 // When all the composition parameters have been set, update the UI with them
