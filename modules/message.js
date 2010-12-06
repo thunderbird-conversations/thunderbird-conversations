@@ -284,6 +284,9 @@ Message.prototype = {
     // 5) Custom tag telling the user if this is a draft
     data.draft = msgHdrIsDraft(this._msgHdr);
 
+    // 6) For the "show remote content" thing
+    data.realFrom = this._realFrom.email || this._from.email;
+
     return data;
   },
 
