@@ -571,6 +571,7 @@ MonkeyPatch.prototype = {
     //  much.
     window.document.getElementById("tabmail")
         .tabInfo[0].messageDisplay.onSelectedMessagesChanged =
+    window.MessageDisplayWidget.prototype.onSelectedMessagesChanged =
       function _onSelectedMessagesChanged_patched () {
         try {
           if (!this.active)
