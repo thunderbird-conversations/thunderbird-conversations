@@ -79,8 +79,9 @@ function showBcc(event) {
   $(".showBcc").hide();
 }
 
-function editFields(event) {
+function editFields(aFocusId) {
   $('.quickReplyRecipients').addClass('edit');
+  $("#"+aFocusId).next().find(".token-input-input-token-facebook input").last().focus();
 }
 
 function onDiscard(event) {

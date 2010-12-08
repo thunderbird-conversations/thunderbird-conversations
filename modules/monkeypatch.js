@@ -317,7 +317,11 @@ MonkeyPatch.prototype = {
       }
     } 
     if (window.gFolderDisplay.view.showThreaded) {
-      if (isExpanded)
+      // The || is for the wicked case that Standard8 sent me a screencast for.
+      // This makes sure we *always* mark the selected message as read, even in
+      //  the tricky case where we recycle a conversation \emph{and} end up with
+      //  only one message left in the thread pane.
+      if (isExpanded || window.gFolderDisplay.selectedMessages.length == 1)
         scrollMode = Prefs.kScrollSelected;
       else
         scrollMode = Prefs.kScrollUnreadOrLast;
@@ -517,9 +521,7 @@ MonkeyPatch.prototype = {
                   // Did we juste change conversations? If we did, it's ok to
                   //  mark as read. Otherwise, it's not, since we may silently
                   //  mark new messages as read.
-                  // The || is for the wicked case that Standard8 sent me a
-                  //  screencast for.
-                  if (isDifferentConversation || window.gFolderDisplay.selectedMessages.length == 1) {
+                  if (isDifferentConversation) {
                     Log.debug("Marking the whole conversation as read");
                     aConversation.read = true;
                   }
