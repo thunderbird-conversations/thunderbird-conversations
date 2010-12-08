@@ -122,6 +122,10 @@ function useEditor() {
 
 function onSend(event, aPopOut) {
   let textarea = document.getElementsByTagName("textarea")[0];
+  let msg = "Send an empty message?";
+  if (!aPopOut && !$(textarea).val().length && !confirm(msg))
+    return;
+
   let isNewThread = $("#startNewThread:checked").length;
   return sendMessage({
       msgHdr: gComposeParams.msgHdr,

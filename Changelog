@@ -1,5 +1,7 @@
 --- Changes since 2.0alpha1 ---
 
+- Confirm sending empty messages.
+- Don't force the message pane into being shown if previously hidden with F8.
 - Make sure the focus is in the recipient field when hitting "edit" to edit the
 to:, cc: or bcc: list.
 - Change 'n' and 'p' keyboard shortcuts to the standard 'b' and 'f' Thunderbird
