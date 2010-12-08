@@ -442,10 +442,23 @@ MonkeyPatch.prototype = {
     // Below is the code that intercepts the message display logic, and reroutes
     //  the control flow to our conversation reader.
 
+    // Because we're not even fetching the conversation when the message pane is
+    //  hidden, we need to trigger it manually when it's un-hidden.
+    window.addEventListener("messagepane-unhide",
+      function () {
+        Log.debug("messagepane-unhide");
+        window.summarizeThread(window.gFolderDisplay.selectedMessages);
+      }, true);
+
     // This nice little wrapper makes sure that the multimessagepane points to
     //  the given URL before moving on. It takes a continuation, and an optional
     //  third argument that is to be run in case we loaded a fresh page.
     let ensureLoadedAndRun = function (aLocation, k, onRefresh) {
+      if (!window.gMessageDisplay.visible) {
+        Log.debug("Message pane is hidden, not fetching...");
+        return;
+      }
+
       if (htmlpane.contentDocument.location.href == aLocation) {
         k();
       } else {

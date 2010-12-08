@@ -1,5 +1,7 @@
 --- Changes since 2.0alpha1 ---
 
+- Make sure the focus is in the recipient field when hitting "edit" to edit the
+to:, cc: or bcc: list.
 - Change 'n' and 'p' keyboard shortcuts to the standard 'b' and 'f' Thunderbird
 ones. Prevents conflicts with muttator and other extensions which bind unused
 keys in Thunderbird.
