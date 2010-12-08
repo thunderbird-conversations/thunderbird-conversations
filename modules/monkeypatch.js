@@ -519,7 +519,7 @@ MonkeyPatch.prototype = {
                   //  mark new messages as read.
                   // The || is for the wicked case that Standard8 sent me a
                   //  screencast for.
-                  if (isDifferentConversation || window.gFolderDisplay.selectedIndices.length == 1) {
+                  if (isDifferentConversation || window.gFolderDisplay.selectedMessages.length == 1) {
                     Log.debug("Marking the whole conversation as read");
                     aConversation.read = true;
                   }
