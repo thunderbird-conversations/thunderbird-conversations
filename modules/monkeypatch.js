@@ -296,6 +296,7 @@ MonkeyPatch.prototype = {
       this._window.clearTimeout(this.markReadTimeout);
   },
 
+  // Don't touch. Too tricky.
   determineScrollMode: function () {
     let window = this._window;
     let scrollMode = Prefs.kScrollUnreadOrLast;
@@ -316,7 +317,7 @@ MonkeyPatch.prototype = {
       }
     } 
     if (window.gFolderDisplay.view.showThreaded) {
-      if (isExpanded)
+      if (isExpanded || window.gFolderDisplay.selectedIndices.length == 1)
         scrollMode = Prefs.kScrollSelected;
       else
         scrollMode = Prefs.kScrollUnreadOrLast;

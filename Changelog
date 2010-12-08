@@ -1,5 +1,8 @@
 --- Changes since 2.0alpha1 ---
 
+- Fix issue where archiving messages in a thread would prevent the last
+remaining message from being marked as read.
+- Make sure conversation view works fine in other folder tabs.
 - Take into account Reply-To headers when present for quick reply.
 - Fix "Copy Complete" issue.
 - Fixed issue where you could not use quick reply for recipients whose names
