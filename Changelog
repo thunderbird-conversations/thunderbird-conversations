@@ -1,5 +1,8 @@
 --- Changes since 2.0alpha1 ---
 
+- Change 'n' and 'p' keyboard shortcuts to the standard 'b' and 'f' Thunderbird
+ones. Prevents conflicts with muttator and other extensions which bind unused
+keys in Thunderbird.
 - Fix issue where archiving messages in a thread would prevent the last
 remaining message from being marked as read.
 - Make sure conversation view works fine in other folder tabs.

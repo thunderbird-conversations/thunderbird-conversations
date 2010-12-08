@@ -91,7 +91,7 @@ KeyListener.prototype = {
         }
         break;
 
-      case 'n'.charCodeAt(0):
+      case 'f'.charCodeAt(0):
         if (!isAccel(event)) {
           let [msgNodes, index] = findMsgNode(this.message._domNode);
           if (index < (msgNodes.length - 1)) {
@@ -105,7 +105,7 @@ KeyListener.prototype = {
         }
         break;
 
-      case 'p'.charCodeAt(0):
+      case 'b'.charCodeAt(0):
         if (!isAccel(event)) {
           let [msgNodes, index] = findMsgNode(this.message._domNode);
           if (index > 0) {

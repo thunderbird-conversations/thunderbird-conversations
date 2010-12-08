@@ -317,7 +317,7 @@ MonkeyPatch.prototype = {
       }
     } 
     if (window.gFolderDisplay.view.showThreaded) {
-      if (isExpanded || window.gFolderDisplay.selectedIndices.length == 1)
+      if (isExpanded)
         scrollMode = Prefs.kScrollSelected;
       else
         scrollMode = Prefs.kScrollUnreadOrLast;
@@ -517,7 +517,9 @@ MonkeyPatch.prototype = {
                   // Did we juste change conversations? If we did, it's ok to
                   //  mark as read. Otherwise, it's not, since we may silently
                   //  mark new messages as read.
-                  if (isDifferentConversation) {
+                  // The || is for the wicked case that Standard8 sent me a
+                  //  screencast for.
+                  if (isDifferentConversation || window.gFolderDisplay.selectedIndices.length == 1) {
                     Log.debug("Marking the whole conversation as read");
                     aConversation.read = true;
                   }
