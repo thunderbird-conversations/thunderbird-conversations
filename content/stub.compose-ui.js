@@ -602,12 +602,13 @@ function setupAutocomplete() {
 function pValue (v) {
   $(".statusPercentage")
     .show()
-    .text(v+"%")
+    .text(v+"%");
+  $(".statusThrobber").hide();
 }
 
 function pUndetermined () {
-  $(".statusPercentage")
-    .hide()
+  $(".statusPercentage").hide();
+  $(".statusThrobber").show();
 }
 
 function pText (t) {
