@@ -273,15 +273,22 @@ ContactFromPeople.prototype = {
       else if (thumbnailPhotos.length)
         self.avatar = thumbnailPhotos[0].value;
 
-      /* Will set this._profiles = {
-       *  facebook: id,
-       *  google: the email,
-       *  linkedin: the email,
-       *  twitter: the nickname
-       * }
-       * */
+      // Find out about the guy's profiles...
+      Log.debug(JSON.stringify(person.obj));
+      let docs = person.obj.documents;
+      if ("facebook" in docs)
+        self._profiles["facebook"] = Object.keys(docs.facebook)[0];
+      if ("twitter" in docs)
+        self._profiles["twitter"] = Object.keys(docs.twitter)[0];
       for each (let [svcName, svc] in Iterator(person.obj.documents)) {
-        self._profiles[svcName] = [k for (k in svc)];
+        if (svcName.indexOf("hcard:http://www.google.com/profiles/") === 0
+            && (!("google" in self._profiles))) {
+          self._profiles["google"] = svcName.substring("hcard:".length, svcName.length);
+        }
+        if (svcName.indexOf("hcard:http://www.flickr.com/photos/") === 0
+            && (!("flickr" in self._profiles))) {
+          self._profiles["flickr"] = svcName.substring("hcard:".length, svcName.length);
+        }
       }
 
       self._name = person.displayName;

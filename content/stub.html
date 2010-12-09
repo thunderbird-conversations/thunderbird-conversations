@@ -384,6 +384,16 @@
             <img src="chrome://conversations/content/i/twitter.ico" />
           </a>
           {{/if}}
+          {{if ("google" in profiles)}}
+          <a href="${profiles.google}" class="profile-link">
+            <img src="chrome://conversations/content/i/google.ico" />
+          </a>
+          {{/if}}
+          {{if ("flickr" in profiles)}}
+          <a href="${profiles.flickr}" class="profile-link">
+            <img src="chrome://conversations/content/i/flickr.ico" />
+          </a>
+          {{/if}}
         </div>
         <div class="tipFooter">
           <button class="sendEmail">send email</button>
