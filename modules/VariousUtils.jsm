@@ -80,15 +80,16 @@ let uri = function (msg) msg.folder.getUriForMsg(msg);
  * fillIdentities again if you feel that the user has updated them!
  */
 let gIdentities = {};
-function fillIdentities () {
+function fillIdentities() {
   gIdentities = {};
   for each (let id in fixIterator(msgAccountManager.allIdentities, Ci.nsIMsgIdentity)) {
-    // id.fullName
-    gIdentities[id.email] = id;
+    gIdentities[id.email.toLowerCase()] = id;
   }
   gIdentities["default"] = msgAccountManager.defaultAccount.defaultIdentity;
 }
-fillIdentities();
+// We're not fetching right away, because the default identity might be null.
+// What we need to do instead is wait for the mail-startup-done event and have
+//  the monkey-patch call fillIdentities.
 
 /**
  * A stupid formatting function that uses the i18nDateFormatter XPCOM component

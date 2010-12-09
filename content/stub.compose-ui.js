@@ -63,7 +63,12 @@ function onTextareaClicked(event) {
   if (!gComposeParams.msgHdr) { // first time
     Log.debug("Setting up the initial quick reply compose parameters...");
     let messages = Conversations.currentConversation.messages;
-    setupReplyForMsgHdr(messages[messages.length - 1].message._msgHdr);
+    try {
+      setupReplyForMsgHdr(messages[messages.length - 1].message._msgHdr);
+    } catch (e) {
+      Log.debug(e);
+      dumpCallStack(e);
+    }
     scrollNodeIntoView(document.querySelector(".quickReply"));
   }
 }
@@ -230,6 +235,11 @@ function setupReplyForMsgHdr(aMsgHdr) {
 
   let isReplyToOwnMsg = false;
   for each (let [i, identity] in Iterator(gIdentities)) {
+    Log.debug("Iterating over identities", i, identity);
+    if (!identity) {
+      Log.debug("This identity is null, pretty weird...");
+      continue;
+    }
     let email = identity.email;
     if (email == authorEmailAddress)
       isReplyToOwnMsg = true;

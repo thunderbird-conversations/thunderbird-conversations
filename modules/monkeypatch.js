@@ -336,6 +336,7 @@ MonkeyPatch.prototype = {
 
   watchUninstall: function () {
     AddonManager.addAddonListener(this);
+    observerService.addObserver(this, "mail-startup-done", false);
     observerService.addObserver(this, "quit-application-granted", false);
     observerService.addObserver(this, "quit-application-requested", false);
   },
@@ -387,6 +388,11 @@ MonkeyPatch.prototype = {
     //  uninstall stuff.
     if (aTopic == "quit-application-granted" && this._beingUninstalled)
       this.doUninstall();
+
+    // Per discussion on IRC with RattyAway, accessing stuff such as the account
+    //  manager should wait for this notification to be fired first.
+    if (aTopic == "mail-startup-done")
+      fillIdentities();
   },
 
   // AddonListener
@@ -575,7 +581,11 @@ MonkeyPatch.prototype = {
           //  otherwise the individual message nodes get no opportunity to do
           //  their own processing.
           htmlpane.contentWindow.addEventListener("keypress", function (event) {
-            window.dispatchEvent(event);
+            try {
+              window.dispatchEvent(event);
+            } catch (e) {
+              Log.debug("We failed to dispatch the event, don't know why...", e);
+            }
           }, false);
         });
       };

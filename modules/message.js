@@ -414,7 +414,7 @@ Message.prototype = {
       allEmails = [
         (names.value[i] ? (names.value[i] + " <" + x + ">") : x)
         for each ([i, x] in Iterator(emailAddresses.value))
-        if (!gIdentities[x.toLowerCase()])
+        if (!(x.toLowerCase() in gIdentities))
       ];
       let composeAllUri = "mailto:" + allEmails.join(",");
       Log.debug("URI:", composeAllUri);
@@ -806,7 +806,7 @@ Message.prototype = {
             if (Prefs["monospaced_senders"].indexOf(email) < 0) {
               styleRules = styleRules.concat([
                 ".moz-text-flowed, .moz-text-plain {",
-                "  font-family: "+Prefs.getChar("font.default")+" !important;",
+                "  font-family: \""+Prefs.getChar("font.default")+"\" !important;",
                 "  font-size: "+textSize+"px !important;",
                 "  line-height: 112.5% !important;",
                 "}"

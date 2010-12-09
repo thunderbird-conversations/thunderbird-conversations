@@ -273,8 +273,13 @@ ContactFromPeople.prototype = {
       else if (thumbnailPhotos.length)
         self.avatar = thumbnailPhotos[0].value;
 
-      // Find out about the guy's profiles...
-      Log.debug(JSON.stringify(person.obj));
+      // Find out about the guy's profiles... This will set self._profiles = {
+      //  twitter: twitter username,
+      //  facebook: facebook id,
+      //  google: google profile URL,
+      //  flickr: flickr photo page URL,
+      // }
+      // Log.debug(JSON.stringify(person.obj));
       let docs = person.obj.documents;
       if ("facebook" in docs)
         self._profiles["facebook"] = Object.keys(docs.facebook)[0];
