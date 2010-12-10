@@ -199,8 +199,8 @@ function msgHdrsDelete(msgHdrs) {
 }
 
 let w = null;
-function getMail3Pane() {
-  if (!w)
+function getMail3Pane(aForce) {
+  if (!w || aForce)
     w = Cc["@mozilla.org/appshell/window-mediator;1"]
           .getService(Ci.nsIWindowMediator)
           .getMostRecentWindow("mail:3pane");

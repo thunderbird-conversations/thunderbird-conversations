@@ -109,14 +109,13 @@ MultipleCustomization.prototype = {
   }
 }
 
-// let eid = mainWindow.document.getElementById;
+// let eid = getMail3Pane().document.getElementById;
 //
 // The nice idiom above is not possible because of... [Exception...
 //  "Illegal operation on WrappedNative prototype object"  nsresult:
 //  "0x8057000c (NS_ERROR_XPC_BAD_OP_ON_WN_PROTO)"
 // So we do a round of eta-expansion.
-let mainWindow = getMail3Pane();
-let eid = function (id) mainWindow.document.getElementById(id);
+let eid = function (id) getMail3Pane().document.getElementById(id);
 
 let Customizations = {
   actionSetupViewDefaults: new MultipleCustomization([
@@ -146,7 +145,7 @@ let Customizations = {
       return eid("threadpane-splitter").getAttribute("state");
     }, function _setter (aValue) {
       if (aValue != this.get())
-        mainWindow.goDoCommand('cmd_toggleMessagePane');
+        getMail3Pane().goDoCommand('cmd_toggleMessagePane');
     }),
 
   actionReindexAttachments: {
@@ -216,6 +215,7 @@ let Customizations = {
         senderCol: null,
       };
 
+      let mainWindow = getMail3Pane();
       let ftv = mainWindow.gFolderTreeView;
       // save the current mode, set to smart
       state.ftvMode = ftv.mode;
@@ -265,7 +265,7 @@ let Customizations = {
         eid("senderCol").setAttribute("hidden", senderCol);
       if (eid("unreadCol").getAttribute("hidden") == "false")
         eid("unreadCol").setAttribute("hidden", unreadCol);
-      mainWindow.gFolderTreeView.mode = ftvMode;
+      getMail3Pane().gFolderTreeView.mode = ftvMode;
     },
   },
 

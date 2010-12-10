@@ -443,8 +443,11 @@ function parseMimeLine (aMimeLine) {
   let fullNames = {};
   let names = {};
   let numAddresses = headerParser.parseHeadersWithArray(aMimeLine, emails, names, fullNames);
-  return [{ email: emails.value[i], name: names.value[i], fullName: fullNames.value[i] }
-    for each (i in range(0, numAddresses))];
+  if (numAddresses)
+    return [{ email: emails.value[i], name: names.value[i], fullName: fullNames.value[i] }
+      for each (i in range(0, numAddresses))];
+  else
+    return [{ email: "", name: "-", fullName: "-" }];
 }
 
 let mapping = {

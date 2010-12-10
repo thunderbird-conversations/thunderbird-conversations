@@ -228,8 +228,9 @@ MonkeyPatch.prototype = {
       };
       let seenAlready = {};
       let r = [
-        [format(x) for each (x in parseMimeLine(msgHdr[prop]))]
+        [format(x) for each ([, x] in Iterator(parseMimeLine(msgHdr[prop])))]
         for each (prop in ["mime2DecodedAuthor", "mime2DecodedRecipients", "ccList", "bccList"])
+        if (msgHdr[prop])
       ].filter(function (x) {
         // Wow, a nice side-effect, I just hope the implementation of filter is
         //  as I think it is. Yes, I live dangerously!
@@ -431,6 +432,10 @@ MonkeyPatch.prototype = {
     let self = this;
     let htmlpane = window.document.getElementById("multimessage");
     let oldSummarizeMultipleSelection = window["summarizeMultipleSelection"];
+
+    // Nuke the reference to any old message window. Happens if we close the
+    //  main window and open a new one without restarting Thunderbird.
+    getMail3Pane(true);
 
     // Register our new tab type
     let tabmail = window.document.getElementById("tabmail");
