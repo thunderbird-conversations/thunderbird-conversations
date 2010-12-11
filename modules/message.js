@@ -187,8 +187,8 @@ function Message(aConversation) {
   //  sender with something more relevant, like X-Bugzilla-Who.
   this._realFrom = "";
   this._to = this.parse(this._msgHdr.mime2DecodedRecipients);
-  this._cc = this.parse(this._msgHdr.ccList);
-  this._bcc = this.parse(this._msgHdr.bccList);
+  this._cc = this._msgHdr.ccList.length ? this.parse(this._msgHdr.ccList) : [];
+  this._bcc = this._msgHdr.bccList.length ? this.parse(this._msgHdr.bccList) : [];
   this.subject = this._msgHdr.mime2DecodedSubject;
   this.inView = false; // set from the outside by the conversation
 
@@ -542,6 +542,15 @@ Message.prototype = {
       mainWindow.HandleMultipleAttachments(attachmentInfos, "save");
     });
     this.register(".quickReply", function (event) {
+      // Ok, so it's actually convenient to register our event listener on the
+      //  .quickReply node because we can easily prevent it from bubbling
+      //  upwards, but the problem is, if a message is appended at the end of
+      //  the conversation view, this event listener is active and the one from
+      //  the new message is active too. So we check that the quick reply still
+      //  is inside our dom node.
+      if (!self._domNode.getElementsByClassName("quickReply").length)
+        return;
+
       switch (event.keyCode) {
         case mainWindow.KeyEvent.DOM_VK_RETURN:
           if (isAccel(event))

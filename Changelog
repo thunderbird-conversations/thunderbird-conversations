@@ -1,5 +1,7 @@
 --- Changes since 2.0alpha1 ---
 
+- Don't send the message multiple times in quick reply (happens if messages have
+been appended at the end of the conversation).
 - Fix a rare case where the quick reply would be unusable
 - Add links to Google Profiles and Flickr photo pages
 - Add a throbber when sending messages
