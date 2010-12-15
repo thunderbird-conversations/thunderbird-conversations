@@ -55,7 +55,7 @@ ContactManager.prototype = {
       if (name)
         this._cache[email].enrichWithName(name);
       return this._cache[email];
-    } else if (gHasPeople) {
+    } else if (gHasPeople && email.length) {
       let contact = new ContactFromPeople(this, name, email, position);
       cache(contact);
       return contact;
