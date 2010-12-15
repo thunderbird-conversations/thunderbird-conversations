@@ -81,7 +81,6 @@ let uri = function (msg) msg.folder.getUriForMsg(msg);
  */
 let gIdentities = {};
 function fillIdentities() {
-  gIdentities = {};
   for each (let id in fixIterator(msgAccountManager.allIdentities, Ci.nsIMsgIdentity)) {
     gIdentities[id.email.toLowerCase()] = id;
   }
