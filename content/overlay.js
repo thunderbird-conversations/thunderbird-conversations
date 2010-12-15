@@ -56,7 +56,7 @@ window.addEventListener("load", function _overlay_eventListener () {
   Components.utils.import("resource://conversations/prefs.js", NS);
   Components.utils.import("resource://conversations/config.js", NS);
 
-  // We instanciate the Monkey-Patch for the given Conversation object.
+  // We instantiate the Monkey-Patch for the given Conversation object.
   let monkeyPatch = new NS.MonkeyPatch(window, NS.Conversation);
   // And then we seize the window and insert our code into it
   try {

@@ -705,7 +705,6 @@ Message.prototype = {
 
     let iframe = this._domNode.ownerDocument
       .createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "iframe");
-    iframe.setAttribute("transparent", "transparent"); // Big hack to workaround bug 540911
     iframe.setAttribute("style", "height: 20px");
     iframe.setAttribute("type", "content");
 
