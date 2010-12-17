@@ -77,6 +77,7 @@
       window.addEventListener("unload", finish, true);
 
       $(".working").show();
+      $(".applyChanges").attr("disabled", "disabled").text("Busy");
 
       let checkboxes = document.querySelectorAll("input[type=\"checkbox\"]");
       for each (let [, checkbox] in Iterator(checkboxes)) {
@@ -116,8 +117,9 @@
           made as soon as you uninstall the extension.
         </p>
         <p class="p3">
-         <span class="orange">This can take up to 15 minutes! You may close the
-         window in the meanwhile...</span>
+         <span class="orange">This maye take quite some time. You can either
+           wait for this window to close, or close the window yourself, and
+           check the progress from Tools &gt; Activity Manager.</span>
         </p>
         <p class="working" style="text-align: left; margin-top: 50px">
           Working...  <img src="loader.gif" />
@@ -126,8 +128,8 @@
     </div>
 
     <div class="buttonBox">
-      <button onclick="onCustomSetup(event);">Let me check first</button>
-      <button onclick="onFinish(event);">Ok, go ahead!</button>
+      <button onclick="onCustomSetup(event);">Review changes</button>
+      <button onclick="onFinish(event);" class="applyChanges">Apply changes</button>
     </div>
 
     <div class="more">
