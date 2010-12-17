@@ -40,6 +40,7 @@ var EXPORTED_SYMBOLS = [
   // miscellaneous functions
   'dateAsInMessageList', 'groupArray', 'range', 'uri',
   'escapeHtml', 'MixIn', 'NS_FAILED', 'NS_SUCCEEDED',
+  'htmlToPlainText',
   // heuristics for finding quoted parts
   'convertHotmailQuotingToBlockquote1', 'convertHotmailQuotingToBlockquote2',
   'convertOutlookQuotingToBlockquote', 'convertForwardedToBlockquote',
@@ -74,6 +75,18 @@ function NS_SUCCEEDED(v) {
 }
 
 let uri = function (msg) msg.folder.getUriForMsg(msg);
+
+function htmlToPlainText(aHtml) {
+  // Yes, this is ridiculous, we're instanciating composition fields just so
+  //  that they call ConvertBufPlainText for us. But ConvertBufToPlainText
+  //  really isn't easily scriptable, so...
+  let fields = Cc["@mozilla.org/messengercompose/composefields;1"]
+                  .createInstance(Ci.nsIMsgCompFields);
+  fields.body = aHtml;
+  fields.forcePlainText = true;
+  fields.ConvertBodyToPlainText();
+  return fields.body;
+}
 
 /**
  * A global pointer to all the identities known for the user. Feel free to call

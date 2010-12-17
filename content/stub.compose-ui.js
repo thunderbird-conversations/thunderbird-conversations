@@ -22,6 +22,7 @@ Cu.import("resource://conversations/AddressBookUtils.jsm");
 Cu.import("resource://conversations/VariousUtils.jsm");
 Cu.import("resource://conversations/MsgHdrUtils.jsm");
 Cu.import("resource://conversations/send.js");
+Cu.import("resource://conversations/compose.js");
 Cu.import("resource://conversations/log.js");
 
 let Log = setupLogging("Conversations.Stub.Compose");
@@ -280,11 +281,38 @@ function setupReplyForMsgHdr(aMsgHdr) {
         }
       }
       updateUI();
+      if (!$("textarea").val().length)
+        insertQuote(aMsgHdr);
     }, false); // don't download
   } catch (e if e.result == Cr.NS_ERROR_FAILURE) { // Message not available offline.
     // And update our nice composition UI
     updateUI();
+    if (!$("textarea").val().length)
+      insertQuote(aMsgHdr);
   }
+}
+
+function insertQuote(aMsgHdr) {
+  quoteMsgHdr(aMsgHdr, function (body) {
+    // Join together the different parts
+    let date = new Date(aMsgHdr.date/1000);
+    let [{ email, name }] = parseMimeLine(aMsgHdr.mime2DecodedAuthor);
+    Log.debug(aMsgHdr.mime2DecodedAuthor, email, name);
+    let txt = [
+      "\n\n",
+      "On ", date.toLocaleString(), ", ",
+      (name || email), 
+      " wrote:",
+      // Actually, the >'s aren't automatically appended
+      citeString("\n"+body.trim()),
+    ].join("");
+    // After we removed any trailing newlines, insert it into the textarea
+    $("textarea").val(txt); 
+    // I <3 HTML5 selections
+    let node = $("textarea")[0];
+    node.selectionStart = 0;
+    node.selectionEnd = 0;
+  });
 }
 
 // When all the composition parameters have been set, update the UI with them

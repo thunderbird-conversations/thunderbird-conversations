@@ -142,7 +142,7 @@ function sendMessage({ msgHdr, identity, to, cc, bcc, subject },
     return true;
   } else {
     fields.forcePlainText = true;
-    fields.ConvertBodyToPlainText(); // This takes care of wrapping at 70 characters. Expects HTML.
+    fields.ConvertBodyToPlainText(); // This takes care of wrapping at 72 characters. Expects HTML.
     params.format = Ci.nsIMsgCompFormat.PlainText;
 
     // This part initializes a nsIMsgCompose instance. This is useless, because

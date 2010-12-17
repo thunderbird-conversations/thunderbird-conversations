@@ -1,5 +1,11 @@
 --- Changes since 2.0alpha1 ---
 
+- Proper quoting support for quick reply
+- Make sure the message body is in disabled state while the sending process is
+taking place.
+- Make the text clearer in the setup assistant. Don't allow the user to request
+changes again.
+- Fix issue with font rendering on OSX.
 - Make sure deleting messages is undoable.
 - Don't send the message multiple times in quick reply (happens if messages have
 been appended at the end of the conversation).
