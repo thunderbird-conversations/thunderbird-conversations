@@ -685,6 +685,7 @@ let sendListener = {
    */
   onStartSending: function (aMsgID, aMsgSize) {
     pText("Sending message...");
+    $("textarea").attr("disabled", "disabled");
     Log.debug("onStartSending", aMsgID, aMsgSize);
   },
 
@@ -731,6 +732,7 @@ let sendListener = {
     //
     // Moar in mailnews/compose/src/nsComposeStrings.h
     Log.debug("onStopSending", aMsgID, aStatus, aMsg, aReturnFile);
+    $("textarea").attr("disabled", "");
     // This function is called only when the actual send has been performed,
     //  i.e. is not called when saving a draft (although msgCompose.SendMsg is
     //  called...)
@@ -739,6 +741,7 @@ let sendListener = {
       //  msgHdrsDelete([gOldDraftToDelete]);
       pText("Message "+aMsgID+" sent successfully"); 
     } else {
+      pText("Couldn't send the message.");
       Log.debug("NS_FAILED onStopSending");
     }
   },
