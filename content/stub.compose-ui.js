@@ -122,14 +122,19 @@ function onNewThreadClicked() {
 }
 
 function useEditor() {
-  if (onSend(null, true))
+  if (onSend(null, { popOut: true }))
     onDiscard();
 }
 
-function onSend(event, aPopOut) {
+let gWillArchive = false;
+
+function onSend(event, options) {
+  let popOut = options && options.popOut;
+  let archive = options && options.archive;
+  gWillArchive = archive;
   let textarea = document.getElementsByTagName("textarea")[0];
   let msg = "Send an empty message?";
-  if (!aPopOut && !$(textarea).val().length && !confirm(msg))
+  if (!popOut && !$(textarea).val().length && !confirm(msg))
     return;
 
   let isNewThread = $("#startNewThread:checked").length;
@@ -147,8 +152,10 @@ function onSend(event, aPopOut) {
       progressListener: progressListener,
       sendListener: sendListener,
       stateListener: stateListener,
-    }, aPopOut
-  );
+    }, {
+      popOut: popOut,
+      archive: archive,
+    });
 }
 
 function transferQuickReplyToNewWindow(aWindow, aExpand) {
@@ -713,7 +720,7 @@ let sendListener = {
    */
   onStartSending: function (aMsgID, aMsgSize) {
     pText("Sending message...");
-    $("textarea").attr("disabled", "disabled");
+    $("textarea, #send, #sendArchive").attr("disabled", "disabled");
     Log.debug("onStartSending", aMsgID, aMsgSize);
   },
 
@@ -760,7 +767,7 @@ let sendListener = {
     //
     // Moar in mailnews/compose/src/nsComposeStrings.h
     Log.debug("onStopSending", aMsgID, aStatus, aMsg, aReturnFile);
-    $("textarea").attr("disabled", "");
+    $("textarea, #send, #sendArchive").attr("disabled", "");
     // This function is called only when the actual send has been performed,
     //  i.e. is not called when saving a draft (although msgCompose.SendMsg is
     //  called...)
@@ -830,6 +837,11 @@ let stateListener = {
       let msgHdr = gComposeParams.msgHdr;
       msgHdr.folder.addMessageDispositionState(msgHdr, Ci.nsIMsgFolder.nsMsgDispositionState_Replied);
       msgHdr.folder.msgDatabase = null;
+      // Archive the whole conversation if needed
+      if (gWillArchive) {
+        // from stub.html
+        archiveConversation();
+      }
     }
   },
 

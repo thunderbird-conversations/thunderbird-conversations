@@ -49,7 +49,7 @@ function sendMessage({ msgHdr, identity, to, cc, bcc, subject },
     { deliverType, compType },
     aNode,
     { progressListener, sendListener, stateListener },
-    aPopOut) {
+    { popOut, archive }) {
 
   // Here is the part where we do all the stuff related to filling proper
   //  headers, adding references, making sure all the composition fields are
@@ -115,10 +115,47 @@ function sendMessage({ msgHdr, identity, to, cc, bcc, subject },
   fields.body = escapeHtml(fields.body);
   fields.body = fields.body.replace(/\r?\n/g, "<br>");
 
+  // If we are to archive the conversation after sending, this means we also
+  //  have to archive the sent message as well. The simple way to do it is to
+  //  change the FCC (Folder CC) from the Sent folder to the Archives folder.
+  if (archive) {
+    // We're just assuming that the folder exists, this might not be the case...
+    // But I am so NOT reimplementing the whole logic from
+    //  http://mxr.mozilla.org/comm-central/source/mail/base/content/mailWindowOverlay.js#1293
+    let msgDate = new Date();
+    let msgYear = msgDate.getFullYear().toString();
+    let monthFolderName = msgDate.toLocaleFormat("%Y-%m");
+    let granularity = identity.archiveGranularity;
+    let folderUri = identity.archiveFolder;
+    if (granularity >= Ci.nsIMsgIdentity.perYearArchiveFolders)
+      folderUri += "/" + msgYear;
+    if (granularity >= Ci.nsIMsgIdentity.perMonthArchiveFolders)
+      folderUri += "/" + monthFolderName;
+    if (getMail3Pane().GetMsgFolderFromUri(folderUri)) {
+      Log.debug("Message will be copied in", folderUri, "once sent");
+      fields.fcc = folderUri;
+    } else {
+      Log.warn("The archive folder doesn't exist yet, so the last message you sent won't be archived... sorry!");
+    }
+  }
+
   // We init the composition service with the right parameters, and we make sure
   //  we're announcing that we're about to compose in plaintext, so that it
   //  doesn't assume anything about having an editor (composing HTML implies
   //  having an editor instance for the compose service).
+  // The variable we're interested in is m_composeHTML in nsMsgCompose.cpp – its
+  //  initial value is PR_FALSE. The idea is that the msgComposeFields serve
+  //  different purposes:
+  //  - they initially represent the initial parameters to setup the compose
+  //  window and,
+  //  - once the composition is done, they represent the compose session that
+  //  just finished (one notable exception is that if the editor is composing
+  //  HTML, fields.body is irrelevant and the SendMsg code will query the editor
+  //  for its HTML and/or plaintext contents).
+  // The value is to be updated depending on the account's settings to determine
+  //  whether we want HTML composition or not. This is nsMsgCompose::Initialize.
+  //  Well, guess what? We're not calling that function, and we make sure
+  //  m_composeHTML stays PR_FALSE until the end!
   let params = Cc["@mozilla.org/messengercompose/composeparams;1"]
                   .createInstance(Ci.nsIMsgComposeParams);
   params.composeFields = fields;
@@ -128,7 +165,7 @@ function sendMessage({ msgHdr, identity, to, cc, bcc, subject },
 
   // If we want to switch to the external editor, we assembled all the
   //  composition fields properly. Pass them to a compose window, and move on.
-  if (aPopOut) {
+  if (popOut) {
     // We set all the fields ourselves, force New so that the compose code
     //  doesn't try to figure out the parameters by itself.
     // XXX maybe we should just use New everywhere since we're setting the
