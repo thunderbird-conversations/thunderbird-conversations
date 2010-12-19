@@ -112,8 +112,6 @@ function sendMessage({ msgHdr, identity, to, cc, bcc, subject },
   //  offer HTML editing.
   fields.useMultipartAlternative = false;
   fields.body = aNode.value+"\n"; // Doesn't work without the newline. Weird. IMAP stuff.
-  fields.body = escapeHtml(fields.body);
-  fields.body = fields.body.replace(/\r?\n/g, "<br>");
 
   // If we are to archive the conversation after sending, this means we also
   //  have to archive the sent message as well. The simple way to do it is to
@@ -170,8 +168,24 @@ function sendMessage({ msgHdr, identity, to, cc, bcc, subject },
     //  doesn't try to figure out the parameters by itself.
     // XXX maybe we should just use New everywhere since we're setting the
     //  parameters ourselves anyway...
-    fields.forcePlainText = false;
     fields.characterSet = "UTF-8";
+    fields.forcePlainText = false;
+    // XXX This is WRONG since the editor compose window will think that the >'s
+    //  are inserted by the user which means they should be escaped so that they
+    //  are not parsed as quotes.
+    // Solution 1: plaintext editor
+    // Solution 2: find the component that will parse this back into HTML with
+    //  <blockquote>s
+    //
+    // http://mxr.mozilla.org/comm-central/source/mailnews/mime/src/mimetpla.cpp#365
+    // --> we'd better do it ourselves.
+    let conv = Cc["@mozilla.org/txttohtmlconv;1"]
+               .createInstance(Ci.mozITXTToHTMLConv);
+    let flags = Ci.mozITXTToHTMLConv.kEntities
+              | Ci.mozITXTToHTMLConv.kURLs
+              | Ci.mozITXTToHTMLConv.kGlyphSubstitution
+              | Ci.mozITXTToHTMLConv.kStructPhrase;
+    fields.body = conv.scanTXT(fields.body, flags);
     fields.bodyIsAsciiOnly = false;
     params.format = Ci.nsIMsgCompFormat.HTML;
     params.type = mCompType.New;
@@ -179,7 +193,16 @@ function sendMessage({ msgHdr, identity, to, cc, bcc, subject },
     return true;
   } else {
     fields.forcePlainText = true;
-    fields.ConvertBodyToPlainText(); // This takes care of wrapping at 72 characters. Expects HTML.
+    Log.debug(fields.body);
+    // So we should have something more elaborate than a simple textarea. The
+    //  reason is, we should be able to differentiate between user-inserted >'s
+    //  and quote-inserted >'s. (The standard Thunderbird plaintext editor does
+    //  it with a blue color). The user-inserted >'s want a space prepended so
+    //  that the MUA doesn't interpret them as quotation. Real quotations don't.
+    // This is kinda out of scope so we're leaving the issue non-fixed but this
+    //  is clearly a FIXME.
+    fields.body = simpleRewrap(fields.body, 72);
+    Log.debug(fields.body);
     params.format = Ci.nsIMsgCompFormat.PlainText;
 
     // This part initializes a nsIMsgCompose instance. This is useless, because

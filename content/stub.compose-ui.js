@@ -305,6 +305,7 @@ function insertQuote(aMsgHdr) {
     let date = new Date(aMsgHdr.date/1000);
     let [{ email, name }] = parseMimeLine(aMsgHdr.mime2DecodedAuthor);
     Log.debug(aMsgHdr.mime2DecodedAuthor, email, name);
+    //Log.debug(body.trim(), citeString("\n"+body.trim()));
     let txt = [
       "\n\n",
       "On ", date.toLocaleString(), ", ",
