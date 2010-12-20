@@ -20,6 +20,7 @@
   <script type="application/javascript;version=1.8"
     src="chrome://conversations/content/stub.completion-ui.js"></script>
   <script type="application/javascript;version=1.8">
+    // Below are mostly UI utility functions.
     (function ($) {
       $.fn.vAlign = function(container) {
         if (!container)
@@ -132,6 +133,59 @@
       });
     }
 
+    // Setting the second parameter to false means don't fire a stupid timer
+    //  that lives forever everytime we call this function.
+    function fakeTextOverflowSubject() {
+      $(".subject").textOverflow(null, false);
+    }
+
+    // XXX I don't think this is used anymore...
+    function fakeTextOverflowParticipants(aMsgNode) {
+      $(aMsgNode).find(".to").textOverflow(null, false);
+    }
+
+    function cleanup() {
+      Log.debug("Cleaning up jquery's mess...");
+      // These shouldn't be necessary because we're blasting away everything by
+      //  setting .innerHTML BUT jQuery won't remove its persistent event
+      //  listeners if we don't do that which will in turn cause memory leaks!
+      // Indeed, the listeners are actually closures on Message instances. These
+      //  contain a pointer to their parent Conversation, so that would prevent
+      //  the GC from collecting anything! Argh!
+      $("#messageList").empty();
+    }
+
+    document.addEventListener("focus", function (event) {
+      /* This is a persistent event listener. It can operate multiple
+       * times. We have the invariant that for a given conversation, there's at
+       * most one such element (recycling doesn't use tabindex 1). */
+      let msgNode = document.querySelector(".message[tabindex=\"1\"]");
+      if (!msgNode)
+        return;
+
+      /* Restore the proper tab order. This event is fired *after* the
+       * right message has been focused in Gecko 1.9.2, *before* the right
+       * message has been focused in Gecko 1.9.1 (so it's basically
+       * useless). */
+      let msgNodes = document.getElementsByClassName("message");
+      let index;
+      for each (let [i, k] in Iterator(msgNodes)) {
+        if (k == msgNode) {
+          index = i;
+          break;
+        }
+      }
+      if (index)
+        msgNode.setAttribute("tabindex", index+2);
+    }, true);
+
+    window.addEventListener("unload", function () {
+      onSave();
+    }, false);
+
+    // Below are event listeners for various actions. There is some logic
+    //  involved, and they may talk to other parts of the code.
+
     // This property is now set from the outside. This allows stub.html to
     //  be used either in a standalone tab or in the multimessage pane.
     // let Conversations = window.top.Conversations;
@@ -211,52 +265,6 @@
         }
       });
     }
-
-    // Setting the second parameter to false means don't fire a stupid timer
-    //  that lives forever everytime we call this function.
-    function fakeTextOverflowSubject() {
-      $(".subject").textOverflow(null, false);
-    }
-
-    // XXX I don't think this is used anymore...
-    function fakeTextOverflowParticipants(aMsgNode) {
-      $(aMsgNode).find(".to").textOverflow(null, false);
-    }
-
-    function cleanup() {
-      Log.debug("Cleaning up jquery's mess...");
-      // These shouldn't be necessary because we're blasting away everything by
-      //  setting .innerHTML BUT jQuery won't remove its persistent event
-      //  listeners if we don't do that which will in turn cause memory leaks!
-      // Indeed, the listeners are actually closures on Message instances. These
-      //  contain a pointer to their parent Conversation, so that would prevent
-      //  the GC from collecting anything! Argh!
-      $("#messageList").empty();
-    }
-
-    document.addEventListener("focus", function (event) {
-      /* This is a persistent event listener. It can operate multiple
-       * times. We have the invariant that for a given conversation, there's at
-       * most one such element (recycling doesn't use tabindex 1). */
-      let msgNode = document.querySelector(".message[tabindex=\"1\"]");
-      if (!msgNode)
-        return;
-
-      /* Restore the proper tab order. This event is fired *after* the
-       * right message has been focused in Gecko 1.9.2, *before* the right
-       * message has been focused in Gecko 1.9.1 (so it's basically
-       * useless). */
-      let msgNodes = document.getElementsByClassName("message");
-      let index;
-      for each (let [i, k] in Iterator(msgNodes)) {
-        if (k == msgNode) {
-          index = i;
-          break;
-        }
-      }
-      if (index)
-        msgNode.setAttribute("tabindex", index+2);
-    }, true);
   </script>
 </head>
 

@@ -4,21 +4,13 @@ const Cu = Components.utils;
 const Cr = Components.results;
 
 Cu.import("resource:///modules/XPCOMUtils.jsm"); // for generateQI
-Cu.import("resource:///modules/errUtils.js");
-Cu.import("resource:///modules/gloda/gloda.js");
-Cu.import("resource:///modules/gloda/public.js");
-Cu.import("resource:///modules/gloda/utils.js");
-Cu.import("resource:///modules/gloda/mimemsg.js");
-Cu.import("resource:///modules/gloda/suffixtree.js");
-Cu.import("resource:///modules/gloda/noun_tag.js");
-Cu.import("resource:///modules/gloda/noun_freetag.js");
+Cu.import("resource:///modules/gloda/mimemsg.js"); // For MsgHdrToMimeMessage
 
 const gMessenger = Cc["@mozilla.org/messenger;1"]
                    .createInstance(Ci.nsIMessenger);
 const gHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"]
                       .getService(Ci.nsIMsgHeaderParser);
 
-Cu.import("resource://conversations/AddressBookUtils.jsm");
 Cu.import("resource://conversations/VariousUtils.jsm");
 Cu.import("resource://conversations/MsgHdrUtils.jsm");
 Cu.import("resource://conversations/send.js");
@@ -26,11 +18,6 @@ Cu.import("resource://conversations/compose.js");
 Cu.import("resource://conversations/log.js");
 
 let Log = setupLogging("Conversations.Stub.Compose");
-try {
-  Cu.import("resource://people/modules/people.js");
-} catch (e) {
-  Log.debug("You don't have Contacts installed. Can't autocomplete.");
-}
 
 let gComposeParams = {
   msgHdr: null,

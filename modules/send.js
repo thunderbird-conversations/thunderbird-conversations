@@ -1,3 +1,39 @@
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Thunderbird Conversations
+ *
+ * The Initial Developer of the Original Code is
+ * Jonathan Protzenko
+ * Portions created by the Initial Developer are Copyright (C) 2010
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
+
 var EXPORTED_SYMBOLS = ['sendMessage']
 
 const Ci = Components.interfaces;
@@ -5,34 +41,40 @@ const Cc = Components.classes;
 const Cu = Components.utils;
 const Cr = Components.results;
 
-Cu.import("resource:///modules/XPCOMUtils.jsm"); // for generateQI
-Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
+Cu.import("resource:///modules/MailUtils.js"); // for getFolderForURI
 Cu.import("resource:///modules/PluralForm.jsm");
 
-const gMessenger = Cc["@mozilla.org/messenger;1"]
-                   .createInstance(Ci.nsIMessenger);
 const gHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"]
                       .getService(Ci.nsIMsgHeaderParser);
-const gMsgTagService = Cc["@mozilla.org/messenger/tagservice;1"]
-                       .getService(Ci.nsIMsgTagService);
-const ioService = Cc["@mozilla.org/network/io-service;1"]
-                  .getService(Ci.nsIIOService);
 const msgComposeService = Cc["@mozilla.org/messengercompose;1"]
                           .getService(Ci.nsIMsgComposeService);
 const mCompType = Ci.nsIMsgCompType;
 
-let strings = new StringBundle("chrome://conversations/locale/main.properties");
-
-Cu.import("resource://conversations/AddressBookUtils.jsm");
 Cu.import("resource://conversations/VariousUtils.jsm");
 Cu.import("resource://conversations/MsgHdrUtils.jsm");
-Cu.import("resource://conversations/prefs.js");
-Cu.import("resource://conversations/contact.js");
 Cu.import("resource://conversations/compose.js");
-Cu.import("resource://conversations/hook.js");
 Cu.import("resource://conversations/log.js");
 
 let Log = setupLogging("Conversations.Send");
+
+/**
+ * Get the Archive folder URI depending on the given identity and the given Date
+ *  object.
+ * @param {nsIMsgIdentity} identity
+ * @param {Date} msgDate
+ * @return {String} The URI for the folder. Use MailUtils.getFolderForURI.
+ */
+function getArchiveFolderUriFor(identity, msgDate) {
+  let msgYear = msgDate.getFullYear().toString();
+  let monthFolderName = msgDate.toLocaleFormat("%Y-%m");
+  let granularity = identity.archiveGranularity;
+  let folderUri = identity.archiveFolder;
+  if (granularity >= Ci.nsIMsgIdentity.perYearArchiveFolders)
+    folderUri += "/" + msgYear;
+  if (granularity >= Ci.nsIMsgIdentity.perMonthArchiveFolders)
+    folderUri += "/" + monthFolderName;
+  return folderUri;
+}
 
 // This has to be a root because once the msgCompose has deferred the treatment
 //  of the send process to nsMsgSend.cpp, the nsMsgSend holds a reference to
@@ -47,15 +89,16 @@ let gMsgCompose;
  * This is our monstrous Javascript function for sending a message. It hides all
  *  the atrocities of nsMsgCompose.cpp and nsMsgSend.cpp for you, and it
  *  provides what I hope is a much more understandable interface.
- * You are expected to provide all of your listener. The most interesting one is
- *  the stateListener, since it has the ComposeProcessDone notification.
+ * You are expected to provide the whole set of listeners. The most interesting
+ *  one is the stateListener, since it has the ComposeProcessDone notification.
  * This version only does plaintext composition but I hope to enhance it with
  *  both HTML and plaintext in the future.
  * @param composeParameters
  * @param composeParameters.identity The identity the user picked to send the
  *  message
- * @param composeParameters.to The sender. This must be escaped already. You
- *  probably want to use nsIMsgHeaderParser.MakeFullAddress.
+ * @param composeParameters.to The recipients. This is a comma-separated list of
+ *  valid email addresses that must be escaped already. You probably want to use
+ *  nsIMsgHeaderParser.MakeFullAddress to deal with names that contain commas.
  * @param composeParameters.cc Same remark.
  * @param composeParameters.bcc Same remark.
  * @param composeParameters.subject The subject, no restrictions on that one.
@@ -162,16 +205,8 @@ function sendMessage({ msgHdr, identity, to, cc, bcc, subject },
     // We're just assuming that the folder exists, this might not be the case...
     // But I am so NOT reimplementing the whole logic from
     //  http://mxr.mozilla.org/comm-central/source/mail/base/content/mailWindowOverlay.js#1293
-    let msgDate = new Date();
-    let msgYear = msgDate.getFullYear().toString();
-    let monthFolderName = msgDate.toLocaleFormat("%Y-%m");
-    let granularity = identity.archiveGranularity;
-    let folderUri = identity.archiveFolder;
-    if (granularity >= Ci.nsIMsgIdentity.perYearArchiveFolders)
-      folderUri += "/" + msgYear;
-    if (granularity >= Ci.nsIMsgIdentity.perMonthArchiveFolders)
-      folderUri += "/" + monthFolderName;
-    if (getMail3Pane().GetMsgFolderFromUri(folderUri)) {
+    let folderUri = getArchiveFolderUriFor(identity, new Date());
+    if (MailUtils.getFolderForURI(folderUri, true)) {
       Log.debug("Message will be copied in", folderUri, "once sent");
       fields.fcc = folderUri;
     } else {
@@ -223,31 +258,7 @@ function sendMessage({ msgHdr, identity, to, cc, bcc, subject },
     //  thing: if we were to do the right thing (tm) we would unparse the quoted
     //  lines and push them as single lines in the HTML, with no <br>s in the
     //  middle, but well... I guess this is okay enough.
-    let citeLevel = function (line) {
-      let i;
-      for (i = 0; line[i] == ">" && i < line.length; ++i)
-        ; // nop
-      return i;
-    };
-    let lines = fields.body.split(/\r?\n/);
-    let newLines = [];
-    let level = 0;
-    for each (let [, line] in Iterator(lines)) {
-      let newLevel = citeLevel(line);
-      if (newLevel > level)
-        for (let i = level; i < newLevel; ++i)
-          newLines.push('<blockquote type="cite">');
-      if (newLevel < level)
-        for (let i = newLevel; i < level; ++i)
-          newLines.push('</blockquote>');
-      let newLine = line[newLevel] == " "
-        ? escapeHtml(line.substring(newLevel + 1, line.length))
-        : escapeHtml(line.substring(newLevel, line.length))
-      ;
-      newLines.push(newLine);
-      level = newLevel;
-    }
-    fields.body = newLines.join("\n");
+    fields.body = plainTextToHtml(fields.body);
 
     fields.bodyIsAsciiOnly = false;
     params.format = Ci.nsIMsgCompFormat.HTML;
@@ -284,7 +295,7 @@ function sendMessage({ msgHdr, identity, to, cc, bcc, subject },
     gMsgCompose.RegisterStateListener(stateListener);
 
     try {
-      gMsgCompose.SendMsg (deliverType, identity, "", null, progress);
+      gMsgCompose.SendMsg(deliverType, identity, "", null, progress);
     } catch (e) {
       Log.error(e);
       dumpCallStack(e);
