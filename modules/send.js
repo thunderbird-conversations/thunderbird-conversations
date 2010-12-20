@@ -170,22 +170,43 @@ function sendMessage({ msgHdr, identity, to, cc, bcc, subject },
     //  parameters ourselves anyway...
     fields.characterSet = "UTF-8";
     fields.forcePlainText = false;
-    // XXX This is WRONG since the editor compose window will think that the >'s
-    //  are inserted by the user which means they should be escaped so that they
-    //  are not parsed as quotes.
-    // Solution 1: plaintext editor
-    // Solution 2: find the component that will parse this back into HTML with
-    //  <blockquote>s
-    //
-    // http://mxr.mozilla.org/comm-central/source/mailnews/mime/src/mimetpla.cpp#365
-    // --> we'd better do it ourselves.
-    let conv = Cc["@mozilla.org/txttohtmlconv;1"]
-               .createInstance(Ci.mozITXTToHTMLConv);
-    let flags = Ci.mozITXTToHTMLConv.kEntities
-              | Ci.mozITXTToHTMLConv.kURLs
-              | Ci.mozITXTToHTMLConv.kGlyphSubstitution
-              | Ci.mozITXTToHTMLConv.kStructPhrase;
-    fields.body = conv.scanTXT(fields.body, flags);
+    // If we don't do that the editor compose window will think that the >s that
+    //  are inserted by the user are voluntary, that is, they should be escaped
+    //  so that they are not parsed as quotes. We don't want that!
+    // The best solution is to fire the HTML editor and replace the cited lines
+    //  by the appropriate blockquotes.
+    // XXX please not that we are not trying to preserve spacing, or stuff like
+    //  that -- they'll die in the translation. So ASCII art quoted in the quick
+    //  reply won't be preserved. We also won't preserve the format=flowed
+    //  thing: if we were to do the right thing (tm) we would unparse the quoted
+    //  lines and push them as single lines in the HTML, with no <br>s in the
+    //  middle, but well... I guess this is okay enough.
+    let citeLevel = function (line) {
+      let i;
+      for (i = 0; line[i] == ">" && i < line.length; ++i)
+        ; // nop
+      return i;
+    };
+    let lines = fields.body.split(/\r?\n/);
+    let newLines = [];
+    let level = 0;
+    for each (let [, line] in Iterator(lines)) {
+      let newLevel = citeLevel(line);
+      if (newLevel > level)
+        for (let i = level; i < newLevel; ++i)
+          newLines.push('<blockquote type="cite">');
+      if (newLevel < level)
+        for (let i = newLevel; i < level; ++i)
+          newLines.push('</blockquote>');
+      let newLine = line[newLevel] == " "
+        ? escapeHtml(line.substring(newLevel + 1, line.length))
+        : escapeHtml(line.substring(newLevel, line.length))
+      ;
+      newLines.push(newLine);
+      level = newLevel;
+    }
+    fields.body = newLines.join("\n");
+
     fields.bodyIsAsciiOnly = false;
     params.format = Ci.nsIMsgCompFormat.HTML;
     params.type = mCompType.New;
