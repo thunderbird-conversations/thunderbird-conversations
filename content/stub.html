@@ -370,7 +370,7 @@
   -->
   <script id="contactTemplate" type="text/x-jquery-tmpl"><span
     >${separator}</span
-    ><span class="tooltipWrapper"
+    ><span class="tooltipWrapper contact"
       ><span style="${colorStyle}">${String.trim(name)}</span
       ><div class="tooltip">
         <div class="arrow"></div>
@@ -412,6 +412,12 @@
         <div class="tipFooter">
           <button class="sendEmail">send email</button>
           <button class="showInvolving">show involving</button>
+          <button class="addContact" title="Add to address book">
+            <img src="chrome://conversations/content/i/user_add.png" />
+          </button>
+          <button class="editContact" title="Edit contact in address book">
+            <img src="chrome://conversations/content/i/user_edit.png" />
+          </button>
         </div>
       </div
     ></span

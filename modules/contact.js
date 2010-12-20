@@ -113,6 +113,32 @@ let ContactMixIn = {
 
     let self = this;
     let mainWindow = getMail3Pane();
+    let { card, book } = mainWindow.getCardForEmail(self._email);
+    if (card)
+      aDomNode.parentNode.classList.add("inAddressBook");
+    aDomNode.getElementsByClassName("addContact")[0].addEventListener(
+      "click", function (event) {
+        let args = {
+          primaryEmail: self._email,
+          displayName: self._name,
+          allowRemoteContent: true
+        };
+        mainWindow.openDialog(
+          "chrome://messenger/content/addressbook/abNewCardDialog.xul",
+          "", "chrome,resizable=no,titlebar,modal,centerscreen", args
+        );
+      }, false);
+    aDomNode.getElementsByClassName("editContact")[0].addEventListener(
+      "click", function (event) {
+        let args = {
+          abURI: book.URI,
+          card: card
+        };
+        mainWindow.openDialog(
+          "chrome://messenger/content/addressbook/abEditCardDialog.xul",
+          "", "chrome,modal,resizable=no,centerscreen", args
+        );
+      }, false);
     aDomNode.getElementsByClassName("copyEmail")[0].addEventListener(
       "click", function (event) {
         clipboardService.copyString(self._email);

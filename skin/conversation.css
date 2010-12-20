@@ -158,6 +158,14 @@ span.downwardArrow {
   margin-right: 3px;
 }
 
+.contact:not(.inAddressBook) .editContact {
+  display: none;
+}
+
+.contact.inAddressBook .addContact {
+  display: none;
+}
+
 .tooltipWrapper {
   position: relative;
 }
