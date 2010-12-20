@@ -40,7 +40,6 @@ var EXPORTED_SYMBOLS = [
   // miscellaneous functions
   'dateAsInMessageList', 'groupArray', 'range', 'uri',
   'escapeHtml', 'MixIn', 'NS_FAILED', 'NS_SUCCEEDED',
-  'htmlToPlainText', 'simpleRewrap',
   // heuristics for finding quoted parts
   'convertHotmailQuotingToBlockquote1', 'convertHotmailQuotingToBlockquote2',
   'convertOutlookQuotingToBlockquote', 'convertForwardedToBlockquote',
@@ -76,59 +75,6 @@ function NS_SUCCEEDED(v) {
 
 let uri = function (msg) msg.folder.getUriForMsg(msg);
 
-// This function assumes that quoted lines are already wrapped (this is the case
-//  for us) and generates correct text suitable for format=flowed generation.
-// Beware, it doesn't even do space-stuffing as specified in the RFC.
-function simpleRewrap(txt, width) {
-  if (!width)
-    width = 72;
-
-  function splitLongLine(soFar, remaining) {
-    if (remaining.length > width) {
-      let i = width - 1;
-      while (remaining[i] != " " && i > 0)
-        i--;
-      if (i > 0) {
-        soFar.push(remaining.substring(0, i+1));
-        return splitLongLine(soFar, remaining.substring(i+1, remaining.length));
-      } else {
-        let j = remaining.indexOf(" ");
-        if (j > 0) {
-          soFar.push(remaining.substring(0, j+1));
-          return splitLongLine(soFar, remaining.substring(j+1, remaining.length));
-        } else {
-          soFar.push(remaining);
-          return soFar.join("\n");
-        }
-      }
-    } else {
-      soFar.push(remaining.trimRight());
-      return soFar.join("\n");
-    }
-  }
-
-  let lines = txt.split(/\r?\n/);
-
-  for each (let [i, line] in Iterator(lines)) {
-    if (line.length > width && line[0] != ">")
-      lines[i] = splitLongLine([], line);
-  }
-  return lines.join("\n");
-}
-
-// Bad surprises with this one (inserts spaces before >'s at the beginning...)
-//  beware...
-function htmlToPlainText(aHtml) {
-  // Yes, this is ridiculous, we're instanciating composition fields just so
-  //  that they call ConvertBufPlainText for us. But ConvertBufToPlainText
-  //  really isn't easily scriptable, so...
-  let fields = Cc["@mozilla.org/messengercompose/composefields;1"]
-                  .createInstance(Ci.nsIMsgCompFields);
-  fields.body = aHtml;
-  fields.forcePlainText = true;
-  fields.ConvertBodyToPlainText();
-  return fields.body;
-}
 
 /**
  * A global pointer to all the identities known for the user. Feel free to call

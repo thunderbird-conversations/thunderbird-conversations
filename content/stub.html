@@ -13,8 +13,12 @@
   <script type="text/javascript" src="chrome://conversations/content/js/jquery.text-overflow.js"></script>
   <script type="text/javascript" src="chrome://conversations/content/js/jquery.tmpl.js"></script>
   <script type="text/javascript" src="chrome://conversations/content/js/jquery.tokeninput.js"></script>
+  <!-- The two scripts below share the same scope, they were split for the sake
+    of readability. -->
   <script type="application/javascript;version=1.8"
     src="chrome://conversations/content/stub.compose-ui.js"></script>
+  <script type="application/javascript;version=1.8"
+    src="chrome://conversations/content/stub.completion-ui.js"></script>
   <script type="application/javascript;version=1.8">
     (function ($) {
       $.fn.vAlign = function(container) {
@@ -131,6 +135,7 @@
     // This property is now set from the outside. This allows stub.html to
     //  be used either in a standalone tab or in the multimessage pane.
     // let Conversations = window.top.Conversations;
+
     Components.utils.import("resource://conversations/VariousUtils.jsm");
     Components.utils.import("resource://conversations/MsgHdrUtils.jsm");
     Components.utils.import("resource://conversations/prefs.js");

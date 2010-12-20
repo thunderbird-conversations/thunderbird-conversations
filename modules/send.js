@@ -28,6 +28,7 @@ Cu.import("resource://conversations/VariousUtils.jsm");
 Cu.import("resource://conversations/MsgHdrUtils.jsm");
 Cu.import("resource://conversations/prefs.js");
 Cu.import("resource://conversations/contact.js");
+Cu.import("resource://conversations/compose.js");
 Cu.import("resource://conversations/hook.js");
 Cu.import("resource://conversations/log.js");
 
@@ -43,7 +44,48 @@ let Log = setupLogging("Conversations.Send");
 let gMsgCompose;
 
 /**
- * Actually send the message based on the given parameters.
+ * This is our monstrous Javascript function for sending a message. It hides all
+ *  the atrocities of nsMsgCompose.cpp and nsMsgSend.cpp for you, and it
+ *  provides what I hope is a much more understandable interface.
+ * You are expected to provide all of your listener. The most interesting one is
+ *  the stateListener, since it has the ComposeProcessDone notification.
+ * This version only does plaintext composition but I hope to enhance it with
+ *  both HTML and plaintext in the future.
+ * @param composeParameters
+ * @param composeParameters.identity The identity the user picked to send the
+ *  message
+ * @param composeParameters.to The sender. This must be escaped already. You
+ *  probably want to use nsIMsgHeaderParser.MakeFullAddress.
+ * @param composeParameters.cc Same remark.
+ * @param composeParameters.bcc Same remark.
+ * @param composeParameters.subject The subject, no restrictions on that one.
+ *
+ * @param sendingParameters
+ * @param sendingParameters.deliverType See Ci.nsIMsgCompDeliverMode
+ * @param sendingParameters.compType See Ci.nsIMsgCompType. We use this to
+ *  determine what kind of headers we should set (Reply-To, References...).
+ *
+ * @param aNode The DOM node that holds the editing session. Right now, it's
+ *  kinda useless if it's only plaintext, but it's relevant for the HTML
+ *  composition (because nsMsgSend queries the original DOM node to find out
+ *  about inline images).
+ *
+ * @param listeners
+ * @param listeners.progressListener That one monitors the progress of long
+ *  operations (like sending a message with attachments), it's notified with the
+ *  current percentage of completion.
+ * @param listeners.sendListener That one receives notifications about factual
+ *  events (sending, copying to Sent, ...). It receives notifications with
+ *  statuses.
+ * @param listeners.stateListener This one is a high-level listener that
+ *   receives notifications about the global composition process.
+ *
+ * @param options
+ * @param options.popOut Don't send the message, just transfer it to a new
+ *  composition window.
+ * @param options.archive Shall we archive the message right away? This won't
+ *  even copy it to the Sent folder. Warning: this one assumes that the "right"
+ *  Archives folder already exists.
  */
 function sendMessage({ msgHdr, identity, to, cc, bcc, subject },
     { deliverType, compType },
@@ -175,7 +217,7 @@ function sendMessage({ msgHdr, identity, to, cc, bcc, subject },
     //  so that they are not parsed as quotes. We don't want that!
     // The best solution is to fire the HTML editor and replace the cited lines
     //  by the appropriate blockquotes.
-    // XXX please not that we are not trying to preserve spacing, or stuff like
+    // XXX please note that we are not trying to preserve spacing, or stuff like
     //  that -- they'll die in the translation. So ASCII art quoted in the quick
     //  reply won't be preserved. We also won't preserve the format=flowed
     //  thing: if we were to do the right thing (tm) we would unparse the quoted
@@ -214,7 +256,6 @@ function sendMessage({ msgHdr, identity, to, cc, bcc, subject },
     return true;
   } else {
     fields.forcePlainText = true;
-    Log.debug(fields.body);
     // So we should have something more elaborate than a simple textarea. The
     //  reason is, we should be able to differentiate between user-inserted >'s
     //  and quote-inserted >'s. (The standard Thunderbird plaintext editor does
@@ -222,8 +263,7 @@ function sendMessage({ msgHdr, identity, to, cc, bcc, subject },
     //  that the MUA doesn't interpret them as quotation. Real quotations don't.
     // This is kinda out of scope so we're leaving the issue non-fixed but this
     //  is clearly a FIXME.
-    fields.body = simpleRewrap(fields.body, 72);
-    Log.debug(fields.body);
+    fields.body = simpleWrap(fields.body, 72);
     params.format = Ci.nsIMsgCompFormat.PlainText;
 
     // This part initializes a nsIMsgCompose instance. This is useless, because
