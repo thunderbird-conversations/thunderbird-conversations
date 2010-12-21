@@ -113,26 +113,36 @@ let ContactMixIn = {
 
     let self = this;
     let mainWindow = getMail3Pane();
-    let { card, book } = mainWindow.getCardForEmail(self._email);
-    if (card)
+    let cardAndBook = mainWindow.getCardForEmail(self._email);
+    if (cardAndBook.card)
       aDomNode.parentNode.classList.add("inAddressBook");
     aDomNode.getElementsByClassName("addContact")[0].addEventListener(
       "click", function (event) {
         let args = {
           primaryEmail: self._email,
           displayName: self._name,
-          allowRemoteContent: true
+          allowRemoteContent: true,
+          // This is too messed up, there's no easy way to interact with this
+          //  dialog, just forget about it. RegisterSaveListener seems to be
+          //  uncallable... and okCallback just short-circuit the whole logic
         };
         mainWindow.openDialog(
           "chrome://messenger/content/addressbook/abNewCardDialog.xul",
           "", "chrome,resizable=no,titlebar,modal,centerscreen", args
         );
+        // This is an approximation, but it should be good enough
+        let newCardAndBook = mainWindow.getCardForEmail(self._email);
+        if (newCardAndBook.card) {
+          cardAndBook.card = newCardAndBook.card;
+          cardAndBook.book = newCardAndBook.book;
+          aDomNode.parentNode.classList.add("inAddressBook");
+        }
       }, false);
     aDomNode.getElementsByClassName("editContact")[0].addEventListener(
       "click", function (event) {
         let args = {
-          abURI: book.URI,
-          card: card
+          abURI: cardAndBook.book.URI,
+          card: cardAndBook.card,
         };
         mainWindow.openDialog(
           "chrome://messenger/content/addressbook/abEditCardDialog.xul",

@@ -1,5 +1,6 @@
 --- Changes since 2.0alpha1 ---
 
+- Add a button to edit / add the contact into the Thunderbird address book
 - New 'Send & Archive' option
 - Proper quoting support for quick reply
 - Make sure the message body is in disabled state while the sending process is
