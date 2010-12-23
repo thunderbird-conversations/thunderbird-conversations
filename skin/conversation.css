@@ -382,6 +382,10 @@ a img {
   width: 100%;
 }
 
+.iframe-container {
+  margin-top: 5px;
+}
+
 .messageHeader .tags {
   padding: 0;
   margin: 0;
@@ -391,11 +395,7 @@ a img {
 .messageBody .tags {
   padding: 0 0 5px 0;
   margin: 0;
-  display: inline-block;
-}
-
-.messageBody .tags:empty {
-  display: none; /* Because otherwise it leaves a blank space */
+  display: inline;
 }
 
 ul.tags li {
