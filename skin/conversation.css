@@ -421,6 +421,10 @@ ul.special-tags img {
   cursor: pointer;
 }
 
+.message.inView .in-folder {
+  display: none;
+}
+
 .message .remoteContent {
   padding: 10px;
   background-color: rgba(0,255,0, 0.15);

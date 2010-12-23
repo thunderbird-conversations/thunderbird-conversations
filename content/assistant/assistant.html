@@ -77,7 +77,7 @@
       window.addEventListener("unload", finish, true);
 
       $(".working").show();
-      $(".applyChanges").attr("disabled", "disabled").text("Busy");
+      $(".applyChanges").attr("disabled", "disabled").text("Busy...");
 
       let checkboxes = document.querySelectorAll("input[type=\"checkbox\"]");
       for each (let [, checkbox] in Iterator(checkboxes)) {

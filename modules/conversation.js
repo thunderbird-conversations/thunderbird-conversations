@@ -199,6 +199,31 @@ function msgDate ({ type, message, msgHdr, glodaMsg }) {
     Log.error("Bad message type");
 }
 
+function ViewWrapper() {
+  let mainWindow = getMail3Pane();
+  // The trick is, if a thread is collapsed, this._initialSet contains all the
+  //  messages in the thread. We want these to be selected. If a thread is
+  //  expanded, we want messages which are in the current view to be selected.
+  // We cannot compare messages by message-id (they have the same!), we cannot
+  //  compare them by messageKey (not reliable), but URLs should be enough.
+  this.byUri = {};
+  [this.byUri[uri(x)] = true
+    for each ([, x] in Iterator(mainWindow.gFolderDisplay.selectedMessages))];
+}
+
+ViewWrapper.prototype = {
+  isInView: function _ViewWrapper_isInView(aMsg) {
+    let mainWindow = getMail3Pane();
+    let msgHdr = toMsgHdr(aMsg);
+
+    let r =
+      (uri(msgHdr) in this.byUri) ||
+      (mainWindow.gDBView.findIndexOfMsgHdr(msgHdr, false) != nsMsgViewIndex_None)
+    ;
+    return r;
+  },
+}
+
 // -- The actual conversation object
 
 // We maintain the invariant that, once the conversation is built, this.messages
@@ -216,6 +241,9 @@ function Conversation(aWindow, aSelectedMessages, aScrollMode, aCounter) {
   //  and because we can't directly tell whether a message is in the view if
   //  it's under a collapsed thread. See the lengthy discussion in
   //  _filterOutDuplicates
+  // The invariant doesn't hold if the same message is present twice in the
+  //  thread (like, you sent a message to yourself so it appears twice in your
+  //  inbox that also searches sent folders). But we handle that case well.
   this._initialSet = aSelectedMessages;
   // === Our "message" composite type ==
   //
@@ -233,11 +261,11 @@ function Conversation(aWindow, aSelectedMessages, aScrollMode, aCounter) {
   this._query = null;
   this._domNode = null;
   this._onComplete = null;
+  this.viewWrapper = null;
   this.id = null;
 }
 
 Conversation.prototype = {
-
   // Before the Gloda query returns, the user might change selection. Don't
   // output a conversation unless we're really sure the user hasn't changed his
   // mind.
@@ -386,20 +414,14 @@ Conversation.prototype = {
   _filterOutDuplicates: function _Conversation_filterOutDuplicates () {
     let messages = this.messages;
     let mainWindow = getMail3Pane();
+    this.viewWrapper = new ViewWrapper();
     // Wicked cases, when we're asked to display a draft that's half-saved...
     messages = messages.filter(function (x) (toMsgHdr(x) && toMsgHdr(x).messageId));
     messages = groupArray(this.messages, getMessageId);
-    // The trick is, if a thread is collapsed, this._initialSet contains all the
-    //  messages in the thread. We want these to be selected. If a thread is
-    //  expanded, we want messages which are in the current view to be selected.
-    // We cannot compare messages by message-id (they have the same!), we cannot
-    //  compare them by messageKey (not reliable), but URLs should be enough.
-    let byUri = {};
-    [byUri[uri(x)] = true
-      for each ([, x] in Iterator(this._initialSet))];
     // The message that's selected has the highest priority to avoid
     //  inconsistencies in case multiple identical messages are present in the
     //  same thread (e.g. message from to me).
+    let self = this;
     let selectRightMessage = function (aSimilarMessages) {
       let findForCriterion = function (aCriterion) {
         let bestChoice;
@@ -414,8 +436,7 @@ Conversation.prototype = {
         return bestChoice;
       };
       let r =
-        findForCriterion(function (aMsg) ((uri(toMsgHdr(aMsg)) in byUri) && (aMsg.message.inView = true))) ||
-        findForCriterion(function (aMsg) ((mainWindow.gDBView.findIndexOfMsgHdr(toMsgHdr(aMsg), false) != nsMsgViewIndex_None) && (aMsg.message.inView = true))) ||
+        findForCriterion(function (aMsg) self.viewWrapper.isInView(aMsg)) ||
         findForCriterion(function (aMsg) msgHdrIsInbox(toMsgHdr(aMsg))) ||
         findForCriterion(function (aMsg) msgHdrIsSent(toMsgHdr(aMsg))) ||
         findForCriterion(function (aMsg) !msgHdrIsArchive(toMsgHdr(aMsg))) ||
@@ -474,6 +495,7 @@ Conversation.prototype = {
       $(".quickReply").appendTo($(".message:last"));
       // Invalidate the last quick reply settings so that we make sure the
       //  composition fields are updated to match the last message that arrived.
+      // XXX unless the user already started editing FIXME
       this._htmlPane.contentWindow.gComposeParams.msgHdr = null;
 
       // Notify each message that it's been added to the DOM and that it can do
@@ -495,6 +517,10 @@ Conversation.prototype = {
 
     // Re-do the expand/collapse + scroll to the right node stuff.
     this._expandAndScroll();
+    // Update the folder tags, maybe we were called because we changed folders
+    this.viewWrapper = new ViewWrapper();
+    [m.message.inView = this.viewWrapper.isInView(m)
+      for each ([, m] in Iterator(this.messages))];
   },
 
   // Once we're confident our set of messages is the right one, we actually
@@ -639,6 +665,10 @@ Conversation.prototype = {
     Log.debug("Got", domNodes.length+"/"+this.messages.length, "dom nodes");
     for each (let [i, m] in Iterator(this.messages))
       m.message.onAddedToDom(domNodes[i]);
+
+    // Determine which messages should get a nice folder tag
+    [m.message.inView = this.viewWrapper.isInView(m)
+      for each ([, m] in Iterator(this.messages))];
 
     // Set the subject properly
     let subjectNode = this._domNode.ownerDocument.getElementsByClassName("subject")[0];

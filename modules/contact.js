@@ -113,6 +113,10 @@ let ContactMixIn = {
 
     let self = this;
     let mainWindow = getMail3Pane();
+    // XXX we already did this if we're running without contacts
+    // Please note that cardAndBook is never overridden, so that the closure for
+    //  the editContact event listener actually sees the updated fields of the
+    //  object once the addContact event listener has updated them.
     let cardAndBook = mainWindow.getCardForEmail(self._email);
     if (cardAndBook.card)
       aDomNode.parentNode.classList.add("inAddressBook");

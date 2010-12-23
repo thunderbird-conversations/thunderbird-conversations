@@ -190,7 +190,6 @@ function Message(aConversation) {
   this._cc = this._msgHdr.ccList.length ? this.parse(this._msgHdr.ccList) : [];
   this._bcc = this._msgHdr.bccList.length ? this.parse(this._msgHdr.bccList) : [];
   this.subject = this._msgHdr.mime2DecodedSubject;
-  this.inView = false; // set from the outside by the conversation
 
   this._uri = this._msgHdr.folder.getUriForMsg(this._msgHdr);
   this._contacts = [];
@@ -205,6 +204,17 @@ Message.prototype = {
   //  @return a list of { email, name } objects
   parse: function (aMimeLine) {
     return parseMimeLine(aMimeLine);
+  },
+
+  get inView () {
+    return this._domNode.classList.contains("inView");
+  },
+
+  set inView (v) {
+    if (v)
+      this._domNode.classList.add("inView");
+    else
+      this._domNode.classList.remove("inView");
   },
 
   // Output this message as a whole bunch of HTML
@@ -271,15 +281,13 @@ Message.prototype = {
     data.date = this._date;
 
     // 4) Custom tag telling the user if the message is not in the current view
-    if (!this.inView) {
-      let folderStr = this._msgHdr.folder.prettiestName;
-      let folder = this._msgHdr.folder;
-      while (folder.parent) {
-        folder = folder.parent;
-        folderStr = folder.name + "/" + folderStr;
-      }
-      data.folderName = folderStr;
+    let folderStr = this._msgHdr.folder.prettiestName;
+    let folder = this._msgHdr.folder;
+    while (folder.parent) {
+      folder = folder.parent;
+      folderStr = folder.name + "/" + folderStr;
     }
+    data.folderName = folderStr;
 
     // 5) Custom tag telling the user if this is a draft
     data.draft = msgHdrIsDraft(this._msgHdr);
