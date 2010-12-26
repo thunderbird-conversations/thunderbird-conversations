@@ -44,8 +44,7 @@ var EXPORTED_SYMBOLS = [
   'convertHotmailQuotingToBlockquote1', 'convertHotmailQuotingToBlockquote2',
   'convertOutlookQuotingToBlockquote', 'convertForwardedToBlockquote',
   'fusionBlockquotes',
-  // a very stupid function that tries to figure out, given a full name, what is
-  // the guy's first name
+  // not related...
   'parseShortName', 'joinWordList', 'parseMimeLine', 'iconForMimeType'
 ]
 
