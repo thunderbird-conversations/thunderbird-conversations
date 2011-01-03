@@ -1,5 +1,7 @@
 --- Changes since 2.0alpha1 ---
 
+- Offer users the possibility to leave feedback in the Mozilla Messaging addons
+forum after 20 Thunderbird startups with Thunderbird Conversations enabled.
 - Fix ???s in quick replies (was caused when the reply had characters that were
 not covered by the original character encoding).
 - Update folder tags when switching folders.

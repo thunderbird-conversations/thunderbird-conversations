@@ -22,3 +22,14 @@ If you just want to start hacking, see
 [MDC](https://developer.mozilla.org/en/Setting_up_extension_development_environment)
 to learn how to use a proxy file. If you want to package a release, `./build.sh`
 will package a .xpi file. `./package.sh` is for my personal use.
+
+SUBMODULES
+==========
+
+This repo contains a git submodule. To make sure you've checked out all the
+files, make sure you run:
+
+    git submodule init
+    git submodule update
+
+before you start hacking.
