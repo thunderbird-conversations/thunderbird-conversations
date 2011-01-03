@@ -1,5 +1,7 @@
 --- Changes since 2.0alpha1 ---
 
+- Fix ???s in quick replies (was caused when the reply had characters that were
+not covered by the original character encoding).
 - Update folder tags when switching folders.
 - Add a button to edit / add the contact into the Thunderbird address book
 - New 'Send & Archive' option

@@ -196,6 +196,9 @@ function sendMessage({ msgHdr, identity, to, cc, bcc, subject },
   //  ends up being converted as text/plain, for the case where we would like to
   //  offer HTML editing.
   fields.useMultipartAlternative = false;
+  // We're in 2011 now, let's assume everyone knows how to read UTF-8
+  fields.bodyIsAsciiOnly = false;
+  fields.characterSet = "UTF-8";
   fields.body = aNode.value+"\n"; // Doesn't work without the newline. Weird. IMAP stuff.
 
   // If we are to archive the conversation after sending, this means we also
@@ -260,7 +263,6 @@ function sendMessage({ msgHdr, identity, to, cc, bcc, subject },
     //  middle, but well... I guess this is okay enough.
     fields.body = plainTextToHtml(fields.body);
 
-    fields.bodyIsAsciiOnly = false;
     params.format = Ci.nsIMsgCompFormat.HTML;
     params.type = mCompType.New;
     msgComposeService.OpenComposeWindowWithParams(null, params);
