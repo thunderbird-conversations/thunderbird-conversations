@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+
+<html>
+
+<head>
+  <title>Give feedback</title>
+  <link rel="stylesheet" type="text/css" href="chrome://conversations/skin/assistant.css">
+  <script type="text/javascript" src="chrome://conversations/content/js/jquery-1.4.3.min.js"></script>
+  <script type="text/javascript" src="chrome://conversations/content/options.js"></script>
+  <script type="application/javascript;version=1.8">
+  </script>
+</head>
+
+<body style="overflow: hidden">
+  <div id="wrapper">
+    <div class="main" style="height: 500px">
+      <h1 class="title">Thunderbird <span class="orange">Conversations</span> 2.0</h1>
+      <div class="text">
+        <p>
+          Hi, this is <strong>Thunderbird Conversations</strong>!
+        </p>
+        <p>
+          You've been running Thunderbird Conversations for quite some time now,
+          would you care enough to tell us what you think about it? We'd love to
+          hear about any comments you may have!
+        </p>
+      </div>
+
+      <div style="position: absolute; bottom: 0; right: 0; padding: 20px">
+        <button onclick="window.close()">No, thanks</button>
+        <button onclick="openLink('http://feedback.mozillalabs.com/forums/68185-messaging-add-ons'); window.close();">Leave feedback</button>
+      </div>
+
+    </div>
+
+  </div>
+</body>
+
+</html>
