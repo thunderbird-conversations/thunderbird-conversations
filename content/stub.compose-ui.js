@@ -3,8 +3,8 @@ const Cc = Components.classes;
 const Cu = Components.utils;
 const Cr = Components.results;
 
-Cu.import("resource:///modules/XPCOMUtils.jsm"); // for generateQI
-Cu.import("resource:///modules/gloda/mimemsg.js"); // For MsgHdrToMimeMessage
+Cu.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI
+Cu.import("resource://app/modules/gloda/mimemsg.js"); // For MsgHdrToMimeMessage
 
 const gMessenger = Cc["@mozilla.org/messenger;1"]
                    .createInstance(Ci.nsIMessenger);

@@ -5,13 +5,13 @@ const Cc = Components.classes;
 const Cu = Components.utils;
 const Cr = Components.results;
 
-Cu.import("resource:///modules/XPCOMUtils.jsm"); // for generateQI
-Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
-Cu.import("resource:///modules/PluralForm.jsm");
-Cu.import("resource:///modules/templateUtils.js"); // for makeFriendlyDateAgo
-Cu.import("resource:///modules/gloda/utils.js");
-Cu.import("resource:///modules/gloda/mimemsg.js");
-Cu.import("resource:///modules/gloda/connotent.js"); // for mimeMsgToContentSnippetAndMeta
+Cu.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI
+Cu.import("resource://gre/modules/PluralForm.jsm");
+Cu.import("resource://app/modules/StringBundle.js"); // for StringBundle
+Cu.import("resource://app/modules/templateUtils.js"); // for makeFriendlyDateAgo
+Cu.import("resource://app/modules/gloda/utils.js");
+Cu.import("resource://app/modules/gloda/mimemsg.js");
+Cu.import("resource://app/modules/gloda/connotent.js"); // for mimeMsgToContentSnippetAndMeta
 
 const gMessenger = Cc["@mozilla.org/messenger;1"]
                    .createInstance(Ci.nsIMessenger);

@@ -5,7 +5,7 @@ const Cc = Components.classes;
 const Cu = Components.utils;
 const Cr = Components.results;
 
-Cu.import("resource:///modules/gloda/gloda.js");
+Cu.import("resource://app/modules/gloda/gloda.js");
 Cu.import("resource://conversations/log.js");
 Cu.import("resource://conversations/prefs.js");
 

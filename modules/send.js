@@ -41,8 +41,8 @@ const Cc = Components.classes;
 const Cu = Components.utils;
 const Cr = Components.results;
 
-Cu.import("resource:///modules/MailUtils.js"); // for getFolderForURI
-Cu.import("resource:///modules/PluralForm.jsm");
+Cu.import("resource://gre/modules/PluralForm.jsm");
+Cu.import("resource://app/modules/MailUtils.js"); // for getFolderForURI
 
 const gHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"]
                       .getService(Ci.nsIMsgHeaderParser);

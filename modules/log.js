@@ -1,6 +1,6 @@
 var EXPORTED_SYMBOLS = ["setupLogging", "dumpCallStack"]
 
-Components.utils.import("resource:///modules/gloda/log4moz.js");
+Components.utils.import("resource://app/modules/gloda/log4moz.js");
 
 function setupLogging(name) {
   let Log = Log4Moz.repository.getLogger(name);

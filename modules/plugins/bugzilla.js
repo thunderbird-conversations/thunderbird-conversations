@@ -15,8 +15,8 @@ const Cc = Components.classes;
 const Cu = Components.utils;
 const Cr = Components.results;
 
-Cu.import("resource:///modules/gloda/public.js");
-Cu.import("resource:///modules/gloda/mimemsg.js");
+Cu.import("resource://app/modules/gloda/public.js");
+Cu.import("resource://app/modules/gloda/mimemsg.js");
 
 let AlternativeSender = {
   init: function _AlternativeSender_init () {

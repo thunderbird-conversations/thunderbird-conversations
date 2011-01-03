@@ -51,9 +51,10 @@ var EXPORTED_SYMBOLS = [
 const Ci = Components.interfaces;
 const Cc = Components.classes;
 const Cu = Components.utils;
-Cu.import("resource:///modules/gloda/mimemsg.js");
+Cu.import("resource://app/modules/gloda/mimemsg.js");
+Cu.import("resource://app/modules/iteratorUtils.jsm"); // for fixIterator
+
 Cu.import("resource://conversations/MsgHdrUtils.jsm");
-Cu.import("resource:///modules/iteratorUtils.jsm"); // for fixIterator
 
 const txttohtmlconv = Cc["@mozilla.org/txttohtmlconv;1"]
                         .createInstance(Ci.mozITXTToHTMLConv);

@@ -1,12 +1,12 @@
 // ----- Autocomplete stuff. Understand it as a part of stub.compose-ui.js
 
-Cu.import("resource:///modules/errUtils.js");
-Cu.import("resource:///modules/gloda/gloda.js");
-Cu.import("resource:///modules/gloda/public.js");
-Cu.import("resource:///modules/gloda/utils.js");
-Cu.import("resource:///modules/gloda/suffixtree.js");
-Cu.import("resource:///modules/gloda/noun_tag.js");
-Cu.import("resource:///modules/gloda/noun_freetag.js");
+Cu.import("resource://app/modules/errUtils.js");
+Cu.import("resource://app/modules/gloda/gloda.js");
+Cu.import("resource://app/modules/gloda/public.js");
+Cu.import("resource://app/modules/gloda/utils.js");
+Cu.import("resource://app/modules/gloda/suffixtree.js");
+Cu.import("resource://app/modules/gloda/noun_tag.js");
+Cu.import("resource://app/modules/gloda/noun_freetag.js");
 
 try {
   Cu.import("resource://people/modules/people.js");

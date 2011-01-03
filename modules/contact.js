@@ -12,9 +12,10 @@ const msgComposeService = Cc["@mozilla.org/messengercompose;1"]
 const clipboardService = Cc["@mozilla.org/widget/clipboardhelper;1"]
                          .getService(Ci.nsIClipboardHelper);
 
-Cu.import("resource:///modules/iteratorUtils.jsm"); // for fixIterator
-Cu.import("resource:///modules/gloda/utils.js");
-Cu.import("resource:///modules/gloda/gloda.js");
+Cu.import("resource://app/modules/iteratorUtils.jsm"); // for fixIterator
+Cu.import("resource://app/modules/gloda/utils.js");
+Cu.import("resource://app/modules/gloda/gloda.js");
+
 Cu.import("resource://conversations/VariousUtils.jsm");
 Cu.import("resource://conversations/MsgHdrUtils.jsm"); // for getMail3Pane
 Cu.import("resource://conversations/log.js");
