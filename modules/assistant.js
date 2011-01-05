@@ -15,11 +15,11 @@ const ioService = Cc["@mozilla.org/network/io-service;1"]
 
 const kPrefInt = 0, kPrefBool = 1, kPrefChar = 42;
 
-Cu.import("resource://app/modules/MailUtils.js"); // for getFolderForURI
-Cu.import("resource://app/modules/iteratorUtils.jsm"); // for fixIterator
-Cu.import("resource://app/modules/virtualFolderWrapper.js");
-Cu.import("resource://app/modules/gloda/index_msg.js");
-Cu.import("resource://app/modules/gloda/public.js");
+Cu.import("resource:///modules/MailUtils.js"); // for getFolderForURI
+Cu.import("resource:///modules/iteratorUtils.jsm"); // for fixIterator
+Cu.import("resource:///modules/virtualFolderWrapper.js");
+Cu.import("resource:///modules/gloda/index_msg.js");
+Cu.import("resource:///modules/gloda/public.js");
 
 Cu.import("resource://conversations/VariousUtils.jsm");
 Cu.import("resource://conversations/MsgHdrUtils.jsm");

@@ -39,7 +39,7 @@ var EXPORTED_SYMBOLS = ['MimeMessageToHTML', 'MimeMessageGetAttachments']
 const Ci = Components.interfaces;
 const Cc = Components.classes;
 const Cu = Components.utils;
-Components.utils.import("resource://app/modules/gloda/mimemsg.js");
+Components.utils.import("resource:///modules/gloda/mimemsg.js");
 
 /**
  * This function concatenates every text/html part it finds inside a Mime
