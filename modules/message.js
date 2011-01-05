@@ -561,8 +561,13 @@ Message.prototype = {
 
       switch (event.keyCode) {
         case mainWindow.KeyEvent.DOM_VK_RETURN:
-          if (isAccel(event))
-            self._conversation._htmlPane.contentWindow.onSend();
+          if (isAccel(event)) {
+            if (event.shiftKey) {
+              self._conversation._htmlPane.contentWindow.onSend(null, { archive: true });
+            } else {
+              self._conversation._htmlPane.contentWindow.onSend();
+            }
+          }
           break;
 
         case mainWindow.KeyEvent.DOM_VK_ESCAPE:
