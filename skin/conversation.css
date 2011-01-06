@@ -351,17 +351,6 @@ a img {
   display: none;
 }
 
-/* But if there's too many recipients, we want the "details" link to be visible.
- * */
-.message.too-many-recipients .details {
-  display: inline;
-}
-
-/* Until the user has clicked it... */
-.message.too-many-recipients.with-details .details {
-  display: none;
-}
-
 .message.collapsed .snippet {
   display: inline-block;
   height: 18px;

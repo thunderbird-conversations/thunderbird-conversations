@@ -597,25 +597,17 @@ Message.prototype = {
   },
 
   cosmeticFixups: function _Message_cosmeticFixups() {
-    let t0 = (new Date()).getTime();
-    let printTime = function () (
-      Log.debug("Here, ", (new Date()).getTime() - t0, "ms"),
-      t0 = (new Date()).getTime()
-    );
-
     let self = this;
     let window = this._conversation._htmlPane.contentWindow;
     window.alignAttachments(this);
-    printTime();
 
-    // XXX this is too brutal, do something more elaborate, like add a specific
-    //  class. Plus, it doesn't always work properly.
     let toNode = this._domNode.getElementsByClassName("to")[0];
-    let style = window.getComputedStyle(toNode, null);
-    let overflowed = parseInt(style.height) > 18;
-    printTime();
-    if (overflowed) {
-      this._domNode.classList.add("too-many-recipients");
+    let children = toNode.children;
+    let hide = function (aNode) aNode.classList.add("show-with-details");
+    let width = function (x) x.offsetWidth;
+    let overflows = function () parseInt(toNode.offsetHeight) > 18;
+
+    if (overflows()) {
       let dots = toNode.ownerDocument.createElement("a");
       dots.setAttribute("href", "javascript:null");
       dots.classList.add("link");
@@ -626,10 +618,23 @@ Message.prototype = {
         event.stopPropagation();
       }, false);
       toNode.appendChild(dots);
-      let i = toNode.children.length - 2;
-      while (parseInt(style.height) > 18 && i >= 0) {
-        toNode.children[i].classList.add("show-with-details");
-        style = window.getComputedStyle(toNode, null);
+
+      // First find out how many names it takes to fill the message's width
+      let approximateWidth = width(this._domNode);
+      let total = 0;
+      let i = 0;
+      let j = toNode.children.length - 1;
+      while (total < approximateWidth && i < j) {
+        total += width(children[i]);
+        i++;
+      }
+      // Hide all the others
+      [hide(children[x]) for (x in range(i, j))];
+      // And move backwards to hide just enough items (usually one or two) until
+      //  we fit perfectly.
+      i--;
+      while (overflows() && i >= 0) {
+        hide(children[i]);
         i--;
       }
     }
