@@ -597,19 +597,34 @@ Message.prototype = {
   },
 
   cosmeticFixups: function _Message_cosmeticFixups() {
+    let t0 = (new Date()).getTime();
+    let printTime = function () (
+      Log.debug("Here, ", (new Date()).getTime() - t0, "ms"),
+      t0 = (new Date()).getTime()
+    );
+
+    let self = this;
     let window = this._conversation._htmlPane.contentWindow;
     window.alignAttachments(this);
+    printTime();
 
     // XXX this is too brutal, do something more elaborate, like add a specific
     //  class. Plus, it doesn't always work properly.
     let toNode = this._domNode.getElementsByClassName("to")[0];
     let style = window.getComputedStyle(toNode, null);
     let overflowed = parseInt(style.height) > 18;
+    printTime();
     if (overflowed) {
       this._domNode.classList.add("too-many-recipients");
-      let dots = toNode.ownerDocument.createElement("span");
+      let dots = toNode.ownerDocument.createElement("a");
+      dots.setAttribute("href", "javascript:null");
+      dots.classList.add("link");
       dots.textContent = "...";
       dots.classList.add("hide-with-details");
+      dots.addEventListener("click", function (event) {
+        self._domNode.classList.add("with-details");
+        event.stopPropagation();
+      }, false);
       toNode.appendChild(dots);
       let i = toNode.children.length - 2;
       while (parseInt(style.height) > 18 && i >= 0) {
