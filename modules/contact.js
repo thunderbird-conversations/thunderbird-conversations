@@ -115,6 +115,10 @@ let ContactMixIn = {
         msgComposeService.OpenComposeWindowWithURI(null, aURI);
         event.stopPropagation();
       }, false);
+    aDomNode.parentNode.getElementsByClassName("contactName")[0].addEventListener(
+      "click", function (event) {
+        event.stopPropagation();
+      }, false);
 
     let self = this;
     let mainWindow = getMail3Pane();
