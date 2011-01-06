@@ -1,13 +1,14 @@
 --- Changes since 2.0alpha1 ---
 
+- Proper quoting support for quick reply
+- Fix performance issues for emails with a ton of contacts
 - Offer users the possibility to leave feedback in the Mozilla Messaging addons
 forum after 20 Thunderbird startups with Thunderbird Conversations enabled.
 - Fix ???s in quick replies (was caused when the reply had characters that were
 not covered by the original character encoding).
 - Update folder tags when switching folders.
 - Add a button to edit / add the contact into the Thunderbird address book
-- New 'Send & Archive' option
-- Proper quoting support for quick reply
+- New 'Send & Archive' option (Control-Shift-Enter or Meta-Shift-Enter on OSX)
 - Make sure the message body is in disabled state while the sending process is
 taking place.
 - Make the text more understandable in the setup assistant. Don't allow the user

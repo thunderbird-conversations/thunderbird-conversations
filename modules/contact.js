@@ -117,7 +117,8 @@ let ContactMixIn = {
       }, false);
     aDomNode.parentNode.getElementsByClassName("contactName")[0].addEventListener(
       "click", function (event) {
-        event.stopPropagation();
+        if (event.target.nextElementSibling.offsetHeight > 0) // that's the tooltip
+          event.stopPropagation();
       }, false);
 
     let self = this;

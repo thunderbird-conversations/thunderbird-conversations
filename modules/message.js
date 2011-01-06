@@ -194,6 +194,10 @@ function Message(aConversation) {
   this._uri = this._msgHdr.folder.getUriForMsg(this._msgHdr);
   this._contacts = [];
   this._attachments = [];
+
+  // Filled by the conversation, useful to know whether we were initially the
+  //  first message in the conversation or not...
+  this.initialPosition = -1;
 }
 
 Message.prototype = {
@@ -823,7 +827,10 @@ Message.prototype = {
                 }
               }
             };
-            walk(iframeDoc);
+            // https://github.com/protz/GMail-Conversation-View/issues#issue/179
+            // See link above for a rationale ^^
+            if (self.initialPosition > 0)
+              walk(iframeDoc);
 
             // Assuming 16px is the default (like on, say, Linux), this gives
             //  18px and 12px, which what Andy had in mind.

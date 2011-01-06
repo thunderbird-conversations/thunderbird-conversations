@@ -503,6 +503,7 @@ Conversation.prototype = {
       let domNodes = this._domNode.getElementsByClassName(Message.prototype.cssClass);
       for each (let i in range(this.messages.length - aMessages.length, this.messages.length)) {
         Log.debug("Appending node", i, "to the conversation");
+        this.messages[i].message.initialPosition = i;
         this.messages[i].message.onAddedToDom(domNodes[i]);
         this.messages[i].message.expand();
         Log.debug("Appending message", i, "setting tabindex", i+2);
@@ -663,12 +664,12 @@ Conversation.prototype = {
     // event registration and stuff...
     let domNodes = this._domNode.getElementsByClassName(Message.prototype.cssClass);
     Log.debug("Got", domNodes.length+"/"+this.messages.length, "dom nodes");
-    for each (let [i, m] in Iterator(this.messages))
+    for each (let [i, m] in Iterator(this.messages)) {
       m.message.onAddedToDom(domNodes[i]);
-
-    // Determine which messages should get a nice folder tag
-    [m.message.inView = this.viewWrapper.isInView(m)
-      for each ([, m] in Iterator(this.messages))];
+      m.message.initialPosition = i;
+      // Determine which messages should get a nice folder tag
+      m.message.inView = this.viewWrapper.isInView(m);
+    }
 
     // Set the subject properly
     let subjectNode = this._domNode.ownerDocument.getElementsByClassName("subject")[0];
