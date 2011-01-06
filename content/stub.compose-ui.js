@@ -509,6 +509,8 @@ let copyListener = {
   ]),
 }
 
+// XXX Should be a closure on gWillArchive, gComposeParams, and
+//  Conversations.currentConversation.msgHdrs (for archiving purposes)
 let stateListener = {
   NotifyComposeFieldsReady: function() {
     // ComposeFieldsReady();
@@ -531,7 +533,8 @@ let stateListener = {
       msgHdr.folder.msgDatabase = null;
       // Archive the whole conversation if needed
       if (gWillArchive) {
-        // from stub.html
+        // from stub.html. XXX this should be more subtle than that... the
+        //  conversation might be something else now...
         archiveConversation();
       }
     }

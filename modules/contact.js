@@ -67,20 +67,24 @@ ContactManager.prototype = {
     }
   },
 
-  freshColor: function _ContactManager_freshColor() {
-    let predefinedColors = [ "#ed6666", "#ed8866", "#ccc15e", "#9ec269",
-      "#69c2ac", "#66b7ed", "#668ced", "#8866ed", "#cb66ed", "#ed66d9"];
-    if (this._count < predefinedColors.length) {
-      return predefinedColors[this._count++];
+  freshColor: function _ContactManager_freshColor(aIsMe) {
+    if (aIsMe) {
+      return "#ed6666";
     } else {
-      let r, g, b;
-      // Avoid colors that are too light or too dark.
-      do {
-        r = Math.random();
-        g = Math.random();
-        b = Math.random();
-      } while (Math.sqrt(r*r + b*b + g*g) > .8 || Math.sqrt(r*r + b*b + g*g) < .2)
-      return "rgb("+parseInt(r*255)+","+parseInt(g*255)+","+parseInt(b*255)+")";
+      let predefinedColors = ["#ed8866", "#ccc15e", "#9ec269",
+        "#69c2ac", "#66b7ed", "#668ced", "#8866ed", "#cb66ed", "#ed66d9"];
+      if (this._count < predefinedColors.length) {
+        return predefinedColors[this._count++];
+      } else {
+        let r, g, b;
+        // Avoid colors that are too light or too dark.
+        do {
+          r = Math.random();
+          g = Math.random();
+          b = Math.random();
+        } while (Math.sqrt(r*r + b*b + g*g) > .8 || Math.sqrt(r*r + b*b + g*g) < .2)
+        return "rgb("+parseInt(r*255)+","+parseInt(g*255)+","+parseInt(b*255)+")";
+      }
     }
   },
 }
@@ -233,7 +237,7 @@ let ContactMixIn = {
 
 function ContactFromAB(manager, name, email) {
   this.emails = [];
-  this.color = manager.freshColor();
+  this.color = manager.freshColor(email in gIdentities);
 
   this._manager = manager;
   this._name = name; // Initially, the displayed name. Might be enhanced later.
@@ -275,7 +279,7 @@ MixIn(ContactFromAB, ContactMixIn);
 
 function ContactFromPeople(manager, name, email) {
   this.emails = [email];
-  this.color = manager.freshColor();
+  this.color = manager.freshColor(email in gIdentities);
 
   this._manager = manager;
   this._name = name;
