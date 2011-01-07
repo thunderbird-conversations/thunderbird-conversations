@@ -127,6 +127,11 @@ button img {
   list-style-type: none;
 }
 
+.message.highlight:-moz-focusring,
+.message:focus:-moz-focusring {
+  outline: none;
+}
+
 .message.highlight, .message:focus {
   border: 1px solid #bebebe;
   -moz-box-shadow: 0 0 0 5px rgba(0,0,0,0.15);
