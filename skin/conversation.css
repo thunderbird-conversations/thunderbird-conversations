@@ -5,10 +5,26 @@
   padding: 0;
 }
 
+/* RELATIVE FONT SIZING */
+/* http://developer.yahoo.com/yui/fonts/#chart */
+/*10 	77*/
+/*11 	85*/
+/*12 	93 */
+/*13 	100*/
+/*14 	108 */
+/*15 	116 */
+/*16 	123.1 */
+/*17 	131 */
+/*18 	138.5 */
+/*19 	146.5 */
+/*20 	153.9 */
+/*21 	161.6 */
+/*22 	167 */
+
 body {
   font-family: "Lucida Grande", "DejaVu Sans", "Tahoma", sans-serif;
-  font-size: 12px;
-  line-height: 18px;
+  font-size: 85%;
+  line-height: 123.1%;
   background-color: #ECF3FE;
   margin: 0;
   padding: 0;
@@ -63,10 +79,9 @@ button img {
 }
 
 .subject {
-  font-size: 12px;
+  font-size: 93%;
   font-weight: bold;
-  line-height: 22px;
-  height: 22px;
+  line-height: 167%;
   overflow: hidden;
 }
 
@@ -149,7 +164,7 @@ button img {
 }
 
 span.downwardArrow {
-  font-size: 8px;
+  font-size: 123.1%;
   vertical-align: baseline;
 }
 
@@ -200,7 +215,7 @@ span.downwardArrow {
 .dropDown ul {
   margin-top: 0;
   list-style-type: none;
-  font-size: 11px;
+  font-size: 85%;
 }
 
 .dropDown li {
@@ -272,7 +287,7 @@ a img {
 }
 
 .name {
-  font-size: 14px;
+  font-size: 108%;
   float: left;
   clear: left;
 }
@@ -394,7 +409,7 @@ a img {
 
 ul.tags li {
   display: inline;
-  font-size: 10px;
+  font-size:  77%;
   font-weight: bold;
   /*background-color: #68AB57;*/
   padding: 1px 5px;
@@ -624,7 +639,7 @@ ul.special-tags img {
   width: 100%;
   height: 50px;
   font-family: "lucida grande", sans-serif;
-  font-size: 12px;
+  font-size: 93%;
   padding: 5px;
   border: 1px solid #bebebe;  
 }
