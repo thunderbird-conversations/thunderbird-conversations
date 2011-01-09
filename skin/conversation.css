@@ -304,6 +304,10 @@ a img {
   -moz-border-radius: 0 0 5px 5px;
 }
 
+.moreExpander {
+  float: right;
+}
+
 .to {
   color: #666;
   /* We enforce inline-block display so that we can compute the height and

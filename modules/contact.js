@@ -121,6 +121,19 @@ let ContactMixIn = {
           event.stopPropagation();
       }, false);
 
+    aDomNode.parentNode.getElementsByClassName("moreExpander")[0].addEventListener(
+      "click", function (event) {
+        if (aDomNode.parentNode.getElementsByClassName("hiddenFooter")[0].style.display == "none") {
+          aDomNode.parentNode.getElementsByClassName("hiddenFooter")[0].style.display = "block";
+          event.originalTarget.firstChild.textContent = "-";
+        }
+        else {
+          aDomNode.parentNode.getElementsByClassName("hiddenFooter")[0].style.display = "none";
+          event.originalTarget.firstChild.textContent = "+";
+        }
+        event.stopPropagation();
+      }, false);
+
     let self = this;
     let mainWindow = getMail3Pane();
     // XXX we already did this if we're running without contacts

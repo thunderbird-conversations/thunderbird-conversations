@@ -343,7 +343,7 @@ Conversation.prototype = {
         },
         onItemsModified: function () {},
         onItemsRemoved: function () {},
-        onQueryCompleted: function (aCollection) { },
+        onQueryCompleted: function (aCollection) {},
       }, null);
     };
 

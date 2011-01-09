@@ -406,15 +406,23 @@
           </a>
           {{/if}}
         </div>
-        <div class="tipFooter">
-          <button class="sendEmail">send email</button>
-          <button class="showInvolving">show involving</button>
+        <div class="tipFooter hiddenFooter" style="display:none;">
+          <div style="margin-bottom:5px;">
+            <input type="checkbox" style="vertical-align: text-top" id="monospace"/>
+            <label style="color:#666; font-weight: normal" for="monospace">Messages from this sender in monospace</label>
+          </div>
+          <button class="createFilter">create filter for sender</button>
           <button class="addContact" title="Add to address book">
             <img src="chrome://conversations/content/i/user_add.png" />
           </button>
           <button class="editContact" title="Edit contact in address book">
             <img src="chrome://conversations/content/i/user_edit.png" />
           </button>
+        </div>
+        <div class="tipFooter">
+          <button class="sendEmail">send email</button>
+          <button class="showInvolving">recent conversations</button>
+          <button class="moreExpander">+</button>
         </div>
       </div
     ></span
