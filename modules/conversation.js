@@ -1,3 +1,39 @@
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Thunderbird Conversations
+ *
+ * The Initial Developer of the Original Code is
+ *  Jonathan Protzenko <jonathan.protzenko@gmail.com>
+ * Portions created by the Initial Developer are Copyright (C) 2010
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
+
 var EXPORTED_SYMBOLS = ['Conversation']
 
 const Ci = Components.interfaces;
@@ -284,26 +320,109 @@ Conversation.prototype = {
   //  _outputMessages.
   _fetchMessages: function _Conversation_fetchMessages () {
     let self = this;
-    Gloda.getMessageCollectionForHeaders(this._initialSet, {
-      onItemsAdded: function (aItems) {
-        if (!aItems.length) {
-          Log.warn("Warning: gloda query returned no messages"); 
-          self._getReady(self._initialSet.length + 1);
-          self.messages = [{
-              type: kMsgDbHdr,
-              message: new MessageFromDbHdr(self, msgHdr), // will run signal
-              msgHdr: msgHdr,
-              glodaMsg: null,
-            } for each ([, msgHdr] in Iterator(self._initialSet))];
-          self._signal();
-        } else {
-          self._query = aItems[0].conversation.getMessagesCollection(self, true);
-        }
-      },
+    // This is a "classic query", i.e. the one we use all the time: just obtain
+    //  a GlodaMessage for the selected message headers, and then pick the
+    //  first one, get its underlying GlodaConversation object, and then ask for
+    //  the GlodaConversation's messages.
+    let classicQuery = function () {
+      Gloda.getMessageCollectionForHeaders(self._initialSet, {
+        onItemsAdded: function (aItems) {
+          if (!aItems.length) {
+            Log.warn("Warning: gloda query returned no messages");
+            self._getReady(self._initialSet.length + 1);
+            self.messages = [{
+                type: kMsgDbHdr,
+                message: new MessageFromDbHdr(self, msgHdr), // will run signal
+                msgHdr: msgHdr,
+                glodaMsg: null,
+              } for each ([, msgHdr] in Iterator(self._initialSet))];
+            self._signal();
+          } else {
+            self._query = aItems[0].conversation.getMessagesCollection(self, true);
+          }
+        },
+        onItemsModified: function () {},
+        onItemsRemoved: function () {},
+        onQueryCompleted: function (aCollection) { },
+      }, null);
+    };
+
+    // This is a self-service case. GitHub and GetSatisfaction do not thread
+    //  emails related to a common topic, so we're doing it for them. Each
+    //  message is in its own conversation: we get all conversations which sport
+    //  this exact topic, and then, for each conversation, we get its only
+    //  message.
+    // All the messages are gathered in fusionItems, which is then used to call
+    //  self.onQueryCompleted.
+    let fusionCount = -1;
+    let fusionItems = [];
+    let fusionTop = function () {
+      fusionCount--;
+      if (fusionCount == 0)
+        self.onQueryCompleted({ items: fusionItems });
+    };
+    let fusionListener =  {
+      onItemsAdded: function (aItems) {},
       onItemsModified: function () {},
       onItemsRemoved: function () {},
-      onQueryCompleted: function (aCollection) { },
-    }, null);
+      onQueryCompleted: function (aCollection) {
+        Log.debug("Fusionning", aCollection.items.length, "more items");
+        fusionItems = fusionItems.concat(aCollection.items);
+        fusionTop();
+      }
+    };
+
+    // This is the Gloda query to find out about conversations for a given
+    //  subject. This relies on our subject attribute provider found in
+    //  modules/plugins/glodaAttrProviders.js
+    let subjectQuery = function (subject) {
+      let query = Gloda.newQuery(Gloda.NOUN_CONVERSATION);
+      query.subject(subject);
+      query.getCollection({
+        onItemsAdded: function (aItems) {},
+        onItemsModified: function () {},
+        onItemsRemoved: function () {},
+        onQueryCompleted: function (aCollection) {
+          Log.debug("Custom query found", aCollection.items.length, "items");
+          if (aCollection.items.length) {
+            for each (let [k, v] in Iterator(aCollection.items)) {
+              fusionCount++;
+              v.getMessagesCollection(fusionListener);
+            }
+            fusionTop();
+          } else {
+            classicQuery();
+          }
+        },
+      });
+    };
+
+    let firstEmail = this._initialSet.length == 1 && parseMimeLine(this._initialSet[0].author)[0].email;
+    switch (firstEmail) {
+      case "noreply.mozilla_messaging@getsatisfaction.com": {
+        // Special-casing for Roland and his GetSatisfaction emails.
+        let subject = this._initialSet[0].mime2DecodedSubject;
+        subject = subject.replace(/New (reply|comment): /, "");
+        Log.debug("Found a GetSatisfaction message, searching for subject:", subject);
+        fusionCount = 2;
+        subjectQuery("New reply: "+subject);
+        subjectQuery("New comment: "+subject);
+        break;
+      }
+
+      case "noreply@github.com": {
+        // Special-casing for me and my GitHub emails
+        let subject = this._initialSet[0].mime2DecodedSubject;
+        Log.debug("Found a GitHub message, searching for subject:", subject);
+        fusionCount = 1;
+        subjectQuery(subject);
+        break;
+      }
+
+      default:
+        // This is the regular case.
+        classicQuery();
+    }
   },
 
   // This is the observer for the second Gloda query, the one that returns a
