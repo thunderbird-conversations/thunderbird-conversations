@@ -486,11 +486,21 @@ Message.prototype = {
       msgHdrsDelete([self._msgHdr]);
       event.stopPropagation();
     });
-    this.register(".action-monospace", function (event) {
-      let senders = Prefs["monospaced_senders"] || [];
-      let email = self._realFrom.email || self._from.email;
-      if (!senders.filter(function (x) x == email).length) {
-        Prefs.setChar("conversations.monospaced_senders", senders.concat([email]).join(","));
+
+    // Pre-set the right value
+    let realFrom = String.trim(this._realFrom.email || this._from.email);
+    if (Prefs["monospaced_senders"].filter(function (x) x == realFrom).length)
+      this._domNode.getElementsByClassName("checkbox-monospace")[0].checked = true;
+
+    // This one is located in the first contact tooltip
+    this.register(".checkbox-monospace", function (event) {
+      let senders = Prefs["monospaced_senders"].filter(function (x) x != realFrom);
+      senders = senders.filter(function (x) x != realFrom);
+      Log.debug(senders, senders.length);
+      if (event.target.checked) {
+        Prefs.setChar("conversations.monospaced_senders", senders.concat([realFrom]).join(","));
+      } else {
+        Prefs.setChar("conversations.monospaced_senders", senders.join(","));
       }
       self._reloadMessage();
       event.stopPropagation();
@@ -508,13 +518,6 @@ Message.prototype = {
       // Clicking inside a tooltip must not collapse the message.
       event.stopPropagation();
     });
-
-    // Actually we might not need that list item, so possibly remove it!
-    let realFrom = String.trim(this._realFrom.email || this._from.email);
-    if (Prefs["monospaced_senders"].filter(function (x) x == realFrom).length) {
-      let node = this._domNode.getElementsByClassName("action-monospace")[0];
-      node.parentNode.removeChild(node);
-    }
 
     this.register(".show-remote-content", function (event) {
       self._domNode.getElementsByClassName("show-remote-content")[0].style.display = "none";

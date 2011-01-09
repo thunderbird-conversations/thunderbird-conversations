@@ -294,7 +294,6 @@
                   <div class="arrow inside"></div>
                 </li>
                 <li class="action-delete">delete this message</li>
-                <li class="action-monospace">this sender sends monospace</li>
                 <li class="action-classic">view using the classic reader</li>
                 <li class="action-source">view message source</li>
               </ul>
@@ -407,10 +406,12 @@
           {{/if}}
         </div>
         <div class="tipFooter hiddenFooter" style="display:none;">
+          {{if (showMonospace)}}
           <div style="margin-bottom:5px;">
-            <input type="checkbox" style="vertical-align: text-top" id="monospace"/>
-            <label style="color:#666; font-weight: normal" for="monospace">Messages from this sender in monospace</label>
+            <input type="checkbox" style="vertical-align: text-top" class="checkbox-monospace" />
+            <label style="color:#666; font-weight: normal">Messages from this sender in monospace</label>
           </div>
+          {{/if}}
           <button class="createFilter">create filter for sender</button>
           <button class="addContact" title="Add to address book">
             <img src="chrome://conversations/content/i/user_add.png" />

@@ -93,6 +93,7 @@ let ContactMixIn = {
   toTmplData: function _ContactMixIn_toInlineHtml (aUseColor, aPosition) {
     let name = this.getName(aPosition);
     let data = {
+      showMonospace: aPosition == Contacts.kFrom,
       name: name,
       tooltipName: (name != this._email) ? name : "",
       email: this._email,
@@ -214,6 +215,10 @@ let ContactMixIn = {
             });
           }
         });
+      }, false);
+    aDomNode.getElementsByClassName("createFilter")[0].addEventListener(
+      "click", function (event) {
+        mainWindow.MsgFilters(self._email, null);
       }, false);
 
     /* The links to various profiles */
