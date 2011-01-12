@@ -406,9 +406,10 @@ Conversation.prototype = {
         let subject = this._initialSet[0].mime2DecodedSubject;
         subject = subject.replace(/New (reply|comment): /, "");
         Log.debug("Found a GetSatisfaction message, searching for subject:", subject);
-        fusionCount = 2;
+        fusionCount = 3;
         subjectQuery("New reply: "+subject);
         subjectQuery("New comment: "+subject);
+        subjectQuery("New question: "+subject);
         break;
       }
 
