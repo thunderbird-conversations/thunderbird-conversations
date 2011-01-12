@@ -39,7 +39,7 @@ var EXPORTED_SYMBOLS = [
   'msgHdrToMessageBody', 'msgHdrToNeckoURL', 'msgHdrGetTags',
   // Quickly identify a message
   'msgHdrIsDraft', 'msgHdrIsSent', 'msgHdrIsArchive', 'msgHdrIsInbox',
-  'msgHdrIsRss', 'msgHdrIsNntp',
+  'msgHdrIsRss', 'msgHdrIsNntp', 'msgHdrIsJunk',
   // Actions on a set of message headers
   'msgHdrsMarkAsRead', 'msgHdrsArchive', 'msgHdrsDelete',
   // Doesn't really belong here
@@ -238,6 +238,14 @@ function msgHdrIsRss(msgHdr) (
 function msgHdrIsNntp(msgHdr) (
   msgHdr.folder.server instanceof Ci.nsINntpIncomingServer
 )
+
+/**
+ * Tell if a message has been marked as junk.
+ * @param {nsIMsgDbHdr} msgHdr The message header
+ */
+function msgHdrIsJunk(aMsgHdr) {
+  return aMsgHdr.getStringProperty("junkscore") == Ci.nsIJunkMailPlugin.IS_SPAM_SCORE;
+}
 
 // XXX implement some day
 function msgHdrMarkAsJunk(msgHdr) {
