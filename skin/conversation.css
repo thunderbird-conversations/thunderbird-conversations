@@ -62,6 +62,10 @@ button img {
   color: #0a0a0a;
 }
 
+#conversationHeader.not-junkable .junk-button {
+  display: none;
+}
+
 .subject {
   font-size: 12px;
   font-weight: bold;

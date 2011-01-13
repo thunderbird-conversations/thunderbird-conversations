@@ -744,6 +744,10 @@ Conversation.prototype = {
         Log.debug("Not recycling conversation");
         // We'll be replacing the old conversation
         this._window.Conversations.currentConversation.messages = [];
+        // We don't know yet if this is going to be a junkable conversation, so
+        //  when in doubt, reset. Actually, the final call to
+        //  _updateConversationButtons will update this.
+        this._domNode.ownerDocument.getElementById("conversationHeader").classList.remove("not-junkable");
         // Gotta save the quick reply, if there's one! Please note that
         //  contentWindow.Conversations is still wired onto the old
         //  conversation. Updating the global Conversations object and loading
@@ -823,6 +827,13 @@ Conversation.prototype = {
       collapseExpandButton.classList.remove("collapse");
     else
       collapseExpandButton.classList.add("collapse");
+
+    // If we have more than one message, then "junk this message" doesn't make
+    //  sense anymore.
+    Log.debug(toMsgHdr(this.messages[0]).flags);
+    if (this.messages.length > 1 || msgHdrIsJunk(toMsgHdr(this.messages[0])))
+      this._domNode.ownerDocument.getElementById("conversationHeader")
+        .classList.add("not-junkable");
   },
 
   // Do all the penible stuff about scrolling to the right message and expanding

@@ -232,6 +232,14 @@
       msgHdrsDelete(Conversations.currentConversation.msgHdrs);
     }
 
+    function junkConversation(event) {
+      // This callback is only activated when the conversation is not a
+      //  conversation in a tab AND there's only one message in the conversation,
+      //  i.e. the currently selected message
+      getMail3Pane().JunkSelectedMessages(true);
+      $("#conversationHeader").addClass("not-junkable");
+    }
+
     function detachTab(event) {
       let mainWindow = getMail3Pane();
       let tabmail = mainWindow.document.getElementById("tabmail");
@@ -246,6 +254,8 @@
               currentConversation: null,
               counter: 0,
             };
+            browser.contentWindow.document.getElementById("conversationHeader")
+              .classList.add("not-junkable");
             // Pick _initialSet and not msgHdrs so as to enforce the invariant
             //  that the messages from _initialSet are in the current view.
             let freshConversation = new mainWindow.Conversations.monkeyPatch._Conversation(
@@ -518,6 +528,9 @@
           </button>
           <button title="Archive this conversation" onclick="archiveConversation(event);">
             <img src="i/archive.png" />
+          </button>
+          <button title="Junk this message" class="junk-button" onclick="junkConversation(event);">
+            <img src="i/junk.png" />
           </button>
           <button title="Expand/collapse all messages" onclick="expandCollapse(event);">
             <span class="expand"></span>
