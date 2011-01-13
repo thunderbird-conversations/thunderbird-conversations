@@ -105,7 +105,7 @@ KeyListener.prototype = {
   // Any event that's handled *must* be stopped from bubbling upwards, because
   //  there's a topmost event listener on the DOM window that re-fires any
   //  keypress (that one is not capturing) into the main window. We have to do
-  //  this because otherwise event's dont make it out of the <browser
+  //  this because otherwise events dont make it out of the <browser
   //  id="multimessage"> that holds us when the conversation view has focus.
   // That's what makes cmd/ctrl-n work properly.
   onKeyPress: function _KeyListener_onKeyPressed (event) {

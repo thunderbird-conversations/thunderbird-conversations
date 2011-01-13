@@ -93,6 +93,9 @@ for ROOT_FILE in $ROOT_FILES install.rdf chrome.manifest; do
 done
 
 cd $TMP_DIR
+find . -iname '.git' -type d -exec rm -rf {} \;
+find . -iname '.*.sw*' -exec rm -f {} \;
+find . -iname 'tests' -type d -exec rm -rf {} \;
 
 if [ -f "chrome.manifest" ]; then
   echo "Preprocessing chrome.manifest..."
