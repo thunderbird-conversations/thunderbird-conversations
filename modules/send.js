@@ -83,6 +83,16 @@ function getArchiveFolderUriFor(identity, msgDate) {
 //  forwards the notifications to our own little progressListener.
 // So if no one holds a firm reference to gMsgCompose, then it might end up
 //  being collected before the send process terminates, and then, it's BAD.
+// The bad case would be:
+//  * user hits "send"
+//  * quickly changes conversations
+//  * writes a new email
+//  * the previous send hasn't completed, but the user hits send anyway
+//  * gMsgCompose is overridden
+//  * a garbage collection kicks in, collects the previous StateListener
+//  * first send completes
+//  * the first listener fails to receive the notification.
+// That's way too implausible, so I'll just assume this doesn't happen!
 let gMsgCompose;
 
 /**

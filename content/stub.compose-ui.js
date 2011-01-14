@@ -71,10 +71,20 @@ function editFields(aFocusId) {
 
 function onDiscard(event) {
   $("textarea").val("");
-  onSave(event);
+  let id = Conversations.currentConversation.id;
+  if (id)
+    SimpleStorage.spin(function () {
+      let r = yield ss.remove(id);
+      $(".quickReply").removeClass('expand');
+      gComposeParams.startedEditing = false;
+      yield SimpleStorage.kWorkDone;
+    });
 }
 
 function onSave(event) {
+  if (!gComposeParams.startedEditing)
+    return;
+
   SimpleStorage.spin(function () {
     let id = Conversations.currentConversation.id; // Gloda ID
     if (id) {
@@ -101,16 +111,23 @@ function loadDraft() {
     return;
   }
 
+  let makeTokens = function (aList) {
+    let [list, listEmailAddresses] = parse(aList);
+    return [asToken(null, item, listEmailAddresses[i], null)
+      for each ([i, item] in Iterator(list))];
+  };
+
   SimpleStorage.spin(function () {
     let r = yield ss.get(id);
     if (r) {
       let { msgUri, from, to, cc, bcc, body } = r;
       gComposeParams.msgHdr = msgUri && msgUriToMsgHdr(msgUri);
       gComposeParams.identity = gIdentities[from];
+
       if (gComposeParams.msgHdr && gComposeParams.identity) {
-        gComposeParams.to = to;
-        gComposeParams.cc = cc;
-        gComposeParams.bcc = bcc;
+        gComposeParams.to = makeTokens(to);
+        gComposeParams.cc = makeTokens(cc);
+        gComposeParams.bcc = makeTokens(bcc);
         updateUI();
         $("textarea").val(body);
         gComposeParams.startedEditing = true;
@@ -564,7 +581,7 @@ function createStateListener (aComposeParams, aWillArchive, aMsgHdrs, aId) {
         msgHdr.folder.msgDatabase = null;
         // Archive the whole conversation if needed
         if (aWillArchive)
-          msgHdrsArchive(aMsgHdrs);
+          msgHdrsArchive(aMsgHdrs.filter(function (x) !msgHdrIsArchive(x)));
         // If gComposeParams was blown away in the meanwhile, this doesn't mess
         //  anything...
         aComposeParams.startedEditing = false;
