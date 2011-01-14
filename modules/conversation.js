@@ -358,8 +358,12 @@ Conversation.prototype = {
     let fusionItems = [];
     let fusionTop = function () {
       fusionCount--;
-      if (fusionCount == 0)
-        self.onQueryCompleted({ items: fusionItems });
+      if (fusionCount == 0) {
+        if (fusionItems.length)
+          self.onQueryCompleted({ items: fusionItems });
+        else
+          classicQuery();
+      }
     };
     let fusionListener =  {
       onItemsAdded: function (aItems) {},
@@ -389,10 +393,8 @@ Conversation.prototype = {
               fusionCount++;
               v.getMessagesCollection(fusionListener);
             }
-            fusionTop();
-          } else {
-            classicQuery();
           }
+          fusionTop();
         },
       });
     };
