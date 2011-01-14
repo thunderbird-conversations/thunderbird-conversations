@@ -36,7 +36,7 @@
 
 var EXPORTED_SYMBOLS = [
   // Low-level XPCOM boring stuff
-  'msgHdrToMessageBody', 'msgHdrToNeckoURL', 'msgHdrGetTags',
+  'msgHdrToMessageBody', 'msgHdrToNeckoURL', 'msgHdrGetTags', 'msgUriToMsgHdr',
   // Quickly identify a message
   'msgHdrIsDraft', 'msgHdrIsSent', 'msgHdrIsArchive', 'msgHdrIsInbox',
   'msgHdrIsRss', 'msgHdrIsNntp', 'msgHdrIsJunk',
@@ -61,6 +61,16 @@ const gMessenger = Cc["@mozilla.org/messenger;1"]
                    .createInstance(Ci.nsIMessenger);
 const gMsgTagService = Cc["@mozilla.org/messenger/tagservice;1"]
                        .getService(Ci.nsIMsgTagService);
+
+/**
+ * Get a msgHdr from a message URI (msgHdr.URI).
+ * @param {String} aUri The URI of the message
+ * @return {nsIMsgDbHdr}
+ */
+function msgUriToMsgHdr(aUri) {
+  let messageService = gMessenger.messageServiceFromURI(aUri);
+  return messageService.messageURIToMsgHdr(aUri);
+}
 
 /**
  * Tells if the message is in the account's inbox

@@ -614,10 +614,6 @@ Conversation.prototype = {
       // Important: don't forget to move the quick reply part into the last
       //  message.
       $(".quickReply").appendTo($(".message:last"));
-      // Invalidate the last quick reply settings so that we make sure the
-      //  composition fields are updated to match the last message that arrived.
-      // XXX unless the user already started editing FIXME
-      this._htmlPane.contentWindow.gComposeParams.msgHdr = null;
 
       // Notify each message that it's been added to the DOM and that it can do
       //  event registration and stuff...
@@ -803,9 +799,9 @@ Conversation.prototype = {
     subjectNode.setAttribute("title", subject);
     this._htmlPane.contentWindow.fakeTextOverflowSubject();
     this._htmlPane.contentDocument.title = subject;
-    // Invalidate the msgHdr so that the compose-ui.js can setup the fields next
-    //  time.
-    this._htmlPane.contentWindow.gComposeParams.msgHdr = null;
+    // Invalidate the composition session so that compose-ui.js can setup the
+    //  fields next time.
+    this._htmlPane.contentWindow.gComposeParams.startedEditing = false;
 
     // Move on to the next step
     this._expandAndScroll();
@@ -832,7 +828,6 @@ Conversation.prototype = {
 
     // If we have more than one message, then "junk this message" doesn't make
     //  sense anymore.
-    Log.debug(toMsgHdr(this.messages[0]).flags);
     if (this.messages.length > 1 || msgHdrIsJunk(toMsgHdr(this.messages[0])))
       this._domNode.ownerDocument.getElementById("conversationHeader")
         .classList.add("not-junkable");

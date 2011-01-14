@@ -105,7 +105,6 @@ function quoteMsgHdr(aMsgHdr, k) {
   };
   // Here's what we want to stream...
   let msgUri = uri(aMsgHdr);
-  Log.debug("Streaming", msgUri);
   /**
    * Quote a particular message specified by its URI.
    *

@@ -19,26 +19,18 @@ Cu.import("resource://conversations/log.js");
 
 let Log = setupLogging("Conversations.Stub.Compose");
 
-let gComposeParams = {
+var gComposeParams = {
   msgHdr: null,
   identity: null,
   to: null,
   cc: null,
   bcc: null,
   subject: null,
+  startedEditing: false,
 };
 
-// bug 495747 #c10
-let url = "http://www.xulforum.org";
-let ios = Components.classes["@mozilla.org/network/io-service;1"]
-  .getService(Components.interfaces.nsIIOService);
-let ssm = Components.classes["@mozilla.org/scriptsecuritymanager;1"]
-  .getService(Components.interfaces.nsIScriptSecurityManager);
-let dsm = Components.classes["@mozilla.org/dom/storagemanager;1"]
-  .getService(Components.interfaces.nsIDOMStorageManager);
-let uri = ios.newURI(url, "", null);
-let principal = ssm.getCodebasePrincipal(uri);
-let storage = dsm.getLocalStorageForPrincipal(principal, "");
+Cu.import("resource://conversations/stdlib/SimpleStorage.js");
+let ss = SimpleStorage.createIteratorStyle("conversations");
 
 // ----- Event listeners
 
@@ -48,7 +40,7 @@ function onTextareaClicked(event) {
   if (!$(event.target).parent().hasClass('expand')) {
     $(event.target).parent().addClass('expand');
   }
-  if (!gComposeParams.msgHdr) { // first time
+  if (!gComposeParams.startedEditing) { // first time
     Log.debug("Setting up the initial quick reply compose parameters...");
     let messages = Conversations.currentConversation.messages;
     try {
@@ -83,21 +75,52 @@ function onDiscard(event) {
 }
 
 function onSave(event) {
-  let id = Conversations.currentConversation.id; // Gloda ID
-  if (id) {
-    storage.setItem("conversation"+id, $("textarea").val());
-  }
-  $(".quickReply").removeClass('expand');
+  SimpleStorage.spin(function () {
+    let id = Conversations.currentConversation.id; // Gloda ID
+    if (id) {
+      yield ss.set(id, {
+        msgUri: gComposeParams.msgHdr && uri(gComposeParams.msgHdr),
+        from: gComposeParams.identity && gComposeParams.identity.email,
+        to: $("#to").val(),
+        cc: $("#cc").val(),
+        bcc: $("#bcc").val(),
+        body: $("textarea").val()
+      });
+    }
+    $(".quickReply").removeClass('expand');
+    yield SimpleStorage.kWorkDone;
+  });
 }
 
+// This function is only called once, when the conversation is a fresh one, and
+//  has been loaded.
 function loadDraft() {
   let id = Conversations.currentConversation.id; // Gloda ID
-  if (id) {
-    $("textarea").val(storage.getItem("conversation"+id));
-    $("#discard, #save").attr("disabled", "");
-  } else {
+  if (!id) {
     $("#discard, #save").attr("disabled", "disabled");
+    return;
   }
+
+  SimpleStorage.spin(function () {
+    let r = yield ss.get(id);
+    if (r) {
+      let { msgUri, from, to, cc, bcc, body } = r;
+      gComposeParams.msgHdr = msgUri && msgUriToMsgHdr(msgUri);
+      gComposeParams.identity = gIdentities[from];
+      if (gComposeParams.msgHdr && gComposeParams.identity) {
+        gComposeParams.to = to;
+        gComposeParams.cc = cc;
+        gComposeParams.bcc = bcc;
+        updateUI();
+        $("textarea").val(body);
+        gComposeParams.startedEditing = true;
+        $("#discard, #save").attr("disabled", "");
+      } else {
+        $("#discard, #save").attr("disabled", "disabled");
+      }
+    }
+    yield SimpleStorage.kWorkDone;
+  });
 }
 
 function onNewThreadClicked() {
@@ -138,7 +161,11 @@ function onSend(event, options) {
     }, textarea, {
       progressListener: progressListener,
       sendListener: sendListener,
-      stateListener: stateListener,
+      stateListener: createStateListener(gComposeParams,
+        gWillArchive,
+        Conversations.currentConversation.msgHdrs,
+        Conversations.currentConversation.id
+      ),
     }, {
       popOut: popOut,
       archive: archive,
@@ -209,12 +236,14 @@ function parse(aMimeLine) {
 
 // The logic that decides who to compose, from which address, etc. etc.
 function setupReplyForMsgHdr(aMsgHdr) {
+  // Delete the previous object so that closures on the previous object don't
+  //  see the values updated in-place.
+  gComposeParams = {};
   // Standard procedure for finding which identity to send with, as per
   // http://mxr.mozilla.org/comm-central/source/mail/base/content/mailCommands.js#210
   let mainWindow = getMail3Pane();
   let identity = mainWindow.getIdentityForHeader(aMsgHdr, Ci.nsIMsgCompType.ReplyAll)
     || gIdentities.default;
-  Log.debug("We picked", identity.email, "for sending");
   // Set the global parameters
   gComposeParams.identity = identity;
   gComposeParams.msgHdr = aMsgHdr;
@@ -229,7 +258,6 @@ function setupReplyForMsgHdr(aMsgHdr) {
 
   let isReplyToOwnMsg = false;
   for each (let [i, identity] in Iterator(gIdentities)) {
-    Log.debug("Iterating over identities", i, identity);
     // It happens that gIdentities.default is null!
     if (!identity) {
       Log.debug("This identity is null, pretty weird...");
@@ -247,7 +275,6 @@ function setupReplyForMsgHdr(aMsgHdr) {
   // Actually we are implementing the "Reply all" logic... that's better, no one
   //  wants to really use reply anyway ;-)
   if (isReplyToOwnMsg) {
-    Log.debug("Replying to our own message...");
     gComposeParams.to = [asToken(null, r, recipientsEmailAddresses[i], null)
       for each ([i, r] in Iterator(recipients))];
   } else {
@@ -275,14 +302,12 @@ function setupReplyForMsgHdr(aMsgHdr) {
         }
       }
       updateUI();
-      if (!$("textarea").val().length)
-        insertQuote(aMsgHdr);
+      insertQuote(aMsgHdr);
     }, false); // don't download
   } catch (e if e.result == Cr.NS_ERROR_FAILURE) { // Message not available offline.
     // And update our nice composition UI
     updateUI();
-    if (!$("textarea").val().length)
-      insertQuote(aMsgHdr);
+    insertQuote(aMsgHdr);
   }
 }
 
@@ -291,8 +316,6 @@ function insertQuote(aMsgHdr) {
     // Join together the different parts
     let date = new Date(aMsgHdr.date/1000);
     let [{ email, name }] = parseMimeLine(aMsgHdr.mime2DecodedAuthor);
-    Log.debug(aMsgHdr.mime2DecodedAuthor, email, name);
-    Log.debug(body.trim(), citeString("\n"+body.trim()));
     let txt = [
       "\n\n",
       "On ", date.toLocaleString(), ", ",
@@ -509,38 +532,47 @@ let copyListener = {
   ]),
 }
 
-// XXX Should be a closure on gWillArchive, gComposeParams, and
-//  Conversations.currentConversation.msgHdrs (for archiving purposes)
-let stateListener = {
-  NotifyComposeFieldsReady: function() {
-    // ComposeFieldsReady();
-  },
+function createStateListener (aComposeParams, aWillArchive, aMsgHdrs, aId) {
+  return {
+    NotifyComposeFieldsReady: function() {
+      // ComposeFieldsReady();
+    },
 
-  NotifyComposeBodyReady: function() {
-    // if (gMsgCompose.composeHTML)
-    //   loadHTMLMsgPrefs();
-    // AdjustFocus();
-  },
+    NotifyComposeBodyReady: function() {
+      // if (gMsgCompose.composeHTML)
+      //   loadHTMLMsgPrefs();
+      // AdjustFocus();
+    },
 
-  ComposeProcessDone: function(aResult) {
-    if (NS_SUCCEEDED(aResult)) {
-      $(".quickReplyHeader").hide();
-      onDiscard();
-      // Well we assume the user hasn't changed the quick reply parameters in
-      //  the meanwhile... FIXME
-      let msgHdr = gComposeParams.msgHdr;
-      msgHdr.folder.addMessageDispositionState(msgHdr, Ci.nsIMsgFolder.nsMsgDispositionState_Replied);
-      msgHdr.folder.msgDatabase = null;
-      // Archive the whole conversation if needed
-      if (gWillArchive) {
-        // from stub.html. XXX this should be more subtle than that... the
-        //  conversation might be something else now...
-        archiveConversation();
+    ComposeProcessDone: function(aResult) {
+      Log.debug("ComposeProcessDone");
+      if (NS_SUCCEEDED(aResult)) {
+        // If the user didn't start a new composition session, hide the quick
+        //  reply area.
+        if (aComposeParams == gComposeParams)
+          $(".quickReplyHeader").hide();
+        // Remove the old stored draft, don't use onDiscard, because the compose
+        //  params might have changed in the meanwhile.
+        if (aId)
+          SimpleStorage.spin(function () {
+            yield ss.remove(aId);
+            yield SimpleStorage.kWorkDone;
+          });
+        // Do stuff to the message we replied to.
+        let msgHdr = aComposeParams.msgHdr;
+        msgHdr.folder.addMessageDispositionState(msgHdr, Ci.nsIMsgFolder.nsMsgDispositionState_Replied);
+        msgHdr.folder.msgDatabase = null;
+        // Archive the whole conversation if needed
+        if (aWillArchive)
+          msgHdrsArchive(aMsgHdrs);
+        // If gComposeParams was blown away in the meanwhile, this doesn't mess
+        //  anything...
+        aComposeParams.startedEditing = false;
       }
-    }
-  },
+    },
 
-  SaveInFolderDone: function(folderURI) {
-    // DisplaySaveFolderDlg(folderURI);
-  }
-};
+    SaveInFolderDone: function(folderURI) {
+      // DisplaySaveFolderDlg(folderURI);
+    }
+  };
+}

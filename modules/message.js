@@ -602,6 +602,8 @@ Message.prototype = {
       if (!self._domNode.getElementsByClassName("quickReply").length)
         return;
 
+      let window = self._conversation._htmlPane.contentWindow;
+
       switch (event.keyCode) {
         case mainWindow.KeyEvent.DOM_VK_RETURN:
           if (isAccel(event)) {
@@ -617,6 +619,9 @@ Message.prototype = {
           Log.debug("Escape from quickReply");
           self._domNode.focus();
           break;
+
+        default:
+          window.gComposeParams.startedEditing = true;
       }
       event.stopPropagation();
     }, { action: "keypress" });

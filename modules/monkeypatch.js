@@ -529,8 +529,10 @@ MonkeyPatch.prototype = {
               let isDifferentConversation = !window.Conversations.currentConversation
                   || (window.Conversations.currentConversation.counter != aConversation.counter);
               window.Conversations.currentConversation = aConversation;
-              if (isDifferentConversation)
+              if (isDifferentConversation) {
+                htmlpane.contentWindow.gComposeParams.startedEditing = false;
                 htmlpane.contentWindow.loadDraft();
+              }
               if (needsGC)
                 Cu.forceGC();
 

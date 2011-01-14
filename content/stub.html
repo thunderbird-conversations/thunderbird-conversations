@@ -512,7 +512,7 @@
         </button>
         <button id="save" style="float:right" onclick="onSave(event);">save</button>
         <button id="discard" style="float: left;"
-          onclick="if (!$('textarea').val().length || confirm('Are you sure you wish to discard this message ?')) onDiscard();">discard</button>
+          onclick="if (!gComposeParams.startedEditing || confirm('Are you sure you wish to discard this message ?')) onDiscard();">discard</button>
         <button style="float: left; margin-left: 3px"
           onclick="useEditor();">continue using editor</button>
       </div>
