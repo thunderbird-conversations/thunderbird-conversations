@@ -39,17 +39,17 @@ function onTextareaClicked(event) {
   // Do it just once
   if (!$(event.target).parent().hasClass('expand')) {
     $(event.target).parent().addClass('expand');
-  }
-  if (!gComposeParams.startedEditing) { // first time
-    Log.debug("Setting up the initial quick reply compose parameters...");
-    let messages = Conversations.currentConversation.messages;
-    try {
-      setupReplyForMsgHdr(messages[messages.length - 1].message._msgHdr);
-    } catch (e) {
-      Log.debug(e);
-      dumpCallStack(e);
+    if (!gComposeParams.startedEditing) { // first time
+      Log.debug("Setting up the initial quick reply compose parameters...");
+      let messages = Conversations.currentConversation.messages;
+      try {
+        setupReplyForMsgHdr(messages[messages.length - 1].message._msgHdr);
+      } catch (e) {
+        Log.debug(e);
+        dumpCallStack(e);
+      }
+      scrollNodeIntoView(document.querySelector(".quickReply"));
     }
-    scrollNodeIntoView(document.querySelector(".quickReply"));
   }
 }
 
@@ -565,9 +565,12 @@ function createStateListener (aComposeParams, aWillArchive, aMsgHdrs, aId) {
       Log.debug("ComposeProcessDone");
       if (NS_SUCCEEDED(aResult)) {
         // If the user didn't start a new composition session, hide the quick
-        //  reply area.
-        if (aComposeParams == gComposeParams)
+        //  reply area, clear draft, collapse.
+        if (aComposeParams == gComposeParams) {
           $(".quickReplyHeader").hide();
+          $(".quickReply").removeClass('expand');
+          $("textarea").val("");
+        }
         // Remove the old stored draft, don't use onDiscard, because the compose
         //  params might have changed in the meanwhile.
         if (aId)
