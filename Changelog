@@ -1,7 +1,11 @@
 --- Changes since 2.0alpha2 ---
 
+- Support for spellchecking the quick reply. Use right-click to pick a language.
+Will work only if using a recent Thunderbird (> 3.2).
+- Quick reply improvements: now saves recipients, and doesn't lock the UI
+anymore.
 - UI support for extra contact actions (create filter, monospace from this
 sender).
-- UI support for junking a message (only available when one message in the
-conversation).
+- UI support for junking a message (only available if there's just one message
+in the conversation).
 - Remove dotted outline on selected messages.
