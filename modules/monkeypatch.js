@@ -532,6 +532,7 @@ MonkeyPatch.prototype = {
               if (isDifferentConversation) {
                 htmlpane.contentWindow.gComposeParams.startedEditing = false;
                 htmlpane.contentWindow.loadDraft();
+                aConversation.completed = true;
               }
               if (needsGC)
                 Cu.forceGC();

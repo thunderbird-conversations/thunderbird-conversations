@@ -294,11 +294,17 @@ function Conversation(aWindow, aSelectedMessages, aScrollMode, aCounter) {
   // ]
   this.messages = [];
   this.counter = aCounter; // RO
+  // The Gloda query, so that it's not collected.
   this._query = null;
+  // The DOM node that holds all the messages.
   this._domNode = null;
+  // Function provided by the monkey-patch to do cleanup
   this._onComplete = null;
   this.viewWrapper = null;
+  // Gloda conversation ID
   this.id = null;
+  // Set to true by the monkey-patch once the conversation is fully built.
+  this.completed = false;
 }
 
 Conversation.prototype = {
@@ -431,7 +437,46 @@ Conversation.prototype = {
   // This is the observer for the second Gloda query, the one that returns a
   // conversation.
   onItemsAdded: function (aItems) {
+    // The first batch of messages will be treated in onQueryCompleted, this
+    //  handler is only interested in subsequent messages.
+    if (!this.completed)
+      return;
     Log.debug("onItemsAdded", [x.headerMessageID for each ([, x] in Iterator(aItems))]);
+    // That's XPConnect bug 547088, so remove the setTimeout when it's fixed and
+    //  bump the version requirements in install.rdf.template (might be fixed in
+    //  time for Gecko 42, if we're lucky)
+    let self = this;
+    this._window.setTimeout(function _Conversation_onQueryCompleted_bug547088 () {
+      try {
+        // The MessageFromGloda constructor cannot work with gloda messages that
+        //  don't have a message header
+        aItems = aItems.filter(function (glodaMsg) glodaMsg.folderMessage);
+        // We want at least all messages from the Gloda collection
+        let messages = [{
+          type: kMsgGloda,
+          message: new MessageFromGloda(self, glodaMsg), // will fire signal when done
+          glodaMsg: glodaMsg,
+          msgHdr: null,
+        } for each ([, glodaMsg] in Iterator(aItems))];
+        // The message ids we already hold.
+        let messageIds = {};
+        [messageIds[toMsgHdr(m).messageId] = true
+          for each ([i, m] in Iterator(self.messages))];
+        // Don't add a message if we already have it.
+        aItems = aItems.filter(function (x) !(x.headerMessageID in messageIds));
+        // Sort all the messages according to the date so that they are inserted
+        // in the right order.
+        let compare = function (m1, m2) msgDate(m1) - msgDate(m2);
+        // We can sort now because we don't need the Message instance to be
+        // fully created to get the date of a message.
+        messages.sort(compare);
+        self.appendMessages(messages);
+      } catch (e) {
+        Log.error(e);
+        dumpCallStack(e);
+      }
+    }, 0);
+
   },
 
   onItemsModified: function _Conversation_onItemsModified (aItems) {
