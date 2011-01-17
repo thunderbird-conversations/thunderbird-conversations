@@ -41,7 +41,12 @@ Components.utils.import("resource://conversations/plugins/enigmail.js");
 var Conversations = {
   // These two belong here, use getMail3Pane().Conversations to access them
   monkeyPatch: null,
+  // key: Message-ID
+  // value: a list of listeners
   msgListeners: {},
+  // key: Gloda Conversation ID
+  // value: a list of listeners that have a onDraftChanged method
+  draftListeners: {},
 
   // These two are replicated in the case of a conversation tab, so use
   //  Conversation._window.Conversations to access the right instance

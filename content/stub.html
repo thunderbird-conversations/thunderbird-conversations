@@ -179,10 +179,6 @@
         msgNode.setAttribute("tabindex", index+2);
     }, true);
 
-    window.addEventListener("unload", function () {
-      onSave();
-    }, false);
-
     // Below are event listeners for various actions. There is some logic
     //  involved, and they may talk to other parts of the code.
 
@@ -243,10 +239,7 @@
     function detachTab(event) {
       let mainWindow = getMail3Pane();
       let tabmail = mainWindow.document.getElementById("tabmail");
-      // Save the current draft in case the user is actually trying to get more
-      //  space to edit it...
       let willExpand = $("textarea").parent().hasClass("expand");
-      onSave();
       tabmail.openTab("conversationTab", {
         onLoad: function _detachTab_onLoad (event, browser) {
           try {
@@ -265,9 +258,16 @@
               ++browser.contentWindow.Conversations.counter
             );
             freshConversation.outputInto(browser, function (aConversation) {
+              // This is a stripped-down version of what's in monkeypatch.js,
+              //  make sure the two are in sync!
               browser.contentWindow.Conversations.currentConversation = aConversation;
               transferQuickReplyToNewWindow(browser.contentWindow, willExpand);
               aConversation.completed = true;
+              browser.contentWindow.registerQuickReply();
+              // Now this will save the OLD draft which will broadcast the
+              //  change to all listeners, so the new window will pickup the change,
+              //  and magically update itself.
+              onSave();
             });
           } catch (e) {
             Log.debug(e);

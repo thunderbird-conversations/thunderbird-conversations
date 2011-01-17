@@ -530,9 +530,11 @@ MonkeyPatch.prototype = {
                   || (window.Conversations.currentConversation.counter != aConversation.counter);
               window.Conversations.currentConversation = aConversation;
               if (isDifferentConversation) {
+                // Here, put the final touches to our new conversation object.
                 htmlpane.contentWindow.gComposeParams.startedEditing = false;
                 htmlpane.contentWindow.loadDraft();
-                //aConversation.completed = true;
+                aConversation.completed = true;
+                htmlpane.contentWindow.registerQuickReply();
               }
               if (needsGC)
                 Cu.forceGC();

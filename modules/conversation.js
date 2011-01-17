@@ -439,7 +439,9 @@ Conversation.prototype = {
   onItemsAdded: function (aItems) {
     // The first batch of messages will be treated in onQueryCompleted, this
     //  handler is only interested in subsequent messages.
-    if (!this.completed)
+    // If we are an old conversation that hasn't been collected, don't go
+    //  polluting some other conversation!
+    if (!this.completed || this._window.Conversations.counter != this.counter)
       return;
     Log.debug("onItemsAdded", [x.headerMessageID for each ([, x] in Iterator(aItems))]);
     // That's XPConnect bug 547088, so remove the setTimeout when it's fixed and
@@ -786,6 +788,10 @@ Conversation.prototype = {
         this.messages = null;
         return;
       } else {
+        // We're about to blow up the old conversation. At this point, it's
+        //  still untouched, so if you need to save anything, do it NOW.
+        // If you want to do something once the new conversation is complete, do
+        //  it in monkeypatch.js
         Log.debug("Not recycling conversation");
         // We'll be replacing the old conversation
         this._window.Conversations.currentConversation.messages = [];
@@ -798,7 +804,10 @@ Conversation.prototype = {
         //  conversation. Updating the global Conversations object and loading
         //  the new conversation's draft is not our responsibility, it's that of
         //  the monkey-patch, and it's done at the very end of the process.
-        this._htmlPane.contentWindow.onSave();
+        // This call actually starts the save process off the main thread, but
+        //  we're not doing anything besides saving the quick reply, so we don't
+        //  need for this call to complete before going on.
+        this._htmlPane.contentWindow.onSave(null, false);
       }
     }
 

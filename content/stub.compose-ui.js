@@ -32,6 +32,58 @@ var gComposeParams = {
 Cu.import("resource://conversations/stdlib/SimpleStorage.js");
 let ss = SimpleStorage.createIteratorStyle("conversations");
 
+// ----- Listeners
+
+let gDraftListener;
+
+function registerQuickReply() {
+  let id = Conversations.currentConversation.id;
+  let mainWindow = getMail3Pane();
+
+  gDraftListener = {
+    onDraftChanged: function (aTopic) {
+      Log.debug("onDraftChanged", Conversations == mainWindow.Conversations);
+      switch (aTopic) {
+        case "modified":
+          loadDraft();
+          break;
+        case "removed":
+          $(".quickReplyHeader").hide();
+          $(".quickReply").removeClass('expand');
+          $("textarea").val("");
+          gComposeParams.startedEditing = false;
+          break;
+      }
+    },
+
+    notifyDraftChanged: function (aTopic) {
+      Log.debug("Notifying draft listeners for id", id);
+      let listeners = mainWindow.Conversations.draftListeners[id] || [];
+      for each (let [, listener] in Iterator(listeners)) {
+        let obj = listener.get();
+        Log.debug("XXX", obj);
+        if (!obj || obj == this)
+          continue;
+        obj.onDraftChanged(aTopic);
+      }
+      // While we're at it, cleanup...
+      listeners = listeners.filter(function (x) x.get());
+      mainWindow.Conversations.draftListeners[id] = listeners;
+    },
+  };
+
+  Log.debug("Registering draft listener for id", id);
+  if (!(id in mainWindow.Conversations.draftListeners))
+    mainWindow.Conversations.draftListeners[id] = [];
+  mainWindow.Conversations.draftListeners[id].push(Cu.getWeakReference(gDraftListener));
+
+  document.getElementsByTagName("textarea")[0].addEventListener("blur", function () {
+    Log.debug("Autosave...");
+    onSave();
+  }, false);
+
+}
+
 // ----- Event listeners
 
 // Called when we need to expand the textarea and start editing a new message
@@ -81,7 +133,7 @@ function onDiscard(event) {
     });
 }
 
-function onSave(event) {
+function onSave(event, aClose) {
   if (!gComposeParams.startedEditing)
     return;
 
@@ -97,7 +149,9 @@ function onSave(event) {
         body: $("textarea").val()
       });
     }
-    $(".quickReply").removeClass('expand');
+    gDraftListener.notifyDraftChanged("modified");
+    if (aClose === false)
+      $(".quickReply").removeClass('expand');
     yield SimpleStorage.kWorkDone;
   });
 }
@@ -190,51 +244,12 @@ function onSend(event, options) {
 }
 
 function transferQuickReplyToNewWindow(aWindow, aExpand) {
-  // The handler from stub.html called onSave before, and since saving/loading
-  //  is synchronous, it works. When we make saving/loading asynchronous, we'll
-  //  probably have to come up with something else.
-  aWindow.loadDraft();
-  // ^^ We have to load the draft anyways since the draft is not necessarily
-  //  from this very editing session, it might be a leftover draft from before,
-  //  so in any case it should be restored.
-  if (!gComposeParams.msgHdr) {
-    Log.debug("No quick reply session to transfer to the new tab");
-    return;
-  }
-  try {
-    Log.debug("Transferring our quick reply session over to the new tab...");
-    // Now we've forwarded the contents. The two lines below setup from, to, cc,
-    //  bcc properly.
-    let [toNames, toEmails] = parse($("#to").val());
-    let [ccNames, ccEmails] = parse($("#cc").val());
-    let [bccNames, bccEmails] = parse($("#bcc").val());
-    aWindow.gComposeParams = {
-      msgHdr: gComposeParams.msgHdr,
-      identity: gComposeParams.identity,
-      to: [asToken(null, toName, toEmails[i], null)
-        for each ([i, toName] in Iterator(toNames))],
-      cc: [asToken(null, ccName, ccEmails[i], null)
-        for each ([i, ccName] in Iterator(ccNames))],
-      bcc: [asToken(null, bccName, bccEmails[i], null)
-        for each ([i, bccName] in Iterator(bccNames))],
-      subject: gComposeParams.subject,
-    };
-    aWindow.updateUI();
-    // Special code for the subject.
-    let isNewThread = $("#startNewThread:checked").length;
-    if (isNewThread) {
-      aWindow.$("#startNewThread")[0].checked = true;
-      aWindow.onNewThreadClicked();
-      aWindow.$("#subject").val($("#subject").val());
-    }
-    // Open if already opened
-    if (aExpand)
-      aWindow.$("textarea").parent().addClass('expand');
-    // That should be pretty much all.
-  } catch (e) {
-    Log.error(e);
-    dumpCallStack(e);
-  }
+  // Open if already opened
+  if (aExpand)
+    aWindow.$("textarea").parent().addClass('expand');
+  // That should be pretty much all, since all other composition parameters are
+  //  transferred through the call to saveDraft and the weak listeners that will
+  //  trigger a call to loadDraft in the new window..
 }
 
 // ----- Helpers
@@ -570,6 +585,10 @@ function createStateListener (aComposeParams, aWillArchive, aMsgHdrs, aId) {
           $(".quickReplyHeader").hide();
           $(".quickReply").removeClass('expand');
           $("textarea").val("");
+          // If gComposeParams was blown away in the meanwhile, this doesn't mess
+          //  anything...
+          aComposeParams.startedEditing = false;
+          gDraftListener.notifyDraftChanged("removed");
         }
         // Remove the old stored draft, don't use onDiscard, because the compose
         //  params might have changed in the meanwhile.
@@ -585,9 +604,6 @@ function createStateListener (aComposeParams, aWillArchive, aMsgHdrs, aId) {
         // Archive the whole conversation if needed
         if (aWillArchive)
           msgHdrsArchive(aMsgHdrs.filter(function (x) !msgHdrIsArchive(x)));
-        // If gComposeParams was blown away in the meanwhile, this doesn't mess
-        //  anything...
-        aComposeParams.startedEditing = false;
       }
     },
 
