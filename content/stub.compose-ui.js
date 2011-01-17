@@ -123,12 +123,14 @@ function editFields(aFocusId) {
 
 function onDiscard(event) {
   $("textarea").val("");
+  $(".quickReply").removeClass('expand');
+  $(".quickReplyHeader").hide();
   let id = Conversations.currentConversation.id;
   if (id)
     SimpleStorage.spin(function () {
       let r = yield ss.remove(id);
-      $(".quickReply").removeClass('expand');
       gComposeParams.startedEditing = false;
+      gDraftListener.notifyDraftChanged("removed");
       yield SimpleStorage.kWorkDone;
     });
 }
@@ -161,7 +163,7 @@ function onSave(event, aClose) {
 function loadDraft() {
   let id = Conversations.currentConversation.id; // Gloda ID
   if (!id) {
-    $("#discard, #save").attr("disabled", "disabled");
+    $("#save").attr("disabled", "disabled");
     return;
   }
 
@@ -185,9 +187,9 @@ function loadDraft() {
         updateUI();
         $("textarea").val(body);
         gComposeParams.startedEditing = true;
-        $("#discard, #save").attr("disabled", "");
+        $("#save").attr("disabled", "");
       } else {
-        $("#discard, #save").attr("disabled", "disabled");
+        $("#save").attr("disabled", "disabled");
       }
     }
     yield SimpleStorage.kWorkDone;
@@ -298,9 +300,9 @@ function setupReplyForMsgHdr(aMsgHdr) {
     let email = identity.email;
     if (email == authorEmailAddress)
       isReplyToOwnMsg = true;
-    if (recipientsEmailAddresses.filter(function (x) x == email).length)
+    if (recipientsEmailAddresses.some(function (x) x == email))
       isReplyToOwnMsg = false;
-    if (ccListEmailAddresses.filter(function (x) x == email).length)
+    if (ccListEmailAddresses.some(function (x) x == email))
       isReplyToOwnMsg = false;
   }
 

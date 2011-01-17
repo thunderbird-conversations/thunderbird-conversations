@@ -239,7 +239,8 @@
     function detachTab(event) {
       let mainWindow = getMail3Pane();
       let tabmail = mainWindow.document.getElementById("tabmail");
-      let willExpand = $("textarea").parent().hasClass("expand");
+      let willExpand = $("textarea").parent().hasClass("expand") &&
+        gComposeParams.startedEditing;
       tabmail.openTab("conversationTab", {
         onLoad: function _detachTab_onLoad (event, browser) {
           try {

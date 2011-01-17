@@ -317,7 +317,7 @@ Conversation.prototype = {
     let messageIds = [x.messageId for each ([, x] in Iterator(this._initialSet))];
     return
       !gFolderDisplay.selectedMessage ||
-      !messageIds.filter(function (x) x == gFolderDisplay.selectedMessage.messageId).length;
+      !messageIds.some(function (x) x == gFolderDisplay.selectedMessage.messageId);
   },
 
   // This function contains the logic that runs a Gloda query on the initial set
@@ -517,7 +517,8 @@ Conversation.prototype = {
         //  don't have a message header
         aCollection.items = aCollection.items.filter(function (glodaMsg) glodaMsg.folderMessage);
         // Register our id
-        self.id = aCollection.items[0].conversation.id; // all the same
+        // *usually* all the same (think about merged queries on subjects for getsfn for instance)
+        self.id = aCollection.items[0].conversation.id;
         // When the right number of signals has been fired, move on...
         self._getReady(aCollection.items.length + self._initialSet.length + 1);
         // We want at least all messages from the Gloda collection
@@ -870,14 +871,14 @@ Conversation.prototype = {
 
     // Make sure the toggle read/unread button is in the right state
     let markReadButton = this._htmlPane.contentDocument.querySelector("span.read");
-    if (this.messages.filter(function (x) !x.message.read).length)
+    if (this.messages.some(function (x) !x.message.read))
       markReadButton.classList.add("unread");
     else
       markReadButton.classList.remove("unread");
 
     // If some message is collapsed, then the initial state is "expand"
     let collapseExpandButton = this._htmlPane.contentDocument.querySelector("span.expand");
-    if (this.messages.filter(function (x) x.message.collapsed).length)
+    if (this.messages.some(function (x) x.message.collapsed))
       collapseExpandButton.classList.remove("collapse");
     else
       collapseExpandButton.classList.add("collapse");
