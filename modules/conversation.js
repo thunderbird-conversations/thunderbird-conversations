@@ -463,14 +463,15 @@ Conversation.prototype = {
         [messageIds[toMsgHdr(m).messageId] = true
           for each ([i, m] in Iterator(self.messages))];
         // Don't add a message if we already have it.
-        aItems = aItems.filter(function (x) !(x.headerMessageID in messageIds));
+        messages = messages.filter(function (x) !(x.glodaMsg.headerMessageID in messageIds));
         // Sort all the messages according to the date so that they are inserted
         // in the right order.
         let compare = function (m1, m2) msgDate(m1) - msgDate(m2);
         // We can sort now because we don't need the Message instance to be
         // fully created to get the date of a message.
         messages.sort(compare);
-        self.appendMessages(messages);
+        if (messages.length)
+          self.appendMessages(messages);
       } catch (e) {
         Log.error(e);
         dumpCallStack(e);
@@ -855,7 +856,7 @@ Conversation.prototype = {
 
   _updateConversationButtons: function _Conversation_updateConversationButtons () {
     // Bail if we're notified too early.
-    if (!this.messages.length || !this._domNode)
+    if (!this.messages || !this.messages.length || !this._domNode)
       return;
 
     // Make sure the toggle read/unread button is in the right state

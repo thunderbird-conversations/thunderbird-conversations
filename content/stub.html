@@ -267,6 +267,7 @@
             freshConversation.outputInto(browser, function (aConversation) {
               browser.contentWindow.Conversations.currentConversation = aConversation;
               transferQuickReplyToNewWindow(browser.contentWindow, willExpand);
+              aConversation.completed = true;
             });
           } catch (e) {
             Log.debug(e);
