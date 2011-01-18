@@ -16,8 +16,8 @@ Cu.import("resource:///modules/iteratorUtils.jsm"); // for fixIterator
 Cu.import("resource:///modules/gloda/utils.js");
 Cu.import("resource:///modules/gloda/gloda.js");
 
-Cu.import("resource://conversations/VariousUtils.jsm");
-Cu.import("resource://conversations/MsgHdrUtils.jsm"); // for getMail3Pane
+Cu.import("resource://conversations/stdlib/misc.js");
+Cu.import("resource://conversations/stdlib/msgHdrUtils.js"); // for getMail3Pane
 Cu.import("resource://conversations/log.js");
 
 const Contacts = {

@@ -65,11 +65,13 @@ const kAllowRemoteContent = 2;
 
 let strings = new StringBundle("chrome://conversations/locale/main.properties");
 
-Cu.import("resource://conversations/AddressBookUtils.jsm");
-Cu.import("resource://conversations/VariousUtils.jsm");
-Cu.import("resource://conversations/MsgHdrUtils.jsm");
-Cu.import("resource://conversations/prefs.js");
+Cu.import("resource://conversations/stdlib/addressBookUtils.js");
+Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
+Cu.import("resource://conversations/stdlib/misc.js");
+Cu.import("resource://conversations/quoting.js");
 Cu.import("resource://conversations/contact.js");
+Cu.import("resource://conversations/prefs.js");
+Cu.import("resource://conversations/misc.js"); // for iconForMimeType
 Cu.import("resource://conversations/hook.js");
 Cu.import("resource://conversations/log.js");
 
@@ -1010,7 +1012,17 @@ Message.prototype = {
         /* These steps are mandatory. Basically, the code that loads the
          * messages will always output UTF-8 as the OUTPUT ENCODING, so
          * we need to tell the iframe's docshell about it. */
-        let cv = iframe.docShell.contentViewer;
+        let cv;
+        try {
+          cv = iframe.docShell.contentViewer;
+        } catch (e) {
+          Log.error(e);
+          dumpCallStack(e);
+          Log.error("The iframe doesn't have a docShell, it probably doesn't belong to the DOM anymore."
+            +" Possible reasons include: you modified the jquery-tmpl template, and you did it wrong."
+            +" You changed conversations very fast, and the streaming completed after the conversation"
+            +" was blown away by the newer one.");
+        }
         cv.QueryInterface(Ci.nsIMarkupDocumentViewer);
         cv.hintCharacterSet = "UTF-8";
         cv.hintCharacterSetSource = kCharsetFromChannel;

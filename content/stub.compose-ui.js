@@ -11,10 +11,10 @@ const gMessenger = Cc["@mozilla.org/messenger;1"]
 const gHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"]
                       .getService(Ci.nsIMsgHeaderParser);
 
-Cu.import("resource://conversations/VariousUtils.jsm");
-Cu.import("resource://conversations/MsgHdrUtils.jsm");
-Cu.import("resource://conversations/send.js");
-Cu.import("resource://conversations/compose.js");
+Cu.import("resource://conversations/stdlib/misc.js");
+Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
+Cu.import("resource://conversations/stdlib/send.js");
+Cu.import("resource://conversations/stdlib/compose.js");
 Cu.import("resource://conversations/log.js");
 
 let Log = setupLogging("Conversations.Stub.Compose");
@@ -143,7 +143,7 @@ function onSave(event, aClose) {
     let id = Conversations.currentConversation.id; // Gloda ID
     if (id) {
       yield ss.set(id, {
-        msgUri: gComposeParams.msgHdr && uri(gComposeParams.msgHdr),
+        msgUri: gComposeParams.msgHdr && msgHdrGetUri(gComposeParams.msgHdr),
         from: gComposeParams.identity && gComposeParams.identity.email,
         to: $("#to").val(),
         cc: $("#cc").val(),

@@ -7,9 +7,10 @@ const Cr = Components.results;
 
 Cu.import("resource://gre/modules/AddonManager.jsm");
 
-Cu.import("resource://conversations/VariousUtils.jsm");
-Cu.import("resource://conversations/MsgHdrUtils.jsm");
+Cu.import("resource://conversations/stdlib/misc.js");
+Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
 Cu.import("resource://conversations/assistant.js");
+Cu.import("resource://conversations/misc.js"); // for joinWordList
 Cu.import("resource://conversations/prefs.js");
 Cu.import("resource://conversations/log.js");
 

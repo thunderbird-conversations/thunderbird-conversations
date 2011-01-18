@@ -21,8 +21,8 @@ Cu.import("resource:///modules/virtualFolderWrapper.js");
 Cu.import("resource:///modules/gloda/index_msg.js");
 Cu.import("resource:///modules/gloda/public.js");
 
-Cu.import("resource://conversations/VariousUtils.jsm");
-Cu.import("resource://conversations/MsgHdrUtils.jsm");
+Cu.import("resource://conversations/stdlib/misc.js");
+Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
 Cu.import("resource://conversations/prefs.js");
 Cu.import("resource://conversations/log.js");
 

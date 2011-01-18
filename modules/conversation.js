@@ -45,10 +45,11 @@ Cu.import("resource:///modules/gloda/gloda.js");
 Cu.import("resource://conversations/log.js");
 Cu.import("resource://conversations/prefs.js");
 
-Cu.import("resource://conversations/MsgHdrUtils.jsm");
-Cu.import("resource://conversations/VariousUtils.jsm");
+Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
+Cu.import("resource://conversations/stdlib/misc.js");
 Cu.import("resource://conversations/message.js");
 Cu.import("resource://conversations/contact.js");
+Cu.import("resource://conversations/misc.js"); // for groupArray
 
 let Log = setupLogging("Conversations.Conversation");
 
@@ -124,7 +125,7 @@ let OracleMixIn = {
       }
     } else if (this.scrollMode == Prefs.kScrollSelected) {
       let gFolderDisplay = getMail3Pane().gFolderDisplay;
-      let key = uri(gFolderDisplay.selectedMessage);
+      let key = msgHdrGetUri(gFolderDisplay.selectedMessage);
       for (let i = 0; i < this.messages.length; ++i) {
         if (this.messages[i].message._uri == key) {
           needsScroll = i;
@@ -243,7 +244,7 @@ function ViewWrapper() {
   // We cannot compare messages by message-id (they have the same!), we cannot
   //  compare them by messageKey (not reliable), but URLs should be enough.
   this.byUri = {};
-  [this.byUri[uri(x)] = true
+  [this.byUri[msgHdrGetUri(x)] = true
     for each ([, x] in Iterator(mainWindow.gFolderDisplay.selectedMessages))];
 }
 
@@ -253,7 +254,7 @@ ViewWrapper.prototype = {
     let msgHdr = toMsgHdr(aMsg);
 
     let r =
-      (uri(msgHdr) in this.byUri) ||
+      (msgHdrGetUri(msgHdr) in this.byUri) ||
       (mainWindow.gDBView.findIndexOfMsgHdr(msgHdr, false) != nsMsgViewIndex_None)
     ;
     return r;
@@ -626,16 +627,16 @@ Conversation.prototype = {
 
   removeMessage: function _Conversation_removeMessage (aMessage) {
     // Move the quick reply to the previous message
-    let i = [uri(toMsgHdr(x)) for each ([, x] in Iterator(this.messages))].indexOf(uri(aMessage._msgHdr));
+    let i = [msgHdrGetUri(toMsgHdr(x)) for each ([, x] in Iterator(this.messages))].indexOf(msgHdrGetUri(aMessage._msgHdr));
     Log.debug("Removing message", i);
     if (i == this.messages.length - 1 && this.messages.length > 1) {
       let $ = this._htmlPane.contentWindow.$;
       $(".message:last").prev().append($(".quickReply"));
     }
 
-    let badUri = uri(aMessage._msgHdr);
-    this.messages = this.messages.filter(function (x) uri(toMsgHdr(x)) != badUri);
-    this._initialSet = this._initialSet.filter(function (x) uri(x) != badUri);
+    let badUri = msgHdrGetUri(aMessage._msgHdr);
+    this.messages = this.messages.filter(function (x) msgHdrGetUri(toMsgHdr(x)) != badUri);
+    this._initialSet = this._initialSet.filter(function (x) msgHdrGetUri(x) != badUri);
     this._domNode.removeChild(aMessage._domNode);
   },
 
@@ -733,7 +734,7 @@ Conversation.prototype = {
       //  throw an exception here, we're fucked, and we can't recover ever,
       //  because every test trying to determine whether we can recycle will end
       //  up running over the buggy set of messages.
-      let currentMsgUris = [uri(toMsgHdr(x))
+      let currentMsgUris = [msgHdrGetUri(toMsgHdr(x))
         for each ([, x] in Iterator(currentMsgSet))
         if (toMsgHdr(x))];
       // Is a1 a prefix of a2? (I wish JS had pattern matching!)
@@ -751,7 +752,7 @@ Conversation.prototype = {
             return [false, null];
         }
       };
-      let myMsgUris = [uri(toMsgHdr(x))
+      let myMsgUris = [msgHdrGetUri(toMsgHdr(x))
         for each ([, x] in Iterator(this.messages))
         if (toMsgHdr(x))];
       let [shouldRecycle, _whichMessageUris] = isPrefix(currentMsgUris, myMsgUris);
