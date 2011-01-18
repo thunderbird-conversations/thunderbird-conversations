@@ -32,6 +32,7 @@ const Cc = Components.classes;
 const Cu = Components.utils;
 const Cr = Components.results;
 
+Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
 Cu.import("resource://conversations/hook.js");
 Cu.import("resource://conversations/log.js");
 
@@ -47,9 +48,7 @@ let Log = setupLogging("Conversations.Modules.Enigmail");
 Log.debug("Enigmail plugin for Thunderbird Conversations loaded!");
 
 // GetEnigmailSvc needs window to be defined in the scope...
-let window = Cc['@mozilla.org/appshell/window-mediator;1']
-                 .getService(Ci.nsIWindowMediator)
-                 .getMostRecentWindow("mail:3pane");
+let window = getMail3Pane();
 
 // Enigmail support, thanks to Patrick Brunschwig!
 let hasEnigmail;
@@ -98,7 +97,7 @@ function tryEnigmail(bodyElement) {
 }
 
 let enigmailHook = {
-  onMessageStreamed: function _enigmailHook_onMessageStreamed(aMsgHdr, aDomNode) {
+  onMessageStreamed: function _enigmailHook_onMessageStreamed(aMsgHdr, aDomNode, aMsgWindow) {
     let iframe = aDomNode.getElementsByTagName("iframe")[0];
     let iframeDoc = iframe.contentDocument;
     let specialTags = aDomNode.getElementsByClassName("special-tags")[0];
