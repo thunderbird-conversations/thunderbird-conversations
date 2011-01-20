@@ -427,15 +427,38 @@ ul.special-tags img {
   display: none;
 }
 
-.message .remoteContent {
+.message .notificationBar {
   padding: 10px;
-  background-color: rgba(0,255,0, 0.15);
   -moz-box-shadow: 0 0 3px rgba(0,0,0,0.15) inset;
   margin: 0 0 10px 0;
   border-width: 1px 0;
   border-style: solid;
   border-color: #ccc;
   color: #666;
+}
+
+.message .notificationBar button {
+  padding: 0 5px;
+  margin: 0 3px 0 0;
+}
+
+.message .lightningImipBar {
+  background-color: #baeeff;
+  color: #666;
+}
+
+.message .lightningImipImage {
+  height: 24px;
+  width: 24px;
+  vertical-align: middle;
+}
+
+.message .lightningImipButton {
+  float: right;
+}
+
+.message .remoteContent {
+  background-color: rgba(0,255,0, 0.15);
 }
 
 .message .remoteContent a {
@@ -447,7 +470,7 @@ ul.special-tags img {
   text-decoration: underline;
 }
 
-.message.collapsed .remoteContent {
+.message.collapsed .notificationBar {
   display: none;
 }
 
