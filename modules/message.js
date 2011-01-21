@@ -208,7 +208,7 @@ KeyListener.prototype = {
         break;
     }
   },
-}
+};
 
 // Call that one after setting this._msgHdr;
 function Message(aConversation) {
@@ -809,114 +809,11 @@ Message.prototype = {
         iframe.addEventListener("load", function f_temp1(event) {
           try {
             iframe.removeEventListener("load", f_temp1, true);
+
             // XXX cut this off and turn into a this._onMessageStreamed
             let iframeDoc = iframe.contentDocument;
-            let defaultSize = Prefs.getInt("font.size.variable.x-western");
-            let textSize = defaultSize * 12 / 16;
-            let smallSize = defaultSize * 11 / 16;
-
-            // Do some reformatting + deal with people who have bad taste
-            iframeDoc.body.setAttribute("style", "padding: 0; margin: 0; "+
-              "color: rgb(10, 10, 10); background-color: transparent; "+
-              "-moz-user-focus: none !important; ");
-
-            // Launch various crappy pieces of code^W^W^W^W heuristics to
-            //  convert most common quoting styles to real blockquotes. Spoiler:
-            //  most of them suck.
-            try {
-              convertOutlookQuotingToBlockquote(iframe.contentWindow, iframeDoc);
-              convertHotmailQuotingToBlockquote1(iframeDoc);
-              convertHotmailQuotingToBlockquote2(iframe.contentWindow, iframeDoc, Prefs["hide_quote_length"]);
-              convertForwardedToBlockquote(iframeDoc);
-              fusionBlockquotes(iframeDoc);
-            } catch (e) {
-              Log.warn(e);
-              dumpCallStack(e);
-            }
-            // this function adds a show/hide quoted text link to every topmost
-            // blockquote. Nested blockquotes are not taken into account.
-            let walk = function walk_ (elt) {
-              for (let i = elt.childNodes.length - 1; i >= 0; --i) {
-                let c = elt.childNodes[i];
-                // GMail uses class="gmail_quote", other MUAs use type="cite"...
-                // so just search for a regular blockquote
-                if (c.tagName && c.tagName.toLowerCase() == "blockquote") {
-                  if (c.getUserData("hideme") !== false) { // null is ok, true is ok too
-                    // Compute the approximate number of lines while the element is still visible
-                    let style;
-                    try {
-                      style = iframe.contentWindow.getComputedStyle(c, null);
-                    } catch (e) {
-                      // message arrived and window is not displayed, arg,
-                      // cannot get the computed style, BAD
-                    }
-                    if (style) {
-                      let numLines = parseInt(style.height) / parseInt(style.lineHeight);
-                      if (numLines > Prefs["hide_quote_length"]) {
-                        let showText = strings.get("showquotedtext");
-                        let hideText = strings.get("hidequotedtext");
-                        let div = iframeDoc.createElement("div");
-                        div.setAttribute("class", "link showhidequote");
-                        div.addEventListener("click", function div_listener (event) {
-                          let h = self._conversation._htmlPane.contentWindow.toggleQuote(event, showText, hideText);
-                          iframe.style.height = (parseFloat(iframe.style.height) + h)+"px";
-                        }, true);
-                        div.setAttribute("style", "color: orange; cursor: pointer; font-size: "+smallSize+"px;");
-                        div.appendChild(iframeDoc.createTextNode("- "+showText+" -"));
-                        elt.insertBefore(div, c);
-                        c.style.display = "none";
-                      }
-                    }
-                  }
-                } else {
-                  walk(c);
-                }
-              }
-            };
-            // https://github.com/protz/GMail-Conversation-View/issues#issue/179
-            // See link above for a rationale ^^
-            if (self.initialPosition > 0)
-              walk(iframeDoc);
-
-            // Assuming 16px is the default (like on, say, Linux), this gives
-            //  18px and 12px, which what Andy had in mind.
-            // We're applying the style at the beginning of the <head> tag and
-            //  on the body element so that it can be easily overridden by the
-            //  html.
-            // This is for HTML messages only.
-            let styleRules = [];
-            if (iframeDoc.querySelectorAll(":not(.mimemail-body) > .moz-text-html").length) {
-              styleRules = [
-                "body {",
-                //"  line-height: 112.5%;",
-                "  font-size: "+textSize+"px;",
-                "}",
-              ];
-            }
-
-            // Unless the user specifically asked for this message to be
-            //  dislayed with a monospaced font...
-            let [{name, email}] = self.parse(self._msgHdr.mime2DecodedAuthor);
-            if (Prefs["monospaced_senders"].indexOf(email) < 0) {
-              styleRules = styleRules.concat([
-                ".moz-text-flowed, .moz-text-plain {",
-                "  font-family: \""+Prefs.getChar("font.default")+"\" !important;",
-                "  font-size: "+textSize+"px !important;",
-                "  line-height: 112.5% !important;",
-                "}"
-              ]);
-            }
-
-            // Ugly hack (once again) to get the style inside the
-            // <iframe>. I don't think we can use a chrome:// url for
-            // the stylesheet because the iframe has a type="content"
-            let style = iframeDoc.createElement("style");
-            style.appendChild(iframeDoc.createTextNode(styleRules.join("\n")));
-            let head = iframeDoc.body.previousElementSibling;
-            if (head.firstChild)
-              head.insertBefore(style, head.firstChild);
-            else
-              head.appendChild(style);
+            self.tweakFonts(iframeDoc);
+            self.detectQuotes(iframe);
 
             // Notify hooks that we just finished displaying a message. Must be
             //  performed now, not later.
@@ -987,7 +884,7 @@ Message.prototype = {
             self._didStream = true;
             self._signal();
           } catch (e) {
-            Log.warn(e, "(are you running comm-central?)");
+            Log.error(e);
             Log.warn("Running signal once more to make sure we move on with our life... (warning, this WILL cause bugs)");
             dumpCallStack(e);
             self._didStream = true;
@@ -1118,8 +1015,6 @@ MessageFromGloda.prototype = {
   __proto__: Message.prototype,
 }
 
-MixIn(MessageFromGloda, Message);
-
 function MessageFromDbHdr(aConversation, aMsgHdr) {
   this._msgHdr = aMsgHdr;
   Message.apply(this, arguments);
@@ -1165,10 +1060,134 @@ MessageFromDbHdr.prototype = {
   __proto__: Message.prototype,
 
   _fallbackSnippet: function _MessageFromDbHdr_fallbackSnippet () {
+    Log.debug("Using the default streaming code...");
     let body = msgHdrToMessageBody(this._msgHdr, true, snippetLength);
+    Log.debug("Body is", body);
     this._snippet = body.substring(0, snippetLength-1);
     this._signal();
   },
 }
 
-MixIn(MessageFromDbHdr, Message);
+/**
+ * This additional class holds all of the bad heuristics we're performing on a
+ *  message's inner DOM once it's been displayed in the conversation view. These
+ *  include tweaking the fonts, detectin quotes, etc.
+ * As it doesn't belong to the main logic, we're doing this in a separate class
+ *  that's MixIn'd the Message class.
+ */
+let PostStreamingFixesMixIn = {
+  tweakFonts: function (iframeDoc) {
+    let defaultSize = Prefs.getInt("font.size.variable.x-western");
+    let textSize = defaultSize * 12 / 16;
+    let smallSize = defaultSize * 11 / 16;
+
+    // Assuming 16px is the default (like on, say, Linux), this gives
+    //  18px and 12px, which what Andy had in mind.
+    // We're applying the style at the beginning of the <head> tag and
+    //  on the body element so that it can be easily overridden by the
+    //  html.
+    // This is for HTML messages only.
+    let styleRules = [];
+    if (iframeDoc.querySelectorAll(":not(.mimemail-body) > .moz-text-html").length) {
+      styleRules = [
+        "body {",
+        //"  line-height: 112.5%;",
+        "  font-size: "+textSize+"px;",
+        "}",
+      ];
+    }
+
+    // Unless the user specifically asked for this message to be
+    //  dislayed with a monospaced font...
+    let [{name, email}] = this.parse(this._msgHdr.mime2DecodedAuthor);
+    if (Prefs["monospaced_senders"].indexOf(email) < 0) {
+      styleRules = styleRules.concat([
+        ".moz-text-flowed, .moz-text-plain {",
+        "  font-family: \""+Prefs.getChar("font.default")+"\" !important;",
+        "  font-size: "+textSize+"px !important;",
+        "  line-height: 112.5% !important;",
+        "}"
+      ]);
+    }
+
+    // Ugly hack (once again) to get the style inside the
+    // <iframe>. I don't think we can use a chrome:// url for
+    // the stylesheet because the iframe has a type="content"
+    let style = iframeDoc.createElement("style");
+    style.appendChild(iframeDoc.createTextNode(styleRules.join("\n")));
+    let head = iframeDoc.body.previousElementSibling;
+    if (head.firstChild)
+      head.insertBefore(style, head.firstChild);
+    else
+      head.appendChild(style);
+
+    // Do some reformatting + deal with people who have bad taste
+    iframeDoc.body.setAttribute("style", "padding: 0; margin: 0; "+
+      "color: rgb(10, 10, 10); background-color: transparent; "+
+      "-moz-user-focus: none !important; ");
+  },
+
+  detectQuotes: function (iframe) {
+    // Launch various crappy pieces of code^W^W^W^W heuristics to
+    //  convert most common quoting styles to real blockquotes. Spoiler:
+    //  most of them suck.
+    let self = this;
+    let iframeDoc = iframe.contentDocument;
+    try {
+      convertOutlookQuotingToBlockquote(iframe.contentWindow, iframeDoc);
+      convertHotmailQuotingToBlockquote1(iframeDoc);
+      convertHotmailQuotingToBlockquote2(iframe.contentWindow, iframeDoc, Prefs["hide_quote_length"]);
+      convertForwardedToBlockquote(iframeDoc);
+      fusionBlockquotes(iframeDoc);
+    } catch (e) {
+      Log.warn(e);
+      dumpCallStack(e);
+    }
+    // this function adds a show/hide quoted text link to every topmost
+    // blockquote. Nested blockquotes are not taken into account.
+    let walk = function walk_ (elt) {
+      for (let i = elt.childNodes.length - 1; i >= 0; --i) {
+        let c = elt.childNodes[i];
+        // GMail uses class="gmail_quote", other MUAs use type="cite"...
+        // so just search for a regular blockquote
+        if (c.tagName && c.tagName.toLowerCase() == "blockquote") {
+          if (c.getUserData("hideme") !== false) { // null is ok, true is ok too
+            // Compute the approximate number of lines while the element is still visible
+            let style;
+            try {
+              style = iframe.contentWindow.getComputedStyle(c, null);
+            } catch (e) {
+              // message arrived and window is not displayed, arg,
+              // cannot get the computed style, BAD
+            }
+            if (style) {
+              let numLines = parseInt(style.height) / parseInt(style.lineHeight);
+              if (numLines > Prefs["hide_quote_length"]) {
+                let showText = strings.get("showquotedtext");
+                let hideText = strings.get("hidequotedtext");
+                let div = iframeDoc.createElement("div");
+                div.setAttribute("class", "link showhidequote");
+                div.addEventListener("click", function div_listener (event) {
+                  let h = self._conversation._htmlPane.contentWindow.toggleQuote(event, showText, hideText);
+                  iframe.style.height = (parseFloat(iframe.style.height) + h)+"px";
+                }, true);
+                div.setAttribute("style", "color: orange; cursor: pointer; font-size: "+smallSize+"px;");
+                div.appendChild(iframeDoc.createTextNode("- "+showText+" -"));
+                elt.insertBefore(div, c);
+                c.style.display = "none";
+              }
+            }
+          }
+        } else {
+          walk(c);
+        }
+      }
+    };
+    // https://github.com/protz/GMail-Conversation-View/issues#issue/179
+    // See link above for a rationale ^^
+    if (self.initialPosition > 0)
+      walk(iframeDoc);
+  },
+};
+
+MixIn(Message, PostStreamingFixesMixIn);
