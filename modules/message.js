@@ -1076,10 +1076,10 @@ MessageFromDbHdr.prototype = {
  *  that's MixIn'd the Message class.
  */
 let PostStreamingFixesMixIn = {
+  defaultSize: Prefs.getInt("font.size.variable.x-western"),
+
   tweakFonts: function (iframeDoc) {
-    let defaultSize = Prefs.getInt("font.size.variable.x-western");
-    let textSize = defaultSize * 12 / 16;
-    let smallSize = defaultSize * 11 / 16;
+    let textSize = this.defaultSize * 12 / 16;
 
     // Assuming 16px is the default (like on, say, Linux), this gives
     //  18px and 12px, which what Andy had in mind.
@@ -1128,6 +1128,8 @@ let PostStreamingFixesMixIn = {
   },
 
   detectQuotes: function (iframe) {
+    let smallSize = this.defaultSize * 11 / 16;
+
     // Launch various crappy pieces of code^W^W^W^W heuristics to
     //  convert most common quoting styles to real blockquotes. Spoiler:
     //  most of them suck.
