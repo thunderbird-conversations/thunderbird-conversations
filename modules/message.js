@@ -521,6 +521,10 @@ Message.prototype = {
       event.stopPropagation();
     });
 
+    this.register(".ignore-warning", function (event) {
+      self._domNode.getElementsByClassName("phishingBar")[0].style.display = "none";
+      self._msgHdr.setUint32Property("notAPhishMessage", 1);
+    });
     this.register(".show-remote-content", function (event) {
       self._domNode.getElementsByClassName("show-remote-content")[0].style.display = "none";
       self._msgHdr.setUint32Property("remoteContentPolicy", kAllowRemoteContent);
@@ -810,10 +814,13 @@ Message.prototype = {
           try {
             iframe.removeEventListener("load", f_temp1, true);
 
-            // XXX cut this off and turn into a this._onMessageStreamed
             let iframeDoc = iframe.contentDocument;
             self.tweakFonts(iframeDoc);
             self.detectQuotes(iframe);
+            if (self.checkForFishing(iframeDoc) && !self._msgHdr.getUint32Property("notAPhishMessage")) {
+              Log.debug("Phishing attempt");
+              self._domNode.getElementsByClassName("phishingBar")[0].style.display = "block";
+            }
 
             // Notify hooks that we just finished displaying a message. Must be
             //  performed now, not later.
@@ -1189,6 +1196,57 @@ let PostStreamingFixesMixIn = {
     // See link above for a rationale ^^
     if (self.initialPosition > 0)
       walk(iframeDoc);
+  },
+
+  /**
+   * The phishing detector that's in Thunderbird would need a lot of rework:
+   * it's not easily extensible, and the code has a lot of noise, i.e. it just
+   * performs simple operations but it's written in a convoluted way. We should
+   * just rewrite everything, but for now, we just rewrite+simplify the main
+   * function, and still rely on the badly-designed underlying functions for the
+   * low-level treatments.
+   */
+  checkForFishing: function (iframeDoc) {
+    let gPhishingDetector = getMail3Pane().gPhishingDetector;
+    let isPhishing = false;
+    let links = iframeDoc.getElementsByTagName("a");
+    for (let [, a] in Iterator(links)) {
+      let linkText = a.textContent;
+      let linkUrl = a.getAttribute("href");
+      let hrefURL;
+      // make sure relative link urls don't make us bail out
+      try {
+        hrefURL = ioService.newURI(linkUrl, null, null);
+      } catch(ex) {
+        continue;
+      }
+
+      // only check for phishing urls if the url is an http or https link.
+      // this prevents us from flagging imap and other internally handled urls
+      if (hrefURL.schemeIs('http') || hrefURL.schemeIs('https')) {
+        // The link is not suspicious if the visible text is the same as the URL,
+        // even if the URL is an IP address. URLs are commonly surrounded by
+        // < > or "" (RFC2396E) - so strip those from the link text before comparing.
+        if (linkText)
+          linkText = linkText.replace(/^<(.+)>$|^"(.+)"$/, "$1$2");
+
+        let failsStaticTests = false;
+        if (linkText != linkUrl) {
+          // Yes, the third parameter to misMatchedHostWithLinkText is actually
+          //  required, but it's some kind of an out value that's useless for
+          //  us, so just pass it {} so that it's happy...
+          failsStaticTests =
+            gPhishingDetector.hostNameIsIPAddress(hrefURL.host) && !gPhishingDetector.isLocalIPAddress(unobscuredHostNameValue)
+            || linkText && gPhishingDetector.misMatchedHostWithLinkText(hrefURL, linkText, {});
+        }
+
+        if (failsStaticTests) {
+          isPhishing = true;
+          break;
+        }
+      }
+    }
+    return isPhishing;
   },
 };
 

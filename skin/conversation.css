@@ -457,6 +457,20 @@ ul.special-tags img {
   float: right;
 }
 
+.message .phishingBar {
+  background-color: #ed6666;
+  color: #D7D7D7;
+}
+
+.message .phishingBar a {
+  text-decoration: none;
+  color: white;
+}
+
+.message .phishingBar a:hover {
+  text-decoration: underline;
+}
+
 .message .remoteContent {
   background-color: rgba(0,255,0, 0.15);
 }

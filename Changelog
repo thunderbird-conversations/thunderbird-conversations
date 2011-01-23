@@ -1,5 +1,10 @@
 --- Changes since 2.0alpha2 ---
 
+- Improved conversations-in-separate-tabs: they now update automatically as new
+messages arrive, and some inconsistencies between multiple copies of the same
+conversation have been fixed.
+- Support for phishing warnings.
+- Support for Lightning notification bar, kudos to Philipp Kewisch!
 - Support for spellchecking the quick reply. Use right-click to pick a language.
 Will work only if using a recent Thunderbird (> 3.2).
 - Quick reply improvements: now saves recipients, and doesn't lock the UI
