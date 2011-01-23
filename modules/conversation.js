@@ -306,6 +306,24 @@ function Conversation(aWindow, aSelectedMessages, aScrollMode, aCounter) {
   this.id = null;
   // Set to true by the monkey-patch once the conversation is fully built.
   this.completed = false;
+  // Ok, interesting bit. Thunderbird has that non-strict threading thing, i.e.
+  //  it will thread messages together if they have a "Green Llama in your car"
+  //  "Re: Green Llama in your car" subject pattern, and EVEN THOUGH they do not
+  //  have the correct References: header set.
+  // Until 2.0alpha2, what we would do is:
+  //  - fetch the Gloda message collection,
+  //  - pick the first Gloda message, get the message collection for its
+  //  underlying conversation,
+  //  - merge the results for the conversations with the initially selected set,
+  //  - re-stream all other messages except for the first one, because we only
+  //  have their nsIMsgDbHdr.
+  // That's sub-optimal, because we actually have the other message's Gloda
+  //  representations at hand, it's just that because the headers do not set the
+  //  threading, gloda hasn't attached them to the first message.
+  // The solution is to merge the initial set of messages, the gloda messages
+  //  corresponding to the intermediate query, and the initially selected
+  //  messages...
+  this._intermediateResults = [];
 }
 
 Conversation.prototype = {
@@ -345,6 +363,7 @@ Conversation.prototype = {
               } for each ([, msgHdr] in Iterator(self._initialSet))];
             self._signal();
           } else {
+            self._intermediateResults = aItems;
             self._query = aItems[0].conversation.getMessagesCollection(self, true);
           }
         },
@@ -517,18 +536,29 @@ Conversation.prototype = {
         // The MessageFromGloda constructor cannot work with gloda messages that
         //  don't have a message header
         aCollection.items = aCollection.items.filter(function (glodaMsg) glodaMsg.folderMessage);
-        // Register our id
-        // *usually* all the same (think about merged queries on subjects for getsfn for instance)
+        // In most cases, all messages share the same conversation id (i.e. they
+        //  all belong to the same gloda conversations). There are rare cases
+        //  where we lie about this: non-strictly threaded messages regrouped
+        //  together, special queries for GitHub and GetSatisfaction, etc..
+        // Don't really knows what happens in those cases.
         self.id = aCollection.items[0].conversation.id;
         // When the right number of signals has been fired, move on...
-        self._getReady(aCollection.items.length + self._initialSet.length + 1);
-        // We want at least all messages from the Gloda collection
+        self._getReady(aCollection.items.length
+          + self._intermediateResults.length
+          + self._initialSet.length
+          + 1
+        );
+        // We want at least all messages from the Gloda collection + all
+        //  messages from the intermediate set (see rationale in the
+        //  initialization of this._intermediateResults).
         self.messages = [{
           type: kMsgGloda,
           message: new MessageFromGloda(self, glodaMsg), // will fire signal when done
           glodaMsg: glodaMsg,
           msgHdr: null,
-        } for each ([, glodaMsg] in Iterator(aCollection.items))];
+        } for each ([, glodaMsg] in
+            Iterator(aCollection.items.concat(self._intermediateResults)))
+        ];
         // Here's the message IDs we know
         let messageIds = {};
         [messageIds[m.glodaMsg.headerMessageID] = true
@@ -540,7 +570,7 @@ Conversation.prototype = {
           // conversation selected, a new message arrives in that conversation,
           // and we get called immediately. So there's only one message gloda
           // hasn't indexed yet...
-          if (!(messageIds[msgHdr.messageId])) {
+          if (!(msgHdr.messageId in messageIds)) {
             Log.debug("Message with message-id", msgHdr.messageId, "was not in the gloda collection");
             self.messages.push({
               type: kMsgDbHdr,
