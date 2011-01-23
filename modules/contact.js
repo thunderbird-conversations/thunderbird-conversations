@@ -334,12 +334,17 @@ ContactFromPeople.prototype = {
         for each (photo in photos)
         if (photo.type == "thumbnail")
       ];
+      let otherPhotos = [photo
+        for each (photo in photos)
+      ];
       if (gravatarPhotos.length)
         self.avatar = gravatarPhotos[0].value;
       else if (profilePhotos.length)
         self.avatar = profilePhotos[0].value;
       else if (thumbnailPhotos.length)
         self.avatar = thumbnailPhotos[0].value;
+      else if (otherPhotos.length)
+        self.avatar = otherPhotos[0].value;
 
       // Find out about the guy's profiles... This will set self._profiles = {
       //  twitter: twitter username,
