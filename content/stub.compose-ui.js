@@ -356,7 +356,7 @@ function insertQuote(aMsgHdr) {
       (name || email), 
       " wrote:",
       // Actually, the >'s aren't automatically appended
-      citeString("\n"+body.trim()),
+      citeString("\n"+htmlToPlainText(body).trim()),
     ].join("");
     // After we removed any trailing newlines, insert it into the textarea
     $("textarea").val(txt); 
