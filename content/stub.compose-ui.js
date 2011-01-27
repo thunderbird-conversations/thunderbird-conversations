@@ -212,7 +212,6 @@ function startedEditing (aVal) {
     if (!gComposeSession) {
       Log.error("No composition session yet");*
       dumpCallStack();
-      return false;
     } else {
       gComposeSession.startedEditing = aVal;
     }
@@ -236,6 +235,9 @@ function ComposeSession (match) {
     identity: null,
     msgHdr: null,
     subject: null,
+    // We treat these three as immutable, because we have no UI for them (and we
+    //  probably don't plan on implementing any).
+    returnReceipt: null, receiptType: null, requestDsn: null,
   };
   // Go!
   this.setupIdentity();
@@ -253,19 +255,24 @@ ComposeSession.prototype = {
     this.match({
       reply: function (aMsgHdr) {
         // Standard procedure for finding which identity to send with, as per
-        // http://mxr.mozilla.org/comm-central/source/mail/base/content/mailCommands.js#210
+        //  http://mxr.mozilla.org/comm-central/source/mail/base/content/mailCommands.js#210
         let suggestedIdentity = mainWindow.getIdentityForHeader(aMsgHdr, Ci.nsIMsgCompType.ReplyAll);
         identity = suggestedIdentity || gIdentities.default;
       },
 
       draft: function ({ from }) {
-        // from is a string, it's the email address that uniquely identifies the
-        //  identity
+        // The from parameter is a string, it's the email address that uniquely
+        //  identifies the identity. We have a fallback plan in case the user
+        //  has deleted the identity in-between (sounds unlikely, but who
+        //  knows?).
         identity = gIdentities[from] || gIdentities.default;
       },
     });
     $(".senderName").text(identity.fullName + " <"+identity.email+">");
     self.params.identity = identity;
+    self.params.returnReceipt = identity.requestReturnReceipt;
+    self.params.receiptType = identity.receiptHeaderType;
+    self.params.requestDsn = identity.requestDSN;
   },
 
   setupMisc: function () {
@@ -404,6 +411,9 @@ ComposeSession.prototype = {
         cc: $("#cc").val(),
         bcc: $("#bcc").val(),
         subject: self.params.subject,
+        returnReceipt: self.params.returnReceipt,
+        receiptType: self.params.receiptType,
+        requestDsn: self.params.requestDsn,
       }, {
         compType: Ci.nsIMsgCompType.ReplyAll,
         deliverType: Ci.nsIMsgCompDeliverMode.Now,
