@@ -116,11 +116,6 @@ let ContactMixIn = {
         msgComposeService.OpenComposeWindowWithURI(null, aURI);
         event.stopPropagation();
       }, false);
-    aDomNode.parentNode.getElementsByClassName("contactName")[0].addEventListener(
-      "click", function (event) {
-        if (event.target.nextElementSibling.offsetHeight > 0) // that's the tooltip
-          event.stopPropagation();
-      }, false);
 
     aDomNode.parentNode.getElementsByClassName("moreExpander")[0].addEventListener(
       "click", function (event) {
