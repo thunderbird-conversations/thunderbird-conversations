@@ -34,6 +34,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 var EXPORTED_SYMBOLS = ['Message', 'MessageFromGloda', 'MessageFromDbHdr']
 
 const Ci = Components.interfaces;
@@ -613,11 +615,10 @@ Message.prototype = {
       switch (event.keyCode) {
         case mainWindow.KeyEvent.DOM_VK_RETURN:
           if (isAccel(event)) {
-            if (event.shiftKey) {
-              self._conversation._htmlPane.contentWindow.onSend(null, { archive: true });
-            } else {
-              self._conversation._htmlPane.contentWindow.onSend();
-            }
+            if (event.shiftKey)
+              window.gComposeSession.send({ archive: true });
+            else
+              window.gComposeSession.send();
           }
           break;
 
@@ -627,7 +628,7 @@ Message.prototype = {
           break;
 
         default:
-          window.gComposeParams.startedEditing = true;
+          window.startedEditing(true);
       }
       event.stopPropagation();
     }, { action: "keypress" });

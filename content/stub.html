@@ -239,8 +239,7 @@
     function detachTab(event) {
       let mainWindow = getMail3Pane();
       let tabmail = mainWindow.document.getElementById("tabmail");
-      let willExpand = $("textarea").parent().hasClass("expand") &&
-        gComposeParams.startedEditing;
+      let willExpand = $("textarea").parent().hasClass("expand") && startedEditing();
       tabmail.openTab("conversationTab", {
         onLoad: function _detachTab_onLoad (event, browser) {
           try {
@@ -262,7 +261,8 @@
               // This is a stripped-down version of what's in monkeypatch.js,
               //  make sure the two are in sync!
               browser.contentWindow.Conversations.currentConversation = aConversation;
-              transferQuickReplyToNewWindow(browser.contentWindow, willExpand);
+              if (willExpand)
+                browser.contentWindow.$("textarea").parent().addClass('expand');
               aConversation.completed = true;
               browser.contentWindow.registerQuickReply();
               // Now this will save the OLD draft which will broadcast the
@@ -460,11 +460,6 @@
         <ul>
           <li class="showCc"><a onclick="showCc(); editFields();" href="javascript:">add cc</a> |</li>
           <li class="showBcc"><a onclick="showBcc(); editFields();" href="javascript:">add bcc</a></li>
-          <!-- |<li>
-            <input id="startNewThread" type="checkbox" style="vertical-align: text-top"
-              onclick="onNewThreadClicked();" />
-            start a new thread
-          </li>-->
         </ul>
         <ul>
           from:
@@ -506,10 +501,6 @@
           <li>James Burke</li>
           <li class="add-more">&nbsp;- <a href="javascript:" onclick="editFields('bcc');">edit</a></li>
         </ul>
-        <div class="editRecipientList editSubject hbox" style="display: none">
-          <div class="label">subject:</div>
-          <div class="boxFlex"><input type="text" id="subject"></div>
-        </div>
       </div>
       <div class="quickReplyHeader" style="display: none; overflow: auto">
         <span class="statusMessage" style="float: left;"></span>
@@ -521,16 +512,18 @@
       </div>
       <textarea spellcheck="true" onclick="onTextareaClicked(event);"></textarea>
       <div class="quickReplyFooter" style="overflow: auto" tabindex="-1">
-        <button id="send" style="float:right;margin-left:3px;" onclick="onSend(event);">send</button>
+        <button id="send" style="float:right;margin-left:3px;" onclick="gComposeSession.send();">
+          send
+        </button>
         <button id="sendArchive" style="float:right;margin-left:3px;"
-            onclick="onSend(event, { archive: true });">
+            onclick="gComposeSession.send({ archive: true });">
           send &amp; archive
         </button>
         <button id="save" style="float:right" onclick="onSave(event);">save</button>
         <button id="discard" style="float: left;"
-          onclick="if (!gComposeParams.startedEditing || confirm('Are you sure you wish to discard this message ?')) onDiscard();">discard</button>
+          onclick="confirmDiscard()">discard</button>
         <button style="float: left; margin-left: 3px"
-          onclick="useEditor();">continue using editor</button>
+          onclick="onUseEditor();">continue using editor</button>
       </div>
     </div>
   </script>

@@ -1,3 +1,5 @@
+"use strict";
+
 // ----- Autocomplete stuff. Understand it as a part of stub.compose-ui.js
 
 Cu.import("resource:///modules/errUtils.js");
@@ -268,7 +270,7 @@ let autoCompleteClasses = {
   inputToken: "token-input-input-token-facebook"
 }
 
-function setupAutocomplete() {
+function setupAutocomplete(to, cc, bcc) {
   // This function assumes aInput is #something
   let fill = function (aInput, aList, aData) {
     // Cleanup the mess left by tokenInput.
@@ -300,12 +302,12 @@ function setupAutocomplete() {
       $(aList+" .add-more").before($("<li title=\""+email+"\">"+name+sep+"</li>"));
     }
   };
-  fill("#to", ".toList", gComposeParams.to);
-  fill("#cc", ".ccList", gComposeParams.cc);
-  fill("#bcc", ".bccList", gComposeParams.bcc);
+  fill("#to", ".toList", to);
+  fill("#cc", ".ccList", cc);
+  fill("#bcc", ".bccList", bcc);
 
-  if (gComposeParams.cc.length)
+  if (cc.length)
     showCc();
-  if (gComposeParams.bcc.length)
+  if (bcc.length)
     showBcc();
 }

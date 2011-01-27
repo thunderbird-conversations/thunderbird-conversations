@@ -34,6 +34,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+"use strict";
+
 var EXPORTED_SYMBOLS = ['Conversation']
 
 const Ci = Components.interfaces;
@@ -889,7 +891,7 @@ Conversation.prototype = {
     this._htmlPane.contentDocument.title = subject;
     // Invalidate the composition session so that compose-ui.js can setup the
     //  fields next time.
-    this._htmlPane.contentWindow.gComposeParams.startedEditing = false;
+    this._htmlPane.contentWindow.gComposeSession = null;
 
     // Move on to the next step
     this._expandAndScroll();
