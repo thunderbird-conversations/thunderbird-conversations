@@ -1114,9 +1114,20 @@ let PostStreamingFixesMixIn = {
         "  font-family: \""+Prefs.getChar("font.default")+"\" !important;",
         "  font-size: "+textSize+"px !important;",
         "  line-height: 112.5% !important;",
-        "}"
+        "}",
       ]);
     }
+
+    // Do some reformatting + deal with people who have bad taste. All these
+    // rules are important: some people just send messages with horrible colors,
+    // which ruins the conversation view. Gecko tends to automatically add
+    // padding/margin to html mails.
+    styleRules = styleRules.concat([
+      "body {",
+      "  margin: 0; padding: 0;",
+      "  color: rgb(10, 10, 10); background-color: white;",
+      "}",
+    ]);
 
     // Ugly hack (once again) to get the style inside the
     // <iframe>. I don't think we can use a chrome:// url for
@@ -1128,11 +1139,6 @@ let PostStreamingFixesMixIn = {
       head.insertBefore(style, head.firstChild);
     else
       head.appendChild(style);
-
-    // Do some reformatting + deal with people who have bad taste
-    iframeDoc.body.setAttribute("style", "padding: 0; margin: 0; "+
-      "color: rgb(10, 10, 10); background-color: transparent; "+
-      "-moz-user-focus: none !important; ");
   },
 
   detectQuotes: function (iframe) {
