@@ -311,7 +311,12 @@ Message.prototype = {
         ? [att.url, "resize-me"]
         : ["chrome://conversations/skin/icons/"+iconForMimeType(att.contentType), "icon"]
       ;
-      let formattedSize = gMessenger.formatFileSize(att.size);
+      let formattedSize = "?";
+      try {
+        formattedSize = gMessenger.formatFileSize(att.size);
+      } catch (e) {
+        Log.error(e);
+      }
       data.attachments.push({
         formattedSize: formattedSize,
         thumb: thumb,
