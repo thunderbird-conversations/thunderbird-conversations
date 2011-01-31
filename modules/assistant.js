@@ -265,7 +265,7 @@ let Customizations = {
       let i = 0;
       let waitForIt = function () {
         if (smartInbox && mainWindow.gFolderDisplay.displayedFolder != smartInbox && i++ < 10) {
-          setTimeout(waitForIt, 150);
+          mainWindow.setTimeout(waitForIt, 150);
         } else {
           moveOn();
         }
