@@ -57,6 +57,7 @@ Cu.import("resource:///modules/gloda/gloda.js");
 Cu.import("resource://conversations/stdlib/misc.js");
 Cu.import("resource://conversations/stdlib/msgHdrUtils.js"); // for getMail3Pane
 Cu.import("resource://conversations/log.js");
+Cu.import("resource://conversations/misc.js");
 
 const Contacts = {
   kFrom: 0,
@@ -149,110 +150,105 @@ let ContactMixIn = {
     /* Register the "send message" link */
     let uri = "mailto:" + this._email;
     let aURI = ioService.newURI(uri, null, null);
-    aDomNode.getElementsByClassName("sendEmail")[0].addEventListener(
-      "click", function (event) {
-        msgComposeService.OpenComposeWindowWithURI(null, aURI);
-        event.stopPropagation();
-      }, false);
+    this._domNode = aDomNode;
 
-    aDomNode.parentNode.getElementsByClassName("moreExpander")[0].addEventListener(
-      "click", function (event) {
-        if (aDomNode.parentNode.getElementsByClassName("hiddenFooter")[0].style.display == "none") {
-          aDomNode.parentNode.getElementsByClassName("hiddenFooter")[0].style.display = "block";
-          event.originalTarget.firstChild.textContent = "-";
-        }
-        else {
-          aDomNode.parentNode.getElementsByClassName("hiddenFooter")[0].style.display = "none";
-          event.originalTarget.firstChild.textContent = "+";
-        }
-        event.stopPropagation();
-      }, false);
+    aDomNode.parentNode.getElementsByClassName("moreExpander")[0].addEventListener("click", function (event) {
+      if (aDomNode.parentNode.getElementsByClassName("hiddenFooter")[0].style.display == "none") {
+        aDomNode.parentNode.getElementsByClassName("hiddenFooter")[0].style.display = "block";
+        event.originalTarget.firstChild.textContent = "-";
+      } else {
+        aDomNode.parentNode.getElementsByClassName("hiddenFooter")[0].style.display = "none";
+        event.originalTarget.firstChild.textContent = "+";
+      }
+      event.stopPropagation();
+    }, false);
+
+    this.register(".sendEmail", function (event) {
+      msgComposeService.OpenComposeWindowWithURI(null, aURI);
+      event.stopPropagation();
+    });
 
     let self = this;
     let mainWindow = getMail3Pane();
-    // XXX we already did this if we're running without contacts
+    // XXX We already called getCardForEmail if we're runnning without contacts
+    //  installed...
     // Please note that cardAndBook is never overridden, so that the closure for
     //  the editContact event listener actually sees the updated fields of the
     //  object once the addContact event listener has updated them.
     let cardAndBook = mainWindow.getCardForEmail(self._email);
     if (cardAndBook.card)
       aDomNode.parentNode.classList.add("inAddressBook");
-    aDomNode.getElementsByClassName("addContact")[0].addEventListener(
-      "click", function (event) {
-        let args = {
-          primaryEmail: self._email,
-          displayName: self._name,
-          allowRemoteContent: true,
-          // This is too messed up, there's no easy way to interact with this
-          //  dialog, just forget about it. RegisterSaveListener seems to be
-          //  uncallable... and okCallback just short-circuit the whole logic
-        };
-        mainWindow.openDialog(
-          "chrome://messenger/content/addressbook/abNewCardDialog.xul",
-          "", "chrome,resizable=no,titlebar,modal,centerscreen", args
-        );
-        // This is an approximation, but it should be good enough
-        let newCardAndBook = mainWindow.getCardForEmail(self._email);
-        if (newCardAndBook.card) {
-          cardAndBook.card = newCardAndBook.card;
-          cardAndBook.book = newCardAndBook.book;
-          aDomNode.parentNode.classList.add("inAddressBook");
-        }
-      }, false);
-    aDomNode.getElementsByClassName("editContact")[0].addEventListener(
-      "click", function (event) {
-        let args = {
-          abURI: cardAndBook.book.URI,
-          card: cardAndBook.card,
-        };
-        mainWindow.openDialog(
-          "chrome://messenger/content/addressbook/abEditCardDialog.xul",
-          "", "chrome,modal,resizable=no,centerscreen", args
-        );
-      }, false);
-    aDomNode.getElementsByClassName("copyEmail")[0].addEventListener(
-      "click", function (event) {
-        clipboardService.copyString(self._email);
-      }, false);
-    aDomNode.getElementsByClassName("showInvolving")[0].addEventListener(
-      "click", function (event) {
-        let q1 = Gloda.newQuery(Gloda.NOUN_IDENTITY);
-        q1.kind("email");
-        q1.value(self._email);
-        q1.getCollection({
-          onItemsAdded: function _onItemsAdded(aItems, aCollection) {  },
-          onItemsModified: function _onItemsModified(aItems, aCollection) { },
-          onItemsRemoved: function _onItemsRemoved(aItems, aCollection) { },
-          onQueryCompleted: function _onQueryCompleted(aCollection) {
-            if (!aCollection.items.length)
-              return;  
+    this.register(".addContact", function (event) {
+      let args = {
+        primaryEmail: self._email,
+        displayName: self._name,
+        allowRemoteContent: true,
+        // This is too messed up, there's no easy way to interact with this
+        //  dialog, just forget about it. RegisterSaveListener seems to be
+        //  uncallable... and okCallback just short-circuit the whole logic
+      };
+      mainWindow.openDialog(
+        "chrome://messenger/content/addressbook/abNewCardDialog.xul",
+        "", "chrome,resizable=no,titlebar,modal,centerscreen", args
+      );
+      // This is an approximation, but it should be good enough
+      let newCardAndBook = mainWindow.getCardForEmail(self._email);
+      if (newCardAndBook.card) {
+        cardAndBook.card = newCardAndBook.card;
+        cardAndBook.book = newCardAndBook.book;
+        aDomNode.parentNode.classList.add("inAddressBook");
+      }
+    });
+    this.register(".editContact", function (event) {
+      let args = {
+        abURI: cardAndBook.book.URI,
+        card: cardAndBook.card,
+      };
+      mainWindow.openDialog(
+        "chrome://messenger/content/addressbook/abEditCardDialog.xul",
+        "", "chrome,modal,resizable=no,centerscreen", args
+      );
+    });
+    this.register(".copyEmail", function (event) {
+      clipboardService.copyString(self._email);
+    });
+    this.register(".showInvolving", function (event) {
+      let q1 = Gloda.newQuery(Gloda.NOUN_IDENTITY);
+      q1.kind("email");
+      q1.value(self._email);
+      q1.getCollection({
+        onItemsAdded: function _onItemsAdded(aItems, aCollection) {  },
+        onItemsModified: function _onItemsModified(aItems, aCollection) { },
+        onItemsRemoved: function _onItemsRemoved(aItems, aCollection) { },
+        onQueryCompleted: function _onQueryCompleted(aCollection) {
+          if (!aCollection.items.length)
+            return;
 
-            let q2 = Gloda.newQuery(Gloda.NOUN_MESSAGE);
-            q2.involves.apply(q2, aCollection.items);
-            q2.getCollection({
-              onItemsAdded: function _onItemsAdded(aItems, aCollection) {  },
-              onItemsModified: function _onItemsModified(aItems, aCollection) {  },
-              onItemsRemoved: function _onItemsRemoved(aItems, aCollection) {  },
-              onQueryCompleted: function _onQueryCompleted(aCollection) {  
-                let tabmail = mainWindow.document.getElementById("tabmail");
-                /*aCollection.items =
-                  [GCV.selectRightMessage(m)
-                  for each ([, m] in Iterator(GCV.groupMessages(aCollection.items)))];
-                aCollection.items = aCollection.items.filter(function (x) x);*/
-                tabmail.openTab("glodaList", {
-                  collection: aCollection,
-                  title: "Messages involving #1".replace("#1", self._name),
-                  background: false
-                });
-              }
-            });
-          }
-        });
-      }, false);
-    aDomNode.getElementsByClassName("createFilter")[0].addEventListener(
-      "click", function (event) {
-        mainWindow.MsgFilters(self._email, null);
-      }, false);
+          let q2 = Gloda.newQuery(Gloda.NOUN_MESSAGE);
+          q2.involves.apply(q2, aCollection.items);
+          q2.getCollection({
+            onItemsAdded: function _onItemsAdded(aItems, aCollection) {  },
+            onItemsModified: function _onItemsModified(aItems, aCollection) {  },
+            onItemsRemoved: function _onItemsRemoved(aItems, aCollection) {  },
+            onQueryCompleted: function _onQueryCompleted(aCollection) {
+              let tabmail = mainWindow.document.getElementById("tabmail");
+              /*aCollection.items =
+                [GCV.selectRightMessage(m)
+                for each ([, m] in Iterator(GCV.groupMessages(aCollection.items)))];
+              aCollection.items = aCollection.items.filter(function (x) x);*/
+              tabmail.openTab("glodaList", {
+                collection: aCollection,
+                title: "Messages involving #1".replace("#1", self._name),
+                background: false
+              });
+            }
+          });
+        }
+      });
+    });
+    this.register(".createFilter", function (event) {
+      mainWindow.MsgFilters(self._email, null);
+    });
 
     /* The links to various profiles */
     for each (let [, a] in Iterator(aDomNode.getElementsByTagName("a"))) {
@@ -261,7 +257,7 @@ let ContactMixIn = {
           a.classList.contains("profile-link")
           ? function _link_listener (event) (
               mainWindow.document.getElementById("tabmail").openTab("contentTab", {
-                contentPage: a.href, // ^^ (cf. supra)
+                contentPage: a.href, // (cf. supra)
                 clickHandler: "specialTabs.defaultClickHandler(event);"
               }),
               event.preventDefault()
@@ -332,6 +328,7 @@ ContactFromAB.prototype = {
 }
 
 MixIn(ContactFromAB, ContactMixIn);
+MixIn(ContactFromAB, EventHelperMixIn);
 
 function ContactFromPeople(manager, name, email) {
   this.emails = [email];
@@ -409,3 +406,4 @@ ContactFromPeople.prototype = {
 }
 
 MixIn(ContactFromPeople, ContactMixIn);
+MixIn(ContactFromPeople, EventHelperMixIn);

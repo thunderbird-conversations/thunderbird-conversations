@@ -36,6 +36,7 @@
 
 var EXPORTED_SYMBOLS = [
   'groupArray', 'joinWordList', 'iconForMimeType',
+  'EventHelperMixIn',
 ]
 
 const Ci = Components.interfaces;
@@ -108,4 +109,52 @@ function iconForMimeType (aMimeType) {
       return v+".svg";
   }
   return "gtk-file.png";
+}
+
+/**
+ * Used to enrich the Message and Contact objects. Assumes the object it's added
+ *  upon has a _domNode property.
+ */
+let EventHelperMixIn = {
+
+  compose: function _EventHelper_compose (aCompType, aEvent) {
+    let window = getMail3Pane();
+    if (aEvent.shiftKey) {
+      window.ComposeMessage(aCompType, Ci.nsIMsgCompFormat.OppositeOfDefault, this._msgHdr.folder, [this._uri]);
+    } else {
+      window.ComposeMessage(aCompType, Ci.nsIMsgCompFormat.Default, this._msgHdr.folder, [this._uri]);
+    }
+  },
+
+  forward: function _EventHelper_forward (event) {
+    let forwardType = 0;
+    try {
+      forwardType = Prefs.getInt("mail.forward_message_mode");
+    } catch (e) {
+      Log.error("Unable to fetch preferred forward mode\n");
+    }
+    if (forwardType == 0)
+      this.compose(Ci.nsIMsgCompType.ForwardAsAttachment, event);
+    else
+      this.compose(Ci.nsIMsgCompType.ForwardInline, event);
+  },
+
+  register: function _EventHelper_register (selector, f, options) {
+    let action;
+    if (typeof(options) == "undefined" || typeof(options.action) == "undefined")
+      action = "click";
+    else
+      action = options.action;
+    let nodes;
+    if (selector === null)
+      nodes = [this._domNode];
+    else if (typeof(selector) == "string")
+      nodes = this._domNode.querySelectorAll(selector);
+    else
+      nodes = [selector];
+
+    for each (let [, node] in Iterator(nodes))
+      node.addEventListener(action, f, false);
+  },
+
 }
