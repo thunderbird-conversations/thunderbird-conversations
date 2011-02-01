@@ -381,7 +381,7 @@ ComposeSession.prototype = {
             body
           ].join("");
           // After we removed any trailing newlines, insert it into the textarea
-          $("textarea").val(txt); 
+          $("textarea").val($("textarea").val() + txt); 
           // I <3 HTML5 selections.
           let node = $("textarea")[0];
           node.selectionStart = 0;
