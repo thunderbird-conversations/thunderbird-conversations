@@ -43,6 +43,8 @@ const Ci = Components.interfaces;
 const Cc = Components.classes;
 const Cu = Components.utils;
 
+Cu.import("resource://conversations/stdlib/msgHdrUtils.js"); // for getMail3Pane
+
 /**
  * Group some array elements according to a key function
  * @param aItems The array elements (or anything Iterable)
@@ -113,7 +115,8 @@ function iconForMimeType (aMimeType) {
 
 /**
  * Used to enrich the Message and Contact objects. Assumes the object it's added
- *  upon has a _domNode property.
+ *  upon has a _domNode property. Also assumes it has a _msgHdr and _uri
+ *  property if compose is to be called.
  */
 let EventHelperMixIn = {
 
