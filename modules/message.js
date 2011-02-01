@@ -1011,9 +1011,10 @@ function MessageFromDbHdr(aConversation, aMsgHdr) {
 
       let [text, meta] = mimeMsgToContentSnippetAndMeta(aMimeMsg, aMsgHdr.folder, snippetLength);
       self._snippet = text;
-      if ("x-bugzilla-who" in aMimeMsg.headers) {
+      let alternativeSender = PluginHelpers.alternativeSender({ mime: aMimeMsg, header: aMsgHdr });
+      if (alternativeSender) {
         self._realFrom = self._from;
-        self._from = self.parse(aMimeMsg.headers["x-bugzilla-who"])[0];
+        self._from = self.parse(alternativeSender);
       }
 
       self._attachments = aMimeMsg.allUserAttachments

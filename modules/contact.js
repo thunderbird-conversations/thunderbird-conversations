@@ -83,25 +83,36 @@ function ContactManager() {
 
 ContactManager.prototype = {
   getContactFromNameAndEmail: function _ContactManager_getContactFromEmail(name, email, position) {
-    email = (email+"").toLowerCase();
     let self = this;
-    let cache = function _cache (contact) {
-      for each (let [, email] in Iterator(contact.emails)) {
-        email = (email+"").toLowerCase();
-        self._cache[email] = contact;
+    email = (email+"").toLowerCase();
+    // Hack because for github and getsfn, we sniff the person who actually sent
+    //  the comment, but since we don't have their email, all these people share
+    //  the same email, unfortunately...
+    let key = function (name, email) {
+      if (email == "noreply.mozilla_messaging@getsatisfaction.com"
+          || email == "noreply@github.com") {
+        return (name + " <" + email + ">");
+      } else {
+        return email;
       }
     };
-    if (email in this._cache) {
+    let cache = function _cache (name, contact) {
+      for each (let [, email] in Iterator(contact.emails)) {
+        email = (email+"").toLowerCase();
+        self._cache[key(name, email)] = contact;
+      }
+    };
+    if (key(name, email) in this._cache) {
       if (name)
-        this._cache[email].enrichWithName(name);
-      return this._cache[email];
+        this._cache[key(name, email)].enrichWithName(name);
+      return this._cache[key(name, email)];
     } else if (gHasPeople && email.length) {
       let contact = new ContactFromPeople(this, name, email, position);
-      cache(contact);
+      cache(name, contact);
       return contact;
     } else {
       let contact = new ContactFromAB(this, name, email, position);
-      cache(contact);
+      cache(name, contact);
       return contact;
     }
   },
@@ -217,7 +228,7 @@ let ContactMixIn = {
       q1.kind("email");
       q1.value(self._email);
       q1.getCollection({
-        onItemsAdded: function _onItemsAdded(aItems, aCollection) {  },
+        onItemsAdded: function _onItemsAdded(aItems, aCollection) { },
         onItemsModified: function _onItemsModified(aItems, aCollection) { },
         onItemsRemoved: function _onItemsRemoved(aItems, aCollection) { },
         onQueryCompleted: function _onQueryCompleted(aCollection) {
@@ -227,9 +238,9 @@ let ContactMixIn = {
           let q2 = Gloda.newQuery(Gloda.NOUN_MESSAGE);
           q2.involves.apply(q2, aCollection.items);
           q2.getCollection({
-            onItemsAdded: function _onItemsAdded(aItems, aCollection) {  },
-            onItemsModified: function _onItemsModified(aItems, aCollection) {  },
-            onItemsRemoved: function _onItemsRemoved(aItems, aCollection) {  },
+            onItemsAdded: function _onItemsAdded(aItems, aCollection) { },
+            onItemsModified: function _onItemsModified(aItems, aCollection) { },
+            onItemsRemoved: function _onItemsRemoved(aItems, aCollection) { },
             onQueryCompleted: function _onQueryCompleted(aCollection) {
               let tabmail = mainWindow.document.getElementById("tabmail");
               /*aCollection.items =

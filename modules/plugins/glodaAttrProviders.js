@@ -34,6 +34,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+var EXPORTED_SYMBOLS = [];
+
 /*
  * This file contains various attribute providers for Gloda, we're all storing
  *  them in this file. This file acts like a "plugin" for Gloda.
@@ -47,6 +49,8 @@
  *  corresponds to the X-Bugzilla-Who header, if found. In case we don't have a
  *  GlodaMessage in message.js, we just recover that information through a
  *  lookup in the MimeMessage's headers.
+ * We guarantee alternativeSender to be parsable as:
+ *  Sender Name <xx@xx.xx>
  *
  * The second one is a plugin that exposes a new subject noun on Gloda
  *  Conversations. This is slightly more advanced, in the sense that it exposes
@@ -58,13 +62,12 @@
  *  subject, hence this Gloda plugin
  */
 
-var EXPORTED_SYMBOLS = [];
-
 const Ci = Components.interfaces;
 const Cc = Components.classes;
 const Cu = Components.utils;
 const Cr = Components.results;
 
+Cu.import("resource://conversations/plugins/helpers.js");
 Cu.import("resource:///modules/gloda/public.js");
 Cu.import("resource:///modules/gloda/mimemsg.js");
 
@@ -87,9 +90,13 @@ let AlternativeSender = {
   },
 
   process: function _AlternativeSender_process (aGlodaMessage, aRawReps, aIsNew, aCallbackHandle) {
-    let aMimeMsg = aRawReps.mime;
-    if (aMimeMsg && ("x-bugzilla-who" in aMimeMsg.headers))
-        aGlodaMessage.alternativeSender = aMimeMsg.headers["x-bugzilla-who"];
+    try {
+      let alternativeSender = PluginHelpers.alternativeSender(aRawReps);
+      if (alternativeSender)
+        aGlodaMessage.alternativeSender = alternativeSender;
+    } catch (e) {
+      dump(e+"\n"+e.stack+"\n");
+    }
 
     yield Gloda.kWorkDone;
   },
