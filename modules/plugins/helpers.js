@@ -43,6 +43,8 @@ var EXPORTED_SYMBOLS = ['PluginHelpers']
  *  gloda yet (see message.js).
  */
 
+Components.utils.import("resource:///modules/gloda/utils.js");
+
 const gsfnRegexp = /^(.+)(?:, an employee of Mozilla Messaging,)? (?:replied to|commented on|just asked)/;
 const gsfnFrom = "Mozilla Messaging <noreply.mozilla_messaging@getsatisfaction.com>";
 
@@ -60,20 +62,27 @@ let PluginHelpers = {
     if (aMimeMsg && ("x-bugzilla-who" in aMimeMsg.headers))
         return aMimeMsg.headers["x-bugzilla-who"];
 
+    // The thing is, the template caches the contacts according to their
+    // emails, so we need to make sure the email address is unique for each
+    // person (otherwise Person A <email> is cached with email as the key, and
+    // Person B <sameemail> appears as Person A. See contact.js
+    let uniq = function (s) GlodaUtils.md5HashString(s).substring(0, 8);
+
     // We sniff for a name
     if (aMimeMsg && aMimeMsg.headers["from"] == gsfnFrom) {
       let body = aMimeMsg.coerceBodyToPlaintext(aMsgHdr.folder);
       let m = body.match(gsfnRegexp);
       if (m && m.length)
-        return (m[1] + " <noreply.mozilla_messaging@getsatisfaction.com>");
+        return (m[1] + " <" + uniq(m[1]) + "@getsatisfaction.com>");
     }
 
     if (aMimeMsg && aMimeMsg.headers["from"] == ghFrom) {
       let body = aMimeMsg.coerceBodyToPlaintext(aMsgHdr.folder);
       let m = body.match(ghRegexp);
       // I'll never understand how regexps really work...
-      if (m && m.length)
-        return ((m[1] || m[2]) + " <noreply@github.com>");
+      let name = m && m.length && (m[1] || m[2]);
+      if (name)
+        return (name + " <" + uniq(name) + "@github.com>");
     }
 
     return null;

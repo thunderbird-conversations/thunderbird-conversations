@@ -70,6 +70,7 @@ let strings = new StringBundle("chrome://conversations/locale/main.properties");
 Cu.import("resource://conversations/stdlib/addressBookUtils.js");
 Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
 Cu.import("resource://conversations/stdlib/misc.js");
+Cu.import("resource://conversations/plugins/helpers.js");
 Cu.import("resource://conversations/quoting.js");
 Cu.import("resource://conversations/contact.js");
 Cu.import("resource://conversations/prefs.js");

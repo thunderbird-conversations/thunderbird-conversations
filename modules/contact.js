@@ -85,17 +85,8 @@ ContactManager.prototype = {
   getContactFromNameAndEmail: function _ContactManager_getContactFromEmail(name, email, position) {
     let self = this;
     email = (email+"").toLowerCase();
-    // Hack because for github and getsfn, we sniff the person who actually sent
-    //  the comment, but since we don't have their email, all these people share
-    //  the same email, unfortunately...
-    let key = function (name, email) {
-      if (email == "noreply.mozilla_messaging@getsatisfaction.com"
-          || email == "noreply@github.com") {
-        return (name + " <" + email + ">");
-      } else {
-        return email;
-      }
-    };
+    // Might change in the future... who knows? ...
+    let key = function (name, email) email;
     let cache = function _cache (name, contact) {
       for each (let [, email] in Iterator(contact.emails)) {
         email = (email+"").toLowerCase();
