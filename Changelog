@@ -1,5 +1,7 @@
 --- Changes since 2.0alpha2 ---
 
+- Messages sent with quick reply now request return receipts according to the
+global or account-specific preferences.
 - Improved conversations-in-separate-tabs: they now update automatically as new
 messages arrive, and some inconsistencies between multiple copies of the same
 conversation have been fixed.
@@ -14,3 +16,5 @@ sender).
 - UI support for junking a message (only available if there's just one message
 in the conversation).
 - Remove dotted outline on selected messages.
+- Improvements in the setup assistant for people with a huge number of messages.
+- Use photos found through the local address book when Contacts is installed.

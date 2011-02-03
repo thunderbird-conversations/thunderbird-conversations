@@ -1217,6 +1217,7 @@ let PostStreamingFixesMixIn = {
         }
 
         if (failsStaticTests) {
+          Log.debug("Suspicious link", linkUrl);
           isPhishing = true;
           break;
         }
