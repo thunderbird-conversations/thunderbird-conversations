@@ -50,6 +50,7 @@ Cu.import("resource:///modules/templateUtils.js"); // for makeFriendlyDateAgo
 Cu.import("resource:///modules/gloda/utils.js");
 Cu.import("resource:///modules/gloda/mimemsg.js");
 Cu.import("resource:///modules/gloda/connotent.js"); // for mimeMsgToContentSnippetAndMeta
+Cu.import("resource:///modules/Services.jsm"); // https://developer.mozilla.org/en/JavaScript_code_modules/Services.jsm
 
 const gMessenger = Cc["@mozilla.org/messenger;1"]
                    .createInstance(Ci.nsIMessenger);
@@ -57,8 +58,6 @@ const gHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"]
                       .getService(Ci.nsIMsgHeaderParser);
 const gMsgTagService = Cc["@mozilla.org/messenger/tagservice;1"]
                        .getService(Ci.nsIMsgTagService);
-const ioService = Cc["@mozilla.org/network/io-service;1"]
-                  .getService(Ci.nsIIOService);
 const msgComposeService = Cc["@mozilla.org/messengercompose;1"]
                           .getService(Ci.nsIMsgComposeService);
 const kCharsetFromMetaTag = 9;
@@ -436,7 +435,7 @@ Message.prototype = {
       ];
       let composeAllUri = "mailto:" + allEmails.join(",");
       Log.debug("URI:", composeAllUri);
-      let uri = ioService.newURI(composeAllUri, null, null);
+      let uri = Services.io.newURI(composeAllUri, null, null);
       msgComposeService.OpenComposeWindowWithURI(null, uri);
     });
     this.register(".forward", function (event) self.forward(event));
@@ -526,9 +525,9 @@ Message.prototype = {
       let att = this._attachments[i];
 
       /* I'm still surprised that this magically works */
-      let neckoURL = ioService.newURI(att.url, null, null);
-      neckoURL.QueryInterface(Ci.nsIMsgMessageUrl);
-      let uri = neckoURL.uri;
+      let uri = Services.io.newURI(att.url, null, null)
+                        .QueryInterface(Ci.nsIMsgMessageUrl)
+                        .uri;
 
       let attInfo = new mainWindow.createNewAttachmentInfo(
         att.contentType, att.url, att.name, uri, att.isExternal
@@ -1192,7 +1191,7 @@ let PostStreamingFixesMixIn = {
       let hrefURL;
       // make sure relative link urls don't make us bail out
       try {
-        hrefURL = ioService.newURI(linkUrl, null, null);
+        hrefURL = Services.io.newURI(linkUrl, null, null);
       } catch(ex) {
         continue;
       }
