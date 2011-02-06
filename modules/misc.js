@@ -36,7 +36,7 @@
 
 var EXPORTED_SYMBOLS = [
   'groupArray', 'joinWordList', 'iconForMimeType',
-  'EventHelperMixIn',
+  'EventHelperMixIn', 'arrayEquals',
 ]
 
 const Ci = Components.interfaces;
@@ -44,6 +44,16 @@ const Cc = Components.classes;
 const Cu = Components.utils;
 
 Cu.import("resource://conversations/stdlib/msgHdrUtils.js"); // for getMail3Pane
+
+function arrayEquals(a1, a2) {
+  if (a1.length != a2.length)
+    return;
+
+  let e = true;
+  for each (let [i, v] in Iterator(a1))
+    e = e && (v == a2[i]);
+  return e;
+}
 
 /**
  * Group some array elements according to a key function
@@ -90,23 +100,31 @@ let mapping = {
   "application/vnd.ms-excel": "x-office-spreadsheet",
   "application/vnd.ms-powerpoint": "x-office-presentation",
   "application/rtf": "x-office-document",
-  "video/": "video-x-generic",
-  "audio/": "audio-x-generic",
-  "image/": "image-x-generic",
-  //"message/": "email",
-  "text/": "text-x-generic",
-  "text/x-vcalendar": "x-office-calendar",
-  "text/x-vcard": "x-office-address-book",
-  "text/html": "text-html",
   "application/zip": "package-x-generic",
   "application/bzip2": "package-x-generic",
   "application/x-gzip": "package-x-generic",
   "application/x-tar": "package-x-generic",
   "application/x-compressed": "package-x-generic",
+  //"message/": "email",
+  "text/x-vcalendar": "x-office-calendar",
+  "text/x-vcard": "x-office-address-book",
+  "text/html": "text-html",
+};
+
+let fallbackMapping = {
+  // Fallbacks, at the end.
+  "video/": "video-x-generic",
+  "audio/": "audio-x-generic",
+  "image/": "image-x-generic",
+  "text/": "text-x-generic",
 };
 
 function iconForMimeType (aMimeType) {
   for each (let [k, v] in Iterator(mapping)) {
+    if (aMimeType == k)
+      return v+".svg";
+  }
+  for each (let [k, v] in Iterator(fallbackMapping)) {
     if (aMimeType.indexOf(k) === 0)
       return v+".svg";
   }

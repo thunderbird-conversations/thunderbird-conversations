@@ -529,6 +529,8 @@ MonkeyPatch.prototype = {
         });
       };
 
+    let previouslySelectedUris = [];
+
     // This one completely nukes the original summarizeThread function, which is
     //  actually the entry point to the original ThreadSummary class.
     window.summarizeThread =
@@ -538,6 +540,17 @@ MonkeyPatch.prototype = {
 
         ensureLoadedAndRun(kStubUrl, function () {
           try {
+            // Should cancel most intempestive view refreshes, but only after we
+            //  made sure the multimessage pane is shown. The logic behind this
+            //  is the conversation in the message pane is already alive, and
+            //  the gloda query is updating messages just fine, so we should not
+            //  worry about message which are not in the view.
+            let newlySelectedUris = [msgHdrGetUri(x) for each (x in aSelectedMessages)];
+            if (arrayEquals(newlySelectedUris, previouslySelectedUris)) {
+              Log.debug("Hey, know what? The selection hasn't changed, so we're good!");
+              return;
+            }
+
             let scrollMode = self.determineScrollMode();
             let freshConversation = new self._Conversation(
               window,
@@ -546,6 +559,10 @@ MonkeyPatch.prototype = {
               ++window.Conversations.counter
             );
             freshConversation.outputInto(htmlpane, function (aConversation) {
+              // So we've been promoted to be the new conversation! Remember
+              //  that and update the currently selected URIs to prevent further
+              //  reflows.
+              previouslySelectedUris = newlySelectedUris;
               // One nasty behavior of the folder tree view is that it calls us
               //  every time a new message has been downloaded. So if you open
               //  your inbox all of a sudden and select a conversation, it's not

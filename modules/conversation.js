@@ -506,6 +506,8 @@ Conversation.prototype = {
 
   onItemsModified: function _Conversation_onItemsModified (aItems) {
     Log.debug("Updating conversation", this.counter, "global state...");
+    if (!this.completed || this._window.Conversations.counter != this.counter)
+      return;
 
     // This updates conversation-wide buttons (the conversation "read" status,
     //  for instance).

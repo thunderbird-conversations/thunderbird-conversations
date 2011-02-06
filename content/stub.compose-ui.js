@@ -381,7 +381,7 @@ ComposeSession.prototype = {
             body
           ].join("");
           // After we removed any trailing newlines, insert it into the textarea
-          $("textarea").val($("textarea").val() + txt); 
+          $("textarea").val($("textarea").val() + txt);
           // I <3 HTML5 selections.
           let node = $("textarea")[0];
           node.selectionStart = 0;
@@ -543,10 +543,10 @@ let sendListener = {
   },
 
   /**
-   * Notify the observer that the message has been sent.  This method is 
-   * called once when the networking library has finished processing the 
+   * Notify the observer that the message has been sent.  This method is
+   * called once when the networking library has finished processing the
    * message.
-   * 
+   *
    * This method is called regardless of whether the the operation was successful.
    * aMsgID   The message id for the mail message
    * status   Status code for the message send.
@@ -578,7 +578,7 @@ let sendListener = {
     if (NS_SUCCEEDED(aStatus)) {
       //if (gOldDraftToDelete)
       //  msgHdrsDelete([gOldDraftToDelete]);
-      pText("Message "+aMsgID+" sent successfully"); 
+      pText("Message "+aMsgID+" sent successfully");
     } else {
       pText("Couldn't send the message.");
       Log.debug("NS_FAILED onStopSending");
