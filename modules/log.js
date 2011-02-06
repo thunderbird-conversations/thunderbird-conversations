@@ -1,4 +1,4 @@
-var EXPORTED_SYMBOLS = ["setupLogging", "dumpCallStack"]
+var EXPORTED_SYMBOLS = ["setupLogging", "dumpCallStack", "logRoot"]
 
 Components.utils.import("resource:///modules/gloda/log4moz.js");
 
@@ -54,7 +54,8 @@ function setupFullLogging(name) {
 }
 
 // Must call this once to setup the root logger
-let MyLog = setupFullLogging("Conversations");
+let logRoot = "Conversations";
+let MyLog = setupFullLogging(logRoot);
 
 function dumpCallStack(e) {
   let frame = e ? e.stack : Components.stack;

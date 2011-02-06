@@ -35,141 +35,18 @@
  * ***** END LICENSE BLOCK ***** */
 
 var EXPORTED_SYMBOLS = [
-  // don't fetch the data 20 times
-  'gIdentities', 'fillIdentities',
-  // miscellaneous functions
-  'dateAsInMessageList', 'groupArray', 'range', 'uri',
-  'escapeHtml', 'MixIn', 'NS_FAILED', 'NS_SUCCEEDED',
   // heuristics for finding quoted parts
   'convertHotmailQuotingToBlockquote1', 'convertHotmailQuotingToBlockquote2',
   'convertOutlookQuotingToBlockquote', 'convertForwardedToBlockquote',
   'fusionBlockquotes',
-  // not related...
-  'parseShortName', 'joinWordList', 'parseMimeLine', 'iconForMimeType'
 ]
 
 const Ci = Components.interfaces;
 const Cc = Components.classes;
 const Cu = Components.utils;
-Cu.import("resource:///modules/gloda/mimemsg.js");
-Cu.import("resource:///modules/iteratorUtils.jsm"); // for fixIterator
-
-Cu.import("resource://conversations/MsgHdrUtils.jsm");
 
 const txttohtmlconv = Cc["@mozilla.org/txttohtmlconv;1"]
                         .createInstance(Ci.mozITXTToHTMLConv);
-const i18nDateFormatter = Cc["@mozilla.org/intl/scriptabledateformat;1"]
-                            .createInstance(Ci.nsIScriptableDateFormat);
-const headerParser = Cc["@mozilla.org/messenger/headerparser;1"]
-                       .getService(Ci.nsIMsgHeaderParser);
-const msgAccountManager = Cc["@mozilla.org/messenger/account-manager;1"]
-                             .getService(Ci.nsIMsgAccountManager);
-
-function NS_FAILED(v) {
-  return (v & 0x80000000);
-}
-
-function NS_SUCCEEDED(v) {
-  return !NS_FAILED(v);
-}
-
-let uri = function (msg) msg.folder.getUriForMsg(msg);
-
-
-/**
- * A global pointer to all the identities known for the user. Feel free to call
- * fillIdentities again if you feel that the user has updated them!
- */
-let gIdentities = {};
-function fillIdentities() {
-  for each (let id in fixIterator(msgAccountManager.allIdentities, Ci.nsIMsgIdentity)) {
-    gIdentities[id.email.toLowerCase()] = id;
-  }
-  gIdentities["default"] = msgAccountManager.defaultAccount.defaultIdentity;
-}
-// We're not fetching right away, because the default identity might be null.
-// What we need to do instead is wait for the mail-startup-done event and have
-//  the monkey-patch call fillIdentities.
-
-/**
- * A stupid formatting function that uses the i18nDateFormatter XPCOM component
- * to format a date just like in the message list
- * @param aDate a javascript Date object
- * @return a string containing the formatted date
- */
-function dateAsInMessageList(aDate) {
-  // Is it today? (Less stupid tests are welcome!)
-  let format = aDate.toLocaleDateString("%x") == (new Date()).toLocaleDateString("%x")
-    ? Ci.nsIScriptableDateFormat.dateFormatNone
-    : Ci.nsIScriptableDateFormat.dateFormatShort;
-  // That is an ugly XPCOM call!
-  return i18nDateFormatter.FormatDateTime(
-    "", format, Ci.nsIScriptableDateFormat.timeFormatNoSeconds,
-    aDate.getFullYear(), aDate.getMonth() + 1, aDate.getDate(),
-    aDate.getHours(), aDate.getMinutes(), aDate.getSeconds());
-}
-
-// thanks :asuth
-function MixIn(aConstructor, aMixIn) {
-  let proto = aConstructor.prototype;
-  for (let [name, func] in Iterator(aMixIn)) {
-    if (name.substring(0, 4) == "get_")
-      proto.__defineGetter__(name.substring(4), func);
-    else
-      proto[name] = func;
-  }
-}
-
-/**
- * Helper function to escape some XML chars, so they display properly in
- * innerHTML.
- *
- * @param s
- *        input text
- * @return The string with <, >, and & replaced by the corresponding entities.
- */
-function escapeHtml(s) {
-  s += "";
-  // stolen from selectionsummaries.js (thanks davida!)
-  return s.replace(/[<>&]/g, function(s) {
-      switch (s) {
-          case "<": return "&lt;";
-          case ">": return "&gt;";
-          case "&": return "&amp;";
-          default: throw Error("Unexpected match");
-          }
-      }
-  );
-}
-
-// thanks :asuth
-function range(begin, end) {
-  for (let i = begin; i < end; ++i) {
-    yield i;
-  }
-}
-
-/**
- * Group some array elements according to a key function
- * @param aItems The array elements (or anything Iterable)
- * @param aFn The function that take an element from the array and returns an id
- * @return an array of arrays, with each inner array containing all elements
- *  sharing the same key
- */
-function groupArray(aItems, aFn) {
-  let groups = {};
-  let orderedIds = [];
-  for each (let [i, item] in Iterator(aItems)) {
-    let id = aFn(item);
-    if (!groups[id]) {
-      groups[id] = [item];
-      orderedIds.push(id);
-    } else {
-      groups[id].push(item);
-    }
-  }
-  return [groups[id] for each ([, id] in Iterator(orderedIds))];
-}
 
 /* Below are hacks^W heuristics for finding quoted parts in a given email */
 
@@ -208,7 +85,7 @@ function encloseInBlockquote(aDoc, marker) {
   }
 }
 
-function trySel (aDoc, sel, remove) {
+function trySel(aDoc, sel, remove) {
   let marker = aDoc.querySelector(sel);
   if (marker) {
     encloseInBlockquote(aDoc, marker);
@@ -351,129 +228,4 @@ function fusionBlockquotes(aDoc) {
       blockquote.parentNode.removeChild(b);
     }
   }
-}
-
-/* Get a short name out of an email address or a name, suitable for condensed
- * display */
-function _parseShortName(str) {
-  if (str.indexOf("@") >= 0) { //firstname.lastname
-    var j = str.lastIndexOf("@");
-    var before = str.substring(0, str.lastIndexOf("@"));
-    if (before.indexOf(".") >= 0) {
-      var i = before.lastIndexOf(".");
-      var fst = before.substring(0, i);
-      var last = before.substring(i + 1, before.length);
-      if (fst.length > 1)
-        return fst;
-      else
-        return before;
-    } else {
-      return before;
-    }
-  } else {
-    var words = str.split(" ");
-    var found = false;
-    for (var i = 0; i < words.length; i++) {
-      if (words[0].toUpperCase() === words[0]) {
-        words.shift();
-        found = true;
-      }
-      else {
-        break;
-      }
-    }
-    if (words.length > 0 && found) { // PROTZENKO Jonathan
-      return words.join(" ");
-    } else {
-      var words = str.split(" ");
-      var found = false;
-      for (var i = words.length - 1; i >= 0; i--) {
-        if (words[words.length - 1].toUpperCase() === words[words.length - 1]) {
-          words.pop();
-          found = true;
-        }
-        else {
-          break;
-        }
-      }
-      if (words.length > 0 && found) { // Jonathan PROTZENKO
-        return words.join(" ");
-      } else { // Split on last space
-        var j = str.lastIndexOf(" ");
-        if (j >= 0 && words.length == 2) // we're conservative here
-          return str.substring(0, j);
-        else
-          return str;
-      }
-    }
-  }
-}
-
-function parseShortName(str) {
-  var r = _parseShortName(str);
-  if (r.length > 40) // please...
-    return r.substring(0, 40)+"…";
-  else
-    return r;
-}
-
-// Joins together names and format them as "John, Jane and Julie"
-function joinWordList (aElements, aInsertHtml) {
-  let wrap = aInsertHtml
-    ? function (x) "<span>" + x + "</span>"
-    : function (x) x
-  ;
-  let l = aElements.length;
-  if (l == 0)
-    return "";
-  else if (l == 1)
-    return aElements[0];
-  else {
-    let hd = aElements.slice(0, l - 1);
-    let tl = aElements[l-1];
-    return hd.join(wrap(", ")) + wrap(" and ") + tl;
-  }
-}
-
-// Wraps the low-level header parser stuff.
-//  @param aMimeLine a line that looks like "John <john@cheese.com>, Jane <jane@wine.com>"
-//  @return a list of { email, name } objects
-function parseMimeLine (aMimeLine) {
-  let emails = {};
-  let fullNames = {};
-  let names = {};
-  let numAddresses = headerParser.parseHeadersWithArray(aMimeLine, emails, names, fullNames);
-  if (numAddresses)
-    return [{ email: emails.value[i], name: names.value[i], fullName: fullNames.value[i] }
-      for each (i in range(0, numAddresses))];
-  else
-    return [{ email: "", name: "-", fullName: "-" }];
-}
-
-let mapping = {
-  "application/msword": "x-office-document",
-  "application/vnd.ms-excel": "x-office-spreadsheet",
-  "application/vnd.ms-powerpoint": "x-office-presentation",
-  "application/rtf": "x-office-document",
-  "video/": "video-x-generic",
-  "audio/": "audio-x-generic",
-  "image/": "image-x-generic",
-  //"message/": "email",
-  "text/": "text-x-generic",
-  "text/x-vcalendar": "x-office-calendar",
-  "text/x-vcard": "x-office-address-book",
-  "text/html": "text-html",
-  "application/zip": "package-x-generic",
-  "application/bzip2": "package-x-generic",
-  "application/x-gzip": "package-x-generic",
-  "application/x-tar": "package-x-generic",
-  "application/x-compressed": "package-x-generic",
-};
-
-function iconForMimeType (aMimeType) {
-  for each (let [k, v] in Iterator(mapping)) {
-    if (aMimeType.indexOf(k) === 0)
-      return v+".svg";
-  }
-  return "gtk-file.png";
 }

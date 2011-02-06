@@ -1,40 +1,16 @@
---- Changes since 2.0alpha1 ---
+--- Changes since 2.0alpha2 ---
 
-- Proper quoting support for quick reply
-- Fix performance issues for emails with a ton of contacts
-- Offer users the possibility to leave feedback in the Mozilla Messaging addons
-forum after 20 Thunderbird startups with Thunderbird Conversations enabled.
-- Fix ???s in quick replies (was caused when the reply had characters that were
-not covered by the original character encoding).
-- Update folder tags when switching folders.
-- Add a button to edit / add the contact into the Thunderbird address book
-- New 'Send & Archive' option (Control-Shift-Enter or Meta-Shift-Enter on OSX)
-- Make sure the message body is in disabled state while the sending process is
-taking place.
-- Make the text more understandable in the setup assistant. Don't allow the user
-to request changes again.
-- Fix issue with font rendering on OSX.
-- Make sure deleting messages is undoable.
-- Don't send the message multiple times in quick reply (happens if messages have
-been appended at the end of the conversation).
-- Fix a rare case where the quick reply would be unusable
-- Add links to Google Profiles and Flickr photo pages
-- Add a throbber when sending messages
-- Confirm sending empty messages.
-- Don't force the message pane into being shown if previously hidden with F8.
-- Make sure the focus is in the recipient field when hitting "edit" to edit the
-to:, cc: or bcc: list.
-- Change 'n' and 'p' keyboard shortcuts to the standard 'b' and 'f' Thunderbird
-ones. Prevents conflicts with muttator and other extensions which bind unused
-keys in Thunderbird.
-- Fix issue where archiving messages in a thread would prevent the last
-remaining message from being marked as read.
-- Make sure conversation view works fine in other folder tabs.
-- Take into account Reply-To headers when present for quick reply.
-- Fix "Copy Complete" issue.
-- Fixed issue where you could not use quick reply for recipients whose names
-contained commas.
-- Make standard keyboard shortcuts work even when the conversation view has
-focus (forward them to the main window).
-- Make sure we mark message as "replied to" (small blue arrow in the message
-list).
+- Improved conversations-in-separate-tabs: they now update automatically as new
+messages arrive, and some inconsistencies between multiple copies of the same
+conversation have been fixed.
+- Support for phishing warnings.
+- Support for Lightning notification bar, kudos to Philipp Kewisch!
+- Support for spellchecking the quick reply. Use right-click to pick a language.
+Will work only if using a recent Thunderbird (> 3.2).
+- Quick reply improvements: now saves recipients, and doesn't lock the UI
+anymore.
+- UI support for extra contact actions (create filter, monospace from this
+sender).
+- UI support for junking a message (only available if there's just one message
+in the conversation).
+- Remove dotted outline on selected messages.

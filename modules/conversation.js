@@ -1,3 +1,41 @@
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Thunderbird Conversations
+ *
+ * The Initial Developer of the Original Code is
+ *  Jonathan Protzenko <jonathan.protzenko@gmail.com>
+ * Portions created by the Initial Developer are Copyright (C) 2010
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
+
+"use strict";
+
 var EXPORTED_SYMBOLS = ['Conversation']
 
 const Ci = Components.interfaces;
@@ -9,10 +47,11 @@ Cu.import("resource:///modules/gloda/gloda.js");
 Cu.import("resource://conversations/log.js");
 Cu.import("resource://conversations/prefs.js");
 
-Cu.import("resource://conversations/MsgHdrUtils.jsm");
-Cu.import("resource://conversations/VariousUtils.jsm");
+Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
+Cu.import("resource://conversations/stdlib/misc.js");
 Cu.import("resource://conversations/message.js");
 Cu.import("resource://conversations/contact.js");
+Cu.import("resource://conversations/misc.js"); // for groupArray
 
 let Log = setupLogging("Conversations.Conversation");
 
@@ -88,7 +127,7 @@ let OracleMixIn = {
       }
     } else if (this.scrollMode == Prefs.kScrollSelected) {
       let gFolderDisplay = getMail3Pane().gFolderDisplay;
-      let key = uri(gFolderDisplay.selectedMessage);
+      let key = msgHdrGetUri(gFolderDisplay.selectedMessage);
       for (let i = 0; i < this.messages.length; ++i) {
         if (this.messages[i].message._uri == key) {
           needsScroll = i;
@@ -207,7 +246,7 @@ function ViewWrapper() {
   // We cannot compare messages by message-id (they have the same!), we cannot
   //  compare them by messageKey (not reliable), but URLs should be enough.
   this.byUri = {};
-  [this.byUri[uri(x)] = true
+  [this.byUri[msgHdrGetUri(x)] = true
     for each ([, x] in Iterator(mainWindow.gFolderDisplay.selectedMessages))];
 }
 
@@ -217,7 +256,7 @@ ViewWrapper.prototype = {
     let msgHdr = toMsgHdr(aMsg);
 
     let r =
-      (uri(msgHdr) in this.byUri) ||
+      (msgHdrGetUri(msgHdr) in this.byUri) ||
       (mainWindow.gDBView.findIndexOfMsgHdr(msgHdr, false) != nsMsgViewIndex_None)
     ;
     return r;
@@ -258,11 +297,35 @@ function Conversation(aWindow, aSelectedMessages, aScrollMode, aCounter) {
   // ]
   this.messages = [];
   this.counter = aCounter; // RO
+  // The Gloda query, so that it's not collected.
   this._query = null;
+  // The DOM node that holds all the messages.
   this._domNode = null;
+  // Function provided by the monkey-patch to do cleanup
   this._onComplete = null;
   this.viewWrapper = null;
+  // Gloda conversation ID
   this.id = null;
+  // Set to true by the monkey-patch once the conversation is fully built.
+  this.completed = false;
+  // Ok, interesting bit. Thunderbird has that non-strict threading thing, i.e.
+  //  it will thread messages together if they have a "Green Llama in your car"
+  //  "Re: Green Llama in your car" subject pattern, and EVEN THOUGH they do not
+  //  have the correct References: header set.
+  // Until 2.0alpha2, what we would do is:
+  //  - fetch the Gloda message collection,
+  //  - pick the first Gloda message, get the message collection for its
+  //  underlying conversation,
+  //  - merge the results for the conversations with the initially selected set,
+  //  - re-stream all other messages except for the first one, because we only
+  //  have their nsIMsgDbHdr.
+  // That's sub-optimal, because we actually have the other message's Gloda
+  //  representations at hand, it's just that because the headers do not set the
+  //  threading, gloda hasn't attached them to the first message.
+  // The solution is to merge the initial set of messages, the gloda messages
+  //  corresponding to the intermediate query, and the initially selected
+  //  messages...
+  this._intermediateResults = [];
 }
 
 Conversation.prototype = {
@@ -275,7 +338,7 @@ Conversation.prototype = {
     let messageIds = [x.messageId for each ([, x] in Iterator(this._initialSet))];
     return
       !gFolderDisplay.selectedMessage ||
-      !messageIds.filter(function (x) x == gFolderDisplay.selectedMessage.messageId).length;
+      !messageIds.some(function (x) x == gFolderDisplay.selectedMessage.messageId);
   },
 
   // This function contains the logic that runs a Gloda query on the initial set
@@ -284,32 +347,161 @@ Conversation.prototype = {
   //  _outputMessages.
   _fetchMessages: function _Conversation_fetchMessages () {
     let self = this;
-    Gloda.getMessageCollectionForHeaders(this._initialSet, {
-      onItemsAdded: function (aItems) {
-        if (!aItems.length) {
-          Log.warn("Warning: gloda query returned no messages"); 
-          self._getReady(self._initialSet.length + 1);
-          self.messages = [{
-              type: kMsgDbHdr,
-              message: new MessageFromDbHdr(self, msgHdr), // will run signal
-              msgHdr: msgHdr,
-              glodaMsg: null,
-            } for each ([, msgHdr] in Iterator(self._initialSet))];
-          self._signal();
-        } else {
-          self._query = aItems[0].conversation.getMessagesCollection(self, true);
-        }
-      },
+    // This is a "classic query", i.e. the one we use all the time: just obtain
+    //  a GlodaMessage for the selected message headers, and then pick the
+    //  first one, get its underlying GlodaConversation object, and then ask for
+    //  the GlodaConversation's messages.
+    let classicQuery = function () {
+      Gloda.getMessageCollectionForHeaders(self._initialSet, {
+        onItemsAdded: function (aItems) {
+          if (!aItems.length) {
+            Log.warn("Warning: gloda query returned no messages");
+            self._getReady(self._initialSet.length + 1);
+            self.messages = [{
+                type: kMsgDbHdr,
+                message: new MessageFromDbHdr(self, msgHdr), // will run signal
+                msgHdr: msgHdr,
+                glodaMsg: null,
+              } for each ([, msgHdr] in Iterator(self._initialSet))];
+            self._signal();
+          } else {
+            self._intermediateResults = aItems;
+            self._query = aItems[0].conversation.getMessagesCollection(self, true);
+          }
+        },
+        onItemsModified: function () {},
+        onItemsRemoved: function () {},
+        onQueryCompleted: function (aCollection) {},
+      }, null);
+    };
+
+    // This is a self-service case. GitHub and GetSatisfaction do not thread
+    //  emails related to a common topic, so we're doing it for them. Each
+    //  message is in its own conversation: we get all conversations which sport
+    //  this exact topic, and then, for each conversation, we get its only
+    //  message.
+    // All the messages are gathered in fusionItems, which is then used to call
+    //  self.onQueryCompleted.
+    let fusionCount = -1;
+    let fusionItems = [];
+    let fusionTop = function () {
+      fusionCount--;
+      if (fusionCount == 0) {
+        if (fusionItems.length)
+          self.onQueryCompleted({ items: fusionItems });
+        else
+          classicQuery();
+      }
+    };
+    let fusionListener =  {
+      onItemsAdded: function (aItems) {},
       onItemsModified: function () {},
       onItemsRemoved: function () {},
-      onQueryCompleted: function (aCollection) { },
-    }, null);
+      onQueryCompleted: function (aCollection) {
+        Log.debug("Fusionning", aCollection.items.length, "more items");
+        fusionItems = fusionItems.concat(aCollection.items);
+        fusionTop();
+      }
+    };
+
+    // This is the Gloda query to find out about conversations for a given
+    //  subject. This relies on our subject attribute provider found in
+    //  modules/plugins/glodaAttrProviders.js
+    let subjectQuery = function (subject) {
+      let query = Gloda.newQuery(Gloda.NOUN_CONVERSATION);
+      query.subject(subject);
+      query.getCollection({
+        onItemsAdded: function (aItems) {},
+        onItemsModified: function () {},
+        onItemsRemoved: function () {},
+        onQueryCompleted: function (aCollection) {
+          Log.debug("Custom query found", aCollection.items.length, "items");
+          if (aCollection.items.length) {
+            for each (let [k, v] in Iterator(aCollection.items)) {
+              fusionCount++;
+              v.getMessagesCollection(fusionListener);
+            }
+          }
+          fusionTop();
+        },
+      });
+    };
+
+    let firstEmail = this._initialSet.length == 1 && parseMimeLine(this._initialSet[0].author)[0].email;
+    switch (firstEmail) {
+      case "noreply.mozilla_messaging@getsatisfaction.com": {
+        // Special-casing for Roland and his GetSatisfaction emails.
+        let subject = this._initialSet[0].mime2DecodedSubject;
+        subject = subject.replace(/New (reply|comment): /, "");
+        Log.debug("Found a GetSatisfaction message, searching for subject:", subject);
+        fusionCount = 3;
+        subjectQuery("New reply: "+subject);
+        subjectQuery("New comment: "+subject);
+        subjectQuery("New question: "+subject);
+        break;
+      }
+
+      case "noreply@github.com": {
+        // Special-casing for me and my GitHub emails
+        let subject = this._initialSet[0].mime2DecodedSubject;
+        Log.debug("Found a GitHub message, searching for subject:", subject);
+        fusionCount = 1;
+        subjectQuery(subject);
+        break;
+      }
+
+      default:
+        // This is the regular case.
+        classicQuery();
+    }
   },
 
   // This is the observer for the second Gloda query, the one that returns a
   // conversation.
   onItemsAdded: function (aItems) {
+    // The first batch of messages will be treated in onQueryCompleted, this
+    //  handler is only interested in subsequent messages.
+    // If we are an old conversation that hasn't been collected, don't go
+    //  polluting some other conversation!
+    if (!this.completed || this._window.Conversations.counter != this.counter)
+      return;
     Log.debug("onItemsAdded", [x.headerMessageID for each ([, x] in Iterator(aItems))]);
+    // That's XPConnect bug 547088, so remove the setTimeout when it's fixed and
+    //  bump the version requirements in install.rdf.template (might be fixed in
+    //  time for Gecko 42, if we're lucky)
+    let self = this;
+    this._window.setTimeout(function _Conversation_onQueryCompleted_bug547088 () {
+      try {
+        // The MessageFromGloda constructor cannot work with gloda messages that
+        //  don't have a message header
+        aItems = aItems.filter(function (glodaMsg) glodaMsg.folderMessage);
+        // We want at least all messages from the Gloda collection
+        let messages = [{
+          type: kMsgGloda,
+          message: new MessageFromGloda(self, glodaMsg), // will fire signal when done
+          glodaMsg: glodaMsg,
+          msgHdr: null,
+        } for each ([, glodaMsg] in Iterator(aItems))];
+        // The message ids we already hold.
+        let messageIds = {};
+        [messageIds[toMsgHdr(m).messageId] = true
+          for each ([i, m] in Iterator(self.messages))];
+        // Don't add a message if we already have it.
+        messages = messages.filter(function (x) !(x.glodaMsg.headerMessageID in messageIds));
+        // Sort all the messages according to the date so that they are inserted
+        // in the right order.
+        let compare = function (m1, m2) msgDate(m1) - msgDate(m2);
+        // We can sort now because we don't need the Message instance to be
+        // fully created to get the date of a message.
+        messages.sort(compare);
+        if (messages.length)
+          self.appendMessages(messages);
+      } catch (e) {
+        Log.error(e);
+        dumpCallStack(e);
+      }
+    }, 0);
+
   },
 
   onItemsModified: function _Conversation_onItemsModified (aItems) {
@@ -346,17 +538,29 @@ Conversation.prototype = {
         // The MessageFromGloda constructor cannot work with gloda messages that
         //  don't have a message header
         aCollection.items = aCollection.items.filter(function (glodaMsg) glodaMsg.folderMessage);
-        // Register our id
-        self.id = aCollection.items[0].conversation.id; // all the same
+        // In most cases, all messages share the same conversation id (i.e. they
+        //  all belong to the same gloda conversations). There are rare cases
+        //  where we lie about this: non-strictly threaded messages regrouped
+        //  together, special queries for GitHub and GetSatisfaction, etc..
+        // Don't really knows what happens in those cases.
+        self.id = aCollection.items[0].conversation.id;
         // When the right number of signals has been fired, move on...
-        self._getReady(aCollection.items.length + self._initialSet.length + 1);
-        // We want at least all messages from the Gloda collection
+        self._getReady(aCollection.items.length
+          + self._intermediateResults.length
+          + self._initialSet.length
+          + 1
+        );
+        // We want at least all messages from the Gloda collection + all
+        //  messages from the intermediate set (see rationale in the
+        //  initialization of this._intermediateResults).
         self.messages = [{
           type: kMsgGloda,
           message: new MessageFromGloda(self, glodaMsg), // will fire signal when done
           glodaMsg: glodaMsg,
           msgHdr: null,
-        } for each ([, glodaMsg] in Iterator(aCollection.items))];
+        } for each ([, glodaMsg] in
+            Iterator(aCollection.items.concat(self._intermediateResults)))
+        ];
         // Here's the message IDs we know
         let messageIds = {};
         [messageIds[m.glodaMsg.headerMessageID] = true
@@ -368,7 +572,7 @@ Conversation.prototype = {
           // conversation selected, a new message arrives in that conversation,
           // and we get called immediately. So there's only one message gloda
           // hasn't indexed yet...
-          if (!(messageIds[msgHdr.messageId])) {
+          if (!(msgHdr.messageId in messageIds)) {
             Log.debug("Message with message-id", msgHdr.messageId, "was not in the gloda collection");
             self.messages.push({
               type: kMsgDbHdr,
@@ -455,16 +659,16 @@ Conversation.prototype = {
 
   removeMessage: function _Conversation_removeMessage (aMessage) {
     // Move the quick reply to the previous message
-    let i = [uri(toMsgHdr(x)) for each ([, x] in Iterator(this.messages))].indexOf(uri(aMessage._msgHdr));
+    let i = [msgHdrGetUri(toMsgHdr(x)) for each ([, x] in Iterator(this.messages))].indexOf(msgHdrGetUri(aMessage._msgHdr));
     Log.debug("Removing message", i);
     if (i == this.messages.length - 1 && this.messages.length > 1) {
       let $ = this._htmlPane.contentWindow.$;
       $(".message:last").prev().append($(".quickReply"));
     }
 
-    let badUri = uri(aMessage._msgHdr);
-    this.messages = this.messages.filter(function (x) uri(toMsgHdr(x)) != badUri);
-    this._initialSet = this._initialSet.filter(function (x) uri(x) != badUri);
+    let badUri = msgHdrGetUri(aMessage._msgHdr);
+    this.messages = this.messages.filter(function (x) msgHdrGetUri(toMsgHdr(x)) != badUri);
+    this._initialSet = this._initialSet.filter(function (x) msgHdrGetUri(x) != badUri);
     this._domNode.removeChild(aMessage._domNode);
   },
 
@@ -493,10 +697,6 @@ Conversation.prototype = {
       // Important: don't forget to move the quick reply part into the last
       //  message.
       $(".quickReply").appendTo($(".message:last"));
-      // Invalidate the last quick reply settings so that we make sure the
-      //  composition fields are updated to match the last message that arrived.
-      // XXX unless the user already started editing FIXME
-      this._htmlPane.contentWindow.gComposeParams.msgHdr = null;
 
       // Notify each message that it's been added to the DOM and that it can do
       //  event registration and stuff...
@@ -566,7 +766,7 @@ Conversation.prototype = {
       //  throw an exception here, we're fucked, and we can't recover ever,
       //  because every test trying to determine whether we can recycle will end
       //  up running over the buggy set of messages.
-      let currentMsgUris = [uri(toMsgHdr(x))
+      let currentMsgUris = [msgHdrGetUri(toMsgHdr(x))
         for each ([, x] in Iterator(currentMsgSet))
         if (toMsgHdr(x))];
       // Is a1 a prefix of a2? (I wish JS had pattern matching!)
@@ -584,7 +784,7 @@ Conversation.prototype = {
             return [false, null];
         }
       };
-      let myMsgUris = [uri(toMsgHdr(x))
+      let myMsgUris = [msgHdrGetUri(toMsgHdr(x))
         for each ([, x] in Iterator(this.messages))
         if (toMsgHdr(x))];
       let [shouldRecycle, _whichMessageUris] = isPrefix(currentMsgUris, myMsgUris);
@@ -622,15 +822,26 @@ Conversation.prototype = {
         this.messages = null;
         return;
       } else {
+        // We're about to blow up the old conversation. At this point, it's
+        //  still untouched, so if you need to save anything, do it NOW.
+        // If you want to do something once the new conversation is complete, do
+        //  it in monkeypatch.js
         Log.debug("Not recycling conversation");
         // We'll be replacing the old conversation
         this._window.Conversations.currentConversation.messages = [];
+        // We don't know yet if this is going to be a junkable conversation, so
+        //  when in doubt, reset. Actually, the final call to
+        //  _updateConversationButtons will update this.
+        this._domNode.ownerDocument.getElementById("conversationHeader").classList.remove("not-junkable");
         // Gotta save the quick reply, if there's one! Please note that
         //  contentWindow.Conversations is still wired onto the old
         //  conversation. Updating the global Conversations object and loading
         //  the new conversation's draft is not our responsibility, it's that of
         //  the monkey-patch, and it's done at the very end of the process.
-        this._htmlPane.contentWindow.onSave();
+        // This call actually starts the save process off the main thread, but
+        //  we're not doing anything besides saving the quick reply, so we don't
+        //  need for this call to complete before going on.
+        this._htmlPane.contentWindow.onSave(null, false);
       }
     }
 
@@ -678,9 +889,9 @@ Conversation.prototype = {
     subjectNode.setAttribute("title", subject);
     this._htmlPane.contentWindow.fakeTextOverflowSubject();
     this._htmlPane.contentDocument.title = subject;
-    // Invalidate the msgHdr so that the compose-ui.js can setup the fields next
-    //  time.
-    this._htmlPane.contentWindow.gComposeParams.msgHdr = null;
+    // Invalidate the composition session so that compose-ui.js can setup the
+    //  fields next time.
+    this._htmlPane.contentWindow.gComposeSession = null;
 
     // Move on to the next step
     this._expandAndScroll();
@@ -688,22 +899,28 @@ Conversation.prototype = {
 
   _updateConversationButtons: function _Conversation_updateConversationButtons () {
     // Bail if we're notified too early.
-    if (!this.messages.length || !this._domNode)
+    if (!this.messages || !this.messages.length || !this._domNode)
       return;
 
     // Make sure the toggle read/unread button is in the right state
     let markReadButton = this._htmlPane.contentDocument.querySelector("span.read");
-    if (this.messages.filter(function (x) !x.message.read).length)
+    if (this.messages.some(function (x) !x.message.read))
       markReadButton.classList.add("unread");
     else
       markReadButton.classList.remove("unread");
 
     // If some message is collapsed, then the initial state is "expand"
     let collapseExpandButton = this._htmlPane.contentDocument.querySelector("span.expand");
-    if (this.messages.filter(function (x) x.message.collapsed).length)
+    if (this.messages.some(function (x) x.message.collapsed))
       collapseExpandButton.classList.remove("collapse");
     else
       collapseExpandButton.classList.add("collapse");
+
+    // If we have more than one message, then "junk this message" doesn't make
+    //  sense anymore.
+    if (this.messages.length > 1 || msgHdrIsJunk(toMsgHdr(this.messages[0])))
+      this._domNode.ownerDocument.getElementById("conversationHeader")
+        .classList.add("not-junkable");
   },
 
   // Do all the penible stuff about scrolling to the right message and expanding

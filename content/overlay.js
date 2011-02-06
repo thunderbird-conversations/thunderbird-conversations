@@ -35,13 +35,19 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Dear AMO reviewer, please note that these files have var EXPORTED_SYMBOLS = [];
-Components.utils.import("resource://conversations/plugins/bugzilla.js");
+Components.utils.import("resource://conversations/plugins/glodaAttrProviders.js");
 Components.utils.import("resource://conversations/plugins/enigmail.js");
+Components.utils.import("resource://conversations/plugins/lightning.js");
 
 var Conversations = {
   // These two belong here, use getMail3Pane().Conversations to access them
   monkeyPatch: null,
+  // key: Message-ID
+  // value: a list of listeners
   msgListeners: {},
+  // key: Gloda Conversation ID
+  // value: a list of listeners that have a onDraftChanged method
+  draftListeners: {},
 
   // These two are replicated in the case of a conversation tab, so use
   //  Conversation._window.Conversations to access the right instance

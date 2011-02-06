@@ -78,6 +78,10 @@ button img {
   color: #0a0a0a;
 }
 
+#conversationHeader.not-junkable .junk-button {
+  display: none;
+}
+
 .subject {
   font-size: 93%;
   font-weight: bold;
@@ -319,6 +323,10 @@ a img {
   -moz-border-radius: 0 0 5px 5px;
 }
 
+.moreExpander {
+  float: right;
+}
+
 .to {
   color: #666;
   /* We enforce inline-block display so that we can compute the height and
@@ -434,15 +442,52 @@ ul.special-tags img {
   display: none;
 }
 
-.message .remoteContent {
+.message .notificationBar {
   padding: 10px;
-  background-color: rgba(0,255,0, 0.15);
   -moz-box-shadow: 0 0 3px rgba(0,0,0,0.15) inset;
   margin: 0 0 10px 0;
   border-width: 1px 0;
   border-style: solid;
   border-color: #ccc;
   color: #666;
+}
+
+.message .notificationBar button {
+  padding: 0 5px;
+  margin: 0 3px 0 0;
+}
+
+.message .lightningImipBar {
+  background-color: #baeeff;
+  color: #666;
+}
+
+.message .lightningImipImage {
+  height: 24px;
+  width: 24px;
+  vertical-align: middle;
+}
+
+.message .lightningImipButton {
+  float: right;
+}
+
+.message .phishingBar {
+  background-color: #ed6666;
+  color: #D7D7D7;
+}
+
+.message .phishingBar a {
+  text-decoration: none;
+  color: white;
+}
+
+.message .phishingBar a:hover {
+  text-decoration: underline;
+}
+
+.message .remoteContent {
+  background-color: rgba(0,255,0, 0.15);
 }
 
 .message .remoteContent a {
@@ -454,7 +499,7 @@ ul.special-tags img {
   text-decoration: underline;
 }
 
-.message.collapsed .remoteContent {
+.message.collapsed .notificationBar {
   display: none;
 }
 

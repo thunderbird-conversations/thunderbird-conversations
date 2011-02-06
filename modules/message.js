@@ -1,3 +1,41 @@
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Thunderbird Conversations
+ *
+ * The Initial Developer of the Original Code is
+ *  Jonathan Protzenko <jonathan.protzenko@gmail.com>
+ * Portions created by the Initial Developer are Copyright (C) 2010
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
+
+"use strict";
+
 var EXPORTED_SYMBOLS = ['Message', 'MessageFromGloda', 'MessageFromDbHdr']
 
 const Ci = Components.interfaces;
@@ -12,28 +50,42 @@ Cu.import("resource:///modules/templateUtils.js"); // for makeFriendlyDateAgo
 Cu.import("resource:///modules/gloda/utils.js");
 Cu.import("resource:///modules/gloda/mimemsg.js");
 Cu.import("resource:///modules/gloda/connotent.js"); // for mimeMsgToContentSnippetAndMeta
+Cu.import("resource:///modules/Services.jsm"); // https://developer.mozilla.org/en/JavaScript_code_modules/Services.jsm
 
-const gMessenger = Cc["@mozilla.org/messenger;1"]
-                   .createInstance(Ci.nsIMessenger);
-const gHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"]
-                      .getService(Ci.nsIMsgHeaderParser);
-const gMsgTagService = Cc["@mozilla.org/messenger/tagservice;1"]
-                       .getService(Ci.nsIMsgTagService);
-const ioService = Cc["@mozilla.org/network/io-service;1"]
-                  .getService(Ci.nsIIOService);
-const msgComposeService = Cc["@mozilla.org/messengercompose;1"]
-                          .getService(Ci.nsIMsgComposeService);
+// It's not really nice to write into someone elses object but this is what the
+// Services object is for.  We prefix with the "m" to ensure we stay out of their
+// namespace.
+XPCOMUtils.defineLazyGetter(Services, "mMessenger",
+                            function () {
+                              return Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
+                            });
+
+XPCOMUtils.defineLazyServiceGetter(Services, "mHeaderParser",
+                                   "@mozilla.org/messenger/headerparser;1",
+                                   "nsIMsgHeaderParser");
+
+XPCOMUtils.defineLazyServiceGetter(Services, "mMsgTagService",
+                                   "@mozilla.org/messenger/tagservice;1",
+                                   "nsIMsgTagService");
+
+XPCOMUtils.defineLazyServiceGetter(Services, "mMsgComposeService",
+                                   "@mozilla.org/messengercompose;1",
+                                   "nsIMsgComposeService");
+
 const kCharsetFromMetaTag = 9;
 const kCharsetFromChannel = 11;
 const kAllowRemoteContent = 2;
 
 let strings = new StringBundle("chrome://conversations/locale/main.properties");
 
-Cu.import("resource://conversations/AddressBookUtils.jsm");
-Cu.import("resource://conversations/VariousUtils.jsm");
-Cu.import("resource://conversations/MsgHdrUtils.jsm");
-Cu.import("resource://conversations/prefs.js");
+Cu.import("resource://conversations/stdlib/addressBookUtils.js");
+Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
+Cu.import("resource://conversations/stdlib/misc.js");
+Cu.import("resource://conversations/plugins/helpers.js");
+Cu.import("resource://conversations/quoting.js");
 Cu.import("resource://conversations/contact.js");
+Cu.import("resource://conversations/prefs.js");
+Cu.import("resource://conversations/misc.js"); // for iconForMimeType
 Cu.import("resource://conversations/hook.js");
 Cu.import("resource://conversations/log.js");
 
@@ -69,7 +121,7 @@ KeyListener.prototype = {
   // Any event that's handled *must* be stopped from bubbling upwards, because
   //  there's a topmost event listener on the DOM window that re-fires any
   //  keypress (that one is not capturing) into the main window. We have to do
-  //  this because otherwise event's dont make it out of the <browser
+  //  this because otherwise events dont make it out of the <browser
   //  id="multimessage"> that holds us when the conversation view has focus.
   // That's what makes cmd/ctrl-n work properly.
   onKeyPress: function _KeyListener_onKeyPressed (event) {
@@ -170,7 +222,7 @@ KeyListener.prototype = {
         break;
     }
   },
-}
+};
 
 // Call that one after setting this._msgHdr;
 function Message(aConversation) {
@@ -271,7 +323,12 @@ Message.prototype = {
         ? [att.url, "resize-me"]
         : ["chrome://conversations/skin/icons/"+iconForMimeType(att.contentType), "icon"]
       ;
-      let formattedSize = gMessenger.formatFileSize(att.size);
+      let formattedSize = "?";
+      try {
+        formattedSize = Services.mMessenger.formatFileSize(att.size);
+      } catch (e) {
+        Log.error(e);
+      }
       data.attachments.push({
         formattedSize: formattedSize,
         thumb: thumb,
@@ -350,46 +407,6 @@ Message.prototype = {
     this._domNode.getElementsByClassName("remoteContent")[0].style.display = "block";
   },
 
-  compose: function _Message_compose (aCompType, aEvent) {
-    let window = getMail3Pane();
-    if (aEvent.shiftKey) {
-      window.ComposeMessage(aCompType, Ci.nsIMsgCompFormat.OppositeOfDefault, this._msgHdr.folder, [this._uri]);
-    } else {
-      window.ComposeMessage(aCompType, Ci.nsIMsgCompFormat.Default, this._msgHdr.folder, [this._uri]);
-    }
-  },
-
-  forward: function _Message_forward (event) {
-    let forwardType = 0;
-    try {
-      forwardType = Prefs.getInt("mail.forward_message_mode");
-    } catch (e) {
-      Log.error("Unable to fetch preferred forward mode\n");
-    }
-    if (forwardType == 0)
-      this.compose(Ci.nsIMsgCompType.ForwardAsAttachment, event);
-    else
-      this.compose(Ci.nsIMsgCompType.ForwardInline, event);
-  },
-
-  register: function _Message_register (selector, f, options) {
-    let action;
-    if (typeof(options) == "undefined" || typeof(options.action) == "undefined")
-      action = "click";
-    else
-      action = options.action;
-    let nodes;
-    if (selector === null)
-      nodes = [this._domNode];
-    else if (typeof(selector) == "string")
-      nodes = this._domNode.querySelectorAll(selector);
-    else
-      nodes = [selector];
-
-    for each (let [, node] in Iterator(nodes))
-      node.addEventListener(action, f, false);
-  },
-
   // Actually, we only do these expensive DOM calls when we need to, i.e. when
   //  we're expanded for the first time (expand calls us).
   registerActions: function _Message_registerActions() {
@@ -419,10 +436,10 @@ Message.prototype = {
         self._msgHdr.ccList + "," +
         self._msgHdr.bccList
       ;
-      allEmails = gHeaderParser.removeDuplicateAddresses(allEmails, "");
+      allEmails = Services.mHeaderParser.removeDuplicateAddresses(allEmails, "");
       let emailAddresses = {};
       let names = {};
-      let numAddresses = gHeaderParser.parseHeadersWithArray(allEmails, emailAddresses, names, {});
+      let numAddresses = Services.mHeaderParser.parseHeadersWithArray(allEmails, emailAddresses, names, {});
       allEmails = [
         (names.value[i] ? (names.value[i] + " <" + x + ">") : x)
         for each ([i, x] in Iterator(emailAddresses.value))
@@ -430,8 +447,8 @@ Message.prototype = {
       ];
       let composeAllUri = "mailto:" + allEmails.join(",");
       Log.debug("URI:", composeAllUri);
-      let uri = ioService.newURI(composeAllUri, null, null);
-      msgComposeService.OpenComposeWindowWithURI(null, uri);
+      let uri = Services.io.newURI(composeAllUri, null, null);
+      Services.mMsgComposeService.OpenComposeWindowWithURI(null, uri);
     });
     this.register(".forward", function (event) self.forward(event));
     // These event listeners are all in the header, which happens to have an
@@ -450,11 +467,21 @@ Message.prototype = {
       msgHdrsDelete([self._msgHdr]);
       event.stopPropagation();
     });
-    this.register(".action-monospace", function (event) {
-      let senders = Prefs["monospaced_senders"] || [];
-      let email = self._realFrom.email || self._from.email;
-      if (!senders.filter(function (x) x == email).length) {
-        Prefs.setChar("conversations.monospaced_senders", senders.concat([email]).join(","));
+
+    // Pre-set the right value
+    let realFrom = String.trim(this._realFrom.email || this._from.email);
+    if (Prefs["monospaced_senders"].filter(function (x) x == realFrom).length)
+      this._domNode.getElementsByClassName("checkbox-monospace")[0].checked = true;
+
+    // This one is located in the first contact tooltip
+    this.register(".checkbox-monospace", function (event) {
+      let senders = Prefs["monospaced_senders"].filter(function (x) x != realFrom);
+      senders = senders.filter(function (x) x != realFrom);
+      Log.debug(senders, senders.length);
+      if (event.target.checked) {
+        Prefs.setChar("conversations.monospaced_senders", senders.concat([realFrom]).join(","));
+      } else {
+        Prefs.setChar("conversations.monospaced_senders", senders.join(","));
       }
       self._reloadMessage();
       event.stopPropagation();
@@ -473,13 +500,10 @@ Message.prototype = {
       event.stopPropagation();
     });
 
-    // Actually we might not need that list item, so possibly remove it!
-    let realFrom = String.trim(this._realFrom.email || this._from.email);
-    if (Prefs["monospaced_senders"].filter(function (x) x == realFrom).length) {
-      let node = this._domNode.getElementsByClassName("action-monospace")[0];
-      node.parentNode.removeChild(node);
-    }
-
+    this.register(".ignore-warning", function (event) {
+      self._domNode.getElementsByClassName("phishingBar")[0].style.display = "none";
+      self._msgHdr.setUint32Property("notAPhishMessage", 1);
+    });
     this.register(".show-remote-content", function (event) {
       self._domNode.getElementsByClassName("show-remote-content")[0].style.display = "none";
       self._msgHdr.setUint32Property("remoteContentPolicy", kAllowRemoteContent);
@@ -513,9 +537,9 @@ Message.prototype = {
       let att = this._attachments[i];
 
       /* I'm still surprised that this magically works */
-      let neckoURL = ioService.newURI(att.url, null, null);
-      neckoURL.QueryInterface(Ci.nsIMsgMessageUrl);
-      let uri = neckoURL.uri;
+      let uri = Services.io.newURI(att.url, null, null)
+                        .QueryInterface(Ci.nsIMsgMessageUrl)
+                        .uri;
 
       let attInfo = new mainWindow.createNewAttachmentInfo(
         att.contentType, att.url, att.name, uri, att.isExternal
@@ -563,14 +587,15 @@ Message.prototype = {
       if (!self._domNode.getElementsByClassName("quickReply").length)
         return;
 
+      let window = self._conversation._htmlPane.contentWindow;
+
       switch (event.keyCode) {
         case mainWindow.KeyEvent.DOM_VK_RETURN:
           if (isAccel(event)) {
-            if (event.shiftKey) {
-              self._conversation._htmlPane.contentWindow.onSend(null, { archive: true });
-            } else {
-              self._conversation._htmlPane.contentWindow.onSend();
-            }
+            if (event.shiftKey)
+              window.gComposeSession.send({ archive: true });
+            else
+              window.gComposeSession.send();
           }
           break;
 
@@ -578,6 +603,9 @@ Message.prototype = {
           Log.debug("Escape from quickReply");
           self._domNode.focus();
           break;
+
+        default:
+          window.startedEditing(true);
       }
       event.stopPropagation();
     }, { action: "keypress" });
@@ -660,7 +688,7 @@ Message.prototype = {
     while (tagList.firstChild)
       tagList.removeChild(tagList.firstChild);
     for each (let [, tag] in Iterator(tags)) {
-      let colorClass = "blc-" + gMsgTagService.getColorForKey(tag.key).substr(1);
+      let colorClass = "blc-" + Services.mMsgTagService.getColorForKey(tag.key).substr(1);
       let tagName = tag.tag;
       let tagNode = this._domNode.ownerDocument.createElement("li");
       tagNode.classList.add("tag");
@@ -763,119 +791,19 @@ Message.prototype = {
         iframe.addEventListener("load", function f_temp1(event) {
           try {
             iframe.removeEventListener("load", f_temp1, true);
-            // XXX cut this off and turn into a this._onMessageStreamed
+
             let iframeDoc = iframe.contentDocument;
-            let defaultSize = Prefs.getInt("font.size.variable.x-western");
-            let textSize = defaultSize * 12 / 16;
-            let smallSize = defaultSize * 11 / 16;
-
-            // Do some reformatting + deal with people who have bad taste
-            iframeDoc.body.setAttribute("style", "padding: 0; margin: 0; "+
-              "color: rgb(10, 10, 10); background-color: transparent; "+
-              "-moz-user-focus: none !important; ");
-
-            // Launch various crappy pieces of code^W^W^W^W heuristics to
-            //  convert most common quoting styles to real blockquotes. Spoiler:
-            //  most of them suck.
-            try {
-              convertOutlookQuotingToBlockquote(iframe.contentWindow, iframeDoc);
-              convertHotmailQuotingToBlockquote1(iframeDoc);
-              convertHotmailQuotingToBlockquote2(iframe.contentWindow, iframeDoc, Prefs["hide_quote_length"]);
-              convertForwardedToBlockquote(iframeDoc);
-              fusionBlockquotes(iframeDoc);
-            } catch (e) {
-              Log.warn(e);
-              dumpCallStack(e);
+            self.tweakFonts(iframeDoc);
+            self.detectQuotes(iframe);
+            if (self.checkForFishing(iframeDoc) && !self._msgHdr.getUint32Property("notAPhishMessage")) {
+              Log.debug("Phishing attempt");
+              self._domNode.getElementsByClassName("phishingBar")[0].style.display = "block";
             }
-            // this function adds a show/hide quoted text link to every topmost
-            // blockquote. Nested blockquotes are not taken into account.
-            let walk = function walk_ (elt) {
-              for (let i = elt.childNodes.length - 1; i >= 0; --i) {
-                let c = elt.childNodes[i];
-                // GMail uses class="gmail_quote", other MUAs use type="cite"...
-                // so just search for a regular blockquote
-                if (c.tagName && c.tagName.toLowerCase() == "blockquote") {
-                  if (c.getUserData("hideme") !== false) { // null is ok, true is ok too
-                    // Compute the approximate number of lines while the element is still visible
-                    let style;
-                    try {
-                      style = iframe.contentWindow.getComputedStyle(c, null);
-                    } catch (e) {
-                      // message arrived and window is not displayed, arg,
-                      // cannot get the computed style, BAD
-                    }
-                    if (style) {
-                      let numLines = parseInt(style.height) / parseInt(style.lineHeight);
-                      if (numLines > Prefs["hide_quote_length"]) {
-                        let showText = strings.get("showquotedtext");
-                        let hideText = strings.get("hidequotedtext");
-                        let div = iframeDoc.createElement("div");
-                        div.setAttribute("class", "link showhidequote");
-                        div.addEventListener("click", function div_listener (event) {
-                          let h = self._conversation._htmlPane.contentWindow.toggleQuote(event, showText, hideText);
-                          iframe.style.height = (parseFloat(iframe.style.height) + h)+"px";
-                        }, true);
-                        div.setAttribute("style", "color: orange; cursor: pointer; font-size: "+smallSize+"px;");
-                        div.appendChild(iframeDoc.createTextNode("- "+showText+" -"));
-                        elt.insertBefore(div, c);
-                        c.style.display = "none";
-                      }
-                    }
-                  }
-                } else {
-                  walk(c);
-                }
-              }
-            };
-            // https://github.com/protz/GMail-Conversation-View/issues#issue/179
-            // See link above for a rationale ^^
-            if (self.initialPosition > 0)
-              walk(iframeDoc);
-
-            // Assuming 16px is the default (like on, say, Linux), this gives
-            //  18px and 12px, which what Andy had in mind.
-            // We're applying the style at the beginning of the <head> tag and
-            //  on the body element so that it can be easily overridden by the
-            //  html.
-            // This is for HTML messages only.
-            let styleRules = [];
-            if (iframeDoc.querySelectorAll(":not(.mimemail-body) > .moz-text-html").length) {
-              styleRules = [
-                "body {",
-                //"  line-height: 112.5%;",
-                "  font-size: "+textSize+"px;",
-                "}",
-              ];
-            }
-
-            // Unless the user specifically asked for this message to be
-            //  dislayed with a monospaced font...
-            let [{name, email}] = self.parse(self._msgHdr.mime2DecodedAuthor);
-            if (Prefs["monospaced_senders"].indexOf(email) < 0) {
-              styleRules = styleRules.concat([
-                ".moz-text-flowed, .moz-text-plain {",
-                "  font-family: \""+Prefs.getChar("font.default")+"\" !important;",
-                "  font-size: "+textSize+"px !important;",
-                "  line-height: 112.5% !important;",
-                "}"
-              ]);
-            }
-
-            // Ugly hack (once again) to get the style inside the
-            // <iframe>. I don't think we can use a chrome:// url for
-            // the stylesheet because the iframe has a type="content"
-            let style = iframeDoc.createElement("style");
-            style.appendChild(iframeDoc.createTextNode(styleRules.join("\n")));
-            let head = iframeDoc.body.previousElementSibling;
-            if (head.firstChild)
-              head.insertBefore(style, head.firstChild);
-            else
-              head.appendChild(style);
 
             // Notify hooks that we just finished displaying a message. Must be
             //  performed now, not later.
             try {
-              [h.onMessageStreamed(self._msgHdr, self._domNode) for each ([, h] in Iterator(getHooks()))];
+              [h.onMessageStreamed(self._msgHdr, self._domNode, msgWindow) for each ([, h] in Iterator(getHooks()))];
             } catch (e) {
               Log.warn("Plugin returned an error:", e);
               dumpCallStack(e);
@@ -941,7 +869,7 @@ Message.prototype = {
             self._didStream = true;
             self._signal();
           } catch (e) {
-            Log.warn(e, "(are you running comm-central?)");
+            Log.error(e);
             Log.warn("Running signal once more to make sure we move on with our life... (warning, this WILL cause bugs)");
             dumpCallStack(e);
             self._didStream = true;
@@ -966,7 +894,17 @@ Message.prototype = {
         /* These steps are mandatory. Basically, the code that loads the
          * messages will always output UTF-8 as the OUTPUT ENCODING, so
          * we need to tell the iframe's docshell about it. */
-        let cv = iframe.docShell.contentViewer;
+        let cv;
+        try {
+          cv = iframe.docShell.contentViewer;
+        } catch (e) {
+          Log.error(e);
+          dumpCallStack(e);
+          Log.error("The iframe doesn't have a docShell, it probably doesn't belong to the DOM anymore."
+            +" Possible reasons include: you modified the jquery-tmpl template, and you did it wrong."
+            +" You changed conversations very fast, and the streaming completed after the conversation"
+            +" was blown away by the newer one.");
+        }
         cv.QueryInterface(Ci.nsIMarkupDocumentViewer);
         cv.hintCharacterSet = "UTF-8";
         cv.hintCharacterSetSource = kCharsetFromChannel;
@@ -997,7 +935,7 @@ Message.prototype = {
         [3] http://mxr.mozilla.org/comm-central/source/mailnews/base/public/nsIUrlListener.idl#48
         [4] http://mxr.mozilla.org/comm-central/source/mailnews/base/public/nsIMsgMessageService.idl#112
         */
-        let messageService = gMessenger.messageServiceFromURI(url.spec);
+        let messageService = Services.mMessenger.messageServiceFromURI(url.spec);
         let urlListener = {
           OnStartRunningUrl: function () {},
           OnStopRunningUrl: function () {},
@@ -1036,6 +974,8 @@ Message.prototype = {
   }
 }
 
+MixIn(Message, EventHelperMixIn);
+
 function MessageFromGloda(aConversation, aGlodaMsg) {
   this._msgHdr = aGlodaMsg.folderMessage;
   this._glodaMsg = aGlodaMsg;
@@ -1062,8 +1002,6 @@ MessageFromGloda.prototype = {
   __proto__: Message.prototype,
 }
 
-MixIn(MessageFromGloda, Message);
-
 function MessageFromDbHdr(aConversation, aMsgHdr) {
   this._msgHdr = aMsgHdr;
   Message.apply(this, arguments);
@@ -1085,9 +1023,10 @@ function MessageFromDbHdr(aConversation, aMsgHdr) {
 
       let [text, meta] = mimeMsgToContentSnippetAndMeta(aMimeMsg, aMsgHdr.folder, snippetLength);
       self._snippet = text;
-      if ("x-bugzilla-who" in aMimeMsg.headers) {
+      let alternativeSender = PluginHelpers.alternativeSender({ mime: aMimeMsg, header: aMsgHdr });
+      if (alternativeSender) {
         self._realFrom = self._from;
-        self._from = self.parse(aMimeMsg.headers["x-bugzilla-who"])[0];
+        self._from = self.parse(alternativeSender);
       }
 
       self._attachments = aMimeMsg.allUserAttachments
@@ -1109,10 +1048,193 @@ MessageFromDbHdr.prototype = {
   __proto__: Message.prototype,
 
   _fallbackSnippet: function _MessageFromDbHdr_fallbackSnippet () {
+    Log.debug("Using the default streaming code...");
     let body = msgHdrToMessageBody(this._msgHdr, true, snippetLength);
+    Log.debug("Body is", body);
     this._snippet = body.substring(0, snippetLength-1);
     this._signal();
   },
 }
 
-MixIn(MessageFromDbHdr, Message);
+/**
+ * This additional class holds all of the bad heuristics we're performing on a
+ *  message's inner DOM once it's been displayed in the conversation view. These
+ *  include tweaking the fonts, detectin quotes, etc.
+ * As it doesn't belong to the main logic, we're doing this in a separate class
+ *  that's MixIn'd the Message class.
+ */
+let PostStreamingFixesMixIn = {
+  defaultSize: Prefs.getInt("font.size.variable.x-western"),
+
+  tweakFonts: function (iframeDoc) {
+    let textSize = Math.round(this.defaultSize * 12 / 16);
+
+    // Assuming 16px is the default (like on, say, Linux), this gives
+    //  18px and 12px, which what Andy had in mind.
+    // We're applying the style at the beginning of the <head> tag and
+    //  on the body element so that it can be easily overridden by the
+    //  html.
+    // This is for HTML messages only.
+    let styleRules = [];
+    if (iframeDoc.querySelectorAll(":not(.mimemail-body) > .moz-text-html").length) {
+      styleRules = [
+        "body {",
+        //"  line-height: 112.5%;",
+        "  font-size: "+textSize+"px;",
+        "}",
+      ];
+    }
+
+    // Unless the user specifically asked for this message to be
+    //  dislayed with a monospaced font...
+    let [{name, email}] = this.parse(this._msgHdr.mime2DecodedAuthor);
+    if (Prefs["monospaced_senders"].indexOf(email) < 0) {
+      styleRules = styleRules.concat([
+        ".moz-text-flowed, .moz-text-plain {",
+        "  font-family: \""+Prefs.getChar("font.default")+"\" !important;",
+        "  font-size: "+textSize+"px !important;",
+        "  line-height: 112.5% !important;",
+        "}",
+      ]);
+    }
+
+    // Do some reformatting + deal with people who have bad taste. All these
+    // rules are important: some people just send messages with horrible colors,
+    // which ruins the conversation view. Gecko tends to automatically add
+    // padding/margin to html mails.
+    styleRules = styleRules.concat([
+      "body {",
+      "  margin: 0; padding: 0;",
+      "  color: rgb(10, 10, 10); background-color: white;",
+      "}",
+    ]);
+
+    // Ugly hack (once again) to get the style inside the
+    // <iframe>. I don't think we can use a chrome:// url for
+    // the stylesheet because the iframe has a type="content"
+    let style = iframeDoc.createElement("style");
+    style.appendChild(iframeDoc.createTextNode(styleRules.join("\n")));
+    let head = iframeDoc.body.previousElementSibling;
+    if (head.firstChild)
+      head.insertBefore(style, head.firstChild);
+    else
+      head.appendChild(style);
+  },
+
+  detectQuotes: function (iframe) {
+    let smallSize = Math.round(this.defaultSize * 11 / 16);
+
+    // Launch various crappy pieces of code^W^W^W^W heuristics to
+    //  convert most common quoting styles to real blockquotes. Spoiler:
+    //  most of them suck.
+    let self = this;
+    let iframeDoc = iframe.contentDocument;
+    try {
+      convertOutlookQuotingToBlockquote(iframe.contentWindow, iframeDoc);
+      convertHotmailQuotingToBlockquote1(iframeDoc);
+      convertHotmailQuotingToBlockquote2(iframe.contentWindow, iframeDoc, Prefs["hide_quote_length"]);
+      convertForwardedToBlockquote(iframeDoc);
+      fusionBlockquotes(iframeDoc);
+    } catch (e) {
+      Log.warn(e);
+      dumpCallStack(e);
+    }
+    // this function adds a show/hide quoted text link to every topmost
+    // blockquote. Nested blockquotes are not taken into account.
+    let walk = function walk_ (elt) {
+      for (let i = elt.childNodes.length - 1; i >= 0; --i) {
+        let c = elt.childNodes[i];
+        // GMail uses class="gmail_quote", other MUAs use type="cite"...
+        // so just search for a regular blockquote
+        if (c.tagName && c.tagName.toLowerCase() == "blockquote") {
+          if (c.getUserData("hideme") !== false) { // null is ok, true is ok too
+            // Compute the approximate number of lines while the element is still visible
+            let style;
+            try {
+              style = iframe.contentWindow.getComputedStyle(c, null);
+            } catch (e) {
+              // message arrived and window is not displayed, arg,
+              // cannot get the computed style, BAD
+            }
+            if (style) {
+              let numLines = parseInt(style.height) / parseInt(style.lineHeight);
+              if (numLines > Prefs["hide_quote_length"]) {
+                let showText = strings.get("showquotedtext");
+                let hideText = strings.get("hidequotedtext");
+                let div = iframeDoc.createElement("div");
+                div.setAttribute("class", "link showhidequote");
+                div.addEventListener("click", function div_listener (event) {
+                  let h = self._conversation._htmlPane.contentWindow.toggleQuote(event, showText, hideText);
+                  iframe.style.height = (parseFloat(iframe.style.height) + h)+"px";
+                }, true);
+                div.setAttribute("style", "color: orange; cursor: pointer; font-size: "+smallSize+"px;");
+                div.appendChild(iframeDoc.createTextNode("- "+showText+" -"));
+                elt.insertBefore(div, c);
+                c.style.display = "none";
+              }
+            }
+          }
+        } else {
+          walk(c);
+        }
+      }
+    };
+    // https://github.com/protz/GMail-Conversation-View/issues#issue/179
+    // See link above for a rationale ^^
+    if (self.initialPosition > 0)
+      walk(iframeDoc);
+  },
+
+  /**
+   * The phishing detector that's in Thunderbird would need a lot of rework:
+   * it's not easily extensible, and the code has a lot of noise, i.e. it just
+   * performs simple operations but it's written in a convoluted way. We should
+   * just rewrite everything, but for now, we just rewrite+simplify the main
+   * function, and still rely on the badly-designed underlying functions for the
+   * low-level treatments.
+   */
+  checkForFishing: function (iframeDoc) {
+    let gPhishingDetector = getMail3Pane().gPhishingDetector;
+    let isPhishing = false;
+    let links = iframeDoc.getElementsByTagName("a");
+    for (let [, a] in Iterator(links)) {
+      let linkText = a.textContent;
+      let linkUrl = a.getAttribute("href");
+      let hrefURL;
+      // make sure relative link urls don't make us bail out
+      try {
+        hrefURL = Services.io.newURI(linkUrl, null, null);
+      } catch(ex) {
+        continue;
+      }
+
+      // only check for phishing urls if the url is an http or https link.
+      // this prevents us from flagging imap and other internally handled urls
+      if (hrefURL.schemeIs('http') || hrefURL.schemeIs('https')) {
+        // The link is not suspicious if the visible text is the same as the URL,
+        // even if the URL is an IP address. URLs are commonly surrounded by
+        // < > or "" (RFC2396E) - so strip those from the link text before comparing.
+        if (linkText)
+          linkText = linkText.replace(/^<(.+)>$|^"(.+)"$/, "$1$2");
+
+        let failsStaticTests = false;
+        if (linkText != linkUrl) {
+          // Yes, the third parameter to misMatchedHostWithLinkText is actually
+          //  required, but it's some kind of an out value that's useless for
+          //  us, so just pass it {} so that it's happy...
+          failsStaticTests =
+            gPhishingDetector.hostNameIsIPAddress(hrefURL.host) && !gPhishingDetector.isLocalIPAddress(unobscuredHostNameValue)
+            || linkText && gPhishingDetector.misMatchedHostWithLinkText(hrefURL, linkText, {});
+        }
+
+        if (failsStaticTests) {
+          isPhishing = true;
+          break;
+        }
+      }
+    }
+    return isPhishing;
+  },
+};
+
+MixIn(Message, PostStreamingFixesMixIn);

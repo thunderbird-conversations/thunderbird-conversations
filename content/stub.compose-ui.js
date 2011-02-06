@@ -1,3 +1,5 @@
+"use strict";
+
 const Ci = Components.interfaces;
 const Cc = Components.classes;
 const Cu = Components.utils;
@@ -11,34 +13,70 @@ const gMessenger = Cc["@mozilla.org/messenger;1"]
 const gHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"]
                       .getService(Ci.nsIMsgHeaderParser);
 
-Cu.import("resource://conversations/VariousUtils.jsm");
-Cu.import("resource://conversations/MsgHdrUtils.jsm");
-Cu.import("resource://conversations/send.js");
-Cu.import("resource://conversations/compose.js");
+Cu.import("resource://conversations/stdlib/misc.js");
+Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
+Cu.import("resource://conversations/stdlib/send.js");
+Cu.import("resource://conversations/stdlib/compose.js");
 Cu.import("resource://conversations/log.js");
 
 let Log = setupLogging("Conversations.Stub.Compose");
 
-let gComposeParams = {
-  msgHdr: null,
-  identity: null,
-  to: null,
-  cc: null,
-  bcc: null,
-  subject: null,
-};
+Cu.import("resource://conversations/stdlib/SimpleStorage.js");
+let ss = SimpleStorage.createIteratorStyle("conversations");
 
-// bug 495747 #c10
-let url = "http://www.xulforum.org";
-let ios = Components.classes["@mozilla.org/network/io-service;1"]
-  .getService(Components.interfaces.nsIIOService);
-let ssm = Components.classes["@mozilla.org/scriptsecuritymanager;1"]
-  .getService(Components.interfaces.nsIScriptSecurityManager);
-let dsm = Components.classes["@mozilla.org/dom/storagemanager;1"]
-  .getService(Components.interfaces.nsIDOMStorageManager);
-let uri = ios.newURI(url, "", null);
-let principal = ssm.getCodebasePrincipal(uri);
-let storage = dsm.getLocalStorageForPrincipal(principal, "");
+// ----- "Draft modified" listeners
+
+let gDraftListener;
+
+// Called either by the monkey-patch when the conversation is fully built, or by
+//  stub.html when the conversation-in-tab is fully built. This function can
+//  only run once the conversation it lives in is complete.
+function registerQuickReply() {
+  let id = Conversations.currentConversation.id;
+  let mainWindow = getMail3Pane();
+
+  gDraftListener = {
+    onDraftChanged: function (aTopic) {
+      Log.debug("onDraftChanged", Conversations == mainWindow.Conversations);
+      switch (aTopic) {
+        case "modified":
+          loadDraft();
+          break;
+        case "removed":
+          $(".quickReplyHeader").hide();
+          $(".quickReply").removeClass('expand');
+          $("textarea").val("");
+          gComposeSession = null;
+          break;
+      }
+    },
+
+    notifyDraftChanged: function (aTopic) {
+      Log.debug("Notifying draft listeners for id", id);
+      let listeners = mainWindow.Conversations.draftListeners[id] || [];
+      for each (let [, listener] in Iterator(listeners)) {
+        let obj = listener.get();
+        if (!obj || obj == this)
+          continue;
+        obj.onDraftChanged(aTopic);
+      }
+      // While we're at it, cleanup...
+      listeners = listeners.filter(function (x) x.get());
+      mainWindow.Conversations.draftListeners[id] = listeners;
+    },
+  };
+
+  Log.debug("Registering draft listener for id", id);
+  if (!(id in mainWindow.Conversations.draftListeners))
+    mainWindow.Conversations.draftListeners[id] = [];
+  mainWindow.Conversations.draftListeners[id].push(Cu.getWeakReference(gDraftListener));
+
+  $("textarea").blur(function () {
+    Log.debug("Autosave...");
+    onSave();
+  });
+
+}
 
 // ----- Event listeners
 
@@ -47,25 +85,31 @@ function onTextareaClicked(event) {
   // Do it just once
   if (!$(event.target).parent().hasClass('expand')) {
     $(event.target).parent().addClass('expand');
-  }
-  if (!gComposeParams.msgHdr) { // first time
-    Log.debug("Setting up the initial quick reply compose parameters...");
-    let messages = Conversations.currentConversation.messages;
-    try {
-      setupReplyForMsgHdr(messages[messages.length - 1].message._msgHdr);
-    } catch (e) {
-      Log.debug(e);
-      dumpCallStack(e);
+    if (!gComposeSession) { // first time
+      Log.debug("Setting up the initial quick reply compose parameters...");
+      let messages = Conversations.currentConversation.messages;
+      try {
+        gComposeSession = new ComposeSession(function (x)
+          x.reply(messages[messages.length - 1].message._msgHdr)
+        );
+      } catch (e) {
+        Log.debug(e);
+        dumpCallStack(e);
+      }
+      scrollNodeIntoView(document.querySelector(".quickReply"));
     }
-    scrollNodeIntoView(document.querySelector(".quickReply"));
   }
+}
+
+function onUseEditor() {
+  if (gComposeSession.send({ popOut: true }))
+    onDiscard();
 }
 
 function showCc(event) {
   $(".ccList, .editCcList").css("display", "");
   $(".showCc").hide();
 }
-
 
 function showBcc(event) {
   $(".bccList, .editBccList").css("display", "");
@@ -77,121 +121,315 @@ function editFields(aFocusId) {
   $("#"+aFocusId).next().find(".token-input-input-token-facebook input").last().focus();
 }
 
-function onDiscard(event) {
-  $("textarea").val("");
-  onSave(event);
-}
-
-function onSave(event) {
-  let id = Conversations.currentConversation.id; // Gloda ID
-  if (id) {
-    storage.setItem("conversation"+id, $("textarea").val());
-  }
-  $(".quickReply").removeClass('expand');
-}
-
-function loadDraft() {
-  let id = Conversations.currentConversation.id; // Gloda ID
-  if (id) {
-    $("textarea").val(storage.getItem("conversation"+id));
-    $("#discard, #save").attr("disabled", "");
-  } else {
-    $("#discard, #save").attr("disabled", "disabled");
-  }
-}
-
-function onNewThreadClicked() {
-  if ($("#startNewThread:checked").length) {
-    $(".editSubject").css("display", "-moz-box");
-  } else {
-    $(".editSubject").css("display", "none");
-  }
-}
-
-function useEditor() {
-  if (onSend(null, { popOut: true }))
+function confirmDiscard(event) {
+  if (!startedEditing() || confirm('Are you sure you wish to discard this message ?'))
     onDiscard();
 }
 
-let gWillArchive = false;
-
-function onSend(event, options) {
-  let popOut = options && options.popOut;
-  let archive = options && options.archive;
-  gWillArchive = archive;
-  let textarea = document.getElementsByTagName("textarea")[0];
-  let msg = "Send an empty message?";
-  if (!popOut && !$(textarea).val().length && !confirm(msg))
-    return;
-
-  let isNewThread = $("#startNewThread:checked").length;
-  return sendMessage({
-      msgHdr: gComposeParams.msgHdr,
-      identity: gComposeParams.identity,
-      to: $("#to").val(),
-      cc: $("#cc").val(),
-      bcc: $("#bcc").val(),
-      subject: isNewThread ? $("#subject").val() : gComposeParams.subject,
-    }, {
-      compType: isNewThread ? Ci.nsIMsgCompType.New : Ci.nsIMsgCompType.ReplyAll,
-      deliverType: Ci.nsIMsgCompDeliverMode.Now,
-    }, textarea, {
-      progressListener: progressListener,
-      sendListener: sendListener,
-      stateListener: stateListener,
-    }, {
-      popOut: popOut,
-      archive: archive,
+function onDiscard(event) {
+  $("textarea").val("");
+  $(".quickReply").removeClass('expand');
+  $(".quickReplyHeader").hide();
+  let id = Conversations.currentConversation.id;
+  if (id)
+    SimpleStorage.spin(function () {
+      let r = yield ss.remove(id);
+      gComposeSession = null;
+      gDraftListener.notifyDraftChanged("removed");
+      yield SimpleStorage.kWorkDone;
     });
 }
 
-function transferQuickReplyToNewWindow(aWindow, aExpand) {
-  // The handler from stub.html called onSave before, and since saving/loading
-  //  is synchronous, it works. When we make saving/loading asynchronous, we'll
-  //  probably have to come up with something else.
-  aWindow.loadDraft();
-  // ^^ We have to load the draft anyways since the draft is not necessarily
-  //  from this very editing session, it might be a leftover draft from before,
-  //  so in any case it should be restored.
-  if (!gComposeParams.msgHdr) {
-    Log.debug("No quick reply session to transfer to the new tab");
+/**
+ * Save the current draft, or do nothing if the user hasn't started editing the
+ *  draft yet.
+ * @param event The event that led to this.
+ * @param aClose (optional) By default, true. Close the quick reply area after
+ *  saving.
+ */
+function onSave(event, aClose) {
+  if (!startedEditing())
+    return;
+
+  SimpleStorage.spin(function () {
+    let id = Conversations.currentConversation.id; // Gloda ID
+    if (id) {
+      yield ss.set(id, {
+        msgUri: msgHdrGetUri(gComposeSession.params.msgHdr),
+        from: gComposeSession.params.identity.email,
+        to: $("#to").val(),
+        cc: $("#cc").val(),
+        bcc: $("#bcc").val(),
+        body: $("textarea").val()
+      });
+      gDraftListener.notifyDraftChanged("modified");
+    }
+    // undefined is ok, means true
+    if (aClose === false)
+      $(".quickReply").removeClass('expand');
+    yield SimpleStorage.kWorkDone;
+  });
+}
+
+// This function is called once when the conversation is complete, and then
+//  potentially many times, if someone is editing the draft in another instance
+//  of the same conversation (i.e. if the conversation has another instance in a
+//  separate tab).
+// We ignore the edge cases where the set of messages in the conversation view
+//  doesn't correspond to a real gloda conversation (i.e. in the case of
+//  non-strict threading or custom queries). That's problematic because the same
+//  conversation might end up having different Gloda ids... hell, that's too
+//  bad.
+function loadDraft() {
+  let id = Conversations.currentConversation.id; // Gloda ID
+  if (!id) {
+    $("#save").attr("disabled", "disabled");
     return;
   }
-  try {
-    Log.debug("Transferring our quick reply session over to the new tab...");
-    // Now we've forwarded the contents. The two lines below setup from, to, cc,
-    //  bcc properly.
-    let [toNames, toEmails] = parse($("#to").val());
-    let [ccNames, ccEmails] = parse($("#cc").val());
-    let [bccNames, bccEmails] = parse($("#bcc").val());
-    aWindow.gComposeParams = {
-      msgHdr: gComposeParams.msgHdr,
-      identity: gComposeParams.identity,
-      to: [asToken(null, toName, toEmails[i], null)
-        for each ([i, toName] in Iterator(toNames))],
-      cc: [asToken(null, ccName, ccEmails[i], null)
-        for each ([i, ccName] in Iterator(ccNames))],
-      bcc: [asToken(null, bccName, bccEmails[i], null)
-        for each ([i, bccName] in Iterator(bccNames))],
-      subject: gComposeParams.subject,
-    };
-    aWindow.updateUI();
-    // Special code for the subject.
-    let isNewThread = $("#startNewThread:checked").length;
-    if (isNewThread) {
-      aWindow.$("#startNewThread")[0].checked = true;
-      aWindow.onNewThreadClicked();
-      aWindow.$("#subject").val($("#subject").val());
+
+  SimpleStorage.spin(function () {
+    let r = yield ss.get(id);
+    if (r) {
+      gComposeSession = new ComposeSession(function (x) x.draft(r));
+      startedEditing(true);
     }
-    // Open if already opened
-    if (aExpand)
-      aWindow.$("textarea").parent().addClass('expand');
-    // That should be pretty much all.
-  } catch (e) {
-    Log.error(e);
-    dumpCallStack(e);
+    yield SimpleStorage.kWorkDone;
+  });
+}
+
+
+// ----- The whole composition session and related actions...
+
+let gComposeSession;
+
+/**
+ * A jquery-like API. Pass nothing to get the value, pass a value to set it.
+ */
+function startedEditing (aVal) {
+  if (aVal === undefined) {
+    return gComposeSession && gComposeSession.startedEditing;
+  } else {
+    if (!gComposeSession) {
+      Log.error("No composition session yet");*
+      dumpCallStack();
+    } else {
+      gComposeSession.startedEditing = aVal;
+    }
   }
 }
+
+function ComposeSession (match) {
+  // A visitor pattern.
+  //  match({ reply(nsIMsgDbHdr), draft({ msgUri, from, to, cc, bcc, body }) })
+  this.match = match;
+  // A composition session may be setup (i.e. the fields in the UI filled with
+  //  the right values), but that doesn't mean the user has edited it yet...
+  this.startedEditing = false;
+  // Shall we archive this conversation after sending?
+  this.archive = false;
+  // These are the parameters that are defined once at the beginning of the
+  // compose session, and that won't change afterwards. Other parameters live in
+  // the UI, and their value is extracted from the UI before sending the
+  // message.
+  this.params = {
+    identity: null,
+    msgHdr: null,
+    subject: null,
+    // We treat these three as immutable, because we have no UI for them (and we
+    //  probably don't plan on implementing any).
+    returnReceipt: null, receiptType: null, requestDsn: null,
+  };
+  // Go!
+  this.setupIdentity();
+  this.setupMisc();
+  this.setupAutocomplete();
+  this.setupQuote();
+}
+
+ComposeSession.prototype = {
+
+  setupIdentity: function () {
+    let self = this;
+    let mainWindow = getMail3Pane();
+    let identity;
+    this.match({
+      reply: function (aMsgHdr) {
+        // Standard procedure for finding which identity to send with, as per
+        //  http://mxr.mozilla.org/comm-central/source/mail/base/content/mailCommands.js#210
+        let suggestedIdentity = mainWindow.getIdentityForHeader(aMsgHdr, Ci.nsIMsgCompType.ReplyAll);
+        identity = suggestedIdentity || gIdentities.default;
+      },
+
+      draft: function ({ from }) {
+        // The from parameter is a string, it's the email address that uniquely
+        //  identifies the identity. We have a fallback plan in case the user
+        //  has deleted the identity in-between (sounds unlikely, but who
+        //  knows?).
+        identity = gIdentities[from] || gIdentities.default;
+      },
+    });
+    $(".senderName").text(identity.fullName + " <"+identity.email+">");
+    self.params.identity = identity;
+    self.params.returnReceipt = identity.requestReturnReceipt;
+    self.params.receiptType = identity.receiptHeaderType;
+    self.params.requestDsn = identity.requestDSN;
+  },
+
+  setupMisc: function () {
+    let self = this;
+    this.match({
+      reply: function (aMsgHdr) {
+        self.params.msgHdr = aMsgHdr;
+        self.params.subject = "Re: "+aMsgHdr.mime2DecodedSubject;
+      },
+
+      draft: function ({ msgUri }) {
+        let last = function (a) a[a.length-1];
+        let msgHdr = msgUriToMsgHdr(msgUri);
+        self.params.msgHdr = msgHdr || last(Conversations.currentConversation.msgHdrs);
+        self.params.subject = "Re: "+self.params.msgHdr.mime2DecodedSubject;
+      },
+    });
+  },
+
+  setupAutocomplete: function () {
+    let self = this;
+    this.match({
+      reply: function (aMsgHdr) {
+        // Do the whole shebang to find out who to send to...
+        let [author, authorEmailAddress] = parse(aMsgHdr.mime2DecodedAuthor);
+        let [recipients, recipientsEmailAddresses] = parse(aMsgHdr.mime2DecodedRecipients);
+        let [ccList, ccListEmailAddresses] = parse(aMsgHdr.ccList);
+        let [bccList, bccListEmailAddresses] = parse(aMsgHdr.bccList);
+        let identity = self.params.identity;
+        let to = [], cc = [], bcc = [];
+
+        let isReplyToOwnMsg = false;
+        for each (let [i, identity] in Iterator(gIdentities)) {
+          // It happens that gIdentities.default is null!
+          if (!identity) {
+            Log.debug("This identity is null, pretty weird...");
+            continue;
+          }
+          let email = identity.email;
+          if (email == authorEmailAddress)
+            isReplyToOwnMsg = true;
+          if (recipientsEmailAddresses.some(function (x) x == email))
+            isReplyToOwnMsg = false;
+          if (ccListEmailAddresses.some(function (x) x == email))
+            isReplyToOwnMsg = false;
+        }
+
+        // Actually we are implementing the "Reply all" logic... that's better, no one
+        //  wants to really use reply anyway ;-)
+        if (isReplyToOwnMsg) {
+          to = [asToken(null, r, recipientsEmailAddresses[i], null)
+            for each ([i, r] in Iterator(recipients))];
+        } else {
+          to = [asToken(null, author, authorEmailAddress, null)];
+        }
+        cc = [asToken(null, cc, ccListEmailAddresses[i], null)
+          for each ([i, cc] in Iterator(ccList))
+          if (ccListEmailAddresses[i] != identity.email)];
+        if (!isReplyToOwnMsg)
+          cc = cc.concat
+            ([asToken(null, r, recipientsEmailAddresses[i], null)
+              for each ([i, r] in Iterator(recipients))
+              if (recipientsEmailAddresses[i] != identity.email)]);
+        bcc = [asToken(null, bcc, bccListEmailAddresses[i], null)
+          for each ([i, bcc] in Iterator(bccList))];
+
+        // We're streaming the message just to get the reply-to header... kind of a
+        //  shame...
+        try {
+          MsgHdrToMimeMessage(aMsgHdr, null, function (aMsgHdr, aMimeMsg) {
+            if ("reply-to" in aMimeMsg.headers) {
+              let [name, email] = parse(aMimeMsg.headers["reply-to"]);
+              if (email)
+                to = [asToken(null, name, email, null)];
+            }
+            setupAutocomplete(to, cc, bcc);
+          }, false); // don't download
+        } catch (e if e.result == Cr.NS_ERROR_FAILURE) { // Message not available offline.
+          setupAutocomplete(to, cc, bcc);
+        }
+      },
+
+      draft: function ({ to, cc, bcc }) {
+        let makeTokens = function (aList) {
+          let [list, listEmailAddresses] = parse(aList);
+          return [asToken(null, item, listEmailAddresses[i], null)
+            for each ([i, item] in Iterator(list))];
+        };
+        setupAutocomplete(makeTokens(to), makeTokens(cc), makeTokens(bcc));
+      },
+    });
+  },
+
+  setupQuote: function () {
+    this.match({
+      reply: function (aMsgHdr) {
+        quoteMsgHdr(aMsgHdr, function (aBody) {
+          // Join together the different parts
+          let date = (new Date(aMsgHdr.date/1000)).toLocaleString();
+          let [{ email, name }] = parseMimeLine(aMsgHdr.mime2DecodedAuthor);
+          let author = name || email;
+          // The >'s aren't automatically appended, that's what citeString is for.
+          let body = citeString("\n"+htmlToPlainText(aBody).trim());
+          let txt = ["\n\n",
+            "On ", date, ", ", author, " wrote:",
+            body
+          ].join("");
+          // After we removed any trailing newlines, insert it into the textarea
+          $("textarea").val($("textarea").val() + txt); 
+          // I <3 HTML5 selections.
+          let node = $("textarea")[0];
+          node.selectionStart = 0;
+          node.selectionEnd = 0;
+        });
+      },
+
+      draft: function ({ body }) {
+        $("textarea").val(body);
+      },
+    });
+  },
+
+  send: function (options) {
+    let self = this;
+    let popOut = options && options.popOut;
+    this.archive = options && options.archive;
+    let textarea = document.getElementsByTagName("textarea")[0];
+    let msg = "Send an empty message?";
+    if (!popOut && !$(textarea).val().length && !confirm(msg))
+      return;
+
+    return sendMessage({
+        msgHdr: self.params.msgHdr,
+        identity: self.params.identity,
+        to: $("#to").val(),
+        cc: $("#cc").val(),
+        bcc: $("#bcc").val(),
+        subject: self.params.subject,
+        returnReceipt: self.params.returnReceipt,
+        receiptType: self.params.receiptType,
+        requestDsn: self.params.requestDsn,
+      }, {
+        compType: Ci.nsIMsgCompType.ReplyAll,
+        deliverType: Ci.nsIMsgCompDeliverMode.Now,
+      }, textarea, {
+        progressListener: progressListener,
+        sendListener: sendListener,
+        stateListener: createStateListener(self,
+          Conversations.currentConversation.msgHdrs,
+          Conversations.currentConversation.id
+        ),
+      }, {
+        popOut: popOut,
+        archive: self.archive,
+      });
+  }
+};
 
 // ----- Helpers
 
@@ -205,136 +443,10 @@ function parse(aMimeLine) {
   return [names.value, emails.value];
 }
 
-// ----- Main logic
-
-// The logic that decides who to compose, from which address, etc. etc.
-function setupReplyForMsgHdr(aMsgHdr) {
-  // Standard procedure for finding which identity to send with, as per
-  // http://mxr.mozilla.org/comm-central/source/mail/base/content/mailCommands.js#210
-  let mainWindow = getMail3Pane();
-  let identity = mainWindow.getIdentityForHeader(aMsgHdr, Ci.nsIMsgCompType.ReplyAll)
-    || gIdentities.default;
-  Log.debug("We picked", identity.email, "for sending");
-  // Set the global parameters
-  gComposeParams.identity = identity;
-  gComposeParams.msgHdr = aMsgHdr;
-  gComposeParams.subject = "Re: "+aMsgHdr.mime2DecodedSubject;
-  $("#subject").val(gComposeParams.subject);
-
-  // Do the whole shebang to find out who to send to...
-  let [author, authorEmailAddress] = parse(aMsgHdr.mime2DecodedAuthor);
-  let [recipients, recipientsEmailAddresses] = parse(aMsgHdr.mime2DecodedRecipients);
-  let [ccList, ccListEmailAddresses] = parse(aMsgHdr.ccList);
-  let [bccList, bccListEmailAddresses] = parse(aMsgHdr.bccList);
-
-  let isReplyToOwnMsg = false;
-  for each (let [i, identity] in Iterator(gIdentities)) {
-    Log.debug("Iterating over identities", i, identity);
-    // It happens that gIdentities.default is null!
-    if (!identity) {
-      Log.debug("This identity is null, pretty weird...");
-      continue;
-    }
-    let email = identity.email;
-    if (email == authorEmailAddress)
-      isReplyToOwnMsg = true;
-    if (recipientsEmailAddresses.filter(function (x) x == email).length)
-      isReplyToOwnMsg = false;
-    if (ccListEmailAddresses.filter(function (x) x == email).length)
-      isReplyToOwnMsg = false;
-  }
-
-  // Actually we are implementing the "Reply all" logic... that's better, no one
-  //  wants to really use reply anyway ;-)
-  if (isReplyToOwnMsg) {
-    Log.debug("Replying to our own message...");
-    gComposeParams.to = [asToken(null, r, recipientsEmailAddresses[i], null)
-      for each ([i, r] in Iterator(recipients))];
-  } else {
-    gComposeParams.to = [asToken(null, author, authorEmailAddress, null)];
-  }
-  gComposeParams.cc = [asToken(null, cc, ccListEmailAddresses[i], null)
-    for each ([i, cc] in Iterator(ccList))
-    if (ccListEmailAddresses[i] != identity.email)];
-  if (!isReplyToOwnMsg)
-    gComposeParams.cc = gComposeParams.cc.concat
-      ([asToken(null, r, recipientsEmailAddresses[i], null)
-        for each ([i, r] in Iterator(recipients))
-        if (recipientsEmailAddresses[i] != identity.email)]);
-  gComposeParams.bcc = [asToken(null, bcc, bccListEmailAddresses[i], null)
-    for each ([i, bcc] in Iterator(bccList))];
-
-  // We're streaming the message just to get the reply-to header... kind of a
-  //  shame...
-  try {
-    MsgHdrToMimeMessage(aMsgHdr, null, function (aMsgHdr, aMimeMsg) {
-      if ("reply-to" in aMimeMsg.headers) {
-        let [name, email] = parse(aMimeMsg.headers["reply-to"]);
-        if (email) {
-          gComposeParams.to = [asToken(null, name, email, null)];
-        }
-      }
-      updateUI();
-      if (!$("textarea").val().length)
-        insertQuote(aMsgHdr);
-    }, false); // don't download
-  } catch (e if e.result == Cr.NS_ERROR_FAILURE) { // Message not available offline.
-    // And update our nice composition UI
-    updateUI();
-    if (!$("textarea").val().length)
-      insertQuote(aMsgHdr);
-  }
-}
-
-function insertQuote(aMsgHdr) {
-  quoteMsgHdr(aMsgHdr, function (body) {
-    // Join together the different parts
-    let date = new Date(aMsgHdr.date/1000);
-    let [{ email, name }] = parseMimeLine(aMsgHdr.mime2DecodedAuthor);
-    Log.debug(aMsgHdr.mime2DecodedAuthor, email, name);
-    Log.debug(body.trim(), citeString("\n"+body.trim()));
-    let txt = [
-      "\n\n",
-      "On ", date.toLocaleString(), ", ",
-      (name || email), 
-      " wrote:",
-      // Actually, the >'s aren't automatically appended
-      citeString("\n"+body.trim()),
-    ].join("");
-    // After we removed any trailing newlines, insert it into the textarea
-    $("textarea").val(txt); 
-    // I <3 HTML5 selections
-    let node = $("textarea")[0];
-    node.selectionStart = 0;
-    node.selectionEnd = 0;
-  });
-}
-
-// When all the composition parameters have been set, update the UI with them
-// (e.g. recipients, sender, etc.)
-function updateUI() {
-  let i = gComposeParams.identity;
-  $(".senderName").text(i.fullName + " <"+i.email+">");
-  setupAutocomplete();
-}
-
 // ----- Listeners.
 //
 // These are notified about the outcome of the send process and take the right
 //  action accordingly (close window on success, etc. etc.)
-//  
-// This process is inherently FLAWED because we can't listen for the end of the
-//  "save sent message" event which would actually tell us that we're done. From
-//  what I understand from
-//  http://mxr.mozilla.org/comm-central/source/mailnews/compose/src/nsMsgCompose.cpp#3520,
-//  the onStopSending event tells us that we're done if and only if we're not
-//  copying the message to the sent folder.
-// Otherwise, we need to listen for the OnStopCopy event.
-//  http://mxr.mozilla.org/comm-central/source/mailnews/compose/src/nsMsgSend.cpp#4149
-//  But this is harcoded and mListener is nsMsgComposeSendListener in
-//  nsMsgCompose.cpp (bad!).
-// There's a thing called a state listener that might be what we're looking
-//  for...
 
 function pValue (v) {
   $(".statusPercentage")
@@ -509,38 +621,50 @@ let copyListener = {
   ]),
 }
 
-// XXX Should be a closure on gWillArchive, gComposeParams, and
-//  Conversations.currentConversation.msgHdrs (for archiving purposes)
-let stateListener = {
-  NotifyComposeFieldsReady: function() {
-    // ComposeFieldsReady();
-  },
+function createStateListener (aComposeSession, aMsgHdrs, aId) {
+  return {
+    NotifyComposeFieldsReady: function() {
+      // ComposeFieldsReady();
+    },
 
-  NotifyComposeBodyReady: function() {
-    // if (gMsgCompose.composeHTML)
-    //   loadHTMLMsgPrefs();
-    // AdjustFocus();
-  },
+    NotifyComposeBodyReady: function() {
+      // if (gMsgCompose.composeHTML)
+      //   loadHTMLMsgPrefs();
+      // AdjustFocus();
+    },
 
-  ComposeProcessDone: function(aResult) {
-    if (NS_SUCCEEDED(aResult)) {
-      $(".quickReplyHeader").hide();
-      onDiscard();
-      // Well we assume the user hasn't changed the quick reply parameters in
-      //  the meanwhile... FIXME
-      let msgHdr = gComposeParams.msgHdr;
-      msgHdr.folder.addMessageDispositionState(msgHdr, Ci.nsIMsgFolder.nsMsgDispositionState_Replied);
-      msgHdr.folder.msgDatabase = null;
-      // Archive the whole conversation if needed
-      if (gWillArchive) {
-        // from stub.html. XXX this should be more subtle than that... the
-        //  conversation might be something else now...
-        archiveConversation();
+    ComposeProcessDone: function(aResult) {
+      Log.debug("ComposeProcessDone");
+      if (NS_SUCCEEDED(aResult)) {
+        // If the user didn't start a new composition session, hide the quick
+        //  reply area, clear draft, collapse.
+        if (aComposeSession == gComposeSession) {
+          $(".quickReplyHeader").hide();
+          $(".quickReply").removeClass('expand');
+          $("textarea").val("");
+          // We can do this because we're in the right if-block.
+          gComposeSession = null;
+          gDraftListener.notifyDraftChanged("removed");
+        }
+        // Remove the old stored draft, don't use onDiscard, because the compose
+        //  params might have changed in the meanwhile.
+        if (aId)
+          SimpleStorage.spin(function () {
+            yield ss.remove(aId);
+            yield SimpleStorage.kWorkDone;
+          });
+        // Do stuff to the message we replied to.
+        let msgHdr = aComposeSession.params.msgHdr;
+        msgHdr.folder.addMessageDispositionState(msgHdr, Ci.nsIMsgFolder.nsMsgDispositionState_Replied);
+        msgHdr.folder.msgDatabase = null;
+        // Archive the whole conversation if needed
+        if (aComposeSession.archive)
+          msgHdrsArchive(aMsgHdrs.filter(function (x) !msgHdrIsArchive(x)));
       }
-    }
-  },
+    },
 
-  SaveInFolderDone: function(folderURI) {
-    // DisplaySaveFolderDlg(folderURI);
-  }
-};
+    SaveInFolderDone: function(folderURI) {
+      // DisplaySaveFolderDlg(folderURI);
+    }
+  };
+}

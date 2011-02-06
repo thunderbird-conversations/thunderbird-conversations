@@ -23,7 +23,7 @@ function PrefManager() {
 
 PrefManager.prototype = {
 
-  split: function (s) Array.map(s.split(","), String.trim),
+  split: function (s) Array.map(s.split(","), String.trim).filter(String.trim),
 
   register: function mpo_register (observer) {
     prefsService.QueryInterface(Components.interfaces.nsIPrefBranch2);

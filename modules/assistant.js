@@ -21,8 +21,8 @@ Cu.import("resource:///modules/virtualFolderWrapper.js");
 Cu.import("resource:///modules/gloda/index_msg.js");
 Cu.import("resource:///modules/gloda/public.js");
 
-Cu.import("resource://conversations/VariousUtils.jsm");
-Cu.import("resource://conversations/MsgHdrUtils.jsm");
+Cu.import("resource://conversations/stdlib/misc.js");
+Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
 Cu.import("resource://conversations/prefs.js");
 Cu.import("resource://conversations/log.js");
 
@@ -151,6 +151,17 @@ let Customizations = {
 
   actionReindexAttachments: {
     install: function () {
+      let limit = 8192;
+      let popupShown = false;
+      let showPopup = function () {
+        if (popupShown)
+          return;
+        popupShown = true;
+        getMail3Pane().openDialog(
+          "chrome://conversations/content/indexing.html", "",
+          "chrome,width=820,height=500"
+        );
+      };
       let reIndexListener = function () {
         let listener = {
           /* called when new items are returned by the database query or freshly indexed */
@@ -165,6 +176,8 @@ let Customizations = {
           /* called when our database query completes */
           onQueryCompleted: function myListener_onQueryCompleted(aCollection) {
             Log.debug("Found", aCollection.items.length, "messages to reindex");
+            if (aCollection.items.length == limit)
+              showPopup();
             GlodaMsgIndexer.indexMessages([
               [x.folderMessage.folder, x.folderMessage.messageKey]
               for each ([, x] in Iterator(aCollection.items))
@@ -191,6 +204,7 @@ let Customizations = {
           } else {
             let query2 = Gloda.newQuery(Gloda.NOUN_MESSAGE);
             query2.from(aCollection.items[0]);
+            query2.limit(limit);
             query2.getCollection(reIndexListener()); // will top()
           }
         }
@@ -199,6 +213,7 @@ let Customizations = {
       let query3 = Gloda.newQuery(Gloda.NOUN_MESSAGE);
       Customizations.expect();
       query3.attachmentTypes();
+      query3.limit(limit);
       query3.getCollection(reIndexListener()); // will top()
     },
 
@@ -250,7 +265,7 @@ let Customizations = {
       let i = 0;
       let waitForIt = function () {
         if (smartInbox && mainWindow.gFolderDisplay.displayedFolder != smartInbox && i++ < 10) {
-          setTimeout(waitForIt, 150);
+          mainWindow.setTimeout(waitForIt, 150);
         } else {
           moveOn();
         }

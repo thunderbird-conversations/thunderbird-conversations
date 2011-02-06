@@ -179,10 +179,6 @@
         msgNode.setAttribute("tabindex", index+2);
     }, true);
 
-    window.addEventListener("unload", function () {
-      onSave();
-    }, false);
-
     // Below are event listeners for various actions. There is some logic
     //  involved, and they may talk to other parts of the code.
 
@@ -190,8 +186,8 @@
     //  be used either in a standalone tab or in the multimessage pane.
     // let Conversations = window.top.Conversations;
 
-    Components.utils.import("resource://conversations/VariousUtils.jsm");
-    Components.utils.import("resource://conversations/MsgHdrUtils.jsm");
+    Components.utils.import("resource://conversations/stdlib/misc.js");
+    Components.utils.import("resource://conversations/stdlib/msgHdrUtils.js");
     Components.utils.import("resource://conversations/prefs.js");
     Components.utils.import("resource://conversations/log.js");
 
@@ -232,13 +228,18 @@
       msgHdrsDelete(Conversations.currentConversation.msgHdrs);
     }
 
+    function junkConversation(event) {
+      // This callback is only activated when the conversation is not a
+      //  conversation in a tab AND there's only one message in the conversation,
+      //  i.e. the currently selected message
+      getMail3Pane().JunkSelectedMessages(true);
+      $("#conversationHeader").addClass("not-junkable");
+    }
+
     function detachTab(event) {
       let mainWindow = getMail3Pane();
       let tabmail = mainWindow.document.getElementById("tabmail");
-      // Save the current draft in case the user is actually trying to get more
-      //  space to edit it...
-      let willExpand = $("textarea").parent().hasClass("expand");
-      onSave();
+      let willExpand = $("textarea").parent().hasClass("expand") && startedEditing();
       tabmail.openTab("conversationTab", {
         onLoad: function _detachTab_onLoad (event, browser) {
           try {
@@ -246,6 +247,8 @@
               currentConversation: null,
               counter: 0,
             };
+            browser.contentWindow.document.getElementById("conversationHeader")
+              .classList.add("not-junkable");
             // Pick _initialSet and not msgHdrs so as to enforce the invariant
             //  that the messages from _initialSet are in the current view.
             let freshConversation = new mainWindow.Conversations.monkeyPatch._Conversation(
@@ -255,8 +258,17 @@
               ++browser.contentWindow.Conversations.counter
             );
             freshConversation.outputInto(browser, function (aConversation) {
+              // This is a stripped-down version of what's in monkeypatch.js,
+              //  make sure the two are in sync!
               browser.contentWindow.Conversations.currentConversation = aConversation;
-              transferQuickReplyToNewWindow(browser.contentWindow, willExpand);
+              if (willExpand)
+                browser.contentWindow.$("textarea").parent().addClass('expand');
+              aConversation.completed = true;
+              browser.contentWindow.registerQuickReply();
+              // Now this will save the OLD draft which will broadcast the
+              //  change to all listeners, so the new window will pickup the change,
+              //  and magically update itself.
+              onSave();
             });
           } catch (e) {
             Log.debug(e);
@@ -294,7 +306,6 @@
                   <div class="arrow inside"></div>
                 </li>
                 <li class="action-delete">delete this message</li>
-                <li class="action-monospace">this sender sends monospace</li>
                 <li class="action-classic">view using the classic reader</li>
                 <li class="action-source">view message source</li>
               </ul>
@@ -302,7 +313,21 @@
           </span>
         </div>
       </div>
-      <div class="remoteContent" style="display: none">
+      <div class="lightningImipBar notificationBar" style="display: none">
+        <img class="lightningImipImage" src="chrome://calendar/skin/cal-icon32.png"/>
+        <span class="lightningImipText"></span>
+        <button class="lightningImipButton lightningImipButton1" style="display: none"/>
+        <button class="lightningImipButton lightningImipButton2" style="display: none"/>
+        <button class="lightningImipButton lightningImipButton3" style="display: none"/>
+      </div>
+      <div class="phishingBar notificationBar" style="display: none">
+        <img src="chrome://messenger/skin/icons/phishing.png" style="vertical-align: middle;" />
+        This message may be a scam:
+        <span class="ignore-warning">
+          <a href="javascript:">ignore warning</a>
+        </span>
+      </div>
+      <div class="remoteContent notificationBar" style="display: none">
         Remote content was hidden:
         <span class="show-remote-content">
           <a href="javascript:">show remote content</a> -
@@ -406,15 +431,25 @@
           </a>
           {{/if}}
         </div>
-        <div class="tipFooter">
-          <button class="sendEmail">send email</button>
-          <button class="showInvolving">show involving</button>
+        <div class="tipFooter hiddenFooter" style="display:none;">
+          {{if (showMonospace)}}
+          <div style="margin-bottom:5px;">
+            <input type="checkbox" style="vertical-align: text-top" class="checkbox-monospace" />
+            <label style="color:#666; font-weight: normal">Messages from this sender in monospace</label>
+          </div>
+          {{/if}}
+          <button class="createFilter">create filter for sender</button>
           <button class="addContact" title="Add to address book">
             <img src="chrome://conversations/content/i/user_add.png" />
           </button>
           <button class="editContact" title="Edit contact in address book">
             <img src="chrome://conversations/content/i/user_edit.png" />
           </button>
+        </div>
+        <div class="tipFooter">
+          <button class="sendEmail">send email</button>
+          <button class="showInvolving">recent conversations</button>
+          <button class="moreExpander">+</button>
         </div>
       </div
     ></span
@@ -425,11 +460,6 @@
         <ul>
           <li class="showCc"><a onclick="showCc(); editFields();" href="javascript:">add cc</a> |</li>
           <li class="showBcc"><a onclick="showBcc(); editFields();" href="javascript:">add bcc</a></li>
-          <!-- |<li>
-            <input id="startNewThread" type="checkbox" style="vertical-align: text-top"
-              onclick="onNewThreadClicked();" />
-            start a new thread
-          </li>-->
         </ul>
         <ul>
           from:
@@ -471,10 +501,6 @@
           <li>James Burke</li>
           <li class="add-more">&nbsp;- <a href="javascript:" onclick="editFields('bcc');">edit</a></li>
         </ul>
-        <div class="editRecipientList editSubject hbox" style="display: none">
-          <div class="label">subject:</div>
-          <div class="boxFlex"><input type="text" id="subject"></div>
-        </div>
       </div>
       <div class="quickReplyHeader" style="display: none; overflow: auto">
         <span class="statusMessage" style="float: left;"></span>
@@ -484,18 +510,20 @@
             style="vertical-align: middle;" />
         </span>
       </div>
-      <textarea onclick="onTextareaClicked(event);"></textarea>
+      <textarea spellcheck="true" onclick="onTextareaClicked(event);"></textarea>
       <div class="quickReplyFooter" style="overflow: auto" tabindex="-1">
-        <button id="send" style="float:right;margin-left:3px;" onclick="onSend(event);">send</button>
+        <button id="send" style="float:right;margin-left:3px;" onclick="gComposeSession.send();">
+          send
+        </button>
         <button id="sendArchive" style="float:right;margin-left:3px;"
-            onclick="onSend(event, { archive: true });">
+            onclick="gComposeSession.send({ archive: true });">
           send &amp; archive
         </button>
         <button id="save" style="float:right" onclick="onSave(event);">save</button>
         <button id="discard" style="float: left;"
-          onclick="if (!$('textarea').val().length || confirm('Are you sure you wish to discard this message ?')) onDiscard();">discard</button>
+          onclick="confirmDiscard()">discard</button>
         <button style="float: left; margin-left: 3px"
-          onclick="useEditor();">continue using editor</button>
+          onclick="onUseEditor();">continue using editor</button>
       </div>
     </div>
   </script>
@@ -509,6 +537,9 @@
           </button>
           <button title="Archive this conversation" onclick="archiveConversation(event);">
             <img src="i/archive.png" />
+          </button>
+          <button title="Junk this message" class="junk-button" onclick="junkConversation(event);">
+            <img src="i/junk.png" />
           </button>
           <button title="Expand/collapse all messages" onclick="expandCollapse(event);">
             <span class="expand"></span>
