@@ -52,14 +52,26 @@ Cu.import("resource:///modules/gloda/mimemsg.js");
 Cu.import("resource:///modules/gloda/connotent.js"); // for mimeMsgToContentSnippetAndMeta
 Cu.import("resource:///modules/Services.jsm"); // https://developer.mozilla.org/en/JavaScript_code_modules/Services.jsm
 
-const gMessenger = Cc["@mozilla.org/messenger;1"]
-                   .createInstance(Ci.nsIMessenger);
-const gHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"]
-                      .getService(Ci.nsIMsgHeaderParser);
-const gMsgTagService = Cc["@mozilla.org/messenger/tagservice;1"]
-                       .getService(Ci.nsIMsgTagService);
-const msgComposeService = Cc["@mozilla.org/messengercompose;1"]
-                          .getService(Ci.nsIMsgComposeService);
+// It's not really nice to write into someone elses object but this is what the
+// Services object is for.  We prefix with the "m" to ensure we stay out of their
+// namespace.
+XPCOMUtils.defineLazyGetter(Services, "mMessenger",
+                            function () {
+                              return Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
+                            });
+
+XPCOMUtils.defineLazyServiceGetter(Services, "mHeaderParser",
+                                   "@mozilla.org/messenger/headerparser;1",
+                                   "nsIMsgHeaderParser");
+
+XPCOMUtils.defineLazyServiceGetter(Services, "mMsgTagService",
+                                   "@mozilla.org/messenger/tagservice;1",
+                                   "nsIMsgTagService");
+
+XPCOMUtils.defineLazyServiceGetter(Services, "mMsgComposeService",
+                                   "@mozilla.org/messengercompose;1",
+                                   "nsIMsgComposeService");
+
 const kCharsetFromMetaTag = 9;
 const kCharsetFromChannel = 11;
 const kAllowRemoteContent = 2;
@@ -313,7 +325,7 @@ Message.prototype = {
       ;
       let formattedSize = "?";
       try {
-        formattedSize = gMessenger.formatFileSize(att.size);
+        formattedSize = Services.mMessenger.formatFileSize(att.size);
       } catch (e) {
         Log.error(e);
       }
@@ -424,10 +436,10 @@ Message.prototype = {
         self._msgHdr.ccList + "," +
         self._msgHdr.bccList
       ;
-      allEmails = gHeaderParser.removeDuplicateAddresses(allEmails, "");
+      allEmails = Services.mHeaderParser.removeDuplicateAddresses(allEmails, "");
       let emailAddresses = {};
       let names = {};
-      let numAddresses = gHeaderParser.parseHeadersWithArray(allEmails, emailAddresses, names, {});
+      let numAddresses = Services.mHeaderParser.parseHeadersWithArray(allEmails, emailAddresses, names, {});
       allEmails = [
         (names.value[i] ? (names.value[i] + " <" + x + ">") : x)
         for each ([i, x] in Iterator(emailAddresses.value))
@@ -436,7 +448,7 @@ Message.prototype = {
       let composeAllUri = "mailto:" + allEmails.join(",");
       Log.debug("URI:", composeAllUri);
       let uri = Services.io.newURI(composeAllUri, null, null);
-      msgComposeService.OpenComposeWindowWithURI(null, uri);
+      Services.mMsgComposeService.OpenComposeWindowWithURI(null, uri);
     });
     this.register(".forward", function (event) self.forward(event));
     // These event listeners are all in the header, which happens to have an
@@ -676,7 +688,7 @@ Message.prototype = {
     while (tagList.firstChild)
       tagList.removeChild(tagList.firstChild);
     for each (let [, tag] in Iterator(tags)) {
-      let colorClass = "blc-" + gMsgTagService.getColorForKey(tag.key).substr(1);
+      let colorClass = "blc-" + Services.mMsgTagService.getColorForKey(tag.key).substr(1);
       let tagName = tag.tag;
       let tagNode = this._domNode.ownerDocument.createElement("li");
       tagNode.classList.add("tag");
@@ -923,7 +935,7 @@ Message.prototype = {
         [3] http://mxr.mozilla.org/comm-central/source/mailnews/base/public/nsIUrlListener.idl#48
         [4] http://mxr.mozilla.org/comm-central/source/mailnews/base/public/nsIMsgMessageService.idl#112
         */
-        let messageService = gMessenger.messageServiceFromURI(url.spec);
+        let messageService = Services.mMessenger.messageServiceFromURI(url.spec);
         let urlListener = {
           OnStartRunningUrl: function () {},
           OnStopRunningUrl: function () {},
