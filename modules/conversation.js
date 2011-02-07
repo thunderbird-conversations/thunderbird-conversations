@@ -540,6 +540,13 @@ Conversation.prototype = {
         // The MessageFromGloda constructor cannot work with gloda messages that
         //  don't have a message header
         aCollection.items = aCollection.items.filter(function (glodaMsg) glodaMsg.folderMessage);
+        aCollection.items = aCollection.items.filter(
+          function (glodaMsg)
+            let (msgHdr = glodaMsg.folderMessage)
+            let (r = msgHdr.folder.msgDatabase.ContainsKey(msgHdr.messageKey))
+            (msgHdr.folder.msgDatabase = null,
+            r)
+        );
         // In most cases, all messages share the same conversation id (i.e. they
         //  all belong to the same gloda conversations). There are rare cases
         //  where we lie about this: non-strictly threaded messages regrouped
