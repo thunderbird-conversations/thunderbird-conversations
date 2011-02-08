@@ -1026,7 +1026,7 @@ function MessageFromDbHdr(aConversation, aMsgHdr) {
       let alternativeSender = PluginHelpers.alternativeSender({ mime: aMimeMsg, header: aMsgHdr });
       if (alternativeSender) {
         self._realFrom = self._from;
-        self._from = self.parse(alternativeSender);
+        self._from = self.parse(alternativeSender)[0];
       }
 
       self._attachments = aMimeMsg.allUserAttachments
@@ -1105,7 +1105,7 @@ let PostStreamingFixesMixIn = {
     styleRules = styleRules.concat([
       "body {",
       "  margin: 0; padding: 0;",
-      "  color: rgb(10, 10, 10); background-color: white;",
+      "  color: rgb(10, 10, 10); background-color: transparent;",
       "}",
     ]);
 
