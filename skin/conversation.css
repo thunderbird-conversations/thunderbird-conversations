@@ -74,6 +74,12 @@ button img {
   overflow: hidden;
 }
 
+.subject a.text-link {
+  color: #3875d7;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
 .actions {
 }
 

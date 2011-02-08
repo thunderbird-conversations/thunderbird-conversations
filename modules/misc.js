@@ -36,8 +36,11 @@
 
 var EXPORTED_SYMBOLS = [
   'groupArray', 'joinWordList', 'iconForMimeType',
-  'EventHelperMixIn', 'arrayEquals',
+  'EventHelperMixIn', 'arrayEquals', 'LINKS_REGEX',
+  'linkifySubject',
 ]
+
+var LINKS_REGEX = /((\w+):\/\/[^<>()'"\s]+|www(\.[-\w]+){2,})/;
 
 const Ci = Components.interfaces;
 const Cc = Components.classes;
@@ -178,4 +181,36 @@ let EventHelperMixIn = {
       node.addEventListener(action, f, false);
   },
 
+}
+
+function linkifySubject(subject, doc) {
+  /* utility function to split text and links */
+  function linkifySplit(text, doc) {
+    let matches = LINKS_REGEX.exec(text);
+    let pre, post = null;
+    [pre, post] = text.split(matches[1]);
+    let link = doc.createElement("a");
+    link.appendChild(doc.createTextNode(matches[1]));
+    link.setAttribute("href", matches[1]);
+    link.setAttribute("title", matches[1]);
+    link.setAttribute("class","text-link");
+    link.setAttribute("onclick", "openLink(event); return false;");
+    return [pre,link,post];
+  }
+  let text = subject;
+  let node = doc.createElement("span");
+  /* loop through multiple possible links in the subject */
+  while(text && LINKS_REGEX.test(text)) {
+    let pre, link, post = null;
+    [pre,link,post] = linkifySplit(text, doc);
+    /* we can't assume that any pre or post text was given, only a link */
+    if (pre && pre.length > 0)
+      node.appendChild(doc.createTextNode(pre));
+    node.appendChild(link);
+    text = post;
+  }
+  if (text && text.length > 0) {
+    node.appendChild(doc.createTextNode(text));
+  }
+  return node;
 }

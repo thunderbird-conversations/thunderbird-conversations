@@ -155,6 +155,12 @@
       $("#messageList").empty();
     }
 
+    function openLink(event) {
+      Components.classes["@mozilla.org/messenger;1"]
+                .createInstance(Components.interfaces.nsIMessenger)
+                .launchExternalURL(event.originalTarget.getAttribute("href"));
+    }
+
     document.addEventListener("focus", function (event) {
       /* This is a persistent event listener. It can operate multiple
        * times. We have the invariant that for a given conversation, there's at

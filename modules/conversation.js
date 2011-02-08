@@ -887,7 +887,15 @@ Conversation.prototype = {
     // Set the subject properly
     let subjectNode = this._domNode.ownerDocument.getElementsByClassName("subject")[0];
     let subject = this.messages[0].message.subject;
-    subjectNode.textContent = subject || "(no subject)";
+    // Clear out the subject node
+    while(subjectNode.firstChild) {
+      subjectNode.removeChild(subjectNode.firstChild);
+    }
+    if (LINKS_REGEX.test(subject)) {
+      subjectNode.appendChild(linkifySubject(subject, this._domNode.ownerDocument));
+    } else {
+      subjectNode.textContent = subject || "(no subject)";
+    }
     subjectNode.setAttribute("title", subject);
     this._htmlPane.contentWindow.fakeTextOverflowSubject();
     this._htmlPane.contentDocument.title = subject;
