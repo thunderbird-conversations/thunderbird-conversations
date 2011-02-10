@@ -45,12 +45,13 @@ const Cr = Components.results;
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI
 Cu.import("resource://gre/modules/PluralForm.jsm");
+Cu.import("resource://gre/modules/Services.jsm"); // https://developer.mozilla.org/en/JavaScript_code_modules/Services.jsm
+Cu.import("resource:///modules/MailServices.jsm"); // bug 629462
 Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
 Cu.import("resource:///modules/templateUtils.js"); // for makeFriendlyDateAgo
 Cu.import("resource:///modules/gloda/utils.js");
 Cu.import("resource:///modules/gloda/mimemsg.js");
 Cu.import("resource:///modules/gloda/connotent.js"); // for mimeMsgToContentSnippetAndMeta
-Cu.import("resource:///modules/Services.jsm"); // https://developer.mozilla.org/en/JavaScript_code_modules/Services.jsm
 
 // It's not really nice to write into someone elses object but this is what the
 // Services object is for.  We prefix with the "m" to ensure we stay out of their
@@ -59,18 +60,6 @@ XPCOMUtils.defineLazyGetter(Services, "mMessenger",
                             function () {
                               return Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
                             });
-
-XPCOMUtils.defineLazyServiceGetter(Services, "mHeaderParser",
-                                   "@mozilla.org/messenger/headerparser;1",
-                                   "nsIMsgHeaderParser");
-
-XPCOMUtils.defineLazyServiceGetter(Services, "mMsgTagService",
-                                   "@mozilla.org/messenger/tagservice;1",
-                                   "nsIMsgTagService");
-
-XPCOMUtils.defineLazyServiceGetter(Services, "mMsgComposeService",
-                                   "@mozilla.org/messengercompose;1",
-                                   "nsIMsgComposeService");
 
 const kCharsetFromMetaTag = 9;
 const kCharsetFromChannel = 11;
@@ -436,10 +425,11 @@ Message.prototype = {
         self._msgHdr.ccList + "," +
         self._msgHdr.bccList
       ;
-      allEmails = Services.mHeaderParser.removeDuplicateAddresses(allEmails, "");
+      allEmails = MailServices.headerParser.removeDuplicateAddresses(allEmails, "");
       let emailAddresses = {};
       let names = {};
-      let numAddresses = Services.mHeaderParser.parseHeadersWithArray(allEmails, emailAddresses, names, {});
+      let numAddresses = MailServices.headerParser
+                          .parseHeadersWithArray(allEmails, emailAddresses, names, {});
       allEmails = [
         (names.value[i] ? (names.value[i] + " <" + x + ">") : x)
         for each ([i, x] in Iterator(emailAddresses.value))
@@ -448,7 +438,7 @@ Message.prototype = {
       let composeAllUri = "mailto:" + allEmails.join(",");
       Log.debug("URI:", composeAllUri);
       let uri = Services.io.newURI(composeAllUri, null, null);
-      Services.mMsgComposeService.OpenComposeWindowWithURI(null, uri);
+      MailServices.compose.OpenComposeWindowWithURI(null, uri);
     });
     this.register(".forward", function (event) self.forward(event));
     // These event listeners are all in the header, which happens to have an
@@ -688,7 +678,7 @@ Message.prototype = {
     while (tagList.firstChild)
       tagList.removeChild(tagList.firstChild);
     for each (let [, tag] in Iterator(tags)) {
-      let colorClass = "blc-" + Services.mMsgTagService.getColorForKey(tag.key).substr(1);
+      let colorClass = "blc-" + MailServices.tags.getColorForKey(tag.key).substr(1);
       let tagName = tag.tag;
       let tagNode = this._domNode.ownerDocument.createElement("li");
       tagNode.classList.add("tag");
