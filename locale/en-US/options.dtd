@@ -13,11 +13,10 @@
 <!ENTITY option.hide_longer_than "Hide quoted text higher than">
 <!ENTITY option.lines "lines">
 
+<!ENTITY title.advanced "Advanced">
 <!ENTITY title.assistant "Setup assistant">
 <!ENTITY option.assistant "Start the setup assistant">
 
-<!ENTITY title.advanced "Advanced">
-<!ENTITY option.monospaced_senders "Messages from those addresses should be displayed in monospaced fonts (separate using commas)">
-
 <!ENTITY title.advanced_display "Conversation display">
 <!ENTITY option.no_friendly_date "Use &quot;normal&quot; dates, just like the message list">
+<!ENTITY option.monospaced_senders "Messages from those addresses should be displayed in monospaced fonts (separate using commas)">

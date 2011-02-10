@@ -77,11 +77,11 @@ window.addEventListener("load", function _overlay_eventListener () {
 
   // Assistant.
   if (NS.Prefs.getInt("conversations.version") < NS.conversationsCurrentVersion)
-    window.openDialog("chrome://conversations/content/assistant/assistant.html", "", "chrome,width=800,height=500");
+    window.openDialog("chrome://conversations/content/assistant/assistant.xhtml", "", "chrome,width=800,height=500");
 
   // Feedback.
   let nRuns = NS.Prefs.getInt("conversations.nruns");
   if (nRuns == 20)
-    window.openDialog("chrome://conversations/content/feedback.html", "", "chrome,width=320,height=550");
+    window.openDialog("chrome://conversations/content/feedback.xhtml", "", "chrome,width=320,height=550");
   NS.Prefs.setInt("conversations.nruns", nRuns + 1);
 }, false);

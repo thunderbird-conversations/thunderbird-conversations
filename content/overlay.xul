@@ -36,12 +36,7 @@
    -
    - ***** END LICENSE BLOCK ***** -->
 
-<!--<!DOCTYPE overlay [
-  <!ENTITY % messengerDTD SYSTEM "chrome://messenger/locale/messenger.dtd">
-  %messengerDTD;
-  <!ENTITY % gconversationDTD SYSTEM "chrome://gconversation/locale/multimessageview.dtd">
-  %gconversationDTD;
-]>-->
+<!DOCTYPE overlay SYSTEM "chrome://conversations/locale/overlay.dtd">
 <overlay id="messengerWindow" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
   <script type="application/x-javascript" src="overlay.js" />
   <browser id="multimessage" context="mailContext" />
@@ -51,11 +46,8 @@
         persist="width hidden ordinal"
         hidden="false"
         flex="4"
-        label="Between" tooltiptext="Click to sort by participants" />
+        label="&betweenColumnName;" tooltiptext="&betweenColumnTooltip;" />
       <splitter class="tree-splitter" insertbefore="senderCol" />
     </treecols>
   </tree>
-  <!--<stringbundleset id="stringbundleset">
-    <stringbundle id="gconv-string-bundle" src="chrome://gconversation/locale/main.properties"/>
-  </stringbundleset>-->
 </overlay>

@@ -46,7 +46,10 @@ const Ci = Components.interfaces;
 const Cc = Components.classes;
 const Cu = Components.utils;
 
+Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
 Cu.import("resource://conversations/stdlib/msgHdrUtils.js"); // for getMail3Pane
+
+let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
 function arrayEquals(a1, a2) {
   if (a1.length != a2.length)
@@ -94,7 +97,7 @@ function joinWordList (aElements, aInsertHtml) {
   else {
     let hd = aElements.slice(0, l - 1);
     let tl = aElements[l-1];
-    return hd.join(wrap(", ")) + wrap(" and ") + tl;
+    return hd.join(wrap(strings.get("sepComma"))) + wrap(strings.get("sepAnd")) + tl;
   }
 }
 

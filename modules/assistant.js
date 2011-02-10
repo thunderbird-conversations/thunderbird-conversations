@@ -158,7 +158,7 @@ let Customizations = {
           return;
         popupShown = true;
         getMail3Pane().openDialog(
-          "chrome://conversations/content/indexing.html", "",
+          "chrome://conversations/content/indexing.xhtml", "",
           "chrome,width=820,height=500"
         );
       };

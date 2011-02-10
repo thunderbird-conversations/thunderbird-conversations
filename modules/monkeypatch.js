@@ -44,6 +44,7 @@ const Cu = Components.utils;
 const Cr = Components.results;
 
 Cu.import("resource://gre/modules/AddonManager.jsm");
+Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
 
 Cu.import("resource://conversations/stdlib/misc.js");
 Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
@@ -56,6 +57,8 @@ const kStubUrl = "chrome://conversations/content/stub.html";
 
 const observerService = Cc["@mozilla.org/observer-service;1"]
                         .getService(Ci.nsIObserverService);
+
+let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
 let Log = setupLogging("Conversations.MonkeyPatch");
 
@@ -259,16 +262,16 @@ MonkeyPatch.prototype = {
     let window = this._window;
 
     let participants = function (msgHdr) {
-      let format = function (x) {
+      let format = function (x, p) {
         if (x.email in gIdentities)
-          return "Me"
+          return p ? strings.get("meFrom") : strings.get("meTo");
         else
           return x.name || x.email;
       };
       let seenAlready = {};
       let r = [
-        [format(x) for each ([, x] in Iterator(parseMimeLine(msgHdr[prop])))]
-        for each (prop in ["mime2DecodedAuthor", "mime2DecodedRecipients", "ccList", "bccList"])
+        [format(x, p) for each ([, x] in Iterator(parseMimeLine(msgHdr[prop])))]
+        for each ([prop, p] in [["mime2DecodedAuthor", true], ["mime2DecodedRecipients", false], ["ccList", false], ["bccList", false]])
         if (msgHdr[prop])
       ].filter(function (x) {
         // Wow, a nice side-effect, I just hope the implementation of filter is

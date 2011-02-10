@@ -51,6 +51,7 @@ const clipboardService = Cc["@mozilla.org/widget/clipboardhelper;1"]
                          .getService(Ci.nsIClipboardHelper);
 
 Cu.import("resource:///modules/iteratorUtils.jsm"); // for fixIterator
+Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
 Cu.import("resource:///modules/gloda/utils.js");
 Cu.import("resource:///modules/gloda/gloda.js");
 
@@ -65,6 +66,7 @@ const Contacts = {
 }
 
 let Log = setupLogging("Conversations.Contact");
+let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
 let gHasPeople;
 try {
@@ -240,7 +242,7 @@ let ContactMixIn = {
               aCollection.items = aCollection.items.filter(function (x) x);*/
               tabmail.openTab("glodaList", {
                 collection: aCollection,
-                title: "Messages involving #1".replace("#1", self._name),
+                title: strings.get("involvingTabTitle").replace("#1", self._name),
                 background: false
               });
             }
@@ -278,7 +280,7 @@ let ContactMixIn = {
       "Someone did not set the 'position' properly");
     // This will be changed later when we localize
     if (this._email in gIdentities)
-      return (aPosition === Contacts.kFrom) ? "Me" : "Me";
+      return (aPosition === Contacts.kFrom) ? strings.get("meFrom") : strings.get("meTo");
     else
       return this._name || this._email;
   },

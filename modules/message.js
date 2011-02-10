@@ -46,7 +46,7 @@ const Cr = Components.results;
 Cu.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI
 Cu.import("resource://gre/modules/PluralForm.jsm");
 Cu.import("resource://gre/modules/Services.jsm"); // https://developer.mozilla.org/en/JavaScript_code_modules/Services.jsm
-Cu.import("resource:///modules/MailServices.jsm"); // bug 629462
+Cu.import("resource:///modules/mailServices.js"); // bug 629462
 Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
 Cu.import("resource:///modules/templateUtils.js"); // for makeFriendlyDateAgo
 Cu.import("resource:///modules/gloda/utils.js");
@@ -65,7 +65,7 @@ const kCharsetFromMetaTag = 9;
 const kCharsetFromChannel = 11;
 const kAllowRemoteContent = 2;
 
-let strings = new StringBundle("chrome://conversations/locale/main.properties");
+let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
 Cu.import("resource://conversations/stdlib/addressBookUtils.js");
 Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
@@ -298,15 +298,15 @@ Message.prototype = {
       if (i == 0)
         data.separator = "";
       else if (i < l - 1)
-        data.separator = ", ";
+        data.separator = strings.get("sepComma");
       else
-        data.separator = " and ";
+        data.separator = strings.get("sepAnd");
     }
 
     // 2) Generate Attachment objects
     l = this._attachments.length;
-    let [makePlural, ] = PluralForm.makeGetter("1");
-    data.attachmentsPlural = makePlural(l, "one attachment;#1 attachments").replace("#1", l);
+    let [makePlural, ] = PluralForm.makeGetter(strings.get("pluralForm"));
+    data.attachmentsPlural = makePlural(l, strings.get("attachments")).replace("#1", l);
     for each (let [i, att] in Iterator(this._attachments)) {
       let [thumb, imgClass] = (att.contentType.indexOf("image/") === 0)
         ? [att.url, "resize-me"]
@@ -550,7 +550,7 @@ Message.prototype = {
       if (maybeViewable) {
         let img = attNode.getElementsByTagName("img")[0];
         img.classList.add("view-attachment");
-        img.setAttribute("title", "View this attachment in a new tab");
+        img.setAttribute("title", strings.get("viewAttachment"));
         this.register(img, function (event) {
           mainWindow.document.getElementById("tabmail").openTab(
             "contentTab",
@@ -1149,8 +1149,8 @@ let PostStreamingFixesMixIn = {
             if (style) {
               let numLines = parseInt(style.height) / parseInt(style.lineHeight);
               if (numLines > Prefs["hide_quote_length"]) {
-                let showText = strings.get("showquotedtext");
-                let hideText = strings.get("hidequotedtext");
+                let showText = strings.get("showQuotedText");
+                let hideText = strings.get("hideQuotedText");
                 let div = iframeDoc.createElement("div");
                 div.setAttribute("class", "link showhidequote");
                 div.addEventListener("click", function div_listener (event) {

@@ -85,7 +85,7 @@
      <groupbox>
        <caption label="&title.assistant;" />
        <label class="link"
-         onclick="window.openDialog('chrome://conversations/content/assistant/assistant.html',
+         onclick="window.openDialog('chrome://conversations/content/assistant/assistant.xhtml',
          '', 'chrome,width=800,height=500');" value="&option.assistant;" />
      </groupbox>
      <groupbox>

@@ -1,13 +1,14 @@
-<!DOCTYPE html>
-
-<html>
+<!DOCTYPE html [
+  <!ENTITY % pageDTD SYSTEM "chrome://conversations/locale/pages.dtd"> %pageDTD;
+]>
+<html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
   <title>First run assistant</title>
-  <link rel="stylesheet" type="text/css" href="chrome://conversations/skin/assistant.css">
-  <link rel="stylesheet" type="text/css" href="../../skin/assistant.css">
+  <link rel="stylesheet" type="text/css" href="chrome://conversations/skin/assistant.css" />
   <script type="text/javascript" src="chrome://conversations/content/js/jquery-1.4.3.min.js"></script>
   <script type="application/javascript;version=1.8">
+    <![CDATA[
 
     const Ci = Components.interfaces;
     const Cc = Components.classes;
@@ -77,7 +78,7 @@
       window.addEventListener("unload", finish, true);
 
       $(".working").show();
-      $(".applyChanges").attr("disabled", "disabled").text("Busy...");
+      $(".applyChanges").attr("disabled", "disabled").text($(".working:first").text());
 
       let checkboxes = document.querySelectorAll("input[type=\"checkbox\"]");
       for each (let [, checkbox] in Iterator(checkboxes)) {
@@ -95,6 +96,7 @@
       $(event.target).hide();
     }
 
+    ]]>
   </script>
 </head>
 
@@ -104,94 +106,81 @@
       <h1 class="title">Thunderbird <span class="orange">Conversations</span> 2.0</h1>
       <div class="text">
         <p>
-          Hi, this is <strong>Thunderbird Conversations</strong>!
+          &assistant.intro;
         </p>
         <p class="p1">
-          In order to make your life easier, this assistant will tweak your
-          Thunderbird setup to ensure you enjoy the optimal experience. We don't
-          want you to feel dissatisfied!
+          &assistant.p1;
         </p>
         <p class="p2">
-          The tweaks we make are all reversible, so don't worry: should you not
-          enjoy Thunderbird Conversations, we will revert any preference change we
-          made as soon as you uninstall the extension.
+          &assistant.p2;
         </p>
         <p class="p3">
-         <span class="orange">This may take quite some time. You can either
-           wait for this window to close, or close the window yourself, and
-           check the progress from Tools &gt; Activity Manager.</span>
+         <span class="orange">&assistant.p3;</span>
         </p>
         <p class="working" style="text-align: left; margin-top: 50px">
-          Working...  <img src="loader.gif" />
+          &assistant.working;  <img src="loader.gif" />
         </p>
       </div>
     </div>
 
     <div class="buttonBox">
-      <button onclick="onCustomSetup(event);">Review changes</button>
-      <button onclick="onFinish(event);" class="applyChanges">Apply changes</button>
+      <button onclick="onCustomSetup(event);">&assistant.review;</button>
+      <button onclick="onFinish(event);" class="applyChanges">&assistant.apply;</button>
     </div>
 
     <div class="more">
       <p>
-        Some settings are mandatory for Thunderbird Conversations to work
-        properly. Some are strongly recommended, and some are optional.
+        &assistant.settings;
       </p>
       <ul>
         <li>
           <input type="checkbox" disabled="disabled" checked="checked" id="actionEnableGloda" />
-          Make sure Global Search and Indexer is enabled.
+          &assistant.actionEnableGloda;
         </li>
         <li>
           <input type="checkbox" disabled="disabled" checked="checked" id="actionDisableAutoread" />
-          Let Thunderbird Conversations mark messages as read.
+          &assistant.actionDisableAutoread;
         </li>
         <li>
           <input type="checkbox" disabled="disabled" checked="checked" id="actionReindexAttachments" />
-          Re-index messages containing attachments as well as all Mozilla bugmail.
+          &assistant.actionReindexAttachments;
         </li>
         <li>
           <input type="checkbox" disabled="disabled" checked="checked" id="actionDontExpand" />
-          In the message list, don't expand threads containing unread messages.
+          &assistant.actionDontExpand;
         </li>
         <li>
           <input type="checkbox" checked="checked" id="actionAttachmentsInline" />
-          Don't display attachments inline
-          (<strong>strongly</strong> recommended).
+          &assistant.actionAttachmentsInline;
         </li>
         <li>
           <input type="checkbox" checked="checked" id="actionOfflineDownload" />
-          Inbox and Sent are synchronized for offline storage
-          (<strong>strongly</strong> recommended).
+          &assistant.actionOfflineDownload;
         </li>
         <li>
           <input type="checkbox" checked="checked" id="actionUnifiedInboxSearchesSent" />
-          The Unified Inbox also searches Sent folders
-          (<strong>strongly</strong> recommended).
+          &assistant.actionUnifiedInboxSearchesSent;
         </li>
         <li>
           <input type="checkbox" checked="checked" id="actionSetupView" />
-          Switch to Global Inbox, make display threaded, sort by date, enable
-          unread count column and new "between" column
-          (<strong>strongly</strong> recommended).
+          &assistant.actionSetupView;
         </li>
         <li>
           <input type="checkbox" checked="checked" id="actionSetupViewDefaults" />
-          Use these custom sort settings for all folders.
+          &assistant.actionSetupViewDefaults;
         </li>
         <li>
           <input type="checkbox" checked="checked" id="actionEnsureMessagePaneVisible" />
-          Make sure the message pane is visible.
+          &assistant.actionEnsureMessagePaneVisible;
         </li>
       </ul>
 
       <p>
-        Should you wish to enable more options later, you can access this wizard
-        through the addon's preferences, under the "advanced" section.
+        &assistant.settings2;
       </p>
 
       <p class="working">
-        Working...  <img src="loader.gif" />
+        &assistant.working;  <img src="loader.gif" />
       </p>
 
       <div id="footer">
