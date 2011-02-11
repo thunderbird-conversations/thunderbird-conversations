@@ -782,21 +782,23 @@ Message.prototype = {
           try {
             iframe.removeEventListener("load", f_temp1, true);
 
+            // Notify hooks that we just finished displaying a message. Must be
+            //  performed now, not later. This gives plugins a chance to modify
+            //  the DOM of the message (i.e. decrypt it) before we tweak the
+            //  fonts and stuff.
+            try {
+              [h.onMessageStreamed(self._msgHdr, self._domNode, msgWindow) for each ([, h] in Iterator(getHooks()))];
+            } catch (e) {
+              Log.warn("Plugin returned an error:", e);
+              dumpCallStack(e);
+            }
+
             let iframeDoc = iframe.contentDocument;
             self.tweakFonts(iframeDoc);
             self.detectQuotes(iframe);
             if (self.checkForFishing(iframeDoc) && !self._msgHdr.getUint32Property("notAPhishMessage")) {
               Log.debug("Phishing attempt");
               self._domNode.getElementsByClassName("phishingBar")[0].style.display = "block";
-            }
-
-            // Notify hooks that we just finished displaying a message. Must be
-            //  performed now, not later.
-            try {
-              [h.onMessageStreamed(self._msgHdr, self._domNode, msgWindow) for each ([, h] in Iterator(getHooks()))];
-            } catch (e) {
-              Log.warn("Plugin returned an error:", e);
-              dumpCallStack(e);
             }
 
             // For bidiUI. Do that now because the DOM manipulations are

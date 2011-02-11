@@ -42,21 +42,30 @@ let Log = setupLogging("Conversations.Modules.Enigmail");
 //  is expected to interact with the plugin. As an example, we add an extra
 //  Enigmail compatibility layer to make sure we use Enigmail to decrypt
 //  messages whenever possible.
-
 // If you need to listen to more events (conversation loaded, conversation
 //  wiped)... just ask!
-Log.debug("Enigmail plugin for Thunderbird Conversations loaded!");
 
 // GetEnigmailSvc needs window to be defined in the scope...
 let window = getMail3Pane();
 
 // Enigmail support, thanks to Patrick Brunschwig!
 let hasEnigmail;
+try {
+  Cu.import("resource://enigmail/enigmailCommon.jsm");
+  hasEnigmail = true;
+  Log.debug("Enigmail plugin for Thunderbird Conversations loaded!");
+} catch (e) {
+  hasEnigmail = false;
+  Log.debug("Enigmail doesn't seem to be installed...");
+}
+
 let enigmailSvc;
 window.addEventListener("load", function () {
-  hasEnigmail = (("GetEnigmailSvc" in window) && typeof(window.GetEnigmailSvc) == "function");
   if (hasEnigmail) {
-    enigmailSvc = window.GetEnigmailSvc();
+    // Workaround a bug in enigmail. This makes sure EnigmailCommon.prefBranch
+    //  is initialized.
+    try { EnigmailCommon.getPref(""); } catch (e) {}
+    enigmailSvc = EnigmailCommon.getService(window);
     if (!enigmailSvc) {
       Log.debug("Error loading the Enigmail service. Is Enigmail disabled?\n");
       hasEnigmail = false;
@@ -85,12 +94,14 @@ function tryEnigmail(bodyElement) {
         errorMsgObj, blockSeparationObj);
     if (exitCodeObj.value == 0) {
       if (decryptedText.length > 0) {
-        bodyElement.textContent = decryptedText;
+        bodyElement.innerHTML = "<div class='moz-text-plain'></div>";
+        bodyElement.firstElementChild.textContent = decryptedText;
         bodyElement.style.whiteSpace = "pre-wrap";
       }
       return statusFlagsObj.value;
     }
   } catch (ex) {
+    dumpCallStack(ex);
     Log.error("Enigmail error: "+ex+" --- "+errorMsgObj.value+"\n");
     return null;
   }
