@@ -77,9 +77,8 @@ Gallery.prototype = {
   /**
    * This function is called once the message has been streamed and the relevant
    *  data has been extracted from it.
-   *
    * It runs the jquery-tmpl template and then appends the result to the root
-   * DOM node.
+   *  DOM node.
    */
   output: function (aGlodaMessages) {
     let messenger = Cc["@mozilla.org/messenger;1"]
@@ -110,7 +109,7 @@ $(document).ready(function () {
   let url = document.location.href;
   let uri = url.substr(url.indexOf(param) + param.length, url.length);
 
-  // Create the Chat object.
+  // Create the Gallery object.
   let msgHdr = msgUriToMsgHdr(uri);
   gallery = new Gallery(msgHdr);
   gallery.load();
