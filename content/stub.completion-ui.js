@@ -17,6 +17,7 @@ try {
 }
 
 let Log = setupLogging("Conversations.Stub.Completion");
+let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
 // Wrap the given parameters in an object that's compatible with the
 //  facebook-style autocomplete.
@@ -299,7 +300,11 @@ function setupAutocomplete(to, cc, bcc) {
         sep = "";
       else
         sep = strings.get("sepComma");
-      $(aList+" .add-more").before($("<li />").attr("title", email).text(name+sep));
+      // bug in jquery, again?
+      let inner = $("<li />").attr("title", email);
+      inner[0].textContent = name;
+      $(aList+" .add-more").before(inner);
+      $(aList+" .add-more").before($(document.createTextNode(sep)));
     }
   };
   fill("#to", ".toList", to);

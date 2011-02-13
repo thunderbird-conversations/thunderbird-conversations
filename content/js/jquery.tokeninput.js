@@ -271,8 +271,6 @@ $.TokenList = function (input, settings) {
                     .addClass(settings.classes.token)
                     .insertBefore(input_token);
 
-                dump(this_token.text()+"\n\n");
-
                 $("<span>x</span>")
                     .addClass(settings.classes.tokenDelete)
                     .appendTo(this_token)
@@ -327,9 +325,11 @@ $.TokenList = function (input, settings) {
     // Inner function to a token to the list
     function insert_token(id, value, data) {
       // XXX and here
+      var inner = $("<p />");
+      inner[0].textContent = value;
       var this_token = $("<li />")
           .attr("title", data.data)
-          .append($("<p />").text(value))
+          .append(inner)
           .addClass(settings.classes.token)
           .insertBefore(input_token);
 

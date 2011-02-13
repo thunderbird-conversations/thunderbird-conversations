@@ -6,6 +6,7 @@ const Cu = Components.utils;
 const Cr = Components.results;
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI
+Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
 Cu.import("resource:///modules/gloda/mimemsg.js"); // For MsgHdrToMimeMessage
 
 const gMessenger = Cc["@mozilla.org/messenger;1"]
