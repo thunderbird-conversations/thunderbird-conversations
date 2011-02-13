@@ -274,6 +274,8 @@ Message.prototype = {
       attachments: [],
       folderName: null,
       draft: null,
+      gallery: false,
+      uri: null,
       quickReply: aQuickReply,
     };
 
@@ -308,16 +310,24 @@ Message.prototype = {
     let [makePlural, ] = PluralForm.makeGetter(strings.get("pluralForm"));
     data.attachmentsPlural = makePlural(l, strings.get("attachments")).replace("#1", l);
     for each (let [i, att] in Iterator(this._attachments)) {
-      let [thumb, imgClass] = (att.contentType.indexOf("image/") === 0)
+      // Special treatment for images
+      let isImage = (att.contentType.indexOf("image/") === 0);
+      if (isImage)
+        data.gallery = true;
+      let [thumb, imgClass] = isImage
         ? [att.url, "resize-me"]
         : ["chrome://conversations/skin/icons/"+iconForMimeType(att.contentType), "icon"]
       ;
+
+      // This is bug 630011, remove when fixed
       let formattedSize = "?";
       try {
         formattedSize = Services.mMessenger.formatFileSize(att.size);
       } catch (e) {
         Log.error(e);
       }
+
+      // We've got the right data, push it!
       data.attachments.push({
         formattedSize: formattedSize,
         thumb: thumb,
@@ -326,9 +336,10 @@ Message.prototype = {
       });
     }
 
-    // 3) Generate extra information: snippet, date
+    // 3) Generate extra information: snippet, date, uri
     data.snippet = this._snippet;
     data.date = this._date;
+    data.uri = msgHdrGetUri(this._msgHdr);
 
     // 4) Custom tag telling the user if the message is not in the current view
     let folderStr = this._msgHdr.folder.prettiestName;

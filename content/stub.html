@@ -242,6 +242,15 @@
       $("#conversationHeader").addClass("not-junkable");
     }
 
+    const kGalleryUrl = "chrome://conversations/content/gallery/index.html";
+
+    function galleryView(uri) {
+      let tabmail = getMail3Pane().document.getElementById("tabmail");
+      tabmail.openTab("chromeTab", {
+        chromePage: kGalleryUrl+"?uri="+uri,
+      });
+    }
+
     function detachTab(event) {
       let mainWindow = getMail3Pane();
       let tabmail = mainWindow.document.getElementById("tabmail");
@@ -361,7 +370,11 @@
             <div class="attachHeader">
               ${attachmentsPlural}
               | <a href="javascript:" class="link download-all">download all</a>
-              {{if false}}| <a href="javascript:" class="view-all">view all</a>{{/if}}
+              {{if gallery}}
+              | <a href="javascript:" onclick="galleryView('${uri}')" class="view-all">
+                  gallery view
+                </a>
+              {{/if}}
             </div>
             {{each(i, att) attachments}}
             <li class="clearfix hbox attachment">

@@ -637,6 +637,8 @@ MonkeyPatch.prototype = {
             dumpCallStack(e);
           }
         }, function () {
+          // Invalidate the previous selection
+          previouslySelectedUris = [];
           // Invalidate any remaining conversation
           window.Conversations.currentConversation = null;
           // Make the stub aware of the Conversations object it's currently
