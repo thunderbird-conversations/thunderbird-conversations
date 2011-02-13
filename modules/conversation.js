@@ -77,7 +77,6 @@ let SignalManagerMixIn = {
   //  asynchronous. Once we've done what's right for each message (expand,
   //  collapse, or do nothing), we do the final cleanup (mark as read, etc.).
   _runOnceAfterNSignals: function (f, n) {
-    Log.debug("Will wait for", n, "signals");
     if (this._toRun !== null && this._toRun !== undefined)
       Log.error("You failed to call signal enough times. Bad developer, bad! Go fix your code!");
     this._toRun = [f, n+1];
@@ -98,7 +97,6 @@ let SignalManagerMixIn = {
     let [f, n] = this._toRun;
     n--;
     if (n == 0) {
-      Log.debug("Signal dispatch complete, running f...");
       this._toRun = null;
       f();
     } else {
@@ -144,7 +142,6 @@ let OracleMixIn = {
       Log.assert(false, "Unknown value for pref scroll_who");
     }
 
-    Log.debug("Will scroll the following index into view", needsScroll);
     return needsScroll;
   },
 
@@ -465,7 +462,6 @@ Conversation.prototype = {
     //  polluting some other conversation!
     if (!this.completed || this._window.Conversations.counter != this.counter)
       return;
-    Log.debug("onItemsAdded", [x.headerMessageID for each ([, x] in Iterator(aItems))]);
     // That's XPConnect bug 547088, so remove the setTimeout when it's fixed and
     //  bump the version requirements in install.rdf.template (might be fixed in
     //  time for Gecko 42, if we're lucky)
@@ -575,7 +571,6 @@ Conversation.prototype = {
           // and we get called immediately. So there's only one message gloda
           // hasn't indexed yet...
           if (!(msgHdr.messageId in messageIds)) {
-            Log.debug("Message with message-id", msgHdr.messageId, "was not in the gloda collection");
             self.messages.push({
               type: kMsgDbHdr,
               message: new MessageFromDbHdr(self, msgHdr), // will call signal when done
@@ -704,11 +699,9 @@ Conversation.prototype = {
       //  event registration and stuff...
       let domNodes = this._domNode.getElementsByClassName(Message.prototype.cssClass);
       for each (let i in range(this.messages.length - aMessages.length, this.messages.length)) {
-        Log.debug("Appending node", i, "to the conversation");
         this.messages[i].message.initialPosition = i;
         this.messages[i].message.onAddedToDom(domNodes[i]);
         this.messages[i].message.expand();
-        Log.debug("Appending message", i, "setting tabindex", i+2);
         domNodes[i].setAttribute("tabindex", (i+2)+"");
       }
     }
@@ -853,7 +846,6 @@ Conversation.prototype = {
     let $ = this._htmlPane.contentWindow.$;
     let tmplData = [m.message.toTmplData(i == this.messages.length - 1)
       for each ([i, m] in Iterator(this.messages))];
-    Log.debug("So far, ", (new Date()).getTime() - t0, "ms");
     // We must do this if we are to ever release the previous Conversation
     //  object. See comments in stub.html for the nice details.
     this._htmlPane.contentWindow.cleanup();
@@ -866,17 +858,13 @@ Conversation.prototype = {
     for (let i = 0; i <= nChunks; ++i) {
       chunks.push(tmplData.slice(i*chunkSize, (i+1)*chunkSize));
     }
-    Log.debug(tmplData.length, "data objects total, splitting into", nChunks, "chunks");
     // Go!
-    Log.debug("So far, ", (new Date()).getTime() - t0, "ms");
     for (let i = 0; i < chunks.length; ++i)
       $("#messageTemplate").tmpl(chunks[i]).appendTo($(this._domNode));
-    Log.debug("Template generation took", (new Date()).getTime() - t0, "ms");
 
     // Notify each message that it's been added to the DOM and that it can do
     // event registration and stuff...
     let domNodes = this._domNode.getElementsByClassName(Message.prototype.cssClass);
-    Log.debug("Got", domNodes.length+"/"+this.messages.length, "dom nodes");
     for each (let [i, m] in Iterator(this.messages)) {
       m.message.onAddedToDom(domNodes[i]);
       m.message.initialPosition = i;
@@ -946,7 +934,6 @@ Conversation.prototype = {
       let focusedNode = messageNodes[focusThis];
       self._htmlPane.contentWindow.scrollNodeIntoView(focusedNode);
 
-      Log.debug(messageNodes.length);
       for each (let [i, node] in Iterator(messageNodes)) {
         // XXX This is bug 611957
         if (i >= messageNodes.length)

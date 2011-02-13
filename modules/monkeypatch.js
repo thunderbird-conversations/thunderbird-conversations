@@ -372,8 +372,6 @@ MonkeyPatch.prototype = {
       scrollMode = Prefs.kScrollSelected;
     }
 
-    Log.debug("Scroll mode", scrollMode, "is expanded?", isExpanded);
-
     return scrollMode;
   },
 
@@ -449,7 +447,6 @@ MonkeyPatch.prototype = {
   onUninstalled: function(addon) {
   },
   onUninstalling: function(addon) {
-    Log.debug(addon.id);
     if (addon.id == "gconversation@xulforum.org") {
       this._beingUninstalled = true;
       Log.debug("Being uninstalled ?", this._beingUninstalled);
@@ -575,7 +572,6 @@ MonkeyPatch.prototype = {
               //  the new conversation. So because we're not sure
               //  freshConversation will actually end up being used, we take the
               //  new conversation as parameter.
-              Log.debug("Conversation", aConversation.counter, "is the new one. Scroll mode:", aConversation.scrollMode);
               Log.assert(aConversation.scrollMode == scrollMode, "Someone forgot to put the right scroll mode!");
               // So we force a GC cycle if we change conversations, so that the
               //  previous collection is actually deleted and we don't vomit a
@@ -700,7 +696,6 @@ MonkeyPatch.prototype = {
             // asked for the old message reader, we give up as well.
             if (msgHdrIsRss(msgHdr) || msgHdrIsNntp(msgHdr) ||
                 wantedUrl == msgHdrToNeckoURL(msgHdr).spec) {
-              Log.debug("Don't want to handle this message, deferring");
               // Use the default pref.
               self.markReadTimeout = window.setTimeout(function () {
                 msgHdrsMarkAsRead([msgHdr], true);
@@ -714,7 +709,6 @@ MonkeyPatch.prototype = {
               // We don't want to call this._showSummary because it has a built-in check
               // for this.folderDisplay.selectedCount and returns immediately if
               // selectedCount == 1
-              Log.debug("Handling this message, firing summarizeThread");
               this.singleMessageDisplay = false;
               window.summarizeThread(this.folderDisplay.selectedMessages, this);
               return true;
@@ -723,7 +717,6 @@ MonkeyPatch.prototype = {
 
           // Else defer to showSummary to work it out based on thread selection.
           // (This might be a MultiMessageSummary after all!)
-          Log.debug("This is a real multiple selection, deferring to _showSummary()");
           return this._showSummary();
         } catch (e) {
           Log.error(e);

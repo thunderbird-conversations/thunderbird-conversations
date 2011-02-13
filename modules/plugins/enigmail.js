@@ -96,7 +96,7 @@ function tryEnigmail(bodyElement) {
     if (exitCodeObj.value == 0) {
       if (decryptedText.length > 0) {
         bodyElement.innerHTML = "<div class='moz-text-plain'></div>";
-        bodyElement.firstElementChild.textContent = escapeHtml(decryptedText);
+        bodyElement.firstElementChild.textContent = decryptedText;
         bodyElement.style.whiteSpace = "pre-wrap";
       }
       return statusFlagsObj.value;

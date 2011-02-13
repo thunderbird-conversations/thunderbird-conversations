@@ -142,7 +142,6 @@
     }
 
     function cleanup() {
-      Log.debug("Cleaning up jquery's mess...");
       // These shouldn't be necessary because we're blasting away everything by
       //  setting .innerHTML BUT jQuery won't remove its persistent event
       //  listeners if we don't do that which will in turn cause memory leaks!

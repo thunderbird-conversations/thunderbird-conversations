@@ -447,7 +447,6 @@ Message.prototype = {
         if (!(x.toLowerCase() in gIdentities))
       ];
       let composeAllUri = "mailto:" + allEmails.join(",");
-      Log.debug("URI:", composeAllUri);
       let uri = Services.io.newURI(composeAllUri, null, null);
       MailServices.compose.OpenComposeWindowWithURI(null, uri);
     });
@@ -478,7 +477,6 @@ Message.prototype = {
     this.register(".checkbox-monospace", function (event) {
       let senders = Prefs["monospaced_senders"].filter(function (x) x != realFrom);
       senders = senders.filter(function (x) x != realFrom);
-      Log.debug(senders, senders.length);
       if (event.target.checked) {
         Prefs.setChar("conversations.monospaced_senders", senders.concat([realFrom]).join(","));
       } else {

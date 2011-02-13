@@ -353,8 +353,6 @@ ContactFromPeople.prototype = {
   fetch: function _ContactFromPeople_fetch() {
     let self = this;
     People.find({ emails: this._email }).forEach(function (person) {
-      Log.debug("Found a match in contacts");
-
       let photos = person.getProperty("photos");
       let gravatarPhotos = [photo
         for each (photo in photos)
