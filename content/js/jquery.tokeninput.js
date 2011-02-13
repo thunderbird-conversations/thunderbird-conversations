@@ -262,11 +262,16 @@ $.TokenList = function (input, settings) {
         if(li_data && li_data.length) {
             for(var i in li_data) {
                 // XXX change things here
-                var this_token =
-                    $("<li />").attr("title", li_data[i].data)
-                      .append($("<p />").text(li_data[i].name))
+                // XXX looks like a bug in jquery to me... (can't do $("<p />").text(li_data[i].name))
+                var inner = $("<p />");
+                inner[0].textContent = li_data[i].name;
+                var this_token = $("<li />")
+                    .attr("title", li_data[i].data)
+                    .append(inner)
                     .addClass(settings.classes.token)
                     .insertBefore(input_token);
+
+                dump(this_token.text()+"\n\n");
 
                 $("<span>x</span>")
                     .addClass(settings.classes.tokenDelete)
@@ -323,10 +328,10 @@ $.TokenList = function (input, settings) {
     function insert_token(id, value, data) {
       // XXX and here
       var this_token = $("<li />")
-      .attr("title", data.data)
-        .append($("<p />").text(value))
-      .addClass(settings.classes.token)
-      .insertBefore(input_token);
+          .attr("title", data.data)
+          .append($("<p />").text(value))
+          .addClass(settings.classes.token)
+          .insertBefore(input_token);
 
       // The 'delete token' button
       $("<span>x</span>")

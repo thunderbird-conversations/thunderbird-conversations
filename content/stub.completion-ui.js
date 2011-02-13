@@ -23,9 +23,9 @@ let Log = setupLogging("Conversations.Stub.Completion");
 function asToken(thumb, name, email, guid) {
   let hasName = name && (String.trim(name).length > 0);
   let data = hasName ? gHeaderParser.makeFullAddress(name, email) : email;
-  let thumbStr = thumb ? "<img class='autocomplete-thumb' src=\""+thumb+"\" /> " : "";
-  let nameStr = hasName ? name + " &lt;" + email + "&gt;" : email;
-  let listItem = thumbStr + nameStr;
+  let nameStr = hasName ? name + " <" + email + ">" : email;
+  let thumbStr = thumb ? "<img class='autocomplete-thumb' src=\""+escapeHtml(thumb)+"\" /> " : "";
+  let listItem = thumbStr + escapeHtml(nameStr); // this one is for injection
   let id = guid;
   let displayName = hasName ? name : email;
   return { name: displayName, listItem: listItem, data: data, email: email, id: guid }
