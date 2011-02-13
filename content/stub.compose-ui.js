@@ -307,6 +307,7 @@ ComposeSession.prototype = {
 
         let isReplyToOwnMsg = false;
         for each (let [i, identity] in Iterator(gIdentities)) {
+          Log.debug(identity);
           // It happens that gIdentities.default is null!
           if (!identity) {
             Log.debug("This identity is null, pretty weird...");

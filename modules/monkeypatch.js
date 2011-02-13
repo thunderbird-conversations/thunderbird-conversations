@@ -431,11 +431,6 @@ MonkeyPatch.prototype = {
     //  uninstall stuff.
     if (aTopic == "quit-application-granted" && this._beingUninstalled)
       this.doUninstall();
-
-    // Per discussion on IRC with RattyAway, accessing stuff such as the account
-    //  manager should wait for this notification to be fired first.
-    if (aTopic == "mail-startup-done")
-      fillIdentities();
   },
 
   // AddonListener
@@ -478,6 +473,9 @@ MonkeyPatch.prototype = {
     // Nuke the reference to any old message window. Happens if we close the
     //  main window and open a new one without restarting Thunderbird.
     getMail3Pane(true);
+
+    // Do this at least once at overlay load-time
+    fillIdentities();
 
     // Register our new tab type
     let tabmail = window.document.getElementById("tabmail");
