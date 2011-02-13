@@ -294,12 +294,12 @@ function setupAutocomplete(to, cc, bcc) {
       if (aData.length <= 1)
         sep = "";
       else if (i == aData.length - 2)
-        sep = "&nbsp;and&nbsp;";
+        sep = strings.get("sepAnd");
       else if (i == aData.length - 1)
         sep = "";
       else
-        sep = ",&nbsp;";
-      $(aList+" .add-more").before($("<li title=\""+email+"\">"+name+sep+"</li>"));
+        sep = strings.get("sepComma");
+      $(aList+" .add-more").before($("<li />").attr("title", email).text(name+sep));
     }
   };
   fill("#to", ".toList", to);

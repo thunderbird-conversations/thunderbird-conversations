@@ -1,14 +1,13 @@
-<!DOCTYPE html>
-
-<html>
-
+<!DOCTYPE html [
+  <!ENTITY % pageDTD SYSTEM "chrome://conversations/locale/pages.dtd"> %pageDTD;
+]>
+<html xmlns="http://www.w3.org/1999/xhtml">
 <head>
   <title>Conversation Reader</title>
-  <meta charset="utf-8">
   <link rel="stylesheet" type="text/css" href="chrome://messenger/skin/tagColors.css"/>
-  <link rel="stylesheet" type="text/css" href="chrome://conversations/skin/boxflex.css">
-  <link rel="stylesheet" type="text/css" href="chrome://conversations/skin/conversation.css">
-  <link rel="stylesheet" type="text/css" href="chrome://conversations/skin/tokeninput.css">
+  <link rel="stylesheet" type="text/css" href="chrome://conversations/skin/boxflex.css" />
+  <link rel="stylesheet" type="text/css" href="chrome://conversations/skin/conversation.css" />
+  <link rel="stylesheet" type="text/css" href="chrome://conversations/skin/tokeninput.css" />
   <script type="text/javascript" src="chrome://conversations/content/js/jquery-1.4.3.min.js"></script>
   <script type="text/javascript" src="chrome://conversations/content/js/jquery.text-overflow.js"></script>
   <script type="text/javascript" src="chrome://conversations/content/js/jquery.tmpl.js"></script>
@@ -19,7 +18,7 @@
     src="chrome://conversations/content/stub.compose-ui.js"></script>
   <script type="application/javascript;version=1.8"
     src="chrome://conversations/content/stub.completion-ui.js"></script>
-  <script type="application/javascript;version=1.8">
+  <script type="application/javascript;version=1.8"><![CDATA[
     // Below are mostly UI utility functions.
     (function ($) {
       $.fn.vAlign = function(container) {
@@ -27,14 +26,12 @@
           container = "div";
 
         this.each(function(i) {
-          $(this).wrap("<div />");
           var el = $(this);
           var elh = el.height(); //new element height
           var ph = el.parent().height(); //parent height
           var nh = (ph - elh) / 2; //new margin to apply
-          if (!nh) {
-            $(this).unwrap();
-          } else {
+          if (nh > 0) {
+            el.wrap("<div />");
             el.css('margin-top', nh);
             // don't align again now we've succeeded
             el.removeClass("align");
@@ -292,11 +289,12 @@
         }
       });
     }
+  ]]>
   </script>
 </head>
 
 <body>
-  <script id="messageTemplate" type="text/x-jquery-tmpl">
+  <script id="messageTemplate" type="text/x-jquery-tmpl"><![CDATA[
     <li class="message collapsed">
       <div class="messageHeader hbox">
         <div class="star"></div>
@@ -405,11 +403,12 @@
         {{tmpl "#quickReplyTemplate"}}
       {{/if}}
     </li>
+    ]]>
   </script>
   <!-- Weird markup again, otherwise, the comma is separated from the name by a
     space because of the #text whitespace-only nodes that end up in the DOM.
   -->
-  <script id="contactTemplate" type="text/x-jquery-tmpl"><span
+  <script id="contactTemplate" type="text/x-jquery-tmpl"><![CDATA[<span
     >${separator}</span
     ><span class="tooltipWrapper contact"
       ><span class="contactName" style="${colorStyle}">${String.trim(name)}</span
@@ -426,7 +425,7 @@
           </span>
         </div>
         <div class="authorPicture">
-          <img src="${avatar}">
+          <img src="${avatar}" />
         </div>
         <div class="authorInfo authorLinks">
           {{if ("facebook" in profiles)}}
@@ -472,8 +471,8 @@
         </div>
       </div
     ></span
-  ></script>
-  <script id="quickReplyTemplate" type="text/x-jquery-tmpl">
+  >]]></script>
+  <script id="quickReplyTemplate" type="text/x-jquery-tmpl"><![CDATA[
     <div class="quickReply">
       <div class="quickReplyRecipients">
         <ul>
@@ -486,15 +485,15 @@
         </ul>
         <div class="editRecipientList editToList hbox">
           <div class="label">to:</div>
-          <div class="boxFlex"><input type="text" id="to"></div>
+          <div class="boxFlex"><input type="text" id="to" /></div>
         </div>
         <div class="editRecipientList editCcList hbox" style="display: none">
           <div class="label">cc:</div>
-          <div class="boxFlex"><input type="text" id="cc"></div>
+          <div class="boxFlex"><input type="text" id="cc" /></div>
         </div>
         <div class="editRecipientList editBccList hbox" style="display: none">
           <div class="label">bcc:</div>
-          <div class="boxFlex"><input type="text" id="bcc"></div>
+          <div class="boxFlex"><input type="text" id="bcc" /></div>
         </div>
         <ul class="recipientList toList">
           to:
@@ -502,7 +501,7 @@
           <li>David Ascher, </li>
           <li>Bryan Clark, </li>
           <li>James Burke</li>
-          <li class="add-more">&nbsp;- <a href="javascript:" onclick="editFields('to');">edit</a></li>
+          <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('to');">edit</a></li>
         </ul>
         <ul class="recipientList ccList" style="display: none;">
           cc:
@@ -510,7 +509,7 @@
           <li>David Ascher, </li>
           <li>Bryan Clark, </li>
           <li>James Burke</li>
-          <li class="add-more">&nbsp;- <a href="javascript:" onclick="editFields('cc');">edit</a></li>
+          <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('cc');">edit</a></li>
         </ul>
         <ul class="recipientList bccList" style="display: none;">
           bcc:
@@ -518,7 +517,7 @@
           <li>David Ascher, </li>
           <li>Bryan Clark, </li>
           <li>James Burke</li>
-          <li class="add-more">&nbsp;- <a href="javascript:" onclick="editFields('bcc');">edit</a></li>
+          <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('bcc');">edit</a></li>
         </ul>
       </div>
       <div class="quickReplyHeader" style="display: none; overflow: auto">
@@ -545,28 +544,29 @@
           onclick="onUseEditor();">continue using editor</button>
       </div>
     </div>
+    ]]>
   </script>
   <div id="wrapper">
     <div id="conversationHeaderWrapper">
       <div id="conversationHeader" class="hbox">
-        <div class="subject boxFlex">Loading...</div>
+        <div class="subject boxFlex">&stub.loading;</div>
         <div class="actions">
-          <button title="Delete this conversation" onclick="deleteConversation(event);">
+          <button title="&stub.trash.tooltip;" onclick="deleteConversation(event);">
             <img src="i/trash.png" />
           </button>
-          <button title="Archive this conversation" onclick="archiveConversation(event);">
+          <button title="&stub.archive.tooltip;" onclick="archiveConversation(event);">
             <img src="i/archive.png" />
           </button>
-          <button title="Junk this message" class="junk-button" onclick="junkConversation(event);">
+          <button title="&stub.junk.tooltip;" class="junk-button" onclick="junkConversation(event);">
             <img src="i/junk.png" />
           </button>
-          <button title="Expand/collapse all messages" onclick="expandCollapse(event);">
+          <button title="&stub.expand.tooltip;" onclick="expandCollapse(event);">
             <span class="expand"></span>
           </button>
-          <button title="Toggle read/unread all messages" onclick="toggleRead(event);">
+          <button title="&stub.read.tooltip;" onclick="toggleRead(event);">
             <span class="read"></span>
           </button>
-          <button title="Save this conversation in a new tab" onclick="detachTab(event);">
+          <button title="&stub.detach.tooltip;" onclick="detachTab(event);">
             <img src="i/tab.png" />
           </button>
           <!--<button><span class="mode"></span></button>-->

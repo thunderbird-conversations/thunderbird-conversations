@@ -33,3 +33,11 @@
 <!ENTITY indexing.t2 "In more detail">
 <!ENTITY indexing.title "<span class='orange'>Indexing</span> issue">
 <!ENTITY indexing.pageTitle "Indexing warning">
+
+<!ENTITY stub.loading "Loading...">
+<!ENTITY stub.trash.tooltip "Delete this conversation">
+<!ENTITY stub.archive.tooltip "Archive this conversation">
+<!ENTITY stub.junk.tooltip "Junk this message">
+<!ENTITY stub.expand.tooltip "Expand/collapse all messages">
+<!ENTITY stub.read.tooltip "Toggle read/unread all messages">
+<!ENTITY stub.detach.tooltip "Save this conversation in a new tab">

@@ -137,10 +137,10 @@ let ContactMixIn = {
     let name = this.getName(aPosition);
     let data = {
       showMonospace: aPosition == Contacts.kFrom,
-      name: name,
-      tooltipName: (name != this._email) ? name : "",
-      email: this._email,
-      avatar: this.avatar,
+      name: escapeHtml(name),
+      tooltipName: escapeHtml((name != this._email) ? name : ""),
+      email: escapeHtml(this._email),
+      avatar: escapeHtml(this.avatar),
       profiles: this._profiles,
       // Parameter aUseColor is optional, and undefined means true
       colorStyle: ((aUseColor === false)

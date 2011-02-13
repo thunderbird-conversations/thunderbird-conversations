@@ -53,7 +53,7 @@ Cu.import("resource://conversations/misc.js"); // for joinWordList
 Cu.import("resource://conversations/prefs.js");
 Cu.import("resource://conversations/log.js");
 
-const kStubUrl = "chrome://conversations/content/stub.html";
+const kStubUrl = "chrome://conversations/content/stub.xhtml";
 
 const observerService = Cc["@mozilla.org/observer-service;1"]
                         .getService(Ci.nsIObserverService);

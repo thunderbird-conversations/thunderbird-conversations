@@ -89,7 +89,7 @@ $.TokenList = function (input, settings) {
     var timeout;
 
     // Create a new text input an attach keyup events
-    var input_box = $("<input type=\"text\">")
+    var input_box = $("<input type=\"text\" />")
         .css({
             outline: "none"
         })
@@ -262,7 +262,9 @@ $.TokenList = function (input, settings) {
         if(li_data && li_data.length) {
             for(var i in li_data) {
                 // XXX change things here
-                var this_token = $("<li title=\""+li_data[i].data+"\"><p>"+li_data[i].name+"</p> </li>")
+                var this_token =
+                    $("<li />").attr("title", li_data[i].data)
+                      .append($("<p />").text(li_data[i].name))
                     .addClass(settings.classes.token)
                     .insertBefore(input_token);
 
@@ -320,7 +322,9 @@ $.TokenList = function (input, settings) {
     // Inner function to a token to the list
     function insert_token(id, value, data) {
       // XXX and here
-      var this_token = $("<li title=\""+data.data+"\"><p>"+ value +"</p> </li>")
+      var this_token = $("<li />")
+      .attr("title", data.data)
+        .append($("<p />").text(value))
       .addClass(settings.classes.token)
       .insertBefore(input_token);
 

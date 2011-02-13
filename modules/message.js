@@ -330,16 +330,16 @@ Message.prototype = {
       // We've got the right data, push it!
       data.attachments.push({
         formattedSize: formattedSize,
-        thumb: thumb,
+        thumb: escapeHtml(thumb),
         imgClass: imgClass,
-        name: att.name,
+        name: escapeHtml(att.name),
       });
     }
 
     // 3) Generate extra information: snippet, date, uri
-    data.snippet = this._snippet;
-    data.date = this._date;
-    data.uri = msgHdrGetUri(this._msgHdr);
+    data.snippet = escapeHtml(this._snippet);
+    data.date = escapeHtml(this._date);
+    data.uri = escapeHtml(msgHdrGetUri(this._msgHdr));
 
     // 4) Custom tag telling the user if the message is not in the current view
     let folderStr = this._msgHdr.folder.prettiestName;
@@ -348,13 +348,13 @@ Message.prototype = {
       folder = folder.parent;
       folderStr = folder.name + "/" + folderStr;
     }
-    data.folderName = folderStr;
+    data.folderName = escapeHtml(folderStr);
 
     // 5) Custom tag telling the user if this is a draft
     data.draft = msgHdrIsDraft(this._msgHdr);
 
     // 6) For the "show remote content" thing
-    data.realFrom = this._realFrom.email || this._from.email;
+    data.realFrom = escapeHtml(this._realFrom.email || this._from.email);
 
     return data;
   },

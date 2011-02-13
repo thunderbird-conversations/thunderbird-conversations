@@ -33,6 +33,7 @@ const Cu = Components.utils;
 const Cr = Components.results;
 
 Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
+Cu.import("resource://conversations/stdlib/misc.js");
 Cu.import("resource://conversations/hook.js");
 Cu.import("resource://conversations/log.js");
 
@@ -95,7 +96,7 @@ function tryEnigmail(bodyElement) {
     if (exitCodeObj.value == 0) {
       if (decryptedText.length > 0) {
         bodyElement.innerHTML = "<div class='moz-text-plain'></div>";
-        bodyElement.firstElementChild.textContent = decryptedText;
+        bodyElement.firstElementChild.textContent = escapeHtml(decryptedText);
         bodyElement.style.whiteSpace = "pre-wrap";
       }
       return statusFlagsObj.value;
