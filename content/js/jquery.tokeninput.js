@@ -262,12 +262,9 @@ $.TokenList = function (input, settings) {
         if(li_data && li_data.length) {
             for(var i in li_data) {
                 // XXX change things here
-                // XXX looks like a bug in jquery to me... (can't do $("<p />").text(li_data[i].name))
-                var inner = $("<p />");
-                inner[0].textContent = li_data[i].name;
                 var this_token = $("<li />")
                     .attr("title", li_data[i].data)
-                    .append(inner)
+                    .append($("<p />").text(li_data[i].name))
                     .addClass(settings.classes.token)
                     .insertBefore(input_token);
 
@@ -325,11 +322,9 @@ $.TokenList = function (input, settings) {
     // Inner function to a token to the list
     function insert_token(id, value, data) {
       // XXX and here
-      var inner = $("<p />");
-      inner[0].textContent = value;
       var this_token = $("<li />")
           .attr("title", data.data)
-          .append(inner)
+          .append($("<p />").text(value))
           .addClass(settings.classes.token)
           .insertBefore(input_token);
 

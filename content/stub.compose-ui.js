@@ -298,7 +298,7 @@ ComposeSession.prototype = {
     this.match({
       reply: function (aMsgHdr) {
         // Do the whole shebang to find out who to send to...
-        let [author, authorEmailAddress] = parse(aMsgHdr.mime2DecodedAuthor);
+        let [[author], [authorEmailAddress]] = parse(aMsgHdr.mime2DecodedAuthor);
         let [recipients, recipientsEmailAddresses] = parse(aMsgHdr.mime2DecodedRecipients);
         let [ccList, ccListEmailAddresses] = parse(aMsgHdr.ccList);
         let [bccList, bccListEmailAddresses] = parse(aMsgHdr.bccList);
@@ -307,7 +307,6 @@ ComposeSession.prototype = {
 
         let isReplyToOwnMsg = false;
         for each (let [i, identity] in Iterator(gIdentities)) {
-          Log.debug(identity);
           // It happens that gIdentities.default is null!
           if (!identity) {
             Log.debug("This identity is null, pretty weird...");

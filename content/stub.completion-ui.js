@@ -300,10 +300,7 @@ function setupAutocomplete(to, cc, bcc) {
         sep = "";
       else
         sep = strings.get("sepComma");
-      // bug in jquery, again?
-      let inner = $("<li />").attr("title", email);
-      inner[0].textContent = name;
-      $(aList+" .add-more").before(inner);
+      $(aList+" .add-more").before($("<li />").attr("title", email).text(name));
       $(aList+" .add-more").before($(document.createTextNode(sep)));
     }
   };
