@@ -22,25 +22,30 @@
     // Below are mostly UI utility functions.
     (function ($) {
       $.fn.vAlign = function(container) {
-        if (!container)
-          container = "div";
+        $(document).ready(function () {
+          if (!container)
+            container = "div";
 
-        this.each(function(i) {
-          var el = $(this);
-          var elh = el.height(); //new element height
-          var ph = el.parent().height(); //parent height
-          var nh = (ph - elh) / 2; //new margin to apply
-          if (nh > 0) {
-            el.wrap("<div />");
-            el.css('margin-top', nh);
-            // don't align again now we've succeeded
-            el.removeClass("align");
-          }
-        });
+          this.each(function(i) {
+            $(this).wrap("<div />");
+            var el = $(this);
+            var elh = el.height(); //new element height
+            var ph = el.parent().height(); //parent height
+            var nh = (ph - elh) / 2; //new margin to apply
+            if (!nh) {
+              $(this).unwrap();
+            } else {
+              el.css('margin-top', nh);
+              // don't align again now we've succeeded
+              el.removeClass("align");
+            }
+          });
+        }.bind(this));
       };
     })(jQuery);
 
     function alignAttachments(aMsgNode) {
+      Log.debug("Aligning attachments...");
       $(aMsgNode._domNode).find(".align").vAlign();
     }
 
@@ -377,8 +382,7 @@
             <li class="clearfix hbox attachment">
               <div class="attachmentThumb">
                 <img onload="$(this).closest('.attachment').find('.align').vAlign()"
-                  class="${att.imgClass}" src="${att.thumb}"
-                />
+                class="${att.imgClass}" src="${att.thumb}" />
               </div>
               <div class="attachmentInfo align">
                 <span class="filename">${att.name}</span>
