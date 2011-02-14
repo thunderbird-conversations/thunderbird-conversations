@@ -573,7 +573,7 @@ let sendListener = {
     //
     // Moar in mailnews/compose/src/nsComposeStrings.h
     Log.debug("onStopSending", aMsgID, aStatus, aMsg, aReturnFile);
-    $("textarea, #send, #sendArchive").attr("disabled", "");
+    $("textarea, #send, #sendArchive").removeAttr("disabled");
     // This function is called only when the actual send has been performed,
     //  i.e. is not called when saving a draft (although msgCompose.SendMsg is
     //  called...)
@@ -636,7 +636,7 @@ function createStateListener (aComposeSession, aMsgHdrs, aId) {
     },
 
     ComposeProcessDone: function(aResult) {
-      Log.debug("ComposeProcessDone");
+      Log.debug("ComposeProcessDone", NS_SUCCEEDED(aResult));
       if (NS_SUCCEEDED(aResult)) {
         // If the user didn't start a new composition session, hide the quick
         //  reply area, clear draft, collapse.
