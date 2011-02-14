@@ -293,6 +293,16 @@
         }
       });
     }
+    let strings = new StringBundle("chrome://conversations/locale/template.properties");
+    let str = function (x) {
+      try {
+        return strings.get(x);
+      } catch (e) {
+        Log.error("No such string", x);
+        Log.debug(e);
+        dumpCallStack(e);
+      }
+    };
   ]]>
   </script>
 </head>
@@ -304,7 +314,7 @@
         <div class="star"></div>
         <div class="author">{{tmpl(dataContactFrom) "#contactTemplate"}}</div>
         <div class="involved boxFlex">
-          <span class="to">to {{tmpl(dataContactsTo) "#contactTemplate"}}</span>
+          <span class="to">${str("to")} {{tmpl(dataContactsTo) "#contactTemplate"}}</span>
           <span class="snippet"><ul class="tags regular-tags"></ul>${snippet}</span>
         </div>
         <div class="options">
@@ -315,16 +325,16 @@
             ${date}
           </span>
           <span class="dropDown"> |
-            <a href="javascript:" class="top-right-more">more <span class="downwardArrow">&#x25bc;</span></a>
+            <a href="javascript:" class="top-right-more">${str("more")} <span class="downwardArrow">&#x25bc;</span></a>
             <div class="tooltip">
               <ul>
-                <li class="action-archive">archive this message
+                <li class="action-archive">${str("archive")}
                   <div class="arrow"></div>
                   <div class="arrow inside"></div>
                 </li>
-                <li class="action-delete">delete this message</li>
-                <li class="action-classic">view using the classic reader</li>
-                <li class="action-source">view message source</li>
+                <li class="action-delete">${str("delete")}</li>
+                <li class="action-classic">${str("viewClassic")}</li>
+                <li class="action-source">${str("viewSource")}</li>
               </ul>
             </div>
           </span>
@@ -339,18 +349,18 @@
       </div>
       <div class="phishingBar notificationBar" style="display: none">
         <img src="chrome://messenger/skin/icons/phishing.png" style="vertical-align: middle;" />
-        This message may be a scam:
+        ${str("scam")}
         <span class="ignore-warning">
-          <a href="javascript:">ignore warning</a>
+          <a href="javascript:">${str("ignoreWarning")}</a>
         </span>
       </div>
       <div class="remoteContent notificationBar" style="display: none">
-        Remote content was hidden:
+        ${str("remoteContentBlocked")}
         <span class="show-remote-content">
-          <a href="javascript:">show remote content</a> -
+          <a href="javascript:">${str("showRemote")}</a> -
         </span>
         <span class="always-display">
-          <a href="javascript:">always show remote content from ${realFrom}</a>
+          <a href="javascript:">${str("alwaysShowRemote").replace("#1", realFrom)}</a>
         </span>
       </div>
       <div class="messageBody">
@@ -358,11 +368,11 @@
         <ul class="tags special-tags"
           ><li
             class="keep-tag in-folder"
-            title="Jump to this folder"
-            >In ${folderName}</li
+            title="${str('jumpToFolder')}"
+            >${str("inFolder").replace("#1", folderName)}</li
           >{{if draft}}<li
             class="keep-tag edit-draft"
-            >Draft (edit)</li
+            >${str("editDraft")}</li
           >{{/if}}</ul
         >
         <ul class="tags regular-tags"></ul>
@@ -371,10 +381,10 @@
           <ul class="attachments">
             <div class="attachHeader">
               ${attachmentsPlural}
-              | <a href="javascript:" class="link download-all">download all</a>
+              | <a href="javascript:" class="link download-all">${str("downloadAll")}</a>
               {{if gallery}}
               | <a href="javascript:" onclick="galleryView('${uri}')" class="view-all">
-                  gallery view
+                  ${str("galleryView")}
                 </a>
               {{/if}}
             </div>
@@ -388,8 +398,8 @@
                 <span class="filename">${att.name}</span>
                 <div class="attachActions">
                   ${att.formattedSize}
-                   | <a href="javascript:" class="link open-attachment">open</a>
-                   | <a href="javascript:" class="link download-attachment">download</a>
+                  | <a href="javascript:" class="link open-attachment">${str("open")}</a>
+                  | <a href="javascript:" class="link download-attachment">${str("download")}</a>
                 </div>
               </div>
             </li>
@@ -398,9 +408,9 @@
         {{/if}}
       </div>
       <div class="messageFooter">
-        <button class="reply">reply</button>
-        <button class="replyAll">reply all</button>
-        <button class="forward">forward</button>
+        <button class="reply">${str("reply")}</button>
+        <button class="replyAll">${str("replyAll")}</button>
+        <button class="forward">${str("forward")}</button>
       </div>
       {{if quickReply}}
         {{tmpl "#quickReplyTemplate"}}
@@ -422,7 +432,7 @@
           <span class="name">${tooltipName}</span>
           <span class="authorEmail">
             ${email}
-            <button class="copyEmail" title="Copy email address to clipboard">
+            <button class="copyEmail" title="${str('copyEmail')}">
               <img src="chrome://conversations/content/i/clipboard.png" />
             </button>
           </span>
@@ -456,20 +466,20 @@
           {{if (showMonospace)}}
           <div style="margin-bottom:5px;">
             <input type="checkbox" style="vertical-align: text-top" class="checkbox-monospace" />
-            <label style="color:#666; font-weight: normal">Messages from this sender in monospace</label>
+            <label style="color:#666; font-weight: normal">${str("messagesMonospace")}</label>
           </div>
           {{/if}}
-          <button class="createFilter">create filter for sender</button>
-          <button class="addContact" title="Add to address book">
+          <button class="createFilter">${str("createFilter")}</button>
+          <button class="addContact" title="${str('addToAb')}">
             <img src="chrome://conversations/content/i/user_add.png" />
           </button>
-          <button class="editContact" title="Edit contact in address book">
+          <button class="editContact" title="${str('editCardAb')}">
             <img src="chrome://conversations/content/i/user_edit.png" />
           </button>
         </div>
         <div class="tipFooter">
-          <button class="sendEmail">send email</button>
-          <button class="showInvolving">recent conversations</button>
+          <button class="sendEmail">${str("sendEmail")}</button>
+          <button class="showInvolving">${str("recentConversations")}</button>
           <button class="moreExpander">+</button>
         </div>
       </div
@@ -479,48 +489,48 @@
     <div class="quickReply">
       <div class="quickReplyRecipients">
         <ul>
-          <li class="showCc"><a onclick="showCc(); editFields();" href="javascript:">add cc</a> |</li>
-          <li class="showBcc"><a onclick="showBcc(); editFields();" href="javascript:">add bcc</a></li>
+          <li class="showCc"><a onclick="showCc(); editFields();" href="javascript:">${str("addCc")}</a> |</li>
+          <li class="showBcc"><a onclick="showBcc(); editFields();" href="javascript:">${str("addBcc")}</a></li>
         </ul>
         <ul>
-          from:
+          ${str("fieldFrom")}
           <li class="senderName"></li>
         </ul>
         <div class="editRecipientList editToList hbox">
-          <div class="label">to:</div>
+          <div class="label">${str("fieldTo")}</div>
           <div class="boxFlex"><input type="text" id="to" /></div>
         </div>
         <div class="editRecipientList editCcList hbox" style="display: none">
-          <div class="label">cc:</div>
+          <div class="label">${str("fieldCc")}</div>
           <div class="boxFlex"><input type="text" id="cc" /></div>
         </div>
         <div class="editRecipientList editBccList hbox" style="display: none">
-          <div class="label">bcc:</div>
+          <div class="label">${str("fieldBcc")}</div>
           <div class="boxFlex"><input type="text" id="bcc" /></div>
         </div>
         <ul class="recipientList toList">
-          to:
+          ${str("fieldTo")}
           <li>Roland Tanglao, </li>
           <li>David Ascher, </li>
           <li>Bryan Clark, </li>
           <li>James Burke</li>
-          <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('to');">edit</a></li>
+          <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('to');">${str("edit")}</a></li>
         </ul>
         <ul class="recipientList ccList" style="display: none;">
-          cc:
+          ${str("fieldCc")}
           <li>Roland Tanglao, </li>
           <li>David Ascher, </li>
           <li>Bryan Clark, </li>
           <li>James Burke</li>
-          <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('cc');">edit</a></li>
+          <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('cc');">${str("edit")}</a></li>
         </ul>
         <ul class="recipientList bccList" style="display: none;">
-          bcc:
+          ${str("fieldBcc")}
           <li>Roland Tanglao, </li>
           <li>David Ascher, </li>
           <li>Bryan Clark, </li>
           <li>James Burke</li>
-          <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('bcc');">edit</a></li>
+          <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('bcc');">${str("edit")}</a></li>
         </ul>
       </div>
       <div class="quickReplyHeader" style="display: none; overflow: auto">
@@ -534,17 +544,17 @@
       <textarea spellcheck="true" onclick="onTextareaClicked(event);"></textarea>
       <div class="quickReplyFooter" style="overflow: auto" tabindex="-1">
         <button id="send" style="float:right;margin-left:3px;" onclick="gComposeSession.send();">
-          send
+          ${str("send")}
         </button>
         <button id="sendArchive" style="float:right;margin-left:3px;"
             onclick="gComposeSession.send({ archive: true });">
-          send &amp; archive
+          ${str("sendArchive")}
         </button>
-        <button id="save" style="float:right" onclick="onSave(event);">save</button>
+        <button id="save" style="float:right" onclick="onSave(event);">${str("save")}</button>
         <button id="discard" style="float: left;"
-          onclick="confirmDiscard()">discard</button>
+          onclick="confirmDiscard()">${str("discard")}</button>
         <button style="float: left; margin-left: 3px"
-          onclick="onUseEditor();">continue using editor</button>
+          onclick="onUseEditor();">${str("continueEditor")}</button>
       </div>
     </div>
     ]]>
