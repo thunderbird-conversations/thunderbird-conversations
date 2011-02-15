@@ -293,10 +293,11 @@
         }
       });
     }
-    let strings = new StringBundle("chrome://conversations/locale/template.properties");
+    // I'll never understand why JS doesn't have lexical scoping...
+    let tStrings = new StringBundle("chrome://conversations/locale/template.properties");
     let str = function (x) {
       try {
-        return strings.get(x);
+        return tStrings.get(x);
       } catch (e) {
         Log.error("No such string", x);
         Log.debug(e);

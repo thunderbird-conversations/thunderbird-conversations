@@ -301,7 +301,7 @@ function setupAutocomplete(to, cc, bcc) {
       else
         sep = strings.get("sepComma");
       $(aList+" .add-more").before($("<li />").attr("title", email).text(name));
-      $(aList+" .add-more").before($(document.createTextNode(sep)));
+      $(aList+" .add-more").before($("<span />").addClass("recipientListSeparator").text(sep));
     }
   };
   fill("#to", ".toList", to);

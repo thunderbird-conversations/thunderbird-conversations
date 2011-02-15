@@ -645,6 +645,10 @@ ul.special-tags img {
   margin: 0 0 5px 0;
 }
 
+.recipientListSeparator {
+  color: #666;
+}
+
 .quickReplyRecipients li {
   display: inline-block;
   color: #666;
