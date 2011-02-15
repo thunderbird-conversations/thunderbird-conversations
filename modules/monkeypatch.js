@@ -88,6 +88,7 @@ let conversationTabType = {
     browser.setAttribute("tooltip", "aHTMLTooltip");
     browser.setAttribute("id", "conversationTab-" + this.lastId);
     browser.setAttribute("onclick", "specialTabs.defaultClickHandler(event);");
+    browser.setAttribute("context", "mailContext");
     browser.data = aArgs;
     browser.data.tabObject = aTab;
 
