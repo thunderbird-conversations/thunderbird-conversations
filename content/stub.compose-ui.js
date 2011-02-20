@@ -236,9 +236,6 @@ function ComposeSession (match) {
     identity: null,
     msgHdr: null,
     subject: null,
-    // We treat these three as immutable, because we have no UI for them (and we
-    //  probably don't plan on implementing any).
-    returnReceipt: null, receiptType: null, requestDsn: null,
   };
   // Go!
   this.setupIdentity();
@@ -271,9 +268,6 @@ ComposeSession.prototype = {
     });
     $(".senderName").text(identity.fullName + " <"+identity.email+">");
     self.params.identity = identity;
-    self.params.returnReceipt = identity.requestReturnReceipt;
-    self.params.receiptType = identity.receiptHeaderType;
-    self.params.requestDsn = identity.requestDSN;
   },
 
   setupMisc: function () {
@@ -297,55 +291,19 @@ ComposeSession.prototype = {
     let self = this;
     this.match({
       reply: function (aMsgHdr) {
-        // Do the whole shebang to find out who to send to...
-        let [[author], [authorEmailAddress]] = parse(aMsgHdr.mime2DecodedAuthor);
-        let [recipients, recipientsEmailAddresses] = parse(aMsgHdr.mime2DecodedRecipients);
-        let [ccList, ccListEmailAddresses] = parse(aMsgHdr.ccList);
-        let [bccList, bccListEmailAddresses] = parse(aMsgHdr.bccList);
         let identity = self.params.identity;
-        let to = [], cc = [], bcc = [];
-
-        let isReplyToOwnMsg = false;
-        for each (let [i, identity] in Iterator(gIdentities)) {
-          // It happens that gIdentities.default is null!
-          if (!identity) {
-            Log.debug("This identity is null, pretty weird...");
-            continue;
-          }
-          let email = identity.email;
-          if (email == authorEmailAddress)
-            isReplyToOwnMsg = true;
-          if (recipientsEmailAddresses.some(function (x) x == email))
-            isReplyToOwnMsg = false;
-          if (ccListEmailAddresses.some(function (x) x == email))
-            isReplyToOwnMsg = false;
-        }
-
-        // Actually we are implementing the "Reply all" logic... that's better, no one
-        //  wants to really use reply anyway ;-)
-        if (isReplyToOwnMsg) {
-          to = [asToken(null, r, recipientsEmailAddresses[i], null)
-            for each ([i, r] in Iterator(recipients))];
-        } else {
-          to = [asToken(null, author, authorEmailAddress, null)];
-        }
-        cc = [asToken(null, cc, ccListEmailAddresses[i], null)
-          for each ([i, cc] in Iterator(ccList))
-          if (ccListEmailAddresses[i] != identity.email)];
-        if (!isReplyToOwnMsg)
-          cc = cc.concat
-            ([asToken(null, r, recipientsEmailAddresses[i], null)
-              for each ([i, r] in Iterator(recipients))
-              if (recipientsEmailAddresses[i] != identity.email)]);
-        bcc = [asToken(null, bcc, bccListEmailAddresses[i], null)
-          for each ([i, bcc] in Iterator(bccList))];
+        let msgHdr = self.params.msgHdr;
+        let params = replyAllParams(identity, msgHdr);
+        let to = [asToken(null, name, email, null) for each ([name, email] in params.to)];
+        let cc = [asToken(null, name, email, null) for each ([name, email] in params.cc)];
+        let bcc = [asToken(null, name, email, null) for each ([name, email] in params.bcc)];
 
         // We're streaming the message just to get the reply-to header... kind of a
         //  shame...
         try {
           MsgHdrToMimeMessage(aMsgHdr, null, function (aMsgHdr, aMimeMsg) {
             if ("reply-to" in aMimeMsg.headers) {
-              let [[name, email]] = parse(aMimeMsg.headers["reply-to"]);
+              let [[name], [email]] = parse(aMimeMsg.headers["reply-to"]);
               if (email)
                 to = [asToken(null, name, email, null)];
             }
@@ -400,9 +358,9 @@ ComposeSession.prototype = {
     let self = this;
     let popOut = options && options.popOut;
     this.archive = options && options.archive;
-    let textarea = document.getElementsByTagName("textarea")[0];
+    let $textarea = $("textarea");
     let msg = "Send an empty message?";
-    if (!popOut && !$(textarea).val().length && !confirm(msg))
+    if (!popOut && !$textarea.val().length && !confirm(msg))
       return;
 
     return sendMessage({
@@ -412,13 +370,12 @@ ComposeSession.prototype = {
         cc: $("#cc").val(),
         bcc: $("#bcc").val(),
         subject: self.params.subject,
-        returnReceipt: self.params.returnReceipt,
-        receiptType: self.params.receiptType,
-        requestDsn: self.params.requestDsn,
       }, {
         compType: Ci.nsIMsgCompType.ReplyAll,
         deliverType: Ci.nsIMsgCompDeliverMode.Now,
-      }, textarea, {
+      }, { match: function (x) {
+        x.plainText($textarea.val());
+      }}, {
         progressListener: progressListener,
         sendListener: sendListener,
         stateListener: createStateListener(self,
