@@ -46,10 +46,8 @@ let Log = setupLogging("Conversations.Modules.Enigmail");
 // If you need to listen to more events (conversation loaded, conversation
 //  wiped)... just ask!
 
-// GetEnigmailSvc needs window to be defined in the scope...
-let window = getMail3Pane();
-
 // Enigmail support, thanks to Patrick Brunschwig!
+let window = getMail3Pane();
 let hasEnigmail;
 try {
   Cu.import("resource://enigmail/enigmailCommon.jsm");
@@ -63,9 +61,6 @@ try {
 let enigmailSvc;
 window.addEventListener("load", function () {
   if (hasEnigmail) {
-    // Workaround a bug in enigmail. This makes sure EnigmailCommon.prefBranch
-    //  is initialized.
-    try { EnigmailCommon.getPref(""); } catch (e) {}
     enigmailSvc = EnigmailCommon.getService(window);
     if (!enigmailSvc) {
       Log.debug("Error loading the Enigmail service. Is Enigmail disabled?\n");
