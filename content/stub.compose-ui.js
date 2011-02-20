@@ -345,7 +345,7 @@ ComposeSession.prototype = {
         try {
           MsgHdrToMimeMessage(aMsgHdr, null, function (aMsgHdr, aMimeMsg) {
             if ("reply-to" in aMimeMsg.headers) {
-              let [name, email] = parse(aMimeMsg.headers["reply-to"]);
+              let [[name, email]] = parse(aMimeMsg.headers["reply-to"]);
               if (email)
                 to = [asToken(null, name, email, null)];
             }
