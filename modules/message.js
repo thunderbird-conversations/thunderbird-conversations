@@ -232,7 +232,7 @@ function Message(aConversation) {
   this._bcc = this._msgHdr.bccList.length ? this.parse(this._msgHdr.bccList) : [];
   this.subject = this._msgHdr.mime2DecodedSubject;
 
-  this._uri = this._msgHdr.folder.getUriForMsg(this._msgHdr);
+  this._uri = msgHdrGetUri(this._msgHdr);
   this._contacts = [];
   this._attachments = [];
 
@@ -910,7 +910,7 @@ Message.prototype = {
         cv.hintCharacterSet = "UTF-8";
         cv.hintCharacterSetSource = kCharsetFromChannel;
         /* Is this even remotely useful? */
-        iframe.docShell.appType = Components.interfaces.nsIDocShell.APP_TYPE_MAIL;
+        iframe.docShell.appType = Ci.nsIDocShell.APP_TYPE_MAIL;
 
         /* Now that's about the input encoding. Here's the catch: the
          * right way to do that would be to query nsIMsgI18NUrl [1] on the
