@@ -66,7 +66,7 @@ function canInclude(aNode) {
 }
 
 function isBody(aNode) {
-  return aNode.parentNode.parentNode.nodeType == aNode.NODE_DOCUMENT;
+  return (aNode.tagName.toLowerCase() == "body");
 }
 
 /* Create a blockquote that encloses everything relevant, starting from marker.
