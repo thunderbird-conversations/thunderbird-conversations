@@ -364,7 +364,7 @@ ComposeSession.prototype = {
       return;
 
     return sendMessage({
-        msgHdr: self.params.msgHdr,
+        urls: [msgHdrGetUri(self.params.msgHdr)],
         identity: self.params.identity,
         to: $("#to").val(),
         cc: $("#cc").val(),
