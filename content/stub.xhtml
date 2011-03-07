@@ -284,7 +284,7 @@
               // Now this will save the OLD draft which will broadcast the
               //  change to all listeners, so the new window will pickup the change,
               //  and magically update itself.
-              onSave();
+              onSave(null, false);
             });
           } catch (e) {
             Log.debug(e);
