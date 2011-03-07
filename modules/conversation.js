@@ -359,6 +359,7 @@ Conversation.prototype = {
                 message: new MessageFromDbHdr(self, msgHdr), // will run signal
                 msgHdr: msgHdr,
                 glodaMsg: null,
+                debug: "MI+NG", // M = msgHdr, I = Initial, NG = there was no gloda query
               } for each ([, msgHdr] in Iterator(self._initialSet))];
             self._signal();
           } else {
@@ -477,6 +478,7 @@ Conversation.prototype = {
           message: new MessageFromGloda(self, glodaMsg), // will fire signal when done
           glodaMsg: glodaMsg,
           msgHdr: null,
+          debug: "GA",
         } for each ([, glodaMsg] in Iterator(aItems))];
         // The message ids we already hold.
         let messageIds = {};
@@ -542,6 +544,11 @@ Conversation.prototype = {
         //  together, special queries for GitHub and GetSatisfaction, etc..
         // Don't really knows what happens in those cases.
         self.id = aCollection.items[0].conversation.id;
+        // Beware, some bad things might have happened in the meanwhile...
+        self._initialSet =
+          self._initialSet.filter(function (msgHdr) msgHdr && msgHdr.folder.msgDatabase.ContainsKey(msgHdr.messageKey));
+        self._intermediateResults =
+          self._intermediateResults.filter(function (glodaMsg) glodaMsg.folderMessage);
         // When the right number of signals has been fired, move on...
         self._getReady(aCollection.items.length
           + self._intermediateResults.length
@@ -556,9 +563,16 @@ Conversation.prototype = {
           message: new MessageFromGloda(self, glodaMsg), // will fire signal when done
           glodaMsg: glodaMsg,
           msgHdr: null,
-        } for each ([, glodaMsg] in
-            Iterator(aCollection.items.concat(self._intermediateResults)))
-        ];
+          debug: "GF", // G = Gloda, F = Final
+        } for each ([, glodaMsg] in Iterator(aCollection.items))
+        ].concat([{
+          type: kMsgGloda,
+          message: new MessageFromGloda(self, glodaMsg), // will fire signal when done
+          glodaMsg: glodaMsg,
+          msgHdr: null,
+          debug: "GM", // G = Gloda, M = interMediate
+        } for each ([, glodaMsg] in Iterator(self._intermediateResults))
+        ]);
         // Here's the message IDs we know
         let messageIds = {};
         [messageIds[m.glodaMsg.headerMessageID] = true
@@ -566,16 +580,20 @@ Conversation.prototype = {
         // But Gloda might also miss some message headers
         for each (let [, msgHdr] in Iterator(self._initialSet)) {
           // Although _filterOutDuplicates is called eventually, don't uselessly
-          // create messages. The typical use case is when the user has a
-          // conversation selected, a new message arrives in that conversation,
-          // and we get called immediately. So there's only one message gloda
-          // hasn't indexed yet...
+          //  create messages. The typical use case is when the user has a
+          //  conversation selected, a new message arrives in that conversation,
+          //  and we get called immediately. So there's only one message gloda
+          //  hasn't indexed yet...
+          // The extra check should help for cases where the fake header that
+          //  represents the sent message has been replaced in the meanwhile
+          //  with the real header...
           if (!(msgHdr.messageId in messageIds)) {
             self.messages.push({
               type: kMsgDbHdr,
               message: new MessageFromDbHdr(self, msgHdr), // will call signal when done
               msgHdr: msgHdr,
               glodaMsg: null,
+              debug: "MI+G", // M = msgHdr, I = Initial, G = there was a gloda query
             });
           } else {
             self._signal();
@@ -679,6 +697,9 @@ Conversation.prototype = {
     //  whole thing and asks for a new ThreadSummary but the user hasn't
     //  actually changed selections.
     if (aMessages.length) {
+      Log.debug("Appending", "\u001b[01;36m",
+        [x.debug for each (x in aMessages)].join(" "), "\u001b[00m");
+
       // All your messages are belong to us. This is especially important so
       //  that contacts query the right _contactManager through their parent
       //  Message.
@@ -839,6 +860,9 @@ Conversation.prototype = {
         this._htmlPane.contentWindow.onSave(null, false);
       }
     }
+
+    Log.debug("Outputting", "\u001b[01;36m",
+      [x.debug for each (x in this.messages)], "\u001b[00m");
 
     // Fill in the HTML right away. The has the nice side-effect of erasing the
     // previous conversation (but not the conversation-wide event handlers!)
