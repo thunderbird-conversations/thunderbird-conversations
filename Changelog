@@ -1,5 +1,11 @@
 --- Changes since 2.0alpha2 ---
 
+- Added some tweaks to better support GitHub notification emails.
+- Localization work. Upcoming releases should have more locales.
+- A new gallery view has been implemented.
+- Thunderbird Conversations did not honor the "do not automatically mark
+messages as read" case. Please check, in Preferences > Advanced > Display
+and reading that the settings are correct.
 - Messages sent with quick reply now request return receipts according to the
 global or account-specific preferences.
 - Improved conversations-in-separate-tabs: they now update automatically as new

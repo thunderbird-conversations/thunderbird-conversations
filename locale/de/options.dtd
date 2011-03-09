@@ -1,33 +1,21 @@
-<!ENTITY window.title "Better Conversation View Optionen">
+<!-- Please open the "Preferences" window and DO check that your text is not too
+     long. This can cause the contents to overflow and be hidden, so make sure
+     everything is displayed properly. 
+
+
+-->
+<!ENTITY window.title "Thunderbird Conversations Optionen">
 <!ENTITY title.message_display "Nachrichtenanzeige">
-<!ENTITY option.monospaced "Unproportionale Schriftart für Reintextnachrichten verwenden">
-<!ENTITY option.monospaced_snippets "Unproportionale Schriftart für Nachrichtenquelltext verwenden">
-<!ENTITY option.focus_what "Beim Anzeigen einer Konversation, scrollen zu:">
-<!ENTITY option.focus_first "Der ersten ungelesenen oder der letzten Nachricht">
-<!ENTITY option.focus_selected "Der Nachricht, die als letztes ausgewählt wurde">
-<!ENTITY optiondesc.unfold "Standardmäßig ausklappen:">
-<!ENTITY option.last_or_unread "Alle ungelesenen Nachrichten inkl. derjenigen, zu der gescrollt wurde (siehe oben)">
-<!ENTITY option.all_messages "Alle Nachrichten">
-<!ENTITY option.no_messages "Keine Nachrichten">
-<!ENTITY title.toolbar "Buttons der Symbolleiste">
-<!ENTITY buttons.info "All diese Befehle sind auch über das Kontextmenü der Konversation zugänglich (Rechtsklick).">
-<!ENTITY option.button.archive "&quot;Archiv&quot;-Button anzeigen">
-<!ENTITY option.button.trash "&quot;Löschen&quot;-Button anzeigen">
-<!ENTITY option.button.print "&quot;Drucken&quot;-Button anzeigen">
-<!ENTITY option.button.back "&quot;Einzelansicht&quot;-Button anzeigen">
-<!ENTITY option.button.expand_all "&quot;Alle ausklappen&quot;-Button anzeigen">
-<!ENTITY option.button.collapse_all "&quot;Alle einklappen&quot;-Button anzeigen">
-<!ENTITY option.button.mark_as_read "&quot;Alle als gelesen markieren&quot;-Button anzeigen">
-<!ENTITY option.button.open_in_new_tab "&quot;In neuem Tab öffnen&quot;-Button anzeigen">
+<!ENTITY option.expand_who "Standardmäßig ausklappen:">
+<!ENTITY option.expand_auto "Die Nachricht, die Ihnen vorschwebt (automatisch)">
+<!ENTITY option.expand_none "Keine Nachrichten">
+<!ENTITY option.expand_all "Alle Nachrichten">
 <!ENTITY title.quoting "Zitieren">
-<!ENTITY option.hide_longer_than "Zitierte Nachrichtenteile länger als">
+<!ENTITY option.hide_longer_than "Zitierten Text länger als">
 <!ENTITY option.lines "Zeilen verbergen">
-<!ENTITY option.reverse_order "Rückwärts sortieren (letzte → erste)">
-<!ENTITY title.general "Allgemein">
-<!ENTITY option.auto_fetch "Immer nach Konversationen suchen">
-<!ENTITY option.auto_mark_read "Immer den ganzen Thread als gelesen markieren, wenn die Konversation angezeigt wird">
-<!ENTITY auto_fetch.info "Manchman wird in der Nachrichtenliste kein Thread angezeigt, obwohl es eine Konversation gibt (wenn Sie beispielsweise auf eine E-Mail geantwortet haben). Diese Option erlaubt Ihnen, diese Nachrichten automatisch in Ihrer Konversationsansicht anzeigen zu lassen.">
 <!ENTITY title.advanced "Erweitert">
-<!ENTITY title.error_messages "Fehlermeldungen">
-<!ENTITY option.disable_error_empty_collection "Die Warnung über unvollständige Konversationen deaktivieren">
-<!ENTITY option.monospaced_senders "Nachrichten von diesen Adressen sollen in unproportionaler Schriftart angezeigt werden (durch Kommas trennen):">
+<!ENTITY title.assistant "Installationsassistent">
+<!ENTITY option.assistant "Starte den Installationsassistenten">
+<!ENTITY title.advanced_display "Konversationsanzeige">
+<!ENTITY option.no_friendly_date "&quot;Normales&quot; Datum wie in der Nachrichtenliste anzeigen">
+<!ENTITY option.monospaced_senders "Nachrichten von diesen Adressen sollen in unproportionaler Schriftart angezeigt werden (durch Kommata trennen):">

@@ -1,41 +1,15 @@
-<!ENTITY window.title "Gmail преглед разговора поставке">
+<!ENTITY window.title "Thunderbird Conversations - опције">
 <!ENTITY title.message_display "Приказ поруке">
-<!ENTITY option.monospaced "Користи штампани фонт за поруке с чистим текстом">
-<!ENTITY option.monospaced_snippets "Користи штампани фонт за одломке порука">
-<!ENTITY option.focus_what "У току приказа разговора, помакни до:">
-<!ENTITY option.focus_first "Прве непрочитане поруке или последње поруке">
-<!ENTITY option.focus_selected "Поруке која је изабрана у списку">
-<!ENTITY optiondesc.unfold "По подразумеваним поставкама, прошири:">
-<!ENTITY option.last_or_unread "Све непрочитане поруке, плус помицане поруке (види изнад)">
-<!ENTITY option.all_messages "Све поруке">
-<!ENTITY option.no_messages "Нема порука">
-<!ENTITY title.toolbar "Алатница">
-<!ENTITY buttons.info "Све ове наредбе су такође приступачне у контектсном менију кратког прегледа нити (десни клик).">
-<!ENTITY option.toolbar_mode "Прикажи:">
-<!ENTITY option.toolbar_mode_icons "Иконе">
-<!ENTITY option.toolbar_mode_text "Текст">
-<!ENTITY option.toolbar_mode_text_plus_icons "Иконе поред текста">
-<!ENTITY option.button.archive "Прикажи дугме „архивирај“">
-<!ENTITY option.button.trash "Прикажи дугме „обриши“">
-<!ENTITY option.button.print "Прикажи дугме „одштампај“">
-<!ENTITY option.button.back "Прикажи дугме „приказ поруке“">
-<!ENTITY option.button.expand_all "Прикажи дугме „прошири све“">
-<!ENTITY option.button.collapse_all "Прикажи дугме „скупи све“">
-<!ENTITY option.button.mark_as_read "Прикажи дугме „означи све као прочитане“">
-<!ENTITY option.button.open_in_new_tab "Прикажи дугме „отвори у новом језичку“">
+<!ENTITY option.expand_who "Подразумевано, рашири:">
+<!ENTITY option.expand_auto "Порука коју сте имали на уму (аутоматски)">
+<!ENTITY option.expand_none "Нема порука">
+<!ENTITY option.expand_all "Све поруке">
 <!ENTITY title.quoting "Цитирање">
 <!ENTITY option.hide_longer_than "Сакриј цитиране делове с више од">
 <!ENTITY option.lines "линија/е">
-<!ENTITY option.reverse_order "Обрни редослед (последњи → први)">
-<!ENTITY title.general "Опште">
-<!ENTITY option.auto_fetch "Увек тражи разговоре">
-<!ENTITY option.auto_mark_read "Увек означи целу нит као прочитану када је разговор приказан.">
-<!ENTITY auto_fetch.info "Понекад, нит није видљива у прозорском окну, али постоји основни разговор (ако одговорите на нечију е-поруку, на пример). Ова опција Вам омогућава да аутоматски прикажете разговор за такве поруке.">
 <!ENTITY title.advanced "Напредно">
-<!ENTITY title.error_messages "Грешке">
-<!ENTITY option.disable_error_empty_collection "Онемогући упозорење „Тандерберд још увек није индексирао ову тему“">
-<!ENTITY option.monospaced_senders "Поруке с тих адреса би требало бити приказане у штампаним фонтовима (зарез за одвајање)">
+<!ENTITY title.assistant "Помоћник за подешавање">
+<!ENTITY option.assistant "Покрени помоћника за подешавање">
 <!ENTITY title.advanced_display "Приказ разговора">
 <!ENTITY option.no_friendly_date "Користи &quot;нормалне&quot; датуме, исто као списак порука">
-<!ENTITY option.guess_first_names "Претпостави и прикажи само имена учесника">
-<!ENTITY option.my_messages_in_inbox "Како да се приказују поруке које сам послао/ла">
+<!ENTITY option.monospaced_senders "Поруке с тих адреса би требало бити приказане у штампаним фонтовима (зарез за одвајање)">

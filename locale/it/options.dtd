@@ -2,47 +2,15 @@
      long. This can cause the contents to overflow and be hidden, so make sure
      everything is displayed properly. 
 
+
+
 -->
 <!ENTITY window.title "Impostazioni di Gmail Conversation View">
 <!ENTITY title.message_display "Aspetto dei messaggi">
-<!ENTITY option.monospaced "Utilizza i caratteri a larghezza fissa per i messaggi in testo semplice">
-<!ENTITY option.monospaced_snippets "Utilizza i caratteri a larghezza fissa per i frammenti dei messaggi">
-<!ENTITY option.focus_what "Messaggio fino al quale scorrere quando viene mostrata una conversazione">
-<!ENTITY option.focus_first "Scorri al primo messaggio non letto oppure all&apos;ultimo">
-<!ENTITY option.focus_selected "Scorri al messaggio attualmente selezionato nella lista">
-<!ENTITY optiondesc.unfold "Messaggi da espandere (come opzione predefinita)">
-<!ENTITY option.last_or_unread "Espandi tutti i messaggi non letti e quello fino al quale scorrere">
-<!ENTITY option.all_messages "Espandi tutti i messaggi">
-<!ENTITY option.no_messages "Non espandere alcun messaggio">
-<!ENTITY title.toolbar "Pulsanti per la barra del sommario della discussione">
-<!ENTITY buttons.info "È possibile accedere ai comandi qui sotto anche tramite il menu contestuale (clic con tasto destro del mouse) del sommario della discussione">
-<!ENTITY option.toolbar_mode "Mostra:">
-<!ENTITY option.toolbar_mode_icons "solo le icone">
-<!ENTITY option.toolbar_mode_text "solo il testo">
-<!ENTITY option.toolbar_mode_text_plus_icons "il testo a destra delle icone dei pulsanti selezionati">
-<!ENTITY option.button.archive "Mostra il pulsante &quot;Archivia&quot;">
-<!ENTITY option.button.trash "Mostra il pulsante &quot;Elimina&quot;">
-<!ENTITY option.button.print "Mostra il pulsante &quot;Stampa…&quot;">
-<!ENTITY option.button.back "Mostra il pulsante &quot;Vedi singola e-mail&quot;">
-<!ENTITY option.button.expand_all "Mostra il pulsante &quot;Espandi tutti&quot;">
-<!ENTITY option.button.collapse_all "Mostra il pulsante &quot;Contrai tutti&quot;">
-<!ENTITY option.button.mark_as_read "Mostra il pulsante &quot;Segna tutti come letti&quot;">
-<!ENTITY option.button.open_in_new_tab "Mostra il pulsante &quot;Apri in una nuova scheda&quot;">
 <!ENTITY title.quoting "Citazioni">
 <!ENTITY option.hide_longer_than "Righe dopo le quali nascondere il testo citato:">
 <!ENTITY option.lines " ">
-<!ENTITY option.reverse_order "Inverti l&apos;ordine (ultimo → primo)">
-<!ENTITY title.general "Generali">
-<!ENTITY option.auto_fetch "Cerca sempre le conversazioni e-mail">
-<!ENTITY option.auto_mark_read "Segna sempre l&apos;intera discussione come letta quando si visualizza la conversazione e-mail">
-<!ENTITY auto_fetch.info "Talvolta una discussione può non essere presente nella lista dei messaggi nonostante il messaggio selezionato faccia parte di una conversazione (ad esempio in caso di risposta ad un'e-mail). Selezionando l'opzione qui sotto sarà possibile visualizzare automaticamente questo tipo di messaggi sotto forma di conversazione">
 <!ENTITY title.advanced "Avanzate">
-<!ENTITY title.error_messages "Messaggi di errore">
-<!ENTITY option.disable_error_empty_collection "Non visualizzare i messaggi di errore inerenti a conversazioni vuote">
-<!ENTITY option.monospaced_senders "È possibile utilizzare i caratteri a larghezza fissa per i messaggi provenienti da determinati indirizzi e-mail aggiungendoli qui sotto (separati con una virgola)">
 <!ENTITY title.advanced_display "Aspetto delle discussioni">
 <!ENTITY option.no_friendly_date "Utilizza date normali, come nella lista dei messaggi">
-<!ENTITY option.guess_first_names "Rileva e visualizza solamente il nome dei partecipanti">
-<!ENTITY option.my_messages_in_inbox "Come visualizzare i messaggi inviati nella cartella &apos;Posta in arrivo&apos;">
-<!ENTITY option.scroll_to_new_message "Espandi la prima discussione non letta nella lista dei messaggi quando si cambia cartella">
-<!ENTITY title.message_list "Lista dei messaggi">
+<!ENTITY option.monospaced_senders "È possibile utilizzare i caratteri a larghezza fissa per i messaggi provenienti da determinati indirizzi e-mail aggiungendoli qui sotto (separati con una virgola)">

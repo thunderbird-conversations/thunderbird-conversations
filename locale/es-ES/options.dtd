@@ -1,0 +1,15 @@
+<!ENTITY window.title "Thunderbird Conversations - Opciones">
+<!ENTITY title.message_display "Vista de mensajes">
+<!ENTITY option.expand_who "Por defecto, expandir:">
+<!ENTITY option.expand_auto "El mensaje que tiene en mente (automático)">
+<!ENTITY option.expand_none "Sin mensajes">
+<!ENTITY option.expand_all "Todos los mensajes">
+<!ENTITY title.quoting "Citas">
+<!ENTITY option.hide_longer_than "Ocultar el texto citado mayor de">
+<!ENTITY option.lines "líneas">
+<!ENTITY title.advanced "Avanzadas">
+<!ENTITY title.assistant "Asistente de configuración">
+<!ENTITY option.assistant "Iniciar el asistente de configuración">
+<!ENTITY title.advanced_display "Vista de conversación">
+<!ENTITY option.no_friendly_date "Usar fechas &quot;normales&quot; como en la lista de mensajes">
+<!ENTITY option.monospaced_senders "Los mensajes de estas direcciones se mostrarán en fuentes monoespaciadas (separadas con comas)">

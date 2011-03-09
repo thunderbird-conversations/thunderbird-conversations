@@ -1,41 +1,20 @@
+<!-- Please open the "Preferences" window and DO check that your text is not too
+     long. This can cause the contents to overflow and be hidden, so make sure
+     everything is displayed properly. 
+
+
+-->
 <!ENTITY window.title "Gmail会话视图-选项">
 <!ENTITY title.message_display "消息显示">
-<!ENTITY option.monospaced "使用等宽字体显示纯文本邮件">
-<!ENTITY option.monospaced_snippets "使用等宽字体显示邮件摘要">
-<!ENTITY option.focus_what "当显示会话时，滚动到：">
-<!ENTITY option.focus_first "自动显示最新的邮件或第一封未读邮件">
-<!ENTITY option.focus_selected "当前邮件列表中选中的邮件">
-<!ENTITY optiondesc.unfold "默认：展开">
-<!ENTITY option.last_or_unread "最新或未读邮件">
-<!ENTITY option.all_messages "所有邮件">
-<!ENTITY option.no_messages "没有邮件">
-<!ENTITY title.toolbar "工具条按钮">
-<!ENTITY buttons.info "所有命令均可从会话概要区上下文菜单中访问(鼠标右键点击).">
-<!ENTITY option.toolbar_mode "显示：">
-<!ENTITY option.toolbar_mode_icons "图标">
-<!ENTITY option.toolbar_mode_text "文字">
-<!ENTITY option.toolbar_mode_text_plus_icons "图标+文字">
-<!ENTITY option.button.archive "显示 &quot;归档&quot; 按钮">
-<!ENTITY option.button.trash "显示 &quot;删除&quot; 按钮">
-<!ENTITY option.button.print "显示 &quot;打印&quot; 按钮">
-<!ENTITY option.button.back "显示 &quot;单邮件视图&quot; 按钮">
-<!ENTITY option.button.expand_all "显示 &quot;全部展开&quot; 按钮">
-<!ENTITY option.button.collapse_all "显示 &quot;全部折叠&quot; 按钮">
-<!ENTITY option.button.mark_as_read "显示 &quot;标记所有为已读&quot; 按钮">
-<!ENTITY option.button.open_in_new_tab "显示 &quot;在新标签页中打开&quot; 按钮">
+<!ENTITY option.expand_who "默认：展开">
+<!ENTITY option.expand_none "没有邮件">
+<!ENTITY option.expand_all "所有邮件">
 <!ENTITY title.quoting "引用和折叠">
 <!ENTITY option.hide_longer_than "隐藏多于指定行数的引用文字：">
 <!ENTITY option.lines "行">
-<!ENTITY option.reverse_order "倒序显示 (先显示最新的邮件)">
-<!ENTITY title.general "常规">
-<!ENTITY option.auto_fetch "总是自动查找会话相关邮件">
-<!ENTITY option.auto_mark_read "总是自动标记会话相关邮件为已读">
-<!ENTITY auto_fetch.info "有时，仅存在潜在的会话（例如你回复了某人的邮件），在邮件预览窗中却没有可见线程。这个选项允许自动显示这些会话中的相关邮件。">
 <!ENTITY title.advanced "高级">
-<!ENTITY title.error_messages "错误消息">
-<!ENTITY option.disable_error_empty_collection "禁用 &quot;Thunderbird尚未完成索引&quot; 告警">
-<!ENTITY option.monospaced_senders "下列邮件地址发来的邮件以等宽字体显示（使用半角逗号分隔）">
+<!ENTITY title.assistant "安装助手">
+<!ENTITY option.assistant "启动安装助手">
 <!ENTITY title.advanced_display "会话显示">
 <!ENTITY option.no_friendly_date "使用&quot;正常&quot;日期。与邮件列表中相同">
-<!ENTITY option.guess_first_names "推测并仅显示相关人员的姓氏">
-<!ENTITY option.my_messages_in_inbox "如何在收件箱中显示我发出的邮件">
+<!ENTITY option.monospaced_senders "下列邮件地址发来的邮件以等宽字体显示（使用半角逗号分隔）">

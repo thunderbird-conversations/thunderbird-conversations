@@ -1,0 +1,40 @@
+<!ENTITY assistant.intro "¡Hola! Bienvenido a <strong>Thunderbird Conversations</strong>">
+<!ENTITY assistant.p1 "Para hacer las cosas más fáciles, este asistente ajustará la configuración para asegurarle un rendimiento mejor.">
+<!ENTITY assistant.p2 "Los cambios de ajustes son reversibles, por lo que si no le gusta Thunderbird conversaciones, todos los cambios se anularán cuando desinstale la extensión.">
+<!ENTITY assistant.p3 "Esto puede tomar bastante tiempo. Puede esperar a que se cierre la ventana, o cerrarla usted mismo, y comprobar el progreso desde Herramientas&gt; Gestor de actividad.">
+<!ENTITY assistant.working "Trabajando...">
+<!ENTITY assistant.review "Revisar cambios">
+<!ENTITY assistant.apply "Aplicar cambios">
+<!ENTITY assistant.settings "Algunas opciones son obligatorias para que Thunderbird Conversations pueda funcionar. Algunas son bastante recomendables y otras son opcionales.">
+<!ENTITY assistant.actionEnableGloda "Asegúrese de que la búsqueda global y la indexación están habilitadas.">
+<!ENTITY assistant.actionDisableAutoread "Permitir a Thunderbird Conversations marcar mensajes como leídos.">
+<!ENTITY assistant.actionReindexAttachments "Reindexar todos los mensajes con adjuntos o los de bugs de Mozilla.">
+<!ENTITY assistant.actionDontExpand "En la lista de mensajes, no expandir los hilos que tengan mensajes no leídos.">
+<!ENTITY assistant.actionAttachmentsInline "No mostrar adjuntos en línea (<strong>muy</strong> recomendable).">
+<!ENTITY assistant.actionOfflineDownload "Sincronizar bandeja de entrada y elementos enviados para almacenamiento sin conexión (<strong>muy</strong> recomendable).">
+<!ENTITY assistant.actionUnifiedInboxSearchesSent "La bandeja unificada busca también en las carpetas de enviados (<strong>muy</strong> recomendable).">
+<!ENTITY assistant.actionSetupView "Cambiar a la bandeja de entrada global, que muestra hilos, ordenar por fecha, permite la columna de mensajes no leídos y la nueva columna &quot;entre&quot; (<strong>muy</strong> recomendable).">
+<!ENTITY assistant.actionSetupViewDefaults "Usar estos criterios de ordenación para todas las carpetas.">
+<!ENTITY assistant.actionEnsureMessagePaneVisible "Asegúrese de que el panel de mensajes es visible.">
+<!ENTITY assistant.settings2 "Puede habilitar más opciones después, puede acceder a este asistente a través de las opciones del navegador en la sección de Avanzadas.">
+<!ENTITY feedback.message "Ha estado usando Thunderbird Conversations durante bastante tiempo, ¿quiere contarnos lo que piensa? ¡Estaremos encantados de escuchar sus comentarios!">
+<!ENTITY feedback.no "No, gracias">
+<!ENTITY feedback.yes "Dejar un comentario">
+<!ENTITY feedback.pageTitle "Comentarios">
+<!ENTITY indexing.p1 "Hemos intentado ajustar Thunderbird Conversations para que tenga la mejor experiencia, pero tiene algunos mensajes que hacen fallar a Thunderbird al reindexar.">
+<!ENTITY indexing.p2 "Si tiene una cantidad muy alta de correos que no sean de Mozilla, elimine el archivo <tt>global-message-db.sqlite</tt> en su carpeta de perfil (vea el enlace a continuación).">
+<!ENTITY indexing.p3 "¿Tiene muchos mensajes con adjuntos? A menos que la primera versión de Thunderbird que haya probado sea la 3.3 alpha1 o posterior, estos adjuntos no se mostrarán en la vista de conversación. Es necesario reindexar todos los mensajes con adjuntos. La manera más sencilla para hacerlo es borrar el archivo <tt>global-messages-db.sqlite</tt> de su carpeta del perfil.">
+<!ENTITY indexing.p4 "¿Es un miembro de Mozilla? Tenemos un caso especial para los correos de Bugzilla, en los que reemplazamos el remitente, p.ej: bugzilla-daemon@mozilla.org, con el valor de X-Bugzilla-Who. Es probable que tenga mucho correo de bugs, y necesitamos reindexarlos todos para habilitar esta opción. Si quiere activar esta opción tan sólo para los nuevos correos, no tenga en cuenta este mensaje. En otro caso, debe eliminar el archivo <tt>global-messages-db.sqlite</tt> de su carpeta del perfil.">
+<!ENTITY indexing.p5 "Está en una de estas dos situaciones.">
+<!ENTITY indexing.moreInfo "Más información sobre la carpeta del perfil.">
+<!ENTITY indexing.t1 "La tl;dr versión">
+<!ENTITY indexing.t2 "Más detalles">
+<!ENTITY indexing.title "Aspectos sobre <span class='orange'>indexación</span>">
+<!ENTITY indexing.pageTitle "Aviso de indexación">
+<!ENTITY stub.loading "Cargando...">
+<!ENTITY stub.trash.tooltip "Borrar esta conversación">
+<!ENTITY stub.archive.tooltip "Archivar esta conversación">
+<!ENTITY stub.junk.tooltip "Marcar como basura este mensaje">
+<!ENTITY stub.expand.tooltip "Expandir/Contraer todos los mensajes">
+<!ENTITY stub.read.tooltip "Cambiar los mensajes leídos/no leídos">
+<!ENTITY stub.detach.tooltip "Guardar esta conversación en una pestaña nueva">
