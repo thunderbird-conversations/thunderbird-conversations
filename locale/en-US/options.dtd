@@ -5,7 +5,8 @@
 <!ENTITY title.message_display "Message display">
 
 <!ENTITY option.expand_who "By default, expand:">
-<!ENTITY option.expand_auto "The message you had in mind (automatic)">
+<!ENTITY option.expand_auto2 "Automatic">
+<!ENTITY option.expand_auto2.tooltip "If the thread is collapsed, expand all unread messages or the last message. If it is expanded, only expand the selected message in the message list.">
 <!ENTITY option.expand_none "No messages">
 <!ENTITY option.expand_all "All messages">
 

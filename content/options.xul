@@ -62,7 +62,8 @@
       <radiogroup preference="expand_who">
         <radio value="1" label="&option.expand_none;" />
         <radio value="3" label="&option.expand_all;" />
-        <radio value="4" label="&option.expand_auto;" />
+        <radio value="4" label="&option.expand_auto2;"
+          tooltiptext="&option.expand_auto2.tooltip;"/>
       </radiogroup>
     </groupbox>
     <groupbox>

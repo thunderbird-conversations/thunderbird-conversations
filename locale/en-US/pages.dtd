@@ -1,3 +1,4 @@
+<!ENTITY assistant.title "First run assistant">
 <!ENTITY assistant.intro "Hi, this is <strong>Thunderbird Conversations</strong>!">
 <!ENTITY assistant.p1 "In order to make your life easier, this assistant will tweak your Thunderbird setup to ensure you enjoy the optimal experience. We don't want you to feel dissatisfied!">
 <!ENTITY assistant.p2 "The tweaks we make are all reversible, so don't worry: should you not enjoy Thunderbird Conversations, we will revert any preference change we made as soon as you uninstall the extension.">
@@ -7,7 +8,6 @@
 <!ENTITY assistant.apply "Apply changes">
 <!ENTITY assistant.settings "Some settings are mandatory for Thunderbird Conversations to work properly. Some are strongly recommended, and some are optional.">
 <!ENTITY assistant.actionEnableGloda "Make sure Global Search and Indexer is enabled.">
-<!ENTITY assistant.actionDisableAutoread "Let Thunderbird Conversations mark messages as read.">
 <!ENTITY assistant.actionReindexAttachments "Re-index messages containing attachments as well as all Mozilla bugmail.">
 <!ENTITY assistant.actionDontExpand "In the message list, don't expand threads containing unread messages.">
 <!ENTITY assistant.actionAttachmentsInline "Don't display attachments inline (<strong>strongly</strong> recommended).">
