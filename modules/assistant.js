@@ -133,10 +133,6 @@ let Customizations = {
     name: "mailnews.scroll_to_new_message", type: kPrefBool, value: false
   }),
 
-  actionDisableAutoread: new PrefCustomization({
-    name: "mailnews.mark_message_read.auto", type: kPrefBool, value: false
-  }),
-
   actionEnableGloda: new PrefCustomization({
     name: "mailnews.database.global.indexer.enabled", type: kPrefBool, value: true
   }),

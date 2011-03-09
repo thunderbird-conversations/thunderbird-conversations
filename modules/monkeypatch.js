@@ -594,32 +594,34 @@ MonkeyPatch.prototype = {
 
               // Make sure we respect the user's preferences.
               self.markReadTimeout = window.setTimeout(function () {
-                // The idea is that usually, we're selecting a thread (so we
-                //  have kScrollUnreadOrLast). This means we mark the whole
-                //  conversation as read. However, sometimes the user selects
-                //  individual messages. In that case, don't do something weird!
-                //  Just mark the selected messages as read.
-                if (scrollMode == Prefs.kScrollUnreadOrLast) {
-                  // Did we juste change conversations? If we did, it's ok to
-                  //  mark as read. Otherwise, it's not, since we may silently
-                  //  mark new messages as read.
-                  if (isDifferentConversation) {
-                    Log.debug("Marking the whole conversation as read");
-                    aConversation.read = true;
+                if (Prefs.getBool("mailnews.mark_message_read.auto")) {
+                  // The idea is that usually, we're selecting a thread (so we
+                  //  have kScrollUnreadOrLast). This means we mark the whole
+                  //  conversation as read. However, sometimes the user selects
+                  //  individual messages. In that case, don't do something weird!
+                  //  Just mark the selected messages as read.
+                  if (scrollMode == Prefs.kScrollUnreadOrLast) {
+                    // Did we juste change conversations? If we did, it's ok to
+                    //  mark as read. Otherwise, it's not, since we may silently
+                    //  mark new messages as read.
+                    if (isDifferentConversation) {
+                      Log.debug("Marking the whole conversation as read");
+                      aConversation.read = true;
+                    }
+                  } else if (scrollMode == Prefs.kScrollSelected) {
+                    // We don't seem to have a reflow when the thread is expanded
+                    //  so no risk of silently marking conversations as read.
+                    Log.debug("Marking selected messages as read");
+                    msgHdrsMarkAsRead(aSelectedMessages, true);
+                  } else {
+                    Log.assert(false, "GIVE ME ALGEBRAIC DATA TYPES!!!");
                   }
-                } else if (scrollMode == Prefs.kScrollSelected) {
-                  // We don't seem to have a reflow when the thread is expanded
-                  //  so no risk of silently marking conversations as read.
-                  Log.debug("Marking selected messages as read");
-                  msgHdrsMarkAsRead(aSelectedMessages, true);
-                } else {
-                  Log.assert(false, "GIVE ME ALGEBRAIC DATA TYPES!!!");
+                  self.markReadTimeout = null;
+                  // Hehe, do that now, because the conversation potentially
+                  //  includes messages that are not in the gloda collection and
+                  //  that do not trigger the "conversation updated" notification.
+                  aConversation._updateConversationButtons();
                 }
-                self.markReadTimeout = null;
-                // Hehe, do that now, because the conversation potentially
-                //  includes messages that are not in the gloda collection and
-                //  that do not trigger the "conversation updated" notification.
-                aConversation._updateConversationButtons();
               }, Prefs.getInt("mailnews.mark_message_read.delay.interval")
                 * Prefs.getBool("mailnews.mark_message_read.delay") * 1000);
             });
