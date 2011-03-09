@@ -6,8 +6,9 @@
   <title>Conversation Reader</title>
   <link rel="stylesheet" type="text/css" href="chrome://messenger/skin/tagColors.css"/>
   <link rel="stylesheet" type="text/css" href="chrome://conversations/skin/boxflex.css" />
-  <link rel="stylesheet" type="text/css" href="chrome://conversations/skin/conversation.css" />
   <link rel="stylesheet" type="text/css" href="chrome://conversations/skin/tokeninput.css" />
+  <link rel="stylesheet" type="text/css" href="chrome://conversations/skin/conversation.css" />
+  <link rel="stylesheet" type="text/css" media="print" href="chrome://conversations/skin/print.css" />
   <script type="text/javascript" src="chrome://conversations/content/js/jquery-1.5.js"></script>
   <script type="text/javascript" src="chrome://conversations/content/js/jquery.text-overflow.js"></script>
   <script type="text/javascript" src="chrome://conversations/content/js/jquery.tmpl.js"></script>
@@ -378,6 +379,7 @@
         >
         <ul class="tags regular-tags"></ul>
         <div class="iframe-container"></div>
+        <div class="body-container"></div>
         {{if attachments.length}}
           <ul class="attachments">
             <div class="attachHeader">
@@ -573,6 +575,9 @@
           </button>
           <button title="&stub.junk.tooltip;" class="junk-button" onclick="junkConversation(event);">
             <img src="i/junk.png" />
+          </button>
+          <button title="&stub.print.tooltip;" onclick="window.print();">
+            <img src="i/print.png" />
           </button>
           <button title="&stub.expand.tooltip;" onclick="expandCollapse(event);">
             <span class="expand"></span>

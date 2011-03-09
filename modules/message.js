@@ -69,6 +69,7 @@ let strings = new StringBundle("chrome://conversations/locale/message.properties
 
 Cu.import("resource://conversations/stdlib/addressBookUtils.js");
 Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
+Cu.import("resource://conversations/stdlib/compose.js");
 Cu.import("resource://conversations/stdlib/misc.js");
 Cu.import("resource://conversations/plugins/helpers.js");
 Cu.import("resource://conversations/quoting.js");
@@ -790,6 +791,11 @@ Message.prototype = {
         iframe.addEventListener("load", function f_temp1(event) {
           try {
             iframe.removeEventListener("load", f_temp1, true);
+
+            // Fill the text node that will end up being printed. We can't
+            // really print iframes, they don't wrap...
+            let bodyContainer = self._domNode.getElementsByClassName("body-container")[0];
+            bodyContainer.textContent = htmlToPlainText(iframe.contentDocument.body.innerHTML);
 
             // Notify hooks that we just finished displaying a message. Must be
             //  performed now, not later. This gives plugins a chance to modify
