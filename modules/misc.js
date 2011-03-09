@@ -48,6 +48,7 @@ const Cu = Components.utils;
 
 Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
 Cu.import("resource://conversations/stdlib/msgHdrUtils.js"); // for getMail3Pane
+Cu.import("resource://conversations/prefs.js");
 Cu.import("resource://conversations/log.js");
 
 let Log = setupLogging("Conversations.Misc");
