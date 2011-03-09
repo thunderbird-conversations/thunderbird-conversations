@@ -15,6 +15,9 @@ For screenshots and a stable version, please head to
 [AMO](https://addons.mozilla.org/en-US/thunderbird/addon/54035) which should
 provide you with a ready-to-install package.
 
+If you want to leave some feedback, we have a thread on [Google
+Groups](https://groups.google.com/forum/#!topic/mozilla-labs/Jx8CxMvAoVk).
+
 INSTALL
 =======
 
