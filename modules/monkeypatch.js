@@ -529,6 +529,7 @@ MonkeyPatch.prototype = {
       };
 
     let previouslySelectedUris = [];
+    let previousScrollMode = null;
 
     // This one completely nukes the original summarizeThread function, which is
     //  actually the entry point to the original ThreadSummary class.
@@ -545,12 +546,24 @@ MonkeyPatch.prototype = {
             //  the gloda query is updating messages just fine, so we should not
             //  worry about message which are not in the view.
             let newlySelectedUris = [msgHdrGetUri(x) for each (x in aSelectedMessages)];
-            if (arrayEquals(newlySelectedUris, previouslySelectedUris)) {
+            let scrollMode = self.determineScrollMode();
+            // If the scroll mode changes, we should go a little bit further
+            //  down that code path, so that we can figure out that the message
+            //  set is the same, but that we ought to do a round of
+            //  expand/collapse + "scroll to the right message" on the current
+            //  message list. We could optimize that, but I'll assume that since
+            //  the message set is the same, the resulting gloda query will be
+            //  fast, and this doesn't impact performance too much.
+            // Anyways, this is just for the weird edge case where the user has
+            //  expanded the thread and selected all messages, and then
+            //  collapses the thread, which does not change the selection, but
+            //  ony the scroll mode.
+            if (arrayEquals(newlySelectedUris, previouslySelectedUris)
+                && previousScrollMode == scrollMode) {
               Log.debug("Hey, know what? The selection hasn't changed, so we're good!");
               return;
             }
 
-            let scrollMode = self.determineScrollMode();
             let freshConversation = new self._Conversation(
               window,
               aSelectedMessages,
@@ -562,6 +575,7 @@ MonkeyPatch.prototype = {
               //  that and update the currently selected URIs to prevent further
               //  reflows.
               previouslySelectedUris = newlySelectedUris;
+              previousScrollMode = scrollMode;
               // One nasty behavior of the folder tree view is that it calls us
               //  every time a new message has been downloaded. So if you open
               //  your inbox all of a sudden and select a conversation, it's not
