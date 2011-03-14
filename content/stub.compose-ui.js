@@ -38,32 +38,46 @@ function registerQuickReply() {
 
   gDraftListener = {
     onDraftChanged: function (aTopic) {
-      Log.debug("onDraftChanged", Conversations == mainWindow.Conversations);
-      switch (aTopic) {
-        case "modified":
-          loadDraft();
-          break;
-        case "removed":
-          $(".quickReplyHeader").hide();
-          $(".quickReply").removeClass('expand');
-          $("textarea").val("");
-          gComposeSession = null;
-          break;
+      try {
+        Log.debug("onDraftChanged", Conversations == mainWindow.Conversations);
+        switch (aTopic) {
+          case "modified":
+            loadDraft();
+            break;
+          case "removed":
+            $(".quickReplyHeader").hide();
+            $(".quickReply").removeClass('expand');
+            $("textarea").val("");
+            gComposeSession = null;
+            break;
+        }
+      } catch (e) {
+        // Most likely, the window has been tore down, but the listener is still
+        // alive, so all references it holds are dead. Failures usually look
+        // like "Log is undefined".
+        dump(e+"\n");
+        dump(e.stack+"\n");
       }
     },
 
     notifyDraftChanged: function (aTopic) {
-      Log.debug("Notifying draft listeners for id", id);
-      let listeners = mainWindow.Conversations.draftListeners[id] || [];
-      for each (let [, listener] in Iterator(listeners)) {
-        let obj = listener.get();
-        if (!obj || obj == this)
-          continue;
-        obj.onDraftChanged(aTopic);
+      try {
+        Log.debug("Notifying draft listeners for id", id);
+        let listeners = mainWindow.Conversations.draftListeners[id] || [];
+        for each (let [, listener] in Iterator(listeners)) {
+          let obj = listener.get();
+          if (!obj || obj == this)
+            continue;
+          obj.onDraftChanged(aTopic);
+        }
+        // While we're at it, cleanup...
+        listeners = listeners.filter(function (x) x.get());
+        mainWindow.Conversations.draftListeners[id] = listeners;
+      } catch (e) {
+        // See comment above
+        dump(e+"\n");
+        dump(e.stack+"\n");
       }
-      // While we're at it, cleanup...
-      listeners = listeners.filter(function (x) x.get());
-      mainWindow.Conversations.draftListeners[id] = listeners;
     },
   };
 
@@ -147,11 +161,17 @@ function onDiscard(event) {
  * @param event The event that led to this.
  * @param aClose (optional) By default, true. Close the quick reply area after
  *  saving.
+ * @param k (optional) A function to call once it's saved.
  */
-function onSave(event, aClose) {
-  if (!startedEditing())
+function onSave(event, aClose, k) {
+  // First codepath, we ain't got no nothing to save.
+  if (!startedEditing()) {
+    if (k)
+      k();
     return;
+  }
 
+  // Second codepath. Heh, got some work to do.
   SimpleStorage.spin(function () {
     let id = Conversations.currentConversation.id; // Gloda ID
     if (id) {
@@ -168,6 +188,8 @@ function onSave(event, aClose) {
     // undefined is ok, means true
     if (aClose === false)
       $(".quickReply").removeClass('expand');
+    if (k)
+      k();
     yield SimpleStorage.kWorkDone;
   });
 }
