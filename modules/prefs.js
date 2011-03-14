@@ -1,4 +1,4 @@
-var EXPORTED_SYMBOLS = ["Prefs"]
+var EXPORTED_SYMBOLS = ["Prefs", "kStubUrl"]
 
 const Ci = Components.interfaces;
 const Cc = Components.classes;
@@ -11,6 +11,8 @@ const prefsService = Cc["@mozilla.org/preferences-service;1"]
 const gPrefBranch = Cc["@mozilla.org/preferences-service;1"]
   .getService(Ci.nsIPrefService)
   .getBranch(null);
+
+const kStubUrl = "chrome://conversations/content/stub.xhtml";
 
 function PrefManager() {
   this.expand_who = prefsService.getIntPref("expand_who");

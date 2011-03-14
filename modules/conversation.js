@@ -848,7 +848,8 @@ Conversation.prototype = {
         // We don't know yet if this is going to be a junkable conversation, so
         //  when in doubt, reset. Actually, the final call to
         //  _updateConversationButtons will update this.
-        this._domNode.ownerDocument.getElementById("conversationHeader").classList.remove("not-junkable");
+        this._domNode.ownerDocument.getElementById("conversationHeader")
+          .classList.remove("not-junkable");
         // Gotta save the quick reply, if there's one! Please note that
         //  contentWindow.Conversations is still wired onto the old
         //  conversation. Updating the global Conversations object and loading

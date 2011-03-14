@@ -254,47 +254,93 @@
       });
     }
 
+    /**
+     * This function gathers various information, encodes it in a URL query
+     * string, and then opens a regular chrome tab that contains our
+     * conversation.
+     */
     function detachTab(event) {
-      let mainWindow = getMail3Pane();
-      let tabmail = mainWindow.document.getElementById("tabmail");
+      let tabmail = getMail3Pane().document.getElementById("tabmail");
       let willExpand = $("textarea").parent().hasClass("expand") && startedEditing();
-      tabmail.openTab("conversationTab", {
-        onLoad: function _detachTab_onLoad (event, browser) {
-          try {
-            browser.contentWindow.Conversations = {
-              currentConversation: null,
-              counter: 0,
-            };
-            browser.contentWindow.document.getElementById("conversationHeader")
-              .classList.add("not-junkable");
-            // Pick _initialSet and not msgHdrs so as to enforce the invariant
-            //  that the messages from _initialSet are in the current view.
-            let freshConversation = new mainWindow.Conversations.monkeyPatch._Conversation(
-              browser.contentWindow,
-              Conversations.currentConversation._initialSet,
-              Prefs.kScrollUnreadOrLast,
-              ++browser.contentWindow.Conversations.counter
-            );
-            freshConversation.outputInto(browser, function (aConversation) {
-              // This is a stripped-down version of what's in monkeypatch.js,
-              //  make sure the two are in sync!
-              browser.contentWindow.Conversations.currentConversation = aConversation;
-              if (willExpand)
-                browser.contentWindow.$("textarea").parent().addClass('expand');
-              aConversation.completed = true;
-              browser.contentWindow.registerQuickReply();
-              // Now this will save the OLD draft which will broadcast the
-              //  change to all listeners, so the new window will pickup the change,
-              //  and magically update itself.
-              onSave(null, false);
-            });
-          } catch (e) {
-            Log.debug(e);
-            dumpCallStack(e);
-          }
-        }
+      // Pick _initialSet and not msgHdrs so as to enforce the invariant
+      //  that the messages from _initialSet are in the current view.
+      let urls = [
+        msgHdrGetUri(x)
+        for each (x in Conversations.currentConversation._initialSet)
+      ].join(",");
+      let queryString = "?urls="+encodeURIComponent(urls)
+        +"&willExpand="+Number(willExpand);
+      // First, save the draft, and once it's saved, then move on to opening the
+      // conversation in a new tab...
+      onSave(null, false, function () {
+        tabmail.openTab("chromeTab", {
+          chromePage: kStubUrl+queryString,
+        });
       });
     }
+
+    /**
+     * That big event handler tries to parse URL query parameters, and then acts
+     * upon these, by firing a conversation on its own. This is a very
+     * stripped-down version of the logic that's in monkeypatch.js, and it
+     * serves the purpose of being able to create a standalone conversation view
+     * in a new tab.
+     */
+    $(document).ready(function () {
+      // I just imagined Javascript would have some function for that
+      // built-in... looks like even jQuery doesn't have it.
+      let params = {};
+      let href = document.location.href;
+      let i = href.indexOf("?");
+      if (i >= 0) {
+        let query = href.substring(i+1, href.length);
+        let keyVals = query.split("&");
+        for each (let [, keyVal] in Iterator(keyVals)) {
+          let [key, val] = keyVal.split("=");
+          val = decodeURIComponent(val);
+          params[key] = val;
+        }
+      }
+
+      // Oh, are we expected to build a conversation on our own? Let's do it,
+      // yay!
+      if ("urls" in params) {
+        try {
+          let mainWindow = getMail3Pane();
+          let willExpand = Number(params.willExpand);
+          let msgHdrs = [msgUriToMsgHdr(x) for each (x in params.urls.split(","))];
+          window.Conversations = {
+            currentConversation: null,
+            counter: 0,
+          };
+          let freshConversation = new mainWindow.Conversations.monkeyPatch._Conversation(
+            window,
+            msgHdrs,
+            Prefs.kScrollUnreadOrLast,
+            ++Conversations.counter
+          );
+          // We assume the user hasn't had time to switch tabs by now...
+          let browser = window.top.document
+            .getElementById("tabmail").currentTabInfo.browser;
+          freshConversation.outputInto(browser, function (aConversation) {
+            // This is a stripped-down version of what's in monkeypatch.js,
+            //  make sure the two are in sync!
+            Conversations.currentConversation = aConversation;
+            aConversation.completed = true;
+            registerQuickReply();
+            // That's why we saved it before...
+            loadDraft();
+            if (willExpand)
+              $("textarea").parent().addClass('expand');
+            document.getElementById("conversationHeader").classList.add("not-junkable");
+          });
+        } catch (e) {
+          Log.debug(e);
+          dumpCallStack(e);
+        }
+      }
+    });
+
     // I'll never understand why JS doesn't have lexical scoping...
     let tStrings = new StringBundle("chrome://conversations/locale/template.properties");
     let str = function (x) {

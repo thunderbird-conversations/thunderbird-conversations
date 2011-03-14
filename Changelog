@@ -1,5 +1,7 @@
 --- Changes since 2.0alpha2 ---
 
+- UI support for printing a conversation.
+- Conversation tabs now persist.
 - Added some tweaks to better support GitHub notification emails.
 - Localization work. Upcoming releases should have more locales.
 - A new gallery view has been implemented.
