@@ -25,7 +25,6 @@
     <em:optionsURL>chrome://conversations/content/options.xul</em:optionsURL>
     <em:iconURL>chrome://conversations/content/icon.png</em:iconURL>
     <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
-    <em:unpack>true</em:unpack>
 
     <em:localized>
       <Description>
