@@ -143,11 +143,6 @@
       $(".subject").textOverflow(null, false);
     }
 
-    // XXX I don't think this is used anymore...
-    function fakeTextOverflowParticipants(aMsgNode) {
-      $(aMsgNode).find(".to").textOverflow(null, false);
-    }
-
     function cleanup() {
       // These shouldn't be necessary because we're blasting away everything by
       //  setting .innerHTML BUT jQuery won't remove its persistent event
@@ -159,9 +154,7 @@
     }
 
     function openLink(event) {
-      Components.classes["@mozilla.org/messenger;1"]
-                .createInstance(Components.interfaces.nsIMessenger)
-                .launchExternalURL(event.originalTarget.getAttribute("href"));
+      gMessenger.launchExternalURL(event.originalTarget.getAttribute("href"));
     }
 
     document.addEventListener("focus", function (event) {
