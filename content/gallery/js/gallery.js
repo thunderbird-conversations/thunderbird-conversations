@@ -111,6 +111,11 @@ $(document).ready(function () {
 
   // Create the Gallery object.
   let msgHdr = msgUriToMsgHdr(uri);
-  gallery = new Gallery(msgHdr);
-  gallery.load();
+  if (msgHdr && msgHdr.messageId) {
+    gallery = new Gallery(msgHdr);
+    gallery.load();
+  } else {
+    document.getElementsByClassName("images")[0].textContent =
+      strings.get("messageMovedOrDeletedGallery");
+  }
 });
