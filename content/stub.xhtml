@@ -319,19 +319,7 @@
               Prefs.kScrollUnreadOrLast,
               ++Conversations.counter
             );
-            // We have no easy way to get the outer browser that contains us. So
-            // we take all tabs, and find the one that has the browser that has
-            // the same location as us.
-            let tabmail = window.top.document.getElementById("tabmail");
-            let browsers = [tabmail.tabInfo[i].browser
-              for each (i in range(0, tabmail.tabInfo.length))];
-            // This works because we can't have two chromeTabs open at the same
-            // time with the same location
-            browsers = browsers
-              .filter(function (x) x && x.contentDocument.location.href == href);
-            Log.assert(browsers.length == 1, "I couldn't find myself!");
-            // Phew!
-            let browser = browsers[0];
+            let browser = window.frameElement;
             // Because Thunderbird still hasn't fixed that...
             browser.setAttribute("context", "mailContext");
             freshConversation.outputInto(browser, function (aConversation) {
