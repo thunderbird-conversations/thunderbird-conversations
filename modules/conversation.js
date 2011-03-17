@@ -250,13 +250,16 @@ function ViewWrapper() {
 ViewWrapper.prototype = {
   isInView: function _ViewWrapper_isInView(aMsg) {
     let mainWindow = getMail3Pane();
-    let msgHdr = toMsgHdr(aMsg);
-
-    let r =
-      (msgHdrGetUri(msgHdr) in this.byUri) ||
-      (mainWindow.gDBView.findIndexOfMsgHdr(msgHdr, false) != nsMsgViewIndex_None)
-    ;
-    return r;
+    if (mainWindow.gDBView) {
+      let msgHdr = toMsgHdr(aMsg);
+      let r =
+        (msgHdrGetUri(msgHdr) in this.byUri) ||
+        (mainWindow.gDBView.findIndexOfMsgHdr(msgHdr, false) != nsMsgViewIndex_None)
+      ;
+      return r;
+    } else {
+      return false;
+    }
   },
 }
 
