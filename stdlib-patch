@@ -1,0 +1,71 @@
+diff --git a/SimpleStorage.js b/SimpleStorage.js
+index 1710ac7..8ace8d1 100644
+--- a/SimpleStorage.js
++++ b/SimpleStorage.js
+@@ -48,13 +48,7 @@ const Cc = Components.classes;
+ const Cu = Components.utils;
+ const Cr = Components.results;
+ 
+-let ext = __LOCATION__.path.match(/(\w+)@\w+/)[1];
+-let extPath = Cc["@mozilla.org/preferences-service;1"]
+-              .getService(Ci.nsIPrefService)
+-              .getBranch(null)
+-              .getCharPref(ext+".path");
+-
+-Cu.import("resource://"+extPath+"/log.js");
++Cu.import("resource://conversations/log.js");
+ let Log = setupLogging(logRoot+".SimpleStorage");
+ 
+ Log.debug("Simple Storage loaded.");
+diff --git a/compose.js b/compose.js
+index c47c0ed..c2a4113 100644
+--- a/compose.js
++++ b/compose.js
+@@ -51,19 +51,12 @@ const Cc = Components.classes;
+ const Cu = Components.utils;
+ const Cr = Components.results;
+ 
+-// __LOCATION__ is nsILocalFile
+-let ext = __LOCATION__.path.match(/(\w+)@\w+/)[1];
+-let extPath = Cc["@mozilla.org/preferences-service;1"]
+-              .getService(Ci.nsIPrefService)
+-              .getBranch(null)
+-              .getCharPref(ext+".path");
+-
+ Cu.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI
+ Cu.import("resource://gre/modules/NetUtil.jsm");
+ 
+-Cu.import("resource://"+extPath+"/stdlib/misc.js");
+-Cu.import("resource://"+extPath+"/stdlib/msgHdrUtils.js");
+-Cu.import("resource://"+extPath+"/log.js");
++Cu.import("resource://conversations/stdlib/misc.js");
++Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
++Cu.import("resource://conversations/log.js");
+ 
+ let Log = setupLogging(logRoot+".Stdlib");
+ 
+diff --git a/send.js b/send.js
+index a6130f1..94808d0 100644
+--- a/send.js
++++ b/send.js
+@@ -57,16 +57,10 @@ const msgComposeService = Cc["@mozilla.org/messengercompose;1"]
+                           .getService(Ci.nsIMsgComposeService);
+ const mCompType = Ci.nsIMsgCompType;
+ 
+-let ext = __LOCATION__.path.match(/(\w+)@\w+/)[1];
+-let extPath = Cc["@mozilla.org/preferences-service;1"]
+-              .getService(Ci.nsIPrefService)
+-              .getBranch(null)
+-              .getCharPref(ext+".path");
+-
+-Cu.import("resource://"+extPath+"/stdlib/misc.js");
+-Cu.import("resource://"+extPath+"/stdlib/msgHdrUtils.js");
+-Cu.import("resource://"+extPath+"/stdlib/compose.js");
+-Cu.import("resource://"+extPath+"/log.js");
++Cu.import("resource://conversations/stdlib/misc.js");
++Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
++Cu.import("resource://conversations/stdlib/compose.js");
++Cu.import("resource://conversations/log.js");
+ 
+ let Log = setupLogging(logRoot+".Send");
+ 
