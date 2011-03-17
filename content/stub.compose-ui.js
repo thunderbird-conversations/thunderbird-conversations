@@ -315,25 +315,12 @@ ComposeSession.prototype = {
       reply: function (aMsgHdr) {
         let identity = self.params.identity;
         let msgHdr = self.params.msgHdr;
-        let params = replyAllParams(identity, msgHdr);
-        let to = [asToken(null, name, email, null) for each ([name, email] in params.to)];
-        let cc = [asToken(null, name, email, null) for each ([name, email] in params.cc)];
-        let bcc = [asToken(null, name, email, null) for each ([name, email] in params.bcc)];
-
-        // We're streaming the message just to get the reply-to header... kind of a
-        //  shame...
-        try {
-          MsgHdrToMimeMessage(aMsgHdr, null, function (aMsgHdr, aMimeMsg) {
-            if ("reply-to" in aMimeMsg.headers) {
-              let [[name], [email]] = parse(aMimeMsg.headers["reply-to"]);
-              if (email)
-                to = [asToken(null, name, email, null)];
-            }
-            setupAutocomplete(to, cc, bcc);
-          }, false); // don't download
-        } catch (e if e.result == Cr.NS_ERROR_FAILURE) { // Message not available offline.
+        replyAllParams(identity, msgHdr, function (params) {
+          let to = [asToken(null, name, email, null) for each ([name, email] in params.to)];
+          let cc = [asToken(null, name, email, null) for each ([name, email] in params.cc)];
+          let bcc = [asToken(null, name, email, null) for each ([name, email] in params.bcc)];
           setupAutocomplete(to, cc, bcc);
-        }
+        });
       },
 
       draft: function ({ to, cc, bcc }) {
