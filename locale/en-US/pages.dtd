@@ -41,4 +41,4 @@
 <!ENTITY stub.junk.tooltip "Junk this message">
 <!ENTITY stub.expand.tooltip "Expand/collapse all messages">
 <!ENTITY stub.read.tooltip "Toggle read/unread all messages">
-<!ENTITY stub.detach.tooltip "Save this conversation in a new tab">
+<!ENTITY stub.detach.tooltip2 "Show this conversation in a new tab">

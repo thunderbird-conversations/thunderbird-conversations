@@ -302,31 +302,39 @@
           let mainWindow = getMail3Pane();
           let willExpand = Number(params.willExpand);
           let msgHdrs = [msgUriToMsgHdr(x) for each (x in params.urls.split(","))];
-          window.Conversations = {
-            currentConversation: null,
-            counter: 0,
-          };
-          let freshConversation = new mainWindow.Conversations.monkeyPatch._Conversation(
-            window,
-            msgHdrs,
-            Prefs.kScrollUnreadOrLast,
-            ++Conversations.counter
-          );
-          // We assume the user hasn't had time to switch tabs by now...
-          let browser = window.top.document
-            .getElementById("tabmail").currentTabInfo.browser;
-          freshConversation.outputInto(browser, function (aConversation) {
-            // This is a stripped-down version of what's in monkeypatch.js,
-            //  make sure the two are in sync!
-            Conversations.currentConversation = aConversation;
-            aConversation.completed = true;
-            registerQuickReply();
-            // That's why we saved it before...
-            loadDraft();
-            if (willExpand)
-              $("textarea").parent().addClass('expand');
-            document.getElementById("conversationHeader").classList.add("not-junkable");
-          });
+          msgHdrs = msgHdrs.filter(function (x) x != null);
+          msgHdrs = msgHdrs.filter(function (x) x.messageId);
+          // It might happen that there are no messages left...
+          if (!msgHdrs.length) {
+            document.getElementById("messageList").textContent =
+              strings.get("messageMovedOrDeletedConversation");
+          } else {
+            window.Conversations = {
+              currentConversation: null,
+              counter: 0,
+            };
+            let freshConversation = new mainWindow.Conversations.monkeyPatch._Conversation(
+              window,
+              msgHdrs,
+              Prefs.kScrollUnreadOrLast,
+              ++Conversations.counter
+            );
+            let browser = window.frameElement;
+            // Because Thunderbird still hasn't fixed that...
+            browser.setAttribute("context", "mailContext");
+            freshConversation.outputInto(browser, function (aConversation) {
+              // This is a stripped-down version of what's in monkeypatch.js,
+              //  make sure the two are in sync!
+              Conversations.currentConversation = aConversation;
+              aConversation.completed = true;
+              registerQuickReply();
+              // That's why we saved it before...
+              loadDraft();
+              if (willExpand)
+                $("textarea").parent().addClass('expand');
+              document.getElementById("conversationHeader").classList.add("not-junkable");
+            });
+          }
         } catch (e) {
           Log.debug(e);
           dumpCallStack(e);
@@ -625,7 +633,7 @@
           <button title="&stub.read.tooltip;" onclick="toggleRead(event);">
             <span class="read"></span>
           </button>
-          <button title="&stub.detach.tooltip;" onclick="detachTab(event);">
+          <button title="&stub.detach.tooltip2;" onclick="detachTab(event);">
             <img src="i/tab.png" />
           </button>
           <!--<button><span class="mode"></span></button>-->
