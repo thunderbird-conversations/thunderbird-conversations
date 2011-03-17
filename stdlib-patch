@@ -18,10 +18,10 @@ index 1710ac7..8ace8d1 100644
  
  Log.debug("Simple Storage loaded.");
 diff --git a/compose.js b/compose.js
-index c47c0ed..c2a4113 100644
+index 5a91083..9577d9b 100644
 --- a/compose.js
 +++ b/compose.js
-@@ -51,19 +51,12 @@ const Cc = Components.classes;
+@@ -51,20 +51,13 @@ const Cc = Components.classes;
  const Cu = Components.utils;
  const Cr = Components.results;
  
@@ -34,6 +34,7 @@ index c47c0ed..c2a4113 100644
 -
  Cu.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI
  Cu.import("resource://gre/modules/NetUtil.jsm");
+ Cu.import("resource:///modules/gloda/mimemsg.js"); // For MsgHdrToMimeMessage
  
 -Cu.import("resource://"+extPath+"/stdlib/misc.js");
 -Cu.import("resource://"+extPath+"/stdlib/msgHdrUtils.js");
