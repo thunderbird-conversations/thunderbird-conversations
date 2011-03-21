@@ -608,14 +608,6 @@ ul.special-tags img {
   visibility: hidden;
 }
 
-.tipFooter button ,
-.messageFooter button {
-  padding: 0 5px;
-  float: left;
-  margin: 0 3px 0 0;
-}
-
-
 .star {
   display: inline-block;
   height: 14px;
@@ -749,6 +741,57 @@ ul.special-tags img {
   float: left;
   margin: 0 3px 0 0;
 }
+
+button.replyMainAction {
+  -moz-border-radius: 3px 0 0 3px;
+  margin-right: 0;
+}
+
+button.replyDropDown {
+  -moz-border-radius: 0 3px 3px 0;
+  border-left: 0 none;
+  font-size: smaller;
+}
+
+.replyWrapper {
+  display: inline-block;
+  float: left;
+  position: relative;
+}
+
+.replyDropMenu {
+  z-index: 2;
+  position: absolute;
+  top: 23px; /* Height of a button + 1px. */
+  left: 0px;
+  display: none;
+}
+
+.replyDropMenu > * {
+  background-image: -moz-linear-gradient(top, #fefefe 0%, #d5d5d5 100%);
+  border-style: solid;
+  border-color: #919191;
+  border-width: 0 1px 1px 3px;
+  -moz-box-shadow: 0 1px 0 rgba(255,255,255,0.55);
+  outline: none;
+  cursor: pointer;
+  padding: 2px 4px;
+  width: -moz-calc(100% + 26px);
+}
+
+.replyDropMenu img {
+  vertical-align: text-top;
+}
+
+.replyDropMenu > *:hover {
+  background-image: -moz-linear-gradient(top, #fafafa 0%, #e6e6e6 100%);
+}
+
+.replyDropMenu > *:first-child {
+  border-top-width: 1px;
+}
+
+/* misc */
 
 .autocomplete-thumb {
   height: 22px;

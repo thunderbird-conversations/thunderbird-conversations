@@ -46,6 +46,25 @@
       };
     })(jQuery);
 
+    function clearMenu() {
+      let menus = document.getElementsByClassName("replyDropMenu");
+      for each (let [, menu] in Iterator(menus))
+        menu.style.display = "none";
+    }
+
+    function displayMenu(event) {
+      clearMenu();
+      let menu = event.target.nextElementSibling;
+      menu.style.display = "-moz-box";
+      event.stopPropagation();
+    }
+
+    $(document).ready(function () {
+      document.addEventListener("click", function (event) {
+        clearMenu();
+      }, false);
+    });
+
     function alignAttachments(aMsgNode) {
       Log.debug("Aligning attachments...");
       $(aMsgNode._domNode).find(".align").vAlign();
@@ -459,7 +478,15 @@
         {{/if}}
       </div>
       <div class="messageFooter">
-        <button class="reply">${str("reply")}</button>
+        <div class="replyWrapper">
+          <button class="replyMainAction">${str("reply")}</button>
+          <button class="replyDropDown" onclick="displayMenu(event);">&#x25bc;</button>
+          <div class="replyDropMenu">
+            <div class="menuReply"><img src="i/reply.png" /> ${str("reply")}</div>
+            <div class="menuReplyAll"><img src="i/replyAll.png" /> ${str("replyAll")}</div>
+            <div class="menuReplyList"><img src="i/replyList.png" /> ${str("replyList")}</div>
+          </div>
+        </div>
         <button class="replyAll">${str("replyAll")}</button>
         <button class="forward">${str("forward")}</button>
       </div>
