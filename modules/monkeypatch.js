@@ -302,8 +302,29 @@ MonkeyPatch.prototype = {
       self.onUninstalled({ id: "gconversation@xulforum.org" })
     }, 1000); // XXX debug */
 
-    // Below is the code that intercepts the message display logic, and reroutes
-    //  the control flow to our conversation reader.
+    // Below is the code that intercepts the double-click-on-a-message event,
+    //  and reroutes the control flow to our conversation reader.
+    let oldThreadPaneDoubleClick = window.ThreadPaneDoubleClick;
+    window.ThreadPaneDoubleClick = function () {
+      let tabmail = window.document.getElementById("tabmail");
+      // ThreadPaneDoubleClick calls OnMsgOpenSelectedMessages. We don't want to
+      // replace the whole ThreadPaneDoubleClick function, just the line that
+      // calls OnMsgOpenSelectedMessages in that function. So we do that weird
+      // thing here.
+      let oldMsgOpenSelectedMessages = window.MsgOpenSelectedMessages;
+      window.MsgOpenSelectedMessages = function () {
+        let urls = [
+          msgHdrGetUri(x)
+          for each (x in window.gFolderDisplay.selectedMessages)
+        ].join(",");
+        let queryString = "?urls="+window.encodeURIComponent(urls);
+        tabmail.openTab("chromeTab", {
+          chromePage: kStubUrl+queryString,
+        });
+      };
+      oldThreadPaneDoubleClick();
+      window.MsgOpenSelectedMessages = oldMsgOpenSelectedMessages;
+    };
 
     // Because we're not even fetching the conversation when the message pane is
     //  hidden, we need to trigger it manually when it's un-hidden.
