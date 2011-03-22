@@ -328,6 +328,7 @@
             document.getElementById("messageList").textContent =
               strings.get("messageMovedOrDeletedConversation");
           } else {
+            msgHdrsMarkAsRead(msgHdrs, true);
             window.Conversations = {
               currentConversation: null,
               counter: 0,

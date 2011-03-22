@@ -1,28 +1,6 @@
---- Changes since 2.0alpha2 ---
+--- Changes since 2.0alpha5 ---
 
-- UI support for printing a conversation.
-- Conversation tabs now persist.
-- Added some tweaks to better support GitHub notification emails.
-- Localization work. Upcoming releases should have more locales.
-- A new gallery view has been implemented.
-- Thunderbird Conversations did not honor the "do not automatically mark
-messages as read" case. Please check, in Preferences > Advanced > Display
-and reading that the settings are correct.
-- Messages sent with quick reply now request return receipts according to the
-global or account-specific preferences.
-- Improved conversations-in-separate-tabs: they now update automatically as new
-messages arrive, and some inconsistencies between multiple copies of the same
-conversation have been fixed.
-- Support for phishing warnings.
-- Support for Lightning notification bar, kudos to Philipp Kewisch!
-- Support for spellchecking the quick reply. Use right-click to pick a language.
-Will work only if using a recent Thunderbird (> 3.2).
-- Quick reply improvements: now saves recipients, and doesn't lock the UI
-anymore.
-- UI support for extra contact actions (create filter, monospace from this
-sender).
-- UI support for junking a message (only available if there's just one message
-in the conversation).
-- Remove dotted outline on selected messages.
-- Improvements in the setup assistant for people with a huge number of messages.
-- Use photos found through the local address book when Contacts is installed.
+- The Enter key (or double-clicking in the thread pane) now opens a conversation
+in a new tab.
+- Fix duplicate recipients issue.
+- Smart reply button that combines reply, reply all, and reply to list.
