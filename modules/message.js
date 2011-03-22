@@ -237,6 +237,9 @@ function Message(aConversation) {
   this._contacts = [];
   this._attachments = [];
 
+  this.isReplyListEnabled = null;
+  this.isReplyAllEnabled = null;
+
   // Filled by the conversation, useful to know whether we were initially the
   //  first message in the conversation or not...
   this.initialPosition = -1;
@@ -426,8 +429,33 @@ Message.prototype = {
       self._domNode.classList.add("with-details");
       event.stopPropagation();
     });
-    this.register(".reply", function (event) self.compose(Ci.nsIMsgCompType.ReplyToSender, event));
-    this.register(".replyAll", function (event) self.compose(Ci.nsIMsgCompType.ReplyAll, event));
+
+    // This is for the smart reply button, we need to determine what's the best
+    // action.
+    this.register(".menuReply", function (event) self.compose(Ci.nsIMsgCompType.ReplyToSender, event));
+    this.register(".menuReplyAll", function (event) self.compose(Ci.nsIMsgCompType.ReplyAll, event));
+    this.register(".menuReplyList", function (event) self.compose(Ci.nsIMsgCompType.ReplyToList, event));
+    let mainAction = self._domNode.getElementsByClassName("replyMainAction")[0];
+    let replyList = self._domNode.getElementsByClassName("menuReplyList")[0];
+    let replyAll = self._domNode.getElementsByClassName("menuReplyAll")[0];
+    let reply = self._domNode.getElementsByClassName("menuReply")[0];
+    // Hide items if needed
+    if (!this.isReplyListEnabled)
+      replyList.style.display = "none";
+    if (!this.isReplyAllEnabled)
+      replyAll.style.display = "none";
+    // Register the right actions
+    if (this.isReplyListEnabled) {
+      this.register(".replyMainAction", function (event) self.compose(Ci.nsIMsgCompType.ReplyToList, event));
+      mainAction.textContent = replyList.textContent;
+    } else if (this.isReplyAllEnabled) {
+      this.register(".replyMainAction", function (event) self.compose(Ci.nsIMsgCompType.ReplyAll, event));
+      mainAction.textContent = replyAll.textContent;
+    } else {
+      this.register(".replyMainAction", function (event) self.compose(Ci.nsIMsgCompType.ReplyToSender, event));
+      mainAction.textContent = reply.textContent;
+    }
+
     this.register(".edit-draft", function (event) self.compose(Ci.nsIMsgCompType.Draft, event));
     this.register(".action-edit-new", function (event) self.compose(Ci.nsIMsgCompType.Template, event));
     this.register(".action-compose-all", function (event) {
@@ -1002,6 +1030,12 @@ function MessageFromGloda(aConversation, aGlodaMsg) {
   if ("attachmentInfos" in aGlodaMsg)
     this._attachments = aGlodaMsg.attachmentInfos;
 
+  this.isReplyListEnabled =
+    ("mailingLists" in aGlodaMsg) && aGlodaMsg.mailingLists.length;
+  this.isReplyAllEnabled =
+    [aGlodaMsg.from].concat(aGlodaMsg.to).concat(aGlodaMsg.cc).concat(aGlodaMsg.bcc)
+    .filter(function (x) !(x.value in gIdentities)).length > 1;
+
   this._signal();
 }
 
@@ -1039,6 +1073,19 @@ function MessageFromDbHdr(aConversation, aMsgHdr) {
       self._attachments = aMimeMsg.allUserAttachments
         .filter(function (x) x.isRealAttachment);
 
+      self.isReplyListEnabled = 
+        aMimeMsg &&
+        aMimeMsg.has("list-post") &&
+        self.RE_LIST_POST.exec(aMimeMsg.get("list-post"))
+      ;
+      self.isReplyAllEnabled = 
+        parseMimeLine(aMimeMsg.get("from"), true)
+        .concat(parseMimeLine(aMimeMsg.get("to"), true))
+        .concat(parseMimeLine(aMimeMsg.get("cc"), true))
+        .concat(parseMimeLine(aMimeMsg.get("bcc"), true))
+        .filter(function (x) !(x.email in gIdentities))
+        .length > 1;
+
       self._signal();
     }, true);
   } catch (e) {
@@ -1061,6 +1108,8 @@ MessageFromDbHdr.prototype = {
     this._snippet = body.substring(0, snippetLength-1);
     this._signal();
   },
+
+  RE_LIST_POST: /<mailto:([^>]+)>/,
 }
 
 /**

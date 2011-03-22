@@ -53,10 +53,13 @@
     }
 
     function displayMenu(event) {
-      clearMenu();
       let menu = event.target.nextElementSibling;
-      menu.style.display = "-moz-box";
-      event.stopPropagation();
+      let menuWasVisible = menu.style.display == "-moz-box";
+      clearMenu();
+      if (!menuWasVisible) {
+        menu.style.display = "-moz-box";
+        event.stopPropagation();
+      }
     }
 
     $(document).ready(function () {
@@ -477,7 +480,6 @@
             <div class="menuReplyList"><img src="i/replyList.png" /> ${str("replyList")}</div>
           </div>
         </div>
-        <button class="replyAll">${str("replyAll")}</button>
         <button class="forward">${str("forward")}</button>
       </div>
       {{if quickReply}}
