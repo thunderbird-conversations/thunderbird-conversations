@@ -312,16 +312,16 @@ MonkeyPatch.prototype = {
       // calls OnMsgOpenSelectedMessages in that function. So we do that weird
       // thing here.
       let oldMsgOpenSelectedMessages = window.MsgOpenSelectedMessages;
-      window.MsgOpenSelectedMessages = function () {
-        let urls = [
-          msgHdrGetUri(x)
-          for each (x in window.gFolderDisplay.selectedMessages)
-        ].join(",");
-        let queryString = "?urls="+window.encodeURIComponent(urls);
-        tabmail.openTab("chromeTab", {
-          chromePage: kStubUrl+queryString,
-        });
-      };
+      let msgHdrs = window.gFolderDisplay.selectedMessages;
+      if (!msgHdrs.some(msgHdrIsRss) && !msgHdrs.some(msgHdrIsNntp)) {
+        window.MsgOpenSelectedMessages = function () {
+          let urls = [msgHdrGetUri(x) for each (x in msgHdrs)].join(",");
+          let queryString = "?urls="+window.encodeURIComponent(urls);
+          tabmail.openTab("chromeTab", {
+            chromePage: kStubUrl+queryString,
+          });
+        };
+      }
       oldThreadPaneDoubleClick();
       window.MsgOpenSelectedMessages = oldMsgOpenSelectedMessages;
     };
