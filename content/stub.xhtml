@@ -301,25 +301,14 @@
     $(document).ready(function () {
       // I just imagined Javascript would have some function for that
       // built-in... looks like even jQuery doesn't have it.
-      let params = {};
-      let href = document.location.href;
-      let i = href.indexOf("?");
-      if (i >= 0) {
-        let query = href.substring(i+1, href.length);
-        let keyVals = query.split("&");
-        for each (let [, keyVal] in Iterator(keyVals)) {
-          let [key, val] = keyVal.split("=");
-          val = decodeURIComponent(val);
-          params[key] = val;
-        }
-      }
+      let params = decodeUrlParameters(document.location.href);
 
       // Oh, are we expected to build a conversation on our own? Let's do it,
       // yay!
       if ("urls" in params) {
         try {
           let mainWindow = getMail3Pane();
-          let willExpand = Number(params.willExpand);
+          let willExpand = parseInt(params.willExpand);
           let msgHdrs = [msgUriToMsgHdr(x) for each (x in params.urls.split(","))];
           msgHdrs = msgHdrs.filter(function (x) x != null);
           msgHdrs = msgHdrs.filter(function (x) x.messageId);
