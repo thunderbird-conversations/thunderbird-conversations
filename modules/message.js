@@ -578,7 +578,7 @@ Message.prototype = {
       });
       this.register(attNode.getElementsByClassName("download-attachment")[0], function (event) {
         Log.debug("Downloading attachment");
-        mainWindow.HandleMultipleAttachments([attInfo], "save");
+        mainWindow.saveAttachment(attInfo, "save");
       });
 
       let maybeViewable = 
