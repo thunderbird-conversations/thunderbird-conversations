@@ -288,6 +288,10 @@ function setupAutocomplete(to, cc, bcc) {
       prePopulate: aData,
     });
     $(aList+" li:not(.add-more)").remove();
+    $(aList+" .recipientListSeparator").remove();
+    let list = document.getElementsByClassName(aList.substring(1))[0];
+    let marker = list.getElementsByClassName("add-more")[0];
+    // Never, ever use jquery in a loop.
     for each (let [i, { name, email }] in Iterator(aData)) {
       if (!email)
         continue;
@@ -300,8 +304,14 @@ function setupAutocomplete(to, cc, bcc) {
         sep = "";
       else
         sep = strings.get("sepComma");
-      $(aList+" .add-more").before($("<li />").attr("title", email).text(name));
-      $(aList+" .add-more").before($("<span />").addClass("recipientListSeparator").text(sep));
+      let li = document.createElement("li");
+      li.setAttribute("title", email);
+      li.textContent = name;
+      let span = document.createElement("span");
+      span.classList.add("recipientListSeparator");
+      span.textContent = sep;
+      list.insertBefore(li, marker);
+      list.insertBefore(span, marker);
     }
   };
   fill("#to", ".toList", to);
