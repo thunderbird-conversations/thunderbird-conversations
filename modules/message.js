@@ -266,6 +266,8 @@ Message.prototype = {
       this._domNode.classList.remove("inView");
   },
 
+  RE_SNIPPET: /[^\w]/g,
+
   // Output this message as a whole bunch of HTML
   toTmplData: function (aQuickReply) {
     let self = this;
@@ -341,7 +343,7 @@ Message.prototype = {
     }
 
     // 3) Generate extra information: snippet, date, uri
-    data.snippet = escapeHtml(this._snippet);
+    data.snippet = escapeHtml(this._snippet).replace(this.RE_SNIPPET, "");
     data.date = escapeHtml(this._date);
     data.uri = escapeHtml(msgHdrGetUri(this._msgHdr));
 
