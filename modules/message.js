@@ -266,7 +266,7 @@ Message.prototype = {
       this._domNode.classList.remove("inView");
   },
 
-  RE_SNIPPET: /[^\w]/g,
+  RE_SNIPPET: /[\u0000-\u0009]/g,
 
   // Output this message as a whole bunch of HTML
   toTmplData: function (aQuickReply) {
