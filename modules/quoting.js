@@ -66,8 +66,28 @@ function canInclude(aNode) {
 }
 
 function isBody(aNode) {
-  return (aNode.tagName.toLowerCase() == "body");
+  if (aNode.tagName && aNode.tagName.toLowerCase() == "body") {
+    return true;
+  } else {
+    let count = 0;
+    for each (let [, node] in Iterator(aNode.parentNode.childNodes)) {
+      dump(node+" "+node.nodeType+"\n");
+      switch (node.nodeType) {
+        case node.TEXT_NODE:
+          if (node.textContent.trim().length > 0)
+            count++;
+          break;
+        case node.ELEMENT_NODE:
+          count++;
+          break;
+      }
+    }
+    dump(count+"\n");
+    return (count == 1) && isBody(aNode.parentNode);
+  }
 }
+
+function implies(a, b) !a || a && b;
 
 /* Create a blockquote that encloses everything relevant, starting from marker.
  * Marker is included by default, remove it later if you need to. */
@@ -76,7 +96,7 @@ function encloseInBlockquote(aDoc, marker) {
     encloseInBlockquote(aDoc, marker.previousSibling);
   } else if (!marker.previousSibling && !isBody(marker.parentNode)) {
     encloseInBlockquote(aDoc, marker.parentNode);
-  } else {
+  } else if (implies(marker == marker.parentNode.firstChild, !isBody(marker.parentNode))) {
     let blockquote = aDoc.createElement("blockquote");
     blockquote.setAttribute("type", "cite");
     marker.parentNode.insertBefore(blockquote, marker);
