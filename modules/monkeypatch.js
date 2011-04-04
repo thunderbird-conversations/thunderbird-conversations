@@ -513,6 +513,8 @@ MonkeyPatch.prototype = {
     //  situations (where a normal thread summary would kick in) as a
     //  side-effect. That means we don't need to hack into gMessageDisplay too
     //  much.
+    let originalOnSelectedMessagesChanged =
+      window.MessageDisplayWidget.prototype.onSelectedMessagesChanged;
     window.document.getElementById("tabmail")
         .tabInfo[0].messageDisplay.onSelectedMessagesChanged =
     window.MessageDisplayWidget.prototype.onSelectedMessagesChanged =
@@ -527,15 +529,12 @@ MonkeyPatch.prototype = {
           Log.debug("Intercepted message load, ", selectedCount, " message(s) selected");
 
           if (selectedCount == 0) {
-            this.clearDisplay();
-            // Once in our lifetime is plenty.
-            if (!this._haveDisplayedStartPage) {
-              window.loadStartPage(false);
-              this._haveDisplayedStartPage = true;
-            }
-            this.singleMessageDisplay = true;
-            return true;
-
+            // So we're not copying the code here. This changes nothing, and the
+            // execution stays the same. But if someone (say, the account
+            // summary extension) decides to redirect the code to _showSummary
+            // in the case of selectedCount == 0 by monkey-patching
+            // onSelectedMessagesChanged, we give it a chance to run.
+            originalOnSelectedMessagesChanged.call(this);
           } else if (selectedCount == 1) {
             // Here starts the part where we modify the original code.
             let msgHdr = this.folderDisplay.selectedMessage;
