@@ -737,7 +737,7 @@ Conversation.prototype = {
     // Re-do the expand/collapse + scroll to the right node stuff.
     this._expandAndScroll();
     // Update the folder tags, maybe we were called because we changed folders
-    this.viewWrapper = new ViewWrapper();
+    this.viewWrapper = new ViewWrapper(this);
     [m.message.inView = this.viewWrapper.isInView(m)
       for each ([, m] in Iterator(this.messages))];
   },

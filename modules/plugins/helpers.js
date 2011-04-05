@@ -44,12 +44,14 @@ var EXPORTED_SYMBOLS = ['PluginHelpers']
  */
 
 Components.utils.import("resource:///modules/gloda/utils.js");
+Components.utils.import("resource://conversations/stdlib/misc.js");
 
 const gsfnRegexp = /^(.+)(?:, an employee of Mozilla Messaging,)? (?:replied to|commented on|just asked)/;
 const gsfnFrom = "Mozilla Messaging <noreply.mozilla_messaging@getsatisfaction.com>";
 
 const ghRegexp = /^(?:From: (.*)|(.*) (?:reported an issue|commented on|wants someone to pull|sent you a message))/;
 const ghFrom = "GitHub <noreply@github.com>";
+const ghFromRegexp = /^reply\+[a-z0-9-]+@reply\.github\.com/;
 
 let PluginHelpers = {
   // About to do more special-casing here? Please check out the corresponding
@@ -73,16 +75,27 @@ let PluginHelpers = {
       let body = aMimeMsg.coerceBodyToPlaintext(aMsgHdr.folder);
       let m = body.match(gsfnRegexp);
       if (m && m.length)
-        return (m[1] + " <" + uniq(m[1]) + "@getsatisfaction.com>");
+        return (m[1] + " <" + uniq(m[1]) + "@fake.getsatisfaction.com>");
     }
 
+    // Old GitHub
     if (aMimeMsg && aMimeMsg.headers["from"] == ghFrom) {
       let body = aMimeMsg.coerceBodyToPlaintext(aMsgHdr.folder);
       let m = body.match(ghRegexp);
       // I'll never understand how regexps really work...
       let name = m && m.length && (m[1] || m[2]);
       if (name)
-        return (name + " <" + uniq(name) + "@github.com>");
+        return (name + " <" + uniq(name) + "@fake.github.com>");
+    }
+
+    // New GitHub
+    if (aMimeMsg && aMimeMsg.has("from")) {
+      let [{ name, email }] = parseMimeLine(aMimeMsg.get("from"));
+      let m = email.match(ghFromRegexp);
+      if (m && m.length) {
+        dump("\033[01;36m"+(name + " <" + uniq(name) + "@fake.github.com>")+"\033[00m\n");
+        return (name + " <" + uniq(name) + "@fake.github.com>");
+      }
     }
 
     return null;

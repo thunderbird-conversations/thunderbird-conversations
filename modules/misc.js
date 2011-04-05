@@ -224,6 +224,9 @@ function linkifySubject(subject, doc) {
 // Takes either a Message (modules/message.js) or a Conversation
 // (modules/conversation.js)
 function topMail3Pane(aObj) {
+  if (!aObj)
+    throw Error("Bad usage for topMail3Pane");
+
   if ("_conversation" in aObj) // Message
     return aObj._conversation._htmlPane.ownerDocument.defaultView;
   else if ("_htmlPane" in aObj) // Conversation
