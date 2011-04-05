@@ -124,7 +124,7 @@ let OracleMixIn = {
         }
       }
     } else if (this.scrollMode == Prefs.kScrollSelected) {
-      let gFolderDisplay = getMail3Pane().gFolderDisplay;
+      let gFolderDisplay = topMail3Pane(this).gFolderDisplay;
       let key = msgHdrGetUri(gFolderDisplay.selectedMessage);
       for (let i = 0; i < this.messages.length; ++i) {
         if (this.messages[i].message._uri == key) {
@@ -235,8 +235,8 @@ function msgDate ({ type, message, msgHdr, glodaMsg }) {
     Log.error("Bad message type");
 }
 
-function ViewWrapper() {
-  let mainWindow = getMail3Pane();
+function ViewWrapper(aConversation) {
+  this.mainWindow = topMail3Pane(aConversation);
   // The trick is, if a thread is collapsed, this._initialSet contains all the
   //  messages in the thread. We want these to be selected. If a thread is
   //  expanded, we want messages which are in the current view to be selected.
@@ -244,17 +244,16 @@ function ViewWrapper() {
   //  compare them by messageKey (not reliable), but URLs should be enough.
   this.byUri = {};
   [this.byUri[msgHdrGetUri(x)] = true
-    for each ([, x] in Iterator(mainWindow.gFolderDisplay.selectedMessages))];
+    for each ([, x] in Iterator(this.mainWindow.gFolderDisplay.selectedMessages))];
 }
 
 ViewWrapper.prototype = {
   isInView: function _ViewWrapper_isInView(aMsg) {
-    let mainWindow = getMail3Pane();
-    if (mainWindow.gDBView) {
+    if (this.mainWindow.gDBView) {
       let msgHdr = toMsgHdr(aMsg);
       let r =
         (msgHdrGetUri(msgHdr) in this.byUri) ||
-        (mainWindow.gDBView.findIndexOfMsgHdr(msgHdr, false) != nsMsgViewIndex_None)
+        (this.mainWindow.gDBView.findIndexOfMsgHdr(msgHdr, false) != nsMsgViewIndex_None)
       ;
       return r;
     } else {
@@ -334,7 +333,7 @@ Conversation.prototype = {
   // mind.
   // XXX this logic is weird. Shouldn't we just compare a list of URLs?
   _selectionChanged: function _Conversation_selectionChanged () {
-    let gFolderDisplay = getMail3Pane().gFolderDisplay;
+    let gFolderDisplay = topMail3Pane(this).gFolderDisplay;
     let messageIds = [x.messageId for each ([, x] in Iterator(this._initialSet))];
     return
       !gFolderDisplay.selectedMessage ||
@@ -635,8 +634,8 @@ Conversation.prototype = {
   //  current view.
   _filterOutDuplicates: function _Conversation_filterOutDuplicates () {
     let messages = this.messages;
-    let mainWindow = getMail3Pane();
-    this.viewWrapper = new ViewWrapper();
+    let mainWindow = topMail3Pane(this);
+    this.viewWrapper = new ViewWrapper(this);
     // Wicked cases, when we're asked to display a draft that's half-saved...
     messages = messages.filter(function (x) (toMsgHdr(x) && toMsgHdr(x).messageId));
     messages = groupArray(this.messages, getMessageId);

@@ -37,7 +37,7 @@
 var EXPORTED_SYMBOLS = [
   'groupArray', 'joinWordList', 'iconForMimeType',
   'EventHelperMixIn', 'arrayEquals', 'LINKS_REGEX',
-  'linkifySubject',
+  'linkifySubject', 'topMail3Pane'
 ]
 
 var LINKS_REGEX = /((\w+):\/\/[^<>()'"\s]+|www(\.[-\w]+){2,})/;
@@ -219,4 +219,17 @@ function linkifySubject(subject, doc) {
     node.appendChild(doc.createTextNode(text));
   }
   return node;
+}
+
+// Takes either a Message (modules/message.js) or a Conversation
+// (modules/conversation.js)
+function topMail3Pane(aObj) {
+  if ("_conversation" in aObj) // Message
+    return aObj._conversation._htmlPane.ownerDocument.defaultView;
+  else if ("_htmlPane" in aObj) // Conversation
+    return aObj._htmlPane.ownerDocument.defaultView;
+  else if ("top" in aObj) // window inside the htmlpane
+    return aObj.top;
+  else
+    throw Error("Bad usage for topMail3Pane");
 }

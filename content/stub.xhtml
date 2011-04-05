@@ -256,14 +256,14 @@
       // This callback is only activated when the conversation is not a
       //  conversation in a tab AND there's only one message in the conversation,
       //  i.e. the currently selected message
-      getMail3Pane().JunkSelectedMessages(true);
+      topMail3Pane(window).JunkSelectedMessages(true);
       $("#conversationHeader").addClass("not-junkable");
     }
 
     const kGalleryUrl = "chrome://conversations/content/gallery/index.html";
 
     function galleryView(uri) {
-      let tabmail = getMail3Pane().document.getElementById("tabmail");
+      let tabmail = topMail3Pane(window).document.getElementById("tabmail");
       tabmail.openTab("chromeTab", {
         chromePage: kGalleryUrl+"?uri="+uri,
       });
@@ -275,7 +275,7 @@
      * conversation.
      */
     function detachTab(event) {
-      let tabmail = getMail3Pane().document.getElementById("tabmail");
+      let tabmail = topMail3Pane(window).document.getElementById("tabmail");
       let willExpand = $("textarea").parent().hasClass("expand") && startedEditing();
       // Pick _initialSet and not msgHdrs so as to enforce the invariant
       //  that the messages from _initialSet are in the current view.
@@ -310,7 +310,7 @@
       // yay!
       if ("urls" in params) {
         try {
-          let mainWindow = getMail3Pane();
+          let mainWindow = topMail3Pane(window);
           let willExpand = parseInt(params.willExpand);
           let msgHdrs = [msgUriToMsgHdr(x) for each (x in params.urls.split(","))];
           msgHdrs = msgHdrs.filter(function (x) x != null);

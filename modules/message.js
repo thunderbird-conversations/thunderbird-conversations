@@ -87,7 +87,7 @@ const snippetLength = 300;
 //  blocked" notification will then look for a suitable listener and notify it
 //  of the aforementioned event.
 function addMsgListener(aMessage) {
-  let window = getMail3Pane();
+  let window = topMail3Pane(aMessage);
   let weakPtr = Cu.getWeakReference(aMessage);
   let msgListeners = window.Conversations.msgListeners;
   let messageId = aMessage._msgHdr.messageId;
@@ -102,9 +102,9 @@ function isAccel (event) (isOSX && event.metaKey || event.ctrlKey)
 
 function KeyListener(aMessage) {
   this.message = aMessage;
-  let mail3PaneWindow = getMail3Pane();
-  this.KeyEvent = mail3PaneWindow.KeyEvent;
-  this.navigator = mail3PaneWindow.navigator;
+  this.mail3PaneWindow = topMail3Pane(aMessage);
+  this.KeyEvent = this.mail3PaneWindow.KeyEvent;
+  this.navigator = this.mail3PaneWindow.navigator;
 }
 
 KeyListener.prototype = {
@@ -189,7 +189,7 @@ KeyListener.prototype = {
         if (!isAccel(event)) {
           // Hey, let's move back to this message next time!
           this.message._domNode.setAttribute("tabindex", "1");
-          getMail3Pane().SetFocusThreadPane(event);
+          this.mail3PaneWindow.SetFocusThreadPane(event);
           event.preventDefault();
           event.stopPropagation();
         }
@@ -417,7 +417,7 @@ Message.prototype = {
   //  we're expanded for the first time (expand calls us).
   registerActions: function _Message_registerActions() {
     let self = this;
-    let mainWindow = getMail3Pane();
+    let mainWindow = topMail3Pane(this);
 
     // Forward the calls to each contact.
     let people = this._domNode.getElementsByClassName("tooltip");
@@ -796,7 +796,7 @@ Message.prototype = {
     Log.assert(this.expanded, "Cannot stream a message if not expanded first!");
 
     let originalScroll = this._domNode.ownerDocument.documentElement.scrollTop;
-    let msgWindow = getMail3Pane().msgWindow;
+    let msgWindow = topMail3Pane(this).msgWindow;
 
     let iframe = this._domNode.ownerDocument
       .createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "iframe");
@@ -851,7 +851,7 @@ Message.prototype = {
             //  DOM. Don't know why :(.
             // We can't do this as a plugin (I wish I could!) because this is
             //  too entangled with the display logic.
-            let mainWindow = getMail3Pane();
+            let mainWindow = topMail3Pane(self);
             if ("BiDiMailUI" in mainWindow) {
               let ActionPhases = mainWindow.BiDiMailUI.Display.ActionPhases;
               try {
@@ -1252,7 +1252,7 @@ let PostStreamingFixesMixIn = {
    * low-level treatments.
    */
   checkForFishing: function (iframeDoc) {
-    let gPhishingDetector = getMail3Pane().gPhishingDetector;
+    let gPhishingDetector = topMail3Pane(this).gPhishingDetector;
     let isPhishing = false;
     let links = iframeDoc.getElementsByTagName("a");
     for (let [, a] in Iterator(links)) {

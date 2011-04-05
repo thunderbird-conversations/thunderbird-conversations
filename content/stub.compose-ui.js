@@ -19,6 +19,7 @@ Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
 Cu.import("resource://conversations/stdlib/send.js");
 Cu.import("resource://conversations/stdlib/compose.js");
 Cu.import("resource://conversations/log.js");
+Cu.import("resource://conversations/misc.js");
 
 let Log = setupLogging("Conversations.Stub.Compose");
 
@@ -34,7 +35,7 @@ let gDraftListener;
 //  only run once the conversation it lives in is complete.
 function registerQuickReply() {
   let id = Conversations.currentConversation.id;
-  let mainWindow = getMail3Pane();
+  let mainWindow = topMail3Pane(window);
 
   gDraftListener = {
     onDraftChanged: function (aTopic) {
@@ -270,7 +271,7 @@ ComposeSession.prototype = {
 
   setupIdentity: function () {
     let self = this;
-    let mainWindow = getMail3Pane();
+    let mainWindow = topMail3Pane(window);
     let identity;
     this.match({
       reply: function (aMsgHdr) {
