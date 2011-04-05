@@ -173,7 +173,7 @@ let ContactMixIn = {
     });
 
     let self = this;
-    let mainWindow = getMail3Pane();
+    let mainWindow = aDomNode.ownerDocument.defaultView.top;
     // XXX We already called getCardForEmail if we're runnning without contacts
     //  installed...
     // Please note that cardAndBook is never overridden, so that the closure for
