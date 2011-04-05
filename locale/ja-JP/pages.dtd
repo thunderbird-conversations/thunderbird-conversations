@@ -7,7 +7,6 @@
 <!ENTITY assistant.apply "変更を適用する">
 <!ENTITY assistant.settings "いくつかの設定は Thunderbird Conversations の動作に必要です。それ以外に強く推奨している設定があります。その他は任意の設定です。">
 <!ENTITY assistant.actionEnableGloda "グローバル検索と索引データベースを有効にする">
-<!ENTITY assistant.actionDisableAutoread "Thunderbird Conversations の既読処理を優先する">
 <!ENTITY assistant.actionReindexAttachments "添付ファイル付きや Mozilla bugmail のメッセージの索引を作りなおす">
 <!ENTITY assistant.actionDontExpand "メッセージリストで未読を含むスレッドを展開しない">
 <!ENTITY assistant.actionAttachmentsInline "添付ファイルをインライン表示しない (<strong>強く</strong>推奨)">
@@ -36,4 +35,3 @@
 <!ENTITY stub.junk.tooltip "このメッセージに迷惑マークをつけます">
 <!ENTITY stub.expand.tooltip "全てのメッセージを展開・畳みます">
 <!ENTITY stub.read.tooltip "すべてのメッセージの既読・未読を切り替えます">
-<!ENTITY stub.detach.tooltip "会話を新しいタブで開きます">

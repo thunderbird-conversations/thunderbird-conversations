@@ -1,8 +1,14 @@
-<!ENTITY window.title "Opções do Gmail Conversation View">
+<!ENTITY window.title "Opções do Thunderbird Conversation">
+<!ENTITY title.message_display "Exibição das mensagens">
+<!ENTITY option.expand_who "Por padrão, expandir:">
+<!ENTITY option.expand_none "Nenhuma mensagem">
+<!ENTITY option.expand_all "Todas as mensagens">
 <!ENTITY title.quoting "Citação">
 <!ENTITY option.hide_longer_than "Ocultar texto citado maior que">
 <!ENTITY option.lines "linhas">
 <!ENTITY title.advanced "Avançado">
+<!ENTITY title.assistant "Assistente de instalação">
+<!ENTITY option.assistant "Iniciar o assistente de instalação">
 <!ENTITY title.advanced_display "Exibição de conversas">
 <!ENTITY option.no_friendly_date "Usar datas &quot;normais&quot;, assim como na lista de mensagens">
-<!ENTITY option.monospaced_senders "Mensagens destes endereços devem ser exibidas em fontes monoespaçados (separar por vírgulas)">
+<!ENTITY option.monospaced_senders "Mensagens destes endereços devem ser exibidas em fontes monoespaçadas (separar por vírgulas)">

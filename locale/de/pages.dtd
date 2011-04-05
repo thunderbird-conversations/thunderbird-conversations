@@ -7,7 +7,6 @@
 <!ENTITY assistant.apply "Änderungen anwenden">
 <!ENTITY assistant.settings "Einige Einstellungen sind obligatorisch, damit Thunderbird Conversations richtig arbeitet. Einige werden dringend empfohlen und andere sind optional.">
 <!ENTITY assistant.actionEnableGloda "Sicherstellen, dass die globale Suche und Indizierung aktiviert sind.">
-<!ENTITY assistant.actionDisableAutoread "Lasse Thunderbirds Conversations die Nachrichten als gelesen markieren.">
 <!ENTITY assistant.actionReindexAttachments "Re-indiziere Nachrichten, die Anhänge enthalten, genauso wie alle Mozilla Bugmails.">
 <!ENTITY assistant.actionDontExpand "Keine Threads in der Nachrichtenliste ausklappen, die ungelesene Nachrichten enthalten.">
 <!ENTITY assistant.actionAttachmentsInline "Keine Anhänge inline anzeigen (<strong>dringend</strong> empfohlen).">
@@ -23,4 +22,3 @@
 <!ENTITY stub.trash.tooltip "Lösche diese Konversation">
 <!ENTITY stub.archive.tooltip "Archiviere diese Konversation">
 <!ENTITY stub.junk.tooltip "Markiere diese Nachricht als Spam">
-<!ENTITY stub.detach.tooltip "Speichere diese Konversation in neuem Tab">

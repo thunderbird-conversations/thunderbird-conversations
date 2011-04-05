@@ -3,11 +3,11 @@
      everything is displayed properly. 
 
 
+
 -->
 <!ENTITY window.title "Thunderbird Conversations Optionen">
 <!ENTITY title.message_display "Nachrichtenanzeige">
 <!ENTITY option.expand_who "Standardmäßig ausklappen:">
-<!ENTITY option.expand_auto "Die Nachricht, die Ihnen vorschwebt (automatisch)">
 <!ENTITY option.expand_none "Keine Nachrichten">
 <!ENTITY option.expand_all "Alle Nachrichten">
 <!ENTITY title.quoting "Zitieren">

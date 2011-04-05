@@ -1,0 +1,14 @@
+<!ENTITY window.title "Επιλογές Thunderbird Conversations">
+<!ENTITY title.message_display "Εμφάνιση μηνυμάτων">
+<!ENTITY option.expand_who "Ανάπτυξη (σαν προεπιλογή):">
+<!ENTITY option.expand_none "Κανένα μήνυμα">
+<!ENTITY option.expand_all "Όλα τα μηνύματα">
+<!ENTITY title.quoting "Παράθεση">
+<!ENTITY option.hide_longer_than "Απόκρυψη κείμενου σε παράθεση πάνω από">
+<!ENTITY option.lines "γραμμές">
+<!ENTITY title.advanced "Για προχωρημένους">
+<!ENTITY title.assistant "Βοηθός ρυθμίσεων">
+<!ENTITY option.assistant "Εκκίνηση του βοηθού ρυθμίσεων">
+<!ENTITY title.advanced_display "Εμφάνιση συνομιλίας">
+<!ENTITY option.no_friendly_date "Χρήση «κανονικών» ημερομηνιών, όπως και στη λίστα μηνυμάτων">
+<!ENTITY option.monospaced_senders "Μηνύματα από αυτές τις διευθύνσεις θα εμφανίζονται με γραμματοσειρά monospace (διαχωρισμός διευθύνσεων με κόμματα)">

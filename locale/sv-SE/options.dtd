@@ -1,0 +1,23 @@
+<!-- Please open the "Preferences" window and DO check that your text is not too
+     long. This can cause the contents to overflow and be hidden, so make sure
+     everything is displayed properly. 
+
+
+
+
+
+-->
+<!ENTITY window.title "Inställningar för Thunderbird Conversations">
+<!ENTITY title.message_display "Meddelandevyn">
+<!ENTITY option.expand_who "Som standard, expandera:">
+<!ENTITY option.expand_none "Inga meddelanden">
+<!ENTITY option.expand_all "Alla meddelanden">
+<!ENTITY title.quoting "Citering">
+<!ENTITY option.hide_longer_than "Göm citerad text längre än">
+<!ENTITY option.lines "rader">
+<!ENTITY title.advanced "Avancerat">
+<!ENTITY title.assistant "Konfigurationsguide">
+<!ENTITY option.assistant "Starta konfigurationsguiden">
+<!ENTITY title.advanced_display "Konversationsvyn">
+<!ENTITY option.no_friendly_date "Använd &quot;normala&quot; datum, precis som i meddelandelistan">
+<!ENTITY option.monospaced_senders "Meddelanden från dessa adresser skall visas i enbreddsfonter (avgränsa med kommatecken)">

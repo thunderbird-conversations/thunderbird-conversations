@@ -3,11 +3,11 @@
      everything is displayed properly. 
 
 
+
 -->
 <!ENTITY window.title "Thunderbird Conversations オプション">
 <!ENTITY title.message_display "メッセージ表示">
 <!ENTITY option.expand_who "既定で展開するメッセージ:">
-<!ENTITY option.expand_auto "選択したメッセージとそれに関連するもの (自動)">
 <!ENTITY option.expand_none "展開しない">
 <!ENTITY option.expand_all "すべてのメッセージ">
 <!ENTITY title.quoting "引用">

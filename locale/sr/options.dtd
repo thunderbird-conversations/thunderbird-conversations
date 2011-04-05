@@ -1,7 +1,6 @@
 <!ENTITY window.title "Thunderbird Conversations - опције">
 <!ENTITY title.message_display "Приказ поруке">
 <!ENTITY option.expand_who "Подразумевано, рашири:">
-<!ENTITY option.expand_auto "Порука коју сте имали на уму (аутоматски)">
 <!ENTITY option.expand_none "Нема порука">
 <!ENTITY option.expand_all "Све поруке">
 <!ENTITY title.quoting "Цитирање">

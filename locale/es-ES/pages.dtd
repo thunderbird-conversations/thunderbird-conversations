@@ -7,7 +7,6 @@
 <!ENTITY assistant.apply "Aplicar cambios">
 <!ENTITY assistant.settings "Algunas opciones son obligatorias para que Thunderbird Conversations pueda funcionar. Algunas son bastante recomendables y otras son opcionales.">
 <!ENTITY assistant.actionEnableGloda "Asegúrese de que la búsqueda global y la indexación están habilitadas.">
-<!ENTITY assistant.actionDisableAutoread "Permitir a Thunderbird Conversations marcar mensajes como leídos.">
 <!ENTITY assistant.actionReindexAttachments "Reindexar todos los mensajes con adjuntos o los de bugs de Mozilla.">
 <!ENTITY assistant.actionDontExpand "En la lista de mensajes, no expandir los hilos que tengan mensajes no leídos.">
 <!ENTITY assistant.actionAttachmentsInline "No mostrar adjuntos en línea (<strong>muy</strong> recomendable).">
@@ -37,4 +36,3 @@
 <!ENTITY stub.junk.tooltip "Marcar como basura este mensaje">
 <!ENTITY stub.expand.tooltip "Expandir/Contraer todos los mensajes">
 <!ENTITY stub.read.tooltip "Cambiar los mensajes leídos/no leídos">
-<!ENTITY stub.detach.tooltip "Guardar esta conversación en una pestaña nueva">

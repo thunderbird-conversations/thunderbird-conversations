@@ -7,7 +7,6 @@
 <!ENTITY assistant.apply "应用">
 <!ENTITY assistant.settings "部分设置是Thunderbird Conversations正常工作的必选设置，部分为推荐设置，其他为可选设置">
 <!ENTITY assistant.actionEnableGloda "请确认全局检索和索引已经激活">
-<!ENTITY assistant.actionDisableAutoread "允许Thunderbird Conversations将邮件标记为已读">
 <!ENTITY assistant.actionDontExpand "在邮件列表中，不要展开含有未读邮件的会话">
 <!ENTITY assistant.actionAttachmentsInline "不要嵌入显示附件(<strong>强烈</strong>推荐).">
 <!ENTITY assistant.actionOfflineDownload "收件箱和已发邮件箱相同步使用离线存储(<strong>强烈</strong>推荐).">
@@ -23,4 +22,3 @@
 <!ENTITY stub.junk.tooltip "将此邮件标记为垃圾邮件">
 <!ENTITY stub.expand.tooltip "展开/折叠所有邮件">
 <!ENTITY stub.read.tooltip "将所有邮件标记为已读/未读">
-<!ENTITY stub.detach.tooltip "将此会话保存到新的页面中">

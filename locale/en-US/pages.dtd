@@ -17,12 +17,10 @@
 <!ENTITY assistant.actionSetupViewDefaults "Use these custom sort settings for all folders.">
 <!ENTITY assistant.actionEnsureMessagePaneVisible "Make sure the message pane is visible.">
 <!ENTITY assistant.settings2 "Should you wish to enable more options later, you can access this wizard through the addon's preferences, under the &quot;advanced&quot; section.">
-
 <!ENTITY feedback.message "You've been running Thunderbird Conversations for quite some time now, would you care enough to tell us what you think about it? We'd love to hear about any comments you may have!">
 <!ENTITY feedback.no "No, thanks">
 <!ENTITY feedback.yes "Leave feedback">
 <!ENTITY feedback.pageTitle "Give feedback">
-
 <!ENTITY indexing.p1 "We've been trying to setup Thunderbird Conversations to give you the best experience, but you have so many messages that reindexing them would crash your Thunderbird.">
 <!ENTITY indexing.p2 "If you have an insanely high amount of non-bugmail email, delete the <tt>global-message-db.sqlite</tt> file in your profile folder (see link below).">
 <!ENTITY indexing.p3 "Do you have a high amount of mail with attachments? Unless the first version of Thunderbird you ever tried is Thunderbird 3.3 alpha1 or later, these attachments won't show in the conversation view. We need to reindex all messages with attachments. The easiest way is for you to delete the <tt>global-messages-db.sqlite</tt> file in your profile folder.">
@@ -33,7 +31,6 @@
 <!ENTITY indexing.t2 "In more detail">
 <!ENTITY indexing.title "<span class='orange'>Indexing</span> issue">
 <!ENTITY indexing.pageTitle "Indexing warning">
-
 <!ENTITY stub.loading "Loading...">
 <!ENTITY stub.trash.tooltip "Delete this conversation">
 <!ENTITY stub.archive.tooltip "Archive this conversation">
