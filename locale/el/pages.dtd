@@ -1,3 +1,4 @@
+<!ENTITY assistant.title "Βοηθός πρώτης εκτέλεσης">
 <!ENTITY assistant.intro "Χαίρετε και καλώς ορίσατε στο <strong>Thunderbird Conversations</strong>!">
 <!ENTITY assistant.p1 "Για να σας διευκολύνουμε, ο βοηθός θα βελτιστοποιήσει τις ρυθμίσεις του Thunderbird για να σας προσφέρει την καλύτερη δυνατή απόδοση. Θέλουμε να μείνετε ικανοποιημένοι!">
 <!ENTITY assistant.p2 "Όλες οι αλλαγές που θα γίνουν είναι πλήρως αναστρέψιμες, οπότε μην ανησυχείτε. Αν δεν σας αρέσει το Thunderbird Conversations, θα επαναφερθούν οποιεσδήποτε αλλαγές κάνουμε, μόλις απεγκαταστήσετε την επέκταση.">
@@ -33,6 +34,8 @@
 <!ENTITY stub.loading "Γίνεται φόρτωση...">
 <!ENTITY stub.trash.tooltip "Διαγραφή της συνομιλίας">
 <!ENTITY stub.archive.tooltip "Αρχειοθέτηση της συνομιλίας">
+<!ENTITY stub.print.tooltip "Εκτύπωση συνομιλίας">
 <!ENTITY stub.junk.tooltip "Μεταφορά μηνύματος στα ανεπιθύμητα">
 <!ENTITY stub.expand.tooltip "Ανάπτυξη/σύμπτυξη όλων των μηνυμάτων">
 <!ENTITY stub.read.tooltip "Εναλλαγή σημείωσης αναγνωσμένων/μη αναγνωσμένων για όλα τα μηνύματα">
+<!ENTITY stub.detach.tooltip2 "Προβολή συνομιλίας σε νέα καρτέλα">

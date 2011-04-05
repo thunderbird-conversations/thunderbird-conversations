@@ -1,6 +1,8 @@
 <!ENTITY window.title "Επιλογές Thunderbird Conversations">
 <!ENTITY title.message_display "Εμφάνιση μηνυμάτων">
 <!ENTITY option.expand_who "Ανάπτυξη (σαν προεπιλογή):">
+<!ENTITY option.expand_auto2 "Αυτόματο">
+<!ENTITY option.expand_auto2.tooltip "Αν το νήμα έχει συμπτυχθεί, γίνεται ανάπτυξη όλων των μη αναγνωσμένων μηνυμάτων ή του τελευταίου μηνύματος. Αν έχει αναπτυχθεί, γίνεται ανάπτυξη μόνο του επιλεγμένου μηνύματος από τη λίστα.">
 <!ENTITY option.expand_none "Κανένα μήνυμα">
 <!ENTITY option.expand_all "Όλα τα μηνύματα">
 <!ENTITY title.quoting "Παράθεση">
