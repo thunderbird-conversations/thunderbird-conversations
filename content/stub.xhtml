@@ -310,6 +310,7 @@
       // yay!
       if ("urls" in params) {
         try {
+          window.frameElement.setAttribute("tooltip", "aHTMLTooltip");
           let mainWindow = topMail3Pane(window);
           let willExpand = parseInt(params.willExpand);
           let msgHdrs = [msgUriToMsgHdr(x) for each (x in params.urls.split(","))];
