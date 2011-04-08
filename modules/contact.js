@@ -56,7 +56,7 @@ Cu.import("resource:///modules/gloda/utils.js");
 Cu.import("resource:///modules/gloda/gloda.js");
 
 Cu.import("resource://conversations/stdlib/misc.js");
-Cu.import("resource://conversations/stdlib/msgHdrUtils.js"); // for getMail3Pane
+Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
 Cu.import("resource://conversations/log.js");
 Cu.import("resource://conversations/misc.js");
 
@@ -173,7 +173,7 @@ let ContactMixIn = {
     });
 
     let self = this;
-    let mainWindow = aDomNode.ownerDocument.defaultView.top;
+    let mainWindow = topMail3Pane(this);
     // XXX We already called getCardForEmail if we're runnning without contacts
     //  installed...
     // Please note that cardAndBook is never overridden, so that the closure for

@@ -286,10 +286,6 @@ MonkeyPatch.prototype = {
     let htmlpane = window.document.getElementById("multimessage");
     let oldSummarizeMultipleSelection = window["summarizeMultipleSelection"];
 
-    // Nuke the reference to any old message window. Happens if we close the
-    //  main window and open a new one without restarting Thunderbird.
-    getMail3Pane(true);
-
     // Do this at least once at overlay load-time
     fillIdentities();
 

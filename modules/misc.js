@@ -47,7 +47,7 @@ const Cc = Components.classes;
 const Cu = Components.utils;
 
 Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
-Cu.import("resource://conversations/stdlib/msgHdrUtils.js"); // for getMail3Pane
+Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
 Cu.import("resource://conversations/prefs.js");
 Cu.import("resource://conversations/log.js");
 
@@ -148,7 +148,7 @@ function iconForMimeType (aMimeType) {
 let EventHelperMixIn = {
 
   compose: function _EventHelper_compose (aCompType, aEvent) {
-    let window = getMail3Pane();
+    let window = topMail3Pane(this);
     if (aEvent.shiftKey) {
       window.ComposeMessage(aCompType, Ci.nsIMsgCompFormat.OppositeOfDefault, this._msgHdr.folder, [this._uri]);
     } else {
@@ -231,6 +231,8 @@ function topMail3Pane(aObj) {
     return aObj._conversation._htmlPane.ownerDocument.defaultView;
   else if ("_htmlPane" in aObj) // Conversation
     return aObj._htmlPane.ownerDocument.defaultView;
+  else if ("_manager" in aObj) // Contact
+    return aObj._domNode.ownerDocument.defaultView.top;
   else if ("top" in aObj) // window inside the htmlpane
     return aObj.top;
   else
