@@ -392,6 +392,10 @@ a img {
   overflow: hidden;
 }
 
+.message.collapsed:last-child {
+  border-bottom: 1px solid #bebebe;
+}
+
 .message.collapsed .to, 
 .message.collapsed .details,
 .message.collapsed .dropDown,
