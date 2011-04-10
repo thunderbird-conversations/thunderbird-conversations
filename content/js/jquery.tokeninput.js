@@ -462,9 +462,9 @@ $.TokenList = function (input, settings) {
     }
 
     // Highlight the query part of the search term
-	function highlight_term(value, term) {
-		return value.replace(new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + term + ")(?![^<>]*>)(?![^&;]+;)", "gi"), "<b>$1</b>");
-	}
+    function highlight_term(value, term) {
+      return value.replace(new RegExp("(?![^&;]+;)(?!<[^<>]*)(" + term + ")(?![^<>]*>)(?![^&;]+;)", "gi"), "<b>$1</b>");
+    }
 
     // Populate the results dropdown with some results
     function populate_dropdown (query, results) {
@@ -497,6 +497,10 @@ $.TokenList = function (input, settings) {
                     }
 
                     $.data(this_li.get(0), "tokeninput", results[i]);
+
+                    // See remark below
+                    if (i < results.length - 1)
+                      $("<br />").appendTo(dropdown_ul);
                 }
             }
 
@@ -514,6 +518,10 @@ $.TokenList = function (input, settings) {
             }
 
             dropdown.show();
+            // This will cause the outer <ul> to have style="display: block"
+            // which will make the <li>s display as inline elements, with
+            // potentially two on the same line. This explains why we added
+            // <br>s above.
             dropdown_ul.slideDown("fast");
 
         } else {
