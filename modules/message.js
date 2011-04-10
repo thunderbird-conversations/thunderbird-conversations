@@ -1252,6 +1252,9 @@ let PostStreamingFixesMixIn = {
    * low-level treatments.
    */
   checkForFishing: function (iframeDoc) {
+    if (!Prefs.getBool("mail.phishing.detection.enabled"))
+      return false;
+
     let gPhishingDetector = topMail3Pane(this).gPhishingDetector;
     let isPhishing = false;
     let links = iframeDoc.getElementsByTagName("a");
