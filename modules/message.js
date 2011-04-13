@@ -714,19 +714,31 @@ Message.prototype = {
       this._domNode.getElementsByClassName("star")[0].classList.remove("starred");
 
     // Update tags
-    let tagList = this._domNode.getElementsByClassName("regular-tags")[0];
+    let tagList = this._domNode.getElementsByClassName("regular-tags")[1];
     while (tagList.firstChild)
       tagList.removeChild(tagList.firstChild);
     for each (let [, tag] in Iterator(tags)) {
+      let document = this._domNode.ownerDocument;
       let colorClass = "blc-" + MailServices.tags.getColorForKey(tag.key).substr(1);
       let tagName = tag.tag;
-      let tagNode = this._domNode.ownerDocument.createElement("li");
+      let tagNode = document.createElement("li");
       tagNode.classList.add("tag");
       tagNode.classList.add(colorClass);
-      tagNode.textContent = tagName;
+      tagNode.appendChild(document.createTextNode(tagName));
+      let span = document.createElement("span");
+      span.textContent = " x";
+      span.classList.add("tag-x");
+      span.addEventListener("click", function (event) {
+        let tags = msgHdrGetTags(this._msgHdr)
+          .filter(function (x) x.key != tag.key);
+        msgHdrSetTags(this._msgHdr, tags);
+        // And now let onAttributesChanged kick in... NOT
+        tagList.removeChild(tagNode);
+      }.bind(this), false);
+      tagNode.appendChild(span);
       tagList.appendChild(tagNode);
     }
-    this._domNode.getElementsByClassName("regular-tags")[1].innerHTML = tagList.innerHTML;
+    //this._domNode.getElementsByClassName("regular-tags")[0].innerHTML = tagList.innerHTML;
   },
 
   // Convenience properties

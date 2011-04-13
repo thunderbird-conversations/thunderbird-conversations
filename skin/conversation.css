@@ -441,10 +441,19 @@ a img {
   display: inline;
 }
 
+.messageHeader .tag-x {
+  display: none;
+}
+
 .messageBody .tags {
   padding: 0 0 5px 0;
   margin: 0;
   display: inline;
+}
+
+.messageBody .tag-x {
+  cursor: pointer;
+  z-index: 3;
 }
 
 ul.tags li {
