@@ -210,6 +210,29 @@ KeyListener.prototype = {
           event.stopPropagation();
         }
         break;
+
+      default:
+        // Tag handling.
+        // 0 removes all tags, 1 to 9 set the corresponding tag, if it exists
+        if (event.which >= '0'.charCodeAt(0)
+            && event.which <= '9'.charCodeAt(0)) {
+          let i = event.which - '1'.charCodeAt(0);
+          if (i == -1) {
+            this.message.tags = [];
+          } else {
+            let tag = MailServices.tags.getAllTags({})[i];
+            if (tag) {
+              if (this.message.tags.some(function (x) x.key == tag.key))
+                this.message.tags = this.message.tags
+                  .filter(function (x) x.key != tag.key);
+              else
+                this.message.tags = this.message.tags.concat([tag]);
+            }
+          }
+          this.message.onAttributesChanged(this.message);
+          event.preventDefault();
+          event.stopPropagation();
+        }
     }
   },
 };
@@ -729,9 +752,8 @@ Message.prototype = {
       span.textContent = " x";
       span.classList.add("tag-x");
       span.addEventListener("click", function (event) {
-        let tags = msgHdrGetTags(this._msgHdr)
-          .filter(function (x) x.key != tag.key);
-        msgHdrSetTags(this._msgHdr, tags);
+        let tags = this.tags.filter(function (x) x.key != tag.key);
+        this.tags = tags;
         // And now let onAttributesChanged kick in... NOT
         tagList.removeChild(tagNode);
       }.bind(this), false);
@@ -756,6 +778,10 @@ Message.prototype = {
 
   get tags () {
     return msgHdrGetTags(this._msgHdr);
+  },
+
+  set tags (v) {
+    return msgHdrSetTags(this._msgHdr, v);
   },
 
   get collapsed () {
@@ -1101,7 +1127,9 @@ function MessageFromDbHdr(aConversation, aMsgHdr) {
         .length > 1;
 
       self._signal();
-    }, true);
+    }, true, {
+      partsOnDemand: true,
+    });
   } catch (e) {
     // Remember: these exceptions don't make it out of the callback (XPConnect
     // death trap, can't fight it until we reach level 3 and gain 1200 exp

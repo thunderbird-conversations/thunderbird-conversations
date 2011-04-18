@@ -71,7 +71,9 @@ Gallery.prototype = {
       this.attachments = attachments;
       this.subject = aMimeMsg.headers.subject;
       this.output();
-    }, true);
+    }, true, {
+      partsOnDemand: true,
+    });
   },
 
   /**
