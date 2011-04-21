@@ -1011,6 +1011,16 @@ Conversation.prototype = {
   set read (read) {
     msgHdrsMarkAsRead(this.msgHdrs, read);
   },
+
+  // For the "forward conversation" action
+  exportAsHtml: function _Conversation_exportAsHtml () {
+    let hr = '<div style="border-top: 1px solid #888; height: 15px; width: 70%; margin: 0 auto; margin-top: 15px">&nbsp;</div>';
+    let html = "Here's a conversation I thought you might find interesting!"+hr;
+    let messagesHtml = [m.exportAsHtml() for each ({ message: m } in this.messages)];
+    html += "<div style=\"font-family: sans-serif !important;\">"+messagesHtml.join(hr)+"</div>";
+    Log.debug("\n", html);
+    return html;
+  },
 }
 
 MixIn(Conversation, SignalManagerMixIn);

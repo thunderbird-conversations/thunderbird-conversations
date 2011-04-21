@@ -230,6 +230,7 @@
     //  be used either in a standalone tab or in the multimessage pane.
     // let Conversations = window.top.Conversations;
 
+    Components.utils.import("resource:///modules/mailServices.js");
     Components.utils.import("resource://conversations/stdlib/misc.js");
     Components.utils.import("resource://conversations/stdlib/msgHdrUtils.js");
     Components.utils.import("resource://conversations/prefs.js");
@@ -270,6 +271,20 @@
 
     function deleteConversation(event) {
       msgHdrsDelete(Conversations.currentConversation.msgHdrs);
+    }
+
+    function forwardConversation(event) {
+      let fields = Cc["@mozilla.org/messengercompose/composefields;1"]
+                      .createInstance(Components.interfaces.nsIMsgCompFields);
+      fields.characterSet = "UTF-8";
+      fields.bodyIsAsciiOnly = false;
+      fields.forcePlainText = false;
+      fields.body = Conversations.currentConversation.exportAsHtml();
+      let params = Cc["@mozilla.org/messengercompose/composeparams;1"]
+                      .createInstance(Components.interfaces.nsIMsgComposeParams);
+      params.format = Components.interfaces.nsIMsgCompFormat.HTML;
+      params.composeFields = fields;
+      return MailServices.compose.OpenComposeWindowWithParams(null, params);
     }
 
     function junkConversation(event) {
@@ -696,7 +711,7 @@
             </a>
           </li>
           <li class="action-forward">
-            <a href="javascript:" onclick="">
+            <a href="javascript:" onclick="forwardConversation(event);">
               &stub.forward.tooltip;
             </a>
           </li>

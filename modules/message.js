@@ -1046,7 +1046,23 @@ Message.prototype = {
     // which means we can use offsetHeight, getComputedStyle and stuff on it.
     let container = this._domNode.getElementsByClassName("iframe-container")[0];
     container.appendChild(iframe);
-  }
+  },
+
+  exportAsHtml: function _Message_exportAsHtml() {
+    let author = escapeHtml(this._contacts[0]._name);
+    let date = new Date(this._msgHdr.date/1000).toLocaleString("%x");
+    // XXX this gives pretty bad results, gotta find something else
+    let body = this.iframe.contentWindow.document.body.textContent;
+    body = body.replace(/[\n\r]*$/, "");
+    let html = [
+      '<b><span style="color: #396BBD">', author, '</span></b><br />',
+      '<span style="color: #666">', date, '</span><br />',
+      '<div style="white-space: pre-wrap; color: #666">',
+        escapeHtml(body),
+      '</div>',
+    ].join("");
+    return html;
+  },
 }
 
 MixIn(Message, EventHelperMixIn);
