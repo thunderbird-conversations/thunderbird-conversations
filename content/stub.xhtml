@@ -46,8 +46,24 @@
       };
     })(jQuery);
 
+    function hideConversationMenu() {
+      $("#conversationMenuWrapper").css("display", "none");
+    }
+
+    function showConversationMenu() {
+      $("#conversationMenuWrapper").css("display", "block");
+      let menu = $(".conversationMenu");
+      let win = $(window);
+      let h = menu.height();
+      let w = menu.width();
+      let wh = win.height();
+      let ww = win.width();
+      menu.css("margin-top", (wh-h)/2);
+      menu.css("margin-left", (ww-w)/2);
+    }
+
     function clearMenu() {
-      let menus = document.getElementsByClassName("replyDropMenu");
+      let menus = document.querySelectorAll(".replyDropMenu, #conversationMenuWrapper");
       for each (let [, menu] in Iterator(menus))
         menu.style.display = "none";
     }
@@ -65,6 +81,10 @@
     $(document).ready(function () {
       document.addEventListener("click", function (event) {
         clearMenu();
+      }, false);
+      document.addEventListener("keypress", function (event) {
+        if (event.keyCode == KeyEvent.DOM_VK_ESCAPE)
+          clearMenu();
       }, false);
     });
 
@@ -641,11 +661,11 @@
           <button title="&stub.archive.tooltip;" onclick="archiveConversation(event);">
             <img src="i/archive.png" />
           </button>
+          <button title="&stub.menu.tooltip;" onclick="showConversationMenu(event); event.stopPropagation();">
+            <img src="i/envelope.png" />
+          </button>
           <button title="&stub.junk.tooltip;" class="junk-button" onclick="junkConversation(event);">
             <img src="i/junk.png" />
-          </button>
-          <button title="&stub.print.tooltip;" onclick="window.print();">
-            <img src="i/print.png" />
           </button>
           <button title="&stub.expand.tooltip;" onclick="expandCollapse(event);">
             <span class="expand"></span>
@@ -662,6 +682,32 @@
     </div>
     <ul id="messageList">
     </ul>
+    <div id="conversationMenuWrapper">
+      <div class="conversationMenu dropDown">
+        <ul>
+          <li class="action-archive">
+            <a href="javascript:" onclick="archiveConversation(event);">
+              &stub.archive.tooltip;
+            </a>
+          </li>
+          <li class="action-delete">
+            <a href="javascript:" onclick="deleteConversation(event);">
+              &stub.trash.tooltip;
+            </a>
+          </li>
+          <li class="action-forward">
+            <a href="javascript:" onclick="">
+              &stub.forward.tooltip;
+            </a>
+          </li>
+          <li class="action-print">
+            <a href="javascript:" onclick="window.print();">
+              &stub.print.tooltip;
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 </body>
 </html>
