@@ -1051,12 +1051,33 @@ Message.prototype = {
   exportAsHtml: function _Message_exportAsHtml() {
     let author = escapeHtml(this._contacts[0]._name);
     let date = new Date(this._msgHdr.date/1000).toLocaleString("%x");
-    // XXX this gives pretty bad results, gotta find something else
-    let body = this.iframe.contentWindow.document.body.textContent;
+    // This function tries to clean up the email's body by removing hidden
+    // blockquotes, removing signatures, etc. Note: sometimes there's a little
+    // quoted text left over, need to investigate why...
+    let prepare = function (aNode) {
+      let node = aNode.cloneNode(true);
+      for each (let [, x] in Iterator(node.getElementsByClassName("moz-txt-sig")))
+        if (x)
+          x.parentNode.removeChild(x);
+      for each (let [, x] in Iterator(node.getElementsByTagName("blockquote")))
+        if (x && x.style.display == "none")
+          x.parentNode.removeChild(x);
+      return node.innerHTML;
+    };
+    // We try to convert the bodies to plain text, to enhance the readibility in
+    // the forwarded conversation. Note: <pre> tags are not converted properly
+    // it seems, need to investigate...
+    let body = this.iframe
+      ? htmlToPlainText(prepare(this.iframe.contentWindow.document.body))
+      : "<i>" + this._snippet + "</i>..."
+    ;
+    // Remove trailing newlines, it gives a bad appearance.
     body = body.replace(/[\n\r]*$/, "");
+    // Do our little formatting...
     let html = [
       '<b><span style="color: #396BBD">', author, '</span></b><br />',
       '<span style="color: #666">', date, '</span><br />',
+      '<br />',
       '<div style="white-space: pre-wrap; color: #666">',
         escapeHtml(body),
       '</div>',
