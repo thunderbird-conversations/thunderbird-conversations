@@ -6,7 +6,7 @@
 
   <Description about="urn:mozilla:install-manifest">
     <em:id>gconversation@xulforum.org</em:id>
-    <em:version>2.0beta1.201104201704pre</em:version>
+    <em:version>2.0beta1.201104221416pre</em:version>
     
     <!-- Target Application this theme can install into, 
         with minimum and maximum supported versions. --> 
@@ -40,10 +40,32 @@
 
     <em:localized>
       <Description>
+        <em:locale>el</em:locale>
+        <em:name>Thunderbird Conversations</em:name>
+        <em:description>Προσφέρει εμφάνιση μηνυμάτων σε μορφή συνομιλίας στον Thunderbird!.</em:description>
+        <em:translator>Γιώργος Φιωτάκης</em:translator>
+        <em:creator>Jonathan Protzenko</em:creator>
+        <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
+      </Description>
+    </em:localized>
+
+    <em:localized>
+      <Description>
         <em:locale>es</em:locale>
         <em:name>Thunderbird Conversations</em:name>
         <em:description>Permite visualizar los mensajes en modo de conversación, de igual manera que en GMail</em:description>
         <em:translator>Proyecto Nave</em:translator>
+        <em:creator>Jonathan Protzenko</em:creator>
+        <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
+      </Description>
+    </em:localized>
+
+    <em:localized>
+      <Description>
+        <em:locale>fr</em:locale>
+        <em:name>Thunderbird Conversations</em:name>
+        <em:description>Affiche vos emails sous la forme de "conversations" comme sur Gmail. Vos emails sont regroupés et s'affichent sous forme de résumés de fils de discussion.</em:description>
+        <em:translator>Eric B</em:translator>
         <em:creator>Jonathan Protzenko</em:creator>
         <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
       </Description>
@@ -66,17 +88,6 @@
         <em:name>Thunderbird Conversations</em:name>
         <em:description>Permette di visualizzare le e-mail sotto forma di conversazioni in modo analogo al sito web di Gmail</em:description>
         <em:translator>Luana Di Muzio - BabelZilla</em:translator>
-        <em:creator>Jonathan Protzenko</em:creator>
-        <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
-      </Description>
-    </em:localized>
-
-    <em:localized>
-      <Description>
-        <em:locale>fr</em:locale>
-        <em:name>Thunderbird Conversations</em:name>
-        <em:description>Affiche vos emails sous la forme de "conversations" comme sur Gmail. Vos emails sont regroupés et s'affichent sous forme de résumés de fils de discussion.</em:description>
-        <em:translator>Eric B</em:translator>
         <em:creator>Jonathan Protzenko</em:creator>
         <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
       </Description>
