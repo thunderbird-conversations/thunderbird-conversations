@@ -556,10 +556,13 @@ Message.prototype = {
     this.register(".ignore-warning", function (event) {
       self._domNode.getElementsByClassName("phishingBar")[0].style.display = "none";
       self._msgHdr.setUint32Property("notAPhishMessage", 1);
+      // Force a commit of the underlying msgDatabase.
+      self._msgHdr.folder.msgDatabase = null;
     });
     this.register(".show-remote-content", function (event) {
       self._domNode.getElementsByClassName("show-remote-content")[0].style.display = "none";
       self._msgHdr.setUint32Property("remoteContentPolicy", kAllowRemoteContent);
+      self._msgHdr.folder.msgDatabase = null;
       self._reloadMessage();
     });
     this.register(".always-display", function (event) {
