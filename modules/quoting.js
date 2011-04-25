@@ -71,7 +71,7 @@ function isBody(aNode) {
   } else {
     let count = 0;
     for each (let [, node] in Iterator(aNode.parentNode.childNodes)) {
-      dump(node+" "+node.nodeType+"\n");
+      //dump(node+" "+node.nodeType+"\n");
       switch (node.nodeType) {
         case node.TEXT_NODE:
           if (node.textContent.trim().length > 0)
@@ -82,7 +82,7 @@ function isBody(aNode) {
           break;
       }
     }
-    dump(count+"\n");
+    //dump(count+"\n");
     return (count == 1) && isBody(aNode.parentNode);
   }
 }
