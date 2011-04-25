@@ -83,7 +83,10 @@ MonkeyPatch.prototype = {
     let participants = function (msgHdr) {
       let format = function (x, p) {
         if (x.email in gIdentities)
-          return p ? strings.get("meFrom") : strings.get("meTo");
+          return (p
+            ? strings.get("meBetweenMeAndSomeone")
+            : strings.get("meBetweenSomeoneAndMe")
+          );
         else
           return x.name || x.email;
       };

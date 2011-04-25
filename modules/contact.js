@@ -280,7 +280,10 @@ let ContactMixIn = {
       "Someone did not set the 'position' properly");
     // This will be changed later when we localize
     if (this._email in gIdentities)
-      return (aPosition === Contacts.kFrom) ? strings.get("meFrom") : strings.get("meTo");
+      return ((aPosition === Contacts.kFrom)
+        ? strings.get("meFromMeToSomeone")
+        : strings.get("meFromSomeoneToMe")
+      );
     else
       return this._name || this._email;
   },
