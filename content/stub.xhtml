@@ -453,7 +453,7 @@
               {{/if}}
             </div>
             {{each(i, att) attachments}}
-            <li class="clearfix hbox attachment">
+            <li class="clearfix hbox attachment" draggable="true">
               <div class="attachmentThumb">
                 <img onload="$(this).closest('.attachment').find('.align').vAlign()"
                 class="${att.imgClass}" src="${att.thumb}" />

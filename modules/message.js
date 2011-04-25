@@ -592,7 +592,7 @@ Message.prototype = {
     for each (let [i, attNode] in Iterator(attachmentNodes)) {
       let att = this._attachments[i];
 
-      /* I'm still surprised that this magically works */
+      // I'm still surprised that this magically works
       let uri = Services.io.newURI(att.url, null, null)
                         .QueryInterface(Ci.nsIMsgMessageUrl)
                         .uri;
@@ -624,6 +624,25 @@ Message.prototype = {
           );
         });
       }
+
+      // Drag & drop
+      attNode.addEventListener("dragstart", function (event) {
+        // mail/base/content/mailCore.js:602
+        let info;
+        if (/(^file:|&filename=)/.test(att.url))
+          info = att.url;
+        else
+          info = att.url + "&type=" + att.contentType +
+                     "&filename=" + encodeURIComponent(att.name);
+        event.dataTransfer.setData("text/x-moz-url",
+                                   info + "\n" + att.name + "\n" + att.size);
+        event.dataTransfer.setData("text/x-moz-url-data", att.url);
+        event.dataTransfer.setData("text/x-moz-url-desc", att.name);
+        event.dataTransfer.setData("application/x-moz-file-promise-url",
+                                   att.url);
+        // XXX I have no idea whether this is useful...
+        event.dataTransfer.setData("application/x-moz-file-promise", null);
+      }, false);
 
       attachmentInfos.push(attInfo);
     }
