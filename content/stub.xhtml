@@ -287,6 +287,13 @@
       return MailServices.compose.OpenComposeWindowWithParams(null, params);
     }
 
+    function printConversation(event) {
+      for each (let { message: m } in Conversations.currentConversation.messages) {
+        m.dumpPlainTextForPrinting();
+      }
+      window.print();
+    }
+
     function junkConversation(event) {
       // This callback is only activated when the conversation is not a
       //  conversation in a tab AND there's only one message in the conversation,
@@ -716,7 +723,7 @@
             </a>
           </li>
           <li class="action-print">
-            <a href="javascript:" onclick="window.print();">
+            <a href="javascript:" onclick="printConversation(event);">
               &stub.print.tooltip;
             </a>
           </li>
