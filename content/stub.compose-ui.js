@@ -138,7 +138,7 @@ function editFields(aFocusId) {
 }
 
 function confirmDiscard(event) {
-  if (!startedEditing() || confirm('Are you sure you wish to discard this message ?'))
+  if (!startedEditing() || confirm(strings.get("confirmDiscard")))
     onDiscard();
 }
 
@@ -345,9 +345,10 @@ ComposeSession.prototype = {
           let author = name || email;
           // The >'s aren't automatically appended, that's what citeString is for.
           let body = citeString("\n"+htmlToPlainText(aBody).trim());
-          let txt = ["\n\n",
-            "On ", date, ", ", author, " wrote:",
-            body
+          let txt = [
+            "\n\n",
+            strings.get("quoteIntroString", [date, author]),
+            body, // body already starts with a newline
           ].join("");
           // After we removed any trailing newlines, insert it into the textarea
           $("textarea").val($("textarea").val() + txt);
@@ -369,7 +370,7 @@ ComposeSession.prototype = {
     let popOut = options && options.popOut;
     this.archive = options && options.archive;
     let $textarea = $("textarea");
-    let msg = "Send an empty message?";
+    let msg = strings.get("sendAnEmptyMessage");
     if (!popOut && !$textarea.val().length && !confirm(msg))
       return;
 
@@ -491,7 +492,7 @@ let sendListener = {
    * used to cancel the URL load..
    */
   onStartSending: function (aMsgID, aMsgSize) {
-    pText("Sending message...");
+    pText(strings.get("sendingMessage"));
     $("textarea, #send, #sendArchive").attr("disabled", "disabled");
     Log.debug("onStartSending", aMsgID, aMsgSize);
   },
@@ -546,9 +547,9 @@ let sendListener = {
     if (NS_SUCCEEDED(aStatus)) {
       //if (gOldDraftToDelete)
       //  msgHdrsDelete([gOldDraftToDelete]);
-      pText("Message "+aMsgID+" sent successfully");
+      pText(strings.get("messageSendingSuccess", [aMsgID]));
     } else {
-      pText("Couldn't send the message.");
+      pText(strings.get("couldntSendTheMessage"));
       Log.debug("NS_FAILED onStopSending");
     }
   },

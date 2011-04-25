@@ -49,6 +49,18 @@
       </Description>
     </em:localized>
 
+    <!-- It looks like en-US is necessary though redundant for Babezilla. -->
+    <em:localized>
+      <Description>
+        <em:locale>en-US</em:locale>
+        <em:name>Thunderbird Conversations</em:name>
+        <em:description>Brings a conversation view to a Thunderbird near you!</em:description>
+        <em:translator>Jonathan Protzenko</em:translator>
+        <em:creator>Jonathan Protzenko</em:creator>
+        <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
+      </Description>
+    </em:localized>
+
     <em:localized>
       <Description>
         <em:locale>es</em:locale>
@@ -110,6 +122,17 @@
         <em:name>Thunderbird Conversations</em:name>
         <em:description>Групише е-поруке у разговоре, укључујући и Ваше поруке, као што то чини Gmail.</em:description>
         <em:translator>Charmed94</em:translator>
+        <em:creator>Jonathan Protzenko</em:creator>
+        <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
+      </Description>
+    </em:localized>
+
+    <em:localized>
+      <Description>
+        <em:locale>sv-SE</em:locale>
+        <em:name>Gmail Conversation View</em:name>
+        <em:description>Visa dina e-brev som fullständiga trådar eller grupperade och med trådsammanfattningar, precis som hos Gmail.</em:description>
+        <em:translator>Mikael Hiort af Ornäs</em:translator>
         <em:creator>Jonathan Protzenko</em:creator>
         <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
       </Description>
