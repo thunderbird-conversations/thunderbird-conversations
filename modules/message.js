@@ -763,7 +763,7 @@ Message.prototype = {
       tagNode.appendChild(span);
       tagList.appendChild(tagNode);
     }
-    //this._domNode.getElementsByClassName("regular-tags")[0].innerHTML = tagList.innerHTML;
+    this._domNode.getElementsByClassName("regular-tags")[0].innerHTML = tagList.innerHTML;
   },
 
   // Convenience properties
