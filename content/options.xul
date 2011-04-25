@@ -92,7 +92,7 @@
      <groupbox>
        <caption label="&title.advanced_display;" />
        <checkbox label="&option.no_friendly_date;" preference="no_friendly_date" />
-       <description style="width: 0;">&option.monospaced_senders;</description>
+       <description style="width: 0;">&option.monospaced_senders2;</description>
        <textbox multiline="true" preference="monospaced_senders" />
      </groupbox>
      <spacer flex="1" style="min-height: 7em" />

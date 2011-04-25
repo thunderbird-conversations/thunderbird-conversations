@@ -118,6 +118,6 @@ $(document).ready(function () {
     gallery.load();
   } else {
     document.getElementsByClassName("images")[0].textContent =
-      strings.get("messageMovedOrDeletedGallery");
+      strings.get("messageMovedOrDeletedGallery2");
   }
 });

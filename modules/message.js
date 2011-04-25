@@ -1094,7 +1094,10 @@ function MessageFromGloda(aConversation, aGlodaMsg) {
   if ("attachmentInfos" in aGlodaMsg)
     this._attachments = aGlodaMsg.attachmentInfos;
 
-  this.mailingLists = [x.value for each ([, x] in Iterator(aGlodaMsg.mailingLists))];
+  if ("mailingLists" in aGlodaMsg)
+    this.mailingLists =
+      [x.value for each ([, x] in Iterator(aGlodaMsg.mailingLists))];
+
   this.isReplyListEnabled =
     ("mailingLists" in aGlodaMsg) && aGlodaMsg.mailingLists.length;
   this.isReplyAllEnabled =
