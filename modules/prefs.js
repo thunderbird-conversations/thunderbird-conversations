@@ -18,7 +18,10 @@ function PrefManager() {
   this.expand_who = prefsService.getIntPref("expand_who");
   this.no_friendly_date = prefsService.getBoolPref("no_friendly_date");
   this.hide_quote_length = prefsService.getIntPref("hide_quote_length");
-  this.monospaced_senders = this.split(prefsService.getCharPref("monospaced_senders"));
+  // This is a hashmap
+  this.monospaced_senders = {};
+  for each (s in this.split(prefsService.getCharPref("monospaced_senders")))
+    this.monospaced_senders[s] = null;
 
   this.register();
 }
@@ -56,7 +59,9 @@ PrefManager.prototype = {
         break;
 
       case "monospaced_senders":
-        this.monospaced_senders = this.split(prefsService.getCharPref("monospaced_senders"));
+        this.monospaced_senders = {};
+        for each (s in this.split(prefsService.getCharPref("monospaced_senders")))
+          this.monospaced_senders[s] = null;
         break;
     }
   },

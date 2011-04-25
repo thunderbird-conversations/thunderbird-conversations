@@ -260,6 +260,8 @@ function Message(aConversation) {
   this._contacts = [];
   this._attachments = [];
 
+  // A list of email addresses
+  this.mailingLists = [];
   this.isReplyListEnabled = null;
   this.isReplyAllEnabled = null;
 
@@ -524,12 +526,12 @@ Message.prototype = {
 
     // Pre-set the right value
     let realFrom = String.trim(this._realFrom.email || this._from.email);
-    if (Prefs["monospaced_senders"].filter(function (x) x == realFrom).length)
+    if (realFrom in Prefs["monospaced_senders"])
       this._domNode.getElementsByClassName("checkbox-monospace")[0].checked = true;
 
     // This one is located in the first contact tooltip
     this.register(".checkbox-monospace", function (event) {
-      let senders = Prefs["monospaced_senders"].filter(function (x) x != realFrom);
+      let senders = Object.keys(Prefs["monospaced_senders"]);
       senders = senders.filter(function (x) x != realFrom);
       if (event.target.checked) {
         Prefs.setChar("conversations.monospaced_senders", senders.concat([realFrom]).join(","));
@@ -1092,6 +1094,7 @@ function MessageFromGloda(aConversation, aGlodaMsg) {
   if ("attachmentInfos" in aGlodaMsg)
     this._attachments = aGlodaMsg.attachmentInfos;
 
+  this.mailingLists = [x.value for each ([, x] in Iterator(aGlodaMsg.mailingLists))];
   this.isReplyListEnabled =
     ("mailingLists" in aGlodaMsg) && aGlodaMsg.mailingLists.length;
   this.isReplyAllEnabled =
@@ -1134,6 +1137,13 @@ function MessageFromDbHdr(aConversation, aMsgHdr) {
 
       self._attachments = aMimeMsg.allUserAttachments
         .filter(function (x) x.isRealAttachment);
+      let listPost = aMimeMsg.get("list-post");
+      if (listPost) {
+        let r = listPost.match(self.RE_LIST_POST);
+        if (r.length)
+          self.mailingLists = [r[1]];
+      }
+      Log.debug(self.mailingLists);
 
       self.isReplyListEnabled = 
         aMimeMsg &&
@@ -1208,7 +1218,8 @@ let PostStreamingFixesMixIn = {
     // Unless the user specifically asked for this message to be
     //  dislayed with a monospaced font...
     let [{name, email}] = this.parse(this._msgHdr.mime2DecodedAuthor);
-    if (Prefs["monospaced_senders"].indexOf(email) < 0) {
+    if (!(email in Prefs["monospaced_senders"]) &&
+        !(this.mailingLists.some(function (x) (x in Prefs["monospaced_senders"])))) {
       styleRules = styleRules.concat([
         ".moz-text-flowed, .moz-text-plain {",
         "  font-family: \""+Prefs.getChar("font.default")+"\" !important;",
