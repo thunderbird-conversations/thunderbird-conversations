@@ -173,7 +173,7 @@ function convertHotmailQuotingToBlockquote2(aWindow, aDocument, aHideQuoteLength
       aNode.previousSibling.appendChild(aNode);
       /* Move on if possible */
       if (next)
-        walk(next, true, depth);
+        return function () walk(next, true, depth);
     } else if (aNode.tagName && aNode.tagName.toLowerCase() == "br"
             || aNode.nodeType == aNode.TEXT_NODE && !aNode.textContent.trim().length) {
       let next = aNode.nextSibling;
@@ -188,15 +188,18 @@ function convertHotmailQuotingToBlockquote2(aWindow, aDocument, aHideQuoteLength
         aNode.previousSibling.appendChild(aNode);
       }
       if (next)
-        walk(next, inBlockquote, depth);
+        return function () walk(next, inBlockquote, depth);
     } else {
       if (aNode.firstChild && depth < 4) /* Try to mitigate the performance hit... */
-        walk(aNode.firstChild, false, depth + 1);
+        return function () walk(aNode.firstChild, false, depth + 1);
       if (aNode.nextSibling)
-        walk(aNode.nextSibling, false, depth);
+        return function () walk(aNode.nextSibling, false, depth);
     }
   };
-  walk(aDocument.body, false, 0);
+  // Remove this **** when bug 445363 is fixed
+  let r = walk(aDocument.body, false, 0);
+  while (typeof r == "function")
+    r = r();
 }
 
 /* Stupid regexp that matches:
@@ -228,7 +231,7 @@ function convertForwardedToBlockquote(aDoc) {
         // We only move on if we found the matching text in the parent's text
         // content, otherwise, there's no chance we'll find it in the child's
         // content.
-        walk(child);
+        return walk(child);
       }
     }
   };

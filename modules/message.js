@@ -1326,6 +1326,7 @@ let PostStreamingFixesMixIn = {
         }
       }
     };
+
     // https://github.com/protz/GMail-Conversation-View/issues#issue/179
     // See link above for a rationale ^^
     if (self.initialPosition > 0)
