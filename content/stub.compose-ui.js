@@ -377,9 +377,9 @@ ComposeSession.prototype = {
     return sendMessage({
         urls: [msgHdrGetUri(self.params.msgHdr)],
         identity: self.params.identity,
-        to: $("#to").val(),
-        cc: $("#cc").val(),
-        bcc: $("#bcc").val(),
+        to: JSON.parse($("#to").val()).join(","),
+        cc: JSON.parse($("#cc").val()).join(","),
+        bcc: JSON.parse($("#bcc").val()).join(","),
         subject: self.params.subject,
       }, {
         compType: Ci.nsIMsgCompType.ReplyAll,

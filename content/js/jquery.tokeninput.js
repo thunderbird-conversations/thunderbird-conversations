@@ -188,6 +188,7 @@ $.TokenList = function (input, settings) {
   // Keep a reference to the original input box
   var hidden_input = $(input)
                .hide()
+               .val("[]")
                .focus(function () {
                  input_box.focus();
                })
@@ -287,8 +288,10 @@ $.TokenList = function (input, settings) {
         hide_dropdown();
 
         // Save this token id
-        var id_string = li_data[i].data + ","
-        hidden_input.val(hidden_input.val() + id_string);
+        // data is an array
+        var data = JSON.parse(hidden_input.val());
+        data.push(li_data[i].data);
+        hidden_input.val(JSON.stringify(data));
       }
     }
   }
@@ -356,8 +359,9 @@ $.TokenList = function (input, settings) {
     hide_dropdown();
 
     // Save this token id
-    var id_string = li_data.data + ","
-    hidden_input.val(hidden_input.val() + id_string);
+    var data = JSON.parse(hidden_input.val());
+    data.push(li_data.data);
+    hidden_input.val(JSON.stringify(data));
 
     token_count++;
 
@@ -421,15 +425,9 @@ $.TokenList = function (input, settings) {
     input_box.focus();
 
     // Delete this token's id from hidden input
-    var str = hidden_input.val()
-    var start = str.indexOf(token_data.data+",");
-    var end = str.indexOf(",", start) + 1;
-
-    if(end >= str.length) {
-      hidden_input.val(str.slice(0, start));
-    } else {
-      hidden_input.val(str.slice(0, start) + str.slice(end, str.length));
-    }
+    var data = JSON.parse(hidden_input.val());
+    data = data.filter(function (x) (x != token_data.data));
+    hidden_input.val(JSON.stringify(data));
 
     token_count--;
 
@@ -511,8 +509,10 @@ $.TokenList = function (input, settings) {
         insert_token(li_data.id, li_data.name, li_data);
         input_box.val("");
 
-        var id_string = li_data.data + ","
-        hidden_input.val(hidden_input.val() + id_string);
+        var data = JSON.parse(hidden_input.val());
+        data.push(li_data.data);
+        hidden_input.val(JSON.stringify(data));
+
         token_count++;
         return;
       }
