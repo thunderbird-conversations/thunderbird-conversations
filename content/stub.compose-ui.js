@@ -179,9 +179,9 @@ function onSave(event, aClose, k) {
       yield ss.set(id, {
         msgUri: msgHdrGetUri(gComposeSession.params.msgHdr),
         from: gComposeSession.params.identity.email,
-        to: $("#to").val(),
-        cc: $("#cc").val(),
-        bcc: $("#bcc").val(),
+        to: JSON.parse($("#to").val()).join(","),
+        cc: JSON.parse($("#cc").val()).join(","),
+        bcc: JSON.parse($("#bcc").val()).join(","),
         body: $("textarea").val()
       });
       gDraftListener.notifyDraftChanged("modified");
