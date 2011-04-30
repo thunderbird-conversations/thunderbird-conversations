@@ -62,7 +62,6 @@ let Log = setupLogging("Conversations.MonkeyPatch");
 
 function MonkeyPatch(aWindow, aConversation) {
   this._Conversation = aConversation;
-  this._wantedUrl = "";
   this._window = aWindow;
   this._markReadTimeout = null;
   this._beingUninstalled = false;
@@ -595,11 +594,4 @@ MonkeyPatch.prototype = {
 
     Log.debug("Monkey patch successfully applied.");
   },
-
-  // XXX dead
-  expectUrl: function (aUrl) {
-    Log.debug("Expecting "+aUrl+" to be loaded soon");
-    this._wantedUrl = aUrl;
-  },
-
 }
