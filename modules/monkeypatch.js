@@ -499,7 +499,7 @@ MonkeyPatch.prototype = {
             try {
               window.dispatchEvent(event);
             } catch (e) {
-              Log.debug("We failed to dispatch the event, don't know why...", e);
+              //Log.debug("We failed to dispatch the event, don't know why...", e);
             }
           }, false);
         });
