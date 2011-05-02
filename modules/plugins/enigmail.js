@@ -32,10 +32,13 @@ const Cc = Components.classes;
 const Cu = Components.utils;
 const Cr = Components.results;
 
+Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
 Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
 Cu.import("resource://conversations/stdlib/misc.js");
 Cu.import("resource://conversations/hook.js");
 Cu.import("resource://conversations/log.js");
+
+let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
 let Log = setupLogging("Conversations.Modules.Enigmail");
 
@@ -116,11 +119,11 @@ let enigmailHook = {
         specialTags.appendChild(li);
       };
       if (status & Ci.nsIEnigmail.DECRYPTION_OKAY)
-        addTag("chrome://conversations/content/i/enc.png", "encrypted");
+        addTag("chrome://conversations/content/i/enc.png", strings.get("encrypted"));
       if (status & Ci.nsIEnigmail.GOOD_SIGNATURE)
-        addTag("chrome://conversations/content/i/sign.png", "signed");
+        addTag("chrome://conversations/content/i/sign.png", strings.get("signed"));
       if (status & Ci.nsIEnigmail.UNVERIFIED_SIGNATURE)
-        addTag("chrome://conversations/content/i/sign.png", "unknown good signature");
+        addTag("chrome://conversations/content/i/sign.png", strings.get("unknownGood"));
     }
 
   },
