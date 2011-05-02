@@ -145,6 +145,7 @@ function convertOutlookQuotingToBlockquote(aWin, aDoc) {
 function convertHotmailQuotingToBlockquote2(aWindow, aDocument, aHideQuoteLength) {
   /* Actually that's not specific to Hotmail... */
   let brCount = 0;
+  let stack = [];
   let walk = function (aNode, inBlockquote, depth) {
     let p = Object();
     let computedStyle = aNode.parentNode && aWindow.getComputedStyle(aNode.parentNode, null);
@@ -173,7 +174,7 @@ function convertHotmailQuotingToBlockquote2(aWindow, aDocument, aHideQuoteLength
       aNode.previousSibling.appendChild(aNode);
       /* Move on if possible */
       if (next)
-        return function () walk(next, true, depth);
+        stack.push([next, true, depth]);
     } else if (aNode.tagName && aNode.tagName.toLowerCase() == "br"
             || aNode.nodeType == aNode.TEXT_NODE && !aNode.textContent.trim().length) {
       let next = aNode.nextSibling;
@@ -188,18 +189,17 @@ function convertHotmailQuotingToBlockquote2(aWindow, aDocument, aHideQuoteLength
         aNode.previousSibling.appendChild(aNode);
       }
       if (next)
-        return function () walk(next, inBlockquote, depth);
+        stack.push([next, inBlockquote, depth]);
     } else {
-      if (aNode.firstChild && depth < 4) /* Try to mitigate the performance hit... */
-        return function () walk(aNode.firstChild, false, depth + 1);
+      if (aNode.firstChild && depth < 2) /* Try to mitigate the performance hit... */
+        stack.push([aNode.firstChild, false, depth + 1]);
       if (aNode.nextSibling)
-        return function () walk(aNode.nextSibling, false, depth);
+        stack.push([aNode.nextSibling, false, depth]);
     }
   };
-  // Remove this **** when bug 445363 is fixed
-  let r = walk(aDocument.body, false, 0);
-  while (typeof r == "function")
-    r = r();
+  walk(aDocument.body, false, 0);
+  while (stack.length)
+    walk.apply(this, stack.shift());
 }
 
 /* Stupid regexp that matches:
@@ -231,7 +231,7 @@ function convertForwardedToBlockquote(aDoc) {
         // We only move on if we found the matching text in the parent's text
         // content, otherwise, there's no chance we'll find it in the child's
         // content.
-        return walk(child);
+        walk(child);
       }
     }
   };

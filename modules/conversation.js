@@ -732,7 +732,12 @@ Conversation.prototype = {
     // Don't forget to update the conversation buttons, even if we have no new
     //  messages: the reflow might be because some message became unread or
     //  whatever.
-    this._updateConversationButtons();
+    try {
+      this._updateConversationButtons();
+    } catch (e) {
+      Log.warn("Failed to update the conversation buttons", e);
+      dumpCallStack(e);
+    }
 
     // Re-do the expand/collapse + scroll to the right node stuff.
     this._expandAndScroll();
