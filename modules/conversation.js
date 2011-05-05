@@ -235,6 +235,19 @@ function msgDate ({ type, message, msgHdr, glodaMsg }) {
     Log.error("Bad message type");
 }
 
+function msgDebugColor (aMsg) {
+  let msgHdr = toMsgHdr(aMsg);
+  if (msgHdr) {
+    if (msgHdr.getUint32Property("pseudoHdr") == 1)
+      return "\u001b[01;33m"; // yellow, fake sent header
+    else
+      return "\u001b[01;36m"; // blue, real header
+  } else {
+    // red = no message header, shouldn't happen
+    return "\u001b[01;31m";
+  }
+}
+
 function ViewWrapper(aConversation) {
   this.mainWindow = topMail3Pane(aConversation);
   // The trick is, if a thread is collapsed, this._initialSet contains all the
@@ -699,8 +712,8 @@ Conversation.prototype = {
     //  whole thing and asks for a new ThreadSummary but the user hasn't
     //  actually changed selections.
     if (aMessages.length) {
-      Log.debug("Appending", "\u001b[01;36m",
-        [x.debug for each (x in aMessages)].join(" "), "\u001b[00m");
+      Log.debug("Appending",
+        [msgDebugColor(x) + x.debug for each (x in aMessages)].join(" "), "\u001b[00m");
 
       // All your messages are belong to us. This is especially important so
       //  that contacts query the right _contactManager through their parent
@@ -869,8 +882,8 @@ Conversation.prototype = {
       }
     }
 
-    Log.debug("Outputting", "\u001b[01;36m",
-      [x.debug for each (x in this.messages)], "\u001b[00m");
+    Log.debug("Outputting",
+      [msgDebugColor(x) + x.debug for each (x in this.messages)], "\u001b[00m");
 
     // Fill in the HTML right away. The has the nice side-effect of erasing the
     // previous conversation (but not the conversation-wide event handlers!)
