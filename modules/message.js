@@ -1061,7 +1061,7 @@ Message.prototype = {
       for each (let [, x] in Iterator(node.getElementsByClassName("moz-txt-sig")))
         if (x)
           x.parentNode.removeChild(x);
-      for each (let [, x] in Iterator(node.getElementsByTagName("blockquote")))
+      for each (let [, x] in Iterator(node.querySelectorAll("blockquote, div")))
         if (x && x.style.display == "none")
           x.parentNode.removeChild(x);
       return node.innerHTML;
