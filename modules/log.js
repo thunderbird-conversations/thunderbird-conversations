@@ -1,4 +1,4 @@
-var EXPORTED_SYMBOLS = ["setupLogging", "dumpCallStack", "logRoot"]
+var EXPORTED_SYMBOLS = ["setupLogging", "dumpCallStack", "logRoot", "Colors"]
 
 Components.utils.import("resource:///modules/gloda/log4moz.js");
 
@@ -63,4 +63,11 @@ function dumpCallStack(e) {
     MyLog.debug("\n"+frame);
     frame = frame.caller;
   }
+};
+
+let Colors = {
+  yellow: "\u001b[01;33m",
+  blue: "\u001b[01;36m",
+  red: "\u001b[01;31m",
+  default: "\u001b[00m",
 };

@@ -452,13 +452,13 @@ MonkeyPatch.prototype = {
                     //  mark as read. Otherwise, it's not, since we may silently
                     //  mark new messages as read.
                     if (isDifferentConversation) {
-                      Log.debug("Marking the whole conversation as read");
+                      Log.debug(Colors.red, "Marking the whole conversation as read", Colors.default);
                       aConversation.read = true;
                     }
                   } else if (scrollMode == Prefs.kScrollSelected) {
                     // We don't seem to have a reflow when the thread is expanded
                     //  so no risk of silently marking conversations as read.
-                    Log.debug("Marking selected messages as read");
+                    Log.debug(Colors.red, "Marking selected messages as read", Colors.default);
                     msgHdrsMarkAsRead(aSelectedMessages, true);
                   } else {
                     Log.assert(false, "GIVE ME ALGEBRAIC DATA TYPES!!!");
@@ -518,6 +518,9 @@ MonkeyPatch.prototype = {
     window.MessageDisplayWidget.prototype.onSelectedMessagesChanged =
       function _onSelectedMessagesChanged_patched () {
         try {
+          // What a nice pun! If bug 320550 was fixed, I could print
+          // \u2633\u1f426 and that would be very smart.
+          dump("\n"+Colors.red+"\u2633 New Conversation"+Colors.default+"\n");
           if (!this.active)
             return true;
           window.ClearPendingReadTimer();
@@ -542,7 +545,8 @@ MonkeyPatch.prototype = {
             if (msgHdrIsRss(msgHdr) || msgHdrIsNntp(msgHdr)) {
               // Use the default pref.
               self.markReadTimeout = window.setTimeout(function () {
-                msgHdrsMarkAsRead([msgHdr], true);
+                if (Prefs.getBool("mailnews.mark_message_read.auto"))
+                  msgHdrsMarkAsRead([msgHdr], true);
                 self.markReadTimeout = null;
               }, Prefs.getInt("mailnews.mark_message_read.delay.interval")
                 * Prefs.getBool("mailnews.mark_message_read.delay") * 1000);

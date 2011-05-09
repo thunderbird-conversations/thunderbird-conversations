@@ -239,12 +239,12 @@ function msgDebugColor (aMsg) {
   let msgHdr = toMsgHdr(aMsg);
   if (msgHdr) {
     if (msgHdr.getUint32Property("pseudoHdr") == 1)
-      return "\u001b[01;33m"; // yellow, fake sent header
+      return Colors.yellow; // fake sent header
     else
-      return "\u001b[01;36m"; // blue, real header
+      return Colors.blue; // real header
   } else {
     // red = no message header, shouldn't happen
-    return "\u001b[01;31m";
+    return Colors.red;
   }
 }
 
@@ -713,7 +713,7 @@ Conversation.prototype = {
     //  actually changed selections.
     if (aMessages.length) {
       Log.debug("Appending",
-        [msgDebugColor(x) + x.debug for each (x in aMessages)].join(" "), "\u001b[00m");
+        [msgDebugColor(x) + x.debug for each (x in aMessages)].join(" "), Colors.default);
 
       // All your messages are belong to us. This is especially important so
       //  that contacts query the right _contactManager through their parent
@@ -883,7 +883,7 @@ Conversation.prototype = {
     }
 
     Log.debug("Outputting",
-      [msgDebugColor(x) + x.debug for each (x in this.messages)], "\u001b[00m");
+      [msgDebugColor(x) + x.debug for each (x in this.messages)], Colors.default);
 
     // Fill in the HTML right away. The has the nice side-effect of erasing the
     // previous conversation (but not the conversation-wide event handlers!)
@@ -1027,6 +1027,7 @@ Conversation.prototype = {
 
   // Just an efficient way to mark a whole conversation as read
   set read (read) {
+    Log.debug(Colors.red, "Marked as read", Colors.default);
     msgHdrsMarkAsRead(this.msgHdrs, read);
   },
 }
