@@ -1053,8 +1053,9 @@ Message.prototype = {
         * @param in aCharsetOverride (optional) character set override to force the message to use.
         * @param out aURL
         */
-        messageService.DisplayMessage(self._uri, iframe.docShell, msgWindow,
-                                      urlListener, aCharset, {});
+        let params = "&markRead=false";
+        messageService.DisplayMessage(self._uri+params, iframe.docShell,
+                                      msgWindow, urlListener, aCharset, {});
       } catch (e) {
         Log.error(e);
         dumpCallStack(e);
