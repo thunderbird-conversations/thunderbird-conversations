@@ -849,7 +849,7 @@ Conversation.prototype = {
         // - KEEP the counter
         // - _domNode, _window are the same because we can only recycle a
         //    conversation from the main mail:3pane
-        // currentConversation._query = this._query;
+        // - KEEP the _query because it's set to notify currentConversation
         currentConversation._onComplete = this._onComplete;
         // And pass them to the old conversation. It will take care of setting
         // _conversation properly on Message instances.
@@ -884,6 +884,10 @@ Conversation.prototype = {
 
     Log.debug("Outputting",
       [msgDebugColor(x) + x.debug for each (x in this.messages)], Colors.default);
+    /*for each (let message in this.messages) {
+      let msgHdr = toMsgHdr(message);
+      dump("  " + msgHdr.folder.URI + "#" + msgHdr.messageKey + "\n");
+    }*/
 
     // Fill in the HTML right away. The has the nice side-effect of erasing the
     // previous conversation (but not the conversation-wide event handlers!)

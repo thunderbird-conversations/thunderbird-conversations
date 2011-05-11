@@ -714,7 +714,8 @@ Message.prototype = {
     let children = toNode.children;
     let hide = function (aNode) aNode.classList.add("show-with-details");
     let width = function (x) x.offsetWidth;
-    let overflows = function () parseInt(toNode.offsetHeight) > 18;
+    let lineHeight = Math.round(this.defaultSize * .625 * 1.8); // per the CSS file
+    let overflows = function () parseInt(toNode.offsetHeight) > lineHeight;
 
     if (overflows()) {
       let dots = toNode.ownerDocument.createElement("a");
@@ -1198,7 +1199,10 @@ MessageFromDbHdr.prototype = {
  *  that's MixIn'd the Message class.
  */
 let PostStreamingFixesMixIn = {
-  defaultSize: Prefs.getInt("font.size.variable.x-western"),
+  // This is the naming convention to define a getter, per MixIn's definition
+  get_defaultSize: function ()
+    Prefs.getInt("font.size.variable.x-western")
+  ,
 
   tweakFonts: function (iframeDoc) {
     let textSize = Math.round(this.defaultSize * 12 / 16);

@@ -42,10 +42,14 @@
   padding: 0;
 }
 
+html {
+  font-size: 62.5%;
+}
+
 body {
   font-family: "Lucida Grande", "DejaVu Sans", "Tahoma", sans-serif;
-  font-size: 12px;
-  line-height: 18px;
+  font-size: 1.2rem;
+  line-height: 1.8rem;
   background-color: #ECF3FE;
   margin: 0;
   padding: 0;
@@ -53,7 +57,7 @@ body {
 }
 
 p {
-  margin-bottom: 18px;
+  margin-bottom: 1.8rem;
 }
 
 button {
@@ -63,7 +67,7 @@ button {
   -moz-border-radius: 3px;
   text-align: center;
   outline: none;
-  height: 22px;
+  height: 2.2rem;
   cursor: pointer;
 }
 
@@ -104,10 +108,10 @@ button img {
 }
 
 .subject {
-  font-size: 12px;
+  font-size: 1.2rem;
   font-weight: bold;
-  line-height: 22px;
-  height: 22px;
+  line-height: 2.2rem;
+  height: 2.2rem;
   overflow: hidden;
 }
 
@@ -121,14 +125,14 @@ button img {
 }
 
 .actions button {
-  width: 28px;
+  width: 2.8rem;
   float: right;
   margin: 0 0 0 3px;
 }
 
 .actions button span {
-  width: 16px;
-  height: 16px;
+  width: 1.6rem;
+  height: 1.6rem;
   margin: auto;
   display: block;
   background-repeat: no-repeat;
@@ -161,7 +165,7 @@ button img {
 
 
 #messageList {
-  margin-top: 44px;
+  margin-top: 4.4rem;
 }
 
 .message {
@@ -191,12 +195,12 @@ button img {
 }
 
 .messageHeader .involved {
-  height: 18px;
+  height: 1.8rem;
   padding: 0 5px 0 0;
 }
 
 span.downwardArrow {
-  font-size: 8px;
+  font-size: .8rem;
   vertical-align: baseline;
 }
 
@@ -207,7 +211,7 @@ span.downwardArrow {
 .author {
   color: #ff5959;
   font-weight: bold;
-  margin-right: 3px;
+  margin-right: .3rem;
 }
 
 .contact:not(.inAddressBook) .editContact {
@@ -224,7 +228,7 @@ span.downwardArrow {
 
 .tooltip {
   position: absolute;
-  width: 302px;
+  width: 30.2rem;
   top: 24px;
   left: 16px;
   background-color: #fff;
@@ -240,14 +244,14 @@ span.downwardArrow {
 }
 
 .dropDown .tooltip {
-  width: 152px;
-  left: -110px;
+  width: 15.2rem;
+  left: -11rem;
 }
 
 .dropDown ul {
   margin-top: 0;
   list-style-type: none;
-  font-size: 11px;
+  font-size: 1.1rem;
 }
 
 .dropDown li {
@@ -289,7 +293,7 @@ span.downwardArrow {
 }
 
 .dropDown .arrow {
-  left: 120px;
+  left: 12rem;
 }
 
 .arrow.inside {
@@ -305,7 +309,7 @@ span.downwardArrow {
   display: inline-block;
   font-weight: normal;
   float: left;
-  width: 200px;
+  width: 20.0rem;
   padding: 10px;
   color: #333;
 }
@@ -319,7 +323,7 @@ a img {
 }
 
 .name {
-  font-size: 14px;
+  font-size: 1.4rem;
   float: left;
   clear: left;
 }
@@ -385,7 +389,7 @@ a img {
 }
 
 .message.collapsed {
-  height: 36px;
+  height: 3.6rem;
   -moz-border-radius: 5px;
   margin: 0 10px -6px 10px;
   border-bottom: none;
@@ -413,7 +417,7 @@ a img {
 
 .message.collapsed .snippet {
   display: inline-block;
-  height: 18px;
+  height: 1.8rem;
   overflow: hidden;
   color: #666;
 }
@@ -458,7 +462,7 @@ a img {
 
 ul.tags li {
   display: inline;
-  font-size: 10px;
+  font-size: 1.0rem;
   font-weight: bold;
   /*background-color: #68AB57;*/
   padding: 1px 5px;
@@ -657,7 +661,7 @@ ul.special-tags img {
   color: #666;
   padding: 3px 5px 0 0;
   text-align: right;
-  width: 75px;
+  width: 7.5rem;
 }
 
 .quickReply input:-moz-any(#to, #cc, #bcc, #subject) {
@@ -719,15 +723,15 @@ ul.special-tags img {
 
 .quickReply textarea {
   width: 100%;
-  height: 50px;
+  height: 5.0rem;
   font-family: "lucida grande", sans-serif;
-  font-size: 12px;
+  font-size: 1.2rem;
   padding: 5px;
   border: 1px solid #bebebe;  
 }
 
 .quickReply.expand textarea {
-  height: 150px;
+  height: 15.0rem;
   border: 1px solid #aaa;
 }
 
@@ -775,7 +779,7 @@ button.replyDropDown {
 .replyDropMenu {
   z-index: 2;
   position: absolute;
-  top: 23px; /* Height of a button + 1px. */
+  top: -moz-calc(2.2rem + 1px); /* Height of a button + 1px. */
   left: 0px;
   display: none;
 }

@@ -31,7 +31,7 @@ PrefManager.prototype = {
   split: function (s) Array.map(s.split(","), String.trim).filter(String.trim),
 
   register: function mpo_register (observer) {
-    prefsService.QueryInterface(Components.interfaces.nsIPrefBranch2);
+    prefsService.QueryInterface(Ci.nsIPrefBranch2);
     if (observer)
       prefsService.addObserver("", observer, false);
     else

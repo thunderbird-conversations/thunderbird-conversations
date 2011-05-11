@@ -154,6 +154,25 @@ MonkeyPatch.prototype = {
     }
   },
 
+  registerFontPrefObserver: function _MonkeyPatch_registerFontPref (aHtmlpane) {
+    let prefBranch = Cc["@mozilla.org/preferences-service;1"]
+      .getService(Ci.nsIPrefService)
+      .getBranch(null);
+    prefBranch.QueryInterface(Ci.nsIPrefBranch2);
+    let observer = {
+      observe: function (aSubject, aTopic, aData) {
+        if (aTopic == "nsPref:changed"
+            && aData == "font.size.variable.x-western") {
+          aHtmlpane.contentDocument.location.href = "about:blank";
+        }
+      },
+    };
+    prefBranch.addObserver("", observer, false);
+    this._window.addEventListener("close", function () {
+      prefBranch.removeObserver("", observer);
+    }, false);
+  },
+
   clearTimer: function () {
     // If we changed conversations fast, clear the timeout
     if (this.markReadTimeout)
@@ -169,11 +188,15 @@ MonkeyPatch.prototype = {
     let msgIndex = window.gFolderDisplay ? window.gFolderDisplay.selectedIndices[0] : -1;
     if (msgIndex >= 0) {
       try {
+        let viewThread = window.gDBView.getThreadContainingIndex(msgIndex);
         let rootIndex = window.gDBView
-          .findIndexOfMsgHdr(window.gDBView.getThreadContainingIndex(msgIndex).getChildHdrAt(0), false);
+          .findIndexOfMsgHdr(viewThread.getChildHdrAt(0), false);
         if (rootIndex >= 0) {
           isExpanded = window.gDBView.isContainer(rootIndex)
             && !window.gFolderDisplay.view.isCollapsedThreadAtIndex(rootIndex);
+          Log.debug("1 = 2 && !3", isExpanded,
+            window.gDBView.isContainer(rootIndex),
+            window.gFolderDisplay.view.isCollapsedThreadAtIndex(rootIndex));
         }
       } catch (e) {
         Log.debug("Error in the onLocationChange handler "+e+"\n");
@@ -293,6 +316,7 @@ MonkeyPatch.prototype = {
 
     // Register our new column type
     this.registerColumn();
+    this.registerFontPrefObserver(htmlpane);
 
     // Register the uninstall handler
     this.watchUninstall();
@@ -528,6 +552,8 @@ MonkeyPatch.prototype = {
 
           let selectedCount = this.folderDisplay.selectedCount;
           Log.debug("Intercepted message load, ", selectedCount, " message(s) selected");
+          /*for each (let msgHdr in this.folderDisplay.selectedMessages)
+            dump("  " + msgHdr.folder.URI + "#" + msgHdr.messageKey + "\n");*/
 
           if (selectedCount == 0) {
             // So we're not copying the code here. This changes nothing, and the
