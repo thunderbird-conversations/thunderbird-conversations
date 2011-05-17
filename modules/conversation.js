@@ -722,6 +722,19 @@ Conversation.prototype = {
       this.messages = this.messages.concat(aMessages);
 
       let $ = this._htmlPane.contentWindow.$;
+      for each (let i in range(0, aMessages.length)) {
+        let oldMsg;
+        if (i == 0) {
+          if (this.messages.length)
+            oldMsg = this.messages[this.messages.length - 1].message;
+          else
+            oldMsg = null;
+        } else {
+          oldMsg = aMessages[i-1].message;
+        }
+        let msg = aMessages[i].message;
+        msg.updateTmplData(oldMsg);
+      }
       let tmplData = [m.message.toTmplData(false)
         for each ([_i, m] in Iterator(aMessages))];
       $("#messageTemplate").tmpl(tmplData).appendTo($(this._domNode));
@@ -893,6 +906,11 @@ Conversation.prototype = {
     // previous conversation (but not the conversation-wide event handlers!)
     let t0  = (new Date()).getTime();
     let $ = this._htmlPane.contentWindow.$;
+    for each (let i in range(0, this.messages.length)) {
+      let oldMsg = i > 0 ? this.messages[i-1].message : null;
+      let msg = this.messages[i].message;
+      msg.updateTmplData(oldMsg);
+    }
     let tmplData = [m.message.toTmplData(i == this.messages.length - 1)
       for each ([i, m] in Iterator(this.messages))];
     // We must do this if we are to ever release the previous Conversation
@@ -923,7 +941,7 @@ Conversation.prototype = {
 
     // Set the subject properly
     let subjectNode = this._domNode.ownerDocument.getElementsByClassName("subject")[0];
-    let subject = this.messages[0].message.subject;
+    let subject = this.messages[this.messages.length - 1].message.subject;
     // Clear out the subject node
     while(subjectNode.firstChild) {
       subjectNode.removeChild(subjectNode.firstChild);

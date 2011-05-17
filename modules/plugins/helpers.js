@@ -93,9 +93,36 @@ let PluginHelpers = {
       let [{ name, email }] = parseMimeLine(aMimeMsg.get("from"));
       let m = email.match(ghFromRegexp);
       if (m && m.length) {
-        dump("\033[01;36m"+(name + " <" + uniq(name) + "@fake.github.com>")+"\033[00m\n");
         return (name + " <" + uniq(name) + "@fake.github.com>");
       }
+    }
+
+    return null;
+  },
+
+  bugzilla: function _PluginHelpers_bugzilla(aRawReps) {
+    let aMimeMsg = aRawReps.mime;
+    if (!aMimeMsg)
+      return null;
+
+    if (aMimeMsg.has("x-bugzilla-who")) {
+      let keys = [
+        "url",
+        "classification",
+        "product",
+        "component",
+        "keywords",
+        "severity",
+        "status",
+        "priority",
+        "assigned-to",
+        "target-milestone",
+        "changed-fields",
+      ];
+      let o = {};
+      for each (let k in keys)
+        o[k] = aMimeMsg.get("x-bugzilla-"+k); 
+      return o;
     }
 
     return null;

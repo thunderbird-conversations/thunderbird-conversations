@@ -60,6 +60,9 @@ XPCOMUtils.defineLazyGetter(Services, "mMessenger",
                             function () {
                               return Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
                             });
+XPCOMUtils.defineLazyServiceGetter(Services, "mFaviconService",
+                            "@mozilla.org/browser/favicon-service;1",
+                            "nsIFaviconService");
 
 const kCharsetFromMetaTag = 9;
 const kCharsetFromChannel = 11;
@@ -80,7 +83,9 @@ Cu.import("resource://conversations/hook.js");
 Cu.import("resource://conversations/log.js");
 
 let Log = setupLogging("Conversations.Message");
-const snippetLength = 300;
+// This is high because we want enough snippet to extract relevant data from
+// bugzilla snippets.
+const kSnippetLength = 700;
 
 // Add in the global message listener table a weak reference to the given
 //  Message object. The monkey-patch which intercepts the "remote content
@@ -292,6 +297,44 @@ Message.prototype = {
   },
 
   RE_SNIPPET: /[\u0000-\u0009]/g,
+  RE_BZ_COMMENT: /^--- Comment #\d+ from .* \d{4}.*? ---([\s\S]*)/m,
+
+
+  // This function is called before toTmplData, and allows us to adjust our
+  // template data according to the message that came before us.
+  updateTmplData: function (aPrevMsg) {
+    let oldInfos = aPrevMsg && aPrevMsg.bugzillaInfos;
+    if (!oldInfos)
+      oldInfos = {};
+    let infos = this.bugzillaInfos;
+    let makeArrow = function (oldValue, newValue) {
+      if (oldValue)
+        return oldValue + " \u21d2 " + newValue;
+      else
+        return newValue;
+    };
+    if (infos) {
+      let items = [];
+      for each (let k in ["product", "component", "keywords", "severity",
+          "status", "priority", "assigned-to", "target-milestone"]) {
+        if ((!aPrevMsg || k in oldInfos) && oldInfos[k] != infos[k]) {
+          let key =
+            k.split("-").map(function (x) x.charAt(0).toUpperCase() + x.slice(1))
+            .join(" ");
+          items.push(key+": "+makeArrow(oldInfos[k], infos[k]));
+        }
+      }
+      if (String.trim(infos["changed-fields"]).length)
+        items.push("Changed: "+infos["changed-fields"]);
+      let m = this._snippet.match(this.RE_BZ_COMMENT);
+      if (m && m.length && String.trim(m[1]).length)
+        items.push(m[1]);
+      if (!items.length)
+        items.push(this._snippet);
+
+      this._snippet = items.join("; ");
+    }
+  },
 
   // Output this message as a whole bunch of HTML
   toTmplData: function (aQuickReply) {
@@ -308,6 +351,8 @@ Message.prototype = {
       gallery: false,
       uri: null,
       quickReply: aQuickReply,
+      bugzillaClass: "",
+      bugzillaUrl: "[unknown bugzilla instance]",
     };
 
     // 1) Generate Contact objects
@@ -334,6 +379,18 @@ Message.prototype = {
         data.separator = strings.get("sepComma");
       else
         data.separator = strings.get("sepAnd");
+    }
+
+    // 1b) Don't show "to me" if this is a bugzilla email
+    if (this.bugzillaInfos) {
+      data.bugzillaClass = "bugzilla";
+      try {
+        let url = this.bugzillaInfos["url"];
+        let uri = Services.io.newURI(url, null, null);
+        data.bugzillaUrl = url;
+      } catch (e if e.result == Cr.NS_ERROR_MALFORMED_URI) {
+        // why not?
+      }
     }
 
     // 2) Generate Attachment objects
@@ -1088,9 +1145,12 @@ function MessageFromGloda(aConversation, aGlodaMsg) {
     this._from = this.parse(aGlodaMsg.alternativeSender)[0];
   }
 
+  if (aGlodaMsg.bugzillaInfos)
+    this.bugzillaInfos = JSON.parse(aGlodaMsg.bugzillaInfos);
+
   // FIXME messages that have no body end up with "..." as a snippet
   this._snippet = aGlodaMsg._indexedBodyText
-    ? aGlodaMsg._indexedBodyText.substring(0, snippetLength-1)
+    ? aGlodaMsg._indexedBodyText.substring(0, kSnippetLength-1)
     : "..."; // it's probably an Enigmail message
 
   if ("attachmentInfos" in aGlodaMsg)
@@ -1132,13 +1192,15 @@ function MessageFromDbHdr(aConversation, aMsgHdr) {
         return;
       }
 
-      let [text, meta] = mimeMsgToContentSnippetAndMeta(aMimeMsg, aMsgHdr.folder, snippetLength);
+      let [text, meta] = mimeMsgToContentSnippetAndMeta(aMimeMsg, aMsgHdr.folder, kSnippetLength);
       self._snippet = text;
       let alternativeSender = PluginHelpers.alternativeSender({ mime: aMimeMsg, header: aMsgHdr });
       if (alternativeSender) {
         self._realFrom = self._from;
         self._from = self.parse(alternativeSender)[0];
       }
+
+      self.bugzillaInfos = PluginHelpers.bugzilla({ mime: aMimeMsg, header: aMsgHdr });
 
       self._attachments = aMimeMsg.allUserAttachments
         .filter(function (x) x.isRealAttachment);
@@ -1182,9 +1244,9 @@ MessageFromDbHdr.prototype = {
 
   _fallbackSnippet: function _MessageFromDbHdr_fallbackSnippet () {
     Log.debug("Using the default streaming code...");
-    let body = msgHdrToMessageBody(this._msgHdr, true, snippetLength);
+    let body = msgHdrToMessageBody(this._msgHdr, true, kSnippetLength);
     Log.debug("Body is", body);
-    this._snippet = body.substring(0, snippetLength-1);
+    this._snippet = body.substring(0, kSnippetLength-1);
     this._signal();
   },
 

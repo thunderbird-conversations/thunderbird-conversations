@@ -372,12 +372,13 @@
 
 <body>
   <script id="messageTemplate" type="text/x-jquery-tmpl"><![CDATA[
-    <li class="message collapsed">
+    <li class="message collapsed ${bugzillaClass}">
       <div class="messageHeader hbox">
         <div class="star"></div>
         <div class="author">{{tmpl(dataContactFrom) "#contactTemplate"}}</div>
         <div class="involved boxFlex">
           <span class="to">${str("to")} {{tmpl(dataContactsTo) "#contactTemplate"}}</span>
+          <span class="bzTo">${str("at")} ${bugzillaUrl}</span>
           <span class="snippet"><ul class="tags regular-tags"></ul>${snippet}</span>
         </div>
         <div class="options">

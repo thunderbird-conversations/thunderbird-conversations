@@ -100,9 +100,42 @@ let AlternativeSender = {
 
     yield Gloda.kWorkDone;
   },
-}
+};
 
 AlternativeSender.init();
+
+let Bugzilla = {
+  init: function _Bugzilla_init () {
+    this.defineAttributes();
+  },
+
+  defineAttributes: function _Bugzilla_defineAttributes () {
+    this._bugzillaAttribute = Gloda.defineAttribute({
+      provider: this,
+      extensionName: "bugzilla-infos",
+      attributeType: Gloda.kAttrDerived,
+      attributeName: "bugzillaInfos",
+      bind: true,
+      singular: true,
+      subjectNouns: [Gloda.NOUN_MESSAGE],
+      objectNoun: Gloda.NOUN_STRING,
+    });
+  },
+
+  process: function _Bugzilla_process (aGlodaMessage, aRawReps, aIsNew, aCallbackHandle) {
+    try {
+      let bugzilla = PluginHelpers.bugzilla(aRawReps);
+      if (bugzilla)
+        aGlodaMessage.bugzillaInfos = JSON.stringify(bugzilla);
+    } catch (e) {
+      dump(e+"\n"+e.stack+"\n");
+    }
+
+    yield Gloda.kWorkDone;
+  },
+};
+
+Bugzilla.init();
 
 let ConversationSubject = {
   init: function _ConversationSubject_init () {

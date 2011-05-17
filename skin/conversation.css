@@ -361,7 +361,7 @@ a img {
   float: right;
 }
 
-.to {
+.to, .bzTo {
   color: #666;
   /* We enforce inline-block display so that we can compute the height and
    * possibly remove extra recipients that trigger an overflow. */
@@ -390,6 +390,14 @@ a img {
   display: none;
 }
 
+.message:not(.bugzilla) .bzTo {
+  display: none;
+}
+
+.message.bugzilla .to {
+  display: none;
+}
+
 .message.collapsed {
   height: 3.6rem;
   -moz-border-radius: 5px;
@@ -403,6 +411,7 @@ a img {
 }
 
 .message.collapsed .to, 
+.message.collapsed .bzTo, 
 .message.collapsed .details,
 .message.collapsed .dropDown,
 .message.collapsed .messageBody .tags,
