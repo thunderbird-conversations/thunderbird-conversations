@@ -125,7 +125,8 @@ button img {
 }
 
 .actions button {
-  width: 2.8rem;
+  width: 28px;
+  height: 22px;
   float: right;
   margin: 0 0 0 3px;
 }
@@ -229,6 +230,7 @@ span.downwardArrow {
 .tooltip {
   position: absolute;
   width: 30.2rem;
+  min-width: 302px;
   top: 24px;
   left: 16px;
   background-color: #fff;
