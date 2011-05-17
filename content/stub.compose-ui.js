@@ -336,6 +336,7 @@ ComposeSession.prototype = {
   },
 
   setupQuote: function () {
+    let self = this;
     this.match({
       reply: function (aMsgHdr) {
         quoteMsgHdr(aMsgHdr, function (aBody) {
@@ -345,17 +346,48 @@ ComposeSession.prototype = {
           let author = name || email;
           // The >'s aren't automatically appended, that's what citeString is for.
           let body = citeString("\n"+htmlToPlainText(aBody).trim());
-          let txt = [
-            "\n\n",
-            strings.get("quoteIntroString", [date, author]),
-            body, // body already starts with a newline
-          ].join("");
-          // After we removed any trailing newlines, insert it into the textarea
-          $("textarea").val($("textarea").val() + txt);
-          // I <3 HTML5 selections.
+          let quoteblock = // body already starts with a newline
+            strings.get("quoteIntroString", [date, author]) + body;
+          // Grab the identity we're using and use its parameters.
+          let identity = self.params.identity;
+          let signature = "";
+          if (identity.sigOnReply) {
+            signature = identity.htmlSigFormat
+              ? htmlToPlainText(identity.htmlSigText)
+              : identity.htmlSigText;
+            if (String.trim(signature).length)
+              signature = "\n\n-- \n" + signature;
+          }
+          // The user might be fast and might have started typing something
+          // already
+          let txt = $("textarea").val();
           let node = $("textarea")[0];
-          node.selectionStart = 0;
-          node.selectionEnd = 0;
+          let val = null;
+          let pos = null;
+          // Assemble the parts
+          if (identity.replyOnTop) {
+            let quote = identity.autoQuote
+              ? "\n\n" + quoteblock
+              : "";
+            if (!identity.sigBottom) {
+              pos = 0;
+              val = txt + signature + quote;
+            } else {
+              pos = 0;
+              val = txt + quote + signature;
+            }
+          } else {
+            let quote = identity.autoQuote
+              ? quoteblock + "\n\n"
+              : "";
+            pos = (quote + txt).length;
+            val = quote + txt + signature;
+          }
+          // After we removed any trailing newlines, insert it into the textarea
+          $("textarea").val(val);
+          // I <3 HTML5 selections.
+          node.selectionStart = pos;
+          node.selectionEnd = pos;
         });
       },
 
