@@ -552,8 +552,10 @@ MonkeyPatch.prototype = {
 
           let selectedCount = this.folderDisplay.selectedCount;
           Log.debug("Intercepted message load, ", selectedCount, " message(s) selected");
-          /*for each (let msgHdr in this.folderDisplay.selectedMessages)
-            dump("  " + msgHdr.folder.URI + "#" + msgHdr.messageKey + "\n");*/
+          dump(Colors.red);
+          for each (let msgHdr in this.folderDisplay.selectedMessages)
+            dump("  " + msgHdr.folder.URI + "#" + msgHdr.messageKey + "\n");
+          dump(Colors.default);
 
           if (selectedCount == 0) {
             // So we're not copying the code here. This changes nothing, and the

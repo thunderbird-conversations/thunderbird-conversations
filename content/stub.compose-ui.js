@@ -118,8 +118,9 @@ function onTextareaClicked(event) {
 }
 
 function onUseEditor() {
-  if (gComposeSession.send({ popOut: true }))
-    onDiscard();
+  gComposeSession.stripSignatureIfNeeded();
+  gComposeSession.send({ popOut: true });
+  onDiscard();
 }
 
 function showCc(event) {
@@ -260,6 +261,7 @@ function ComposeSession (match) {
     msgHdr: null,
     subject: null,
   };
+  this.stripSignatureIfNeeded = function () {};
   // Go!
   this.setupIdentity();
   this.setupMisc();
@@ -358,6 +360,11 @@ ComposeSession.prototype = {
             if (String.trim(signature).length)
               signature = "\n\n-- \n" + signature;
           }
+          self.stripSignatureIfNeeded = function () {
+            let textarea = $("textarea");
+            if (identity.sigOnReply)
+              textarea.val(textarea.val().replace(signature, ""));
+          };
           // The user might be fast and might have started typing something
           // already
           let txt = $("textarea").val();
