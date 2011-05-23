@@ -322,7 +322,6 @@
             document.getElementById("messageList").textContent =
               strings.get("messageMovedOrDeletedConversation");
           } else {
-            msgHdrsMarkAsRead(msgHdrs, true);
             window.Conversations = {
               currentConversation: null,
               counter: 0,
@@ -346,6 +345,8 @@
               loadDraft();
               if (willExpand)
                 $("textarea").parent().addClass('expand');
+              // Create a new rule that will override the default rule, so that
+              // the expanded quick reply is twice higher.
               let stylesheet;
               let stylesheet = [x
                 for each ([, x] in Iterator(document.styleSheets))
@@ -356,7 +357,13 @@
                   0);
               else
                 Log.error("No stylesheet. This is unexpected.");
+              // We can never junk a conversation in a new tab, because the junk
+              // command only operates on selected messages, and we're not in a
+              // 3pane context anymore.
               document.getElementById("conversationHeader").classList.add("not-junkable");
+              // Do this now so as to not defeat the whole expand/collapse
+              // logic.
+              msgHdrsMarkAsRead(msgHdrs, true);
             });
           }
         } catch (e) {
