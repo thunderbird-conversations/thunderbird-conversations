@@ -248,6 +248,7 @@ span.downwardArrow {
 .dropDown .tooltip {
   width: 15.2rem;
   left: -11rem;
+  min-width: 0;
 }
 
 .dropDown ul {

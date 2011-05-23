@@ -47,14 +47,16 @@
     })(jQuery);
 
     function clearMenu() {
-      let menus = document.getElementsByClassName("replyDropMenu");
+      let menus = document.getElementsByClassName("menu");
       for each (let [, menu] in Iterator(menus))
         menu.style.display = "none";
     }
 
     function displayMenu(event) {
       let menu = event.target.nextElementSibling;
-      let menuWasVisible = menu.style.display == "-moz-box";
+      let menuWasVisible = (menu.style.display == "-moz-box")
+          || (menu.style.display == "inline-block")
+          || (menu.style.display == "block");
       clearMenu();
       if (!menuWasVisible) {
         menu.style.display = "-moz-box";
@@ -108,40 +110,39 @@
 
     const kPopupTimeout = 500;
 
+    // This only works for contact tooltips. The "more" menu is treated like a
+    //  real menu (it uses displayMenu and falls under clearMenu's operations),
+    //  and the reply menu with various choices is also treated like a menu.
+    // It turns out the "more" menu reuses the tooltip style for various
+    //  reasons, mostly to keep the same appearance, so we differentiate that
+    //  one with a tooltip-menu extra class.
     function enableTooltips(aMsg) {
       let $aMsgNode = $(aMsg._domNode);
       $aMsgNode.find('.tooltip').each(function (i) {
         // "details" is a hypothetical "details" link that, when
         //   hovered/clicked, starts the interaction with the tooltip
         let $tooltip = $(this);
+        if ($tooltip.hasClass("tooltip-menu"))
+          return;
         let $details = $tooltip.prev();
 
-        let sticky = false;
         let timeout;
-        /* $details.get(0).addEventListener("click", function (event) {
-          sticky = !sticky;
-          event.stopPropagation();
-        }, false); */
         $details.hover(
           function() {
             if (aMsg.collapsed)
               return;
-            if (!sticky) {
-              clearTimeout(timeout);
-              let self = this;
-              timeout = setTimeout(function () {
-                $(self).next(':hidden').fadeIn();
-              }, kPopupTimeout);
-            }
+            clearTimeout(timeout);
+            let self = this;
+            timeout = setTimeout(function () {
+              $(self).next(':hidden').fadeIn();
+            }, kPopupTimeout);
           },
           function() {
             var self = this;
-            if (!sticky) {
-              clearTimeout(timeout);
-              timeout = setTimeout(function () {
-                $(self).next(/*':visible'*/).fadeOut()
-              }, kPopupTimeout);
-            }
+            clearTimeout(timeout);
+            timeout = setTimeout(function () {
+              $(self).next(/*':visible'*/).fadeOut()
+            }, kPopupTimeout);
           });
         $tooltip.hover(
           function () {
@@ -149,7 +150,7 @@
           },
           function () {
             var self = this;
-            if ($(this).is(":visible") && !sticky) {
+            if ($(this).is(":visible")) {
               clearTimeout(timeout);
               timeout = setTimeout(function () {
                 $(self).fadeOut();
@@ -389,8 +390,8 @@
             ${date}
           </span>
           <span class="dropDown"> |
-            <a href="javascript:" class="top-right-more">${str("more")} <span class="downwardArrow">&#x25bc;</span></a>
-            <div class="tooltip">
+            <a href="javascript:" onclick="displayMenu(event);" class="top-right-more">${str("more")} <span class="downwardArrow">&#x25bc;</span></a>
+            <div class="tooltip tooltip-menu menu">
               <ul>
                 <li class="action-archive">${str("archive")}
                   <div class="arrow"></div>
@@ -476,7 +477,7 @@
         <div class="replyWrapper">
           <button class="replyMainAction">${str("reply")}</button>
           <button class="replyDropDown" onclick="displayMenu(event);">&#x25bc;</button>
-          <div class="replyDropMenu">
+          <div class="replyDropMenu menu">
             <div class="menuReply"><img src="i/reply.png" /> ${str("reply")}</div>
             <div class="menuReplyAll"><img src="i/replyAll.png" /> ${str("replyAll")}</div>
             <div class="menuReplyList"><img src="i/replyList.png" /> ${str("replyList")}</div>
