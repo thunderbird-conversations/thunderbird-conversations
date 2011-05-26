@@ -140,28 +140,48 @@ button img {
   background-position: center center;
 }
 
-.actions button span.read {
+.actions span.read {
   background-image: url("chrome://conversations/content/i/read.png");
 }
 
-.actions button span.read.unread {
+.actions span.read.unread {
   background-image: url("chrome://conversations/content/i/unread.png");
 }
 
-.actions button span.mode {
+.actions span.mode {
   background-image: url("chrome://conversations/content/i/mode.png");
 }
 
-.actions button span.mode.classic {
+.actions span.mode.classic {
   background-image: url("chrome://conversations/content/i/classicMode.png");
 }
 
-.actions button span.expand {
+.actions span.expand {
   background-image: url("chrome://conversations/content/i/expand.png");
 }
 
-.actions button span.expand.collapse {
+.actions span.expand.collapse {
   background-image: url("chrome://conversations/content/i/collapse.png");
+}
+
+.actions span.trash {
+  background-image: url("chrome://conversations/content/i/trash.png");
+}
+
+.actions span.archive {
+  background-image: url("chrome://conversations/content/i/archive.png");
+}
+
+.actions span.junk {
+  background-image: url("chrome://conversations/content/i/junk.png");
+}
+
+.actions span.print {
+  background-image: url("chrome://conversations/content/i/print.png");
+}
+
+.actions span.tab {
+  background-image: url("chrome://conversations/content/i/tab.png");
 }
 
 
