@@ -468,6 +468,8 @@ a img {
 }
 
 .messageBody .tag-x {
+  border-left: 1px solid white;
+  margin-left: 1ex;
   cursor: pointer;
   z-index: 3;
 }
