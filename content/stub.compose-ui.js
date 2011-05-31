@@ -106,7 +106,7 @@ function onTextareaClicked(event) {
       let messages = Conversations.currentConversation.messages;
       try {
         gComposeSession = new ComposeSession(function (x)
-          x.reply(messages[messages.length - 1].message._msgHdr)
+          x.reply(messages[messages.length - 1].message)
         );
       } catch (e) {
         Log.debug(e);
@@ -276,7 +276,8 @@ ComposeSession.prototype = {
     let mainWindow = topMail3Pane(window);
     let identity;
     this.match({
-      reply: function (aMsgHdr) {
+      reply: function (aMessage) {
+        let aMsgHdr = aMessage._msgHdr;
         // Standard procedure for finding which identity to send with, as per
         //  http://mxr.mozilla.org/comm-central/source/mail/base/content/mailCommands.js#210
         let suggestedIdentity = mainWindow.getIdentityForHeader(aMsgHdr, Ci.nsIMsgCompType.ReplyAll);
@@ -298,7 +299,8 @@ ComposeSession.prototype = {
   setupMisc: function () {
     let self = this;
     this.match({
-      reply: function (aMsgHdr) {
+      reply: function (aMessage) {
+        let aMsgHdr = aMessage._msgHdr;
         self.params.msgHdr = aMsgHdr;
         self.params.subject = "Re: "+aMsgHdr.mime2DecodedSubject;
       },
@@ -315,15 +317,25 @@ ComposeSession.prototype = {
   setupAutocomplete: function () {
     let self = this;
     this.match({
-      reply: function (aMsgHdr) {
+      reply: function (aMessage) {
         let identity = self.params.identity;
         let msgHdr = self.params.msgHdr;
-        replyAllParams(identity, msgHdr, function (params) {
-          let to = [asToken(null, name, email, null) for each ([name, email] in params.to)];
-          let cc = [asToken(null, name, email, null) for each ([name, email] in params.cc)];
-          let bcc = [asToken(null, name, email, null) for each ([name, email] in params.bcc)];
-          setupAutocomplete(to, cc, bcc);
-        });
+        // This is very simple; either we've got a mailing-list, and then the
+        // default action is reply to list. Otherwise, this is either reply all
+        // or reply, and replyAllParams works for both. We do that so that the
+        // action in the quick reply area is consistent with what's displayed in
+        // the smart reply button.
+        if (aMessage.isReplyListEnabled) {
+          let token = asToken(null, null, aMessage.mailingLists[0], null);
+          setupAutocomplete([token], [], []);
+        } else {
+          replyAllParams(identity, msgHdr, function (params) {
+            let to = [asToken(null, name, email, null) for each ([name, email] in params.to)];
+            let cc = [asToken(null, name, email, null) for each ([name, email] in params.cc)];
+            let bcc = [asToken(null, name, email, null) for each ([name, email] in params.bcc)];
+            setupAutocomplete(to, cc, bcc);
+          });
+        }
       },
 
       draft: function ({ to, cc, bcc }) {
@@ -340,7 +352,8 @@ ComposeSession.prototype = {
   setupQuote: function () {
     let self = this;
     this.match({
-      reply: function (aMsgHdr) {
+      reply: function (aMessage) {
+        let aMsgHdr = aMessage._msgHdr;
         quoteMsgHdr(aMsgHdr, function (aBody) {
           // Join together the different parts
           let date = (new Date(aMsgHdr.date/1000)).toLocaleString();
