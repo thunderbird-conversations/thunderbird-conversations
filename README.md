@@ -26,8 +26,8 @@ If you just want to start hacking, see
 to learn how to use a proxy file. If you want to package a release, `./build.sh`
 will package a .xpi file. `./package.sh` is for my personal use.
 
-SUBMODULES
-==========
+HACKING
+=======
 
 This repo contains a git submodule. To make sure you've checked out all the
 files, make sure you run:
@@ -36,3 +36,6 @@ files, make sure you run:
     git submodule update
 
 before you start hacking.
+
+You also need to have your source folder named gconversation@xulforum.org ; this
+is a temporary hack that will go away once we stop supporting Thunderbird 3.3.
