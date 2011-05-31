@@ -1026,6 +1026,11 @@ Message.prototype = {
             self._didStream = true;
             self._signal();
           } catch (e) {
+            try {
+              iframe.style.height = iframeDoc.body.scrollHeight+"px";
+            } catch (e) {
+              iframe.style.height = "800px";
+            }
             Log.error(e);
             Log.warn("Running signal once more to make sure we move on with our life... (warning, this WILL cause bugs)");
             dumpCallStack(e);
@@ -1439,9 +1444,12 @@ let PostStreamingFixesMixIn = {
           // Yes, the third parameter to misMatchedHostWithLinkText is actually
           //  required, but it's some kind of an out value that's useless for
           //  us, so just pass it {} so that it's happy...
+          let unobscuredHostNameValue = gPhishingDetector.hostNameIsIPAddress(hrefURL.host);
           failsStaticTests =
-            gPhishingDetector.hostNameIsIPAddress(hrefURL.host) && !gPhishingDetector.isLocalIPAddress(unobscuredHostNameValue)
-            || linkText && gPhishingDetector.misMatchedHostWithLinkText(hrefURL, linkText, {});
+            unobscuredHostNameValue
+              && !gPhishingDetector.isLocalIPAddress(unobscuredHostNameValue)
+            || linkText
+              && gPhishingDetector.misMatchedHostWithLinkText(hrefURL, linkText, {});
         }
 
         if (failsStaticTests) {
