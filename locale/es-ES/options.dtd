@@ -1,6 +1,8 @@
 <!ENTITY window.title "Thunderbird Conversations - Opciones">
 <!ENTITY title.message_display "Vista de mensajes">
 <!ENTITY option.expand_who "Por defecto, expandir:">
+<!ENTITY option.expand_auto2 "Automático">
+<!ENTITY option.expand_auto2.tooltip "Si el hilo está contraido, expandir todos los mensajes no leído o el último mensaje. Si está expandido, sólo expandir el mensaje seleccionado.">
 <!ENTITY option.expand_none "Sin mensajes">
 <!ENTITY option.expand_all "Todos los mensajes">
 <!ENTITY title.quoting "Citas">

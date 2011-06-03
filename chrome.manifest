@@ -5,7 +5,7 @@ overlay chrome://messenger/content/messenger.xul chrome://conversations/content/
 #style chrome://global/content/customizeToolbar.xul chrome://conversations/skin/overlay.css
 
 #locale conversations de locale/de/
-locale conversations el locale/el/
+#locale conversations el locale/el/
 locale conversations en-US locale/en-US/
 #locale conversations es-ES locale/es-ES/
 #locale conversations fr locale/fr/
@@ -14,6 +14,6 @@ locale conversations en-US locale/en-US/
 #locale conversations it locale/it/
 #locale conversations ja-JP locale/ja-JP/
 #locale conversations pt-BR locale/pt-BR/
-#locale conversations sv-SE locale/sv-SE/
 #locale conversations sr locale/sr/
+#locale conversations sv-SE locale/sv-SE/
 #locale conversations zh-CN locale/zh-CN/

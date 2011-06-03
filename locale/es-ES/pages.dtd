@@ -1,3 +1,4 @@
+<!ENTITY assistant.title "Asistente del primer uso">
 <!ENTITY assistant.intro "¡Hola! Bienvenido a <strong>Thunderbird Conversations</strong>">
 <!ENTITY assistant.p1 "Para hacer las cosas más fáciles, este asistente ajustará la configuración para asegurarle un rendimiento mejor.">
 <!ENTITY assistant.p2 "Los cambios de ajustes son reversibles, por lo que si no le gusta Thunderbird conversaciones, todos los cambios se anularán cuando desinstale la extensión.">
@@ -33,6 +34,8 @@
 <!ENTITY stub.loading "Cargando...">
 <!ENTITY stub.trash.tooltip "Borrar esta conversación">
 <!ENTITY stub.archive.tooltip "Archivar esta conversación">
+<!ENTITY stub.print.tooltip "Imprimir esta conversación">
 <!ENTITY stub.junk.tooltip "Marcar como basura este mensaje">
 <!ENTITY stub.expand.tooltip "Expandir/Contraer todos los mensajes">
 <!ENTITY stub.read.tooltip "Cambiar los mensajes leídos/no leídos">
+<!ENTITY stub.detach.tooltip2 "Mostrar esta conversación en una pesaña nueva">

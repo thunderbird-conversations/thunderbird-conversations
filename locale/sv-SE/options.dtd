@@ -11,6 +11,8 @@
 <!ENTITY window.title "Inställningar för Thunderbird Conversations">
 <!ENTITY title.message_display "Meddelandevyn">
 <!ENTITY option.expand_who "Som standard, expandera:">
+<!ENTITY option.expand_auto2 "Automatiskt">
+<!ENTITY option.expand_auto2.tooltip "Om tråden är dold, expandera alla olästa meddelanden eller det sista meddelandet. Om den visas, expandera endast det i meddelandelistan markerade meddelandet.">
 <!ENTITY option.expand_none "Inga meddelanden">
 <!ENTITY option.expand_all "Alla meddelanden">
 <!ENTITY title.quoting "Citering">

@@ -1,6 +1,8 @@
 <!ENTITY window.title "Thunderbird Conversations - опције">
 <!ENTITY title.message_display "Приказ поруке">
 <!ENTITY option.expand_who "Подразумевано, рашири:">
+<!ENTITY option.expand_auto2 "аутоматски">
+<!ENTITY option.expand_auto2.tooltip "Ако је тема скупљена, рашири све непрочитане поруке или последњу поруку. Ако је раширена, рашири само поруку одабрану на списку.">
 <!ENTITY option.expand_none "Нема порука">
 <!ENTITY option.expand_all "Све поруке">
 <!ENTITY title.quoting "Цитирање">
@@ -10,5 +12,5 @@
 <!ENTITY title.assistant "Помоћник за подешавање">
 <!ENTITY option.assistant "Покрени помоћника за подешавање">
 <!ENTITY title.advanced_display "Приказ разговора">
-<!ENTITY option.no_friendly_date "Користи &quot;нормалне&quot; датуме, исто као списак порука">
-<!ENTITY option.monospaced_senders "Поруке с тих адреса би требало бити приказане у штампаним фонтовима (зарез за одвајање)">
+<!ENTITY option.no_friendly_date "Користи „нормалне” датуме, исто као списак порука">
+<!ENTITY option.monospaced_senders "Поруке с ових адреса би требале бити приказане у штампаним фонтовима (зарез за одвајање)">

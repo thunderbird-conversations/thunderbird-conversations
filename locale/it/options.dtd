@@ -1,12 +1,12 @@
 <!-- Please open the "Preferences" window and DO check that your text is not too
      long. This can cause the contents to overflow and be hidden, so make sure
      everything is displayed properly. 
-
-
 -->
 <!ENTITY window.title "Impostazioni di Thunderbird Conversations">
 <!ENTITY title.message_display "Aspetto dei messaggi">
 <!ENTITY option.expand_who "Messaggi da espandere (come opzione predefinita)">
+<!ENTITY option.expand_auto2 "L&apos;ultimo messaggio selezionato o il primo non letto">
+<!ENTITY option.expand_auto2.tooltip "Visualizza l&apos;ultimo messaggio selezionato se la discussione è già espansa oppure il primo messaggio non letto se la discussione è contratta">
 <!ENTITY option.expand_none "Non espandere alcun messaggio">
 <!ENTITY option.expand_all "Espandi tutti i messaggi">
 <!ENTITY title.quoting "Citazioni">

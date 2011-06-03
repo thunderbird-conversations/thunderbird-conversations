@@ -9,6 +9,8 @@
 <!ENTITY window.title "Thunderbird Conversations Optionen">
 <!ENTITY title.message_display "Nachrichtenanzeige">
 <!ENTITY option.expand_who "Standardmäßig ausklappen:">
+<!ENTITY option.expand_auto2 "Automatisch">
+<!ENTITY option.expand_auto2.tooltip "Wenn der Thread (Themenbaum) eingeklappt ist, werden alle ungelesenen Nachrichten bzw. nur die letzte Nachricht ausgeklappt. Ist der Thread aber ausgeklappt, wird nur die ausgewählte Nachricht angezeigt.">
 <!ENTITY option.expand_none "Keine Nachrichten">
 <!ENTITY option.expand_all "Alle Nachrichten">
 <!ENTITY title.quoting "Zitieren">

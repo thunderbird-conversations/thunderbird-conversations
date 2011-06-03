@@ -5,13 +5,21 @@
 
 
 
+
 -->
 <!ENTITY window.title "Options de &quot;GMail Conversation View&quot;">
 <!ENTITY title.message_display "Affichage des messages">
+<!ENTITY option.expand_who "Par défaut, développer :">
+<!ENTITY option.expand_auto2 "Automatiquement">
+<!ENTITY option.expand_auto2.tooltip "Si le fil de discussion est replié, développe tous les messages non-lus ou le dernier message. S'il est développé, n'étend que que le message sélectionné de la liste.">
+<!ENTITY option.expand_none "Aucun message">
+<!ENTITY option.expand_all "Tous les messages">
 <!ENTITY title.quoting "Citations">
 <!ENTITY option.hide_longer_than "Cacher les citations plus hautes que">
 <!ENTITY option.lines "lignes">
 <!ENTITY title.advanced "Avancé">
+<!ENTITY title.assistant "Assistant d'installation">
+<!ENTITY option.assistant "Lancer l'assistant d'installation">
 <!ENTITY title.advanced_display "Apparence des conversations">
 <!ENTITY option.no_friendly_date "Utiliser des dates au format standard, comme dans la liste des messages">
-<!ENTITY option.monospaced_senders "Utiliser une police à largeur fixe pour afficher les messages provenant des adresses suivantes (séparer par des virgules)">
+<!ENTITY option.monospaced_senders "Utiliser une police à largeur fixe pour afficher les messages provenant des adresses suivantes (séparées par des virgules)">

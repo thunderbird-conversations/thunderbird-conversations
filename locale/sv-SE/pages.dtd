@@ -1,8 +1,9 @@
+<!ENTITY assistant.title "Guiden Första körningen">
 <!ENTITY assistant.intro "Hejsan, det här är <strong>Thunderbird Conversations</strong>!">
 <!ENTITY assistant.p1 "För att kunna göra ditt liv enklare, så kommer denna guide att finjustera din Thunderbird-konfiguration för att säkerställa att du får en så bra upplevelse som möjligt. Vi vill ju inte att du skall känna dig otillfredsställd!">
 <!ENTITY assistant.p2 "Justeringarna vi gör är alla reversibla, så var inte orolig: Skulle du inte uppskatta Thunderbird Conversations, så återställer vi alla inställningsändringar vi har gjort så snart du avinstallerar tillägget.">
 <!ENTITY assistant.p3 "Det här kan ta ett tag. Du kan antingen vänta tills det här fönstret stängs eller stänga fönstret själv och följa förloppet via Verktyg &gt; Aktiviteter.">
-<!ENTITY assistant.working "Arbetar...">
+<!ENTITY assistant.working "Arbetar…">
 <!ENTITY assistant.review "Granska ändringar">
 <!ENTITY assistant.apply "Verkställ ändringarna">
 <!ENTITY assistant.settings "Vissa inställningar är obligatoriska för att Thunderbird Conversations skall fungera korrekt. Andra rekommenderas starkt, och åter andra är valfria.">
@@ -30,9 +31,11 @@
 <!ENTITY indexing.t2 "Närmare detaljer">
 <!ENTITY indexing.title "<span class='orange'>Indexeringsproblem</span>">
 <!ENTITY indexing.pageTitle "Indexeringsvarning">
-<!ENTITY stub.loading "Läser in...">
+<!ENTITY stub.loading "Läser in…">
 <!ENTITY stub.trash.tooltip "Ta bort denna konversation">
 <!ENTITY stub.archive.tooltip "Arkivera denna konversation">
+<!ENTITY stub.print.tooltip "Skriv ut denna konversation">
 <!ENTITY stub.junk.tooltip "Märk detta meddelande som skräppost">
 <!ENTITY stub.expand.tooltip "Expandera/dölj alla meddelanden">
 <!ENTITY stub.read.tooltip "Växla lästa/olästa för alla meddelanden">
+<!ENTITY stub.detach.tooltip2 "Visa denna konversation i en ny flik">

@@ -9,6 +9,8 @@
 <!ENTITY window.title "Thunderbird Conversations オプション">
 <!ENTITY title.message_display "メッセージ表示">
 <!ENTITY option.expand_who "既定で展開するメッセージ:">
+<!ENTITY option.expand_auto2 "自動">
+<!ENTITY option.expand_auto2.tooltip "スレッドが折りたたまれているならば、未読か最後のメッセージを展開します。スレッドが展開されているならば、メッセージリストで選択したメッセージを展開します。">
 <!ENTITY option.expand_none "展開しない">
 <!ENTITY option.expand_all "すべてのメッセージ">
 <!ENTITY title.quoting "引用">
@@ -17,6 +19,6 @@
 <!ENTITY title.advanced "詳細">
 <!ENTITY title.assistant "設定アシスタント">
 <!ENTITY option.assistant "設定アシスタントを起動する">
-<!ENTITY title.advanced_display "会話の表示">
+<!ENTITY title.advanced_display "スレッドビュー">
 <!ENTITY option.no_friendly_date "メッセージリストと同じ &quot;標準の&quot; 日付表記を使用する">
 <!ENTITY option.monospaced_senders "次の送信者のメッセージを等幅フォントで表示する (半角カンマ区切り)">
