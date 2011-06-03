@@ -661,16 +661,32 @@ Message.prototype = {
                         .QueryInterface(Ci.nsIMsgMessageUrl)
                         .uri;
 
-      let attInfo = new mainWindow.createNewAttachmentInfo(
-        att.contentType, att.url, att.name, uri, att.isExternal
-      );
+      // New versions of Thunderbird (post-5.0) have changed the API for
+      // attachment objects. Handle both ways for now.
+      let newAttAPI = ("AttachmentInfo" in mainWindow);
+      let attInfo;
+      if (newAttAPI)
+        attInfo = new mainWindow.AttachmentInfo(
+          att.contentType, att.url, att.name, uri, att.isExternal
+        );
+      else
+        attInfo = new mainWindow.createNewAttachmentInfo(
+          att.contentType, att.url, att.name, uri, att.isExternal
+        );
+
       this.register(attNode.getElementsByClassName("open-attachment")[0], function (event) {
         Log.debug("Opening attachment");
-        mainWindow.HandleMultipleAttachments([attInfo], "open");
+        if (newAttAPI)
+          attInfo.open();
+        else
+          mainWindow.openAttachment(attInfo);
       });
       this.register(attNode.getElementsByClassName("download-attachment")[0], function (event) {
         Log.debug("Downloading attachment");
-        mainWindow.saveAttachment(attInfo, "save");
+        if (newAttAPI)
+          attInfo.save();
+        else
+          mainWindow.saveAttachment(attInfo);
       });
 
       let maybeViewable = 
