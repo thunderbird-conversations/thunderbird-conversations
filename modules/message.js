@@ -344,6 +344,7 @@ Message.prototype = {
       dataContactsTo: null,
       snippet: null,
       date: null,
+      fullDate: null,
       attachmentsPlural: null,
       attachments: [],
       folderName: null,
@@ -427,6 +428,10 @@ Message.prototype = {
     // 3) Generate extra information: snippet, date, uri
     data.snippet = escapeHtml(this._snippet).replace(this.RE_SNIPPET, "");
     data.date = escapeHtml(this._date);
+    data.fullDate = Prefs["no_friendly_date"]
+      ? ""
+      : dateAsInMessageList(new Date(this._msgHdr.date/1000))
+    ;
     data.uri = escapeHtml(msgHdrGetUri(this._msgHdr));
 
     // 4) Custom tag telling the user if the message is not in the current view
