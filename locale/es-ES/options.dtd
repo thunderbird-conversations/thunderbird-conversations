@@ -13,4 +13,4 @@
 <!ENTITY option.assistant "Iniciar el asistente de configuración">
 <!ENTITY title.advanced_display "Vista de conversación">
 <!ENTITY option.no_friendly_date "Usar fechas &quot;normales&quot; como en la lista de mensajes">
-<!ENTITY option.monospaced_senders "Los mensajes de estas direcciones se mostrarán en fuentes monoespaciadas (separadas con comas)">
+<!ENTITY option.monospaced_senders2 "Los mensajes de estas direcciones/listas de correo deben mostrarse en fuentes monoespacio (separados por comas)">

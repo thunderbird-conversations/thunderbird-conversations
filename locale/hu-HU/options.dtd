@@ -6,6 +6,7 @@
 
 
 
+
 -->
 <!ENTITY window.title "Gmail Conversation View Options">
 <!ENTITY title.message_display "Üzenet megjelenítése">
@@ -15,4 +16,3 @@
 <!ENTITY title.advanced "Haladó">
 <!ENTITY title.advanced_display "Beszélgetés megjelenítése">
 <!ENTITY option.no_friendly_date "Use &quot;normal&quot; dates, just like the message list">
-<!ENTITY option.monospaced_senders "Messages from those addresses should be displayed in monospaced fonts (separate using commas)">

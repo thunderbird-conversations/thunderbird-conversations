@@ -6,6 +6,7 @@
 
 
 
+
 -->
 <!ENTITY window.title "Options de &quot;GMail Conversation View&quot;">
 <!ENTITY title.message_display "Affichage des messages">
@@ -22,4 +23,4 @@
 <!ENTITY option.assistant "Lancer l'assistant d'installation">
 <!ENTITY title.advanced_display "Apparence des conversations">
 <!ENTITY option.no_friendly_date "Utiliser des dates au format standard, comme dans la liste des messages">
-<!ENTITY option.monospaced_senders "Utiliser une police à largeur fixe pour afficher les messages provenant des adresses suivantes (séparées par des virgules)">
+<!ENTITY option.monospaced_senders2 "Les messages venant de ces adresses ou listes de discussion devraient être affichés en polices monospace (séparer les adresses par des virgules)">

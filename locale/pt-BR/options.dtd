@@ -11,4 +11,3 @@
 <!ENTITY option.assistant "Iniciar o assistente de instalação">
 <!ENTITY title.advanced_display "Exibição de conversas">
 <!ENTITY option.no_friendly_date "Usar datas &quot;normais&quot;, assim como na lista de mensagens">
-<!ENTITY option.monospaced_senders "Mensagens destes endereços devem ser exibidas em fontes monoespaçadas (separar por vírgulas)">

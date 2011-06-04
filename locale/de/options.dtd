@@ -5,6 +5,7 @@
 
 
 
+
 -->
 <!ENTITY window.title "Thunderbird Conversations Optionen">
 <!ENTITY title.message_display "Nachrichtenanzeige">
@@ -21,4 +22,3 @@
 <!ENTITY option.assistant "Starte den Installationsassistenten">
 <!ENTITY title.advanced_display "Konversationsanzeige">
 <!ENTITY option.no_friendly_date "&quot;Normales&quot; Datum wie in der Nachrichtenliste anzeigen">
-<!ENTITY option.monospaced_senders "Nachrichten von diesen Adressen sollen in unproportionaler Schriftart angezeigt werden (durch Kommata trennen):">

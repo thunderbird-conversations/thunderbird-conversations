@@ -7,6 +7,7 @@
 
 
 
+
 -->
 <!ENTITY window.title "Inställningar för Thunderbird Conversations">
 <!ENTITY title.message_display "Meddelandevyn">
@@ -23,4 +24,4 @@
 <!ENTITY option.assistant "Starta konfigurationsguiden">
 <!ENTITY title.advanced_display "Konversationsvyn">
 <!ENTITY option.no_friendly_date "Använd &quot;normala&quot; datum, precis som i meddelandelistan">
-<!ENTITY option.monospaced_senders "Meddelanden från dessa adresser skall visas i enbreddsfonter (avgränsa med kommatecken)">
+<!ENTITY option.monospaced_senders2 "Meddelanden från dessa adresser/e-postlistor skall visas i enbreddstypsnitt (avgränsa med kommatecken)">

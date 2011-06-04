@@ -17,4 +17,4 @@
 <!ENTITY option.assistant "Avvia la configurazione guidata">
 <!ENTITY title.advanced_display "Aspetto delle discussioni">
 <!ENTITY option.no_friendly_date "Utilizza date normali, come nella lista dei messaggi">
-<!ENTITY option.monospaced_senders "È possibile utilizzare i caratteri a larghezza fissa per i messaggi provenienti da determinati indirizzi e-mail aggiungendoli qui sotto (separati con una virgola)">
+<!ENTITY option.monospaced_senders2 "È possibile utilizzare i caratteri a larghezza fissa per i messaggi provenienti da determinati indirizzi e-mail aggiungendoli qui sotto (separati con una virgola)">
