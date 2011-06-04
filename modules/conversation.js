@@ -495,6 +495,9 @@ Conversation.prototype = {
           msgHdr: null,
           debug: "GA",
         } for each ([, glodaMsg] in Iterator(aItems))];
+        Log.debug("onItemsAdded",
+          [msgDebugColor(x) + x.debug + " " + x.glodaMsg.headerMessageID
+            for each (x in messages)].join(" "), Colors.default);
         // The message ids we already hold.
         let messageIds = {};
         [messageIds[toMsgHdr(m).messageId] = true
@@ -689,7 +692,8 @@ Conversation.prototype = {
 
   removeMessage: function _Conversation_removeMessage (aMessage) {
     // Move the quick reply to the previous message
-    let i = [msgHdrGetUri(toMsgHdr(x)) for each ([, x] in Iterator(this.messages))].indexOf(msgHdrGetUri(aMessage._msgHdr));
+    let i = [msgHdrGetUri(toMsgHdr(x)) for each ([, x] in Iterator(this.messages))]
+      .indexOf(msgHdrGetUri(aMessage._msgHdr));
     Log.debug("Removing message", i);
     if (i == this.messages.length - 1 && this.messages.length > 1) {
       let $ = this._htmlPane.contentWindow.$;
@@ -750,7 +754,6 @@ Conversation.prototype = {
       for each (let i in range(this.messages.length - aMessages.length, this.messages.length)) {
         this.messages[i].message.initialPosition = i;
         this.messages[i].message.onAddedToDom(domNodes[i]);
-        this.messages[i].message.expand();
         domNodes[i].setAttribute("tabindex", (i+2)+"");
       }
     }
