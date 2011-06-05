@@ -45,7 +45,7 @@ var bzNoCookieMsg =
   "read the documentation on the Thunderbird Conversations wiki.";
 
 let gBugzillaAPIs = {
-  "https://bugzilla.mozilla.org":
+  "https://bugzilla.mozilla.org/":
     "https://api-dev.bugzilla.mozilla.org/0.9/",
   "https://landfill.bugzilla.org/bzapi_sandbox/":
     "https://api-dev.bugzilla.mozilla.org/test/0.9/",
@@ -103,6 +103,8 @@ function BzComposeSession (match, apiUrl, [login, loginCookie]) {
     identity: null,
     msgHdr: null,
   };
+  let conv = Conversations.currentConversation;
+  this.message = conv.messages[conv.messages.length - 1].message;
 
   // This makes no sense in this context
   $(".useEditor").attr("disabled", true);
@@ -134,3 +136,79 @@ function BzComposeSession (match, apiUrl, [login, loginCookie]) {
     },
   });
 }
+
+const RE_BUG_NUMBER = /^bug-([\d]+)-/;
+
+BzComposeSession.prototype = {
+  send: function (options) {
+    let archive = options && options.archive;
+    let id = Conversations.currentConversation.id;
+    let results = RE_BUG_NUMBER.exec(this.message._msgHdr.messageId);
+    if (results && results.length) {
+      let bugNumber = results[1];
+      let url = this.makeQuery("bug/"+bugNumber+"/comment/");
+
+      let req = new XMLHttpRequest();
+      // Register a whole bunch of event listeners.
+      req.addEventListener("progress", function (event) {
+        if (event.lengthComputable) {
+          pValue(event.loaded/event.total);
+        } else {
+          pUndetermined();
+        }
+      }, false);
+      req.addEventListener("load", function (event) {
+        pValue(100);
+        let response = null;
+        try {
+          response = JSON.parse(req.responseText);
+        } catch (e) {
+          pText("Couldn't parse the BzAPI response. Somewhere, something went horribly wrong.");
+        }
+        if (response) {
+          if ("error" in response && response.error == "1") {
+            pText("Error code "+response.code+" : "+response.message);
+          } else {
+            if (id == Conversations.currentConversation.id) {
+              $(".quickReplyHeader").hide();
+              $(".quickReply").removeClass('expand');
+              $("textarea").val("");
+              // We can do this because we're in the right if-block.
+              gComposeSession = null;
+              gDraftListener.notifyDraftChanged("removed");
+            }
+            // Remove the old stored draft, don't use onDiscard, because the compose
+            //  params might have changed in the meanwhile.
+            if (id)
+              SimpleStorage.spin(function () {
+                yield ss.remove(id);
+                yield SimpleStorage.kWorkDone;
+              });
+            pText("Comment successfully sent.");
+            // Show the user everything went fine.
+            setTimeout(function () {
+              $(".quickReplyHeader").hide();
+            }, 1000);
+          }
+        }
+      }, false);
+      req.addEventListener("error", function (event) {
+        pText("There was an error sending the comment.");
+      }, false);
+      req.addEventListener("abort", function (event) {
+        pText("User aborted sending the comment.");
+      }, false);
+      // Now we're about to send.
+      Log.debug("Sending a bugzilla comment to", url);
+      $(".quickReplyHeader").show();
+      req.open("POST", url);
+      req.setRequestHeader('Accept', 'application/json');
+      req.setRequestHeader('Content-Type', 'application/json');
+      req.send(JSON.stringify({
+        text: $("textarea").val()
+      }));
+    } else {
+      pText("Couldn't send the comment, unable to figure out the bug number");
+    }
+  },
+};
