@@ -59,6 +59,21 @@ function bzSetup() {
       } else {
         document.getElementsByTagName("textarea")[0]
           .setAttribute("placeholder", strings.get("bzNoCookieMsg"));
+        $(".quickReply")
+          .append($("<div />")
+            .css("text-align", "right")
+            .css("padding-top", "5px")
+            .append($("<a>")
+              .css("color", "rgb(114, 159, 207)")
+              .css("text-decoration", "underline")
+              .text(strings.get("bzDoLogin"))
+              .attr("href", "javascript:")
+              .click(function () {
+                topMail3Pane(window).document.getElementById("tabmail")
+                  .openTab("contentTab",  { contentPage: url });
+              })
+          )
+        );
         return null;
       }
     } else {
