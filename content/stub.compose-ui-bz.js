@@ -39,11 +39,6 @@
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource:///modules/iteratorUtils.jsm");
 
-var bzNoCookieMsg =
-  "This a bugzilla thread. Thunderbird Conversations is able to turn a reply to "+
-  "this email thread into a comment on the corresponding bug. To do this, please "+
-  "read the documentation on the Thunderbird Conversations wiki.";
-
 let gBugzillaAPIs = {
   "https://bugzilla.mozilla.org/":
     "https://api-dev.bugzilla.mozilla.org/0.9/",
@@ -63,9 +58,13 @@ function bzSetup() {
         return [bzUrl, cookie];
       } else {
         document.getElementsByTagName("textarea")[0]
-          .setAttribute("placeholder", bzNoCookieMsg);
+          .setAttribute("placeholder", strings.get("bzNoCookieMsg"));
         return null;
       }
+    } else {
+      document.getElementsByTagName("textarea")[0]
+        .setAttribute("placeholder", strings.get("bzNoApiUrlMsg"));
+      return null;
     }
   } else {
     return null;
@@ -157,49 +156,51 @@ BzComposeSession.prototype = {
           pUndetermined();
         }
       }, false);
+      req.addEventListener("error", function (event) {
+        pText(strings.get("bzMsgXHRError"));
+      }, false);
+      req.addEventListener("abort", function (event) {
+        pText(strings.get("bzMsgXHRAbort"));
+      }, false);
+      // This is where the real analysis is happening...
       req.addEventListener("load", function (event) {
         pValue(100);
         let response = null;
         try {
           response = JSON.parse(req.responseText);
         } catch (e) {
-          pText("Couldn't parse the BzAPI response. Somewhere, something went horribly wrong.");
+          pText(strings.get("bzMsgCantParse"));
         }
         if (response) {
           if ("error" in response && response.error == "1") {
-            pText("Error code "+response.code+" : "+response.message);
+            pText(strings.get("bzMsgError", [response.code, response.message]));
           } else {
+            pText(strings.get("bzMsgSuccess"));
+            // Only operate if we haven't changed conversations in the
+            // meanwhile.
             if (id == Conversations.currentConversation.id) {
-              $(".quickReplyHeader").hide();
+              setTimeout(function () {
+                $(".quickReplyHeader").hide();
+              }, 1000);
               $(".quickReply").removeClass('expand');
               $("textarea").val("");
               // We can do this because we're in the right if-block.
               gComposeSession = null;
               gDraftListener.notifyDraftChanged("removed");
             }
-            // Remove the old stored draft, don't use onDiscard, because the compose
-            //  params might have changed in the meanwhile.
+            // Remove the old stored draft, don't use onDiscard, because the
+            // compose params might have changed in the meanwhile.
             if (id)
               SimpleStorage.spin(function () {
                 yield ss.remove(id);
                 yield SimpleStorage.kWorkDone;
               });
-            pText("Comment successfully sent.");
-            // Show the user everything went fine.
-            setTimeout(function () {
-              $(".quickReplyHeader").hide();
-            }, 1000);
           }
         }
       }, false);
-      req.addEventListener("error", function (event) {
-        pText("There was an error sending the comment.");
-      }, false);
-      req.addEventListener("abort", function (event) {
-        pText("User aborted sending the comment.");
-      }, false);
       // Now we're about to send.
       Log.debug("Sending a bugzilla comment to", url);
+      pText(strings.get("bzMsgStartSending"));
       $(".quickReplyHeader").show();
       req.open("POST", url);
       req.setRequestHeader('Accept', 'application/json');
@@ -208,7 +209,7 @@ BzComposeSession.prototype = {
         text: $("textarea").val()
       }));
     } else {
-      pText("Couldn't send the comment, unable to figure out the bug number");
+      pText(strings.get("bzRegexpFail"));
     }
   },
 };
