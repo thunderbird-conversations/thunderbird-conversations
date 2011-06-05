@@ -122,7 +122,7 @@ function BzComposeSession (match, apiUrl, [login, loginCookie]) {
 
   // This makes no sense in this context
   $(".useEditor").attr("disabled", true);
-  $(".editRecipientList, .recipientList").hide();
+  $(".editRecipientList, .recipientList, .showCc, .showBcc").hide();
   $(".fromField").text(strings.get("bzLoggedIn", [apiUrl]));
   // Because loadDraft expects this to be JSON data...
   $("#to, #cc, #bcc").val("[]");
@@ -157,6 +157,7 @@ BzComposeSession.prototype = {
   send: function (options) {
     let archive = options && options.archive;
     let id = Conversations.currentConversation.id;
+    let conv = Conversations.currentConversation;
     let results = RE_BUG_NUMBER.exec(this.message._msgHdr.messageId);
     if (results && results.length) {
       let bugNumber = results[1];
@@ -210,6 +211,8 @@ BzComposeSession.prototype = {
                 yield ss.remove(id);
                 yield SimpleStorage.kWorkDone;
               });
+            if (archive)
+              msgHdrsArchive(conv.msgHdrs.filter(function (x) !msgHdrIsArchive(x)));
           }
         }
       }, false);
