@@ -314,7 +314,7 @@ Message.prototype = {
       else
         return newValue;
     };
-    if (infos) {
+    if (Object.keys(infos).length) {
       let items = [];
       for each (let k in ["product", "component", "keywords", "severity",
           "status", "priority", "assigned-to", "target-milestone"]) {
@@ -384,7 +384,7 @@ Message.prototype = {
     }
 
     // 1b) Don't show "to me" if this is a bugzilla email
-    if (this.bugzillaInfos) {
+    if (Object.keys(this.bugzillaInfos).length) {
       data.bugzillaClass = "bugzilla";
       try {
         let url = this.bugzillaInfos["url"];
