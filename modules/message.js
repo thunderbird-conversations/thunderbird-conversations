@@ -269,6 +269,7 @@ function Message(aConversation) {
   this.mailingLists = [];
   this.isReplyListEnabled = null;
   this.isReplyAllEnabled = null;
+  this.bugzillaInfos = {};
 
   // Filled by the conversation, useful to know whether we were initially the
   //  first message in the conversation or not...
@@ -324,7 +325,7 @@ Message.prototype = {
           items.push(key+": "+makeArrow(oldInfos[k], infos[k]));
         }
       }
-      if (String.trim(infos["changed-fields"]).length)
+      if (infos["changed-fields"] && String.trim(infos["changed-fields"]).length)
         items.push("Changed: "+infos["changed-fields"]);
       let m = this._snippet.match(this.RE_BZ_COMMENT);
       if (m && m.length && String.trim(m[1]).length)

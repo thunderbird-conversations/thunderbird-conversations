@@ -1,0 +1,136 @@
+/* ***** BEGIN LICENSE BLOCK *****
+ * Version: MPL 1.1/GPL 2.0/LGPL 2.1
+ *
+ * The contents of this file are subject to the Mozilla Public License Version
+ * 1.1 (the "License"); you may not use this file except in compliance with
+ * the License. You may obtain a copy of the License at
+ * http://www.mozilla.org/MPL/
+ *
+ * Software distributed under the License is distributed on an "AS IS" basis,
+ * WITHOUT WARRANTY OF ANY KIND, either express or implied. See the License
+ * for the specific language governing rights and limitations under the
+ * License.
+ *
+ * The Original Code is Thunderbird Conversations
+ *
+ * The Initial Developer of the Original Code is
+ *  Jonathan Protzenko <jonathan.protzenko@gmail.com>
+ * Portions created by the Initial Developer are Copyright (C) 2010
+ * the Initial Developer. All Rights Reserved.
+ *
+ * Contributor(s):
+ *
+ * Alternatively, the contents of this file may be used under the terms of
+ * either the GNU General Public License Version 2 or later (the "GPL"), or
+ * the GNU Lesser General Public License Version 2.1 or later (the "LGPL"),
+ * in which case the provisions of the GPL or the LGPL are applicable instead
+ * of those above. If you wish to allow use of your version of this file only
+ * under the terms of either the GPL or the LGPL, and not to allow others to
+ * use your version of this file under the terms of the MPL, indicate your
+ * decision by deleting the provisions above and replace them with the notice
+ * and other provisions required by the GPL or the LGPL. If you do not delete
+ * the provisions above, a recipient may use your version of this file under
+ * the terms of any one of the MPL, the GPL or the LGPL.
+ *
+ * ***** END LICENSE BLOCK ***** */
+
+"use strict";
+
+Cu.import("resource://gre/modules/Services.jsm");
+Cu.import("resource:///modules/iteratorUtils.jsm");
+
+var bzNoCookieMsg =
+  "This a bugzilla thread. Thunderbird Conversations is able to turn a reply to "+
+  "this email thread into a comment on the corresponding bug. To do this, please "+
+  "read the documentation on the Thunderbird Conversations wiki.";
+
+let gBugzillaAPIs = {
+  "https://bugzilla.mozilla.org":
+    "https://api-dev.bugzilla.mozilla.org/0.9/",
+  "https://landfill.bugzilla.org/bzapi_sandbox/":
+    "https://api-dev.bugzilla.mozilla.org/test/0.9/",
+};
+
+function bzSetup() {
+  let conv = Conversations.currentConversation;
+  let lastMsg = conv.messages[conv.messages.length - 1].message;
+  if ("url" in lastMsg.bugzillaInfos) {
+    let url = lastMsg.bugzillaInfos.url;
+    if (url in gBugzillaAPIs) {
+      let cookie = getBugzillaCookie(url);
+      let bzUrl = gBugzillaAPIs[url];
+      if (cookie) {
+        return [bzUrl, cookie];
+      } else {
+        document.getElementsByTagName("textarea")[0]
+          .setAttribute("placeholder", bzNoCookieMsg);
+        return null;
+      }
+    }
+  } else {
+    return null;
+  }
+
+}
+
+function getBugzillaCookie(aUrl) {
+  let uri = Services.io.newURI(aUrl, null, null);
+  let cookies = Services.cookies.getCookiesFromHost(uri.host);
+  let login = null;
+  let loginCookie = null;
+  for each (let cookie in fixIterator(cookies, Ci.nsICookie)) {
+    if (cookie.name == "Bugzilla_login")
+      login = cookie.value;
+    if (cookie.name == "Bugzilla_logincookie")
+      loginCookie = cookie.value;
+  }
+  Log.debug(Colors.blue, "Bugzilla", login, loginCookie, Colors.default);
+  if (login && loginCookie)
+    return [login, loginCookie];
+  else
+    return null;
+}
+
+function BzComposeSession (match, apiUrl, [login, loginCookie]) {
+  // A visitor pattern.
+  //  match({ reply(nsIMsgDbHdr), draft({ msgUri, from, to, cc, bcc, body }) })
+  this.match = match;
+  // A composition session may be setup (i.e. the fields in the UI filled with
+  //  the right values), but that doesn't mean the user has edited it yet...
+  this.startedEditing = false;
+  // So that we don't break the rest of the UI.
+  this.params = {
+    identity: null,
+    msgHdr: null,
+  };
+
+  // This makes no sense in this context
+  $(".useEditor").attr("disabled", true);
+  $(".editRecipientList, .recipientList").hide();
+  $(".fromField").text(strings.get("bzLoggedIn", [apiUrl]));
+  // Because loadDraft expects this to be JSON data...
+  $("#to, #cc, #bcc").val("[]");
+
+  this.makeQuery = function (action) {
+    let queryString =
+      apiUrl + action + "?userid=" + login + "&cookie=" + loginCookie;
+    return queryString;
+  }
+
+  let mainWindow = topMail3Pane(window);
+  let self = this;
+  // Implement the required minima so that loading and saving a draft work.
+  match({
+    reply: function (aMessage) {
+      let aMsgHdr = aMessage._msgHdr;
+      let suggestedIdentity = mainWindow.getIdentityForHeader(aMsgHdr, Ci.nsIMsgCompType.ReplyAll);
+      self.params.identity = suggestedIdentity || gIdentities.default;
+      self.params.msgHdr = aMsgHdr;
+    },
+    draft: function ({ msgUri, from, body }) {
+      self.params.identity = gIdentities[from] || gIdentities.default;
+      self.params.msgHdr = msgUriToMsgHdr(msgUri);
+      $("textarea").val(body);
+    },
+  });
+}

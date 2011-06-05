@@ -19,6 +19,8 @@
   <script type="application/javascript;version=1.8"
     src="chrome://conversations/content/stub.compose-ui.js"></script>
   <script type="application/javascript;version=1.8"
+    src="chrome://conversations/content/stub.compose-ui-bz.js"></script>
+  <script type="application/javascript;version=1.8"
     src="chrome://conversations/content/stub.completion-ui.js"></script>
   <script type="application/javascript;version=1.8"><![CDATA[
     // Below are mostly UI utility functions.
@@ -71,7 +73,6 @@
     });
 
     function alignAttachments(aMsgNode) {
-      Log.debug("Aligning attachments...");
       $(aMsgNode._domNode).find(".align").vAlign();
     }
 
@@ -582,7 +583,7 @@
           <li class="showCc"><a onclick="showCc(); editFields();" href="javascript:">${str("addCc")}</a> |</li>
           <li class="showBcc"><a onclick="showBcc(); editFields();" href="javascript:">${str("addBcc")}</a></li>
         </ul>
-        <ul>
+        <ul class="fromField">
           ${str("fieldFrom")}
           <li class="senderName"></li>
         </ul>
@@ -643,7 +644,7 @@
         <button id="save" style="float:right" onclick="onSave(event);">${str("save")}</button>
         <button id="discard" style="float: left;"
           onclick="confirmDiscard()">${str("discard")}</button>
-        <button style="float: left; margin-left: 3px"
+        <button style="float: left; margin-left: 3px" class="useEditor"
           onclick="onUseEditor();">${str("continueEditor")}</button>
       </div>
     </div>
