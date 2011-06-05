@@ -768,8 +768,15 @@ Conversation.prototype = {
       dumpCallStack(e);
     }
 
-    // Re-do the expand/collapse + scroll to the right node stuff.
-    this._expandAndScroll();
+    // Re-do the expand/collapse + scroll to the right node stuff. What this
+    // means is if: if we just added new messages, don't touch the other ones,
+    // and expand/collapse only the newer messages. If we have no new messages,
+    // we probably have a different selection in the thread pane, which means we
+    // have to redo the expand/collapse.
+    if (aMessages.length)
+      this._expandAndScroll(this.messages.length - aMessages.length);
+    else
+      this._expandAndScroll();
     // Update the folder tags, maybe we were called because we changed folders
     this.viewWrapper = new ViewWrapper(this);
     [m.message.inView = this.viewWrapper.isInView(m)
@@ -993,7 +1000,9 @@ Conversation.prototype = {
 
   // Do all the penible stuff about scrolling to the right message and expanding
   // the right message
-  _expandAndScroll: function _Conversation_expandAndScroll () {
+  _expandAndScroll: function _Conversation_expandAndScroll (aStart) {
+    if (aStart === undefined)
+      aStart = 0;
     let focusThis = this._tellMeWhoToScroll();
     let expandThese = this._tellMeWhoToExpand(focusThis);
     let messageNodes = this._domNode.getElementsByClassName(Message.prototype.cssClass);
@@ -1020,19 +1029,25 @@ Conversation.prototype = {
     }, this.messages.length);
 
     for each (let [i, action] in Iterator(expandThese)) {
-      switch (action) {
-        case kActionExpand:
-          this.messages[i].message.expand();
-          break;      
-        case kActionCollapse:
-          this.messages[i].message.collapse();
-          this._signal();
-          break;      
-        case kActionDoNothing:
-          this._signal();
-          break;
-        default:
-          Log.error("Unknown action");
+      // If we were instructed to start operating only after the i-1 messages,
+      // don't do anything.
+      if (i < aStart) {
+        this._signal();
+      } else {
+        switch (action) {
+          case kActionExpand:
+            this.messages[i].message.expand();
+            break;
+          case kActionCollapse:
+            this.messages[i].message.collapse();
+            this._signal();
+            break;
+          case kActionDoNothing:
+            this._signal();
+            break;
+          default:
+            Log.error("Unknown action");
+        }
       }
     }
   },
