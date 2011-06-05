@@ -1214,45 +1214,50 @@ function MessageFromDbHdr(aConversation, aMsgHdr) {
   Log.warn("Streaming the message because Gloda has not indexed it, this is BAD");
   try {
     MsgHdrToMimeMessage(aMsgHdr, null, function(aMsgHdr, aMimeMsg) {
-      if (aMimeMsg == null) {
-        self._fallbackSnippet();
-        return;
+      try {
+        if (aMimeMsg == null) {
+          self._fallbackSnippet();
+          return;
+        }
+
+        let [text, meta] = mimeMsgToContentSnippetAndMeta(aMimeMsg, aMsgHdr.folder, kSnippetLength);
+        self._snippet = text;
+        let alternativeSender = PluginHelpers.alternativeSender({ mime: aMimeMsg, header: aMsgHdr });
+        if (alternativeSender) {
+          self._realFrom = self._from;
+          self._from = self.parse(alternativeSender)[0];
+        }
+
+        self.bugzillaInfos = PluginHelpers.bugzilla({ mime: aMimeMsg, header: aMsgHdr }) || {};
+
+        self._attachments = aMimeMsg.allUserAttachments
+          .filter(function (x) x.isRealAttachment);
+        let listPost = aMimeMsg.get("list-post");
+        if (listPost) {
+          let r = listPost.match(self.RE_LIST_POST);
+          if (r.length)
+            self.mailingLists = [r[1]];
+        }
+        Log.debug(self.mailingLists);
+
+        self.isReplyListEnabled = 
+          aMimeMsg &&
+          aMimeMsg.has("list-post") &&
+          self.RE_LIST_POST.exec(aMimeMsg.get("list-post"))
+        ;
+        self.isReplyAllEnabled = 
+          parseMimeLine(aMimeMsg.get("from"), true)
+          .concat(parseMimeLine(aMimeMsg.get("to"), true))
+          .concat(parseMimeLine(aMimeMsg.get("cc"), true))
+          .concat(parseMimeLine(aMimeMsg.get("bcc"), true))
+          .filter(function (x) !(x.email in gIdentities))
+          .length > 1;
+
+        self._signal();
+      } catch (e) {
+        Log.error(e);
+        dumpCallStack(e);
       }
-
-      let [text, meta] = mimeMsgToContentSnippetAndMeta(aMimeMsg, aMsgHdr.folder, kSnippetLength);
-      self._snippet = text;
-      let alternativeSender = PluginHelpers.alternativeSender({ mime: aMimeMsg, header: aMsgHdr });
-      if (alternativeSender) {
-        self._realFrom = self._from;
-        self._from = self.parse(alternativeSender)[0];
-      }
-
-      self.bugzillaInfos = PluginHelpers.bugzilla({ mime: aMimeMsg, header: aMsgHdr });
-
-      self._attachments = aMimeMsg.allUserAttachments
-        .filter(function (x) x.isRealAttachment);
-      let listPost = aMimeMsg.get("list-post");
-      if (listPost) {
-        let r = listPost.match(self.RE_LIST_POST);
-        if (r.length)
-          self.mailingLists = [r[1]];
-      }
-      Log.debug(self.mailingLists);
-
-      self.isReplyListEnabled = 
-        aMimeMsg &&
-        aMimeMsg.has("list-post") &&
-        self.RE_LIST_POST.exec(aMimeMsg.get("list-post"))
-      ;
-      self.isReplyAllEnabled = 
-        parseMimeLine(aMimeMsg.get("from"), true)
-        .concat(parseMimeLine(aMimeMsg.get("to"), true))
-        .concat(parseMimeLine(aMimeMsg.get("cc"), true))
-        .concat(parseMimeLine(aMimeMsg.get("bcc"), true))
-        .filter(function (x) !(x.email in gIdentities))
-        .length > 1;
-
-      self._signal();
     }, true, {
       partsOnDemand: true,
     });
