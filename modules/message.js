@@ -1299,7 +1299,7 @@ let PostStreamingFixesMixIn = {
   ,
 
   tweakFonts: function (iframeDoc) {
-    let textSize = Math.round(this.defaultSize * 12 / 16);
+    let textSize = Math.round(100 * this.defaultSize * 12 / 16) / 100;
 
     // Assuming 16px is the default (like on, say, Linux), this gives
     //  18px and 12px, which what Andy had in mind.
@@ -1355,7 +1355,7 @@ let PostStreamingFixesMixIn = {
   },
 
   detectQuotes: function (iframe) {
-    let smallSize = Math.round(this.defaultSize * 11 / 16);
+    let smallSize = Math.round(100 * this.defaultSize * 11 / 16) / 100;
 
     // Launch various crappy pieces of code^W^W^W^W heuristics to
     //  convert most common quoting styles to real blockquotes. Spoiler:
