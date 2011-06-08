@@ -43,7 +43,12 @@
 }
 
 html {
-  font-size: 62.5%;
+  /* This is what we set from stub.xhtml, for Linux/Windows:
+   *   font-size: 62.5%; (16px default size => we rebase to 10px)
+   * for MacOSX:
+   *   font-size: 66.6%; (15px default size => we rebase to 10px).
+   * This rule is added dynamically by stub.xhtml.
+   */
 }
 
 body {
