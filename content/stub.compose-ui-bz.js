@@ -39,6 +39,12 @@
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource:///modules/iteratorUtils.jsm");
 
+if (!("cookies" in Services)) {
+  XPCOMUtils.defineLazyServiceGetter(Services, "cookies",
+                                     "@mozilla.org/cookiemanager;1",
+                                     "nsICookieManager2");
+}
+
 let gBugzillaAPIs = {
   "https://bugzilla.mozilla.org/":
     "https://api-dev.bugzilla.mozilla.org/0.9/",

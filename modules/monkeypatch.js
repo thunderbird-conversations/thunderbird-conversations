@@ -472,13 +472,13 @@ MonkeyPatch.prototype = {
                     //  mark as read. Otherwise, it's not, since we may silently
                     //  mark new messages as read.
                     if (isDifferentConversation) {
-                      //Log.debug(Colors.red, "Marking the whole conversation as read", Colors.default);
+                      Log.debug(Colors.red, "Marking the whole conversation as read", Colors.default);
                       aConversation.read = true;
                     }
                   } else if (scrollMode == Prefs.kScrollSelected) {
                     // We don't seem to have a reflow when the thread is expanded
                     //  so no risk of silently marking conversations as read.
-                    //Log.debug(Colors.red, "Marking selected messages as read", Colors.default);
+                    Log.debug(Colors.red, "Marking selected messages as read", Colors.default);
                     msgHdrsMarkAsRead(aSelectedMessages, true);
                   } else {
                     Log.assert(false, "GIVE ME ALGEBRAIC DATA TYPES!!!");
