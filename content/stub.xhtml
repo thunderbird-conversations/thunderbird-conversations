@@ -217,6 +217,21 @@
     Components.utils.import("resource://conversations/log.js");
 
     let Log = setupLogging("Conversations.Stub");
+    let isOSX = ("nsILocalFileMac" in Components.interfaces);
+
+    $(document).ready(function () {
+      let stylesheet = [x
+        for each ([, x] in Iterator(document.styleSheets))
+        if (String.indexOf(x.href, "/conversation.css") >= 0)][0];
+      if (stylesheet) {
+        if (isOSX)
+          stylesheet.insertRule("html { font-size: 66.6%; }", 0);
+        else
+          stylesheet.insertRule("html { font-size: 62.5%; }", 0);
+      } else {
+        Log.error("No stylesheet. This is unexpected.");
+      }
+    });
 
     // Mark the current conversation as read/unread. The conversation driver
     //  takes care of setting the right class on us whenever the state
