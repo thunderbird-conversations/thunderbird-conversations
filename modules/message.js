@@ -843,7 +843,8 @@ Message.prototype = {
     let tagList = this._domNode.getElementsByClassName("regular-tags")[1];
     while (tagList.firstChild)
       tagList.removeChild(tagList.firstChild);
-    for each (let [, tag] in Iterator(tags)) {
+    for each (let [, mtag] in Iterator(tags)) {
+      let tag = mtag;
       let document = this._domNode.ownerDocument;
       let colorClass = "blc-" + MailServices.tags.getColorForKey(tag.key).substr(1);
       let tagName = tag.tag;
