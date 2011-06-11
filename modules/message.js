@@ -792,7 +792,9 @@ Message.prototype = {
     let children = toNode.children;
     let hide = function (aNode) aNode.classList.add("show-with-details");
     let width = function (x) x.offsetWidth;
-    let lineHeight = Math.round(this.defaultSize * .625 * 1.8); // per the CSS file
+    let baseSize = isOSX ? 15 : 16;
+    let textSize = Math.round(100 * this.defaultSize * 12 / baseSize) / 100;
+    let lineHeight = textSize * 1.8; // per the CSS file
     let overflows = function () parseInt(toNode.offsetHeight) > lineHeight;
 
     if (overflows()) {
