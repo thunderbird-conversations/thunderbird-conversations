@@ -966,11 +966,6 @@ Message.prototype = {
           try {
             iframe.removeEventListener("load", f_temp1, true);
 
-            // Fill the text node that will end up being printed. We can't
-            // really print iframes, they don't wrap...
-            let bodyContainer = self._domNode.getElementsByClassName("body-container")[0];
-            bodyContainer.textContent = htmlToPlainText(iframe.contentDocument.body.innerHTML);
-
             // Notify hooks that we just finished displaying a message. Must be
             //  performed now, not later. This gives plugins a chance to modify
             //  the DOM of the message (i.e. decrypt it) before we tweak the
@@ -1158,7 +1153,76 @@ Message.prototype = {
     // which means we can use offsetHeight, getComputedStyle and stuff on it.
     let container = this._domNode.getElementsByClassName("iframe-container")[0];
     container.appendChild(iframe);
-  }
+  },
+
+  /**
+   * Returns the message's text, assuming it's been streamed already (i.e.
+   * expanded). We're extracting a plaintext version of the body from what's in
+   * the <iframe>, modulo a few cosmetic cleanups. The collapsed quoted parts
+   * are *not* included.
+   */
+  get bodyAsText () {
+    // This function tries to clean up the email's body by removing hidden
+    // blockquotes, removing signatures, etc. Note: sometimes there's a little
+    // quoted text left over, need to investigate why...
+    let prepare = function (aNode) {
+      let node = aNode.cloneNode(true);
+      for each (let [, x] in Iterator(node.getElementsByClassName("moz-txt-sig")))
+        if (x)
+          x.parentNode.removeChild(x);
+      for each (let [, x] in Iterator(node.querySelectorAll("blockquote, div")))
+        if (x && x.style.display == "none")
+          x.parentNode.removeChild(x);
+      return node.innerHTML;
+    };
+    let body = htmlToPlainText(prepare(this.iframe.contentWindow.document.body))
+    // Remove trailing newlines, it gives a bad appearance.
+    body = body.replace(/[\n\r]*$/, "");
+    return body;
+  },
+
+  /**
+   * Fills the bodyContainer <div> with the plaintext contents of the message
+   * for printing.
+   */
+  dumpPlainTextForPrinting: function _Message_dumpPlainTextForPrinting() {
+    // printConversation from content/stub.xhtml calls us, regardless of whether
+    // we've streamed the message yet, or not, so the iframe might not be ready
+    // yet. That's ok, since we will print the snippet anyway.
+    if (this.iframe) {
+      // Fill the text node that will end up being printed. We can't
+      // really print iframes, they don't wrap...
+      let bodyContainer = this._domNode.getElementsByClassName("body-container")[0];
+      bodyContainer.textContent = this.bodyAsText;
+    }
+  },
+
+  /**
+   * This function is called for the "Forward conversation" action. The idea is
+   * that we want to forward a plaintext version of the message, so we try and
+   * do our best to give this. We're trying not to stream it once more!
+   */
+  exportAsHtml: function _Message_exportAsHtml() {
+    let author = escapeHtml(this._contacts[0]._name);
+    let date = new Date(this._msgHdr.date/1000).toLocaleString("%x");
+    // We try to convert the bodies to plain text, to enhance the readibility in
+    // the forwarded conversation. Note: <pre> tags are not converted properly
+    // it seems, need to investigate...
+    let body = this.iframe
+      ? this.bodyAsText
+      : "<i>" + this._snippet + "</i>..."
+    ;
+    // Do our little formatting...
+    let html = [
+      '<b><span style="color: #396BBD">', author, '</span></b><br />',
+      '<span style="color: #666">', date, '</span><br />',
+      '<br />',
+      '<div style="white-space: pre-wrap; color: #666">',
+        escapeHtml(body),
+      '</div>',
+    ].join("");
+    return html;
+  },
 }
 
 MixIn(Message, EventHelperMixIn);

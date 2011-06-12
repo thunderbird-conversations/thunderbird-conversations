@@ -181,8 +181,8 @@ button img {
   background-image: url("chrome://conversations/content/i/junk.png");
 }
 
-.actions span.print {
-  background-image: url("chrome://conversations/content/i/print.png");
+.actions span.conversation-menu-button {
+  background-image: url("chrome://conversations/content/i/envelope.png");
 }
 
 .actions span.tab {
@@ -862,6 +862,26 @@ button.replyDropDown {
 
 .body-container {
   display: none;
+}
+
+/* conversation global menu */
+
+#conversationMenuWrapper {
+  display: none;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, .2);;
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  z-index: 200;
+}
+
+.conversationMenu {
+  background-color: white;
+  border: 1px solid #aaa;
+  -moz-box-shadow: 0 0 0 6px rgba(0,0,0,0.25);
+  -moz-border-radius: 5px;
+  width: 200px;
 }
 
 /* clearfix */

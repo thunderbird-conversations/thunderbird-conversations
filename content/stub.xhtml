@@ -46,6 +46,22 @@
       };
     })(jQuery);
 
+    function hideConversationMenu() {
+      $("#conversationMenuWrapper").css("display", "none");
+    }
+
+    function showConversationMenu() {
+      $("#conversationMenuWrapper").css("display", "block");
+      let menu = $(".conversationMenu");
+      let win = $(window);
+      let h = menu.height();
+      let w = menu.width();
+      let wh = win.height();
+      let ww = win.width();
+      menu.css("margin-top", (wh-h)/2);
+      menu.css("margin-left", (ww-w)/2);
+    }
+
     function clearMenu() {
       let menus = document.getElementsByClassName("menu");
       for each (let [, menu] in Iterator(menus))
@@ -67,6 +83,10 @@
     $(document).ready(function () {
       document.addEventListener("click", function (event) {
         clearMenu();
+      }, false);
+      document.addEventListener("keypress", function (event) {
+        if (event.keyCode == KeyEvent.DOM_VK_ESCAPE)
+          clearMenu();
       }, false);
     });
 
@@ -211,6 +231,7 @@
     //  be used either in a standalone tab or in the multimessage pane.
     // let Conversations = window.top.Conversations;
 
+    Components.utils.import("resource:///modules/mailServices.js");
     Components.utils.import("resource://conversations/stdlib/misc.js");
     Components.utils.import("resource://conversations/stdlib/msgHdrUtils.js");
     Components.utils.import("resource://conversations/prefs.js");
@@ -266,6 +287,27 @@
 
     function deleteConversation(event) {
       msgHdrsDelete(Conversations.currentConversation.msgHdrs);
+    }
+
+    function forwardConversation(event) {
+      let fields = Cc["@mozilla.org/messengercompose/composefields;1"]
+                      .createInstance(Components.interfaces.nsIMsgCompFields);
+      fields.characterSet = "UTF-8";
+      fields.bodyIsAsciiOnly = false;
+      fields.forcePlainText = false;
+      fields.body = Conversations.currentConversation.exportAsHtml();
+      let params = Cc["@mozilla.org/messengercompose/composeparams;1"]
+                      .createInstance(Components.interfaces.nsIMsgComposeParams);
+      params.format = Components.interfaces.nsIMsgCompFormat.HTML;
+      params.composeFields = fields;
+      return MailServices.compose.OpenComposeWindowWithParams(null, params);
+    }
+
+    function printConversation(event) {
+      for each (let { message: m } in Conversations.currentConversation.messages) {
+        m.dumpPlainTextForPrinting();
+      }
+      window.print();
     }
 
     function junkConversation(event) {
@@ -675,8 +717,8 @@
           <button title="&stub.archive.tooltip;" onclick="archiveConversation(event);">
             <span class="archive"></span>
           </button>
-          <button title="&stub.print.tooltip;" onclick="window.print();">
-            <span class="print"></span>
+          <button title="&stub.menu.tooltip;" onclick="showConversationMenu(event); event.stopPropagation();">
+            <span class="conversation-menu-button"></span>
           </button>
           <button title="&stub.junk.tooltip;" class="junk-button" onclick="junkConversation(event);">
             <span class="junk"></span>
@@ -696,6 +738,32 @@
     </div>
     <ul id="messageList">
     </ul>
+    <div id="conversationMenuWrapper" class="menu">
+      <div class="conversationMenu dropDown">
+        <ul>
+          <li class="action-archive">
+            <a href="javascript:" onclick="archiveConversation(event);">
+              &stub.archive.tooltip;
+            </a>
+          </li>
+          <li class="action-delete">
+            <a href="javascript:" onclick="deleteConversation(event);">
+              &stub.trash.tooltip;
+            </a>
+          </li>
+          <li class="action-forward">
+            <a href="javascript:" onclick="forwardConversation(event);">
+              &stub.forward.tooltip;
+            </a>
+          </li>
+          <li class="action-print">
+            <a href="javascript:" onclick="printConversation(event);">
+              &stub.print.tooltip;
+            </a>
+          </li>
+        </ul>
+      </div>
+    </div>
   </div>
 </body>
 </html>
