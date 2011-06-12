@@ -130,7 +130,6 @@ MonkeyPatch.prototype = {
                           .getService(Ci.nsIObserverService);
     observerService.addObserver({
       observe: function(aMsgFolder, aTopic, aData) {  
-        Log.debug("MsgCreateDBView -- registering our custom column handler");
         window.gDBView.addColumnHandler("betweenCol", columnHandler);
       }
     }, "MsgCreateDBView", false);
@@ -194,9 +193,6 @@ MonkeyPatch.prototype = {
         if (rootIndex >= 0) {
           isExpanded = window.gDBView.isContainer(rootIndex)
             && !window.gFolderDisplay.view.isCollapsedThreadAtIndex(rootIndex);
-          Log.debug("1 = 2 && !3", isExpanded,
-            window.gDBView.isContainer(rootIndex),
-            window.gFolderDisplay.view.isCollapsedThreadAtIndex(rootIndex));
         }
       } catch (e) {
         Log.debug("Error in the onLocationChange handler "+e+"\n");
@@ -245,7 +241,7 @@ MonkeyPatch.prototype = {
 
   // nsIObserver
   observe: function (aSubject, aTopic, aData) {
-    Log.debug("Observing", aTopic, aData);
+    // Log.debug("Observing", aTopic, aData);
     // Why do we need such a convoluted shutdown procedure? The thing is, unless
     //  the current tab is the standard folder view, customizations such as the
     //  folder view columns won't take effect. So we need to switch to the first
@@ -553,10 +549,10 @@ MonkeyPatch.prototype = {
 
           let selectedCount = this.folderDisplay.selectedCount;
           Log.debug("Intercepted message load, ", selectedCount, " message(s) selected");
-          dump(Colors.red);
+          /*dump(Colors.red);
           for each (let msgHdr in this.folderDisplay.selectedMessages)
             dump("  " + msgHdr.folder.URI + "#" + msgHdr.messageKey + "\n");
-          dump(Colors.default);
+          dump(Colors.default);*/
 
           if (selectedCount == 0) {
             // So we're not copying the code here. This changes nothing, and the
