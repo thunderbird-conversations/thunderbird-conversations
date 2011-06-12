@@ -7,12 +7,21 @@
 
 
 
+
 -->
 <!ENTITY window.title "Gmail Conversation View Options">
 <!ENTITY title.message_display "Üzenet megjelenítése">
+<!ENTITY option.expand_who "By default, expand:">
+<!ENTITY option.expand_auto2 "Automatic">
+<!ENTITY option.expand_auto2.tooltip "If the thread is collapsed, expand all unread messages or the last message. If it is expanded, only expand the selected message in the message list.">
+<!ENTITY option.expand_none "No messages">
+<!ENTITY option.expand_all "All messages">
 <!ENTITY title.quoting "Quoting">
 <!ENTITY option.hide_longer_than "Hide quoted text higher than">
 <!ENTITY option.lines "sor">
 <!ENTITY title.advanced "Haladó">
+<!ENTITY title.assistant "Setup assistant">
+<!ENTITY option.assistant "Start the setup assistant">
 <!ENTITY title.advanced_display "Beszélgetés megjelenítése">
 <!ENTITY option.no_friendly_date "Use &quot;normal&quot; dates, just like the message list">
+<!ENTITY option.monospaced_senders2 "Messages from those addresses/mailing-lists should be displayed in monospaced fonts (separate using commas)">

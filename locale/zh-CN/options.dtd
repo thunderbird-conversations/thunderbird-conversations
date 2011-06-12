@@ -6,10 +6,13 @@
 
 
 
+
 -->
 <!ENTITY window.title "Gmail会话视图-选项">
 <!ENTITY title.message_display "消息显示">
 <!ENTITY option.expand_who "默认：展开">
+<!ENTITY option.expand_auto2 "自动">
+<!ENTITY option.expand_auto2.tooltip "如果折叠会话，则显示所有未读邮件或最后一封邮件。如果展开会话，仅展开邮件列表中的指定邮件.">
 <!ENTITY option.expand_none "没有邮件">
 <!ENTITY option.expand_all "所有邮件">
 <!ENTITY title.quoting "引用和折叠">
@@ -20,3 +23,4 @@
 <!ENTITY option.assistant "启动安装助手">
 <!ENTITY title.advanced_display "会话显示">
 <!ENTITY option.no_friendly_date "使用&quot;正常&quot;日期。与邮件列表中相同">
+<!ENTITY option.monospaced_senders2 "从指定地址或邮件列表中发出的邮件需以等宽字体显示（使用逗号分隔）">

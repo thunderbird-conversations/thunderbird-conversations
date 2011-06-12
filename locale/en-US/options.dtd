@@ -2,6 +2,7 @@
      long. This can cause the contents to overflow and be hidden, so make sure
      everything is displayed properly. 
 
+
 -->
 <!ENTITY window.title "Thunderbird Conversations Options">
 <!ENTITY title.message_display "Message display">

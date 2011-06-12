@@ -1,3 +1,9 @@
+<!-- Please open the "Preferences" window and DO check that your text is not too
+     long. This can cause the contents to overflow and be hidden, so make sure
+     everything is displayed properly. 
+
+
+-->
 <!ENTITY window.title "Επιλογές Thunderbird Conversations">
 <!ENTITY title.message_display "Εμφάνιση μηνυμάτων">
 <!ENTITY option.expand_who "Ανάπτυξη (σαν προεπιλογή):">

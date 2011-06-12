@@ -1,8 +1,22 @@
+<!-- Please open the "Preferences" window and DO check that your text is not too
+     long. This can cause the contents to overflow and be hidden, so make sure
+     everything is displayed properly. 
+
+
+-->
 <!ENTITY window.title "הגדרות של תצוגת שיחה">
 <!ENTITY title.message_display "תצוגת הודעה">
+<!ENTITY option.expand_who "כברירת מחדל, הרחב:‏">
+<!ENTITY option.expand_auto2 "באופן עצמאי">
+<!ENTITY option.expand_auto2.tooltip "במידה והחוט מקופל, הרחב כל הודעות שלא נקראו או הודעה האחרונה. במידה והחוט מורחב, הרחב רק את ההודעות הנבחרות ברשימת ההודעות.‏">
+<!ENTITY option.expand_none "אין הודעות">
+<!ENTITY option.expand_all "כל ההודעות">
 <!ENTITY title.quoting "ציטוט">
 <!ENTITY option.hide_longer_than "החבא ציטוטים גבוה מאשר">
 <!ENTITY option.lines "שורות">
 <!ENTITY title.advanced "מתקדם">
+<!ENTITY title.assistant "אשף התקנה">
+<!ENTITY option.assistant "התחל את אשף ההתקנה">
 <!ENTITY title.advanced_display "תצוגת שיחה">
 <!ENTITY option.no_friendly_date "תשתמש בתאריכים &quot;רגילים&quot;, כמו ברשימת ההודעות">
+<!ENTITY option.monospaced_senders2 "הודעות מכתובות/תפוצות אלו יוצגו בגופן רוחב-קבוע (הפרד באמצעות פסיקים)‏">
