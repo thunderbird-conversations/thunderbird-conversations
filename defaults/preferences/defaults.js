@@ -5,4 +5,3 @@ pref("conversations.no_friendly_date", false);
 pref("conversations.version", 0);
 pref("conversations.nruns", 0);
 pref("conversations.uninstall_infos", "{}");
-pref("gconversation.path", "conversations");

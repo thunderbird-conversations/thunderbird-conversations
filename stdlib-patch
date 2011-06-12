@@ -1,0 +1,72 @@
+diff --git a/SimpleStorage.js b/SimpleStorage.js
+index 7a1385e..2329df7 100644
+--- a/SimpleStorage.js
++++ b/SimpleStorage.js
+@@ -45,13 +45,7 @@ var EXPORTED_SYMBOLS = ['SimpleStorage']
+ 
+ const {classes: Cc, interfaces: Ci, utils: Cu, results : Cr} = Components;
+ 
+-let ext = __LOCATION__.path.match(/(\w+)@\w+/)[1];
+-let extPath = Cc["@mozilla.org/preferences-service;1"]
+-              .getService(Ci.nsIPrefService)
+-              .getBranch(null)
+-              .getCharPref(ext+".path");
+-
+-Cu.import("resource://"+extPath+"/log.js");
++Cu.import("resource://conversations/log.js");
+ let Log = setupLogging(logRoot+".SimpleStorage");
+ 
+ Log.debug("Simple Storage loaded.");
+diff --git a/compose.js b/compose.js
+index defcfd8..ba67051 100644
+--- a/compose.js
++++ b/compose.js
+@@ -49,20 +49,13 @@ var EXPORTED_SYMBOLS = [
+ 
+ const {classes: Cc, interfaces: Ci, utils: Cu, results : Cr} = Components;
+ 
+-// __LOCATION__ is nsILocalFile
+-let ext = __LOCATION__.path.match(/(\w+)@\w+/)[1];
+-let extPath = Cc["@mozilla.org/preferences-service;1"]
+-              .getService(Ci.nsIPrefService)
+-              .getBranch(null)
+-              .getCharPref(ext+".path");
+-
+ Cu.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI, defineLazyServiceGetter
+ Cu.import("resource://gre/modules/NetUtil.jsm");
+ Cu.import("resource:///modules/gloda/mimemsg.js"); // For MsgHdrToMimeMessage
+ 
+-Cu.import("resource://"+extPath+"/stdlib/misc.js");
+-Cu.import("resource://"+extPath+"/stdlib/msgHdrUtils.js");
+-Cu.import("resource://"+extPath+"/log.js");
++Cu.import("resource://conversations/stdlib/misc.js");
++Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
++Cu.import("resource://conversations/log.js");
+ 
+ let Log = setupLogging(logRoot+".Stdlib");
+ 
+diff --git a/send.js b/send.js
+index 5d3ce26..3248eb7 100644
+--- a/send.js
++++ b/send.js
+@@ -63,16 +63,10 @@ try {
+ 
+ const mCompType = Ci.nsIMsgCompType;
+ 
+-let ext = __LOCATION__.path.match(/(\w+)@\w+/)[1];
+-let extPath = Cc["@mozilla.org/preferences-service;1"]
+-              .getService(Ci.nsIPrefService)
+-              .getBranch(null)
+-              .getCharPref(ext+".path");
+-
+-Cu.import("resource://"+extPath+"/stdlib/misc.js");
+-Cu.import("resource://"+extPath+"/stdlib/msgHdrUtils.js");
+-Cu.import("resource://"+extPath+"/stdlib/compose.js");
+-Cu.import("resource://"+extPath+"/log.js");
++Cu.import("resource://conversations/stdlib/misc.js");
++Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
++Cu.import("resource://conversations/stdlib/compose.js");
++Cu.import("resource://conversations/log.js");
+ 
+ let Log = setupLogging(logRoot+".Send");
+ 
