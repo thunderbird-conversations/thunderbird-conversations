@@ -13,7 +13,7 @@
 <!ENTITY assistant.actionAttachmentsInline "添付ファイルをインライン表示しない (<strong>おすすめ</strong>)">
 <!ENTITY assistant.actionOfflineDownload "受信トレイと送信済みトレイをオフライン表示用に同期する (<strong>おすすめ</strong>)">
 <!ENTITY assistant.actionUnifiedInboxSearchesSent "受信トレイから送信済みトレイ内を参照する (<strong>おすすめ</strong>)">
-<!ENTITY assistant.actionSetupView "ローカルフォルダに切り替え、スレッド表示、送信日時で並び替え、未読列と新機能&quot;参加者&quot;列を表示する (<strong>おすすめ</strong>)">
+<!ENTITY assistant.actionSetupView "共通受信トレイに切り替え、スレッド表示、送信日時で並び替え、未読列と新機能&quot;参加者&quot;列を表示する (<strong>おすすめ</strong>)">
 <!ENTITY assistant.actionSetupViewDefaults "すべてのフォルダで上記の設定を使用する">
 <!ENTITY assistant.actionEnsureMessagePaneVisible "メッセージペインを表示する">
 <!ENTITY assistant.settings2 "オプションを後で変更したい場合、アドオンの設定画面にある&quot;詳細&quot;タブよりこのアシスタント画面を表示できます。">
