@@ -229,6 +229,18 @@
         msgNode.setAttribute("tabindex", index+2);
     }, true);
 
+    function closeTab() {
+      let browser = window.frameElement;
+      let tabmail = window.top.document.getElementById("tabmail");
+      let tabs = tabmail.tabInfo;
+      let candidates = tabs.filter(function (x) x.browser == browser);
+      if (candidates.length == 1) {
+        tabmail.closeTab(candidates[0]);
+      } else {
+        Log.error("Couldn't find a tab to close...");
+      }
+    }
+
     // Below are event listeners for various actions. There is some logic
     //  involved, and they may talk to other parts of the code.
 
@@ -244,6 +256,7 @@
 
     let Log = setupLogging("Conversations.Stub");
     let isOSX = ("nsILocalFileMac" in Components.interfaces);
+    let isInTab = false;
 
     $(document).ready(function () {
       let stylesheet = [x
@@ -292,6 +305,8 @@
 
     function deleteConversation(event) {
       msgHdrsDelete(Conversations.currentConversation.msgHdrs);
+      if (isInTab)
+        closeTab();
     }
 
     function forwardConversation(event) {
@@ -373,6 +388,7 @@
       // yay!
       if ("urls" in params) {
         try {
+          isInTab = true;
           window.frameElement.setAttribute("tooltip", "aHTMLTooltip");
           let mainWindow = topMail3Pane(window);
           let willExpand = parseInt(params.willExpand);
