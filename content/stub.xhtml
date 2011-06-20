@@ -53,7 +53,11 @@
     }
 
     function displayMenu(event) {
-      let menu = event.target.nextElementSibling;
+      let target = event.target;
+      // This is a hack to make it work when we click the downwardArrow.
+      if (!target.nextElementSibling)
+        target = target.parentNode;
+      let menu = target.nextElementSibling;
       let menuWasVisible = (menu.style.display == "-moz-box")
           || (menu.style.display == "inline-block")
           || (menu.style.display == "block");
