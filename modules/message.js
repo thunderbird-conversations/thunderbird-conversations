@@ -467,7 +467,13 @@ Message.prototype = {
 
     let self = this;
     this._domNode.getElementsByClassName("messageHeader")[0]
-      .addEventListener("click", function () self.toggle(), false);
+      .addEventListener("click", function () {
+        self._conversation._runOnceAfterNSignals(function () {
+          if (self.expanded)
+            self._conversation._htmlPane.contentWindow.scrollNodeIntoView(self._domNode);
+        }, 1);
+        self.toggle();
+      }, false);
 
     let keyListener = new KeyListener(this);
     this._domNode.addEventListener("keypress", function (event) {
@@ -1038,10 +1044,23 @@ Message.prototype = {
             // Everything's done, so now we're able to settle for a height.
             iframe.style.height = iframeDoc.body.scrollHeight+"px";
 
+            // So now we might overflow horizontally, which causes a horizontal
+            // scrollbar to appear, which narrows the vertical height available,
+            // which causes a vertical scrollbar to appear.
+            let iframeStyle = self._conversation._window.getComputedStyle(iframe, null);
+            let iframeExternalWidth = parseInt(iframeStyle.width);
+            // 20px is a completely arbitrary default value which I hope is
+            // greater
+            if (iframeDoc.body.scrollWidth > iframeExternalWidth) {
+              Log.debug("Horizontal overflow detected.");
+              iframe.style.height = (iframeDoc.body.scrollHeight + 20)+"px";
+            }
+
             // Sometimes setting the iframe's content and height changes
             // the scroll value, don't know why.
-            if (originalScroll)
+            if (false && originalScroll) {
               self._domNode.ownerDocument.documentElement.scrollTop = originalScroll;
+            }
 
             self._didStream = true;
             self._signal();
