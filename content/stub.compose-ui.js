@@ -328,7 +328,10 @@ ComposeSession.prototype = {
         let aMsgHdr = aMessage._msgHdr;
         // Standard procedure for finding which identity to send with, as per
         //  http://mxr.mozilla.org/comm-central/source/mail/base/content/mailCommands.js#210
-        let suggestedIdentity = mainWindow.getIdentityForHeader(aMsgHdr, Ci.nsIMsgCompType.ReplyAll);
+        let compType = aMessage.isReplyListEnabled
+          ? Ci.nsIMsgCompType.ReplyList
+          : Ci.nsIMsgCompType.ReplyAll;
+        let suggestedIdentity = mainWindow.getIdentityForHeader(aMsgHdr, compType);
         identity = suggestedIdentity || gIdentities.default;
       },
 
