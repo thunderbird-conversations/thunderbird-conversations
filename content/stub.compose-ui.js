@@ -147,6 +147,7 @@ function onDiscard(event) {
   $("textarea").val("");
   $(".quickReply").removeClass('expand');
   $(".quickReplyHeader").hide();
+  $('.quickReplyRecipients').removeClass('edit');
   let id = Conversations.currentConversation.id;
   if (id)
     SimpleStorage.spin(function () {
@@ -666,6 +667,7 @@ function createStateListener (aComposeSession, aMsgHdrs, aId) {
           $(".quickReplyHeader").hide();
           $(".quickReply").removeClass('expand');
           $("textarea").val("");
+          $('.quickReplyRecipients').removeClass('edit');
           // We can do this because we're in the right if-block.
           gComposeSession = null;
           gDraftListener.notifyDraftChanged("removed");
