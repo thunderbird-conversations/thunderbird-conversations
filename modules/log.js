@@ -1,5 +1,6 @@
 var EXPORTED_SYMBOLS = ["setupLogging", "dumpCallStack", "logRoot", "Colors"]
 
+Components.utils.import("resource://conversations/prefs.js");
 Components.utils.import("resource:///modules/gloda/log4moz.js");
 
 function setupLogging(name) {
@@ -18,7 +19,7 @@ function setupLogging(name) {
 }
 
 function setupFullLogging(name) {
-  dump(name+"\n\n");
+  // dump(name+"\n\n");
   // The basic formatter will output lines like:
   // DATE/TIME	LoggerName	LEVEL	(log message) 
   let formatter = new Log4Moz.BasicFormatter();
@@ -29,15 +30,17 @@ function setupFullLogging(name) {
   let root = Log;
   root.level = Log4Moz.Level["All"];
 
-  // A console appender outputs to the JS Error Console
-  let capp = new Log4Moz.ConsoleAppender(formatter);
-  capp.level = Log4Moz.Level["Warn"];
-  root.addAppender(capp);
+  if (Prefs.logging_enabled) {
+    // A console appender outputs to the JS Error Console
+    let capp = new Log4Moz.ConsoleAppender(formatter);
+    capp.level = Log4Moz.Level["Warn"];
+    root.addAppender(capp);
 
-  // A dump appender outputs to standard out
-  let dapp = new Log4Moz.DumpAppender(formatter);
-  dapp.level = Log4Moz.Level["All"];
-  root.addAppender(dapp);
+    // A dump appender outputs to standard out
+    let dapp = new Log4Moz.DumpAppender(formatter);
+    dapp.level = Log4Moz.Level["All"];
+    root.addAppender(dapp);
+  }
 
   Log.assert = function (aBool, aStr) {
     if (!aBool) {
