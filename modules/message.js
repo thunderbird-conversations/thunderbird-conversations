@@ -1275,7 +1275,7 @@ function MessageFromDbHdr(aConversation, aMsgHdr) {
 
       self._signal();
     }, true, {
-      partsOnDemand: true,
+      //partsOnDemand: true, // commented out because of bug 662792
     });
   } catch (e) {
     // Remember: these exceptions don't make it out of the callback (XPConnect
