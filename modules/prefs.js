@@ -17,6 +17,7 @@ const kStubUrl = "chrome://conversations/content/stub.xhtml";
 function PrefManager() {
   this.expand_who = prefsService.getIntPref("expand_who");
   this.no_friendly_date = prefsService.getBoolPref("no_friendly_date");
+  this.logging_enabled = prefsService.getBoolPref("logging_enabled");
   this.hide_quote_length = prefsService.getIntPref("hide_quote_length");
   // This is a hashmap
   this.monospaced_senders = {};
@@ -50,6 +51,7 @@ PrefManager.prototype = {
 
     switch (aData) {
       case "no_friendly_date":
+      case "logging_enabled":
         this[aData] = prefsService.getBoolPref(aData);
         break;
 
