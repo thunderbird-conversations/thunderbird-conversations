@@ -947,6 +947,8 @@ Message.prototype = {
 
     let originalScroll = this._domNode.ownerDocument.documentElement.scrollTop;
     let msgWindow = topMail3Pane(this).msgWindow;
+    // Workaround bug 659925 on branch.
+    topMail3Pane(this).messageHeaderSink.mProperties = null;
 
     let iframe = this._domNode.ownerDocument
       .createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "iframe");
