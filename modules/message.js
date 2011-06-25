@@ -299,6 +299,7 @@ Message.prototype = {
 
   RE_SNIPPET: /[\u0000-\u0009]/g,
   RE_BZ_COMMENT: /^--- Comment #\d+ from .* \d{4}.*? ---([\s\S]*)/m,
+  RE_MSGKEY: /number=(\d+)/,
 
 
   // This function is called before toTmplData, and allows us to adjust our
@@ -404,8 +405,10 @@ Message.prototype = {
       let isImage = (att.contentType.indexOf("image/") === 0);
       if (isImage)
         data.gallery = true;
+      let key = self._msgHdr.messageKey;
+      let url = att.url.replace(self.RE_MSGKEY, "number="+key);
       let [thumb, imgClass] = isImage
-        ? [att.url, "resize-me"]
+        ? [url, "resize-me"]
         : ["chrome://conversations/skin/icons/"+iconForMimeType(att.contentType), "icon"]
       ;
 
@@ -662,9 +665,13 @@ Message.prototype = {
     let attachmentInfos = [];
     for each (let [i, attNode] in Iterator(attachmentNodes)) {
       let att = this._attachments[i];
+      // The message keys can change over time, so do not assume that the msgkey
+      // that was picked at indexing-time is still valid.
+      let key = self._msgHdr.messageKey;
+      let url = att.url.replace(self.RE_MSGKEY, "number="+key);
 
       // I'm still surprised that this magically works
-      let uri = Services.io.newURI(att.url, null, null)
+      let uri = Services.io.newURI(url, null, null)
                         .QueryInterface(Ci.nsIMsgMessageUrl)
                         .uri;
 
@@ -674,26 +681,32 @@ Message.prototype = {
       let attInfo;
       if (newAttAPI)
         attInfo = new mainWindow.AttachmentInfo(
-          att.contentType, att.url, att.name, uri, att.isExternal
+          att.contentType, url, att.name, uri, att.isExternal
         );
       else
         attInfo = new mainWindow.createNewAttachmentInfo(
-          att.contentType, att.url, att.name, uri, att.isExternal
+          att.contentType, url, att.name, uri, att.isExternal
         );
 
       this.register(attNode.getElementsByClassName("open-attachment")[0], function (event) {
-        Log.debug("Opening attachment");
-        if (newAttAPI)
-          attInfo.open();
-        else
-          mainWindow.openAttachment(attInfo);
+        try {
+          if (newAttAPI)
+            attInfo.open();
+          else
+            mainWindow.openAttachment(attInfo);
+        } catch (e) {
+          Log.warn(e);
+        }
       });
       this.register(attNode.getElementsByClassName("download-attachment")[0], function (event) {
-        Log.debug("Downloading attachment");
-        if (newAttAPI)
-          attInfo.save();
-        else
-          mainWindow.saveAttachment(attInfo);
+        try {
+          if (newAttAPI)
+            attInfo.save();
+          else
+            mainWindow.saveAttachment(attInfo);
+        } catch (e) {
+          Log.warn(e);
+        }
       });
 
       let maybeViewable = 
@@ -707,7 +720,7 @@ Message.prototype = {
         this.register(img, function (event) {
           mainWindow.document.getElementById("tabmail").openTab(
             "contentTab",
-            { contentPage: att.url }
+            { contentPage: url }
           );
         });
       }
@@ -716,17 +729,17 @@ Message.prototype = {
       attNode.addEventListener("dragstart", function (event) {
         // mail/base/content/mailCore.js:602
         let info;
-        if (/(^file:|&filename=)/.test(att.url))
-          info = att.url;
+        if (/(^file:|&filename=)/.test(url))
+          info = url;
         else
-          info = att.url + "&type=" + att.contentType +
+          info = url + "&type=" + att.contentType +
                      "&filename=" + encodeURIComponent(att.name);
         event.dataTransfer.setData("text/x-moz-url",
                                    info + "\n" + att.name + "\n" + att.size);
-        event.dataTransfer.setData("text/x-moz-url-data", att.url);
+        event.dataTransfer.setData("text/x-moz-url-data", url);
         event.dataTransfer.setData("text/x-moz-url-desc", att.name);
         event.dataTransfer.setData("application/x-moz-file-promise-url",
-                                   att.url);
+                                   url);
         // XXX I have no idea whether this is useful...
         event.dataTransfer.setData("application/x-moz-file-promise", null);
       }, false);
