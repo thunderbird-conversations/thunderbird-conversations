@@ -907,10 +907,6 @@ Conversation.prototype = {
 
     Log.debug("Outputting",
       [msgDebugColor(x) + x.debug for each (x in this.messages)], Colors.default);
-    for each (let message in this.messages) {
-      let msgHdr = toMsgHdr(message);
-      dump("  " + msgHdr.folder.URI + "#" + msgHdr.messageKey + "\n");
-    }
 
     // Fill in the HTML right away. The has the nice side-effect of erasing the
     // previous conversation (but not the conversation-wide event handlers!)

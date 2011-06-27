@@ -542,9 +542,6 @@ MonkeyPatch.prototype = {
     window.MessageDisplayWidget.prototype.onSelectedMessagesChanged =
       function _onSelectedMessagesChanged_patched () {
         try {
-          // What a nice pun! If bug 320550 was fixed, I could print
-          // \u2633\u1f426 and that would be very smart.
-          dump("\n"+Colors.red+"\u2633 New Conversation"+Colors.default+"\n");
           if (!this.active)
             return true;
           window.ClearPendingReadTimer();
@@ -552,10 +549,6 @@ MonkeyPatch.prototype = {
 
           let selectedCount = this.folderDisplay.selectedCount;
           Log.debug("Intercepted message load, ", selectedCount, " message(s) selected");
-          dump(Colors.red);
-          for each (let msgHdr in this.folderDisplay.selectedMessages)
-            dump("  " + msgHdr.folder.URI + "#" + msgHdr.messageKey + "\n");
-          dump(Colors.default);
 
           if (selectedCount == 0) {
             // So we're not copying the code here. This changes nothing, and the
