@@ -1,15 +1,8 @@
 <!-- Please open the "Preferences" window and DO check that your text is not too
      long. This can cause the contents to overflow and be hidden, so make sure
      everything is displayed properly. 
-
-
-
-
-
-
-
 -->
-<!ENTITY window.title "Options de &quot;GMail Conversation View&quot;">
+<!ENTITY window.title "Options de l'extension « Thunderbird Conversations »">
 <!ENTITY title.message_display "Affichage des messages">
 <!ENTITY option.expand_who "Par défaut, développer :">
 <!ENTITY option.expand_auto2 "Automatiquement">
