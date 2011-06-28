@@ -5,6 +5,7 @@ html, body {
 
 body {
   font-family: "DejaVu Sans", "Lucida Grande", "Tahoma", sans;
+  background-color: white;
   color: #4b4742;
   font-size: 12px;
 }
