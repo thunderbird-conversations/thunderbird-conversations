@@ -449,6 +449,10 @@ MonkeyPatch.prototype = {
                 && (window.Conversations.currentConversation.counter != aConversation.counter);
               let isDifferentConversation = !window.Conversations.currentConversation
                   || (window.Conversations.currentConversation.counter != aConversation.counter);
+              // Make sure we have a global root --> conversation --> persistent
+              //  query chain to prevent the Conversation object (and its inner
+              //  query) to be collected. The Conversation keeps watching the
+              //  Gloda query for modified items (read/unread, starred, tags...).
               window.Conversations.currentConversation = aConversation;
               if (isDifferentConversation) {
                 // Here, put the final touches to our new conversation object.
@@ -493,10 +497,6 @@ MonkeyPatch.prototype = {
               }, Prefs.getInt("mailnews.mark_message_read.delay.interval")
                 * Prefs.getBool("mailnews.mark_message_read.delay") * 1000);
             });
-            // Make sure we have a global root --> conversation --> persistent
-            //  query chain to prevent the Conversation object (and its inner
-            //  query) to be collected. The Conversation keeps watching the
-            //  Gloda query for modified items (read/unread, starred, tags...).
           } catch (e) {
             Log.error(e);
             dumpCallStack(e);
@@ -611,10 +611,8 @@ MonkeyPatch.prototype = {
           let obj = listener.get();
           if (obj)
             obj.onMsgHasRemoteContent();
-          else
-            Log.debug("Yay! Weak references actually work.");
         }
-        msgListeners[messageId] = msgListeners[messageId].filter(function (x) (x != null));
+        msgListeners[messageId] = msgListeners[messageId].filter(function (x) (x.get() != null));
       }
       // Wicked case: we have the conversation and another tab with a message
       //  from the conversation in that tab. So to be safe, forward the call.
