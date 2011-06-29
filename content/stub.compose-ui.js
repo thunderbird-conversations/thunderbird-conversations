@@ -82,7 +82,7 @@ function registerQuickReply() {
     },
   };
 
-  Log.debug("Registering draft listener for id", id);
+  //Log.debug("Registering draft listener for id", id);
   if (!(id in mainWindow.Conversations.draftListeners))
     mainWindow.Conversations.draftListeners[id] = [];
   mainWindow.Conversations.draftListeners[id].push(Cu.getWeakReference(gDraftListener));

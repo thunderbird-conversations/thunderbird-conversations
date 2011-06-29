@@ -194,9 +194,6 @@ MonkeyPatch.prototype = {
         if (rootIndex >= 0) {
           isExpanded = window.gDBView.isContainer(rootIndex)
             && !window.gFolderDisplay.view.isCollapsedThreadAtIndex(rootIndex);
-          Log.debug("1 = 2 && !3", isExpanded,
-            window.gDBView.isContainer(rootIndex),
-            window.gFolderDisplay.view.isCollapsedThreadAtIndex(rootIndex));
         }
       } catch (e) {
         Log.debug("Error in the onLocationChange handler "+e+"\n");
