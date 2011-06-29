@@ -296,7 +296,7 @@ Message.prototype = {
       this._domNode.classList.remove("inView");
   },
 
-  RE_SNIPPET: /[\u0000-\u0009]/g,
+  RE_SNIPPET: /[\u0000-\u0008\u000b-\u000c\u000e-\u001f]/g,
   RE_BZ_COMMENT: /^--- Comment #\d+ from .* \d{4}.*? ---([\s\S]*)/m,
   RE_MSGKEY: /number=(\d+)/,
 
