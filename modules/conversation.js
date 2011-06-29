@@ -561,7 +561,10 @@ Conversation.prototype = {
         //  where we lie about this: non-strictly threaded messages regrouped
         //  together, special queries for GitHub and GetSatisfaction, etc..
         // Don't really knows what happens in those cases.
-        self.id = aCollection.items[0].conversation.id;
+        // I've seen cases where we do have intermediate results for the message
+        // header but the final collection after filtering has zero items.
+        if (aCollection.items.length)
+          self.id = aCollection.items[0].conversation.id;
         // Beware, some bad things might have happened in the meanwhile...
         self._initialSet =
           self._initialSet.filter(function (msgHdr) msgHdr && msgHdr.folder.msgDatabase.ContainsKey(msgHdr.messageKey));
@@ -590,6 +593,7 @@ Conversation.prototype = {
           msgHdr: null,
           debug: "GM", // G = Gloda, M = interMediate
         } for each ([, glodaMsg] in Iterator(self._intermediateResults))
+          if (glodaMsg.folderMessage) // be paranoid
         ]);
         // Here's the message IDs we know
         let messageIds = {};
