@@ -373,22 +373,14 @@ ComposeSession.prototype = {
       reply: function (aMessage) {
         let identity = self.params.identity;
         let msgHdr = self.params.msgHdr;
-        // This is very simple; either we've got a mailing-list, and then the
-        // default action is reply to list. Otherwise, this is either reply all
-        // or reply, and replyAllParams works for both. We do that so that the
-        // action in the quick reply area is consistent with what's displayed in
-        // the smart reply button.
-        if (aMessage.isReplyListEnabled) {
-          let token = asToken(null, null, aMessage.mailingLists[0], null);
-          setupAutocomplete([token], [], []);
-        } else {
-          replyAllParams(identity, msgHdr, function (params) {
-            let to = [asToken(null, name, email, null) for each ([name, email] in params.to)];
-            let cc = [asToken(null, name, email, null) for each ([name, email] in params.cc)];
-            let bcc = [asToken(null, name, email, null) for each ([name, email] in params.bcc)];
-            setupAutocomplete(to, cc, bcc);
-          });
-        }
+        // We default to reply all, and that's the way it is. This is equivalent
+        // to reply if there's only one person involved, so don't bother.
+        replyAllParams(identity, msgHdr, function (params) {
+          let to = [asToken(null, name, email, null) for each ([name, email] in params.to)];
+          let cc = [asToken(null, name, email, null) for each ([name, email] in params.cc)];
+          let bcc = [asToken(null, name, email, null) for each ([name, email] in params.bcc)];
+          setupAutocomplete(to, cc, bcc);
+        });
       },
 
       draft: function ({ to, cc, bcc }) {

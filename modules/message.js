@@ -544,10 +544,7 @@ Message.prototype = {
     if (!this.isReplyAllEnabled)
       replyAll.style.display = "none";
     // Register the right actions
-    if (this.isReplyListEnabled) {
-      this.register(".replyMainAction", function (event) self.compose(Ci.nsIMsgCompType.ReplyToList, event));
-      mainAction.textContent = replyList.textContent;
-    } else if (this.isReplyAllEnabled) {
+    if (this.isReplyAllEnabled) {
       this.register(".replyMainAction", function (event) self.compose(Ci.nsIMsgCompType.ReplyAll, event));
       mainAction.textContent = replyAll.textContent;
     } else {
