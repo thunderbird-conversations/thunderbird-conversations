@@ -41,6 +41,7 @@ const Cc = Components.classes;
 const Cu = Components.utils;
 const Cr = Components.results;
 
+Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI
 Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
 Cu.import("resource:///modules/gloda/mimemsg.js"); // For MsgHdrToMimeMessage
@@ -477,6 +478,9 @@ ComposeSession.prototype = {
     let msg = strings.get("sendAnEmptyMessage");
     if (!popOut && !$textarea.val().length && !confirm(msg))
       return;
+    let deliverMode = Services.io.offline
+      ? Ci.nsIMsgCompDeliverMode.Later
+      : Ci.nsIMsgCompDeliverMode.Now;
 
     return sendMessage({
         urls: [msgHdrGetUri(self.params.msgHdr)],
@@ -487,7 +491,7 @@ ComposeSession.prototype = {
         subject: self.params.subject,
       }, {
         compType: Ci.nsIMsgCompType.ReplyAll,
-        deliverType: Ci.nsIMsgCompDeliverMode.Now,
+        deliverType: deliverMode,
       }, { match: function (x) {
         x.plainText($textarea.val());
       }}, {
