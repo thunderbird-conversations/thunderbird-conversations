@@ -821,13 +821,19 @@ Message.prototype = {
       let dots = toNode.ownerDocument.createElement("a");
       dots.setAttribute("href", "javascript:null");
       dots.classList.add("link");
-      dots.textContent = "...";
       dots.classList.add("hide-with-details");
+      // We need to be conservative here, because if we don't set the number,
+      // then setting it in the end might trigger one more overflow...
+      dots.textContent = strings.get("andNMore", [999]);
       dots.addEventListener("click", function (event) {
         self._domNode.classList.add("with-details");
         event.stopPropagation();
       }, false);
+      toNode.appendChild(toNode.ownerDocument.createTextNode(" "));
       toNode.appendChild(dots);
+      // We need to hide an even number of nodes, so that there's no sepComma or
+      // sepAnd at the end of the list.
+      let nHidden = 0;
 
       // First find out how many names it takes to fill the message's width
       let approximateWidth = width(this._domNode);
@@ -839,14 +845,17 @@ Message.prototype = {
         i++;
       }
       // Hide all the others
-      [hide(children[x]) for (x in range(i, j))];
+      [(hide(children[x]), ++nHidden) for (x in range(i, j))];
       // And move backwards to hide just enough items (usually one or two) until
       //  we fit perfectly.
       i--;
       while (overflows() && i >= 0) {
-        hide(children[i]);
+        (hide(children[i]), ++nHidden);
         i--;
       }
+      if (nHidden % 2)
+        (hide(children[i]), ++nHidden);
+      dots.textContent = strings.get("andNMore", [nHidden/2]);
     }
   },
 

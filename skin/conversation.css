@@ -412,6 +412,10 @@ a img {
   display: none;
 }
 
+.link.hide-with-details {
+  font-weight: bold;
+}
+
 .message.with-details .hide-with-details {
   display: none;
 }
