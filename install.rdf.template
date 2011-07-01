@@ -117,6 +117,17 @@
 
     <em:localized>
       <Description>
+        <em:locale>ru-RU</em:locale>
+        <em:name>Thunderbird Conversations</em:name>
+        <em:description>Группирует Ваши электронные письма в беседах, с Вашими собственными включенными сообщениями, так же как в GMail.</em:description>
+        <em:translator>Sergey Podushkin and Gudo Alexander</em:translator>
+        <em:creator>Джонатан Проценко</em:creator>
+        <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
+      </Description>
+    </em:localized>
+
+    <em:localized>
+      <Description>
         <em:locale>sr</em:locale>
         <em:name>Thunderbird Conversations</em:name>
         <em:description>Групише е-поруке у разговоре, укључујући и Ваше поруке, као што то чини Gmail.</em:description>
