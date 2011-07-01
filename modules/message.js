@@ -1330,6 +1330,9 @@ let PostStreamingFixesMixIn = {
   ,
 
   tweakFonts: function (iframeDoc) {
+    if (!Prefs.tweak_bodies)
+      return;
+
     let baseSize = isOSX ? 15 : 16;
     let textSize = Math.round(100 * this.defaultSize * 12 / baseSize) / 100;
 
