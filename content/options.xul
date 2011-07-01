@@ -81,6 +81,7 @@
      <preferences>
        <preference id="monospaced_senders" name="conversations.monospaced_senders" type="string" />
        <preference id="no_friendly_date" name="conversations.no_friendly_date" type="bool" />
+       <preference id="tweak_bodies" name="conversations.tweak_bodies" type="bool" />
      </preferences>
 
      <groupbox>
@@ -92,6 +93,7 @@
      <groupbox>
        <caption label="&title.advanced_display;" />
        <checkbox label="&option.no_friendly_date;" preference="no_friendly_date" />
+       <checkbox label="&option.tweak_bodies;" preference="tweak_bodies" style="width: 0;" />
        <description style="width: 0;">&option.monospaced_senders2;</description>
        <textbox multiline="true" preference="monospaced_senders" />
      </groupbox>
