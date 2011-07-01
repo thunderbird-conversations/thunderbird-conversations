@@ -1249,7 +1249,7 @@ Message.prototype = {
     // it seems, need to investigate...
     let body = this.iframe
       ? this.bodyAsText
-      : "<i>" + this._snippet + "</i>..."
+      : this._snippet
     ;
     // Do our little formatting...
     let html = [
@@ -1257,7 +1257,7 @@ Message.prototype = {
       '<span style="color: #666">', date, '</span><br />',
       '<br />',
       '<div style="white-space: pre-wrap; color: #666">',
-        escapeHtml(body),
+        (this.iframe ? escapeHtml(body) : ("<i>" + escapeHtml(body) + "</i>...")),
       '</div>',
     ].join("");
     return html;
