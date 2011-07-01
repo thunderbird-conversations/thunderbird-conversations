@@ -65,6 +65,8 @@ const Contacts = {
   kTo: 1
 }
 
+const defaultPhotoURI = "chrome://messenger/skin/addressbook/icons/contact-generic.png";
+
 let Log = setupLogging("Conversations.Contact");
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
@@ -302,6 +304,7 @@ function ContactFromAB(manager, name, email) {
   this._name = name; // Initially, the displayed name. Might be enhanced later.
   this._email = email; // The original email. Use to pick a gravatar.
   this._profiles = {};
+  this._card = null;
 
   this.fetch();
 }
@@ -309,6 +312,7 @@ function ContactFromAB(manager, name, email) {
 ContactFromAB.prototype = {
   fetch: function _ContactFromAB_fetch() {
     let card = GlodaUtils.getCardForEmail(this._email);
+    this._card = card;
     if (card) {
       this.emails = [card.primaryEmail, card.getProperty("SecondEmail", "")];
       // Prefer:
@@ -327,10 +331,12 @@ ContactFromAB.prototype = {
   },
 
   get avatar () {
-    let gravatarUrl = "http://www.gravatar.com/avatar/"
-      + GlodaUtils.md5HashString(this._email.trim().toLowerCase())
-      + "?r=pg&d=wavatar&s=80";
-    return gravatarUrl;
+    if (this._card) {
+      let photoURI = this._card.getProperty("PhotoURI", "");
+      if (photoURI)
+        return photoURI;
+    }
+    return defaultPhotoURI;
   },
 }
 
@@ -344,9 +350,7 @@ function ContactFromPeople(manager, name, email) {
   this._manager = manager;
   this._name = name;
   this._email = email;
-  this.avatar = "http://www.gravatar.com/avatar/"
-      + GlodaUtils.md5HashString(this._email.trim().toLowerCase())
-      + "?r=pg&d=wavatar&s=80";
+  this.avatar = defaultPhotoURI;
   this._profiles = {};
 
   this.fetch();
