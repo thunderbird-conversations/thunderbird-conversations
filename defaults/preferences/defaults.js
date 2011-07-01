@@ -7,3 +7,4 @@ pref("conversations.nruns", 0);
 pref("conversations.uninstall_infos", "{}");
 pref("gconversation.path", "conversations");
 pref("conversations.logging_enabled", false);
+pref("conversations.tweak_bodies", true);
