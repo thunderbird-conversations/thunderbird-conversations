@@ -108,7 +108,7 @@
       <Description>
         <em:locale>ja-JP</em:locale>
         <em:name>Thunderbird Conversations</em:name>
-        <em:description>関連するメールをGmail風に一連の会話としてまとめます。自分で出したメールも含まれます。</em:description>
+        <em:description>返信メールが一目でわかるスレッドビューをあなたの Thunderbirdに!</em:description>
         <em:translator>SATO Kentaro</em:translator>
         <em:creator>Jonathan Protzenko</em:creator>
         <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
