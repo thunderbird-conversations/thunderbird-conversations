@@ -398,7 +398,12 @@
               document.getElementById("conversationHeader").classList.add("not-junkable");
               // Do this now so as to not defeat the whole expand/collapse
               // logic.
-              msgHdrsMarkAsRead(msgHdrs, true);
+              if (Prefs.getBool("mailnews.mark_message_read.auto")) {
+                setTimeout(function () {
+                  msgHdrsMarkAsRead(msgHdrs, true);
+                }, Prefs.getInt("mailnews.mark_message_read.delay.interval")
+                   * Prefs.getBool("mailnews.mark_message_read.delay") * 1000);
+              }
             });
           }
         } catch (e) {
