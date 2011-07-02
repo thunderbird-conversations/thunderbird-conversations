@@ -119,7 +119,7 @@ KeyListener.prototype = {
   //  this because otherwise events dont make it out of the <browser
   //  id="multimessage"> that holds us when the conversation view has focus.
   // That's what makes cmd/ctrl-n work properly.
-  onKeyPress: function _KeyListener_onKeyPressed (event) {
+  onKeyUp: function _KeyListener_onKeyPressed (event) {
     let self = this;
     let findMsgNode = function (msgNode) {
       let msgNodes = self.message._domNode.ownerDocument
@@ -130,7 +130,7 @@ KeyListener.prototype = {
     };
     switch (event.which) {
       case this.KeyEvent.DOM_VK_RETURN:
-      case 'o'.charCodeAt(0):
+      case 'O'.charCodeAt(0):
         if (!isAccel(event)) {
           this.message.toggle();
           event.preventDefault();
@@ -138,7 +138,7 @@ KeyListener.prototype = {
         }
         break;
 
-      case 'f'.charCodeAt(0):
+      case 'F'.charCodeAt(0):
         if (!isAccel(event)) {
           let [msgNodes, index] = findMsgNode(this.message._domNode);
           if (index < (msgNodes.length - 1)) {
@@ -152,7 +152,7 @@ KeyListener.prototype = {
         }
         break;
 
-      case 'b'.charCodeAt(0):
+      case 'B'.charCodeAt(0):
         if (!isAccel(event)) {
           let [msgNodes, index] = findMsgNode(this.message._domNode);
           if (index > 0) {
@@ -166,23 +166,19 @@ KeyListener.prototype = {
         }
         break;
 
-      case 'r'.charCodeAt(0):
-        if (isAccel(event)) {
-          this.message.compose(Ci.nsIMsgCompType.ReplyToSender, event);
-          event.preventDefault();
-          event.stopPropagation();
-        }
-        break;
-
       case 'R'.charCodeAt(0):
         if (isAccel(event)) {
-          this.message.compose(Ci.nsIMsgCompType.ReplyAll, event);
+          if (event.shiftKey) {
+            this.message.compose(Ci.nsIMsgCompType.ReplyAll, event);
+          } else {
+            this.message.compose(Ci.nsIMsgCompType.ReplyToSender, event);
+          }
           event.preventDefault();
           event.stopPropagation();
         }
         break;
 
-      case 'l'.charCodeAt(0):
+      case 'L'.charCodeAt(0):
         if (isAccel(event)) {
           this.message.forward(event);
           event.preventDefault();
@@ -190,7 +186,7 @@ KeyListener.prototype = {
         }
         break;
 
-      case 'u'.charCodeAt(0):
+      case 'U'.charCodeAt(0):
         if (!isAccel(event)) {
           // Hey, let's move back to this message next time!
           this.message._domNode.setAttribute("tabindex", "1");
@@ -200,7 +196,7 @@ KeyListener.prototype = {
         }
         break;
 
-      case 'a'.charCodeAt(0):
+      case 'A'.charCodeAt(0):
         if (!isAccel(event)) {
           msgHdrsArchive(this.message._conversation.msgHdrs);
           event.preventDefault();
@@ -210,7 +206,7 @@ KeyListener.prototype = {
 
       case this.KeyEvent.DOM_VK_DELETE:
         if (!isAccel(event)) {
-          msgHdrsDelete(this.message._conversation.msgHdrs);
+          this.message.removeFromConversation();
           event.preventDefault();
           event.stopPropagation();
         }
@@ -479,8 +475,8 @@ Message.prototype = {
       }, false);
 
     let keyListener = new KeyListener(this);
-    this._domNode.addEventListener("keypress", function (event) {
-      keyListener.onKeyPress(event);
+    this._domNode.addEventListener("keyup", function (event) {
+      keyListener.onKeyUp(event);
     }, false); // über-important: don't capture
 
     // Do this now because the star is visible even if we haven't been expanded
@@ -588,8 +584,7 @@ Message.prototype = {
       // We do this, otherwise we end up with messages in the conversation that
       //  don't have a message header, and that breaks pretty much all the
       //  assumptions...
-      self._conversation.removeMessage(self);
-      msgHdrsDelete([self._msgHdr]);
+      self.removeFromConversation();
       event.stopPropagation();
     });
 
@@ -893,6 +888,14 @@ Message.prototype = {
       tagList.appendChild(tagNode);
     }
     this._domNode.getElementsByClassName("regular-tags")[0].innerHTML = tagList.innerHTML;
+  },
+
+  removeFromConversation: function _Message_removeFromConversation() {
+    this._conversation.removeMessage(this);
+    msgHdrsDelete([this._msgHdr]);
+    let w = this._conversation._window;
+    if (w.isInTab && !this._conversation.messages.length)
+      w.closeTab();
   },
 
   // Convenience properties
