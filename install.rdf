@@ -6,7 +6,7 @@
 
   <Description about="urn:mozilla:install-manifest">
     <em:id>gconversation@xulforum.org</em:id>
-    <em:version>2.1alpha1.201107011152pre</em:version>
+    <em:version>2.1alpha1pre</em:version>
     
     <!-- Target Application this theme can install into, 
         with minimum and maximum supported versions. --> 
@@ -111,6 +111,17 @@
         <em:description>返信メールが一目でわかるスレッドビューをあなたの Thunderbirdに!</em:description>
         <em:translator>SATO Kentaro</em:translator>
         <em:creator>Jonathan Protzenko</em:creator>
+        <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
+      </Description>
+    </em:localized>
+
+    <em:localized>
+      <Description>
+        <em:locale>ru-RU</em:locale>
+        <em:name>Thunderbird Conversations</em:name>
+        <em:description>Группирует Ваши электронные письма в беседах, с Вашими собственными включенными сообщениями, так же как в GMail.</em:description>
+        <em:translator>Sergey Podushkin and Gudo Alexander</em:translator>
+        <em:creator>Джонатан Проценко</em:creator>
         <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
       </Description>
     </em:localized>
