@@ -24,7 +24,7 @@
     <em:creator>Jonathan Protzenko</em:creator>
     <em:optionsURL>chrome://conversations/content/options.xul</em:optionsURL>
     <em:iconURL>chrome://conversations/content/icon.png</em:iconURL>
-    <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
+    <em:homepageURL>http://github.com/protz/GMail-Conversation-View/wiki</em:homepageURL>
 
     <em:localized>
       <Description>
@@ -33,7 +33,7 @@
         <em:description>Gruppiert Ihre Nachrichten (inklusive Ihrer gesendeten) in Konversationen, ähnlich wie Googlemail es tut.</em:description>
         <em:translator>Sebastian Kronenwerth</em:translator>
         <em:creator>Jonathan Protzenko</em:creator>
-        <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
+        <em:homepageURL>http://github.com/protz/GMail-Conversation-View/wiki</em:homepageURL>
       </Description>
     </em:localized>
 
@@ -44,7 +44,7 @@
         <em:description>Προσφέρει εμφάνιση μηνυμάτων σε μορφή συνομιλίας στον Thunderbird!.</em:description>
         <em:translator>Γιώργος Φιωτάκης</em:translator>
         <em:creator>Jonathan Protzenko</em:creator>
-        <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
+        <em:homepageURL>http://github.com/protz/GMail-Conversation-View/wiki</em:homepageURL>
       </Description>
     </em:localized>
 
@@ -56,7 +56,7 @@
         <em:description>Brings a conversation view to a Thunderbird near you!</em:description>
         <em:translator>Jonathan Protzenko</em:translator>
         <em:creator>Jonathan Protzenko</em:creator>
-        <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
+        <em:homepageURL>http://github.com/protz/GMail-Conversation-View/wiki</em:homepageURL>
       </Description>
     </em:localized>
 
@@ -67,7 +67,7 @@
         <em:description>Permite visualizar los mensajes en modo de conversación, de igual manera que en GMail</em:description>
         <em:translator>Proyecto Nave</em:translator>
         <em:creator>Jonathan Protzenko</em:creator>
-        <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
+        <em:homepageURL>http://github.com/protz/GMail-Conversation-View/wiki</em:homepageURL>
       </Description>
     </em:localized>
 
@@ -78,7 +78,7 @@
         <em:description>Affiche vos emails sous la forme de "conversations" comme sur Gmail. Vos emails sont regroupés et s'affichent sous forme de résumés de fils de discussion.</em:description>
         <em:translator>Eric B</em:translator>
         <em:creator>Jonathan Protzenko</em:creator>
-        <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
+        <em:homepageURL>http://github.com/protz/GMail-Conversation-View/wiki</em:homepageURL>
       </Description>
     </em:localized>
 
@@ -89,7 +89,7 @@
         <em:description>כווץ את הודעות הדוא"ל בשיחות, כולל ההודעות שלך, בדומה לג'יימל.‏</em:description>
         <em:translator>Dotan Cohen</em:translator>
         <em:creator>Jonathan Protzenko</em:creator>
-        <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
+        <em:homepageURL>http://github.com/protz/GMail-Conversation-View/wiki</em:homepageURL>
       </Description>
     </em:localized>
 
@@ -100,7 +100,7 @@
         <em:description>Permette di visualizzare le e-mail sotto forma di conversazioni in modo analogo al sito web di Gmail</em:description>
         <em:translator>Luana Di Muzio - BabelZilla</em:translator>
         <em:creator>Jonathan Protzenko</em:creator>
-        <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
+        <em:homepageURL>http://github.com/protz/GMail-Conversation-View/wiki</em:homepageURL>
       </Description>
     </em:localized>
 
@@ -111,7 +111,7 @@
         <em:description>返信メールが一目でわかるスレッドビューをあなたの Thunderbirdに!</em:description>
         <em:translator>SATO Kentaro</em:translator>
         <em:creator>Jonathan Protzenko</em:creator>
-        <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
+        <em:homepageURL>http://github.com/protz/GMail-Conversation-View/wiki</em:homepageURL>
       </Description>
     </em:localized>
 
@@ -122,7 +122,7 @@
         <em:description>Группирует Ваши электронные письма в беседах, с Вашими собственными включенными сообщениями, так же как в GMail.</em:description>
         <em:translator>Sergey Podushkin and Gudo Alexander</em:translator>
         <em:creator>Джонатан Проценко</em:creator>
-        <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
+        <em:homepageURL>http://github.com/protz/GMail-Conversation-View/wiki</em:homepageURL>
       </Description>
     </em:localized>
 
@@ -133,7 +133,7 @@
         <em:description>Групише е-поруке у разговоре, укључујући и Ваше поруке, као што то чини Gmail.</em:description>
         <em:translator>Charmed94</em:translator>
         <em:creator>Jonathan Protzenko</em:creator>
-        <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
+        <em:homepageURL>http://github.com/protz/GMail-Conversation-View/wiki</em:homepageURL>
       </Description>
     </em:localized>
 
@@ -144,7 +144,7 @@
         <em:description>Visa dina e-brev som fullständiga trådar eller grupperade och med trådsammanfattningar, precis som hos Gmail.</em:description>
         <em:translator>Mikael Hiort af Ornäs</em:translator>
         <em:creator>Jonathan Protzenko</em:creator>
-        <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
+        <em:homepageURL>http://github.com/protz/GMail-Conversation-View/wiki</em:homepageURL>
       </Description>
     </em:localized>
 
@@ -155,7 +155,7 @@
         <em:description>按邮件话题集中显示相关邮件（包括你自己发出的邮件）, 同Gmail目前的邮件显示方式一致</em:description>
         <em:translator>Wellown</em:translator>
         <em:creator>夏若朗 (Jonathan Protzenko)</em:creator>
-        <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
+        <em:homepageURL>http://github.com/protz/GMail-Conversation-View/wiki</em:homepageURL>
       </Description>
     </em:localized> 
 
