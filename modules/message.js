@@ -775,7 +775,7 @@ Message.prototype = {
           window.startedEditing(true);
       }
       event.stopPropagation();
-    }, { action: "keypress" });
+    }, { action: "keyup" });
   },
 
   _reloadMessage: function _Message_reloadMessage () {
