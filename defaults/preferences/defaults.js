@@ -8,3 +8,4 @@ pref("conversations.uninstall_infos", "{}");
 pref("gconversation.path", "conversations");
 pref("conversations.logging_enabled", false);
 pref("conversations.tweak_bodies", true);
+pref("conversations.tweak_chrome", true);
