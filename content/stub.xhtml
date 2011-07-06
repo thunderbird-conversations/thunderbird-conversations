@@ -241,10 +241,14 @@
         for each ([, x] in Iterator(document.styleSheets))
         if (String.indexOf(x.href, "/conversation.css") >= 0)][0];
       if (stylesheet) {
-        if (isOSX)
-          stylesheet.insertRule("html { font-size: 66.6%; }", 0);
-        else
-          stylesheet.insertRule("html { font-size: 62.5%; }", 0);
+        if (Prefs.tweak_chrome) {
+          if (isOSX)
+            stylesheet.insertRule("html { font-size: 66.6%; }", 0);
+          else
+            stylesheet.insertRule("html { font-size: 62.5%; }", 0);
+        } else {
+          stylesheet.insertRule("html { font-size: 83.3%; }", 0);
+        }
       } else {
         Log.error("No stylesheet. This is unexpected.");
       }
