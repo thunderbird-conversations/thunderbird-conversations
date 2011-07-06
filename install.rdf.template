@@ -117,6 +117,17 @@
 
     <em:localized>
       <Description>
+        <em:locale>pl</em:locale>
+        <em:name>Thunderbird Conversations</em:name>
+        <em:description>Rozszerzenie dodaje do Thunderbirda widok konwersacji.</em:description>
+        <em:translator>Leszek(teo)Życzkowski</em:translator>
+        <em:creator>Jonathan Protzenko</em:creator>
+        <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
+      </Description>
+    </em:localized>
+
+    <em:localized>
+      <Description>
         <em:locale>ru-RU</em:locale>
         <em:name>Thunderbird Conversations</em:name>
         <em:description>Группирует Ваши электронные письма в беседах, с Вашими собственными включенными сообщениями, так же как в GMail.</em:description>
