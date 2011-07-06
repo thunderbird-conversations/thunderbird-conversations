@@ -1,41 +1,41 @@
-<!ENTITY assistant.title "First run assistant">
-<!ENTITY assistant.intro "Hi, this is <strong>Thunderbird Conversations</strong>!">
-<!ENTITY assistant.p1 "In order to make your life easier, this assistant will tweak your Thunderbird setup to ensure you enjoy the optimal experience. We don't want you to feel dissatisfied!">
-<!ENTITY assistant.p2 "The tweaks we make are all reversible, so don't worry: should you not enjoy Thunderbird Conversations, we will revert any preference change we made as soon as you uninstall the extension.">
-<!ENTITY assistant.p3 "This may take quite some time. You can either wait for this window to close, or close the window yourself, and check the progress from Tools &gt; Activity Manager.">
-<!ENTITY assistant.working "Working...">
-<!ENTITY assistant.review "Review changes">
-<!ENTITY assistant.apply "Apply changes">
-<!ENTITY assistant.settings "Some settings are mandatory for Thunderbird Conversations to work properly. Some are strongly recommended, and some are optional.">
-<!ENTITY assistant.actionEnableGloda "Make sure Global Search and Indexer is enabled.">
-<!ENTITY assistant.actionReindexAttachments "Re-index messages containing attachments as well as all Mozilla bugmail.">
-<!ENTITY assistant.actionDontExpand "In the message list, don't expand threads containing unread messages.">
-<!ENTITY assistant.actionAttachmentsInline "Don't display attachments inline (<strong>strongly</strong> recommended).">
-<!ENTITY assistant.actionOfflineDownload "Inbox and Sent are synchronized for offline storage (<strong>strongly</strong> recommended).">
-<!ENTITY assistant.actionUnifiedInboxSearchesSent "The Unified Inbox also searches Sent folders (<strong>strongly</strong> recommended).">
-<!ENTITY assistant.actionSetupView "Switch to Global Inbox, make display threaded, sort by date, enable unread count column and new &quot;between&quot; column (<strong>strongly</strong> recommended).">
-<!ENTITY assistant.actionSetupViewDefaults "Use these custom sort settings for all folders.">
-<!ENTITY assistant.actionEnsureMessagePaneVisible "Make sure the message pane is visible.">
-<!ENTITY assistant.settings2 "Should you wish to enable more options later, you can access this wizard through the addon's preferences, under the &quot;advanced&quot; section.">
-<!ENTITY feedback.message "You've been running Thunderbird Conversations for quite some time now, would you care enough to tell us what you think about it? We'd love to hear about any comments you may have!">
-<!ENTITY feedback.no "No, thanks">
-<!ENTITY feedback.yes "Leave feedback">
-<!ENTITY feedback.pageTitle "Give feedback">
-<!ENTITY indexing.p1 "We've been trying to setup Thunderbird Conversations to give you the best experience, but you have so many messages that reindexing them would crash your Thunderbird.">
-<!ENTITY indexing.p2 "If you have an insanely high amount of non-bugmail email, delete the <tt>global-message-db.sqlite</tt> file in your profile folder (see link below).">
-<!ENTITY indexing.p3 "Do you have a high amount of mail with attachments? Unless the first version of Thunderbird you ever tried is Thunderbird 3.3 alpha1 or later, these attachments won't show in the conversation view. We need to reindex all messages with attachments. The easiest way is for you to delete the <tt>global-messages-db.sqlite</tt> file in your profile folder.">
-<!ENTITY indexing.p4 "Are you a Mozillian? We have a nice special-case for Bugzilla emails, where we replace the sender, i.e. bugzilla-daemon@mozilla.org, with the value of X-Bugzilla-Who header. You probably have way too much bugmail, and we need to reindex all of it to enable that feature. If you can live with the feature being enabled for newly arrived bugmail only, just forget about this message. Otherwise, you'll want to delete the <tt>global-messages-db.sqlite</tt> file in your profile folder.">
-<!ENTITY indexing.p5 "You're in one of the two situations below.">
-<!ENTITY indexing.moreInfo "More info on the profile folder.">
-<!ENTITY indexing.t1 "The tl;dr version">
-<!ENTITY indexing.t2 "In more detail">
-<!ENTITY indexing.title "<span class='orange'>Indexing</span> issue">
-<!ENTITY indexing.pageTitle "Indexing warning">
-<!ENTITY stub.loading "Loading...">
-<!ENTITY stub.trash.tooltip "Delete this conversation">
-<!ENTITY stub.archive.tooltip "Archive this conversation">
-<!ENTITY stub.print.tooltip "Print this conversation">
-<!ENTITY stub.junk.tooltip "Junk this message">
-<!ENTITY stub.expand.tooltip "Expand/collapse all messages">
-<!ENTITY stub.read.tooltip "Toggle read/unread all messages">
-<!ENTITY stub.detach.tooltip2 "Show this conversation in a new tab">
+<!ENTITY assistant.title "Assistente de Primeira Execução">
+<!ENTITY assistant.intro "Olá! Este é o <strong>Thunderbird Conversations</strong>!">
+<!ENTITY assistant.p1 "A fim de facilitar sua vida, este assistente vai ajustar as configurações do Thunderbird para garantir que você aproveite a experiência ideal. Não queremos que você se sinta insatisfeito!">
+<!ENTITY assistant.p2 "Os ajustes que fazemos são todas reversíveis. Por isso não se preocupe, pois caso você não aprecie o Thunderbird Conversations, vamos reverter todas as alterações que fizermos assim que você desinstalar a extensão.">
+<!ENTITY assistant.p3 "Isso deve demorar um pouco. Você pode esperar essa janela se fechar ou você pode fechar a janela e verificar o andamento em Ferramentas -&gt; Gerenciador de atividade.">
+<!ENTITY assistant.working "Trabalhando...">
+<!ENTITY assistant.review "Conferir alterações">
+<!ENTITY assistant.apply "Aplicar alterações">
+<!ENTITY assistant.settings "Algumas configurações são obrigatórias para o Thunderbird Conversations funcionar corretamente. Algumas são altamente recomendadas e algumas são opcionais.">
+<!ENTITY assistant.actionEnableGloda "Garantir que pesquisa global e indexação estejam ativadas.">
+<!ENTITY assistant.actionReindexAttachments "Reindexar mensagens com anexos e todas os e-mails de erro da Mozilla.">
+<!ENTITY assistant.actionDontExpand "Na lista de mensagens, não expandir tópicos que contenham mensagens não lidas.">
+<!ENTITY assistant.actionAttachmentsInline "Não exibir anexos direto nas mensagens (<strong>altamente</strong> recomendado).">
+<!ENTITY assistant.actionOfflineDownload "A caixa de entrada e as mensagens enviadas são sincronizadas para leitura offline (<strong>altamente</strong> recomendado).">
+<!ENTITY assistant.actionUnifiedInboxSearchesSent "A caixa de entrada unificada também engloba as pastas de mensagens enviadas (<strong>altamente</strong> recomendado).">
+<!ENTITY assistant.actionSetupView "Mudar para caixa de entrada global, fazer exibir por tópicos, ordenar por data, ativar coluna com a quantidade de mensagens não lidas e acrescentar nova coluna &quot;Entre&quot; (<strong>altamente</strong> recomendado).">
+<!ENTITY assistant.actionSetupViewDefaults "Usar essa configuração de ordenação para todas as pastas.">
+<!ENTITY assistant.actionEnsureMessagePaneVisible "Garantir que o painel de mensagens esteja visível.">
+<!ENTITY assistant.settings2 "Caso você deseje ativar mais opções posteriormente, você pode abrir este assistente através das opções do Thunderbird Conversations, na seção &quot;Avançado&quot;.">
+<!ENTITY feedback.message "Você já vem usando o Thunderbird Conversations há algum tempo. Você se importaria de nos dizer o que você pensa sobre ele? Gostaríamos muito de ouvir qualquer comentário que você tiver!">
+<!ENTITY feedback.no "Não, obrigado">
+<!ENTITY feedback.yes "Enviar comentário">
+<!ENTITY feedback.pageTitle "Enviar Comentário">
+<!ENTITY indexing.p1 "Nós tentamos configurar o Thunderbird Conversations para lhe dar a melhor experiência, mas você tem tantas mensagens que a reindexação poderia travar o seu Thunderbird.">
+<!ENTITY indexing.p2 "Se você tiver uma quantidade imensa de mensagens (desde que não sejam e-mails de erro da Mozilla), exclua o arquivo <tt>global-message-db.sqlite</tt> localizado na sua pasta de perfil (veja o link abaixo).">
+<!ENTITY indexing.p3 "Você tem uma grande quantidade de mensagens com anexos? Se a primeira versão do Thunderbird que você usou foi anterior ao Thunderbird 3.3 alpha1, esses anexos não serão exibidos no modo de conversa. Precisamos reindexar todas as mensagens com anexos. A maneira mais fácil é você excluir o arquivo <tt>global-messages-db.sqlite</tt> localizado na sua pasta de perfil.">
+<!ENTITY indexing.p4 "Você é um membro da Mozilla? Temos um recurso interessante para os e-mails do Bugzilla, em que substituímos o remetente (por exemplo, bugzilla-daemon@mozilla.org) pelo valor do cabeçalho X-Bugzilla-Who. Você provavelmente tem bastante e-mails de erros e precisamos reindexar tudo isso para habilitar esse recurso. Se você quiser ativar esse recurso somente para os novos e-mails de erro que chegarem, desconsidere esta mensagem. Caso contrário, você deve excluir o arquivo <tt>global-messages-db.sqlite</tt> localizado na sua pasta de perfil.">
+<!ENTITY indexing.p5 "Você está em uma das duas situações abaixo.">
+<!ENTITY indexing.moreInfo "Mais informações sobre a pasta de perfil.">
+<!ENTITY indexing.t1 "A versão tl;dr">
+<!ENTITY indexing.t2 "Mais detalhes">
+<!ENTITY indexing.title "<span class='orange'>Problema de indexação</span>">
+<!ENTITY indexing.pageTitle "Aviso de indexação">
+<!ENTITY stub.loading "Carregando...">
+<!ENTITY stub.trash.tooltip "Excluir esta conversa">
+<!ENTITY stub.archive.tooltip "Arquivar esta conversa">
+<!ENTITY stub.print.tooltip "Imprimir esta conversa">
+<!ENTITY stub.junk.tooltip "Marcar mensagem como spam">
+<!ENTITY stub.expand.tooltip "Expandir/recolher todas as mensagens">
+<!ENTITY stub.read.tooltip "Marcar todas as mensagens como lidas/como não lidas">
+<!ENTITY stub.detach.tooltip2 "Exibir esta conversa em uma nova aba">
