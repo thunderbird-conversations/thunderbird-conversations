@@ -819,7 +819,9 @@ Message.prototype = {
     let hide = function (aNode) aNode.classList.add("show-with-details");
     let width = function (x) x.offsetWidth;
     let baseSize = isOSX ? 15 : 16;
-    let textSize = Math.round(100 * this.defaultSize * 12 / baseSize) / 100;
+    let textSize = Prefs.tweak_chrome
+      ? Math.round(100 * this.defaultSize * 12 / baseSize) / 100
+      : this.defaultSize;
     let lineHeight = textSize * 1.8; // per the CSS file
     let overflows = function () parseInt(toNode.offsetHeight) > lineHeight;
 
@@ -1398,7 +1400,9 @@ let PostStreamingFixesMixIn = {
 
   detectQuotes: function (iframe) {
     let baseSize = isOSX ? 15 : 16;
-    let smallSize = Math.round(100 * this.defaultSize * 11 / baseSize) / 100;
+    let smallSize = Prefs.tweak_chrome
+      ? Math.round(100 * this.defaultSize * 11 / baseSize) / 100
+      : Math.round(100 * this.defaultSize * 11 / 12) / 100;
 
     // Launch various crappy pieces of code^W^W^W^W heuristics to
     //  convert most common quoting styles to real blockquotes. Spoiler:
