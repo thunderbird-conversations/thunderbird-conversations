@@ -695,6 +695,7 @@ Message.prototype = {
             mainWindow.openAttachment(attInfo);
         } catch (e) {
           Log.warn(e);
+          Log.warn(uri);
         }
       });
       this.register(attNode.getElementsByClassName("download-attachment")[0], function (event) {
@@ -705,6 +706,7 @@ Message.prototype = {
             mainWindow.saveAttachment(attInfo);
         } catch (e) {
           Log.warn(e);
+          Log.warn(uri);
         }
       });
 
