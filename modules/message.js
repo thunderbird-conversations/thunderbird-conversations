@@ -191,9 +191,11 @@ KeyListener.prototype = {
           // Hey, let's move back to this message next time!
           this.message._domNode.setAttribute("tabindex", "1");
           this.mail3PaneWindow.SetFocusThreadPane(event);
-          event.preventDefault();
-          event.stopPropagation();
+        } else {
+          topMail3Pane(this.message).ViewPageSource([this.message._uri])
         }
+        event.preventDefault();
+        event.stopPropagation();
         break;
 
       case 'A'.charCodeAt(0):
