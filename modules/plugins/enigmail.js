@@ -110,7 +110,7 @@ let enigmailHook = {
   onMessageStreamed: function _enigmailHook_onMessageStreamed(aMsgHdr, aDomNode, aMsgWindow) {
     let iframe = aDomNode.getElementsByTagName("iframe")[0];
     let iframeDoc = iframe.contentDocument;
-    let specialTags = aDomNode.getElementsByClassName("special-tags")[0];
+    let specialTags = aDomNode.getElementsByClassName("special-tags")[1];
     if (iframeDoc.body.textContent.length > 0 && hasEnigmail) {
       let status = tryEnigmail(iframeDoc.body);
       let addTag = function _addTag(url, txt) {

@@ -351,6 +351,7 @@ Message.prototype = {
       attachmentsPlural: null,
       attachments: [],
       folderName: null,
+      shortFolderName: null,
       draft: null,
       gallery: false,
       uri: null,
@@ -447,6 +448,7 @@ Message.prototype = {
       folderStr = folder.name + "/" + folderStr;
     }
     data.folderName = escapeHtml(folderStr);
+    data.shortFolderName = escapeHtml(this._msgHdr.folder.name);
 
     // 5) Custom tag telling the user if this is a draft
     data.draft = msgHdrIsDraft(this._msgHdr);
@@ -657,7 +659,7 @@ Message.prototype = {
       }
       self._reloadMessage();
     });
-    this.register(".in-folder", function (event) {
+    this.register(".messageBody .in-folder", function (event) {
       mainWindow.gFolderTreeView.selectFolder(self._msgHdr.folder, true);
       mainWindow.gFolderDisplay.selectMessage(self._msgHdr);
     });
@@ -790,7 +792,8 @@ Message.prototype = {
   },
 
   _reloadMessage: function _Message_reloadMessage () {
-    let specialTags = this._domNode.getElementsByClassName("special-tags")[0];
+    // The second one in for when we're expanded.
+    let specialTags = this._domNode.getElementsByClassName("special-tags")[1];
     // Remove any extra tags because they will be re-added after reload, but
     //  leave the "show remote content" tag.
     for (let i = specialTags.children.length - 1; i >= 0; i--) {
