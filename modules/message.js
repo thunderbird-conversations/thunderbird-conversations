@@ -977,6 +977,13 @@ Message.prototype = {
     iframe.setAttribute("style", "height: 20px");
     iframe.setAttribute("type", "content");
 
+    let timeout = topMail3Pane(this).setTimeout(function () {
+      // Do a pre-computation of the height because of HTML newsletters that
+      // don't fire the load event until the whole document is done loading,
+      // which can take up to 1 minute if the server is slow delivering images.
+      iframe.style.height = iframe.contentDocument.body.scrollHeight+"px";
+    }, 100);
+
     // The xul:iframe automatically loads about:blank when it is added
     // into the tree. We need to wait for the document to be loaded before
     // doing things.
@@ -1070,6 +1077,7 @@ Message.prototype = {
             }
 
             // Everything's done, so now we're able to settle for a height.
+            mainWindow.clearTimeout(timeout);
             iframe.style.height = iframeDoc.body.scrollHeight+"px";
 
             // So now we might overflow horizontally, which causes a horizontal
