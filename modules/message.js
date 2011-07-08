@@ -479,7 +479,7 @@ Message.prototype = {
       }, false);
 
     let keyListener = new KeyListener(this);
-    this._domNode.addEventListener("keyup", function (event) {
+    this._domNode.addEventListener("keydown", function (event) {
       keyListener.onKeyUp(event);
     }, false); // über-important: don't capture
 
@@ -779,7 +779,7 @@ Message.prototype = {
           window.startedEditing(true);
       }
       event.stopPropagation();
-    }, { action: "keyup" });
+    }, { action: "keydown" });
   },
 
   _reloadMessage: function _Message_reloadMessage () {
