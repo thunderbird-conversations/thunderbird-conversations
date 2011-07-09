@@ -977,18 +977,32 @@ Message.prototype = {
 
     let originalScroll = this._domNode.ownerDocument.documentElement.scrollTop;
     let msgWindow = topMail3Pane(this).msgWindow;
+    let self = this;
 
     let iframe = this._domNode.ownerDocument
       .createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "iframe");
     iframe.setAttribute("style", "height: 20px");
     iframe.setAttribute("type", "content");
 
-    let timeout = topMail3Pane(this).setTimeout(function () {
+    let delay = 100;
+    let timeout = topMail3Pane(this).setTimeout(function resize () {
       // Do a pre-computation of the height because of HTML newsletters that
-      // don't fire the load event until the whole document is done loading,
-      // which can take up to 1 minute if the server is slow delivering images.
-      iframe.style.height = iframe.contentDocument.body.scrollHeight+"px";
-    }, 100);
+      // don't fire the load event until the whole document is done loading.
+      // This can take up to 1 minute if the server is slow delivering images
+      // (true story).
+      try {
+        if (iframe.contentDocument && iframe.contentDocument.body)
+          iframe.style.height = iframe.contentDocument.body.scrollHeight+"px";
+        // Retry aggressively, because the backend may need a lot of time
+        // to fetch the message in the message store, process it through libmime,
+        // and output it into the xul:iframe. Every time we retry, we leave the
+        // backend twice more time, until we've really waited for a long time...
+        if (delay < 10000)
+          timeout = topMail3Pane(self).setTimeout(resize, (delay = delay * 2));
+      } catch (e) {
+        Log.debug(e);
+      }
+    }, delay);
 
     // The xul:iframe automatically loads about:blank when it is added
     // into the tree. We need to wait for the document to be loaded before
@@ -998,7 +1012,6 @@ Message.prototype = {
     // have a docShell and a webNavigation. If we don't do that, and we
     // set directly src="about:blank" above, sometimes we are too fast and
     // the docShell isn't ready by the time we get there.
-    let self = this;
     iframe.addEventListener("load", function f_temp2(event, aCharset) {
       try {
         iframe.removeEventListener("load", f_temp2, true);
