@@ -4,7 +4,7 @@
 
 
 -->
-<!ENTITY window.title "Konverzace pro Thunderbird">
+<!ENTITY window.title "Nastavení Thunderbird Conversations">
 <!ENTITY title.message_display "Zobrazení zpráv">
 <!ENTITY option.expand_who "Při otevření rozbalit:">
 <!ENTITY option.expand_auto2 "automaticky">

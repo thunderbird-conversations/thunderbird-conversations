@@ -3,16 +3,20 @@ skin conversations classic/1.0 skin/
 resource conversations modules/
 overlay chrome://messenger/content/messenger.xul chrome://conversations/content/overlay.xul
 
+locale conversations cs locale/cs/
 locale conversations de locale/de/
 locale conversations el locale/el/
 locale conversations en-US locale/en-US/
 locale conversations es-ES locale/es-ES/
+locale conversations eu-ES locale/eu-ES/
 locale conversations fr locale/fr/
 locale conversations he-IL locale/he-IL/
 locale conversations hu-HU locale/hu-HU/
 locale conversations it locale/it/
 locale conversations ja-JP locale/ja-JP/
+locale conversations pl locale/pl/
 locale conversations pt-BR locale/pt-BR/
+locale conversations ru locale/ru/
 locale conversations sr locale/sr/
 locale conversations sv-SE locale/sv-SE/
 locale conversations zh-CN locale/zh-CN/
