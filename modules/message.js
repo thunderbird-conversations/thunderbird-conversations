@@ -1092,7 +1092,15 @@ Message.prototype = {
 
             // Everything's done, so now we're able to settle for a height.
             mainWindow.clearTimeout(timeout);
+            // This is needed in case the timeout kicked in after the message
+            // was loaded but before we collapsed quotes. Then, the scrollheight
+            // is too big, so we need to make the iframe small, so that its
+            // scrollheight corresponds to its "real" height (there was an issue
+            // with offsetheight, don't remember what, though).
+            Log.debug(iframeDoc.body.scrollHeight, iframeDoc.body.offsetHeight);
+            iframe.style.height = "20px";
             iframe.style.height = iframeDoc.body.scrollHeight+"px";
+            Log.debug(iframeDoc.body.scrollHeight, iframeDoc.body.offsetHeight);
 
             // So now we might overflow horizontally, which causes a horizontal
             // scrollbar to appear, which narrows the vertical height available,
