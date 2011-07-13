@@ -1,10 +1,10 @@
 <!-- Please open the "Preferences" window and DO check that your text is not too     long. This can cause the contents to overflow and be hidden, so make sure     everything is displayed properly. -->
 <!ENTITY window.title "Thunderbird Conversations aukerak">
 <!ENTITY title.message_display "Mezuen bistaratzea">
-<!ENTITY option.expand_who "lehenetsita, zabalduta:">
-<!ENTITY option.expand_auto2 "automatikoa">
-<!ENTITY option.expand_auto2.tooltip "Haria tolestua badago, zabaldu irakurri gabeak edo azken mezua. Haria zabaldua badago, aukeratutako mezua bakarrik zabaldu mezu zerrendan.">
-<!ENTITY option.expand_none "Mezurik gabe">
+<!ENTITY option.expand_who "Lehenespenez, zabaldu:">
+<!ENTITY option.expand_auto2 "Automatikoa">
+<!ENTITY option.expand_auto2.tooltip "Haria tolestuta badago, zabaldu irakurri gabeak edo azken mezua. Haria zabalduta badago, aukeratutako mezua bakarrik zabaldu mezu zerrendan.">
+<!ENTITY option.expand_none "Mezurik ez">
 <!ENTITY option.expand_all "Mezu guztiak">
 <!ENTITY title.quoting "Aipamenak">
 <!ENTITY option.hide_longer_than "Gorde aipatutako testua lerro hauek baino gehiago baditu:">
@@ -12,6 +12,6 @@
 <!ENTITY title.advanced "Aurretatua">
 <!ENTITY title.assistant "Konfigurazio laguntzailea">
 <!ENTITY option.assistant "Hasi konfigurazio laguntzailea">
-<!ENTITY title.advanced_display "Hizketaldi bistaratzea">
-<!ENTITY option.no_friendly_date "Erabili mezu zerrendan bezlako data  &quot;normalak&quot;">
-<!ENTITY option.monospaced_senders2 "Helbide/posta zerrenda hauetako mezuak tarte-bakarreko letra-tipoaz erakutsi (komaz banaturik)">
+<!ENTITY title.advanced_display "Hizketaldien bistaratzea">
+<!ENTITY option.no_friendly_date "Erabili mezu-zerrendan bezalako data  &quot;normalak&quot;">
+<!ENTITY option.monospaced_senders2 "Erakutsi helbide/posta-zerrenda hauetako mezuak tarte-bakarreko letra-tipoaz (komaz banaturik)">

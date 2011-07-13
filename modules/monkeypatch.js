@@ -362,7 +362,7 @@ MonkeyPatch.prototype = {
         return;
       }
 
-      if (htmlpane.contentDocument.location.href == aLocation) {
+      if (htmlpane.getAttribute("src") == aLocation) {
         k();
       } else {
         htmlpane.addEventListener("load", function _g (event) {
@@ -371,7 +371,7 @@ MonkeyPatch.prototype = {
             onRefresh();
           k();
         }, true);
-        htmlpane.contentDocument.location.href = aLocation;
+        htmlpane.setAttribute("src", aLocation);
       }
     };
 
