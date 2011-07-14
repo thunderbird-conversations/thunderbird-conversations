@@ -85,7 +85,7 @@ function registerQuickReply() {
             break;
           case "removed":
             $(".quickReplyHeader").hide();
-            $(".quickReply").removeClass('expand');
+            collapseQuickReply();
             $("textarea").val("");
             gComposeSession = null;
             break;
@@ -140,7 +140,7 @@ function registerQuickReply() {
 function onTextareaClicked(event) {
   // Do it just once
   if (!$(event.target).parent().hasClass('expand')) {
-    $(event.target).parent().addClass('expand');
+    expandQuickReply();
     if (!gComposeSession) { // first time
       Log.debug("Setting up the initial quick reply compose parameters...");
       let messages = Conversations.currentConversation.messages;
@@ -163,6 +163,16 @@ function onUseEditor() {
   onDiscard();
 }
 
+function expandQuickReply() {
+  $(".message:last .messageFooter").addClass("hide");
+  $(".quickReply").addClass("expand");
+}
+
+function collapseQuickReply() {
+  $(".message:last .messageFooter").removeClass("hide");
+  $(".quickReply").removeClass("expand");
+}
+
 function showCc(event) {
   $(".ccList, .editCcList").css("display", "");
   $(".showCc").hide();
@@ -171,6 +181,17 @@ function showCc(event) {
 function showBcc(event) {
   $(".bccList, .editBccList").css("display", "");
   $(".showBcc").hide();
+}
+
+function changeComposeFields(aMode) {
+  $(".showCc, .showBcc").show();
+  $('.quickReplyRecipients').removeClass('edit');
+  $(".bccList, .editBccList").css("display", "none");
+  $(".ccList, .editCcList").css("display", "none");
+  gComposeSession.changeComposeFields(aMode);
+  if (aMode == "forward") {
+    editFields("to");
+  }
 }
 
 function editFields(aFocusId) {
@@ -185,7 +206,7 @@ function confirmDiscard(event) {
 
 function onDiscard(event) {
   $("textarea").val("");
-  $(".quickReply").removeClass('expand');
+  collapseQuickReply();
   $(".quickReplyHeader").hide();
   $('.quickReplyRecipients').removeClass('edit');
   let id = Conversations.currentConversation.id;
@@ -230,7 +251,7 @@ function onSave(event, aClose, k) {
     }
     // undefined is ok, means true
     if (aClose === false)
-      $(".quickReply").removeClass('expand');
+      collapseQuickReply();
     if (k)
       k();
     yield SimpleStorage.kWorkDone;
@@ -367,20 +388,61 @@ ComposeSession.prototype = {
     });
   },
 
-  setupAutocomplete: function () {
-    let self = this;
-    this.match({
-      reply: function (aMessage) {
-        let identity = self.params.identity;
-        let msgHdr = self.params.msgHdr;
-        // We default to reply all, and that's the way it is. This is equivalent
-        // to reply if there's only one person involved, so don't bother.
+  // Calls k with the total number of people involved in a reply so that the
+  // caller can determine whether to disable reply-all or not.
+  changeComposeFields: function (aMode, k) {
+    let identity = this.params.identity;
+    let msgHdr = this.params.msgHdr;
+    switch (aMode) {
+      case "replyAll":
         replyAllParams(identity, msgHdr, function (params) {
           let to = [asToken(null, name, email, null) for each ([name, email] in params.to)];
           let cc = [asToken(null, name, email, null) for each ([name, email] in params.cc)];
           let bcc = [asToken(null, name, email, null) for each ([name, email] in params.bcc)];
           setupAutocomplete(to, cc, bcc);
+          k && k(to.length + cc.length + bcc.length);
         });
+        break;
+
+      case "replyList":
+        let token = asToken(null, null, aMessage.mailingLists[0], null);
+        setupAutocomplete([token], [], []);
+        break;
+
+      case "forward":
+        setupAutocomplete([], [], []);
+        break;
+
+      case "reply":
+      default:
+        replyAllParams(identity, msgHdr, function (params) {
+          let to = [asToken(null, name, email, null) for each ([name, email] in params.to)];
+          setupAutocomplete(to, [], []);
+          k && k(params.to.length + params.cc.length + params.bcc.length);
+        });
+        break;
+    }
+  },
+
+  setupAutocomplete: function () {
+    let self = this;
+    this.match({
+      reply: function (aMessage) {
+        if (aMessage.isReplyListEnabled) {
+          self.changeComposeFields("replyAll");
+          $("#replyAll-radio").attr("checked", "checked");
+          $(".replyMethod-replyList").show();
+        } else {
+          self.changeComposeFields("reply", function (n) {
+            // This basically says that while processing various headers, we
+            // found out we reply to at most one person, then this means that
+            // the reply method "reply all" makes no sense.
+            if (n <= 1)
+              $(".replyMethod-replyAll").hide();
+          });
+          $("#reply-radio").attr("checked", "checked");
+          $(".replyMethod-replyList").hide();
+        }
       },
 
       draft: function ({ to, cc, bcc }) {
@@ -473,6 +535,9 @@ ComposeSession.prototype = {
     let deliverMode = Services.io.offline
       ? Ci.nsIMsgCompDeliverMode.Later
       : Ci.nsIMsgCompDeliverMode.Now;
+    let compType = document.getElementById("forward-radio").checked
+      ? Ci.nsIMsgCompType.ForwardInline
+      : Ci.nsIMsgCompType.ReplyAll; // ReplyAll, Reply... ends up the same
 
     return sendMessage({
         urls: [msgHdrGetUri(self.params.msgHdr)],
@@ -482,7 +547,7 @@ ComposeSession.prototype = {
         bcc: JSON.parse($("#bcc").val()).join(","),
         subject: self.params.subject,
       }, {
-        compType: Ci.nsIMsgCompType.ReplyAll,
+        compType: compType,
         deliverType: deliverMode,
       }, { match: function (x) {
         x.plainText($textarea.val());
@@ -709,7 +774,7 @@ function createStateListener (aComposeSession, aMsgHdrs, aId) {
         //  reply area, clear draft, collapse.
         if (aComposeSession == gComposeSession) {
           $(".quickReplyHeader").hide();
-          $(".quickReply").removeClass('expand');
+          collapseQuickReply();
           $("textarea").val("");
           $('.quickReplyRecipients').removeClass('edit');
           // We can do this because we're in the right if-block.

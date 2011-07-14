@@ -660,6 +660,14 @@ ul.special-tags img {
   -moz-border-radius: 0 0 5px 5px;
 }
 
+.messageFooter.hide .footerActions {
+  display: none;
+}
+
+.messageFooter.hide {
+  padding: 0;
+}
+
 .messageFooter:after {
   content: " ";
   display: block;
@@ -748,6 +756,10 @@ ul.special-tags img {
   text-decoration: none;
 }
 
+.replyMethod > label {
+  cursor: pointer;
+}
+
 .quickReplyRecipients a:hover {
   text-decoration: underline;
 }
@@ -781,6 +793,10 @@ ul.special-tags img {
 .quickReply input:focus,
 .quickReply.expand textarea:focus {
   -moz-box-shadow: 0 0 0 3px #ECF3FE inset;
+}
+
+.replyMethod > input {
+  vertical-align: middle;
 }
 
 .quickReplyFooter {

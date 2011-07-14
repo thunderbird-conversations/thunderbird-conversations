@@ -702,6 +702,12 @@ Conversation.prototype = {
     if (i == this.messages.length - 1 && this.messages.length > 1) {
       let $ = this._htmlPane.contentWindow.$;
       $(".message:last").prev().append($(".quickReply"));
+      // Re-enable to reply dropdown for the message that previously had the
+      // quick reply.
+      $(".messageFooter").removeClass("hide");
+      if ($(".quickReply").hasClass("expand")) {
+        $(".message:last .messageFooter").addClass("hide");
+      }
     }
 
     let badUri = msgHdrGetUri(aMessage._msgHdr);
@@ -751,6 +757,12 @@ Conversation.prototype = {
       // Important: don't forget to move the quick reply part into the last
       //  message.
       $(".quickReply").appendTo($(".message:last"));
+      // Re-enable to reply dropdown for the message that previously had the
+      // quick reply.
+      $(".messageFooter").removeClass("hide");
+      if ($(".quickReply").hasClass("expand")) {
+        $(".message:last .messageFooter").addClass("hide");
+      }
 
       // Notify each message that it's been added to the DOM and that it can do
       //  event registration and stuff...

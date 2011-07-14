@@ -426,7 +426,7 @@
               // That's why we saved it before...
               loadDraft();
               if (willExpand)
-                $("textarea").parent().addClass('expand');
+                expandQuickReply();
               // Create a new rule that will override the default rule, so that
               // the expanded quick reply is twice higher.
               let stylesheet;
@@ -584,16 +584,18 @@
         {{/if}}
       </div>
       <div class="messageFooter">
-        <div class="replyWrapper">
-          <button class="replyMainAction">${str("reply")}</button>
-          <button class="replyDropDown" onclick="displayMenu(event);">&#x25bc;</button>
-          <div class="replyDropMenu menu">
-            <div class="menuReply"><img src="i/reply.png" /> ${str("reply")}</div>
-            <div class="menuReplyAll"><img src="i/replyAll.png" /> ${str("replyAll")}</div>
-            <div class="menuReplyList"><img src="i/replyList.png" /> ${str("replyList")}</div>
+        <div class="footerActions">
+          <div class="replyWrapper">
+            <button class="replyMainAction">${str("reply")}</button>
+            <button class="replyDropDown" onclick="displayMenu(event);">&#x25bc;</button>
+            <div class="replyDropMenu menu">
+              <div class="menuReply"><img src="i/reply.png" /> ${str("reply")}</div>
+              <div class="menuReplyAll"><img src="i/replyAll.png" /> ${str("replyAll")}</div>
+              <div class="menuReplyList"><img src="i/replyList.png" /> ${str("replyList")}</div>
+            </div>
           </div>
+          <button class="forward">${str("forward")}</button>
         </div>
-        <button class="forward">${str("forward")}</button>
       </div>
       {{if quickReply}}
         {{tmpl "#quickReplyTemplate"}}
@@ -672,6 +674,23 @@
     <div class="quickReply">
       <div class="quickReplyRecipients">
         <ul>
+          ${str("fieldReply")}
+          <li class="replyMethod">
+            <input type="radio" name="reply-method" onchange="changeComposeFields('reply')" id="reply-radio" />
+            <label for="reply-radio">${str("reply")}</label>
+          </li>
+          <li class="replyMethod replyMethod-replyAll">
+            <input type="radio" name="reply-method" onchange="changeComposeFields('replyAll')" id="replyAll-radio" />
+            <label for="replyAll-radio">${str("replyAll")}</label>
+          </li>
+          <li class="replyMethod replyMethod-replyList">
+            <input type="radio" name="reply-method" onchange="changeComposeFields('replyList')" id="replyList-radio" />
+            <label for="replyList-radio">${str("replyList")}</label>
+          </li>
+          <li class="replyMethod">
+            <input type="radio" name="reply-method" onchange="changeComposeFields('forward')" id="forward-radio" />
+            <label for="forward-radio">${str("forward")}</label> |
+          </li>
           <li class="showCc"><a onclick="showCc(); editFields();" href="javascript:">${str("addCc")}</a> |</li>
           <li class="showBcc"><a onclick="showBcc(); editFields();" href="javascript:">${str("addBcc")}</a></li>
         </ul>
@@ -693,26 +712,17 @@
         </div>
         <ul class="recipientList toList">
           ${str("fieldTo")}
-          <li>Roland Tanglao, </li>
-          <li>David Ascher, </li>
-          <li>Bryan Clark, </li>
-          <li>James Burke</li>
+          <li>${str("pleaseWait")}</li>
           <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('to');">${str("edit")}</a></li>
         </ul>
         <ul class="recipientList ccList" style="display: none;">
           ${str("fieldCc")}
-          <li>Roland Tanglao, </li>
-          <li>David Ascher, </li>
-          <li>Bryan Clark, </li>
-          <li>James Burke</li>
+          <li>${str("pleaseWait")}</li>
           <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('cc');">${str("edit")}</a></li>
         </ul>
         <ul class="recipientList bccList" style="display: none;">
           ${str("fieldBcc")}
-          <li>Roland Tanglao, </li>
-          <li>David Ascher, </li>
-          <li>Bryan Clark, </li>
-          <li>James Burke</li>
+          <li>${str("pleaseWait")}</li>
           <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('bcc');">${str("edit")}</a></li>
         </ul>
       </div>
