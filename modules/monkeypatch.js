@@ -162,7 +162,7 @@ MonkeyPatch.prototype = {
       observe: function (aSubject, aTopic, aData) {
         if (aTopic == "nsPref:changed"
             && aData == "font.size.variable.x-western") {
-          aHtmlpane.contentDocument.location.href = "about:blank";
+          aHtmlpane.setAttribute("src", "about:blank");
         }
       },
     };
