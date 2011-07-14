@@ -32,9 +32,11 @@ const Cc = Components.classes;
 const Cu = Components.utils;
 const Cr = Components.results;
 
+Cu.import("resource://gre/modules/Services.jsm"); // https://developer.mozilla.org/en/JavaScript_code_modules/Services.jsm
 Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
 Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
 Cu.import("resource://conversations/stdlib/misc.js");
+Cu.import("resource://conversations/misc.js");
 Cu.import("resource://conversations/hook.js");
 Cu.import("resource://conversations/log.js");
 
@@ -76,6 +78,8 @@ function tryEnigmail(bodyElement) {
   if (bodyElement.textContent.indexOf("-----BEGIN PGP") < 0)
     return null;
 
+  Log.debug("Found inline PGP");
+
   var signatureObj       = new Object();
   var exitCodeObj        = new Object();
   var statusFlagsObj     = new Object();
@@ -107,6 +111,18 @@ function tryEnigmail(bodyElement) {
 }
 
 let enigmailHook = {
+  onMessageBeforeStreaming: function _enigmailHook_onBeforeSreaming(aMessage) {
+    let { _attachments: attachments, _msgHdr: msgHdr } = aMessage;
+    let w = topMail3Pane(aMessage);
+    let hasEnc = (aMessage.contentType+"").search(/^multipart\/encrypted(;|$)/i) == 0;
+    if (hasEnc)
+      Log.debug("Found Mime/PGP");
+    if (hasEnc && !enigmailSvc.mimeInitialized()) {
+      Log.debug("Initializing EnigMime");
+      w.document.getElementById("messagepane").setAttribute("src", "enigmail:dummy");
+    }
+  },
+
   onMessageStreamed: function _enigmailHook_onMessageStreamed(aMsgHdr, aDomNode, aMsgWindow) {
     let iframe = aDomNode.getElementsByTagName("iframe")[0];
     let iframeDoc = iframe.contentDocument;

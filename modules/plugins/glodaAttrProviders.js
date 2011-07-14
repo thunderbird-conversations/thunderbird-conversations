@@ -104,6 +104,37 @@ let AlternativeSender = {
 
 AlternativeSender.init();
 
+let ContentType = {
+  init: function _ContentType_init () {
+    this.defineAttributes();
+  },
+
+  defineAttributes: function _ContentType_defineAttributes () {
+    this._bugzillaAttribute = Gloda.defineAttribute({
+      provider: this,
+      extensionName: "content-type",
+      attributeType: Gloda.kAttrDerived,
+      attributeName: "contentType",
+      bind: true,
+      singular: true,
+      subjectNouns: [Gloda.NOUN_MESSAGE],
+      objectNoun: Gloda.NOUN_STRING,
+    });
+  },
+
+  process: function _ContentType_process (aGlodaMessage, aRawReps, aIsNew, aCallbackHandle) {
+    try {
+      aGlodaMessage.contentType = aRawReps.mime.headers["content-type"];
+    } catch (e) {
+      dump(e+"\n"+e.stack+"\n");
+    }
+
+    yield Gloda.kWorkDone;
+  },
+};
+
+ContentType.init();
+
 let Bugzilla = {
   init: function _Bugzilla_init () {
     this.defineAttributes();

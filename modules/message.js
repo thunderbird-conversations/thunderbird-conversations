@@ -262,6 +262,7 @@ function Message(aConversation) {
   this._uri = msgHdrGetUri(this._msgHdr);
   this._contacts = [];
   this._attachments = [];
+  this.contentType = "";
 
   // A list of email addresses
   this.mailingLists = [];
@@ -979,6 +980,13 @@ Message.prototype = {
     let msgWindow = topMail3Pane(this).msgWindow;
     let self = this;
 
+    try {
+      [h.onMessageBeforeStreaming(this) for each ([, h] in Iterator(getHooks()))];
+    } catch (e) {
+      Log.warn("Plugin returned an error:", e);
+      dumpCallStack(e);
+    }
+
     let iframe = this._domNode.ownerDocument
       .createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "iframe");
     iframe.setAttribute("style", "height: 20px");
@@ -1327,6 +1335,11 @@ function MessageFromGloda(aConversation, aGlodaMsg) {
   if ("attachmentInfos" in aGlodaMsg)
     this._attachments = aGlodaMsg.attachmentInfos;
 
+  if ("contentType" in aGlodaMsg)
+    this.contentType = aGlodaMsg.contentType;
+  else
+    this.contentType = "message/rfc822";
+
   if ("mailingLists" in aGlodaMsg)
     this.mailingLists =
       [x.value for each ([, x] in Iterator(aGlodaMsg.mailingLists))];
@@ -1376,6 +1389,7 @@ function MessageFromDbHdr(aConversation, aMsgHdr) {
 
         self._attachments = aMimeMsg.allUserAttachments
           .filter(function (x) x.isRealAttachment);
+        self.contentType = aMimeMsg.headers["content-type"] || "message/rfc822";
         let listPost = aMimeMsg.get("list-post");
         if (listPost) {
           let r = listPost.match(self.RE_LIST_POST);
