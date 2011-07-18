@@ -22,7 +22,7 @@
 <!ENTITY feedback.yes "Wystaw opinię">
 <!ENTITY feedback.pageTitle "Prześlij opinię">
 <!ENTITY indexing.p1 "Wykonano próbę konfiguracji Thunderbird Conversations, by ułatwić korzystanie z Thunderbirda, ale masz bardzo dużo wiadomości i ponowne ich indeksowanie może spowodować awarię Thunderbirda.">
-<!ENTITY indexing.p2 "Jeśli masz bardzo dużo wiadomości nie będących informacją o zgłoszeniu błędów, usuń plik <tt>global-message-db.sqlite</tt> znajdujący się w twoim folderze profilu. Zobacz odnośnik poniżej.">
+<!ENTITY indexing.p2 "Jeśli masz bardzo dużo wiadomości niebędących informacją o zgłoszeniu błędów, usuń plik <tt>global-message-db.sqlite</tt> znajdujący się w twoim folderze profilu. Zobacz odnośnik poniżej.">
 <!ENTITY indexing.p3 "Czy masz dużo wiadomości z załącznikami? Jeśli pierwszą zainstalowaną przez ciebie wersją Thunderbirda jest wersja 3.3 alpha1 lub nowsza, te załączniki nie będą wyświetlane w widoku konwersacji. Należy ponownie zindeksować wszystkie wiadomości z załącznikami. Najprościej jest usunąć plik <tt>global-message-db.sqlite</tt> znajdujący się w twoim folderze profilu.">
 <!ENTITY indexing.p4 "Jesteś deweloperem Mozilli? Mamy specjalną funkcję zmieniającą w nagłówku nadawcę wiadomości z Bugzilli z, np. bugzilla-daemon@mozilla.org na X-Bugzilla-Kto. Prawdopodobnie masz bardzo dużo wiadomości z Bugzilli i aby włączyć tę funkcję trzeba ponownie wszystko zindeksować. Jeśli w Bugzilli masz włączoną tylko funkcję powiadamiania o nowych zgłoszeniach błędów – informacja ta cię nie dotyczy. W innym przypadku, należy usunąć plik <tt>global-message-db.sqlite</tt> znajdujący się w twoim folderze profilu.">
 <!ENTITY indexing.p5 "Wystąpiła jedna z dwóch poniższych sytuacji.">
