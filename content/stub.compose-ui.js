@@ -208,7 +208,10 @@ function onDiscard(event) {
   $("textarea").val("");
   collapseQuickReply();
   $(".quickReplyHeader").hide();
+  $(".showCc, .showBcc").show();
   $('.quickReplyRecipients').removeClass('edit');
+  $(".bccList, .editBccList").css("display", "none");
+  $(".ccList, .editCcList").css("display", "none");
   let id = Conversations.currentConversation.id;
   if (id)
     SimpleStorage.spin(function () {
