@@ -536,6 +536,7 @@ Message.prototype = {
     this.register(".menuReplyAll", function (event) self.compose(Ci.nsIMsgCompType.ReplyAll, event));
     this.register(".menuReplyList", function (event) self.compose(Ci.nsIMsgCompType.ReplyToList, event));
     let mainAction = self._domNode.getElementsByClassName("replyMainAction")[0];
+    let mainActionLink = self._domNode.getElementsByClassName("replyMainActionLink")[0];
     let replyList = self._domNode.getElementsByClassName("menuReplyList")[0];
     let replyAll = self._domNode.getElementsByClassName("menuReplyAll")[0];
     let reply = self._domNode.getElementsByClassName("menuReply")[0];
@@ -547,11 +548,19 @@ Message.prototype = {
     // Register the right actions. Make sure we're consistent with
     // stub.compose-ui.js!
     if (this.isReplyListEnabled) {
-      this.register(".replyMainAction", function (event) self.compose(Ci.nsIMsgCompType.ReplyAll, event));
+      this.register(".replyMainAction, .replyMainActionLink", function (event) {
+        self.compose(Ci.nsIMsgCompType.ReplyAll, event);
+        event.stopPropagation();
+      });
       mainAction.textContent = replyAll.textContent;
+      mainActionLink.textContent = replyAll.textContent;
     } else {
-      this.register(".replyMainAction", function (event) self.compose(Ci.nsIMsgCompType.ReplyToSender, event));
+      this.register(".replyMainAction, .replyMainActionLink", function (event) {
+        self.compose(Ci.nsIMsgCompType.ReplyToSender, event);
+        event.stopPropagation();
+      });
       mainAction.textContent = reply.textContent;
+      mainActionLink.textContent = reply.textContent;
     }
 
     this.register(".edit-draft", function (event) self.compose(Ci.nsIMsgCompType.Draft, event));

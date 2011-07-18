@@ -444,6 +444,7 @@ a img {
 .message.collapsed .bzTo, 
 .message.collapsed .details,
 .message.collapsed .dropDown,
+.message.collapsed .replyLinkWrapper,
 .message.collapsed .messageBody .tags,
 .message.collapsed p,
 .message.collapsed .attachments,
