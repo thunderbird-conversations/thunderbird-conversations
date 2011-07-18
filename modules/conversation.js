@@ -248,6 +248,39 @@ function msgDebugColor (aMsg) {
   }
 }
 
+function messageFromGlodaIfOffline (aSelf, aGlodaMsg, aDebug) {
+  let aMsgHdr = aGlodaMsg.folderMessage;
+  if ((aMsgHdr.flags & Ci.nsMsgMessageFlags.Offline) ||
+      (aMsgHdr.folder instanceof Ci.nsIMsgLocalMailFolder)) {
+    // Means Gloda indexed the message fully...
+    return {
+      type: kMsgGloda,
+      message: new MessageFromGloda(aSelf, aGlodaMsg), // will fire signal when done
+      glodaMsg: aGlodaMsg,
+      msgHdr: null,
+      debug: aDebug,
+    };
+  } else {
+    return {
+      type: kMsgDbHdr,
+      message: new MessageFromDbHdr(aSelf, aGlodaMsg.folderMessage), // will run signal
+      msgHdr: aGlodaMsg.folderMessage,
+      glodaMsg: null,
+      debug: aDebug+"-!offline",
+    };
+  }
+}
+
+function messageFromDbHdr (aSelf, aMsgHdr, aDebug) {
+  return {
+    type: kMsgDbHdr,
+    message: new MessageFromDbHdr(aSelf, aMsgHdr), // will run signal
+    msgHdr: aMsgHdr,
+    glodaMsg: null,
+    debug: aDebug,
+  };
+}
+
 function ViewWrapper(aConversation) {
   this.mainWindow = topMail3Pane(aConversation);
   // The trick is, if a thread is collapsed, this._initialSet contains all the
@@ -369,13 +402,10 @@ Conversation.prototype = {
           if (!aItems.length) {
             Log.warn("Warning: gloda query returned no messages");
             self._getReady(self._initialSet.length + 1);
-            self.messages = [{
-                type: kMsgDbHdr,
-                message: new MessageFromDbHdr(self, msgHdr), // will run signal
-                msgHdr: msgHdr,
-                glodaMsg: null,
-                debug: "MI+NG", // M = msgHdr, I = Initial, NG = there was no gloda query
-              } for each ([, msgHdr] in Iterator(self._initialSet))];
+            // M = msgHdr, I = Initial, NG = there was no gloda query
+            // will run signal
+            self.messages = [messageFromDbHdr(self, msgHdr, "MI+NG")
+              for each ([, msgHdr] in Iterator(self._initialSet))];
             self._signal();
           } else {
             self._intermediateResults = aItems;
@@ -488,13 +518,9 @@ Conversation.prototype = {
         //  don't have a message header
         aItems = aItems.filter(function (glodaMsg) glodaMsg.folderMessage);
         // We want at least all messages from the Gloda collection
-        let messages = [{
-          type: kMsgGloda,
-          message: new MessageFromGloda(self, glodaMsg), // will fire signal when done
-          glodaMsg: glodaMsg,
-          msgHdr: null,
-          debug: "GA",
-        } for each ([, glodaMsg] in Iterator(aItems))];
+        // will fire signal when done
+        let messages = [messageFromGlodaIfOffline(self, glodaMsg, "GA")
+          for each ([, glodaMsg] in Iterator(aItems))];
         Log.debug("onItemsAdded",
           [msgDebugColor(x) + x.debug + " " + x.glodaMsg.headerMessageID
             for each (x in messages)].join(" "), Colors.default);
@@ -579,25 +605,16 @@ Conversation.prototype = {
         // We want at least all messages from the Gloda collection + all
         //  messages from the intermediate set (see rationale in the
         //  initialization of this._intermediateResults).
-        self.messages = [{
-          type: kMsgGloda,
-          message: new MessageFromGloda(self, glodaMsg), // will fire signal when done
-          glodaMsg: glodaMsg,
-          msgHdr: null,
-          debug: "GF", // G = Gloda, F = Final
-        } for each ([, glodaMsg] in Iterator(aCollection.items))
-        ].concat([{
-          type: kMsgGloda,
-          message: new MessageFromGloda(self, glodaMsg), // will fire signal when done
-          glodaMsg: glodaMsg,
-          msgHdr: null,
-          debug: "GM", // G = Gloda, M = interMediate
-        } for each ([, glodaMsg] in Iterator(self._intermediateResults))
+        // will fire signal when done
+        self.messages = [messageFromGlodaIfOffline(self, glodaMsg, "GF")
+          for each ([, glodaMsg] in Iterator(aCollection.items))
+        ].concat([messageFromGlodaIfOffline(self, glodaMsg, "GM")
+          for each ([, glodaMsg] in Iterator(self._intermediateResults))
           if (glodaMsg.folderMessage) // be paranoid
         ]);
         // Here's the message IDs we know
         let messageIds = {};
-        [messageIds[m.glodaMsg.headerMessageID] = true
+        [messageIds[getMessageId(m)] = true
           for each ([i, m] in Iterator(self.messages))];
         // But Gloda might also miss some message headers
         for each (let [, msgHdr] in Iterator(self._initialSet)) {
@@ -610,13 +627,8 @@ Conversation.prototype = {
           //  represents the sent message has been replaced in the meanwhile
           //  with the real header...
           if (!(msgHdr.messageId in messageIds)) {
-            self.messages.push({
-              type: kMsgDbHdr,
-              message: new MessageFromDbHdr(self, msgHdr), // will call signal when done
-              msgHdr: msgHdr,
-              glodaMsg: null,
-              debug: "MI+G", // M = msgHdr, I = Initial, G = there was a gloda query
-            });
+            // Will call signal when done.
+            self.messages.push(messageFromDbHdr(self, msgHdr, "MI+G"));
           } else {
             self._signal();
           }
