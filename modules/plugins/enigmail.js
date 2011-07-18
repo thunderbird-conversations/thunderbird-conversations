@@ -95,6 +95,13 @@ function tryEnigmail(bodyElement) {
         signatureObj, exitCodeObj,
         statusFlagsObj, keyIdObj, userIdObj, sigDetailsObj,
         errorMsgObj, blockSeparationObj);
+    var charset = null;
+    var matches = bodyElement.textContent.match(/\nCharset: *(.*) *\n/i);
+    if (matches && (matches.length > 1)) {
+      // Override character set
+      charset = matches[1];
+    }
+    decryptedText = EnigmailCommon.convertToUnicode(decryptedText, charset);
     if (exitCodeObj.value == 0) {
       if (decryptedText.length > 0) {
         bodyElement.innerHTML = "<div class='moz-text-plain'></div>";
