@@ -369,7 +369,7 @@ ComposeSession.prototype = {
         identity = gIdentities[from] || gIdentities.default;
       },
     });
-    $(".senderName").text(identity.fullName + " <"+identity.email+">");
+    $(".senderName").text(identity.email);
     self.params.identity = identity;
   },
 
