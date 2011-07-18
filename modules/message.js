@@ -666,8 +666,14 @@ Message.prototype = {
 
     let attachmentNodes = this._domNode.getElementsByClassName("attachment");
     let attachmentInfos = [];
-    for each (let [i, attNode] in Iterator(attachmentNodes)) {
-      let att = this._attachments[i];
+    let attInfos = [];
+    let newAttAPI = ("AttachmentInfo" in mainWindow);
+    // Create or lookup in the cache some attachment info
+    let getOrCreateAttInfo = function (i) {
+      if (attInfos[i])
+        return attInfos[i];
+
+      let att = self._attachments[i];
       // The message keys can change over time, so do not assume that the msgkey
       // that was picked at indexing-time is still valid.
       let key = self._msgHdr.messageKey;
@@ -680,7 +686,6 @@ Message.prototype = {
 
       // New versions of Thunderbird (post-5.0) have changed the API for
       // attachment objects. Handle both ways for now.
-      let newAttAPI = ("AttachmentInfo" in mainWindow);
       let attInfo;
       if (newAttAPI)
         attInfo = new mainWindow.AttachmentInfo(
@@ -691,26 +696,55 @@ Message.prototype = {
           att.contentType, url, att.name, uri, att.isExternal
         );
 
+      attInfos[i] = attInfo;
+      return attInfo;
+    };
+    // Open an attachment regardless of the API version we're on
+    let openAtt = function (attInfo) {
+      if (newAttAPI)
+        attInfo.open();
+      else
+        mainWindow.openAttachment(attInfo);
+    };
+    // Save an attachment regardless of the API version we're on
+    let saveAtt = function (attInfo) {
+      if (newAttAPI)
+        attInfo.save();
+      else
+        mainWindow.saveAttachment(attInfo);
+    };
+    // Re-generate the attachment infos...
+    let recreateAttInfos = function (k) {
+      MsgHdrToMimeMessage(self._msgHdr, self, function (aMsgHdr, aMimeMsg) {
+        attachmentInfos = aMimeMsg.attachmentInfos;
+        attInfos = [];
+        k();
+      }, true, { partsOnDemand: true });
+    };
+    for each (let [i, attNode] in Iterator(attachmentNodes)) {
+      let j = i;
+      let att = this._attachments[j];
+
       this.register(attNode.getElementsByClassName("open-attachment")[0], function (event) {
         try {
-          if (newAttAPI)
-            attInfo.open();
-          else
-            mainWindow.openAttachment(attInfo);
+          openAtt(getOrCreateAttInfo(j));
         } catch (e) {
-          Log.warn(e);
-          Log.warn(uri);
+          Log.debug("Invalid attachment URL", att.url);
+          recreateAttInfos(function () {
+            reindexMessages([self._msgHdr]);
+            openAtt(getOrCreateAttInfo(j));
+          });
         }
       });
       this.register(attNode.getElementsByClassName("download-attachment")[0], function (event) {
         try {
-          if (newAttAPI)
-            attInfo.save();
-          else
-            mainWindow.saveAttachment(attInfo);
+          saveAtt(getOrCreateAttInfo(j));
         } catch (e) {
-          Log.warn(e);
-          Log.warn(uri);
+          Log.debug("Invalid attachment URL", att.url);
+          recreateAttInfos(function () {
+            reindexMessages([self._msgHdr]);
+            saveAtt(getOrCreateAttInfo(j));
+          });
         }
       });
 
@@ -748,13 +782,15 @@ Message.prototype = {
         // XXX I have no idea whether this is useful...
         event.dataTransfer.setData("application/x-moz-file-promise", null);
       }, false);
-
-      attachmentInfos.push(attInfo);
     }
     this.register(".open-all", function (event) {
+      for (let i in range(0, self._attachments.length))
+        getOrCreateAttInfo(i);
       mainWindow.HandleMultipleAttachments(attachmentInfos, "open");
     });
     this.register(".download-all", function (event) {
+      for (let i in range(0, self._attachments.length))
+        getOrCreateAttInfo(i);
       mainWindow.HandleMultipleAttachments(attachmentInfos, "save");
     });
     this.register(".quickReply", function (event) {

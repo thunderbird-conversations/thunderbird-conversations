@@ -37,7 +37,7 @@
 var EXPORTED_SYMBOLS = [
   'groupArray', 'joinWordList', 'iconForMimeType',
   'EventHelperMixIn', 'arrayEquals', 'LINKS_REGEX',
-  'linkifySubject', 'topMail3Pane'
+  'linkifySubject', 'topMail3Pane', 'reindexMessages',
 ]
 
 var LINKS_REGEX = /((\w+):\/\/[^<>()'"\s]+|www(\.[-\w]+){2,})/;
@@ -47,6 +47,7 @@ const Cc = Components.classes;
 const Cu = Components.utils;
 
 Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
+Cu.import("resource:///modules/gloda/index_msg.js");
 Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
 Cu.import("resource://conversations/prefs.js");
 Cu.import("resource://conversations/log.js");
@@ -237,4 +238,11 @@ function topMail3Pane(aObj) {
     return aObj.top;
   else
     throw Error("Bad usage for topMail3Pane");
+}
+
+function reindexMessages(aMsgHdrs) {
+  GlodaMsgIndexer.indexMessages([
+    [x.folder, x.messageKey]
+    for each ([, x] in Iterator(aMsgHdrs))
+  ]);
 }
