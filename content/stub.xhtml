@@ -673,30 +673,28 @@
   <script id="quickReplyTemplate" type="text/x-jquery-tmpl"><![CDATA[
     <div class="quickReply">
       <div class="quickReplyRecipients">
-        <ul>
-          ${str("fieldReply")}
+        <ul class="fromField">
+          ${str("fieldFrom2")}
+          <li class="senderName"></li>
+          ${str("fieldReply2")}
           <li class="replyMethod">
-            <input type="radio" name="reply-method" onchange="changeComposeFields('reply')" id="reply-radio" />
-            <label for="reply-radio">${str("reply")}</label>
+            <input type="radio" name="reply-method" onchange="changeComposeFields('reply')" id="reply-radio"
+            /><label for="reply-radio">${str("reply")}</label>
           </li>
           <li class="replyMethod replyMethod-replyAll">
-            <input type="radio" name="reply-method" onchange="changeComposeFields('replyAll')" id="replyAll-radio" />
-            <label for="replyAll-radio">${str("replyAll")}</label>
+            <input type="radio" name="reply-method" onchange="changeComposeFields('replyAll')" id="replyAll-radio"
+            /><label for="replyAll-radio">${str("replyAll")}</label>
           </li>
           <li class="replyMethod replyMethod-replyList">
-            <input type="radio" name="reply-method" onchange="changeComposeFields('replyList')" id="replyList-radio" />
-            <label for="replyList-radio">${str("replyList")}</label>
+            <input type="radio" name="reply-method" onchange="changeComposeFields('replyList')" id="replyList-radio"
+            /><label for="replyList-radio">${str("replyList")}</label>
           </li>
           <li class="replyMethod">
-            <input type="radio" name="reply-method" onchange="changeComposeFields('forward')" id="forward-radio" />
-            <label for="forward-radio">${str("forward")}</label>
+            <input type="radio" name="reply-method" onchange="changeComposeFields('forward')" id="forward-radio"
+            /><label for="forward-radio">${str("forward")}</label>
           </li>
           <li class="showCc">| <a onclick="showCc(); editFields();" href="javascript:">${str("addCc")}</a></li>
           <li class="showBcc">| <a onclick="showBcc(); editFields();" href="javascript:">${str("addBcc")}</a></li>
-        </ul>
-        <ul class="fromField">
-          ${str("fieldFrom")}
-          <li class="senderName"></li>
         </ul>
         <div class="editRecipientList editToList hbox">
           <div class="label">${str("fieldTo")}</div>

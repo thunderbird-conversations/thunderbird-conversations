@@ -544,8 +544,9 @@ Message.prototype = {
       replyList.style.display = "none";
     if (!this.isReplyAllEnabled)
       replyAll.style.display = "none";
-    // Register the right actions
-    if (this.isReplyAllEnabled) {
+    // Register the right actions. Make sure we're consistent with
+    // stub.compose-ui.js!
+    if (this.isReplyListEnabled) {
       this.register(".replyMainAction", function (event) self.compose(Ci.nsIMsgCompType.ReplyAll, event));
       mainAction.textContent = replyAll.textContent;
     } else {

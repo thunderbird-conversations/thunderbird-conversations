@@ -797,6 +797,8 @@ ul.special-tags img {
 
 .replyMethod > input {
   vertical-align: middle;
+  margin-left: 3px;
+  margin-right: 2px;
 }
 
 .quickReplyFooter {

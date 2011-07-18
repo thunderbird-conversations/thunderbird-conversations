@@ -431,6 +431,7 @@ ComposeSession.prototype = {
     let self = this;
     this.match({
       reply: function (aMessage) {
+        // Make sure we're consistent with modules/message.js!
         if (aMessage.isReplyListEnabled) {
           self.changeComposeFields("replyAll");
           $("#replyAll-radio").attr("checked", "checked");
