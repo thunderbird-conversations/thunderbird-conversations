@@ -1351,7 +1351,7 @@ Message.prototype = {
       '<b><span style="color: #396BBD">', author, '</span></b><br />',
       '<span style="color: #666">', date, '</span><br />',
       '<br />',
-      '<div style="white-space: pre-wrap; color: #666">',
+      '<div style="color: #666">',
         (this.iframe ? escapeHtml(body) : ("<i>" + escapeHtml(body) + "</i>...")),
       '</div>',
     ].join("");
