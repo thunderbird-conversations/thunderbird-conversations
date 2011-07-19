@@ -327,12 +327,16 @@
       return MailServices.compose.OpenComposeWindowWithParams(null, params);
     }
 
+    let oldPrint = window.print;
+
     function printConversation(event) {
       for each (let { message: m } in Conversations.currentConversation.messages) {
         m.dumpPlainTextForPrinting();
       }
-      window.print();
+      oldPrint();
     }
+
+    window.print = printConversation;
 
     function junkConversation(event) {
       // This callback is only activated when the conversation is not a
