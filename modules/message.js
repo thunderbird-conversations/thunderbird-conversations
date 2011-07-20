@@ -759,7 +759,7 @@ Message.prototype = {
         this.register(img, function (event) {
           mainWindow.document.getElementById("tabmail").openTab(
             "contentTab",
-            { contentPage: url }
+            { contentPage: self._attachments[j].url }
           );
         });
       }
@@ -768,17 +768,17 @@ Message.prototype = {
       attNode.addEventListener("dragstart", function (event) {
         // mail/base/content/mailCore.js:602
         let info;
-        if (/(^file:|&filename=)/.test(url))
-          info = url;
+        if (/(^file:|&filename=)/.test(self._attachments[j].url))
+          info = self._attachments[j].url;
         else
-          info = url + "&type=" + att.contentType +
+          info = self._attachments[j].url + "&type=" + att.contentType +
                      "&filename=" + encodeURIComponent(att.name);
         event.dataTransfer.setData("text/x-moz-url",
                                    info + "\n" + att.name + "\n" + att.size);
-        event.dataTransfer.setData("text/x-moz-url-data", url);
+        event.dataTransfer.setData("text/x-moz-url-data", self._attachments[j].url);
         event.dataTransfer.setData("text/x-moz-url-desc", att.name);
         event.dataTransfer.setData("application/x-moz-file-promise-url",
-                                   url);
+                                   self._attachments[j].url);
         // XXX I have no idea whether this is useful...
         event.dataTransfer.setData("application/x-moz-file-promise", null);
       }, false);
