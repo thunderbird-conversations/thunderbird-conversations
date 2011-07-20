@@ -61,6 +61,8 @@ function bzSetup() {
       let cookie = getBugzillaCookie(url);
       let bzUrl = gBugzillaAPIs[url];
       if (cookie) {
+        document.getElementsByTagName("textarea")[0]
+          .setAttribute("placeholder", strings.get("bzPlaceholder"));
         return [bzUrl, cookie];
       } else {
         document.getElementsByTagName("textarea")[0]
