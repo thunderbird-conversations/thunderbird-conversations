@@ -665,10 +665,17 @@ Message.prototype = {
     });
 
     let attachmentNodes = this._domNode.getElementsByClassName("attachment");
-    let attachmentInfos = [];
     let attInfos = [];
     let newAttAPI = ("AttachmentInfo" in mainWindow);
-    // Create or lookup in the cache some attachment info
+    // Create or lookup in the cache some attachment info. The logic goes like
+    // this:
+    // - this._attachments is either glodaMsg.attachmentInfos or
+    // mimeMsg.allUserAttachments, and has type [{ name, contentType, size, url }]
+    // - attInfos is a cache of AttachmentInfo objects
+    // - when opening or saving an attachment, we lazily create attInfos[i]
+    // - if it turns out the corresponding attInfo fails when trying to open it
+    // or save it, bail, and then stream the message, update this._attachments,
+    // clear attInfos
     let getOrCreateAttInfo = function (i) {
       if (attInfos[i])
         return attInfos[i];
@@ -716,7 +723,7 @@ Message.prototype = {
     // Re-generate the attachment infos...
     let recreateAttInfos = function (k) {
       MsgHdrToMimeMessage(self._msgHdr, self, function (aMsgHdr, aMimeMsg) {
-        attachmentInfos = aMimeMsg.attachmentInfos;
+        this._attachments = aMimeMsg.allUserAttachments;
         attInfos = [];
         k();
       }, true, { partsOnDemand: true });
@@ -740,6 +747,9 @@ Message.prototype = {
         try {
           saveAtt(getOrCreateAttInfo(j));
         } catch (e) {
+          // This seems to never happen, unfortunately...
+          // TODO 20110721 Validate this by stripping the attachment part of the
+          // URI and running msgUriToMsgHdr on it.
           Log.debug("Invalid attachment URL", att.url);
           recreateAttInfos(function () {
             reindexMessages([self._msgHdr]);
@@ -783,15 +793,21 @@ Message.prototype = {
         event.dataTransfer.setData("application/x-moz-file-promise", null);
       }, false);
     }
-    this.register(".open-all", function (event) {
-      for (let i in range(0, self._attachments.length))
-        getOrCreateAttInfo(i);
-      mainWindow.HandleMultipleAttachments(attachmentInfos, "open");
-    });
     this.register(".download-all", function (event) {
       for (let i in range(0, self._attachments.length))
         getOrCreateAttInfo(i);
-      mainWindow.HandleMultipleAttachments(attachmentInfos, "save");
+      try {
+        mainWindow.HandleMultipleAttachments(attInfos, "save");
+      } catch (e) {
+        // This doesn't look like we can catch that kind of failure...
+        Log.debug("Invalid attachment info");
+        recreateAttInfos(function () {
+          reindexMessages([self._msgHdr]);
+          for (let i in range(0, self._attachments.length))
+            getOrCreateAttInfo(i);
+          mainWindow.HandleMultipleAttachments(attInfos, "save");
+        });
+      }
     });
     this.register(".quickReply", function (event) {
       // Ok, so it's actually convenient to register our event listener on the
