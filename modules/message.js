@@ -425,7 +425,7 @@ Message.prototype = {
         formattedSize: formattedSize,
         thumb: escapeHtml(thumb),
         imgClass: imgClass,
-        name: escapeHtml(att.name),
+        name: escapeHtml(att.name).replace(this.RE_SNIPPET, ""),
       });
     }
 

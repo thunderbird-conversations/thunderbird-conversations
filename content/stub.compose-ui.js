@@ -293,6 +293,12 @@ function loadDraft() {
 var gComposeSession;
 
 function createComposeSession(what) {
+  // Do that now so that it doesn't have to be implemented by each compose
+  // session type.
+  if (Prefs.getBool("mail.spellcheck.inline"))
+    document.getElementsByTagName("textarea")[0].setAttribute("spellcheck", true);
+  else
+    document.getElementsByTagName("textarea")[0].setAttribute("spellcheck", false);
   if (gBzSetup) {
     let [bzUrl, cookie] = gBzSetup;
     return new BzComposeSession(what, bzUrl, cookie);
