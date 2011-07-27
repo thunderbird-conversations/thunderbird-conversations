@@ -300,8 +300,8 @@ function createComposeSession(what) {
   else
     document.getElementsByTagName("textarea")[0].setAttribute("spellcheck", false);
   if (gBzSetup) {
-    let [bzUrl, cookie] = gBzSetup;
-    return new BzComposeSession(what, bzUrl, cookie);
+    let [webUrl, bzUrl, cookie] = gBzSetup;
+    return new BzComposeSession(what, webUrl, bzUrl, cookie);
   } else {
     return new ComposeSession(what);
   }
@@ -812,4 +812,11 @@ function createStateListener (aComposeSession, aMsgHdrs, aId) {
       // DisplaySaveFolderDlg(folderURI);
     }
   };
+}
+
+function _rewrap() {
+  let textarea = document.getElementsByTagName("textarea")[0];
+  let editor = textarea.QueryInterface(Ci.nsIDOMNSEditableElement).editor;
+  editor.QueryInterface(Ci.nsIEditorMailSupport);
+  editor.rewrap(true);
 }

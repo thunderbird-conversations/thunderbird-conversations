@@ -39,6 +39,7 @@
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource:///modules/iteratorUtils.jsm");
 
+// Remove when switching to Thunderbird 7
 if (!("cookies" in Services)) {
   XPCOMUtils.defineLazyServiceGetter(Services, "cookies",
                                      "@mozilla.org/cookiemanager;1",
@@ -52,6 +53,28 @@ let gBugzillaAPIs = {
     "https://api-dev.bugzilla.mozilla.org/test/0.9/",
 };
 
+function addBzLink(aUrl) {
+  if (gComposeSession && gComposeSession.addedBzLink)
+    return;
+  $(".quickReply")
+    .append($("<div />")
+      .css("text-align", "right")
+      .css("padding-top", "5px")
+      .append($("<a>")
+        .css("color", "rgb(114, 159, 207)")
+        .css("text-decoration", "underline")
+        .text(strings.get("bzDoLogin"))
+        .attr("href", "javascript:")
+        .click(function () {
+          topMail3Pane(window).document.getElementById("tabmail")
+            .openTab("contentTab",  { contentPage: aUrl });
+        })
+      )
+    );
+  if (gComposeSession)
+    gComposeSession.addedBzLink = true;
+}
+
 function bzSetup() {
   let conv = Conversations.currentConversation;
   let lastMsg = conv.messages[conv.messages.length - 1].message;
@@ -63,25 +86,11 @@ function bzSetup() {
       if (cookie) {
         document.getElementsByTagName("textarea")[0]
           .setAttribute("placeholder", strings.get("bzPlaceholder"));
-        return [bzUrl, cookie];
+        return [url, bzUrl, cookie];
       } else {
         document.getElementsByTagName("textarea")[0]
           .setAttribute("placeholder", strings.get("bzNoCookieMsg"));
-        $(".quickReply")
-          .append($("<div />")
-            .css("text-align", "right")
-            .css("padding-top", "5px")
-            .append($("<a>")
-              .css("color", "rgb(114, 159, 207)")
-              .css("text-decoration", "underline")
-              .text(strings.get("bzDoLogin"))
-              .attr("href", "javascript:")
-              .click(function () {
-                topMail3Pane(window).document.getElementById("tabmail")
-                  .openTab("contentTab",  { contentPage: url });
-              })
-          )
-        );
+        addBzLink(url);
         return null;
       }
     } else {
@@ -113,7 +122,8 @@ function getBugzillaCookie(aUrl) {
     return null;
 }
 
-function BzComposeSession (match, apiUrl, [login, loginCookie]) {
+function BzComposeSession (match, webUrl, apiUrl, [login, loginCookie]) {
+  this.webUrl = webUrl;
   // A visitor pattern.
   //  match({ reply(nsIMsgDbHdr), draft({ msgUri, from, to, cc, bcc, body }) })
   this.match = match;
@@ -125,6 +135,8 @@ function BzComposeSession (match, apiUrl, [login, loginCookie]) {
     identity: null,
     msgHdr: null,
   };
+  this.addedBzLink = false;
+
   let conv = Conversations.currentConversation;
   this.message = conv.messages[conv.messages.length - 1].message;
 
@@ -163,6 +175,7 @@ const RE_BUG_NUMBER = /^bug-([\d]+)-/;
 
 BzComposeSession.prototype = {
   send: function (options) {
+    let self = this;
     let archive = options && options.archive;
     let id = Conversations.currentConversation.id;
     let conv = Conversations.currentConversation;
@@ -198,6 +211,7 @@ BzComposeSession.prototype = {
         if (response) {
           if ("error" in response && response.error == "1") {
             pText(strings.get("bzMsgError", [response.code, response.message]));
+            addBzLink(self.webUrl);
           } else {
             pText(strings.get("bzMsgSuccess"));
             // Only operate if we haven't changed conversations in the
