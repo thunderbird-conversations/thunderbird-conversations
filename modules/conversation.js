@@ -913,10 +913,53 @@ Conversation.prototype = {
       //  not just currentMsgset.
       if (currentMsgUris.length == 0)
         shouldRecycle = false;
+      // Be super-conservative (but I fail to see how we could possibly end up
+      // in a different situation → famous last words): we can recycle the
+      // conversation only if there's one draft in it and it's the last message
+      // in the conversation.
+      let drafts = currentMsgSet.filter(function (x)
+        !toMsgHdr(x) || msgHdrIsDraft(toMsgHdr(x))
+      );
+      if (drafts.length) {
+        if (drafts.length > 1)
+          shouldRecycle = false;
+        else
+          shouldRecycle = shouldRecycle
+            && (currentMsgSet.indexOf(drafts[0]) == currentMsgSet.length - 1);
+        Log.debug("Found drafts, recycling?", shouldRecycle);
+      }
       if (shouldRecycle) {
         // NB: we get here even if there's 0 new messages, understood?
         // Just get the extra messages
         let whichMessages = this.messages.slice(currentMsgSet.length, this.messages.length);
+        // So the deal with drafts is a little bit simpler here, because we
+        // don't know which drafts are new, and which are not...
+        // - this.messages in the NEW message set
+        // - currentMsgSet =
+        // this._window.Conversations.currentConversation.messages is the OLD
+        // set of messages
+        // - whichMessages is the set of messages we're about to append
+        for each (let [, x] in Iterator(currentMsgSet)) {
+          if (!toMsgHdr(x)) {
+            Log.debug("Discarding null msgHdr");
+            // Not much we can do here... since that message hasn't been taken
+            // into account earlier (see if (toMsgHdr(x))), if we have a
+            // replacement for it, it's already in "whichMessages".
+            this._window.Conversations.currentConversation.removeMessage(x.message);
+          } else if (msgHdrIsDraft(toMsgHdr(x))) {
+            // 20110801 XXX this codepath is not tested (but you get the idea).
+            Log.debug("Replacing draft...");
+            this._window.Conversations.currentConversation.removeMessage(x.message);
+            let uri = msgHdrGetUri(toMsgHdr(x));
+            // Find the replacement message, and move it back into the list of
+            // messages we have to append to the old conversation.
+            let correspondingMessage =
+              this.messages.filter(function (x) (msgHdrGetUri(toMsgHdr(x)) == uri))[0];
+            whichMessages.push(correspondingMessage);
+          }
+        }
+        let compare = function (m1, m2) msgDate(m1) - msgDate(m2);
+        whichMessages.sort(compare);
         let currentConversation = this._window.Conversations.currentConversation;
         // Modify the old conversation in-place. BEWARE: don't forget anything
         Log.debug("Recycling conversation! We are eco-responsible.", whichMessages.length,
