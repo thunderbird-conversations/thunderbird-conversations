@@ -36,6 +36,7 @@
 
 // Dear AMO reviewer, please note that these files have var EXPORTED_SYMBOLS = [];
 Components.utils.import("resource://conversations/plugins/glodaAttrProviders.js");
+Components.utils.import("resource://conversations/plugins/embeds.js");
 Components.utils.import("resource://conversations/plugins/enigmail.js");
 Components.utils.import("resource://conversations/plugins/lightning.js");
 
