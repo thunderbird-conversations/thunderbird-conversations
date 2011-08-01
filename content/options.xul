@@ -83,6 +83,7 @@
        <preference id="no_friendly_date" name="conversations.no_friendly_date" type="bool" />
        <preference id="tweak_bodies" name="conversations.tweak_bodies" type="bool" />
        <preference id="tweak_chrome" name="conversations.tweak_chrome" type="bool" />
+       <preference id="add_embeds" name="conversations.add_embeds" type="bool" />
      </preferences>
 
      <groupbox>
@@ -96,6 +97,7 @@
        <checkbox label="&option.no_friendly_date;" preference="no_friendly_date" />
        <checkbox label="&option.tweak_chrome;" preference="tweak_chrome" style="width: 0;" />
        <checkbox label="&option.tweak_bodies;" preference="tweak_bodies" style="width: 0;" />
+       <checkbox label="&option.add_embeds;" preference="add_embeds" style="width: 0;" />
        <description style="width: 0;">&option.monospaced_senders2;</description>
        <textbox multiline="true" preference="monospaced_senders" />
      </groupbox>

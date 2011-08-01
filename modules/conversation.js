@@ -947,7 +947,8 @@ Conversation.prototype = {
             // replacement for it, it's already in "whichMessages".
             this._window.Conversations.currentConversation.removeMessage(x.message);
           } else if (msgHdrIsDraft(toMsgHdr(x))) {
-            // 20110801 XXX this codepath is not tested (but you get the idea).
+            // 20110801 XXX this codepath is not tested (but you get the idea)
+            //   because I don't know how to possibly trigger it.
             Log.debug("Replacing draft...");
             this._window.Conversations.currentConversation.removeMessage(x.message);
             let uri = msgHdrGetUri(toMsgHdr(x));

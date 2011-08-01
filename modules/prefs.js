@@ -20,6 +20,7 @@ function PrefManager() {
   this.logging_enabled = prefsService.getBoolPref("logging_enabled");
   this.tweak_bodies = prefsService.getBoolPref("tweak_bodies");
   this.tweak_chrome = prefsService.getBoolPref("tweak_chrome");
+  this.add_embeds = prefsService.getBoolPref("add_embeds");
   this.hide_quote_length = prefsService.getIntPref("hide_quote_length");
   // This is a hashmap
   this.monospaced_senders = {};
@@ -56,6 +57,7 @@ PrefManager.prototype = {
       case "logging_enabled":
       case "tweak_bodies":
       case "tweak_chrome":
+      case "add_embeds":
         this[aData] = prefsService.getBoolPref(aData);
         break;
 

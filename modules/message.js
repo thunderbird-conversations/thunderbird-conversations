@@ -1108,6 +1108,8 @@ Message.prototype = {
             let iframeDoc = iframe.contentDocument;
             self.tweakFonts(iframeDoc);
             self.detectQuotes(iframe);
+            if (Prefs["add_embeds"])
+              self.addEmbeds(iframeDoc);
             if (self.checkForFishing(iframeDoc) && !self._msgHdr.getUint32Property("notAPhishMessage")) {
               Log.debug("Phishing attempt");
               self._domNode.getElementsByClassName("phishingBar")[0].style.display = "block";
@@ -1716,6 +1718,69 @@ let PostStreamingFixesMixIn = {
       }
     }
     return isPhishing;
+  },
+
+  /**
+   * Walks the link of the message, and tries to detect stuff it knows how to
+   * embed, such as youtube videos...
+   */
+  addEmbeds: function (iframeDoc) {
+    // From http://stackoverflow.com/questions/5830387/php-regex-find-all-youtube-video-ids-in-string/5831191#5831191
+    let YOUTUBE_REGEXP = new RegExp(
+      '(?:https?://)?'           + // Optional scheme. Either http or https
+      '(?:www\\.)?'              + // Optional www subdomain
+      '(?:'                      + // Group host alternatives
+      'youtu\\.be/'              + // Either youtu.be,
+      '|youtube\\.com'           + // or youtube.com
+      '(?:'                      + // Group path alternatives
+      '/embed/'                  + // Either /embed/
+      '|/v/'                     + // or /v/
+      '|/watch\\?v='             + // or /watch\?v=
+      '|/user/\\S+/'             + // or /user/username#p/u/1/
+      '|/ytscreeningroom\?v='    + // or ytscreeningroom
+      ')'                        + // End path alternatives.
+      ')'                        + // End host alternatives.
+      '([\\w\\-]{10,12})'        + // $1: Allow 10-12 for 11 char youtube id.
+      '\\b'                      + // Anchor end to word boundary.
+      '[?=&\\w]*'                + // Consume any URL (query) remainder.
+      '(?!'                      + // But don\'t match URLs already linked.
+      '[\\\'"][^<>]*>'           + // Not inside a start tag,
+      '|</a>'                    + // or <a> element text contents.
+      ')'                          // End negative lookahead assertion.
+    );
+    let links = iframeDoc.getElementsByTagName("a");
+    [x.skip = true
+      for each ([, x] in Iterator(iframeDoc.querySelectorAll("blockquote a")))];
+    for each (let [, a] in Iterator(links)) {
+      if (a.skip)
+        continue;
+      let matches = a.href.match(YOUTUBE_REGEXP);
+      if (matches && matches.length) {
+        let videoId = matches[1];
+        Log.debug("Found a youtube video, video-id", videoId);
+        // Let's build the nodes
+        let document = this._domNode.ownerDocument;
+        let header = document.createElement("div");
+        header.classList.add("attachHeader");
+        header.textContent = strings.get("foundYoutube");
+        let br = document.createElement("br");
+        let iframe = document.createElementNS(
+          "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul",
+          "iframe");
+        iframe.setAttribute("type", "content");
+        iframe.style.width = "640px";
+        iframe.style.height = "385px";
+        iframe.style.marginTop = "3px";
+        iframe.setAttribute("src", "http://www.youtube.com/embed/"+videoId);
+        // Insert them
+        let container = this._domNode.getElementsByClassName("embedsContainer")[0];
+        let div = document.createElement("div");
+        div.style.marginTop = "20px";
+        for each (let e in [header, br, iframe])
+          div.appendChild(e);
+        container.appendChild(div);
+      }
+    }
   },
 };
 
