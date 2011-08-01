@@ -297,6 +297,8 @@ ViewWrapper.prototype = {
   isInView: function _ViewWrapper_isInView(aMsg) {
     if (this.mainWindow.gDBView) {
       let msgHdr = toMsgHdr(aMsg);
+      if (!msgHdr)
+        return false;
       let r =
         (msgHdrGetUri(msgHdr) in this.byUri) ||
         (this.mainWindow.gDBView.findIndexOfMsgHdr(msgHdr, false) != nsMsgViewIndex_None)
@@ -524,12 +526,35 @@ Conversation.prototype = {
         Log.debug("onItemsAdded",
           [msgDebugColor(x) + x.debug + " " + x.glodaMsg.headerMessageID
             for each (x in messages)].join(" "), Colors.default);
+        Log.debug(self.messages.length, "messages already in the conversation");
         // The message ids we already hold.
         let messageIds = {};
-        [messageIds[toMsgHdr(m).messageId] = true
+        // Remove all messages which don't have a msgHdr anymore
+        for each (let [, message] in Iterator(self.messages)) {
+          if (!toMsgHdr(message)) {
+            Log.debug("Removing a message with no msgHdr");
+            self.removeMessage(message.message);
+          }
+        }
+        [messageIds[getMessageId(m)] = !toMsgHdr(m) || msgHdrIsDraft(toMsgHdr(m))
           for each ([i, m] in Iterator(self.messages))];
+        // If we've got a new header for a message that we used to know as a
+        // draft, that means either the draft has been updated (autosave), or
+        // the draft was actually sent. In both cases, we want to remove the old
+        // draft.
+        for each (let [, x] in Iterator(messages)) {
+          let newMessageId = getMessageId(x);
+          if (messageIds[newMessageId]) {
+            Log.debug("Removing a draft...");
+            let draft = self.messages.filter(function (y)
+              getMessageId(y) == newMessageId
+            )[0];
+            self.removeMessage(draft.message);
+            delete messageIds[newMessageId];
+          }
+        }
         // Don't add a message if we already have it.
-        messages = messages.filter(function (x) !(x.glodaMsg.headerMessageID in messageIds));
+        messages = messages.filter(function (x) !(getMessageId(x) in messageIds));
         // Sort all the messages according to the date so that they are inserted
         // in the right order.
         let compare = function (m1, m2) msgDate(m1) - msgDate(m2);
@@ -669,7 +694,7 @@ Conversation.prototype = {
     let mainWindow = topMail3Pane(this);
     this.viewWrapper = new ViewWrapper(this);
     // Wicked cases, when we're asked to display a draft that's half-saved...
-    messages = messages.filter(function (x) (toMsgHdr(x) && toMsgHdr(x).messageId));
+    messages = messages.filter(function (x) (toMsgHdr(x) && getMessageId(x)));
     messages = groupArray(this.messages, getMessageId);
     // The message that's selected has the highest priority to avoid
     //  inconsistencies in case multiple identical messages are present in the
@@ -706,10 +731,13 @@ Conversation.prototype = {
     this.messages = messages;
   },
 
+  /**
+   * Remove a given message from the conversation.
+   * @param aMessage {Message} a Message as in modules/message.js
+   */
   removeMessage: function _Conversation_removeMessage (aMessage) {
     // Move the quick reply to the previous message
-    let i = [msgHdrGetUri(toMsgHdr(x)) for each ([, x] in Iterator(this.messages))]
-      .indexOf(msgHdrGetUri(aMessage._msgHdr));
+    let i = [x.message for each ([, x] in Iterator(this.messages))].indexOf(aMessage);
     Log.debug("Removing message", i);
     if (i == this.messages.length - 1 && this.messages.length > 1) {
       let $ = this._htmlPane.contentWindow.$;
@@ -722,9 +750,8 @@ Conversation.prototype = {
       }
     }
 
-    let badUri = msgHdrGetUri(aMessage._msgHdr);
-    this.messages = this.messages.filter(function (x) msgHdrGetUri(toMsgHdr(x)) != badUri);
-    this._initialSet = this._initialSet.filter(function (x) msgHdrGetUri(x) != badUri);
+    this.messages = this.messages.filter(function (x) x.message != aMessage);
+    this._initialSet = this._initialSet.filter(function (x) x.message != aMessage);
     this._domNode.removeChild(aMessage._domNode);
   },
 
@@ -935,6 +962,7 @@ Conversation.prototype = {
 
     Log.debug("Outputting",
       [msgDebugColor(x) + x.debug for each (x in this.messages)], Colors.default);
+    Log.debug(this.messages.length, "messages in the conversation now");
     /*for each (let message in this.messages) {
       let msgHdr = toMsgHdr(message);
       dump("  " + msgHdr.folder.URI + "#" + msgHdr.messageKey + "\n");
