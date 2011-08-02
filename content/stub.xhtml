@@ -687,19 +687,23 @@
           <li class="senderName"></li>
           ${str("fieldReply2")}
           <li class="replyMethod">
-            <input type="radio" name="reply-method" onchange="changeComposeFields('reply')" id="reply-radio"
+            <input type="radio" name="reply-method" value="reply"
+              onchange="changeComposeFields('reply')" id="reply-radio"
             /><label for="reply-radio">${str("reply")}</label>
           </li>
           <li class="replyMethod replyMethod-replyAll">
-            <input type="radio" name="reply-method" onchange="changeComposeFields('replyAll')" id="replyAll-radio"
+            <input type="radio" name="reply-method" value="replyAll"
+              onchange="changeComposeFields('replyAll')" id="replyAll-radio"
             /><label for="replyAll-radio">${str("replyAll")}</label>
           </li>
           <li class="replyMethod replyMethod-replyList">
-            <input type="radio" name="reply-method" onchange="changeComposeFields('replyList')" id="replyList-radio"
+            <input type="radio" name="reply-method" value="replyList"
+              onchange="changeComposeFields('replyList')" id="replyList-radio"
             /><label for="replyList-radio">${str("replyList")}</label>
           </li>
           <li class="replyMethod">
-            <input type="radio" name="reply-method" onchange="changeComposeFields('forward')" id="forward-radio"
+            <input type="radio" name="reply-method" value="forward"
+              onchange="changeComposeFields('forward')" id="forward-radio"
             /><label for="forward-radio">${str("forward")}</label>
           </li>
           <li class="showCc">| <a onclick="showCc(); editFields();" href="javascript:">${str("addCc")}</a></li>

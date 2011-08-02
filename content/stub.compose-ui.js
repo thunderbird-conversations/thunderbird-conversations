@@ -440,7 +440,7 @@ ComposeSession.prototype = {
         // Make sure we're consistent with modules/message.js!
         if (aMessage.isReplyListEnabled) {
           self.changeComposeFields("replyAll");
-          $("#replyAll-radio").attr("checked", "checked");
+          $(".replyMethod > input").val(["replyAll"]);
           $(".replyMethod-replyList").show();
         } else {
           self.changeComposeFields("reply", function (n) {
@@ -450,7 +450,7 @@ ComposeSession.prototype = {
             if (n <= 1)
               $(".replyMethod-replyAll").hide();
           });
-          $("#reply-radio").attr("checked", "checked");
+          $(".replyMethod > input").val(["reply"]);
           $(".replyMethod-replyList").hide();
         }
       },
