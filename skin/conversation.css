@@ -514,6 +514,18 @@ ul.tags li {
   color: #fff;
 }
 
+ul.tags li.light-tag {
+  color: rgb(10, 10, 10);
+}
+
+li.light-tag .tag-x {
+  border-color: rgb(10, 10, 10);
+}
+
+li.blc-FFFFFF {
+  border: 1px solid black;
+}
+
 ul.special-tags li {
   background-color: #3F5381;
 }

@@ -941,9 +941,17 @@ Message.prototype = {
     for each (let [, mtag] in Iterator(tags)) {
       let tag = mtag;
       let document = this._domNode.ownerDocument;
-      let colorClass = "blc-" + MailServices.tags.getColorForKey(tag.key).substr(1);
+      let rgb = MailServices.tags.getColorForKey(tag.key).substr(1) || "FFFFFF";
+      // This is just so we can figure out if the tag color is too light and we
+      // need to have the text black or not.
+      let [, r, g, b] = rgb.match(/(..)(..)(..)/).map(function (x) parseInt(x, 16)/255);
+      let colorClass = "blc-" + rgb;
       let tagName = tag.tag;
       let tagNode = document.createElement("li");
+      let l = 0.2126*r + 0.7152*g + 0.0722*b;
+      Log.debug(l);
+      if (l > .8)
+        tagNode.classList.add("light-tag");
       tagNode.classList.add("tag");
       tagNode.classList.add(colorClass);
       tagNode.appendChild(document.createTextNode(tagName));
