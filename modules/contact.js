@@ -55,6 +55,7 @@ Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
 Cu.import("resource:///modules/gloda/utils.js");
 Cu.import("resource:///modules/gloda/gloda.js");
 
+Cu.import("resource://conversations/stdlib/compose.js");
 Cu.import("resource://conversations/stdlib/misc.js");
 Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
 Cu.import("resource://conversations/log.js");
@@ -153,10 +154,9 @@ let ContactMixIn = {
   },
 
   onAddedToDom: function _ContactMixIn_onAddedToDom(aDomNode) {
-    /* Register the "send message" link */
-    let uri = "mailto:" + this._email;
-    let aURI = ioService.newURI(uri, null, null);
-    this._domNode = aDomNode;
+    let self = this;
+    this._domNode = aDomNode; // makes the line below possible
+    let mainWindow = topMail3Pane(this);
 
     aDomNode.parentNode.getElementsByClassName("moreExpander")[0].addEventListener("click", function (event) {
       if (aDomNode.parentNode.getElementsByClassName("hiddenFooter")[0].style.display == "none") {
@@ -169,13 +169,12 @@ let ContactMixIn = {
       event.stopPropagation();
     }, false);
 
+    /* Register the "send message" link */
     this.register(".sendEmail", function (event) {
-      msgComposeService.OpenComposeWindowWithURI(null, aURI);
+      composeMessageTo(self._email, mainWindow.gFolderDisplay.displayedFolder);
       event.stopPropagation();
     });
 
-    let self = this;
-    let mainWindow = topMail3Pane(this);
     // XXX We already called getCardForEmail if we're runnning without contacts
     //  installed...
     // Please note that cardAndBook is never overridden, so that the closure for
