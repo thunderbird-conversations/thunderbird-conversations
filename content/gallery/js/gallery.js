@@ -73,6 +73,7 @@ Gallery.prototype = {
       this.output();
     }, true, {
       partsOnDemand: true,
+      examineEncryptedParts: true,
     });
   },
 

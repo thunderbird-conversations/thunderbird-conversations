@@ -704,7 +704,10 @@ Message.prototype = {
         this._attachments = aMimeMsg.allUserAttachments;
         attInfos = [];
         k();
-      }, true, { partsOnDemand: true });
+      }, true, {
+        partsOnDemand: true,
+        examineEncryptedParts: true,
+      });
     };
     for each (let [i, attNode] in Iterator(attachmentNodes)) {
       let j = i;
@@ -1463,6 +1466,7 @@ function MessageFromDbHdr(aConversation, aMsgHdr) {
       }
     }, true, {
       partsOnDemand: true,
+      examineEncryptedParts: true,
     });
   } catch (e) {
     // Remember: these exceptions don't make it out of the callback (XPConnect
