@@ -949,7 +949,6 @@ Message.prototype = {
       let tagName = tag.tag;
       let tagNode = document.createElement("li");
       let l = 0.2126*r + 0.7152*g + 0.0722*b;
-      Log.debug(l);
       if (l > .8)
         tagNode.classList.add("light-tag");
       tagNode.classList.add("tag");
@@ -1165,6 +1164,8 @@ Message.prototype = {
             // Attach the required event handlers so that links open in the
             // external browser.
             for each (let [, a] in Iterator(iframeDoc.getElementsByTagName("a"))) {
+              if (!a)
+                continue;
               a.addEventListener("click",
                 function link_listener (event)
                   mainWindow.specialTabs.siteClickHandler(event, /^mailto:/), true);
@@ -1684,6 +1685,8 @@ let PostStreamingFixesMixIn = {
     let isPhishing = false;
     let links = iframeDoc.getElementsByTagName("a");
     for (let [, a] in Iterator(links)) {
+      if (!a)
+        continue;
       let linkText = a.textContent;
       let linkUrl = a.getAttribute("href");
       let hrefURL;
