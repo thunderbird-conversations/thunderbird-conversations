@@ -689,40 +689,14 @@ Message.prototype = {
       // that was picked at indexing-time is still valid.
       let key = self._msgHdr.messageKey;
       let url = att.url.replace(self.RE_MSGKEY, "number="+key);
+      let uri = msgHdrGetUri(self._msgHdr);
 
-      // I'm still surprised that this magically works
-      let uri = Services.io.newURI(url, null, null)
-                        .QueryInterface(Ci.nsIMsgMessageUrl)
-                        .uri;
-
-      // New versions of Thunderbird (post-5.0) have changed the API for
-      // attachment objects. Handle both ways for now.
-      let attInfo;
-      if (newAttAPI)
-        attInfo = new mainWindow.AttachmentInfo(
-          att.contentType, url, att.name, uri, att.isExternal
-        );
-      else
-        attInfo = new mainWindow.createNewAttachmentInfo(
-          att.contentType, url, att.name, uri, att.isExternal
+      let attInfo = new mainWindow.AttachmentInfo(
+          att.contentType, url, att.name, uri, att.isExternal, 42
         );
 
       attInfos[i] = attInfo;
       return attInfo;
-    };
-    // Open an attachment regardless of the API version we're on
-    let openAtt = function (attInfo) {
-      if (newAttAPI)
-        attInfo.open();
-      else
-        mainWindow.openAttachment(attInfo);
-    };
-    // Save an attachment regardless of the API version we're on
-    let saveAtt = function (attInfo) {
-      if (newAttAPI)
-        attInfo.save();
-      else
-        mainWindow.saveAttachment(attInfo);
     };
     // Re-generate the attachment infos...
     let recreateAttInfos = function (k) {
@@ -738,18 +712,18 @@ Message.prototype = {
 
       this.register(attNode.getElementsByClassName("open-attachment")[0], function (event) {
         try {
-          openAtt(getOrCreateAttInfo(j));
+          getOrCreateAttInfo(j).open();
         } catch (e) {
-          Log.debug("Invalid attachment URL", att.url);
+          Log.debug("Invalid attachment URL", getOrCreateAttInfo(j).url);
           recreateAttInfos(function () {
             reindexMessages([self._msgHdr]);
-            openAtt(getOrCreateAttInfo(j));
+            getOrCreateAttInfo(j).open();
           });
         }
       });
       this.register(attNode.getElementsByClassName("download-attachment")[0], function (event) {
         try {
-          saveAtt(getOrCreateAttInfo(j));
+          getOrCreateAttInfo(j).save();
         } catch (e) {
           // This seems to never happen, unfortunately...
           // TODO 20110721 Validate this by stripping the attachment part of the
@@ -757,7 +731,7 @@ Message.prototype = {
           Log.debug("Invalid attachment URL", att.url);
           recreateAttInfos(function () {
             reindexMessages([self._msgHdr]);
-            saveAtt(getOrCreateAttInfo(j));
+            getOrCreateAttInfo(j).save();
           });
         }
       });
@@ -1178,10 +1152,8 @@ Message.prototype = {
             // is too big, so we need to make the iframe small, so that its
             // scrollheight corresponds to its "real" height (there was an issue
             // with offsetheight, don't remember what, though).
-            Log.debug(iframeDoc.body.scrollHeight, iframeDoc.body.offsetHeight);
             iframe.style.height = "20px";
             iframe.style.height = iframeDoc.body.scrollHeight+"px";
-            Log.debug(iframeDoc.body.scrollHeight, iframeDoc.body.offsetHeight);
 
             // So now we might overflow horizontally, which causes a horizontal
             // scrollbar to appear, which narrows the vertical height available,
