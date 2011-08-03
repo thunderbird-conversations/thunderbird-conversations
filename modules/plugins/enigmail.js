@@ -154,36 +154,49 @@ function tryEnigmail(bodyElement) {
   }
 }
 
+const ENC_IMG = "chrome://conversations/content/i/enc.png";
+const SIG_IMG = "chrome://conversations/content/i/sign.png";
+
 let enigmailHook = {
+  _domNode: null,
+
   onMessageBeforeStreaming: function _enigmailHook_onBeforeSreaming(aMessage) {
-    let { _attachments: attachments, _msgHdr: msgHdr } = aMessage;
+    let { _attachments: attachments, _msgHdr: msgHdr, _domNode: domNode } = aMessage;
+    this._domNode = domNode;
     let w = topMail3Pane(aMessage);
     let hasEnc = (aMessage.contentType+"").search(/^multipart\/encrypted(;|$)/i) == 0;
-    if (hasEnc)
+    if (hasEnc) {
       Log.debug("Found Mime/PGP");
+      this.addTag(ENC_IMG, strings.get("encrypted"));
+    }
     if (hasEnc && !enigmailSvc.mimeInitialized()) {
       Log.debug("Initializing EnigMime");
       w.document.getElementById("messagepane").setAttribute("src", "enigmail:dummy");
     }
+
+    let hasSig = (aMessage.contentType+"").search(/^multipart\/signed(;|$)/i) == 0;
+    if (hasSig)
+      this.addTag(SIG_IMG, strings.get("signed"));
+  },
+
+  addTag: function _addTag(url, txt) {
+    let specialTags = this._domNode.getElementsByClassName("special-tags")[1];
+    let li = this._domNode.ownerDocument.createElement("li");
+    li.innerHTML = ["<img src=\"", url, "\" />", txt].join("");
+    specialTags.appendChild(li);
   },
 
   onMessageStreamed: function _enigmailHook_onMessageStreamed(aMsgHdr, aDomNode, aMsgWindow) {
     let iframe = aDomNode.getElementsByTagName("iframe")[0];
     let iframeDoc = iframe.contentDocument;
-    let specialTags = aDomNode.getElementsByClassName("special-tags")[1];
     if (iframeDoc.body.textContent.length > 0 && hasEnigmail) {
       let status = tryEnigmail(iframeDoc.body);
-      let addTag = function _addTag(url, txt) {
-        let li = iframe.ownerDocument.createElement("li");
-        li.innerHTML = ["<img src=\"", url, "\" />", txt].join("");
-        specialTags.appendChild(li);
-      };
       if (status & Ci.nsIEnigmail.DECRYPTION_OKAY)
-        addTag("chrome://conversations/content/i/enc.png", strings.get("encrypted"));
+        this.addTag(ENC_IMG, strings.get("encrypted"));
       if (status & Ci.nsIEnigmail.GOOD_SIGNATURE)
-        addTag("chrome://conversations/content/i/sign.png", strings.get("signed"));
+        this.addTag(SIG_IMG, strings.get("signed"));
       if (status & Ci.nsIEnigmail.UNVERIFIED_SIGNATURE)
-        addTag("chrome://conversations/content/i/sign.png", strings.get("unknownGood"));
+        this.addTag(SIG_IMG, strings.get("unknownGood"));
     }
 
   },
