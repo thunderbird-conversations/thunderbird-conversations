@@ -250,10 +250,9 @@ function msgDebugColor (aMsg) {
 
 function messageFromGlodaIfOffline (aSelf, aGlodaMsg, aDebug) {
   let aMsgHdr = aGlodaMsg.folderMessage;
-  let hasEnc = (aGlodaMsg.contentType+"").search(/^multipart\/encrypted(;|$)/i) == 0;
   if (((aMsgHdr.flags & Ci.nsMsgMessageFlags.Offline) ||
         (aMsgHdr.folder instanceof Ci.nsIMsgLocalMailFolder))
-      && !hasEnc) {
+      && !aGlodaMsg.isEncrypted) {
     // Means Gloda indexed the message fully...
     return {
       type: kMsgGloda,
@@ -526,7 +525,7 @@ Conversation.prototype = {
         let messages = [messageFromGlodaIfOffline(self, glodaMsg, "GA")
           for each ([, glodaMsg] in Iterator(aItems))];
         Log.debug("onItemsAdded",
-          [msgDebugColor(x) + x.debug + " " + x.glodaMsg.headerMessageID
+          [msgDebugColor(x) + x.debug + " " + getMessageId(x)
             for each (x in messages)].join(" "), Colors.default);
         Log.debug(self.messages.length, "messages already in the conversation");
         // The message ids we already hold.
