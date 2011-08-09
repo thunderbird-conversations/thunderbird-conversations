@@ -254,7 +254,11 @@ function Message(aConversation) {
   // Might be filled to something more meaningful later, in case we replace the
   //  sender with something more relevant, like X-Bugzilla-Who.
   this._realFrom = "";
-  this._to = this.parse(this._msgHdr.mime2DecodedRecipients);
+  // The extra test is because recipients fallsback to cc if there's no To:
+  // header, and we don't want to display the information twice, then.
+  this._to = (this._msgHdr.mime2DecodedRecipients != this._msgHdr.ccList)
+    ? this.parse(this._msgHdr.mime2DecodedRecipients)
+    : [];
   this._cc = this._msgHdr.ccList.length ? this.parse(this._msgHdr.ccList) : [];
   this._bcc = this._msgHdr.bccList.length ? this.parse(this._msgHdr.bccList) : [];
   this.subject = this._msgHdr.mime2DecodedSubject;
