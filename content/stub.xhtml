@@ -516,6 +516,9 @@
           <span class="replyLinkWrapper">
             | <a href="javascript:" class="replyMainActionLink"></a>
           </span>
+          <span class="editDraftLinkWrapper">
+            | <a href="javascript:" class="edit-draft">${str("editDraft2")}</a>
+          </span>
           <span class="dropDown"> |
             <a href="javascript:" onclick="displayMenu(event);" class="top-right-more">${str("more")} <span class="downwardArrow">&#x25bc;</span></a>
             <div class="tooltip tooltip-menu menu">
@@ -572,10 +575,7 @@
             class="keep-tag in-folder"
             title="${str('jumpToFolder')}"
             >${str("inFolder").replace("#1", folderName)}</li
-          >{{if draft}}<li
-            class="keep-tag edit-draft"
-            >${str("editDraft")}</li
-          >{{/if}}</ul
+          ></ul
         >
         <ul class="tags regular-tags"></ul>
         <div class="iframe-container"></div>
@@ -614,6 +614,7 @@
       </div>
       <div class="messageFooter">
         <div class="footerActions">
+          <button class="edit-draft">${str("editDraft2")}</button>
           <div class="replyWrapper">
             <button class="replyMainAction">${str("reply")}</button>
             <button class="replyDropDown" onclick="displayMenu(event);">&#x25bc;</button>

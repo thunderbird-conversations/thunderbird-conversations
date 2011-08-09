@@ -352,7 +352,6 @@ Message.prototype = {
       attachments: [],
       folderName: null,
       shortFolderName: null,
-      draft: null,
       gallery: false,
       uri: null,
       quickReply: aQuickReply,
@@ -451,7 +450,8 @@ Message.prototype = {
     data.shortFolderName = escapeHtml(this._msgHdr.folder.name);
 
     // 5) Custom tag telling the user if this is a draft
-    data.draft = msgHdrIsDraft(this._msgHdr);
+    if (msgHdrIsDraft(this._msgHdr))
+      extraClasses.push("draft");
 
     // 6) For the "show remote content" thing
     data.realFrom = escapeHtml(this._realFrom.email || this._from.email);
@@ -1395,7 +1395,7 @@ function MessageFromGloda(aConversation, aGlodaMsg) {
   else
     this.contentType = "message/rfc822";
 
-  Log.assert(!("isEncrypted" in aGlodaMsg),
+  Log.assert(!aGlodaMsg.isEncrypted,
     "We're supposed to stream encrypted messages!");
 
   if ("mailingLists" in aGlodaMsg)

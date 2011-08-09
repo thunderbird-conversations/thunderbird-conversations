@@ -444,6 +444,7 @@ a img {
 .message.collapsed .details,
 .message.collapsed .dropDown,
 .message.collapsed .replyLinkWrapper,
+.message.collapsed .editDraftLinkWrapper,
 .message.collapsed .messageBody .tags,
 .message.collapsed p,
 .message.collapsed .attachments,
@@ -534,7 +535,7 @@ ul.special-tags img {
   vertical-align: text-top;
 }
 
-.in-folder, .edit-draft {
+.in-folder {
   cursor: pointer;
 }
 
@@ -929,6 +930,19 @@ button.replyDropDown {
 
 .tag-signed, .tag-decrypted {
   background-color: #68AB57 !important;
+}
+
+/* for drafts only */
+.message.draft :-moz-any(.replyWrapper, .forward, .replyLinkWrapper) {
+  display: none;
+}
+
+.message:not(.draft) :-moz-any(.edit-draft, .editDraftLinkWrapper) {
+  display: none;
+}
+
+.editDraftLinkWrapper {
+  font-weight: bold;
 }
 
 /* clearfix */
