@@ -918,6 +918,19 @@ button.replyDropDown {
   width: 200px;
 }
 
+/* signed / decrypted */
+.message:not(.decrypted) .tag-decrypted {
+  display: none;
+}
+
+.message:not(.signed) .tag-signed {
+  display: none;
+}
+
+.tag-signed, .tag-decrypted {
+  background-color: #68AB57 !important;
+}
+
 /* clearfix */
 
 .clearfix:after {

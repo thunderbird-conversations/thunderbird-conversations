@@ -268,6 +268,7 @@ function Message(aConversation) {
   this.mailingLists = [];
   this.isReplyListEnabled = null;
   this.isReplyAllEnabled = null;
+  this.isEncrypted = false;
   this.bugzillaInfos = {};
 
   // Filled by the conversation, useful to know whether we were initially the
@@ -340,6 +341,7 @@ Message.prototype = {
   // Output this message as a whole bunch of HTML
   toTmplData: function (aQuickReply) {
     let self = this;
+    let extraClasses = [];
     let data = {
       dataContactFrom: null,
       dataContactsTo: null,
@@ -354,8 +356,8 @@ Message.prototype = {
       gallery: false,
       uri: null,
       quickReply: aQuickReply,
-      bugzillaClass: "",
       bugzillaUrl: "[unknown bugzilla instance]",
+      extraClasses: null,
     };
 
     // 1) Generate Contact objects
@@ -386,7 +388,7 @@ Message.prototype = {
 
     // 1b) Don't show "to me" if this is a bugzilla email
     if (Object.keys(this.bugzillaInfos).length) {
-      data.bugzillaClass = "bugzilla";
+      extraClasses.push("bugzilla");
       try {
         let url = this.bugzillaInfos["url"];
         let uri = Services.io.newURI(url, null, null);
@@ -453,6 +455,11 @@ Message.prototype = {
 
     // 6) For the "show remote content" thing
     data.realFrom = escapeHtml(this._realFrom.email || this._from.email);
+
+    // 7) Extra classes we want to add to the message
+    if (this.isEncrypted)
+      extraClasses.push("decrypted");
+    data.extraClasses = extraClasses.join(" ");
 
     return data;
   },
@@ -1388,6 +1395,9 @@ function MessageFromGloda(aConversation, aGlodaMsg) {
   else
     this.contentType = "message/rfc822";
 
+  Log.assert(!("isEncrypted" in aGlodaMsg),
+    "We're supposed to stream encrypted messages!");
+
   if ("mailingLists" in aGlodaMsg)
     this.mailingLists =
       [x.value for each ([, x] in Iterator(aGlodaMsg.mailingLists))];
@@ -1458,6 +1468,10 @@ function MessageFromDbHdr(aConversation, aMsgHdr) {
           .concat(parseMimeLine(aMimeMsg.get("bcc"), true))
           .filter(function (x) !(x.email in gIdentities))
           .length > 1;
+
+        let findIsEncrypted = function (x)
+          x.isEncrypted || (x.parts ? x.parts.some(findIsEncrypted) : false);
+        self.isEncrypted = findIsEncrypted(aMimeMsg);
 
         self._signal();
       } catch (e) {

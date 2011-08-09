@@ -481,7 +481,7 @@
 
 <body>
   <script id="messageTemplate" type="text/x-jquery-tmpl"><![CDATA[
-    <li class="message collapsed ${bugzillaClass}">
+    <li class="message collapsed ${extraClasses}">
       <div class="messageHeader hbox">
         <div class="star"></div>
         <div class="author">{{tmpl(dataContactFrom) "#contactTemplate"}}</div>
@@ -490,6 +490,16 @@
           <span class="bzTo"> ${str("at")} ${bugzillaUrl}</span>
           <span class="snippet"><ul class="tags regular-tags"></ul><ul
               class="tags special-tags"
+            ><li
+              class="tag-signed"
+              title="${str('messageSignedLong')}"
+              ><img src="chrome://conversations/content/i/sign.png" />
+              ${str("messageSigned")}</li
+            ><li
+              class="tag-decrypted"
+              title="${str('messageDecryptedLong')}"
+              ><img src="chrome://conversations/content/i/enc.png" />
+              ${str("messageDecrypted")}</li
             ><li
               class="in-folder"
               title="${str('jumpToFolder')}"
@@ -548,6 +558,16 @@
       <div class="messageBody">
         <!-- Weird markup to deal with whitespace DOM nodes -->
         <ul class="tags special-tags"
+          ><li
+            class="keep-tag tag-signed"
+            title="${str('messageSignedLong')}"
+            ><img src="chrome://conversations/content/i/sign.png" />
+            ${str("messageSigned")}</li
+          ><li
+            class="keep-tag tag-decrypted"
+            title="${str('messageDecryptedLong')}"
+            ><img src="chrome://conversations/content/i/enc.png" />
+            ${str("messageDecrypted")}</li
           ><li
             class="keep-tag in-folder"
             title="${str('jumpToFolder')}"
