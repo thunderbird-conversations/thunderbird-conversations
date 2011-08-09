@@ -724,7 +724,7 @@ Message.prototype = {
         try {
           getOrCreateAttInfo(j).open();
         } catch (e) {
-          Log.debug("Invalid attachment URL", getOrCreateAttInfo(j).url);
+          Log.debug("Invalid attachment URL", getOrCreateAttInfo(j).url, e);
           recreateAttInfos(function () {
             reindexMessages([self._msgHdr]);
             getOrCreateAttInfo(j).open();
@@ -735,10 +735,7 @@ Message.prototype = {
         try {
           getOrCreateAttInfo(j).save();
         } catch (e) {
-          // This seems to never happen, unfortunately...
-          // TODO 20110721 Validate this by stripping the attachment part of the
-          // URI and running msgUriToMsgHdr on it.
-          Log.debug("Invalid attachment URL", att.url);
+          Log.debug("Invalid attachment URL", getOrCreateAttInfo(j).url, e);
           recreateAttInfos(function () {
             reindexMessages([self._msgHdr]);
             getOrCreateAttInfo(j).save();
@@ -788,7 +785,7 @@ Message.prototype = {
         mainWindow.HandleMultipleAttachments(attInfos, "save");
       } catch (e) {
         // This doesn't look like we can catch that kind of failure...
-        Log.debug("Invalid attachment info");
+        Log.debug("Invalid attachment info", e);
         recreateAttInfos(function () {
           reindexMessages([self._msgHdr]);
           for (let i in range(0, self._attachments.length))
