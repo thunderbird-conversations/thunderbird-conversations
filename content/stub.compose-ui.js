@@ -476,24 +476,34 @@ ComposeSession.prototype = {
           let date = (new Date(aMsgHdr.date/1000)).toLocaleString();
           let [{ email, name }] = parseMimeLine(aMsgHdr.mime2DecodedAuthor);
           let author = name || email;
-          // The >'s aren't automatically appended, that's what citeString is for.
-          let body = citeString("\n"+htmlToPlainText(aBody).trim());
+          // This will somehow make sure reflow inside the blockquotes happens,
+          // rather than trying to use our own citeString function which doesn't
+          // perform rewrap.
+          let body = "\n"
+            + htmlToPlainText('<blockquote type="cite">'+aBody+'</blockquote>')
+              .trim();
           let quoteblock = // body already starts with a newline
             strings.get("quoteIntroString", [date, author]) + body;
           // Grab the identity we're using and use its parameters.
           let identity = self.params.identity;
-          let signature = "";
+          let signature = "", signatureNoDashes = "";
           if (identity.sigOnReply) {
             signature = identity.htmlSigFormat
               ? htmlToPlainText(identity.htmlSigText)
               : identity.htmlSigText;
-            if (String.trim(signature).length)
-              signature = "\n\n-- \n" + signature;
+            if (String.trim(signature).length) {
+              [signature, signatureNoDashes] =
+                ["\n\n-- \n" + signature, "\n\n" + signature];
+            }
           }
           self.stripSignatureIfNeeded = function () {
             let textarea = $("textarea");
-            if (identity.sigOnReply)
-              textarea.val(textarea.val().replace(signature, ""));
+            if (identity.sigOnReply) {
+              if (identity.replyOnTop && !identity.sigBottom)
+                textarea.val(textarea.val().replace(signatureNoDashes, ""));
+              else
+                textarea.val(textarea.val().replace(signature, ""));
+            }
           };
           // The user might be fast and might have started typing something
           // already
@@ -501,22 +511,19 @@ ComposeSession.prototype = {
           let node = $("textarea")[0];
           let val = null;
           let pos = null;
+          let quote = identity.autoQuote
+            ? "\n\n" + quoteblock
+            : "";
           // Assemble the parts
           if (identity.replyOnTop) {
-            let quote = identity.autoQuote
-              ? "\n\n" + quoteblock
-              : "";
             if (!identity.sigBottom) {
               pos = 0;
-              val = txt + signature + quote;
+              val = txt + signatureNoDashes + quote;
             } else {
               pos = 0;
               val = txt + quote + signature;
             }
           } else {
-            let quote = identity.autoQuote
-              ? quoteblock + "\n\n"
-              : "";
             pos = (quote + txt).length;
             val = quote + txt + signature;
           }
