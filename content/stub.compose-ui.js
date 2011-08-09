@@ -62,6 +62,10 @@ let Log = setupLogging("Conversations.Stub.Compose");
 
 Cu.import("resource://conversations/stdlib/SimpleStorage.js");
 let ss = SimpleStorage.createIteratorStyle("conversations");
+window.addEventListener("unload", function () {
+  Log.debug("Unload.");
+  ss.ss.dbConnection.asyncClose();
+}, false);
 
 // ----- "Draft modified" listeners
 
@@ -819,11 +823,4 @@ function createStateListener (aComposeSession, aMsgHdrs, aId) {
       // DisplaySaveFolderDlg(folderURI);
     }
   };
-}
-
-function _rewrap() {
-  let textarea = document.getElementsByTagName("textarea")[0];
-  let editor = textarea.QueryInterface(Ci.nsIDOMNSEditableElement).editor;
-  editor.QueryInterface(Ci.nsIEditorMailSupport);
-  editor.rewrap(true);
 }

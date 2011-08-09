@@ -803,7 +803,6 @@ ul.special-tags img {
   border: 1px solid #aaa;
 }
 
-.quickReply input:focus,
 .quickReply.expand textarea:focus {
   -moz-box-shadow: 0 0 0 3px #ECF3FE inset;
 }
