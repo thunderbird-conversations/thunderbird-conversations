@@ -135,7 +135,7 @@ function convertOutlookQuotingToBlockquote(aWin, aDoc) {
         && style.borderRightWidth == "0px"
         && style.borderBottomWidth == "0px") {
       encloseInBlockquote(aDoc, div);
-      div.parentNode.removeChild(div);
+      div.style.borderTopWidth = 0;
       break;
     }
   }
