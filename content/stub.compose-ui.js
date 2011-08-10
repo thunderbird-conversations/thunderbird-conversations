@@ -486,6 +486,8 @@ ComposeSession.prototype = {
           let body = "\n"
             + htmlToPlainText('<blockquote type="cite">'+aBody+'</blockquote>')
               .trim();
+          // See my comment on https://bugzilla.mozilla.org/show_bug.cgi?id=456053
+          body = body.replace(/[ ]+$/gm, "");
           let quoteblock = // body already starts with a newline
             strings.get("quoteIntroString", [date, author]) + body;
           // Grab the identity we're using and use its parameters.
