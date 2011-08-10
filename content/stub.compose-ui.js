@@ -516,10 +516,11 @@ ComposeSession.prototype = {
           let val = null;
           let pos = null;
           let quote = identity.autoQuote
-            ? "\n\n" + quoteblock
+            ? quoteblock
             : "";
           // Assemble the parts
           if (identity.replyOnTop) {
+            quote = "\n\n" + quote;
             if (!identity.sigBottom) {
               pos = 0;
               val = txt + signatureNoDashes + quote;
@@ -528,6 +529,7 @@ ComposeSession.prototype = {
               val = txt + quote + signature;
             }
           } else {
+            quote = quote + "\n\n";
             pos = (quote + txt).length;
             val = quote + txt + signature;
           }
