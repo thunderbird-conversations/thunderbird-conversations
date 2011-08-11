@@ -100,7 +100,9 @@
       $(aMsgNode._domNode).find(".align").vAlign();
     }
 
-    function scrollNodeIntoView (aNode) {
+    // This function only works for our message nodes, use $(...).offset() for
+    //  more complicated computations.
+    function offsetFromTop (aNode) {
       let offset = aNode.offsetTop || 0;
       let parent = aNode.parentNode;
       while (parent && !(parent instanceof HTMLDocument)) {
@@ -109,6 +111,11 @@
           offset += parent.offsetTop;
         parent = parent.parentNode;
       }
+      return offset;
+    }
+
+    function scrollNodeIntoView (aNode) {
+      let offset = offsetFromTop(aNode);
       // The header is 44px high (yes, this is harcodeadly ugly).
       window.scrollTo(0, offset + 5 - 44);
     }

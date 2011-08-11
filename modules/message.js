@@ -958,7 +958,8 @@ Message.prototype = {
     this._conversation.removeMessage(this);
     msgHdrsDelete([this._msgHdr]);
     let w = this._conversation._window;
-    if (w.isInTab && !this._conversation.messages.length)
+    if (this._conversation._htmlPane.contentWindow.isInTab
+        && !this._conversation.messages.length)
       w.closeTab();
   },
 
@@ -1100,6 +1101,7 @@ Message.prototype = {
             let iframeDoc = iframe.contentDocument;
             self.tweakFonts(iframeDoc);
             self.detectQuotes(iframe);
+            self.registerLinkHandlers(iframe);
             if (self.checkForFishing(iframeDoc) && !self._msgHdr.getUint32Property("notAPhishMessage")) {
               Log.debug("Phishing attempt");
               self._domNode.getElementsByClassName("phishingBar")[0].style.display = "block";
@@ -1144,16 +1146,6 @@ Message.prototype = {
                 Log.error(e);
                 dumpCallStack(e);
               }
-            }
-
-            // Attach the required event handlers so that links open in the
-            // external browser.
-            for each (let [, a] in Iterator(iframeDoc.getElementsByTagName("a"))) {
-              if (!a)
-                continue;
-              a.addEventListener("click",
-                function link_listener (event)
-                  mainWindow.specialTabs.siteClickHandler(event, /^mailto:/), true);
             }
 
             // Everything's done, so now we're able to settle for a height.
@@ -1718,6 +1710,55 @@ let PostStreamingFixesMixIn = {
       }
     }
     return isPhishing;
+  },
+
+  _getAnchor: function (href) {
+    // Libmime has decided to rewrite the anchors for us, so try to
+    // reverse-engineer that...
+    if (!href.indexOf("imap://") == 0 && !href.indexOf("mailbox://") == 0)
+      return false;
+    try {
+      let uri = Services.io.newURI(href, null, null);
+      if (!(uri instanceof Ci.nsIMsgMailNewsUrl))
+        return false;
+      uri.QueryInterface(Ci.nsIURL);
+      let ref = uri.ref;
+      if (!ref.length)
+        return false;
+      return ref;
+    } catch (e) {
+      Log.debug(e);
+      return false;
+    }
+  },
+
+  registerLinkHandlers: function (iframe) {
+    let self = this;
+    let iframeDoc = iframe.contentDocument;
+    let mainWindow = topMail3Pane(this);
+    for each (let [, a] in Iterator(iframeDoc.getElementsByTagName("a"))) {
+      if (!a)
+        continue;
+      let anchor = this._getAnchor(a.href);
+      if (anchor) {
+        // It's an anchor, do the scrolling ourselves since, for security
+        // reasons, content cannot scroll its outer chrome document.
+        a.addEventListener("click", function link_listener (event) {
+          let node = iframeDoc.getElementsByName(anchor)[0];
+          let w = self._conversation._htmlPane.contentWindow;
+          let o1 = w.$(node).offset().top;
+          let o2 = w.$(iframe).offset().top;
+          w.scrollTo(0, o1 + o2 + 5 - 44);
+        }, true);
+      } else {
+        // Attach the required event handler so that links open in the external
+        // browser.
+        a.addEventListener("click",
+          function link_listener (event)
+            mainWindow.specialTabs.siteClickHandler(event, /^mailto:/),
+          true);
+      }
+    }
   },
 };
 
