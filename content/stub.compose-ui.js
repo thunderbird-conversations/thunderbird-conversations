@@ -483,12 +483,11 @@ ComposeSession.prototype = {
           // This will somehow make sure reflow inside the blockquotes happens,
           // rather than trying to use our own citeString function which doesn't
           // perform rewrap.
-          //let body = citeString("\n"+htmlToPlainText(aBody).trim());
           let body = "\n"
             + htmlToPlainText('<blockquote type="cite">'+aBody+'</blockquote>')
               .trim();
-          // See my comment on https://bugzilla.mozilla.org/show_bug.cgi?id=456053
-          body = body.replace(/[ ]+$/gm, "");
+          // Old way:
+          //  let body = citeString("\n"+htmlToPlainText(aBody).trim());
           let quoteblock = // body already starts with a newline
             strings.get("quoteIntroString", [date, author]) + body;
           // Grab the identity we're using and use its parameters.
