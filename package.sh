@@ -24,6 +24,8 @@ if [ "$1" = "official" ]; then
 else
   template ."$DATE"pre;
   ./build.sh
-  upload;
-  rm -f conversations.xpi;
+  if [ "$1" != "build" ]; then
+    upload;
+    rm -f conversations.xpi;
+  fi;
 fi

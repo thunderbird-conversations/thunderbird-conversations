@@ -546,7 +546,7 @@ Message.prototype = {
     this.register(".menuReply", function (event) self.compose(Ci.nsIMsgCompType.ReplyToSender, event));
     this.register(".menuReplyAll", function (event) self.compose(Ci.nsIMsgCompType.ReplyAll, event));
     this.register(".menuReplyList", function (event) self.compose(Ci.nsIMsgCompType.ReplyToList, event));
-    let mainAction = self._domNode.getElementsByClassName("replyMainAction")[0];
+    let mainAction = self._domNode.getElementsByClassName("replyMainAction")[0].firstElementChild;
     let mainActionLink = self._domNode.getElementsByClassName("replyMainActionLink")[0];
     let replyList = self._domNode.getElementsByClassName("menuReplyList")[0];
     let replyAll = self._domNode.getElementsByClassName("menuReplyAll")[0];

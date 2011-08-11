@@ -616,7 +616,7 @@
         <div class="footerActions">
           <button class="edit-draft">${str("editDraft2")}</button>
           <div class="replyWrapper">
-            <button class="replyMainAction">${str("reply")}</button>
+            <button class="replyMainAction"><span>${str("reply")}</span><span class="ext"></span></button>
             <button class="replyDropDown" onclick="displayMenu(event);">&#x25bc;</button>
             <div class="replyDropMenu menu">
               <div class="menuReply"><img src="i/reply.png" /> ${str("reply")}</div>
@@ -624,7 +624,7 @@
               <div class="menuReplyList"><img src="i/replyList.png" /> ${str("replyList")}</div>
             </div>
           </div>
-          <button class="forward">${str("forward")}</button>
+          <button class="forward">${str("forward")}<span class="ext"></span></button>
         </div>
       </div>
       {{if quickReply}}
