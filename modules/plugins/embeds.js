@@ -97,12 +97,15 @@ let embedsHook = {
     // Don't detect links in quotations.
     [x.skip = true
       for each ([, x] in Iterator(iframeDoc.querySelectorAll("blockquote a")))];
+    let seen = {};
     // Examine all links in the message.
     for each (let [, a] in Iterator(links)) {
-      if (a.skip)
+      if (a.skip || (a.href in seen))
         continue;
-      this.tryYouTube(a, aDomNode);
-      this.tryGoogleMaps(a, aDomNode);
+      if (this.tryYouTube(a, aDomNode))
+        seen[a.href] = null;
+      if (this.tryGoogleMaps(a, aDomNode))
+        seen[a.href] = null;
     }
   },
 
@@ -113,6 +116,9 @@ let embedsHook = {
       Log.debug("Found a youtube video, video-id", videoId);
       this.insertEmbed(strings.get("foundYouTube"), "640", "385", 
         "http://www.youtube.com/embed/"+videoId, aDomNode);
+      return true;
+    } else {
+      return false;
     }
   },
 
@@ -125,7 +131,7 @@ let embedsHook = {
       url.QueryInterface(Ci.nsIURL);
     } catch (e) {
       //Log.debug(e);
-      return;
+      return false;
     }
     if (url.host == "maps.google.com") {
       let matches = url.query.match(this.GMAPS_REGEXP);
@@ -137,8 +143,10 @@ let embedsHook = {
           "&ie=UTF8&split=0&z=8&iwloc=A&output=embed",
           aDomNode
         );
+        return true;
       }
     }
+    return false;
   },
 
   insertEmbed: function _embeds_insert(str, width, height, src, aDomNode) {
