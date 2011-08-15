@@ -45,6 +45,7 @@
   title="&window.title;"
   xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
   onload="sizeToContent();"
+  style="min-width: 480px"
   >
 
   <script type="application/javascript" src="chrome://conversations/content/options.js" />

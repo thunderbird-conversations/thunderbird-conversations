@@ -185,6 +185,7 @@ let ConversationSubject = {
       specialColumnName: "subject",
       subjectNouns: [Gloda.NOUN_CONVERSATION],
       objectNoun: Gloda.NOUN_STRING,
+      canQuery: true,
     });
   },
 

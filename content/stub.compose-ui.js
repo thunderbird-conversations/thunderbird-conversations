@@ -64,7 +64,10 @@ Cu.import("resource://conversations/stdlib/SimpleStorage.js");
 let ss = SimpleStorage.createIteratorStyle("conversations");
 window.addEventListener("unload", function () {
   Log.debug("Unload.");
+  // otherwise it leaks and makes about:memory crash
   ss.ss.dbConnection.asyncClose();
+  // save if needed
+  onSave();
 }, false);
 
 // ----- "Draft modified" listeners

@@ -122,7 +122,7 @@ let embedsHook = {
     }
   },
 
-  GMAPS_REGEXP: /q=([^&]+)&/,
+  GMAPS_REGEXP: /q=([^&]+)(&|$)/,
 
   tryGoogleMaps: function _embeds_googlemaps(a, aDomNode) {
     let url;
