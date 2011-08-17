@@ -157,19 +157,21 @@ function tryEnigmail(bodyElement) {
 let enigmailHook = {
   _domNode: null,
 
-  onMessageBeforeStreaming: function _enigmailHook_onBeforeSreaming(aMessage) {
-    let { _attachments: attachments, _msgHdr: msgHdr, _domNode: domNode } = aMessage;
-    this._domNode = domNode;
-    let w = topMail3Pane(aMessage);
-    let hasEnc = (aMessage.contentType+"").search(/^multipart\/encrypted(;|$)/i) == 0;
-    if (hasEnc && !enigmailSvc.mimeInitialized()) {
-      Log.debug("Initializing EnigMime");
-      w.document.getElementById("messagepane").setAttribute("src", "enigmail:dummy");
-    }
+  onMessageBeforeStreaming: function _enigmailHook_onBeforeStreaming(aMessage) {
+    if (enigmailSvc) {
+      let { _attachments: attachments, _msgHdr: msgHdr, _domNode: domNode } = aMessage;
+      this._domNode = domNode;
+      let w = topMail3Pane(aMessage);
+      let hasEnc = (aMessage.contentType+"").search(/^multipart\/encrypted(;|$)/i) == 0;
+      if (hasEnc && !enigmailSvc.mimeInitialized()) {
+        Log.debug("Initializing EnigMime");
+        w.document.getElementById("messagepane").setAttribute("src", "enigmail:dummy");
+      }
 
-    let hasSig = (aMessage.contentType+"").search(/^multipart\/signed(;|$)/i) == 0;
-    if (hasSig)
-      aMessage._domNode.classList.add("signed");
+      let hasSig = (aMessage.contentType+"").search(/^multipart\/signed(;|$)/i) == 0;
+      if (hasSig)
+        aMessage._domNode.classList.add("signed");
+    }
   },
 
   onMessageStreamed: function _enigmailHook_onMessageStreamed(aMsgHdr, aDomNode, aMsgWindow) {
@@ -187,7 +189,6 @@ let enigmailHook = {
           .setAttribute("title", strings.get("unknownGood"));
       }
     }
-
   },
 }
 

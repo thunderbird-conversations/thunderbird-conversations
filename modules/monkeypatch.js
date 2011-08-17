@@ -53,8 +53,7 @@ Cu.import("resource://conversations/misc.js"); // for joinWordList
 Cu.import("resource://conversations/prefs.js");
 Cu.import("resource://conversations/log.js");
 
-const observerService = Cc["@mozilla.org/observer-service;1"]
-                        .getService(Ci.nsIObserverService);
+Cu.import("resource://gre/modules/Services.jsm");
 
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
@@ -126,9 +125,7 @@ MonkeyPatch.prototype = {
     };
 
     // The main window is loaded when the monkey-patch is applied
-    let observerService = Cc["@mozilla.org/observer-service;1"]
-                          .getService(Ci.nsIObserverService);
-    observerService.addObserver({
+    Services.obs.addObserver({
       observe: function(aMsgFolder, aTopic, aData) {  
         window.gDBView.addColumnHandler("betweenCol", columnHandler);
       }
@@ -217,9 +214,9 @@ MonkeyPatch.prototype = {
 
   watchUninstall: function () {
     AddonManager.addAddonListener(this);
-    observerService.addObserver(this, "mail-startup-done", false);
-    observerService.addObserver(this, "quit-application-granted", false);
-    observerService.addObserver(this, "quit-application-requested", false);
+    Services.obs.addObserver(this, "mail-startup-done", false);
+    Services.obs.addObserver(this, "quit-application-granted", false);
+    Services.obs.addObserver(this, "quit-application-requested", false);
   },
 
   doUninstall: function () {
@@ -414,6 +411,7 @@ MonkeyPatch.prototype = {
             if (arrayEquals(newlySelectedUris, previouslySelectedUris)
                 && previousScrollMode == scrollMode) {
               Log.debug("Hey, know what? The selection hasn't changed, so we're good!");
+              Services.obs.notifyObservers(null, "Conversations", "Displayed");
               return;
             }
 
@@ -463,6 +461,8 @@ MonkeyPatch.prototype = {
               }
               if (needsGC)
                 Cu.forceGC();
+
+              Services.obs.notifyObservers(null, "Conversations", "Displayed");
 
               // Make sure we respect the user's preferences.
               self.markReadTimeout = window.setTimeout(function () {

@@ -23,8 +23,8 @@ INSTALL
 
 If you just want to start hacking, see
 [MDC](https://developer.mozilla.org/en/Setting_up_extension_development_environment)
-to learn how to use a proxy file. If you want to package a release, `./build.sh`
-will package a .xpi file. `./package.sh` is for my personal use.
+to learn how to use a proxy file. If you want to package a release,
+`./package.sh build` will package a .xpi file.
 
 HACKING
 =======
@@ -39,3 +39,15 @@ before you start hacking.
 
 You also need to have your source folder named gconversation@xulforum.org ; this
 is a temporary hack that will go away once we stop supporting Thunderbird 3.3.
+
+TESTING
+=======
+
+There are tests for this addon. They are distributed as a MQ patch that you
+need to qimport into your comm-central tree. The file is
+tests/mozmill-conversations. Once you qimport'd it,
+
+    jonathan@ramona:~/Code/objdir-comm-central $ make \
+    MOZMILL_EXTRA=--addon=/home/jonathan/Code/gconversation@xulforum.org/conversations.xpi \
+    SOLO_TEST=conversations/test-attachments.js mozmill-one
+
