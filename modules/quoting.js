@@ -125,6 +125,7 @@ function convertHotmailQuotingToBlockquote1(aDoc) {
      body > pre > hr, \
      body > div > div > hr, \
      hr#stopSpelling", true);
+  trySel(aDoc, ".gmail_quote", false);
 }
 
 /* There's a special message header for that. */
@@ -195,7 +196,7 @@ function convertHotmailQuotingToBlockquote2(aWindow, aDocument, aHideQuoteLength
       if (next)
         stack.push([next, inBlockquote, depth]);
     } else {
-      if (aNode.firstChild && depth < 2) /* Try to mitigate the performance hit... */
+      if (aNode.firstChild && depth < 4) /* Try to mitigate the performance hit... */
         stack.push([aNode.firstChild, false, depth + 1]);
       if (aNode.nextSibling)
         stack.push([aNode.nextSibling, false, depth]);
