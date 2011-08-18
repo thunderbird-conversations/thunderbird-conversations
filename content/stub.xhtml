@@ -487,6 +487,12 @@
 </head>
 
 <body>
+  <menu id="attachmentMenu" type="context">
+    <menuitem label="Open" onclick="event.target.attInfo().open()"></menuitem>
+    <menuitem label="Save" onclick="event.target.attInfo().save()"></menuitem>
+    <menuitem label="Detach" onclick="event.target.attInfo().detach()"></menuitem>
+    <menuitem label="Delete" onclick="event.target.attInfo().delete()"></menuitem>
+  </menu>
   <script id="messageTemplate" type="text/x-jquery-tmpl"><![CDATA[
     <li class="message collapsed ${extraClasses}">
       <div class="messageHeader hbox">
