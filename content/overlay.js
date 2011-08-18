@@ -34,12 +34,6 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// Dear AMO reviewer, please note that these files have var EXPORTED_SYMBOLS = [];
-Components.utils.import("resource://conversations/plugins/glodaAttrProviders.js");
-Components.utils.import("resource://conversations/plugins/embeds.js");
-Components.utils.import("resource://conversations/plugins/enigmail.js");
-Components.utils.import("resource://conversations/plugins/lightning.js");
-
 var Conversations = {
   // These two belong here, use getMail3Pane().Conversations to access them
   monkeyPatch: null,

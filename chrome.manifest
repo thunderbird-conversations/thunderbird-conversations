@@ -1,7 +1,6 @@
 content conversations content/
 skin conversations classic/1.0 skin/
 resource conversations modules/
-overlay chrome://messenger/content/messenger.xul chrome://conversations/content/overlay.xul
 
 #locale conversations cs locale/cs/
 #locale conversations de locale/de/
