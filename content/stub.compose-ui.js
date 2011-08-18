@@ -421,6 +421,9 @@ ComposeSession.prototype = {
         break;
 
       case "replyList":
+        // XXX 20110818 Fix this once we have multiple quick replies
+        let conv = topMail3Pane(window).Conversations.currentConversation;
+        let aMessage = conv.messages[conv.messages.length - 1].message;
         let token = asToken(null, null, aMessage.mailingLists[0], null);
         setupAutocomplete([token], [], []);
         break;
