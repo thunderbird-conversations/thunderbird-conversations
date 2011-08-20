@@ -124,7 +124,8 @@ let ContentType = {
 
   process: function _ContentType_process (aGlodaMessage, aRawReps, aIsNew, aCallbackHandle) {
     try {
-      aGlodaMessage.contentType = aRawReps.mime.headers["content-type"];
+      if (aRawReps.mime)
+        aGlodaMessage.contentType = aRawReps.mime.headers["content-type"];
     } catch (e) {
       dump(e+"\n"+e.stack+"\n");
     }

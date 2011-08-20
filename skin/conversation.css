@@ -667,10 +667,28 @@ ul.special-tags img {
 }
 
 .messageFooter {
-  padding: 5px 10px;
+  padding: 0px 10px 5px 10px;
   background-color: #f6f6f6;
-  border-top: 1px solid #e6e6e6;
+  border-top: 1px solid #bebebe;
   -moz-border-radius: 0 0 5px 5px;
+}
+
+.messageFooter button {
+  background: none;
+  background-color: white;
+
+  float: left;
+  border: 1px solid #bebebe;
+  border-top-color: white;
+  -moz-border-radius: 0 0 0 0;
+
+  margin: -1px 3px 0 0;
+  padding: 0 5px 3px 5px;
+}
+
+.messageFooter button:hover {
+  border-color: #666;
+  border-top-color: white;
 }
 
 .messageFooter.hide .footerActions {
@@ -825,22 +843,10 @@ ul.special-tags img {
   display: block;
 }
 
-.tipFooter button,
-.messageFooter button {
+.tipFooter button {
   padding: 0 5px;
   float: left;
   margin: 0 3px 0 0;
-}
-
-button.replyMainAction {
-  -moz-border-radius: 3px 0 0 3px;
-  margin-right: 0;
-}
-
-button.replyDropDown {
-  -moz-border-radius: 0 3px 3px 0;
-  border-left: 0 none;
-  font-size: smaller;
 }
 
 .replyWrapper {
@@ -932,7 +938,13 @@ button.replyDropDown {
 }
 
 /* for drafts only */
-.message.draft :-moz-any(.replyWrapper, .forward, .replyLinkWrapper) {
+.message.draft :-moz-any(
+  .buttonReply,
+  .buttonReplyAll,
+  .buttonReplyList,
+  .buttonForward,
+  .replyLinkWrapper
+) {
   display: none;
 }
 

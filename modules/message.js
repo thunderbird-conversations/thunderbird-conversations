@@ -543,14 +543,14 @@ Message.prototype = {
 
     // This is for the smart reply button, we need to determine what's the best
     // action.
-    this.register(".menuReply", function (event) self.compose(Ci.nsIMsgCompType.ReplyToSender, event));
-    this.register(".menuReplyAll", function (event) self.compose(Ci.nsIMsgCompType.ReplyAll, event));
-    this.register(".menuReplyList", function (event) self.compose(Ci.nsIMsgCompType.ReplyToList, event));
-    let mainAction = self._domNode.getElementsByClassName("replyMainAction")[0].firstElementChild;
+    this.register(".buttonReply", function (event) self.compose(Ci.nsIMsgCompType.ReplyToSender, event));
+    this.register(".buttonReplyAll", function (event) self.compose(Ci.nsIMsgCompType.ReplyAll, event));
+    this.register(".buttonReplyList", function (event) self.compose(Ci.nsIMsgCompType.ReplyToList, event));
+    this.register(".buttonForward", function (event) self.forward(event));
     let mainActionLink = self._domNode.getElementsByClassName("replyMainActionLink")[0];
-    let replyList = self._domNode.getElementsByClassName("menuReplyList")[0];
-    let replyAll = self._domNode.getElementsByClassName("menuReplyAll")[0];
-    let reply = self._domNode.getElementsByClassName("menuReply")[0];
+    let replyList = self._domNode.getElementsByClassName("buttonReplyList")[0];
+    let replyAll = self._domNode.getElementsByClassName("buttonReplyAll")[0];
+    let reply = self._domNode.getElementsByClassName("buttonReply")[0];
     // Hide items if needed
     if (!this.isReplyListEnabled)
       replyList.style.display = "none";
@@ -559,18 +559,16 @@ Message.prototype = {
     // Register the right actions. Make sure we're consistent with
     // stub.compose-ui.js!
     if (this.isReplyListEnabled) {
-      this.register(".replyMainAction, .replyMainActionLink", function (event) {
+      this.register(".replyMainActionLink", function (event) {
         self.compose(Ci.nsIMsgCompType.ReplyAll, event);
         event.stopPropagation();
       });
-      mainAction.textContent = replyAll.textContent;
       mainActionLink.textContent = replyAll.textContent;
     } else {
-      this.register(".replyMainAction, .replyMainActionLink", function (event) {
+      this.register(".replyMainActionLink", function (event) {
         self.compose(Ci.nsIMsgCompType.ReplyToSender, event);
         event.stopPropagation();
       });
-      mainAction.textContent = reply.textContent;
       mainActionLink.textContent = reply.textContent;
     }
 
@@ -597,7 +595,6 @@ Message.prototype = {
       let uri = Services.io.newURI(composeAllUri, null, null);
       MailServices.compose.OpenComposeWindowWithURI(null, uri);
     });
-    this.register(".forward", function (event) self.forward(event));
     // These event listeners are all in the header, which happens to have an
     //  event listener set on the click event for toggling the message. So we
     //  make sure that event listener is bubbling, and we register these with
