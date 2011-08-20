@@ -169,9 +169,9 @@ KeyListener.prototype = {
       case 'R'.charCodeAt(0):
         if (isAccel(event)) {
           if (event.shiftKey) {
-            this.message.compose(Ci.nsIMsgCompType.ReplyAll, event);
+            this.message.compose(Ci.nsIMsgCompType.ReplyAll, null);
           } else {
-            this.message.compose(Ci.nsIMsgCompType.ReplyToSender, event);
+            this.message.compose(Ci.nsIMsgCompType.ReplyToSender, null);
           }
           event.preventDefault();
           event.stopPropagation();
