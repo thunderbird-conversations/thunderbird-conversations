@@ -1464,7 +1464,7 @@ function MessageFromDbHdr(aConversation, aMsgHdr) {
         let listPost = aMimeMsg.get("list-post");
         if (listPost) {
           let r = listPost.match(self.RE_LIST_POST);
-          if (r.length)
+          if (r && r.length)
             self.mailingLists = [r[1]];
         }
         Log.debug(self.mailingLists);
