@@ -1122,6 +1122,7 @@ Message.prototype = {
             self.tweakFonts(iframeDoc);
             self.detectQuotes(iframe);
             self.registerLinkHandlers(iframe);
+            self.injectCss(iframeDoc);
             if (self.checkForFishing(iframeDoc) && !self._msgHdr.getUint32Property("notAPhishMessage")) {
               Log.debug("Phishing attempt");
               self._domNode.getElementsByClassName("phishingBar")[0].style.display = "block";
@@ -1531,6 +1532,27 @@ let PostStreamingFixesMixIn = {
   get_defaultSize: function ()
     Prefs.getInt("font.size.variable.x-western")
   ,
+
+  injectCss: function (iframeDoc) {
+    let styleRules = [];
+    // !important because messageContents.css is appended after us when the html
+    // is rendered
+    styleRules = styleRules.concat([
+      "blockquote[type=\"cite\"] {",
+      "  border-right-width: 0px;",
+      "  border-left: 1px #ccc solid;",
+      "  color: #666 !important;",
+      "}",
+    ]);
+
+    // Ugly hack (once again) to get the style inside the
+    // <iframe>. I don't think we can use a chrome:// url for
+    // the stylesheet because the iframe has a type="content"
+    let style = iframeDoc.createElement("style");
+    style.appendChild(iframeDoc.createTextNode(styleRules.join("\n")));
+    let head = iframeDoc.body.previousElementSibling;
+    head.appendChild(style);
+  },
 
   tweakFonts: function (iframeDoc) {
     if (!Prefs.tweak_bodies)

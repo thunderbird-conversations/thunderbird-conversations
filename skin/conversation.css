@@ -674,7 +674,7 @@ ul.special-tags img {
 }
 
 .messageFooter button {
-  background: none;
+  background-image: none;
   background-color: white;
 
   float: left;
@@ -689,6 +689,12 @@ ul.special-tags img {
 .messageFooter button:hover {
   border-color: #666;
   border-top-color: white;
+}
+
+.messageFooter button:active {
+  background-image: none;
+  background-color: white;
+  -moz-box-shadow: none;
 }
 
 .messageFooter.hide .footerActions {
