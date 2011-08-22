@@ -25,9 +25,10 @@
 
     function install(aKey) {
       if (!(aKey in Customizations)) {
-        Log.warn("Couldn't find a suitable customization for", aKey);
+        Log.error("Couldn't find a suitable customization for", aKey);
       } else {
         try {
+          Log.debug("Installing customization", aKey);
           let uninstallInfo = Customizations[aKey].install();
           uninstallInfos[aKey] = uninstallInfo;
         } catch (e) {
@@ -52,9 +53,13 @@
       if (finishedAlready)
         return;
 
-      let str = JSON.stringify(uninstallInfos);
-      Log.debug("Saving JSON uninstall information", str);
-      Prefs.setString("conversations.uninstall_infos", str);
+      if (Prefs.getString("conversations.uninstall_infos") == "{}") {
+        let str = JSON.stringify(uninstallInfos);
+        Log.debug("Saving JSON uninstall information", str);
+        Prefs.setString("conversations.uninstall_infos", str);
+      } else {
+        Log.warn("Uninstall information already there, not overwriting...");
+      }
       finishedAlready = true;
       upgrade();
       window.removeEventListener("unload", finish, true);

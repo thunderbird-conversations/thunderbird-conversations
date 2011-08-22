@@ -237,8 +237,17 @@ let Customizations = {
 
       let mainWindow = getMail3Pane();
       let ftv = mainWindow.gFolderTreeView;
-      // save the current mode, set to smart
+      // save the current mode, save the current folder, save the current sort
       state.ftvMode = ftv.mode;
+      state.initialFolder.uri = mainWindow.gFolderDisplay.displayedFolder.URI;
+      if (mainWindow.gFolderDisplay.view.showUnthreaded)
+        state.initialFolder.show = 0;
+      else if (mainWindow.gFolderDisplay.view.showThreaded)
+        state.initialFolder.show = 1;
+      else if (mainWindow.gFolderDisplay.view.showGroupedBySort)
+        state.initialFolder.show = 2;
+
+      // start customizing things
       mainWindow.gFolderTreeView.mode = "smart";
 
       let smartInbox = null;
@@ -248,17 +257,10 @@ let Customizations = {
         Log.debug(e);
         Log.debug("Is there only one account?");
       }
+
       // Might not be created yet if only one account
       if (smartInbox)
         ftv.selectFolder(smartInbox);
-
-      state.initialFolder.uri = mainWindow.gFolderDisplay.displayedFolder.URI;
-      if (mainWindow.gFolderDisplay.view.showUnthreaded)
-        state.initialFolder.show = 0;
-      else if (mainWindow.gFolderDisplay.view.showThreaded)
-        state.initialFolder.show = 1;
-      else if (mainWindow.gFolderDisplay.view.showGroupedBySort)
-        state.initialFolder.show = 2;
 
       let moveOn = function () {
         let tabmail = mainWindow.document.getElementById("tabmail");
