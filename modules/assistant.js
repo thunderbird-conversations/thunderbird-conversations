@@ -218,13 +218,21 @@ let Customizations = {
     },
   },
 
-  // XXX this customization does not revert everything when uninstalling...
   actionSetupView: {
     install: function () {
+      /**
+       * const kShowUnthreaded = 0;
+       * const kShowThreaded = 1;
+       * const kShowGroupedBySort = 2;
+       */
       let state = {
         ftvMode: null,
         unreadCol: null,
         senderCol: null,
+        initialFolder: {
+          uri: null,
+          show: null,
+        }
       };
 
       let mainWindow = getMail3Pane();
@@ -237,19 +245,30 @@ let Customizations = {
       try {
         smartInbox = get_smart_folder_named("Inbox");
       } catch (e) {
-        Log.warn(e);
-        Log.warn("Is there only one account?");
+        Log.debug(e);
+        Log.debug("Is there only one account?");
       }
       // Might not be created yet if only one account
       if (smartInbox)
         ftv.selectFolder(smartInbox);
 
+      state.initialFolder.uri = mainWindow.gFolderDisplay.displayedFolder.URI;
+      if (mainWindow.gFolderDisplay.view.showUnthreaded)
+        state.initialFolder.show = 0;
+      else if (mainWindow.gFolderDisplay.view.showThreaded)
+        state.initialFolder.show = 1;
+      else if (mainWindow.gFolderDisplay.view.showGroupedBySort)
+        state.initialFolder.show = 2;
+
       let moveOn = function () {
         let tabmail = mainWindow.document.getElementById("tabmail");
         tabmail.switchToTab(0);
         mainWindow.MsgSortThreaded();
-        mainWindow.MsgSortThreadPane('byDate');
-        mainWindow.MsgSortDescending();
+        /**
+         * We don't know how to revert these, so forget about it for now.
+         */
+        // mainWindow.MsgSortThreadPane('byDate');
+        // mainWindow.MsgSortDescending();
         mainWindow.goDoCommand('cmd_collapseAllThreads');
         state.unreadCol = eid("unreadCol").getAttribute("hidden");
         state.senderCol = eid("senderCol").getAttribute("hidden");
@@ -272,12 +291,26 @@ let Customizations = {
       return state;
     },
 
-    uninstall: function ({ ftvMode, senderCol, unreadCol }) {
+    uninstall: function ({ ftvMode, senderCol, unreadCol, initialFolder }) {
       if (eid("senderCol").getAttribute("hidden") == "true")
         eid("senderCol").setAttribute("hidden", senderCol);
       if (eid("unreadCol").getAttribute("hidden") == "false")
         eid("unreadCol").setAttribute("hidden", unreadCol);
-      getMail3Pane().gFolderTreeView.mode = ftvMode;
+      let mainWindow = getMail3Pane();
+      mainWindow.gFolderTreeView.mode = ftvMode;
+
+      mainWindow.gFolderDisplay.show(MailUtils.getFolderForURI(initialFolder.uri));
+      switch (initialFolder.show) {
+        case 0:
+          mainWindow.gFolderDisplay.view.showUnthreaded = true;
+          break;
+        case 1:
+          mainWindow.gFolderDisplay.view.showThreaded = true;
+          break;
+        case 2:
+          mainWindow.gFolderDisplay.view.showGroupedBySort = true;
+          break;
+      }
     },
   },
 
