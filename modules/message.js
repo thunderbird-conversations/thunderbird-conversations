@@ -425,12 +425,24 @@ Message.prototype = {
         Log.error(e);
       }
 
+      // Separator... boring
+      let sep = "";
+      if (i == this._attachments.length - 1) {
+        ;
+      } else if (i == this._attachments.length - 2) {
+        sep = strings.get("sepAnd");
+      } else {
+        sep = strings.get("sepComma");
+      }
+
       // We've got the right data, push it!
       data.attachments.push({
         formattedSize: formattedSize,
         thumb: escapeHtml(thumb),
         imgClass: imgClass,
         name: escapeHtml(att.name).replace(this.RE_SNIPPET, ""),
+        anchor: "msg"+this.initialPosition+"att"+i,
+        sep: sep,
       });
     }
 

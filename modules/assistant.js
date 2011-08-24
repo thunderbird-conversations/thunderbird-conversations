@@ -239,13 +239,15 @@ let Customizations = {
       let ftv = mainWindow.gFolderTreeView;
       // save the current mode, save the current folder, save the current sort
       state.ftvMode = ftv.mode;
-      state.initialFolder.uri = mainWindow.gFolderDisplay.displayedFolder.URI;
-      if (mainWindow.gFolderDisplay.view.showUnthreaded)
-        state.initialFolder.show = 0;
-      else if (mainWindow.gFolderDisplay.view.showThreaded)
-        state.initialFolder.show = 1;
-      else if (mainWindow.gFolderDisplay.view.showGroupedBySort)
-        state.initialFolder.show = 2;
+      if (mainWindow.gFolderDisplay.displayedFolder) {
+        state.initialFolder.uri = mainWindow.gFolderDisplay.displayedFolder.URI;
+        if (mainWindow.gFolderDisplay.view.showUnthreaded)
+          state.initialFolder.show = 0;
+        else if (mainWindow.gFolderDisplay.view.showThreaded)
+          state.initialFolder.show = 1;
+        else if (mainWindow.gFolderDisplay.view.showGroupedBySort)
+          state.initialFolder.show = 2;
+      }
 
       // start customizing things
       mainWindow.gFolderTreeView.mode = "smart";
@@ -301,17 +303,19 @@ let Customizations = {
       let mainWindow = getMail3Pane();
       mainWindow.gFolderTreeView.mode = ftvMode;
 
-      mainWindow.gFolderDisplay.show(MailUtils.getFolderForURI(initialFolder.uri));
-      switch (initialFolder.show) {
-        case 0:
-          mainWindow.gFolderDisplay.view.showUnthreaded = true;
-          break;
-        case 1:
-          mainWindow.gFolderDisplay.view.showThreaded = true;
-          break;
-        case 2:
-          mainWindow.gFolderDisplay.view.showGroupedBySort = true;
-          break;
+      if (initialFolder.uri) {
+        mainWindow.gFolderDisplay.show(MailUtils.getFolderForURI(initialFolder.uri));
+        switch (initialFolder.show) {
+          case 0:
+            mainWindow.gFolderDisplay.view.showUnthreaded = true;
+            break;
+          case 1:
+            mainWindow.gFolderDisplay.view.showThreaded = true;
+            break;
+          case 2:
+            mainWindow.gFolderDisplay.view.showGroupedBySort = true;
+            break;
+        }
       }
     },
   },

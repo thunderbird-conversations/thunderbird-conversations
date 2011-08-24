@@ -789,6 +789,10 @@ Conversation.prototype = {
         let msg = aMessages[i].message;
         msg.updateTmplData(oldMsg);
       }
+      // Update initialPosition
+      for each (let i in range(this.messages.length - aMessages.length, this.messages.length)) {
+        this.messages[i].message.initialPosition = i;
+      }
       let tmplData = [m.message.toTmplData(false)
         for each ([_i, m] in Iterator(aMessages))];
       $("#messageTemplate").tmpl(tmplData).appendTo($(this._domNode));
@@ -808,7 +812,6 @@ Conversation.prototype = {
       //  event registration and stuff...
       let domNodes = this._domNode.getElementsByClassName(Message.prototype.cssClass);
       for each (let i in range(this.messages.length - aMessages.length, this.messages.length)) {
-        this.messages[i].message.initialPosition = i;
         this.messages[i].message.onAddedToDom(domNodes[i]);
         domNodes[i].setAttribute("tabindex", (i+2)+"");
       }
@@ -1018,8 +1021,11 @@ Conversation.prototype = {
     let t0  = (new Date()).getTime();
     let $ = this._htmlPane.contentWindow.$;
     for each (let i in range(0, this.messages.length)) {
-      let oldMsg = i > 0 ? this.messages[i-1].message : null;
+      // We need to set this before the call to toTmplData.
       let msg = this.messages[i].message;
+      msg.initialPosition = i;
+
+      let oldMsg = i > 0 ? this.messages[i-1].message : null;
       msg.updateTmplData(oldMsg);
     }
     let tmplData = [m.message.toTmplData(i == this.messages.length - 1)
@@ -1045,7 +1051,6 @@ Conversation.prototype = {
     let domNodes = this._domNode.getElementsByClassName(Message.prototype.cssClass);
     for each (let [i, m] in Iterator(this.messages)) {
       m.message.onAddedToDom(domNodes[i]);
-      m.message.initialPosition = i;
       // Determine which messages should get a nice folder tag
       m.message.inView = this.viewWrapper.isInView(m);
     }

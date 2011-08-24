@@ -448,6 +448,7 @@ a img {
 .message.collapsed .messageBody .tags,
 .message.collapsed p,
 .message.collapsed .attachments,
+.message.collapsed .attachmentItems,
 .message .snippet {
   display: none;
 }
@@ -602,6 +603,16 @@ ul.special-tags img {
 
 .message.collapsed .notificationBar {
   display: none;
+}
+
+.attachmentItems {
+  font-size: 1.1rem;
+  padding-left: 20px;
+  text-indent: -10px;
+  padding-right: 10px;
+  color: #666;
+  margin-top: -5px;
+  margin-bottom: 5px;
 }
 
 .attachments {

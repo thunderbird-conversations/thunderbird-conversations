@@ -140,7 +140,7 @@
       }
     }
 
-    const kPopupTimeout = 500;
+    const kPopupTimeout = 400;
 
     // This only works for contact tooltips. The "more" menu is treated like a
     //  real menu (it uses displayMenu and falls under clearMenu's operations),
@@ -542,6 +542,16 @@
           </span>
         </div>
       </div>
+      <div class="attachmentItems">
+        {{if attachments.length}}
+          <u>${attachmentsPlural}:</u>
+          {{each(i, att) attachments}}
+            <a href="javascript:"
+              onclick="scrollNodeIntoView(document.getElementById('${att.anchor}'));">
+              ${att.name} (${att.formattedSize})</a>${att.sep}
+          {{/each}}
+        {{/if}}
+      </div>
       <div class="lightningImipBar notificationBar" style="display: none">
         <img class="lightningImipImage" src="chrome://calendar/skin/cal-icon32.png"/>
         <span class="lightningImipText"></span>
@@ -599,7 +609,7 @@
               {{/if}}
             </div>
             {{each(i, att) attachments}}
-            <li class="clearfix hbox attachment" draggable="true">
+            <li class="clearfix hbox attachment" draggable="true" id="${att.anchor}">
               <div class="attachmentThumb">
                 <img onload="$(this).closest('.attachment').find('.align').vAlign()"
                 class="${att.imgClass}" src="${att.thumb}" />
