@@ -93,6 +93,7 @@ let window = getMail3Pane();
 let hasEnigmail;
 try {
   Cu.import("resource://enigmail/enigmailCommon.jsm");
+  Cu.import("resource://enigmail/commonFuncs.jsm");
   hasEnigmail = true;
   Log.debug("Enigmail plugin for Thunderbird Conversations loaded!");
 } catch (e) {
@@ -141,9 +142,14 @@ function tryEnigmail(bodyElement) {
     decryptedText = EnigmailCommon.convertToUnicode(decryptedText, charset);
     if (exitCodeObj.value == 0) {
       if (decryptedText.length > 0) {
-        bodyElement.innerHTML = "<div class='moz-text-plain'></div>";
-        bodyElement.firstElementChild.textContent = decryptedText;
+        bodyElement.innerHTML = "<div class='moz-text-plain'>"+EnigmailFuncs.formatPlaintextMsg(decryptedText)+"</div>";
         bodyElement.style.whiteSpace = "pre-wrap";
+        let elements = bodyElement.getElementsByClassName("moz-txt-citetags");
+        for (let i = elements.length; i >= 0; i--) {
+          let e = elements[i];
+          if (e)
+            e.parentNode.removeChild(e);
+        }
       }
       return statusFlagsObj.value;
     }
