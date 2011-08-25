@@ -10,3 +10,4 @@ pref("conversations.logging_enabled", false);
 pref("conversations.tweak_bodies", true);
 pref("conversations.tweak_chrome", true);
 pref("conversations.add_embeds", true);
+pref("conversations.expensive_quote_detection", false);

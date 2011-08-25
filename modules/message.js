@@ -1647,15 +1647,17 @@ let PostStreamingFixesMixIn = {
         t = Date.now();
       };
       convertOutlookQuotingToBlockquote(iframe.contentWindow, iframeDoc);
-      //log("convertOutlookQuotingToBlockquote");
+      log("convertOutlookQuotingToBlockquote");
       convertHotmailQuotingToBlockquote1(iframeDoc);
-      //log("convertHotmailQuotingToBlockquote1");
-      convertHotmailQuotingToBlockquote2(iframe.contentWindow, iframeDoc, Prefs["hide_quote_length"]);
-      //log("convertHotmailQuotingToBlockquote2");
+      log("convertHotmailQuotingToBlockquote1");
+      if (Prefs.expensive_quote_detection) {
+        convertHotmailQuotingToBlockquote2(iframe.contentWindow, iframeDoc, Prefs["hide_quote_length"]);
+        log("convertHotmailQuotingToBlockquote2");
+      }
       convertForwardedToBlockquote(iframeDoc);
-      //log("convertForwardedToBlockquote");
+      log("convertForwardedToBlockquote");
       fusionBlockquotes(iframeDoc);
-      //log("fusionBlockquotes");
+      log("fusionBlockquotes");
     } catch (e) {
       Log.warn(e);
       dumpCallStack(e);
