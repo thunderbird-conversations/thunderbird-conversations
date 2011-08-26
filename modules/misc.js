@@ -222,8 +222,14 @@ function linkifySubject(subject, doc) {
   return node;
 }
 
-// Takes either a Message (modules/message.js) or a Conversation
-// (modules/conversation.js)
+/**
+ * This is a super-polymorphic function that allows you to get the topmost
+ * mail:3pane window from anywhere in the conversation code.
+ * - if you're a Contact, use topMail3Pane(this)
+ * - if you're a Message, use topMail3Pane(this)
+ * - if you're a Conversation, use topMail3Pane(this)
+ * - if you're in content/stub.xhtml, use topMail3Pane(window)
+ */
 function topMail3Pane(aObj) {
   if (!aObj)
     throw Error("Bad usage for topMail3Pane");

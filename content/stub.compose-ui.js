@@ -43,13 +43,12 @@ const Cr = Components.results;
 
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI
+Cu.import("resource:///modules/mailServices.js");
 Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
 Cu.import("resource:///modules/gloda/mimemsg.js"); // For MsgHdrToMimeMessage
 
 const gMessenger = Cc["@mozilla.org/messenger;1"]
                    .createInstance(Ci.nsIMessenger);
-const gHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"]
-                      .getService(Ci.nsIMsgHeaderParser);
 
 Cu.import("resource://conversations/stdlib/misc.js");
 Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
@@ -604,7 +603,8 @@ function parse(aMimeLine) {
   let emails = {};
   let fullNames = {};
   let names = {};
-  let numAddresses = gHeaderParser.parseHeadersWithArray(aMimeLine, emails, names, fullNames);
+  let numAddresses = MailServices.headerParser
+    .parseHeadersWithArray(aMimeLine, emails, names, fullNames);
   return [names.value, emails.value];
 }
 

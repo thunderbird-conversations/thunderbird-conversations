@@ -52,6 +52,7 @@ const clipboardService = Cc["@mozilla.org/widget/clipboardhelper;1"]
 
 Cu.import("resource:///modules/iteratorUtils.jsm"); // for fixIterator
 Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
+Cu.import("resource:///modules/mailServices.js");
 Cu.import("resource:///modules/gloda/utils.js");
 Cu.import("resource:///modules/gloda/gloda.js");
 
@@ -136,7 +137,7 @@ ContactManager.prototype = {
 }
 
 let ContactMixIn = {
-  toTmplData: function _ContactMixIn_toInlineHtml (aUseColor, aPosition) {
+  toTmplData: function _ContactMixIn_toInlineHtml (aUseColor, aPosition, aIsDetail) {
     let name = this.getName(aPosition);
     let data = {
       showMonospace: aPosition == Contacts.kFrom,
@@ -149,7 +150,15 @@ let ContactMixIn = {
       colorStyle: ((aUseColor === false)
         ? ""
         : ("color :" + this.color)),
+      writeBr: aIsDetail,
+      star: false,
     };
+    if (aIsDetail) {
+      data.name = name != this._email
+        ? MailServices.headerParser.makeFullAddress(name, this._email)
+        : this._email;
+      data.star = this._card != null;
+    }
     return data;
   },
 
@@ -237,10 +246,6 @@ let ContactMixIn = {
             onItemsRemoved: function _onItemsRemoved(aItems, aCollection) { },
             onQueryCompleted: function _onQueryCompleted(aCollection) {
               let tabmail = mainWindow.document.getElementById("tabmail");
-              /*aCollection.items =
-                [GCV.selectRightMessage(m)
-                for each ([, m] in Iterator(GCV.groupMessages(aCollection.items)))];
-              aCollection.items = aCollection.items.filter(function (x) x);*/
               tabmail.openTab("glodaList", {
                 collection: aCollection,
                 title: strings.get("involvingTabTitle").replace("#1", self._name),

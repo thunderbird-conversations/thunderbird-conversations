@@ -332,9 +332,15 @@ span.downwardArrow {
   border-color: transparent transparent #3875D7 transparent;
 }
 
+.contactName {
+  cursor: pointer;
+}
+
 .authorInfo {
   display: inline-block;
   font-weight: normal;
+  font-size: 1.2rem;
+  text-indent: 0;
   float: left;
   width: 20.0rem;
   padding: 10px;
@@ -411,10 +417,6 @@ a img {
   display: none;
 }
 
-.link.hide-with-details {
-  font-weight: bold;
-}
-
 .message.with-details .hide-with-details {
   display: none;
 }
@@ -448,13 +450,8 @@ a img {
 .message.collapsed .messageBody .tags,
 .message.collapsed p,
 .message.collapsed .attachments,
-.message.collapsed .attachmentItems,
+.message.collapsed .detailsLine,
 .message .snippet {
-  display: none;
-}
-
-/* In general, there's no details to display. */
-.message .details {
   display: none;
 }
 
@@ -468,6 +465,10 @@ a img {
 .message .messageBody {
   padding: 0 10px 5px 10px;
   color: #0a0a0a;
+}
+
+.message.with-details .messageBody {
+  padding-top: 10px;
 }
 
 .message.collapsed iframe {
@@ -605,7 +606,7 @@ ul.special-tags img {
   display: none;
 }
 
-.attachmentItems {
+.detailsLine {
   font-size: 1.1rem;
   padding-left: 20px;
   text-indent: -10px;

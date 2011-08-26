@@ -157,6 +157,8 @@
         if ($tooltip.hasClass("tooltip-menu"))
           return;
         let $details = $tooltip.prev();
+        if ($details.hasClass("contactBr"))
+          $details = $details.prev();
 
         let timeout;
         $details.hover(
@@ -501,13 +503,46 @@
 </head>
 
 <body>
+  <script id="detailsTemplate" type="text/x-jquery-tmpl"><![CDATA[
+      {{if dataContactsFrom.length}}
+        <div class="detailsLine fromLine">
+          <u>${str("fieldFrom")}</u>
+          {{tmpl(dataContactsFrom) "#contactTemplate"}}
+        </div>
+      {{/if}}
+      {{if dataContactsTo.length}}
+        <div class="detailsLine toLine">
+          <u>${str("fieldTo")}</u>
+          {{tmpl(dataContactsTo) "#contactTemplate"}}
+        </div>
+      {{/if}}
+      {{if dataContactsCc.length}}
+        <div class="detailsLine ccLine">
+          <u>${str("fieldCc")}</u>
+          {{tmpl(dataContactsCc) "#contactTemplate"}}
+        </div>
+      {{/if}}
+      {{if dataContactsBcc.length}}
+        <div class="detailsLine bccLine">
+          <u>${str("fieldBcc")}</u>
+          {{tmpl(dataContactsBcc) "#contactTemplate"}}
+        </div>
+      {{/if}}
+      {{each(i, line) extraLines}}
+        <div class="detailsLine">
+          <u>${line.key}:</u>
+          ${line.value}
+        </div>
+      {{/each}}
+    ]]>
+  </script>
   <script id="messageTemplate" type="text/x-jquery-tmpl"><![CDATA[
     <li class="message collapsed ${extraClasses}">
       <div class="messageHeader hbox">
         <div class="star"></div>
         <div class="author">{{tmpl(dataContactFrom) "#contactTemplate"}}</div>
         <div class="involved boxFlex">
-          <span class="to"> ${str("to")} {{tmpl(dataContactsTo) "#contactTemplate"}}</span>
+          <span class="to hide-with-details"> ${str("to")} {{tmpl(dataContactsTo) "#contactTemplate"}}</span>
           <span class="bzTo"> ${str("at")} ${bugzillaUrl}</span>
           <span class="snippet"><ul class="tags regular-tags"></ul><ul
               class="tags special-tags"
@@ -534,6 +569,9 @@
             {{/if}}
             <span title="${fullDate}">${date}</span>
           </span>
+          <span class="details hide-with-details">
+            | <a href="javascript:" class="link">show details</a>
+          </span>
           <span class="replyLinkWrapper">
             | <a href="javascript:" class="replyMainActionLink"></a>
           </span>
@@ -556,7 +594,9 @@
           </span>
         </div>
       </div>
-      <div class="attachmentItems">
+      <div class="detailsPlaceholder">
+      </div>
+      <div class="detailsLine">
         {{if attachments.length}}
           <u>${attachmentsPlural}:</u>
           {{each(i, att) attachments}}
@@ -664,7 +704,8 @@
   <script id="contactTemplate" type="text/x-jquery-tmpl"><![CDATA[<span
     >${separator}</span
     ><span class="tooltipWrapper contact"
-      ><span class="contactName" style="${colorStyle}">${String.trim(name)}</span
+      ><span class="contactName" style="${colorStyle}"
+        >{{if star}}&#x2605; {{/if}}${String.trim(name)}{{if writeBr}}<br />{{/if}}</span
       ><div class="tooltip">
         <div class="arrow"></div>
         <div class="arrow inside"></div>

@@ -60,9 +60,6 @@ XPCOMUtils.defineLazyGetter(Services, "mMessenger",
                             function () {
                               return Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
                             });
-XPCOMUtils.defineLazyServiceGetter(Services, "mFaviconService",
-                            "@mozilla.org/browser/favicon-service;1",
-                            "nsIFaviconService");
 
 const kCharsetFromMetaTag = 9;
 const kCharsetFromChannel = 11;
@@ -548,10 +545,6 @@ Message.prototype = {
     this._conversation._htmlPane.contentWindow.enableTooltips(this);
 
     // Register all the needed event handlers. Nice wrappers below.
-    this.register(".details", function (event) {
-      self._domNode.classList.add("with-details");
-      event.stopPropagation();
-    });
 
     // This is for the smart reply button, we need to determine what's the best
     // action.
@@ -686,6 +679,75 @@ Message.prototype = {
     this.register(".messageBody .in-folder", function (event) {
       mainWindow.gFolderTreeView.selectFolder(self._msgHdr.folder, true);
       mainWindow.gFolderDisplay.selectMessage(self._msgHdr);
+    });
+
+    // We only output this shitload of contact nodes when we have to...
+    this.register(".details > a", function (event) {
+      event.stopPropagation();
+      event.preventDefault();
+      // Hide all irrelevant UI items now we're showing details
+      self._domNode.classList.add("with-details");
+      let w = self._conversation._htmlPane.contentWindow;
+      MsgHdrToMimeMessage(self._msgHdr, self, function (aMsgHdr, aMimeMsg) {
+        try {
+          let $ = w.$;
+          let data = {
+            dataContactsFrom: [],
+            dataContactsTo: [],
+            dataContactsCc: [],
+            dataContactsBcc: [],
+            extraLines: [],
+          };
+          let interestingHeaders =
+            ["mailed-by", "x-mailer", "mailer", "user-agent", "date"];
+          for each (let h in interestingHeaders) {
+            if (aMimeMsg.has(h))
+              data.extraLines.push({ key: h, value: aMimeMsg.get(h) });
+          }
+          let buildContactObjects = function (nameEmails)
+            nameEmails.map(function (x)
+              self._conversation._contactManager
+                .getContactFromNameAndEmail(x.name, x.email)
+            );
+          let buildContactData = function (contactObjects)
+            contactObjects.map(function (x)
+              // Third parameter: aIsDetail
+              x.toTmplData(false, Contacts.kTo, true)
+            );
+          let contactsFrom = buildContactObjects([this._from]);
+          let contactsTo = buildContactObjects(this._to);
+          let contactsCc = buildContactObjects(this._cc);
+          let contactsBcc = buildContactObjects(this._bcc);
+          data.dataContactsFrom = buildContactData(contactsFrom);
+          data.dataContactsTo = buildContactData(contactsTo);
+          data.dataContactsCc = buildContactData(contactsCc);
+          data.dataContactsBcc = buildContactData(contactsBcc);
+
+          // Output the template
+          $("#detailsTemplate").tmpl(data)
+            .appendTo($(this._domNode.getElementsByClassName("detailsPlaceholder")[0]));
+          // Activate tooltip event listeners
+          w.enableTooltips({
+            _domNode:
+              this._domNode.getElementsByClassName("detailsPlaceholder")[0],
+          });
+          // Notify contact nodes they've been added to the DOM. This is all very
+          // higher-order...
+          for each (let [contactObjects, cssClass] in
+              [[contactsFrom, ".fromLine"], [contactsTo, ".toLine"],
+               [contactsCc, ".ccLine"], [contactsBcc, ".bccLine"]]) {
+            for each (let [i, node] in
+                Iterator(this._domNode.querySelectorAll(cssClass+" .tooltip"))) {
+              contactObjects[i].onAddedToDom(node);
+            }
+          }
+        } catch (e) {
+          Log.error(e);
+          dumpCallStack(e);
+        }
+      }, {
+        partsOnDemand: true,
+      });
     });
 
     let attachmentNodes = this._domNode.getElementsByClassName("attachment");
@@ -887,9 +949,10 @@ Message.prototype = {
     let window = this._conversation._htmlPane.contentWindow;
     window.alignAttachments(this);
 
+    // Ha! How I wish bug 672944 was fixed...
     let toNode = this._domNode.getElementsByClassName("to")[0];
     let children = toNode.children;
-    let hide = function (aNode) aNode.classList.add("show-with-details");
+    let hide = function (aNode) aNode.style.display = "none";
     let width = function (x) x.offsetWidth;
     let baseSize = isOSX ? 15 : 16;
     let textSize = Prefs.tweak_chrome
@@ -899,19 +962,16 @@ Message.prototype = {
     let overflows = function () parseInt(toNode.offsetHeight) > lineHeight;
 
     if (overflows()) {
-      let dots = toNode.ownerDocument.createElement("a");
-      dots.setAttribute("href", "javascript:null");
-      dots.classList.add("link");
+      // Add the "and N more" text that will be shown at the end of the
+      // recipient list, if there's too many of them
+      let dots = toNode.ownerDocument.createElement("span");
       dots.classList.add("hide-with-details");
       // We need to be conservative here, because if we don't set the number,
       // then setting it in the end might trigger one more overflow...
       dots.textContent = strings.get("andNMore", [999]);
-      dots.addEventListener("click", function (event) {
-        self._domNode.classList.add("with-details");
-        event.stopPropagation();
-      }, false);
       toNode.appendChild(toNode.ownerDocument.createTextNode(" "));
       toNode.appendChild(dots);
+
       // We need to hide an even number of nodes, so that there's no sepComma or
       // sepAnd at the end of the list.
       let nHidden = 0;
