@@ -175,14 +175,10 @@ function tryEnigmail(bodyElement, aMsgWindow) {
 
     if (exitCodeObj.value == 0) {
       if (msgRfc822Text.length > 0) {
-        bodyElement.innerHTML = "<div class='moz-text-plain'>"+EnigmailFuncs.formatPlaintextMsg(msgRfc822Text)+"</div>";
-        bodyElement.style.whiteSpace = "pre-wrap";
-        let elements = bodyElement.getElementsByClassName("moz-txt-citetags");
-        for (let i = elements.length - 1; i >= 0; i--) {
-          let e = elements[i];
-          if (e)
-            e.parentNode.removeChild(e);
-        }
+        bodyElement.innerHTML =
+            "<div class='moz-text-plain' wrap='true' graphical-quote='true'>"
+          + EnigmailFuncs.formatPlaintextMsg(msgRfc822Text)
+          + "</div>";
       }
       return statusFlagsObj.value;
     }
