@@ -310,8 +310,22 @@
       }
     }
 
+    function archiveToolbar(event) {
+      if (isInTab)
+        archiveConversation(event);
+      else
+        msgHdrsArchive(topMail3Pane(window).gFolderDisplay.selectedMessages);
+    }
+
     function archiveConversation(event) {
       msgHdrsArchive(Conversations.currentConversation.msgHdrs);
+    }
+
+    function deleteToolbar(event) {
+      if (isInTab)
+        deleteConversation();
+      else
+        msgHdrsDelete(topMail3Pane(window).gFolderDisplay.selectedMessages);
     }
 
     function deleteConversation(event) {
@@ -802,10 +816,10 @@
       <div id="conversationHeader" class="hbox">
         <div class="subject boxFlex">&stub.loading;</div>
         <div class="actions">
-          <button title="&stub.trash.tooltip;" onclick="deleteConversation(event);">
+          <button title="&stub.trash.tooltip;" onclick="deleteToolbar(event);">
             <span class="trash"></span>
           </button>
-          <button title="&stub.archive.tooltip;" onclick="archiveConversation(event);">
+          <button title="&stub.archive.tooltip;" onclick="archiveToolbar(event);">
             <span class="archive"></span>
           </button>
           <button title="&stub.menu.tooltip;" onclick="showConversationMenu(event); event.stopPropagation();">

@@ -599,6 +599,11 @@ Conversation.prototype = {
   onItemsRemoved: function () {},
 
   onQueryCompleted: function _Conversation_onQueryCompleted (aCollection) {
+    // We'll receive this notification waaaay too many times, so if we've
+    // already settled on a set of messages, let onItemsAdded handle the rest.
+    // This is just for the initial building of the conversation.
+    if (this.messages.length)
+      return;
     // That's XPConnect bug 547088, so remove the setTimeout when it's fixed and
     //  bump the version requirements in install.rdf.template (might be fixed in
     //  time for Gecko 42, if we're lucky)
