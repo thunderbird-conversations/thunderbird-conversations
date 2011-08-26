@@ -1,0 +1,146 @@
+/* Quick reply */
+
+.quickReply {
+  padding: 5px 10px 10px;
+  background-color: #f6f6f6;
+  -moz-border-radius: 0 0 5px 5px;
+}
+
+.quickReplyRecipients {
+  width: 100%;
+  margin: 0 0 5px 0;
+  display: none;
+}
+
+.quickReply .label {
+  -moz-border-radius: 3px 0 0 3px;
+  background-image: -moz-linear-gradient(top, #fff 0%, #fff 50%, #fafafa 50%, #fafafa 100%);
+  border-color: #AAAAAA;
+  border-style: solid;
+  border-width: 1px 0 1px 1px;
+  color: #666;
+  padding: 3px 5px 0 0;
+  text-align: right;
+  width: 7.5rem;
+}
+
+.quickReply input:-moz-any(#to, #cc, #bcc, #subject) {
+  width: 100%;
+  border: 1px solid #aaa;
+  padding: 5px;
+}
+
+.editRecipientList {
+  display:none;
+  margin: 0 0 5px 0;
+  width: 100%;
+}
+
+.quickReplyRecipients.edit .editRecipientList {
+  display: -moz-box;
+}
+
+.quickReplyRecipients.edit ul.recipientList {
+  display: none;
+}
+
+.quickReplyRecipients ul {
+  margin: 0;
+  display: block;
+  list-style-type: none;
+  margin: 0 0 5px 0;
+}
+
+.recipientListSeparator {
+  color: #666;
+}
+
+.quickReplyRecipients li {
+  display: inline-block;
+  color: #666;
+}
+
+.quickReplyRecipients a {
+  color: #3875D7;
+  text-decoration: none;
+}
+
+.replyMethod > label {
+  cursor: pointer;
+}
+
+.quickReplyRecipients a:hover {
+  text-decoration: underline;
+}
+
+.quickReplyHeader {
+  padding: 5px 10px;
+  background-image: -moz-linear-gradient(top, #fff 0%, #fff 50%, #fafafa 50%, #fafafa 100%);
+  border-width: 1px 1px 0;
+  border-color: #aaa;
+  border-style: solid;
+  width: 100%;
+  color: #666;
+  -moz-border-radius: 3px 3px 0 0;
+  display: none;
+}
+
+.quickReply textarea {
+  width: 100%;
+  height: 5.0rem;
+  font-family: "lucida grande", sans-serif;
+  font-size: 1.2rem;
+  padding: 5px;
+  border: 1px solid #bebebe;  
+}
+
+.quickReply.expand textarea {
+  height: 15.0rem;
+  border: 1px solid #aaa;
+}
+
+.quickReply.expand textarea:focus {
+  -moz-box-shadow: 0 0 0 3px #ECF3FE inset;
+}
+
+.replyMethod > input {
+  vertical-align: middle;
+  margin-left: 3px;
+  margin-right: 2px;
+}
+
+.quickReplyFooter {
+  width: 100%;
+  display: none;
+  padding: 5px 0 0 0; 
+}
+
+.quickReply.expand .quickReplyRecipients,
+.quickReply.expand .quickReplyFooter,
+.quickReply.expand .quickReplyHeader {
+  display: block;
+}
+
+.tipFooter button {
+  padding: 0 5px;
+  float: left;
+  margin: 0 3px 0 0;
+}
+
+.replyWrapper {
+  display: inline-block;
+  float: left;
+  position: relative;
+}
+
+/* misc */
+
+.autocomplete-thumb {
+  height: 22px;
+  vertical-align: middle;
+}
+
+.token-input-list-facebook {
+  width: 100%;
+}
+

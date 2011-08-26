@@ -92,7 +92,7 @@ function registerQuickReply() {
           case "removed":
             $(".quickReplyHeader").hide();
             collapseQuickReply();
-            $("textarea").val("");
+            getActiveEditor().value = "";
             gComposeSession = null;
             break;
         }
@@ -145,7 +145,7 @@ function registerQuickReply() {
 // Called when we need to expand the textarea and start editing a new message
 function onTextareaClicked(event) {
   // Do it just once
-  if (!$(event.target).parent().hasClass('expand')) {
+  if (!event.target.parentNode.classList.contains('expand')) {
     expandQuickReply();
     if (!gComposeSession) { // first time
       Log.debug("Setting up the initial quick reply compose parameters...");
@@ -170,13 +170,17 @@ function onUseEditor() {
 }
 
 function expandQuickReply() {
-  $(".message:last .messageFooter").addClass("hide");
-  $(".quickReply").addClass("expand");
+  document.querySelector(".message:last-child .messageFooter")
+    .classList.add("hide");
+  document.querySelector(".quickReply")
+    .classList.add("expand");
 }
 
 function collapseQuickReply() {
-  $(".message:last .messageFooter").removeClass("hide");
-  $(".quickReply").removeClass("expand");
+  document.querySelector(".message:last-child .messageFooter")
+    .classList.remove("hide");
+  document.querySelector(".quickReply")
+    .classList.remove("expand");
 }
 
 function showCc(event) {
@@ -211,7 +215,7 @@ function confirmDiscard(event) {
 }
 
 function onDiscard(event) {
-  $("textarea").val("");
+  getActiveEditor().value = "";
   collapseQuickReply();
   $(".quickReplyHeader").hide();
   $(".showCc, .showBcc").show();
@@ -254,7 +258,7 @@ function onSave(event, aClose, k) {
         to: JSON.parse($("#to").val()).join(","),
         cc: JSON.parse($("#cc").val()).join(","),
         bcc: JSON.parse($("#bcc").val()).join(","),
-        body: $("textarea").val()
+        body: getActiveEditor().value,
       });
       gDraftListener.notifyDraftChanged("modified");
     }
@@ -298,13 +302,20 @@ function loadDraft() {
 
 var gComposeSession;
 
+function getActiveEditor() {
+  return document.getElementsByTagName("textarea")[0];
+}
+
 function createComposeSession(what) {
   // Do that now so that it doesn't have to be implemented by each compose
   // session type.
-  if (Prefs.getBool("mail.spellcheck.inline"))
-    document.getElementsByTagName("textarea")[0].setAttribute("spellcheck", true);
-  else
-    document.getElementsByTagName("textarea")[0].setAttribute("spellcheck", false);
+  if (Prefs.getBool("mail.spellcheck.inline")) {
+    for each (let [, elt] in Iterator(document.getElementsByTagName("textarea")))
+      elt.setAttribute("spellcheck", true);
+  } else {
+    for each (let [, elt] in Iterator(document.getElementsByTagName("textarea")))
+      elt.setAttribute("spellcheck", false);
+  }
   if (gBzSetup) {
     let [webUrl, bzUrl, cookie] = gBzSetup;
     return new BzComposeSession(what, webUrl, bzUrl, cookie);
@@ -508,18 +519,18 @@ ComposeSession.prototype = {
             }
           }
           self.stripSignatureIfNeeded = function () {
-            let textarea = $("textarea");
+            let ed = getActiveEditor();
             if (identity.sigOnReply) {
               if (identity.replyOnTop && !identity.sigBottom)
-                textarea.val(textarea.val().replace(signatureNoDashes, ""));
+                ed.value = ed.value.replace(signatureNoDashes, "");
               else
-                textarea.val(textarea.val().replace(signature, ""));
+                ed.value = ed.value.replace(signature, "");
             }
           };
           // The user might be fast and might have started typing something
           // already
-          let txt = $("textarea").val();
-          let node = $("textarea")[0];
+          let node = getActiveEditor();
+          let txt = node.value;
           let val = null;
           let pos = null;
           let quote = identity.autoQuote
@@ -541,7 +552,7 @@ ComposeSession.prototype = {
             val = quote + txt + signature;
           }
           // After we removed any trailing newlines, insert it into the textarea
-          $("textarea").val(val);
+          node.value = val;
           // I <3 HTML5 selections.
           node.selectionStart = pos;
           node.selectionEnd = pos;
@@ -549,7 +560,8 @@ ComposeSession.prototype = {
       },
 
       draft: function ({ body }) {
-        $("textarea").val(body);
+        let node = getActiveEditor();
+        node.value = body;
       },
     });
   },
@@ -558,9 +570,9 @@ ComposeSession.prototype = {
     let self = this;
     let popOut = options && options.popOut;
     this.archive = options && options.archive;
-    let $textarea = $("textarea");
+    let ed = getActiveEditor();
     let msg = strings.get("sendAnEmptyMessage");
-    if (!popOut && !$textarea.val().length && !confirm(msg))
+    if (!popOut && !ed.value.length && !confirm(msg))
       return;
     let deliverMode = Services.io.offline
       ? Ci.nsIMsgCompDeliverMode.Later
@@ -580,7 +592,7 @@ ComposeSession.prototype = {
         compType: compType,
         deliverType: deliverMode,
       }, { match: function (x) {
-        x.plainText($textarea.val());
+        x.plainText(ed.value);
       }}, {
         progressListener: progressListener,
         sendListener: sendListener,
@@ -806,7 +818,7 @@ function createStateListener (aComposeSession, aMsgHdrs, aId) {
         if (aComposeSession == gComposeSession) {
           $(".quickReplyHeader").hide();
           collapseQuickReply();
-          $("textarea").val("");
+          getActiveEditor().value = "";
           $('.quickReplyRecipients').removeClass('edit');
           // We can do this because we're in the right if-block.
           gComposeSession = null;
