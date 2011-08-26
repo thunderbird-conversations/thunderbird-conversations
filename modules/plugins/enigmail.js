@@ -112,7 +112,7 @@ window.addEventListener("load", function () {
   }
 }, false);
 
-function tryEnigmail(bodyElement) {
+function tryEnigmail(bodyElement, aMsgWindow) {
   if (bodyElement.textContent.indexOf("-----BEGIN PGP") < 0)
     return null;
 
@@ -128,24 +128,57 @@ function tryEnigmail(bodyElement) {
   var blockSeparationObj = new Object();
 
   try {
+    // extract text preceeding and/or following armored block
+    var head = "";
+    var tail = "";
+    var msgText = bodyElement.textContent;
+    var startOffset = msgText.indexOf("-----BEGIN PGP");
+    head = msgText.substring(0, startOffset).replace(/^[\n\r\s]*/,"");
+    head = head.replace(/[\n\r\s]*$/,"");
+    var endStart = msgText.indexOf("-----END PGP");
+    var nextLine = msgText.substring(endStart).search(/[\n\r]/);
+    if (nextLine > 0) {
+      tail = msgText.substring(endStart+nextLine).replace(/^[\n\r\s]*/,"");
+    }
+
     var decryptedText =
       enigmailSvc.decryptMessage(window, 0, bodyElement.textContent,
         signatureObj, exitCodeObj,
         statusFlagsObj, keyIdObj, userIdObj, sigDetailsObj,
         errorMsgObj, blockSeparationObj);
-    var charset = null;
-    var matches = bodyElement.textContent.match(/\nCharset: *(.*) *\n/i);
+
+    var charset = aMsgWindow ? aMsgWindow.mailCharacterSet : "";
+    var subText = msgText.substr(startOffset);
+    var matches = subText.match(/\n[> ]*Charset: *(.*) *\n/i);
     if (matches && (matches.length > 1)) {
       // Override character set
       charset = matches[1];
     }
-    decryptedText = EnigmailCommon.convertToUnicode(decryptedText, charset);
+
+    var msgRfc822Text = "";
+    if (head || tail) {
+      if (head) {
+        // print a warning if the signed or encrypted part doesn't start
+        // quite early in the message
+        matches = head.match(/(\n)/g);
+        if (matches && matches.length > 10) {
+          msgRfc822Text = EnigmailCommon.getString("notePartEncrypted")+"\n\n";
+        }
+        msgRfc822Text += head+"\n\n";
+      }
+      msgRfc822Text += EnigmailCommon.getString("beginPgpPart")+"\n\n";
+    }
+    msgRfc822Text += EnigmailCommon.convertToUnicode(decryptedText, charset);
+    if (head || tail) {
+      msgRfc822Text += "\n\n"+ EnigmailCommon.getString("endPgpPart")+"\n\n"+tail;
+    }
+
     if (exitCodeObj.value == 0) {
-      if (decryptedText.length > 0) {
-        bodyElement.innerHTML = "<div class='moz-text-plain'>"+EnigmailFuncs.formatPlaintextMsg(decryptedText)+"</div>";
+      if (msgRfc822Text.length > 0) {
+        bodyElement.innerHTML = "<div class='moz-text-plain'>"+EnigmailFuncs.formatPlaintextMsg(msgRfc822Text)+"</div>";
         bodyElement.style.whiteSpace = "pre-wrap";
         let elements = bodyElement.getElementsByClassName("moz-txt-citetags");
-        for (let i = elements.length; i >= 0; i--) {
+        for (let i = elements.length - 1; i >= 0; i--) {
           let e = elements[i];
           if (e)
             e.parentNode.removeChild(e);
@@ -184,7 +217,7 @@ let enigmailHook = {
     let iframe = aDomNode.getElementsByTagName("iframe")[0];
     let iframeDoc = iframe.contentDocument;
     if (iframeDoc.body.textContent.length > 0 && hasEnigmail) {
-      let status = tryEnigmail(iframeDoc.body);
+      let status = tryEnigmail(iframeDoc.body, aMsgWindow);
       if (status & Ci.nsIEnigmail.DECRYPTION_OKAY)
         aDomNode.classList.add("decrypted");
       if (status & Ci.nsIEnigmail.GOOD_SIGNATURE)
