@@ -263,6 +263,9 @@
       }
     }
 
+    function capitalize(str)
+      str.charAt(0).toUpperCase() + str.substring(1);
+
     // Below are event listeners for various actions. There is some logic
     //  involved, and they may talk to other parts of the code.
 
@@ -409,7 +412,7 @@
         +"&willExpand="+Number(willExpand);
       // First, save the draft, and once it's saved, then move on to opening the
       // conversation in a new tab...
-      onSave(null, false, function () {
+      onSave(function () {
         tabmail.openTab("chromeTab", {
           chromePage: kStubUrl+queryString,
         });
@@ -464,7 +467,7 @@
               aConversation.completed = true;
               registerQuickReply();
               // That's why we saved it before...
-              loadDraft();
+              newComposeSessionByDraftIf();
               if (willExpand)
                 expandQuickReply();
               // Create a new rule that will override the default rule, so that
@@ -851,7 +854,7 @@
         <li class="reply expand">
           <div class="popout" title="${str('popoutReply')}" alt="popout"></div>
           <div class="textWrap">
-            <div class="icon">reply <img src="i/reply.png" /></div>
+            <div class="icon"><span>${str("reply")}</span> <img src="i/reply.png" /></div>
             <textarea class="sans"></textarea>
           </div>
         </li>
@@ -859,15 +862,15 @@
         <li class="replyAll expand">
           <div class="popout" title="${str('popoutReplyAll')}" alt="popout"></div>
           <div class="textWrap">
-            <div class="icon">reply to all <img src="i/replyAll.png" /></div>
+            <div class="icon"><span>${str("replyAll")}</span> <img src="i/replyAll.png" /></div>
             <textarea class="sans"></textarea>
           </div>
         </li>
         
         <li class="misc">
           <ul class="actions cf">
-            <li class="fwd"><a href="javascript:">${str('forward')}</a></li>
-            <li class="list"><a href="javascript:">${str('replyList')}</a></li>
+            <li class="fwd"><a href="javascript:">${capitalize(str('forward'))}</a></li>
+            <li class="list"><a href="javascript:">${capitalize(str('replyList'))}</a></li>
           </ul>
         </li>   
       </ul>
@@ -880,7 +883,7 @@
             onclick="gComposeSession.send({ archive: true });">
           ${str("sendArchive")}
         </button>
-        <button id="save" style="float:right" onclick="onSave(event);">${str("save")}</button>
+        <button id="save" style="float:right" onclick="onSave();">${str("save")}</button>
         <a class="discard" href="javascript:" id="discard"
           onclick="confirmDiscard()">${str("discard")}</a> - 
         <a class="discard useEditor" href="javascript:"

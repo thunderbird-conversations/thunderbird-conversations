@@ -62,11 +62,12 @@ let Log = setupLogging("Conversations.Stub.Compose");
 Cu.import("resource://conversations/stdlib/SimpleStorage.js");
 let ss = SimpleStorage.createIteratorStyle("conversations");
 window.addEventListener("unload", function () {
-  Log.debug("Unload.");
-  // otherwise it leaks and makes about:memory crash
-  ss.ss.dbConnection.asyncClose();
   // save if needed
-  onSave();
+  onSave(function () {
+    Log.debug("Unload.");
+    // otherwise it leaks and makes about:memory crash
+    ss.ss.dbConnection.asyncClose();
+  });
 }, false);
 
 // ----- "Draft modified" listeners
@@ -74,9 +75,19 @@ window.addEventListener("unload", function () {
 var gDraftListener;
 var gBzSetup;
 
-// Called either by the monkey-patch when the conversation is fully built, or by
-//  stub.html when the conversation-in-tab is fully built. This function can
-//  only run once the conversation it lives in is complete.
+/**
+ * Called either by the monkey-patch when the conversation is fully built, or by
+ *  stub.html when the conversation-in-tab is fully built. This function can
+ *  only run once the conversation it lives in is complete. Is NOT called if the
+ *  conversation is updated, etc.
+ * What this function does is:
+ * - register global event listeners so that if someone else modifies this
+ *   conversation's draft in a different tab/window, it receives the update and
+ *   changes its parameters accordingly;
+ * - add event listeners for the shiny-shiny animations that take places when
+ *   one clicks on one of the text areas;
+ * - register event listeners that kick an auto-save when it's worth doing.
+ */
 function registerQuickReply() {
   let id = Conversations.currentConversation.id;
   let mainWindow = topMail3Pane(window);
@@ -87,12 +98,13 @@ function registerQuickReply() {
         Log.debug("onDraftChanged", Conversations == mainWindow.Conversations);
         switch (aTopic) {
           case "modified":
-            loadDraft();
+            newComposeSessionByDraftIf();
             break;
           case "removed":
-            $(".quickReplyHeader").hide();
-            collapseQuickReply();
             getActiveEditor().value = "";
+            hideCompositionFields();
+            resetCompositionFields();
+            $(".quickReplyHeader").hide();
             gComposeSession = null;
             break;
         }
@@ -131,36 +143,34 @@ function registerQuickReply() {
   mainWindow.Conversations.draftListeners[id].push(Cu.getWeakReference(gDraftListener));
 
   $("textarea").blur(function () {
-    Log.debug("Autosave...");
+    Log.debug("Autosave opportunity...");
     onSave();
   });
 
   // Will set the placeholder and return the bz params
   gBzSetup = bzSetup();
-
+  registerQuickReplyEventListeners();
 }
 
 // ----- Event listeners
 
 // Called when we need to expand the textarea and start editing a new message
-function onTextareaClicked(event) {
-  // Do it just once
-  if (!event.target.parentNode.classList.contains('expand')) {
-    expandQuickReply();
-    if (!gComposeSession) { // first time
-      Log.debug("Setting up the initial quick reply compose parameters...");
-      let messages = Conversations.currentConversation.messages;
-      try {
-        gComposeSession = createComposeSession(function (x)
-          x.reply(messages[messages.length - 1].message)
-        );
-      } catch (e) {
-        Log.debug(e);
-        dumpCallStack(e);
-      }
-      scrollNodeIntoView(document.querySelector(".quickReply"));
-    }
+function newComposeSessionByClick(type) {
+  Log.assert(!gComposeSession,
+    "We should only get here if there's no compose session already");
+  Log.debug("Setting up the initial quick reply compose parameters...");
+  let messages = Conversations.currentConversation.messages;
+  try {
+    gComposeSession = createComposeSession(function (x)
+      x.reply(messages[messages.length - 1].message, type)
+    );
+    startedEditing(true);
+    revealCompositionFields();
+  } catch (e) {
+    Log.debug(e);
+    dumpCallStack(e);
   }
+  scrollNodeIntoView(document.querySelector(".quickReply"));
 }
 
 function onUseEditor() {
@@ -169,18 +179,31 @@ function onUseEditor() {
   onDiscard();
 }
 
-function expandQuickReply() {
-  document.querySelector(".message:last-child .messageFooter")
-    .classList.add("hide");
+function revealCompositionFields() {
   document.querySelector(".quickReply")
     .classList.add("expand");
+  $('.quickReplyRecipients').show();
 }
 
-function collapseQuickReply() {
-  document.querySelector(".message:last-child .messageFooter")
-    .classList.remove("hide");
+function hideCompositionFields() {
   document.querySelector(".quickReply")
     .classList.remove("expand");
+  $('.quickReplyRecipients').hide();
+}
+
+function resetCompositionFields() {
+  $(".showCc, .showBcc").show();
+  $('.quickReplyRecipients').removeClass('edit');
+  $(".bccList, .editBccList").css("display", "none");
+  $(".ccList, .editCcList").css("display", "none");
+}
+
+function changeComposeFields(aMode) {
+  resetCompositionFields();
+  gComposeSession.changeComposeFields(aMode);
+  if (aMode == "forward") {
+    editFields("to");
+  }
 }
 
 function showCc(event) {
@@ -191,17 +214,6 @@ function showCc(event) {
 function showBcc(event) {
   $(".bccList, .editBccList").css("display", "");
   $(".showBcc").hide();
-}
-
-function changeComposeFields(aMode) {
-  $(".showCc, .showBcc").show();
-  $('.quickReplyRecipients').removeClass('edit');
-  $(".bccList, .editBccList").css("display", "none");
-  $(".ccList, .editCcList").css("display", "none");
-  gComposeSession.changeComposeFields(aMode);
-  if (aMode == "forward") {
-    editFields("to");
-  }
 }
 
 function editFields(aFocusId) {
@@ -216,17 +228,15 @@ function confirmDiscard(event) {
 
 function onDiscard(event) {
   getActiveEditor().value = "";
-  collapseQuickReply();
+  hideCompositionFields();
+  resetCompositionFields();
   $(".quickReplyHeader").hide();
-  $(".showCc, .showBcc").show();
-  $('.quickReplyRecipients').removeClass('edit');
-  $(".bccList, .editBccList").css("display", "none");
-  $(".ccList, .editCcList").css("display", "none");
+  hideQuickReply();
+  gComposeSession = null;
   let id = Conversations.currentConversation.id;
   if (id)
     SimpleStorage.spin(function () {
       let r = yield ss.remove(id);
-      gComposeSession = null;
       gDraftListener.notifyDraftChanged("removed");
       yield SimpleStorage.kWorkDone;
     });
@@ -235,12 +245,9 @@ function onDiscard(event) {
 /**
  * Save the current draft, or do nothing if the user hasn't started editing the
  *  draft yet.
- * @param event The event that led to this.
- * @param aClose (optional) By default, true. Close the quick reply area after
- *  saving.
  * @param k (optional) A function to call once it's saved.
  */
-function onSave(event, aClose, k) {
+function onSave(k) {
   // First codepath, we ain't got no nothing to save.
   if (!startedEditing()) {
     if (k)
@@ -249,6 +256,7 @@ function onSave(event, aClose, k) {
   }
 
   // Second codepath. Heh, got some work to do.
+  Log.debug("Saving because there's a compose session");
   SimpleStorage.spin(function () {
     let id = Conversations.currentConversation.id; // Gloda ID
     if (id) {
@@ -262,9 +270,6 @@ function onSave(event, aClose, k) {
       });
       gDraftListener.notifyDraftChanged("modified");
     }
-    // undefined is ok, means true
-    if (aClose === false)
-      collapseQuickReply();
     if (k)
       k();
     yield SimpleStorage.kWorkDone;
@@ -280,7 +285,7 @@ function onSave(event, aClose, k) {
 //  non-strict threading or custom queries). That's problematic because the same
 //  conversation might end up having different Gloda ids... hell, that's too
 //  bad.
-function loadDraft() {
+function newComposeSessionByDraftIf() {
   let id = Conversations.currentConversation.id; // Gloda ID
   if (!id) {
     $("#save").attr("disabled", "disabled");
@@ -292,6 +297,8 @@ function loadDraft() {
     if (r) {
       gComposeSession = createComposeSession(function (x) x.draft(r));
       startedEditing(true);
+      revealCompositionFields();
+      showQuickReply.call($(".quickReply li.reply"));
     }
     yield SimpleStorage.kWorkDone;
   });
@@ -303,7 +310,27 @@ function loadDraft() {
 var gComposeSession;
 
 function getActiveEditor() {
-  return document.getElementsByTagName("textarea")[0];
+  let textarea;
+  if (gComposeSession) {
+    gComposeSession.match({
+      reply: function (_, aReplyType) {
+        if (aReplyType == "reply")
+          textarea = document.querySelector("li.reply textarea");
+        else if (aReplyType == "replyAll")
+          textarea = document.querySelector("li.replyAll textarea");
+        else
+          Log.assert(false, "Unknown reply type");
+      },
+
+      draft: function () {
+        textarea = document.querySelector("li.reply textarea");
+      },
+    });
+  } else {
+    // This happens if we are creating a draft instance.
+    textarea = document.querySelector("li.reply textarea");
+  }
+  return textarea;
 }
 
 function createComposeSession(what) {
@@ -332,7 +359,7 @@ function startedEditing (aVal) {
     return gComposeSession && gComposeSession.startedEditing;
   } else {
     if (!gComposeSession) {
-      Log.error("No composition session yet");*
+      Log.error("No composition session yet");
       dumpCallStack();
     } else {
       gComposeSession.startedEditing = aVal;
@@ -373,13 +400,17 @@ ComposeSession.prototype = {
     let mainWindow = topMail3Pane(window);
     let identity;
     this.match({
-      reply: function (aMessage) {
+      reply: function (aMessage, aReplyType) {
         let aMsgHdr = aMessage._msgHdr;
+        let compType;
+        if (aReplyType == "reply")
+          compType = Ci.nsIMsgCompType.ReplyToSender;
+        else if (aReplyType == "replyAll")
+          compType = Ci.nsIMsgCompType.ReplyAll;
+        else
+          Log.assert(false, "Unknown reply type");
         // Standard procedure for finding which identity to send with, as per
         //  http://mxr.mozilla.org/comm-central/source/mail/base/content/mailCommands.js#210
-        let compType = aMessage.isReplyListEnabled
-          ? Ci.nsIMsgCompType.ReplyList
-          : Ci.nsIMsgCompType.ReplyAll;
         let suggestedIdentity = mainWindow.getIdentityForHeader(aMsgHdr, compType);
         identity = suggestedIdentity || gIdentities.default;
       },
@@ -456,22 +487,28 @@ ComposeSession.prototype = {
   setupAutocomplete: function () {
     let self = this;
     this.match({
-      reply: function (aMessage) {
+      reply: function (aMessage, aReplyType) {
         // Make sure we're consistent with modules/message.js!
-        if (aMessage.isReplyListEnabled) {
-          self.changeComposeFields("replyAll");
+        let showHideActions = function (n) {
+          // This basically says that while processing various headers, we
+          // found out we reply to at most one person, then this means that
+          // the reply method "reply all" makes no sense.
+          if (n <= 1) {
+            $(".replyMethod-replyAll").hide();
+            $(".replyMethod-replyList").hide();
+          } else {
+            $(".replyMethod-replyAll").show();
+            $(".replyMethod-replyList").show();
+          }
+        };
+        if (aReplyType == "replyAll") {
+          self.changeComposeFields("replyAll", showHideActions);
           $(".replyMethod > input").val(["replyAll"]);
-          $(".replyMethod-replyList").show();
-        } else {
-          self.changeComposeFields("reply", function (n) {
-            // This basically says that while processing various headers, we
-            // found out we reply to at most one person, then this means that
-            // the reply method "reply all" makes no sense.
-            if (n <= 1)
-              $(".replyMethod-replyAll").hide();
-          });
+        } else if (aReplyType == "reply"){
+          self.changeComposeFields("reply", showHideActions);
           $(".replyMethod > input").val(["reply"]);
-          $(".replyMethod-replyList").hide();
+        } else {
+          Log.assert(false, "Unknown reply type");
         }
       },
 
@@ -816,10 +853,11 @@ function createStateListener (aComposeSession, aMsgHdrs, aId) {
         // If the user didn't start a new composition session, hide the quick
         //  reply area, clear draft, collapse.
         if (aComposeSession == gComposeSession) {
-          $(".quickReplyHeader").hide();
-          collapseQuickReply();
+          resetCompositionFields();
+          hideCompositionFields();
           getActiveEditor().value = "";
-          $('.quickReplyRecipients').removeClass('edit');
+          $(".quickReplyHeader").hide();
+          hideQuickReply();
           // We can do this because we're in the right if-block.
           gComposeSession = null;
           gDraftListener.notifyDraftChanged("removed");

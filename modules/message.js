@@ -563,7 +563,10 @@ Message.prototype = {
       replyAll.style.display = "none";
     // Register the right actions. Make sure we're consistent with
     // stub.compose-ui.js!
+    if (this.isReplyAllEnabled)
+      this._domNode.classList.add("isReplyAllEnabled");
     if (this.isReplyListEnabled) {
+      this._domNode.classList.add("isReplyListEnabled");
       this.register(".replyMainActionLink", function (event) {
         self.compose(Ci.nsIMsgCompType.ReplyAll, event);
         event.stopPropagation();
@@ -918,9 +921,6 @@ Message.prototype = {
           Log.debug("Escape from quickReply");
           self._domNode.focus();
           break;
-
-        default:
-          window.startedEditing(true);
       }
       event.stopPropagation();
     }, { action: "keydown" });

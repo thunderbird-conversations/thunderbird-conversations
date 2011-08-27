@@ -11,6 +11,7 @@ function setupLogging(name) {
       this.error("\n!!!!!!!!!!!!!!!!!!!!!!"+
                  "\n    ASSERT FAILURE    "+
                  "\n!!!!!!!!!!!!!!!!!!!!!!\n"+aStr);
+      dumpCallStack();
       throw Error("Assert failures are fatal, man");
     }
   };

@@ -454,7 +454,7 @@ MonkeyPatch.prototype = {
               window.Conversations.currentConversation = aConversation;
               if (isDifferentConversation) {
                 // Here, put the final touches to our new conversation object.
-                htmlpane.contentWindow.loadDraft();
+                htmlpane.contentWindow.newComposeSessionByDraftIf();
                 aConversation.completed = true;
                 htmlpane.contentWindow.registerQuickReply();
                 htmlpane.contentWindow.hideConversationMenu();
