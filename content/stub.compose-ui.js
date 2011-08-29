@@ -266,6 +266,21 @@ function onUseEditor() {
   onDiscard();
 }
 
+function onPopOut(event, aType, aIsSelected) {
+  if (!aIsSelected) {
+    switch (aType) {
+      case "reply":
+        getMessageForQuickReply().compose(Ci.nsIMsgCompType.ReplyToSender, event)
+        break;
+      case "replyAll":
+        getMessageForQuickReply().compose(Ci.nsIMsgCompType.ReplyAll, event)
+        break;
+    }
+  } else {
+    onUseEditor();
+  }
+}
+
 function onDiscard(event) {
   getActiveEditor().value = "";
   hideCompositionFields();
