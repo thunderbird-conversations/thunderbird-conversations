@@ -422,6 +422,8 @@ MonkeyPatch.prototype = {
               ++window.Conversations.counter
             );
             freshConversation.outputInto(htmlpane, function (aConversation) {
+              if (aConversation.messages.length == 0)
+                return;
               // So we've been promoted to be the new conversation! Remember
               //  that and update the currently selected URIs to prevent further
               //  reflows.

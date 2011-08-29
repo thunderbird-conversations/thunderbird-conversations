@@ -477,16 +477,7 @@
                 expandQuickReply();
               // Create a new rule that will override the default rule, so that
               // the expanded quick reply is twice higher.
-              let stylesheet;
-              let stylesheet = [x
-                for each ([, x] in Iterator(document.styleSheets))
-                if (String.indexOf(x.href, "/conversation.css") >= 0)][0];
-              if (stylesheet)
-                stylesheet.insertRule(
-                  ".quickReply.expand textarea { height: 30rem !important; }",
-                  0);
-              else
-                Log.error("No stylesheet. This is unexpected.");
+              document.body.classList.add("inTab");
               // We can never junk a conversation in a new tab, because the junk
               // command only operates on selected messages, and we're not in a
               // 3pane context anymore.

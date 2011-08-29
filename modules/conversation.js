@@ -1021,7 +1021,12 @@ Conversation.prototype = {
         // This call actually starts the save process off the main thread, but
         //  we're not doing anything besides saving the quick reply, so we don't
         //  need for this call to complete before going on.
-        this._htmlPane.contentWindow.onSave();
+        try {
+          this._htmlPane.contentWindow.onSave();
+        } catch (e) {
+          Log.error(e);
+          dumpCallStack(e);
+        }
       }
     }
 

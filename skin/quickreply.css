@@ -146,6 +146,10 @@
   resize: vertical;
 }
 
+body.inTab .quickReply li.selected textarea {
+  height: 216px;
+}
+
 .quickReply .popout {
   width: 16px;
   height: 16px;
