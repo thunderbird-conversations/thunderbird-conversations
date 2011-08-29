@@ -52,7 +52,7 @@ html {
 }
 
 body {
-  font-family: "Lucida Grande", "DejaVu Sans", "Tahoma", sans-serif;
+  font-family: sans-serif;
   font-size: 1.2rem;
   line-height: 1.8rem;
   background-color: #ECF3FE;

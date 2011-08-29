@@ -281,6 +281,7 @@
 
     let Log = setupLogging("Conversations.Stub");
     let isOSX = ("nsILocalFileMac" in Components.interfaces);
+    let isWindows = ("@mozilla.org/windows-registry-key;1" in Components.classes);
     let isInTab = false;
 
     $(document).ready(function () {
@@ -289,8 +290,12 @@
         if (String.indexOf(x.href, "/conversation.css") >= 0)][0];
       if (stylesheet) {
         if (Prefs.tweak_chrome) {
+          // Set the root size to 10px on Linux, and equivalent font sizes on
+          // other platforms.
           if (isOSX)
             stylesheet.insertRule("html { font-size: 66.6%; }", 0);
+          else if (isWindows)
+            stylesheet.insertRule("html { font-size: 70%; }", 0);
           else
             stylesheet.insertRule("html { font-size: 62.5%; }", 0);
         } else {

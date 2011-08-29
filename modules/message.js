@@ -99,6 +99,7 @@ function addMsgListener(aMessage) {
 }
 
 let isOSX = ("nsILocalFileMac" in Components.interfaces);
+let isWindows = ("@mozilla.org/windows-registry-key;1" in Components.classes);
 
 function isAccel (event) (isOSX && event.metaKey || event.ctrlKey)
 
@@ -702,7 +703,7 @@ Message.prototype = {
             extraLines: [],
           };
           let interestingHeaders =
-            ["mailed-by", "x-mailer", "mailer", "user-agent", "date"];
+            ["mailed-by", "x-mailer", "mailer", "user-agent", "date", "subject"];
           for each (let h in interestingHeaders) {
             if (aMimeMsg.has(h))
               data.extraLines.push({ key: h, value: aMimeMsg.get(h) });
@@ -944,6 +945,10 @@ Message.prototype = {
     return this._domNode.getElementsByTagName("iframe")[0];
   },
 
+  get tenPxFactor () {
+    return (isOSX ? .666 : (isWindows ? .7 : .625));
+  },
+
   cosmeticFixups: function _Message_cosmeticFixups() {
     let self = this;
     let window = this._conversation._htmlPane.contentWindow;
@@ -954,10 +959,9 @@ Message.prototype = {
     let children = toNode.children;
     let hide = function (aNode) aNode.style.display = "none";
     let width = function (x) x.offsetWidth;
-    let baseSize = isOSX ? 15 : 16;
     let textSize = Prefs.tweak_chrome
-      ? Math.round(100 * this.defaultSize * 12 / baseSize) / 100
-      : this.defaultSize;
+      ? this.defaultSize * this.tenPxFactor * 1.2
+      : this.defaultSize * .833;
     let lineHeight = textSize * 1.8; // per the CSS file
     let overflows = function () parseInt(toNode.offsetHeight) > lineHeight;
 
@@ -1630,11 +1634,11 @@ let PostStreamingFixesMixIn = {
     if (!Prefs.tweak_bodies)
       return;
 
-    let baseSize = isOSX ? 15 : 16;
-    let textSize = Math.round(100 * this.defaultSize * 12 / baseSize) / 100;
+    let tenPxFactor = isOSX ? .666 : (isWindows ? .7 : .625);
+    let textSize = Math.round(this.defaultSize * tenPxFactor * 1.2);
 
     // Assuming 16px is the default (like on, say, Linux), this gives
-    //  18px and 12px, which what Andy had in mind.
+    //  18px and 12px, which is what Andy had in mind.
     // We're applying the style at the beginning of the <head> tag and
     //  on the body element so that it can be easily overridden by the
     //  html.
@@ -1656,7 +1660,7 @@ let PostStreamingFixesMixIn = {
         !(this.mailingLists.some(function (x) (x in Prefs["monospaced_senders"])))) {
       styleRules = styleRules.concat([
         ".moz-text-flowed, .moz-text-plain {",
-        "  font-family: \""+Prefs.getChar("font.default")+"\" !important;",
+        "  font-family: sans-serif !important;",
         "  font-size: "+textSize+"px !important;",
         "  line-height: 112.5% !important;",
         "}",
@@ -1687,9 +1691,8 @@ let PostStreamingFixesMixIn = {
   },
 
   detectQuotes: function (iframe) {
-    let baseSize = isOSX ? 15 : 16;
     let smallSize = Prefs.tweak_chrome
-      ? Math.round(100 * this.defaultSize * 11 / baseSize) / 100
+      ? this.defaultSize * this.tenPxFactor * 1.1
       : Math.round(100 * this.defaultSize * 11 / 12) / 100;
 
     // Launch various crappy pieces of code^W^W^W^W heuristics to
