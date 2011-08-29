@@ -1494,9 +1494,14 @@ function MessageFromGloda(aConversation, aGlodaMsg) {
 
   this.isReplyListEnabled =
     ("mailingLists" in aGlodaMsg) && aGlodaMsg.mailingLists.length;
+  let seen = {};
   this.isReplyAllEnabled =
     [aGlodaMsg.from].concat(aGlodaMsg.to).concat(aGlodaMsg.cc).concat(aGlodaMsg.bcc)
-    .filter(function (x) !(x.value in gIdentities)).length > 1;
+    .filter(function (x) {
+      let r = !(x.value in gIdentities) && !(x.value in seen);
+      seen[x.value] = null;
+      return r;
+    }).length > 1;
 
   this._signal();
 }
@@ -1551,12 +1556,17 @@ function MessageFromDbHdr(aConversation, aMsgHdr) {
           aMimeMsg.has("list-post") &&
           self.RE_LIST_POST.exec(aMimeMsg.get("list-post"))
         ;
+        let seen = {};
         self.isReplyAllEnabled = 
           parseMimeLine(aMimeMsg.get("from"), true)
           .concat(parseMimeLine(aMimeMsg.get("to"), true))
           .concat(parseMimeLine(aMimeMsg.get("cc"), true))
           .concat(parseMimeLine(aMimeMsg.get("bcc"), true))
-          .filter(function (x) !(x.email in gIdentities))
+          .filter(function (x) {
+            let r = !(x.email in gIdentities) && !(x.email in seen);
+            seen[x.email] = null;
+            return r;
+          })
           .length > 1;
 
         let findIsEncrypted = function (x)
