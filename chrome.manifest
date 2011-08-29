@@ -4,6 +4,7 @@ resource conversations modules/
 overlay chrome://messenger/content/messenger.xul chrome://conversations/content/overlay.xul
 
 #locale conversations cs locale/cs/
+#locale conversations da locale/da/
 #locale conversations de locale/de/
 #locale conversations el locale/el/
 locale conversations en-US locale/en-US/
