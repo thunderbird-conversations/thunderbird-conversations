@@ -70,8 +70,6 @@ window.addEventListener("unload", function () {
   });
 }, false);
 
-// ----- "Draft modified" listeners
-
 var gDraftListener;
 var gBzSetup;
 
@@ -84,9 +82,9 @@ var gBzSetup;
  * - register global event listeners so that if someone else modifies this
  *   conversation's draft in a different tab/window, it receives the update and
  *   changes its parameters accordingly;
- * - add event listeners for the shiny-shiny animations that take places when
- *   one clicks on one of the text areas;
- * - register event listeners that kick an auto-save when it's worth doing.
+ * - add event listeners for the shiny-shiny animations that take place when
+ *   one clicks on one of the textareas;
+ * - register event listeners that kick an auto-save when it's worth doing it.
  */
 function registerQuickReply() {
   let id = Conversations.currentConversation.id;
@@ -147,14 +145,54 @@ function registerQuickReply() {
     onSave();
   });
 
+  // Register Forward and Reply to list
+  document.querySelector(".quickReply .fwd > a").addEventListener("click", function (event) {
+    getMessageForQuickReply().forward(event);
+    event.stopPropagation();
+    event.preventDefault();
+  }, false);
+  document.querySelector(".quickReply .list > a").addEventListener("click", function (event) {
+    getMessageForQuickReply().compose(Ci.nsIMsgCompType.ReplyToList, event)
+    event.stopPropagation();
+    event.preventDefault();
+  }, false);
+
   // Will set the placeholder and return the bz params
   gBzSetup = bzSetup();
   registerQuickReplyEventListeners();
 }
 
-// ----- Event listeners
+// This function is called once when the conversation is complete, and then
+//  potentially many times, if someone is editing the draft in another instance
+//  of the same conversation (i.e. if the conversation has another instance in a
+//  separate tab).
+// We ignore the edge cases where the set of messages in the conversation view
+//  doesn't correspond to a real gloda conversation (i.e. in the case of
+//  non-strict threading or custom queries). That's problematic because the same
+//  conversation might end up having different Gloda ids... hell, that's too
+//  bad.
+function newComposeSessionByDraftIf() {
+  let id = Conversations.currentConversation.id; // Gloda ID
+  if (!id) {
+    $("#save").attr("disabled", "disabled");
+    return;
+  }
 
-// Called when we need to expand the textarea and start editing a new message
+  SimpleStorage.spin(function () {
+    let r = yield ss.get(id);
+    if (r) {
+      gComposeSession = createComposeSession(function (x) x.draft(r));
+      startedEditing(true);
+      revealCompositionFields();
+      showQuickReply.call($(".quickReply li.reply"));
+    }
+    yield SimpleStorage.kWorkDone;
+  });
+}
+
+// Called when we need to expand the textarea and start editing a new message.
+// The type parameter is determined by the event listeners (see quickReply.js)
+// as they know whether the user clicked reply or reply all.
 function newComposeSessionByClick(type) {
   Log.assert(!gComposeSession,
     "We should only get here if there's no compose session already");
@@ -162,8 +200,10 @@ function newComposeSessionByClick(type) {
   let messages = Conversations.currentConversation.messages;
   try {
     gComposeSession = createComposeSession(function (x)
-      x.reply(messages[messages.length - 1].message, type)
+      x.reply(getMessageForQuickReply(), type)
     );
+    // This could probably be refined, like only considering we started editing
+    // if we modified the body and/or the composition fields.
     startedEditing(true);
     revealCompositionFields();
   } catch (e) {
@@ -171,12 +211,6 @@ function newComposeSessionByClick(type) {
     dumpCallStack(e);
   }
   scrollNodeIntoView(document.querySelector(".quickReply"));
-}
-
-function onUseEditor() {
-  gComposeSession.stripSignatureIfNeeded();
-  gComposeSession.send({ popOut: true });
-  onDiscard();
 }
 
 function revealCompositionFields() {
@@ -224,6 +258,12 @@ function editFields(aFocusId) {
 function confirmDiscard(event) {
   if (!startedEditing() || confirm(strings.get("confirmDiscard")))
     onDiscard();
+}
+
+function onUseEditor() {
+  gComposeSession.stripSignatureIfNeeded();
+  gComposeSession.send({ popOut: true });
+  onDiscard();
 }
 
 function onDiscard(event) {
@@ -276,38 +316,18 @@ function onSave(k) {
   });
 }
 
-// This function is called once when the conversation is complete, and then
-//  potentially many times, if someone is editing the draft in another instance
-//  of the same conversation (i.e. if the conversation has another instance in a
-//  separate tab).
-// We ignore the edge cases where the set of messages in the conversation view
-//  doesn't correspond to a real gloda conversation (i.e. in the case of
-//  non-strict threading or custom queries). That's problematic because the same
-//  conversation might end up having different Gloda ids... hell, that's too
-//  bad.
-function newComposeSessionByDraftIf() {
-  let id = Conversations.currentConversation.id; // Gloda ID
-  if (!id) {
-    $("#save").attr("disabled", "disabled");
-    return;
-  }
-
-  SimpleStorage.spin(function () {
-    let r = yield ss.get(id);
-    if (r) {
-      gComposeSession = createComposeSession(function (x) x.draft(r));
-      startedEditing(true);
-      revealCompositionFields();
-      showQuickReply.call($(".quickReply li.reply"));
-    }
-    yield SimpleStorage.kWorkDone;
-  });
-}
-
 
 // ----- The whole composition session and related actions...
 
 var gComposeSession;
+
+/**
+ * Obviously going to be upgraded once we have one quick reply per message.
+ */
+function getMessageForQuickReply() {
+  let conv = Conversations.currentConversation;
+  return conv.messages[conv.messages.length - 1].message;
+}
 
 function getActiveEditor() {
   let textarea;
@@ -462,10 +482,8 @@ ComposeSession.prototype = {
         break;
 
       case "replyList":
-        // XXX 20110818 Fix this once we have multiple quick replies
-        let conv = topMail3Pane(window).Conversations.currentConversation;
-        let aMessage = conv.messages[conv.messages.length - 1].message;
-        let token = asToken(null, null, aMessage.mailingLists[0], null);
+        let msg = getMessageForQuickReply();
+        let token = asToken(null, null, msg.mailingLists[0], null);
         setupAutocomplete([token], [], []);
         break;
 

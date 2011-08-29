@@ -703,7 +703,7 @@ Message.prototype = {
             extraLines: [],
           };
           let interestingHeaders =
-            ["mailed-by", "x-mailer", "mailer", "user-agent", "date", "subject"];
+            ["mailed-by", "x-mailer", "mailer", "date", "subject", "user-agent"];
           for each (let h in interestingHeaders) {
             if (aMimeMsg.has(h))
               data.extraLines.push({ key: h, value: aMimeMsg.get(h) });
