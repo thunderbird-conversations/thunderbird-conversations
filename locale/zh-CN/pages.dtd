@@ -1,3 +1,4 @@
+<!ENTITY assistant.title "首次运行向导">
 <!ENTITY assistant.intro "Hi, 这是<strong>Thunderbird Conversations</strong>!">
 <!ENTITY assistant.p1 "为了让日子过得再轻松些，此辅助工具将对你的Thunderbird进行微调，以便获得更好的使用体验。">
 <!ENTITY assistant.p2 "所有的调整都是可恢复的。隐藏不必担心：一旦你卸载了此扩展程序，所有本程序修改的设置项都将恢复原样（到安装本程序以前）。">
@@ -7,18 +8,36 @@
 <!ENTITY assistant.apply "应用">
 <!ENTITY assistant.settings "部分设置是Thunderbird Conversations正常工作的必选设置，部分为推荐设置，其他为可选设置">
 <!ENTITY assistant.actionEnableGloda "请确认全局检索和索引已经激活">
+<!ENTITY assistant.actionReindexAttachments "重新为包含附件的邮件创建索引（包含Mozilla Bugmail）.">
 <!ENTITY assistant.actionDontExpand "在邮件列表中，不要展开含有未读邮件的会话">
 <!ENTITY assistant.actionAttachmentsInline "不要嵌入显示附件(<strong>强烈</strong>推荐).">
 <!ENTITY assistant.actionOfflineDownload "收件箱和已发邮件箱相同步使用离线存储(<strong>强烈</strong>推荐).">
+<!ENTITY assistant.actionUnifiedInboxSearchesSent "统一收件箱同样检索已发送文件夹（推荐）.">
+<!ENTITY assistant.actionSetupView "切换至全局收件箱，按日期排序显示会话，激活未读技术栏和新&quot;间&quot;栏（推荐）.">
+<!ENTITY assistant.actionSetupViewDefaults "对所有文件夹使用自定义排序设置.">
 <!ENTITY assistant.actionEnsureMessagePaneVisible "请确认邮件面板可见。">
 <!ENTITY assistant.settings2 "如果需要再次调整其他设置，可以从本插件的选项页中“高级”栏目中访问本设置向导">
 <!ENTITY feedback.message "您已经使用Thunderbird Conversations相当长的一段时间了。您愿意告我们您的想法吗？我们迫切希望听到您的建议！">
 <!ENTITY feedback.no "不，谢谢">
 <!ENTITY feedback.yes "反馈意见">
 <!ENTITY feedback.pageTitle "我的意见">
+<!ENTITY indexing.p1 "已尝试设置Thunderbird Conversations以获得最佳体验，但由于存在过多需重新创建索引的邮件，可能导致Thunderbird崩溃.">
+<!ENTITY indexing.p2 "如果有超巨量的邮件，请从配置目录中删除<tt>global-message-db.sqlite</tt>文件（请看下方的链接）.">
+<!ENTITY indexing.p3 "是否有大量带附件的邮件？除非首次安装的Thunderbird版本为3.3 Alpha1或以后，这些附件将不会显示在会话视图中。因此需要重新为这些带附件的邮件重新建立索引。最简单的办法是阐述配置目录中的<tt>global-message-db.sqlite</tt> 文件.">
+<!ENTITY indexing.p4 "你是Mozilla开发者？对于Bugzilla发出的邮件，我们可以替换发送地址，例如将bugzilla-daemon@mozilla.org替换为X-Bugzilla-Who Header的取值。为激活此功能需要对所有相关邮件重新建立索引。如果仅需针对新收到的Bug邮件使用此功能，则可以忽略本消息。否则，建议删除配置文件夹中的<tt>global-messages-db.sqlite</tt>.">
+<!ENTITY indexing.p5 "有两种情况可供选择.">
+<!ENTITY indexing.moreInfo "关于配置目录的更多信息.">
+<!ENTITY indexing.t1 "The tl;dr version">
+<!ENTITY indexing.t2 "更多信息">
+<!ENTITY indexing.title "<span class='orange'>索引</span>问题">
+<!ENTITY indexing.pageTitle "索引警告">
 <!ENTITY stub.loading "加载中……">
 <!ENTITY stub.trash.tooltip "删除此次会话">
 <!ENTITY stub.archive.tooltip "将此次会话进行归档">
+<!ENTITY stub.forward.tooltip "转发此会话">
+<!ENTITY stub.print.tooltip "打印此会话">
 <!ENTITY stub.junk.tooltip "将此邮件标记为垃圾邮件">
 <!ENTITY stub.expand.tooltip "展开/折叠所有邮件">
 <!ENTITY stub.read.tooltip "将所有邮件标记为已读/未读">
+<!ENTITY stub.detach.tooltip2 "在新标签页中显示会话">
+<!ENTITY stub.menu.tooltip "会话动作">

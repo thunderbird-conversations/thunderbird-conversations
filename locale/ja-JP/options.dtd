@@ -6,6 +6,8 @@
 
 
 
+
+
 -->
 <!ENTITY window.title "Thunderbird Conversations オプション">
 <!ENTITY title.message_display "メッセージ表示">
@@ -22,4 +24,7 @@
 <!ENTITY option.assistant "設定アシスタントを起動する">
 <!ENTITY title.advanced_display "スレッドビュー">
 <!ENTITY option.no_friendly_date "メッセージリストと同じ &quot;標準の&quot; 日付表記を使用する">
-<!ENTITY option.monospaced_senders2 "これらのアドレス/メーリングリストからのメッセージは等幅フォントで表示されます (半角カンマ区切り)">
+<!ENTITY option.monospaced_senders2 "以下のアドレス/メーリングリストからのメッセージを等幅フォントで表示する (半角カンマ区切り)">
+<!ENTITY option.tweak_bodies "メッセージ本文のフォントを外側と調和するように調整する (おすすめ, 要再起動)">
+<!ENTITY option.tweak_chrome "スレッドのフォントサイズを縮小する (おすすめ, 要再起動)">
+<!ENTITY option.add_embeds "さまざまなサービス (YouTube など) のリンクを検出してインライン表示する">

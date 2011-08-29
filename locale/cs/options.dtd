@@ -1,0 +1,19 @@
+<!ENTITY window.title "Nastavení Thunderbird Conversations">
+<!ENTITY title.message_display "Zobrazení zpráv">
+<!ENTITY option.expand_who "Při otevření rozbalit:">
+<!ENTITY option.expand_auto2 "automaticky">
+<!ENTITY option.expand_auto2.tooltip "Pokud je vlákno sbalené, rozbalit všechny nepřečtené, nebo poslední zprávu. Pokud je rozbalené, rozbalit pouze zprávu vybranou v seznamu zpráv.">
+<!ENTITY option.expand_none "žádné zprávy">
+<!ENTITY option.expand_all "všechny zprávy">
+<!ENTITY title.quoting "Citace">
+<!ENTITY option.hide_longer_than "Skrýt citovaný text delší než">
+<!ENTITY option.lines "řádek">
+<!ENTITY title.advanced "Pokročilé">
+<!ENTITY title.assistant "Pomocník s nastavením">
+<!ENTITY option.assistant "Spustit pomocníka s nastavením">
+<!ENTITY title.advanced_display "Zobrazení konverzací">
+<!ENTITY option.no_friendly_date "&quot;Nepolidšťovat&quot; datování zpráv.">
+<!ENTITY option.monospaced_senders2 "Zprávy z následujících adres/poštovních konferencí budou zobrazeny písmem s pevnou šířkou. (Adresy oddělujte čárkami.)">
+<!ENTITY option.tweak_bodies "Upravit písma v těle zprávy, aby ladila s vnějšími písmy (doporučeno, vyžaduje restart).">
+<!ENTITY option.tweak_chrome "Zmenšit velikost písma konverzací (doporučeno, vyžaduje restart).">
+<!ENTITY option.add_embeds "Rozpoznávat odkazy na různé služby (např. YouTube) a zobrazovat je v e-mailech.">

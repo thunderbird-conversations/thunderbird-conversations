@@ -34,8 +34,10 @@
 <!ENTITY stub.loading "Chargement…">
 <!ENTITY stub.trash.tooltip "Supprimer cette conversation">
 <!ENTITY stub.archive.tooltip "Archiver cette conversation">
+<!ENTITY stub.forward.tooltip "Transférer cette conversations">
 <!ENTITY stub.print.tooltip "Imprimer cette conversation">
 <!ENTITY stub.junk.tooltip "Placer ce message dans les indésirables">
 <!ENTITY stub.expand.tooltip "Développer/replier tous les messages">
 <!ENTITY stub.read.tooltip "Basculer pour tous les messages entre lus et non-lus">
 <!ENTITY stub.detach.tooltip2 "Afficher cette conversation dans un nouvel onglet">
+<!ENTITY stub.menu.tooltip "Actions de Conversations">

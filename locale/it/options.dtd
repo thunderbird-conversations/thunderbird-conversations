@@ -18,3 +18,6 @@
 <!ENTITY title.advanced_display "Aspetto delle discussioni">
 <!ENTITY option.no_friendly_date "Utilizza date normali, come nella lista dei messaggi">
 <!ENTITY option.monospaced_senders2 "È possibile utilizzare i caratteri a larghezza fissa per i messaggi provenienti da determinati indirizzi e-mail aggiungendoli qui sotto (separati con una virgola)">
+<!ENTITY option.tweak_bodies "Modifica i caratteri nel corpo dei messaggi per renderli compatibili con i caratteri esterni (raccomandato, riavvio necessario)">
+<!ENTITY option.tweak_chrome "Ridimensiona i caratteri affinché coincidano con quelli nella sezione conversazione (raccomandato, riavvio necessario)">
+<!ENTITY option.add_embeds "Rileva i link a vari servizi (es: YouTube) nelle e-mail e visualizzali in linea">

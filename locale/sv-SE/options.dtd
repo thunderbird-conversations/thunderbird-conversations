@@ -8,6 +8,8 @@
 
 
 
+
+
 -->
 <!ENTITY window.title "Inställningar för Thunderbird Conversations">
 <!ENTITY title.message_display "Meddelandevyn">
@@ -25,3 +27,6 @@
 <!ENTITY title.advanced_display "Konversationsvyn">
 <!ENTITY option.no_friendly_date "Använd &quot;normala&quot; datum, precis som i meddelandelistan">
 <!ENTITY option.monospaced_senders2 "Meddelanden från dessa adresser/e-postlistor skall visas i enbreddstypsnitt (avgränsa med kommatecken)">
+<!ENTITY option.tweak_bodies "Ställ in typsnitten i meddelandebrödtexterna så att de stämmer överens med de yttre typsnitten (rekommenderas, kräver omstart).">
+<!ENTITY option.tweak_chrome "Skala ner typsnittsstorleken konversationernas chrome (rekommenderas, kräver omstart).">
+<!ENTITY option.add_embeds "Identifiera länkar till olika tjänster (t.ex. YouTube) i meddelanden och visa dem infogade.">

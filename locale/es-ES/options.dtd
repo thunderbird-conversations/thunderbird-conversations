@@ -14,3 +14,6 @@
 <!ENTITY title.advanced_display "Vista de conversación">
 <!ENTITY option.no_friendly_date "Usar fechas &quot;normales&quot; como en la lista de mensajes">
 <!ENTITY option.monospaced_senders2 "Los mensajes de estas direcciones/listas de correo deben mostrarse en fuentes monoespacio (separados por comas)">
+<!ENTITY option.tweak_bodies "Ajustar las fuentes del cuerpo del mensaje para hacerlas consistentes con el resto de fuentes (recomendado, requiere reiniciar).">
+<!ENTITY option.tweak_chrome "Reducir el tamaño de la fuente para el apartado de conversación (recomendado, requiere reiniciar).">
+<!ENTITY option.add_embeds "Detectar enlaces a servicios varios (como YouTube) en correos, y verlos en línea.">

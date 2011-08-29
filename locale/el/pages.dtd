@@ -34,8 +34,10 @@
 <!ENTITY stub.loading "Γίνεται φόρτωση...">
 <!ENTITY stub.trash.tooltip "Διαγραφή της συνομιλίας">
 <!ENTITY stub.archive.tooltip "Αρχειοθέτηση της συνομιλίας">
+<!ENTITY stub.forward.tooltip "Προώθηση συζήτησης">
 <!ENTITY stub.print.tooltip "Εκτύπωση συνομιλίας">
 <!ENTITY stub.junk.tooltip "Μεταφορά μηνύματος στα ανεπιθύμητα">
 <!ENTITY stub.expand.tooltip "Ανάπτυξη/σύμπτυξη όλων των μηνυμάτων">
 <!ENTITY stub.read.tooltip "Εναλλαγή σημείωσης αναγνωσμένων/μη αναγνωσμένων για όλα τα μηνύματα">
 <!ENTITY stub.detach.tooltip2 "Προβολή συνομιλίας σε νέα καρτέλα">
+<!ENTITY stub.menu.tooltip "Ενέργειες συζήτησης">

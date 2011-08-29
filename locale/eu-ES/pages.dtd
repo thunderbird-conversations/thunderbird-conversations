@@ -1,0 +1,43 @@
+<!ENTITY assistant.title "Lehen abiarazpeneko laguntzailea">
+<!ENTITY assistant.intro "Kaixo, hau <strong>Thunderbird Conversations</strong> da!">
+<!ENTITY assistant.p1 "Zure bizitza errazteko asmoz, laguntzaile honek Thunderbird moldatuko dizu erabilerarik egokiena ziurtatzeko. Ez dugu nahi zu atsekabeturik sentitzea!">
+<!ENTITY assistant.p2 "Moldaketa guztiak itzulgarriak dira, beraz ez larritu: ez bazaizu Thunderbird Conversations atsegin, atzera botako ditugu moldaketa guztiak gehigarria kentzen duzunean.">
+<!ENTITY assistant.p3 "Honek bere denbora har dezake. Leihoa ixtera itxaron dezakezu edo zuk zeuk itxi, eta aurrerapena ikuskatu Tresnak&gt; jarduera-kudeatzailea aukeratuz.">
+<!ENTITY assistant.working "Lanean...">
+<!ENTITY assistant.review "Berrikusi aldaketak">
+<!ENTITY assistant.apply "Aplikatu aldaketak">
+<!ENTITY assistant.settings "Aldaketa batzuk nahitaezkoak dira Thunderbird Conversations ondo exekutatzeko. Beste batzuk oso gomendatuak, eta batzuk aukerakoak.">
+<!ENTITY assistant.actionEnableGloda "Bilaketa orokorra eta indexatzailea gaituak egon behar dute.">
+<!ENTITY assistant.actionReindexAttachments "Berrindexatu eranskinak duten mezu guztiak eta mozilla bugak.">
+<!ENTITY assistant.actionDontExpand "Mezuen zerrendan, ez zabaldu mezu irakurri gabeak dituzten hariak.">
+<!ENTITY assistant.actionAttachmentsInline "Ez erakutsi eranskinak barnean(<strong>oso</strong> gomendatua).">
+<!ENTITY assistant.actionOfflineDownload "Lineaz kanpoko sarrera eta bidalitakoen karpetak sinkronizatuak (<strong>oso</strong> gomendatua).">
+<!ENTITY assistant.actionUnifiedInboxSearchesSent "Elkartutako karpetak bidalitakoetan ere bilatzen du(<strong>oso</strong> gomendatua).">
+<!ENTITY assistant.actionSetupView "Aldatu sarrera globala, erakutsi hariak, dataz ordenatu,gaitu irakurri gabeen zutabea eta zutabe berria &quot;Parte-hartzaileak&quot; sartu (<strong>oso</strong> gomendatua).">
+<!ENTITY assistant.actionSetupViewDefaults "Erabili ordenatze aukera pertsonalizatu hauek karpeta guztietan.">
+<!ENTITY assistant.actionEnsureMessagePaneVisible "Ziurtatu mezuen panela ikusgai dagoela.">
+<!ENTITY assistant.settings2 "Gerora aukera gehiago gaitu nahi izanez gero, laguntzaile hau abiarazi ahal duzu gehigarrien kudeatzaileko aukeretatik, &quot;Aurreratuak&quot; atalean.">
+<!ENTITY feedback.message "Denboraldi batez Thunderbird Conversations erabiltzen ari zara, gehigarriari buruz duzun iritzia ematerik? oso pozik jasoko genuke zuk esateko daukazun oro!">
+<!ENTITY feedback.no "Ez, eskerrik asko">
+<!ENTITY feedback.yes "Utzi iritzia">
+<!ENTITY feedback.pageTitle "Iritzi jasotzea">
+<!ENTITY indexing.p1 "Zuri ahalik eta bizipen hoberena emateko saiatu gara thunderbird Corversation konfiguratzen, baina badaude hainbat mezu indexatzerakoan Thunderbird kraskatu dezaketenak.">
+<!ENTITY indexing.p2 "Bugmail postak ez diren posta kopuru izugarria badaukazu, ezabatu <tt>global-message-db.sqlite</tt> zure profil-karpetan (ikus azpiko lotura).">
+<!ENTITY indexing.p3 "Eranskinak dituzten mezu ugari dituzu? Zure lehen thunderbird bertsioa ez bada Thunderbird 3.3 alpha1edo beranduagokoa, eranskin hauek ez dira ikusiko hizketaldi eran. Eranskinak dituzten mezu guztiak berriz indexatu behar ditugu. hau lortzeko erarik errazena <tt>global-messages-db.sqlite</tt> artxiboa zure profil-karpetan ezabatzea da.">
+<!ENTITY indexing.p4 "Mozillatarra zara? Bugzillako postarentzat tratamendu berezia daukagu, zeinetan bidaltzailea, hau da, bugzilla-daemon@mozilla.org, X-Bugzilla-Who goiburukoaren balioarekin ordezkatzen dugun. Beharbada bugmail mordoa izango duzu eta hori guztia berrindexatu behar dugu funtzionaltasuna gaitzeko. Ez badizu axola funtzionaltasuna bugmail berrientzako soilik gaitzea, besterik gabe alboratu mezu hau. Bestela, <tt>global-message-db.sqlite</tt> fitxategia ezabatu nahiko duzu zure profil-karpetan.">
+<!ENTITY indexing.p5 "Zu azpiko bi egoera hauen artean zaude.">
+<!ENTITY indexing.moreInfo "Informazio gehiago profil karpetan.">
+<!ENTITY indexing.t1 "The tl;dr version">
+<!ENTITY indexing.t2 "Zehaztasun gehiagorekin">
+<!ENTITY indexing.title "<span class='orange'>Indexatze</span> arazoak">
+<!ENTITY indexing.pageTitle "Indexatze oharrak">
+<!ENTITY stub.loading "Kargatzen...">
+<!ENTITY stub.trash.tooltip "Ezabatu hizketaldi hau">
+<!ENTITY stub.archive.tooltip "Artxibatu hizketaldi hau">
+<!ENTITY stub.forward.tooltip "Aurrera hizketaldi hau">
+<!ENTITY stub.print.tooltip "Inprimatu hizketaldi hau">
+<!ENTITY stub.junk.tooltip "Mezu hau zabor-postara">
+<!ENTITY stub.expand.tooltip "Zabaldu/Tolestu mezu guztiak">
+<!ENTITY stub.read.tooltip "Aldatu irakurrita/irakurri gabe mezu guztiak">
+<!ENTITY stub.detach.tooltip2 "Ikusi hizketaldi hau fitxa berrian">
+<!ENTITY stub.menu.tooltip "Hizketaldi ekintzak">

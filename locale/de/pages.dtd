@@ -34,8 +34,10 @@
 <!ENTITY stub.loading "Lade...">
 <!ENTITY stub.trash.tooltip "Lösche diese Konversation">
 <!ENTITY stub.archive.tooltip "Archiviere diese Konversation">
+<!ENTITY stub.forward.tooltip "Diese Konversation weiterleiten">
 <!ENTITY stub.print.tooltip "Drucke diese Konversation">
 <!ENTITY stub.junk.tooltip "Markiere diese Nachricht als Spam">
 <!ENTITY stub.expand.tooltip "Alle Nachrichten aus-/einklappen">
 <!ENTITY stub.read.tooltip "Alle Nachrichten als un-/gelesen markieren">
 <!ENTITY stub.detach.tooltip2 "Zeige diese Konversation im neuem Tab">
+<!ENTITY stub.menu.tooltip "Conversation actions">
