@@ -38,7 +38,7 @@
 }
 
 .quickReply ul.noPad {
-  padding-right: 0;
+  padding-right: 0 !important;
 }
 
 .quickReply ul.inputs li {
@@ -67,7 +67,7 @@
 }
 
 .quickReply ul.inputs li.invisible {
-  width: 0px;
+  width: 0px !important;
   opacity: 0;
 }
 
