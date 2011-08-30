@@ -445,6 +445,7 @@ a img {
 
 .message.collapsed:last-child {
   border-bottom: 1px solid #bebebe;
+  margin-bottom: 10px;
 }
 
 .message.collapsed .to, 
@@ -742,6 +743,12 @@ ul.special-tags img {
 
 .star.starred {
   background-image: url(chrome://conversations/content/i/star.png);
+}
+
+/* bottom links: forward this conversation, print this conversation */
+.bottom-links {
+  text-align: right;
+  padding: 0 15px 10px 10px;
 }
 
 /* for printing */

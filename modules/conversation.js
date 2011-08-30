@@ -1205,7 +1205,6 @@ Conversation.prototype = {
     let html = "Here's a conversation I thought you might find interesting!"+hr;
     let messagesHtml = [m.exportAsHtml() for each ({ message: m } in this.messages)];
     html += "<div style=\"font-family: sans-serif !important;\">"+messagesHtml.join(hr)+"</div>";
-    Log.debug("\n", html);
     return html;
   },
 }

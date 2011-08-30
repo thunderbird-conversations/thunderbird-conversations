@@ -358,17 +358,23 @@
     }
 
     function forwardConversation(event) {
-      let fields = Cc["@mozilla.org/messengercompose/composefields;1"]
-                      .createInstance(Components.interfaces.nsIMsgCompFields);
-      fields.characterSet = "UTF-8";
-      fields.bodyIsAsciiOnly = false;
-      fields.forcePlainText = false;
-      fields.body = Conversations.currentConversation.exportAsHtml();
-      let params = Cc["@mozilla.org/messengercompose/composeparams;1"]
-                      .createInstance(Components.interfaces.nsIMsgComposeParams);
-      params.format = Components.interfaces.nsIMsgCompFormat.HTML;
-      params.composeFields = fields;
-      return MailServices.compose.OpenComposeWindowWithParams(null, params);
+      let conv = Conversations.currentConversation;
+      conv._runOnceAfterNSignals(function () {
+        let fields = Cc["@mozilla.org/messengercompose/composefields;1"]
+                        .createInstance(Components.interfaces.nsIMsgCompFields);
+        fields.characterSet = "UTF-8";
+        fields.bodyIsAsciiOnly = false;
+        fields.forcePlainText = false;
+        fields.body = Conversations.currentConversation.exportAsHtml();
+        let params = Cc["@mozilla.org/messengercompose/composeparams;1"]
+                        .createInstance(Components.interfaces.nsIMsgComposeParams);
+        params.format = Components.interfaces.nsIMsgCompFormat.HTML;
+        params.composeFields = fields;
+        return MailServices.compose.OpenComposeWindowWithParams(null, params);
+      }, conv.messages.length);
+      for each (let { message } in conv.messages) {
+        message.expand();
+      }
     }
 
     let oldPrint = window.print;
@@ -897,9 +903,6 @@
           <button title="&stub.archive.tooltip;" onclick="archiveToolbar(event);">
             <span class="archive"></span>
           </button>
-          <button title="&stub.menu.tooltip;" onclick="showConversationMenu(event); event.stopPropagation();">
-            <span class="conversation-menu-button"></span>
-          </button>
           <button title="&stub.junk.tooltip;" class="junk-button" onclick="junkConversation(event);">
             <span class="junk"></span>
           </button>
@@ -918,31 +921,13 @@
     </div>
     <ul id="messageList">
     </ul>
-    <div id="conversationMenuWrapper" class="menu">
-      <div class="conversationMenu dropDown">
-        <ul>
-          <li class="action-archive">
-            <a href="javascript:" onclick="archiveConversation(event);">
-              &stub.archive.tooltip;
-            </a>
-          </li>
-          <li class="action-delete">
-            <a href="javascript:" onclick="deleteConversation(event);">
-              &stub.trash.tooltip;
-            </a>
-          </li>
-          <li class="action-forward">
-            <a href="javascript:" onclick="forwardConversation(event);">
-              &stub.forward.tooltip;
-            </a>
-          </li>
-          <li class="action-print">
-            <a href="javascript:" onclick="printConversation(event);">
-              &stub.print.tooltip;
-            </a>
-          </li>
-        </ul>
-      </div>
+    <div class="bottom-links">
+      <a class="link" href="javascript:" onclick="forwardConversation(event);">
+        &stub.forward.tooltip;
+      </a> –
+      <a class="link" href="javascript:" onclick="printConversation(event);">
+        &stub.print.tooltip;
+      </a>
     </div>
   </div>
 </body>
