@@ -421,9 +421,16 @@ MonkeyPatch.prototype = {
               scrollMode,
               ++window.Conversations.counter
             );
+            if (window.Conversations.currentConversation)
+              Log.debug("Current conversation is", Colors.red,
+                window.Conversations.currentConversation.counter, Colors.default);
+            else
+              Log.debug("First conversation");
             freshConversation.outputInto(htmlpane, function (aConversation) {
-              if (aConversation.messages.length == 0)
+              if (aConversation.messages.length == 0) {
+                Log.debug(Colors.red, "0 messages in aConversation");
                 return;
+              }
               // So we've been promoted to be the new conversation! Remember
               //  that and update the currently selected URIs to prevent further
               //  reflows.
@@ -449,6 +456,15 @@ MonkeyPatch.prototype = {
                 && (window.Conversations.currentConversation.counter != aConversation.counter);
               let isDifferentConversation = !window.Conversations.currentConversation
                   || (window.Conversations.currentConversation.counter != aConversation.counter);
+              let prevCounter = window.Conversations.currentConversation
+                ? window.Conversations.currentConversation.counter
+                : 0;
+              Log.debug("Going from ", Colors.red,
+                prevCounter,
+                "\u2192",
+                aConversation.counter,
+                "["+isDifferentConversation+"]",
+                Colors.default);
               // Make sure we have a global root --> conversation --> persistent
               //  query chain to prevent the Conversation object (and its inner
               //  query) to be collected. The Conversation keeps watching the
@@ -543,7 +559,7 @@ MonkeyPatch.prototype = {
         try {
           // What a nice pun! If bug 320550 was fixed, I could print
           // \u2633\u1f426 and that would be very smart.
-          dump("\n"+Colors.red+"\u2633 New Conversation"+Colors.default+"\n");
+          // dump("\n"+Colors.red+"\u2633 New Conversation"+Colors.default+"\n");
           if (!this.active)
             return true;
           window.ClearPendingReadTimer();
