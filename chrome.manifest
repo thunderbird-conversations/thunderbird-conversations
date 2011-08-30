@@ -10,7 +10,7 @@ overlay chrome://messenger/content/messenger.xul chrome://conversations/content/
 locale conversations en-US locale/en-US/
 #locale conversations es-ES locale/es-ES/
 #locale conversations eu-ES locale/eu-ES/
-locale conversations fr locale/fr/
+#locale conversations fr locale/fr/
 #locale conversations he-IL locale/he-IL/
 #locale conversations hu-HU locale/hu-HU/
 #locale conversations it locale/it/

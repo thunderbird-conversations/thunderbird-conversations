@@ -1439,7 +1439,7 @@ Message.prototype = {
   exportAsHtml: function _Message_exportAsHtml() {
     let author = escapeHtml(this._contacts[0]._name);
     let date = new Date(this._msgHdr.date/1000).toLocaleString("%x");
-    // We try to convert the bodies to plain text, to enhance the readibility in
+    // We try to convert the bodies to plain text, to enhance the readability in
     // the forwarded conversation. Note: <pre> tags are not converted properly
     // it seems, need to investigate...
     let body = this.iframe

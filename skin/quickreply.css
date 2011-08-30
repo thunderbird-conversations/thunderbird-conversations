@@ -27,7 +27,7 @@
 .quickReply ul.inputs {
   list-style-type: none;
   overflow: hidden;
-  padding-right: 140px;
+  padding-right: 140px; /* overridden in stub.xhtml (localized) */
 
   margin: -10px -5px;
   
@@ -58,7 +58,7 @@
   width: auto;
   position: absolute;
   right: 10px;
-  width: 140px;
+  width: 140px; /* overridden in stub.xhtml (localized) */
   overflow: hidden;
 }
 
