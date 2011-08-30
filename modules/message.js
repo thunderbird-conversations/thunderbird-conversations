@@ -706,7 +706,10 @@ Message.prototype = {
             ["mailed-by", "x-mailer", "mailer", "date", "subject", "user-agent"];
           for each (let h in interestingHeaders) {
             if (aMimeMsg.has(h))
-              data.extraLines.push({ key: h, value: aMimeMsg.get(h) });
+              data.extraLines.push({
+                key: h,
+                value: escapeHtml(aMimeMsg.get(h).replace(this.RE_SNIPPET, "")),
+              });
           }
           let buildContactObjects = function (nameEmails)
             nameEmails.map(function (x)
