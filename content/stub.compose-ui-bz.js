@@ -220,7 +220,7 @@ BzComposeSession.prototype = {
               setTimeout(function () {
                 $(".quickReplyHeader").hide();
               }, 1000);
-              collapseQuickReply();
+              onDiscard();
               $("textarea").val("");
               // We can do this because we're in the right if-block.
               gComposeSession = null;
