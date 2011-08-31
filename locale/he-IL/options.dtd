@@ -1,3 +1,9 @@
+<!-- Please open the "Preferences" window and DO check that your text is not too
+     long. This can cause the contents to overflow and be hidden, so make sure
+     everything is displayed properly. 
+
+
+-->
 <!ENTITY window.title "הגדרות של תצוגת שיחה">
 <!ENTITY title.message_display "תצוגת הודעה">
 <!ENTITY option.expand_who "כברירת מחדל, הרחב:‏">
@@ -14,3 +20,6 @@
 <!ENTITY title.advanced_display "תצוגת שיחה">
 <!ENTITY option.no_friendly_date "תשתמש בתאריכים &quot;רגילים&quot;, כמו ברשימת ההודעות">
 <!ENTITY option.monospaced_senders2 "הודעות מכתובות/תפוצות אלו יוצגו בגופן רוחב-קבוע (הפרד באמצעות פסיקים)‏">
+<!ENTITY option.tweak_bodies "Tweak the fonts in the message bodies to make them consistent with the outer font (recommended, requires restart).">
+<!ENTITY option.tweak_chrome "Scale down the font size for the conversation chrome (recommended, requires restart).">
+<!ENTITY option.add_embeds "Detect links to various services (e.g. YouTube) in emails, and view them inline.">

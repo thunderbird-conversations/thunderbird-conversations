@@ -34,8 +34,10 @@
 <!ENTITY stub.loading "Wczytywanie…">
 <!ENTITY stub.trash.tooltip "Usuń konwersację">
 <!ENTITY stub.archive.tooltip "Archiwizuj konwersację">
+<!ENTITY stub.forward.tooltip "Prześlij dalej konwersację">
 <!ENTITY stub.print.tooltip "Drukuj konwersację">
 <!ENTITY stub.junk.tooltip "Oznacz konwersację jako niechcianą">
 <!ENTITY stub.expand.tooltip "Rozwiń/zwiń wszystkie wiadomości">
 <!ENTITY stub.read.tooltip "Oznacz wszystkie wiadomości jako przeczytane/nieprzeczytane">
 <!ENTITY stub.detach.tooltip2 "Wyświetl konwersację w nowej karcie">
+<!ENTITY stub.menu.tooltip "Czynności konwersacji">

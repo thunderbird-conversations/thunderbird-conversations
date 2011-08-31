@@ -1,0 +1,43 @@
+<!ENTITY assistant.title "Første start assistent">
+<!ENTITY assistant.intro "Hej, dette er <strong>Thunderbird Conversations</strong>!">
+<!ENTITY assistant.p1 "For at gøre dit liv lidt nemmere, vil denne assistent tilpasse din opsætning af Thunderbird for at sikre du vil opnå den bedste oplevelse. Vi vil ikke have at du bliver skuffet!">
+<!ENTITY assistant.p2 "Tilpasningerne vi vil lave kan alle fortrydes, så du skal ikke være urolig: hvis du ikke nyder Thunderbird Conversations, kan vi gendanne alle indstillinger vi har ændret så snart du afinstallerer denne udvidelse.">
+<!ENTITY assistant.p3 "Dette vil tage et stykke tid. Du kan enten vente på dette vindue lukker af sig selv, eller lukke vinduet og holde øje med fremgangen ved at klikke på menuen Funktioner &gt; Aktivitet.">
+<!ENTITY assistant.working "Arbejder...">
+<!ENTITY assistant.review "Gennemse ændringer">
+<!ENTITY assistant.apply "Anvend ændringer">
+<!ENTITY assistant.settings "Nogle indstillinger er obligatoriske for at Thunderbird Conversations kan fungere ordenligt. Nogle kan stærkt anbefales, mens andre er valgfrie.">
+<!ENTITY assistant.actionEnableGloda "Sørg for global søgning og indeksering er aktiveret.">
+<!ENTITY assistant.actionReindexAttachments "Genindekser meddelelser der indeholder vedhæftede filer samt alle Mozilla bugmail.">
+<!ENTITY assistant.actionDontExpand "Udvid ikke tråde der indeholder ulæste meddelelser på meddelelseslisten.">
+<!ENTITY assistant.actionAttachmentsInline "Vis ikke vedhæftede filer i meddelelserne (<strong>anbefales</strong> kraftigt).">
+<!ENTITY assistant.actionOfflineDownload "Mapperne Indbakke og Sendte er synkroniseret til offline-lagring (<strong>anbefales</strong> kraftigt).">
+<!ENTITY assistant.actionUnifiedInboxSearchesSent "Den Samlede Indbakke søger også i mappen Sendt (<strong>anbefales</strong> kraftigt).">
+<!ENTITY assistant.actionSetupView "Skift til Global Indbakke, gør visningen til trådet, sorter efter dato, aktiver kolonnen &quot;Ulæste i tråden&quot; og den nye kolonne &quot;Imellem&quot; (<strong>anbefales</strong> kraftigt).">
+<!ENTITY assistant.actionSetupViewDefaults "Brug disse personlige sorteringsindstillinger for alle mapper.">
+<!ENTITY assistant.actionEnsureMessagePaneVisible "Sørg for meddelelsespanelet er synligt.">
+<!ENTITY assistant.settings2 "Ønsker du at aktivere flere indstillinger senere kan du altid tilgå denne assistent igennem tilføjelsens indstillingsknap under &quot;Avanceret&quot;.">
+<!ENTITY feedback.message "Du har nu kørt med Thunderbird Conversations i et stykke tid. Er du interesseret i at fortælle os om hvad du syntes om tilføjelsen? Vi ville elske at høre dine kommentarer!">
+<!ENTITY feedback.no "Nej tak">
+<!ENTITY feedback.yes "Giv feedback">
+<!ENTITY feedback.pageTitle "Giv feedback">
+<!ENTITY indexing.p1 "Vi har prøvet på at indstille Thunderbird Conversations til at give dig den bedste oplevelse, men du har så mange meddelelser at genindeksering vil tvinge Thunderbird til at lukke.">
+<!ENTITY indexing.p2 "Hvis du har et sindssygt højt antal af ikke-bugmail meddelelser, så kan du slette filen <tt>global-message-db.sqlite</tt> i din profilmappe (se link neden under).">
+<!ENTITY indexing.p3 "Har du et stort antal af vedhæftede filer i dine meddelelser? Med mindre den første version af Thunderbird du nogensinde har prøvet er Thunderbird 3.3 alpha 1 eller senere, vil disse vedhæftede filer ikke blive vist i samtalevisningen. Vi er nødt til at genindeksere alle meddelelser med vedhæftede filer. Den nemmeste måde for dig er at slette filen <tt>global-messages-db.sqlite</tt> i din profilmappe.">
+<!ENTITY indexing.p4 "Er du en Mozillianer? Vi har en smart speciel-sag for Bugzilla mails, hvor vi erstatter afsenderen, f.eks. bugzilla-daemon@mozilla.org med værdien af X-Bugzilla-Who headeren. Du har højst sandsynligt alt for mange bugmails, og vi er nødt til at genindeksere alle sammen for at aktivere denne funktion. Hvis du kan leve med at denne funktion kun er aktiveret for nye bugmails, så glem alt om denne meddelelse, ellers vil du måske slette filen <tt>global-messages-db.sqlite</tt> i din profilmappe.">
+<!ENTITY indexing.p5 "Du er i en af de to situationer neden under.">
+<!ENTITY indexing.moreInfo "Mere information omkring profilmappen">
+<!ENTITY indexing.t1 "tl;dr Versionen">
+<!ENTITY indexing.t2 "I flere detaljer">
+<!ENTITY indexing.title "<span class='orange'>Indekserings</span>problem">
+<!ENTITY indexing.pageTitle "Indekseringsadvarsel">
+<!ENTITY stub.loading "Indlæser...">
+<!ENTITY stub.trash.tooltip "Slet denne samtale">
+<!ENTITY stub.archive.tooltip "Arkiver denne samtale">
+<!ENTITY stub.forward.tooltip "Videresend denne samtale">
+<!ENTITY stub.print.tooltip "Udskriv denne samtale">
+<!ENTITY stub.junk.tooltip "Marker denne meddelelse som spam">
+<!ENTITY stub.expand.tooltip "Udvid/sammenfold alle meddelelser">
+<!ENTITY stub.read.tooltip "Marker som læst/ulæst">
+<!ENTITY stub.detach.tooltip2 "Vis denne samtale i et nyt faneblad">
+<!ENTITY stub.menu.tooltip "Handlinger for samtale">

@@ -1,0 +1,25 @@
+<!-- Please open the "Preferences" window and DO check that your text is not too
+     long. This can cause the contents to overflow and be hidden, so make sure
+     everything is displayed properly. 
+
+
+-->
+<!ENTITY window.title "Thunderbird Conversations Indstillinger">
+<!ENTITY title.message_display "Meddelelsesvisning">
+<!ENTITY option.expand_who "Som standard, udvid:">
+<!ENTITY option.expand_auto2 "Automatisk">
+<!ENTITY option.expand_auto2.tooltip "Hvis tråden er sammenfoldet, udvid alle ulæste meddelelser eller den sidste meddelelse. Hvis den er udvidet, udvid kun den valgte meddelelse i meddelelseslisten.">
+<!ENTITY option.expand_none "Ingen meddelelser">
+<!ENTITY option.expand_all "Alle meddelelser">
+<!ENTITY title.quoting "Citering">
+<!ENTITY option.hide_longer_than "Skjul citeret tekst med flere end">
+<!ENTITY option.lines "linier">
+<!ENTITY title.advanced "Avanceret">
+<!ENTITY title.assistant "Opsætningsassistent">
+<!ENTITY option.assistant "Start opsætningsassistenten">
+<!ENTITY title.advanced_display "Samtalevisning">
+<!ENTITY option.no_friendly_date "Brug &quot;normale&quot; datoer, lige som i meddelelseslisten">
+<!ENTITY option.monospaced_senders2 "Meddelelser fra de adresser/mailinglister skal vises i monospatierede skrifttyper (separer med komma)">
+<!ENTITY option.tweak_bodies "Juster skrifttyperne i meddelelserne for at bringe dem i overensstemmelse med den ydre skrifttype (anbefalet, kræver genstart).">
+<!ENTITY option.tweak_chrome "Reducer skriftstørrelsen for rammen rundt om samtalen (anbefales, kræver genstart).">
+<!ENTITY option.add_embeds "Find links til forskellige tjenester (f.eks. YouTube) i mails og vis dem indlejret.">

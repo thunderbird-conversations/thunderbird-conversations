@@ -1,3 +1,9 @@
+<!-- Please open the "Preferences" window and DO check that your text is not too
+     long. This can cause the contents to overflow and be hidden, so make sure
+     everything is displayed properly. 
+
+
+-->
 <!ENTITY window.title "Thunderbird Conversations – ustawienia">
 <!ENTITY title.message_display "Wyświetlanie wiadomości">
 <!ENTITY option.expand_who "Rozwijanie wiadomości">
@@ -14,3 +20,6 @@
 <!ENTITY title.advanced_display "Wyświetlanie konwersacji">
 <!ENTITY option.no_friendly_date "Użyj „normalnych” dat, takich jak na liście wiadomości">
 <!ENTITY option.monospaced_senders2 "Wiadomości z tych adresów/list wiadomości wyświetlaj czcionką o stałej szerokości (oddzielone przecinkami)">
+<!ENTITY option.tweak_bodies "Poprawiaj czcionki w treść wiadomości, by były spójne z czcionkami zewnętrznymi (zalecane, wymaga restartu).">
+<!ENTITY option.tweak_chrome "Zmniejszaj rozmiaru czcionki dla poprawy wyglądu konwersacji (zalecane, wymaga restartu).">
+<!ENTITY option.add_embeds "Wykrywaj w wiadomościach odnośniki do różnych serwisów, np. YouTube i wyświetlaj je jako wbudowane.">

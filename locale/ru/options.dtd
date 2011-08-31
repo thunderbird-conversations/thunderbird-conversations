@@ -5,6 +5,8 @@
 
 
 
+
+
 -->
 <!ENTITY window.title "Параметры Thunderbird Conversations">
 <!ENTITY title.message_display "Окно сообщений">
@@ -22,3 +24,6 @@
 <!ENTITY title.advanced_display "Окно общения">
 <!ENTITY option.no_friendly_date "Использовать &quot;обычные&quot; даты, как в списке сообщений">
 <!ENTITY option.monospaced_senders2 "Сообщения от этих адресов/списков рассылки следует показывать моноширинными шрифтами (разделяйте имена запятыми)">
+<!ENTITY option.tweak_bodies "Tweak the fonts in the message bodies to make them consistent with the outer font (recommended, requires restart).">
+<!ENTITY option.tweak_chrome "Scale down the font size for the conversation chrome (recommended, requires restart).">
+<!ENTITY option.add_embeds "Detect links to various services (e.g. YouTube) in emails, and view them inline.">

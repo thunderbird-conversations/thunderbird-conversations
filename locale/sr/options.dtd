@@ -1,3 +1,9 @@
+<!-- Please open the "Preferences" window and DO check that your text is not too
+     long. This can cause the contents to overflow and be hidden, so make sure
+     everything is displayed properly. 
+
+
+-->
 <!ENTITY window.title "Thunderbird Conversations - опције">
 <!ENTITY title.message_display "Приказ поруке">
 <!ENTITY option.expand_who "Подразумевано, рашири:">
@@ -14,3 +20,6 @@
 <!ENTITY title.advanced_display "Приказ разговора">
 <!ENTITY option.no_friendly_date "Користи „нормалне” датуме, исто као списак порука">
 <!ENTITY option.monospaced_senders2 "Поруке са ових адреса/спискова за слање требају бити приказане у фонтовима фиксне ширине (одвојеним зарезима)">
+<!ENTITY option.tweak_bodies "Tweak the fonts in the message bodies to make them consistent with the outer font (recommended, requires restart).">
+<!ENTITY option.tweak_chrome "Scale down the font size for the conversation chrome (recommended, requires restart).">
+<!ENTITY option.add_embeds "Detect links to various services (e.g. YouTube) in emails, and view them inline.">

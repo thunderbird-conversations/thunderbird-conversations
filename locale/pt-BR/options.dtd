@@ -1,3 +1,9 @@
+<!-- Please open the "Preferences" window and DO check that your text is not too
+     long. This can cause the contents to overflow and be hidden, so make sure
+     everything is displayed properly. 
+
+
+-->
 <!ENTITY window.title "Opções do Thunderbird Conversations">
 <!ENTITY title.message_display "Exibição de mensagens">
 <!ENTITY option.expand_who "Por padrão, expandir:">
@@ -14,6 +20,6 @@
 <!ENTITY title.advanced_display "Exibição de conversas">
 <!ENTITY option.no_friendly_date "Usar datas &quot;normais&quot;, assim como na lista de mensagens">
 <!ENTITY option.monospaced_senders2 "Mensagens destes endereços/listas de discussão devem ser exibidas com espaçamento fixo (separar com vírgulas)">
-<!ENTITY option.tweak_bodies "Ajustar as fontes no corpo da mensagem para torná-las consistentes com a fonte externa (recomendado, requer reiniciar).">
-<!ENTITY option.tweak_chrome "Reduzir o tamanho da fonte para a conversa chrome (recomendado, requer reiniciar).">
-<!ENTITY option.add_embeds "Detectar links para vários serviços (por exemplo, YouTube) em emails e visualizá-los inline.">
+<!ENTITY option.tweak_bodies "Ajustar as fontes no corpo da mensagem para torná-las consistentes com a fonte externa (recomendado, necessário reiniciar)">
+<!ENTITY option.tweak_chrome "Reduzir o tamanho da fonte dos elementos visuais básicos das conversas (recomendado, necessário reiniciar)">
+<!ENTITY option.add_embeds "Detectar links para vários serviços (por exemplo, YouTube) e visualizá-los nas próprias mensagens">
