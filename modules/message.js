@@ -703,7 +703,7 @@ Message.prototype = {
             extraLines: [],
           };
           let interestingHeaders =
-            ["mailed-by", "x-mailer", "mailer", "date", "subject", "user-agent"];
+            ["mailed-by", "x-mailer", "mailer", "date", "user-agent"];
           for each (let h in interestingHeaders) {
             if (aMimeMsg.has(h))
               data.extraLines.push({
@@ -711,6 +711,10 @@ Message.prototype = {
                 value: escapeHtml(aMimeMsg.get(h).replace(this.RE_SNIPPET, "")),
               });
           }
+          data.extraLines.push({
+            key: "subject",
+            value: this._msgHdr.mime2DecodedSubject,
+          });
           let buildContactObjects = function (nameEmails)
             nameEmails.map(function (x)
               self._conversation._contactManager
