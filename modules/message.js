@@ -904,6 +904,12 @@ Message.prototype = {
       }
     });
     this.register(".quickReply", function (event) {
+      event.stopPropagation();
+    }, { action: "keyup" });
+    this.register(".quickReply", function (event) {
+      event.stopPropagation();
+    }, { action: "keypress" });
+    this.register(".quickReply", function (event) {
       // Ok, so it's actually convenient to register our event listener on the
       //  .quickReply node because we can easily prevent it from bubbling
       //  upwards, but the problem is, if a message is appended at the end of
