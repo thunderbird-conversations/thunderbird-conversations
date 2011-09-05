@@ -1291,7 +1291,7 @@ Message.prototype = {
             }
 
             // Send "msgLoaded" event
-            let msgLoadedAtom = atomService.getAtom("msgLoaded");
+            let msgLoadedAtom = Services.mAtomService.getAtom("msgLoaded");
             self._msgHdr.folder.NotifyPropertyFlagChanged(self._msgHdr, msgLoadedAtom, 0, 1);
 
             self._didStream = true;
