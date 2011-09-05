@@ -100,6 +100,7 @@ function addMsgListener(aMessage) {
 
 let isOSX = ("nsILocalFileMac" in Components.interfaces);
 let isWindows = ("@mozilla.org/windows-registry-key;1" in Components.classes);
+let atomService = Components.classes["@mozilla.org/atom-service;1"].getService(Components.interfaces.nsIAtomService);
 
 function isAccel (event) (isOSX && event.metaKey || event.ctrlKey)
 
@@ -1285,6 +1286,10 @@ Message.prototype = {
             if (false && originalScroll) {
               self._domNode.ownerDocument.documentElement.scrollTop = originalScroll;
             }
+
+            // Send "msgLoaded" event
+            let msgLoadedAtom = atomService.getAtom("msgLoaded");
+            self._msgHdr.folder.NotifyPropertyFlagChanged(self._msgHdr, msgLoadedAtom, 0, 1);
 
             self._didStream = true;
             self._signal();
