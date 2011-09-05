@@ -60,6 +60,10 @@ XPCOMUtils.defineLazyGetter(Services, "mMessenger",
                             function () {
                               return Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
                             });
+XPCOMUtils.defineLazyGetter(Services, "mAtomService",
+                            function() {
+                              return Cc["@mozilla.org/atom-service;1"].getService(Ci.nsIAtomService);
+                            });
 
 const kCharsetFromMetaTag = 9;
 const kCharsetFromChannel = 11;
@@ -98,9 +102,8 @@ function addMsgListener(aMessage) {
   msgListeners[messageId].push(weakPtr);
 }
 
-let isOSX = ("nsILocalFileMac" in Components.interfaces);
-let isWindows = ("@mozilla.org/windows-registry-key;1" in Components.classes);
-let atomService = Components.classes["@mozilla.org/atom-service;1"].getService(Components.interfaces.nsIAtomService);
+let isOSX = ("nsILocalFileMac" in Ci);
+let isWindows = ("@mozilla.org/windows-registry-key;1" in CC);
 
 function isAccel (event) (isOSX && event.metaKey || event.ctrlKey)
 
