@@ -103,7 +103,7 @@ function addMsgListener(aMessage) {
 }
 
 let isOSX = ("nsILocalFileMac" in Ci);
-let isWindows = ("@mozilla.org/windows-registry-key;1" in CC);
+let isWindows = ("@mozilla.org/windows-registry-key;1" in Cc);
 
 function isAccel (event) (isOSX && event.metaKey || event.ctrlKey)
 
