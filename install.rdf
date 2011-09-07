@@ -6,7 +6,7 @@
 
   <Description about="urn:mozilla:install-manifest">
     <em:id>gconversation@xulforum.org</em:id>
-    <em:version>2.1</em:version>
+    <em:version>2.1.1</em:version>
     
     <!-- Target Application this theme can install into, 
         with minimum and maximum supported versions. --> 
@@ -157,7 +157,7 @@ Tak til Jørgen Rasmussen / MozillaDanmark for korrekturlæsning.</em:translator
         <em:description>Rozszerzenie dodaje do Thunderbirda widok konwersacji.</em:description>
         <em:translator>Leszek(teo)Życzkowski</em:translator>
         <em:creator>Jonathan Protzenko</em:creator>
-        <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
+        <em:homepageURL>http://github.com/protz/GMail-Conversation-View/wiki</em:homepageURL>
       </Description>
     </em:localized>
 
@@ -167,8 +167,19 @@ Tak til Jørgen Rasmussen / MozillaDanmark for korrekturlæsning.</em:translator
         <em:name>Thunderbird Conversations</em:name>
         <em:description>Traz o modo de conversa para um Thunderbird perto de você!</em:description>
         <em:creator>Jonathan Protzenko</em:creator>
-        <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
+        <em:homepageURL>http://github.com/protz/GMail-Conversation-View/wiki</em:homepageURL>
         <em:translator>Marcelo Ghelman (ghelman.net), Mauro José da Silva</em:translator>
+      </Description>
+    </em:localized>
+
+    <em:localized>
+      <Description>
+        <em:locale>rm</em:locale>
+        <em:name>Thunderbird ConversationsCopy</em:name>
+        <em:description>Pussibilitescha dad utilisar ina vista da conversaziuns en Thunderbird.</em:description>
+        <em:creator>Jonathan ProtzenkoCopy</em:creator>
+        <em:homepageURL>http://github.com/protz/GMail-Conversation-View/wiki</em:homepageURL>
+        <em:translator>Gion-Andri Cantieni</em:translator>
       </Description>
     </em:localized>
 
