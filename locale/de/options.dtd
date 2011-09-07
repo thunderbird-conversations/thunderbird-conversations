@@ -27,6 +27,6 @@
 <!ENTITY title.advanced_display "Konversationsanzeige">
 <!ENTITY option.no_friendly_date "&quot;Normales&quot; Datum wie in der Nachrichtenliste anzeigen">
 <!ENTITY option.monospaced_senders2 "Nachrichten von dieser Adresse/Mailingliste sollen in unproportionaler Schriftart angezeigt werden (getrennt durch Kommata)">
-<!ENTITY option.tweak_bodies "Tweak the fonts in the message bodies to make them consistent with the outer font (recommended, requires restart).">
-<!ENTITY option.tweak_chrome "Scale down the font size for the conversation chrome (recommended, requires restart).">
-<!ENTITY option.add_embeds "Entdecke Links zu verschieden Services in E-mails (z.B. YouTube) und zeige diese eingebettet.">
+<!ENTITY option.tweak_bodies "Optimiere die Schriften in der Nachrichtenansicht, um die Konsistenz zu den äußeren Schriften herzsutellen (empfohlen, Neustart erforderlich).">
+<!ENTITY option.tweak_chrome "Skaliere die Schriftgröße für die Konversation (empfohlen, Neustart erforderlich).">
+<!ENTITY option.add_embeds "Erkenne Links zu verschiedenen Services in E-mails (z.B. YouTube) und zeige deren Inhalte in der Nachricht eingebettet an.">

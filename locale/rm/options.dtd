@@ -1,0 +1,25 @@
+<!-- Please open the "Preferences" window and DO check that your text is not too
+     long. This can cause the contents to overflow and be hidden, so make sure
+     everything is displayed properly. 
+
+
+-->
+<!ENTITY window.title "Preferenzas da Thunderbird Conversations">
+<!ENTITY title.message_display "Visualisaziun da messadis">
+<!ENTITY option.expand_who "Extender normalmain:">
+<!ENTITY option.expand_auto2 "automatic">
+<!ENTITY option.expand_auto2.tooltip "Sch'in tema è reducì vegnan tut ils messadis nunlegids u almain l'ultim messadi extendids. Sch'il tema è extendì vegn be il messadi tschernì extendì.">
+<!ENTITY option.expand_none "nagin messadi">
+<!ENTITY option.expand_all "tut ils messadis">
+<!ENTITY title.quoting "Citats">
+<!ENTITY option.hide_longer_than "Zuppentar text cità pli lung che">
+<!ENTITY option.lines "lingias">
+<!ENTITY title.advanced "Extendì">
+<!ENTITY title.assistant "Assistent d'installaziun">
+<!ENTITY option.assistant "Aviar l'assistent d'installaziun">
+<!ENTITY title.advanced_display "Visualisaziun da conversaziuns">
+<!ENTITY option.no_friendly_date "Utilisar datas &quot;normalas&quot; sco en la glista da messadis">
+<!ENTITY option.monospaced_senders2 "Messadis da questas adressas/glistas da mail duain vegnir mussadas en scrittiras da largezza fixa (separar las adressas entras commas)">
+<!ENTITY option.tweak_bodies "Optimar las scrittiras dals messadis per las render consistent cun las scrittiras ordadora (recumandà, Thunderbird sto vegnir reavià).">
+<!ENTITY option.tweak_chrome "Reducir la grondezza da scrittira per l'interfatscha da las conversaziuns (recumandà, Thunderbird sto vegnir reavià).">
+<!ENTITY option.add_embeds "Scuvrir colliaziuns a servetschs (p.ex. YouTube) en e-mails ed als visualisar en il messadi.">

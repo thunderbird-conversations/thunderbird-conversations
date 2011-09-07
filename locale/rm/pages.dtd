@@ -1,0 +1,43 @@
+<!ENTITY assistant.title "Assistent d'installaziun">
+<!ENTITY assistant.intro "Hallo, quai è <strong>Thunderbird Conversations</strong>!">
+<!ENTITY assistant.p1 "Quest assistent ta gida tar la configuraziun da Thunderbird per l'utilisaziun da Thunderbird Conversations per che ti pos utilisar tut las funcziuns a moda optimala.">
+<!ENTITY assistant.p2 "Las midadas che l'assistent fa èn tuttas reversiblas: Sche Thunderbird Conversations na ta plascha betg vegnan tut las adattaziuns fatgas revocadas sche ti deinstalleschas l'extensiun.">
+<!ENTITY assistant.p3 "Quai po durar in temp. Ti pos spetgar enfin che la fanestra sa serra automaticamain u pos la serrar sez e contemplar il progress en il menu sut Utensils &gt; Activitads.">
+<!ENTITY assistant.working "Lavurar…">
+<!ENTITY assistant.review "Repassar las midadas">
+<!ENTITY assistant.apply "Exequir las midadas">
+<!ENTITY assistant.settings "Intginas midadas èn obligatoricas per che Thunderbird Conversations po funcziunar correctamain. Autras èn recumandadas urgentamain, ed autras èn opziunalas.">
+<!ENTITY assistant.actionEnableGloda "Controllar che la tschertga globala e l'indexaziun da messadis è activada.">
+<!ENTITY assistant.actionReindexAttachments "Re-indexar messadis che cuntegnan agiuntas e Mozilla bugmails.">
+<!ENTITY assistant.actionDontExpand "En la glista da messadis vegnan temas che cuntegnan messadis nunlegids betg extendids.">
+<!ENTITY assistant.actionAttachmentsInline "Betg mussar agiuntas a moda incorporada (recumandà <strong>urgentamain</strong>).">
+<!ENTITY assistant.actionOfflineDownload "Sincronisar la posta entrada ed l'ordinatur tramess per la memoria offline (recumandà <strong>urgentamain</strong>).">
+<!ENTITY assistant.actionUnifiedInboxSearchesSent "La posta entrada gruppada tschertga era en ils ordinaturs dad e-mails tramess (recumandà <strong>urgentamain</strong>).">
+<!ENTITY assistant.actionSetupView "Midar a la posta entrada globala, mussar ils messadis tenor tema, zavrar tenor data, activar las colonas &quot;nunlegì&quot; e &quot;tranter&quot; (recumandà <strong>urgentamain</strong>).">
+<!ENTITY assistant.actionSetupViewDefaults "Utilisar las preferenzas da zavrar persunalisadas per tut ils ordinaturs.">
+<!ENTITY assistant.actionEnsureMessagePaneVisible "Controllar che la zona da prevista dals messadis è visibla.">
+<!ENTITY assistant.settings2 "Sche ti vuls activar dapli opziuns pli tard, pos ti acceder quest assistent sur las preferenzas dal supplement en la secziun &quot;extendì&quot;.">
+<!ENTITY feedback.message "Ti utiliseschas ussa gia in temps Thunderbird Conversations. Vuls ti ans gidar e dir tge che ti pensas? Nus ans legrain da tes commentaris!">
+<!ENTITY feedback.no "Na, grazia">
+<!ENTITY feedback.yes "Dar in resun">
+<!ENTITY feedback.pageTitle "Resun">
+<!ENTITY indexing.p1 "Nus avain empruvà dad installar Thunderbird Conversations uschia ch'ei funcziuna il meglier tenor nossas experientschas. Ti has dentant talmain blers messadis che reindexar quels chaschunas in collaps da Thunderbird.">
+<!ENTITY indexing.p2 "Sche ti has in grond dumber dad e-mails che n'èn betg bugmail, stizza la datoteca <tt>global-message-db.sqlite</tt> en tes ordinatur da profil (guarda la colliaziun sutvart).">
+<!ENTITY indexing.p3 "Has ti in grond dumber dad e-mails cun agiuntas? Sche l'emprima versiun da Thunderbird era pli veglia che Thunderbird 3.3 alpha1, na vegnan questas agiuntas betg mussadas en la vista da conversaziun. Tut ils messadis cun agiuntas ston vegnir reindexads. La via la pli simpla per far quai è da stizzar la datoteca <tt>global-messages-db.sqlite</tt> en tes ordinatur da profil.">
+<!ENTITY indexing.p4 "Es ti in Mozillist? Nus avain ina funcziuns speciala per e-mails da Bugzilla, nua che nus remplazzain il speditur (p.ex. bugzilla-daemon@mozilla.org) cun la valita dal X-Bugzilla-Who header. Ti has probablamain ina massa mails da bugs e tut quels mails ston vegnir reindexads per utilisar questa funczuin. Sche ti pos viver cun il fatg che questa funcziun vegn be activada per novs mails da bugs pos ti emblidar quest messadi. Autr'uisa stos ti stizzar la datoteca <tt>global-messages-db.sqlite</tt> en tes ordinatur da profil.">
+<!ENTITY indexing.p5 "Ti es en ina da questas duas situaziuns.">
+<!ENTITY indexing.moreInfo "Dapli infurmaziuns davart l'ordinatur da profil.">
+<!ENTITY indexing.t1 "Resumaziun">
+<!ENTITY indexing.t2 "Pli detaglià">
+<!ENTITY indexing.title "Problem cun <span class='orange'>indexar</span>">
+<!ENTITY indexing.pageTitle "Avertiment da l'indexar">
+<!ENTITY stub.loading "Chargiar…">
+<!ENTITY stub.trash.tooltip "Stizzar questa conversaziun">
+<!ENTITY stub.archive.tooltip "Archivar questa conversaziun">
+<!ENTITY stub.forward.tooltip "Renviar questa conversaziun">
+<!ENTITY stub.print.tooltip "Stampar questa conversaziun">
+<!ENTITY stub.junk.tooltip "Marcar quest messadi sco nungiavischà">
+<!ENTITY stub.expand.tooltip "Extender/cumprimer tut ils messadis">
+<!ENTITY stub.read.tooltip "Marcar sco legì/nunlegì tut ils messadis">
+<!ENTITY stub.detach.tooltip2 "Mussar questa conversaziun en in nov tab">
+<!ENTITY stub.menu.tooltip "Acziuns per questa conversaziun">

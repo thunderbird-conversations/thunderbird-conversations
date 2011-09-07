@@ -20,6 +20,6 @@
 <!ENTITY title.advanced_display "Приказ разговора">
 <!ENTITY option.no_friendly_date "Користи „нормалне” датуме, исто као списак порука">
 <!ENTITY option.monospaced_senders2 "Поруке са ових адреса/спискова за слање требају бити приказане у фонтовима фиксне ширине (одвојеним зарезима)">
-<!ENTITY option.tweak_bodies "Tweak the fonts in the message bodies to make them consistent with the outer font (recommended, requires restart).">
-<!ENTITY option.tweak_chrome "Scale down the font size for the conversation chrome (recommended, requires restart).">
-<!ENTITY option.add_embeds "Detect links to various services (e.g. YouTube) in emails, and view them inline.">
+<!ENTITY option.tweak_bodies "Подеси фонтове у телу поруке тако да се подударају са окружењем (потребно поновно покретање).">
+<!ENTITY option.tweak_chrome "Умањи фонт за разговоре (препоручено, потребно поновно покретање)">
+<!ENTITY option.add_embeds "Препознај везе ка разним услугама (нпр. YouTube) у порукама и прикажи их као уграђене.">
