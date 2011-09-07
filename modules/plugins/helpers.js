@@ -121,7 +121,7 @@ let PluginHelpers = {
       ];
       let o = {};
       for each (let k in keys)
-        o[k] = aMimeMsg.get("x-bugzilla-"+k); 
+        o[k] = GlodaUtils.deMime(aMimeMsg.get("x-bugzilla-"+k));
       return o;
     }
 
