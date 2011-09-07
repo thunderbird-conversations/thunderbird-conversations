@@ -60,6 +60,10 @@ XPCOMUtils.defineLazyGetter(Services, "mMessenger",
                             function () {
                               return Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
                             });
+XPCOMUtils.defineLazyGetter(Services, "mAtomService",
+                            function() {
+                              return Cc["@mozilla.org/atom-service;1"].getService(Ci.nsIAtomService);
+                            });
 
 const kCharsetFromMetaTag = 9;
 const kCharsetFromChannel = 11;
@@ -98,8 +102,8 @@ function addMsgListener(aMessage) {
   msgListeners[messageId].push(weakPtr);
 }
 
-let isOSX = ("nsILocalFileMac" in Components.interfaces);
-let isWindows = ("@mozilla.org/windows-registry-key;1" in Components.classes);
+let isOSX = ("nsILocalFileMac" in Ci);
+let isWindows = ("@mozilla.org/windows-registry-key;1" in Cc);
 
 function isAccel (event) (isOSX && event.metaKey || event.ctrlKey)
 
@@ -703,7 +707,7 @@ Message.prototype = {
             extraLines: [],
           };
           let interestingHeaders =
-            ["mailed-by", "x-mailer", "mailer", "date", "subject", "user-agent"];
+            ["mailed-by", "x-mailer", "mailer", "date", "user-agent"];
           for each (let h in interestingHeaders) {
             if (aMimeMsg.has(h))
               data.extraLines.push({
@@ -711,6 +715,10 @@ Message.prototype = {
                 value: escapeHtml(aMimeMsg.get(h).replace(this.RE_SNIPPET, "")),
               });
           }
+          data.extraLines.push({
+            key: "subject",
+            value: this._msgHdr.mime2DecodedSubject,
+          });
           let buildContactObjects = function (nameEmails)
             nameEmails.map(function (x)
               self._conversation._contactManager
@@ -899,6 +907,12 @@ Message.prototype = {
         });
       }
     });
+    this.register(".quickReply", function (event) {
+      event.stopPropagation();
+    }, { action: "keyup" });
+    this.register(".quickReply", function (event) {
+      event.stopPropagation();
+    }, { action: "keypress" });
     this.register(".quickReply", function (event) {
       // Ok, so it's actually convenient to register our event listener on the
       //  .quickReply node because we can easily prevent it from bubbling
@@ -1275,6 +1289,10 @@ Message.prototype = {
             if (false && originalScroll) {
               self._domNode.ownerDocument.documentElement.scrollTop = originalScroll;
             }
+
+            // Send "msgLoaded" event
+            let msgLoadedAtom = Services.mAtomService.getAtom("msgLoaded");
+            self._msgHdr.folder.NotifyPropertyFlagChanged(self._msgHdr, msgLoadedAtom, 0, 1);
 
             self._didStream = true;
             self._signal();
