@@ -45,6 +45,7 @@ const Cr = Components.results;
 
 Cu.import("resource://gre/modules/Services.jsm");
 
+Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
 Cu.import("resource:///modules/gloda/gloda.js");
 Cu.import("resource://conversations/log.js");
 Cu.import("resource://conversations/prefs.js");
@@ -65,6 +66,8 @@ const kActionExpand    = 1;
 const kActionCollapse  = 2;
 
 const nsMsgViewIndex_None = 0xffffffff;
+
+let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
 // The SignalManager class handles stuff related to spawing asynchronous
 //  requests and waiting for all of them to complete. Basic, but works well.
@@ -1202,7 +1205,7 @@ Conversation.prototype = {
   // For the "forward conversation" action
   exportAsHtml: function _Conversation_exportAsHtml () {
     let hr = '<div style="border-top: 1px solid #888; height: 15px; width: 70%; margin: 0 auto; margin-top: 15px">&nbsp;</div>';
-    let html = "Here's a conversation I thought you might find interesting!"+hr;
+    let html = strings.get("conversationFillInText")+hr;
     let messagesHtml = [m.exportAsHtml() for each ({ message: m } in this.messages)];
     html += "<div style=\"font-family: sans-serif !important;\">"+messagesHtml.join(hr)+"</div>";
     return html;

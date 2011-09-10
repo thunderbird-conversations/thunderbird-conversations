@@ -705,14 +705,19 @@ Message.prototype = {
           let interestingHeaders =
             ["mailed-by", "x-mailer", "mailer", "date", "user-agent"];
           for each (let h in interestingHeaders) {
-            if (aMimeMsg.has(h))
+            if (aMimeMsg.has(h)) {
+              let key = h;
+              try { // Note all the header names are translated.
+                key = strings.get("header-"+h);
+              } catch (e) {}
               data.extraLines.push({
-                key: h,
+                key: key,
                 value: escapeHtml(aMimeMsg.get(h).replace(this.RE_SNIPPET, "")),
               });
+            }
           }
           data.extraLines.push({
-            key: "subject",
+            key: strings.get("header-subject"),
             value: this._msgHdr.mime2DecodedSubject,
           });
           let buildContactObjects = function (nameEmails)

@@ -139,10 +139,11 @@ ContactManager.prototype = {
 let ContactMixIn = {
   toTmplData: function _ContactMixIn_toInlineHtml (aUseColor, aPosition, aIsDetail) {
     let name = this.getName(aPosition);
+    let tooltipName = this.getTooltipName(aPosition);
     let data = {
       showMonospace: aPosition == Contacts.kFrom,
       name: escapeHtml(name),
-      tooltipName: escapeHtml((name != this._email) ? name : ""),
+      tooltipName: escapeHtml((tooltipName != this._email) ? tooltipName : ""),
       email: escapeHtml(this._email),
       avatar: escapeHtml(this.avatar),
       profiles: this._profiles,
@@ -281,10 +282,18 @@ let ContactMixIn = {
     }
   },
 
+  getTooltipName: function _ContactMixIn_getName (aPosition) {
+    Log.assert(aPosition === Contacts.kFrom || aPosition === Contacts.kTo,
+      "Someone did not set the 'position' properly");
+    if (this._email in gIdentities)
+      return strings.get("meFromMeToSomeone");
+    else
+      return this._name || this._email;
+  },
+
   getName: function _ContactMixIn_getName (aPosition) {
     Log.assert(aPosition === Contacts.kFrom || aPosition === Contacts.kTo,
       "Someone did not set the 'position' properly");
-    // This will be changed later when we localize
     if (this._email in gIdentities)
       return ((aPosition === Contacts.kFrom)
         ? strings.get("meFromMeToSomeone")
