@@ -125,7 +125,6 @@ function convertHotmailQuotingToBlockquote1(aDoc) {
      body > pre > hr, \
      body > div > div > hr, \
      hr#stopSpelling", true);
-  trySel(aDoc, ".gmail_quote", false);
 }
 
 /* There's a special message header for that. */
