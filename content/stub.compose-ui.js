@@ -210,7 +210,6 @@ function newComposeSessionByClick(type) {
     Log.debug(e);
     dumpCallStack(e);
   }
-  scrollNodeIntoView(document.querySelector(".quickReply"));
 }
 
 function revealCompositionFields() {

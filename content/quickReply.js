@@ -46,6 +46,7 @@ function showQuickReply() {
   textareas.addClass('ease selected');
   setTimeout(function() {
     textareas.removeClass('ease');
+    scrollNodeIntoView(document.querySelector(".quickReply"));
   }, 900);
 }
 
