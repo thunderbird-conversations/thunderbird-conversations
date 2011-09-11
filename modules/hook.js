@@ -1,4 +1,4 @@
-var EXPORTED_SYMBOLS = ['registerHook', 'getHooks'];
+var EXPORTED_SYMBOLS = ['registerHook', 'getHooks', 'removeHook'];
 
 /* A hook is just a listener whose various methods get called at various stages
  *  of the conversation process.
@@ -15,6 +15,10 @@ let hooks = [];
 
 function registerHook(h) {
   hooks.push(h);
+}
+
+function removeHook(h) {
+  hooks = hooks.filter(function (x) x != h);
 }
 
 function getHooks() {
