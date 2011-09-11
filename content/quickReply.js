@@ -84,9 +84,13 @@ function registerQuickReplyEventListeners() {
     event.stopPropagation();
   });
   
+  // Must match .quickReply li.selected textarea size in quickreply.css
+  let lastKnownHeight = 0;
+
   $('ul.inputs li.expand').click(function(event) {
     if ($(this).hasClass("selected"))
       return;
+    lastKnownHeight = 0;
     showQuickReply.call(this);
     let type;
     if ($(this).hasClass("reply"))
@@ -103,4 +107,22 @@ function registerQuickReplyEventListeners() {
     confirmDiscard();
   });
 
+  let lineHeight = parseInt(
+    window.getComputedStyle(document.querySelector('.quickReply textarea'), null).lineHeight
+  );
+  // Autoresize sorta-thingy.
+  $('.quickReply textarea').keypress(function (event) {
+    if (event.which == KeyEvent.DOM_VK_RETURN) {
+      if (event.target.scrollHeight > lastKnownHeight) {
+        // 5px padding-top, 5px padding-bottom, 1px border-top-width, 1px
+        // border-bottom-width
+        let height = parseInt(window.getComputedStyle(event.target, null).height) + 12;
+        //Log.debug("Computed height is", height, lineHeight);
+        height += lineHeight;
+        //Log.debug("Computed height is", height, lineHeight);
+        event.target.style.height = height+"px";
+        lastKnownHeight = height;
+      }
+    }
+  });
 }

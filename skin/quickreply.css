@@ -102,7 +102,7 @@
   border: 1px solid #aaa;
   min-height: 54px;
   height: 54px;
-  padding: 5px;
+  padding: 5px 5px 5px 20px;
   font-size: 1.2rem;
   resize: none;
   background-color: transparent;
@@ -114,7 +114,7 @@
   color: transparent;
 
   font-family: sans-serif;
-  font-size: 1.2rem;
+  font-size: 1.4rem;
   
   -webkit-box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05) inset;
      -moz-box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05) inset;
@@ -141,7 +141,7 @@
 .quickReply li.selected textarea {
   color: #000;
   background-color: #fff;
-  height: 108px;
+  height: 108px; /* must match baseSize in quickReply.js */
   overflow: auto;
   resize: vertical;
 }
@@ -155,27 +155,20 @@ body.inTab .quickReply li.selected textarea {
   height: 16px;
   display: block;
   position: absolute;
-  top: 10px;
-  right: 5px;
-  border-width: 0 0 1px 1px;
+  bottom: 10px;
+  left: 5px;
+  border-width: 1px 1px 0 0;
   border-color: #aaa;
   border-style: solid;
   background-color: #f6f6f6;
   cursor: pointer;
   background-image: url('chrome://conversations/content/i/out.png');
-  background-position: center center;
+  background-position: -4px 2px;
   background-repeat: no-repeat;
   z-index: 101;
   
-  -webkit-box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05);
-     -moz-box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05);
-     -o-box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05);
-      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05);
-  
-  -webkit-border-radius: 0 0 0 5px;
-     -moz-border-radius: 0 0 0 5px;
-     -o-border-radius: 0 0 0 5px;
-      border-radius: 0 0 0 5px;
+  -moz-border-radius: 0 3px 0 0;
+  border-radius: 0 3px 0 0;
 }
 
 .quickReply ul.actions {
