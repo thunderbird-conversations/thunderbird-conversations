@@ -13,8 +13,7 @@ template() {
 }
 
 upload() {
-  echo "cd jonathan/files\nput conversations.xpi gcv-nightlies/$TARGET_FILENAME\n\
-    put Changelog gcv-nightlies/Changelog_$BRANCH" | ftp xulforum@ftp.xulforum.org
+  echo "cd jonathan/files\nput conversations.xpi gcv-nightlies/$TARGET_FILENAME" | ftp xulforum@ftp.xulforum.org
 }
 
 if [ "$1" = "official" ]; then

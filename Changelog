@@ -1,6 +1,0 @@
---- Changes since 2.0alpha5 ---
-
-- The Enter key (or double-clicking in the thread pane) now opens a conversation
-in a new tab.
-- Fix duplicate recipients issue.
-- Smart reply button that combines reply, reply all, and reply to list.
