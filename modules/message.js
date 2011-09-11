@@ -981,11 +981,9 @@ Message.prototype = {
     let children = toNode.children;
     let hide = function (aNode) aNode.style.display = "none";
     let width = function (x) x.offsetWidth;
-    let textSize = Prefs.tweak_chrome
-      ? this.defaultSize * this.tenPxFactor * 1.2
-      : this.defaultSize * .833;
-    let lineHeight = textSize * 1.8; // per the CSS file
-    let overflows = function () parseInt(toNode.offsetHeight) > lineHeight;
+    let lineHeight = parseFloat(window.getComputedStyle(toNode, null).lineHeight);
+    Log.debug("line height (computed)", lineHeight);
+    let overflows = function () parseInt(toNode.offsetHeight) > Math.ceil(lineHeight);
 
     if (overflows()) {
       // Add the "and N more" text that will be shown at the end of the
