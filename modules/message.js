@@ -720,9 +720,10 @@ Message.prototype = {
               });
             }
           }
+          let subject = aMimeMsg.get("subject");
           data.extraLines.push({
             key: strings.get("header-subject"),
-            value: this._msgHdr.mime2DecodedSubject,
+            value: subject ? GlodaUtils.deMime(subject) : "",
           });
           let buildContactObjects = function (nameEmails)
             nameEmails.map(function (x)
