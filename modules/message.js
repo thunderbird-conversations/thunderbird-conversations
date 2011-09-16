@@ -1209,7 +1209,7 @@ Message.prototype = {
             //  the DOM of the message (i.e. decrypt it) before we tweak the
             //  fonts and stuff.
             try {
-              [h.onMessageStreamed(self._msgHdr, self._domNode, msgWindow) for each ([, h] in Iterator(getHooks()))];
+              [h.onMessageStreamed(self._msgHdr, self._domNode, msgWindow, self) for each ([, h] in Iterator(getHooks()))];
             } catch (e) {
               Log.warn("Plugin returned an error:", e);
               dumpCallStack(e);
