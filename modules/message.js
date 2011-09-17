@@ -723,7 +723,7 @@ Message.prototype = {
           let subject = aMimeMsg.get("subject");
           data.extraLines.push({
             key: strings.get("header-subject"),
-            value: subject ? GlodaUtils.deMime(subject) : "",
+            value: subject ? escapeHtml(GlodaUtils.deMime(subject)) : "",
           });
           let buildContactObjects = function (nameEmails)
             nameEmails.map(function (x)
