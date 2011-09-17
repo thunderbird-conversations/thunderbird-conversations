@@ -569,8 +569,8 @@ ComposeSession.prototype = {
           // This will somehow make sure reflow inside the blockquotes happens,
           // rather than trying to use our own citeString function which doesn't
           // perform rewrap.
-          let body =
-              htmlToPlainText('<blockquote type="cite">'+aBody+'</blockquote>')
+          let body = "\n"
+            + htmlToPlainText('<blockquote type="cite">'+aBody+'</blockquote>')
               .trim();
           try {
             [body = h.onReplyComposed(getMessageForQuickReply(), body)
@@ -580,7 +580,6 @@ ComposeSession.prototype = {
             Log.warn("Plugin returned an error:", e);
             dumpCallStack(e);
           }
-          body = "\n" + body;
           // Old way:
           //  let body = citeString("\n"+htmlToPlainText(aBody).trim());
           let quoteblock = // body already starts with a newline
