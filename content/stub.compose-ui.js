@@ -56,6 +56,7 @@ Cu.import("resource://conversations/stdlib/send.js");
 Cu.import("resource://conversations/stdlib/compose.js");
 Cu.import("resource://conversations/log.js");
 Cu.import("resource://conversations/misc.js");
+Cu.import("resource://conversations/hook.js");
 
 let Log = setupLogging("Conversations.Stub.Compose");
 
@@ -602,6 +603,14 @@ ComposeSession.prototype = {
           let body = "\n"
             + htmlToPlainText('<blockquote type="cite">'+aBody+'</blockquote>')
               .trim();
+          try {
+            [body = h.onReplyComposed(getMessageForQuickReply(), body)
+              for each ([, h] in Iterator(getHooks()))
+              if (typeof(h.onReplyComposed) == "function")];
+          } catch (e) {
+            Log.warn("Plugin returned an error:", e);
+            dumpCallStack(e);
+          }
           // Old way:
           //  let body = citeString("\n"+htmlToPlainText(aBody).trim());
           let quoteblock = // body already starts with a newline
@@ -680,14 +689,41 @@ ComposeSession.prototype = {
     let compType = document.getElementById("forward-radio").checked
       ? Ci.nsIMsgCompType.ForwardInline
       : Ci.nsIMsgCompType.ReplyAll; // ReplyAll, Reply... ends up the same
+    let [to, cc, bcc] = ["to", "cc", "bcc"].map(function (x)
+      JSON.parse($("#"+x).val()));
+
+    let sendStatus = {};
+    if (!popOut) {
+      try {
+        [sendStatus = h.onMessageBeforeSend({
+            identity: self.params.identity,
+            to: to,
+            cc: cc,
+            bcc: bcc,
+          }, ed, sendStatus)
+          for each ([, h] in Iterator(getHooks()))
+          if (typeof(h.onMessageBeforeSend) == "function")];
+      } catch (e) {
+        Log.warn("Plugin returned an error:", e);
+        dumpCallStack(e);
+      }
+      if (sendStatus.canceled) {
+        pText(strings.get("messageSendingCanceled"));
+        $(".statusPercentage").hide();
+        $(".statusThrobber").hide();
+        $(".quickReplyHeader").show();
+        return;
+      }
+    }
 
     return sendMessage({
         urls: [msgHdrGetUri(self.params.msgHdr)],
         identity: self.params.identity,
-        to: JSON.parse($("#to").val()).join(","),
-        cc: JSON.parse($("#cc").val()).join(","),
-        bcc: JSON.parse($("#bcc").val()).join(","),
+        to: to.join(","),
+        cc: cc.join(","),
+        bcc: bcc.join(","),
         subject: self.params.subject,
+        securityInfo: sendStatus.securityInfo,
       }, {
         compType: compType,
         deliverType: deliverMode,
