@@ -4,8 +4,33 @@ var EXPORTED_SYMBOLS = ['registerHook', 'getHooks', 'removeHook'];
  *  of the conversation process.
  *
  * let hook = {
+ *  // Called before the given message is streamed into the <iframe>.
+ *  onMessageBeforeStreaming (aMessage) {
+ *  },
+ *
  *  // Called when the given message has been displayed.
- *  onMessageStreamed (aMsgHdr, aDomNode, aMsgWindow) {
+ *  onMessageStreamed (aMsgHdr, aDomNode, aMsgWindow, aMessage) {
+ *  },
+ *
+ *  // Called before the quick reply message is send.
+ *  // @param aAddress.identity The identity the user picked to send the
+ *  //  message.
+ *  // @param aAddress.to The recipients. This is an Array of valid email
+ *  //  addresses.
+ *  // @param aAddress.cc Same remark.
+ *  // @param aAddress.bcc Same remark.
+ *  // @param aEditor The textarea node which value is mail body.
+ *  // @param aStatus.canceled Sending the message is canceled.
+ *  // @param aStatus.securityInfo An object for PGM/MIME message.
+ *  // @return aStatus Same remark.
+ *  onMessageBeforeSend: function (aAddress, aEditor, aStatus) {
+ *  },
+ *
+ *  // Called when quick reply body is composed.
+ *  // @param aMessage Original message instance.
+ *  // @param aBody Quoted body of original message.
+ *  // @return aBody Same remark.
+ *  onReplyComposed (aMessage, aBody) {
  *  },
  * }
  *
