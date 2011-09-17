@@ -493,7 +493,7 @@ ComposeSession.prototype = {
 
     let mergeDefault = function (aList, aDefault) {
       aDefault = aDefault.replace(/\s/g, "");
-      if (!aDefault)
+      if (!aDefault) // "" evaluates to false
         return aList;
       for each (let [, email] in Iterator(aDefault.split(/,/))) {
         if (!aList.some(function (x) x.email == email)) {
@@ -503,39 +503,47 @@ ComposeSession.prototype = {
       return aList;
     };
 
-    let cc = mergeDefault([], defaultCc);
-    let bcc = mergeDefault([], defaultBcc);
     switch (aMode) {
-      case "replyAll":
+      case "replyAll": {
         replyAllParams(identity, msgHdr, function (params) {
           let to = [asToken(null, name, email, null) for each ([name, email] in params.to)];
-          cc = [asToken(null, name, email, null) for each ([name, email] in params.cc)];
-          bcc = [asToken(null, name, email, null) for each ([name, email] in params.bcc)];
+          let cc = [asToken(null, name, email, null) for each ([name, email] in params.cc)];
+          let bcc = [asToken(null, name, email, null) for each ([name, email] in params.bcc)];
           cc = mergeDefault(cc, defaultCc);
           bcc = mergeDefault(bcc, defaultBcc);
           setupAutocomplete(to, cc, bcc);
           k && k(to.length + cc.length + bcc.length);
         });
         break;
+      }
 
-      case "replyList":
+      case "replyList": {
+        let cc = mergeDefault([], defaultCc);
+        let bcc = mergeDefault([], defaultBcc);
         let msg = getMessageForQuickReply();
         let token = asToken(null, null, msg.mailingLists[0], null);
         setupAutocomplete([token], cc, bcc);
         break;
+      }
 
-      case "forward":
+      case "forward": {
+        let cc = mergeDefault([], defaultCc);
+        let bcc = mergeDefault([], defaultBcc);
         setupAutocomplete([], cc, bcc);
         break;
+      }
 
       case "reply":
-      default:
+      default: {
+        let cc = mergeDefault([], defaultCc);
+        let bcc = mergeDefault([], defaultBcc);
         replyAllParams(identity, msgHdr, function (params) {
           let to = [asToken(null, name, email, null) for each ([name, email] in params.to)];
           setupAutocomplete(to, cc, bcc);
           k && k(params.to.length + params.cc.length + params.bcc.length);
         });
         break;
+      }
     }
   },
 
