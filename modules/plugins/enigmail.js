@@ -270,9 +270,9 @@ let enigmailHook = {
 
     let fromAddr = identity.email;
     let userIdValue;
-    // getUserIdValue works if Enigmail supports it.
-    if (Enigmail.msg.getUserIdValue) {
-      userIdValue = Enigmail.msg.getUserIdValue.call(Enigmail.msg);
+    // Enigmail <= 1.3.2 doesn't support getSenderUserId.
+    if (Enigmail.msg.getSenderUserId) {
+      userIdValue = Enigmail.msg.getSenderUserId.call(Enigmail.msg);
     } else if (identity.getIntAttribute("pgpKeyMode") > 0) {
       userIdValue = identity.getCharAttribute("pgpkeyId");
     }
@@ -304,7 +304,7 @@ let enigmailHook = {
     let bccAddr = bccAddrList.join(", ");
     // Enigmail <= 1.3.2 doesn't support keySelection.
     if (Enigmail.msg.keySelection) {
-      let result = Enigmail.msg.keySelection(
+      let result = Enigmail.msg.keySelection.call(Enigmail.msg,
                      enigmailSvc, sendFlags, optSendFlags, gotSendFlags,
                      fromAddr, toAddrList, bccAddrList);
       if (!result) {
