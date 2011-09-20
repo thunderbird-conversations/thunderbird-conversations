@@ -346,6 +346,9 @@ let enigmailHook = {
         let plainText = aEditor.value;
         let charset = "UTF-8";
         origText = plainText;
+        if (!(sendFlags & ENCRYPT)) {
+          plainText = simpleWrap(plainText);
+        }
         plainText= EnigmailCommon.convertFromUnicode(plainText, charset);
         let cipherText = enigmailSvc.encryptMessage(window, uiFlags, null,
                            plainText, fromAddr, toAddr, bccAddr,
