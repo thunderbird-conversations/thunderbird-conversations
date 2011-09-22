@@ -365,6 +365,14 @@ let enigmailHook = {
           cipherText = EnigmailCommon.convertToUnicode(cipherText, charset);
           aEditor.value = cipherText;
         }
+        else {
+          // Encryption/signing failed
+          let msg = EnigmailCommon.getString("signFailed") + "\n"
+                  + errorMsgObj.value;
+          aStatus.canceled = !EnigmailCommon.confirmDlg(window, msg,
+            EnigmailCommon.getString("msgCompose.button.sendUnencrypted"));
+          return aStatus;
+        }
       }
 
       if ((!(sendFlags & nsIEnigmail.SAVE_MESSAGE)) &&
@@ -385,8 +393,8 @@ let enigmailHook = {
       if (EnigmailCommon.enigmailSvc && EnigmailCommon.enigmailSvc.initializationError) {
         msg += "\n"+EnigmailCommon.enigmailSvc.initializationError;
       }
-      aStatus.canceled =
-        !EnigmailCommon.confirmDlg(window, msg, EnigmailCommon.getString("msgCompose.button.sendUnencrypted"));
+      aStatus.canceled = !EnigmailCommon.confirmDlg(window, msg,
+        EnigmailCommon.getString("msgCompose.button.sendUnencrypted"));
     }
     return aStatus;
   },
