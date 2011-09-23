@@ -347,7 +347,16 @@ let enigmailHook = {
         let charset = "UTF-8";
         origText = plainText;
         if (!(sendFlags & ENCRYPT)) {
-          plainText = simpleWrap(plainText);
+          // Clear signing replaces preceding '-' to '- -'.
+          // It produces 2 characters longer lines.
+          // To prevent rewrap breaking validity of sign,
+          // prepare for the case: a 71 or 72 char's long line starting with '-'
+          let width = 72;
+          let lines = plainText.match(/^-.*$/gm);
+          if (lines && lines.some(function (x) x.length > 70)) {
+            width -= 2;
+          }
+          plainText = simpleWrap(plainText, width);
         }
         plainText= EnigmailCommon.convertFromUnicode(plainText, charset);
         let cipherText = enigmailSvc.encryptMessage(window, uiFlags, null,
