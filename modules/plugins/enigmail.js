@@ -194,7 +194,7 @@ function tryEnigmail(bodyElement, aMsgWindow, aMessage) {
     }
     msgRfc822Text += EnigmailCommon.convertToUnicode(decryptedText, charset);
     if (head || tail) {
-      msgRfc822Text += "\n\n"+ EnigmailCommon.getString("endPgpPart")+"\n\n"+tail;
+      msgRfc822Text += "\n\n"+EnigmailCommon.getString("endPgpPart")+"\n\n"+tail;
     }
 
     if (exitCodeObj.value == 0) {
@@ -258,7 +258,7 @@ let enigmailHook = {
       return aStatus;
 
     const nsIEnigmail = Ci.nsIEnigmail;
-    const SIGN    = nsIEnigmail.SEND_SIGNED;
+    const SIGN = nsIEnigmail.SEND_SIGNED;
     const ENCRYPT = nsIEnigmail.SEND_ENCRYPTED;
 
     let uiFlags = nsIEnigmail.UI_INTERACTIVE;
@@ -290,7 +290,8 @@ let enigmailHook = {
     if (EnigmailCommon.getPref("alwaysTrustSend")) {
       optSendFlags |= nsIEnigmail.SEND_ALWAYS_TRUST;
     }
-    if (EnigmailCommon.getPref("encryptToSelf") || (sendFlags & nsIEnigmail.SAVE_MESSAGE)) {
+    if (EnigmailCommon.getPref("encryptToSelf") ||
+        (sendFlags & nsIEnigmail.SAVE_MESSAGE)) {
       optSendFlags |= nsIEnigmail.SEND_ENCRYPT_TO_SELF;
     }
     let gotSendFlags = sendFlags;
@@ -358,7 +359,7 @@ let enigmailHook = {
           }
           plainText = simpleWrap(plainText, width);
         }
-        plainText= EnigmailCommon.convertFromUnicode(plainText, charset);
+        plainText = EnigmailCommon.convertFromUnicode(plainText, charset);
         let cipherText = enigmailSvc.encryptMessage(window, uiFlags, null,
                            plainText, fromAddr, toAddr, bccAddr,
                            sendFlags, exitCodeObj, statusFlagsObj, errorMsgObj);
