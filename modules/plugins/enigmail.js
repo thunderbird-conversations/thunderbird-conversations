@@ -161,9 +161,9 @@ function tryEnigmail(bodyElement, aMsgWindow, aMessage) {
     if (nextLine == 0) {
       pgpBlock += msgText(endStart);
     }
-    if (indent)
+    if (indent) {
       pgpBlock = pgpBlock.replace(new RegExp("^"+indent+"?", "gm"), "");
-
+    }
     var charset = aMsgWindow ? aMsgWindow.mailCharacterSet : "";
     msgText = EnigmailCommon.convertFromUnicode(pgpBlock, charset);
 
@@ -351,10 +351,9 @@ let enigmailHook = {
           // Clear signing replaces preceding '-' to '- -'.
           // It produces 2 characters longer lines.
           // To prevent rewrap breaking validity of sign,
-          // prepare for the case: a 71 or 72 char's long line starting with '-'
+          // prepare for the case: over 70 char's long lines starting with '-'
           let width = 72;
-          let lines = plainText.match(/^-.*$/gm);
-          if (lines && lines.some(function (x) x.length > 70)) {
+          if (plainText.match(/^-.{70,}/m)) {
             width -= 2;
           }
           plainText = simpleWrap(plainText, width);
