@@ -657,7 +657,7 @@ ComposeSession.prototype = {
             }
           } else {
             quote = quote + "\n\n";
-            pos = (quote + txt).length;
+            pos = (quote + txt).replace(/\r?\n/g, "\n").length;
             val = quote + txt + signature;
           }
           // After we removed any trailing newlines, insert it into the textarea
