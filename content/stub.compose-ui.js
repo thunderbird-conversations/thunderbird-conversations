@@ -619,9 +619,7 @@ ComposeSession.prototype = {
           let identity = self.params.identity;
           let signature = "", signatureNoDashes = "";
           if (identity.sigOnReply) {
-            signature = identity.htmlSigFormat
-              ? htmlToPlainText(identity.htmlSigText)
-              : identity.htmlSigText;
+            signature = getSignatureContentsForAccount(identity);
             if (String.trim(signature).length) {
               [signature, signatureNoDashes] =
                 ["\n\n-- \n" + signature, "\n\n" + signature];
