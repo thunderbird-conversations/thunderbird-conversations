@@ -695,6 +695,12 @@ Message.prototype = {
       event.preventDefault();
       // Hide all irrelevant UI items now we're showing details
       self._domNode.classList.add("with-details");
+      let details = self._domNode.getElementsByClassName("detailsPlaceholder")[0];
+      if (self.detailsFetched) {
+        details.style.display = "block";
+        return;
+      }
+      self.detailsFetched = true;
       let w = self._conversation._htmlPane.contentWindow;
       MsgHdrToMimeMessage(self._msgHdr, self, function (aMsgHdr, aMimeMsg) {
         try {
@@ -769,6 +775,13 @@ Message.prototype = {
       }, {
         partsOnDemand: true,
       });
+    });
+
+    this.register(".hide-details > a", function (event) {
+      event.stopPropagation();
+      event.preventDefault();
+      self._domNode.classList.remove("with-details");
+      self._domNode.getElementsByClassName("detailsPlaceholder")[0].style.display = "none";
     });
 
     let attachmentNodes = this._domNode.getElementsByClassName("attachment");
