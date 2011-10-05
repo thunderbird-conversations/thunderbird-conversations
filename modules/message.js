@@ -695,6 +695,9 @@ Message.prototype = {
       event.preventDefault();
       // Hide all irrelevant UI items now we're showing details
       self._domNode.classList.add("with-details");
+      if (self.detailsFetched)
+        return;
+      self.detailsFetched = true;
       let w = self._conversation._htmlPane.contentWindow;
       MsgHdrToMimeMessage(self._msgHdr, self, function (aMsgHdr, aMimeMsg) {
         try {
@@ -769,6 +772,12 @@ Message.prototype = {
       }, {
         partsOnDemand: true,
       });
+    });
+
+    this.register(".hide-details > a", function (event) {
+      event.stopPropagation();
+      event.preventDefault();
+      self._domNode.classList.remove("with-details");
     });
 
     let attachmentNodes = this._domNode.getElementsByClassName("attachment");
