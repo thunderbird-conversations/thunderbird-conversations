@@ -402,6 +402,32 @@ function startedEditing (aVal) {
   }
 }
 
+function systemCharset() {
+  let charset = "UTF-8";
+  if ("@mozilla.org/windows-registry-key;1" in Cc) {
+    let registry = Cc["@mozilla.org/windows-registry-key;1"]
+                     .createInstance(Ci.nsIWindowsRegKey);
+    registry.open(registry.ROOT_KEY_LOCAL_MACHINE,
+                  "SYSTEM\\CurrentControlSet\\Control\\Nls\\CodePage",
+                  registry.ACCESS_READ);
+    let codePage = registry.readStringValue("ACP");
+    if (codePage) {
+      charset = "CP" + codePage;
+    }
+    registry.close();
+  }
+  else {
+    let env = Cc["@mozilla.org/process/environment;1"]
+                .getService(Ci.nsIEnvironment);
+    let lang = env.get("LANG").split(".");
+    if (lang.length > 1) {
+      charset = lang[1];
+    }
+  }
+  Log.debug("System charset: "+charset+"\n");
+  return charset;
+}
+
 function ComposeSession (match) {
   // A visitor pattern.
   //  match({ reply(nsIMsgDbHdr), draft({ msgUri, from, to, cc, bcc, body }) })
@@ -619,9 +645,40 @@ ComposeSession.prototype = {
           let identity = self.params.identity;
           let signature = "", signatureNoDashes = "";
           if (identity.sigOnReply) {
-            signature = identity.htmlSigFormat
-              ? htmlToPlainText(identity.htmlSigText)
-              : identity.htmlSigText;
+            if (identity.attachSignature && identity.signature) {
+              let charset = systemCharset();
+              const replacementChar =
+                Ci.nsIConverterInputStream.DEFAULT_REPLACEMENT_CHARACTER;
+              let fstream = Cc["@mozilla.org/network/file-input-stream;1"]
+                              .createInstance(Ci.nsIFileInputStream);
+              try {
+                fstream.init(identity.signature, -1, 0, 0);
+                let is = Cc["@mozilla.org/intl/converter-input-stream;1"]
+                           .createInstance(Ci.nsIConverterInputStream);
+                try {
+                  is.init(fstream, charset, 1024, replacementChar);
+                } catch (e) {
+                  Log.error("Init error: "+e+"\n charset: "+charset+"\n");
+                  is.init(fstream, "UTF-8", 1024, replacementChar);
+                }
+                let str = {};
+                while (is.readString(4096, str) != 0) {
+                   signature += str.value;
+                }
+                is.close();
+              } catch (e) {
+                Log.error("Signature file init error: "+e+"\n");
+              }
+              fstream.close();
+              if (identity.signature.path.match(/\.html$/)) {
+                signature = htmlToPlainText(signature);
+              }
+            }
+            else {
+              signature = identity.htmlSigFormat
+                ? htmlToPlainText(identity.htmlSigText)
+                : identity.htmlSigText;
+            }
             if (String.trim(signature).length) {
               [signature, signatureNoDashes] =
                 ["\n\n-- \n" + signature, "\n\n" + signature];
@@ -657,7 +714,7 @@ ComposeSession.prototype = {
             }
           } else {
             quote = quote + "\n\n";
-            pos = (quote + txt).length;
+            pos = (quote + txt).replace(/\r?\n/g, "\n").length;
             val = quote + txt + signature;
           }
           // After we removed any trailing newlines, insert it into the textarea
