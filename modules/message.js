@@ -208,6 +208,14 @@ KeyListener.prototype = {
         }
         break;
 
+      case 'E'.charCodeAt(0):
+        if (isAccel(event)) {
+          this.message.compose(Ci.nsIMsgCompType.Template, null);
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        break;
+
       case this.KeyEvent.DOM_VK_DELETE:
         if (!isAccel(event)) {
           this.message.removeFromConversation();
