@@ -451,6 +451,7 @@ a img {
 .message.collapsed .to, 
 .message.collapsed .bzTo, 
 .message.collapsed .details,
+.message.collapsed .hide-details,
 .message.collapsed .dropDown,
 .message.collapsed .replyLinkWrapper,
 .message.collapsed .editDraftLinkWrapper,
