@@ -1153,12 +1153,13 @@ Message.prototype = {
     let originalScroll = this._domNode.ownerDocument.documentElement.scrollTop;
     let msgWindow = topMail3Pane(this).msgWindow;
     let self = this;
-
-    try {
-      [h.onMessageBeforeStreaming(this) for each ([, h] in Iterator(getHooks()))];
-    } catch (e) {
-      Log.warn("Plugin returned an error:", e);
-      dumpCallStack(e);
+    
+    for each (let [, h] in Iterator(getHooks())) {
+      try { if (typeof(h.onMessageBeforeStreaming) == "function") 
+         h.onMessageBeforeStreaming(this);
+      } catch (e) {
+        Log.warn("Plugin returned an error:", e); dumpCallStack(e);
+      };
     }
 
     let iframe = this._domNode.ownerDocument
@@ -1208,11 +1209,12 @@ Message.prototype = {
             //  performed now, not later. This gives plugins a chance to modify
             //  the DOM of the message (i.e. decrypt it) before we tweak the
             //  fonts and stuff.
-            try {
-              [h.onMessageStreamed(self._msgHdr, self._domNode, msgWindow, self) for each ([, h] in Iterator(getHooks()))];
-            } catch (e) {
-              Log.warn("Plugin returned an error:", e);
-              dumpCallStack(e);
+            for each (let [, h] in Iterator(getHooks())) {
+              try { if (typeof(h.onMessageStreamed) == "function") 
+                h.onMessageStreamed(self._msgHdr, self._domNode, msgWindow, self);
+              } catch (e) {
+                Log.warn("Plugin returned an error:", e); dumpCallStack(e);
+              };
             }
 
             let iframeDoc = iframe.contentDocument;
