@@ -295,6 +295,7 @@ function onDiscard(event) {
       gDraftListener.notifyDraftChanged("removed");
       yield SimpleStorage.kWorkDone;
     });
+  return true;
 }
 
 /**
@@ -550,6 +551,15 @@ ComposeSession.prototype = {
 
   setupAutocomplete: function () {
     let self = this;
+    let callComposeSessionTrigger = function() {
+      let recipients = JSON.parse($("#to").val()) + ", " + JSON.parse($("#cc").val());
+      Log.debug("XXXXXX callComposeSessionTrigger XXXXXX", recipients )
+      for each (let [, h] in Iterator(getHooks())) {
+        try { if (typeof(h.onComposeSessionConstructDone) == "function") 
+              h.onComposeSessionConstructDone(recipients, self.params, $(".senderName"));
+        } catch (e) { Log.warn("Plugin returned an error:", e); dumpCallStack(e); };
+      }
+    };
     this.match({
       reply: function (aMessage, aReplyType) {
         // Make sure we're consistent with modules/message.js!
@@ -564,6 +574,7 @@ ComposeSession.prototype = {
             $(".replyMethod-replyAll").show();
             $(".replyMethod-replyList").show();
           }
+          callComposeSessionTrigger();
         };
         if (aReplyType == "replyAll") {
           self.changeComposeFields("replyAll", showHideActions);
@@ -583,6 +594,7 @@ ComposeSession.prototype = {
             for each ([i, item] in Iterator(list))];
         };
         setupAutocomplete(makeTokens(to), makeTokens(cc), makeTokens(bcc));
+        callComposeSessionTrigger();
       },
     });
   },
@@ -693,6 +705,14 @@ ComposeSession.prototype = {
       JSON.parse($("#"+x).val()));
 
     let sendStatus = {};
+    // Notify the virtualIdentity Extension exclusivly, before any other function requests the identity of the message
+    // or before message is opened in a new window
+    for each (let [, h] in Iterator(getHooks())) {
+    try { if (typeof(h.onMessageBeforeSendOrPopup) == "function") 
+          sendStatus = h.onMessageBeforeSendOrPopup(this.params, to + ", " + cc, popOut, sendStatus);
+    } catch (e) { Log.warn("Plugin returned an error:", e); dumpCallStack(e); };
+  }
+
     if (!popOut) {
       try {
         [sendStatus = h.onMessageBeforeSend({
@@ -702,20 +722,20 @@ ComposeSession.prototype = {
             bcc: bcc,
           }, ed, sendStatus)
           for each ([, h] in Iterator(getHooks()))
-          if (typeof(h.onMessageBeforeSend) == "function")];
+          if (typeof(h.onMessageBeforeSend) == "function" && (!sendStatus.canceled)) ];
       } catch (e) {
         Log.warn("Plugin returned an error:", e);
         dumpCallStack(e);
       }
-      if (sendStatus.canceled) {
-        pText(strings.get("messageSendingCanceled"));
-        $(".statusPercentage").hide();
-        $(".statusThrobber").hide();
-        $(".quickReplyHeader").show();
-        return;
-      }
     }
-
+    if (sendStatus.canceled) {
+      pText(strings.get("messageSendingCanceled"));
+      $(".statusPercentage").hide();
+      $(".statusThrobber").hide();
+      $(".quickReplyHeader").show();
+      return;
+    }
+  
     return sendMessage({
         urls: [msgHdrGetUri(self.params.msgHdr)],
         identity: self.params.identity,
@@ -896,6 +916,9 @@ let sendListener = {
       pText(strings.get("couldntSendTheMessage"));
       Log.debug("NS_FAILED onStopSending");
     }
+    for each (let [, h] in Iterator(getHooks())) {
+		try { if (typeof(h.onStopSending) == "function") h.onStopSending(); } catch (e) { Log.warn("Plugin returned an error:", e); dumpCallStack(e);};
+	}
   },
 
   /**

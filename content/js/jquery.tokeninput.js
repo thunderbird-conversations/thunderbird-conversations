@@ -277,6 +277,8 @@ $.TokenList = function (input, settings) {
             return false;
           });
 
+        token_count++;
+        
         $.data(this_token.get(0), "tokeninput", li_data[i]);
 
         // Clear input box and make sure it keeps focus
@@ -324,6 +326,11 @@ $.TokenList = function (input, settings) {
 
   // Inner function to a token to the list
   function insert_token(id, value, data) {
+    Log.debug("insert_token")
+    for each (var [, h] in Iterator(getHooks())) {
+      try { if (typeof(h.onRecipientAdded) == "function") h.onRecipientAdded(data.data, hidden_input.attr("id"), token_count); } catch (e) { Log.warn("Plugin returned an error:", e); dumpCallStack(e); };
+    }
+    Log.debug("insert_token trigger done")
     // XXX and here
     var this_token = $("<li />")
       .attr("title", data.data)
