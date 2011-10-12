@@ -221,13 +221,16 @@ let enigmailHook = {
 
   onMessageBeforeStreaming: function _enigmailHook_onBeforeStreaming(aMessage) {
     if (enigmailSvc) {
-      let { _attachments: attachments, _msgHdr: msgHdr, _domNode: domNode } = aMessage;
+      let { _domNode: domNode, _conversation: conversation } = aMessage;
       this._domNode = domNode;
       let w = topMail3Pane(aMessage);
-      let hasEnc = (aMessage.contentType+"").search(/^multipart\/encrypted(;|$)/i) == 0;
+      let hasEnc = conversation.messages.some(function (x)
+        (x.message.contentType+"").search(/^multipart\/encrypted(;|$)/i) == 0);
       if (hasEnc && !enigmailSvc.mimeInitialized()) {
         Log.debug("Initializing EnigMime");
         w.document.getElementById("messagepane").setAttribute("src", "enigmail:dummy");
+        conversation.messages = [];
+        conversation._fetchMessages.call(conversation);
       }
 
       let hasSig = (aMessage.contentType+"").search(/^multipart\/signed(;|$)/i) == 0;
