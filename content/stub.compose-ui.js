@@ -243,11 +243,13 @@ function changeComposeFields(aMode) {
 function showCc(event) {
   $(".ccList, .editCcList").css("display", "");
   $(".showCc").hide();
+  editFields("cc");
 }
 
 function showBcc(event) {
   $(".bccList, .editBccList").css("display", "");
   $(".showBcc").hide();
+  editFields("bcc");
 }
 
 function editFields(aFocusId) {
