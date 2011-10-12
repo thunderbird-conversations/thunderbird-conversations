@@ -119,6 +119,9 @@ window.addEventListener("load", function () {
       hasEnigmail = false;
       Log.debug("Enigmail script doesn't seem to be loaded. Error: " + e);
     }
+
+    let w = getMail3Pane();
+    w.document.getElementById("messagepane").setAttribute("src", "enigmail:dummy");
   }
 }, false);
 
