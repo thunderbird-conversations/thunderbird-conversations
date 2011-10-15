@@ -84,6 +84,7 @@ try {
 
 function ContactManager() {
   this._cache = {};
+  this._colorCache = {};
   this._count = 0;
 }
 
@@ -108,8 +109,18 @@ ContactManager.prototype = {
       cache(name, contact);
       return contact;
     } else {
-      let contact = new ContactFromAB(this, name, email, position);
-      cache(name, contact);
+      let contact = new ContactFromAB(this, name, email, position, this._colorCache[email]);
+      // Only cache contacts which are in the address book. This avoids weird
+      //  phenomena such as a bug tracker sending emails with different names
+      //  but with the same email address, resulting in people all sharing the
+      //  same name.
+      if (contact._card) {
+        cache(name, contact);
+      } else {
+        // We still want to cache the color...
+        if (!(email in this._colorCache))
+          this._colorCache[email] = contact.color;
+      }
       return contact;
     }
   },
@@ -309,9 +320,9 @@ let ContactMixIn = {
   },
 };
 
-function ContactFromAB(manager, name, email) {
+function ContactFromAB(manager, name, email, /* unused */ position, color) {
   this.emails = [];
-  this.color = manager.freshColor(email in gIdentities);
+  this.color = color || manager.freshColor(email in gIdentities);
 
   this._manager = manager;
   this._name = name; // Initially, the displayed name. Might be enhanced later.
