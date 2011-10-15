@@ -54,6 +54,8 @@ let viewer;
 
 function Viewer(aUrl) {
   this.url = aUrl;
+  this.pdfDoc = null;
+  this.curPage = -1;
 }
 
 Viewer.prototype = {
@@ -103,27 +105,42 @@ Viewer.prototype = {
     Log.debug("Downloading", this.url);
 
     this._download(function (data) {
-      //
-      // Instantiate PDFDoc with PDF data
-      //
-      let pdf = new PDFDoc(data);
-      let page = pdf.getPage(1);
-      let scale = 1.5;
+      this.pdfDoc = new PDFDoc(data);
+      this.switchToPage(1);
+    }.bind(this));
+  },
 
-      //
-      // Prepare canvas using PDF page dimensions
-      //
-      let canvas = document.getElementById('the-canvas');
-      let context = canvas.getContext('2d');
-      canvas.height = page.height * scale;
-      canvas.width = page.width * scale;
+  switchToPage: function (aPageNum) {
+    Log.debug("Switching to page", aPageNum);
 
-      //
-      // Render PDF page into canvas context
-      //
-      page.startRendering(context);
-    });
+    let page = this.pdfDoc.getPage(aPageNum);
+    this.curPage = aPageNum;
+    let scale = 1.5;
 
+    //
+    // Prepare canvas using PDF page dimensions
+    //
+    let canvas = document.getElementById('the-canvas');
+    let context = canvas.getContext('2d');
+    canvas.height = page.height * scale;
+    canvas.width = page.width * scale;
+
+    //
+    // Render PDF page into canvas context
+    //
+    page.startRendering(context);
+
+    document.getElementById("count").innerHTML = aPageNum + " of " + this.pdfDoc.numPages;
+  },
+
+  prevPage: function () {
+    if (this.curPage > 1)
+      this.switchToPage(this.curPage - 1);
+  },
+
+  nextPage: function () {
+    if (this.curPage < this.pdfDoc.numPages)
+      this.switchToPage(this.curPage + 1);
   },
 };
 
