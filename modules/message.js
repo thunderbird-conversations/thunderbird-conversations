@@ -87,6 +87,7 @@ let Log = setupLogging("Conversations.Message");
 // This is high because we want enough snippet to extract relevant data from
 // bugzilla snippets.
 const kSnippetLength = 700;
+const kViewerUrl = "chrome://conversations/content/pdfviewer/viewer.html?uri=";
 
 // Add in the global message listener table a weak reference to the given
 //  Message object. The monkey-patch which intercepts the "remote content
@@ -871,6 +872,23 @@ Message.prototype = {
           mainWindow.document.getElementById("tabmail").openTab(
             "contentTab",
             { contentPage: self._attachments[j].url }
+          );
+        });
+      }
+      let pdfMimeTypes = {
+        "application/pdf": null,
+        "application/x-pdf": null,
+        "application/x-bzpdf": null,
+        "application/x-gzpdf": null,
+      };
+      if (att.contentType in pdfMimeTypes) {
+        let img = attNode.getElementsByTagName("img")[0];
+        img.classList.add("view-attachment");
+        img.setAttribute("title", strings.get("viewAttachment"));
+        this.register(img, function (event) {
+          mainWindow.document.getElementById("tabmail").openTab(
+            "chromeTab",
+            { chromePage: kViewerUrl+self._attachments[j].url }
           );
         });
       }
