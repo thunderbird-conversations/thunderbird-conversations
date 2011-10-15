@@ -149,7 +149,7 @@ ContactManager.prototype = {
 
 let ContactMixIn = {
   toTmplData: function _ContactMixIn_toInlineHtml (aUseColor, aPosition, aIsDetail) {
-    let name = this.getName(aPosition);
+    let name = this.getName(aPosition, aIsDetail);
     let tooltipName = this.getTooltipName(aPosition);
     let data = {
       showMonospace: aPosition == Contacts.kFrom,
@@ -166,9 +166,9 @@ let ContactMixIn = {
       star: false,
     };
     if (aIsDetail) {
-      data.name = name != this._email
+      data.name = escapeHtml(name != this._email
         ? MailServices.headerParser.makeFullAddress(name, this._email)
-        : this._email;
+        : this._email);
       data.star = this._card != null;
     }
     return data;
@@ -302,10 +302,10 @@ let ContactMixIn = {
       return this._name || this._email;
   },
 
-  getName: function _ContactMixIn_getName (aPosition) {
+  getName: function _ContactMixIn_getName (aPosition, aIsDetail) {
     Log.assert(aPosition === Contacts.kFrom || aPosition === Contacts.kTo,
       "Someone did not set the 'position' properly");
-    if (this._email in gIdentities)
+    if ((this._email in gIdentities) && !aIsDetail)
       return ((aPosition === Contacts.kFrom)
         ? strings.get("meFromMeToSomeone")
         : strings.get("meFromSomeoneToMe")
