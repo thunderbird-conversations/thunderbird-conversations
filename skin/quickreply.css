@@ -18,10 +18,8 @@
   padding: 10px 10px;
   position: relative;
   
-  -webkit-border-radius: 0 0 5px 5px;
-     -moz-border-radius: 0 0 5px 5px;
-     -o-border-radius: 0 0 5px 5px;
-      border-radius: 0 0 5px 5px;
+  -moz-border-radius: 0 0 5px 5px;
+   border-radius: 0 0 5px 5px;
 }
 
 .quickReply ul.inputs {
@@ -31,10 +29,8 @@
 
   margin: -10px -5px;
   
-  -webkit-transition: all 0.4s ease;
-     -moz-transition: all 0.4s ease;
-     -o-transition: all 0.4s ease;
-      transition: all 0.4s ease;
+  -moz-transition: all 0.4s ease;
+   transition: all 0.4s ease;
 }
 
 .quickReply ul.noPad {
@@ -48,10 +44,8 @@
   width: 50%;
   opacity: 1;
   
-  -webkit-transition: all 0.4s ease;
-     -moz-transition: all 0.4s ease;
-     -o-transition: all 0.4s ease;
-      transition: all 0.4s ease;
+  -moz-transition: all 0.4s ease;
+   transition: all 0.4s ease;
 }
 
 .quickReply ul.inputs li.misc {
@@ -116,26 +110,20 @@
   font-family: sans-serif;
   font-size: 1.4rem;
   
-  -webkit-box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05) inset;
-     -moz-box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05) inset;
-     -o-box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05) inset;
-      box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05) inset;
+  -moz-box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05) inset;
+   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05) inset;
 }
 
 .quickReply textarea.ease {
-  -webkit-transition: all 0.4s ease;
-     -moz-transition: all 0.4s ease;
-     -o-transition: all 0.4s ease;
-      transition: all 0.4s ease;
+  -moz-transition: all 0.4s ease;
+   transition: all 0.4s ease;
 }
 
 .quickReply textarea:focus {
   border-color: #888;
   
-  -webkit-box-shadow: 0 0 0 2px rgba(0, 107, 255, 0.25) inset;
-     -moz-box-shadow: 0 0 0 2px rgba(0, 107, 255, 0.25) inset;
-     -o-box-shadow: 0 0 0 2px rgba(0, 107, 255, 0.25) inset;
-      box-shadow: 0 0 0 2px rgba(0, 107, 255, 0.25) inset;
+  -moz-box-shadow: 0 0 0 2px rgba(0, 107, 255, 0.25) inset;
+   box-shadow: 0 0 0 2px rgba(0, 107, 255, 0.25) inset;
 }
 
 .quickReply li.selected textarea {
@@ -150,8 +138,12 @@ body.inTab .quickReply li.selected textarea {
   height: 216px;
 }
 
+.quickReply .popoutTxt {
+  color: #bbb;
+  padding: 0 4px 0 15px;
+}
+
 .quickReply .popout {
-  width: 16px;
   height: 16px;
   display: block;
   position: absolute;
@@ -169,6 +161,14 @@ body.inTab .quickReply li.selected textarea {
   
   -moz-border-radius: 0 3px 0 0;
   border-radius: 0 3px 0 0;
+}
+
+.quickReply .selected .popout {
+  width: 16px;
+}
+
+.quickReply .selected .popoutTxt {
+  display: none;
 }
 
 .quickReply ul.actions {
