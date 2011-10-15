@@ -672,6 +672,10 @@ ul.special-tags img {
   display: inline;
 }
 
+.view-all {
+  font-weight: bold;
+}
+
 .view-attachment {
   cursor: pointer;
 }
