@@ -323,6 +323,14 @@ html[xmlns] .cf {
 }
 
 /* hide the right UI items */
+.message:not(.isReplyAllEnabled) .action-replyAll {
+  display: none;
+}
+
+.message:not(.isReplyListEnabled) .action-replyList {
+  display: none;
+}
+
 .message:not(.isReplyAllEnabled) .quickReply li.replyAll {
   display: none;
 }

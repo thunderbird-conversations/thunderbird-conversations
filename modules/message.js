@@ -561,10 +561,10 @@ Message.prototype = {
 
     // This is for the smart reply button, we need to determine what's the best
     // action.
-    this.register(".buttonReply", function (event) self.compose(Ci.nsIMsgCompType.ReplyToSender, event));
-    this.register(".buttonReplyAll", function (event) self.compose(Ci.nsIMsgCompType.ReplyAll, event));
-    this.register(".buttonReplyList", function (event) self.compose(Ci.nsIMsgCompType.ReplyToList, event));
-    this.register(".buttonForward", function (event) self.forward(event));
+    this.register(".buttonReply, .action-reply", function (event) self.compose(Ci.nsIMsgCompType.ReplyToSender, event));
+    this.register(".buttonReplyAll, .action-replyAll", function (event) self.compose(Ci.nsIMsgCompType.ReplyAll, event));
+    this.register(".buttonReplyList, .action-replyList", function (event) self.compose(Ci.nsIMsgCompType.ReplyToList, event));
+    this.register(".buttonForward, .action-forward", function (event) self.forward(event));
     let mainActionLink = self._domNode.getElementsByClassName("replyMainActionLink")[0];
     let replyList = self._domNode.getElementsByClassName("buttonReplyList")[0];
     let replyAll = self._domNode.getElementsByClassName("buttonReplyAll")[0];
@@ -594,28 +594,8 @@ Message.prototype = {
     }
 
     this.register(".edit-draft", function (event) self.compose(Ci.nsIMsgCompType.Draft, event));
-    this.register(".action-edit-new", function (event) self.compose(Ci.nsIMsgCompType.Template, event));
-    this.register(".action-compose-all", function (event) {
-      let allEmails =
-        self._msgHdr.author + "," +
-        self._msgHdr.recipients + "," +
-        self._msgHdr.ccList + "," +
-        self._msgHdr.bccList
-      ;
-      allEmails = MailServices.headerParser.removeDuplicateAddresses(allEmails, "");
-      let emailAddresses = {};
-      let names = {};
-      let numAddresses = MailServices.headerParser
-                          .parseHeadersWithArray(allEmails, emailAddresses, names, {});
-      allEmails = [
-        (names.value[i] ? (names.value[i] + " <" + x + ">") : x)
-        for each ([i, x] in Iterator(emailAddresses.value))
-        if (!(x.toLowerCase() in gIdentities))
-      ];
-      let composeAllUri = "mailto:" + allEmails.join(",");
-      let uri = Services.io.newURI(composeAllUri, null, null);
-      MailServices.compose.OpenComposeWindowWithURI(null, uri);
-    });
+    this.register(".action-editNew", function (event) self.compose(Ci.nsIMsgCompType.Template, event));
+    this.register(".action-print", function (event) self.print());
     // These event listeners are all in the header, which happens to have an
     //  event listener set on the click event for toggling the message. So we
     //  make sure that event listener is bubbling, and we register these with
