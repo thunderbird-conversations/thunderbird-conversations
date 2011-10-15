@@ -121,7 +121,13 @@ window.addEventListener("load", function () {
     }
 
     let w = getMail3Pane();
-    w.document.getElementById("messagepane").setAttribute("src", "enigmail:dummy");
+    let iframe = w.document.createElement("iframe");
+    iframe.addEventListener("load", function () {
+      iframe.parentNode.removeChild(iframe);
+    }, true);
+    iframe.setAttribute("src", "enigmail:dummy");
+    iframe.style.display = "none";
+    w.document.getElementById("messagepane").appendChild(iframe);
   }
 }, false);
 
