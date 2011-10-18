@@ -13,7 +13,7 @@
     <em:targetApplication>
       <Description>
         <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
-        <em:minVersion>6.0a2</em:minVersion>
+        <em:minVersion>8.0a1</em:minVersion>
         <em:maxVersion>10.0a1</em:maxVersion>
       </Description>
     </em:targetApplication>
@@ -23,6 +23,7 @@
     <em:description>Brings a conversation view to a Thunderbird near you!</em:description>
     <em:creator>Jonathan Protzenko</em:creator>
     <em:optionsURL>chrome://conversations/content/options.xul</em:optionsURL>
+    <em:optionsType>2</em:optionsType>
     <em:iconURL>chrome://conversations/content/icon.png</em:iconURL>
     <em:homepageURL>http://github.com/protz/GMail-Conversation-View/wiki</em:homepageURL>
 

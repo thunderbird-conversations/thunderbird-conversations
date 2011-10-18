@@ -3,22 +3,22 @@
      everything is displayed properly. 
 
 -->
-<!ENTITY window.title "Thunderbird Conversations Options">
-<!ENTITY title.message_display "Message display">
 <!ENTITY option.expand_who "By default, expand:">
 <!ENTITY option.expand_auto2 "Automatic">
 <!ENTITY option.expand_auto2.tooltip "If the thread is collapsed, expand all unread messages or the last message. If it is expanded, only expand the selected message in the message list.">
 <!ENTITY option.expand_none "No messages">
 <!ENTITY option.expand_all "All messages">
-<!ENTITY title.quoting "Quoting">
-<!ENTITY option.hide_longer_than "Hide quoted text higher than">
-<!ENTITY option.lines "lines">
-<!ENTITY title.advanced "Advanced">
+<!ENTITY title.quoting2 "Quoted text">
+<!ENTITY desc.quoting "Quotes higher than this number of lines will be collapsed.">
 <!ENTITY title.assistant "Setup assistant">
 <!ENTITY option.assistant "Start the setup assistant">
-<!ENTITY title.advanced_display "Conversation display">
-<!ENTITY option.no_friendly_date "Use &quot;normal&quot; dates, just like the message list">
+<!ENTITY title.friendly_date "Friendly dates">
+<!ENTITY option.no_friendly_date2 "Use &quot;normal&quot; dates, just like the message list, to display in the top right corner of messages.">
+<!ENTITY title.monospaced_senders "Display in monospaced">
 <!ENTITY option.monospaced_senders2 "Messages from those addresses/mailing-lists should be displayed in monospaced fonts (separate using commas)">
+<!ENTITY title.tweak_chrome "Tweak chrome fonts">
 <!ENTITY option.tweak_bodies "Tweak the fonts in the message bodies to make them consistent with the outer font (recommended, requires restart).">
+<!ENTITY title.tweak_bodies "Tweak body fonts">
 <!ENTITY option.tweak_chrome "Scale down the font size for the conversation chrome (recommended, requires restart).">
+<!ENTITY title.add_embeds "Add embeds">
 <!ENTITY option.add_embeds "Detect links to various services (e.g. YouTube) in emails, and view them inline.">
