@@ -13,7 +13,7 @@
 <!ENTITY title.assistant "Setup assistant">
 <!ENTITY option.assistant "Start the setup assistant">
 <!ENTITY title.friendly_date "Friendly dates">
-<!ENTITY option.no_friendly_date2 "Use &quot;normal&quot; dates, just like the message list, to display in the top right corner of messages.">
+<!ENTITY option.no_friendly_date2 "In the top right corner, use &quot;normal&quot; dates, just like the message list, instead of &quot;yesterday&quot; and others.">
 <!ENTITY title.monospaced_senders "Display in monospaced">
 <!ENTITY option.monospaced_senders2 "Messages from those addresses/mailing-lists should be displayed in monospaced fonts (separate using commas)">
 <!ENTITY title.tweak_chrome "Tweak chrome fonts">
@@ -22,3 +22,5 @@
 <!ENTITY option.tweak_chrome "Scale down the font size for the conversation chrome (recommended, requires restart).">
 <!ENTITY title.add_embeds "Add embeds">
 <!ENTITY option.add_embeds "Detect links to various services (e.g. YouTube) in emails, and view them inline.">
+<!ENTITY title.debugging "Debugging">
+<!ENTITY desc.debugging "Enable debug output in the system console and the error console. This will generate a lot of messages.">
