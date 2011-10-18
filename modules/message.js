@@ -792,35 +792,12 @@ Message.prototype = {
       let url = att.url.replace(self.RE_MSGKEY, "number="+key);
       let uri = msgHdrGetUri(self._msgHdr);
 
-
-      // New versions of Thunderbird (post-5.0) have changed the API for
-      // attachment objects. Handle both ways for now.
-      let attInfo;
-      if (newAttAPI)
-        attInfo = new mainWindow.AttachmentInfo(
-          att.contentType, url, att.name, uri, att.isExternal, 42
-        );
-      else
-        attInfo = new mainWindow.createNewAttachmentInfo(
+      let attInfo = new mainWindow.AttachmentInfo(
           att.contentType, url, att.name, uri, att.isExternal, 42
         );
 
       attInfos[i] = attInfo;
       return attInfo;
-    };
-    // Open an attachment regardless of the API version we're on
-    let openAtt = function (attInfo) {
-      if (newAttAPI)
-        attInfo.open();
-      else
-        mainWindow.openAttachment(attInfo);
-    };
-    // Save an attachment regardless of the API version we're on
-    let saveAtt = function (attInfo) {
-      if (newAttAPI)
-        attInfo.save();
-      else
-        mainWindow.saveAttachment(attInfo);
     };
     // Re-generate the attachment infos...
     let recreateAttInfos = function (k) {
@@ -839,7 +816,7 @@ Message.prototype = {
 
       this.register(attNode.getElementsByClassName("open-attachment")[0], function (event) {
         try {
-          openAtt(getOrCreateAttInfo(j));
+          getOrCreateAttInfo(j).open();
         } catch (e) {
           Log.debug("Invalid attachment URL", getOrCreateAttInfo(j).url, e);
           recreateAttInfos(function () {
@@ -850,12 +827,12 @@ Message.prototype = {
       });
       this.register(attNode.getElementsByClassName("download-attachment")[0], function (event) {
         try {
-          saveAtt(getOrCreateAttInfo(j));
+          getOrCreateAttInfo(j).save();
         } catch (e) {
           Log.debug("Invalid attachment URL", getOrCreateAttInfo(j).url, e);
           recreateAttInfos(function () {
             reindexMessages([self._msgHdr]);
-            saveAtt(getOrCreateAttInfo(j));
+            getOrCreateAttInfo(j).save();
           });
         }
       });
