@@ -251,18 +251,17 @@ function prepareForHdrIconsOnFocus(aMessage) {
     updateHdrIcons = w.Enigmail.hdrView.updateHdrIcons;
     w.Enigmail.hdrView._oldUpdateHdrIcons = updateHdrIcons;
   }
-  let updateHdrIconsForMessage;
+  let updateHdrIconsForMessage, self, args;
   w.Enigmail.hdrView.updateHdrIcons = function () {
-    let [self, args] = [this, arguments];
+    [self, args] = [this, arguments];
     (updateHdrIconsForMessage = function () {
       updateHdrIcons.apply(self, args);
     })();
   }
   aMessage._domNode.addEventListener("focus", function () {
+    w.Enigmail.hdrView.statusBarHide();
     if (updateHdrIconsForMessage) {
       updateHdrIconsForMessage();
-    } else {
-      w.Enigmail.hdrView.statusBarHide();
     }
   }, true);
 }
