@@ -334,7 +334,7 @@
     }
 
     function archiveToolbar(event) {
-      if (isInTab)
+      if (isInTab || Prefs.operate_on_conversations)
         archiveConversation(event);
       else
         msgHdrsArchive(topMail3Pane(window).gFolderDisplay.selectedMessages);
@@ -345,7 +345,7 @@
     }
 
     function deleteToolbar(event) {
-      if (isInTab)
+      if (isInTab || Prefs.operate_on_conversations)
         deleteConversation();
       else
         msgHdrsDelete(topMail3Pane(window).gFolderDisplay.selectedMessages);

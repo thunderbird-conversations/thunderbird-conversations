@@ -24,3 +24,5 @@
 <!ENTITY option.add_embeds "Detect links to various services (e.g. YouTube) in emails, and view them inline.">
 <!ENTITY title.debugging "Debugging">
 <!ENTITY desc.debugging "Enable debug output in the system console and the error console. This will generate a lot of messages.">
+<!ENTITY title.operate_on_conversations "Toolbar buttons">
+<!ENTITY option.operate_on_conversations "Toolbar buttons should archive and delete the entire conversation, not just selected messages">

@@ -22,6 +22,7 @@ function PrefManager() {
   this.tweak_chrome = prefsService.getBoolPref("tweak_chrome");
   this.add_embeds = prefsService.getBoolPref("add_embeds");
   this.expensive_quote_detection = prefsService.getBoolPref("expensive_quote_detection");
+  this.operate_on_conversations = prefsService.getBoolPref("operate_on_conversations");
   this.hide_quote_length = prefsService.getIntPref("hide_quote_length");
   // This is a hashmap
   this.monospaced_senders = {};
@@ -60,6 +61,7 @@ PrefManager.prototype = {
       case "tweak_chrome":
       case "add_embeds":
       case "expensive_quote_detection":
+      case "operate_on_conversations":
         this[aData] = prefsService.getBoolPref(aData);
         break;
 

@@ -56,6 +56,7 @@
   <setting title="&title.tweak_bodies;" desc="&option.tweak_bodies;" pref="conversations.tweak_bodies" type="bool" />
   <setting title="&title.add_embeds;" desc="&option.add_embeds;" pref="conversations.add_embeds" type="bool" />
   <setting title="&title.monospaced_senders;" desc="&option.monospaced_senders2;" pref="conversations.monospaced_senders" type="string" />
+  <setting title="&title.operate_on_conversations;" desc="&option.operate_on_conversations;" pref="conversations.operate_on_conversations" type="bool" />
   <setting title="&title.assistant;" type="control">  
     <button label="&option.assistant;"
       oncommand="window.openDialog('chrome://conversations/content/assistant/assistant.xhtml', '', 'chrome,width=800,height=500');"
