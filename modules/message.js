@@ -135,6 +135,9 @@ KeyListener.prototype = {
       case this.KeyEvent.DOM_VK_RETURN:
       case 'O'.charCodeAt(0):
         if (!isAccel(event)) {
+          // If we expand a collapsed, when in doubt, mark it read.
+          if (this.message.collapsed)
+            this.message.read = true;
           this.message.toggle();
           event.preventDefault();
           event.stopPropagation();
@@ -509,6 +512,7 @@ Message.prototype = {
         self._conversation._runOnceAfterNSignals(function () {
           if (self.expanded)
             self._conversation._htmlPane.contentWindow.scrollNodeIntoView(self._domNode);
+            self.read = true;
         }, 1);
         self.toggle();
       }, false);
@@ -1075,6 +1079,10 @@ Message.prototype = {
   // Convenience properties
   get read () {
     return this._msgHdr.isRead;
+  },
+
+  set read (v) {
+    return msgHdrsMarkAsRead([this._msgHdr], v);
   },
 
   get starred () {

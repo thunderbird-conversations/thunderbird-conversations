@@ -330,6 +330,7 @@
         [message.expand()
           for each ([, { message }] in Iterator(Conversations.currentConversation.messages))];
         $span.addClass("collapse");
+        Conversations.currentConversation.read = true;
       }
     }
 
