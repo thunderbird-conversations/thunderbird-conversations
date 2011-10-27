@@ -129,6 +129,59 @@ window.addEventListener("load", function () {
     iframe.setAttribute("src", "enigmail:dummy");
     iframe.style.display = "none";
     w.document.getElementById("messagepane").appendChild(iframe);
+
+    // Override updateSecurityStatus for showing security info properly
+    // when plural messages in a thread are streamed at one time.
+    let messagepane = w.document.getElementById("messagepane");
+    messagepane.addEventListener("load", function _overrideUpdateSecurity() {
+      messagepane.removeEventListener("load", _overrideUpdateSecurity, true);
+      let w = getMail3Pane();
+      w._enigMimeMessages = [];
+      w.messageHeaderSink.enigmailPrepSecurityInfo();
+
+      let findMessage = function (uriSpec) {
+        let currentMsgSet = w._currentConversation.messages;
+        for each (let [, x] in Iterator(currentMsgSet)) {
+          if (x.message._uri == uriSpec) {
+            return x.message;
+          }
+        }
+      };
+
+      // EnigMimeHeaderSink.prototype in enigmailMsgHdrViewOverlay.js
+      let enigMimeHeaderSink =
+        Object.getPrototypeOf(w.messageHeaderSink.securityInfo);
+      enigMimeHeaderSink.updateSecurityStatus = function (uriSpec) {
+        let message;
+        if (uriSpec) {
+          // attachment signature which has uriSpec
+          message = findMessage(uriSpec);
+        } else {
+          // multipart/encrypted message
+          // possible to get a wrong message
+          message = w._enigMimeMessages.shift();
+          // Use a nsIURI object to identify the message correctly.
+          // Enigmail patch is required.
+          let uri = arguments[8];
+          if (uri) {
+            let msgHdr = uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
+            let uriSpec = msgHdrGetUri(msgHdr);
+            message = findMessage(uriSpec);
+          }
+        }
+        let args = Array.prototype.slice.call(arguments, 1);
+        let updateHdrIcons = function () {
+          w.Enigmail.hdrView.updateHdrIcons.apply(w.Enigmail.hdrView, args);
+        };
+        if (!message) {
+          Log.error("Message for the security info not found!\n");
+          updateHdrIcons();
+          return;
+        }
+        message._updateHdrIcons = updateHdrIcons;
+        showHdrIconsOnStreamed(message, w);
+      }
+    }, true);
   }
 }, false);
 
@@ -218,9 +271,12 @@ function tryEnigmail(bodyElement, aMsgWindow, aMessage) {
       Log.error("Enigmail error: "+exitCodeObj.value+" --- "+errorMsgObj.value+"\n");
     }
     let w = topMail3Pane(aMessage);
-    w.Enigmail.hdrView.updateHdrIcons(exitCodeObj.value, statusFlagsObj.value,
-      keyIdObj.value, userIdObj.value, sigDetailsObj.value, errorMsgObj.value,
-      blockSeparationObj.value);
+    aMessage._updateHdrIcons = function () {
+      w.Enigmail.hdrView.updateHdrIcons(exitCodeObj.value, statusFlagsObj.value,
+        keyIdObj.value, userIdObj.value, sigDetailsObj.value, errorMsgObj.value,
+        blockSeparationObj.value);
+    };
+    showHdrIconsOnStreamed(aMessage, w);
     return statusFlagsObj.value;
   } catch (ex) {
     dumpCallStack(ex);
@@ -242,33 +298,44 @@ function verifyAttachments(aMessage) {
   });
 };
 
-// Preserve the security info in message event handler to display it
-// when focusing on the message again.
-function prepareForHdrIconsOnFocus(aMessage) {
+// Prepare for showing security info later
+function prepareForShowHdrIcons(aMessage, aHasEnc) {
   let w = topMail3Pane(aMessage);
-  let updateHdrIcons = w.Enigmail.hdrView._oldUpdateHdrIcons;
-  if (!updateHdrIcons) {
-    updateHdrIcons = w.Enigmail.hdrView.updateHdrIcons;
-    w.Enigmail.hdrView._oldUpdateHdrIcons = updateHdrIcons;
-  }
-  let updateHdrIconsForMessage, self, args;
-  w.Enigmail.hdrView.updateHdrIcons = function () {
-    [self, args] = [this, arguments];
-    (updateHdrIconsForMessage = function () {
-      updateHdrIcons.apply(self, args);
-    })();
-  }
+  let conversation = aMessage._conversation;
+  w._currentConversation = conversation;
+  if (!conversation._focusThis)
+    conversation._focusThis = conversation._tellMeWhoToScroll();
+  if (aHasEnc)
+    w._enigMimeMessages.push(aMessage);
+
+  // The security info is stored in the message's _updateHdrIcons
+  // to display it when focusing on the message again.
   aMessage._domNode.addEventListener("focus", function () {
     w.Enigmail.hdrView.statusBarHide();
-    if (updateHdrIconsForMessage) {
-      updateHdrIconsForMessage();
+    if (aMessage._updateHdrIcons) {
+      aMessage._updateHdrIcons();
     }
   }, true);
 }
 
+// Show security info only if the message is focused.
+function showHdrIconsOnStreamed(aMessage, aWindow) {
+  let w = aWindow;
+  let { _domNode: node, _conversation: conversation } = aMessage;
+  let focused = (node == node.ownerDocument.activeElement);
+  if (!focused) {
+    let messageNodes = conversation._domNode
+      .getElementsByClassName(aMessage.cssClass);
+    focused = (node == messageNodes[conversation._focusThis]);
+  }
+  if (focused)
+    aMessage._updateHdrIcons();
+}
+
 // Override treeController defined in enigmailMessengerOverlay.js
 // not to hide status bar when multiple messages are selected.
-function patchDecryptButtonController(aWindow) {
+// Remove unwanted event listeners.
+function patchForShowSecurityInfo(aWindow) {
   let w = aWindow;
   if (w._newTreeController)
     return;
@@ -289,6 +356,12 @@ function patchDecryptButtonController(aWindow) {
   };
   w.top.controllers.appendController(newTreeController);
   w._newTreeController = newTreeController;
+
+  // Event listeners are added in enigmailMsgHdrViewOverlay.js,
+  // but not needed. These display security info incorrectly when
+  // resizing message view.
+  w.removeEventListener('messagepane-hide', w.Enigmail.hdrView.msgHdrViewHide, true);
+  w.removeEventListener('messagepane-unhide', w.Enigmail.hdrView.msgHdrViewUnide, true);
 }
 
 let enigmailHook = {
@@ -314,8 +387,8 @@ let enigmailHook = {
         aMessage._domNode.classList.add("signed");
 
       verifyAttachments(aMessage);
-      prepareForHdrIconsOnFocus(aMessage);
-      patchDecryptButtonController(w);
+      prepareForShowHdrIcons(aMessage, hasEnc);
+      patchForShowSecurityInfo(w);
     }
   },
 
