@@ -520,8 +520,14 @@
     // Mark a message as read if a user scrolls past top and bottom of an
     // unread message.
     $(document).ready(function () {
-      document.addEventListener("scroll", function _markReadInView() {
+      document.addEventListener("focus", function _markReadInView() {
         document.removeEventListener("scroll", _markReadInView, false);
+        window.setTimeout(function () {
+          document.addEventListener("scroll", _markReadInView, false);
+        }, 200);
+        if (!Conversations.currentConversation)
+          return;
+
         let pageTop = window.pageYOffset;
         let pageBottom = pageTop + window.innerHeight;
         let messages = Conversations.currentConversation.messages;
@@ -545,9 +551,6 @@
             }
           }
         }
-        window.setTimeout(function () {
-          document.addEventListener("scroll", _markReadInView, false);
-        }, 500);
       }, false);
     });
   ]]>
