@@ -519,40 +519,38 @@
 
     // Mark a message as read if a user scrolls past top and bottom of an
     // unread message.
-    $(document).ready(function () {
-      document.addEventListener("mouseover", function _markReadInView() {
-        document.removeEventListener("scroll", _markReadInView, false);
-        window.setTimeout(function () {
-          document.addEventListener("scroll", _markReadInView, false);
-        }, 200);
-        if (!Conversations.currentConversation)
-          return;
+    function markReadInView() {
+      document.removeEventListener("scroll", markReadInView, false);
+      window.setTimeout(function () {
+        document.addEventListener("scroll", markReadInView, false);
+      }, 200);
+      if (!Conversations.currentConversation)
+        return;
 
-        let pageTop = window.pageYOffset;
-        let pageBottom = pageTop + window.innerHeight;
-        let messages = Conversations.currentConversation.messages;
-        for each (let [i, { message }] in Iterator(messages)) {
-          if (!message.read && message.expanded) {
-            if (!message._topInView) {
-              let top = $(message._domNode).offset().top;
-              if (top > pageTop && top < pageBottom)
-                message._topInView = true;
-            }
-            if (!message._bottomInView) {
-              let footerClass = (i == messages.length - 1) ? ".quickReply" : ".messageFooter";
-              let bottom = $(message._domNode.querySelector(footerClass)).offset().top;
-              if (bottom > pageTop && bottom < pageBottom)
-                message._bottomInView = true;
-            }
-            if (message._topInView && message._bottomInView) {
-              message._topInView = false;
-              message._bottomInView = false;
-              message.read = true;
-            }
+      let pageTop = window.pageYOffset;
+      let pageBottom = pageTop + window.innerHeight;
+      let messages = Conversations.currentConversation.messages;
+      for each (let [i, { message }] in Iterator(messages)) {
+        if (!message.read && message.expanded) {
+          if (!message._topInView) {
+            let top = $(message._domNode).offset().top;
+            if (top > pageTop && top < pageBottom)
+              message._topInView = true;
+          }
+          if (!message._bottomInView) {
+            let footerClass = (i == messages.length - 1) ? ".quickReply" : ".messageFooter";
+            let bottom = $(message._domNode.querySelector(footerClass)).offset().top;
+            if (bottom > pageTop && bottom < pageBottom)
+              message._bottomInView = true;
+          }
+          if (message._topInView && message._bottomInView) {
+            message._topInView = false;
+            message._bottomInView = false;
+            message.read = true;
           }
         }
-      }, false);
-    });
+      }
+    }
   ]]>
   </script>
 </head>

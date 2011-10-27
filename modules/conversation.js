@@ -815,6 +815,11 @@ Conversation.prototype = {
       }
       let tmplData = [m.message.toTmplData(false)
         for each ([_i, m] in Iterator(aMessages))];
+
+      let w = this._htmlPane.contentWindow;
+      [w.document.removeEventListener(x, w.markReadInView, false)
+        for each ([, x] in Iterator(["mouseover", "focus", "scroll"]))];
+
       $("#messageTemplate").tmpl(tmplData).appendTo($(this._domNode));
 
 
@@ -1157,6 +1162,10 @@ Conversation.prototype = {
       self._onComplete();
       // _onComplete will potentially set a timeout that, when fired, takes care
       //  of notifying us that we should update the conversation buttons.
+
+      let w = self._htmlPane.contentWindow;
+      [w.document.addEventListener(x, w.markReadInView, false)
+        for each ([, x] in Iterator(["mouseover", "focus"]))];
     }, this.messages.length);
 
     for each (let [i, action] in Iterator(expandThese)) {
