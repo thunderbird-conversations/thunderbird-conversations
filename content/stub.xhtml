@@ -520,7 +520,7 @@
     // Mark a message as read if a user scrolls past top and bottom of an
     // unread message.
     $(document).ready(function () {
-      document.addEventListener("focus", function _markReadInView() {
+      document.addEventListener("mouseover", function _markReadInView() {
         document.removeEventListener("scroll", _markReadInView, false);
         window.setTimeout(function () {
           document.addEventListener("scroll", _markReadInView, false);
