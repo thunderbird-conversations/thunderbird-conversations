@@ -817,6 +817,7 @@ Conversation.prototype = {
         for each ([_i, m] in Iterator(aMessages))];
 
       let w = this._htmlPane.contentWindow;
+      w.clearTimeout(w.markReadInView.timeout);
       [w.document.removeEventListener(x, w.markReadInView, false)
         for each ([, x] in Iterator(["mouseover", "focus", "scroll"]))];
 

@@ -521,7 +521,8 @@
     // unread message.
     function markReadInView() {
       document.removeEventListener("scroll", markReadInView, false);
-      window.setTimeout(function () {
+      clearTimeout(markReadInView.timeout);
+      markReadInView.timeout = setTimeout(function () {
         document.addEventListener("scroll", markReadInView, false);
       }, 200);
       if (!Conversations.currentConversation)
