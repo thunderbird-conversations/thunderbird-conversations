@@ -55,6 +55,7 @@ Cu.import("resource://conversations/stdlib/misc.js");
 Cu.import("resource://conversations/message.js");
 Cu.import("resource://conversations/contact.js");
 Cu.import("resource://conversations/misc.js"); // for groupArray
+Cu.import("resource://conversations/hook.js");
 
 let Log = setupLogging("Conversations.Conversation");
 
@@ -1149,6 +1150,16 @@ Conversation.prototype = {
     this._runOnceAfterNSignals(function () {
       let focusedNode = messageNodes[focusThis];
       self._htmlPane.contentWindow.scrollNodeIntoView(focusedNode);
+
+      try {
+        let focusedMessage = self.messages[focusThis].message;
+        [h.onFocusMessage(focusedMessage)
+          for each ([, h] in Iterator(getHooks()))
+          if (typeof(h.onFocusMessage) == "function")];
+      } catch (e) {
+        Log.warn("Plugin returned an error:", e);
+        dumpCallStack(e);
+      }
 
       for each (let [i, node] in Iterator(messageNodes)) {
         // XXX This is bug 611957

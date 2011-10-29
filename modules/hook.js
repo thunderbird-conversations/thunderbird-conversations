@@ -32,6 +32,12 @@ var EXPORTED_SYMBOLS = ['registerHook', 'getHooks', 'removeHook'];
  *  // @return aBody Same remark.
  *  onReplyComposed (aMessage, aBody) {
  *  },
+ *
+ *  // Called when a message has been focused while building a
+ *  // conversation.
+ *  // @param aMessage Focused message instance.
+ *  onFocusMessage (aMessage) {
+ *  },
  * }
  *
  * If you need something else, just ask!
