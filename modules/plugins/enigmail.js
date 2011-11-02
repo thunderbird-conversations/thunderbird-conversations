@@ -325,7 +325,8 @@ function prepareForShowHdrIcons(aMessage, aHasEnc) {
   let node = aMessage._domNode;
   node.removeEventListener("focus", conversation._focusListener, true);
   node.addEventListener("focus", function (event) {
-    if (event.target.classList.contains("message"))
+    let classList = event.target.classList;
+    if (classList && classList.contains("message"))
       updateSecurityInfo(aMessage);
   }, true);
   node.addEventListener("click", function () {
