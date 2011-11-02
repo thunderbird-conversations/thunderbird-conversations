@@ -324,16 +324,12 @@ function prepareForShowHdrIcons(aMessage, aHasEnc) {
   // the link fails. This hack suppresses focus event when clicking.
   let node = aMessage._domNode;
   node.removeEventListener("focus", conversation._focusListener, true);
-  let update = function () {
-    updateSecurityInfo(aMessage);
-  };
-  node.addEventListener("focus", update, true);
-  node.addEventListener("click", update, true);
-  node.addEventListener("mousedown", function () {
-    node.removeEventListener("focus", update, true);
+  node.addEventListener("focus", function (event) {
+    if (event.target.classList.contains("message"))
+      updateSecurityInfo(aMessage);
   }, true);
-  node.addEventListener("blur", function () {
-    node.addEventListener("focus", update, true);
+  node.addEventListener("click", function () {
+    updateSecurityInfo(aMessage);
   }, true);
 }
 
