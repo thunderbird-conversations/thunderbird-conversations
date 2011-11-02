@@ -308,12 +308,12 @@ function prepareForShowHdrIcons(aMessage, aHasEnc) {
 
   // Add default focus event listner for keyboard shortcut which moves
   // focus to the next or previous message.
-  if (!conversation._forcusListener) {
-    conversation._forcusListener = function () {
+  if (!conversation._focusListener) {
+    conversation._focusListener = function () {
       w.Enigmail.hdrView.statusBarHide();
     };
     [message._domNode.addEventListener("focus",
-      conversation._forcusListener, true)
+      conversation._focusListener, true)
       for each ([, { message }] in Iterator(conversation.messages))];
   }
 
@@ -323,7 +323,7 @@ function prepareForShowHdrIcons(aMessage, aHasEnc) {
   // the security info causes to move the link position and clicking
   // the link fails. This hack suppresses focus event when clicking.
   let node = aMessage._domNode;
-  node.removeEventListener("focus", conversation._forcusListener, true);
+  node.removeEventListener("focus", conversation._focusListener, true);
   let update = function () {
     updateSecurityInfo(aMessage);
   };
