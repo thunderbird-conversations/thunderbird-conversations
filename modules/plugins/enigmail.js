@@ -157,7 +157,7 @@ window.addEventListener("load", function () {
             uriSpec = msgHdrGetUri(msgHdr);
           }
         }
-        if (uriSpec) {
+        if (uriSpec && w._currentConversation) {
           for each (let [, x] in Iterator(w._currentConversation.messages)) {
             if (x.message._uri == uriSpec) {
               message = x.message;
@@ -180,7 +180,7 @@ window.addEventListener("load", function () {
   }
 }, false);
 
-function tryEnigmail(bodyElement, aMsgWindow, aMessage) {
+function tryEnigmail(bodyElement, aMessage) {
   if (bodyElement.textContent.indexOf("-----BEGIN PGP") < 0)
     return null;
 
@@ -217,12 +217,12 @@ function tryEnigmail(bodyElement, aMsgWindow, aMessage) {
     var pgpBlock = msgText.substring(startOffset - indent.length,
                                      endStart + nextLine);
     if (nextLine == 0) {
-      pgpBlock += msgText(endStart);
+      pgpBlock += msgText.substring(endStart);
     }
     if (indent) {
       pgpBlock = pgpBlock.replace(new RegExp("^"+indent+"?", "gm"), "");
     }
-    var charset = aMsgWindow ? aMsgWindow.mailCharacterSet : "";
+    var charset = aMessage._msgHdr.Charset;
     msgText = EnigmailCommon.convertFromUnicode(
                 head+"\n"+pgpBlock+"\n"+tail, charset);
 
@@ -303,19 +303,44 @@ function prepareForShowHdrIcons(aMessage, aHasEnc) {
   // _onComplete().
   w._currentConversation = conversation;
 
-  if (conversation._focusThis === undefined)
-    conversation._focusThis = conversation._tellMeWhoToScroll();
   if (aHasEnc)
     w._encryptedMimeMessages.push(aMessage);
 
+  // Add default focus event listner for keyboard shortcut which moves
+  // focus to the next or previous message.
+  if (!conversation._focusListener) {
+    conversation._focusListener = function () {
+      w.Enigmail.hdrView.statusBarHide();
+    };
+    [message._domNode.addEventListener("focus",
+      conversation._focusListener, true)
+      for each ([, { message }] in Iterator(conversation.messages))];
+  }
+
   // The security info is stored in the message's _updateHdrIcons
   // to show it when focusing on the message again.
-  aMessage._domNode.addEventListener("focus", function () {
-    w.Enigmail.hdrView.statusBarHide();
-    if (aMessage._updateHdrIcons) {
-      aMessage._updateHdrIcons();
-    }
+  // If the focus is triggered when clicking a link, showing or hiding
+  // the security info causes to move the link position and clicking
+  // the link fails. This hack suppresses focus event when clicking.
+  let node = aMessage._domNode;
+  node.removeEventListener("focus", conversation._focusListener, true);
+  node.addEventListener("focus", function (event) {
+    let classList = event.target.classList;
+    if (classList && classList.contains("message"))
+      updateSecurityInfo(aMessage);
   }, true);
+  node.addEventListener("click", function () {
+    updateSecurityInfo(aMessage);
+  }, true);
+}
+
+// Update security info display of the message.
+function updateSecurityInfo(aMessage) {
+  let w = topMail3Pane(aMessage);
+  w.Enigmail.hdrView.statusBarHide();
+  if (aMessage._updateHdrIcons) {
+    aMessage._updateHdrIcons();
+  }
 }
 
 // Show security info only if the message is focused.
@@ -324,9 +349,8 @@ function showHdrIconsOnStreamed(aMessage, updateHdrIcons) {
   let { _domNode: node, _conversation: conversation } = aMessage;
   let focused = (node == node.ownerDocument.activeElement);
   if (!focused) {
-    let messageNodes = conversation._domNode
-      .getElementsByClassName(aMessage.cssClass);
-    focused = (node == messageNodes[conversation._focusThis]);
+    let focusThis = conversation._tellMeWhoToScroll();
+    focused = (aMessage == conversation.messages[focusThis].message);
   }
   if (focused)
     updateHdrIcons();
@@ -399,7 +423,7 @@ let enigmailHook = {
     let iframe = aDomNode.getElementsByTagName("iframe")[0];
     let iframeDoc = iframe.contentDocument;
     if (iframeDoc.body.textContent.length > 0 && hasEnigmail) {
-      let status = tryEnigmail(iframeDoc.body, aMsgWindow, aMessage);
+      let status = tryEnigmail(iframeDoc.body, aMessage);
       if (status & Ci.nsIEnigmail.DECRYPTION_OKAY)
         aDomNode.classList.add("decrypted");
       if (status & Ci.nsIEnigmail.GOOD_SIGNATURE)
@@ -570,6 +594,12 @@ let enigmailHook = {
       return citeString("\n" + aMessage.decryptedText);
     }
     return aBody;
+  },
+
+  // For the case when the message which has been already streamed is
+  // selected at message list.
+  onFocusMessage: function _enigmailHook_onFocusMessage(aMessage) {
+    updateSecurityInfo(aMessage);
   },
 }
 
