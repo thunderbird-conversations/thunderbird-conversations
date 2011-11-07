@@ -818,9 +818,7 @@ Conversation.prototype = {
         for each ([_i, m] in Iterator(aMessages))];
 
       let w = this._htmlPane.contentWindow;
-      w.clearTimeout(w.markReadInView.timeout);
-      [w.document.removeEventListener(x, w.markReadInView, true)
-        for each ([, x] in Iterator(["mouseover", "focus", "keydown", "scroll"]))];
+      w.markReadInView.disable();
 
       $("#messageTemplate").tmpl(tmplData).appendTo($(this._domNode));
 
@@ -1176,8 +1174,12 @@ Conversation.prototype = {
       //  of notifying us that we should update the conversation buttons.
 
       let w = self._htmlPane.contentWindow;
-      [w.document.addEventListener(x, w.markReadInView, true)
-        for each ([, x] in Iterator(["mouseover", "focus", "keydown"]))];
+      if (Prefs.getBool("mailnews.mark_message_read.auto") &&
+          !Prefs.getBool("mailnews.mark_message_read.delay")) {
+        w.markReadInView.enable();
+      } else {
+        w.markReadInView.disable();
+      }
     }, this.messages.length);
 
     for each (let [i, action] in Iterator(expandThese)) {
