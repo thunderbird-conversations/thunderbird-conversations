@@ -599,7 +599,8 @@ let enigmailHook = {
   // For the case when the message which has been already streamed is
   // selected at message list.
   onFocusMessage: function _enigmailHook_onFocusMessage(aMessage) {
-    updateSecurityInfo(aMessage);
+    if (hasEnigmail)
+      updateSecurityInfo(aMessage);
   },
 }
 
