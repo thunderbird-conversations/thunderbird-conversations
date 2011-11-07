@@ -552,6 +552,18 @@
         }
       }
     }
+    (function () {
+      let w = window;
+      markReadInView.enable = function () {
+        [w.document.addEventListener(x, w.markReadInView, true)
+          for each ([, x] in Iterator(["mouseover", "focus", "keydown"]))];
+      };
+      markReadInView.disable = function () {
+        w.clearTimeout(w.markReadInView.timeout);
+        [w.document.removeEventListener(x, w.markReadInView, true)
+          for each ([, x] in Iterator(["mouseover", "focus", "keydown", "scroll"]))];
+      };
+    })();
   ]]>
   </script>
 </head>
