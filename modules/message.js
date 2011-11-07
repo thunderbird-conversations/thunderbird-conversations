@@ -583,8 +583,16 @@ Message.prototype = {
       replyList.style.display = "none";
     if (!this.isReplyAllEnabled)
       replyAll.style.display = "none";
+    // These items must be removed completely so that the alternate colors are
+    //  not off.
+    let replyListLink = self._domNode.getElementsByClassName("action-replyList")[0];
+    if (!this.isReplyListEnabled)
+      replyListLink.parentNode.removeChild(replyListLink);
+    let replyAllLink = self._domNode.getElementsByClassName("action-replyAll")[0];
+    if (!this.isReplyAllEnabled)
+      replyAllLink.parentNode.removeChild(replyAllLink);
     // Register the right actions. Make sure we're consistent with
-    // stub.compose-ui.js!
+    //  stub.compose-ui.js!
     if (this.isReplyAllEnabled)
       this._domNode.classList.add("isReplyAllEnabled");
     if (this.isReplyListEnabled) {
