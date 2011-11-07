@@ -108,6 +108,14 @@ let isWindows = ("@mozilla.org/windows-registry-key;1" in Cc);
 
 function isAccel (event) (isOSX && event.metaKey || event.ctrlKey)
 
+function dateAccordingToPref(date) {
+  try {
+    return Prefs["no_friendly_date"] ? dateAsInMessageList(date) : makeFriendlyDateAgo(date);
+  } catch (e) {
+    return dateAsInMessageList(date);
+  }
+}
+
 function KeyListener(aMessage) {
   this.message = aMessage;
   this.mail3PaneWindow = topMail3Pane(aMessage);
@@ -261,12 +269,7 @@ function Message(aConversation) {
   this._snippet = "";
   this._conversation = aConversation;
 
-  let date = new Date(this._msgHdr.date/1000);
-  try {
-    this._date = Prefs["no_friendly_date"] ? dateAsInMessageList(date) : makeFriendlyDateAgo(date);
-  } catch (e) {
-    this._date = dateAsInMessageList(date);
-  }
+  this._date = dateAccordingToPref(new Date(this._msgHdr.date/1000));
   // This one is for display purposes
   this._from = this.parse(this._msgHdr.mime2DecodedAuthor)[0];
   // Might be filled to something more meaningful later, in case we replace the
@@ -1472,7 +1475,9 @@ Message.prototype = {
    */
   exportAsHtml: function _Message_exportAsHtml() {
     let author = escapeHtml(this._contacts[0]._name);
-    let date = new Date(this._msgHdr.date/1000).toLocaleString("%x");
+    let authorEmail = this._contacts[0]._email;
+    let authorAvatar = this._contacts[0].avatar;
+    let date = dateAccordingToPref(new Date(this._msgHdr.date/1000));
     // We try to convert the bodies to plain text, to enhance the readability in
     // the forwarded conversation. Note: <pre> tags are not converted properly
     // it seems, need to investigate...
@@ -1482,8 +1487,12 @@ Message.prototype = {
     ;
     // Do our little formatting...
     let html = [
-      '<b><span style="color: #396BBD">', author, '</span></b><br />',
-      '<span style="color: #666">', date, '</span><br />',
+      '<div style="overflow: auto">',
+      '<img src="', authorAvatar, '" style="float: left; height: 48px; margin-right: 5px" />',
+      '<b><span><a style="color: #396BBD !important; text-decoration: none !important; font-weight: bold" href="mailto:', authorEmail,
+      '">', author, '</a></span></b><br />',
+      '<span style="color: #666">', date, '</span>',
+      '</div>',
       '<br />',
       '<div style="color: #666">',
         (this.iframe ? escapeHtml(body) : ("<i>" + escapeHtml(body) + "</i>...")),
