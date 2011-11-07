@@ -262,7 +262,11 @@ function Message(aConversation) {
   this._conversation = aConversation;
 
   let date = new Date(this._msgHdr.date/1000);
-  this._date = Prefs["no_friendly_date"] ? dateAsInMessageList(date) : makeFriendlyDateAgo(date);
+  try {
+    this._date = Prefs["no_friendly_date"] ? dateAsInMessageList(date) : makeFriendlyDateAgo(date);
+  } catch (e) {
+    this._date = dateAsInMessageList(date);
+  }
   // This one is for display purposes
   this._from = this.parse(this._msgHdr.mime2DecodedAuthor)[0];
   // Might be filled to something more meaningful later, in case we replace the

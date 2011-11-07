@@ -61,22 +61,6 @@
       };
     })(jQuery);
 
-    function hideConversationMenu() {
-      $("#conversationMenuWrapper").css("display", "none");
-    }
-
-    function showConversationMenu() {
-      $("#conversationMenuWrapper").css("display", "block");
-      let menu = $(".conversationMenu");
-      let win = $(window);
-      let h = menu.height();
-      let w = menu.width();
-      let wh = win.height();
-      let ww = win.width();
-      menu.css("margin-top", (wh-h)/2);
-      menu.css("margin-left", (ww-w)/2);
-    }
-
     function clearMenu() {
       let menus = document.getElementsByClassName("menu");
       for each (let [, menu] in Iterator(menus))

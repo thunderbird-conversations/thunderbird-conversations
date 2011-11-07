@@ -475,7 +475,6 @@ MonkeyPatch.prototype = {
                 htmlpane.contentWindow.newComposeSessionByDraftIf();
                 aConversation.completed = true;
                 htmlpane.contentWindow.registerQuickReply();
-                htmlpane.contentWindow.hideConversationMenu();
               }
               if (needsGC)
                 Cu.forceGC();
