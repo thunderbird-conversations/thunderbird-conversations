@@ -343,22 +343,19 @@
 
     function forwardConversation(event) {
       let conv = Conversations.currentConversation;
-      conv._runOnceAfterNSignals(function () {
-        let fields = Cc["@mozilla.org/messengercompose/composefields;1"]
-                        .createInstance(Components.interfaces.nsIMsgCompFields);
-        fields.characterSet = "UTF-8";
-        fields.bodyIsAsciiOnly = false;
-        fields.forcePlainText = false;
-        fields.body = Conversations.currentConversation.exportAsHtml();
+      let fields = Cc["@mozilla.org/messengercompose/composefields;1"]
+                      .createInstance(Components.interfaces.nsIMsgCompFields);
+      fields.characterSet = "UTF-8";
+      fields.bodyIsAsciiOnly = false;
+      fields.forcePlainText = false;
+      Conversations.currentConversation.exportAsHtml(function (html) {
+        fields.body = html;
         let params = Cc["@mozilla.org/messengercompose/composeparams;1"]
-                        .createInstance(Components.interfaces.nsIMsgComposeParams);
-        params.format = Components.interfaces.nsIMsgCompFormat.HTML;
+                        .createInstance(Ci.nsIMsgComposeParams);
+        params.format = Ci.nsIMsgCompFormat.HTML;
         params.composeFields = fields;
         return MailServices.compose.OpenComposeWindowWithParams(null, params);
-      }, conv.messages.length);
-      for each (let { message } in conv.messages) {
-        message.expand();
-      }
+      });
     }
 
     let oldPrint = window.print;

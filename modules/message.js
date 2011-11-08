@@ -1473,32 +1473,30 @@ Message.prototype = {
    * that we want to forward a plaintext version of the message, so we try and
    * do our best to give this. We're trying not to stream it once more!
    */
-  exportAsHtml: function _Message_exportAsHtml() {
+  exportAsHtml: function _Message_exportAsHtml(k) {
     let author = escapeHtml(this._contacts[0]._name);
     let authorEmail = this._contacts[0]._email;
     let authorAvatar = this._contacts[0].avatar;
+    let authorColor = this._contacts[0].color;
     let date = dateAccordingToPref(new Date(this._msgHdr.date/1000));
     // We try to convert the bodies to plain text, to enhance the readability in
     // the forwarded conversation. Note: <pre> tags are not converted properly
     // it seems, need to investigate...
-    let body = this.iframe
-      ? this.bodyAsText
-      : this._snippet
-    ;
-    // Do our little formatting...
-    let html = [
-      '<div style="overflow: auto">',
-      '<img src="', authorAvatar, '" style="float: left; height: 48px; margin-right: 5px" />',
-      '<b><span><a style="color: #396BBD !important; text-decoration: none !important; font-weight: bold" href="mailto:', authorEmail,
-      '">', author, '</a></span></b><br />',
-      '<span style="color: #666">', date, '</span>',
-      '</div>',
-      '<br />',
-      '<div style="color: #666">',
-        (this.iframe ? escapeHtml(body) : ("<i>" + escapeHtml(body) + "</i>...")),
-      '</div>',
-    ].join("");
-    return html;
+    quoteMsgHdr(this._msgHdr, function (body) {
+      // Do our little formatting...
+      let html = [
+        '<div style="overflow: auto">',
+        '<img src="', authorAvatar, '" style="float: left; height: 48px; margin-right: 5px" />',
+        '<b><span><a style="color: ', authorColor, ' !important; text-decoration: none !important; font-weight: bold" href="mailto:', authorEmail,
+        '">', author, '</a></span></b><br />',
+        '<span style="color: #666">', date, '</span>',
+        '</div>',
+        '<div style="color: #666">',
+          body,
+        '</div>',
+      ].join("");
+      k(html);
+    });
   },
 }
 

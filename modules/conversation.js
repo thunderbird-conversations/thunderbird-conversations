@@ -1226,12 +1226,26 @@ Conversation.prototype = {
   },
 
   // For the "forward conversation" action
-  exportAsHtml: function _Conversation_exportAsHtml () {
+  exportAsHtml: function _Conversation_exportAsHtml (k) {
     let hr = '<div style="border-top: 1px solid #888; height: 15px; width: 70%; margin: 0 auto; margin-top: 15px">&nbsp;</div>';
     let html = strings.get("conversationFillInText")+hr;
-    let messagesHtml = [m.exportAsHtml() for each ({ message: m } in this.messages)];
-    html += "<div style=\"font-family: sans-serif !important;\">"+messagesHtml.join(hr)+"</div>";
-    return html;
+    let count = 1;
+    let top = function () {
+      if (!--count) {
+        html += "<div style=\"font-family: sans-serif !important;\">"+messagesHtml.join(hr)+"</div>";
+        k(html);
+      }
+    }
+    let messagesHtml = new Array(this.messages.length);
+    for each (let [i, { message: message }] in Iterator(this.messages)) {
+      let j = i;
+      count++;
+      message.exportAsHtml(function (aHtml) {
+        messagesHtml[j] = aHtml;
+        top();
+      });
+    }
+    top();
   },
 }
 
