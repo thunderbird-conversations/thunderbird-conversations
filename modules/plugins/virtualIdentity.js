@@ -6,19 +6,16 @@ const Cu = Components.utils;
 
 Cu.import("resource://conversations/hook.js");
 Cu.import("resource://conversations/log.js");
+Cu.import("resource://conversations/misc.js");
+
 
 let Log = setupLogging("Conversations.Modules.VirtualIdentity");
 
-let window = Cc['@mozilla.org/appshell/window-mediator;1']
-  .getService(Ci.nsIWindowMediator)
-  .getMostRecentWindow("mail:3pane");
-
-const gHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"]
-  .getService(Ci.nsIMsgHeaderParser);
+let window = getMail3Pane()
 
 let virtualIdentityHook = {
-  onComposeSessionConstructDone: function _virtualIdentityHook_onComposeSessionConstructDone(recipients, params, senderNameElem) {
-    window.virtualIdentityExtension.conversationHook.onComposeSessionConstructDone(recipients, params, senderNameElem, Log);
+  onComposeFieldsChanged: function _virtualIdentityHook_onComposeFieldsChanged(recipients, params, senderNameElem) {
+    window.virtualIdentityExtension.conversationHook.onComposeFieldsChanged(recipients, params, senderNameElem, Log);
   },
   
   onMessageBeforeSendOrPopup: function _enigmailHook_onMessageBeforeSendOrPopup(params, recipients, popOut, aStatus) {

@@ -551,13 +551,15 @@ ComposeSession.prototype = {
 
   setupAutocomplete: function () {
     let self = this;
-    let callComposeSessionTrigger = function() {
+    let notifyHooks = function() {
       let recipients = JSON.parse($("#to").val()) + ", " + JSON.parse($("#cc").val());
-      Log.debug("XXXXXX callComposeSessionTrigger XXXXXX", recipients )
       for each (let [, h] in Iterator(getHooks())) {
-        try { if (typeof(h.onComposeSessionConstructDone) == "function") 
-              h.onComposeSessionConstructDone(recipients, self.params, $(".senderName"));
-        } catch (e) { Log.warn("Plugin returned an error:", e); dumpCallStack(e); };
+        try {
+          if (typeof(h.onComposeFieldsChanged) == "function") 
+            h.onComposeFieldsChanged(recipients, self.params, $(".senderName"));
+        } catch (e) {
+          Log.warn("Plugin returned an error:", e); dumpCallStack(e);
+        };
       }
     };
     this.match({
@@ -574,7 +576,7 @@ ComposeSession.prototype = {
             $(".replyMethod-replyAll").show();
             $(".replyMethod-replyList").show();
           }
-          callComposeSessionTrigger();
+          notifyHooks();
         };
         if (aReplyType == "replyAll") {
           self.changeComposeFields("replyAll", showHideActions);
@@ -594,7 +596,7 @@ ComposeSession.prototype = {
             for each ([i, item] in Iterator(list))];
         };
         setupAutocomplete(makeTokens(to), makeTokens(cc), makeTokens(bcc));
-        callComposeSessionTrigger();
+        notifyHooks();
       },
     });
   },
@@ -706,9 +708,12 @@ ComposeSession.prototype = {
     // Notify the virtualIdentity Extension exclusivly, before any other function requests the identity of the message
     // or before message is opened in a new window
     for each (let [, h] in Iterator(getHooks())) {
-    try { if (typeof(h.onMessageBeforeSendOrPopup) == "function") 
-          sendStatus = h.onMessageBeforeSendOrPopup(this.params, to + ", " + cc, popOut, sendStatus);
-    } catch (e) { Log.warn("Plugin returned an error:", e); dumpCallStack(e); };
+    try {
+      if (typeof(h.onMessageBeforeSendOrPopup) == "function") 
+        sendStatus = h.onMessageBeforeSendOrPopup(this.params, to + ", " + cc, popOut, sendStatus);
+    } catch (e) {
+      Log.warn("Plugin returned an error:", e); dumpCallStack(e);
+    };
   }
 
     if (!popOut) {
@@ -725,13 +730,13 @@ ComposeSession.prototype = {
         Log.warn("Plugin returned an error:", e);
         dumpCallStack(e);
       }
-    }
-    if (sendStatus.canceled) {
-      pText(strings.get("messageSendingCanceled"));
-      $(".statusPercentage").hide();
-      $(".statusThrobber").hide();
-      $(".quickReplyHeader").show();
-      return;
+      if (sendStatus.canceled) {
+        pText(strings.get("messageSendingCanceled"));
+        $(".statusPercentage").hide();
+        $(".statusThrobber").hide();
+        $(".quickReplyHeader").show();
+        return;
+      }
     }
   
     return sendMessage({
@@ -915,7 +920,12 @@ let sendListener = {
       Log.debug("NS_FAILED onStopSending");
     }
     for each (let [, h] in Iterator(getHooks())) {
-		try { if (typeof(h.onStopSending) == "function") h.onStopSending(); } catch (e) { Log.warn("Plugin returned an error:", e); dumpCallStack(e);};
+      try {
+        if (typeof(h.onStopSending) == "function")
+          h.onStopSending();
+      } catch (e) {
+        Log.warn("Plugin returned an error:", e); dumpCallStack(e);
+      };
 	}
   },
 

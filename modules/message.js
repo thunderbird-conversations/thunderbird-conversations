@@ -1170,8 +1170,9 @@ Message.prototype = {
     let self = this;
     
     for each (let [, h] in Iterator(getHooks())) {
-      try { if (typeof(h.onMessageBeforeStreaming) == "function") 
-         h.onMessageBeforeStreaming(this);
+      try {
+        if (typeof(h.onMessageBeforeStreaming) == "function") 
+          h.onMessageBeforeStreaming(this);
       } catch (e) {
         Log.warn("Plugin returned an error:", e); dumpCallStack(e);
       };
@@ -1225,8 +1226,9 @@ Message.prototype = {
             //  the DOM of the message (i.e. decrypt it) before we tweak the
             //  fonts and stuff.
             for each (let [, h] in Iterator(getHooks())) {
-              try { if (typeof(h.onMessageStreamed) == "function") 
-                h.onMessageStreamed(self._msgHdr, self._domNode, msgWindow, self);
+              try {
+                if (typeof(h.onMessageStreamed) == "function") 
+                  h.onMessageStreamed(self._msgHdr, self._domNode, msgWindow, self);
               } catch (e) {
                 Log.warn("Plugin returned an error:", e); dumpCallStack(e);
               };
