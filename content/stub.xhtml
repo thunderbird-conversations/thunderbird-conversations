@@ -61,22 +61,6 @@
       };
     })(jQuery);
 
-    function hideConversationMenu() {
-      $("#conversationMenuWrapper").css("display", "none");
-    }
-
-    function showConversationMenu() {
-      $("#conversationMenuWrapper").css("display", "block");
-      let menu = $(".conversationMenu");
-      let win = $(window);
-      let h = menu.height();
-      let w = menu.width();
-      let wh = win.height();
-      let ww = win.width();
-      menu.css("margin-top", (wh-h)/2);
-      menu.css("margin-left", (ww-w)/2);
-    }
-
     function clearMenu() {
       let menus = document.getElementsByClassName("menu");
       for each (let [, menu] in Iterator(menus))
@@ -334,7 +318,7 @@
     }
 
     function archiveToolbar(event) {
-      if (isInTab)
+      if (isInTab || Prefs.operate_on_conversations)
         archiveConversation(event);
       else
         msgHdrsArchive(topMail3Pane(window).gFolderDisplay.selectedMessages);
@@ -345,7 +329,7 @@
     }
 
     function deleteToolbar(event) {
-      if (isInTab)
+      if (isInTab || Prefs.operate_on_conversations)
         deleteConversation();
       else
         msgHdrsDelete(topMail3Pane(window).gFolderDisplay.selectedMessages);
@@ -516,6 +500,70 @@
         dumpCallStack(e);
       }
     };
+
+    // Mark a message as read if a user scrolls past top and bottom of an
+    // unread message.
+    function markReadInView(event) {
+      if (event.type == "keydown") {
+        // for scroll by keyboard shortcut
+        switch (event.which) {
+          case KeyEvent.DOM_VK_SPACE:
+          case KeyEvent.DOM_VK_TAB:
+          case KeyEvent.DOM_VK_PAGE_UP:
+          case KeyEvent.DOM_VK_PAGE_DOWN:
+          case KeyEvent.DOM_VK_UP:
+          case KeyEvent.DOM_VK_DOWN:
+          case KeyEvent.DOM_VK_F:
+          case KeyEvent.DOM_VK_B:
+            break;
+          default:
+            return;
+        }
+      }
+      document.removeEventListener("scroll", markReadInView, true);
+      clearTimeout(markReadInView.timeout);
+      markReadInView.timeout = setTimeout(function () {
+        document.addEventListener("scroll", markReadInView, true);
+      }, 200);
+      if (!Conversations.currentConversation)
+        return;
+
+      let pageTop = window.pageYOffset;
+      let pageBottom = pageTop + window.innerHeight;
+      let messages = Conversations.currentConversation.messages;
+      for each (let [i, { message }] in Iterator(messages)) {
+        if (!message.read && message.expanded) {
+          if (!message._topInView) {
+            let top = $(message._domNode).offset().top;
+            if (top > pageTop && top < pageBottom)
+              message._topInView = true;
+          }
+          if (!message._bottomInView) {
+            let footerClass = (i == messages.length - 1) ? ".quickReply" : ".messageFooter";
+            let bottom = $(message._domNode.querySelector(footerClass)).offset().top;
+            if (bottom > pageTop && bottom < pageBottom)
+              message._bottomInView = true;
+          }
+          if (message._topInView && message._bottomInView) {
+            message._topInView = false;
+            message._bottomInView = false;
+            message.read = true;
+          }
+        }
+      }
+    }
+    (function () {
+      let w = window;
+      markReadInView.enable = function () {
+        [w.document.addEventListener(x, w.markReadInView, true)
+          for each ([, x] in Iterator(["mouseover", "focus", "keydown"]))];
+      };
+      markReadInView.disable = function () {
+        w.clearTimeout(w.markReadInView.timeout);
+        [w.document.removeEventListener(x, w.markReadInView, true)
+          for each ([, x] in Iterator(["mouseover", "focus", "keydown", "scroll"]))];
+      };
+    })();
   ]]>
   </script>
 </head>
@@ -590,6 +638,9 @@
           <span class="details hide-with-details">
             | <a href="javascript:" class="link">${str("details")}</a>
           </span>
+          <span class="hide-details show-with-details">
+            | <a href="javascript:" class="link">${str("hideDetails")}</a>
+          </span>
           <span class="replyLinkWrapper">
             | <a href="javascript:" class="replyMainActionLink"></a>
           </span>
@@ -600,19 +651,25 @@
             <a href="javascript:" onclick="displayMenu(event);" class="top-right-more">${str("more")} <span class="downwardArrow">&#x25bc;</span></a>
             <div class="tooltip tooltip-menu menu">
               <ul>
-                <li class="action-archive">${str("archive")}
+                <li class="action-reply">${str("reply")}
                   <div class="arrow"></div>
                   <div class="arrow inside"></div>
                 </li>
+                <li class="action-replyAll">${str("replyAll")}</li>
+                <li class="action-replyList">${str("replyList")}</li>
+                <li class="action-editNew">${str("editNew")}</li>
+                <li class="action-forward" style="border-bottom: 1px solid #aaa">${str("forward")}</li>
+                <li class="action-archive">${str("archive")}</li>
                 <li class="action-delete">${str("delete")}</li>
                 <li class="action-classic">${str("viewClassic")}</li>
                 <li class="action-source">${str("viewSource")}</li>
+                <li class="action-print" style="display: none;">${str("print")}</li>
               </ul>
             </div>
           </span>
         </div>
       </div>
-      <div class="detailsPlaceholder">
+      <div class="detailsPlaceholder show-with-details">
       </div>
       <div class="detailsLine">
         {{if attachments.length}}
@@ -811,8 +868,8 @@
                 onchange="changeComposeFields('forward')" id="forward-radio"
               /><label for="forward-radio">${str("forward")}</label>
             </li>
-            <li class="showCc">| <a onclick="showCc(); editFields();" href="javascript:">${str("addCc")}</a></li>
-            <li class="showBcc">| <a onclick="showBcc(); editFields();" href="javascript:">${str("addBcc")}</a></li>
+            <li class="showCc">| <a onclick="showCc(); editFields('cc');" href="javascript:">${str("addCc")}</a></li>
+            <li class="showBcc">| <a onclick="showBcc(); editFields('bcc');" href="javascript:">${str("addBcc")}</a></li>
           </ul>
           <div class="editRecipientList editToList hbox">
             <div class="label">${str("fieldTo")}</div>
@@ -854,7 +911,9 @@
 
       <ul class="inputs cf" style="padding-right: ${str('actionsSize')}rem">
         <li class="reply expand">
-          <div class="popout" title="${str('popoutReply')}" alt="popout"></div>
+          <div class="popout" title="${str('popoutReply')}" alt="popout">
+            <span class="popoutTxt">${str('popoutTxt')}</span>
+          </div>
           <div class="textWrap">
             <div class="icon"><span>${str("reply")}</span> <img src="i/reply.png" /></div>
             <textarea class="sans"></textarea>
@@ -862,7 +921,9 @@
         </li>
         
         <li class="replyAll expand">
-          <div class="popout" title="${str('popoutReplyAll')}" alt="popout"></div>
+          <div class="popout" title="${str('popoutReplyAll')}" alt="popout">
+            <span class="popoutTxt">${str('popoutTxt')}</span>
+          </div>
           <div class="textWrap">
             <div class="icon"><span>${str("replyAll")}</span> <img src="i/replyAll.png" /></div>
             <textarea class="sans"></textarea>

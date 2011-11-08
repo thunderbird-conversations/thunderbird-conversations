@@ -103,6 +103,7 @@ try {
 }
 
 let enigmailSvc;
+let gMsgCompose = null; // used in enigmailMsgComposeOverlay.js
 let global = this;
 window.addEventListener("load", function () {
   if (hasEnigmail) {
@@ -119,10 +120,67 @@ window.addEventListener("load", function () {
       hasEnigmail = false;
       Log.debug("Enigmail script doesn't seem to be loaded. Error: " + e);
     }
+
+    let w = getMail3Pane();
+    let iframe = w.document.createElement("iframe");
+    iframe.addEventListener("load", function () {
+      iframe.parentNode.removeChild(iframe);
+    }, true);
+    iframe.setAttribute("src", "enigmail:dummy");
+    iframe.style.display = "none";
+    w.document.getElementById("messagepane").appendChild(iframe);
+
+    // Override updateSecurityStatus for showing security info properly
+    // when plural messages in a thread are streamed at one time.
+    let messagepane = w.document.getElementById("messagepane");
+    messagepane.addEventListener("load", function _overrideUpdateSecurity() {
+      messagepane.removeEventListener("load", _overrideUpdateSecurity, true);
+      let w = getMail3Pane();
+      w._encryptedMimeMessages = [];
+      w.messageHeaderSink.enigmailPrepSecurityInfo();
+
+      // EnigMimeHeaderSink.prototype in enigmailMsgHdrViewOverlay.js
+      let enigMimeHeaderSinkPrototype =
+        Object.getPrototypeOf(w.messageHeaderSink.securityInfo);
+      enigMimeHeaderSinkPrototype
+        .updateSecurityStatus = function _updateSecurityStatus_patched(uriSpec) {
+        let message;
+        // multipart/encrypted message doesn't have uriSpec.
+        if (!uriSpec) {
+          // possible to get a wrong message
+          message = w._encryptedMimeMessages.shift();
+          // Use a nsIURI object to identify the message correctly.
+          // Enigmail patch is required.
+          let uri = arguments[8];
+          if (uri) {
+            let msgHdr = uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
+            uriSpec = msgHdrGetUri(msgHdr);
+          }
+        }
+        if (uriSpec && w._currentConversation) {
+          for each (let [, x] in Iterator(w._currentConversation.messages)) {
+            if (x.message._uri == uriSpec) {
+              message = x.message;
+              break;
+            }
+          }
+        }
+        let args = Array.prototype.slice.call(arguments, 1);
+        let updateHdrIcons = function () {
+          w.Enigmail.hdrView.updateHdrIcons.apply(w.Enigmail.hdrView, args);
+        };
+        if (!message) {
+          Log.error("Message for the security info not found!\n");
+          updateHdrIcons();
+          return;
+        }
+        showHdrIconsOnStreamed(message, updateHdrIcons);
+      }
+    }, true);
   }
 }, false);
 
-function tryEnigmail(bodyElement, aMsgWindow, aMessage) {
+function tryEnigmail(bodyElement, aMessage) {
   if (bodyElement.textContent.indexOf("-----BEGIN PGP") < 0)
     return null;
 
@@ -159,13 +217,14 @@ function tryEnigmail(bodyElement, aMsgWindow, aMessage) {
     var pgpBlock = msgText.substring(startOffset - indent.length,
                                      endStart + nextLine);
     if (nextLine == 0) {
-      pgpBlock += msgText(endStart);
+      pgpBlock += msgText.substring(endStart);
     }
     if (indent) {
       pgpBlock = pgpBlock.replace(new RegExp("^"+indent+"?", "gm"), "");
     }
-    var charset = aMsgWindow ? aMsgWindow.mailCharacterSet : "";
-    msgText = EnigmailCommon.convertFromUnicode(pgpBlock, charset);
+    var charset = aMessage._msgHdr.Charset;
+    msgText = EnigmailCommon.convertFromUnicode(
+                head+"\n"+pgpBlock+"\n"+tail, charset);
 
     var decryptedText =
       enigmailSvc.decryptMessage(window, 0, msgText,
@@ -203,11 +262,16 @@ function tryEnigmail(bodyElement, aMsgWindow, aMessage) {
           EnigmailFuncs.formatPlaintextMsg(msgRfc822Text);
         aMessage.decryptedText = msgRfc822Text;
       }
-      return statusFlagsObj.value;
-    }
-    else {
+    } else {
       Log.error("Enigmail error: "+exitCodeObj.value+" --- "+errorMsgObj.value+"\n");
     }
+    let w = topMail3Pane(aMessage);
+    showHdrIconsOnStreamed(aMessage, function () {
+      w.Enigmail.hdrView.updateHdrIcons(exitCodeObj.value, statusFlagsObj.value,
+        keyIdObj.value, userIdObj.value, sigDetailsObj.value, errorMsgObj.value,
+        blockSeparationObj.value);
+    });
+    return statusFlagsObj.value;
   } catch (ex) {
     dumpCallStack(ex);
     Log.error("Enigmail error: "+ex+" --- "+errorMsgObj.value+"\n");
@@ -215,6 +279,117 @@ function tryEnigmail(bodyElement, aMsgWindow, aMessage) {
   }
 }
 
+// Verify PGP/MIME messages attachment signature.
+function verifyAttachments(aMessage) {
+  let { _attachments: attachments, _uri: uri, contentType: contentType } = aMessage;
+  let w = topMail3Pane(aMessage);
+  w.currentAttachments = attachments;
+  w.Enigmail.msg.getCurrentMsgUriSpec = function () uri;
+  w.Enigmail.msg.messageDecryptCb(null, true, {
+    headers: {'content-type': contentType },
+    contentType: contentType,
+    parts: null,
+  });
+};
+
+// Prepare for showing security info later
+function prepareForShowHdrIcons(aMessage, aHasEnc) {
+  let w = topMail3Pane(aMessage);
+  let conversation = aMessage._conversation;
+
+  // w.Conversations.currentConversation is assined when conversation
+  // _onComplete(), but we need currentConversation in
+  // updateSecurityStatus() which is possible to be called before
+  // _onComplete().
+  w._currentConversation = conversation;
+
+  if (aHasEnc)
+    w._encryptedMimeMessages.push(aMessage);
+
+  // Add default focus event listner for keyboard shortcut which moves
+  // focus to the next or previous message.
+  if (!conversation._focusListener) {
+    conversation._focusListener = function () {
+      w.Enigmail.hdrView.statusBarHide();
+    };
+    [message._domNode.addEventListener("focus",
+      conversation._focusListener, true)
+      for each ([, { message }] in Iterator(conversation.messages))];
+  }
+
+  // The security info is stored in the message's _updateHdrIcons
+  // to show it when focusing on the message again.
+  // If the focus is triggered when clicking a link, showing or hiding
+  // the security info causes to move the link position and clicking
+  // the link fails. This hack suppresses focus event when clicking.
+  let node = aMessage._domNode;
+  node.removeEventListener("focus", conversation._focusListener, true);
+  node.addEventListener("focus", function (event) {
+    let classList = event.target.classList;
+    if (classList && classList.contains("message"))
+      updateSecurityInfo(aMessage);
+  }, true);
+  node.addEventListener("click", function () {
+    updateSecurityInfo(aMessage);
+  }, true);
+}
+
+// Update security info display of the message.
+function updateSecurityInfo(aMessage) {
+  let w = topMail3Pane(aMessage);
+  w.Enigmail.hdrView.statusBarHide();
+  if (aMessage._updateHdrIcons) {
+    aMessage._updateHdrIcons();
+  }
+}
+
+// Show security info only if the message is focused.
+function showHdrIconsOnStreamed(aMessage, updateHdrIcons) {
+  let w = topMail3Pane(aMessage);
+  let { _domNode: node, _conversation: conversation } = aMessage;
+  let focused = (node == node.ownerDocument.activeElement);
+  if (!focused) {
+    let focusThis = conversation._tellMeWhoToScroll();
+    focused = (aMessage == conversation.messages[focusThis].message);
+  }
+  if (focused)
+    updateHdrIcons();
+
+  // Prepare for showing on focus.
+  aMessage._updateHdrIcons = updateHdrIcons;
+}
+
+// Override treeController defined in enigmailMessengerOverlay.js
+// not to hide status bar when multiple messages are selected.
+// Remove unwanted event listeners.
+function patchForShowSecurityInfo(aWindow) {
+  let w = aWindow;
+  if (w._newTreeController)
+    return;
+
+  let oldTreeController =
+    w.top.controllers.getControllerForCommand("button_enigmail_decrypt");
+  w.top.controllers.removeController(oldTreeController);
+  let treeController = {};
+  [treeController[i] = x for each([i, x] in Iterator(oldTreeController))];
+  treeController.isCommandEnabled = function () {
+    if (w.gFolderDisplay.messageDisplay.visible) {
+      if (w.gFolderDisplay.selectedCount == 0) {
+        w.Enigmail.hdrView.statusBarHide();
+      }
+      return (w.gFolderDisplay.selectedCount == 1);
+    }
+    w.Enigmail.hdrView.statusBarHide();
+  };
+  w.top.controllers.appendController(treeController);
+  w._newTreeController = treeController;
+
+  // Event listeners are added in enigmailMsgHdrViewOverlay.js,
+  // but not needed. These display security info incorrectly when
+  // resizing message view.
+  w.removeEventListener('messagepane-hide', w.Enigmail.hdrView.msgHdrViewHide, true);
+  w.removeEventListener('messagepane-unhide', w.Enigmail.hdrView.msgHdrViewUnide, true);
+}
 
 let enigmailHook = {
   _domNode: null,
@@ -231,8 +406,16 @@ let enigmailHook = {
       }
 
       let hasSig = (aMessage.contentType+"").search(/^multipart\/signed(;|$)/i) == 0;
+      for each (let [, x] in Iterator(attachments)) {
+        if (x.contentType.search(/^application\/pgp-signature/i) == 0)
+          hasSig = true;
+      }
       if (hasSig)
         aMessage._domNode.classList.add("signed");
+
+      verifyAttachments(aMessage);
+      prepareForShowHdrIcons(aMessage, hasEnc);
+      patchForShowSecurityInfo(w);
     }
   },
 
@@ -240,7 +423,7 @@ let enigmailHook = {
     let iframe = aDomNode.getElementsByTagName("iframe")[0];
     let iframeDoc = iframe.contentDocument;
     if (iframeDoc.body.textContent.length > 0 && hasEnigmail) {
-      let status = tryEnigmail(iframeDoc.body, aMsgWindow, aMessage);
+      let status = tryEnigmail(iframeDoc.body, aMessage);
       if (status & Ci.nsIEnigmail.DECRYPTION_OKAY)
         aDomNode.classList.add("decrypted");
       if (status & Ci.nsIEnigmail.GOOD_SIGNATURE)
@@ -272,14 +455,14 @@ let enigmailHook = {
     let userIdValue;
     // Enigmail <= 1.3.2 doesn't support getSenderUserId.
     if (Enigmail.msg.getSenderUserId) {
-      userIdValue = Enigmail.msg.getSenderUserId.call(Enigmail.msg);
+      userIdValue = Enigmail.msg.getSenderUserId();
     } else if (identity.getIntAttribute("pgpKeyMode") > 0) {
       userIdValue = identity.getCharAttribute("pgpkeyId");
     }
     if (userIdValue)
       fromAddr = userIdValue;
 
-    Enigmail.msg.setSendDefaultOptions.call(Enigmail.msg);
+    Enigmail.msg.setSendDefaultOptions();
     let sendFlags = Enigmail.msg.sendMode;
     if (Enigmail.msg.sendPgpMime) {
       // Use PGP/MIME
@@ -305,14 +488,13 @@ let enigmailHook = {
     let bccAddr = bccAddrList.join(", ");
     // Enigmail <= 1.3.2 doesn't support keySelection.
     if (Enigmail.msg.keySelection) {
-      let result = Enigmail.msg.keySelection.call(Enigmail.msg,
+      let result = Enigmail.msg.keySelection(
                      enigmailSvc, sendFlags, optSendFlags, gotSendFlags,
                      fromAddr, toAddrList, bccAddrList);
       if (!result) {
         aStatus.canceled = true;
         return aStatus;
-      }
-      else {
+      } else {
         sendFlags = result.sendFlags;
         toAddr = result.toAddr;
         bccAddr = result.bccAddr;
@@ -373,8 +555,7 @@ let enigmailHook = {
           }
           cipherText = EnigmailCommon.convertToUnicode(cipherText, charset);
           aEditor.value = cipherText;
-        }
-        else {
+        } else {
           // Encryption/signing failed
           let msg = EnigmailCommon.getString("signFailed") + "\n"
                   + errorMsgObj.value;
@@ -413,6 +594,13 @@ let enigmailHook = {
       return citeString("\n" + aMessage.decryptedText);
     }
     return aBody;
+  },
+
+  // For the case when the message which has been already streamed is
+  // selected at message list.
+  onFocusMessage: function _enigmailHook_onFocusMessage(aMessage) {
+    if (hasEnigmail)
+      updateSecurityInfo(aMessage);
   },
 }
 

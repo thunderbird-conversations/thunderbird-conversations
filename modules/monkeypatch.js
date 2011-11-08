@@ -459,12 +459,6 @@ MonkeyPatch.prototype = {
               let prevCounter = window.Conversations.currentConversation
                 ? window.Conversations.currentConversation.counter
                 : 0;
-              Log.debug("Going from ", Colors.red,
-                prevCounter,
-                "\u2192",
-                aConversation.counter,
-                "["+isDifferentConversation+"]",
-                Colors.default);
               // Make sure we have a global root --> conversation --> persistent
               //  query chain to prevent the Conversation object (and its inner
               //  query) to be collected. The Conversation keeps watching the
@@ -475,7 +469,6 @@ MonkeyPatch.prototype = {
                 htmlpane.contentWindow.newComposeSessionByDraftIf();
                 aConversation.completed = true;
                 htmlpane.contentWindow.registerQuickReply();
-                htmlpane.contentWindow.hideConversationMenu();
               }
               if (needsGC)
                 Cu.forceGC();

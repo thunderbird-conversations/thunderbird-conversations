@@ -1,0 +1,48 @@
+<!doctype html>
+<html>
+
+<head>
+  <link rel="stylesheet" href="buttons.css">
+  <!-- PDF.js-specific -->
+  <script type="text/javascript" src="../pdfjs/pdf.js"></script>
+  <script type="text/javascript" src="../pdfjs/metrics.js"></script>
+  <script type="text/javascript" src="../pdfjs/fonts.js"></script>
+  <script type="text/javascript" src="../pdfjs/glyphlist.js"></script>
+  <script type="text/javascript" src="../pdfjs/cidmaps.js"></script>
+  <script type="text/javascript" src="../pdfjs/crypto.js"></script>
+
+  <script src="viewer.js" type="application/javascript;version=1.8" charset="utf-8"></script>
+
+  <style>
+    body {
+      background-color: white;
+      text-align: center;
+    }
+
+    canvas {
+      margin: 20px;
+      border: 1px solid #888;
+      box-shadow: 0 0 2px #888;
+    }
+
+    #nav {
+    }
+  </style>
+</head>  
+
+<body>
+  <canvas id="the-canvas"></canvas>
+
+  <div id="nav">
+    <p>
+      <span id="count">loading... <img src="../i/loader.gif"></span>
+    </p>
+    <p>
+      <button class="clean-gray" id="prev" onclick="viewer.prevPage()">previous</button> &#8212; 
+      <button class="clean-gray" id="next" onclick="viewer.nextPage()">next</button>
+    </p>
+  </div>
+    
+</body>
+
+</html>

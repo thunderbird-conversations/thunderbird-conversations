@@ -87,6 +87,7 @@ let Log = setupLogging("Conversations.Message");
 // This is high because we want enough snippet to extract relevant data from
 // bugzilla snippets.
 const kSnippetLength = 700;
+const kViewerUrl = "chrome://conversations/content/pdfviewer/viewer.html?uri=";
 
 // Add in the global message listener table a weak reference to the given
 //  Message object. The monkey-patch which intercepts the "remote content
@@ -106,6 +107,14 @@ let isOSX = ("nsILocalFileMac" in Ci);
 let isWindows = ("@mozilla.org/windows-registry-key;1" in Cc);
 
 function isAccel (event) (isOSX && event.metaKey || event.ctrlKey)
+
+function dateAccordingToPref(date) {
+  try {
+    return Prefs["no_friendly_date"] ? dateAsInMessageList(date) : makeFriendlyDateAgo(date);
+  } catch (e) {
+    return dateAsInMessageList(date);
+  }
+}
 
 function KeyListener(aMessage) {
   this.message = aMessage;
@@ -134,6 +143,9 @@ KeyListener.prototype = {
       case this.KeyEvent.DOM_VK_RETURN:
       case 'O'.charCodeAt(0):
         if (!isAccel(event)) {
+          // If we expand a collapsed, when in doubt, mark it read.
+          if (this.message.collapsed)
+            this.message.read = true;
           this.message.toggle();
           event.preventDefault();
           event.stopPropagation();
@@ -208,6 +220,14 @@ KeyListener.prototype = {
         }
         break;
 
+      case 'E'.charCodeAt(0):
+        if (isAccel(event)) {
+          this.message.compose(Ci.nsIMsgCompType.Template, null);
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        break;
+
       case this.KeyEvent.DOM_VK_DELETE:
         if (!isAccel(event)) {
           this.message.removeFromConversation();
@@ -249,8 +269,7 @@ function Message(aConversation) {
   this._snippet = "";
   this._conversation = aConversation;
 
-  let date = new Date(this._msgHdr.date/1000);
-  this._date = Prefs["no_friendly_date"] ? dateAsInMessageList(date) : makeFriendlyDateAgo(date);
+  this._date = dateAccordingToPref(new Date(this._msgHdr.date/1000));
   // This one is for display purposes
   this._from = this.parse(this._msgHdr.mime2DecodedAuthor)[0];
   // Might be filled to something more meaningful later, in case we replace the
@@ -500,6 +519,7 @@ Message.prototype = {
         self._conversation._runOnceAfterNSignals(function () {
           if (self.expanded)
             self._conversation._htmlPane.contentWindow.scrollNodeIntoView(self._domNode);
+            self.read = true;
         }, 1);
         self.toggle();
       }, false);
@@ -553,10 +573,10 @@ Message.prototype = {
 
     // This is for the smart reply button, we need to determine what's the best
     // action.
-    this.register(".buttonReply", function (event) self.compose(Ci.nsIMsgCompType.ReplyToSender, event));
-    this.register(".buttonReplyAll", function (event) self.compose(Ci.nsIMsgCompType.ReplyAll, event));
-    this.register(".buttonReplyList", function (event) self.compose(Ci.nsIMsgCompType.ReplyToList, event));
-    this.register(".buttonForward", function (event) self.forward(event));
+    this.register(".buttonReply, .action-reply", function (event) self.compose(Ci.nsIMsgCompType.ReplyToSender, event));
+    this.register(".buttonReplyAll, .action-replyAll", function (event) self.compose(Ci.nsIMsgCompType.ReplyAll, event));
+    this.register(".buttonReplyList, .action-replyList", function (event) self.compose(Ci.nsIMsgCompType.ReplyToList, event));
+    this.register(".buttonForward, .action-forward", function (event) self.forward(event));
     let mainActionLink = self._domNode.getElementsByClassName("replyMainActionLink")[0];
     let replyList = self._domNode.getElementsByClassName("buttonReplyList")[0];
     let replyAll = self._domNode.getElementsByClassName("buttonReplyAll")[0];
@@ -566,8 +586,16 @@ Message.prototype = {
       replyList.style.display = "none";
     if (!this.isReplyAllEnabled)
       replyAll.style.display = "none";
+    // These items must be removed completely so that the alternate colors are
+    //  not off.
+    let replyListLink = self._domNode.getElementsByClassName("action-replyList")[0];
+    if (!this.isReplyListEnabled)
+      replyListLink.parentNode.removeChild(replyListLink);
+    let replyAllLink = self._domNode.getElementsByClassName("action-replyAll")[0];
+    if (!this.isReplyAllEnabled)
+      replyAllLink.parentNode.removeChild(replyAllLink);
     // Register the right actions. Make sure we're consistent with
-    // stub.compose-ui.js!
+    //  stub.compose-ui.js!
     if (this.isReplyAllEnabled)
       this._domNode.classList.add("isReplyAllEnabled");
     if (this.isReplyListEnabled) {
@@ -586,28 +614,8 @@ Message.prototype = {
     }
 
     this.register(".edit-draft", function (event) self.compose(Ci.nsIMsgCompType.Draft, event));
-    this.register(".action-edit-new", function (event) self.compose(Ci.nsIMsgCompType.Template, event));
-    this.register(".action-compose-all", function (event) {
-      let allEmails =
-        self._msgHdr.author + "," +
-        self._msgHdr.recipients + "," +
-        self._msgHdr.ccList + "," +
-        self._msgHdr.bccList
-      ;
-      allEmails = MailServices.headerParser.removeDuplicateAddresses(allEmails, "");
-      let emailAddresses = {};
-      let names = {};
-      let numAddresses = MailServices.headerParser
-                          .parseHeadersWithArray(allEmails, emailAddresses, names, {});
-      allEmails = [
-        (names.value[i] ? (names.value[i] + " <" + x + ">") : x)
-        for each ([i, x] in Iterator(emailAddresses.value))
-        if (!(x.toLowerCase() in gIdentities))
-      ];
-      let composeAllUri = "mailto:" + allEmails.join(",");
-      let uri = Services.io.newURI(composeAllUri, null, null);
-      MailServices.compose.OpenComposeWindowWithURI(null, uri);
-    });
+    this.register(".action-editNew", function (event) self.compose(Ci.nsIMsgCompType.Template, event));
+    this.register(".action-print", function (event) self.print());
     // These event listeners are all in the header, which happens to have an
     //  event listener set on the click event for toggling the message. So we
     //  make sure that event listener is bubbling, and we register these with
@@ -695,6 +703,9 @@ Message.prototype = {
       event.preventDefault();
       // Hide all irrelevant UI items now we're showing details
       self._domNode.classList.add("with-details");
+      if (self.detailsFetched)
+        return;
+      self.detailsFetched = true;
       let w = self._conversation._htmlPane.contentWindow;
       MsgHdrToMimeMessage(self._msgHdr, self, function (aMsgHdr, aMimeMsg) {
         try {
@@ -771,6 +782,12 @@ Message.prototype = {
       });
     });
 
+    this.register(".hide-details > a", function (event) {
+      event.stopPropagation();
+      event.preventDefault();
+      self._domNode.classList.remove("with-details");
+    });
+
     let attachmentNodes = this._domNode.getElementsByClassName("attachment");
     let attInfos = [];
     let newAttAPI = ("AttachmentInfo" in mainWindow);
@@ -794,35 +811,12 @@ Message.prototype = {
       let url = att.url.replace(self.RE_MSGKEY, "number="+key);
       let uri = msgHdrGetUri(self._msgHdr);
 
-
-      // New versions of Thunderbird (post-5.0) have changed the API for
-      // attachment objects. Handle both ways for now.
-      let attInfo;
-      if (newAttAPI)
-        attInfo = new mainWindow.AttachmentInfo(
-          att.contentType, url, att.name, uri, att.isExternal, 42
-        );
-      else
-        attInfo = new mainWindow.createNewAttachmentInfo(
+      let attInfo = new mainWindow.AttachmentInfo(
           att.contentType, url, att.name, uri, att.isExternal, 42
         );
 
       attInfos[i] = attInfo;
       return attInfo;
-    };
-    // Open an attachment regardless of the API version we're on
-    let openAtt = function (attInfo) {
-      if (newAttAPI)
-        attInfo.open();
-      else
-        mainWindow.openAttachment(attInfo);
-    };
-    // Save an attachment regardless of the API version we're on
-    let saveAtt = function (attInfo) {
-      if (newAttAPI)
-        attInfo.save();
-      else
-        mainWindow.saveAttachment(attInfo);
     };
     // Re-generate the attachment infos...
     let recreateAttInfos = function (k) {
@@ -841,7 +835,7 @@ Message.prototype = {
 
       this.register(attNode.getElementsByClassName("open-attachment")[0], function (event) {
         try {
-          openAtt(getOrCreateAttInfo(j));
+          getOrCreateAttInfo(j).open();
         } catch (e) {
           Log.debug("Invalid attachment URL", getOrCreateAttInfo(j).url, e);
           recreateAttInfos(function () {
@@ -852,12 +846,12 @@ Message.prototype = {
       });
       this.register(attNode.getElementsByClassName("download-attachment")[0], function (event) {
         try {
-          saveAtt(getOrCreateAttInfo(j));
+          getOrCreateAttInfo(j).save();
         } catch (e) {
           Log.debug("Invalid attachment URL", getOrCreateAttInfo(j).url, e);
           recreateAttInfos(function () {
             reindexMessages([self._msgHdr]);
-            saveAtt(getOrCreateAttInfo(j));
+            getOrCreateAttInfo(j).save();
           });
         }
       });
@@ -874,6 +868,23 @@ Message.prototype = {
           mainWindow.document.getElementById("tabmail").openTab(
             "contentTab",
             { contentPage: self._attachments[j].url }
+          );
+        });
+      }
+      let pdfMimeTypes = {
+        "application/pdf": null,
+        "application/x-pdf": null,
+        "application/x-bzpdf": null,
+        "application/x-gzpdf": null,
+      };
+      if (att.contentType in pdfMimeTypes) {
+        let img = attNode.getElementsByTagName("img")[0];
+        img.classList.add("view-attachment");
+        img.setAttribute("title", strings.get("viewAttachment"));
+        this.register(img, function (event) {
+          mainWindow.document.getElementById("tabmail").openTab(
+            "chromeTab",
+            { chromePage: kViewerUrl+self._attachments[j].url }
           );
         });
       }
@@ -1083,6 +1094,10 @@ Message.prototype = {
   // Convenience properties
   get read () {
     return this._msgHdr.isRead;
+  },
+
+  set read (v) {
+    return msgHdrsMarkAsRead([this._msgHdr], v);
   },
 
   get starred () {
@@ -1462,7 +1477,9 @@ Message.prototype = {
    */
   exportAsHtml: function _Message_exportAsHtml() {
     let author = escapeHtml(this._contacts[0]._name);
-    let date = new Date(this._msgHdr.date/1000).toLocaleString("%x");
+    let authorEmail = this._contacts[0]._email;
+    let authorAvatar = this._contacts[0].avatar;
+    let date = dateAccordingToPref(new Date(this._msgHdr.date/1000));
     // We try to convert the bodies to plain text, to enhance the readability in
     // the forwarded conversation. Note: <pre> tags are not converted properly
     // it seems, need to investigate...
@@ -1472,8 +1489,12 @@ Message.prototype = {
     ;
     // Do our little formatting...
     let html = [
-      '<b><span style="color: #396BBD">', author, '</span></b><br />',
-      '<span style="color: #666">', date, '</span><br />',
+      '<div style="overflow: auto">',
+      '<img src="', authorAvatar, '" style="float: left; height: 48px; margin-right: 5px" />',
+      '<b><span><a style="color: #396BBD !important; text-decoration: none !important; font-weight: bold" href="mailto:', authorEmail,
+      '">', author, '</a></span></b><br />',
+      '<span style="color: #666">', date, '</span>',
+      '</div>',
       '<br />',
       '<div style="color: #666">',
         (this.iframe ? escapeHtml(body) : ("<i>" + escapeHtml(body) + "</i>...")),

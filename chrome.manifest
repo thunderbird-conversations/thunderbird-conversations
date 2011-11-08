@@ -15,6 +15,7 @@ locale conversations en-US locale/en-US/
 #locale conversations hu-HU locale/hu-HU/
 #locale conversations it locale/it/
 #locale conversations ja-JP locale/ja-JP/
+#locale conversations nl-NL locale/nl-NL/
 #locale conversations pl locale/pl/
 #locale conversations pt-BR locale/pt-BR/
 #locale conversations ru locale/ru/

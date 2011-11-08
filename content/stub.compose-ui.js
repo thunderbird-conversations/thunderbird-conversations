@@ -631,9 +631,7 @@ ComposeSession.prototype = {
           let identity = self.params.identity;
           let signature = "", signatureNoDashes = "";
           if (identity.sigOnReply) {
-            signature = identity.htmlSigFormat
-              ? htmlToPlainText(identity.htmlSigText)
-              : identity.htmlSigText;
+            signature = getSignatureContentsForAccount(identity);
             if (String.trim(signature).length) {
               [signature, signatureNoDashes] =
                 ["\n\n-- \n" + signature, "\n\n" + signature];
@@ -669,7 +667,7 @@ ComposeSession.prototype = {
             }
           } else {
             quote = quote + "\n\n";
-            pos = (quote + txt).length;
+            pos = (quote + txt).replace(/\r?\n/g, "\n").length;
             val = quote + txt + signature;
           }
           // After we removed any trailing newlines, insert it into the textarea
