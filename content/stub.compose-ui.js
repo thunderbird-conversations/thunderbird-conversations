@@ -900,7 +900,7 @@ let sendListener = {
    * called once when the networking library has finished processing the
    * message.
    *
-   * This method is called regardless of whether the the operation was successful.
+   * This method is called regardless of whether the operation was successful.
    * aMsgID   The message id for the mail message
    * status   Status code for the message send.
    * msg      A text string describing the error.
@@ -939,7 +939,7 @@ let sendListener = {
     for each (let [, h] in Iterator(getHooks())) {
       try {
         if (typeof(h.onStopSending) == "function")
-          h.onStopSending();
+          h.onStopSending(aMsgID, aStatus, aMsg, aReturnFile);
       } catch (e) {
         Log.warn("Plugin returned an error:", e); dumpCallStack(e);
       };
