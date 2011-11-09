@@ -183,7 +183,7 @@ ContactIdentityCompleter.prototype = {
         let contact = items[iContact];
         if (!(contact.id in contactToThing)) {
           contactToThing[contact.id] = contact;
-          if (contact.identities[0])
+          if (contact.identities)
             possibleDudes.push(contact.identities[0]);
         }
       }
