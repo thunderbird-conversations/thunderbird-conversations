@@ -6,36 +6,37 @@ const Cu = Components.utils;
 
 Cu.import("resource://conversations/hook.js");
 Cu.import("resource://conversations/log.js");
-Cu.import("resource://conversations/misc.js");
+Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
 
 
 let Log = setupLogging("Conversations.Modules.VirtualIdentity");
 
-let window = getMail3Pane()
+let mainWindow = getMail3Pane();
 
 let virtualIdentityHook = {
-  onComposeFieldsChanged: function _virtualIdentityHook_onComposeFieldsChanged(recipients, params, senderNameElem) {
-    window.virtualIdentityExtension.conversationHook.onComposeFieldsChanged(recipients, params, senderNameElem, Log);
+  onComposeSessionChanged: function _virtualIdentityHook_onComposeSessionChanged(composeSession, message, recipients) {
+    mainWindow.virtualIdentityExtension.conversationHook.onComposeSessionChanged(composeSession, recipients, Log);
   },
   
-  onMessageBeforeSendOrPopup: function _enigmailHook_onMessageBeforeSendOrPopup(params, recipients, popOut, aStatus) {
-    // returns true if message should be sended, false if sending should be aborted
-    return window.virtualIdentityExtension.conversationHook.onMessageBeforeSendOrPopup(params, recipients, popOut, aStatus, Log);
+  onMessageBeforeSendOrPopout_early: function _enigmailHook_onMessageBeforeSendOrPopout_early(aAddress, aEditor, aStatus, aPopout) {
+    if (aStatus.canceled)
+      return aStatus;
+    return mainWindow.virtualIdentityExtension.conversationHook.onMessageBeforeSendOrPopout(aAddress, aStatus, aPopout, Log);
   },
   
-  onStopSending: function _virtualIdentityHook_onStopSending() {
-    window.virtualIdentityExtension.conversationHook.onStopSending();
+  onStopSending: function _virtualIdentityHook_onStopSending(aMsgID, aStatus, aMsg, aReturnFile) {
+    mainWindow.virtualIdentityExtension.conversationHook.onStopSending();
   },
   
-  onRecipientAdded: function _virtualIdentityHook_onRecipientAdded(recipient, type, count) {
-    window.virtualIdentityExtension.conversationHook.onRecipientAdded(recipient, type, count, Log);
+  onRecipientAdded: function _virtualIdentityHook_onRecipientAdded(data, type, count) {
+    mainWindow.virtualIdentityExtension.conversationHook.onRecipientAdded(data.data, type, count, Log);
   }
 }
 
 // virtual Identity support
 let hasVirtualIdentity;
-window.addEventListener("load", function () {
-  hasVirtualIdentity = (("virtualIdentityExtension" in window) && typeof(window.virtualIdentityExtension) == "object");
+mainWindow.addEventListener("load", function () {
+  hasVirtualIdentity = (("virtualIdentityExtension" in mainWindow) && typeof(mainWindow.virtualIdentityExtension) == "object");
   if (hasVirtualIdentity) {
     Log.debug("Virtual Identity plugin for Thunderbird Conversations loaded!");
     registerHook(virtualIdentityHook);
