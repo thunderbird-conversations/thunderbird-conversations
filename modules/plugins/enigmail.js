@@ -436,8 +436,8 @@ let enigmailHook = {
     }
   },
 
-  onMessageBeforeSend: function _enigmailHook_onMessageBeforeSend(aAddress, aEditor, aStatus) {
-    if (!hasEnigmail)
+  onMessageBeforeSendOrPopup: function _enigmailHook_onMessageBeforeSendOrPopup(aAddress, aEditor, aStatus, aPopout) {
+    if (!hasEnigmail || aPopout)
       return aStatus;
 
     const nsIEnigmail = Ci.nsIEnigmail;
@@ -446,7 +446,7 @@ let enigmailHook = {
 
     let uiFlags = nsIEnigmail.UI_INTERACTIVE;
 
-    let identity = aAddress.identity
+    let identity = aAddress.params.identity
     Enigmail.msg.identity = identity;
     Enigmail.msg.enableRules = true;
     Enigmail.msg.sendModeDirty = 0;

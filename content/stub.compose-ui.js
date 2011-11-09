@@ -722,40 +722,32 @@ ComposeSession.prototype = {
     let [to, cc, bcc] = ["to", "cc", "bcc"].map(function (x)
       JSON.parse($("#"+x).val()));
 
-    let sendStatus = {};
-    // Notify the virtualIdentity Extension exclusivly, before any other function requests the identity of the message
-    // or before message is opened in a new window
-    for each (let [, h] in Iterator(getHooks())) {
-    try {
-      if (typeof(h.onMessageBeforeSendOrPopup) == "function") 
-        sendStatus = h.onMessageBeforeSendOrPopup(this.params, to + ", " + cc, popOut, sendStatus);
-    } catch (e) {
-      Log.warn("Plugin returned an error:", e);
-      dumpCallStack(e);
-    };
-  }
+    let sendStatus = { canceled: false };
+    for each (let priority in ["_early", "", "_late"]) {
+      for each (let [, h] in Iterator(getHooks())) {
+        try {
+          if (typeof(h["onMessageBeforeSendOrPopup" + priority]) == "function"  && !sendStatus.canceled) {
+            Log.warn("calling function:", "onMessageBeforeSendOrPopup" + priority, sendStatus.canceled);
+          
+          sendStatus = h["onMessageBeforeSendOrPopup" + priority]({
+                params: self.params,
+                to: to,
+                cc: cc,
+                bcc: bcc,
+              }, ed, sendStatus, popOut);}
+        } catch (e) {
+          Log.warn("Plugin returned an error:", e);
+          dumpCallStack(e);
+        };
+      }
+    }
 
-    if (!popOut) {
-      try {
-        [sendStatus = h.onMessageBeforeSend({
-            identity: self.params.identity,
-            to: to,
-            cc: cc,
-            bcc: bcc,
-          }, ed, sendStatus)
-          for each ([, h] in Iterator(getHooks()))
-          if (typeof(h.onMessageBeforeSend) == "function" && (!sendStatus.canceled)) ];
-      } catch (e) {
-        Log.warn("Plugin returned an error:", e);
-        dumpCallStack(e);
-      }
-      if (sendStatus.canceled) {
-        pText(strings.get("messageSendingCanceled"));
-        $(".statusPercentage").hide();
-        $(".statusThrobber").hide();
-        $(".quickReplyHeader").show();
-        return;
-      }
+    if (sendStatus.canceled) {
+      pText(strings.get("messageSendingCanceled"));
+      $(".statusPercentage").hide();
+      $(".statusThrobber").hide();
+      $(".quickReplyHeader").show();
+      return;
     }
   
     return sendMessage({
