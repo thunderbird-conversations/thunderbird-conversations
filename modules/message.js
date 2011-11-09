@@ -1174,7 +1174,8 @@ Message.prototype = {
         if (typeof(h.onMessageBeforeStreaming) == "function") 
           h.onMessageBeforeStreaming(this);
       } catch (e) {
-        Log.warn("Plugin returned an error:", e); dumpCallStack(e);
+        Log.warn("Plugin returned an error:", e);
+        dumpCallStack(e);
       };
     }
 
@@ -1230,7 +1231,8 @@ Message.prototype = {
                 if (typeof(h.onMessageStreamed) == "function") 
                   h.onMessageStreamed(self._msgHdr, self._domNode, msgWindow, self);
               } catch (e) {
-                Log.warn("Plugin returned an error:", e); dumpCallStack(e);
+                Log.warn("Plugin returned an error:", e);
+                dumpCallStack(e);
               };
             }
 

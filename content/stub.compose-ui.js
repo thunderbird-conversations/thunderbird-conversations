@@ -698,7 +698,8 @@ ComposeSession.prototype = {
           if (typeof(h.onComposeSessionChanged) == "function") 
             h.onComposeSessionChanged(this, getMessageForQuickReply(), recipients);
         } catch (e) {
-          Log.warn("Plugin returned an error:", e); dumpCallStack(e);
+          Log.warn("Plugin returned an error:", e);
+          dumpCallStack(e);
         };
       }
     }
@@ -729,7 +730,8 @@ ComposeSession.prototype = {
       if (typeof(h.onMessageBeforeSendOrPopup) == "function") 
         sendStatus = h.onMessageBeforeSendOrPopup(this.params, to + ", " + cc, popOut, sendStatus);
     } catch (e) {
-      Log.warn("Plugin returned an error:", e); dumpCallStack(e);
+      Log.warn("Plugin returned an error:", e);
+      dumpCallStack(e);
     };
   }
 
@@ -941,7 +943,8 @@ let sendListener = {
         if (typeof(h.onStopSending) == "function")
           h.onStopSending(aMsgID, aStatus, aMsg, aReturnFile);
       } catch (e) {
-        Log.warn("Plugin returned an error:", e); dumpCallStack(e);
+        Log.warn("Plugin returned an error:", e);
+        dumpCallStack(e);
       };
 	}
   },
