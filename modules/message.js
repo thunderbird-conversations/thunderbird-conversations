@@ -1481,7 +1481,10 @@ Message.prototype = {
     // the forwarded conversation. Note: <pre> tags are not converted properly
     // it seems, need to investigate...
     quoteMsgHdr(this._msgHdr, function (body) {
-      // Do our little formatting...
+      // UGLY HACK. I don't even wanna dig into the internals of the composition
+      // window to figure out why this results in an extra <br> being added, so
+      // let's just stay sane and use a hack.
+      body = body.replace(/\r?\n<br>/g, "<br>");
       let html = [
         '<div style="overflow: auto">',
         '<img src="', authorAvatar, '" style="float: left; height: 48px; margin-right: 5px" />',
