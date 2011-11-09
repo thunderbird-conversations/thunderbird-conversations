@@ -42,7 +42,7 @@ const Cu = Components.utils;
 const Cr = Components.results;
 
 Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
-Cu.import("resource:///modules/gloda/mimemsg.js"); // for MsgHdrToMimeMessage
+Cu.import("resource:///modules/gloda/mimemsg.js");
 Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
 Cu.import("resource://conversations/stdlib/misc.js");
 Cu.import("resource://conversations/log.js");

@@ -707,7 +707,7 @@ Message.prototype = {
         return;
       self.detailsFetched = true;
       let w = self._conversation._htmlPane.contentWindow;
-      MsgHdrToMimeMessage(self._msgHdr, self, function (aMsgHdr, aMimeMsg) {
+      msgHdrGetHeaders(self._msgHdr, function (aHeaders) {
         try {
           let $ = w.$;
           let data = {
@@ -720,18 +720,18 @@ Message.prototype = {
           let interestingHeaders =
             ["mailed-by", "x-mailer", "mailer", "date", "user-agent"];
           for each (let h in interestingHeaders) {
-            if (aMimeMsg.has(h)) {
+            if (aHeaders.has(h)) {
               let key = h;
               try { // Note all the header names are translated.
                 key = strings.get("header-"+h);
               } catch (e) {}
               data.extraLines.push({
                 key: key,
-                value: escapeHtml(aMimeMsg.get(h).replace(this.RE_SNIPPET, "")),
+                value: escapeHtml(aHeaders.get(h).replace(this.RE_SNIPPET, "")),
               });
             }
           }
-          let subject = aMimeMsg.get("subject");
+          let subject = aHeaders.get("subject");
           data.extraLines.push({
             key: strings.get("header-subject"),
             value: subject ? escapeHtml(GlodaUtils.deMime(subject)) : "",
@@ -777,9 +777,7 @@ Message.prototype = {
           Log.error(e);
           dumpCallStack(e);
         }
-      }, {
-        partsOnDemand: true,
-      });
+      }.bind(self));
     });
 
     this.register(".hide-details > a", function (event) {

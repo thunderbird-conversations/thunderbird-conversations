@@ -45,7 +45,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI
 Cu.import("resource:///modules/mailServices.js");
 Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
-Cu.import("resource:///modules/gloda/mimemsg.js"); // For MsgHdrToMimeMessage
+Cu.import("resource:///modules/gloda/mimemsg.js");
 
 const gMessenger = Cc["@mozilla.org/messenger;1"]
                    .createInstance(Ci.nsIMessenger);
