@@ -724,7 +724,7 @@ ComposeSession.prototype = {
     for each (let priority in ["_early", ""]) {
       for each (let [, h] in Iterator(getHooks())) {
         try {
-          if (typeof(h["onMessageBeforeSendOrPopout" + priority]) == "function"  && !sendStatus.canceled)
+          if (typeof(h["onMessageBeforeSendOrPopout" + priority]) == "function")
             sendStatus = h["onMessageBeforeSendOrPopout" + priority]({
                 params: self.params,
                 to: JSON.parse($("#to").val()),

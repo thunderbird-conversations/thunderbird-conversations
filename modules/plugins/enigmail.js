@@ -437,7 +437,7 @@ let enigmailHook = {
   },
 
   onMessageBeforeSendOrPopout: function _enigmailHook_onMessageBeforeSendOrPopout(aAddress, aEditor, aStatus, aPopout) {
-    if (!hasEnigmail || aPopout)
+    if (!hasEnigmail || aPopout || aStatus.canceled)
       return aStatus;
 
     const nsIEnigmail = Ci.nsIEnigmail;
