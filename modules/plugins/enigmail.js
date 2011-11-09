@@ -436,7 +436,7 @@ let enigmailHook = {
     }
   },
 
-  onMessageBeforeSendOrPopup: function _enigmailHook_onMessageBeforeSendOrPopup(aAddress, aEditor, aStatus, aPopout) {
+  onMessageBeforeSendOrPopout: function _enigmailHook_onMessageBeforeSendOrPopout(aAddress, aEditor, aStatus, aPopout) {
     if (!hasEnigmail || aPopout)
       return aStatus;
 

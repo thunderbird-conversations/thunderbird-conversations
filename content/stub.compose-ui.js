@@ -726,15 +726,13 @@ ComposeSession.prototype = {
     for each (let priority in ["_early", "", "_late"]) {
       for each (let [, h] in Iterator(getHooks())) {
         try {
-          if (typeof(h["onMessageBeforeSendOrPopup" + priority]) == "function"  && !sendStatus.canceled) {
-            Log.warn("calling function:", "onMessageBeforeSendOrPopup" + priority, sendStatus.canceled);
-          
-          sendStatus = h["onMessageBeforeSendOrPopup" + priority]({
+          if (typeof(h["onMessageBeforeSendOrPopout" + priority]) == "function"  && !sendStatus.canceled)
+            sendStatus = h["onMessageBeforeSendOrPopout" + priority]({
                 params: self.params,
                 to: to,
                 cc: cc,
                 bcc: bcc,
-              }, ed, sendStatus, popOut);}
+              }, ed, sendStatus, popOut);
         } catch (e) {
           Log.warn("Plugin returned an error:", e);
           dumpCallStack(e);
