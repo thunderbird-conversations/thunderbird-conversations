@@ -14,8 +14,8 @@ let Log = setupLogging("Conversations.Modules.VirtualIdentity");
 let mainWindow = getMail3Pane();
 
 let virtualIdentityHook = {
-  onComposeSessionChanged: function _virtualIdentityHook_onComposeSessionChanged(composeSession, message, recipients) {
-    mainWindow.virtualIdentityExtension.conversationHook.onComposeSessionChanged(composeSession, recipients, Log);
+  onComposeSessionChanged: function _virtualIdentityHook_onComposeSessionChanged(aComposeSession, aMessage, aAddress) {
+    mainWindow.virtualIdentityExtension.conversationHook.onComposeSessionChanged(aComposeSession, aAddress, Log);
   },
   
   onMessageBeforeSendOrPopout_early: function _enigmailHook_onMessageBeforeSendOrPopout_early(aAddress, aEditor, aStatus, aPopout) {
@@ -28,8 +28,8 @@ let virtualIdentityHook = {
     mainWindow.virtualIdentityExtension.conversationHook.onStopSending();
   },
   
-  onRecipientAdded: function _virtualIdentityHook_onRecipientAdded(data, type, count) {
-    mainWindow.virtualIdentityExtension.conversationHook.onRecipientAdded(data.data, type, count, Log);
+  onRecipientAdded: function _virtualIdentityHook_onRecipientAdded(aData, aType, aCount) {
+    mainWindow.virtualIdentityExtension.conversationHook.onRecipientAdded(aData, aType, aCount, Log);
   }
 }
 

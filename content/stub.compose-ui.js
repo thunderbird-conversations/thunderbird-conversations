@@ -719,7 +719,9 @@ ComposeSession.prototype = {
     let compType = document.getElementById("forward-radio").checked
       ? Ci.nsIMsgCompType.ForwardInline
       : Ci.nsIMsgCompType.ReplyAll; // ReplyAll, Reply... ends up the same
-    
+    let [to, cc, bcc] = ["to", "cc", "bcc"].map(function (x)
+      JSON.parse($("#"+x).val()));
+
     let sendStatus = { canceled: false };
     for each (let priority in ["_early", ""]) {
       for each (let [, h] in Iterator(getHooks())) {
@@ -727,9 +729,9 @@ ComposeSession.prototype = {
           if (typeof(h["onMessageBeforeSendOrPopout" + priority]) == "function")
             sendStatus = h["onMessageBeforeSendOrPopout" + priority]({
                 params: self.params,
-                to: JSON.parse($("#to").val()),
-                cc: JSON.parse($("#cc").val()),
-                bcc: JSON.parse($("#bcc").val()),
+                to: to,
+                cc: cc,
+                bcc: bcc,
               }, ed, sendStatus, popOut);
         } catch (e) {
           Log.warn("Plugin returned an error:", e);

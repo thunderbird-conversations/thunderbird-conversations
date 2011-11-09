@@ -49,8 +49,11 @@ var EXPORTED_SYMBOLS = ['registerHook', 'getHooks', 'removeHook'];
  *  // created and all fields are prepared
  *  // @param aComposeSession created composeSession
  *  // @param aMessage current message instance
- *  // @param aRecipients current recipients (to, cc, bcc)
- *  onComposeSessionChanged (aComposeSession, aMessage, aRecipients) {
+ *  // @param aAddress.to The recipients. This is an Array of valid email
+ *  //  addresses.
+ *  // @param aAddress.cc Same remark.
+ *  // @param aAddress.bcc Same remark.
+ *  onComposeSessionChanged (aComposeSession, aMessage, aAddress) {
  *  },
  * 
  *  // Called whenever a recipient is added to the quickreply
