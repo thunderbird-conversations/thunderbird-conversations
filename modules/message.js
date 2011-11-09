@@ -1485,6 +1485,9 @@ Message.prototype = {
       // window to figure out why this results in an extra <br> being added, so
       // let's just stay sane and use a hack.
       body = body.replace(/\r?\n<br>/g, "<br>");
+      body = body.replace(/<\/body>\s*<\/html>\s*$/, "");
+      if (!(body.indexOf("<pre wrap>") === 0))
+        body = "<br>"+body;
       let html = [
         '<div style="overflow: auto">',
         '<img src="', authorAvatar, '" style="float: left; height: 48px; margin-right: 5px" />',
