@@ -422,7 +422,10 @@ function ComposeSession (match) {
     subject: null,
   };
   this.stripSignatureIfNeeded = function () {};
+  
   // Go!
+  this.senderNameElem = $(".senderName");
+  this.asyncSetupSteps = 4; // number of asynchronous setup functions to finish
   this.setupIdentity();
   this.setupMisc();
   this.setupAutocomplete();
@@ -449,6 +452,7 @@ ComposeSession.prototype = {
         //  http://mxr.mozilla.org/comm-central/source/mail/base/content/mailCommands.js#210
         let suggestedIdentity = mainWindow.getIdentityForHeader(aMsgHdr, compType);
         identity = suggestedIdentity || gIdentities.default;
+        self.setupDone();
       },
 
       draft: function ({ from }) {
@@ -457,9 +461,10 @@ ComposeSession.prototype = {
         //  has deleted the identity in-between (sounds unlikely, but who
         //  knows?).
         identity = gIdentities[from] || gIdentities.default;
+        self.setupDone();
       },
     });
-    $(".senderName").text(identity.email);
+    self.senderNameElem.text(identity.email);
     self.params.identity = identity;
   },
 
@@ -470,6 +475,7 @@ ComposeSession.prototype = {
         let aMsgHdr = aMessage._msgHdr;
         self.params.msgHdr = aMsgHdr;
         self.params.subject = "Re: "+aMsgHdr.mime2DecodedSubject;
+        self.setupDone();
       },
 
       draft: function ({ msgUri }) {
@@ -477,6 +483,7 @@ ComposeSession.prototype = {
         let msgHdr = msgUriToMsgHdr(msgUri);
         self.params.msgHdr = msgHdr || last(Conversations.currentConversation.msgHdrs);
         self.params.subject = "Re: "+self.params.msgHdr.mime2DecodedSubject;
+        self.setupDone();
       },
     });
   },
@@ -551,17 +558,6 @@ ComposeSession.prototype = {
 
   setupAutocomplete: function () {
     let self = this;
-    let notifyHooks = function() {
-      let recipients = JSON.parse($("#to").val()) + ", " + JSON.parse($("#cc").val());
-      for each (let [, h] in Iterator(getHooks())) {
-        try {
-          if (typeof(h.onComposeFieldsChanged) == "function") 
-            h.onComposeFieldsChanged(recipients, self.params, $(".senderName"));
-        } catch (e) {
-          Log.warn("Plugin returned an error:", e); dumpCallStack(e);
-        };
-      }
-    };
     this.match({
       reply: function (aMessage, aReplyType) {
         // Make sure we're consistent with modules/message.js!
@@ -576,7 +572,7 @@ ComposeSession.prototype = {
             $(".replyMethod-replyAll").show();
             $(".replyMethod-replyList").show();
           }
-          notifyHooks();
+          self.setupDone();
         };
         if (aReplyType == "replyAll") {
           self.changeComposeFields("replyAll", showHideActions);
@@ -596,7 +592,7 @@ ComposeSession.prototype = {
             for each ([i, item] in Iterator(list))];
         };
         setupAutocomplete(makeTokens(to), makeTokens(cc), makeTokens(bcc));
-        notifyHooks();
+        self.setupDone();
       },
     });
   },
@@ -678,15 +674,36 @@ ComposeSession.prototype = {
           node.selectionStart = pos;
           node.selectionEnd = pos;
         });
+        self.setupDone();
       },
 
       draft: function ({ body }) {
         let node = getActiveEditor();
         node.value = body;
+        self.setupDone();
       },
     });
   },
 
+  setupDone: function() {
+    // wait till all (asynchronous) setup steps are finished
+    if (!--this.asyncSetupSteps) {
+      let recipients = {
+        to: JSON.parse($("#to").val()).join(","),
+        cc: JSON.parse($("#cc").val()).join(","),
+        bcc: JSON.parse($("#bcc").val()).join(","),
+      };
+      for each (let [, h] in Iterator(getHooks())) {
+        try {
+          if (typeof(h.onComposeSessionChanged) == "function") 
+            h.onComposeSessionChanged(this, getMessageForQuickReply(), recipients);
+        } catch (e) {
+          Log.warn("Plugin returned an error:", e); dumpCallStack(e);
+        };
+      }
+    }
+  },
+  
   send: function (options) {
     let self = this;
     let popOut = options && options.popOut;
