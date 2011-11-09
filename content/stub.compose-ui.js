@@ -295,7 +295,6 @@ function onDiscard(event) {
       gDraftListener.notifyDraftChanged("removed");
       yield SimpleStorage.kWorkDone;
     });
-  return true;
 }
 
 /**
@@ -722,7 +721,7 @@ ComposeSession.prototype = {
     let [to, cc, bcc] = ["to", "cc", "bcc"].map(function (x)
       JSON.parse($("#"+x).val()));
 
-    let sendStatus = { canceled: false };
+    let sendStatus = { };
     for each (let priority in ["_early", ""]) {
       for each (let [, h] in Iterator(getHooks())) {
         try {
