@@ -689,9 +689,9 @@ ComposeSession.prototype = {
     // wait till all (asynchronous) setup steps are finished
     if (!--this.asyncSetupSteps) {
       let recipients = {
-        to: JSON.parse($("#to").val()).join(","),
-        cc: JSON.parse($("#cc").val()).join(","),
-        bcc: JSON.parse($("#bcc").val()).join(","),
+        to: JSON.parse($("#to").val()),
+        cc: JSON.parse($("#cc").val()),
+        bcc: JSON.parse($("#bcc").val()),
       };
       for each (let [, h] in Iterator(getHooks())) {
         try {
@@ -719,19 +719,17 @@ ComposeSession.prototype = {
     let compType = document.getElementById("forward-radio").checked
       ? Ci.nsIMsgCompType.ForwardInline
       : Ci.nsIMsgCompType.ReplyAll; // ReplyAll, Reply... ends up the same
-    let [to, cc, bcc] = ["to", "cc", "bcc"].map(function (x)
-      JSON.parse($("#"+x).val()));
-
+    
     let sendStatus = { canceled: false };
-    for each (let priority in ["_early", "", "_late"]) {
+    for each (let priority in ["_early", ""]) {
       for each (let [, h] in Iterator(getHooks())) {
         try {
           if (typeof(h["onMessageBeforeSendOrPopout" + priority]) == "function"  && !sendStatus.canceled)
             sendStatus = h["onMessageBeforeSendOrPopout" + priority]({
                 params: self.params,
-                to: to,
-                cc: cc,
-                bcc: bcc,
+                to: JSON.parse($("#to").val()),
+                cc: JSON.parse($("#cc").val()),
+                bcc: JSON.parse($("#bcc").val()),
               }, ed, sendStatus, popOut);
         } catch (e) {
           Log.warn("Plugin returned an error:", e);
