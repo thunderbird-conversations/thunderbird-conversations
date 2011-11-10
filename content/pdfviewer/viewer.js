@@ -105,7 +105,7 @@ Viewer.prototype = {
     Log.debug("Downloading", this.url);
 
     this._download(function (data) {
-      this.pdfDoc = new PDFDoc(data);
+      this.pdfDoc = new PDFJS.PDFDoc(data);
       this.switchToPage(1);
     }.bind(this));
   },
