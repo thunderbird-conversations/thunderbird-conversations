@@ -1,5 +1,5 @@
 <!ENTITY assistant.title "Guiden Första körningen">
-<!ENTITY assistant.intro "Hejsan, det här är <strong>Thunderbird Conversations</strong>!">
+<!ENTITY assistant.intro "Hej, det här är <strong>Thunderbird Conversations</strong>!">
 <!ENTITY assistant.p1 "För att kunna göra ditt liv enklare, så kommer denna guide att finjustera din Thunderbird-konfiguration för att säkerställa att du får en så bra upplevelse som möjligt. Vi vill ju inte att du skall känna dig otillfredsställd!">
 <!ENTITY assistant.p2 "Justeringarna vi gör är alla reversibla, så var inte orolig: Skulle du inte uppskatta Thunderbird Conversations, så återställer vi alla inställningsändringar vi har gjort så snart du avinstallerar tillägget.">
 <!ENTITY assistant.p3 "Det här kan ta ett tag. Du kan antingen vänta tills det här fönstret stängs eller stänga fönstret själv och följa förloppet via Verktyg &gt; Aktiviteter.">
@@ -16,10 +16,10 @@
 <!ENTITY assistant.actionSetupView "Byt till global inkorg, gör visningen trådad, sortera efter datum, aktivera en &quot;Antal olästa&quot;-kolumn och en ny &quot;Mellan&quot;-kolumn (rekommenderas <strong>starkt</strong>).">
 <!ENTITY assistant.actionSetupViewDefaults "Använd dessa anpassade sorteringsinställningar för alla mappar.">
 <!ENTITY assistant.actionEnsureMessagePaneVisible "Säkerställ att meddelandepanelen är synlig.">
-<!ENTITY assistant.settings2 "Om du skulle vilja aktivera fler alternativ senare, så kommer du åt denna guide via tilläggets inställningar, under sektionen &quot;Avancerat&quot;.">
+<!ENTITY assistant.settings2 "Om du skulle vilja aktivera fler alternativ senare, så kommer du åt denna guide via tilläggets inställningar, under avsnittet &quot;Avancerat&quot;.">
 <!ENTITY feedback.message "Du har nu använt Thunderbird Conversations under en tid. Skulle du kunna tänka dig att berätta för oss vad du tycker om tillägget? Vi uppskattar verkligen alla kommentarer som du kan ge oss!">
 <!ENTITY feedback.no "Nej tack">
-<!ENTITY feedback.yes "Lämna feedbackrutan">
+<!ENTITY feedback.yes "Ge feedback">
 <!ENTITY feedback.pageTitle "Ge feedback">
 <!ENTITY indexing.p1 "Vi har försökt att konfigurera Thunderbird Conversations för att ge dig en så bra upplevelse som möjligt, men du har så många meddelanden att omindexeringen av dem skulle krascha Thunderbird.">
 <!ENTITY indexing.p2 "Om du har ett galet stort antal icke-buggmeddelanden, ta bort filen <tt>global-messages-db.sqlite</tt> från din profilmapp (se länken nedan).">
@@ -37,7 +37,7 @@
 <!ENTITY stub.forward.tooltip "Vidarebefordra denna konversation">
 <!ENTITY stub.print.tooltip "Skriv ut denna konversation">
 <!ENTITY stub.junk.tooltip "Märk detta meddelande som skräppost">
-<!ENTITY stub.expand.tooltip "Expandera/dölj alla meddelanden">
+<!ENTITY stub.expand.tooltip "Visa/dölj alla meddelanden">
 <!ENTITY stub.read.tooltip "Växla lästa/olästa för alla meddelanden">
 <!ENTITY stub.detach.tooltip2 "Visa denna konversation i en ny flik">
 <!ENTITY stub.menu.tooltip "Konversationsåtgärder">

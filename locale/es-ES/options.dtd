@@ -1,3 +1,4 @@
+<!-- Please open the "Preferences" window and DO check that your text is not toon     long. This can cause the contents to overflow and be hidden, so make suren     everything is displayed properly. nnn-->
 <!ENTITY window.title "Thunderbird Conversations - Opciones">
 <!ENTITY title.message_display "Vista de mensajes">
 <!ENTITY option.expand_who "Por defecto, expandir:">

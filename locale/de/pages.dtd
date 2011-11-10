@@ -40,4 +40,4 @@
 <!ENTITY stub.expand.tooltip "Alle Nachrichten aus-/einklappen">
 <!ENTITY stub.read.tooltip "Alle Nachrichten als un-/gelesen markieren">
 <!ENTITY stub.detach.tooltip2 "Zeige diese Konversation im neuem Tab">
-<!ENTITY stub.menu.tooltip "Conversation actions">
+<!ENTITY stub.menu.tooltip "Konversationsaktionen">

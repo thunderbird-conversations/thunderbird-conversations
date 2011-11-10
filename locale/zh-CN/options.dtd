@@ -1,14 +1,4 @@
-<!-- Please open the "Preferences" window and DO check that your text is not too
-     long. This can cause the contents to overflow and be hidden, so make sure
-     everything is displayed properly. 
-
-
-
-
-
-
-
--->
+<!-- Please open the "Preferences" window and DO check that your text is not toon     long. This can cause the contents to overflow and be hidden, so make suren     everything is displayed properly. nnnnnnnnnnn-->
 <!ENTITY window.title "Gmail会话视图-选项">
 <!ENTITY title.message_display "消息显示">
 <!ENTITY option.expand_who "默认：展开">

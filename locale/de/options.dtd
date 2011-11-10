@@ -1,14 +1,4 @@
-<!-- Please open the "Preferences" window and DO check that your text is not too
-     long. This can cause the contents to overflow and be hidden, so make sure
-     everything is displayed properly. 
-
-
-
-
-
-
-
--->
+<!-- Please open the "Preferences" window and DO check that your text is not toon     long. This can cause the contents to overflow and be hidden, so make suren     everything is displayed properly. nnnnnnnnnnn-->
 <!ENTITY window.title "Thunderbird Conversations Optionen">
 <!ENTITY title.message_display "Nachrichtenanzeige">
 <!ENTITY option.expand_who "Standardmäßig ausklappen:">
@@ -25,4 +15,6 @@
 <!ENTITY title.advanced_display "Konversationsanzeige">
 <!ENTITY option.no_friendly_date "&quot;Normales&quot; Datum wie in der Nachrichtenliste anzeigen">
 <!ENTITY option.monospaced_senders2 "Nachrichten von dieser Adresse/Mailingliste sollen in unproportionaler Schriftart angezeigt werden (getrennt durch Kommata)">
-<!ENTITY option.add_embeds "Entdecke Links zu verschieden Services in E-mails (z.B. YouTube) und zeige diese eingebettet.">
+<!ENTITY option.tweak_bodies "Optimiere die Schriften in der Nachrichtenansicht, um die Konsistenz zu den äußeren Schriften herzsutellen (empfohlen, Neustart erforderlich).">
+<!ENTITY option.tweak_chrome "Skaliere die Schriftgröße für die Konversation (empfohlen, Neustart erforderlich).">
+<!ENTITY option.add_embeds "Erkenne Links zu verschiedenen Services in E-mails (z.B. YouTube) und zeige deren Inhalte in der Nachricht eingebettet an.">

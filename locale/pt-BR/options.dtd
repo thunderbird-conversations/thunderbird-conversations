@@ -1,6 +1,12 @@
+<!-- Please open the "Preferences" window and DO check that your text is not too
+     long. This can cause the contents to overflow and be hidden, so make sure
+     everything is displayed properly. 
+
+
+-->
 <!ENTITY window.title "Opções do Thunderbird Conversations">
 <!ENTITY title.message_display "Exibição de mensagens">
-<!ENTITY option.expand_who "Por padrão, expandir:">
+<!ENTITY option.expand_who "Normalmente expandir">
 <!ENTITY option.expand_auto2 "Automático">
 <!ENTITY option.expand_auto2.tooltip "Se o tópico estiver recolhido, expandir todas as mensagens não lidas ou a última mensagem. Se o tópico estiver expandido, somente expandir a mensagem selecionada na lista de mensagens.">
 <!ENTITY option.expand_none "Nenhuma mensagem">
@@ -10,10 +16,10 @@
 <!ENTITY option.lines "linhas">
 <!ENTITY title.advanced "Avançado">
 <!ENTITY title.assistant "Assistente de instalação">
-<!ENTITY option.assistant "Iniciar o assistente de instalação">
+<!ENTITY option.assistant "Chamar assistente de instalação">
 <!ENTITY title.advanced_display "Exibição de conversas">
-<!ENTITY option.no_friendly_date "Usar datas &quot;normais&quot;, assim como na lista de mensagens">
-<!ENTITY option.monospaced_senders2 "Mensagens destes endereços/listas de discussão devem ser exibidas com espaçamento fixo (separar com vírgulas)">
-<!ENTITY option.tweak_bodies "Ajustar as fontes no corpo da mensagem para torná-las consistentes com a fonte externa (recomendado, requer reiniciar).">
-<!ENTITY option.tweak_chrome "Reduzir o tamanho da fonte para a conversa chrome (recomendado, requer reiniciar).">
-<!ENTITY option.add_embeds "Detectar links para vários serviços (por exemplo, YouTube) em emails e visualizá-los inline.">
+<!ENTITY option.no_friendly_date "Usar datas &quot;normais&quot;, como na lista de mensagens">
+<!ENTITY option.monospaced_senders2 "Mensagens desses endereços e listas (separar com vírgulas) devem ser exibidas com tipos de letra de espaçamento fixo">
+<!ENTITY option.tweak_bodies "Ajustar as fontes no corpo da mensagem para torná-las consistentes com a fonte externa (recomendado, necessário reiniciar)">
+<!ENTITY option.tweak_chrome "Reduzir o tamanho da fonte dos elementos visuais das conversas (recomendado, necessário reiniciar)">
+<!ENTITY option.add_embeds "Detectar links para vários serviços (por exemplo, YouTube) e visualizá-los nas próprias mensagens">

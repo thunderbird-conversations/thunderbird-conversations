@@ -34,7 +34,7 @@
 <!ENTITY stub.loading "Chargement…">
 <!ENTITY stub.trash.tooltip "Supprimer cette conversation">
 <!ENTITY stub.archive.tooltip "Archiver cette conversation">
-<!ENTITY stub.forward.tooltip "Transférer cette conversations">
+<!ENTITY stub.forward.tooltip "Transférer cette conversation">
 <!ENTITY stub.print.tooltip "Imprimer cette conversation">
 <!ENTITY stub.junk.tooltip "Placer ce message dans les indésirables">
 <!ENTITY stub.expand.tooltip "Développer/replier tous les messages">
