@@ -16,6 +16,8 @@ var EXPORTED_SYMBOLS = ['registerHook', 'getHooks', 'removeHook'];
  *  // compose-window.
  *  // Set of functions with different priorities, call to "_early" function
  *  // should not expect parameters (like sender, recipients) to keep stable.
+ *  // "_canceled"-function will only be called if sending was canceled - you
+ *  // should not expect to change the returned sending-status here.
  *  // @param aAddress.param The params (sender, identity) the user picked
  *  //  to send the message.
  *  // @param aAddress.to The recipients. This is an Array of valid email
@@ -30,6 +32,8 @@ var EXPORTED_SYMBOLS = ['registerHook', 'getHooks', 'removeHook'];
  *  onMessageBeforeSendOrPopout_early: function (aAddress, aEditor, aStatus, aPopout) {
  *  },
  *  onMessageBeforeSendOrPopout: function (aAddress, aEditor, aStatus, aPopout) {
+ *  },
+ *  onMessageBeforeSendOrPopout_canceled: function (aAddress, aEditor, aStatus, aPopout) {
  *  },
  *
  *  // Called when quick reply body is composed.

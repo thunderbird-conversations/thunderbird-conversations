@@ -722,16 +722,19 @@ ComposeSession.prototype = {
       JSON.parse($("#"+x).val()));
 
     let sendStatus = { };
-    for each (let priority in ["_early", ""]) {
+    for each (let priority in ["_early", "", "_canceled"]) {
       for each (let [, h] in Iterator(getHooks())) {
         try {
-          if (typeof(h["onMessageBeforeSendOrPopout" + priority]) == "function")
-            sendStatus = h["onMessageBeforeSendOrPopout" + priority]({
+          if ((typeof(h["onMessageBeforeSendOrPopout" + priority]) == "function") && (priority != "_canceled" || sendStatus.canceled)) {
+            let newSendStatus = h["onMessageBeforeSendOrPopout" + priority]({
                 params: self.params,
                 to: to,
                 cc: cc,
                 bcc: bcc,
               }, ed, sendStatus, popOut);
+            if (priority != "_canceled")
+              sendStatus = newSendStatus;
+          }
         } catch (e) {
           Log.warn("Plugin returned an error:", e);
           dumpCallStack(e);
