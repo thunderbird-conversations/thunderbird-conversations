@@ -421,7 +421,10 @@ function ComposeSession (match) {
     subject: null,
   };
   this.stripSignatureIfNeeded = function () {};
+  
   // Go!
+  this.senderNameElem = $(".senderName");
+  this.asyncSetupSteps = 4; // number of asynchronous setup functions to finish
   this.setupIdentity();
   this.setupMisc();
   this.setupAutocomplete();
@@ -448,6 +451,7 @@ ComposeSession.prototype = {
         //  http://mxr.mozilla.org/comm-central/source/mail/base/content/mailCommands.js#210
         let suggestedIdentity = mainWindow.getIdentityForHeader(aMsgHdr, compType);
         identity = suggestedIdentity || gIdentities.default;
+        self.setupDone();
       },
 
       draft: function ({ from }) {
@@ -456,9 +460,10 @@ ComposeSession.prototype = {
         //  has deleted the identity in-between (sounds unlikely, but who
         //  knows?).
         identity = gIdentities[from] || gIdentities.default;
+        self.setupDone();
       },
     });
-    $(".senderName").text(identity.email);
+    self.senderNameElem.text(identity.email);
     self.params.identity = identity;
   },
 
@@ -469,6 +474,7 @@ ComposeSession.prototype = {
         let aMsgHdr = aMessage._msgHdr;
         self.params.msgHdr = aMsgHdr;
         self.params.subject = "Re: "+aMsgHdr.mime2DecodedSubject;
+        self.setupDone();
       },
 
       draft: function ({ msgUri }) {
@@ -476,6 +482,7 @@ ComposeSession.prototype = {
         let msgHdr = msgUriToMsgHdr(msgUri);
         self.params.msgHdr = msgHdr || last(Conversations.currentConversation.msgHdrs);
         self.params.subject = "Re: "+self.params.msgHdr.mime2DecodedSubject;
+        self.setupDone();
       },
     });
   },
@@ -564,6 +571,7 @@ ComposeSession.prototype = {
             $(".replyMethod-replyAll").show();
             $(".replyMethod-replyList").show();
           }
+          self.setupDone();
         };
         if (aReplyType == "replyAll") {
           self.changeComposeFields("replyAll", showHideActions);
@@ -583,6 +591,7 @@ ComposeSession.prototype = {
             for each ([i, item] in Iterator(list))];
         };
         setupAutocomplete(makeTokens(to), makeTokens(cc), makeTokens(bcc));
+        self.setupDone();
       },
     });
   },
@@ -664,15 +673,37 @@ ComposeSession.prototype = {
           node.selectionStart = pos;
           node.selectionEnd = pos;
         });
+        self.setupDone();
       },
 
       draft: function ({ body }) {
         let node = getActiveEditor();
         node.value = body;
+        self.setupDone();
       },
     });
   },
 
+  setupDone: function() {
+    // wait till all (asynchronous) setup steps are finished
+    if (!--this.asyncSetupSteps) {
+      let recipients = {
+        to: JSON.parse($("#to").val()),
+        cc: JSON.parse($("#cc").val()),
+        bcc: JSON.parse($("#bcc").val()),
+      };
+      for each (let [, h] in Iterator(getHooks())) {
+        try {
+          if (typeof(h.onComposeSessionChanged) == "function") 
+            h.onComposeSessionChanged(this, getMessageForQuickReply(), recipients);
+        } catch (e) {
+          Log.warn("Plugin returned an error:", e);
+          dumpCallStack(e);
+        };
+      }
+    }
+  },
+  
   send: function (options) {
     let self = this;
     let popOut = options && options.popOut;
@@ -690,30 +721,35 @@ ComposeSession.prototype = {
     let [to, cc, bcc] = ["to", "cc", "bcc"].map(function (x)
       JSON.parse($("#"+x).val()));
 
-    let sendStatus = {};
-    if (!popOut) {
-      try {
-        [sendStatus = h.onMessageBeforeSend({
-            identity: self.params.identity,
-            to: to,
-            cc: cc,
-            bcc: bcc,
-          }, ed, sendStatus)
-          for each ([, h] in Iterator(getHooks()))
-          if (typeof(h.onMessageBeforeSend) == "function")];
-      } catch (e) {
-        Log.warn("Plugin returned an error:", e);
-        dumpCallStack(e);
-      }
-      if (sendStatus.canceled) {
-        pText(strings.get("messageSendingCanceled"));
-        $(".statusPercentage").hide();
-        $(".statusThrobber").hide();
-        $(".quickReplyHeader").show();
-        return;
+    let sendStatus = { };
+    for each (let priority in ["_early", "", "_canceled"]) {
+      for each (let [, h] in Iterator(getHooks())) {
+        try {
+          if ((typeof(h["onMessageBeforeSendOrPopout" + priority]) == "function") && (priority != "_canceled" || sendStatus.canceled)) {
+            let newSendStatus = h["onMessageBeforeSendOrPopout" + priority]({
+                params: self.params,
+                to: to,
+                cc: cc,
+                bcc: bcc,
+              }, ed, sendStatus, popOut);
+            if (priority != "_canceled")
+              sendStatus = newSendStatus;
+          }
+        } catch (e) {
+          Log.warn("Plugin returned an error:", e);
+          dumpCallStack(e);
+        };
       }
     }
 
+    if (sendStatus.canceled) {
+      pText(strings.get("messageSendingCanceled"));
+      $(".statusPercentage").hide();
+      $(".statusThrobber").hide();
+      $(".quickReplyHeader").show();
+      return;
+    }
+  
     return sendMessage({
         urls: [msgHdrGetUri(self.params.msgHdr)],
         identity: self.params.identity,
@@ -858,7 +894,7 @@ let sendListener = {
    * called once when the networking library has finished processing the
    * message.
    *
-   * This method is called regardless of whether the the operation was successful.
+   * This method is called regardless of whether the operation was successful.
    * aMsgID   The message id for the mail message
    * status   Status code for the message send.
    * msg      A text string describing the error.
@@ -894,6 +930,15 @@ let sendListener = {
       pText(strings.get("couldntSendTheMessage"));
       Log.debug("NS_FAILED onStopSending");
     }
+    for each (let [, h] in Iterator(getHooks())) {
+      try {
+        if (typeof(h.onStopSending) == "function")
+          h.onStopSending(aMsgID, aStatus, aMsg, aReturnFile);
+      } catch (e) {
+        Log.warn("Plugin returned an error:", e);
+        dumpCallStack(e);
+      };
+	}
   },
 
   /**
