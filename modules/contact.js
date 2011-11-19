@@ -192,9 +192,13 @@ let ContactMixIn = {
 
     /* Register the "send message" link */
     this.register(".sendEmail", function (event) {
-      composeMessageTo(self._email, mainWindow.gFolderDisplay.displayedFolder);
+      let dest = (this._name == this._email || !this._name)
+        ? this._email
+        : MailServices.headerParser.makeFullAddress(this._name, this._email);
+      dump(dest+"\n\n");
+      composeMessageTo(dest, mainWindow.gFolderDisplay.displayedFolder);
       event.stopPropagation();
-    });
+    }.bind(this));
 
     // XXX We already called getCardForEmail if we're runnning without contacts
     //  installed...
