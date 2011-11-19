@@ -393,6 +393,7 @@ function patchForShowSecurityInfo(aWindow) {
 
 let enigmailHook = {
   _domNode: null,
+  _originalText: null, // for restoring original text when sending message is canceled
 
   onMessageBeforeStreaming: function _enigmailHook_onBeforeStreaming(aMessage) {
     if (enigmailSvc) {
@@ -436,9 +437,15 @@ let enigmailHook = {
     }
   },
 
-  onMessageBeforeSend: function _enigmailHook_onMessageBeforeSend(aAddress, aEditor, aStatus) {
-    if (!hasEnigmail)
+  onMessageBeforeSendOrPopout: function _enigmailHook_onMessageBeforeSendOrPopout(aAddress, aEditor, aStatus, aPopout) {
+    if (hasEnigmail)
+      this._originalText = null;
+
+    if (!hasEnigmail || aPopout || aStatus.canceled)
       return aStatus;
+
+    // global window is used in Enigmail function
+    window = getMail3Pane();
 
     const nsIEnigmail = Ci.nsIEnigmail;
     const SIGN = nsIEnigmail.SEND_SIGNED;
@@ -446,7 +453,7 @@ let enigmailHook = {
 
     let uiFlags = nsIEnigmail.UI_INTERACTIVE;
 
-    let identity = aAddress.identity
+    let identity = aAddress.params.identity
     Enigmail.msg.identity = identity;
     Enigmail.msg.enableRules = true;
     Enigmail.msg.sendModeDirty = 0;
@@ -555,6 +562,7 @@ let enigmailHook = {
           }
           cipherText = EnigmailCommon.convertToUnicode(cipherText, charset);
           aEditor.value = cipherText;
+          this._originalText = origText;
         } else {
           // Encryption/signing failed
           let msg = EnigmailCommon.getString("signFailed") + "\n"
@@ -587,6 +595,12 @@ let enigmailHook = {
         EnigmailCommon.getString("msgCompose.button.sendUnencrypted"));
     }
     return aStatus;
+  },
+
+  onMessageBeforeSendOrPopout_canceled: function _enigmailHook_onMessageBeforeSendOrPopout_canceled(aAddress, aEditor, aStatus, aPopout) {
+    if (hasEnigmail && !aPopout && aStatus.canceled && this._originalText !== null) {
+       aEditor.value = this._originalText;
+    }
   },
 
   onReplyComposed: function _enigmailHook_onReplyComposed(aMessage, aBody) {
