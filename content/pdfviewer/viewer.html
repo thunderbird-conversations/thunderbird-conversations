@@ -4,28 +4,10 @@
 <head>
   <link rel="stylesheet" href="buttons.css">
 
-  <!-- PDFJSSCRIPT_INCLUDE_BUILD -->
-  <script type="text/javascript" src="../pdfjs/src/core.js"></script> <!-- PDFJSSCRIPT_REMOVE -->
-  <script type="text/javascript" src="../pdfjs/src/util.js"></script>  <!-- PDFJSSCRIPT_REMOVE -->
-  <script type="text/javascript" src="../pdfjs/src/canvas.js"></script>  <!-- PDFJSSCRIPT_REMOVE -->
-  <script type="text/javascript" src="../pdfjs/src/obj.js"></script>  <!-- PDFJSSCRIPT_REMOVE -->
-  <script type="text/javascript" src="../pdfjs/src/function.js"></script> <!-- PDFJSSCRIPT_REMOVE -->
-  <script type="text/javascript" src="../pdfjs/src/charsets.js"></script>  <!-- PDFJSSCRIPT_REMOVE -->
-  <script type="text/javascript" src="../pdfjs/src/cidmaps.js"></script>  <!-- PDFJSSCRIPT_REMOVE -->
-  <script type="text/javascript" src="../pdfjs/src/colorspace.js"></script>  <!-- PDFJSSCRIPT_REMOVE -->
-  <script type="text/javascript" src="../pdfjs/src/crypto.js"></script>  <!-- PDFJSSCRIPT_REMOVE -->
-  <script type="text/javascript" src="../pdfjs/src/evaluator.js"></script>  <!-- PDFJSSCRIPT_REMOVE -->
-  <script type="text/javascript" src="../pdfjs/src/fonts.js"></script>  <!-- PDFJSSCRIPT_REMOVE -->
-  <script type="text/javascript" src="../pdfjs/src/glyphlist.js"></script>  <!-- PDFJSSCRIPT_REMOVE -->
-  <script type="text/javascript" src="../pdfjs/src/image.js"></script>  <!-- PDFJSSCRIPT_REMOVE -->
-  <script type="text/javascript" src="../pdfjs/src/metrics.js"></script>  <!-- PDFJSSCRIPT_REMOVE -->
-  <script type="text/javascript" src="../pdfjs/src/parser.js"></script>  <!-- PDFJSSCRIPT_REMOVE -->
-  <script type="text/javascript" src="../pdfjs/src/pattern.js"></script>  <!-- PDFJSSCRIPT_REMOVE -->
-  <script type="text/javascript" src="../pdfjs/src/stream.js"></script>  <!-- PDFJSSCRIPT_REMOVE -->
-  <script type="text/javascript" src="../pdfjs/src/worker.js"></script>  <!-- PDFJSSCRIPT_REMOVE -->
-
-  <script type="text/javascript">PDFJS.workerSrc = '../src/worker_loader.js';</script> <!-- PDFJSSCRIPT_REMOVE -->
-
+  <script type="text/javascript" src="../pdfjs/build/pdf.js"></script> <!-- PDFJSSCRIPT_REMOVE -->
+  <script type="text/javascript">
+    PDFJS.workerSrc = 'chrome://conversations/content/pdfjs/src/worker_loader.js';
+  </script>
   <script src="viewer.js" type="application/javascript;version=1.8" charset="utf-8"></script>
 
   <style>
