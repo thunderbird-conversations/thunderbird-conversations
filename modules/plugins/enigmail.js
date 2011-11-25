@@ -150,7 +150,7 @@ window.addEventListener("load", function () {
           // possible to get a wrong message
           message = w._encryptedMimeMessages.shift();
           // Use a nsIURI object to identify the message correctly.
-          // Enigmail patch is required.
+          // Enigmail <= 1.3.3 doesn't support uri argument.
           let uri = arguments[8];
           if (uri) {
             let msgHdr = uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
@@ -256,16 +256,26 @@ function tryEnigmail(bodyElement, aMessage) {
       msgRfc822Text += "\n\n"+EnigmailCommon.getString("endPgpPart")+"\n\n"+tail;
     }
 
+    let w = topMail3Pane(aMessage);
     if (exitCodeObj.value == 0) {
       if (msgRfc822Text.length > 0) {
-        bodyElement.querySelector("div.moz-text-plain").innerHTML =
+        let messageElement = bodyElement.querySelector("div.moz-text-plain");
+        messageElement.innerHTML =
           EnigmailFuncs.formatPlaintextMsg(msgRfc822Text);
         aMessage.decryptedText = msgRfc822Text;
+        // Revert click link behavior to the original because
+        // URL content is loaded into message iframe on Mac OSX.
+        [x.addEventListener("click", function (event) {
+            if (event.button != 2) {
+              w.messenger.launchExternalURL(event.target.textContent);
+              event.preventDefault();
+            }
+          }, false)
+          for ([, x] in Iterator(messageElement.querySelectorAll("a")))];
       }
     } else {
       Log.error("Enigmail error: "+exitCodeObj.value+" --- "+errorMsgObj.value+"\n");
     }
-    let w = topMail3Pane(aMessage);
     showHdrIconsOnStreamed(aMessage, function () {
       w.Enigmail.hdrView.updateHdrIcons(exitCodeObj.value, statusFlagsObj.value,
         keyIdObj.value, userIdObj.value, sigDetailsObj.value, errorMsgObj.value,
@@ -305,33 +315,6 @@ function prepareForShowHdrIcons(aMessage, aHasEnc) {
 
   if (aHasEnc)
     w._encryptedMimeMessages.push(aMessage);
-
-  // Add default focus event listner for keyboard shortcut which moves
-  // focus to the next or previous message.
-  if (!conversation._focusListener) {
-    conversation._focusListener = function () {
-      w.Enigmail.hdrView.statusBarHide();
-    };
-    [message._domNode.addEventListener("focus",
-      conversation._focusListener, true)
-      for each ([, { message }] in Iterator(conversation.messages))];
-  }
-
-  // The security info is stored in the message's _updateHdrIcons
-  // to show it when focusing on the message again.
-  // If the focus is triggered when clicking a link, showing or hiding
-  // the security info causes to move the link position and clicking
-  // the link fails. This hack suppresses focus event when clicking.
-  let node = aMessage._domNode;
-  node.removeEventListener("focus", conversation._focusListener, true);
-  node.addEventListener("focus", function (event) {
-    let classList = event.target.classList;
-    if (classList && classList.contains("message"))
-      updateSecurityInfo(aMessage);
-  }, true);
-  node.addEventListener("click", function () {
-    updateSecurityInfo(aMessage);
-  }, true);
 }
 
 // Update security info display of the message.
@@ -610,9 +593,8 @@ let enigmailHook = {
     return aBody;
   },
 
-  // For the case when the message which has been already streamed is
-  // selected at message list.
-  onFocusMessage: function _enigmailHook_onFocusMessage(aMessage) {
+  // Update security info when the message is selected.
+  onMessageSelected: function _enigmailHook_onMessageSelected(aMessage) {
     if (hasEnigmail)
       updateSecurityInfo(aMessage);
   },
