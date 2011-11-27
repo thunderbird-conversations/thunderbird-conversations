@@ -150,7 +150,7 @@ let EventHelperMixIn = {
 
   compose: function _EventHelper_compose (aCompType, aEvent) {
     let window = topMail3Pane(this);
-    if (aEvent.shiftKey) {
+    if (aEvent && aEvent.shiftKey) {
       window.ComposeMessage(aCompType, Ci.nsIMsgCompFormat.OppositeOfDefault, this._msgHdr.folder, [this._uri]);
     } else {
       window.ComposeMessage(aCompType, Ci.nsIMsgCompFormat.Default, this._msgHdr.folder, [this._uri]);
