@@ -70,8 +70,10 @@ echo "Generating $JAR_FILE..."
 for CHROME_SUBDIR in $CHROME_PROVIDERS; do
   find $CHROME_SUBDIR -iname '.*.swp' -prune \
     -o -path $CHROME_SUBDIR/pdfjs/.git -prune \
+    -o -path $CHROME_SUBDIR/pdfjs/.gitignore -prune \
     -o -path $CHROME_SUBDIR/pdfjs/examples -prune \
     -o -path $CHROME_SUBDIR/pdfjs/extensions -prune \
+    -o -path $CHROME_SUBDIR/pdfjs/src -prune \
     -o -path $CHROME_SUBDIR/pdfjs/test -prune \
     -o -path $CHROME_SUBDIR/pdfjs/web -prune \
     -o -path $CHROME_SUBDIR/pdfjs/worker -prune \
