@@ -1,0 +1,24 @@
+<!-- Please open the "Preferences" window and DO check that your text is not toon     long. This can cause the contents to overflow and be hidden, so make suren     everything is displayed properly. nnn-->
+<!ENTITY option.expand_who "Sco standard, extender:">
+<!ENTITY option.expand_auto2 "Automaticamain">
+<!ENTITY option.expand_auto2.tooltip "Sch'il temà è cumprimì, extender tut ils messadis che n'èn betg legids u l'ultim messadi. Sch'el è extendì, be extender ils messadis tschernids en la glista da messadis.">
+<!ENTITY option.expand_none "Nagins messadis">
+<!ENTITY option.expand_all "Tut ils messadis">
+<!ENTITY title.quoting2 "Text cità">
+<!ENTITY desc.quoting "Text cità pli lung che quest dumber da lingias vegn reducì.">
+<!ENTITY title.assistant "Assistent d'installaziun">
+<!ENTITY option.assistant "Aviar l'assistent d'installaziun">
+<!ENTITY title.friendly_date "Datas empernaivlas">
+<!ENTITY option.no_friendly_date2 "Utilisar en il chantun sura dretg datas &quot;normal&quot;, sco en la glista da messadis enstagl da &quot;ier&quot; ed auters.">
+<!ENTITY title.monospaced_senders "Mussar en largezza fixa.">
+<!ENTITY option.monospaced_senders2 "Messadis da questas adressas/glistas da mail vegnan mussadas en ina scrittira da largezza fixa (seperar las adressas entras commas)">
+<!ENTITY title.tweak_chrome "Tweak chrome fonts">
+<!ENTITY option.tweak_bodies "Tweak the fonts in the message bodies to make them consistent with the outer font (recommended, requires restart).">
+<!ENTITY title.tweak_bodies "Tweak body fonts">
+<!ENTITY option.tweak_chrome "Scale down the font size for the conversation chrome (recommended, requires restart).">
+<!ENTITY title.add_embeds "Add embeds">
+<!ENTITY option.add_embeds "Detect links to various services (e.g. YouTube) in emails, and view them inline.">
+<!ENTITY title.debugging "Debugging">
+<!ENTITY desc.debugging "Enable debug output in the system console and the error console. This will generate a lot of messages.">
+<!ENTITY title.operate_on_conversations "Toolbar buttons">
+<!ENTITY option.operate_on_conversations "Toolbar buttons should archive and delete the entire conversation, not just selected messages">

@@ -1,0 +1,43 @@
+<!ENTITY assistant.title "首次執行導引">
+<!ENTITY assistant.intro "Hi, 這是<strong>Thunderbird Conversations</strong>!">
+<!ENTITY assistant.p1 "為了讓日子過得再輕鬆些，此輔助工具將對你的Thunderbird進行微調，以便獲得更好的使用體驗。">
+<!ENTITY assistant.p2 "所有的調整都是可恢複的。隱藏不必擔心：一旦你卸載了此擴展程序，所有本程序修改的設置項都將恢複原樣（到安裝本程序以前）。">
+<!ENTITY assistant.p3 "此操作將花費一些時間。你可以等待此視窗關閉，也可以直接關閉，並在「工具」菜單中「活動管理器」裏查看進度">
+<!ENTITY assistant.working "操作中……">
+<!ENTITY assistant.review "檢查變更項目">
+<!ENTITY assistant.apply "應用">
+<!ENTITY assistant.settings "部分設置是Thunderbird Conversations正常工作的必選設置，部分為推薦設置，其他為可選設置">
+<!ENTITY assistant.actionEnableGloda "請確認全部檢索和索引已經啟動">
+<!ENTITY assistant.actionReindexAttachments "重新為包含附件的郵件創建索引（包含Mozilla Bugmail）.">
+<!ENTITY assistant.actionDontExpand "在郵件列表中，不要展開含有未讀郵件的對話">
+<!ENTITY assistant.actionAttachmentsInline "不要嵌入顯示附件(<strong>強烈</strong>推薦).">
+<!ENTITY assistant.actionOfflineDownload "收件箱和已發郵件箱相同步使用離線存儲(<strong>強烈</strong>推薦).">
+<!ENTITY assistant.actionUnifiedInboxSearchesSent "統一收件箱同樣檢索已發送文件夾（推薦）.">
+<!ENTITY assistant.actionSetupView "切換至全部收件箱，按日期排序顯示對話，啟動未讀技術欄和新&quot;參與者&quot;欄（推薦）.">
+<!ENTITY assistant.actionSetupViewDefaults "對所有文件夾使用自定義排序設置.">
+<!ENTITY assistant.actionEnsureMessagePaneVisible "請確認郵件面板可見。">
+<!ENTITY assistant.settings2 "如果需要再次調整其他設置，可以從本插件的選項頁中「進階」欄目中訪問本設置導引">
+<!ENTITY feedback.message "您已經使用Thunderbird Conversations相當長的一段時間了。您願意告我們您的想法嗎？我們迫切希望聽到您的建議！">
+<!ENTITY feedback.no "不，謝謝">
+<!ENTITY feedback.yes "反饋意見">
+<!ENTITY feedback.pageTitle "我的意見">
+<!ENTITY indexing.p1 "已嘗試設置Thunderbird Conversations以獲得最佳體驗，但由於存在過多需重新創建索引的郵件，可能導致Thunderbird崩潰.">
+<!ENTITY indexing.p2 "如果有超巨量的郵件，請從配置目錄中刪除<tt>global-message-db.sqlite</tt>文件（請看下方的連接）.">
+<!ENTITY indexing.p3 "是否有大量帶附件的郵件？除非首次安裝的Thunderbird版本為3.3 Alpha1或以後，這些附件將不會顯示在對話視圖中。因此需要重新為這些帶附件的郵件重新建立索引。最簡單的辦法是刪除配置目錄中的<tt>global-message-db.sqlite</tt> 文件.">
+<!ENTITY indexing.p4 "你是Mozilla開發者？對於Bugzilla發出的郵件，我們可以替換發送地址，例如將bugzilla-daemon@mozilla.org替換為X-Bugzilla-Who Header的取值。為啟動此功能需要對所有相關郵件重新建立索引。如果僅需針對新收到的Bug郵件使用此功能，則可以忽略本消息。否則，建議刪除配置文件夾中的<tt>global-messages-db.sqlite</tt>.">
+<!ENTITY indexing.p5 "有兩種情況可供選擇.">
+<!ENTITY indexing.moreInfo "關於配置目錄的更多信息.">
+<!ENTITY indexing.t1 "The tl;dr version">
+<!ENTITY indexing.t2 "更多信息">
+<!ENTITY indexing.title "<span class='orange'>索引</span>問題">
+<!ENTITY indexing.pageTitle "索引警告">
+<!ENTITY stub.loading "加載中……">
+<!ENTITY stub.trash.tooltip "刪除此次對話">
+<!ENTITY stub.archive.tooltip "將此次對話進行歸檔">
+<!ENTITY stub.forward.tooltip "轉寄此對話">
+<!ENTITY stub.print.tooltip "打印此對話">
+<!ENTITY stub.junk.tooltip "將此郵件標記為垃圾郵件">
+<!ENTITY stub.expand.tooltip "展開/折疊所有郵件">
+<!ENTITY stub.read.tooltip "將所有郵件標記為已讀/未讀">
+<!ENTITY stub.detach.tooltip2 "在新標簽頁中顯示對話">
+<!ENTITY stub.menu.tooltip "對話動作">

@@ -1,20 +1,24 @@
 <!-- Please open the "Preferences" window and DO check that your text is not toon     long. This can cause the contents to overflow and be hidden, so make suren     everything is displayed properly. nnn-->
-<!ENTITY window.title "הגדרות של תצוגת שיחה">
-<!ENTITY title.message_display "תצוגת הודעה">
 <!ENTITY option.expand_who "כברירת מחדל, הרחב:‏">
 <!ENTITY option.expand_auto2 "אוטומטי">
 <!ENTITY option.expand_auto2.tooltip "במידה והחוט מקופל, הרחב כל הודעות שלא נקראו או הודעה האחרונה. במידה והחוט מורחב, הרחב רק את ההודעות הנבחרות ברשימת ההודעות.‏">
 <!ENTITY option.expand_none "אף הודעה">
 <!ENTITY option.expand_all "את כל ההודעות">
-<!ENTITY title.quoting "ציטוט">
-<!ENTITY option.hide_longer_than "הסתר ציטוט הארוך מ">
-<!ENTITY option.lines "שורות">
-<!ENTITY title.advanced "מתקדם">
+<!ENTITY title.quoting2 "טקסט מצוטט‏">
+<!ENTITY desc.quoting "טקסט מצוטט ברמת גבוהה מזה לא ייצג.‏">
 <!ENTITY title.assistant "אשף התקנה">
 <!ENTITY option.assistant "התחל את אשף ההתקנה">
-<!ENTITY title.advanced_display "תצוגת שיחה">
-<!ENTITY option.no_friendly_date "תשתמש בתאריכים &quot;רגילים&quot;, כמו ברשימת ההודעות">
+<!ENTITY title.friendly_date "תאריכים ידודתיים">
+<!ENTITY option.no_friendly_date2 "בפינה הימינית העליונה השתמש בתאריכים רגילים, במקום מילים כגון &quot;אתמול&quot;.‏">
+<!ENTITY title.monospaced_senders "הצג בגופן רוחב-קבוע">
 <!ENTITY option.monospaced_senders2 "הודעות מכתובות/תפוצות אלו יוצגו בגופן רוחב-קבוע (הפרד באמצעות פסיקים)‏">
+<!ENTITY title.tweak_chrome "שפר את גופני הממשק">
 <!ENTITY option.tweak_bodies "Tweak the fonts in the message bodies to make them consistent with the outer font (recommended, requires restart).">
+<!ENTITY title.tweak_bodies "שפר את גופני גוף ההודעה">
 <!ENTITY option.tweak_chrome "Scale down the font size for the conversation chrome (recommended, requires restart).">
+<!ENTITY title.add_embeds "הודף קבצים מושתלים">
 <!ENTITY option.add_embeds "Detect links to various services (e.g. YouTube) in emails, and view them inline.">
+<!ENTITY title.debugging "מערכת הצגת פרטים במטרה לגלות שגיות בתוכנה">
+<!ENTITY desc.debugging "אישר את מערכת הצגת פרטים במטרה לגלות שגיות בתוכנה שייראה פלט למסוף המערכת ומסוף שגיות. פעולה זאת עלולה לגרום להצפת הודעות.‏">
+<!ENTITY title.operate_on_conversations "מקשי פס הכלים">
+<!ENTITY option.operate_on_conversations "מקשי פס הכלים ישלחו וימחקו את כל השיחה, לא רק את ההודעות הנבחרות">

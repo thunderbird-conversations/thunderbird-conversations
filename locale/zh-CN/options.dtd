@@ -1,20 +1,24 @@
 <!-- Please open the "Preferences" window and DO check that your text is not toon     long. This can cause the contents to overflow and be hidden, so make suren     everything is displayed properly. nnnnnnnnnnn-->
-<!ENTITY window.title "Gmail会话视图-选项">
-<!ENTITY title.message_display "消息显示">
 <!ENTITY option.expand_who "默认：展开">
 <!ENTITY option.expand_auto2 "自动">
 <!ENTITY option.expand_auto2.tooltip "如果折叠会话，则显示所有未读邮件或最后一封邮件。如果展开会话，仅展开邮件列表中的指定邮件.">
 <!ENTITY option.expand_none "没有邮件">
 <!ENTITY option.expand_all "所有邮件">
-<!ENTITY title.quoting "引用和折叠">
-<!ENTITY option.hide_longer_than "隐藏多于指定行数的引用文字：">
-<!ENTITY option.lines "行">
-<!ENTITY title.advanced "高级">
+<!ENTITY title.quoting2 "Quoted text">
+<!ENTITY desc.quoting "Quotes higher than this number of lines will be collapsed.">
 <!ENTITY title.assistant "安装助手">
 <!ENTITY option.assistant "启动安装助手">
-<!ENTITY title.advanced_display "会话显示">
-<!ENTITY option.no_friendly_date "使用&quot;正常&quot;日期。与邮件列表中相同">
+<!ENTITY title.friendly_date "Friendly dates">
+<!ENTITY option.no_friendly_date2 "In the top right corner, use &quot;normal&quot; dates, just like the message list, instead of &quot;yesterday&quot; and others.">
+<!ENTITY title.monospaced_senders "Display in monospaced">
 <!ENTITY option.monospaced_senders2 "从指定地址或邮件列表中发出的邮件需以等宽字体显示（使用逗号分隔）">
+<!ENTITY title.tweak_chrome "Tweak chrome fonts">
 <!ENTITY option.tweak_bodies "调整邮件正文的字体以确保与外部字体相一致（推荐，需要重启）.">
+<!ENTITY title.tweak_bodies "Tweak body fonts">
 <!ENTITY option.tweak_chrome "减小会话列表的字体大小（推荐，需要重启）.">
+<!ENTITY title.add_embeds "Add embeds">
 <!ENTITY option.add_embeds "检测邮件中的内容链接（例如YouTube），并直接在邮件中显示.">
+<!ENTITY title.debugging "Debugging">
+<!ENTITY desc.debugging "Enable debug output in the system console and the error console. This will generate a lot of messages.">
+<!ENTITY title.operate_on_conversations "Toolbar buttons">
+<!ENTITY option.operate_on_conversations "Toolbar buttons should archive and delete the entire conversation, not just selected messages">

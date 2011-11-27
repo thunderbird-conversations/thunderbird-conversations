@@ -1,20 +1,24 @@
 <!-- Please open the "Preferences" window and DO check that your text is not toon     long. This can cause the contents to overflow and be hidden, so make suren     everything is displayed properly. nnnnnnnnnnnnn-->
-<!ENTITY window.title "Inställningar för Thunderbird Conversations">
-<!ENTITY title.message_display "Meddelandevyn">
 <!ENTITY option.expand_who "Som standard, visa:">
 <!ENTITY option.expand_auto2 "Automatiskt">
 <!ENTITY option.expand_auto2.tooltip "Om tråden är dold, visa alla olästa meddelanden eller det sista meddelandet. Om tråden visas, visa endast det i meddelandelistan markerade meddelandet.">
 <!ENTITY option.expand_none "Inga meddelanden">
 <!ENTITY option.expand_all "Alla meddelanden">
-<!ENTITY title.quoting "Citering">
-<!ENTITY option.hide_longer_than "Dölj citerad text längre än">
-<!ENTITY option.lines "rader">
-<!ENTITY title.advanced "Avancerat">
+<!ENTITY title.quoting2 "Citerad text">
+<!ENTITY desc.quoting "Citat längre än detta antal rader kommer att minimeras.">
 <!ENTITY title.assistant "Konfigurationsguide">
 <!ENTITY option.assistant "Starta konfigurationsguiden">
-<!ENTITY title.advanced_display "Konversationsvyn">
-<!ENTITY option.no_friendly_date "Använd &quot;vanliga&quot; datum, precis som i meddelandelistan">
+<!ENTITY title.friendly_date "Konsekventa datum">
+<!ENTITY option.no_friendly_date2 "Använd &quot;vanliga&quot; datum i det övre högra hörnet, precis som i meddelandelistan, istället för &quot;igår&quot; och liknande.">
+<!ENTITY title.monospaced_senders "Visa i enbreddsteckensnitt">
 <!ENTITY option.monospaced_senders2 "Meddelanden från dessa adresser/e-postlistor skall visas i enbreddsteckensnitt (avgränsa med kommatecken)">
+<!ENTITY title.tweak_chrome "Justera chrome-teckensnitten">
 <!ENTITY option.tweak_bodies "Ställ in teckensnitten i meddelandebrödtexterna så att de stämmer överens med de yttre teckensnitten (rekommenderas, kräver omstart).">
+<!ENTITY title.tweak_bodies "Justera brödtextteckensnitten">
 <!ENTITY option.tweak_chrome "Skala ner teckenstorleken i konversationernas chrome (rekommenderas, kräver omstart).">
+<!ENTITY title.add_embeds "Lägg till inbäddade">
 <!ENTITY option.add_embeds "Identifiera länkar till olika tjänster (t.ex. YouTube) i meddelanden och visa dem infogade.">
+<!ENTITY title.debugging "Felsökning">
+<!ENTITY desc.debugging "Aktivera felsökningsutdata i systemkonsolen och felkonsolen. Detta kommer att generera mängder av meddelanden.">
+<!ENTITY title.operate_on_conversations "Verktygsfältsknappar">
+<!ENTITY option.operate_on_conversations "Verktygsfältsknappar skall arkivera och ta bort hela konversationen, inte endast markerade meddelanden">

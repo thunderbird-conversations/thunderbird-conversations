@@ -1,20 +1,24 @@
 <!-- Please open the "Preferences" window and DO check that your text is not toon     long. This can cause the contents to overflow and be hidden, so make suren     everything is displayed properly. nnnn-->
-<!ENTITY window.title "Impostazioni di Thunderbird Conversations">
-<!ENTITY title.message_display "Aspetto dei messaggi">
 <!ENTITY option.expand_who "Messaggi da espandere (come opzione predefinita)">
 <!ENTITY option.expand_auto2 "L&apos;ultimo messaggio selezionato o il primo non letto">
 <!ENTITY option.expand_auto2.tooltip "Visualizza l&apos;ultimo messaggio selezionato se la discussione è già espansa oppure il primo messaggio non letto se la discussione è contratta">
 <!ENTITY option.expand_none "Non espandere alcun messaggio">
 <!ENTITY option.expand_all "Espandi tutti i messaggi">
-<!ENTITY title.quoting "Citazioni">
-<!ENTITY option.hide_longer_than "Righe dopo le quali nascondere il testo citato:">
-<!ENTITY option.lines " ">
-<!ENTITY title.advanced "Avanzate">
+<!ENTITY title.quoting2 "Quoted text">
+<!ENTITY desc.quoting "Quotes higher than this number of lines will be collapsed.">
 <!ENTITY title.assistant "Configurazione guidata">
 <!ENTITY option.assistant "Avvia la configurazione guidata">
-<!ENTITY title.advanced_display "Aspetto delle discussioni">
-<!ENTITY option.no_friendly_date "Utilizza date normali, come nella lista dei messaggi">
+<!ENTITY title.friendly_date "Friendly dates">
+<!ENTITY option.no_friendly_date2 "In the top right corner, use &quot;normal&quot; dates, just like the message list, instead of &quot;yesterday&quot; and others.">
+<!ENTITY title.monospaced_senders "Display in monospaced">
 <!ENTITY option.monospaced_senders2 "È possibile utilizzare i caratteri a larghezza fissa per i messaggi provenienti da determinati indirizzi e-mail aggiungendoli qui sotto (separati con una virgola)">
+<!ENTITY title.tweak_chrome "Tweak chrome fonts">
 <!ENTITY option.tweak_bodies "Modifica i caratteri nel corpo dei messaggi per renderli compatibili con i caratteri esterni (raccomandato, riavvio necessario)">
+<!ENTITY title.tweak_bodies "Tweak body fonts">
 <!ENTITY option.tweak_chrome "Ridimensiona i caratteri affinché coincidano con quelli nella sezione conversazione (raccomandato, riavvio necessario)">
+<!ENTITY title.add_embeds "Add embeds">
 <!ENTITY option.add_embeds "Rileva i link a vari servizi (es: YouTube) nelle e-mail e visualizzali in linea">
+<!ENTITY title.debugging "Debugging">
+<!ENTITY desc.debugging "Enable debug output in the system console and the error console. This will generate a lot of messages.">
+<!ENTITY title.operate_on_conversations "Toolbar buttons">
+<!ENTITY option.operate_on_conversations "Toolbar buttons should archive and delete the entire conversation, not just selected messages">

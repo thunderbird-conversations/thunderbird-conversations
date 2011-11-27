@@ -1,16 +1,24 @@
-<!ENTITY window.title "Thunderbird Conversations – ustawienia">
-<!ENTITY title.message_display "Wyświetlanie wiadomości">
+<!-- Please open the "Preferences" window and DO check that your text is not toon     long. This can cause the contents to overflow and be hidden, so make suren     everything is displayed properly. nnn-->
 <!ENTITY option.expand_who "Rozwijanie wiadomości">
 <!ENTITY option.expand_auto2 "Rozwijaj automatycznie">
 <!ENTITY option.expand_auto2.tooltip "Jeśli wątek jest zwinięty, rozwija wszystkie nieprzeczytane lub ostatnie wiadomości. Jeśli wątek jest rozwinięty, rozwija tylko zaznaczone wiadomości.">
 <!ENTITY option.expand_none "Nie rozwijaj">
 <!ENTITY option.expand_all "Rozwijaj wszystkie">
-<!ENTITY title.quoting "Cytowanie">
-<!ENTITY option.hide_longer_than "Nie wyświetlaj tekstu dłuższego niż">
-<!ENTITY option.lines "wierszy">
-<!ENTITY title.advanced "Zaawansowane">
+<!ENTITY title.quoting2 "Quoted text">
+<!ENTITY desc.quoting "Quotes higher than this number of lines will be collapsed.">
 <!ENTITY title.assistant "Asystent konfiguracji">
 <!ENTITY option.assistant "Uruchom asystenta konfiguracji">
-<!ENTITY title.advanced_display "Wyświetlanie konwersacji">
-<!ENTITY option.no_friendly_date "Użyj „normalnych” dat, takich jak na liście wiadomości">
+<!ENTITY title.friendly_date "Friendly dates">
+<!ENTITY option.no_friendly_date2 "In the top right corner, use &quot;normal&quot; dates, just like the message list, instead of &quot;yesterday&quot; and others.">
+<!ENTITY title.monospaced_senders "Display in monospaced">
 <!ENTITY option.monospaced_senders2 "Wiadomości z tych adresów/list wiadomości wyświetlaj czcionką o stałej szerokości (oddzielone przecinkami)">
+<!ENTITY title.tweak_chrome "Tweak chrome fonts">
+<!ENTITY option.tweak_bodies "Tweak the fonts in the message bodies to make them consistent with the outer font (recommended, requires restart).">
+<!ENTITY title.tweak_bodies "Tweak body fonts">
+<!ENTITY option.tweak_chrome "Scale down the font size for the conversation chrome (recommended, requires restart).">
+<!ENTITY title.add_embeds "Add embeds">
+<!ENTITY option.add_embeds "Detect links to various services (e.g. YouTube) in emails, and view them inline.">
+<!ENTITY title.debugging "Debugging">
+<!ENTITY desc.debugging "Enable debug output in the system console and the error console. This will generate a lot of messages.">
+<!ENTITY title.operate_on_conversations "Toolbar buttons">
+<!ENTITY option.operate_on_conversations "Toolbar buttons should archive and delete the entire conversation, not just selected messages">

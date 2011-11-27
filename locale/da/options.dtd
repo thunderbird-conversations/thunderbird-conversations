@@ -1,0 +1,24 @@
+<!-- Please open the "Preferences" window and DO check that your text is not toon     long. This can cause the contents to overflow and be hidden, so make suren     everything is displayed properly. nnn-->
+<!ENTITY option.expand_who "Som standard, udvid:">
+<!ENTITY option.expand_auto2 "Automatisk">
+<!ENTITY option.expand_auto2.tooltip "Hvis tråden er sammenfoldet, udvid alle ulæste meddelelser eller den sidste meddelelse. Hvis den er udvidet, udvid kun den valgte meddelelse i meddelelseslisten.">
+<!ENTITY option.expand_none "Ingen meddelelser">
+<!ENTITY option.expand_all "Alle meddelelser">
+<!ENTITY title.quoting2 "Quoted text">
+<!ENTITY desc.quoting "Quotes higher than this number of lines will be collapsed.">
+<!ENTITY title.assistant "Opsætningsassistent">
+<!ENTITY option.assistant "Start opsætningsassistenten">
+<!ENTITY title.friendly_date "Friendly dates">
+<!ENTITY option.no_friendly_date2 "In the top right corner, use &quot;normal&quot; dates, just like the message list, instead of &quot;yesterday&quot; and others.">
+<!ENTITY title.monospaced_senders "Display in monospaced">
+<!ENTITY option.monospaced_senders2 "Meddelelser fra de adresser/mailinglister skal vises i monospatierede skrifttyper (separer med komma)">
+<!ENTITY title.tweak_chrome "Tweak chrome fonts">
+<!ENTITY option.tweak_bodies "Juster skrifttyperne i meddelelserne for at bringe dem i overensstemmelse med den ydre skrifttype (anbefalet, kræver genstart).">
+<!ENTITY title.tweak_bodies "Tweak body fonts">
+<!ENTITY option.tweak_chrome "Reducer skriftstørrelsen for rammen rundt om samtalen (anbefales, kræver genstart).">
+<!ENTITY title.add_embeds "Add embeds">
+<!ENTITY option.add_embeds "Find links til forskellige tjenester (f.eks. YouTube) i mails og vis dem indlejret.">
+<!ENTITY title.debugging "Debugging">
+<!ENTITY desc.debugging "Enable debug output in the system console and the error console. This will generate a lot of messages.">
+<!ENTITY title.operate_on_conversations "Toolbar buttons">
+<!ENTITY option.operate_on_conversations "Toolbar buttons should archive and delete the entire conversation, not just selected messages">

@@ -9,6 +9,7 @@ locale conversations de locale/de/
 locale conversations el locale/el/
 locale conversations en-US locale/en-US/
 locale conversations es-ES locale/es-ES/
+locale conversations eu locale/eu/
 locale conversations eu-ES locale/eu-ES/
 locale conversations fr locale/fr/
 locale conversations he-IL locale/he-IL/
@@ -18,7 +19,9 @@ locale conversations ja-JP locale/ja-JP/
 locale conversations nl-NL locale/nl-NL/
 locale conversations pl locale/pl/
 locale conversations pt-BR locale/pt-BR/
+locale conversations rm locale/rm/
 locale conversations ru locale/ru/
 locale conversations sr locale/sr/
 locale conversations sv-SE locale/sv-SE/
 locale conversations zh-CN locale/zh-CN/
+locale conversations zh-TW locale/zh-TW/

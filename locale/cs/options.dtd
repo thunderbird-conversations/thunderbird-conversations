@@ -1,19 +1,24 @@
-<!ENTITY window.title "Nastavení Thunderbird Conversations">
-<!ENTITY title.message_display "Zobrazení zpráv">
+<!-- Please open the "Preferences" window and DO check that your text is not toon     long. This can cause the contents to overflow and be hidden, so make suren     everything is displayed properly. nnn-->
 <!ENTITY option.expand_who "Při otevření rozbalit:">
 <!ENTITY option.expand_auto2 "automaticky">
 <!ENTITY option.expand_auto2.tooltip "Pokud je vlákno sbalené, rozbalit všechny nepřečtené, nebo poslední zprávu. Pokud je rozbalené, rozbalit pouze zprávu vybranou v seznamu zpráv.">
 <!ENTITY option.expand_none "žádné zprávy">
 <!ENTITY option.expand_all "všechny zprávy">
-<!ENTITY title.quoting "Citace">
-<!ENTITY option.hide_longer_than "Skrýt citovaný text delší než">
-<!ENTITY option.lines "řádek">
-<!ENTITY title.advanced "Pokročilé">
+<!ENTITY title.quoting2 "Citovaný text">
+<!ENTITY desc.quoting "Citace delší než tento počet řádek budou sbaleny.">
 <!ENTITY title.assistant "Pomocník s nastavením">
 <!ENTITY option.assistant "Spustit pomocníka s nastavením">
-<!ENTITY title.advanced_display "Zobrazení konverzací">
-<!ENTITY option.no_friendly_date "&quot;Nepolidšťovat&quot; datování zpráv.">
+<!ENTITY title.friendly_date "Vlastní formáty data">
+<!ENTITY option.no_friendly_date2 "V pravém horním rohu zobrazovat &quot;normální&quot; data, stejně jako v seznamu zpráv, místo &quot;včera&quot; a dalších.">
+<!ENTITY title.monospaced_senders "Zobrazit písmem s pevnou šířkou">
 <!ENTITY option.monospaced_senders2 "Zprávy z následujících adres/poštovních konferencí budou zobrazeny písmem s pevnou šířkou. (Adresy oddělujte čárkami.)">
+<!ENTITY title.tweak_chrome "Upravit písma chrome">
 <!ENTITY option.tweak_bodies "Upravit písma v těle zprávy, aby ladila s vnějšími písmy (doporučeno, vyžaduje restart).">
+<!ENTITY title.tweak_bodies "Upravit písma těla">
 <!ENTITY option.tweak_chrome "Zmenšit velikost písma konverzací (doporučeno, vyžaduje restart).">
+<!ENTITY title.add_embeds "Přidat prvky">
 <!ENTITY option.add_embeds "Rozpoznávat odkazy na různé služby (např. YouTube) a zobrazovat je v e-mailech.">
+<!ENTITY title.debugging "Ladění">
+<!ENTITY desc.debugging "Aktivuje ladící výstup v systémové a chybové konzoli. Tato volba bude generovat mnoho zpráv.">
+<!ENTITY title.operate_on_conversations "Tlačítka na liště">
+<!ENTITY option.operate_on_conversations "Tlačítka na liště budou archivovat, nebo mazat celou konverzaci, ne jen vybranou zprávu.">

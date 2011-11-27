@@ -1,0 +1,24 @@
+<!-- Please open the "Preferences" window and DO check that your text is not toon     long. This can cause the contents to overflow and be hidden, so make suren     everything is displayed properly. nnnnnnnnnnnn-->
+<!ENTITY option.expand_who "默認：展開">
+<!ENTITY option.expand_auto2 "自動">
+<!ENTITY option.expand_auto2.tooltip "如果折疊對話，則顯示所有未讀郵件或最後一封郵件。如果展開對話，僅展開郵件列表中的指定郵件.">
+<!ENTITY option.expand_none "沒有郵件">
+<!ENTITY option.expand_all "所有郵件">
+<!ENTITY title.quoting2 "Quoted text">
+<!ENTITY desc.quoting "Quotes higher than this number of lines will be collapsed.">
+<!ENTITY title.assistant "安裝助手">
+<!ENTITY option.assistant "啟動安裝助手">
+<!ENTITY title.friendly_date "Friendly dates">
+<!ENTITY option.no_friendly_date2 "In the top right corner, use &quot;normal&quot; dates, just like the message list, instead of &quot;yesterday&quot; and others.">
+<!ENTITY title.monospaced_senders "Display in monospaced">
+<!ENTITY option.monospaced_senders2 "從指定地址或郵件列表中發出的郵件需以等寬字體顯示（使用逗號分隔）">
+<!ENTITY title.tweak_chrome "Tweak chrome fonts">
+<!ENTITY option.tweak_bodies "調整郵件正文的字體以確保與外部字體相一致（推薦，需要重啟）.">
+<!ENTITY title.tweak_bodies "Tweak body fonts">
+<!ENTITY option.tweak_chrome "減小對話列表的字體大小（推薦，需要重啟）.">
+<!ENTITY title.add_embeds "Add embeds">
+<!ENTITY option.add_embeds "檢測郵件中的內容鏈接（例如YouTube），並直接在郵件中顯示.">
+<!ENTITY title.debugging "Debugging">
+<!ENTITY desc.debugging "Enable debug output in the system console and the error console. This will generate a lot of messages.">
+<!ENTITY title.operate_on_conversations "Toolbar buttons">
+<!ENTITY option.operate_on_conversations "Toolbar buttons should archive and delete the entire conversation, not just selected messages">

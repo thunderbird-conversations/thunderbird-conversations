@@ -1,25 +1,24 @@
-<!-- Please open the "Preferences" window and DO check that your text is not too
-     long. This can cause the contents to overflow and be hidden, so make sure
-     everything is displayed properly. 
-
-
--->
-<!ENTITY window.title "Opções do Thunderbird Conversations">
-<!ENTITY title.message_display "Exibição de mensagens">
+<!-- Please open the "Preferences" window and DO check that your text is not toon     long. This can cause the contents to overflow and be hidden, so make suren     everything is displayed properly. nnnn-->
 <!ENTITY option.expand_who "Normalmente expandir">
 <!ENTITY option.expand_auto2 "Automático">
 <!ENTITY option.expand_auto2.tooltip "Se o tópico estiver recolhido, expandir todas as mensagens não lidas ou a última mensagem. Se o tópico estiver expandido, somente expandir a mensagem selecionada na lista de mensagens.">
 <!ENTITY option.expand_none "Nenhuma mensagem">
 <!ENTITY option.expand_all "Todas as mensagens">
-<!ENTITY title.quoting "Mensagens anteriores">
-<!ENTITY option.hide_longer_than "Ocultar texto de mensagens anteriores com mais de">
-<!ENTITY option.lines "linhas">
-<!ENTITY title.advanced "Avançado">
+<!ENTITY title.quoting2 "Texto entre aspas">
+<!ENTITY desc.quoting "Textos entre aspas com mais linhas que este número serão recolhidas.">
 <!ENTITY title.assistant "Assistente de instalação">
 <!ENTITY option.assistant "Chamar assistente de instalação">
-<!ENTITY title.advanced_display "Exibição de conversas">
-<!ENTITY option.no_friendly_date "Usar datas &quot;normais&quot;, como na lista de mensagens">
+<!ENTITY title.friendly_date "Datas amigáveis">
+<!ENTITY option.no_friendly_date2 "No canto superior direito, usar data &quot;normais&quot;, como na lista de mensagens, em vez de usar &quot;ontem&quot;, &quot;hoje&quot;, etc.">
+<!ENTITY title.monospaced_senders "Exibir com espaçamento fixo">
 <!ENTITY option.monospaced_senders2 "Mensagens desses endereços e listas (separar com vírgulas) devem ser exibidas com tipos de letra de espaçamento fixo">
+<!ENTITY title.tweak_chrome "Ajustar fontes da interface">
 <!ENTITY option.tweak_bodies "Ajustar as fontes no corpo da mensagem para torná-las consistentes com a fonte externa (recomendado, necessário reiniciar)">
+<!ENTITY title.tweak_bodies "Ajustar fontes do corpo das mensagens">
 <!ENTITY option.tweak_chrome "Reduzir o tamanho da fonte dos elementos visuais das conversas (recomendado, necessário reiniciar)">
+<!ENTITY title.add_embeds "Adicionar anexos">
 <!ENTITY option.add_embeds "Detectar links para vários serviços (por exemplo, YouTube) e visualizá-los nas próprias mensagens">
+<!ENTITY title.debugging "Depuração">
+<!ENTITY desc.debugging "Habilitar mensagens de depuração no console do sistema e no console de erros. Isto vai gerar uma grande quantidade de mensagens.">
+<!ENTITY title.operate_on_conversations "Botões da barra de ferramentas">
+<!ENTITY option.operate_on_conversations "Os botões da barra de ferramentas devem arquivar e excluir a conversa inteira e não apenas as mensagens selecionadas">

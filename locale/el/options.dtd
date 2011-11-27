@@ -1,20 +1,24 @@
 <!-- Please open the "Preferences" window and DO check that your text is not toon     long. This can cause the contents to overflow and be hidden, so make suren     everything is displayed properly. nnn-->
-<!ENTITY window.title "Επιλογές Thunderbird Conversations">
-<!ENTITY title.message_display "Εμφάνιση μηνυμάτων">
 <!ENTITY option.expand_who "Ανάπτυξη (σαν προεπιλογή):">
 <!ENTITY option.expand_auto2 "Αυτόματο">
 <!ENTITY option.expand_auto2.tooltip "Αν το νήμα έχει συμπτυχθεί, γίνεται ανάπτυξη όλων των μη αναγνωσμένων μηνυμάτων ή του τελευταίου μηνύματος. Αν έχει αναπτυχθεί, γίνεται ανάπτυξη μόνο του επιλεγμένου μηνύματος από τη λίστα.">
 <!ENTITY option.expand_none "Κανένα μήνυμα">
 <!ENTITY option.expand_all "Όλα τα μηνύματα">
-<!ENTITY title.quoting "Παράθεση">
-<!ENTITY option.hide_longer_than "Απόκρυψη κείμενου σε παράθεση πάνω από">
-<!ENTITY option.lines "γραμμές">
-<!ENTITY title.advanced "Για προχωρημένους">
+<!ENTITY title.quoting2 "Κείμενο σε παράθεση">
+<!ENTITY desc.quoting "Παραθέσεις κειμένου μεγαλύτερες από τόσες γραμμές θα συμπτύσσονται.">
 <!ENTITY title.assistant "Βοηθός ρυθμίσεων">
 <!ENTITY option.assistant "Εκκίνηση του βοηθού ρυθμίσεων">
-<!ENTITY title.advanced_display "Εμφάνιση συνομιλίας">
-<!ENTITY option.no_friendly_date "Χρήση «κανονικών» ημερομηνιών, όπως και στη λίστα μηνυμάτων">
+<!ENTITY title.friendly_date "Φιλικές ημερομηνίες">
+<!ENTITY option.no_friendly_date2 "Χρήση &quot;κανονικής&quot; ημερομηνίας όπως στη λίστα μηνυμάτων αντί για &quot;χθες&quot; κλπ. στη δεξιά πάνω γωνία.">
+<!ENTITY title.monospaced_senders "Προβολή σε γραμματοσειρά σταθερού πλάτους">
 <!ENTITY option.monospaced_senders2 "Τα μηνύματα από αυτές τις διευθύνσεις/λίστες να εμφανίζονται με γραμματοσειρές σταθερού πλάτους (διαχωρισμός με κόμματα)">
+<!ENTITY title.tweak_chrome "Προσαρμογή γραμματοσειράς προγράμματος">
 <!ENTITY option.tweak_bodies "Ρύθμιση της γραμματοσειράς στο σώμα μηνύματος ώστε να συμβαδίζει με τη γραμματοσειρά πέρα απ' αυτό (συνιστάται - απαιτεί επανεκκίνηση).">
+<!ENTITY title.tweak_bodies "Προσαρμογή γραμματοσειράς κυρίως σώματος">
 <!ENTITY option.tweak_chrome "Σμίκρυνση γραμματοσειράς για το περιβάλλον συζήτησης (συνιστάται - απαιτεί επανεκκίνηση).">
+<!ENTITY title.add_embeds "Προσθήκη ενσωματωμένων στοιχείων">
 <!ENTITY option.add_embeds "Ανίχνευση δεσμών προς διάφορες υπηρεσίες (πχ YouTube) στα μηνύματα και προβολή τους μέσα στο μήνυμα.">
+<!ENTITY title.debugging "Αποσφαλμάτωση">
+<!ENTITY desc.debugging "Ενεργοποίηση πληροφοριών αποσφαλμάτωσης στις κονσόλες συστήματος και σφαλμάτων.">
+<!ENTITY title.operate_on_conversations "Κουμπιά εργαλειοθήκης">
+<!ENTITY option.operate_on_conversations "Τα κουμπιά εργαλειοθήκης θα αρχειοθετούν και θα διαγράφουν ολόκληρες τις συζητήσεις κι όχι μόνο τα επιλεγμένα μηνύματα.">
