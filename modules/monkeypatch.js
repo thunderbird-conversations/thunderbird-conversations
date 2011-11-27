@@ -373,8 +373,7 @@ MonkeyPatch.prototype = {
           return;
         }
 
-        let isRefresh = htmlpane.contentDocument.location.href != kStubUrl;
-        window.gSummaryFrameManager.loadAndCallback(kStubUrl, function () {
+        window.gSummaryFrameManager.loadAndCallback(kStubUrl, function (isRefresh) {
           if (isRefresh) {
             // Invalidate the previous selection
             previouslySelectedUris = [];
