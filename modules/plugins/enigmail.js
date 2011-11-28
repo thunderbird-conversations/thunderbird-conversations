@@ -256,26 +256,16 @@ function tryEnigmail(bodyElement, aMessage) {
       msgRfc822Text += "\n\n"+EnigmailCommon.getString("endPgpPart")+"\n\n"+tail;
     }
 
-    let w = topMail3Pane(aMessage);
     if (exitCodeObj.value == 0) {
       if (msgRfc822Text.length > 0) {
-        let messageElement = bodyElement.querySelector("div.moz-text-plain");
-        messageElement.innerHTML =
+        bodyElement.querySelector("div.moz-text-plain").innerHTML =
           EnigmailFuncs.formatPlaintextMsg(msgRfc822Text);
         aMessage.decryptedText = msgRfc822Text;
-        // Revert click link behavior to the original because
-        // URL content is loaded into message iframe on Mac OSX.
-        [x.addEventListener("click", function (event) {
-            if (event.button != 2) {
-              w.messenger.launchExternalURL(event.target.textContent);
-              event.preventDefault();
-            }
-          }, false)
-          for ([, x] in Iterator(messageElement.querySelectorAll("a")))];
       }
     } else {
       Log.error("Enigmail error: "+exitCodeObj.value+" --- "+errorMsgObj.value+"\n");
     }
+    let w = topMail3Pane(aMessage);
     showHdrIconsOnStreamed(aMessage, function () {
       w.Enigmail.hdrView.updateHdrIcons(exitCodeObj.value, statusFlagsObj.value,
         keyIdObj.value, userIdObj.value, sigDetailsObj.value, errorMsgObj.value,

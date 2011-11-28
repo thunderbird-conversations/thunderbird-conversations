@@ -1977,7 +1977,7 @@ let PostStreamingFixesMixIn = {
     let self = this;
     let iframeDoc = iframe.contentDocument;
     let mainWindow = topMail3Pane(this);
-    for each (let [, a] in Iterator(iframeDoc.getElementsByTagName("a"))) {
+    for each (let [, a] in Iterator(iframeDoc.querySelectorAll("a"))) {
       if (!a)
         continue;
       let anchor = this._getAnchor(a.href);
