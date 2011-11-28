@@ -43,12 +43,11 @@ var EXPORTED_SYMBOLS = ['registerHook', 'getHooks', 'removeHook'];
  *  onReplyComposed (aMessage, aBody) {
  *  },
  *
- *  // Called when a message has been focused while building a
- *  // conversation.
- *  // @param aMessage Focused message instance.
- *  onFocusMessage (aMessage) {
+ *  // Called when a message is selected.
+ *  // @param aMessage Selected message instance.
+ *  onMessageSelected (aMessage) {
  *  },
- * 
+ *
  *  // Called whenever a new quickreply Compose-Session was
  *  // created and all fields are prepared
  *  // @param aComposeSession created composeSession
@@ -59,14 +58,14 @@ var EXPORTED_SYMBOLS = ['registerHook', 'getHooks', 'removeHook'];
  *  // @param aAddress.bcc Same remark.
  *  onComposeSessionChanged (aComposeSession, aMessage, aAddress) {
  *  },
- * 
+ *
  *  // Called whenever a recipient is added to the quickreply
  *  // @param aData list data containing user input
  *  // @param aType type of changed recipient (to, cc, bcc)
  *  // @param aCount number of recipients of this type
  *  onRecipientAdded(aData, aType, aCount) {
  *  },
- * 
+ *
  *  // Called regardless of whether the Sending operation was successful.
  *  // @param aMsgID   The message id for the mail message
  *  // @param aStatus   Status code for the message send.

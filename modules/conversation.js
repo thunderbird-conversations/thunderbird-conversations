@@ -1148,16 +1148,7 @@ Conversation.prototype = {
     this._runOnceAfterNSignals(function () {
       let focusedNode = messageNodes[focusThis];
       self._htmlPane.contentWindow.scrollNodeIntoView(focusedNode);
-
-      try {
-        let focusedMessage = self.messages[focusThis].message;
-        [h.onFocusMessage(focusedMessage)
-          for each ([, h] in Iterator(getHooks()))
-          if (typeof(h.onFocusMessage) == "function")];
-      } catch (e) {
-        Log.warn("Plugin returned an error:", e);
-        dumpCallStack(e);
-      }
+      self.messages[focusThis].message.onSelected();
 
       for each (let [i, node] in Iterator(messageNodes)) {
         // XXX This is bug 611957
