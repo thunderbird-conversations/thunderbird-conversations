@@ -299,6 +299,9 @@ function Message(aConversation) {
   // Filled by the conversation, useful to know whether we were initially the
   //  first message in the conversation or not...
   this.initialPosition = -1;
+
+  // Selected state for onSelected function
+  this._selected = false;
 }
 
 Message.prototype = {
@@ -541,6 +544,38 @@ Message.prototype = {
     this.register(".top-right-more", function (event) {
       event.stopPropagation();
     });
+
+    // Register event handlers for onSelected.
+    // Set useCapture: true for preventing this from being canceled
+    // by stopPropagation. This should be always called.
+    // Use focus event for shortcut keys 'F', 'B' and Tab.
+    // When trying to click a link or a collapsed message, focus event
+    // occurs before click. Update display by focus event has posibility
+    // to cause click failure. So we use mousedown to cancel focus event.
+    let mousedown = false;
+    this._domNode.addEventListener("mousedown", function () {
+      mousedown = true;
+    }, true);
+    this._domNode.addEventListener("blur", function () {
+      mousedown = false;
+    }, true);
+    this._domNode.addEventListener("focus", function () {
+      if (!mousedown)
+        self.onSelected();
+    }, true);
+    this._domNode.addEventListener("click", function () {
+      self.onSelected();
+    }, true);
+    // For the case when focused by mousedown but not clicked
+    this._domNode.addEventListener("mousemove", function () {
+      if (mousedown) {
+        self.onSelected();
+        mousedown = false;
+      }
+    }, true);
+    this._domNode.addEventListener("dragstart", function () {
+      self.onSelected();
+    }, true);
   },
 
   notifiedRemoteContentAlready: false,
@@ -554,6 +589,29 @@ Message.prototype = {
     Log.debug("This message's remote content was blocked");
 
     this._domNode.getElementsByClassName("remoteContent")[0].style.display = "block";
+  },
+
+  // This function should be called whenever the message is selected
+  // by focus, click, scrollNodeIntoView, etc.
+  onSelected: function _Message_onSelected() {
+    if (this._selected)
+      return;
+
+    // We run below code only for the first time after messages selected.
+    Log.debug("A message is selected: " + this._uri);
+    this._selected = true;
+    [message._selected = false
+      for ([, { message }] in Iterator(this._conversation.messages))
+      if (message != this)];
+
+    try {
+      [h.onMessageSelected(this)
+        for each ([, h] in Iterator(getHooks()))
+        if (typeof(h.onMessageSelected) == "function")];
+    } catch (e) {
+      Log.warn("Plugin returned an error:", e);
+      dumpCallStack(e);
+    }
   },
 
   // Actually, we only do these expensive DOM calls when we need to, i.e. when
@@ -1919,7 +1977,7 @@ let PostStreamingFixesMixIn = {
     let self = this;
     let iframeDoc = iframe.contentDocument;
     let mainWindow = topMail3Pane(this);
-    for each (let [, a] in Iterator(iframeDoc.getElementsByTagName("a"))) {
+    for each (let [, a] in Iterator(iframeDoc.querySelectorAll("a"))) {
       if (!a)
         continue;
       let anchor = this._getAnchor(a.href);
