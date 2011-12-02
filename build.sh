@@ -67,17 +67,11 @@ mkdir --parents --verbose $TMP_DIR/chrome
 # generate the JAR file, excluding CVS and temporary files
 JAR_FILE=$TMP_DIR/chrome/$APP_NAME.jar
 echo "Generating $JAR_FILE..."
+find content/pdfjs -not -iname 'pdf.js' -prune;
 for CHROME_SUBDIR in $CHROME_PROVIDERS; do
-  find $CHROME_SUBDIR -iname '.*.swp' -prune \
-    -o -path $CHROME_SUBDIR/pdfjs/.git -prune \
-    -o -path $CHROME_SUBDIR/pdfjs/.gitignore -prune \
-    -o -path $CHROME_SUBDIR/pdfjs/examples -prune \
-    -o -path $CHROME_SUBDIR/pdfjs/extensions -prune \
-    -o -path $CHROME_SUBDIR/pdfjs/src -prune \
-    -o -path $CHROME_SUBDIR/pdfjs/test -prune \
-    -o -path $CHROME_SUBDIR/pdfjs/web -prune \
-    -o -path $CHROME_SUBDIR/pdfjs/worker -prune \
-    -o -type f -print | grep -v \~ >> files
+  find $CHROME_SUBDIR -not \( -wholename $CHROME_SUBDIR'/pdfjs/*' \
+      -and -not -wholename $CHROME_SUBDIR'/pdfjs/build/pdf.js' \) \
+    -type f -print | grep -v \~ >> files
 done
 
 #zip -0 -r $JAR_FILE `cat files`
