@@ -25,7 +25,7 @@
 <!ENTITY indexing.p2 "Als je enorm veel non-bugmail emial hebt, verwijder bestand <tt>global-message-db.sqlite</tt> uit je profielmap (bekijk link hieronder).">
 <!ENTITY indexing.p3 "Heb je veel e-mail met bijlages? Heb je ooit Thunderbird 3.3 alpha of later geprobeerd? Deze bijlages worden niet getoond in de conversatie weergave. We zijn genoodzaakt alle berichten met bijlages te herindexeren. De makkelijkste manier voor jou is om het bestand <tt>global-messages-db.sqlite</tt> te verwijderen uit jouw profielmap.">
 <!ENTITY indexing.p4 "Ben jij een Mozillian? We hebben een leuke speciale case voor Bugzilla e-mails, where we de afzender vervangen. Bijvoorbeeld; bugzilla-daemon@mozilla.org vervangen met de waarde X-Bugzilla-Who header. Je hebt ongetwijfeld veel bugmail, en wij zijn daarom genoodzaakt om dit te herindexeren om deze feature in te schakelen. Indien je accepteren kunt dat deze feature alleen op nieuwe e-mail, vergeet dan dit bericht. Anders verwijder het bestand <tt>global-messages-db.sqlite</tt> in jouw profielmap.">
-<!ENTITY indexing.p5 "Je zit in één van de 2 situaties hieronder.">
+<!ENTITY indexing.p5 "Je zit in Ã©Ã©n van de 2 situaties hieronder.">
 <!ENTITY indexing.moreInfo "Meer informatie over de profiel map.">
 <!ENTITY indexing.t1 "De tl;dr versie">
 <!ENTITY indexing.t2 "In meer details">
