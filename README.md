@@ -35,10 +35,8 @@ files, make sure you run:
     git submodule init
     git submodule update
 
-before you start hacking.
-
-You also need to have your source folder named gconversation@xulforum.org ; this
-is a temporary hack that will go away once we stop supporting Thunderbird 3.3.
+before you start hacking. You also need to run `make` in the `content/pdfjs`
+directory for the embedded pdf viewer to work properly.
 
 TESTING
 =======
