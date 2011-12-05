@@ -845,75 +845,27 @@ Message.prototype = {
     });
 
     let attachmentNodes = this._domNode.getElementsByClassName("attachment");
-    let attInfos = [];
-    let newAttAPI = ("AttachmentInfo" in mainWindow);
-    // Create or lookup in the cache some attachment info. The logic goes like
-    // this:
-    // - this._attachments is either glodaMsg.attachmentInfos or
-    // mimeMsg.allUserAttachments, and has type [{ name, contentType, size, url }]
-    // - attInfos is a cache of AttachmentInfo objects
-    // - when opening or saving an attachment, we lazily create attInfos[i]
-    // - if it turns out the corresponding attInfo fails when trying to open it
-    // or save it, bail, and then stream the message, update this._attachments,
-    // clear attInfos
-    let getOrCreateAttInfo = function (i) {
-      if (attInfos[i])
-        return attInfos[i];
-
-      let att = self._attachments[i];
-      // The message keys can change over time, so do not assume that the msgkey
-      // that was picked at indexing-time is still valid.
-      let key = self._msgHdr.messageKey;
-      let url = att.url.replace(self.RE_MSGKEY, "number="+key);
-      let uri = msgHdrGetUri(self._msgHdr);
-
-      let attInfo = new mainWindow.AttachmentInfo(
-          att.contentType, url, att.name, uri, att.isExternal, 42
-        );
-
-      attInfos[i] = attInfo;
-      return attInfo;
-    };
-    // Re-generate the attachment infos...
-    let recreateAttInfos = function (k) {
-      MsgHdrToMimeMessage(self._msgHdr, self, function (aMsgHdr, aMimeMsg) {
-        this._attachments = aMimeMsg.allUserAttachments;
-        attInfos = [];
-        k();
-      }, true, {
-        partsOnDemand: true,
-        examineEncryptedParts: true,
-      });
-    };
+    /**
+     * We now assume that all the information is correct. I've done enough work
+     * on the Gloda side to ensure this. All hail to Gloda!
+     */
+    let attInfos = self._attachments.map(function (att)
+      new mainWindow.AttachmentInfo(
+        att.contentType, att.url, att.name, self._uri, att.isExternal, 42
+      ));
     for each (let [i, attNode] in Iterator(attachmentNodes)) {
       let j = i;
       let att = this._attachments[j];
 
       // For the context menu event handlers
-      attNode.attInfo = function () getOrCreateAttInfo(j);
+      attNode.attInfo = attInfos[i];
       attNode.setAttribute("contextmenu", "attachmentMenu");
 
       this.register(attNode.getElementsByClassName("open-attachment")[0], function (event) {
-        try {
-          getOrCreateAttInfo(j).open();
-        } catch (e) {
-          Log.debug("Invalid attachment URL", getOrCreateAttInfo(j).url, e);
-          recreateAttInfos(function () {
-            reindexMessages([self._msgHdr]);
-            getOrCreateAttInfo(j).open();
-          });
-        }
+        attInfos[j].open();
       });
       this.register(attNode.getElementsByClassName("download-attachment")[0], function (event) {
-        try {
-          getOrCreateAttInfo(j).save();
-        } catch (e) {
-          Log.debug("Invalid attachment URL", getOrCreateAttInfo(j).url, e);
-          recreateAttInfos(function () {
-            reindexMessages([self._msgHdr]);
-            getOrCreateAttInfo(j).save();
-          });
-        }
+        attInfos[j].save();
       });
 
       let maybeViewable = 
@@ -969,20 +921,7 @@ Message.prototype = {
       }, false);
     }
     this.register(".download-all", function (event) {
-      for (let i in range(0, self._attachments.length))
-        getOrCreateAttInfo(i);
-      try {
-        mainWindow.HandleMultipleAttachments(attInfos, "save");
-      } catch (e) {
-        // This doesn't look like we can catch that kind of failure...
-        Log.debug("Invalid attachment info", e);
-        recreateAttInfos(function () {
-          reindexMessages([self._msgHdr]);
-          for (let i in range(0, self._attachments.length))
-            getOrCreateAttInfo(i);
-          mainWindow.HandleMultipleAttachments(attInfos, "save");
-        });
-      }
+      mainWindow.HandleMultipleAttachments(attInfos, "save");
     });
     this.register(".quickReply", function (event) {
       event.stopPropagation();

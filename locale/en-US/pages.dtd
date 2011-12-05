@@ -41,3 +41,7 @@
 <!ENTITY stub.read.tooltip "Toggle read/unread all messages">
 <!ENTITY stub.detach.tooltip2 "Show this conversation in a new tab">
 <!ENTITY stub.menu.tooltip "Conversation actions">
+<!ENTITY stub.context.open "Open attachment">
+<!ENTITY stub.context.save "Save attachment">
+<!ENTITY stub.context.detach "Detach attachment">
+<!ENTITY stub.context.delete "Delete attachment">
