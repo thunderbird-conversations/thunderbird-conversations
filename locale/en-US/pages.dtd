@@ -8,7 +8,6 @@
 <!ENTITY assistant.apply "Apply changes">
 <!ENTITY assistant.settings "Some settings are mandatory for Thunderbird Conversations to work properly. Some are strongly recommended, and some are optional.">
 <!ENTITY assistant.actionEnableGloda "Make sure Global Search and Indexer is enabled.">
-<!ENTITY assistant.actionReindexAttachments "Re-index messages containing attachments as well as all Mozilla bugmail.">
 <!ENTITY assistant.actionDontExpand "In the message list, don't expand threads containing unread messages.">
 <!ENTITY assistant.actionAttachmentsInline "Don't display attachments inline (<strong>strongly</strong> recommended).">
 <!ENTITY assistant.actionOfflineDownload "Inbox and Sent are synchronized for offline storage (<strong>strongly</strong> recommended).">
@@ -21,16 +20,6 @@
 <!ENTITY feedback.no "No, thanks">
 <!ENTITY feedback.yes "Leave feedback">
 <!ENTITY feedback.pageTitle "Give feedback">
-<!ENTITY indexing.p1 "We've been trying to setup Thunderbird Conversations to give you the best experience, but you have so many messages that reindexing them would crash your Thunderbird.">
-<!ENTITY indexing.p2 "If you have an insanely high amount of non-bugmail email, delete the <tt>global-message-db.sqlite</tt> file in your profile folder (see link below).">
-<!ENTITY indexing.p3 "Do you have a high amount of mail with attachments? Unless the first version of Thunderbird you ever tried is Thunderbird 3.3 alpha1 or later, these attachments won't show in the conversation view. We need to reindex all messages with attachments. The easiest way is for you to delete the <tt>global-messages-db.sqlite</tt> file in your profile folder.">
-<!ENTITY indexing.p4 "Are you a Mozillian? We have a nice special-case for Bugzilla emails, where we replace the sender, i.e. bugzilla-daemon@mozilla.org, with the value of X-Bugzilla-Who header. You probably have way too much bugmail, and we need to reindex all of it to enable that feature. If you can live with the feature being enabled for newly arrived bugmail only, just forget about this message. Otherwise, you'll want to delete the <tt>global-messages-db.sqlite</tt> file in your profile folder.">
-<!ENTITY indexing.p5 "You're in one of the two situations below.">
-<!ENTITY indexing.moreInfo "More info on the profile folder.">
-<!ENTITY indexing.t1 "The tl;dr version">
-<!ENTITY indexing.t2 "In more detail">
-<!ENTITY indexing.title "<span class='orange'>Indexing</span> issue">
-<!ENTITY indexing.pageTitle "Indexing warning">
 <!ENTITY stub.loading "Loading...">
 <!ENTITY stub.trash.tooltip "Delete this conversation">
 <!ENTITY stub.archive.tooltip "Archive this conversation">
