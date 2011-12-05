@@ -358,7 +358,8 @@ MonkeyPatch.prototype = {
         return;
       }
 
-      if (htmlpane.getAttribute("src") == aLocation) {
+      if (htmlpane.getAttribute("src") == aLocation &&
+          htmlpane.contentDocument.location == aLocation) {
         k();
       } else {
         htmlpane.addEventListener("load", function _g (event) {
