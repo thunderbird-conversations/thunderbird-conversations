@@ -566,6 +566,12 @@
 </head>
 
 <body>
+  <menu id="attachmentMenu" type="context">
+    <menuitem label="Open" onclick="event.target.attInfo().open()"></menuitem>
+    <menuitem label="Save" onclick="event.target.attInfo().save()"></menuitem>
+    <menuitem label="Detach" onclick="event.target.attInfo().detach()"></menuitem>
+    <menuitem label="Delete" onclick="event.target.attInfo().delete()"></menuitem>
+  </menu>
   <script id="detailsTemplate" type="text/x-jquery-tmpl"><![CDATA[
       {{if dataContactsFrom.length}}
         <div class="detailsLine fromLine">
