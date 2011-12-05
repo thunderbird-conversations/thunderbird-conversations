@@ -201,7 +201,10 @@ function linkifySubject(subject, doc) {
     link.setAttribute("href", matches[1]);
     link.setAttribute("title", matches[1]);
     link.setAttribute("class","text-link");
-    link.setAttribute("onclick", "openLink(event); return false;");
+    link.addEventListener("click", function (event) {
+        getMail3Pane().messenger.launchExternalURL(matches[1]);
+        event.preventDefault();
+      }, false);
     return [pre,link,post];
   }
   let text = subject;

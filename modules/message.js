@@ -1078,7 +1078,11 @@ Message.prototype = {
       tagNode.appendChild(span);
       tagList.appendChild(tagNode);
     }
-    this._domNode.getElementsByClassName("regular-tags")[0].innerHTML = tagList.innerHTML;
+    let otherTagList = this._domNode.getElementsByClassName("regular-tags")[0];
+    while (otherTagList.firstChild)
+      otherTagList.removeChild(otherTagList.firstChild);
+    for (let [, node] in Iterator(tagList.childNodes))
+      otherTagList.appendChild(node.cloneNode(true));
   },
 
   removeFromConversation: function _Message_removeFromConversation() {

@@ -26,6 +26,7 @@
     <em:optionsType>2</em:optionsType>
     <em:iconURL>chrome://conversations/content/icon.png</em:iconURL>
     <em:homepageURL>http://github.com/protz/GMail-Conversation-View/wiki</em:homepageURL>
+    <em:type>2</em:type>
 
     <em:localized>
       <Description>
