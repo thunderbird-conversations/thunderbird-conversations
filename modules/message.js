@@ -889,6 +889,10 @@ Message.prototype = {
       let j = i;
       let att = this._attachments[j];
 
+      // For the context menu event handlers
+      attNode.attInfo = function () getOrCreateAttInfo(j);
+      attNode.setAttribute("contextmenu", "attachmentMenu");
+
       this.register(attNode.getElementsByClassName("open-attachment")[0], function (event) {
         try {
           getOrCreateAttInfo(j).open();
