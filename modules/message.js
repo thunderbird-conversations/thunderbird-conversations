@@ -1384,8 +1384,8 @@ Message.prototype = {
               iframe.style.height = "800px";
             }
             Log.error(e);
-            Log.warn("Running signal once more to make sure we move on with our life... (warning, this WILL cause bugs)");
             dumpCallStack(e);
+            Log.warn("Running signal once more to make sure we move on with our life... (warning, this WILL cause bugs)");
             self._didStream = true;
             self._signal();
           }

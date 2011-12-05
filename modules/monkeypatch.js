@@ -55,6 +55,8 @@ Cu.import("resource://conversations/log.js");
 
 Cu.import("resource://gre/modules/Services.jsm");
 
+const kMultiMessageUrl = "chrome://messenger/content/multimessageview.xhtml";
+
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
 let Log = setupLogging("Conversations.MonkeyPatch");
@@ -349,31 +351,9 @@ MonkeyPatch.prototype = {
         window.summarizeThread(window.gFolderDisplay.selectedMessages);
       }, true);
 
-    // This nice little wrapper makes sure that the multimessagepane points to
-    //  the given URL before moving on. It takes a continuation, and an optional
-    //  third argument that is to be run in case we loaded a fresh page.
-    let ensureLoadedAndRun = function (aLocation, k, onRefresh) {
-      if (!window.gMessageDisplay.visible) {
-        Log.debug("Message pane is hidden, not fetching...");
-        return;
-      }
-
-      if (htmlpane.getAttribute("src") == aLocation) {
-        k();
-      } else {
-        htmlpane.addEventListener("load", function _g (event) {
-          htmlpane.removeEventListener("load", _g, true);
-          if (onRefresh)
-            onRefresh();
-          k();
-        }, true);
-        htmlpane.setAttribute("src", aLocation);
-      }
-    };
-
     window.summarizeMultipleSelection =
       function _summarizeMultiple_patched (aSelectedMessages, aListener) {
-        ensureLoadedAndRun("chrome://messenger/content/multimessageview.xhtml", function () {
+        window.gSummaryFrameManager.loadAndCallback(kMultiMessageUrl, function () {
           oldSummarizeMultipleSelection(aSelectedMessages, aListener);
         });
       };
@@ -388,7 +368,35 @@ MonkeyPatch.prototype = {
         if (!aSelectedMessages.length)
           return;
 
-        ensureLoadedAndRun(kStubUrl, function () {
+        if (!window.gMessageDisplay.visible) {
+          Log.debug("Message pane is hidden, not fetching...");
+          return;
+        }
+
+        window.gSummaryFrameManager.loadAndCallback(kStubUrl, function (isRefresh) {
+          if (isRefresh) {
+            // Invalidate the previous selection
+            previouslySelectedUris = [];
+            // Invalidate any remaining conversation
+            window.Conversations.currentConversation = null;
+            // Make the stub aware of the Conversations object it's currently
+            //  representing.
+            htmlpane.contentWindow.Conversations = window.Conversations;
+            // The DOM window is fresh, it needs an event listener to forward
+            //  keyboard shorcuts to the main window when the conversation view
+            //  has focus.
+            // It's crucial we register a non-capturing event listener here,
+            //  otherwise the individual message nodes get no opportunity to do
+            //  their own processing.
+            htmlpane.contentWindow.addEventListener("keypress", function (event) {
+              try {
+                window.dispatchEvent(event);
+              } catch (e) {
+                //Log.debug("We failed to dispatch the event, don't know why...", e);
+              }
+            }, false);
+          }
+
           try {
             // Should cancel most intempestive view refreshes, but only after we
             //  made sure the multimessage pane is shown. The logic behind this
@@ -512,27 +520,6 @@ MonkeyPatch.prototype = {
             Log.error(e);
             dumpCallStack(e);
           }
-        }, function () {
-          // Invalidate the previous selection
-          previouslySelectedUris = [];
-          // Invalidate any remaining conversation
-          window.Conversations.currentConversation = null;
-          // Make the stub aware of the Conversations object it's currently
-          //  representing.
-          htmlpane.contentWindow.Conversations = window.Conversations;
-          // The DOM window is fresh, it needs an event listener to forward
-          //  keyboard shorcuts to the main window when the conversation view
-          //  has focus.
-          // It's crucial we register a non-capturing event listener here,
-          //  otherwise the individual message nodes get no opportunity to do
-          //  their own processing.
-          htmlpane.contentWindow.addEventListener("keypress", function (event) {
-            try {
-              window.dispatchEvent(event);
-            } catch (e) {
-              //Log.debug("We failed to dispatch the event, don't know why...", e);
-            }
-          }, false);
         });
       };
 
