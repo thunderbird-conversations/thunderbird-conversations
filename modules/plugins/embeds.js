@@ -102,8 +102,9 @@ let embedsHook = {
     for each (let [, a] in Iterator(links)) {
       if (a.skip || (a.href in seen))
         continue;
-      if (this.tryYouTube(a, aDomNode))
-        seen[a.href] = null;
+      let youTubeId;
+      if ((youTubeId = this.tryYouTube(a, aDomNode)))
+        seen[youTubeId] = null;
       if (this.tryGoogleMaps(a, aDomNode))
         seen[a.href] = null;
     }
@@ -116,9 +117,9 @@ let embedsHook = {
       Log.debug("Found a youtube video, video-id", videoId);
       this.insertEmbed(strings.get("foundYouTube"), "640", "385", 
         "http://www.youtube.com/embed/"+videoId, aDomNode);
-      return true;
+      return videoId;
     } else {
-      return false;
+      return null;
     }
   },
 
