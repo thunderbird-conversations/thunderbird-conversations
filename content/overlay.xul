@@ -49,4 +49,7 @@
       <splitter class="tree-splitter" insertbefore="senderCol" />
     </treecols>
   </tree>
+  <vbox id="messagepanebox">
+    <findbar id="FindToolbar2" browserid="multimessage" />
+  </vbox>
 </overlay>

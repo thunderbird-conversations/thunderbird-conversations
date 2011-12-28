@@ -300,6 +300,109 @@ MonkeyPatch.prototype = {
   onPropertyChanged: function (addon, properties) {
   },
 
+  replaceFindBar: function (window) {
+    // Use our better-located find bar!
+    let oldFindBar = window.document.getElementById("FindToolbar");
+    let newFindBar = window.document.getElementById("FindToolbar2");
+    oldFindBar.parentNode.removeChild(oldFindBar);
+    newFindBar.setAttribute("id", "FindToolbar");
+
+    // And say yes to find all the time!
+    let oldFunc = window.DefaultController.isCommandEnabled;
+    window.DefaultController.isCommandEnabled = function(command) {
+      switch (command) {
+        case "cmd_find":
+        case "cmd_findAgain":
+        case "cmd_findPrevious":
+          // XXX: we can't allow the findbar to be used in a single message tab
+          // (classic viewer) because that makes Thunderbird segfault.
+          // Super-bad.
+          if (window.document.getElementById("multimessage").contentDocument.location.href == kStubUrl
+              && window.document.getElementById("tabmail").currentTabInfo.mode.type == "folder")
+            return true;
+          else if (window.document.getElementById("tabmail").currentTabInfo.mode.type == "message")
+            return false;
+          // fall-through
+        default:
+          return oldFunc(command);
+      }
+    }
+
+    // Work again for our conversations-in-tabs...
+    let vbox = window.document.querySelector("#chromeTab > .chromeTabInstance");
+    let findbar = window.document.createElement("findbar");
+    findbar.setAttribute("browserid", "dummychromebrowser");
+    vbox.appendChild(findbar);
+
+    let oldOpen = window.specialTabs.chromeTabType.openTab;
+    window.specialTabs.chromeTabType.openTab = function (aTab, aArgs) {
+      oldOpen.apply(window.specialTabs.chromeTabType, arguments);
+
+      if (aArgs.chromePage.indexOf(kStubUrl) == 0) {
+        aTab.findbar = aTab.panel.getElementsByTagName("findbar")[0];
+        // The counter has already been ++'d
+        aTab.findbar.setAttribute("browserid",
+                                  "chromeTabBrowser" + (this.lastBrowserId - 1));
+        aTab.isConversations = true;
+      }
+    }.bind(window.specialTabs.chromeTabType);
+
+    let oldDo = window.specialTabs.chromeTabType.doCommand;
+    window.specialTabs.chromeTabType.doCommand = function (aCommand, aTab) {
+      switch (aCommand) {
+        case "cmd_find":
+          if (aTab.isConversations)
+            aTab.findbar.onFindCommand();
+          else
+            return false;
+          break;
+        case "cmd_findAgain":
+          if (aTab.isConversations)
+            aTab.findbar.onFindAgainCommand(false);
+          else
+            return false;
+          break;
+        case "cmd_findPrevious":
+          if (aTab.isConversations)
+            aTab.findbar.onFindAgainCommand(true);
+          else
+            return false;
+          break;
+        default:
+          return oldDo.apply(window.specialTabs.chromeTabType, arguments);
+      }
+    };
+
+    let oldSupports = window.specialTabs.chromeTabType.supportsCommand;
+    window.specialTabs.chromeTabType.supportsCommand = function (aCommand, aTab) {
+      switch (aCommand) {
+        case "cmd_find":
+        case "cmd_findAgain":
+        case "cmd_findPrevious":
+          if (aTab.isConversations)
+            return true;
+          // fall-through
+        default:
+          return oldSupports.apply(window.specialTabs.chromeTabType, arguments);
+      }
+    };
+
+    let oldIsEnabled = window.specialTabs.chromeTabType.isCommandEnabled;
+    window.specialTabs.chromeTabType.isCommandEnabled = function (aCommand, aTab) {
+      switch (aCommand) {
+        case "cmd_find":
+        case "cmd_findAgain":
+        case "cmd_findPrevious":
+          if (aTab.isConversations)
+            return true;
+          // fall-through
+        default:
+          return oldIsEnabled.apply(window.specialTabs.chromeTabType, arguments);
+      }
+    };
+
+  },
+
   apply: function () {
     let window = this._window;
     let self = this;
@@ -312,6 +415,8 @@ MonkeyPatch.prototype = {
     // Register our new column type
     this.registerColumn();
     this.registerFontPrefObserver(htmlpane);
+
+    this.replaceFindBar(window);
 
     // Register the uninstall handler
     this.watchUninstall();
@@ -383,7 +488,7 @@ MonkeyPatch.prototype = {
             //  representing.
             htmlpane.contentWindow.Conversations = window.Conversations;
             // The DOM window is fresh, it needs an event listener to forward
-            //  keyboard shorcuts to the main window when the conversation view
+            //  keyboard shortcuts to the main window when the conversation view
             //  has focus.
             // It's crucial we register a non-capturing event listener here,
             //  otherwise the individual message nodes get no opportunity to do
@@ -395,6 +500,9 @@ MonkeyPatch.prototype = {
                 //Log.debug("We failed to dispatch the event, don't know why...", e);
               }
             }, false);
+
+            window.document.getElementById("FindToolbar")
+              .setAttribute("browserid", "multimessage");
           }
 
           try {
