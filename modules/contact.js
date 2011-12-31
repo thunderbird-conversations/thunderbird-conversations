@@ -148,14 +148,20 @@ ContactManager.prototype = {
 }
 
 let ContactMixIn = {
-  toTmplData: function _ContactMixIn_toInlineHtml (aUseColor, aPosition, aIsDetail) {
+  /**
+   * The aEmail parameter is here because the same contact object is shared for
+   * all instances of a contact, even though the original email address is
+   * different. This allows one to share a common color for a same card in the
+   * address book.
+   */
+  toTmplData: function _ContactMixIn_toInlineHtml (aUseColor, aPosition, aEmail, aIsDetail) {
     let name = this.getName(aPosition, aIsDetail);
     let tooltipName = this.getTooltipName(aPosition);
     let data = {
       showMonospace: aPosition == Contacts.kFrom,
       name: escapeHtml(name),
-      tooltipName: escapeHtml((tooltipName != this._email) ? tooltipName : ""),
-      email: escapeHtml(this._email),
+      tooltipName: escapeHtml((tooltipName != aEmail) ? tooltipName : ""),
+      email: escapeHtml(aEmail),
       avatar: escapeHtml(this.avatar),
       profiles: this._profiles,
       // Parameter aUseColor is optional, and undefined means true
@@ -166,9 +172,9 @@ let ContactMixIn = {
       star: false,
     };
     if (aIsDetail) {
-      data.name = escapeHtml(name != this._email
-        ? MailServices.headerParser.makeFullAddress(name, this._email)
-        : this._email);
+      data.name = escapeHtml(name != aEmail
+        ? MailServices.headerParser.makeFullAddress(name, aEmail)
+        : aEmail);
       data.star = this._card != null;
     }
     return data;

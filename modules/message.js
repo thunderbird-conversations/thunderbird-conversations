@@ -388,21 +388,25 @@ Message.prototype = {
     };
 
     // 1) Generate Contact objects
-    let contactFrom = this._conversation._contactManager
-      .getContactFromNameAndEmail(this._from.name, this._from.email);
+    let contactFrom = [
+      this._conversation._contactManager
+        .getContactFromNameAndEmail(this._from.name, this._from.email),
+      this._from.email
+    ];
     this._contacts.push(contactFrom);
     // true means "with colors"
-    data.dataContactFrom = contactFrom.toTmplData(true, Contacts.kFrom);
+    data.dataContactFrom = contactFrom[0].toTmplData(true, Contacts.kFrom, contactFrom[1]);
     data.dataContactFrom.separator = "";
 
     let to = this._to.concat(this._cc).concat(this._bcc);
-    let contactsTo = to.map(function (x) {
-      return self._conversation._contactManager
-        .getContactFromNameAndEmail(x.name, x.email);
-    });
+    let contactsTo = to.map(function (x)
+      [self._conversation._contactManager
+        .getContactFromNameAndEmail(x.name, x.email),
+       x.email]
+    );
     this._contacts = this._contacts.concat(contactsTo);
     // false means "no colors"
-    data.dataContactsTo = contactsTo.map(function (x) x.toTmplData(false, Contacts.kTo));
+    data.dataContactsTo = contactsTo.map(function ([x, email]) x.toTmplData(false, Contacts.kTo, email));
     let l = data.dataContactsTo.length;
     for each (let [i, data] in Iterator(data.dataContactsTo)) {
       if (i == 0)
@@ -622,7 +626,7 @@ Message.prototype = {
 
     // Forward the calls to each contact.
     let people = this._domNode.getElementsByClassName("tooltip");
-    [x.onAddedToDom(people[i]) for each ([i, x] in Iterator(this._contacts))];
+    [x.onAddedToDom(people[i]) for each ([i, [x, email]] in Iterator(this._contacts))];
 
     // Let the UI do its stuff with the tooltips
     this._conversation._htmlPane.contentWindow.enableTooltips(this);
@@ -796,13 +800,14 @@ Message.prototype = {
           });
           let buildContactObjects = function (nameEmails)
             nameEmails.map(function (x)
-              self._conversation._contactManager
-                .getContactFromNameAndEmail(x.name, x.email)
+              [self._conversation._contactManager
+                .getContactFromNameAndEmail(x.name, x.email),
+               x.email]
             );
           let buildContactData = function (contactObjects)
-            contactObjects.map(function (x)
-              // Third parameter: aIsDetail
-              x.toTmplData(false, Contacts.kTo, true)
+            contactObjects.map(function ([x, email])
+              // Fourth parameter: aIsDetail
+              x.toTmplData(false, Contacts.kTo, email, true)
             );
           let contactsFrom = buildContactObjects([this._from]);
           let contactsTo = buildContactObjects(this._to);
@@ -828,7 +833,7 @@ Message.prototype = {
                [contactsCc, ".ccLine"], [contactsBcc, ".bccLine"]]) {
             for each (let [i, node] in
                 Iterator(this._domNode.querySelectorAll(cssClass+" .tooltip"))) {
-              contactObjects[i].onAddedToDom(node);
+              contactObjects[i][0].onAddedToDom(node);
             }
           }
         } catch (e) {
@@ -1483,10 +1488,10 @@ Message.prototype = {
    * do our best to give this. We're trying not to stream it once more!
    */
   exportAsHtml: function _Message_exportAsHtml(k) {
-    let author = escapeHtml(this._contacts[0]._name);
-    let authorEmail = this._contacts[0]._email;
-    let authorAvatar = this._contacts[0].avatar;
-    let authorColor = this._contacts[0].color;
+    let author = escapeHtml(this._contacts[0][0]._name);
+    let authorEmail = this._from.email;
+    let authorAvatar = this._contacts[0][0].avatar;
+    let authorColor = this._contacts[0][0].color;
     let date = dateAccordingToPref(new Date(this._msgHdr.date/1000));
     // We try to convert the bodies to plain text, to enhance the readability in
     // the forwarded conversation. Note: <pre> tags are not converted properly
