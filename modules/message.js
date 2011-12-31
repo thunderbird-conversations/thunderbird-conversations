@@ -466,7 +466,7 @@ Message.prototype = {
       // We've got the right data, push it!
       data.attachments.push({
         formattedSize: formattedSize,
-        thumb: escapeHtml(thumb),
+        thumb: escapeHtml(thumb.replace(this.RE_SNIPPET, "")),
         imgClass: imgClass,
         name: escapeHtml(att.name).replace(this.RE_SNIPPET, ""),
         anchor: "msg"+this.initialPosition+"att"+i,
