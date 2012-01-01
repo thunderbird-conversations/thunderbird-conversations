@@ -145,7 +145,7 @@ let OracleMixIn = {
         needsScroll = this.messages.length - 1;
       }
     } else {
-      Log.assert(false, "Unknown value for pref scroll_who");
+      Log.assert(false, "Unknown value for kScroll* constant");
     }
 
     return needsScroll;

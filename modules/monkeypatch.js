@@ -333,7 +333,9 @@ MonkeyPatch.prototype = {
       if (!msgHdrs.some(msgHdrIsRss) && !msgHdrs.some(msgHdrIsNntp)) {
         window.MsgOpenSelectedMessages = function () {
           let urls = [msgHdrGetUri(x) for each (x in msgHdrs)].join(",");
-          let queryString = "?urls="+window.encodeURIComponent(urls);
+          let scrollMode = self.determineScrollMode();
+          let queryString = "?urls="+window.encodeURIComponent(urls) +
+            "&scrollMode="+scrollMode;
           tabmail.openTab("chromeTab", {
             chromePage: kStubUrl+queryString,
           });

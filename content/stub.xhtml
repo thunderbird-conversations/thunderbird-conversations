@@ -438,6 +438,15 @@
       // yay!
       if ("urls" in params) {
         try {
+          let scrollMode = ("scrollMode" in params)
+            ? parseInt(params.scrollMode)
+            : Prefs.kScrollUnreadOrLast;
+          /* If we start up Thunderbird with a saved conversation tab, then we
+           * have no selected message. Fallback to the usual mode. */
+          if (scrollMode == Prefs.kScrollSelected &&
+              !topMail3Pane(window).gFolderDisplay.selectedMessage)
+            scrollMode = Prefs.kScrollUnreadOrLast;
+
           isInTab = true;
           window.frameElement.setAttribute("tooltip", "aHTMLTooltip");
           let mainWindow = topMail3Pane(window);
@@ -457,7 +466,7 @@
             let freshConversation = new mainWindow.Conversations.monkeyPatch._Conversation(
               window,
               msgHdrs,
-              Prefs.kScrollUnreadOrLast,
+              scrollMode,
               ++Conversations.counter
             );
             let browser = window.frameElement;
