@@ -658,8 +658,13 @@ ul.special-tags img {
   image-rendering: optimizeQuality;
 }
 
+.preview-attachment {
+  font-weight: bold;
+}
+
 /* For moz-icons */
 .attachmentThumb img.icon {
+  width: 48px;
 }
 
 /* For thumbnails */

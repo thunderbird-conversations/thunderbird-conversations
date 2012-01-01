@@ -119,6 +119,10 @@ let mapping = {
   "text/x-vcalendar": "x-office-calendar",
   "text/x-vcard": "x-office-address-book",
   "text/html": "text-html",
+  "application/pdf": "application-pdf",
+  "application/x-pdf": "application-pdf",
+  "application/x-bzpdf": "application-pdf",
+  "application/x-gzpdf": "application-pdf",
 };
 
 let fallbackMapping = {

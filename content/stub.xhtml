@@ -761,6 +761,9 @@
                 <span class="filename">${att.name}</span>
                 <div class="attachActions">
                   ${att.formattedSize}
+                  {{if att.canPreview}}
+                  | <a href="javascript:" class="link preview-attachment">${str("preview")}</a>
+                  {{/if}}
                   | <a href="javascript:" class="link open-attachment">${str("open")}</a>
                   | <a href="javascript:" class="link download-attachment">${str("download2")}</a>
                 </div>

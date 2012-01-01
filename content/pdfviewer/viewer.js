@@ -46,6 +46,7 @@ Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/NetUtil.jsm");
 Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
 Cu.import("resource://conversations/log.js");
+Cu.import("resource://conversations/stdlib/misc.js");
 
 let Log = setupLogging("Conversations.PdfViewer");
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
@@ -145,10 +146,10 @@ Viewer.prototype = {
 };
 
 window.addEventListener("load", function (event) {
-  // Parse URL components
-  let param = "?uri="; // only one param
-  let url = document.location.href;
-  let uri = url.substr(url.indexOf(param) + param.length, url.length);
+  let params = decodeUrlParameters(document.location.href);
+  let uri = decodeURIComponent(params.uri);
+  let name = decodeURIComponent(params.name);
+  document.title = name;
 
   viewer = new Viewer(uri);
   viewer.load();

@@ -89,6 +89,18 @@ let Log = setupLogging("Conversations.Message");
 const kSnippetLength = 700;
 const kViewerUrl = "chrome://conversations/content/pdfviewer/viewer.html?uri=";
 
+let makeViewerUrl = function (name, url)
+  kViewerUrl + encodeURIComponent(url) +
+  "&name=" + encodeURIComponent(name)
+;
+
+let pdfMimeTypes = {
+  "application/pdf": null,
+  "application/x-pdf": null,
+  "application/x-bzpdf": null,
+  "application/x-gzpdf": null,
+};
+
 // Add in the global message listener table a weak reference to the given
 //  Message object. The monkey-patch which intercepts the "remote content
 //  blocked" notification will then look for a suitable listener and notify it
@@ -438,6 +450,7 @@ Message.prototype = {
       let isImage = (att.contentType.indexOf("image/") === 0);
       if (isImage)
         data.gallery = true;
+      let isPdf = (att.contentType in pdfMimeTypes);
       let key = self._msgHdr.messageKey;
       let url = att.url.replace(self.RE_MSGKEY, "number="+key);
       let [thumb, imgClass] = isImage
@@ -470,6 +483,8 @@ Message.prototype = {
         imgClass: imgClass,
         name: escapeHtml(att.name).replace(this.RE_SNIPPET, ""),
         anchor: "msg"+this.initialPosition+"att"+i,
+        /* Only advertise the preview for PDFs (images have the gallery view). */
+        canPreview: isPdf,
         sep: sep,
       });
     }
@@ -881,29 +896,28 @@ Message.prototype = {
         let img = attNode.getElementsByTagName("img")[0];
         img.classList.add("view-attachment");
         img.setAttribute("title", strings.get("viewAttachment"));
-        this.register(img, function (event) {
+        let preview = function (event) {
           mainWindow.document.getElementById("tabmail").openTab(
             "contentTab",
             { contentPage: self._attachments[j].url }
           );
-        });
+        };
+        this.register(img, preview);
       }
-      let pdfMimeTypes = {
-        "application/pdf": null,
-        "application/x-pdf": null,
-        "application/x-bzpdf": null,
-        "application/x-gzpdf": null,
-      };
       if (att.contentType in pdfMimeTypes) {
         let img = attNode.getElementsByTagName("img")[0];
         img.classList.add("view-attachment");
         img.setAttribute("title", strings.get("viewAttachment"));
-        this.register(img, function (event) {
+        let preview = function (event) {
           mainWindow.document.getElementById("tabmail").openTab(
-            "chromeTab",
-            { chromePage: kViewerUrl+self._attachments[j].url }
+            "chromeTab", { chromePage:
+              makeViewerUrl(self._attachments[j].name, self._attachments[j].url)
+            }
           );
-        });
+        };
+        this.register(img, preview);
+        let previewLink = attNode.getElementsByClassName("preview-attachment")[0];
+        this.register(previewLink, preview);
       }
 
       // Drag & drop
