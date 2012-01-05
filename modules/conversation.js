@@ -256,7 +256,7 @@ function msgDebugColor (aMsg) {
 
 function messageFromGlodaIfOffline (aSelf, aGlodaMsg, aDebug) {
   let aMsgHdr = aGlodaMsg.folderMessage;
-  if (((aMsgHdr.flags & Ci.nsMsgMessageFlags.Offline) ||
+  if (((aMsgHdr.folder.flags & Ci.nsMsgFolderFlags.Offline) ||
         (aMsgHdr.folder instanceof Ci.nsIMsgLocalMailFolder))
       && !aGlodaMsg.isEncrypted) {
     // Means Gloda indexed the message fully...
