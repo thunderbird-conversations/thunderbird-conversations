@@ -604,7 +604,24 @@ Conversation.prototype = {
     }
   },
 
-  onItemsRemoved: function () {},
+  onItemsRemoved: function (aItems) {
+    Log.debug("Updating conversation", this.counter, "global state...");
+    if (!this.completed)
+      return;
+
+    // We (should) have the invariant that a conversation only has one message
+    // with a given Message-Id.
+    let byMessageId = {};
+    [byMessageId[getMessageId(x)] = x.message
+      for each ([, x] in Iterator(this.messages))];
+    for each (let [, glodaMsg] in Iterator(aItems)) {
+      let msgId = glodaMsg.headerMessageID;
+      if ((msgId in byMessageId) && byMessageId[msgId]._msgHdr.messageKey == glodaMsg.messageKey)
+        this.removeMessage(byMessageId[msgId]);
+    }
+
+    this._updateConversationButtons();
+  },
 
   onQueryCompleted: function _Conversation_onQueryCompleted (aCollection) {
     // We'll receive this notification waaaay too many times, so if we've
@@ -1109,8 +1126,9 @@ Conversation.prototype = {
   },
 
   _updateConversationButtons: function _Conversation_updateConversationButtons () {
-    // Bail if we're notified too early.
-    if (!this.messages || !this.messages.length || !this._domNode)
+    // Bail if we're notified too early, or if someone stole the message pane
+    // from us, or whatever.
+    if (!this.messages || !this.messages.length || !this._domNode || !this._htmlPane.contentDocument)
       return;
 
     // Make sure the toggle read/unread button is in the right state
