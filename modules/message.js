@@ -442,7 +442,53 @@ Message.prototype = {
     }
 
     // 2) Generate Attachment objects
-    l = this._attachments.length;
+    data = this.toTmplDataForAttachments(data);
+
+    // 3) Generate extra information: snippet, date, uri
+    data.snippet = escapeHtml(this._snippet).replace(this.RE_SNIPPET, "");
+    data.date = escapeHtml(this._date);
+    data.fullDate = Prefs["no_friendly_date"]
+      ? ""
+      : dateAsInMessageList(new Date(this._msgHdr.date/1000))
+    ;
+    data.uri = escapeHtml(msgHdrGetUri(this._msgHdr));
+
+    // 4) Custom tag telling the user if the message is not in the current view
+    let folderStr = this._msgHdr.folder.prettiestName;
+    let folder = this._msgHdr.folder;
+    while (folder.parent) {
+      folder = folder.parent;
+      folderStr = folder.name + "/" + folderStr;
+    }
+    data.folderName = escapeHtml(folderStr);
+    data.shortFolderName = escapeHtml(this._msgHdr.folder.name);
+
+    // 5) Custom tag telling the user if this is a draft
+    if (msgHdrIsDraft(this._msgHdr))
+      extraClasses.push("draft");
+
+    // 6) For the "show remote content" thing
+    data.realFrom = escapeHtml(this._realFrom.email || this._from.email);
+
+    // 7) Extra classes we want to add to the message
+    if (this.isEncrypted)
+      extraClasses.push("decrypted");
+    data.extraClasses = extraClasses.join(" ");
+
+    return data;
+  },
+
+  // Generate Attachment objects
+  toTmplDataForAttachments: function (data) {
+    if (!data) {
+      data = {
+        attachmentsPlural: null,
+        attachments: [],
+        gallery: false,
+      };
+    }
+    let self = this;
+    let l = this._attachments.length;
     let [makePlural, ] = PluralForm.makeGetter(strings.get("pluralForm"));
     data.attachmentsPlural = makePlural(l, strings.get("attachments")).replace("#1", l);
     for each (let [i, att] in Iterator(this._attachments)) {
@@ -488,38 +534,6 @@ Message.prototype = {
         sep: sep,
       });
     }
-
-    // 3) Generate extra information: snippet, date, uri
-    data.snippet = escapeHtml(this._snippet).replace(this.RE_SNIPPET, "");
-    data.date = escapeHtml(this._date);
-    data.fullDate = Prefs["no_friendly_date"]
-      ? ""
-      : dateAsInMessageList(new Date(this._msgHdr.date/1000))
-    ;
-    data.uri = escapeHtml(msgHdrGetUri(this._msgHdr));
-
-    // 4) Custom tag telling the user if the message is not in the current view
-    let folderStr = this._msgHdr.folder.prettiestName;
-    let folder = this._msgHdr.folder;
-    while (folder.parent) {
-      folder = folder.parent;
-      folderStr = folder.name + "/" + folderStr;
-    }
-    data.folderName = escapeHtml(folderStr);
-    data.shortFolderName = escapeHtml(this._msgHdr.folder.name);
-
-    // 5) Custom tag telling the user if this is a draft
-    if (msgHdrIsDraft(this._msgHdr))
-      extraClasses.push("draft");
-
-    // 6) For the "show remote content" thing
-    data.realFrom = escapeHtml(this._realFrom.email || this._from.email);
-
-    // 7) Extra classes we want to add to the message
-    if (this.isEncrypted)
-      extraClasses.push("decrypted");
-    data.extraClasses = extraClasses.join(" ");
-
     return data;
   },
 
@@ -1113,6 +1127,47 @@ Message.prototype = {
       w.closeTab();
   },
 
+  // Build attachment view for encrypted mime because Gloda has not indexed
+  // attachments.
+  buildAttachmentView: function _Message_buildAttachmentView(k) {
+    if (!(this._glodaMsg && this._glodaMsg.isEncrypted)) {
+      k();
+      return;
+    }
+    let self = this;
+    Log.debug("Building attachment view");
+    try {
+      MsgHdrToMimeMessage(this._msgHdr, null, function(aMsgHdr, aMimeMsg) {
+        try {
+          if (aMimeMsg == null)
+            return;
+
+          self._attachments = aMimeMsg.allUserAttachments
+            .filter(function (x) x.isRealAttachment);
+          let tmplData = self.toTmplDataForAttachments();
+          let w = self._conversation._htmlPane.contentWindow;
+          let $ = w.$;
+          $("#attachmentDetailsTemplate").tmpl(tmplData).appendTo(
+            $(self._domNode.querySelector(".detailsLine")).empty());
+          $("#attachmentsTemplate").tmpl(tmplData).appendTo(
+            $(self._domNode.querySelector(".attachments-container")).empty());
+
+          k();
+        } catch (e) {
+          Log.error(e);
+          dumpCallStack(e);
+        }
+      }, true, {
+        partsOnDemand: true,
+        examineEncryptedParts: true,
+      });
+    } catch (e) {
+      Log.warn("Failed to stream the attachments properly, this is VERY BAD");
+      Log.warn(e);
+      k();
+    }
+  },
+
   // Convenience properties
   get read () {
     return this._msgHdr.isRead;
@@ -1163,9 +1218,12 @@ Message.prototype = {
     this._domNode.classList.remove("collapsed");
     if (!this._didStream) {
       try {
-        this.registerActions();
-        this.cosmeticFixups();
-        this.streamMessage(); // will call _signal
+        let self = this;
+        this.buildAttachmentView(function () {
+          self.registerActions();
+          self.cosmeticFixups();
+          self.streamMessage(); // will call _signal
+        });
       } catch (e) {
         Log.error(e);
         dumpCallStack(e);
@@ -1564,8 +1622,8 @@ function MessageFromGloda(aConversation, aGlodaMsg) {
   else
     this.contentType = "message/rfc822";
 
-  Log.assert(!aGlodaMsg.isEncrypted,
-    "We're supposed to stream encrypted messages!");
+  if ("isEncrypted" in aGlodaMsg)
+    this.isEncrypted = aGlodaMsg.isEncrypted;
 
   if ("mailingLists" in aGlodaMsg)
     this.mailingLists =
