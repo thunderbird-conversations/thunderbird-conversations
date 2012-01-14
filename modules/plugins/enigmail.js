@@ -175,6 +175,10 @@ window.addEventListener("load", function () {
           return;
         }
         showHdrIconsOnStreamed(message, updateHdrIcons);
+
+        // Show signed label of encrypted and signed pgp/mime.
+        let statusFlags = arguments[2];
+        addSignedLabel(statusFlags, message._domNode);
       }
     }, true);
   }
@@ -344,7 +348,7 @@ function patchForShowSecurityInfo(aWindow) {
     w.top.controllers.getControllerForCommand("button_enigmail_decrypt");
   w.top.controllers.removeController(oldTreeController);
   let treeController = {};
-  [treeController[i] = x for each([i, x] in Iterator(oldTreeController))];
+  [treeController[i] = x for each ([i, x] in Iterator(oldTreeController))];
   treeController.isCommandEnabled = function () {
     if (w.gFolderDisplay.messageDisplay.visible) {
       if (w.gFolderDisplay.selectedCount == 0) {
@@ -362,6 +366,25 @@ function patchForShowSecurityInfo(aWindow) {
   // resizing message view.
   w.removeEventListener('messagepane-hide', w.Enigmail.hdrView.msgHdrViewHide, true);
   w.removeEventListener('messagepane-unhide', w.Enigmail.hdrView.msgHdrViewUnide, true);
+}
+
+// Add signed label and click action to a signed message.
+function addSignedLabel(aStatus, aDomNode) {
+  if (aStatus & (Ci.nsIEnigmail.GOOD_SIGNATURE |
+      Ci.nsIEnigmail.UNVERIFIED_SIGNATURE)) {
+    aDomNode.classList.add("signed");
+    let w = getMail3Pane();
+    let signedTag = aDomNode.querySelector(".keep-tag.tag-signed");
+    signedTag.addEventListener("click", function (event) {
+      // Open alert dialog which contains security info.
+      w.Enigmail.msg.viewSecurityInfo(event);
+    }, false);
+    signedTag.style.cursor = "pointer";
+  }
+  if (aStatus & Ci.nsIEnigmail.UNVERIFIED_SIGNATURE) {
+    [x.setAttribute("title", strings.get("unknownGood"))
+      for each ([, x] in Iterator(aDomNode.querySelectorAll(".tag-signed")))];
+  }
 }
 
 let enigmailHook = {
@@ -400,13 +423,7 @@ let enigmailHook = {
       let status = tryEnigmail(iframeDoc.body, aMessage);
       if (status & Ci.nsIEnigmail.DECRYPTION_OKAY)
         aDomNode.classList.add("decrypted");
-      if (status & Ci.nsIEnigmail.GOOD_SIGNATURE)
-        aDomNode.classList.add("signed");
-      if (status & Ci.nsIEnigmail.UNVERIFIED_SIGNATURE) {
-        aDomNode.classList.add("signed");
-        aDomNode.getElementsByClassName("tag-signed")[0]
-          .setAttribute("title", strings.get("unknownGood"));
-      }
+      addSignedLabel(status, aDomNode);
     }
   },
 
