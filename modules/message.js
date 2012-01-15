@@ -864,6 +864,52 @@ Message.prototype = {
       self._domNode.classList.remove("with-details");
     });
 
+    // This will be called at buildAttachmentView() if encrypted.
+    if (!(this._glodaMsg && this._glodaMsg.isEncrypted))
+      this.registerAttachmentActions();
+
+    this.register(".quickReply", function (event) {
+      event.stopPropagation();
+    }, { action: "keyup" });
+    this.register(".quickReply", function (event) {
+      event.stopPropagation();
+    }, { action: "keypress" });
+    this.register(".quickReply", function (event) {
+      // Ok, so it's actually convenient to register our event listener on the
+      //  .quickReply node because we can easily prevent it from bubbling
+      //  upwards, but the problem is, if a message is appended at the end of
+      //  the conversation view, this event listener is active and the one from
+      //  the new message is active too. So we check that the quick reply still
+      //  is inside our dom node.
+      if (!self._domNode.getElementsByClassName("quickReply").length)
+        return;
+
+      let window = self._conversation._htmlPane.contentWindow;
+
+      switch (event.keyCode) {
+        case mainWindow.KeyEvent.DOM_VK_RETURN:
+          if (isAccel(event)) {
+            if (event.shiftKey)
+              window.gComposeSession.send({ archive: true });
+            else
+              window.gComposeSession.send();
+          }
+          break;
+
+        case mainWindow.KeyEvent.DOM_VK_ESCAPE:
+          Log.debug("Escape from quickReply");
+          self._domNode.focus();
+          break;
+      }
+      event.stopPropagation();
+    }, { action: "keydown" });
+  },
+
+  // Register event handlers for attachments. We separate this from
+  // registerActions() for delayed building attachments view of encrypted mime.
+  registerAttachmentActions: function _Message_registerAttachmentActions () {
+    let self = this;
+    let mainWindow = topMail3Pane(this);
     let attachmentNodes = this._domNode.getElementsByClassName("attachment");
     /**
      * We now assume that all the information is correct. I've done enough work
@@ -888,7 +934,7 @@ Message.prototype = {
         attInfos[j].save();
       });
 
-      let maybeViewable = 
+      let maybeViewable =
         att.contentType.indexOf("image/") === 0
         || att.contentType.indexOf("text/") === 0
       ;
@@ -942,41 +988,6 @@ Message.prototype = {
     this.register(".download-all", function (event) {
       mainWindow.HandleMultipleAttachments(attInfos, "save");
     });
-    this.register(".quickReply", function (event) {
-      event.stopPropagation();
-    }, { action: "keyup" });
-    this.register(".quickReply", function (event) {
-      event.stopPropagation();
-    }, { action: "keypress" });
-    this.register(".quickReply", function (event) {
-      // Ok, so it's actually convenient to register our event listener on the
-      //  .quickReply node because we can easily prevent it from bubbling
-      //  upwards, but the problem is, if a message is appended at the end of
-      //  the conversation view, this event listener is active and the one from
-      //  the new message is active too. So we check that the quick reply still
-      //  is inside our dom node.
-      if (!self._domNode.getElementsByClassName("quickReply").length)
-        return;
-
-      let window = self._conversation._htmlPane.contentWindow;
-
-      switch (event.keyCode) {
-        case mainWindow.KeyEvent.DOM_VK_RETURN:
-          if (isAccel(event)) {
-            if (event.shiftKey)
-              window.gComposeSession.send({ archive: true });
-            else
-              window.gComposeSession.send();
-          }
-          break;
-
-        case mainWindow.KeyEvent.DOM_VK_ESCAPE:
-          Log.debug("Escape from quickReply");
-          self._domNode.focus();
-          break;
-      }
-      event.stopPropagation();
-    }, { action: "keydown" });
   },
 
   _reloadMessage: function _Message_reloadMessage () {
@@ -1113,6 +1124,44 @@ Message.prototype = {
       w.closeTab();
   },
 
+  // Build attachment view for encrypted mime because Gloda has not indexed
+  // attachments.
+  buildAttachmentView: function _Message_buildAttachmentView() {
+    let self = this;
+    Log.debug("Building attachment view");
+    try {
+      MsgHdrToMimeMessage(this._msgHdr, null, function(aMsgHdr, aMimeMsg) {
+        try {
+          if (aMimeMsg == null)
+            return;
+
+          self._attachments = aMimeMsg.allUserAttachments
+            .filter(function (x) x.isRealAttachment);
+          let tmplData = self.toTmplData(false);
+          let w = self._conversation._htmlPane.contentWindow;
+          let $ = w.$;
+          $("#attachmentDetailsTemplate").tmpl(tmplData).appendTo(
+            $(self._domNode.querySelector(".detailsLine")).empty());
+          $("#attachmentsTemplate").tmpl(tmplData).appendTo(
+            $(self._domNode.querySelector(".attachments-container")).empty());
+          self.registerAttachmentActions();
+
+          self._signal();
+        } catch (e) {
+          Log.error(e);
+          dumpCallStack(e);
+        }
+      }, true, {
+        partsOnDemand: true,
+        examineEncryptedParts: true,
+      });
+    } catch (e) {
+      Log.warn("Failed to stream the attachments properly, this is VERY BAD");
+      Log.warn(e);
+      this._signal();
+    }
+  },
+
   // Convenience properties
   get read () {
     return this._msgHdr.isRead;
@@ -1163,6 +1212,9 @@ Message.prototype = {
     this._domNode.classList.remove("collapsed");
     if (!this._didStream) {
       try {
+        if (this._glodaMsg && this._glodaMsg.isEncrypted)
+          this.buildAttachmentView(); // will call _signal
+
         this.registerActions();
         this.cosmeticFixups();
         this.streamMessage(); // will call _signal
@@ -1564,8 +1616,8 @@ function MessageFromGloda(aConversation, aGlodaMsg) {
   else
     this.contentType = "message/rfc822";
 
-  Log.assert(!aGlodaMsg.isEncrypted,
-    "We're supposed to stream encrypted messages!");
+  if ("isEncrypted" in aGlodaMsg)
+    this.isEncrypted = aGlodaMsg.isEncrypted;
 
   if ("mailingLists" in aGlodaMsg)
     this.mailingLists =

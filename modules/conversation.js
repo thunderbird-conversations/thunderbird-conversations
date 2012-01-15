@@ -256,9 +256,8 @@ function msgDebugColor (aMsg) {
 
 function messageFromGlodaIfOffline (aSelf, aGlodaMsg, aDebug) {
   let aMsgHdr = aGlodaMsg.folderMessage;
-  if (((aMsgHdr.folder.flags & Ci.nsMsgFolderFlags.Offline) ||
-        (aMsgHdr.folder instanceof Ci.nsIMsgLocalMailFolder))
-      && !aGlodaMsg.isEncrypted) {
+  if ((aMsgHdr.folder.flags & Ci.nsMsgFolderFlags.Offline) ||
+        (aMsgHdr.folder instanceof Ci.nsIMsgLocalMailFolder)) {
     // Means Gloda indexed the message fully...
     return {
       type: kMsgGloda,
@@ -1162,6 +1161,16 @@ Conversation.prototype = {
     let messageNodes = this._domNode.getElementsByClassName(Message.prototype.cssClass);
     Log.assert(messageNodes.length == this.messages.length, "WTF?");
 
+    // Signals for streaming attachments of encrypted mime messages
+    let encryptedAttachmentsSignals = 0;
+    for each (let [i, action] in Iterator(expandThese)) {
+      if (i >= aStart && action == kActionExpand) {
+        let message = this.messages[i].message;
+        if (!message._didStream && message._glodaMsg && message._glodaMsg.isEncrypted)
+          encryptedAttachmentsSignals++;
+      }
+    }
+    Log.debug("encryptedAttachmentsSignals: " + encryptedAttachmentsSignals);
     let self = this;
     this._runOnceAfterNSignals(function () {
       let focusedNode = messageNodes[focusThis];
@@ -1189,7 +1198,7 @@ Conversation.prototype = {
       } else {
         w.markReadInView.disable();
       }
-    }, this.messages.length);
+    }, this.messages.length + encryptedAttachmentsSignals);
 
     for each (let [i, action] in Iterator(expandThese)) {
       // If we were instructed to start operating only after the i-1 messages,
