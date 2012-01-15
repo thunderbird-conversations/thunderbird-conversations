@@ -23,11 +23,14 @@ function PrefManager() {
   this.add_embeds = prefsService.getBoolPref("add_embeds");
   this.expensive_quote_detection = prefsService.getBoolPref("expensive_quote_detection");
   this.operate_on_conversations = prefsService.getBoolPref("operate_on_conversations");
+  this.enabled = prefsService.getBoolPref("enabled");
   this.hide_quote_length = prefsService.getIntPref("hide_quote_length");
   // This is a hashmap
   this.monospaced_senders = {};
   for each (s in this.split(prefsService.getCharPref("monospaced_senders")))
     this.monospaced_senders[s] = null;
+
+  this.watchers = [];
 
   this.register();
 }
@@ -35,6 +38,8 @@ function PrefManager() {
 PrefManager.prototype = {
 
   split: function (s) Array.map(s.split(","), String.trim).filter(String.trim),
+
+  watch: function (watcher) this.watchers.push(watcher),
 
   register: function mpo_register (observer) {
     prefsService.QueryInterface(Ci.nsIPrefBranch2);
@@ -62,13 +67,20 @@ PrefManager.prototype = {
       case "add_embeds":
       case "expensive_quote_detection":
       case "operate_on_conversations":
-        this[aData] = prefsService.getBoolPref(aData);
+      case "enabled": {
+        let v = prefsService.getBoolPref(aData)
+        this[aData] = v;
+        [x(aData, v) for each (x in this.watchers)];
         break;
+      }
 
       case "expand_who":
-      case "hide_quote_length":
-        this[aData] = prefsService.getIntPref(aData);
+      case "hide_quote_length": {
+        let v = prefsService.getIntPref(aData)
+        this[aData] = v;
+        [x(aData, v) for each (x in this.watchers)];
         break;
+      }
 
       case "monospaced_senders":
         this.monospaced_senders = {};

@@ -300,11 +300,27 @@ MonkeyPatch.prototype = {
   onPropertyChanged: function (addon, properties) {
   },
 
+  activateMenuItem: function (window) {
+    let menuItem = window.document.getElementById("menuConversationsEnabled");
+    menuItem.setAttribute("checked", Prefs.enabled);
+    Prefs.watch(function (aPrefName, aPrefValue) {
+      if (aPrefName == "enabled")
+        menuItem.setAttribute("checked", aPrefValue);
+    });
+    menuItem.addEventListener("command", function (event) {
+      let checked = menuItem.hasAttribute("checked") &&
+        menuItem.getAttribute("checked") == "true";
+      Prefs.setBool("conversations.enabled", checked);
+      window.gMessageDisplay.onSelectedMessagesChanged.call(window.gMessageDisplay);
+    });
+  },
+
   apply: function () {
     let window = this._window;
     let self = this;
     let htmlpane = window.document.getElementById("multimessage");
     let oldSummarizeMultipleSelection = window["summarizeMultipleSelection"];
+    let oldSummarizeThread = window["summarizeThread"];
 
     // Do this at least once at overlay load-time
     fillIdentities();
@@ -312,6 +328,8 @@ MonkeyPatch.prototype = {
     // Register our new column type
     this.registerColumn();
     this.registerFontPrefObserver(htmlpane);
+
+    this.activateMenuItem(window);
 
     // Register the uninstall handler
     this.watchUninstall();
@@ -323,6 +341,11 @@ MonkeyPatch.prototype = {
     //  and reroutes the control flow to our conversation reader.
     let oldThreadPaneDoubleClick = window.ThreadPaneDoubleClick;
     window.ThreadPaneDoubleClick = function () {
+      if (!Prefs.enabled) {
+        oldThreadPaneDoubleClick();
+        return;
+      }
+
       let tabmail = window.document.getElementById("tabmail");
       // ThreadPaneDoubleClick calls OnMsgOpenSelectedMessages. We don't want to
       // replace the whole ThreadPaneDoubleClick function, just the line that
@@ -349,12 +372,19 @@ MonkeyPatch.prototype = {
     //  hidden, we need to trigger it manually when it's un-hidden.
     window.addEventListener("messagepane-unhide",
       function () {
-        Log.debug("messagepane-unhide");
+        if (!Prefs.enabled)
+          return;
+
         window.summarizeThread(window.gFolderDisplay.selectedMessages);
       }, true);
 
     window.summarizeMultipleSelection =
       function _summarizeMultiple_patched (aSelectedMessages, aListener) {
+        if (!Prefs.enabled) {
+          oldSummarizeMultipleSelection(aSelectedMessages, aListener);
+          return;
+        }
+
         window.gSummaryFrameManager.loadAndCallback(kMultiMessageUrl, function () {
           oldSummarizeMultipleSelection(aSelectedMessages, aListener);
         });
@@ -367,6 +397,11 @@ MonkeyPatch.prototype = {
     //  actually the entry point to the original ThreadSummary class.
     window.summarizeThread =
       function _summarizeThread_patched (aSelectedMessages, aListener) {
+        if (!Prefs.enabled) {
+          oldSummarizeThread(aSelectedMessages, aListener);
+          return;
+        }
+
         if (!aSelectedMessages.length)
           return;
 
@@ -538,6 +573,11 @@ MonkeyPatch.prototype = {
         .tabInfo[0].messageDisplay.onSelectedMessagesChanged =
     window.MessageDisplayWidget.prototype.onSelectedMessagesChanged =
       function _onSelectedMessagesChanged_patched () {
+        if (!Prefs.enabled) {
+          originalOnSelectedMessagesChanged.call(this);
+          return;
+        }
+
         try {
           // What a nice pun! If bug 320550 was fixed, I could print
           // \u2633\u1f426 and that would be very smart.

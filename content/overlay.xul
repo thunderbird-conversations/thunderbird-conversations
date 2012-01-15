@@ -37,8 +37,11 @@
 
 <!DOCTYPE overlay SYSTEM "chrome://conversations/locale/overlay.dtd">
 <overlay id="messengerWindow" xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+  <!-- Load our script -->
   <script type="application/x-javascript" src="overlay.js" />
+  <!-- I can haz context menu -->
   <browser id="multimessage" context="mailContext" />
+  <!-- Our custom "between" column -->
   <tree id="threadTree">
     <treecols id="threadCols">
       <treecol id="betweenCol" insertbefore="senderCol"
@@ -49,4 +52,10 @@
       <splitter class="tree-splitter" insertbefore="senderCol" />
     </treecols>
   </tree>
+  <!-- The "Conversation View" menu entry -->
+  <menupopup id="menu_View_Popup">
+    <menuitem insertafter="viewMessagesMenu" type="checkbox"
+      id="menuConversationsEnabled"
+      label="&menuConversationsEnabled;" />
+  </menupopup>
 </overlay>
