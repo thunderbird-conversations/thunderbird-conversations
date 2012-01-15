@@ -129,13 +129,13 @@
 .quickReply li.selected textarea {
   color: #000;
   background-color: #fff;
-  height: 108px; /* must match baseSize in quickReply.js */
+  height: 162px;
   overflow: auto;
   resize: vertical;
 }
 
 body.inTab .quickReply li.selected textarea {
-  height: 216px;
+  height: 243px;
 }
 
 .quickReply .popoutTxt {

@@ -57,7 +57,6 @@ function hideQuickReply() {
     $('ul.inputs li').removeClass('selected');
     $('ul.inputs li').removeClass('invisible');
     
-    
     var textareas = $('ul.inputs li textarea.selected');
     textareas.addClass('ease');
     textareas.removeClass('selected');
@@ -117,9 +116,12 @@ function registerQuickReplyEventListeners() {
         // 5px padding-top, 5px padding-bottom, 1px border-top-width, 1px
         // border-bottom-width
         let height = parseInt(window.getComputedStyle(event.target, null).height) + 12;
-        //Log.debug("Computed height is", height, lineHeight);
-        height += lineHeight;
-        //Log.debug("Computed height is", height, lineHeight);
+        // We don't want a quick reply area that's higher than the available
+        // height! (44px is for the top header, 5px is for good measure)
+        let availableHeight = window.frameElement.scrollHeight - 49;
+        Log.debug(height, lineHeight, availableHeight);
+        if (height + lineHeight <= availableHeight)
+          height += lineHeight;
         event.target.style.height = height+"px";
         lastKnownHeight = height;
       }
