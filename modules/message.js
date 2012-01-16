@@ -1127,9 +1127,9 @@ Message.prototype = {
       w.closeTab();
   },
 
-  // Build attachment view for encrypted mime because Gloda has not indexed
-  // attachments.
-  buildAttachmentView: function _Message_buildAttachmentView(k) {
+  // Build attachment view if we have a `MessageFromGloda` that's encrypted
+  // because Gloda has not indexed attachments.
+  buildAttachmentViewIfNeeded: function _Message_buildAttachmentViewIfNeeded(k) {
     if (!(this._glodaMsg && this._glodaMsg.isEncrypted)) {
       k();
       return;
@@ -1227,7 +1227,7 @@ Message.prototype = {
     if (!this._didStream) {
       try {
         let self = this;
-        this.buildAttachmentView(function () {
+        this.buildAttachmentViewIfNeeded(function () {
           self.registerActions();
           self.cosmeticFixups();
           self.streamMessage(); // will call _signal
