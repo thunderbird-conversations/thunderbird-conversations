@@ -1154,10 +1154,16 @@ Message.prototype = {
           $("#attachmentsTemplate").tmpl(tmplData).appendTo(
             $(self._domNode.querySelector(".attachments-container")).empty());
 
-          k();
+          try {
+            k();
+          } catch (e) {
+            Log.error(e);
+            dumpCallStack(e);
+          }
         } catch (e) {
           Log.error(e);
           dumpCallStack(e);
+          k();
         }
       }, true, {
         partsOnDemand: true,
