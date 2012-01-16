@@ -654,9 +654,9 @@
         </div>
         <div class="options">
           <span class="date">
-            {{if attachments.length}}
-              <img src="chrome://conversations/content/i/attachment.png" />
-            {{/if}}
+            <span class="attachmentIcon">
+              {{tmpl "#attachmentIconTemplate"}}
+            </span>
             <span title="${fullDate}">${date}</span>
           </span>
           <span class="details hide-with-details">
@@ -832,6 +832,11 @@
       </div
     ></span
   >]]></script>
+  <script id="attachmentIconTemplate" type="text/x-jquery-tmpl"><![CDATA[
+    {{if attachments.length}}
+      <img src="chrome://conversations/content/i/attachment.png" />
+    {{/if}}
+  ]]></script>
   <script id="attachmentDetailsTemplate" type="text/x-jquery-tmpl"><![CDATA[
     {{if attachments.length}}
       <u>${attachmentsPlural}:</u>

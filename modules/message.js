@@ -1147,6 +1147,8 @@ Message.prototype = {
           let tmplData = self.toTmplDataForAttachments();
           let w = self._conversation._htmlPane.contentWindow;
           let $ = w.$;
+          $("#attachmentIconTemplate").tmpl(tmplData).appendTo(
+            $(self._domNode.querySelector(".attachmentIcon")).empty());
           $("#attachmentDetailsTemplate").tmpl(tmplData).appendTo(
             $(self._domNode.querySelector(".detailsLine")).empty());
           $("#attachmentsTemplate").tmpl(tmplData).appendTo(
