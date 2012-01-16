@@ -87,7 +87,7 @@ let Log = setupLogging("Conversations.Message");
 // This is high because we want enough snippet to extract relevant data from
 // bugzilla snippets.
 const kSnippetLength = 700;
-const kViewerUrl = "chrome://conversations/content/pdfviewer/viewer.html?uri=";
+const kViewerUrl = "chrome://conversations/content/pdfviewer/wrapper.xul?uri=";
 
 // Add in the global message listener table a weak reference to the given
 //  Message object. The monkey-patch which intercepts the "remote content
