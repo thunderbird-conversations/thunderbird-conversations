@@ -87,7 +87,7 @@ let Log = setupLogging("Conversations.Message");
 // This is high because we want enough snippet to extract relevant data from
 // bugzilla snippets.
 const kSnippetLength = 700;
-const kViewerUrl = "chrome://conversations/content/pdfviewer/viewer.html?uri=";
+const kViewerUrl = "chrome://conversations/content/pdfviewer/wrapper.xul?uri=";
 
 let makeViewerUrl = function (name, url)
   kViewerUrl + encodeURIComponent(url) +

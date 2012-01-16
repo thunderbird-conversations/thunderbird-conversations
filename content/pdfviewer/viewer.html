@@ -4,7 +4,9 @@
 <head>
   <link rel="stylesheet" href="buttons.css">
 
-  <script type="text/javascript" src="../pdfjs/build/pdf.js"></script> <!-- PDFJSSCRIPT_REMOVE -->
+  <!-- Everything in this file is loaded as *content*, so there are absolutely
+    no security concerns with loading pdf.js -->
+  <script type="text/javascript" src="../pdfjs/build/pdf.js"></script>
   <script type="text/javascript">
     PDFJS.workerSrc = 'chrome://conversations/content/pdfjs/build/pdf.js';
   </script>

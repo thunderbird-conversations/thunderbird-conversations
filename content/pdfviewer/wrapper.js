@@ -51,57 +51,79 @@ Cu.import("resource://conversations/stdlib/misc.js");
 let Log = setupLogging("Conversations.PdfViewer");
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
-let viewer;
+let wrapper;
 
-function Viewer() {
+function Wrapper(aUrl) {
+  this.url = aUrl;
   this.pdfDoc = null;
   this.curPage = -1;
 }
 
-Viewer.prototype = {
+Wrapper.prototype = {
+  /**
+   * The XMLHttpRequest thing doesn't seem to work properly, so use our own
+   * little function to get the contents of the attachment into a TypedArray.
+   */
+  _download: function (k) {
+    let url = Services.io.newURI(this.url, null, null);
+    let channel = Services.io.newChannelFromURI(url);
+    let chunks = [];
+    let listener = {
+      onStartRequest: function (/* nsIRequest */ aRequest, /* nsISupports */ aContext) {
+      },
 
-  load: function (data) {
-    this.pdfDoc = new PDFJS.PDFDoc(data);
-    this.switchToPage(1);
+      onStopRequest: function (/* nsIRequest */ aRequest, /* nsISupports */ aContext, /* int */ aStatusCode) {
+        let length = chunks.reduce(function (acc, v) acc + v.length, 0);
+        let array = new Uint8Array(length);
+        let offset = 0;
+        for each (let chunk in chunks) {
+          array.set(chunk, offset);
+          offset += chunk.length;
+        }
+        k(array);
+      },
+
+      onDataAvailable: function (/* nsIRequest */ aRequest, /* nsISupports */ aContext,
+          /* nsIInputStream */ aStream, /* int */ aOffset, /* int */ aCount) {
+        // Fortunately, we have in Gecko 2.0 a nice wrapper
+        let data = NetUtil.readInputStreamToString(aStream, aCount);
+        // Now each character of the string is actually to be understood as a byte
+        // So charCodeAt is what we want here...
+        let array = [];
+        for (let i = 0; i < data.length; ++i)
+          array[i] = data.charCodeAt(i);
+        // Yay, good to go!
+        chunks.push(array);
+      },
+
+      QueryInterface: XPCOMUtils.generateQI([Ci.nsISupports, Ci.nsIStreamListener,
+        Ci.nsIRequestObserver])
+    };
+    channel.asyncOpen(listener, null);
   },
 
-  switchToPage: function (aPageNum) {
-    Log.debug("Switching to page", aPageNum);
+  load: function () {
+    Log.debug("Downloading", this.url);
 
-    let page = this.pdfDoc.getPage(aPageNum);
-    this.curPage = aPageNum;
-    let scale = 1.5;
-
-    //
-    // Prepare canvas using PDF page dimensions
-    //
-    let canvas = document.getElementById('the-canvas');
-    let context = canvas.getContext('2d');
-    canvas.height = page.height * scale;
-    canvas.width = page.width * scale;
-
-    //
-    // Render PDF page into canvas context
-    //
-    page.startRendering(context);
-
-    document.getElementById("count").innerHTML = aPageNum + " of " + this.pdfDoc.numPages;
+    this._download(function (data) {
+      let browser = document.getElementById("browser");
+      browser.addEventListener("load", function load_handler () {
+        browser.removeEventListener("load", load_handler, true);
+        browser.contentWindow.init(data);
+      }, true);
+      browser.contentDocument.location.href = "viewer.html";
+    }.bind(this));
   },
 
-  prevPage: function () {
-    if (this.curPage > 1)
-      this.switchToPage(this.curPage - 1);
-  },
-
-  nextPage: function () {
-    if (this.curPage < this.pdfDoc.numPages)
-      this.switchToPage(this.curPage + 1);
-  },
 };
 
-// Called from the outer wrapper JS code.
-function init(aData) {
-  viewer = new Viewer();
-  viewer.load(aData);
-}
+window.addEventListener("load", function (event) {
+  let params = decodeUrlParameters(document.location.href);
+  let uri = decodeURIComponent(params.uri);
+  let name = decodeURIComponent(params.name);
+  document.title = name;
+
+  wrapper = new Wrapper(uri);
+  wrapper.load();
+}, false);
 
