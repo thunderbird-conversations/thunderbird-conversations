@@ -89,6 +89,11 @@ let Log = setupLogging("Conversations.Message");
 const kSnippetLength = 700;
 const kViewerUrl = "chrome://conversations/content/pdfviewer/wrapper.xul?uri=";
 
+let makeViewerUrl = function (name, url)
+  kViewerUrl + encodeURIComponent(url) +
+  "&name=" + encodeURIComponent(name)
+;
+
 // Add in the global message listener table a weak reference to the given
 //  Message object. The monkey-patch which intercepts the "remote content
 //  blocked" notification will then look for a suitable listener and notify it
@@ -882,7 +887,7 @@ Message.prototype = {
         this.register(img, function (event) {
           mainWindow.document.getElementById("tabmail").openTab(
             "chromeTab",
-            { chromePage: kViewerUrl+self._attachments[j].url }
+            { chromePage: makeViewerUrl(self._attachments[j].name, self._attachments[j].url) }
           );
         });
       }
