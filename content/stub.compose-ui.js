@@ -694,7 +694,7 @@ ComposeSession.prototype = {
     if (!popOut) {
       try {
         [sendStatus = h.onMessageBeforeSend({
-            identity: self.params.identity,
+            params: self.params,
             to: to,
             cc: cc,
             bcc: bcc,
