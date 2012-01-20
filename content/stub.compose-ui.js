@@ -50,17 +50,17 @@ Cu.import("resource:///modules/gloda/mimemsg.js");
 const gMessenger = Cc["@mozilla.org/messenger;1"]
                    .createInstance(Ci.nsIMessenger);
 
-Cu.import("resource://conversations/stdlib/misc.js");
-Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
-Cu.import("resource://conversations/stdlib/send.js");
-Cu.import("resource://conversations/stdlib/compose.js");
-Cu.import("resource://conversations/log.js");
-Cu.import("resource://conversations/misc.js");
-Cu.import("resource://conversations/hook.js");
+Cu.import("resource://conversations/modules/stdlib/misc.js");
+Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+Cu.import("resource://conversations/modules/stdlib/send.js");
+Cu.import("resource://conversations/modules/stdlib/compose.js");
+Cu.import("resource://conversations/modules/log.js");
+Cu.import("resource://conversations/modules/misc.js");
+Cu.import("resource://conversations/modules/hook.js");
 
 let Log = setupLogging("Conversations.Stub.Compose");
 
-Cu.import("resource://conversations/stdlib/SimpleStorage.js");
+Cu.import("resource://conversations/modules/stdlib/SimpleStorage.js");
 let ss = SimpleStorage.createIteratorStyle("conversations");
 window.addEventListener("unload", function () {
   // save if needed

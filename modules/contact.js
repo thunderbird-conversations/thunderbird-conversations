@@ -56,11 +56,11 @@ Cu.import("resource:///modules/mailServices.js");
 Cu.import("resource:///modules/gloda/utils.js");
 Cu.import("resource:///modules/gloda/gloda.js");
 
-Cu.import("resource://conversations/stdlib/compose.js");
-Cu.import("resource://conversations/stdlib/misc.js");
-Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
-Cu.import("resource://conversations/log.js");
-Cu.import("resource://conversations/misc.js");
+Cu.import("resource://conversations/modules/stdlib/compose.js");
+Cu.import("resource://conversations/modules/stdlib/misc.js");
+Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+Cu.import("resource://conversations/modules/log.js");
+Cu.import("resource://conversations/modules/misc.js");
 
 const Contacts = {
   kFrom: 0,

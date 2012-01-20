@@ -45,8 +45,8 @@ Cu.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/NetUtil.jsm");
 Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
-Cu.import("resource://conversations/log.js");
-Cu.import("resource://conversations/stdlib/misc.js");
+Cu.import("resource://conversations/modules/log.js");
+Cu.import("resource://conversations/modules/stdlib/misc.js");
 
 let Log = setupLogging("Conversations.PdfViewer");
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
@@ -109,9 +109,13 @@ Wrapper.prototype = {
       let browser = document.getElementById("browser");
       browser.addEventListener("load", function load_handler () {
         browser.removeEventListener("load", load_handler, true);
-        browser.contentWindow.init(data);
+        let w = browser.contentWindow.wrappedJSObject;
+        w.Log = setupLogging("Conversations.PdfViewer");
+        w.strings = new StringBundle("chrome://conversations/locale/message.properties");
+        w.init(data);
       }, true);
-      browser.contentDocument.location.href = "viewer.html";
+      // Load from a resource:// URL so that it doesn't have chrome privileges.
+      browser.loadURI("resource://conversations/content/pdfviewer/viewer.html", null, null);
     }.bind(this));
   },
 

@@ -43,12 +43,12 @@ const Cr = Components.results;
 
 Cu.import("resource://gre/modules/Services.jsm"); // https://developer.mozilla.org/en/JavaScript_code_modules/Services.jsm
 Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
-Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
-Cu.import("resource://conversations/stdlib/misc.js");
-Cu.import("resource://conversations/prefs.js");
-Cu.import("resource://conversations/misc.js");
-Cu.import("resource://conversations/hook.js");
-Cu.import("resource://conversations/log.js");
+Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+Cu.import("resource://conversations/modules/stdlib/misc.js");
+Cu.import("resource://conversations/modules/prefs.js");
+Cu.import("resource://conversations/modules/misc.js");
+Cu.import("resource://conversations/modules/hook.js");
+Cu.import("resource://conversations/modules/log.js");
 
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 

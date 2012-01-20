@@ -150,10 +150,10 @@ function doStuff() {
     return;
 
   try {
-    Cu.import("resource://conversations/stdlib/msgHdrUtils.js", global);
-    Cu.import("resource://conversations/hook.js", global);
-    Cu.import("resource://conversations/prefs.js", global);
-    Cu.import("resource://conversations/log.js", global);
+    Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js", global);
+    Cu.import("resource://conversations/modules/hook.js", global);
+    Cu.import("resource://conversations/modules/prefs.js", global);
+    Cu.import("resource://conversations/modules/log.js", global);
 
     Log = setupLogging("Conversations.OEmbed");
     Log.debug("Registering OEmbed plugin for Conversations...");

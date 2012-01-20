@@ -51,7 +51,7 @@ var EXPORTED_SYMBOLS = [];
  *
  *    let hasConversations;
  *    try {
- *      Components.utils.import("resource://conversations/hook.js");
+ *      Components.utils.import("resource://conversations/modules/hook.js");
  *      hasConversations = true;
  *    } catch (e) {
  *      hasConversations = false;
@@ -71,12 +71,12 @@ const Cr = Components.results;
 
 Cu.import("resource://gre/modules/Services.jsm"); // https://developer.mozilla.org/en/JavaScript_code_modules/Services.jsm
 Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
-Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
-Cu.import("resource://conversations/stdlib/misc.js");
-Cu.import("resource://conversations/stdlib/compose.js");
-Cu.import("resource://conversations/misc.js");
-Cu.import("resource://conversations/hook.js");
-Cu.import("resource://conversations/log.js");
+Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+Cu.import("resource://conversations/modules/stdlib/misc.js");
+Cu.import("resource://conversations/modules/stdlib/compose.js");
+Cu.import("resource://conversations/modules/misc.js");
+Cu.import("resource://conversations/modules/hook.js");
+Cu.import("resource://conversations/modules/log.js");
 
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 

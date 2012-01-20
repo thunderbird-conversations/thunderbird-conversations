@@ -36,20 +36,8 @@
 
 "use strict";
 
-const Ci = Components.interfaces;
-const Cc = Components.classes;
-const Cu = Components.utils;
-const Cr = Components.results;
-
-Cu.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI
-Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://gre/modules/NetUtil.jsm");
-Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
-Cu.import("resource://conversations/log.js");
-Cu.import("resource://conversations/stdlib/misc.js");
-
-let Log = setupLogging("Conversations.PdfViewer");
-let strings = new StringBundle("chrome://conversations/locale/message.properties");
+let Log; // filled from wrapper.js
+let strings; // filled from wrapper.js
 
 let viewer;
 

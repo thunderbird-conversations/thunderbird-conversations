@@ -46,12 +46,12 @@ const Cr = Components.results;
 Cu.import("resource://gre/modules/AddonManager.jsm");
 Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
 
-Cu.import("resource://conversations/stdlib/misc.js");
-Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
-Cu.import("resource://conversations/assistant.js");
-Cu.import("resource://conversations/misc.js"); // for joinWordList
-Cu.import("resource://conversations/prefs.js");
-Cu.import("resource://conversations/log.js");
+Cu.import("resource://conversations/modules/stdlib/misc.js");
+Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+Cu.import("resource://conversations/modules/assistant.js");
+Cu.import("resource://conversations/modules/misc.js"); // for joinWordList
+Cu.import("resource://conversations/modules/prefs.js");
+Cu.import("resource://conversations/modules/log.js");
 
 Cu.import("resource://gre/modules/Services.jsm");
 

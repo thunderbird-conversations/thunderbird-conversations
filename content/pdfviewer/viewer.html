@@ -4,11 +4,11 @@
 <head>
   <link rel="stylesheet" href="buttons.css">
 
-  <!-- Everything in this file is loaded as *content*, so there are absolutely
-    no security concerns with loading pdf.js -->
+  <!-- This file is loaded through a resource:// URL so all the scripts below
+    run as content... -->
   <script type="text/javascript" src="../pdfjs/build/pdf.js"></script>
   <script type="text/javascript">
-    PDFJS.workerSrc = 'chrome://conversations/content/pdfjs/build/pdf.js';
+    PDFJS.workerSrc = 'resource://conversations/content/pdfjs/build/pdf.js';
   </script>
   <script src="viewer.js" type="application/javascript;version=1.8" charset="utf-8"></script>
 

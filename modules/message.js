@@ -71,17 +71,17 @@ const kAllowRemoteContent = 2;
 
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
-Cu.import("resource://conversations/stdlib/addressBookUtils.js");
-Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
-Cu.import("resource://conversations/stdlib/compose.js");
-Cu.import("resource://conversations/stdlib/misc.js");
-Cu.import("resource://conversations/plugins/helpers.js");
-Cu.import("resource://conversations/quoting.js");
-Cu.import("resource://conversations/contact.js");
-Cu.import("resource://conversations/prefs.js");
-Cu.import("resource://conversations/misc.js"); // for iconForMimeType
-Cu.import("resource://conversations/hook.js");
-Cu.import("resource://conversations/log.js");
+Cu.import("resource://conversations/modules/stdlib/addressBookUtils.js");
+Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+Cu.import("resource://conversations/modules/stdlib/compose.js");
+Cu.import("resource://conversations/modules/stdlib/misc.js");
+Cu.import("resource://conversations/modules/plugins/helpers.js");
+Cu.import("resource://conversations/modules/quoting.js");
+Cu.import("resource://conversations/modules/contact.js");
+Cu.import("resource://conversations/modules/prefs.js");
+Cu.import("resource://conversations/modules/misc.js"); // for iconForMimeType
+Cu.import("resource://conversations/modules/hook.js");
+Cu.import("resource://conversations/modules/log.js");
 
 let Log = setupLogging("Conversations.Message");
 // This is high because we want enough snippet to extract relevant data from

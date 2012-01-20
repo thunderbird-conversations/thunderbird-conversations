@@ -47,15 +47,15 @@ Cu.import("resource://gre/modules/Services.jsm");
 
 Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
 Cu.import("resource:///modules/gloda/gloda.js");
-Cu.import("resource://conversations/log.js");
-Cu.import("resource://conversations/prefs.js");
+Cu.import("resource://conversations/modules/log.js");
+Cu.import("resource://conversations/modules/prefs.js");
 
-Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
-Cu.import("resource://conversations/stdlib/misc.js");
-Cu.import("resource://conversations/message.js");
-Cu.import("resource://conversations/contact.js");
-Cu.import("resource://conversations/misc.js"); // for groupArray
-Cu.import("resource://conversations/hook.js");
+Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+Cu.import("resource://conversations/modules/stdlib/misc.js");
+Cu.import("resource://conversations/modules/message.js");
+Cu.import("resource://conversations/modules/contact.js");
+Cu.import("resource://conversations/modules/misc.js"); // for groupArray
+Cu.import("resource://conversations/modules/hook.js");
 
 let Log = setupLogging("Conversations.Conversation");
 

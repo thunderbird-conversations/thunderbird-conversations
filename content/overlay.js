@@ -35,10 +35,10 @@
  * ***** END LICENSE BLOCK ***** */
 
 // Dear AMO reviewer, please note that these files have var EXPORTED_SYMBOLS = [];
-Components.utils.import("resource://conversations/plugins/glodaAttrProviders.js");
-Components.utils.import("resource://conversations/plugins/embeds.js");
-Components.utils.import("resource://conversations/plugins/enigmail.js");
-Components.utils.import("resource://conversations/plugins/lightning.js");
+Components.utils.import("resource://conversations/modules/plugins/glodaAttrProviders.js");
+Components.utils.import("resource://conversations/modules/plugins/embeds.js");
+Components.utils.import("resource://conversations/modules/plugins/enigmail.js");
+Components.utils.import("resource://conversations/modules/plugins/lightning.js");
 
 var Conversations = {
   // These two belong here, use getMail3Pane().Conversations to access them
@@ -58,10 +58,10 @@ var Conversations = {
 
 window.addEventListener("load", function _overlay_eventListener () {
   let NS = {};
-  Components.utils.import("resource://conversations/monkeypatch.js", NS);
-  Components.utils.import("resource://conversations/conversation.js", NS);
-  Components.utils.import("resource://conversations/prefs.js", NS);
-  Components.utils.import("resource://conversations/config.js", NS);
+  Components.utils.import("resource://conversations/modules/monkeypatch.js", NS);
+  Components.utils.import("resource://conversations/modules/conversation.js", NS);
+  Components.utils.import("resource://conversations/modules/prefs.js", NS);
+  Components.utils.import("resource://conversations/modules/config.js", NS);
 
   // We instantiate the Monkey-Patch for the given Conversation object.
   let monkeyPatch = new NS.MonkeyPatch(window, NS.Conversation);

@@ -36,8 +36,8 @@
 
 var EXPORTED_SYMBOLS = [];
 
-Components.utils.import("resource://conversations/hook.js");
-Components.utils.import("resource://conversations/log.js");
+Components.utils.import("resource://conversations/modules/hook.js");
+Components.utils.import("resource://conversations/modules/log.js");
 Components.utils.import("resource:///modules/Services.jsm");
 
 let Log = setupLogging("Conversations.Modules.Lightning");
