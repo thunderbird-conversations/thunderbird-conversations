@@ -446,7 +446,7 @@ let enigmailHook = {
 
     let uiFlags = nsIEnigmail.UI_INTERACTIVE;
 
-    let identity = aAddress.params.identity
+    let identity = aAddress.identity
     Enigmail.msg.identity = identity;
     Enigmail.msg.enableRules = true;
     Enigmail.msg.sendModeDirty = 0;

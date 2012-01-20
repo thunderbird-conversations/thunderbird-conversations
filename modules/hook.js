@@ -13,7 +13,8 @@ var EXPORTED_SYMBOLS = ['registerHook', 'getHooks', 'removeHook'];
  *  },
  *
  *  // Called before the quick reply message is send.
- *  // @param aAddress.params The params to compose the message
+ *  // @param aAddress.identity The identity the user picked to send the
+ *  //  message.
  *  // @param aAddress.to The recipients. This is an Array of valid email
  *  //  addresses.
  *  // @param aAddress.cc Same remark.
