@@ -88,8 +88,20 @@ Viewer.prototype = {
 };
 
 // Called from the outer wrapper JS code.
-function init(aData) {
+function init(chunks) {
+  // Strangely enough, I can't get my typed array to cross the chrome/content
+  // boundary, so let's make the data cross the boundary as a chunk of
+  // strings...
+  let length = chunks.reduce(function (acc, v) acc + v.length, 0);
+  let buffer = new ArrayBuffer(length);
+  let array = new Uint8Array(buffer);
+  let offset = 0;
+  for each (let chunk in chunks) {
+    array.set(chunk, offset);
+    offset += chunk.length;
+  }
+
   viewer = new Viewer();
-  viewer.load(aData);
+  viewer.load(buffer);
 }
 

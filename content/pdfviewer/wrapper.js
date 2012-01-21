@@ -73,14 +73,7 @@ Wrapper.prototype = {
       },
 
       onStopRequest: function (/* nsIRequest */ aRequest, /* nsISupports */ aContext, /* int */ aStatusCode) {
-        let length = chunks.reduce(function (acc, v) acc + v.length, 0);
-        let array = new Uint8Array(length);
-        let offset = 0;
-        for each (let chunk in chunks) {
-          array.set(chunk, offset);
-          offset += chunk.length;
-        }
-        k(array);
+        k(chunks);
       },
 
       onDataAvailable: function (/* nsIRequest */ aRequest, /* nsISupports */ aContext,
@@ -105,14 +98,14 @@ Wrapper.prototype = {
   load: function () {
     Log.debug("Downloading", this.url);
 
-    this._download(function (data) {
+    this._download(function (chunks) {
       let browser = document.getElementById("browser");
       browser.addEventListener("load", function load_handler () {
         browser.removeEventListener("load", load_handler, true);
         let w = browser.contentWindow.wrappedJSObject;
         w.Log = setupLogging("Conversations.PdfViewer");
         w.strings = new StringBundle("chrome://conversations/locale/message.properties");
-        w.init(data);
+        w.init(chunks);
       }, true);
       // Load from a resource:// URL so that it doesn't have chrome privileges.
       browser.loadURI("resource://conversations/content/pdfviewer/viewer.html", null, null);
