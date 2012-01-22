@@ -38,6 +38,7 @@ var EXPORTED_SYMBOLS = [
   'groupArray', 'joinWordList', 'iconForMimeType',
   'EventHelperMixIn', 'arrayEquals', 'LINKS_REGEX',
   'linkifySubject', 'topMail3Pane', 'reindexMessages',
+  'folderName',
 ]
 
 var LINKS_REGEX = /((\w+):\/\/[^<>()'"\s]+|www(\.[-\w]+){2,})/;
@@ -258,4 +259,14 @@ function reindexMessages(aMsgHdrs) {
     [x.folder, x.messageKey]
     for each ([, x] in Iterator(aMsgHdrs))
   ]);
+}
+
+function folderName(aFolder) {
+  let folderStr = aFolder.prettiestName;
+  let folder = aFolder;
+  while (folder.parent) {
+    folder = folder.parent;
+    folderStr = folder.name + "/" + folderStr;
+  }
+  return [folder.prettiestName, folderStr];
 }

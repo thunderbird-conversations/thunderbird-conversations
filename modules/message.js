@@ -69,6 +69,9 @@ const kCharsetFromMetaTag = 9;
 const kCharsetFromChannel = 11;
 const kAllowRemoteContent = 2;
 
+const kHeadersShowAll = 2;
+const kHeadersShowNormal = 1;
+
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
 Cu.import("resource://conversations/modules/stdlib/addressBookUtils.js");
@@ -454,14 +457,9 @@ Message.prototype = {
     data.uri = escapeHtml(msgHdrGetUri(this._msgHdr));
 
     // 4) Custom tag telling the user if the message is not in the current view
-    let folderStr = this._msgHdr.folder.prettiestName;
-    let folder = this._msgHdr.folder;
-    while (folder.parent) {
-      folder = folder.parent;
-      folderStr = folder.name + "/" + folderStr;
-    }
-    data.folderName = escapeHtml(folderStr);
-    data.shortFolderName = escapeHtml(this._msgHdr.folder.name);
+    let [name, fullName] = folderName(this._msgHdr.folder);
+    data.folderName = escapeHtml(fullName);
+    data.shortFolderName = escapeHtml(name);
 
     // 5) Custom tag telling the user if this is a draft
     if (msgHdrIsDraft(this._msgHdr))
@@ -792,84 +790,7 @@ Message.prototype = {
     this.register(".details > a", function (event) {
       event.stopPropagation();
       event.preventDefault();
-      // Hide all irrelevant UI items now we're showing details
-      self._domNode.classList.add("with-details");
-      if (self.detailsFetched)
-        return;
-      self.detailsFetched = true;
-      let w = self._conversation._htmlPane.contentWindow;
-      msgHdrGetHeaders(self._msgHdr, function (aHeaders) {
-        try {
-          let $ = w.$;
-          let data = {
-            dataContactsFrom: [],
-            dataContactsTo: [],
-            dataContactsCc: [],
-            dataContactsBcc: [],
-            extraLines: [],
-          };
-          let interestingHeaders =
-            ["mailed-by", "x-mailer", "mailer", "date", "user-agent"];
-          for each (let h in interestingHeaders) {
-            if (aHeaders.has(h)) {
-              let key = h;
-              try { // Note all the header names are translated.
-                key = strings.get("header-"+h);
-              } catch (e) {}
-              data.extraLines.push({
-                key: key,
-                value: escapeHtml(aHeaders.get(h).replace(this.RE_SNIPPET, "")),
-              });
-            }
-          }
-          let subject = aHeaders.get("subject");
-          data.extraLines.push({
-            key: strings.get("header-subject"),
-            value: subject ? escapeHtml(GlodaUtils.deMime(subject)) : "",
-          });
-          let buildContactObjects = function (nameEmails)
-            nameEmails.map(function (x)
-              [self._conversation._contactManager
-                .getContactFromNameAndEmail(x.name, x.email),
-               x.email]
-            );
-          let buildContactData = function (contactObjects)
-            contactObjects.map(function ([x, email])
-              // Fourth parameter: aIsDetail
-              x.toTmplData(false, Contacts.kTo, email, true)
-            );
-          let contactsFrom = buildContactObjects([this._from]);
-          let contactsTo = buildContactObjects(this._to);
-          let contactsCc = buildContactObjects(this._cc);
-          let contactsBcc = buildContactObjects(this._bcc);
-          data.dataContactsFrom = buildContactData(contactsFrom);
-          data.dataContactsTo = buildContactData(contactsTo);
-          data.dataContactsCc = buildContactData(contactsCc);
-          data.dataContactsBcc = buildContactData(contactsBcc);
-
-          // Output the template
-          $("#detailsTemplate").tmpl(data)
-            .appendTo($(this._domNode.getElementsByClassName("detailsPlaceholder")[0]));
-          // Activate tooltip event listeners
-          w.enableTooltips({
-            _domNode:
-              this._domNode.getElementsByClassName("detailsPlaceholder")[0],
-          });
-          // Notify contact nodes they've been added to the DOM. This is all very
-          // higher-order...
-          for each (let [contactObjects, cssClass] in
-              [[contactsFrom, ".fromLine"], [contactsTo, ".toLine"],
-               [contactsCc, ".ccLine"], [contactsBcc, ".bccLine"]]) {
-            for each (let [i, node] in
-                Iterator(this._domNode.querySelectorAll(cssClass+" .tooltip"))) {
-              contactObjects[i][0].onAddedToDom(node);
-            }
-          }
-        } catch (e) {
-          Log.error(e);
-          dumpCallStack(e);
-        }
-      }.bind(self));
+      self.showDetails();
     });
 
     this.register(".hide-details > a", function (event) {
@@ -1176,6 +1097,97 @@ Message.prototype = {
     }
   },
 
+  // Adds the details if needed... done after the message has been streamed, so
+  // in theory, that should be pretty fast...
+  showDetails: function _Message_showDetails(k) {
+    // Hide all irrelevant UI items now we're showing details
+    this._domNode.classList.add("with-details");
+    if (this.detailsFetched)
+      return;
+    this.detailsFetched = true;
+    let w = this._conversation._htmlPane.contentWindow;
+    msgHdrGetHeaders(this._msgHdr, function (aHeaders) {
+      try {
+        let $ = w.$;
+        let data = {
+          dataContactsFrom: [],
+          dataContactsTo: [],
+          dataContactsCc: [],
+          dataContactsBcc: [],
+          extraLines: [],
+        };
+        data.extraLines.push({
+          key: strings.get("header-folder"),
+          value: escapeHtml(folderName(this._msgHdr.folder)[1]),
+        });
+        let interestingHeaders =
+          ["mailed-by", "x-mailer", "mailer", "date", "user-agent"];
+        for each (let h in interestingHeaders) {
+          if (aHeaders.has(h)) {
+            let key = h;
+            try { // Note all the header names are translated.
+              key = strings.get("header-"+h);
+            } catch (e) {}
+            data.extraLines.push({
+              key: key,
+              value: escapeHtml(aHeaders.get(h).replace(this.RE_SNIPPET, "")),
+            });
+          }
+        }
+        let subject = aHeaders.get("subject");
+        data.extraLines.push({
+          key: strings.get("header-subject"),
+          value: subject ? escapeHtml(GlodaUtils.deMime(subject)) : "",
+        });
+        let self = this;
+        let buildContactObjects = function (nameEmails)
+          nameEmails.map(function (x)
+            [self._conversation._contactManager
+              .getContactFromNameAndEmail(x.name, x.email),
+             x.email]
+          );
+        let buildContactData = function (contactObjects)
+          contactObjects.map(function ([x, email])
+            // Fourth parameter: aIsDetail
+            x.toTmplData(false, Contacts.kTo, email, true)
+          );
+        let contactsFrom = buildContactObjects([this._from]);
+        let contactsTo = buildContactObjects(this._to);
+        let contactsCc = buildContactObjects(this._cc);
+        let contactsBcc = buildContactObjects(this._bcc);
+        data.dataContactsFrom = buildContactData(contactsFrom);
+        data.dataContactsTo = buildContactData(contactsTo);
+        data.dataContactsCc = buildContactData(contactsCc);
+        data.dataContactsBcc = buildContactData(contactsBcc);
+
+        // Output the template
+        $("#detailsTemplate").tmpl(data)
+          .appendTo($(this._domNode.getElementsByClassName("detailsPlaceholder")[0]));
+        // Activate tooltip event listeners
+        w.enableTooltips({
+          _domNode:
+            this._domNode.getElementsByClassName("detailsPlaceholder")[0],
+        });
+        // Notify contact nodes they've been added to the DOM. This is all very
+        // higher-order...
+        for each (let [contactObjects, cssClass] in
+            [[contactsFrom, ".fromLine"], [contactsTo, ".toLine"],
+             [contactsCc, ".ccLine"], [contactsBcc, ".bccLine"]]) {
+          for each (let [i, node] in
+              Iterator(this._domNode.querySelectorAll(cssClass+" .tooltip"))) {
+            contactObjects[i][0].onAddedToDom(node);
+          }
+        }
+      } catch (e) {
+        Log.error(e);
+        dumpCallStack(e);
+      }
+      // It's asynchronous, so move on if needed.
+      if (k)
+        k();
+    }.bind(this));
+  },
+
   // Convenience properties
   get read () {
     return this._msgHdr.isRead;
@@ -1409,7 +1421,10 @@ Message.prototype = {
             self._msgHdr.folder.lastMessageLoaded = self._msgHdr.messageKey;
 
             self._didStream = true;
-            self._signal();
+            if (Prefs.getInt("mail.show_headers") == kHeadersShowAll)
+              self.showDetails(function () self._signal());
+            else
+              self._signal();
           } catch (e) {
             try {
               iframe.style.height = iframeDoc.body.scrollHeight+"px";
