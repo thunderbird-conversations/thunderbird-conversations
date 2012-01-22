@@ -24,7 +24,12 @@
       box-shadow: 0 0 2px #888;
     }
 
-    #nav {
+    #status.loaded #loading {
+      display: none;
+    }
+
+    #status:not(.loaded) #count {
+      display: none;
     }
   </style>
 </head>  
@@ -33,8 +38,9 @@
   <canvas id="the-canvas"></canvas>
 
   <div id="nav">
-    <p>
-      <span id="count">loading... <img src="../i/loader.gif"></span>
+    <p id="status">
+      <span id="loading">loading... <img src="../i/loader.gif"></span>
+      <span id="count"></span>
     </p>
     <p>
       <button class="clean-gray" id="prev" onclick="viewer.prevPage()">previous</button> &#8212; 

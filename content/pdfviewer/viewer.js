@@ -51,6 +51,7 @@ Viewer.prototype = {
   load: function (data) {
     this.pdfDoc = new PDFJS.PDFDoc(data);
     this.switchToPage(1);
+    document.getElementById("status").classList.add("loaded");
   },
 
   switchToPage: function (aPageNum) {
@@ -73,7 +74,7 @@ Viewer.prototype = {
     //
     page.startRendering(context);
 
-    document.getElementById("count").innerHTML = aPageNum + " of " + this.pdfDoc.numPages;
+    document.getElementById("count").textContent = aPageNum + " of " + this.pdfDoc.numPages;
   },
 
   prevPage: function () {
