@@ -419,6 +419,7 @@ function ComposeSession (match) {
     identity: null,
     msgHdr: null,
     subject: null,
+    otherRandomHeaders: null,
   };
   this.stripSignatureIfNeeded = function () {};
   
@@ -758,6 +759,7 @@ ComposeSession.prototype = {
         bcc: bcc.join(","),
         subject: self.params.subject,
         securityInfo: sendStatus.securityInfo,
+        otherRandomHeaders: self.params.otherRandomHeaders,
       }, {
         compType: compType,
         deliverType: deliverMode,
