@@ -400,9 +400,13 @@ a img {
 
 .to, .bzTo {
   color: #666;
-  /* We enforce inline-block display so that we can compute the height and
-   * possibly remove extra recipients that trigger an overflow. */
-  display: inline-block;
+}
+
+.to {
+  display: none;
+  white-space:    nowrap;
+  text-overflow:  ellipsis;
+  overflow:       hidden;
 }
 
 .options a,
@@ -424,7 +428,7 @@ a img {
 }
 
 .message.with-details .hide-with-details {
-  display: none;
+  display: none !important;
 }
 
 .message:not(.bugzilla) .bzTo {

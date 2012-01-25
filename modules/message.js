@@ -941,52 +941,11 @@ Message.prototype = {
     let window = this._conversation._htmlPane.contentWindow;
     window.alignAttachments(this);
 
-    // Ha! How I wish bug 672944 was fixed...
+    // We're expanded at that stage...
     let toNode = this._domNode.getElementsByClassName("to")[0];
-    let children = toNode.children;
-    let hide = function (aNode) aNode.style.display = "none";
-    let width = function (x) x.offsetWidth;
-    let lineHeight = parseFloat(window.getComputedStyle(toNode, null).lineHeight);
-    Log.debug("line height (computed)", lineHeight);
-    let overflows = function () parseInt(toNode.offsetHeight) > Math.ceil(lineHeight);
-
-    if (overflows()) {
-      // Add the "and N more" text that will be shown at the end of the
-      // recipient list, if there's too many of them
-      let dots = toNode.ownerDocument.createElement("span");
-      dots.classList.add("hide-with-details");
-      // We need to be conservative here, because if we don't set the number,
-      // then setting it in the end might trigger one more overflow...
-      dots.textContent = strings.get("andNMore", [999]);
-      toNode.appendChild(toNode.ownerDocument.createTextNode(" "));
-      toNode.appendChild(dots);
-
-      // We need to hide an even number of nodes, so that there's no sepComma or
-      // sepAnd at the end of the list.
-      let nHidden = 0;
-
-      // First find out how many names it takes to fill the message's width
-      let approximateWidth = width(this._domNode);
-      let total = 0;
-      let i = 0;
-      let j = toNode.children.length - 1;
-      while (total < approximateWidth && i < j) {
-        total += width(children[i]);
-        i++;
-      }
-      // Hide all the others
-      [(hide(children[x]), ++nHidden) for (x in range(i, j))];
-      // And move backwards to hide just enough items (usually one or two) until
-      //  we fit perfectly.
-      i--;
-      while (overflows() && i >= 0) {
-        (hide(children[i]), ++nHidden);
-        i--;
-      }
-      if (nHidden % 2)
-        (hide(children[i]), ++nHidden);
-      dots.textContent = strings.get("andNMore", [nHidden/2]);
-    }
+    let w = toNode.parentNode.scrollWidth;
+    toNode.style.width = (w-5)+"px";
+    toNode.style.display = "inline-block";
   },
 
   // {
