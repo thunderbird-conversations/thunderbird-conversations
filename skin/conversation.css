@@ -436,7 +436,7 @@ a img {
 }
 
 .message.bugzilla .to {
-  display: none;
+  display: none !important;
 }
 
 .message.collapsed {
