@@ -945,7 +945,7 @@ Message.prototype = {
     let toNode = this._domNode.getElementsByClassName("to")[0];
     let w = toNode.parentNode.scrollWidth;
     toNode.style.width = (w-5)+"px";
-    toNode.style.display = "inline-block";
+    toNode.classList.remove("not-resized-yet");
   },
 
   // {

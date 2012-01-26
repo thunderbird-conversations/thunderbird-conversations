@@ -402,8 +402,12 @@ a img {
   color: #666;
 }
 
-.to {
+.to.not-resized-yet {
   display: none;
+}
+
+.to {
+  display: inline-block;
   white-space:    nowrap;
   text-overflow:  ellipsis;
   overflow:       hidden;
@@ -436,7 +440,7 @@ a img {
 }
 
 .message.bugzilla .to {
-  display: none !important;
+  display: none;
 }
 
 .message.collapsed {
