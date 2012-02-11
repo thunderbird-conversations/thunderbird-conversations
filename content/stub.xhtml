@@ -721,6 +721,14 @@
           <a href="javascript:">${str("alwaysShowRemote").replace("#1", realFrom)}</a>
         </span>
       </div>
+      <div class="junkBar notificationBar" {{if !canUnJunk}}style="display: none"{{/if}}>
+        <img src="chrome://messenger/skin/icons/junk.png" style="vertical-align: middle;" />
+        ${str("junk")}
+        <span class="notJunk">
+          <a href="javascript:">${str("notJunk")}</a>
+        </span>
+      </div>
+
       <div class="messageBody">
         <!-- Weird markup to deal with whitespace DOM nodes -->
         <ul class="tags special-tags"

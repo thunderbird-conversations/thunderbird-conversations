@@ -605,6 +605,25 @@ ul.special-tags img {
   text-decoration: underline;
 }
 
+.message .junkBar {
+  background-color: rgb(231, 243, 253);
+  color: black;
+}
+
+.message .junkBar a {
+  text-decoration: none;
+}
+
+.message .notJunk {
+  float: right;
+  color: #666;
+  padding-top: 2px;
+}
+
+.message .junkBar a:hover {
+  text-decoration: underline;
+}
+
 .message .remoteContent {
   background-color: rgba(0,255,0, 0.15);
 }

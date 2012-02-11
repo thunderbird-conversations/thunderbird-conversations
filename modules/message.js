@@ -400,6 +400,7 @@ Message.prototype = {
       quickReply: aQuickReply,
       bugzillaUrl: "[unknown bugzilla instance]",
       extraClasses: null,
+      canUnJunk: false,
     };
 
     // 1) Generate Contact objects
@@ -472,6 +473,8 @@ Message.prototype = {
     if (this.isEncrypted)
       extraClasses.push("decrypted");
     data.extraClasses = extraClasses.join(" ");
+    if (this._conversation.messages.length == 1 && msgHdrIsJunk(this._msgHdr))
+      data.canUnJunk = true;
 
     return data;
   },
@@ -752,6 +755,11 @@ Message.prototype = {
       event.stopPropagation();
     });
 
+    this.register(".notJunk", function (event) {
+      self._domNode.getElementsByClassName("junkBar")[0].style.display = "none";
+      // false = not junk
+      topMail3Pane(self).JunkSelectedMessages(false);
+    });
     this.register(".ignore-warning", function (event) {
       self._domNode.getElementsByClassName("phishingBar")[0].style.display = "none";
       self._msgHdr.setUint32Property("notAPhishMessage", 1);
