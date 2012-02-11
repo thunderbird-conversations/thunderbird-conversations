@@ -24,6 +24,7 @@ function PrefManager() {
   this.expensive_quote_detection = prefsService.getBoolPref("expensive_quote_detection");
   this.operate_on_conversations = prefsService.getBoolPref("operate_on_conversations");
   this.enabled = prefsService.getBoolPref("enabled");
+  this.extra_attachments = prefsService.getBoolPref("extra_attachments");
   this.hide_quote_length = prefsService.getIntPref("hide_quote_length");
   // This is a hashmap
   this.monospaced_senders = {};
@@ -67,6 +68,7 @@ PrefManager.prototype = {
       case "add_embeds":
       case "expensive_quote_detection":
       case "operate_on_conversations":
+      case "extra_attachments":
       case "enabled": {
         let v = prefsService.getBoolPref(aData)
         this[aData] = v;

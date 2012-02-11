@@ -1018,20 +1018,30 @@ Message.prototype = {
   // Build attachment view if we have a `MessageFromGloda` that's encrypted
   // because Gloda has not indexed attachments.
   buildAttachmentViewIfNeeded: function _Message_buildAttachmentViewIfNeeded(k) {
-    if (!(this._glodaMsg && this._glodaMsg.isEncrypted)) {
+    if (!this.needsLateAttachments) {
       k();
       return;
     }
     let self = this;
-    Log.debug("Building attachment view");
+    Log.debug(Colors.blue, "Building attachment view", Colors.default);
     try {
       MsgHdrToMimeMessage(this._msgHdr, null, function(aMsgHdr, aMimeMsg) {
         try {
           if (aMimeMsg == null)
             return;
 
-          self._attachments = aMimeMsg.allUserAttachments
-            .filter(function (x) x.isRealAttachment);
+          if (Prefs.extra_attachments) {
+            self._attachments = aMimeMsg.allAttachments.concat(aMimeMsg.allUserAttachments);
+            let hashMap = {};
+            self._attachments = self._attachments.filter(function (x) {
+              let seenAlready = (x.url in hashMap);
+              hashMap[x.url] = null;
+              return !seenAlready;
+            });
+          } else {
+            self._attachments = aMimeMsg.allUserAttachments
+              .filter(function (x) x.isRealAttachment);
+          }
           let tmplData = self.toTmplDataForAttachments();
           let w = self._conversation._htmlPane.contentWindow;
           let $ = w.$;
@@ -1585,9 +1595,10 @@ Message.prototype = {
 
 MixIn(Message, EventHelperMixIn);
 
-function MessageFromGloda(aConversation, aGlodaMsg) {
+function MessageFromGloda(aConversation, aGlodaMsg, aLateAttachments) {
   this._msgHdr = aGlodaMsg.folderMessage;
   this._glodaMsg = aGlodaMsg;
+  this.needsLateAttachments = aLateAttachments;
   Message.apply(this, arguments);
 
   // Our gloda plugin found something for us, thanks dude!

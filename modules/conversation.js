@@ -256,25 +256,18 @@ function msgDebugColor (aMsg) {
 
 function messageFromGlodaIfOffline (aSelf, aGlodaMsg, aDebug) {
   let aMsgHdr = aGlodaMsg.folderMessage;
-  if ((aMsgHdr.folder.flags & Ci.nsMsgFolderFlags.Offline) ||
-      (aMsgHdr.folder instanceof Ci.nsIMsgLocalMailFolder)) {
-    // Means Gloda indexed the message fully...
-    return {
-      type: kMsgGloda,
-      message: new MessageFromGloda(aSelf, aGlodaMsg), // will fire signal when done
-      glodaMsg: aGlodaMsg,
-      msgHdr: null,
-      debug: aDebug,
-    };
-  } else {
-    return {
-      type: kMsgDbHdr,
-      message: new MessageFromDbHdr(aSelf, aGlodaMsg.folderMessage), // will run signal
-      msgHdr: aGlodaMsg.folderMessage,
-      glodaMsg: null,
-      debug: aDebug+"-!offline",
-    };
-  }
+  let needsLateAttachments =
+    !(aMsgHdr.folder instanceof Ci.nsIMsgLocalMailFolder) &&
+      !(aMsgHdr.folder.flags & Ci.nsMsgFolderFlags.Offline) || // online IMAP
+    aGlodaMsg.isEncrypted || // encrypted message
+    Prefs.extra_attachments; // user request
+  return {
+    type: kMsgGloda,
+    message: new MessageFromGloda(aSelf, aGlodaMsg, needsLateAttachments), // will fire signal when done
+    glodaMsg: aGlodaMsg,
+    msgHdr: null,
+    debug: aDebug,
+  };
 }
 
 function messageFromDbHdr (aSelf, aMsgHdr, aDebug) {

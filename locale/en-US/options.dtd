@@ -26,3 +26,5 @@
 <!ENTITY desc.debugging "Enable debug output in the system console and the error console. This will generate a lot of messages.">
 <!ENTITY title.operate_on_conversations "Toolbar buttons">
 <!ENTITY option.operate_on_conversations "Toolbar buttons should archive and delete the entire conversation, not just selected messages">
+<!ENTITY title.extra_attachments "I love attachments">
+<!ENTITY desc.extra_attachments "In some corner cases, Thunderbird will fail to recognize some attachments. This options allows you to workaround the Thunderbird bug, and makes sure we try to display as many attachments as we can. Use in combination with View > Message Body As > All Body Parts.">

@@ -12,3 +12,4 @@ pref("conversations.add_embeds", true);
 pref("conversations.expensive_quote_detection", false);
 pref("conversations.operate_on_conversations", false);
 pref("conversations.enabled", true);
+pref("conversations.extra_attachments", false);
