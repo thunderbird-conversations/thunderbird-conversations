@@ -843,7 +843,7 @@ AttachmentList.prototype = {
     let line = $("#quickReplyAttachmentTemplate").tmpl(data);
     line.find(".removeAttachmentLink").click(function () {
       line.remove();
-      self.attachments = self.attachments.filter(function (x) x != msgAttachment);
+      self._attachments = self._attachments.filter(function (x) x != msgAttachment);
     });
     line.appendTo($(".quickReplyAttachments"));
   },
@@ -863,9 +863,17 @@ AttachmentList.prototype = {
   },
 
   restore: function (aData) {
+    for each (let data in aData) {
+      this.addWithData(data);
+    }
   },
 
   save: function () {
+    return [{
+      name: x.name,
+      size: x.size,
+      url: x.url,
+    } for each (x in this._attachments)];
   },
 
   get attachments () {
@@ -897,7 +905,8 @@ function attachmentDataFromDragData(event) {
       url = messageData;
       prettyName = strings.get("attachedMessage");
     } /* else if (fileData) {
-      // I don't understand how this is supposed to work
+      // I don't understand how this is supposed to work since the newer
+      // DataTransfer API doesn't allow putting nsIFiles in drag data...
       let fileHandler = Services.io.getProtocolHandler("file").QueryInterface(Ci.nsIFileProtocolHandler);
       size = fileData.fileSize;
       url = fileHandler.getURLSpecFromFile(fileData);

@@ -1023,13 +1023,6 @@ Conversation.prototype = {
         // If you want to do something once the new conversation is complete, do
         //  it in monkeypatch.js
         Log.debug("Not recycling conversation");
-        // We'll be replacing the old conversation
-        this._window.Conversations.currentConversation.messages = [];
-        // We don't know yet if this is going to be a junkable conversation, so
-        //  when in doubt, reset. Actually, the final call to
-        //  _updateConversationButtons will update this.
-        this._domNode.ownerDocument.getElementById("conversationHeader")
-          .classList.remove("not-junkable");
         // Gotta save the quick reply, if there's one! Please note that
         //  contentWindow.Conversations is still wired onto the old
         //  conversation. Updating the global Conversations object and loading
@@ -1044,6 +1037,14 @@ Conversation.prototype = {
           Log.error(e);
           dumpCallStack(e);
         }
+        // We'll be replacing the old conversation. Do this after the call to
+        // onSave, because onSave calls getMessageForQuickReply...
+        this._window.Conversations.currentConversation.messages = [];
+        // We don't know yet if this is going to be a junkable conversation, so
+        //  when in doubt, reset. Actually, the final call to
+        //  _updateConversationButtons will update this.
+        this._domNode.ownerDocument.getElementById("conversationHeader")
+          .classList.remove("not-junkable");
       }
     }
 
