@@ -890,7 +890,7 @@
     {{/if}}
   ]]></script>
   <script id="quickReplyTemplate" type="text/x-jquery-tmpl"><![CDATA[
-    <div class="quickReply">
+    <div class="quickReply" ondragover="quickReplyCheckDrag(event);" ondrop="quickReplyDrop(event);">
       <div class="replyHeader">
         <div class="quickReplyRecipients">
           <ul class="fromField">
@@ -961,7 +961,7 @@
       </div>
 
       <ul class="inputs cf" style="padding-right: ${str('actionsSize')}rem">
-        <li class="reply expand">
+        <li class="reply expand" ondragenter="quickReplyDragEnter(event);">
           <div class="popout" title="${str('popoutReply')}" alt="popout">
             <span class="popoutTxt">${str('popoutTxt')}</span>
           </div>
@@ -971,7 +971,7 @@
           </div>
         </li>
         
-        <li class="replyAll expand">
+        <li class="replyAll expand"> ondragenter="quickReplyDragEnter(event);"
           <div class="popout" title="${str('popoutReplyAll')}" alt="popout">
             <span class="popoutTxt">${str('popoutTxt')}</span>
           </div>

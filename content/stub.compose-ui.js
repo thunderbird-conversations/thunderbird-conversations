@@ -806,7 +806,7 @@ ComposeSession.prototype = {
 
 function AttachmentList() {
   // An array of nsIMsgAttachment
-  this.attachments = [];
+  this._attachments = [];
 }
 
 AttachmentList.prototype = {
@@ -825,21 +825,41 @@ AttachmentList.prototype = {
                             .createInstance(Ci.nsIMsgAttachment);
         msgAttachment.url = Services.io.newFileURI(file).spec;
         msgAttachment.name = file.leafName;
-        this.attachments.push(msgAttachment);
+        msgAttachment.size = file.fileSize;
+        this._attachments.push(msgAttachment);
 
         // Then create DOM-related entries
         let data = {
           name: file.leafName,
           size: topMail3Pane(window).messenger.formatFileSize(file.fileSize),
         };
-        let line = $("#quickReplyAttachmentTemplate").tmpl(data);
-        line.find(".removeAttachmentLink").click(function () {
-          line.remove();
-          self.attachments = self.attachments.filter(function (x) x != msgAttachment);
-        });
-        line.appendTo($(".quickReplyAttachments"));
+        this._populateUI(msgAttachment, data);
       }
     }
+  },
+
+  _populateUI: function (msgAttachment, data) {
+    let self = this;
+    let line = $("#quickReplyAttachmentTemplate").tmpl(data);
+    line.find(".removeAttachmentLink").click(function () {
+      line.remove();
+      self.attachments = self.attachments.filter(function (x) x != msgAttachment);
+    });
+    line.appendTo($(".quickReplyAttachments"));
+  },
+
+  addWithData: function (aData) {
+    let msgAttachment = Cc["@mozilla.org/messengercompose/attachment;1"]
+                        .createInstance(Ci.nsIMsgAttachment);
+    msgAttachment.url = aData.url;
+    msgAttachment.size = aData.size;
+    msgAttachment.name = aData.name || strings.get("attachment");
+    this._attachments.push(msgAttachment);
+
+    this._populateUI(msgAttachment, {
+      name: aData.name || strings.get("attachment"),
+      size: topMail3Pane(window).messenger.formatFileSize(aData.size) || strings.get("sizeUnknown"),
+    });
   },
 
   restore: function (aData) {
@@ -847,7 +867,77 @@ AttachmentList.prototype = {
 
   save: function () {
   },
+
+  get attachments () {
+    // Todo: check that all files still exist, etc.
+    return this._attachments;
+  },
 };
+
+function attachmentDataFromDragData(event) {
+  let size, prettyName, url;
+  let fileData = event.dataTransfer.getData("text/x-moz-file");
+  let urlData = event.dataTransfer.getData("text/x-moz-url");
+  let messageData = event.dataTransfer.getData("application/x-moz-message");
+  // Log.debug("file", fileData, "url", urlData, "message", messageData);
+
+  if (fileData || urlData || messageData) {
+    if (urlData) {
+      let pieces = urlData.split("\n");
+      url = pieces[0];
+      if (pieces.length > 1)
+        prettyName = pieces[1];
+      if (pieces.length > 2)
+        size = parseInt(pieces[2]);
+    } else if (messageData) {
+      size = topMail3Pane(window).messenger
+              .messageServiceFromURI(messageData)
+              .messageURIToMsgHdr(messageData)
+              .messageSize;
+      url = messageData;
+      prettyName = strings.get("attachedMessage");
+    } /* else if (fileData) {
+      // I don't understand how this is supposed to work
+      let fileHandler = Services.io.getProtocolHandler("file").QueryInterface(Ci.nsIFileProtocolHandler);
+      size = fileData.fileSize;
+      url = fileHandler.getURLSpecFromFile(fileData);
+    } */
+
+    let isValid = true;
+    if (urlData) {
+      try {
+        let scheme = Services.io.extractScheme(url);
+        // don't attach mailto: urls
+        if (scheme == "mailto")
+          isValid = false;
+      } catch (ex) {
+        isValid = false;
+      }
+    }
+
+    if (isValid)
+      return { url: url, size: size, name: prettyName };
+  }
+}
+
+function quickReplyDragEnter(event) {
+  if (attachmentDataFromDragData(event) && !gComposeSession) {
+    $(event.target).click();
+    event.preventDefault();
+  }
+}
+
+function quickReplyCheckDrag(event) {
+  if (attachmentDataFromDragData(event))
+    event.preventDefault();
+}
+
+function quickReplyDrop(event) {
+  let data = attachmentDataFromDragData(event);
+  if (data)
+    gComposeSession.attachmentList.addWithData(data);
+
+}
 
 // ----- Helpers
 
