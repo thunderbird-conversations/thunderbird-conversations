@@ -237,9 +237,12 @@ html[xmlns] .cf {
 
 /* Quick reply */
 
-.quickReplyRecipients {
+.quickReplyRecipients, .quickReplyAttachments {
   width: 100%;
   margin: 0 0 5px 0;
+}
+
+.quickReplyRecipients {
   display: none;
 }
 
@@ -275,7 +278,7 @@ html[xmlns] .cf {
   display: none;
 }
 
-.quickReplyRecipients ul {
+:-moz-any(.quickReplyRecipients, .quickReplyAttachments) ul {
   margin: 0;
   display: block;
   list-style-type: none;
@@ -286,12 +289,12 @@ html[xmlns] .cf {
   color: #666;
 }
 
-.quickReplyRecipients li {
+:-moz-any(.quickReplyRecipients, .quickReplyAttachments) li {
   display: inline-block;
   color: #666;
 }
 
-.quickReplyRecipients a {
+:-moz-any(.quickReplyRecipients, .quickReplyAttachments) a {
   color: #3875D7;
   text-decoration: none;
 }
@@ -300,7 +303,7 @@ html[xmlns] .cf {
   cursor: pointer;
 }
 
-.quickReplyRecipients a:hover {
+:-moz-any(.quickReplyRecipients, .quickReplyAttachments) a:hover {
   text-decoration: underline;
 }
 

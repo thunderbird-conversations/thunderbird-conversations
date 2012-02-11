@@ -918,6 +918,7 @@
             </li>
             <li class="showCc">| <a onclick="showCc(); editFields('cc');" href="javascript:">${str("addCc")}</a></li>
             <li class="showBcc">| <a onclick="showBcc(); editFields('bcc');" href="javascript:">${str("addBcc")}</a></li>
+            <li class="addAttachment">| <a onclick="addAttachment();" href="javascript:">${str("addAttachment")}</a></li>
           </ul>
           <div class="editRecipientList editToList hbox">
             <div class="label">${str("fieldTo")}</div>
@@ -946,6 +947,8 @@
             <li>${str("pleaseWait")}</li>
             <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('bcc');">${str("edit")}</a></li>
           </ul>
+        </div>
+        <div class="quickReplyAttachments">
         </div>
         <div class="quickReplyHeader" style="display: none; overflow: auto">
           <span class="statusMessage" style="float: left;"></span>
@@ -999,6 +1002,14 @@
           onclick="confirmDiscard()">${str("discard")}</a>
       </div>
     </div>
+    ]]>
+  </script>
+  <script id="quickReplyAttachmentTemplate" type="text/x-jquery-tmpl"><![CDATA[
+    <ul class="quickReplyAttachment">
+      ${str("attachment")}:
+      <li>${name}</li> (${size}) - 
+      <a href="javascript:" class="removeAttachmentLink">${str("removeAttachment")}</a>
+    </ul>
     ]]>
   </script>
   <div id="wrapper">

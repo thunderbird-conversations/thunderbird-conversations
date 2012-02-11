@@ -250,6 +250,10 @@ function showBcc(event) {
   $(".showBcc").hide();
 }
 
+function addAttachment() {
+  gComposeSession.attachmentList.add();
+}
+
 function editFields(aFocusId) {
   $('.quickReplyRecipients').addClass('edit');
   $("#"+aFocusId).next().find(".token-input-input-token-facebook input").last().focus();
@@ -322,6 +326,7 @@ function onSave(k) {
         cc: JSON.parse($("#cc").val()).join(","),
         bcc: JSON.parse($("#bcc").val()).join(","),
         body: getActiveEditor().value,
+        attachments: gComposeSession.attachmentList.save(),
       });
       gDraftListener.notifyDraftChanged("modified");
     }
@@ -425,14 +430,31 @@ function ComposeSession (match) {
   
   // Go!
   this.senderNameElem = $(".senderName");
-  this.asyncSetupSteps = 4; // number of asynchronous setup functions to finish
+  this.asyncSetupSteps = 5; // number of asynchronous setup functions to finish
   this.setupIdentity();
   this.setupMisc();
   this.setupAutocomplete();
+  this.setupAttachments();
   this.setupQuote();
 }
 
 ComposeSession.prototype = {
+
+  setupAttachments: function () {
+    let self = this;
+    this.match({
+      reply: function () {
+        self.attachmentList = new AttachmentList();
+        self.setupDone();
+      },
+
+      draft: function ({ attachments }) {
+        self.attachmentList = new AttachmentList();
+        self.attachmentList.restore(attachments);
+        self.setupDone();
+      },
+    });
+  },
 
   setupIdentity: function () {
     let self = this;
@@ -760,6 +782,7 @@ ComposeSession.prototype = {
         subject: self.params.subject,
         securityInfo: sendStatus.securityInfo,
         otherRandomHeaders: self.params.otherRandomHeaders,
+        attachments: self.attachmentList.attachments,
       }, {
         compType: compType,
         deliverType: deliverMode,
@@ -777,6 +800,53 @@ ComposeSession.prototype = {
         archive: self.archive,
       });
   }
+};
+
+// ----- Attachment list
+
+function AttachmentList() {
+  // An array of nsIMsgAttachment
+  this.attachments = [];
+}
+
+AttachmentList.prototype = {
+  add: function () {
+    let self = this;
+    let filePicker = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
+    filePicker.init(window, strings.get("attachFiles"), Ci.nsIFilePicker.modeOpenMultiple);
+    let rv = filePicker.show();
+    if (rv != Ci.nsIFilePicker.returnOK) {
+      Log.debug("User canceled, returning");
+    } else {
+      // Iterate over all files
+      for each (let file in fixIterator(filePicker.files, Ci.nsILocalFile)) {
+        // Keep track of this one
+        let msgAttachment = Cc["@mozilla.org/messengercompose/attachment;1"]
+                            .createInstance(Ci.nsIMsgAttachment);
+        msgAttachment.url = Services.io.newFileURI(file).spec;
+        msgAttachment.name = file.leafName;
+        this.attachments.push(msgAttachment);
+
+        // Then create DOM-related entries
+        let data = {
+          name: file.leafName,
+          size: topMail3Pane(window).messenger.formatFileSize(file.fileSize),
+        };
+        let line = $("#quickReplyAttachmentTemplate").tmpl(data);
+        line.find(".removeAttachmentLink").click(function () {
+          line.remove();
+          self.attachments = self.attachments.filter(function (x) x != msgAttachment);
+        });
+        line.appendTo($(".quickReplyAttachments"));
+      }
+    }
+  },
+
+  restore: function (aData) {
+  },
+
+  save: function () {
+  },
 };
 
 // ----- Helpers
