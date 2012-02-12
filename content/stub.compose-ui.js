@@ -879,7 +879,7 @@ function attachmentDataFromDragData(event) {
   let fileData = event.dataTransfer.getData("application/x-moz-file");
   let urlData = event.dataTransfer.getData("text/x-moz-url");
   let messageData = event.dataTransfer.getData("text/x-moz-message");
-  Log.debug("file", fileData, "url", urlData, "message", messageData);
+  // Log.debug("file", fileData, "url", urlData, "message", messageData);
 
   if (fileData || urlData || messageData) {
      /* if (fileData) {
