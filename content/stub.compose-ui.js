@@ -843,13 +843,14 @@ AttachmentList.prototype = {
     let msgAttachment = Cc["@mozilla.org/messengercompose/attachment;1"]
                         .createInstance(Ci.nsIMsgAttachment);
     msgAttachment.url = aData.url;
-    msgAttachment.size = aData.size;
+    if (aData.size != undefined)
+      msgAttachment.size = aData.size;
     msgAttachment.name = aData.name || strings.get("attachment");
     this._attachments.push(msgAttachment);
 
     this._populateUI(msgAttachment, {
       name: aData.name || strings.get("attachment"),
-      size: topMail3Pane(window).messenger.formatFileSize(aData.size) || strings.get("sizeUnknown"),
+      size: aData.size ? topMail3Pane(window).messenger.formatFileSize(aData.size) : strings.get("sizeUnknown"),
     });
   },
 
@@ -902,6 +903,17 @@ function attachmentDataFromDragData(event) {
         prettyName = pieces[1];
       if (pieces.length > 2)
         size = parseInt(pieces[2]);
+      // If this is a local file, we may be able to recover some information...
+      try {
+        let uri = Services.io.newURI(url, null, null);
+        let file = uri.QueryInterface(Ci.nsIFileURL).file;
+        if (!prettyName)
+          prettyName = file.leafName;
+        if (!size)
+          size = file.fileSize;
+      } catch (e) {
+        Log.debug("This is probably okay", e);
+      }
     }
 
     let isValid = true;
