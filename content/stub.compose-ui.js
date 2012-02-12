@@ -820,20 +820,11 @@ AttachmentList.prototype = {
     } else {
       // Iterate over all files
       for each (let file in fixIterator(filePicker.files, Ci.nsILocalFile)) {
-        // Keep track of this one
-        let msgAttachment = Cc["@mozilla.org/messengercompose/attachment;1"]
-                            .createInstance(Ci.nsIMsgAttachment);
-        msgAttachment.url = Services.io.newFileURI(file).spec;
-        msgAttachment.name = file.leafName;
-        msgAttachment.size = file.fileSize;
-        this._attachments.push(msgAttachment);
-
-        // Then create DOM-related entries
-        let data = {
+        this.addWithData({
+          url: Services.io.newFileURI(file).spec,
           name: file.leafName,
-          size: topMail3Pane(window).messenger.formatFileSize(file.fileSize),
-        };
-        this._populateUI(msgAttachment, data);
+          size: file.fileSize,
+        });
       }
     }
   },
@@ -863,6 +854,7 @@ AttachmentList.prototype = {
   },
 
   restore: function (aData) {
+    // Todo: check that all files still exist, etc.
     for each (let data in aData) {
       this.addWithData(data);
     }
@@ -877,40 +869,40 @@ AttachmentList.prototype = {
   },
 
   get attachments () {
-    // Todo: check that all files still exist, etc.
     return this._attachments;
   },
 };
 
 function attachmentDataFromDragData(event) {
   let size, prettyName, url;
-  let fileData = event.dataTransfer.getData("text/x-moz-file");
+  let fileData = event.dataTransfer.getData("application/x-moz-file");
   let urlData = event.dataTransfer.getData("text/x-moz-url");
-  let messageData = event.dataTransfer.getData("application/x-moz-message");
-  // Log.debug("file", fileData, "url", urlData, "message", messageData);
+  let messageData = event.dataTransfer.getData("text/x-moz-message");
+  Log.debug("file", fileData, "url", urlData, "message", messageData);
 
   if (fileData || urlData || messageData) {
-    if (urlData) {
-      let pieces = urlData.split("\n");
-      url = pieces[0];
-      if (pieces.length > 1)
-        prettyName = pieces[1];
-      if (pieces.length > 2)
-        size = parseInt(pieces[2]);
-    } else if (messageData) {
+     /* if (fileData) {
+      // I don't understand how this is supposed to work since the newer
+      // DataTransfer API doesn't allow putting nsIFiles in drag data...
+      let fileHandler = Services.io.getProtocolHandler("file").QueryInterface(Ci.nsIFileProtocolHandler);
+      size = fileData.fileSize;
+      url = fileHandler.getURLSpecFromFile(fileData);
+    } else */
+    if (messageData) {
       size = topMail3Pane(window).messenger
               .messageServiceFromURI(messageData)
               .messageURIToMsgHdr(messageData)
               .messageSize;
       url = messageData;
       prettyName = strings.get("attachedMessage");
-    } /* else if (fileData) {
-      // I don't understand how this is supposed to work since the newer
-      // DataTransfer API doesn't allow putting nsIFiles in drag data...
-      let fileHandler = Services.io.getProtocolHandler("file").QueryInterface(Ci.nsIFileProtocolHandler);
-      size = fileData.fileSize;
-      url = fileHandler.getURLSpecFromFile(fileData);
-    } */
+    } else if (urlData) {
+      let pieces = urlData.split("\n");
+      url = pieces[0];
+      if (pieces.length > 1)
+        prettyName = pieces[1];
+      if (pieces.length > 2)
+        size = parseInt(pieces[2]);
+    }
 
     let isValid = true;
     if (urlData) {
