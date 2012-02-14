@@ -49,9 +49,18 @@ function Viewer() {
 Viewer.prototype = {
 
   load: function (data) {
-    this.pdfDoc = new PDFJS.PDFDoc(data);
-    this.switchToPage(1);
-    document.getElementById("status").classList.add("loaded");
+    let status = document.getElementById('status');
+    try {
+      this.pdfDoc = new PDFJS.PDFDoc(data);
+      this.switchToPage(1);
+      status.classList.remove('loading');
+      status.classList.add('loaded');
+    } catch (e) {
+      status.classList.remove('loading');
+      status.classList.add('error');
+      document.getElementById('error').textContent = e;
+      throw e;
+    }
   },
 
   switchToPage: function (aPageNum) {

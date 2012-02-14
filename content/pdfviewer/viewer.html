@@ -24,10 +24,8 @@
       box-shadow: 0 0 2px #888;
     }
 
-    #status.loaded #loading {
-      display: none;
-    }
-
+    #status:not(.error) #error,
+    #status:not(.loading) #loading,
     #status:not(.loaded) #count {
       display: none;
     }
@@ -42,7 +40,8 @@
   <canvas id="the-canvas"></canvas>
 
   <div id="nav">
-    <p id="status">
+    <p id="status" class="loading">
+      <span id="error"></span>
       <span id="loading"><span id="loadingMessage">loading...</span> <img src="../i/loader.gif"></span>
       <form id="count"></form>
     </p>
