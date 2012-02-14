@@ -1258,7 +1258,7 @@ Message.prototype = {
 
     let iframe = this._domNode.ownerDocument
       .createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "iframe");
-    iframe.setAttribute("style", "height: 20px");
+    iframe.setAttribute("style", "height: 20px; overflow-y: hidden");
     iframe.setAttribute("type", "content");
 
     let delay = 100;
