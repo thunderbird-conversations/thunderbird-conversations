@@ -74,7 +74,7 @@ Viewer.prototype = {
     //
     page.startRendering(context);
 
-    document.getElementById("count").textContent = aPageNum + " of " + this.pdfDoc.numPages;
+    document.getElementById("count").textContent = strings.get("pdfViewerPageNOfN").replace("#1", aPageNum).replace("#2", this.pdfDoc.numPages);
   },
 
   prevPage: function () {
@@ -100,6 +100,15 @@ function init(chunks) {
   for each (let chunk in chunks) {
     array.set(chunk, offset);
     offset += chunk.length;
+  }
+
+  let elementStrings = {
+    loadingMessage: 'pdfViewerLoading',
+    next: 'pdfViewerNext',
+    prev: 'pdfViewerPrevious',
+  };
+  for (let id in elementStrings) {
+    document.getElementById(id).textContent = strings.get(elementStrings[id]);
   }
 
   viewer = new Viewer();
