@@ -74,7 +74,15 @@ Viewer.prototype = {
     //
     page.startRendering(context);
 
-    document.getElementById("count").textContent = strings.get("pdfViewerPageNOfN").replace("#1", aPageNum).replace("#2", this.pdfDoc.numPages);
+    let pageNumberBox = document.getElementById('pageNumberBox');
+    if (!pageNumberBox) {
+      let count = document.getElementById('count');
+      count.innerHTML = strings.get('pdfViewerPageNOfN').replace('#1', '<input id="pageNumberBox"/>').replace('#2', '<span id="numPages"/>');
+      pageNumberBox = document.getElementById('pageNumberBox');
+      this._initPageForm(count, pageNumberBox);
+    }
+    document.getElementById('numPages').textContent = this.pdfDoc.numPages;
+    pageNumberBox.value = aPageNum;
   },
 
   prevPage: function () {
@@ -85,6 +93,19 @@ Viewer.prototype = {
   nextPage: function () {
     if (this.curPage < this.pdfDoc.numPages)
       this.switchToPage(this.curPage + 1);
+  },
+
+  _initPageForm: function (pageForm, numBox) {
+    let self = this;
+    pageForm.addEventListener('submit', function (event) {
+      let page = parseInt(numBox.value, 10);
+      if (!isNaN(page) && page != self.curPage && page > 0 && page <= self.pdfDoc.numPages) {
+        self.switchToPage(page);
+      } else {
+        numBox.value = self.curPage;
+      }
+      event.preventDefault();
+    }, false);
   },
 };
 

@@ -31,6 +31,10 @@
     #status:not(.loaded) #count {
       display: none;
     }
+
+    #pageNumberBox {
+      width: 3em;
+    }
   </style>
 </head>  
 
@@ -40,7 +44,7 @@
   <div id="nav">
     <p id="status">
       <span id="loading"><span id="loadingMessage">loading...</span> <img src="../i/loader.gif"></span>
-      <span id="count"></span>
+      <form id="count"></form>
     </p>
     <p>
       <button class="clean-gray" id="prev" onclick="viewer.prevPage()">previous</button> &#8212; 
