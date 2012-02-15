@@ -255,7 +255,10 @@ KeyListener.prototype = {
         // Tag handling.
         // 0 removes all tags, 1 to 9 set the corresponding tag, if it exists
         if (event.which >= '0'.charCodeAt(0)
-            && event.which <= '9'.charCodeAt(0)) {
+            && event.which <= '9'.charCodeAt(0)
+            // Don't steal tab-switching shortcuts and friends.
+            && !event.altKey && !event.ctrlKey
+            && !event.shiftKey && !event.metaKey) {
           let i = event.which - '1'.charCodeAt(0);
           if (i == -1) {
             this.message.tags = [];
