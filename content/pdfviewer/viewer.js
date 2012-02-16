@@ -44,14 +44,27 @@ let viewer;
 function Viewer() {
   this.pdfDoc = null;
   this.curPage = -1;
+  let form = document.getElementById('count');
+  let pageNumberBox = document.getElementById('pageNumberBox');
+  this._initPageForm(form, pageNumberBox);
 }
 
 Viewer.prototype = {
 
   load: function (data) {
-    this.pdfDoc = new PDFJS.PDFDoc(data);
-    this.switchToPage(1);
-    document.getElementById("status").classList.add("loaded");
+    let status = document.getElementById('status');
+    try {
+      this.pdfDoc = new PDFJS.PDFDoc(data);
+      document.getElementById('numPages').textContent = this.pdfDoc.numPages;
+      this.switchToPage(1);
+      status.classList.remove('loading');
+      status.classList.add('loaded');
+    } catch (e) {
+      status.classList.remove('loading');
+      status.classList.add('error');
+      document.getElementById('error').textContent = e;
+      throw e;
+    }
   },
 
   switchToPage: function (aPageNum) {
@@ -74,7 +87,7 @@ Viewer.prototype = {
     //
     page.startRendering(context);
 
-    document.getElementById("count").textContent = aPageNum + " of " + this.pdfDoc.numPages;
+    document.getElementById('pageNumberBox').value = aPageNum;
   },
 
   prevPage: function () {
@@ -85,6 +98,19 @@ Viewer.prototype = {
   nextPage: function () {
     if (this.curPage < this.pdfDoc.numPages)
       this.switchToPage(this.curPage + 1);
+  },
+
+  _initPageForm: function (pageForm, numBox) {
+    let self = this;
+    pageForm.addEventListener('submit', function (event) {
+      let page = parseInt(numBox.value, 10);
+      if (!isNaN(page) && page != self.curPage && page > 0 && page <= self.pdfDoc.numPages) {
+        self.switchToPage(page);
+      } else {
+        numBox.value = self.curPage;
+      }
+      event.preventDefault();
+    }, false);
   },
 };
 
