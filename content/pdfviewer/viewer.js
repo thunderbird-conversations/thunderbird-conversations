@@ -44,6 +44,9 @@ let viewer;
 function Viewer() {
   this.pdfDoc = null;
   this.curPage = -1;
+  let form = document.getElementById('count');
+  let pageNumberBox = document.getElementById('pageNumberBox');
+  this._initPageForm(form, pageNumberBox);
 }
 
 Viewer.prototype = {
@@ -52,6 +55,7 @@ Viewer.prototype = {
     let status = document.getElementById('status');
     try {
       this.pdfDoc = new PDFJS.PDFDoc(data);
+      document.getElementById('numPages').textContent = this.pdfDoc.numPages;
       this.switchToPage(1);
       status.classList.remove('loading');
       status.classList.add('loaded');
@@ -83,15 +87,7 @@ Viewer.prototype = {
     //
     page.startRendering(context);
 
-    let pageNumberBox = document.getElementById('pageNumberBox');
-    if (!pageNumberBox) {
-      let count = document.getElementById('count');
-      count.innerHTML = strings.get('pdfViewerPageNOfN').replace('#1', '<input id="pageNumberBox"/>').replace('#2', '<span id="numPages"/>');
-      pageNumberBox = document.getElementById('pageNumberBox');
-      this._initPageForm(count, pageNumberBox);
-    }
-    document.getElementById('numPages').textContent = this.pdfDoc.numPages;
-    pageNumberBox.value = aPageNum;
+    document.getElementById('pageNumberBox').value = aPageNum;
   },
 
   prevPage: function () {
@@ -130,15 +126,6 @@ function init(chunks) {
   for each (let chunk in chunks) {
     array.set(chunk, offset);
     offset += chunk.length;
-  }
-
-  let elementStrings = {
-    loadingMessage: 'pdfViewerLoading',
-    next: 'pdfViewerNext',
-    prev: 'pdfViewerPrevious',
-  };
-  for (let id in elementStrings) {
-    document.getElementById(id).textContent = strings.get(elementStrings[id]);
   }
 
   viewer = new Viewer();

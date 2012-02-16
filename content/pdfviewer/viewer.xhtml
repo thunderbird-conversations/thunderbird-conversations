@@ -1,18 +1,20 @@
-<!doctype html>
-<html>
+<!DOCTYPE html [
+  <!ENTITY % pageDTD SYSTEM "chrome://conversations/locale/gallery.dtd"> %pageDTD;
+]>
+<html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
-  <link rel="stylesheet" href="buttons.css">
+  <link rel="stylesheet" type="text/css" href="buttons.css" />
 
   <!-- This file is loaded through a resource:// URL so all the scripts below
     run as content... -->
   <script type="text/javascript" src="../pdfjs/build/pdf.js"></script>
-  <script type="text/javascript">
+  <script type="text/javascript"><![CDATA[
     PDFJS.workerSrc = 'resource://conversations/content/pdfjs/build/pdf.js';
-  </script>
+  ]]></script>
   <script src="viewer.js" type="application/javascript;version=1.8" charset="utf-8"></script>
 
-  <style>
+  <style type="text/css">
     body {
       background-color: white;
       text-align: center;
@@ -22,6 +24,10 @@
       margin: 20px;
       border: 1px solid #888;
       box-shadow: 0 0 2px #888;
+    }
+
+    #status {
+      margin: 0 0 12px 0;
     }
 
     #status:not(.error) #error,
@@ -40,14 +46,14 @@
   <canvas id="the-canvas"></canvas>
 
   <div id="nav">
-    <p id="status" class="loading">
+    <div id="status" class="loading">
       <span id="error"></span>
-      <span id="loading"><span id="loadingMessage">loading...</span> <img src="../i/loader.gif"></span>
-      <form id="count"></form>
-    </p>
+      <span id="loading"><span id="loadingMessage">&pdfViewer.loading;</span> <img src="../i/loader.gif" /></span>
+      <form action="" id="count"><input id="pageNumberBox" /> / <span id="numPages" /></form>
+    </div>
     <p>
-      <button class="clean-gray" id="prev" onclick="viewer.prevPage()">previous</button> &#8212; 
-      <button class="clean-gray" id="next" onclick="viewer.nextPage()">next</button>
+      <button class="clean-gray" id="prev" onclick="viewer.prevPage()">&pdfViewer.previous;</button> &#8212;
+      <button class="clean-gray" id="next" onclick="viewer.nextPage()">&pdfViewer.next;</button>
     </p>
   </div>
     
