@@ -620,7 +620,7 @@ ul.special-tags img {
   padding-top: 2px;
 }
 
-.message .junkBar a:hover {
+.message :-moz-any(.junkBar, .outboxBar) a:hover {
   text-decoration: underline;
 }
 

@@ -404,6 +404,7 @@ Message.prototype = {
       bugzillaUrl: "[unknown bugzilla instance]",
       extraClasses: null,
       canUnJunk: false,
+      isOutbox: false,
     };
 
     // 1) Generate Contact objects
@@ -478,6 +479,8 @@ Message.prototype = {
     data.extraClasses = extraClasses.join(" ");
     if (this._conversation.messages.length == 1 && msgHdrIsJunk(this._msgHdr))
       data.canUnJunk = true;
+    if (this._msgHdr.folder.getFlag(Ci.nsMsgFolderFlags.Queue))
+      data.isOutbox = true;
 
     return data;
   },
@@ -756,6 +759,14 @@ Message.prototype = {
     this.register(".tooltip", function (event) {
       // Clicking inside a tooltip must not collapse the message.
       event.stopPropagation();
+    });
+
+    this.register(".sendUnsent", function (event) {
+      let w = topMail3Pane(self);
+      if (Services.io.offline)
+        w.MailOfflineMgr.goOnlineToSendMessages(w.msgWindow);
+      else
+        w.SendUnsentMessages();
     });
 
     this.register(".notJunk", function (event) {

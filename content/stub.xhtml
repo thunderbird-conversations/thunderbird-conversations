@@ -728,6 +728,13 @@
           <a href="javascript:">${str("notJunk")}</a>
         </span>
       </div>
+      <div class="outboxBar notificationBar" {{if !isOutbox}}style="display: none"{{/if}}>
+        <img src="chrome://conversations/skin/icons/outbox.png" style="vertical-align: middle;" />
+        ${str("isOutbox")}
+        <span class="sendUnsent">
+          <a href="javascript:">${str("sendUnsent")}</a>
+        </span>
+      </div>
 
       <div class="messageBody">
         <!-- Weird markup to deal with whitespace DOM nodes -->

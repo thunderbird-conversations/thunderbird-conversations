@@ -1,8 +1,3 @@
-<!-- Please open the "Preferences" window and DO check that your text is not too
-     long. This can cause the contents to overflow and be hidden, so make sure
-     everything is displayed properly. 
-
--->
 <!ENTITY option.expand_who "By default, expand:">
 <!ENTITY option.expand_auto2 "Automatic">
 <!ENTITY option.expand_auto2.tooltip "If the thread is collapsed, expand all unread messages or the last message. If it is expanded, only expand the selected message in the message list.">
@@ -28,3 +23,5 @@
 <!ENTITY option.operate_on_conversations "Toolbar buttons should archive and delete the entire conversation, not just selected messages">
 <!ENTITY title.extra_attachments "I love attachments">
 <!ENTITY desc.extra_attachments "In some corner cases, Thunderbird will fail to recognize some attachments. This options allows you to workaround the Thunderbird bug, and makes sure we try to display as many attachments as we can. Use in combination with View > Message Body As > All Body Parts.">
+<!ENTITY title.send_in_background "Send in background">
+<!ENTITY desc.send_in_background "This will queue messages for sending, so that you don't have to wait for the sending process to complete before switching conversations. Warning: the feature is not complete (see SendInBackground on wiki.mozilla.org) and applies to the regular composition process too.">

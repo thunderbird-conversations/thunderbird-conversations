@@ -735,9 +735,15 @@ ComposeSession.prototype = {
     let msg = strings.get("sendAnEmptyMessage");
     if (!popOut && !ed.value.length && !confirm(msg))
       return;
-    let deliverMode = Services.io.offline
-      ? Ci.nsIMsgCompDeliverMode.Later
-      : Ci.nsIMsgCompDeliverMode.Now;
+
+    let deliverMode;
+    if (Services.io.offline)
+      deliverMode = Ci.nsIMsgCompDeliverMode.Later;
+    else if (Prefs.getBool("mailnews.sendInBackground"))
+      deliverMode = Ci.nsIMsgCompDeliverMode.Background;
+    else
+      deliverMode = Ci.nsIMsgCompDeliverMode.Now;
+
     let compType = document.getElementById("forward-radio").checked
       ? Ci.nsIMsgCompType.ForwardInline
       : Ci.nsIMsgCompType.ReplyAll; // ReplyAll, Reply... ends up the same
