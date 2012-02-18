@@ -72,6 +72,8 @@ for CHROME_SUBDIR in $CHROME_PROVIDERS; do
   find $CHROME_SUBDIR -not \( -wholename $CHROME_SUBDIR'/pdfjs/*' \
       -and -not -wholename $CHROME_SUBDIR'/pdfjs/build/pdf.js' \) \
       -and -not -iname '.vimsession' \
+      -and -not -iname '.*.sw*' \
+      -and -not -iname '.sw*' \
     -type f -print | grep -v \~ >> files
 done
 
@@ -83,7 +85,7 @@ cp --verbose --parents `cat files` $TMP_DIR/chrome
 echo "Copying various files to $TMP_DIR folder..."
 for DIR in $ROOT_DIRS; do
   mkdir $TMP_DIR/$DIR
-  FILES="`find $DIR -iname '.*.swp' -or -iname '.vimsession' -prune -o -type f -print | grep -v \~`"
+  FILES="`find $DIR -iname '.*.sw*' -or -iname '.vimsession' -prune -o -type f -print | grep -v \~`"
   echo $FILES >> files
   cp --verbose --parents $FILES $TMP_DIR
 done

@@ -58,4 +58,9 @@
       id="menuConversationsEnabled"
       label="&menuConversationsEnabled;" />
   </menupopup>
+  <!-- The hidden keyboard shortcut for the experimental quick compose feature.  -->
+  <keyset id="mailKeys">
+    <key id="key_conversationsQuickCompose" key="n" modifiers="accel,shift"
+      oncommand="Conversations.quickCompose();" />
+  </keyset>
 </overlay>

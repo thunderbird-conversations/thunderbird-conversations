@@ -38,16 +38,20 @@ function showQuickReply() {
   $(this).parent().addClass('noPad');
   $(this).addClass('selected');
   $(this).siblings().addClass('invisible');
-  setTimeout(function() {
-    $('.replyHeader, .replyFooter').slideDown();
-  }, 500);
+  if (isQuickCompose)
+    $('.replyHeader, .replyFooter').show();
+  else
+    setTimeout(function() {
+      $('.replyHeader, .replyFooter').slideDown();
+    }, 500);
   
   var textareas = $(this).find('textarea');
   textareas.addClass('ease selected');
+  let delay = isQuickCompose ? 0 : 900;
   setTimeout(function() {
     textareas.removeClass('ease');
     scrollNodeIntoView(document.querySelector(".quickReply"));
-  }, 900);
+  }, delay);
 }
 
 function hideQuickReply() {

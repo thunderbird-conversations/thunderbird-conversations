@@ -286,19 +286,23 @@ function onPopOut(event, aType, aIsSelected) {
 }
 
 function onDiscard(event) {
-  getActiveEditor().value = "";
-  hideCompositionFields();
-  resetCompositionFields();
-  $(".quickReplyHeader").hide();
-  hideQuickReply();
-  gComposeSession = null;
-  let id = Conversations.currentConversation.id;
-  if (id)
-    SimpleStorage.spin(function () {
-      let r = yield ss.remove(id);
-      gDraftListener.notifyDraftChanged("removed");
-      yield SimpleStorage.kWorkDone;
-    });
+  if (isQuickCompose) {
+    window.close();
+  } else {
+    getActiveEditor().value = "";
+    hideCompositionFields();
+    resetCompositionFields();
+    $(".quickReplyHeader").hide();
+    hideQuickReply();
+    gComposeSession = null;
+    let id = Conversations.currentConversation.id;
+    if (id)
+      SimpleStorage.spin(function () {
+        let r = yield ss.remove(id);
+        gDraftListener.notifyDraftChanged("removed");
+        yield SimpleStorage.kWorkDone;
+      });
+  }
 }
 
 /**
@@ -360,6 +364,10 @@ function getActiveEditor() {
           textarea = document.querySelector("li.replyAll textarea");
         else
           Log.assert(false, "Unknown reply type");
+      },
+
+      new: function () {
+        textarea = document.querySelector("li.reply textarea");
       },
 
       draft: function () {
@@ -443,6 +451,11 @@ ComposeSession.prototype = {
   setupAttachments: function () {
     let self = this;
     this.match({
+      new: function () {
+        self.attachmentList = new AttachmentList();
+        self.setupDone();
+      },
+
       reply: function () {
         self.attachmentList = new AttachmentList();
         self.setupDone();
@@ -485,6 +498,31 @@ ComposeSession.prototype = {
         identity = gIdentities[from] || gIdentities.default;
         self.setupDone();
       },
+
+      new: function () {
+        identity = gIdentities.default;
+        document.querySelector(".senderSwitcher").style.display = "";
+        let left = document.querySelector(".switchLeft");
+        let right = document.querySelector(".switchRight");
+        let identities = [];
+        for each (let [email, identity] in Iterator(gIdentities)) {
+          if (email != "default")
+            identities.push(email.toLowerCase());
+        }
+        left.addEventListener("click", function (event) {
+          let i = identities.indexOf(self.params.identity.email.toLowerCase());
+          i = (i-1 + identities.length) % identities.length;
+          self.params.identity = gIdentities[identities[i]];
+          self.senderNameElem.text(self.params.identity.email);
+        }, false);
+        right.addEventListener("click", function (event) {
+          let i = identities.indexOf(self.params.identity.email.toLowerCase());
+          i = (i + 1) % identities.length;
+          self.params.identity = gIdentities[identities[i]];
+          self.senderNameElem.text(self.params.identity.email);
+        }, false);
+        self.setupDone();
+      },
     });
     self.senderNameElem.text(identity.email);
     self.params.identity = identity;
@@ -505,6 +543,16 @@ ComposeSession.prototype = {
         let msgHdr = msgUriToMsgHdr(msgUri);
         self.params.msgHdr = msgHdr || last(Conversations.currentConversation.msgHdrs);
         self.params.subject = "Re: "+self.params.msgHdr.mime2DecodedSubject;
+        self.setupDone();
+      },
+
+      new: function () {
+        let subjectNode = document.querySelector(".editSubject");
+        subjectNode.style.display = "";
+        let input = document.getElementById("subject");
+        input.addEventListener("change", function () {
+          self.params.subject = input.value;
+        }, false);
         self.setupDone();
       },
     });
@@ -616,6 +664,11 @@ ComposeSession.prototype = {
         setupAutocomplete(makeTokens(to), makeTokens(cc), makeTokens(bcc));
         self.setupDone();
       },
+
+      new: function () {
+        setupAutocomplete([], [], []);
+        self.setupDone();
+      },
     });
   },
 
@@ -704,6 +757,17 @@ ComposeSession.prototype = {
         node.value = body;
         self.setupDone();
       },
+
+      new: function () {
+        let signature = getSignatureContentsForAccount(self.params.identity);
+        let node = getActiveEditor();
+        if (signature) {
+          node.value = "\n\n-- \n" + signature;
+          node.selectionStart = 0;
+          node.selectionEnd = 0;
+        }
+        self.setupDone();
+      },
     });
   },
 
@@ -744,9 +808,14 @@ ComposeSession.prototype = {
     else
       deliverMode = Ci.nsIMsgCompDeliverMode.Now;
 
-    let compType = document.getElementById("forward-radio").checked
-      ? Ci.nsIMsgCompType.ForwardInline
-      : Ci.nsIMsgCompType.ReplyAll; // ReplyAll, Reply... ends up the same
+    let compType;
+    if (isQuickCompose)
+      compType = Ci.nsIMsgCompType.New;
+    else if (document.getElementById("forward-radio").checked)
+      compType = Ci.nsIMsgCompType.ForwardInline;
+    else
+      compType =  Ci.nsIMsgCompType.ReplyAll; // ReplyAll, Reply... ends up the same
+
     let [to, cc, bcc] = ["to", "cc", "bcc"].map(function (x)
       JSON.parse($("#"+x).val()));
 
@@ -778,9 +847,11 @@ ComposeSession.prototype = {
       $(".quickReplyHeader").show();
       return;
     }
+
+    let urls = self.params.msgHdr ? [msgHdrGetUri(self.params.msgHdr)] : [];
   
     return sendMessage({
-        urls: [msgHdrGetUri(self.params.msgHdr)],
+        urls: urls,
         identity: self.params.identity,
         to: to.join(","),
         cc: cc.join(","),
@@ -1175,7 +1246,7 @@ function createStateListener (aComposeSession, aMsgHdrs, aId) {
       if (NS_SUCCEEDED(aResult)) {
         // If the user didn't start a new composition session, hide the quick
         //  reply area, clear draft, collapse.
-        if (aComposeSession == gComposeSession) {
+        if (!isQuickCompose && aComposeSession == gComposeSession) {
           resetCompositionFields();
           hideCompositionFields();
           getActiveEditor().value = "";
@@ -1199,6 +1270,8 @@ function createStateListener (aComposeSession, aMsgHdrs, aId) {
         // Archive the whole conversation if needed
         if (aComposeSession.archive)
           msgHdrsArchive(aMsgHdrs.filter(function (x) !msgHdrIsArchive(x)));
+        if (isQuickCompose)
+          window.close();
       }
     },
 

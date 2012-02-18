@@ -54,6 +54,8 @@ var Conversations = {
   //  Conversation._window.Conversations to access the right instance
   currentConversation: null,
   counter: 0,
+
+  quickCompose: function () {},
 };
 
 window.addEventListener("load", function _overlay_eventListener () {
@@ -79,4 +81,9 @@ window.addEventListener("load", function _overlay_eventListener () {
   // Assistant.
   if (NS.Prefs.getInt("conversations.version") < NS.conversationsCurrentVersion)
     window.openDialog("chrome://conversations/content/assistant/assistant.xhtml", "", "chrome,width=800,height=500");
+
+  // Quick compose
+  Conversations.quickCompose = function () {
+    window.openDialog("chrome://conversations/content/stub.xhtml?quickCompose=1", "", "chrome,width=800,height=600");
+  }
 }, false);
