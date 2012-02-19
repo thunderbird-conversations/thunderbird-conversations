@@ -500,7 +500,18 @@ ComposeSession.prototype = {
       },
 
       new: function () {
+        // Do some work to figure what the "right" identity is for us.
         identity = gIdentities.default;
+        let selectedFolder = topMail3Pane(window).gFolderTreeView.getSelectedFolders()[0];
+        if (selectedFolder) {
+          identity = selectedFolder.customIdentity ||
+            topMail3Pane(window).getIdentityForServer(selectedFolder.server) ||
+            identity;
+        }
+        // Hook up various event listeners to the sender switcher. If we were to
+        // enable the sender switcher for the quick reply as well, we should
+        // write onclick="gComposeSession.cycleSender(±1)" in stub.xhtml so that
+        // we don't end up registering the same event listeners multiple times.
         document.querySelector(".senderSwitcher").style.display = "";
         let left = document.querySelector(".switchLeft");
         let right = document.querySelector(".switchRight");
@@ -521,6 +532,7 @@ ComposeSession.prototype = {
           self.params.identity = gIdentities[identities[i]];
           self.senderNameElem.text(self.params.identity.email);
         }, false);
+        // We're done!
         self.setupDone();
       },
     });
