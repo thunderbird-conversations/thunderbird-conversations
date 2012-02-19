@@ -972,9 +972,10 @@
                 onchange="changeComposeFields('forward')" id="forward-radio"
               /><label for="forward-radio">${str("forward")}</label>
             </li>
-            <li class="showCc"><span class="firstBar">|</span> <a onclick="showCc(); editFields('cc');" href="javascript:">${str("addCc")}</a></li>
-            <li class="showBcc">| <a onclick="showBcc(); editFields('bcc');" href="javascript:">${str("addBcc")}</a></li>
-            <li class="addAttachment">| <a onclick="addAttachment();" href="javascript:">${str("addAttachment")}</a></li>
+            <li class="firstBar">|</li>
+            <li class="showCc"><a onclick="showCc(); editFields('cc');" href="javascript:">${str("addCc")}</a> |</li>
+            <li class="showBcc"><a onclick="showBcc(); editFields('bcc');" href="javascript:">${str("addBcc")}</a> |</li>
+            <li class="addAttachment"><a onclick="addAttachment();" href="javascript:">${str("addAttachment")}</a></li>
           </ul>
           <div class="editRecipientList editToList hbox">
             <div class="label">${str("fieldTo")}</div>
