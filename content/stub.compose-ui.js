@@ -43,41 +43,50 @@ const Cr = Components.results;
 
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI
+Cu.import("resource:///modules/mailServices.js");
 Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
-Cu.import("resource:///modules/gloda/mimemsg.js"); // For MsgHdrToMimeMessage
+Cu.import("resource:///modules/gloda/mimemsg.js");
 
 const gMessenger = Cc["@mozilla.org/messenger;1"]
                    .createInstance(Ci.nsIMessenger);
-const gHeaderParser = Cc["@mozilla.org/messenger/headerparser;1"]
-                      .getService(Ci.nsIMsgHeaderParser);
 
-Cu.import("resource://conversations/stdlib/misc.js");
-Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
-Cu.import("resource://conversations/stdlib/send.js");
-Cu.import("resource://conversations/stdlib/compose.js");
-Cu.import("resource://conversations/log.js");
-Cu.import("resource://conversations/misc.js");
+Cu.import("resource://conversations/modules/stdlib/misc.js");
+Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+Cu.import("resource://conversations/modules/stdlib/send.js");
+Cu.import("resource://conversations/modules/stdlib/compose.js");
+Cu.import("resource://conversations/modules/log.js");
+Cu.import("resource://conversations/modules/misc.js");
+Cu.import("resource://conversations/modules/hook.js");
 
 let Log = setupLogging("Conversations.Stub.Compose");
 
-Cu.import("resource://conversations/stdlib/SimpleStorage.js");
+Cu.import("resource://conversations/modules/stdlib/SimpleStorage.js");
 let ss = SimpleStorage.createIteratorStyle("conversations");
 window.addEventListener("unload", function () {
-  Log.debug("Unload.");
-  // otherwise it leaks and makes about:memory crash
-  ss.ss.dbConnection.asyncClose();
   // save if needed
-  onSave();
+  onSave(function () {
+    Log.debug("Unload.");
+    // otherwise it leaks and makes about:memory crash
+    ss.ss.dbConnection.asyncClose();
+  });
 }, false);
-
-// ----- "Draft modified" listeners
 
 var gDraftListener;
 var gBzSetup;
 
-// Called either by the monkey-patch when the conversation is fully built, or by
-//  stub.html when the conversation-in-tab is fully built. This function can
-//  only run once the conversation it lives in is complete.
+/**
+ * Called either by the monkey-patch when the conversation is fully built, or by
+ *  stub.html when the conversation-in-tab is fully built. This function can
+ *  only run once the conversation it lives in is complete. Is NOT called if the
+ *  conversation is updated, etc.
+ * What this function does is:
+ * - register global event listeners so that if someone else modifies this
+ *   conversation's draft in a different tab/window, it receives the update and
+ *   changes its parameters accordingly;
+ * - add event listeners for the shiny-shiny animations that take place when
+ *   one clicks on one of the textareas;
+ * - register event listeners that kick an auto-save when it's worth doing it.
+ */
 function registerQuickReply() {
   let id = Conversations.currentConversation.id;
   let mainWindow = topMail3Pane(window);
@@ -88,12 +97,13 @@ function registerQuickReply() {
         Log.debug("onDraftChanged", Conversations == mainWindow.Conversations);
         switch (aTopic) {
           case "modified":
-            loadDraft();
+            newComposeSessionByDraftIf();
             break;
           case "removed":
+            getActiveEditor().value = "";
+            hideCompositionFields();
+            resetCompositionFields();
             $(".quickReplyHeader").hide();
-            collapseQuickReply();
-            $("textarea").val("");
             gComposeSession = null;
             break;
         }
@@ -132,52 +142,102 @@ function registerQuickReply() {
   mainWindow.Conversations.draftListeners[id].push(Cu.getWeakReference(gDraftListener));
 
   $("textarea").blur(function () {
-    Log.debug("Autosave...");
+    Log.debug("Autosave opportunity...");
     onSave();
   });
 
+  // Register Forward and Reply to list
+  document.querySelector(".quickReply .fwd > a").addEventListener("click", function (event) {
+    getMessageForQuickReply().forward(event);
+    event.stopPropagation();
+    event.preventDefault();
+  }, false);
+  document.querySelector(".quickReply .list > a").addEventListener("click", function (event) {
+    getMessageForQuickReply().compose(Ci.nsIMsgCompType.ReplyToList, event)
+    event.stopPropagation();
+    event.preventDefault();
+  }, false);
+
   // Will set the placeholder and return the bz params
   gBzSetup = bzSetup();
-
+  registerQuickReplyEventListeners();
 }
 
-// ----- Event listeners
+// This function is called once when the conversation is complete, and then
+//  potentially many times, if someone is editing the draft in another instance
+//  of the same conversation (i.e. if the conversation has another instance in a
+//  separate tab).
+// We ignore the edge cases where the set of messages in the conversation view
+//  doesn't correspond to a real gloda conversation (i.e. in the case of
+//  non-strict threading or custom queries). That's problematic because the same
+//  conversation might end up having different Gloda ids... hell, that's too
+//  bad.
+function newComposeSessionByDraftIf() {
+  let id = Conversations.currentConversation.id; // Gloda ID
+  if (!id) {
+    $("#save").attr("disabled", "disabled");
+    return;
+  }
 
-// Called when we need to expand the textarea and start editing a new message
-function onTextareaClicked(event) {
-  // Do it just once
-  if (!$(event.target).parent().hasClass('expand')) {
-    expandQuickReply();
-    if (!gComposeSession) { // first time
-      Log.debug("Setting up the initial quick reply compose parameters...");
-      let messages = Conversations.currentConversation.messages;
-      try {
-        gComposeSession = createComposeSession(function (x)
-          x.reply(messages[messages.length - 1].message)
-        );
-      } catch (e) {
-        Log.debug(e);
-        dumpCallStack(e);
-      }
-      scrollNodeIntoView(document.querySelector(".quickReply"));
+  SimpleStorage.spin(function () {
+    let r = yield ss.get(id);
+    if (r) {
+      gComposeSession = createComposeSession(function (x) x.draft(r));
+      startedEditing(true);
+      revealCompositionFields();
+      showQuickReply.call($(".quickReply li.reply"));
     }
+    yield SimpleStorage.kWorkDone;
+  });
+}
+
+// Called when we need to expand the textarea and start editing a new message.
+// The type parameter is determined by the event listeners (see quickReply.js)
+// as they know whether the user clicked reply or reply all.
+function newComposeSessionByClick(type) {
+  Log.assert(!gComposeSession,
+    "We should only get here if there's no compose session already");
+  Log.debug("Setting up the initial quick reply compose parameters...");
+  let messages = Conversations.currentConversation.messages;
+  try {
+    gComposeSession = createComposeSession(function (x)
+      x.reply(getMessageForQuickReply(), type)
+    );
+    // This could probably be refined, like only considering we started editing
+    // if we modified the body and/or the composition fields.
+    startedEditing(true);
+    revealCompositionFields();
+  } catch (e) {
+    Log.debug(e);
+    dumpCallStack(e);
   }
 }
 
-function onUseEditor() {
-  gComposeSession.stripSignatureIfNeeded();
-  gComposeSession.send({ popOut: true });
-  onDiscard();
+function revealCompositionFields() {
+  document.querySelector(".quickReply")
+    .classList.add("expand");
+  $('.quickReplyRecipients').show();
 }
 
-function expandQuickReply() {
-  $(".message:last .messageFooter").addClass("hide");
-  $(".quickReply").addClass("expand");
+function hideCompositionFields() {
+  document.querySelector(".quickReply")
+    .classList.remove("expand");
+  $('.quickReplyRecipients').hide();
 }
 
-function collapseQuickReply() {
-  $(".message:last .messageFooter").removeClass("hide");
-  $(".quickReply").removeClass("expand");
+function resetCompositionFields() {
+  $(".showCc, .showBcc").show();
+  $('.quickReplyRecipients').removeClass('edit');
+  $(".bccList, .editBccList").css("display", "none");
+  $(".ccList, .editCcList").css("display", "none");
+}
+
+function changeComposeFields(aMode) {
+  resetCompositionFields();
+  gComposeSession.changeComposeFields(aMode);
+  if (aMode == "forward") {
+    editFields("to");
+  }
 }
 
 function showCc(event) {
@@ -190,15 +250,8 @@ function showBcc(event) {
   $(".showBcc").hide();
 }
 
-function changeComposeFields(aMode) {
-  $(".showCc, .showBcc").show();
-  $('.quickReplyRecipients').removeClass('edit');
-  $(".bccList, .editBccList").css("display", "none");
-  $(".ccList, .editCcList").css("display", "none");
-  gComposeSession.changeComposeFields(aMode);
-  if (aMode == "forward") {
-    editFields("to");
-  }
+function addAttachment() {
+  gComposeSession.attachmentList.add();
 }
 
 function editFields(aFocusId) {
@@ -211,33 +264,53 @@ function confirmDiscard(event) {
     onDiscard();
 }
 
+function onUseEditor() {
+  gComposeSession.stripSignatureIfNeeded();
+  gComposeSession.send({ popOut: true });
+  onDiscard();
+}
+
+function onPopOut(event, aType, aIsSelected) {
+  if (!aIsSelected) {
+    switch (aType) {
+      case "reply":
+        getMessageForQuickReply().compose(Ci.nsIMsgCompType.ReplyToSender, event)
+        break;
+      case "replyAll":
+        getMessageForQuickReply().compose(Ci.nsIMsgCompType.ReplyAll, event)
+        break;
+    }
+  } else {
+    onUseEditor();
+  }
+}
+
 function onDiscard(event) {
-  $("textarea").val("");
-  collapseQuickReply();
-  $(".quickReplyHeader").hide();
-  $(".showCc, .showBcc").show();
-  $('.quickReplyRecipients').removeClass('edit');
-  $(".bccList, .editBccList").css("display", "none");
-  $(".ccList, .editCcList").css("display", "none");
-  let id = Conversations.currentConversation.id;
-  if (id)
-    SimpleStorage.spin(function () {
-      let r = yield ss.remove(id);
-      gComposeSession = null;
-      gDraftListener.notifyDraftChanged("removed");
-      yield SimpleStorage.kWorkDone;
-    });
+  if (isQuickCompose) {
+    window.close();
+  } else {
+    getActiveEditor().value = "";
+    hideCompositionFields();
+    resetCompositionFields();
+    $(".quickReplyHeader").hide();
+    hideQuickReply();
+    gComposeSession = null;
+    let id = Conversations.currentConversation.id;
+    if (id)
+      SimpleStorage.spin(function () {
+        let r = yield ss.remove(id);
+        gDraftListener.notifyDraftChanged("removed");
+        yield SimpleStorage.kWorkDone;
+      });
+  }
 }
 
 /**
  * Save the current draft, or do nothing if the user hasn't started editing the
  *  draft yet.
- * @param event The event that led to this.
- * @param aClose (optional) By default, true. Close the quick reply area after
- *  saving.
  * @param k (optional) A function to call once it's saved.
  */
-function onSave(event, aClose, k) {
+function onSave(k) {
   // First codepath, we ain't got no nothing to save.
   if (!startedEditing()) {
     if (k)
@@ -246,6 +319,7 @@ function onSave(event, aClose, k) {
   }
 
   // Second codepath. Heh, got some work to do.
+  Log.debug("Saving because there's a compose session");
   SimpleStorage.spin(function () {
     let id = Conversations.currentConversation.id; // Gloda ID
     if (id) {
@@ -255,41 +329,13 @@ function onSave(event, aClose, k) {
         to: JSON.parse($("#to").val()).join(","),
         cc: JSON.parse($("#cc").val()).join(","),
         bcc: JSON.parse($("#bcc").val()).join(","),
-        body: $("textarea").val()
+        body: getActiveEditor().value,
+        attachments: gComposeSession.attachmentList.save(),
       });
       gDraftListener.notifyDraftChanged("modified");
     }
-    // undefined is ok, means true
-    if (aClose === false)
-      collapseQuickReply();
     if (k)
       k();
-    yield SimpleStorage.kWorkDone;
-  });
-}
-
-// This function is called once when the conversation is complete, and then
-//  potentially many times, if someone is editing the draft in another instance
-//  of the same conversation (i.e. if the conversation has another instance in a
-//  separate tab).
-// We ignore the edge cases where the set of messages in the conversation view
-//  doesn't correspond to a real gloda conversation (i.e. in the case of
-//  non-strict threading or custom queries). That's problematic because the same
-//  conversation might end up having different Gloda ids... hell, that's too
-//  bad.
-function loadDraft() {
-  let id = Conversations.currentConversation.id; // Gloda ID
-  if (!id) {
-    $("#save").attr("disabled", "disabled");
-    return;
-  }
-
-  SimpleStorage.spin(function () {
-    let r = yield ss.get(id);
-    if (r) {
-      gComposeSession = createComposeSession(function (x) x.draft(r));
-      startedEditing(true);
-    }
     yield SimpleStorage.kWorkDone;
   });
 }
@@ -299,13 +345,52 @@ function loadDraft() {
 
 var gComposeSession;
 
+/**
+ * Obviously going to be upgraded once we have one quick reply per message.
+ */
+function getMessageForQuickReply() {
+  let conv = Conversations.currentConversation;
+  return conv.messages[conv.messages.length - 1].message;
+}
+
+function getActiveEditor() {
+  let textarea;
+  if (gComposeSession) {
+    gComposeSession.match({
+      reply: function (_, aReplyType) {
+        if (aReplyType == "reply")
+          textarea = document.querySelector("li.reply textarea");
+        else if (aReplyType == "replyAll")
+          textarea = document.querySelector("li.replyAll textarea");
+        else
+          Log.assert(false, "Unknown reply type");
+      },
+
+      new: function () {
+        textarea = document.querySelector("li.reply textarea");
+      },
+
+      draft: function () {
+        textarea = document.querySelector("li.reply textarea");
+      },
+    });
+  } else {
+    // This happens if we are creating a draft instance.
+    textarea = document.querySelector("li.reply textarea");
+  }
+  return textarea;
+}
+
 function createComposeSession(what) {
   // Do that now so that it doesn't have to be implemented by each compose
   // session type.
-  if (Prefs.getBool("mail.spellcheck.inline"))
-    document.getElementsByTagName("textarea")[0].setAttribute("spellcheck", true);
-  else
-    document.getElementsByTagName("textarea")[0].setAttribute("spellcheck", false);
+  if (Prefs.getBool("mail.spellcheck.inline")) {
+    for each (let [, elt] in Iterator(document.getElementsByTagName("textarea")))
+      elt.setAttribute("spellcheck", true);
+  } else {
+    for each (let [, elt] in Iterator(document.getElementsByTagName("textarea")))
+      elt.setAttribute("spellcheck", false);
+  }
   if (gBzSetup) {
     let [webUrl, bzUrl, cookie] = gBzSetup;
     return new BzComposeSession(what, webUrl, bzUrl, cookie);
@@ -322,7 +407,7 @@ function startedEditing (aVal) {
     return gComposeSession && gComposeSession.startedEditing;
   } else {
     if (!gComposeSession) {
-      Log.error("No composition session yet");*
+      Log.error("No composition session yet");
       dumpCallStack();
     } else {
       gComposeSession.startedEditing = aVal;
@@ -347,31 +432,62 @@ function ComposeSession (match) {
     identity: null,
     msgHdr: null,
     subject: null,
+    otherRandomHeaders: null,
   };
   this.stripSignatureIfNeeded = function () {};
+  
   // Go!
+  this.senderNameElem = $(".senderName");
+  this.asyncSetupSteps = 5; // number of asynchronous setup functions to finish
   this.setupIdentity();
   this.setupMisc();
   this.setupAutocomplete();
+  this.setupAttachments();
   this.setupQuote();
 }
 
 ComposeSession.prototype = {
+
+  setupAttachments: function () {
+    let self = this;
+    this.match({
+      new: function () {
+        self.attachmentList = new AttachmentList();
+        self.setupDone();
+      },
+
+      reply: function () {
+        self.attachmentList = new AttachmentList();
+        self.setupDone();
+      },
+
+      draft: function ({ attachments }) {
+        self.attachmentList = new AttachmentList();
+        self.attachmentList.restore(attachments);
+        self.setupDone();
+      },
+    });
+  },
 
   setupIdentity: function () {
     let self = this;
     let mainWindow = topMail3Pane(window);
     let identity;
     this.match({
-      reply: function (aMessage) {
+      reply: function (aMessage, aReplyType) {
         let aMsgHdr = aMessage._msgHdr;
+        let compType;
+        if (aReplyType == "reply")
+          compType = Ci.nsIMsgCompType.ReplyToSender;
+        else if (aReplyType == "replyAll")
+          compType = Ci.nsIMsgCompType.ReplyAll;
+        else
+          Log.assert(false, "Unknown reply type");
         // Standard procedure for finding which identity to send with, as per
         //  http://mxr.mozilla.org/comm-central/source/mail/base/content/mailCommands.js#210
-        let compType = aMessage.isReplyListEnabled
-          ? Ci.nsIMsgCompType.ReplyList
-          : Ci.nsIMsgCompType.ReplyAll;
         let suggestedIdentity = mainWindow.getIdentityForHeader(aMsgHdr, compType);
         identity = suggestedIdentity || gIdentities.default;
+        self.setupDone();
       },
 
       draft: function ({ from }) {
@@ -380,9 +496,47 @@ ComposeSession.prototype = {
         //  has deleted the identity in-between (sounds unlikely, but who
         //  knows?).
         identity = gIdentities[from] || gIdentities.default;
+        self.setupDone();
+      },
+
+      new: function () {
+        // Do some work to figure what the "right" identity is for us.
+        identity = gIdentities.default;
+        let selectedFolder = topMail3Pane(window).gFolderTreeView.getSelectedFolders()[0];
+        if (selectedFolder) {
+          identity = selectedFolder.customIdentity ||
+            topMail3Pane(window).getIdentityForServer(selectedFolder.server) ||
+            identity;
+        }
+        // Hook up various event listeners to the sender switcher. If we were to
+        // enable the sender switcher for the quick reply as well, we should
+        // write onclick="gComposeSession.cycleSender(±1)" in stub.xhtml so that
+        // we don't end up registering the same event listeners multiple times.
+        document.querySelector(".senderSwitcher").style.display = "";
+        let left = document.querySelector(".switchLeft");
+        let right = document.querySelector(".switchRight");
+        let identities = [];
+        for each (let [email, identity] in Iterator(gIdentities)) {
+          if (email != "default")
+            identities.push(email.toLowerCase());
+        }
+        left.addEventListener("click", function (event) {
+          let i = identities.indexOf(self.params.identity.email.toLowerCase());
+          i = (i-1 + identities.length) % identities.length;
+          self.params.identity = gIdentities[identities[i]];
+          self.senderNameElem.text(self.params.identity.email);
+        }, false);
+        right.addEventListener("click", function (event) {
+          let i = identities.indexOf(self.params.identity.email.toLowerCase());
+          i = (i + 1) % identities.length;
+          self.params.identity = gIdentities[identities[i]];
+          self.senderNameElem.text(self.params.identity.email);
+        }, false);
+        // We're done!
+        self.setupDone();
       },
     });
-    $(".senderName").text(identity.email);
+    self.senderNameElem.text(identity.email);
     self.params.identity = identity;
   },
 
@@ -393,6 +547,7 @@ ComposeSession.prototype = {
         let aMsgHdr = aMessage._msgHdr;
         self.params.msgHdr = aMsgHdr;
         self.params.subject = "Re: "+aMsgHdr.mime2DecodedSubject;
+        self.setupDone();
       },
 
       draft: function ({ msgUri }) {
@@ -400,6 +555,17 @@ ComposeSession.prototype = {
         let msgHdr = msgUriToMsgHdr(msgUri);
         self.params.msgHdr = msgHdr || last(Conversations.currentConversation.msgHdrs);
         self.params.subject = "Re: "+self.params.msgHdr.mime2DecodedSubject;
+        self.setupDone();
+      },
+
+      new: function () {
+        let subjectNode = document.querySelector(".editSubject");
+        subjectNode.style.display = "";
+        let input = document.getElementById("subject");
+        input.addEventListener("change", function () {
+          self.params.subject = input.value;
+        }, false);
+        self.setupDone();
       },
     });
   },
@@ -409,56 +575,95 @@ ComposeSession.prototype = {
   changeComposeFields: function (aMode, k) {
     let identity = this.params.identity;
     let msgHdr = this.params.msgHdr;
+    let defaultCc = "";
+    let defaultBcc = "";
+    if (identity.doCc)
+      defaultCc = identity.doCcList;
+    if (identity.doBcc)
+      defaultBcc = identity.doBccList;
+
+    let mergeDefault = function (aList, aDefault) {
+      aDefault = aDefault.replace(/\s/g, "");
+      if (!aDefault) // "" evaluates to false
+        return aList;
+      for each (let [, email] in Iterator(aDefault.split(/,/))) {
+        if (!aList.some(function (x) x.email == email)) {
+          aList.push(asToken(null, null, email, null));
+        }
+      }
+      return aList;
+    };
+
     switch (aMode) {
-      case "replyAll":
+      case "replyAll": {
         replyAllParams(identity, msgHdr, function (params) {
           let to = [asToken(null, name, email, null) for each ([name, email] in params.to)];
           let cc = [asToken(null, name, email, null) for each ([name, email] in params.cc)];
           let bcc = [asToken(null, name, email, null) for each ([name, email] in params.bcc)];
+          cc = mergeDefault(cc, defaultCc);
+          bcc = mergeDefault(bcc, defaultBcc);
           setupAutocomplete(to, cc, bcc);
           k && k(to.length + cc.length + bcc.length);
         });
         break;
+      }
 
-      case "replyList":
-        let token = asToken(null, null, aMessage.mailingLists[0], null);
-        setupAutocomplete([token], [], []);
+      case "replyList": {
+        let cc = mergeDefault([], defaultCc);
+        let bcc = mergeDefault([], defaultBcc);
+        let msg = getMessageForQuickReply();
+        let token = asToken(null, null, msg.mailingLists[0], null);
+        setupAutocomplete([token], cc, bcc);
         break;
+      }
 
-      case "forward":
-        setupAutocomplete([], [], []);
+      case "forward": {
+        let cc = mergeDefault([], defaultCc);
+        let bcc = mergeDefault([], defaultBcc);
+        setupAutocomplete([], cc, bcc);
         break;
+      }
 
       case "reply":
-      default:
+      default: {
+        let cc = mergeDefault([], defaultCc);
+        let bcc = mergeDefault([], defaultBcc);
         replyAllParams(identity, msgHdr, function (params) {
           let to = [asToken(null, name, email, null) for each ([name, email] in params.to)];
-          setupAutocomplete(to, [], []);
+          setupAutocomplete(to, cc, bcc);
           k && k(params.to.length + params.cc.length + params.bcc.length);
         });
         break;
+      }
     }
   },
 
   setupAutocomplete: function () {
     let self = this;
     this.match({
-      reply: function (aMessage) {
+      reply: function (aMessage, aReplyType) {
         // Make sure we're consistent with modules/message.js!
-        if (aMessage.isReplyListEnabled) {
-          self.changeComposeFields("replyAll");
+        let showHideActions = function (n) {
+          // This basically says that while processing various headers, we
+          // found out we reply to at most one person, then this means that
+          // the reply method "reply all" makes no sense.
+          if (n <= 1) {
+            $(".replyMethod-replyAll").hide();
+            $(".replyMethod-replyList").hide();
+          } else {
+            $(".replyMethod-replyAll").show();
+            $(".replyMethod-replyList").show();
+          }
+          self.setupDone();
+        };
+        if (aReplyType == "replyAll") {
+          self.changeComposeFields("replyAll", showHideActions);
           $(".replyMethod > input").val(["replyAll"]);
-          $(".replyMethod-replyList").show();
-        } else {
-          self.changeComposeFields("reply", function (n) {
-            // This basically says that while processing various headers, we
-            // found out we reply to at most one person, then this means that
-            // the reply method "reply all" makes no sense.
-            if (n <= 1)
-              $(".replyMethod-replyAll").hide();
-          });
+        } else if (aReplyType == "reply"){
+          self.changeComposeFields("reply", showHideActions);
           $(".replyMethod > input").val(["reply"]);
-          $(".replyMethod-replyList").hide();
+        } else {
+          Log.assert(false, "Unknown reply type");
         }
       },
 
@@ -469,6 +674,12 @@ ComposeSession.prototype = {
             for each ([i, item] in Iterator(list))];
         };
         setupAutocomplete(makeTokens(to), makeTokens(cc), makeTokens(bcc));
+        self.setupDone();
+      },
+
+      new: function () {
+        setupAutocomplete([], [], []);
+        self.setupDone();
       },
     });
   },
@@ -489,6 +700,14 @@ ComposeSession.prototype = {
           let body = "\n"
             + htmlToPlainText('<blockquote type="cite">'+aBody+'</blockquote>')
               .trim();
+          try {
+            [body = h.onReplyComposed(getMessageForQuickReply(), body)
+              for each ([, h] in Iterator(getHooks()))
+              if (typeof(h.onReplyComposed) == "function")];
+          } catch (e) {
+            Log.warn("Plugin returned an error:", e);
+            dumpCallStack(e);
+          }
           // Old way:
           //  let body = citeString("\n"+htmlToPlainText(aBody).trim());
           let quoteblock = // body already starts with a newline
@@ -497,27 +716,25 @@ ComposeSession.prototype = {
           let identity = self.params.identity;
           let signature = "", signatureNoDashes = "";
           if (identity.sigOnReply) {
-            signature = identity.htmlSigFormat
-              ? htmlToPlainText(identity.htmlSigText)
-              : identity.htmlSigText;
+            signature = getSignatureContentsForAccount(identity);
             if (String.trim(signature).length) {
               [signature, signatureNoDashes] =
                 ["\n\n-- \n" + signature, "\n\n" + signature];
             }
           }
           self.stripSignatureIfNeeded = function () {
-            let textarea = $("textarea");
+            let ed = getActiveEditor();
             if (identity.sigOnReply) {
               if (identity.replyOnTop && !identity.sigBottom)
-                textarea.val(textarea.val().replace(signatureNoDashes, ""));
+                ed.value = ed.value.replace(signatureNoDashes, "");
               else
-                textarea.val(textarea.val().replace(signature, ""));
+                ed.value = ed.value.replace(signature, "");
             }
           };
           // The user might be fast and might have started typing something
           // already
-          let txt = $("textarea").val();
-          let node = $("textarea")[0];
+          let node = getActiveEditor();
+          let txt = node.value;
           let val = null;
           let pos = null;
           let quote = identity.autoQuote
@@ -535,50 +752,131 @@ ComposeSession.prototype = {
             }
           } else {
             quote = quote + "\n\n";
-            pos = (quote + txt).length;
+            pos = (quote + txt).replace(/\r?\n/g, "\n").length;
             val = quote + txt + signature;
           }
           // After we removed any trailing newlines, insert it into the textarea
-          $("textarea").val(val);
+          node.value = val;
           // I <3 HTML5 selections.
           node.selectionStart = pos;
           node.selectionEnd = pos;
         });
+        self.setupDone();
       },
 
       draft: function ({ body }) {
-        $("textarea").val(body);
+        let node = getActiveEditor();
+        node.value = body;
+        self.setupDone();
+      },
+
+      new: function () {
+        let signature = getSignatureContentsForAccount(self.params.identity);
+        let node = getActiveEditor();
+        if (signature) {
+          node.value = "\n\n-- \n" + signature;
+          node.selectionStart = 0;
+          node.selectionEnd = 0;
+        }
+        self.setupDone();
       },
     });
   },
 
+  setupDone: function() {
+    // wait till all (asynchronous) setup steps are finished
+    if (!--this.asyncSetupSteps) {
+      let recipients = {
+        to: JSON.parse($("#to").val()),
+        cc: JSON.parse($("#cc").val()),
+        bcc: JSON.parse($("#bcc").val()),
+      };
+      for each (let [, h] in Iterator(getHooks())) {
+        try {
+          if (typeof(h.onComposeSessionChanged) == "function") 
+            h.onComposeSessionChanged(this, getMessageForQuickReply(), recipients);
+        } catch (e) {
+          Log.warn("Plugin returned an error:", e);
+          dumpCallStack(e);
+        };
+      }
+    }
+  },
+  
   send: function (options) {
     let self = this;
     let popOut = options && options.popOut;
     this.archive = options && options.archive;
-    let $textarea = $("textarea");
+    let ed = getActiveEditor();
     let msg = strings.get("sendAnEmptyMessage");
-    if (!popOut && !$textarea.val().length && !confirm(msg))
+    if (!popOut && !ed.value.length && !confirm(msg))
       return;
-    let deliverMode = Services.io.offline
-      ? Ci.nsIMsgCompDeliverMode.Later
-      : Ci.nsIMsgCompDeliverMode.Now;
-    let compType = document.getElementById("forward-radio").checked
-      ? Ci.nsIMsgCompType.ForwardInline
-      : Ci.nsIMsgCompType.ReplyAll; // ReplyAll, Reply... ends up the same
 
+    let deliverMode;
+    if (Services.io.offline)
+      deliverMode = Ci.nsIMsgCompDeliverMode.Later;
+    else if (Prefs.getBool("mailnews.sendInBackground"))
+      deliverMode = Ci.nsIMsgCompDeliverMode.Background;
+    else
+      deliverMode = Ci.nsIMsgCompDeliverMode.Now;
+
+    let compType;
+    if (isQuickCompose)
+      compType = Ci.nsIMsgCompType.New;
+    else if (document.getElementById("forward-radio").checked)
+      compType = Ci.nsIMsgCompType.ForwardInline;
+    else
+      compType =  Ci.nsIMsgCompType.ReplyAll; // ReplyAll, Reply... ends up the same
+
+    let [to, cc, bcc] = ["to", "cc", "bcc"].map(function (x)
+      JSON.parse($("#"+x).val()));
+
+    let sendStatus = { };
+    for each (let priority in ["_early", "", "_canceled"]) {
+      for each (let [, h] in Iterator(getHooks())) {
+        try {
+          if ((typeof(h["onMessageBeforeSendOrPopout" + priority]) == "function") && (priority != "_canceled" || sendStatus.canceled)) {
+            let newSendStatus = h["onMessageBeforeSendOrPopout" + priority]({
+                params: self.params,
+                to: to,
+                cc: cc,
+                bcc: bcc,
+              }, ed, sendStatus, popOut);
+            if (priority != "_canceled")
+              sendStatus = newSendStatus;
+          }
+        } catch (e) {
+          Log.warn("Plugin returned an error:", e);
+          dumpCallStack(e);
+        };
+      }
+    }
+
+    if (sendStatus.canceled) {
+      pText(strings.get("messageSendingCanceled"));
+      $(".statusPercentage").hide();
+      $(".statusThrobber").hide();
+      $(".quickReplyHeader").show();
+      return;
+    }
+
+    let urls = self.params.msgHdr ? [msgHdrGetUri(self.params.msgHdr)] : [];
+  
     return sendMessage({
-        urls: [msgHdrGetUri(self.params.msgHdr)],
+        urls: urls,
         identity: self.params.identity,
-        to: JSON.parse($("#to").val()).join(","),
-        cc: JSON.parse($("#cc").val()).join(","),
-        bcc: JSON.parse($("#bcc").val()).join(","),
+        to: to.join(","),
+        cc: cc.join(","),
+        bcc: bcc.join(","),
         subject: self.params.subject,
+        securityInfo: sendStatus.securityInfo,
+        otherRandomHeaders: self.params.otherRandomHeaders,
+        attachments: self.attachmentList.attachments,
       }, {
         compType: compType,
         deliverType: deliverMode,
       }, { match: function (x) {
-        x.plainText($textarea.val());
+        x.plainText(ed.value);
       }}, {
         progressListener: progressListener,
         sendListener: sendListener,
@@ -593,6 +891,156 @@ ComposeSession.prototype = {
   }
 };
 
+// ----- Attachment list
+
+function AttachmentList() {
+  // An array of nsIMsgAttachment
+  this._attachments = [];
+}
+
+AttachmentList.prototype = {
+  add: function () {
+    let self = this;
+    let filePicker = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
+    filePicker.init(window, strings.get("attachFiles"), Ci.nsIFilePicker.modeOpenMultiple);
+    let rv = filePicker.show();
+    if (rv != Ci.nsIFilePicker.returnOK) {
+      Log.debug("User canceled, returning");
+    } else {
+      // Iterate over all files
+      for each (let file in fixIterator(filePicker.files, Ci.nsILocalFile)) {
+        this.addWithData({
+          url: Services.io.newFileURI(file).spec,
+          name: file.leafName,
+          size: file.fileSize,
+        });
+      }
+    }
+  },
+
+  _populateUI: function (msgAttachment, data) {
+    let self = this;
+    let line = $("#quickReplyAttachmentTemplate").tmpl(data);
+    line.find(".removeAttachmentLink").click(function () {
+      line.remove();
+      self._attachments = self._attachments.filter(function (x) x != msgAttachment);
+    });
+    line.appendTo($(".quickReplyAttachments"));
+  },
+
+  addWithData: function (aData) {
+    let msgAttachment = Cc["@mozilla.org/messengercompose/attachment;1"]
+                        .createInstance(Ci.nsIMsgAttachment);
+    msgAttachment.url = aData.url;
+    if (aData.size != undefined)
+      msgAttachment.size = aData.size;
+    msgAttachment.name = aData.name || strings.get("attachment");
+    this._attachments.push(msgAttachment);
+
+    this._populateUI(msgAttachment, {
+      name: aData.name || strings.get("attachment"),
+      size: aData.size ? topMail3Pane(window).messenger.formatFileSize(aData.size) : strings.get("sizeUnknown"),
+    });
+  },
+
+  restore: function (aData) {
+    // Todo: check that all files still exist, etc.
+    for each (let data in aData) {
+      this.addWithData(data);
+    }
+  },
+
+  save: function () {
+    return [{
+      name: x.name,
+      size: x.size,
+      url: x.url,
+    } for each (x in this._attachments)];
+  },
+
+  get attachments () {
+    return this._attachments;
+  },
+};
+
+function attachmentDataFromDragData(event) {
+  let size, prettyName, url;
+  let fileData = event.dataTransfer.getData("application/x-moz-file");
+  let urlData = event.dataTransfer.getData("text/x-moz-url");
+  let messageData = event.dataTransfer.getData("text/x-moz-message");
+  // Log.debug("file", fileData, "url", urlData, "message", messageData);
+
+  if (fileData || urlData || messageData) {
+     /* if (fileData) {
+      // I don't understand how this is supposed to work since the newer
+      // DataTransfer API doesn't allow putting nsIFiles in drag data...
+      let fileHandler = Services.io.getProtocolHandler("file").QueryInterface(Ci.nsIFileProtocolHandler);
+      size = fileData.fileSize;
+      url = fileHandler.getURLSpecFromFile(fileData);
+    } else */
+    if (messageData) {
+      size = topMail3Pane(window).messenger
+              .messageServiceFromURI(messageData)
+              .messageURIToMsgHdr(messageData)
+              .messageSize;
+      url = messageData;
+      prettyName = strings.get("attachedMessage");
+    } else if (urlData) {
+      let pieces = urlData.split("\n");
+      url = pieces[0];
+      if (pieces.length > 1)
+        prettyName = pieces[1];
+      if (pieces.length > 2)
+        size = parseInt(pieces[2]);
+      // If this is a local file, we may be able to recover some information...
+      try {
+        let uri = Services.io.newURI(url, null, null);
+        let file = uri.QueryInterface(Ci.nsIFileURL).file;
+        if (!prettyName)
+          prettyName = file.leafName;
+        if (!size)
+          size = file.fileSize;
+      } catch (e) {
+        Log.debug("This is probably okay", e);
+      }
+    }
+
+    let isValid = true;
+    if (urlData) {
+      try {
+        let scheme = Services.io.extractScheme(url);
+        // don't attach mailto: urls
+        if (scheme == "mailto")
+          isValid = false;
+      } catch (ex) {
+        isValid = false;
+      }
+    }
+
+    if (isValid)
+      return { url: url, size: size, name: prettyName };
+  }
+}
+
+function quickReplyDragEnter(event) {
+  if (attachmentDataFromDragData(event) && !gComposeSession) {
+    $(event.target).click();
+    event.preventDefault();
+  }
+}
+
+function quickReplyCheckDrag(event) {
+  if (attachmentDataFromDragData(event))
+    event.preventDefault();
+}
+
+function quickReplyDrop(event) {
+  let data = attachmentDataFromDragData(event);
+  if (data)
+    gComposeSession.attachmentList.addWithData(data);
+
+}
+
 // ----- Helpers
 
 // Just get the email and/or name from a MIME-style "John Doe <john@blah.com>"
@@ -601,7 +1049,8 @@ function parse(aMimeLine) {
   let emails = {};
   let fullNames = {};
   let names = {};
-  let numAddresses = gHeaderParser.parseHeadersWithArray(aMimeLine, emails, names, fullNames);
+  let numAddresses = MailServices.headerParser
+    .parseHeadersWithArray(aMimeLine, emails, names, fullNames);
   return [names.value, emails.value];
 }
 
@@ -709,7 +1158,7 @@ let sendListener = {
    * called once when the networking library has finished processing the
    * message.
    *
-   * This method is called regardless of whether the the operation was successful.
+   * This method is called regardless of whether the operation was successful.
    * aMsgID   The message id for the mail message
    * status   Status code for the message send.
    * msg      A text string describing the error.
@@ -745,6 +1194,15 @@ let sendListener = {
       pText(strings.get("couldntSendTheMessage"));
       Log.debug("NS_FAILED onStopSending");
     }
+    for each (let [, h] in Iterator(getHooks())) {
+      try {
+        if (typeof(h.onStopSending) == "function")
+          h.onStopSending(aMsgID, aStatus, aMsg, aReturnFile);
+      } catch (e) {
+        Log.warn("Plugin returned an error:", e);
+        dumpCallStack(e);
+      };
+	}
   },
 
   /**
@@ -800,11 +1258,12 @@ function createStateListener (aComposeSession, aMsgHdrs, aId) {
       if (NS_SUCCEEDED(aResult)) {
         // If the user didn't start a new composition session, hide the quick
         //  reply area, clear draft, collapse.
-        if (aComposeSession == gComposeSession) {
+        if (!isQuickCompose && aComposeSession == gComposeSession) {
+          resetCompositionFields();
+          hideCompositionFields();
+          getActiveEditor().value = "";
           $(".quickReplyHeader").hide();
-          collapseQuickReply();
-          $("textarea").val("");
-          $('.quickReplyRecipients').removeClass('edit');
+          hideQuickReply();
           // We can do this because we're in the right if-block.
           gComposeSession = null;
           gDraftListener.notifyDraftChanged("removed");
@@ -818,11 +1277,15 @@ function createStateListener (aComposeSession, aMsgHdrs, aId) {
           });
         // Do stuff to the message we replied to.
         let msgHdr = aComposeSession.params.msgHdr;
-        msgHdr.folder.addMessageDispositionState(msgHdr, Ci.nsIMsgFolder.nsMsgDispositionState_Replied);
-        msgHdr.folder.msgDatabase = null;
+        if (msgHdr) {
+          msgHdr.folder.addMessageDispositionState(msgHdr, Ci.nsIMsgFolder.nsMsgDispositionState_Replied);
+          msgHdr.folder.msgDatabase = null;
+        }
         // Archive the whole conversation if needed
         if (aComposeSession.archive)
           msgHdrsArchive(aMsgHdrs.filter(function (x) !msgHdrIsArchive(x)));
+        if (isQuickCompose)
+          window.close();
       }
     },
 

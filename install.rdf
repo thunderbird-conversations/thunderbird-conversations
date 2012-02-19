@@ -6,15 +6,15 @@
 
   <Description about="urn:mozilla:install-manifest">
     <em:id>gconversation@xulforum.org</em:id>
-    <em:version>2.1alpha1pre</em:version>
+    <em:version>2.3pre</em:version>
     
     <!-- Target Application this theme can install into, 
         with minimum and maximum supported versions. --> 
     <em:targetApplication>
       <Description>
         <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
-        <em:minVersion>6.0a2</em:minVersion>
-        <em:maxVersion>9.0a1</em:maxVersion>
+        <em:minVersion>11.0a1</em:minVersion>
+        <em:maxVersion>13.0a1</em:maxVersion>
       </Description>
     </em:targetApplication>
     
@@ -23,9 +23,11 @@
     <em:description>Brings a conversation view to a Thunderbird near you!</em:description>
     <em:creator>Jonathan Protzenko</em:creator>
     <em:optionsURL>chrome://conversations/content/options.xul</em:optionsURL>
+    <em:optionsType>2</em:optionsType>
     <em:iconURL>chrome://conversations/content/icon.png</em:iconURL>
     <em:homepageURL>http://github.com/protz/GMail-Conversation-View/wiki</em:homepageURL>
     <em:bootstrap>true</em:bootstrap>
+    <em:type>2</em:type>
 
     <em:localized>
       <Description>
@@ -35,6 +37,20 @@
         <em:creator>Jonathan Protzenko</em:creator>
         <em:homepageURL>http://github.com/protz/GMail-Conversation-View</em:homepageURL>
         <em:translator>Martin Lukeš</em:translator>
+      </Description>
+    </em:localized>
+
+    <em:localized>
+      <Description>
+        <em:locale>da</em:locale>
+        <em:name>Thunderbird Conversations</em:name>
+        <em:description>Bringer samtalevisning til Din Thunderbird!</em:description>
+        <em:creator>Jonathan Protzenko</em:creator>
+        <em:homepageURL>http://github.com/protz/GMail-Conversation-View/wiki</em:homepageURL>
+        <em:translator>Glenn Dufke
+http://code-kungfu.com
+
+Tak til Jørgen Rasmussen / MozillaDanmark for korrekturlæsning.</em:translator>
       </Description>
     </em:localized>
 
@@ -80,6 +96,16 @@
         <em:translator>Proyecto Nave</em:translator>
         <em:creator>Jonathan Protzenko</em:creator>
         <em:homepageURL>http://github.com/protz/GMail-Conversation-View/wiki</em:homepageURL>
+      </Description>
+    </em:localized>
+
+    <em:localized>
+      <Description>
+        <em:locale>eu-ES</em:locale>
+        <em:name>Thunderbird Conversations</em:name>
+        <em:creator>Jonathan Protzenko</em:creator>
+        <em:homepageURL>http://github.com/protz/GMail-Conversation-View/wiki</em:homepageURL>
+        <em:translator>Ander Elortondo (librezale.org)</em:translator>
       </Description>
     </em:localized>
 

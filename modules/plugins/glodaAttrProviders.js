@@ -67,7 +67,7 @@ const Cc = Components.classes;
 const Cu = Components.utils;
 const Cr = Components.results;
 
-Cu.import("resource://conversations/plugins/helpers.js");
+Cu.import("resource://conversations/modules/plugins/helpers.js");
 Cu.import("resource:///modules/gloda/public.js");
 Cu.import("resource:///modules/gloda/mimemsg.js");
 
@@ -124,7 +124,8 @@ let ContentType = {
 
   process: function _ContentType_process (aGlodaMessage, aRawReps, aIsNew, aCallbackHandle) {
     try {
-      aGlodaMessage.contentType = aRawReps.mime.headers["content-type"];
+      if (aRawReps.mime)
+        aGlodaMessage.contentType = aRawReps.mime.headers["content-type"];
     } catch (e) {
       dump(e+"\n"+e.stack+"\n");
     }

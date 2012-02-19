@@ -13,9 +13,15 @@ template() {
 }
 
 upload() {
-  echo "cd jonathan/files\nput conversations.xpi gcv-nightlies/$TARGET_FILENAME\n\
-    put Changelog gcv-nightlies/Changelog_$BRANCH" | ftp xulforum@ftp.xulforum.org
+  echo "cd jonathan/files\nput conversations.xpi gcv-nightlies/$TARGET_FILENAME" | ftp xulforum@ftp.xulforum.org
 }
+
+if [ -f "content/pdfjs/build/pdf.js" ]; then
+  true;
+else
+  echo "Please run make from content/pdfjs";
+  exit 0
+fi
 
 if [ "$1" = "official" ]; then
   template "";

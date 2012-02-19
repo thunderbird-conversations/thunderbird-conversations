@@ -1,0 +1,403 @@
+/* Hide other actions for the last message */
+
+.message:last-child .messageFooter {
+  display: none;
+}
+
+/* Quick reply */
+
+.quickReply a {
+  text-decoration: none;
+  color: #3875D7;
+}
+
+.quickReply {
+  font-size: 1.2rem;
+  background-color: #F6F6F6;
+  border-top: 1px solid #E6E6E6;
+  padding: 10px 10px;
+  position: relative;
+  
+  -moz-border-radius: 0 0 5px 5px;
+   border-radius: 0 0 5px 5px;
+}
+
+.quickReply ul.inputs {
+  list-style-type: none;
+  overflow: hidden;
+  padding-right: 140px; /* overridden in stub.xhtml (localized) */
+
+  margin: -10px -5px;
+  
+  -moz-transition: all 0.4s ease;
+   transition: all 0.4s ease;
+}
+
+.quickReply ul.noPad {
+  padding-right: 0 !important;
+}
+
+.quickReply ul.inputs li {
+  display: inline-block;
+  float: left;
+  position: relative;
+  width: 50%;
+  opacity: 1;
+  
+  -moz-transition: all 0.4s ease;
+   transition: all 0.4s ease;
+}
+
+.quickReply ul.inputs li.misc {
+  width: auto;
+  position: absolute;
+  right: 10px;
+  width: 140px; /* overridden in stub.xhtml (localized) */
+  overflow: hidden;
+}
+
+.quickReply ul.inputs li.selected {
+  width: 100%;
+}
+
+.quickReply ul.inputs li.invisible {
+  width: 0px !important;
+  opacity: 0;
+}
+
+.quickReply .textWrap {
+  margin: 10px 5px;
+  background-color: #fff;
+  position: relative;
+}
+
+.quickReply .icon {
+  width: 100%;
+  height: 32px;
+  font-size: 1.4rem;
+  position: absolute;
+  z-index: 1;
+  top: 50%;
+  left: 0;
+  margin-top: -16px;
+  line-height: 32px;
+  text-align: center;
+  color: #c1d1ea;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.quickReply .icon img {
+  vertical-align: top;
+}
+
+.quickReply textarea {
+  width: 100%;
+  border: 1px solid #aaa;
+  min-height: 54px;
+  height: 54px;
+  padding: 5px 5px 5px 20px;
+  font-size: 1.2rem;
+  resize: none;
+  background-color: transparent;
+  display: block;
+  position: relative;
+  z-index: 100;
+  outline: none;
+  overflow: hidden;
+  color: transparent;
+
+  font-family: sans-serif;
+  font-size: 1.4rem;
+  
+  -moz-box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05) inset;
+   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05) inset;
+}
+
+.quickReply textarea.ease {
+  -moz-transition: all 0.4s ease;
+   transition: all 0.4s ease;
+}
+
+.quickReply textarea:focus {
+  border-color: #888;
+  
+  -moz-box-shadow: 0 0 0 2px rgba(0, 107, 255, 0.25) inset;
+   box-shadow: 0 0 0 2px rgba(0, 107, 255, 0.25) inset;
+}
+
+.quickReply li.selected textarea {
+  color: #000;
+  background-color: #fff;
+  height: 162px;
+  overflow: auto;
+  resize: vertical;
+}
+
+body.inTab .quickReply li.selected textarea {
+  height: 243px;
+}
+
+.quickReply .popoutTxt {
+  color: #bbb;
+  padding: 0 4px 0 15px;
+}
+
+.quickReply .popout {
+  height: 16px;
+  display: block;
+  position: absolute;
+  bottom: 10px;
+  left: 5px;
+  border-width: 1px 1px 0 0;
+  border-color: #aaa;
+  border-style: solid;
+  background-color: #f6f6f6;
+  cursor: pointer;
+  background-image: url('chrome://conversations/content/i/out.png');
+  background-position: -4px 2px;
+  background-repeat: no-repeat;
+  z-index: 101;
+  
+  -moz-border-radius: 0 3px 0 0;
+  border-radius: 0 3px 0 0;
+}
+
+.quickReply .selected .popout {
+  width: 16px;
+}
+
+.quickReply .selected .popoutTxt {
+  display: none;
+}
+
+.quickReply ul.actions {
+  list-style-type: none;
+  padding: 0 0 0 10px;
+  margin: 10px 5px 10px 10px;
+  border-left: 1px solid #ddd;
+  min-height: 54px;
+}
+
+.quickReply ul.actions li {
+  display: block;
+  width: 100%;
+  margin: 0 0 3px 0;
+  white-space: nowrap;
+}
+
+.quickReply ul.actions li.fwd {
+  background-image: url('chrome://conversations/content/i/fwd.png');
+  background-position: left center;
+  background-repeat: no-repeat;
+  padding-left: 20px;
+}
+
+.quickReply ul.actions li.list {
+  background-image: url('chrome://conversations/content/i/list.png');
+  background-position: -1px center;
+  background-repeat: no-repeat;
+  padding-left: 20px;
+}
+
+.quickReply .replyHeader,
+.quickReply .replyFooter {
+  display: none;
+  overflow: hidden;
+  color: #aaa;
+}
+
+.quickReply .replyFooter {
+  margin-top: 10px;
+}
+
+.quickReply .replyFooter span {
+  padding: 0 5px 10px;  
+  display: block;
+}
+
+/* clearfix */
+
+.cf:after {
+	content: ".";
+	display: block;
+	clear: both;
+	visibility: hidden;
+	line-height: 0;
+	height: 0;
+}
+ 
+html[xmlns] .cf {
+	display: block;
+}
+ 
+* html .cf {
+	height: 1%;
+}
+
+/* Quick reply */
+
+.quickReplyRecipients, .quickReplyAttachments {
+  width: 100%;
+  margin: 0 0 5px 0;
+}
+
+.quickReplyRecipients {
+  display: none;
+}
+
+.quickReply .label {
+  -moz-border-radius: 3px 0 0 3px;
+  background-image: -moz-linear-gradient(top, #fff 0%, #fff 50%, #fafafa 50%, #fafafa 100%);
+  border-color: #AAAAAA;
+  border-style: solid;
+  border-width: 1px 0 1px 1px;
+  color: #666;
+  padding: 3px 5px 0 0;
+  text-align: right;
+  width: 7.5rem;
+}
+
+.quickReply input:-moz-any(#to, #cc, #bcc, #subject) {
+  width: 100%;
+  border: 1px solid #aaa;
+  padding: 5px;
+}
+
+.editRecipientList {
+  display:none;
+  margin: 0 0 5px 0;
+  width: 100%;
+}
+
+.quickReplyRecipients.edit .editRecipientList {
+  display: -moz-box;
+}
+
+.quickReplyRecipients.edit ul.recipientList {
+  display: none;
+}
+
+:-moz-any(.quickReplyRecipients, .quickReplyAttachments) ul {
+  margin: 0;
+  display: block;
+  list-style-type: none;
+  margin: 0 0 5px 0;
+}
+
+.recipientListSeparator {
+  color: #666;
+}
+
+:-moz-any(.quickReplyRecipients, .quickReplyAttachments) li {
+  display: inline-block;
+  color: #666;
+}
+
+:-moz-any(.quickReplyRecipients, .quickReplyAttachments) a {
+  color: #3875D7;
+  text-decoration: none;
+}
+
+.replyMethod > label {
+  cursor: pointer;
+}
+
+:-moz-any(.quickReplyRecipients, .quickReplyAttachments) a:hover {
+  text-decoration: underline;
+}
+
+.quickReplyHeader {
+  padding: 5px 10px;
+  background-image: -moz-linear-gradient(top, #fff 0%, #fff 50%, #fafafa 50%, #fafafa 100%);
+  border-width: 1px 1px 0;
+  border-color: #aaa;
+  border-style: solid;
+  width: 100%;
+  color: #666;
+  -moz-border-radius: 3px 3px 0 0;
+  display: none;
+}
+
+.replyMethod > input {
+  vertical-align: middle;
+  margin-left: 3px;
+  margin-right: 2px;
+}
+
+/* hide the right UI items */
+.message:not(.isReplyAllEnabled) .action-replyAll {
+  display: none;
+}
+
+.message:not(.isReplyListEnabled) .action-replyList {
+  display: none;
+}
+
+.message:not(.isReplyAllEnabled) .quickReply li.replyAll {
+  display: none;
+}
+
+.message:not(.isReplyAllEnabled) .quickReply li.reply {
+  width: 100%;
+}
+
+.message:not(.isReplyListEnabled) .quickReply li.list {
+  display: none;
+}
+
+/* misc */
+
+.autocomplete-thumb {
+  height: 22px;
+  vertical-align: middle;
+}
+
+.token-input-list-facebook {
+  width: 100%;
+}
+
+
+/* Quick compose */
+
+#messageList.quickCompose {
+  position: fixed;
+  top: 0; right: 0; bottom: 0; left: 0;
+}
+
+.quickCompose ul.inputs li {
+  float: none;
+}
+
+.quickCompose .quickReply {
+  width: 100%;
+  height: 100%;
+}
+
+.quickCompose .popout {
+  /* Bug #640433 taken into account. $@!!###☠☠ */
+  bottom: -moz-calc(2.2rem + 20px);
+  left: 10px;
+}
+
+.quickCompose :-moz-any(.quickReply, .inputs, .reply),
+.quickCompose .reply :-moz-any(.textWrap, .selected) {
+  display: -moz-box !important;
+  -moz-box-flex: 1;
+  -moz-box-orient: vertical;
+}
+
+.quickCompose .quickReply ul.inputs,
+.quickCompose .quickReply ul.inputs li,
+.quickCompose .quickReply textarea.ease {
+  -moz-transition: none;
+  transition: none;
+}
+
+.quickCompose .firstBar {
+  display: none;
+}
+
+.switchLeft, .switchRight {
+  cursor: pointer;
+}

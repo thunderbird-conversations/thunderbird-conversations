@@ -43,12 +43,12 @@ const Cr = Components.results;
 
 Cu.import("resource://gre/modules/Services.jsm"); // https://developer.mozilla.org/en/JavaScript_code_modules/Services.jsm
 Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
-Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
-Cu.import("resource://conversations/stdlib/misc.js");
-Cu.import("resource://conversations/prefs.js");
-Cu.import("resource://conversations/misc.js");
-Cu.import("resource://conversations/hook.js");
-Cu.import("resource://conversations/log.js");
+Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+Cu.import("resource://conversations/modules/stdlib/misc.js");
+Cu.import("resource://conversations/modules/prefs.js");
+Cu.import("resource://conversations/modules/misc.js");
+Cu.import("resource://conversations/modules/hook.js");
+Cu.import("resource://conversations/modules/log.js");
 
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
@@ -102,8 +102,9 @@ let embedsHook = {
     for each (let [, a] in Iterator(links)) {
       if (a.skip || (a.href in seen))
         continue;
-      if (this.tryYouTube(a, aDomNode))
-        seen[a.href] = null;
+      let youTubeId;
+      if ((youTubeId = this.tryYouTube(a, aDomNode)))
+        seen[youTubeId] = null;
       if (this.tryGoogleMaps(a, aDomNode))
         seen[a.href] = null;
     }
@@ -116,9 +117,9 @@ let embedsHook = {
       Log.debug("Found a youtube video, video-id", videoId);
       this.insertEmbed(strings.get("foundYouTube"), "640", "385", 
         "http://www.youtube.com/embed/"+videoId, aDomNode);
-      return true;
+      return videoId;
     } else {
-      return false;
+      return null;
     }
   },
 

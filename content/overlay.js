@@ -48,14 +48,16 @@ var Conversations = {
   //  Conversation._window.Conversations to access the right instance
   currentConversation: null,
   counter: 0,
+
+  quickCompose: function () {},
 };
 
 window.addEventListener("load", function _overlay_eventListener () {
   let NS = {};
-  Components.utils.import("resource://conversations/monkeypatch.js", NS);
-  Components.utils.import("resource://conversations/conversation.js", NS);
-  Components.utils.import("resource://conversations/prefs.js", NS);
-  Components.utils.import("resource://conversations/config.js", NS);
+  Components.utils.import("resource://conversations/modules/monkeypatch.js", NS);
+  Components.utils.import("resource://conversations/modules/conversation.js", NS);
+  Components.utils.import("resource://conversations/modules/prefs.js", NS);
+  Components.utils.import("resource://conversations/modules/config.js", NS);
 
   // We instantiate the Monkey-Patch for the given Conversation object.
   let monkeyPatch = new NS.MonkeyPatch(window, NS.Conversation);
@@ -74,9 +76,8 @@ window.addEventListener("load", function _overlay_eventListener () {
   if (NS.Prefs.getInt("conversations.version") < NS.conversationsCurrentVersion)
     window.openDialog("chrome://conversations/content/assistant/assistant.xhtml", "", "chrome,width=800,height=500");
 
-  // Feedback.
-  let nRuns = NS.Prefs.getInt("conversations.nruns");
-  if (nRuns == 20)
-    window.openDialog("chrome://conversations/content/feedback.xhtml", "", "chrome,width=320,height=550");
-  NS.Prefs.setInt("conversations.nruns", nRuns + 1);
+  // Quick compose
+  Conversations.quickCompose = function () {
+    window.openDialog("chrome://conversations/content/stub.xhtml?quickCompose=1", "", "chrome,width=800,height=600");
+  }
 }, false);

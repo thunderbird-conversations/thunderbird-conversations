@@ -43,15 +43,19 @@ const Cc = Components.classes;
 const Cu = Components.utils;
 const Cr = Components.results;
 
-Cu.import("resource:///modules/gloda/gloda.js");
-Cu.import("resource://conversations/log.js");
-Cu.import("resource://conversations/prefs.js");
+Cu.import("resource://gre/modules/Services.jsm");
 
-Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
-Cu.import("resource://conversations/stdlib/misc.js");
-Cu.import("resource://conversations/message.js");
-Cu.import("resource://conversations/contact.js");
-Cu.import("resource://conversations/misc.js"); // for groupArray
+Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
+Cu.import("resource:///modules/gloda/gloda.js");
+Cu.import("resource://conversations/modules/log.js");
+Cu.import("resource://conversations/modules/prefs.js");
+
+Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+Cu.import("resource://conversations/modules/stdlib/misc.js");
+Cu.import("resource://conversations/modules/message.js");
+Cu.import("resource://conversations/modules/contact.js");
+Cu.import("resource://conversations/modules/misc.js"); // for groupArray
+Cu.import("resource://conversations/modules/hook.js");
 
 let Log = setupLogging("Conversations.Conversation");
 
@@ -63,6 +67,8 @@ const kActionExpand    = 1;
 const kActionCollapse  = 2;
 
 const nsMsgViewIndex_None = 0xffffffff;
+
+let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
 // The SignalManager class handles stuff related to spawing asynchronous
 //  requests and waiting for all of them to complete. Basic, but works well.
@@ -139,7 +145,7 @@ let OracleMixIn = {
         needsScroll = this.messages.length - 1;
       }
     } else {
-      Log.assert(false, "Unknown value for pref scroll_who");
+      Log.assert(false, "Unknown value for kScroll* constant");
     }
 
     return needsScroll;
@@ -250,26 +256,18 @@ function msgDebugColor (aMsg) {
 
 function messageFromGlodaIfOffline (aSelf, aGlodaMsg, aDebug) {
   let aMsgHdr = aGlodaMsg.folderMessage;
-  if (((aMsgHdr.flags & Ci.nsMsgMessageFlags.Offline) ||
-        (aMsgHdr.folder instanceof Ci.nsIMsgLocalMailFolder))
-      && !aGlodaMsg.isEncrypted) {
-    // Means Gloda indexed the message fully...
-    return {
-      type: kMsgGloda,
-      message: new MessageFromGloda(aSelf, aGlodaMsg), // will fire signal when done
-      glodaMsg: aGlodaMsg,
-      msgHdr: null,
-      debug: aDebug,
-    };
-  } else {
-    return {
-      type: kMsgDbHdr,
-      message: new MessageFromDbHdr(aSelf, aGlodaMsg.folderMessage), // will run signal
-      msgHdr: aGlodaMsg.folderMessage,
-      glodaMsg: null,
-      debug: aDebug+"-!offline",
-    };
-  }
+  let needsLateAttachments =
+    !(aMsgHdr.folder instanceof Ci.nsIMsgLocalMailFolder) &&
+      !(aMsgHdr.folder.flags & Ci.nsMsgFolderFlags.Offline) || // online IMAP
+    aGlodaMsg.isEncrypted || // encrypted message
+    Prefs.extra_attachments; // user request
+  return {
+    type: kMsgGloda,
+    message: new MessageFromGloda(aSelf, aGlodaMsg, needsLateAttachments), // will fire signal when done
+    glodaMsg: aGlodaMsg,
+    msgHdr: null,
+    debug: aDebug,
+  };
 }
 
 function messageFromDbHdr (aSelf, aMsgHdr, aDebug) {
@@ -374,6 +372,8 @@ function Conversation(aWindow, aSelectedMessages, aScrollMode, aCounter) {
   //  corresponding to the intermediate query, and the initially selected
   //  messages...
   this._intermediateResults = [];
+  // For timing purposes
+  this.t0 = Date.now();
 }
 
 Conversation.prototype = {
@@ -596,9 +596,39 @@ Conversation.prototype = {
     }
   },
 
-  onItemsRemoved: function () {},
+  onItemsRemoved: function (aItems) {
+    Log.debug("Updating conversation", this.counter, "global state...");
+    if (!this.completed)
+      return;
+
+    // We (should) have the invariant that a conversation only has one message
+    // with a given Message-Id.
+    let byMessageId = {};
+    [byMessageId[getMessageId(x)] = x.message
+      for each ([, x] in Iterator(this.messages))];
+    for each (let [, glodaMsg] in Iterator(aItems)) {
+      let msgId = glodaMsg.headerMessageID;
+      if ((msgId in byMessageId) && byMessageId[msgId]._msgHdr.messageKey == glodaMsg.messageKey)
+        this.removeMessage(byMessageId[msgId]);
+    }
+
+    this._updateConversationButtons();
+  },
 
   onQueryCompleted: function _Conversation_onQueryCompleted (aCollection) {
+    // We'll receive this notification waaaay too many times, so if we've
+    // already settled on a set of messages, let onItemsAdded handle the rest.
+    // This is just for the initial building of the conversation.
+    if (this.messages.length)
+      return;
+    // Report!
+    let delta = Date.now() - this.t0;
+    try {
+      let h = Services.telemetry.getHistogramById("THUNDERBIRD_CONVERSATIONS_TIME_TO_2ND_GLODA_QUERY_MS");
+      h.add(delta);
+    } catch (e) {
+      Log.debug("Unable to report telemetry", e);
+    }
     // That's XPConnect bug 547088, so remove the setTimeout when it's fixed and
     //  bump the version requirements in install.rdf.template (might be fixed in
     //  time for Gecko 42, if we're lucky)
@@ -789,8 +819,16 @@ Conversation.prototype = {
         let msg = aMessages[i].message;
         msg.updateTmplData(oldMsg);
       }
+      // Update initialPosition
+      for each (let i in range(this.messages.length - aMessages.length, this.messages.length)) {
+        this.messages[i].message.initialPosition = i;
+      }
       let tmplData = [m.message.toTmplData(false)
         for each ([_i, m] in Iterator(aMessages))];
+
+      let w = this._htmlPane.contentWindow;
+      w.markReadInView.disable();
+
       $("#messageTemplate").tmpl(tmplData).appendTo($(this._domNode));
 
 
@@ -808,7 +846,6 @@ Conversation.prototype = {
       //  event registration and stuff...
       let domNodes = this._domNode.getElementsByClassName(Message.prototype.cssClass);
       for each (let i in range(this.messages.length - aMessages.length, this.messages.length)) {
-        this.messages[i].message.initialPosition = i;
         this.messages[i].message.onAddedToDom(domNodes[i]);
         domNodes[i].setAttribute("tabindex", (i+2)+"");
       }
@@ -986,13 +1023,6 @@ Conversation.prototype = {
         // If you want to do something once the new conversation is complete, do
         //  it in monkeypatch.js
         Log.debug("Not recycling conversation");
-        // We'll be replacing the old conversation
-        this._window.Conversations.currentConversation.messages = [];
-        // We don't know yet if this is going to be a junkable conversation, so
-        //  when in doubt, reset. Actually, the final call to
-        //  _updateConversationButtons will update this.
-        this._domNode.ownerDocument.getElementById("conversationHeader")
-          .classList.remove("not-junkable");
         // Gotta save the quick reply, if there's one! Please note that
         //  contentWindow.Conversations is still wired onto the old
         //  conversation. Updating the global Conversations object and loading
@@ -1001,7 +1031,20 @@ Conversation.prototype = {
         // This call actually starts the save process off the main thread, but
         //  we're not doing anything besides saving the quick reply, so we don't
         //  need for this call to complete before going on.
-        this._htmlPane.contentWindow.onSave(null, false);
+        try {
+          this._htmlPane.contentWindow.onSave();
+        } catch (e) {
+          Log.error(e);
+          dumpCallStack(e);
+        }
+        // We'll be replacing the old conversation. Do this after the call to
+        // onSave, because onSave calls getMessageForQuickReply...
+        this._window.Conversations.currentConversation.messages = [];
+        // We don't know yet if this is going to be a junkable conversation, so
+        //  when in doubt, reset. Actually, the final call to
+        //  _updateConversationButtons will update this.
+        this._domNode.ownerDocument.getElementById("conversationHeader")
+          .classList.remove("not-junkable");
       }
     }
 
@@ -1018,8 +1061,11 @@ Conversation.prototype = {
     let t0  = (new Date()).getTime();
     let $ = this._htmlPane.contentWindow.$;
     for each (let i in range(0, this.messages.length)) {
-      let oldMsg = i > 0 ? this.messages[i-1].message : null;
+      // We need to set this before the call to toTmplData.
       let msg = this.messages[i].message;
+      msg.initialPosition = i;
+
+      let oldMsg = i > 0 ? this.messages[i-1].message : null;
       msg.updateTmplData(oldMsg);
     }
     let tmplData = [m.message.toTmplData(i == this.messages.length - 1)
@@ -1045,7 +1091,6 @@ Conversation.prototype = {
     let domNodes = this._domNode.getElementsByClassName(Message.prototype.cssClass);
     for each (let [i, m] in Iterator(this.messages)) {
       m.message.onAddedToDom(domNodes[i]);
-      m.message.initialPosition = i;
       // Determine which messages should get a nice folder tag
       m.message.inView = this.viewWrapper.isInView(m);
     }
@@ -1074,8 +1119,9 @@ Conversation.prototype = {
   },
 
   _updateConversationButtons: function _Conversation_updateConversationButtons () {
-    // Bail if we're notified too early.
-    if (!this.messages || !this.messages.length || !this._domNode)
+    // Bail if we're notified too early, or if someone stole the message pane
+    // from us, or whatever.
+    if (!this.messages || !this.messages.length || !this._domNode || !this._htmlPane.contentDocument)
       return;
 
     // Make sure the toggle read/unread button is in the right state
@@ -1113,6 +1159,7 @@ Conversation.prototype = {
     this._runOnceAfterNSignals(function () {
       let focusedNode = messageNodes[focusThis];
       self._htmlPane.contentWindow.scrollNodeIntoView(focusedNode);
+      self.messages[focusThis].message.onSelected();
 
       for each (let [i, node] in Iterator(messageNodes)) {
         // XXX This is bug 611957
@@ -1127,6 +1174,14 @@ Conversation.prototype = {
       self._onComplete();
       // _onComplete will potentially set a timeout that, when fired, takes care
       //  of notifying us that we should update the conversation buttons.
+
+      let w = self._htmlPane.contentWindow;
+      if (Prefs.getBool("mailnews.mark_message_read.auto") &&
+          !Prefs.getBool("mailnews.mark_message_read.delay")) {
+        w.markReadInView.enable();
+      } else {
+        w.markReadInView.disable();
+      }
     }, this.messages.length);
 
     for each (let [i, action] in Iterator(expandThese)) {
@@ -1173,13 +1228,26 @@ Conversation.prototype = {
   },
 
   // For the "forward conversation" action
-  exportAsHtml: function _Conversation_exportAsHtml () {
+  exportAsHtml: function _Conversation_exportAsHtml (k) {
     let hr = '<div style="border-top: 1px solid #888; height: 15px; width: 70%; margin: 0 auto; margin-top: 15px">&nbsp;</div>';
-    let html = "Here's a conversation I thought you might find interesting!"+hr;
-    let messagesHtml = [m.exportAsHtml() for each ({ message: m } in this.messages)];
-    html += "<div style=\"font-family: sans-serif !important;\">"+messagesHtml.join(hr)+"</div>";
-    Log.debug("\n", html);
-    return html;
+    let html = strings.get("conversationFillInText")+hr;
+    let count = 1;
+    let top = function () {
+      if (!--count) {
+        html += "<div style=\"font-family: sans-serif !important;\">"+messagesHtml.join(hr)+"</div>";
+        k(html);
+      }
+    }
+    let messagesHtml = new Array(this.messages.length);
+    for each (let [i, { message: message }] in Iterator(this.messages)) {
+      let j = i;
+      count++;
+      message.exportAsHtml(function (aHtml) {
+        messagesHtml[j] = aHtml;
+        top();
+      });
+    }
+    top();
   },
 }
 

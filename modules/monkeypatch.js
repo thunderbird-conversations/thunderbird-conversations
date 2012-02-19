@@ -46,14 +46,16 @@ const Cr = Components.results;
 Cu.import("resource://gre/modules/AddonManager.jsm");
 Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
 
-Cu.import("resource://conversations/stdlib/misc.js");
-Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
-Cu.import("resource://conversations/assistant.js");
-Cu.import("resource://conversations/misc.js"); // for joinWordList
-Cu.import("resource://conversations/prefs.js");
-Cu.import("resource://conversations/log.js");
+Cu.import("resource://conversations/modules/stdlib/misc.js");
+Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+Cu.import("resource://conversations/modules/assistant.js");
+Cu.import("resource://conversations/modules/misc.js"); // for joinWordList
+Cu.import("resource://conversations/modules/prefs.js");
+Cu.import("resource://conversations/modules/log.js");
 
 Cu.import("resource://gre/modules/Services.jsm");
+
+const kMultiMessageUrl = "chrome://messenger/content/multimessageview.xhtml";
 
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
@@ -298,11 +300,27 @@ MonkeyPatch.prototype = {
   onPropertyChanged: function (addon, properties) {
   },
 
+  activateMenuItem: function (window) {
+    let menuItem = window.document.getElementById("menuConversationsEnabled");
+    menuItem.setAttribute("checked", Prefs.enabled);
+    Prefs.watch(function (aPrefName, aPrefValue) {
+      if (aPrefName == "enabled")
+        menuItem.setAttribute("checked", aPrefValue);
+    });
+    menuItem.addEventListener("command", function (event) {
+      let checked = menuItem.hasAttribute("checked") &&
+        menuItem.getAttribute("checked") == "true";
+      Prefs.setBool("conversations.enabled", checked);
+      window.gMessageDisplay.onSelectedMessagesChanged.call(window.gMessageDisplay);
+    });
+  },
+
   apply: function () {
     let window = this._window;
     let self = this;
     let htmlpane = window.document.getElementById("multimessage");
     let oldSummarizeMultipleSelection = window["summarizeMultipleSelection"];
+    let oldSummarizeThread = window["summarizeThread"];
 
     // Do this at least once at overlay load-time
     fillIdentities();
@@ -310,6 +328,8 @@ MonkeyPatch.prototype = {
     // Register our new column type
     this.registerColumn();
     this.registerFontPrefObserver(htmlpane);
+
+    this.activateMenuItem(window);
 
     // Register the uninstall handler
     this.watchUninstall();
@@ -321,6 +341,11 @@ MonkeyPatch.prototype = {
     //  and reroutes the control flow to our conversation reader.
     let oldThreadPaneDoubleClick = window.ThreadPaneDoubleClick;
     window.ThreadPaneDoubleClick = function () {
+      if (!Prefs.enabled) {
+        oldThreadPaneDoubleClick();
+        return;
+      }
+
       let tabmail = window.document.getElementById("tabmail");
       // ThreadPaneDoubleClick calls OnMsgOpenSelectedMessages. We don't want to
       // replace the whole ThreadPaneDoubleClick function, just the line that
@@ -331,7 +356,9 @@ MonkeyPatch.prototype = {
       if (!msgHdrs.some(msgHdrIsRss) && !msgHdrs.some(msgHdrIsNntp)) {
         window.MsgOpenSelectedMessages = function () {
           let urls = [msgHdrGetUri(x) for each (x in msgHdrs)].join(",");
-          let queryString = "?urls="+window.encodeURIComponent(urls);
+          let scrollMode = self.determineScrollMode();
+          let queryString = "?urls="+window.encodeURIComponent(urls) +
+            "&scrollMode="+scrollMode;
           tabmail.openTab("chromeTab", {
             chromePage: kStubUrl+queryString,
           });
@@ -345,35 +372,20 @@ MonkeyPatch.prototype = {
     //  hidden, we need to trigger it manually when it's un-hidden.
     window.addEventListener("messagepane-unhide",
       function () {
-        Log.debug("messagepane-unhide");
+        if (!Prefs.enabled)
+          return;
+
         window.summarizeThread(window.gFolderDisplay.selectedMessages);
       }, true);
 
-    // This nice little wrapper makes sure that the multimessagepane points to
-    //  the given URL before moving on. It takes a continuation, and an optional
-    //  third argument that is to be run in case we loaded a fresh page.
-    let ensureLoadedAndRun = function (aLocation, k, onRefresh) {
-      if (!window.gMessageDisplay.visible) {
-        Log.debug("Message pane is hidden, not fetching...");
-        return;
-      }
-
-      if (htmlpane.getAttribute("src") == aLocation) {
-        k();
-      } else {
-        htmlpane.addEventListener("load", function _g (event) {
-          htmlpane.removeEventListener("load", _g, true);
-          if (onRefresh)
-            onRefresh();
-          k();
-        }, true);
-        htmlpane.setAttribute("src", aLocation);
-      }
-    };
-
     window.summarizeMultipleSelection =
       function _summarizeMultiple_patched (aSelectedMessages, aListener) {
-        ensureLoadedAndRun("chrome://messenger/content/multimessageview.xhtml", function () {
+        if (!Prefs.enabled) {
+          oldSummarizeMultipleSelection(aSelectedMessages, aListener);
+          return;
+        }
+
+        window.gSummaryFrameManager.loadAndCallback(kMultiMessageUrl, function () {
           oldSummarizeMultipleSelection(aSelectedMessages, aListener);
         });
       };
@@ -385,10 +397,43 @@ MonkeyPatch.prototype = {
     //  actually the entry point to the original ThreadSummary class.
     window.summarizeThread =
       function _summarizeThread_patched (aSelectedMessages, aListener) {
+        if (!Prefs.enabled) {
+          oldSummarizeThread(aSelectedMessages, aListener);
+          return;
+        }
+
         if (!aSelectedMessages.length)
           return;
 
-        ensureLoadedAndRun(kStubUrl, function () {
+        if (!window.gMessageDisplay.visible) {
+          Log.debug("Message pane is hidden, not fetching...");
+          return;
+        }
+
+        window.gSummaryFrameManager.loadAndCallback(kStubUrl, function (isRefresh) {
+          if (isRefresh) {
+            // Invalidate the previous selection
+            previouslySelectedUris = [];
+            // Invalidate any remaining conversation
+            window.Conversations.currentConversation = null;
+            // Make the stub aware of the Conversations object it's currently
+            //  representing.
+            htmlpane.contentWindow.Conversations = window.Conversations;
+            // The DOM window is fresh, it needs an event listener to forward
+            //  keyboard shorcuts to the main window when the conversation view
+            //  has focus.
+            // It's crucial we register a non-capturing event listener here,
+            //  otherwise the individual message nodes get no opportunity to do
+            //  their own processing.
+            htmlpane.contentWindow.addEventListener("keypress", function (event) {
+              try {
+                window.dispatchEvent(event);
+              } catch (e) {
+                //Log.debug("We failed to dispatch the event, don't know why...", e);
+              }
+            }, false);
+          }
+
           try {
             // Should cancel most intempestive view refreshes, but only after we
             //  made sure the multimessage pane is shown. The logic behind this
@@ -421,7 +466,16 @@ MonkeyPatch.prototype = {
               scrollMode,
               ++window.Conversations.counter
             );
+            if (window.Conversations.currentConversation)
+              Log.debug("Current conversation is", Colors.red,
+                window.Conversations.currentConversation.counter, Colors.default);
+            else
+              Log.debug("First conversation");
             freshConversation.outputInto(htmlpane, function (aConversation) {
+              if (aConversation.messages.length == 0) {
+                Log.debug(Colors.red, "0 messages in aConversation");
+                return;
+              }
               // So we've been promoted to be the new conversation! Remember
               //  that and update the currently selected URIs to prevent further
               //  reflows.
@@ -447,6 +501,9 @@ MonkeyPatch.prototype = {
                 && (window.Conversations.currentConversation.counter != aConversation.counter);
               let isDifferentConversation = !window.Conversations.currentConversation
                   || (window.Conversations.currentConversation.counter != aConversation.counter);
+              let prevCounter = window.Conversations.currentConversation
+                ? window.Conversations.currentConversation.counter
+                : 0;
               // Make sure we have a global root --> conversation --> persistent
               //  query chain to prevent the Conversation object (and its inner
               //  query) to be collected. The Conversation keeps watching the
@@ -454,10 +511,9 @@ MonkeyPatch.prototype = {
               window.Conversations.currentConversation = aConversation;
               if (isDifferentConversation) {
                 // Here, put the final touches to our new conversation object.
-                htmlpane.contentWindow.loadDraft();
+                htmlpane.contentWindow.newComposeSessionByDraftIf();
                 aConversation.completed = true;
                 htmlpane.contentWindow.registerQuickReply();
-                htmlpane.contentWindow.hideConversationMenu();
               }
               if (needsGC)
                 Cu.forceGC();
@@ -501,27 +557,6 @@ MonkeyPatch.prototype = {
             Log.error(e);
             dumpCallStack(e);
           }
-        }, function () {
-          // Invalidate the previous selection
-          previouslySelectedUris = [];
-          // Invalidate any remaining conversation
-          window.Conversations.currentConversation = null;
-          // Make the stub aware of the Conversations object it's currently
-          //  representing.
-          htmlpane.contentWindow.Conversations = window.Conversations;
-          // The DOM window is fresh, it needs an event listener to forward
-          //  keyboard shorcuts to the main window when the conversation view
-          //  has focus.
-          // It's crucial we register a non-capturing event listener here,
-          //  otherwise the individual message nodes get no opportunity to do
-          //  their own processing.
-          htmlpane.contentWindow.addEventListener("keypress", function (event) {
-            try {
-              window.dispatchEvent(event);
-            } catch (e) {
-              //Log.debug("We failed to dispatch the event, don't know why...", e);
-            }
-          }, false);
         });
       };
 
@@ -538,10 +573,15 @@ MonkeyPatch.prototype = {
         .tabInfo[0].messageDisplay.onSelectedMessagesChanged =
     window.MessageDisplayWidget.prototype.onSelectedMessagesChanged =
       function _onSelectedMessagesChanged_patched () {
+        if (!Prefs.enabled) {
+          originalOnSelectedMessagesChanged.call(this);
+          return;
+        }
+
         try {
           // What a nice pun! If bug 320550 was fixed, I could print
           // \u2633\u1f426 and that would be very smart.
-          dump("\n"+Colors.red+"\u2633 New Conversation"+Colors.default+"\n");
+          // dump("\n"+Colors.red+"\u2633 New Conversation"+Colors.default+"\n");
           if (!this.active)
             return true;
           window.ClearPendingReadTimer();

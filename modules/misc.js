@@ -38,6 +38,7 @@ var EXPORTED_SYMBOLS = [
   'groupArray', 'joinWordList', 'iconForMimeType',
   'EventHelperMixIn', 'arrayEquals', 'LINKS_REGEX',
   'linkifySubject', 'topMail3Pane', 'reindexMessages',
+  'folderName',
 ]
 
 var LINKS_REGEX = /((\w+):\/\/[^<>()'"\s]+|www(\.[-\w]+){2,})/;
@@ -48,9 +49,9 @@ const Cu = Components.utils;
 
 Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
 Cu.import("resource:///modules/gloda/index_msg.js");
-Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
-Cu.import("resource://conversations/prefs.js");
-Cu.import("resource://conversations/log.js");
+Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+Cu.import("resource://conversations/modules/prefs.js");
+Cu.import("resource://conversations/modules/log.js");
 
 let Log = setupLogging("Conversations.Misc");
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
@@ -119,6 +120,10 @@ let mapping = {
   "text/x-vcalendar": "x-office-calendar",
   "text/x-vcard": "x-office-address-book",
   "text/html": "text-html",
+  "application/pdf": "application-pdf",
+  "application/x-pdf": "application-pdf",
+  "application/x-bzpdf": "application-pdf",
+  "application/x-gzpdf": "application-pdf",
 };
 
 let fallbackMapping = {
@@ -150,7 +155,7 @@ let EventHelperMixIn = {
 
   compose: function _EventHelper_compose (aCompType, aEvent) {
     let window = topMail3Pane(this);
-    if (aEvent.shiftKey) {
+    if (aEvent && aEvent.shiftKey) {
       window.ComposeMessage(aCompType, Ci.nsIMsgCompFormat.OppositeOfDefault, this._msgHdr.folder, [this._uri]);
     } else {
       window.ComposeMessage(aCompType, Ci.nsIMsgCompFormat.Default, this._msgHdr.folder, [this._uri]);
@@ -201,7 +206,10 @@ function linkifySubject(subject, doc) {
     link.setAttribute("href", matches[1]);
     link.setAttribute("title", matches[1]);
     link.setAttribute("class","text-link");
-    link.setAttribute("onclick", "openLink(event); return false;");
+    link.addEventListener("click", function (event) {
+        getMail3Pane().messenger.launchExternalURL(matches[1]);
+        event.preventDefault();
+      }, false);
     return [pre,link,post];
   }
   let text = subject;
@@ -222,8 +230,14 @@ function linkifySubject(subject, doc) {
   return node;
 }
 
-// Takes either a Message (modules/message.js) or a Conversation
-// (modules/conversation.js)
+/**
+ * This is a super-polymorphic function that allows you to get the topmost
+ * mail:3pane window from anywhere in the conversation code.
+ * - if you're a Contact, use topMail3Pane(this)
+ * - if you're a Message, use topMail3Pane(this)
+ * - if you're a Conversation, use topMail3Pane(this)
+ * - if you're in content/stub.xhtml, use topMail3Pane(window)
+ */
 function topMail3Pane(aObj) {
   if (!aObj)
     throw Error("Bad usage for topMail3Pane");
@@ -234,6 +248,8 @@ function topMail3Pane(aObj) {
     return aObj._htmlPane.ownerDocument.defaultView;
   else if ("_manager" in aObj) // Contact
     return aObj._domNode.ownerDocument.defaultView.top;
+  else if (aObj.isQuickCompose) // Standalone window
+    return aObj.top.opener;
   else if ("top" in aObj) // window inside the htmlpane
     return aObj.top;
   else
@@ -245,4 +261,14 @@ function reindexMessages(aMsgHdrs) {
     [x.folder, x.messageKey]
     for each ([, x] in Iterator(aMsgHdrs))
   ]);
+}
+
+function folderName(aFolder) {
+  let folderStr = aFolder.prettiestName;
+  let folder = aFolder;
+  while (folder.parent) {
+    folder = folder.parent;
+    folderStr = folder.name + "/" + folderStr;
+  }
+  return [folder.prettiestName, folderStr];
 }

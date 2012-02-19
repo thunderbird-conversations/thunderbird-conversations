@@ -60,32 +60,49 @@ XPCOMUtils.defineLazyGetter(Services, "mMessenger",
                             function () {
                               return Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
                             });
-XPCOMUtils.defineLazyServiceGetter(Services, "mFaviconService",
-                            "@mozilla.org/browser/favicon-service;1",
-                            "nsIFaviconService");
+XPCOMUtils.defineLazyGetter(Services, "mAtomService",
+                            function() {
+                              return Cc["@mozilla.org/atom-service;1"].getService(Ci.nsIAtomService);
+                            });
 
 const kCharsetFromMetaTag = 9;
 const kCharsetFromChannel = 11;
 const kAllowRemoteContent = 2;
 
+const kHeadersShowAll = 2;
+const kHeadersShowNormal = 1;
+
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
-Cu.import("resource://conversations/stdlib/addressBookUtils.js");
-Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
-Cu.import("resource://conversations/stdlib/compose.js");
-Cu.import("resource://conversations/stdlib/misc.js");
-Cu.import("resource://conversations/plugins/helpers.js");
-Cu.import("resource://conversations/quoting.js");
-Cu.import("resource://conversations/contact.js");
-Cu.import("resource://conversations/prefs.js");
-Cu.import("resource://conversations/misc.js"); // for iconForMimeType
-Cu.import("resource://conversations/hook.js");
-Cu.import("resource://conversations/log.js");
+Cu.import("resource://conversations/modules/stdlib/addressBookUtils.js");
+Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+Cu.import("resource://conversations/modules/stdlib/compose.js");
+Cu.import("resource://conversations/modules/stdlib/misc.js");
+Cu.import("resource://conversations/modules/plugins/helpers.js");
+Cu.import("resource://conversations/modules/quoting.js");
+Cu.import("resource://conversations/modules/contact.js");
+Cu.import("resource://conversations/modules/prefs.js");
+Cu.import("resource://conversations/modules/misc.js"); // for iconForMimeType
+Cu.import("resource://conversations/modules/hook.js");
+Cu.import("resource://conversations/modules/log.js");
 
 let Log = setupLogging("Conversations.Message");
 // This is high because we want enough snippet to extract relevant data from
 // bugzilla snippets.
 const kSnippetLength = 700;
+const kViewerUrl = "chrome://conversations/content/pdfviewer/wrapper.xul?uri=";
+
+let makeViewerUrl = function (name, url)
+  kViewerUrl + encodeURIComponent(url) +
+  "&name=" + encodeURIComponent(name)
+;
+
+let pdfMimeTypes = {
+  "application/pdf": null,
+  "application/x-pdf": null,
+  "application/x-bzpdf": null,
+  "application/x-gzpdf": null,
+};
 
 // Add in the global message listener table a weak reference to the given
 //  Message object. The monkey-patch which intercepts the "remote content
@@ -101,9 +118,18 @@ function addMsgListener(aMessage) {
   msgListeners[messageId].push(weakPtr);
 }
 
-let isOSX = ("nsILocalFileMac" in Components.interfaces);
+let isOSX = ("nsILocalFileMac" in Ci);
+let isWindows = ("@mozilla.org/windows-registry-key;1" in Cc);
 
 function isAccel (event) (isOSX && event.metaKey || event.ctrlKey)
+
+function dateAccordingToPref(date) {
+  try {
+    return Prefs["no_friendly_date"] ? dateAsInMessageList(date) : makeFriendlyDateAgo(date);
+  } catch (e) {
+    return dateAsInMessageList(date);
+  }
+}
 
 function KeyListener(aMessage) {
   this.message = aMessage;
@@ -132,6 +158,9 @@ KeyListener.prototype = {
       case this.KeyEvent.DOM_VK_RETURN:
       case 'O'.charCodeAt(0):
         if (!isAccel(event)) {
+          // If we expand a collapsed, when in doubt, mark it read.
+          if (this.message.collapsed)
+            this.message.read = true;
           this.message.toggle();
           event.preventDefault();
           event.stopPropagation();
@@ -169,9 +198,9 @@ KeyListener.prototype = {
       case 'R'.charCodeAt(0):
         if (isAccel(event)) {
           if (event.shiftKey) {
-            this.message.compose(Ci.nsIMsgCompType.ReplyAll, event);
+            this.message.compose(Ci.nsIMsgCompType.ReplyAll, null);
           } else {
-            this.message.compose(Ci.nsIMsgCompType.ReplyToSender, event);
+            this.message.compose(Ci.nsIMsgCompType.ReplyToSender, null);
           }
           event.preventDefault();
           event.stopPropagation();
@@ -206,6 +235,14 @@ KeyListener.prototype = {
         }
         break;
 
+      case 'E'.charCodeAt(0):
+        if (isAccel(event)) {
+          this.message.compose(Ci.nsIMsgCompType.Template, null);
+          event.preventDefault();
+          event.stopPropagation();
+        }
+        break;
+
       case this.KeyEvent.DOM_VK_DELETE:
         if (!isAccel(event)) {
           this.message.removeFromConversation();
@@ -218,7 +255,10 @@ KeyListener.prototype = {
         // Tag handling.
         // 0 removes all tags, 1 to 9 set the corresponding tag, if it exists
         if (event.which >= '0'.charCodeAt(0)
-            && event.which <= '9'.charCodeAt(0)) {
+            && event.which <= '9'.charCodeAt(0)
+            // Don't steal tab-switching shortcuts and friends.
+            && !event.altKey && !event.ctrlKey
+            && !event.shiftKey && !event.metaKey) {
           let i = event.which - '1'.charCodeAt(0);
           if (i == -1) {
             this.message.tags = [];
@@ -247,8 +287,7 @@ function Message(aConversation) {
   this._snippet = "";
   this._conversation = aConversation;
 
-  let date = new Date(this._msgHdr.date/1000);
-  this._date = Prefs["no_friendly_date"] ? dateAsInMessageList(date) : makeFriendlyDateAgo(date);
+  this._date = dateAccordingToPref(new Date(this._msgHdr.date/1000));
   // This one is for display purposes
   this._from = this.parse(this._msgHdr.mime2DecodedAuthor)[0];
   // Might be filled to something more meaningful later, in case we replace the
@@ -278,6 +317,9 @@ function Message(aConversation) {
   // Filled by the conversation, useful to know whether we were initially the
   //  first message in the conversation or not...
   this.initialPosition = -1;
+
+  // Selected state for onSelected function
+  this._selected = false;
 }
 
 Message.prototype = {
@@ -361,24 +403,30 @@ Message.prototype = {
       quickReply: aQuickReply,
       bugzillaUrl: "[unknown bugzilla instance]",
       extraClasses: null,
+      canUnJunk: false,
+      isOutbox: false,
     };
 
     // 1) Generate Contact objects
-    let contactFrom = this._conversation._contactManager
-      .getContactFromNameAndEmail(this._from.name, this._from.email);
+    let contactFrom = [
+      this._conversation._contactManager
+        .getContactFromNameAndEmail(this._from.name, this._from.email),
+      this._from.email
+    ];
     this._contacts.push(contactFrom);
     // true means "with colors"
-    data.dataContactFrom = contactFrom.toTmplData(true, Contacts.kFrom);
+    data.dataContactFrom = contactFrom[0].toTmplData(true, Contacts.kFrom, contactFrom[1]);
     data.dataContactFrom.separator = "";
 
     let to = this._to.concat(this._cc).concat(this._bcc);
-    let contactsTo = to.map(function (x) {
-      return self._conversation._contactManager
-        .getContactFromNameAndEmail(x.name, x.email);
-    });
+    let contactsTo = to.map(function (x)
+      [self._conversation._contactManager
+        .getContactFromNameAndEmail(x.name, x.email),
+       x.email]
+    );
     this._contacts = this._contacts.concat(contactsTo);
     // false means "no colors"
-    data.dataContactsTo = contactsTo.map(function (x) x.toTmplData(false, Contacts.kTo));
+    data.dataContactsTo = contactsTo.map(function ([x, email]) x.toTmplData(false, Contacts.kTo, email));
     let l = data.dataContactsTo.length;
     for each (let [i, data] in Iterator(data.dataContactsTo)) {
       if (i == 0)
@@ -402,7 +450,52 @@ Message.prototype = {
     }
 
     // 2) Generate Attachment objects
-    l = this._attachments.length;
+    data = this.toTmplDataForAttachments(data);
+
+    // 3) Generate extra information: snippet, date, uri
+    data.snippet = escapeHtml(this._snippet).replace(this.RE_SNIPPET, "");
+    data.date = escapeHtml(this._date);
+    data.fullDate = Prefs["no_friendly_date"]
+      ? ""
+      : dateAsInMessageList(new Date(this._msgHdr.date/1000))
+    ;
+    data.uri = escapeHtml(msgHdrGetUri(this._msgHdr));
+
+    // 4) Custom tag telling the user if the message is not in the current view
+    let [name, fullName] = folderName(this._msgHdr.folder);
+    data.folderName = escapeHtml(fullName);
+    data.shortFolderName = escapeHtml(name);
+
+    // 5) Custom tag telling the user if this is a draft
+    if (msgHdrIsDraft(this._msgHdr))
+      extraClasses.push("draft");
+
+    // 6) For the "show remote content" thing
+    data.realFrom = escapeHtml(this._realFrom.email || this._from.email);
+
+    // 7) Extra classes we want to add to the message
+    if (this.isEncrypted)
+      extraClasses.push("decrypted");
+    data.extraClasses = extraClasses.join(" ");
+    if (this._conversation.messages.length == 1 && msgHdrIsJunk(this._msgHdr))
+      data.canUnJunk = true;
+    if (this._msgHdr.folder.getFlag(Ci.nsMsgFolderFlags.Queue))
+      data.isOutbox = true;
+
+    return data;
+  },
+
+  // Generate Attachment objects
+  toTmplDataForAttachments: function (data) {
+    if (!data) {
+      data = {
+        attachmentsPlural: null,
+        attachments: [],
+        gallery: false,
+      };
+    }
+    let self = this;
+    let l = this._attachments.length;
     let [makePlural, ] = PluralForm.makeGetter(strings.get("pluralForm"));
     data.attachmentsPlural = makePlural(l, strings.get("attachments")).replace("#1", l);
     for each (let [i, att] in Iterator(this._attachments)) {
@@ -410,6 +503,7 @@ Message.prototype = {
       let isImage = (att.contentType.indexOf("image/") === 0);
       if (isImage)
         data.gallery = true;
+      let isPdf = (att.contentType in pdfMimeTypes);
       let key = self._msgHdr.messageKey;
       let url = att.url.replace(self.RE_MSGKEY, "number="+key);
       let [thumb, imgClass] = isImage
@@ -425,46 +519,28 @@ Message.prototype = {
         Log.error(e);
       }
 
+      // Separator... boring
+      let sep = "";
+      if (i == this._attachments.length - 1) {
+        ;
+      } else if (i == this._attachments.length - 2) {
+        sep = strings.get("sepAnd");
+      } else {
+        sep = strings.get("sepComma");
+      }
+
       // We've got the right data, push it!
       data.attachments.push({
         formattedSize: formattedSize,
-        thumb: escapeHtml(thumb),
+        thumb: escapeHtml(thumb.replace(this.RE_SNIPPET, "")),
         imgClass: imgClass,
         name: escapeHtml(att.name).replace(this.RE_SNIPPET, ""),
+        anchor: "msg"+this.initialPosition+"att"+i,
+        /* Only advertise the preview for PDFs (images have the gallery view). */
+        canPreview: isPdf,
+        sep: sep,
       });
     }
-
-    // 3) Generate extra information: snippet, date, uri
-    data.snippet = escapeHtml(this._snippet).replace(this.RE_SNIPPET, "");
-    data.date = escapeHtml(this._date);
-    data.fullDate = Prefs["no_friendly_date"]
-      ? ""
-      : dateAsInMessageList(new Date(this._msgHdr.date/1000))
-    ;
-    data.uri = escapeHtml(msgHdrGetUri(this._msgHdr));
-
-    // 4) Custom tag telling the user if the message is not in the current view
-    let folderStr = this._msgHdr.folder.prettiestName;
-    let folder = this._msgHdr.folder;
-    while (folder.parent) {
-      folder = folder.parent;
-      folderStr = folder.name + "/" + folderStr;
-    }
-    data.folderName = escapeHtml(folderStr);
-    data.shortFolderName = escapeHtml(this._msgHdr.folder.name);
-
-    // 5) Custom tag telling the user if this is a draft
-    if (msgHdrIsDraft(this._msgHdr))
-      extraClasses.push("draft");
-
-    // 6) For the "show remote content" thing
-    data.realFrom = escapeHtml(this._realFrom.email || this._from.email);
-
-    // 7) Extra classes we want to add to the message
-    if (this.isEncrypted)
-      extraClasses.push("decrypted");
-    data.extraClasses = extraClasses.join(" ");
-
     return data;
   },
 
@@ -486,6 +562,7 @@ Message.prototype = {
         self._conversation._runOnceAfterNSignals(function () {
           if (self.expanded)
             self._conversation._htmlPane.contentWindow.scrollNodeIntoView(self._domNode);
+            self.read = true;
         }, 1);
         self.toggle();
       }, false);
@@ -507,6 +584,38 @@ Message.prototype = {
     this.register(".top-right-more", function (event) {
       event.stopPropagation();
     });
+
+    // Register event handlers for onSelected.
+    // Set useCapture: true for preventing this from being canceled
+    // by stopPropagation. This should be always called.
+    // Use focus event for shortcut keys 'F', 'B' and Tab.
+    // When trying to click a link or a collapsed message, focus event
+    // occurs before click. Update display by focus event has posibility
+    // to cause click failure. So we use mousedown to cancel focus event.
+    let mousedown = false;
+    this._domNode.addEventListener("mousedown", function () {
+      mousedown = true;
+    }, true);
+    this._domNode.addEventListener("blur", function () {
+      mousedown = false;
+    }, true);
+    this._domNode.addEventListener("focus", function () {
+      if (!mousedown)
+        self.onSelected();
+    }, true);
+    this._domNode.addEventListener("click", function () {
+      self.onSelected();
+    }, true);
+    // For the case when focused by mousedown but not clicked
+    this._domNode.addEventListener("mousemove", function () {
+      if (mousedown) {
+        self.onSelected();
+        mousedown = false;
+      }
+    }, true);
+    this._domNode.addEventListener("dragstart", function () {
+      self.onSelected();
+    }, true);
   },
 
   notifiedRemoteContentAlready: false,
@@ -522,6 +631,29 @@ Message.prototype = {
     this._domNode.getElementsByClassName("remoteContent")[0].style.display = "block";
   },
 
+  // This function should be called whenever the message is selected
+  // by focus, click, scrollNodeIntoView, etc.
+  onSelected: function _Message_onSelected() {
+    if (this._selected)
+      return;
+
+    // We run below code only for the first time after messages selected.
+    Log.debug("A message is selected: " + this._uri);
+    this._selected = true;
+    [message._selected = false
+      for ([, { message }] in Iterator(this._conversation.messages))
+      if (message != this)];
+
+    try {
+      [h.onMessageSelected(this)
+        for each ([, h] in Iterator(getHooks()))
+        if (typeof(h.onMessageSelected) == "function")];
+    } catch (e) {
+      Log.warn("Plugin returned an error:", e);
+      dumpCallStack(e);
+    }
+  },
+
   // Actually, we only do these expensive DOM calls when we need to, i.e. when
   //  we're expanded for the first time (expand calls us).
   registerActions: function _Message_registerActions() {
@@ -530,74 +662,58 @@ Message.prototype = {
 
     // Forward the calls to each contact.
     let people = this._domNode.getElementsByClassName("tooltip");
-    [x.onAddedToDom(people[i]) for each ([i, x] in Iterator(this._contacts))];
+    [x.onAddedToDom(people[i]) for each ([i, [x, email]] in Iterator(this._contacts))];
 
     // Let the UI do its stuff with the tooltips
     this._conversation._htmlPane.contentWindow.enableTooltips(this);
 
     // Register all the needed event handlers. Nice wrappers below.
-    this.register(".details", function (event) {
-      self._domNode.classList.add("with-details");
-      event.stopPropagation();
-    });
 
     // This is for the smart reply button, we need to determine what's the best
     // action.
-    this.register(".menuReply", function (event) self.compose(Ci.nsIMsgCompType.ReplyToSender, event));
-    this.register(".menuReplyAll", function (event) self.compose(Ci.nsIMsgCompType.ReplyAll, event));
-    this.register(".menuReplyList", function (event) self.compose(Ci.nsIMsgCompType.ReplyToList, event));
-    let mainAction = self._domNode.getElementsByClassName("replyMainAction")[0].firstElementChild;
+    this.register(".buttonReply, .action-reply", function (event) self.compose(Ci.nsIMsgCompType.ReplyToSender, event));
+    this.register(".buttonReplyAll, .action-replyAll", function (event) self.compose(Ci.nsIMsgCompType.ReplyAll, event));
+    this.register(".buttonReplyList, .action-replyList", function (event) self.compose(Ci.nsIMsgCompType.ReplyToList, event));
+    this.register(".buttonForward, .action-forward", function (event) self.forward(event));
     let mainActionLink = self._domNode.getElementsByClassName("replyMainActionLink")[0];
-    let replyList = self._domNode.getElementsByClassName("menuReplyList")[0];
-    let replyAll = self._domNode.getElementsByClassName("menuReplyAll")[0];
-    let reply = self._domNode.getElementsByClassName("menuReply")[0];
+    let replyList = self._domNode.getElementsByClassName("buttonReplyList")[0];
+    let replyAll = self._domNode.getElementsByClassName("buttonReplyAll")[0];
+    let reply = self._domNode.getElementsByClassName("buttonReply")[0];
     // Hide items if needed
     if (!this.isReplyListEnabled)
       replyList.style.display = "none";
     if (!this.isReplyAllEnabled)
       replyAll.style.display = "none";
+    // These items must be removed completely so that the alternate colors are
+    //  not off.
+    let replyListLink = self._domNode.getElementsByClassName("action-replyList")[0];
+    if (!this.isReplyListEnabled)
+      replyListLink.parentNode.removeChild(replyListLink);
+    let replyAllLink = self._domNode.getElementsByClassName("action-replyAll")[0];
+    if (!this.isReplyAllEnabled)
+      replyAllLink.parentNode.removeChild(replyAllLink);
     // Register the right actions. Make sure we're consistent with
-    // stub.compose-ui.js!
+    //  stub.compose-ui.js!
+    if (this.isReplyAllEnabled)
+      this._domNode.classList.add("isReplyAllEnabled");
     if (this.isReplyListEnabled) {
-      this.register(".replyMainAction, .replyMainActionLink", function (event) {
+      this._domNode.classList.add("isReplyListEnabled");
+      this.register(".replyMainActionLink", function (event) {
         self.compose(Ci.nsIMsgCompType.ReplyAll, event);
         event.stopPropagation();
       });
-      mainAction.textContent = replyAll.textContent;
       mainActionLink.textContent = replyAll.textContent;
     } else {
-      this.register(".replyMainAction, .replyMainActionLink", function (event) {
+      this.register(".replyMainActionLink", function (event) {
         self.compose(Ci.nsIMsgCompType.ReplyToSender, event);
         event.stopPropagation();
       });
-      mainAction.textContent = reply.textContent;
       mainActionLink.textContent = reply.textContent;
     }
 
     this.register(".edit-draft", function (event) self.compose(Ci.nsIMsgCompType.Draft, event));
-    this.register(".action-edit-new", function (event) self.compose(Ci.nsIMsgCompType.Template, event));
-    this.register(".action-compose-all", function (event) {
-      let allEmails =
-        self._msgHdr.author + "," +
-        self._msgHdr.recipients + "," +
-        self._msgHdr.ccList + "," +
-        self._msgHdr.bccList
-      ;
-      allEmails = MailServices.headerParser.removeDuplicateAddresses(allEmails, "");
-      let emailAddresses = {};
-      let names = {};
-      let numAddresses = MailServices.headerParser
-                          .parseHeadersWithArray(allEmails, emailAddresses, names, {});
-      allEmails = [
-        (names.value[i] ? (names.value[i] + " <" + x + ">") : x)
-        for each ([i, x] in Iterator(emailAddresses.value))
-        if (!(x.toLowerCase() in gIdentities))
-      ];
-      let composeAllUri = "mailto:" + allEmails.join(",");
-      let uri = Services.io.newURI(composeAllUri, null, null);
-      MailServices.compose.OpenComposeWindowWithURI(null, uri);
-    });
-    this.register(".forward", function (event) self.forward(event));
+    this.register(".action-editNew", function (event) self.compose(Ci.nsIMsgCompType.Template, event));
+    this.register(".action-print", function (event) self.print());
     // These event listeners are all in the header, which happens to have an
     //  event listener set on the click event for toggling the message. So we
     //  make sure that event listener is bubbling, and we register these with
@@ -645,6 +761,19 @@ Message.prototype = {
       event.stopPropagation();
     });
 
+    this.register(".sendUnsent", function (event) {
+      let w = topMail3Pane(self);
+      if (Services.io.offline)
+        w.MailOfflineMgr.goOnlineToSendMessages(w.msgWindow);
+      else
+        w.SendUnsentMessages();
+    });
+
+    this.register(".notJunk", function (event) {
+      self._domNode.getElementsByClassName("junkBar")[0].style.display = "none";
+      // false = not junk
+      topMail3Pane(self).JunkSelectedMessages(false);
+    });
     this.register(".ignore-warning", function (event) {
       self._domNode.getElementsByClassName("phishingBar")[0].style.display = "none";
       self._msgHdr.setUint32Property("notAPhishMessage", 1);
@@ -679,95 +808,41 @@ Message.prototype = {
       mainWindow.gFolderDisplay.selectMessage(self._msgHdr);
     });
 
+    // We only output this shitload of contact nodes when we have to...
+    this.register(".details > a", function (event) {
+      event.stopPropagation();
+      event.preventDefault();
+      self.showDetails();
+    });
+
+    this.register(".hide-details > a", function (event) {
+      event.stopPropagation();
+      event.preventDefault();
+      self._domNode.classList.remove("with-details");
+    });
+
     let attachmentNodes = this._domNode.getElementsByClassName("attachment");
-    let attInfos = [];
-    let newAttAPI = ("AttachmentInfo" in mainWindow);
-    // Create or lookup in the cache some attachment info. The logic goes like
-    // this:
-    // - this._attachments is either glodaMsg.attachmentInfos or
-    // mimeMsg.allUserAttachments, and has type [{ name, contentType, size, url }]
-    // - attInfos is a cache of AttachmentInfo objects
-    // - when opening or saving an attachment, we lazily create attInfos[i]
-    // - if it turns out the corresponding attInfo fails when trying to open it
-    // or save it, bail, and then stream the message, update this._attachments,
-    // clear attInfos
-    let getOrCreateAttInfo = function (i) {
-      if (attInfos[i])
-        return attInfos[i];
-
-      let att = self._attachments[i];
-      // The message keys can change over time, so do not assume that the msgkey
-      // that was picked at indexing-time is still valid.
-      let key = self._msgHdr.messageKey;
-      let url = att.url.replace(self.RE_MSGKEY, "number="+key);
-      let uri = msgHdrGetUri(self._msgHdr);
-
-
-      // New versions of Thunderbird (post-5.0) have changed the API for
-      // attachment objects. Handle both ways for now.
-      let attInfo;
-      if (newAttAPI)
-        attInfo = new mainWindow.AttachmentInfo(
-          att.contentType, url, att.name, uri, att.isExternal, 42
-        );
-      else
-        attInfo = new mainWindow.createNewAttachmentInfo(
-          att.contentType, url, att.name, uri, att.isExternal, 42
-        );
-
-      attInfos[i] = attInfo;
-      return attInfo;
-    };
-    // Open an attachment regardless of the API version we're on
-    let openAtt = function (attInfo) {
-      if (newAttAPI)
-        attInfo.open();
-      else
-        mainWindow.openAttachment(attInfo);
-    };
-    // Save an attachment regardless of the API version we're on
-    let saveAtt = function (attInfo) {
-      if (newAttAPI)
-        attInfo.save();
-      else
-        mainWindow.saveAttachment(attInfo);
-    };
-    // Re-generate the attachment infos...
-    let recreateAttInfos = function (k) {
-      MsgHdrToMimeMessage(self._msgHdr, self, function (aMsgHdr, aMimeMsg) {
-        this._attachments = aMimeMsg.allUserAttachments;
-        attInfos = [];
-        k();
-      }, true, {
-        partsOnDemand: true,
-        examineEncryptedParts: true,
-      });
-    };
+    /**
+     * We now assume that all the information is correct. I've done enough work
+     * on the Gloda side to ensure this. All hail to Gloda!
+     */
+    let attInfos = self._attachments.map(function (att)
+      new mainWindow.AttachmentInfo(
+        att.contentType, att.url, att.name, self._uri, att.isExternal, 42
+      ));
     for each (let [i, attNode] in Iterator(attachmentNodes)) {
       let j = i;
       let att = this._attachments[j];
 
+      // For the context menu event handlers
+      attNode.attInfo = attInfos[i];
+      attNode.setAttribute("contextmenu", "attachmentMenu");
+
       this.register(attNode.getElementsByClassName("open-attachment")[0], function (event) {
-        try {
-          openAtt(getOrCreateAttInfo(j));
-        } catch (e) {
-          Log.debug("Invalid attachment URL", getOrCreateAttInfo(j).url, e);
-          recreateAttInfos(function () {
-            reindexMessages([self._msgHdr]);
-            getOrCreateAttInfo(j).open();
-          });
-        }
+        attInfos[j].open();
       });
       this.register(attNode.getElementsByClassName("download-attachment")[0], function (event) {
-        try {
-          saveAtt(getOrCreateAttInfo(j));
-        } catch (e) {
-          Log.debug("Invalid attachment URL", getOrCreateAttInfo(j).url, e);
-          recreateAttInfos(function () {
-            reindexMessages([self._msgHdr]);
-            saveAtt(getOrCreateAttInfo(j));
-          });
-        }
+        attInfos[j].save();
       });
 
       let maybeViewable = 
@@ -778,12 +853,28 @@ Message.prototype = {
         let img = attNode.getElementsByTagName("img")[0];
         img.classList.add("view-attachment");
         img.setAttribute("title", strings.get("viewAttachment"));
-        this.register(img, function (event) {
+        let preview = function (event) {
           mainWindow.document.getElementById("tabmail").openTab(
             "contentTab",
             { contentPage: self._attachments[j].url }
           );
-        });
+        };
+        this.register(img, preview);
+      }
+      if (att.contentType in pdfMimeTypes) {
+        let img = attNode.getElementsByTagName("img")[0];
+        img.classList.add("view-attachment");
+        img.setAttribute("title", strings.get("viewAttachment"));
+        let preview = function (event) {
+          mainWindow.document.getElementById("tabmail").openTab(
+            "chromeTab", { chromePage:
+              makeViewerUrl(self._attachments[j].name, self._attachments[j].url)
+            }
+          );
+        };
+        this.register(img, preview);
+        let previewLink = attNode.getElementsByClassName("preview-attachment")[0];
+        this.register(previewLink, preview);
       }
 
       // Drag & drop
@@ -806,21 +897,14 @@ Message.prototype = {
       }, false);
     }
     this.register(".download-all", function (event) {
-      for (let i in range(0, self._attachments.length))
-        getOrCreateAttInfo(i);
-      try {
-        mainWindow.HandleMultipleAttachments(attInfos, "save");
-      } catch (e) {
-        // This doesn't look like we can catch that kind of failure...
-        Log.debug("Invalid attachment info", e);
-        recreateAttInfos(function () {
-          reindexMessages([self._msgHdr]);
-          for (let i in range(0, self._attachments.length))
-            getOrCreateAttInfo(i);
-          mainWindow.HandleMultipleAttachments(attInfos, "save");
-        });
-      }
+      mainWindow.HandleMultipleAttachments(attInfos, "save");
     });
+    this.register(".quickReply", function (event) {
+      event.stopPropagation();
+    }, { action: "keyup" });
+    this.register(".quickReply", function (event) {
+      event.stopPropagation();
+    }, { action: "keypress" });
     this.register(".quickReply", function (event) {
       // Ok, so it's actually convenient to register our event listener on the
       //  .quickReply node because we can easily prevent it from bubbling
@@ -847,9 +931,6 @@ Message.prototype = {
           Log.debug("Escape from quickReply");
           self._domNode.focus();
           break;
-
-        default:
-          window.startedEditing(true);
       }
       event.stopPropagation();
     }, { action: "keydown" });
@@ -873,62 +954,20 @@ Message.prototype = {
     return this._domNode.getElementsByTagName("iframe")[0];
   },
 
+  get tenPxFactor () {
+    return (isOSX ? .666 : (isWindows ? .7 : .625));
+  },
+
   cosmeticFixups: function _Message_cosmeticFixups() {
     let self = this;
     let window = this._conversation._htmlPane.contentWindow;
     window.alignAttachments(this);
 
+    // We're expanded at that stage...
     let toNode = this._domNode.getElementsByClassName("to")[0];
-    let children = toNode.children;
-    let hide = function (aNode) aNode.classList.add("show-with-details");
-    let width = function (x) x.offsetWidth;
-    let baseSize = isOSX ? 15 : 16;
-    let textSize = Prefs.tweak_chrome
-      ? Math.round(100 * this.defaultSize * 12 / baseSize) / 100
-      : this.defaultSize;
-    let lineHeight = textSize * 1.8; // per the CSS file
-    let overflows = function () parseInt(toNode.offsetHeight) > lineHeight;
-
-    if (overflows()) {
-      let dots = toNode.ownerDocument.createElement("a");
-      dots.setAttribute("href", "javascript:null");
-      dots.classList.add("link");
-      dots.classList.add("hide-with-details");
-      // We need to be conservative here, because if we don't set the number,
-      // then setting it in the end might trigger one more overflow...
-      dots.textContent = strings.get("andNMore", [999]);
-      dots.addEventListener("click", function (event) {
-        self._domNode.classList.add("with-details");
-        event.stopPropagation();
-      }, false);
-      toNode.appendChild(toNode.ownerDocument.createTextNode(" "));
-      toNode.appendChild(dots);
-      // We need to hide an even number of nodes, so that there's no sepComma or
-      // sepAnd at the end of the list.
-      let nHidden = 0;
-
-      // First find out how many names it takes to fill the message's width
-      let approximateWidth = width(this._domNode);
-      let total = 0;
-      let i = 0;
-      let j = toNode.children.length - 1;
-      while (total < approximateWidth && i < j) {
-        total += width(children[i]);
-        i++;
-      }
-      // Hide all the others
-      [(hide(children[x]), ++nHidden) for (x in range(i, j))];
-      // And move backwards to hide just enough items (usually one or two) until
-      //  we fit perfectly.
-      i--;
-      while (overflows() && i >= 0) {
-        (hide(children[i]), ++nHidden);
-        i--;
-      }
-      if (nHidden % 2)
-        (hide(children[i]), ++nHidden);
-      dots.textContent = strings.get("andNMore", [nHidden/2]);
-    }
+    let w = toNode.parentNode.scrollWidth;
+    toNode.style.width = (w-5)+"px";
+    toNode.classList.remove("not-resized-yet");
   },
 
   // {
@@ -974,7 +1013,11 @@ Message.prototype = {
       tagNode.appendChild(span);
       tagList.appendChild(tagNode);
     }
-    this._domNode.getElementsByClassName("regular-tags")[0].innerHTML = tagList.innerHTML;
+    let otherTagList = this._domNode.getElementsByClassName("regular-tags")[0];
+    while (otherTagList.firstChild)
+      otherTagList.removeChild(otherTagList.firstChild);
+    for (let [, node] in Iterator(tagList.childNodes))
+      otherTagList.appendChild(node.cloneNode(true));
   },
 
   removeFromConversation: function _Message_removeFromConversation() {
@@ -986,9 +1029,163 @@ Message.prototype = {
       w.closeTab();
   },
 
+  // Build attachment view if we have a `MessageFromGloda` that's encrypted
+  // because Gloda has not indexed attachments.
+  buildAttachmentViewIfNeeded: function _Message_buildAttachmentViewIfNeeded(k) {
+    if (!this.needsLateAttachments) {
+      k();
+      return;
+    }
+    let self = this;
+    Log.debug(Colors.blue, "Building attachment view", Colors.default);
+    try {
+      MsgHdrToMimeMessage(this._msgHdr, null, function(aMsgHdr, aMimeMsg) {
+        try {
+          if (aMimeMsg == null)
+            return;
+
+          if (Prefs.extra_attachments) {
+            self._attachments = aMimeMsg.allAttachments.concat(aMimeMsg.allUserAttachments);
+            let hashMap = {};
+            self._attachments = self._attachments.filter(function (x) {
+              let seenAlready = (x.url in hashMap);
+              hashMap[x.url] = null;
+              return !seenAlready;
+            });
+          } else {
+            self._attachments = aMimeMsg.allUserAttachments
+              .filter(function (x) x.isRealAttachment);
+          }
+          let tmplData = self.toTmplDataForAttachments();
+          let w = self._conversation._htmlPane.contentWindow;
+          let $ = w.$;
+          $("#attachmentIconTemplate").tmpl(tmplData).appendTo(
+            $(self._domNode.querySelector(".attachmentIcon")).empty());
+          $("#attachmentDetailsTemplate").tmpl(tmplData).appendTo(
+            $(self._domNode.querySelector(".detailsLine")).empty());
+          $("#attachmentsTemplate").tmpl(tmplData).appendTo(
+            $(self._domNode.querySelector(".attachments-container")).empty());
+
+          try {
+            k();
+          } catch (e) {
+            Log.error(e);
+            dumpCallStack(e);
+          }
+        } catch (e) {
+          Log.error(e);
+          dumpCallStack(e);
+          k();
+        }
+      }, true, {
+        partsOnDemand: true,
+        examineEncryptedParts: true,
+      });
+    } catch (e) {
+      Log.warn("Failed to stream the attachments properly, this is VERY BAD");
+      Log.warn(e);
+      k();
+    }
+  },
+
+  // Adds the details if needed... done after the message has been streamed, so
+  // in theory, that should be pretty fast...
+  showDetails: function _Message_showDetails(k) {
+    // Hide all irrelevant UI items now we're showing details
+    this._domNode.classList.add("with-details");
+    if (this.detailsFetched)
+      return;
+    this.detailsFetched = true;
+    let w = this._conversation._htmlPane.contentWindow;
+    msgHdrGetHeaders(this._msgHdr, function (aHeaders) {
+      try {
+        let $ = w.$;
+        let data = {
+          dataContactsFrom: [],
+          dataContactsTo: [],
+          dataContactsCc: [],
+          dataContactsBcc: [],
+          extraLines: [],
+        };
+        data.extraLines.push({
+          key: strings.get("header-folder"),
+          value: escapeHtml(folderName(this._msgHdr.folder)[1]),
+        });
+        let interestingHeaders =
+          ["mailed-by", "x-mailer", "mailer", "date", "user-agent"];
+        for each (let h in interestingHeaders) {
+          if (aHeaders.has(h)) {
+            let key = h;
+            try { // Note all the header names are translated.
+              key = strings.get("header-"+h);
+            } catch (e) {}
+            data.extraLines.push({
+              key: key,
+              value: escapeHtml(aHeaders.get(h).replace(this.RE_SNIPPET, "")),
+            });
+          }
+        }
+        let subject = aHeaders.get("subject");
+        data.extraLines.push({
+          key: strings.get("header-subject"),
+          value: subject ? escapeHtml(GlodaUtils.deMime(subject)) : "",
+        });
+        let self = this;
+        let buildContactObjects = function (nameEmails)
+          nameEmails.map(function (x)
+            [self._conversation._contactManager
+              .getContactFromNameAndEmail(x.name, x.email),
+             x.email]
+          );
+        let buildContactData = function (contactObjects)
+          contactObjects.map(function ([x, email])
+            // Fourth parameter: aIsDetail
+            x.toTmplData(false, Contacts.kTo, email, true)
+          );
+        let contactsFrom = buildContactObjects([this._from]);
+        let contactsTo = buildContactObjects(this._to);
+        let contactsCc = buildContactObjects(this._cc);
+        let contactsBcc = buildContactObjects(this._bcc);
+        data.dataContactsFrom = buildContactData(contactsFrom);
+        data.dataContactsTo = buildContactData(contactsTo);
+        data.dataContactsCc = buildContactData(contactsCc);
+        data.dataContactsBcc = buildContactData(contactsBcc);
+
+        // Output the template
+        $("#detailsTemplate").tmpl(data)
+          .appendTo($(this._domNode.getElementsByClassName("detailsPlaceholder")[0]));
+        // Activate tooltip event listeners
+        w.enableTooltips({
+          _domNode:
+            this._domNode.getElementsByClassName("detailsPlaceholder")[0],
+        });
+        // Notify contact nodes they've been added to the DOM. This is all very
+        // higher-order...
+        for each (let [contactObjects, cssClass] in
+            [[contactsFrom, ".fromLine"], [contactsTo, ".toLine"],
+             [contactsCc, ".ccLine"], [contactsBcc, ".bccLine"]]) {
+          for each (let [i, node] in
+              Iterator(this._domNode.querySelectorAll(cssClass+" .tooltip"))) {
+            contactObjects[i][0].onAddedToDom(node);
+          }
+        }
+      } catch (e) {
+        Log.error(e);
+        dumpCallStack(e);
+      }
+      // It's asynchronous, so move on if needed.
+      if (k)
+        k();
+    }.bind(this));
+  },
+
   // Convenience properties
   get read () {
     return this._msgHdr.isRead;
+  },
+
+  set read (v) {
+    return msgHdrsMarkAsRead([this._msgHdr], v);
   },
 
   get starred () {
@@ -1032,9 +1229,12 @@ Message.prototype = {
     this._domNode.classList.remove("collapsed");
     if (!this._didStream) {
       try {
-        this.registerActions();
-        this.cosmeticFixups();
-        this.streamMessage(); // will call _signal
+        let self = this;
+        this.buildAttachmentViewIfNeeded(function () {
+          self.registerActions();
+          self.cosmeticFixups();
+          self.streamMessage(); // will call _signal
+        });
       } catch (e) {
         Log.error(e);
         dumpCallStack(e);
@@ -1059,17 +1259,20 @@ Message.prototype = {
     let originalScroll = this._domNode.ownerDocument.documentElement.scrollTop;
     let msgWindow = topMail3Pane(this).msgWindow;
     let self = this;
-
-    try {
-      [h.onMessageBeforeStreaming(this) for each ([, h] in Iterator(getHooks()))];
-    } catch (e) {
-      Log.warn("Plugin returned an error:", e);
-      dumpCallStack(e);
+    
+    for each (let [, h] in Iterator(getHooks())) {
+      try {
+        if (typeof(h.onMessageBeforeStreaming) == "function") 
+          h.onMessageBeforeStreaming(this);
+      } catch (e) {
+        Log.warn("Plugin returned an error:", e);
+        dumpCallStack(e);
+      };
     }
 
     let iframe = this._domNode.ownerDocument
       .createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "iframe");
-    iframe.setAttribute("style", "height: 20px");
+    iframe.setAttribute("style", "height: 20px; overflow-y: hidden");
     iframe.setAttribute("type", "content");
 
     let delay = 100;
@@ -1114,17 +1317,21 @@ Message.prototype = {
             //  performed now, not later. This gives plugins a chance to modify
             //  the DOM of the message (i.e. decrypt it) before we tweak the
             //  fonts and stuff.
-            try {
-              [h.onMessageStreamed(self._msgHdr, self._domNode, msgWindow) for each ([, h] in Iterator(getHooks()))];
-            } catch (e) {
-              Log.warn("Plugin returned an error:", e);
-              dumpCallStack(e);
+            for each (let [, h] in Iterator(getHooks())) {
+              try {
+                if (typeof(h.onMessageStreamed) == "function") 
+                  h.onMessageStreamed(self._msgHdr, self._domNode, msgWindow, self);
+              } catch (e) {
+                Log.warn("Plugin returned an error:", e);
+                dumpCallStack(e);
+              };
             }
 
             let iframeDoc = iframe.contentDocument;
             self.tweakFonts(iframeDoc);
             self.detectQuotes(iframe);
             self.registerLinkHandlers(iframe);
+            self.injectCss(iframeDoc);
             if (self.checkForFishing(iframeDoc) && !self._msgHdr.getUint32Property("notAPhishMessage")) {
               Log.debug("Phishing attempt");
               self._domNode.getElementsByClassName("phishingBar")[0].style.display = "block";
@@ -1199,8 +1406,16 @@ Message.prototype = {
               self._domNode.ownerDocument.documentElement.scrollTop = originalScroll;
             }
 
+            // Send "msgLoaded" event
+            let msgLoadedAtom = Services.mAtomService.getAtom("msgLoaded");
+            self._msgHdr.folder.NotifyPropertyFlagChanged(self._msgHdr, msgLoadedAtom, 0, 1);
+            self._msgHdr.folder.lastMessageLoaded = self._msgHdr.messageKey;
+
             self._didStream = true;
-            self._signal();
+            if (Prefs.getInt("mail.show_headers") == kHeadersShowAll)
+              self.showDetails(function () self._signal());
+            else
+              self._signal();
           } catch (e) {
             try {
               iframe.style.height = iframeDoc.body.scrollHeight+"px";
@@ -1208,8 +1423,8 @@ Message.prototype = {
               iframe.style.height = "800px";
             }
             Log.error(e);
-            Log.warn("Running signal once more to make sure we move on with our life... (warning, this WILL cause bugs)");
             dumpCallStack(e);
+            Log.warn("Running signal once more to make sure we move on with our life... (warning, this WILL cause bugs)");
             self._didStream = true;
             self._signal();
           }
@@ -1359,34 +1574,45 @@ Message.prototype = {
    * that we want to forward a plaintext version of the message, so we try and
    * do our best to give this. We're trying not to stream it once more!
    */
-  exportAsHtml: function _Message_exportAsHtml() {
-    let author = escapeHtml(this._contacts[0]._name);
-    let date = new Date(this._msgHdr.date/1000).toLocaleString("%x");
-    // We try to convert the bodies to plain text, to enhance the readibility in
+  exportAsHtml: function _Message_exportAsHtml(k) {
+    let author = escapeHtml(this._contacts[0][0]._name);
+    let authorEmail = this._from.email;
+    let authorAvatar = this._contacts[0][0].avatar;
+    let authorColor = this._contacts[0][0].color;
+    let date = dateAccordingToPref(new Date(this._msgHdr.date/1000));
+    // We try to convert the bodies to plain text, to enhance the readability in
     // the forwarded conversation. Note: <pre> tags are not converted properly
     // it seems, need to investigate...
-    let body = this.iframe
-      ? this.bodyAsText
-      : this._snippet
-    ;
-    // Do our little formatting...
-    let html = [
-      '<b><span style="color: #396BBD">', author, '</span></b><br />',
-      '<span style="color: #666">', date, '</span><br />',
-      '<br />',
-      '<div style="color: #666">',
-        (this.iframe ? escapeHtml(body) : ("<i>" + escapeHtml(body) + "</i>...")),
-      '</div>',
-    ].join("");
-    return html;
+    quoteMsgHdr(this._msgHdr, function (body) {
+      // UGLY HACK. I don't even wanna dig into the internals of the composition
+      // window to figure out why this results in an extra <br> being added, so
+      // let's just stay sane and use a hack.
+      body = body.replace(/\r?\n<br>/g, "<br>");
+      body = body.replace(/<\/body>\s*<\/html>\s*$/, "");
+      if (!(body.indexOf("<pre wrap>") === 0))
+        body = "<br>"+body;
+      let html = [
+        '<div style="overflow: auto">',
+        '<img src="', authorAvatar, '" style="float: left; height: 48px; margin-right: 5px" />',
+        '<b><span><a style="color: ', authorColor, ' !important; text-decoration: none !important; font-weight: bold" href="mailto:', authorEmail,
+        '">', author, '</a></span></b><br />',
+        '<span style="color: #666">', date, '</span>',
+        '</div>',
+        '<div style="color: #666">',
+          body,
+        '</div>',
+      ].join("");
+      k(html);
+    });
   },
 }
 
 MixIn(Message, EventHelperMixIn);
 
-function MessageFromGloda(aConversation, aGlodaMsg) {
+function MessageFromGloda(aConversation, aGlodaMsg, aLateAttachments) {
   this._msgHdr = aGlodaMsg.folderMessage;
   this._glodaMsg = aGlodaMsg;
+  this.needsLateAttachments = aLateAttachments;
   Message.apply(this, arguments);
 
   // Our gloda plugin found something for us, thanks dude!
@@ -1411,8 +1637,8 @@ function MessageFromGloda(aConversation, aGlodaMsg) {
   else
     this.contentType = "message/rfc822";
 
-  Log.assert(!aGlodaMsg.isEncrypted,
-    "We're supposed to stream encrypted messages!");
+  if ("isEncrypted" in aGlodaMsg)
+    this.isEncrypted = aGlodaMsg.isEncrypted;
 
   if ("mailingLists" in aGlodaMsg)
     this.mailingLists =
@@ -1420,9 +1646,14 @@ function MessageFromGloda(aConversation, aGlodaMsg) {
 
   this.isReplyListEnabled =
     ("mailingLists" in aGlodaMsg) && aGlodaMsg.mailingLists.length;
+  let seen = {};
   this.isReplyAllEnabled =
     [aGlodaMsg.from].concat(aGlodaMsg.to).concat(aGlodaMsg.cc).concat(aGlodaMsg.bcc)
-    .filter(function (x) !(x.value in gIdentities)).length > 1;
+    .filter(function (x) {
+      let r = !(x.value in gIdentities) && !(x.value in seen);
+      seen[x.value] = null;
+      return r;
+    }).length > 1;
 
   this._signal();
 }
@@ -1467,7 +1698,7 @@ function MessageFromDbHdr(aConversation, aMsgHdr) {
         let listPost = aMimeMsg.get("list-post");
         if (listPost) {
           let r = listPost.match(self.RE_LIST_POST);
-          if (r.length)
+          if (r && r.length)
             self.mailingLists = [r[1]];
         }
         Log.debug(self.mailingLists);
@@ -1477,12 +1708,17 @@ function MessageFromDbHdr(aConversation, aMsgHdr) {
           aMimeMsg.has("list-post") &&
           self.RE_LIST_POST.exec(aMimeMsg.get("list-post"))
         ;
+        let seen = {};
         self.isReplyAllEnabled = 
           parseMimeLine(aMimeMsg.get("from"), true)
           .concat(parseMimeLine(aMimeMsg.get("to"), true))
           .concat(parseMimeLine(aMimeMsg.get("cc"), true))
           .concat(parseMimeLine(aMimeMsg.get("bcc"), true))
-          .filter(function (x) !(x.email in gIdentities))
+          .filter(function (x) {
+            let r = !(x.email in gIdentities) && !(x.email in seen);
+            seen[x.email] = null;
+            return r;
+          })
           .length > 1;
 
         let findIsEncrypted = function (x)
@@ -1535,15 +1771,36 @@ let PostStreamingFixesMixIn = {
     Prefs.getInt("font.size.variable.x-western")
   ,
 
+  injectCss: function (iframeDoc) {
+    let styleRules = [];
+    // !important because messageContents.css is appended after us when the html
+    // is rendered
+    styleRules = styleRules.concat([
+      "blockquote[type=\"cite\"] {",
+      "  border-right-width: 0px;",
+      "  border-left: 1px #ccc solid;",
+      "  color: #666 !important;",
+      "}",
+    ]);
+
+    // Ugly hack (once again) to get the style inside the
+    // <iframe>. I don't think we can use a chrome:// url for
+    // the stylesheet because the iframe has a type="content"
+    let style = iframeDoc.createElement("style");
+    style.appendChild(iframeDoc.createTextNode(styleRules.join("\n")));
+    let head = iframeDoc.body.previousElementSibling;
+    head.appendChild(style);
+  },
+
   tweakFonts: function (iframeDoc) {
     if (!Prefs.tweak_bodies)
       return;
 
-    let baseSize = isOSX ? 15 : 16;
-    let textSize = Math.round(100 * this.defaultSize * 12 / baseSize) / 100;
+    let tenPxFactor = isOSX ? .666 : (isWindows ? .7 : .625);
+    let textSize = Math.round(this.defaultSize * tenPxFactor * 1.2);
 
     // Assuming 16px is the default (like on, say, Linux), this gives
-    //  18px and 12px, which what Andy had in mind.
+    //  18px and 12px, which is what Andy had in mind.
     // We're applying the style at the beginning of the <head> tag and
     //  on the body element so that it can be easily overridden by the
     //  html.
@@ -1565,7 +1822,7 @@ let PostStreamingFixesMixIn = {
         !(this.mailingLists.some(function (x) (x in Prefs["monospaced_senders"])))) {
       styleRules = styleRules.concat([
         ".moz-text-flowed, .moz-text-plain {",
-        "  font-family: \""+Prefs.getChar("font.default")+"\" !important;",
+        "  font-family: sans-serif !important;",
         "  font-size: "+textSize+"px !important;",
         "  line-height: 112.5% !important;",
         "}",
@@ -1596,9 +1853,8 @@ let PostStreamingFixesMixIn = {
   },
 
   detectQuotes: function (iframe) {
-    let baseSize = isOSX ? 15 : 16;
     let smallSize = Prefs.tweak_chrome
-      ? Math.round(100 * this.defaultSize * 11 / baseSize) / 100
+      ? this.defaultSize * this.tenPxFactor * 1.1
       : Math.round(100 * this.defaultSize * 11 / 12) / 100;
 
     // Launch various crappy pieces of code^W^W^W^W heuristics to
@@ -1616,15 +1872,17 @@ let PostStreamingFixesMixIn = {
         t = Date.now();
       };
       convertOutlookQuotingToBlockquote(iframe.contentWindow, iframeDoc);
-      //log("convertOutlookQuotingToBlockquote");
+      log("convertOutlookQuotingToBlockquote");
       convertHotmailQuotingToBlockquote1(iframeDoc);
-      //log("convertHotmailQuotingToBlockquote1");
-      convertHotmailQuotingToBlockquote2(iframe.contentWindow, iframeDoc, Prefs["hide_quote_length"]);
-      //log("convertHotmailQuotingToBlockquote2");
+      log("convertHotmailQuotingToBlockquote1");
+      if (Prefs.expensive_quote_detection) {
+        convertHotmailQuotingToBlockquote2(iframe.contentWindow, iframeDoc, Prefs["hide_quote_length"]);
+        log("convertHotmailQuotingToBlockquote2");
+      }
       convertForwardedToBlockquote(iframeDoc);
-      //log("convertForwardedToBlockquote");
+      log("convertForwardedToBlockquote");
       fusionBlockquotes(iframeDoc);
-      //log("fusionBlockquotes");
+      log("fusionBlockquotes");
     } catch (e) {
       Log.warn(e);
       dumpCallStack(e);
@@ -1759,7 +2017,7 @@ let PostStreamingFixesMixIn = {
     let self = this;
     let iframeDoc = iframe.contentDocument;
     let mainWindow = topMail3Pane(this);
-    for each (let [, a] in Iterator(iframeDoc.getElementsByTagName("a"))) {
+    for each (let [, a] in Iterator(iframeDoc.querySelectorAll("a"))) {
       if (!a)
         continue;
       let anchor = this._getAnchor(a.href);

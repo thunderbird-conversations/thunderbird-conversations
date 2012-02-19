@@ -1,8 +1,0 @@
-<!ENTITY window.title "הגדרות של תצוגת שיחה">
-<!ENTITY title.message_display "תצוגת הודעה">
-<!ENTITY title.quoting "ציטוט">
-<!ENTITY option.hide_longer_than "החבא ציטוטים גבוה מאשר">
-<!ENTITY option.lines "שורות">
-<!ENTITY title.advanced "מתקדם">
-<!ENTITY title.advanced_display "תצוגת שיחה">
-<!ENTITY option.no_friendly_date "תשתמש בתאריכים &quot;רגילים&quot;, כמו ברשימת ההודעות">

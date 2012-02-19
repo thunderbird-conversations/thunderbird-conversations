@@ -1,6 +1,6 @@
 var EXPORTED_SYMBOLS = ["setupLogging", "dumpCallStack", "logRoot", "Colors"]
 
-Components.utils.import("resource://conversations/prefs.js");
+Components.utils.import("resource://conversations/modules/prefs.js");
 Components.utils.import("resource:///modules/gloda/log4moz.js");
 
 function setupLogging(name) {
@@ -11,6 +11,7 @@ function setupLogging(name) {
       this.error("\n!!!!!!!!!!!!!!!!!!!!!!"+
                  "\n    ASSERT FAILURE    "+
                  "\n!!!!!!!!!!!!!!!!!!!!!!\n"+aStr);
+      dumpCallStack();
       throw Error("Assert failures are fatal, man");
     }
   };

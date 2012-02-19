@@ -23,7 +23,7 @@ let strings = new StringBundle("chrome://conversations/locale/message.properties
 //  facebook-style autocomplete.
 function asToken(thumb, name, email, guid) {
   let hasName = name && (String.trim(name).length > 0);
-  let data = hasName ? gHeaderParser.makeFullAddress(name, email) : email;
+  let data = hasName ? MailServices.headerParser.makeFullAddress(name, email) : email;
   let nameStr = hasName ? name + " <" + email + ">" : email;
   let thumbStr = thumb ? "<img class='autocomplete-thumb' src=\""+escapeHtml(thumb)+"\" /> " : "";
   let listItem = thumbStr + escapeHtml(nameStr); // this one is for injection
@@ -183,7 +183,8 @@ ContactIdentityCompleter.prototype = {
         let contact = items[iContact];
         if (!(contact.id in contactToThing)) {
           contactToThing[contact.id] = contact;
-          possibleDudes.push(contact.identities[0]);
+          if (contact.identities)
+            possibleDudes.push(contact.identities[0]);
         }
       }
 

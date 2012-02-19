@@ -4,15 +4,19 @@
 <head>
   <title>tbGallery</title>
   <link rel="stylesheet" href="style.css" type="text/css" media="screen" />
-  <script type="text/javascript" src="chrome://conversations/content/js/jquery-1.5.js"></script>
-  <script type="text/javascript" src="chrome://conversations/content/js/jquery.tmpl.js"></script>
+  <link rel="stylesheet" type="text/css" href="css/jquery.lightbox-0.5.css" media="screen" />
+  <script type="text/javascript" src="chrome://messenger/content/jquery.js"></script>
+  <script type="text/javascript" src="../js/jquery.tmpl.js"></script>
   <script src="js/gallery.js" type="application/javascript;version=1.8" charset="utf-8"></script>
+  <script type="text/javascript" src="js/jquery.lightbox-0.5.js"></script>
 </head>
 
 <body>
   <script id="imageTemplate" type="text/x-jquery-tmpl">
     <li class="photoWrap">
-      <img src="${url}">
+      <a href="${url}" title="${name}" class="lightBox">
+        <img src="${url}">
+      </a>
       <div class="hbox">
         <span class="filename">${name}</span> 
         <span class="size">${size}</span>

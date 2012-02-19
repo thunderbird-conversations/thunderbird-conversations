@@ -52,14 +52,15 @@ const clipboardService = Cc["@mozilla.org/widget/clipboardhelper;1"]
 
 Cu.import("resource:///modules/iteratorUtils.jsm"); // for fixIterator
 Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
+Cu.import("resource:///modules/mailServices.js");
 Cu.import("resource:///modules/gloda/utils.js");
 Cu.import("resource:///modules/gloda/gloda.js");
 
-Cu.import("resource://conversations/stdlib/compose.js");
-Cu.import("resource://conversations/stdlib/misc.js");
-Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
-Cu.import("resource://conversations/log.js");
-Cu.import("resource://conversations/misc.js");
+Cu.import("resource://conversations/modules/stdlib/compose.js");
+Cu.import("resource://conversations/modules/stdlib/misc.js");
+Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+Cu.import("resource://conversations/modules/log.js");
+Cu.import("resource://conversations/modules/misc.js");
 
 const Contacts = {
   kFrom: 0,
@@ -83,6 +84,7 @@ try {
 
 function ContactManager() {
   this._cache = {};
+  this._colorCache = {};
   this._count = 0;
 }
 
@@ -107,8 +109,18 @@ ContactManager.prototype = {
       cache(name, contact);
       return contact;
     } else {
-      let contact = new ContactFromAB(this, name, email, position);
-      cache(name, contact);
+      let contact = new ContactFromAB(this, name, email, position, this._colorCache[email]);
+      // Only cache contacts which are in the address book. This avoids weird
+      //  phenomena such as a bug tracker sending emails with different names
+      //  but with the same email address, resulting in people all sharing the
+      //  same name.
+      if (contact._card) {
+        cache(name, contact);
+      } else {
+        // We still want to cache the color...
+        if (!(email in this._colorCache))
+          this._colorCache[email] = contact.color;
+      }
       return contact;
     }
   },
@@ -136,20 +148,35 @@ ContactManager.prototype = {
 }
 
 let ContactMixIn = {
-  toTmplData: function _ContactMixIn_toInlineHtml (aUseColor, aPosition) {
-    let name = this.getName(aPosition);
+  /**
+   * The aEmail parameter is here because the same contact object is shared for
+   * all instances of a contact, even though the original email address is
+   * different. This allows one to share a common color for a same card in the
+   * address book.
+   */
+  toTmplData: function _ContactMixIn_toInlineHtml (aUseColor, aPosition, aEmail, aIsDetail) {
+    let name = this.getName(aPosition, aIsDetail);
+    let tooltipName = this.getTooltipName(aPosition);
     let data = {
       showMonospace: aPosition == Contacts.kFrom,
       name: escapeHtml(name),
-      tooltipName: escapeHtml((name != this._email) ? name : ""),
-      email: escapeHtml(this._email),
+      tooltipName: escapeHtml((tooltipName != aEmail) ? tooltipName : ""),
+      email: escapeHtml(aEmail),
       avatar: escapeHtml(this.avatar),
       profiles: this._profiles,
       // Parameter aUseColor is optional, and undefined means true
       colorStyle: ((aUseColor === false)
         ? ""
         : ("color :" + this.color)),
+      writeBr: aIsDetail,
+      star: false,
     };
+    if (aIsDetail) {
+      data.name = escapeHtml(name != aEmail
+        ? MailServices.headerParser.makeFullAddress(name, aEmail)
+        : aEmail);
+      data.star = this._card != null;
+    }
     return data;
   },
 
@@ -171,9 +198,13 @@ let ContactMixIn = {
 
     /* Register the "send message" link */
     this.register(".sendEmail", function (event) {
-      composeMessageTo(self._email, mainWindow.gFolderDisplay.displayedFolder);
+      let dest = (this._name == this._email || !this._name)
+        ? this._email
+        : MailServices.headerParser.makeFullAddress(this._name, this._email);
+      dump(dest+"\n\n");
+      composeMessageTo(dest, mainWindow.gFolderDisplay.displayedFolder);
       event.stopPropagation();
-    });
+    }.bind(this));
 
     // XXX We already called getCardForEmail if we're runnning without contacts
     //  installed...
@@ -237,10 +268,6 @@ let ContactMixIn = {
             onItemsRemoved: function _onItemsRemoved(aItems, aCollection) { },
             onQueryCompleted: function _onQueryCompleted(aCollection) {
               let tabmail = mainWindow.document.getElementById("tabmail");
-              /*aCollection.items =
-                [GCV.selectRightMessage(m)
-                for each ([, m] in Iterator(GCV.groupMessages(aCollection.items)))];
-              aCollection.items = aCollection.items.filter(function (x) x);*/
               tabmail.openTab("glodaList", {
                 collection: aCollection,
                 title: strings.get("involvingTabTitle").replace("#1", self._name),
@@ -276,11 +303,19 @@ let ContactMixIn = {
     }
   },
 
-  getName: function _ContactMixIn_getName (aPosition) {
+  getTooltipName: function _ContactMixIn_getName (aPosition) {
     Log.assert(aPosition === Contacts.kFrom || aPosition === Contacts.kTo,
       "Someone did not set the 'position' properly");
-    // This will be changed later when we localize
     if (this._email in gIdentities)
+      return strings.get("meFromMeToSomeone");
+    else
+      return this._name || this._email;
+  },
+
+  getName: function _ContactMixIn_getName (aPosition, aIsDetail) {
+    Log.assert(aPosition === Contacts.kFrom || aPosition === Contacts.kTo,
+      "Someone did not set the 'position' properly");
+    if ((this._email in gIdentities) && !aIsDetail)
       return ((aPosition === Contacts.kFrom)
         ? strings.get("meFromMeToSomeone")
         : strings.get("meFromSomeoneToMe")
@@ -295,9 +330,9 @@ let ContactMixIn = {
   },
 };
 
-function ContactFromAB(manager, name, email) {
+function ContactFromAB(manager, name, email, /* unused */ position, color) {
   this.emails = [];
-  this.color = manager.freshColor(email in gIdentities);
+  this.color = color || manager.freshColor(email in gIdentities);
 
   this._manager = manager;
   this._name = name; // Initially, the displayed name. Might be enhanced later.

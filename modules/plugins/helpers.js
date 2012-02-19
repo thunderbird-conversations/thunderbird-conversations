@@ -44,7 +44,7 @@ var EXPORTED_SYMBOLS = ['PluginHelpers']
  */
 
 Components.utils.import("resource:///modules/gloda/utils.js");
-Components.utils.import("resource://conversations/stdlib/misc.js");
+Components.utils.import("resource://conversations/modules/stdlib/misc.js");
 
 const gsfnRegexp = /^(.+)(?:, an employee of Mozilla Messaging,)? (?:replied to|commented on|just asked)/;
 const gsfnFrom = "Mozilla Messaging <noreply.mozilla_messaging@getsatisfaction.com>";
@@ -120,8 +120,11 @@ let PluginHelpers = {
         "changed-fields",
       ];
       let o = {};
-      for each (let k in keys)
-        o[k] = aMimeMsg.get("x-bugzilla-"+k); 
+      for each (let k in keys) {
+        let v = aMimeMsg.get("x-bugzilla-"+k);
+        if (v)
+          o[k] = GlodaUtils.deMime(v);
+      }
       return o;
     }
 

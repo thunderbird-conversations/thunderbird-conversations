@@ -21,10 +21,10 @@ Cu.import("resource:///modules/virtualFolderWrapper.js");
 Cu.import("resource:///modules/gloda/index_msg.js");
 Cu.import("resource:///modules/gloda/public.js");
 
-Cu.import("resource://conversations/stdlib/misc.js");
-Cu.import("resource://conversations/stdlib/msgHdrUtils.js");
-Cu.import("resource://conversations/prefs.js");
-Cu.import("resource://conversations/log.js");
+Cu.import("resource://conversations/modules/stdlib/misc.js");
+Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+Cu.import("resource://conversations/modules/prefs.js");
+Cu.import("resource://conversations/modules/log.js");
 
 let Log = setupLogging("Conversations.Assistant");
 
@@ -145,101 +145,48 @@ let Customizations = {
         getMail3Pane().goDoCommand('cmd_toggleMessagePane');
     }),
 
-  actionReindexAttachments: {
-    install: function () {
-      let limit = 8192;
-      let popupShown = false;
-      let showPopup = function () {
-        if (popupShown)
-          return;
-        popupShown = true;
-        getMail3Pane().openDialog(
-          "chrome://conversations/content/indexing.xhtml", "",
-          "chrome,width=820,height=500"
-        );
-      };
-      let reIndexListener = function () {
-        let listener = {
-          /* called when new items are returned by the database query or freshly indexed */
-          onItemsAdded: function myListener_onItemsAdded(aItems, aCollection) {
-          },
-          /* called when items that are already in our collection get re-indexed */
-          onItemsModified: function myListener_onItemsModified(aItems, aCollection) {
-          },
-          /* called when items that are in our collection are purged from the system */
-          onItemsRemoved: function myListener_onItemsRemoved(aItems, aCollection) {
-          },
-          /* called when our database query completes */
-          onQueryCompleted: function myListener_onQueryCompleted(aCollection) {
-            Log.debug("Found", aCollection.items.length, "messages to reindex");
-            if (aCollection.items.length == limit)
-              showPopup();
-            GlodaMsgIndexer.indexMessages([
-              [x.folderMessage.folder, x.folderMessage.messageKey]
-              for each ([, x] in Iterator(aCollection.items))
-              if (x.folderMessage)
-            ]);
-            Customizations.top();
-          }
-        };
-        return listener;
-      };
-
-      let query1 = Gloda.newQuery(Gloda.NOUN_IDENTITY);
-      Customizations.expect();
-      query1.kind("email");
-      query1.value("bugzilla-daemon@mozilla.org");
-      query1.getCollection({
-        onItemsAdded: function _onItemsAdded(aItems, aCollection) {  },
-        onItemsModified: function _onItemsModified(aItems, aCollection) { },
-        onItemsRemoved: function _onItemsRemoved(aItems, aCollection) { },
-        onQueryCompleted: function _onQueryCompleted(aCollection) {
-          if (!aCollection.items.length) {
-            Log.debug("Looks like there is no bugmail for this account...");
-            Customizations.top();
-          } else {
-            let query2 = Gloda.newQuery(Gloda.NOUN_MESSAGE);
-            query2.from(aCollection.items[0]);
-            query2.limit(limit);
-            query2.getCollection(reIndexListener()); // will top()
-          }
-        }
-      });
-
-      let query3 = Gloda.newQuery(Gloda.NOUN_MESSAGE);
-      Customizations.expect();
-      query3.attachmentTypes();
-      query3.limit(limit);
-      query3.getCollection(reIndexListener()); // will top()
-    },
-
-    uninstall: function () {
-      // nop
-    },
-  },
-
-  // XXX this customization does not revert everything when uninstalling...
   actionSetupView: {
     install: function () {
+      /**
+       * const kShowUnthreaded = 0;
+       * const kShowThreaded = 1;
+       * const kShowGroupedBySort = 2;
+       */
       let state = {
         ftvMode: null,
         unreadCol: null,
         senderCol: null,
+        initialFolder: {
+          uri: null,
+          show: null,
+        }
       };
 
       let mainWindow = getMail3Pane();
       let ftv = mainWindow.gFolderTreeView;
-      // save the current mode, set to smart
+      // save the current mode, save the current folder, save the current sort
       state.ftvMode = ftv.mode;
+      if (mainWindow.gFolderDisplay.displayedFolder) {
+        state.initialFolder.uri = mainWindow.gFolderDisplay.displayedFolder.URI;
+        if (mainWindow.gFolderDisplay.view.showUnthreaded)
+          state.initialFolder.show = 0;
+        else if (mainWindow.gFolderDisplay.view.showThreaded)
+          state.initialFolder.show = 1;
+        else if (mainWindow.gFolderDisplay.view.showGroupedBySort)
+          state.initialFolder.show = 2;
+      }
+
+      // start customizing things
       mainWindow.gFolderTreeView.mode = "smart";
 
       let smartInbox = null;
       try {
         smartInbox = get_smart_folder_named("Inbox");
       } catch (e) {
-        Log.warn(e);
-        Log.warn("Is there only one account?");
+        Log.debug(e);
+        Log.debug("Is there only one account?");
       }
+
       // Might not be created yet if only one account
       if (smartInbox)
         ftv.selectFolder(smartInbox);
@@ -248,8 +195,11 @@ let Customizations = {
         let tabmail = mainWindow.document.getElementById("tabmail");
         tabmail.switchToTab(0);
         mainWindow.MsgSortThreaded();
-        mainWindow.MsgSortThreadPane('byDate');
-        mainWindow.MsgSortDescending();
+        /**
+         * We don't know how to revert these, so forget about it for now.
+         */
+        // mainWindow.MsgSortThreadPane('byDate');
+        // mainWindow.MsgSortDescending();
         mainWindow.goDoCommand('cmd_collapseAllThreads');
         state.unreadCol = eid("unreadCol").getAttribute("hidden");
         state.senderCol = eid("senderCol").getAttribute("hidden");
@@ -272,12 +222,28 @@ let Customizations = {
       return state;
     },
 
-    uninstall: function ({ ftvMode, senderCol, unreadCol }) {
+    uninstall: function ({ ftvMode, senderCol, unreadCol, initialFolder }) {
       if (eid("senderCol").getAttribute("hidden") == "true")
         eid("senderCol").setAttribute("hidden", senderCol);
       if (eid("unreadCol").getAttribute("hidden") == "false")
         eid("unreadCol").setAttribute("hidden", unreadCol);
-      getMail3Pane().gFolderTreeView.mode = ftvMode;
+      let mainWindow = getMail3Pane();
+      mainWindow.gFolderTreeView.mode = ftvMode;
+
+      if (initialFolder.uri) {
+        mainWindow.gFolderDisplay.show(MailUtils.getFolderForURI(initialFolder.uri));
+        switch (initialFolder.show) {
+          case 0:
+            mainWindow.gFolderDisplay.view.showUnthreaded = true;
+            break;
+          case 1:
+            mainWindow.gFolderDisplay.view.showThreaded = true;
+            break;
+          case 2:
+            mainWindow.gFolderDisplay.view.showGroupedBySort = true;
+            break;
+        }
+      }
     },
   },
 

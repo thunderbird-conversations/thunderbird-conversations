@@ -84,18 +84,18 @@ function bzSetup() {
       let cookie = getBugzillaCookie(url);
       let bzUrl = gBugzillaAPIs[url];
       if (cookie) {
-        document.getElementsByTagName("textarea")[0]
-          .setAttribute("placeholder", strings.get("bzPlaceholder"));
+        document.querySelector(".quickReply li.reply .icon span")
+          .textContent = strings.get("bzPlaceholder");
         return [url, bzUrl, cookie];
       } else {
-        document.getElementsByTagName("textarea")[0]
-          .setAttribute("placeholder", strings.get("bzNoCookieMsg"));
+        document.querySelector(".quickReply li.reply .icon span")
+          .textContent = strings.get("bzNoCookieMsg");
         addBzLink(url);
         return null;
       }
     } else {
-      document.getElementsByTagName("textarea")[0]
-        .setAttribute("placeholder", strings.get("bzNoApiUrlMsg"));
+      document.querySelector(".quickReply li.reply .icon span")
+        .textContent = strings.get("bzNoApiUrlMsg");
       return null;
     }
   } else {
@@ -220,7 +220,7 @@ BzComposeSession.prototype = {
               setTimeout(function () {
                 $(".quickReplyHeader").hide();
               }, 1000);
-              collapseQuickReply();
+              onDiscard();
               $("textarea").val("");
               // We can do this because we're in the right if-block.
               gComposeSession = null;

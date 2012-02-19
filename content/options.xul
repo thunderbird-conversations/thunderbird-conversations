@@ -1,6 +1,4 @@
 <?xml version="1.0"?>
-<?xml-stylesheet href="chrome://global/skin/" type="text/css"?>
-<?xml-stylesheet href="chrome://conversations/skin/options.css" type="text/css"?>
 
 <!-- ***** BEGIN LICENSE BLOCK *****
    - Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -41,68 +39,34 @@
 
 <!DOCTYPE window SYSTEM "chrome://conversations/locale/options.dtd">
  
-<prefwindow id="conversations-prefs"
-  title="&window.title;"
-  xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-  onload="sizeToContent();"
-  style="min-width: 480px"
-  >
+<vbox xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-  <script type="application/javascript" src="chrome://conversations/content/options.js" />
+  <setting pref="conversations.expand_who" type="radio" title="&option.expand_who;">  
+    <radiogroup>  
+      <radio value="1" label="&option.expand_none;" />
+      <radio value="3" label="&option.expand_all;" />
+      <radio value="4" label="&option.expand_auto2;" tooltiptext="&option.expand_auto2.tooltip;"/>
+    </radiogroup>  
+  </setting>
+
+  <setting title="&title.quoting2;" desc="&desc.quoting;" pref="conversations.hide_quote_length" type="integer" />
+
+  <setting title="&title.friendly_date;" desc="&option.no_friendly_date2;" pref="conversations.no_friendly_date" type="bool" />
+  <setting title="&title.tweak_chrome;" desc="&option.tweak_chrome;" pref="conversations.tweak_chrome" type="bool" />
+  <setting title="&title.tweak_bodies;" desc="&option.tweak_bodies;" pref="conversations.tweak_bodies" type="bool" />
+  <setting title="&title.add_embeds;" desc="&option.add_embeds;" pref="conversations.add_embeds" type="bool" />
+  <setting title="&title.monospaced_senders;" desc="&option.monospaced_senders2;" pref="conversations.monospaced_senders" type="string" />
+
+  <setting title="&title.send_in_background;" desc="&desc.send_in_background;"
+    pref="mailnews.sendInBackground" type="bool" />
+
+  <setting title="&title.operate_on_conversations;" desc="&option.operate_on_conversations;" pref="conversations.operate_on_conversations" type="bool" />
+  <setting title="&title.assistant;" type="control">  
+    <button label="&option.assistant;"
+      oncommand="window.openDialog('chrome://conversations/content/assistant/assistant.xhtml', '', 'chrome,width=800,height=500');"
+     />
+  </setting>
+  <setting title="&title.extra_attachments;" desc="&desc.extra_attachments;" pref="conversations.extra_attachments" type="bool" />
+  <setting title="&title.debugging;" desc="&desc.debugging;" pref="conversations.logging_enabled" type="bool" />
  
-  <prefpane id="message-display" label="&title.message_display;"
-    image="chrome://messenger/skin/preferences/general.png"
-    flex="1">
-    <preferences>
-      <preference id="hide_quote_length" name="conversations.hide_quote_length" type="int" />
-      <preference id="expand_who" name="conversations.expand_who" type="int" />
-    </preferences>
-   
-    <groupbox>
-      <caption label="&option.expand_who;" />
-      <radiogroup preference="expand_who">
-        <radio value="1" label="&option.expand_none;" />
-        <radio value="3" label="&option.expand_all;" />
-        <radio value="4" label="&option.expand_auto2;"
-          tooltiptext="&option.expand_auto2.tooltip;"/>
-      </radiogroup>
-    </groupbox>
-    <groupbox>
-      <caption label="&title.quoting;"/>
-      <hbox align="center">
-        <label control="hide_quote_length_textbox" value="&option.hide_longer_than;" />
-        <textbox type="number" preference="hide_quote_length" id="hide_quote_length_textbox" size="2" />
-        <label control="hide_quote_length_textbox" value="&option.lines;" />
-      </hbox>
-    </groupbox>
-    <spacer flex="1" style="min-height: 6em" />
-   </prefpane>
-
-   <prefpane id="advanced" label="&title.advanced;" image="chrome://messenger/skin/preferences/advanced.png">
-     <preferences>
-       <preference id="monospaced_senders" name="conversations.monospaced_senders" type="string" />
-       <preference id="no_friendly_date" name="conversations.no_friendly_date" type="bool" />
-       <preference id="tweak_bodies" name="conversations.tweak_bodies" type="bool" />
-       <preference id="tweak_chrome" name="conversations.tweak_chrome" type="bool" />
-       <preference id="add_embeds" name="conversations.add_embeds" type="bool" />
-     </preferences>
-
-     <groupbox>
-       <caption label="&title.assistant;" />
-       <label class="link"
-         onclick="window.openDialog('chrome://conversations/content/assistant/assistant.xhtml',
-         '', 'chrome,width=800,height=500');" value="&option.assistant;" />
-     </groupbox>
-     <groupbox>
-       <caption label="&title.advanced_display;" />
-       <checkbox label="&option.no_friendly_date;" preference="no_friendly_date" />
-       <checkbox label="&option.tweak_chrome;" preference="tweak_chrome" style="width: 0;" />
-       <checkbox label="&option.tweak_bodies;" preference="tweak_bodies" style="width: 0;" />
-       <checkbox label="&option.add_embeds;" preference="add_embeds" style="width: 0;" />
-       <description style="width: 0;">&option.monospaced_senders2;</description>
-       <textbox multiline="true" preference="monospaced_senders" />
-     </groupbox>
-     <spacer flex="1" style="min-height: 7em" />
-   </prefpane>
- 
-</prefwindow>
+</vbox>
