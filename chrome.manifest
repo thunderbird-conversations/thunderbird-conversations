@@ -1,6 +1,5 @@
 content conversations content/
 skin conversations classic/1.0 skin/
-resource conversations ./
 
 #locale conversations cs locale/cs/
 #locale conversations da locale/da/

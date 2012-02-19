@@ -44,8 +44,10 @@ const Cr = Components.results;
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource:///modules/iteratorUtils.jsm");
+Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
 
 let global = this;
+let Log;
 
 // from wjohnston (cleary for Fennec)
 let ResourceRegister = {
@@ -64,33 +66,101 @@ let ResourceRegister = {
       .QueryInterface(Ci.nsIResProtocolHandler);
     resource.setSubstitution(aName, null);
   }
-}
+};
 
-function monkeyPatchWindow(window) {
-  // Insert our own global Conversations object
-  window.Conversations = {
-    // These two belong here, use getMail3Pane().Conversations to access them
-    monkeyPatch: null,
-    // key: Message-ID
-    // value: a list of listeners
-    msgListeners: {},
-    // key: Gloda Conversation ID
-    // value: a list of listeners that have a onDraftChanged method
-    draftListeners: {},
+function monkeyPatchWindow(window, aLater) {
+  let doIt = function () {
+    try {
+      if (window.document.location != "chrome://messenger/content/messenger.xul")
+        return;
+      Log.debug("The window looks like a mail:3pane, monkey-patching...");
 
-    // These two are replicated in the case of a conversation tab, so use
-    //  Conversation._window.Conversations to access the right instance
-    currentConversation: null,
-    counter: 0,
+      // Insert our own global Conversations object
+      window.Conversations = {
+        // These two belong here, use getMail3Pane().Conversations to access them
+        monkeyPatch: null,
+        // key: Message-ID
+        // value: a list of listeners
+        msgListeners: {},
+        // key: Gloda Conversation ID
+        // value: a list of listeners that have a onDraftChanged method
+        draftListeners: {},
+
+        // These two are replicated in the case of a conversation tab, so use
+        //  Conversation._window.Conversations to access the right instance
+        currentConversation: null,
+        counter: 0,
+
+        quickCompose: function () {},
+      };
+
+      // Wow! I love restartless! Now I get to create all the items by hand!
+      let strings = new StringBundle("chrome://conversations/locale/overlay.properties");
+
+      // 1) Get a context menu in the multimessage
+      window.document.getElementById("multimessage").setAttribute("context", "mailContext");
+
+      // 2) View > Conversation View
+      let menuitem = window.document.createElement("menuitem");
+      for each (let [k, v] in Iterator({
+        type: "checkbox",
+        id: "menuConversationsEnabled",
+        label: strings.get("menuConversationsEnabled"),
+      })) menuitem.setAttribute(k, v);
+      let after = window.document.getElementById("viewMessagesMenu");
+      window.document.getElementById("menu_View_Popup").insertBefore(menuitem, after.nextElementSibling);
+
+      // 3) Keyboard shortcut
+      let key = window.document.createElement("key");
+      for each (let [k, v] in Iterator({
+        id: "key_conversationsQuickCompose",
+        key: "n",
+        modifiers: "accel,shift",
+        oncommand: "Conversations.quickCompose();",
+      })) key.setAttribute(k, v);
+      window.document.getElementById("mailKeys").appendChild(key);
+
+      // 4) Tree column
+      let treecol = window.document.createElement("treecol");
+      for each (let [k, v] in Iterator({
+        id: "betweenCol",
+        hidden: "false",
+        flex: "4",
+        label: strings.get("betweenColumnName"),
+        tooltiptext: strings.get("betweenColumnTooltip"),
+      })) treecol.setAttribute(k, v);
+      window.document.getElementById("threadCols").appendChild(treecol);
+      let splitter = window.document.createElement("splitter");
+      splitter.classList.add("tree-splitter");
+      window.document.getElementById("threadCols").appendChild(splitter);
+
+      // We instantiate the Monkey-Patch for the given Conversation object.
+      let monkeyPatch = new MonkeyPatch(window, Conversation);
+      // And then we seize the window and insert our code into it
+      monkeyPatch.apply();
+
+      // Used by the in-stub.html detachTab function
+      window.Conversations.monkeyPatch = monkeyPatch;
+
+      window.Conversations.quickCompose = function () {
+        window.openDialog("chrome://conversations/content/stub.xhtml?quickCompose=1", "", "chrome,width=800,height=600");
+      }
+
+      // The modules below need to be loaded when a window exists. 
+      Cu.import("resource://conversations/modules/plugins/enigmail.js");
+    } catch (e) {
+      Log.error(e);
+      dumpCallStack(e);
+    }
   };
 
-  // We instantiate the Monkey-Patch for the given Conversation object.
-  let monkeyPatch = new MonkeyPatch(window, Conversation);
-  // And then we seize the window and insert our code into it
-  monkeyPatch.apply();
-
-  // Used by the in-stub.html detachTab function
-  Conversations.monkeyPatch = monkeyPatch;
+  if (aLater)
+    window.addEventListener("load", function tmp () {
+      window.removeEventListener("load", tmp, false);
+      doIt();
+    }, false);
+  else
+    doIt();
 }
 
 function startup(aData, aReason) {
@@ -102,25 +172,24 @@ function startup(aData, aReason) {
   Cu.import("resource://conversations/modules/prefs.js", global);
   Cu.import("resource://conversations/modules/log.js", global);
 
-  let Log = setupLogging("Conversations.MonkeyPatch");
+  Log = setupLogging("Conversations.MonkeyPatch");
 
   try {
     // Import all required plugins. If you create a new plugin, install it here.
-    Cu.import("resource://conversations/plugins/glodaAttrProviders.js");
-    Cu.import("resource://conversations/plugins/embeds.js");
-    Cu.import("resource://conversations/plugins/enigmail.js");
-    Cu.import("resource://conversations/plugins/lightning.js");
+    Cu.import("resource://conversations/modules/plugins/glodaAttrProviders.js");
+    Cu.import("resource://conversations/modules/plugins/embeds.js");
+    Cu.import("resource://conversations/modules/plugins/lightning.js");
 
     // Patch all existing windows
     for each (let w in fixIterator(Services.wm.getEnumerator("mail:3pane")))
-      monkeyPatchWindow(w);
+      monkeyPatchWindow(w, false);
 
     // Patch all future windows
     Services.ww.registerNotification({
-      observer: function (aSubject, aTopic, aData) {
+      observe: function (aSubject, aTopic, aData) {
         if (aTopic == "domwindowopened") {
           aSubject.QueryInterface(Ci.nsIDOMWindow);
-          monkeyPatchWindow(aSubject.window);
+          monkeyPatchWindow(aSubject.window, true);
         }
       },
     });
@@ -132,20 +201,7 @@ function startup(aData, aReason) {
         "chrome://conversations/content/assistant/assistant.xhtml",
         "",
         "chrome,width=800,height=500");
-
-    // Feedback.
-    let nRuns = Prefs.getInt("conversations.nruns");
-    if (nRuns == 20)
-      Services.ww.openWindow(
-        null,
-        "chrome://conversations/content/feedback.xhtml",
-        "",
-        "chrome,width=320,height=550");
-
-    Prefs.setInt("conversations.nruns", nRuns + 1);
   } catch (e) {
-    dump(e+"\n");
-    dump(e.stack+"\n");
     Log.error(e);
     dumpCallStack(e);
   }
