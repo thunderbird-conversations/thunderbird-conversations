@@ -1265,8 +1265,10 @@ function createStateListener (aComposeSession, aMsgHdrs, aId) {
           });
         // Do stuff to the message we replied to.
         let msgHdr = aComposeSession.params.msgHdr;
-        msgHdr.folder.addMessageDispositionState(msgHdr, Ci.nsIMsgFolder.nsMsgDispositionState_Replied);
-        msgHdr.folder.msgDatabase = null;
+        if (msgHdr) {
+          msgHdr.folder.addMessageDispositionState(msgHdr, Ci.nsIMsgFolder.nsMsgDispositionState_Replied);
+          msgHdr.folder.msgDatabase = null;
+        }
         // Archive the whole conversation if needed
         if (aComposeSession.archive)
           msgHdrsArchive(aMsgHdrs.filter(function (x) !msgHdrIsArchive(x)));
