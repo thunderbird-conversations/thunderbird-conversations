@@ -61,14 +61,83 @@ let strings = new StringBundle("chrome://conversations/locale/message.properties
 
 let Log = setupLogging("Conversations.MonkeyPatch");
 
+let shouldPerformUninstall;
+
 function MonkeyPatch(aWindow, aConversation) {
   this._Conversation = aConversation;
   this._window = aWindow;
   this._markReadTimeout = null;
   this._beingUninstalled = false;
+  this._undoFuncs = [];
 }
 
 MonkeyPatch.prototype = {
+
+  pushUndo: function _MonkeyPatch_pushUndo(f) {
+    this._undoFuncs.push(f);
+  },
+
+  undo: function _MonkeyPatch_undo() {
+    let f;
+    while (f = this._undoFuncs.pop()) {
+      try {
+        f();
+      } catch (e) {
+        Log.error("Failed to undo some customization", e);
+        dumpCallStack(e);
+      }
+    }
+  },
+
+  applyOverlay: function _MonkeyPatch_applyOverlay (window) {
+    // Wow! I love restartless! Now I get to create all the items by hand!
+    let strings = new StringBundle("chrome://conversations/locale/overlay.properties");
+
+    // 1) Get a context menu in the multimessage
+    window.document.getElementById("multimessage").setAttribute("context", "mailContext");
+
+    // 2) View > Conversation View
+    let menuitem = window.document.createElement("menuitem");
+    for each (let [k, v] in Iterator({
+      type: "checkbox",
+      id: "menuConversationsEnabled",
+      label: strings.get("menuConversationsEnabled"),
+    })) menuitem.setAttribute(k, v);
+    let after = window.document.getElementById("viewMessagesMenu");
+    let parent1 = window.document.getElementById("menu_View_Popup");
+    parent1.insertBefore(menuitem, after.nextElementSibling);
+    this.pushUndo(function () parent1.removeChild(menuitem));
+
+    // 3) Keyboard shortcut
+    let key = window.document.createElement("key");
+    for each (let [k, v] in Iterator({
+      id: "key_conversationsQuickCompose",
+      key: "n",
+      modifiers: "accel,shift",
+      oncommand: "Conversations.quickCompose();",
+    })) key.setAttribute(k, v);
+    let parent2 = window.document.getElementById("mailKeys");
+    parent2.appendChild(key);
+    this.pushUndo(function () parent2.removeChild(key));
+
+    // 4) Tree column
+    let treecol = window.document.createElement("treecol");
+    for each (let [k, v] in Iterator({
+      id: "betweenCol",
+      hidden: "false",
+      flex: "4",
+      label: strings.get("betweenColumnName"),
+      tooltiptext: strings.get("betweenColumnTooltip"),
+    })) treecol.setAttribute(k, v);
+    let parent3 = window.document.getElementById("threadCols");
+    parent3.appendChild(treecol);
+    this.pushUndo(function () parent3.removeChild(treecol));
+    let splitter = window.document.createElement("splitter");
+    splitter.classList.add("tree-splitter");
+    parent3.appendChild(splitter);
+    this.pushUndo(function () parent3.removeChild(splitter));
+  },
+
 
   registerColumn: function _MonkeyPatch_registerColumn () {
     // This has to be the first time that the documentation on MDC
@@ -150,6 +219,7 @@ MonkeyPatch.prototype = {
       // So our solution kinda works, but registering the thing at jsm load-time
       //  would work as well.
     }
+    this.pushUndo(function () window.gDBView.removeColumnHandler("betweenCol"));
   },
 
   registerFontPrefObserver: function _MonkeyPatch_registerFontPref (aHtmlpane) {
@@ -169,6 +239,7 @@ MonkeyPatch.prototype = {
     this._window.addEventListener("close", function () {
       prefBranch.removeObserver("", observer);
     }, false);
+    this.pushUndo(function () prefBranch.removeObserver("", observer));
   },
 
   clearTimer: function () {
@@ -214,14 +285,28 @@ MonkeyPatch.prototype = {
     return scrollMode;
   },
 
-  watchUninstall: function () {
-    AddonManager.addAddonListener(this);
-    Services.obs.addObserver(this, "mail-startup-done", false);
-    Services.obs.addObserver(this, "quit-application-granted", false);
-    Services.obs.addObserver(this, "quit-application-requested", false);
+  registerUndoCustomizations: function () {
+    shouldPerformUninstall = true;
+
+    let self = this;
+    this.pushUndo(function () {
+      if (shouldPerformUninstall) {
+        // Switch to a 3pane view (otherwise the "display threaded"
+        // customization is not reverted)
+        let mainWindow = getMail3Pane();
+        let tabmail = mainWindow.document.getElementById("tabmail");
+        if (tabmail.tabContainer.selectedIndex != 0)
+          tabmail.tabContainer.selectedIndex = 0;
+        // This is asynchronous, leave it a second
+        mainWindow.setTimeout(function () self.undoCustomizations(), 1000);
+        // Since this is called once per window, we don't want to uninstall
+        // multiple times...
+        shouldPerformUninstall = false;
+      }
+    });
   },
 
-  doUninstall: function () {
+  undoCustomizations: function () {
     let uninstallInfos = JSON.parse(Prefs.getString("conversations.uninstall_infos"));
     for each (let [k, v] in Iterator(Customizations)) {
       if (k in uninstallInfos) {
@@ -236,68 +321,6 @@ MonkeyPatch.prototype = {
     }
     Prefs.setString("conversations.uninstall_infos", "{}");
     Prefs.setInt("conversations.version", 0);
-  },
-
-  // nsIObserver
-  observe: function (aSubject, aTopic, aData) {
-    // Log.debug("Observing", aTopic, aData);
-    // Why do we need such a convoluted shutdown procedure? The thing is, unless
-    //  the current tab is the standard folder view, customizations such as the
-    //  folder view columns won't take effect. So we need to switch to the first
-    //  tab.
-    // Next issue: this takes some time, so we must do this while we can still
-    //  cancel the shutdown procedure, and then do the shutdown again, after a
-    //  small timeout, the time for Thunderbird to switch to the correct tab.
-    if (aTopic == "quit-application-requested" && this._beingUninstalled) {
-      let mainWindow = getMail3Pane();
-      let tabmail = mainWindow.document.getElementById("tabmail");
-      if (tabmail.tabContainer.selectedIndex != 0) {
-        tabmail.tabContainer.selectedIndex = 0;
-        aSubject.QueryInterface(Ci.nsISupportsPRBool);
-        // Cancel shutdown, and leave some time for Thunderbird to setup the
-        //  view.
-        aSubject.data = true;
-        if (aData == "restart")
-          mainWindow.setTimeout(function () { mainWindow.Application.restart(); }, 1000);
-        else
-          mainWindow.setTimeout(function () { mainWindow.Application.quit(); }, 1000);
-      }
-    }
-
-    // Now we assume the view is setup, and we can actually do our little
-    //  uninstall stuff.
-    if (aTopic == "quit-application-granted" && this._beingUninstalled)
-      this.doUninstall();
-  },
-
-  // AddonListener
-  onEnabling: function (addon, needsRestart) {
-  },
-  onEnabled: function (addon) {
-  },
-  onDisabling: function (addon, needsRestart) {
-  },
-  onDisabled: function (addon) {
-  },
-  onInstalling: function (addon, needsRestart) {
-  },
-  onInstalled: function (addon) {
-  },
-  onUninstalled: function(addon) {
-  },
-  onUninstalling: function(addon) {
-    if (addon.id == "gconversation@xulforum.org") {
-      this._beingUninstalled = true;
-      Log.debug("Being uninstalled ?", this._beingUninstalled);
-    }
-  },
-  onOperationCancelled: function(addon) {
-    if (addon.id == "gconversation@xulforum.org") {
-      this._beingUninstalled = (addon.pendingOperations & AddonManager.PENDING_UNINSTALL) != 0;
-      Log.debug("Being uninstalled ?", this._beingUninstalled);
-    }
-  },
-  onPropertyChanged: function (addon, properties) {
   },
 
   activateMenuItem: function (window) {
@@ -317,6 +340,9 @@ MonkeyPatch.prototype = {
 
   apply: function () {
     let window = this._window;
+    // First of all: "apply" the "overlay"
+    this.applyOverlay(window);
+
     let self = this;
     let htmlpane = window.document.getElementById("multimessage");
     let oldSummarizeMultipleSelection = window["summarizeMultipleSelection"];
@@ -331,11 +357,8 @@ MonkeyPatch.prototype = {
 
     this.activateMenuItem(window);
 
-    // Register the uninstall handler
-    this.watchUninstall();
-    /* window.setTimeout(function () {
-      self.onUninstalled({ id: "gconversation@xulforum.org" })
-    }, 1000); // XXX debug */
+    // Undo all our customizations at uninstall-time
+    this.registerUndoCustomizations();
 
     // Below is the code that intercepts the double-click-on-a-message event,
     //  and reroutes the control flow to our conversation reader.
@@ -367,16 +390,18 @@ MonkeyPatch.prototype = {
       oldThreadPaneDoubleClick();
       window.MsgOpenSelectedMessages = oldMsgOpenSelectedMessages;
     };
+    this.pushUndo(function() window.ThreadPaneDoubleClick = oldThreadPaneDoubleClick);
 
     // Because we're not even fetching the conversation when the message pane is
     //  hidden, we need to trigger it manually when it's un-hidden.
-    window.addEventListener("messagepane-unhide",
-      function () {
-        if (!Prefs.enabled)
-          return;
+    let unhideListener = function () {
+      if (!Prefs.enabled)
+        return;
 
-        window.summarizeThread(window.gFolderDisplay.selectedMessages);
-      }, true);
+      window.summarizeThread(window.gFolderDisplay.selectedMessages);
+    };
+    window.addEventListener("messagepane-unhide", unhideListener, true);
+    this.pushUndo(function () window.removeEventListener("messagepane-unhide", unhideListener, true));
 
     window.summarizeMultipleSelection =
       function _summarizeMultiple_patched (aSelectedMessages, aListener) {
@@ -389,6 +414,7 @@ MonkeyPatch.prototype = {
           oldSummarizeMultipleSelection(aSelectedMessages, aListener);
         });
       };
+    this.pushUndo(function () window.summarizeMultipleSelection = oldSummarizeMultipleSelection);
 
     let previouslySelectedUris = [];
     let previousScrollMode = null;
@@ -559,6 +585,7 @@ MonkeyPatch.prototype = {
           }
         });
       };
+    this.pushUndo(function () window.summarizeThread = oldSummarizeThread);
 
     // Because we want to replace the standard message reader, we need to always
     //  fire up the conversation view instead of deferring to the regular
@@ -634,6 +661,8 @@ MonkeyPatch.prototype = {
           dumpCallStack(e);
         }
       };
+    this.pushUndo(function ()
+      window.MessageDisplayWidget.prototype.onSelectedMessagesChanged = originalOnSelectedMessagesChanged);
 
     // Ok, this is slightly tricky. The C++ code notifies the global msgWindow
     //  when content has been blocked, and we can't really afford to just
@@ -656,6 +685,7 @@ MonkeyPatch.prototype = {
       //  from the conversation in that tab. So to be safe, forward the call.
       oldOnMsgHasRemoteContent(aMsgHdr);
     };
+    this.pushUndo(function () window.messageHeaderSink.onMsgHasRemoteContent = oldOnMsgHasRemoteContent);
 
     Log.debug("Monkey patch successfully applied.");
   },
