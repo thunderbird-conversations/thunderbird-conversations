@@ -56,42 +56,48 @@ try {
   Log.debug("Did you know, Thunderbird Conversations supports Lightning?");
 }
 
-function imipAccept(rootNode, msgWindow, itipItem, actionFunc, actionMethod, e) {
+function imipAccept(rootNode, msgWindow, itipItem, actionFunc, actionMethod, foundItems) {
+  if (actionMethod == "X-SHOWDETAILS") {
+    if (foundItems.length) {
+      let item = foundItems[0].isMutable ? foundItems[0] : foundItems[0].clone();
+      msgWindow.domWindow.modifyEventWithDialog(item);
+    }
+  } else if (cal.itip.promptCalendar(actionFunc.method, itipItem, msgWindow.domWindow)) {
+    // Hide the buttons so processing doesn't happen twice
+    for (i = 1; i <= 3; i++) {
+      let buttonElement = rootNode.getElementsByClassName("lightningImipButton" + i)[0];
+      buttonElement.style.display = "none";
+      buttonElement.removeEventListener("click", buttonElement.clickHandler, false);
+      buttonElement.clickHandler = null;
+    }
 
-  // Prompt for a calendar if the method requires it
-  cal.itip.promptCalendar(actionFunc.method, itipItem, msgWindow.domWindow);
+    let listener = {
+      onOperationComplete: function imipAccept_onOpComplete(aCalendar,
+                                                            aStatus,
+                                                            aOperationType,
+                                                            aId,
+                                                            aDetail) {
 
-  // Hide the buttons so processing doesn't happen twice
-  for (i = 1; i <= 3; i++) {
-    let buttonElement = rootNode.getElementsByClassName("lightningImipButton" + i)[0];
-    buttonElement.style.display = "none";
-    buttonElement.removeEventListener("click", buttonElement.clickHandler, false);
-    buttonElement.clickHandler = null;
-  }
+        let imipBarText = rootNode.getElementsByClassName("lightningImipText")[0];
+        let label = cal.itip.getCompleteText(aStatus, aOperationType);
+        imipBarText.textContent = label;
+      },
 
-  let listener = {
-    onOperationComplete: function imipAccept_onOpComplete(aCalendar,
-                                                          aStatus,
-                                                          aOperationType,
-                                                          aId,
-                                                          aDetail) {
+      onGetResult: function() {}
+    };
 
-      let imipBarText = rootNode.getElementsByClassName("lightningImipText")[0];
-      let label = cal.itip.getCompleteText(aStatus, aOperationType);
-      imipBarText.textContent = label;
-    },
-
-    onGetResult: function() {}
-  };
-
-  try {
-    actionFunc(listener, actionMethod);
-  } catch (e) {
-    Log.error(e);
+    try {
+      actionFunc(listener, actionMethod);
+    } catch (e) {
+      Log.error(e);
+    }
+    return true;
+  } else {
+    return false;
   }
 }
 
-function imipOptions(rootNode, msgWindow, itipItem, rc, actionFunc) {
+function imipOptions(rootNode, msgWindow, itipItem, rc, actionFunc, foundItems) {
   let imipBarText = rootNode.getElementsByClassName("lightningImipText")[0];
   let doc = imipBarText.ownerDocument;
   let data = cal.itip.getOptionsText(itipItem, rc, actionFunc);
@@ -101,7 +107,8 @@ function imipOptions(rootNode, msgWindow, itipItem, rc, actionFunc) {
       let buttonElement = rootNode.getElementsByClassName("lightningImipButton" + i)[0];
       if (data["button" + i].label) {
           let handler = imipAccept.bind(null, rootNode, msgWindow, itipItem,
-                                        actionFunc, data["button" + i].actionMethod);
+                                        actionFunc, data["button" + i].actionMethod,
+                                        foundItems);
           buttonElement.textContent = data["button" + i].label;
 
           // TODO The "command" handler would be better for accessibility, but 
