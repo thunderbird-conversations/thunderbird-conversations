@@ -1,0 +1,27 @@
+<!ENTITY option.expand_who "Laajenna viestit oletuksena">
+<!ENTITY option.expand_auto2 "Automaattisesti">
+<!ENTITY option.expand_auto2.tooltip "Jos viestiketju on tiivistetty, laajenna kaikki lukemattomat viestit tai viimeinen viesti. Jos se on laajennettu, laajenna ainoastaan valittu viesti.">
+<!ENTITY option.expand_none "Ei viestejä">
+<!ENTITY option.expand_all "Kaikki viestit">
+<!ENTITY title.quoting2 "Lainattu teksti">
+<!ENTITY desc.quoting "Tiivistä lainatut rivit, jos niitä on enemmän kuin:">
+<!ENTITY title.assistant "Asennusvelho">
+<!ENTITY option.assistant "Aloita asennusvelho">
+<!ENTITY title.friendly_date "Päiväys">
+<!ENTITY option.no_friendly_date2 "Vaihda oikean yläkulman &quot;eilinen&quot; &quot;huominen&quot; päiväys normaaliksi päiväykseksi.">
+<!ENTITY title.monospaced_senders "Tasavälisen fontin näyttö">
+<!ENTITY option.monospaced_senders2 "Viestit näistä osotteista/listoista tulee näyttää tasavälisin fontein (erottele pilkulla)">
+<!ENTITY title.tweak_chrome "Muokkaa chrome fontteja">
+<!ENTITY option.tweak_bodies "Muokkaa fontteja viestirungossa tehdäksesi ne yhtenäiseksi ulkopuolisten fonttien kanssa. (suositeltu, vaatii uudelleen käynnistyksen.">
+<!ENTITY title.tweak_bodies "Muokaa rungon fontteja.">
+<!ENTITY option.tweak_chrome "Muuta fonttien kokoa pienemmäksi keskustelu näkymään. (suositeltu, vaatii uudelleen käynnistyksen)">
+<!ENTITY title.add_embeds "Lisää Sisennykset">
+<!ENTITY option.add_embeds "Tunnista linkit useilta palveluilta (esim. YouTube) sähköpostissa, ja näytä ne yksirivisinä.">
+<!ENTITY title.debugging "Debuggaus">
+<!ENTITY desc.debugging "Salli debuggaus järjestelmä- ja virhekonsoliin. Tämä generoi paljon viestejä.">
+<!ENTITY title.operate_on_conversations "Työkalupalkin painikkeet">
+<!ENTITY option.operate_on_conversations "Työkalupalkin painikkeet arkistoivat ja poistavat täydellisen ketjun, ei ainoastaan valittua viestiä.">
+<!ENTITY title.extra_attachments "Pidän liitteistä">
+<!ENTITY desc.extra_attachments "Joissakin poikkeustapauksissa Thunderbird epäonnistuu liitteiden tunnistuksessa. Tällä asetuksella voit kiertää thunderbirdin ongelman ja varmistaa että kaikki mahdolliset liitteet näkyvät. Käytä valintaa Näytä &gt; Viesti muodossa &gt; Alkuperäinen HTML">
+<!ENTITY title.send_in_background "Send in background">
+<!ENTITY desc.send_in_background "This will queue messages for sending, so that you don't have to wait for the sending process to complete before switching conversations. Warning: the feature is not complete (see SendInBackground on wiki.mozilla.org) and applies to the regular composition process too. Restart required.">

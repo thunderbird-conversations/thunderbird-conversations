@@ -1,0 +1,27 @@
+<!ENTITY option.expand_who "Standardmäßig ausklappen:">
+<!ENTITY option.expand_auto2 "Automatisch">
+<!ENTITY option.expand_auto2.tooltip "Wenn der Thread (Themenbaum) eingeklappt ist, werden alle ungelesenen Nachrichten bzw. nur die letzte Nachricht ausgeklappt. Ist der Thread aber ausgeklappt, wird nur die ausgewählte Nachricht angezeigt.">
+<!ENTITY option.expand_none "Keine Nachrichten">
+<!ENTITY option.expand_all "Alle Nachrichten">
+<!ENTITY title.quoting2 "Zitierter Text">
+<!ENTITY desc.quoting "Zitate mit mehr als dieser Anzahl von Zeilen einklappen.">
+<!ENTITY title.assistant "Installationsassistent">
+<!ENTITY option.assistant "Starte den Installationsassistenten">
+<!ENTITY title.friendly_date "Freundliches Datum">
+<!ENTITY option.no_friendly_date2 "Verwende in der oberen rechten Ecke &quot;normale&quot; Datumsangaben anstelle von &quot;gestern&quot; oder ähnlichem, genau wie in der Nachrichtenliste.">
+<!ENTITY title.monospaced_senders "In unproportionaler Schriftart anzeigen">
+<!ENTITY option.monospaced_senders2 "Nachrichten von dieser Adresse/Mailingliste sollen in unproportionaler Schriftart angezeigt werden (getrennt durch Kommata)">
+<!ENTITY title.tweak_chrome "Optimiere Chrom-Schriften">
+<!ENTITY option.tweak_bodies "Optimiere die Schriften in der Nachrichtenansicht, um die Konsistenz zu den äußeren Schriften herzsutellen (empfohlen, Neustart erforderlich).">
+<!ENTITY title.tweak_bodies "Optimiere Body-Schriften">
+<!ENTITY option.tweak_chrome "Skaliere die Schriftgröße für die Konversation (empfohlen, Neustart erforderlich).">
+<!ENTITY title.add_embeds "Add embeds">
+<!ENTITY option.add_embeds "Erkenne Links zu verschiedenen Services in E-mails (z.B. YouTube) und zeige deren Inhalte in der Nachricht eingebettet an.">
+<!ENTITY title.debugging "Debugging">
+<!ENTITY desc.debugging "Aktiviere die Debug-Ausgabe in der System- und Fehlerkonsole. Dies wird viele Nachrichten generieren.">
+<!ENTITY title.operate_on_conversations "Schaltflächen der Symbolleiste">
+<!ENTITY option.operate_on_conversations "Die Schaltflächen der Symbolleiste sollten die komplette Konversation archivieren bzw. löschen und nicht nur die ausgewählte Nachricht.">
+<!ENTITY title.extra_attachments "I love attachments">
+<!ENTITY desc.extra_attachments "In some corner cases, Thunderbird will fail to recognize some attachments. This options allows you to workaround the Thunderbird bug, and makes sure we try to display as many attachments as we can. Use in combination with View &gt; Message Body As &gt; All Body Parts.">
+<!ENTITY title.send_in_background "Send in background">
+<!ENTITY desc.send_in_background "This will queue messages for sending, so that you don't have to wait for the sending process to complete before switching conversations. Warning: the feature is not complete (see SendInBackground on wiki.mozilla.org) and applies to the regular composition process too. Restart required.">

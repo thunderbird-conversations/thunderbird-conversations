@@ -1,0 +1,27 @@
+<!ENTITY option.expand_who "Подразумевано, рашири:">
+<!ENTITY option.expand_auto2 "аутоматски">
+<!ENTITY option.expand_auto2.tooltip "Ако је тема скупљена, рашири све непрочитане поруке или последњу поруку. Ако је раширена, рашири само поруку одабрану на списку.">
+<!ENTITY option.expand_none "Нема порука">
+<!ENTITY option.expand_all "Све поруке">
+<!ENTITY title.quoting2 "Наведени текст">
+<!ENTITY desc.quoting "Наводи који имају више линија од наведеног броја ће бити скупљени.">
+<!ENTITY title.assistant "Помоћник за подешавање">
+<!ENTITY option.assistant "Покрени помоћника за подешавање">
+<!ENTITY title.friendly_date "Пријатељски датуми">
+<!ENTITY option.no_friendly_date2 "У горњем левом углу користите „нормалне” датуме, као списак порука, уместо „јуче” и осталих.">
+<!ENTITY title.monospaced_senders "Прикажи у једнаком размаку">
+<!ENTITY option.monospaced_senders2 "Поруке са ових адреса/спискова за слање требају бити приказане у фонтовима фиксне ширине (одвојеним зарезима)">
+<!ENTITY title.tweak_chrome "Подеси фонтове за chrome">
+<!ENTITY option.tweak_bodies "Подеси фонтове у телу поруке тако да се подударају са окружењем (потребно поновно покретање).">
+<!ENTITY title.tweak_bodies "Подеси фонтове за body">
+<!ENTITY option.tweak_chrome "Умањи фонт за разговоре (препоручено, потребно поновно покретање)">
+<!ENTITY title.add_embeds "Додај уграђено">
+<!ENTITY option.add_embeds "Препознај везе ка разним услугама (нпр. YouTube) у порукама и прикажи их као уграђене.">
+<!ENTITY title.debugging "Отклањање грешака">
+<!ENTITY desc.debugging "Омогућите приказ порука у системској конзоли и конзоли за грешке, ако желите да радите на њиховом отклањању.">
+<!ENTITY title.operate_on_conversations "Дугмад у траци са алаткама">
+<!ENTITY option.operate_on_conversations "Дугмад у траци са алаткама служе за архивирање и брисање целог разговора, а не само одабраних порука.">
+<!ENTITY title.extra_attachments "I love attachments">
+<!ENTITY desc.extra_attachments "In some corner cases, Thunderbird will fail to recognize some attachments. This options allows you to workaround the Thunderbird bug, and makes sure we try to display as many attachments as we can. Use in combination with View &gt; Message Body As &gt; All Body Parts.">
+<!ENTITY title.send_in_background "Send in background">
+<!ENTITY desc.send_in_background "This will queue messages for sending, so that you don't have to wait for the sending process to complete before switching conversations. Warning: the feature is not complete (see SendInBackground on wiki.mozilla.org) and applies to the regular composition process too. Restart required.">

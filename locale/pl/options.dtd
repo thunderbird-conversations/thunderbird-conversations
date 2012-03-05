@@ -1,0 +1,27 @@
+<!ENTITY option.expand_who "Rozwijanie wiadomości">
+<!ENTITY option.expand_auto2 "Rozwijaj automatycznie">
+<!ENTITY option.expand_auto2.tooltip "Jeśli wątek jest zwinięty, rozwija wszystkie nieprzeczytane lub ostatnie wiadomości. Jeśli wątek jest rozwinięty, rozwija tylko zaznaczone wiadomości.">
+<!ENTITY option.expand_none "Nie rozwijaj">
+<!ENTITY option.expand_all "Rozwijaj wszystkie">
+<!ENTITY title.quoting2 "Quoted text">
+<!ENTITY desc.quoting "Quotes higher than this number of lines will be collapsed.">
+<!ENTITY title.assistant "Asystent konfiguracji">
+<!ENTITY option.assistant "Uruchom asystenta konfiguracji">
+<!ENTITY title.friendly_date "Friendly dates">
+<!ENTITY option.no_friendly_date2 "In the top right corner, use &quot;normal&quot; dates, just like the message list, instead of &quot;yesterday&quot; and others.">
+<!ENTITY title.monospaced_senders "Display in monospaced">
+<!ENTITY option.monospaced_senders2 "Wiadomości z tych adresów/list wiadomości wyświetlaj czcionką o stałej szerokości (oddzielone przecinkami)">
+<!ENTITY title.tweak_chrome "Tweak chrome fonts">
+<!ENTITY option.tweak_bodies "Tweak the fonts in the message bodies to make them consistent with the outer font (recommended, requires restart).">
+<!ENTITY title.tweak_bodies "Tweak body fonts">
+<!ENTITY option.tweak_chrome "Scale down the font size for the conversation chrome (recommended, requires restart).">
+<!ENTITY title.add_embeds "Add embeds">
+<!ENTITY option.add_embeds "Detect links to various services (e.g. YouTube) in emails, and view them inline.">
+<!ENTITY title.debugging "Debugging">
+<!ENTITY desc.debugging "Enable debug output in the system console and the error console. This will generate a lot of messages.">
+<!ENTITY title.operate_on_conversations "Toolbar buttons">
+<!ENTITY option.operate_on_conversations "Toolbar buttons should archive and delete the entire conversation, not just selected messages">
+<!ENTITY title.extra_attachments "Kocham załączniki">
+<!ENTITY desc.extra_attachments "W niektórych skrajnych przypadkach Thunderbird nie potrafi rozpoznać niektórych załączników. Ta opcja umożliwia obejście błędu Thunderbirda i wyświetlenie tylu załączników ile się da. Stosuj a kombinacji z Widok » Wyświetlaj wiadomości jako » Wszystkie części treści wiadomości.">
+<!ENTITY title.send_in_background "Wyślij w tle">
+<!ENTITY desc.send_in_background "Spowoduje to umieszczenie wiadomości w kolejce do wysłania i nie będzie potrzeby czekania na zakończenie procesu wysyłania przed wyjściem z trybu konwersacji. Informacja! Proces twórczy tej funkcji nie jest jeszcze w pełni zakończony (zobacz SendInBackground on wiki.mozilla.org) i oddziałuje również na normalny proces tworzenia wiadomości. Włączenie jej wymaga ponownego uruchomienia programu.">
