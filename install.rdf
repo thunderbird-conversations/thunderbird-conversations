@@ -14,7 +14,7 @@
       <Description>
         <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
         <em:minVersion>11.0a1</em:minVersion>
-        <em:maxVersion>12.0a1</em:maxVersion>
+        <em:maxVersion>13.0a1</em:maxVersion>
       </Description>
     </em:targetApplication>
     
@@ -26,6 +26,7 @@
     <em:optionsType>2</em:optionsType>
     <em:iconURL>chrome://conversations/content/icon.png</em:iconURL>
     <em:homepageURL>http://github.com/protz/GMail-Conversation-View/wiki</em:homepageURL>
+    <em:bootstrap>true</em:bootstrap>
     <em:type>2</em:type>
 
     <em:localized>

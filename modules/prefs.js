@@ -5,6 +5,8 @@ const Cc = Components.classes;
 const Cu = Components.utils;
 const Cr = Components.results;
 
+Cu.import("resource://gre/modules/Services.jsm");
+
 const prefsService = Cc["@mozilla.org/preferences-service;1"]
   .getService(Ci.nsIPrefService)
   .getBranch("conversations.");
@@ -14,7 +16,45 @@ const gPrefBranch = Cc["@mozilla.org/preferences-service;1"]
 
 const kStubUrl = "chrome://conversations/content/stub.xhtml";
 
+// That's why I'm lovin' restartless.
+function loadDefaultPrefs () {
+  // nsIPrefBranch2 is going away in Gecko 13 (I think)
+  let prefs = Services.prefs.QueryInterface(Ci.nsIPrefBranch2);
+  // All code below hamelessly stolen from the SDK
+  let branch = prefs.getDefaultBranch("");
+  let prefLoaderScope = {
+    pref: function(key, val) {
+      switch (typeof val) {
+        case "boolean":
+          branch.setBoolPref(key, val);
+          break;
+        case "number":
+          branch.setIntPref(key, val);
+          break;
+        case "string":
+          branch.setCharPref(key, val);
+          break;
+      }
+    }
+  };
+
+  let uri = Services.io.newURI(
+      "defaults/preferences/defaults.js",
+      null,
+      Services.io.newURI("resource://conversations/", null, null));
+
+  // if there is a prefs.js file, then import the default prefs
+  if (uri.QueryInterface(Ci.nsIFileURL).file.exists()) {
+    // setup default prefs
+    Services.scriptloader.loadSubScript(uri.spec, prefLoaderScope);
+  } else {
+    dump("No file found at "+uri.spec+"\n");
+  }
+}
+
 function PrefManager() {
+  loadDefaultPrefs();
+
   this.expand_who = prefsService.getIntPref("expand_who");
   this.no_friendly_date = prefsService.getBoolPref("no_friendly_date");
   this.logging_enabled = prefsService.getBoolPref("logging_enabled");
