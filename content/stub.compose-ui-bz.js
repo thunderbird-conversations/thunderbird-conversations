@@ -48,9 +48,9 @@ if (!("cookies" in Services)) {
 
 let gBugzillaAPIs = {
   "https://bugzilla.mozilla.org/":
-    "https://api-dev.bugzilla.mozilla.org/0.9/",
+    "https://api-dev.bugzilla.mozilla.org/1.1/",
   "https://landfill.bugzilla.org/bzapi_sandbox/":
-    "https://api-dev.bugzilla.mozilla.org/test/0.9/",
+    "https://api-dev.bugzilla.mozilla.org/test/1.1/",
 };
 
 function addBzLink(aUrl) {
