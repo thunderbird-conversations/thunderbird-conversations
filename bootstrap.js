@@ -168,10 +168,13 @@ function startup(aData, aReason) {
 }
 
 function shutdown(data, reason) {
-  ResourceRegister.uninit("conversations");
+  // No need to do extra work here
+  if (reason == BOOTSTRAP_REASONS.APP_SHUTDOWN)
+    return;
 
+  ResourceRegister.uninit("conversations");
   for each (let w in fixIterator(Services.wm.getEnumerator("mail:3pane")))
-    w.Conversations.monkeyPatch.undo();
+    w.Conversations.monkeyPatch.undo(reason);
 }
 
 function install(data, reason) {

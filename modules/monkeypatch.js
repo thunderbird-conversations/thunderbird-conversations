@@ -36,7 +36,7 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ['MonkeyPatch']
+var EXPORTED_SYMBOLS = ['MonkeyPatch', 'BOOTSTRAP_REASONS']
 
 const Ci = Components.interfaces;
 const Cc = Components.classes;
@@ -56,6 +56,17 @@ Cu.import("resource://conversations/modules/log.js");
 Cu.import("resource://gre/modules/Services.jsm");
 
 const kMultiMessageUrl = "chrome://messenger/content/multimessageview.xhtml";
+
+const BOOTSTRAP_REASONS = {
+  APP_STARTUP     : 1,
+  APP_SHUTDOWN    : 2,
+  ADDON_ENABLE    : 3,
+  ADDON_DISABLE   : 4,
+  ADDON_INSTALL   : 5,
+  ADDON_UNINSTALL : 6,
+  ADDON_UPGRADE   : 7,
+  ADDON_DOWNGRADE : 8
+};
 
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
@@ -77,11 +88,11 @@ MonkeyPatch.prototype = {
     this._undoFuncs.push(f);
   },
 
-  undo: function _MonkeyPatch_undo() {
+  undo: function _MonkeyPatch_undo(aReason) {
     let f;
     while (f = this._undoFuncs.pop()) {
       try {
-        f();
+        f(aReason);
       } catch (e) {
         Log.error("Failed to undo some customization", e);
         dumpCallStack(e);
@@ -289,8 +300,11 @@ MonkeyPatch.prototype = {
     shouldPerformUninstall = true;
 
     let self = this;
-    this.pushUndo(function () {
-      if (shouldPerformUninstall) {
+    this.pushUndo(function (aReason) {
+      // We don't want to undo all the customizations in the case of an
+      // upgrade... but if the user disables the conversation view, or
+      // uninstalls the addon, then we should revert them indeed.
+      if (shouldPerformUninstall && aReason != BOOTSTRAP_REASONS.ADDON_UPGRADE) {
         // Switch to a 3pane view (otherwise the "display threaded"
         // customization is not reverted)
         let mainWindow = getMail3Pane();
