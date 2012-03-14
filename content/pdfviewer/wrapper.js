@@ -108,7 +108,7 @@ Wrapper.prototype = {
         w.init(chunks);
       }, true);
       // Load from a resource:// URL so that it doesn't have chrome privileges.
-      browser.loadURI("resource://conversations/content/pdfviewer/viewer.xhtml", null, null);
+      browser.loadURI("resource://conversations/chrome/content/pdfviewer/viewer.xhtml", null, null);
     }.bind(this));
   },
 
