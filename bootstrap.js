@@ -92,6 +92,10 @@ function monkeyPatchWindow(window, aLater) {
         counter: 0,
 
         quickCompose: function () {},
+
+        createDraftListenerArrayForId: function (aId) {
+          window.Conversations.draftListeners[aId] = [];
+        },
       };
 
       // We instantiate the Monkey-Patch for the given Conversation object.

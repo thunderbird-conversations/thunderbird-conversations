@@ -137,9 +137,15 @@ function registerQuickReply() {
     },
   };
 
-  if (!(id in mainWindow.Conversations.draftListeners))
-    mainWindow.Conversations.draftListeners[id] = [];
-  mainWindow.Conversations.draftListeners[id].push(Cu.getWeakReference(gDraftListener));
+  if (!(id in mainWindow.Conversations.draftListeners)) {
+    mainWindow.Conversations.createDraftListenerArrayForId(id);
+    // We can't use the (seemingly) simple line below because the array would be
+    // allocated in the xhtml compartment, which would then get nuked, and
+    // create errors later on while we expect the array to still be valid.
+    //mainWindow.Conversations.draftListeners[id] = [];
+  }
+  let weakRef = Cu.getWeakReference(gDraftListener);
+  mainWindow.Conversations.draftListeners[id].push(weakRef);
 
   $("textarea").blur(function () {
     Log.debug("Autosave opportunity...");
