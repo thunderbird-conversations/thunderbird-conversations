@@ -137,6 +137,7 @@ MonkeyPatch.prototype = {
       id: "betweenCol",
       hidden: "false",
       flex: "4",
+      persist: "width hidden ordinal",
       label: strings.get("betweenColumnName"),
       tooltiptext: strings.get("betweenColumnTooltip"),
     })) treecol.setAttribute(k, v);
