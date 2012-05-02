@@ -512,12 +512,10 @@ Message.prototype = {
       ;
 
       // This is bug 630011, remove when fixed
-      let formattedSize = "?";
-      try {
+      let formattedSize = strings.get("sizeUnknown");
+      // -1 means size unknown
+      if (att.size != -1)
         formattedSize = Services.mMessenger.formatFileSize(att.size);
-      } catch (e) {
-        Log.error(e);
-      }
 
       // Separator... boring
       let sep = "";
