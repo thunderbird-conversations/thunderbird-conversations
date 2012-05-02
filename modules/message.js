@@ -1779,6 +1779,9 @@ let PostStreamingFixesMixIn = {
       "  border-left: 1px #ccc solid;",
       "  color: #666 !important;",
       "}",
+      "span.moz-txt-formfeed {",
+      "  height: auto;",
+      "}",
     ]);
 
     // Ugly hack (once again) to get the style inside the
