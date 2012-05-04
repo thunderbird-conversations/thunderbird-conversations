@@ -32,13 +32,8 @@ ul {
     position: relative;
     text-align: center;
     
-    -webkit-border-radius: 5px;
-       -moz-border-radius: 5px;
-            border-radius: 5px;
-    
-    -webkit-box-shadow: 0 1px 2px #CCE0FF;
-       -moz-box-shadow: 0 1px 2px #CCE0FF;
-            box-shadow: 0 1px 2px #CCE0FF;
+    border-radius: 5px;
+    box-shadow: 0 1px 2px #CCE0FF;
 }
 
     .photoWrap img {

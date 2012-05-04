@@ -18,8 +18,7 @@
   padding: 10px 10px;
   position: relative;
   
-  -moz-border-radius: 0 0 5px 5px;
-   border-radius: 0 0 5px 5px;
+  border-radius: 0 0 5px 5px;
 }
 
 .quickReply ul.inputs {
@@ -110,8 +109,7 @@
   font-family: sans-serif;
   font-size: 1.4rem;
   
-  -moz-box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05) inset;
-   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05) inset;
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05) inset;
 }
 
 .quickReply textarea.ease {
@@ -122,8 +120,7 @@
 .quickReply textarea:focus {
   border-color: #888;
   
-  -moz-box-shadow: 0 0 0 2px rgba(0, 107, 255, 0.25) inset;
-   box-shadow: 0 0 0 2px rgba(0, 107, 255, 0.25) inset;
+  box-shadow: 0 0 0 2px rgba(0, 107, 255, 0.25) inset;
 }
 
 .quickReply li.selected textarea {
@@ -159,7 +156,6 @@ body.inTab .quickReply li.selected textarea {
   background-repeat: no-repeat;
   z-index: 101;
   
-  -moz-border-radius: 0 3px 0 0;
   border-radius: 0 3px 0 0;
 }
 
@@ -247,7 +243,7 @@ html[xmlns] .cf {
 }
 
 .quickReply .label {
-  -moz-border-radius: 3px 0 0 3px;
+  border-radius: 3px 0 0 3px;
   background-image: -moz-linear-gradient(top, #fff 0%, #fff 50%, #fafafa 50%, #fafafa 100%);
   border-color: #AAAAAA;
   border-style: solid;
@@ -315,7 +311,7 @@ html[xmlns] .cf {
   border-style: solid;
   width: 100%;
   color: #666;
-  -moz-border-radius: 3px 3px 0 0;
+  border-radius: 3px 3px 0 0;
   display: none;
 }
 

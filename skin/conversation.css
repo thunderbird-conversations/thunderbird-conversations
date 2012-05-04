@@ -37,7 +37,6 @@
 
 * {
   -moz-box-sizing: border-box;
-  -webkit-box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
@@ -68,8 +67,8 @@ p {
 button {
   background-image: -moz-linear-gradient(top, #fefefe 0%, #d5d5d5 100%);
   border: 1px solid #919191;
-  -moz-box-shadow: 0 1px 0 rgba(255,255,255,0.55);
-  -moz-border-radius: 3px;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.55);
+  border-radius: 3px;
   text-align: center;
   outline: none;
   height: 2.2rem;
@@ -83,7 +82,7 @@ button:hover {
 button:active {
   background-image: none;
   background-color: #d5d5d5;
-  -moz-box-shadow: inset 0 0 2px #666;
+  box-shadow: inset 0 0 2px #666;
   border: 1px solid #666;
 }
 
@@ -97,7 +96,7 @@ button img {
   left: 0;
   width: 100%;
   z-index: 150;
-  -moz-box-shadow: 0 0 2px rgba(0,0,0,0.25);
+  box-shadow: 0 0 2px rgba(0,0,0,0.25);
 }
 
 #conversationHeader {
@@ -199,8 +198,8 @@ button img {
   background-color: #fff;
   background-image: -moz-linear-gradient(top,#fff 0%,#fafafa 100%);
   border: 1px solid #bebebe;
-  -moz-border-radius: 5px;
-  -moz-box-shadow: 0 1px 2px #CCE0FF;
+  border-radius: 5px;
+  box-shadow: 0 1px 2px #CCE0FF;
   list-style-type: none;
 }
 
@@ -211,7 +210,7 @@ button img {
 
 .message.highlight, .message:focus {
   border: 1px solid #bebebe;
-  -moz-box-shadow: 0 0 0 5px rgba(0,0,0,0.15);
+  box-shadow: 0 0 0 5px rgba(0,0,0,0.15);
 }
 
 .messageHeader {
@@ -260,8 +259,8 @@ span.downwardArrow {
   left: 16px;
   background-color: #fff;
   border: 1px solid #aaa;
-  -moz-box-shadow: 0 0 0 6px rgba(0,0,0,0.25);
-  -moz-border-radius: 5px;
+  box-shadow: 0 0 0 6px rgba(0,0,0,0.25);
+  border-radius: 5px;
   z-index: 1000;
   display: none;
 }
@@ -293,11 +292,11 @@ span.downwardArrow {
 }
 
 .dropDown li:last-child {
-  -moz-border-radius: 0 0 5px 5px;
+  border-radius: 0 0 5px 5px;
 }
 
 .dropDown li:first-child {
-  -moz-border-radius: 5px 5px 0 0;
+  border-radius: 5px 5px 0 0;
 }
 
 .dropDown li:nth-child(2n) {
@@ -385,7 +384,7 @@ a img {
   background-color: #f6f6f6;
   border-top: 1px solid #E6E6E6;
   float: left;
-  -moz-border-radius: 0 0 5px 5px;
+  border-radius: 0 0 5px 5px;
 }
 
 .tipFooter button {
@@ -445,7 +444,7 @@ a img {
 
 .message.collapsed {
   height: 3.6rem;
-  -moz-border-radius: 5px;
+  border-radius: 5px;
   margin: 0 10px -6px 10px;
   border-bottom: none;
   overflow: hidden;
@@ -529,7 +528,7 @@ ul.tags li {
   /*background-color: #68AB57;*/
   padding: 1px 5px;
   margin-right: 5px;
-  -moz-border-radius: 3px;
+  border-radius: 3px;
   color: #fff;
 }
 
@@ -563,7 +562,7 @@ ul.special-tags img {
 
 .message .notificationBar {
   padding: 10px;
-  -moz-box-shadow: 0 0 3px rgba(0,0,0,0.15) inset;
+  box-shadow: 0 0 3px rgba(0,0,0,0.15) inset;
   margin: 0 0 10px 0;
   border-width: 1px 0;
   border-style: solid;
@@ -726,7 +725,7 @@ ul.special-tags img {
   padding: 0px 10px 5px 10px;
   background-color: #f6f6f6;
   border-top: 1px solid #bebebe;
-  -moz-border-radius: 0 0 5px 5px;
+  border-radius: 0 0 5px 5px;
 }
 
 .messageFooter button {
@@ -736,7 +735,7 @@ ul.special-tags img {
   float: left;
   border: 1px solid #bebebe;
   border-top-color: white;
-  -moz-border-radius: 0 0 0 0;
+  border-radius: 0 0 0 0;
 
   margin: -1px 3px 0 0;
   padding: 0 5px 3px 5px;
@@ -750,7 +749,7 @@ ul.special-tags img {
 .messageFooter button:active {
   background-image: none;
   background-color: white;
-  -moz-box-shadow: none;
+  box-shadow: none;
 }
 
 .messageFooter.hide .footerActions {
