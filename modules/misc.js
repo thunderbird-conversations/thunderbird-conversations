@@ -270,5 +270,5 @@ function folderName(aFolder) {
     folder = folder.parent;
     folderStr = folder.name + "/" + folderStr;
   }
-  return [folder.prettiestName, folderStr];
+  return [aFolder.prettiestName, folderStr];
 }
