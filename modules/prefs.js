@@ -43,12 +43,11 @@ function loadDefaultPrefs () {
       null,
       Services.io.newURI("resource://conversations/", null, null));
 
-  // if there is a prefs.js file, then import the default prefs
-  if (uri.QueryInterface(Ci.nsIFileURL).file.exists()) {
-    // setup default prefs
+  // setup default prefs
+  try {
     Services.scriptloader.loadSubScript(uri.spec, prefLoaderScope);
-  } else {
-    dump("No file found at "+uri.spec+"\n");
+  } catch (e) {
+    dump("Error loading default preferences at "+uri.spec+": "+e+"\n");
   }
 }
 
