@@ -698,7 +698,7 @@ ComposeSession.prototype = {
         quoteMsgHdr(aMsgHdr, function (aBody) {
           // Join together the different parts
           let date = (new Date(aMsgHdr.date/1000)).toLocaleString();
-          let [{ email, name }] = parseMimeLine(aMsgHdr.mime2DecodedAuthor);
+          let [{ email, name }] = parseMimeLine(aMsgHdr.author);
           let author = name || email;
           // This will somehow make sure reflow inside the blockquotes happens,
           // rather than trying to use our own citeString function which doesn't

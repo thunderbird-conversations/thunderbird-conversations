@@ -288,15 +288,16 @@ function Message(aConversation) {
   this._conversation = aConversation;
 
   this._date = dateAccordingToPref(new Date(this._msgHdr.date/1000));
-  // This one is for display purposes
-  this._from = this.parse(this._msgHdr.mime2DecodedAuthor)[0];
+  // This one is for display purposes. We should always parse the non-decoded
+  // author because there's more information in the encoded form (see #602)
+  this._from = this.parse(this._msgHdr.author)[0];
   // Might be filled to something more meaningful later, in case we replace the
   //  sender with something more relevant, like X-Bugzilla-Who.
   this._realFrom = "";
   // The extra test is because recipients fallsback to cc if there's no To:
   // header, and we don't want to display the information twice, then.
-  this._to = (this._msgHdr.mime2DecodedRecipients != this._msgHdr.ccList)
-    ? this.parse(this._msgHdr.mime2DecodedRecipients)
+  this._to = (this._msgHdr.recipients != this._msgHdr.ccList)
+    ? this.parse(this._msgHdr.recipients)
     : [];
   this._cc = this._msgHdr.ccList.length ? this.parse(this._msgHdr.ccList) : [];
   this._bcc = this._msgHdr.bccList.length ? this.parse(this._msgHdr.bccList) : [];
@@ -1818,7 +1819,7 @@ let PostStreamingFixesMixIn = {
 
     // Unless the user specifically asked for this message to be
     //  dislayed with a monospaced font...
-    let [{name, email}] = this.parse(this._msgHdr.mime2DecodedAuthor);
+    let [{name, email}] = this.parse(this._msgHdr.author);
     if (!(email in Prefs["monospaced_senders"]) &&
         !(this.mailingLists.some(function (x) (x in Prefs["monospaced_senders"])))) {
       styleRules = styleRules.concat([
