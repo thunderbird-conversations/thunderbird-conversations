@@ -1838,7 +1838,7 @@ let PostStreamingFixesMixIn = {
     styleRules = styleRules.concat([
       "body {",
       "  margin: 0; padding: 0;",
-      "  color: rgb(10, 10, 10); background-color: transparent;",
+      "  color: rgb(10, 10, 10); background-color: #ffffff;",
       "}",
     ]);
 
