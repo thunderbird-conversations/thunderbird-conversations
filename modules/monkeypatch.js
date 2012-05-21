@@ -473,6 +473,9 @@ MonkeyPatch.prototype = {
                 //Log.debug("We failed to dispatch the event, don't know why...", e);
               }
             }, false);
+            // Workaround the "feature" that disabled the context menu when the
+            // messagepane points to about:blank
+            window.document.getElementById("messagepane").contentDocument.location.href = "about:blank?";
           }
 
           try {
