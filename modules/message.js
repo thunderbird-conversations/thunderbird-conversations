@@ -1331,6 +1331,7 @@ Message.prototype = {
             self.detectQuotes(iframe);
             self.registerLinkHandlers(iframe);
             self.injectCss(iframeDoc);
+            self.addFocusHelper(iframe);
             if (self.checkForFishing(iframeDoc) && !self._msgHdr.getUint32Property("notAPhishMessage")) {
               Log.debug("Phishing attempt");
               self._domNode.getElementsByClassName("phishingBar")[0].style.display = "block";
@@ -2042,6 +2043,18 @@ let PostStreamingFixesMixIn = {
           true);
       }
     }
+  },
+
+  addFocusHelper: function (iframe) {
+    // This is a bad idea since we can't select text anymore with this
+    // enabled...
+    return;
+    let self = this;
+    let w = iframe.contentWindow;
+    w.addEventListener("click", function (event) {
+      if (self._conversation._htmlPane.contentDocument.activeElement != self._domNode)
+        self._domNode.focus();
+    }, false);
   },
 };
 

@@ -771,8 +771,13 @@ Conversation.prototype = {
     let i = [x.message for each ([, x] in Iterator(this.messages))].indexOf(aMessage);
     Log.debug("Removing message", i);
     if (i == this.messages.length - 1 && this.messages.length > 1) {
-      let $ = this._htmlPane.contentWindow.$;
+      let w = this._htmlPane.contentWindow;
+      let $ = w.$;
+      let quickReply = w.document.querySelector(".quickReply");
+      let wasFocused = w.document.activeElement == quickReply;
       $(".message:last").prev().append($(".quickReply"));
+      if (wasFocused)
+        quickReply.focus();
       // Re-enable to reply dropdown for the message that previously had the
       // quick reply.
       $(".messageFooter").removeClass("hide");
