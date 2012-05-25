@@ -36,7 +36,7 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ['ContactManager', 'Contacts']
+var EXPORTED_SYMBOLS = ['ContactManager', 'Contacts', 'defaultPhotoURI']
 
 const Ci = Components.interfaces;
 const Cc = Components.classes;

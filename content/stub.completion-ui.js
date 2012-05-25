@@ -284,10 +284,16 @@ function setupAutocomplete(to, cc, bcc) {
       ? peopleAutocomplete
       : glodaAutocomplete
     ;
-    $(aInput).tokenInput(f, {
-      classes: autoCompleteClasses,
-      prePopulate: aData,
-    });
+    try {
+      $(aInput).tokenInput(f, {
+        classes: autoCompleteClasses,
+        prePopulate: aData,
+      });
+    } catch (e) {
+      Log.debug("Error in jquery-autocomplete", e);
+      dumpCallStack(e);
+      throw e;
+    }
     $(aList+" li:not(.add-more)").remove();
     $(aList+" .recipientListSeparator").remove();
     let list = document.getElementsByClassName(aList.substring(1))[0];

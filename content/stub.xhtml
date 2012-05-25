@@ -262,6 +262,7 @@
     Components.utils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
     Components.utils.import("resource://conversations/modules/prefs.js");
     Components.utils.import("resource://conversations/modules/log.js");
+    Components.utils.import("resource://conversations/modules/contact.js");
 
     let Log = setupLogging("Conversations.Stub");
     let isOSX = ("nsILocalFileMac" in Components.interfaces);
@@ -514,7 +515,7 @@
     function isAccel (event) (isOSX && event.metaKey || event.ctrlKey)
 
     /* This is our new hack: reuse this file to provide a standalone composition
-     * window. Why? Because it's uses gloda autocomplete and provides a
+     * window. Why? Because it uses gloda autocomplete and provides a
      * no-frills composition experience. */
     function masqueradeAsQuickCompose() {
       isQuickCompose = true;
@@ -553,6 +554,94 @@
       document.querySelector(".popout").addEventListener("click", function (event) {
         onUseEditor();
       }, false);
+
+
+      let data = [];
+
+      // Push a new contact item in the list
+      let pushNewPopularContacts = function (n) {
+        let items = data.splice(0, n);
+        let nodes = $("#popularContactTemplate").tmpl(items);
+
+        for each (let [i, data2] in Iterator(items)) {
+          let data = data2;
+          let node = nodes.eq(i);
+          Log.debug("Adding", data.name, data.email);
+
+          node.find(".popularRemove").click(function () {
+            Log.debug("Removing", data.name, data.email);
+            // Mark it in the prefs
+            let unwantedRecipients = JSON.parse(Prefs.getString("conversations.unwanted_recipients"));
+            unwantedRecipients[data.email] = null;
+            Prefs.setString("conversations.unwanted_recipients",
+              JSON.stringify(unwantedRecipients));
+            // Update the UI
+            $(this).closest(".popularContact").remove();
+            pushNewPopularContacts(1);
+          });
+
+          node.find(".popularName").click(function () {
+            // Get all the current parameters
+            let to = JSON.parse($("#to").val());
+            let cc = JSON.parse($("#cc").val());
+            let bcc = JSON.parse($("#bcc").val());
+            // Append our new value
+            to.push(MailServices.headerParser.makeFullAddress(data.name, data.email));
+            // Re-set everything
+            let format = function (items)
+              [asToken(null, name, email, null) for each ([{ name, email }] in items.map(parseMimeLine))]
+            ;
+            setupAutocomplete(format(to), format(cc), format(bcc));
+            // Remove the node!
+            node.remove();
+            pushNewPopularContacts(1);
+          });
+
+        }
+
+        nodes.appendTo($(".quickReplyContacts"));
+      };
+
+      // Fill in the "10 most popular contacts" thing
+      let contactQuery = Gloda.newQuery(Gloda.NOUN_CONTACT);
+      contactQuery.orderBy("-popularity").limit(100);
+      let contactCollection = contactQuery.getCollection({
+        onItemsAdded: function(aItems, aCollection) {
+        },
+        onItemsModified: function(aItems, aCollection) {
+        },
+        onItemsRemoved: function(aItems, aCollection) {
+        },
+        onQueryCompleted: function(aCollection) {
+          let items = aCollection.items;
+          let unwantedRecipients = JSON.parse(Prefs.getString("conversations.unwanted_recipients"));
+
+          for each (let contact in items) {
+            if (contact.identities.length) {
+              let id = contact.identities[0];
+              let photoForAbCard = function (card) {
+                if (!card)
+                  return defaultPhotoURI;
+                let url = card.getProperty("PhotoURI", "");
+                if (!url)
+                  return defaultPhotoURI;
+                return url;
+              };
+              if (id.kind == "email" && !(id.value in unwantedRecipients)) {
+                // Log.debug("Pushing", id.value, contact.name, contact.popularity);
+                data.push({
+                  email: id.value,
+                  name: contact.name,
+                  photo: photoForAbCard(id.abCard),
+                });
+              }
+            }
+          }
+
+          pushNewPopularContacts(10);
+        },
+      }, null);
+      contactCollection.becomeExplicit();
     }
 
     // I'll never understand why JS doesn't have lexical scoping...
@@ -944,123 +1033,138 @@
       </ul>
     {{/if}}
   ]]></script>
+  <script id="popularContactTemplate" type="text/x-jquery-tmpl"><![CDATA[
+    <div class="popularContact">
+      <img class="popularPhoto" src="${photo}" style="float: left" />
+      <span class="popularRemove">×</span>
+      <span class="popularName">${name}</span><br />
+      <span class="popularEmail">${email}</span>
+    </div>
+  ]]></script>
   <script id="quickReplyTemplate" type="text/x-jquery-tmpl"><![CDATA[
     <div class="quickReply" ondragover="quickReplyCheckDrag(event);" ondrop="quickReplyDrop(event);">
-      <div class="replyHeader">
-        <div class="quickReplyRecipients">
-          <ul class="fromField">
-            ${str("fieldFrom")}
-            <li class="senderSwitcher" style="display: none"><a class="switchLeft">◂</a> <a class="switchRight">▸</a></li>
-            <li class="senderName"></li>,
-            <li class="replyMethod">
-              <input type="radio" name="reply-method" value="reply"
-                onchange="changeComposeFields('reply')" id="reply-radio"
-              /><label for="reply-radio">${str("reply")}</label>
-            </li>
-            <li class="replyMethod replyMethod-replyAll">
-              <input type="radio" name="reply-method" value="replyAll"
-                onchange="changeComposeFields('replyAll')" id="replyAll-radio"
-              /><label for="replyAll-radio">${str("replyAll")}</label>
-            </li>
-            <li class="replyMethod replyMethod-replyList">
-              <input type="radio" name="reply-method" value="replyList"
-                onchange="changeComposeFields('replyList')" id="replyList-radio"
-              /><label for="replyList-radio">${str("replyList")}</label>
-            </li>
-            <li class="replyMethod">
-              <input type="radio" name="reply-method" value="forward"
-                onchange="changeComposeFields('forward')" id="forward-radio"
-              /><label for="forward-radio">${str("forward")}</label>
-            </li>
-            <li class="firstBar">|</li>
-            <li class="showCc"><a onclick="showCc(); editFields('cc');" href="javascript:">${str("addCc")}</a> |</li>
-            <li class="showBcc"><a onclick="showBcc(); editFields('bcc');" href="javascript:">${str("addBcc")}</a> |</li>
-            <li class="addAttachment"><a onclick="addAttachment();" href="javascript:">${str("addAttachment")}</a></li>
-          </ul>
-          <div class="editRecipientList editToList hbox">
-            <div class="label">${str("fieldTo")}</div>
-            <div class="boxFlex"><input type="text" id="to" /></div>
-          </div>
-          <div class="editRecipientList editCcList hbox" style="display: none">
-            <div class="label">${str("fieldCc")}</div>
-            <div class="boxFlex"><input type="text" id="cc" /></div>
-          </div>
-          <div class="editRecipientList editBccList hbox" style="display: none">
-            <div class="label">${str("fieldBcc")}</div>
-            <div class="boxFlex"><input type="text" id="bcc" /></div>
-          </div>
-          <div class="editRecipientList editSubject hbox" style="display: none">
-            <div class="label">${str("fieldSubject")}</div>
-            <div class="boxFlex"><input type="text" id="subject" /></div>
-          </div>
-          <ul class="recipientList toList">
-            ${str("fieldTo")}
-            <li>${str("pleaseWait")}</li>
-            <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('to');">${str("edit")}</a></li>
-          </ul>
-          <ul class="recipientList ccList" style="display: none;">
-            ${str("fieldCc")}
-            <li>${str("pleaseWait")}</li>
-            <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('cc');">${str("edit")}</a></li>
-          </ul>
-          <ul class="recipientList bccList" style="display: none;">
-            ${str("fieldBcc")}
-            <li>${str("pleaseWait")}</li>
-            <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('bcc');">${str("edit")}</a></li>
-          </ul>
-        </div>
-        <div class="quickReplyAttachments">
-        </div>
-        <div class="quickReplyHeader" style="display: none; overflow: auto">
-          <span class="statusMessage" style="float: left;"></span>
-          <span class="statusPercentage" style="float: right;"></span>
-          <span class="statusThrobber" style="float: right;">
-            <img src="chrome://conversations/content/i/loader.gif"
-              style="vertical-align: middle;" />
-          </span>
+      <div class="quickReplyContacts">
+        <div class="quickReplyContactsHeader">
+          ${str("mostFrequentContacts")}
         </div>
       </div>
+      <div class="quickReplyBox">
+        <div class="replyHeader">
+          <div class="quickReplyRecipients">
+            <ul class="fromField">
+              ${str("fieldFrom")}
+              <li class="senderSwitcher" style="display: none"><a class="switchLeft">◂</a> <a class="switchRight">▸</a></li>
+              <li class="senderName"></li>,
+              <li class="replyMethod">
+                <input type="radio" name="reply-method" value="reply"
+                  onchange="changeComposeFields('reply')" id="reply-radio"
+                /><label for="reply-radio">${str("reply")}</label>
+              </li>
+              <li class="replyMethod replyMethod-replyAll">
+                <input type="radio" name="reply-method" value="replyAll"
+                  onchange="changeComposeFields('replyAll')" id="replyAll-radio"
+                /><label for="replyAll-radio">${str("replyAll")}</label>
+              </li>
+              <li class="replyMethod replyMethod-replyList">
+                <input type="radio" name="reply-method" value="replyList"
+                  onchange="changeComposeFields('replyList')" id="replyList-radio"
+                /><label for="replyList-radio">${str("replyList")}</label>
+              </li>
+              <li class="replyMethod">
+                <input type="radio" name="reply-method" value="forward"
+                  onchange="changeComposeFields('forward')" id="forward-radio"
+                /><label for="forward-radio">${str("forward")}</label>
+              </li>
+              <li class="firstBar">|</li>
+              <li class="showCc"><a onclick="showCc(); editFields('cc');" href="javascript:">${str("addCc")}</a> |</li>
+              <li class="showBcc"><a onclick="showBcc(); editFields('bcc');" href="javascript:">${str("addBcc")}</a> |</li>
+              <li class="addAttachment"><a onclick="addAttachment();" href="javascript:">${str("addAttachment")}</a></li>
+            </ul>
+            <div class="editRecipientList editToList hbox">
+              <div class="label">${str("fieldTo")}</div>
+              <div class="boxFlex"><input type="text" id="to" /></div>
+            </div>
+            <div class="editRecipientList editCcList hbox" style="display: none">
+              <div class="label">${str("fieldCc")}</div>
+              <div class="boxFlex"><input type="text" id="cc" /></div>
+            </div>
+            <div class="editRecipientList editBccList hbox" style="display: none">
+              <div class="label">${str("fieldBcc")}</div>
+              <div class="boxFlex"><input type="text" id="bcc" /></div>
+            </div>
+            <div class="editRecipientList editSubject hbox" style="display: none">
+              <div class="label">${str("fieldSubject")}</div>
+              <div class="boxFlex"><input type="text" id="subject" /></div>
+            </div>
+            <ul class="recipientList toList">
+              ${str("fieldTo")}
+              <li>${str("pleaseWait")}</li>
+              <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('to');">${str("edit")}</a></li>
+            </ul>
+            <ul class="recipientList ccList" style="display: none;">
+              ${str("fieldCc")}
+              <li>${str("pleaseWait")}</li>
+              <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('cc');">${str("edit")}</a></li>
+            </ul>
+            <ul class="recipientList bccList" style="display: none;">
+              ${str("fieldBcc")}
+              <li>${str("pleaseWait")}</li>
+              <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('bcc');">${str("edit")}</a></li>
+            </ul>
+          </div>
+          <div class="quickReplyAttachments">
+          </div>
+          <div class="quickReplyHeader" style="display: none; overflow: auto">
+            <span class="statusMessage" style="float: left;"></span>
+            <span class="statusPercentage" style="float: right;"></span>
+            <span class="statusThrobber" style="float: right;">
+              <img src="chrome://conversations/content/i/loader.gif"
+                style="vertical-align: middle;" />
+            </span>
+          </div>
+        </div>
 
-      <ul class="inputs cf" style="padding-right: ${str('actionsSize')}rem">
-        <li class="reply expand" ondragenter="quickReplyDragEnter(event);">
-          <div class="popout" title="${str('popoutReply')}" alt="popout">
-            <span class="popoutTxt">${str('popoutTxt')}</span>
-          </div>
-          <div class="textWrap">
-            <div class="icon"><span>${str("reply")}</span> <img src="i/reply.png" /></div>
-            <textarea class="sans"></textarea>
-          </div>
-        </li>
-        
-        <li class="replyAll expand" ondragenter="quickReplyDragEnter(event);">
-          <div class="popout" title="${str('popoutReplyAll')}" alt="popout">
-            <span class="popoutTxt">${str('popoutTxt')}</span>
-          </div>
-          <div class="textWrap">
-            <div class="icon"><span>${str("replyAll")}</span> <img src="i/replyAll.png" /></div>
-            <textarea class="sans"></textarea>
-          </div>
-        </li>
-        
-        <li class="misc" style="width: ${str('actionsSize')}rem">
-          <ul class="actions cf">
-            <li class="fwd"><a href="javascript:">${capitalize(str('forward'))}</a></li>
-            <li class="list"><a href="javascript:">${capitalize(str('replyList'))}</a></li>
-          </ul>
-        </li>   
-      </ul>
+        <ul class="inputs cf" style="padding-right: ${str('actionsSize')}rem">
+          <li class="reply expand" ondragenter="quickReplyDragEnter(event);">
+            <div class="popout" title="${str('popoutReply')}" alt="popout">
+              <span class="popoutTxt">${str('popoutTxt')}</span>
+            </div>
+            <div class="textWrap">
+              <div class="icon"><span>${str("reply")}</span> <img src="i/reply.png" /></div>
+              <textarea class="sans"></textarea>
+            </div>
+          </li>
 
-      <div class="replyFooter" style="overflow: auto" tabindex="-1">
-        <button id="send" style="float:right;margin-left:3px;" onclick="gComposeSession.send();">
-          ${str("send")}
-        </button>
-        <button id="sendArchive" style="float:right;margin-left:3px;"
-            onclick="gComposeSession.send({ archive: true });">
-          ${str("sendArchive")}
-        </button>
-        <button id="save" style="float:right" onclick="onSave();">${str("save")}</button>
-        <a class="discard" href="javascript:" id="discard"
-          onclick="confirmDiscard()">${str("discard")}</a>
+          <li class="replyAll expand" ondragenter="quickReplyDragEnter(event);">
+            <div class="popout" title="${str('popoutReplyAll')}" alt="popout">
+              <span class="popoutTxt">${str('popoutTxt')}</span>
+            </div>
+            <div class="textWrap">
+              <div class="icon"><span>${str("replyAll")}</span> <img src="i/replyAll.png" /></div>
+              <textarea class="sans"></textarea>
+            </div>
+          </li>
+
+          <li class="misc" style="width: ${str('actionsSize')}rem">
+            <ul class="actions cf">
+              <li class="fwd"><a href="javascript:">${capitalize(str('forward'))}</a></li>
+              <li class="list"><a href="javascript:">${capitalize(str('replyList'))}</a></li>
+            </ul>
+          </li>
+        </ul>
+
+        <div class="replyFooter" style="overflow: auto" tabindex="-1">
+          <button id="send" style="float:right;margin-left:3px;" onclick="gComposeSession.send();">
+            ${str("send")}
+          </button>
+          <button id="sendArchive" style="float:right;margin-left:3px;"
+              onclick="gComposeSession.send({ archive: true });">
+            ${str("sendArchive")}
+          </button>
+          <button id="save" style="float:right" onclick="onSave();">${str("save")}</button>
+          <a class="discard" href="javascript:" id="discard"
+            onclick="confirmDiscard()">${str("discard")}</a>
+        </div>
       </div>
     </div>
     ]]>
@@ -1068,7 +1172,7 @@
   <script id="quickReplyAttachmentTemplate" type="text/x-jquery-tmpl"><![CDATA[
     <ul class="quickReplyAttachment">
       ${str("attachment")}:
-      <li>${name}</li> (${size}) - 
+      <li>${name}</li> (${size}) -
       <a href="javascript:" class="removeAttachmentLink">${str("removeAttachment")}</a>
     </ul>
     ]]>
