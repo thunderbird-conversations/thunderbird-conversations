@@ -13,3 +13,4 @@ pref("conversations.expensive_quote_detection", false);
 pref("conversations.operate_on_conversations", false);
 pref("conversations.enabled", true);
 pref("conversations.extra_attachments", false);
+pref("conversations.compose_in_tab", true);

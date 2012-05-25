@@ -248,8 +248,8 @@ function topMail3Pane(aObj) {
     return aObj._htmlPane.ownerDocument.defaultView;
   else if ("_manager" in aObj) // Contact
     return aObj._domNode.ownerDocument.defaultView.top;
-  else if (aObj.isQuickCompose) // Standalone window
-    return aObj.top.opener;
+  else if (aObj.isQuickCompose) // Standalone window or in a tab
+    return aObj.top.opener || aObj.frameElement.ownerDocument.defaultView;
   else if ("top" in aObj) // window inside the htmlpane
     return aObj.top;
   else

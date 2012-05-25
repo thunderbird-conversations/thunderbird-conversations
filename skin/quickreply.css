@@ -370,12 +370,6 @@ html[xmlns] .cf {
   height: 100%;
 }
 
-.quickCompose .popout {
-  /* Bug #640433 taken into account. $@!!###☠☠ */
-  bottom: -moz-calc(2.2rem + 20px);
-  left: 10px;
-}
-
 .quickCompose :-moz-any(.quickReply, .inputs, .reply),
 .quickCompose .reply :-moz-any(.textWrap, .selected) {
   display: -moz-box !important;

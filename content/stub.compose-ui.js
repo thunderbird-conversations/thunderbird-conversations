@@ -1290,8 +1290,11 @@ function createStateListener (aComposeSession, aMsgHdrs, aId) {
         // Archive the whole conversation if needed
         if (aComposeSession.archive)
           msgHdrsArchive(aMsgHdrs.filter(function (x) !msgHdrIsArchive(x)));
-        if (isQuickCompose)
+        if (isQuickCompose) {
+          // Try both, the first one will do nothing if in a tab.
           window.close();
+          closeTab();
+        }
       }
     },
 
