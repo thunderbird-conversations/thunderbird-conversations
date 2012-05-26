@@ -110,7 +110,7 @@ function monkeyPatchWindow(window, aLater) {
         if (Prefs.compose_in_tab)
           window.openTab("chromeTab", { chromePage: "chrome://conversations/content/stub.xhtml?quickCompose=1" });
         else
-          window.openDialog("chrome://conversations/content/stub.xhtml?quickCompose=1", "", "chrome,width=800,height=600");
+          window.openDialog("chrome://conversations/content/stub.xhtml?quickCompose=1", "", "chrome,width=1020,height=600");
       }
 
       // The modules below need to be loaded when a window exists. 
