@@ -473,9 +473,6 @@ MonkeyPatch.prototype = {
                 //Log.debug("We failed to dispatch the event, don't know why...", e);
               }
             }, false);
-            // Workaround the "feature" that disabled the context menu when the
-            // messagepane points to about:blank
-            window.document.getElementById("messagepane").contentDocument.location.href = "about:blank?";
           }
 
           try {
@@ -704,6 +701,19 @@ MonkeyPatch.prototype = {
       oldOnMsgHasRemoteContent(aMsgHdr);
     };
     this.pushUndo(function () window.messageHeaderSink.onMsgHasRemoteContent = oldOnMsgHasRemoteContent);
+
+    let messagepane = window.document.getElementById("messagepane");
+    let fightAboutBlank = function () {
+      if (messagepane.contentWindow.location.href == "about:blank") {
+        Log.debug("Hockey-hack");
+        // Workaround the "feature" that disables the context menu when the
+        // messagepane points to about:blank
+        messagepane.contentWindow.location.href = "about:blank?";
+      }
+    };
+    messagepane.addEventListener("load", fightAboutBlank, true);
+    this.pushUndo(function () messagepane.removeEventListener("load", fightAboutBlank, true));
+    fightAboutBlank();
 
     Log.debug("Monkey patch successfully applied.");
   },

@@ -294,6 +294,7 @@ function onPopOut(event, aType, aIsSelected) {
 function onDiscard(event) {
   if (isQuickCompose) {
     window.close();
+    closeTab();
   } else {
     getActiveEditor().value = "";
     hideCompositionFields();
