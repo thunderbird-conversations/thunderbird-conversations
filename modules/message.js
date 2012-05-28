@@ -1587,7 +1587,7 @@ Message.prototype = {
       // window to figure out why this results in an extra <br> being added, so
       // let's just stay sane and use a hack.
       body = body.replace(/\r?\n<br>/g, "<br>");
-      body = body.replace(/<\/body>\s*<\/html>\s*$/, "");
+      body = body.replace(/<br>\r?\n/g, "<br>");
       if (!(body.indexOf("<pre wrap>") === 0))
         body = "<br>"+body;
       let html = [
