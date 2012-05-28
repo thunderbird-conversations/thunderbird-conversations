@@ -66,8 +66,8 @@
       oncommand="window.openDialog('chrome://conversations/content/assistant/assistant.xhtml', '', 'chrome,width=800,height=500');"
      />
   </setting>
-  <setting title="&title.extra_attachments;" desc="&desc.extra_attachments;" pref="conversations.extra_attachments" type="bool" />
-  <setting title="&title.debugging;" desc="&desc.debugging;" pref="conversations.logging_enabled" type="bool" />
+  <setting title="&title.extra_attachments;" desc="&desc.extra_attachments2;" pref="conversations.extra_attachments" type="bool" />
   <setting title="&title.compose_in_tab;" desc="&desc.compose_in_tab;" pref="conversations.compose_in_tab" type="bool" />
+  <setting title="&title.debugging;" desc="&desc.debugging;" pref="conversations.logging_enabled" type="bool" />
  
 </vbox>
