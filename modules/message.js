@@ -460,7 +460,7 @@ Message.prototype = {
       ? ""
       : dateAsInMessageList(new Date(this._msgHdr.date/1000))
     ;
-    data.uri = escapeHtml(msgHdrGetUri(this._msgHdr));
+    data.uri = msgHdrGetUri(this._msgHdr);
 
     // 4) Custom tag telling the user if the message is not in the current view
     let [name, fullName] = folderName(this._msgHdr.folder);
@@ -493,6 +493,7 @@ Message.prototype = {
         attachmentsPlural: null,
         attachments: [],
         gallery: false,
+        uri: msgHdrGetUri(this._msgHdr),
       };
     }
     let self = this;

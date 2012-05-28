@@ -69,7 +69,7 @@ Gallery.prototype = {
       attachments =
         attachments.filter(function (x) x.contentType.indexOf("image/") === 0);
       this.attachments = attachments;
-      this.subject = aMimeMsg.headers.subject;
+      this.subject = aMsgHdr.mime2DecodedSubject;
       this.output();
     }, true, {
       partsOnDemand: true,
