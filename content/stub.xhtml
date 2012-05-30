@@ -644,8 +644,10 @@
       contactCollection.becomeExplicit();
 
       // Misc
-      if (!top.opener)
+      if (!top.opener) {
         window.frameElement.setAttribute("tooltip", "aHTMLTooltip");
+        window.frameElement.setAttribute("context", "mailContext");
+      }
     }
 
     // I'll never understand why JS doesn't have lexical scoping...
