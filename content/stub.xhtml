@@ -599,8 +599,10 @@
 
         }
 
-        nodes.appendTo($(".quickReplyContacts"));
+        nodes.appendTo($(".quickReplyContactsBox"));
       };
+
+      $(".quickReplyContactsMoreLink").click(function () pushNewPopularContacts(10));
 
       // Fill in the "10 most popular contacts" thing
       let contactQuery = Gloda.newQuery(Gloda.NOUN_CONTACT);
@@ -1052,6 +1054,13 @@
       <div class="quickReplyContacts">
         <div class="quickReplyContactsHeader">
           ${str("mostFrequentContacts")}
+        </div>
+        <div class="quickReplyContactsBox">
+        </div>
+        <div class="quickReplyContactsMore">
+          <a class="quickReplyContactsMoreLink">
+            ${str("showMore")}
+          </a>
         </div>
       </div>
       <div class="quickReplyBox">

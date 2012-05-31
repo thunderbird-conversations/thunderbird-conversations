@@ -414,6 +414,7 @@ html[xmlns] .cf {
   border-bottom: 1px solid #888;
   margin-bottom: 5px;
   clear: both;
+  position: relative;
 }
 
 .popularPhoto {
@@ -426,7 +427,7 @@ html[xmlns] .cf {
   cursor: pointer;
 }
 
-.popularEmail {
+.popularEmail, .popularName {
   /* 300px - 32px - 4px */
   width: 260px;
   text-overflow: ellipsis;
@@ -436,6 +437,15 @@ html[xmlns] .cf {
 }
 
 .popularRemove {
-  float: right;
+  position: absolute;
+  top: 0; right: 0;
+  cursor: pointer;
+}
+
+.quickReplyContactsMore {
+  text-align: center;
+}
+
+.quickReplyContactsMoreLink {
   cursor: pointer;
 }
