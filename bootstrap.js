@@ -113,8 +113,10 @@ function monkeyPatchWindow(window, aLater) {
           window.openDialog("chrome://conversations/content/stub.xhtml?quickCompose=1", "", "chrome,width=1020,height=600");
       }
 
-      // The modules below need to be loaded when a window exists. 
+      // The modules below need to be loaded when a window exists, i.e. after
+      // overlays have been properly loaded and applied
       Cu.import("resource://conversations/modules/plugins/enigmail.js");
+      Cu.import("resource://conversations/modules/plugins/lightning.js");
     } catch (e) {
       Log.error(e);
       dumpCallStack(e);
@@ -145,7 +147,6 @@ function startup(aData, aReason) {
     // Import all required plugins. If you create a new plugin, install it here.
     Cu.import("resource://conversations/modules/plugins/glodaAttrProviders.js");
     Cu.import("resource://conversations/modules/plugins/embeds.js");
-    Cu.import("resource://conversations/modules/plugins/lightning.js");
 
     // Patch all existing windows
     for each (let w in fixIterator(Services.wm.getEnumerator("mail:3pane")))
