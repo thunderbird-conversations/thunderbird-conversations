@@ -1,0 +1,29 @@
+<!ENTITY option.expand_who "Rozwijanie wiadomości">
+<!ENTITY option.expand_auto2 "Automatycznie">
+<!ENTITY option.expand_auto2.tooltip "Jeśli wątek jest zwinięty, będą rozwijane wszystkie nieprzeczytane lub ostatnie wiadomości. Jeśli wątek jest rozwinięty, będą rozwijane tylko zaznaczone wiadomości.">
+<!ENTITY option.expand_none "Nie rozwijaj">
+<!ENTITY option.expand_all "Rozwijaj wszystkie">
+<!ENTITY title.quoting2 "Skracaj cytowany tekst">
+<!ENTITY desc.quoting "Cytowany tekst zawierający więcej niż podana liczba wierszy będzie skracany.">
+<!ENTITY title.assistant "Asystent konfiguracji">
+<!ENTITY option.assistant "Uruchom asystenta konfiguracji">
+<!ENTITY title.friendly_date "Przyjazne daty">
+<!ENTITY option.no_friendly_date2 "Jeśli funkcja zostanie zaznaczona, zamiast np. „wczoraj”, „wtorek”, „4 kwietnia” itp. będą wyświetlane informacje w klasycznej postaci – daty i godziny.">
+<!ENTITY title.monospaced_senders "Wyświetlaj czcionką o stałej szerokości">
+<!ENTITY option.monospaced_senders2 "Wiadomości z tych adresów/list wysyłkowych będą wyświetlane czcionką o stałej szerokości (adresy oddzielaj przecinkami)">
+<!ENTITY title.tweak_chrome "Dopasuj czcionki interfejsu konwersacji">
+<!ENTITY option.tweak_bodies "Czcionki w treści wiadomości będą dopasowane do czcionki zewnętrznej (wymaga ponownego uruchomienia programu).">
+<!ENTITY title.tweak_bodies "Dopasuj czcionki treści wiadomości">
+<!ENTITY option.tweak_chrome "Rozmiar czcionki interfejsu konwersacji będzie zmniejszany (zalecane, wymaga ponownego uruchomienia programu).">
+<!ENTITY title.add_embeds "Dodawaj elementy osadzone">
+<!ENTITY option.add_embeds "Odnośniki do różnych serwisów, np. YouTube, będą wykrywane w e-mailach i wyświetlane w treści wiadomości.">
+<!ENTITY title.debugging "Debugowanie">
+<!ENTITY desc.debugging "Jeśli funkcja zostanie włączona, błędy będą wykrywane i wyświetlanie w Konsoli błędów i innych konsolach.">
+<!ENTITY title.operate_on_conversations "Przyciski paska narzędzi">
+<!ENTITY option.operate_on_conversations "Zamiast usuwania zaznaczonych wiadomości, przyciski paska narzędzi będą powodowały archiwizowanie i usuwanie całych konwersacji.">
+<!ENTITY title.extra_attachments "Kocham załączniki">
+<!ENTITY desc.extra_attachments2 "W pewnych sytuacjach Thunderbird nie będzie w stanie rozpoznać niektórych załączników. Ta opcja umożliwia obejście błędu Thunderbirda i wyświetlenie możliwie jak największej liczby załączników. Najlepiej używać tej funkcji w kombinacji z dodatkiem Show All Body Parts.">
+<!ENTITY title.send_in_background "Wysyłaj w tle">
+<!ENTITY desc.send_in_background "Funkcja ta powoduje umieszczenie wiadomości w kolejce do wysłania i nie będzie potrzeby czekania na zakończenie procesu wysyłania przed wyjściem z trybu konwersacji. Informacja! Proces twórczy tej funkcji nie jest jeszcze w pełni zakończony (zobacz SendInBackground na wiki.mozilla.org) i oddziałuje również na normalny proces tworzenia wiadomości. Włączenie jej wymaga ponownego uruchomienia programu.">
+<!ENTITY title.compose_in_tab "Ukryte okno tworzenia wiadomości">
+<!ENTITY desc.compose_in_tab "Skrót Ctrl+Shift+N powoduje otwarcie ukrytego, nieobsługiwanego okna tworzenia wiadomości w nowej karcie">
