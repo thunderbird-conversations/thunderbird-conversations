@@ -76,6 +76,7 @@ for DIR in $ROOT_DIRS; do
   find $DIR -not \( -wholename $DIR'/pdfjs/*' \
         -and -not -wholename $DIR'/pdfjs/build/pdf.js' \) \
       -and -not -iname '.vimsession' \
+      -and -not -iname '.gitignore' \
       -and -not -iname '.*.sw*' \
       -and -not -iname '.sw*' \
     -type f -print | grep -v \~ | grep -v '/.git/' >> files
