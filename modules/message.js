@@ -1835,11 +1835,14 @@ let PostStreamingFixesMixIn = {
     // Do some reformatting + deal with people who have bad taste. All these
     // rules are important: some people just send messages with horrible colors,
     // which ruins the conversation view. Gecko tends to automatically add
-    // padding/margin to html mails.
+    // padding/margin to html mails. We still want to honor these prefs but
+    // usually they just black/white so this is pretty much what we want.
+    let fg = Prefs.getChar("browser.display.foreground_color");
+    let bg = Prefs.getChar("browser.display.background_color");
     styleRules = styleRules.concat([
       "body {",
       "  margin: 0; padding: 0;",
-      "  color: rgb(10, 10, 10); background-color: #ffffff;",
+      "  color: "+fg+"; background-color: "+bg+";",
       "}",
     ]);
 
