@@ -1,0 +1,29 @@
+<!ENTITY option.expand_who "Pagal nutylėjimą, išskleisti:">
+<!ENTITY option.expand_auto2 "Automatiškai">
+<!ENTITY option.expand_auto2.tooltip "Jei tema suskleista, išskleisti neskaitytus laiškus arba paskutinį laišką. Jei išskleista, išskleisti tik tuos laiškus kurie pasirinkti laiškų sąraše.">
+<!ENTITY option.expand_none "Nei vieno laiško">
+<!ENTITY option.expand_all "Visus laiškus">
+<!ENTITY title.quoting2 "Cituojamas tekstas">
+<!ENTITY desc.quoting "Citatos ilgesnės nei šis eilučių skaičius bus suskleistos.">
+<!ENTITY title.assistant "Nustatymo padėjėjas">
+<!ENTITY option.assistant "Paleisti nustatymo padėjėją">
+<!ENTITY title.friendly_date "Draugiškos datos">
+<!ENTITY option.no_friendly_date2 "Viršutiniame dešiniame kampe, naudoti „įprastas“ datas, tokias pat kaip ir laiškų sąraše. Vietoj „vakar“ ir kitų.">
+<!ENTITY title.monospaced_senders "Rodyti lygiapločiu šriftu">
+<!ENTITY option.monospaced_senders2 "Laiškai iš šių adresatų/konferencijų turi būti rodomi naudojant lygiapločius šriftus (atskirkite kableliais)">
+<!ENTITY title.tweak_chrome "Tobulinti chrome šriftus">
+<!ENTITY option.tweak_bodies "Patobulinti šriftus, kurie naudojami laiškų turinio atvaizdavimui, kad jie atitiktų išorinį šriftą (rekomenduojama, reikia paleisti iš naujo).">
+<!ENTITY title.tweak_bodies "Tobulinti pranešimo šriftus">
+<!ENTITY option.tweak_chrome "Sumažinti šriftus naudojamus pokalbių „chrome“ (rekomenduojama, reikia paleisti iš naujo).">
+<!ENTITY title.add_embeds "Pridėti įterpimus">
+<!ENTITY option.add_embeds "Laiškuose aptikti nuorodas į įvairias tarnybas (pvz. YouTube) ir rodyti jas šalia.">
+<!ENTITY title.debugging "Derinimas">
+<!ENTITY desc.debugging "Įjungti derinimo išvestį, sistemos pulte ir klaidų pulte. Tai generuos daug pranešimų.">
+<!ENTITY title.operate_on_conversations "Įrankinės mygtukai">
+<!ENTITY option.operate_on_conversations "Įrankinės mygtukai turėtų archyvuoti ir pašalinti visą pokalbį, ne tik pasirinktus laiškus">
+<!ENTITY title.extra_attachments "Man patinka priedai">
+<!ENTITY desc.extra_attachments2 "Kai kuriais atvejais, Thunderbird neatpažins nekurių priedų. Ši parinktis leidžia išspręsti šią Thunderbird klaidą ir rodyti tiek priedų kiek tik įmanoma. Naudokite kartu su „Show All Body Parts“ papildiniu.">
+<!ENTITY title.send_in_background "Siųsti fone">
+<!ENTITY desc.send_in_background "Tai sudės laiškus į siuntimo eilę, jums nereikės, prieš persijungiant prie kito pokalbio, laukti kol siuntimo procesas bus baigtas. Įspėjimas: ši galimybė nebaigta (pažiūrėkite SendInBackground tinklalapyje wiki.mozilla.org) ir taipogi taikoma įprastam kūrimo procesui. Reikia paleisti iš naujo.">
+<!ENTITY title.compose_in_tab "Paslėptas kūrimo langas">
+<!ENTITY desc.compose_in_tab "Ctrl-Shift-N naujoje kortelėje atveria paslėptą ir nepalaikomą kūrimą langą">

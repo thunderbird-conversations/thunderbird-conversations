@@ -13,8 +13,10 @@ locale conversations fi-FI locale/fi-FI/
 locale conversations fr locale/fr/
 locale conversations he-IL locale/he-IL/
 locale conversations hu-HU locale/hu-HU/
+locale conversations hr locale/hr/
 locale conversations it locale/it/
 locale conversations ja-JP locale/ja-JP/
+locale conversations lt locale/lt/
 locale conversations nl locale/nl/
 locale conversations nl-NL locale/nl-NL/
 locale conversations pl locale/pl/
