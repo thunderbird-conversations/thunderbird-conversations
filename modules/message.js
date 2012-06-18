@@ -139,143 +139,205 @@ function KeyListener(aMessage) {
 }
 
 KeyListener.prototype = {
+  functions: {
+    toggleMessage: function toggleMessage(event) {
+      // If we expand a collapsed, when in doubt, mark it read.
+      if (this.message.collapsed)
+        this.message.read = true;
+      this.message.toggle();
+      event.preventDefault();
+      event.stopPropagation();
+    },
+    nextMessage: function nextMessage(event) {
+      let [msgNodes, index] = this.findMsgNode(this.message._domNode);
+      if (index < (msgNodes.length - 1)) {
+        let next = msgNodes[index+1];
+        next.focus();
+        this.message._conversation._htmlPane
+          .contentWindow.scrollNodeIntoView(next);
+      }
+      event.preventDefault();
+      event.stopPropagation();
+    },
+    prevMessage: function prevMessage(event) {
+      let [msgNodes, index] = this.findMsgNode(this.message._domNode);
+      if (index > 0) {
+        let prev = msgNodes[index-1];
+        prev.focus();
+        this.message._conversation._htmlPane
+          .contentWindow.scrollNodeIntoView(prev);
+      }
+      event.preventDefault();
+      event.stopPropagation();
+    },
+    reply: function reply(event) {
+      if (event.shiftKey) {
+        this.message.compose(Ci.nsIMsgCompType.ReplyAll, null);
+      } else {
+        this.message.compose(Ci.nsIMsgCompType.ReplyToSender, null);
+      }
+      event.preventDefault();
+      event.stopPropagation();
+    },
+    forward: function forward(event) {
+      this.message.forward(event);
+      event.preventDefault();
+      event.stopPropagation();
+    },
+    setFocus: function setFocus(event) {
+      // Hey, let's move back to this message next time!
+      this.message._domNode.setAttribute("tabindex", "1");
+      this.mail3PaneWindow.SetFocusThreadPane(event);
+      event.preventDefault();
+      event.stopPropagation();
+    },
+    viewSource: function viewSource(event) {
+      topMail3Pane(this.message).ViewPageSource([this.message._uri])
+      event.preventDefault();
+      event.stopPropagation();
+    },
+    archive: function archive(event) {
+      msgHdrsArchive(this.message._conversation.msgHdrs);
+      event.preventDefault();
+      event.stopPropagation();
+    },
+    composeTemplate: function composeTemplate(event) {
+      this.message.compose(Ci.nsIMsgCompType.Template, null);
+      event.preventDefault();
+      event.stopPropagation();
+    },
+    deleteMessage: function deleteMessage(event) {
+      this.message.removeFromConversation();
+      event.preventDefault();
+      event.stopPropagation();
+    },
+    tagHandling: function tagHandling(event) {
+      // Tag handling.
+      // 0 removes all tags, 1 to 9 set the corresponding tag, if it exists
+      let i = event.which - '1'.charCodeAt(0);
+      if (i == -1) {
+        this.message.tags = [];
+      } else {
+        let tag = MailServices.tags.getAllTags({})[i];
+        if (tag) {
+          if (this.message.tags.some(function (x) x.key == tag.key))
+            this.message.tags = this.message.tags
+            .filter(function (x) x.key != tag.key);
+          else
+            this.message.tags = this.message.tags.concat([tag]);
+        }
+      }
+      this.message.onAttributesChanged(this.message);
+      event.preventDefault();
+      event.stopPropagation();
+    },
+  },
+
+  findMsgNode: function findMsgNode(msgNode) {
+    let msgNodes = this.message._domNode.ownerDocument
+      .getElementsByClassName(Message.prototype.cssClass);
+    msgNodes = [x for each ([, x] in Iterator(msgNodes))];
+    let index = msgNodes.indexOf(msgNode);
+    return [msgNodes, index];
+  },
+
+  keybindings: {
+    "OSX": {
+      "R": [{ mods: { metaKey: true, ctrlKey: false },
+              func: "reply" },
+            { mods: { metaKey: false, ctrlKey: true },
+              func: "reply"}],
+      "L": [{ mods: { metaKey: true, ctrlKey: false },
+              func: "forward" },
+            { mods: { metaKey: false, ctrlKey: true },
+              func: "forward" }],
+      "U": [{ mods: { metaKey: true, ctrlKey: false },
+              func: "viewSource" },
+            { mods: { metaKey: false, ctrlKey: true },
+              func: "viewSource" }],
+      "E": [{ mods: { metaKey: true, ctrlKey: false },
+              func: "composeTemplate" },
+            { mods: { metaKey: false, ctrlKey: true },
+              func: "composeTemplate" }],
+    },
+    "Other": {
+      "R": [{ mods: { ctrlKey: true },
+              func: "reply"}],
+      "L": [{ mods: { ctrlKey: true },
+              func: "forward" }],
+      "U": [{ mods: { ctrlKey: true },
+              func: "viewSource" }],
+      "E": [{ mods: { ctrlKey: true },
+              func: "composeTemplate" }],
+    },
+    "Generic": {
+      "\x0D": // \x0D = 13 = KeyboardEvent.DOM_VK_RETURN
+        [{ mods: { metaKey: false, ctrlKey: false },
+           func: "toggleMessage" }],
+      "O": [{ mods: { metaKey: false, ctrlKey: false },
+              func: "toggleMessage" }],
+      "F": [{ mods: { metaKey: false, ctrlKey: false },
+              func: "nextMessage" }],
+      "B": [{ mods: { metaKey: false, ctrlKey: false },
+              func: "prevMessage" }],
+      "A": [{ mods: { metaKey: false, ctrlKey: false },
+              func: "archive" }],
+      "U": [{ mods: { metaKey: false, ctrlKey: false },
+              func: "setFocus" }],
+      "\x2E": // \x2E = 46 = KeyboardEvent.DOM_VK_DELETE
+        [{ mods: { metaKey: false, ctrlKey: false },
+           func: "deleteMessage" }],
+
+      "0": [{ mods: { ctrlKey: false, altKey: false, shiftKey: false, metaKey: false },
+              func: "tagHandling" }],
+      "1": [{ mods: { ctrlKey: false, altKey: false, shiftKey: false, metaKey: false },
+              func: "tagHandling" }],
+      "2": [{ mods: { ctrlKey: false, altKey: false, shiftKey: false, metaKey: false },
+              func: "tagHandling" }],
+      "3": [{ mods: { ctrlKey: false, altKey: false, shiftKey: false, metaKey: false },
+              func: "tagHandling" }],
+      "4": [{ mods: { ctrlKey: false, altKey: false, shiftKey: false, metaKey: false },
+              func: "tagHandling" }],
+      "5": [{ mods: { ctrlKey: false, altKey: false, shiftKey: false, metaKey: false },
+              func: "tagHandling" }],
+      "6": [{ mods: { ctrlKey: false, altKey: false, shiftKey: false, metaKey: false },
+              func: "tagHandling" }],
+      "7": [{ mods: { ctrlKey: false, altKey: false, shiftKey: false, metaKey: false },
+              func: "tagHandling" }],
+      "8": [{ mods: { ctrlKey: false, altKey: false, shiftKey: false, metaKey: false },
+              func: "tagHandling" }],
+      "9": [{ mods: { ctrlKey: false, altKey: false, shiftKey: false, metaKey: false },
+              func: "tagHandling" }],
+    }
+  },
   // Any event that's handled *must* be stopped from bubbling upwards, because
   //  there's a topmost event listener on the DOM window that re-fires any
   //  keypress (that one is not capturing) into the main window. We have to do
   //  this because otherwise events dont make it out of the <browser
   //  id="multimessage"> that holds us when the conversation view has focus.
   // That's what makes cmd/ctrl-n work properly.
-  onKeyUp: function _KeyListener_onKeyPressed (event) {
-    let self = this;
-    let findMsgNode = function (msgNode) {
-      let msgNodes = self.message._domNode.ownerDocument
-        .getElementsByClassName(Message.prototype.cssClass);
-      msgNodes = [x for each ([, x] in Iterator(msgNodes))];
-      let index = msgNodes.indexOf(msgNode);
-      return [msgNodes, index];
-    };
-    switch (event.which) {
-      case this.KeyEvent.DOM_VK_RETURN:
-      case 'O'.charCodeAt(0):
-        if (!isAccel(event)) {
-          // If we expand a collapsed, when in doubt, mark it read.
-          if (this.message.collapsed)
-            this.message.read = true;
-          this.message.toggle();
-          event.preventDefault();
-          event.stopPropagation();
-        }
-        break;
-
-      case 'F'.charCodeAt(0):
-        if (!isAccel(event)) {
-          let [msgNodes, index] = findMsgNode(this.message._domNode);
-          if (index < (msgNodes.length - 1)) {
-            let next = msgNodes[index+1];
-            next.focus();
-            this.message._conversation._htmlPane
-              .contentWindow.scrollNodeIntoView(next);
+  onKeyUp: function _KeyListener_onKeyPress (event) {
+    let bindings;
+    if (isOSX) {
+      bindings = [this.keybindings.OSX, this.keybindings.Generic];
+    } else { // TODO: Windows, Linux or other platform-specific bindings, rather than just "Other"?
+      bindings = [this.keybindings.Other, this.keybindings.Generic];
+    }
+    let key = String.fromCharCode(event.which);
+    for (let [i, binding] in Iterator(bindings)) {
+      if (key in binding) {
+        let actions = binding[key];
+        for (let [j, action] in Iterator(actions)) {
+          let match = true;
+          for (let mod in action.mods) {
+            match = match && (action.mods[mod] == event[mod]);
           }
-          event.preventDefault();
-          event.stopPropagation();
-        }
-        break;
-
-      case 'B'.charCodeAt(0):
-        if (!isAccel(event)) {
-          let [msgNodes, index] = findMsgNode(this.message._domNode);
-          if (index > 0) {
-            let prev = msgNodes[index-1];
-            prev.focus();
-            this.message._conversation._htmlPane
-              .contentWindow.scrollNodeIntoView(prev);
+          if (match) {
+            this.functions[action.func].apply(this, event);
+            return;
           }
-          event.preventDefault();
-          event.stopPropagation();
         }
-        break;
-
-      case 'R'.charCodeAt(0):
-        if (isAccel(event)) {
-          if (event.shiftKey) {
-            this.message.compose(Ci.nsIMsgCompType.ReplyAll, null);
-          } else {
-            this.message.compose(Ci.nsIMsgCompType.ReplyToSender, null);
-          }
-          event.preventDefault();
-          event.stopPropagation();
-        }
-        break;
-
-      case 'L'.charCodeAt(0):
-        if (isAccel(event)) {
-          this.message.forward(event);
-          event.preventDefault();
-          event.stopPropagation();
-        }
-        break;
-
-      case 'U'.charCodeAt(0):
-        if (!isAccel(event)) {
-          // Hey, let's move back to this message next time!
-          this.message._domNode.setAttribute("tabindex", "1");
-          this.mail3PaneWindow.SetFocusThreadPane(event);
-        } else {
-          topMail3Pane(this.message).ViewPageSource([this.message._uri])
-        }
-        event.preventDefault();
-        event.stopPropagation();
-        break;
-
-      case 'A'.charCodeAt(0):
-        if (!isAccel(event)) {
-          msgHdrsArchive(this.message._conversation.msgHdrs);
-          event.preventDefault();
-          event.stopPropagation();
-        }
-        break;
-
-      case 'E'.charCodeAt(0):
-        if (isAccel(event)) {
-          this.message.compose(Ci.nsIMsgCompType.Template, null);
-          event.preventDefault();
-          event.stopPropagation();
-        }
-        break;
-
-      case this.KeyEvent.DOM_VK_DELETE:
-        if (!isAccel(event)) {
-          this.message.removeFromConversation();
-          event.preventDefault();
-          event.stopPropagation();
-        }
-        break;
-
-      default:
-        // Tag handling.
-        // 0 removes all tags, 1 to 9 set the corresponding tag, if it exists
-        if (event.which >= '0'.charCodeAt(0)
-            && event.which <= '9'.charCodeAt(0)
-            // Don't steal tab-switching shortcuts and friends.
-            && !event.altKey && !event.ctrlKey
-            && !event.shiftKey && !event.metaKey) {
-          let i = event.which - '1'.charCodeAt(0);
-          if (i == -1) {
-            this.message.tags = [];
-          } else {
-            let tag = MailServices.tags.getAllTags({})[i];
-            if (tag) {
-              if (this.message.tags.some(function (x) x.key == tag.key))
-                this.message.tags = this.message.tags
-                  .filter(function (x) x.key != tag.key);
-              else
-                this.message.tags = this.message.tags.concat([tag]);
-            }
-          }
-          this.message.onAttributesChanged(this.message);
-          event.preventDefault();
-          event.stopPropagation();
-        }
+      }
     }
   },
 };
