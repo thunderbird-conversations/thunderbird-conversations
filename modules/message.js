@@ -333,7 +333,7 @@ KeyListener.prototype = {
             match = match && (action.mods[mod] == event[mod]);
           }
           if (match) {
-            this.functions[action.func].apply(this, event);
+            this.functions[action.func].call(this, event);
             return;
           }
         }
