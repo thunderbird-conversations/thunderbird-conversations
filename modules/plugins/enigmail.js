@@ -105,84 +105,82 @@ try {
 let enigmailSvc;
 let gMsgCompose = null; // used in enigmailMsgComposeOverlay.js
 let global = this;
-window.addEventListener("load", function () {
-  if (hasEnigmail) {
-    enigmailSvc = EnigmailCommon.getService(window);
-    if (!enigmailSvc) {
-      Log.debug("Error loading the Enigmail service. Is Enigmail disabled?\n");
-      hasEnigmail = false;
-    }
-    try {
-      let loader = Services.scriptloader;
-      loader.loadSubScript("chrome://enigmail/content/enigmailMsgComposeOverlay.js", global);
-      loader.loadSubScript("chrome://enigmail/content/enigmailMsgComposeHelper.js", global);
-    } catch (e) {
-      hasEnigmail = false;
-      Log.debug("Enigmail script doesn't seem to be loaded. Error: " + e);
-    }
-
-    let w = getMail3Pane();
-    let iframe = w.document.createElement("iframe");
-    iframe.addEventListener("load", function () {
-      iframe.parentNode.removeChild(iframe);
-    }, true);
-    iframe.setAttribute("src", "enigmail:dummy");
-    iframe.style.display = "none";
-    w.document.getElementById("messagepane").appendChild(iframe);
-
-    // Override updateSecurityStatus for showing security info properly
-    // when plural messages in a thread are streamed at one time.
-    let messagepane = w.document.getElementById("messagepane");
-    messagepane.addEventListener("load", function _overrideUpdateSecurity() {
-      messagepane.removeEventListener("load", _overrideUpdateSecurity, true);
-      let w = getMail3Pane();
-      w._encryptedMimeMessages = [];
-      w.messageHeaderSink.enigmailPrepSecurityInfo();
-
-      // EnigMimeHeaderSink.prototype in enigmailMsgHdrViewOverlay.js
-      let enigMimeHeaderSinkPrototype =
-        Object.getPrototypeOf(w.messageHeaderSink.securityInfo);
-      enigMimeHeaderSinkPrototype
-        .updateSecurityStatus = function _updateSecurityStatus_patched(uriSpec) {
-        let message;
-        // multipart/encrypted message doesn't have uriSpec.
-        if (!uriSpec) {
-          // possible to get a wrong message
-          message = w._encryptedMimeMessages.shift();
-          // Use a nsIURI object to identify the message correctly.
-          // Enigmail <= 1.3.3 doesn't support uri argument.
-          let uri = arguments[8];
-          if (uri) {
-            let msgHdr = uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
-            uriSpec = msgHdrGetUri(msgHdr);
-          }
-        }
-        if (uriSpec && w._currentConversation) {
-          for each (let [, x] in Iterator(w._currentConversation.messages)) {
-            if (x.message._uri == uriSpec) {
-              message = x.message;
-              break;
-            }
-          }
-        }
-        let args = Array.prototype.slice.call(arguments, 1);
-        let updateHdrIcons = function () {
-          w.Enigmail.hdrView.updateHdrIcons.apply(w.Enigmail.hdrView, args);
-        };
-        if (!message) {
-          Log.error("Message for the security info not found!\n");
-          updateHdrIcons();
-          return;
-        }
-        showHdrIconsOnStreamed(message, updateHdrIcons);
-
-        // Show signed label of encrypted and signed pgp/mime.
-        let statusFlags = arguments[2];
-        addSignedLabel(statusFlags, message._domNode);
-      }
-    }, true);
+if (hasEnigmail) {
+  enigmailSvc = EnigmailCommon.getService(window);
+  if (!enigmailSvc) {
+    Log.debug("Error loading the Enigmail service. Is Enigmail disabled?\n");
+    hasEnigmail = false;
   }
-}, false);
+  try {
+    let loader = Services.scriptloader;
+    loader.loadSubScript("chrome://enigmail/content/enigmailMsgComposeOverlay.js", global);
+    loader.loadSubScript("chrome://enigmail/content/enigmailMsgComposeHelper.js", global);
+  } catch (e) {
+    hasEnigmail = false;
+    Log.debug("Enigmail script doesn't seem to be loaded. Error: " + e);
+  }
+
+  let w = getMail3Pane();
+  let iframe = w.document.createElement("iframe");
+  iframe.addEventListener("load", function () {
+    iframe.parentNode.removeChild(iframe);
+  }, true);
+  iframe.setAttribute("src", "enigmail:dummy");
+  iframe.style.display = "none";
+  w.document.getElementById("messagepane").appendChild(iframe);
+
+  // Override updateSecurityStatus for showing security info properly
+  // when plural messages in a thread are streamed at one time.
+  let messagepane = w.document.getElementById("messagepane");
+  messagepane.addEventListener("load", function _overrideUpdateSecurity() {
+    messagepane.removeEventListener("load", _overrideUpdateSecurity, true);
+    let w = getMail3Pane();
+    w._encryptedMimeMessages = [];
+    w.messageHeaderSink.enigmailPrepSecurityInfo();
+
+    // EnigMimeHeaderSink.prototype in enigmailMsgHdrViewOverlay.js
+    let enigMimeHeaderSinkPrototype =
+      Object.getPrototypeOf(w.messageHeaderSink.securityInfo);
+    enigMimeHeaderSinkPrototype
+      .updateSecurityStatus = function _updateSecurityStatus_patched(uriSpec) {
+      let message;
+      // multipart/encrypted message doesn't have uriSpec.
+      if (!uriSpec) {
+        // possible to get a wrong message
+        message = w._encryptedMimeMessages.shift();
+        // Use a nsIURI object to identify the message correctly.
+        // Enigmail <= 1.3.3 doesn't support uri argument.
+        let uri = arguments[8];
+        if (uri) {
+          let msgHdr = uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
+          uriSpec = msgHdrGetUri(msgHdr);
+        }
+      }
+      if (uriSpec && w._currentConversation) {
+        for each (let [, x] in Iterator(w._currentConversation.messages)) {
+          if (x.message._uri == uriSpec) {
+            message = x.message;
+            break;
+          }
+        }
+      }
+      let args = Array.prototype.slice.call(arguments, 1);
+      let updateHdrIcons = function () {
+        w.Enigmail.hdrView.updateHdrIcons.apply(w.Enigmail.hdrView, args);
+      };
+      if (!message) {
+        Log.error("Message for the security info not found!\n");
+        updateHdrIcons();
+        return;
+      }
+      showHdrIconsOnStreamed(message, updateHdrIcons);
+
+      // Show signed label of encrypted and signed pgp/mime.
+      let statusFlags = arguments[2];
+      addSignedLabel(statusFlags, message._domNode);
+    }
+  }, true);
+}
 
 function tryEnigmail(bodyElement, aMessage) {
   if (bodyElement.textContent.indexOf("-----BEGIN PGP") < 0)
