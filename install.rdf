@@ -31,6 +31,17 @@
 
     <em:localized>
       <Description>
+        <em:locale>ca</em:locale>
+        <em:name>Thunderbird Conversations</em:name>
+        <em:description>Porta un visor de conversa cap al teu Thunderbird</em:description>
+        <em:creator>Jonathan Protzenko</em:creator>
+        <em:homepageURL>http://github.com/protz/GMail-Conversation-View/wiki</em:homepageURL>
+        <em:translator>CatTranslations (versió en català)</em:translator>
+      </Description>
+    </em:localized>
+
+    <em:localized>
+      <Description>
         <em:locale>cs</em:locale>
         <em:name>Konverzace pro Thunderbird</em:name>
         <em:description>Přináší do Thunderbirdu zobrazení konverzací!</em:description>
