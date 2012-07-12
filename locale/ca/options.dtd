@@ -1,0 +1,29 @@
+<!ENTITY option.expand_who "Per defecte, expandeix:">
+<!ENTITY option.expand_auto2 "Automàtic">
+<!ENTITY option.expand_auto2.tooltip "Si el fil es troba col·lapsat, expandeix tots els missatges no llegits o bé l'últim missatge. Si ja estan expandits, només expandeix el missatge seleccionat de la llista">
+<!ENTITY option.expand_none "No hi ha missatges!">
+<!ENTITY option.expand_all "Tots els missatges">
+<!ENTITY title.quoting2 "Text citat">
+<!ENTITY desc.quoting "Si el text citat sobrepasa aquest nombre de línies es col·lapsarà.">
+<!ENTITY title.assistant "Assistent de configuració">
+<!ENTITY option.assistant "Engega  l'Assistent de configuració">
+<!ENTITY title.friendly_date "Dates favorables">
+<!ENTITY option.no_friendly_date2 "En el marge superior esquerre, fes servir &quot;Dates&quot; normals, igual que a la llista de missatges, en comptes de &quot;ahir&quot; i altres.">
+<!ENTITY title.monospaced_senders "Mostra en  monoespaiat">
+<!ENTITY option.monospaced_senders2 "Els  missatges provinents d'aquestes adreçes haurien de mostrar-se en fonts monoespaiades (separades utilitzant comes)">
+<!ENTITY title.tweak_chrome "Ajusta les fonts de Chrome">
+<!ENTITY option.tweak_bodies "Ajusta les fonts en el cós dels missatges per que esdevinguin consistents amb les fonts de sortida (es recomana, requereix reinici).">
+<!ENTITY title.tweak_bodies "Ajusta les fonts del cós">
+<!ENTITY option.tweak_chrome "disminueix la mida de les fonts per a les converses de chrome (recomanat, requereix reinici).">
+<!ENTITY title.add_embeds "Afegeix embeds">
+<!ENTITY option.add_embeds "Detecta els links per anar als diferents serveis (p.e YouTube) en els emails, i mira'ls en línia.">
+<!ENTITY title.debugging "Debugging">
+<!ENTITY desc.debugging "Activa la sortida del Debug en la consola del sistema i també en la consola d'errors. Això generarà una quantitat enorme de missatges.">
+<!ENTITY title.operate_on_conversations "Botons de la barra d'eines">
+<!ENTITY option.operate_on_conversations "Els Botons de la barra d'eines han d'arxivar o eliminar la conversa sencera, no només els missatges seleccionats">
+<!ENTITY title.extra_attachments "M'encanten els adjunts">
+<!ENTITY desc.extra_attachments2 "En alguns casos, el Thunderbird fallarà en reconèixer alguns adjunts. Aquestes opcions et permeten treballar al voltant del Bug de Thunderbird, i s'assegura que intentem mostrar tants adjunts com podem. Fes-ho servir juntament amb el Show All Body Parts addon.">
+<!ENTITY title.send_in_background "Envia en un segon pla">
+<!ENTITY desc.send_in_background "Això posarà a la cua els missatges per enviar, així no hauràs d'esperar a completar  el procés d'enviament per  canviar de conversació. Aneu alerta !! : La característica no està completada (mira-ho a :  SendInBackground a wiki.mozilla.org) i també ho aplica al procés de composicions regulars. Es necessari el reinici.">
+<!ENTITY title.compose_in_tab "Amaga la finestra de composició">
+<!ENTITY desc.compose_in_tab "Ctrl-Shift-N obre la finestra de composició amagada, i no suportada, en una nova pestanya">
