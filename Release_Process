@@ -15,7 +15,7 @@ Thunderbird Conversations release process
     install.rdf
   - Add missing lines in chrome.manifest
   - Check the encoding of all files:
-      find locale/ -type f -not -iname '.*' | xargs file | egrep -v (UTF-8|ASCII)
+      find locale/ -type f -not -iname '.*' | xargs file | egrep -v '(UTF-8|ASCII)'
   - Make sure Babelzilla did not mess up backslashes:
       cd locale && ack-grep 0020
   - Make sure Babelzilla did not mess up HTML entities:
