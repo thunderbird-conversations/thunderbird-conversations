@@ -914,7 +914,7 @@ ComposeSession.prototype = {
   // Restore identity settings.
   restoreIdentity: function () {
     if (!this._doRestore)
-      retrun;
+      return;
     Log.debug("restoreIdentity: doCc: " + this._doCc + " doBcc: " + this._doBcc);
     this.params.identity.doCc = this._doCc;
     this.params.identity.doBcc = this._doBcc;
