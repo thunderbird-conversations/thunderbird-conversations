@@ -868,7 +868,21 @@ ComposeSession.prototype = {
     }
 
     let urls = self.params.msgHdr ? [msgHdrGetUri(self.params.msgHdr)] : [];
-  
+
+    if (!popOut) {
+      // We set doCc/doBcc false temporarily to prevent resetting default
+      // cc and bcc while compose process.
+      // We should restore the settings after compose process.
+      let identity = self.params.identity;
+      if (identity.doCc || identity.doBcc) {
+        self._doCc = identity.doCc;
+        self._doBcc = identity.doBcc;
+        identity.doCc = false;
+        identity.doBcc = false;
+        self._doRestore = true;
+      }
+    }
+
     return sendMessage({
         urls: urls,
         identity: self.params.identity,
@@ -895,6 +909,15 @@ ComposeSession.prototype = {
         popOut: popOut,
         archive: self.archive,
       });
+  },
+
+  // Restore identity settings.
+  restoreIdentity: function () {
+    if (!this._doRestore)
+      retrun;
+    Log.debug("restoreIdentity: doCc: " + this._doCc + " doBcc: " + this._doBcc);
+    this.params.identity.doCc = this._doCc;
+    this.params.identity.doBcc = this._doBcc;
   }
 };
 
@@ -1262,6 +1285,7 @@ function createStateListener (aComposeSession, aMsgHdrs, aId) {
 
     ComposeProcessDone: function(aResult) {
       Log.debug("ComposeProcessDone", NS_SUCCEEDED(aResult));
+      aComposeSession.restoreIdentity();
       if (NS_SUCCEEDED(aResult)) {
         // If the user didn't start a new composition session, hide the quick
         //  reply area, clear draft, collapse.
