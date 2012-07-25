@@ -868,10 +868,22 @@ ComposeSession.prototype = {
     }
 
     let urls = self.params.msgHdr ? [msgHdrGetUri(self.params.msgHdr)] : [];
-  
+
+    let identity = self.params.identity;
+    if (!popOut && (identity.doCc || identity.doBcc)) {
+      // create new identity to avoid resetting default cc/bcc
+      if (!self._fakeIdentity) {
+        let accountManager = Cc["@mozilla.org/messenger/account-manager;1"]
+                             .getService(Ci.nsIMsgAccountManager);
+        self._fakeIdentity = accountManager.createIdentity();
+      }
+      self._fakeIdentity.copy(identity);
+      identity = self._fakeIdentity;
+    }
+
     return sendMessage({
         urls: urls,
-        identity: self.params.identity,
+        identity: identity,
         to: to.join(","),
         cc: cc.join(","),
         bcc: bcc.join(","),
