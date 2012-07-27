@@ -873,9 +873,7 @@ ComposeSession.prototype = {
     if (!popOut && (identity.doCc || identity.doBcc)) {
       // create new identity to avoid resetting default cc/bcc
       if (!self._fakeIdentity) {
-        let accountManager = Cc["@mozilla.org/messenger/account-manager;1"]
-                             .getService(Ci.nsIMsgAccountManager);
-        self._fakeIdentity = accountManager.createIdentity();
+        self._fakeIdentity = MailServices.accounts.createIdentity();
       }
       self._fakeIdentity.copy(identity);
       identity = self._fakeIdentity;
