@@ -614,8 +614,7 @@ MonkeyPatch.prototype = {
     window.MessageDisplayWidget.prototype.onSelectedMessagesChanged =
       function _onSelectedMessagesChanged_patched () {
         if (!Prefs.enabled) {
-          originalOnSelectedMessagesChanged.call(this);
-          return;
+          return originalOnSelectedMessagesChanged.call(this);
         }
 
         try {
