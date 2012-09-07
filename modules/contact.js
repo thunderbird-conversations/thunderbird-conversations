@@ -43,13 +43,7 @@ const Cc = Components.classes;
 const Cu = Components.utils;
 const Cr = Components.results;
 
-const ioService = Cc["@mozilla.org/network/io-service;1"]
-                  .getService(Ci.nsIIOService);
-const msgComposeService = Cc["@mozilla.org/messengercompose;1"]
-                          .getService(Ci.nsIMsgComposeService);
-const clipboardService = Cc["@mozilla.org/widget/clipboardhelper;1"]
-                         .getService(Ci.nsIClipboardHelper);
-
+Cu.import("resource://gre/modules/Services.jsm"); // https://developer.mozilla.org/en/JavaScript_code_modules/Services.jsm
 Cu.import("resource:///modules/iteratorUtils.jsm"); // for fixIterator
 Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
 Cu.import("resource:///modules/mailServices.js");
@@ -71,16 +65,6 @@ const defaultPhotoURI = "chrome://messenger/skin/addressbook/icons/contact-gener
 
 let Log = setupLogging("Conversations.Contact");
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
-
-let gHasPeople;
-try {
-  Cu.import("resource://people/modules/people.js");
-  Log.debug("You have contacts, attaboy!");
-  gHasPeople = true;
-} catch (e) {
-  gHasPeople = false;
-  Log.debug("You don't have contacts, bad boy!");
-}
 
 function ContactManager() {
   this._cache = {};
@@ -104,17 +88,16 @@ ContactManager.prototype = {
       if (name)
         this._cache[key(name, email)].enrichWithName(name);
       return this._cache[key(name, email)];
-    } else if (gHasPeople && email.length) {
-      let contact = new ContactFromPeople(this, name, email, position);
-      cache(name, contact);
-      return contact;
     } else {
       let contact = new ContactFromAB(this, name, email, position, this._colorCache[email]);
       // Only cache contacts which are in the address book. This avoids weird
       //  phenomena such as a bug tracker sending emails with different names
       //  but with the same email address, resulting in people all sharing the
       //  same name.
-      if (contact._card) {
+      // For those that need to be in the address book (because we want to
+      //  display images, for instance), the user still has the option to uncheck
+      //  "prefer display name over header name".
+      if (contact._card && !contact._card.getProperty("PreferDisplayName", true)) {
         cache(name, contact);
       } else {
         // We still want to cache the color...
@@ -246,7 +229,7 @@ let ContactMixIn = {
       );
     });
     this.register(".copyEmail", function (event) {
-      clipboardService.copyString(self._email);
+      Services.clipboard.copyString(self._email);
     });
     this.register(".showInvolving", function (event) {
       let q1 = Gloda.newQuery(Gloda.NOUN_IDENTITY);
@@ -376,77 +359,3 @@ ContactFromAB.prototype = {
 
 MixIn(ContactFromAB, ContactMixIn);
 MixIn(ContactFromAB, EventHelperMixIn);
-
-function ContactFromPeople(manager, name, email) {
-  this.emails = [email];
-  this.color = manager.freshColor(email in gIdentities);
-
-  this._manager = manager;
-  this._name = name;
-  this._email = email;
-  this.avatar = defaultPhotoURI;
-  this._profiles = {};
-
-  this.fetch();
-}
-
-ContactFromPeople.prototype = {
-  fetch: function _ContactFromPeople_fetch() {
-    let self = this;
-    People.find({ emails: this._email }).forEach(function (person) {
-      let photos = person.getProperty("photos");
-      let gravatarPhotos = [photo
-        for each (photo in photos)
-        if (photo.value.indexOf("www.gravatar.com") >= 0)
-      ];
-      let profilePhotos = [photo
-        for each (photo in photos)
-        if (photo.type == "profile")
-      ];
-      let thumbnailPhotos = [photo
-        for each (photo in photos)
-        if (photo.type == "thumbnail")
-      ];
-      let otherPhotos = [photo
-        for each (photo in photos)
-      ];
-      if (gravatarPhotos.length)
-        self.avatar = gravatarPhotos[0].value;
-      else if (profilePhotos.length)
-        self.avatar = profilePhotos[0].value;
-      else if (thumbnailPhotos.length)
-        self.avatar = thumbnailPhotos[0].value;
-      else if (otherPhotos.length)
-        self.avatar = otherPhotos[0].value;
-
-      // Find out about the guy's profiles... This will set self._profiles = {
-      //  twitter: twitter username,
-      //  facebook: facebook id,
-      //  google: google profile URL,
-      //  flickr: flickr photo page URL,
-      // }
-      // Log.debug(JSON.stringify(person.obj));
-      let docs = person.obj.documents;
-      if ("facebook" in docs)
-        self._profiles["facebook"] = Object.keys(docs.facebook)[0];
-      if ("twitter" in docs)
-        self._profiles["twitter"] = Object.keys(docs.twitter)[0];
-      for each (let [svcName, svc] in Iterator(person.obj.documents)) {
-        if (svcName.indexOf("hcard:http://www.google.com/profiles/") === 0
-            && (!("google" in self._profiles))) {
-          self._profiles["google"] = svcName.substring("hcard:".length, svcName.length);
-        }
-        if (svcName.indexOf("hcard:http://www.flickr.com/photos/") === 0
-            && (!("flickr" in self._profiles))) {
-          self._profiles["flickr"] = svcName.substring("hcard:".length, svcName.length);
-        }
-      }
-
-      self._name = person.displayName;
-      self.emails = self.emails.concat(person.getProperty("emails"));
-    });
-  },
-}
-
-MixIn(ContactFromPeople, ContactMixIn);
-MixIn(ContactFromPeople, EventHelperMixIn);
