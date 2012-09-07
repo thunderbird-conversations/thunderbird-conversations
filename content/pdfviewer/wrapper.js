@@ -80,6 +80,7 @@ Wrapper.prototype = {
           /* nsIInputStream */ aStream, /* int */ aOffset, /* int */ aCount) {
         // Fortunately, we have in Gecko 2.0 a nice wrapper
         let data = NetUtil.readInputStreamToString(aStream, aCount);
+        Log.debug(data);
         // Now each character of the string is actually to be understood as a byte
         // So charCodeAt is what we want here...
         let array = [];
@@ -103,9 +104,11 @@ Wrapper.prototype = {
       browser.addEventListener("load", function load_handler () {
         browser.removeEventListener("load", load_handler, true);
         let w = browser.contentWindow.wrappedJSObject;
+        // expose the [Log] object
         w.Log = setupLogging("Conversations.PdfViewer");
-        w.strings = new StringBundle("chrome://conversations/locale/message.properties");
-        w.init(chunks);
+        w.Log.__exposedProps__ = { debug: "r" };
+        // pass the right object to the init function
+        w.init({ chunks: chunks, __exposedProps__: { chunks: 'r' }});
       }, true);
       // Load from a resource:// URL so that it doesn't have chrome privileges.
       browser.loadURI("resource://conversations/content/pdfviewer/viewer.xhtml", null, null);

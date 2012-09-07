@@ -37,7 +37,6 @@
 "use strict";
 
 let Log; // filled from wrapper.js
-let strings; // filled from wrapper.js
 
 let viewer;
 
@@ -115,15 +114,22 @@ Viewer.prototype = {
 };
 
 // Called from the outer wrapper JS code.
-function init(chunks) {
+function init({ chunks }) {
   // Strangely enough, I can't get my typed array to cross the chrome/content
   // boundary, so let's make the data cross the boundary as a chunk of
   // strings...
   let length = chunks.reduce(function (acc, v) acc + v.length, 0);
+  //Log.debug("chunk0", chunks[0]);
   let buffer = new ArrayBuffer(length);
   let array = new Uint8Array(buffer);
   let offset = 0;
-  for each (let chunk in chunks) {
+  // So [Iterator] doesn't seem to like too much the fact that [chunks] has
+  // crossed the chrome/content boundary, and is unable to work properly.
+  // Sigh... it stopped working at some point between Gecko 16 and Gecko 18,
+  // probably has something to do with the fact that [__exposedProps__] now
+  // seems to be mandatory. Anywho, it works.
+  for (let i = 0; i < chunks.length; ++i) {
+    let chunk = chunks[i];
     array.set(chunk, offset);
     offset += chunk.length;
   }
