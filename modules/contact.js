@@ -56,6 +56,9 @@ Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
 Cu.import("resource://conversations/modules/log.js");
 Cu.import("resource://conversations/modules/misc.js");
 
+const clipboardService = Cc["@mozilla.org/widget/clipboardhelper;1"]
+                         .getService(Ci.nsIClipboardHelper);
+
 const Contacts = {
   kFrom: 0,
   kTo: 1
@@ -229,7 +232,7 @@ let ContactMixIn = {
       );
     });
     this.register(".copyEmail", function (event) {
-      Services.clipboard.copyString(self._email);
+      clipboardService.copyString(self._email);
     });
     this.register(".showInvolving", function (event) {
       let q1 = Gloda.newQuery(Gloda.NOUN_IDENTITY);
