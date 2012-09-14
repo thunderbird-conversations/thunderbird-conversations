@@ -848,7 +848,7 @@ ComposeSession.prototype = {
                 to: to,
                 cc: cc,
                 bcc: bcc,
-              }, ed, sendStatus, popOut);
+              }, ed, sendStatus, popOut, self.attachmentList);
             if (priority != "_canceled")
               sendStatus = newSendStatus;
           }
