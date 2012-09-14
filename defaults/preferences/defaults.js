@@ -15,3 +15,4 @@ pref("conversations.enabled", true);
 pref("conversations.extra_attachments", false);
 pref("conversations.compose_in_tab", true);
 pref("conversations.unwanted_recipients", "{}");
+pref("conversations.fcc_follows_if_not_inbox", false);

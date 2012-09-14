@@ -902,6 +902,7 @@ ComposeSession.prototype = {
           Conversations.currentConversation.id
         ),
       }, {
+        fcc_follows_if_not_inbox: Prefs.fcc_follows_if_not_inbox,
         popOut: popOut,
         archive: self.archive,
       });
