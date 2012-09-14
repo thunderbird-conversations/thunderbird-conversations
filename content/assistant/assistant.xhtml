@@ -69,10 +69,10 @@
     // This is the usual API: if you launch something asynchronous, just do
     // expect () and call top () when you're done.
     let expected = 1;
-    function top() {
+    let top = function top() {
       if (--expected == 0)
         finish();
-    }
+    };
     Customizations.expect = function () expected++;
     Customizations.top = top;
 
