@@ -425,7 +425,7 @@ let enigmailHook = {
     }
   },
 
-  onMessageBeforeSendOrPopout: function _enigmailHook_onMessageBeforeSendOrPopout(aAddress, aEditor, aStatus, aPopout) {
+  onMessageBeforeSendOrPopout: function _enigmailHook_onMessageBeforeSendOrPopout(aAddress, aEditor, aStatus, aPopout, aAttachmentList) {
     if (hasEnigmail)
       this._originalText = null;
 
@@ -504,6 +504,23 @@ let enigmailHook = {
       let origText;
       let usingPGPMime = (sendFlags & nsIEnigmail.SEND_PGP_MIME) &&
                          (sendFlags & (ENCRYPT | SIGN));
+
+      if (!usingPGPMime && (sendFlags & ENCRYPT) &&
+          aAttachmentList && aAttachmentList.attachments.length > 0) {
+        // Attachments will not be encrypted using inline-PGP.
+        // We switch to PGP/MIME if possible.
+        if (EnigmailCommon.confirmDlg(window,
+            strings.get("attachmentsNotEncrypted"),
+            EnigmailCommon.getString("pgpMime_sMime.dlg.pgpMime.button"),
+            EnigmailCommon.getString("dlg.button.cancel"))) {
+          usingPGPMime = true;
+          sendFlags |= nsIEnigmail.SEND_PGP_MIME;
+        } else {
+          aStatus.canceled = true;
+          return aStatus;
+        }
+      }
+
       if (usingPGPMime) {
         uiFlags |= nsIEnigmail.UI_PGP_MIME;
 
@@ -585,7 +602,7 @@ let enigmailHook = {
     return aStatus;
   },
 
-  onMessageBeforeSendOrPopout_canceled: function _enigmailHook_onMessageBeforeSendOrPopout_canceled(aAddress, aEditor, aStatus, aPopout) {
+  onMessageBeforeSendOrPopout_canceled: function _enigmailHook_onMessageBeforeSendOrPopout_canceled(aAddress, aEditor, aStatus, aPopout, aAttachmentList) {
     if (hasEnigmail && !aPopout && aStatus.canceled && this._originalText !== null) {
        aEditor.value = this._originalText;
     }
