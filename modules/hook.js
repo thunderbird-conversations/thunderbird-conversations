@@ -28,12 +28,13 @@ var EXPORTED_SYMBOLS = ['registerHook', 'getHooks', 'removeHook'];
  *  // @param aStatus.canceled Sending the message is canceled.
  *  // @param aStatus.securityInfo An object for PGM/MIME message.
  *  // @param aPopout if set, message will not be opened in compose window
+ *  // @param aAttachmentList The AttachmentList object.
  *  // @return aStatus Same remark.
- *  onMessageBeforeSendOrPopout_early: function (aAddress, aEditor, aStatus, aPopout) {
+ *  onMessageBeforeSendOrPopout_early: function (aAddress, aEditor, aStatus, aPopout, aAttachmentList) {
  *  },
- *  onMessageBeforeSendOrPopout: function (aAddress, aEditor, aStatus, aPopout) {
+ *  onMessageBeforeSendOrPopout: function (aAddress, aEditor, aStatus, aPopout, aAttachmentList) {
  *  },
- *  onMessageBeforeSendOrPopout_canceled: function (aAddress, aEditor, aStatus, aPopout) {
+ *  onMessageBeforeSendOrPopout_canceled: function (aAddress, aEditor, aStatus, aPopout, aAttachmentList) {
  *  },
  *
  *  // Called when quick reply body is composed.
