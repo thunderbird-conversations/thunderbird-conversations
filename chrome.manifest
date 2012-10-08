@@ -1,6 +1,7 @@
 content conversations content/
 skin conversations classic/1.0 skin/
 
+#locale conversations ca locale/ca/
 #locale conversations cs locale/cs/
 #locale conversations da locale/da/
 #locale conversations de locale/de/
