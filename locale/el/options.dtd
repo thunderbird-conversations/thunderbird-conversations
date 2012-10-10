@@ -1,31 +1,31 @@
-<!ENTITY option.expand_who "By default, expand:">
-<!ENTITY option.expand_auto2 "Automatic">
-<!ENTITY option.expand_auto2.tooltip "If the thread is collapsed, expand all unread messages or the last message. If it is expanded, only expand the selected message in the message list.">
-<!ENTITY option.expand_none "No messages">
-<!ENTITY option.expand_all "All messages">
-<!ENTITY title.quoting2 "Quoted text">
-<!ENTITY desc.quoting "Quotes higher than this number of lines will be collapsed.">
-<!ENTITY title.assistant "Setup assistant">
-<!ENTITY option.assistant "Start the setup assistant">
-<!ENTITY title.friendly_date "Friendly dates">
-<!ENTITY option.no_friendly_date2 "In the top right corner, use &quot;normal&quot; dates, just like the message list, instead of &quot;yesterday&quot; and others.">
-<!ENTITY title.monospaced_senders "Display in monospaced">
-<!ENTITY option.monospaced_senders2 "Messages from those addresses/mailing-lists should be displayed in monospaced fonts (separate using commas)">
-<!ENTITY title.tweak_chrome "Tweak chrome fonts">
-<!ENTITY option.tweak_bodies "Tweak the fonts in the message bodies to make them consistent with the outer font (recommended, requires restart).">
-<!ENTITY title.tweak_bodies "Tweak body fonts">
-<!ENTITY option.tweak_chrome "Scale down the font size for the conversation chrome (recommended, requires restart).">
-<!ENTITY title.add_embeds "Add embeds">
-<!ENTITY option.add_embeds "Detect links to various services (e.g. YouTube) in emails, and view them inline.">
-<!ENTITY title.debugging "Debugging">
-<!ENTITY desc.debugging "Enable debug output in the system console and the error console. This will generate a lot of messages.">
-<!ENTITY title.operate_on_conversations "Toolbar buttons">
-<!ENTITY option.operate_on_conversations "Toolbar buttons should archive and delete the entire conversation, not just selected messages">
-<!ENTITY title.extra_attachments "I love attachments">
-<!ENTITY desc.extra_attachments2 "In some corner cases, Thunderbird will fail to recognize some attachments. This options allows you to workaround the Thunderbird bug, and makes sure we try to display as many attachments as we can. Use in combination with the Show All Body Parts addon.">
-<!ENTITY title.send_in_background "Send in background">
-<!ENTITY desc.send_in_background "This will queue messages for sending, so that you don't have to wait for the sending process to complete before switching conversations. Warning: the feature is not complete (see SendInBackground on wiki.mozilla.org) and applies to the regular composition process too. Restart required.">
-<!ENTITY title.compose_in_tab "Hidden composition window">
-<!ENTITY desc.compose_in_tab "Ctrl-Shift-N opens the hidden, unsupported composition window in a new tab">
-<!ENTITY title.fcc_follows_if_not_inbox "Place a copy of the sent message...">
-<!ENTITY desc.fcc_follows_if_not_inbox "In the same folder as the original message, but only if the original message is not in the inbox. This options is for all accounts, and only for messages sent with the quick reply.">
+<!ENTITY option.expand_who "Ανάπτυξη (σαν προεπιλογή):">
+<!ENTITY option.expand_auto2 "Αυτόματο">
+<!ENTITY option.expand_auto2.tooltip "Αν το νήμα έχει συμπτυχθεί, γίνεται ανάπτυξη όλων των μη αναγνωσμένων μηνυμάτων ή του τελευταίου μηνύματος. Αν έχει αναπτυχθεί, γίνεται ανάπτυξη μόνο του επιλεγμένου μηνύματος από τη λίστα.">
+<!ENTITY option.expand_none "Κανένα μήνυμα">
+<!ENTITY option.expand_all "Όλα τα μηνύματα">
+<!ENTITY title.quoting2 "Κείμενο σε παράθεση">
+<!ENTITY desc.quoting "Παραθέσεις κειμένου μεγαλύτερες από τόσες γραμμές θα συμπτύσσονται.">
+<!ENTITY title.assistant "Βοηθός ρυθμίσεων">
+<!ENTITY option.assistant "Εκκίνηση του βοηθού ρυθμίσεων">
+<!ENTITY title.friendly_date "Φιλικές ημερομηνίες">
+<!ENTITY option.no_friendly_date2 "Χρήση &quot;κανονικής&quot; ημερομηνίας όπως στη λίστα μηνυμάτων αντί για &quot;χθες&quot; κλπ. στη δεξιά πάνω γωνία.">
+<!ENTITY title.monospaced_senders "Προβολή σε γραμματοσειρά σταθερού πλάτους">
+<!ENTITY option.monospaced_senders2 "Τα μηνύματα από αυτές τις διευθύνσεις/λίστες να εμφανίζονται με γραμματοσειρές σταθερού πλάτους (διαχωρισμός με κόμματα)">
+<!ENTITY title.tweak_chrome "Προσαρμογή γραμματοσειράς προγράμματος">
+<!ENTITY option.tweak_bodies "Ρύθμιση της γραμματοσειράς στο σώμα μηνύματος ώστε να συμβαδίζει με τη γραμματοσειρά πέρα απ\' αυτό (συνιστάται - απαιτεί επανεκκίνηση).">
+<!ENTITY title.tweak_bodies "Προσαρμογή γραμματοσειράς κυρίως σώματος">
+<!ENTITY option.tweak_chrome "Σμίκρυνση γραμματοσειράς για το περιβάλλον συζήτησης (συνιστάται - απαιτεί επανεκκίνηση).">
+<!ENTITY title.add_embeds "Προσθήκη ενσωματωμένων στοιχείων">
+<!ENTITY option.add_embeds "Ανίχνευση δεσμών προς διάφορες υπηρεσίες (πχ YouTube) στα μηνύματα και προβολή τους μέσα στο μήνυμα.">
+<!ENTITY title.debugging "Αποσφαλμάτωση">
+<!ENTITY desc.debugging "Ενεργοποίηση πληροφοριών αποσφαλμάτωσης στις κονσόλες συστήματος και σφαλμάτων.">
+<!ENTITY title.operate_on_conversations "Κουμπιά εργαλειοθήκης">
+<!ENTITY option.operate_on_conversations "Τα κουμπιά εργαλειοθήκης θα αρχειοθετούν και θα διαγράφουν ολόκληρες τις συζητήσεις κι όχι μόνο τα επιλεγμένα μηνύματα.">
+<!ENTITY title.extra_attachments "Μου αρέσουν τα συνημμένα">
+<!ENTITY desc.extra_attachments2 "Σε μερικές σπάνιες περιπτώσεις, ο Thunderbird ίσως δεν μπορέσει να αναγνωρίσει μερικά επισυναπτόμενα. Αυτή η επιλογή παρακάμπτει το σφάλμα του Thunderbird και εμφανίζει όσα περισσότερα επισυναπτόμενα γίνεται. Χρησιμοποιήστε την σε συνδυασμό με το πρόσθετο: Show All Body Parts.">
+<!ENTITY title.send_in_background "Αποστολή στο παρασκήνιο">
+<!ENTITY desc.send_in_background "Αυτή η επιλογή θα προσθέτει τα μηνύματα σε ουρά αποστολής ώστε να να μη χρειάζεται να περιμένετε να ολοκληρωθεί η αποστολή για να μεταβείτε σε άλλη συνομιλία.Προειδοποίηση: Η λειτουργία είναι ακόμα ημιτελής (δείτε το SendInBackground στο wiki.mozilla.org) και εφαρμόζεται και στην κανονική διεργασία σύνταξης. Απαιτεί επανεκκίνηση.">
+<!ENTITY title.compose_in_tab "Κρυμμένο παράθυρο σύνταξης">
+<!ENTITY desc.compose_in_tab "Η συντόμευση «Ctrl-Shift-N» ανοίγει το κρυμμένο, μη υποστηριζόμενο παράθυρο σύνταξης σε νέα καρτέλα.">
+<!ENTITY title.fcc_follows_if_not_inbox "Τοποθέτηση αντίγραφου του απεσταλμένου μηνύματος...">
+<!ENTITY desc.fcc_follows_if_not_inbox "Στον ίδιο φάκελο με το αρχικό μήνυμα, αλλά μόνο αν το αρχικό μήνυμα δεν είναι στα εισερχόμενα. Αυτή η επιλογή ισχύει για όλους τους λογαριασμούς και μόνο για μηνύματα που έχουν αποσταλεί μέσω της γρήγορης απάντησης.">

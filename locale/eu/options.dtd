@@ -1,31 +1,31 @@
-<!ENTITY option.expand_who "By default, expand:">
-<!ENTITY option.expand_auto2 "Automatic">
-<!ENTITY option.expand_auto2.tooltip "If the thread is collapsed, expand all unread messages or the last message. If it is expanded, only expand the selected message in the message list.">
-<!ENTITY option.expand_none "No messages">
-<!ENTITY option.expand_all "All messages">
-<!ENTITY title.quoting2 "Quoted text">
-<!ENTITY desc.quoting "Quotes higher than this number of lines will be collapsed.">
-<!ENTITY title.assistant "Setup assistant">
-<!ENTITY option.assistant "Start the setup assistant">
-<!ENTITY title.friendly_date "Friendly dates">
-<!ENTITY option.no_friendly_date2 "In the top right corner, use &quot;normal&quot; dates, just like the message list, instead of &quot;yesterday&quot; and others.">
-<!ENTITY title.monospaced_senders "Display in monospaced">
-<!ENTITY option.monospaced_senders2 "Messages from those addresses/mailing-lists should be displayed in monospaced fonts (separate using commas)">
-<!ENTITY title.tweak_chrome "Tweak chrome fonts">
-<!ENTITY option.tweak_bodies "Tweak the fonts in the message bodies to make them consistent with the outer font (recommended, requires restart).">
-<!ENTITY title.tweak_bodies "Tweak body fonts">
-<!ENTITY option.tweak_chrome "Scale down the font size for the conversation chrome (recommended, requires restart).">
-<!ENTITY title.add_embeds "Add embeds">
-<!ENTITY option.add_embeds "Detect links to various services (e.g. YouTube) in emails, and view them inline.">
-<!ENTITY title.debugging "Debugging">
-<!ENTITY desc.debugging "Enable debug output in the system console and the error console. This will generate a lot of messages.">
-<!ENTITY title.operate_on_conversations "Toolbar buttons">
-<!ENTITY option.operate_on_conversations "Toolbar buttons should archive and delete the entire conversation, not just selected messages">
-<!ENTITY title.extra_attachments "I love attachments">
-<!ENTITY desc.extra_attachments2 "In some corner cases, Thunderbird will fail to recognize some attachments. This options allows you to workaround the Thunderbird bug, and makes sure we try to display as many attachments as we can. Use in combination with the Show All Body Parts addon.">
-<!ENTITY title.send_in_background "Send in background">
-<!ENTITY desc.send_in_background "This will queue messages for sending, so that you don't have to wait for the sending process to complete before switching conversations. Warning: the feature is not complete (see SendInBackground on wiki.mozilla.org) and applies to the regular composition process too. Restart required.">
-<!ENTITY title.compose_in_tab "Hidden composition window">
-<!ENTITY desc.compose_in_tab "Ctrl-Shift-N opens the hidden, unsupported composition window in a new tab">
-<!ENTITY title.fcc_follows_if_not_inbox "Place a copy of the sent message...">
-<!ENTITY desc.fcc_follows_if_not_inbox "In the same folder as the original message, but only if the original message is not in the inbox. This options is for all accounts, and only for messages sent with the quick reply.">
+<!ENTITY option.expand_who "Lehenespenez, zabaldu:">
+<!ENTITY option.expand_auto2 "Automatikoa">
+<!ENTITY option.expand_auto2.tooltip "Haria tolestuta badago, zabaldu irakurri gabeak edo azken mezua. Haria zabalduta badago, aukeratutako mezua bakarrik zabaldu mezu zerrendan.">
+<!ENTITY option.expand_none "Mezurik ez">
+<!ENTITY option.expand_all "Mezu guztiak">
+<!ENTITY title.quoting2 "testua komatxo artean">
+<!ENTITY desc.quoting "Lerro kopuru hau baino komatxo arteko testuak tolestuak izango dira.">
+<!ENTITY title.assistant "Konfigurazio-laguntzailea">
+<!ENTITY option.assistant "Hasi konfigurazio-laguntzailea">
+<!ENTITY title.friendly_date "Data atseginagoak">
+<!ENTITY option.no_friendly_date2 "Goiko eskumako ertzean, erabili data &quot;normalak&quot; mezu zerrendan bezala, &quot;atzo&quot; eta horrelakoen ordez.">
+<!ENTITY title.monospaced_senders "monospace erabili">
+<!ENTITY option.monospaced_senders2 "Erakutsi helbide/posta-zerrenda hauetako mezuak tarte-bakarreko letra-tipoaz (komaz banaturik)">
+<!ENTITY title.tweak_chrome "Doitu interfazeko letra-tipoak">
+<!ENTITY option.tweak_bodies "Doitu mezuen gorputzetako letra-tipoak, irteerako letra-tipoarekin koherentzia mantentzeko (gomendatua, berrabiaraztea behar du).">
+<!ENTITY title.tweak_bodies "Doitu mezuen gorputzetako letra-tipoak">
+<!ENTITY option.tweak_chrome "Txikitu hizketaldien interfazerako letra-tamaina (gomendatua, berrabiaraztea behar du).">
+<!ENTITY title.add_embeds "Gehitu kapsulatuak">
+<!ENTITY option.add_embeds "Antzeman hainbat zerbitzuri loturak mezuetan eta ikusi hauek lerroartean. (Adibidez Youtube)">
+<!ENTITY title.debugging "Arazketa">
+<!ENTITY desc.debugging "Gaitu arazketa irteera sistemako kontsolan eta errore kontsolan. Honek mezu ugari sortuko ditu.">
+<!ENTITY title.operate_on_conversations "Tresna-barra botoiak">
+<!ENTITY option.operate_on_conversations "Tresna-barra botoiek hizketaldi osoa artxibatu edo ezabatuko dute, ez hautatutako mezua bakarrik.">
+<!ENTITY title.extra_attachments "Maite ditut eranskinak">
+<!ENTITY desc.extra_attachments2 "Zenbait kasu ezohikotan, Thunderbird eranskin batzuk errekonozitzen kale egin dezake. Aukera honek thunderbird bug horren aurrean eragiteko aukera ematen dizu, ziurtatuz ahal den guztietan eranskin guztiak erakutsiko direla. Erabil ezazu hau &quot;All Body Parts&quot; gehigarriaz.">
+<!ENTITY title.send_in_background "Atzeko planoan bidali">
+<!ENTITY desc.send_in_background "Honek mezuak bidaltzeko ilaran jartzen ditu, ez duzu bidaltzea amaitzera itxaron beharrik hizketaldiz aldatzeko. Kontuz: eginbide hau ez dago amaitua (ikus SendInBackground wiki.mozilla.org webgunean) eta gaitu ohiko prestatze prozesuari ere. Berrabiaraztea beharrezkoa da.">
+<!ENTITY title.compose_in_tab "Ezkutuan prestatzeko leihoa">
+<!ENTITY desc.compose_in_tab "Ctrl-Shift-N ezkutukoa irekitzen du, sostengu gabeko prestatze leihoa fitxa berrian">
+<!ENTITY title.fcc_follows_if_not_inbox "Gorde bidalitako mezuaren kopia...">
+<!ENTITY desc.fcc_follows_if_not_inbox "Jatorrizko mezuaren karpeta berean, baina jatorrizko mezua sarrera karpetan ez badago bakarrik. Aukera hau kontu guztietarako da eta erantzun azkarra erabilitako mezuekin bakarrik.">

@@ -1,36 +1,36 @@
-<!ENTITY assistant.title "First run assistant">
-<!ENTITY assistant.intro "Hi, this is <strong>Thunderbird Conversations</strong>!">
-<!ENTITY assistant.p1 "In order to make your life easier, this assistant will tweak your Thunderbird setup to ensure you enjoy the optimal experience. We don't want you to feel dissatisfied!">
-<!ENTITY assistant.p2 "The tweaks we make are all reversible, so don't worry: should you not enjoy Thunderbird Conversations, we will revert any preference change we made as soon as you uninstall the extension.">
-<!ENTITY assistant.p3 "This may take quite some time. You can either wait for this window to close, or close the window yourself, and check the progress from Tools &gt; Activity Manager.">
-<!ENTITY assistant.working "Working...">
-<!ENTITY assistant.review "Review changes">
-<!ENTITY assistant.apply "Apply changes">
-<!ENTITY assistant.settings "Some settings are mandatory for Thunderbird Conversations to work properly. Some are strongly recommended, and some are optional.">
-<!ENTITY assistant.actionEnableGloda "Make sure Global Search and Indexer is enabled.">
-<!ENTITY assistant.actionDontExpand "In the message list, don't expand threads containing unread messages.">
-<!ENTITY assistant.actionAttachmentsInline "Don't display attachments inline (<strong>strongly</strong> recommended).">
-<!ENTITY assistant.actionOfflineDownload "Inbox and Sent are synchronized for offline storage (<strong>strongly</strong> recommended).">
-<!ENTITY assistant.actionUnifiedInboxSearchesSent "The Unified Inbox also searches Sent folders (<strong>strongly</strong> recommended).">
-<!ENTITY assistant.actionSetupView "Switch to Global Inbox, make display threaded, sort by date, enable unread count column and new &quot;between&quot; column (<strong>strongly</strong> recommended).">
-<!ENTITY assistant.actionSetupViewDefaults "Use these custom sort settings for all folders.">
-<!ENTITY assistant.actionEnsureMessagePaneVisible "Make sure the message pane is visible.">
-<!ENTITY assistant.settings2 "Should you wish to enable more options later, you can access this wizard through the addon's preferences, under the &quot;advanced&quot; section.">
-<!ENTITY feedback.message "You've been running Thunderbird Conversations for quite some time now, would you care enough to tell us what you think about it? We'd love to hear about any comments you may have!">
-<!ENTITY feedback.no "No, thanks">
-<!ENTITY feedback.yes "Leave feedback">
-<!ENTITY feedback.pageTitle "Give feedback">
-<!ENTITY stub.loading "Loading...">
-<!ENTITY stub.trash.tooltip "Delete this conversation">
-<!ENTITY stub.archive.tooltip "Archive this conversation">
-<!ENTITY stub.forward.tooltip "Forward this conversation">
-<!ENTITY stub.print.tooltip "Print this conversation">
-<!ENTITY stub.junk.tooltip "Junk this message">
-<!ENTITY stub.expand.tooltip "Expand/collapse all messages">
-<!ENTITY stub.read.tooltip "Toggle read/unread all messages">
-<!ENTITY stub.detach.tooltip2 "Show this conversation in a new tab">
-<!ENTITY stub.menu.tooltip "Conversation actions">
-<!ENTITY stub.context.open "Open attachment">
-<!ENTITY stub.context.save "Save attachment">
-<!ENTITY stub.context.detach "Detach attachment">
-<!ENTITY stub.context.delete "Delete attachment">
+<!ENTITY assistant.title "Assistent per cumenzar">
+<!ENTITY assistant.intro "Ueila, quai è <strong>Thunderbird Conversations</strong>!">
+<!ENTITY assistant.p1 "Per simplifitgar la midada a Thunderbird Conversations vegn quest assistent far las midadas necessarias per che tut possia funcziunar optimal. Nus na vulain betg che ti sajas trumpà dal program.">
+<!ENTITY assistant.p2 "Las midadas che nus faschain pos ti revocar tuttas, nagina tema: Sche Thunderbird Conversations na ta plascha betg, po quest assistent revocar tut las midadas ch'el fa sche ti deinstalleschas quest supplement.">
+<!ENTITY assistant.p3 "Quai po cuzzar in mument. Ti pos u spetgar enfin che questa fanestra vegn serrada automaticamain ni che ti pos serrar la fanestra ed observar il progress dal menu Utensils &gt; Activitads.">
+<!ENTITY assistant.working "Lavurar…">
+<!ENTITY assistant.review "Controllar las midadas">
+<!ENTITY assistant.apply "Applitgar las midadas">
+<!ENTITY assistant.settings "Intginas opziuns èn necessarias per che Thunderbird Conversations possia funcziunar. Intginas èn fermamain recummandadas ed intginas èn opziunalas.">
+<!ENTITY assistant.actionEnableGloda "Controllar che la tschertga globala ed l'indexer èn activads.">
+<!ENTITY assistant.actionDontExpand "Betg extender temas che cuntegnan messadis betg legids en la glista da messadis.">
+<!ENTITY assistant.actionAttachmentsInline "Betg mussar las agiuntas cun incorporar (<strong>fermamain</strong> recummandà).">
+<!ENTITY assistant.actionOfflineDownload "Sincronisar la posta entrada ed ils e-mails tramess per la memoria offline (<strong>fermamain</strong> recummandà).">
+<!ENTITY assistant.actionUnifiedInboxSearchesSent "La posta entrada unifitgada tschertga era en ordinaturs cun e-mails tramess (<strong>fermamain</strong> recummandà).">
+<!ENTITY assistant.actionSetupView "Midar a la posta entrada globala, activar la vista gruppada, zavrar tenor data, activar la colonna cun il dumber dad e-mails nunlegids ed la nova colonna &quot;tranter&quot; (<strong>fermamain</strong> recummandà).">
+<!ENTITY assistant.actionSetupViewDefaults "Utilisar questas preferenzas da zavrar persunalisadas per tut ils ordinaturs.">
+<!ENTITY assistant.actionEnsureMessagePaneVisible "Controllar che la zona da prevista da messadis è visibla.">
+<!ENTITY assistant.settings2 "Sche ti vuls activar pli tard dapli opziuns, pos ti acceder quest assisent en las preferenzas dal supplement, en la secziun &quot;extendì&quot;.">
+<!ENTITY feedback.message "Ti utiliseschas ussa dapi in temps Thunderbird Conversations. Nus appreziassan sche ti ans raquintassas tge che ti pensas da quai.">
+<!ENTITY feedback.no "Na, grazia">
+<!ENTITY feedback.yes "Dar in resun">
+<!ENTITY feedback.pageTitle "Dai tes resun">
+<!ENTITY stub.loading "Chargiar…">
+<!ENTITY stub.trash.tooltip "Stizzar questa conversaziun">
+<!ENTITY stub.archive.tooltip "Archivar questa conversaziun">
+<!ENTITY stub.forward.tooltip "Renviar questa conversaziun">
+<!ENTITY stub.print.tooltip "Stampar questa conversaziun">
+<!ENTITY stub.junk.tooltip "Marcar quest messadi sco nungiavischà">
+<!ENTITY stub.expand.tooltip "Extender/cumprimer tut ils messadis">
+<!ENTITY stub.read.tooltip "Midar legì/betg legì tar tut ils messadis">
+<!ENTITY stub.detach.tooltip2 "Mussar questa conversaziun en in nov tab">
+<!ENTITY stub.menu.tooltip "Acziuns da la conversaziun">
+<!ENTITY stub.context.open "Avrir l'agiunta">
+<!ENTITY stub.context.save "Memorisar l'agiunta">
+<!ENTITY stub.context.detach "Allontanar l'agiunta">
+<!ENTITY stub.context.delete "Stizzar l'agiunta">

@@ -1,31 +1,31 @@
-<!ENTITY option.expand_who "By default, expand:">
-<!ENTITY option.expand_auto2 "Automatic">
-<!ENTITY option.expand_auto2.tooltip "If the thread is collapsed, expand all unread messages or the last message. If it is expanded, only expand the selected message in the message list.">
-<!ENTITY option.expand_none "No messages">
-<!ENTITY option.expand_all "All messages">
-<!ENTITY title.quoting2 "Quoted text">
-<!ENTITY desc.quoting "Quotes higher than this number of lines will be collapsed.">
-<!ENTITY title.assistant "Setup assistant">
-<!ENTITY option.assistant "Start the setup assistant">
-<!ENTITY title.friendly_date "Friendly dates">
-<!ENTITY option.no_friendly_date2 "In the top right corner, use &quot;normal&quot; dates, just like the message list, instead of &quot;yesterday&quot; and others.">
-<!ENTITY title.monospaced_senders "Display in monospaced">
-<!ENTITY option.monospaced_senders2 "Messages from those addresses/mailing-lists should be displayed in monospaced fonts (separate using commas)">
-<!ENTITY title.tweak_chrome "Tweak chrome fonts">
-<!ENTITY option.tweak_bodies "Tweak the fonts in the message bodies to make them consistent with the outer font (recommended, requires restart).">
-<!ENTITY title.tweak_bodies "Tweak body fonts">
-<!ENTITY option.tweak_chrome "Scale down the font size for the conversation chrome (recommended, requires restart).">
-<!ENTITY title.add_embeds "Add embeds">
-<!ENTITY option.add_embeds "Detect links to various services (e.g. YouTube) in emails, and view them inline.">
-<!ENTITY title.debugging "Debugging">
-<!ENTITY desc.debugging "Enable debug output in the system console and the error console. This will generate a lot of messages.">
-<!ENTITY title.operate_on_conversations "Toolbar buttons">
-<!ENTITY option.operate_on_conversations "Toolbar buttons should archive and delete the entire conversation, not just selected messages">
-<!ENTITY title.extra_attachments "I love attachments">
-<!ENTITY desc.extra_attachments2 "In some corner cases, Thunderbird will fail to recognize some attachments. This options allows you to workaround the Thunderbird bug, and makes sure we try to display as many attachments as we can. Use in combination with the Show All Body Parts addon.">
-<!ENTITY title.send_in_background "Send in background">
-<!ENTITY desc.send_in_background "This will queue messages for sending, so that you don't have to wait for the sending process to complete before switching conversations. Warning: the feature is not complete (see SendInBackground on wiki.mozilla.org) and applies to the regular composition process too. Restart required.">
-<!ENTITY title.compose_in_tab "Hidden composition window">
-<!ENTITY desc.compose_in_tab "Ctrl-Shift-N opens the hidden, unsupported composition window in a new tab">
-<!ENTITY title.fcc_follows_if_not_inbox "Place a copy of the sent message...">
-<!ENTITY desc.fcc_follows_if_not_inbox "In the same folder as the original message, but only if the original message is not in the inbox. This options is for all accounts, and only for messages sent with the quick reply.">
+<!ENTITY option.expand_who "Som standard, udvid:">
+<!ENTITY option.expand_auto2 "Automatisk">
+<!ENTITY option.expand_auto2.tooltip "Hvis tråden er sammenfoldet, udvid alle ulæste meddelelser eller den sidste meddelelse. Hvis den er udvidet, udvid kun den valgte meddelelse i meddelelseslisten.">
+<!ENTITY option.expand_none "Ingen meddelelser">
+<!ENTITY option.expand_all "Alle meddelelser">
+<!ENTITY title.quoting2 "Citeret tekst">
+<!ENTITY desc.quoting "Sammenfold citeret tekst med flere end dette antal linjer.">
+<!ENTITY title.assistant "Opsætningsassistent">
+<!ENTITY option.assistant "Start opsætningsassistenten">
+<!ENTITY title.friendly_date "Venlige datoer">
+<!ENTITY option.no_friendly_date2 "Brug &quot;normale&quot; datoer, ligesom i meddelelseslisten, i stedet for &quot;i går&quot; og lignende.">
+<!ENTITY title.monospaced_senders "Vis i monospatieret">
+<!ENTITY option.monospaced_senders2 "Meddelelser fra de adresser/mailinglister skal vises i monospatierede skrifttyper (separer med komma).">
+<!ENTITY title.tweak_chrome "Juster chrome skrifttyper">
+<!ENTITY option.tweak_bodies "Juster skrifttyperne i meddelelserne for at bringe dem i overensstemmelse med den ydre skrifttype (anbefalet, kræver genstart).">
+<!ENTITY title.tweak_bodies "Juster skrifttyper i meddelelsesteksten">
+<!ENTITY option.tweak_chrome "Reducer skriftstørrelsen for rammen rundt om samtalen (anbefales, kræver genstart).">
+<!ENTITY title.add_embeds "Tilføj indlejringer">
+<!ENTITY option.add_embeds "Find links til forskellige tjenester (f.eks. YouTube) i mails og vis dem indlejret.">
+<!ENTITY title.debugging "Fejlretning">
+<!ENTITY desc.debugging "Tillad fejlretningsinformation i system- og fejlkonsollen. Dette vil generere rigtigt mange beskeder.">
+<!ENTITY title.operate_on_conversations "Knapper på værktøjslinjen">
+<!ENTITY option.operate_on_conversations "Knapper på værktøjslinjen vil arkivere og slette hele samtalen, ikke kun valgte meddelelser.">
+<!ENTITY title.extra_attachments "Jeg elsker vedhæftede filer">
+<!ENTITY desc.extra_attachments2 "I sjældne tilfælde kan Thunderbird ikke genkende visse vedhæftede filer. Denne indstilling lader dig omgå den Thunderbird-fejl, og sørger for, vi forsøger at vise så mange vedhæftede filer som vi kan. Brug sammen med tilføjelsen Show All Body Parts.">
+<!ENTITY title.send_in_background "Send i baggrunden">
+<!ENTITY desc.send_in_background "Dette vil sætte meddelelser til afsendelse i kø. Så behøver du ikke vente på, at afsendelsen er fuldført inden du skifter samtaler. Advarsel: funktionen er ikke færdig (se SendInBackground på wiki.mozilla.org) og gælder også for den almindelige mailskrivning. Genstart påkrævet.">
+<!ENTITY title.compose_in_tab "Skjult &quot;Skriv&quot;-vindue">
+<!ENTITY desc.compose_in_tab "Ctrl+Shift+N åbner det skjulte, ikke-understøttede &quot;Skriv&quot;-vindue i et nyt faneblad">
+<!ENTITY title.fcc_follows_if_not_inbox "Anbring en kopi af den sendte meddelelse…">
+<!ENTITY desc.fcc_follows_if_not_inbox "I den samme mappe som den oprindelige meddelelse, men kun hvis den oprindelige meddelelse ikke er i indbakken. Denne indstilling gælder for alle konti og kun for meddelelser sendt med hurtig-svar.">

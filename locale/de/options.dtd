@@ -1,31 +1,31 @@
-<!ENTITY option.expand_who "By default, expand:">
-<!ENTITY option.expand_auto2 "Automatic">
-<!ENTITY option.expand_auto2.tooltip "If the thread is collapsed, expand all unread messages or the last message. If it is expanded, only expand the selected message in the message list.">
-<!ENTITY option.expand_none "No messages">
-<!ENTITY option.expand_all "All messages">
-<!ENTITY title.quoting2 "Quoted text">
-<!ENTITY desc.quoting "Quotes higher than this number of lines will be collapsed.">
-<!ENTITY title.assistant "Setup assistant">
-<!ENTITY option.assistant "Start the setup assistant">
-<!ENTITY title.friendly_date "Friendly dates">
-<!ENTITY option.no_friendly_date2 "In the top right corner, use &quot;normal&quot; dates, just like the message list, instead of &quot;yesterday&quot; and others.">
-<!ENTITY title.monospaced_senders "Display in monospaced">
-<!ENTITY option.monospaced_senders2 "Messages from those addresses/mailing-lists should be displayed in monospaced fonts (separate using commas)">
-<!ENTITY title.tweak_chrome "Tweak chrome fonts">
-<!ENTITY option.tweak_bodies "Tweak the fonts in the message bodies to make them consistent with the outer font (recommended, requires restart).">
-<!ENTITY title.tweak_bodies "Tweak body fonts">
-<!ENTITY option.tweak_chrome "Scale down the font size for the conversation chrome (recommended, requires restart).">
-<!ENTITY title.add_embeds "Add embeds">
-<!ENTITY option.add_embeds "Detect links to various services (e.g. YouTube) in emails, and view them inline.">
+<!ENTITY option.expand_who "Standardmäßig ausklappen:">
+<!ENTITY option.expand_auto2 "Automatisch">
+<!ENTITY option.expand_auto2.tooltip "Wenn der Thread eingeklappt ist, werden alle ungelesenen Nachrichten bzw. nur die letzte Nachricht ausgeklappt. Ist der Thread aber ausgeklappt, wird nur die ausgewählte Nachricht angezeigt.">
+<!ENTITY option.expand_none "Keine Nachrichten">
+<!ENTITY option.expand_all "Alle Nachrichten">
+<!ENTITY title.quoting2 "Zitierter Text">
+<!ENTITY desc.quoting "Zitate mit mehr als der angegeben Anzahl von Zeilen einklappen.">
+<!ENTITY title.assistant "Installationsassistent">
+<!ENTITY option.assistant "Installationsassistenten starten">
+<!ENTITY title.friendly_date "Freundliches Datum">
+<!ENTITY option.no_friendly_date2 "&quot;Normale&quot; Datumsangaben anstelle von &quot;gestern&quot; oder ähnlichem in der oberen rechten Ecke verwenden, genau wie in der Nachrichtenliste.">
+<!ENTITY title.monospaced_senders "In unproportionaler Schriftart anzeigen">
+<!ENTITY option.monospaced_senders2 "Nachrichten von dieser Adresse/Mailingliste sollen in unproportionaler Schriftart angezeigt werden (durch Kommata trennen).">
+<!ENTITY title.tweak_chrome "Chrom-Schriften optimieren">
+<!ENTITY option.tweak_bodies "Schriften in der Nachrichten-Ansicht optimieren, um die Kompatibilität zu den äußeren Schriften herzsutellen (empfohlen, Neustart erforderlich).">
+<!ENTITY title.tweak_bodies "Body-Schriften optimieren">
+<!ENTITY option.tweak_chrome "Chrom-Schriften für die Konversation verkleinern (empfohlen, Neustart erforderlich).">
+<!ENTITY title.add_embeds "Eingebette Inhalte anzeigen">
+<!ENTITY option.add_embeds "Links zu verschiedenen Diensten (z.B. YouTube) in Nachrichten erkennen und deren Inhalt eingebettet anzeigen.">
 <!ENTITY title.debugging "Debugging">
-<!ENTITY desc.debugging "Enable debug output in the system console and the error console. This will generate a lot of messages.">
-<!ENTITY title.operate_on_conversations "Toolbar buttons">
-<!ENTITY option.operate_on_conversations "Toolbar buttons should archive and delete the entire conversation, not just selected messages">
-<!ENTITY title.extra_attachments "I love attachments">
-<!ENTITY desc.extra_attachments2 "In some corner cases, Thunderbird will fail to recognize some attachments. This options allows you to workaround the Thunderbird bug, and makes sure we try to display as many attachments as we can. Use in combination with the Show All Body Parts addon.">
-<!ENTITY title.send_in_background "Send in background">
-<!ENTITY desc.send_in_background "This will queue messages for sending, so that you don't have to wait for the sending process to complete before switching conversations. Warning: the feature is not complete (see SendInBackground on wiki.mozilla.org) and applies to the regular composition process too. Restart required.">
-<!ENTITY title.compose_in_tab "Hidden composition window">
-<!ENTITY desc.compose_in_tab "Ctrl-Shift-N opens the hidden, unsupported composition window in a new tab">
+<!ENTITY desc.debugging "Debug-Ausgabe in der System- und Fehlerkonsole aktivieren. Es werden dadurch zahlreiche Nachrichten erzeugt.">
+<!ENTITY title.operate_on_conversations "Schaltflächen der Symbolleiste">
+<!ENTITY option.operate_on_conversations "Durch die Schaltflächen der Symbolleiste wird die komplette Konversation archiviert bzw. gelöscht und nicht nur die ausgewählte Nachricht.">
+<!ENTITY title.extra_attachments "Ich liebe Anhänge">
+<!ENTITY desc.extra_attachments2 "In einigen seltenen Fällen erkennt Thunderbird Email-Anhänge nicht. Durch diese Option wird der Fehler in Thunderbird umgangen und es wird versucht so viele Anhänge wie möglich anzuzeigen. In Verbindung mit dem &quot;Show All Body Parts&quot; Add-on benutzen.">
+<!ENTITY title.send_in_background "Im Hintergrund senden">
+<!ENTITY desc.send_in_background "Gesendete Nachrichten werden in einer Warteschlange aufgereiht, sodass man nicht abwarten muss bis die Nachricht gesendet wurde, wenn man zu einer anderen Konversation wechseln möchte. Warnung: Diese Funktion ist nocht nicht fertig und betrifft auch den normalen Aufbau-Prozess (siehe SendInBackground auf wiki.mozilla.org)(Neustart erforderlich).">
+<!ENTITY title.compose_in_tab "Verborgenes Aufbau-Fenster">
+<!ENTITY desc.compose_in_tab "Strg-Shift-N öffnet das verborgene, nicht unterstützte Aufbau-Fenster in einem neuen Tab.">
 <!ENTITY title.fcc_follows_if_not_inbox "Place a copy of the sent message...">
 <!ENTITY desc.fcc_follows_if_not_inbox "In the same folder as the original message, but only if the original message is not in the inbox. This options is for all accounts, and only for messages sent with the quick reply.">

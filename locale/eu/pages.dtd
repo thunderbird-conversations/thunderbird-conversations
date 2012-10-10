@@ -1,36 +1,36 @@
-<!ENTITY assistant.title "First run assistant">
-<!ENTITY assistant.intro "Hi, this is <strong>Thunderbird Conversations</strong>!">
-<!ENTITY assistant.p1 "In order to make your life easier, this assistant will tweak your Thunderbird setup to ensure you enjoy the optimal experience. We don't want you to feel dissatisfied!">
-<!ENTITY assistant.p2 "The tweaks we make are all reversible, so don't worry: should you not enjoy Thunderbird Conversations, we will revert any preference change we made as soon as you uninstall the extension.">
-<!ENTITY assistant.p3 "This may take quite some time. You can either wait for this window to close, or close the window yourself, and check the progress from Tools &gt; Activity Manager.">
-<!ENTITY assistant.working "Working...">
-<!ENTITY assistant.review "Review changes">
-<!ENTITY assistant.apply "Apply changes">
-<!ENTITY assistant.settings "Some settings are mandatory for Thunderbird Conversations to work properly. Some are strongly recommended, and some are optional.">
-<!ENTITY assistant.actionEnableGloda "Make sure Global Search and Indexer is enabled.">
-<!ENTITY assistant.actionDontExpand "In the message list, don't expand threads containing unread messages.">
-<!ENTITY assistant.actionAttachmentsInline "Don't display attachments inline (<strong>strongly</strong> recommended).">
-<!ENTITY assistant.actionOfflineDownload "Inbox and Sent are synchronized for offline storage (<strong>strongly</strong> recommended).">
-<!ENTITY assistant.actionUnifiedInboxSearchesSent "The Unified Inbox also searches Sent folders (<strong>strongly</strong> recommended).">
-<!ENTITY assistant.actionSetupView "Switch to Global Inbox, make display threaded, sort by date, enable unread count column and new &quot;between&quot; column (<strong>strongly</strong> recommended).">
-<!ENTITY assistant.actionSetupViewDefaults "Use these custom sort settings for all folders.">
-<!ENTITY assistant.actionEnsureMessagePaneVisible "Make sure the message pane is visible.">
-<!ENTITY assistant.settings2 "Should you wish to enable more options later, you can access this wizard through the addon's preferences, under the &quot;advanced&quot; section.">
-<!ENTITY feedback.message "You've been running Thunderbird Conversations for quite some time now, would you care enough to tell us what you think about it? We'd love to hear about any comments you may have!">
-<!ENTITY feedback.no "No, thanks">
-<!ENTITY feedback.yes "Leave feedback">
-<!ENTITY feedback.pageTitle "Give feedback">
-<!ENTITY stub.loading "Loading...">
-<!ENTITY stub.trash.tooltip "Delete this conversation">
-<!ENTITY stub.archive.tooltip "Archive this conversation">
-<!ENTITY stub.forward.tooltip "Forward this conversation">
-<!ENTITY stub.print.tooltip "Print this conversation">
-<!ENTITY stub.junk.tooltip "Junk this message">
-<!ENTITY stub.expand.tooltip "Expand/collapse all messages">
-<!ENTITY stub.read.tooltip "Toggle read/unread all messages">
-<!ENTITY stub.detach.tooltip2 "Show this conversation in a new tab">
-<!ENTITY stub.menu.tooltip "Conversation actions">
-<!ENTITY stub.context.open "Open attachment">
-<!ENTITY stub.context.save "Save attachment">
-<!ENTITY stub.context.detach "Detach attachment">
-<!ENTITY stub.context.delete "Delete attachment">
+<!ENTITY assistant.title "Lehen abiarazpeneko laguntzailea">
+<!ENTITY assistant.intro "Kaixo, hau <strong>Thunderbird Conversations</strong> da!">
+<!ENTITY assistant.p1 "Zure bizitza errazteko asmoz, laguntzaile honek Thunderbird moldatuko dizu erabilerarik egokiena ziurtatzeko. Ez dugu nahi zu atsekabeturik sentitzea!">
+<!ENTITY assistant.p2 "Moldaketa guztiak itzulgarriak dira, beraz ez larritu: ez bazaizu Thunderbird Conversations atsegin, atzera botako ditugu moldaketa guztiak gehigarria kentzen duzunean.">
+<!ENTITY assistant.p3 "Honek bere denbora har dezake. Leihoa ixtera itxaron dezakezu edo zuk zeuk itxi, eta aurrerapena ikuskatu Tresnak&gt; jarduera-kudeatzailea aukeratuz.">
+<!ENTITY assistant.working "Lanean...">
+<!ENTITY assistant.review "Berrikusi aldaketak">
+<!ENTITY assistant.apply "Aplikatu aldaketak">
+<!ENTITY assistant.settings "Aldaketa batzuk nahitaezkoak dira Thunderbird Conversations ondo exekutatzeko. Beste batzuk oso gomendatuak, eta batzuk aukerakoak.">
+<!ENTITY assistant.actionEnableGloda "Bilaketa orokorra eta indexatzailea gaituak egon behar dute.">
+<!ENTITY assistant.actionDontExpand "Mezuen zerrendan, ez zabaldu mezu irakurri gabeak dituzten hariak.">
+<!ENTITY assistant.actionAttachmentsInline "Ez erakutsi eranskinak barnean(<strong>oso</strong> gomendatua).">
+<!ENTITY assistant.actionOfflineDownload "Lineaz kanpoko sarrera eta bidalitakoen karpetak sinkronizatuak (<strong>oso</strong> gomendatua).">
+<!ENTITY assistant.actionUnifiedInboxSearchesSent "Elkartutako karpetak bidalitakoetan ere bilatzen du(<strong>oso</strong> gomendatua).">
+<!ENTITY assistant.actionSetupView "Aldatu sarrera globala, erakutsi hariak, dataz ordenatu,gaitu irakurri gabeen zutabea eta zutabe berria &quot;Parte-hartzaileak&quot; sartu (<strong>oso</strong> gomendatua).">
+<!ENTITY assistant.actionSetupViewDefaults "Erabili ordenatze aukera pertsonalizatu hauek karpeta guztietan.">
+<!ENTITY assistant.actionEnsureMessagePaneVisible "Ziurtatu mezuen panela ikusgai dagoela.">
+<!ENTITY assistant.settings2 "Gerora aukera gehiago gaitu nahi izanez gero, laguntzaile hau abiarazi ahal duzu gehigarrien kudeatzaileko aukeretatik, &quot;Aurreratuak&quot; atalean.">
+<!ENTITY feedback.message "Denboraldi batez Thunderbird Conversations erabiltzen ari zara, gehigarriari buruz duzun iritzia ematerik? oso pozik jasoko genuke zuk esateko daukazun oro!">
+<!ENTITY feedback.no "Ez, eskerrik asko">
+<!ENTITY feedback.yes "Utzi iritzia">
+<!ENTITY feedback.pageTitle "Iritzi jasotzea">
+<!ENTITY stub.loading "Kargatzen...">
+<!ENTITY stub.trash.tooltip "Ezabatu hizketaldi hau">
+<!ENTITY stub.archive.tooltip "Artxibatu hizketaldi hau">
+<!ENTITY stub.forward.tooltip "Aurrera hizketaldi hau">
+<!ENTITY stub.print.tooltip "Inprimatu hizketaldi hau">
+<!ENTITY stub.junk.tooltip "Mezu hau zabor-postara">
+<!ENTITY stub.expand.tooltip "Zabaldu/Tolestu mezu guztiak">
+<!ENTITY stub.read.tooltip "Aldatu irakurrita/irakurri gabe mezu guztiak">
+<!ENTITY stub.detach.tooltip2 "Ikusi hizketaldi hau fitxa berrian">
+<!ENTITY stub.menu.tooltip "Hizketaldi ekintzak">
+<!ENTITY stub.context.open "Ireki eranskina">
+<!ENTITY stub.context.save "Gorde eranskina">
+<!ENTITY stub.context.detach "Askatu eranskina">
+<!ENTITY stub.context.delete "Ezabatu eranskina">

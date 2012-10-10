@@ -1,36 +1,36 @@
-<!ENTITY assistant.title "First run assistant">
-<!ENTITY assistant.intro "Hi, this is <strong>Thunderbird Conversations</strong>!">
-<!ENTITY assistant.p1 "In order to make your life easier, this assistant will tweak your Thunderbird setup to ensure you enjoy the optimal experience. We don't want you to feel dissatisfied!">
-<!ENTITY assistant.p2 "The tweaks we make are all reversible, so don't worry: should you not enjoy Thunderbird Conversations, we will revert any preference change we made as soon as you uninstall the extension.">
-<!ENTITY assistant.p3 "This may take quite some time. You can either wait for this window to close, or close the window yourself, and check the progress from Tools &gt; Activity Manager.">
-<!ENTITY assistant.working "Working...">
-<!ENTITY assistant.review "Review changes">
-<!ENTITY assistant.apply "Apply changes">
-<!ENTITY assistant.settings "Some settings are mandatory for Thunderbird Conversations to work properly. Some are strongly recommended, and some are optional.">
-<!ENTITY assistant.actionEnableGloda "Make sure Global Search and Indexer is enabled.">
-<!ENTITY assistant.actionDontExpand "In the message list, don't expand threads containing unread messages.">
-<!ENTITY assistant.actionAttachmentsInline "Don't display attachments inline (<strong>strongly</strong> recommended).">
-<!ENTITY assistant.actionOfflineDownload "Inbox and Sent are synchronized for offline storage (<strong>strongly</strong> recommended).">
-<!ENTITY assistant.actionUnifiedInboxSearchesSent "The Unified Inbox also searches Sent folders (<strong>strongly</strong> recommended).">
-<!ENTITY assistant.actionSetupView "Switch to Global Inbox, make display threaded, sort by date, enable unread count column and new &quot;between&quot; column (<strong>strongly</strong> recommended).">
-<!ENTITY assistant.actionSetupViewDefaults "Use these custom sort settings for all folders.">
-<!ENTITY assistant.actionEnsureMessagePaneVisible "Make sure the message pane is visible.">
-<!ENTITY assistant.settings2 "Should you wish to enable more options later, you can access this wizard through the addon's preferences, under the &quot;advanced&quot; section.">
-<!ENTITY feedback.message "You've been running Thunderbird Conversations for quite some time now, would you care enough to tell us what you think about it? We'd love to hear about any comments you may have!">
-<!ENTITY feedback.no "No, thanks">
-<!ENTITY feedback.yes "Leave feedback">
-<!ENTITY feedback.pageTitle "Give feedback">
-<!ENTITY stub.loading "Loading...">
-<!ENTITY stub.trash.tooltip "Delete this conversation">
-<!ENTITY stub.archive.tooltip "Archive this conversation">
-<!ENTITY stub.forward.tooltip "Forward this conversation">
-<!ENTITY stub.print.tooltip "Print this conversation">
-<!ENTITY stub.junk.tooltip "Junk this message">
-<!ENTITY stub.expand.tooltip "Expand/collapse all messages">
-<!ENTITY stub.read.tooltip "Toggle read/unread all messages">
-<!ENTITY stub.detach.tooltip2 "Show this conversation in a new tab">
-<!ENTITY stub.menu.tooltip "Conversation actions">
-<!ENTITY stub.context.open "Open attachment">
-<!ENTITY stub.context.save "Save attachment">
-<!ENTITY stub.context.detach "Detach attachment">
-<!ENTITY stub.context.delete "Delete attachment">
+<!ENTITY assistant.title "Assistent de la primera sessió">
+<!ENTITY assistant.intro "Hola, això és<strong>Thunderbird Conversations</strong>!">
+<!ENTITY assistant.p1 "Per tal de fer la teva vida més fàcil, aquest assistent ajustarà la configuració del Thunderbird per assegurar-nos que disfrutes de una experiència òptima. No volem que et sentis insatisfet">
+<!ENTITY assistant.p2 "Els ajustos que fem són tots reversibles, per tant no et preocupis: si no vols seguir usant les Thunderbird Conversations, revertirem tots els canvis en les preferències que vam fer al moment que tu  suprimeixis la extensió.">
+<!ENTITY assistant.p3 "Això pot tardar un temps. Et pots esperar a que la finestra es tanqui sola, o tancar-la tu mateix, i pots seguir el procés des de les eines &gt; Monitor d'activitat.">
+<!ENTITY assistant.working "Treballant...">
+<!ENTITY assistant.review "Revisa els canvis">
+<!ENTITY assistant.apply "Aplica els canvis">
+<!ENTITY assistant.settings "Alguns ajustos de configuració són necessaris perquè Thunderbird Conversations funcioni. Altres estàn fortament recomanats, i altres són opcionals.">
+<!ENTITY assistant.actionEnableGloda "Assegura't que la Búsqueda Global i l'Indexer estàn activats.">
+<!ENTITY assistant.actionDontExpand "Dins la llista de missatges, no expandeixis els fils de conversa de missatges no llegits.">
+<!ENTITY assistant.actionAttachmentsInline "NO mostris els adjunts en la línia (<strong>fortament</strong> recomanat).">
+<!ENTITY assistant.actionOfflineDownload "La bústia d'Entrada i els missatges enviats estàn sicronitzats per un emmagatzematge fora de línia  (<strong>fortament</strong> recomanat).">
+<!ENTITY assistant.actionUnifiedInboxSearchesSent "La bústia d'entrada unificada també busca a la bústia d'enviats (<strong>fortament</strong> recomanat).">
+<!ENTITY assistant.actionSetupView "Canvia a la bústia d'entrada global, se't mostra una mica embolicada, separa per data,  activa la columna de recompte de missatges no llegits i una nova columna d'&quot;entremig&quot;(<strong>fortament</strong> recomanat).">
+<!ENTITY assistant.actionSetupViewDefaults "Fes servir totes aquestes preferències personalitzades de separació per a totes les carpetes.">
+<!ENTITY assistant.actionEnsureMessagePaneVisible "Assegura't que el panell de missatges és visible.">
+<!ENTITY assistant.settings2 "T'agradaria activar més opcions després ? Pots accedir a aquest assistent a través del panell de preferències,  es troba a sota de  la secció : &quot;Avançat&quot; .">
+<!ENTITY feedback.message "Ja has estat fent servir Thunderbird Conversations un bon temps, et podries prendre la molèstia de explicar-nos com ho estem duent a terme? Ens encantaria rebre qualsevol comentari que poguessis tenir al respecte!">
+<!ENTITY feedback.no "No, gràcies">
+<!ENTITY feedback.yes "Deixa'ns el teu Feedback">
+<!ENTITY feedback.pageTitle "Dona el Feedback">
+<!ENTITY stub.loading "Carregant-se...">
+<!ENTITY stub.trash.tooltip "Elimina aquesta conversa">
+<!ENTITY stub.archive.tooltip "Arxiva aquesta conversa">
+<!ENTITY stub.forward.tooltip "Reenvia la conversa">
+<!ENTITY stub.print.tooltip "Imprimeix aquesta conversa">
+<!ENTITY stub.junk.tooltip "Aquest missatge és brossa">
+<!ENTITY stub.expand.tooltip "Expandeix/Redueix tots els missatges">
+<!ENTITY stub.read.tooltip "Marca com a Llegit/No llegit tots els missatge">
+<!ENTITY stub.detach.tooltip2 "Mostra aquesta conversa en una nova pestanya">
+<!ENTITY stub.menu.tooltip "Accions de conversa">
+<!ENTITY stub.context.open "Obre l'adjunt">
+<!ENTITY stub.context.save "Guarda l'adjunt">
+<!ENTITY stub.context.detach "Desenganxa l'adjunt">
+<!ENTITY stub.context.delete "Elimina l'adjunt">

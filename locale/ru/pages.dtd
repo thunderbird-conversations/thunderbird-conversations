@@ -1,34 +1,34 @@
-<!ENTITY assistant.title "First run assistant">
-<!ENTITY assistant.intro "Hi, this is <strong>Thunderbird Conversations</strong>!">
-<!ENTITY assistant.p1 "In order to make your life easier, this assistant will tweak your Thunderbird setup to ensure you enjoy the optimal experience. We don't want you to feel dissatisfied!">
-<!ENTITY assistant.p2 "The tweaks we make are all reversible, so don't worry: should you not enjoy Thunderbird Conversations, we will revert any preference change we made as soon as you uninstall the extension.">
-<!ENTITY assistant.p3 "This may take quite some time. You can either wait for this window to close, or close the window yourself, and check the progress from Tools &gt; Activity Manager.">
-<!ENTITY assistant.working "Working...">
-<!ENTITY assistant.review "Review changes">
-<!ENTITY assistant.apply "Apply changes">
-<!ENTITY assistant.settings "Some settings are mandatory for Thunderbird Conversations to work properly. Some are strongly recommended, and some are optional.">
-<!ENTITY assistant.actionEnableGloda "Make sure Global Search and Indexer is enabled.">
-<!ENTITY assistant.actionDontExpand "In the message list, don't expand threads containing unread messages.">
-<!ENTITY assistant.actionAttachmentsInline "Don't display attachments inline (<strong>strongly</strong> recommended).">
-<!ENTITY assistant.actionOfflineDownload "Inbox and Sent are synchronized for offline storage (<strong>strongly</strong> recommended).">
-<!ENTITY assistant.actionUnifiedInboxSearchesSent "The Unified Inbox also searches Sent folders (<strong>strongly</strong> recommended).">
-<!ENTITY assistant.actionSetupView "Switch to Global Inbox, make display threaded, sort by date, enable unread count column and new &quot;between&quot; column (<strong>strongly</strong> recommended).">
-<!ENTITY assistant.actionSetupViewDefaults "Use these custom sort settings for all folders.">
-<!ENTITY assistant.actionEnsureMessagePaneVisible "Make sure the message pane is visible.">
-<!ENTITY assistant.settings2 "Should you wish to enable more options later, you can access this wizard through the addon's preferences, under the &quot;advanced&quot; section.">
-<!ENTITY feedback.message "You've been running Thunderbird Conversations for quite some time now, would you care enough to tell us what you think about it? We'd love to hear about any comments you may have!">
-<!ENTITY feedback.no "No, thanks">
-<!ENTITY feedback.yes "Leave feedback">
-<!ENTITY feedback.pageTitle "Give feedback">
-<!ENTITY stub.loading "Loading...">
-<!ENTITY stub.trash.tooltip "Delete this conversation">
-<!ENTITY stub.archive.tooltip "Archive this conversation">
+<!ENTITY assistant.title "Помощник начальной настройки">
+<!ENTITY assistant.intro "Привет- это <strong>Thunderbird Conversations</strong>!">
+<!ENTITY assistant.p1 "Я помогу вам настроить Thunderbird на оптимальную, приятную и удобную работу.">
+<!ENTITY assistant.p2 "Все, что будет настроено, можно вернуть к начальному состоянию, поэтому, если вы решите убрать Thunderbird Conversations, вы вернетесь к состоянию, которое было до его установки.">
+<!ENTITY assistant.p3 "Процесс займет некоторое время. Вы можете дождаться, когда это окно закроется само, или закрыть его и следить за выполнением через Инструменты &gt; Менеджер активности (Tools &gt; Activity Manager)">
+<!ENTITY assistant.working "Работаю...">
+<!ENTITY assistant.review "Просмотр изменений">
+<!ENTITY assistant.apply "Применить изменения">
+<!ENTITY assistant.settings "Некоторые параметры обязательны для нормальной работы Thunderbird Conversations, некоторые желательны, остальные на ваше усмотрение.">
+<!ENTITY assistant.actionEnableGloda "Убедитесь, что Глобальный поиск и Индексатор включены.">
+<!ENTITY assistant.actionDontExpand "В списке сообщений не раскрывать нити, содержащие непрочтенные сообщения.">
+<!ENTITY assistant.actionAttachmentsInline "Не поазывать вложения в сообщениях (<strong>рекомендуется</strong>).">
+<!ENTITY assistant.actionOfflineDownload "Синхронизовать Входящие и Отправленные для работы без сети (<strong>рекомендуется</strong>).">
+<!ENTITY assistant.actionUnifiedInboxSearchesSent "Универсальный ящик включает ящики Отправленные (<strong>рекомендуется</strong>).">
+<!ENTITY assistant.actionSetupView "Переключиться в &quot;Вся почта&quot;, показать нити, сортировать по дате, показывать количество непрочтенных и новую колонку &quot;между&quot; (<strong>рекомендуется</strong>).">
+<!ENTITY assistant.actionSetupViewDefaults "Использовать такую настройку сортировки для всех папок.">
+<!ENTITY assistant.actionEnsureMessagePaneVisible "Убедиться, что панель сообщения видна.">
+<!ENTITY assistant.settings2 "При необходимости изменить параметры, вы всегда можете найти этот помощник через Менеджер дополнений, во вкладке &quot;Дополнительно&quot;.">
+<!ENTITY feedback.message "Вы используете Thunderbird Conversations уже продолжительное время. Не желаете высказать нам свое мнение о нем? Нам будет приятно получить любые ваши комментарии!">
+<!ENTITY feedback.no "Нет, спасибо!">
+<!ENTITY feedback.yes "Оставить отзыв">
+<!ENTITY feedback.pageTitle "Дать отзыв">
+<!ENTITY stub.loading "Загрузка...">
+<!ENTITY stub.trash.tooltip "Удалить это общение">
+<!ENTITY stub.archive.tooltip "Архивировать это общение">
 <!ENTITY stub.forward.tooltip "Forward this conversation">
-<!ENTITY stub.print.tooltip "Print this conversation">
-<!ENTITY stub.junk.tooltip "Junk this message">
-<!ENTITY stub.expand.tooltip "Expand/collapse all messages">
-<!ENTITY stub.read.tooltip "Toggle read/unread all messages">
-<!ENTITY stub.detach.tooltip2 "Show this conversation in a new tab">
+<!ENTITY stub.print.tooltip "Печать этого общения">
+<!ENTITY stub.junk.tooltip "Это сообщение - спам">
+<!ENTITY stub.expand.tooltip "Развернуть/свернуть все сообщения">
+<!ENTITY stub.read.tooltip "Переключить статус прочтения всех сообщений">
+<!ENTITY stub.detach.tooltip2 "Показать общение в новой вкладке">
 <!ENTITY stub.menu.tooltip "Conversation actions">
 <!ENTITY stub.context.open "Open attachment">
 <!ENTITY stub.context.save "Save attachment">

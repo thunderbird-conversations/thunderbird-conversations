@@ -1,36 +1,36 @@
-<!ENTITY assistant.title "First run assistant">
-<!ENTITY assistant.intro "Hi, this is <strong>Thunderbird Conversations</strong>!">
-<!ENTITY assistant.p1 "In order to make your life easier, this assistant will tweak your Thunderbird setup to ensure you enjoy the optimal experience. We don't want you to feel dissatisfied!">
-<!ENTITY assistant.p2 "The tweaks we make are all reversible, so don't worry: should you not enjoy Thunderbird Conversations, we will revert any preference change we made as soon as you uninstall the extension.">
-<!ENTITY assistant.p3 "This may take quite some time. You can either wait for this window to close, or close the window yourself, and check the progress from Tools &gt; Activity Manager.">
-<!ENTITY assistant.working "Working...">
-<!ENTITY assistant.review "Review changes">
-<!ENTITY assistant.apply "Apply changes">
-<!ENTITY assistant.settings "Some settings are mandatory for Thunderbird Conversations to work properly. Some are strongly recommended, and some are optional.">
-<!ENTITY assistant.actionEnableGloda "Make sure Global Search and Indexer is enabled.">
-<!ENTITY assistant.actionDontExpand "In the message list, don't expand threads containing unread messages.">
-<!ENTITY assistant.actionAttachmentsInline "Don't display attachments inline (<strong>strongly</strong> recommended).">
-<!ENTITY assistant.actionOfflineDownload "Inbox and Sent are synchronized for offline storage (<strong>strongly</strong> recommended).">
-<!ENTITY assistant.actionUnifiedInboxSearchesSent "The Unified Inbox also searches Sent folders (<strong>strongly</strong> recommended).">
-<!ENTITY assistant.actionSetupView "Switch to Global Inbox, make display threaded, sort by date, enable unread count column and new &quot;between&quot; column (<strong>strongly</strong> recommended).">
-<!ENTITY assistant.actionSetupViewDefaults "Use these custom sort settings for all folders.">
-<!ENTITY assistant.actionEnsureMessagePaneVisible "Make sure the message pane is visible.">
-<!ENTITY assistant.settings2 "Should you wish to enable more options later, you can access this wizard through the addon's preferences, under the &quot;advanced&quot; section.">
-<!ENTITY feedback.message "You've been running Thunderbird Conversations for quite some time now, would you care enough to tell us what you think about it? We'd love to hear about any comments you may have!">
-<!ENTITY feedback.no "No, thanks">
-<!ENTITY feedback.yes "Leave feedback">
-<!ENTITY feedback.pageTitle "Give feedback">
-<!ENTITY stub.loading "Loading...">
-<!ENTITY stub.trash.tooltip "Delete this conversation">
-<!ENTITY stub.archive.tooltip "Archive this conversation">
-<!ENTITY stub.forward.tooltip "Forward this conversation">
-<!ENTITY stub.print.tooltip "Print this conversation">
-<!ENTITY stub.junk.tooltip "Junk this message">
-<!ENTITY stub.expand.tooltip "Expand/collapse all messages">
-<!ENTITY stub.read.tooltip "Toggle read/unread all messages">
-<!ENTITY stub.detach.tooltip2 "Show this conversation in a new tab">
-<!ENTITY stub.menu.tooltip "Conversation actions">
-<!ENTITY stub.context.open "Open attachment">
-<!ENTITY stub.context.save "Save attachment">
-<!ENTITY stub.context.detach "Detach attachment">
-<!ENTITY stub.context.delete "Delete attachment">
+<!ENTITY assistant.title "Pirmo paleidimo padėjėjas">
+<!ENTITY assistant.intro "Sveiki, jus sveikina <strong>Thunderbird Conversations</strong>!">
+<!ENTITY assistant.p1 "Norėdamas palengvinti jūsų gyvenimą, šis padėjėjas nustatys jūsų Thunderbird nustatymus, kad būtų užtikrintas optimalus darbas. Mes nenorime jog jūs nusiviltumėte!">
+<!ENTITY assistant.p2 "Patobulinimai kuriuos mes padarome yra atšaukiami, nesijaudinkite: kai tik išdiegsite Thunderbird Conversations plėtinį visi pakeitimai bus atkeisti į prieš tai buvusį būvį.">
+<!ENTITY assistant.p3 "Tai gali užtrukti. Galite palaukti kol langas užsidarys arba patys uždaryti šį langą ir stebėti pažangą iš Priemonės &gt; Veiklų tvarkytuvė.">
+<!ENTITY assistant.working "Vykdoma...">
+<!ENTITY assistant.review "Peržiūrėti keitimus">
+<!ENTITY assistant.apply "Pritaikyti pakeitimus">
+<!ENTITY assistant.settings "Kai kurie nustatymai yra būtini teisingam Thunderbird Conversations darbui. Kai kurie yra itin rekomenduojami, kiti yra nebūtini.">
+<!ENTITY assistant.actionEnableGloda "Įsitikinkite jog Globali paieška ir indeksavimas yra įjungti.">
+<!ENTITY assistant.actionDontExpand "Laiškų sąraše, neišskleisti temų kuriose yra neskaitytų laiškų.">
+<!ENTITY assistant.actionAttachmentsInline "Nerodyti priedų šalia (<strong>labai</strong> rekomenduotina).">
+<!ENTITY assistant.actionOfflineDownload "„Gauti laiškai“ ir „Išsiųsti laiškai“ yra sinchronizuoti darbui atsijungus (<strong>labai</strong> rekomenduotina).">
+<!ENTITY assistant.actionUnifiedInboxSearchesSent "Suvestinių aplankų gautieji taipogi ieško Išsiųstųjų aplankų (<strong>labai</strong> rekomenduotina).">
+<!ENTITY assistant.actionSetupView "Persijungti į globalų gautųjų aplanką, rodyti temomis, rikiuoti pagal datą, įjungti neskaitytų skaičiaus stulpelį ir „tarp“ stulpelį (<strong>labai</strong> rekomenduotina).">
+<!ENTITY assistant.actionSetupViewDefaults "Šiuos pasirinktinius rikiavimo nustatymus naudoti visiems aplankams.">
+<!ENTITY assistant.actionEnsureMessagePaneVisible "Įsitikinkite jog laiškų skydelis matomas.">
+<!ENTITY assistant.settings2 "Jei vėliau norėsite įjungti daugiau parinkčių, galėsite pasiekti šį vedlį per papildinių nustatymų meniu, „papildoma“ skyriuj.">
+<!ENTITY feedback.message "Jūs naudojate Thunderbird Conversations jau kurį laiką, ar norite papasakoti mums ką manote apie šį plėtinį? Mes labai norime išgirsti visus komentarus!">
+<!ENTITY feedback.no "Ne, dėkui">
+<!ENTITY feedback.yes "Palikti atsiliepimą">
+<!ENTITY feedback.pageTitle "Suteikti atsiliepimą">
+<!ENTITY stub.loading "Įkraunama...">
+<!ENTITY stub.trash.tooltip "Pašalinti šį pokalbį">
+<!ENTITY stub.archive.tooltip "Archyvuoti šį pokalbį">
+<!ENTITY stub.forward.tooltip "Persiųsti šį pokalbį">
+<!ENTITY stub.print.tooltip "Spausdinti šį pokalbį">
+<!ENTITY stub.junk.tooltip "Pažymėti kaip brukalą">
+<!ENTITY stub.expand.tooltip "Išskleisti/Suskleisti visus laiškus">
+<!ENTITY stub.read.tooltip "Perjungti visų laiškų būseną kaip skaityti/neskaityti">
+<!ENTITY stub.detach.tooltip2 "Rodyti šį pokalbį naujoje kortelėje">
+<!ENTITY stub.menu.tooltip "Pokalbio veiksmai">
+<!ENTITY stub.context.open "Atverti priedą">
+<!ENTITY stub.context.save "Išsaugoti priedą">
+<!ENTITY stub.context.detach "Atsegti priedą">
+<!ENTITY stub.context.delete "Ištrinti priedą">

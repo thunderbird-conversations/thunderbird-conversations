@@ -27,5 +27,5 @@
 <!ENTITY desc.send_in_background "メッセージを送信トレイに移動することで、送信完了を待たずにスレッドを切り替えられます。注意:この機能は完成していません (wiki.mozilla.org の SendInBackground 参照)。また、通常のメール送信にも適用されます。再起動が必要です。">
 <!ENTITY title.compose_in_tab "隠しメール作成ウインドウ">
 <!ENTITY desc.compose_in_tab "Ctrl-Shift-N でメール作成ウインドウを新しいタブで開きます。これは隠し機能でサポート対象外です。">
-<!ENTITY title.fcc_follows_if_not_inbox "Place a copy of the sent message...">
-<!ENTITY desc.fcc_follows_if_not_inbox "In the same folder as the original message, but only if the original message is not in the inbox. This options is for all accounts, and only for messages sent with the quick reply.">
+<!ENTITY title.fcc_follows_if_not_inbox "送信済みメッセージをコピー">
+<!ENTITY desc.fcc_follows_if_not_inbox "元メッセージと同じフォルダにコピーします。ただし元メッセージが受信トレイにない場合です。すべてのアカウントのインライン返信機能で送信したメッセージが対象です。">

@@ -1,36 +1,36 @@
-<!ENTITY assistant.title "First run assistant">
-<!ENTITY assistant.intro "Hi, this is <strong>Thunderbird Conversations</strong>!">
-<!ENTITY assistant.p1 "In order to make your life easier, this assistant will tweak your Thunderbird setup to ensure you enjoy the optimal experience. We don't want you to feel dissatisfied!">
-<!ENTITY assistant.p2 "The tweaks we make are all reversible, so don't worry: should you not enjoy Thunderbird Conversations, we will revert any preference change we made as soon as you uninstall the extension.">
-<!ENTITY assistant.p3 "This may take quite some time. You can either wait for this window to close, or close the window yourself, and check the progress from Tools &gt; Activity Manager.">
-<!ENTITY assistant.working "Working...">
-<!ENTITY assistant.review "Review changes">
-<!ENTITY assistant.apply "Apply changes">
-<!ENTITY assistant.settings "Some settings are mandatory for Thunderbird Conversations to work properly. Some are strongly recommended, and some are optional.">
-<!ENTITY assistant.actionEnableGloda "Make sure Global Search and Indexer is enabled.">
-<!ENTITY assistant.actionDontExpand "In the message list, don't expand threads containing unread messages.">
-<!ENTITY assistant.actionAttachmentsInline "Don't display attachments inline (<strong>strongly</strong> recommended).">
-<!ENTITY assistant.actionOfflineDownload "Inbox and Sent are synchronized for offline storage (<strong>strongly</strong> recommended).">
-<!ENTITY assistant.actionUnifiedInboxSearchesSent "The Unified Inbox also searches Sent folders (<strong>strongly</strong> recommended).">
-<!ENTITY assistant.actionSetupView "Switch to Global Inbox, make display threaded, sort by date, enable unread count column and new &quot;between&quot; column (<strong>strongly</strong> recommended).">
-<!ENTITY assistant.actionSetupViewDefaults "Use these custom sort settings for all folders.">
-<!ENTITY assistant.actionEnsureMessagePaneVisible "Make sure the message pane is visible.">
-<!ENTITY assistant.settings2 "Should you wish to enable more options later, you can access this wizard through the addon's preferences, under the &quot;advanced&quot; section.">
-<!ENTITY feedback.message "You've been running Thunderbird Conversations for quite some time now, would you care enough to tell us what you think about it? We'd love to hear about any comments you may have!">
-<!ENTITY feedback.no "No, thanks">
-<!ENTITY feedback.yes "Leave feedback">
-<!ENTITY feedback.pageTitle "Give feedback">
-<!ENTITY stub.loading "Loading...">
-<!ENTITY stub.trash.tooltip "Delete this conversation">
-<!ENTITY stub.archive.tooltip "Archive this conversation">
-<!ENTITY stub.forward.tooltip "Forward this conversation">
-<!ENTITY stub.print.tooltip "Print this conversation">
-<!ENTITY stub.junk.tooltip "Junk this message">
-<!ENTITY stub.expand.tooltip "Expand/collapse all messages">
-<!ENTITY stub.read.tooltip "Toggle read/unread all messages">
-<!ENTITY stub.detach.tooltip2 "Show this conversation in a new tab">
-<!ENTITY stub.menu.tooltip "Conversation actions">
-<!ENTITY stub.context.open "Open attachment">
-<!ENTITY stub.context.save "Save attachment">
-<!ENTITY stub.context.detach "Detach attachment">
-<!ENTITY stub.context.delete "Delete attachment">
+<!ENTITY assistant.title "Prvo pokrenite čarobnjaka">
+<!ENTITY assistant.intro "Pozdrav, ovo je <strong>Thunderbird Conversations</strong>!">
+<!ENTITY assistant.p1 "Kako bi vam olakšali, čarobnjak će prilagoditi vaše Thunderbird postavke kako bi osigurali optimalno iskustvo. Ne želimo da se osjećate nezadovoljno!">
+<!ENTITY assistant.p2 "Ne brinite, sve prilagodbe koje smo napravili se mogu vratiti. Ukoliko nećete uživati u Thunderbird Conversations vratit ćemo sve postavke na početne vrijednosti čim uklonite dodatak.">
+<!ENTITY assistant.p3 "Ovo može potrajati. Možete pričekati da se ovaj prozor zatvori ili ga sami zatvoriti i pratiti napredak iz Alati &gt; Upravitelj aktivnostima.">
+<!ENTITY assistant.working "Obrada...">
+<!ENTITY assistant.review "Pregled promjena">
+<!ENTITY assistant.apply "Primijeni promjene">
+<!ENTITY assistant.settings "Neke postavke su obavezne kako bi Thunderbird Conversations ispravno radio, neke se izrazito preporučuju, a neke su opcionalne.">
+<!ENTITY assistant.actionEnableGloda "Provjerite da je globalno pretraživanje i indeksiranje uključeno.">
+<!ENTITY assistant.actionDontExpand "U popisu poruka ne proširuj teme koje sadrže nepročitane poruke.">
+<!ENTITY assistant.actionAttachmentsInline "Ne prikazuj privitke umetnuto (<strong>izrazito</strong> preporučeno).">
+<!ENTITY assistant.actionOfflineDownload "Primljena pošta i Poslano se sinkronizira za izvanmrežnu pohranu (<strong>izrazito</strong> preporučeno).">
+<!ENTITY assistant.actionUnifiedInboxSearchesSent "Zajednička Primljena pošta također pretražuje mape Poslano (<strong>izrazito</strong> preporučeno).">
+<!ENTITY assistant.actionSetupView "Prebacite se na Globalnu primljenu poštu, sortirajte po datumu, omogućite stupac za brojanje nepročitanih poruka i novi stupac &quot;između&quot; (<strong>izrazito</strong> preporučeno).">
+<!ENTITY assistant.actionSetupViewDefaults "Koristi ove prilagođene postavke za sortiranje za sve mape.">
+<!ENTITY assistant.actionEnsureMessagePaneVisible "Provjerite da li je okno poruka vidljivo.">
+<!ENTITY assistant.settings2 "Ukoliko želite promjeniti neke postavke kasnije, možete pristupiti ovom čarobnjaku kroz postavke dodatka, pod odjelom &quot;napredno&quot;.">
+<!ENTITY feedback.message "Već neko vrijeme koristite Thunderbird Conversations, želite li nam reći šta mislite o njemu? Željeli bi čuti vaše komentare.">
+<!ENTITY feedback.no "Ne hvala">
+<!ENTITY feedback.yes "Ostavite povratnu informaciju">
+<!ENTITY feedback.pageTitle "Ostavite povratnu informaciju">
+<!ENTITY stub.loading "Učitavanje...">
+<!ENTITY stub.trash.tooltip "Obriši ovaj razgovor">
+<!ENTITY stub.archive.tooltip "Arhiviraj ovaj razgovor">
+<!ENTITY stub.forward.tooltip "Proslijedi ovaj razgovor">
+<!ENTITY stub.print.tooltip "Ispiši ovaj razgovor">
+<!ENTITY stub.junk.tooltip "Označi ovu poruku kao neželjenu">
+<!ENTITY stub.expand.tooltip "Proširi/skupi sve poruke">
+<!ENTITY stub.read.tooltip "Označi sve poruke pročitanim/nepročitanim">
+<!ENTITY stub.detach.tooltip2 "Prikaži ovaj razgovor u novoj kartici">
+<!ENTITY stub.menu.tooltip "Radnje razgovora">
+<!ENTITY stub.context.open "Otvori privitak">
+<!ENTITY stub.context.save "Spremi privitak">
+<!ENTITY stub.context.detach "Odvoji privitak">
+<!ENTITY stub.context.delete "Obriši privitak">

@@ -27,5 +27,5 @@
 <!ENTITY desc.send_in_background "Detta köar meddelanden för sändning, så att du slipper vänta på att sändningsprocessen skall slutföras innan du kan växla mellan konversationer. Varning: Funktionen är inte helt färdigställd (se SendInBackground på wiki.mozilla.org) och tillämpas även på den vanliga skrivprocessen. Omstart krävs.">
 <!ENTITY title.compose_in_tab "Dolt Skriv-fönster">
 <!ENTITY desc.compose_in_tab "Ctrl+Skift+N öppnar det dolda, ej stödda Skriv-fönstret i en ny flik">
-<!ENTITY title.fcc_follows_if_not_inbox "Place a copy of the sent message...">
-<!ENTITY desc.fcc_follows_if_not_inbox "In the same folder as the original message, but only if the original message is not in the inbox. This options is for all accounts, and only for messages sent with the quick reply.">
+<!ENTITY title.fcc_follows_if_not_inbox "Placera en kopia av det skickade meddelandet…">
+<!ENTITY desc.fcc_follows_if_not_inbox "I samma mapp som originalmeddelandet, men endast om originalmeddelandet inte finns i inkorgen. Detta alternativ gäller för samtliga konton och endast för meddelanden som skickas m.h.a. snabbsvarsfunktionen.">
