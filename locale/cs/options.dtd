@@ -27,5 +27,5 @@
 <!ENTITY desc.send_in_background "Tímto zařadíte odesílané zprávy na pozadí, takže již nemusíte čekat, až se zpráva odešle, ale můžete okamžitě pokračovat další konverzací. VAROVÁNÍ: Tato funkce ještě není zcela kompletní (stav rozpracování najdete na wiki.mozilla.org po vyhledání hesla SendInBackground). Vyžadován restart.">
 <!ENTITY title.compose_in_tab "Skryté okno psaní zprávy">
 <!ENTITY desc.compose_in_tab "Ctrl+Shift+N otevře v novém okně skryté, nepodporované okno psaní zprávy">
-<!ENTITY title.fcc_follows_if_not_inbox "Place a copy of the sent message...">
-<!ENTITY desc.fcc_follows_if_not_inbox "In the same folder as the original message, but only if the original message is not in the inbox. This options is for all accounts, and only for messages sent with the quick reply.">
+<!ENTITY title.fcc_follows_if_not_inbox "Umístit kopii odeslané zprávy...">
+<!ENTITY desc.fcc_follows_if_not_inbox "Ve stejné složce jako původní zpráva, ale pouze pokud původní zpráva není v Doručené poště. Tato volba se použije pro všechny zprávy odeslané rychlou odpovědí, ze všech účtů.">

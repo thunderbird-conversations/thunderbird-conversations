@@ -27,5 +27,5 @@
 <!ENTITY desc.send_in_background "Això posarà a la cua els missatges per enviar, així no hauràs d'esperar a completar  el procés d'enviament per  canviar de conversació. Aneu alerta !! : La característica no està completada (mira-ho a :  SendInBackground a wiki.mozilla.org) i també ho aplica al procés de composicions regulars. Es necessari el reinici.">
 <!ENTITY title.compose_in_tab "Amaga la finestra de composició">
 <!ENTITY desc.compose_in_tab "Ctrl-Shift-N obre la finestra de composició amagada, i no suportada, en una nova pestanya">
-<!ENTITY title.fcc_follows_if_not_inbox "Place a copy of the sent message...">
-<!ENTITY desc.fcc_follows_if_not_inbox "In the same folder as the original message, but only if the original message is not in the inbox. This options is for all accounts, and only for messages sent with the quick reply.">
+<!ENTITY title.fcc_follows_if_not_inbox "Fes una còpia del missatge enviat…">
+<!ENTITY desc.fcc_follows_if_not_inbox "A la mateixa carpeta que el missatge original, però només si el missatge original no és a la safata d'entrada. Aquesta opció és per a tots els comptes,i només per els missatges enviats amb resposta ràpida (quick reply)">

@@ -24,8 +24,8 @@
 <!ENTITY title.extra_attachments "Amo gli allegati!">
 <!ENTITY desc.extra_attachments2 "In alcuni casi limite, Thunderbird non riuscirà a riconoscere alcuni allegati. Questa opzione permette di visualizzare tutti gli allegati possibili. Da utilizzare in combinazione al componente aggiuntivo 'Show All Body Parts'">
 <!ENTITY title.send_in_background "Invia in modalità silenziosa">
-<!ENTITY desc.send_in_background "I messaggi verranno queue per l&apos;invio, così da non dover attendere il completamento del procedimento di invio prima di poter attivare la visualizzazione a conversazione. Attenzione: l&apos;opzione è ancora incompleta (consultare SendInBackground su wiki.mozilla.org) e viene applicata anche alla composizione regolare. Sarà necessario riavviare per attivare l&apos;opzione">
+<!ENTITY desc.send_in_background "I messaggi verranno messi in coda per l&apos;invio, così da non dover attendere il completamento del procedimento di invio prima di poter attivare la visualizzazione a conversazione. Attenzione: l&apos;opzione è ancora incompleta (consultare SendInBackground su wiki.mozilla.org) e viene applicata anche alla composizione regolare. Sarà necessario riavviare per attivare l&apos;opzione">
 <!ENTITY title.compose_in_tab "Finestra di composizione nascosta">
 <!ENTITY desc.compose_in_tab "Ctrl+Maiusc+N apre la finestra di composizione nascosta e non supportata in una nuova scheda">
-<!ENTITY title.fcc_follows_if_not_inbox "Place a copy of the sent message...">
-<!ENTITY desc.fcc_follows_if_not_inbox "In the same folder as the original message, but only if the original message is not in the inbox. This options is for all accounts, and only for messages sent with the quick reply.">
+<!ENTITY title.fcc_follows_if_not_inbox "Copia del messaggio inviato">
+<!ENTITY desc.fcc_follows_if_not_inbox "Una copia del messaggio inviato viene inserito nella stessa cartella del messaggio originale, ma solo se questo non si trova nella casella di posta in arrivo. Questa opzione è per tutti gli account, e solo per i messaggi inviati con la risposta rapida">

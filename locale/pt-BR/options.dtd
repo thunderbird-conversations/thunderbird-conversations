@@ -27,5 +27,5 @@
 <!ENTITY desc.send_in_background "Colocar mensagens em uma fila para envio, de modo que você não tenha que esperar a conclusão do envio para poder ver outras conversas. Atenção: este recurso não está completo (veja SendInBackground em wiki.mozilla.org) e também se aplica ao processo de composição normal. Necessário reiniciar.">
 <!ENTITY title.compose_in_tab "Janela de composição oculta">
 <!ENTITY desc.compose_in_tab "Ctrl-Shift-N abre a janela de composição oculta, não suportada, em nova aba">
-<!ENTITY title.fcc_follows_if_not_inbox "Place a copy of the sent message...">
-<!ENTITY desc.fcc_follows_if_not_inbox "In the same folder as the original message, but only if the original message is not in the inbox. This options is for all accounts, and only for messages sent with the quick reply.">
+<!ENTITY title.fcc_follows_if_not_inbox "Deixar uma cópia da mensagem enviada…">
+<!ENTITY desc.fcc_follows_if_not_inbox "Na mesma pasta da mensagem original, mas somente se a mensagem original não estiver na caixa de entrada. Esta opção é para todas as contas, apenas para mensagens enviadas com a resposta rápida.">

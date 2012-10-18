@@ -27,5 +27,5 @@
 <!ENTITY desc.send_in_background "Gesendete Nachrichten werden in einer Warteschlange aufgereiht, sodass man nicht abwarten muss bis die Nachricht gesendet wurde, wenn man zu einer anderen Konversation wechseln möchte. Warnung: Diese Funktion ist nocht nicht fertig und betrifft auch den normalen Aufbau-Prozess (siehe SendInBackground auf wiki.mozilla.org)(Neustart erforderlich).">
 <!ENTITY title.compose_in_tab "Verborgenes Aufbau-Fenster">
 <!ENTITY desc.compose_in_tab "Strg-Shift-N öffnet das verborgene, nicht unterstützte Aufbau-Fenster in einem neuen Tab.">
-<!ENTITY title.fcc_follows_if_not_inbox "Place a copy of the sent message...">
-<!ENTITY desc.fcc_follows_if_not_inbox "In the same folder as the original message, but only if the original message is not in the inbox. This options is for all accounts, and only for messages sent with the quick reply.">
+<!ENTITY title.fcc_follows_if_not_inbox "Kopie einer gesendeten Nachricht anlegen...">
+<!ENTITY desc.fcc_follows_if_not_inbox "Die Nachricht ist im selben Ordner wie die ursprüngliche Nachricht, aber nur wenn die ursprüngliche Nachricht nicht in den Posteingang liegt. Diese Optionen gelten für alle Konten aber nur für Nachrichten die über die Schnellantwort versendet wurden.">
