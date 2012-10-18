@@ -119,6 +119,8 @@ MultipleCustomization.prototype = {
 let eid = function (id) getMail3Pane().document.getElementById(id);
 
 let Customizations = {
+  ttop: function () {},
+
   actionSetupViewDefaults: new MultipleCustomization([
     { name: "mailnews.default_sort_order", type: kPrefInt, value: 2 },
     { name: "mailnews.default_sort_type", type: kPrefInt, value: 18 },
@@ -206,7 +208,7 @@ let Customizations = {
         eid("unreadCol").setAttribute("hidden", "false");
         eid("senderCol").setAttribute("hidden", "true");
         eid("betweenCol").setAttribute("hidden", "false");
-        Customizations.top();
+        Customizations.ttop();
       };
       let i = 0;
       let waitForIt = function () {

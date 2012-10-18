@@ -69,12 +69,12 @@
     // This is the usual API: if you launch something asynchronous, just do
     // expect () and call top () when you're done.
     let expected = 1;
-    let top = function top() {
+    let ttop = function () {
       if (--expected == 0)
         finish();
     };
     Customizations.expect = function () expected++;
-    Customizations.top = top;
+    Customizations.ttop = ttop;
 
     // --- UI event handlers
 
@@ -92,7 +92,7 @@
         else
           Log.debug("User declined", checkbox.id);
       }
-      top();
+      ttop();
     }
 
     function onCustomSetup(event) {
