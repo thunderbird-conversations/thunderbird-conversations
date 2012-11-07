@@ -892,8 +892,12 @@ Message.prototype = {
       new mainWindow.AttachmentInfo(
         att.contentType, att.url, att.name, self._uri, att.isExternal, 42
       ));
-    for each (let [i, attNode] in Iterator(attachmentNodes)) {
+    /* So for some strange reason, Gecko decided that Iterator would now yield
+     * both the element's id attribute and its index in the collection... which
+     * screws us up, so let's forget about using modern JS features. */
+    for (let i = 0; i < attachmentNodes.length; ++i) {
       let j = i;
+      let attNode = attachmentNodes[j];
       let att = this._attachments[j];
 
       // For the context menu event handlers
