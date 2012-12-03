@@ -585,12 +585,13 @@ ComposeSession.prototype = {
     let defaultCc = "";
     let defaultBcc = "";
     if (identity.doCc)
-      defaultCc = identity.doCcList;
+      defaultCc = identity.doCcList || "";
     if (identity.doBcc)
-      defaultBcc = identity.doBccList;
+      defaultBcc = identity.doBccList || "";
 
     let mergeDefault = function (aList, aDefault) {
-      aDefault = aDefault.replace(/\s/g, "");
+      if (aDefault)
+        aDefault = aDefault.replace(/\s/g, "");
       if (!aDefault) // "" evaluates to false
         return aList;
       for each (let [, email] in Iterator(aDefault.split(/,/))) {
