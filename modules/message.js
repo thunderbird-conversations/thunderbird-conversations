@@ -2044,13 +2044,16 @@ let PostStreamingFixesMixIn = {
 
         let failsStaticTests = false;
         if (linkText != linkUrl) {
+          // Bug 80855
+          let isLegalIpAddress = gPhishingDetector.hostNameIsIPAddress || gPhishingDetector.isLegalIPAddress;
+          let isLegalLocalIpAddress = gPhishingDetector.isLocalIPAddress || gPhishingDetector.isLegalLocalIPAddress;
           // Yes, the third parameter to misMatchedHostWithLinkText is actually
           //  required, but it's some kind of an out value that's useless for
           //  us, so just pass it {} so that it's happy...
-          let unobscuredHostNameValue = gPhishingDetector.hostNameIsIPAddress(hrefURL.host);
+          let unobscuredHostNameValue = isLegalIpAddress(hrefURL.host);
           failsStaticTests =
             unobscuredHostNameValue
-              && !gPhishingDetector.isLocalIPAddress(unobscuredHostNameValue)
+              && !isLegalLocalIpAddress(unobscuredHostNameValue)
             || linkText
               && gPhishingDetector.misMatchedHostWithLinkText(hrefURL, linkText, {});
         }
