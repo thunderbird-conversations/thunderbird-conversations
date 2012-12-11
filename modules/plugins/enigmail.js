@@ -617,8 +617,14 @@ let enigmailHook = {
 
   // Update security info when the message is selected.
   onMessageSelected: function _enigmailHook_onMessageSelected(aMessage) {
-    if (hasEnigmail)
+    if (hasEnigmail) {
+      // EnigmailVerify is supported since Enigmail 1.4.6
+      // lastMsgUri is used for security info display to get current message.
+      let w = topMail3Pane(aMessage);
+      if (w.EnigmailVerify)
+        w.EnigmailVerify.lastMsgUri = aMessage._uri;
       updateSecurityInfo(aMessage);
+    }
   },
 }
 
