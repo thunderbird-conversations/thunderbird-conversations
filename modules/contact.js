@@ -77,20 +77,21 @@ function ContactManager() {
 
 ContactManager.prototype = {
   getContactFromNameAndEmail: function _ContactManager_getContactFromEmail(name, email, position) {
+    // [name] and [email] are from the message header
     let self = this;
     email = (email+"").toLowerCase();
     // Might change in the future... who knows? ...
-    let key = function (name, email) email;
+    let key = email;
     let cache = function _cache (name, contact) {
       for each (let [, email] in Iterator(contact.emails)) {
         email = (email+"").toLowerCase();
-        self._cache[key(name, email)] = contact;
+        self._cache[key] = contact;
       }
     };
-    if (key(name, email) in this._cache) {
+    if (key in this._cache) {
       if (name)
-        this._cache[key(name, email)].enrichWithName(name);
-      return this._cache[key(name, email)];
+        this._cache[key].enrichWithName(name);
+      return this._cache[key];
     } else {
       let contact = new ContactFromAB(this, name, email, position, this._colorCache[email]);
       // Only cache contacts which are in the address book. This avoids weird
@@ -100,7 +101,7 @@ ContactManager.prototype = {
       // For those that need to be in the address book (because we want to
       //  display images, for instance), the user still has the option to uncheck
       //  "prefer display name over header name".
-      if (contact._card && !contact._card.getProperty("PreferDisplayName", true)) {
+      if (contact._useCardName) {
         cache(name, contact);
       } else {
         // We still want to cache the color...
@@ -325,6 +326,7 @@ function ContactFromAB(manager, name, email, /* unused */ position, color) {
   this._email = email; // The original email. Use to pick a gravatar.
   this._profiles = {};
   this._card = null;
+  this._useCardName = false;
 
   this.fetch();
 }
@@ -334,16 +336,21 @@ ContactFromAB.prototype = {
     let card = GlodaUtils.getCardForEmail(this._email);
     this._card = card;
     if (card) {
+      // getProperty may return "0" or "1" which must be "== false"'d to be
+      //  properly evaluated
+      this._useCardName = (card.getProperty("PreferDisplayName", true) == true);
       this.emails = [card.primaryEmail, card.getProperty("SecondEmail", "")];
       // Prefer:
       // - displayName
       // - firstName lastName (if one of these is non-empty)
       // - the parsed name
       // - the email
-      this._name = card.displayName
-        || ((card.firstName || card.lastName)
-        ? (card.firstName + " " + card.lastName)
-        : this._name || this._email);
+      if (this._useCardName && card.displayName)
+        this._name = card.displayName;
+      if (this._useCardName && (card.firstName || card.lastName))
+        this._name = card.firstName + " " + card.lastName;
+      if (!this._name)
+        this._name = this._email;
     } else {
       this.emails = [this._email];
       this._name = this._name || this._email;
