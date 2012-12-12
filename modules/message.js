@@ -406,7 +406,6 @@ Message.prototype = {
       this._domNode.classList.remove("inView");
   },
 
-  RE_SNIPPET: /[\u0000-\u0008\u000b-\u000c\u000e-\u001f]/g,
   RE_BZ_COMMENT: /^--- Comment #\d+ from .* \d{4}.*? ---([\s\S]*)/m,
   RE_MSGKEY: /number=(\d+)/,
 
@@ -516,7 +515,7 @@ Message.prototype = {
     data = this.toTmplDataForAttachments(data);
 
     // 3) Generate extra information: snippet, date, uri
-    data.snippet = escapeHtml(this._snippet).replace(this.RE_SNIPPET, "");
+    data.snippet = escapeHtml(this._snippet);
     data.date = escapeHtml(this._date);
     data.fullDate = Prefs["no_friendly_date"]
       ? ""
@@ -594,9 +593,9 @@ Message.prototype = {
       // We've got the right data, push it!
       data.attachments.push({
         formattedSize: formattedSize,
-        thumb: escapeHtml(thumb.replace(this.RE_SNIPPET, "")),
+        thumb: escapeHtml(thumb),
         imgClass: imgClass,
-        name: escapeHtml(att.name).replace(this.RE_SNIPPET, ""),
+        name: escapeHtml(att.name),
         anchor: "msg"+this.initialPosition+"att"+i,
         /* Only advertise the preview for PDFs (images have the gallery view). */
         canPreview: isPdf,
@@ -1187,7 +1186,7 @@ Message.prototype = {
             } catch (e) {}
             data.extraLines.push({
               key: key,
-              value: escapeHtml(aHeaders.get(h).replace(this.RE_SNIPPET, "")),
+              value: escapeHtml(aHeaders.get(h)),
             });
           }
         }
