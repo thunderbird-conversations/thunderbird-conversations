@@ -80,7 +80,6 @@ Wrapper.prototype = {
           /* nsIInputStream */ aStream, /* int */ aOffset, /* int */ aCount) {
         // Fortunately, we have in Gecko 2.0 a nice wrapper
         let data = NetUtil.readInputStreamToString(aStream, aCount);
-        Log.debug(data);
         // Now each character of the string is actually to be understood as a byte
         // So charCodeAt is what we want here...
         let array = [];
