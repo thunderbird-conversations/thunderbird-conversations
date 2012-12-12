@@ -452,6 +452,10 @@ MonkeyPatch.prototype = {
         }
 
         window.gSummaryFrameManager.loadAndCallback(kStubUrl, function (isRefresh) {
+          // See issue #673
+          if (htmlpane.contentDocument && htmlpane.contentDocument.body)
+            htmlpane.contentDocument.body.hidden = false;
+
           if (isRefresh) {
             // Invalidate the previous selection
             previouslySelectedUris = [];
