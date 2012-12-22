@@ -36,7 +36,7 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ['Message', 'MessageFromGloda', 'MessageFromDbHdr']
+var EXPORTED_SYMBOLS = ['Message', 'MessageFromGloda', 'MessageFromDbHdr', 'ConversationKeybindings']
 
 const Ci = Components.interfaces;
 const Cc = Components.classes;
@@ -333,7 +333,11 @@ KeyListener.prototype = {
             match = match && (action.mods[mod] == event[mod]);
           }
           if (match) {
-            this.functions[action.func].call(this, event);
+            if (typeof action.func === "function") {
+              action.func.call(this, event);
+            } else {
+              this.functions[action.func].call(this, event);
+            }
             return;
           }
         }
@@ -341,6 +345,12 @@ KeyListener.prototype = {
     }
   },
 };
+
+const ConversationKeybindings = KeyListener.prototype.keybindings;
+ConversationKeybindings.availableActions = [];
+for (let [actionName, j] in Iterator(KeyListener.prototype.functions)) {
+  ConversationKeybindings.availableActions.push(actionName);
+}
 
 // Call that one after setting this._msgHdr;
 function Message(aConversation) {
