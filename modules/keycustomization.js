@@ -77,25 +77,52 @@ const UnneededKey =
   "color: gray;";
 
 
+function titleCaseToSpacedWords(str) {
+  let words = str.split(/(^.|[A-Z])/);
+  let ret = "";
+  words.shift();
+  if (words.length % 2 == 1)
+    words.unshift("");
+  for (let i = 0; i < words.length; i += 2) {
+    if (i > 0)
+      ret += " " + words[i].toLowerCase() + words[i+1];
+    else
+      ret += words[i].toUpperCase() + words[i+1];
+  }
+  return ret;
+}
+
 
 function menulistChanged(event) {
   let menulist = event.target;
-  menulist.parentNode.hotkeyBinding.func = menulist.selectedItem.label;
+  menulist.parentNode.hotkeyBinding.func = menulist.selectedItem.value;
+  ConversationKeybindings.saveKeybindings();
 }
 function buildMenuList(doc, parent, arr, selected) {
   let list = doc.createElementNS(XUL_NS, "menulist");
   parent.appendChild(list);
   list.setAttribute("sizetopopup", "always");
-  list.addEventListener("select", menulistChanged, false);
   let popup = doc.createElementNS(XUL_NS, "menupopup");
   list.appendChild(popup);
+  let selectedItem = null;
   for (let [i, cmd] in Iterator(arr)) {
     let item = doc.createElementNS(XUL_NS, "menuitem");
     popup.appendChild(item);
-    item.setAttribute("label", cmd);
+    item.setAttribute("value", cmd);
+    item.setAttribute("label", titleCaseToSpacedWords(cmd));
     if (cmd == selected) {
       item.setAttribute("selected", "true");
+      selectedItem = item;
     }
+  }
+  if (selectedItem != null)
+    list.addEventListener("select", menulistChanged, false);
+  else {
+    let item = doc.createElementNS(XUL_NS, "menuitem");
+    popup.appendChild(item);
+    item.setAttribute("label", strings.get("customFunction"));
+    item.setAttribute("selected", "true");
+    list.setAttribute("disabled", "true");
   }
   return list;
 }
@@ -127,6 +154,7 @@ function buttonOnCheck(event) {
     binding.mods[key + "Key"] = true;
   else if (key + "Key" in binding.mods)
     delete binding.mods[key + "Key"];
+  ConversationKeybindings.saveKeybindings();
 }
 function buildButton(doc, parent, label, state) {
   let btn = doc.createElementNS(XUL_NS, "button");
@@ -147,9 +175,9 @@ function buildButton(doc, parent, label, state) {
 function buildDelete(doc, parent, key, binding) {
   let bindingGroups = undefined;
   if (isOSX) {
-    bindingGroups = [ConversationKeybindings.OSX, ConversationKeybindings.Generic];
+    bindingGroups = [ConversationKeybindings.bindings.OSX, ConversationKeybindings.bindings.Generic];
   } else { // TODO: Windows, Linux or other platform-specific bindings, rather than just "Other"?
-    bindingGroups = [ConversationKeybindings.Other, ConversationKeybindings.Generic];
+    bindingGroups = [ConversationKeybindings.bindings.Other, ConversationKeybindings.bindings.Generic];
   }
   let btn = doc.createElementNS(XUL_NS, "button");
   btn.setAttribute("label", "Remove hotkey");
@@ -163,11 +191,22 @@ function buildDelete(doc, parent, key, binding) {
           }
         }
       }
+      ConversationKeybindings.saveKeybindings();
     }
     parent.parentNode.removeChild(parent);
   }, false);
 }
- 
+
+// Todo: handle other non-printable characters
+function describeKey(key) {
+  if (key === "\x0D")
+    return strings.get("returnKey");
+  if (key === "\x2E")
+    return strings.get("deleteKey");
+  if (key === " ")
+    return strings.get("spaceKey");
+  return key;
+}
 function buildHotKey(doc, key, binding) {
   let hbox = doc.createElementNS(XUL_NS, "hbox");
   hbox.hotkey = key;
@@ -179,7 +218,7 @@ function buildHotKey(doc, key, binding) {
     buildLbl(doc, hbox, "+");
     hbox.appendChild(doc.createElementNS(XUL_NS, "separator"));
   }
-  buildLbl(doc, hbox, key);
+  buildLbl(doc, hbox, describeKey(key));
   hbox.appendChild(doc.createElementNS(XUL_NS, "separator"));
   buildLbl(doc, hbox, ":");
   hbox.appendChild(doc.createElementNS(XUL_NS, "separator"));
@@ -187,6 +226,18 @@ function buildHotKey(doc, key, binding) {
   return hbox;
 }
 
+function buildRestore(doc) {
+  let hbox = doc.createElementNS(XUL_NS, "hbox");
+  let btn = doc.createElementNS(XUL_NS, "button");
+  hbox.appendChild(btn);
+  btn.setAttribute("label", strings.get("restoreKeys"));
+  btn.addEventListener("command", function(event) {
+    ConversationKeybindings.restoreKeybindings();
+    CustomizeKeys.disable(doc);
+    CustomizeKeys.enable(doc);
+  }, false);
+  return hbox;
+}
 function showHide(event) {
   let showhide = event.target;
   let keysVbox = showhide.previousElementSibling;
@@ -206,9 +257,9 @@ const CustomizeKeys = {
     let keysVbox = showhide.previousElementSibling;
     let bindingGroups = undefined;
     if (isOSX) {
-      bindingGroups = [ConversationKeybindings.OSX, ConversationKeybindings.Generic];
+      bindingGroups = [ConversationKeybindings.bindings.OSX, ConversationKeybindings.bindings.Generic];
     } else { // TODO: Windows, Linux or other platform-specific bindings, rather than just "Other"?
-      bindingGroups = [ConversationKeybindings.Other, ConversationKeybindings.Generic];
+      bindingGroups = [ConversationKeybindings.bindings.Other, ConversationKeybindings.bindings.Generic];
     }
     for (let [os, bindings] in Iterator(bindingGroups)) {
       for (let [key, keybinding] in Iterator(bindings)) {
@@ -217,6 +268,7 @@ const CustomizeKeys = {
         }
       }
     }
+    keysVbox.appendChild(buildRestore(doc));
   },
   disable : function disable(doc) {
     let showhide = doc.getElementById("showhidekeys");
@@ -224,5 +276,6 @@ const CustomizeKeys = {
     let keysVbox = showhide.previousElementSibling;
     while (keysVbox.hasChildNodes())
       keysVbox.removeChild(keysVbox.firstChild);
+    Cu.reportError("disable is called!");
   }
 }

@@ -135,6 +135,10 @@ PrefManager.prototype = {
     }
   },
 
+  hasPref: function (p) {
+    return !!gPrefBranch.getPrefType(p);
+  },
+
   getChar: function (p) {
     return gPrefBranch.getCharPref(p);
   },
