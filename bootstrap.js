@@ -168,6 +168,23 @@ function startup(aData, aReason) {
         "chrome://conversations/content/assistant/assistant.xhtml",
         "",
         "chrome,width=800,height=500", {});
+
+    // Hook into options window
+    Cu.import("resource://conversations/modules/keycustomization.js", global);
+    Services.obs.addObserver({
+      observe: function(aSubject, aTopic, aData) {
+        if (aTopic == "addon-options-displayed" && aData == "gconversation@xulforum.org") {
+          CustomizeKeys.enable(aSubject); // aSubject is the options document
+        }
+      }
+    }, "addon-options-displayed", false);
+    Services.obs.addObserver({
+      observe: function(aSubject, aTopic, aData) {
+        if (aTopic == "addon-options-displayed" && aData == "gconversation@xulforum.org") {
+          CustomizeKeys.disable(aSubject); // aSubject is the options document
+        }
+      }
+    }, "addon-options-hidden", false);
   } catch (e) {
     Log.error(e);
     dumpCallStack(e);
