@@ -180,7 +180,7 @@ function startup(aData, aReason) {
     }, "addon-options-displayed", false);
     Services.obs.addObserver({
       observe: function(aSubject, aTopic, aData) {
-        if (aTopic == "addon-options-displayed" && aData == "gconversation@xulforum.org") {
+        if (aTopic == "addon-options-hidden" && aData == "gconversation@xulforum.org") {
           CustomizeKeys.disable(aSubject); // aSubject is the options document
         }
       }
