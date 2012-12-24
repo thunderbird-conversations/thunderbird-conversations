@@ -140,6 +140,10 @@ function KeyListener(aMessage) {
 
 KeyListener.prototype = {
   functions: {
+    doNothing: function doNothing(event) {
+      event.preventDefault();
+      event.stopPropagation();
+    },
     toggleMessage: function toggleMessage(event) {
       // If we expand a collapsed, when in doubt, mark it read.
       if (this.message.collapsed)
@@ -245,12 +249,9 @@ KeyListener.prototype = {
     Prefs.setString("conversations.keybindings", JSON.stringify(KeyListener.prototype.keybindings));
   },
   loadKeybindings: function () {
-    try {
-      if (Prefs.hasPref("conversations.keybindings"))
-        for (let [os, bindings] in Iterator(JSON.parse(Prefs.getString("conversations.keybindings")))) {
-          KeyListener.prototype.keybindings[os] = bindings;
-        }
-    } catch (e) { Cu.reportError(e); }
+    if (Prefs.hasPref("conversations.keybindings"))
+      for (let [os, bindings] in Iterator(JSON.parse(Prefs.getString("conversations.keybindings"))))
+        KeyListener.prototype.keybindings[os] = bindings;
   },
   restoreKeybindings: function () {
     for (let [os, bindings] in Iterator(KeyListener.prototype.defaultKeybindings))

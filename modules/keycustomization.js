@@ -53,6 +53,9 @@ Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
 let strings = new StringBundle("chrome://conversations/locale/keycustomization.properties");
 let Log = setupLogging("Conversations.Message");
 
+let bindingGroups = undefined;
+
+
 const InactiveKey =
   "color: #880000;" +
   "font-weight: bold;" +
@@ -97,33 +100,24 @@ function menulistChanged(event) {
   let menulist = event.target;
   menulist.parentNode.hotkeyBinding.func = menulist.selectedItem.value;
   ConversationKeybindings.saveKeybindings();
+  event.stopPropagation();
 }
 function buildMenuList(doc, parent, arr, selected) {
   let list = doc.createElementNS(XUL_NS, "menulist");
   parent.appendChild(list);
   list.setAttribute("sizetopopup", "always");
+  list.setAttribute("class", "actionList");
   let popup = doc.createElementNS(XUL_NS, "menupopup");
   list.appendChild(popup);
-  let selectedItem = null;
   for (let [i, cmd] in Iterator(arr)) {
     let item = doc.createElementNS(XUL_NS, "menuitem");
     popup.appendChild(item);
     item.setAttribute("value", cmd);
     item.setAttribute("label", titleCaseToSpacedWords(cmd));
-    if (cmd == selected) {
+    if (cmd == selected)
       item.setAttribute("selected", "true");
-      selectedItem = item;
-    }
   }
-  if (selectedItem != null)
-    list.addEventListener("select", menulistChanged, false);
-  else {
-    let item = doc.createElementNS(XUL_NS, "menuitem");
-    popup.appendChild(item);
-    item.setAttribute("label", strings.get("customFunction"));
-    item.setAttribute("selected", "true");
-    list.setAttribute("disabled", "true");
-  }
+  list.addEventListener("select", menulistChanged, false);
   return list;
 }
 function buildLbl(doc, parent, text) {
@@ -142,6 +136,7 @@ function setStyle(btn) {
     btn.setAttribute("style", UnneededKey);
 }
 function buttonOnCheck(event) {
+  try {
   let btn = event.target;
   let newState = (btn.getAttribute("checkState") + 1) % 3;
   btn.setAttribute("checkState", newState);
@@ -155,6 +150,8 @@ function buttonOnCheck(event) {
   else if (key + "Key" in binding.mods)
     delete binding.mods[key + "Key"];
   ConversationKeybindings.saveKeybindings();
+  event.stopPropagation();
+    } catch (e) { Cu.reportError(e); }
 }
 function buildButton(doc, parent, label, state) {
   let btn = doc.createElementNS(XUL_NS, "button");
@@ -162,6 +159,7 @@ function buildButton(doc, parent, label, state) {
   btn.setAttribute("type", "checkbox");
   btn.setAttribute("autoCheck", false);
   btn.setAttribute("label", label);
+  btn.setAttribute("class", "setModifier");
   if (state == undefined)
     btn.setAttribute("checkState", 2);
   else if (state)
@@ -172,31 +170,96 @@ function buildButton(doc, parent, label, state) {
   btn.addEventListener("command", buttonOnCheck, false);
   return btn;
 }
+
 function buildDelete(doc, parent, key, binding) {
-  let bindingGroups = undefined;
-  if (isOSX) {
-    bindingGroups = [ConversationKeybindings.bindings.OSX, ConversationKeybindings.bindings.Generic];
-  } else { // TODO: Windows, Linux or other platform-specific bindings, rather than just "Other"?
-    bindingGroups = [ConversationKeybindings.bindings.Other, ConversationKeybindings.bindings.Generic];
-  }
   let btn = doc.createElementNS(XUL_NS, "button");
-  btn.setAttribute("label", "Remove hotkey");
+  btn.setAttribute("label", strings.get("removeHotkey"));
   parent.appendChild(btn);
   btn.addEventListener("command", function(event) {
-    for (let [os, bindings] in Iterator(bindingGroups)) {
-      if (key in bindings) {
-        for (let [j, bind] in Iterator(bindings[key])) {
-          if (bind === binding) {
-            bindings[key].splice(j, 1);
-          }
-        }
-      }
-      ConversationKeybindings.saveKeybindings();
-    }
+    // NOTE: Cannot be key or binding, because keys (and bindings) can now change!
+    deleteBinding(parent.hotkey, parent.hotkeyBinding); 
+    delete parent.hotkey;
+    delete parent.hotkeyBinding;
     parent.parentNode.removeChild(parent);
+    ConversationKeybindings.saveKeybindings();
+    event.stopPropagation();
   }, false);
 }
 
+function deleteBinding(key, binding) {
+  for (let [os, bindings] in Iterator(bindingGroups)) {
+    if (key in bindings) {
+      for (let [j, bind] in Iterator(bindings[key])) {
+        Cu.reportError("Trying " + os + "." + key + "." + j + "...");
+        if (bind === binding) {
+          Cu.reportError("Deleting binding " + JSON.stringify(binding, null, 2) 
+                         + " from ConversationKeybindings.bindings." + os + "." + key);
+          bindings[key].splice(j, 1);
+          if (bindings[key].length == 0)
+            delete bindings[key];
+          return;
+        }
+      }
+    }
+  }
+  Cu.reportError("Did not find " + key + "=>" + JSON.stringify(binding));
+}
+function createBinding(key, func) {
+  let bindings = isOSX ? bindingGroups.OSX : bindingGroups.Other;
+  if (!(key in bindings))
+    bindings[key] = [];
+  let binding = { mods: {}, func: func };
+  bindings[key].push(binding);
+  return binding;
+}
+
+function letterSelection(event) {
+  try {
+    let parent = event.target.parentNode;
+    if (parent.hotkey === event.target.value)
+      return;
+    Cu.reportError("Changing key from " + parent.hotkey + " to " + event.target.value);
+    let oldBinding = parent.hotkeyBinding;
+    deleteBinding(parent.hotkey, parent.hotkeyBinding);
+    let binding = createBinding(event.target.value, oldBinding.func);
+    parent.hotkeyBinding = binding;
+    parent.hotkey = event.target.value;
+    for (let [i,child] in Iterator(parent.querySelectorAll("button.setModifier"))) {
+      let state = child.getAttribute("checkState");
+      let modKey = child.getAttribute("label");
+      if (state == 0)
+        binding.mods[modKey + "Key"] = false;
+      else if (state == 1)
+        binding.mods[modKey + "Key"] = true;
+      else if (modKey + "Key" in binding.mods)
+        delete binding.mods[modKey + "Key"];
+    }
+    ConversationKeybindings.saveKeybindings();
+  } catch (e) { Cu.reportError("In letterSelection: " + e); }
+}
+function buildLetterSelect(doc, parent, key) {
+  let keyCode = key.charCodeAt(0);
+  let list = doc.createElementNS(XUL_NS, "menulist");
+  parent.appendChild(list);
+  list.setAttribute("sizetopopup", "always");
+  let popup = doc.createElementNS(XUL_NS, "menupopup");
+  list.appendChild(popup);
+  function createItem(itemKey) {
+    let item = doc.createElementNS(XUL_NS, "menuitem");
+    popup.appendChild(item);
+    item.setAttribute("value", itemKey);
+    item.setAttribute("label", describeKey(itemKey));
+    if (itemKey === key)
+      item.setAttribute("selected", "true");
+  }
+  for (let i = "A".charCodeAt(0); i <= "Z".charCodeAt(0); i++)
+    createItem(String.fromCharCode(i));
+  for (let i = "0".charCodeAt(0); i <= "9".charCodeAt(0); i++)
+    createItem(String.fromCharCode(i));
+  createItem("\x0D");
+  createItem("\x2E");
+  list.addEventListener("select", letterSelection, false);
+}
 // Todo: handle other non-printable characters
 function describeKey(key) {
   if (key === "\x0D")
@@ -218,7 +281,7 @@ function buildHotKey(doc, key, binding) {
     buildLbl(doc, hbox, "+");
     hbox.appendChild(doc.createElementNS(XUL_NS, "separator"));
   }
-  buildLbl(doc, hbox, describeKey(key));
+  buildLetterSelect(doc, hbox, key);
   hbox.appendChild(doc.createElementNS(XUL_NS, "separator"));
   buildLbl(doc, hbox, ":");
   hbox.appendChild(doc.createElementNS(XUL_NS, "separator"));
@@ -232,12 +295,29 @@ function buildRestore(doc) {
   hbox.appendChild(btn);
   btn.setAttribute("label", strings.get("restoreKeys"));
   btn.addEventListener("command", function(event) {
-    ConversationKeybindings.restoreKeybindings();
     CustomizeKeys.disable(doc);
+    ConversationKeybindings.restoreKeybindings();
+    ConversationKeybindings.saveKeybindings();
     CustomizeKeys.enable(doc);
+    event.stopPropagation();
   }, false);
   return hbox;
 }
+
+function buildCreate(doc) {
+  let hbox = doc.createElementNS(XUL_NS, "hbox");
+  let btn = doc.createElementNS(XUL_NS, "button");
+  hbox.appendChild(btn);
+  btn.setAttribute("label", strings.get("createHotkey"));
+  btn.addEventListener("command", function(event) {
+    btn.parentNode.insertBefore(
+      buildHotKey(doc, "A", createBinding("A", ConversationKeybindings.availableActions[0])), 
+      btn);
+    event.stopPropagation();
+  }, false);
+  return hbox;
+}
+
 function showHide(event) {
   let showhide = event.target;
   let keysVbox = showhide.previousElementSibling;
@@ -250,24 +330,32 @@ function showHide(event) {
   }
 }
 
+
 const CustomizeKeys = {
   enable : function enable(doc) {
     let showhide = doc.getElementById("showhidekeys");
     showhide.addEventListener("command", showHide, false);
-    let keysVbox = showhide.previousElementSibling;
-    let bindingGroups = undefined;
+    // Must be here, rather than at top level, because load/restoreKeybindings will
+    // destroy the previous values
     if (isOSX) {
-      bindingGroups = [ConversationKeybindings.bindings.OSX, ConversationKeybindings.bindings.Generic];
+      bindingGroups = {OSX:     ConversationKeybindings.bindings.OSX, 
+                       Generic: ConversationKeybindings.bindings.Generic};
     } else { // TODO: Windows, Linux or other platform-specific bindings, rather than just "Other"?
-      bindingGroups = [ConversationKeybindings.bindings.Other, ConversationKeybindings.bindings.Generic];
+      bindingGroups = {Other:   ConversationKeybindings.bindings.Other, 
+                       Generic: ConversationKeybindings.bindings.Generic};
     }
+    let keysVbox = showhide.previousElementSibling;
+    try {
+      Cu.reportError(JSON.stringify(bindingGroups, null, 2));
     for (let [os, bindings] in Iterator(bindingGroups)) {
       for (let [key, keybinding] in Iterator(bindings)) {
         for (let [j, binding] in Iterator(keybinding)) {
-          keysVbox.appendChild(buildHotKey(doc, key, binding));
+          keysVbox.appendChild(buildHotKey(doc, ""+key, binding));
         }
       }
     }
+    } catch (e) { Cu.reportError(e); }
+    keysVbox.appendChild(buildCreate(doc));
     keysVbox.appendChild(buildRestore(doc));
   },
   disable : function disable(doc) {
