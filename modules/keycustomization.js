@@ -171,6 +171,7 @@ function buttonOnCheck(event) {
   // (N.B. technically, getAttribute returns a string, but it's always numeric)
   let newState = (btn.getAttribute("checkState") + 1) % 3;
   btn.setAttribute("checkState", newState);
+  Cu.reportError("newState = " + newState + " KeyStyles[newState] = " + KeyStyles[newState]);
   btn.setAttribute("style", KeyStyles[newState]);
   let key = btn.getAttribute("label");
   let binding = btn.parentNode.hotkeyBinding;
@@ -205,11 +206,13 @@ function buildButton(doc, parent, label, state) {
   btn.setAttribute("label", label);
   btn.setAttribute("class", "setModifier");
   if (state == undefined)
-    btn.setAttribute("checkState", UNNEEDED_KEY);
+    state = UNNEEDED_KEY
   else if (state)
-    btn.setAttribute("checkState", ACTIVE_KEY);
+    state = ACTIVE_KEY;
   else
-    btn.setAttribute("checkState", INACTIVE_KEY);
+    state = INACTIVE_KEY;
+  btn.setAttribute("checkState", state);
+  Cu.reportError("state = " + state + " KeyStyles[state] = " + KeyStyles[state]);
   btn.setAttribute("style", KeyStyles[state]);
   btn.addEventListener("command", buttonOnCheck, false);
   return btn;
