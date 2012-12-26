@@ -212,7 +212,6 @@ function buildButton(doc, parent, label, state) {
   else
     state = INACTIVE_KEY;
   btn.setAttribute("checkState", state);
-  Cu.reportError("state = " + state + " KeyStyles[state] = " + KeyStyles[state]);
   btn.setAttribute("style", KeyStyles[state]);
   btn.addEventListener("command", buttonOnCheck, false);
   return btn;
