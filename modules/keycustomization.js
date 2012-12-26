@@ -427,11 +427,19 @@ function showHide(event) {
   let showhide = event.target;
   let keysVbox = showhide.previousElementSibling;
   if (keysVbox.hidden) {
+    if (CustomizeKeys.alreadyEditing) {
+      let promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
+                                    .getService(Components.interfaces.nsIPromptService);
+      promptService.alert(null, strings.get("alreadyEditingTitle"), strings.get("alreadyEditingText"));
+      return;
+    }
     keysVbox.hidden = false;
+    CustomizeKeys.alreadyEditing = true;
     showhide.label = strings.get("collapseKeys");
   } else {
     keysVbox.hidden = true;
     showhide.label = strings.get("expandKeys");
+    CustomizeKeys.alreadyEditing = false;
   }
 }
 
