@@ -139,6 +139,7 @@ function startup(aData, aReason) {
   Cu.import("resource://conversations/modules/config.js", global);
   Cu.import("resource://conversations/modules/prefs.js", global);
   Cu.import("resource://conversations/modules/log.js", global);
+  Cu.import("resource://conversations/modules/keycustomization.js", global);
 
   Log = setupLogging("Conversations.MonkeyPatch");
 
@@ -170,7 +171,6 @@ function startup(aData, aReason) {
         "chrome,width=800,height=500", {});
 
     // Hook into options window
-    Cu.import("resource://conversations/modules/keycustomization.js", global);
     Services.obs.addObserver({
       observe: function(aSubject, aTopic, aData) {
         if (aTopic == "addon-options-displayed" && aData == "gconversation@xulforum.org") {

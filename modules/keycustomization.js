@@ -14,7 +14,7 @@
  * The Original Code is Thunderbird Conversations
  *
  * The Initial Developer of the Original Code is
- *  Jonathan Protzenko <jonathan.protzenko@gmail.com>
+ *  Benjamin Lerner <benjamin.lerner@gmail.com>
  * Portions created by the Initial Developer are Copyright (C) 2010
  * the Initial Developer. All Rights Reserved.
  *
@@ -45,7 +45,7 @@ const Cr = Components.results;
 
 let isOSX = ("nsILocalFileMac" in Ci);
 let isWindows = ("@mozilla.org/windows-registry-key;1" in Cc);
-const XUL_NS = "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul";
+
 
 Cu.import("resource://conversations/modules/message.js");
 Cu.import("resource://conversations/modules/log.js");
@@ -53,10 +53,20 @@ Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
 let strings = new StringBundle("chrome://conversations/locale/keycustomization.properties");
 let Log = setupLogging("Conversations.Message");
 
+// Binding groups will be an array containing
+// ConversationKeybindings.bindings.<OSX or Other> and
+// ConversationKeybindings.bindings.Generic Object.  Identity matters,
+// and these objects may change as a result of calling
+// loadKeybindings() or restoreKeybindings(), so this array is
+// initialized lazily in CustomizeKeys.enable.
 let bindingGroups = undefined;
 
 
-const InactiveKey =
+const INACTIVE_KEY = Ci.nsIDOMXULButtonElement.CHECKSTATE_UNCHECKED; // 0
+const ACTIVE_KEY = Ci.nsIDOMXULButtonElement.CHECKSTATE_CHECKED; // 1
+const UNNEEDED_KEY = Ci.nsIDOMXULButtonElement.CHECKSTATE_MIXED; // 2
+const KeyStyles = [
+  // INACTIVE_KEY
   "color: #880000;" +
   "font-weight: bold;" +
   "text-decoration: line-through;" +
@@ -64,22 +74,29 @@ const InactiveKey =
   "border-left:   1px solid #38678B;" +
   "border-top:    1px solid #38678B;" +
   "border-right:  1px solid #24435B;" +
-  "border-bottom: 1px solid #24435B;";
+  "border-bottom: 1px solid #24435B;",
 
-const ActiveKey =
+  // ACTIVE_KEY
   "color: #008800;" +
   "font-weight: bold;" +
   "border-right:  2px solid #38678B;" +
   "border-bottom: 2px solid #38678B;" +
   "border-left:   2px solid #24435B;" +
-  "border-top:    2px solid #24435B;";
+  "border-top:    2px solid #24435B;",
 
-const UnneededKey = 
+  // UNNEEDED_KEY
   "border: 0px solid white;" +
   "padding: 2px;" +
-  "color: gray;";
+  "color: gray;"
+];
 
 
+/**
+ * Simple helper to turn "aTitleCasedString" into "A title cased string",
+ * by splitting on capital letters, lowercasing them, and recombining with spaces.
+ * Used to turn function names (e.g. "tagHandling") into more 
+ * human-friendly descriptions (e.g. "Tag handling")
+ */
 function titleCaseToSpacedWords(str) {
   let words = str.split(/(^.|[A-Z])/);
   let ret = "";
@@ -95,115 +112,130 @@ function titleCaseToSpacedWords(str) {
   return ret;
 }
 
-
-function menulistChanged(event) {
-  let menulist = event.target;
-  menulist.parentNode.hotkeyBinding.func = menulist.selectedItem.value;
-  ConversationKeybindings.saveKeybindings();
-  event.stopPropagation();
-}
+/**
+ * Constructs a drop-down menu of the available actions that a 
+ * hotkey can trigger.
+ * @param {XULDocument} doc is the settings document
+ * @param {HBox} parent is the specific container element for this menu
+ * @param {Array of strings} arr is array of function names of available actions
+ * @param {String} selected is initial function name to be selected
+ * @return The menu list
+ */
 function buildMenuList(doc, parent, arr, selected) {
-  let list = doc.createElementNS(XUL_NS, "menulist");
+  let list = doc.createElement("menulist");
   parent.appendChild(list);
   list.setAttribute("sizetopopup", "always");
   list.setAttribute("class", "actionList");
-  let popup = doc.createElementNS(XUL_NS, "menupopup");
+  let popup = doc.createElement("menupopup");
   list.appendChild(popup);
   for (let [i, cmd] in Iterator(arr)) {
-    let item = doc.createElementNS(XUL_NS, "menuitem");
+    let item = doc.createElement("menuitem");
     popup.appendChild(item);
     item.setAttribute("value", cmd);
     item.setAttribute("label", titleCaseToSpacedWords(cmd));
     if (cmd == selected)
       item.setAttribute("selected", "true");
   }
-  list.addEventListener("select", menulistChanged, false);
+  list.addEventListener("select", function menulistChanged(event) {
+    let menulist = event.target;
+    menulist.parentNode.hotkeyBinding.func = menulist.selectedItem.value;
+    ConversationKeybindings.saveKeybindings();
+    event.stopPropagation();
+  }, false);
   return list;
 }
+
+/**
+ * Simple helper function to construct a text label
+ * @param {XULDocument} doc is the settings document
+ * @param {HBox} parent is the specific container element for this menu
+ * @param {String} text to be displayed
+ * @return The label
+ */
 function buildLbl(doc, parent, text) {
-  let lbl = doc.createElementNS(XUL_NS, "label");
+  let lbl = doc.createElement("label");
   parent.appendChild(lbl);
   lbl.setAttribute("value", text);
   return lbl;
 }
-function setStyle(btn) {
-  let state = btn.getAttribute("checkState");
-  if (state == 0)
-    btn.setAttribute("style", InactiveKey);
-  else if (state == 1)
-    btn.setAttribute("style", ActiveKey);
-  else
-    btn.setAttribute("style", UnneededKey);
-}
+
+/**
+ * Event handler for modifier-key buttons.  After updating the button's
+ * internal state, it updates the keybindings and saves the new settings.
+ * The state for the button is stored in the "checkState" attribute:
+ * https://developer.mozilla.org/en-US/docs/XUL/button#a-checkState
+ */
 function buttonOnCheck(event) {
-  try {
   let btn = event.target;
+  // cycles checkState 0 => 1 => 2 => 0 => ...
+  // (N.B. technically, getAttribute returns a string, but it's always numeric)
   let newState = (btn.getAttribute("checkState") + 1) % 3;
   btn.setAttribute("checkState", newState);
-  setStyle(btn);
+  btn.setAttribute("style", KeyStyles[newState]);
   let key = btn.getAttribute("label");
   let binding = btn.parentNode.hotkeyBinding;
-  if (newState == 0)
-    binding.mods[key + "Key"] = false;
-  else if (newState == 1)
-    binding.mods[key + "Key"] = true;
-  else if (key + "Key" in binding.mods)
-    delete binding.mods[key + "Key"];
+  switch (newState) {
+  case INACTIVE_KEY:
+    binding.mods[key + "Key"] = false; break;
+  case ACTIVE_KEY:
+    binding.mods[key + "Key"] = true; break;
+  case UNEEDED_KEY:
+    delete binding.mods[key + "Key"]; break;
+  default:
+    Cu.reportError("Impossible checkState: " + newState);
+  }
   ConversationKeybindings.saveKeybindings();
   event.stopPropagation();
-    } catch (e) { Cu.reportError(e); }
 }
+
+/**
+ * Constructs a modifier-key button
+ * @param {XULDocument} doc is the settings document
+ * @param {HBox} parent is the specific container element for this menu
+ * @param {String} label is the name of the modifier key
+ * @param {Boolean|Undef} state the initial value of the modifier key for
+ *        the current hotkey
+ * @returns the button
+ */
 function buildButton(doc, parent, label, state) {
-  let btn = doc.createElementNS(XUL_NS, "button");
+  let btn = doc.createElement("button");
   parent.appendChild(btn);
   btn.setAttribute("type", "checkbox");
   btn.setAttribute("autoCheck", false);
   btn.setAttribute("label", label);
   btn.setAttribute("class", "setModifier");
   if (state == undefined)
-    btn.setAttribute("checkState", 2);
+    btn.setAttribute("checkState", UNNEEDED_KEY);
   else if (state)
-    btn.setAttribute("checkState", 1);
+    btn.setAttribute("checkState", ACTIVE_KEY);
   else
-    btn.setAttribute("checkState", 0);
-  setStyle(btn);
+    btn.setAttribute("checkState", INACTIVE_KEY);
+  btn.setAttribute("style", KeyStyles[state]);
   btn.addEventListener("command", buttonOnCheck, false);
   return btn;
 }
 
-function buildDelete(doc, parent, key, binding) {
-  let btn = doc.createElementNS(XUL_NS, "button");
-  btn.setAttribute("label", strings.get("removeHotkey"));
-  parent.appendChild(btn);
-  btn.addEventListener("command", function(event) {
-    // NOTE: Cannot be key or binding, because keys (and bindings) can now change!
-    deleteBinding(parent.hotkey, parent.hotkeyBinding); 
-    delete parent.hotkey;
-    delete parent.hotkeyBinding;
-    parent.parentNode.removeChild(parent);
-    ConversationKeybindings.saveKeybindings();
-    event.stopPropagation();
-  }, false);
-}
-
+/**
+ * Actually deletes a hotkey from ConversationKeybindings.
+ * @param {String} key is the letter of the hotkey to be removed
+ * @param {Object} binding is the specific keybinding object to be removed
+ */
 function deleteBinding(key, binding) {
   for (let [os, bindings] in Iterator(bindingGroups)) {
     if (key in bindings) {
-      for (let [j, bind] in Iterator(bindings[key])) {
-        Cu.reportError("Trying " + os + "." + key + "." + j + "...");
-        if (bind === binding) {
-          Cu.reportError("Deleting binding " + JSON.stringify(binding, null, 2) 
-                         + " from ConversationKeybindings.bindings." + os + "." + key);
-          bindings[key].splice(j, 1);
-          if (bindings[key].length == 0)
-            delete bindings[key];
-          return;
-        }
-      }
+      bindings[key] = bindings[key].filter(function (x) x !== binding);
+      if (!bindings[key].length)
+        delete bindings[key]; // For clarity, all empty arrays are removed
     }
   }
-  Cu.reportError("Did not find " + key + "=>" + JSON.stringify(binding));
 }
+
+/**
+ * Creates a keybinding
+ * @param {String} key is the hotkey letter to be created
+ * @param {String} func is the name of the hotkey callback function
+ * @returns the binding object
+ */
 function createBinding(key, func) {
   let bindings = isOSX ? bindingGroups.OSX : bindingGroups.Other;
   if (!(key in bindings))
@@ -213,39 +245,83 @@ function createBinding(key, func) {
   return binding;
 }
 
-function letterSelection(event) {
-  try {
-    let parent = event.target.parentNode;
-    if (parent.hotkey === event.target.value)
-      return;
-    Cu.reportError("Changing key from " + parent.hotkey + " to " + event.target.value);
-    let oldBinding = parent.hotkeyBinding;
-    deleteBinding(parent.hotkey, parent.hotkeyBinding);
-    let binding = createBinding(event.target.value, oldBinding.func);
-    parent.hotkeyBinding = binding;
-    parent.hotkey = event.target.value;
-    for (let [i,child] in Iterator(parent.querySelectorAll("button.setModifier"))) {
-      let state = child.getAttribute("checkState");
-      let modKey = child.getAttribute("label");
-      if (state == 0)
-        binding.mods[modKey + "Key"] = false;
-      else if (state == 1)
-        binding.mods[modKey + "Key"] = true;
-      else if (modKey + "Key" in binding.mods)
-        delete binding.mods[modKey + "Key"];
-    }
+/**
+ * Constructs a button to delete a hotkey binding
+ * @param {XULDocument} doc is the settings document
+ * @param {HBox} parent is the specific container element for this menu
+ * @param {String} key is the main letter of the hotkey
+ * @param {Object} binding is the actual binding object in
+ *      ConversationKeybindings describing this hotkey
+ * @returns the button
+ */
+function buildDelete(doc, parent, key, binding) {
+  let btn = doc.createElement("button");
+  btn.setAttribute("label", strings.get("removeHotkey"));
+  parent.appendChild(btn);
+  btn.addEventListener("command", function(event) {
+    // NOTE: Cannot be the variables key or binding, because keys (and bindings) 
+    // are editable and may change. Instead, must use the hotkey and hotkeyBinding 
+    // properties stashed on the parent hbox object.
+    deleteBinding(parent.hotkey, parent.hotkeyBinding); 
+    delete parent.hotkey;
+    delete parent.hotkeyBinding;
+    parent.parentNode.removeChild(parent);
     ConversationKeybindings.saveKeybindings();
-  } catch (e) { Cu.reportError("In letterSelection: " + e); }
+    event.stopPropagation();
+  }, false);
 }
+
+/**
+ * Event handler for changing the letter of a hotkey binding:
+ * Essentially, it deletes the existing binding and constructs a new one,
+ * then updates the state of the modifier-key buttons, and saves the new
+ * keybinding state.
+ */
+function letterSelection(event) {
+  let parent = event.target.parentNode;
+  if (parent.hotkey === event.target.value)
+    return;
+  let oldBinding = parent.hotkeyBinding;
+  deleteBinding(parent.hotkey, parent.hotkeyBinding);
+  let binding = createBinding(event.target.value, oldBinding.func);
+  parent.hotkeyBinding = binding;
+  parent.hotkey = event.target.value;
+  for (let [i,child] in Iterator(parent.querySelectorAll("button.setModifier"))) {
+    let state = child.getAttribute("checkState");
+    let modKey = child.getAttribute("label");
+    switch (state) {
+    case INACTIVE_KEY:
+      binding.mods[key + "Key"] = false; break;
+    case ACTIVE_KEY:
+      binding.mods[key + "Key"] = true; break;
+    case UNEEDED_KEY:
+      delete binding.mods[key + "Key"]; break;
+    default:
+      Cu.reportError("Impossible checkState: " + newState);
+    }
+  }
+  ConversationKeybindings.saveKeybindings();
+}
+
+/**
+ * Constructs the drop-down selector for the letter of a hotkey
+ * @param {XULDocument} doc is the settings document
+ * @param {HBox} parent is the specific container element for this menu
+ * @param {String} key is the letter to be used in the hotkey
+ * @returns the drop-down lost
+ */
 function buildLetterSelect(doc, parent, key) {
   let keyCode = key.charCodeAt(0);
-  let list = doc.createElementNS(XUL_NS, "menulist");
+  let list = doc.createElement("menulist");
   parent.appendChild(list);
   list.setAttribute("sizetopopup", "always");
-  let popup = doc.createElementNS(XUL_NS, "menupopup");
+  let popup = doc.createElement("menupopup");
   list.appendChild(popup);
-  function createItem(itemKey) {
-    let item = doc.createElementNS(XUL_NS, "menuitem");
+  // Helper function for use in creating drop-down list menuitems 
+  // for each letter, digit and symbol that we support
+  // Todo: list these elsewhere more explicitly.
+  let createItem = function(itemKey) {
+    let item = doc.createElement("menuitem");
     popup.appendChild(item);
     item.setAttribute("value", itemKey);
     item.setAttribute("label", describeKey(itemKey));
@@ -260,8 +336,14 @@ function buildLetterSelect(doc, parent, key) {
   createItem("\x2E");
   list.addEventListener("select", letterSelection, false);
 }
-// Todo: handle other non-printable characters
+
+
+/**
+ * Produces a human-readable description of keys (particularly for 
+ * non-printing ones)
+ */
 function describeKey(key) {
+  // Todo: handle other non-printable characters
   if (key === "\x0D")
     return strings.get("returnKey");
   if (key === "\x2E")
@@ -270,28 +352,41 @@ function describeKey(key) {
     return strings.get("spaceKey");
   return key;
 }
+
+/**
+ * Constructs the widget for manipulating a given hotkey binding
+ * @param {XULDocument} doc is the settings document
+ * @param {String} key is the hotkey letter
+ * @param {Object} binding is the hotkey binding description object
+ * @returns the hbox widget
+ */
 function buildHotKey(doc, key, binding) {
-  let hbox = doc.createElementNS(XUL_NS, "hbox");
+  let hbox = doc.createElement("hbox");
   hbox.hotkey = key;
   hbox.hotkeyBinding = binding;
   buildDelete(doc, hbox, key, binding);
   for (let [i, k] in Iterator(["super", "ctrl", "shift", "meta", "alt"])) {
     buildButton(doc, hbox, k, binding.mods[k + "Key"]);
-    hbox.appendChild(doc.createElementNS(XUL_NS, "separator"));
+    hbox.appendChild(doc.createElement("separator"));
     buildLbl(doc, hbox, "+");
-    hbox.appendChild(doc.createElementNS(XUL_NS, "separator"));
+    hbox.appendChild(doc.createElement("separator"));
   }
   buildLetterSelect(doc, hbox, key);
-  hbox.appendChild(doc.createElementNS(XUL_NS, "separator"));
+  hbox.appendChild(doc.createElement("separator"));
   buildLbl(doc, hbox, ":");
-  hbox.appendChild(doc.createElementNS(XUL_NS, "separator"));
+  hbox.appendChild(doc.createElement("separator"));
   buildMenuList(doc, hbox, ConversationKeybindings.availableActions, binding.func);
   return hbox;
 }
 
+/**
+ * Constructs the restore-default-hotkeys button
+ * @param {XULDocument} doc is the settings document
+ * @return the hbox containing the button
+ */
 function buildRestore(doc) {
-  let hbox = doc.createElementNS(XUL_NS, "hbox");
-  let btn = doc.createElementNS(XUL_NS, "button");
+  let hbox = doc.createElement("hbox");
+  let btn = doc.createElement("button");
   hbox.appendChild(btn);
   btn.setAttribute("label", strings.get("restoreKeys"));
   btn.addEventListener("command", function(event) {
@@ -304,9 +399,14 @@ function buildRestore(doc) {
   return hbox;
 }
 
+/**
+ * Constructs the create-new-hotkey button
+ * @param {XULDocument} doc is the settings document
+ * @return the hbox containing the button
+ */
 function buildCreate(doc) {
-  let hbox = doc.createElementNS(XUL_NS, "hbox");
-  let btn = doc.createElementNS(XUL_NS, "button");
+  let hbox = doc.createElement("hbox");
+  let btn = doc.createElement("button");
   hbox.appendChild(btn);
   btn.setAttribute("label", strings.get("createHotkey"));
   btn.addEventListener("command", function(event) {
@@ -318,6 +418,9 @@ function buildCreate(doc) {
   return hbox;
 }
 
+/**
+ * Event handler to show or hide the hotkey customization UI
+ */
 function showHide(event) {
   let showhide = event.target;
   let keysVbox = showhide.previousElementSibling;
@@ -329,7 +432,6 @@ function showHide(event) {
     showhide.label = strings.get("expandKeys");
   }
 }
-
 
 const CustomizeKeys = {
   enable : function enable(doc) {
@@ -345,8 +447,6 @@ const CustomizeKeys = {
                        Generic: ConversationKeybindings.bindings.Generic};
     }
     let keysVbox = showhide.previousElementSibling;
-    try {
-      Cu.reportError(JSON.stringify(bindingGroups, null, 2));
     for (let [os, bindings] in Iterator(bindingGroups)) {
       for (let [key, keybinding] in Iterator(bindings)) {
         for (let [j, binding] in Iterator(keybinding)) {
@@ -354,7 +454,6 @@ const CustomizeKeys = {
         }
       }
     }
-    } catch (e) { Cu.reportError(e); }
     keysVbox.appendChild(buildCreate(doc));
     keysVbox.appendChild(buildRestore(doc));
   },
@@ -364,6 +463,5 @@ const CustomizeKeys = {
     let keysVbox = showhide.previousElementSibling;
     while (keysVbox.hasChildNodes())
       keysVbox.removeChild(keysVbox.firstChild);
-    Cu.reportError("disable is called!");
   }
 }

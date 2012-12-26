@@ -254,6 +254,9 @@ KeyListener.prototype = {
         KeyListener.prototype.keybindings[os] = bindings;
   },
   restoreKeybindings: function () {
+    // We need to preserve object identity for KeyListener.prototype.keybindings,
+    // So we can't just clone defaultKeybindings directly.  Instead, we clone
+    // each key/value pair, but leave the outer object unchanged.
     for (let [os, bindings] in Iterator(KeyListener.prototype.defaultKeybindings))
       KeyListener.prototype.keybindings[os] = JSON.parse(JSON.stringify(bindings));
   },
