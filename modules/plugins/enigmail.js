@@ -260,8 +260,17 @@ function tryEnigmail(bodyElement, aMessage) {
 
     if (exitCodeObj.value == 0) {
       if (msgRfc822Text.length > 0) {
-        bodyElement.querySelector("div.moz-text-plain").innerHTML =
-          EnigmailFuncs.formatPlaintextMsg(msgRfc822Text);
+        let node = bodyElement.querySelector("div.moz-text-plain");
+        // If there's no suitable node to put the decrypted text in, create one
+        // for ourselves... (happends with messages sent as html, duh).
+        if (!node) {
+          while (bodyElement.firstChild)
+            bodyElement.removeChild(bodyElement.firstChild);
+          let pre = bodyElement.ownerDocument.createElement("pre");
+          bodyElement.appendChild(pre);
+          node = pre;
+        }
+        node.innerHTML = EnigmailFuncs.formatPlaintextMsg(msgRfc822Text);
         aMessage.decryptedText = msgRfc822Text;
       }
     } else {
