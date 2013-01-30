@@ -927,7 +927,7 @@ AttachmentList.prototype = {
       Log.debug("User canceled, returning");
     } else {
       // Iterate over all files
-      for each (let file in fixIterator(filePicker.files, Ci.nsILocalFile)) {
+      for each (let file in fixIterator(filePicker.files, Ci.nsIFile)) {
         this.addWithData({
           url: Services.io.newFileURI(file).spec,
           name: file.leafName,
