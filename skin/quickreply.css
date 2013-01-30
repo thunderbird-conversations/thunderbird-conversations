@@ -28,7 +28,7 @@
 
   margin: -10px -5px;
   
-  -moz-transition: all 0.4s ease;
+  transition: all 0.4s ease;
    transition: all 0.4s ease;
 }
 
@@ -43,7 +43,7 @@
   width: 50%;
   opacity: 1;
   
-  -moz-transition: all 0.4s ease;
+  transition: all 0.4s ease;
    transition: all 0.4s ease;
 }
 
@@ -113,7 +113,7 @@
 }
 
 .quickReply textarea.ease {
-  -moz-transition: all 0.4s ease;
+  transition: all 0.4s ease;
    transition: all 0.4s ease;
 }
 
@@ -244,7 +244,7 @@ html[xmlns] .cf {
 
 .quickReply .label {
   border-radius: 3px 0 0 3px;
-  background-image: -moz-linear-gradient(top, #fff 0%, #fff 50%, #fafafa 50%, #fafafa 100%);
+  background-image: linear-gradient(top, #fff 0%, #fff 50%, #fafafa 50%, #fafafa 100%);
   border-color: #AAAAAA;
   border-style: solid;
   border-width: 1px 0 1px 1px;
@@ -305,7 +305,7 @@ html[xmlns] .cf {
 
 .quickReplyHeader {
   padding: 5px 10px;
-  background-image: -moz-linear-gradient(top, #fff 0%, #fff 50%, #fafafa 50%, #fafafa 100%);
+  background-image: linear-gradient(top, #fff 0%, #fff 50%, #fafafa 50%, #fafafa 100%);
   border-width: 1px 1px 0;
   border-color: #aaa;
   border-style: solid;
@@ -387,7 +387,7 @@ html[xmlns] .cf {
 .quickCompose .quickReply ul.inputs,
 .quickCompose .quickReply ul.inputs li,
 .quickCompose .quickReply textarea.ease {
-  -moz-transition: none;
+  transition: none;
   transition: none;
 }
 
