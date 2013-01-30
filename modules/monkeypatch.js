@@ -238,7 +238,7 @@ MonkeyPatch.prototype = {
     let prefBranch = Cc["@mozilla.org/preferences-service;1"]
       .getService(Ci.nsIPrefService)
       .getBranch(null);
-    prefBranch.QueryInterface(Ci.nsIPrefBranch2);
+    prefBranch.QueryInterface(Ci.nsIPrefBranch);
     let observer = {
       observe: function (aSubject, aTopic, aData) {
         if (aTopic == "nsPref:changed"
