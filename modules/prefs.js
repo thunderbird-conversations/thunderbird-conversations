@@ -18,8 +18,7 @@ const kStubUrl = "chrome://conversations/content/stub.xhtml";
 
 // That's why I'm lovin' restartless.
 function loadDefaultPrefs () {
-  // nsIPrefBranch2 is going away in Gecko 13 (I think)
-  let prefs = Services.prefs.QueryInterface(Ci.nsIPrefBranch2);
+  let prefs = Services.prefs.QueryInterface(Ci.nsIPrefBranch);
   // All code below hamelessly stolen from the SDK
   let branch = prefs.getDefaultBranch("");
   let prefLoaderScope = {
@@ -84,7 +83,7 @@ PrefManager.prototype = {
   watch: function (watcher) this.watchers.push(watcher),
 
   register: function mpo_register (observer) {
-    prefsService.QueryInterface(Ci.nsIPrefBranch2);
+    prefsService.QueryInterface(Ci.nsIPrefBranch);
     if (observer)
       prefsService.addObserver("", observer, false);
     else
