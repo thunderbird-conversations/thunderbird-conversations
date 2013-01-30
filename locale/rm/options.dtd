@@ -1,0 +1,31 @@
+<!ENTITY option.expand_who "Sco standard, extender:">
+<!ENTITY option.expand_auto2 "Automaticamain">
+<!ENTITY option.expand_auto2.tooltip "Sch'il temà è cumprimì, extender tut ils messadis che n'èn betg legids u l'ultim messadi. Sch'el è extendì, be extender ils messadis tschernids en la glista da messadis.">
+<!ENTITY option.expand_none "Nagins messadis">
+<!ENTITY option.expand_all "Tut ils messadis">
+<!ENTITY title.quoting2 "Text cità">
+<!ENTITY desc.quoting "Text cità pli lung che quest dumber da lingias vegn reducì.">
+<!ENTITY title.assistant "Assistent d'installaziun">
+<!ENTITY option.assistant "Aviar l'assistent d'installaziun">
+<!ENTITY title.friendly_date "Datas empernaivlas">
+<!ENTITY option.no_friendly_date2 "Utilisar en il chantun sura dretg datas &quot;normal&quot;, sco en la glista da messadis enstagl da &quot;ier&quot; ed auters.">
+<!ENTITY title.monospaced_senders "Mussar en largezza fixa.">
+<!ENTITY option.monospaced_senders2 "Messadis da questas adressas/glistas da mail vegnan mussadas en ina scrittira da largezza fixa (seperar las adressas entras commas)">
+<!ENTITY title.tweak_chrome "Midar las scrittiras da la rama">
+<!ENTITY option.tweak_bodies "Midar las scrittiras en ils corps dals messadis per las render consistent cun las scrittiras ordvart (recummandà, necessari da reaviar).">
+<!ENTITY title.tweak_bodies "Midar la scrittira dal corp">
+<!ENTITY option.tweak_chrome "Midar la grondezza da la scrittira per la rama da la conversaziun (recummandà, necessari da reaviar).">
+<!ENTITY title.add_embeds "Acticar incorporar">
+<!ENTITY option.add_embeds "Scuvrir colliaziuns a differents survetschs (p.ex. YouTube) en e-mails ed las mussar a moda incorporada.">
+<!ENTITY title.debugging "Chattar bugs">
+<!ENTITY desc.debugging "Activar output en la consola dal sistem ed en la consola d'errurs per chattar errurs. Quai vegn a generar ina massa messadis.">
+<!ENTITY title.operate_on_conversations "Buttuns en la trav d'utensils">
+<!ENTITY option.operate_on_conversations "Ils buttuns en la trav d'utensils duessan archivar e stizzar l'entira conversaziun, betg be ils messadis tschernids">
+<!ENTITY title.extra_attachments "Jau charez agiuntas">
+<!ENTITY desc.extra_attachments2 "En tschertgs cas n'enconuscha Thunderbird betg spezialas agiuntas. Questa opziun ta lubescha da giuntgir questa errur e procura che tantas agiuntas sco pussaivel pon vengir mussadas. Utilisescha quai en coumbinaziun cun il supplement «All Body Parts».">
+<!ENTITY title.send_in_background "Trametter en il fund davos">
+<!ENTITY desc.send_in_background "Cun questa opziun vegn il messadi mess en ina colonna da spetga, uschia che ti na stos betg spetgar enfin ch'il process da trametter vegn terminà. Attenziun: Questa funcziun n'è anc betg cumpletta (guarda SendInBackground sin wiki.mozilla.org) e pertutga era la metoda normala da scriver e-mails. Necessari da reaviar il program.">
+<!ENTITY title.compose_in_tab "Fanestra da rediger zuppentada">
+<!ENTITY desc.compose_in_tab "Ctrl-Shift-N avra la fanestra da rediger zuppentada e na betg sustegnida en in nov tab">
+<!ENTITY title.fcc_follows_if_not_inbox "Plazzar ina copia dal messadi tramess…">
+<!ENTITY desc.fcc_follows_if_not_inbox "En il medem ordinatur sco il messadi original, ma be sch'il messadi original n'è betg en la posta entrada. Questa opziun è per tut ils contos, e be sch'il messadi è vengì tramess cun la resposta sperta.">

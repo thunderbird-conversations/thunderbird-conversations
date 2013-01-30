@@ -1,0 +1,31 @@
+<!ENTITY option.expand_who "Som standard, visa:">
+<!ENTITY option.expand_auto2 "Automatiskt">
+<!ENTITY option.expand_auto2.tooltip "Om tråden är dold, visa alla olästa meddelanden eller det sista meddelandet. Om tråden visas, visa endast det i meddelandelistan markerade meddelandet.">
+<!ENTITY option.expand_none "Inga meddelanden">
+<!ENTITY option.expand_all "Alla meddelanden">
+<!ENTITY title.quoting2 "Citerad text">
+<!ENTITY desc.quoting "Citat längre än detta antal rader kommer att minimeras.">
+<!ENTITY title.assistant "Konfigurationsguide">
+<!ENTITY option.assistant "Starta konfigurationsguiden">
+<!ENTITY title.friendly_date "Konsekventa datum">
+<!ENTITY option.no_friendly_date2 "Använd &quot;vanliga&quot; datum i det övre högra hörnet, precis som i meddelandelistan, istället för &quot;igår&quot; och liknande.">
+<!ENTITY title.monospaced_senders "Visa i enbreddsteckensnitt">
+<!ENTITY option.monospaced_senders2 "Meddelanden från dessa adresser/e-postlistor skall visas i enbreddsteckensnitt (avgränsa med kommatecken)">
+<!ENTITY title.tweak_chrome "Justera chrome-teckensnitten">
+<!ENTITY option.tweak_bodies "Ställ in teckensnitten i meddelandebrödtexterna så att de stämmer överens med de yttre teckensnitten (rekommenderas, kräver omstart).">
+<!ENTITY title.tweak_bodies "Justera brödtextteckensnitten">
+<!ENTITY option.tweak_chrome "Skala ner teckenstorleken i konversationernas chrome (rekommenderas, kräver omstart).">
+<!ENTITY title.add_embeds "Lägg till inbäddade">
+<!ENTITY option.add_embeds "Identifiera länkar till olika tjänster (t.ex. YouTube) i meddelanden och visa dem infogade.">
+<!ENTITY title.debugging "Felsökning">
+<!ENTITY desc.debugging "Aktivera felsökningsutdata i systemkonsolen och felkonsolen. Detta kommer att generera mängder av meddelanden.">
+<!ENTITY title.operate_on_conversations "Verktygsfältsknappar">
+<!ENTITY option.operate_on_conversations "Verktygsfältsknappar skall arkivera och ta bort hela konversationen, inte endast markerade meddelanden">
+<!ENTITY title.extra_attachments "Jag älskar bilagor">
+<!ENTITY desc.extra_attachments2 "I enstaka fall känner inte Thunderbird igen vissa bilagor. Detta alternativ låter dig kringgå den buggen och ser till att vi försöker visa så många bilagor som möjligt. Använd tillsammans med tillägget Show All Body Parts.">
+<!ENTITY title.send_in_background "Skicka i bakgrunden">
+<!ENTITY desc.send_in_background "Detta köar meddelanden för sändning, så att du slipper vänta på att sändningsprocessen skall slutföras innan du kan växla mellan konversationer. Varning: Funktionen är inte helt färdigställd (se SendInBackground på wiki.mozilla.org) och tillämpas även på den vanliga skrivprocessen. Omstart krävs.">
+<!ENTITY title.compose_in_tab "Dolt Skriv-fönster">
+<!ENTITY desc.compose_in_tab "Ctrl+Skift+N öppnar det dolda, ej stödda Skriv-fönstret i en ny flik">
+<!ENTITY title.fcc_follows_if_not_inbox "Placera en kopia av det skickade meddelandet…">
+<!ENTITY desc.fcc_follows_if_not_inbox "I samma mapp som originalmeddelandet, men endast om originalmeddelandet inte finns i inkorgen. Detta alternativ gäller för samtliga konton och endast för meddelanden som skickas m.h.a. snabbsvarsfunktionen.">

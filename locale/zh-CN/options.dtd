@@ -1,0 +1,31 @@
+<!ENTITY option.expand_who "默认：展开">
+<!ENTITY option.expand_auto2 "自动">
+<!ENTITY option.expand_auto2.tooltip "如果折叠会话，则显示所有未读邮件或最后一封邮件。如果展开会话，仅展开邮件列表中的指定邮件.">
+<!ENTITY option.expand_none "没有邮件">
+<!ENTITY option.expand_all "所有邮件">
+<!ENTITY title.quoting2 "引用文本">
+<!ENTITY desc.quoting "多余此行数的引用文本将隐藏（折叠）.">
+<!ENTITY title.assistant "安装助手">
+<!ENTITY option.assistant "启动安装助手">
+<!ENTITY title.friendly_date "日期">
+<!ENTITY option.no_friendly_date2 "在右上角，如同在邮件列表中一致，使用&quot;普通&quot;日期，而不是使用&quot;昨天&quot;之类.">
+<!ENTITY title.monospaced_senders "使用等宽字体显示">
+<!ENTITY option.monospaced_senders2 "从指定地址或邮件列表中发出的邮件需以等宽字体显示（使用逗号分隔）">
+<!ENTITY title.tweak_chrome "调整Chrome字体">
+<!ENTITY option.tweak_bodies "调整邮件正文的字体以确保与外部字体相一致（推荐，需要重启）.">
+<!ENTITY title.tweak_bodies "调整正文字体">
+<!ENTITY option.tweak_chrome "减小会话列表的字体大小（推荐，需要重启）.">
+<!ENTITY title.add_embeds "添加嵌入">
+<!ENTITY option.add_embeds "检测邮件中的内容链接（例如YouTube），并直接在邮件中显示.">
+<!ENTITY title.debugging "调试">
+<!ENTITY desc.debugging "调试信息输出到系统终端和错误终端。本操作将可能产生大量信息.">
+<!ENTITY title.operate_on_conversations "工具条按钮">
+<!ENTITY option.operate_on_conversations "工具条上的按钮归档并删除整个邮件回话，而不仅包括选中的邮件">
+<!ENTITY title.extra_attachments "附件">
+<!ENTITY desc.extra_attachments2 "在某些情况下，Thunderbird可能会无法识别某些附件。此设置项允许您可以跟踪Thunderbird缺陷，以确认已尽可能多的显示了附件。可与Show All Body Parts联合使用本设置项.">
+<!ENTITY title.send_in_background "后台发送">
+<!ENTITY desc.send_in_background "设置后台发送邮件，以便切换会话而不必等待邮件发送过程结束。警告：本特征尚未完成（详见SendInBackground , wiki.mozilla.org）。需要重启.">
+<!ENTITY title.compose_in_tab "隐藏邮件编写窗口">
+<!ENTITY desc.compose_in_tab "Ctrl-Shift-N 在新页面中打开隐藏的、为支持的邮件编写窗口">
+<!ENTITY title.fcc_follows_if_not_inbox "保存已发送邮件的副本">
+<!ENTITY desc.fcc_follows_if_not_inbox "当原始邮件未保存在收件箱内，使用与原始邮件相同的文件夹。本选项仅对所有邮件账号中快速回复邮件时有效.">

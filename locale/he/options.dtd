@@ -1,0 +1,31 @@
+<!ENTITY option.expand_who "כברירת מחדל, הרחב:‏">
+<!ENTITY option.expand_auto2 "אוטומטי">
+<!ENTITY option.expand_auto2.tooltip "במידה והחוט מקופל, הרחב כל הודעות שלא נקראו או הודעה האחרונה. במידה והחוט מורחב, הרחב רק את ההודעות הנבחרות ברשימת ההודעות.‏">
+<!ENTITY option.expand_none "אף הודעה">
+<!ENTITY option.expand_all "את כל ההודעות">
+<!ENTITY title.quoting2 "טקסט מצוטט‏">
+<!ENTITY desc.quoting "טקסט מצוטט ברמת גבוהה מזה לא ייצג.‏">
+<!ENTITY title.assistant "אשף התקנה">
+<!ENTITY option.assistant "התחל את אשף ההתקנה">
+<!ENTITY title.friendly_date "תאריכים ידודתיים">
+<!ENTITY option.no_friendly_date2 "בפינה הימינית העליונה השתמש בתאריכים רגילים, במקום מילים כגון &quot;אתמול&quot;.‏">
+<!ENTITY title.monospaced_senders "הצג בגופן רוחב-קבוע">
+<!ENTITY option.monospaced_senders2 "הודעות מכתובות/תפוצות אלו יוצגו בגופן רוחב-קבוע (הפרד באמצעות פסיקים)‏">
+<!ENTITY title.tweak_chrome "שפר את גופני הממשק">
+<!ENTITY option.tweak_bodies "Tweak the fonts in the message bodies to make them consistent with the outer font (recommended, requires restart).">
+<!ENTITY title.tweak_bodies "שפר את גופני גוף ההודעה">
+<!ENTITY option.tweak_chrome "Scale down the font size for the conversation chrome (recommended, requires restart).">
+<!ENTITY title.add_embeds "הודף קבצים מושתלים">
+<!ENTITY option.add_embeds "Detect links to various services (e.g. YouTube) in emails, and view them inline.">
+<!ENTITY title.debugging "מערכת הצגת פרטים במטרה לגלות שגיות בתוכנה">
+<!ENTITY desc.debugging "אישר את מערכת הצגת פרטים במטרה לגלות שגיות בתוכנה שייראה פלט למסוף המערכת ומסוף שגיות. פעולה זאת עלולה לגרום להצפת הודעות.‏">
+<!ENTITY title.operate_on_conversations "מקשי פס הכלים">
+<!ENTITY option.operate_on_conversations "מקשי פס הכלים ישלחו וימחקו את כל השיחה, לא רק את ההודעות הנבחרות">
+<!ENTITY title.extra_attachments "I love attachments">
+<!ENTITY desc.extra_attachments2 "In some corner cases, Thunderbird will fail to recognize some attachments. This option allows you to workaround the Thunderbird bug, and makes sure we try to display as many attachments as we can. Use in combination with the Show All Body Parts addon.">
+<!ENTITY title.send_in_background "Send in background">
+<!ENTITY desc.send_in_background "This will queue messages for sending, so that you don't have to wait for the sending process to complete before switching conversations. Warning: the feature is not complete (see SendInBackground on wiki.mozilla.org) and applies to the regular composition process too. Restart required.">
+<!ENTITY title.compose_in_tab "Hidden composition window">
+<!ENTITY desc.compose_in_tab "Ctrl-Shift-N opens the hidden, unsupported composition window in a new tab">
+<!ENTITY title.fcc_follows_if_not_inbox "Place a copy of the sent message...">
+<!ENTITY desc.fcc_follows_if_not_inbox "In the same folder as the original message, but only if the original message is not in the inbox. This option is for all accounts, and only for messages sent with the quick reply.">
