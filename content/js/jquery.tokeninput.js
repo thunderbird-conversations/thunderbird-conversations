@@ -326,8 +326,8 @@ $.TokenList = function (input, settings) {
 
   // Inner function to a token to the list
   function insert_token(id, value, data) {
-    var h = getHooks();
-    for (var i = 0; i < h.length; ++i) {
+    var hooks = getHooks();
+    for (var i = 0; i < hooks.length; ++i) {
       var h = hooks[i];
       try {
         if (typeof(h.onRecipientAdded) == "function")
