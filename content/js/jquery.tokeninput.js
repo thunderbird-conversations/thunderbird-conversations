@@ -326,7 +326,9 @@ $.TokenList = function (input, settings) {
 
   // Inner function to a token to the list
   function insert_token(id, value, data) {
-    for each (var [, h] in Iterator(getHooks())) {
+    var h = getHooks();
+    for (var i = 0; i < h.length; ++i) {
+      var h = hooks[i];
       try {
         if (typeof(h.onRecipientAdded) == "function")
           h.onRecipientAdded(data, hidden_input.attr("id"), token_count);
