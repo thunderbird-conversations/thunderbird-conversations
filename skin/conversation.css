@@ -66,7 +66,7 @@ p {
 }
 
 button {
-  background-image: linear-gradient(to bottom, #fefefe 0%, #d5d5d5 100%);
+  background-image: linear-gradient(top, #fefefe 0%, #d5d5d5 100%);
   border: 1px solid #919191;
   box-shadow: 0 1px 0 rgba(255,255,255,0.55);
   border-radius: 3px;
@@ -77,7 +77,7 @@ button {
 }
 
 button:hover {
-  background-image: linear-gradient(to bottom, #fafafa 0%, #e6e6e6 100%);
+  background-image: linear-gradient(top, #fafafa 0%, #e6e6e6 100%);
 }
 
 button:active {
@@ -103,7 +103,7 @@ button img {
 #conversationHeader {
   width: 100%;
   padding: 5px 10px;
-  background-image: linear-gradient(to bottom, #fcfcfc 0%, #e6e6e6 100%);
+  background-image: linear-gradient(top, #fcfcfc 0%, #e6e6e6 100%);
   border-bottom: 1px solid #bebebe;
   color: #0a0a0a;
 }
@@ -197,7 +197,7 @@ button img {
 .message {
   margin: 0 10px 10px 10px;
   background-color: #fff;
-  background-image: linear-gradient(to bottom,#fff 0%,#fafafa 100%);
+  background-image: linear-gradient(top,#fff 0%,#fafafa 100%);
   border: 1px solid #bebebe;
   border-radius: 5px;
   box-shadow: 0 1px 2px #CCE0FF;
@@ -288,7 +288,7 @@ span.downwardArrow {
 
 .dropDown li:hover,
 .dropDown li:nth-child(2n):hover {
-  background-image: linear-gradient(to bottom, #3875D7 0%, #396BBD 100%);
+  background-image: linear-gradient(top, #3875D7 0%, #396BBD 100%);
   color: #fff;
 }
 
@@ -673,7 +673,7 @@ ul.special-tags img {
   padding: 4px;
   border: 1px solid #ccc;
   background-color: #fff;
-  background-image: linear-gradient(to bottom,#fff 0%,#f2f2f2 100%);
+  background-image: linear-gradient(top,#fff 0%,#f2f2f2 100%);
   margin: 0 20px 0 0;
   display: inline-block;
   float: left;

@@ -244,7 +244,7 @@ html[xmlns] .cf {
 
 .quickReply .label {
   border-radius: 3px 0 0 3px;
-  background-image: linear-gradient(to bottom, #fff 0%, #fff 50%, #fafafa 50%, #fafafa 100%);
+  background-image: linear-gradient(top, #fff 0%, #fff 50%, #fafafa 50%, #fafafa 100%);
   border-color: #AAAAAA;
   border-style: solid;
   border-width: 1px 0 1px 1px;
@@ -305,7 +305,7 @@ html[xmlns] .cf {
 
 .quickReplyHeader {
   padding: 5px 10px;
-  background-image: linear-gradient(to bottom, #fff 0%, #fff 50%, #fafafa 50%, #fafafa 100%);
+  background-image: linear-gradient(top, #fff 0%, #fff 50%, #fafafa 50%, #fafafa 100%);
   border-width: 1px 1px 0;
   border-color: #aaa;
   border-style: solid;
