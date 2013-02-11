@@ -51,42 +51,56 @@ function Viewer() {
 Viewer.prototype = {
 
   load: function (data) {
+    let self = this;
     let status = document.getElementById('status');
-    try {
-      this.pdfDoc = new PDFJS.PDFDoc(data);
-      document.getElementById('numPages').textContent = this.pdfDoc.numPages;
-      this.switchToPage(1);
-      status.classList.remove('loading');
-      status.classList.add('loaded');
-    } catch (e) {
-      status.classList.remove('loading');
-      status.classList.add('error');
-      document.getElementById('error').textContent = e;
-      throw e;
-    }
+
+    PDFJS.getDocument(data).then(
+      function getDocumentOk (pdfDocument) {
+        self.pdfDoc = pdfDocument;
+        document.getElementById('numPages').textContent = self.pdfDoc.numPages;
+        self.switchToPage(1);
+        status.classList.remove('loading');
+        status.classList.add('loaded');
+      },
+      function getDocumentError(message, e) {
+        Log.error("Error loading the document", message);
+        document.getElementById('error').textContent = message;
+        status.classList.remove('loading');
+        status.classList.add('error');
+        throw e;
+      }
+    );
   },
 
   switchToPage: function (aPageNum) {
     Log.debug("Switching to page", aPageNum);
 
-    let page = this.pdfDoc.getPage(aPageNum);
-    this.curPage = aPageNum;
-    let scale = 1.5;
+    let self = this;
 
-    //
-    // Prepare canvas using PDF page dimensions
-    //
-    let canvas = document.getElementById('the-canvas');
-    let context = canvas.getContext('2d');
-    canvas.height = page.height * scale;
-    canvas.width = page.width * scale;
+    this.pdfDoc.getPage(aPageNum).then(function (page) {
+      self.curPage = aPageNum;
+      let scale = 1.5;
+      let viewport = page.getViewport(scale);
 
-    //
-    // Render PDF page into canvas context
-    //
-    page.startRendering(context);
+      //
+      // Prepare canvas using PDF page dimensions
+      //
+      let canvas = document.getElementById('the-canvas');
+      let context = canvas.getContext('2d');
+      canvas.height = viewport.height;
+      canvas.width = viewport.width;
 
-    document.getElementById('pageNumberBox').value = aPageNum;
+      //
+      // Render PDF page into canvas context
+      //
+      let renderContext = {
+        canvasContext: context,
+        viewport: viewport
+      };
+      page.render(renderContext);
+
+      document.getElementById('pageNumberBox').value = aPageNum;
+    });
   },
 
   prevPage: function () {
