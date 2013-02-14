@@ -2049,10 +2049,10 @@ let PostStreamingFixesMixIn = {
           // Yes, the third parameter to misMatchedHostWithLinkText is actually
           //  required, but it's some kind of an out value that's useless for
           //  us, so just pass it {} so that it's happy...
-          let unobscuredHostNameValue = isLegalIpAddress(hrefURL.host);
+          let unobscuredHostNameValue = isLegalIpAddress.call(gPhishingDetector, hrefURL.host);
           failsStaticTests =
             unobscuredHostNameValue
-              && !isLegalLocalIpAddress(unobscuredHostNameValue)
+              && !isLegalLocalIpAddress.call(gPhishingDetector, unobscuredHostNameValue)
             || linkText
               && gPhishingDetector.misMatchedHostWithLinkText(hrefURL, linkText, {});
         }
