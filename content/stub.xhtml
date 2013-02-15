@@ -328,6 +328,8 @@
 
     function archiveConversation(event) {
       msgHdrsArchive(Conversations.currentConversation.msgHdrs);
+      if (!isInTab)
+        topMail3Pane(window).SetFocusThreadPane(event);
     }
 
     function deleteToolbar(event) {
@@ -341,6 +343,7 @@
       msgHdrsDelete(Conversations.currentConversation.msgHdrs);
       if (isInTab)
         closeTab();
+      topMail3Pane(window).SetFocusThreadPane(event);
     }
 
     function forwardConversation(event) {
@@ -377,6 +380,7 @@
       //  i.e. the currently selected message
       topMail3Pane(window).JunkSelectedMessages(true);
       $("#conversationHeader").addClass("not-junkable");
+      topMail3Pane(window).SetFocusThreadPane(event);
     }
 
     const kGalleryUrl = "chrome://conversations/content/gallery/index.html";
