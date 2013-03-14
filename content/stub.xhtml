@@ -727,6 +727,28 @@
           for each ([, x] in Iterator(["mouseover", "focus", "keydown", "scroll"]))];
       };
     })();
+
+    document.addEventListener("scroll", function() {
+      let header = document.getElementById("conversationHeaderWrapper");
+      // The topmost visible position
+      let top = header.offsetTop + header.offsetHeight + window.scrollY;
+      // Get the topmost partially-visible message
+      let first = Array.slice(document.querySelectorAll("#messageList .message"))
+                       .filter(function(m) m.offsetTop < top &&
+                                           m.offsetTop + m.offsetHeight > top)
+                       .pop();
+      if (first) {
+        first = $(first);
+        let data = {
+          author: first.find(".author").html(),
+          date: first.find(".date").html(),
+        };
+        $("#conversationHeader .stuff").html($("#scrolledHeaderTemplate").tmpl(data));
+      } else {
+        // No hidden messages, remove the header contents
+        $("#conversationHeader .stuff").html("");
+      }
+    });
   ]]>
   </script>
 </head>
@@ -1192,10 +1214,16 @@
     </ul>
     ]]>
   </script>
+  <script id="scrolledHeaderTemplate" type="text/x-jquery-tmpl"><![CDATA[
+    <span class="author">{{html author}}</span>
+    <span class="date">{{html date}}</span>
+    ]]>
+  </script>
   <div id="wrapper">
     <div id="conversationHeaderWrapper">
       <div id="conversationHeader" class="hbox">
         <div class="subject boxFlex">&stub.loading;</div>
+        <div class="stuff boxFlex"></div>
         <div class="actions">
           <button title="&stub.trash.tooltip;" onclick="deleteToolbar(event);">
             <span class="trash"></span>
