@@ -9,6 +9,10 @@
 <!ENTITY option.assistant "Start the setup assistant">
 <!ENTITY title.friendly_date "Friendly dates">
 <!ENTITY option.no_friendly_date2 "In the top right corner, use &quot;normal&quot; dates, just like the message list, instead of &quot;yesterday&quot; and others.">
+<!ENTITY title.customize_keys "Customize keys">
+<!ENTITY desc.customize_keys "Customize the hotkeys of this extension">
+<!ENTITY label.expand_keys "Expand keysettings">
+<!ENTITY label.collapse_keys "Collapse keysettings">
 <!ENTITY title.monospaced_senders "Display in monospaced">
 <!ENTITY option.monospaced_senders2 "Messages from those addresses/mailing-lists should be displayed in monospaced fonts (separate using commas)">
 <!ENTITY title.tweak_chrome "Tweak chrome fonts">

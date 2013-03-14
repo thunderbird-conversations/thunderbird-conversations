@@ -134,6 +134,10 @@ PrefManager.prototype = {
     }
   },
 
+  hasPref: function (p) {
+    return (gPrefBranch.getPrefType(p) != Ci.nsIPrefBranch.PREF_INVALID);
+  },
+
   getChar: function (p) {
     return gPrefBranch.getCharPref(p);
   },
