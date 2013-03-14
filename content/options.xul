@@ -52,6 +52,13 @@
   <setting title="&title.quoting2;" desc="&desc.quoting;" pref="conversations.hide_quote_length" type="integer" />
 
   <setting title="&title.friendly_date;" desc="&option.no_friendly_date2;" pref="conversations.no_friendly_date" type="bool" />
+
+  <setting title="&title.customize_keys;" desc="&desc.customize_keys;" type="control">
+    <vbox>
+      <vbox id="keysettings" hidden="true"/>
+      <button id="showhidekeys" label="&label.expand_keys;"/>
+    </vbox>
+  </setting>
   <setting title="&title.tweak_chrome;" desc="&option.tweak_chrome;" pref="conversations.tweak_chrome" type="bool" />
   <setting title="&title.tweak_bodies;" desc="&option.tweak_bodies;" pref="conversations.tweak_bodies" type="bool" />
   <setting title="&title.add_embeds;" desc="&option.add_embeds;" pref="conversations.add_embeds" type="bool" />

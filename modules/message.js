@@ -36,7 +36,7 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ['Message', 'MessageFromGloda', 'MessageFromDbHdr']
+var EXPORTED_SYMBOLS = ['Message', 'MessageFromGloda', 'MessageFromDbHdr', 'ConversationKeybindings']
 
 const Ci = Components.interfaces;
 const Cc = Components.classes;
@@ -140,6 +140,10 @@ function KeyListener(aMessage) {
 
 KeyListener.prototype = {
   functions: {
+    doNothing: function doNothing(event) {
+      event.preventDefault();
+      event.stopPropagation();
+    },
     toggleMessage: function toggleMessage(event) {
       // If we expand a collapsed, when in doubt, mark it read.
       if (this.message.collapsed)
@@ -241,6 +245,22 @@ KeyListener.prototype = {
     return [msgNodes, index];
   },
 
+  saveKeybindings: function () {
+    Prefs.setString("conversations.keybindings", JSON.stringify(KeyListener.prototype.keybindings));
+  },
+  loadKeybindings: function () {
+    if (Prefs.hasPref("conversations.keybindings"))
+      for (let [os, bindings] in Iterator(JSON.parse(Prefs.getString("conversations.keybindings"))))
+        KeyListener.prototype.keybindings[os] = bindings;
+  },
+  restoreKeybindings: function () {
+    // We need to preserve object identity for KeyListener.prototype.keybindings,
+    // So we can't just clone defaultKeybindings directly.  Instead, we clone
+    // each key/value pair, but leave the outer object unchanged.
+    for (let [os, bindings] in Iterator(KeyListener.prototype.defaultKeybindings))
+      KeyListener.prototype.keybindings[os] = JSON.parse(JSON.stringify(bindings));
+  },
+  defaultKeybindings: null, // To be filled in below with a copy of these keybindings
   keybindings: {
     "OSX": {
       "R": [{ mods: { metaKey: true, ctrlKey: false },
@@ -329,11 +349,12 @@ KeyListener.prototype = {
         let actions = binding[key];
         for (let [j, action] in Iterator(actions)) {
           let match = true;
-          for (let mod in action.mods) {
+          for (let mod in action.mods)
             match = match && (action.mods[mod] == event[mod]);
-          }
           if (match) {
-            this.functions[action.func].call(this, event);
+            let func = this.functions[action.func];
+            if (typeof func === "function")
+              func.call(this, event);
             return;
           }
         }
@@ -341,6 +362,28 @@ KeyListener.prototype = {
     }
   },
 };
+
+const ConversationKeybindings = {
+  bindings: KeyListener.prototype.keybindings,
+  registerCustomListener : function registerCustomListener(name, func) {
+    if (this.availableActions.indexOf(name) >= 0) 
+      return false;
+    this.availableActions.push(name);
+    KeyListener.prototype.functions[name] = func;
+    return true;
+  },
+  availableActions: [],
+  saveKeybindings: function () { KeyListener.prototype.saveKeybindings(); },
+  restoreKeybindings: function () { KeyListener.prototype.restoreKeybindings(); },
+};
+
+// Copy default bindings
+KeyListener.prototype.defaultKeybindings = JSON.parse(JSON.stringify(KeyListener.prototype.keybindings));
+// Load any customizations
+KeyListener.prototype.loadKeybindings();
+for (let [actionName, j] in Iterator(KeyListener.prototype.functions)) {
+  ConversationKeybindings.availableActions.push(actionName);
+}
 
 // Call that one after setting this._msgHdr;
 function Message(aConversation) {

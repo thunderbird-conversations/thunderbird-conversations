@@ -139,6 +139,7 @@ function startup(aData, aReason) {
   Cu.import("resource://conversations/modules/config.js", global);
   Cu.import("resource://conversations/modules/prefs.js", global);
   Cu.import("resource://conversations/modules/log.js", global);
+  Cu.import("resource://conversations/modules/keycustomization.js", global);
 
   Log = setupLogging("Conversations.MonkeyPatch");
 
@@ -168,6 +169,22 @@ function startup(aData, aReason) {
         "chrome://conversations/content/assistant/assistant.xhtml",
         "",
         "chrome,width=800,height=500", {});
+
+    // Hook into options window
+    Services.obs.addObserver({
+      observe: function(aSubject, aTopic, aData) {
+        if (aTopic == "addon-options-displayed" && aData == "gconversation@xulforum.org") {
+          CustomizeKeys.enable(aSubject); // aSubject is the options document
+        }
+      }
+    }, "addon-options-displayed", false);
+    Services.obs.addObserver({
+      observe: function(aSubject, aTopic, aData) {
+        if (aTopic == "addon-options-hidden" && aData == "gconversation@xulforum.org") {
+          CustomizeKeys.disable(aSubject); // aSubject is the options document
+        }
+      }
+    }, "addon-options-hidden", false);
   } catch (e) {
     Log.error(e);
     dumpCallStack(e);
