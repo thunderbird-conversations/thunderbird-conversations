@@ -540,12 +540,15 @@ let enigmailHook = {
         newSecurityInfo.senderEmailAddr = fromAddr;
         newSecurityInfo.recipients = toAddr;
         newSecurityInfo.bccRecipients = bccAddr;
-        newSecurityInfo.hashAlgorithm =
-          Enigmail.msg.mimeHashAlgo[EnigmailCommon.getPref("mimeHashAlgorithm")];
-
+        if (Enigmail.msg.mimeHashAlgo) {
+          // Enigmail < 1.5.1
+          // hashAlgorithm was removed since Enigmail 1.5.1
+          newSecurityInfo.hashAlgorithm =
+            Enigmail.msg.mimeHashAlgo[EnigmailCommon.getPref("mimeHashAlgorithm")];
+        }
         aStatus.securityInfo = newSecurityInfo;
-      }
-      else if (sendFlags & (ENCRYPT | SIGN)) {
+
+      } else if (sendFlags & (ENCRYPT | SIGN)) {
         // inline-PGP
         let plainText = aEditor.value;
         let charset = "UTF-8";
@@ -562,9 +565,18 @@ let enigmailHook = {
           plainText = simpleWrap(plainText, width);
         }
         plainText = EnigmailCommon.convertFromUnicode(plainText, charset);
-        let cipherText = enigmailSvc.encryptMessage(window, uiFlags, null,
-                           plainText, fromAddr, toAddr, bccAddr,
-                           sendFlags, exitCodeObj, statusFlagsObj, errorMsgObj);
+        let cipherText;
+        if (Enigmail.msg.mimeHashAlgo) {
+          // Enigmail < 1.5.1
+          cipherText = enigmailSvc.encryptMessage(window, uiFlags, null,
+                         plainText, fromAddr, toAddr, bccAddr,
+                         sendFlags, exitCodeObj, statusFlagsObj, errorMsgObj);
+        } else {
+          // Third argument(hashAlgorithm) was removed since Enigmail 1.5.1
+          cipherText = enigmailSvc.encryptMessage(window, uiFlags,
+                         plainText, fromAddr, toAddr, bccAddr,
+                         sendFlags, exitCodeObj, statusFlagsObj, errorMsgObj);
+        }
 
         let exitCode = exitCodeObj.value;
         if (cipherText && (exitCode == 0)) {
