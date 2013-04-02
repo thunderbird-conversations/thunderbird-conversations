@@ -792,7 +792,12 @@ Message.prototype = {
     });
 
     // Pre-set the right value
-    let realFrom = String.trim(this._realFrom.email || this._from.email).toLowerCase();
+    let realFrom = "";
+    if (this._from.email)
+      realFrom = String.trim(this._from.email).toLowerCase();
+    // _realFrom is better.
+    if (this._realFrom.email)
+      realFrom = String.trim(this._realFrom.email).toLowerCase();
     if (realFrom in Prefs["monospaced_senders"])
       this._domNode.getElementsByClassName("checkbox-monospace")[0].checked = true;
 
@@ -1886,7 +1891,7 @@ let PostStreamingFixesMixIn = {
     // Unless the user specifically asked for this message to be
     //  dislayed with a monospaced font...
     let [{name, email}] = this.parse(this._msgHdr.author);
-    if (!(email.toLowerCase() in Prefs["monospaced_senders"]) &&
+    if (email && !(email.toLowerCase() in Prefs["monospaced_senders"]) &&
         !(this.mailingLists.some(function (x) (x.toLowerCase() in Prefs["monospaced_senders"])))) {
       styleRules = styleRules.concat([
         ".moz-text-flowed, .moz-text-plain {",
