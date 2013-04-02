@@ -91,7 +91,7 @@ let PluginHelpers = {
     // New GitHub
     if (aMimeMsg && aMimeMsg.has("from")) {
       let [{ name, email }] = parseMimeLine(aMimeMsg.get("from"));
-      let m = email.match(ghFromRegexp);
+      let m = email && email.match(ghFromRegexp);
       if (m && m.length) {
         return (name + " <" + uniq(name) + "@fake.github.com>");
       }
