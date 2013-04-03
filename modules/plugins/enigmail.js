@@ -404,7 +404,7 @@ let enigmailHook = {
       this._domNode = domNode;
       let w = topMail3Pane(aMessage);
       let hasEnc = (aMessage.contentType+"").search(/^multipart\/encrypted(;|$)/i) == 0;
-      if (hasEnc && !enigmailSvc.mimeInitialized()) {
+      if (hasEnc && enigmailSvc.mimeInitialized && !enigmailSvc.mimeInitialized()) {
         Log.debug("Initializing EnigMime");
         w.document.getElementById("messagepane").setAttribute("src", "enigmail:dummy");
       }
