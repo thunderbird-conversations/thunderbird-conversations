@@ -148,13 +148,13 @@ if (hasEnigmail) {
       if (!uriSpec) {
         // possible to get a wrong message
         message = w._encryptedMimeMessages.shift();
-        // Use a nsIURI object to identify the message correctly.
-        // Enigmail <= 1.3.3 doesn't support uri argument.
-        let uri = arguments[8];
-        if (uri) {
-          let msgHdr = uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
-          uriSpec = msgHdrGetUri(msgHdr);
-        }
+      }
+      // Use a nsIURI object to identify the message correctly.
+      // Enigmail <= 1.3.3 doesn't support uri argument.
+      let uri = arguments[8];
+      if (uri) {
+        let msgHdr = uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
+        uriSpec = msgHdrGetUri(msgHdr);
       }
       if (uriSpec && w._currentConversation) {
         for each (let [, x] in Iterator(w._currentConversation.messages)) {
