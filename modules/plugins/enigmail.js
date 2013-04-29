@@ -293,15 +293,24 @@ function tryEnigmail(bodyElement, aMessage) {
 // Verify PGP/MIME messages attachment signature.
 function verifyAttachments(aMessage) {
   let { _attachments: attachments, _uri: uri, contentType: contentType } = aMessage;
+  if ((contentType+"").search(/^multipart\/mixed(;|$)/i) != 0)
+    return;
+  let embeddedSigned;
+  for each (let [, x] in Iterator(attachments)) {
+    if (x.contentType.search(/application\/pgp-signature/i) >= 0) {
+      embeddedSigned = x.url.replace(/(\.\d+){1,2}&filename=.*$/, "");
+      break;
+    }
+  }
+  if (!embeddedSigned)
+    return;
   let w = topMail3Pane(aMessage);
-  w.currentAttachments = attachments;
   w.Enigmail.msg.getCurrentMsgUriSpec = function () uri;
-  w.Enigmail.msg.messageDecryptCb(null, true, {
-    headers: {'content-type': contentType },
-    contentType: contentType,
-    parts: null,
-  });
-};
+  let mailNewsUrl = w.Enigmail.msg.getCurrentMsgUrl();
+  mailNewsUrl.spec = embeddedSigned;
+  w.Enigmail.msg.verifyEmbeddedMsg(w, mailNewsUrl, w.msgWindow, uri,
+    null, null);
+}
 
 // Prepare for showing security info later
 function prepareForShowHdrIcons(aMessage, aHasEnc) {
