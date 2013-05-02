@@ -148,13 +148,13 @@ if (hasEnigmail) {
       if (!uriSpec) {
         // possible to get a wrong message
         message = w._encryptedMimeMessages.shift();
-        // Use a nsIURI object to identify the message correctly.
-        // Enigmail <= 1.3.3 doesn't support uri argument.
-        let uri = arguments[8];
-        if (uri) {
-          let msgHdr = uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
-          uriSpec = msgHdrGetUri(msgHdr);
-        }
+      }
+      // Use a nsIURI object to identify the message correctly.
+      // Enigmail <= 1.3.3 doesn't support uri argument.
+      let uri = arguments[8];
+      if (uri) {
+        let msgHdr = uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
+        uriSpec = msgHdrGetUri(msgHdr);
       }
       if (uriSpec && w._currentConversation) {
         for each (let [, x] in Iterator(w._currentConversation.messages)) {
@@ -294,14 +294,31 @@ function tryEnigmail(bodyElement, aMessage) {
 function verifyAttachments(aMessage) {
   let { _attachments: attachments, _uri: uri, contentType: contentType } = aMessage;
   let w = topMail3Pane(aMessage);
-  w.currentAttachments = attachments;
   w.Enigmail.msg.getCurrentMsgUriSpec = function () uri;
-  w.Enigmail.msg.messageDecryptCb(null, true, {
-    headers: {'content-type': contentType },
-    contentType: contentType,
-    parts: null,
-  });
-};
+  if ((contentType+"").search(/^multipart\/signed(;|$)/i) == 0) {
+    w.Enigmail.msg.messageDecryptCb(null, true, {
+      headers: {'content-type': contentType },
+      contentType: contentType,
+      parts: null,
+    });
+    return;
+  }
+  if ((contentType+"").search(/^multipart\/mixed(;|$)/i) != 0)
+    return;
+  let embeddedSigned;
+  for each (let [, x] in Iterator(attachments)) {
+    if (x.contentType.search(/application\/pgp-signature/i) >= 0) {
+      embeddedSigned = x.url.replace(/(\.\d+){1,2}&filename=.*$/, "");
+      break;
+    }
+  }
+  if (!embeddedSigned)
+    return;
+  let mailNewsUrl = w.Enigmail.msg.getCurrentMsgUrl();
+  mailNewsUrl.spec = embeddedSigned;
+  w.Enigmail.msg.verifyEmbeddedMsg(w, mailNewsUrl, w.msgWindow, uri,
+    null, null);
+}
 
 // Prepare for showing security info later
 function prepareForShowHdrIcons(aMessage, aHasEnc) {
