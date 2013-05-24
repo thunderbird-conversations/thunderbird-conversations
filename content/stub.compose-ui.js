@@ -750,7 +750,8 @@ ComposeSession.prototype = {
             : "";
           // Assemble the parts
           if (identity.replyOnTop) {
-            quote = "\n\n" + quote;
+            if (identity.autoQuote)
+              quote = "\n\n" + quote;
             if (!identity.sigBottom) {
               pos = 0;
               val = txt + signatureNoDashes + quote;
@@ -759,7 +760,8 @@ ComposeSession.prototype = {
               val = txt + quote + signature;
             }
           } else {
-            quote = quote + "\n\n";
+            if (identity.autoQuote)
+              quote = quote + "\n\n";
             pos = (quote + txt).replace(/\r?\n/g, "\n").length;
             val = quote + txt + signature;
           }
