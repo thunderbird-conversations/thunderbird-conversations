@@ -336,6 +336,16 @@ span.downwardArrow {
   cursor: pointer;
 }
 
+.smallEmail {
+  font-size: 85%;
+  color: #888;
+  font-weight: normal;
+}
+
+.message.collapsed .smallEmail {
+  display: none;
+}
+
 .authorInfo {
   display: inline-block;
   font-weight: normal;

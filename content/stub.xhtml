@@ -935,7 +935,9 @@
     >${separator}</span
     ><span class="tooltipWrapper contact"
       ><span class="contactName" style="${colorStyle}"
-        >{{if star}}&#x2605; {{/if}}${String.trim(name)}{{if writeBr}}<br />{{/if}}</span
+        >{{if star}}&#x2605; {{/if}}${String.trim(name)}{{if displayEmail}}
+          <span class="smallEmail">&lt;${String.trim(displayEmail)}&gt;</span>
+        {{/if}}{{if writeBr}}<br />{{/if}}</span
       ><div class="tooltip">
         <div class="arrow"></div>
         <div class="arrow inside"></div>

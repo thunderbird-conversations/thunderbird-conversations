@@ -54,6 +54,7 @@ Cu.import("resource://conversations/modules/stdlib/compose.js");
 Cu.import("resource://conversations/modules/stdlib/misc.js");
 Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
 Cu.import("resource://conversations/modules/log.js");
+Cu.import("resource://conversations/modules/prefs.js");
 Cu.import("resource://conversations/modules/misc.js");
 
 const clipboardService = Cc["@mozilla.org/widget/clipboardhelper;1"]
@@ -143,10 +144,14 @@ let ContactMixIn = {
    */
   toTmplData: function _ContactMixIn_toInlineHtml (aUseColor, aPosition, aEmail, aIsDetail) {
     let name = this.getName(aPosition, aIsDetail);
+    let displayEmail = (name != aEmail ? aEmail : "");
+    let hasCard = (this._card != null);
+    let skipEmail = (aEmail in gIdentities) || !aIsDetail && hasCard && Prefs.getBool("mail.showCondensedAddresses");
     let tooltipName = this.getTooltipName(aPosition);
     let data = {
       showMonospace: aPosition == Contacts.kFrom,
       name: escapeHtml(name),
+      displayEmail: escapeHtml(skipEmail ? "" : displayEmail),
       tooltipName: escapeHtml((tooltipName != aEmail) ? tooltipName : ""),
       email: escapeHtml(aEmail),
       avatar: escapeHtml(this.avatar),
@@ -156,14 +161,8 @@ let ContactMixIn = {
         ? ""
         : ("color :" + this.color)),
       writeBr: aIsDetail,
-      star: false,
+      star: aIsDetail && hasCard,
     };
-    if (aIsDetail) {
-      data.name = escapeHtml(name != aEmail
-        ? MailServices.headerParser.makeFullAddress(name, aEmail)
-        : aEmail);
-      data.star = this._card != null;
-    }
     return data;
   },
 

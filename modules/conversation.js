@@ -487,15 +487,6 @@ Conversation.prototype = {
         break;
       }
 
-      case "noreply@github.com": {
-        // Special-casing for me and my GitHub emails
-        let subject = this._initialSet[0].mime2DecodedSubject;
-        Log.debug("Found a GitHub message, searching for subject:", subject);
-        fusionCount = 1;
-        subjectQuery(subject);
-        break;
-      }
-
       default:
         // This is the regular case.
         classicQuery();
