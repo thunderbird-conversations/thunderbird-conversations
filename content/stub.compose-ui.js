@@ -728,6 +728,8 @@ ComposeSession.prototype = {
             if (String.trim(signature).length) {
               [signature, signatureNoDashes] =
                 ["\n\n-- \n" + signature, "\n\n" + signature];
+              if (identity.suppressSigSep)
+                signature = signatureNoDashes;
             }
           }
           self.stripSignatureIfNeeded = function () {
@@ -784,7 +786,10 @@ ComposeSession.prototype = {
         let signature = getSignatureContentsForAccount(self.params.identity);
         let node = getActiveEditor();
         if (signature) {
-          node.value = "\n\n-- \n" + signature;
+          if (self.params.identity.suppressSigSep)
+            node.value = "\n" + signature;
+          else
+            node.value = "\n\n-- \n" + signature;
           node.selectionStart = 0;
           node.selectionEnd = 0;
         }
