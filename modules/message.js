@@ -796,12 +796,21 @@ Message.prototype = {
     let replyAllLink = self._domNode.getElementsByClassName("action-replyAll")[0];
     if (!this.isReplyAllEnabled)
       replyAllLink.parentNode.removeChild(replyAllLink);
-    // Register the right actions. Make sure we're consistent with
-    //  stub.compose-ui.js!
+    // Make sure we add the right CSS classes.
     if (this.isReplyAllEnabled)
       this._domNode.classList.add("isReplyAllEnabled");
-    if (this.isReplyListEnabled) {
+    if (this.isReplyListEnabled)
       this._domNode.classList.add("isReplyListEnabled");
+    // Then, a sequence that prioritizes replyList over replyAll over the
+    // default. The three are mutually exclusive, so it's a sequence of if /
+    // then / else, unlike the CSS classes above.
+    if (this.isReplyListEnabled) {
+      this.register(".replyMainActionLink", function (event) {
+        self.compose(Ci.nsIMsgCompType.ReplyList, event);
+        event.stopPropagation();
+      });
+      mainActionLink.textContent = replyList.textContent;
+    } else if (this.isReplyAllEnabled) {
       this.register(".replyMainActionLink", function (event) {
         self.compose(Ci.nsIMsgCompType.ReplyAll, event);
         event.stopPropagation();
