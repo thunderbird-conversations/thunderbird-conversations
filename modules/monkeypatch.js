@@ -162,6 +162,10 @@ MonkeyPatch.prototype = {
     let window = this._window;
 
     let participants = function (msgHdr) {
+      // The array of people involved in this email.
+      let people = [];
+      // Helper for formatting; depending on the locale, we may need a different
+      // for me as in "to me" or as in "from me".
       let format = function (x, p) {
         if ((x.email+"").toLowerCase() in gIdentities)
           return (p
@@ -171,19 +175,29 @@ MonkeyPatch.prototype = {
         else
           return x.name || x.email;
       };
+      // Add all the people found in one of the msgHdr's properties.
+      let addPeople = function (prop, pos) {
+        let line = msgHdr[prop];
+        for each ([, x] in Iterator(parseMimeLine(line, true)))
+          people.push(format(x, pos))
+      };
+      // We add everyone
+      addPeople("author", true);
+      addPeople("recipients", false);
+      addPeople("ccList", false);
+      addPeople("bccList", false);
+      // Then remove duplicates
       let seenAlready = {};
-      let r = [
-        [format(x, p) for each ([, x] in Iterator(parseMimeLine(msgHdr[prop])))]
-        for each ([prop, p] in [["mime2DecodedAuthor", true], ["mime2DecodedRecipients", false], ["ccList", false], ["bccList", false]])
-        if (msgHdr[prop])
-      ].filter(function (x) {
-        // Wow, a nice side-effect, I just hope the implementation of filter is
-        //  as I think it is. Yes, I live dangerously!
+      people = people.filter(function (x) {
         let r = !(x in seenAlready);
         seenAlready[x] = true;
         return r;
-      }).reduce(function (x, y) x.concat(y));
-      return joinWordList(r);
+      });
+      // And turn this into a human-readable line.
+      if (people.length)
+        return joinWordList(people);
+      else
+        return "-";
     };
 
     let columnHandler = {
