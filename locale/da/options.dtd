@@ -1,0 +1,35 @@
+<!ENTITY option.expand_who "Som standard, udvid:">
+<!ENTITY option.expand_auto2 "Automatisk">
+<!ENTITY option.expand_auto2.tooltip "Hvis tråden er sammenfoldet, udvid alle ulæste meddelelser eller den sidste meddelelse. Hvis den er udvidet, udvid kun den valgte meddelelse i meddelelseslisten.">
+<!ENTITY option.expand_none "Ingen meddelelser">
+<!ENTITY option.expand_all "Alle meddelelser">
+<!ENTITY title.quoting2 "Citeret tekst">
+<!ENTITY desc.quoting "Sammenfold citeret tekst med flere end dette antal linjer.">
+<!ENTITY title.assistant "Opsætningsassistent">
+<!ENTITY option.assistant "Start opsætningsassistenten">
+<!ENTITY title.friendly_date "Venlige datoer">
+<!ENTITY option.no_friendly_date2 "Brug &quot;normale&quot; datoer, ligesom i meddelelseslisten, i stedet for &quot;i går&quot; og lignende.">
+<!ENTITY title.customize_keys "Tilpas tastaturgenveje">
+<!ENTITY desc.customize_keys "Tilpas denne udvidelses tastaturgenveje">
+<!ENTITY label.expand_keys "Udvid tastaturindstillinger">
+<!ENTITY label.collapse_keys "Sammenfold tastaturindstillinger">
+<!ENTITY title.monospaced_senders "Vis i monospatieret">
+<!ENTITY option.monospaced_senders2 "Meddelelser fra de adresser/mailinglister skal vises i monospatierede skrifttyper (separer med komma).">
+<!ENTITY title.tweak_chrome "Juster chrome skrifttyper">
+<!ENTITY option.tweak_bodies "Juster skrifttyperne i meddelelserne for at bringe dem i overensstemmelse med den ydre skrifttype (anbefalet, kræver genstart).">
+<!ENTITY title.tweak_bodies "Juster skrifttyper i meddelelsesteksten">
+<!ENTITY option.tweak_chrome "Reducer skriftstørrelsen for rammen rundt om samtalen (anbefales, kræver genstart).">
+<!ENTITY title.add_embeds "Tilføj indlejringer">
+<!ENTITY option.add_embeds "Find links til forskellige tjenester (f.eks. YouTube) i mails og vis dem indlejret.">
+<!ENTITY title.debugging "Fejlretning">
+<!ENTITY desc.debugging "Tillad fejlretningsinformation i system- og fejlkonsollen. Dette vil generere rigtigt mange beskeder.">
+<!ENTITY title.operate_on_conversations "Knapper på værktøjslinjen">
+<!ENTITY option.operate_on_conversations "Knapper på værktøjslinjen vil arkivere og slette hele samtalen, ikke kun valgte meddelelser.">
+<!ENTITY title.extra_attachments "Jeg elsker vedhæftede filer">
+<!ENTITY desc.extra_attachments2 "I sjældne tilfælde kan Thunderbird ikke genkende visse vedhæftede filer. Denne indstilling lader dig omgå den Thunderbird-fejl, og sørger for, vi forsøger at vise så mange vedhæftede filer som vi kan. Brug sammen med tilføjelsen Show All Body Parts.">
+<!ENTITY title.send_in_background "Send i baggrunden">
+<!ENTITY desc.send_in_background "Dette vil sætte meddelelser til afsendelse i kø. Så behøver du ikke vente på, at afsendelsen er fuldført inden du skifter samtaler. Advarsel: funktionen er ikke færdig (se SendInBackground på wiki.mozilla.org) og gælder også for den almindelige mailskrivning. Genstart påkrævet.">
+<!ENTITY title.compose_in_tab "Skjult &quot;Skriv&quot;-vindue">
+<!ENTITY desc.compose_in_tab "Ctrl+Shift+N åbner det skjulte, ikke-understøttede &quot;Skriv&quot;-vindue i et nyt faneblad">
+<!ENTITY title.fcc_follows_if_not_inbox "Anbring en kopi af den sendte meddelelse…">
+<!ENTITY desc.fcc_follows_if_not_inbox "I den samme mappe som den oprindelige meddelelse, men kun hvis den oprindelige meddelelse ikke er i indbakken. Denne indstilling gælder for alle konti og kun for meddelelser sendt med hurtig-svar.">

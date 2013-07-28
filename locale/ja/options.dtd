@@ -1,0 +1,35 @@
+<!ENTITY option.expand_who "既定で展開するメッセージ:">
+<!ENTITY option.expand_auto2 "自動">
+<!ENTITY option.expand_auto2.tooltip "スレッドが折りたたまれているならば、未読か最後のメッセージを展開します。スレッドが展開されているならば、メッセージリストで選択したメッセージを展開します。">
+<!ENTITY option.expand_none "展開しない">
+<!ENTITY option.expand_all "すべてのメッセージ">
+<!ENTITY title.quoting2 "引用文">
+<!ENTITY desc.quoting "この行数より長い引用文は畳まれます。">
+<!ENTITY title.assistant "設定アシスタント">
+<!ENTITY option.assistant "設定アシスタントを起動する">
+<!ENTITY title.friendly_date "わかりやすい日付">
+<!ENTITY option.no_friendly_date2 "右上部分に、&quot;昨日&quot;のような表記ではなくメッセージリストと同じ&quot;普通の&quot;日付表記を使用します。">
+<!ENTITY title.customize_keys "キーのカスタマイズ">
+<!ENTITY desc.customize_keys "ショートカットキーを変更します。">
+<!ENTITY label.expand_keys "キー設定を展開">
+<!ENTITY label.collapse_keys "キー設定を畳む">
+<!ENTITY title.monospaced_senders "等幅で表示">
+<!ENTITY option.monospaced_senders2 "次のアドレス/メーリングリストからのメッセージを等幅フォントで表示します。 (半角カンマ区切り)">
+<!ENTITY title.tweak_chrome "外観フォントを調節">
+<!ENTITY option.tweak_bodies "メッセージ本文のフォントを外側と調和するように調整します。 (おすすめ, 要再起動)">
+<!ENTITY title.tweak_bodies "メッセージフォントを調節">
+<!ENTITY option.tweak_chrome "スレッドビューのフォントサイズを縮小します。 (おすすめ, 要再起動)">
+<!ENTITY title.add_embeds "インライン表示">
+<!ENTITY option.add_embeds "さまざまなサービス (YouTube など) のリンクを検出してインライン表示します。">
+<!ENTITY title.debugging "デバッグモード">
+<!ENTITY desc.debugging "コンソールへデバッグ出力を記録します。大量のメッセージが生成されます。">
+<!ENTITY title.operate_on_conversations "ツールバーボタン">
+<!ENTITY option.operate_on_conversations "ツールバーボタンで、選択したメッセージだけではなくスレッド全体をアーカイブ・削除します。">
+<!ENTITY title.extra_attachments "添付ファイルが大好き">
+<!ENTITY desc.extra_attachments2 "まれに Thunderbird が添付ファイルを認識できないことがあります。このオプションはそのような Thunderbird のバグを回避して、できるだけ多くの添付ファイルを表示します。Show All Body Parts アドオンが必要です。">
+<!ENTITY title.send_in_background "バックグラウンド送信">
+<!ENTITY desc.send_in_background "メッセージを送信トレイに移動することで、送信完了を待たずにスレッドを切り替えられます。注意:この機能は完成していません (wiki.mozilla.org の SendInBackground 参照)。また、通常のメール送信にも適用されます。再起動が必要です。">
+<!ENTITY title.compose_in_tab "隠しメール作成ウインドウ">
+<!ENTITY desc.compose_in_tab "Ctrl-Shift-N でメール作成ウインドウを新しいタブで開きます。これは隠し機能でサポート対象外です。">
+<!ENTITY title.fcc_follows_if_not_inbox "送信済みメッセージをコピー">
+<!ENTITY desc.fcc_follows_if_not_inbox "元メッセージと同じフォルダにコピーします。ただし元メッセージが受信トレイにない場合です。すべてのアカウントのインライン返信機能で送信したメッセージが対象です。">

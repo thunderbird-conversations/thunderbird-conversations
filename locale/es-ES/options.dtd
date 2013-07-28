@@ -1,0 +1,35 @@
+<!ENTITY option.expand_who "Por defecto, expandir:">
+<!ENTITY option.expand_auto2 "Automático">
+<!ENTITY option.expand_auto2.tooltip "Si el hilo está contraido, expandir todos los mensajes no leído o el último mensaje. Si está expandido, sólo expandir el mensaje seleccionado.">
+<!ENTITY option.expand_none "Sin mensajes">
+<!ENTITY option.expand_all "Todos los mensajes">
+<!ENTITY title.quoting2 "¿Texto citado?">
+<!ENTITY desc.quoting "Las citas mayores que el número de líneas serán comprimidas.">
+<!ENTITY title.assistant "Asistente de configuración">
+<!ENTITY option.assistant "Iniciar el asistente de configuración">
+<!ENTITY title.friendly_date "Fechas agradables">
+<!ENTITY option.no_friendly_date2 "En la esquina superior derecha, usar fechas &quot;normales&quot;, como en la lista de mensajes, en lugar de &quot;ayer&quot; y similares.">
+<!ENTITY title.customize_keys "Customize keys">
+<!ENTITY desc.customize_keys "Customize the hotkeys of this extension">
+<!ENTITY label.expand_keys "Expand keysettings">
+<!ENTITY label.collapse_keys "Collapse keysettings">
+<!ENTITY title.monospaced_senders "Mostrar en monoespacio">
+<!ENTITY option.monospaced_senders2 "Los mensajes de estas direcciones/listas de correo deben mostrarse en fuentes monoespacio (separados por comas)">
+<!ENTITY title.tweak_chrome "Ajustar fuentes">
+<!ENTITY option.tweak_bodies "Ajustar las fuentes del cuerpo del mensaje para hacerlas consistentes con el resto de fuentes (recomendado, requiere reiniciar).">
+<!ENTITY title.tweak_bodies "Ajustar fuentes del contenido">
+<!ENTITY option.tweak_chrome "Reducir el tamaño de la fuente para el apartado de conversación (recomendado, requiere reiniciar).">
+<!ENTITY title.add_embeds "Añadir adjuntos">
+<!ENTITY option.add_embeds "Detectar enlaces a servicios varios (como YouTube) en correos, y verlos en línea.">
+<!ENTITY title.debugging "Depuración">
+<!ENTITY desc.debugging "Habilitar la depuración en la consola del sistema y en la consola de errores. Puede generar muchos mensajes.">
+<!ENTITY title.operate_on_conversations "Botones de la barra de herramientas">
+<!ENTITY option.operate_on_conversations "Los botones archivan y borran la conversación completa, no sólo el mensaje seleccionado">
+<!ENTITY title.extra_attachments "Me gustan los adjuntos">
+<!ENTITY desc.extra_attachments2 "In some corner cases, Thunderbird will fail to recognize some attachments. This option allows you to workaround the Thunderbird bug, and makes sure we try to display as many attachments as we can. Use in combination with the Show All Body Parts addon.">
+<!ENTITY title.send_in_background "Enviar en segundo plano">
+<!ENTITY desc.send_in_background "Esta opción mandará los mensajes a la cola, para no tener que esperar a terminar el proceso. Aviso: esta opción no está completa (vea SendInBackground en wiki.mozilla.org) y se aplica también al proceso normal de redacción. Requiere reiniciar.">
+<!ENTITY title.compose_in_tab "Hidden composition window">
+<!ENTITY desc.compose_in_tab "Ctrl-Shift-N opens the hidden, unsupported composition window in a new tab">
+<!ENTITY title.fcc_follows_if_not_inbox "Place a copy of the sent message...">
+<!ENTITY desc.fcc_follows_if_not_inbox "In the same folder as the original message, but only if the original message is not in the inbox. This option is for all accounts, and only for messages sent with the quick reply.">
