@@ -787,7 +787,7 @@ ComposeSession.prototype = {
         let node = getActiveEditor();
         if (signature) {
           if (self.params.identity.suppressSigSep)
-            node.value = "\n" + signature;
+            node.value = "\n\n" + signature;
           else
             node.value = "\n\n-- \n" + signature;
           node.selectionStart = 0;
