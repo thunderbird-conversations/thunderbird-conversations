@@ -806,7 +806,7 @@ Message.prototype = {
     // then / else, unlike the CSS classes above.
     if (this.isReplyListEnabled) {
       this.register(".replyMainActionLink", function (event) {
-        self.compose(Ci.nsIMsgCompType.ReplyList, event);
+        self.compose(Ci.nsIMsgCompType.ReplyToList, event);
         event.stopPropagation();
       });
       mainActionLink.textContent = replyList.textContent;
