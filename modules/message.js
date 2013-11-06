@@ -1452,6 +1452,7 @@ Message.prototype = {
             let iframeDoc = iframe.contentDocument;
             self.tweakFonts(iframeDoc);
             self.detectQuotes(iframe);
+            self.detectSigs(iframe);
             self.registerLinkHandlers(iframe);
             self.injectCss(iframeDoc);
             if (self.checkForFishing(iframeDoc) && !self._msgHdr.getUint32Property("notAPhishMessage")) {
@@ -1980,11 +1981,7 @@ let PostStreamingFixesMixIn = {
       head.appendChild(style);
   },
 
-  detectQuotes: function (iframe) {
-    let smallSize = Prefs.tweak_chrome
-      ? this.defaultSize * this.tenPxFactor * 1.1
-      : Math.round(100 * this.defaultSize * 11 / 12) / 100;
-
+  convertCommonQuotingToBlockquote: function (iframe) {
     // Launch various crappy pieces of code^W^W^W^W heuristics to
     //  convert most common quoting styles to real blockquotes. Spoiler:
     //  most of them suck.
@@ -2015,50 +2012,95 @@ let PostStreamingFixesMixIn = {
       Log.warn(e);
       dumpCallStack(e);
     }
-    // this function adds a show/hide quoted text link to every topmost
-    // blockquote. Nested blockquotes are not taken into account.
+  },
+
+  detectBlocks: function (iframe, test_node, hideText, showText, linkClass, linkColor) {
+    let self = this;
+    let iframeDoc = iframe.contentDocument;
+
+    let smallSize = Prefs.tweak_chrome
+      ? this.defaultSize * this.tenPxFactor * 1.1
+      : Math.round(100 * this.defaultSize * 11 / 12) / 100;
+
+    // this function adds a show/hide block text link to every topmost
+    // block. Nested blocks are not taken into account.
     let walk = function walk_ (elt) {
       for (let i = elt.childNodes.length - 1; i >= 0; --i) {
         let c = elt.childNodes[i];
-        // GMail uses class="gmail_quote", other MUAs use type="cite"...
-        // so just search for a regular blockquote
-        if (c.tagName && c.tagName.toLowerCase() == "blockquote") {
+
+        if (test_node(c)) {
           if (c.getUserData("hideme") !== false) { // null is ok, true is ok too
-            // Compute the approximate number of lines while the element is still visible
-            let style;
-            try {
-              style = iframe.contentWindow.getComputedStyle(c, null);
-            } catch (e) {
-              // message arrived and window is not displayed, arg,
-              // cannot get the computed style, BAD
-            }
-            if (style) {
-              let numLines = parseInt(style.height) / parseInt(style.lineHeight);
-              if (numLines > Prefs["hide_quote_length"]) {
-                let showText = strings.get("showQuotedText");
-                let hideText = strings.get("hideQuotedText");
-                let div = iframeDoc.createElement("div");
-                div.setAttribute("class", "link showhidequote");
-                div.addEventListener("click", function div_listener (event) {
-                  let h = self._conversation._htmlPane.contentWindow.toggleQuote(event, showText, hideText);
-                  iframe.style.height = (parseFloat(iframe.style.height) + h)+"px";
-                }, true);
-                div.setAttribute("style", "color: orange; cursor: pointer; font-size: "+smallSize+"px;");
-                div.appendChild(iframeDoc.createTextNode("- "+showText+" -"));
-                elt.insertBefore(div, c);
-                c.style.display = "none";
-              }
-            }
+            let div = iframeDoc.createElement("div");
+            div.setAttribute("class", "link "+linkClass);
+            div.addEventListener("click", function div_listener (event) {
+              let h = self._conversation._htmlPane.contentWindow.toggleBlock(event, showText, hideText);
+              iframe.style.height = (parseFloat(iframe.style.height) + h)+"px";
+            }, true);
+            div.setAttribute("style", "color: "+linkColor+"; cursor: pointer; font-size: "+smallSize+"px;");
+            div.appendChild(iframeDoc.createTextNode("- "+showText+" -"));
+            elt.insertBefore(div, c);
+            c.style.display = "none";
           }
         } else {
           walk(c);
         }
       }
     };
+
+    walk(iframeDoc);
+  },
+
+  detectQuotes: function (iframe) {
+    let self = this;
+    self.convertCommonQuotingToBlockquote(iframe);
+
+    let isBlockquote = function isBlockquote_ (node) {
+      if (node.tagName && node.tagName.toLowerCase() == "blockquote") {
+        // Compute the approximate number of lines while the element is still visible
+        let style;
+        try {
+          style = iframe.contentWindow.getComputedStyle(node, null);
+        } catch (e) {
+          // message arrived and window is not displayed, arg,
+          // cannot get the computed style, BAD
+        }
+        if (style) {
+          let numLines = parseInt(style.height) / parseInt(style.lineHeight);
+          if (numLines > Prefs["hide_quote_length"]) {
+            return true;
+          }
+        }
+      }
+
+      return false;
+    };
+
     // https://github.com/protz/GMail-Conversation-View/issues#issue/179
     // See link above for a rationale ^^
     if (self.initialPosition > 0)
-      walk(iframeDoc);
+      self.detectBlocks(iframe,
+                        isBlockquote,
+                        strings.get("hideQuotedText"),
+                        strings.get("showQuotedText"),
+                        "showhidequote",
+                        "orange");
+  },
+
+  detectSigs: function (iframe) {
+    let self = this;
+
+    let isSignature = function isSignature_ (node) {
+      return (node.classList && node.classList.contains("moz-txt-sig"));
+    };
+
+    if (Prefs["hide_sigs"]) {
+      self.detectBlocks(iframe,
+                        isSignature,
+                        strings.get("hideSigText"),
+                        strings.get("showSigText"),
+                        "showhidesig",
+                        "blue");
+    }
   },
 
   /**

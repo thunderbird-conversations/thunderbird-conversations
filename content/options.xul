@@ -50,6 +50,7 @@
   </setting>
 
   <setting title="&title.quoting2;" desc="&desc.quoting;" pref="conversations.hide_quote_length" type="integer" />
+  <setting title="&title.hide_sigs;" desc="&desc.hide_sigs;" pref="conversations.hide_sigs" type="bool" />
 
   <setting title="&title.friendly_date;" desc="&option.no_friendly_date2;" pref="conversations.no_friendly_date" type="bool" />
 

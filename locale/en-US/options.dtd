@@ -5,6 +5,8 @@
 <!ENTITY option.expand_all "All messages">
 <!ENTITY title.quoting2 "Quoted text">
 <!ENTITY desc.quoting "Quotes higher than this number of lines will be collapsed.">
+<!ENTITY title.hide_sigs "Hide Signatures">
+<!ENTITY desc.hide_sigs "Whether signatures are collapsed by default.">
 <!ENTITY title.assistant "Setup assistant">
 <!ENTITY option.assistant "Start the setup assistant">
 <!ENTITY title.friendly_date "Friendly dates">

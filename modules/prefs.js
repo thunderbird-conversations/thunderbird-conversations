@@ -64,6 +64,7 @@ function PrefManager() {
   this.enabled = prefsService.getBoolPref("enabled");
   this.extra_attachments = prefsService.getBoolPref("extra_attachments");
   this.hide_quote_length = prefsService.getIntPref("hide_quote_length");
+  this.hide_sigs = prefsService.getBoolPref("hide_sigs");
   this.compose_in_tab = prefsService.getBoolPref("compose_in_tab");
   this.fcc_follows_if_not_inbox = prefsService.getBoolPref("fcc_follows_if_not_inbox");
   // This is a hashmap
@@ -111,7 +112,8 @@ PrefManager.prototype = {
       case "extra_attachments":
       case "compose_in_tab":
       case "fcc_follows_if_not_inbox":
-      case "enabled": {
+      case "enabled":
+      case "hide_sigs": {
         let v = prefsService.getBoolPref(aData)
         this[aData] = v;
         [x(aData, v) for each (x in this.watchers)];

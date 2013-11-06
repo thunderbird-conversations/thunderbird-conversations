@@ -117,12 +117,12 @@
       window.scrollTo(0, offset + 5 - 44);
     }
 
-    function toggleQuote(event, showquotedtext, hidequotedtext) {
+    function toggleBlock(event, showtext, hidetext) {
       let link = event.target;
       let div = link.nextSibling;
       let cs = window.getComputedStyle(div, null);
       if (div.style.display == "none") {
-        link.textContent = "- "+hidequotedtext+" -";
+        link.textContent = "- "+hidetext+" -";
         div.style.display = "";
         let h = div.getBoundingClientRect().height +
           parseFloat(cs.marginTop) + parseFloat(cs.marginBottom);
@@ -131,7 +131,7 @@
         let h = div.getBoundingClientRect().height;
         h += parseFloat(cs.marginTop);
         h += parseFloat(cs.marginBottom);
-        link.textContent = "- "+showquotedtext+" -";
+        link.textContent = "- "+showtext+" -";
         div.style.display = "none";
         return -h;
       }
