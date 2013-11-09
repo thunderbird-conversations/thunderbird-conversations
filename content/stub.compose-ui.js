@@ -442,7 +442,7 @@ function ComposeSession (match) {
     otherRandomHeaders: null,
   };
   this.stripSignatureIfNeeded = function () {};
-  
+
   // Go!
   this.senderNameElem = $(".senderName");
   this.asyncSetupSteps = 5; // number of asynchronous setup functions to finish
@@ -808,7 +808,7 @@ ComposeSession.prototype = {
       };
       for each (let [, h] in Iterator(getHooks())) {
         try {
-          if (typeof(h.onComposeSessionChanged) == "function") 
+          if (typeof(h.onComposeSessionChanged) == "function")
             h.onComposeSessionChanged(this, getMessageForQuickReply(), recipients);
         } catch (e) {
           Log.warn("Plugin returned an error:", e);
@@ -817,7 +817,7 @@ ComposeSession.prototype = {
       }
     }
   },
-  
+
   send: function (options) {
     let self = this;
     let popOut = options && options.popOut;
@@ -917,6 +917,45 @@ ComposeSession.prototype = {
   }
 };
 
+// Stolen from MsgComposeCommands.js
+
+function nsAttachmentOpener() {
+}
+
+nsAttachmentOpener.prototype = {
+
+  QueryInterface: XPCOMUtils.generateQI([
+    Ci.nsIURIContentListener,
+    Ci.nsIInterfaceRequestor
+  ]),
+
+  onStartURIOpen: function(uri) {
+    return false;
+  },
+
+  doContent: function(contentType, isContentPreferred, request, contentHandler) {
+    return false;
+  },
+
+  isPreferred: function(contentType, desiredContentType) {
+    return false;
+  },
+
+  canHandleContent: function(contentType, isContentPreferred, desiredContentType) {
+    return false;
+  },
+
+  getInterface: function(iid) {
+    if (iid.equals(Components.interfaces.nsIDOMWindow))
+      return window;
+    else
+      return this.QueryInterface(iid);
+  },
+
+  loadCookie: null,
+  parentContentListener: null
+}
+
 // ----- Attachment list
 
 function AttachmentList() {
@@ -947,6 +986,18 @@ AttachmentList.prototype = {
   _populateUI: function (msgAttachment, data) {
     let self = this;
     let line = $("#quickReplyAttachmentTemplate").tmpl(data);
+    line.find(".openAttachmentLink").click(function () {
+      let url = Services.io.newURI(data.url, null, null);
+      url = url.QueryInterface(Ci.nsIURL);
+
+      if (url) {
+        let channel = Services.io.newChannelFromURI(url);
+        if (channel) {
+          let uriLoader = Cc["@mozilla.org/uriloader;1"].getService(Ci.nsIURILoader);
+          uriLoader.openURI(channel, true, new nsAttachmentOpener());
+        }
+      }
+    });
     line.find(".removeAttachmentLink").click(function () {
       line.remove();
       self._attachments = self._attachments.filter(function (x) x != msgAttachment);
@@ -966,6 +1017,7 @@ AttachmentList.prototype = {
     this._populateUI(msgAttachment, {
       name: aData.name || strings.get("attachment"),
       size: aData.size ? topMail3Pane(window).messenger.formatFileSize(aData.size) : strings.get("sizeUnknown"),
+      url: aData.url,
     });
   },
 
