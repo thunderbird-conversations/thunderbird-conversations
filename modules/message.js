@@ -2079,11 +2079,12 @@ let PostStreamingFixesMixIn = {
     // See link above for a rationale ^^
     if (self.initialPosition > 0)
       self.detectBlocks(iframe,
-                        isBlockquote,
-                        strings.get("hideQuotedText"),
-                        strings.get("showQuotedText"),
-                        "showhidequote",
-                        "orange");
+        isBlockquote,
+        strings.get("hideQuotedText"),
+        strings.get("showQuotedText"),
+        "showhidequote",
+        "orange"
+      );
   },
 
   detectSigs: function (iframe) {
@@ -2095,11 +2096,12 @@ let PostStreamingFixesMixIn = {
 
     if (Prefs["hide_sigs"]) {
       self.detectBlocks(iframe,
-                        isSignature,
-                        strings.get("hideSigText"),
-                        strings.get("showSigText"),
-                        "showhidesig",
-                        "blue");
+        isSignature,
+        strings.get("hideSigText"),
+        strings.get("showSigText"),
+        "showhidesig",
+        "rgb(56, 117, 215)"
+      );
     }
   },
 
