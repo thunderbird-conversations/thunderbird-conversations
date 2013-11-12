@@ -1934,7 +1934,7 @@ let PostStreamingFixesMixIn = {
     let styleRules = [];
     if (iframeDoc.querySelectorAll(":not(.mimemail-body) > .moz-text-html").length) {
       styleRules = [
-        "body {",
+        "body, table {",
         //"  line-height: 112.5%;",
         "  font-size: "+textSize+"px;",
         "}",
