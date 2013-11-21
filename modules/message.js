@@ -1989,7 +1989,7 @@ let PostStreamingFixesMixIn = {
     let iframeDoc = iframe.contentDocument;
     try {
       let t = Date.now();
-      let log = function () {
+      let _log = function () {
         let t1 = Date.now();
         let delta = t1 - t;
         let args = [x for each ([, x] in Iterator(arguments))];
@@ -1997,17 +1997,19 @@ let PostStreamingFixesMixIn = {
         t = Date.now();
       };
       convertOutlookQuotingToBlockquote(iframe.contentWindow, iframeDoc);
-      log("convertOutlookQuotingToBlockquote");
+      _log("convertOutlookQuotingToBlockquote");
       convertHotmailQuotingToBlockquote1(iframeDoc);
-      log("convertHotmailQuotingToBlockquote1");
+      _log("convertHotmailQuotingToBlockquote1");
       if (Prefs.expensive_quote_detection) {
         convertHotmailQuotingToBlockquote2(iframe.contentWindow, iframeDoc, Prefs["hide_quote_length"]);
-        log("convertHotmailQuotingToBlockquote2");
+        _log("convertHotmailQuotingToBlockquote2");
       }
       convertForwardedToBlockquote(iframeDoc);
-      log("convertForwardedToBlockquote");
+      _log("convertForwardedToBlockquote");
+      convertMiscQuotingToBlockquote(iframeDoc);
+      _log("convertMiscQuotingToBlockquote");
       fusionBlockquotes(iframeDoc);
-      log("fusionBlockquotes");
+      _log("fusionBlockquotes");
     } catch (e) {
       Log.warn(e);
       dumpCallStack(e);

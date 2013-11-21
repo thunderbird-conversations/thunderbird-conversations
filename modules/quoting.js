@@ -38,7 +38,7 @@ var EXPORTED_SYMBOLS = [
   // heuristics for finding quoted parts
   'convertHotmailQuotingToBlockquote1', 'convertHotmailQuotingToBlockquote2',
   'convertOutlookQuotingToBlockquote', 'convertForwardedToBlockquote',
-  'fusionBlockquotes',
+  'fusionBlockquotes', 'convertMiscQuotingToBlockquote',
 ]
 
 const Ci = Components.interfaces;
@@ -125,6 +125,10 @@ function convertHotmailQuotingToBlockquote1(aDoc) {
      body > pre > hr, \
      body > div > div > hr, \
      hr#stopSpelling", true);
+}
+
+function convertMiscQuotingToBlockquote(aDoc) {
+  trySel(aDoc, ".yahoo_quoted");
 }
 
 /* There's a special message header for that. */
