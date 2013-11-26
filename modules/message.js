@@ -1451,7 +1451,8 @@ Message.prototype = {
 
             let iframeDoc = iframe.contentDocument;
             self.tweakFonts(iframeDoc);
-            self.detectQuotes(iframe);
+            if (!(self._realFrom && self._realFrom.email.indexOf("bugzilla-daemon") == 0))
+              self.detectQuotes(iframe);
             self.detectSigs(iframe);
             self.registerLinkHandlers(iframe);
             self.injectCss(iframeDoc);
