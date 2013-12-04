@@ -1584,6 +1584,7 @@ Message.prototype = {
         }
         cv.QueryInterface(Ci.nsIMarkupDocumentViewer);
         cv.hintCharacterSet = "UTF-8";
+        cv.forceCharacterSet = "UTF-8";
         cv.hintCharacterSetSource = kCharsetFromChannel;
         /* Is this even remotely useful? */
         iframe.docShell.appType = Ci.nsIDocShell.APP_TYPE_MAIL;
