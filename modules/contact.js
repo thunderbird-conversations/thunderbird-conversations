@@ -186,7 +186,7 @@ let ContactMixIn = {
     this.register(".sendEmail", function (event) {
       let dest = (this._name == this._email || !this._name)
         ? this._email
-        : MailServices.headerParser.makeFullAddress(this._name, this._email);
+        : MailServices.headerParser.makeMimeAddress(this._name, this._email);
       dump(dest+"\n\n");
       composeMessageTo(dest, mainWindow.gFolderDisplay.displayedFolder);
       event.stopPropagation();
