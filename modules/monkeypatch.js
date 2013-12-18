@@ -162,42 +162,47 @@ MonkeyPatch.prototype = {
     let window = this._window;
 
     let participants = function (msgHdr) {
-      // The array of people involved in this email.
-      let people = [];
-      // Helper for formatting; depending on the locale, we may need a different
-      // for me as in "to me" or as in "from me".
-      let format = function (x, p) {
-        if ((x.email+"").toLowerCase() in gIdentities)
-          return (p
-            ? strings.get("meBetweenMeAndSomeone")
-            : strings.get("meBetweenSomeoneAndMe")
-          );
+      try {
+        // The array of people involved in this email.
+        let people = [];
+        // Helper for formatting; depending on the locale, we may need a different
+        // for me as in "to me" or as in "from me".
+        let format = function (x, p) {
+          if ((x.email+"").toLowerCase() in gIdentities)
+            return (p
+              ? strings.get("meBetweenMeAndSomeone")
+              : strings.get("meBetweenSomeoneAndMe")
+            );
+          else
+            return x.name || x.email;
+        };
+        // Add all the people found in one of the msgHdr's properties.
+        let addPeople = function (prop, pos) {
+          let line = msgHdr[prop];
+          for each (let [, x] in Iterator(parseMimeLine(line, true)))
+            people.push(format(x, pos))
+        };
+        // We add everyone
+        addPeople("author", true);
+        addPeople("recipients", false);
+        addPeople("ccList", false);
+        addPeople("bccList", false);
+        // Then remove duplicates
+        let seenAlready = {};
+        people = people.filter(function (x) {
+          let r = !(x in seenAlready);
+          seenAlready[x] = true;
+          return r;
+        });
+        // And turn this into a human-readable line.
+        if (people.length)
+          return joinWordList(people);
         else
-          return x.name || x.email;
-      };
-      // Add all the people found in one of the msgHdr's properties.
-      let addPeople = function (prop, pos) {
-        let line = msgHdr[prop];
-        for each ([, x] in Iterator(parseMimeLine(line, true)))
-          people.push(format(x, pos))
-      };
-      // We add everyone
-      addPeople("author", true);
-      addPeople("recipients", false);
-      addPeople("ccList", false);
-      addPeople("bccList", false);
-      // Then remove duplicates
-      let seenAlready = {};
-      people = people.filter(function (x) {
-        let r = !(x in seenAlready);
-        seenAlready[x] = true;
-        return r;
-      });
-      // And turn this into a human-readable line.
-      if (people.length)
-        return joinWordList(people);
-      else
-        return "-";
+          return "-";
+      } catch (e) {
+        Log.debug("Error in the special column", e);
+        dumpCallStack(e);
+      }
     };
 
     let columnHandler = {
