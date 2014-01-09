@@ -451,9 +451,22 @@ function ComposeSession (match) {
   this.setupAutocomplete();
   this.setupAttachments();
   this.setupQuote();
+
+  this.identities = [];
+  for each (let [email, identity] in Iterator(gIdentities)) {
+    if (email != "default")
+      this.identities.push(email.toLowerCase());
+  }
 }
 
 ComposeSession.prototype = {
+
+  cycleSender: function (dir) {
+    let i = this.identities.indexOf(this.params.identity.email.toLowerCase());
+    i = (i + dir + this.identities.length) % this.identities.length;
+    this.params.identity = gIdentities[this.identities[i]];
+    this.senderNameElem.text(this.params.identity.email);
+  },
 
   setupAttachments: function () {
     let self = this;
@@ -515,30 +528,6 @@ ComposeSession.prototype = {
             topMail3Pane(window).getIdentityForServer(selectedFolder.server) ||
             identity;
         }
-        // Hook up various event listeners to the sender switcher. If we were to
-        // enable the sender switcher for the quick reply as well, we should
-        // write onclick="gComposeSession.cycleSender(±1)" in stub.xhtml so that
-        // we don't end up registering the same event listeners multiple times.
-        document.querySelector(".senderSwitcher").style.display = "";
-        let left = document.querySelector(".switchLeft");
-        let right = document.querySelector(".switchRight");
-        let identities = [];
-        for each (let [email, identity] in Iterator(gIdentities)) {
-          if (email != "default")
-            identities.push(email.toLowerCase());
-        }
-        left.addEventListener("click", function (event) {
-          let i = identities.indexOf(self.params.identity.email.toLowerCase());
-          i = (i-1 + identities.length) % identities.length;
-          self.params.identity = gIdentities[identities[i]];
-          self.senderNameElem.text(self.params.identity.email);
-        }, false);
-        right.addEventListener("click", function (event) {
-          let i = identities.indexOf(self.params.identity.email.toLowerCase());
-          i = (i + 1) % identities.length;
-          self.params.identity = gIdentities[identities[i]];
-          self.senderNameElem.text(self.params.identity.email);
-        }, false);
         // We're done!
         self.setupDone();
       },

@@ -590,7 +590,7 @@
             let cc = JSON.parse($("#cc").val());
             let bcc = JSON.parse($("#bcc").val());
             // Append our new value
-            to.push(MailServices.headerParser.makeFullAddress(data.name, data.email));
+            to.push(MailServices.headerParser.makeMimeAddress(data.name, data.email));
             // Re-set everything
             let format = function (items)
               [asToken(null, name, email, null) for each ([{ name, email }] in items.map(parseMimeLine))]
@@ -1074,7 +1074,7 @@
           <div class="quickReplyRecipients">
             <ul class="fromField">
               ${str("fieldFrom")}
-              <li class="senderSwitcher" style="display: none"><a class="switchLeft">◂</a> <a class="switchRight">▸</a></li>
+              <li class="senderSwitcher"><a class="switchLeft" onclick="gComposeSession.cycleSender(-1)">◂</a> <a class="switchRight" onclick="gComposeSession.cycleSender(1)">▸</a></li>
               <li class="senderName"></li>,
               <li class="replyMethod">
                 <input type="radio" name="reply-method" value="reply"
