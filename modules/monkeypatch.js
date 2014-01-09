@@ -383,7 +383,7 @@ MonkeyPatch.prototype = {
     let oldSummarizeThread = window["summarizeThread"];
 
     // Do this at least once at overlay load-time
-    fillIdentities();
+    fillIdentities(false);
 
     // Register our new column type
     this.registerColumn();
