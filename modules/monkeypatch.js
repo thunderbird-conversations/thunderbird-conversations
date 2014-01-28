@@ -470,6 +470,8 @@ MonkeyPatch.prototype = {
           return;
         }
 
+        window.gMessageDisplay.singleMessageDisplay = false;
+
         window.gSummaryFrameManager.loadAndCallback(kStubUrl, function (isRefresh) {
           // See issue #673
           if (htmlpane.contentDocument && htmlpane.contentDocument.body)
