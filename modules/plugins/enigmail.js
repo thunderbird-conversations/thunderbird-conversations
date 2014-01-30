@@ -177,7 +177,7 @@ if (hasEnigmail) {
 
       // Show signed label of encrypted and signed pgp/mime.
       let statusFlags = arguments[2];
-      addSignedLabel(statusFlags, message._domNode);
+      addSignedLabel(statusFlags, message._domNode, message);
     }
   }, true);
 }
@@ -393,16 +393,25 @@ function patchForShowSecurityInfo(aWindow) {
 }
 
 // Add signed label and click action to a signed message.
-function addSignedLabel(aStatus, aDomNode) {
-  if (aStatus & (Ci.nsIEnigmail.GOOD_SIGNATURE |
-      Ci.nsIEnigmail.UNVERIFIED_SIGNATURE)) {
+function addSignedLabel(aStatus, aDomNode, aMessage) {
+  if (aStatus & (Ci.nsIEnigmail.BAD_SIGNATURE |
+      Ci.nsIEnigmail.GOOD_SIGNATURE |
+      Ci.nsIEnigmail.EXPIRED_KEY_SIGNATURE |
+      Ci.nsIEnigmail.EXPIRED_SIGNATURE |
+      Ci.nsIEnigmail.UNVERIFIED_SIGNATURE |
+      Ci.nsIEnigmail.REVOKED_KEY |
+      Ci.nsIEnigmail.EXPIRED_KEY_SIGNATURE |
+      Ci.nsIEnigmail.EXPIRED_SIGNATURE)) {
     aDomNode.classList.add("signed");
     let w = getMail3Pane();
     let signedTag = aDomNode.querySelector(".keep-tag.tag-signed");
-    signedTag.addEventListener("click", function (event) {
+    if (aMessage._viewSecurityInfo)
+      signedTag.removeEventListener("click", aMessage._viewSecurityInfo, false);
+    aMessage._viewSecurityInfo = function (event) {
       // Open alert dialog which contains security info.
       w.Enigmail.msg.viewSecurityInfo(event);
-    }, false);
+    };
+    signedTag.addEventListener("click", aMessage._viewSecurityInfo, false);
     signedTag.style.cursor = "pointer";
   }
   if (aStatus & Ci.nsIEnigmail.UNVERIFIED_SIGNATURE) {
@@ -447,7 +456,7 @@ let enigmailHook = {
       let status = tryEnigmail(iframeDoc.body, aMessage);
       if (status & Ci.nsIEnigmail.DECRYPTION_OKAY)
         aDomNode.classList.add("decrypted");
-      addSignedLabel(status, aDomNode);
+      addSignedLabel(status, aDomNode, aMessage);
     }
   },
 
