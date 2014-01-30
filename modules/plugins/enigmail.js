@@ -394,8 +394,14 @@ function patchForShowSecurityInfo(aWindow) {
 
 // Add signed label and click action to a signed message.
 function addSignedLabel(aStatus, aDomNode, aMessage) {
-  if (aStatus & (Ci.nsIEnigmail.GOOD_SIGNATURE |
-      Ci.nsIEnigmail.UNVERIFIED_SIGNATURE)) {
+  if (aStatus & (Ci.nsIEnigmail.BAD_SIGNATURE |
+      Ci.nsIEnigmail.GOOD_SIGNATURE |
+      Ci.nsIEnigmail.EXPIRED_KEY_SIGNATURE |
+      Ci.nsIEnigmail.EXPIRED_SIGNATURE |
+      Ci.nsIEnigmail.UNVERIFIED_SIGNATURE |
+      Ci.nsIEnigmail.REVOKED_KEY |
+      Ci.nsIEnigmail.EXPIRED_KEY_SIGNATURE |
+      Ci.nsIEnigmail.EXPIRED_SIGNATURE)) {
     aDomNode.classList.add("signed");
     let w = getMail3Pane();
     let signedTag = aDomNode.querySelector(".keep-tag.tag-signed");
