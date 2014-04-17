@@ -220,6 +220,16 @@ button img {
   cursor: pointer
 }
 
+.messageHeader img {
+  vertical-align: text-top;
+}
+
+.author {
+  color: #ff5959;
+  font-weight: bold;
+  margin-right: .3rem;
+}
+
 .messageHeader .involved {
   height: 1.8rem;
   padding: 0 5px 0 0;
@@ -230,19 +240,26 @@ button img {
   position: relative;
 }
 
-span.downwardArrow {
-  font-size: .8rem;
-  vertical-align: baseline;
+.to, .bzTo {
+  color: #666;
 }
 
-.messageHeader img {
-  vertical-align: text-top;
+.to.not-resized-yet {
+  display: none;
 }
 
-.author {
-  color: #ff5959;
-  font-weight: bold;
-  margin-right: .3rem;
+.to {
+  display: inline-block;
+  white-space:    nowrap;
+  text-overflow:  ellipsis;
+  overflow:       hidden;
+}
+
+.recipient-tooltips {
+  /* place it over '.to' sibling element */
+  position: absolute;
+  top: 0px;
+  left: 0px;
 }
 
 .contact:not(.inAddressBook) .editContact {
@@ -418,29 +435,6 @@ a img {
   float: right;
 }
 
-/* TODO Those '.to' rules should be moved upwards, close to .messageHeader .involved */
-.to, .bzTo {
-  color: #666;
-}
-
-.to.not-resized-yet {
-  display: none;
-}
-
-.to {
-  display: inline-block;
-  white-space:    nowrap;
-  text-overflow:  ellipsis;
-  overflow:       hidden;
-}
-
-.toWrapper .recipient-tooltips {
-  /* place it over '.to' sibling element */
-  position: absolute;
-  top: 0px;
-  left: 0px;
-}
-
 .options a,
 .attachments a,
 .link {
@@ -453,6 +447,11 @@ a img {
 .attachments a:hover ,
 .link:hover {
   text-decoration: underline;
+}
+
+span.downwardArrow {
+  font-size: .8rem;
+  vertical-align: baseline;
 }
 
 .message:not(.with-details) .show-with-details {
