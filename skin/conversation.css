@@ -225,6 +225,11 @@ button img {
   padding: 0 5px 0 0;
 }
 
+.messageHeader .involved .toWrapper {
+  /* allow recipient tooltips container to be placed over recipient contacts container */
+  position: relative;
+}
+
 span.downwardArrow {
   font-size: .8rem;
   vertical-align: baseline;
@@ -252,6 +257,10 @@ span.downwardArrow {
   position: relative;
 }
 
+.recipientTooltipWrapper {
+  position: absolute;  /* allow it to be moved over respective contact wrapper */
+}
+
 .tooltip {
   position: absolute;
   width: 30.2rem;
@@ -264,6 +273,11 @@ span.downwardArrow {
   border-radius: 5px;
   z-index: 1000;
   display: none;
+}
+
+.recipientTooltipWrapper .tooltip {
+  /* override generic tooltip, so to look closer to contact name */
+  left: 0px;
 }
 
 .dropDown {
@@ -302,10 +316,6 @@ span.downwardArrow {
 
 .dropDown li:nth-child(2n) {
   background-color: #ECF3FE;
-}
-
-.tooltip {
-  display: none;
 }
 
 .arrow {
@@ -408,6 +418,7 @@ a img {
   float: right;
 }
 
+/* TODO Those '.to' rules should be moved upwards, close to .messageHeader .involved */
 .to, .bzTo {
   color: #666;
 }
@@ -421,6 +432,13 @@ a img {
   white-space:    nowrap;
   text-overflow:  ellipsis;
   overflow:       hidden;
+}
+
+.toWrapper .recipient-tooltips {
+  /* place it over '.to' sibling element */
+  position: absolute;
+  top: 0px;
+  left: 0px;
 }
 
 .options a,
