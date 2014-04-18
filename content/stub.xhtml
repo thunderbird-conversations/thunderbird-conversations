@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html [
+<!DOCTYPE html [
   <!ENTITY % pageDTD SYSTEM "chrome://conversations/locale/pages.dtd"> %pageDTD;
 ]>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -147,35 +147,35 @@
     //  one with a tooltip-menu extra class.
     function enableTooltips(aMsg) {
       let $aMsgNode = $(aMsg._domNode);
-      
+
       let self = this;
-      
+
       // enable tooltip for all contacts but recipients
       $aMsgNode.find(':not(.recipient-tooltips) .tooltip').each(function () {
         // "contact" is a hypothetical "contact" link that, when
         // hovered/clicked, starts the interaction with the tooltip
         let $tooltip = $(this);
-        
+
         if ($tooltip.hasClass("tooltip-menu"))
           return;
-        
+
         let $contact = $tooltip.prev();
         if ($contact.hasClass("contactBr"))
           $contact = $contact.prev();
-        
+
         self.setTooltipEventHandlers(aMsg, $contact, $tooltip, false);
       });
 
       let $recipientContacts = $aMsgNode.find('.to .contactName');
-      
+
       // enable tooltip for recipient contacts
       $aMsgNode.find('.recipient-tooltips .tooltip').each(function (index) {
         // "contact" is a hypothetical "contact" link that, when
         // hovered/clicked, starts the interaction with the tooltip
         let $tooltip = $(this);
-        
+
         let $contact = $recipientContacts.eq(index);
-        
+
         self.setTooltipEventHandlers(aMsg, $contact, $tooltip, true);
       });
     }
@@ -184,13 +184,13 @@
     //  the tooltip over the contact when mouse enters/leaves their areas.
     function setTooltipEventHandlers(aMsg, $contact, $tooltip, isRecipient) {
       let timeout;
-      
+
       $contact.hover(function() {
         if (aMsg.collapsed)
           return;
-          
+
         clearTimeout(timeout);
-        
+
         timeout = setTimeout(function () {
           if (isRecipient) {
             // move tooltip close to its respective recipient contact
@@ -198,25 +198,25 @@
             let $tooltipWrapper = $tooltip.parents('.recipientTooltipWrapper');
             $tooltipWrapper.css(contactWrapperPosition);
           }
-          
+
           $tooltip.fadeIn();
         }, kPopupTimeout);
-        
+
       }, function() {
         clearTimeout(timeout);
-        
+
         timeout = setTimeout(function () {
           $tooltip.fadeOut();
         }, kPopupTimeout);
       });
-        
+
       $tooltip.hover(function () {
         clearTimeout(timeout);
-        
+
       }, function () {
         if ($tooltip.is(":visible")) {
           clearTimeout(timeout);
-          
+
           timeout = setTimeout(function () {
             $tooltip.fadeOut();
           }, kPopupTimeout);
@@ -988,11 +988,11 @@
       ></span
   >]]></script>
   <!-- Tooltip template specific to recipients -->
-  <script id="recipientTooltipTemplate" type="text/x-jquery-tmpl"><![CDATA[<span 
+  <script id="recipientTooltipTemplate" type="text/x-jquery-tmpl"><![CDATA[<span
     class="recipientTooltipWrapper contact">{{tmpl "#innerTooltipTemplate"}}</span
   >]]></script>
   <!-- Inner tooltip template, to be used by other templates -->
-  <script id="innerTooltipTemplate" type="text/x-jquery-tmpl"><![CDATA[<div 
+  <script id="innerTooltipTemplate" type="text/x-jquery-tmpl"><![CDATA[<div
     class="tooltip">
       <div class="arrow"></div>
       <div class="arrow inside"></div>
