@@ -1,4 +1,4 @@
-<!DOCTYPE html [
+﻿<!DOCTYPE html [
   <!ENTITY % pageDTD SYSTEM "chrome://conversations/locale/pages.dtd"> %pageDTD;
 ]>
 <html xmlns="http://www.w3.org/1999/xhtml">
@@ -147,47 +147,80 @@
     //  one with a tooltip-menu extra class.
     function enableTooltips(aMsg) {
       let $aMsgNode = $(aMsg._domNode);
-      $aMsgNode.find('.tooltip').each(function (i) {
-        // "details" is a hypothetical "details" link that, when
-        //   hovered/clicked, starts the interaction with the tooltip
+      
+      let self = this;
+      
+      // enable tooltip for all contacts but recipients
+      $aMsgNode.find(':not(.recipient-tooltips) .tooltip').each(function () {
+        // "contact" is a hypothetical "contact" link that, when
+        // hovered/clicked, starts the interaction with the tooltip
         let $tooltip = $(this);
+        
         if ($tooltip.hasClass("tooltip-menu"))
           return;
-        let $details = $tooltip.prev();
-        if ($details.hasClass("contactBr"))
-          $details = $details.prev();
+        
+        let $contact = $tooltip.prev();
+        if ($contact.hasClass("contactBr"))
+          $contact = $contact.prev();
+        
+        self.setTooltipEventHandlers(aMsg, $contact, $tooltip, false);
+      });
 
-        let timeout;
-        $details.hover(
-          function() {
-            if (aMsg.collapsed)
-              return;
-            clearTimeout(timeout);
-            let self = this;
-            timeout = setTimeout(function () {
-              $(self).next(':hidden').fadeIn();
-            }, kPopupTimeout);
-          },
-          function() {
-            var self = this;
-            clearTimeout(timeout);
-            timeout = setTimeout(function () {
-              $(self).next(/*':visible'*/).fadeOut()
-            }, kPopupTimeout);
-          });
-        $tooltip.hover(
-          function () {
-            clearTimeout(timeout);
-          },
-          function () {
-            var self = this;
-            if ($(this).is(":visible")) {
-              clearTimeout(timeout);
-              timeout = setTimeout(function () {
-                $(self).fadeOut();
-              }, kPopupTimeout);
-            }
-          });
+      let $recipientContacts = $aMsgNode.find('.to .contactName');
+      
+      // enable tooltip for recipient contacts
+      $aMsgNode.find('.recipient-tooltips .tooltip').each(function (index) {
+        // "contact" is a hypothetical "contact" link that, when
+        // hovered/clicked, starts the interaction with the tooltip
+        let $tooltip = $(this);
+        
+        let $contact = $recipientContacts.eq(index);
+        
+        self.setTooltipEventHandlers(aMsg, $contact, $tooltip, true);
+      });
+    }
+
+    // Set events on a contact and its respective tooltip so to show/hide
+    //  the tooltip over the contact when mouse enters/leaves their areas.
+    function setTooltipEventHandlers(aMsg, $contact, $tooltip, isRecipient) {
+      let timeout;
+      
+      $contact.hover(function() {
+        if (aMsg.collapsed)
+          return;
+          
+        clearTimeout(timeout);
+        
+        timeout = setTimeout(function () {
+          if (isRecipient) {
+            // move tooltip close to its respective recipient contact
+            let contactWrapperPosition = $contact.parents('.tooltipWrapper').position();
+            let $tooltipWrapper = $tooltip.parents('.recipientTooltipWrapper');
+            $tooltipWrapper.css(contactWrapperPosition);
+          }
+          
+          $tooltip.fadeIn();
+        }, kPopupTimeout);
+        
+      }, function() {
+        clearTimeout(timeout);
+        
+        timeout = setTimeout(function () {
+          $tooltip.fadeOut();
+        }, kPopupTimeout);
+      });
+        
+      $tooltip.hover(function () {
+        clearTimeout(timeout);
+        
+      }, function () {
+        if ($tooltip.is(":visible")) {
+          clearTimeout(timeout);
+          
+          timeout = setTimeout(function () {
+            $tooltip.fadeOut();
+          }, kPopupTimeout);
+        }
       });
     }
 
@@ -781,7 +814,10 @@
         <div class="star"></div>
         <div class="author">{{tmpl(dataContactFrom) "#contactTemplate"}}</div>
         <div class="involved boxFlex">
-          <span class="to hide-with-details not-resized-yet"> ${str("to")} {{tmpl(dataContactsTo) "#contactTemplate"}}</span>
+          <div class="toWrapper">
+              <span class="to hide-with-details not-resized-yet"> ${str("to")} {{tmpl(dataContactsTo) "#recipientContactTemplate"}}</span>
+              <span class="recipient-tooltips">{{tmpl(dataContactsTo) "#recipientTooltipTemplate"}}</span>
+          </div>
           <span class="bzTo"> ${str("at")} ${bugzillaUrl}</span>
           <span class="snippet"><ul class="tags regular-tags"></ul><ul
               class="tags special-tags"
@@ -931,6 +967,7 @@
   <!-- Weird markup again, otherwise, the comma is separated from the name by a
     space because of the #text whitespace-only nodes that end up in the DOM.
   -->
+  <!-- Generic contact template with tooltip -->
   <script id="contactTemplate" type="text/x-jquery-tmpl"><![CDATA[<span
     >${separator}</span
     ><span class="tooltipWrapper contact"
@@ -938,65 +975,82 @@
         >{{if star}}&#x2605; {{/if}}${String.trim(name)}{{if displayEmail}}
           <span class="smallEmail">&lt;${String.trim(displayEmail)}&gt;</span>
         {{/if}}{{if writeBr}}<br />{{/if}}</span
-      ><div class="tooltip">
-        <div class="arrow"></div>
-        <div class="arrow inside"></div>
-        <div class="authorInfo">
-          <span class="name">${tooltipName}</span>
-          <span class="authorEmail">
-            ${email}
-            <button class="copyEmail" title="${str('copyEmail')}">
-              <img src="chrome://conversations/content/i/clipboard.png" />
-            </button>
-          </span>
-        </div>
-        <div class="authorPicture">
-          <img src="${avatar}" />
-        </div>
-        <div class="authorInfo authorLinks">
-          {{if ("facebook" in profiles)}}
-          <a href="http://www.facebook.com/profile.php?id=${profiles.facebook}" class="profile-link">
-            <img src="chrome://conversations/content/i/facebook.ico" />
-          </a>
-          {{/if}}
-          {{if ("twitter" in profiles)}}
-          <a href="http://www.twitter.com/${profiles.twitter}" class="profile-link">
-            <img src="chrome://conversations/content/i/twitter.ico" />
-          </a>
-          {{/if}}
-          {{if ("google" in profiles)}}
-          <a href="${profiles.google}" class="profile-link">
-            <img src="chrome://conversations/content/i/google.ico" />
-          </a>
-          {{/if}}
-          {{if ("flickr" in profiles)}}
-          <a href="${profiles.flickr}" class="profile-link">
-            <img src="chrome://conversations/content/i/flickr.ico" />
-          </a>
-          {{/if}}
-        </div>
-        <div class="tipFooter hiddenFooter" style="display:none;">
-          {{if (showMonospace)}}
-          <div style="margin-bottom:5px;">
-            <input type="checkbox" style="vertical-align: text-top" class="checkbox-monospace" />
-            <label style="color:#666; font-weight: normal">${str("messagesMonospace")}</label>
-          </div>
-          {{/if}}
-          <button class="createFilter">${str("createFilter")}</button>
-          <button class="addContact" title="${str('addToAb')}">
-            <img src="chrome://conversations/content/i/user_add.png" />
+      >{{tmpl "#innerTooltipTemplate"}}</span
+  >]]></script>
+  <!-- Contact template specific to recipients, without tooltip -->
+  <script id="recipientContactTemplate" type="text/x-jquery-tmpl"><![CDATA[<span
+    >${separator}</span
+    ><span class="tooltipWrapper contact"
+      ><span class="contactName" style="${colorStyle}"
+        >{{if star}}&#x2605; {{/if}}${String.trim(name)}{{if displayEmail}}
+          <span class="smallEmail">&lt;${String.trim(displayEmail)}&gt;</span>
+        {{/if}}{{if writeBr}}<br />{{/if}}</span
+      ></span
+  >]]></script>
+  <!-- Tooltip template specific to recipients -->
+  <script id="recipientTooltipTemplate" type="text/x-jquery-tmpl"><![CDATA[<span 
+    class="recipientTooltipWrapper contact">{{tmpl "#innerTooltipTemplate"}}</span
+  >]]></script>
+  <!-- Inner tooltip template, to be used by other templates -->
+  <script id="innerTooltipTemplate" type="text/x-jquery-tmpl"><![CDATA[<div 
+    class="tooltip">
+      <div class="arrow"></div>
+      <div class="arrow inside"></div>
+      <div class="authorInfo">
+        <span class="name">${tooltipName}</span>
+        <span class="authorEmail">
+          ${email}
+          <button class="copyEmail" title="${str('copyEmail')}">
+            <img src="chrome://conversations/content/i/clipboard.png" />
           </button>
-          <button class="editContact" title="${str('editCardAb')}">
-            <img src="chrome://conversations/content/i/user_edit.png" />
-          </button>
+        </span>
+      </div>
+      <div class="authorPicture">
+        <img src="${avatar}" />
+      </div>
+      <div class="authorInfo authorLinks">
+        {{if ("facebook" in profiles)}}
+        <a href="http://www.facebook.com/profile.php?id=${profiles.facebook}" class="profile-link">
+          <img src="chrome://conversations/content/i/facebook.ico" />
+        </a>
+        {{/if}}
+        {{if ("twitter" in profiles)}}
+        <a href="http://www.twitter.com/${profiles.twitter}" class="profile-link">
+          <img src="chrome://conversations/content/i/twitter.ico" />
+        </a>
+        {{/if}}
+        {{if ("google" in profiles)}}
+        <a href="${profiles.google}" class="profile-link">
+          <img src="chrome://conversations/content/i/google.ico" />
+        </a>
+        {{/if}}
+        {{if ("flickr" in profiles)}}
+        <a href="${profiles.flickr}" class="profile-link">
+          <img src="chrome://conversations/content/i/flickr.ico" />
+        </a>
+        {{/if}}
+      </div>
+      <div class="tipFooter hiddenFooter" style="display:none;">
+        {{if (showMonospace)}}
+        <div style="margin-bottom:5px;">
+          <input type="checkbox" style="vertical-align: text-top" class="checkbox-monospace" />
+          <label style="color:#666; font-weight: normal">${str("messagesMonospace")}</label>
         </div>
-        <div class="tipFooter">
-          <button class="sendEmail">${str("sendEmail")}</button>
-          <button class="showInvolving">${str("recentConversations")}</button>
-          <button class="moreExpander">+</button>
-        </div>
-      </div
-    ></span
+        {{/if}}
+        <button class="createFilter">${str("createFilter")}</button>
+        <button class="addContact" title="${str('addToAb')}">
+          <img src="chrome://conversations/content/i/user_add.png" />
+        </button>
+        <button class="editContact" title="${str('editCardAb')}">
+          <img src="chrome://conversations/content/i/user_edit.png" />
+        </button>
+      </div>
+      <div class="tipFooter">
+        <button class="sendEmail">${str("sendEmail")}</button>
+        <button class="showInvolving">${str("recentConversations")}</button>
+        <button class="moreExpander">+</button>
+      </div>
+    </div
   >]]></script>
   <script id="attachmentIconTemplate" type="text/x-jquery-tmpl"><![CDATA[
     {{if attachments.length}}
