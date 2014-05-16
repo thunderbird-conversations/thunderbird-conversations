@@ -907,18 +907,8 @@ Message.prototype = {
     this.register(".always-display", function (event) {
       self._domNode.getElementsByClassName("remoteContent")[0].style.display = "none";
 
-      let { card, book } = mainWindow.getCardForEmail(self._from.email);
-      if (card) {
-        // set the property for remote content
-        card.setProperty("AllowRemoteContent", true);
-        book.modifyCard(card);
-      } else {
-        saveEmailInAddressBook(
-          getAddressBookFromUri(kCollectedAddressBookUri),
-          self._from.email,
-          self._from.name
-        );
-      }
+      let uri = Services.io.newURI("mailto:" + self._from.email, null, null);
+      Services.perms.add(uri, "image", Services.perms.ALLOW_ACTION);
       self._reloadMessage();
     });
     this.register(".messageBody .in-folder", function (event) {
