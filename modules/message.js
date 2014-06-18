@@ -1387,6 +1387,30 @@ Message.prototype = {
     iframe.setAttribute("style", "height: 20px; overflow-y: hidden");
     iframe.setAttribute("type", "content");
 
+    let adjustHeight = function () {
+      let iframeDoc = iframe.contentDocument;
+
+      // This is needed in case the timeout kicked in after the message
+      // was loaded but before we collapsed quotes. Then, the scrollheight
+      // is too big, so we need to make the iframe small, so that its
+      // scrollheight corresponds to its "real" height (there was an issue
+      // with offsetheight, don't remember what, though).
+      iframe.style.height = "20px";
+      iframe.style.height = iframeDoc.body.scrollHeight+"px";
+
+      // So now we might overflow horizontally, which causes a horizontal
+      // scrollbar to appear, which narrows the vertical height available,
+      // which causes a vertical scrollbar to appear.
+      let iframeStyle = self._conversation._window.getComputedStyle(iframe, null);
+      let iframeExternalWidth = parseInt(iframeStyle.width);
+      // 20px is a completely arbitrary default value which I hope is
+      // greater
+      if (iframeDoc.body.scrollWidth > iframeExternalWidth) {
+        Log.debug("Horizontal overflow detected.");
+        iframe.style.height = (iframeDoc.body.scrollHeight + 20)+"px";
+      }
+    };
+
     let delay = 100;
     let timeout = topMail3Pane(this).setTimeout(function resize () {
       // Do a pre-computation of the height because of HTML newsletters that
@@ -1395,7 +1419,7 @@ Message.prototype = {
       // (true story).
       try {
         if (iframe.contentDocument && iframe.contentDocument.body)
-          iframe.style.height = iframe.contentDocument.body.scrollHeight+"px";
+          adjustHeight();
         // Retry aggressively, because the backend may need a lot of time
         // to fetch the message in the message store, process it through libmime,
         // and output it into the xul:iframe. Every time we retry, we leave the
@@ -1424,30 +1448,6 @@ Message.prototype = {
         // _before_ images have been loaded. We adjust the height after that.
         // But still need to do some more processing after the message has been
         // fully loaded. We adjust the height again.
-
-        let adjustHeight = function () {
-          let iframeDoc = iframe.contentDocument;
-
-          // This is needed in case the timeout kicked in after the message
-          // was loaded but before we collapsed quotes. Then, the scrollheight
-          // is too big, so we need to make the iframe small, so that its
-          // scrollheight corresponds to its "real" height (there was an issue
-          // with offsetheight, don't remember what, though).
-          iframe.style.height = "20px";
-          iframe.style.height = iframeDoc.body.scrollHeight+"px";
-
-          // So now we might overflow horizontally, which causes a horizontal
-          // scrollbar to appear, which narrows the vertical height available,
-          // which causes a vertical scrollbar to appear.
-          let iframeStyle = self._conversation._window.getComputedStyle(iframe, null);
-          let iframeExternalWidth = parseInt(iframeStyle.width);
-          // 20px is a completely arbitrary default value which I hope is
-          // greater
-          if (iframeDoc.body.scrollWidth > iframeExternalWidth) {
-            Log.debug("Horizontal overflow detected.");
-            iframe.style.height = (iframeDoc.body.scrollHeight + 20)+"px";
-          }
-        };
 
 
         // Early adjustments
