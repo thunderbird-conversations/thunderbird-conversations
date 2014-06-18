@@ -1419,8 +1419,56 @@ Message.prototype = {
       try {
         iframe.removeEventListener("load", f_temp2, true);
 
+        // The post-display adjustments are now divided in two phases. Some
+        // stuff takes place directly after the message has been streamed but
+        // _before_ images have been loaded. We adjust the height after that.
+        // But still need to do some more processing after the message has been
+        // fully loaded. We adjust the height again.
+
+        let adjustHeight = function () {
+          let iframeDoc = iframe.contentDocument;
+
+          // This is needed in case the timeout kicked in after the message
+          // was loaded but before we collapsed quotes. Then, the scrollheight
+          // is too big, so we need to make the iframe small, so that its
+          // scrollheight corresponds to its "real" height (there was an issue
+          // with offsetheight, don't remember what, though).
+          iframe.style.height = "20px";
+          iframe.style.height = iframeDoc.body.scrollHeight+"px";
+
+          // So now we might overflow horizontally, which causes a horizontal
+          // scrollbar to appear, which narrows the vertical height available,
+          // which causes a vertical scrollbar to appear.
+          let iframeStyle = self._conversation._window.getComputedStyle(iframe, null);
+          let iframeExternalWidth = parseInt(iframeStyle.width);
+          // 20px is a completely arbitrary default value which I hope is
+          // greater
+          if (iframeDoc.body.scrollWidth > iframeExternalWidth) {
+            Log.debug("Horizontal overflow detected.");
+            iframe.style.height = (iframeDoc.body.scrollHeight + 20)+"px";
+          }
+        };
+
+
+        // Early adjustments
+        iframe.addEventListener("DOMContentLoaded", function f_temp3(event) {
+          iframe.removeEventListener("DOMContentLoaded", f_temp3);
+
+          let iframeDoc = iframe.contentDocument;
+          self.tweakFonts(iframeDoc);
+          if (!(self._realFrom && self._realFrom.email.indexOf("bugzilla-daemon") == 0))
+            self.detectQuotes(iframe);
+          self.detectSigs(iframe);
+          self.registerLinkHandlers(iframe);
+          self.injectCss(iframeDoc);
+
+          adjustHeight();
+        });
+
         // The second load event is triggered by loadURI with the URL
-        // being the necko URL to the given message.
+        // being the necko URL to the given message. These are the late
+        // adjustments that (possibly) depend on the message being actually,
+        // fully, completely loaded.
         iframe.addEventListener("load", function f_temp1(event) {
           try {
             iframe.removeEventListener("load", f_temp1, true);
@@ -1440,12 +1488,6 @@ Message.prototype = {
             }
 
             let iframeDoc = iframe.contentDocument;
-            self.tweakFonts(iframeDoc);
-            if (!(self._realFrom && self._realFrom.email.indexOf("bugzilla-daemon") == 0))
-              self.detectQuotes(iframe);
-            self.detectSigs(iframe);
-            self.registerLinkHandlers(iframe);
-            self.injectCss(iframeDoc);
             if (self.checkForFishing(iframeDoc) && !self._msgHdr.getUint32Property("notAPhishMessage")) {
               Log.debug("Phishing attempt");
               self._domNode.getElementsByClassName("phishingBar")[0].style.display = "block";
@@ -1494,25 +1536,8 @@ Message.prototype = {
 
             // Everything's done, so now we're able to settle for a height.
             mainWindow.clearTimeout(timeout);
-            // This is needed in case the timeout kicked in after the message
-            // was loaded but before we collapsed quotes. Then, the scrollheight
-            // is too big, so we need to make the iframe small, so that its
-            // scrollheight corresponds to its "real" height (there was an issue
-            // with offsetheight, don't remember what, though).
-            iframe.style.height = "20px";
-            iframe.style.height = iframeDoc.body.scrollHeight+"px";
 
-            // So now we might overflow horizontally, which causes a horizontal
-            // scrollbar to appear, which narrows the vertical height available,
-            // which causes a vertical scrollbar to appear.
-            let iframeStyle = self._conversation._window.getComputedStyle(iframe, null);
-            let iframeExternalWidth = parseInt(iframeStyle.width);
-            // 20px is a completely arbitrary default value which I hope is
-            // greater
-            if (iframeDoc.body.scrollWidth > iframeExternalWidth) {
-              Log.debug("Horizontal overflow detected.");
-              iframe.style.height = (iframeDoc.body.scrollHeight + 20)+"px";
-            }
+            adjustHeight();
 
             // Sometimes setting the iframe's content and height changes
             // the scroll value, don't know why.
@@ -1532,7 +1557,7 @@ Message.prototype = {
               self._signal();
           } catch (e) {
             try {
-              iframe.style.height = iframeDoc.body.scrollHeight+"px";
+              adjustHeight();
             } catch (e) {
               iframe.style.height = "800px";
             }
