@@ -360,32 +360,41 @@ function getMessageForQuickReply() {
   return conv.messages[conv.messages.length - 1].message;
 }
 
+// Returns a wrapper around the iframe that stands for the editor
 function getActiveEditor() {
   let textarea;
   if (gComposeSession) {
     gComposeSession.match({
       reply: function (_, aReplyType) {
         if (aReplyType == "reply")
-          textarea = document.querySelector("li.reply textarea");
+          textarea = document.querySelector("li.reply .textarea");
         else if (aReplyType == "replyAll")
-          textarea = document.querySelector("li.replyAll textarea");
+          textarea = document.querySelector("li.replyAll .textarea");
         else
           Log.assert(false, "Unknown reply type");
       },
 
       new: function () {
-        textarea = document.querySelector("li.reply textarea");
+        textarea = document.querySelector("li.reply .textarea");
       },
 
       draft: function () {
-        textarea = document.querySelector("li.reply textarea");
+        textarea = document.querySelector("li.reply .textarea");
       },
     });
   } else {
     // This happens if we are creating a draft instance.
-    textarea = document.querySelector("li.reply textarea");
+    textarea = document.querySelector("li.reply .textarea");
   }
-  return textarea;
+  return {
+    node: textarea,
+    get value () {
+      return textarea.contentDocument.body.innerHTML
+    },
+    set value (val) {
+      textarea.contentDocument.body.innerHTML = val
+    }
+  }
 }
 
 function createComposeSession(what) {
@@ -691,14 +700,9 @@ ComposeSession.prototype = {
           let date = (new Date(aMsgHdr.date/1000)).toLocaleString();
           let [{ email, name }] = parseMimeLine(aMsgHdr.author);
           let author = name || email;
-          // This will somehow make sure reflow inside the blockquotes happens,
-          // rather than trying to use our own citeString function which doesn't
-          // perform rewrap.
-          let body = "\n"
-            + htmlToPlainText('<blockquote type="cite">'+aBody+'</blockquote>')
-              .trim();
+          let body = '<blockquote type="cite">'+aBody+'</blockquote>';
           try {
-            [body = h.onReplyComposed(getMessageForQuickReply(), body)
+            [body = h.onReplyComposed(getMessageForQuickReply(), body, true)
               for each ([, h] in Iterator(getHooks()))
               if (typeof(h.onReplyComposed) == "function")];
           } catch (e) {
@@ -757,7 +761,7 @@ ComposeSession.prototype = {
             val = quote + txt + signature;
           }
           // After we removed any trailing newlines, insert it into the textarea
-          node.value = val;
+          node.value = val; 
           // I <3 HTML5 selections.
           node.selectionStart = pos;
           node.selectionEnd = pos;
@@ -890,7 +894,7 @@ ComposeSession.prototype = {
         compType: compType,
         deliverType: deliverMode,
       }, { match: function (x) {
-        x.plainText(ed.value);
+        x.editor(ed.node);
       }}, {
         progressListener: progressListener,
         sendListener: sendListener,

@@ -34,6 +34,25 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+function makeEditable(aIframe, aMakeEditable) {
+  // Setup the iframe to be editable in htmlmail mode (for blockquotes)
+  let w = aIframe.contentWindow;
+  // let nav = w.QueryInterface(Ci.nsIInterfaceRequestor)
+  //             .getInterface(Ci.nsIWebNavigation);
+  let s = w.QueryInterface(Ci.nsIInterfaceRequestor)
+           .getInterface(Ci.nsIWebNavigation)
+           .QueryInterface(Ci.nsIInterfaceRequestor)
+           .getInterface(Ci.nsIEditingSession);
+  if (aMakeEditable) {
+    //aIframe.designMode = "on";
+    s.makeWindowEditable(w, "htmlmail", false, aMakeEditable, false);
+  } else {
+    // TODO debug from gdb tearDownEditorOnWindow and see what happens
+    //s.detachFromWindow(w);
+    s.tearDownEditorOnWindow(w);
+  }
+}
+
 function showQuickReply() {
   $(this).parent().addClass('noPad');
   $(this).addClass('selected');
@@ -45,12 +64,13 @@ function showQuickReply() {
       $('.replyHeader, .replyFooter').slideDown();
     }, 500);
   
-  var textareas = $(this).find('textarea');
-  textareas.addClass('ease selected');
+  var textarea = $(this).find('.textarea');
+  textarea.addClass('ease selected');
   let delay = isQuickCompose ? 0 : 900;
   setTimeout(function() {
-    textareas.removeClass('ease');
+    textarea.removeClass('ease');
     scrollNodeIntoView(document.querySelector(".quickReply"));
+    makeEditable(textarea.get(0), true);
   }, delay);
 }
 
@@ -61,12 +81,13 @@ function hideQuickReply() {
     $('ul.inputs li').removeClass('selected');
     $('ul.inputs li').removeClass('invisible');
     
-    var textareas = $('ul.inputs li textarea.selected');
-    textareas.addClass('ease');
-    textareas.removeClass('selected');
-    textareas.removeAttr('style');
+    var textarea = $('.textarea.selected');
+    makeEditable(textarea.get(0), false);
+    textarea.addClass('ease');
+    textarea.removeClass('selected');
+    textarea.removeAttr('style');
     setTimeout(function() {
-      textareas.removeClass('ease');
+      textarea.removeClass('ease');
     }, 500);
   }, 500);
 }
@@ -105,16 +126,12 @@ function registerQuickReplyEventListeners() {
     Log.debug("New quick reply (event listener) →", type);
     newComposeSessionByClick(type);
   });
-  
-  $('a.discard').click(function() {
-    confirmDiscard();
-  });
-
-  let lineHeight = parseInt(
-    window.getComputedStyle(document.querySelector('.quickReply textarea'), null).lineHeight
-  );
+ 
   // Autoresize sorta-thingy.
-  $('.quickReply textarea').keypress(function (event) {
+  let lineHeight = parseInt(
+    window.getComputedStyle(document.querySelector('.quickReply .textarea'), null).lineHeight
+  );
+  $('.quickReply .textarea').keypress(function (event) {
     if (event.which == KeyEvent.DOM_VK_RETURN) {
       if (event.target.scrollHeight > lastKnownHeight) {
         // 5px padding-top, 5px padding-bottom, 1px border-top-width, 1px

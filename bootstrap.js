@@ -142,6 +142,7 @@ function startup(aData, aReason) {
   Cu.import("resource://conversations/modules/keycustomization.js", global);
 
   Log = setupLogging("Conversations.MonkeyPatch");
+  Log.debug("startup, aReason=", aReason);
 
   try {
     // Import all required plugins. If you create a new plugin, install it here.
@@ -191,18 +192,18 @@ function startup(aData, aReason) {
   }
 }
 
-function shutdown(data, reason) {
+function shutdown(aData, aReason) {
   // No need to do extra work here
-  if (reason == BOOTSTRAP_REASONS.APP_SHUTDOWN)
+  if (aReason == BOOTSTRAP_REASONS.APP_SHUTDOWN)
     return;
 
   ResourceRegister.uninit("conversations");
   for each (let w in fixIterator(Services.wm.getEnumerator("mail:3pane")))
-    w.Conversations.monkeyPatch.undo(reason);
+    w.Conversations.monkeyPatch.undo(aReason);
 }
 
-function install(data, reason) {
+function install(aData, aReason) {
 }
 
-function uninstall(data, reason) {
+function uninstall(aData, aReason) {
 }

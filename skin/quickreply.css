@@ -90,7 +90,7 @@
   vertical-align: top;
 }
 
-.quickReply textarea {
+.quickReply .textarea {
   width: 100%;
   border: 1px solid #aaa;
   min-height: 54px;
@@ -112,18 +112,18 @@
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05) inset;
 }
 
-.quickReply textarea.ease {
+.quickReply .textarea.ease {
   transition: all 0.4s ease;
    transition: all 0.4s ease;
 }
 
-.quickReply textarea:focus {
+.quickReply .textarea:focus {
   border-color: #888;
   
   box-shadow: 0 0 0 2px rgba(0, 107, 255, 0.25) inset;
 }
 
-.quickReply li.selected textarea {
+.quickReply li.selected .textarea {
   color: #000;
   background-color: #fff;
   height: 162px;
@@ -131,7 +131,7 @@
   resize: vertical;
 }
 
-body.inTab .quickReply li.selected textarea {
+body.inTab .quickReply li.selected .textarea {
   height: 243px;
 }
 
@@ -386,7 +386,7 @@ html[xmlns] .cf {
 
 .quickCompose .quickReply ul.inputs,
 .quickCompose .quickReply ul.inputs li,
-.quickCompose .quickReply textarea.ease {
+.quickCompose .quickReply .textarea.ease {
   transition: none;
   transition: none;
 }

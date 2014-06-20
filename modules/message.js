@@ -1411,26 +1411,6 @@ Message.prototype = {
       }
     };
 
-    let delay = 100;
-    let timeout = topMail3Pane(this).setTimeout(function resize () {
-      // Do a pre-computation of the height because of HTML newsletters that
-      // don't fire the load event until the whole document is done loading.
-      // This can take up to 1 minute if the server is slow delivering images
-      // (true story).
-      try {
-        if (iframe.contentDocument && iframe.contentDocument.body)
-          adjustHeight();
-        // Retry aggressively, because the backend may need a lot of time
-        // to fetch the message in the message store, process it through libmime,
-        // and output it into the xul:iframe. Every time we retry, we leave the
-        // backend twice more time, until we've really waited for a long time...
-        if (delay < 10000)
-          timeout = topMail3Pane(self).setTimeout(resize, (delay = delay * 2));
-      } catch (e) {
-        Log.debug(e);
-      }
-    }, delay);
-
     // The xul:iframe automatically loads about:blank when it is added
     // into the tree. We need to wait for the document to be loaded before
     // doing things.
@@ -1535,8 +1515,6 @@ Message.prototype = {
             }
 
             // Everything's done, so now we're able to settle for a height.
-            mainWindow.clearTimeout(timeout);
-
             adjustHeight();
 
             // Sometimes setting the iframe's content and height changes
