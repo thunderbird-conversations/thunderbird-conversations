@@ -695,77 +695,7 @@ ComposeSession.prototype = {
     this.match({
       reply: function (aMessage) {
         let aMsgHdr = aMessage._msgHdr;
-        quoteMsgHdr(aMsgHdr, function (aBody) {
-          // Join together the different parts
-          let date = (new Date(aMsgHdr.date/1000)).toLocaleString();
-          let [{ email, name }] = parseMimeLine(aMsgHdr.author);
-          let author = name || email;
-          let body = '<blockquote type="cite">'+aBody+'</blockquote>';
-          try {
-            [body = h.onReplyComposed(getMessageForQuickReply(), body, true)
-              for each ([, h] in Iterator(getHooks()))
-              if (typeof(h.onReplyComposed) == "function")];
-          } catch (e) {
-            Log.warn("Plugin returned an error:", e);
-            dumpCallStack(e);
-          }
-          // Old way:
-          //  let body = citeString("\n"+htmlToPlainText(aBody).trim());
-          let quoteblock = // body already starts with a newline
-            strings.get("quoteIntroString", [date, author]) + body;
-          // Grab the identity we're using and use its parameters.
-          let identity = self.params.identity;
-          let signature = "", signatureNoDashes = "";
-          if (identity.sigOnReply) {
-            signature = getSignatureContentsForAccount(identity);
-            if (String.trim(signature).length) {
-              [signature, signatureNoDashes] =
-                ["\n\n-- \n" + signature, "\n\n" + signature];
-              if (identity.suppressSigSep)
-                signature = signatureNoDashes;
-            }
-          }
-          self.stripSignatureIfNeeded = function () {
-            let ed = getActiveEditor();
-            if (identity.sigOnReply) {
-              if (identity.replyOnTop && !identity.sigBottom)
-                ed.value = ed.value.replace(signatureNoDashes, "");
-              else
-                ed.value = ed.value.replace(signature, "");
-            }
-          };
-          // The user might be fast and might have started typing something
-          // already
-          let node = getActiveEditor();
-          let txt = node.value;
-          let val = null;
-          let pos = null;
-          let quote = identity.autoQuote
-            ? quoteblock
-            : "";
-          // Assemble the parts
-          if (identity.replyOnTop) {
-            if (identity.autoQuote)
-              quote = "\n\n" + quote;
-            if (!identity.sigBottom) {
-              pos = 0;
-              val = txt + signatureNoDashes + quote;
-            } else {
-              pos = 0;
-              val = txt + quote + signature;
-            }
-          } else {
-            if (identity.autoQuote)
-              quote = quote + "\n\n";
-            pos = (quote + txt).replace(/\r?\n/g, "\n").length;
-            val = quote + txt + signature;
-          }
-          // After we removed any trailing newlines, insert it into the textarea
-          node.value = val; 
-          // I <3 HTML5 selections.
-          node.selectionStart = pos;
-          node.selectionEnd = pos;
-        });
+        quoteMsgHdrIntoIframe(aMsgHdr, getActiveEditor().node);
         self.setupDone();
       },
 

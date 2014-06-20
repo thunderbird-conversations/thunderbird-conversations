@@ -65,12 +65,12 @@ function showQuickReply() {
     }, 500);
   
   var textarea = $(this).find('.textarea');
+  makeEditable(textarea.get(0), true);
   textarea.addClass('ease selected');
   let delay = isQuickCompose ? 0 : 900;
   setTimeout(function() {
     textarea.removeClass('ease');
     scrollNodeIntoView(document.querySelector(".quickReply"));
-    makeEditable(textarea.get(0), true);
   }, delay);
 }
 
@@ -127,6 +127,8 @@ function registerQuickReplyEventListeners() {
     newComposeSessionByClick(type);
   });
  
+  // TODO
+  return;
   // Autoresize sorta-thingy.
   let lineHeight = parseInt(
     window.getComputedStyle(document.querySelector('.quickReply .textarea'), null).lineHeight
