@@ -563,7 +563,13 @@
       document.querySelector("#messageList").classList.add("quickCompose");
       $("#quickReplyTemplate").tmpl().appendTo($("#messageList"));
       $(".replyAll, #save, .replyMethod").remove();
-      showQuickReply.call($(".reply.expand"));
+
+      // TODO figure out why this timeout is needed
+      setTimeout(function ()
+        showQuickReply.call($(".reply.expand")),
+        0
+      );
+
       revealCompositionFields();
       gComposeSession = createComposeSession(function (x) x.new());
       editFields("to");

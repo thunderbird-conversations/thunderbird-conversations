@@ -45,9 +45,8 @@ function makeEditable(aIframe, aMakeEditable) {
            .getInterface(Ci.nsIEditingSession);
   if (aMakeEditable) {
     //aIframe.designMode = "on";
-    s.makeWindowEditable(w, "htmlmail", false, aMakeEditable, false);
+    s.makeWindowEditable(w, "htmlmail", false, true, false);
   } else {
-    // TODO debug from gdb tearDownEditorOnWindow and see what happens
     //s.detachFromWindow(w);
     s.tearDownEditorOnWindow(w);
   }
