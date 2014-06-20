@@ -693,9 +693,15 @@ ComposeSession.prototype = {
   setupQuote: function () {
     let self = this;
     this.match({
-      reply: function (aMessage) {
+      reply: function (aMessage, aReplyType) {
         let aMsgHdr = aMessage._msgHdr;
-        quoteMsgHdrIntoIframe(aMsgHdr, getActiveEditor().node);
+        // Can't use getActiveEditor() at this stage because gComposeSession
+        // hasn't been set yet.
+        quoteMsgHdrIntoIframe(aMsgHdr,
+          aReplyType == "reply" ?
+          document.querySelector("li.reply .textarea") :
+          document.querySelector("li.replyAll .textarea")
+        );
         self.setupDone();
       },
 
