@@ -450,7 +450,13 @@ function ComposeSession (match) {
     subject: null,
     otherRandomHeaders: null,
   };
-  this.stripSignatureIfNeeded = function () {};
+  this.stripSignatureIfNeeded = function () {
+    let w = getActiveEditor().node.contentWindow;
+    for (let sig of w.document.querySelectorAll("blockquote[type=cite] .moz-signature"))
+      sig.classList.add("moz-quoted-signature");
+    for (let sig of w.document.querySelectorAll(".moz-signature:not(.moz-quoted-signature)"))
+      sig.parentNode.removeChild(sig);
+  };
 
   // Go!
   this.senderNameElem = $(".senderName");
