@@ -17,7 +17,7 @@
   border-top: 1px solid #E6E6E6;
   padding: 10px 10px;
   position: relative;
-  
+
   border-radius: 0 0 5px 5px;
 }
 
@@ -27,7 +27,7 @@
   padding-right: 140px; /* overridden in stub.xhtml (localized) */
 
   margin: -10px -5px;
-  
+
   transition: all 0.4s ease;
    transition: all 0.4s ease;
 }
@@ -42,7 +42,7 @@
   position: relative;
   width: 50%;
   opacity: 1;
-  
+
   transition: all 0.4s ease;
    transition: all 0.4s ease;
 }
@@ -101,14 +101,14 @@
   background-color: transparent;
   display: block;
   position: relative;
-  z-index: 100;
+  z-index: 0;
   outline: none;
   overflow: hidden;
   color: transparent;
 
   font-family: sans-serif;
   font-size: 1.4rem;
-  
+
   box-shadow: 0 2px 0 rgba(0, 0, 0, 0.05) inset;
 }
 
@@ -119,7 +119,7 @@
 
 .quickReply .textarea:focus {
   border-color: #888;
-  
+
   box-shadow: 0 0 0 2px rgba(0, 107, 255, 0.25) inset;
 }
 
@@ -129,6 +129,7 @@
   height: 162px;
   overflow: auto;
   resize: vertical;
+  z-index: 100;
 }
 
 body.inTab .quickReply li.selected .textarea {
@@ -155,7 +156,7 @@ body.inTab .quickReply li.selected .textarea {
   background-position: -4px 2px;
   background-repeat: no-repeat;
   z-index: 101;
-  
+
   border-radius: 0 3px 0 0;
 }
 
@@ -208,7 +209,7 @@ body.inTab .quickReply li.selected .textarea {
 }
 
 .quickReply .replyFooter span {
-  padding: 0 5px 10px;  
+  padding: 0 5px 10px;
   display: block;
 }
 
@@ -222,11 +223,11 @@ body.inTab .quickReply li.selected .textarea {
 	line-height: 0;
 	height: 0;
 }
- 
+
 html[xmlns] .cf {
 	display: block;
 }
- 
+
 * html .cf {
 	height: 1%;
 }
