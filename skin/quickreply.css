@@ -101,7 +101,7 @@
   background-color: transparent;
   display: block;
   position: relative;
-  z-index: 0;
+  z-index: 100;
   outline: none;
   overflow: hidden;
   color: transparent;
@@ -129,7 +129,6 @@
   height: 162px;
   overflow: auto;
   resize: vertical;
-  z-index: 100;
 }
 
 body.inTab .quickReply li.selected .textarea {
