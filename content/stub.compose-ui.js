@@ -167,6 +167,9 @@ function registerQuickReply() {
   // Will set the placeholder and return the bz params
   gBzSetup = bzSetup();
   registerQuickReplyEventListeners();
+
+  // Bold, italics, etC.
+  registerQuickReplyDocumentCommands();
 }
 
 // This function is called once when the conversation is complete, and then

@@ -62,7 +62,7 @@ function showQuickReply() {
     setTimeout(function() {
       $('.replyHeader, .replyFooter').slideDown();
     }, 500);
-  
+
   var textarea = $(this).find('.textarea');
   makeEditable(textarea.get(0), true);
   textarea.addClass('ease selected');
@@ -79,7 +79,7 @@ function hideQuickReply() {
     $('ul.inputs').removeClass('noPad');
     $('ul.inputs li').removeClass('selected');
     $('ul.inputs li').removeClass('invisible');
-    
+
     var textarea = $('.textarea.selected');
     makeEditable(textarea.get(0), false);
     textarea.addClass('ease');
@@ -106,7 +106,7 @@ function registerQuickReplyEventListeners() {
     onPopOut(event, type, isSelected);
     event.stopPropagation();
   });
-  
+
   // Must match .quickReply li.selected textarea size in quickreply.css
   let lastKnownHeight = 0;
 
@@ -125,7 +125,7 @@ function registerQuickReplyEventListeners() {
     Log.debug("New quick reply (event listener) →", type);
     newComposeSessionByClick(type);
   });
- 
+
   // TODO
   return;
   // Autoresize sorta-thingy.
@@ -149,4 +149,19 @@ function registerQuickReplyEventListeners() {
       }
     }
   });
+}
+
+function registerQuickReplyDocumentCommands() {
+  for (let iframe of document.querySelectorAll(".textarea")) {
+    let w = iframe.contentWindow;
+    let doc = iframe.contentDocument;
+    w.addEventListener("keypress", function (event) {
+      if (event.ctrlKey && event.which == 'b'.charCodeAt(0))
+        doc.execCommand("bold");
+      if (event.ctrlKey && event.which == 'i'.charCodeAt(0))
+        doc.execCommand("italic");
+      if (event.ctrlKey && event.which == 'u'.charCodeAt(0))
+        doc.execCommand("underline");
+    });
+  }
 }
