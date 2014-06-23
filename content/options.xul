@@ -76,7 +76,6 @@
   </setting>
   <setting title="&title.extra_attachments;" desc="&desc.extra_attachments2;" pref="conversations.extra_attachments" type="bool" />
   <setting title="&title.compose_in_tab;" desc="&desc.compose_in_tab;" pref="conversations.compose_in_tab" type="bool" />
-  <setting title="&title.fcc_follows_if_not_inbox;" desc="&desc.fcc_follows_if_not_inbox;" pref="conversations.fcc_follows_if_not_inbox" type="bool" />
   <setting title="&title.debugging;" desc="&desc.debugging;" pref="conversations.logging_enabled" type="bool" />
  
 </vbox>
