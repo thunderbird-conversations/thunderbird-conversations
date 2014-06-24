@@ -419,6 +419,7 @@ MonkeyPatch.prototype = {
           tabmail.openTab("chromeTab", {
             chromePage: kStubUrl+queryString,
           });
+          //getMail3Pane().openDialog(kStubUrl+queryString, "", "chrome,width=640,height=1024");
         };
       }
       oldThreadPaneDoubleClick();
@@ -537,7 +538,7 @@ MonkeyPatch.prototype = {
                 window.Conversations.currentConversation.counter, Colors.default);
             else
               Log.debug("First conversation");
-            freshConversation.outputInto(htmlpane, function (aConversation) {
+            freshConversation.outputInto(htmlpane.contentWindow, function (aConversation) {
               if (aConversation.messages.length == 0) {
                 Log.debug(Colors.red, "0 messages in aConversation");
                 return;

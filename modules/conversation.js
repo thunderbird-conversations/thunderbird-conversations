@@ -762,7 +762,7 @@ Conversation.prototype = {
     let i = [x.message for each ([, x] in Iterator(this.messages))].indexOf(aMessage);
     Log.debug("Removing message", i);
     if (i == this.messages.length - 1 && this.messages.length > 1) {
-      let $ = this._htmlPane.contentWindow.$;
+      let $ = this._htmlPane.$;
       $(".message:last").prev().append($(".quickReply"));
       // Re-enable to reply dropdown for the message that previously had the
       // quick reply.
@@ -796,7 +796,7 @@ Conversation.prototype = {
       [(x.message._conversation = this) for each ([, x] in Iterator(aMessages))];
       this.messages = this.messages.concat(aMessages);
 
-      let $ = this._htmlPane.contentWindow.$;
+      let $ = this._htmlPane.$;
       for each (let i in range(0, aMessages.length)) {
         let oldMsg;
         if (i == 0) {
@@ -817,7 +817,7 @@ Conversation.prototype = {
       let tmplData = [m.message.toTmplData(false)
         for each ([_i, m] in Iterator(aMessages))];
 
-      let w = this._htmlPane.contentWindow;
+      let w = this._htmlPane;
       w.markReadInView.disable();
 
       $("#messageTemplate").tmpl(tmplData).appendTo($(this._domNode));
@@ -1023,7 +1023,7 @@ Conversation.prototype = {
         //  we're not doing anything besides saving the quick reply, so we don't
         //  need for this call to complete before going on.
         try {
-          this._htmlPane.contentWindow.onSave();
+          this._htmlPane.onSave();
         } catch (e) {
           Log.error(e);
           dumpCallStack(e);
@@ -1050,7 +1050,7 @@ Conversation.prototype = {
     // Fill in the HTML right away. The has the nice side-effect of erasing the
     // previous conversation (but not the conversation-wide event handlers!)
     let t0  = (new Date()).getTime();
-    let $ = this._htmlPane.contentWindow.$;
+    let $ = this._htmlPane.$;
     for each (let i in range(0, this.messages.length)) {
       // We need to set this before the call to toTmplData.
       let msg = this.messages[i].message;
@@ -1063,7 +1063,7 @@ Conversation.prototype = {
       for each ([i, m] in Iterator(this.messages))];
     // We must do this if we are to ever release the previous Conversation
     //  object. See comments in stub.html for the nice details.
-    this._htmlPane.contentWindow.cleanup();
+    this._htmlPane.cleanup();
     // We need to split the big array in small chunks because jquery-tmpl chokes
     //  on big outputs... Snarky remark: that didn't happen with my innerHTML
     //  solution. On my computer, jquery-tmpl chokes at 93 messages.
@@ -1099,11 +1099,11 @@ Conversation.prototype = {
       subjectNode.textContent = subject || "(no subject)";
     }
     subjectNode.setAttribute("title", subject);
-    this._htmlPane.contentWindow.fakeTextOverflowSubject();
-    this._htmlPane.contentDocument.title = subject;
+    this._htmlPane.fakeTextOverflowSubject();
+    this._htmlPane.document.title = subject;
     // Invalidate the composition session so that compose-ui.js can setup the
     //  fields next time.
-    this._htmlPane.contentWindow.gComposeSession = null;
+    this._htmlPane.gComposeSession = null;
 
     // Move on to the next step
     this._expandAndScroll();
@@ -1112,18 +1112,18 @@ Conversation.prototype = {
   _updateConversationButtons: function _Conversation_updateConversationButtons () {
     // Bail if we're notified too early, or if someone stole the message pane
     // from us, or whatever.
-    if (!this.messages || !this.messages.length || !this._domNode || !this._htmlPane.contentDocument)
+    if (!this.messages || !this.messages.length || !this._domNode || !this._htmlPane.document)
       return;
 
     // Make sure the toggle read/unread button is in the right state
-    let markReadButton = this._htmlPane.contentDocument.querySelector("span.read");
+    let markReadButton = this._htmlPane.document.querySelector("span.read");
     if (this.messages.some(function (x) !x.message.read))
       markReadButton.classList.add("unread");
     else
       markReadButton.classList.remove("unread");
 
     // If some message is collapsed, then the initial state is "expand"
-    let collapseExpandButton = this._htmlPane.contentDocument.querySelector("span.expand");
+    let collapseExpandButton = this._htmlPane.document.querySelector("span.expand");
     if (this.messages.some(function (x) x.message.collapsed))
       collapseExpandButton.classList.remove("collapse");
     else
@@ -1149,7 +1149,7 @@ Conversation.prototype = {
     let self = this;
     this._runOnceAfterNSignals(function () {
       let focusedNode = messageNodes[focusThis];
-      self._htmlPane.contentWindow.scrollNodeIntoView(focusedNode);
+      self._htmlPane.scrollNodeIntoView(focusedNode);
       self.messages[focusThis].message.onSelected();
 
       for each (let [i, node] in Iterator(messageNodes)) {
@@ -1166,7 +1166,7 @@ Conversation.prototype = {
       // _onComplete will potentially set a timeout that, when fired, takes care
       //  of notifying us that we should update the conversation buttons.
 
-      let w = self._htmlPane.contentWindow;
+      let w = self._htmlPane;
       if (Prefs.getBool("mailnews.mark_message_read.auto") &&
           !Prefs.getBool("mailnews.mark_message_read.delay")) {
         w.markReadInView.enable();
@@ -1203,7 +1203,7 @@ Conversation.prototype = {
   // or the event handlers ask for a conversation.
   outputInto: function _Conversation_outputInto (aHtmlPane, k) {
     this._htmlPane = aHtmlPane;
-    this._domNode = this._htmlPane.contentDocument.getElementById("messageList");
+    this._domNode = this._htmlPane.document.getElementById("messageList");
     this._onComplete = function () k(this);
     this._fetchMessages();
   },

@@ -487,7 +487,8 @@
             scrollMode = Prefs.kScrollUnreadOrLast;
 
           isInTab = true;
-          window.frameElement.setAttribute("tooltip", "aHTMLTooltip");
+          if (window.frameElement)
+            window.frameElement.setAttribute("tooltip", "aHTMLTooltip");
           let mainWindow = topMail3Pane(window);
           let willExpand = parseInt(params.willExpand);
           let msgHdrs = [msgUriToMsgHdr(x) for each (x in params.urls.split(","))];
@@ -510,8 +511,9 @@
             );
             let browser = window.frameElement;
             // Because Thunderbird still hasn't fixed that...
-            browser.setAttribute("context", "mailContext");
-            freshConversation.outputInto(browser, function (aConversation) {
+            if (browser)
+              browser.setAttribute("context", "mailContext");
+            freshConversation.outputInto(window, function (aConversation) {
               // This is a stripped-down version of what's in monkeypatch.js,
               //  make sure the two are in sync!
               Conversations.currentConversation = aConversation;
