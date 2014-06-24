@@ -565,14 +565,13 @@
       $(".replyAll, #save, .replyMethod").remove();
 
       // TODO figure out why this timeout is needed
-      setTimeout(function ()
-        showQuickReply.call($(".reply.expand")),
-        0
-      );
+      setTimeout(function () {
+        showQuickReply.call($(".reply.expand"));
+        editFields("to");
+      }, 0);
 
       revealCompositionFields();
       gComposeSession = createComposeSession(function (x) x.new());
-      editFields("to");
 
       window.Conversations = {
         currentConversation: {
