@@ -38,7 +38,7 @@ var EXPORTED_SYMBOLS = [
   'groupArray', 'joinWordList', 'iconForMimeType',
   'EventHelperMixIn', 'arrayEquals', 'LINKS_REGEX',
   'linkifySubject', 'topMail3Pane', 'reindexMessages',
-  'folderName',
+  'folderName', 'openConversationInTabOrWindow'
 ]
 
 var LINKS_REGEX = /((\w+):\/\/[^<>()'"\s]+|www(\.[-\w]+){2,})/;
@@ -49,6 +49,7 @@ const Cu = Components.utils;
 
 Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
 Cu.import("resource:///modules/gloda/index_msg.js");
+Cu.import("resource://conversations/modules/stdlib/misc.js");
 Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
 Cu.import("resource://conversations/modules/prefs.js");
 Cu.import("resource://conversations/modules/log.js");
@@ -237,23 +238,28 @@ function linkifySubject(subject, doc) {
  * - if you're a Message, use topMail3Pane(this)
  * - if you're a Conversation, use topMail3Pane(this)
  * - if you're in content/stub.xhtml, use topMail3Pane(window)
+ * - if you're in a standalone window, this function makes no sense, and returns
+ *   a pointer to _any_ mail:3pane
  */
 function topMail3Pane(aObj) {
   if (!aObj)
     throw Error("Bad usage for topMail3Pane");
 
+  let moveOut = function (w) {
+    if (w.frameElement)
+      return w.frameElement.ownerDocument.defaultView;
+    else
+      return getMail3Pane();
+  };
+
   if ("_conversation" in aObj) // Message
-    return aObj._conversation._htmlPane.ownerDocument.defaultView;
+    return moveOut(aObj._conversation._htmlPane);
   else if ("_htmlPane" in aObj) // Conversation
-    return aObj._htmlPane.ownerDocument.defaultView;
+    return moveOut(aObj._htmlPane);
   else if ("_manager" in aObj) // Contact
-    return aObj._domNode.ownerDocument.defaultView.top;
-  else if (aObj.isQuickCompose) // Standalone window or in a tab
-    return aObj.top.opener || aObj.frameElement.ownerDocument.defaultView;
-  else if ("top" in aObj) // window inside the htmlpane
-    return aObj.top;
-  else
-    throw Error("Bad usage for topMail3Pane");
+    return moveOut(aObj._domNode.ownerDocument.defaultView);
+  else // Standalone window, a tab, or in the htmlpane (common case)
+    return aObj.top.opener || moveOut(aObj) || aObj.top;
 }
 
 function reindexMessages(aMsgHdrs) {
@@ -271,4 +277,21 @@ function folderName(aFolder) {
     folderStr = folder.name + "/" + folderStr;
   }
   return [aFolder.prettiestName, folderStr];
+}
+
+function openConversationInTabOrWindow(aUrl) {
+  let window = getMail3Pane();
+  switch (Prefs.getInt("mail.openMessageBehavior")) {
+    case 0:
+      window.openDialog(aUrl, "_blank", "chrome,width=640,height=1024");
+      break;
+    case 1:
+      window.openDialog(aUrl, "conversations", "chrome,width=640,height=1024");
+      break;
+    case 2:
+      window.document.getElementById("tabmail").openTab("chromeTab", {
+        chromePage: aUrl,
+      });
+      break;
+  }
 }

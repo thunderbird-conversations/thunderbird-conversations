@@ -295,6 +295,7 @@
     Components.utils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
     Components.utils.import("resource://conversations/modules/prefs.js");
     Components.utils.import("resource://conversations/modules/log.js");
+    Components.utils.import("resource://conversations/modules/misc.js");
     Components.utils.import("resource://conversations/modules/contact.js");
 
     let Log = setupLogging("Conversations.Stub");
@@ -444,9 +445,7 @@
       // First, save the draft, and once it's saved, then move on to opening the
       // conversation in a new tab...
       onSave(function () {
-        tabmail.openTab("chromeTab", {
-          chromePage: kStubUrl+queryString,
-        });
+        openConversationInTabOrWindow(kStubUrl+queryString);
       });
     }
 
@@ -487,7 +486,8 @@
             scrollMode = Prefs.kScrollUnreadOrLast;
 
           isInTab = true;
-          window.frameElement.setAttribute("tooltip", "aHTMLTooltip");
+          if (window.frameElement)
+            window.frameElement.setAttribute("tooltip", "aHTMLTooltip");
           let mainWindow = topMail3Pane(window);
           let willExpand = parseInt(params.willExpand);
           let msgHdrs = [msgUriToMsgHdr(x) for each (x in params.urls.split(","))];
@@ -510,8 +510,9 @@
             );
             let browser = window.frameElement;
             // Because Thunderbird still hasn't fixed that...
-            browser.setAttribute("context", "mailContext");
-            freshConversation.outputInto(browser, function (aConversation) {
+            if (browser)
+              browser.setAttribute("context", "mailContext");
+            freshConversation.outputInto(window, function (aConversation) {
               // This is a stripped-down version of what's in monkeypatch.js,
               //  make sure the two are in sync!
               Conversations.currentConversation = aConversation;

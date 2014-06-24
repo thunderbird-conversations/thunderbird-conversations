@@ -157,8 +157,7 @@ KeyListener.prototype = {
       if (index < (msgNodes.length - 1)) {
         let next = msgNodes[index+1];
         next.focus();
-        this.message._conversation._htmlPane
-          .contentWindow.scrollNodeIntoView(next);
+        this.message._conversation._htmlPane.scrollNodeIntoView(next);
       }
       event.preventDefault();
       event.stopPropagation();
@@ -168,8 +167,7 @@ KeyListener.prototype = {
       if (index > 0) {
         let prev = msgNodes[index-1];
         prev.focus();
-        this.message._conversation._htmlPane
-          .contentWindow.scrollNodeIntoView(prev);
+        this.message._conversation._htmlPane.scrollNodeIntoView(prev);
       }
       event.preventDefault();
       event.stopPropagation();
@@ -665,7 +663,7 @@ Message.prototype = {
       .addEventListener("click", function () {
         self._conversation._runOnceAfterNSignals(function () {
           if (self.expanded)
-            self._conversation._htmlPane.contentWindow.scrollNodeIntoView(self._domNode);
+            self._conversation._htmlPane.scrollNodeIntoView(self._domNode);
             self.read = true;
         }, 1);
         self.toggle();
@@ -769,7 +767,7 @@ Message.prototype = {
     [x.onAddedToDom(people[i]) for each ([i, [x, email]] in Iterator(this._contacts))];
 
     // Let the UI do its stuff with the tooltips
-    this._conversation._htmlPane.contentWindow.enableTooltips(this);
+    this._conversation._htmlPane.enableTooltips(this);
 
     // Register all the needed event handlers. Nice wrappers below.
 
@@ -1027,7 +1025,7 @@ Message.prototype = {
       if (!self._domNode.getElementsByClassName("quickReply").length)
         return;
 
-      let window = self._conversation._htmlPane.contentWindow;
+      let window = self._conversation._htmlPane;
 
       switch (event.keyCode) {
         case mainWindow.KeyEvent.DOM_VK_RETURN:
@@ -1072,7 +1070,7 @@ Message.prototype = {
 
   cosmeticFixups: function _Message_cosmeticFixups() {
     let self = this;
-    let window = this._conversation._htmlPane.contentWindow;
+    let window = this._conversation._htmlPane;
     window.alignAttachments(this);
 
     // We're expanded at that stage...
@@ -1136,7 +1134,7 @@ Message.prototype = {
     this._conversation.removeMessage(this);
     msgHdrsDelete([this._msgHdr]);
     let w = this._conversation._window;
-    if (this._conversation._htmlPane.contentWindow.isInTab
+    if (this._conversation._htmlPane.isInTab
         && !this._conversation.messages.length)
       w.closeTab();
   },
@@ -1169,7 +1167,7 @@ Message.prototype = {
               .filter(function (x) x.isRealAttachment);
           }
           let tmplData = self.toTmplDataForAttachments();
-          let w = self._conversation._htmlPane.contentWindow;
+          let w = self._conversation._htmlPane;
           let $ = w.$;
           $("#attachmentIconTemplate").tmpl(tmplData).appendTo(
             $(self._domNode.querySelector(".attachmentIcon")).empty());
@@ -1208,7 +1206,7 @@ Message.prototype = {
     if (this.detailsFetched)
       return;
     this.detailsFetched = true;
-    let w = this._conversation._htmlPane.contentWindow;
+    let w = this._conversation._htmlPane;
     msgHdrGetHeaders(this._msgHdr, function (aHeaders) {
       try {
         let $ = w.$;
@@ -2030,7 +2028,7 @@ let PostStreamingFixesMixIn = {
             let div = iframeDoc.createElement("div");
             div.setAttribute("class", "link "+linkClass);
             div.addEventListener("click", function div_listener (event) {
-              let h = self._conversation._htmlPane.contentWindow.toggleBlock(event, showText, hideText);
+              let h = self._conversation._htmlPane.toggleBlock(event, showText, hideText);
               iframe.style.height = (parseFloat(iframe.style.height) + h)+"px";
             }, true);
             div.setAttribute("style", "color: "+linkColor+"; cursor: pointer; font-size: "+smallSize+"px;");
@@ -2198,7 +2196,7 @@ let PostStreamingFixesMixIn = {
         // reasons, content cannot scroll its outer chrome document.
         a.addEventListener("click", function link_listener (event) {
           let node = iframeDoc.getElementsByName(anchor)[0];
-          let w = self._conversation._htmlPane.contentWindow;
+          let w = self._conversation._htmlPane;
           let o1 = w.$(node).offset().top;
           let o2 = w.$(iframe).offset().top;
           w.scrollTo(0, o1 + o2 + 5 - 44);
