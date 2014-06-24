@@ -49,7 +49,7 @@ Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
 Cu.import("resource://conversations/modules/stdlib/misc.js");
 Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
 Cu.import("resource://conversations/modules/assistant.js");
-Cu.import("resource://conversations/modules/misc.js"); // for joinWordList
+Cu.import("resource://conversations/modules/misc.js"); // for joinWordList, openConversationIn
 Cu.import("resource://conversations/modules/prefs.js");
 Cu.import("resource://conversations/modules/log.js");
 
@@ -416,10 +416,7 @@ MonkeyPatch.prototype = {
           let scrollMode = self.determineScrollMode();
           let queryString = "?urls="+window.encodeURIComponent(urls) +
             "&scrollMode="+scrollMode;
-          tabmail.openTab("chromeTab", {
-            chromePage: kStubUrl+queryString,
-          });
-          //getMail3Pane().openDialog(kStubUrl+queryString, "", "chrome,width=640,height=1024");
+          openConversationInTabOrWindow(kStubUrl+queryString);
         };
       }
       oldThreadPaneDoubleClick();

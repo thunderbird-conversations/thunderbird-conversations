@@ -38,7 +38,7 @@ var EXPORTED_SYMBOLS = [
   'groupArray', 'joinWordList', 'iconForMimeType',
   'EventHelperMixIn', 'arrayEquals', 'LINKS_REGEX',
   'linkifySubject', 'topMail3Pane', 'reindexMessages',
-  'folderName',
+  'folderName', 'openConversationInTabOrWindow'
 ]
 
 var LINKS_REGEX = /((\w+):\/\/[^<>()'"\s]+|www(\.[-\w]+){2,})/;
@@ -49,6 +49,7 @@ const Cu = Components.utils;
 
 Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
 Cu.import("resource:///modules/gloda/index_msg.js");
+Cu.import("resource://conversations/modules/stdlib/misc.js");
 Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
 Cu.import("resource://conversations/modules/prefs.js");
 Cu.import("resource://conversations/modules/log.js");
@@ -276,4 +277,21 @@ function folderName(aFolder) {
     folderStr = folder.name + "/" + folderStr;
   }
   return [aFolder.prettiestName, folderStr];
+}
+
+function openConversationInTabOrWindow(aUrl) {
+  let window = getMail3Pane();
+  switch (Prefs.getInt("mail.openMessageBehavior")) {
+    case 0:
+      window.openDialog(aUrl, "_blank", "chrome,width=640,height=1024");
+      break;
+    case 1:
+      window.openDialog(aUrl, "conversations", "chrome,width=640,height=1024");
+      break;
+    case 2:
+      window.document.getElementById("tabmail").openTab("chromeTab", {
+        chromePage: aUrl,
+      });
+      break;
+  }
 }

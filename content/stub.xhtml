@@ -295,6 +295,7 @@
     Components.utils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
     Components.utils.import("resource://conversations/modules/prefs.js");
     Components.utils.import("resource://conversations/modules/log.js");
+    Components.utils.import("resource://conversations/modules/misc.js");
     Components.utils.import("resource://conversations/modules/contact.js");
 
     let Log = setupLogging("Conversations.Stub");
@@ -444,9 +445,7 @@
       // First, save the draft, and once it's saved, then move on to opening the
       // conversation in a new tab...
       onSave(function () {
-        tabmail.openTab("chromeTab", {
-          chromePage: kStubUrl+queryString,
-        });
+        openConversationInTabOrWindow(kStubUrl+queryString);
       });
     }
 
