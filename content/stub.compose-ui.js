@@ -463,12 +463,11 @@ function ComposeSession (match) {
 
   // Go!
   this.senderNameElem = $(".senderName");
-  this.asyncSetupSteps = 5; // number of asynchronous setup functions to finish
+  this.asyncSetupSteps = 4; // number of asynchronous setup functions to finish
   this.setupIdentity();
   this.setupMisc();
   this.setupAutocomplete();
   this.setupAttachments();
-  this.setupQuote();
 
   this.identities = [];
   for each (let [email, identity] in Iterator(gIdentities)) {
@@ -699,39 +698,35 @@ ComposeSession.prototype = {
     });
   },
 
-  setupQuote: function () {
+  setupFinal: function () {
     let self = this;
     this.match({
       reply: function (aMessage, aReplyType) {
         let aMsgHdr = aMessage._msgHdr;
         // Can't use getActiveEditor() at this stage because gComposeSession
         // hasn't been set yet.
-        quoteMsgHdrIntoIframe(aMsgHdr,
-          aReplyType == "reply" ?
+        let iframe = aReplyType == "reply" ?
           document.querySelector("li.reply .textarea") :
-          document.querySelector("li.replyAll .textarea")
-        );
-        self.setupDone();
+          document.querySelector("li.replyAll .textarea");
+        composeInIframe(iframe, {
+          msgHdr: aMsgHdr,
+          compType: Ci.nsIMsgCompType.ReplyAll,
+          identity: self.params.identity,
+        });
       },
 
       draft: function ({ body }) {
         let node = getActiveEditor();
         node.value = body;
-        self.setupDone();
       },
 
       new: function () {
-        let signature = getSignatureContentsForAccount(self.params.identity);
-        let node = getActiveEditor();
-        if (signature) {
-          if (self.params.identity.suppressSigSep)
-            node.value = "\n\n" + signature;
-          else
-            node.value = "\n\n-- \n" + signature;
-          node.selectionStart = 0;
-          node.selectionEnd = 0;
-        }
-        self.setupDone();
+        let iframe = document.querySelector("li.reply .textarea");
+        composeInIframe(iframe, {
+          msgHdr: null,
+          compType: Ci.nsIMsgCompType.New,
+          identity: self.params.identity,
+        });
       },
     });
   },
@@ -739,6 +734,7 @@ ComposeSession.prototype = {
   setupDone: function() {
     // wait till all (asynchronous) setup steps are finished
     if (!--this.asyncSetupSteps) {
+      this.setupFinal();
       let recipients = {
         to: JSON.parse($("#to").val()),
         cc: JSON.parse($("#cc").val()),

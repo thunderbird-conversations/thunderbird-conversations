@@ -568,10 +568,9 @@
       setTimeout(function () {
         showQuickReply.call($(".reply.expand"));
         editFields("to");
+        revealCompositionFields();
+        gComposeSession = createComposeSession(function (x) x.new());
       }, 0);
-
-      revealCompositionFields();
-      gComposeSession = createComposeSession(function (x) x.new());
 
       window.Conversations = {
         currentConversation: {
