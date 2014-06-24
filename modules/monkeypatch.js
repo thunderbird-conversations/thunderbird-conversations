@@ -394,14 +394,20 @@ MonkeyPatch.prototype = {
     // Undo all our customizations at uninstall-time
     this.registerUndoCustomizations();
 
+    let mkConvUrl = function (msgHdrs) {
+      let urls = [msgHdrGetUri(x) for each (x in msgHdrs)].join(",");
+      let scrollMode = self.determineScrollMode();
+      let queryString = "?urls="+window.encodeURIComponent(urls) +
+        "&scrollMode="+scrollMode;
+      return kStubUrl + queryString;
+    };
+
     // Below is the code that intercepts the double-click-on-a-message event,
     //  and reroutes the control flow to our conversation reader.
     let oldThreadPaneDoubleClick = window.ThreadPaneDoubleClick;
     window.ThreadPaneDoubleClick = function () {
-      if (!Prefs.enabled) {
-        oldThreadPaneDoubleClick();
-        return;
-      }
+      if (!Prefs.enabled)
+        return oldThreadPaneDoubleClick();
 
       let tabmail = window.document.getElementById("tabmail");
       // ThreadPaneDoubleClick calls OnMsgOpenSelectedMessages. We don't want to
@@ -412,17 +418,34 @@ MonkeyPatch.prototype = {
       let msgHdrs = window.gFolderDisplay.selectedMessages;
       if (!msgHdrs.some(msgHdrIsRss) && !msgHdrs.some(msgHdrIsNntp)) {
         window.MsgOpenSelectedMessages = function () {
-          let urls = [msgHdrGetUri(x) for each (x in msgHdrs)].join(",");
-          let scrollMode = self.determineScrollMode();
-          let queryString = "?urls="+window.encodeURIComponent(urls) +
-            "&scrollMode="+scrollMode;
-          openConversationInTabOrWindow(kStubUrl+queryString);
+          openConversationInTabOrWindow(mkConvUrl(msgHdrs));
         };
       }
       oldThreadPaneDoubleClick();
       window.MsgOpenSelectedMessages = oldMsgOpenSelectedMessages;
     };
     this.pushUndo(function() window.ThreadPaneDoubleClick = oldThreadPaneDoubleClick);
+
+    // Same thing for middle-click
+    let oldTreeOnMouseDown = window.TreeOnMouseDown;
+    window.TreeOnMouseDown = function (event) {
+      if (!Prefs.enabled)
+        return oldTreeOnMouseDown(event);
+
+      // Middle-click
+      if (event.button == 1) {
+        let tabmail = window.document.getElementById("tabmail");
+        window.ChangeSelectionWithoutContentLoad(event, event.target.parentNode, false);
+
+        let msgHdrs = window.gFolderDisplay.selectedMessages;
+        if (!msgHdrs.some(msgHdrIsRss) && !msgHdrs.some(msgHdrIsNntp))
+          tabmail.openTab("chromeTab", { chromePage: mkConvUrl(msgHdrs) });
+        else
+          return oldTreeOnMouseDown(event);
+      } else {
+        return oldTreeOnMouseDown(event);
+      }
+    };
 
     // Because we're not even fetching the conversation when the message pane is
     //  hidden, we need to trigger it manually when it's un-hidden.
