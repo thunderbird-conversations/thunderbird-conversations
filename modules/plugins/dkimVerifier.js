@@ -73,7 +73,7 @@ if (hasDKIMVerifier) {
     "use strict";
 
     // don't start a verification for the classic view if it is not shown
-    if (getMail3Pane().document.getElementById("singlemessage").getAttribute("hidden") != "true") {
+    if (getMail3Pane().gMessageDisplay.singleMessageDisplay == true) {
       onEndHeaders();
     }
   };
