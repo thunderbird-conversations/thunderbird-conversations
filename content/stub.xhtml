@@ -833,6 +833,10 @@
               ><img src="chrome://conversations/content/i/enc.png" />
               ${str("messageDecrypted")}</li
             ><li
+              class="tag-dkim-signed"
+              ><img src="chrome://conversations/content/i/sign.png" />
+              ${str("messageDKIMSigned")}</li
+            ><li
               class="in-folder"
               title="${str('jumpToFolder')}"
               >${str("inFolder").replace("#1", shortFolderName)}</li
@@ -935,6 +939,10 @@
             title="${str('messageDecryptedLong')}"
             ><img src="chrome://conversations/content/i/enc.png" />
             ${str("messageDecrypted")}</li
+          ><li
+            class="keep-tag tag-dkim-signed"
+            ><img src="chrome://conversations/content/i/sign.png" />
+            ${str("messageDKIMSigned")}</li
           ><li
             class="keep-tag in-folder"
             title="${str('jumpToFolder')}"
