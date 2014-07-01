@@ -834,6 +834,47 @@ ul.special-tags img {
   background-color: #68AB57 !important;
 }
 
+/* DKIM Verifier plugin */
+.message:not(.dkim-signed) .tag-dkim-signed {
+  display: none;
+}
+
+.message[dkimStatus="SUCCESS"] .tag-dkim-signed{
+  background-color: #68AB57 !important;
+}
+
+.message[dkimStatus="SUCCESS"][warnings="true"] .tag-dkim-signed{
+  background-color: orange !important;
+}
+
+.message[dkimStatus="PERMFAIL"] .tag-dkim-signed{
+  background-color: red!important;
+}
+
+.message[dkimStatus="TEMPFAIL"] .tag-dkim-signed{
+}
+
+.tag-dkim-signed  {
+	position: relative;
+}
+
+.tag-dkim-signed span {
+  display:none;
+}
+
+.tag-dkim-signed:hover span {
+  display: inline;
+  position: absolute;
+  top: 24px;
+  padding: 5px;
+  color: #111;
+  background-color: #fff;
+  border: 1px solid #aaa;
+  box-shadow: 0 0 0 6px rgba(0,0,0,0.25);
+  border-radius: 5px;
+  z-index: 1000;
+}
+
 /* for drafts only */
 .message.draft :-moz-any(
   .buttonReply,
