@@ -299,8 +299,6 @@
     Components.utils.import("resource://conversations/modules/contact.js");
 
     let Log = setupLogging("Conversations.Stub");
-    let isOSX = ("nsILocalFileMac" in Components.interfaces);
-    let isWindows = ("@mozilla.org/windows-registry-key;1" in Components.classes);
     let isInTab = false;
 
     $(document).ready(function () {
@@ -550,8 +548,6 @@
 
     var isQuickCompose = false;
 
-    function isAccel (event) (isOSX && event.metaKey || event.ctrlKey)
-
     /* This is our new hack: reuse this file to provide a standalone composition
      * window. Why? Because it uses gloda autocomplete and provides a
      * no-frills composition experience. */
@@ -568,9 +564,9 @@
       // TODO figure out why this timeout is needed
       setTimeout(function () {
         showQuickReply.call($(".reply.expand"));
-        editFields("to");
-        revealCompositionFields();
         gComposeSession = createComposeSession(function (x) x.new());
+        revealCompositionFields();
+        editFields("to");
       }, 0);
 
       window.Conversations = {

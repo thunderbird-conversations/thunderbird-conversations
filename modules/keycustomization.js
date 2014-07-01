@@ -43,10 +43,8 @@ const Cc = Components.classes;
 const Cu = Components.utils;
 const Cr = Components.results;
 
-let isOSX = ("nsILocalFileMac" in Ci);
-let isWindows = ("@mozilla.org/windows-registry-key;1" in Cc);
 
-
+Cu.import("resource://conversations/modules/stdlib/misc.js");
 Cu.import("resource://conversations/modules/message.js");
 Cu.import("resource://conversations/modules/log.js");
 Cu.import("resource:///modules/StringBundle.js"); // for StringBundle

@@ -118,10 +118,6 @@ function addMsgListener(aMessage) {
   msgListeners[messageId].push(weakPtr);
 }
 
-let isOSX = ("nsILocalFileMac" in Ci);
-let isWindows = ("@mozilla.org/windows-registry-key;1" in Cc);
-
-function isAccel (event) (isOSX && event.metaKey || event.ctrlKey)
 
 function dateAccordingToPref(date) {
   try {

@@ -156,11 +156,11 @@ function registerQuickReplyDocumentCommands() {
     let w = iframe.contentWindow;
     let doc = iframe.contentDocument;
     w.addEventListener("keypress", function (event) {
-      if (event.ctrlKey && event.which == 'b'.charCodeAt(0))
+      if (isAccel(event) && event.which == 'b'.charCodeAt(0))
         doc.execCommand("bold");
-      if (event.ctrlKey && event.which == 'i'.charCodeAt(0))
+      if (isAccel(event) && event.which == 'i'.charCodeAt(0))
         doc.execCommand("italic");
-      if (event.ctrlKey && event.which == 'u'.charCodeAt(0))
+      if (isAccel(event) && event.which == 'u'.charCodeAt(0))
         doc.execCommand("underline");
     });
   }
