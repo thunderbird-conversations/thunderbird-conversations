@@ -95,7 +95,7 @@
   border: 1px solid #aaa;
   min-height: 54px;
   height: 54px;
-  padding: 5px 5px 5px 20px;
+  padding: 0 0 0 100%; /* weird difference between iframe mozframetype="content" and iframe */
   font-size: 1.2rem;
   resize: none;
   background-color: transparent;
@@ -129,6 +129,7 @@
   height: 162px;
   overflow: auto;
   resize: vertical;
+  padding: 5px 5px 5px 20px;
 }
 
 body.inTab .quickReply li.selected .textarea {
