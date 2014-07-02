@@ -118,6 +118,8 @@ button img {
   line-height: 2.2rem;
   height: 2.2rem;
   overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
 }
 
 .subject a.text-link {

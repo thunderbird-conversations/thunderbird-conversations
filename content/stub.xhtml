@@ -224,12 +224,6 @@
       });
     }
 
-    // Setting the second parameter to false means don't fire a stupid timer
-    //  that lives forever everytime we call this function.
-    function fakeTextOverflowSubject() {
-      $(".subject").textOverflow(null, false);
-    }
-
     function cleanup() {
       // These shouldn't be necessary because we're blasting away everything by
       //  setting .innerHTML BUT jQuery won't remove its persistent event

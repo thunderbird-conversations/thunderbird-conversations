@@ -1099,7 +1099,6 @@ Conversation.prototype = {
       subjectNode.textContent = subject || "(no subject)";
     }
     subjectNode.setAttribute("title", subject);
-    this._htmlPane.fakeTextOverflowSubject();
     this._htmlPane.document.title = subject;
     // Invalidate the composition session so that compose-ui.js can setup the
     //  fields next time.

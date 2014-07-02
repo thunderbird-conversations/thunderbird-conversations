@@ -1,75 +1,28 @@
-/* START hbox/vbox normalization from http://alex.dojotoolkit.org/2009/08/css-3-progress/ */
-/* hbox and vbox classes */
- 
 .hbox {
-  display: -moz-box;
-  -moz-box-orient: horizontal;
-  -moz-box-align: stretch;
-
-  /*display: box;*/
-  /*box-orient: horizontal;*/
-  /*box-align: stretch;*/
+  display: flex;
+  flex-direction: row;
 }
 
 .hbox > * {
-  -moz-box-flex: 0;
-  /*box-flex: 0;*/
+  flex: none;
   display: block;
 }
 
 .vbox {
-  display: -moz-box;
-  -moz-box-orient: vertical;
-  -moz-box-align: stretch;
-
-  /*display: box;*/
-  /*box-orient: vertical;*/
-  /*box-align: stretch;*/
+  display: flex;
+  flex-direction: column;
 }
 
 .vbox > * {
-  -moz-box-flex: 0;
-  /*box-flex: 0;*/
+  flex: none;
   display: block;
 }
 
 .spacer {
-  -moz-box-flex: 1;
-  /*box-flex: 1;*/
+  flex: 1;
 }
 
-.reverse {
-  -moz-box-direction: reverse;
-  /*box-direction: reverse;*/
-}
 
-.boxFlex0 {
-  -moz-box-flex: 0;
-  /*box-flex: 0;*/
+.boxFlex {
+  flex: 1;
 }
-
-.boxFlex1, .boxFlex {
-  -moz-box-flex: 1;
-  /*box-flex: 1;*/
-}
-
-.boxFlex2 {
-  -moz-box-flex: 2;
-  /*box-flex: 2;*/
-}
-
-.start {
-  -moz-box-pack: start;
-  /*box-pack: start;*/
-}
- 
-.end {
-  -moz-box-pack: end;
-  /*box-pack: end;*/
-}
- 
-.center {
-  -moz-box-pack: center;
-  /*box-pack: center;*/
-}
-/* END hbox/vbox normalization from http://alex.dojotoolkit.org/2009/08/css-3-progress/ */
