@@ -262,13 +262,13 @@ html[xmlns] .cf {
 }
 
 .editRecipientList {
-  display:none;
+  display: none;
   margin: 0 0 5px 0;
   width: 100%;
 }
 
 .quickReplyRecipients.edit .editRecipientList {
-  display: -moz-box;
+  display: flex;
 }
 
 .quickReplyRecipients.edit ul.recipientList {
@@ -373,16 +373,15 @@ html[xmlns] .cf {
 .quickCompose .quickReply {
   width: 100%;
   height: 100%;
-  display: -moz-box !important;
-  -moz-box-flex: 1;
-  -moz-box-orient: horizontal;
+  display: flex !important;
+  flex-flow: row;
 }
 
 .quickCompose :-moz-any(.quickReplyBox, .inputs, .reply),
 .quickCompose .reply :-moz-any(.textWrap, .selected) {
-  display: -moz-box !important;
-  -moz-box-flex: 1;
-  -moz-box-orient: vertical;
+  display: flex !important;
+  flex-flow: column;
+  flex: auto;
 }
 
 .quickCompose .quickReply ul.inputs,
