@@ -23,8 +23,15 @@ INSTALL
 
 If you just want to start hacking, see
 [MDC](https://developer.mozilla.org/en/Setting_up_extension_development_environment)
-to learn how to use a proxy file. If you want to package a release,
-`./package.sh build` will package a .xpi file.
+to learn how to use a proxy file. If you want to package a release, follow
+the follow steps.
+
+1. Download the [zip archive](https://github.com/protz/GMail-Conversation-View/archive/master.zip) or clone the repository
+2. Change into the main folder, run `git submodule init` and `git submodule update` 
+3. Change into the subfolder `content/pdfjs`, run `node make bundle` and `make`. Note that you need to have `nodejs` installed.
+4. Change into the main folder and run `./build.sh`.
+
+This will package an `.xpi` file of the latest codebase.
 
 HACKING
 =======
