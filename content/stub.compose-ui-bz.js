@@ -246,7 +246,7 @@ BzComposeSession.prototype = {
       req.setRequestHeader('Accept', 'application/json');
       req.setRequestHeader('Content-Type', 'application/json');
       req.send(JSON.stringify({
-        text: $("textarea").val()
+        text: htmlToPlainText(getActiveEditor().value)
       }));
     } else {
       pText(strings.get("bzRegexpFail"));
