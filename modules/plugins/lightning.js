@@ -38,6 +38,7 @@ var EXPORTED_SYMBOLS = [];
 
 Components.utils.import("resource://conversations/modules/hook.js");
 Components.utils.import("resource://conversations/modules/log.js");
+Components.utils.import("resource://conversations/modules/misc.js");
 Components.utils.import("resource:///modules/Services.jsm");
 
 let Log = setupLogging("Conversations.Modules.Lightning");
@@ -56,72 +57,61 @@ try {
   Log.debug("Did you know, Thunderbird Conversations supports Lightning?");
 }
 
-function imipAccept(rootNode, msgWindow, itipItem, actionFunc, actionMethod, foundItems) {
-  if (actionMethod == "X-SHOWDETAILS") {
-    if (foundItems.length) {
-      let item = foundItems[0].isMutable ? foundItems[0] : foundItems[0].clone();
-      msgWindow.domWindow.modifyEventWithDialog(item);
-    }
-  } else if (cal.itip.promptCalendar(actionFunc.method, itipItem, msgWindow.domWindow)) {
-    // Hide the buttons so processing doesn't happen twice
-    for (i = 1; i <= 3; i++) {
-      let buttonElement = rootNode.getElementsByClassName("lightningImipButton" + i)[0];
-      buttonElement.style.display = "none";
-      buttonElement.removeEventListener("click", buttonElement.clickHandler, false);
-      buttonElement.clickHandler = null;
-    }
+// This is a version of setupOptions suitable for Conversations
+// see http://mxr.mozilla.org/comm-central/source/calendar/lightning/content/imip-bar.js#186
+function imipOptions(rootNode, msgWindow, message, itipItem, rc, actionFunc, foundItems) {
+  let imipBarText = rootNode.getElementsByClassName("lightningImipText")[0];
+  let doc = imipBarText.ownerDocument;
+  let data = cal.itip.getOptionsText(itipItem, rc, actionFunc);
+  let w = topMail3Pane(message);
 
-    let listener = {
+  // Set the right globals so that actionFunc works properly.
+  w.ltnImipBar.itipItem = itipItem;
+  w.ltnImipBar.actionFunc = function (listener, actionMethod) {
+
+    // Short-circuit the listeners so that we can add our own routines for
+    // adding the buttons, etc.
+    let newListener = {
       onOperationComplete: function imipAccept_onOpComplete(aCalendar,
                                                             aStatus,
                                                             aOperationType,
                                                             aId,
                                                             aDetail) {
 
-        let imipBarText = rootNode.getElementsByClassName("lightningImipText")[0];
         let label = cal.itip.getCompleteText(aStatus, aOperationType);
         imipBarText.textContent = label;
+
+        // Hide all buttons
+        for (let button of rootNode.getElementsByClassName("lightningImipButton"))
+          button.style.display = "none";
+
+        // In case it's useful
+        listener.onOperationComplete(aCalendar, aStatus, aOperationType, aId, aDetail);
       },
 
       onGetResult: function() {}
     };
 
-    try {
-      actionFunc(listener, actionMethod);
-    } catch (e) {
-      Log.error(e);
-    }
-    return true;
-  } else {
-    return false;
-  }
-}
+    actionFunc(newListener, actionMethod);
+  };
 
-function imipOptions(rootNode, msgWindow, itipItem, rc, actionFunc, foundItems) {
-  let imipBarText = rootNode.getElementsByClassName("lightningImipText")[0];
-  let doc = imipBarText.ownerDocument;
-  let data = cal.itip.getOptionsText(itipItem, rc, actionFunc);
-
+  // Update the Conversation UI
   imipBarText.textContent = data.label;
-  for (let i = 1; i <= 3; i++) {
-      let buttonElement = rootNode.getElementsByClassName("lightningImipButton" + i)[0];
-      if (data["button" + i].label) {
-          let handler = imipAccept.bind(null, rootNode, msgWindow, itipItem,
-                                        actionFunc, data["button" + i].actionMethod,
-                                        foundItems);
-          buttonElement.textContent = data["button" + i].label;
-
-          // TODO The "command" handler would be better for accessibility, but 
-          // it doesn't seem to work with this type of button.
-          buttonElement.addEventListener("click", handler, false);
-          buttonElement.style.display = "block";
-          buttonElement.clickHandler = handler;
-      }
+  // data.buttons tells us which buttons should be shown
+  for (let c of data.buttons) {
+    let buttonElement = rootNode.getElementsByClassName(c)[0];
+    let originalButtonElement = w.document.getElementById(buttonElement.id);
+    // Show the button!
+    buttonElement.style.display = "block";
+    // Fill in the right tooltip and label by re-using the original (hidden)
+    // elements.
+    buttonElement.setAttribute("tooltiptext", originalButtonElement.getAttribute("tooltiptext"));
+    buttonElement.textContent = originalButtonElement.label;
   }
 }
 
 let lightningHook = {
-  onMessageStreamed: function _lightningHook_onMessageStreamed(aMsgHdr, aDomNode, aMsgWindow) {
+  onMessageStreamed: function _lightningHook_onMessageStreamed(aMsgHdr, aDomNode, aMsgWindow, aMessage) {
     let imipBar = aDomNode.getElementsByClassName("lightningImipBar")[0];
     let imipBarText = aDomNode.getElementsByClassName("lightningImipText")[0];
     let doc = imipBar.ownerDocument;
@@ -140,7 +130,7 @@ let lightningHook = {
 
       imipBarText.textContent  = label;
 
-      cal.itip.processItipItem(itipItem, imipOptions.bind(null, aDomNode, aMsgWindow));
+      cal.itip.processItipItem(itipItem, imipOptions.bind(null, aDomNode, aMsgWindow, aMessage));
       imipBar.style.display = "block";
     }
   }

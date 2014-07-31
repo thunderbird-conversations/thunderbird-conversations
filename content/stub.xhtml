@@ -759,6 +759,9 @@
           for each ([, x] in Iterator(["mouseover", "focus", "keydown", "scroll"]))];
       };
     })();
+
+    // Lightning
+    var ltnImipBar = topMail3Pane(window).ltnImipBar;
   ]]>
   </script>
 </head>
@@ -885,9 +888,136 @@
       <div class="lightningImipBar notificationBar" style="display: none">
         <img class="lightningImipImage" src="chrome://calendar/skin/cal-icon32.png"/>
         <span class="lightningImipText"></span>
-        <button class="lightningImipButton lightningImipButton1" style="display: none"/>
-        <button class="lightningImipButton lightningImipButton2" style="display: none"/>
-        <button class="lightningImipButton lightningImipButton3" style="display: none"/>
+        <!-- The text for all these buttons is filled dynamically -->
+
+        <!-- show event/invitation details -->
+        <button id="imipDetailsButton"
+                class="lightningImipButton msgHeaderView-button imipDetailsButton"
+                onclick="ltnImipBar.executeAction('X-SHOWDETAILS')"
+                style="display: none">
+        </button>
+
+        <!-- add published events -->
+        <button id="imipAddButton"
+                class="lightningImipButton msgHeaderView-button imipAddButton"
+                onclick="ltnImipBar.executeAction()"
+                style="display: none">
+        </button>
+
+        <!-- update published events and invitations -->
+        <button id="imipUpdateButton"
+                class="lightningImipButton msgHeaderView-button imipUpdateButton"
+                onclick="ltnImipBar.executeAction()"
+                style="display: none">
+        </button>
+
+        <!-- delete cancelled events from calendar -->
+        <button id="imipDeleteButton"
+                class="lightningImipButton msgHeaderView-button imipDeleteButton"
+                onclick="ltnImipBar.executeAction()"
+                style="display: none">
+        </button>
+
+        <!-- re-confirm partstat -->
+        <button id="imipReconfirmButton"
+                class="lightningImipButton msgHeaderView-button imipReconfirmButton"
+                onclick="ltnImipBar.executeAction()"
+                style="display: none">
+        </button>
+
+        <!-- accept -->
+        <button id="imipAcceptButton"
+                onclick="if (event.target.id == this.id) ltnImipBar.executeAction('ACCEPTED');"
+                type="menu-button"
+                class="imip-button lightningImipButton msgHeaderView-button imipAcceptButton"
+                style="display: none">
+          <menupopup id="imipAcceptDropdown">
+            <menuitem id="imipAcceptButton_Accept"
+                      onclick="ltnImipBar.executeAction('ACCEPTED');"/>
+            <menuitem id="imipAcceptButton_Tentative"
+                      onclick="ltnImipBar.executeAction('TENTATIVE');"/>
+            <!-- add here more menuitem as needed -->
+          </menupopup>
+        </button>
+
+        <!-- accept recurrences -->
+        <button id="imipAcceptRecurrencesButton"
+                onclick="if (event.target.id == this.id) ltnImipBar.executeAction('ACCEPTED');"
+                type="menu-button"
+                class="imip-button lightningImipButton msgHeaderView-button imipAcceptRecurrencesButton"
+                style="display: none">
+          <menupopup id="imipAcceptRecurrencesDropdown">
+            <menuitem id="imipAcceptRecurrencesButton_Accept"
+                      onclick="ltnImipBar.executeAction('ACCEPTED');"/>
+            <menuitem id="imipAcceptRecurrencesButton_Tentative"
+                      onclick="ltnImipBar.executeAction('TENTATIVE');"/>
+            <!-- add here more menuitem as needed -->
+          </menupopup>
+        </button>
+
+        <!-- tentative; should only be used, if no imipMoreButton is used and
+           - imipDeclineButton/imipAcceptButton have no visible menuitems //-->
+        <button id="imipTentativeButton"
+                class="lightningImipButton msgHeaderView-button imipTentativeButton"
+                onclick="if (event.target.id == this.id) ltnImipBar.executeAction('TENTATIVE');"
+                type="menu-button"
+                style="display: none">
+          <menupopup id="imipTentativeDropdown">
+            <menuitem id="imipTentativeButton_Tentative"
+                      onclick="ltnImipBar.executeAction('TENTATIVE');"/>
+            <!-- add here more menuitem as needed -->
+          </menupopup>
+        </button>
+
+        <!-- tentative recurrences; should only be used, if no imipMoreButton is used and
+           - imipDeclineRecurrencesButton/imipAcceptRecurrencesButton have no visible menuitems //-->
+        <button id="imipTentativeRecurrencesButton"
+                class="lightningImipButton msgHeaderView-button imipTentativeRecurrencesButton"
+                onclick="if (event.target.id == this.id) ltnImipBar.executeAction('TENTATIVE');"
+                type="menu-button"
+                style="display: none">
+          <menupopup id="imipTentativeRecurrencesDropdown">
+            <menuitem id="imipTentativeRecurrencesButton_Tentative"
+                      onclick="ltnImipBar.executeAction('TENTATIVE');"/>
+            <!-- add here more menuitem as needed -->
+          </menupopup>
+        </button>
+
+        <!-- decline -->
+        <button id="imipDeclineButton"
+                onclick="if (event.target.id == this.id) ltnImipBar.executeAction('DECLINED');"
+                type="menu-button"
+                class="lightningImipButton msgHeaderView-button imipDeclineButton"
+                style="display: none">
+          <menupopup id="imipDeclineDropdown">
+            <menuitem id="imipDeclineButton_Decline"
+                      onclick="ltnImipBar.executeAction('DECLINED');"/>
+            <!-- add here more menuitem as needed -->
+          </menupopup>
+        </button>
+
+        <!-- decline recurrences -->
+        <button id="imipDeclineRecurrencesButton"
+                onclick="if (event.target.id == this.id) ltnImipBar.executeAction('DECLINED');"
+                type="menu-button"
+                class="lightningImipButton msgHeaderView-button imipDeclineRecurrencesButton"
+                style="display: none">
+          <menupopup id="imipDeclineRecurrencesDropdown">
+            <menuitem id="imipDeclineRecurrencesButton_DeclineAll"
+                      onclick="ltnImipBar.executeAction('DECLINED');"/>
+            <!-- add here more menuitem as needed -->
+          </menupopup>
+        </button>
+
+        <!-- more options -->
+        <button id="imipMoreButton"
+                type="menu"
+                class="lightningImipButton msgHeaderView-button imipMoreButton"
+                style="display: none">
+          <menupopup id="imipMoreDropdown">
+            <!-- add here a menuitem as needed -->
+          </menupopup>
+        </button>
       </div>
       <div class="phishingBar notificationBar" style="display: none">
         <img src="chrome://messenger/skin/icons/phishing.png" style="vertical-align: middle;" />

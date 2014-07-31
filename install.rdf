@@ -6,10 +6,10 @@
 
   <Description about="urn:mozilla:install-manifest">
     <em:id>gconversation@xulforum.org</em:id>
-    <em:version>2.8</em:version>
-    
-    <!-- Target Application this theme can install into, 
-        with minimum and maximum supported versions. --> 
+    <em:version>2.9pre</em:version>
+
+    <!-- Target Application this theme can install into,
+        with minimum and maximum supported versions. -->
     <em:targetApplication>
       <Description>
         <em:id>{3550f703-e582-4d05-9a08-453d09bdfdc6}</em:id>
@@ -17,7 +17,7 @@
         <em:maxVersion>34.0</em:maxVersion>
       </Description>
     </em:targetApplication>
-    
+
     <!-- Front End MetaData -->
     <em:name>Thunderbird Conversations</em:name>
     <em:description>Brings a conversation view to a Thunderbird near you!</em:description>
@@ -228,8 +228,8 @@ Tak til Jørgen Rasmussen / MozillaDanmark for korrekturlæsning.</em:translator
         <em:creator>夏若朗 (Jonathan Protzenko)</em:creator>
         <em:homepageURL>http://github.com/protz/GMail-Conversation-View/wiki</em:homepageURL>
       </Description>
-    </em:localized> 
+    </em:localized>
 
-  </Description>      
+  </Description>
 
 </RDF>
