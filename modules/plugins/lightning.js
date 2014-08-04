@@ -97,8 +97,8 @@ function imipOptions(rootNode, msgWindow, message, itipItem, rc, actionFunc, fou
 
   // Update the Conversation UI
   imipBarText.textContent = data.label;
-  // data.buttons tells us which buttons should be shown
-  for (let c of data.buttons) {
+
+  let showButton = function (c) {
     let buttonElement = rootNode.getElementsByClassName(c)[0];
     let originalButtonElement = w.document.getElementById(buttonElement.id);
     // Show the button!
@@ -107,6 +107,16 @@ function imipOptions(rootNode, msgWindow, message, itipItem, rc, actionFunc, fou
     // elements.
     buttonElement.setAttribute("tooltiptext", originalButtonElement.getAttribute("tooltiptext"));
     buttonElement.textContent = originalButtonElement.label;
+  };
+
+  // data.buttons tells us which buttons should be shown
+  for (let c of data.buttons) {
+    if (c != "imipMoreButton") {
+      showButton(c);
+      // Working around the lack of dropdown buttons. See discussion in bug 1042741
+      if (c == "imipAcceptButton" || c == "imipAcceptRecurrencesButton")
+        showButton("imipTentativeButton");
+    }
   }
 }
 
