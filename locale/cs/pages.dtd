@@ -1,0 +1,36 @@
+<!ENTITY assistant.title "Pomocník s nastavením">
+<!ENTITY assistant.intro "Vítejte v <strong>Konverzacích pro Thunderbird</strong>!">
+<!ENTITY assistant.p1 "Abychom vám usnadnili život, tento pomocník upraví některá nastavení Thunderbirdu, aby vše klapalo. Nechceme, abyste se cítili zklamaně.">
+<!ENTITY assistant.p2 "Pokud byste si náhodou Konverzace pro Thuderbird neužívali tak, jak jste doufali, nezoufejte! Všechny provedené změny se vrátí zpět, jakmile toto rozšíření odinstalujete.">
+<!ENTITY assistant.p3 "Nastavování může chvilku trvat. Můžete buď počkat až se okno zavře samo, nebo jej můžete zavřít ručně a stav uplatňování změn zkontrolovat v nabídce Nástroje &gt; Správce aktivit.">
+<!ENTITY assistant.working "Pracuje se ...">
+<!ENTITY assistant.review "Zobrazit změny">
+<!ENTITY assistant.apply "Uplatnit změny">
+<!ENTITY assistant.settings "Některá nastavení jsou povinná, aby Konverzace pro Thunderbird fungovali správně. Jiná jsou silně doporučená a zbývající volitelná.">
+<!ENTITY assistant.actionEnableGloda "Aktivovat globální vyhledávání a indexaci.">
+<!ENTITY assistant.actionDontExpand "V seznamu zpráv nerozbalovat vlákna, která obsahují nepřečtené zprávy.">
+<!ENTITY assistant.actionAttachmentsInline "Nezobrazovat přílohy v jednom řádku (<strong>silně</strong> doporučeno).">
+<!ENTITY assistant.actionOfflineDownload "Doručená a odeslaná pošta je ukládána offline (<strong>silně</strong> doporučeno).">
+<!ENTITY assistant.actionUnifiedInboxSearchesSent "V zobrazení Jednotné složky lze prohledávat i složky s odeslanou poštou (<strong>silně</strong> doporučeno).">
+<!ENTITY assistant.actionSetupView "Po spuštění přepnout do zobrazení Všechny složky, zobrazit zprávy jako vlákna, seřadit podle data, zobrazit sloupec Nepřečtené a nový sloupec &quot;Mezi&quot; (<strong>silně</strong> doporučeno).">
+<!ENTITY assistant.actionSetupViewDefaults "Použít tato nastavení řazení pro všechny složky.">
+<!ENTITY assistant.actionEnsureMessagePaneVisible "Zobrazit Panel zpráv.">
+<!ENTITY assistant.settings2 "Tato nastavení můžete upravit i později, spuštěním pomocníka v předvolbách rozšíření, v sekci &quot;Pokročilé&quot;.">
+<!ENTITY feedback.message "Konverzace pro Thunderbird máte nainstalovány již nějakou dobu, mohli bychom Vás poprosit o Váš názor na ně? Těšíme se na Vaše připomínky.">
+<!ENTITY feedback.no "Ne, děkuji">
+<!ENTITY feedback.yes "Odeslat zpětnou vazbu">
+<!ENTITY feedback.pageTitle "Odeslat zpětnou vazbu">
+<!ENTITY stub.loading "Načítá se...">
+<!ENTITY stub.trash.tooltip "Smazat konverzaci">
+<!ENTITY stub.archive.tooltip "Archivovat konverzaci">
+<!ENTITY stub.forward.tooltip "Přeposlat konverzaci">
+<!ENTITY stub.print.tooltip "Vytisknout konverzaci">
+<!ENTITY stub.junk.tooltip "Označit zprávu jako nevyžádaná">
+<!ENTITY stub.expand.tooltip "Rozbalit / sbalit všechny zprávy">
+<!ENTITY stub.read.tooltip "Označit všechny zprávy jako ne/přečtené">
+<!ENTITY stub.detach.tooltip2 "Zobrazit konverzaci v novém panelu">
+<!ENTITY stub.menu.tooltip "Akce s konverzací">
+<!ENTITY stub.context.open "Otevřít přílohu">
+<!ENTITY stub.context.save "Uložit přílohu">
+<!ENTITY stub.context.detach "Vyčlenit přílohu">
+<!ENTITY stub.context.delete "Smazat přílohu">
