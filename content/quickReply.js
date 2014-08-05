@@ -107,13 +107,9 @@ function registerQuickReplyEventListeners() {
     event.stopPropagation();
   });
 
-  // Must match .quickReply li.selected textarea size in quickreply.css
-  let lastKnownHeight = 0;
-
   $('ul.inputs li.expand').click(function(event) {
     if ($(this).hasClass("selected"))
       return;
-    lastKnownHeight = 0;
     showQuickReply.call(this);
     let type;
     if ($(this).hasClass("reply"))
@@ -126,27 +122,42 @@ function registerQuickReplyEventListeners() {
     newComposeSessionByClick(type);
   });
 
-  // TODO
-  return;
   // Autoresize sorta-thingy.
+  let textarea = document.querySelector(".textarea");
   let lineHeight = parseInt(
-    window.getComputedStyle(document.querySelector('.quickReply .textarea'), null).lineHeight
+    window.getComputedStyle(textarea, null).lineHeight
   );
+  let getHeight = function (x) parseInt(window.getComputedStyle(x, null).height);
   $('.quickReply .textarea').keypress(function (event) {
     if (event.which == KeyEvent.DOM_VK_RETURN) {
-      if (event.target.scrollHeight > lastKnownHeight) {
-        // 5px padding-top, 5px padding-bottom, 1px border-top-width, 1px
-        // border-bottom-width
-        let height = parseInt(window.getComputedStyle(event.target, null).height) + 12;
-        // We don't want a quick reply area that's higher than the available
-        // height! (44px is for the top header, 5px is for good measure)
-        let availableHeight = window.frameElement.scrollHeight - 49;
-        Log.debug(height, lineHeight, availableHeight);
-        if (height + lineHeight <= availableHeight)
-          height += lineHeight;
-        event.target.style.height = height+"px";
-        lastKnownHeight = height;
+      let scrollHeight = textarea.contentDocument.body.scrollHeight;
+      // Only grow if the contents of the reply don't fit into the viewport.
+      if (scrollHeight > getHeight(textarea)) {
+        // The resulting height if we do perform the resizing (12px is for the
+        // margins).
+        let totalTargetHeight = getHeight(textarea) + 12 + lineHeight;
+        // The total available vertical height (44px is for the top header, 5px
+        // is for good measure)
+        let availableHeight = window.innerHeight - 49;
+        Log.debug(totalTargetHeight, lineHeight, availableHeight);
+        // We only grow the textarea if it doesn't exceed half of the available
+        // vertical height.
+        if (totalTargetHeight <= availableHeight/2) {
+          Log.debug("Growing to", (getHeight(textarea)+lineHeight)+"px");
+          textarea.style.height = (getHeight(textarea)+lineHeight)+"px";
+
+          // Scroll if we grew the reply area into overflow
+          let pageTop = window.pageYOffset;
+          let pageBottom = pageTop + window.innerHeight;
+          let textareaBottom = $(".textarea").offset().top + $(".textarea").outerHeight();
+          // 20px for good measure...
+          let diff = pageBottom - textareaBottom - 20;
+          Log.debug(pageBottom, textareaBottom, diff);
+          if (diff < 0)
+            window.scrollTo(0, pageTop - diff);
+        }
       }
+      Log.debug("---");
     }
   });
 }
