@@ -820,6 +820,14 @@ Message.prototype = {
 
     this.register(".edit-draft", function (event) self.compose(Ci.nsIMsgCompType.Draft, event));
     this.register(".action-editNew", function (event) self.compose(Ci.nsIMsgCompType.Template, event));
+    this.register(".action-read", function (event) {
+      msgHdrsMarkAsRead([self._msgHdr], true);
+      event.stopPropagation();
+    });
+    this.register(".action-unread", function (event) {
+      msgHdrsMarkAsRead([self._msgHdr], false);
+      event.stopPropagation();
+    });
     this.register(".action-print", function (event) self.print());
     // These event listeners are all in the header, which happens to have an
     //  event listener set on the click event for toggling the message. So we
