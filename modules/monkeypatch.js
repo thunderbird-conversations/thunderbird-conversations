@@ -210,7 +210,7 @@ MonkeyPatch.prototype = {
         let msgHdr = window.gDBView.getMsgHdrAt(row);
         return participants(msgHdr);    
       },
-      getSortStringForRow: function(hdr) {
+      getSortStringForRow: function(msgHdr) {
         return participants(msgHdr);
       },
       isString: function() {
