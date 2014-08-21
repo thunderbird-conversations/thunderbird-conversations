@@ -105,6 +105,7 @@ function registerQuickReply() {
             resetCompositionFields();
             $(".quickReplyHeader").hide();
             gComposeSession = null;
+            hideQuickReply();
             break;
         }
       } catch (e) {
