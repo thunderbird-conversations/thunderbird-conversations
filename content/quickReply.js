@@ -132,6 +132,7 @@ function registerQuickReplyEventListeners() {
     if (event.which == KeyEvent.DOM_VK_RETURN) {
       let scrollHeight = textarea.contentDocument.body.scrollHeight;
       // Only grow if the contents of the reply don't fit into the viewport.
+      Log.debug(scrollHeight, getHeight(textarea));
       if (scrollHeight > getHeight(textarea)) {
         // The resulting height if we do perform the resizing (12px is for the
         // margins).
