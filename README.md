@@ -24,7 +24,7 @@ INSTALL
 If you just want to start hacking, see
 [MDC](https://developer.mozilla.org/en/Setting_up_extension_development_environment)
 to learn how to use a proxy file. If you want to package a release, follow
-the follow steps.
+these steps.
 
 1. Download the [zip archive](https://github.com/protz/GMail-Conversation-View/archive/master.zip) or clone the repository
 2. Change into the main folder, run `git submodule init` and `git submodule update`
