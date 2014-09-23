@@ -32,7 +32,7 @@ these steps.
 4. Change into the main folder and run `./build.sh`.
 
 This will package an `.xpi` file of the latest codebase which can be installed via add-on manager in Thunderbird.
-Please note that the latest `GMail-conersation`-builds are only compatible with the `Daily`-version of Thunderbird. You can build this from source or get a pre-built binary at http://ftp.mozilla.org/pub/mozilla.org/thunderbird/nightly/latest-comm-central/.
+Please note that the latest `GMail-conversation`-builds are only compatible with the `Daily`-version of Thunderbird. You can build this from source or get a pre-built binary at http://ftp.mozilla.org/pub/mozilla.org/thunderbird/nightly/latest-comm-central/.
 
 TESTING
 =======
