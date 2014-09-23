@@ -1,7 +1,7 @@
 Thunderbird Conversations
 =========================
 
-This extension improves the threaded summary for emails in Thunderbird 3.0. It
+This extension improves the threaded summary for emails in Thunderbird. It
 vastly improves the UI by including some ideas from GMail. More specifically:
 
 * your own messages are displayed in the thread,
@@ -28,22 +28,11 @@ these steps.
 
 1. Download the [zip archive](https://github.com/protz/GMail-Conversation-View/archive/master.zip) or clone the repository
 2. Change into the main folder, run `git submodule init` and `git submodule update`
-3. Change into the subfolder `content/pdfjs`, run `node make bundle`. Note that you need to have `nodejs` installed.
+3. Change into the subfolder `content/pdfjs`, run `node make bundle`. Note that you need to have `nodejs` installed. On modern Debian-based distributions the command is `nodejs` instead of `node`.
 4. Change into the main folder and run `./build.sh`.
 
-This will package an `.xpi` file of the latest codebase.
-
-HACKING
-=======
-
-This repo contains a git submodule. To make sure you've checked out all the
-files, make sure you run:
-
-    git submodule init
-    git submodule update
-
-before you start hacking. You also need to run `make` in the `content/pdfjs`
-directory for the embedded pdf viewer to work properly.
+This will package an `.xpi` file of the latest codebase which can be installed via add-on manager in Thunderbird.
+Please note that the latest `GMail-conersation`-builds are only compatible with the `Daily`-version of Thunderbird. You can build this from source or get a pre-built binary at http://ftp.mozilla.org/pub/mozilla.org/thunderbird/nightly/latest-comm-central/.
 
 TESTING
 =======
