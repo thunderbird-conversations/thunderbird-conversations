@@ -54,8 +54,8 @@ body {
   font-family: sans-serif;
   font-size: 1.2rem;
   line-height: 1.8rem;
-  background-color: -moz-dialog;
-  color: -moz-dialogtext;
+  background-color: window;
+  color: windowtext;
   margin: 0;
   padding: 0;
   overflow-y: scroll;
@@ -81,10 +81,10 @@ button {
 #conversationHeader {
   width: 100%;
   padding: 5px 10px;
-  background-color: -moz-default-background-color;
+  background-color: window;
   background-image: linear-gradient(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 19px);
   border-bottom: 1px solid threedshadow;
-  color: -moz-default-color;
+  color: windowtext;
 }
 
 #conversationHeader.not-junkable .junk-button {
