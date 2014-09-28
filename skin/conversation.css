@@ -180,7 +180,7 @@ button {
   background-image: linear-gradient(to bottom,#fff 0%,#fafafa 100%);
   border: 1px solid #bebebe;
   border-radius: 5px;
-  box-shadow: 0 1px 2px #CCE0FF;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.25);
   list-style-type: none;
 }
 
@@ -191,7 +191,7 @@ button {
 
 .message.highlight, .message:focus {
   border: 1px solid #bebebe;
-  box-shadow: 0 0 0 5px rgba(0,0,0,0.15);
+  box-shadow: 0 0 0 5px rgba(0,0,0,0.25);
 }
 
 .messageHeader {
@@ -570,7 +570,7 @@ ul.special-tags img {
 
 .message .notificationBar {
   padding: 10px;
-  box-shadow: 0 0 3px rgba(0,0,0,0.15) inset;
+  box-shadow: 0 0 3px rgba(0,0,0,0.25) inset;
   margin: 0 0 10px 0;
   border-width: 1px 0;
   border-style: solid;
