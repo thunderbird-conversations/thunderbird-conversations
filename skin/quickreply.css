@@ -283,12 +283,12 @@ html[xmlns] .cf {
 }
 
 .recipientListSeparator {
-  color: #666;
+  color: #888a85;
 }
 
 :-moz-any(.quickReplyRecipients, .quickReplyAttachments) li {
   display: inline-block;
-  color: #666;
+  color: #888a85;
 }
 
 :-moz-any(.quickReplyRecipients, .quickReplyAttachments) a {
@@ -311,7 +311,7 @@ html[xmlns] .cf {
   border-color: threedshadow;
   border-style: solid;
   width: 100%;
-  color: #666;
+  color: #888a85;
   border-radius: 3px 3px 0 0;
   display: none;
 }
