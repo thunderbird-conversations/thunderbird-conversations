@@ -66,29 +66,7 @@ p {
 }
 
 button {
-  background-image: linear-gradient(to bottom, #fefefe 0%, #d5d5d5 100%);
-  border: 1px solid #919191;
-  box-shadow: 0 1px 0 rgba(255,255,255,0.55);
-  border-radius: 3px;
-  text-align: center;
-  outline: none;
-  height: 2.2rem;
-  cursor: pointer;
-}
-
-button:hover {
-  background-image: linear-gradient(to bottom, #fafafa 0%, #e6e6e6 100%);
-}
-
-button:active {
-  background-image: none;
-  background-color: #d5d5d5;
-  box-shadow: inset 0 0 2px #666;
-  border: 1px solid #666;
-}
-
-button img {
-  vertical-align: middle;
+  -moz-appearance: button;
 }
 
 #conversationHeaderWrapper {
