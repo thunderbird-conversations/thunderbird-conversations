@@ -252,6 +252,7 @@ html[xmlns] .cf {
   padding: 3px 5px 0 0;
   text-align: right;
   width: 7.5rem;
+  line-height: 1.8;
 }
 
 .quickReply input:-moz-any(#to, #cc, #bcc, #subject) {
