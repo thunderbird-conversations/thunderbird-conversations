@@ -300,7 +300,9 @@ button {
 }
 
 .dropDown li:hover,
-.dropDown li:nth-child(2n):hover {
+.dropDown li:nth-child(2n):hover,
+.dropDown li:focus,
+.dropDown li:nth-child(2n):focus {
   background-color: -moz-cellhighlight;
   color: -moz-cellhighlighttext;
 }
@@ -427,7 +429,10 @@ a img {
 
 .options a:hover,
 .attachments a:hover ,
-.link:hover {
+.link:hover,
+.options a:focus,
+.attachments a:focus ,
+.link:focus {
   text-decoration: underline;
 }
 
