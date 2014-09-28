@@ -49,7 +49,7 @@ li.token-input-token-facebook p {
 }
 
 li.token-input-token-facebook span {
-    color: #a6b3cf;
+    color: #888a85;
     margin-left: 5px;
     font-weight: bold;
     cursor: pointer;
@@ -83,7 +83,7 @@ div.token-input-dropdown-facebook p {
     margin: 0;
     padding: 5px;
     font-weight: bold;
-    color: #777;
+    color: #888a85;
 }
 
 div.token-input-dropdown-facebook ul {

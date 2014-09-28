@@ -221,7 +221,7 @@ button {
 }
 
 .to, .bzTo {
-  color: #666;
+  color: #888a85;
 }
 
 .to.not-resized-yet {
@@ -345,7 +345,7 @@ button {
 
 .smallEmail {
   font-size: 85%;
-  color: #888;
+  color: #888a85;
   font-weight: normal;
 }
 
@@ -379,7 +379,7 @@ a img {
 }
 
 .authorEmail {
-  color: #888;
+  color: #888a85;
   float: left;
   clear: left;
 }
@@ -482,7 +482,7 @@ span.downwardArrow {
   display: inline-block;
   height: 1.8rem;
   overflow: hidden;
-  color: #666;
+  color: #888a85;
 }
 
 .message .messageBody {
@@ -574,8 +574,8 @@ ul.special-tags img {
   margin: 0 0 10px 0;
   border-width: 1px 0;
   border-style: solid;
-  color: #666;
   border-color: threedshadow;
+  color: #888a85;
 }
 
 .message .notificationBar button {
@@ -585,7 +585,7 @@ ul.special-tags img {
 
 .message .lightningImipBar {
   background-color: #baeeff;
-  color: #666;
+  color: #888a85;
 }
 
 .message .lightningImipImage {
@@ -623,7 +623,7 @@ ul.special-tags img {
 
 .message .notJunk {
   float: right;
-  color: #666;
+  color: #888a85;
   padding-top: 2px;
 }
 
@@ -653,7 +653,7 @@ ul.special-tags img {
   padding-left: 20px;
   text-indent: -10px;
   padding-right: 10px;
-  color: #666;
+  color: #888a85;
   margin-top: -5px;
   margin-bottom: 5px;
 }
