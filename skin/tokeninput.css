@@ -7,7 +7,6 @@ ul.token-input-list-facebook {
     border: 1px solid threedshadow;
     cursor: text;
     font-size: 12px;
-    font-family: Verdana;
     min-height: 1px;
     z-index: 1003;
     margin: 0;
@@ -75,7 +74,6 @@ div.token-input-dropdown-facebook {
     border-bottom: 1px solid threedshadow;
     cursor: default;
     font-size: 11px;
-    font-family: Verdana;
     z-index: 1001;
 }
 
