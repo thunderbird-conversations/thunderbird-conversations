@@ -4,7 +4,7 @@ ul.token-input-list-facebook {
     height: auto !important;
     height: 1%;
     width: 100%;
-    border: 1px solid #8496ba;
+    border: 1px solid threedshadow;
     cursor: text;
     font-size: 12px;
     font-family: Verdana;
@@ -36,7 +36,7 @@ li.token-input-token-facebook {
     background-color: #eff2f7;
     color: #000;
     cursor: default;
-    border: 1px solid #ccd5e4;
+    border: 1px solid threedshadow;
     font-size: 11px;
     border-radius: 5px;
     float: left;
@@ -57,8 +57,8 @@ li.token-input-token-facebook span {
 
 li.token-input-selected-token-facebook {
     background-color: #5670a6;
-    border: 1px solid #3b5998;
     color: #fff;
+    border: 1px solid threedshadow;
 }
 
 li.token-input-input-token-facebook {
@@ -70,9 +70,9 @@ div.token-input-dropdown-facebook {
     width: 400px;
     background-color: #fff;
     overflow: hidden;
-    border-left: 1px solid #ccc;
-    border-right: 1px solid #ccc;
-    border-bottom: 1px solid #ccc;
+    border-left: 1px solid threedshadow;
+    border-right: 1px solid threedshadow;
+    border-bottom: 1px solid threedshadow;
     cursor: default;
     font-size: 11px;
     font-family: Verdana;

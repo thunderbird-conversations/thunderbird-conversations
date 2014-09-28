@@ -82,8 +82,8 @@ button {
   width: 100%;
   padding: 5px 10px;
   background-image: linear-gradient(to bottom, #fcfcfc 0%, #e6e6e6 100%);
-  border-bottom: 1px solid #bebebe;
   color: #0a0a0a;
+  border-bottom: 1px solid threedshadow;
 }
 
 #conversationHeader.not-junkable .junk-button {
@@ -178,7 +178,7 @@ button {
   margin: 0 10px 10px 10px;
   background-color: #fff;
   background-image: linear-gradient(to bottom,#fff 0%,#fafafa 100%);
-  border: 1px solid #bebebe;
+  border: 1px solid threedshadow;
   border-radius: 5px;
   box-shadow: 0 1px 2px rgba(0,0,0,0.25);
   list-style-type: none;
@@ -190,7 +190,7 @@ button {
 }
 
 .message.highlight, .message:focus {
-  border: 1px solid #bebebe;
+  border: 1px solid threedshadow;
   box-shadow: 0 0 0 5px rgba(0,0,0,0.25);
 }
 
@@ -265,7 +265,7 @@ button {
   top: 24px;
   left: 16px;
   background-color: #fff;
-  border: 1px solid #aaa;
+  border: 1px solid -moz-fieldtext;
   box-shadow: 0 0 0 6px rgba(0,0,0,0.25);
   border-radius: 5px;
   z-index: 1000;
@@ -400,7 +400,7 @@ a img {
   width: 100%;
   padding: 5px 10px;
   background-color: #f6f6f6;
-  border-top: 1px solid #E6E6E6;
+  border-top: 1px solid threedshadow;
   float: left;
   border-radius: 0 0 5px 5px;
 }
@@ -459,7 +459,7 @@ span.downwardArrow {
 }
 
 .message.collapsed:last-child {
-  border-bottom: 1px solid #bebebe;
+  border-bottom: 1px solid threedshadow;
   margin-bottom: 10px;
 }
 
@@ -523,7 +523,7 @@ span.downwardArrow {
 }
 
 .messageBody .tag-x {
-  border-left: 1px solid white;
+  border-left: 1px solid threedshadow;
   margin-left: 1ex;
   cursor: pointer;
   z-index: 3;
@@ -574,8 +574,8 @@ ul.special-tags img {
   margin: 0 0 10px 0;
   border-width: 1px 0;
   border-style: solid;
-  border-color: #ccc;
   color: #666;
+  border-color: threedshadow;
 }
 
 .message .notificationBar button {
@@ -666,7 +666,7 @@ ul.special-tags img {
 .attachHeader {
   display: inline;
   padding-top: 10px;
-  border-top: 1px solid #e6e6e6;
+  border-top: 1px solid threedshadow;
 }
 
 .attachments li {
@@ -678,7 +678,7 @@ ul.special-tags img {
 .attachmentThumb {
   width: 130px;
   padding: 4px;
-  border: 1px solid #ccc;
+  border: 1px solid threedshadow;
   background-color: #fff;
   background-image: linear-gradient(to bottom,#fff 0%,#f2f2f2 100%);
   margin: 0 20px 0 0;
@@ -732,7 +732,7 @@ ul.special-tags img {
 .messageFooter {
   padding: 0px 10px 5px 10px;
   background-color: #f6f6f6;
-  border-top: 1px solid #bebebe;
+  border-top: 1px solid threedshadow;
   border-radius: 0 0 5px 5px;
 }
 
