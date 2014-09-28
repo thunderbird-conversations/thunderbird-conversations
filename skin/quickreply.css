@@ -13,7 +13,8 @@
 
 .quickReply {
   font-size: 1.2rem;
-  background-color: #F6F6F6;
+  background-color: -moz-field;
+  color: -moz-fieldtext;
   border-top: 1px solid threedshadow;
   padding: 10px 10px;
   position: relative;
@@ -147,7 +148,8 @@ body.inTab .quickReply li.selected .textarea {
   border-width: 1px 1px 0 0;
   border-color: threedshadow;
   border-style: solid;
-  background-color: #f6f6f6;
+  background-color: -moz-field;
+  color: -moz-fieldtext;
   cursor: pointer;
   background-image: url('chrome://conversations/content/i/out.png');
   background-position: -4px 2px;
@@ -198,7 +200,7 @@ body.inTab .quickReply li.selected .textarea {
 .quickReply .replyFooter {
   display: none;
   overflow: hidden;
-  color: #aaa;
+  color: threedshadow;
 }
 
 .quickReply .replyFooter {
@@ -242,11 +244,11 @@ html[xmlns] .cf {
 
 .quickReply .label {
   border-radius: 3px 0 0 3px;
-  background-image: linear-gradient(to bottom, #fff 0%, #fff 50%, #fafafa 50%, #fafafa 100%);
+  background-color: -moz-dialog;
+  color: -moz-dialogtext;
   border-color: threedshadow;
   border-style: solid;
   border-width: 1px 0 1px 1px;
-  color: #666;
   padding: 3px 5px 0 0;
   text-align: right;
   width: 7.5rem;
@@ -289,7 +291,6 @@ html[xmlns] .cf {
 }
 
 :-moz-any(.quickReplyRecipients, .quickReplyAttachments) a {
-  color: #3875D7;
   text-decoration: none;
 }
 
@@ -303,7 +304,7 @@ html[xmlns] .cf {
 
 .quickReplyHeader {
   padding: 5px 10px;
-  background-image: linear-gradient(to bottom, #fff 0%, #fff 50%, #fafafa 50%, #fafafa 100%);
+  background-color: -moz-default-background-color;
   border-width: 1px 1px 0;
   border-color: threedshadow;
   border-style: solid;

@@ -11,7 +11,8 @@ ul.token-input-list-facebook {
     z-index: 1003;
     margin: 0;
     padding: 0;
-    background-color: #fff;
+    background-color: -moz-field;
+    color: -moz-fieldtext;
 }
 
 ul.token-input-list-facebook {
@@ -22,7 +23,8 @@ ul.token-input-list-facebook li input {
     border: 0;
     width: 100px;
     padding: 3px 8px;
-    background-color: white;
+    background-color: -moz-field;
+    color: -moz-fieldtext;
     margin: 2px 0;
 }
 
@@ -32,8 +34,8 @@ li.token-input-token-facebook {
     height: 1%;
     margin: 3px;
     padding: 1px 3px;
-    background-color: #eff2f7;
-    color: #000;
+    background-color: -moz-oddtreerow;
+    color: -moz-oddtreerowtext;
     cursor: default;
     border: 1px solid threedshadow;
     font-size: 11px;
@@ -55,9 +57,9 @@ li.token-input-token-facebook span {
 }
 
 li.token-input-selected-token-facebook {
-    background-color: #5670a6;
-    color: #fff;
+    background-color: -moz-cellhighlight;
     border: 1px solid threedshadow;
+    color: -moz-cellhighlighttext;
 }
 
 li.token-input-input-token-facebook {
@@ -67,7 +69,8 @@ li.token-input-input-token-facebook {
 div.token-input-dropdown-facebook {
     position: absolute;
     width: 400px;
-    background-color: #fff;
+    background-color: -moz-field;
+    color: -moz-fieldtext;
     overflow: hidden;
     border-left: 1px solid threedshadow;
     border-right: 1px solid threedshadow;
@@ -90,16 +93,19 @@ div.token-input-dropdown-facebook ul {
 }
 
 div.token-input-dropdown-facebook ul li {
-    background-color: #fff;
+    background-color: -moz-field;
+    color: -moz-fieldtext;
     padding: 3px;
 }
 
 div.token-input-dropdown-facebook ul li.token-input-dropdown-item-facebook {
-    background-color: #fff;
+    background-color: -moz-field;
+    color: -moz-fieldtext;
 }
 
 div.token-input-dropdown-facebook ul li.token-input-dropdown-item2-facebook {
-    background-color: #fff;
+    background-color: -moz-field;
+    color: -moz-fieldtext;
 }
 
 div.token-input-dropdown-facebook ul li em {
@@ -108,6 +114,6 @@ div.token-input-dropdown-facebook ul li em {
 }
 
 div.token-input-dropdown-facebook ul li.token-input-selected-dropdown-item-facebook {
-    background-color: #3b5998;
-    color: #fff;
+    background-color: -moz-cellhighlight;
+    color: -moz-cellhighlighttext;
 }

@@ -54,8 +54,8 @@ body {
   font-family: sans-serif;
   font-size: 1.2rem;
   line-height: 1.8rem;
-  background-color: #ECF3FE;
-  color: #000000;
+  background-color: -moz-dialog;
+  color: -moz-dialogtext;
   margin: 0;
   padding: 0;
   overflow-y: scroll;
@@ -81,9 +81,10 @@ button {
 #conversationHeader {
   width: 100%;
   padding: 5px 10px;
-  background-image: linear-gradient(to bottom, #fcfcfc 0%, #e6e6e6 100%);
-  color: #0a0a0a;
+  background-color: -moz-default-background-color;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 19px);
   border-bottom: 1px solid threedshadow;
+  color: -moz-default-color;
 }
 
 #conversationHeader.not-junkable .junk-button {
@@ -176,8 +177,8 @@ button {
 
 .message {
   margin: 0 10px 10px 10px;
-  background-color: #fff;
-  background-image: linear-gradient(to bottom,#fff 0%,#fafafa 100%);
+  background-color: -moz-default-background-color;
+  color: -moz-default-color;
   border: 1px solid threedshadow;
   border-radius: 5px;
   box-shadow: 0 1px 2px rgba(0,0,0,0.25);
@@ -264,7 +265,8 @@ button {
   min-width: 302px;
   top: 24px;
   left: 16px;
-  background-color: #fff;
+  background-color: -moz-field;
+  color: -moz-fieldtext;
   border: 1px solid -moz-fieldtext;
   box-shadow: 0 0 0 6px rgba(0,0,0,0.25);
   border-radius: 5px;
@@ -299,8 +301,8 @@ button {
 
 .dropDown li:hover,
 .dropDown li:nth-child(2n):hover {
-  background-image: linear-gradient(to bottom, #3875D7 0%, #396BBD 100%);
-  color: #fff;
+  background-color: -moz-cellhighlight;
+  color: -moz-cellhighlighttext;
 }
 
 .dropDown li:last-child {
@@ -312,11 +314,11 @@ button {
 }
 
 .dropDown li:nth-child(2n) {
-  background-color: #ECF3FE;
+  background-color: -moz-oddtreerow;
 }
 
 .arrow {
-  border-color: transparent transparent #666 transparent;
+  border-color: transparent transparent -moz-fieldtext transparent;
   border-style: solid;
   border-width: 7px;
   height: 0;
@@ -331,12 +333,12 @@ button {
 }
 
 .arrow.inside {
-  border-color: transparent transparent #fff transparent;
+  border-color: transparent transparent -moz-field transparent;
   top: -13px;
 }
 
 .dropDown li:hover .arrow.inside {
-  border-color: transparent transparent #3875D7 transparent;
+  border-color: transparent transparent -moz-cellhighlight transparent;
 }
 
 .contactName {
@@ -361,7 +363,6 @@ button {
   float: left;
   width: 20.0rem;
   padding: 10px;
-  color: #333;
 }
 
 .authorLinks {
@@ -399,7 +400,8 @@ a img {
 .tipFooter {
   width: 100%;
   padding: 5px 10px;
-  background-color: #f6f6f6;
+  background-color: -moz-dialog;
+  color: -moz-dialogtext;
   border-top: 1px solid threedshadow;
   float: left;
   border-radius: 0 0 5px 5px;
@@ -487,7 +489,6 @@ span.downwardArrow {
 
 .message .messageBody {
   padding: 0 10px 5px 10px;
-  color: #0a0a0a;
 }
 
 .message.with-details .messageBody {
@@ -731,7 +732,8 @@ ul.special-tags img {
 
 .messageFooter {
   padding: 0px 10px 5px 10px;
-  background-color: #f6f6f6;
+  background-color: -moz-field;
+  color: -moz-fieldtext;
   border-top: 1px solid threedshadow;
   border-radius: 0 0 5px 5px;
 }
