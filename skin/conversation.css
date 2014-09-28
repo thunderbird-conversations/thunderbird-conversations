@@ -485,8 +485,8 @@ span.downwardArrow {
   margin-bottom: 10px;
 }
 
-.message.collapsed .to, 
-.message.collapsed .bzTo, 
+.message.collapsed .to,
+.message.collapsed .bzTo,
 .message.collapsed .details,
 .message.collapsed .hide-details,
 .message.collapsed .dropDown,
@@ -793,7 +793,7 @@ ul.special-tags img {
 .messageFooter:after {
   content: " ";
   display: block;
-  height: 0; 
+  height: 0;
   clear: both;
   visibility: hidden;
 }
@@ -918,11 +918,11 @@ ul.special-tags img {
   line-height: 0;
   height: 0;
 }
- 
+
 html[xmlns] .clearfix {
   display: block;
 }
- 
+
 * html .clearfix {
   height: 1%;
 }
