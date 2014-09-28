@@ -14,7 +14,7 @@
 .quickReply {
   font-size: 1.2rem;
   background-color: #F6F6F6;
-  border-top: 1px solid #E6E6E6;
+  border-top: 1px solid threedshadow;
   padding: 10px 10px;
   position: relative;
 
@@ -92,7 +92,7 @@
 
 .quickReply .textarea {
   width: 100%;
-  border: 1px solid #aaa;
+  border: 1px solid threedshadow;
   min-height: 54px;
   height: 54px;
   padding: 0 0 0 100%; /* weird difference between iframe mozframetype="content" and iframe */
@@ -118,7 +118,7 @@
 }
 
 .quickReply .textarea:focus {
-  border-color: #888;
+  border-color: threedshadow;
 
   box-shadow: 0 0 0 2px rgba(0, 107, 255, 0.25) inset;
 }
@@ -148,7 +148,7 @@ body.inTab .quickReply li.selected .textarea {
   bottom: 10px;
   left: 5px;
   border-width: 1px 1px 0 0;
-  border-color: #aaa;
+  border-color: threedshadow;
   border-style: solid;
   background-color: #f6f6f6;
   cursor: pointer;
@@ -172,7 +172,7 @@ body.inTab .quickReply li.selected .textarea {
   list-style-type: none;
   padding: 0 0 0 10px;
   margin: 10px 5px 10px 10px;
-  border-left: 1px solid #ddd;
+  border-left: 1px solid threedshadow;
   min-height: 54px;
 }
 
@@ -246,7 +246,7 @@ html[xmlns] .cf {
 .quickReply .label {
   border-radius: 3px 0 0 3px;
   background-image: linear-gradient(to bottom, #fff 0%, #fff 50%, #fafafa 50%, #fafafa 100%);
-  border-color: #AAAAAA;
+  border-color: threedshadow;
   border-style: solid;
   border-width: 1px 0 1px 1px;
   color: #666;
@@ -257,7 +257,7 @@ html[xmlns] .cf {
 
 .quickReply input:-moz-any(#to, #cc, #bcc, #subject) {
   width: 100%;
-  border: 1px solid #aaa;
+  border: 1px solid threedshadow;
   padding: 5px;
 }
 
@@ -308,7 +308,7 @@ html[xmlns] .cf {
   padding: 5px 10px;
   background-image: linear-gradient(to bottom, #fff 0%, #fff 50%, #fafafa 50%, #fafafa 100%);
   border-width: 1px 1px 0;
-  border-color: #aaa;
+  border-color: threedshadow;
   border-style: solid;
   width: 100%;
   color: #666;
@@ -411,7 +411,7 @@ html[xmlns] .cf {
 }
 
 .popularContact {
-  border-bottom: 1px solid #888;
+  border-bottom: 1px solid threedshadow;
   margin-bottom: 5px;
   clear: both;
   position: relative;
