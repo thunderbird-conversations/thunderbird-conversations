@@ -8,7 +8,7 @@
 
 .quickReply a {
   text-decoration: none;
-  color: #3875D7;
+  color: -moz-hyperlinktext;
 }
 
 .quickReply {
@@ -81,7 +81,7 @@
   margin-top: -16px;
   line-height: 32px;
   text-align: center;
-  color: #c1d1ea;
+  color: -moz-hyperlinktext;
   white-space: nowrap;
   overflow: hidden;
 }

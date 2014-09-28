@@ -123,7 +123,7 @@ button img {
 }
 
 .subject a.text-link {
-  color: #3875d7;
+  color: -moz-hyperlinktext;
   cursor: pointer;
   text-decoration: underline;
 }
@@ -441,7 +441,7 @@ a img {
 .attachments a,
 .link {
   text-decoration: none;
-  color: #3875d7;
+  color: -moz-hyperlinktext;
   cursor: pointer;
 }
 
@@ -659,7 +659,7 @@ ul.special-tags img {
 
 .message .remoteContent a {
   text-decoration: none;
-  color: #3875D7;
+  color: -moz-hyperlinktext;
 }
 
 .message .remoteContent a:hover {
