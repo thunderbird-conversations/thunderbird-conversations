@@ -64,7 +64,8 @@
 
 .quickReply .textWrap {
   margin: 10px 5px;
-  background-color: #fff;
+  background-color: white;
+  color: black;
   position: relative;
 }
 
@@ -120,8 +121,8 @@
 }
 
 .quickReply li.selected .textarea {
-  color: #000;
-  background-color: #fff;
+  color: black;
+  background-color: white;
   height: 162px;
   overflow: auto;
   resize: vertical;
