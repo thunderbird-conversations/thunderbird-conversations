@@ -146,7 +146,7 @@ let ContactMixIn = {
     let name = this.getName(aPosition, aIsDetail);
     let displayEmail = (name != aEmail ? aEmail : "");
     let hasCard = (this._card != null);
-    let skipEmail = (aEmail in gIdentities) || !aIsDetail && hasCard && Prefs.getBool("mail.showCondensedAddresses");
+    let skipEmail = !aIsDetail && hasCard && Prefs.getBool("mail.showCondensedAddresses");
     let tooltipName = this.getTooltipName(aPosition);
     let data = {
       showMonospace: aPosition == Contacts.kFrom,
