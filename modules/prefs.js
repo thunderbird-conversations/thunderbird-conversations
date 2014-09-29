@@ -55,6 +55,7 @@ function PrefManager() {
 
   this.expand_who = prefsService.getIntPref("expand_who");
   this.no_friendly_date = prefsService.getBoolPref("no_friendly_date");
+  this.no_friendly_address = prefsService.getBoolPref("no_friendly_address");
   this.logging_enabled = prefsService.getBoolPref("logging_enabled");
   this.tweak_bodies = prefsService.getBoolPref("tweak_bodies");
   this.tweak_chrome = prefsService.getBoolPref("tweak_chrome");
@@ -102,6 +103,7 @@ PrefManager.prototype = {
 
     switch (aData) {
       case "no_friendly_date":
+      case "no_friendly_address":
       case "logging_enabled":
       case "tweak_bodies":
       case "tweak_chrome":
