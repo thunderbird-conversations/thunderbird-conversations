@@ -743,6 +743,30 @@ ul.special-tags img {
   border-radius: 0 0 5px 5px;
 }
 
+.messageFooter button {
+  background-image: none;
+  background-color: white;
+
+  float: left;
+  border: 1px solid #bebebe;
+  border-top-color: white;
+  border-radius: 0 0 0 0;
+
+  margin: -1px 3px 0 0;
+  padding: 0 5px 3px 5px;
+}
+
+.messageFooter button:hover {
+  border-color: #666;
+  border-top-color: white;
+}
+
+.messageFooter button:active {
+  background-image: none;
+  background-color: white;
+  box-shadow: none;
+}
+
 .messageFooter.hide .footerActions {
   display: none;
 }
