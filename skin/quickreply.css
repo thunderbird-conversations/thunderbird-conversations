@@ -215,20 +215,20 @@ body.inTab .quickReply li.selected .textarea {
 /* clearfix */
 
 .cf:after {
-	content: ".";
-	display: block;
-	clear: both;
-	visibility: hidden;
-	line-height: 0;
-	height: 0;
+  content: ".";
+  display: block;
+  clear: both;
+  visibility: hidden;
+  line-height: 0;
+  height: 0;
 }
 
 html[xmlns] .cf {
-	display: block;
+  display: block;
 }
 
 * html .cf {
-	height: 1%;
+  height: 1%;
 }
 
 /* Quick reply */

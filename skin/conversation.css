@@ -844,7 +844,7 @@ ul.special-tags img {
 }
 
 .tag-dkim-signed  {
-	position: relative;
+  position: relative;
 }
 
 .tag-dkim-signed span {
