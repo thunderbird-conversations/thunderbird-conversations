@@ -67,6 +67,7 @@ p {
 
 button {
   -moz-appearance: button;
+  height: 2.2rem;
 }
 
 #conversationHeaderWrapper {
