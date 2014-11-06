@@ -745,25 +745,26 @@ ul.special-tags img {
 
 .messageFooter button {
   background-image: none;
-  background-color: white;
+  background-color: -moz-default-background-color;
+  color: -moz-default-color;
 
   float: left;
-  border: 1px solid #bebebe;
-  border-top-color: white;
-  border-radius: 0 0 0 0;
+  border: 1px solid threedshadow;
+  border-top-color: -moz-default-background-color;
+  border-radius: 0;
 
   margin: -1px 3px 0 0;
-  padding: 0 5px 3px 5px;
+  padding: 0 5px 3px;
 }
 
 .messageFooter button:hover {
-  border-color: #666;
-  border-top-color: white;
+  border-color: #888a85;
+  border-top-color: -moz-default-background-color;
 }
 
 .messageFooter button:active {
   background-image: none;
-  background-color: white;
+  background-color: -moz-default-background-color;
   box-shadow: none;
 }
 
