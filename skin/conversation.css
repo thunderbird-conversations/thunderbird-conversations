@@ -403,8 +403,7 @@ a img {
 .tipFooter {
   width: 100%;
   padding: 5px 10px;
-  background-color: -moz-dialog;
-  color: -moz-dialogtext;
+  background-color: rgba(160, 160, 160, 0.1);
   border-top: 1px solid threedshadow;
   float: left;
   border-radius: 0 0 5px 5px;
@@ -738,8 +737,7 @@ ul.special-tags img {
 
 .messageFooter {
   padding: 0px 10px 5px 10px;
-  background-color: -moz-field;
-  color: -moz-fieldtext;
+  background-color: rgba(160, 160, 160, 0.1);
   border-top: 1px solid threedshadow;
   border-radius: 0 0 5px 5px;
 }
