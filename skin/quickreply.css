@@ -13,8 +13,7 @@
 
 .quickReply {
   font-size: 1.2rem;
-  background-color: -moz-field;
-  color: -moz-fieldtext;
+  background-color: rgba(160, 160, 160, 0.1);
   border-top: 1px solid threedshadow;
   padding: 10px 10px;
   position: relative;
