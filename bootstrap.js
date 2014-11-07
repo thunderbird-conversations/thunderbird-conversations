@@ -132,32 +132,42 @@ function monkeyPatchWindow(window, aLater) {
     doIt();
 }
 
+function loadImports(){
+  Cu.import("resource://conversations/modules/monkeypatch.js", global);
+  Cu.import("resource://conversations/modules/prefs.js", global);
+  Cu.import("resource://conversations/modules/conversation.js", global);
+  Cu.import("resource://conversations/modules/keycustomization.js", global);
+
+  Cu.import("resource://conversations/modules/plugins/glodaAttrProviders.js");
+  Cu.import("resource://conversations/modules/plugins/embeds.js");
+}
+
+
 function startup(aData, aReason) {
   ResourceRegister.init(aData.installPath, "conversations");
-
-  Cu.import("resource://conversations/modules/monkeypatch.js", global);
-  Cu.import("resource://conversations/modules/conversation.js", global);
-  Cu.import("resource://conversations/modules/config.js", global);
-  Cu.import("resource://conversations/modules/prefs.js", global);
   Cu.import("resource://conversations/modules/log.js", global);
-  Cu.import("resource://conversations/modules/keycustomization.js", global);
+  Cu.import("resource://conversations/modules/prefs.js", global);
+  Cu.import("resource://conversations/modules/config.js", global);
 
   Log = setupLogging("Conversations.MonkeyPatch");
   Log.debug("startup, aReason=", aReason);
 
   try {
-    // Import all required plugins. If you create a new plugin, install it here.
-    Cu.import("resource://conversations/modules/plugins/glodaAttrProviders.js");
-    Cu.import("resource://conversations/modules/plugins/embeds.js");
-
     // Patch all existing windows
-    for each (let w in fixIterator(Services.wm.getEnumerator("mail:3pane")))
-      monkeyPatchWindow(w, false);
+    Services.obs.addObserver({
+      observe: function(aSubject, aTopic, aData) {
+	  loadImports();
+          for each (let w in fixIterator(Services.wm.getEnumerator("mail:3pane")))
+      		monkeyPatchWindow(w, false);
+      }
+    }, "final-ui-startup", false);
+
 
     // Patch all future windows
     Services.ww.registerNotification({
       observe: function (aSubject, aTopic, aData) {
         if (aTopic == "domwindowopened") {
+	  loadImports();
           aSubject.QueryInterface(Ci.nsIDOMWindow);
           monkeyPatchWindow(aSubject.window, true);
         }
@@ -165,17 +175,20 @@ function startup(aData, aReason) {
     });
 
     // Assistant.
-    if (Prefs.getInt("conversations.version") < conversationsCurrentVersion)
+    if (Prefs.getInt("conversations.version") < conversationsCurrentVersion){
+	loadImports();
       Services.ww.openWindow(
         null,
         "chrome://conversations/content/assistant/assistant.xhtml",
         "",
         "chrome,width=800,height=500", {});
+	}
 
     // Hook into options window
     Services.obs.addObserver({
       observe: function(aSubject, aTopic, aData) {
         if (aTopic == "addon-options-displayed" && aData == "gconversation@xulforum.org") {
+	  loadImports();
           CustomizeKeys.enable(aSubject); // aSubject is the options document
         }
       }
@@ -183,6 +196,7 @@ function startup(aData, aReason) {
     Services.obs.addObserver({
       observe: function(aSubject, aTopic, aData) {
         if (aTopic == "addon-options-hidden" && aData == "gconversation@xulforum.org") {
+	  loadImports();
           CustomizeKeys.disable(aSubject); // aSubject is the options document
         }
       }
@@ -195,6 +209,7 @@ function startup(aData, aReason) {
 
 function shutdown(aData, aReason) {
   // No need to do extra work here
+  loadImports();
   if (aReason == BOOTSTRAP_REASONS.APP_SHUTDOWN)
     return;
 
