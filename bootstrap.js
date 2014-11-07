@@ -177,6 +177,8 @@ function startup(aData, aReason) {
     // Assistant.
     if (Prefs.getInt("conversations.version") < conversationsCurrentVersion){
 	loadImports();
+	for each (let w in fixIterator(Services.wm.getEnumerator("mail:3pane")))
+      		monkeyPatchWindow(w, false);
       Services.ww.openWindow(
         null,
         "chrome://conversations/content/assistant/assistant.xhtml",
