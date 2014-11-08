@@ -36,7 +36,7 @@
 
 var EXPORTED_SYMBOLS = [
   // heuristics for finding quoted parts
-  'convertHotmailQuotingToBlockquote1', 'convertHotmailQuotingToBlockquote2',
+  'convertHotmailQuotingToBlockquote1',
   'convertOutlookQuotingToBlockquote', 'convertForwardedToBlockquote',
   'fusionBlockquotes', 'convertMiscQuotingToBlockquote',
 ]
@@ -154,71 +154,6 @@ function citeLevel (line) {
   for (i = 0; line[i] == ">" && i < line.length; ++i)
     ; // nop
   return i;
-}
-
-/* For #text <br /> #text ... when text nodes are quotes */
-function convertHotmailQuotingToBlockquote2(aWindow, aDocument, aHideQuoteLength) {
-  /* Actually that's not specific to Hotmail... */
-  let brCount = 0;
-  let stack = [];
-  let walk = function (aNode, inBlockquote, depth) {
-    let p;
-    let computedStyle = aNode.parentNode && aWindow.getComputedStyle(aNode.parentNode, null);
-    let parentIsBlock = computedStyle && computedStyle.display == "block";
-    if (aNode.nodeType == aNode.TEXT_NODE
-        && (p = citeLevel(aNode.textContent)) > 0
-        && parentIsBlock) {
-      /* Strip the leading > > > ...s.
-       * NB: this might actually be wrong since we might transform
-       *    > blah
-       *    > > duh
-       * into
-       *    blah
-       *    duh
-       * (with a single blockquote). However, Hotmail doesn't nest comments that
-       * way and switches to <hr />s when there is more than one quoting level. */
-      if (p <= aNode.textContent.length)
-        aNode.textContent = aNode.textContent.substring(p, aNode.textContent.length);
-      /* Create the <blockquote> if needed */
-      if (!inBlockquote) {
-        let blockquote = aDocument.createElement("blockquote");
-        blockquote.setAttribute("type", "cite");
-        blockquote.setUserData("hideme", false, null);
-        aNode.parentNode.insertBefore(blockquote, aNode);
-      }
-      /* Put the text node inside the blockquote */
-      let next = aNode.nextSibling;
-      aNode.previousSibling.appendChild(aNode);
-      /* Move on if possible */
-      if (next)
-        stack.push([next, true, depth]);
-    } else if (aNode.tagName && aNode.tagName.toLowerCase() == "br"
-            || aNode.nodeType == aNode.TEXT_NODE && !aNode.textContent.trim().length) {
-      let next = aNode.nextSibling;
-      /* Inside the <blockquote> we accept <br>s and empty text nodes */
-      if (inBlockquote) {
-        /* Count the <br>'s */
-        if (aNode.tagName && aNode.tagName.toLowerCase() == "br")
-          brCount++;
-        /* If we've seen enough, mark this node for folding */
-        if (brCount == aHideQuoteLength + 1)
-          aNode.previousSibling.setUserData("hideme", true, null);
-        aNode.previousSibling.appendChild(aNode);
-      }
-      if (next)
-        stack.push([next, inBlockquote, depth]);
-    } else {
-      if (aNode.firstChild && depth < 4) /* Try to mitigate the performance hit... */
-        stack.push([aNode.firstChild, false, depth + 1]);
-      if (aNode.nextSibling)
-        stack.push([aNode.nextSibling, false, depth]);
-    }
-  };
-  let count = 0;
-  walk(aDocument.body, false, 0);
-  // Anything above 100 will likely put your computer to a crawl...
-  while (stack.length && (count++ < 100))
-    walk.apply(this, stack.shift());
 }
 
 /* Stupid regexp that matches:
