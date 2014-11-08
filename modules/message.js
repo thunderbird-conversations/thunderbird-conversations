@@ -1989,10 +1989,6 @@ let PostStreamingFixesMixIn = {
       _log("convertOutlookQuotingToBlockquote");
       convertHotmailQuotingToBlockquote1(iframeDoc);
       _log("convertHotmailQuotingToBlockquote1");
-      if (Prefs.expensive_quote_detection) {
-        convertHotmailQuotingToBlockquote2(iframe.contentWindow, iframeDoc, Prefs["hide_quote_length"]);
-        _log("convertHotmailQuotingToBlockquote2");
-      }
       convertForwardedToBlockquote(iframeDoc);
       _log("convertForwardedToBlockquote");
       convertMiscQuotingToBlockquote(iframeDoc);
