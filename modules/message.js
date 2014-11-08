@@ -2000,7 +2000,7 @@ let PostStreamingFixesMixIn = {
     }
   },
 
-  detectBlocks: function (iframe, test_node, hideText, showText, linkClass, linkColor) {
+  detectBlocks: function (iframe, testNode, hideText, showText, linkClass, linkColor) {
     let self = this;
     let iframeDoc = iframe.contentDocument;
 
@@ -2014,7 +2014,7 @@ let PostStreamingFixesMixIn = {
       for (let i = elt.childNodes.length - 1; i >= 0; --i) {
         let c = elt.childNodes[i];
 
-        if (test_node(c)) {
+        if (testNode(c)) {
           let div = iframeDoc.createElement("div");
           div.setAttribute("class", "link "+linkClass);
           div.addEventListener("click", function div_listener (event) {
