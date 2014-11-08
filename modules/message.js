@@ -2016,18 +2016,16 @@ let PostStreamingFixesMixIn = {
         let c = elt.childNodes[i];
 
         if (test_node(c)) {
-          if (c.getUserData("hideme") !== false) { // null is ok, true is ok too
-            let div = iframeDoc.createElement("div");
-            div.setAttribute("class", "link "+linkClass);
-            div.addEventListener("click", function div_listener (event) {
-              let h = self._conversation._htmlPane.toggleBlock(event, showText, hideText);
-              iframe.style.height = (parseFloat(iframe.style.height) + h)+"px";
-            }, true);
-            div.setAttribute("style", "color: "+linkColor+"; cursor: pointer; font-size: "+smallSize+"px;");
-            div.appendChild(iframeDoc.createTextNode("- "+showText+" -"));
-            elt.insertBefore(div, c);
-            c.style.display = "none";
-          }
+          let div = iframeDoc.createElement("div");
+          div.setAttribute("class", "link "+linkClass);
+          div.addEventListener("click", function div_listener (event) {
+            let h = self._conversation._htmlPane.toggleBlock(event, showText, hideText);
+            iframe.style.height = (parseFloat(iframe.style.height) + h)+"px";
+          }, true);
+          div.setAttribute("style", "color: "+linkColor+"; cursor: pointer; font-size: "+smallSize+"px;");
+          div.appendChild(iframeDoc.createTextNode("- "+showText+" -"));
+          elt.insertBefore(div, c);
+          c.style.display = "none";
         } else {
           walk(c);
         }
