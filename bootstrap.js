@@ -132,50 +132,75 @@ function monkeyPatchWindow(window, aLater) {
     doIt();
 }
 
+function monkeyPatchAllWindows() {
+  for each (let w in fixIterator(Services.wm.getEnumerator("mail:3pane")))
+    monkeyPatchWindow(w, false);
+}
+
+/* We don't load all imports at initialization time because of bug #622:
+ * Some of these imports import gloda/public.js, gloda/index_msg.js or gloda/index_msg.js.
+ * These trigger some code which loads the language strings for some folders ("inbox", "sent", etc.)
+ * before other locales were loaded. The result were some English strings although another locale was selected.
+ *
+ * Cu.import() just loads every imported file once, so there is no need for a guard (like if(!isLoaded){...})
+ */
+function loadImports(){
+  Cu.import("resource://conversations/modules/monkeypatch.js", global);
+  Cu.import("resource://conversations/modules/prefs.js", global);
+  Cu.import("resource://conversations/modules/conversation.js", global);
+  Cu.import("resource://conversations/modules/keycustomization.js", global);
+
+  Cu.import("resource://conversations/modules/plugins/glodaAttrProviders.js");
+  Cu.import("resource://conversations/modules/plugins/embeds.js");
+}
+
+
 function startup(aData, aReason) {
   ResourceRegister.init(aData.installPath, "conversations");
-
-  Cu.import("resource://conversations/modules/monkeypatch.js", global);
-  Cu.import("resource://conversations/modules/conversation.js", global);
-  Cu.import("resource://conversations/modules/config.js", global);
-  Cu.import("resource://conversations/modules/prefs.js", global);
   Cu.import("resource://conversations/modules/log.js", global);
-  Cu.import("resource://conversations/modules/keycustomization.js", global);
+  Cu.import("resource://conversations/modules/prefs.js", global);
+  Cu.import("resource://conversations/modules/config.js", global);
 
   Log = setupLogging("Conversations.MonkeyPatch");
   Log.debug("startup, aReason=", aReason);
 
   try {
-    // Import all required plugins. If you create a new plugin, install it here.
-    Cu.import("resource://conversations/modules/plugins/glodaAttrProviders.js");
-    Cu.import("resource://conversations/modules/plugins/embeds.js");
+    // Patch all existing windows when the UI is built; all locales should have been loaded here
+    Services.obs.addObserver({
+      observe: function(aSubject, aTopic, aData) {
+          loadImports();
+          monkeyPatchAllWindows();
+      }
+    }, "final-ui-startup", false);
 
-    // Patch all existing windows
-    for each (let w in fixIterator(Services.wm.getEnumerator("mail:3pane")))
-      monkeyPatchWindow(w, false);
 
     // Patch all future windows
     Services.ww.registerNotification({
       observe: function (aSubject, aTopic, aData) {
         if (aTopic == "domwindowopened") {
+          loadImports();
           aSubject.QueryInterface(Ci.nsIDOMWindow);
           monkeyPatchWindow(aSubject.window, true);
         }
       },
     });
 
-    // Assistant.
-    if (Prefs.getInt("conversations.version") < conversationsCurrentVersion)
+    // Show the assistant if a newer version of conversations is detected (also applies when the extension is installed)
+    if (Prefs.getInt("conversations.version") < conversationsCurrentVersion) {
+      loadImports();
+      monkeyPatchAllWindows();
       Services.ww.openWindow(
         null,
         "chrome://conversations/content/assistant/assistant.xhtml",
         "",
         "chrome,width=800,height=500", {});
+    }
 
     // Hook into options window
     Services.obs.addObserver({
       observe: function(aSubject, aTopic, aData) {
         if (aTopic == "addon-options-displayed" && aData == "gconversation@xulforum.org") {
+          loadImports();
           CustomizeKeys.enable(aSubject); // aSubject is the options document
         }
       }
@@ -183,6 +208,7 @@ function startup(aData, aReason) {
     Services.obs.addObserver({
       observe: function(aSubject, aTopic, aData) {
         if (aTopic == "addon-options-hidden" && aData == "gconversation@xulforum.org") {
+          loadImports();
           CustomizeKeys.disable(aSubject); // aSubject is the options document
         }
       }
@@ -195,6 +221,7 @@ function startup(aData, aReason) {
 
 function shutdown(aData, aReason) {
   // No need to do extra work here
+  loadImports();
   if (aReason == BOOTSTRAP_REASONS.APP_SHUTDOWN)
     return;
 
