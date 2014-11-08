@@ -132,6 +132,11 @@ function monkeyPatchWindow(window, aLater) {
     doIt();
 }
 
+function monkeyPatchAllWindows() {
+  for each (let w in fixIterator(Services.wm.getEnumerator("mail:3pane")))
+    monkeyPatchWindow(w, false);
+}
+
 /* We don't load all imports at initialization time because of bug #622:
  * Some of these imports import gloda/public.js, gloda/index_msg.js or gloda/index_msg.js.
  * These trigger some code which loads the language strings for some folders ("inbox", "sent", etc.)
@@ -164,8 +169,7 @@ function startup(aData, aReason) {
     Services.obs.addObserver({
       observe: function(aSubject, aTopic, aData) {
           loadImports();
-          for each (let w in fixIterator(Services.wm.getEnumerator("mail:3pane")))
-      		monkeyPatchWindow(w, false);
+          monkeyPatchAllWindows();
       }
     }, "final-ui-startup", false);
 
@@ -182,16 +186,15 @@ function startup(aData, aReason) {
     });
 
     // Show the assistant if a newer version of conversations is detected (also applies when the extension is installed)
-    if (Prefs.getInt("conversations.version") < conversationsCurrentVersion){
-        loadImports();
-	for each (let w in fixIterator(Services.wm.getEnumerator("mail:3pane")))
-      		monkeyPatchWindow(w, false);
+    if (Prefs.getInt("conversations.version") < conversationsCurrentVersion) {
+      loadImports();
+      monkeyPatchAllWindows();
       Services.ww.openWindow(
         null,
         "chrome://conversations/content/assistant/assistant.xhtml",
         "",
         "chrome,width=800,height=500", {});
-	}
+    }
 
     // Hook into options window
     Services.obs.addObserver({
