@@ -132,6 +132,13 @@ function monkeyPatchWindow(window, aLater) {
     doIt();
 }
 
+/* We don't load all imports at initialization time because of bug #622:
+ * Some of these imports import gloda/public.js, gloda/index_msg.js or gloda/index_msg.js.
+ * These trigger some code which loads the language strings for some folders ("inbox", "sent", etc.)
+ * before other locales were loaded. The result were some English strings although another locale was selected.
+ *
+ * Cu.import() just loads every imported file once, so there is no need for a guard (like if(!isLoaded){...})
+ */
 function loadImports(){
   Cu.import("resource://conversations/modules/monkeypatch.js", global);
   Cu.import("resource://conversations/modules/prefs.js", global);
@@ -153,7 +160,7 @@ function startup(aData, aReason) {
   Log.debug("startup, aReason=", aReason);
 
   try {
-    // Patch all existing windows
+    // Patch all existing windows when the UI is built; all locales should have been loaded here
     Services.obs.addObserver({
       observe: function(aSubject, aTopic, aData) {
 	  loadImports();
@@ -174,7 +181,7 @@ function startup(aData, aReason) {
       },
     });
 
-    // Assistant.
+    // Show the assistant if a newer version of conversations is detected (also applies when the extension is installed)
     if (Prefs.getInt("conversations.version") < conversationsCurrentVersion){
 	loadImports();
 	for each (let w in fixIterator(Services.wm.getEnumerator("mail:3pane")))
