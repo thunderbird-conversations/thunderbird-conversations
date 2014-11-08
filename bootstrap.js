@@ -163,7 +163,7 @@ function startup(aData, aReason) {
     // Patch all existing windows when the UI is built; all locales should have been loaded here
     Services.obs.addObserver({
       observe: function(aSubject, aTopic, aData) {
-	  loadImports();
+          loadImports();
           for each (let w in fixIterator(Services.wm.getEnumerator("mail:3pane")))
       		monkeyPatchWindow(w, false);
       }
@@ -174,7 +174,7 @@ function startup(aData, aReason) {
     Services.ww.registerNotification({
       observe: function (aSubject, aTopic, aData) {
         if (aTopic == "domwindowopened") {
-	  loadImports();
+          loadImports();
           aSubject.QueryInterface(Ci.nsIDOMWindow);
           monkeyPatchWindow(aSubject.window, true);
         }
@@ -183,7 +183,7 @@ function startup(aData, aReason) {
 
     // Show the assistant if a newer version of conversations is detected (also applies when the extension is installed)
     if (Prefs.getInt("conversations.version") < conversationsCurrentVersion){
-	loadImports();
+        loadImports();
 	for each (let w in fixIterator(Services.wm.getEnumerator("mail:3pane")))
       		monkeyPatchWindow(w, false);
       Services.ww.openWindow(
@@ -197,7 +197,7 @@ function startup(aData, aReason) {
     Services.obs.addObserver({
       observe: function(aSubject, aTopic, aData) {
         if (aTopic == "addon-options-displayed" && aData == "gconversation@xulforum.org") {
-	  loadImports();
+          loadImports();
           CustomizeKeys.enable(aSubject); // aSubject is the options document
         }
       }
@@ -205,7 +205,7 @@ function startup(aData, aReason) {
     Services.obs.addObserver({
       observe: function(aSubject, aTopic, aData) {
         if (aTopic == "addon-options-hidden" && aData == "gconversation@xulforum.org") {
-	  loadImports();
+          loadImports();
           CustomizeKeys.disable(aSubject); // aSubject is the options document
         }
       }
