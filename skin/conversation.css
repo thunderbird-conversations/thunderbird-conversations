@@ -54,8 +54,8 @@ body {
   font-family: sans-serif;
   font-size: 1.2rem;
   line-height: 1.8rem;
-  background-color: #ECF3FE;
-  color: #000000;
+  background-color: window;
+  color: windowtext;
   margin: 0;
   padding: 0;
   overflow-y: scroll;
@@ -66,29 +66,7 @@ p {
 }
 
 button {
-  background-image: linear-gradient(to bottom, #fefefe 0%, #d5d5d5 100%);
-  border: 1px solid #919191;
-  box-shadow: 0 1px 0 rgba(255,255,255,0.55);
-  border-radius: 3px;
-  text-align: center;
-  outline: none;
-  height: 2.2rem;
-  cursor: pointer;
-}
-
-button:hover {
-  background-image: linear-gradient(to bottom, #fafafa 0%, #e6e6e6 100%);
-}
-
-button:active {
-  background-image: none;
-  background-color: #d5d5d5;
-  box-shadow: inset 0 0 2px #666;
-  border: 1px solid #666;
-}
-
-button img {
-  vertical-align: middle;
+  -moz-appearance: button;
 }
 
 #conversationHeaderWrapper {
@@ -103,9 +81,10 @@ button img {
 #conversationHeader {
   width: 100%;
   padding: 5px 10px;
-  background-image: linear-gradient(to bottom, #fcfcfc 0%, #e6e6e6 100%);
-  border-bottom: 1px solid #bebebe;
-  color: #0a0a0a;
+  background-color: window;
+  background-image: linear-gradient(rgba(255, 255, 255, 0.3), rgba(255, 255, 255, 0) 19px);
+  border-bottom: 1px solid threedshadow;
+  color: windowtext;
 }
 
 #conversationHeader.not-junkable .junk-button {
@@ -123,17 +102,14 @@ button img {
 }
 
 .subject a.text-link {
-  color: #3875d7;
+  color: -moz-hyperlinktext;
   cursor: pointer;
   text-decoration: underline;
 }
 
-.actions {
-}
-
 .actions button {
-  width: 28px;
-  height: 22px;
+  width: 30px;
+  height: 24px;
   float: right;
   margin: 0 0 0 3px;
 }
@@ -198,11 +174,11 @@ button img {
 
 .message {
   margin: 0 10px 10px 10px;
-  background-color: #fff;
-  background-image: linear-gradient(to bottom,#fff 0%,#fafafa 100%);
-  border: 1px solid #bebebe;
+  background-color: -moz-default-background-color;
+  color: -moz-default-color;
+  border: 1px solid threedshadow;
   border-radius: 5px;
-  box-shadow: 0 1px 2px #CCE0FF;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.25);
   list-style-type: none;
 }
 
@@ -212,8 +188,8 @@ button img {
 }
 
 .message.highlight, .message:focus {
-  border: 1px solid #bebebe;
-  box-shadow: 0 0 0 5px rgba(0,0,0,0.15);
+  border: 1px solid threedshadow;
+  box-shadow: 0 0 0 5px rgba(0,0,0,0.25);
 }
 
 .messageHeader {
@@ -243,7 +219,7 @@ button img {
 }
 
 .to, .bzTo {
-  color: #666;
+  color: #888a85;
 }
 
 .to.not-resized-yet {
@@ -286,8 +262,9 @@ button img {
   min-width: 302px;
   top: 24px;
   left: 16px;
-  background-color: #fff;
-  border: 1px solid #aaa;
+  background-color: -moz-field;
+  color: -moz-fieldtext;
+  border: 1px solid -moz-fieldtext;
   box-shadow: 0 0 0 6px rgba(0,0,0,0.25);
   border-radius: 5px;
   z-index: 1000;
@@ -320,9 +297,11 @@ button img {
 }
 
 .dropDown li:hover,
-.dropDown li:nth-child(2n):hover {
-  background-image: linear-gradient(to bottom, #3875D7 0%, #396BBD 100%);
-  color: #fff;
+.dropDown li:nth-child(2n):hover,
+.dropDown li:focus,
+.dropDown li:nth-child(2n):focus {
+  background-color: -moz-cellhighlight;
+  color: -moz-cellhighlighttext;
 }
 
 .dropDown li:last-child {
@@ -334,11 +313,11 @@ button img {
 }
 
 .dropDown li:nth-child(2n) {
-  background-color: #ECF3FE;
+  background-color: -moz-oddtreerow;
 }
 
 .arrow {
-  border-color: transparent transparent #666 transparent;
+  border-color: transparent transparent -moz-fieldtext transparent;
   border-style: solid;
   border-width: 7px;
   height: 0;
@@ -353,12 +332,12 @@ button img {
 }
 
 .arrow.inside {
-  border-color: transparent transparent #fff transparent;
+  border-color: transparent transparent -moz-field transparent;
   top: -13px;
 }
 
 .dropDown li:hover .arrow.inside {
-  border-color: transparent transparent #3875D7 transparent;
+  border-color: transparent transparent -moz-cellhighlight transparent;
 }
 
 .contactName {
@@ -367,7 +346,7 @@ button img {
 
 .smallEmail {
   font-size: 85%;
-  color: #888;
+  color: #888a85;
   font-weight: normal;
 }
 
@@ -383,7 +362,6 @@ button img {
   float: left;
   width: 20.0rem;
   padding: 10px;
-  color: #333;
 }
 
 .authorLinks {
@@ -401,7 +379,7 @@ a img {
 }
 
 .authorEmail {
-  color: #888;
+  color: #888a85;
   float: left;
   clear: left;
 }
@@ -421,8 +399,8 @@ a img {
 .tipFooter {
   width: 100%;
   padding: 5px 10px;
-  background-color: #f6f6f6;
-  border-top: 1px solid #E6E6E6;
+  background-color: rgba(160, 160, 160, 0.1);
+  border-top: 1px solid threedshadow;
   float: left;
   border-radius: 0 0 5px 5px;
 }
@@ -441,13 +419,16 @@ a img {
 .attachments a,
 .link {
   text-decoration: none;
-  color: #3875d7;
+  color: -moz-hyperlinktext;
   cursor: pointer;
 }
 
 .options a:hover,
 .attachments a:hover ,
-.link:hover {
+.link:hover,
+.options a:focus,
+.attachments a:focus ,
+.link:focus {
   text-decoration: underline;
 }
 
@@ -481,12 +462,12 @@ span.downwardArrow {
 }
 
 .message.collapsed:last-child {
-  border-bottom: 1px solid #bebebe;
+  border-bottom: 1px solid threedshadow;
   margin-bottom: 10px;
 }
 
-.message.collapsed .to, 
-.message.collapsed .bzTo, 
+.message.collapsed .to,
+.message.collapsed .bzTo,
 .message.collapsed .details,
 .message.collapsed .hide-details,
 .message.collapsed .dropDown,
@@ -504,12 +485,11 @@ span.downwardArrow {
   display: inline-block;
   height: 1.8rem;
   overflow: hidden;
-  color: #666;
+  color: #888a85;
 }
 
 .message .messageBody {
   padding: 0 10px 5px 10px;
-  color: #0a0a0a;
 }
 
 .message.with-details .messageBody {
@@ -545,7 +525,7 @@ span.downwardArrow {
 }
 
 .messageBody .tag-x {
-  border-left: 1px solid white;
+  border-left: 1px solid threedshadow;
   margin-left: 1ex;
   cursor: pointer;
   z-index: 3;
@@ -592,12 +572,12 @@ ul.special-tags img {
 
 .message .notificationBar {
   padding: 10px;
-  box-shadow: 0 0 3px rgba(0,0,0,0.15) inset;
+  box-shadow: 0 0 3px rgba(0,0,0,0.25) inset;
   margin: 0 0 10px 0;
   border-width: 1px 0;
   border-style: solid;
-  border-color: #ccc;
-  color: #666;
+  border-color: threedshadow;
+  color: #888a85;
 }
 
 .message .notificationBar button {
@@ -607,7 +587,7 @@ ul.special-tags img {
 
 .message .lightningImipBar {
   background-color: #baeeff;
-  color: #666;
+  color: #888a85;
 }
 
 .message .lightningImipImage {
@@ -645,7 +625,7 @@ ul.special-tags img {
 
 .message .notJunk {
   float: right;
-  color: #666;
+  color: #888a85;
   padding-top: 2px;
 }
 
@@ -659,7 +639,7 @@ ul.special-tags img {
 
 .message .remoteContent a {
   text-decoration: none;
-  color: #3875D7;
+  color: -moz-hyperlinktext;
 }
 
 .message .remoteContent a:hover {
@@ -675,7 +655,7 @@ ul.special-tags img {
   padding-left: 20px;
   text-indent: -10px;
   padding-right: 10px;
-  color: #666;
+  color: #888a85;
   margin-top: -5px;
   margin-bottom: 5px;
 }
@@ -688,7 +668,7 @@ ul.special-tags img {
 .attachHeader {
   display: inline;
   padding-top: 10px;
-  border-top: 1px solid #e6e6e6;
+  border-top: 1px solid threedshadow;
 }
 
 .attachments li {
@@ -700,7 +680,7 @@ ul.special-tags img {
 .attachmentThumb {
   width: 130px;
   padding: 4px;
-  border: 1px solid #ccc;
+  border: 1px solid threedshadow;
   background-color: #fff;
   background-image: linear-gradient(to bottom,#fff 0%,#f2f2f2 100%);
   margin: 0 20px 0 0;
@@ -753,32 +733,33 @@ ul.special-tags img {
 
 .messageFooter {
   padding: 0px 10px 5px 10px;
-  background-color: #f6f6f6;
-  border-top: 1px solid #bebebe;
+  background-color: rgba(160, 160, 160, 0.1);
+  border-top: 1px solid threedshadow;
   border-radius: 0 0 5px 5px;
 }
 
 .messageFooter button {
   background-image: none;
-  background-color: white;
+  background-color: -moz-default-background-color;
+  color: -moz-default-color;
 
   float: left;
-  border: 1px solid #bebebe;
-  border-top-color: white;
-  border-radius: 0 0 0 0;
+  border: 1px solid threedshadow;
+  border-top-color: -moz-default-background-color;
+  border-radius: 0;
 
   margin: -1px 3px 0 0;
-  padding: 0 5px 3px 5px;
+  padding: 0 5px 3px;
 }
 
 .messageFooter button:hover {
-  border-color: #666;
-  border-top-color: white;
+  border-color: #888a85;
+  border-top-color: -moz-default-background-color;
 }
 
 .messageFooter button:active {
   background-image: none;
-  background-color: white;
+  background-color: -moz-default-background-color;
   box-shadow: none;
 }
 
@@ -793,7 +774,7 @@ ul.special-tags img {
 .messageFooter:after {
   content: " ";
   display: block;
-  height: 0; 
+  height: 0;
   clear: both;
   visibility: hidden;
 }
@@ -857,7 +838,7 @@ ul.special-tags img {
 }
 
 .tag-dkim-signed  {
-	position: relative;
+  position: relative;
 }
 
 .tag-dkim-signed span {
@@ -918,11 +899,11 @@ ul.special-tags img {
   line-height: 0;
   height: 0;
 }
- 
+
 html[xmlns] .clearfix {
   display: block;
 }
- 
+
 * html .clearfix {
   height: 1%;
 }
