@@ -281,12 +281,14 @@ function folderName(aFolder) {
 
 function openConversationInTabOrWindow(aUrl) {
   let window = getMail3Pane();
+  // Counting some extra pixels for window decorations.
+  let height = Math.min(window.screen.availHeight-30, 1024);
   switch (Prefs.getInt("mail.openMessageBehavior")) {
     case 0:
-      window.openDialog(aUrl, "_blank", "chrome,width=640,height=1024");
+      window.open(aUrl, "_blank", "chrome,width=640,height="+height);
       break;
     case 1:
-      window.openDialog(aUrl, "conversations", "chrome,width=640,height=1024");
+      window.open(aUrl, "conversations", "chrome,width=640,height="+height);
       break;
     case 2:
       window.document.getElementById("tabmail").openTab("chromeTab", {
