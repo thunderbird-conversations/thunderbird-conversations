@@ -185,7 +185,7 @@ function startup(aData, aReason) {
       },
     });
 
-    // Show the assistant if the extension is installed or upgraded
+    // Show the assistant if the extension is installed or enabled
     if (aReason == BOOTSTRAP_REASONS.ADDON_INSTALL || aReason == BOOTSTRAP_REASONS.ADDON_ENABLE) {
       loadImports();
       monkeyPatchAllWindows();
@@ -225,10 +225,13 @@ function startup(aData, aReason) {
 
 function shutdown(aData, aReason) {
   // No need to do extra work here
+  Log.debug("shutdown, aReason=", aReason);
+  // Load imports for the BOOTSTRAP_REASONS constants; should have happened before in most cases
   loadImports();
   if (aReason == BOOTSTRAP_REASONS.APP_SHUTDOWN)
     return;
 
+  // Reasons to be here can be DISABLE or UNINSTALL
   ResourceRegister.uninit("conversations");
   for each (let w in fixIterator(Services.wm.getEnumerator("mail:3pane")))
     w.Conversations.monkeyPatch.undo(aReason);
