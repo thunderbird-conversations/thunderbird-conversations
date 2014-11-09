@@ -196,7 +196,9 @@ function startup(aData, aReason) {
         "chrome,width=800,height=500", {});
     }
 
-    if (aReason == BOOTSTRAP_REASONS.ADDON_UPGRADE || aReason == BOOTSTRAP_REASONS.ADDON_DOWNGRADE || aReason == BOOTSTRAP_REASONS.ADDON_ENABLE || aReason == BOOTSTRAP_REASONS.ADDON_DISABLE ) {
+    // In case of an up- or downgrade patch all windows again
+    if (aReason == BOOTSTRAP_REASONS.ADDON_UPGRADE || aReason == BOOTSTRAP_REASONS.ADDON_DOWNGRADE) {
+      loadImports();
       monkeyPatchAllWindows();
     }
 
