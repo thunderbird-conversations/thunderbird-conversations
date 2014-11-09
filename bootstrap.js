@@ -185,8 +185,8 @@ function startup(aData, aReason) {
       },
     });
 
-    // Show the assistant if a newer version of conversations is detected (also applies when the extension is installed)
-    if (Prefs.getInt("conversations.version") < conversationsCurrentVersion) {
+    // Show the assistant if the extension is installed or upgraded
+    if (aReason == BOOTSTRAP_REASONS.ADDON_INSTALL || aReason == BOOTSTRAP_REASONS.ADDON_ENABLE) {
       loadImports();
       monkeyPatchAllWindows();
       Services.ww.openWindow(
@@ -194,6 +194,10 @@ function startup(aData, aReason) {
         "chrome://conversations/content/assistant/assistant.xhtml",
         "",
         "chrome,width=800,height=500", {});
+    }
+
+    if (aReason == BOOTSTRAP_REASONS.ADDON_UPGRADE || aReason == BOOTSTRAP_REASONS.ADDON_DOWNGRADE || aReason == BOOTSTRAP_REASONS.ADDON_ENABLE || aReason == BOOTSTRAP_REASONS.ADDON_DISABLE ) {
+      monkeyPatchAllWindows();
     }
 
     // Hook into options window
