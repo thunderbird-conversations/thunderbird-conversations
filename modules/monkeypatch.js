@@ -344,7 +344,6 @@ MonkeyPatch.prototype = {
       }
     }
     Prefs.setString("conversations.uninstall_infos", "{}");
-    Prefs.setInt("conversations.version", 0);
   },
 
   activateMenuItem: function (window) {
