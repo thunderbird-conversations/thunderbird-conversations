@@ -53,6 +53,7 @@
   <setting title="&title.hide_sigs;" desc="&desc.hide_sigs;" pref="conversations.hide_sigs" type="bool" />
 
   <setting title="&title.friendly_date;" desc="&option.no_friendly_date2;" pref="conversations.no_friendly_date" type="bool" />
+  <setting title="&title.friendly_address;" desc="&option.no_friendly_address;" pref="conversations.no_friendly_address" type="bool" />
 
   <setting title="&title.customize_keys;" desc="&desc.customize_keys;" type="control">
     <vbox>
