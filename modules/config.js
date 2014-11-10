@@ -1,6 +1,4 @@
-var EXPORTED_SYMBOLS = ['conversationsCurrentVersion', 'BOOTSTRAP_REASONS']
-
-let conversationsCurrentVersion = 1;
+var EXPORTED_SYMBOLS = ['BOOTSTRAP_REASONS']
 
 const BOOTSTRAP_REASONS = {
   APP_STARTUP     : 1,
