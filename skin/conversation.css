@@ -208,29 +208,18 @@ button {
   margin-right: .3rem;
 }
 
-.messageHeader .involved {
-  height: 1.8rem;
-  padding: 0 5px 0 0;
-}
-
-.messageHeader .involved .toWrapper {
-  /* allow recipient tooltips container to be placed over recipient contacts container */
-  position: relative;
-}
-
 .to, .bzTo {
   color: #888a85;
 }
 
-.to.not-resized-yet {
-  display: none;
-}
 
-.to {
-  display: inline-block;
+/* That's what makes the ellipsis appear */
+.shrink-box {
+  display:        inline-block;
   white-space:    nowrap;
   text-overflow:  ellipsis;
   overflow:       hidden;
+  flex:           1;
 }
 
 .recipient-tooltips {
@@ -477,14 +466,11 @@ span.downwardArrow {
 .message.collapsed p,
 .message.collapsed .attachments,
 .message.collapsed .detailsLine,
-.message .snippet {
+.message:not(.collapsed) .snippet {
   display: none;
 }
 
-.message.collapsed .snippet {
-  display: inline-block;
-  height: 1.8rem;
-  overflow: hidden;
+.snippet {
   color: #888a85;
 }
 

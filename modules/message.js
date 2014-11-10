@@ -1068,12 +1068,6 @@ Message.prototype = {
     let self = this;
     let window = this._conversation._htmlPane;
     window.alignAttachments(this);
-
-    // We're expanded at that stage...
-    let toNode = this._domNode.getElementsByClassName("to")[0];
-    let w = toNode.parentNode.scrollWidth;
-    toNode.style.width = (w-5)+"px";
-    toNode.classList.remove("not-resized-yet");
   },
 
   // {

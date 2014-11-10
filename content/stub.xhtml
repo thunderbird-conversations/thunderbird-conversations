@@ -810,12 +810,10 @@
     <li class="message collapsed ${extraClasses}">
       <div class="messageHeader hbox">
         <div class="star"></div>
-        <div class="author">{{tmpl(dataContactFrom) "#contactTemplate"}}</div>
-        <div class="involved boxFlex">
-          <div class="toWrapper">
-              <span class="to hide-with-details not-resized-yet"> ${str("to")} {{tmpl(dataContactsTo) "#recipientContactTemplate"}}</span>
-              <span class="recipient-tooltips">{{tmpl(dataContactsTo) "#recipientTooltipTemplate"}}</span>
-          </div>
+        <div class="shrink-box">
+          <span class="author">{{tmpl(dataContactFrom) "#contactTemplate"}}</span>
+          <span class="to hide-with-details"> ${str("to")} {{tmpl(dataContactsTo) "#recipientContactTemplate"}}</span>
+          <span class="recipient-tooltips">{{tmpl(dataContactsTo) "#recipientTooltipTemplate"}}</span>
           <span class="bzTo"> ${str("at")} ${bugzillaUrl}</span>
           <span class="snippet"><ul class="tags regular-tags"></ul><ul
               class="tags special-tags"
