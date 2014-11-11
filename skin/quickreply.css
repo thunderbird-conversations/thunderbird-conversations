@@ -150,12 +150,19 @@ body.inTab .quickReply li.selected .textarea {
   background-color: -moz-field;
   color: -moz-fieldtext;
   cursor: pointer;
-  background-image: url('chrome://conversations/content/i/out.png');
-  background-position: -4px 2px;
-  background-repeat: no-repeat;
   z-index: 101;
 
   border-radius: 0 3px 0 0;
+}
+
+.quickReply .popout::before {
+  content: "";
+  position: absolute;
+  width: 16px;
+  height: 16px;
+  background-image: url('chrome://conversations/content/i/out.png');
+  background-position: -4px 2px;
+  background-repeat: no-repeat;
 }
 
 .quickReply .selected .popout {
