@@ -147,9 +147,11 @@ body.inTab .quickReply li.selected .textarea {
   border-width: 1px 1px 0 0;
   border-color: threedshadow;
   border-style: solid;
-  background-color: -moz-field;
-  color: -moz-fieldtext;
+  background-color: -moz-default-background-color;
+  color: -moz-default-color;
   cursor: pointer;
+  background-image: linear-gradient(rgba(160, 160, 160, 0.1),
+                                    rgba(160, 160, 160, 0.1));
   z-index: 101;
 
   border-radius: 0 3px 0 0;
