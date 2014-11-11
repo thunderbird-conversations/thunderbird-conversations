@@ -134,7 +134,7 @@ body.inTab .quickReply li.selected .textarea {
 }
 
 .quickReply .popoutTxt {
-  color: #bbb;
+  color: threedshadow;
   padding: 0 4px 0 15px;
 }
 
