@@ -1755,7 +1755,7 @@ function MessageFromGloda(aConversation, aGlodaMsg, aLateAttachments) {
   this.isReplyAllEnabled =
     [aGlodaMsg.from].concat(aGlodaMsg.to).concat(aGlodaMsg.cc).concat(aGlodaMsg.bcc)
     .filter(function (x) {
-      let r = !(x.value in gIdentities) && !(x.value in seen);
+      let r = !(gIdentities.some(function (ident) ident.identity.email == x.value.toLowerCase())) && !(x.value in seen);
       seen[x.value] = null;
       return r;
     }).length > 1;
@@ -1820,7 +1820,7 @@ function MessageFromDbHdr(aConversation, aMsgHdr) {
           .concat(parseMimeLine(aMimeMsg.get("cc"), true))
           .concat(parseMimeLine(aMimeMsg.get("bcc"), true))
           .filter(function (x) {
-            let r = !(x.email in gIdentities) && !(x.email in seen);
+            let r = !(gIdentities.some(function (ident) ident.identity.email == x.email)) && !(x.email in seen);
             seen[x.email] = null;
             return r;
           })
