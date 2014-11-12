@@ -382,9 +382,6 @@ MonkeyPatch.prototype = {
     let oldSummarizeMultipleSelection = window["summarizeMultipleSelection"];
     let oldSummarizeThread = window["summarizeThread"];
 
-    // Do this at least once at overlay load-time
-    fillIdentities(false);
-
     // Register our new column type
     this.registerColumn();
     this.registerFontPrefObserver(htmlpane);
