@@ -185,8 +185,8 @@ function startup(aData, aReason) {
       },
     });
 
-    // Show the assistant if a newer version of conversations is detected (also applies when the extension is installed)
-    if (Prefs.getInt("conversations.version") < conversationsCurrentVersion) {
+    // Show the assistant if the extension is installed or enabled
+    if (aReason == BOOTSTRAP_REASONS.ADDON_INSTALL || aReason == BOOTSTRAP_REASONS.ADDON_ENABLE) {
       loadImports();
       monkeyPatchAllWindows();
       Services.ww.openWindow(
@@ -194,6 +194,12 @@ function startup(aData, aReason) {
         "chrome://conversations/content/assistant/assistant.xhtml",
         "",
         "chrome,width=800,height=500", {});
+    }
+
+    // In case of an up- or downgrade patch all windows again
+    if (aReason == BOOTSTRAP_REASONS.ADDON_UPGRADE || aReason == BOOTSTRAP_REASONS.ADDON_DOWNGRADE) {
+      loadImports();
+      monkeyPatchAllWindows();
     }
 
     // Hook into options window
@@ -221,10 +227,13 @@ function startup(aData, aReason) {
 
 function shutdown(aData, aReason) {
   // No need to do extra work here
+  Log.debug("shutdown, aReason=", aReason);
+  // Load imports for the BOOTSTRAP_REASONS constants; should have happened before in most cases
   loadImports();
   if (aReason == BOOTSTRAP_REASONS.APP_SHUTDOWN)
     return;
 
+  // Reasons to be here can be DISABLE or UNINSTALL
   ResourceRegister.uninit("conversations");
   for each (let w in fixIterator(Services.wm.getEnumerator("mail:3pane")))
     w.Conversations.monkeyPatch.undo(aReason);

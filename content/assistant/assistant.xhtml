@@ -39,13 +39,6 @@
       }
     }
 
-    // In all cases, closing the window once should prevent it from ever opening
-    //  again.
-    function upgrade() {
-      Prefs.setInt("conversations.version", conversationsCurrentVersion);
-    }
-    window.addEventListener("unload", upgrade, true);
-
     let finishedAlready = false;
     function finish() {
       // The user closed the window, so we ran finish() already, and now we're
@@ -61,7 +54,6 @@
         Log.warn("Uninstall information already there, not overwriting...");
       }
       finishedAlready = true;
-      upgrade();
       window.removeEventListener("unload", finish, true);
       window.close();
     }
