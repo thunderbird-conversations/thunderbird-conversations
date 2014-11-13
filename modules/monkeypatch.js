@@ -168,7 +168,7 @@ MonkeyPatch.prototype = {
         // Helper for formatting; depending on the locale, we may need a different
         // for me as in "to me" or as in "from me".
         let format = function (x, p) {
-          if (getIdentities().some(function (ident) ident.identity.email == x.email.toLowerCase()))
+          if (getIdentityForEmail(x.email))
             return (p
               ? strings.get("meBetweenMeAndSomeone")
               : strings.get("meBetweenSomeoneAndMe")

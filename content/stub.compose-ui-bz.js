@@ -164,7 +164,7 @@ function BzComposeSession (match, webUrl, apiUrl, [login, loginCookie]) {
       self.params.msgHdr = aMsgHdr;
     },
     draft: function ({ msgUri, from, body }) {
-      self.params.identity = getIdentities().some(function (ident) ident.identity.email == from.toLowerCase()) || getDefaultIdentity();
+      self.params.identity = getIdentityForEmail(from) || getDefaultIdentity();
       self.params.msgHdr = msgUriToMsgHdr(msgUri);
       $("textarea").val(body);
     },

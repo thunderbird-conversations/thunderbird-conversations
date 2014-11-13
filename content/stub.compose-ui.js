@@ -482,8 +482,7 @@ ComposeSession.prototype = {
   cycleSender: function (dir) {
     let i = this.identities.indexOf(this.params.identity.email.toLowerCase());
     i = (i + dir + this.identities.length) % this.identities.length;
-    let self = this;
-    this.params.identity = getIdentities().some(function (ident) ident.identity.email == self.identities[i]);
+    this.params.identity = getIdentityForEmail(this.identities[i]);
     this.senderNameElem.text(this.params.identity.email);
   },
 
@@ -534,7 +533,7 @@ ComposeSession.prototype = {
         //  identifies the identity. We have a fallback plan in case the user
         //  has deleted the identity in-between (sounds unlikely, but who
         //  knows?).
-        identity = getIdentities().some(function (ident) ident.identity.email == from.toLowerCase()) || getDefaultIdentity();
+        identity = getIdentityForEmail(from) || getDefaultIdentity();
         self.setupDone();
       },
 
