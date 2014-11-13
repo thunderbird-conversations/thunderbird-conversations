@@ -472,9 +472,7 @@ function ComposeSession (match) {
 
   this.identities = [];
   for (let ident in getIdentities()) {
-    if (!ident.isDefault)
-      this.identities.push(ident.email);
-  }
+    this.identities.push(ident.email);
 }
 
 ComposeSession.prototype = {
