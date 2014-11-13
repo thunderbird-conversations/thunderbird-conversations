@@ -292,7 +292,7 @@ let ContactMixIn = {
   getTooltipName: function _ContactMixIn_getName (aPosition) {
     Log.assert(aPosition === Contacts.kFrom || aPosition === Contacts.kTo,
       "Someone did not set the 'position' properly");
-    if (this._email in gIdentities)
+    if (getIdentityForEmail(this._email))
       return strings.get("meFromMeToSomeone");
     else
       return this._name || this._email;
@@ -301,7 +301,7 @@ let ContactMixIn = {
   getName: function _ContactMixIn_getName (aPosition, aIsDetail) {
     Log.assert(aPosition === Contacts.kFrom || aPosition === Contacts.kTo,
       "Someone did not set the 'position' properly");
-    if ((this._email in gIdentities) && !aIsDetail)
+    if (getIdentityForEmail(this._email) && !aIsDetail)
       return ((aPosition === Contacts.kFrom)
         ? strings.get("meFromMeToSomeone")
         : strings.get("meFromSomeoneToMe")
@@ -318,7 +318,7 @@ let ContactMixIn = {
 
 function ContactFromAB(manager, name, email, /* unused */ position, color) {
   this.emails = [];
-  this.color = color || manager.freshColor(email in gIdentities);
+  this.color = color || manager.freshColor(getIdentityForEmail(email));
 
   this._manager = manager;
   this._name = name; // Initially, the displayed name. Might be enhanced later.

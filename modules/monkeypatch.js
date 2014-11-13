@@ -168,7 +168,7 @@ MonkeyPatch.prototype = {
         // Helper for formatting; depending on the locale, we may need a different
         // for me as in "to me" or as in "from me".
         let format = function (x, p) {
-          if ((x.email+"").toLowerCase() in gIdentities)
+          if (getIdentityForEmail(x.email))
             return (p
               ? strings.get("meBetweenMeAndSomeone")
               : strings.get("meBetweenSomeoneAndMe")
@@ -381,9 +381,6 @@ MonkeyPatch.prototype = {
     let htmlpane = window.document.getElementById("multimessage");
     let oldSummarizeMultipleSelection = window["summarizeMultipleSelection"];
     let oldSummarizeThread = window["summarizeThread"];
-
-    // Do this at least once at overlay load-time
-    fillIdentities(false);
 
     // Register our new column type
     this.registerColumn();
