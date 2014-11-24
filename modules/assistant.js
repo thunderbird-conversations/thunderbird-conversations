@@ -33,7 +33,14 @@ function get_smart_folder_named(aFolderName) {
   let acctMgr = Cc["@mozilla.org/messenger/account-manager;1"]
                   .getService(Ci.nsIMsgAccountManager);
   let smartServer = acctMgr.FindServer("nobody", "smart mailboxes", "none");
-  return smartServer.rootFolder.getChildNamed(aFolderName);
+  let smartInbox = null;
+  try {
+   smartInbox = smartServer.rootFolder.getChildNamed(aFolderName);
+  } catch (e) {
+    Log.debug(e);
+    Log.debug("Is there only one account?");
+  }
+  return smartInbox;
 }
 
 
@@ -181,13 +188,7 @@ let Customizations = {
       // start customizing things
       mainWindow.gFolderTreeView.mode = "smart";
 
-      let smartInbox = null;
-      try {
-        smartInbox = get_smart_folder_named("Inbox");
-      } catch (e) {
-        Log.debug(e);
-        Log.debug("Is there only one account?");
-      }
+      let smartInbox = get_smart_folder_named("Inbox");
 
       // Might not be created yet if only one account
       if (smartInbox)
@@ -255,13 +256,8 @@ let Customizations = {
 
       // Get a handle onto the virtual inbox, and mark all the folders it
       //  already searches.
-      let smartInbox = null;
-      try {
-        smartInbox = get_smart_folder_named("Inbox");
-      } catch (e) {
-        Log.warn(e);
-        Log.warn("Is there only one account?");
-      }
+      let smartInbox = get_smart_folder_named("Inbox");
+
       if (!smartInbox)
         return changedFolders;
 
@@ -301,13 +297,7 @@ let Customizations = {
     uninstall: function (aChangedFolders) {
       // Just remove from the smart inbox the folders we added if they're still
       //  here.
-      let smartInbox = null;
-      try {
-        smartInbox = get_smart_folder_named("Inbox");
-      } catch (e) {
-        Log.debug(e);
-        Log.debug("Is there only one account?");
-      }
+      let smartInbox = get_smart_folder_named("Inbox");
 
       if (!smartInbox)
         return;
