@@ -473,6 +473,7 @@ function ComposeSession (match) {
   this.identities = [];
   for (let ident in getIdentities()) {
     this.identities.push(ident.email);
+  }
 }
 
 ComposeSession.prototype = {
