@@ -280,8 +280,7 @@ let Customizations = {
           continue;
 
         let rootFolder = account.incomingServer.rootFolder;
-        let allFolders = Cc["@mozilla.org/supports-array;1"].createInstance(Ci.nsISupportsArray);
-        rootFolder.ListDescendents(allFolders);
+        let allFolders = rootFolder.descendants;
         for each (let folder in fixIterator(allFolders, Ci.nsIMsgFolder)) {
           if ((folder.getFlag(nsMsgFolderFlags_SentMail) || folder.getFlag(nsMsgFolderFlags_Inbox))
               && !searchFolders[folder.folderURL]) {
@@ -341,8 +340,7 @@ let Customizations = {
           changedServers.push(account.incomingServer.serverURI);
         }
         let rootFolder = account.incomingServer.rootFolder;
-        let allFolders = Cc["@mozilla.org/supports-array;1"].createInstance(Ci.nsISupportsArray);
-        rootFolder.ListDescendents(allFolders);
+        let allFolders = rootFolder.descendants;
         for each (let folder in fixIterator(allFolders, Ci.nsIMsgFolder)) {
           if ((folder.getFlag(nsMsgFolderFlags_SentMail) || folder.getFlag(nsMsgFolderFlags_Inbox))
               && !folder.getFlag(nsMsgFolderFlags_Offline)) {
