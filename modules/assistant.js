@@ -29,7 +29,7 @@ Cu.import("resource://conversations/modules/log.js");
 let Log = setupLogging("Conversations.Assistant");
 
 // Thanks, Andrew!
-function get_smart_folder_named(aFolderName) {
+function getSmartFolderNamed(aFolderName) {
   let acctMgr = Cc["@mozilla.org/messenger/account-manager;1"]
                   .getService(Ci.nsIMsgAccountManager);
   let smartServer = acctMgr.FindServer("nobody", "smart mailboxes", "none");
@@ -188,7 +188,7 @@ let Customizations = {
       // start customizing things
       mainWindow.gFolderTreeView.mode = "smart";
 
-      let smartInbox = get_smart_folder_named("Inbox");
+      let smartInbox = getSmartFolderNamed("Inbox");
 
       // Might not be created yet if only one account
       if (smartInbox)
@@ -256,7 +256,7 @@ let Customizations = {
 
       // Get a handle onto the virtual inbox, and mark all the folders it
       //  already searches.
-      let smartInbox = get_smart_folder_named("Inbox");
+      let smartInbox = getSmartFolderNamed("Inbox");
 
       if (!smartInbox)
         return changedFolders;
@@ -297,7 +297,7 @@ let Customizations = {
     uninstall: function (aChangedFolders) {
       // Just remove from the smart inbox the folders we added if they're still
       //  here.
-      let smartInbox = get_smart_folder_named("Inbox");
+      let smartInbox = getSmartFolderNamed("Inbox");
 
       if (!smartInbox)
         return;
