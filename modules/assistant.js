@@ -301,7 +301,14 @@ let Customizations = {
     uninstall: function (aChangedFolders) {
       // Just remove from the smart inbox the folders we added if they're still
       //  here.
-      let smartInbox = get_smart_folder_named("Inbox");
+      let smartInbox = null;
+      try {
+        smartInbox = get_smart_folder_named("Inbox");
+      } catch (e) {
+        Log.debug(e);
+        Log.debug("Is there only one account?");
+      }
+
       if (!smartInbox)
         return;
 
