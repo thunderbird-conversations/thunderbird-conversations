@@ -471,9 +471,8 @@ function ComposeSession (match) {
   this.setupAttachments();
 
   this.identities = [];
-  for each (let [email, identity] in Iterator(gIdentities)) {
-    if (email != "default")
-      this.identities.push(email.toLowerCase());
+  for (let ident in getIdentities()) {
+    this.identities.push(ident.email);
   }
 }
 
@@ -482,7 +481,7 @@ ComposeSession.prototype = {
   cycleSender: function (dir) {
     let i = this.identities.indexOf(this.params.identity.email.toLowerCase());
     i = (i + dir + this.identities.length) % this.identities.length;
-    this.params.identity = gIdentities[this.identities[i]];
+    this.params.identity = getIdentityForEmail(this.identities[i]);
     this.senderNameElem.text(this.params.identity.email);
   },
 
@@ -524,7 +523,7 @@ ComposeSession.prototype = {
         // Standard procedure for finding which identity to send with, as per
         //  http://mxr.mozilla.org/comm-central/source/mail/base/content/mailCommands.js#210
         let suggestedIdentity = mainWindow.getIdentityForHeader(aMsgHdr, compType);
-        identity = suggestedIdentity || gIdentities.default;
+        identity = suggestedIdentity || getDefaultIdentity();
         self.setupDone();
       },
 
@@ -533,13 +532,13 @@ ComposeSession.prototype = {
         //  identifies the identity. We have a fallback plan in case the user
         //  has deleted the identity in-between (sounds unlikely, but who
         //  knows?).
-        identity = gIdentities[from] || gIdentities.default;
+        identity = getIdentityForEmail(from) || getDefaultIdentity();
         self.setupDone();
       },
 
       new: function () {
         // Do some work to figure what the "right" identity is for us.
-        identity = gIdentities.default;
+        identity = getDefaultIdentity();
         let selectedFolder = topMail3Pane(window).gFolderTreeView.getSelectedFolders()[0];
         if (selectedFolder) {
           identity = selectedFolder.customIdentity ||
