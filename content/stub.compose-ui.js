@@ -469,19 +469,19 @@ function ComposeSession (match) {
   this.setupMisc();
   this.setupAutocomplete();
   this.setupAttachments();
-
-  this.identities = [];
-  for (let ident in getIdentities()) {
-    this.identities.push(ident.email);
-  }
 }
 
 ComposeSession.prototype = {
 
+  /* This function is called when you click on the small arrows in the quick reply next to the email address
+   * you're using  for sending the message. The effect is that we cycle through the list of available identities
+   * for sending that email. dir is either 1 or -1.
+   */
   cycleSender: function (dir) {
-    let i = this.identities.indexOf(this.params.identity.email.toLowerCase());
-    i = (i + dir + this.identities.length) % this.identities.length;
-    this.params.identity = getIdentityForEmail(this.identities[i]);
+    let self = this;
+    let index = getIdentities().findIndex(function (ident) ident.identity == self.params.identity);
+    index = (index + dir) % getIdentities().length;
+    this.params.identity = getIdentities()[index].identity;
     this.senderNameElem.text(this.params.identity.email);
   },
 
