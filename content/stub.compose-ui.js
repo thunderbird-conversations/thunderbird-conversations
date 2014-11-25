@@ -523,7 +523,7 @@ ComposeSession.prototype = {
         // Standard procedure for finding which identity to send with, as per
         //  http://mxr.mozilla.org/comm-central/source/mail/base/content/mailCommands.js#210
         let suggestedIdentity = mainWindow.getIdentityForHeader(aMsgHdr, compType);
-        identity = suggestedIdentity || getDefaultIdentity();
+        identity = suggestedIdentity || getDefaultIdentity().identity;
         self.setupDone();
       },
 
@@ -532,13 +532,13 @@ ComposeSession.prototype = {
         //  identifies the identity. We have a fallback plan in case the user
         //  has deleted the identity in-between (sounds unlikely, but who
         //  knows?).
-        identity = getIdentityForEmail(from) || getDefaultIdentity();
+        identity = getIdentityForEmail(from).identity || getDefaultIdentity().identity;
         self.setupDone();
       },
 
       new: function () {
         // Do some work to figure what the "right" identity is for us.
-        identity = getDefaultIdentity();
+        identity = getDefaultIdentity().identity;
         let selectedFolder = topMail3Pane(window).gFolderTreeView.getSelectedFolders()[0];
         if (selectedFolder) {
           identity = selectedFolder.customIdentity ||
