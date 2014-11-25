@@ -160,11 +160,11 @@ function BzComposeSession (match, webUrl, apiUrl, [login, loginCookie]) {
     reply: function (aMessage) {
       let aMsgHdr = aMessage._msgHdr;
       let suggestedIdentity = mainWindow.getIdentityForHeader(aMsgHdr, Ci.nsIMsgCompType.ReplyAll);
-      self.params.identity = suggestedIdentity || getDefaultIdentity();
+      self.params.identity = suggestedIdentity || getDefaultIdentity().identity;
       self.params.msgHdr = aMsgHdr;
     },
     draft: function ({ msgUri, from, body }) {
-      self.params.identity = getIdentityForEmail(from) || getDefaultIdentity();
+      self.params.identity = getIdentityForEmail(from).identity || getDefaultIdentity().identity;
       self.params.msgHdr = msgUriToMsgHdr(msgUri);
       $("textarea").val(body);
     },
