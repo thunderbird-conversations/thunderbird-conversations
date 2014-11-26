@@ -480,7 +480,7 @@ ComposeSession.prototype = {
   cycleSender: function (dir) {
     let self = this;
     let index = getIdentities().findIndex(function (ident) ident.identity == self.params.identity);
-    index = (index + dir) % getIdentities().length;
+    index = (index + dir + getIdentities().length) % getIdentities().length;
     this.params.identity = getIdentities()[index].identity;
     this.senderNameElem.text(this.params.identity.email);
   },
