@@ -301,11 +301,15 @@ let ContactMixIn = {
   getName: function _ContactMixIn_getName (aPosition, aIsDetail) {
     Log.assert(aPosition === Contacts.kFrom || aPosition === Contacts.kTo,
       "Someone did not set the 'position' properly");
-    if (getIdentityForEmail(this._email) && !aIsDetail)
-      return ((aPosition === Contacts.kFrom)
+    if (getIdentityForEmail(this._email) && !aIsDetail) {
+      let display = ((aPosition === Contacts.kFrom)
         ? strings.get("meFromMeToSomeone")
         : strings.get("meFromSomeoneToMe")
       );
+      if (getIdentities().length > 1)
+        display += " (" + this._email + ")";
+      return display;
+    }
     else
       return this._name || this._email;
   },
