@@ -158,11 +158,15 @@ MonkeyPatch.prototype = {
         // Helper for formatting; depending on the locale, we may need a different
         // for me as in "to me" or as in "from me".
         let format = function (x, p) {
-          if (getIdentityForEmail(x.email))
-            return (p
+          if (getIdentityForEmail(x.email)) {
+            let display = (p
               ? strings.get("meBetweenMeAndSomeone")
               : strings.get("meBetweenSomeoneAndMe")
             );
+            if (getIdentities().length > 1)
+              display += " (" + x.email + ")";
+            return display;
+          }
           else
             return x.name || x.email;
         };
