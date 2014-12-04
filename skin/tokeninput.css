@@ -1,18 +1,18 @@
 /* Example tokeninput style #2: Facebook style */
 ul.token-input-list-facebook {
-    overflow: hidden; 
-    height: auto !important; 
+    overflow: hidden;
+    height: auto !important;
     height: 1%;
     width: 100%;
-    border: 1px solid #8496ba;
+    border: 1px solid threedshadow;
     cursor: text;
     font-size: 12px;
-    font-family: Verdana;
     min-height: 1px;
     z-index: 1003;
     margin: 0;
     padding: 0;
-    background-color: #fff;
+    background-color: -moz-field;
+    color: -moz-fieldtext;
 }
 
 ul.token-input-list-facebook {
@@ -23,20 +23,21 @@ ul.token-input-list-facebook li input {
     border: 0;
     width: 100px;
     padding: 3px 8px;
-    background-color: white;
+    background-color: -moz-field;
+    color: -moz-fieldtext;
     margin: 2px 0;
 }
 
 li.token-input-token-facebook {
-    overflow: hidden; 
-    height: auto !important; 
+    overflow: hidden;
+    height: auto !important;
     height: 1%;
     margin: 3px;
     padding: 1px 3px;
-    background-color: #eff2f7;
-    color: #000;
+    background-color: -moz-oddtreerow;
+    color: -moz-oddtreerowtext;
     cursor: default;
-    border: 1px solid #ccd5e4;
+    border: 1px solid threedshadow;
     font-size: 11px;
     border-radius: 5px;
     float: left;
@@ -49,16 +50,16 @@ li.token-input-token-facebook p {
 }
 
 li.token-input-token-facebook span {
-    color: #a6b3cf;
+    color: #888a85;
     margin-left: 5px;
     font-weight: bold;
     cursor: pointer;
 }
 
 li.token-input-selected-token-facebook {
-    background-color: #5670a6;
-    border: 1px solid #3b5998;
-    color: #fff;
+    background-color: -moz-cellhighlight;
+    border: 1px solid threedshadow;
+    color: -moz-cellhighlighttext;
 }
 
 li.token-input-input-token-facebook {
@@ -68,14 +69,14 @@ li.token-input-input-token-facebook {
 div.token-input-dropdown-facebook {
     position: absolute;
     width: 400px;
-    background-color: #fff;
+    background-color: -moz-field;
+    color: -moz-fieldtext;
     overflow: hidden;
-    border-left: 1px solid #ccc;
-    border-right: 1px solid #ccc;
-    border-bottom: 1px solid #ccc;
+    border-left: 1px solid threedshadow;
+    border-right: 1px solid threedshadow;
+    border-bottom: 1px solid threedshadow;
     cursor: default;
     font-size: 11px;
-    font-family: Verdana;
     z-index: 1001;
 }
 
@@ -83,7 +84,7 @@ div.token-input-dropdown-facebook p {
     margin: 0;
     padding: 5px;
     font-weight: bold;
-    color: #777;
+    color: #888a85;
 }
 
 div.token-input-dropdown-facebook ul {
@@ -92,16 +93,19 @@ div.token-input-dropdown-facebook ul {
 }
 
 div.token-input-dropdown-facebook ul li {
-    background-color: #fff;
+    background-color: -moz-field;
+    color: -moz-fieldtext;
     padding: 3px;
 }
 
 div.token-input-dropdown-facebook ul li.token-input-dropdown-item-facebook {
-    background-color: #fff;
+    background-color: -moz-field;
+    color: -moz-fieldtext;
 }
 
 div.token-input-dropdown-facebook ul li.token-input-dropdown-item2-facebook {
-    background-color: #fff;
+    background-color: -moz-field;
+    color: -moz-fieldtext;
 }
 
 div.token-input-dropdown-facebook ul li em {
@@ -110,7 +114,6 @@ div.token-input-dropdown-facebook ul li em {
 }
 
 div.token-input-dropdown-facebook ul li.token-input-selected-dropdown-item-facebook {
-    background-color: #3b5998;
-    color: #fff;
+    background-color: -moz-cellhighlight;
+    color: -moz-cellhighlighttext;
 }
-

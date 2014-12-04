@@ -36,7 +36,7 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ['MonkeyPatch', 'BOOTSTRAP_REASONS']
+var EXPORTED_SYMBOLS = ['MonkeyPatch']
 
 const Ci = Components.interfaces;
 const Cc = Components.classes;
@@ -52,21 +52,11 @@ Cu.import("resource://conversations/modules/assistant.js");
 Cu.import("resource://conversations/modules/misc.js"); // for joinWordList, openConversationIn
 Cu.import("resource://conversations/modules/prefs.js");
 Cu.import("resource://conversations/modules/log.js");
+Cu.import("resource://conversations/modules/config.js");
 
 Cu.import("resource://gre/modules/Services.jsm");
 
 const kMultiMessageUrl = "chrome://messenger/content/multimessageview.xhtml";
-
-const BOOTSTRAP_REASONS = {
-  APP_STARTUP     : 1,
-  APP_SHUTDOWN    : 2,
-  ADDON_ENABLE    : 3,
-  ADDON_DISABLE   : 4,
-  ADDON_INSTALL   : 5,
-  ADDON_UNINSTALL : 6,
-  ADDON_UPGRADE   : 7,
-  ADDON_DOWNGRADE : 8
-};
 
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
@@ -210,7 +200,7 @@ MonkeyPatch.prototype = {
         let msgHdr = window.gDBView.getMsgHdrAt(row);
         return participants(msgHdr);    
       },
-      getSortStringForRow: function(hdr) {
+      getSortStringForRow: function(msgHdr) {
         return participants(msgHdr);
       },
       isString: function() {
@@ -354,7 +344,6 @@ MonkeyPatch.prototype = {
       }
     }
     Prefs.setString("conversations.uninstall_infos", "{}");
-    Prefs.setInt("conversations.version", 0);
   },
 
   activateMenuItem: function (window) {

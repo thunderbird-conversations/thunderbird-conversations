@@ -29,11 +29,18 @@ Cu.import("resource://conversations/modules/log.js");
 let Log = setupLogging("Conversations.Assistant");
 
 // Thanks, Andrew!
-function get_smart_folder_named(aFolderName) {
+function getSmartFolderNamed(aFolderName) {
   let acctMgr = Cc["@mozilla.org/messenger/account-manager;1"]
                   .getService(Ci.nsIMsgAccountManager);
   let smartServer = acctMgr.FindServer("nobody", "smart mailboxes", "none");
-  return smartServer.rootFolder.getChildNamed(aFolderName);
+  let smartInbox = null;
+  try {
+   smartInbox = smartServer.rootFolder.getChildNamed(aFolderName);
+  } catch (e) {
+    Log.debug(e);
+    Log.debug("Is there only one account?");
+  }
+  return smartInbox;
 }
 
 
@@ -181,13 +188,7 @@ let Customizations = {
       // start customizing things
       mainWindow.gFolderTreeView.mode = "smart";
 
-      let smartInbox = null;
-      try {
-        smartInbox = get_smart_folder_named("Inbox");
-      } catch (e) {
-        Log.debug(e);
-        Log.debug("Is there only one account?");
-      }
+      let smartInbox = getSmartFolderNamed("Inbox");
 
       // Might not be created yet if only one account
       if (smartInbox)
@@ -255,13 +256,8 @@ let Customizations = {
 
       // Get a handle onto the virtual inbox, and mark all the folders it
       //  already searches.
-      let smartInbox = null;
-      try {
-        smartInbox = get_smart_folder_named("Inbox");
-      } catch (e) {
-        Log.warn(e);
-        Log.warn("Is there only one account?");
-      }
+      let smartInbox = getSmartFolderNamed("Inbox");
+
       if (!smartInbox)
         return changedFolders;
 
@@ -280,8 +276,7 @@ let Customizations = {
           continue;
 
         let rootFolder = account.incomingServer.rootFolder;
-        let allFolders = Cc["@mozilla.org/supports-array;1"].createInstance(Ci.nsISupportsArray);
-        rootFolder.ListDescendents(allFolders);
+        let allFolders = rootFolder.descendants;
         for each (let folder in fixIterator(allFolders, Ci.nsIMsgFolder)) {
           if ((folder.getFlag(nsMsgFolderFlags_SentMail) || folder.getFlag(nsMsgFolderFlags_Inbox))
               && !searchFolders[folder.folderURL]) {
@@ -302,7 +297,8 @@ let Customizations = {
     uninstall: function (aChangedFolders) {
       // Just remove from the smart inbox the folders we added if they're still
       //  here.
-      let smartInbox = get_smart_folder_named("Inbox");
+      let smartInbox = getSmartFolderNamed("Inbox");
+
       if (!smartInbox)
         return;
 
@@ -341,8 +337,7 @@ let Customizations = {
           changedServers.push(account.incomingServer.serverURI);
         }
         let rootFolder = account.incomingServer.rootFolder;
-        let allFolders = Cc["@mozilla.org/supports-array;1"].createInstance(Ci.nsISupportsArray);
-        rootFolder.ListDescendents(allFolders);
+        let allFolders = rootFolder.descendants;
         for each (let folder in fixIterator(allFolders, Ci.nsIMsgFolder)) {
           if ((folder.getFlag(nsMsgFolderFlags_SentMail) || folder.getFlag(nsMsgFolderFlags_Inbox))
               && !folder.getFlag(nsMsgFolderFlags_Offline)) {

@@ -74,7 +74,7 @@ mkdir --parents --verbose $TMP_DIR
 # copy everything brutally, since we're not using JARs anymore
 for DIR in $ROOT_DIRS; do
   find $DIR -not \( -wholename $DIR'/pdfjs/*' \
-        -and -not -wholename $DIR'/pdfjs/build/pdf.js' \) \
+        -and -not -wholename $DIR'/pdfjs/build/*' \) \
       -and -not -iname '.vimsession' \
       -and -not -iname '.gitignore' \
       -and -not -iname '.*.sw*' \

@@ -59,7 +59,6 @@ function PrefManager() {
   this.tweak_bodies = prefsService.getBoolPref("tweak_bodies");
   this.tweak_chrome = prefsService.getBoolPref("tweak_chrome");
   this.add_embeds = prefsService.getBoolPref("add_embeds");
-  this.expensive_quote_detection = prefsService.getBoolPref("expensive_quote_detection");
   this.operate_on_conversations = prefsService.getBoolPref("operate_on_conversations");
   this.enabled = prefsService.getBoolPref("enabled");
   this.extra_attachments = prefsService.getBoolPref("extra_attachments");
@@ -106,7 +105,6 @@ PrefManager.prototype = {
       case "tweak_bodies":
       case "tweak_chrome":
       case "add_embeds":
-      case "expensive_quote_detection":
       case "operate_on_conversations":
       case "extra_attachments":
       case "compose_in_tab":
