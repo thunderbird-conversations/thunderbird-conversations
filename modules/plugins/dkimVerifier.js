@@ -36,34 +36,32 @@
 
 // options for JSHint
 /* jshint strict:true, moz:true, unused:true, jquery:true */
-/* global Components, Services */
-/* global StringBundle, setupLogging, msgHdrGetUri, registerHook, getMail3Pane */
-/* global Verifier, dkimStrings, tryGetString, tryGetFormattedString */
+/* global Components */
+/* global setupLogging, registerHook, getMail3Pane */
+/* global AuthVerifier */
 /* exported EXPORTED_SYMBOLS */
 
 var EXPORTED_SYMBOLS = [];
 
 const Cu = Components.utils;
 
-Cu.import("resource://gre/modules/Services.jsm"); // https://developer.mozilla.org/en/JavaScript_code_modules/Services.jsm
-Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
 Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
 Cu.import("resource://conversations/modules/hook.js");
 Cu.import("resource://conversations/modules/log.js");
 
 let Log = setupLogging("Conversations.Modules.DKIMVerifier");
 
-let dkimPrefs = Services.prefs.getBranch("extensions.dkim_verifier.");
-
-let hasDKIMVerifier;
+let hasDKIMVerifier = false;
 try {
-  Cu.import("resource://dkim_verifier/dkimVerifier.jsm");
-  Cu.import("resource://dkim_verifier/helper.jsm");
-  hasDKIMVerifier = true;
-  Log.debug("DKIM Verifier plugin for Thunderbird Conversations loaded!");
+  Cu.import("resource://dkim_verifier/AuthVerifier.jsm");
+  if (AuthVerifier.version.match(/^[0-9]+/)[0] === "1") {
+    hasDKIMVerifier = true;
+    Log.debug("DKIM Verifier plugin for Thunderbird Conversations loaded!");
+  } else {
+    Log.debug("DKIM Verifier has incompatible version.");
+  }
 } catch (e) {
-  hasDKIMVerifier = false;
-  Log.debug("DKIM Verifier doesn't seem to be installed...");
+  Log.debug("DKIM Verifier doesn't seem to be installed or has incompatible version.");
 }
 
 if (hasDKIMVerifier) {
@@ -73,73 +71,10 @@ if (hasDKIMVerifier) {
     "use strict";
 
     // don't start a verification for the classic view if it is not shown
-    if (getMail3Pane().gMessageDisplay.singleMessageDisplay == true) {
+    if (getMail3Pane().gMessageDisplay.singleMessageDisplay === true) {
       onEndHeaders();
     }
   };
-}
-
-/*
- * save result
- */
-function saveResult(msgHdr, result) {
-  "use strict";
-
-  if (dkimPrefs.getBoolPref("saveResult")) {
-    // don't save result if message is external
-    if (!msgHdr.folder) {
-      return;
-    }
-
-    if (result === "") {
-      Log.debug("reset result");
-      msgHdr.setStringProperty("dkim_verifier@pl-result", "");
-    } else {
-      Log.debug("save result");
-      msgHdr.setStringProperty("dkim_verifier@pl-result", JSON.stringify(result));
-    }
-  }
-}
-
-/*
- * get result
- */
-function getResult(msgHdr) {
-  "use strict";
-
-  if (dkimPrefs.getBoolPref("saveResult")) {
-    // don't read result if message is external
-    if (!msgHdr.folder) {
-      return null;
-    }
-
-    let result = msgHdr.getStringProperty("dkim_verifier@pl-result");
-
-    if (result !== "") {
-      Log.debug("result found: "+result);
-
-      result = JSON.parse(result);
-
-      if (result.version.match(/^[0-9]+/)[0] !== "1") {
-        Log.error("Result has wrong Version ("+result.version+")");
-        result = null;
-      }
-
-      return result;
-    }
-  }
-
-  return null;
-}
-
-function resultCallback(result, aMsgHdr, aDomNode) {
-  "use strict";
-
-  // don't save result if it's a TEMPFAIL
-  if (result.result !== "TEMPFAIL") {
-    saveResult(aMsgHdr, result);
-  }
-  displayResult(result, aDomNode);
 }
 
 function setTooltip(aDomNode, status, warnings) {
@@ -171,65 +106,11 @@ function setTooltip(aDomNode, status, warnings) {
 function displayResult(result, aDomNode) {
   "use strict";
 
-  aDomNode.setAttribute("dkimStatus", result.result);
-  let status;
+  aDomNode.setAttribute("dkimStatus", result.dkim[0].result);
 
-  switch(result.result) {
-    case "none":
-      break;
-    case "SUCCESS":
-      status = dkimStrings.getFormattedString("SUCCESS", [result.SDID]);
-      let warnings;
-
-      // show warnings
-      if (result.warnings.length > 0) {
-        aDomNode.setAttribute("warnings", "true");
-        warnings = result.warnings.map(function(e) {
-          if (e === "DKIM_POLICYERROR_WRONG_SDID") {
-            return tryGetFormattedString(dkimStrings, e, [result.shouldBeSignedBy]) || e;
-          } else {
-            return tryGetString(dkimStrings, e) || e;
-          }
-        });
-      }
-      aDomNode.classList.add("dkim-signed");
-      setTooltip(aDomNode, status, warnings);
-
-      break;
-    case "PERMFAIL":
-      // if domain is testing DKIM
-      // or hideFail is set to true,
-      // treat msg as not signed
-      if (result.errorType === "DKIM_SIGERROR_KEY_TESTMODE" ||
-          result.hideFail) {
-        break;
-      }
-
-      let errorMsg;
-      switch (result.errorType) {
-        case "DKIM_POLICYERROR_MISSING_SIG":
-        case "DKIM_POLICYERROR_WRONG_SDID":
-          errorMsg = tryGetFormattedString(dkimStrings, result.errorType, [result.shouldBeSignedBy]) ||
-            result.errorType;
-          break;
-        default :
-          errorMsg = tryGetString(dkimStrings, result.errorType) ||
-            result.errorType;
-      }
-      status = dkimStrings.getFormattedString("PERMFAIL", [errorMsg]);
-      aDomNode.classList.add("dkim-signed");
-      setTooltip(aDomNode, status);
-
-      break;
-    case "TEMPFAIL":
-      status = tryGetString(dkimStrings, result.errorType) ||
-        result.errorType ||
-        dkimStrings.getString("DKIM_INTERNALERROR_NAME");
-      aDomNode.classList.add("dkim-signed");
-      setTooltip(aDomNode, status);
-      break;
-    default:
-      Log.error("unkown result");
+  if (result.dkim[0].res_num <= 30) {
+    aDomNode.classList.add("dkim-signed");
+    setTooltip(aDomNode, result.dkim[0].result_str, result.dkim[0].warnings_str);
   }
 }
 
@@ -237,17 +118,11 @@ let dkimVerifierHook = {
   onMessageStreamed: function _dkimVerifierHook_onMessageStreamed(aMsgHdr, aDomNode/*, aMsgWindow, aMessage*/) {
     "use strict";
 
-    // check for saved result
-    var result = getResult(aMsgHdr);
-    if (result !== null) {
+    AuthVerifier.verify(aMsgHdr).then(function (result) {
       displayResult(result, aDomNode);
-      return;
-    }
-    Verifier.verify(msgHdrGetUri(aMsgHdr),
-      function(msgURI, result) {
-        resultCallback(result, aMsgHdr, aDomNode);
-      }
-    );
+    }, function (exception) {
+      Log.debug("Exception in dkimVerifierHook: " + exception);
+    });
  },
 };
 
