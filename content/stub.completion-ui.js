@@ -85,14 +85,14 @@ ContactIdentityCompleter.prototype = {
     // and since we can now map from contacts down to identities, map contacts
     //  to the first identity for them that we find...
     matches = [val.NOUN_ID == Gloda.NOUN_IDENTITY ? val : val.identities[0]
-               for each ([iVal, val] in Iterator(contactToThing))];
+               for ([iVal, val] of Iterator(contactToThing))];
 
     let rows = [asToken(
                   match.pictureURL(),
                   match.contact.name != match.value ? match.contact.name : null,
                   match.value,
                   match.value
-                ) for each ([iMatch, match] in Iterator(matches))];
+                ) for ([iMatch, match] of Iterator(matches))];
     aResult.addRows(rows);
 
     // - match against database contacts / identities
@@ -133,13 +133,13 @@ ContactIdentityCompleter.prototype = {
       this.identityCollection =
         this.contactCollection.subCollections[Gloda.NOUN_IDENTITY];
 
-      let contactNames = [(c.name.replace(" ", "").toLowerCase() || "x") for each
-                          ([, c] in Iterator(this.contactCollection.items))];
+      let contactNames = [(c.name.replace(" ", "").toLowerCase() || "x") for 
+                          ([, c] of Iterator(this.contactCollection.items))];
       // if we had no contacts, we will have no identity collection!
       let identityMails;
       if (this.identityCollection)
-        identityMails = [i.value.toLowerCase() for each
-                         ([, i] in Iterator(this.identityCollection.items))];
+        identityMails = [i.value.toLowerCase() for 
+                         ([, i] of Iterator(this.identityCollection.items))];
 
       // The suffix tree takes two parallel lists; the first contains strings
       //  while the second contains objects that correspond to those strings.
@@ -195,7 +195,7 @@ ContactIdentityCompleter.prototype = {
                     dude.contact.name != dude.value ? dude.contact.name : null,
                     dude.value,
                     dude.value
-                  ) for each ([iDude, dude] in Iterator(possibleDudes))];
+                  ) for ([iDude, dude] of Iterator(possibleDudes))];
       result.addRows(rows);
       result.markCompleted(this);
 
@@ -230,7 +230,7 @@ function peopleAutocomplete(query, callback) {
   let add = function(person) {
     let photos = person.getProperty("photos");
     let thumb;
-    for each (let photo in photos) {
+    for (let photo of photos) {
       if (photo.type == "thumbnail") {
         thumb = photo.value;
         break;
@@ -238,7 +238,7 @@ function peopleAutocomplete(query, callback) {
     }
 
     let suggestions = person.getProperty("emails");
-    for each (let suggestion in suggestions)
+    for (let suggestion of suggestions)
     {
       if (suggestion.value in dupCheck)
         continue;
@@ -299,7 +299,7 @@ function setupAutocomplete(to, cc, bcc) {
     let list = document.getElementsByClassName(aList.substring(1))[0];
     let marker = list.getElementsByClassName("add-more")[0];
     // Never, ever use jquery in a loop.
-    for each (let [i, { name, email }] in Iterator(aData)) {
+    for (let [i, { name, email }] of Iterator(aData)) {
       if (!email)
         continue;
       let sep;

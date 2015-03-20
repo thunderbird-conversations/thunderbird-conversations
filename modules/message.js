@@ -234,7 +234,7 @@ KeyListener.prototype = {
   findMsgNode: function findMsgNode(msgNode) {
     let msgNodes = this.message._domNode.ownerDocument
       .getElementsByClassName(Message.prototype.cssClass);
-    msgNodes = [x for each ([, x] in Iterator(msgNodes))];
+    msgNodes = [x for ([, x] of Iterator(msgNodes))];
     let index = msgNodes.indexOf(msgNode);
     return [msgNodes, index];
   },
@@ -462,7 +462,7 @@ Message.prototype = {
     };
     if (Object.keys(infos).length) {
       let items = [];
-      for each (let k in ["product", "component", "keywords", "severity",
+      for (let k of ["product", "component", "keywords", "severity",
           "status", "priority", "assigned-to", "target-milestone"]) {
         if ((!aPrevMsg || k in oldInfos) && oldInfos[k] != infos[k]) {
           let key =
@@ -527,7 +527,7 @@ Message.prototype = {
     // false means "no colors"
     data.dataContactsTo = contactsTo.map(function ([x, email]) x.toTmplData(false, Contacts.kTo, email));
     let l = data.dataContactsTo.length;
-    for each (let [i, data] in Iterator(data.dataContactsTo)) {
+    for (let [i, data] of Iterator(data.dataContactsTo)) {
       if (i == 0)
         data.separator = "";
       else if (i < l - 1)
@@ -598,7 +598,7 @@ Message.prototype = {
     let l = this._attachments.length;
     let [makePlural, ] = PluralForm.makeGetter(strings.get("pluralForm"));
     data.attachmentsPlural = makePlural(l, strings.get("attachments")).replace("#1", l);
-    for each (let [i, att] in Iterator(this._attachments)) {
+    for (let [i, att] of Iterator(this._attachments)) {
       // Special treatment for images
       let isImage = (att.contentType.indexOf("image/") === 0);
       if (isImage)
@@ -744,7 +744,7 @@ Message.prototype = {
 
     try {
       [h.onMessageSelected(this)
-        for each ([, h] in Iterator(getHooks()))
+        for ([, h] of Iterator(getHooks()))
         if (typeof(h.onMessageSelected) == "function")];
     } catch (e) {
       Log.warn("Plugin returned an error:", e);
@@ -760,7 +760,7 @@ Message.prototype = {
 
     // Forward the calls to each contact.
     let people = this._domNode.getElementsByClassName("tooltip");
-    [x.onAddedToDom(people[i]) for each ([i, [x, email]] in Iterator(this._contacts))];
+    [x.onAddedToDom(people[i]) for ([i, [x, email]] of Iterator(this._contacts))];
 
     // Let the UI do its stuff with the tooltips
     this._conversation._htmlPane.enableTooltips(this);
@@ -1085,7 +1085,7 @@ Message.prototype = {
     let tagList = this._domNode.getElementsByClassName("regular-tags")[1];
     while (tagList.firstChild)
       tagList.removeChild(tagList.firstChild);
-    for each (let [, mtag] in Iterator(tags)) {
+    for (let [, mtag] of Iterator(tags)) {
       let tag = mtag;
       let document = this._domNode.ownerDocument;
       let rgb = MailServices.tags.getColorForKey(tag.key).substr(1) || "FFFFFF";
@@ -1213,7 +1213,7 @@ Message.prototype = {
         });
         let interestingHeaders =
           ["mailed-by", "x-mailer", "mailer", "date", "user-agent"];
-        for each (let h in interestingHeaders) {
+        for (let h of interestingHeaders) {
           if (aHeaders.has(h)) {
             let key = h;
             try { // Note all the header names are translated.
@@ -1261,10 +1261,10 @@ Message.prototype = {
         });
         // Notify contact nodes they've been added to the DOM. This is all very
         // higher-order...
-        for each (let [contactObjects, cssClass] in
+        for (let [contactObjects, cssClass] of
             [[contactsFrom, ".fromLine"], [contactsTo, ".toLine"],
              [contactsCc, ".ccLine"], [contactsBcc, ".bccLine"]]) {
-          for each (let [i, node] in
+          for (let [i, node] of
               Iterator(this._domNode.querySelectorAll(cssClass+" .tooltip"))) {
             contactObjects[i][0].onAddedToDom(node);
           }
@@ -1360,7 +1360,7 @@ Message.prototype = {
     let msgWindow = topMail3Pane(this).msgWindow;
     let self = this;
     
-    for each (let [, h] in Iterator(getHooks())) {
+    for (let [, h] of Iterator(getHooks())) {
       try {
         if (typeof(h.onMessageBeforeStreaming) == "function") 
           h.onMessageBeforeStreaming(this);
@@ -1445,7 +1445,7 @@ Message.prototype = {
             //  performed now, not later. This gives plugins a chance to modify
             //  the DOM of the message (i.e. decrypt it) before we tweak the
             //  fonts and stuff.
-            for each (let [, h] in Iterator(getHooks())) {
+            for (let [, h] of Iterator(getHooks())) {
               try {
                 if (typeof(h.onMessageStreamed) == "function") 
                   h.onMessageStreamed(self._msgHdr, self._domNode, msgWindow, self);
@@ -1644,10 +1644,10 @@ Message.prototype = {
     // quoted text left over, need to investigate why...
     let prepare = function (aNode) {
       let node = aNode.cloneNode(true);
-      for each (let [, x] in Iterator(node.getElementsByClassName("moz-txt-sig")))
+      for (let [, x] of Iterator(node.getElementsByClassName("moz-txt-sig")))
         if (x)
           x.parentNode.removeChild(x);
-      for each (let [, x] in Iterator(node.querySelectorAll("blockquote, div")))
+      for (let [, x] of Iterator(node.querySelectorAll("blockquote, div")))
         if (x && x.style.display == "none")
           x.parentNode.removeChild(x);
       return node.innerHTML;
@@ -1747,7 +1747,7 @@ function MessageFromGloda(aConversation, aGlodaMsg, aLateAttachments) {
 
   if ("mailingLists" in aGlodaMsg)
     this.mailingLists =
-      [x.value for each ([, x] in Iterator(aGlodaMsg.mailingLists))];
+      [x.value for ([, x] of Iterator(aGlodaMsg.mailingLists))];
 
   this.isReplyListEnabled =
     ("mailingLists" in aGlodaMsg) && aGlodaMsg.mailingLists.length;
@@ -1974,7 +1974,7 @@ let PostStreamingFixesMixIn = {
       let _log = function () {
         let t1 = Date.now();
         let delta = t1 - t;
-        let args = [x for each ([, x] in Iterator(arguments))];
+        let args = [x for ([, x] of Iterator(arguments))];
         Log.debug.apply(Log, args.concat([delta+"ms"]));
         t = Date.now();
       };
@@ -2170,7 +2170,7 @@ let PostStreamingFixesMixIn = {
     let self = this;
     let iframeDoc = iframe.contentDocument;
     let mainWindow = topMail3Pane(this);
-    for each (let [, a] in Iterator(iframeDoc.querySelectorAll("a"))) {
+    for (let [, a] of Iterator(iframeDoc.querySelectorAll("a"))) {
       if (!a)
         continue;
       let anchor = this._getAnchor(a.href);

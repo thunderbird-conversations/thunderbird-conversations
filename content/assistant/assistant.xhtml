@@ -78,7 +78,7 @@
       $(".applyChanges").attr("disabled", "disabled").text($(".working:first").text());
 
       let checkboxes = document.querySelectorAll("input[type=\"checkbox\"]");
-      for each (let [, checkbox] in Iterator(checkboxes)) {
+      for (let [, checkbox] of Iterator(checkboxes)) {
         if (checkbox.checked)
           install(checkbox.id);
         else

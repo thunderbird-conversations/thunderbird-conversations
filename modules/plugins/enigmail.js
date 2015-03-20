@@ -157,7 +157,7 @@ if (hasEnigmail) {
         uriSpec = msgHdrGetUri(msgHdr);
       }
       if (uriSpec && w._currentConversation) {
-        for each (let [, x] in Iterator(w._currentConversation.messages)) {
+        for (let [, x] of Iterator(w._currentConversation.messages)) {
           if (x.message._uri == uriSpec) {
             message = x.message;
             break;
@@ -306,7 +306,7 @@ function verifyAttachments(aMessage) {
   if ((contentType+"").search(/^multipart\/mixed(;|$)/i) != 0)
     return;
   let embeddedSigned;
-  for each (let [, x] in Iterator(attachments)) {
+  for (let [, x] of Iterator(attachments)) {
     if (x.contentType.search(/application\/pgp-signature/i) >= 0) {
       embeddedSigned = x.url.replace(/(\.\d+){1,2}&filename=.*$/, "");
       break;
@@ -372,7 +372,7 @@ function patchForShowSecurityInfo(aWindow) {
     w.top.controllers.getControllerForCommand("button_enigmail_decrypt");
   w.top.controllers.removeController(oldTreeController);
   let treeController = {};
-  [treeController[i] = x for each ([i, x] in Iterator(oldTreeController))];
+  [treeController[i] = x for ([i, x] of Iterator(oldTreeController))];
   treeController.isCommandEnabled = function () {
     if (w.gFolderDisplay.messageDisplay.visible) {
       if (w.gFolderDisplay.selectedCount == 0) {
@@ -416,7 +416,7 @@ function addSignedLabel(aStatus, aDomNode, aMessage) {
   }
   if (aStatus & Ci.nsIEnigmail.UNVERIFIED_SIGNATURE) {
     [x.setAttribute("title", strings.get("unknownGood"))
-      for each ([, x] in Iterator(aDomNode.querySelectorAll(".tag-signed")))];
+      for ([, x] of Iterator(aDomNode.querySelectorAll(".tag-signed")))];
   }
 }
 
@@ -436,7 +436,7 @@ let enigmailHook = {
       }
 
       let hasSig = (aMessage.contentType+"").search(/^multipart\/signed(;|$)/i) == 0;
-      for each (let [, x] in Iterator(attachments)) {
+      for (let [, x] of Iterator(attachments)) {
         if (x.contentType.search(/^application\/pgp-signature/i) == 0)
           hasSig = true;
       }

@@ -89,7 +89,7 @@ Gallery.prototype = {
     let data = [];
     let n = this.attachments.length;
     Log.debug(n, "attachments in this gallery view");
-    for each (let [i, att] in Iterator(this.attachments)) {
+    for (let [i, att] of Iterator(this.attachments)) {
       data.push({
         url: att.url,
         name: att.name,

@@ -84,7 +84,7 @@ ContactManager.prototype = {
     // Might change in the future... who knows? ...
     let key = email;
     let cache = function _cache (name, contact) {
-      for each (let [, email] in Iterator(contact.emails)) {
+      for (let [, email] of Iterator(contact.emails)) {
         email = (email+"").toLowerCase();
         self._cache[key] = contact;
       }
@@ -269,7 +269,7 @@ let ContactMixIn = {
     });
 
     /* The links to various profiles */
-    for each (let [, a] in Iterator(aDomNode.getElementsByTagName("a"))) {
+    for (let [, a] of Iterator(aDomNode.getElementsByTagName("a"))) {
       let (a = a) { // I hate you Javascript! I hate you!!!
         a.addEventListener("click",
           a.classList.contains("profile-link")

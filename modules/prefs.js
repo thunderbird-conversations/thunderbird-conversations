@@ -67,7 +67,7 @@ function PrefManager() {
   this.compose_in_tab = prefsService.getBoolPref("compose_in_tab");
   // This is a hashmap
   this.monospaced_senders = {};
-  for each (s in this.split(prefsService.getCharPref("monospaced_senders")))
+  for (s of this.split(prefsService.getCharPref("monospaced_senders")))
     this.monospaced_senders[s] = null;
 
   this.watchers = [];
@@ -112,7 +112,7 @@ PrefManager.prototype = {
       case "hide_sigs": {
         let v = prefsService.getBoolPref(aData)
         this[aData] = v;
-        [x(aData, v) for each (x in this.watchers)];
+        [x(aData, v) for (x of this.watchers)];
         break;
       }
 
@@ -120,13 +120,13 @@ PrefManager.prototype = {
       case "hide_quote_length": {
         let v = prefsService.getIntPref(aData)
         this[aData] = v;
-        [x(aData, v) for each (x in this.watchers)];
+        [x(aData, v) for (x of this.watchers)];
         break;
       }
 
       case "monospaced_senders":
         this.monospaced_senders = {};
-        for each (s in this.split(prefsService.getCharPref("monospaced_senders")))
+        for (s of this.split(prefsService.getCharPref("monospaced_senders")))
           this.monospaced_senders[s] = null;
         break;
     }

@@ -62,7 +62,7 @@ function arrayEquals(a1, a2) {
     return;
 
   let e = true;
-  for each (let [i, v] in Iterator(a1))
+  for (let [i, v] of Iterator(a1))
     e = e && (v == a2[i]);
   return e;
 }
@@ -77,7 +77,7 @@ function arrayEquals(a1, a2) {
 function groupArray(aItems, aFn) {
   let groups = {};
   let orderedIds = [];
-  for each (let [i, item] in Iterator(aItems)) {
+  for (let [i, item] of Iterator(aItems)) {
     let id = aFn(item);
     if (!groups[id]) {
       groups[id] = [item];
@@ -86,7 +86,7 @@ function groupArray(aItems, aFn) {
       groups[id].push(item);
     }
   }
-  return [groups[id] for each ([, id] in Iterator(orderedIds))];
+  return [groups[id] for ([, id] of Iterator(orderedIds))];
 }
 
 // Joins together names and format them as "John, Jane and Julie"
@@ -136,11 +136,11 @@ let fallbackMapping = {
 };
 
 function iconForMimeType (aMimeType) {
-  for each (let [k, v] in Iterator(mapping)) {
+  for (let [k, v] of Iterator(mapping)) {
     if (aMimeType == k)
       return v+".svg";
   }
-  for each (let [k, v] in Iterator(fallbackMapping)) {
+  for (let [k, v] of Iterator(fallbackMapping)) {
     if (aMimeType.indexOf(k) === 0)
       return v+".svg";
   }
@@ -190,7 +190,7 @@ let EventHelperMixIn = {
     else
       nodes = [selector];
 
-    for each (let [, node] in Iterator(nodes))
+    for (let [, node] of Iterator(nodes))
       node.addEventListener(action, f, false);
   },
 
@@ -265,7 +265,7 @@ function topMail3Pane(aObj) {
 function reindexMessages(aMsgHdrs) {
   GlodaMsgIndexer.indexMessages([
     [x.folder, x.messageKey]
-    for each ([, x] in Iterator(aMsgHdrs))
+    for ([, x] of Iterator(aMsgHdrs))
   ]);
 }
 

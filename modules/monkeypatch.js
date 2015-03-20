@@ -99,7 +99,7 @@ MonkeyPatch.prototype = {
 
     // 2) View > Conversation View
     let menuitem = window.document.createElement("menuitem");
-    for each (let [k, v] in Iterator({
+    for (let [k, v] of Iterator({
       type: "checkbox",
       id: "menuConversationsEnabled",
       label: strings.get("menuConversationsEnabled"),
@@ -111,7 +111,7 @@ MonkeyPatch.prototype = {
 
     // 3) Keyboard shortcut
     let key = window.document.createElement("key");
-    for each (let [k, v] in Iterator({
+    for (let [k, v] of Iterator({
       id: "key_conversationsQuickCompose",
       key: "n",
       modifiers: "accel,shift",
@@ -123,7 +123,7 @@ MonkeyPatch.prototype = {
 
     // 4) Tree column
     let treecol = window.document.createElement("treecol");
-    for each (let [k, v] in Iterator({
+    for (let [k, v] of Iterator({
       id: "betweenCol",
       hidden: "false",
       flex: "4",
@@ -173,7 +173,7 @@ MonkeyPatch.prototype = {
         // Add all the people found in one of the msgHdr's properties.
         let addPeople = function (prop, pos) {
           let line = msgHdr[prop];
-          for each (let [, x] in Iterator(parseMimeLine(line, true)))
+          for (let [, x] of Iterator(parseMimeLine(line, true)))
             people.push(format(x, pos))
         };
         // We add everyone
@@ -336,7 +336,7 @@ MonkeyPatch.prototype = {
 
   undoCustomizations: function () {
     let uninstallInfos = JSON.parse(Prefs.getString("conversations.uninstall_infos"));
-    for each (let [k, v] in Iterator(Customizations)) {
+    for (let [k, v] of Iterator(Customizations)) {
       if (k in uninstallInfos) {
         try {
           Log.debug("Uninstalling", k, uninstallInfos[k]);
@@ -385,7 +385,7 @@ MonkeyPatch.prototype = {
     this.registerUndoCustomizations();
 
     let mkConvUrl = function (msgHdrs) {
-      let urls = [msgHdrGetUri(x) for each (x in msgHdrs)].join(",");
+      let urls = [msgHdrGetUri(x) for (x of msgHdrs)].join(",");
       let scrollMode = self.determineScrollMode();
       let queryString = "?urls="+window.encodeURIComponent(urls) +
         "&scrollMode="+scrollMode;
@@ -517,7 +517,7 @@ MonkeyPatch.prototype = {
             //  is the conversation in the message pane is already alive, and
             //  the gloda query is updating messages just fine, so we should not
             //  worry about message which are not in the view.
-            let newlySelectedUris = [msgHdrGetUri(x) for each (x in aSelectedMessages)];
+            let newlySelectedUris = [msgHdrGetUri(x) for (x of aSelectedMessages)];
             let scrollMode = self.determineScrollMode();
             // If the scroll mode changes, we should go a little bit further
             //  down that code path, so that we can figure out that the message
@@ -665,7 +665,7 @@ MonkeyPatch.prototype = {
           let selectedCount = this.folderDisplay.selectedCount;
           Log.debug("Intercepted message load, ", selectedCount, " message(s) selected");
           /*dump(Colors.red);
-          for each (let msgHdr in this.folderDisplay.selectedMessages)
+          for (let msgHdr of this.folderDisplay.selectedMessages)
             dump("  " + msgHdr.folder.URI + "#" + msgHdr.messageKey + "\n");
           dump(Colors.default);*/
 
@@ -724,7 +724,7 @@ MonkeyPatch.prototype = {
       let msgListeners = window.Conversations.msgListeners;
       let messageId = aMsgHdr.messageId;
       if (messageId in msgListeners) {
-        for each (let [i, listener] in Iterator(msgListeners[messageId])) {
+        for (let [i, listener] of Iterator(msgListeners[messageId])) {
           let obj = listener.get();
           if (obj)
             obj.onMsgHasRemoteContent();
