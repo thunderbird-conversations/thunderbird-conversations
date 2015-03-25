@@ -269,23 +269,22 @@ let ContactMixIn = {
     });
 
     /* The links to various profiles */
-    for (let [, a] of Iterator(aDomNode.getElementsByTagName("a"))) {
-      let (a = a) { // I hate you Javascript! I hate you!!!
-        a.addEventListener("click",
-          a.classList.contains("profile-link")
-          ? function _link_listener (event) (
-              mainWindow.document.getElementById("tabmail").openTab("contentTab", {
-                contentPage: a.href, // (cf. supra)
-                clickHandler: "specialTabs.defaultClickHandler(event);"
-              }),
-              event.preventDefault()
-            )
-          : function _link_listener (event) (
-              mainWindow.specialTabs.siteClickHandler(event, /^mailto:/),
-              event.preventDefault()
-            ),
-          false);
-      }
+    for each (let [, a1] in Iterator(aDomNode.getElementsByTagName("a"))) {
+      let a = a1;
+      a.addEventListener("click",
+        a.classList.contains("profile-link")
+        ? function _link_listener (event) (
+            mainWindow.document.getElementById("tabmail").openTab("contentTab", {
+              contentPage: a.href,
+              clickHandler: "specialTabs.defaultClickHandler(event);"
+            }),
+            event.preventDefault()
+          )
+        : function _link_listener (event) (
+            mainWindow.specialTabs.siteClickHandler(event, /^mailto:/),
+            event.preventDefault()
+          ),
+        false);
     }
   },
 

@@ -407,8 +407,9 @@ Conversation.prototype = {
             self._getReady(self._initialSet.length + 1);
             // M = msgHdr, I = Initial, NG = there was no gloda query
             // will run signal
-            self.messages = [messageFromDbHdr(self, msgHdr, "MI+NG")
-              for ([, msgHdr] of Iterator(self._initialSet))];
+            self.messages = self._initialSet.map(function (msgHdr)
+              messageFromDbHdr(self, msgHdr, "MI+NG")
+            );
             self._signal();
           } else {
             self._intermediateResults = aItems;
