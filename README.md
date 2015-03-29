@@ -8,8 +8,7 @@ vastly improves the UI by including some ideas from GMail. More specifically:
 * you initially see summaries, they can be expanded to display full messages,
 * quoted sections are collapsed à la GMail,
 * fast links for replying (and possibly other useful actions),
-* you can reply inline (through a "quick reply" feature),
-* integration with Thunderbird Contacts.
+* you can reply inline (through a "quick reply" feature).
 
 For screenshots and a stable version, please head to
 [AMO](https://addons.mozilla.org/en-US/thunderbird/addon/54035) which should

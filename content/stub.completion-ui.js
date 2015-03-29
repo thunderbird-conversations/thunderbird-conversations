@@ -224,41 +224,6 @@ function glodaAutocomplete(query, callback) {
   }, query);
 }
 
-function peopleAutocomplete(query, callback) {
-  let results = [];
-  let dupCheck = {};
-  let add = function(person) {
-    let photos = person.getProperty("photos");
-    let thumb;
-    for each (let photo in photos) {
-      if (photo.type == "thumbnail") {
-        thumb = photo.value;
-        break;
-      }
-    }
-
-    let suggestions = person.getProperty("emails");
-    for each (let suggestion in suggestions)
-    {
-      if (suggestion.value in dupCheck)
-        continue;
-      dupCheck[suggestion.value] = null;
-      results.push(asToken(thumb, person.displayName, suggestion.value, person.guid));
-    }
-  };
-  try {
-    // Contacts doesn't seem to allow a OR, so run two queries... (longer)
-    People.find({ displayName: query }).forEach(add);
-    People.find({ emails: query }).forEach(add);
-  } catch(e) {
-    Log.error(e);
-    dumpCallStack(e);
-  }
-  if (!results.length)
-    results.push(asToken(null, null, query, query));
-  callback(results);
-}
-
 let autoCompleteClasses = {
   tokenList: "token-input-list-facebook",
   token: "token-input-token-facebook",
@@ -280,12 +245,8 @@ function setupAutocomplete(to, cc, bcc) {
     $parent.empty();
     $parent.append($("<input type=\"text\" id=\""+aInput.substring(1)+"\" />"));
     // Now we can start fresh.
-    let f = ("People" in window)
-      ? peopleAutocomplete
-      : glodaAutocomplete
-    ;
     try {
-      $(aInput).tokenInput(f, {
+      $(aInput).tokenInput(glodaAutocomplete, {
         classes: autoCompleteClasses,
         prePopulate: aData,
       });
