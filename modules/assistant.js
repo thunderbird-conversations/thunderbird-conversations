@@ -263,7 +263,7 @@ let Customizations = {
 
       let vFolder = VirtualFolderHelper.wrapVirtualFolder(smartInbox);
       let searchFolders = {};
-      for (let [, folder] of Iterator(vFolder.searchFolders)) {
+      for (let folder of Iterator(vFolder.searchFolders)) {
         Log.debug("Folder", folder.folderURL, "is in the unified inbox already");
         searchFolders[folder.folderURL] = true;
       }

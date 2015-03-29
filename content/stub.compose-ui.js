@@ -121,7 +121,7 @@ function registerQuickReply() {
       try {
         Log.debug("Notifying draft listeners for id", id);
         let listeners = mainWindow.Conversations.draftListeners[id] || [];
-        for (let [, listener] of Iterator(listeners)) {
+        for (let listener of Iterator(listeners)) {
           let obj = listener.get();
           if (!obj || obj == this)
             continue;
@@ -405,10 +405,10 @@ function createComposeSession(what) {
   // Do that now so that it doesn't have to be implemented by each compose
   // session type.
   if (Prefs.getBool("mail.spellcheck.inline")) {
-    for (let [, elt] of Iterator(document.getElementsByTagName("textarea")))
+    for (let elt of Iterator(document.getElementsByTagName("textarea")))
       elt.setAttribute("spellcheck", true);
   } else {
-    for (let [, elt] of Iterator(document.getElementsByTagName("textarea")))
+    for (let elt of Iterator(document.getElementsByTagName("textarea")))
       elt.setAttribute("spellcheck", false);
   }
   if (gBzSetup) {
@@ -600,7 +600,7 @@ ComposeSession.prototype = {
         aDefault = aDefault.replace(/\s/g, "");
       if (!aDefault) // "" evaluates to false
         return aList;
-      for (let [, email] of Iterator(aDefault.split(/,/))) {
+      for (let email of Iterator(aDefault.split(/,/))) {
         if (!aList.some(function (x) x.email == email)) {
           aList.push(asToken(null, null, email, null));
         }
@@ -740,7 +740,7 @@ ComposeSession.prototype = {
         cc: JSON.parse($("#cc").val()),
         bcc: JSON.parse($("#bcc").val()),
       };
-      for (let [, h] of Iterator(getHooks())) {
+      for (let h of Iterator(getHooks())) {
         try {
           if (typeof(h.onComposeSessionChanged) == "function")
             h.onComposeSessionChanged(this, getMessageForQuickReply(), recipients);
@@ -782,7 +782,7 @@ ComposeSession.prototype = {
 
     let sendStatus = { };
     for (let priority of ["_early", "", "_canceled"]) {
-      for (let [, h] of Iterator(getHooks())) {
+      for (let h of Iterator(getHooks())) {
         try {
           if ((typeof(h["onMessageBeforeSendOrPopout" + priority]) == "function") && (priority != "_canceled" || sendStatus.canceled)) {
             let newSendStatus = h["onMessageBeforeSendOrPopout" + priority]({
@@ -1205,7 +1205,7 @@ let sendListener = {
       pText(strings.get("couldntSendTheMessage"));
       Log.debug("NS_FAILED onStopSending");
     }
-    for (let [, h] of Iterator(getHooks())) {
+    for (let h of Iterator(getHooks())) {
       try {
         if (typeof(h.onStopSending) == "function")
           h.onStopSending(aMsgID, aStatus, aMsg, aReturnFile);
