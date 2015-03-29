@@ -85,14 +85,14 @@ ContactIdentityCompleter.prototype = {
     // and since we can now map from contacts down to identities, map contacts
     //  to the first identity for them that we find...
     matches = [val.NOUN_ID == Gloda.NOUN_IDENTITY ? val : val.identities[0]
-               for ([iVal, val] of Iterator(contactToThing))];
+               for ([iVal, val] of contactToThing)];
 
     let rows = [asToken(
                   match.pictureURL(),
                   match.contact.name != match.value ? match.contact.name : null,
                   match.value,
                   match.value
-                ) for ([iMatch, match] of Iterator(matches))];
+                ) for ([iMatch, match] of matches)];
     aResult.addRows(rows);
 
     // - match against database contacts / identities
@@ -134,12 +134,12 @@ ContactIdentityCompleter.prototype = {
         this.contactCollection.subCollections[Gloda.NOUN_IDENTITY];
 
       let contactNames = [(c.name.replace(" ", "").toLowerCase() || "x") for 
-                          ([, c] of Iterator(this.contactCollection.items))];
+                          ([, c] of this.contactCollection.items)];
       // if we had no contacts, we will have no identity collection!
       let identityMails;
       if (this.identityCollection)
         identityMails = [i.value.toLowerCase() for 
-                         ([, i] of Iterator(this.identityCollection.items))];
+                         ([, i] of this.identityCollection.items)];
 
       // The suffix tree takes two parallel lists; the first contains strings
       //  while the second contains objects that correspond to those strings.
@@ -195,7 +195,7 @@ ContactIdentityCompleter.prototype = {
                     dude.contact.name != dude.value ? dude.contact.name : null,
                     dude.value,
                     dude.value
-                  ) for ([iDude, dude] of Iterator(possibleDudes))];
+                  ) for ([iDude, dude] of possibleDudes)];
       result.addRows(rows);
       result.markCompleted(this);
 
@@ -299,7 +299,7 @@ function setupAutocomplete(to, cc, bcc) {
     let list = document.getElementsByClassName(aList.substring(1))[0];
     let marker = list.getElementsByClassName("add-more")[0];
     // Never, ever use jquery in a loop.
-    for (let [i, { name, email }] of Iterator(aData)) {
+    for (let [i, { name, email }] of aData) {
       if (!email)
         continue;
       let sep;
