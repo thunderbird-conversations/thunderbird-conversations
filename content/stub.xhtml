@@ -62,9 +62,9 @@
     })(jQuery);
 
     function clearMenu() {
-      let menus = document.getElementsByClassName("menu");
-      for (let [, menu] of Iterator(menus))
+      Array.prototype.forEach.call(document.getElementsByClassName("menu"), function(menu) {
         menu.style.display = "none";
+      });
     }
 
     function displayMenu(event) {
@@ -251,15 +251,10 @@
        * message has been focused in Gecko 1.9.1 (so it's basically
        * useless). */
       let msgNodes = document.getElementsByClassName("message");
-      let index;
-      for (let [i, k] of Iterator(msgNodes)) {
-        if (k == msgNode) {
-          index = i;
-          break;
-        }
+      let index = Array.prototype.indexOf.call(msgNodes, msgNode);
+      if (index != -1) {
+        msgNode.setAttribute("tabindex", index + 2);
       }
-      if (index)
-        msgNode.setAttribute("tabindex", index+2);
     }, true);
 
     function closeTab() {
@@ -297,7 +292,7 @@
 
     $(document).ready(function () {
       let stylesheet = [x
-        for ([, x] of Iterator(document.styleSheets))
+        for (x of document.styleSheets)
         if (String.indexOf(x.href, "/conversation.css") >= 0)][0];
       if (stylesheet) {
         if (Prefs.tweak_chrome) {
