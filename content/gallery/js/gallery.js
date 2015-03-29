@@ -90,7 +90,6 @@ Gallery.prototype = {
     let n = this.attachments.length;
     Log.debug(n, "attachments in this gallery view");
     this.attachments.forEach(function(att, i) {
-    // for (let [i, att] of this.attachments) {
       data.push({
         url: att.url,
         name: att.name,
