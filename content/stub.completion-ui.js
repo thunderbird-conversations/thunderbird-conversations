@@ -299,27 +299,27 @@ function setupAutocomplete(to, cc, bcc) {
     let list = document.getElementsByClassName(aList.substring(1))[0];
     let marker = list.getElementsByClassName("add-more")[0];
     // Never, ever use jquery in a loop.
-    for (let [i, { name, email }] of aData) {
-      if (!email)
-        continue;
-      let sep;
-      if (aData.length <= 1)
-        sep = "";
-      else if (i == aData.length - 2)
-        sep = strings.get("sepAnd");
-      else if (i == aData.length - 1)
-        sep = "";
-      else
-        sep = strings.get("sepComma");
-      let li = document.createElement("li");
-      li.setAttribute("title", email);
-      li.textContent = name;
-      let span = document.createElement("span");
-      span.classList.add("recipientListSeparator");
-      span.textContent = sep;
-      list.insertBefore(li, marker);
-      list.insertBefore(span, marker);
-    }
+    aData.forEach(function(v, i) {
+      if (v.email) {
+        let sep;
+        if (aData.length <= 1)
+          sep = "";
+        else if (i == aData.length - 2)
+          sep = strings.get("sepAnd");
+        else if (i == aData.length - 1)
+          sep = "";
+        else
+          sep = strings.get("sepComma");
+        let li = document.createElement("li");
+        li.setAttribute("title", v.email);
+        li.textContent = v.name;
+        let span = document.createElement("span");
+        span.classList.add("recipientListSeparator");
+        span.textContent = sep;
+        list.insertBefore(li, marker);
+        list.insertBefore(span, marker);
+      }
+    })
   };
   fill("#to", ".toList", to);
   fill("#cc", ".ccList", cc);
