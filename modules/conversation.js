@@ -798,7 +798,7 @@ Conversation.prototype = {
       this.messages = this.messages.concat(aMessages);
 
       let $ = this._htmlPane.$;
-      for each (let i in range(0, aMessages.length)) {
+      for (let i of range(0, aMessages.length)) {
         let oldMsg;
         if (i == 0) {
           if (this.messages.length)
@@ -812,7 +812,7 @@ Conversation.prototype = {
         msg.updateTmplData(oldMsg);
       }
       // Update initialPosition
-      for each (let i in range(this.messages.length - aMessages.length, this.messages.length)) {
+      for (let i of range(this.messages.length - aMessages.length, this.messages.length)) {
         this.messages[i].message.initialPosition = i;
       }
       let tmplData = [m.message.toTmplData(false)
@@ -837,7 +837,7 @@ Conversation.prototype = {
       // Notify each message that it's been added to the DOM and that it can do
       //  event registration and stuff...
       let domNodes = this._domNode.getElementsByClassName(Message.prototype.cssClass);
-      for each (let i in range(this.messages.length - aMessages.length, this.messages.length)) {
+      for (let i of range(this.messages.length - aMessages.length, this.messages.length)) {
         this.messages[i].message.onAddedToDom(domNodes[i]);
         domNodes[i].setAttribute("tabindex", (i+2)+"");
       }
@@ -1052,7 +1052,7 @@ Conversation.prototype = {
     // previous conversation (but not the conversation-wide event handlers!)
     let t0  = (new Date()).getTime();
     let $ = this._htmlPane.$;
-    for each (let i in range(0, this.messages.length)) {
+    for (let i of range(0, this.messages.length)) {
       // We need to set this before the call to toTmplData.
       let msg = this.messages[i].message;
       msg.initialPosition = i;
