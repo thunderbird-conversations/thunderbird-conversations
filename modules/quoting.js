@@ -194,19 +194,34 @@ function convertForwardedToBlockquote(aDoc) {
   } catch ( { found } if found) { }
 }
 
-/* Fusion together two adjacent blockquotes */
+/* If [b1] is a blockquote followed by [ns] whitespace nodes followed by [b2],
+ * append [ns] to [b1], then append all the child nodes of [b2] to [b1],
+ * effectively merging the two blockquotes together. */
 function fusionBlockquotes(aDoc) {
-  let blockquotes = aDoc.getElementsByTagName("blockquote");
-  for (let i = blockquotes.length - 1; i >= 0; i--) {
-    let blockquote = blockquotes[i];
-    if ( blockquote
-      && blockquote.nextElementSibling
-      && blockquote.nextElementSibling.tagName
-      && blockquote.nextElementSibling.tagName.toLowerCase() == "blockquote") {
-      let b = blockquote.nextElementSibling;
-      while (b.firstChild)
-        blockquote.appendChild(b.firstChild);
-      blockquote.parentNode.removeChild(b);
+  let blockquotes = new Set(aDoc.getElementsByTagName("blockquote"));
+  for (let blockquote of blockquotes) {
+    let isWhitespace = function (n) {
+      return (n && (n.tagName && n.tagName.toLowerCase() == "br"
+          || n.nodeType == n.TEXT_NODE && n.textContent.match(/^\s*$/)));
+    }
+    let isBlockquote = function (b) {
+      return (b && b.tagName && b.tagName.toLowerCase() == "blockquote");
+    };
+    let blockquoteFollows = function (n) {
+      return n && (isBlockquote(n) || isWhitespace(n) && blockquoteFollows(n.nextSibling));
+    };
+    while (blockquoteFollows(blockquote.nextSibling)) {
+      while (isWhitespace(blockquote.nextSibling))
+        blockquote.appendChild(blockquote.nextSibling);
+      if (isBlockquote(blockquote.nextSibling)) {
+        let next = blockquote.nextSibling;
+        while (next.firstChild)
+          blockquote.appendChild(next.firstChild);
+        blockquote.parentNode.removeChild(next);
+        blockquotes.delete(next);
+      } else {
+        Log.error("What?!");
+      }
     }
   }
 }
