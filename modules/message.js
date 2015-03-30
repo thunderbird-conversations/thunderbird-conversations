@@ -1159,11 +1159,11 @@ Message.prototype = {
           let tmplData = self.toTmplDataForAttachments();
           let w = self._conversation._htmlPane;
           let $ = w.$;
-          $("#attachmentIconTemplate").tmpl(tmplData).appendTo(
+          this._conversation.tmpl("#attachmentIconTemplate", tmplData).appendTo(
             $(self._domNode.querySelector(".attachmentIcon")).empty());
-          $("#attachmentDetailsTemplate").tmpl(tmplData).appendTo(
+          this._conversation.tmpl("#attachmentDetailsTemplate", tmplData).appendTo(
             $(self._domNode.querySelector(".detailsLine")).empty());
-          $("#attachmentsTemplate").tmpl(tmplData).appendTo(
+          this._conversation.tmpl("#attachmentsTemplate", tmplData).appendTo(
             $(self._domNode.querySelector(".attachments-container")).empty());
 
           try {
@@ -1252,7 +1252,7 @@ Message.prototype = {
         data.dataContactsBcc = buildContactData(contactsBcc);
 
         // Output the template
-        $("#detailsTemplate").tmpl(data)
+        this._conversation.tmpl("#detailsTemplate", data)
           .appendTo($(this._domNode.getElementsByClassName("detailsPlaceholder")[0]));
         // Activate tooltip event listeners
         w.enableTooltips({

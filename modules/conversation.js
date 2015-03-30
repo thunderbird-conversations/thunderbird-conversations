@@ -307,7 +307,7 @@ ViewWrapper.prototype = {
       return false;
     }
   },
-}
+};
 
 // -- The actual conversation object
 
@@ -821,7 +821,7 @@ Conversation.prototype = {
       let w = this._htmlPane;
       w.markReadInView.disable();
 
-      $("#messageTemplate").tmpl(tmplData).appendTo($(this._domNode));
+      this.tmpl("#messageTemplate", tmplData).appendTo($(this._domNode));
 
 
       // Important: don't forget to move the quick reply part into the last
@@ -866,6 +866,10 @@ Conversation.prototype = {
     this.viewWrapper = new ViewWrapper(this);
     [m.message.inView = this.viewWrapper.isInView(m)
       for each ([, m] in Iterator(this.messages))];
+  },
+
+  tmpl: function _Conversation_tmpl (id, data) {
+    return this._htmlPane.tmpl(id, data);
   },
 
   // Once we're confident our set of messages is the right one, we actually
@@ -1065,18 +1069,7 @@ Conversation.prototype = {
     // We must do this if we are to ever release the previous Conversation
     //  object. See comments in stub.html for the nice details.
     this._htmlPane.cleanup();
-    // We need to split the big array in small chunks because jquery-tmpl chokes
-    //  on big outputs... Snarky remark: that didn't happen with my innerHTML
-    //  solution. On my computer, jquery-tmpl chokes at 93 messages.
-    let chunkSize = 50;
-    let nChunks = Math.ceil(tmplData.length/chunkSize);
-    let chunks = [];
-    for (let i = 0; i <= nChunks; ++i) {
-      chunks.push(tmplData.slice(i*chunkSize, (i+1)*chunkSize));
-    }
-    // Go!
-    for (let i = 0; i < chunks.length; ++i)
-      $("#messageTemplate").tmpl(chunks[i]).appendTo($(this._domNode));
+    this.tmpl("#messageTemplate", tmplData).appendTo($(this._domNode));
 
     // Notify each message that it's been added to the DOM and that it can do
     // event registration and stuff...
