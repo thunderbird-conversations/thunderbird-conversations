@@ -241,7 +241,7 @@ button {
   position: relative;
 }
 
-.recipientTooltipWrapper {
+.contactTooltipWrapper {
   position: absolute;  /* allow it to be moved over respective contact wrapper */
 }
 
@@ -260,7 +260,7 @@ button {
   display: none;
 }
 
-.recipientTooltipWrapper .tooltip {
+.contactTooltipWrapper .tooltip {
   /* override generic tooltip, so to look closer to contact name */
   left: 0px;
 }

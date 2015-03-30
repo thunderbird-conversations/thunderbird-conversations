@@ -1137,7 +1137,7 @@
   -->
   <!-- Generic contact template with tooltip -->
   <script id="contactTemplate" type="text/x-handlebars-template"><![CDATA[
-    {{tmpl "contactLabelTemplate" this}}{{tmpl "contactTooltipTemplate" this}}
+    {{tmpl "contactLabel" this}}{{tmpl "contactTooltip" this}}
   ]]></script>
   <!-- Contact template specific to recipients, without tooltip -->
   <script id="contactLabelTemplate" type="text/x-handlebars-template"><![CDATA[<span
@@ -1149,7 +1149,7 @@
           crop="center" class="contactExtra"
           value="({{extra}})"
         />{{/if}}{{#if displayEmail}}<span class="smallEmail"
-          >&lt;{{trim displayEmail}}&gt;</span>{{/if}}{{#if writeBr}}<br />{{/if}}</span
+          > &lt;{{trim displayEmail}}&gt;</span>{{/if}}{{#if writeBr}}<br />{{/if}}</span
       ></span
   >]]></script>
   <!-- Tooltip template specific to recipients -->
