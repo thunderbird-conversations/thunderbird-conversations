@@ -313,8 +313,9 @@
       let str = function (x, ...args) {
         try {
           var s = strings.get(x);
-          for (let i = 0; i < args.length; ++i)
-            s = s.replace("#"+i, args[i]);
+          // One extra argument added by Handlebars
+          for (let i = 0; i < args.length - 1; ++i)
+            s = s.replace("#"+(i+1), args[i]);
           return s;
         } catch (e) {
           Log.error("No such string", x);
