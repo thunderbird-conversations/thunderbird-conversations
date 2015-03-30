@@ -165,7 +165,7 @@
         self.setTooltipEventHandlers(aMsg, $contact, $tooltip, false);
       });
 
-      let $recipientContacts = $aMsgNode.find('.to .contactName');
+      let $contactLabels = $aMsgNode.find('.to .contactName');
 
       // enable tooltip for recipient contacts
       $aMsgNode.find('.recipient-tooltips .tooltip').each(function (index) {
@@ -173,7 +173,9 @@
         // hovered/clicked, starts the interaction with the tooltip
         let $tooltip = $(this);
 
-        let $contact = $recipientContacts.eq(index);
+        let $contact = index > 0
+          ? $contactLabels.eq(index-1)
+          : $aMsgNode.find('.author .contactName');
 
         self.setTooltipEventHandlers(aMsg, $contact, $tooltip, true);
       });
@@ -194,7 +196,7 @@
           if (isRecipient) {
             // move tooltip close to its respective recipient contact
             let contactWrapperPosition = $contact.parents('.tooltipWrapper').position();
-            let $tooltipWrapper = $tooltip.parents('.recipientTooltipWrapper');
+            let $tooltipWrapper = $tooltip.parents('.contactTooltipWrapper');
             $tooltipWrapper.css(contactWrapperPosition);
           }
 
@@ -291,7 +293,7 @@
     let Log = setupLogging("Conversations.Stub");
     let isInTab = false;
 
-    // Handlebars; TODO: pre-compile templates
+    // Handlebars
     (function () {
       let tmpl0 = function(id, data) {
         try {
@@ -846,9 +848,9 @@
       <div class="messageHeader hbox">
         <div class="star"></div>
         <div class="shrink-box">
-          <span class="author">{{tmpl "contact" dataContactFrom}}</span>
-          <span class="to hide-with-details"> {{str "to"}} {{tmpl "recipientContact" dataContactsTo}}</span>
-          <span class="recipient-tooltips">{{tmpl "recipientTooltip" dataContactsTo}}</span>
+          <span class="author">{{tmpl "contactLabel" dataContactFrom}}</span>
+          <span class="to hide-with-details"> {{str "to"}} {{tmpl "contactLabel" dataContactsTo}}</span>
+          <span class="recipient-tooltips">{{tmpl "contactTooltip" dataContactFrom}}{{tmpl "contactTooltip" dataContactsTo}}</span>
           <span class="bzTo"> {{str "at"}} {{bugzillaUrl}}</span>
           <span class="snippet"><ul class="tags regular-tags"></ul><ul
               class="tags special-tags"
@@ -1134,33 +1136,27 @@
     space because of the #text whitespace-only nodes that end up in the DOM.
   -->
   <!-- Generic contact template with tooltip -->
-  <script id="contactTemplate" type="text/x-handlebars-template"><![CDATA[<span
+  <script id="contactTemplate" type="text/x-handlebars-template"><![CDATA[
+    {{tmpl "contactLabelTemplate" this}}{{tmpl "contactTooltipTemplate" this}}
+  ]]></script>
+  <!-- Contact template specific to recipients, without tooltip -->
+  <script id="contactLabelTemplate" type="text/x-handlebars-template"><![CDATA[<span
     >{{separator}}</span
     ><span class="tooltipWrapper contact"
       ><span class="contactName" style="{{colorStyle}}"
         >{{#if star}}&#x2605; {{/if}}{{trim name}}{{#if extra}}
-          <label xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-            crop="center" class="contactExtra" value="({{extra}})" />
-          {{/if}}{{#if displayEmail}}
-          <span class="smallEmail">&lt;{{trim displayEmail}}&gt;</span>
-        {{/if}}{{#if writeBr}}<br />{{/if}}</span
-      >{{tmpl "innerTooltip" this}}</span
-  >]]></script>
-  <!-- Contact template specific to recipients, without tooltip -->
-  <script id="recipientContactTemplate" type="text/x-handlebars-template"><![CDATA[<span
-    >{{separator}}</span
-    ><span class="tooltipWrapper contact"
-      ><span class="contactName" style="{{colorStyle}}"
-        >{{#if star}}&#x2605; {{/if}}{{trim name}}{{#if displayEmail}}
-          <span class="smallEmail">&lt;{{trim displayEmail}}&gt;</span>
-        {{/if}}{{#if writeBr}}<br />{{/if}}</span
+        <label xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+          crop="center" class="contactExtra"
+          value="({{extra}})"
+        />{{/if}}{{#if displayEmail}}<span class="smallEmail"
+          >&lt;{{trim displayEmail}}&gt;</span>{{/if}}{{#if writeBr}}<br />{{/if}}</span
       ></span
   >]]></script>
   <!-- Tooltip template specific to recipients -->
-  <script id="recipientTooltipTemplate" type="text/x-handlebars-template"><![CDATA[<span
-    class="recipientTooltipWrapper contact">{{tmpl "innerTooltip" this}}</span
+  <script id="contactTooltipTemplate" type="text/x-handlebars-template"><![CDATA[<span
+    class="contactTooltipWrapper contact">{{tmpl "innerTooltip" this}}</span
   >]]></script>
-  <!-- Inner tooltip template, to be used by other templates -->
+  <!-- Inner tooltip template, to be used by other templates. Currently only used by the template above. -->
   <script id="innerTooltipTemplate" type="text/x-handlebars-template"><![CDATA[<div
     class="tooltip">
       <div class="arrow"></div>

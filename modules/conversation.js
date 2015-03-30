@@ -399,99 +399,26 @@ Conversation.prototype = {
     //  a GlodaMessage for the selected message headers, and then pick the
     //  first one, get its underlying GlodaConversation object, and then ask for
     //  the GlodaConversation's messages.
-    let classicQuery = function () {
-      Gloda.getMessageCollectionForHeaders(self._initialSet, {
-        onItemsAdded: function (aItems) {
-          if (!aItems.length) {
-            Log.warn("Warning: gloda query returned no messages");
-            self._getReady(self._initialSet.length + 1);
-            // M = msgHdr, I = Initial, NG = there was no gloda query
-            // will run signal
-            self.messages = self._initialSet.map(function (msgHdr)
-              messageFromDbHdr(self, msgHdr, "MI+NG")
-            );
-            self._signal();
-          } else {
-            self._intermediateResults = aItems;
-            self._query = aItems[0].conversation.getMessagesCollection(self, true);
-          }
-        },
-        onItemsModified: function () {},
-        onItemsRemoved: function () {},
-        onQueryCompleted: function (aCollection) {},
-      }, null);
-    };
-
-    // This is a self-service case. GitHub and GetSatisfaction do not thread
-    //  emails related to a common topic, so we're doing it for them. Each
-    //  message is in its own conversation: we get all conversations which sport
-    //  this exact topic, and then, for each conversation, we get its only
-    //  message.
-    // All the messages are gathered in fusionItems, which is then used to call
-    //  self.onQueryCompleted.
-    let fusionCount = -1;
-    let fusionItems = [];
-    let fusionTop = function () {
-      fusionCount--;
-      if (fusionCount == 0) {
-        if (fusionItems.length)
-          self.onQueryCompleted({ items: fusionItems });
-        else
-          classicQuery();
-      }
-    };
-    let fusionListener =  {
-      onItemsAdded: function (aItems) {},
+    Gloda.getMessageCollectionForHeaders(self._initialSet, {
+      onItemsAdded: function (aItems) {
+        if (!aItems.length) {
+          Log.warn("Warning: gloda query returned no messages");
+          self._getReady(self._initialSet.length + 1);
+          // M = msgHdr, I = Initial, NG = there was no gloda query
+          // will run signal
+          self.messages = self._initialSet.map(function (msgHdr)
+            messageFromDbHdr(self, msgHdr, "MI+NG")
+          );
+          self._signal();
+        } else {
+          self._intermediateResults = aItems;
+          self._query = aItems[0].conversation.getMessagesCollection(self, true);
+        }
+      },
       onItemsModified: function () {},
       onItemsRemoved: function () {},
-      onQueryCompleted: function (aCollection) {
-        Log.debug("Fusionning", aCollection.items.length, "more items");
-        fusionItems = fusionItems.concat(aCollection.items);
-        fusionTop();
-      }
-    };
-
-    // This is the Gloda query to find out about conversations for a given
-    //  subject. This relies on our subject attribute provider found in
-    //  modules/plugins/glodaAttrProviders.js
-    let subjectQuery = function (subject) {
-      let query = Gloda.newQuery(Gloda.NOUN_CONVERSATION);
-      query.subject(subject);
-      query.getCollection({
-        onItemsAdded: function (aItems) {},
-        onItemsModified: function () {},
-        onItemsRemoved: function () {},
-        onQueryCompleted: function (aCollection) {
-          Log.debug("Custom query found", aCollection.items.length, "items");
-          if (aCollection.items.length) {
-            for each (let [k, v] in Iterator(aCollection.items)) {
-              fusionCount++;
-              v.getMessagesCollection(fusionListener);
-            }
-          }
-          fusionTop();
-        },
-      });
-    };
-
-    let firstEmail = this._initialSet.length == 1 && parseMimeLine(this._initialSet[0].author)[0].email;
-    switch (firstEmail) {
-      case "noreply.mozilla_messaging@getsatisfaction.com": {
-        // Special-casing for Roland and his GetSatisfaction emails.
-        let subject = this._initialSet[0].mime2DecodedSubject;
-        subject = subject.replace(/New (reply|comment): /, "");
-        Log.debug("Found a GetSatisfaction message, searching for subject:", subject);
-        fusionCount = 3;
-        subjectQuery("New reply: "+subject);
-        subjectQuery("New comment: "+subject);
-        subjectQuery("New question: "+subject);
-        break;
-      }
-
-      default:
-        // This is the regular case.
-        classicQuery();
-    }
+      onQueryCompleted: function (aCollection) {},
+    }, null);
   },
 
   // This is the observer for the second Gloda query, the one that returns a
