@@ -265,6 +265,11 @@ button {
   left: 0px;
 }
 
+.contactExtra {
+  max-width: 10em;
+  display: inline;
+}
+
 .dropDown {
   position: relative;
 }

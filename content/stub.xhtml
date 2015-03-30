@@ -1,7 +1,8 @@
 <!DOCTYPE html [
   <!ENTITY % pageDTD SYSTEM "chrome://conversations/locale/pages.dtd"> %pageDTD;
 ]>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 <head>
   <title>Conversation Reader</title>
   <link rel="stylesheet" type="text/css"
@@ -1137,7 +1138,10 @@
     >{{separator}}</span
     ><span class="tooltipWrapper contact"
       ><span class="contactName" style="{{colorStyle}}"
-        >{{#if star}}&#x2605; {{/if}}{{trim name}}{{#if displayEmail}}
+        >{{#if star}}&#x2605; {{/if}}{{trim name}}{{#if extra}}
+          <label xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+            crop="center" class="contactExtra" value="({{extra}})" />
+          {{/if}}{{#if displayEmail}}
           <span class="smallEmail">&lt;{{trim displayEmail}}&gt;</span>
         {{/if}}{{#if writeBr}}<br />{{/if}}</span
       >{{tmpl "innerTooltip" this}}</span

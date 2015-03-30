@@ -143,7 +143,7 @@ let ContactMixIn = {
    * address book.
    */
   toTmplData: function _ContactMixIn_toInlineHtml (aUseColor, aPosition, aEmail, aIsDetail) {
-    let name = this.getName(aPosition, aIsDetail);
+    let [name, extra] = this.getName(aPosition, aIsDetail);
     let displayEmail = (name != aEmail ? aEmail : "");
     let hasCard = (this._card != null);
     let skipEmail = !aIsDetail && hasCard && Prefs.getBool("mail.showCondensedAddresses");
@@ -156,6 +156,7 @@ let ContactMixIn = {
       email: escapeHtml(aEmail),
       avatar: escapeHtml(this.avatar),
       profiles: this._profiles,
+      extra: extra,
       // Parameter aUseColor is optional, and undefined means true
       colorStyle: ((aUseColor === false)
         ? ""
@@ -305,12 +306,10 @@ let ContactMixIn = {
         ? strings.get("meFromMeToSomeone")
         : strings.get("meFromSomeoneToMe")
       );
-      if (getIdentities().length > 1)
-        display += " (" + this._email + ")";
-      return display;
+      return [display, getIdentities().length > 1 ? this._email : ""]
     }
     else
-      return this._name || this._email;
+      return [this._name || this._email, ""];
   },
 
   enrichWithName: function _ContactMixIn_enrichWithName (aName) {
