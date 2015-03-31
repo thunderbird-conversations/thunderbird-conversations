@@ -331,11 +331,11 @@
       let $span = $(event.target).find("span.expand");
       if ($span.hasClass("collapse")) {
         [message.collapse()
-          for ([, { message }] of Iterator(Conversations.currentConversation.messages))];
+          for ({ message } of Conversations.currentConversation.messages)];
         $span.removeClass("collapse");
       } else {
         [message.expand()
-          for ([, { message }] of Iterator(Conversations.currentConversation.messages))];
+          for ({ message } of Conversations.currentConversation.messages)];
         $span.addClass("collapse");
       }
     }
@@ -590,7 +590,7 @@
         let items = data.splice(0, n);
         let nodes = $("#popularContactTemplate").tmpl(items);
 
-        for (let [i, data2] of Iterator(items)) {
+	items.forEach(function(data2, i) {
           let data = data2;
           let node = nodes.eq(i);
           Log.debug("Adding", data.name, data.email);
@@ -624,7 +624,7 @@
             pushNewPopularContacts(1);
           });
 
-        }
+        });
 
         nodes.appendTo($(".quickReplyContactsBox"));
       };
@@ -721,7 +721,7 @@
       let pageTop = window.pageYOffset;
       let pageBottom = pageTop + window.innerHeight;
       let messages = Conversations.currentConversation.messages;
-      for (let [i, { message }] of Iterator(messages)) {
+      messages.forEach(function({ message }, i) {
         if (!message.read && message.expanded) {
           if (!message._topInView) {
             let top = $(message._domNode).offset().top;
@@ -740,18 +740,18 @@
             message.read = true;
           }
         }
-      }
+      });
     }
     (function () {
       let w = window;
       markReadInView.enable = function () {
         [w.document.addEventListener(x, w.markReadInView, true)
-          for ([, x] of Iterator(["mouseover", "focus", "keydown"]))];
+          for (x of ["mouseover", "focus", "keydown"])];
       };
       markReadInView.disable = function () {
         w.clearTimeout(w.markReadInView.timeout);
         [w.document.removeEventListener(x, w.markReadInView, true)
-          for ([, x] of Iterator(["mouseover", "focus", "keydown", "scroll"]))];
+          for (x of ["mouseover", "focus", "keydown", "scroll"])];
       };
     })();
 
