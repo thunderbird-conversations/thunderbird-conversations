@@ -84,8 +84,9 @@ ContactIdentityCompleter.prototype = {
     }
     // and since we can now map from contacts down to identities, map contacts
     //  to the first identity for them that we find...
-    matches = [val.NOUN_ID == Gloda.NOUN_IDENTITY ? val : val.identities[0]
-               for ([iVal, val] of contactToThing)];
+    matches = Array.prototype.map.call(contactToThing, function(val) {
+      return val.NOUN_ID == Gloda.NOUN_IDENTITY ? val : val.identities[0];
+    });
 
     let rows = [asToken(
                   match.pictureURL(),
@@ -133,13 +134,16 @@ ContactIdentityCompleter.prototype = {
       this.identityCollection =
         this.contactCollection.subCollections[Gloda.NOUN_IDENTITY];
 
-      let contactNames = [(c.name.replace(" ", "").toLowerCase() || "x") for 
-                          ([, c] of this.contactCollection.items)];
+      let contactNames = this.contactCollection.items.map(function(c) {
+        return c.name.replace(" ", "").toLowerCase() || "x";
+      });
       // if we had no contacts, we will have no identity collection!
       let identityMails;
-      if (this.identityCollection)
-        identityMails = [i.value.toLowerCase() for 
-                         ([, i] of this.identityCollection.items)];
+      if (this.identityCollection) {
+        identityMails = Array.prototype.map.call(this.identityCollection.items, function(i) {
+          return i.value.toLowerCase();
+        });
+      }
 
       // The suffix tree takes two parallel lists; the first contains strings
       //  while the second contains objects that correspond to those strings.
@@ -190,12 +194,14 @@ ContactIdentityCompleter.prototype = {
 
       // sort in order of descending popularity
       possibleDudes.sort(this._popularitySorter);
-      let rows = [asToken(
-                    dude.pictureURL(),
-                    dude.contact.name != dude.value ? dude.contact.name : null,
-                    dude.value,
-                    dude.value
-                  ) for ([iDude, dude] of possibleDudes)];
+      let rows = Array.prototype.map.call(possibleDudes, function(dude) {
+          return asToken(
+            dude.pictureURL(),
+            dude.contact.name != dude.value ? dude.contact.name : null,
+            dude.value,
+            dude.value
+          )
+      });
       result.addRows(rows);
       result.markCompleted(this);
 

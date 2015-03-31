@@ -643,7 +643,7 @@ ComposeSession.prototype = {
         let cc = mergeDefault([], defaultCc);
         let bcc = mergeDefault([], defaultBcc);
         replyAllParams(identity, msgHdr, function (params) {
-          let to = [asToken(null, name, email, null) for  ([name, email] of params.to)];
+          let to = [asToken(null, name, email, null) for each ([name, email] in params.to)];
           setupAutocomplete(to, cc, bcc);
           k && k(params.to.length + params.cc.length + params.bcc.length);
         });
@@ -684,8 +684,9 @@ ComposeSession.prototype = {
       draft: function ({ to, cc, bcc }) {
         let makeTokens = function (aList) {
           let [list, listEmailAddresses] = parse(aList);
-          return [asToken(null, item, listEmailAddresses[i], null)
-            for ([i, item] of list)];
+	  return Array.prototype.map.call(list, function(item, i) {
+            return asToken(null, item, listEmailAddresses[i], null);
+	  });
         };
         setupAutocomplete(makeTokens(to), makeTokens(cc), makeTokens(bcc));
         self.setupDone();
