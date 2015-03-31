@@ -643,7 +643,7 @@ ComposeSession.prototype = {
         let cc = mergeDefault([], defaultCc);
         let bcc = mergeDefault([], defaultBcc);
         replyAllParams(identity, msgHdr, function (params) {
-          let to = [asToken(null, name, email, null) for each ([name, email] in params.to)];
+          let to = [asToken(null, name, email, null) for ([name, email] of params.to)];
           setupAutocomplete(to, cc, bcc);
           k && k(params.to.length + params.cc.length + params.bcc.length);
         });
