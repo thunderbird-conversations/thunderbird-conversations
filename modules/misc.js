@@ -61,10 +61,9 @@ function arrayEquals(a1, a2) {
   if (a1.length != a2.length)
     return;
 
-  let e = true;
-  for (let [i, v] of Iterator(a1))
-    e = e && (v == a2[i]);
-  return e;
+  return a1.every(function(v, i) {
+    return v == a2[i];
+  });
 }
 
 /**
@@ -77,7 +76,7 @@ function arrayEquals(a1, a2) {
 function groupArray(aItems, aFn) {
   let groups = {};
   let orderedIds = [];
-  for (let [i, item] of Iterator(aItems)) {
+  for (let item of aItems) {
     let id = aFn(item);
     if (!groups[id]) {
       groups[id] = [item];
@@ -86,7 +85,7 @@ function groupArray(aItems, aFn) {
       groups[id].push(item);
     }
   }
-  return [groups[id] for ([, id] of Iterator(orderedIds))];
+  return [groups[id] for (id of orderedIds)];
 }
 
 // Joins together names and format them as "John, Jane and Julie"
@@ -107,42 +106,46 @@ function joinWordList (aElements, aInsertHtml) {
   }
 }
 
-let mapping = {
-  "application/msword": "x-office-document",
-  "application/vnd.ms-excel": "x-office-spreadsheet",
-  "application/vnd.ms-powerpoint": "x-office-presentation",
-  "application/rtf": "x-office-document",
-  "application/zip": "package-x-generic",
-  "application/bzip2": "package-x-generic",
-  "application/x-gzip": "package-x-generic",
-  "application/x-tar": "package-x-generic",
-  "application/x-compressed": "package-x-generic",
+let mapping = [
+  ["application/msword", "x-office-document"],
+  ["application/vnd.ms-excel", "x-office-spreadsheet"],
+  ["application/vnd.ms-powerpoint", "x-office-presentation"],
+  ["application/rtf", "x-office-document"],
+  ["application/zip", "package-x-generic"],
+  ["application/bzip2", "package-x-generic"],
+  ["application/x-gzip", "package-x-generic"],
+  ["application/x-tar", "package-x-generic"],
+  ["application/x-compressed", "package-x-generic"],
   //"message/": "email",
-  "text/x-vcalendar": "x-office-calendar",
-  "text/x-vcard": "x-office-address-book",
-  "text/html": "text-html",
-  "application/pdf": "application-pdf",
-  "application/x-pdf": "application-pdf",
-  "application/x-bzpdf": "application-pdf",
-  "application/x-gzpdf": "application-pdf",
-};
+  ["text/x-vcalendar", "x-office-calendar"],
+  ["text/x-vcard", "x-office-address-book"],
+  ["text/html", "text-html"],
+  ["application/pdf", "application-pdf"],
+  ["application/x-pdf", "application-pdf"],
+  ["application/x-bzpdf", "application-pdf"],
+  ["application/x-gzpdf", "application-pdf"],
+];
 
-let fallbackMapping = {
+let fallbackMapping = [
   // Fallbacks, at the end.
-  "video/": "video-x-generic",
-  "audio/": "audio-x-generic",
-  "image/": "image-x-generic",
-  "text/": "text-x-generic",
-};
+  ["video/", "video-x-generic"],
+  ["audio/", "audio-x-generic"],
+  ["image/", "image-x-generic"],
+  ["text/", "text-x-generic"],
+];
 
 function iconForMimeType (aMimeType) {
-  for (let [k, v] of Iterator(mapping)) {
-    if (aMimeType == k)
-      return v+".svg";
+  let idx = mapping.findIndex(function([k, ]) {
+    return aMimeType == k;
+  });
+  if (idx != -1) {
+    return mapping[idx][1] + ".svg";
   }
-  for (let [k, v] of Iterator(fallbackMapping)) {
-    if (aMimeType.indexOf(k) === 0)
-      return v+".svg";
+  idx = fallbackMapping.findIndex(function([k, ]) {
+    return aMimeType.startsWith(k);
+  });
+  if (idx != -1) {
+    return fallbackMapping[idx][1] + ".svg";
   }
   return "gtk-file.png";
 }
@@ -190,7 +193,7 @@ let EventHelperMixIn = {
     else
       nodes = [selector];
 
-    for (let [, node] of Iterator(nodes))
+    for (let node of nodes)
       node.addEventListener(action, f, false);
   },
 
@@ -265,7 +268,7 @@ function topMail3Pane(aObj) {
 function reindexMessages(aMsgHdrs) {
   GlodaMsgIndexer.indexMessages([
     [x.folder, x.messageKey]
-    for ([, x] of Iterator(aMsgHdrs))
+    for (x of aMsgHdrs)
   ]);
 }
 
