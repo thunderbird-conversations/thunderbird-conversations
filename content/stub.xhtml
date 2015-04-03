@@ -601,7 +601,7 @@
       document.querySelector(".bottom-links").style.display = "none";
       document.querySelector("#messageList").style.marginTop = "0";
       document.querySelector("#messageList").classList.add("quickCompose");
-      $("#quickReplyTemplate").tmpl().appendTo($("#messageList"));
+      tmpl("#quickReplyTemplate").appendTo($("#messageList"));
       $(".replyAll, #save, .replyMethod").remove();
 
       // TODO figure out why this timeout is needed
@@ -642,7 +642,7 @@
       // Push a new contact item in the list
       let pushNewPopularContacts = function (n) {
         let items = data.splice(0, n);
-        let nodes = $("#popularContactTemplate").tmpl(items);
+        let nodes = tmpl("#popularContactTemplate", items);
 
         for each (let [i, data2] in Iterator(items)) {
           let data = data2;
