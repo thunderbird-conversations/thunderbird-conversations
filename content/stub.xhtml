@@ -62,9 +62,9 @@
     })(jQuery);
 
     function clearMenu() {
-      Array.prototype.forEach.call(document.getElementsByClassName("menu"), function(menu) {
+      for (let menu of document.getElementsByClassName("menu")) {
         menu.style.display = "none";
-      });
+      }
     }
 
     function displayMenu(event) {
@@ -590,7 +590,7 @@
         let items = data.splice(0, n);
         let nodes = $("#popularContactTemplate").tmpl(items);
 
-	items.forEach(function(data2, i) {
+        items.forEach(function(data2, i) {
           let data = data2;
           let node = nodes.eq(i);
           Log.debug("Adding", data.name, data.email);
