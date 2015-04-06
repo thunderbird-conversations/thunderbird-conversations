@@ -9,6 +9,7 @@ Cu.import("resource:///modules/gloda/utils.js");
 Cu.import("resource:///modules/gloda/suffixtree.js");
 Cu.import("resource:///modules/gloda/noun_tag.js");
 Cu.import("resource:///modules/gloda/noun_freetag.js");
+Cu.import("resource://conversations/modules/stdlib/misc.js");
 
 try {
   Cu.import("resource://people/modules/people.js");
@@ -84,16 +85,15 @@ ContactIdentityCompleter.prototype = {
     }
     // and since we can now map from contacts down to identities, map contacts
     //  to the first identity for them that we find...
-    matches = Array.prototype.map.call(contactToThing, function(val) {
-      return val.NOUN_ID == Gloda.NOUN_IDENTITY ? val : val.identities[0];
-    });
+    matches = [val.NOUN_ID == Gloda.NOUN_IDENTITY ? val : val.identities[0]
+               for ([, val] of entries(contactToThing))]
 
     let rows = [asToken(
                   match.pictureURL(),
                   match.contact.name != match.value ? match.contact.name : null,
                   match.value,
                   match.value
-                ) for ([iMatch, match] of matches)];
+                ) for (match of matches)];
     aResult.addRows(rows);
 
     // - match against database contacts / identities
@@ -140,7 +140,7 @@ ContactIdentityCompleter.prototype = {
       // if we had no contacts, we will have no identity collection!
       let identityMails;
       if (this.identityCollection) {
-        identityMails = Array.prototype.map.call(this.identityCollection.items, function(i) {
+        identityMails = this.identityCollection.items.map(function(i) {
           return i.value.toLowerCase();
         });
       }
@@ -194,7 +194,7 @@ ContactIdentityCompleter.prototype = {
 
       // sort in order of descending popularity
       possibleDudes.sort(this._popularitySorter);
-      let rows = Array.prototype.map.call(possibleDudes, function(dude) {
+      let rows = possibleDudes.map(function(dude) {
           return asToken(
             dude.pictureURL(),
             dude.contact.name != dude.value ? dude.contact.name : null,
@@ -305,8 +305,8 @@ function setupAutocomplete(to, cc, bcc) {
     let list = document.getElementsByClassName(aList.substring(1))[0];
     let marker = list.getElementsByClassName("add-more")[0];
     // Never, ever use jquery in a loop.
-    aData.forEach(function(v, i) {
-      if (v.email) {
+    aData.forEach(function({ name, email }, i) {
+      if (email) {
         let sep;
         if (aData.length <= 1)
           sep = "";
@@ -317,8 +317,8 @@ function setupAutocomplete(to, cc, bcc) {
         else
           sep = strings.get("sepComma");
         let li = document.createElement("li");
-        li.setAttribute("title", v.email);
-        li.textContent = v.name;
+        li.setAttribute("title", email);
+        li.textContent = name;
         let span = document.createElement("span");
         span.classList.add("recipientListSeparator");
         span.textContent = sep;
