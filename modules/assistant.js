@@ -113,9 +113,8 @@ MultipleCustomization.prototype = {
   },
 
   uninstall: function (uninstallInfos) {
-    //[x.uninstall(uninstallInfos[i]) for ([i, x] of Iterator(this.customizations))];
     this.customizations.forEach(function(x, i) {
-      x.uninstall(uninstallInfos[i]); 
+      x.uninstall(uninstallInfos[i]);
     });
   }
 }
