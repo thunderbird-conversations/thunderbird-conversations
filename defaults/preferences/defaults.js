@@ -14,3 +14,4 @@ pref("conversations.extra_attachments", false);
 pref("conversations.compose_in_tab", true);
 pref("conversations.unwanted_recipients", "{}");
 pref("conversations.hide_sigs", false);
+pref("conversations.enable_quick_reply", true);

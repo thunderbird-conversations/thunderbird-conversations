@@ -65,6 +65,7 @@ function PrefManager() {
   this.hide_quote_length = prefsService.getIntPref("hide_quote_length");
   this.hide_sigs = prefsService.getBoolPref("hide_sigs");
   this.compose_in_tab = prefsService.getBoolPref("compose_in_tab");
+  this.enable_quick_reply = prefsService.getBoolPref("enable_quick_reply");
   // This is a hashmap
   this.monospaced_senders = {};
   for each (s in this.split(prefsService.getCharPref("monospaced_senders")))
@@ -109,7 +110,8 @@ PrefManager.prototype = {
       case "extra_attachments":
       case "compose_in_tab":
       case "enabled":
-      case "hide_sigs": {
+      case "hide_sigs":
+      case "enable_quick_reply": {
         let v = prefsService.getBoolPref(aData)
         this[aData] = v;
         [x(aData, v) for each (x in this.watchers)];

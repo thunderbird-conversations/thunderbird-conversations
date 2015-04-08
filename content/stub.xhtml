@@ -771,7 +771,8 @@
               message._topInView = true;
           }
           if (!message._bottomInView) {
-            let footerClass = (i == messages.length - 1) ? ".quickReply" : ".messageFooter";
+            let footerClass = (Prefs.enable_quick_reply && i == messages.length - 1) ? ".quickReply" : ".messageFooter";
+
             let bottom = $(message._domNode.querySelector(footerClass)).offset().top;
             if (bottom > pageTop && bottom < pageBottom)
               message._bottomInView = true;
@@ -1117,7 +1118,7 @@
         <div class="embedsContainer">
         </div>
       </div>
-      <div class="messageFooter">
+      <div class="messageFooter{{#if quickReply}} quickReplyEnabled{{/if}}">
         <div class="footerActions">
           <button class="edit-draft"><span>{{str "editDraft2"}}</span><span class="ext"></span></button>
           <button class="buttonReply"><span>{{str "reply"}}</span><span class="ext"></span></button>
