@@ -991,7 +991,7 @@ Conversation.prototype = {
       let oldMsg = i > 0 ? this.messages[i-1].message : null;
       msg.updateTmplData(oldMsg);
     }
-    let tmplData = [m.message.toTmplData(i == this.messages.length - 1)
+    let tmplData = [m.message.toTmplData(Prefs.enable_quick_reply && (i == this.messages.length - 1))
       for each ([i, m] in Iterator(this.messages))];
     // We must do this if we are to ever release the previous Conversation
     //  object. See comments in stub.html for the nice details.

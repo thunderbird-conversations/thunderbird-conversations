@@ -38,15 +38,15 @@
    - ***** END LICENSE BLOCK ***** -->
 
 <!DOCTYPE window SYSTEM "chrome://conversations/locale/options.dtd">
- 
+
 <vbox xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 
-  <setting pref="conversations.expand_who" type="radio" title="&option.expand_who;">  
-    <radiogroup>  
+  <setting pref="conversations.expand_who" type="radio" title="&option.expand_who;">
+    <radiogroup>
       <radio value="1" label="&option.expand_none;" />
       <radio value="3" label="&option.expand_all;" />
       <radio value="4" label="&option.expand_auto2;" tooltiptext="&option.expand_auto2.tooltip;"/>
-    </radiogroup>  
+    </radiogroup>
   </setting>
 
   <setting title="&title.quoting2;" desc="&desc.quoting;" pref="conversations.hide_quote_length" type="integer" />
@@ -69,13 +69,14 @@
     pref="mailnews.sendInBackground" type="bool" />
 
   <setting title="&title.operate_on_conversations;" desc="&option.operate_on_conversations;" pref="conversations.operate_on_conversations" type="bool" />
-  <setting title="&title.assistant;" type="control">  
+  <setting title="&title.assistant;" type="control">
     <button label="&option.assistant;"
       oncommand="window.openDialog('chrome://conversations/content/assistant/assistant.xhtml', '', 'chrome,width=800,height=500');"
      />
   </setting>
   <setting title="&title.extra_attachments;" desc="&desc.extra_attachments2;" pref="conversations.extra_attachments" type="bool" />
   <setting title="&title.compose_in_tab;" desc="&desc.compose_in_tab;" pref="conversations.compose_in_tab" type="bool" />
+  <setting title="&title.enable_quick_reply;" desc="&desc.enable_quick_reply;" pref="conversations.enable_quick_reply" type="bool" />
   <setting title="&title.debugging;" desc="&desc.debugging;" pref="conversations.logging_enabled" type="bool" />
- 
+
 </vbox>

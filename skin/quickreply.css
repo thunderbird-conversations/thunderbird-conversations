@@ -1,8 +1,9 @@
 /* Hide other actions for the last message */
 
-.message:last-child .messageFooter {
+.message:last-child .messageFooter.quickReplyEnabled {
   display: none;
 }
+
 
 /* Quick reply */
 
