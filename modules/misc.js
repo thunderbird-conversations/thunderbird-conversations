@@ -285,10 +285,10 @@ function openConversationInTabOrWindow(aUrl) {
   let height = Math.min(window.screen.availHeight-30, 1024);
   switch (Prefs.getInt("mail.openMessageBehavior")) {
     case 0:
-      window.open(aUrl, "_blank", "chrome,width=640,height="+height);
+      window.open(aUrl, "_blank", "chrome,resizable,width=640,height="+height);
       break;
     case 1:
-      window.open(aUrl, "conversations", "chrome,width=640,height="+height);
+      window.open(aUrl, "conversations", "chrome,resizable,width=640,height="+height);
       break;
     case 2:
       window.document.getElementById("tabmail").openTab("chromeTab", {
