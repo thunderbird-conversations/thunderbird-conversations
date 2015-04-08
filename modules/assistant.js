@@ -113,7 +113,10 @@ MultipleCustomization.prototype = {
   },
 
   uninstall: function (uninstallInfos) {
-    [x.uninstall(uninstallInfos[i]) for ([i, x] of Iterator(this.customizations))];
+    //[x.uninstall(uninstallInfos[i]) for ([i, x] of Iterator(this.customizations))];
+    this.customizations.forEach(function(x, i) {
+      x.uninstall(uninstallInfos[i]); 
+    });
   }
 }
 
@@ -263,7 +266,7 @@ let Customizations = {
 
       let vFolder = VirtualFolderHelper.wrapVirtualFolder(smartInbox);
       let searchFolders = {};
-      for (let folder of Iterator(vFolder.searchFolders)) {
+      for (let folder of vFolder.searchFolders) {
         Log.debug("Folder", folder.folderURL, "is in the unified inbox already");
         searchFolders[folder.folderURL] = true;
       }
