@@ -99,11 +99,13 @@ MonkeyPatch.prototype = {
 
     // 2) View > Conversation View
     let menuitem = window.document.createElement("menuitem");
-    for (let [k, v] of Iterator({
-      type: "checkbox",
-      id: "menuConversationsEnabled",
-      label: strings.get("menuConversationsEnabled"),
-    })) menuitem.setAttribute(k, v);
+    [
+      ["type", "checkbox"],
+      ["id", "menuConversationsEnabled"],
+      ["label", strings.get("menuConversationsEnabled")]
+    ].forEach(function([k, v]) {
+      menuitem.setAttribute(k, v);
+    });
     let after = window.document.getElementById("viewMessagesMenu");
     let parent1 = window.document.getElementById("menu_View_Popup");
     parent1.insertBefore(menuitem, after.nextElementSibling);
@@ -111,26 +113,30 @@ MonkeyPatch.prototype = {
 
     // 3) Keyboard shortcut
     let key = window.document.createElement("key");
-    for (let [k, v] of Iterator({
-      id: "key_conversationsQuickCompose",
-      key: "n",
-      modifiers: "accel,shift",
-      oncommand: "Conversations.quickCompose();",
-    })) key.setAttribute(k, v);
+    [
+      ["id", "key_conversationsQuickCompose"],
+      ["key", "n"],
+      ["modifiers", "accel,shift"],
+      ["oncommand", "Conversations.quickCompose();"],
+    ].forEach(function([k, v]) {
+      key.setAttribute(k, v);
+    });
     let parent2 = window.document.getElementById("mailKeys");
     parent2.appendChild(key);
     this.pushUndo(function () parent2.removeChild(key));
 
     // 4) Tree column
     let treecol = window.document.createElement("treecol");
-    for (let [k, v] of Iterator({
-      id: "betweenCol",
-      hidden: "false",
-      flex: "4",
-      persist: "width hidden ordinal",
-      label: strings.get("betweenColumnName"),
-      tooltiptext: strings.get("betweenColumnTooltip"),
-    })) treecol.setAttribute(k, v);
+    [
+      ["id", "betweenCol"],
+      ["hidden", "false"],
+      ["flex", "4"],
+      ["persist", "width hidden ordinal"],
+      ["label", strings.get("betweenColumnName")],
+      ["tooltiptext", strings.get("betweenColumnTooltip")]
+    ].forEach(function([k, v]) {
+      treecol.setAttribute(k, v);
+    });
     let parent3 = window.document.getElementById("threadCols");
     parent3.appendChild(treecol);
     this.pushUndo(function () parent3.removeChild(treecol));
@@ -173,9 +179,10 @@ MonkeyPatch.prototype = {
         // Add all the people found in one of the msgHdr's properties.
         let addPeople = function (prop, pos) {
           let line = msgHdr[prop];
-          for (let [, x] of Iterator(parseMimeLine(line, true)))
+          parseMimeLine(line, true).forEach(function(x) {
             people.push(format(x, pos))
-        };
+          });
+	}
         // We add everyone
         addPeople("author", true);
         addPeople("recipients", false);
@@ -336,7 +343,7 @@ MonkeyPatch.prototype = {
 
   undoCustomizations: function () {
     let uninstallInfos = JSON.parse(Prefs.getString("conversations.uninstall_infos"));
-    for (let [k, v] of Iterator(Customizations)) {
+    for (let [k, v] of entries(Customizations)) {
       if (k in uninstallInfos) {
         try {
           Log.debug("Uninstalling", k, uninstallInfos[k]);
@@ -724,7 +731,7 @@ MonkeyPatch.prototype = {
       let msgListeners = window.Conversations.msgListeners;
       let messageId = aMsgHdr.messageId;
       if (messageId in msgListeners) {
-        for (let [i, listener] of Iterator(msgListeners[messageId])) {
+        for (let [i, listener] of entries(msgListeners[messageId])) {
           let obj = listener.get();
           if (obj)
             obj.onMsgHasRemoteContent();
