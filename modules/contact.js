@@ -269,7 +269,7 @@ let ContactMixIn = {
     });
 
     /* The links to various profiles */
-    for each (let [, a1] in Iterator(aDomNode.getElementsByTagName("a"))) {
+    for (let a1 of aDomNode.getElementsByTagName("a")) {
       let a = a1;
       a.addEventListener("click",
         a.classList.contains("profile-link")
