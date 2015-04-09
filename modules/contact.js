@@ -84,7 +84,7 @@ ContactManager.prototype = {
     // Might change in the future... who knows? ...
     let key = email;
     let cache = function _cache (name, contact) {
-      for (let email of Iterator(contact.emails)) {
+      for (let email of contact.emails) {
         email = (email+"").toLowerCase();
         self._cache[key] = contact;
       }
