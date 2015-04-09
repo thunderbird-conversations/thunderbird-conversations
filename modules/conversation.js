@@ -469,7 +469,7 @@ Conversation.prototype = {
         onQueryCompleted: function (aCollection) {
           Log.debug("Custom query found", aCollection.items.length, "items");
           if (aCollection.items.length) {
-            for (let [k, v] of Iterator(aCollection.items)) {
+            for (let [, v] of aCollection.items) {
               fusionCount++;
               v.getMessagesCollection(fusionListener);
             }
@@ -520,7 +520,7 @@ Conversation.prototype = {
         // We want at least all messages from the Gloda collection
         // will fire signal when done
         let messages = [messageFromGlodaIfOffline(self, glodaMsg, "GA")
-          for ([, glodaMsg] of Iterator(aItems))];
+          for (glodaMsg of aItems)];
         Log.debug("onItemsAdded",
           [msgDebugColor(x) + x.debug + " " + getMessageId(x)
             for (x of messages)].join(" "), Colors.default);
@@ -528,19 +528,19 @@ Conversation.prototype = {
         // The message ids we already hold.
         let messageIds = {};
         // Remove all messages which don't have a msgHdr anymore
-        for (let [, message] of Iterator(self.messages)) {
+        for (let message of self.messages) {
           if (!toMsgHdr(message)) {
             Log.debug("Removing a message with no msgHdr");
             self.removeMessage(message.message);
           }
         }
         [messageIds[getMessageId(m)] = !toMsgHdr(m) || msgHdrIsDraft(toMsgHdr(m))
-          for ([i, m] of Iterator(self.messages))];
+          for (m of self.messages)];
         // If we've got a new header for a message that we used to know as a
         // draft, that means either the draft has been updated (autosave), or
         // the draft was actually sent. In both cases, we want to remove the old
         // draft.
-        for (let [, x] of Iterator(messages)) {
+        for (let x of messages) {
           let newMessageId = getMessageId(x);
           if (messageIds[newMessageId]) {
             Log.debug("Removing a draft...");
@@ -581,8 +581,8 @@ Conversation.prototype = {
     // Now we forward individual updates to each messages (e.g. tags, starred)
     let byMessageId = {};
     [byMessageId[getMessageId(x)] = x.message
-      for ([, x] of Iterator(this.messages))];
-    for (let [, glodaMsg] of Iterator(aItems)) {
+      for (x of this.messages)];
+    for (let glodaMsg of aItems) {
       // If you see big failures coming from the lines below, don't worry: it's
       //  just that an old conversation hasn't been GC'd and still receives
       //  notifications from Gloda. However, its DOM nodes are long gone, so the
@@ -602,8 +602,8 @@ Conversation.prototype = {
     // with a given Message-Id.
     let byMessageId = {};
     [byMessageId[getMessageId(x)] = x.message
-      for ([, x] of Iterator(this.messages))];
-    for (let [, glodaMsg] of Iterator(aItems)) {
+      for (x of this.messages)];
+    for (let glodaMsg of aItems) {
       let msgId = glodaMsg.headerMessageID;
       if ((msgId in byMessageId) && byMessageId[msgId]._msgHdr.messageKey == glodaMsg.messageKey)
         this.removeMessage(byMessageId[msgId]);
@@ -660,17 +660,17 @@ Conversation.prototype = {
         //  initialization of this._intermediateResults).
         // will fire signal when done
         self.messages = [messageFromGlodaIfOffline(self, glodaMsg, "GF")
-          for ([, glodaMsg] of Iterator(aCollection.items))
+          for (glodaMsg of aCollection.items)
         ].concat([messageFromGlodaIfOffline(self, glodaMsg, "GM")
-          for ([, glodaMsg] of Iterator(self._intermediateResults))
+          for (glodaMsg of self._intermediateResults)
           if (glodaMsg.folderMessage) // be paranoid
         ]);
         // Here's the message IDs we know
         let messageIds = {};
         [messageIds[getMessageId(m)] = true
-          for ([i, m] of Iterator(self.messages))];
+          for (m of self.messages)];
         // But Gloda might also miss some message headers
-        for (let [, msgHdr] of Iterator(self._initialSet)) {
+        for (let msgHdr of self._initialSet) {
           // Although _filterOutDuplicates is called eventually, don't uselessly
           //  create messages. The typical use case is when the user has a
           //  conversation selected, a new message arrives in that conversation,
@@ -731,7 +731,7 @@ Conversation.prototype = {
     let selectRightMessage = function (aSimilarMessages) {
       let findForCriterion = function (aCriterion) {
         let bestChoice;
-        for (let [i, msg] of Iterator(aSimilarMessages)) {
+        for (let msg of aSimilarMessages) {
           if (!toMsgHdr(msg))
             continue;
           if (aCriterion(msg)) {
@@ -753,7 +753,7 @@ Conversation.prototype = {
     // Select right message will try to pick the message that has an
     //  existing msgHdr.
     messages = [selectRightMessage(group)
-      for ([i, group] of Iterator(messages))];
+      for (group of messages)];
     // But sometimes it just fails, and gloda remembers dead messages...
     messages = messages.filter(toMsgHdr);
     this.messages = messages;
@@ -765,7 +765,7 @@ Conversation.prototype = {
    */
   removeMessage: function _Conversation_removeMessage (aMessage) {
     // Move the quick reply to the previous message
-    let i = [x.message for ([, x] of Iterator(this.messages))].indexOf(aMessage);
+    let i = [x.message for (x of this.messages)].indexOf(aMessage);
     Log.debug("Removing message", i);
     if (i == this.messages.length - 1 && this.messages.length > 1) {
       let $ = this._htmlPane.$;
@@ -799,7 +799,7 @@ Conversation.prototype = {
       // All your messages are belong to us. This is especially important so
       //  that contacts query the right _contactManager through their parent
       //  Message.
-      [(x.message._conversation = this) for ([, x] of Iterator(aMessages))];
+      [(x.message._conversation = this) for (x of aMessages)];
       this.messages = this.messages.concat(aMessages);
 
       let $ = this._htmlPane.$;
@@ -821,7 +821,7 @@ Conversation.prototype = {
         this.messages[i].message.initialPosition = i;
       }
       let tmplData = [m.message.toTmplData(false)
-        for ([_i, m] of Iterator(aMessages))];
+        for (m of aMessages)];
 
       let w = this._htmlPane;
       w.markReadInView.disable();
@@ -870,12 +870,13 @@ Conversation.prototype = {
     // Update the folder tags, maybe we were called because we changed folders
     this.viewWrapper = new ViewWrapper(this);
     [m.message.inView = this.viewWrapper.isInView(m)
-      for ([, m] of Iterator(this.messages))];
+      for (m of this.messages)];
   },
 
   // Once we're confident our set of messages is the right one, we actually
   // start outputting them inside the DOM element we were given.
   _outputMessages: function _Conversation_outputMessages () {
+    let self = this;
     // XXX I think this test is still valid because of the thread summary
     // stabilization interval (we might have changed selection and still be
     // waiting to fire the new conversation).
@@ -916,7 +917,7 @@ Conversation.prototype = {
       //  because every test trying to determine whether we can recycle will end
       //  up running over the buggy set of messages.
       let currentMsgUris = [msgHdrGetUri(toMsgHdr(x))
-        for ([, x] of Iterator(currentMsgSet))
+        for (x of currentMsgSet)
         if (toMsgHdr(x))];
       // Is a1 a prefix of a2? (I wish JS had pattern matching!)
       let isPrefix = function _isPrefix (a1, a2) {
@@ -934,7 +935,7 @@ Conversation.prototype = {
         }
       };
       let myMsgUris = [msgHdrGetUri(toMsgHdr(x))
-        for ([, x] of Iterator(this.messages))
+        for (x of this.messages)
         if (toMsgHdr(x))];
       let [shouldRecycle, _whichMessageUris] = isPrefix(currentMsgUris, myMsgUris);
       // Ok, some explanation needed. How can this possibly happen?
@@ -974,7 +975,7 @@ Conversation.prototype = {
         // this._window.Conversations.currentConversation.messages is the OLD
         // set of messages
         // - whichMessages is the set of messages we're about to append
-        for (let [, x] of Iterator(currentMsgSet)) {
+        for (let x of currentMsgSet) {
           if (!toMsgHdr(x)) {
             Log.debug("Discarding null msgHdr");
             // Not much we can do here... since that message hasn't been taken
@@ -1065,8 +1066,9 @@ Conversation.prototype = {
       let oldMsg = i > 0 ? this.messages[i-1].message : null;
       msg.updateTmplData(oldMsg);
     }
-    let tmplData = [m.message.toTmplData(i == this.messages.length - 1)
-      for ([i, m] of Iterator(this.messages))];
+    let tmplData = this.messages.map(function(m, i) {
+      return m.message.toTmplData(i == self.messages.length - 1);
+    });
     // We must do this if we are to ever release the previous Conversation
     //  object. See comments in stub.html for the nice details.
     this._htmlPane.cleanup();
@@ -1086,11 +1088,11 @@ Conversation.prototype = {
     // Notify each message that it's been added to the DOM and that it can do
     // event registration and stuff...
     let domNodes = this._domNode.getElementsByClassName(Message.prototype.cssClass);
-    for (let [i, m] of Iterator(this.messages)) {
+    this.messages.forEach(function(m, i) {
       m.message.onAddedToDom(domNodes[i]);
       // Determine which messages should get a nice folder tag
-      m.message.inView = this.viewWrapper.isInView(m);
-    }
+      m.message.inView = self.viewWrapper.isInView(m);
+    });
 
     // Set the subject properly
     let subjectNode = this._domNode.ownerDocument.getElementsByClassName("subject")[0];
@@ -1157,12 +1159,12 @@ Conversation.prototype = {
       self._htmlPane.scrollNodeIntoView(focusedNode);
       self.messages[focusThis].message.onSelected();
 
-      for (let [i, node] of Iterator(messageNodes)) {
+      Array.prototype.forEach.call(messageNodes, function(node, i) {
         // XXX This is bug 611957
-        if (i >= messageNodes.length)
-          break;
-        node.setAttribute("tabindex", i+2);
-      }
+        if (i < messageNodes.length) {
+          node.setAttribute("tabindex", i+2);
+	}
+      });
       focusedNode.setAttribute("tabindex", "1");
 
       // It doesn't matter if it's an update after all, we will just set
@@ -1180,28 +1182,28 @@ Conversation.prototype = {
       }
     }, this.messages.length);
 
-    for (let [i, action] of Iterator(expandThese)) {
+    expandThese.forEach(function(action, i) {
       // If we were instructed to start operating only after the i-1 messages,
       // don't do anything.
       if (i < aStart) {
-        this._signal();
+        self._signal();
       } else {
         switch (action) {
           case kActionExpand:
-            this.messages[i].message.expand();
+            self.messages[i].message.expand();
             break;
           case kActionCollapse:
-            this.messages[i].message.collapse();
-            this._signal();
+            self.messages[i].message.collapse();
+            self._signal();
             break;
           case kActionDoNothing:
-            this._signal();
+            self._signal();
             break;
           default:
             Log.error("Unknown action");
         }
       }
-    }
+    });
   },
 
   // This is the starting point, this is where the Monkey-Patched threadSummary
@@ -1214,7 +1216,7 @@ Conversation.prototype = {
   },
 
   get msgHdrs () {
-    return [toMsgHdr(x) for ([, x] of Iterator(this.messages)) if (toMsgHdr(x))];
+    return [toMsgHdr(x) for (x of this.messages) if (toMsgHdr(x))];
   },
 
   // Just an efficient way to mark a whole conversation as read
@@ -1238,7 +1240,7 @@ Conversation.prototype = {
       }
     }
     let messagesHtml = new Array(this.messages.length);
-    for (let [i, { message: message }] of Iterator(this.messages)) {
+    for (let [i, { message: message }] of this.messages) {
       let j = i;
       count++;
       message.exportAsHtml(function (aHtml) {
