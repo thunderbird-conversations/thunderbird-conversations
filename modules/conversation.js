@@ -154,6 +154,7 @@ let OracleMixIn = {
   // Go through all the messages and for each one of them, give the expected
   //  action
   _tellMeWhoToExpand: function _Conversation_tellMeWhoToExpand (aNeedsFocus) {
+    let self = this;
     let actions = [];
     let collapse = function _collapse (message) {
       if (message.collapsed)
@@ -173,33 +174,35 @@ let OracleMixIn = {
         //  message if all messages are read), and we expand all unread messages
         //  + the last one (which will probably be unread as well).
         if (this.scrollMode == Prefs.kScrollUnreadOrLast) {
-          for (let [i, { message }] of Iterator(this.messages)) {
-            if (!message.read || i == this.messages.length - 1)
+	  this.messages.forEach(function ( { message }, i) {
+            if (!message.read || i == self.messages.length - 1)
               expand(message);
             else
               collapse(message);
-          }
+          });
         // In this mode, we scroll to the selected message, and we only expand
         //  the selected message.
         } else if (this.scrollMode == Prefs.kScrollSelected) {
-          for (let [i, { message }] of Iterator(this.messages)) {
+	  this.messages.forEach(function( { message }, i) {
             if (i == aNeedsFocus)
               expand(message);
             else
               collapse(message);
-          }
+          });
         } else {
           Log.assert(false, "Unknown value for pref scroll_who");
         }
 
         break;
       case Prefs.kExpandAll:
-        for (let [, { message }] of Iterator(this.messages))
+	this.messages.forEach(function( { message }) {
           expand(message);
+	});
         break;
       case Prefs.kExpandNone:
-        for (let [, { message }] of Iterator(this.messages))
+        this.messages.forEach(function( { message }) {
           collapse(message);
+	});
         break;
       default:
         Log.assert(false, "Unknown value for pref expand_who");
@@ -289,7 +292,7 @@ function ViewWrapper(aConversation) {
   //  compare them by messageKey (not reliable), but URLs should be enough.
   this.byUri = {};
   [this.byUri[msgHdrGetUri(x)] = true
-    for ([, x] of Iterator(this.mainWindow.gFolderDisplay.selectedMessages))];
+    for (x of this.mainWindow.gFolderDisplay.selectedMessages)];
 }
 
 ViewWrapper.prototype = {
@@ -383,7 +386,9 @@ Conversation.prototype = {
   // XXX this logic is weird. Shouldn't we just compare a list of URLs?
   _selectionChanged: function _Conversation_selectionChanged () {
     let gFolderDisplay = topMail3Pane(this).gFolderDisplay;
-    let messageIds = [x.messageId for ([, x] of Iterator(this._initialSet))];
+    let messageIds = this._initialSet.map(function(x) {
+      return x.messageId;
+    });
     return
       !gFolderDisplay.selectedMessage ||
       !messageIds.some(function (x) x == gFolderDisplay.selectedMessage.messageId);
