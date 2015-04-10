@@ -65,6 +65,7 @@ function PrefManager() {
   this.hide_quote_length = prefsService.getIntPref("hide_quote_length");
   this.hide_sigs = prefsService.getBoolPref("hide_sigs");
   this.compose_in_tab = prefsService.getBoolPref("compose_in_tab");
+  this.message_open_in_conversation = prefsService.getBoolPref("message_open_in_conversation");
   // This is a hashmap
   this.monospaced_senders = {};
   for (let s of this.split(prefsService.getCharPref("monospaced_senders")))

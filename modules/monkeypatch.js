@@ -399,29 +399,31 @@ MonkeyPatch.prototype = {
       return kStubUrl + queryString;
     };
 
-    // Below is the code that intercepts the double-click-on-a-message event,
-    //  and reroutes the control flow to our conversation reader.
-    let oldThreadPaneDoubleClick = window.ThreadPaneDoubleClick;
-    window.ThreadPaneDoubleClick = function () {
-      if (!Prefs.enabled)
-        return oldThreadPaneDoubleClick();
+    if (Prefs.message_open_in_conversation) {
+      // Below is the code that intercepts the double-click-on-a-message event,
+      //  and reroutes the control flow to our conversation reader.
+      let oldThreadPaneDoubleClick = window.ThreadPaneDoubleClick;
+      window.ThreadPaneDoubleClick = function () {
+        if (!Prefs.enabled)
+          return oldThreadPaneDoubleClick();
 
-      let tabmail = window.document.getElementById("tabmail");
-      // ThreadPaneDoubleClick calls OnMsgOpenSelectedMessages. We don't want to
-      // replace the whole ThreadPaneDoubleClick function, just the line that
-      // calls OnMsgOpenSelectedMessages in that function. So we do that weird
-      // thing here.
-      let oldMsgOpenSelectedMessages = window.MsgOpenSelectedMessages;
-      let msgHdrs = window.gFolderDisplay.selectedMessages;
-      if (!msgHdrs.some(msgHdrIsRss) && !msgHdrs.some(msgHdrIsNntp)) {
-        window.MsgOpenSelectedMessages = function () {
-          openConversationInTabOrWindow(mkConvUrl(msgHdrs));
-        };
-      }
-      oldThreadPaneDoubleClick();
-      window.MsgOpenSelectedMessages = oldMsgOpenSelectedMessages;
-    };
-    this.pushUndo(function() window.ThreadPaneDoubleClick = oldThreadPaneDoubleClick);
+        let tabmail = window.document.getElementById("tabmail");
+        // ThreadPaneDoubleClick calls OnMsgOpenSelectedMessages. We don't want to
+        // replace the whole ThreadPaneDoubleClick function, just the line that
+        // calls OnMsgOpenSelectedMessages in that function. So we do that weird
+        // thing here.
+        let oldMsgOpenSelectedMessages = window.MsgOpenSelectedMessages;
+        let msgHdrs = window.gFolderDisplay.selectedMessages;
+        if (!msgHdrs.some(msgHdrIsRss) && !msgHdrs.some(msgHdrIsNntp)) {
+          window.MsgOpenSelectedMessages = function () {
+            openConversationInTabOrWindow(mkConvUrl(msgHdrs));
+          };
+        }
+        oldThreadPaneDoubleClick();
+        window.MsgOpenSelectedMessages = oldMsgOpenSelectedMessages;
+      };
+      this.pushUndo(function() window.ThreadPaneDoubleClick = oldThreadPaneDoubleClick);
+    }
 
     // Same thing for middle-click
     let oldTreeOnMouseDown = window.TreeOnMouseDown;

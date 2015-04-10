@@ -23,6 +23,8 @@
 <!ENTITY option.tweak_chrome "Scale down the font size for the conversation chrome (recommended, requires restart).">
 <!ENTITY title.add_embeds "Add embeds">
 <!ENTITY option.add_embeds "Detect links to various services (e.g. YouTube) in emails, and view them inline.">
+<!ENTITY title.message_open_in_conversation "Double click/enter on message opens in conversation view">
+<!ENTITY desc.message_open_in_conversation "If unselected, clicking on a message will open the message in a new window in traditional view, as several windowing features are currently not available (requires restart)">
 <!ENTITY title.debugging "Debugging">
 <!ENTITY desc.debugging "Enable debug output in the system console and the error console. This will generate a lot of messages.">
 <!ENTITY title.operate_on_conversations "Toolbar buttons">
