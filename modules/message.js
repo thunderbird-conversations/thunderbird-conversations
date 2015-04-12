@@ -552,25 +552,25 @@ Message.prototype = {
     data = this.toTmplDataForAttachments(data);
 
     // 3) Generate extra information: snippet, date, uri
-    data.snippet = escapeHtml(this._snippet);
-    data.date = escapeHtml(this._date);
+    data.snippet = sanitize(this._snippet);
+    data.date = sanitize(this._date);
     data.fullDate = Prefs["no_friendly_date"]
       ? ""
       : dateAsInMessageList(new Date(this._msgHdr.date/1000))
     ;
-    data.uri = escapeHtml(msgHdrGetUri(this._msgHdr));
+    data.uri = sanitize(msgHdrGetUri(this._msgHdr));
 
     // 4) Custom tag telling the user if the message is not in the current view
     let [name, fullName] = folderName(this._msgHdr.folder);
-    data.folderName = escapeHtml(fullName);
-    data.shortFolderName = escapeHtml(name);
+    data.folderName = sanitize(fullName);
+    data.shortFolderName = sanitize(name);
 
     // 5) Custom tag telling the user if this is a draft
     if (msgHdrIsDraft(this._msgHdr))
       extraClasses.push("draft");
 
     // 6) For the "show remote content" thing
-    data.realFrom = escapeHtml(this._realFrom.email || this._from.email);
+    data.realFrom = sanitize(this._realFrom.email || this._from.email);
 
     // 7) Extra classes we want to add to the message
     if (this.isEncrypted)
@@ -630,9 +630,9 @@ Message.prototype = {
       // We've got the right data, push it!
       data.attachments.push({
         formattedSize: formattedSize,
-        thumb: escapeHtml(thumb),
+        thumb: sanitize(thumb),
         imgClass: imgClass,
-        name: escapeHtml(att.name),
+        name: sanitize(att.name),
         anchor: "msg"+this.initialPosition+"att"+i,
         /* Only advertise the preview for PDFs (images have the gallery view). */
         canPreview: isPdf,
@@ -1209,7 +1209,7 @@ Message.prototype = {
         };
         data.extraLines.push({
           key: strings.get("header-folder"),
-          value: escapeHtml(folderName(this._msgHdr.folder)[1]),
+          value: sanitize(folderName(this._msgHdr.folder)[1]),
         });
         let interestingHeaders =
           ["mailed-by", "x-mailer", "mailer", "date", "user-agent"];
@@ -1221,14 +1221,14 @@ Message.prototype = {
             } catch (e) {}
             data.extraLines.push({
               key: key,
-              value: escapeHtml(aHeaders.get(h)),
+              value: sanitize(aHeaders.get(h)),
             });
           }
         }
         let subject = aHeaders.get("subject");
         data.extraLines.push({
           key: strings.get("header-subject"),
-          value: subject ? escapeHtml(GlodaUtils.deMime(subject)) : "",
+          value: subject ? sanitize(GlodaUtils.deMime(subject)) : "",
         });
         let self = this;
         let buildContactObjects = function (nameEmails)
