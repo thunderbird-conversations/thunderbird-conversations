@@ -70,7 +70,7 @@ function isBody(aNode) {
     return true;
   } else {
     let count = 0;
-    for (let [, node] of Iterator(aNode.parentNode.childNodes)) {
+    for (let node of aNode.parentNode.childNodes) {
       //dump(node+" "+node.nodeType+"\n");
       switch (node.nodeType) {
         case node.TEXT_NODE:
@@ -135,7 +135,7 @@ function convertMiscQuotingToBlockquote(aDoc) {
 function convertOutlookQuotingToBlockquote(aWin, aDoc) {
   /* Outlook uses a special thing for that */
   trySel(aDoc, ".OutlookMessageHeader");
-  for (let [, div] of Iterator(aDoc.getElementsByTagName("div"))) {
+  for (let div of aDoc.getElementsByTagName("div")) {
     let style = aWin.getComputedStyle(div, null);
     if (style.borderTopColor == "rgb(181, 196, 223)"
         && style.borderTopStyle == "solid"
@@ -162,7 +162,7 @@ function citeLevel (line) {
 function convertForwardedToBlockquote(aDoc) {
   let re = /^\s*(-{5,15})(?:\s*)(?:[^ \f\n\r\t\v\u00A0\u2028\u2029-]+\s+)*[^ \f\n\r\t\v\u00A0\u2028\u2029-]+(\s*)\1\s*/mg;
   let walk = function (aNode) {
-    for (let [, child] of Iterator(aNode.childNodes)) {
+    for (let child of aNode.childNodes) {
       let txt = child.textContent;
       let m = txt.match(re);
       if (child.nodeType == child.TEXT_NODE
