@@ -386,9 +386,7 @@ Conversation.prototype = {
   // XXX this logic is weird. Shouldn't we just compare a list of URLs?
   _selectionChanged: function _Conversation_selectionChanged () {
     let gFolderDisplay = topMail3Pane(this).gFolderDisplay;
-    let messageIds = this._initialSet.map(function(x) {
-      return x.messageId;
-    });
+    let messageIds = this._initialSet.map(x => x.messageId);
     return
       !gFolderDisplay.selectedMessage ||
       !messageIds.some(function (x) x == gFolderDisplay.selectedMessage.messageId);
@@ -1160,7 +1158,6 @@ Conversation.prototype = {
       self.messages[focusThis].message.onSelected();
 
       Array.prototype.forEach.call(messageNodes, function(node, i) {
-        // XXX This is bug 611957
         if (i < messageNodes.length) {
           node.setAttribute("tabindex", i+2);
 	}
@@ -1240,14 +1237,14 @@ Conversation.prototype = {
       }
     }
     let messagesHtml = new Array(this.messages.length);
-    for (let [i, { message: message }] of this.messages) {
+    this.messages.forEach(function ({ message: message }, i) {
       let j = i;
       count++;
       message.exportAsHtml(function (aHtml) {
         messagesHtml[j] = aHtml;
         top();
       });
-    }
+    });
     top();
   },
 }

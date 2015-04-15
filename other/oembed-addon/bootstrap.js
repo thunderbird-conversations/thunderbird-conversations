@@ -63,10 +63,10 @@ let hook = {
     let links = iframeDoc.getElementsByTagName("a");
     // Don't detect links in quotations.
     [x.skip = true
-      for ([, x] of Iterator(iframeDoc.querySelectorAll("blockquote a")))];
+      for (x of iframeDoc.querySelectorAll("blockquote a"))];
     let seen = {};
     // Examine all links in the message.
-    for (let [, a] of Iterator(links)) {
+    for (let a of links) {
       if (a.skip || (a.href in seen))
         continue;
       if (this.tryOEmbed(a, aDomNode))

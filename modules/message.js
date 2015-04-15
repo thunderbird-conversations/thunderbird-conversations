@@ -1969,29 +1969,13 @@ let PostStreamingFixesMixIn = {
     // Launch various crappy pieces of code^W^W^W^W heuristics to
     //  convert most common quoting styles to real blockquotes. Spoiler:
     //  most of them suck.
-    let self = this;
     let iframeDoc = iframe.contentDocument;
     try {
-      let t = Date.now();
-      let _log = function () {
-        let t1 = Date.now();
-        let delta = t1 - t;
-        let args = Array.prototype.map(function(x) {
-          return x;
-        });
-        Log.debug.apply(Log, args.concat([delta+"ms"]));
-        t = Date.now();
-      };
       convertOutlookQuotingToBlockquote(iframe.contentWindow, iframeDoc);
-      _log("convertOutlookQuotingToBlockquote");
       convertHotmailQuotingToBlockquote1(iframeDoc);
-      _log("convertHotmailQuotingToBlockquote1");
       convertForwardedToBlockquote(iframeDoc);
-      _log("convertForwardedToBlockquote");
       convertMiscQuotingToBlockquote(iframeDoc);
-      _log("convertMiscQuotingToBlockquote");
       fusionBlockquotes(iframeDoc);
-      _log("fusionBlockquotes");
     } catch (e) {
       Log.warn(e);
       dumpCallStack(e);
