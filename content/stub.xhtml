@@ -1,7 +1,8 @@
 <!DOCTYPE html [
   <!ENTITY % pageDTD SYSTEM "chrome://conversations/locale/pages.dtd"> %pageDTD;
 ]>
-<html xmlns="http://www.w3.org/1999/xhtml">
+<html xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
 <head>
   <title>Conversation Reader</title>
   <link rel="stylesheet" type="text/css"
@@ -20,9 +21,7 @@
   <script type="text/javascript"
     src="chrome://messenger/content/jquery.js"></script>
   <script type="text/javascript"
-    src="chrome://conversations/content/js/jquery.text-overflow.js"></script>
-  <script type="text/javascript"
-    src="chrome://conversations/content/js/jquery.tmpl.js"></script>
+    src="chrome://conversations/content/js/handlebars-v3.0.0.js"></script>
   <script type="text/javascript"
     src="chrome://conversations/content/js/jquery.tokeninput.js"></script>
   <!-- The two scripts below share the same scope, they were split for the sake
@@ -166,7 +165,7 @@
         self.setTooltipEventHandlers(aMsg, $contact, $tooltip, false);
       });
 
-      let $recipientContacts = $aMsgNode.find('.to .contactName');
+      let $contactLabels = $aMsgNode.find('.to .contactName');
 
       // enable tooltip for recipient contacts
       $aMsgNode.find('.recipient-tooltips .tooltip').each(function (index) {
@@ -174,7 +173,9 @@
         // hovered/clicked, starts the interaction with the tooltip
         let $tooltip = $(this);
 
-        let $contact = $recipientContacts.eq(index);
+        let $contact = index > 0
+          ? $contactLabels.eq(index-1)
+          : $aMsgNode.find('.author .contactName');
 
         self.setTooltipEventHandlers(aMsg, $contact, $tooltip, true);
       });
@@ -195,7 +196,7 @@
           if (isRecipient) {
             // move tooltip close to its respective recipient contact
             let contactWrapperPosition = $contact.parents('.tooltipWrapper').position();
-            let $tooltipWrapper = $tooltip.parents('.recipientTooltipWrapper');
+            let $tooltipWrapper = $tooltip.parents('.contactTooltipWrapper');
             $tooltipWrapper.css(contactWrapperPosition);
           }
 
@@ -269,9 +270,6 @@
       }
     }
 
-    function capitalize(str)
-      str.charAt(0).toUpperCase() + str.substring(1);
-
     // Below are event listeners for various actions. There is some logic
     //  involved, and they may talk to other parts of the code.
 
@@ -289,6 +287,60 @@
 
     let Log = setupLogging("Conversations.Stub");
     let isInTab = false;
+
+    // Handlebars
+    (function () {
+      let tmpl0 = function(id, data) {
+        try {
+          // Per compatibility with the old spec of jquery-tmpl.
+          if (!$.isArray(data))
+            data = [data];
+          var t = Handlebars.compile(document.querySelector(id).innerHTML);
+          var html = "";
+          for (let i = 0; i < data.length; ++i)
+            html += t(data[i]).trim();
+          return html;
+        } catch (e) {
+          Log.error("Couldn't compile template", id, "because of:", e);
+          dumpCallStack(e);
+        }
+      };
+      window.tmpl = function (id, data) $(tmpl0(id, data));
+
+      let strings = new StringBundle("chrome://conversations/locale/template.properties");
+      let str0 = function (x, ...args) {
+        try {
+          var s = strings.get(x);
+          // One extra argument added by Handlebars
+          for (let i = 0; i < args.length - 1; ++i)
+            s = s.replace("#"+(i+1), args[i]);
+          return s;
+        } catch (e) {
+          Log.error("No such string", x);
+          Log.debug(e);
+          dumpCallStack(e);
+        }
+      };
+      let str = function (x, ...args) {
+        return new Handlebars.SafeString(str0(x, ...args));
+      };
+      let strC = function (x, ...args) {
+        var s = str0(x, ...args);
+        return new Handlebars.SafeString(s.charAt(0).toUpperCase() + s.substring(1));
+      };
+      let tmpl = function (short, data) {
+        var id = "#"+short+"Template";
+        return new Handlebars.SafeString(tmpl0(id, data));
+      };
+      let trim = function (s) {
+        return String.trim(s || "");
+      };
+
+      Handlebars.registerHelper("str", str);
+      Handlebars.registerHelper("strC", strC);
+      Handlebars.registerHelper("tmpl", tmpl);
+      Handlebars.registerHelper("trim", trim);
+    })();
 
     $(document).ready(function () {
       let stylesheet = [x
@@ -547,7 +599,7 @@
       document.querySelector(".bottom-links").style.display = "none";
       document.querySelector("#messageList").style.marginTop = "0";
       document.querySelector("#messageList").classList.add("quickCompose");
-      $("#quickReplyTemplate").tmpl().appendTo($("#messageList"));
+      tmpl("#quickReplyTemplate").appendTo($("#messageList"));
       $(".replyAll, #save, .replyMethod").remove();
 
       // TODO figure out why this timeout is needed
@@ -588,7 +640,7 @@
       // Push a new contact item in the list
       let pushNewPopularContacts = function (n) {
         let items = data.splice(0, n);
-        let nodes = $("#popularContactTemplate").tmpl(items);
+        let nodes = tmpl("#popularContactTemplate", items);
 
         items.forEach(function(data2, i) {
           let data = data2;
@@ -679,18 +731,6 @@
       }
     }
 
-    // I'll never understand why JS doesn't have lexical scoping...
-    let tStrings = new StringBundle("chrome://conversations/locale/template.properties");
-    let str = function (x) {
-      try {
-        return tStrings.get(x);
-      } catch (e) {
-        Log.error("No such string", x);
-        Log.debug(e);
-        dumpCallStack(e);
-      }
-    };
-
     // Mark a message as read if a user scrolls past top and bottom of an
     // unread message.
     function markReadInView(event) {
@@ -768,106 +808,106 @@
     <menuitem label="&stub.context.detach;" onclick="getCurrentAttInfo().detach(true);"></menuitem>
     <menuitem label="&stub.context.delete;" onclick="getCurrentAttInfo().detach(false);"></menuitem>
   </menu>
-  <script id="detailsTemplate" type="text/x-jquery-tmpl"><![CDATA[
-      {{if dataContactsFrom.length}}
+  <script id="detailsTemplate" type="text/x-handlebars-template"><![CDATA[
+      {{#if dataContactsFrom.length}}
         <div class="detailsLine fromLine">
-          <u>${str("fieldFrom")}</u>
-          {{tmpl(dataContactsFrom) "#contactTemplate"}}
+          <u>{{str "fieldFrom"}}</u>
+          {{tmpl "contact" dataContactsFrom}}
         </div>
       {{/if}}
-      {{if dataContactsTo.length}}
+      {{#if dataContactsTo.length}}
         <div class="detailsLine toLine">
-          <u>${str("fieldTo")}</u>
-          {{tmpl(dataContactsTo) "#contactTemplate"}}
+          <u>{{str "fieldTo"}}</u>
+          {{tmpl "contact" dataContactsTo}}
         </div>
       {{/if}}
-      {{if dataContactsCc.length}}
+      {{#if dataContactsCc.length}}
         <div class="detailsLine ccLine">
-          <u>${str("fieldCc")}</u>
-          {{tmpl(dataContactsCc) "#contactTemplate"}}
+          <u>{{str "fieldCc"}}</u>
+          {{tmpl "contact" dataContactsCc}}
         </div>
       {{/if}}
-      {{if dataContactsBcc.length}}
+      {{#if dataContactsBcc.length}}
         <div class="detailsLine bccLine">
-          <u>${str("fieldBcc")}</u>
-          {{tmpl(dataContactsBcc) "#contactTemplate"}}
+          <u>{{str "fieldBcc"}}</u>
+          {{tmpl "contact" dataContactsBcc}}
         </div>
       {{/if}}
-      {{each(i, line) extraLines}}
+      {{#each extraLines}}
         <div class="detailsLine">
-          <u>${line.key}:</u>
-          ${line.value}
+          <u>{{key}}:</u>
+          {{value}}
         </div>
       {{/each}}
     ]]>
   </script>
-  <script id="messageTemplate" type="text/x-jquery-tmpl"><![CDATA[
-    <li class="message collapsed ${extraClasses}">
+  <script id="messageTemplate" type="text/x-handlebars-template"><![CDATA[
+    <li class="message collapsed {{extraClasses}}">
       <div class="messageHeader hbox">
         <div class="star"></div>
         <div class="shrink-box">
-          <span class="author">{{tmpl(dataContactFrom) "#contactTemplate"}}</span>
-          <span class="to hide-with-details"> ${str("to")} {{tmpl(dataContactsTo) "#recipientContactTemplate"}}</span>
-          <span class="recipient-tooltips">{{tmpl(dataContactsTo) "#recipientTooltipTemplate"}}</span>
-          <span class="bzTo"> ${str("at")} ${bugzillaUrl}</span>
+          <span class="author">{{tmpl "contactLabel" dataContactFrom}}</span>
+          <span class="to hide-with-details"> {{str "to"}} {{tmpl "contactLabel" dataContactsTo}}</span>
+          <span class="recipient-tooltips">{{tmpl "contactTooltip" dataContactFrom}}{{tmpl "contactTooltip" dataContactsTo}}</span>
+          <span class="bzTo"> {{str "at"}} {{bugzillaUrl}}</span>
           <span class="snippet"><ul class="tags regular-tags"></ul><ul
               class="tags special-tags"
             ><li
               class="tag-signed"
-              title="${str('messageSignedLong')}"
+              title="{{str 'messageSignedLong'}}"
               ><img src="chrome://conversations/content/i/sign.png" />
-              ${str("messageSigned")}</li
+              {{str "messageSigned"}}</li
             ><li
               class="tag-decrypted"
-              title="${str('messageDecryptedLong')}"
+              title="{{str 'messageDecryptedLong'}}"
               ><img src="chrome://conversations/content/i/enc.png" />
-              ${str("messageDecrypted")}</li
+              {{str "messageDecrypted"}}</li
             ><li
               class="tag-dkim-signed"
               ><img src="chrome://conversations/content/i/sign.png" />
-              ${str("messageDKIMSigned")}</li
+              {{str "messageDKIMSigned"}}</li
             ><li
               class="in-folder"
-              title="${str('jumpToFolder')}"
-              >${str("inFolder").replace("#1", shortFolderName)}</li
-            ></ul>${snippet}</span>
+              title="{{str 'jumpToFolder'}}"
+              >{{str "inFolder" shortFolderName}}</li
+            ></ul>{{snippet}}</span>
         </div>
         <div class="options">
           <span class="date">
             <span class="attachmentIcon">
-              {{tmpl "#attachmentIconTemplate"}}
+              {{tmpl "attachmentIcon" this}}
             </span>
-            <span title="${fullDate}">${date}</span>
+            <span title="{{fullDate}}">{{date}}</span>
           </span>
           <span class="details hide-with-details">
-            | <a href="javascript:" class="link">${str("details")}</a>
+            | <a href="javascript:" class="link">{{str "details"}}</a>
           </span>
           <span class="hide-details show-with-details">
-            | <a href="javascript:" class="link">${str("hideDetails")}</a>
+            | <a href="javascript:" class="link">{{str "hideDetails"}}</a>
           </span>
           <span class="replyLinkWrapper">
             | <a href="javascript:" class="replyMainActionLink"></a>
           </span>
           <span class="editDraftLinkWrapper">
-            | <a href="javascript:" class="edit-draft">${str("editDraft2")}</a>
+            | <a href="javascript:" class="edit-draft">{{str "editDraft2"}}</a>
           </span>
           <span class="dropDown"> |
-            <a href="javascript:" onclick="displayMenu(event);" class="top-right-more">${str("more")} <span class="downwardArrow">&#x25bc;</span></a>
+            <a href="javascript:" onclick="displayMenu(event);" class="top-right-more">{{str "more"}} <span class="downwardArrow">&#x25bc;</span></a>
             <div class="tooltip tooltip-menu menu">
               <ul>
-                <li class="action-reply">${str("reply")}
+                <li class="action-reply">{{str "reply"}}
                   <div class="arrow"></div>
                   <div class="arrow inside"></div>
                 </li>
-                <li class="action-replyAll">${str("replyAll")}</li>
-                <li class="action-replyList">${str("replyList")}</li>
-                <li class="action-editNew">${str("editNew")}</li>
-                <li class="action-forward" style="border-bottom: 1px solid #aaa">${str("forward")}</li>
-                <li class="action-archive">${str("archive")}</li>
-                <li class="action-delete">${str("delete")}</li>
-                <li class="action-classic">${str("viewClassic")}</li>
-                <li class="action-source">${str("viewSource")}</li>
-                <li class="action-print" style="display: none;">${str("print")}</li>
+                <li class="action-replyAll">{{str "replyAll"}}</li>
+                <li class="action-replyList">{{str "replyList"}}</li>
+                <li class="action-editNew">{{str "editNew"}}</li>
+                <li class="action-forward" style="border-bottom: 1px solid #aaa">{{str "forward"}}</li>
+                <li class="action-archive">{{str "archive"}}</li>
+                <li class="action-delete">{{str "delete"}}</li>
+                <li class="action-classic">{{str "viewClassic"}}</li>
+                <li class="action-source">{{str "viewSource"}}</li>
+                <li class="action-print" style="display: none;">{{str "print"}}</li>
               </ul>
             </div>
           </span>
@@ -876,7 +916,7 @@
       <div class="detailsPlaceholder show-with-details">
       </div>
       <div class="detailsLine">
-        {{tmpl "#attachmentDetailsTemplate"}}
+        {{tmpl "attachmentDetails" this}}
       </div>
       <div class="lightningImipBar notificationBar" style="display: none">
         <img class="lightningImipImage" src="chrome://calendar/skin/cal-icon32.png"/>
@@ -1014,32 +1054,32 @@
       </div>
       <div class="phishingBar notificationBar" style="display: none">
         <img src="chrome://messenger/skin/icons/phishing.png" style="vertical-align: middle;" />
-        ${str("scam")}
+        {{str "scam"}}
         <span class="ignore-warning">
-          <a href="javascript:">${str("ignoreWarning")}</a>
+          <a href="javascript:">{{str "ignoreWarning"}}</a>
         </span>
       </div>
       <div class="remoteContent notificationBar" style="display: none">
-        ${str("remoteContentBlocked")}
+        {{str "remoteContentBlocked"}}
         <span class="show-remote-content">
-          <a href="javascript:">${str("showRemote")}</a> -
+          <a href="javascript:">{{str "showRemote"}}</a> -
         </span>
         <span class="always-display">
-          <a href="javascript:">${str("alwaysShowRemote").replace("#1", realFrom)}</a>
+          <a href="javascript:">{{str "alwaysShowRemote" realFrom}}</a>
         </span>
       </div>
-      <div class="junkBar notificationBar" {{if !canUnJunk}}style="display: none"{{/if}}>
+      <div class="junkBar notificationBar" {{#unless canUnJunk}}style="display: none"{{/unless}}>
         <img src="chrome://messenger/skin/icons/junk.png" style="vertical-align: middle;" />
-        ${str("junk")}
+        {{str "junk"}}
         <span class="notJunk">
-          <a href="javascript:">${str("notJunk")}</a>
+          <a href="javascript:">{{str "notJunk"}}</a>
         </span>
       </div>
-      <div class="outboxBar notificationBar" {{if !isOutbox}}style="display: none"{{/if}}>
+      <div class="outboxBar notificationBar" {{#unless isOutbox}}style="display: none"{{/unless}}>
         <img src="chrome://conversations/skin/icons/outbox.png" style="vertical-align: middle;" />
-        ${str("isOutbox")}
+        {{str "isOutbox"}}
         <span class="sendUnsent">
-          <a href="javascript:">${str("sendUnsent")}</a>
+          <a href="javascript:">{{str "sendUnsent"}}</a>
         </span>
       </div>
 
@@ -1048,44 +1088,44 @@
         <ul class="tags special-tags"
           ><li
             class="keep-tag tag-signed"
-            title="${str('messageSignedLong')}"
+            title="{{str 'messageSignedLong'}}"
             ><img src="chrome://conversations/content/i/sign.png" />
-            ${str("messageSigned")}</li
+            {{str "messageSigned"}}</li
           ><li
             class="keep-tag tag-decrypted"
-            title="${str('messageDecryptedLong')}"
+            title="{{str 'messageDecryptedLong'}}"
             ><img src="chrome://conversations/content/i/enc.png" />
-            ${str("messageDecrypted")}</li
+            {{str "messageDecrypted"}}</li
           ><li
             class="keep-tag tag-dkim-signed"
             ><img src="chrome://conversations/content/i/sign.png" />
-            ${str("messageDKIMSigned")}</li
+            {{str "messageDKIMSigned"}}</li
           ><li
             class="keep-tag in-folder"
-            title="${str('jumpToFolder')}"
-            >${str("inFolder").replace("#1", folderName)}</li
+            title="{{str 'jumpToFolder'}}"
+            >{{str "inFolder" folderName}}</li
           ></ul
         >
         <ul class="tags regular-tags"></ul>
         <div class="iframe-container"></div>
         <div class="body-container"></div>
         <div class="attachments-container">
-          {{tmpl "#attachmentsTemplate"}}
+          {{tmpl "attachments" this}}
         </div>
         <div class="embedsContainer">
         </div>
       </div>
       <div class="messageFooter">
         <div class="footerActions">
-          <button class="edit-draft"><span>${str("editDraft2")}</span><span class="ext"></span></button>
-          <button class="buttonReply"><span>${str("reply")}</span><span class="ext"></span></button>
-          <button class="buttonReplyAll"><span>${str("replyAll")}</span><span class="ext"></span></button>
-          <button class="buttonReplyList"><span>${str("replyList")}</span><span class="ext"></span></button>
-          <button class="buttonForward">${str("forward")}<span class="ext"></span></button>
+          <button class="edit-draft"><span>{{str "editDraft2"}}</span><span class="ext"></span></button>
+          <button class="buttonReply"><span>{{str "reply"}}</span><span class="ext"></span></button>
+          <button class="buttonReplyAll"><span>{{str "replyAll"}}</span><span class="ext"></span></button>
+          <button class="buttonReplyList"><span>{{str "replyList"}}</span><span class="ext"></span></button>
+          <button class="buttonForward">{{str "forward"}}<span class="ext"></span></button>
         </div>
       </div>
-      {{if quickReply}}
-        {{tmpl "#quickReplyTemplate"}}
+      {{#if quickReply}}
+        {{tmpl "quickReply" this}}
       {{/if}}
     </li>
     ]]>
@@ -1094,132 +1134,107 @@
     space because of the #text whitespace-only nodes that end up in the DOM.
   -->
   <!-- Generic contact template with tooltip -->
-  <script id="contactTemplate" type="text/x-jquery-tmpl"><![CDATA[<span
-    >${separator}</span
-    ><span class="tooltipWrapper contact"
-      ><span class="contactName" style="${colorStyle}"
-        >{{if star}}&#x2605; {{/if}}${String.trim(name)}{{if displayEmail}}
-          <span class="smallEmail">&lt;${String.trim(displayEmail)}&gt;</span>
-        {{/if}}{{if writeBr}}<br />{{/if}}</span
-      >{{tmpl "#innerTooltipTemplate"}}</span
-  >]]></script>
+  <script id="contactTemplate" type="text/x-handlebars-template"><![CDATA[
+    {{tmpl "contactLabel" this}}{{tmpl "contactTooltip" this}}
+  ]]></script>
   <!-- Contact template specific to recipients, without tooltip -->
-  <script id="recipientContactTemplate" type="text/x-jquery-tmpl"><![CDATA[<span
-    >${separator}</span
+  <script id="contactLabelTemplate" type="text/x-handlebars-template"><![CDATA[<span
+    >{{separator}}</span
     ><span class="tooltipWrapper contact"
-      ><span class="contactName" style="${colorStyle}"
-        >{{if star}}&#x2605; {{/if}}${String.trim(name)}{{if displayEmail}}
-          <span class="smallEmail">&lt;${String.trim(displayEmail)}&gt;</span>
-        {{/if}}{{if writeBr}}<br />{{/if}}</span
+      ><span class="contactName" style="{{colorStyle}}"
+        >{{#if star}}&#x2605; {{/if}}{{trim name}}{{#if extra}}
+        <label xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+          crop="center" class="contactExtra"
+          value="({{extra}})"
+        />{{/if}}{{#if displayEmail}}<span class="smallEmail"
+          > &lt;{{trim displayEmail}}&gt;</span>{{/if}}{{#if writeBr}}<br />{{/if}}</span
       ></span
   >]]></script>
   <!-- Tooltip template specific to recipients -->
-  <script id="recipientTooltipTemplate" type="text/x-jquery-tmpl"><![CDATA[<span
-    class="recipientTooltipWrapper contact">{{tmpl "#innerTooltipTemplate"}}</span
+  <script id="contactTooltipTemplate" type="text/x-handlebars-template"><![CDATA[<span
+    class="contactTooltipWrapper contact">{{tmpl "innerTooltip" this}}</span
   >]]></script>
-  <!-- Inner tooltip template, to be used by other templates -->
-  <script id="innerTooltipTemplate" type="text/x-jquery-tmpl"><![CDATA[<div
+  <!-- Inner tooltip template, to be used by other templates. Currently only used by the template above. -->
+  <script id="innerTooltipTemplate" type="text/x-handlebars-template"><![CDATA[<div
     class="tooltip">
       <div class="arrow"></div>
       <div class="arrow inside"></div>
       <div class="authorInfo">
-        <span class="name">${tooltipName}</span>
+        <span class="name">{{tooltipName}}</span>
         <span class="authorEmail">
-          ${email}
-          <button class="copyEmail" title="${str('copyEmail')}">
+          {{email}}
+          <button class="copyEmail" title="{{str 'copyEmail'}}">
             <img src="chrome://conversations/content/i/clipboard.png" />
           </button>
         </span>
       </div>
       <div class="authorPicture">
-        <img src="${avatar}" />
-      </div>
-      <div class="authorInfo authorLinks">
-        {{if ("facebook" in profiles)}}
-        <a href="http://www.facebook.com/profile.php?id=${profiles.facebook}" class="profile-link">
-          <img src="chrome://conversations/content/i/facebook.ico" />
-        </a>
-        {{/if}}
-        {{if ("twitter" in profiles)}}
-        <a href="http://www.twitter.com/${profiles.twitter}" class="profile-link">
-          <img src="chrome://conversations/content/i/twitter.ico" />
-        </a>
-        {{/if}}
-        {{if ("google" in profiles)}}
-        <a href="${profiles.google}" class="profile-link">
-          <img src="chrome://conversations/content/i/google.ico" />
-        </a>
-        {{/if}}
-        {{if ("flickr" in profiles)}}
-        <a href="${profiles.flickr}" class="profile-link">
-          <img src="chrome://conversations/content/i/flickr.ico" />
-        </a>
-        {{/if}}
+        <img src="{{avatar}}" />
       </div>
       <div class="tipFooter hiddenFooter" style="display:none;">
-        {{if (showMonospace)}}
+        {{#if showMonospace}}
         <div style="margin-bottom:5px;">
           <input type="checkbox" style="vertical-align: text-top" class="checkbox-monospace" />
-          <label style="color:#666; font-weight: normal">${str("messagesMonospace")}</label>
+          <label style="color:#666; font-weight: normal">{{str "messagesMonospace"}}</label>
         </div>
         {{/if}}
-        <button class="createFilter">${str("createFilter")}</button>
-        <button class="addContact" title="${str('addToAb')}">
+        <button class="createFilter">{{str "createFilter"}}</button>
+        <button class="addContact" title="{{str 'addToAb'}}">
           <img src="chrome://conversations/content/i/user_add.png" />
         </button>
-        <button class="editContact" title="${str('editCardAb')}">
+        <button class="editContact" title="{{str 'editCardAb'}}">
           <img src="chrome://conversations/content/i/user_edit.png" />
         </button>
       </div>
       <div class="tipFooter">
-        <button class="sendEmail">${str("sendEmail")}</button>
-        <button class="showInvolving">${str("recentConversations")}</button>
+        <button class="sendEmail">{{str "sendEmail"}}</button>
+        <button class="showInvolving">{{str "recentConversations"}}</button>
         <button class="moreExpander">+</button>
       </div>
     </div
   >]]></script>
-  <script id="attachmentIconTemplate" type="text/x-jquery-tmpl"><![CDATA[
-    {{if attachments.length}}
+  <script id="attachmentIconTemplate" type="text/x-handlebars-template"><![CDATA[
+    {{#if attachments.length}}
       <img src="chrome://conversations/content/i/attachment.png" />
     {{/if}}
   ]]></script>
-  <script id="attachmentDetailsTemplate" type="text/x-jquery-tmpl"><![CDATA[
-    {{if attachments.length}}
-      <u>${attachmentsPlural}:</u>
-      {{each(i, att) attachments}}
+  <script id="attachmentDetailsTemplate" type="text/x-handlebars-template"><![CDATA[
+    {{#if attachments.length}}
+      <u>{{attachmentsPlural}}:</u>
+      {{#each attachments}}
         <a href="javascript:"
-          onclick="scrollNodeIntoView(document.getElementById('${att.anchor}'));">
-          ${att.name} (${att.formattedSize})</a>${att.sep}
+          onclick="scrollNodeIntoView(document.getElementById('{{anchor}}'));">
+          {{name}} ({{formattedSize}})</a>{{sep}}
       {{/each}}
     {{/if}}
   ]]></script>
-  <script id="attachmentsTemplate" type="text/x-jquery-tmpl"><![CDATA[
-    {{if attachments.length}}
+  <script id="attachmentsTemplate" type="text/x-handlebars-template"><![CDATA[
+    {{#if attachments.length}}
       <ul class="attachments">
         <div class="attachHeader">
-          ${attachmentsPlural}
-          | <a href="javascript:" class="link download-all">${str("downloadAll2")}</a>
-          {{if gallery}}
-          | <a href="javascript:" onclick="galleryView('${uri}')" class="view-all">
-              ${str("galleryView")}
+          {{attachmentsPlural}}
+          | <a href="javascript:" class="link download-all">{{str "downloadAll2"}}</a>
+          {{#if gallery}}
+          | <a href="javascript:" onclick="galleryView('{{uri}}')" class="view-all">
+              {{str "galleryView"}}
             </a>
           {{/if}}
         </div>
-        {{each(i, att) attachments}}
-        <li class="clearfix hbox attachment" draggable="true" id="${att.anchor}">
+        {{#each attachments}}
+        <li class="clearfix hbox attachment" draggable="true" id="{{anchor}}">
           <div class="attachmentThumb">
             <img onload="$(this).closest('.attachment').find('.align').vAlign()"
-            class="${att.imgClass}" src="${att.thumb}" />
+            class="{{imgClass}}" src="{{thumb}}" />
           </div>
           <div class="attachmentInfo align">
-            <span class="filename">${att.name}</span>
+            <span class="filename">{{name}}</span>
             <div class="attachActions">
-              ${att.formattedSize}
-              {{if att.canPreview}}
-              | <a href="javascript:" class="link preview-attachment">${str("preview")}</a>
+              {{formattedSize}}
+              {{#if canPreview}}
+              | <a href="javascript:" class="link preview-attachment">{{str "preview"}}</a>
               {{/if}}
-              | <a href="javascript:" class="link open-attachment">${str("open")}</a>
-              | <a href="javascript:" class="link download-attachment">${str("download2")}</a>
+              | <a href="javascript:" class="link open-attachment">{{str "open"}}</a>
+              | <a href="javascript:" class="link download-attachment">{{str "download2"}}</a>
             </div>
           </div>
         </li>
@@ -1227,25 +1242,25 @@
       </ul>
     {{/if}}
   ]]></script>
-  <script id="popularContactTemplate" type="text/x-jquery-tmpl"><![CDATA[
+  <script id="popularContactTemplate" type="text/x-handlebars-template"><![CDATA[
     <div class="popularContact">
-      <img class="popularPhoto" src="${photo}" style="float: left" />
+      <img class="popularPhoto" src="{{photo}}" style="float: left" />
       <span class="popularRemove">×</span>
-      <span class="popularName">${name}</span><br />
-      <span class="popularEmail">${email}</span>
+      <span class="popularName">{{name}}</span><br />
+      <span class="popularEmail">{{email}}</span>
     </div>
   ]]></script>
-  <script id="quickReplyTemplate" type="text/x-jquery-tmpl"><![CDATA[
+  <script id="quickReplyTemplate" type="text/x-handlebars-template"><![CDATA[
     <div class="quickReply" ondragover="quickReplyCheckDrag(event);" ondrop="quickReplyDrop(event);">
       <div class="quickReplyContacts">
         <div class="quickReplyContactsHeader">
-          ${str("mostFrequentContacts")}
+          {{str "mostFrequentContacts"}}
         </div>
         <div class="quickReplyContactsBox">
         </div>
         <div class="quickReplyContactsMore">
           <a class="quickReplyContactsMoreLink">
-            ${str("showMore")}
+            {{str "showMore"}}
           </a>
         </div>
       </div>
@@ -1253,64 +1268,64 @@
         <div class="replyHeader">
           <div class="quickReplyRecipients">
             <ul class="fromField">
-              ${str("fieldFrom")}
+              {{str "fieldFrom"}}
               <li class="senderSwitcher"><a class="switchLeft" onclick="gComposeSession.cycleSender(-1)">◂</a> <a class="switchRight" onclick="gComposeSession.cycleSender(1)">▸</a></li>
               <li class="senderName"></li>,
               <li class="replyMethod">
                 <input type="radio" name="reply-method" value="reply"
                   onchange="changeComposeFields('reply')" id="reply-radio"
-                /><label for="reply-radio">${str("reply")}</label>
+                /><label for="reply-radio">{{str "reply"}}</label>
               </li>
               <li class="replyMethod replyMethod-replyAll">
                 <input type="radio" name="reply-method" value="replyAll"
                   onchange="changeComposeFields('replyAll')" id="replyAll-radio"
-                /><label for="replyAll-radio">${str("replyAll")}</label>
+                /><label for="replyAll-radio">{{str "replyAll"}}</label>
               </li>
               <li class="replyMethod replyMethod-replyList">
                 <input type="radio" name="reply-method" value="replyList"
                   onchange="changeComposeFields('replyList')" id="replyList-radio"
-                /><label for="replyList-radio">${str("replyList")}</label>
+                /><label for="replyList-radio">{{str "replyList"}}</label>
               </li>
               <li class="replyMethod">
                 <input type="radio" name="reply-method" value="forward"
                   onchange="changeComposeFields('forward')" id="forward-radio"
-                /><label for="forward-radio">${str("forward")}</label>
+                /><label for="forward-radio">{{str "forward"}}</label>
               </li>
               <li class="firstBar">|</li>
-              <li class="showCc"><a onclick="showCc(); editFields('cc');" href="javascript:">${str("addCc")}</a> |</li>
-              <li class="showBcc"><a onclick="showBcc(); editFields('bcc');" href="javascript:">${str("addBcc")}</a> |</li>
-              <li class="addAttachment"><a onclick="addAttachment();" href="javascript:">${str("addAttachment")}</a></li>
+              <li class="showCc"><a onclick="showCc(); editFields('cc');" href="javascript:">{{str "addCc"}}</a> |</li>
+              <li class="showBcc"><a onclick="showBcc(); editFields('bcc');" href="javascript:">{{str "addBcc"}}</a> |</li>
+              <li class="addAttachment"><a onclick="addAttachment();" href="javascript:">{{str "addAttachment"}}</a></li>
             </ul>
             <div class="editRecipientList editToList hbox">
-              <div class="label">${str("fieldTo")}</div>
+              <div class="label">{{str "fieldTo"}}</div>
               <div class="boxFlex"><input type="text" id="to" /></div>
             </div>
             <div class="editRecipientList editCcList hbox" style="display: none">
-              <div class="label">${str("fieldCc")}</div>
+              <div class="label">{{str "fieldCc"}}</div>
               <div class="boxFlex"><input type="text" id="cc" /></div>
             </div>
             <div class="editRecipientList editBccList hbox" style="display: none">
-              <div class="label">${str("fieldBcc")}</div>
+              <div class="label">{{str "fieldBcc"}}</div>
               <div class="boxFlex"><input type="text" id="bcc" /></div>
             </div>
             <div class="editRecipientList editSubject hbox" style="display: none">
-              <div class="label">${str("fieldSubject")}</div>
+              <div class="label">{{str "fieldSubject"}}</div>
               <div class="boxFlex"><input type="text" id="subject" /></div>
             </div>
             <ul class="recipientList toList">
-              ${str("fieldTo")}
-              <li>${str("pleaseWait")}</li>
-              <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('to');">${str("edit")}</a></li>
+              {{str "fieldTo"}}
+              <li>{{str "pleaseWait"}}</li>
+              <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('to');">{{str "edit"}}</a></li>
             </ul>
             <ul class="recipientList ccList" style="display: none;">
-              ${str("fieldCc")}
-              <li>${str("pleaseWait")}</li>
-              <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('cc');">${str("edit")}</a></li>
+              {{str "fieldCc"}}
+              <li>{{str "pleaseWait"}}</li>
+              <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('cc');">{{str "edit"}}</a></li>
             </ul>
             <ul class="recipientList bccList" style="display: none;">
-              ${str("fieldBcc")}
-              <li>${str("pleaseWait")}</li>
-              <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('bcc');">${str("edit")}</a></li>
+              {{str "fieldBcc"}}
+              <li>{{str "pleaseWait"}}</li>
+              <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('bcc');">{{str "edit"}}</a></li>
             </ul>
           </div>
           <div class="quickReplyAttachments">
@@ -1325,57 +1340,57 @@
           </div>
         </div>
 
-        <ul class="inputs cf" style="padding-right: ${str('actionsSize')}rem">
+        <ul class="inputs cf" style="padding-right: {{str 'actionsSize'}}rem">
           <li class="reply expand" ondragenter="quickReplyDragEnter(event);">
-            <div class="popout" title="${str('popoutReply')}" alt="popout">
-              <span class="popoutTxt">${str('popoutTxt')}</span>
+            <div class="popout" title="{{str 'popoutReply'}}" alt="popout">
+              <span class="popoutTxt">{{str 'popoutTxt'}}</span>
             </div>
             <div class="textWrap">
-              <div class="icon"><span>${str("reply")}</span> <img src="i/reply.png" /></div>
+              <div class="icon"><span>{{str "reply"}}</span> <img src="i/reply.png" /></div>
               <iframe mozframetype="content" class="textarea sans"></iframe>
             </div>
           </li>
 
           <li class="replyAll expand" ondragenter="quickReplyDragEnter(event);">
-            <div class="popout" title="${str('popoutReplyAll')}" alt="popout">
-              <span class="popoutTxt">${str('popoutTxt')}</span>
+            <div class="popout" title="{{str 'popoutReplyAll'}}" alt="popout">
+              <span class="popoutTxt">{{str 'popoutTxt'}}</span>
             </div>
             <div class="textWrap">
-              <div class="icon"><span>${str("replyAll")}</span> <img src="i/replyAll.png" /></div>
+              <div class="icon"><span>{{str "replyAll"}}</span> <img src="i/replyAll.png" /></div>
               <iframe mozframetype="content" class="textarea sans"></iframe>
             </div>
           </li>
 
-          <li class="misc" style="width: ${str('actionsSize')}rem">
+          <li class="misc" style="width: {{str 'actionsSize'}}rem">
             <ul class="actions cf">
-              <li class="fwd"><a href="javascript:">${capitalize(str('forward'))}</a></li>
-              <li class="list"><a href="javascript:">${capitalize(str('replyList'))}</a></li>
+              <li class="fwd"><a href="javascript:">{{strC 'forward'}}</a></li>
+              <li class="list"><a href="javascript:">{{strC 'replyList'}}</a></li>
             </ul>
           </li>
         </ul>
 
         <div class="replyFooter" style="overflow: auto" tabindex="-1">
           <button id="send" style="float:right;margin-left:3px;" onclick="gComposeSession.send();">
-            ${str("send")}
+            {{str "send"}}
           </button>
           <button id="sendArchive" style="float:right;margin-left:3px;"
               onclick="gComposeSession.send({ archive: true });">
-            ${str("sendArchive")}
+            {{str "sendArchive"}}
           </button>
-          <button id="save" style="float:right" onclick="onSave();">${str("save")}</button>
+          <button id="save" style="float:right" onclick="onSave();">{{str "save"}}</button>
           <a class="discard" href="javascript:" id="discard"
-            onclick="confirmDiscard()">${str("discard")}</a>
+            onclick="confirmDiscard()">{{str "discard"}}</a>
         </div>
       </div>
     </div>
     ]]>
   </script>
-  <script id="quickReplyAttachmentTemplate" type="text/x-jquery-tmpl"><![CDATA[
+  <script id="quickReplyAttachmentTemplate" type="text/x-handlebars-template"><![CDATA[
     <ul class="quickReplyAttachment">
-      ${str("attachment")}:
-      <li>${name}</li> (${size}) -
-      <a href="javascript:" class="openAttachmentLink">${str("open")}</a> -
-      <a href="javascript:" class="removeAttachmentLink">${str("removeAttachment")}</a>
+      {{str "attachment"}}:
+      <li>{{name}}</li> ({{size}}) -
+      <a href="javascript:" class="openAttachmentLink">{{str "open"}}</a> -
+      <a href="javascript:" class="removeAttachmentLink">{{str "removeAttachment"}}</a>
     </ul>
     ]]>
   </script>

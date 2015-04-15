@@ -63,7 +63,7 @@ Viewer.prototype = {
         status.classList.add('loaded');
       },
       function getDocumentError(message, e) {
-        Log.error("Error loading the document", message);
+        // Log.error("Error loading the document", message);
         document.getElementById('error').textContent = message;
         status.classList.remove('loading');
         status.classList.add('error');
@@ -73,7 +73,7 @@ Viewer.prototype = {
   },
 
   switchToPage: function (aPageNum) {
-    Log.debug("Switching to page", aPageNum);
+    // Log.debug("Switching to page", aPageNum);
 
     let self = this;
 

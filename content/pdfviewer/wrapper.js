@@ -103,11 +103,12 @@ Wrapper.prototype = {
       browser.addEventListener("load", function load_handler () {
         browser.removeEventListener("load", load_handler, true);
         let w = browser.contentWindow.wrappedJSObject;
-        // expose the [Log] object
-        w.Log = setupLogging("Conversations.PdfViewer");
-        w.Log.__exposedProps__ = { debug: "r" };
-        // pass the right object to the init function
-        w.init({ chunks: chunks, __exposedProps__: { chunks: 'r' }});
+        w.Log = Components.utils.cloneInto(
+          setupLogging("Conversations.PdfViewer"),
+          w,
+          { cloneFunctions: true }
+        );
+        w.init(Components.utils.cloneInto({ chunks: chunks }, w));
       }, true);
       // Load from a resource:// URL so that it doesn't have chrome privileges.
       browser.loadURI("resource://conversations/content/pdfviewer/viewer.xhtml", null, null);
