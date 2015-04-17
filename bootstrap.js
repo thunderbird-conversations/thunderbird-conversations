@@ -154,6 +154,16 @@ function loadImports(){
   Cu.import("resource://conversations/modules/plugins/embeds.js");
 }
 
+// This obserer is notified when a new window is created and injects our code
+let windowObserver = {
+  observe: function (aSubject, aTopic, aData) {
+    if (aTopic == "domwindowopened") {
+      loadImports();
+      aSubject.QueryInterface(Ci.nsIDOMWindow);
+      monkeyPatchWindow(aSubject.window, true);
+    }
+  }
+}
 
 function startup(aData, aReason) {
   ResourceRegister.init(aData.installPath, "conversations");
@@ -175,15 +185,7 @@ function startup(aData, aReason) {
 
 
     // Patch all future windows
-    Services.ww.registerNotification({
-      observe: function (aSubject, aTopic, aData) {
-        if (aTopic == "domwindowopened") {
-          loadImports();
-          aSubject.QueryInterface(Ci.nsIDOMWindow);
-          monkeyPatchWindow(aSubject.window, true);
-        }
-      },
-    });
+    Services.ww.registerNotification(windowObserver);
 
     // Show the assistant if the extension is installed or enabled
     if (aReason == BOOTSTRAP_REASONS.ADDON_INSTALL || aReason == BOOTSTRAP_REASONS.ADDON_ENABLE) {
@@ -232,6 +234,8 @@ function shutdown(aData, aReason) {
   loadImports();
   if (aReason == BOOTSTRAP_REASONS.APP_SHUTDOWN)
     return;
+
+  Services.ww.unregisterNotification(windowObserver);
 
   // Reasons to be here can be DISABLE or UNINSTALL
   ResourceRegister.uninit("conversations");
