@@ -133,7 +133,7 @@ function monkeyPatchWindow(window, aLater) {
 }
 
 function monkeyPatchAllWindows() {
-  for each (let w in fixIterator(Services.wm.getEnumerator("mail:3pane")))
+  for (let w of fixIterator(Services.wm.getEnumerator("mail:3pane")))
     monkeyPatchWindow(w, false);
 }
 
@@ -239,7 +239,7 @@ function shutdown(aData, aReason) {
 
   // Reasons to be here can be DISABLE or UNINSTALL
   ResourceRegister.uninit("conversations");
-  for each (let w in fixIterator(Services.wm.getEnumerator("mail:3pane")))
+  for (let w of fixIterator(Services.wm.getEnumerator("mail:3pane")))
     w.Conversations.monkeyPatch.undo(aReason);
 }
 

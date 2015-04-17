@@ -104,16 +104,18 @@ MixIn(PrefCustomization, SimpleCustomization.prototype);
 
 
 function MultipleCustomization(aParams) {
-  this.customizations = [new PrefCustomization(p) for each (p in aParams)];
+  this.customizations = [new PrefCustomization(p) for (p of aParams)];
 }
 
 MultipleCustomization.prototype = {
   install: function () {
-    return [x.install() for each (x in this.customizations)];
+    return [x.install() for (x of this.customizations)];
   },
 
   uninstall: function (uninstallInfos) {
-    [x.uninstall(uninstallInfos[i]) for each ([i, x] in Iterator(this.customizations))];
+    this.customizations.forEach(function(x, i) {
+      x.uninstall(uninstallInfos[i]);
+    });
   }
 }
 
@@ -263,7 +265,7 @@ let Customizations = {
 
       let vFolder = VirtualFolderHelper.wrapVirtualFolder(smartInbox);
       let searchFolders = {};
-      for each (let [, folder] in Iterator(vFolder.searchFolders)) {
+      for (let folder of vFolder.searchFolders) {
         Log.debug("Folder", folder.folderURL, "is in the unified inbox already");
         searchFolders[folder.folderURL] = true;
       }
@@ -271,13 +273,13 @@ let Customizations = {
 
       // Go through all accounts and through all folders, and add each one
       //  that's either an inbox or a sent folder to the global inbox.
-      for each (let account in fixIterator(msgAccountManager.accounts, Ci.nsIMsgAccount)) {
+      for (let account of fixIterator(msgAccountManager.accounts, Ci.nsIMsgAccount)) {
         if (!account.incomingServer)
           continue;
 
         let rootFolder = account.incomingServer.rootFolder;
         let allFolders = rootFolder.descendants;
-        for each (let folder in fixIterator(allFolders, Ci.nsIMsgFolder)) {
+        for (let folder of fixIterator(allFolders, Ci.nsIMsgFolder)) {
           if ((folder.getFlag(nsMsgFolderFlags_SentMail) || folder.getFlag(nsMsgFolderFlags_Inbox))
               && !searchFolders[folder.folderURL]) {
             Log.debug("Searching folder", folder.folderURL, "inside Global Inbox");
@@ -317,7 +319,7 @@ let Customizations = {
       let changedFolders = [];
       let changedServers = [];
 
-      for each (let account in fixIterator(msgAccountManager.accounts, Ci.nsIMsgAccount)) {
+      for (let account of fixIterator(msgAccountManager.accounts, Ci.nsIMsgAccount)) {
         if (!account.incomingServer)
           continue;
 
@@ -338,7 +340,7 @@ let Customizations = {
         }
         let rootFolder = account.incomingServer.rootFolder;
         let allFolders = rootFolder.descendants;
-        for each (let folder in fixIterator(allFolders, Ci.nsIMsgFolder)) {
+        for (let folder of fixIterator(allFolders, Ci.nsIMsgFolder)) {
           if ((folder.getFlag(nsMsgFolderFlags_SentMail) || folder.getFlag(nsMsgFolderFlags_Inbox))
               && !folder.getFlag(nsMsgFolderFlags_Offline)) {
             Log.debug("Marking folder", folder.folderURL, "for offline use");
@@ -352,12 +354,12 @@ let Customizations = {
     },
 
     uninstall: function ([aChangedFolders, aChangedServers]) {
-      for each (let uri in aChangedFolders) {
+      for (let uri of aChangedFolders) {
         let folder = MailUtils.getFolderForURI(uri);
         if (folder)
           folder.clearFlag(nsMsgFolderFlags_Offline);
       }
-      for each (let aUri in aChangedServers) {
+      for (let aUri of aChangedServers) {
         let uri = ioService.newURI(aUri, null, null);
         let server = msgAccountManager.findServerByURI(uri, false);
         if (server) {

@@ -109,7 +109,7 @@ function getBugzillaCookie(aUrl) {
   let cookies = Services.cookies.getCookiesFromHost(uri.host);
   let login = null;
   let loginCookie = null;
-  for each (let cookie in fixIterator(cookies, Ci.nsICookie)) {
+  for (let cookie of fixIterator(cookies, Ci.nsICookie)) {
     if (cookie.name == "Bugzilla_login")
       login = cookie.value;
     if (cookie.name == "Bugzilla_logincookie")

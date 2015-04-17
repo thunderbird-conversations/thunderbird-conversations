@@ -121,7 +121,7 @@ function registerQuickReply() {
       try {
         Log.debug("Notifying draft listeners for id", id);
         let listeners = mainWindow.Conversations.draftListeners[id] || [];
-        for each (let [, listener] in Iterator(listeners)) {
+        for (let listener of listeners) {
           let obj = listener.get();
           if (!obj || obj == this)
             continue;
@@ -405,10 +405,10 @@ function createComposeSession(what) {
   // Do that now so that it doesn't have to be implemented by each compose
   // session type.
   if (Prefs.getBool("mail.spellcheck.inline")) {
-    for each (let [, elt] in Iterator(document.getElementsByTagName("textarea")))
+    for (let elt of document.getElementsByTagName("textarea"))
       elt.setAttribute("spellcheck", true);
   } else {
-    for each (let [, elt] in Iterator(document.getElementsByTagName("textarea")))
+    for (let elt of document.getElementsByTagName("textarea"))
       elt.setAttribute("spellcheck", false);
   }
   if (gBzSetup) {
@@ -600,7 +600,7 @@ ComposeSession.prototype = {
         aDefault = aDefault.replace(/\s/g, "");
       if (!aDefault) // "" evaluates to false
         return aList;
-      for each (let [, email] in Iterator(aDefault.split(/,/))) {
+      for (let email of aDefault.split(/,/)) {
         if (!aList.some(function (x) x.email == email)) {
           aList.push(asToken(null, null, email, null));
         }
@@ -611,9 +611,9 @@ ComposeSession.prototype = {
     switch (aMode) {
       case "replyAll": {
         replyAllParams(identity, msgHdr, function (params) {
-          let to = [asToken(null, name, email, null) for each ([name, email] in params.to)];
-          let cc = [asToken(null, name, email, null) for each ([name, email] in params.cc)];
-          let bcc = [asToken(null, name, email, null) for each ([name, email] in params.bcc)];
+          let to = [asToken(null, name, email, null) for ([name, email] of params.to)];
+          let cc = [asToken(null, name, email, null) for ([name, email] of params.cc)];
+          let bcc = [asToken(null, name, email, null) for ([name, email] of params.bcc)];
           cc = mergeDefault(cc, defaultCc);
           bcc = mergeDefault(bcc, defaultBcc);
           setupAutocomplete(to, cc, bcc);
@@ -643,7 +643,7 @@ ComposeSession.prototype = {
         let cc = mergeDefault([], defaultCc);
         let bcc = mergeDefault([], defaultBcc);
         replyAllParams(identity, msgHdr, function (params) {
-          let to = [asToken(null, name, email, null) for each ([name, email] in params.to)];
+          let to = [asToken(null, name, email, null) for ([name, email] of params.to)];
           setupAutocomplete(to, cc, bcc);
           k && k(params.to.length + params.cc.length + params.bcc.length);
         });
@@ -684,8 +684,9 @@ ComposeSession.prototype = {
       draft: function ({ to, cc, bcc }) {
         let makeTokens = function (aList) {
           let [list, listEmailAddresses] = parse(aList);
-          return [asToken(null, item, listEmailAddresses[i], null)
-            for each ([i, item] in Iterator(list))];
+	  return Array.prototype.map.call(list, function(item, i) {
+            return asToken(null, item, listEmailAddresses[i], null);
+	  });
         };
         setupAutocomplete(makeTokens(to), makeTokens(cc), makeTokens(bcc));
         self.setupDone();
@@ -740,7 +741,7 @@ ComposeSession.prototype = {
         cc: JSON.parse($("#cc").val()),
         bcc: JSON.parse($("#bcc").val()),
       };
-      for each (let [, h] in Iterator(getHooks())) {
+      for (let h of getHooks()) {
         try {
           if (typeof(h.onComposeSessionChanged) == "function")
             h.onComposeSessionChanged(this, getMessageForQuickReply(), recipients);
@@ -781,8 +782,8 @@ ComposeSession.prototype = {
       JSON.parse($("#"+x).val()));
 
     let sendStatus = { };
-    for each (let priority in ["_early", "", "_canceled"]) {
-      for each (let [, h] in Iterator(getHooks())) {
+    for (let priority of ["_early", "", "_canceled"]) {
+      for (let h of getHooks()) {
         try {
           if ((typeof(h["onMessageBeforeSendOrPopout" + priority]) == "function") && (priority != "_canceled" || sendStatus.canceled)) {
             let newSendStatus = h["onMessageBeforeSendOrPopout" + priority]({
@@ -906,7 +907,7 @@ AttachmentList.prototype = {
       Log.debug("User canceled, returning");
     } else {
       // Iterate over all files
-      for each (let file in fixIterator(filePicker.files, Ci.nsIFile)) {
+      for (let file of fixIterator(filePicker.files, Ci.nsIFile)) {
         this.addWithData({
           url: Services.io.newFileURI(file).spec,
           name: file.leafName,
@@ -956,7 +957,7 @@ AttachmentList.prototype = {
 
   restore: function (aData) {
     // Todo: check that all files still exist, etc.
-    for each (let data in aData) {
+    for (let data of aData) {
       this.addWithData(data);
     }
   },
@@ -966,7 +967,7 @@ AttachmentList.prototype = {
       name: x.name,
       size: x.size,
       url: x.url,
-    } for each (x in this._attachments)];
+    } for (x of this._attachments)];
   },
 
   get attachments () {
@@ -1205,7 +1206,7 @@ let sendListener = {
       pText(strings.get("couldntSendTheMessage"));
       Log.debug("NS_FAILED onStopSending");
     }
-    for each (let [, h] in Iterator(getHooks())) {
+    for (let h of getHooks()) {
       try {
         if (typeof(h.onStopSending) == "function")
           h.onStopSending(aMsgID, aStatus, aMsg, aReturnFile);
