@@ -53,6 +53,7 @@ Cu.import("resource:///modules/gloda/utils.js");
 Cu.import("resource:///modules/gloda/mimemsg.js");
 Cu.import("resource:///modules/gloda/connotent.js"); // for mimeMsgToContentSnippetAndMeta
 
+Cu.import("resource://conversations/modules/plugins/lightning.js");
 // It's not really nice to write into someone elses object but this is what the
 // Services object is for.  We prefix with the "m" to ensure we stay out of their
 // namespace.
@@ -504,6 +505,7 @@ Message.prototype = {
       extraClasses: null,
       canUnJunk: false,
       isOutbox: false,
+      generateLightningTempl : false,
     };
 
     // 1) Generate Contact objects
@@ -581,6 +583,8 @@ Message.prototype = {
     if (this._msgHdr.folder.getFlag(Ci.nsMsgFolderFlags.Queue))
       data.isOutbox = true;
 
+    // 8) Decide whether Lightning is installed and Lightning content should be generated
+    data.generateLightningTempl = isLightningInstalled();
     return data;
   },
 

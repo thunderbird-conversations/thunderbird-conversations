@@ -34,7 +34,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var EXPORTED_SYMBOLS = [];
+var EXPORTED_SYMBOLS = ["isLightningInstalled"];
 
 Components.utils.import("resource://conversations/modules/hook.js");
 Components.utils.import("resource://conversations/modules/log.js");
@@ -42,6 +42,10 @@ Components.utils.import("resource://conversations/modules/misc.js");
 Components.utils.import("resource:///modules/Services.jsm");
 
 let Log = setupLogging("Conversations.Modules.Lightning");
+
+function isLightningInstalled() {
+  return hasLightning;
+};
 
 let hasLightning = false;
 try {
