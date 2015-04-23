@@ -163,7 +163,7 @@ let windowObserver = {
       monkeyPatchWindow(aSubject.window, true);
     }
   }
-}
+};
 
 function startup(aData, aReason) {
   ResourceRegister.init(aData.installPath, "conversations");
