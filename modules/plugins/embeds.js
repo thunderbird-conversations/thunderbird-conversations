@@ -96,10 +96,10 @@ let embedsHook = {
     let links = iframeDoc.getElementsByTagName("a");
     // Don't detect links in quotations.
     [x.skip = true
-      for each ([, x] in Iterator(iframeDoc.querySelectorAll("blockquote a")))];
+      for (x of iframeDoc.querySelectorAll("blockquote a"))];
     let seen = {};
     // Examine all links in the message.
-    for each (let [, a] in Iterator(links)) {
+    for (let a of links) {
       if (a.skip || (a.href in seen))
         continue;
       let youTubeId;
@@ -169,7 +169,7 @@ let embedsHook = {
     let container = aDomNode.getElementsByClassName("embedsContainer")[0];
     let div = document.createElement("div");
     div.style.marginTop = "20px";
-    for each (let e in [header, br, iframe])
+    for (let e of [header, br, iframe])
       div.appendChild(e);
     container.appendChild(div);
   },

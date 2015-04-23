@@ -89,7 +89,7 @@ Gallery.prototype = {
     let data = [];
     let n = this.attachments.length;
     Log.debug(n, "attachments in this gallery view");
-    for each (let [i, att] in Iterator(this.attachments)) {
+    this.attachments.forEach(function(att, i) {
       data.push({
         url: att.url,
         name: att.name,
@@ -97,7 +97,7 @@ Gallery.prototype = {
         i: i+1,
         n: n,
       });
-    }
+    })
 
     // Output the data
     $("#imageTemplate").tmpl(data).appendTo($(".images"));

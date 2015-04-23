@@ -61,9 +61,9 @@
     })(jQuery);
 
     function clearMenu() {
-      let menus = document.getElementsByClassName("menu");
-      for each (let [, menu] in Iterator(menus))
+      for (let menu of document.getElementsByClassName("menu")) {
         menu.style.display = "none";
+      }
     }
 
     function displayMenu(event) {
@@ -252,15 +252,10 @@
        * message has been focused in Gecko 1.9.1 (so it's basically
        * useless). */
       let msgNodes = document.getElementsByClassName("message");
-      let index;
-      for each (let [i, k] in Iterator(msgNodes)) {
-        if (k == msgNode) {
-          index = i;
-          break;
-        }
+      let index = Array.prototype.indexOf.call(msgNodes, msgNode);
+      if (index != -1) {
+        msgNode.setAttribute("tabindex", index + 2);
       }
-      if (index)
-        msgNode.setAttribute("tabindex", index+2);
     }, true);
 
     function closeTab() {
@@ -349,7 +344,7 @@
 
     $(document).ready(function () {
       let stylesheet = [x
-        for each ([, x] in Iterator(document.styleSheets))
+        for (x of document.styleSheets)
         if (String.indexOf(x.href, "/conversation.css") >= 0)][0];
       if (stylesheet) {
         if (Prefs.tweak_chrome) {
@@ -388,11 +383,11 @@
       let $span = $(event.target).find("span.expand");
       if ($span.hasClass("collapse")) {
         [message.collapse()
-          for each ([, { message }] in Iterator(Conversations.currentConversation.messages))];
+          for ({ message } of Conversations.currentConversation.messages)];
         $span.removeClass("collapse");
       } else {
         [message.expand()
-          for each ([, { message }] in Iterator(Conversations.currentConversation.messages))];
+          for ({ message } of Conversations.currentConversation.messages)];
         $span.addClass("collapse");
       }
     }
@@ -444,7 +439,7 @@
     let oldPrint = window.print;
 
     function printConversation(event) {
-      for each (let { message: m } in Conversations.currentConversation.messages) {
+      for (let { message: m } of Conversations.currentConversation.messages) {
         m.dumpPlainTextForPrinting();
       }
       oldPrint();
@@ -482,7 +477,7 @@
       //  that the messages from _initialSet are in the current view.
       let urls = [
         msgHdrGetUri(x)
-        for each (x in Conversations.currentConversation._initialSet)
+        for (x of Conversations.currentConversation._initialSet)
       ].join(",");
       let queryString = "?urls="+encodeURIComponent(urls)
         +"&willExpand="+Number(willExpand);
@@ -534,7 +529,7 @@
             window.frameElement.setAttribute("tooltip", "aHTMLTooltip");
           let mainWindow = topMail3Pane(window);
           let willExpand = parseInt(params.willExpand);
-          let msgHdrs = [msgUriToMsgHdr(x) for each (x in params.urls.split(","))];
+          let msgHdrs = [msgUriToMsgHdr(x) for (x of params.urls.split(","))];
           msgHdrs = msgHdrs.filter(function (x) x != null);
           msgHdrs = msgHdrs.filter(function (x) x.messageId);
           // It might happen that there are no messages left...
@@ -647,7 +642,7 @@
         let items = data.splice(0, n);
         let nodes = tmpl("#popularContactTemplate", items);
 
-        for each (let [i, data2] in Iterator(items)) {
+        items.forEach(function(data2, i) {
           let data = data2;
           let node = nodes.eq(i);
           Log.debug("Adding", data.name, data.email);
@@ -673,7 +668,7 @@
             to.push(MailServices.headerParser.makeMimeAddress(data.name, data.email));
             // Re-set everything
             let format = function (items)
-              [asToken(null, name, email, null) for each ([{ name, email }] in items.map(parseMimeLine))]
+              [asToken(null, name, email, null) for ([{ name, email }] of items.map(parseMimeLine))]
             ;
             setupAutocomplete(format(to), format(cc), format(bcc));
             // Remove the node!
@@ -681,7 +676,7 @@
             pushNewPopularContacts(1);
           });
 
-        }
+        });
 
         nodes.appendTo($(".quickReplyContactsBox"));
       };
@@ -702,7 +697,7 @@
           let items = aCollection.items;
           let unwantedRecipients = JSON.parse(Prefs.getString("conversations.unwanted_recipients"));
 
-          for each (let contact in items) {
+          for (let contact of items) {
             if (contact.identities.length) {
               let id = contact.identities[0];
               let photoForAbCard = function (card) {
@@ -766,7 +761,7 @@
       let pageTop = window.pageYOffset;
       let pageBottom = pageTop + window.innerHeight;
       let messages = Conversations.currentConversation.messages;
-      for each (let [i, { message }] in Iterator(messages)) {
+      messages.forEach(function({ message }, i) {
         if (!message.read && message.expanded) {
           if (!message._topInView) {
             let top = $(message._domNode).offset().top;
@@ -785,18 +780,18 @@
             message.read = true;
           }
         }
-      }
+      });
     }
     (function () {
       let w = window;
       markReadInView.enable = function () {
         [w.document.addEventListener(x, w.markReadInView, true)
-          for each ([, x] in Iterator(["mouseover", "focus", "keydown"]))];
+          for (x of ["mouseover", "focus", "keydown"])];
       };
       markReadInView.disable = function () {
         w.clearTimeout(w.markReadInView.timeout);
         [w.document.removeEventListener(x, w.markReadInView, true)
-          for each ([, x] in Iterator(["mouseover", "focus", "keydown", "scroll"]))];
+          for (x of ["mouseover", "focus", "keydown", "scroll"])];
       };
     })();
 

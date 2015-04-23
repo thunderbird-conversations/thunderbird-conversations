@@ -9,6 +9,7 @@ Cu.import("resource:///modules/gloda/utils.js");
 Cu.import("resource:///modules/gloda/suffixtree.js");
 Cu.import("resource:///modules/gloda/noun_tag.js");
 Cu.import("resource:///modules/gloda/noun_freetag.js");
+Cu.import("resource://conversations/modules/stdlib/misc.js");
 
 try {
   Cu.import("resource://people/modules/people.js");
@@ -85,14 +86,14 @@ ContactIdentityCompleter.prototype = {
     // and since we can now map from contacts down to identities, map contacts
     //  to the first identity for them that we find...
     matches = [val.NOUN_ID == Gloda.NOUN_IDENTITY ? val : val.identities[0]
-               for each ([iVal, val] in Iterator(contactToThing))];
+               for ([, val] of entries(contactToThing))]
 
     let rows = [asToken(
                   match.pictureURL(),
                   match.contact.name != match.value ? match.contact.name : null,
                   match.value,
                   match.value
-                ) for each ([iMatch, match] in Iterator(matches))];
+                ) for (match of matches)];
     aResult.addRows(rows);
 
     // - match against database contacts / identities
@@ -133,13 +134,16 @@ ContactIdentityCompleter.prototype = {
       this.identityCollection =
         this.contactCollection.subCollections[Gloda.NOUN_IDENTITY];
 
-      let contactNames = [(c.name.replace(" ", "").toLowerCase() || "x") for each
-                          ([, c] in Iterator(this.contactCollection.items))];
+      let contactNames = this.contactCollection.items.map(function(c) {
+        return c.name.replace(" ", "").toLowerCase() || "x";
+      });
       // if we had no contacts, we will have no identity collection!
       let identityMails;
-      if (this.identityCollection)
-        identityMails = [i.value.toLowerCase() for each
-                         ([, i] in Iterator(this.identityCollection.items))];
+      if (this.identityCollection) {
+        identityMails = this.identityCollection.items.map(function(i) {
+          return i.value.toLowerCase();
+        });
+      }
 
       // The suffix tree takes two parallel lists; the first contains strings
       //  while the second contains objects that correspond to those strings.
@@ -190,12 +194,14 @@ ContactIdentityCompleter.prototype = {
 
       // sort in order of descending popularity
       possibleDudes.sort(this._popularitySorter);
-      let rows = [asToken(
-                    dude.pictureURL(),
-                    dude.contact.name != dude.value ? dude.contact.name : null,
-                    dude.value,
-                    dude.value
-                  ) for each ([iDude, dude] in Iterator(possibleDudes))];
+      let rows = possibleDudes.map(function(dude) {
+          return asToken(
+            dude.pictureURL(),
+            dude.contact.name != dude.value ? dude.contact.name : null,
+            dude.value,
+            dude.value
+          )
+      });
       result.addRows(rows);
       result.markCompleted(this);
 
@@ -260,27 +266,27 @@ function setupAutocomplete(to, cc, bcc) {
     let list = document.getElementsByClassName(aList.substring(1))[0];
     let marker = list.getElementsByClassName("add-more")[0];
     // Never, ever use jquery in a loop.
-    for each (let [i, { name, email }] in Iterator(aData)) {
-      if (!email)
-        continue;
-      let sep;
-      if (aData.length <= 1)
-        sep = "";
-      else if (i == aData.length - 2)
-        sep = strings.get("sepAnd");
-      else if (i == aData.length - 1)
-        sep = "";
-      else
-        sep = strings.get("sepComma");
-      let li = document.createElement("li");
-      li.setAttribute("title", email);
-      li.textContent = name;
-      let span = document.createElement("span");
-      span.classList.add("recipientListSeparator");
-      span.textContent = sep;
-      list.insertBefore(li, marker);
-      list.insertBefore(span, marker);
-    }
+    aData.forEach(function({ name, email }, i) {
+      if (email) {
+        let sep;
+        if (aData.length <= 1)
+          sep = "";
+        else if (i == aData.length - 2)
+          sep = strings.get("sepAnd");
+        else if (i == aData.length - 1)
+          sep = "";
+        else
+          sep = strings.get("sepComma");
+        let li = document.createElement("li");
+        li.setAttribute("title", email);
+        li.textContent = name;
+        let span = document.createElement("span");
+        span.classList.add("recipientListSeparator");
+        span.textContent = sep;
+        list.insertBefore(li, marker);
+        list.insertBefore(span, marker);
+      }
+    })
   };
   fill("#to", ".toList", to);
   fill("#cc", ".ccList", cc);

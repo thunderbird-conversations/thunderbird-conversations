@@ -97,7 +97,7 @@ let PluginHelpers = {
         "changed-fields",
       ];
       let o = {};
-      for each (let k in keys) {
+      for (let k of keys) {
         let v = aMimeMsg.get("x-bugzilla-"+k);
         if (v)
           o[k] = GlodaUtils.deMime(v);

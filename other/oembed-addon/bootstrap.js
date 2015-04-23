@@ -63,10 +63,10 @@ let hook = {
     let links = iframeDoc.getElementsByTagName("a");
     // Don't detect links in quotations.
     [x.skip = true
-      for each ([, x] in Iterator(iframeDoc.querySelectorAll("blockquote a")))];
+      for (x of iframeDoc.querySelectorAll("blockquote a"))];
     let seen = {};
     // Examine all links in the message.
-    for each (let [, a] in Iterator(links)) {
+    for (let a of links) {
       if (a.skip || (a.href in seen))
         continue;
       if (this.tryOEmbed(a, aDomNode))
@@ -129,7 +129,7 @@ let hook = {
       let div = document.createElement("div");
       div.style.marginTop = "20px";
       div.style.overflow = "auto";
-      for each (let e in [a, br, span, span2])
+      for (let e of [a, br, span, span2])
         div.appendChild(e);
       container.appendChild(div);
     } catch (e) {
@@ -171,7 +171,7 @@ function startup(aData, aReason) {
   try {
     // If we find a window open, that means that Thunderbird has been started
     // already, so go ahead, and do stuff...
-    for each (let w in fixIterator(Services.wm.getEnumerator("mail:3pane"))) {
+    for (let w of fixIterator(Services.wm.getEnumerator("mail:3pane"))) {
       doStuff();
     }
 

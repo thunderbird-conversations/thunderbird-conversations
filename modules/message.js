@@ -46,6 +46,7 @@ const Cr = Components.results;
 Cu.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI
 Cu.import("resource://gre/modules/PluralForm.jsm");
 Cu.import("resource://gre/modules/Services.jsm"); // https://developer.mozilla.org/en/JavaScript_code_modules/Services.jsm
+Cu.import("resource://conversations/modules/stdlib/misc.js");
 Cu.import("resource:///modules/mailServices.js"); // bug 629462
 Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
 Cu.import("resource:///modules/templateUtils.js"); // for makeFriendlyDateAgo
@@ -235,7 +236,7 @@ KeyListener.prototype = {
   findMsgNode: function findMsgNode(msgNode) {
     let msgNodes = this.message._domNode.ownerDocument
       .getElementsByClassName(Message.prototype.cssClass);
-    msgNodes = [x for each ([, x] in Iterator(msgNodes))];
+    msgNodes = [x for (x of msgNodes)];
     let index = msgNodes.indexOf(msgNode);
     return [msgNodes, index];
   },
@@ -245,14 +246,14 @@ KeyListener.prototype = {
   },
   loadKeybindings: function () {
     if (Prefs.hasPref("conversations.keybindings"))
-      for (let [os, bindings] in Iterator(JSON.parse(Prefs.getString("conversations.keybindings"))))
+      for (let [os, bindings] of entries(JSON.parse(Prefs.getString("conversations.keybindings"))))
         KeyListener.prototype.keybindings[os] = bindings;
   },
   restoreKeybindings: function () {
     // We need to preserve object identity for KeyListener.prototype.keybindings,
     // So we can't just clone defaultKeybindings directly.  Instead, we clone
     // each key/value pair, but leave the outer object unchanged.
-    for (let [os, bindings] in Iterator(KeyListener.prototype.defaultKeybindings))
+    for (let [os, bindings] of entries(KeyListener.prototype.defaultKeybindings))
       KeyListener.prototype.keybindings[os] = JSON.parse(JSON.stringify(bindings));
   },
   defaultKeybindings: null, // To be filled in below with a copy of these keybindings
@@ -339,12 +340,12 @@ KeyListener.prototype = {
       bindings = [this.keybindings.Other, this.keybindings.Generic];
     }
     let key = String.fromCharCode(event.which);
-    for (let [i, binding] in Iterator(bindings)) {
+    for (let binding of bindings) {
       if (key in binding) {
         let actions = binding[key];
-        for (let [j, action] in Iterator(actions)) {
+        for (let action of actions) {
           let match = true;
-          for (let mod in action.mods)
+          for (let mod of entries(action.mods))
             match = match && (action.mods[mod] == event[mod]);
           if (match) {
             let func = this.functions[action.func];
@@ -376,7 +377,7 @@ const ConversationKeybindings = {
 KeyListener.prototype.defaultKeybindings = JSON.parse(JSON.stringify(KeyListener.prototype.keybindings));
 // Load any customizations
 KeyListener.prototype.loadKeybindings();
-for (let [actionName, j] in Iterator(KeyListener.prototype.functions)) {
+for (let [actionName, j] of entries(KeyListener.prototype.functions)) {
   ConversationKeybindings.availableActions.push(actionName);
 }
 
@@ -463,7 +464,7 @@ Message.prototype = {
     };
     if (Object.keys(infos).length) {
       let items = [];
-      for each (let k in ["product", "component", "keywords", "severity",
+      for (let k of ["product", "component", "keywords", "severity",
           "status", "priority", "assigned-to", "target-milestone"]) {
         if ((!aPrevMsg || k in oldInfos) && oldInfos[k] != infos[k]) {
           let key =
@@ -529,14 +530,14 @@ Message.prototype = {
     // false means "no colors"
     data.dataContactsTo = contactsTo.map(function ([x, email]) x.toTmplData(false, Contacts.kTo, email));
     let l = data.dataContactsTo.length;
-    for each (let [i, data] in Iterator(data.dataContactsTo)) {
+    data.dataContactsTo.forEach(function(data, i) {
       if (i == 0)
         data.separator = "";
       else if (i < l - 1)
         data.separator = strings.get("sepComma");
       else
         data.separator = strings.get("sepAnd");
-    }
+    });
 
     // 1b) Don't show "to me" if this is a bugzilla email
     if (Object.keys(this.bugzillaInfos).length) {
@@ -602,7 +603,7 @@ Message.prototype = {
     let l = this._attachments.length;
     let [makePlural, ] = PluralForm.makeGetter(strings.get("pluralForm"));
     data.attachmentsPlural = makePlural(l, strings.get("attachments")).replace("#1", l);
-    for each (let [i, att] in Iterator(this._attachments)) {
+    this._attachments.forEach(function(att, i) {
       // Special treatment for images
       let isImage = (att.contentType.indexOf("image/") === 0);
       if (isImage)
@@ -623,9 +624,9 @@ Message.prototype = {
 
       // Separator... boring
       let sep = "";
-      if (i == this._attachments.length - 1) {
+      if (i == self._attachments.length - 1) {
         ;
-      } else if (i == this._attachments.length - 2) {
+      } else if (i == self._attachments.length - 2) {
         sep = strings.get("sepAnd");
       } else {
         sep = strings.get("sepComma");
@@ -637,12 +638,12 @@ Message.prototype = {
         thumb: sanitize(thumb),
         imgClass: imgClass,
         name: sanitize(att.name),
-        anchor: "msg"+this.initialPosition+"att"+i,
+        anchor: "msg"+self.initialPosition+"att"+i,
         /* Only advertise the preview for PDFs (images have the gallery view). */
         canPreview: isPdf,
         sep: sep,
       });
-    }
+    });
     return data;
   },
 
@@ -743,12 +744,12 @@ Message.prototype = {
     Log.debug("A message is selected: " + this._uri);
     this._selected = true;
     [message._selected = false
-      for ([, { message }] in Iterator(this._conversation.messages))
+      for ({ message } of this._conversation.messages)
       if (message != this)];
 
     try {
       [h.onMessageSelected(this)
-        for each ([, h] in Iterator(getHooks()))
+        for (h of getHooks())
         if (typeof(h.onMessageSelected) == "function")];
     } catch (e) {
       Log.warn("Plugin returned an error:", e);
@@ -764,7 +765,9 @@ Message.prototype = {
 
     // Forward the calls to each contact.
     let people = this._domNode.getElementsByClassName("tooltip");
-    [x.onAddedToDom(people[i]) for each ([i, [x, email]] in Iterator(this._contacts))];
+    this._contacts.forEach(function([x, ], i) {
+      x.onAddedToDom(people[i]);
+    });
 
     // Let the UI do its stuff with the tooltips
     this._conversation._htmlPane.enableTooltips(this);
@@ -1089,7 +1092,7 @@ Message.prototype = {
     let tagList = this._domNode.getElementsByClassName("regular-tags")[1];
     while (tagList.firstChild)
       tagList.removeChild(tagList.firstChild);
-    for each (let [, mtag] in Iterator(tags)) {
+    for (let mtag of tags) {
       let tag = mtag;
       let document = this._domNode.ownerDocument;
       let rgb = MailServices.tags.getColorForKey(tag.key).substr(1) || "FFFFFF";
@@ -1120,7 +1123,7 @@ Message.prototype = {
     let otherTagList = this._domNode.getElementsByClassName("regular-tags")[0];
     while (otherTagList.firstChild)
       otherTagList.removeChild(otherTagList.firstChild);
-    for (let [, node] in Iterator(tagList.childNodes))
+    for (let node of tagList.childNodes)
       otherTagList.appendChild(node.cloneNode(true));
   },
 
@@ -1217,7 +1220,7 @@ Message.prototype = {
         });
         let interestingHeaders =
           ["mailed-by", "x-mailer", "mailer", "date", "user-agent"];
-        for each (let h in interestingHeaders) {
+        for (let h of interestingHeaders) {
           if (aHeaders.has(h)) {
             let key = h;
             try { // Note all the header names are translated.
@@ -1265,13 +1268,12 @@ Message.prototype = {
         });
         // Notify contact nodes they've been added to the DOM. This is all very
         // higher-order...
-        for each (let [contactObjects, cssClass] in
+        for (let [contactObjects, cssClass] of
             [[contactsFrom, ".fromLine"], [contactsTo, ".toLine"],
              [contactsCc, ".ccLine"], [contactsBcc, ".bccLine"]]) {
-          for each (let [i, node] in
-              Iterator(this._domNode.querySelectorAll(cssClass+" .tooltip"))) {
+          Array.prototype.forEach.call(this._domNode.querySelectorAll(cssClass+" .tooltip"), function(node, i) {
             contactObjects[i][0].onAddedToDom(node);
-          }
+          });
         }
       } catch (e) {
         Log.error(e);
@@ -1364,7 +1366,7 @@ Message.prototype = {
     let msgWindow = topMail3Pane(this).msgWindow;
     let self = this;
     
-    for each (let [, h] in Iterator(getHooks())) {
+    for (let h of getHooks()) {
       try {
         if (typeof(h.onMessageBeforeStreaming) == "function") 
           h.onMessageBeforeStreaming(this);
@@ -1449,7 +1451,7 @@ Message.prototype = {
             //  performed now, not later. This gives plugins a chance to modify
             //  the DOM of the message (i.e. decrypt it) before we tweak the
             //  fonts and stuff.
-            for each (let [, h] in Iterator(getHooks())) {
+            for (let h of getHooks()) {
               try {
                 if (typeof(h.onMessageStreamed) == "function") 
                   h.onMessageStreamed(self._msgHdr, self._domNode, msgWindow, self);
@@ -1648,10 +1650,10 @@ Message.prototype = {
     // quoted text left over, need to investigate why...
     let prepare = function (aNode) {
       let node = aNode.cloneNode(true);
-      for each (let [, x] in Iterator(node.getElementsByClassName("moz-txt-sig")))
+      for (let x of node.getElementsByClassName("moz-txt-sig"))
         if (x)
           x.parentNode.removeChild(x);
-      for each (let [, x] in Iterator(node.querySelectorAll("blockquote, div")))
+      for (let x of node.querySelectorAll("blockquote, div"))
         if (x && x.style.display == "none")
           x.parentNode.removeChild(x);
       return node.innerHTML;
@@ -1751,7 +1753,7 @@ function MessageFromGloda(aConversation, aGlodaMsg, aLateAttachments) {
 
   if ("mailingLists" in aGlodaMsg)
     this.mailingLists =
-      [x.value for each ([, x] in Iterator(aGlodaMsg.mailingLists))];
+      [x.value for (x of aGlodaMsg.mailingLists)];
 
   this.isReplyListEnabled =
     ("mailingLists" in aGlodaMsg) && aGlodaMsg.mailingLists.length;
@@ -1971,27 +1973,13 @@ let PostStreamingFixesMixIn = {
     // Launch various crappy pieces of code^W^W^W^W heuristics to
     //  convert most common quoting styles to real blockquotes. Spoiler:
     //  most of them suck.
-    let self = this;
     let iframeDoc = iframe.contentDocument;
     try {
-      let t = Date.now();
-      let _log = function () {
-        let t1 = Date.now();
-        let delta = t1 - t;
-        let args = [x for each ([, x] in Iterator(arguments))];
-        Log.debug.apply(Log, args.concat([delta+"ms"]));
-        t = Date.now();
-      };
       convertOutlookQuotingToBlockquote(iframe.contentWindow, iframeDoc);
-      _log("convertOutlookQuotingToBlockquote");
       convertHotmailQuotingToBlockquote1(iframeDoc);
-      _log("convertHotmailQuotingToBlockquote1");
       convertForwardedToBlockquote(iframeDoc);
-      _log("convertForwardedToBlockquote");
       convertMiscQuotingToBlockquote(iframeDoc);
-      _log("convertMiscQuotingToBlockquote");
       fusionBlockquotes(iframeDoc);
-      _log("fusionBlockquotes");
     } catch (e) {
       Log.warn(e);
       dumpCallStack(e);
@@ -2102,7 +2090,7 @@ let PostStreamingFixesMixIn = {
     let gPhishingDetector = topMail3Pane(this).gPhishingDetector;
     let isPhishing = false;
     let links = iframeDoc.getElementsByTagName("a");
-    for (let [, a] in Iterator(links)) {
+    for (let a of links) {
       if (!a)
         continue;
       let linkText = a.textContent;
@@ -2174,7 +2162,7 @@ let PostStreamingFixesMixIn = {
     let self = this;
     let iframeDoc = iframe.contentDocument;
     let mainWindow = topMail3Pane(this);
-    for each (let [, a] in Iterator(iframeDoc.querySelectorAll("a"))) {
+    for (let a of iframeDoc.querySelectorAll("a")) {
       if (!a)
         continue;
       let anchor = this._getAnchor(a.href);

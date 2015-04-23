@@ -153,7 +153,7 @@ const PrefEditors = {
    * @param {Object} binding is the specific keybinding object to be removed
    */
   deleteBinding: function deleteBinding(key, binding) {
-    for (let [os, bindings] in Iterator(bindingGroups)) {
+    for (let [os, bindings] of entries(bindingGroups)) {
       if (key in bindings) {
         bindings[key] = bindings[key].filter(function (x) x !== binding);
         if (!bindings[key].length)
@@ -216,7 +216,7 @@ const Listeners = {
     let binding = PrefEditors.createBinding(event.target.value, oldBinding.func);
     parent.hotkeyBinding = binding;
     parent.hotkey = event.target.value;
-    for (let [i,child] in Iterator(parent.querySelectorAll("button.setModifier"))) {
+    for (let child of parent.querySelectorAll("button.setModifier")) {
       let state = parseInt(child.getAttribute("checkState"), 10);
       let modKey = child.getAttribute("label");
       PrefEditors.updateBinding(binding, modKey, state);
@@ -319,7 +319,7 @@ const Templates = {
     list.setAttribute("class", "actionList");
     let popup = doc.createElement("menupopup");
     list.appendChild(popup);
-    for (let [i, cmd] in Iterator(arr)) {
+    for (let cmd of arr) {
       let item = doc.createElement("menuitem");
       popup.appendChild(item);
       item.setAttribute("value", cmd);
@@ -436,7 +436,7 @@ const Templates = {
     hbox.hotkey = key;
     hbox.hotkeyBinding = binding;
     Templates.buildDelete(doc, hbox, key);
-    for (let [i, k] in Iterator(["super", "ctrl", "shift", "meta", "alt"])) {
+    for (let k of ["super", "ctrl", "shift", "meta", "alt"]) {
       Templates.buildButton(doc, hbox, k, binding.mods[k + "Key"]);
       hbox.appendChild(doc.createElement("separator"));
       Templates.buildLbl(doc, hbox, "+");
@@ -494,9 +494,9 @@ const CustomizeKeys = {
                        Generic: ConversationKeybindings.bindings.Generic};
     }
     let keysVbox = showhide.previousElementSibling;
-    for (let [os, bindings] in Iterator(bindingGroups)) {
-      for (let [key, keybinding] in Iterator(bindings)) {
-        for (let [j, binding] in Iterator(keybinding)) {
+    for (let [os, bindings] of entries(bindingGroups)) {
+      for (let [key, keybinding] of entries(bindings)) {
+        for (let binding of keybinding) {
           keysVbox.appendChild(Templates.buildHotKey(doc, ""+key, binding));
         }
       }
