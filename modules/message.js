@@ -361,7 +361,7 @@ KeyListener.prototype = {
 const ConversationKeybindings = {
   bindings: KeyListener.prototype.keybindings,
   registerCustomListener : function registerCustomListener(name, func) {
-    if (this.availableActions.indexOf(name) >= 0) 
+    if (this.availableActions.indexOf(name) >= 0)
       return false;
     this.availableActions.push(name);
     KeyListener.prototype.functions[name] = func;
@@ -954,7 +954,7 @@ Message.prototype = {
         attInfos[j].save();
       });
 
-      let maybeViewable = 
+      let maybeViewable =
         att.contentType.indexOf("image/") === 0
         || att.contentType.indexOf("text/") === 0
       ;
@@ -1361,10 +1361,10 @@ Message.prototype = {
     let originalScroll = this._domNode.ownerDocument.documentElement.scrollTop;
     let msgWindow = topMail3Pane(this).msgWindow;
     let self = this;
-    
+
     for (let h of getHooks()) {
       try {
-        if (typeof(h.onMessageBeforeStreaming) == "function") 
+        if (typeof(h.onMessageBeforeStreaming) == "function")
           h.onMessageBeforeStreaming(this);
       } catch (e) {
         Log.warn("Plugin returned an error:", e);
@@ -1449,7 +1449,7 @@ Message.prototype = {
             //  fonts and stuff.
             for (let h of getHooks()) {
               try {
-                if (typeof(h.onMessageStreamed) == "function") 
+                if (typeof(h.onMessageStreamed) == "function")
                   h.onMessageStreamed(self._msgHdr, self._domNode, msgWindow, self);
               } catch (e) {
                 Log.warn("Plugin returned an error:", e);
@@ -1601,12 +1601,12 @@ Message.prototype = {
           OnStopRunningUrl: function () {},
           QueryInterface: XPCOMUtils.generateQI([Ci.nsISupports, Ci.nsIUrlListener])
         };
- 
+
         /**
         * When you want a message displayed....
         *
         * @param in aMessageURI Is a uri representing the message to display.
-        * @param in aDisplayConsumer Is (for now) an nsIDocShell which we'll use to load 
+        * @param in aDisplayConsumer Is (for now) an nsIDocShell which we'll use to load
         *                         the message into.
         *                         XXXbz Should it be an nsIWebNavigation or something?
         * @param in aMsgWindow
@@ -1810,13 +1810,13 @@ function MessageFromDbHdr(aConversation, aMsgHdr) {
         }
         Log.debug(self.mailingLists);
 
-        self.isReplyListEnabled = 
+        self.isReplyListEnabled =
           aMimeMsg &&
           aMimeMsg.has("list-post") &&
           self.RE_LIST_POST.exec(aMimeMsg.get("list-post"))
         ;
         let seen = {};
-        self.isReplyAllEnabled = 
+        self.isReplyAllEnabled =
           parseMimeLine(aMimeMsg.get("from"), true)
           .concat(parseMimeLine(aMimeMsg.get("to"), true))
           .concat(parseMimeLine(aMimeMsg.get("cc"), true))

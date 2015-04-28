@@ -151,7 +151,7 @@ MonkeyPatch.prototype = {
     // This has to be the first time that the documentation on MDC
     //  1) exists and
     //  2) is actually relevant!
-    // 
+    //
     //            OMG !
     //
     // https://developer.mozilla.org/en/Extensions/Thunderbird/Creating_a_Custom_Column
@@ -182,7 +182,7 @@ MonkeyPatch.prototype = {
           parseMimeLine(line, true).forEach(function(x) {
             people.push(format(x, pos))
           });
-	}
+        }
         // We add everyone
         addPeople("author", true);
         addPeople("recipients", false);
@@ -209,7 +209,7 @@ MonkeyPatch.prototype = {
     let columnHandler = {
       getCellText: function(row, col) {
         let msgHdr = window.gDBView.getMsgHdrAt(row);
-        return participants(msgHdr);    
+        return participants(msgHdr);
       },
       getSortStringForRow: function(msgHdr) {
         return participants(msgHdr);
@@ -229,7 +229,7 @@ MonkeyPatch.prototype = {
 
     // The main window is loaded when the monkey-patch is applied
     Services.obs.addObserver({
-      observe: function(aMsgFolder, aTopic, aData) {  
+      observe: function(aMsgFolder, aTopic, aData) {
         window.gDBView.addColumnHandler("betweenCol", columnHandler);
       }
     }, "MsgCreateDBView", false);
@@ -300,7 +300,7 @@ MonkeyPatch.prototype = {
         Log.debug("Error in the onLocationChange handler "+e+"\n");
         dumpCallStack(e);
       }
-    } 
+    }
     if (window.gFolderDisplay.view.showThreaded) {
       // The || is for the wicked case that Standard8 sent me a screencast for.
       // This makes sure we *always* mark the selected message as read, even in

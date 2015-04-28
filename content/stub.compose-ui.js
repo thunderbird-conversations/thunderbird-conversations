@@ -684,9 +684,9 @@ ComposeSession.prototype = {
       draft: function ({ to, cc, bcc }) {
         let makeTokens = function (aList) {
           let [list, listEmailAddresses] = parse(aList);
-	  return Array.prototype.map.call(list, function(item, i) {
+          return Array.prototype.map.call(list, function(item, i) {
             return asToken(null, item, listEmailAddresses[i], null);
-	  });
+          });
         };
         setupAutocomplete(makeTokens(to), makeTokens(cc), makeTokens(bcc));
         self.setupDone();
@@ -919,7 +919,7 @@ AttachmentList.prototype = {
 
   _populateUI: function (msgAttachment, data) {
     let self = this;
-    let line = $("#quickReplyAttachmentTemplate").tmpl(data);
+    let line = tmpl("#quickReplyAttachmentTemplate", data);
     line.find(".openAttachmentLink").click(function () {
       let url = Services.io.newURI(data.url, null, null);
       url = url.QueryInterface(Ci.nsIURL);
@@ -1214,7 +1214,7 @@ let sendListener = {
         Log.warn("Plugin returned an error:", e);
         dumpCallStack(e);
       };
-	}
+        }
   },
 
   /**

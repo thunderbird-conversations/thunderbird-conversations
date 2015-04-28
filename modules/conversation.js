@@ -174,7 +174,7 @@ let OracleMixIn = {
         //  message if all messages are read), and we expand all unread messages
         //  + the last one (which will probably be unread as well).
         if (this.scrollMode == Prefs.kScrollUnreadOrLast) {
-	  this.messages.forEach(function ( { message }, i) {
+          this.messages.forEach(function ( { message }, i) {
             if (!message.read || i == self.messages.length - 1)
               expand(message);
             else
@@ -183,7 +183,7 @@ let OracleMixIn = {
         // In this mode, we scroll to the selected message, and we only expand
         //  the selected message.
         } else if (this.scrollMode == Prefs.kScrollSelected) {
-	  this.messages.forEach(function( { message }, i) {
+          this.messages.forEach(function( { message }, i) {
             if (i == aNeedsFocus)
               expand(message);
             else
@@ -195,14 +195,14 @@ let OracleMixIn = {
 
         break;
       case Prefs.kExpandAll:
-	this.messages.forEach(function( { message }) {
+        this.messages.forEach(function( { message }) {
           expand(message);
-	});
+        });
         break;
       case Prefs.kExpandNone:
         this.messages.forEach(function( { message }) {
           collapse(message);
-	});
+        });
         break;
       default:
         Log.assert(false, "Unknown value for pref expand_who");
@@ -1080,7 +1080,7 @@ Conversation.prototype = {
       Array.prototype.forEach.call(messageNodes, function(node, i) {
         if (i < messageNodes.length) {
           node.setAttribute("tabindex", i+2);
-	}
+        }
       });
       focusedNode.setAttribute("tabindex", "1");
 
