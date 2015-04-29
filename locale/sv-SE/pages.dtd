@@ -1,0 +1,36 @@
+<!ENTITY assistant.title "Guiden Första körningen">
+<!ENTITY assistant.intro "Hej, det här är <strong>Thunderbird Conversations</strong>!">
+<!ENTITY assistant.p1 "För att kunna göra ditt liv enklare, så kommer denna guide att finjustera din Thunderbird-konfiguration för att säkerställa att du får en så bra upplevelse som möjligt. Vi vill ju inte att du skall känna dig otillfredsställd!">
+<!ENTITY assistant.p2 "Justeringarna vi gör är alla reversibla, så var inte orolig: Skulle du inte uppskatta Thunderbird Conversations, så återställer vi alla inställningsändringar vi har gjort så snart du avinstallerar tillägget.">
+<!ENTITY assistant.p3 "Det här kan ta ett tag. Du kan antingen vänta tills det här fönstret stängs eller stänga fönstret själv och följa förloppet via Verktyg &gt; Aktiviteter.">
+<!ENTITY assistant.working "Arbetar…">
+<!ENTITY assistant.review "Granska ändringar">
+<!ENTITY assistant.apply "Verkställ ändringarna">
+<!ENTITY assistant.settings "Vissa inställningar är obligatoriska för att Thunderbird Conversations skall fungera korrekt. Andra rekommenderas starkt, och åter andra är valfria.">
+<!ENTITY assistant.actionEnableGloda "Säkerställ att global sökning och indexeraren är aktiverade.">
+<!ENTITY assistant.actionDontExpand "Expandera inte trådar i meddelandelistan som innehåller olästa meddelanden.">
+<!ENTITY assistant.actionAttachmentsInline "Visa inte bilagor infogade (rekommenderas <strong>starkt</strong>).">
+<!ENTITY assistant.actionOfflineDownload "Inkorgen och Skickat synkroniseras för offlinelagring (rekommenderas <strong>starkt</strong>).">
+<!ENTITY assistant.actionUnifiedInboxSearchesSent "Den gemensamma inkorgen söker även igenom Skickat-mappar (rekommenderas <strong>starkt</strong>).">
+<!ENTITY assistant.actionSetupView "Byt till global inkorg, gör visningen trådad, sortera efter datum, aktivera en &quot;Antal olästa&quot;-kolumn och en ny &quot;Mellan&quot;-kolumn (rekommenderas <strong>starkt</strong>).">
+<!ENTITY assistant.actionSetupViewDefaults "Använd dessa anpassade sorteringsinställningar för alla mappar.">
+<!ENTITY assistant.actionEnsureMessagePaneVisible "Säkerställ att meddelandepanelen är synlig.">
+<!ENTITY assistant.settings2 "Om du skulle vilja aktivera fler alternativ senare, så kommer du åt denna guide via tilläggets inställningar, under avsnittet &quot;Avancerat&quot;.">
+<!ENTITY feedback.message "Du har nu använt Thunderbird Conversations under en tid. Skulle du kunna tänka dig att berätta för oss vad du tycker om tillägget? Vi uppskattar verkligen alla kommentarer som du kan ge oss!">
+<!ENTITY feedback.no "Nej tack">
+<!ENTITY feedback.yes "Ge feedback">
+<!ENTITY feedback.pageTitle "Ge feedback">
+<!ENTITY stub.loading "Läser in…">
+<!ENTITY stub.trash.tooltip "Ta bort denna konversation">
+<!ENTITY stub.archive.tooltip "Arkivera denna konversation">
+<!ENTITY stub.forward.tooltip "Vidarebefordra denna konversation">
+<!ENTITY stub.print.tooltip "Skriv ut denna konversation">
+<!ENTITY stub.junk.tooltip "Märk detta meddelande som skräppost">
+<!ENTITY stub.expand.tooltip "Visa/dölj alla meddelanden">
+<!ENTITY stub.read.tooltip "Växla lästa/olästa för alla meddelanden">
+<!ENTITY stub.detach.tooltip2 "Visa denna konversation i en ny flik">
+<!ENTITY stub.menu.tooltip "Konversationsåtgärder">
+<!ENTITY stub.context.open "Öppna bilaga">
+<!ENTITY stub.context.save "Spara bilaga">
+<!ENTITY stub.context.detach "Koppla loss bilaga">
+<!ENTITY stub.context.delete "Ta bort bilaga">
