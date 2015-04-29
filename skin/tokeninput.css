@@ -35,7 +35,6 @@ li.token-input-token-facebook {
     margin: 3px;
     padding: 1px 3px;
     background-color: -moz-oddtreerow;
-    color: -moz-oddtreerowtext;
     cursor: default;
     border: 1px solid threedshadow;
     font-size: 11px;
@@ -110,7 +109,6 @@ div.token-input-dropdown-facebook ul li.token-input-dropdown-item2-facebook {
 
 div.token-input-dropdown-facebook ul li em {
     font-weight: bold;
-    font-style: none;
 }
 
 div.token-input-dropdown-facebook ul li.token-input-selected-dropdown-item-facebook {

@@ -918,6 +918,8 @@
       <div class="detailsLine">
         {{tmpl "attachmentDetails" this}}
       </div>
+
+      {{#if generateLightningTempl}}
       <div class="lightningImipBar notificationBar" style="display: none">
         <img class="lightningImipImage" src="chrome://calendar/skin/cal-icon32.png"/>
         <span class="lightningImipText"></span>
@@ -1052,6 +1054,7 @@
           </menupopup>
         </button>
       </div>
+      {{/if}}
       <div class="phishingBar notificationBar" style="display: none">
         <img src="chrome://messenger/skin/icons/phishing.png" style="vertical-align: middle;" />
         {{str "scam"}}

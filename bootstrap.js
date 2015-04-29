@@ -163,7 +163,7 @@ let windowObserver = {
       monkeyPatchWindow(aSubject.window, true);
     }
   }
-}
+};
 
 function startup(aData, aReason) {
   ResourceRegister.init(aData.installPath, "conversations");
@@ -230,8 +230,6 @@ function startup(aData, aReason) {
 function shutdown(aData, aReason) {
   // No need to do extra work here
   Log.debug("shutdown, aReason=", aReason);
-  // Load imports for the BOOTSTRAP_REASONS constants; should have happened before in most cases
-  loadImports();
   if (aReason == BOOTSTRAP_REASONS.APP_SHUTDOWN)
     return;
 

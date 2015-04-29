@@ -48,7 +48,7 @@
 }
 
 #conversationHeaderWrapper {
-  -moz-box-shadow: 0 0 0 transparent;
+  box-shadow: 0 0 0 transparent;
   position: static;
   font-size: large;
 }
