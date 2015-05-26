@@ -7,21 +7,24 @@
   <link rel="stylesheet" href="style.css" type="text/css" media="screen" />
   <link rel="stylesheet" type="text/css" href="css/jquery.lightbox-0.5.css" media="screen" />
   <script type="text/javascript" src="chrome://messenger/content/jquery.js"></script>
-  <script type="text/javascript" src="../js/jquery.tmpl.js"></script>
+  <script type="text/javascript"
+    src="chrome://conversations/content/js/handlebars-v3.0.0.js"></script>
+  <script type="application/javascript;version=1.8"
+    src="chrome://conversations/content/handlebars-wrapper.js"></script>
   <script src="js/gallery.js" type="application/javascript;version=1.8"></script>
   <script type="text/javascript" src="js/jquery.lightbox-0.5.js"></script>
 </head>
 
 <body>
-  <script id="imageTemplate" type="text/x-jquery-tmpl">
+  <script id="imageTemplate" type="text/x-handlebars-template">
     <li class="photoWrap">
-      <a href="${url}" title="${name}" class="lightBox">
-        <img src="${url}">
+      <a href="{{url}}" title="{{name}}" class="lightBox">
+        <img src="{{url}}">
       </a>
       <div class="hbox">
-        <span class="filename">${name}</span> 
-        <span class="size">${size}</span>
-        <span class="count boxFlex">${i}/${n}</span>
+        <span class="filename">{{name}}</span>
+        <span class="size">{{size}}</span>
+        <span class="count boxFlex">{{i}}/{{n}}</span>
       </div>
     </li>
   </script>
