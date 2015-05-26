@@ -22,6 +22,8 @@
     src="chrome://messenger/content/jquery.js"></script>
   <script type="text/javascript"
     src="chrome://conversations/content/js/handlebars-v3.0.0.js"></script>
+  <script type="application/javascript;version=1.8"
+    src="chrome://conversations/content/handlebars-wrapper.js"></script>
   <script type="text/javascript"
     src="chrome://conversations/content/js/jquery.tokeninput.js"></script>
   <!-- The two scripts below share the same scope, they were split for the sake
@@ -288,59 +290,7 @@
     let Log = setupLogging("Conversations.Stub");
     let isInTab = false;
 
-    // Handlebars
-    (function () {
-      let tmpl0 = function(id, data) {
-        try {
-          // Per compatibility with the old spec of jquery-tmpl.
-          if (!$.isArray(data))
-            data = [data];
-          var t = Handlebars.compile(document.querySelector(id).innerHTML);
-          var html = "";
-          for (let i = 0; i < data.length; ++i)
-            html += t(data[i]).trim();
-          return html;
-        } catch (e) {
-          Log.error("Couldn't compile template", id, "because of:", e);
-          dumpCallStack(e);
-        }
-      };
-      window.tmpl = function (id, data) $(tmpl0(id, data));
-
-      let strings = new StringBundle("chrome://conversations/locale/template.properties");
-      let str0 = function (x, ...args) {
-        try {
-          var s = strings.get(x);
-          // One extra argument added by Handlebars
-          for (let i = 0; i < args.length - 1; ++i)
-            s = s.replace("#"+(i+1), args[i]);
-          return s;
-        } catch (e) {
-          Log.error("No such string", x);
-          Log.debug(e);
-          dumpCallStack(e);
-        }
-      };
-      let str = function (x, ...args) {
-        return new Handlebars.SafeString(str0(x, ...args));
-      };
-      let strC = function (x, ...args) {
-        var s = str0(x, ...args);
-        return new Handlebars.SafeString(s.charAt(0).toUpperCase() + s.substring(1));
-      };
-      let tmpl = function (short, data) {
-        var id = "#"+short+"Template";
-        return new Handlebars.SafeString(tmpl0(id, data));
-      };
-      let trim = function (s) {
-        return String.trim(s || "");
-      };
-
-      Handlebars.registerHelper("str", str);
-      Handlebars.registerHelper("strC", strC);
-      Handlebars.registerHelper("tmpl", tmpl);
-      Handlebars.registerHelper("trim", trim);
-    })();
+    wrapHandlebars();
 
     $(document).ready(function () {
       let stylesheet = [x

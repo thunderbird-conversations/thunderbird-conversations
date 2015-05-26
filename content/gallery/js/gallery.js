@@ -50,6 +50,8 @@ Cu.import("resource://conversations/modules/log.js");
 let Log = setupLogging("Conversations.Gallery");
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
+wrapHandlebars();
+
 let gallery = null;
 
 function Gallery (aMsg) {
@@ -80,7 +82,7 @@ Gallery.prototype = {
   /**
    * This function is called once the message has been streamed and the relevant
    *  data has been extracted from it.
-   * It runs the jquery-tmpl template and then appends the result to the root
+   * It runs the handlebars template and then appends the result to the root
    *  DOM node.
    */
   output: function (aGlodaMessages) {
@@ -100,7 +102,7 @@ Gallery.prototype = {
     })
 
     // Output the data
-    $("#imageTemplate").tmpl(data).appendTo($(".images"));
+    tmpl("#imageTemplate", data).appendTo($(".images"));
     // This will also update the tab title
     document.title = strings.get("galleryTitle").replace("#1", this.subject);
 
