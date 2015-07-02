@@ -1166,11 +1166,11 @@ Message.prototype = {
           let tmplData = self.toTmplDataForAttachments();
           let w = self._conversation._htmlPane;
           let $ = w.$;
-          this._conversation.tmpl("#attachmentIconTemplate", tmplData).appendTo(
+          self._conversation.tmpl("#attachmentIconTemplate", tmplData).appendTo(
             $(self._domNode.querySelector(".attachmentIcon")).empty());
-          this._conversation.tmpl("#attachmentDetailsTemplate", tmplData).appendTo(
+          self._conversation.tmpl("#attachmentDetailsTemplate", tmplData).appendTo(
             $(self._domNode.querySelector(".detailsLine")).empty());
-          this._conversation.tmpl("#attachmentsTemplate", tmplData).appendTo(
+          self._conversation.tmpl("#attachmentsTemplate", tmplData).appendTo(
             $(self._domNode.querySelector(".attachments-container")).empty());
 
           try {
