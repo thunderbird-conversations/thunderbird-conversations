@@ -1,0 +1,35 @@
+<!ENTITY option.expand_who "Zadano, proširi:">
+<!ENTITY option.expand_auto2 "Automatsko">
+<!ENTITY option.expand_auto2.tooltip "Ako je tema skupljena, proširi sve nepročitane poruke ili zadnju poruku. Ako je proširena, samo proširi odabrane poruke u popisu poruka.">
+<!ENTITY option.expand_none "Nema poruka">
+<!ENTITY option.expand_all "Sve poruke">
+<!ENTITY title.quoting2 "Citirani tekst">
+<!ENTITY desc.quoting "Citati višlji od ovog broja linija će biti skupljeni.">
+<!ENTITY title.hide_sigs "Sakrij potpise">
+<!ENTITY desc.hide_sigs "Da li su potpisi skupljeni kao zadano stanje.">
+<!ENTITY title.assistant "Čarobnjak za postavke">
+<!ENTITY option.assistant "Pokreni čarobnjaka za postavke">
+<!ENTITY title.friendly_date "Prijateljski datumi">
+<!ENTITY option.no_friendly_date2 "U gornjem desnom kutu, koristi &quot;normalne&quot; datume, isto kao i u popisu poruka, umjesto &quot;jučer&quot; i drugih.">
+<!ENTITY title.customize_keys "Prilagodi tipke">
+<!ENTITY desc.customize_keys "Prilagodi kratice za ovaj dodatak">
+<!ENTITY label.expand_keys "Proširi postavke kratica">
+<!ENTITY label.collapse_keys "Sakrij postavke kratica">
+<!ENTITY title.monospaced_senders "Prikaži kao monospace">
+<!ENTITY option.monospaced_senders2 "Poruke sa ovih adresa/mailing lista trebaju biti prikazane u monospace fontu (odvojite koristeći zareze)">
+<!ENTITY title.tweak_chrome "Podesi chrome fontove">
+<!ENTITY option.tweak_bodies "Podesi fontove u tijelu poruke kako bi bili u skladu sa vanjskim fontom (preporučeno, zahtjeva ponovno pokretanje).">
+<!ENTITY title.tweak_bodies "Podesi fontove tijela poruke">
+<!ENTITY option.tweak_chrome "Umanji veličinu fonta za chrome razgovora (preporučeno, zahtjeva ponovno pokretanje).">
+<!ENTITY title.add_embeds "Dodaj ugradnje">
+<!ENTITY option.add_embeds "Otkrij poveznice na razne usluge (npr. YouTube) u porukama e-pošte i prikaži ih umetnute.">
+<!ENTITY title.debugging "Otkrivanje grešaka">
+<!ENTITY desc.debugging "Omogući otklanjanje grešaka">
+<!ENTITY title.operate_on_conversations "Tipke alatne trake">
+<!ENTITY option.operate_on_conversations "Tipke alatne trake trebaju arhivirati i obrisati cijeli razgovor, ne samo odabrane poruke">
+<!ENTITY title.extra_attachments "Volim privitke">
+<!ENTITY desc.extra_attachments2 "U rijetkim slučajevima, Thunderbird neće uspjeti prepoznati neke privitke. Ova mogućnost vam omogućava zaobilaženje Thunderbird greške i prikazuje što je moguće više privitaka. Koristite u kombinaciji sa dodatkom Show All Body Parts.">
+<!ENTITY title.send_in_background "Šalji u pozadini">
+<!ENTITY desc.send_in_background "Ovo će odgoditi slanje poruka tako da nemorate čekati da proces slanja završi prije prebacivanja između razgovora. Upozorenje: ova mogućnost nije završena (vidite SendInBackground na wiki.mozilla.org) i odnosi se također i na normalni proces. Zahtjeva ponovno pokretanje.">
+<!ENTITY title.compose_in_tab "Sakriveni prozor za pisanje">
+<!ENTITY desc.compose_in_tab "Ctrl-Shift-N otvara skriveni, nepodržani, prozor za pisanje u novu karticu">

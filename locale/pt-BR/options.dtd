@@ -1,0 +1,35 @@
+<!ENTITY option.expand_who "Por padrão, expandir:">
+<!ENTITY option.expand_auto2 "Automático">
+<!ENTITY option.expand_auto2.tooltip "Se o tópico estiver recolhido, expandir todas as mensagens não lidas ou a última mensagem. Se o tópico estiver expandido, somente expandir a mensagem selecionada na lista de mensagens.">
+<!ENTITY option.expand_none "Nenhuma mensagem">
+<!ENTITY option.expand_all "Todas as mensagens">
+<!ENTITY title.quoting2 "Texto entre aspas">
+<!ENTITY desc.quoting "Textos entre aspas com mais linhas que este número serão recolhidas.">
+<!ENTITY title.hide_sigs "Hide Signatures">
+<!ENTITY desc.hide_sigs "Whether signatures are collapsed by default.">
+<!ENTITY title.assistant "Assistente de instalação">
+<!ENTITY option.assistant "Iniciar assistente de instalação">
+<!ENTITY title.friendly_date "Datas amigáveis">
+<!ENTITY option.no_friendly_date2 "No canto superior direito, usar data &quot;normais&quot;, como na lista de mensagens, em vez de usar &quot;ontem&quot;, &quot;hoje&quot;, etc.">
+<!ENTITY title.customize_keys "Personalizar atalhos">
+<!ENTITY desc.customize_keys "Personaliza os atalhos de teclado dessa extensão">
+<!ENTITY label.expand_keys "Expandir configurações de atalhos">
+<!ENTITY label.collapse_keys "Recolher configurações de atalhos">
+<!ENTITY title.monospaced_senders "Exibir com espaçamento fixo">
+<!ENTITY option.monospaced_senders2 "Mensagens desses endereços e listas (separar com vírgulas) devem ser exibidas com tipos de letra de espaçamento fixo">
+<!ENTITY title.tweak_chrome "Ajustar fontes da interface">
+<!ENTITY option.tweak_bodies "Ajustar as fontes no corpo da mensagem para torná-las consistentes com a fonte externa (recomendado, necessário reiniciar)">
+<!ENTITY title.tweak_bodies "Ajustar fontes do corpo das mensagens">
+<!ENTITY option.tweak_chrome "Reduzir o tamanho da fonte dos elementos visuais das conversas (recomendado, necessário reiniciar)">
+<!ENTITY title.add_embeds "Adicionar anexos">
+<!ENTITY option.add_embeds "Detectar links para vários serviços (por exemplo, YouTube) e visualizá-los nas próprias mensagens">
+<!ENTITY title.debugging "Depuração">
+<!ENTITY desc.debugging "Habilitar mensagens de depuração no console do sistema e no console de erros. Isto vai gerar uma grande quantidade de mensagens.">
+<!ENTITY title.operate_on_conversations "Botões da barra de ferramentas">
+<!ENTITY option.operate_on_conversations "Os botões da barra de ferramentas devem arquivar e excluir a conversa inteira e não apenas as mensagens selecionadas">
+<!ENTITY title.extra_attachments "Eu adoro anexos">
+<!ENTITY desc.extra_attachments2 "Em certos casos, o Thunderbird não consegue reconhecer alguns anexos. Estas opções permitem contornar o bug do Thunderbird e garantem que tentemos exibir o máximo de anexos que pudermos. Usar junto com a extensão &quot;Show All Body Parts&quot;.">
+<!ENTITY title.send_in_background "Enviar em segundo plano">
+<!ENTITY desc.send_in_background "Colocar mensagens em uma fila para envio, de modo que você não tenha que esperar a conclusão do envio para poder ver outras conversas. Atenção: este recurso não está completo (veja SendInBackground em wiki.mozilla.org) e também se aplica ao processo de composição normal. Necessário reiniciar.">
+<!ENTITY title.compose_in_tab "Janela de composição oculta">
+<!ENTITY desc.compose_in_tab "Ctrl-Shift-N abre a janela de composição oculta, não suportada, em nova aba">

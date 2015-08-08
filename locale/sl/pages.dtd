@@ -1,0 +1,36 @@
+<!ENTITY assistant.title "Najprej zaženite pomočnika">
+<!ENTITY assistant.intro "Pozdravljeni, to je dodatek <strong>Thunderbird Conversations</strong>!">
+<!ENTITY assistant.p1 "Za lažjo namestitev bo pomočnik prilagodil vaše nastavitve Thunderbirda, da zagotovi optimalno izkušnjo. Ne želimo, da se počutite nezadovoljni!">
+<!ENTITY assistant.p2 "Narejene prilagoditve se da povrniti, tako da vam ni potrebno skrbeti: če ne boste uživali v dodatku Thunderbird Conversations, bodo nastavitve povrnjene takoj, ko boste odstranili dodatek.">
+<!ENTITY assistant.p3 "To lahko traja nekaj časa. Lahko počakate, da se to okno zapre ali pa ga zaprete sami in preverite napredek na Orodja > Upravitelj dejavnosti.">
+<!ENTITY assistant.working "Obdelava ...">
+<!ENTITY assistant.review "Preglej spremembe">
+<!ENTITY assistant.apply "Uveljavi spremembe">
+<!ENTITY assistant.settings "Nekatere nastavitve so za pravilno delovanje dodatka Thunderbird Conversations obvezne. Nekatere so močno priporočene in nekatere izbirne.">
+<!ENTITY assistant.actionEnableGloda "Zagotovi, da je omogočeno splošno iskanje in kazalo.">
+<!ENTITY assistant.actionDontExpand "V seznamu sporočil ne razširi niti, ki vsebujejo neprebrana sporočila.">
+<!ENTITY assistant.actionAttachmentsInline "Ne prikaži priponk v besedilu (<strong>zelo</strong> priporočeno).">
+<!ENTITY assistant.actionOfflineDownload "Mapi &quot;Prejeto&quot; in &quot;Poslano&quot; sta usklajeni za shrambo v nepovezanem načinu (<strong>zelo</strong> priporočeno).">
+<!ENTITY assistant.actionUnifiedInboxSearchesSent "Iskanje v poenoteni mapi &quot;Prejeto&quot; išče tudi v mapi &quot;Poslano&quot; (<strong>zelo</strong> priporočeno).">
+<!ENTITY assistant.actionSetupView "Preklopi na Splošno mapo &quot;Prejeto&quot;, omogoči prikaz niti, razvrsti po datumu, omogoči stolpec za prikaz števila neprebranih sporočil in nov stolpec &quot;med&quot; (<strong>zelo</strong> priporočeno).">
+<!ENTITY assistant.actionSetupViewDefaults "Uporabi nastavitve razvrščanja po meri za vse mape.">
+<!ENTITY assistant.actionEnsureMessagePaneVisible "Zagotovi, da je podokno sporočil vidno.">
+<!ENTITY assistant.settings2 "Če bi morda želeli kasneje omogočiti več možnosti, lahko dostopate do tega čarovnika v nastavitvah dodatka v odseku  &quot;napredno&quot;.">
+<!ENTITY feedback.message "Thunderbird Conversations uporabljate že kar nekaj časa, bi nam radi o njem sporočili svoje mnenje? Radi bi slišali vaše pripombe o njem!">
+<!ENTITY feedback.no "Ne, hvala">
+<!ENTITY feedback.yes "Sporočite povratne informacije">
+<!ENTITY feedback.pageTitle "Podajte povratne informacije">
+<!ENTITY stub.loading "Nalaganje ...">
+<!ENTITY stub.trash.tooltip "Izbriši ta pogovor">
+<!ENTITY stub.archive.tooltip "Arhiviraj ta pogovor">
+<!ENTITY stub.forward.tooltip "Posreduj ta pogovor">
+<!ENTITY stub.print.tooltip "Natisni ta pogovor">
+<!ENTITY stub.junk.tooltip "Označi to sporočilo kot neželeno">
+<!ENTITY stub.expand.tooltip "Razširi/strni vsa sporočila">
+<!ENTITY stub.read.tooltip "Preklopi med prebranimi/neprebranimi sporočili">
+<!ENTITY stub.detach.tooltip2 "Prikaži ta pogovor v novem zavihku">
+<!ENTITY stub.menu.tooltip "Dejanja pogovora">
+<!ENTITY stub.context.open "Odpri priponko">
+<!ENTITY stub.context.save "Shrani priponko">
+<!ENTITY stub.context.detach "Odpni priponko">
+<!ENTITY stub.context.delete "Izbriši priponko">
