@@ -64,13 +64,9 @@
 
 .quickReply .textWrap {
   margin: 10px 5px;
-  background-color: buttonface;
-  color: black;
+  background-color: window;
+  color: windowtext;
   position: relative;
-}
-
-.quickReply .textWrap:hover {
-  background-color: -moz-ButtonHoverFace;
 }
 
 .quickReply .icon {
@@ -126,7 +122,7 @@
 
 .quickReply li.selected .textarea {
   color: black;
-  background-color: buttonface;
+  background-color: window;
   height: 162px;
   overflow: auto;
   resize: vertical;
