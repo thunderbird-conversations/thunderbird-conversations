@@ -147,113 +147,6 @@ MonkeyPatch.prototype = {
   },
 
 
-  registerColumn: function _MonkeyPatch_registerColumn () {
-    // This has to be the first time that the documentation on MDC
-    //  1) exists and
-    //  2) is actually relevant!
-    //
-    //            OMG !
-    //
-    // https://developer.mozilla.org/en/Extensions/Thunderbird/Creating_a_Custom_Column
-    let window = this._window;
-
-    let participants = function (msgHdr) {
-      try {
-        // The array of people involved in this email.
-        let people = [];
-        // Helper for formatting; depending on the locale, we may need a different
-        // for me as in "to me" or as in "from me".
-        let format = function (x, p) {
-          if (getIdentityForEmail(x.email)) {
-            let display = (p
-              ? strings.get("meBetweenMeAndSomeone")
-              : strings.get("meBetweenSomeoneAndMe")
-            );
-            if (getIdentities().length > 1)
-              display += " (" + x.email + ")";
-            return display;
-          }
-          else
-            return x.name || x.email;
-        };
-        // Add all the people found in one of the msgHdr's properties.
-        let addPeople = function (prop, pos) {
-          let line = msgHdr[prop];
-          parseMimeLine(line, true).forEach(function(x) {
-            people.push(format(x, pos))
-          });
-        }
-        // We add everyone
-        addPeople("author", true);
-        addPeople("recipients", false);
-        addPeople("ccList", false);
-        addPeople("bccList", false);
-        // Then remove duplicates
-        let seenAlready = {};
-        people = people.filter(function (x) {
-          let r = !(x in seenAlready);
-          seenAlready[x] = true;
-          return r;
-        });
-        // And turn this into a human-readable line.
-        if (people.length)
-          return joinWordList(people);
-        else
-          return "-";
-      } catch (e) {
-        Log.debug("Error in the special column", e);
-        dumpCallStack(e);
-      }
-    };
-
-    let columnHandler = {
-      getCellText: function(row, col) {
-        let msgHdr = window.gDBView.getMsgHdrAt(row);
-        return participants(msgHdr);
-      },
-      getSortStringForRow: function(msgHdr) {
-        return participants(msgHdr);
-      },
-      isString: function() {
-        return true;
-      },
-      getCellProperties: function(row, col, props) {},
-      getRowProperties: function(row, props) {},
-      getImageSrc: function(row, col) {
-        return null;
-      },
-      getSortLongForRow: function(hdr) {
-        return 0;
-      }
-    };
-
-    // The main window is loaded when the monkey-patch is applied
-    Services.obs.addObserver({
-      observe: function(aMsgFolder, aTopic, aData) {
-        window.gDBView.addColumnHandler("betweenCol", columnHandler);
-      }
-    }, "MsgCreateDBView", false);
-    try {
-      window.gDBView.addColumnHandler("betweenCol", columnHandler);
-    } catch (e) {
-      // This is really weird, but rkent does it for junquilla, and this solves
-      //  the issue of enigmail breaking us... don't wanna know why it works,
-      //  but it works.
-      // After investigating, it turns out that without enigmail, we have the
-      //  following sequence of events:
-      // - jsm load
-      // - onload
-      // - msgcreatedbview
-      // With enigmail, this sequence is modified
-      // - jsm load
-      // - msgcreatedbview
-      // - onlaod
-      // So our solution kinda works, but registering the thing at jsm load-time
-      //  would work as well.
-    }
-    this.pushUndo(function () window.gDBView.removeColumnHandler("betweenCol"));
-  },
-
   registerFontPrefObserver: function _MonkeyPatch_registerFontPref (aHtmlpane) {
     let prefBranch = Cc["@mozilla.org/preferences-service;1"]
       .getService(Ci.nsIPrefService)
@@ -383,7 +276,6 @@ MonkeyPatch.prototype = {
     let oldSummarizeThread = window["summarizeThread"];
 
     // Register our new column type
-    this.registerColumn();
     this.registerFontPrefObserver(htmlpane);
 
     this.activateMenuItem(window);
