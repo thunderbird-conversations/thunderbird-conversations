@@ -275,7 +275,6 @@ MonkeyPatch.prototype = {
     let oldSummarizeMultipleSelection = window["summarizeMultipleSelection"];
     let oldSummarizeThread = window["summarizeThread"];
 
-    // Register our new column type
     this.registerFontPrefObserver(htmlpane);
 
     this.activateMenuItem(window);
@@ -415,7 +414,7 @@ MonkeyPatch.prototype = {
             //  made sure the multimessage pane is shown. The logic behind this
             //  is the conversation in the message pane is already alive, and
             //  the gloda query is updating messages just fine, so we should not
-            //  worry about message which are not in the view.
+            //  worry about messages which are not in the view.
             let newlySelectedUris = [msgHdrGetUri(x) for (x of aSelectedMessages)];
             let scrollMode = self.determineScrollMode();
             // If the scroll mode changes, we should go a little bit further

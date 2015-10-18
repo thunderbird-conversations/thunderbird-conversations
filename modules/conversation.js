@@ -436,6 +436,8 @@ Conversation.prototype = {
     // That's XPConnect bug 547088, so remove the setTimeout when it's fixed and
     //  bump the version requirements in install.rdf.template (might be fixed in
     //  time for Gecko 42, if we're lucky)
+    // SO LOLZ: the comment above was written in 2011, Gecko 42 has been
+    //  released, bug still isn't fixed.
     let self = this;
     this._window.setTimeout(function _Conversation_onQueryCompleted_bug547088 () {
       try {
@@ -751,7 +753,7 @@ Conversation.prototype = {
       let w = this._htmlPane;
       w.markReadInView.disable();
 
-      this.tmpl("#messageTemplate", tmplData).appendTo($(this._domNode));
+      this._htmlPane.tmpl("#messageTemplate", tmplData).appendTo($(this._domNode));
 
 
       // Important: don't forget to move the quick reply part into the last
@@ -796,10 +798,6 @@ Conversation.prototype = {
     this.viewWrapper = new ViewWrapper(this);
     [m.message.inView = this.viewWrapper.isInView(m)
       for (m of this.messages)];
-  },
-
-  tmpl: function _Conversation_tmpl (id, data) {
-    return this._htmlPane.tmpl(id, data);
   },
 
   // Once we're confident our set of messages is the right one, we actually
@@ -1001,7 +999,7 @@ Conversation.prototype = {
     // We must do this if we are to ever release the previous Conversation
     //  object. See comments in stub.html for the nice details.
     this._htmlPane.cleanup();
-    this.tmpl("#messageTemplate", tmplData).appendTo($(this._domNode));
+    this._htmlPane.tmpl("#messageTemplate", tmplData).appendTo($(this._domNode));
 
     // Notify each message that it's been added to the DOM and that it can do
     // event registration and stuff...
