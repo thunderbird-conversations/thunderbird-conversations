@@ -263,6 +263,7 @@ function messageFromGlodaIfOffline (aSelf, aGlodaMsg, aDebug) {
     !(aMsgHdr.folder instanceof Ci.nsIMsgLocalMailFolder) &&
       !(aMsgHdr.folder.flags & Ci.nsMsgFolderFlags.Offline) || // online IMAP
     aGlodaMsg.isEncrypted || // encrypted message
+    (aGlodaMsg.contentType + "").search(/^multipart\/encrypted(;|$)/i) == 0 || // encrypted message
     Prefs.extra_attachments; // user request
   return {
     type: kMsgGloda,
