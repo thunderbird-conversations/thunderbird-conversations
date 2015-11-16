@@ -1281,6 +1281,20 @@
               <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('bcc');">{{str "edit"}}</a></li>
             </ul>
           </div>
+          <ul class="enigmail" style="display: none;">
+            <li class="replyEncrypt">
+              <input type="checkbox" name="enigmail-reply-encrypt" id="enigmail-reply-encrypt"
+              /><label for="enigmail-reply-encrypt">{{str "encrypt"}}</label>
+            </li>
+            <li class="replySign">
+              <input type="checkbox" name="enigmail-reply-sign" id="enigmail-reply-sign"
+              /><label for="enigmail-reply-sign">{{str "sign"}}</label>
+            </li>
+            <li class="replyPgpMime">
+              <input type="checkbox" name="enigmail-reply-pgpmime" id="enigmail-reply-pgpmime"
+              /><label for="enigmail-reply-pgpmime">PGP/MIME</label>
+            </li>
+          </ul>
           <div class="quickReplyAttachments">
           </div>
           <div class="quickReplyHeader" style="display: none; overflow: auto">

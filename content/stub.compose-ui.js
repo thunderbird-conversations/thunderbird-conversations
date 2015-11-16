@@ -744,7 +744,7 @@ ComposeSession.prototype = {
       for (let h of getHooks()) {
         try {
           if (typeof(h.onComposeSessionChanged) == "function")
-            h.onComposeSessionChanged(this, getMessageForQuickReply(), recipients);
+            h.onComposeSessionChanged(this, getMessageForQuickReply(), recipients, getActiveEditor(), window);
         } catch (e) {
           Log.warn("Plugin returned an error:", e);
           dumpCallStack(e);
@@ -791,7 +791,7 @@ ComposeSession.prototype = {
                 to: to,
                 cc: cc,
                 bcc: bcc,
-              }, ed, sendStatus, popOut, self.attachmentList);
+              }, ed, sendStatus, popOut, self.attachmentList, window);
             if (priority != "_canceled")
               sendStatus = newSendStatus;
           }

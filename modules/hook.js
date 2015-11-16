@@ -29,19 +29,13 @@ var EXPORTED_SYMBOLS = ['registerHook', 'getHooks', 'removeHook'];
  *  // @param aStatus.securityInfo An object for PGM/MIME message.
  *  // @param aPopout if set, message will not be opened in compose window
  *  // @param aAttachmentList The AttachmentList object.
+ *  // @param aWindow window object of compose UI.
  *  // @return aStatus Same remark.
- *  onMessageBeforeSendOrPopout_early: function (aAddress, aEditor, aStatus, aPopout, aAttachmentList) {
+ *  onMessageBeforeSendOrPopout_early: function (aAddress, aEditor, aStatus, aPopout, aAttachmentList, aWindow) {
  *  },
- *  onMessageBeforeSendOrPopout: function (aAddress, aEditor, aStatus, aPopout, aAttachmentList) {
+ *  onMessageBeforeSendOrPopout: function (aAddress, aEditor, aStatus, aPopout, aAttachmentList, aWindow) {
  *  },
- *  onMessageBeforeSendOrPopout_canceled: function (aAddress, aEditor, aStatus, aPopout, aAttachmentList) {
- *  },
- *
- *  // Called when quick reply body is composed.
- *  // @param aMessage Original message instance.
- *  // @param aBody Quoted body of original message.
- *  // @return aBody Same remark.
- *  onReplyComposed (aMessage, aBody) {
+ *  onMessageBeforeSendOrPopout_canceled: function (aAddress, aEditor, aStatus, aPopout, aAttachmentList, aWindow) {
  *  },
  *
  *  // Called when a message is selected.
@@ -57,7 +51,9 @@ var EXPORTED_SYMBOLS = ['registerHook', 'getHooks', 'removeHook'];
  *  //  addresses.
  *  // @param aAddress.cc Same remark.
  *  // @param aAddress.bcc Same remark.
- *  onComposeSessionChanged (aComposeSession, aMessage, aAddress) {
+ *  // @param aEditor a wrapper around the iframe that stands for the editor.
+ *  // @param aWindow window object of compose UI.
+ *  onComposeSessionChanged (aComposeSession, aMessage, aAddress, aEditor, aWindow) {
  *  },
  *
  *  // Called whenever a recipient is added to the quickreply
