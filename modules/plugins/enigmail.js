@@ -93,20 +93,52 @@ let Log = setupLogging("Conversations.Modules.Enigmail");
 let window = getMail3Pane();
 let hasEnigmail;
 try {
-  Cu.import("resource://enigmail/enigmailCommon.jsm");
-  Cu.import("resource://enigmail/commonFuncs.jsm");
+  Cu.import("resource://enigmail/core.jsm");
+  Cu.import("resource://enigmail/data.jsm");
+  Cu.import("resource://enigmail/dialog.jsm");
+  Cu.import("resource://enigmail/prefs.jsm");
+  Cu.import("resource://enigmail/locale.jsm");
   hasEnigmail = true;
   Log.debug("Enigmail plugin for Thunderbird Conversations loaded!");
 } catch (e) {
   hasEnigmail = false;
-  Log.debug("Enigmail doesn't seem to be installed...");
+  Log.debug("Enigmail is older than 1.9 or doesn't seem to be installed...");
+  try {
+    Cu.import("resource://enigmail/enigmailCommon.jsm");
+    Cu.import("resource://enigmail/commonFuncs.jsm");
+    hasEnigmail = true;
+    Log.debug("Enigmail plugin for Thunderbird Conversations loaded!");
+  } catch (e) {
+    hasEnigmail = false;
+    Log.debug("Enigmail doesn't seem to be installed...");
+  }
 }
 
+
 let enigmailSvc;
-let gMsgCompose = null; // used in enigmailMsgComposeOverlay.js
+// used in enigmailMsgComposeOverlay.js
+let gMsgCompose = {
+  compFields: {}
+};
 let global = this;
+
 if (hasEnigmail) {
-  enigmailSvc = EnigmailCommon.getService(window);
+  if (!global.EnigmailCore) {
+    global.EnigmailCore = EnigmailCommon;
+  }
+  if (!global.EnigmailData) {
+    global.EnigmailData = EnigmailCommon;
+  }
+  if (!global.EnigmailDialog) {
+    global.EnigmailDialog = EnigmailCommon;
+  }
+  if (!global.EnigmailPrefs) {
+    global.EnigmailPrefs = EnigmailCommon;
+  }
+  if (!global.EnigmailLocale) {
+    global.EnigmailLocale = EnigmailCommon;
+  }
+  enigmailSvc = EnigmailCore.getService(window);
   if (!enigmailSvc) {
     Log.debug("Error loading the Enigmail service. Is Enigmail disabled?\n");
     hasEnigmail = false;
@@ -142,19 +174,13 @@ if (hasEnigmail) {
     let enigMimeHeaderSinkPrototype =
       Object.getPrototypeOf(w.messageHeaderSink.securityInfo);
     enigMimeHeaderSinkPrototype
-      .updateSecurityStatus = function _updateSecurityStatus_patched(uriSpec) {
+      .updateSecurityStatus = function _updateSecurityStatus_patched(unusedUriSpec, exitCode, statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation, uri, encToDetails) {
       let message;
-      // multipart/encrypted message doesn't have uriSpec.
+      let msgHdr = uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
+      let uriSpec = msgHdrGetUri(msgHdr);
       if (!uriSpec) {
         // possible to get a wrong message
         message = w._encryptedMimeMessages.shift();
-      }
-      // Use a nsIURI object to identify the message correctly.
-      // Enigmail <= 1.3.3 doesn't support uri argument.
-      let uri = arguments[8];
-      if (uri) {
-        let msgHdr = uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
-        uriSpec = msgHdrGetUri(msgHdr);
       }
       if (uriSpec && w._currentConversation) {
         for (let x of w._currentConversation.messages) {
@@ -164,9 +190,10 @@ if (hasEnigmail) {
           }
         }
       }
-      let args = Array.prototype.slice.call(arguments, 1);
       let updateHdrIcons = function () {
-        w.Enigmail.hdrView.updateHdrIcons.apply(w.Enigmail.hdrView, args);
+        w.Enigmail.hdrView.updateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails,
+          errorMsg, blockSeparation, encToDetails,
+          null); // xtraStatus
       };
       if (!message) {
         Log.error("Message for the security info not found!\n");
@@ -176,7 +203,6 @@ if (hasEnigmail) {
       showHdrIconsOnStreamed(message, updateHdrIcons);
 
       // Show signed label of encrypted and signed pgp/mime.
-      let statusFlags = arguments[2];
       addSignedLabel(statusFlags, message._domNode, message);
     }
   }, true);
@@ -188,14 +214,17 @@ function tryEnigmail(bodyElement, aMessage) {
 
   Log.debug("Found inline PGP");
 
-  var signatureObj       = new Object();
-  var exitCodeObj        = new Object();
-  var statusFlagsObj     = new Object();
-  var keyIdObj           = new Object();
-  var userIdObj          = new Object();
-  var sigDetailsObj      = new Object();
-  var errorMsgObj        = new Object();
-  var blockSeparationObj = new Object();
+  var signatureObj = {};
+  var exitCodeObj = {};
+  var statusFlagsObj = {};
+  var keyIdObj = {};
+  var userIdObj = {};
+  var sigDetailsObj = {};
+  var errorMsgObj = {};
+  var encToDetailsObj = {};
+  var blockSeparationObj = {
+    value: ""
+  };
 
   try {
     // extract text preceeding and/or following armored block
@@ -225,14 +254,14 @@ function tryEnigmail(bodyElement, aMessage) {
       pgpBlock = pgpBlock.replace(new RegExp("^"+indent+"?", "gm"), "");
     }
     var charset = aMessage._msgHdr.Charset;
-    msgText = EnigmailCommon.convertFromUnicode(
+    msgText = EnigmailData.convertFromUnicode(
                 head+"\n"+pgpBlock+"\n"+tail, charset);
 
     var decryptedText =
       enigmailSvc.decryptMessage(window, 0, msgText,
         signatureObj, exitCodeObj,
         statusFlagsObj, keyIdObj, userIdObj, sigDetailsObj,
-        errorMsgObj, blockSeparationObj);
+        errorMsgObj, blockSeparationObj, encToDetailsObj);
 
     var matches = pgpBlock.match(/\nCharset: *(.*) *\n/i);
     if (matches && (matches.length > 1)) {
@@ -247,15 +276,15 @@ function tryEnigmail(bodyElement, aMessage) {
         // quite early in the message
         matches = head.match(/(\n)/g);
         if (matches && matches.length > 10) {
-          msgRfc822Text = EnigmailCommon.getString("notePartEncrypted")+"\n\n";
+          msgRfc822Text = EnigmailLocale.getString("notePartEncrypted")+"\n\n";
         }
         msgRfc822Text += head+"\n\n";
       }
-      msgRfc822Text += EnigmailCommon.getString("beginPgpPart")+"\n\n";
+      msgRfc822Text += EnigmailLocale.getString("beginPgpPart")+"\n\n";
     }
-    msgRfc822Text += EnigmailCommon.convertToUnicode(decryptedText, charset);
+    msgRfc822Text += EnigmailData.convertToUnicode(decryptedText, charset);
     if (head || tail) {
-      msgRfc822Text += "\n\n"+EnigmailCommon.getString("endPgpPart")+"\n\n"+tail;
+      msgRfc822Text += "\n\n"+EnigmailLocale.getString("endPgpPart")+"\n\n"+tail;
     }
 
     if (exitCodeObj.value == 0) {
@@ -280,7 +309,7 @@ function tryEnigmail(bodyElement, aMessage) {
     showHdrIconsOnStreamed(aMessage, function () {
       w.Enigmail.hdrView.updateHdrIcons(exitCodeObj.value, statusFlagsObj.value,
         keyIdObj.value, userIdObj.value, sigDetailsObj.value, errorMsgObj.value,
-        blockSeparationObj.value);
+        blockSeparationObj.value, encToDetailsObj.value);
     });
     return statusFlagsObj.value;
   } catch (ex) {
@@ -460,7 +489,7 @@ let enigmailHook = {
     }
   },
 
-  onMessageBeforeSendOrPopout: function _enigmailHook_onMessageBeforeSendOrPopout(aAddress, aEditor, aStatus, aPopout, aAttachmentList) {
+  onMessageBeforeSendOrPopout: function _enigmailHook_onMessageBeforeSendOrPopout(aAddress, aEditor, aStatus, aPopout, aAttachmentList, aWindow) {
     if (hasEnigmail)
       this._originalText = null;
 
@@ -479,7 +508,7 @@ let enigmailHook = {
     let identity = aAddress.params.identity
     Enigmail.msg.identity = identity;
     Enigmail.msg.enableRules = true;
-    Enigmail.msg.sendModeDirty = 0;
+    Enigmail.msg.sendModeDirty = false;
 
     let fromAddr = identity.email;
     let userIdValue;
@@ -492,44 +521,59 @@ let enigmailHook = {
     if (userIdValue)
       fromAddr = userIdValue;
 
-    Enigmail.msg.setSendDefaultOptions();
-    let sendFlags = Enigmail.msg.sendMode;
+    Enigmail.msg.setOwnKeyStatus = function () {};
+    Enigmail.msg.processAccountSpecificDefaultOptions();
+    // Get flags from UI checkboxes.
+    if (aWindow.document.getElementById("enigmail-reply-encrypt").checked) {
+      Enigmail.msg.sendMode |= ENCRYPT;
+    } else {
+      Enigmail.msg.sendMode &= ~ENCRYPT;
+    }
+    if (aWindow.document.getElementById("enigmail-reply-sign").checked) {
+      Enigmail.msg.sendMode |= SIGN;
+    } else {
+      Enigmail.msg.sendMode &= ~SIGN;
+    }
+    if (aWindow.document.getElementById("enigmail-reply-pgpmime").checked) {
+      Enigmail.msg.sendPgpMime = true;
+    } else {
+      Enigmail.msg.sendPgpMime = false;
+    }
+    let gotSendFlags = Enigmail.msg.sendMode;
+    let sendFlags = gotSendFlags;
     if (Enigmail.msg.sendPgpMime) {
       // Use PGP/MIME
       sendFlags |= nsIEnigmail.SEND_PGP_MIME;
     }
-
     let optSendFlags = 0;
-    if (EnigmailCommon.getPref("alwaysTrustSend")) {
+    if (EnigmailPrefs.getPref("alwaysTrustSend")) {
       optSendFlags |= nsIEnigmail.SEND_ALWAYS_TRUST;
     }
-    if (EnigmailCommon.getPref("encryptToSelf") ||
+    if (EnigmailPrefs.getPref("encryptToSelf") ||
         (sendFlags & nsIEnigmail.SAVE_MESSAGE)) {
       optSendFlags |= nsIEnigmail.SEND_ENCRYPT_TO_SELF;
     }
-    let gotSendFlags = sendFlags;
     sendFlags |= optSendFlags;
 
     let toAddrList = aAddress.to.concat(aAddress.cc)
       .map(EnigmailFuncs.stripEmail);
     let bccAddrList = aAddress.bcc.map(EnigmailFuncs.stripEmail);
 
-    let toAddr = toAddrList.join(", ");
-    let bccAddr = bccAddrList.join(", ");
-    // Enigmail <= 1.3.2 doesn't support keySelection.
-    if (Enigmail.msg.keySelection) {
-      let result = Enigmail.msg.keySelection(
-                     enigmailSvc, sendFlags, optSendFlags, gotSendFlags,
-                     fromAddr, toAddrList, bccAddrList);
-      if (!result) {
-        aStatus.canceled = true;
-        return aStatus;
-      } else {
-        sendFlags = result.sendFlags;
-        toAddr = result.toAddr;
-        bccAddr = result.bccAddr;
-      }
+    let result = Enigmail.msg.keySelection(
+      enigmailSvc,
+      sendFlags, // all current combined/processed send flags (incl. optSendFlags)
+      optSendFlags, // may only be SEND_ALWAYS_TRUST or SEND_ENCRYPT_TO_SELF
+      gotSendFlags, // initial sendMode (0 or SIGN or ENCRYPT or SIGN|ENCRYPT)
+      fromAddr, toAddrList, bccAddrList);
+    if (!result) {
+      aStatus.canceled = true;
+      return aStatus;
     }
+    let toAddr;
+    let bccAddr;
+    sendFlags = result.sendFlags;
+    toAddr = result.toAddrStr;
+    bccAddr = result.bccAddrStr;
 
     let statusFlagsObj = {};
     let exitCodeObj = {};
@@ -544,10 +588,10 @@ let enigmailHook = {
           aAttachmentList && aAttachmentList.attachments.length > 0) {
         // Attachments will not be encrypted using inline-PGP.
         // We switch to PGP/MIME if possible.
-        if (EnigmailCommon.confirmDlg(window,
+        if (EnigmailDialog.confirmDlg(window,
             strings.get("attachmentsNotEncrypted"),
-            EnigmailCommon.getString("pgpMime_sMime.dlg.pgpMime.button"),
-            EnigmailCommon.getString("dlg.button.cancel"))) {
+            EnigmailLocale.getString("pgpMime_sMime.dlg.pgpMime.button"),
+            EnigmailLocale.getString("dlg.button.cancel"))) {
           usingPGPMime = true;
           sendFlags |= nsIEnigmail.SEND_PGP_MIME;
         } else {
@@ -570,15 +614,27 @@ let enigmailHook = {
           // Enigmail < 1.5.1
           // hashAlgorithm was removed since Enigmail 1.5.1
           newSecurityInfo.hashAlgorithm =
-            Enigmail.msg.mimeHashAlgo[EnigmailCommon.getPref("mimeHashAlgorithm")];
+            Enigmail.msg.mimeHashAlgo[EnigmailPrefs.getPref("mimeHashAlgorithm")];
         }
         aStatus.securityInfo = newSecurityInfo;
 
       } else if (sendFlags & (ENCRYPT | SIGN)) {
         // inline-PGP
-        let plainText = aEditor.value;
+        let textAndBrUnder = function (node) {
+          let text = [];
+          for (let node = node.firstChild; node; node = node.nextSibling) {
+            if (node.nodeType == 3)
+              text.push(node.nodeValue);
+            else if (node.nodeType == 1 && node.nodeName == 'BR')
+              text.push("\n");
+            else
+              text = text.concat(textAndBrUnder(node));
+          }
+          return text;
+        };
+        let plainText = textAndBrUnder(aEditor.node.contentDocument.body).join('');
         let charset = "UTF-8";
-        origText = plainText;
+        origText = aEditor.value;
         if (!(sendFlags & ENCRYPT)) {
           // Clear signing replaces preceding '-' to '- -'.
           // It produces 2 characters longer lines.
@@ -590,7 +646,7 @@ let enigmailHook = {
           }
           plainText = simpleWrap(plainText, width);
         }
-        plainText = EnigmailCommon.convertFromUnicode(plainText, charset);
+        plainText = EnigmailData.convertFromUnicode(plainText, charset);
         let cipherText;
         if (Enigmail.msg.mimeHashAlgo) {
           // Enigmail < 1.5.1
@@ -612,21 +668,21 @@ let enigmailHook = {
             cipherText = cipherText.replace(/(-----BEGIN PGP MESSAGE----- *)(\r?\n)/,
               "$1$2Charset: "+charset+"$2");
           }
-          cipherText = EnigmailCommon.convertToUnicode(cipherText, charset);
-          aEditor.value = cipherText;
+          cipherText = EnigmailData.convertToUnicode(cipherText, charset);
+          aEditor.value = cipherText.replace(/\r?\n/g, '<br>');
           this._originalText = origText;
         } else {
           // Encryption/signing failed
-          let msg = EnigmailCommon.getString("signFailed") + "\n"
+          let msg = EnigmailLocale.getString("signFailed") + "\n"
                   + errorMsgObj.value;
-          aStatus.canceled = !EnigmailCommon.confirmDlg(window, msg,
-            EnigmailCommon.getString("msgCompose.button.sendUnencrypted"));
+          aStatus.canceled = !EnigmailDialog.confirmDlg(window, msg,
+            EnigmailLocale.getString("msgCompose.button.sendUnencrypted"));
           return aStatus;
         }
       }
 
       if ((!(sendFlags & nsIEnigmail.SAVE_MESSAGE)) &&
-           EnigmailCommon.getPref("confirmBeforeSend")) {
+           EnigmailPrefs.getPref("confirmBeforeSending")) {
         if (!Enigmail.msg.confirmBeforeSend(toAddrList.join(", "), toAddr+", "+bccAddr,
              sendFlags, false)) {
           if (origText) {
@@ -639,12 +695,12 @@ let enigmailHook = {
     } catch (ex) {
       dumpCallStack(ex);
       Log.error("Enigmail encrypt error: "+ex+" --- "+errorMsgObj.value+"\n");
-      let msg = EnigmailCommon.getString("signFailed");
-      if (EnigmailCommon.enigmailSvc && EnigmailCommon.enigmailSvc.initializationError) {
-        msg += "\n"+EnigmailCommon.enigmailSvc.initializationError;
+      let msg = EnigmailLocale.getString("signFailed");
+      if (enigmailSvc && enigmailSvc.initializationError) {
+        msg += "\n"+enigmailSvc.initializationError;
       }
-      aStatus.canceled = !EnigmailCommon.confirmDlg(window, msg,
-        EnigmailCommon.getString("msgCompose.button.sendUnencrypted"));
+      aStatus.canceled = !EnigmailDialog.confirmDlg(window, msg,
+        EnigmailLocale.getString("msgCompose.button.sendUnencrypted"));
     }
     return aStatus;
   },
@@ -655,11 +711,48 @@ let enigmailHook = {
     }
   },
 
-  onReplyComposed: function _enigmailHook_onReplyComposed(aMessage, aBody) {
-    if (hasEnigmail && aMessage.decryptedText) {
-      return citeString("\n" + aMessage.decryptedText);
-    }
-    return aBody;
+  onComposeSessionChanged: function _enigmailHook_onComposeSessionChanged(aComposeSession, aMessage, aRecipients, aEditor, aWindow) {
+    if (!hasEnigmail)
+      return;
+
+    // Show enigmail features on quick reply
+    aWindow.document.querySelector(".enigmail").style.display = "inline-block";
+    // Set encrypt parameters as same as the original message.
+    if (aMessage._domNode.classList.contains("decrypted"))
+      aWindow.document.getElementById("enigmail-reply-encrypt").checked = true;
+    // Set parameters from identity
+    Enigmail.msg.identity = aComposeSession.params.identity;
+    Enigmail.msg.enableRules = true;
+    Enigmail.msg.sendModeDirty = false;
+    Enigmail.msg.setOwnKeyStatus = function () {};
+    Enigmail.msg.processAccountSpecificDefaultOptions();
+    const nsIEnigmail = Ci.nsIEnigmail;
+    const SIGN = nsIEnigmail.SEND_SIGNED;
+    const ENCRYPT = nsIEnigmail.SEND_ENCRYPTED;
+    if (Enigmail.msg.sendMode & ENCRYPT)
+      aWindow.document.getElementById("enigmail-reply-encrypt").checked = true;
+    if (Enigmail.msg.sendMode & SIGN)
+      aWindow.document.getElementById("enigmail-reply-sign").checked = true;
+    if (Enigmail.msg.sendPgpMime)
+      aWindow.document.getElementById("enigmail-reply-pgpmime").checked = true;
+
+    if (!aMessage.decryptedText)
+      return;
+
+    // Replace inline PGP body to decrypted body.
+    let waitLoadingBody = function (complete) {
+      window.setTimeout(function () {
+        if (aEditor.node.contentDocument.querySelector("blockquote").length === 0) {
+          waitLoadingBody(complete);
+        } else {
+           complete();
+        };
+      }, 200);
+    };
+    waitLoadingBody(function () {
+      aEditor.node.contentDocument.querySelector("blockquote").innerHTML =
+        aMessage.decryptedText.replace(/\r?\n/g, '<br>');
+    });
   },
 
   // Update security info when the message is selected.

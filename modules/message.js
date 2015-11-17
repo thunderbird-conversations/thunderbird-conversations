@@ -1751,6 +1751,9 @@ function MessageFromGloda(aConversation, aGlodaMsg, aLateAttachments) {
   if ("isEncrypted" in aGlodaMsg)
     this.isEncrypted = aGlodaMsg.isEncrypted;
 
+  if ((aGlodaMsg.contentType + "").search(/^multipart\/encrypted(;|$)/i) == 0)
+    this.isEncrypted = true;
+
   if ("mailingLists" in aGlodaMsg)
     this.mailingLists =
       [x.value for (x of aGlodaMsg.mailingLists)];

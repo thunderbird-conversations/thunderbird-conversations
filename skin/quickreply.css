@@ -331,6 +331,20 @@ html[xmlns] .cf {
   margin-right: 2px;
 }
 
+.enigmail li {
+  display: inline-block;
+}
+
+.enigmail :-moz-any(.replyEncrypt, .replySign, .replyPgpMime) > input {
+  vertical-align: middle;
+  margin-left: 3px;
+  margin-right: 2px;
+}
+
+.enigmail :-moz-any(.replyEncrypt, .replySign, .replyPgpMime) > label {
+  color: -moz-default-color;
+}
+
 /* hide the right UI items */
 .message:not(.isReplyAllEnabled) .action-replyAll {
   display: none;
