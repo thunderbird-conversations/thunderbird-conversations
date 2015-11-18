@@ -590,7 +590,6 @@ let enigmailHook = {
     let identity = aAddress.params.identity
     Enigmail.msg.identity = identity;
     Enigmail.msg.enableRules = true;
-    Enigmail.msg.sendModeDirty = false;
 
     let fromAddr = identity.email;
     let userIdValue;
@@ -651,11 +650,9 @@ let enigmailHook = {
       aStatus.canceled = true;
       return aStatus;
     }
-    let toAddr;
-    let bccAddr;
     sendFlags = result.sendFlags;
-    toAddr = result.toAddrStr;
-    bccAddr = result.bccAddrStr;
+    let toAddr = result.toAddrStr;
+    let bccAddr = result.bccAddrStr;
 
     let statusFlagsObj = {};
     let exitCodeObj = {};
@@ -793,15 +790,28 @@ let enigmailHook = {
     }
   },
 
-  onComposeSessionChanged: function _enigmailHook_onComposeSessionChanged(aComposeSession, aMessage, aRecipients, aEditor, aWindow) {
+  onComposeSessionChanged: function _enigmailHook_onComposeSessionChanged(aComposeSession, aMessage, aAddress, aEditor, aWindow) {
     if (!hasEnigmail)
       return;
 
     // Show enigmail features on quick reply
     aWindow.document.querySelector(".enigmail").style.display = "inline-block";
-    // Set encrypt parameters as same as the original message.
-    if (aMessage._domNode.classList.contains("decrypted"))
-      aWindow.document.getElementById("enigmail-reply-encrypt").checked = true;
+
+    // Set default parameters
+    Enigmail.msg.encryptForced = EnigmailConstants.ENIG_UNDEF;
+    Enigmail.msg.signForced = EnigmailConstants.ENIG_UNDEF;
+    Enigmail.msg.pgpmimeForced = EnigmailConstants.ENIG_UNDEF;
+
+    let replyEncrypt = aWindow.document.getElementById("enigmail-reply-encrypt");
+    let replySign = aWindow.document.getElementById("enigmail-reply-sign");
+    let replyPgpMime = aWindow.document.getElementById("enigmail-reply-pgpmime");
+    // Set encrypt from settings
+    if (aAddress.to.length > 0 && EnigmailPrefs.getPref("autoSendEncrypted") == 1) {
+      let validKeyList = Enigmail.hlp.validKeysForAllRecipients(aAddress.to.join(", "));
+      if (validKeyList) {
+        replyEncrypt.checked = true;
+      }
+    }
     // Set parameters from identity
     Enigmail.msg.identity = aComposeSession.params.identity;
     Enigmail.msg.enableRules = true;
@@ -812,11 +822,39 @@ let enigmailHook = {
     const SIGN = nsIEnigmail.SEND_SIGNED;
     const ENCRYPT = nsIEnigmail.SEND_ENCRYPTED;
     if (Enigmail.msg.sendMode & ENCRYPT)
-      aWindow.document.getElementById("enigmail-reply-encrypt").checked = true;
+      replyEncrypt.checked = true;
     if (Enigmail.msg.sendMode & SIGN)
-      aWindow.document.getElementById("enigmail-reply-sign").checked = true;
+      replySign.checked = true;
     if (Enigmail.msg.sendPgpMime)
-      aWindow.document.getElementById("enigmail-reply-pgpmime").checked = true;
+      replyPgpMime.checked = true;
+
+    // Add listeners to set final mode
+    if (!aMessage._conversation._enigmailReplyEventListener) {
+      aMessage._conversation._enigmailReplyEventListener = true;
+      replyEncrypt.addEventListener('click', function () {
+        if (this.checked) {
+          Enigmail.msg.encryptForced = EnigmailConstants.ENIG_ALWAYS; // force to encrypt
+        } else {
+          Enigmail.msg.encryptForced = EnigmailConstants.ENIG_NEVER; // force not to encrypt
+        }
+      });
+      replySign.addEventListener('click', function () {
+        if (this.checked) {
+          Enigmail.msg.signingNoLongerDependsOnEnc();
+          Enigmail.msg.signForced = EnigmailConstants.ENIG_ALWAYS; // force to sign
+        } else {
+          Enigmail.msg.signingNoLongerDependsOnEnc();
+          Enigmail.msg.signForced = EnigmailConstants.ENIG_NEVER; // force not to sign
+        }
+      });
+      replyPgpMime.addEventListener('click', function () {
+        if (this.checked) {
+          Enigmail.msg.pgpmimeForced = EnigmailConstants.ENIG_ALWAYS; // force to PGP/Mime
+        } else {
+          Enigmail.msg.pgpmimeForced = EnigmailConstants.ENIG_NEVER; // force not to PGP/Mime
+        }
+      });
+    }
 
     if (!aMessage.decryptedText)
       return;
