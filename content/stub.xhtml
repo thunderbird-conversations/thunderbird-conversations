@@ -19,11 +19,9 @@
   <link rel="stylesheet" type="text/css" media="print"
     href="chrome://conversations/skin/print.css" />
   <script type="text/javascript"
-    src="chrome://messenger/content/jquery.js"></script>
+    src="chrome://conversations/content/js/jquery-1.6.4.min.js"></script>
   <script type="text/javascript"
     src="chrome://conversations/content/js/handlebars-v3.0.0.js"></script>
-  <script type="application/javascript;version=1.8"
-    src="chrome://conversations/content/handlebars-wrapper.js"></script>
   <script type="text/javascript"
     src="chrome://conversations/content/js/jquery.tokeninput.js"></script>
   <!-- The two scripts below share the same scope, they were split for the sake
@@ -36,6 +34,8 @@
     src="chrome://conversations/content/stub.compose-ui-bz.js"></script>
   <script type="application/javascript;version=1.8"
     src="chrome://conversations/content/stub.completion-ui.js"></script>
+  <script type="application/javascript;version=1.8"
+    src="chrome://conversations/content/handlebars-wrapper.js"></script>
   <script type="application/javascript;version=1.8"><![CDATA[
     // Below are mostly UI utility functions.
     (function ($) {
@@ -287,7 +287,7 @@
     Components.utils.import("resource://conversations/modules/misc.js");
     Components.utils.import("resource://conversations/modules/contact.js");
 
-    let Log = setupLogging("Conversations.Stub");
+    Log = setupLogging("Conversations.Stub");
     let isInTab = false;
 
     wrapHandlebars();
