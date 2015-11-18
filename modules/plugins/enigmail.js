@@ -208,8 +208,30 @@ if (hasEnigmail) {
   }, true);
 }
 
-function tryEnigmail(bodyElement, aMessage) {
-  if (bodyElement.textContent.indexOf("-----BEGIN PGP") < 0)
+function tryEnigmail(aDocument, aMessage, aMsgWindow) {
+  let bodyElement = aDocument.body;
+  let findStr = "-----BEGIN PGP";
+  let msgText = null;
+  let foundIndex = -1;
+  if (bodyElement.firstChild) {
+    let node = bodyElement.firstChild;
+    while (node) {
+      if (node.nodeName == "DIV") {
+        foundIndex = node.textContent.indexOf(findStr);
+
+        if (foundIndex >= 0) {
+          if (node.textContent.indexOf(findStr + " LICENSE AUTHORIZATION") == foundIndex)
+            foundIndex = -1;
+        }
+        if (foundIndex >= 0) {
+          bodyElement = node;
+          break;
+        }
+      }
+      node = node.nextSibling;
+    }
+  }
+  if (foundIndex < 0)
     return null;
 
   Log.debug("Found inline PGP");
@@ -228,45 +250,104 @@ function tryEnigmail(bodyElement, aMessage) {
 
   try {
     // extract text preceeding and/or following armored block
+    // strip "- show quoted text -" from body text
+    let NodeFilter = window.NodeFilter;
+    let treeWalker = aDocument.createTreeWalker(
+      bodyElement,
+      NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT,
+      { acceptNode: function (node) {
+          if (node.nodeType == 1) {
+            if (node.classList.contains("showhidequote")) {
+              return NodeFilter.FILTER_REJECT;
+            }
+            return NodeFilter.FILTER_SKIP;
+          }
+          return NodeFilter.FILTER_ACCEPT;
+        }
+      }
+    );
+    let text = [];
+    while (treeWalker.nextNode())
+      text.push(treeWalker.currentNode.nodeValue);
+    msgText = text.join('');
+    msgText = msgText.replace(/\r\n/g, "\n");
+    msgText = msgText.replace(/\r/g, "\n");
+
+    var charset = aMsgWindow ? aMsgWindow.mailCharacterSet : "";
+    Log.debug("charset=" + charset);
+
+    // Encode ciphertext to charset from unicode
+    msgText = EnigmailData.convertFromUnicode(msgText, charset);
+
+    var mozPlainText = bodyElement.innerHTML.search(/class=\"moz-text-plain\"/);
+
+    if ((mozPlainText >= 0) && (mozPlainText < 40)) {
+      // workaround for too much expanded emoticons in plaintext msg
+      var r = new RegExp(/( )(;-\)|:-\)|;\)|:\)|:-\(|:\(|:-\\|:-P|:-D|:-\[|:-\*|\>:o|8-\)|:-\$|:-X|\=-O|:-\!|O:-\)|:\'\()( )/g);
+      if (msgText.search(r) >= 0) {
+        msgText = msgText.replace(r, "$2");
+      }
+    }
+
+    let retry = (charset != "UTF-8" ? 1 : 2);
+
+    // extract text preceeding and/or following armored block
     var head = "";
     var tail = "";
-    var msgText = bodyElement.textContent;
-    var startOffset = msgText.indexOf("-----BEGIN PGP");
-    var indentMatches = msgText.match(/\n(.*)-----BEGIN PGP/);
-    var indent = "";
-    if (indentMatches && (indentMatches.length > 1)) {
-      indent = indentMatches[1];
+    if (findStr) {
+      head = msgText.substring(0, msgText.indexOf(findStr)).replace(/^[\n\r\s]*/, "");
+      head = head.replace(/[\n\r\s]*$/, "");
+      var endStart = msgText.indexOf("-----END PGP");
+      var nextLine = msgText.substring(endStart).search(/[\n\r]/);
+      if (nextLine > 0) {
+        tail = msgText.substring(endStart + nextLine).replace(/^[\n\r\s]*/, "");
+      }
     }
-    head = msgText.substring(0, startOffset).replace(/^[\n\r\s]*/,"");
-    head = head.replace(/[\n\r\s]*$/,"");
-    var endStart = msgText.indexOf("\n"+indent+"-----END PGP") + 1;
-    var nextLine = msgText.substring(endStart).search(/[\n\r]/);
-    if (nextLine > 0) {
-      tail = msgText.substring(endStart+nextLine).replace(/^[\n\r\s]*/,"");
+    if (msgText.indexOf("\nCharset:") > 0) {
+      // Check if character set needs to be overridden
+      var startOffset = msgText.indexOf("-----BEGIN PGP ");
+
+      if (startOffset >= 0) {
+        var subText = msgText.substr(startOffset);
+
+        subText = subText.replace(/\r\n/g, "\n");
+        subText = subText.replace(/\r/g, "\n");
+
+        var endOffset = subText.search(/\n\n/);
+        if (endOffset > 0) {
+          subText = subText.substr(0, endOffset) + "\n";
+
+          let matches = subText.match(/\nCharset: *(.*) *\n/i);
+          if (matches && (matches.length > 1)) {
+            // Override character set
+            charset = matches[1];
+            Log.debug("OVERRIDING charset=" + charset);
+          }
+        }
+      }
     }
 
-    var pgpBlock = msgText.substring(startOffset - indent.length,
-                                     endStart + nextLine);
-    if (nextLine == 0) {
-      pgpBlock += msgText.substring(endStart);
-    }
-    if (indent) {
-      pgpBlock = pgpBlock.replace(new RegExp("^"+indent+"?", "gm"), "");
-    }
-    var charset = aMessage._msgHdr.Charset;
-    msgText = EnigmailData.convertFromUnicode(
-                head+"\n"+pgpBlock+"\n"+tail, charset);
-
-    var decryptedText =
+    var plainText =
       enigmailSvc.decryptMessage(window, 0, msgText,
         signatureObj, exitCodeObj,
         statusFlagsObj, keyIdObj, userIdObj, sigDetailsObj,
         errorMsgObj, blockSeparationObj, encToDetailsObj);
 
-    var matches = pgpBlock.match(/\nCharset: *(.*) *\n/i);
-    if (matches && (matches.length > 1)) {
-      // Override character set
-      charset = matches[1];
+    let exitCode = exitCodeObj.value;
+    if (plainText === "" && exitCode === 0) {
+      plainText = " ";
+    }
+    if (!plainText) {
+      return statusFlagsObj.value;
+    }
+    if (retry >= 2) {
+      plainText = EnigmailData.convertFromUnicode(EnigmailData.convertToUnicode(plainText, "UTF-8"), charset);
+    }
+    if (blockSeparationObj.value.indexOf(" ") >= 0) {
+      let blocks = blockSeparationObj.value.split(/ /);
+      let blockInfo = blocks[0].split(/:/);
+      plainText = EnigmailData.convertFromUnicode(EnigmailLocale.getString("notePartEncrypted"), charset) +
+        "\n\n" + plainText.substr(0, blockInfo[1]) + "\n\n" + EnigmailLocale.getString("noteCutMessage");
     }
 
     var msgRfc822Text = "";
@@ -274,20 +355,20 @@ function tryEnigmail(bodyElement, aMessage) {
       if (head) {
         // print a warning if the signed or encrypted part doesn't start
         // quite early in the message
-        matches = head.match(/(\n)/g);
+        let matches = head.match(/(\n)/g);
         if (matches && matches.length > 10) {
-          msgRfc822Text = EnigmailLocale.getString("notePartEncrypted")+"\n\n";
+          msgRfc822Text = EnigmailData.convertFromUnicode(EnigmailLocale.getString("notePartEncrypted"), charset) + "\n\n";
         }
-        msgRfc822Text += head+"\n\n";
+        msgRfc822Text += head + "\n\n";
       }
-      msgRfc822Text += EnigmailLocale.getString("beginPgpPart")+"\n\n";
+      msgRfc822Text += EnigmailData.convertFromUnicode(EnigmailLocale.getString("beginPgpPart"), charset) + "\n\n";
     }
-    msgRfc822Text += EnigmailData.convertToUnicode(decryptedText, charset);
+    msgRfc822Text += plainText;
     if (head || tail) {
-      msgRfc822Text += "\n\n"+EnigmailLocale.getString("endPgpPart")+"\n\n"+tail;
+      msgRfc822Text += "\n\n" + EnigmailData.convertFromUnicode(EnigmailLocale.getString("endPgpPart"), charset) + "\n\n" + tail;
     }
 
-    if (exitCodeObj.value == 0) {
+    if (exitCode == 0) {
       if (msgRfc822Text.length > 0) {
         let node = bodyElement.querySelector("div.moz-text-plain");
         // If there's no suitable node to put the decrypted text in, create one
@@ -299,15 +380,16 @@ function tryEnigmail(bodyElement, aMessage) {
           bodyElement.appendChild(pre);
           node = pre;
         }
+        msgRfc822Text = EnigmailData.convertToUnicode(msgRfc822Text, charset);
         node.innerHTML = EnigmailFuncs.formatPlaintextMsg(msgRfc822Text);
         aMessage.decryptedText = msgRfc822Text;
       }
     } else {
-      Log.error("Enigmail error: "+exitCodeObj.value+" --- "+errorMsgObj.value+"\n");
+      Log.error("Enigmail error: "+exitCode+" --- "+errorMsgObj.value+"\n");
     }
     let w = topMail3Pane(aMessage);
     showHdrIconsOnStreamed(aMessage, function () {
-      w.Enigmail.hdrView.updateHdrIcons(exitCodeObj.value, statusFlagsObj.value,
+      w.Enigmail.hdrView.updateHdrIcons(exitCode, statusFlagsObj.value,
         keyIdObj.value, userIdObj.value, sigDetailsObj.value, errorMsgObj.value,
         blockSeparationObj.value, encToDetailsObj.value);
     });
@@ -482,7 +564,7 @@ let enigmailHook = {
     let iframe = aDomNode.getElementsByTagName("iframe")[0];
     let iframeDoc = iframe.contentDocument;
     if (iframeDoc.body.textContent.length > 0 && hasEnigmail) {
-      let status = tryEnigmail(iframeDoc.body, aMessage);
+      let status = tryEnigmail(iframeDoc, aMessage, aMsgWindow);
       if (status & Ci.nsIEnigmail.DECRYPTION_OKAY)
         aDomNode.classList.add("decrypted");
       addSignedLabel(status, aDomNode, aMessage);
