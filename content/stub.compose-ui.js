@@ -36,11 +36,6 @@
 
 "use strict";
 
-const Ci = Components.interfaces;
-const Cc = Components.classes;
-const Cu = Components.utils;
-const Cr = Components.results;
-
 Cu.import("resource://gre/modules/Services.jsm");
 Cu.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI
 Cu.import("resource:///modules/mailServices.js");
@@ -58,7 +53,7 @@ Cu.import("resource://conversations/modules/log.js");
 Cu.import("resource://conversations/modules/misc.js");
 Cu.import("resource://conversations/modules/hook.js");
 
-let Log = setupLogging("Conversations.Stub.Compose");
+Log = setupLogging("Conversations.Stub.Compose");
 
 Cu.import("resource://conversations/modules/stdlib/SimpleStorage.js");
 let ss = SimpleStorage.createIteratorStyle("conversations");
