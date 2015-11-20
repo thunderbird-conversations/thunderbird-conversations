@@ -256,7 +256,7 @@ function tryEnigmail(aDocument, aMessage, aMsgWindow) {
       bodyElement,
       NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT,
       { acceptNode: function (node) {
-          if (node.nodeType == 1) {
+          if (node.nodeType == node.ELEMENT_NODE) {
             if (node.classList.contains("showhidequote")) {
               return NodeFilter.FILTER_REJECT;
             }
@@ -270,8 +270,7 @@ function tryEnigmail(aDocument, aMessage, aMsgWindow) {
     while (treeWalker.nextNode())
       text.push(treeWalker.currentNode.nodeValue);
     msgText = text.join('');
-    msgText = msgText.replace(/\r\n/g, "\n");
-    msgText = msgText.replace(/\r/g, "\n");
+    msgText = msgText.replace(/\r\n?/g, "\n");
 
     var charset = aMsgWindow ? aMsgWindow.mailCharacterSet : "";
     Log.debug("charset=" + charset);
@@ -309,9 +308,7 @@ function tryEnigmail(aDocument, aMessage, aMsgWindow) {
 
       if (startOffset >= 0) {
         var subText = msgText.substr(startOffset);
-
-        subText = subText.replace(/\r\n/g, "\n");
-        subText = subText.replace(/\r/g, "\n");
+        subText = subText.replace(/\r\n?/g, "\n");
 
         var endOffset = subText.search(/\n\n/);
         if (endOffset > 0) {
