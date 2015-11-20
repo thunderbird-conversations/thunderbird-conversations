@@ -871,7 +871,7 @@ let enigmailHook = {
     };
     waitLoadingBody(function () {
       aEditor.node.contentDocument.querySelector("blockquote").innerHTML =
-        aMessage.decryptedText.replace(/\r?\n/g, '<br>');
+        escapeHtml(aMessage.decryptedText).replace(/\r?\n/g, '<br>');
     });
   },
 
