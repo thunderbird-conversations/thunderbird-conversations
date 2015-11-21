@@ -663,10 +663,11 @@ Message.prototype = {
     this._domNode.getElementsByClassName("messageHeader")[0]
       .addEventListener("click", function () {
         self._conversation._runOnceAfterNSignals(function () {
-          if (self.expanded)
+          if (self.expanded) {
             self._conversation._htmlPane.scrollNodeIntoView(self._domNode);
             self.read = true;
-        }, 1);
+          }
+        }, (self.needsLateAttachments ? 2 : 1));
         self.toggle();
       }, false);
 
