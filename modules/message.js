@@ -1219,7 +1219,7 @@ Message.prototype = {
           value: sanitize(folderName(this._msgHdr.folder)[1]),
         });
         let interestingHeaders =
-          ["mailed-by", "x-mailer", "mailer", "date", "user-agent"];
+          ["mailed-by", "x-mailer", "mailer", "date", "user-agent", "reply-to"];
         for (let h of interestingHeaders) {
           if (aHeaders.has(h)) {
             let key = h;
