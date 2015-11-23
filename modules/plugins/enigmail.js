@@ -699,19 +699,7 @@ let enigmailHook = {
 
       } else if (sendFlags & (ENCRYPT | SIGN)) {
         // inline-PGP
-        let textAndBrUnder = function (node) {
-          let text = [];
-          for (let node = node.firstChild; node; node = node.nextSibling) {
-            if (node.nodeType == 3)
-              text.push(node.nodeValue);
-            else if (node.nodeType == 1 && node.nodeName == 'BR')
-              text.push("\n");
-            else
-              text = text.concat(textAndBrUnder(node));
-          }
-          return text;
-        };
-        let plainText = textAndBrUnder(aEditor.node.contentDocument.body).join('');
+        let plainText = htmlToPlainText(aEditor.value);
         let charset = "UTF-8";
         origText = aEditor.value;
         if (!(sendFlags & ENCRYPT)) {
