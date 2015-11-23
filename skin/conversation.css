@@ -637,6 +637,25 @@ ul.special-tags img {
   text-decoration: underline;
 }
 
+.message .enigmailBar.ok {
+  background-color: rgb(204, 255, 204);
+  color: black;
+}
+
+.message .enigmailBar.unknown {
+  background-color: rgb(204, 255, 255);
+  color: black;
+}
+
+.message .enigmailBar.notok {
+  background-color: rgb(255, 216, 254);
+  color: black;
+}
+
+.message .enigmailBar .enigmailDetails {
+  float: right;
+}
+
 .message.collapsed .notificationBar {
   display: none;
 }
