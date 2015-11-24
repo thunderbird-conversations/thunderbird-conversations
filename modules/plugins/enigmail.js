@@ -500,6 +500,7 @@ function showHdrIconsOnStreamed(aMessage, updateHdrIcons) {
     let focusThis = conversation._tellMeWhoToScroll();
     focused = (aMessage == conversation.messages[focusThis].message);
   }
+  w.Enigmail.hdrView.statusBarHide();
   updateHdrIcons();
   showNotificationBar(aMessage);
   if (!focused) {
