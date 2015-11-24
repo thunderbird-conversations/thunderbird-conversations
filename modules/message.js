@@ -667,7 +667,7 @@ Message.prototype = {
             self._conversation._htmlPane.scrollNodeIntoView(self._domNode);
             self.read = true;
           }
-        }, (self.needsLateAttachments ? 2 : 1));
+        }, 1);
         self.toggle();
       }, false);
 
