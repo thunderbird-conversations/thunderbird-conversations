@@ -422,7 +422,6 @@ function tryEnigmail(aDocument, aMessage, aMsgWindow) {
 function verifyAttachments(aMessage) {
   let { _attachments: attachments, _uri: uri, contentType: contentType } = aMessage;
   let w = topMail3Pane(aMessage);
-  w.Enigmail.msg.getCurrentMsgUriSpec = function () uri;
   if ((contentType+"").search(/^multipart\/signed(;|$)/i) == 0) {
     w.Enigmail.msg.messageDecryptCb(null, true, {
       headers: {'content-type': contentType },
@@ -501,6 +500,7 @@ function showHdrIconsOnStreamed(aMessage, updateHdrIcons) {
     let focusThis = conversation._tellMeWhoToScroll();
     focused = (aMessage == conversation.messages[focusThis].message);
   }
+  w.Enigmail.hdrView.statusBarHide();
   updateHdrIcons();
   showNotificationBar(aMessage);
   if (!focused) {
@@ -601,6 +601,8 @@ let enigmailHook = {
       if (hasSig)
         aMessage._domNode.classList.add("signed");
 
+      // Current message uri should be blank to decrypt all PGP/MIME messages.
+      w.Enigmail.msg.getCurrentMsgUriSpec = function () { return ""; }
       verifyAttachments(aMessage);
       prepareForShowHdrIcons(aMessage);
       patchForShowSecurityInfo(w);
@@ -915,11 +917,6 @@ let enigmailHook = {
   // Update security info when the message is selected.
   onMessageSelected: function _enigmailHook_onMessageSelected(aMessage) {
     if (hasEnigmail) {
-      // EnigmailVerify is supported since Enigmail 1.4.6
-      // lastMsgUri is used for security info display to get current message.
-      let w = topMail3Pane(aMessage);
-      if (w.EnigmailVerify)
-        w.EnigmailVerify.lastMsgUri = aMessage._uri;
       updateSecurityInfo(aMessage);
     }
   },
