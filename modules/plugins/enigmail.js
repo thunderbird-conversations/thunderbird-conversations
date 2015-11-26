@@ -151,6 +151,9 @@ if (hasEnigmail) {
     hasEnigmail = false;
     Log.debug("Enigmail script doesn't seem to be loaded. Error: " + e);
   }
+  if (!global.EnigmailConstants) {
+    global.EnigmailConstants = EnigmailCommon;
+  }
 
   let w = getMail3Pane();
   let iframe = w.document.createElement("iframe");
@@ -836,36 +839,94 @@ let enigmailHook = {
     // Show enigmail features on quick reply
     aWindow.document.querySelector(".enigmail").style.display = "inline-block";
 
+    // Get default decrypt, sign and PGP/MIME status from settings.
+    // The following code is based on enigmailMsgComposeOverlay.js.
     // Set default parameters
     Enigmail.msg.encryptForced = EnigmailConstants.ENIG_UNDEF;
     Enigmail.msg.signForced = EnigmailConstants.ENIG_UNDEF;
     Enigmail.msg.pgpmimeForced = EnigmailConstants.ENIG_UNDEF;
 
+    // Set Enigmail.msg.sendMode from identity
+    Enigmail.msg.identity = aComposeSession.params.identity;
+    Enigmail.msg.setOwnKeyStatus = function () {};
+    Enigmail.msg.processAccountSpecificDefaultOptions();
+
+    // Process rules for to addresses
+    let toAddrList = aAddress.to;
+    if (toAddrList.length > 0 && EnigmailPrefs.getPref("assignKeysByRules")) {
+      let matchedKeysObj = {};
+      let flagsObj = {};
+      let success;
+      if (global.EnigmailRules) {
+        success = EnigmailRules.mapAddrsToKeys(toAddrList.join(", "),
+          false, // no interaction if not all addrs have a key
+          window,
+          matchedKeysObj, // resulting matching keys
+          flagsObj); // resulting flags (0/1/2/3 for each type)
+      } else {
+        // Enigmail before 1.9
+        success = Enigmail.hlp.getRecipientsKeys(toAddrList.join(", "),
+          false, // not interactive
+          false, // forceRecipientSettings (ignored due to not interactive)
+          matchedKeysObj, // resulting matching keys
+          flagsObj); // resulting flags (0/1/2/3 for each type)
+      }
+      if (success) {
+        Enigmail.msg.encryptByRules = flagsObj.encrypt;
+        Enigmail.msg.signByRules = flagsObj.sign;
+        Enigmail.msg.pgpmimeByRules = flagsObj.pgpMime;
+
+        if (matchedKeysObj.value && matchedKeysObj.value.length > 0) {
+          // replace addresses with results from rules
+          toAddrList = matchedKeysObj.value.split(", ");
+        }
+      }
+    }
+    // Set encryptByRules from settings
+    if (toAddrList.length > 0 && EnigmailPrefs.getPref("autoSendEncrypted") == 1) {
+      let validKeyList = Enigmail.hlp.validKeysForAllRecipients(toAddrList.join(", "));
+      if (validKeyList) {
+        Enigmail.msg.encryptByRules = EnigmailConstants.ENIG_AUTO_ALWAYS;
+      }
+    }
+
+    // key function to process the final encrypt/sign/pgpmime state from all settings
+    // - uses as INPUT:
+    //   - Enigmail.msg.sendMode
+    //   - Enigmail.msg.encryptByRules, Enigmail.msg.signByRules, Enigmail.msg.pgpmimeByRules
+    //   - Enigmail.msg.encryptForced, Enigmail.msg.signForced, Enigmail.msg.pgpmimeForced
+    // - uses as OUTPUT:
+    //   - Enigmail.msg.statusEncrypted, Enigmail.msg.statusSigned, Enigmail.msg.statusPGPMime
+    //   - Enigmail.msg.reasonEncrypted, Enigmail.msg.reasonSigned
+    Enigmail.msg.processFinalState();
+
     let replyEncrypt = aWindow.document.getElementById("enigmail-reply-encrypt");
     let replySign = aWindow.document.getElementById("enigmail-reply-sign");
     let replyPgpMime = aWindow.document.getElementById("enigmail-reply-pgpmime");
-    // Set encrypt from settings
-    if (aAddress.to.length > 0 && EnigmailPrefs.getPref("autoSendEncrypted") == 1) {
-      let validKeyList = Enigmail.hlp.validKeysForAllRecipients(aAddress.to.join(", "));
-      if (validKeyList) {
+    replyEncrypt.checked = false;
+    replySign.checked = false;
+    replyPgpMime.checked = false;
+    switch (Enigmail.msg.statusEncrypted) {
+      case EnigmailConstants.ENIG_FINAL_FORCEYES:
+      case EnigmailConstants.ENIG_FINAL_YES:
         replyEncrypt.checked = true;
-      }
+        break;
     }
-    // Set parameters from identity
-    Enigmail.msg.identity = aComposeSession.params.identity;
-    Enigmail.msg.enableRules = true;
-    Enigmail.msg.sendModeDirty = false;
-    Enigmail.msg.setOwnKeyStatus = function () {};
-    Enigmail.msg.processAccountSpecificDefaultOptions();
-    const nsIEnigmail = Ci.nsIEnigmail;
-    const SIGN = nsIEnigmail.SEND_SIGNED;
-    const ENCRYPT = nsIEnigmail.SEND_ENCRYPTED;
-    if (Enigmail.msg.sendMode & ENCRYPT)
-      replyEncrypt.checked = true;
-    if (Enigmail.msg.sendMode & SIGN)
-      replySign.checked = true;
-    if (Enigmail.msg.sendPgpMime)
-      replyPgpMime.checked = true;
+    switch (Enigmail.msg.statusSigned) {
+      case EnigmailConstants.ENIG_FINAL_FORCEYES:
+      case EnigmailConstants.ENIG_FINAL_YES:
+        replySign.checked = true;
+        break;
+    }
+    switch (Enigmail.msg.statusPGPMime) {
+      case EnigmailConstants.ENIG_FINAL_FORCEYES:
+      case EnigmailConstants.ENIG_FINAL_YES:
+        replyPgpMime.checked = true;
+        break;
+    }
+    // Set reasons to checkboxes
+    replyEncrypt.setAttribute("title", Enigmail.msg.reasonEncrypted);
+    replySign.setAttribute("title", Enigmail.msg.reasonSigned);
 
     // Add listeners to set final mode
     if (!aMessage._conversation._enigmailReplyEventListener) {
