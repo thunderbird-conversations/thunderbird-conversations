@@ -249,13 +249,13 @@ button {
   position: absolute;
   width: 30.2rem;
   min-width: 302px;
-  top: 24px;
+  top: 20px;
   left: 16px;
   background-color: -moz-field;
   color: -moz-fieldtext;
   border: 1px solid -moz-fieldtext;
-  box-shadow: 0 0 0 6px rgba(0,0,0,0.25);
-  border-radius: 5px;
+  box-shadow: 0 0 0 1px rgba(0,0,0,0.25);
+  border-radius: 4px;
   z-index: 1000;
   display: none;
 }
@@ -275,7 +275,7 @@ button {
 }
 
 .dropDown .tooltip {
-  width: 15.2rem;
+  width: 14rem;
   left: -11rem;
   min-width: 0;
 }
@@ -284,6 +284,7 @@ button {
   margin-top: 0;
   list-style-type: none;
   font-size: 1.1rem;
+  padding-left: 2px;
 }
 
 .dropDown li {
@@ -332,6 +333,50 @@ button {
 
 .dropDown li:hover .arrow.inside {
   border-color: transparent transparent -moz-cellhighlight transparent;
+}
+
+.dropDown .tooltip > ul > li {
+  background-repeat: no-repeat;
+  background-size: 14px 14px;
+  background-position: 3px center;
+  text-indent: 21px;
+  vertical-align: middle;
+}
+
+.action-reply {
+  background-image: url("chrome://conversations/content/i/flaticon/back57.svg");
+}
+
+.action-replyAll {
+  background-image: url("chrome://conversations/content/i/flaticon/reply18.svg");
+}
+
+.action-replyList {
+  background-image: url("chrome://conversations/content/i/flaticon/back57.svg");
+}
+
+.action-editNew {
+  background-image: url("chrome://conversations/content/i/flaticon/create3.svg");
+}
+
+.action-forward {
+  background-image: url("chrome://conversations/content/i/flaticon/forward19.svg");
+}
+
+.action-archive {
+  background-image: url("chrome://conversations/content/i/flaticon/download166.svg");
+}
+
+.action-delete {
+  background-image: url("chrome://conversations/content/i/flaticon/rubbish.svg");
+}
+
+.action-classic {
+  background-image: url("chrome://conversations/content/i/flaticon/move26.svg");
+}
+
+.action-source {
+  background-image: url("chrome://conversations/content/i/flaticon/visibility1.svg");
 }
 
 .contactName {
@@ -403,6 +448,21 @@ a img {
   padding: 0 5px;
   float: left;
   margin: 0 3px 0 0;
+}
+
+.top-right-more {
+  display: inline-block;
+  background-image: url("chrome://conversations/content/i/more.png");
+  background-repeat: no-repeat;
+  background-position: 6px 0;
+  width: 20px;
+  height: 14px;
+  vertical-align: middle;
+}
+
+.top-right-more:hover,
+.top-right-more.expand {
+  background-image: url("chrome://conversations/content/i/more_expand.png");
 }
 
 .moreExpander {

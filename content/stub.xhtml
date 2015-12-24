@@ -65,6 +65,8 @@
     function clearMenu() {
       for (let menu of document.getElementsByClassName("menu")) {
         menu.style.display = "none";
+        if (menu.previousElementSibling)
+          menu.previousElementSibling.classList.remove("expand");
       }
     }
 
@@ -80,6 +82,7 @@
       clearMenu();
       if (!menuWasVisible) {
         menu.style.display = "-moz-box";
+        target.classList.add("expand");
         event.stopPropagation();
       }
     }
@@ -842,13 +845,10 @@
             | <a href="javascript:" class="edit-draft">{{str "editDraft2"}}</a>
           </span>
           <span class="dropDown"> |
-            <a href="javascript:" onclick="displayMenu(event);" class="top-right-more">{{str "more"}} <span class="downwardArrow">&#x25bc;</span></a>
+            <a href="javascript:" onclick="displayMenu(event);" class="top-right-more" title="{{str "more"}}"></a>
             <div class="tooltip tooltip-menu menu">
               <ul>
-                <li class="action-reply">{{str "reply"}}
-                  <div class="arrow"></div>
-                  <div class="arrow inside"></div>
-                </li>
+                <li class="action-reply">{{str "reply"}}</li>
                 <li class="action-replyAll">{{str "replyAll"}}</li>
                 <li class="action-replyList">{{str "replyList"}}</li>
                 <li class="action-editNew">{{str "editNew"}}</li>
