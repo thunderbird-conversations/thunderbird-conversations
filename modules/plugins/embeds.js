@@ -95,8 +95,9 @@ let embedsHook = {
     let iframeDoc = iframe.contentDocument;
     let links = iframeDoc.getElementsByTagName("a");
     // Don't detect links in quotations.
-    [x.skip = true
-      for (x of iframeDoc.querySelectorAll("blockquote a"))];
+    for (let x of iframeDoc.querySelectorAll("blockquote a")) {
+      x.skip = true;
+    }
     let seen = {};
     // Examine all links in the message.
     for (let a of links) {
@@ -115,7 +116,7 @@ let embedsHook = {
     if (matches && matches.length) {
       let videoId = matches[1];
       Log.debug("Found a youtube video, video-id", videoId);
-      this.insertEmbed(strings.get("foundYouTube"), "640", "385", 
+      this.insertEmbed(strings.get("foundYouTube"), "640", "385",
         "http://www.youtube.com/embed/"+videoId, aDomNode);
       return videoId;
     } else {

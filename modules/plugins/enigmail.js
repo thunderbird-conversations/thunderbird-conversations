@@ -576,8 +576,9 @@ function addSignedLabel(aStatus, aDomNode, aMessage) {
     addViewSecurityInfoEvent(aMessage);
   }
   if (aStatus & Ci.nsIEnigmail.UNVERIFIED_SIGNATURE) {
-    [x.setAttribute("title", strings.get("unknownGood"))
-      for (x of aDomNode.querySelectorAll(".tag-signed"))];
+    for (let x of aDomNode.querySelectorAll(".tag-signed")) {
+      x.setAttribute("title", strings.get("unknownGood"));
+    };
   }
 }
 

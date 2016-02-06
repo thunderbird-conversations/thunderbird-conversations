@@ -87,7 +87,9 @@ function isBody(aNode) {
   }
 }
 
-function implies(a, b) !a || a && b;
+function implies(a, b) {
+  return !a || a && b;
+}
 
 /* Create a blockquote that encloses everything relevant, starting from marker.
  * Marker is included by default, remove it later if you need to. */

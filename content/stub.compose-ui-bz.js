@@ -234,7 +234,7 @@ BzComposeSession.prototype = {
                 yield SimpleStorage.kWorkDone;
               });
             if (archive)
-              msgHdrsArchive(conv.msgHdrs.filter(function (x) !msgHdrIsArchive(x)));
+              msgHdrsArchive(conv.msgHdrs.filter(x => !msgHdrIsArchive(x)));
           }
         }
       }, false);

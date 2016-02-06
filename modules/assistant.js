@@ -70,7 +70,7 @@ function PrefCustomization({ name, type, value }) {
   this.type = type;
   this.name = name;
   this.desiredValue = value;
-  return 
+  return
 }
 
 PrefCustomization.prototype = {
@@ -104,12 +104,12 @@ MixIn(PrefCustomization, SimpleCustomization.prototype);
 
 
 function MultipleCustomization(aParams) {
-  this.customizations = [new PrefCustomization(p) for (p of aParams)];
+  this.customizations = !!aParams ? aParams.map(p => new PrefCustomization(p)) : [];
 }
 
 MultipleCustomization.prototype = {
   install: function () {
-    return [x.install() for (x of this.customizations)];
+    return this.customizations.map(c => c.install());
   },
 
   uninstall: function (uninstallInfos) {
@@ -125,7 +125,7 @@ MultipleCustomization.prototype = {
 //  "Illegal operation on WrappedNative prototype object"  nsresult:
 //  "0x8057000c (NS_ERROR_XPC_BAD_OP_ON_WN_PROTO)"
 // So we do a round of eta-expansion.
-let eid = function (id) getMail3Pane().document.getElementById(id);
+let eid = (id) => getMail3Pane().document.getElementById(id);
 
 let Customizations = {
   ttop: function () {},
@@ -306,7 +306,7 @@ let Customizations = {
 
       let vFolder = VirtualFolderHelper.wrapVirtualFolder(smartInbox);
       vFolder.searchFolders = vFolder.searchFolders.filter(
-        function (x) (!(x.URI in aChangedFolders))
+        x => !(x.URI in aChangedFolders)
       );
       vFolder.cleanUpMessageDatabase();
       msgAccountManager.saveVirtualFolders();
