@@ -125,7 +125,7 @@ MultipleCustomization.prototype = {
 //  "Illegal operation on WrappedNative prototype object"  nsresult:
 //  "0x8057000c (NS_ERROR_XPC_BAD_OP_ON_WN_PROTO)"
 // So we do a round of eta-expansion.
-let eid = (id) => getMail3Pane().document.getElementById(id);
+let eid = id => getMail3Pane().document.getElementById(id);
 
 let Customizations = {
   ttop: function () {},

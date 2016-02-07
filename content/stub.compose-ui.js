@@ -955,13 +955,7 @@ AttachmentList.prototype = {
   },
 
   save: function () {
-    return this._attachments.map(x => {
-      return {
-        name: x.name,
-        size: x.size,
-        url: x.url,
-      };
-    });
+    return this._attachments.map(x => ({ name: x.name, size: x.size, url: x.url }));
   },
 
   get attachments () {

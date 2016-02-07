@@ -476,9 +476,8 @@
             window.frameElement.setAttribute("tooltip", "aHTMLTooltip");
           let mainWindow = topMail3Pane(window);
           let willExpand = parseInt(params.willExpand);
-          let msgHdrs = params.urls.split(",").map(x => msgUriToMsgHdr(x));
-          msgHdrs = msgHdrs.filter(x => x != null);
-          msgHdrs = msgHdrs.filter(x => x.messageId);
+          let msgHdrs = params.urls.split(",").map(x => msgUriToMsgHdr(x))
+                                              .filter(x => x != null && x.messageId);
           // It might happen that there are no messages left...
           if (!msgHdrs.length) {
             document.getElementById("messageList").textContent =
