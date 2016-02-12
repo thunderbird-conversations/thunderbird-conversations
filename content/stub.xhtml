@@ -293,8 +293,14 @@
     wrapHandlebars();
 
     $(document).ready(function () {
-      let stylesheet =
-        document.styleSheets.filter(x => String.indexOf(x.href, "/conversation.css") >= 0)[0];
+      let stylesheet;
+      for (let x of document.styleSheets) {
+        if (String.indexOf(x.href, "/conversation.css") >= 0) {
+          stylesheet = x;
+          break;
+        }
+      }
+
       if (stylesheet) {
         if (Prefs.tweak_chrome) {
           // Set the root size to 10px on Linux, and equivalent font sizes on
@@ -331,12 +337,14 @@
     function expandCollapse(event) {
       let $span = $(event.target).find("span.expand");
       if ($span.hasClass("collapse")) {
-        [message.collapse()
-          for ({ message } of Conversations.currentConversation.messages)];
+        for (let { message } of Conversations.currentConversation.messages) {
+          message.collapse();
+        }
         $span.removeClass("collapse");
       } else {
-        [message.expand()
-          for ({ message } of Conversations.currentConversation.messages)];
+        for (let { message } of Conversations.currentConversation.messages) {
+          message.expand();
+        }
         $span.addClass("collapse");
       }
     }
@@ -613,9 +621,8 @@
             // Append our new value
             to.push(MailServices.headerParser.makeMimeAddress(data.name, data.email));
             // Re-set everything
-            let format = function (items)
-              [asToken(null, name, email, null) for ([{ name, email }] of items.map(parseMimeLine))]
-            ;
+            let format = items => items.map(parseMimeLine)
+                                       .map(([{ name, email }]) => asToken(null, name, email, null));
             setupAutocomplete(format(to), format(cc), format(bcc));
             // Remove the node!
             node.remove();
@@ -627,7 +634,7 @@
         nodes.appendTo($(".quickReplyContactsBox"));
       };
 
-      $(".quickReplyContactsMoreLink").click(function () pushNewPopularContacts(10));
+      $(".quickReplyContactsMoreLink").click(() => pushNewPopularContacts(10));
 
       // Fill in the "10 most popular contacts" thing
       let contactQuery = Gloda.newQuery(Gloda.NOUN_CONTACT);
@@ -731,13 +738,15 @@
     (function () {
       let w = window;
       markReadInView.enable = function () {
-        [w.document.addEventListener(x, w.markReadInView, true)
-          for (x of ["mouseover", "focus", "keydown"])];
+        for (let x of ["mouseover", "focus", "keydown"]) {
+          w.document.addEventListener(x, w.markReadInView, true);
+        }
       };
       markReadInView.disable = function () {
         w.clearTimeout(w.markReadInView.timeout);
-        [w.document.removeEventListener(x, w.markReadInView, true)
-          for (x of ["mouseover", "focus", "keydown", "scroll"])];
+        for (let x of ["mouseover", "focus", "keydown", "scroll"]) {
+          w.document.removeEventListener(x, w.markReadInView, true);
+        }
       };
     })();
 

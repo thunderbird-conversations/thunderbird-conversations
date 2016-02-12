@@ -528,7 +528,7 @@ Message.prototype = {
     );
     this._contacts = this._contacts.concat(contactsTo);
     // false means "no colors"
-    data.dataContactsTo = contactsTo.map(function ([x, email]) x.toTmplData(false, Contacts.kTo, email));
+    data.dataContactsTo = contactsTo.map(([x, email]) => x.toTmplData(false, Contacts.kTo, email));
     let l = data.dataContactsTo.length;
     data.dataContactsTo.forEach(function(data, i) {
       if (i == 0)
@@ -781,10 +781,10 @@ Message.prototype = {
 
     // This is for the smart reply button, we need to determine what's the best
     // action.
-    this.register(".buttonReply, .action-reply", function (event) self.compose(Ci.nsIMsgCompType.ReplyToSender, event));
-    this.register(".buttonReplyAll, .action-replyAll", function (event) self.compose(Ci.nsIMsgCompType.ReplyAll, event));
-    this.register(".buttonReplyList, .action-replyList", function (event) self.compose(Ci.nsIMsgCompType.ReplyToList, event));
-    this.register(".buttonForward, .action-forward", function (event) self.forward(event));
+    this.register(".buttonReply, .action-reply", event => self.compose(Ci.nsIMsgCompType.ReplyToSender, event));
+    this.register(".buttonReplyAll, .action-replyAll", event => self.compose(Ci.nsIMsgCompType.ReplyAll, event));
+    this.register(".buttonReplyList, .action-replyList", event => self.compose(Ci.nsIMsgCompType.ReplyToList, event));
+    this.register(".buttonForward, .action-forward", event => self.forward(event));
     let mainActionLink = self._domNode.getElementsByClassName("replyMainActionLink")[0];
     let replyList = self._domNode.getElementsByClassName("buttonReplyList")[0];
     let replyAll = self._domNode.getElementsByClassName("buttonReplyAll")[0];
@@ -830,9 +830,9 @@ Message.prototype = {
       mainActionLink.textContent = reply.textContent;
     }
 
-    this.register(".edit-draft", function (event) self.compose(Ci.nsIMsgCompType.Draft, event));
-    this.register(".action-editNew", function (event) self.compose(Ci.nsIMsgCompType.Template, event));
-    this.register(".action-print", function (event) self.print());
+    this.register(".edit-draft", event => self.compose(Ci.nsIMsgCompType.Draft, event));
+    this.register(".action-editNew", event => self.compose(Ci.nsIMsgCompType.Template, event));
+    this.register(".action-print", event => self.print());
     // These event listeners are all in the header, which happens to have an
     //  event listener set on the click event for toggling the message. So we
     //  make sure that event listener is bubbling, and we register these with
@@ -940,7 +940,7 @@ Message.prototype = {
      * We now assume that all the information is correct. I've done enough work
      * on the Gloda side to ensure this. All hail to Gloda!
      */
-    let attInfos = self._attachments.map(function (att)
+    let attInfos = self._attachments.map(att =>
       new mainWindow.AttachmentInfo(
         att.contentType, att.url, att.name, self._uri, att.isExternal, 42
       ));
@@ -1243,14 +1243,14 @@ Message.prototype = {
           value: subject ? sanitize(GlodaUtils.deMime(subject)) : "",
         });
         let self = this;
-        let buildContactObjects = function (nameEmails)
+        let buildContactObjects = nameEmails =>
           nameEmails.map(x =>
             [self._conversation._contactManager
               .getContactFromNameAndEmail(x.name, x.email),
              x.email]
           );
-        let buildContactData = function (contactObjects)
-          contactObjects.map(function ([x, email])
+        let buildContactData = contactObjects =>
+          contactObjects.map(([x, email]) =>
             // Fourth parameter: aIsDetail
             x.toTmplData(false, Contacts.kTo, email, true)
           );
@@ -1529,7 +1529,7 @@ Message.prototype = {
 
             self._didStream = true;
             if (Prefs.getInt("mail.show_headers") == kHeadersShowAll)
-              self.showDetails(function () self._signal());
+              self.showDetails(() => self._signal());
             else
               self._signal();
           } catch (e) {
@@ -1885,9 +1885,9 @@ MessageFromDbHdr.prototype = {
  */
 let PostStreamingFixesMixIn = {
   // This is the naming convention to define a getter, per MixIn's definition
-  get_defaultSize: function ()
-    Prefs.getInt("font.size.variable.x-western")
-  ,
+  get_defaultSize: function () {
+    return Prefs.getInt("font.size.variable.x-western");
+  },
 
   injectCss: function (iframeDoc) {
     let styleRules = [];
@@ -2187,8 +2187,7 @@ let PostStreamingFixesMixIn = {
         // Attach the required event handler so that links open in the external
         // browser.
         a.addEventListener("click",
-          function link_listener (event)
-            mainWindow.specialTabs.siteClickHandler(event, /^mailto:/),
+          event => mainWindow.specialTabs.siteClickHandler(event, /^mailto:/),
           true);
       }
     }

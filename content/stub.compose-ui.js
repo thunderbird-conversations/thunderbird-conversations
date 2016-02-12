@@ -604,9 +604,9 @@ ComposeSession.prototype = {
     switch (aMode) {
       case "replyAll": {
         replyAllParams(identity, msgHdr, function (params) {
-          let to = [asToken(null, name, email, null) for ([name, email] of params.to)];
-          let cc = [asToken(null, name, email, null) for ([name, email] of params.cc)];
-          let bcc = [asToken(null, name, email, null) for ([name, email] of params.bcc)];
+          let to = params.to.map(([name, email]) => asToken(null, name, email, null));
+          let cc = params.cc.map(([name, email]) => asToken(null, name, email, null));
+          let bcc = params.bcc.map(([name, email]) => asToken(null, name, email, null));
           cc = mergeDefault(cc, defaultCc);
           bcc = mergeDefault(bcc, defaultBcc);
           setupAutocomplete(to, cc, bcc);
@@ -636,7 +636,7 @@ ComposeSession.prototype = {
         let cc = mergeDefault([], defaultCc);
         let bcc = mergeDefault([], defaultBcc);
         replyAllParams(identity, msgHdr, function (params) {
-          let to = [asToken(null, name, email, null) for ([name, email] of params.to)];
+          let to = params.to.map(([name, email]) => asToken(null, name, email, null));
           setupAutocomplete(to, cc, bcc);
           k && k(params.to.length + params.cc.length + params.bcc.length);
         });

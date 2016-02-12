@@ -79,7 +79,7 @@ PrefManager.prototype = {
 
   split: s => Array.map(s.split(","), String.trim).filter(String.trim).map(String.toLowerCase),
 
-  watch: watcher => this.watchers.push(watcher),
+  watch: function (watcher) { return this.watchers.push(watcher); },
 
   register: function mpo_register (observer) {
     prefsService.QueryInterface(Ci.nsIPrefBranch);

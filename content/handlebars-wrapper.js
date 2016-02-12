@@ -55,7 +55,7 @@ function wrapHandlebars() {
       dumpCallStack(e);
     }
   };
-  window.tmpl = function (id, data) $(tmpl0(id, data));
+  window.tmpl = (id, data) => $(tmpl0(id, data));
 
   let strings = new StringBundle("chrome://conversations/locale/template.properties");
   let str0 = function (x, ...args) {

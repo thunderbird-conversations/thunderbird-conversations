@@ -525,7 +525,9 @@ function patchForShowSecurityInfo(aWindow) {
     w.top.controllers.getControllerForCommand("button_enigmail_decrypt");
   w.top.controllers.removeController(oldTreeController);
   let treeController = {};
-  [treeController[i] = x for ([i, x] of entries(oldTreeController))];
+  for ([i, x] of entries(oldTreeController)) {
+    treeController[i] = x;
+  }
   treeController.isCommandEnabled = function () {
     if (w.gFolderDisplay.messageDisplay.visible) {
       if (w.gFolderDisplay.selectedCount == 0) {
