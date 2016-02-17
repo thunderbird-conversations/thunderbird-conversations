@@ -123,7 +123,7 @@ function registerQuickReply() {
           obj.onDraftChanged(aTopic);
         }
         // While we're at it, cleanup...
-        listeners = listeners.filter(function (x) x.get());
+        listeners = listeners.filter(x => x.get());
         mainWindow.Conversations.draftListeners[id] = listeners;
       } catch (e) {
         // See comment above
@@ -187,7 +187,7 @@ function newComposeSessionByDraftIf() {
   SimpleStorage.spin(function () {
     let r = yield ss.get(id);
     if (r) {
-      gComposeSession = createComposeSession(function (x) x.draft(r));
+      gComposeSession = createComposeSession(x => x.draft(r));
       startedEditing(true);
       revealCompositionFields();
       showQuickReply.call($(".quickReply li.reply"));
@@ -205,9 +205,7 @@ function newComposeSessionByClick(type) {
   Log.debug("Setting up the initial quick reply compose parameters...");
   let messages = Conversations.currentConversation.messages;
   try {
-    gComposeSession = createComposeSession(function (x)
-      x.reply(getMessageForQuickReply(), type)
-    );
+    gComposeSession = createComposeSession(x => x.reply(getMessageForQuickReply(), type));
     // This could probably be refined, like only considering we started editing
     // if we modified the body and/or the composition fields.
     startedEditing(true);
@@ -596,7 +594,7 @@ ComposeSession.prototype = {
       if (!aDefault) // "" evaluates to false
         return aList;
       for (let email of aDefault.split(/,/)) {
-        if (!aList.some(function (x) x.email == email)) {
+        if (!aList.some(x => x.email == email)) {
           aList.push(asToken(null, null, email, null));
         }
       }
@@ -606,9 +604,9 @@ ComposeSession.prototype = {
     switch (aMode) {
       case "replyAll": {
         replyAllParams(identity, msgHdr, function (params) {
-          let to = [asToken(null, name, email, null) for ([name, email] of params.to)];
-          let cc = [asToken(null, name, email, null) for ([name, email] of params.cc)];
-          let bcc = [asToken(null, name, email, null) for ([name, email] of params.bcc)];
+          let to = params.to.map(([name, email]) => asToken(null, name, email, null));
+          let cc = params.cc.map(([name, email]) => asToken(null, name, email, null));
+          let bcc = params.bcc.map(([name, email]) => asToken(null, name, email, null));
           cc = mergeDefault(cc, defaultCc);
           bcc = mergeDefault(bcc, defaultBcc);
           setupAutocomplete(to, cc, bcc);
@@ -638,7 +636,7 @@ ComposeSession.prototype = {
         let cc = mergeDefault([], defaultCc);
         let bcc = mergeDefault([], defaultBcc);
         replyAllParams(identity, msgHdr, function (params) {
-          let to = [asToken(null, name, email, null) for ([name, email] of params.to)];
+          let to = params.to.map(([name, email]) => asToken(null, name, email, null));
           setupAutocomplete(to, cc, bcc);
           k && k(params.to.length + params.cc.length + params.bcc.length);
         });
@@ -773,8 +771,7 @@ ComposeSession.prototype = {
     else
       compType =  Ci.nsIMsgCompType.ReplyAll; // ReplyAll, Reply... ends up the same
 
-    let [to, cc, bcc] = ["to", "cc", "bcc"].map(function (x)
-      JSON.parse($("#"+x).val()));
+    let [to, cc, bcc] = ["to", "cc", "bcc"].map(x => JSON.parse($("#"+x).val()));
 
     let sendStatus = { };
     for (let priority of ["_early", "", "_canceled"]) {
@@ -929,7 +926,7 @@ AttachmentList.prototype = {
     });
     line.find(".removeAttachmentLink").click(function () {
       line.remove();
-      self._attachments = self._attachments.filter(function (x) x != msgAttachment);
+      self._attachments = self._attachments.filter(x => x != msgAttachment);
     });
     line.appendTo($(".quickReplyAttachments"));
   },
@@ -958,11 +955,7 @@ AttachmentList.prototype = {
   },
 
   save: function () {
-    return [{
-      name: x.name,
-      size: x.size,
-      url: x.url,
-    } for (x of this._attachments)];
+    return this._attachments.map(x => ({ name: x.name, size: x.size, url: x.url }));
   },
 
   get attachments () {
@@ -1290,7 +1283,7 @@ function createStateListener (aComposeSession, aMsgHdrs, aId) {
         }
         // Archive the whole conversation if needed
         if (aComposeSession.archive)
-          msgHdrsArchive(aMsgHdrs.filter(function (x) !msgHdrIsArchive(x)));
+          msgHdrsArchive(aMsgHdrs.filter(x => !msgHdrIsArchive(x)));
         if (isQuickCompose) {
           // Try both, the first one will do nothing if in a tab.
           window.close();

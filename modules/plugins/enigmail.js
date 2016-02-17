@@ -525,7 +525,9 @@ function patchForShowSecurityInfo(aWindow) {
     w.top.controllers.getControllerForCommand("button_enigmail_decrypt");
   w.top.controllers.removeController(oldTreeController);
   let treeController = {};
-  [treeController[i] = x for ([i, x] of entries(oldTreeController))];
+  for ([i, x] of entries(oldTreeController)) {
+    treeController[i] = x;
+  }
   treeController.isCommandEnabled = function () {
     if (w.gFolderDisplay.messageDisplay.visible) {
       if (w.gFolderDisplay.selectedCount == 0) {
@@ -576,8 +578,9 @@ function addSignedLabel(aStatus, aDomNode, aMessage) {
     addViewSecurityInfoEvent(aMessage);
   }
   if (aStatus & Ci.nsIEnigmail.UNVERIFIED_SIGNATURE) {
-    [x.setAttribute("title", strings.get("unknownGood"))
-      for (x of aDomNode.querySelectorAll(".tag-signed"))];
+    for (let x of aDomNode.querySelectorAll(".tag-signed")) {
+      x.setAttribute("title", strings.get("unknownGood"));
+    };
   }
 }
 

@@ -278,7 +278,7 @@ $.TokenList = function (input, settings) {
           });
 
         token_count++;
-        
+
         $.data(this_token.get(0), "tokeninput", li_data[i]);
 
         // Clear input box and make sure it keeps focus

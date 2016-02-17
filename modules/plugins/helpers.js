@@ -64,7 +64,7 @@ let PluginHelpers = {
     // emails, so we need to make sure the email address is unique for each
     // person (otherwise Person A <email> is cached with email as the key, and
     // Person B <sameemail> appears as Person A. See contact.js
-    let uniq = function (s) GlodaUtils.md5HashString(s).substring(0, 8);
+    let uniq = s => GlodaUtils.md5HashString(s).substring(0, 8);
 
     // We sniff for a name
     if (aMimeMsg && aMimeMsg.headers["from"] == gsfnFrom) {

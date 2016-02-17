@@ -292,8 +292,9 @@ function ViewWrapper(aConversation) {
   // We cannot compare messages by message-id (they have the same!), we cannot
   //  compare them by messageKey (not reliable), but URLs should be enough.
   this.byUri = {};
-  [this.byUri[msgHdrGetUri(x)] = true
-    for (x of this.mainWindow.gFolderDisplay.selectedMessages)];
+  if (this.mainWindow.gFolderDisplay.selectedMessages) {
+    this.mainWindow.gFolderDisplay.selectedMessages.map(x => this.byUri[msgHdrGetUri(x)] = true);
+  }
 }
 
 ViewWrapper.prototype = {
@@ -325,7 +326,7 @@ function Conversation(aWindow, aSelectedMessages, aScrollMode, aCounter) {
   //  message inside a thread or viewing a closed thread.
   this.scrollMode = aScrollMode;
   // We have the COOL invariant that this._initialSet is a subset of
-  //   [toMsgHdr(x) for (x of this.messages)]
+  //   this.messages.map(x => toMsgHdr(x))
   // This is actually trickier than it seems because of the different view modes
   //  and because we can't directly tell whether a message is in the view if
   //  it's under a collapsed thread. See the lengthy discussion in
@@ -388,9 +389,8 @@ Conversation.prototype = {
   _selectionChanged: function _Conversation_selectionChanged () {
     let gFolderDisplay = topMail3Pane(this).gFolderDisplay;
     let messageIds = this._initialSet.map(x => x.messageId);
-    return
-      !gFolderDisplay.selectedMessage ||
-      !messageIds.some(function (x) x == gFolderDisplay.selectedMessage.messageId);
+    return !gFolderDisplay.selectedMessage ||
+           !messageIds.some(x => x == gFolderDisplay.selectedMessage.messageId);
   },
 
   // This function contains the logic that runs a Gloda query on the initial set
@@ -410,7 +410,7 @@ Conversation.prototype = {
           self._getReady(self._initialSet.length + 1);
           // M = msgHdr, I = Initial, NG = there was no gloda query
           // will run signal
-          self.messages = self._initialSet.map(function (msgHdr)
+          self.messages = self._initialSet.map(msgHdr =>
             messageFromDbHdr(self, msgHdr, "MI+NG")
           );
           self._signal();
@@ -444,14 +444,13 @@ Conversation.prototype = {
       try {
         // The MessageFromGloda constructor cannot work with gloda messages that
         //  don't have a message header
-        aItems = aItems.filter(function (glodaMsg) glodaMsg.folderMessage);
+        aItems = aItems.filter(glodaMsg => glodaMsg.folderMessage);
         // We want at least all messages from the Gloda collection
         // will fire signal when done
-        let messages = [messageFromGlodaIfOffline(self, glodaMsg, "GA")
-          for (glodaMsg of aItems)];
+        let messages = aItems.map(glodaMsg => messageFromGlodaIfOffline(self, glodaMsg, "GA"));
         Log.debug("onItemsAdded",
-          [msgDebugColor(x) + x.debug + " " + getMessageId(x)
-            for (x of messages)].join(" "), Colors.default);
+          messages.map(x => msgDebugColor(x) + x.debug + " " + getMessageId(x)).join(" "),
+          Colors.default);
         Log.debug(self.messages.length, "messages already in the conversation");
         // The message ids we already hold.
         let messageIds = {};
@@ -462,8 +461,9 @@ Conversation.prototype = {
             self.removeMessage(message.message);
           }
         }
-        [messageIds[getMessageId(m)] = !toMsgHdr(m) || msgHdrIsDraft(toMsgHdr(m))
-          for (m of self.messages)];
+        self.messages.map(m => {
+          messageIds[getMessageId(m)] = !toMsgHdr(m) || msgHdrIsDraft(toMsgHdr(m));
+        });
         // If we've got a new header for a message that we used to know as a
         // draft, that means either the draft has been updated (autosave), or
         // the draft was actually sent. In both cases, we want to remove the old
@@ -472,7 +472,7 @@ Conversation.prototype = {
           let newMessageId = getMessageId(x);
           if (messageIds[newMessageId]) {
             Log.debug("Removing a draft...");
-            let draft = self.messages.filter(function (y)
+            let draft = self.messages.filter(y =>
               getMessageId(y) == newMessageId
             )[0];
             self.removeMessage(draft.message);
@@ -480,10 +480,10 @@ Conversation.prototype = {
           }
         }
         // Don't add a message if we already have it.
-        messages = messages.filter(function (x) !(getMessageId(x) in messageIds));
+        messages = messages.filter(x => !(getMessageId(x) in messageIds));
         // Sort all the messages according to the date so that they are inserted
         // in the right order.
-        let compare = function (m1, m2) msgDate(m1) - msgDate(m2);
+        let compare = (m1, m2) => msgDate(m1) - msgDate(m2);
         // We can sort now because we don't need the Message instance to be
         // fully created to get the date of a message.
         messages.sort(compare);
@@ -508,8 +508,9 @@ Conversation.prototype = {
 
     // Now we forward individual updates to each messages (e.g. tags, starred)
     let byMessageId = {};
-    [byMessageId[getMessageId(x)] = x.message
-      for (x of this.messages)];
+    for (let x of this.messages) {
+      byMessageId[getMessageId(x)] = x.message;
+    }
     for (let glodaMsg of aItems) {
       // If you see big failures coming from the lines below, don't worry: it's
       //  just that an old conversation hasn't been GC'd and still receives
@@ -529,8 +530,9 @@ Conversation.prototype = {
     // We (should) have the invariant that a conversation only has one message
     // with a given Message-Id.
     let byMessageId = {};
-    [byMessageId[getMessageId(x)] = x.message
-      for (x of this.messages)];
+    for (let x of this.messages) {
+      byMessageId[getMessageId(x)] = x.message;
+    }
     for (let glodaMsg of aItems) {
       let msgId = glodaMsg.headerMessageID;
       if ((msgId in byMessageId) && byMessageId[msgId]._msgHdr.messageKey == glodaMsg.messageKey)
@@ -562,7 +564,7 @@ Conversation.prototype = {
       try {
         // The MessageFromGloda constructor cannot work with gloda messages that
         //  don't have a message header
-        aCollection.items = aCollection.items.filter(function (glodaMsg) glodaMsg.folderMessage);
+        aCollection.items = aCollection.items.filter(glodaMsg => glodaMsg.folderMessage);
         // In most cases, all messages share the same conversation id (i.e. they
         //  all belong to the same gloda conversations). There are rare cases
         //  where we lie about this: non-strictly threaded messages regrouped
@@ -574,9 +576,9 @@ Conversation.prototype = {
           self.id = aCollection.items[0].conversation.id;
         // Beware, some bad things might have happened in the meanwhile...
         self._initialSet =
-          self._initialSet.filter(function (msgHdr) msgHdr && msgHdr.folder.msgDatabase.ContainsKey(msgHdr.messageKey));
+          self._initialSet.filter(msgHdr => msgHdr && msgHdr.folder.msgDatabase.ContainsKey(msgHdr.messageKey));
         self._intermediateResults =
-          self._intermediateResults.filter(function (glodaMsg) glodaMsg.folderMessage);
+          self._intermediateResults.filter(glodaMsg => glodaMsg.folderMessage);
         // When the right number of signals has been fired, move on...
         self._getReady(aCollection.items.length
           + self._intermediateResults.length
@@ -587,16 +589,17 @@ Conversation.prototype = {
         //  messages from the intermediate set (see rationale in the
         //  initialization of this._intermediateResults).
         // will fire signal when done
-        self.messages = [messageFromGlodaIfOffline(self, glodaMsg, "GF")
-          for (glodaMsg of aCollection.items)
-        ].concat([messageFromGlodaIfOffline(self, glodaMsg, "GM")
-          for (glodaMsg of self._intermediateResults)
-          if (glodaMsg.folderMessage) // be paranoid
-        ]);
+        self.messages =
+          aCollection.items.map(glodaMsg => messageFromGlodaIfOffline(self, glodaMsg, "GF"));
+        let intermediateSet =
+          self._intermediateResults.filter(glodaMsg => glodaMsg.folderMessage)
+                                   .map(glodaMsg => messageFromGlodaIfOffline(self, glodaMsg, "GM"));
+        self.messages = self.messages.concat(intermediateSet);
         // Here's the message IDs we know
         let messageIds = {};
-        [messageIds[getMessageId(m)] = true
-          for (m of self.messages)];
+        for (let m of self.messages) {
+          messageIds[getMessageId(m)] = true;
+        }
         // But Gloda might also miss some message headers
         for (let msgHdr of self._initialSet) {
           // Although _filterOutDuplicates is called eventually, don't uselessly
@@ -616,7 +619,7 @@ Conversation.prototype = {
         }
         // Sort all the messages according to the date so that they are inserted
         // in the right order.
-        let compare = function (m1, m2) msgDate(m1) - msgDate(m2);
+        let compare = (m1, m2) => msgDate(m1) - msgDate(m2);
         // We can sort now because we don't need the Message instance to be
         // fully created to get the date of a message.
         self.messages.sort(compare);
@@ -650,7 +653,7 @@ Conversation.prototype = {
     let mainWindow = topMail3Pane(this);
     this.viewWrapper = new ViewWrapper(this);
     // Wicked cases, when we're asked to display a draft that's half-saved...
-    messages = messages.filter(function (x) (toMsgHdr(x) && getMessageId(x)));
+    messages = messages.filter(x => (toMsgHdr(x) && getMessageId(x)));
     messages = groupArray(this.messages, getMessageId);
     // The message that's selected has the highest priority to avoid
     //  inconsistencies in case multiple identical messages are present in the
@@ -670,18 +673,17 @@ Conversation.prototype = {
         return bestChoice;
       };
       let r =
-        findForCriterion(function (aMsg) self.viewWrapper.isInView(aMsg)) ||
-        findForCriterion(function (aMsg) msgHdrIsInbox(toMsgHdr(aMsg))) ||
-        findForCriterion(function (aMsg) msgHdrIsSent(toMsgHdr(aMsg))) ||
-        findForCriterion(function (aMsg) !msgHdrIsArchive(toMsgHdr(aMsg))) ||
+        findForCriterion(aMsg => self.viewWrapper.isInView(aMsg)) ||
+        findForCriterion(aMsg => msgHdrIsInbox(toMsgHdr(aMsg))) ||
+        findForCriterion(aMsg => msgHdrIsSent(toMsgHdr(aMsg))) ||
+        findForCriterion(aMsg => !msgHdrIsArchive(toMsgHdr(aMsg))) ||
         aSimilarMessages[0]
       ;
       return r;
     }
     // Select right message will try to pick the message that has an
     //  existing msgHdr.
-    messages = [selectRightMessage(group)
-      for (group of messages)];
+    messages = messages.map(group => selectRightMessage(group));
     // But sometimes it just fails, and gloda remembers dead messages...
     messages = messages.filter(toMsgHdr);
     this.messages = messages;
@@ -693,7 +695,7 @@ Conversation.prototype = {
    */
   removeMessage: function _Conversation_removeMessage (aMessage) {
     // Move the quick reply to the previous message
-    let i = [x.message for (x of this.messages)].indexOf(aMessage);
+    let i = this.messages.map(x => x.message).indexOf(aMessage);
     Log.debug("Removing message", i);
     if (i == this.messages.length - 1 && this.messages.length > 1) {
       let $ = this._htmlPane.$;
@@ -706,8 +708,8 @@ Conversation.prototype = {
       }
     }
 
-    this.messages = this.messages.filter(function (x) x.message != aMessage);
-    this._initialSet = this._initialSet.filter(function (x) x.message != aMessage);
+    this.messages = this.messages.filter(x => x.message != aMessage);
+    this._initialSet = this._initialSet.filter(x => x.message != aMessage);
     this._domNode.removeChild(aMessage._domNode);
   },
 
@@ -722,12 +724,14 @@ Conversation.prototype = {
     //  actually changed selections.
     if (aMessages.length) {
       Log.debug("Appending",
-        [msgDebugColor(x) + x.debug for (x of aMessages)].join(" "), Colors.default);
+        aMessages.map(x => msgDebugColor(x) + x.debug).join(" "), Colors.default);
 
       // All your messages are belong to us. This is especially important so
       //  that contacts query the right _contactManager through their parent
       //  Message.
-      [(x.message._conversation = this) for (x of aMessages)];
+      for (let x of aMessages) {
+        x.message._conversation = this;
+      }
       this.messages = this.messages.concat(aMessages);
 
       let $ = this._htmlPane.$;
@@ -748,8 +752,7 @@ Conversation.prototype = {
       for (let i of range(this.messages.length - aMessages.length, this.messages.length)) {
         this.messages[i].message.initialPosition = i;
       }
-      let tmplData = [m.message.toTmplData(false)
-        for (m of aMessages)];
+      let tmplData = aMessages.map(m => m.message.toTmplData(false));
 
       let w = this._htmlPane;
       w.markReadInView.disable();
@@ -797,8 +800,9 @@ Conversation.prototype = {
       this._expandAndScroll();
     // Update the folder tags, maybe we were called because we changed folders
     this.viewWrapper = new ViewWrapper(this);
-    [m.message.inView = this.viewWrapper.isInView(m)
-      for (m of this.messages)];
+    for (let m of this.messages) {
+      m.message.inView = this.viewWrapper.isInView(m);
+    }
   },
 
   // Once we're confident our set of messages is the right one, we actually
@@ -844,9 +848,8 @@ Conversation.prototype = {
       //  throw an exception here, we're fucked, and we can't recover ever,
       //  because every test trying to determine whether we can recycle will end
       //  up running over the buggy set of messages.
-      let currentMsgUris = [msgHdrGetUri(toMsgHdr(x))
-        for (x of currentMsgSet)
-        if (toMsgHdr(x))];
+      let currentMsgUris = currentMsgSet.filter(x => toMsgHdr(x))
+                                        .map(x => msgHdrGetUri(toMsgHdr(x)))
       // Is a1 a prefix of a2? (I wish JS had pattern matching!)
       let isPrefix = function _isPrefix (a1, a2) {
         if (!a1.length) {
@@ -862,9 +865,8 @@ Conversation.prototype = {
             return [false, null];
         }
       };
-      let myMsgUris = [msgHdrGetUri(toMsgHdr(x))
-        for (x of this.messages)
-        if (toMsgHdr(x))];
+      let myMsgUris = this.messages.filter(x => toMsgHdr(x))
+                                   .map(x => msgHdrGetUri(toMsgHdr(x)));
       let [shouldRecycle, _whichMessageUris] = isPrefix(currentMsgUris, myMsgUris);
       // Ok, some explanation needed. How can this possibly happen?
       // - Click on a conversation
@@ -881,7 +883,7 @@ Conversation.prototype = {
       // in a different situation → famous last words): we can recycle the
       // conversation only if there's one draft in it and it's the last message
       // in the conversation.
-      let drafts = currentMsgSet.filter(function (x)
+      let drafts = currentMsgSet.filter(x =>
         !toMsgHdr(x) || msgHdrIsDraft(toMsgHdr(x))
       );
       if (drafts.length) {
@@ -919,11 +921,11 @@ Conversation.prototype = {
             // Find the replacement message, and move it back into the list of
             // messages we have to append to the old conversation.
             let correspondingMessage =
-              this.messages.filter(function (x) (msgHdrGetUri(toMsgHdr(x)) == uri))[0];
+              this.messages.filter(x => (msgHdrGetUri(toMsgHdr(x)) == uri))[0];
             whichMessages.push(correspondingMessage);
           }
         }
-        let compare = function (m1, m2) msgDate(m1) - msgDate(m2);
+        let compare = (m1, m2) => msgDate(m1) - msgDate(m2);
         whichMessages.sort(compare);
         let currentConversation = this._window.Conversations.currentConversation;
         // Modify the old conversation in-place. BEWARE: don't forget anything
@@ -975,7 +977,7 @@ Conversation.prototype = {
     }
 
     Log.debug("Outputting",
-      [msgDebugColor(x) + x.debug for (x of this.messages)], Colors.default);
+      this.messages.map(x => msgDebugColor(x) + x.debug), Colors.default);
     Log.debug(this.messages.length, "messages in the conversation now");
     /*for (let message of this.messages) {
       let msgHdr = toMsgHdr(message);
@@ -1041,14 +1043,14 @@ Conversation.prototype = {
 
     // Make sure the toggle read/unread button is in the right state
     let markReadButton = this._htmlPane.document.querySelector("span.read");
-    if (this.messages.some(function (x) !x.message.read))
+    if (this.messages.some(x => !x.message.read))
       markReadButton.classList.add("unread");
     else
       markReadButton.classList.remove("unread");
 
     // If some message is collapsed, then the initial state is "expand"
     let collapseExpandButton = this._htmlPane.document.querySelector("span.expand");
-    if (this.messages.some(function (x) x.message.collapsed))
+    if (this.messages.some(x => x.message.collapsed))
       collapseExpandButton.classList.remove("collapse");
     else
       collapseExpandButton.classList.add("collapse");
@@ -1127,12 +1129,12 @@ Conversation.prototype = {
   outputInto: function _Conversation_outputInto (aHtmlPane, k) {
     this._htmlPane = aHtmlPane;
     this._domNode = this._htmlPane.document.getElementById("messageList");
-    this._onComplete = function () k(this);
+    this._onComplete = () => k(this);
     this._fetchMessages();
   },
 
   get msgHdrs () {
-    return [toMsgHdr(x) for (x of this.messages) if (toMsgHdr(x))];
+    return this.messages.filter(x => toMsgHdr(x)).map(x => toMsgHdr(x));
   },
 
   // Just an efficient way to mark a whole conversation as read

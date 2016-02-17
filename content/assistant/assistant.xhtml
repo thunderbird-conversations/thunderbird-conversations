@@ -65,7 +65,7 @@
       if (--expected == 0)
         finish();
     };
-    Customizations.expect = function () expected++;
+    Customizations.expect = () => expected++;
     Customizations.ttop = ttop;
 
     // --- UI event handlers

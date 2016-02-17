@@ -93,15 +93,16 @@ ContactIdentityCompleter.prototype = {
     }
     // and since we can now map from contacts down to identities, map contacts
     //  to the first identity for them that we find...
-    matches = [val.NOUN_ID == Gloda.NOUN_IDENTITY ? val : val.identities[0]
-               for ([, val] of entries(contactToThing))]
+    matches = entries(contactToThing).map(([, val]) =>
+      val.NOUN_ID == Gloda.NOUN_IDENTITY ? val : val.identities[0]);
 
-    let rows = [asToken(
-                  match.pictureURL(),
-                  match.contact.name != match.value ? match.contact.name : null,
-                  match.value,
-                  match.value
-                ) for (match of matches)];
+    let rows =
+      matches.map(match => asToken(
+                            match.pictureURL(),
+                            match.contact.name != match.value ? match.contact.name : null,
+                            match.value,
+                            match.value
+                          ));
     aResult.addRows(rows);
 
     // - match against database contacts / identities

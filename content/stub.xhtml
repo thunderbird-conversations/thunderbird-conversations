@@ -264,7 +264,7 @@
       let browser = window.frameElement;
       let tabmail = window.top.document.getElementById("tabmail");
       let tabs = tabmail.tabInfo;
-      let candidates = tabs.filter(function (x) x.browser == browser);
+      let candidates = tabs.filter(x => x.browser == browser);
       if (candidates.length == 1) {
         tabmail.closeTab(candidates[0]);
       } else {
@@ -293,9 +293,14 @@
     wrapHandlebars();
 
     $(document).ready(function () {
-      let stylesheet = [x
-        for (x of document.styleSheets)
-        if (String.indexOf(x.href, "/conversation.css") >= 0)][0];
+      let stylesheet;
+      for (let x of document.styleSheets) {
+        if (String.indexOf(x.href, "/conversation.css") >= 0) {
+          stylesheet = x;
+          break;
+        }
+      }
+
       if (stylesheet) {
         if (Prefs.tweak_chrome) {
           // Set the root size to 10px on Linux, and equivalent font sizes on
@@ -332,12 +337,14 @@
     function expandCollapse(event) {
       let $span = $(event.target).find("span.expand");
       if ($span.hasClass("collapse")) {
-        [message.collapse()
-          for ({ message } of Conversations.currentConversation.messages)];
+        for (let { message } of Conversations.currentConversation.messages) {
+          message.collapse();
+        }
         $span.removeClass("collapse");
       } else {
-        [message.expand()
-          for ({ message } of Conversations.currentConversation.messages)];
+        for (let { message } of Conversations.currentConversation.messages) {
+          message.expand();
+        }
         $span.addClass("collapse");
       }
     }
@@ -425,10 +432,8 @@
       let willExpand = $("textarea").parent().hasClass("expand") && startedEditing();
       // Pick _initialSet and not msgHdrs so as to enforce the invariant
       //  that the messages from _initialSet are in the current view.
-      let urls = [
-        msgHdrGetUri(x)
-        for (x of Conversations.currentConversation._initialSet)
-      ].join(",");
+      let urls =
+        Conversations.currentConversation._initialSet.map(x => msgHdrGetUri(x)).join(",");
       let queryString = "?urls="+encodeURIComponent(urls)
         +"&willExpand="+Number(willExpand);
       // First, save the draft, and once it's saved, then move on to opening the
@@ -479,9 +484,8 @@
             window.frameElement.setAttribute("tooltip", "aHTMLTooltip");
           let mainWindow = topMail3Pane(window);
           let willExpand = parseInt(params.willExpand);
-          let msgHdrs = [msgUriToMsgHdr(x) for (x of params.urls.split(","))];
-          msgHdrs = msgHdrs.filter(function (x) x != null);
-          msgHdrs = msgHdrs.filter(function (x) x.messageId);
+          let msgHdrs = params.urls.split(",").map(x => msgUriToMsgHdr(x))
+                                              .filter(x => x != null && x.messageId);
           // It might happen that there are no messages left...
           if (!msgHdrs.length) {
             document.getElementById("messageList").textContent =
@@ -555,7 +559,7 @@
       // TODO figure out why this timeout is needed
       setTimeout(function () {
         showQuickReply.call($(".reply.expand"));
-        gComposeSession = createComposeSession(function (x) x.new());
+        gComposeSession = createComposeSession(x => x.new());
         revealCompositionFields();
         editFields("to");
       }, 0);
@@ -617,9 +621,8 @@
             // Append our new value
             to.push(MailServices.headerParser.makeMimeAddress(data.name, data.email));
             // Re-set everything
-            let format = function (items)
-              [asToken(null, name, email, null) for ([{ name, email }] of items.map(parseMimeLine))]
-            ;
+            let format = items => items.map(parseMimeLine)
+                                       .map(([{ name, email }]) => asToken(null, name, email, null));
             setupAutocomplete(format(to), format(cc), format(bcc));
             // Remove the node!
             node.remove();
@@ -631,7 +634,7 @@
         nodes.appendTo($(".quickReplyContactsBox"));
       };
 
-      $(".quickReplyContactsMoreLink").click(function () pushNewPopularContacts(10));
+      $(".quickReplyContactsMoreLink").click(() => pushNewPopularContacts(10));
 
       // Fill in the "10 most popular contacts" thing
       let contactQuery = Gloda.newQuery(Gloda.NOUN_CONTACT);
@@ -735,13 +738,15 @@
     (function () {
       let w = window;
       markReadInView.enable = function () {
-        [w.document.addEventListener(x, w.markReadInView, true)
-          for (x of ["mouseover", "focus", "keydown"])];
+        for (let x of ["mouseover", "focus", "keydown"]) {
+          w.document.addEventListener(x, w.markReadInView, true);
+        }
       };
       markReadInView.disable = function () {
         w.clearTimeout(w.markReadInView.timeout);
-        [w.document.removeEventListener(x, w.markReadInView, true)
-          for (x of ["mouseover", "focus", "keydown", "scroll"])];
+        for (let x of ["mouseover", "focus", "keydown", "scroll"]) {
+          w.document.removeEventListener(x, w.markReadInView, true);
+        }
       };
     })();
 

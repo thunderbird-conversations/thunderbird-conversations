@@ -109,7 +109,7 @@ MonkeyPatch.prototype = {
     let after = window.document.getElementById("viewMessagesMenu");
     let parent1 = window.document.getElementById("menu_View_Popup");
     parent1.insertBefore(menuitem, after.nextElementSibling);
-    this.pushUndo(function () parent1.removeChild(menuitem));
+    this.pushUndo(() => parent1.removeChild(menuitem));
 
     // 3) Keyboard shortcut
     let key = window.document.createElement("key");
@@ -123,7 +123,7 @@ MonkeyPatch.prototype = {
     });
     let parent2 = window.document.getElementById("mailKeys");
     parent2.appendChild(key);
-    this.pushUndo(function () parent2.removeChild(key));
+    this.pushUndo(() => parent2.removeChild(key));
 
     // 4) Tree column
     let treecol = window.document.createElement("treecol");
@@ -139,11 +139,11 @@ MonkeyPatch.prototype = {
     });
     let parent3 = window.document.getElementById("threadCols");
     parent3.appendChild(treecol);
-    this.pushUndo(function () parent3.removeChild(treecol));
+    this.pushUndo(() => parent3.removeChild(treecol));
     let splitter = window.document.createElement("splitter");
     splitter.classList.add("tree-splitter");
     parent3.appendChild(splitter);
-    this.pushUndo(function () parent3.removeChild(splitter));
+    this.pushUndo(() => parent3.removeChild(splitter));
   },
 
 
@@ -164,7 +164,7 @@ MonkeyPatch.prototype = {
     this._window.addEventListener("close", function () {
       prefBranch.removeObserver("", observer);
     }, false);
-    this.pushUndo(function () prefBranch.removeObserver("", observer));
+    this.pushUndo(() => prefBranch.removeObserver("", observer));
   },
 
   clearTimer: function () {
@@ -226,7 +226,7 @@ MonkeyPatch.prototype = {
         if (tabmail.tabContainer.selectedIndex != 0)
           tabmail.tabContainer.selectedIndex = 0;
         // This is asynchronous, leave it a second
-        mainWindow.setTimeout(function () self.undoCustomizations(), 1000);
+        mainWindow.setTimeout(() => self.undoCustomizations(), 1000);
         // Since this is called once per window, we don't want to uninstall
         // multiple times...
         shouldPerformUninstall = false;
@@ -283,7 +283,7 @@ MonkeyPatch.prototype = {
     this.registerUndoCustomizations();
 
     let mkConvUrl = function (msgHdrs) {
-      let urls = [msgHdrGetUri(x) for (x of msgHdrs)].join(",");
+      let urls = msgHdrs.map(hdr => msgHdrGetUri(hdr)).join(",");
       let scrollMode = self.determineScrollMode();
       let queryString = "?urls="+window.encodeURIComponent(urls) +
         "&scrollMode="+scrollMode;
@@ -312,7 +312,7 @@ MonkeyPatch.prototype = {
       oldThreadPaneDoubleClick();
       window.MsgOpenSelectedMessages = oldMsgOpenSelectedMessages;
     };
-    this.pushUndo(function() window.ThreadPaneDoubleClick = oldThreadPaneDoubleClick);
+    this.pushUndo(() => window.ThreadPaneDoubleClick = oldThreadPaneDoubleClick);
 
     // Same thing for middle-click
     let oldTreeOnMouseDown = window.TreeOnMouseDown;
@@ -344,7 +344,7 @@ MonkeyPatch.prototype = {
       window.summarizeThread(window.gFolderDisplay.selectedMessages);
     };
     window.addEventListener("messagepane-unhide", unhideListener, true);
-    this.pushUndo(function () window.removeEventListener("messagepane-unhide", unhideListener, true));
+    this.pushUndo(() => window.removeEventListener("messagepane-unhide", unhideListener, true));
 
     window.summarizeMultipleSelection =
       function _summarizeMultiple_patched (aSelectedMessages, aListener) {
@@ -357,7 +357,7 @@ MonkeyPatch.prototype = {
           oldSummarizeMultipleSelection(aSelectedMessages, aListener);
         });
       };
-    this.pushUndo(function () window.summarizeMultipleSelection = oldSummarizeMultipleSelection);
+    this.pushUndo(() => window.summarizeMultipleSelection = oldSummarizeMultipleSelection);
 
     let previouslySelectedUris = [];
     let previousScrollMode = null;
@@ -415,7 +415,7 @@ MonkeyPatch.prototype = {
             //  is the conversation in the message pane is already alive, and
             //  the gloda query is updating messages just fine, so we should not
             //  worry about messages which are not in the view.
-            let newlySelectedUris = [msgHdrGetUri(x) for (x of aSelectedMessages)];
+            let newlySelectedUris = aSelectedMessages.map(m => msgHdrGetUri(m));
             let scrollMode = self.determineScrollMode();
             // If the scroll mode changes, we should go a little bit further
             //  down that code path, so that we can figure out that the message
@@ -534,7 +534,7 @@ MonkeyPatch.prototype = {
           }
         });
       };
-    this.pushUndo(function () window.summarizeThread = oldSummarizeThread);
+    this.pushUndo(() => window.summarizeThread = oldSummarizeThread);
 
     // Because we want to replace the standard message reader, we need to always
     //  fire up the conversation view instead of deferring to the regular
@@ -609,7 +609,7 @@ MonkeyPatch.prototype = {
           dumpCallStack(e);
         }
       };
-    this.pushUndo(function ()
+    this.pushUndo(() =>
       window.MessageDisplayWidget.prototype.onSelectedMessagesChanged = originalOnSelectedMessagesChanged);
 
     // Ok, this is slightly tricky. The C++ code notifies the global msgWindow
@@ -627,13 +627,13 @@ MonkeyPatch.prototype = {
           if (obj)
             obj.onMsgHasRemoteContent();
         }
-        msgListeners[messageId] = msgListeners[messageId].filter(function (x) (x.get() != null));
+        msgListeners[messageId] = msgListeners[messageId].filter(x => (x.get() != null));
       }
       // Wicked case: we have the conversation and another tab with a message
       //  from the conversation in that tab. So to be safe, forward the call.
       oldOnMsgHasRemoteContent(aMsgHdr);
     };
-    this.pushUndo(function () window.messageHeaderSink.onMsgHasRemoteContent = oldOnMsgHasRemoteContent);
+    this.pushUndo(() => window.messageHeaderSink.onMsgHasRemoteContent = oldOnMsgHasRemoteContent);
 
     let messagepane = window.document.getElementById("messagepane");
     let fightAboutBlank = function () {
@@ -645,7 +645,7 @@ MonkeyPatch.prototype = {
       }
     };
     messagepane.addEventListener("load", fightAboutBlank, true);
-    this.pushUndo(function () messagepane.removeEventListener("load", fightAboutBlank, true));
+    this.pushUndo(() => messagepane.removeEventListener("load", fightAboutBlank, true));
     fightAboutBlank();
 
     Log.debug("Monkey patch successfully applied.");

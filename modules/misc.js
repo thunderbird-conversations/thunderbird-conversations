@@ -85,14 +85,14 @@ function groupArray(aItems, aFn) {
       groups[id].push(item);
     }
   }
-  return [groups[id] for (id of orderedIds)];
+  return orderedIds.map(id => groups[id]);
 }
 
 // Joins together names and format them as "John, Jane and Julie"
 function joinWordList (aElements, aInsertHtml) {
   let wrap = aInsertHtml
-    ? function (x) "<span>" + x + "</span>"
-    : function (x) x
+    ? x => "<span>" + x + "</span>"
+    : x => x
   ;
   let l = aElements.length;
   if (l == 0)
@@ -266,10 +266,7 @@ function topMail3Pane(aObj) {
 }
 
 function reindexMessages(aMsgHdrs) {
-  GlodaMsgIndexer.indexMessages([
-    [x.folder, x.messageKey]
-    for (x of aMsgHdrs)
-  ]);
+  GlodaMsgIndexer.indexMessages(aMsgHdrs.map(x => [x.folder, x.messageKey]));
 }
 
 function folderName(aFolder) {

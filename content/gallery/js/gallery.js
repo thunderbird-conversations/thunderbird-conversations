@@ -69,7 +69,7 @@ Gallery.prototype = {
     MsgHdrToMimeMessage(this.msgHdr, this, function (aMsgHdr, aMimeMsg) {
       let attachments = aMimeMsg.allAttachments;
       attachments =
-        attachments.filter(function (x) x.contentType.indexOf("image/") === 0);
+        attachments.filter(x => x.contentType.indexOf("image/") === 0);
       this.attachments = attachments;
       this.subject = aMsgHdr.mime2DecodedSubject;
       this.output();

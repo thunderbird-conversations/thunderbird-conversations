@@ -92,7 +92,7 @@ const KeyStyles = [
 /**
  * Simple helper to turn "aTitleCasedString" into "A title cased string",
  * by splitting on capital letters, lowercasing them, and recombining with spaces.
- * Used to turn function names (e.g. "tagHandling") into more 
+ * Used to turn function names (e.g. "tagHandling") into more
  * human-friendly descriptions (e.g. "Tag handling")
  */
 function titleCaseToSpacedWords(str) {
@@ -112,7 +112,7 @@ function titleCaseToSpacedWords(str) {
 
 
 /**
- * Produces a human-readable description of keys (particularly for 
+ * Produces a human-readable description of keys (particularly for
  * non-printing ones)
  */
 function describeKey(key) {
@@ -155,7 +155,7 @@ const PrefEditors = {
   deleteBinding: function deleteBinding(key, binding) {
     for (let [os, bindings] of entries(bindingGroups)) {
       if (key in bindings) {
-        bindings[key] = bindings[key].filter(function (x) x !== binding);
+        bindings[key] = bindings[key].filter(x => x !== binding);
         if (!bindings[key].length)
           delete bindings[key]; // For clarity, all empty arrays are removed
       }
@@ -224,7 +224,7 @@ const Listeners = {
     ConversationKeybindings.saveKeybindings();
   },
 
-  /** 
+  /**
    * Event listener for modifying the function associated with a hotkey
    */
   onActionMenuSelect: function onActionMenuSelect(event) {
@@ -262,20 +262,20 @@ const Listeners = {
 
   /**
    * Event listener for the Create-new-hotkey button
-   */   
+   */
   onCreateClick: function onCreateClick(event) {
     let hboxToInsertBefore = event.target.parentNode;
     let doc = event.target.ownerDocument;
     hboxToInsertBefore.parentNode.insertBefore(
-      Templates.buildHotKey(doc, "A", 
-                            PrefEditors.createBinding("A", ConversationKeybindings.availableActions[0])), 
+      Templates.buildHotKey(doc, "A",
+                            PrefEditors.createBinding("A", ConversationKeybindings.availableActions[0])),
       hboxToInsertBefore);
     event.stopPropagation();
   },
 
   /**
    * Event listener for the Restore-default-hotkeys button
-   */   
+   */
   onRestoreClick: function onRestoreClick(event) {
     let doc = event.target.ownerDocument;
     CustomizeKeys.disable(doc);
@@ -290,10 +290,10 @@ const Listeners = {
    */
   onDeleteClick: function onDeleteClick(event) {
     let parent = event.target.parentNode;
-    // NOTE: We cannot use the variables key or binding from Templates.buildDelete, 
+    // NOTE: We cannot use the variables key or binding from Templates.buildDelete,
     // because keys (and bindings) are editable and may change. Instead, we must
     // use the hotkey and hotkeyBinding properties stashed on the parent hbox object.
-    PrefEditors.deleteBinding(parent.hotkey, parent.hotkeyBinding); 
+    PrefEditors.deleteBinding(parent.hotkey, parent.hotkeyBinding);
     delete parent.hotkey;
     delete parent.hotkeyBinding;
     parent.parentNode.removeChild(parent);
@@ -304,7 +304,7 @@ const Listeners = {
 
 const Templates = {
   /**
-   * Constructs a drop-down menu of the available actions that a 
+   * Constructs a drop-down menu of the available actions that a
    * hotkey can trigger.
    * @param {XULDocument} doc is the settings document
    * @param {HBox} parent is the specific container element for this menu
@@ -403,7 +403,7 @@ const Templates = {
     list.setAttribute("sizetopopup", "always");
     let popup = doc.createElement("menupopup");
     list.appendChild(popup);
-    // Helper function for use in creating drop-down list menuitems 
+    // Helper function for use in creating drop-down list menuitems
     // for each letter, digit and symbol that we support
     // Todo: list these elsewhere more explicitly.
     let createItem = function(itemKey) {
@@ -487,10 +487,10 @@ const CustomizeKeys = {
     // Must be here, rather than at top level, because load/restoreKeybindings will
     // destroy the previous values
     if (isOSX) {
-      bindingGroups = {OSX:     ConversationKeybindings.bindings.OSX, 
+      bindingGroups = {OSX:     ConversationKeybindings.bindings.OSX,
                        Generic: ConversationKeybindings.bindings.Generic};
     } else { // TODO: Windows, Linux or other platform-specific bindings, rather than just "Other"?
-      bindingGroups = {Other:   ConversationKeybindings.bindings.Other, 
+      bindingGroups = {Other:   ConversationKeybindings.bindings.Other,
                        Generic: ConversationKeybindings.bindings.Generic};
     }
     let keysVbox = showhide.previousElementSibling;

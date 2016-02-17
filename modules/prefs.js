@@ -77,9 +77,9 @@ function PrefManager() {
 
 PrefManager.prototype = {
 
-  split: function (s) Array.map(s.split(","), String.trim).filter(String.trim).map(String.toLowerCase),
+  split: s => Array.map(s.split(","), String.trim).filter(String.trim).map(String.toLowerCase),
 
-  watch: function (watcher) this.watchers.push(watcher),
+  watch: function (watcher) { return this.watchers.push(watcher); },
 
   register: function mpo_register (observer) {
     prefsService.QueryInterface(Ci.nsIPrefBranch);
@@ -112,7 +112,7 @@ PrefManager.prototype = {
       case "hide_sigs": {
         let v = prefsService.getBoolPref(aData)
         this[aData] = v;
-        [x(aData, v) for (x of this.watchers)];
+        this.watchers.map(w => w(aData, v));
         break;
       }
 
@@ -120,7 +120,7 @@ PrefManager.prototype = {
       case "hide_quote_length": {
         let v = prefsService.getIntPref(aData)
         this[aData] = v;
-        [x(aData, v) for (x of this.watchers)];
+        this.watchers.map(w => w(aData, v));
         break;
       }
 

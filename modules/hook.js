@@ -81,7 +81,7 @@ function registerHook(h) {
 }
 
 function removeHook(h) {
-  hooks = hooks.filter(function (x) x != h);
+  hooks = hooks.filter(x => x != h);
 }
 
 function getHooks() {

@@ -94,7 +94,7 @@ let Log = setupLogging("Conversations.Message");
 const kSnippetLength = 700;
 const kViewerUrl = "chrome://conversations/content/pdfviewer/wrapper.xul?uri=";
 
-let makeViewerUrl = function (name, url)
+let makeViewerUrl = (name, url) =>
   kViewerUrl + encodeURIComponent(url) +
   "&name=" + encodeURIComponent(name)
 ;
@@ -220,9 +220,9 @@ KeyListener.prototype = {
       } else {
         let tag = MailServices.tags.getAllTags({})[i];
         if (tag) {
-          if (this.message.tags.some(function (x) x.key == tag.key))
+          if (this.message.tags.some(x => x.key == tag.key))
             this.message.tags = this.message.tags
-            .filter(function (x) x.key != tag.key);
+            .filter(x => x.key != tag.key);
           else
             this.message.tags = this.message.tags.concat([tag]);
         }
@@ -236,7 +236,7 @@ KeyListener.prototype = {
   findMsgNode: function findMsgNode(msgNode) {
     let msgNodes = this.message._domNode.ownerDocument
       .getElementsByClassName(Message.prototype.cssClass);
-    msgNodes = [x for (x of msgNodes)];
+    msgNodes = Array.from(msgNodes);
     let index = msgNodes.indexOf(msgNode);
     return [msgNodes, index];
   },
@@ -468,7 +468,7 @@ Message.prototype = {
           "status", "priority", "assigned-to", "target-milestone"]) {
         if ((!aPrevMsg || k in oldInfos) && oldInfos[k] != infos[k]) {
           let key =
-            k.split("-").map(function (x) x.charAt(0).toUpperCase() + x.slice(1))
+            k.split("-").map(x => x.charAt(0).toUpperCase() + x.slice(1))
             .join(" ");
           items.push(key+": "+makeArrow(oldInfos[k], infos[k]));
         }
@@ -521,14 +521,14 @@ Message.prototype = {
     data.dataContactFrom.separator = "";
 
     let to = this._to.concat(this._cc).concat(this._bcc);
-    let contactsTo = to.map(function (x)
+    let contactsTo = to.map(x =>
       [self._conversation._contactManager
         .getContactFromNameAndEmail(x.name, x.email),
        x.email]
     );
     this._contacts = this._contacts.concat(contactsTo);
     // false means "no colors"
-    data.dataContactsTo = contactsTo.map(function ([x, email]) x.toTmplData(false, Contacts.kTo, email));
+    data.dataContactsTo = contactsTo.map(([x, email]) => x.toTmplData(false, Contacts.kTo, email));
     let l = data.dataContactsTo.length;
     data.dataContactsTo.forEach(function(data, i) {
       if (i == 0)
@@ -744,14 +744,18 @@ Message.prototype = {
     // We run below code only for the first time after messages selected.
     Log.debug("A message is selected: " + this._uri);
     this._selected = true;
-    [message._selected = false
-      for ({ message } of this._conversation.messages)
-      if (message != this)];
+    for ( let { message } of this._conversation.messages) {
+      if (message != this) {
+        message._selected = false;
+      }
+    };
 
     try {
-      [h.onMessageSelected(this)
-        for (h of getHooks())
-        if (typeof(h.onMessageSelected) == "function")];
+      for (let h of getHooks()) {
+        if (typeof(h.onMessageSelected) == "function") {
+          h.onMessageSelected(this);
+        }
+      }
     } catch (e) {
       Log.warn("Plugin returned an error:", e);
       dumpCallStack(e);
@@ -777,10 +781,10 @@ Message.prototype = {
 
     // This is for the smart reply button, we need to determine what's the best
     // action.
-    this.register(".buttonReply, .action-reply", function (event) self.compose(Ci.nsIMsgCompType.ReplyToSender, event));
-    this.register(".buttonReplyAll, .action-replyAll", function (event) self.compose(Ci.nsIMsgCompType.ReplyAll, event));
-    this.register(".buttonReplyList, .action-replyList", function (event) self.compose(Ci.nsIMsgCompType.ReplyToList, event));
-    this.register(".buttonForward, .action-forward", function (event) self.forward(event));
+    this.register(".buttonReply, .action-reply", event => self.compose(Ci.nsIMsgCompType.ReplyToSender, event));
+    this.register(".buttonReplyAll, .action-replyAll", event => self.compose(Ci.nsIMsgCompType.ReplyAll, event));
+    this.register(".buttonReplyList, .action-replyList", event => self.compose(Ci.nsIMsgCompType.ReplyToList, event));
+    this.register(".buttonForward, .action-forward", event => self.forward(event));
     let mainActionLink = self._domNode.getElementsByClassName("replyMainActionLink")[0];
     let replyList = self._domNode.getElementsByClassName("buttonReplyList")[0];
     let replyAll = self._domNode.getElementsByClassName("buttonReplyAll")[0];
@@ -826,9 +830,9 @@ Message.prototype = {
       mainActionLink.textContent = reply.textContent;
     }
 
-    this.register(".edit-draft", function (event) self.compose(Ci.nsIMsgCompType.Draft, event));
-    this.register(".action-editNew", function (event) self.compose(Ci.nsIMsgCompType.Template, event));
-    this.register(".action-print", function (event) self.print());
+    this.register(".edit-draft", event => self.compose(Ci.nsIMsgCompType.Draft, event));
+    this.register(".action-editNew", event => self.compose(Ci.nsIMsgCompType.Template, event));
+    this.register(".action-print", event => self.print());
     // These event listeners are all in the header, which happens to have an
     //  event listener set on the click event for toggling the message. So we
     //  make sure that event listener is bubbling, and we register these with
@@ -858,7 +862,7 @@ Message.prototype = {
     // This one is located in the first contact tooltip
     this.register(".checkbox-monospace", function (event) {
       let senders = Object.keys(Prefs["monospaced_senders"]);
-      senders = senders.filter(function (x) x != realFrom);
+      senders = senders.filter(x => x != realFrom);
       if (event.target.checked) {
         Prefs.setChar("conversations.monospaced_senders", senders.concat([realFrom]).join(","));
       } else {
@@ -936,7 +940,7 @@ Message.prototype = {
      * We now assume that all the information is correct. I've done enough work
      * on the Gloda side to ensure this. All hail to Gloda!
      */
-    let attInfos = self._attachments.map(function (att)
+    let attInfos = self._attachments.map(att =>
       new mainWindow.AttachmentInfo(
         att.contentType, att.url, att.name, self._uri, att.isExternal, 42
       ));
@@ -1099,7 +1103,7 @@ Message.prototype = {
       let rgb = MailServices.tags.getColorForKey(tag.key).substr(1) || "FFFFFF";
       // This is just so we can figure out if the tag color is too light and we
       // need to have the text black or not.
-      let [, r, g, b] = rgb.match(/(..)(..)(..)/).map(function (x) parseInt(x, 16)/255);
+      let [, r, g, b] = rgb.match(/(..)(..)(..)/).map(x => parseInt(x, 16)/255);
       let colorClass = "blc-" + rgb;
       let tagName = tag.tag;
       let tagNode = document.createElement("li");
@@ -1113,7 +1117,7 @@ Message.prototype = {
       span.textContent = " x";
       span.classList.add("tag-x");
       span.addEventListener("click", function (event) {
-        let tags = this.tags.filter(function (x) x.key != tag.key);
+        let tags = this.tags.filter(x => x.key != tag.key);
         this.tags = tags;
         // And now let onAttributesChanged kick in... NOT
         tagList.removeChild(tagNode);
@@ -1162,7 +1166,7 @@ Message.prototype = {
             });
           } else {
             self._attachments = aMimeMsg.allUserAttachments
-              .filter(function (x) x.isRealAttachment);
+              .filter(x => x.isRealAttachment);
           }
           let tmplData = self.toTmplDataForAttachments();
           let w = self._conversation._htmlPane;
@@ -1239,14 +1243,14 @@ Message.prototype = {
           value: subject ? sanitize(GlodaUtils.deMime(subject)) : "",
         });
         let self = this;
-        let buildContactObjects = function (nameEmails)
-          nameEmails.map(function (x)
+        let buildContactObjects = nameEmails =>
+          nameEmails.map(x =>
             [self._conversation._contactManager
               .getContactFromNameAndEmail(x.name, x.email),
              x.email]
           );
-        let buildContactData = function (contactObjects)
-          contactObjects.map(function ([x, email])
+        let buildContactData = contactObjects =>
+          contactObjects.map(([x, email]) =>
             // Fourth parameter: aIsDetail
             x.toTmplData(false, Contacts.kTo, email, true)
           );
@@ -1525,7 +1529,7 @@ Message.prototype = {
 
             self._didStream = true;
             if (Prefs.getInt("mail.show_headers") == kHeadersShowAll)
-              self.showDetails(function () self._signal());
+              self.showDetails(() => self._signal());
             else
               self._signal();
           } catch (e) {
@@ -1756,8 +1760,7 @@ function MessageFromGloda(aConversation, aGlodaMsg, aLateAttachments) {
     this.isEncrypted = true;
 
   if ("mailingLists" in aGlodaMsg)
-    this.mailingLists =
-      [x.value for (x of aGlodaMsg.mailingLists)];
+    this.mailingLists = aGlodaMsg.mailingLists.map(x => x.value);
 
   this.isReplyListEnabled =
     ("mailingLists" in aGlodaMsg) && aGlodaMsg.mailingLists.length;
@@ -1808,7 +1811,7 @@ function MessageFromDbHdr(aConversation, aMsgHdr) {
         self.bugzillaInfos = PluginHelpers.bugzilla({ mime: aMimeMsg, header: aMsgHdr }) || {};
 
         self._attachments = aMimeMsg.allUserAttachments
-          .filter(function (x) x.isRealAttachment);
+          .filter(x => x.isRealAttachment);
         self.contentType = aMimeMsg.headers["content-type"] || "message/rfc822";
         let listPost = aMimeMsg.get("list-post");
         if (listPost) {
@@ -1836,7 +1839,7 @@ function MessageFromDbHdr(aConversation, aMsgHdr) {
           })
           .length > 1;
 
-        let findIsEncrypted = function (x)
+        let findIsEncrypted = x =>
           x.isEncrypted || (x.parts ? x.parts.some(findIsEncrypted) : false);
         self.isEncrypted = findIsEncrypted(aMimeMsg);
 
@@ -1882,9 +1885,9 @@ MessageFromDbHdr.prototype = {
  */
 let PostStreamingFixesMixIn = {
   // This is the naming convention to define a getter, per MixIn's definition
-  get_defaultSize: function ()
-    Prefs.getInt("font.size.variable.x-western")
-  ,
+  get_defaultSize: function () {
+    return Prefs.getInt("font.size.variable.x-western");
+  },
 
   injectCss: function (iframeDoc) {
     let styleRules = [];
@@ -1937,7 +1940,7 @@ let PostStreamingFixesMixIn = {
     //  dislayed with a monospaced font...
     let [{name, email}] = this.parse(this._msgHdr.author);
     if (email && !(email.toLowerCase() in Prefs["monospaced_senders"]) &&
-        !(this.mailingLists.some(function (x) (x.toLowerCase() in Prefs["monospaced_senders"])))) {
+        !(this.mailingLists.some(x => (x.toLowerCase() in Prefs["monospaced_senders"])))) {
       styleRules = styleRules.concat([
         ".moz-text-flowed, .moz-text-plain {",
         "  font-family: sans-serif !important;",
@@ -2184,8 +2187,7 @@ let PostStreamingFixesMixIn = {
         // Attach the required event handler so that links open in the external
         // browser.
         a.addEventListener("click",
-          function link_listener (event)
-            mainWindow.specialTabs.siteClickHandler(event, /^mailto:/),
+          event => mainWindow.specialTabs.siteClickHandler(event, /^mailto:/),
           true);
       }
     }

@@ -274,14 +274,14 @@ let ContactMixIn = {
       let a = a1;
       a.addEventListener("click",
         a.classList.contains("profile-link")
-        ? function _link_listener (event) (
+        ? (event) => (
             mainWindow.document.getElementById("tabmail").openTab("contentTab", {
               contentPage: a.href,
               clickHandler: "specialTabs.defaultClickHandler(event);"
             }),
             event.preventDefault()
           )
-        : function _link_listener (event) (
+        : (event) => (
             mainWindow.specialTabs.siteClickHandler(event, /^mailto:/),
             event.preventDefault()
           ),
