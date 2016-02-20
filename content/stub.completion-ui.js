@@ -93,7 +93,7 @@ ContactIdentityCompleter.prototype = {
     }
     // and since we can now map from contacts down to identities, map contacts
     //  to the first identity for them that we find...
-    matches = entries(contactToThing).map(([, val]) =>
+    matches = Array.from(entries(contactToThing)).map(([, val]) =>
       val.NOUN_ID == Gloda.NOUN_IDENTITY ? val : val.identities[0]);
 
     let rows =
