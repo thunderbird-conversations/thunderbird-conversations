@@ -913,7 +913,7 @@ Message.prototype = {
     this.register(".always-display", function (event) {
       self._domNode.getElementsByClassName("remoteContent")[0].style.display = "none";
 
-      let uri = Services.io.newURI("mailto:" + self._from.email, null, null);
+      let uri = Services.io.newURI("chrome://messenger/content/?email=" + self._from.email, null, null);
       Services.perms.add(uri, "image", Services.perms.ALLOW_ACTION);
       self._reloadMessage();
     });
