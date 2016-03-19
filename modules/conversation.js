@@ -943,7 +943,7 @@ Conversation.prototype = {
         // _conversation properly on Message instances.
         currentConversation.appendMessages(whichMessages);
 
-        this.messages = null;
+        this.messages = [];
         return;
       } else {
         // We're about to blow up the old conversation. At this point, it's
