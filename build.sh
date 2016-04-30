@@ -60,8 +60,7 @@ fi
 ROOT_DIR=`pwd`
 TMP_DIR=build
 
-# uncomment to debug
-#set -x
+set -e
 
 # remove any left-over files from previous build
 rm -f $APP_NAME.xpi files
@@ -69,7 +68,7 @@ rm -rf $TMP_DIR
 
 $BEFORE_BUILD
 
-mkdir --parents --verbose $TMP_DIR
+mkdir -pv $TMP_DIR
 
 # copy everything brutally, since we're not using JARs anymore
 for DIR in $ROOT_DIRS; do
@@ -83,11 +82,11 @@ for DIR in $ROOT_DIRS; do
 done
 
 # The following statement should be used instead if you don't wish to use the JAR file
-cp --verbose --parents `cat files` $TMP_DIR
+cp -pv `cat files` $TMP_DIR
 
 # Copy other files to the root of future XPI.
 for ROOT_FILE in $ROOT_FILES install.rdf chrome.manifest; do
-  cp --verbose $ROOT_FILE $TMP_DIR
+  cp -v $ROOT_FILE $TMP_DIR
   if [ -f $ROOT_FILE ]; then
     echo $ROOT_FILE >> files
   fi
