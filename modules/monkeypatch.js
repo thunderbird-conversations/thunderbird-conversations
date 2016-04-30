@@ -124,26 +124,6 @@ MonkeyPatch.prototype = {
     let parent2 = window.document.getElementById("mailKeys");
     parent2.appendChild(key);
     this.pushUndo(() => parent2.removeChild(key));
-
-    // 4) Tree column
-    let treecol = window.document.createElement("treecol");
-    [
-      ["id", "betweenCol"],
-      ["hidden", "false"],
-      ["flex", "4"],
-      ["persist", "width hidden ordinal"],
-      ["label", strings.get("betweenColumnName")],
-      ["tooltiptext", strings.get("betweenColumnTooltip")]
-    ].forEach(function([k, v]) {
-      treecol.setAttribute(k, v);
-    });
-    let parent3 = window.document.getElementById("threadCols");
-    parent3.appendChild(treecol);
-    this.pushUndo(() => parent3.removeChild(treecol));
-    let splitter = window.document.createElement("splitter");
-    splitter.classList.add("tree-splitter");
-    parent3.appendChild(splitter);
-    this.pushUndo(() => parent3.removeChild(splitter));
   },
 
 
