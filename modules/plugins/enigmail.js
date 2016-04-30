@@ -120,6 +120,7 @@ let enigmailSvc;
 let gMsgCompose = {
   compFields: {}
 };
+let gSMFields = {};
 let global = this;
 
 if (hasEnigmail) {
