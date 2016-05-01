@@ -2,3 +2,4 @@ _build
 gconv.jar
 gconversation.xpi
 .vimsession
+.DS_Store
