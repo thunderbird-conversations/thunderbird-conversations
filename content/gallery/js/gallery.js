@@ -101,10 +101,15 @@ Gallery.prototype = {
       });
     })
 
+    function decode_utf8( s )
+    {
+      return decodeURIComponent( escape( s ) );
+    }
+
     // Output the data
     tmpl("#imageTemplate", data).appendTo($(".images"));
     // This will also update the tab title
-    document.title = strings.get("galleryTitle").replace("#1", this.subject);
+    document.title = strings.get("galleryTitle").replace("#1", decode_utf8(this.subject));
 
     $('a.lightBox').lightBox(); // Select all links that contains lightbox in the attribute rel
   },
