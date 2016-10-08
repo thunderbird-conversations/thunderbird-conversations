@@ -210,7 +210,6 @@ let Customizations = {
         state.senderCol = eid("senderCol").getAttribute("hidden");
         eid("unreadCol").setAttribute("hidden", "false");
         eid("senderCol").setAttribute("hidden", "true");
-        eid("betweenCol").setAttribute("hidden", "false");
         Customizations.ttop();
       };
       let i = 0;
