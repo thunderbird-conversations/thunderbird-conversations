@@ -44,3 +44,4 @@ tests/mozmill-conversations. Once you qimport'd it,
     MOZMILL_EXTRA=--addon=/home/jonathan/Code/gconversation@xulforum.org/conversations.xpi \
     SOLO_TEST=conversations/test-attachments.js mozmill-one
 
+
