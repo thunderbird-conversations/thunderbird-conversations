@@ -2052,7 +2052,7 @@ let PostStreamingFixesMixIn = {
       return false;
     };
 
-    // https://github.com/protz/GMail-Conversation-View/issues#issue/179
+    // https://github.com/protz/thunderbird-conversations/issues#issue/179
     // See link above for a rationale ^^
     if (self.initialPosition > 0)
       self.detectBlocks(iframe,

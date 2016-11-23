@@ -25,7 +25,7 @@ If you just want to start hacking, see
 to learn how to use a proxy file. If you want to package a release, follow
 these steps.
 
-1. Download the [zip archive](https://github.com/protz/GMail-Conversation-View/archive/master.zip) or clone the repository
+1. Download the [zip archive](https://github.com/protz/thunderbird-conversations/archive/master.zip) or clone the repository
 2. Change into the main folder, run `git submodule init` and `git submodule update`
 3. Change into the subfolder `content/pdfjs`, run `node make bundle`. Note that you need to have `nodejs` installed. On modern Debian-based distributions the command is `nodejs` instead of `node`.
 4. Change into the main folder and run `./build.sh`.

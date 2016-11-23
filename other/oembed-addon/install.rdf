@@ -22,7 +22,7 @@
     <em:name>Flickr OEmbed support for Conversations</em:name>
     <em:description>Displays links to Flickr images like regular attachments</em:description>
     <em:creator>Jonathan Protzenko</em:creator>
-    <em:homepageURL>http://github.com/protz/GMail-Conversation-View/wiki</em:homepageURL>
+    <em:homepageURL>http://github.com/protz/thunderbird-conversations/wiki</em:homepageURL>
     <em:bootstrap>true</em:bootstrap>
   </Description>      
 
