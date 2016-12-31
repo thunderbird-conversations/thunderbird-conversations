@@ -376,6 +376,8 @@ a img {
   color: #888a85;
   float: left;
   clear: left;
+  white-space: normal;
+  max-width: 100%;
 }
 
 .authorPicture {
