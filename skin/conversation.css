@@ -247,8 +247,8 @@ button {
 
 .tooltip {
   position: absolute;
-  width: 30.2rem;
-  min-width: 302px;
+  min-width: 30.2rem;
+  max-width: 45rem;
   top: 24px;
   left: 16px;
   background-color: -moz-field;
@@ -348,13 +348,16 @@ button {
   display: none;
 }
 
+.authorInfoContainer {
+  display: flex;
+  justify-content: space-between;
+}
+
 .authorInfo {
-  display: inline-block;
   font-weight: normal;
   font-size: 1.2rem;
   text-indent: 0;
-  float: left;
-  width: 20.0rem;
+  min-width: 20.0rem;
   padding: 10px;
 }
 
@@ -370,19 +373,26 @@ a img {
   font-size: 1.4rem;
   float: left;
   clear: left;
+  max-width: calc(40rem - 100px);
+  text-overflow: ellipsis;
+  overflow: hidden;
 }
 
 .authorEmail {
+  display: flex;
+  width: 100%;
   color: #888a85;
-  float: left;
-  clear: left;
-  white-space: normal;
-  max-width: 100%;
+  overflow: hidden;
+  padding-top: 3px;
+}
+
+.authorEmailAddress {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  margin-right: 5px;
 }
 
 .authorPicture {
-  display: inline-block;
-  float: right;
   max-width: 100px;
   padding: 10px;
 }

@@ -1123,17 +1123,19 @@
     class="tooltip">
       <div class="arrow"></div>
       <div class="arrow inside"></div>
-      <div class="authorInfo">
-        <span class="name">{{tooltipName}}</span>
-        <span class="authorEmail">
-          {{email}}
-          <button class="copyEmail" title="{{str 'copyEmail'}}">
-            <img src="chrome://conversations/content/i/clipboard.png" />
-          </button>
-        </span>
-      </div>
-      <div class="authorPicture">
-        <img src="{{avatar}}" />
+      <div class="authorInfoContainer">
+        <div class="authorInfo">
+          <span class="name" title="{{tooltipName}}">{{tooltipName}}</span>
+          <span class="authorEmail">
+            <span class="authorEmailAddress" title="{{email}}">{{email}}</span>
+            <button class="copyEmail" title="{{str 'copyEmail'}}">
+              <img src="chrome://conversations/content/i/clipboard.png" />
+            </button>
+          </span>
+        </div>
+        <div class="authorPicture">
+          <img src="{{avatar}}" />
+        </div>
       </div>
       <div class="tipFooter hiddenFooter" style="display:none;">
         {{#if showMonospace}}
