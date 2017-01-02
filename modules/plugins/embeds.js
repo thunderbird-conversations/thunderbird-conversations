@@ -140,9 +140,8 @@ let embedsHook = {
       if (matches && matches.length) {
         let q = matches[1];
         this.insertEmbed(strings.get("foundGoogleMaps"),
-          "425", "350",
-          "http://maps.google.com/maps?hl=en&q="+q+
-          "&ie=UTF8&split=0&z=8&iwloc=A&output=embed",
+          "600", "450",
+          "https://www.google.com/maps/embed/v1/place?key=AIzaSyCUitgLn5uy0kcU1pneLGiEfI_f0nhMvXw&q="+q,
           aDomNode
         );
         return true;
@@ -165,7 +164,10 @@ let embedsHook = {
     iframe.style.width = width+"px";
     iframe.style.height = height+"px";
     iframe.style.marginTop = "3px";
+    iframe.style.border = "0";
     iframe.setAttribute("src", src);
+    iframe.setAttribute("frameborder", "0");
+    iframe.setAttribute("allowfullscreen", "allowfullscreen");
     // Insert them
     let container = aDomNode.getElementsByClassName("embedsContainer")[0];
     let div = document.createElement("div");
