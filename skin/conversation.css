@@ -220,6 +220,7 @@ button {
   text-overflow:  ellipsis;
   overflow:       hidden;
   flex:           1;
+  margin-right:   .4em;
 }
 
 .recipient-tooltips {
