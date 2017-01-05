@@ -193,8 +193,8 @@ button {
 }
 
 .messageHeader {
-  width: 100%;
-  padding: 5px 10px;
+  padding: 0 10px;
+  line-height: 3;
   cursor: pointer
 }
 
@@ -227,6 +227,7 @@ button {
   position: absolute;
   top: 0px;
   left: 0px;
+  line-height: 1.8;
 }
 
 .contact:not(.inAddressBook) .editContact {
@@ -278,6 +279,7 @@ button {
   width: 15.2rem;
   left: -11rem;
   min-width: 0;
+  line-height: 1.8;
 }
 
 .dropDown ul {
@@ -799,6 +801,7 @@ ul.special-tags img {
   background-image: url(chrome://conversations/content/i/unstarred.png);
   background-repeat: no-repeat;
   margin-right: 3px;
+  vertical-align: -2px;
 }
 
 .star.starred {
