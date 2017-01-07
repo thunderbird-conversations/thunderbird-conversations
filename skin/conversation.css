@@ -489,62 +489,55 @@ span.downwardArrow {
   width: 100%;
 }
 
-.iframe-container {
-  margin-top: 5px;
-}
-
-.messageHeader .tags {
+.tags {
   padding: 0;
   margin: 0;
   display: inline;
 }
 
-.messageHeader .tag-x {
-  display: none;
+.messageBody .tags li {
+  margin-bottom: 5px;
 }
 
-.messageBody .tags {
-  padding: 0 0 5px 0;
-  margin: 0;
-  display: inline;
-}
-
-.messageBody .tag-x {
-  border-left: 1px solid ThreeDShadow;
-  margin-left: 1ex;
-  cursor: pointer;
-  z-index: 3;
-}
-
-ul.tags li {
+.tags li {
   display: inline;
   font-size: 1.0rem;
   font-weight: bold;
-  /*background-color: #68AB57;*/
   padding: 1px 5px;
   margin-right: 5px;
   border-radius: 3px;
   color: #fff;
 }
 
-ul.tags li.light-tag {
+.tag-x {
+  border-left: 1px solid ThreeDShadow;
+  margin-left: 1ex;
+  cursor: pointer;
+  z-index: 3;
+}
+
+.messageHeader .tag-x {
+  display: none;
+}
+
+.tags li.light-tag {
   color: rgb(10, 10, 10);
 }
 
-li.light-tag .tag-x {
+.tags li.light-tag .tag-x {
   border-color: rgb(10, 10, 10);
 }
 
-li.blc-FFFFFF {
+.tags li.blc-FFFFFF {
   border: 1px solid black;
 }
 
-ul.special-tags li {
+.tags.special-tags li {
   background-color: #3F5381;
 }
 
-ul.special-tags img {
-  vertical-align: text-top;
+.tags.special-tags img {
+  vertical-align: middle;
 }
 
 .in-folder {
