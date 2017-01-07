@@ -548,7 +548,7 @@ span.downwardArrow {
   display: none;
 }
 
-.message .notificationBar {
+.notificationBar {
   padding: 10px;
   margin: 0 0 10px 0;
   border-width: 1px 0;
@@ -557,88 +557,61 @@ span.downwardArrow {
   color: #888a85;
 }
 
-.message .notificationBar button {
+.notificationBar button {
   padding: 0 5px;
   margin: 0 3px 0 0;
 }
 
-.message .lightningImipBar {
+.notificationBar a {
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+.lightningImipBar {
   background-color: #baeeff;
   color: #888a85;
 }
 
-.message .lightningImipImage {
+.lightningImipImage {
   height: 24px;
   width: 24px;
   vertical-align: middle;
 }
 
-.message .lightningImipButton {
+.lightningImipButton {
   float: right;
 }
 
-.message .phishingBar {
+.phishingBar {
   background-color: #ed6666;
   color: #D7D7D7;
 }
 
-.message .phishingBar a {
-  text-decoration: none;
-  color: white;
-}
-
-.message .phishingBar a:hover {
-  text-decoration: underline;
-}
-
-.message .junkBar {
+.junkBar {
   background-color: rgb(231, 243, 253);
   color: black;
 }
 
-.message .junkBar a {
-  text-decoration: none;
-}
-
-.message .notJunk {
-  float: right;
-  color: #888a85;
-  padding-top: 2px;
-}
-
-.message :-moz-any(.junkBar, .outboxBar) a:hover {
-  text-decoration: underline;
-}
-
-.message .remoteContent {
+.remoteContent {
   background-color: rgba(0,255,0, 0.15);
 }
 
-.message .remoteContent a {
-  text-decoration: none;
-  color: -moz-HyperlinkText;
-}
-
-.message .remoteContent a:hover {
-  text-decoration: underline;
-}
-
-.message .enigmailBar.ok {
+.enigmailBar.ok {
   background-color: rgb(204, 255, 204);
   color: black;
 }
 
-.message .enigmailBar.unknown {
+.enigmailBar.unknown {
   background-color: rgb(204, 255, 255);
   color: black;
 }
 
-.message .enigmailBar.notok {
+.enigmailBar.notok {
   background-color: rgb(255, 216, 254);
   color: black;
 }
 
-.message .enigmailBar .enigmailDetails {
+.enigmailBar .enigmailDetails {
   float: right;
 }
 
