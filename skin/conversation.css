@@ -69,6 +69,18 @@ button {
   -moz-appearance: button;
 }
 
+.button-flat {
+  -moz-appearance: none;
+  background: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  color: inherit;
+}
+.button-flat:hover,
+.button-flat:focus {
+  border-color: ThreeDShadow;
+}
+
 a img {
   border-color: transparent;
 }
