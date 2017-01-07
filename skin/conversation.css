@@ -73,6 +73,17 @@ a img {
   border-color: transparent;
 }
 
+.link {
+  text-decoration: none;
+  color: -moz-HyperlinkText;
+  cursor: pointer;
+}
+
+.link:hover,
+.link:focus {
+  text-decoration: underline;
+}
+
 #conversationHeaderWrapper {
   position: fixed;
   top: 0;
@@ -101,12 +112,6 @@ a img {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-}
-
-.subject a.text-link {
-  color: -moz-HyperlinkText;
-  cursor: pointer;
-  text-decoration: underline;
 }
 
 .actions button {
@@ -413,23 +418,6 @@ a img {
 
 .moreExpander {
   float: right;
-}
-
-.options a,
-.attachments a,
-.link {
-  text-decoration: none;
-  color: -moz-HyperlinkText;
-  cursor: pointer;
-}
-
-.options a:hover,
-.attachments a:hover ,
-.link:hover,
-.options a:focus,
-.attachments a:focus ,
-.link:focus {
-  text-decoration: underline;
 }
 
 span.downwardArrow {
