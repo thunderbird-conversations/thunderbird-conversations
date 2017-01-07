@@ -617,12 +617,8 @@ span.downwardArrow {
 
 .detailsLine {
   font-size: 1.1rem;
-  padding-left: 20px;
-  text-indent: -10px;
-  padding-right: 10px;
+  padding: 0 10px;
   color: #888a85;
-  margin-top: -5px;
-  margin-bottom: 5px;
 }
 
 .attachments {
