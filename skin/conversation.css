@@ -488,12 +488,12 @@ span.downwardArrow {
 }
 
 .tags li {
-  display: inline;
+  display: inline-block;
   font-size: 1.0rem;
-  font-weight: bold;
-  padding: 1px 5px;
-  margin-right: 5px;
-  border-radius: 3px;
+  line-height: 1.6;
+  padding: 0 .8em;
+  margin-right: .4rem;
+  border-radius: .8em;
   color: #fff;
 }
 
