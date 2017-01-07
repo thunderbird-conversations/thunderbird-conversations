@@ -179,16 +179,15 @@ button {
   list-style-type: none;
 }
 
-.message.highlight:-moz-focusring,
-.message:focus:-moz-focusring {
-  outline: none;
-}
-
-.message.highlight, .message:focus {
+.message:focus {
   border: 1px solid threedshadow;
   box-shadow: 0 0 8px rgba(0,0,0,0.25);
   /* force shadow to the front */
   position: relative;
+}
+
+.message:focus:-moz-focusring {
+  outline: none;
 }
 
 .messageHeader {
