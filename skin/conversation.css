@@ -177,7 +177,6 @@ button {
   background-color: -moz-default-background-color;
   color: -moz-default-color;
   border: 1px solid threedshadow;
-  border-radius: 5px;
   box-shadow: 0 1px 2px rgba(0,0,0,0.25);
   list-style-type: none;
 }
@@ -257,7 +256,6 @@ button {
   color: -moz-fieldtext;
   border: 1px solid -moz-fieldtext;
   box-shadow: 0 0 0 6px rgba(0,0,0,0.25);
-  border-radius: 5px;
   z-index: 1000;
   display: none;
 }
@@ -299,14 +297,6 @@ button {
 .dropDown li:nth-child(2n):focus {
   background-color: -moz-cellhighlight;
   color: -moz-cellhighlighttext;
-}
-
-.dropDown li:last-child {
-  border-radius: 0 0 5px 5px;
-}
-
-.dropDown li:first-child {
-  border-radius: 5px 5px 0 0;
 }
 
 .dropDown li:nth-child(2n) {
@@ -459,7 +449,6 @@ span.downwardArrow {
 }
 
 .message.collapsed {
-  border-radius: 5px;
   margin: 0 10px -6px 10px;
   border-bottom: none;
 }
@@ -751,7 +740,6 @@ ul.special-tags img {
   padding: 0px 10px 5px 10px;
   background-color: rgba(160, 160, 160, 0.1);
   border-top: 1px solid threedshadow;
-  border-radius: 0 0 5px 5px;
 }
 
 .messageFooter button {
