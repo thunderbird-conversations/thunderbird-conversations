@@ -54,8 +54,8 @@ body {
   font-family: sans-serif;
   font-size: 1.2rem;
   line-height: 1.8rem;
-  background-color: window;
-  color: windowtext;
+  background-color: Window;
+  color: WindowText;
   margin: 0;
   padding: 0;
   overflow-y: scroll;
@@ -69,6 +69,10 @@ button {
   -moz-appearance: button;
 }
 
+a img {
+  border-color: transparent;
+}
+
 #conversationHeaderWrapper {
   position: fixed;
   top: 0;
@@ -79,11 +83,10 @@ button {
 }
 
 #conversationHeader {
-  width: 100%;
   padding: 5px 10px;
-  background-color: menu;
-  border-bottom: 1px solid threedshadow;
-  color: menutext;
+  background-color: Menu;
+  border-bottom: 1px solid ThreeDShadow;
+  color: MenuText;
 }
 
 #conversationHeader.not-junkable .junk-button {
@@ -101,7 +104,7 @@ button {
 }
 
 .subject a.text-link {
-  color: -moz-hyperlinktext;
+  color: -moz-HyperlinkText;
   cursor: pointer;
   text-decoration: underline;
 }
@@ -175,12 +178,12 @@ button {
   margin: 0 10px 1px;
   background-color: -moz-default-background-color;
   color: -moz-default-color;
-  border: 1px solid threedshadow;
+  border: 1px solid ThreeDShadow;
   list-style-type: none;
 }
 
 .message:focus {
-  border: 1px solid threedshadow;
+  border: 1px solid ThreeDShadow;
   box-shadow: 0 0 8px rgba(0,0,0,0.25);
   /* force shadow to the front */
   position: relative;
@@ -206,7 +209,8 @@ button {
   margin-right: .3rem;
 }
 
-.to, .bzTo {
+.to,
+.bzTo {
   color: #888a85;
 }
 
@@ -224,8 +228,8 @@ button {
 .recipient-tooltips {
   /* place it over '.to' sibling element */
   position: absolute;
-  top: 0px;
-  left: 0px;
+  top: 0;
+  left: 0;
   line-height: 1.8;
 }
 
@@ -251,9 +255,9 @@ button {
   max-width: 45rem;
   top: 24px;
   left: 16px;
-  background-color: -moz-field;
-  color: -moz-fieldtext;
-  border: 1px solid threedshadow;
+  background-color: -moz-Field;
+  color: -moz-FieldText;
+  border: 1px solid ThreeDShadow;
   box-shadow: 0 0 8px rgba(0,0,0,0.25);
   z-index: 1000;
   display: none;
@@ -261,7 +265,7 @@ button {
 
 .contactTooltipWrapper .tooltip {
   /* override generic tooltip, so to look closer to contact name */
-  left: 0px;
+  left: 0;
 }
 
 .contactExtra {
@@ -295,20 +299,20 @@ button {
 .dropDown li:nth-child(2n):hover,
 .dropDown li:focus,
 .dropDown li:nth-child(2n):focus {
-  background-color: -moz-cellhighlight;
-  color: -moz-cellhighlighttext;
+  background-color: -moz-CellHighlight;
+  color: -moz-CellHighlightText;
 }
 
 .dropDown li:nth-child(2n) {
-  background-color: -moz-oddtreerow;
+  background-color: -moz-OddTreeRow;
 }
 
 .dropdown-sep {
-  border-bottom: 1px solid threedshadow;
+  border-bottom: 1px solid ThreeDShadow;
 }
 
 .arrow {
-  border-color: transparent transparent threedshadow transparent;
+  border-color: transparent transparent ThreeDShadow transparent;
   border-style: solid;
   border-width: 7px;
   height: 0;
@@ -324,12 +328,12 @@ button {
 }
 
 .arrow.inside {
-  border-color: transparent transparent -moz-field transparent;
+  border-color: transparent transparent -moz-Field transparent;
   top: -13px;
 }
 
 .dropDown li:hover .arrow.inside {
-  border-color: transparent transparent -moz-cellhighlight transparent;
+  border-color: transparent transparent -moz-CellHighlight transparent;
 }
 
 .contactName {
@@ -357,10 +361,6 @@ button {
 
 .authorLinks {
   clear: left;
-}
-
-a img {
-  border-color: transparent;
 }
 
 .name {
@@ -400,7 +400,7 @@ a img {
   width: 100%;
   padding: 5px 10px;
   background-color: rgba(160, 160, 160, 0.1);
-  border-top: 1px solid threedshadow;
+  border-top: 1px solid ThreeDShadow;
   float: left;
   border-radius: 0 0 5px 5px;
 }
@@ -419,7 +419,7 @@ a img {
 .attachments a,
 .link {
   text-decoration: none;
-  color: -moz-hyperlinktext;
+  color: -moz-HyperlinkText;
   cursor: pointer;
 }
 
@@ -510,7 +510,7 @@ span.downwardArrow {
 }
 
 .messageBody .tag-x {
-  border-left: 1px solid threedshadow;
+  border-left: 1px solid ThreeDShadow;
   margin-left: 1ex;
   cursor: pointer;
   z-index: 3;
@@ -560,7 +560,7 @@ ul.special-tags img {
   margin: 0 0 10px 0;
   border-width: 1px 0;
   border-style: solid;
-  border-color: threedshadow;
+  border-color: ThreeDShadow;
   color: #888a85;
 }
 
@@ -623,7 +623,7 @@ ul.special-tags img {
 
 .message .remoteContent a {
   text-decoration: none;
-  color: -moz-hyperlinktext;
+  color: -moz-HyperlinkText;
 }
 
 .message .remoteContent a:hover {
@@ -667,7 +667,7 @@ ul.special-tags img {
 .attachHeader {
   display: inline;
   padding-top: 10px;
-  border-top: 1px solid threedshadow;
+  border-top: 1px solid ThreeDShadow;
 }
 
 .attachments li {
@@ -679,14 +679,14 @@ ul.special-tags img {
 .attachmentThumb {
   width: 130px;
   padding: 4px;
-  border: 1px solid threedshadow;
+  border: 1px solid ThreeDShadow;
   background-color: #fff;
   background-image: linear-gradient(to bottom,#fff 0%,#f2f2f2 100%);
   margin: 0 20px 0 0;
   display: inline-block;
   float: left;
   text-align: center;
-  line-height: 0px; /* Needed, otherwise there's an extra padding at the bottom... */
+  line-height: 0; /* Needed, otherwise there's an extra padding at the bottom... */
 }
 
 .attachmentThumb img {
@@ -731,9 +731,9 @@ ul.special-tags img {
 }
 
 .messageFooter {
-  padding: 0px 10px 5px 10px;
+  padding: 0 10px 5px 10px;
   background-color: rgba(160, 160, 160, 0.1);
-  border-top: 1px solid threedshadow;
+  border-top: 1px solid ThreeDShadow;
 }
 
 .messageFooter button {
@@ -742,7 +742,7 @@ ul.special-tags img {
   color: -moz-default-color;
 
   float: left;
-  border: 1px solid threedshadow;
+  border: 1px solid ThreeDShadow;
   border-top-color: -moz-default-background-color;
   border-radius: 0;
 
@@ -812,7 +812,8 @@ ul.special-tags img {
   display: none;
 }
 
-.tag-signed, .tag-decrypted {
+.tag-signed,
+.tag-decrypted {
   background-color: #68AB57 !important;
 }
 
@@ -821,22 +822,22 @@ ul.special-tags img {
   display: none;
 }
 
-.message[dkimStatus="SUCCESS"] .tag-dkim-signed{
+.message[dkimStatus="SUCCESS"] .tag-dkim-signed {
   background-color: #68AB57 !important;
 }
 
-.message[dkimStatus="SUCCESS"][warnings="true"] .tag-dkim-signed{
+.message[dkimStatus="SUCCESS"][warnings="true"] .tag-dkim-signed {
   background-color: orange !important;
 }
 
-.message[dkimStatus="PERMFAIL"] .tag-dkim-signed{
+.message[dkimStatus="PERMFAIL"] .tag-dkim-signed {
   background-color: red!important;
 }
 
-.message[dkimStatus="TEMPFAIL"] .tag-dkim-signed{
+.message[dkimStatus="TEMPFAIL"] .tag-dkim-signed {
 }
 
-.tag-dkim-signed  {
+.tag-dkim-signed {
   position: relative;
 }
 
@@ -876,7 +877,8 @@ ul.special-tags img {
   font-weight: bold;
 }
 
-.editDraftLinkWrapper > a, .replyLinkWrapper > a {
+.editDraftLinkWrapper > a,
+.replyLinkWrapper > a {
   background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAFZJREFUeF59z4EJADEIQ1F36k7u5E7ZKXeUQPACJ3wK7UNokVxVk9kHnQH7bY9hbDyDhNXgjpRLqFlo4M2GgfyJHhjq8V4agfrgPQX3JtJQGbofmCHgA/nAKks+JAjFAAAAAElFTkSuQmCC")
     no-repeat scroll right center transparent;
   padding-right: 13px;
