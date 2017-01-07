@@ -173,7 +173,7 @@ button {
 }
 
 .message {
-  margin: 0 10px 10px 10px;
+  margin: 0 10px 1px;
   background-color: -moz-default-background-color;
   color: -moz-default-color;
   border: 1px solid threedshadow;
@@ -446,16 +446,6 @@ span.downwardArrow {
 
 .message.bugzilla .to {
   display: none;
-}
-
-.message.collapsed {
-  margin: 0 10px -6px 10px;
-  border-bottom: none;
-}
-
-.message.collapsed:last-child {
-  border-bottom: 1px solid threedshadow;
-  margin-bottom: 10px;
 }
 
 .message.collapsed .to,
