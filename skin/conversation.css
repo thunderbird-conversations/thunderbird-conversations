@@ -54,8 +54,8 @@ body {
   font-family: sans-serif;
   font-size: 1.2rem;
   line-height: 1.8rem;
-  background-color: window;
-  color: windowtext;
+  background-color: Window;
+  color: WindowText;
   margin: 0;
   padding: 0;
   overflow-y: scroll;
@@ -69,6 +69,21 @@ button {
   -moz-appearance: button;
 }
 
+a img {
+  border-color: transparent;
+}
+
+.link {
+  text-decoration: none;
+  color: -moz-HyperlinkText;
+  cursor: pointer;
+}
+
+.link:hover,
+.link:focus {
+  text-decoration: underline;
+}
+
 #conversationHeaderWrapper {
   position: fixed;
   top: 0;
@@ -79,11 +94,10 @@ button {
 }
 
 #conversationHeader {
-  width: 100%;
   padding: 5px 10px;
-  background-color: menu;
-  border-bottom: 1px solid threedshadow;
-  color: menutext;
+  background-color: Menu;
+  border-bottom: 1px solid ThreeDShadow;
+  color: MenuText;
 }
 
 #conversationHeader.not-junkable .junk-button {
@@ -98,12 +112,6 @@ button {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
-}
-
-.subject a.text-link {
-  color: -moz-hyperlinktext;
-  cursor: pointer;
-  text-decoration: underline;
 }
 
 .actions button {
@@ -175,20 +183,19 @@ button {
   margin: 0 10px 1px;
   background-color: -moz-default-background-color;
   color: -moz-default-color;
-  border: 1px solid threedshadow;
+  border: 1px solid ThreeDShadow;
   list-style-type: none;
 }
 
-.message.highlight:-moz-focusring,
-.message:focus:-moz-focusring {
-  outline: none;
-}
-
-.message.highlight, .message:focus {
-  border: 1px solid threedshadow;
+.message:focus {
+  border: 1px solid ThreeDShadow;
   box-shadow: 0 0 8px rgba(0,0,0,0.25);
   /* force shadow to the front */
   position: relative;
+}
+
+.message:focus:-moz-focusring {
+  outline: none;
 }
 
 .messageHeader {
@@ -207,7 +214,8 @@ button {
   margin-right: .3rem;
 }
 
-.to, .bzTo {
+.to,
+.bzTo {
   color: #888a85;
 }
 
@@ -225,8 +233,8 @@ button {
 .recipient-tooltips {
   /* place it over '.to' sibling element */
   position: absolute;
-  top: 0px;
-  left: 0px;
+  top: 0;
+  left: 0;
   line-height: 1.8;
 }
 
@@ -252,9 +260,9 @@ button {
   max-width: 45rem;
   top: 24px;
   left: 16px;
-  background-color: -moz-field;
-  color: -moz-fieldtext;
-  border: 1px solid -moz-fieldtext;
+  background-color: -moz-Field;
+  color: -moz-FieldText;
+  border: 1px solid ThreeDShadow;
   box-shadow: 0 0 8px rgba(0,0,0,0.25);
   z-index: 1000;
   display: none;
@@ -262,7 +270,7 @@ button {
 
 .contactTooltipWrapper .tooltip {
   /* override generic tooltip, so to look closer to contact name */
-  left: 0px;
+  left: 0;
 }
 
 .contactExtra {
@@ -275,9 +283,9 @@ button {
 }
 
 .dropDown .tooltip {
-  width: 15.2rem;
-  left: -11rem;
-  min-width: 0;
+  min-width: 15.2em;
+  left: auto;
+  right: 1.5em;
   line-height: 1.8;
 }
 
@@ -289,22 +297,27 @@ button {
 
 .dropDown li {
   padding: 3px 5px;
+  white-space: nowrap;
 }
 
 .dropDown li:hover,
 .dropDown li:nth-child(2n):hover,
 .dropDown li:focus,
 .dropDown li:nth-child(2n):focus {
-  background-color: -moz-cellhighlight;
-  color: -moz-cellhighlighttext;
+  background-color: -moz-CellHighlight;
+  color: -moz-CellHighlightText;
 }
 
 .dropDown li:nth-child(2n) {
-  background-color: -moz-oddtreerow;
+  background-color: -moz-OddTreeRow;
+}
+
+.dropdown-sep {
+  border-bottom: 1px solid ThreeDShadow;
 }
 
 .arrow {
-  border-color: transparent transparent -moz-fieldtext transparent;
+  border-color: transparent transparent ThreeDShadow transparent;
   border-style: solid;
   border-width: 7px;
   height: 0;
@@ -315,16 +328,17 @@ button {
 }
 
 .dropDown .arrow {
-  left: 12rem;
+  left: auto;
+  right: .5em;
 }
 
 .arrow.inside {
-  border-color: transparent transparent -moz-field transparent;
+  border-color: transparent transparent -moz-Field transparent;
   top: -13px;
 }
 
 .dropDown li:hover .arrow.inside {
-  border-color: transparent transparent -moz-cellhighlight transparent;
+  border-color: transparent transparent -moz-CellHighlight transparent;
 }
 
 .contactName {
@@ -352,10 +366,6 @@ button {
 
 .authorLinks {
   clear: left;
-}
-
-a img {
-  border-color: transparent;
 }
 
 .name {
@@ -395,7 +405,7 @@ a img {
   width: 100%;
   padding: 5px 10px;
   background-color: rgba(160, 160, 160, 0.1);
-  border-top: 1px solid threedshadow;
+  border-top: 1px solid ThreeDShadow;
   float: left;
   border-radius: 0 0 5px 5px;
 }
@@ -408,23 +418,6 @@ a img {
 
 .moreExpander {
   float: right;
-}
-
-.options a,
-.attachments a,
-.link {
-  text-decoration: none;
-  color: -moz-hyperlinktext;
-  cursor: pointer;
-}
-
-.options a:hover,
-.attachments a:hover ,
-.link:hover,
-.options a:focus,
-.attachments a:focus ,
-.link:focus {
-  text-decoration: underline;
 }
 
 span.downwardArrow {
@@ -484,62 +477,55 @@ span.downwardArrow {
   width: 100%;
 }
 
-.iframe-container {
-  margin-top: 5px;
-}
-
-.messageHeader .tags {
+.tags {
   padding: 0;
   margin: 0;
   display: inline;
 }
 
-.messageHeader .tag-x {
-  display: none;
+.messageBody .tags li {
+  margin-bottom: 5px;
 }
 
-.messageBody .tags {
-  padding: 0 0 5px 0;
-  margin: 0;
-  display: inline;
-}
-
-.messageBody .tag-x {
-  border-left: 1px solid threedshadow;
-  margin-left: 1ex;
-  cursor: pointer;
-  z-index: 3;
-}
-
-ul.tags li {
+.tags li {
   display: inline;
   font-size: 1.0rem;
   font-weight: bold;
-  /*background-color: #68AB57;*/
   padding: 1px 5px;
   margin-right: 5px;
   border-radius: 3px;
   color: #fff;
 }
 
-ul.tags li.light-tag {
+.tag-x {
+  border-left: 1px solid ThreeDShadow;
+  margin-left: 1ex;
+  cursor: pointer;
+  z-index: 3;
+}
+
+.messageHeader .tag-x {
+  display: none;
+}
+
+.tags li.light-tag {
   color: rgb(10, 10, 10);
 }
 
-li.light-tag .tag-x {
+.tags li.light-tag .tag-x {
   border-color: rgb(10, 10, 10);
 }
 
-li.blc-FFFFFF {
+.tags li.blc-FFFFFF {
   border: 1px solid black;
 }
 
-ul.special-tags li {
+.tags.special-tags li {
   background-color: #3F5381;
 }
 
-ul.special-tags img {
-  vertical-align: text-top;
+.tags.special-tags img {
+  vertical-align: middle;
 }
 
 .in-folder {
@@ -550,108 +536,77 @@ ul.special-tags img {
   display: none;
 }
 
-.message .notificationBar {
+.notificationBar {
   padding: 10px;
   margin: 0 0 10px 0;
   border-width: 1px 0;
   border-style: solid;
-  border-color: threedshadow;
+  border-color: ThreeDShadow;
   color: #888a85;
 }
 
-.message .notificationBar button {
+.notificationBar button {
   padding: 0 5px;
   margin: 0 3px 0 0;
 }
 
-.message .lightningImipBar {
+.notificationBar a {
+  text-decoration: underline;
+  font-weight: bold;
+}
+
+.lightningImipBar {
   background-color: #baeeff;
   color: #888a85;
 }
 
-.message .lightningImipImage {
+.lightningImipImage {
   height: 24px;
   width: 24px;
   vertical-align: middle;
 }
 
-.message .lightningImipButton {
+.lightningImipButton {
   float: right;
 }
 
-.message .phishingBar {
+.phishingBar {
   background-color: #ed6666;
   color: #D7D7D7;
 }
 
-.message .phishingBar a {
-  text-decoration: none;
-  color: white;
-}
-
-.message .phishingBar a:hover {
-  text-decoration: underline;
-}
-
-.message .junkBar {
+.junkBar {
   background-color: rgb(231, 243, 253);
   color: black;
 }
 
-.message .junkBar a {
-  text-decoration: none;
-}
-
-.message .notJunk {
-  float: right;
-  color: #888a85;
-  padding-top: 2px;
-}
-
-.message :-moz-any(.junkBar, .outboxBar) a:hover {
-  text-decoration: underline;
-}
-
-.message .remoteContent {
+.remoteContent {
   background-color: rgba(0,255,0, 0.15);
 }
 
-.message .remoteContent a {
-  text-decoration: none;
-  color: -moz-hyperlinktext;
-}
-
-.message .remoteContent a:hover {
-  text-decoration: underline;
-}
-
-.message .enigmailBar.ok {
+.enigmailBar.ok {
   background-color: rgb(204, 255, 204);
   color: black;
 }
 
-.message .enigmailBar.unknown {
+.enigmailBar.unknown {
   background-color: rgb(204, 255, 255);
   color: black;
 }
 
-.message .enigmailBar.notok {
+.enigmailBar.notok {
   background-color: rgb(255, 216, 254);
   color: black;
 }
 
-.message .enigmailBar .enigmailDetails {
+.enigmailBar .enigmailDetails {
   float: right;
 }
 
 .detailsLine {
   font-size: 1.1rem;
-  padding-left: 20px;
-  text-indent: -10px;
-  padding-right: 10px;
+  padding: 0 10px;
   color: #888a85;
-  margin-top: -5px;
-  margin-bottom: 5px;
 }
 
 .attachments {
@@ -662,7 +617,7 @@ ul.special-tags img {
 .attachHeader {
   display: inline;
   padding-top: 10px;
-  border-top: 1px solid threedshadow;
+  border-top: 1px solid ThreeDShadow;
 }
 
 .attachments li {
@@ -674,14 +629,14 @@ ul.special-tags img {
 .attachmentThumb {
   width: 130px;
   padding: 4px;
-  border: 1px solid threedshadow;
+  border: 1px solid ThreeDShadow;
   background-color: #fff;
   background-image: linear-gradient(to bottom,#fff 0%,#f2f2f2 100%);
   margin: 0 20px 0 0;
   display: inline-block;
   float: left;
   text-align: center;
-  line-height: 0px; /* Needed, otherwise there's an extra padding at the bottom... */
+  line-height: 0; /* Needed, otherwise there's an extra padding at the bottom... */
 }
 
 .attachmentThumb img {
@@ -726,9 +681,9 @@ ul.special-tags img {
 }
 
 .messageFooter {
-  padding: 0px 10px 5px 10px;
+  padding: 0 10px 5px 10px;
   background-color: rgba(160, 160, 160, 0.1);
-  border-top: 1px solid threedshadow;
+  border-top: 1px solid ThreeDShadow;
 }
 
 .messageFooter button {
@@ -737,7 +692,7 @@ ul.special-tags img {
   color: -moz-default-color;
 
   float: left;
-  border: 1px solid threedshadow;
+  border: 1px solid ThreeDShadow;
   border-top-color: -moz-default-background-color;
   border-radius: 0;
 
@@ -807,7 +762,8 @@ ul.special-tags img {
   display: none;
 }
 
-.tag-signed, .tag-decrypted {
+.tag-signed,
+.tag-decrypted {
   background-color: #68AB57 !important;
 }
 
@@ -816,22 +772,22 @@ ul.special-tags img {
   display: none;
 }
 
-.message[dkimStatus="SUCCESS"] .tag-dkim-signed{
+.message[dkimStatus="SUCCESS"] .tag-dkim-signed {
   background-color: #68AB57 !important;
 }
 
-.message[dkimStatus="SUCCESS"][warnings="true"] .tag-dkim-signed{
+.message[dkimStatus="SUCCESS"][warnings="true"] .tag-dkim-signed {
   background-color: orange !important;
 }
 
-.message[dkimStatus="PERMFAIL"] .tag-dkim-signed{
+.message[dkimStatus="PERMFAIL"] .tag-dkim-signed {
   background-color: red!important;
 }
 
-.message[dkimStatus="TEMPFAIL"] .tag-dkim-signed{
+.message[dkimStatus="TEMPFAIL"] .tag-dkim-signed {
 }
 
-.tag-dkim-signed  {
+.tag-dkim-signed {
   position: relative;
 }
 
@@ -871,7 +827,8 @@ ul.special-tags img {
   font-weight: bold;
 }
 
-.editDraftLinkWrapper > a, .replyLinkWrapper > a {
+.editDraftLinkWrapper > a,
+.replyLinkWrapper > a {
   background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAFZJREFUeF59z4EJADEIQ1F36k7u5E7ZKXeUQPACJ3wK7UNokVxVk9kHnQH7bY9hbDyDhNXgjpRLqFlo4M2GgfyJHhjq8V4agfrgPQX3JtJQGbofmCHgA/nAKks+JAjFAAAAAElFTkSuQmCC")
     no-repeat scroll right center transparent;
   padding-right: 13px;

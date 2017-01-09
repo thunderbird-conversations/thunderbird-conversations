@@ -841,23 +841,22 @@
             | <a href="javascript:" class="link">{{str "hideDetails"}}</a>
           </span>
           <span class="replyLinkWrapper">
-            | <a href="javascript:" class="replyMainActionLink"></a>
+            | <a href="javascript:" class="link replyMainActionLink"></a>
           </span>
           <span class="editDraftLinkWrapper">
-            | <a href="javascript:" class="edit-draft">{{str "editDraft2"}}</a>
+            | <a href="javascript:" class="link edit-draft">{{str "editDraft2"}}</a>
           </span>
           <span class="dropDown"> |
-            <a href="javascript:" onclick="displayMenu(event);" class="top-right-more">{{str "more"}} <span class="downwardArrow">&#x25bc;</span></a>
+            <a href="javascript:" onclick="displayMenu(event);" class="link top-right-more">{{str "more"}} <span class="downwardArrow">&#x25bc;</span></a>
             <div class="tooltip tooltip-menu menu">
+              <div class="arrow"></div>
+              <div class="arrow inside"></div>
               <ul>
-                <li class="action-reply">{{str "reply"}}
-                  <div class="arrow"></div>
-                  <div class="arrow inside"></div>
-                </li>
+                <li class="action-reply">{{str "reply"}}</li>
                 <li class="action-replyAll">{{str "replyAll"}}</li>
                 <li class="action-replyList">{{str "replyList"}}</li>
                 <li class="action-editNew">{{str "editNew"}}</li>
-                <li class="action-forward" style="border-bottom: 1px solid #aaa">{{str "forward"}}</li>
+                <li class="action-forward dropdown-sep">{{str "forward"}}</li>
                 <li class="action-archive">{{str "archive"}}</li>
                 <li class="action-delete">{{str "delete"}}</li>
                 <li class="action-classic">{{str "viewClassic"}}</li>
@@ -1181,7 +1180,7 @@
           {{attachmentsPlural}}
           | <a href="javascript:" class="link download-all">{{str "downloadAll2"}}</a>
           {{#if gallery}}
-          | <a href="javascript:" onclick="galleryView('{{uri}}')" class="view-all">
+          | <a href="javascript:" onclick="galleryView('{{uri}}')" class="link view-all">
               {{str "galleryView"}}
             </a>
           {{/if}}
