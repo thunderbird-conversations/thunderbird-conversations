@@ -750,17 +750,13 @@ span.downwardArrow {
 }
 
 .star {
-  display: inline-block;
-  height: 14px;
-  width: 14px;
-  background-image: url(chrome://conversations/content/i/unstarred.png);
-  background-repeat: no-repeat;
+  display: inline;
   margin-right: 3px;
-  vertical-align: -2px;
+  color: #888a85;
 }
 
 .star.starred {
-  background-image: url(chrome://conversations/content/i/star.png);
+  color: #fcb040;
 }
 
 /* bottom links: forward this conversation, print this conversation */
