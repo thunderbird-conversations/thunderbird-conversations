@@ -529,6 +529,10 @@ span.downwardArrow {
   font-weight: bold;
 }
 
+.notificationBar .icon {
+  font-size: 1.8em;
+}
+
 .lightningImipBar {
   background-color: #baeeff;
   color: #888a85;

@@ -1011,7 +1011,7 @@
       </div>
       {{/if}}
       <div class="phishingBar notificationBar" style="display: none">
-        <img src="chrome://messenger/skin/icons/phishing.png" style="vertical-align: middle;" />
+        <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#warning"></use></svg>
         {{str "scam"}}
         <span class="ignore-warning">
           <a href="javascript:">{{str "ignoreWarning"}}</a>
@@ -1027,14 +1027,14 @@
         </span>
       </div>
       <div class="junkBar notificationBar" {{#unless canUnJunk}}style="display: none"{{/unless}}>
-        <img src="chrome://messenger/skin/icons/junk.png" style="vertical-align: middle;" />
+        <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#whatshot"></use></svg>
         {{str "junk"}}
         <span class="notJunk">
           <a href="javascript:">{{str "notJunk"}}</a>
         </span>
       </div>
       <div class="outboxBar notificationBar" {{#unless isOutbox}}style="display: none"{{/unless}}>
-        <img src="chrome://conversations/skin/icons/outbox.png" style="vertical-align: middle;" />
+        <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#inbox"></use></svg>
         {{str "isOutbox"}}
         <span class="sendUnsent">
           <a href="javascript:">{{str "sendUnsent"}}</a>
