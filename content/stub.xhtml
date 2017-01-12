@@ -323,29 +323,30 @@
     //  takes care of setting the right class on us whenever the state
     //  changes...
     function toggleRead(event) {
-      let $span = $(event.target).find("span.read");
-      if ($span.hasClass("unread")) {
+      let $icon = $(event.target).find(".icon");
+      if ($icon.hasClass("unread")) {
         Conversations.currentConversation.read = true;
-        $span.removeClass("unread");
+        $icon.removeClass("unread")
       } else {
         Conversations.currentConversation.read = false;
-        $span.addClass("unread");
+        $icon.addClass("unread")
         markReadInView.disable();
       }
     }
 
     function expandCollapse(event) {
-      let $span = $(event.target).find("span.expand");
-      if ($span.hasClass("collapse")) {
+      let $icon = $(event.target).find(".icon");
+      let sprites = "chrome://conversations/skin/material-icons.svg";
+      if ($icon.find("use").attr("xlink:href") === sprites + "#expand_less") {
         for (let { message } of Conversations.currentConversation.messages) {
           message.collapse();
         }
-        $span.removeClass("collapse");
+        $icon.find("use").attr("xlink:href", sprites + "#expand_more");
       } else {
         for (let { message } of Conversations.currentConversation.messages) {
           message.expand();
         }
-        $span.addClass("collapse");
+        $icon.find("use").attr("xlink:href", sprites + "#expand_less");
       }
     }
 
@@ -1379,22 +1380,22 @@
         <div class="subject boxFlex">&stub.loading;</div>
         <div class="actions">
           <button class="button-flat" title="&stub.trash.tooltip;" onclick="deleteToolbar(event);">
-            <span class="trash"></span>
+            <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#delete"></use></svg>
           </button>
           <button class="button-flat" title="&stub.archive.tooltip;" onclick="archiveToolbar(event);">
-            <span class="archive"></span>
+            <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#archive"></use></svg>
           </button>
           <button class="button-flat junk-button" title="&stub.junk.tooltip;" onclick="junkConversation(event);">
-            <span class="junk"></span>
+            <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#whatshot"></use></svg>
           </button>
           <button class="button-flat" title="&stub.expand.tooltip;" onclick="expandCollapse(event);">
-            <span class="expand"></span>
+            <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#expand_more"></use></svg>
           </button>
           <button class="button-flat" title="&stub.read.tooltip;" onclick="toggleRead(event);">
-            <span class="read"></span>
+            <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#visibility"></use></svg>
           </button>
           <button class="button-flat" title="&stub.detach.tooltip2;" onclick="detachTab(event);">
-            <span class="tab"></span>
+            <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#open_in_new"></use></svg>
           </button>
           <!--<button><span class="mode"></span></button>-->
         </div>
