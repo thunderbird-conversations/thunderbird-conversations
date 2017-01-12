@@ -449,7 +449,7 @@ span.downwardArrow {
 }
 
 .message .messageBody {
-  padding: 0 10px 5px 10px;
+  padding: 0 10px 5px;
 }
 
 .message.with-details .messageBody {
@@ -649,36 +649,30 @@ span.downwardArrow {
 }
 
 .messageFooter {
-  padding: 0 10px 5px 10px;
+  padding: 5px 10px;
   background-color: rgba(160, 160, 160, 0.1);
   border-top: 1px solid ThreeDShadow;
 }
 
+.footerActions {
+  float: right;
+}
+
 .messageFooter button {
-  background-image: none;
-  background-color: -moz-default-background-color;
+  font-size: 150%;
+  background: none;
+  border: 0;
   color: #666;
-
   float: left;
-  border: 1px solid ThreeDShadow;
-  border-top-color: -moz-default-background-color;
-
-  margin: -1px 3px 0 0;
-  padding: 0 5px 3px;
-
+  width: 2em;
+  height: 2em;
+  border-radius: 1em;
   cursor: pointer;
 }
 
 .messageFooter button:hover,
 .messageFooter button:focus {
-  border-color: #888a85;
-  border-top-color: -moz-default-background-color;
-}
-
-.messageFooter button:active {
-  background-image: none;
-  background-color: -moz-default-background-color;
-  box-shadow: none;
+  color: -moz-CellHighlight;
 }
 
 .messageFooter.hide .footerActions {
