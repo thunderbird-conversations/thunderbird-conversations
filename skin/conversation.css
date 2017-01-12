@@ -525,7 +525,17 @@ span.downwardArrow {
   border-width: 1px 0;
   border-style: solid;
   border-color: ThreeDShadow;
-  color: #888a85;
+  background-color: rgb(204, 255, 255);
+  color: black;
+}
+
+.phishingBar,
+.enigmailBar.notok {
+  background-color: #ed6666;
+}
+
+.enigmailBar.ok {
+  background-color: rgb(204, 255, 204);
 }
 
 .notificationBar button {
@@ -542,11 +552,6 @@ span.downwardArrow {
   font-size: 1.8em;
 }
 
-.lightningImipBar {
-  background-color: #baeeff;
-  color: #888a85;
-}
-
 .lightningImipImage {
   height: 24px;
   width: 24px;
@@ -555,35 +560,6 @@ span.downwardArrow {
 
 .lightningImipButton {
   float: right;
-}
-
-.phishingBar {
-  background-color: #ed6666;
-  color: #D7D7D7;
-}
-
-.junkBar {
-  background-color: rgb(231, 243, 253);
-  color: black;
-}
-
-.remoteContent {
-  background-color: rgba(0,255,0, 0.15);
-}
-
-.enigmailBar.ok {
-  background-color: rgb(204, 255, 204);
-  color: black;
-}
-
-.enigmailBar.unknown {
-  background-color: rgb(204, 255, 255);
-  color: black;
-}
-
-.enigmailBar.notok {
-  background-color: rgb(255, 216, 254);
-  color: black;
 }
 
 .enigmailBar .enigmailDetails {
