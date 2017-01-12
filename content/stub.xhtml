@@ -829,10 +829,10 @@
             ></ul>{{snippet}}</span>
         </div>
         <div class="options">
+          <span class="attachmentIcon">
+            {{tmpl "attachmentIcon" this}}
+          </span>
           <span class="date">
-            <span class="attachmentIcon">
-              {{tmpl "attachmentIcon" this}}
-            </span>
             <span title="{{fullDate}}">{{date}}</span>
           </span>
           <span class="details hide-with-details">
@@ -1161,7 +1161,7 @@
   >]]></script>
   <script id="attachmentIconTemplate" type="text/x-handlebars-template"><![CDATA[
     {{#if attachments.length}}
-      <img src="chrome://conversations/content/i/attachment.png" />
+      <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#attachment"></use></svg>
     {{/if}}
   ]]></script>
   <script id="attachmentDetailsTemplate" type="text/x-handlebars-template"><![CDATA[

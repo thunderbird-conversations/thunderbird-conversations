@@ -583,6 +583,10 @@ span.downwardArrow {
   color: #888a85;
 }
 
+.attachmentIcon {
+  color: #666;
+}
+
 .attachments {
   padding: 10px 0 0 0;
   margin: 0 0 18px 0;
