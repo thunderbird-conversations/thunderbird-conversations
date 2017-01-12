@@ -91,6 +91,16 @@ a img {
   cursor: pointer;
 }
 
+.icon {
+  display: inline-block;
+  fill: currentColor;
+  height: 1.5em;
+  vertical-align: -.4em;
+}
+.icon.active {
+  fill: #3079e0;
+}
+
 .link:hover,
 .link:focus {
   text-decoration: underline;
@@ -131,59 +141,11 @@ a img {
   height: 24px;
   float: right;
   margin: 0 0 0 3px;
+  color: #666;
 }
 
-.actions button span {
-  width: 1.6rem;
-  height: 1.6rem;
-  margin: auto;
-  display: block;
-  background-repeat: no-repeat;
-  background-position: center center;
-}
-
-.actions span.read {
-  background-image: url("chrome://conversations/content/i/read.png");
-}
-
-.actions span.read.unread {
-  background-image: url("chrome://conversations/content/i/unread.png");
-}
-
-.actions span.mode {
-  background-image: url("chrome://conversations/content/i/mode.png");
-}
-
-.actions span.mode.classic {
-  background-image: url("chrome://conversations/content/i/classicMode.png");
-}
-
-.actions span.expand {
-  background-image: url("chrome://conversations/content/i/expand.png");
-}
-
-.actions span.expand.collapse {
-  background-image: url("chrome://conversations/content/i/collapse.png");
-}
-
-.actions span.trash {
-  background-image: url("chrome://conversations/content/i/trash.png");
-}
-
-.actions span.archive {
-  background-image: url("chrome://conversations/content/i/archive.png");
-}
-
-.actions span.junk {
-  background-image: url("chrome://conversations/content/i/junk.png");
-}
-
-.actions span.conversation-menu-button {
-  background-image: url("chrome://conversations/content/i/conversation2.png");
-}
-
-.actions span.tab {
-  background-image: url("chrome://conversations/content/i/tab.png");
+.actions .unread {
+  color: #3079e0;
 }
 
 
@@ -567,6 +529,10 @@ span.downwardArrow {
   font-weight: bold;
 }
 
+.notificationBar .icon {
+  font-size: 1.8em;
+}
+
 .lightningImipBar {
   background-color: #baeeff;
   color: #888a85;
@@ -621,6 +587,10 @@ span.downwardArrow {
   color: #888a85;
 }
 
+.attachmentIcon {
+  color: #666;
+}
+
 .attachments {
   padding: 10px 0 0 0;
   margin: 0 0 18px 0;
@@ -661,6 +631,7 @@ span.downwardArrow {
 
 /* For moz-icons */
 .attachmentThumb img.icon {
+  height: auto;
   width: 48px;
 }
 
@@ -740,17 +711,13 @@ span.downwardArrow {
 }
 
 .star {
-  display: inline-block;
-  height: 14px;
-  width: 14px;
-  background-image: url(chrome://conversations/content/i/unstarred.png);
-  background-repeat: no-repeat;
+  display: inline;
   margin-right: 3px;
-  vertical-align: -2px;
+  color: #888a85;
 }
 
 .star.starred {
-  background-image: url(chrome://conversations/content/i/star.png);
+  color: #fcb040;
 }
 
 /* bottom links: forward this conversation, print this conversation */
@@ -837,13 +804,6 @@ span.downwardArrow {
 
 .editDraftLinkWrapper {
   font-weight: bold;
-}
-
-.editDraftLinkWrapper > a,
-.replyLinkWrapper > a {
-  background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAFZJREFUeF59z4EJADEIQ1F36k7u5E7ZKXeUQPACJ3wK7UNokVxVk9kHnQH7bY9hbDyDhNXgjpRLqFlo4M2GgfyJHhjq8V4agfrgPQX3JtJQGbofmCHgA/nAKks+JAjFAAAAAElFTkSuQmCC")
-    no-repeat scroll right center transparent;
-  padding-right: 13px;
 }
 
 .ext {
