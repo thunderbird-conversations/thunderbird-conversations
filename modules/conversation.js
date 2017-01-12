@@ -1042,14 +1042,14 @@ Conversation.prototype = {
       return;
 
     // Make sure the toggle read/unread button is in the right state
-    let markReadButton = this._htmlPane.document.querySelector("span.read");
+    let markReadButton = this._htmlPane.document.querySelector(".icon.read");
     if (this.messages.some(x => !x.message.read))
       markReadButton.classList.add("unread");
     else
       markReadButton.classList.remove("unread");
 
     // If some message is collapsed, then the initial state is "expand"
-    let collapseExpandButton = this._htmlPane.document.querySelector("span.expand");
+    let collapseExpandButton = this._htmlPane.document.querySelector(".icon.expand");
     if (this.messages.some(x => x.message.collapsed))
       collapseExpandButton.classList.remove("collapse");
     else

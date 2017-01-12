@@ -148,6 +148,15 @@ a img {
   color: #3079e0;
 }
 
+.expand .expand-less,
+.expand.collapse .expand-more {
+  display: none;
+}
+
+.expand.collapse .expand-less {
+  display: initial;
+}
+
 
 #messageList {
   margin-top: 4.4rem;

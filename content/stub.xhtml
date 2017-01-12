@@ -323,30 +323,29 @@
     //  takes care of setting the right class on us whenever the state
     //  changes...
     function toggleRead(event) {
-      let $icon = $(event.target).find(".icon");
-      if ($icon.hasClass("unread")) {
+      let $span = $(event.target).find(".icon.read");
+      if ($span.hasClass("unread")) {
         Conversations.currentConversation.read = true;
-        $icon.removeClass("unread")
+        $span.removeClass("unread");
       } else {
         Conversations.currentConversation.read = false;
-        $icon.addClass("unread")
+        $span.addClass("unread");
         markReadInView.disable();
       }
     }
 
     function expandCollapse(event) {
-      let $icon = $(event.target).find(".icon");
-      let sprites = "chrome://conversations/skin/material-icons.svg";
-      if ($icon.find("use").attr("xlink:href") === sprites + "#expand_less") {
+      let $span = $(event.target).find(".icon.expand");
+      if ($span.hasClass("collapse")) {
         for (let { message } of Conversations.currentConversation.messages) {
           message.collapse();
         }
-        $icon.find("use").attr("xlink:href", sprites + "#expand_more");
+        $span.removeClass("collapse");
       } else {
         for (let { message } of Conversations.currentConversation.messages) {
           message.expand();
         }
-        $icon.find("use").attr("xlink:href", sprites + "#expand_less");
+        $span.addClass("collapse");
       }
     }
 
@@ -1393,10 +1392,13 @@
             <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#whatshot"></use></svg>
           </button>
           <button class="button-flat" title="&stub.expand.tooltip;" onclick="expandCollapse(event);">
-            <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#expand_more"></use></svg>
+            <svg class="icon expand" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <use class="expand-more" xlink:href="chrome://conversations/skin/material-icons.svg#expand_more"></use>
+              <use class="expand-less" xlink:href="chrome://conversations/skin/material-icons.svg#expand_less"></use>
+            </svg>
           </button>
           <button class="button-flat" title="&stub.read.tooltip;" onclick="toggleRead(event);">
-            <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#visibility"></use></svg>
+            <svg class="icon read" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#visibility"></use></svg>
           </button>
           <button class="button-flat" title="&stub.detach.tooltip2;" onclick="detachTab(event);">
             <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#open_in_new"></use></svg>
