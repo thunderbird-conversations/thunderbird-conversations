@@ -631,6 +631,7 @@ span.downwardArrow {
 
 /* For moz-icons */
 .attachmentThumb img.icon {
+  height: auto;
   width: 48px;
 }
 
