@@ -850,10 +850,14 @@
           <span class="dropDown"> |
             <a href="javascript:" onclick="displayMenu(event);" class="link top-right-more">{{str "more"}} <span class="downwardArrow">&#x25bc;</span></a>
             <div class="tooltip tooltip-menu menu">
-              <div class="arrow"></div>
-              <div class="arrow inside"></div>
               <ul>
-                <li class="action-reply"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#reply"></use></svg> {{str "reply"}}</li>
+                <li class="action-reply">
+                  <!-- arow should change color along with first item on hover -->
+                  <div class="arrow"></div>
+                  <div class="arrow inside"></div>
+
+                  <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#reply"></use></svg> {{str "reply"}}
+                </li>
                 <li class="action-replyAll"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#reply_all"></use></svg> {{str "replyAll"}}</li>
                 <li class="action-replyList"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#list"></use></svg> {{str "replyList"}}</li>
                 <li class="action-editNew"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#edit"></use></svg> {{str "editNew"}}</li>
