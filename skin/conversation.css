@@ -657,18 +657,20 @@ span.downwardArrow {
 .messageFooter button {
   background-image: none;
   background-color: -moz-default-background-color;
-  color: -moz-default-color;
+  color: #666;
 
   float: left;
   border: 1px solid ThreeDShadow;
   border-top-color: -moz-default-background-color;
-  border-radius: 0;
 
   margin: -1px 3px 0 0;
   padding: 0 5px 3px;
+
+  cursor: pointer;
 }
 
-.messageFooter button:hover {
+.messageFooter button:hover,
+.messageFooter button:focus {
   border-color: #888a85;
   border-top-color: -moz-default-background-color;
 }
@@ -789,12 +791,6 @@ span.downwardArrow {
 
 .editDraftLinkWrapper {
   font-weight: bold;
-}
-
-.ext {
-  background: url("chrome://conversations/content/i/ext.png")
-    no-repeat scroll right center transparent;
-  padding-right: 13px;
 }
 
 /* clearfix */

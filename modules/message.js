@@ -815,19 +815,19 @@ Message.prototype = {
         self.compose(Ci.nsIMsgCompType.ReplyToList, event);
         event.stopPropagation();
       });
-      mainActionLink.textContent = replyList.textContent;
+      mainActionLink.textContent = replyList.title;
     } else if (this.isReplyAllEnabled) {
       this.register(".replyMainActionLink", function (event) {
         self.compose(Ci.nsIMsgCompType.ReplyAll, event);
         event.stopPropagation();
       });
-      mainActionLink.textContent = replyAll.textContent;
+      mainActionLink.textContent = replyAll.title;
     } else {
       this.register(".replyMainActionLink", function (event) {
         self.compose(Ci.nsIMsgCompType.ReplyToSender, event);
         event.stopPropagation();
       });
-      mainActionLink.textContent = reply.textContent;
+      mainActionLink.textContent = reply.title;
     }
 
     this.register(".edit-draft", event => self.compose(Ci.nsIMsgCompType.Draft, event));
