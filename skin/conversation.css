@@ -805,13 +805,6 @@ span.downwardArrow {
   font-weight: bold;
 }
 
-.editDraftLinkWrapper > a,
-.replyLinkWrapper > a {
-  background: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAYAAACNMs+9AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAFZJREFUeF59z4EJADEIQ1F36k7u5E7ZKXeUQPACJ3wK7UNokVxVk9kHnQH7bY9hbDyDhNXgjpRLqFlo4M2GgfyJHhjq8V4agfrgPQX3JtJQGbofmCHgA/nAKks+JAjFAAAAAElFTkSuQmCC")
-    no-repeat scroll right center transparent;
-  padding-right: 13px;
-}
-
 .ext {
   background: url("chrome://conversations/content/i/ext.png")
     no-repeat scroll right center transparent;

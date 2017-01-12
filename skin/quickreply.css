@@ -190,20 +190,6 @@ body.inTab .quickReply li.selected .textarea {
   white-space: nowrap;
 }
 
-.quickReply ul.actions li.fwd {
-  background-image: url('chrome://conversations/content/i/fwd.png');
-  background-position: left center;
-  background-repeat: no-repeat;
-  padding-left: 20px;
-}
-
-.quickReply ul.actions li.list {
-  background-image: url('chrome://conversations/content/i/list.png');
-  background-position: -1px center;
-  background-repeat: no-repeat;
-  padding-left: 20px;
-}
-
 .quickReply .replyHeader,
 .quickReply .replyFooter {
   display: none;
