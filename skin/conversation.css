@@ -91,6 +91,16 @@ a img {
   cursor: pointer;
 }
 
+.icon {
+  display: inline-block;
+  fill: currentColor;
+  height: 1.5em;
+  vertical-align: -.4em;
+}
+.icon.active {
+  fill: #3079e0;
+}
+
 .link:hover,
 .link:focus {
   text-decoration: underline;
