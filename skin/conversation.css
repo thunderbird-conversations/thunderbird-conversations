@@ -87,7 +87,7 @@ a img {
 
 .link {
   text-decoration: none;
-  color: -moz-HyperlinkText;
+  color: -moz-nativehyperlinktext;
   cursor: pointer;
 }
 
