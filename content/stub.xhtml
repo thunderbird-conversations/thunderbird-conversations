@@ -8,6 +8,8 @@
   <link rel="stylesheet" type="text/css"
     href="chrome://messenger/skin/tagColors.css"/>
   <link rel="stylesheet" type="text/css"
+    href="chrome://conversations/skin/material-icons.css"/>
+  <link rel="stylesheet" type="text/css"
     href="chrome://conversations/skin/boxflex.css" />
   <!-- Keep the order! -->
   <link rel="stylesheet" type="text/css"
@@ -800,32 +802,33 @@
     <li class="message collapsed {{extraClasses}}">
       <div class="messageHeader hbox">
         <div class="shrink-box">
-          <div class="star"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#star"></use></svg></div>
+          <div class="star">
+              <i class="material-icons md-18">star_border</i>
+          </div>
           <span class="author">{{tmpl "contactLabel" dataContactFrom}}</span>
           <span class="to hide-with-details"> {{str "to"}} {{tmpl "contactLabel" dataContactsTo}}</span>
           <span class="recipient-tooltips">{{tmpl "contactTooltip" dataContactFrom}}{{tmpl "contactTooltip" dataContactsTo}}</span>
           <span class="bzTo"> {{str "at"}} {{bugzillaUrl}}</span>
-          <span class="snippet"><ul class="tags regular-tags"></ul><ul
-              class="tags special-tags"
-            ><li
-              class="tag-signed"
-              title="{{str 'messageSignedLong'}}"
-              ><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#edit"></use></svg>
-              {{str "messageSigned"}}</li
-            ><li
-              class="tag-decrypted"
-              title="{{str 'messageDecryptedLong'}}"
-              ><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#enhanced_encryption"></use></svg>
-              {{str "messageDecrypted"}}</li
-            ><li
-              class="tag-dkim-signed"
-              ><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#edit"></use></svg>
-              {{str "messageDKIMSigned"}}</li
-            ><li
-              class="in-folder"
-              title="{{str 'jumpToFolder'}}"
-              >{{str "inFolder" shortFolderName}}</li
-            ></ul>{{snippet}}</span>
+          <span class="snippet">
+            <ul class="tags regular-tags"></ul>
+            <ul class="tags special-tags">
+              <li class="tag-signed" title="{{str 'messageSignedLong'}}">
+                <i class="material-icons md-18">edit</i>
+                {{str "messageSigned"}}
+              </li>
+              <li class="tag-decrypted" title="{{str 'messageDecryptedLong'}}">
+                <i class="material-icons md-15">vpn_key</i>
+                {{str "messageDecrypted"}}
+              </li>
+              <li class="tag-dkim-signed">
+                <i class="material-icons md-18">edit</i>
+                {{str "messageDKIMSigned"}}</li>
+              <li class="in-folder" title="{{str 'jumpToFolder'}}" >
+                {{str "inFolder" shortFolderName}}
+                </li>
+            </ul>
+            {{snippet}}
+          </span>
         </div>
         <div class="options">
           <span class="attachmentIcon">
@@ -855,17 +858,45 @@
                   <div class="arrow"></div>
                   <div class="arrow inside"></div>
 
-                  <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#reply"></use></svg> {{str "reply"}}
+                  <i class="material-icons md-18">reply</i>
+                  {{str "reply"}}
                 </li>
-                <li class="action-replyAll"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#reply_all"></use></svg> {{str "replyAll"}}</li>
-                <li class="action-replyList"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#list"></use></svg> {{str "replyList"}}</li>
-                <li class="action-editNew"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#edit"></use></svg> {{str "editNew"}}</li>
-                <li class="action-forward dropdown-sep"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#forward"></use></svg> {{str "forward"}}</li>
-                <li class="action-archive"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#archive"></use></svg> {{str "archive"}}</li>
-                <li class="action-delete"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#delete"></use></svg> {{str "delete"}}</li>
-                <li class="action-classic"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#open_in_new"></use></svg> {{str "viewClassic"}}</li>
-                <li class="action-source"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#code"></use></svg> {{str "viewSource"}}</li>
-                <li class="action-print" style="display: none;"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#print"></use></svg> {{str "print"}}</li>
+                <li class="action-replyAll">
+                  <i class="material-icons md-18">reply_all</i>
+                  {{str "replyAll"}}
+                </li>
+                <li class="action-replyList">
+                  <i class="material-icons md-18">list</i>
+                  {{str "replyList"}}
+                </li>
+                <li class="action-editNew">
+                  <i class="material-icons md-18">edit</i>
+                  {{str "editNew"}}
+                </li>
+                <li class="action-forward dropdown-sep">
+                  <i class="material-icons md-18">forward</i>
+                  {{str "forward"}}
+                </li>
+                <li class="action-archive">
+                  <i class="material-icons md-18">archive</i>
+                  {{str "archive"}}
+                  </li>
+                <li class="action-delete">
+                  <i class="material-icons md-18">delete</i>
+                  {{str "delete"}}
+                </li>
+                <li class="action-classic">
+                  <i class="material-icons md-18">open_in_new</i>
+                  {{str "viewClassic"}}
+                </li>
+                <li class="action-source">
+                  <i class="material-icons md-18">visibility</i>
+                  {{str "viewSource"}}
+                </li>
+                <li class="action-print" style="display: none;">
+                  <i class="material-icons md-18">print</i>
+                  {{str "print"}}
+                </li>
               </ul>
             </div>
           </span>
@@ -1014,7 +1045,8 @@
       </div>
       {{/if}}
       <div class="phishingBar notificationBar" style="display: none">
-        <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#warning"></use></svg>
+        <i class="material-icons md-18">warning</i>
+
         {{str "scam"}}
         <span class="ignore-warning">
           <a href="javascript:">{{str "ignoreWarning"}}</a>
@@ -1030,14 +1062,16 @@
         </span>
       </div>
       <div class="junkBar notificationBar" {{#unless canUnJunk}}style="display: none"{{/unless}}>
-        <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#whatshot"></use></svg>
+        <i class="material-icons md-18">whatshot</i>
+
         {{str "junk"}}
         <span class="notJunk">
           <a href="javascript:">{{str "notJunk"}}</a>
         </span>
       </div>
       <div class="outboxBar notificationBar" {{#unless isOutbox}}style="display: none"{{/unless}}>
-        <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#inbox"></use></svg>
+        <i class="material-icons md-18">inbox</i>
+
         {{str "isOutbox"}}
         <span class="sendUnsent">
           <a href="javascript:">{{str "sendUnsent"}}</a>
@@ -1052,27 +1086,23 @@
 
       <div class="messageBody">
         <!-- Weird markup to deal with whitespace DOM nodes -->
-        <ul class="tags special-tags"
-          ><li
-            class="keep-tag tag-signed"
-            title="{{str 'messageSignedLong'}}"
-            ><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#edit"></use></svg>
-            {{str "messageSigned"}}</li
-          ><li
-            class="keep-tag tag-decrypted"
-            title="{{str 'messageDecryptedLong'}}"
-            ><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#enhanced_encryption"></use></svg>
-            {{str "messageDecrypted"}}</li
-          ><li
-            class="keep-tag tag-dkim-signed"
-            ><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#edit"></use></svg>
-            {{str "messageDKIMSigned"}}</li
-          ><li
-            class="keep-tag in-folder"
-            title="{{str 'jumpToFolder'}}"
-            >{{str "inFolder" folderName}}</li
-          ></ul
-        >
+        <ul class="tags special-tags">
+          <li class="keep-tag tag-signed" title="{{str 'messageSignedLong'}}">
+            <i class="material-icons md-15">edit</i>
+            {{str "messageSigned"}}
+          </li>
+          <li class="keep-tag tag-decrypted" title="{{str 'messageDecryptedLong'}}">
+            <i class="material-icons md-15">vpn_key</i>
+            {{str "messageDecrypted"}}
+          </li>
+          <li class="keep-tag tag-dkim-signed">
+            <i class="material-icons md-15">edit</i>
+            {{str "messageDKIMSigned"}}
+          </li>
+          <li class="keep-tag in-folder" title="{{str 'jumpToFolder'}}">
+            {{str "inFolder" folderName}}
+          </li>
+        </ul>
         <ul class="tags regular-tags"></ul>
         <div class="iframe-container"></div>
         <div class="body-container"></div>
@@ -1084,11 +1114,21 @@
       </div>
       <div class="messageFooter">
         <div class="footerActions">
-          <button class="edit-draft" title="{{str 'editDraft2'}}"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#edit"></use></svg></button>
-          <button class="buttonReply" title="{{str 'reply'}}"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#reply"></use></svg> <span></span></button>
-          <button class="buttonReplyAll" title="{{str 'replyAll'}}"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#reply_all"></use></svg></button>
-          <button class="buttonReplyList" title="{{str 'replyList'}}"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#list"></use></svg></button>
-          <button class="buttonForward" title="{{str 'forward'}}"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#forward"></use></svg></button>
+          <button class="edit-draft" title="{{str 'editDraft2'}}">
+            <i class="material-icons md-18">edit</i>
+          </button>
+          <button class="buttonReply" title="{{str 'reply'}}">
+            <i class="material-icons md-18">reply</i>
+          </button>
+          <button class="buttonReplyAll" title="{{str 'replyAll'}}">
+            <i class="material-icons md-18">reply_all</i>
+          </button>
+          <button class="buttonReplyList" title="{{str 'replyList'}}">
+            <i class="material-icons md-18">list</i>
+          </button>
+          <button class="buttonForward" title="{{str 'forward'}}">
+            <i class="material-icons md-18">forward</i>
+          </button>
         </div>
       </div>
       {{#if quickReply}}
@@ -1164,7 +1204,7 @@
   >]]></script>
   <script id="attachmentIconTemplate" type="text/x-handlebars-template"><![CDATA[
     {{#if attachments.length}}
-      <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#attachment"></use></svg>
+      <i class="material-icons md-18">attachment</i>
     {{/if}}
   ]]></script>
   <script id="attachmentDetailsTemplate" type="text/x-handlebars-template"><![CDATA[
@@ -1329,7 +1369,10 @@
               <span class="popoutTxt">{{str 'popoutTxt'}}</span>
             </div>
             <div class="textWrap">
-              <div class="quickReplyIcon"><span>{{str "reply"}}</span> <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#reply"></use></svg></div>
+              <div class="quickReplyIcon">
+                <span>{{str "reply"}}</span>
+                <i class="material-icons md-18">reply</i>
+              </div>
               <iframe mozframetype="content" class="textarea sans"></iframe>
             </div>
           </li>
@@ -1339,15 +1382,22 @@
               <span class="popoutTxt">{{str 'popoutTxt'}}</span>
             </div>
             <div class="textWrap">
-              <div class="quickReplyIcon"><span>{{str "replyAll"}}</span> <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#reply_all"></use></svg></div>
+              <div class="quickReplyIcon">
+                <span>{{str "replyAll"}}</span>
+                <i class="material-icons md-18">reply_all</i>
+              </div>
               <iframe mozframetype="content" class="textarea sans"></iframe>
             </div>
           </li>
 
           <li class="misc" style="width: {{str 'actionsSize'}}rem">
             <ul class="actions cf">
-              <li class="fwd"><a href="javascript:"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#forward"></use></svg> {{strC 'forward'}}</a></li>
-              <li class="list"><a href="javascript:"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#list"></use></svg> {{strC 'replyList'}}</a></li>
+              <li class="fwd"><a href="javascript:">
+                 <i class="material-icons md-18">forward</i>
+                 {{strC 'forward'}}</a></li>
+              <li class="list"><a href="javascript:">
+                 <i class="material-icons md-18">list</i>
+                 {{strC 'replyList'}}</a></li>
             </ul>
           </li>
         </ul>
@@ -1383,25 +1433,25 @@
         <div class="subject boxFlex">&stub.loading;</div>
         <div class="actions">
           <button class="button-flat" title="&stub.trash.tooltip;" onclick="deleteToolbar(event);">
-            <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#delete"></use></svg>
+            <i class="material-icons md-18">delete</i>
           </button>
           <button class="button-flat" title="&stub.archive.tooltip;" onclick="archiveToolbar(event);">
-            <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#archive"></use></svg>
+            <i class="material-icons md-18">archive</i>
           </button>
           <button class="button-flat junk-button" title="&stub.junk.tooltip;" onclick="junkConversation(event);">
-            <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#whatshot"></use></svg>
+            <i class="material-icons md-18">whatshot</i>
           </button>
           <button class="button-flat" title="&stub.expand.tooltip;" onclick="expandCollapse(event);">
-            <svg class="icon expand" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-              <use class="expand-more" xlink:href="chrome://conversations/skin/material-icons.svg#expand_more"></use>
-              <use class="expand-less" xlink:href="chrome://conversations/skin/material-icons.svg#expand_less"></use>
-            </svg>
+            <div class="icon expand">
+              <i class="expand-more material-icons">keyboard_arrow_down</i>
+              <i class="expand-less material-icons">keyboard_arrow_up</i>
+            </div>
           </button>
           <button class="button-flat" title="&stub.read.tooltip;" onclick="toggleRead(event);">
-            <svg class="icon read" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#visibility"></use></svg>
+            <i class="material-icons md-18">visibility</i>
           </button>
           <button class="button-flat" title="&stub.detach.tooltip2;" onclick="detachTab(event);">
-            <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#open_in_new"></use></svg>
+            <i class="material-icons md-18">open_in_new</i>
           </button>
           <!--<button><span class="mode"></span></button>-->
         </div>
