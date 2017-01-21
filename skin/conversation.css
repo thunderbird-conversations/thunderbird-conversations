@@ -81,12 +81,6 @@ button {
   border-color: ThreeDShadow;
 }
 
-/* fix alignment of icon font
-   in message headers and tags */
-.messageHeader i, tags li i {
-  vertical-align: middle;
-}
-
 a img {
   border-color: transparent;
 }
@@ -193,8 +187,8 @@ a img {
   cursor: pointer
 }
 
-.messageHeader img {
-  vertical-align: text-top;
+.messageHeader i {
+  vertical-align: middle;
 }
 
 .author {
@@ -513,7 +507,7 @@ span.downwardArrow {
   background-color: #3F5381;
 }
 
-.tags.special-tags img {
+.tags.special-tags i {
   vertical-align: middle;
 }
 
