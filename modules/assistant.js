@@ -199,7 +199,7 @@ let Customizations = {
       let moveOn = function () {
         let tabmail = mainWindow.document.getElementById("tabmail");
         tabmail.switchToTab(0);
-        //mainWindow.MsgSortThreaded();
+        mainWindow.MsgSortThreaded();
         /**
          * We don't know how to revert these, so forget about it for now.
          */
