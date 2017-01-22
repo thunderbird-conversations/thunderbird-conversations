@@ -199,7 +199,7 @@ let Customizations = {
       let moveOn = function () {
         let tabmail = mainWindow.document.getElementById("tabmail");
         tabmail.switchToTab(0);
-        //mainWindow.MsgSortThreaded();
+        mainWindow.MsgSortThreaded();
         /**
          * We don't know how to revert these, so forget about it for now.
          */
@@ -210,6 +210,7 @@ let Customizations = {
         state.senderCol = eid("senderCol").getAttribute("hidden");
         eid("unreadCol").setAttribute("hidden", "false");
         eid("senderCol").setAttribute("hidden", "true");
+        eid("correspondentCol").setAttribute("hidden", "false");
         Customizations.ttop();
       };
       let i = 0;
