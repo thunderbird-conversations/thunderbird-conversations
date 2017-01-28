@@ -247,7 +247,7 @@ MonkeyPatch.prototype = {
       // With enigmail, this sequence is modified
       // - jsm load
       // - msgcreatedbview
-      // - onlaod
+      // - onload
       // So our solution kinda works, but registering the thing at jsm load-time
       //  would work as well.
     }
