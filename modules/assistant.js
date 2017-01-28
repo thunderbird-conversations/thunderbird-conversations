@@ -167,6 +167,7 @@ let Customizations = {
         ftvMode: null,
         unreadCol: null,
         senderCol: null,
+        correspondentCol: null,
         initialFolder: {
           uri: null,
           show: null,
@@ -208,8 +209,11 @@ let Customizations = {
         mainWindow.goDoCommand('cmd_collapseAllThreads');
         state.unreadCol = eid("unreadCol").getAttribute("hidden");
         state.senderCol = eid("senderCol").getAttribute("hidden");
+        state.correspondentCol = eid("correspondentCol").getAttribute("hidden");
         eid("unreadCol").setAttribute("hidden", "false");
         eid("senderCol").setAttribute("hidden", "true");
+        eid("correspondentCol").setAttribute("hidden", "true");
+        eid("betweenCol").setAttribute("hidden", "false");
         Customizations.ttop();
       };
       let i = 0;
@@ -229,8 +233,10 @@ let Customizations = {
     uninstall: function ({ ftvMode, senderCol, unreadCol, initialFolder }) {
       if (eid("senderCol").getAttribute("hidden") == "true")
         eid("senderCol").setAttribute("hidden", senderCol);
-      if (eid("unreadCol").getAttribute("hidden") == "false")
+      if (eid("unreadCol").getAttribute("hidden") == "true")
         eid("unreadCol").setAttribute("hidden", unreadCol);
+      if (eid("correspondentCol").getAttribute("hidden") == "true")
+        eid("correspondentCol").setAttribute("hidden", correspondentCol);
       let mainWindow = getMail3Pane();
       mainWindow.gFolderTreeView.mode = ftvMode;
 
