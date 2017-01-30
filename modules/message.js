@@ -1574,9 +1574,9 @@ Message.prototype = {
             +" You changed conversations very fast, and the streaming completed after the conversation"
             +" was blown away by the newer one.");
         }
-        cv.hintCharacterSet = "UTF-8";
-        cv.forceCharacterSet = "UTF-8";
-        cv.hintCharacterSetSource = kCharsetFromChannel;
+        //cv.hintCharacterSet = "UTF-8";
+        //cv.forceCharacterSet = "UTF-8";
+        //cv.hintCharacterSetSource = kCharsetFromChannel;
         /* Is this even remotely useful? */
         iframe.docShell.appType = Ci.nsIDocShell.APP_TYPE_MAIL;
 
