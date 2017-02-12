@@ -83,7 +83,7 @@ let SignalManagerMixIn = {
   //  asynchronous. Once we've done what's right for each message (expand,
   //  collapse, or do nothing), we do the final cleanup (mark as read, etc.).
   _runOnceAfterNSignals: function (f, n) {
-    if (this._toRun !== null && this._toRun !== undefined)
+    if (("_toRun" in this) && this._toRun !== null && this._toRun !== undefined)
       Log.error("You failed to call signal enough times. Bad developer, bad! Go fix your code!");
     this._toRun = [f, n+1];
     try {
@@ -812,7 +812,7 @@ Conversation.prototype = {
     // XXX I think this test is still valid because of the thread summary
     // stabilization interval (we might have changed selection and still be
     // waiting to fire the new conversation).
-    if (this._selectionChanged()) {
+    if (!this._htmlPane.isInTab && this._selectionChanged()) {
       Log.debug("Selection changed, aborting...");
       return;
     }

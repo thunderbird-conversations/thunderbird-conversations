@@ -288,7 +288,8 @@
     Components.utils.import("resource://conversations/modules/contact.js");
 
     Log = setupLogging("Conversations.Stub");
-    let isInTab = false;
+    // Declare with var, not let, so that it's in the global scope, not the lexical scope.
+    var isInTab = false;
 
     wrapHandlebars();
 
