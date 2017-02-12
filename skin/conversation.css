@@ -187,8 +187,8 @@ a img {
   cursor: pointer
 }
 
-.messageHeader img {
-  vertical-align: text-top;
+.messageHeader i {
+  vertical-align: middle;
 }
 
 .author {
@@ -507,7 +507,7 @@ span.downwardArrow {
   background-color: #3F5381;
 }
 
-.tags.special-tags img {
+.tags.special-tags i {
   vertical-align: middle;
 }
 
@@ -663,8 +663,8 @@ span.downwardArrow {
   border: 1px solid ThreeDShadow;
   border-top-color: -moz-default-background-color;
 
-  margin: -1px 3px 0 0;
-  padding: 0 5px 3px;
+  margin: -2px 0 0 0;
+  padding: 0 5px;
 
   cursor: pointer;
 }
@@ -699,6 +699,8 @@ span.downwardArrow {
 
 .star {
   display: inline;
+  position: relative;
+  bottom: 2px;
   margin-right: 3px;
   color: #888a85;
 }
