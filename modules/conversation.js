@@ -812,10 +812,10 @@ Conversation.prototype = {
     // XXX I think this test is still valid because of the thread summary
     // stabilization interval (we might have changed selection and still be
     // waiting to fire the new conversation).
-    if (this._selectionChanged()) {
-      Log.debug("Selection changed, aborting...");
-      return;
-    }
+    //if (this._selectionChanged()) {
+    //  Log.debug("Selection changed, aborting...");
+    //  return;
+    //}
     // In some pathological cases, the folder tree view will fire two consecutive
     //  thread summaries very fast. This will MITIGATE race conditions, not solve
     //  them. To solve them, we would need to make sure the two lines below are
