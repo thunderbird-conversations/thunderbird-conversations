@@ -101,48 +101,6 @@ body.inTab .quickReply li.selected .textarea {
   height: 243px;
 }
 
-.quickReply .popoutTxt {
-  color: GrayText;
-  padding: 0 4px 0 15px;
-}
-
-.quickReply .popout {
-  height: 16px;
-  display: block;
-  position: absolute;
-  bottom: 10px;
-  left: 0;
-  border-width: 1px 1px 0 0;
-  border-color: ThreeDShadow;
-  border-style: solid;
-  background-color: -moz-default-background-color;
-  color: -moz-default-color;
-  cursor: pointer;
-  background-image: linear-gradient(rgba(160, 160, 160, 0.1),
-                                    rgba(160, 160, 160, 0.1));
-  z-index: 101;
-
-  border-radius: 0 3px 0 0;
-}
-
-.quickReply .popout::before {
-  content: "";
-  position: absolute;
-  width: 16px;
-  height: 16px;
-  background-image: url('chrome://conversations/content/i/out.png');
-  background-position: -4px 2px;
-  background-repeat: no-repeat;
-}
-
-.quickReply .selected .popout {
-  width: 16px;
-}
-
-.quickReply .selected .popoutTxt {
-  display: none;
-}
-
 .quickReply .replyHeader,
 .quickReply .replyFooter {
   display: none;

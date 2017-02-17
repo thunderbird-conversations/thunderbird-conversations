@@ -95,20 +95,6 @@ function hideQuickReply() {
 
 function registerQuickReplyEventListeners() {
 
-  $('.popout').click(function (event) {
-    let $parent = $(this).parent();
-    let isSelected = $parent.hasClass("selected");
-    let type;
-    if ($parent.hasClass("reply"))
-      type = "reply";
-    else if ($parent.hasClass("replyAll"))
-      type = "replyAll";
-    else
-      Log.assert(false, "There's only two type of textareas");
-    onPopOut(event, type, isSelected);
-    event.stopPropagation();
-  });
-
   $('ul.inputs li.expand').click(function(event) {
     if ($(this).hasClass("selected"))
       return;
