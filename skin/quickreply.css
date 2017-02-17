@@ -162,25 +162,6 @@ body.inTab .quickReply li.selected .textarea {
   display: block;
 }
 
-/* clearfix */
-
-.cf:after {
-  content: ".";
-  display: block;
-  clear: both;
-  visibility: hidden;
-  line-height: 0;
-  height: 0;
-}
-
-html[xmlns] .cf {
-  display: block;
-}
-
-* html .cf {
-  height: 1%;
-}
-
 /* Quick reply */
 
 .quickReplyRecipients,
