@@ -12,7 +12,6 @@
 .quickReply ul.inputs {
   list-style-type: none;
   overflow: hidden;
-  transition: all 0.4s ease;
 }
 
 .quickReply ul.inputs li {
@@ -20,8 +19,6 @@
   position: relative;
   width: 50%;
   opacity: 1;
-
-  transition: all 0.4s ease;
 }
 
 .quickReply ul.inputs li.selected {
