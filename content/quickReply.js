@@ -56,6 +56,7 @@ function showQuickReply() {
   $(this).parent().addClass('noPad');
   $(this).addClass('selected');
   $(this).siblings().addClass('invisible');
+  $(this).closest('.messageFooter').find('.footerActions').hide();
   if (isQuickCompose)
     $('.replyHeader, .replyFooter').show();
   else
@@ -79,6 +80,7 @@ function hideQuickReply() {
     $('ul.inputs').removeClass('noPad');
     $('ul.inputs li').removeClass('selected');
     $('ul.inputs li').removeClass('invisible');
+    $('.quickReply').closest('.messageFooter').find('.footerActions').show();
 
     var textarea = $('.textarea.selected');
     makeEditable(textarea.get(0), false);

@@ -658,20 +658,19 @@ span.downwardArrow {
   float: right;
 }
 
-.messageFooter button {
+.footerActions button {
   font-size: 150%;
   background: none;
   border: 0;
   color: #666;
-  float: left;
   width: 2em;
   height: 2em;
   border-radius: 1em;
   cursor: pointer;
 }
 
-.messageFooter button:hover,
-.messageFooter button:focus {
+.footerActions button:hover,
+.footerActions button:focus {
   color: -moz-CellHighlight;
 }
 

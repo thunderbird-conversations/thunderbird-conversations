@@ -1091,10 +1091,10 @@
           <button class="buttonReplyList" title="{{str 'replyList'}}"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#list"></use></svg></button>
           <button class="buttonForward" title="{{str 'forward'}}"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#forward"></use></svg></button>
         </div>
+        {{#if quickReply}}
+          {{tmpl "quickReply" this}}
+        {{/if}}
       </div>
-      {{#if quickReply}}
-        {{tmpl "quickReply" this}}
-      {{/if}}
     </li>
     ]]>
   </script>
@@ -1324,7 +1324,7 @@
           </div>
         </div>
 
-        <ul class="inputs cf" style="padding-right: {{str 'actionsSize'}}rem">
+        <ul class="inputs cf">
           <li class="reply expand" ondragenter="quickReplyDragEnter(event);">
             <div class="popout" title="{{str 'popoutReply'}}" alt="popout">
               <span class="popoutTxt">{{str 'popoutTxt'}}</span>
@@ -1343,13 +1343,6 @@
               <div class="quickReplyIcon"><span>{{str "replyAll"}}</span> <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#reply_all"></use></svg></div>
               <iframe mozframetype="content" class="textarea sans"></iframe>
             </div>
-          </li>
-
-          <li class="misc" style="width: {{str 'actionsSize'}}rem">
-            <ul class="actions cf">
-              <li class="fwd"><a href="javascript:"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#forward"></use></svg> {{strC 'forward'}}</a></li>
-              <li class="list"><a href="javascript:"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#list"></use></svg> {{strC 'replyList'}}</a></li>
-            </ul>
           </li>
         </ul>
 

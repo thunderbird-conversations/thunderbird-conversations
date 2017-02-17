@@ -148,18 +148,6 @@ function registerQuickReply() {
     onSave();
   });
 
-  // Register Forward and Reply to list
-  document.querySelector(".quickReply .fwd > a").addEventListener("click", function (event) {
-    getMessageForQuickReply().forward(event);
-    event.stopPropagation();
-    event.preventDefault();
-  }, false);
-  document.querySelector(".quickReply .list > a").addEventListener("click", function (event) {
-    getMessageForQuickReply().compose(Ci.nsIMsgCompType.ReplyToList, event)
-    event.stopPropagation();
-    event.preventDefault();
-  }, false);
-
   // Will set the placeholder and return the bz params
   gBzSetup = bzSetup();
   registerQuickReplyEventListeners();
