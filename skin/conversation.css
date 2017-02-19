@@ -327,13 +327,15 @@ a img {
   cursor: pointer;
 }
 
-.contactInitials {
+.contactInitials,
+.contactAvatar {
   display: inline-block;
   line-height: 2.4;
   min-width: 2.4em;
   border-radius: 1.2em;
   text-align: center;
   color: #fff;
+  background-size: cover;
 }
 
 .smallEmail {
