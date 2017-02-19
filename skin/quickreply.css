@@ -15,19 +15,22 @@
 
 .quickReply ul.inputs {
   list-style-type: none;
-  overflow: hidden;
+  display: flex;
   transition: all 0.4s ease;
 }
 
 .quickReply ul.inputs li {
-  float: left;
   width: 50%;
-
   transition: all 0.4s ease;
+}
+
+.quickReply ul.inputs li:last-child {
+  margin-left: 10px;
 }
 
 .quickReply ul.inputs li.selected {
   width: 100%;
+  margin-left: 0;
 }
 
 .quickReply ul.inputs li.invisible {
@@ -36,7 +39,7 @@
 }
 
 .quickReply .textWrap {
-  margin: 5px 10px 10px 0;
+  margin: 5px 0 10px;
   background-color: Window;
   color: WindowText;
   position: relative;
