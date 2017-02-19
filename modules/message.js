@@ -492,6 +492,7 @@ Message.prototype = {
     let data = {
       dataContactFrom: null,
       dataContactsTo: null,
+      initialsFrom: null,
       snippet: null,
       date: null,
       fullDate: null,

@@ -70,6 +70,19 @@ const defaultPhotoURI = "chrome://messenger/skin/addressbook/icons/contact-gener
 let Log = setupLogging("Conversations.Contact");
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
+function getInitials(name) {
+  name = name.trim().split('@')[0];
+  let parts = name.split(/[ .\-_]/);
+  let initials = "??";
+  let n = parts.length;
+  if (n == 1) {
+    initials = parts[0].substr(0, 2);
+  } else if (n > 1) {
+    initials = parts[0][0] + parts[n - 1][0];
+  }
+  return initials.toUpperCase();
+}
+
 function ContactManager() {
   this._cache = {};
   this._colorCache = {};
@@ -151,6 +164,7 @@ let ContactMixIn = {
     let data = {
       showMonospace: aPosition == Contacts.kFrom,
       name: sanitize(name),
+      initials: getInitials(sanitize(name)),
       displayEmail: sanitize(skipEmail ? "" : displayEmail),
       tooltipName: sanitize((tooltipName != aEmail) ? tooltipName : ""),
       email: sanitize(aEmail),
@@ -160,7 +174,7 @@ let ContactMixIn = {
       // Parameter aUseColor is optional, and undefined means true
       colorStyle: ((aUseColor === false)
         ? ""
-        : ("color :" + this.color)),
+        : ("background-color :" + this.color)),
       writeBr: aIsDetail,
       star: aIsDetail && hasCard,
     };
