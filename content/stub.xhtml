@@ -798,6 +798,7 @@
       <div class="messageHeader hbox">
         <div class="shrink-box">
           <div class="star"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#star"></use></svg></div>
+          <abbr class="contactInitials" style="{{dataContactFrom.colorStyle}}">{{dataContactFrom.initials}}</abbr>
           <span class="author">{{tmpl "contactLabel" dataContactFrom}}</span>
           <span class="to hide-with-details"> {{str "to"}} {{tmpl "contactLabel" dataContactsTo}}</span>
           <span class="recipient-tooltips">{{tmpl "contactTooltip" dataContactFrom}}{{tmpl "contactTooltip" dataContactsTo}}</span>
@@ -1105,7 +1106,7 @@
   <script id="contactLabelTemplate" type="text/x-handlebars-template"><![CDATA[<span
     >{{separator}}</span
     ><span class="tooltipWrapper contact"
-      ><span class="contactName" style="{{colorStyle}}"
+      ><span class="contactName"
         >{{#if star}}&#x2605; {{/if}}{{trim name}}{{#if extra}}
         <label xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
           crop="center" class="contactExtra"
