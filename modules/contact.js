@@ -125,27 +125,6 @@ ContactManager.prototype = {
       return contact;
     }
   },
-
-  freshColor: function _ContactManager_freshColor(aIsMe) {
-    if (aIsMe) {
-      return "#ed6666";
-    } else {
-      let predefinedColors = ["#ed8866", "#ccc15e", "#9ec269",
-        "#69c2ac", "#66b7ed", "#668ced", "#8866ed", "#cb66ed", "#ed66d9"];
-      if (this._count < predefinedColors.length) {
-        return predefinedColors[this._count++];
-      } else {
-        let r, g, b;
-        // Avoid colors that are too light or too dark.
-        do {
-          r = Math.random();
-          g = Math.random();
-          b = Math.random();
-        } while (Math.sqrt(r*r + b*b + g*g) > .8 || Math.sqrt(r*r + b*b + g*g) < .2)
-        return "rgb("+parseInt(r*255)+","+parseInt(g*255)+","+parseInt(b*255)+")";
-      }
-    }
-  },
 }
 
 let ContactMixIn = {
@@ -332,9 +311,24 @@ let ContactMixIn = {
   },
 };
 
+function freshColor(email) {
+  let hash = 0;
+  for (let i = 0; i < email.length; i++) {
+    let chr = email.charCodeAt(i);
+    hash = ((hash << 5) - hash) + chr;
+    hash &= 0xffff;
+  }
+  let hue = Math.floor(360 * hash / 0xffff);
+  if (hash & 1) {
+    return "hsl(" + hue + ", 55%, 35%)";
+  } else {
+    return "hsl(" + hue + ", 80%, 20%)";
+  }
+};
+
 function ContactFromAB(manager, name, email, /* unused */ position, color) {
   this.emails = [];
-  this.color = color || manager.freshColor(getIdentityForEmail(email));
+  this.color = color || freshColor(email);
 
   this._manager = manager;
   this._name = name; // Initially, the displayed name. Might be enhanced later.
