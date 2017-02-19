@@ -1087,10 +1087,10 @@
           <button class="buttonReplyList" title="{{str 'replyList'}}"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#list"></use></svg></button>
           <button class="buttonForward" title="{{str 'forward'}}"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#forward"></use></svg></button>
         </div>
-        {{#if quickReply}}
-          {{tmpl "quickReply" this}}
-        {{/if}}
       </div>
+      {{#if quickReply}}
+        {{tmpl "quickReply" this}}
+      {{/if}}
     </li>
     ]]>
   </script>
