@@ -21,9 +21,7 @@
 
 .quickReply ul.inputs li {
   float: left;
-  position: relative;
   width: 50%;
-  opacity: 1;
 
   transition: all 0.4s ease;
 }
@@ -58,10 +56,6 @@
   color: -moz-nativehyperlinktext;
   white-space: nowrap;
   overflow: hidden;
-}
-
-.quickReplyIcon img {
-  vertical-align: top;
 }
 
 .quickReply .textarea {
