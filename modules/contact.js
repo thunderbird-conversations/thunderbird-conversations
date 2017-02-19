@@ -148,6 +148,7 @@ let ContactMixIn = {
       tooltipName: sanitize((tooltipName != aEmail) ? tooltipName : ""),
       email: sanitize(aEmail),
       avatar: sanitize(this.avatar),
+      avatarIsDefault: this.avatar.substr(0, 6) === 'chrome',
       profiles: this._profiles,
       extra: extra,
       // Parameter aUseColor is optional, and undefined means true
