@@ -9,7 +9,7 @@
   font-size: 1.2rem;
   background-color: rgba(160, 160, 160, 0.1);
   border-top: 1px solid ThreeDShadow;
-  padding: 10px 10px;
+  padding: 10px;
   position: relative;
 }
 
@@ -39,7 +39,6 @@
 }
 
 .quickReply .textWrap {
-  margin: 5px 0 10px;
   background-color: Window;
   color: WindowText;
   position: relative;
