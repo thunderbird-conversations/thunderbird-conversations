@@ -800,10 +800,9 @@
           <div class="star"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#star"></use></svg></div>
           {{#if dataContactFrom.avatarIsDefault}}
             <abbr class="contactInitials" style="{{dataContactFrom.colorStyle}}">{{dataContactFrom.initials}}</abbr>
-          {{/if}}
-          {{#unless dataContactFrom.avatarIsDefault}}
+          {{else}}
             <span class="contactAvatar" style="background-image: url('{{dataContactFrom.avatar}}')"> </span>
-          {{/unless}}
+          {{/if}}
           <span class="author">{{tmpl "contactLabel" dataContactFrom}}</span>
           <span class="to hide-with-details"> {{str "to"}} {{tmpl "contactLabel" dataContactsTo}}</span>
           <span class="recipient-tooltips">{{tmpl "contactTooltip" dataContactFrom}}{{tmpl "contactTooltip" dataContactsTo}}</span>
