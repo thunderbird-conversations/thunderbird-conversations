@@ -77,7 +77,9 @@ let strings = new StringBundle("chrome://conversations/locale/message.properties
  */
 function getInitials(name) {
   name = name.trim().split('@')[0];
-  let words = name.split(/[ .\-_]/);
+  let words = name.split(/[ .\-_]/).filter(function(word) {
+    return word;
+  });
   let initials = "??";
   let n = words.length;
   if (n == 1) {
