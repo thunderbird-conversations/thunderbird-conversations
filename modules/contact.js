@@ -325,11 +325,15 @@ function freshColor(email) {
     hash &= 0xffff;
   }
   let hue = Math.floor(360 * hash / 0xffff);
-  if (hash & 1) {
-    return "hsl(" + hue + ", 55%, 35%)";
-  } else {
-    return "hsl(" + hue + ", 80%, 20%)";
-  }
+
+  // try to provide a consistent lightness across hues
+  let lightnessStops = [48, 25, 28, 27, 62, 42];
+  let j = Math.floor(hue / 60);
+  let l1 = lightnessStops[j];
+  let l2 = lightnessStops[(j + 1) % 6];
+  let lightness = Math.floor((hue / 60 - j) * (l2 - l1) + l1);
+
+  return "hsl(" + hue + ", 70%, " + Math.floor(lightness) + "%)";
 };
 
 function ContactFromAB(manager, name, email, /* unused */ position, color) {
