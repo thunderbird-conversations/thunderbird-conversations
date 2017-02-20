@@ -70,15 +70,20 @@ const defaultPhotoURI = "chrome://messenger/skin/addressbook/icons/contact-gener
 let Log = setupLogging("Conversations.Contact");
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
+/**
+ * If `name` is an email address, get the part before the @.
+ * Then, capitalize the first letter of the first and last word (or the first
+ * two letters of the first word if only one exists).
+ */
 function getInitials(name) {
   name = name.trim().split('@')[0];
-  let parts = name.split(/[ .\-_]/);
+  let words = name.split(/[ .\-_]/);
   let initials = "??";
-  let n = parts.length;
+  let n = words.length;
   if (n == 1) {
-    initials = parts[0].substr(0, 2);
+    initials = words[0].substr(0, 2);
   } else if (n > 1) {
-    initials = parts[0][0] + parts[n - 1][0];
+    initials = words[0][0] + words[n - 1][0];
   }
   return initials.toUpperCase();
 }
