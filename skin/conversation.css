@@ -693,10 +693,20 @@ span.downwardArrow {
   display: inline;
   margin-right: 3px;
   color: #888a85;
+  font-size: 80%;
+}
+.star .icon {
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 2;
 }
 
 .star.starred {
   color: #fcb040;
+}
+.star.starred .icon {
+  fill: currentColor;
+  stroke: currentColor;
 }
 
 /* bottom links: forward this conversation, print this conversation */
