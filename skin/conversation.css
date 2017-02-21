@@ -655,6 +655,10 @@ span.downwardArrow {
 
 .footerActions {
   float: right;
+  margin-top: -2.3em;
+  background-color: -moz-default-background-color;
+  position: relative;
+  border-top-left-radius: 0.3em;
 }
 
 .footerActions button {
