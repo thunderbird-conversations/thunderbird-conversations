@@ -691,6 +691,7 @@ span.downwardArrow {
   cursor: pointer;
 }
 
+.link-icon:hover,
 .footerActions button:hover,
 .footerActions button:focus {
   color: -moz-CellHighlight;
