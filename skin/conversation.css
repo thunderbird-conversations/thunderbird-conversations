@@ -597,6 +597,10 @@ span.downwardArrow {
   list-style-type: none;
 }
 
+.attachments .icon {
+  color: #666;
+}
+
 .attachmentThumb {
   width: 130px;
   padding: 4px;
@@ -631,7 +635,14 @@ span.downwardArrow {
 }
 
 .attachActions {
-  display: inline;
+  display: inline-block;
+  margin-top: 1em;
+}
+
+.attachActions .icon{
+  height: 32px;
+  width: auto;
+  margin-right: 0.2em;
 }
 
 .view-all {
@@ -647,13 +658,22 @@ span.downwardArrow {
   float: left;
 }
 
-.filename {
+.filename,
+.filesize {
   display: block;
+}
+
+.filename {
   font-weight: bold;
 }
 
+.filesize
 .messageFooter {
   padding: 2px 10px;
+}
+
+.download-attachment .icon {
+  transform: rotate(90deg);
 }
 
 .footerActions {
