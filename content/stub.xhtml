@@ -1164,16 +1164,33 @@
         {{/if}}
         <button class="createFilter">{{str "createFilter"}}</button>
         <button class="addContact" title="{{str 'addToAb'}}">
-          <img src="chrome://conversations/content/i/user_add.png" />
+          <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <use xlink:href="chrome://conversations/skin/material-icons.svg#add"></use>
+          </svg>
         </button>
         <button class="editContact" title="{{str 'editCardAb'}}">
-          <img src="chrome://conversations/content/i/user_edit.png" />
+          <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <use xlink:href="chrome://conversations/skin/material-icons.svg#edit"></use>
+          </svg>
         </button>
       </div>
       <div class="tipFooter">
-        <button class="sendEmail">{{str "sendEmail"}}</button>
-        <button class="showInvolving">{{str "recentConversations"}}</button>
-        <button class="moreExpander">+</button>
+        <button class="sendEmail" title="{{str 'sendEmail'}}">
+          <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <use xlink:href="chrome://conversations/skin/material-icons.svg#mail"></use>
+          </svg>
+        </button>
+        <button class="showInvolving" title="{{str 'recentConversations'}}">
+          <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <use xlink:href="chrome://conversations/skin/material-icons.svg#history"></use>
+          </svg>
+        </button>
+        <button class="moreExpander" title="{{str 'more'}}">
+          <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <use class="moreExpander-closed" xlink:href="chrome://conversations/skin/material-icons.svg#expand_less"></use>
+            <use class="moreExpander-open" xlink:href="chrome://conversations/skin/material-icons.svg#expand_more"></use>
+          </svg>
+        </button>
       </div>
     </div
   >]]></script>
