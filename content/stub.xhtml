@@ -1214,10 +1214,16 @@
       <ul class="attachments">
         <div class="attachHeader">
           {{attachmentsPlural}}
-          | <a href="javascript:" class="link download-all">{{str "downloadAll2"}}</a>
+          <a href="javascript:" class="download-all" title="{{str 'downloadAll2'}}">
+            <svg class="icon link-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <use xlink:href="chrome://conversations/skin/material-icons.svg#file_download"></use>
+            </svg>
+          </a>
           {{#if gallery}}
-          | <a href="javascript:" onclick="galleryView('{{uri}}')" class="link view-all">
-              {{str "galleryView"}}
+          <a href="javascript:" onclick="galleryView('{{uri}}')" class="view-all" title="{{str 'galleryView'}}">
+            <svg class="icon link-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <use xlink:href="chrome://conversations/skin/material-icons.svg#photo_library"></use>
+            </svg>
             </a>
           {{/if}}
         </div>
@@ -1228,14 +1234,22 @@
             class="{{imgClass}}" src="{{thumb}}" />
           </div>
           <div class="attachmentInfo align">
-            <span class="filename">{{name}}</span>
+            <span class="filename"> {{name}} </span>
+            <span class="filesize"> {{formattedSize}} </span>
             <div class="attachActions">
-              {{formattedSize}}
               {{#if canPreview}}
-              | <a href="javascript:" class="link preview-attachment">{{str "preview"}}</a>
+              <a href="javascript:" class="link preview-attachment">{{str "preview"}}</a>
               {{/if}}
-              | <a href="javascript:" class="link open-attachment">{{str "open"}}</a>
-              | <a href="javascript:" class="link download-attachment">{{str "download2"}}</a>
+              <a href="javascript:" class="download-attachment" title="{{str 'download2'}}">
+                <svg class="icon link-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="chrome://conversations/skin/material-icons.svg#forward"></use>
+                </svg>
+              </a>
+              <a href="javascript:" class="open-attachment" title="{{str 'open'}}">
+                <svg class="icon link-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="chrome://conversations/skin/material-icons.svg#search"></use>
+                </svg>
+              </a>
             </div>
           </div>
         </li>
