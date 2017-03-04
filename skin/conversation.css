@@ -261,6 +261,9 @@ a img {
   display: inline;
 }
 
+.options .hide-details {
+  color: -moz-CellHighlight;
+}
 .dropDown {
   position: relative;
 }
