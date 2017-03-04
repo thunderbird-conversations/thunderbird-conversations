@@ -406,11 +406,6 @@ a img {
   float: right;
 }
 
-span.downwardArrow {
-  font-size: .8rem;
-  vertical-align: baseline;
-}
-
 .message:not(.with-details) .show-with-details {
   display: none;
 }
