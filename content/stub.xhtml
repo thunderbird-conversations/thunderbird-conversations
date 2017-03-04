@@ -832,19 +832,37 @@
             <span title="{{fullDate}}">{{date}}</span>
           </span>
           <span class="details hide-with-details">
-            | <a href="javascript:" class="link">{{str "details"}}</a>
+            <a href="javascript:" title="{{str "details"}}">
+              <svg class="icon link-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <use xlink:href="chrome://conversations/skin/material-icons.svg#info_outline"></use>
+              </svg>
+            </a>
           </span>
           <span class="hide-details show-with-details">
-            | <a href="javascript:" class="link">{{str "hideDetails"}}</a>
+            <a href="javascript:" title="{{str "hideDetails"}}">
+              <svg class="icon link-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <use xlink:href="chrome://conversations/skin/material-icons.svg#info"></use>
+              </svg>
+            </a>
           </span>
           <span class="replyLinkWrapper">
-            | <a href="javascript:" class="link replyMainActionLink"></a>
+            <a href="javascript:" class="link replyMainActionLink" style="display:none"></a>
           </span>
           <span class="editDraftLinkWrapper">
-            | <a href="javascript:" class="link edit-draft">{{str "editDraft2"}}</a>
+            <!--
+            <a href="javascript:" class="link edit-draft" title="{{str 'editDraft2'}}">
+              <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <use xlink:href="chrome://conversations/skin/material-icons.svg#edit"></use>
+              </svg>
+            </a>
+            -->
           </span>
-          <span class="dropDown"> |
-            <a href="javascript:" onclick="displayMenu(event);" class="link top-right-more">{{str "more"}} <span class="downwardArrow">&#x25bc;</span></a>
+          <span class="dropDown">
+            <a href="javascript:" onclick="displayMenu(event);" class="top-right-more" title="{{str 'more'}}">
+            <svg class="icon link-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <use xlink:href="chrome://conversations/skin/material-icons.svg#more_vert"></use>
+              </svg>
+            </a>
             <div class="tooltip tooltip-menu menu">
               <ul>
                 <li class="action-reply">
