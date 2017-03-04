@@ -179,7 +179,7 @@ a img {
 
 .message {
   margin: 0 10px 1px;
-  background-color: -moz-default-background-color;
+  background-color: #ffffff;
   color: -moz-default-color;
   border: 1px solid ThreeDShadow;
   list-style-type: none;
