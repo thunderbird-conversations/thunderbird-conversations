@@ -575,6 +575,10 @@ a img {
   color: #666;
 }
 
+.attachmentIcon .icon {
+  transform: rotate(50deg);
+}
+
 .attachments {
   padding: 10px 0 0 0;
   margin: 0 0 18px 0;
