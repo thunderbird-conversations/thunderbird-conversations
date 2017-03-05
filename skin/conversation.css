@@ -576,7 +576,7 @@ a img {
 }
 
 .attachmentIcon .icon {
-  transform: rotate(50deg);
+  transform: rotate(-50deg);
 }
 
 .attachments {
