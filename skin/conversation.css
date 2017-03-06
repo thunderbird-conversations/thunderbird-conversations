@@ -148,6 +148,11 @@ a img {
   color: #3079e0;
 }
 
+.actions .expand {
+  /* relatively scale arrow to match with other icons */
+  transform: scale(1.6,1.6);
+}
+
 .expand .expand-less,
 .expand.collapse .expand-more {
   display: none;
