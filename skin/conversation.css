@@ -148,6 +148,11 @@ a img {
   color: #3079e0;
 }
 
+.actions .expand {
+  /* relatively scale arrow to match with other icons */
+  transform: scale(1.6,1.6);
+}
+
 .expand .expand-less,
 .expand.collapse .expand-more {
   display: none;
@@ -261,6 +266,9 @@ a img {
   display: inline;
 }
 
+.options .hide-details {
+  color: -moz-CellHighlight;
+}
 .dropDown {
   position: relative;
 }
@@ -401,11 +409,6 @@ a img {
 
 .moreExpander {
   float: right;
-}
-
-span.downwardArrow {
-  font-size: .8rem;
-  vertical-align: baseline;
 }
 
 .message:not(.with-details) .show-with-details {
@@ -577,6 +580,10 @@ span.downwardArrow {
   color: #666;
 }
 
+.attachmentIcon .icon {
+  transform: rotate(-50deg);
+}
+
 .attachments {
   padding: 10px 0 0 0;
   margin: 0 0 18px 0;
@@ -592,6 +599,10 @@ span.downwardArrow {
   margin: 10px 0 0 0;
   width: 100%;
   list-style-type: none;
+}
+
+.attachments .icon {
+  color: #666;
 }
 
 .attachmentThumb {
@@ -628,7 +639,14 @@ span.downwardArrow {
 }
 
 .attachActions {
-  display: inline;
+  display: inline-block;
+  margin-top: 1em;
+}
+
+.attachActions .icon{
+  height: 32px;
+  width: auto;
+  margin-right: 0.2em;
 }
 
 .view-all {
@@ -644,13 +662,22 @@ span.downwardArrow {
   float: left;
 }
 
-.filename {
+.filename,
+.filesize {
   display: block;
+}
+
+.filename {
   font-weight: bold;
 }
 
+.filesize
 .messageFooter {
   padding: 2px 10px;
+}
+
+.download-attachment .icon {
+  transform: rotate(90deg);
 }
 
 .footerActions {
@@ -668,6 +695,7 @@ span.downwardArrow {
   cursor: pointer;
 }
 
+.link-icon:hover,
 .footerActions button:hover,
 .footerActions button:focus {
   color: -moz-CellHighlight;
