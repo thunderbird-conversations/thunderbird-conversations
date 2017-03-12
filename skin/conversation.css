@@ -197,7 +197,6 @@ a img {
 }
 
 .author {
-  color: #ff5959;
   font-weight: bold;
   margin-right: .3rem;
 }
@@ -334,6 +333,17 @@ a img {
 
 .contactName {
   cursor: pointer;
+}
+
+.contactInitials,
+.contactAvatar {
+  display: inline-block;
+  line-height: 2.4;
+  min-width: 2.4em;
+  border-radius: 1.2em;
+  text-align: center;
+  color: #fff;
+  background-size: cover;
 }
 
 .smallEmail {

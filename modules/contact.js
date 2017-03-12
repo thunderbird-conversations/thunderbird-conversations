@@ -70,6 +70,26 @@ const defaultPhotoURI = "chrome://messenger/skin/addressbook/icons/contact-gener
 let Log = setupLogging("Conversations.Contact");
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
+/**
+ * If `name` is an email address, get the part before the @.
+ * Then, capitalize the first letter of the first and last word (or the first
+ * two letters of the first word if only one exists).
+ */
+function getInitials(name) {
+  name = name.trim().split('@')[0];
+  let words = name.split(/[ .\-_]/).filter(function(word) {
+    return word;
+  });
+  let initials = "??";
+  let n = words.length;
+  if (n == 1) {
+    initials = words[0].substr(0, 2);
+  } else if (n > 1) {
+    initials = words[0][0] + words[n - 1][0];
+  }
+  return initials.toUpperCase();
+}
+
 function ContactManager() {
   this._cache = {};
   this._colorCache = {};
@@ -112,27 +132,6 @@ ContactManager.prototype = {
       return contact;
     }
   },
-
-  freshColor: function _ContactManager_freshColor(aIsMe) {
-    if (aIsMe) {
-      return "#ed6666";
-    } else {
-      let predefinedColors = ["#ed8866", "#ccc15e", "#9ec269",
-        "#69c2ac", "#66b7ed", "#668ced", "#8866ed", "#cb66ed", "#ed66d9"];
-      if (this._count < predefinedColors.length) {
-        return predefinedColors[this._count++];
-      } else {
-        let r, g, b;
-        // Avoid colors that are too light or too dark.
-        do {
-          r = Math.random();
-          g = Math.random();
-          b = Math.random();
-        } while (Math.sqrt(r*r + b*b + g*g) > .8 || Math.sqrt(r*r + b*b + g*g) < .2)
-        return "rgb("+parseInt(r*255)+","+parseInt(g*255)+","+parseInt(b*255)+")";
-      }
-    }
-  },
 }
 
 let ContactMixIn = {
@@ -151,16 +150,18 @@ let ContactMixIn = {
     let data = {
       showMonospace: aPosition == Contacts.kFrom,
       name: sanitize(name),
+      initials: getInitials(sanitize(name)),
       displayEmail: sanitize(skipEmail ? "" : displayEmail),
       tooltipName: sanitize((tooltipName != aEmail) ? tooltipName : ""),
       email: sanitize(aEmail),
       avatar: sanitize(this.avatar),
+      avatarIsDefault: this.avatar.substr(0, 6) === 'chrome',
       profiles: this._profiles,
       extra: extra,
       // Parameter aUseColor is optional, and undefined means true
       colorStyle: ((aUseColor === false)
         ? ""
-        : ("color :" + this.color)),
+        : ("background-color :" + this.color)),
       writeBr: aIsDetail,
       star: aIsDetail && hasCard,
     };
@@ -318,9 +319,28 @@ let ContactMixIn = {
   },
 };
 
+function freshColor(email) {
+  let hash = 0;
+  for (let i = 0; i < email.length; i++) {
+    let chr = email.charCodeAt(i);
+    hash = ((hash << 5) - hash) + chr;
+    hash &= 0xffff;
+  }
+  let hue = Math.floor(360 * hash / 0xffff);
+
+  // try to provide a consistent lightness across hues
+  let lightnessStops = [48, 25, 28, 27, 62, 42];
+  let j = Math.floor(hue / 60);
+  let l1 = lightnessStops[j];
+  let l2 = lightnessStops[(j + 1) % 6];
+  let lightness = Math.floor((hue / 60 - j) * (l2 - l1) + l1);
+
+  return "hsl(" + hue + ", 70%, " + Math.floor(lightness) + "%)";
+};
+
 function ContactFromAB(manager, name, email, /* unused */ position, color) {
   this.emails = [];
-  this.color = color || manager.freshColor(getIdentityForEmail(email));
+  this.color = color || freshColor(email);
 
   this._manager = manager;
   this._name = name; // Initially, the displayed name. Might be enhanced later.
