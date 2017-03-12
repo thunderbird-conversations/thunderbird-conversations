@@ -477,18 +477,23 @@ a img {
 .tags li {
   display: inline-block;
   font-size: 1.0rem;
-  line-height: 1.6;
-  padding: 0 .8em;
+  line-height: 1.8;
+  padding: 0 .9em;
   margin-right: .4rem;
-  border-radius: .8em;
+  border-radius: .9em;
   color: #fff;
 }
 
 .tag-x {
-  border-left: 1px solid ThreeDShadow;
-  margin-left: 1ex;
+  display: inline-block;
   cursor: pointer;
-  z-index: 3;
+  text-align: center;
+  font-weight: bold;
+  width: 1.8em;
+  margin-right: -0.9em;
+  border-radius: .9em;
+  margin-left: .5em;
+  background-color: rgba(255,255,255,0.4);
 }
 
 .messageHeader .tag-x {
