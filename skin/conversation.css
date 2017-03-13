@@ -96,6 +96,7 @@ a img {
   fill: currentColor;
   height: 1.5em;
   vertical-align: -.4em;
+  pointer-events: none;
 }
 .icon.active {
   fill: #3079e0;
