@@ -275,7 +275,7 @@ a img {
 .dropDown .tooltip {
   min-width: 15.2em;
   left: auto;
-  right: 1.5em;
+  right: .5em;
   line-height: 1.8;
 }
 
