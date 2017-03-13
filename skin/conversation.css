@@ -101,6 +101,15 @@ a img {
   fill: #3079e0;
 }
 
+.icon-link {
+  display: inline-block;
+  color: #666;
+}
+.icon-link:focus,
+.icon-link:hover {
+  color: -moz-CellHighlight;
+}
+
 .link:hover,
 .link:focus {
   text-decoration: underline;
@@ -616,10 +625,6 @@ a img {
   list-style-type: none;
 }
 
-.attachments .icon {
-  color: #666;
-}
-
 .attachmentThumb {
   width: 130px;
   padding: 4px;
@@ -710,7 +715,6 @@ a img {
   cursor: pointer;
 }
 
-.link-icon:hover,
 .footerActions button:hover,
 .footerActions button:focus {
   color: -moz-CellHighlight;

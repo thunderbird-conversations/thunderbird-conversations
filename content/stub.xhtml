@@ -837,15 +837,15 @@
             <span title="{{fullDate}}">{{date}}</span>
           </span>
           <span class="details hide-with-details">
-            <a href="javascript:" title="{{str "details"}}">
-              <svg class="icon link-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <a href="javascript:" class="icon-link" title="{{str "details"}}">
+              <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                 <use xlink:href="chrome://conversations/skin/material-icons.svg#info_outline"></use>
               </svg>
             </a>
           </span>
           <span class="hide-details show-with-details">
-            <a href="javascript:" title="{{str "hideDetails"}}">
-              <svg class="icon link-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <a href="javascript:" class="icon-link" title="{{str "hideDetails"}}">
+              <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                 <use xlink:href="chrome://conversations/skin/material-icons.svg#info"></use>
               </svg>
             </a>
@@ -863,8 +863,8 @@
             -->
           </span>
           <span class="dropDown">
-            <a href="javascript:" onclick="displayMenu(event);" class="top-right-more" title="{{str 'more'}}">
-            <svg class="icon link-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+            <a href="javascript:" onclick="displayMenu(event);" class="icon-link top-right-more" title="{{str 'more'}}">
+            <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
               <use xlink:href="chrome://conversations/skin/material-icons.svg#more_vert"></use>
               </svg>
             </a>
@@ -1219,14 +1219,14 @@
       <ul class="attachments">
         <div class="attachHeader">
           {{attachmentsPlural}}
-          <a href="javascript:" class="download-all" title="{{str 'downloadAll2'}}">
-            <svg class="icon link-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+          <a href="javascript:" class="icon-link download-all" title="{{str 'downloadAll2'}}">
+            <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
               <use xlink:href="chrome://conversations/skin/material-icons.svg#file_download"></use>
             </svg>
           </a>
           {{#if gallery}}
-          <a href="javascript:" onclick="galleryView('{{uri}}')" class="view-all" title="{{str 'galleryView'}}">
-            <svg class="icon link-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+          <a href="javascript:" onclick="galleryView('{{uri}}')" class="icon-link view-all" title="{{str 'galleryView'}}">
+            <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
               <use xlink:href="chrome://conversations/skin/material-icons.svg#photo_library"></use>
             </svg>
             </a>
@@ -1245,13 +1245,13 @@
               {{#if canPreview}}
               <a href="javascript:" class="link preview-attachment">{{str "preview"}}</a>
               {{/if}}
-              <a href="javascript:" class="download-attachment" title="{{str 'download2'}}">
-                <svg class="icon link-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <a href="javascript:" class="icon-link download-attachment" title="{{str 'download2'}}">
+                <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                   <use xlink:href="chrome://conversations/skin/material-icons.svg#forward"></use>
                 </svg>
               </a>
-              <a href="javascript:" class="open-attachment" title="{{str 'open'}}">
-                <svg class="icon link-icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <a href="javascript:" class="icon-link open-attachment" title="{{str 'open'}}">
+                <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
                   <use xlink:href="chrome://conversations/skin/material-icons.svg#search"></use>
                 </svg>
               </a>
