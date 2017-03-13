@@ -635,9 +635,9 @@ a img {
   background-color: #fff;
   background-image: linear-gradient(to bottom,#fff 0%,#f2f2f2 100%);
   margin: 0 20px 0 0;
-  display: inline-block;
-  float: left;
-  text-align: center;
+  display: flex;
+  align-content: center;
+  justify-content: center;
   line-height: 0; /* Needed, otherwise there's an extra padding at the bottom... */
 }
 
