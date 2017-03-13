@@ -436,6 +436,13 @@ a img {
 .moreExpander {
   float: right;
 }
+.moreExpander.is-open .moreExpander-open,
+.moreExpander-close {
+  display: none;
+}
+.moreExpander.is-open .moreExpander-close {
+  display: initial;
+}
 
 .message:not(.with-details) .show-with-details {
   display: none;

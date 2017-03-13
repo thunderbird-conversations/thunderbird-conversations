@@ -176,10 +176,10 @@ let ContactMixIn = {
     aDomNode.parentNode.getElementsByClassName("moreExpander")[0].addEventListener("click", function (event) {
       if (aDomNode.parentNode.getElementsByClassName("hiddenFooter")[0].style.display == "none") {
         aDomNode.parentNode.getElementsByClassName("hiddenFooter")[0].style.display = "block";
-        event.originalTarget.firstChild.textContent = "-";
+        event.originalTarget.classList.add("is-open");
       } else {
         aDomNode.parentNode.getElementsByClassName("hiddenFooter")[0].style.display = "none";
-        event.originalTarget.firstChild.textContent = "+";
+        event.originalTarget.classList.remove("is-open");
       }
       event.stopPropagation();
     }, false);
