@@ -277,6 +277,12 @@ a img {
 .options .hide-details {
   color: -moz-CellHighlight;
 }
+
+.options .icon-link {
+  font-size: 130%;
+  line-height: 1;
+}
+
 .dropDown {
   position: relative;
 }
