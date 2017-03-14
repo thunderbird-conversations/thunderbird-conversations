@@ -13,4 +13,11 @@ for icon in "archive" "attachment" "code" "content_copy" "delete" "edit" "vpn_ke
         | grep -v fill | $HEAD -n -1 \
         | sed "s/<path/<path id=\"${icon}\"/"
 done
+echo '    <!-- The Font Awesome font is licensed under the SIL OFL 1.1: http://scripts.sil.org/OFL -->'
+for icon in "certificate"; do
+    wget -q "https://raw.githubusercontent.com/encharm/Font-Awesome-SVG-PNG/master/black/svg/${icon}.svg" -O - \
+        | sed 's/<\/\?svg[^>]*>//g'\
+        | sed "s/<path/    <path id=\"${icon}\"/"
+    echo ''
+done
 echo "</svg>"
