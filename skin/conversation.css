@@ -197,9 +197,14 @@ a img {
 }
 
 .messageHeader {
+  margin: 0 0 5px;
   padding: 0 10px;
   line-height: 3;
   cursor: pointer
+}
+
+.collapsed .messageHeader {
+  margin: 0;
 }
 
 .messageHeader img {
