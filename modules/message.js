@@ -816,19 +816,22 @@ Message.prototype = {
         self.compose(Ci.nsIMsgCompType.ReplyToList, event);
         event.stopPropagation();
       });
-      mainActionLink.textContent = replyList.title;
+      mainActionLink.innerHTML = replyList.innerHTML;
+      mainActionLink.title = replyList.title;
     } else if (this.isReplyAllEnabled) {
       this.register(".replyMainActionLink", function (event) {
         self.compose(Ci.nsIMsgCompType.ReplyAll, event);
         event.stopPropagation();
       });
-      mainActionLink.textContent = replyAll.title;
+      mainActionLink.innerHTML = replyAll.innerHTML;
+      mainActionLink.title = replyAll.title;
     } else {
       this.register(".replyMainActionLink", function (event) {
         self.compose(Ci.nsIMsgCompType.ReplyToSender, event);
         event.stopPropagation();
       });
-      mainActionLink.textContent = reply.title;
+      mainActionLink.innerHTML = reply.innerHTML;
+      mainActionLink.title = reply.title;
     }
 
     this.register(".edit-draft", event => self.compose(Ci.nsIMsgCompType.Draft, event));
