@@ -137,7 +137,8 @@ a img {
 }
 
 .actions button {
-  width: 30px;
+  min-width: 30px;
+  text-align: center;
   height: 24px;
   float: right;
   margin: 0 0 0 3px;
