@@ -429,6 +429,9 @@ MonkeyPatch.prototype = {
       if (!Prefs.enabled)
         return oldTreeOnMouseDown(event);
 
+      if (event.target.parentNode.id !== 'threadTree')
+        return oldTreeOnMouseDown(event);
+
       // Middle-click
       if (event.button == 1) {
         let tabmail = window.document.getElementById("tabmail");
