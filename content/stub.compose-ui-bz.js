@@ -84,17 +84,17 @@ function bzSetup() {
       let cookie = getBugzillaCookie(url);
       let bzUrl = gBugzillaAPIs[url];
       if (cookie) {
-        document.querySelector(".quickReply li.reply .icon span")
+        document.querySelector(".quickReply li.reply .quickReplyIcon span")
           .textContent = strings.get("bzPlaceholder");
         return [url, bzUrl, cookie];
       } else {
-        document.querySelector(".quickReply li.reply .icon span")
+        document.querySelector(".quickReply li.reply .quickReplyIcon span")
           .textContent = strings.get("bzNoCookieMsg");
         addBzLink(url);
         return null;
       }
     } else {
-      document.querySelector(".quickReply li.reply .icon span")
+      document.querySelector(".quickReply li.reply .quickReplyIcon span")
         .textContent = strings.get("bzNoApiUrlMsg");
       return null;
     }
