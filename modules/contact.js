@@ -70,6 +70,36 @@ const defaultPhotoURI = "chrome://messenger/skin/addressbook/icons/contact-gener
 let Log = setupLogging("Conversations.Contact");
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
+// Taken from
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/charAt#Fixing_charAt()_to_support_non-Basic-Multilingual-Plane_(BMP)_characters
+function fixedCharAt(str, idx) {
+  var ret = '';
+  str += '';
+  var end = str.length;
+
+  var surrogatePairs = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g;
+  while ((surrogatePairs.exec(str)) != null) {
+    var li = surrogatePairs.lastIndex;
+    if (li - 2 < idx) {
+      idx++;
+    } else {
+      break;
+    }
+  }
+
+  if (idx >= end || idx < 0) {
+    return '';
+  }
+
+  ret += str.charAt(idx);
+
+  if (/[\uD800-\uDBFF]/.test(ret) && /[\uDC00-\uDFFF]/.test(str.charAt(idx + 1))) {
+    // Go one further, since one of the "characters" is part of a surrogate pair
+    ret += str.charAt(idx + 1);
+  }
+  return ret;
+}
+
 /**
  * If `name` is an email address, get the part before the @.
  * Then, capitalize the first letter of the first and last word (or the first
@@ -85,7 +115,7 @@ function getInitials(name) {
   if (n == 1) {
     initials = words[0].substr(0, 2);
   } else if (n > 1) {
-    initials = words[0][0] + words[n - 1][0];
+    initials = fixedCharAt(words[0], 0) + fixedCharAt(words[n - 1], 0);
   }
   return initials.toUpperCase();
 }
