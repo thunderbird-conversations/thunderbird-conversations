@@ -666,7 +666,7 @@ a img {
 }
 
 /* For moz-icons */
-.attachmentThumb img.icon {
+.attachmentThumb img.mime-icon {
   height: auto;
   width: 48px;
 }

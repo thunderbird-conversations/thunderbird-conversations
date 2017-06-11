@@ -614,7 +614,7 @@ Message.prototype = {
       let url = att.url.replace(self.RE_MSGKEY, "number="+key);
       let [thumb, imgClass] = isImage
         ? [url, "resize-me"]
-        : ["chrome://conversations/skin/icons/"+iconForMimeType(att.contentType), "icon"]
+        : ["chrome://conversations/skin/icons/"+iconForMimeType(att.contentType), "mime-icon"]
       ;
 
       // This is bug 630011, remove when fixed
