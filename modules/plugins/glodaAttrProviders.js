@@ -89,7 +89,7 @@ let AlternativeSender = {
     });
   },
 
-  process: function _AlternativeSender_process (aGlodaMessage, aRawReps, aIsNew, aCallbackHandle) {
+  process: function* _AlternativeSender_process (aGlodaMessage, aRawReps, aIsNew, aCallbackHandle) {
     try {
       let alternativeSender = PluginHelpers.alternativeSender(aRawReps);
       if (alternativeSender)
@@ -122,7 +122,7 @@ let ContentType = {
     });
   },
 
-  process: function _ContentType_process (aGlodaMessage, aRawReps, aIsNew, aCallbackHandle) {
+  process: function* _ContentType_process (aGlodaMessage, aRawReps, aIsNew, aCallbackHandle) {
     try {
       if (aRawReps.mime)
         aGlodaMessage.contentType = aRawReps.mime.headers["content-type"];
@@ -154,7 +154,7 @@ let Bugzilla = {
     });
   },
 
-  process: function _Bugzilla_process (aGlodaMessage, aRawReps, aIsNew, aCallbackHandle) {
+  process: function* _Bugzilla_process (aGlodaMessage, aRawReps, aIsNew, aCallbackHandle) {
     try {
       let bugzilla = PluginHelpers.bugzilla(aRawReps);
       if (bugzilla)
@@ -190,7 +190,7 @@ let ConversationSubject = {
     });
   },
 
-  process: function _ConversationSubject_process (aGlodaMessage, aRawReps, aIsNew, aCallbackHandle) {
+  process: function* _ConversationSubject_process (aGlodaMessage, aRawReps, aIsNew, aCallbackHandle) {
     let aMimeMsg = aRawReps.mime;
     yield Gloda.kWorkDone;
   },
