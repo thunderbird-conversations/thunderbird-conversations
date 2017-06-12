@@ -1,0 +1,99 @@
+<!ENTITY assistant.title "Suorita ensin asennusavustaja">
+<!ENTITY assistant.intro "Hei, tämä on <strong>Thunderbird Conversations</strong>!">
+<!ENTITY assistant.p1 "Tämä asennusvelho helpottaa elämääsi ja muokkaa Thunderbirdin asetukset mieleiseksesi, optimaalisen käyttäjäkokemuksen saavuttamiseksi. Emme halua että tunnet itsesi tyytymättömäksi.">
+<!ENTITY assistant.p2 "Kaikki tekemämme muutokset ovat peruttavissa, joten älä huolestu. Jos et pidä Thunderbird Conversationista, niin palautamme kaikki asetukset välittömästi ennalleen laajennuksen poiston jälkeen.">
+<!ENTITY assistant.p3 "Tämä voi kestää hetken aikaa. Voit odottaa tämän ikkunan sulkeutumista, tai sulkea ikkunan itse ja tarkastaa etenemisen valikosta Työkalut &gt; Toimintojen hallinta.">
+<!ENTITY assistant.working "Työskentelen...">
+<!ENTITY assistant.review "Katsele muutokset">
+<!ENTITY assistant.apply "Hyväksy muutokset">
+<!ENTITY assistant.settings "Jotkin asetukset ovat pakollisia Thunderbird Conversationin oikealle toiminnalle. Jotkin ovat vahvasti suositeltuja, ja jotkin valinnaisia.">
+<!ENTITY assistant.actionEnableGloda "Varmista, että yleinen haku ja indekstointi ovat otettu käyttöön.">
+<!ENTITY assistant.actionDontExpand "Älä laajenna lukemattomia viestejä.">
+<!ENTITY assistant.actionAttachmentsInline "Älä näytä liitteitä avoimina.">
+<!ENTITY assistant.actionOfflineDownload "Saapuneet ja lähetetyt synkronoidaan yhteydetöntä tilaa varten.">
+<!ENTITY assistant.actionUnifiedInboxSearchesSent "Yhdistetty postilaatikko etsii myös lähetetyistä. (<strong>vahvasti</strong> suositeltu).">
+<!ENTITY assistant.actionSetupView "Vaihda yleiseen saapuneet kansioon, ketjuta viestit, järjestele päivän mukaan, ota käyttöön lukemattomien viestien lukumäärän näyttö ja uusi &quot;väli&quot; palsta(<strong>vahvasti</strong> suositeltu).">
+<!ENTITY assistant.actionSetupViewDefaults "Käytä näitä muokattuja lajittelu asetuksia kaikkiin kansioihin.">
+<!ENTITY assistant.actionEnsureMessagePaneVisible "Varmista viestipaneelin näkyvyys.">
+<!ENTITY assistant.settings2 "Haluaisitko ottaa käyttöön muita valintoja myöhemmin? Voit käynnistää tämän asennusvelhon lisäosien asetuksista.">
+<!ENTITY feedback.message "Olet käyttänyt Thunderbird Conversationia nyt jonkin aikaa, haluaisitko kertoa meille mitä ajattelet lisäosasta? 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+Kuulisimme mielellämme kaikki sinun mahdollisett kommentit!">
+<!ENTITY feedback.no "Ei kiitos">
+<!ENTITY feedback.yes "Jätä palautetta">
+<!ENTITY feedback.pageTitle "Anna palautetta">
+<!ENTITY stub.loading "Ladataan...">
+<!ENTITY stub.trash.tooltip "Poista tämä keskustelu">
+<!ENTITY stub.archive.tooltip "Arkistoi tämä keskustelu">
+<!ENTITY stub.forward.tooltip "Välitä tämä keskustelu">
+<!ENTITY stub.print.tooltip "Tulosta tämä keskustelu">
+<!ENTITY stub.junk.tooltip "Poista tämä viesti">
+<!ENTITY stub.expand.tooltip "Laajenna/kutista kaikki viestit">
+<!ENTITY stub.read.tooltip "Vaihda luetuksi/lukemattomaksi kaikki viestit">
+<!ENTITY stub.detach.tooltip2 "Näytä tämä keskustelu uudessa välilehdessä">
+<!ENTITY stub.menu.tooltip "Keskustelun toiminnot">
+<!ENTITY stub.context.open "Avaa liite">
+<!ENTITY stub.context.save "Tallenna liite">
+<!ENTITY stub.context.detach "Irrota liite">
+<!ENTITY stub.context.delete "Poista liite">
