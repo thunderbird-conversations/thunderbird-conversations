@@ -1,0 +1,36 @@
+<!ENTITY assistant.title "Eerste keer assistent">
+<!ENTITY assistant.intro "Hallo, dit is <strong>Thunderbird Conversations</strong>!">
+<!ENTITY assistant.p1 "Om uw leven gemakkelijker te maken, zal deze assistent uw Thunderbird tweaken zodat u een optimale ervaring geniet. We willen niet dat u zich ontevreden voelt!">
+<!ENTITY assistant.p2 "De tweaks die wij maken zijn alle terug te draaien, dus maak u geen zorgen. Als u niet geniet van Thunderbird Conversations, dan zullen we elke instelling die wij maken ongedaan maken, zodra u deze add-on verwijdert.">
+<!ENTITY assistant.p3 "Dit kan even duren. U kunt wachten totdat het scherm sluit, of het scherm zelf sluiten en controleer het proces vanuit Taakbeheer Manager.">
+<!ENTITY assistant.working "Bezig...">
+<!ENTITY assistant.review "Wijzigingen herzien">
+<!ENTITY assistant.apply "Wijzigingen toepassen">
+<!ENTITY assistant.settings "Sommige instellingen zijn verplicht voor Thunderbird Conversations om goed te werken. Sommige zijn aanbevolen en sommige zijn optioneel.">
+<!ENTITY assistant.actionEnableGloda "Controleer dat Global Search en Indexer ingeschakeld zijn.">
+<!ENTITY assistant.actionDontExpand "In de berichtenlijst, geen onderwerpen uitvouwen met ongelezen berichten.">
+<!ENTITY assistant.actionAttachmentsInline "Toon bijlagen niet inline (<strong>zeer</strong> aanbevolen).">
+<!ENTITY assistant.actionOfflineDownload "Postvak IN en Verzonden items gesynchroniseerd voor offline opslag (<strong>zeer</strong> aanbevolen).">
+<!ENTITY assistant.actionUnifiedInboxSearchesSent "Dezelfde Postvak IN als zoeken in Verzonden items mappen (<strong>zeer</strong> aanbevolen).">
+<!ENTITY assistant.actionSetupView "Wijzig naar Globale Postvak IN, onderwerpen weergave maken, sorteer op datum, schakel aantal ongelezen kolom en &quot;tussen&quot; kolom in (<strong>zeer</strong> aanbevolen).">
+<!ENTITY assistant.actionSetupViewDefaults "Gebruik deze sorteerinstelling voor alle mappen.">
+<!ENTITY assistant.actionEnsureMessagePaneVisible "Controleer dat het berichtenvenster zichtbaar is.">
+<!ENTITY assistant.settings2 "Indien u meer opties wilt inschakelen, kunt u deze wizard via de add-on-instellingen, onder het &quot;geavanceerd&quot; deel, opnieuw starten.">
+<!ENTITY feedback.message "U gebruikt Thunderbird Conversations nu enige tijd, wilt u ons vertellen wat u er van vindt? We horen graag alle commentaren welke u heeft!">
+<!ENTITY feedback.no "Nee, bedankt">
+<!ENTITY feedback.yes "Feedback geven">
+<!ENTITY feedback.pageTitle "Feedback geven">
+<!ENTITY stub.loading "Laden...">
+<!ENTITY stub.trash.tooltip "Deze conversatie verwijderen">
+<!ENTITY stub.archive.tooltip "Deze conversatie archiveren">
+<!ENTITY stub.forward.tooltip "Conversatie doorsturen">
+<!ENTITY stub.print.tooltip "Conversatie afdrukken">
+<!ENTITY stub.junk.tooltip "Dit bericht is junk">
+<!ENTITY stub.expand.tooltip "Alle berichten uitklappen/inklappen">
+<!ENTITY stub.read.tooltip "Alle gelezen/ongelezen berichten wisselen">
+<!ENTITY stub.detach.tooltip2 "Deze conversatie in een nieuw scherm tonen">
+<!ENTITY stub.menu.tooltip "Conversatie-acties">
+<!ENTITY stub.context.open "Bijlage openen">
+<!ENTITY stub.context.save "Bijlage opslaan">
+<!ENTITY stub.context.detach "Bijlage ontkoppelen">
+<!ENTITY stub.context.delete "Bijlage verwijderen">

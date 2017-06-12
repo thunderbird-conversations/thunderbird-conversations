@@ -1,0 +1,35 @@
+<!ENTITY option.expand_who "Varsayılan olarak, genişlet:">
+<!ENTITY option.expand_auto2 "Otomatik">
+<!ENTITY option.expand_auto2.tooltip "Konu daraltılmış ise, tüm okunmamış iletiler veya son okunmuş iletiyi genişlet. Genişletilmiş ise,sadece ileti listesinden seçilmiş mesajı genişlet.">
+<!ENTITY option.expand_none "İleti yok">
+<!ENTITY option.expand_all "Tüm iletiler">
+<!ENTITY title.quoting2 "Alıntılanan metin">
+<!ENTITY desc.quoting "Satır sayısına göre daha yüksek alıntılar daraltılacak.">
+<!ENTITY title.hide_sigs "İmzaları Gizle">
+<!ENTITY desc.hide_sigs "İmzalar varsayılan olarak daraltılmış olsun.">
+<!ENTITY title.assistant "Kurulum Yardımcısı">
+<!ENTITY option.assistant "Kurulum Yardımcısı'nı başlat">
+<!ENTITY title.friendly_date "Önemli tarihler">
+<!ENTITY option.no_friendly_date2 "Üst sağ köşede &quot;dün&quot; gibi ifadeler yerine, mesaj listesinde olduğu gibi normal tarih biçimi kullan.">
+<!ENTITY title.customize_keys "Özelleştirilmiş tuşlar">
+<!ENTITY desc.customize_keys "Bu eklentinin kısayol tuşlarını özelleştir">
+<!ENTITY label.expand_keys "Tuş ayarlarını genişlet">
+<!ENTITY label.collapse_keys "Tuş ayarlarını daralt">
+<!ENTITY title.monospaced_senders "Eş aralıklı görüntüleme">
+<!ENTITY option.monospaced_senders2 "Bu adresler ve mail listelerinden gelen iletiler eş aralıklı yazı tipleriyle görüntülenmeli. (ayırmak için virgül kullanarak)">
+<!ENTITY title.tweak_chrome "chrome yazı tiplerini ayarla">
+<!ENTITY option.tweak_bodies "İleti gövdesindeki yazı tipini harici yazı tipiyle uyumlu hale getirmek için ayarla (yeniden başlatma gerektirir).">
+<!ENTITY title.tweak_bodies "Gövde yazı tıiplerini ayarla">
+<!ENTITY option.tweak_chrome "Conversation chrome için yazı tipi boyutunu küçültün (yeniden başlatma gerektirir).">
+<!ENTITY title.add_embeds "Embed ekle">
+<!ENTITY option.add_embeds "E-postalardaki çeşitli hizmetlerin (örneğin YouTube) bağlantılarını algıla ve satırda göster.">
+<!ENTITY title.debugging "Hata ayıklaması yapılıyor">
+<!ENTITY desc.debugging "Sistem ve hata konsolu için hata ayıklama çıktısını etkinleştirin. Bu bir sürü ileti oluşturur.">
+<!ENTITY title.operate_on_conversations "Araç çubuğu düğmeleri">
+<!ENTITY option.operate_on_conversations "Araç çubuğu düğmeleri yalnızca seçilen iletiyi değil, bütün görüşmeyi arşivler ve siler.">
+<!ENTITY title.extra_attachments "Eklentileri severim">
+<!ENTITY desc.extra_attachments2 "Bazı durumlarda, Thunderbird bazı ekleri tanımakta başarısız olur. Bu seçenek, Thunderbird programının hata verdiği durumlarda bize geçici çözüm sağlar ve mümkün olduğunca çok ek çeşidini görüntülemeye çalışır. Show All Body Parts eklentisi ile birlikte kullanın.">
+<!ENTITY title.send_in_background "Arka plana gönder">
+<!ENTITY desc.send_in_background "Bu özellik iletileri gönderirken sıraya koyar, dolayısıyla görüşmeler arasında geçiş yaparken gönderme sürecinin tamamlanmasını beklemenize gerek kalmaz. Uyarı: bu özellik henüz tamamlanmadı (wiki.mozilla.org sitesindeki SendInBackground kısmına bakın) ve aynı zamanda düzenli kompozisyon süreci için geçerlidir. Yeniden başlatma gerektirir.">
+<!ENTITY title.compose_in_tab "Gizli kompozisyon penceresi">
+<!ENTITY desc.compose_in_tab "Ctrl-Shift-N yeni bir sekmede gizli, desteklenmeyen kompozisyon penceresini açar">
