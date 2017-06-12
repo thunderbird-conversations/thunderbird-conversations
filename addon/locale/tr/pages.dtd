@@ -1,0 +1,37 @@
+<!ENTITY assistant.title "İlk çalıştırma yardımcısı">
+<!ENTITY assistant.intro "Merhaba, <strong>Thunderbird Conversations</strong> eklentisine hoş geldiniz!">
+<!ENTITY assistant.p1 "Bu yardımcı, thunderbird ayalarını yaparken iyi bir deneyim yaşamanız için size yardımcı olacak. Memnuniyetsizlik duymanızı istemeyiz!">
+<!ENTITY assistant.p2 "Yapılan ayarların hepsi eski haline geri döndürülebilir, bu yüzden endişelenmeyin: Herhangi bir seçeneği tersine çevirdiğimizde, Thunderbird Conversations eklentisinden memnun kalmazsak onu tıpkı kaldırıp yeniden yüklenmiş hale çevirebiliriz.">
+<!ENTITY assistant.p3 "Bu biraz zaman alabilir. Bu pencerenin kapanmasını bekleyebilir veya kendiniz kapatıp ilerleyişi Etkinlik Yöneticisinden takip edebilirsiniz.">
+<!ENTITY assistant.working "Çalışıyor...">
+<!ENTITY assistant.review "Değişikleri gözden geçir">
+<!ENTITY assistant.apply "Değişikleri onayla">
+<!ENTITY assistant.settings "Bazı ayarların doldurulması Thunderbird Conversations eklentisinin düzgün çalışması için zorunludur. Bazı ayarlar şiddetle tavsiye edilirken, bazıları da isteğe bağlıdır.">
+<!ENTITY assistant.actionEnableGloda "Genel Arama ve dizin oluşturucunun etkin olduğundan emin ol.">
+<!ENTITY assistant.actionDontExpand "Mesaj listesinde, okunmamış mesajları içeren konuları genişletme.">
+<!ENTITY assistant.actionAttachmentsInline "Satır içinde ekleri gösterme (<strong>şiddetle</strong> önerilir).">
+<!ENTITY assistant.actionOfflineDownload "Gelen Kutusu ve Gönderilenleri çevrimdışı depolama için eşitle
+(<strong>şiddetle</strong> önerilir).">
+<!ENTITY assistant.actionUnifiedInboxSearchesSent "Birleşik Gelen Kutusu aynı zamanda Gönderilen klasörlerini de arasın (<strong>şiddetle</strong> önerilir).">
+<!ENTITY assistant.actionSetupView "Genel gelen kutusuna geçiş yap, parçalı görünüme geç, tarihe göre sırala, okunmadı ve arasında sütunlarını etkinleştir (<strong>şiddetle</strong> önerilir).">
+<!ENTITY assistant.actionSetupViewDefaults "Tüm klasörler için bu özel sıralama ayarları kullan">
+<!ENTITY assistant.actionEnsureMessagePaneVisible "İleti bölmesinin görünür olduğundan emin ol.">
+<!ENTITY assistant.settings2 "Daha fazla seçeneği etkinleştirmek isteseniz, &quot;gelişmiş&quot; sekmesi altındaki eklenti seçeneklerine girebilirsiniz.">
+<!ENTITY feedback.message "Thunderbird Conversations eklentisini uzun bir süredir kullanıyorsunuz. Eklenti hakkında söylemek istediğiniz bir şey var mı? Herhangi bir yorumunuz varsa duymaktan mutluluk duyarız!">
+<!ENTITY feedback.no "Hayır, teşekkürler">
+<!ENTITY feedback.yes "Geri bildirimden ayrıl">
+<!ENTITY feedback.pageTitle "Geri bildirim ver">
+<!ENTITY stub.loading "Yükleniyor...">
+<!ENTITY stub.trash.tooltip "Bu görüşmeyi sil">
+<!ENTITY stub.archive.tooltip "Bu görüşmeyi arşivle">
+<!ENTITY stub.forward.tooltip "Bu görüşmeyi llet">
+<!ENTITY stub.print.tooltip "Bu görüşmeyi yazdır">
+<!ENTITY stub.junk.tooltip "Bu ileti gereksiz">
+<!ENTITY stub.expand.tooltip "Tüm iletileri genişlet/daralt">
+<!ENTITY stub.read.tooltip "Mesajları okunmuş/okunmamış şeklinde değiştir">
+<!ENTITY stub.detach.tooltip2 "Bu görüşmeyi yeni sekmede göster">
+<!ENTITY stub.menu.tooltip "Görüşme eylemleri">
+<!ENTITY stub.context.open "Eki aç">
+<!ENTITY stub.context.save "Eki kaydet">
+<!ENTITY stub.context.detach "Eki ayır">
+<!ENTITY stub.context.delete "Eki sil">
