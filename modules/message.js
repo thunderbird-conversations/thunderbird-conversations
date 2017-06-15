@@ -547,7 +547,10 @@ Message.prototype = {
         let url = this.bugzillaInfos["url"];
         let uri = Services.io.newURI(url, null, null);
         data.bugzillaUrl = url;
-      } catch (e if e.result == Cr.NS_ERROR_MALFORMED_URI) {
+      } catch (e) {
+        if (e.result != Cr.NS_ERROR_MALFORMED_URI) {
+          throw e;
+        }
         // why not?
       }
     }

@@ -193,7 +193,11 @@ function convertForwardedToBlockquote(aDoc) {
   };
   try {
     walk(aDoc.body);
-  } catch ( { found } if found) { }
+  } catch ( { found }) {
+    if (!found) {
+      throw new Error();
+    }
+  }
 }
 
 /* If [b1] is a blockquote followed by [ns] whitespace nodes followed by [b2],

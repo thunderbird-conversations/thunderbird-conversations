@@ -80,7 +80,7 @@ MonkeyPatch.prototype = {
 
   undo: function _MonkeyPatch_undo(aReason) {
     let f;
-    while (f = this._undoFuncs.pop()) {
+    while ((f = this._undoFuncs.pop())) {
       try {
         f(aReason);
       } catch (e) {
@@ -251,7 +251,7 @@ MonkeyPatch.prototype = {
       // So our solution kinda works, but registering the thing at jsm load-time
       //  would work as well.
     }
-    this.pushUndo(function () window.gDBView.removeColumnHandler("betweenCol"));
+    this.pushUndo(() => window.gDBView.removeColumnHandler("betweenCol"));
   },
 
   registerFontPrefObserver: function _MonkeyPatch_registerFontPref (aHtmlpane) {

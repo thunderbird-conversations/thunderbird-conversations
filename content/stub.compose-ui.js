@@ -172,7 +172,7 @@ function newComposeSessionByDraftIf() {
     return;
   }
 
-  SimpleStorage.spin(function () {
+  SimpleStorage.spin(function* () {
     let r = yield ss.get(id);
     if (r) {
       gComposeSession = createComposeSession(x => x.draft(r));
@@ -289,7 +289,7 @@ function onDiscard(event) {
     gComposeSession = null;
     let id = Conversations.currentConversation.id;
     if (id)
-      SimpleStorage.spin(function () {
+      SimpleStorage.spin(function* () {
         let r = yield ss.remove(id);
         gDraftListener.notifyDraftChanged("removed");
         yield SimpleStorage.kWorkDone;
@@ -312,7 +312,7 @@ function onSave(k) {
 
   // Second codepath. Heh, got some work to do.
   Log.debug("Saving because there's a compose session");
-  SimpleStorage.spin(function () {
+  SimpleStorage.spin(function* () {
     let id = Conversations.currentConversation.id; // Gloda ID
     if (id) {
       yield ss.set(id, {
@@ -460,7 +460,7 @@ ComposeSession.prototype = {
    */
   cycleSender: function (dir) {
     let self = this;
-    let index = getIdentities().findIndex(function (ident) ident.identity == self.params.identity);
+    let index = getIdentities().findIndex((ident) => ident.identity == self.params.identity);
     index = (index + dir + getIdentities().length) % getIdentities().length;
     this.params.identity = getIdentities()[index].identity;
     this.senderNameElem.text(this.params.identity.email);
@@ -545,7 +545,7 @@ ComposeSession.prototype = {
       },
 
       draft: function ({ msgUri }) {
-        let last = function (a) a[a.length-1];
+        let last = (a) => a[a.length-1];
         let msgHdr = msgUriToMsgHdr(msgUri);
         self.params.msgHdr = msgHdr || last(Conversations.currentConversation.msgHdrs);
         self.params.subject = "Re: "+self.params.msgHdr.mime2DecodedSubject;
@@ -1259,7 +1259,7 @@ function createStateListener (aComposeSession, aMsgHdrs, aId) {
         // Remove the old stored draft, don't use onDiscard, because the compose
         //  params might have changed in the meanwhile.
         if (aId)
-          SimpleStorage.spin(function () {
+          SimpleStorage.spin(function* () {
             yield ss.remove(aId);
             yield SimpleStorage.kWorkDone;
           });
