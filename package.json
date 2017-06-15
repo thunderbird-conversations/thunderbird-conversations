@@ -1,0 +1,26 @@
+{
+  "name": "thunderbirdconversations",
+  "version": "0.0.1",
+  "description": "Thunderbird Conversations",
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:protz/thunderbird-conversations.git"
+  },
+  "bugs": {
+    "url": "https://github.com/protz/thunderbird-conversations/issues"
+  },
+  "engines": {
+    "thunderbird": ">=45.0a1"
+  },
+  "dependencies": {},
+  "devDependencies": {
+    "eslint": "3.18.0",
+    "eslint-plugin-mozilla": "0.3.2",
+    "npm-run-all": "4.0.2"
+  },
+  "scripts": {
+    "test": "npm-run-all test:*",
+    "test:lint": "eslint ."
+  },
+  "license": "MPL-1.1"
+}

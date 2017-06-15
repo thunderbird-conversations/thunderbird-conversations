@@ -132,7 +132,7 @@ function init({ chunks }) {
   // Strangely enough, I can't get my typed array to cross the chrome/content
   // boundary, so let's make the data cross the boundary as a chunk of
   // strings...
-  let length = chunks.reduce(function (acc, v) acc + v.length, 0);
+  let length = chunks.reduce((acc, v) => acc + v.length, 0);
   //Log.debug("chunk0", chunks[0]);
   let buffer = new ArrayBuffer(length);
   let array = new Uint8Array(buffer);
@@ -151,4 +151,3 @@ function init({ chunks }) {
   viewer = new Viewer();
   viewer.load(buffer);
 }
-

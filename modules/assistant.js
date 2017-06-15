@@ -70,7 +70,6 @@ function PrefCustomization({ name, type, value }) {
   this.type = type;
   this.name = name;
   this.desiredValue = value;
-  return
 }
 
 PrefCustomization.prototype = {
@@ -104,7 +103,7 @@ MixIn(PrefCustomization, SimpleCustomization.prototype);
 
 
 function MultipleCustomization(aParams) {
-  this.customizations = !!aParams ? aParams.map(p => new PrefCustomization(p)) : [];
+  this.customizations = aParams ? aParams.map(p => new PrefCustomization(p)) : [];
 }
 
 MultipleCustomization.prototype = {
@@ -332,8 +331,12 @@ let Customizations = {
         try {
           account.incomingServer.QueryInterface(Ci.nsIImapIncomingServer);
           isImap = true;
-        } catch (e if e.result == Cr.NS_NOINTERFACE) {
-          isImap = false;
+        } catch (e) {
+          if (e.result == Cr.NS_NOINTERFACE) {
+            isImap = false;
+          } else {
+            throw e;
+          }
         }
         if (!isImap)
           continue;
