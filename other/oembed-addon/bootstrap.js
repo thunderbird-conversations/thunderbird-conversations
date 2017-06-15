@@ -62,8 +62,9 @@ let hook = {
     let iframeDoc = iframe.contentDocument;
     let links = iframeDoc.getElementsByTagName("a");
     // Don't detect links in quotations.
-    [x.skip = true
-      for (x of iframeDoc.querySelectorAll("blockquote a"))];
+    for (x of iframe.querySelectorAll("blockquote a")) {
+      x.skip = true;
+    }
     let seen = {};
     // Examine all links in the message.
     for (let a of links) {
@@ -90,7 +91,7 @@ let hook = {
         Log.debug("Load event", req.responseXML, req.responseText);
         if (!req.responseXML)
           return;
-        let getAttr = function (attrName)
+        let getAttr = (attrName) =>
           req.responseXML.getElementsByTagName(attrName)[0].textContent;
         self.insertDesc(getAttr("title"), getAttr("author_name"), getAttr("url"), a.href, aDomNode);
       });

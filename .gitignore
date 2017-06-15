@@ -3,3 +3,4 @@ gconv.jar
 conversations.xpi
 .vimsession
 .DS_Store
+node_modules

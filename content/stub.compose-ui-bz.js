@@ -229,7 +229,7 @@ BzComposeSession.prototype = {
             // Remove the old stored draft, don't use onDiscard, because the
             // compose params might have changed in the meanwhile.
             if (id)
-              SimpleStorage.spin(function () {
+              SimpleStorage.spin(function* () {
                 yield ss.remove(id);
                 yield SimpleStorage.kWorkDone;
               });
