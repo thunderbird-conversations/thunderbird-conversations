@@ -19,6 +19,7 @@
     "npm-run-all": "4.0.2"
   },
   "scripts": {
+    "build": "./build.sh",
     "test": "npm-run-all test:*",
     "test:lint": "eslint ."
   },
