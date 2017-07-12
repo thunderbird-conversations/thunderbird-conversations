@@ -172,7 +172,7 @@ function newComposeSessionByDraftIf() {
     return;
   }
 
-  SimpleStorage.spin(function* () {
+  SimpleStorage.spin(function () {
     let r = yield ss.get(id);
     if (r) {
       gComposeSession = createComposeSession(x => x.draft(r));
@@ -289,7 +289,7 @@ function onDiscard(event) {
     gComposeSession = null;
     let id = Conversations.currentConversation.id;
     if (id)
-      SimpleStorage.spin(function* () {
+      SimpleStorage.spin(function () {
         let r = yield ss.remove(id);
         gDraftListener.notifyDraftChanged("removed");
         yield SimpleStorage.kWorkDone;
@@ -312,7 +312,7 @@ function onSave(k) {
 
   // Second codepath. Heh, got some work to do.
   Log.debug("Saving because there's a compose session");
-  SimpleStorage.spin(function* () {
+  SimpleStorage.spin(function () {
     let id = Conversations.currentConversation.id; // Gloda ID
     if (id) {
       yield ss.set(id, {
@@ -1259,7 +1259,7 @@ function createStateListener (aComposeSession, aMsgHdrs, aId) {
         // Remove the old stored draft, don't use onDiscard, because the compose
         //  params might have changed in the meanwhile.
         if (aId)
-          SimpleStorage.spin(function* () {
+          SimpleStorage.spin(function () {
             yield ss.remove(aId);
             yield SimpleStorage.kWorkDone;
           });
