@@ -180,7 +180,6 @@ function newComposeSessionByDraftIf() {
       revealCompositionFields();
       showQuickReply.call($(".quickReply li.reply"));
     }
-    yield SimpleStorage.kWorkDone;
   });
 }
 
@@ -292,7 +291,6 @@ function onDiscard(event) {
       SimpleStorage.spin(function () {
         let r = yield ss.remove(id);
         gDraftListener.notifyDraftChanged("removed");
-        yield SimpleStorage.kWorkDone;
       });
   }
 }
@@ -328,7 +326,6 @@ function onSave(k) {
     }
     if (k)
       k();
-    yield SimpleStorage.kWorkDone;
   });
 }
 
@@ -1261,7 +1258,6 @@ function createStateListener (aComposeSession, aMsgHdrs, aId) {
         if (aId)
           SimpleStorage.spin(function () {
             yield ss.remove(aId);
-            yield SimpleStorage.kWorkDone;
           });
         // Do stuff to the message we replied to.
         let msgHdr = aComposeSession.params.msgHdr;

@@ -231,7 +231,6 @@ BzComposeSession.prototype = {
             if (id)
               SimpleStorage.spin(function () {
                 yield ss.remove(id);
-                yield SimpleStorage.kWorkDone;
               });
             if (archive)
               msgHdrsArchive(conv.msgHdrs.filter(x => !msgHdrIsArchive(x)));
