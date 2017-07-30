@@ -345,8 +345,11 @@ KeyListener.prototype = {
         let actions = binding[key];
         for (let action of actions) {
           let match = true;
-          for (let mod of entries(action.mods))
-            match = match && (action.mods[mod] == event[mod]);
+          for (let mod in action.mods) {
+            if (action.mods.hasOwnProperty(mod)) {
+              match = match && (action.mods[mod] == event[mod]);
+            }
+          }
           if (match) {
             let func = this.functions[action.func];
             if (typeof func === "function")
