@@ -101,19 +101,19 @@ let embedsHook = {
     let seen = {};
     // Examine all links in the message.
     for (let a of links) {
-      if (a.skip || (a.href in seen))
+      if (a.skip)
         continue;
       let youTubeId;
-      if ((youTubeId = this.tryYouTube(a, aDomNode)))
+      if ((youTubeId = this.tryYouTube(a, aDomNode, seen)))
         seen[youTubeId] = null;
-      if (this.tryGoogleMaps(a, aDomNode))
+      if (!(a.href in seen) && this.tryGoogleMaps(a, aDomNode))
         seen[a.href] = null;
     }
   },
 
-  tryYouTube: function _embeds_youtube(a, aDomNode) {
+  tryYouTube: function _embeds_youtube(a, aDomNode, seen) {
     let matches = a.href.match(this.YOUTUBE_REGEXP);
-    if (matches && matches.length) {
+    if (matches && matches.length && !(matches[1] in seen)) {
       let videoId = matches[1];
       Log.debug("Found a youtube video, video-id", videoId);
       this.insertEmbed(strings.get("foundYouTube"), "640", "385",
