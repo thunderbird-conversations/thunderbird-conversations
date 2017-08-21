@@ -39,7 +39,7 @@ var EXPORTED_SYMBOLS = ["isLightningInstalled"];
 Components.utils.import("resource://conversations/modules/hook.js");
 Components.utils.import("resource://conversations/modules/log.js");
 Components.utils.import("resource://conversations/modules/misc.js");
-Components.utils.import("resource:///modules/Services.jsm");
+Components.utils.import("resource://gre/modules/Services.jsm");
 
 let Log = setupLogging("Conversations.Modules.Lightning");
 
