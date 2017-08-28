@@ -366,6 +366,7 @@ a img {
   text-align: center;
   color: #fff;
   background-size: cover;
+  background-position: center;
 }
 
 .smallEmail {
