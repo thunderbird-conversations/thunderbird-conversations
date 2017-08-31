@@ -12,7 +12,9 @@
   "engines": {
     "thunderbird": ">=45.0a1"
   },
-  "dependencies": {},
+  "dependencies": {
+    "pdfjs-dist": "1.8.188"
+  },
   "devDependencies": {
     "eslint": "3.18.0",
     "eslint-plugin-mozilla": "0.3.2",
