@@ -1,5 +1,5 @@
 #!/bin/sh
-NOT='.sh$|^.git|^tests|^.eslint|.travis'
+NOT='.sh$|^.git|^tests|^.eslint|^.travis|^package.json$|^package-lock.json$'
 PDFJS_IN=node_modules/pdfjs-dist/build/pdf.js
 PDFWORKERJS_IN=node_modules/pdfjs-dist/build/pdf.worker.js
 PDFJS_OUT=content/vendor/pdf.js
