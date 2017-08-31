@@ -27,8 +27,7 @@ these steps.
 
 1. Download the [zip archive](https://github.com/protz/thunderbird-conversations/archive/master.zip) or clone the repository
 2. Change into the main folder, run `git submodule init` and `git submodule update`
-3. Change into the subfolder `content/pdfjs`, run `node make bundle`. Note that you need to have `nodejs` installed. On modern Debian-based distributions the command is `nodejs` instead of `node`.
-4. Change into the main folder and run `./build.sh`.
+3. Change into the main folder and run `./build.sh`.
 
 This will package an `.xpi` file of the latest codebase which can be installed via add-on manager in Thunderbird.
 Please note that the latest `thunderbird-conversations`-builds are only compatible with the `Daily`-version of Thunderbird. You can build this from source or get a pre-built binary at http://ftp.mozilla.org/pub/mozilla.org/thunderbird/nightly/latest-comm-central/.
@@ -43,4 +42,3 @@ tests/mozmill-conversations. Once you qimport'd it,
     jonathan@ramona:~/Code/objdir-comm-central $ make \
     MOZMILL_EXTRA=--addon=/home/jonathan/Code/gconversation@xulforum.org/conversations.xpi \
     SOLO_TEST=conversations/test-attachments.js mozmill-one
-

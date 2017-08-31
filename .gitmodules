@@ -1,6 +1,3 @@
 [submodule "modules/stdlib"]
 	path = modules/stdlib
 	url = git://github.com/protz/thunderbird-stdlib.git
-[submodule "content/pdfjs"]
-	path = content/pdfjs
-	url = https://github.com/mozilla/pdf.js
