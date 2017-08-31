@@ -8,9 +8,9 @@
 
   <!-- This file is loaded through a resource:// URL so all the scripts below
     run as content... -->
-  <script type="text/javascript" src="../pdfjs/build/pdf.js"></script>
+  <script type="text/javascript" src="../vendor/pdf.js"></script>
   <script type="text/javascript"><![CDATA[
-    PDFJS.workerSrc = 'resource://conversations/content/pdfjs/build/pdf.worker.js';
+    PDFJS.workerSrc = 'resource://conversations/content/vendor/pdf.worker.js';
   ]]></script>
   <script src="viewer.js" type="application/javascript;version=1.8" charset="utf-8"></script>
 
@@ -40,7 +40,7 @@
       width: 3em;
     }
   </style>
-</head>  
+</head>
 
 <body>
   <canvas id="the-canvas"></canvas>
@@ -56,7 +56,7 @@
       <button class="clean-gray" id="next" onclick="viewer.nextPage()">&pdfViewer.next;</button>
     </p>
   </div>
-    
+
 </body>
 
 </html>
