@@ -1,13 +1,17 @@
-<!-- This template is to help you file new issues, so that we can better respond
-     to issues. If it is a feature request, feel free to remove the sections and
-     comment free-form. -->
-**Tell us about your environment**
+<!--
+  This template is to help you file new issues, so that we can better respond
+    to issues. If it is a feature request, feel free to remove the sections and
+    comment free-form.
+-->
 
-<!-- The Thunderbird version is available from Help -> Troubleshooting Information -->
-* **Thunderbird Version:**
-<!-- The Thunderbird Conversations version is available from Help ->
-     Troubleshooting Information (Extensions section) -->
-* **Thunderbird Conversation Version:**
+<!--
+  The Thunderbird version is available from Help: Troubleshooting Information.
+    The Thunderbird Conversation version is available on the same location in the
+    Extensions section.
+-->
+
+* **Thunderbird version:**
+* **Thunderbird Conversation version:**
 * **Operating System:**
 
 **What did you do?**
