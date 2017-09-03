@@ -3,755 +3,755 @@
 ]>
 <html xmlns="http://www.w3.org/1999/xhtml"
   xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
-<head>
-  <title>Conversation Reader</title>
-  <link rel="stylesheet" type="text/css"
-    href="chrome://messenger/skin/tagColors.css"/>
-  <link rel="stylesheet" type="text/css"
-    href="chrome://conversations/skin/boxflex.css" />
-  <!-- Keep the order! -->
-  <link rel="stylesheet" type="text/css"
-    href="chrome://conversations/skin/conversation.css" />
-  <link rel="stylesheet" type="text/css"
-    href="chrome://conversations/skin/quickreply.css" />
-  <link rel="stylesheet" type="text/css"
-    href="chrome://conversations/skin/tokeninput.css" />
-  <link rel="stylesheet" type="text/css" media="print"
-    href="chrome://conversations/skin/print.css" />
-  <script type="text/javascript"
-    src="chrome://conversations/content/js/jquery-3.2.1.min.js"></script>
-  <script type="text/javascript"
-    src="chrome://conversations/content/js/handlebars-v3.0.0.js"></script>
-  <script type="text/javascript"
-    src="chrome://conversations/content/js/jquery.tokeninput.js"></script>
-  <!-- The two scripts below share the same scope, they were split for the sake
-    of readability. -->
-  <script type="application/javascript;version=1.8"
-    src="chrome://conversations/content/quickReply.js"></script>
-  <script type="application/javascript;version=1.8"
-    src="chrome://conversations/content/stub.completion-ui.js"></script>
-  <script type="application/javascript;version=1.8"
-    src="chrome://conversations/content/stub.compose-ui.js"></script>
-  <script type="application/javascript;version=1.8"
-    src="chrome://conversations/content/stub.compose-ui-bz.js"></script>
-  <script type="application/javascript;version=1.8"
-    src="chrome://conversations/content/handlebars-wrapper.js"></script>
-  <script type="application/javascript;version=1.8"><![CDATA[
-    // Below are mostly UI utility functions.
-    (function ($) {
-      $.fn.vAlign = function(container) {
-        $(document).ready(function () {
-          if (!container)
-            container = "div";
-
-          this.each(function(i) {
-            $(this).wrap("<div />");
-            var el = $(this);
-            var elh = el.height(); //new element height
-            var ph = el.parent().height(); //parent height
-            var nh = (ph - elh) / 2; //new margin to apply
-            if (!nh) {
-              $(this).unwrap();
-            } else {
-              el.css('margin-top', nh);
-              // don't align again now we've succeeded
-              el.removeClass("align");
-            }
-          });
-        }.bind(this));
-      };
-    })(jQuery);
-
-    function clearMenu() {
-      for (let menu of document.getElementsByClassName("menu")) {
-        menu.style.display = "none";
+  <head>
+    <title>Conversation Reader</title>
+    <link rel="stylesheet" type="text/css"
+      href="chrome://messenger/skin/tagColors.css"/>
+    <link rel="stylesheet" type="text/css"
+      href="chrome://conversations/skin/boxflex.css" />
+    <!-- Keep the order! -->
+    <link rel="stylesheet" type="text/css"
+      href="chrome://conversations/skin/conversation.css" />
+    <link rel="stylesheet" type="text/css"
+      href="chrome://conversations/skin/quickreply.css" />
+    <link rel="stylesheet" type="text/css"
+      href="chrome://conversations/skin/tokeninput.css" />
+    <link rel="stylesheet" type="text/css" media="print"
+      href="chrome://conversations/skin/print.css" />
+    <script type="text/javascript"
+      src="chrome://conversations/content/js/jquery-3.2.1.min.js"></script>
+    <script type="text/javascript"
+      src="chrome://conversations/content/js/handlebars-v3.0.0.js"></script>
+    <script type="text/javascript"
+      src="chrome://conversations/content/js/jquery.tokeninput.js"></script>
+    <!-- The two scripts below share the same scope, they were split for the sake
+      of readability. -->
+    <script type="application/javascript;version=1.8"
+      src="chrome://conversations/content/quickReply.js"></script>
+    <script type="application/javascript;version=1.8"
+      src="chrome://conversations/content/stub.completion-ui.js"></script>
+    <script type="application/javascript;version=1.8"
+      src="chrome://conversations/content/stub.compose-ui.js"></script>
+    <script type="application/javascript;version=1.8"
+      src="chrome://conversations/content/stub.compose-ui-bz.js"></script>
+    <script type="application/javascript;version=1.8"
+      src="chrome://conversations/content/handlebars-wrapper.js"></script>
+    <script type="application/javascript;version=1.8"><![CDATA[
+      // Below are mostly UI utility functions.
+      (function ($) {
+        $.fn.vAlign = function(container) {
+          $(document).ready(function () {
+            if (!container)
+              container = "div";
+  
+            this.each(function(i) {
+              $(this).wrap("<div />");
+              var el = $(this);
+              var elh = el.height(); //new element height
+              var ph = el.parent().height(); //parent height
+              var nh = (ph - elh) / 2; //new margin to apply
+              if (!nh) {
+                $(this).unwrap();
+              } else {
+                el.css('margin-top', nh);
+                // don't align again now we've succeeded
+                el.removeClass("align");
+              }
+            });
+          }.bind(this));
+        };
+      })(jQuery);
+  
+      function clearMenu() {
+        for (let menu of document.getElementsByClassName("menu")) {
+          menu.style.display = "none";
+        }
       }
-    }
-
-    function displayMenu(event) {
-      let target = event.target;
-      // This is a hack to make it work when we click the downwardArrow.
-      if (!target.nextElementSibling)
-        target = target.parentNode;
-      let menu = target.nextElementSibling;
-      let menuWasVisible = (menu.style.display == "-moz-box")
-          || (menu.style.display == "inline-block")
-          || (menu.style.display == "block");
-      clearMenu();
-      if (!menuWasVisible) {
-        menu.style.display = "-moz-box";
-        event.stopPropagation();
-      }
-    }
-
-    $(document).ready(function () {
-      document.addEventListener("click", function (event) {
+  
+      function displayMenu(event) {
+        let target = event.target;
+        // This is a hack to make it work when we click the downwardArrow.
+        if (!target.nextElementSibling)
+          target = target.parentNode;
+        let menu = target.nextElementSibling;
+        let menuWasVisible = (menu.style.display == "-moz-box")
+            || (menu.style.display == "inline-block")
+            || (menu.style.display == "block");
         clearMenu();
-      }, false);
-      document.addEventListener("keypress", function (event) {
-        if (event.keyCode == KeyEvent.DOM_VK_ESCAPE)
+        if (!menuWasVisible) {
+          menu.style.display = "-moz-box";
+          event.stopPropagation();
+        }
+      }
+  
+      $(document).ready(function () {
+        document.addEventListener("click", function (event) {
           clearMenu();
-      }, false);
-    });
-
-    function alignAttachments(aMsgNode) {
-      $(aMsgNode._domNode).find(".align").vAlign();
-    }
-
-    // This function only works for our message nodes, use $(...).offset() for
-    //  more complicated computations.
-    function offsetFromTop (aNode) {
-      let offset = aNode.offsetTop || 0;
-      let parent = aNode.parentNode;
-      while (parent && !(parent instanceof HTMLDocument)) {
-        let style = window.getComputedStyle(parent, null);
-        if (style.position == "relative")
-          offset += parent.offsetTop;
-        parent = parent.parentNode;
+        }, false);
+        document.addEventListener("keypress", function (event) {
+          if (event.keyCode == KeyEvent.DOM_VK_ESCAPE)
+            clearMenu();
+        }, false);
+      });
+  
+      function alignAttachments(aMsgNode) {
+        $(aMsgNode._domNode).find(".align").vAlign();
       }
-      return offset;
-    }
-
-    function scrollNodeIntoView (aNode) {
-      let offset = offsetFromTop(aNode);
-      // The header is 44px high (yes, this is harcodeadly ugly).
-      window.scrollTo(0, offset + 5 - 44);
-    }
-
-    function toggleBlock(event, showtext, hidetext) {
-      let link = event.target;
-      let div = link.nextSibling;
-      let cs = window.getComputedStyle(div, null);
-      if (div.style.display == "none") {
-        link.textContent = "- "+hidetext+" -";
-        div.style.display = "";
-        let h = div.getBoundingClientRect().height +
-          parseFloat(cs.marginTop) + parseFloat(cs.marginBottom);
-        return h;
-      } else {
-        let h = div.getBoundingClientRect().height;
-        h += parseFloat(cs.marginTop);
-        h += parseFloat(cs.marginBottom);
-        link.textContent = "- "+showtext+" -";
-        div.style.display = "none";
-        return -h;
+  
+      // This function only works for our message nodes, use $(...).offset() for
+      //  more complicated computations.
+      function offsetFromTop (aNode) {
+        let offset = aNode.offsetTop || 0;
+        let parent = aNode.parentNode;
+        while (parent && !(parent instanceof HTMLDocument)) {
+          let style = window.getComputedStyle(parent, null);
+          if (style.position == "relative")
+            offset += parent.offsetTop;
+          parent = parent.parentNode;
+        }
+        return offset;
       }
-    }
-
-    const kPopupTimeout = 400;
-
-    // This only works for contact tooltips. The "more" menu is treated like a
-    //  real menu (it uses displayMenu and falls under clearMenu's operations),
-    //  and the reply menu with various choices is also treated like a menu.
-    // It turns out the "more" menu reuses the tooltip style for various
-    //  reasons, mostly to keep the same appearance, so we differentiate that
-    //  one with a tooltip-menu extra class.
-    function enableTooltips(aMsg) {
-      let $aMsgNode = $(aMsg._domNode);
-
-      let self = this;
-
-      // enable tooltip for all contacts but recipients
-      $aMsgNode.find(':not(.recipient-tooltips) .tooltip').each(function () {
-        // "contact" is a hypothetical "contact" link that, when
-        // hovered/clicked, starts the interaction with the tooltip
-        let $tooltip = $(this);
-
-        if ($tooltip.hasClass("tooltip-menu"))
-          return;
-
-        let $contact = $tooltip.prev();
-        if ($contact.hasClass("contactBr"))
-          $contact = $contact.prev();
-
-        self.setTooltipEventHandlers(aMsg, $contact, $tooltip, false);
-      });
-
-      let $contactLabels = $aMsgNode.find('.to .contactName');
-
-      // enable tooltip for recipient contacts
-      $aMsgNode.find('.recipient-tooltips .tooltip').each(function (index) {
-        // "contact" is a hypothetical "contact" link that, when
-        // hovered/clicked, starts the interaction with the tooltip
-        let $tooltip = $(this);
-
-        let $contact = index > 0
-          ? $contactLabels.eq(index-1)
-          : $aMsgNode.find('.author .contactName');
-
-        self.setTooltipEventHandlers(aMsg, $contact, $tooltip, true);
-      });
-    }
-
-    // Set events on a contact and its respective tooltip so to show/hide
-    //  the tooltip over the contact when mouse enters/leaves their areas.
-    function setTooltipEventHandlers(aMsg, $contact, $tooltip, isRecipient) {
-      let timeout;
-
-      $contact.hover(function() {
-        if (aMsg.collapsed)
-          return;
-
-        clearTimeout(timeout);
-
-        timeout = setTimeout(function () {
-          if (isRecipient) {
-            // move tooltip close to its respective recipient contact
-            let contactWrapperPosition = $contact.parents('.tooltipWrapper').position();
-            let $tooltipWrapper = $tooltip.parents('.contactTooltipWrapper');
-            $tooltipWrapper.css(contactWrapperPosition);
-          }
-
-          $tooltip.fadeIn();
-        }, kPopupTimeout);
-
-      }, function() {
-        clearTimeout(timeout);
-
-        timeout = setTimeout(function () {
-          $tooltip.fadeOut();
-        }, kPopupTimeout);
-      });
-
-      $tooltip.hover(function () {
-        clearTimeout(timeout);
-
-      }, function () {
-        if ($tooltip.is(":visible")) {
+  
+      function scrollNodeIntoView (aNode) {
+        let offset = offsetFromTop(aNode);
+        // The header is 44px high (yes, this is harcodeadly ugly).
+        window.scrollTo(0, offset + 5 - 44);
+      }
+  
+      function toggleBlock(event, showtext, hidetext) {
+        let link = event.target;
+        let div = link.nextSibling;
+        let cs = window.getComputedStyle(div, null);
+        if (div.style.display == "none") {
+          link.textContent = "- "+hidetext+" -";
+          div.style.display = "";
+          let h = div.getBoundingClientRect().height +
+            parseFloat(cs.marginTop) + parseFloat(cs.marginBottom);
+          return h;
+        } else {
+          let h = div.getBoundingClientRect().height;
+          h += parseFloat(cs.marginTop);
+          h += parseFloat(cs.marginBottom);
+          link.textContent = "- "+showtext+" -";
+          div.style.display = "none";
+          return -h;
+        }
+      }
+  
+      const kPopupTimeout = 400;
+  
+      // This only works for contact tooltips. The "more" menu is treated like a
+      //  real menu (it uses displayMenu and falls under clearMenu's operations),
+      //  and the reply menu with various choices is also treated like a menu.
+      // It turns out the "more" menu reuses the tooltip style for various
+      //  reasons, mostly to keep the same appearance, so we differentiate that
+      //  one with a tooltip-menu extra class.
+      function enableTooltips(aMsg) {
+        let $aMsgNode = $(aMsg._domNode);
+  
+        let self = this;
+  
+        // enable tooltip for all contacts but recipients
+        $aMsgNode.find(':not(.recipient-tooltips) .tooltip').each(function () {
+          // "contact" is a hypothetical "contact" link that, when
+          // hovered/clicked, starts the interaction with the tooltip
+          let $tooltip = $(this);
+  
+          if ($tooltip.hasClass("tooltip-menu"))
+            return;
+  
+          let $contact = $tooltip.prev();
+          if ($contact.hasClass("contactBr"))
+            $contact = $contact.prev();
+  
+          self.setTooltipEventHandlers(aMsg, $contact, $tooltip, false);
+        });
+  
+        let $contactLabels = $aMsgNode.find('.to .contactName');
+  
+        // enable tooltip for recipient contacts
+        $aMsgNode.find('.recipient-tooltips .tooltip').each(function (index) {
+          // "contact" is a hypothetical "contact" link that, when
+          // hovered/clicked, starts the interaction with the tooltip
+          let $tooltip = $(this);
+  
+          let $contact = index > 0
+            ? $contactLabels.eq(index-1)
+            : $aMsgNode.find('.author .contactName');
+  
+          self.setTooltipEventHandlers(aMsg, $contact, $tooltip, true);
+        });
+      }
+  
+      // Set events on a contact and its respective tooltip so to show/hide
+      //  the tooltip over the contact when mouse enters/leaves their areas.
+      function setTooltipEventHandlers(aMsg, $contact, $tooltip, isRecipient) {
+        let timeout;
+  
+        $contact.hover(function() {
+          if (aMsg.collapsed)
+            return;
+  
           clearTimeout(timeout);
-
+  
+          timeout = setTimeout(function () {
+            if (isRecipient) {
+              // move tooltip close to its respective recipient contact
+              let contactWrapperPosition = $contact.parents('.tooltipWrapper').position();
+              let $tooltipWrapper = $tooltip.parents('.contactTooltipWrapper');
+              $tooltipWrapper.css(contactWrapperPosition);
+            }
+  
+            $tooltip.fadeIn();
+          }, kPopupTimeout);
+  
+        }, function() {
+          clearTimeout(timeout);
+  
           timeout = setTimeout(function () {
             $tooltip.fadeOut();
           }, kPopupTimeout);
-        }
-      });
-    }
-
-    function cleanup() {
-      // These shouldn't be necessary because we're blasting away everything by
-      //  setting .innerHTML BUT jQuery won't remove its persistent event
-      //  listeners if we don't do that which will in turn cause memory leaks!
-      // Indeed, the listeners are actually closures on Message instances. These
-      //  contain a pointer to their parent Conversation, so that would prevent
-      //  the GC from collecting anything! Argh!
-      $("#messageList").empty();
-    }
-
-    function openLink(event) {
-      gMessenger.launchExternalURL(event.originalTarget.getAttribute("href"));
-    }
-
-    document.addEventListener("focus", function (event) {
-      /* This is a persistent event listener. It can operate multiple
-       * times. We have the invariant that for a given conversation, there's at
-       * most one such element (recycling doesn't use tabindex 1). */
-      let msgNode = document.querySelector(".message[tabindex=\"1\"]");
-      if (!msgNode)
-        return;
-
-      /* Restore the proper tab order. This event is fired *after* the
-       * right message has been focused in Gecko 1.9.2, *before* the right
-       * message has been focused in Gecko 1.9.1 (so it's basically
-       * useless). */
-      let msgNodes = document.getElementsByClassName("message");
-      let index = Array.prototype.indexOf.call(msgNodes, msgNode);
-      if (index != -1) {
-        msgNode.setAttribute("tabindex", index + 2);
-      }
-    }, true);
-
-    function closeTab() {
-      let browser = window.frameElement;
-      let tabmail = window.top.document.getElementById("tabmail");
-      let tabs = tabmail.tabInfo;
-      let candidates = tabs.filter(x => x.browser == browser);
-      if (candidates.length == 1) {
-        tabmail.closeTab(candidates[0]);
-      } else {
-        Log.error("Couldn't find a tab to close...");
-      }
-    }
-
-    // Below are event listeners for various actions. There is some logic
-    //  involved, and they may talk to other parts of the code.
-
-    // This property is now set from the outside. This allows stub.html to
-    //  be used either in a standalone tab or in the multimessage pane.
-    // let Conversations = window.top.Conversations;
-
-    Components.utils.import("resource:///modules/mailServices.js");
-    Components.utils.import("resource://conversations/modules/stdlib/misc.js");
-    Components.utils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
-    Components.utils.import("resource://conversations/modules/prefs.js");
-    Components.utils.import("resource://conversations/modules/log.js");
-    Components.utils.import("resource://conversations/modules/misc.js");
-    Components.utils.import("resource://conversations/modules/contact.js");
-
-    Log = setupLogging("Conversations.Stub");
-    // Declare with var, not let, so that it's in the global scope, not the lexical scope.
-    var isInTab = false;
-
-    wrapHandlebars();
-
-    $(document).ready(function () {
-      let stylesheet;
-      for (let x of document.styleSheets) {
-        if (String.indexOf(x.href, "/conversation.css") >= 0) {
-          stylesheet = x;
-          break;
-        }
-      }
-
-      if (stylesheet) {
-        if (Prefs.tweak_chrome) {
-          // Set the root size to 10px on Linux, and equivalent font sizes on
-          // other platforms.
-          if (isOSX)
-            stylesheet.insertRule("html { font-size: 66.6%; }", 0);
-          else if (isWindows)
-            stylesheet.insertRule("html { font-size: 70%; }", 0);
-          else
-            stylesheet.insertRule("html { font-size: 62.5%; }", 0);
-        } else {
-          stylesheet.insertRule("html { font-size: 83.3%; }", 0);
-        }
-      } else {
-        Log.error("No stylesheet. This is unexpected.");
-      }
-    });
-
-    // Mark the current conversation as read/unread. The conversation driver
-    //  takes care of setting the right class on us whenever the state
-    //  changes...
-    function toggleRead(event) {
-      let $span = $(event.target).find(".icon.read");
-      if ($span.hasClass("unread")) {
-        Conversations.currentConversation.read = true;
-        $span.removeClass("unread");
-      } else {
-        Conversations.currentConversation.read = false;
-        $span.addClass("unread");
-        markReadInView.disable();
-      }
-    }
-
-    function expandCollapse(event) {
-      let $span = $(event.target).find(".icon.expand");
-      if ($span.hasClass("collapse")) {
-        for (let { message } of Conversations.currentConversation.messages) {
-          message.collapse();
-        }
-        $span.removeClass("collapse");
-      } else {
-        for (let { message } of Conversations.currentConversation.messages) {
-          message.expand();
-        }
-        $span.addClass("collapse");
-      }
-    }
-
-    function archiveToolbar(event) {
-      if (isInTab || Prefs.operate_on_conversations)
-        archiveConversation(event);
-      else
-        msgHdrsArchive(topMail3Pane(window).gFolderDisplay.selectedMessages);
-    }
-
-    function archiveConversation(event) {
-      msgHdrsArchive(Conversations.currentConversation.msgHdrs);
-      if (!isInTab)
-        topMail3Pane(window).SetFocusThreadPane(event);
-    }
-
-    function deleteToolbar(event) {
-      if (isInTab || Prefs.operate_on_conversations)
-        deleteConversation();
-      else
-        msgHdrsDelete(topMail3Pane(window).gFolderDisplay.selectedMessages);
-    }
-
-    function deleteConversation(event) {
-      msgHdrsDelete(Conversations.currentConversation.msgHdrs);
-      if (isInTab)
-        closeTab();
-      topMail3Pane(window).SetFocusThreadPane(event);
-    }
-
-    function forwardConversation(event) {
-      let conv = Conversations.currentConversation;
-      let fields = Cc["@mozilla.org/messengercompose/composefields;1"]
-                      .createInstance(Components.interfaces.nsIMsgCompFields);
-      fields.characterSet = "UTF-8";
-      fields.bodyIsAsciiOnly = false;
-      fields.forcePlainText = false;
-      Conversations.currentConversation.exportAsHtml(function (html) {
-        fields.body = html;
-        let params = Cc["@mozilla.org/messengercompose/composeparams;1"]
-                        .createInstance(Ci.nsIMsgComposeParams);
-        params.format = Ci.nsIMsgCompFormat.HTML;
-        params.composeFields = fields;
-        return MailServices.compose.OpenComposeWindowWithParams(null, params);
-      });
-    }
-
-    let oldPrint = window.print;
-
-    function printConversation(event) {
-      for (let { message: m } of Conversations.currentConversation.messages) {
-        m.dumpPlainTextForPrinting();
-      }
-      oldPrint();
-    }
-
-    window.print = printConversation;
-
-    function junkConversation(event) {
-      // This callback is only activated when the conversation is not a
-      //  conversation in a tab AND there's only one message in the conversation,
-      //  i.e. the currently selected message
-      topMail3Pane(window).JunkSelectedMessages(true);
-      $("#conversationHeader").addClass("not-junkable");
-      topMail3Pane(window).SetFocusThreadPane(event);
-    }
-
-    const kGalleryUrl = "chrome://conversations/content/gallery/index.html";
-
-    function galleryView(uri) {
-      let tabmail = topMail3Pane(window).document.getElementById("tabmail");
-      tabmail.openTab("chromeTab", {
-        chromePage: kGalleryUrl+"?uri="+uri,
-      });
-    }
-
-    /**
-     * This function gathers various information, encodes it in a URL query
-     * string, and then opens a regular chrome tab that contains our
-     * conversation.
-     */
-    function detachTab(event) {
-      let tabmail = topMail3Pane(window).document.getElementById("tabmail");
-      let willExpand = $("textarea").parent().hasClass("expand") && startedEditing();
-      // Pick _initialSet and not msgHdrs so as to enforce the invariant
-      //  that the messages from _initialSet are in the current view.
-      let urls =
-        Conversations.currentConversation._initialSet.map(x => msgHdrGetUri(x)).join(",");
-      let queryString = "?urls="+encodeURIComponent(urls)
-        +"&willExpand="+Number(willExpand);
-      // First, save the draft, and once it's saved, then move on to opening the
-      // conversation in a new tab...
-      onSave(function () {
-        openConversationInTabOrWindow(kStubUrl+queryString);
-      });
-    }
-
-    /**
-     * This function finds the right node that holds the attachment information
-     * and returns its information.
-     */
-    function getCurrentAttInfo() {
-      let node = topMail3Pane(window).document.popupNode;
-      while (!node.attInfo)
-        node = node.parentNode;
-      return node.attInfo;
-    }
-
-    /**
-     * That big event handler tries to parse URL query parameters, and then acts
-     * upon these, by firing a conversation on its own. This is a very
-     * stripped-down version of the logic that's in monkeypatch.js, and it
-     * serves the purpose of being able to create a standalone conversation view
-     * in a new tab.
-     */
-    $(document).ready(function () {
-      // I just imagined Javascript would have some function for that
-      // built-in... looks like even jQuery doesn't have it.
-      let params = decodeUrlParameters(document.location.href);
-
-      // Oh, are we expected to build a conversation on our own? Let's do it,
-      // yay!
-      if ("urls" in params) {
-        try {
-          let scrollMode = ("scrollMode" in params)
-            ? parseInt(params.scrollMode)
-            : Prefs.kScrollUnreadOrLast;
-          /* If we start up Thunderbird with a saved conversation tab, then we
-           * have no selected message. Fallback to the usual mode. */
-          if (scrollMode == Prefs.kScrollSelected &&
-              !topMail3Pane(window).gFolderDisplay.selectedMessage)
-            scrollMode = Prefs.kScrollUnreadOrLast;
-
-          isInTab = true;
-          if (window.frameElement)
-            window.frameElement.setAttribute("tooltip", "aHTMLTooltip");
-          let mainWindow = topMail3Pane(window);
-          let willExpand = parseInt(params.willExpand);
-          let msgHdrs = params.urls.split(",").map(x => msgUriToMsgHdr(x))
-                                              .filter(x => x != null && x.messageId);
-          // It might happen that there are no messages left...
-          if (!msgHdrs.length) {
-            document.getElementById("messageList").textContent =
-              strings.get("messageMovedOrDeletedConversation");
-          } else {
-            window.Conversations = {
-              currentConversation: null,
-              counter: 0,
-            };
-            let freshConversation = new mainWindow.Conversations.monkeyPatch._Conversation(
-              window,
-              msgHdrs,
-              scrollMode,
-              ++Conversations.counter
-            );
-            let browser = window.frameElement;
-            // Because Thunderbird still hasn't fixed that...
-            if (browser)
-              browser.setAttribute("context", "mailContext");
-            freshConversation.outputInto(window, function (aConversation) {
-              // This is a stripped-down version of what's in monkeypatch.js,
-              //  make sure the two are in sync!
-              Conversations.currentConversation = aConversation;
-              aConversation.completed = true;
-              registerQuickReply();
-              // That's why we saved it before...
-              newComposeSessionByDraftIf();
-              if (willExpand)
-                expandQuickReply();
-              // Create a new rule that will override the default rule, so that
-              // the expanded quick reply is twice higher.
-              document.body.classList.add("inTab");
-              // We can never junk a conversation in a new tab, because the junk
-              // command only operates on selected messages, and we're not in a
-              // 3pane context anymore.
-              document.getElementById("conversationHeader").classList.add("not-junkable");
-              // Do this now so as to not defeat the whole expand/collapse
-              // logic.
-              if (Prefs.getBool("mailnews.mark_message_read.auto")) {
-                setTimeout(function () {
-                  msgHdrsMarkAsRead(msgHdrs, true);
-                }, Prefs.getInt("mailnews.mark_message_read.delay.interval")
-                   * Prefs.getBool("mailnews.mark_message_read.delay") * 1000);
-              }
-            });
-          }
-        } catch (e) {
-          Log.debug(e);
-          dumpCallStack(e);
-        }
-      } else if ("quickCompose" in params) {
-        masqueradeAsQuickCompose();
-      }
-    });
-
-    var isQuickCompose = false;
-
-    /* This is our new hack: reuse this file to provide a standalone composition
-     * window. Why? Because it uses gloda autocomplete and provides a
-     * no-frills composition experience. */
-    function masqueradeAsQuickCompose() {
-      isQuickCompose = true;
-      document.title = strings.get("write");
-      document.querySelector("#conversationHeader").style.display = "none";
-      document.querySelector(".bottom-links").style.display = "none";
-      document.querySelector("#messageList").style.marginTop = "0";
-      document.querySelector("#messageList").classList.add("quickCompose");
-      tmpl("#quickReplyTemplate").appendTo($("#messageList"));
-      $(".replyAll, #save, .replyMethod").remove();
-
-      // TODO figure out why this timeout is needed
-      setTimeout(function () {
-        showQuickReply.call($(".reply.expand"));
-        gComposeSession = createComposeSession(x => x.new());
-        revealCompositionFields();
-        editFields("to");
-      }, 0);
-
-      window.Conversations = {
-        currentConversation: {
-          msgHdrs: [],
-          id: null,
-        },
-      };
-
-      document.querySelector(".quickReply").addEventListener("keypress", function (event) {
-        switch (event.keyCode) {
-          case KeyEvent.DOM_VK_RETURN:
-            if (isAccel(event)) {
-              if (event.shiftKey)
-                gComposeSession.send({ archive: true });
-              else
-                gComposeSession.send();
-            }
-            break;
-        }
-      }, false);
-
-
-      let data = [];
-
-      // Push a new contact item in the list
-      let pushNewPopularContacts = function (n) {
-        let items = data.splice(0, n);
-        let nodes = tmpl("#popularContactTemplate", items);
-
-        items.forEach(function(data2, i) {
-          let data = data2;
-          let node = nodes.eq(i);
-          Log.debug("Adding", data.name, data.email);
-
-          node.find(".popularRemove").click(function () {
-            Log.debug("Removing", data.name, data.email);
-            // Mark it in the prefs
-            let unwantedRecipients = JSON.parse(Prefs.getString("conversations.unwanted_recipients"));
-            unwantedRecipients[data.email] = null;
-            Prefs.setString("conversations.unwanted_recipients",
-              JSON.stringify(unwantedRecipients));
-            // Update the UI
-            $(this).closest(".popularContact").remove();
-            pushNewPopularContacts(1);
-          });
-
-          node.find(".popularName").click(function () {
-            // Get all the current parameters
-            let to = JSON.parse($("#to").val());
-            let cc = JSON.parse($("#cc").val());
-            let bcc = JSON.parse($("#bcc").val());
-            // Append our new value
-            to.push(MailServices.headerParser.makeMimeAddress(data.name, data.email));
-            // Re-set everything
-            let format = items => items.map(parseMimeLine)
-                                       .map(([{ name, email }]) => asToken(null, name, email, null));
-            setupAutocomplete(format(to), format(cc), format(bcc));
-            // Remove the node!
-            node.remove();
-            pushNewPopularContacts(1);
-          });
-
         });
-
-        nodes.appendTo($(".quickReplyContactsBox"));
-      };
-
-      $(".quickReplyContactsMoreLink").click(() => pushNewPopularContacts(10));
-
-      // Fill in the "10 most popular contacts" thing
-      let contactQuery = Gloda.newQuery(Gloda.NOUN_CONTACT);
-      contactQuery.orderBy("-popularity").limit(100);
-      let contactCollection = contactQuery.getCollection({
-        onItemsAdded: function(aItems, aCollection) {
-        },
-        onItemsModified: function(aItems, aCollection) {
-        },
-        onItemsRemoved: function(aItems, aCollection) {
-        },
-        onQueryCompleted: function(aCollection) {
-          let items = aCollection.items;
-          let unwantedRecipients = JSON.parse(Prefs.getString("conversations.unwanted_recipients"));
-
-          for (let contact of items) {
-            if (contact.identities.length) {
-              let id = contact.identities[0];
-              let photoForAbCard = function (card) {
-                if (!card)
-                  return defaultPhotoURI;
-                let url = card.getProperty("PhotoURI", "");
-                if (!url)
-                  return defaultPhotoURI;
-                return url;
-              };
-              if (id.kind == "email" && !(id.value in unwantedRecipients)) {
-                // Log.debug("Pushing", id.value, contact.name, contact.popularity);
-                data.push({
-                  email: id.value,
-                  name: contact.name,
-                  photo: photoForAbCard(id.abCard),
-                });
-              }
-            }
+  
+        $tooltip.hover(function () {
+          clearTimeout(timeout);
+  
+        }, function () {
+          if ($tooltip.is(":visible")) {
+            clearTimeout(timeout);
+  
+            timeout = setTimeout(function () {
+              $tooltip.fadeOut();
+            }, kPopupTimeout);
           }
-
-          pushNewPopularContacts(10);
-        },
-      }, null);
-      contactCollection.becomeExplicit();
-
-      // Misc
-      if (!top.opener) {
-        window.frameElement.setAttribute("tooltip", "aHTMLTooltip");
-        window.frameElement.setAttribute("context", "mailContext");
+        });
       }
-    }
-
-    // Mark a message as read if a user scrolls past top and bottom of an
-    // unread message.
-    function markReadInView(event) {
-      if (event.type == "keydown") {
-        // for scroll by keyboard shortcut
-        switch (event.which) {
-          case KeyEvent.DOM_VK_SPACE:
-          case KeyEvent.DOM_VK_TAB:
-          case KeyEvent.DOM_VK_PAGE_UP:
-          case KeyEvent.DOM_VK_PAGE_DOWN:
-          case KeyEvent.DOM_VK_UP:
-          case KeyEvent.DOM_VK_DOWN:
-          case KeyEvent.DOM_VK_F:
-          case KeyEvent.DOM_VK_B:
-            break;
-          default:
-            return;
+  
+      function cleanup() {
+        // These shouldn't be necessary because we're blasting away everything by
+        //  setting .innerHTML BUT jQuery won't remove its persistent event
+        //  listeners if we don't do that which will in turn cause memory leaks!
+        // Indeed, the listeners are actually closures on Message instances. These
+        //  contain a pointer to their parent Conversation, so that would prevent
+        //  the GC from collecting anything! Argh!
+        $("#messageList").empty();
+      }
+  
+      function openLink(event) {
+        gMessenger.launchExternalURL(event.originalTarget.getAttribute("href"));
+      }
+  
+      document.addEventListener("focus", function (event) {
+        /* This is a persistent event listener. It can operate multiple
+         * times. We have the invariant that for a given conversation, there's at
+         * most one such element (recycling doesn't use tabindex 1). */
+        let msgNode = document.querySelector(".message[tabindex=\"1\"]");
+        if (!msgNode)
+          return;
+  
+        /* Restore the proper tab order. This event is fired *after* the
+         * right message has been focused in Gecko 1.9.2, *before* the right
+         * message has been focused in Gecko 1.9.1 (so it's basically
+         * useless). */
+        let msgNodes = document.getElementsByClassName("message");
+        let index = Array.prototype.indexOf.call(msgNodes, msgNode);
+        if (index != -1) {
+          msgNode.setAttribute("tabindex", index + 2);
+        }
+      }, true);
+  
+      function closeTab() {
+        let browser = window.frameElement;
+        let tabmail = window.top.document.getElementById("tabmail");
+        let tabs = tabmail.tabInfo;
+        let candidates = tabs.filter(x => x.browser == browser);
+        if (candidates.length == 1) {
+          tabmail.closeTab(candidates[0]);
+        } else {
+          Log.error("Couldn't find a tab to close...");
         }
       }
-      document.removeEventListener("scroll", markReadInView, true);
-      clearTimeout(markReadInView.timeout);
-      markReadInView.timeout = setTimeout(function () {
-        document.addEventListener("scroll", markReadInView, true);
-      }, 200);
-      if (!Conversations.currentConversation)
-        return;
-
-      let pageTop = window.pageYOffset;
-      let pageBottom = pageTop + window.innerHeight;
-      let messages = Conversations.currentConversation.messages;
-      messages.forEach(function({ message }, i) {
-        if (!message.read && message.expanded) {
-          if (!message._topInView) {
-            let top = $(message._domNode).offset().top;
-            if (top > pageTop && top < pageBottom)
-              message._topInView = true;
+  
+      // Below are event listeners for various actions. There is some logic
+      //  involved, and they may talk to other parts of the code.
+  
+      // This property is now set from the outside. This allows stub.html to
+      //  be used either in a standalone tab or in the multimessage pane.
+      // let Conversations = window.top.Conversations;
+  
+      Components.utils.import("resource:///modules/mailServices.js");
+      Components.utils.import("resource://conversations/modules/stdlib/misc.js");
+      Components.utils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+      Components.utils.import("resource://conversations/modules/prefs.js");
+      Components.utils.import("resource://conversations/modules/log.js");
+      Components.utils.import("resource://conversations/modules/misc.js");
+      Components.utils.import("resource://conversations/modules/contact.js");
+  
+      Log = setupLogging("Conversations.Stub");
+      // Declare with var, not let, so that it's in the global scope, not the lexical scope.
+      var isInTab = false;
+  
+      wrapHandlebars();
+  
+      $(document).ready(function () {
+        let stylesheet;
+        for (let x of document.styleSheets) {
+          if (String.indexOf(x.href, "/conversation.css") >= 0) {
+            stylesheet = x;
+            break;
           }
-          if (!message._bottomInView) {
-            let footerClass = (i == messages.length - 1) ? ".quickReply" : ".messageFooter";
-            let bottom = $(message._domNode.querySelector(footerClass)).offset().top;
-            if (bottom > pageTop && bottom < pageBottom)
-              message._bottomInView = true;
+        }
+  
+        if (stylesheet) {
+          if (Prefs.tweak_chrome) {
+            // Set the root size to 10px on Linux, and equivalent font sizes on
+            // other platforms.
+            if (isOSX)
+              stylesheet.insertRule("html { font-size: 66.6%; }", 0);
+            else if (isWindows)
+              stylesheet.insertRule("html { font-size: 70%; }", 0);
+            else
+              stylesheet.insertRule("html { font-size: 62.5%; }", 0);
+          } else {
+            stylesheet.insertRule("html { font-size: 83.3%; }", 0);
           }
-          if (message._topInView && message._bottomInView) {
-            message._topInView = false;
-            message._bottomInView = false;
-            message.read = true;
-          }
+        } else {
+          Log.error("No stylesheet. This is unexpected.");
         }
       });
-    }
-    (function () {
-      let w = window;
-      markReadInView.enable = function () {
-        for (let x of ["mouseover", "focus", "keydown"]) {
-          w.document.addEventListener(x, w.markReadInView, true);
+  
+      // Mark the current conversation as read/unread. The conversation driver
+      //  takes care of setting the right class on us whenever the state
+      //  changes...
+      function toggleRead(event) {
+        let $span = $(event.target).find(".icon.read");
+        if ($span.hasClass("unread")) {
+          Conversations.currentConversation.read = true;
+          $span.removeClass("unread");
+        } else {
+          Conversations.currentConversation.read = false;
+          $span.addClass("unread");
+          markReadInView.disable();
         }
-      };
-      markReadInView.disable = function () {
-        w.clearTimeout(w.markReadInView.timeout);
-        for (let x of ["mouseover", "focus", "keydown", "scroll"]) {
-          w.document.removeEventListener(x, w.markReadInView, true);
+      }
+  
+      function expandCollapse(event) {
+        let $span = $(event.target).find(".icon.expand");
+        if ($span.hasClass("collapse")) {
+          for (let { message } of Conversations.currentConversation.messages) {
+            message.collapse();
+          }
+          $span.removeClass("collapse");
+        } else {
+          for (let { message } of Conversations.currentConversation.messages) {
+            message.expand();
+          }
+          $span.addClass("collapse");
         }
-      };
-    })();
-
-    // Lightning
-    var ltnImipBar = topMail3Pane(window).ltnImipBar;
-  ]]>
-  </script>
-</head>
+      }
+  
+      function archiveToolbar(event) {
+        if (isInTab || Prefs.operate_on_conversations)
+          archiveConversation(event);
+        else
+          msgHdrsArchive(topMail3Pane(window).gFolderDisplay.selectedMessages);
+      }
+  
+      function archiveConversation(event) {
+        msgHdrsArchive(Conversations.currentConversation.msgHdrs);
+        if (!isInTab)
+          topMail3Pane(window).SetFocusThreadPane(event);
+      }
+  
+      function deleteToolbar(event) {
+        if (isInTab || Prefs.operate_on_conversations)
+          deleteConversation();
+        else
+          msgHdrsDelete(topMail3Pane(window).gFolderDisplay.selectedMessages);
+      }
+  
+      function deleteConversation(event) {
+        msgHdrsDelete(Conversations.currentConversation.msgHdrs);
+        if (isInTab)
+          closeTab();
+        topMail3Pane(window).SetFocusThreadPane(event);
+      }
+  
+      function forwardConversation(event) {
+        let conv = Conversations.currentConversation;
+        let fields = Cc["@mozilla.org/messengercompose/composefields;1"]
+                        .createInstance(Components.interfaces.nsIMsgCompFields);
+        fields.characterSet = "UTF-8";
+        fields.bodyIsAsciiOnly = false;
+        fields.forcePlainText = false;
+        Conversations.currentConversation.exportAsHtml(function (html) {
+          fields.body = html;
+          let params = Cc["@mozilla.org/messengercompose/composeparams;1"]
+                          .createInstance(Ci.nsIMsgComposeParams);
+          params.format = Ci.nsIMsgCompFormat.HTML;
+          params.composeFields = fields;
+          return MailServices.compose.OpenComposeWindowWithParams(null, params);
+        });
+      }
+  
+      let oldPrint = window.print;
+  
+      function printConversation(event) {
+        for (let { message: m } of Conversations.currentConversation.messages) {
+          m.dumpPlainTextForPrinting();
+        }
+        oldPrint();
+      }
+  
+      window.print = printConversation;
+  
+      function junkConversation(event) {
+        // This callback is only activated when the conversation is not a
+        //  conversation in a tab AND there's only one message in the conversation,
+        //  i.e. the currently selected message
+        topMail3Pane(window).JunkSelectedMessages(true);
+        $("#conversationHeader").addClass("not-junkable");
+        topMail3Pane(window).SetFocusThreadPane(event);
+      }
+  
+      const kGalleryUrl = "chrome://conversations/content/gallery/index.html";
+  
+      function galleryView(uri) {
+        let tabmail = topMail3Pane(window).document.getElementById("tabmail");
+        tabmail.openTab("chromeTab", {
+          chromePage: kGalleryUrl+"?uri="+uri,
+        });
+      }
+  
+      /**
+       * This function gathers various information, encodes it in a URL query
+       * string, and then opens a regular chrome tab that contains our
+       * conversation.
+       */
+      function detachTab(event) {
+        let tabmail = topMail3Pane(window).document.getElementById("tabmail");
+        let willExpand = $("textarea").parent().hasClass("expand") && startedEditing();
+        // Pick _initialSet and not msgHdrs so as to enforce the invariant
+        //  that the messages from _initialSet are in the current view.
+        let urls =
+          Conversations.currentConversation._initialSet.map(x => msgHdrGetUri(x)).join(",");
+        let queryString = "?urls="+encodeURIComponent(urls)
+          +"&willExpand="+Number(willExpand);
+        // First, save the draft, and once it's saved, then move on to opening the
+        // conversation in a new tab...
+        onSave(function () {
+          openConversationInTabOrWindow(kStubUrl+queryString);
+        });
+      }
+  
+      /**
+       * This function finds the right node that holds the attachment information
+       * and returns its information.
+       */
+      function getCurrentAttInfo() {
+        let node = topMail3Pane(window).document.popupNode;
+        while (!node.attInfo)
+          node = node.parentNode;
+        return node.attInfo;
+      }
+  
+      /**
+       * That big event handler tries to parse URL query parameters, and then acts
+       * upon these, by firing a conversation on its own. This is a very
+       * stripped-down version of the logic that's in monkeypatch.js, and it
+       * serves the purpose of being able to create a standalone conversation view
+       * in a new tab.
+       */
+      $(document).ready(function () {
+        // I just imagined Javascript would have some function for that
+        // built-in... looks like even jQuery doesn't have it.
+        let params = decodeUrlParameters(document.location.href);
+  
+        // Oh, are we expected to build a conversation on our own? Let's do it,
+        // yay!
+        if ("urls" in params) {
+          try {
+            let scrollMode = ("scrollMode" in params)
+              ? parseInt(params.scrollMode)
+              : Prefs.kScrollUnreadOrLast;
+            /* If we start up Thunderbird with a saved conversation tab, then we
+             * have no selected message. Fallback to the usual mode. */
+            if (scrollMode == Prefs.kScrollSelected &&
+                !topMail3Pane(window).gFolderDisplay.selectedMessage)
+              scrollMode = Prefs.kScrollUnreadOrLast;
+  
+            isInTab = true;
+            if (window.frameElement)
+              window.frameElement.setAttribute("tooltip", "aHTMLTooltip");
+            let mainWindow = topMail3Pane(window);
+            let willExpand = parseInt(params.willExpand);
+            let msgHdrs = params.urls.split(",").map(x => msgUriToMsgHdr(x))
+                                                .filter(x => x != null && x.messageId);
+            // It might happen that there are no messages left...
+            if (!msgHdrs.length) {
+              document.getElementById("messageList").textContent =
+                strings.get("messageMovedOrDeletedConversation");
+            } else {
+              window.Conversations = {
+                currentConversation: null,
+                counter: 0,
+              };
+              let freshConversation = new mainWindow.Conversations.monkeyPatch._Conversation(
+                window,
+                msgHdrs,
+                scrollMode,
+                ++Conversations.counter
+              );
+              let browser = window.frameElement;
+              // Because Thunderbird still hasn't fixed that...
+              if (browser)
+                browser.setAttribute("context", "mailContext");
+              freshConversation.outputInto(window, function (aConversation) {
+                // This is a stripped-down version of what's in monkeypatch.js,
+                //  make sure the two are in sync!
+                Conversations.currentConversation = aConversation;
+                aConversation.completed = true;
+                registerQuickReply();
+                // That's why we saved it before...
+                newComposeSessionByDraftIf();
+                if (willExpand)
+                  expandQuickReply();
+                // Create a new rule that will override the default rule, so that
+                // the expanded quick reply is twice higher.
+                document.body.classList.add("inTab");
+                // We can never junk a conversation in a new tab, because the junk
+                // command only operates on selected messages, and we're not in a
+                // 3pane context anymore.
+                document.getElementById("conversationHeader").classList.add("not-junkable");
+                // Do this now so as to not defeat the whole expand/collapse
+                // logic.
+                if (Prefs.getBool("mailnews.mark_message_read.auto")) {
+                  setTimeout(function () {
+                    msgHdrsMarkAsRead(msgHdrs, true);
+                  }, Prefs.getInt("mailnews.mark_message_read.delay.interval")
+                     * Prefs.getBool("mailnews.mark_message_read.delay") * 1000);
+                }
+              });
+            }
+          } catch (e) {
+            Log.debug(e);
+            dumpCallStack(e);
+          }
+        } else if ("quickCompose" in params) {
+          masqueradeAsQuickCompose();
+        }
+      });
+  
+      var isQuickCompose = false;
+  
+      /* This is our new hack: reuse this file to provide a standalone composition
+       * window. Why? Because it uses gloda autocomplete and provides a
+       * no-frills composition experience. */
+      function masqueradeAsQuickCompose() {
+        isQuickCompose = true;
+        document.title = strings.get("write");
+        document.querySelector("#conversationHeader").style.display = "none";
+        document.querySelector(".bottom-links").style.display = "none";
+        document.querySelector("#messageList").style.marginTop = "0";
+        document.querySelector("#messageList").classList.add("quickCompose");
+        tmpl("#quickReplyTemplate").appendTo($("#messageList"));
+        $(".replyAll, #save, .replyMethod").remove();
+  
+        // TODO figure out why this timeout is needed
+        setTimeout(function () {
+          showQuickReply.call($(".reply.expand"));
+          gComposeSession = createComposeSession(x => x.new());
+          revealCompositionFields();
+          editFields("to");
+        }, 0);
+  
+        window.Conversations = {
+          currentConversation: {
+            msgHdrs: [],
+            id: null,
+          },
+        };
+  
+        document.querySelector(".quickReply").addEventListener("keypress", function (event) {
+          switch (event.keyCode) {
+            case KeyEvent.DOM_VK_RETURN:
+              if (isAccel(event)) {
+                if (event.shiftKey)
+                  gComposeSession.send({ archive: true });
+                else
+                  gComposeSession.send();
+              }
+              break;
+          }
+        }, false);
+  
+  
+        let data = [];
+  
+        // Push a new contact item in the list
+        let pushNewPopularContacts = function (n) {
+          let items = data.splice(0, n);
+          let nodes = tmpl("#popularContactTemplate", items);
+  
+          items.forEach(function(data2, i) {
+            let data = data2;
+            let node = nodes.eq(i);
+            Log.debug("Adding", data.name, data.email);
+  
+            node.find(".popularRemove").click(function () {
+              Log.debug("Removing", data.name, data.email);
+              // Mark it in the prefs
+              let unwantedRecipients = JSON.parse(Prefs.getString("conversations.unwanted_recipients"));
+              unwantedRecipients[data.email] = null;
+              Prefs.setString("conversations.unwanted_recipients",
+                JSON.stringify(unwantedRecipients));
+              // Update the UI
+              $(this).closest(".popularContact").remove();
+              pushNewPopularContacts(1);
+            });
+  
+            node.find(".popularName").click(function () {
+              // Get all the current parameters
+              let to = JSON.parse($("#to").val());
+              let cc = JSON.parse($("#cc").val());
+              let bcc = JSON.parse($("#bcc").val());
+              // Append our new value
+              to.push(MailServices.headerParser.makeMimeAddress(data.name, data.email));
+              // Re-set everything
+              let format = items => items.map(parseMimeLine)
+                                         .map(([{ name, email }]) => asToken(null, name, email, null));
+              setupAutocomplete(format(to), format(cc), format(bcc));
+              // Remove the node!
+              node.remove();
+              pushNewPopularContacts(1);
+            });
+  
+          });
+  
+          nodes.appendTo($(".quickReplyContactsBox"));
+        };
+  
+        $(".quickReplyContactsMoreLink").click(() => pushNewPopularContacts(10));
+  
+        // Fill in the "10 most popular contacts" thing
+        let contactQuery = Gloda.newQuery(Gloda.NOUN_CONTACT);
+        contactQuery.orderBy("-popularity").limit(100);
+        let contactCollection = contactQuery.getCollection({
+          onItemsAdded: function(aItems, aCollection) {
+          },
+          onItemsModified: function(aItems, aCollection) {
+          },
+          onItemsRemoved: function(aItems, aCollection) {
+          },
+          onQueryCompleted: function(aCollection) {
+            let items = aCollection.items;
+            let unwantedRecipients = JSON.parse(Prefs.getString("conversations.unwanted_recipients"));
+  
+            for (let contact of items) {
+              if (contact.identities.length) {
+                let id = contact.identities[0];
+                let photoForAbCard = function (card) {
+                  if (!card)
+                    return defaultPhotoURI;
+                  let url = card.getProperty("PhotoURI", "");
+                  if (!url)
+                    return defaultPhotoURI;
+                  return url;
+                };
+                if (id.kind == "email" && !(id.value in unwantedRecipients)) {
+                  // Log.debug("Pushing", id.value, contact.name, contact.popularity);
+                  data.push({
+                    email: id.value,
+                    name: contact.name,
+                    photo: photoForAbCard(id.abCard),
+                  });
+                }
+              }
+            }
+  
+            pushNewPopularContacts(10);
+          },
+        }, null);
+        contactCollection.becomeExplicit();
+  
+        // Misc
+        if (!top.opener) {
+          window.frameElement.setAttribute("tooltip", "aHTMLTooltip");
+          window.frameElement.setAttribute("context", "mailContext");
+        }
+      }
+  
+      // Mark a message as read if a user scrolls past top and bottom of an
+      // unread message.
+      function markReadInView(event) {
+        if (event.type == "keydown") {
+          // for scroll by keyboard shortcut
+          switch (event.which) {
+            case KeyEvent.DOM_VK_SPACE:
+            case KeyEvent.DOM_VK_TAB:
+            case KeyEvent.DOM_VK_PAGE_UP:
+            case KeyEvent.DOM_VK_PAGE_DOWN:
+            case KeyEvent.DOM_VK_UP:
+            case KeyEvent.DOM_VK_DOWN:
+            case KeyEvent.DOM_VK_F:
+            case KeyEvent.DOM_VK_B:
+              break;
+            default:
+              return;
+          }
+        }
+        document.removeEventListener("scroll", markReadInView, true);
+        clearTimeout(markReadInView.timeout);
+        markReadInView.timeout = setTimeout(function () {
+          document.addEventListener("scroll", markReadInView, true);
+        }, 200);
+        if (!Conversations.currentConversation)
+          return;
+  
+        let pageTop = window.pageYOffset;
+        let pageBottom = pageTop + window.innerHeight;
+        let messages = Conversations.currentConversation.messages;
+        messages.forEach(function({ message }, i) {
+          if (!message.read && message.expanded) {
+            if (!message._topInView) {
+              let top = $(message._domNode).offset().top;
+              if (top > pageTop && top < pageBottom)
+                message._topInView = true;
+            }
+            if (!message._bottomInView) {
+              let footerClass = (i == messages.length - 1) ? ".quickReply" : ".messageFooter";
+              let bottom = $(message._domNode.querySelector(footerClass)).offset().top;
+              if (bottom > pageTop && bottom < pageBottom)
+                message._bottomInView = true;
+            }
+            if (message._topInView && message._bottomInView) {
+              message._topInView = false;
+              message._bottomInView = false;
+              message.read = true;
+            }
+          }
+        });
+      }
+      (function () {
+        let w = window;
+        markReadInView.enable = function () {
+          for (let x of ["mouseover", "focus", "keydown"]) {
+            w.document.addEventListener(x, w.markReadInView, true);
+          }
+        };
+        markReadInView.disable = function () {
+          w.clearTimeout(w.markReadInView.timeout);
+          for (let x of ["mouseover", "focus", "keydown", "scroll"]) {
+            w.document.removeEventListener(x, w.markReadInView, true);
+          }
+        };
+      })();
+  
+      // Lightning
+      var ltnImipBar = topMail3Pane(window).ltnImipBar;
+    ]]>
+    </script>
+  </head>
 
 <body>
   <menu id="attachmentMenu" type="context">
