@@ -74,6 +74,8 @@ const kAllowRemoteContent = 2;
 const kHeadersShowAll = 2;
 const kHeadersShowNormal = 1;
 
+const olderThan52 = Services.vc.compare(Services.sysinfo.version, "51.1") > 0;
+
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
 Cu.import("resource://conversations/modules/stdlib/addressBookUtils.js");
@@ -920,7 +922,13 @@ Message.prototype = {
     this.register(".always-display", function (event) {
       self._domNode.getElementsByClassName("remoteContent")[0].style.display = "none";
 
-      let uri = Services.io.newURI("chrome://messenger/content/?email=" + self._from.email, null, null);
+      let chromeUrl;
+      if (olderThan52) {
+        chromeUrl = "chrome://messenger/content/?email=" + self._from.email;
+      } else {
+        chromeUrl = "chrome://messenger/content/email=" + self._from.email;
+      }
+      let uri = Services.io.newURI(chromeUrl, null, null);
       Services.perms.add(uri, "image", Services.perms.ALLOW_ACTION);
       self._reloadMessage();
     });
