@@ -753,710 +753,710 @@
     </script>
   </head>
 
-<body>
-  <menu id="attachmentMenu" type="context">
-    <menuitem label="&stub.context.open;" onclick="getCurrentAttInfo().open();"></menuitem>
-    <menuitem label="&stub.context.save;" onclick="getCurrentAttInfo().save();"></menuitem>
-    <menuitem label="&stub.context.detach;" onclick="getCurrentAttInfo().detach(true);"></menuitem>
-    <menuitem label="&stub.context.delete;" onclick="getCurrentAttInfo().detach(false);"></menuitem>
-  </menu>
-  <script id="detailsTemplate" type="text/x-handlebars-template"><![CDATA[
-      {{#if dataContactsFrom.length}}
-        <div class="detailsLine fromLine">
-          <u>{{str "fieldFrom"}}</u>
-          {{tmpl "contact" dataContactsFrom}}
+  <body>
+    <menu id="attachmentMenu" type="context">
+      <menuitem label="&stub.context.open;" onclick="getCurrentAttInfo().open();"></menuitem>
+      <menuitem label="&stub.context.save;" onclick="getCurrentAttInfo().save();"></menuitem>
+      <menuitem label="&stub.context.detach;" onclick="getCurrentAttInfo().detach(true);"></menuitem>
+      <menuitem label="&stub.context.delete;" onclick="getCurrentAttInfo().detach(false);"></menuitem>
+    </menu>
+    <script id="detailsTemplate" type="text/x-handlebars-template"><![CDATA[
+        {{#if dataContactsFrom.length}}
+          <div class="detailsLine fromLine">
+            <u>{{str "fieldFrom"}}</u>
+            {{tmpl "contact" dataContactsFrom}}
+          </div>
+        {{/if}}
+        {{#if dataContactsTo.length}}
+          <div class="detailsLine toLine">
+            <u>{{str "fieldTo"}}</u>
+            {{tmpl "contact" dataContactsTo}}
+          </div>
+        {{/if}}
+        {{#if dataContactsCc.length}}
+          <div class="detailsLine ccLine">
+            <u>{{str "fieldCc"}}</u>
+            {{tmpl "contact" dataContactsCc}}
+          </div>
+        {{/if}}
+        {{#if dataContactsBcc.length}}
+          <div class="detailsLine bccLine">
+            <u>{{str "fieldBcc"}}</u>
+            {{tmpl "contact" dataContactsBcc}}
+          </div>
+        {{/if}}
+        {{#each extraLines}}
+          <div class="detailsLine">
+            <u>{{key}}:</u>
+            {{value}}
+          </div>
+        {{/each}}
+      ]]>
+    </script>
+    <script id="messageTemplate" type="text/x-handlebars-template"><![CDATA[
+      <li class="message collapsed {{extraClasses}}">
+        <div class="messageHeader hbox">
+          <div class="shrink-box">
+            <div class="star"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#star"></use></svg></div>
+            {{#if dataContactFrom.avatarIsDefault}}
+              <abbr class="contactInitials" style="{{dataContactFrom.colorStyle}}">{{dataContactFrom.initials}}</abbr>
+            {{else}}
+              <span class="contactAvatar" style="background-image: url('{{dataContactFrom.avatar}}')"> </span>
+            {{/if}}
+            <span class="author">{{tmpl "contactLabel" dataContactFrom}}</span>
+            <span class="to hide-with-details"> {{str "to"}} {{tmpl "contactLabel" dataContactsTo}}</span>
+            <span class="recipient-tooltips">{{tmpl "contactTooltip" dataContactFrom}}{{tmpl "contactTooltip" dataContactsTo}}</span>
+            <span class="bzTo"> {{str "at"}} {{bugzillaUrl}}</span>
+            <span class="snippet"><ul class="tags regular-tags"></ul><ul
+                class="tags special-tags"
+              ><li
+                class="tag-signed"
+                title="{{str 'messageSignedLong'}}"
+                ><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#edit"></use></svg>
+                {{str "messageSigned"}}</li
+              ><li
+                class="tag-decrypted"
+                title="{{str 'messageDecryptedLong'}}"
+                ><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#vpn_key"></use></svg>
+                {{str "messageDecrypted"}}</li
+              ><li
+                class="tag-dkim-signed"
+                ><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#edit"></use></svg>
+                {{str "messageDKIMSigned"}}</li
+              ><li
+                class="in-folder"
+                title="{{str 'jumpToFolder'}}"
+                >{{str "inFolder" shortFolderName}}</li
+              ></ul>{{snippet}}</span>
+          </div>
+          <div class="options">
+            <span class="attachmentIcon">
+              {{tmpl "attachmentIcon" this}}
+            </span>
+            <span class="date">
+              <span title="{{fullDate}}">{{date}}</span>
+            </span>
+            <span class="replyLinkWrapper">
+              <a href="javascript:" class="icon-link replyMainActionLink"></a>
+            </span>
+            <span class="editDraftLinkWrapper">
+              <!--
+              <a href="javascript:" class="link edit-draft" title="{{str 'editDraft2'}}">
+                <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="chrome://conversations/skin/material-icons.svg#edit"></use>
+                </svg>
+              </a>
+              -->
+            </span>
+            <span class="details hide-with-details">
+              <a href="javascript:" class="icon-link" title="{{str "details"}}">
+                <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="chrome://conversations/skin/material-icons.svg#info_outline"></use>
+                </svg>
+              </a>
+            </span>
+            <span class="hide-details show-with-details">
+              <a href="javascript:" class="icon-link" title="{{str "hideDetails"}}">
+                <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="chrome://conversations/skin/material-icons.svg#info"></use>
+                </svg>
+              </a>
+            </span>
+            <span class="dropDown">
+              <a href="javascript:" onclick="displayMenu(event);" class="icon-link top-right-more" title="{{str 'more'}}">
+                <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                  <use xlink:href="chrome://conversations/skin/material-icons.svg#more_vert"></use>
+                </svg>
+              </a>
+              <div class="tooltip tooltip-menu menu">
+                <ul>
+                  <li class="action-reply">
+                    <!-- arrow should change color along with first item on hover -->
+                    <div class="arrow"></div>
+                    <div class="arrow inside"></div>
+  
+                    <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#reply"></use></svg> {{str "reply"}}
+                  </li>
+                  <li class="action-replyAll"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#reply_all"></use></svg> {{str "replyAll"}}</li>
+                  <li class="action-replyList"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#list"></use></svg> {{str "replyList"}}</li>
+                  <li class="action-editNew"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#edit"></use></svg> {{str "editNew"}}</li>
+                  <li class="action-forward dropdown-sep"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#forward"></use></svg> {{str "forward"}}</li>
+                  <li class="action-archive"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#archive"></use></svg> {{str "archive"}}</li>
+                  <li class="action-delete"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#delete"></use></svg> {{str "delete"}}</li>
+                  <li class="action-classic"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#open_in_new"></use></svg> {{str "viewClassic"}}</li>
+                  <li class="action-source"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#code"></use></svg> {{str "viewSource"}}</li>
+                  <li class="action-print" style="display: none;"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#print"></use></svg> {{str "print"}}</li>
+                </ul>
+              </div>
+            </span>
+          </div>
         </div>
-      {{/if}}
-      {{#if dataContactsTo.length}}
-        <div class="detailsLine toLine">
-          <u>{{str "fieldTo"}}</u>
-          {{tmpl "contact" dataContactsTo}}
+        <div class="detailsPlaceholder show-with-details">
         </div>
-      {{/if}}
-      {{#if dataContactsCc.length}}
-        <div class="detailsLine ccLine">
-          <u>{{str "fieldCc"}}</u>
-          {{tmpl "contact" dataContactsCc}}
-        </div>
-      {{/if}}
-      {{#if dataContactsBcc.length}}
-        <div class="detailsLine bccLine">
-          <u>{{str "fieldBcc"}}</u>
-          {{tmpl "contact" dataContactsBcc}}
-        </div>
-      {{/if}}
-      {{#each extraLines}}
         <div class="detailsLine">
-          <u>{{key}}:</u>
-          {{value}}
+          {{tmpl "attachmentDetails" this}}
         </div>
-      {{/each}}
-    ]]>
-  </script>
-  <script id="messageTemplate" type="text/x-handlebars-template"><![CDATA[
-    <li class="message collapsed {{extraClasses}}">
-      <div class="messageHeader hbox">
-        <div class="shrink-box">
-          <div class="star"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#star"></use></svg></div>
-          {{#if dataContactFrom.avatarIsDefault}}
-            <abbr class="contactInitials" style="{{dataContactFrom.colorStyle}}">{{dataContactFrom.initials}}</abbr>
-          {{else}}
-            <span class="contactAvatar" style="background-image: url('{{dataContactFrom.avatar}}')"> </span>
-          {{/if}}
-          <span class="author">{{tmpl "contactLabel" dataContactFrom}}</span>
-          <span class="to hide-with-details"> {{str "to"}} {{tmpl "contactLabel" dataContactsTo}}</span>
-          <span class="recipient-tooltips">{{tmpl "contactTooltip" dataContactFrom}}{{tmpl "contactTooltip" dataContactsTo}}</span>
-          <span class="bzTo"> {{str "at"}} {{bugzillaUrl}}</span>
-          <span class="snippet"><ul class="tags regular-tags"></ul><ul
-              class="tags special-tags"
+  
+        {{#if generateLightningTempl}}
+        <div class="lightningImipBar notificationBar" style="display: none">
+          <img class="lightningImipImage" src="chrome://calendar/skin/cal-icon32.png"/>
+          <span class="lightningImipText"></span>
+          <!-- The text for all these buttons is filled dynamically -->
+  
+          <!-- show event/invitation details -->
+          <button id="imipDetailsButton"
+                  class="lightningImipButton msgHeaderView-button imipDetailsButton"
+                  onclick="ltnImipBar.executeAction('X-SHOWDETAILS')"
+                  style="display: none">
+          </button>
+  
+          <!-- add published events -->
+          <button id="imipAddButton"
+                  class="lightningImipButton msgHeaderView-button imipAddButton"
+                  onclick="ltnImipBar.executeAction()"
+                  style="display: none">
+          </button>
+  
+          <!-- update published events and invitations -->
+          <button id="imipUpdateButton"
+                  class="lightningImipButton msgHeaderView-button imipUpdateButton"
+                  onclick="ltnImipBar.executeAction()"
+                  style="display: none">
+          </button>
+  
+          <!-- delete cancelled events from calendar -->
+          <button id="imipDeleteButton"
+                  class="lightningImipButton msgHeaderView-button imipDeleteButton"
+                  onclick="ltnImipBar.executeAction()"
+                  style="display: none">
+          </button>
+  
+          <!-- re-confirm partstat -->
+          <button id="imipReconfirmButton"
+                  class="lightningImipButton msgHeaderView-button imipReconfirmButton"
+                  onclick="ltnImipBar.executeAction()"
+                  style="display: none">
+          </button>
+  
+          <!-- accept -->
+          <button id="imipAcceptButton"
+                  onclick="if (event.target.id == this.id) ltnImipBar.executeAction('ACCEPTED');"
+                  type="menu-button"
+                  class="imip-button lightningImipButton msgHeaderView-button imipAcceptButton"
+                  style="display: none">
+            <menupopup id="imipAcceptDropdown">
+              <menuitem id="imipAcceptButton_Accept"
+                        onclick="ltnImipBar.executeAction('ACCEPTED');"/>
+              <menuitem id="imipAcceptButton_Tentative"
+                        onclick="ltnImipBar.executeAction('TENTATIVE');"/>
+              <!-- add here more menuitem as needed -->
+            </menupopup>
+          </button>
+  
+          <!-- accept recurrences -->
+          <button id="imipAcceptRecurrencesButton"
+                  onclick="if (event.target.id == this.id) ltnImipBar.executeAction('ACCEPTED');"
+                  type="menu-button"
+                  class="imip-button lightningImipButton msgHeaderView-button imipAcceptRecurrencesButton"
+                  style="display: none">
+            <menupopup id="imipAcceptRecurrencesDropdown">
+              <menuitem id="imipAcceptRecurrencesButton_Accept"
+                        onclick="ltnImipBar.executeAction('ACCEPTED');"/>
+              <menuitem id="imipAcceptRecurrencesButton_Tentative"
+                        onclick="ltnImipBar.executeAction('TENTATIVE');"/>
+              <!-- add here more menuitem as needed -->
+            </menupopup>
+          </button>
+  
+          <!-- tentative; should only be used, if no imipMoreButton is used and
+             - imipDeclineButton/imipAcceptButton have no visible menuitems //-->
+          <button id="imipTentativeButton"
+                  class="lightningImipButton msgHeaderView-button imipTentativeButton"
+                  onclick="if (event.target.id == this.id) ltnImipBar.executeAction('TENTATIVE');"
+                  type="menu-button"
+                  style="display: none">
+            <menupopup id="imipTentativeDropdown">
+              <menuitem id="imipTentativeButton_Tentative"
+                        onclick="ltnImipBar.executeAction('TENTATIVE');"/>
+              <!-- add here more menuitem as needed -->
+            </menupopup>
+          </button>
+  
+          <!-- tentative recurrences; should only be used, if no imipMoreButton is used and
+             - imipDeclineRecurrencesButton/imipAcceptRecurrencesButton have no visible menuitems //-->
+          <button id="imipTentativeRecurrencesButton"
+                  class="lightningImipButton msgHeaderView-button imipTentativeRecurrencesButton"
+                  onclick="if (event.target.id == this.id) ltnImipBar.executeAction('TENTATIVE');"
+                  type="menu-button"
+                  style="display: none">
+            <menupopup id="imipTentativeRecurrencesDropdown">
+              <menuitem id="imipTentativeRecurrencesButton_Tentative"
+                        onclick="ltnImipBar.executeAction('TENTATIVE');"/>
+              <!-- add here more menuitem as needed -->
+            </menupopup>
+          </button>
+  
+          <!-- decline -->
+          <button id="imipDeclineButton"
+                  onclick="if (event.target.id == this.id) ltnImipBar.executeAction('DECLINED');"
+                  type="menu-button"
+                  class="lightningImipButton msgHeaderView-button imipDeclineButton"
+                  style="display: none">
+            <menupopup id="imipDeclineDropdown">
+              <menuitem id="imipDeclineButton_Decline"
+                        onclick="ltnImipBar.executeAction('DECLINED');"/>
+              <!-- add here more menuitem as needed -->
+            </menupopup>
+          </button>
+  
+          <!-- decline recurrences -->
+          <button id="imipDeclineRecurrencesButton"
+                  onclick="if (event.target.id == this.id) ltnImipBar.executeAction('DECLINED');"
+                  type="menu-button"
+                  class="lightningImipButton msgHeaderView-button imipDeclineRecurrencesButton"
+                  style="display: none">
+            <menupopup id="imipDeclineRecurrencesDropdown">
+              <menuitem id="imipDeclineRecurrencesButton_DeclineAll"
+                        onclick="ltnImipBar.executeAction('DECLINED');"/>
+              <!-- add here more menuitem as needed -->
+            </menupopup>
+          </button>
+  
+          <!-- more options -->
+          <button id="imipMoreButton"
+                  type="menu"
+                  class="lightningImipButton msgHeaderView-button imipMoreButton"
+                  style="display: none">
+            <menupopup id="imipMoreDropdown">
+              <!-- add here a menuitem as needed -->
+            </menupopup>
+          </button>
+        </div>
+        {{/if}}
+        <div class="phishingBar notificationBar" style="display: none">
+          <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#warning"></use></svg>
+          {{str "scam"}}
+          <span class="ignore-warning">
+            <a href="javascript:">{{str "ignoreWarning"}}</a>
+          </span>
+        </div>
+        <div class="remoteContent notificationBar" style="display: none">
+          {{str "remoteContentBlocked"}}
+          <span class="show-remote-content">
+            <a href="javascript:">{{str "showRemote"}}</a> -
+          </span>
+          <span class="always-display">
+            <a href="javascript:">{{str "alwaysShowRemote" realFrom}}</a>
+          </span>
+        </div>
+        <div class="junkBar notificationBar" {{#unless canUnJunk}}style="display: none"{{/unless}}>
+          <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#whatshot"></use></svg>
+          {{str "junk"}}
+          <span class="notJunk">
+            <a href="javascript:">{{str "notJunk"}}</a>
+          </span>
+        </div>
+        <div class="outboxBar notificationBar" {{#unless isOutbox}}style="display: none"{{/unless}}>
+          <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#inbox"></use></svg>
+          {{str "isOutbox"}}
+          <span class="sendUnsent">
+            <a href="javascript:">{{str "sendUnsent"}}</a>
+          </span>
+        </div>
+        <div class="enigmailBar notificationBar" style="display: none">
+          <span class="enigmailMessage"></span>
+          <span class="enigmailDetails">
+            <button>{{str "Details"}}</button>
+          </span>
+        </div>
+  
+        <div class="messageBody">
+          <!-- Weird markup to deal with whitespace DOM nodes -->
+          <ul class="tags special-tags"
             ><li
-              class="tag-signed"
+              class="keep-tag tag-signed"
               title="{{str 'messageSignedLong'}}"
               ><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#edit"></use></svg>
               {{str "messageSigned"}}</li
             ><li
-              class="tag-decrypted"
+              class="keep-tag tag-decrypted"
               title="{{str 'messageDecryptedLong'}}"
               ><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#vpn_key"></use></svg>
               {{str "messageDecrypted"}}</li
             ><li
-              class="tag-dkim-signed"
+              class="keep-tag tag-dkim-signed"
               ><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#edit"></use></svg>
               {{str "messageDKIMSigned"}}</li
             ><li
-              class="in-folder"
+              class="keep-tag in-folder"
               title="{{str 'jumpToFolder'}}"
-              >{{str "inFolder" shortFolderName}}</li
-            ></ul>{{snippet}}</span>
+              >{{str "inFolder" folderName}}</li
+            ></ul
+          >
+          <ul class="tags regular-tags"></ul>
+          <div class="iframe-container"></div>
+          <div class="body-container"></div>
+          <div class="attachments-container">
+            {{tmpl "attachments" this}}
+          </div>
+          <div class="embedsContainer">
+          </div>
         </div>
-        <div class="options">
-          <span class="attachmentIcon">
-            {{tmpl "attachmentIcon" this}}
-          </span>
-          <span class="date">
-            <span title="{{fullDate}}">{{date}}</span>
-          </span>
-          <span class="replyLinkWrapper">
-            <a href="javascript:" class="icon-link replyMainActionLink"></a>
-          </span>
-          <span class="editDraftLinkWrapper">
-            <!--
-            <a href="javascript:" class="link edit-draft" title="{{str 'editDraft2'}}">
-              <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                <use xlink:href="chrome://conversations/skin/material-icons.svg#edit"></use>
-              </svg>
-            </a>
-            -->
-          </span>
-          <span class="details hide-with-details">
-            <a href="javascript:" class="icon-link" title="{{str "details"}}">
-              <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                <use xlink:href="chrome://conversations/skin/material-icons.svg#info_outline"></use>
-              </svg>
-            </a>
-          </span>
-          <span class="hide-details show-with-details">
-            <a href="javascript:" class="icon-link" title="{{str "hideDetails"}}">
-              <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                <use xlink:href="chrome://conversations/skin/material-icons.svg#info"></use>
-              </svg>
-            </a>
-          </span>
-          <span class="dropDown">
-            <a href="javascript:" onclick="displayMenu(event);" class="icon-link top-right-more" title="{{str 'more'}}">
-              <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                <use xlink:href="chrome://conversations/skin/material-icons.svg#more_vert"></use>
-              </svg>
-            </a>
-            <div class="tooltip tooltip-menu menu">
-              <ul>
-                <li class="action-reply">
-                  <!-- arrow should change color along with first item on hover -->
-                  <div class="arrow"></div>
-                  <div class="arrow inside"></div>
-
-                  <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#reply"></use></svg> {{str "reply"}}
-                </li>
-                <li class="action-replyAll"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#reply_all"></use></svg> {{str "replyAll"}}</li>
-                <li class="action-replyList"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#list"></use></svg> {{str "replyList"}}</li>
-                <li class="action-editNew"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#edit"></use></svg> {{str "editNew"}}</li>
-                <li class="action-forward dropdown-sep"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#forward"></use></svg> {{str "forward"}}</li>
-                <li class="action-archive"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#archive"></use></svg> {{str "archive"}}</li>
-                <li class="action-delete"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#delete"></use></svg> {{str "delete"}}</li>
-                <li class="action-classic"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#open_in_new"></use></svg> {{str "viewClassic"}}</li>
-                <li class="action-source"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#code"></use></svg> {{str "viewSource"}}</li>
-                <li class="action-print" style="display: none;"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#print"></use></svg> {{str "print"}}</li>
-              </ul>
-            </div>
-          </span>
+        <div class="messageFooter">
+          <div class="footerActions">
+            <button class="edit-draft" title="{{str 'editDraft2'}}"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#edit"></use></svg></button>
+            <button class="buttonReply" title="{{str 'reply'}}"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#reply"></use></svg> <span></span></button>
+            <button class="buttonReplyAll" title="{{str 'replyAll'}}"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#reply_all"></use></svg></button>
+            <button class="buttonReplyList" title="{{str 'replyList'}}"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#list"></use></svg></button>
+            <button class="buttonForward" title="{{str 'forward'}}"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#forward"></use></svg></button>
+          </div>
         </div>
-      </div>
-      <div class="detailsPlaceholder show-with-details">
-      </div>
-      <div class="detailsLine">
-        {{tmpl "attachmentDetails" this}}
-      </div>
-
-      {{#if generateLightningTempl}}
-      <div class="lightningImipBar notificationBar" style="display: none">
-        <img class="lightningImipImage" src="chrome://calendar/skin/cal-icon32.png"/>
-        <span class="lightningImipText"></span>
-        <!-- The text for all these buttons is filled dynamically -->
-
-        <!-- show event/invitation details -->
-        <button id="imipDetailsButton"
-                class="lightningImipButton msgHeaderView-button imipDetailsButton"
-                onclick="ltnImipBar.executeAction('X-SHOWDETAILS')"
-                style="display: none">
-        </button>
-
-        <!-- add published events -->
-        <button id="imipAddButton"
-                class="lightningImipButton msgHeaderView-button imipAddButton"
-                onclick="ltnImipBar.executeAction()"
-                style="display: none">
-        </button>
-
-        <!-- update published events and invitations -->
-        <button id="imipUpdateButton"
-                class="lightningImipButton msgHeaderView-button imipUpdateButton"
-                onclick="ltnImipBar.executeAction()"
-                style="display: none">
-        </button>
-
-        <!-- delete cancelled events from calendar -->
-        <button id="imipDeleteButton"
-                class="lightningImipButton msgHeaderView-button imipDeleteButton"
-                onclick="ltnImipBar.executeAction()"
-                style="display: none">
-        </button>
-
-        <!-- re-confirm partstat -->
-        <button id="imipReconfirmButton"
-                class="lightningImipButton msgHeaderView-button imipReconfirmButton"
-                onclick="ltnImipBar.executeAction()"
-                style="display: none">
-        </button>
-
-        <!-- accept -->
-        <button id="imipAcceptButton"
-                onclick="if (event.target.id == this.id) ltnImipBar.executeAction('ACCEPTED');"
-                type="menu-button"
-                class="imip-button lightningImipButton msgHeaderView-button imipAcceptButton"
-                style="display: none">
-          <menupopup id="imipAcceptDropdown">
-            <menuitem id="imipAcceptButton_Accept"
-                      onclick="ltnImipBar.executeAction('ACCEPTED');"/>
-            <menuitem id="imipAcceptButton_Tentative"
-                      onclick="ltnImipBar.executeAction('TENTATIVE');"/>
-            <!-- add here more menuitem as needed -->
-          </menupopup>
-        </button>
-
-        <!-- accept recurrences -->
-        <button id="imipAcceptRecurrencesButton"
-                onclick="if (event.target.id == this.id) ltnImipBar.executeAction('ACCEPTED');"
-                type="menu-button"
-                class="imip-button lightningImipButton msgHeaderView-button imipAcceptRecurrencesButton"
-                style="display: none">
-          <menupopup id="imipAcceptRecurrencesDropdown">
-            <menuitem id="imipAcceptRecurrencesButton_Accept"
-                      onclick="ltnImipBar.executeAction('ACCEPTED');"/>
-            <menuitem id="imipAcceptRecurrencesButton_Tentative"
-                      onclick="ltnImipBar.executeAction('TENTATIVE');"/>
-            <!-- add here more menuitem as needed -->
-          </menupopup>
-        </button>
-
-        <!-- tentative; should only be used, if no imipMoreButton is used and
-           - imipDeclineButton/imipAcceptButton have no visible menuitems //-->
-        <button id="imipTentativeButton"
-                class="lightningImipButton msgHeaderView-button imipTentativeButton"
-                onclick="if (event.target.id == this.id) ltnImipBar.executeAction('TENTATIVE');"
-                type="menu-button"
-                style="display: none">
-          <menupopup id="imipTentativeDropdown">
-            <menuitem id="imipTentativeButton_Tentative"
-                      onclick="ltnImipBar.executeAction('TENTATIVE');"/>
-            <!-- add here more menuitem as needed -->
-          </menupopup>
-        </button>
-
-        <!-- tentative recurrences; should only be used, if no imipMoreButton is used and
-           - imipDeclineRecurrencesButton/imipAcceptRecurrencesButton have no visible menuitems //-->
-        <button id="imipTentativeRecurrencesButton"
-                class="lightningImipButton msgHeaderView-button imipTentativeRecurrencesButton"
-                onclick="if (event.target.id == this.id) ltnImipBar.executeAction('TENTATIVE');"
-                type="menu-button"
-                style="display: none">
-          <menupopup id="imipTentativeRecurrencesDropdown">
-            <menuitem id="imipTentativeRecurrencesButton_Tentative"
-                      onclick="ltnImipBar.executeAction('TENTATIVE');"/>
-            <!-- add here more menuitem as needed -->
-          </menupopup>
-        </button>
-
-        <!-- decline -->
-        <button id="imipDeclineButton"
-                onclick="if (event.target.id == this.id) ltnImipBar.executeAction('DECLINED');"
-                type="menu-button"
-                class="lightningImipButton msgHeaderView-button imipDeclineButton"
-                style="display: none">
-          <menupopup id="imipDeclineDropdown">
-            <menuitem id="imipDeclineButton_Decline"
-                      onclick="ltnImipBar.executeAction('DECLINED');"/>
-            <!-- add here more menuitem as needed -->
-          </menupopup>
-        </button>
-
-        <!-- decline recurrences -->
-        <button id="imipDeclineRecurrencesButton"
-                onclick="if (event.target.id == this.id) ltnImipBar.executeAction('DECLINED');"
-                type="menu-button"
-                class="lightningImipButton msgHeaderView-button imipDeclineRecurrencesButton"
-                style="display: none">
-          <menupopup id="imipDeclineRecurrencesDropdown">
-            <menuitem id="imipDeclineRecurrencesButton_DeclineAll"
-                      onclick="ltnImipBar.executeAction('DECLINED');"/>
-            <!-- add here more menuitem as needed -->
-          </menupopup>
-        </button>
-
-        <!-- more options -->
-        <button id="imipMoreButton"
-                type="menu"
-                class="lightningImipButton msgHeaderView-button imipMoreButton"
-                style="display: none">
-          <menupopup id="imipMoreDropdown">
-            <!-- add here a menuitem as needed -->
-          </menupopup>
-        </button>
-      </div>
-      {{/if}}
-      <div class="phishingBar notificationBar" style="display: none">
-        <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#warning"></use></svg>
-        {{str "scam"}}
-        <span class="ignore-warning">
-          <a href="javascript:">{{str "ignoreWarning"}}</a>
-        </span>
-      </div>
-      <div class="remoteContent notificationBar" style="display: none">
-        {{str "remoteContentBlocked"}}
-        <span class="show-remote-content">
-          <a href="javascript:">{{str "showRemote"}}</a> -
-        </span>
-        <span class="always-display">
-          <a href="javascript:">{{str "alwaysShowRemote" realFrom}}</a>
-        </span>
-      </div>
-      <div class="junkBar notificationBar" {{#unless canUnJunk}}style="display: none"{{/unless}}>
-        <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#whatshot"></use></svg>
-        {{str "junk"}}
-        <span class="notJunk">
-          <a href="javascript:">{{str "notJunk"}}</a>
-        </span>
-      </div>
-      <div class="outboxBar notificationBar" {{#unless isOutbox}}style="display: none"{{/unless}}>
-        <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#inbox"></use></svg>
-        {{str "isOutbox"}}
-        <span class="sendUnsent">
-          <a href="javascript:">{{str "sendUnsent"}}</a>
-        </span>
-      </div>
-      <div class="enigmailBar notificationBar" style="display: none">
-        <span class="enigmailMessage"></span>
-        <span class="enigmailDetails">
-          <button>{{str "Details"}}</button>
-        </span>
-      </div>
-
-      <div class="messageBody">
-        <!-- Weird markup to deal with whitespace DOM nodes -->
-        <ul class="tags special-tags"
-          ><li
-            class="keep-tag tag-signed"
-            title="{{str 'messageSignedLong'}}"
-            ><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#edit"></use></svg>
-            {{str "messageSigned"}}</li
-          ><li
-            class="keep-tag tag-decrypted"
-            title="{{str 'messageDecryptedLong'}}"
-            ><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#vpn_key"></use></svg>
-            {{str "messageDecrypted"}}</li
-          ><li
-            class="keep-tag tag-dkim-signed"
-            ><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#edit"></use></svg>
-            {{str "messageDKIMSigned"}}</li
-          ><li
-            class="keep-tag in-folder"
-            title="{{str 'jumpToFolder'}}"
-            >{{str "inFolder" folderName}}</li
-          ></ul
-        >
-        <ul class="tags regular-tags"></ul>
-        <div class="iframe-container"></div>
-        <div class="body-container"></div>
-        <div class="attachments-container">
-          {{tmpl "attachments" this}}
-        </div>
-        <div class="embedsContainer">
-        </div>
-      </div>
-      <div class="messageFooter">
-        <div class="footerActions">
-          <button class="edit-draft" title="{{str 'editDraft2'}}"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#edit"></use></svg></button>
-          <button class="buttonReply" title="{{str 'reply'}}"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#reply"></use></svg> <span></span></button>
-          <button class="buttonReplyAll" title="{{str 'replyAll'}}"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#reply_all"></use></svg></button>
-          <button class="buttonReplyList" title="{{str 'replyList'}}"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#list"></use></svg></button>
-          <button class="buttonForward" title="{{str 'forward'}}"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#forward"></use></svg></button>
-        </div>
-      </div>
-      {{#if quickReply}}
-        {{tmpl "quickReply" this}}
-      {{/if}}
-    </li>
-    ]]>
-  </script>
-  <!-- Weird markup again, otherwise, the comma is separated from the name by a
-    space because of the #text whitespace-only nodes that end up in the DOM.
-  -->
-  <!-- Generic contact template with tooltip -->
-  <script id="contactTemplate" type="text/x-handlebars-template"><![CDATA[
-    {{tmpl "contactLabel" this}}{{tmpl "contactTooltip" this}}
-  ]]></script>
-  <!-- Contact template specific to recipients, without tooltip -->
-  <script id="contactLabelTemplate" type="text/x-handlebars-template"><![CDATA[<span
-    >{{separator}}</span
-    ><span class="tooltipWrapper contact"
-      ><span class="contactName"
-        >{{#if star}}&#x2605; {{/if}}{{trim name}}{{#if extra}}
-        <label xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-          crop="center" class="contactExtra"
-          value="({{extra}})"
-        />{{/if}}{{#if displayEmail}}<span class="smallEmail"
-          > &lt;{{trim displayEmail}}&gt;</span>{{/if}}{{#if writeBr}}<br />{{/if}}</span
-      ></span
-  >]]></script>
-  <!-- Tooltip template specific to recipients -->
-  <script id="contactTooltipTemplate" type="text/x-handlebars-template"><![CDATA[<span
-    class="contactTooltipWrapper contact">{{tmpl "innerTooltip" this}}</span
-  >]]></script>
-  <!-- Inner tooltip template, to be used by other templates. Currently only used by the template above. -->
-  <script id="innerTooltipTemplate" type="text/x-handlebars-template"><![CDATA[<div
-    class="tooltip">
-      <div class="arrow"></div>
-      <div class="arrow inside"></div>
-      <div class="authorInfoContainer">
-        <div class="authorInfo">
-          <span class="name" title="{{tooltipName}}">{{tooltipName}}</span>
-          <span class="authorEmail">
-            <span class="authorEmailAddress" title="{{email}}">{{email}}</span>
-            <button class="copyEmail" title="{{str 'copyEmail'}}">
-              <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#content_copy"></use></svg>
-            </button>
-          </span>
-        </div>
-        <div class="authorPicture">
-          <img src="{{avatar}}" />
-        </div>
-      </div>
-      <div class="tipFooter hiddenFooter" style="display:none;">
-        {{#if showMonospace}}
-        <div style="margin-bottom:5px;">
-          <input type="checkbox" style="vertical-align: text-top" class="checkbox-monospace" />
-          <label style="color:#666; font-weight: normal">{{str "messagesMonospace"}}</label>
-        </div>
+        {{#if quickReply}}
+          {{tmpl "quickReply" this}}
         {{/if}}
-        <button class="createFilter">{{str "createFilter"}}</button>
-        <button class="addContact" title="{{str 'addToAb'}}">
-          <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-            <use xlink:href="chrome://conversations/skin/material-icons.svg#add"></use>
-          </svg>
-        </button>
-        <button class="editContact" title="{{str 'editCardAb'}}">
-          <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-            <use xlink:href="chrome://conversations/skin/material-icons.svg#edit"></use>
-          </svg>
-        </button>
-      </div>
-      <div class="tipFooter">
-        <button class="sendEmail" title="{{str 'sendEmail'}}">
-          <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-            <use xlink:href="chrome://conversations/skin/material-icons.svg#mail"></use>
-          </svg>
-        </button>
-        <button class="showInvolving" title="{{str 'recentConversations'}}">
-          <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-            <use xlink:href="chrome://conversations/skin/material-icons.svg#history"></use>
-          </svg>
-        </button>
-        <button class="moreExpander" title="{{str 'more'}}">
-          <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-            <use class="moreExpander-close" xlink:href="chrome://conversations/skin/material-icons.svg#expand_less"></use>
-            <use class="moreExpander-open" xlink:href="chrome://conversations/skin/material-icons.svg#expand_more"></use>
-          </svg>
-        </button>
-      </div>
-    </div
-  >]]></script>
-  <script id="attachmentIconTemplate" type="text/x-handlebars-template"><![CDATA[
-    {{#if attachments.length}}
-      <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#attachment"></use></svg>
-    {{/if}}
-  ]]></script>
-  <script id="attachmentDetailsTemplate" type="text/x-handlebars-template"><![CDATA[
-    {{#if attachments.length}}
-      <u>{{attachmentsPlural}}:</u>
-      {{#each attachments}}
-        <a href="javascript:"
-          onclick="scrollNodeIntoView(document.getElementById('{{anchor}}'));">
-          {{name}} ({{formattedSize}})</a>{{sep}}
-      {{/each}}
-    {{/if}}
-  ]]></script>
-  <script id="attachmentsTemplate" type="text/x-handlebars-template"><![CDATA[
-    {{#if attachments.length}}
-      <ul class="attachments">
-        <div class="attachHeader">
-          {{attachmentsPlural}}
-          <a href="javascript:" class="icon-link download-all" title="{{str 'downloadAll2'}}">
-            <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-              <use xlink:href="chrome://conversations/skin/material-icons.svg#save"></use>
-            </svg>
-          </a>
-          {{#if gallery}}
-          <a href="javascript:" onclick="galleryView('{{uri}}')" class="icon-link view-all" title="{{str 'galleryView'}}">
-            <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-              <use xlink:href="chrome://conversations/skin/material-icons.svg#photo_library"></use>
-            </svg>
-            </a>
-          {{/if}}
-        </div>
-        {{#each attachments}}
-        <li class="clearfix hbox attachment" draggable="true" id="{{anchor}}">
-          <div class="attachmentThumb">
-            <img onload="$(this).closest('.attachment').find('.align').vAlign()"
-            class="{{imgClass}}" src="{{thumb}}" />
-          </div>
-          <div class="attachmentInfo align">
-            <span class="filename">{{name}}</span>
-            <span class="filesize">{{formattedSize}}</span>
-            <div class="attachActions">
-              {{#if canPreview}}
-              <a href="javascript:" class="icon-link preview-attachment" title="{{str "preview"}}">
-                <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                  <use xlink:href="chrome://conversations/skin/material-icons.svg#visibility"></use>
-                </svg>
-              </a>
-              {{/if}}
-              <a href="javascript:" class="icon-link download-attachment" title="{{str 'download2'}}">
-                <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                  <use xlink:href="chrome://conversations/skin/material-icons.svg#save"></use>
-                </svg>
-              </a>
-              <a href="javascript:" class="icon-link open-attachment" title="{{str 'open'}}">
-                <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                  <use xlink:href="chrome://conversations/skin/material-icons.svg#search"></use>
-                </svg>
-              </a>
-            </div>
-          </div>
-        </li>
-        {{/each}}
-      </ul>
-    {{/if}}
-  ]]></script>
-  <script id="popularContactTemplate" type="text/x-handlebars-template"><![CDATA[
-    <div class="popularContact">
-      <img class="popularPhoto" src="{{photo}}" style="float: left" />
-      <span class="popularRemove">×</span>
-      <span class="popularName">{{name}}</span><br />
-      <span class="popularEmail">{{email}}</span>
-    </div>
-  ]]></script>
-  <script id="quickReplyTemplate" type="text/x-handlebars-template"><![CDATA[
-    <div class="quickReply" ondragover="quickReplyCheckDrag(event);" ondrop="quickReplyDrop(event);">
-      <div class="quickReplyContacts">
-        <div class="quickReplyContactsHeader">
-          {{str "mostFrequentContacts"}}
-        </div>
-        <div class="quickReplyContactsBox">
-        </div>
-        <div class="quickReplyContactsMore">
-          <a class="quickReplyContactsMoreLink">
-            {{str "showMore"}}
-          </a>
-        </div>
-      </div>
-      <div class="quickReplyBox">
-        <div class="replyHeader">
-          <div class="quickReplyRecipients">
-            <ul class="fromField">
-              {{str "fieldFrom"}}
-              <li class="senderSwitcher"><a class="switchLeft" onclick="gComposeSession.cycleSender(-1)">◂</a> <a class="switchRight" onclick="gComposeSession.cycleSender(1)">▸</a></li>
-              <li class="senderName"></li>,
-              <li class="replyMethod">
-                <input type="radio" name="reply-method" value="reply"
-                  onchange="changeComposeFields('reply')" id="reply-radio"
-                /><label for="reply-radio">{{str "reply"}}</label>
-              </li>
-              <li class="replyMethod replyMethod-replyAll">
-                <input type="radio" name="reply-method" value="replyAll"
-                  onchange="changeComposeFields('replyAll')" id="replyAll-radio"
-                /><label for="replyAll-radio">{{str "replyAll"}}</label>
-              </li>
-              <li class="replyMethod replyMethod-replyList">
-                <input type="radio" name="reply-method" value="replyList"
-                  onchange="changeComposeFields('replyList')" id="replyList-radio"
-                /><label for="replyList-radio">{{str "replyList"}}</label>
-              </li>
-              <li class="replyMethod">
-                <input type="radio" name="reply-method" value="forward"
-                  onchange="changeComposeFields('forward')" id="forward-radio"
-                /><label for="forward-radio">{{str "forward"}}</label>
-              </li>
-              <li class="firstBar">|</li>
-              <li class="showCc"><a onclick="showCc(); editFields('cc');" href="javascript:">{{str "addCc"}}</a> |</li>
-              <li class="showBcc"><a onclick="showBcc(); editFields('bcc');" href="javascript:">{{str "addBcc"}}</a> |</li>
-              <li class="addAttachment"><a onclick="addAttachment();" href="javascript:">{{str "addAttachment"}}</a></li>
-            </ul>
-            <div class="editRecipientList editToList hbox">
-              <div class="label">{{str "fieldTo"}}</div>
-              <div class="boxFlex"><input type="text" id="to" /></div>
-            </div>
-            <div class="editRecipientList editCcList hbox" style="display: none">
-              <div class="label">{{str "fieldCc"}}</div>
-              <div class="boxFlex"><input type="text" id="cc" /></div>
-            </div>
-            <div class="editRecipientList editBccList hbox" style="display: none">
-              <div class="label">{{str "fieldBcc"}}</div>
-              <div class="boxFlex"><input type="text" id="bcc" /></div>
-            </div>
-            <div class="editRecipientList editSubject hbox" style="display: none">
-              <div class="label">{{str "fieldSubject"}}</div>
-              <div class="boxFlex"><input type="text" id="subject" /></div>
-            </div>
-            <ul class="recipientList toList">
-              {{str "fieldTo"}}
-              <li>{{str "pleaseWait"}}</li>
-              <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('to');">{{str "edit"}}</a></li>
-            </ul>
-            <ul class="recipientList ccList" style="display: none;">
-              {{str "fieldCc"}}
-              <li>{{str "pleaseWait"}}</li>
-              <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('cc');">{{str "edit"}}</a></li>
-            </ul>
-            <ul class="recipientList bccList" style="display: none;">
-              {{str "fieldBcc"}}
-              <li>{{str "pleaseWait"}}</li>
-              <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('bcc');">{{str "edit"}}</a></li>
-            </ul>
-          </div>
-          <ul class="enigmail" style="display: none;">
-            <li class="replyEncrypt">
-              <input type="checkbox" name="enigmail-reply-encrypt" id="enigmail-reply-encrypt"
-              /><label for="enigmail-reply-encrypt">{{str "encrypt"}}</label>
-            </li>
-            <li class="replySign">
-              <input type="checkbox" name="enigmail-reply-sign" id="enigmail-reply-sign"
-              /><label for="enigmail-reply-sign">{{str "sign"}}</label>
-            </li>
-            <li class="replyPgpMime">
-              <input type="checkbox" name="enigmail-reply-pgpmime" id="enigmail-reply-pgpmime"
-              /><label for="enigmail-reply-pgpmime">PGP/MIME</label>
-            </li>
-          </ul>
-          <div class="quickReplyAttachments">
-          </div>
-          <div class="quickReplyHeader" style="display: none; overflow: auto">
-            <span class="statusMessage" style="float: left;"></span>
-            <span class="statusPercentage" style="float: right;"></span>
-            <span class="statusThrobber" style="float: right;">
-              <img src="chrome://conversations/content/i/loader.gif"
-                style="vertical-align: middle;" />
+      </li>
+      ]]>
+    </script>
+    <!-- Weird markup again, otherwise, the comma is separated from the name by a
+      space because of the #text whitespace-only nodes that end up in the DOM.
+    -->
+    <!-- Generic contact template with tooltip -->
+    <script id="contactTemplate" type="text/x-handlebars-template"><![CDATA[
+      {{tmpl "contactLabel" this}}{{tmpl "contactTooltip" this}}
+    ]]></script>
+    <!-- Contact template specific to recipients, without tooltip -->
+    <script id="contactLabelTemplate" type="text/x-handlebars-template"><![CDATA[<span
+      >{{separator}}</span
+      ><span class="tooltipWrapper contact"
+        ><span class="contactName"
+          >{{#if star}}&#x2605; {{/if}}{{trim name}}{{#if extra}}
+          <label xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+            crop="center" class="contactExtra"
+            value="({{extra}})"
+          />{{/if}}{{#if displayEmail}}<span class="smallEmail"
+            > &lt;{{trim displayEmail}}&gt;</span>{{/if}}{{#if writeBr}}<br />{{/if}}</span
+        ></span
+    >]]></script>
+    <!-- Tooltip template specific to recipients -->
+    <script id="contactTooltipTemplate" type="text/x-handlebars-template"><![CDATA[<span
+      class="contactTooltipWrapper contact">{{tmpl "innerTooltip" this}}</span
+    >]]></script>
+    <!-- Inner tooltip template, to be used by other templates. Currently only used by the template above. -->
+    <script id="innerTooltipTemplate" type="text/x-handlebars-template"><![CDATA[<div
+      class="tooltip">
+        <div class="arrow"></div>
+        <div class="arrow inside"></div>
+        <div class="authorInfoContainer">
+          <div class="authorInfo">
+            <span class="name" title="{{tooltipName}}">{{tooltipName}}</span>
+            <span class="authorEmail">
+              <span class="authorEmailAddress" title="{{email}}">{{email}}</span>
+              <button class="copyEmail" title="{{str 'copyEmail'}}">
+                <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#content_copy"></use></svg>
+              </button>
             </span>
           </div>
+          <div class="authorPicture">
+            <img src="{{avatar}}" />
+          </div>
         </div>
-
-        <ul class="inputs">
-          <li class="reply expand" ondragenter="quickReplyDragEnter(event);">
-            <div class="textWrap">
-              <div class="quickReplyIcon"><span>{{str "reply"}}</span> <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#reply"></use></svg></div>
-              <iframe mozframetype="content" class="textarea sans"></iframe>
-            </div>
-          </li>
-
-          <li class="replyAll expand" ondragenter="quickReplyDragEnter(event);">
-            <div class="textWrap">
-              <div class="quickReplyIcon"><span>{{str "replyAll"}}</span> <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#reply_all"></use></svg></div>
-              <iframe mozframetype="content" class="textarea sans"></iframe>
-            </div>
-          </li>
-        </ul>
-
-        <div class="replyFooter" style="overflow: auto" tabindex="-1">
-          <button id="send" style="float:right;margin-left:3px;" onclick="gComposeSession.send();">
-            {{str "send"}}
-          </button>
-          <button id="sendArchive" style="float:right;margin-left:3px;"
-              onclick="gComposeSession.send({ archive: true });">
-            {{str "sendArchive"}}
-          </button>
-          <button id="save" style="float:right" onclick="onSave();">{{str "save"}}</button>
-          <a class="discard" href="javascript:" id="discard"
-            onclick="confirmDiscard()">{{str "discard"}}</a>
-        </div>
-      </div>
-    </div>
-    ]]>
-  </script>
-  <script id="quickReplyAttachmentTemplate" type="text/x-handlebars-template"><![CDATA[
-    <ul class="quickReplyAttachment">
-      {{str "attachment"}}:
-      <li>{{name}}</li> ({{size}}) -
-      <a href="javascript:" class="openAttachmentLink">{{str "open"}}</a> -
-      <a href="javascript:" class="removeAttachmentLink">{{str "removeAttachment"}}</a>
-    </ul>
-    ]]>
-  </script>
-  <div id="wrapper">
-    <div id="conversationHeaderWrapper">
-      <div id="conversationHeader" class="hbox">
-        <div class="subject boxFlex">&stub.loading;</div>
-        <div class="actions">
-          <button class="button-flat" title="&stub.trash.tooltip;" onclick="deleteToolbar(event);">
-            <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#delete"></use></svg>
-          </button>
-          <button class="button-flat" title="&stub.archive.tooltip;" onclick="archiveToolbar(event);">
-            <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#archive"></use></svg>
-          </button>
-          <button class="button-flat junk-button" title="&stub.junk.tooltip;" onclick="junkConversation(event);">
-            <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#whatshot"></use></svg>
-          </button>
-          <button class="button-flat" title="&stub.expand.tooltip;" onclick="expandCollapse(event);">
-            <svg class="icon expand" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-              <use class="expand-more" xlink:href="chrome://conversations/skin/material-icons.svg#expand_more"></use>
-              <use class="expand-less" xlink:href="chrome://conversations/skin/material-icons.svg#expand_less"></use>
+        <div class="tipFooter hiddenFooter" style="display:none;">
+          {{#if showMonospace}}
+          <div style="margin-bottom:5px;">
+            <input type="checkbox" style="vertical-align: text-top" class="checkbox-monospace" />
+            <label style="color:#666; font-weight: normal">{{str "messagesMonospace"}}</label>
+          </div>
+          {{/if}}
+          <button class="createFilter">{{str "createFilter"}}</button>
+          <button class="addContact" title="{{str 'addToAb'}}">
+            <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <use xlink:href="chrome://conversations/skin/material-icons.svg#add"></use>
             </svg>
           </button>
-          <button class="button-flat" title="&stub.read.tooltip;" onclick="toggleRead(event);">
-            <svg class="icon read" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#new"></use></svg>
+          <button class="editContact" title="{{str 'editCardAb'}}">
+            <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <use xlink:href="chrome://conversations/skin/material-icons.svg#edit"></use>
+            </svg>
           </button>
-          <button class="button-flat" title="&stub.detach.tooltip2;" onclick="detachTab(event);">
-            <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#open_in_new"></use></svg>
+        </div>
+        <div class="tipFooter">
+          <button class="sendEmail" title="{{str 'sendEmail'}}">
+            <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <use xlink:href="chrome://conversations/skin/material-icons.svg#mail"></use>
+            </svg>
           </button>
-          <!--<button><span class="mode"></span></button>-->
+          <button class="showInvolving" title="{{str 'recentConversations'}}">
+            <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <use xlink:href="chrome://conversations/skin/material-icons.svg#history"></use>
+            </svg>
+          </button>
+          <button class="moreExpander" title="{{str 'more'}}">
+            <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+              <use class="moreExpander-close" xlink:href="chrome://conversations/skin/material-icons.svg#expand_less"></use>
+              <use class="moreExpander-open" xlink:href="chrome://conversations/skin/material-icons.svg#expand_more"></use>
+            </svg>
+          </button>
+        </div>
+      </div
+    >]]></script>
+    <script id="attachmentIconTemplate" type="text/x-handlebars-template"><![CDATA[
+      {{#if attachments.length}}
+        <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#attachment"></use></svg>
+      {{/if}}
+    ]]></script>
+    <script id="attachmentDetailsTemplate" type="text/x-handlebars-template"><![CDATA[
+      {{#if attachments.length}}
+        <u>{{attachmentsPlural}}:</u>
+        {{#each attachments}}
+          <a href="javascript:"
+            onclick="scrollNodeIntoView(document.getElementById('{{anchor}}'));">
+            {{name}} ({{formattedSize}})</a>{{sep}}
+        {{/each}}
+      {{/if}}
+    ]]></script>
+    <script id="attachmentsTemplate" type="text/x-handlebars-template"><![CDATA[
+      {{#if attachments.length}}
+        <ul class="attachments">
+          <div class="attachHeader">
+            {{attachmentsPlural}}
+            <a href="javascript:" class="icon-link download-all" title="{{str 'downloadAll2'}}">
+              <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <use xlink:href="chrome://conversations/skin/material-icons.svg#save"></use>
+              </svg>
+            </a>
+            {{#if gallery}}
+            <a href="javascript:" onclick="galleryView('{{uri}}')" class="icon-link view-all" title="{{str 'galleryView'}}">
+              <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <use xlink:href="chrome://conversations/skin/material-icons.svg#photo_library"></use>
+              </svg>
+              </a>
+            {{/if}}
+          </div>
+          {{#each attachments}}
+          <li class="clearfix hbox attachment" draggable="true" id="{{anchor}}">
+            <div class="attachmentThumb">
+              <img onload="$(this).closest('.attachment').find('.align').vAlign()"
+              class="{{imgClass}}" src="{{thumb}}" />
+            </div>
+            <div class="attachmentInfo align">
+              <span class="filename">{{name}}</span>
+              <span class="filesize">{{formattedSize}}</span>
+              <div class="attachActions">
+                {{#if canPreview}}
+                <a href="javascript:" class="icon-link preview-attachment" title="{{str "preview"}}">
+                  <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <use xlink:href="chrome://conversations/skin/material-icons.svg#visibility"></use>
+                  </svg>
+                </a>
+                {{/if}}
+                <a href="javascript:" class="icon-link download-attachment" title="{{str 'download2'}}">
+                  <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <use xlink:href="chrome://conversations/skin/material-icons.svg#save"></use>
+                  </svg>
+                </a>
+                <a href="javascript:" class="icon-link open-attachment" title="{{str 'open'}}">
+                  <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                    <use xlink:href="chrome://conversations/skin/material-icons.svg#search"></use>
+                  </svg>
+                </a>
+              </div>
+            </div>
+          </li>
+          {{/each}}
+        </ul>
+      {{/if}}
+    ]]></script>
+    <script id="popularContactTemplate" type="text/x-handlebars-template"><![CDATA[
+      <div class="popularContact">
+        <img class="popularPhoto" src="{{photo}}" style="float: left" />
+        <span class="popularRemove">×</span>
+        <span class="popularName">{{name}}</span><br />
+        <span class="popularEmail">{{email}}</span>
+      </div>
+    ]]></script>
+    <script id="quickReplyTemplate" type="text/x-handlebars-template"><![CDATA[
+      <div class="quickReply" ondragover="quickReplyCheckDrag(event);" ondrop="quickReplyDrop(event);">
+        <div class="quickReplyContacts">
+          <div class="quickReplyContactsHeader">
+            {{str "mostFrequentContacts"}}
+          </div>
+          <div class="quickReplyContactsBox">
+          </div>
+          <div class="quickReplyContactsMore">
+            <a class="quickReplyContactsMoreLink">
+              {{str "showMore"}}
+            </a>
+          </div>
+        </div>
+        <div class="quickReplyBox">
+          <div class="replyHeader">
+            <div class="quickReplyRecipients">
+              <ul class="fromField">
+                {{str "fieldFrom"}}
+                <li class="senderSwitcher"><a class="switchLeft" onclick="gComposeSession.cycleSender(-1)">◂</a> <a class="switchRight" onclick="gComposeSession.cycleSender(1)">▸</a></li>
+                <li class="senderName"></li>,
+                <li class="replyMethod">
+                  <input type="radio" name="reply-method" value="reply"
+                    onchange="changeComposeFields('reply')" id="reply-radio"
+                  /><label for="reply-radio">{{str "reply"}}</label>
+                </li>
+                <li class="replyMethod replyMethod-replyAll">
+                  <input type="radio" name="reply-method" value="replyAll"
+                    onchange="changeComposeFields('replyAll')" id="replyAll-radio"
+                  /><label for="replyAll-radio">{{str "replyAll"}}</label>
+                </li>
+                <li class="replyMethod replyMethod-replyList">
+                  <input type="radio" name="reply-method" value="replyList"
+                    onchange="changeComposeFields('replyList')" id="replyList-radio"
+                  /><label for="replyList-radio">{{str "replyList"}}</label>
+                </li>
+                <li class="replyMethod">
+                  <input type="radio" name="reply-method" value="forward"
+                    onchange="changeComposeFields('forward')" id="forward-radio"
+                  /><label for="forward-radio">{{str "forward"}}</label>
+                </li>
+                <li class="firstBar">|</li>
+                <li class="showCc"><a onclick="showCc(); editFields('cc');" href="javascript:">{{str "addCc"}}</a> |</li>
+                <li class="showBcc"><a onclick="showBcc(); editFields('bcc');" href="javascript:">{{str "addBcc"}}</a> |</li>
+                <li class="addAttachment"><a onclick="addAttachment();" href="javascript:">{{str "addAttachment"}}</a></li>
+              </ul>
+              <div class="editRecipientList editToList hbox">
+                <div class="label">{{str "fieldTo"}}</div>
+                <div class="boxFlex"><input type="text" id="to" /></div>
+              </div>
+              <div class="editRecipientList editCcList hbox" style="display: none">
+                <div class="label">{{str "fieldCc"}}</div>
+                <div class="boxFlex"><input type="text" id="cc" /></div>
+              </div>
+              <div class="editRecipientList editBccList hbox" style="display: none">
+                <div class="label">{{str "fieldBcc"}}</div>
+                <div class="boxFlex"><input type="text" id="bcc" /></div>
+              </div>
+              <div class="editRecipientList editSubject hbox" style="display: none">
+                <div class="label">{{str "fieldSubject"}}</div>
+                <div class="boxFlex"><input type="text" id="subject" /></div>
+              </div>
+              <ul class="recipientList toList">
+                {{str "fieldTo"}}
+                <li>{{str "pleaseWait"}}</li>
+                <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('to');">{{str "edit"}}</a></li>
+              </ul>
+              <ul class="recipientList ccList" style="display: none;">
+                {{str "fieldCc"}}
+                <li>{{str "pleaseWait"}}</li>
+                <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('cc');">{{str "edit"}}</a></li>
+              </ul>
+              <ul class="recipientList bccList" style="display: none;">
+                {{str "fieldBcc"}}
+                <li>{{str "pleaseWait"}}</li>
+                <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('bcc');">{{str "edit"}}</a></li>
+              </ul>
+            </div>
+            <ul class="enigmail" style="display: none;">
+              <li class="replyEncrypt">
+                <input type="checkbox" name="enigmail-reply-encrypt" id="enigmail-reply-encrypt"
+                /><label for="enigmail-reply-encrypt">{{str "encrypt"}}</label>
+              </li>
+              <li class="replySign">
+                <input type="checkbox" name="enigmail-reply-sign" id="enigmail-reply-sign"
+                /><label for="enigmail-reply-sign">{{str "sign"}}</label>
+              </li>
+              <li class="replyPgpMime">
+                <input type="checkbox" name="enigmail-reply-pgpmime" id="enigmail-reply-pgpmime"
+                /><label for="enigmail-reply-pgpmime">PGP/MIME</label>
+              </li>
+            </ul>
+            <div class="quickReplyAttachments">
+            </div>
+            <div class="quickReplyHeader" style="display: none; overflow: auto">
+              <span class="statusMessage" style="float: left;"></span>
+              <span class="statusPercentage" style="float: right;"></span>
+              <span class="statusThrobber" style="float: right;">
+                <img src="chrome://conversations/content/i/loader.gif"
+                  style="vertical-align: middle;" />
+              </span>
+            </div>
+          </div>
+  
+          <ul class="inputs">
+            <li class="reply expand" ondragenter="quickReplyDragEnter(event);">
+              <div class="textWrap">
+                <div class="quickReplyIcon"><span>{{str "reply"}}</span> <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#reply"></use></svg></div>
+                <iframe mozframetype="content" class="textarea sans"></iframe>
+              </div>
+            </li>
+  
+            <li class="replyAll expand" ondragenter="quickReplyDragEnter(event);">
+              <div class="textWrap">
+                <div class="quickReplyIcon"><span>{{str "replyAll"}}</span> <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#reply_all"></use></svg></div>
+                <iframe mozframetype="content" class="textarea sans"></iframe>
+              </div>
+            </li>
+          </ul>
+  
+          <div class="replyFooter" style="overflow: auto" tabindex="-1">
+            <button id="send" style="float:right;margin-left:3px;" onclick="gComposeSession.send();">
+              {{str "send"}}
+            </button>
+            <button id="sendArchive" style="float:right;margin-left:3px;"
+                onclick="gComposeSession.send({ archive: true });">
+              {{str "sendArchive"}}
+            </button>
+            <button id="save" style="float:right" onclick="onSave();">{{str "save"}}</button>
+            <a class="discard" href="javascript:" id="discard"
+              onclick="confirmDiscard()">{{str "discard"}}</a>
+          </div>
         </div>
       </div>
+      ]]>
+    </script>
+    <script id="quickReplyAttachmentTemplate" type="text/x-handlebars-template"><![CDATA[
+      <ul class="quickReplyAttachment">
+        {{str "attachment"}}:
+        <li>{{name}}</li> ({{size}}) -
+        <a href="javascript:" class="openAttachmentLink">{{str "open"}}</a> -
+        <a href="javascript:" class="removeAttachmentLink">{{str "removeAttachment"}}</a>
+      </ul>
+      ]]>
+    </script>
+    <div id="wrapper">
+      <div id="conversationHeaderWrapper">
+        <div id="conversationHeader" class="hbox">
+          <div class="subject boxFlex">&stub.loading;</div>
+          <div class="actions">
+            <button class="button-flat" title="&stub.trash.tooltip;" onclick="deleteToolbar(event);">
+              <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#delete"></use></svg>
+            </button>
+            <button class="button-flat" title="&stub.archive.tooltip;" onclick="archiveToolbar(event);">
+              <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#archive"></use></svg>
+            </button>
+            <button class="button-flat junk-button" title="&stub.junk.tooltip;" onclick="junkConversation(event);">
+              <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#whatshot"></use></svg>
+            </button>
+            <button class="button-flat" title="&stub.expand.tooltip;" onclick="expandCollapse(event);">
+              <svg class="icon expand" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
+                <use class="expand-more" xlink:href="chrome://conversations/skin/material-icons.svg#expand_more"></use>
+                <use class="expand-less" xlink:href="chrome://conversations/skin/material-icons.svg#expand_less"></use>
+              </svg>
+            </button>
+            <button class="button-flat" title="&stub.read.tooltip;" onclick="toggleRead(event);">
+              <svg class="icon read" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#new"></use></svg>
+            </button>
+            <button class="button-flat" title="&stub.detach.tooltip2;" onclick="detachTab(event);">
+              <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#open_in_new"></use></svg>
+            </button>
+            <!--<button><span class="mode"></span></button>-->
+          </div>
+        </div>
+      </div>
+      <ul id="messageList">
+      </ul>
+      <div class="bottom-links">
+        <a class="link" href="javascript:" onclick="forwardConversation(event);">
+          &stub.forward.tooltip;</a> –
+        <a class="link" href="javascript:" onclick="printConversation(event);">
+          &stub.print.tooltip;</a>
+      </div>
     </div>
-    <ul id="messageList">
-    </ul>
-    <div class="bottom-links">
-      <a class="link" href="javascript:" onclick="forwardConversation(event);">
-        &stub.forward.tooltip;</a> –
-      <a class="link" href="javascript:" onclick="printConversation(event);">
-        &stub.print.tooltip;</a>
-    </div>
-  </div>
-</body>
+  </body>
 </html>
