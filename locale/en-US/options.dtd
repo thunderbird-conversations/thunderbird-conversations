@@ -25,7 +25,7 @@
 <!ENTITY option.add_embeds "Detect links to various services (e.g. YouTube) in emails, and view them inline.">
 <!ENTITY title.debugging "Debugging">
 <!ENTITY desc.debugging "Enable debug output in the system console and the error console. This will generate a lot of messages.">
-<!ENTITY title.operate_on_conversations "Toolbar buttons">
+<!ENTITY title.operate_on_conversations "Archive/delete behavior">
 <!ENTITY option.operate_on_conversations "Toolbar buttons should archive and delete the entire conversation, not just selected messages">
 <!ENTITY title.extra_attachments "I love attachments">
 <!ENTITY desc.extra_attachments2 "In some corner cases, Thunderbird will fail to recognize some attachments. This option allows you to workaround the Thunderbird bug, and makes sure we try to display as many attachments as we can. Use in combination with the Show All Body Parts addon.">
