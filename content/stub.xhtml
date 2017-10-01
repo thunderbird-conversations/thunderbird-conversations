@@ -296,7 +296,7 @@
     $(document).ready(function () {
       let stylesheet;
       for (let x of document.styleSheets) {
-        if (String.indexOf(x.href, "/conversation.css") >= 0) {
+        if (x.href.indexOf("/conversation.css") >= 0) {
           stylesheet = x;
           break;
         }

@@ -77,7 +77,7 @@ function PrefManager() {
 
 PrefManager.prototype = {
 
-  split: s => Array.map(s.split(","), String.trim).filter(String.trim).map(String.toLowerCase),
+  split: s => s.split(",").map(s => s.trim()).map(s => s.toLowerCase()),
 
   watch: function (watcher) { return this.watchers.push(watcher); },
 

@@ -83,7 +83,7 @@ function wrapHandlebars() {
     return new Handlebars.SafeString(tmpl0(id, data));
   };
   let trim = function (s) {
-    return String.trim(s || "");
+    return String.prototype.trim.call(s || "");
   };
 
   Handlebars.registerHelper("str", str);
