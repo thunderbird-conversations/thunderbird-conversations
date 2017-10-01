@@ -270,13 +270,13 @@ function reindexMessages(aMsgHdrs) {
 }
 
 function folderName(aFolder) {
-  let folderStr = aFolder.prettiestName;
+  let folderStr = aFolder.prettyName;
   let folder = aFolder;
   while (folder.parent) {
     folder = folder.parent;
     folderStr = folder.name + "/" + folderStr;
   }
-  return [aFolder.prettiestName, folderStr];
+  return [aFolder.prettyName, folderStr];
 }
 
 function openConversationInTabOrWindow(aUrl) {
