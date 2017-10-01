@@ -44,8 +44,11 @@ const Cu = Components.utils;
 const Cr = Components.results;
 
 
+/* import-globals-from stdlib/misc.js */
 Cu.import("resource://conversations/modules/stdlib/misc.js");
+/* import-globals-from message.js */
 Cu.import("resource://conversations/modules/message.js");
+/* import-globals-from log.js */
 Cu.import("resource://conversations/modules/log.js");
 Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
 let strings = new StringBundle("chrome://conversations/locale/keycustomization.properties");

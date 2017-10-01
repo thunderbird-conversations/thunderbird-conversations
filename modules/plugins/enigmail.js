@@ -71,11 +71,17 @@ const Cr = Components.results;
 
 Cu.import("resource://gre/modules/Services.jsm"); // https://developer.mozilla.org/en/JavaScript_code_modules/Services.jsm
 Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
+/* import-globals-from ../stdlib/msgHdrUtils.js */
 Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+/* import-globals-from ../stdlib/misc.js */
 Cu.import("resource://conversations/modules/stdlib/misc.js");
+/* import-globals-from ../stdlib/compose.js */
 Cu.import("resource://conversations/modules/stdlib/compose.js");
+/* import-globals-from ../misc.js */
 Cu.import("resource://conversations/modules/misc.js");
+/* import-globals-from ../hook.js */
 Cu.import("resource://conversations/modules/hook.js");
+/* import-globals-from ../log.js */
 Cu.import("resource://conversations/modules/log.js");
 
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
@@ -93,6 +99,9 @@ let Log = setupLogging("Conversations.Modules.Enigmail");
 let window = getMail3Pane();
 let hasEnigmail;
 try {
+  /* globals EnigmailCommon, EnigmailCore, EnigmailData, EnigmailLocale,
+             EnigmailFuncs, Enigmail, EnigmailPrefs, EnigmailDialog,
+             EnigmailConstants, EnigmailRules */
   Cu.import("resource://enigmail/core.jsm");
   Cu.import("resource://enigmail/data.jsm");
   Cu.import("resource://enigmail/dialog.jsm");
@@ -526,7 +535,7 @@ function patchForShowSecurityInfo(aWindow) {
     w.top.controllers.getControllerForCommand("button_enigmail_decrypt");
   w.top.controllers.removeController(oldTreeController);
   let treeController = {};
-  for ([i, x] of entries(oldTreeController)) {
+  for (let [i, x] of entries(oldTreeController)) {
     treeController[i] = x;
   }
   treeController.isCommandEnabled = function () {

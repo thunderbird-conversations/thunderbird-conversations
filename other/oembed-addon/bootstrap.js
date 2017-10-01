@@ -43,7 +43,7 @@ const Cr = Components.results;
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource:///modules/iteratorUtils.jsm");
+const {fixIterator} = Cu.import("resource:///modules/iteratorUtils.jsm", {});
 
 let global = this;
 let Log;
@@ -62,7 +62,7 @@ let hook = {
     let iframeDoc = iframe.contentDocument;
     let links = iframeDoc.getElementsByTagName("a");
     // Don't detect links in quotations.
-    for (x of iframe.querySelectorAll("blockquote a")) {
+    for (let x of iframe.querySelectorAll("blockquote a")) {
       x.skip = true;
     }
     let seen = {};
@@ -151,9 +151,13 @@ function doStuff() {
     return;
 
   try {
+    /* import-globals-from ../../modules/stdlib/msgHdrUtils.js */
     Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js", global);
+    /* import-globals-from ../../modules/hook.js */
     Cu.import("resource://conversations/modules/hook.js", global);
+    /* import-globals-from ../../modules/prefs.js */
     Cu.import("resource://conversations/modules/prefs.js", global);
+    /* import-globals-from ../../modules/log.js */
     Cu.import("resource://conversations/modules/log.js", global);
 
     Log = setupLogging("Conversations.OEmbed");

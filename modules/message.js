@@ -46,14 +46,16 @@ const Cr = Components.results;
 Cu.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI
 Cu.import("resource://gre/modules/PluralForm.jsm");
 Cu.import("resource://gre/modules/Services.jsm"); // https://developer.mozilla.org/en/JavaScript_code_modules/Services.jsm
+/* import-globals-from stdlib/misc.js */
 Cu.import("resource://conversations/modules/stdlib/misc.js");
-Cu.import("resource:///modules/mailServices.js"); // bug 629462
-Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
-Cu.import("resource:///modules/templateUtils.js"); // for makeFriendlyDateAgo
-Cu.import("resource:///modules/gloda/utils.js");
-Cu.import("resource:///modules/gloda/mimemsg.js");
-Cu.import("resource:///modules/gloda/connotent.js"); // for mimeMsgToContentSnippetAndMeta
+const {MailServices} = Cu.import("resource:///modules/mailServices.js", {}); // bug 629462
+Cu.import("resource:///modules/StringBundle.js");
+const {makeFriendlyDateAgo} = Cu.import("resource:///modules/templateUtils.js", {});
+const {GlodaUtils} = Cu.import("resource:///modules/gloda/utils.js", {});
+const {MsgHdrToMimeMessage} = Cu.import("resource:///modules/gloda/mimemsg.js", {});
+const {mimeMsgToContentSnippetAndMeta} = Cu.import("resource:///modules/gloda/connotent.js", {});
 
+/* import-globals-from plugins/lightning.js */
 Cu.import("resource://conversations/modules/plugins/lightning.js");
 // It's not really nice to write into someone elses object but this is what the
 // Services object is for.  We prefix with the "m" to ensure we stay out of their
@@ -78,16 +80,25 @@ const olderThan52 = Services.vc.compare(Services.sysinfo.version, "51.1") > 0;
 
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
+/* import-globals-from stdlib/addressBookUtils.js */
 Cu.import("resource://conversations/modules/stdlib/addressBookUtils.js");
+/* import-globals-from stdlib/msgHdrUtils.js */
 Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+/* import-globals-from stdlib/compose.js */
 Cu.import("resource://conversations/modules/stdlib/compose.js");
-Cu.import("resource://conversations/modules/stdlib/misc.js");
+/* import-globals-from plugins/helpers.js */
 Cu.import("resource://conversations/modules/plugins/helpers.js");
+/* import-globals-from quoting.js */
 Cu.import("resource://conversations/modules/quoting.js");
+/* import-globals-from contact.js */
 Cu.import("resource://conversations/modules/contact.js");
+/* import-globals-from prefs.js */
 Cu.import("resource://conversations/modules/prefs.js");
+/* import-globals-from misc.js */
 Cu.import("resource://conversations/modules/misc.js"); // for iconForMimeType
+/* import-globals-from hook.js */
 Cu.import("resource://conversations/modules/hook.js");
+/* import-globals-from log.js */
 Cu.import("resource://conversations/modules/log.js");
 
 let Log = setupLogging("Conversations.Message");

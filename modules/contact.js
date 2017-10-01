@@ -44,17 +44,22 @@ const Cu = Components.utils;
 const Cr = Components.results;
 
 Cu.import("resource://gre/modules/Services.jsm"); // https://developer.mozilla.org/en/JavaScript_code_modules/Services.jsm
-Cu.import("resource:///modules/iteratorUtils.jsm"); // for fixIterator
+const {fixIterator} = Cu.import("resource:///modules/iteratorUtils.jsm", {}); // for fixIterator
 Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
-Cu.import("resource:///modules/mailServices.js");
-Cu.import("resource:///modules/gloda/utils.js");
-Cu.import("resource:///modules/gloda/gloda.js");
+const {MailServices} = Cu.import("resource:///modules/mailServices.js", {});
+const {GlodaUtils} = Cu.import("resource:///modules/gloda/utils.js", {});
+const {Gloda} = Cu.import("resource:///modules/gloda/gloda.js", {});
 
+/* import-globals-from stdlib/compose.js */
 Cu.import("resource://conversations/modules/stdlib/compose.js");
+/* import-globals-from stdlib/misc.js */
 Cu.import("resource://conversations/modules/stdlib/misc.js");
 Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+/* import-globals-from log.js */
 Cu.import("resource://conversations/modules/log.js");
+/* import-globals-from prefs.js */
 Cu.import("resource://conversations/modules/prefs.js");
+/* import-globals-from misc.js */
 Cu.import("resource://conversations/modules/misc.js");
 
 const clipboardService = Cc["@mozilla.org/widget/clipboardhelper;1"]

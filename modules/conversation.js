@@ -46,12 +46,17 @@ const Cr = Components.results;
 Cu.import("resource://gre/modules/Services.jsm");
 
 Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
-Cu.import("resource:///modules/gloda/gloda.js");
+const {Gloda} = Cu.import("resource:///modules/gloda/gloda.js", {});
+/* import-globals-from log.js */
 Cu.import("resource://conversations/modules/log.js");
+/* import-globals-from prefs.js */
 Cu.import("resource://conversations/modules/prefs.js");
 
+/* import-globals-from stdlib/msgHdrUtils.js */
 Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+/* import-globals-from stdlib/misc.js */
 Cu.import("resource://conversations/modules/stdlib/misc.js");
+/* import-globals-from message.js */
 Cu.import("resource://conversations/modules/message.js");
 Cu.import("resource://conversations/modules/contact.js");
 Cu.import("resource://conversations/modules/misc.js"); // for groupArray

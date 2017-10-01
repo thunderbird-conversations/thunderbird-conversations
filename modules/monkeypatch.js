@@ -46,12 +46,19 @@ const Cr = Components.results;
 Cu.import("resource://gre/modules/AddonManager.jsm");
 Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
 
+/* import-globals-from stdlib/misc.js */
 Cu.import("resource://conversations/modules/stdlib/misc.js");
+/* import-globals-from stdlib/msgHdrUtils.js */
 Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+/* import-globals-from assistant.js */
 Cu.import("resource://conversations/modules/assistant.js");
+/* import-globals-from misc.js */
 Cu.import("resource://conversations/modules/misc.js"); // for joinWordList, openConversationIn
+/* import-globals-from prefs.js */
 Cu.import("resource://conversations/modules/prefs.js");
+/* import-globals-from log.js */
 Cu.import("resource://conversations/modules/log.js");
+/* import-globals-from config.js */
 Cu.import("resource://conversations/modules/config.js");
 
 Cu.import("resource://gre/modules/Services.jsm");

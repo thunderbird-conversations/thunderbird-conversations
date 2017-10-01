@@ -1,5 +1,6 @@
 "use strict";
 
+/* eslint-env node */
 /* eslint sort-keys: "error" */
 
 module.exports = {
@@ -37,7 +38,7 @@ module.exports = {
     "no-native-reassign": "off",
     "no-nested-ternary": "off",
     "no-trailing-spaces": "off",
-    "no-undef": "off",
+    "no-undef": "error",
     "no-unused-vars": "off",
     "no-useless-call": "off",
     "object-shorthand": "off",

@@ -43,7 +43,7 @@ const Cr = Components.results;
 
 Cu.import("resource://gre/modules/XPCOMUtils.jsm");
 Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource:///modules/iteratorUtils.jsm");
+const {fixIterator} = Cu.import("resource:///modules/iteratorUtils.jsm", {});
 
 let global = this;
 let Log;
@@ -145,9 +145,12 @@ function monkeyPatchAllWindows() {
  * Cu.import() just loads every imported file once, so there is no need for a guard (like if(!isLoaded){...})
  */
 function loadImports(){
+  /* import-globals-from modules/monkeypatch.js */
   Cu.import("resource://conversations/modules/monkeypatch.js", global);
   Cu.import("resource://conversations/modules/prefs.js", global);
+  /* import-globals-from modules/conversation.js */
   Cu.import("resource://conversations/modules/conversation.js", global);
+  /* import-globals-from modules/keycustomization.js */
   Cu.import("resource://conversations/modules/keycustomization.js", global);
 
   Cu.import("resource://conversations/modules/plugins/glodaAttrProviders.js");
@@ -167,8 +170,11 @@ let windowObserver = {
 
 function startup(aData, aReason) {
   ResourceRegister.init(aData.installPath, "conversations");
+  /* import-globals-from modules/log.js */
   Cu.import("resource://conversations/modules/log.js", global);
+  /* import-globals-from modules/prefs.js */
   Cu.import("resource://conversations/modules/prefs.js", global);
+  /* import-globals-from modules/config.js */
   Cu.import("resource://conversations/modules/config.js", global);
 
   Log = setupLogging("Conversations.MonkeyPatch");

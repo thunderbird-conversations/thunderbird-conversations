@@ -45,9 +45,13 @@ Cu.import("resource://gre/modules/Services.jsm"); // https://developer.mozilla.o
 Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
 Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
 Cu.import("resource://conversations/modules/stdlib/misc.js");
+/* import-globals-from ../prefs.js */
 Cu.import("resource://conversations/modules/prefs.js");
+/* import-globals-from ../misc.js */
 Cu.import("resource://conversations/modules/misc.js");
+/* import-globals-from ../hook.js */
 Cu.import("resource://conversations/modules/hook.js");
+/* import-globals-from ../log.js */
 Cu.import("resource://conversations/modules/log.js");
 
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
