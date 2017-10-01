@@ -229,7 +229,7 @@ let Customizations = {
       return state;
     },
 
-    uninstall: function ({ ftvMode, senderCol, unreadCol, initialFolder }) {
+    uninstall: function ({ ftvMode, senderCol, unreadCol, correspondentCol, initialFolder }) {
       if (eid("senderCol").getAttribute("hidden") == "true")
         eid("senderCol").setAttribute("hidden", senderCol);
       if (eid("unreadCol").getAttribute("hidden") == "true")
