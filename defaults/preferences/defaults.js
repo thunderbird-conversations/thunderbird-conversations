@@ -1,3 +1,4 @@
+/* global pref */
 pref("conversations.hide_quote_length", 5);
 pref("conversations.expand_who", 4); // kExpandAuto
 pref("conversations.monospaced_senders", "bugzilla-daemon@mozilla.org");

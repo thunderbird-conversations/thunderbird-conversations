@@ -67,8 +67,9 @@ const Cc = Components.classes;
 const Cu = Components.utils;
 const Cr = Components.results;
 
+/* import-globals-from helpers.js */
 Cu.import("resource://conversations/modules/plugins/helpers.js");
-Cu.import("resource:///modules/gloda/public.js");
+const {Gloda} = Cu.import("resource:///modules/gloda/public.js", {});
 Cu.import("resource:///modules/gloda/mimemsg.js");
 
 let AlternativeSender = {

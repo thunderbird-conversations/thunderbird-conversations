@@ -43,8 +43,11 @@ const Cr = Components.results;
 
 Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
 Cu.import("resource:///modules/gloda/mimemsg.js");
+/* import-globals-from ../../../modules/stdlib/msgHdrUtils.js */
 Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+/* import-globals-from ../../../modules/stdlib/misc.js */
 Cu.import("resource://conversations/modules/stdlib/misc.js");
+/* import-globals-from ../../../modules/log.js */
 Cu.import("resource://conversations/modules/log.js");
 
 let Log = setupLogging("Conversations.Gallery");

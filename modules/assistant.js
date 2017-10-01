@@ -16,14 +16,18 @@ const ioService = Cc["@mozilla.org/network/io-service;1"]
 const kPrefInt = 0, kPrefBool = 1, kPrefChar = 42;
 
 Cu.import("resource:///modules/MailUtils.js"); // for getFolderForURI
-Cu.import("resource:///modules/iteratorUtils.jsm"); // for fixIterator
-Cu.import("resource:///modules/virtualFolderWrapper.js");
+const {fixIterator} = Cu.import("resource:///modules/iteratorUtils.jsm", {});
+const {VirtualFolderHelper} = Cu.import("resource:///modules/virtualFolderWrapper.js", {});
 Cu.import("resource:///modules/gloda/index_msg.js");
 Cu.import("resource:///modules/gloda/public.js");
 
+/* import-globals-from stdlib/misc.js */
 Cu.import("resource://conversations/modules/stdlib/misc.js");
+/* import-globals-from stdlib/msgHdrUtils.js */
 Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+/* import-globals-from prefs.js */
 Cu.import("resource://conversations/modules/prefs.js");
+/* import-globals-from log.js */
 Cu.import("resource://conversations/modules/log.js");
 
 let Log = setupLogging("Conversations.Assistant");

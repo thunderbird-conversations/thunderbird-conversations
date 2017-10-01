@@ -1,7 +1,8 @@
 var EXPORTED_SYMBOLS = ["setupLogging", "dumpCallStack", "logRoot", "Colors"]
 
+/* import-globals-from prefs.js */
 Components.utils.import("resource://conversations/modules/prefs.js");
-Components.utils.import("resource:///modules/gloda/log4moz.js");
+const {Log4Moz} = Components.utils.import("resource:///modules/gloda/log4moz.js", {});
 
 function setupLogging(name) {
   let Log = Log4Moz.repository.getLogger(name);
@@ -22,7 +23,7 @@ function setupLogging(name) {
 function setupFullLogging(name) {
   // dump(name+"\n\n");
   // The basic formatter will output lines like:
-  // DATE/TIME	LoggerName	LEVEL	(log message) 
+  // DATE/TIME	LoggerName	LEVEL	(log message)
   let formatter = new Log4Moz.BasicFormatter();
 
   let Log = Log4Moz.repository.getLogger(name);

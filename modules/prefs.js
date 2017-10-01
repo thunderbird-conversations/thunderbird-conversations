@@ -126,7 +126,7 @@ PrefManager.prototype = {
 
       case "monospaced_senders":
         this.monospaced_senders = {};
-        for (s of this.split(prefsService.getCharPref("monospaced_senders")))
+        for (let s of this.split(prefsService.getCharPref("monospaced_senders")))
           this.monospaced_senders[s] = null;
         break;
     }

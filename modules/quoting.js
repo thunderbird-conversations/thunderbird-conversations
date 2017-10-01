@@ -226,7 +226,7 @@ function fusionBlockquotes(aDoc) {
         blockquote.parentNode.removeChild(next);
         blockquotes.delete(next);
       } else {
-        Log.error("What?!");
+        Cu.reportError("What?!");
       }
     }
   }

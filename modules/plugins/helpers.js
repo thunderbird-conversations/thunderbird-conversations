@@ -43,7 +43,7 @@ var EXPORTED_SYMBOLS = ['PluginHelpers']
  *  gloda yet (see message.js).
  */
 
-Components.utils.import("resource:///modules/gloda/utils.js");
+const {GlodaUtils} = Components.utils.import("resource:///modules/gloda/utils.js", {});
 Components.utils.import("resource://conversations/modules/stdlib/misc.js");
 
 const gsfnRegexp = /^(.+)(?:, an employee of Mozilla Messaging,)? (?:replied to|commented on|just asked)/;

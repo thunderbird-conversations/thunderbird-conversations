@@ -36,8 +36,11 @@
 
 var EXPORTED_SYMBOLS = ["isLightningInstalled"];
 
+/* import-globals-from ../hook.js */
 Components.utils.import("resource://conversations/modules/hook.js");
+/* import-globals-from ../log.js */
 Components.utils.import("resource://conversations/modules/log.js");
+/* import-globals-from ../misc.js */
 Components.utils.import("resource://conversations/modules/misc.js");
 Components.utils.import("resource://gre/modules/Services.jsm");
 
@@ -48,8 +51,9 @@ function isLightningInstalled() {
 };
 
 let hasLightning = false;
+let cal;
 try {
-  Components.utils.import("resource://calendar/modules/calItipUtils.jsm");
+  cal = Components.utils.import("resource://calendar/modules/calItipUtils.jsm", {});
   if (cal.itip.getMethodText) {
     // We need the patch from mozilla bug 626829 for this plugin to work. The
     // patch adds the method cal.itip.getMethodText.
