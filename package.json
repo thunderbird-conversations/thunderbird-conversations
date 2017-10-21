@@ -22,7 +22,9 @@
   },
   "scripts": {
     "test": "npm-run-all test:*",
-    "test:lint": "eslint ."
+    "test:lint": "eslint .",
+    "preversion": "npm test",
+    "version": "scripts/update-version.sh"
   },
   "license": "MPL-1.1"
 }
