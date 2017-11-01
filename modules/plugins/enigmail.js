@@ -229,6 +229,32 @@ if (hasEnigmail) {
       // Show signed label of encrypted and signed pgp/mime.
       addSignedLabel(statusFlags, message._domNode, message);
     }
+
+    let originalHandleSMimeMessage = enigMimeHeaderSinkPrototype.handleSMimeMessage;
+    enigMimeHeaderSinkPrototype.handleSMimeMessage = function _handleSMimeMessage_patched(uri) {
+      // Use original if the classic reader is used.
+      if (messagepane.contentDocument.location.href !== "about:blank?") {
+        originalHandleSMimeMessage.apply(this, arguments);
+        return;
+      }
+      let message;
+      let msgHdr = uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
+      let uriSpec = msgHdrGetUri(msgHdr);
+      if (w._currentConversation) {
+        for (let x of w._currentConversation.messages) {
+          if (x.message._uri == uriSpec) {
+            message = x.message;
+            break;
+          }
+        }
+      }
+      if (!message) {
+        Log.error("Message for the SMIME info not found!");
+        return;
+      }
+      w.EnigmailVerify.unregisterContentTypeHandler();
+      message._reloadMessage();
+    }
   }, true);
 }
 
