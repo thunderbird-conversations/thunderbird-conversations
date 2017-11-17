@@ -109,6 +109,7 @@ function registerQuickReplyEventListeners() {
     Log.debug("New quick reply (event listener) →", type);
     newComposeSessionByClick(type);
   });
+  $('.quickReply .textarea:not(.processed)').TextAreaResizer();
 
   // Autoresize sorta-thingy.
   let textarea = document.querySelector(".textarea");
