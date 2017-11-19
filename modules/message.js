@@ -489,10 +489,10 @@ Message.prototype = {
           items.push(key+": "+makeArrow(oldInfos[k], infos[k]));
         }
       }
-      if (infos["changed-fields"] && String.trim(infos["changed-fields"]).length)
+      if (infos["changed-fields"] && infos["changed-fields"].trim().length)
         items.push("Changed: "+infos["changed-fields"]);
       let m = this._snippet.match(this.RE_BZ_COMMENT);
-      if (m && m.length && String.trim(m[1]).length)
+      if (m && m.length && m[1].trim().length)
         items.push(m[1]);
       if (!items.length)
         items.push(this._snippet);
@@ -875,10 +875,10 @@ Message.prototype = {
     // Pre-set the right value
     let realFrom = "";
     if (this._from.email)
-      realFrom = String.trim(this._from.email).toLowerCase();
+      realFrom = this._from.email.trim().toLowerCase();
     // _realFrom is better.
     if (this._realFrom.email)
-      realFrom = String.trim(this._realFrom.email).toLowerCase();
+      realFrom = this._realFrom.email.trim().toLowerCase();
     if (realFrom in Prefs["monospaced_senders"])
       this._domNode.getElementsByClassName("checkbox-monospace")[0].checked = true;
 

@@ -60,7 +60,7 @@ function insertAfter(newElement, referenceElt) {
 
 function canInclude(aNode) {
   let v = aNode.tagName && aNode.tagName.toLowerCase() == "br"
-    || aNode.nodeType == aNode.TEXT_NODE && String.trim(aNode.textContent) === "";
+    || aNode.nodeType == aNode.TEXT_NODE && aNode.textContent.trim() === "";
   //if (v) dump("Including "+aNode+"\n");
   return v;
 }

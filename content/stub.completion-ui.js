@@ -31,7 +31,7 @@ try {
 // Wrap the given parameters in an object that's compatible with the
 //  facebook-style autocomplete.
 function asToken(thumb, name, email, guid) {
-  let hasName = name && (String.trim(name).length > 0);
+  let hasName = name && (name.trim().length > 0);
   let data = hasName ? MailServices.headerParser.makeMimeAddress(name, email) : email;
   let nameStr = hasName ? name + " <" + email + ">" : email;
   let thumbStr = thumb ? "<img class='autocomplete-thumb' src=\""+escapeHtml(thumb)+"\" /> " : "";
