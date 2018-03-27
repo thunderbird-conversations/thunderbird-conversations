@@ -39,11 +39,7 @@ var EXPORTED_SYMBOLS = [
   'convertHotmailQuotingToBlockquote1',
   'convertOutlookQuotingToBlockquote', 'convertForwardedToBlockquote',
   'fusionBlockquotes', 'convertMiscQuotingToBlockquote',
-]
-
-const Ci = Components.interfaces;
-const Cc = Components.classes;
-const Cu = Components.utils;
+];
 
 const txttohtmlconv = Cc["@mozilla.org/txttohtmlconv;1"]
                         .createInstance(Ci.mozITXTToHTMLConv);
@@ -168,8 +164,8 @@ function convertForwardedToBlockquote(aDoc) {
       let txt = child.textContent;
       let m = txt.match(re);
       if (child.nodeType == child.TEXT_NODE
-          && txt.indexOf("-----BEGIN PGP") < 0
-          && txt.indexOf("----END PGP") < 0
+          && txt.includes("-----BEGIN PGP")
+          && txt.includes("----END PGP")
           && m && m.length) {
         let marker = m[0];
         //dump("Found matching text "+marker+"\n");
@@ -209,7 +205,7 @@ function fusionBlockquotes(aDoc) {
     let isWhitespace = function (n) {
       return (n && (n.tagName && n.tagName.toLowerCase() == "br"
           || n.nodeType == n.TEXT_NODE && n.textContent.match(/^\s*$/)));
-    }
+    };
     let isBlockquote = function (b) {
       return (b && b.tagName && b.tagName.toLowerCase() == "blockquote");
     };

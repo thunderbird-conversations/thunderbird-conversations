@@ -36,23 +36,18 @@
 
 var EXPORTED_SYMBOLS = [];
 
-const Ci = Components.interfaces;
-const Cc = Components.classes;
-const Cu = Components.utils;
-const Cr = Components.results;
-
-Cu.import("resource://gre/modules/Services.jsm"); // https://developer.mozilla.org/en/JavaScript_code_modules/Services.jsm
-Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
-Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
-Cu.import("resource://conversations/modules/stdlib/misc.js");
+ChromeUtils.import("resource://gre/modules/Services.jsm");
+ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
+ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
 /* import-globals-from ../prefs.js */
-Cu.import("resource://conversations/modules/prefs.js");
+ChromeUtils.import("resource://conversations/modules/prefs.js");
 /* import-globals-from ../misc.js */
-Cu.import("resource://conversations/modules/misc.js");
+ChromeUtils.import("resource://conversations/modules/misc.js");
 /* import-globals-from ../hook.js */
-Cu.import("resource://conversations/modules/hook.js");
+ChromeUtils.import("resource://conversations/modules/hook.js");
 /* import-globals-from ../log.js */
-Cu.import("resource://conversations/modules/log.js");
+ChromeUtils.import("resource://conversations/modules/log.js");
 
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
@@ -92,7 +87,7 @@ let embedsHook = {
    */
   onMessageStreamed: function _embedsHook_onMessageStreamed(aMsgHdr, aDomNode, aMsgWindow) {
     // There's a pref that controls whether we're enabled or not.
-    if (!Prefs["add_embeds"])
+    if (!Prefs.add_embeds)
       return;
     // First get the basic elements of the message.
     let iframe = aDomNode.getElementsByTagName("iframe")[0];
@@ -180,6 +175,6 @@ let embedsHook = {
       div.appendChild(e);
     container.appendChild(div);
   },
-}
+};
 
 registerHook(embedsHook);

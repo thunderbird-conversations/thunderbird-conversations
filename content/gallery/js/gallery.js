@@ -36,19 +36,14 @@
 
 "use strict";
 
-const Ci = Components.interfaces;
-const Cc = Components.classes;
-const Cu = Components.utils;
-const Cr = Components.results;
-
-Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
-Cu.import("resource:///modules/gloda/mimemsg.js");
+ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
+ChromeUtils.import("resource:///modules/gloda/mimemsg.js");
 /* import-globals-from ../../../modules/stdlib/msgHdrUtils.js */
-Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
 /* import-globals-from ../../../modules/stdlib/misc.js */
-Cu.import("resource://conversations/modules/stdlib/misc.js");
+ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
 /* import-globals-from ../../../modules/log.js */
-Cu.import("resource://conversations/modules/log.js");
+ChromeUtils.import("resource://conversations/modules/log.js");
 
 let Log = setupLogging("Conversations.Gallery");
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
@@ -102,7 +97,7 @@ Gallery.prototype = {
         i: i+1,
         n: n,
       });
-    })
+    });
 
     // Output the data
     tmpl("#imageTemplate", data).appendTo($(".images"));

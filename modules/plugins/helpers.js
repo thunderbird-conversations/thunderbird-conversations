@@ -34,7 +34,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var EXPORTED_SYMBOLS = ['PluginHelpers']
+var EXPORTED_SYMBOLS = ['PluginHelpers'];
 
 /**
  * This file just contains helpers for our Gloda plugins. The function in
@@ -43,8 +43,8 @@ var EXPORTED_SYMBOLS = ['PluginHelpers']
  *  gloda yet (see message.js).
  */
 
-const {GlodaUtils} = Components.utils.import("resource:///modules/gloda/utils.js", {});
-Components.utils.import("resource://conversations/modules/stdlib/misc.js");
+const {GlodaUtils} = ChromeUtils.import("resource:///modules/gloda/utils.js", {});
+ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
 
 const gsfnRegexp = /^(.+)(?:, an employee of Mozilla Messaging,)? (?:replied to|commented on|just asked)/;
 const gsfnFrom = "Mozilla Messaging <noreply.mozilla_messaging@getsatisfaction.com>";
@@ -67,7 +67,7 @@ let PluginHelpers = {
     let uniq = s => GlodaUtils.md5HashString(s).substring(0, 8);
 
     // We sniff for a name
-    if (aMimeMsg && aMimeMsg.headers["from"] == gsfnFrom) {
+    if (aMimeMsg && aMimeMsg.headers.from == gsfnFrom) {
       let body = aMimeMsg.coerceBodyToPlaintext(aMsgHdr.folder);
       let m = body.match(gsfnRegexp);
       if (m && m.length)

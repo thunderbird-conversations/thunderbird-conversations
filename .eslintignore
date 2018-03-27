@@ -8,3 +8,6 @@ content/vendor/**
 
 # Ignore sub-module directories
 modules/stdlib/**
+
+# Ignore old add-on.
+other/oembed-addon/**

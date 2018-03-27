@@ -439,7 +439,7 @@ $.TokenList = function (input, settings) {
 
     // Delete this token's id from hidden input
     var data = JSON.parse(hidden_input.val());
-    data = data.filter(function (x) (x != token_data.data));
+    data = data.filter((x) => x != token_data.data);
     hidden_input.val(JSON.stringify(data));
 
     token_count--;

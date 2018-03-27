@@ -36,31 +36,26 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ['Conversation']
+var EXPORTED_SYMBOLS = ['Conversation'];
 
-const Ci = Components.interfaces;
-const Cc = Components.classes;
-const Cu = Components.utils;
-const Cr = Components.results;
+ChromeUtils.import("resource://gre/modules/Services.jsm");
 
-Cu.import("resource://gre/modules/Services.jsm");
-
-Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
-const {Gloda} = Cu.import("resource:///modules/gloda/gloda.js", {});
+ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
+const {Gloda} = ChromeUtils.import("resource:///modules/gloda/gloda.js", {});
 /* import-globals-from log.js */
-Cu.import("resource://conversations/modules/log.js");
+ChromeUtils.import("resource://conversations/modules/log.js");
 /* import-globals-from prefs.js */
-Cu.import("resource://conversations/modules/prefs.js");
+ChromeUtils.import("resource://conversations/modules/prefs.js");
 
 /* import-globals-from stdlib/msgHdrUtils.js */
-Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
 /* import-globals-from stdlib/misc.js */
-Cu.import("resource://conversations/modules/stdlib/misc.js");
+ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
 /* import-globals-from message.js */
-Cu.import("resource://conversations/modules/message.js");
-Cu.import("resource://conversations/modules/contact.js");
-Cu.import("resource://conversations/modules/misc.js"); // for groupArray
-Cu.import("resource://conversations/modules/hook.js");
+ChromeUtils.import("resource://conversations/modules/message.js");
+ChromeUtils.import("resource://conversations/modules/contact.js");
+ChromeUtils.import("resource://conversations/modules/misc.js"); // for groupArray
+ChromeUtils.import("resource://conversations/modules/hook.js");
 
 let Log = setupLogging("Conversations.Conversation");
 
@@ -114,7 +109,7 @@ let SignalManagerMixIn = {
       this._toRun = [f, n];
     }
   },
-}
+};
 
 // The Oracle just decides who to expand and who to scroll into view. As this is
 //  quite obscure logic and does not really belong to the main control flow, I
@@ -173,7 +168,7 @@ let OracleMixIn = {
       else
         actions.push(kActionDoNothing);
     };
-    switch (Prefs["expand_who"]) {
+    switch (Prefs.expand_who) {
       case Prefs.kExpandAuto:
         // In this mode, we scroll to the first unread message (or the last
         //  message if all messages are read), and we expand all unread messages
@@ -214,7 +209,7 @@ let OracleMixIn = {
     }
     return actions;
   },
-}
+};
 
 // -- Some helpers for our message type
 
@@ -643,7 +638,7 @@ Conversation.prototype = {
     let self = this;
     this._runOnceAfterNSignals(function () {
       self._filterOutDuplicates();
-      self._outputMessages()
+      self._outputMessages();
     }, n);
   },
 
@@ -685,7 +680,7 @@ Conversation.prototype = {
         aSimilarMessages[0]
       ;
       return r;
-    }
+    };
     // Select right message will try to pick the message that has an
     //  existing msgHdr.
     messages = messages.map(group => selectRightMessage(group));
@@ -854,7 +849,7 @@ Conversation.prototype = {
       //  because every test trying to determine whether we can recycle will end
       //  up running over the buggy set of messages.
       let currentMsgUris = currentMsgSet.filter(x => toMsgHdr(x))
-                                        .map(x => msgHdrGetUri(toMsgHdr(x)))
+                                        .map(x => msgHdrGetUri(toMsgHdr(x)));
       // Is a1 a prefix of a2? (I wish JS had pattern matching!)
       let isPrefix = function _isPrefix (a1, a2) {
         if (!a1.length) {
@@ -1161,7 +1156,7 @@ Conversation.prototype = {
         Log.debug("The HTML: ---------\n", html, "\n\n");
         k(html);
       }
-    }
+    };
     let messagesHtml = new Array(this.messages.length);
     this.messages.forEach(function ({ message: message }, i) {
       let j = i;
@@ -1173,7 +1168,7 @@ Conversation.prototype = {
     });
     top();
   },
-}
+};
 
 MixIn(Conversation, SignalManagerMixIn);
 MixIn(Conversation, OracleMixIn);

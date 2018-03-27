@@ -62,15 +62,10 @@ var EXPORTED_SYMBOLS = [];
  *  subject, hence this Gloda plugin
  */
 
-const Ci = Components.interfaces;
-const Cc = Components.classes;
-const Cu = Components.utils;
-const Cr = Components.results;
-
 /* import-globals-from helpers.js */
-Cu.import("resource://conversations/modules/plugins/helpers.js");
-const {Gloda} = Cu.import("resource:///modules/gloda/public.js", {});
-Cu.import("resource:///modules/gloda/mimemsg.js");
+ChromeUtils.import("resource://conversations/modules/plugins/helpers.js");
+const {Gloda} = ChromeUtils.import("resource:///modules/gloda/public.js", {});
+ChromeUtils.import("resource:///modules/gloda/mimemsg.js");
 
 let AlternativeSender = {
   init: function _AlternativeSender_init () {
@@ -195,6 +190,6 @@ let ConversationSubject = {
     let aMimeMsg = aRawReps.mime;
     yield Gloda.kWorkDone;
   },
-}
+};
 
 ConversationSubject.init();

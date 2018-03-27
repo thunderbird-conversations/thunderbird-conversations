@@ -2,27 +2,22 @@
 
 // ----- Autocomplete stuff. Understand it as a part of stub.compose-ui.js
 
-const Ci = Components.interfaces;
-const Cc = Components.classes;
-const Cu = Components.utils;
-const Cr = Components.results;
-
-Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
-Cu.import("resource:///modules/errUtils.js");
-Cu.import("resource:///modules/gloda/gloda.js");
-Cu.import("resource:///modules/gloda/public.js");
-Cu.import("resource:///modules/gloda/utils.js");
-Cu.import("resource:///modules/gloda/suffixtree.js");
-Cu.import("resource:///modules/gloda/noun_tag.js");
-Cu.import("resource:///modules/gloda/noun_freetag.js");
-Cu.import("resource://conversations/modules/stdlib/misc.js");
-Cu.import("resource://conversations/modules/log.js");
+ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
+ChromeUtils.import("resource:///modules/errUtils.js");
+ChromeUtils.import("resource:///modules/gloda/gloda.js");
+ChromeUtils.import("resource:///modules/gloda/public.js");
+ChromeUtils.import("resource:///modules/gloda/utils.js");
+ChromeUtils.import("resource:///modules/gloda/suffixtree.js");
+ChromeUtils.import("resource:///modules/gloda/noun_tag.js");
+ChromeUtils.import("resource:///modules/gloda/noun_freetag.js");
+ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
+ChromeUtils.import("resource://conversations/modules/log.js");
 
 let Log = setupLogging("Conversations.Stub.Completion");
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
 try {
-  Cu.import("resource://people/modules/people.js");
+  ChromeUtils.import("resource://people/modules/people.js");
 } catch (e) {
   Log.debug("You don't have Contacts installed. Gloda will provide autocomplete.");
 }
@@ -38,7 +33,7 @@ function asToken(thumb, name, email, guid) {
   let listItem = thumbStr + escapeHtml(nameStr); // this one is for injection
   let id = guid;
   let displayName = hasName ? name : email;
-  return { name: displayName, listItem: listItem, data: data, email: email, id: guid }
+  return { name: displayName, listItem: listItem, data: data, email: email, id: guid };
 }
 
 const MAX_POPULAR_CONTACTS = 200;
@@ -209,7 +204,7 @@ ContactIdentityCompleter.prototype = {
             dude.contact.name != dude.value ? dude.contact.name : null,
             dude.value,
             dude.value
-          )
+          );
       });
       result.addRows(rows);
       result.markCompleted(this);
@@ -250,7 +245,7 @@ let autoCompleteClasses = {
   dropdownItem2: "token-input-dropdown-item2-facebook",
   selectedDropdownItem: "token-input-selected-dropdown-item-facebook",
   inputToken: "token-input-input-token-facebook"
-}
+};
 
 function setupAutocomplete(to, cc, bcc) {
   // This function assumes aInput is #something
@@ -295,7 +290,7 @@ function setupAutocomplete(to, cc, bcc) {
         list.insertBefore(li, marker);
         list.insertBefore(span, marker);
       }
-    })
+    });
   };
   fill("#to", ".toList", to);
   fill("#cc", ".ccList", cc);

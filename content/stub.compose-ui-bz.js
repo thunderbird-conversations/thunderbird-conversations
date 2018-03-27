@@ -36,8 +36,8 @@
 
 "use strict";
 
-Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource:///modules/iteratorUtils.jsm");
+ChromeUtils.import("resource://gre/modules/Services.jsm");
+ChromeUtils.import("resource:///modules/iteratorUtils.jsm");
 
 // Remove when switching to Thunderbird 7
 if (!("cookies" in Services)) {
@@ -151,7 +151,7 @@ function BzComposeSession (match, webUrl, apiUrl, [login, loginCookie]) {
     let queryString =
       apiUrl + action + "?userid=" + login + "&cookie=" + loginCookie;
     return queryString;
-  }
+  };
 
   let mainWindow = topMail3Pane(window);
   let self = this;

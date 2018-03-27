@@ -1,34 +1,27 @@
-var EXPORTED_SYMBOLS = ['Customizations']
-
-const Ci = Components.interfaces;
-const Cc = Components.classes;
-const Cu = Components.utils;
-const Cr = Components.results;
+var EXPORTED_SYMBOLS = ['Customizations'];
 
 const nsMsgFolderFlags_SentMail = 0x00000200;
 const nsMsgFolderFlags_Inbox    = 0x00001000;
 const nsMsgFolderFlags_Offline  = 0x08000000;
 const msgAccountManager = Cc["@mozilla.org/messenger/account-manager;1"]
                             .getService(Ci.nsIMsgAccountManager);
-const ioService = Cc["@mozilla.org/network/io-service;1"]
-                  .getService(Ci.nsIIOService);
 
 const kPrefInt = 0, kPrefBool = 1, kPrefChar = 42;
 
-Cu.import("resource:///modules/MailUtils.js"); // for getFolderForURI
-const {fixIterator} = Cu.import("resource:///modules/iteratorUtils.jsm", {});
-const {VirtualFolderHelper} = Cu.import("resource:///modules/virtualFolderWrapper.js", {});
-Cu.import("resource:///modules/gloda/index_msg.js");
-Cu.import("resource:///modules/gloda/public.js");
+ChromeUtils.import("resource:///modules/MailUtils.js"); // for getFolderForURI
+const {fixIterator} = ChromeUtils.import("resource:///modules/iteratorUtils.jsm", {});
+const {VirtualFolderHelper} = ChromeUtils.import("resource:///modules/virtualFolderWrapper.js", {});
+ChromeUtils.import("resource:///modules/gloda/index_msg.js");
+ChromeUtils.import("resource:///modules/gloda/public.js");
 
 /* import-globals-from stdlib/misc.js */
-Cu.import("resource://conversations/modules/stdlib/misc.js");
+ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
 /* import-globals-from stdlib/msgHdrUtils.js */
-Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
 /* import-globals-from prefs.js */
-Cu.import("resource://conversations/modules/prefs.js");
+ChromeUtils.import("resource://conversations/modules/prefs.js");
 /* import-globals-from log.js */
-Cu.import("resource://conversations/modules/log.js");
+ChromeUtils.import("resource://conversations/modules/log.js");
 
 let Log = setupLogging("Conversations.Assistant");
 
@@ -67,7 +60,7 @@ SimpleCustomization.prototype = {
       this.set(oldValue);
     }
   },
-}
+};
 
 
 function PrefCustomization({ name, type, value }) {
@@ -101,7 +94,7 @@ PrefCustomization.prototype = {
         break;
     }
   },
-}
+};
 
 MixIn(PrefCustomization, SimpleCustomization.prototype);
 
@@ -120,7 +113,7 @@ MultipleCustomization.prototype = {
       x.uninstall(uninstallInfos[i]);
     });
   }
-}
+};
 
 // let eid = getMail3Pane().document.getElementById;
 //
@@ -226,7 +219,7 @@ let Customizations = {
         } else {
           moveOn();
         }
-      }
+      };
       Customizations.expect();
       waitForIt(); // will top()
 
@@ -372,7 +365,7 @@ let Customizations = {
           folder.clearFlag(nsMsgFolderFlags_Offline);
       }
       for (let aUri of aChangedServers) {
-        let uri = ioService.newURI(aUri, null, null);
+        let uri = Services.io.newURI(aUri, null, null);
         let server = msgAccountManager.findServerByURI(uri, false);
         if (server) {
           try {

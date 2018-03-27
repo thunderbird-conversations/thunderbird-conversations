@@ -36,31 +36,26 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ['ContactManager', 'Contacts', 'defaultPhotoURI']
+var EXPORTED_SYMBOLS = ['ContactManager', 'Contacts', 'defaultPhotoURI'];
 
-const Ci = Components.interfaces;
-const Cc = Components.classes;
-const Cu = Components.utils;
-const Cr = Components.results;
-
-Cu.import("resource://gre/modules/Services.jsm"); // https://developer.mozilla.org/en/JavaScript_code_modules/Services.jsm
-const {fixIterator} = Cu.import("resource:///modules/iteratorUtils.jsm", {}); // for fixIterator
-Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
-const {MailServices} = Cu.import("resource:///modules/mailServices.js", {});
-const {GlodaUtils} = Cu.import("resource:///modules/gloda/utils.js", {});
-const {Gloda} = Cu.import("resource:///modules/gloda/gloda.js", {});
+ChromeUtils.import("resource://gre/modules/Services.jsm"); // https://developer.mozilla.org/en/JavaScript_code_modules/Services.jsm
+const {fixIterator} = ChromeUtils.import("resource:///modules/iteratorUtils.jsm", {}); // for fixIterator
+ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
+const {MailServices} = ChromeUtils.import("resource:///modules/mailServices.js", {});
+const {GlodaUtils} = ChromeUtils.import("resource:///modules/gloda/utils.js", {});
+const {Gloda} = ChromeUtils.import("resource:///modules/gloda/gloda.js", {});
 
 /* import-globals-from stdlib/compose.js */
-Cu.import("resource://conversations/modules/stdlib/compose.js");
+ChromeUtils.import("resource://conversations/modules/stdlib/compose.js");
 /* import-globals-from stdlib/misc.js */
-Cu.import("resource://conversations/modules/stdlib/misc.js");
-Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
+ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
 /* import-globals-from log.js */
-Cu.import("resource://conversations/modules/log.js");
+ChromeUtils.import("resource://conversations/modules/log.js");
 /* import-globals-from prefs.js */
-Cu.import("resource://conversations/modules/prefs.js");
+ChromeUtils.import("resource://conversations/modules/prefs.js");
 /* import-globals-from misc.js */
-Cu.import("resource://conversations/modules/misc.js");
+ChromeUtils.import("resource://conversations/modules/misc.js");
 
 const clipboardService = Cc["@mozilla.org/widget/clipboardhelper;1"]
                          .getService(Ci.nsIClipboardHelper);
@@ -68,7 +63,7 @@ const clipboardService = Cc["@mozilla.org/widget/clipboardhelper;1"]
 const Contacts = {
   kFrom: 0,
   kTo: 1
-}
+};
 
 const defaultPhotoURI = "chrome://messenger/skin/addressbook/icons/contact-generic.png";
 
@@ -167,7 +162,7 @@ ContactManager.prototype = {
       return contact;
     }
   },
-}
+};
 
 let ContactMixIn = {
   /**
@@ -342,7 +337,7 @@ let ContactMixIn = {
         ? strings.get("meFromMeToSomeone")
         : strings.get("meFromSomeoneToMe")
       );
-      return [display, getIdentities().length > 1 ? this._email : ""]
+      return [display, getIdentities().length > 1 ? this._email : ""];
     }
     else
       return [this._name || this._email, ""];
@@ -394,7 +389,7 @@ ContactFromAB.prototype = {
     if (card) {
       // getProperty may return "0" or "1" which must be "== false"'d to be
       //  properly evaluated
-      this._useCardName = (card.getProperty("PreferDisplayName", true) == true);
+      this._useCardName = !!card.getProperty("PreferDisplayName", true);
       this.emails = [card.primaryEmail, card.getProperty("SecondEmail", "")];
       // Prefer:
       // - displayName
@@ -421,7 +416,7 @@ ContactFromAB.prototype = {
     }
     return defaultPhotoURI;
   },
-}
+};
 
 MixIn(ContactFromAB, ContactMixIn);
 MixIn(ContactFromAB, EventHelperMixIn);

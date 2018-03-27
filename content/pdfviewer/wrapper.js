@@ -36,17 +36,12 @@
 
 "use strict";
 
-const Ci = Components.interfaces;
-const Cc = Components.classes;
-const Cu = Components.utils;
-const Cr = Components.results;
-
-Cu.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI
-Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://gre/modules/NetUtil.jsm");
-Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
-Cu.import("resource://conversations/modules/log.js");
-Cu.import("resource://conversations/modules/stdlib/misc.js");
+ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI
+ChromeUtils.import("resource://gre/modules/Services.jsm");
+ChromeUtils.import("resource://gre/modules/NetUtil.jsm");
+ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
+ChromeUtils.import("resource://conversations/modules/log.js");
+ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
 
 let Log = setupLogging("Conversations.PdfViewer");
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
@@ -103,12 +98,12 @@ Wrapper.prototype = {
       browser.addEventListener("load", function load_handler () {
         browser.removeEventListener("load", load_handler, true);
         let w = browser.contentWindow.wrappedJSObject;
-        w.Log = Components.utils.cloneInto(
+        w.Log = Cu.cloneInto(
           setupLogging("Conversations.PdfViewer"),
           w,
           { cloneFunctions: true }
         );
-        w.init(Components.utils.cloneInto({ chunks: chunks }, w));
+        w.init(Cu.cloneInto({ chunks: chunks }, w));
       }, true);
       // Load from a resource:// URL so that it doesn't have chrome privileges.
       browser.loadURI("resource://conversations/content/pdfviewer/viewer.xhtml", null, null);
@@ -126,4 +121,3 @@ window.addEventListener("load", function (event) {
   wrapper = new Wrapper(uri);
   wrapper.load();
 }, false);
-

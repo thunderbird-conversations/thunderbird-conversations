@@ -36,11 +36,9 @@
  * ***** END LICENSE BLOCK ***** */
 
 function openLink(uri) {
-  if (!(uri instanceof Components.interfaces.nsIURI))
-    uri = Components.classes["@mozilla.org/network/io-service;1"]
-      .getService(Components.interfaces.nsIIOService)
-      .newURI(uri, null, null);
-  Components.classes["@mozilla.org/uriloader/external-protocol-service;1"]
-    .getService(Components.interfaces.nsIExternalProtocolService)
+  if (!(uri instanceof Ci.nsIURI))
+    uri = Services.io.newURI(uri, null, null);
+  Cc["@mozilla.org/uriloader/external-protocol-service;1"]
+    .getService(Ci.nsIExternalProtocolService)
     .loadUrl(uri);
 }

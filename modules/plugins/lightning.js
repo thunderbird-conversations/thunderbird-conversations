@@ -37,12 +37,12 @@
 var EXPORTED_SYMBOLS = ["isLightningInstalled"];
 
 /* import-globals-from ../hook.js */
-Components.utils.import("resource://conversations/modules/hook.js");
+ChromeUtils.import("resource://conversations/modules/hook.js");
 /* import-globals-from ../log.js */
-Components.utils.import("resource://conversations/modules/log.js");
+ChromeUtils.import("resource://conversations/modules/log.js");
 /* import-globals-from ../misc.js */
-Components.utils.import("resource://conversations/modules/misc.js");
-Components.utils.import("resource://gre/modules/Services.jsm");
+ChromeUtils.import("resource://conversations/modules/misc.js");
+ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 let Log = setupLogging("Conversations.Modules.Lightning");
 
@@ -53,7 +53,7 @@ function isLightningInstalled() {
 let hasLightning = false;
 let cal;
 try {
-  cal = Components.utils.import("resource://calendar/modules/calItipUtils.jsm", {});
+  cal = ChromeUtils.import("resource://calendar/modules/calItipUtils.jsm", {});
   if (cal.itip.getMethodText) {
     // We need the patch from mozilla bug 626829 for this plugin to work. The
     // patch adds the method cal.itip.getMethodText.
@@ -137,7 +137,7 @@ let lightningHook = {
     let itipItem = null;
     try {
       let sinkProps = aMsgWindow.msgHeaderSink.properties;
-      itipItem = sinkProps.getPropertyAsInterface("itipItem", Components.interfaces.calIItipItem);
+      itipItem = sinkProps.getPropertyAsInterface("itipItem", Ci.calIItipItem);
     } catch (e) {
     }
 

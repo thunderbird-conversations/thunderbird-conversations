@@ -43,17 +43,15 @@
 
 var EXPORTED_SYMBOLS = [];
 
-const Cu = Components.utils;
-
-Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
-Cu.import("resource://conversations/modules/hook.js");
-Cu.import("resource://conversations/modules/log.js");
+ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+ChromeUtils.import("resource://conversations/modules/hook.js");
+ChromeUtils.import("resource://conversations/modules/log.js");
 
 let Log = setupLogging("Conversations.Modules.DKIMVerifier");
 
 let hasDKIMVerifier = false;
 try {
-  Cu.import("resource://dkim_verifier/AuthVerifier.jsm");
+  ChromeUtils.import("resource://dkim_verifier/AuthVerifier.jsm");
   if (AuthVerifier.version.match(/^[0-9]+/)[0] === "1") {
     hasDKIMVerifier = true;
     Log.debug("DKIM Verifier plugin for Thunderbird Conversations loaded!");

@@ -36,32 +36,27 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ['MonkeyPatch']
+var EXPORTED_SYMBOLS = ['MonkeyPatch'];
 
-const Ci = Components.interfaces;
-const Cc = Components.classes;
-const Cu = Components.utils;
-const Cr = Components.results;
-
-Cu.import("resource://gre/modules/AddonManager.jsm");
-Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
+ChromeUtils.import("resource://gre/modules/AddonManager.jsm");
+ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
 
 /* import-globals-from stdlib/misc.js */
-Cu.import("resource://conversations/modules/stdlib/misc.js");
+ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
 /* import-globals-from stdlib/msgHdrUtils.js */
-Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
 /* import-globals-from assistant.js */
-Cu.import("resource://conversations/modules/assistant.js");
+ChromeUtils.import("resource://conversations/modules/assistant.js");
 /* import-globals-from misc.js */
-Cu.import("resource://conversations/modules/misc.js"); // for joinWordList, openConversationIn
+ChromeUtils.import("resource://conversations/modules/misc.js"); // for joinWordList, openConversationIn
 /* import-globals-from prefs.js */
-Cu.import("resource://conversations/modules/prefs.js");
+ChromeUtils.import("resource://conversations/modules/prefs.js");
 /* import-globals-from log.js */
-Cu.import("resource://conversations/modules/log.js");
+ChromeUtils.import("resource://conversations/modules/log.js");
 /* import-globals-from config.js */
-Cu.import("resource://conversations/modules/config.js");
+ChromeUtils.import("resource://conversations/modules/config.js");
 
-Cu.import("resource://gre/modules/Services.jsm");
+ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 const kMultiMessageUrl = "chrome://messenger/content/multimessageview.xhtml";
 
@@ -187,9 +182,9 @@ MonkeyPatch.prototype = {
         let addPeople = function (prop, pos) {
           let line = msgHdr[prop];
           parseMimeLine(line, true).forEach(function(x) {
-            people.push(format(x, pos))
+            people.push(format(x, pos));
           });
-        }
+        };
         // We add everyone
         addPeople("author", true);
         addPeople("recipients", false);
@@ -262,10 +257,6 @@ MonkeyPatch.prototype = {
   },
 
   registerFontPrefObserver: function _MonkeyPatch_registerFontPref (aHtmlpane) {
-    let prefBranch = Cc["@mozilla.org/preferences-service;1"]
-      .getService(Ci.nsIPrefService)
-      .getBranch(null);
-    prefBranch.QueryInterface(Ci.nsIPrefBranch);
     let observer = {
       observe: function (aSubject, aTopic, aData) {
         if (aTopic == "nsPref:changed"
@@ -274,11 +265,11 @@ MonkeyPatch.prototype = {
         }
       },
     };
-    prefBranch.addObserver("", observer, false);
+    Services.prefs.addObserver("", observer, false);
     this._window.addEventListener("close", function () {
-      prefBranch.removeObserver("", observer);
+      Services.prefs.removeObserver("", observer);
     }, false);
-    this.pushUndo(() => prefBranch.removeObserver("", observer));
+    this.pushUndo(() => Services.prefs.removeObserver("", observer));
   },
 
   clearTimer: function () {
@@ -386,8 +377,8 @@ MonkeyPatch.prototype = {
 
     let self = this;
     let htmlpane = window.document.getElementById("multimessage");
-    let oldSummarizeMultipleSelection = window["summarizeMultipleSelection"];
-    let oldSummarizeThread = window["summarizeThread"];
+    let oldSummarizeMultipleSelection = window.summarizeMultipleSelection;
+    let oldSummarizeThread = window.summarizeThread;
 
     // Register our new column type
     this.registerColumn();
@@ -769,4 +760,4 @@ MonkeyPatch.prototype = {
 
     Log.debug("Monkey patch successfully applied.");
   },
-}
+};

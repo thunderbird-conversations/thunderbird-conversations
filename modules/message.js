@@ -36,27 +36,22 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ['Message', 'MessageFromGloda', 'MessageFromDbHdr', 'ConversationKeybindings']
+var EXPORTED_SYMBOLS = ['Message', 'MessageFromGloda', 'MessageFromDbHdr', 'ConversationKeybindings'];
 
-const Ci = Components.interfaces;
-const Cc = Components.classes;
-const Cu = Components.utils;
-const Cr = Components.results;
-
-Cu.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI
-Cu.import("resource://gre/modules/PluralForm.jsm");
-Cu.import("resource://gre/modules/Services.jsm"); // https://developer.mozilla.org/en/JavaScript_code_modules/Services.jsm
+ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI
+ChromeUtils.import("resource://gre/modules/PluralForm.jsm");
+ChromeUtils.import("resource://gre/modules/Services.jsm"); // https://developer.mozilla.org/en/JavaScript_code_modules/Services.jsm
 /* import-globals-from stdlib/misc.js */
-Cu.import("resource://conversations/modules/stdlib/misc.js");
-const {MailServices} = Cu.import("resource:///modules/mailServices.js", {}); // bug 629462
-Cu.import("resource:///modules/StringBundle.js");
-const {makeFriendlyDateAgo} = Cu.import("resource:///modules/templateUtils.js", {});
-const {GlodaUtils} = Cu.import("resource:///modules/gloda/utils.js", {});
-const {MsgHdrToMimeMessage} = Cu.import("resource:///modules/gloda/mimemsg.js", {});
-const {mimeMsgToContentSnippetAndMeta} = Cu.import("resource:///modules/gloda/connotent.js", {});
+ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
+const {MailServices} = ChromeUtils.import("resource:///modules/mailServices.js", {}); // bug 629462
+ChromeUtils.import("resource:///modules/StringBundle.js");
+const {makeFriendlyDateAgo} = ChromeUtils.import("resource:///modules/templateUtils.js", {});
+const {GlodaUtils} = ChromeUtils.import("resource:///modules/gloda/utils.js", {});
+const {MsgHdrToMimeMessage} = ChromeUtils.import("resource:///modules/gloda/mimemsg.js", {});
+const {mimeMsgToContentSnippetAndMeta} = ChromeUtils.import("resource:///modules/gloda/connotent.js", {});
 
 /* import-globals-from plugins/lightning.js */
-Cu.import("resource://conversations/modules/plugins/lightning.js");
+ChromeUtils.import("resource://conversations/modules/plugins/lightning.js");
 // It's not really nice to write into someone elses object but this is what the
 // Services object is for.  We prefix with the "m" to ensure we stay out of their
 // namespace.
@@ -81,25 +76,25 @@ const olderThan52 = Services.vc.compare(Services.sysinfo.version, "51.1") > 0;
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
 /* import-globals-from stdlib/addressBookUtils.js */
-Cu.import("resource://conversations/modules/stdlib/addressBookUtils.js");
+ChromeUtils.import("resource://conversations/modules/stdlib/addressBookUtils.js");
 /* import-globals-from stdlib/msgHdrUtils.js */
-Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
 /* import-globals-from stdlib/compose.js */
-Cu.import("resource://conversations/modules/stdlib/compose.js");
+ChromeUtils.import("resource://conversations/modules/stdlib/compose.js");
 /* import-globals-from plugins/helpers.js */
-Cu.import("resource://conversations/modules/plugins/helpers.js");
+ChromeUtils.import("resource://conversations/modules/plugins/helpers.js");
 /* import-globals-from quoting.js */
-Cu.import("resource://conversations/modules/quoting.js");
+ChromeUtils.import("resource://conversations/modules/quoting.js");
 /* import-globals-from contact.js */
-Cu.import("resource://conversations/modules/contact.js");
+ChromeUtils.import("resource://conversations/modules/contact.js");
 /* import-globals-from prefs.js */
-Cu.import("resource://conversations/modules/prefs.js");
+ChromeUtils.import("resource://conversations/modules/prefs.js");
 /* import-globals-from misc.js */
-Cu.import("resource://conversations/modules/misc.js"); // for iconForMimeType
+ChromeUtils.import("resource://conversations/modules/misc.js"); // for iconForMimeType
 /* import-globals-from hook.js */
-Cu.import("resource://conversations/modules/hook.js");
+ChromeUtils.import("resource://conversations/modules/hook.js");
 /* import-globals-from log.js */
-Cu.import("resource://conversations/modules/log.js");
+ChromeUtils.import("resource://conversations/modules/log.js");
 
 let Log = setupLogging("Conversations.Message");
 // This is high because we want enough snippet to extract relevant data from
@@ -136,7 +131,7 @@ function addMsgListener(aMessage) {
 
 function dateAccordingToPref(date) {
   try {
-    return Prefs["no_friendly_date"] ? dateAsInMessageList(date) : makeFriendlyDateAgo(date);
+    return Prefs.no_friendly_date ? dateAsInMessageList(date) : makeFriendlyDateAgo(date);
   } catch (e) {
     return dateAsInMessageList(date);
   }
@@ -205,7 +200,7 @@ KeyListener.prototype = {
       event.stopPropagation();
     },
     viewSource: function viewSource(event) {
-      topMail3Pane(this.message).ViewPageSource([this.message._uri])
+      topMail3Pane(this.message).ViewPageSource([this.message._uri]);
       event.preventDefault();
       event.stopPropagation();
     },
@@ -378,7 +373,7 @@ KeyListener.prototype = {
 const ConversationKeybindings = {
   bindings: KeyListener.prototype.keybindings,
   registerCustomListener : function registerCustomListener(name, func) {
-    if (this.availableActions.indexOf(name) >= 0)
+    if (this.availableActions.includes(name))
       return false;
     this.availableActions.push(name);
     KeyListener.prototype.functions[name] = func;
@@ -560,7 +555,7 @@ Message.prototype = {
     if (Object.keys(this.bugzillaInfos).length) {
       extraClasses.push("bugzilla");
       try {
-        let url = this.bugzillaInfos["url"];
+        let url = this.bugzillaInfos.url;
         let uri = Services.io.newURI(url, null, null);
         data.bugzillaUrl = url;
       } catch (e) {
@@ -577,7 +572,7 @@ Message.prototype = {
     // 3) Generate extra information: snippet, date, uri
     data.snippet = sanitize(this._snippet);
     data.date = sanitize(this._date);
-    data.fullDate = Prefs["no_friendly_date"]
+    data.fullDate = Prefs.no_friendly_date
       ? ""
       : dateAsInMessageList(new Date(this._msgHdr.date/1000))
     ;
@@ -835,6 +830,7 @@ Message.prototype = {
         self.compose(Ci.nsIMsgCompType.ReplyToList, event);
         event.stopPropagation();
       });
+      // eslint-disable-next-line no-unsanitized/property
       mainActionLink.innerHTML = replyList.innerHTML;
       mainActionLink.title = replyList.title;
     } else if (this.isReplyAllEnabled) {
@@ -842,6 +838,7 @@ Message.prototype = {
         self.compose(Ci.nsIMsgCompType.ReplyAll, event);
         event.stopPropagation();
       });
+      // eslint-disable-next-line no-unsanitized/property
       mainActionLink.innerHTML = replyAll.innerHTML;
       mainActionLink.title = replyAll.title;
     } else {
@@ -849,6 +846,7 @@ Message.prototype = {
         self.compose(Ci.nsIMsgCompType.ReplyToSender, event);
         event.stopPropagation();
       });
+      // eslint-disable-next-line no-unsanitized/property
       mainActionLink.innerHTML = reply.innerHTML;
       mainActionLink.title = reply.title;
     }
@@ -879,12 +877,12 @@ Message.prototype = {
     // _realFrom is better.
     if (this._realFrom.email)
       realFrom = this._realFrom.email.trim().toLowerCase();
-    if (realFrom in Prefs["monospaced_senders"])
+    if (realFrom in Prefs.monospaced_senders)
       this._domNode.getElementsByClassName("checkbox-monospace")[0].checked = true;
 
     // This one is located in the first contact tooltip
     this.register(".checkbox-monospace", function (event) {
-      let senders = Object.keys(Prefs["monospaced_senders"]);
+      let senders = Object.keys(Prefs.monospaced_senders);
       senders = senders.filter(x => x != realFrom);
       if (event.target.checked) {
         Prefs.setChar("conversations.monospaced_senders", senders.concat([realFrom]).join(","));
@@ -900,7 +898,7 @@ Message.prototype = {
       event.stopPropagation();
     });
     this.register(".action-source", function (event) {
-      mainWindow.ViewPageSource([self._uri])
+      mainWindow.ViewPageSource([self._uri]);
       event.stopPropagation();
     });
     this.register(".tooltip", function (event) {
@@ -1692,7 +1690,7 @@ Message.prototype = {
           x.parentNode.removeChild(x);
       return node.innerHTML;
     };
-    let body = htmlToPlainText(prepare(this.iframe.contentWindow.document.body))
+    let body = htmlToPlainText(prepare(this.iframe.contentWindow.document.body));
     // Remove trailing newlines, it gives a bad appearance.
     body = body.replace(/[\n\r]*$/, "");
     return body;
@@ -1750,7 +1748,7 @@ Message.prototype = {
       k(html);
     });
   },
-}
+};
 
 MixIn(Message, EventHelperMixIn);
 
@@ -1807,7 +1805,7 @@ function MessageFromGloda(aConversation, aGlodaMsg, aLateAttachments) {
 
 MessageFromGloda.prototype = {
   __proto__: Message.prototype,
-}
+};
 
 function MessageFromDbHdr(aConversation, aMsgHdr) {
   this._msgHdr = aMsgHdr;
@@ -1903,7 +1901,7 @@ MessageFromDbHdr.prototype = {
   },
 
   RE_LIST_POST: /<mailto:([^>]+)>/,
-}
+};
 
 /**
  * This additional class holds all of the bad heuristics we're performing on a
@@ -1968,8 +1966,8 @@ let PostStreamingFixesMixIn = {
     // Unless the user specifically asked for this message to be
     //  dislayed with a monospaced font...
     let [{name, email}] = this.parse(this._msgHdr.author);
-    if (email && !(email.toLowerCase() in Prefs["monospaced_senders"]) &&
-        !(this.mailingLists.some(x => (x.toLowerCase() in Prefs["monospaced_senders"])))) {
+    if (email && !(email.toLowerCase() in Prefs.monospaced_senders) &&
+        !(this.mailingLists.some(x => (x.toLowerCase() in Prefs.monospaced_senders)))) {
       styleRules = styleRules.concat([
         ".moz-text-flowed, .moz-text-plain {",
         "  font-family: sans-serif !important;",
@@ -2072,7 +2070,7 @@ let PostStreamingFixesMixIn = {
         }
         if (style) {
           let numLines = parseInt(style.height) / parseInt(style.lineHeight);
-          if (numLines > Prefs["hide_quote_length"]) {
+          if (numLines > Prefs.hide_quote_length) {
             return true;
           }
         }
@@ -2100,7 +2098,7 @@ let PostStreamingFixesMixIn = {
       return (node.classList && node.classList.contains("moz-txt-sig"));
     };
 
-    if (Prefs["hide_sigs"]) {
+    if (Prefs.hide_sigs) {
       self.detectBlocks(iframe,
         isSignature,
         strings.get("hideSigText"),

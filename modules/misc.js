@@ -39,24 +39,20 @@ var EXPORTED_SYMBOLS = [
   'EventHelperMixIn', 'arrayEquals', 'LINKS_REGEX',
   'linkifySubject', 'topMail3Pane', 'reindexMessages',
   'folderName', 'openConversationInTabOrWindow'
-]
+];
 
 var LINKS_REGEX = /((\w+):\/\/[^<>()'"\s]+|www(\.[-\w]+){2,})/;
 
-const Ci = Components.interfaces;
-const Cc = Components.classes;
-const Cu = Components.utils;
-
-Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
-const { GlodaMsgIndexer } = Cu.import("resource:///modules/gloda/index_msg.js", {});
+ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
+const { GlodaMsgIndexer } = ChromeUtils.import("resource:///modules/gloda/index_msg.js", {});
 /* import-globals-from stdlib/misc.js */
-Cu.import("resource://conversations/modules/stdlib/misc.js");
+ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
 /* import-globals-from stdlib/msgHdrUtils.js */
-Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
 /* import-globals-from prefs.js */
-Cu.import("resource://conversations/modules/prefs.js");
+ChromeUtils.import("resource://conversations/modules/prefs.js");
 /* import-globals-from log.js */
-Cu.import("resource://conversations/modules/log.js");
+ChromeUtils.import("resource://conversations/modules/log.js");
 
 let Log = setupLogging("Conversations.Misc");
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
@@ -201,7 +197,7 @@ let EventHelperMixIn = {
       node.addEventListener(action, f, false);
   },
 
-}
+};
 
 function linkifySubject(subject, doc) {
   /* utility function to split text and links */

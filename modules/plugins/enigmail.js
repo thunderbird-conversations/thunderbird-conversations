@@ -64,25 +64,20 @@ var EXPORTED_SYMBOLS = [];
  * That way, your conv-plugin.js won't export anything and AMO won't bother you.
  */
 
-const Ci = Components.interfaces;
-const Cc = Components.classes;
-const Cu = Components.utils;
-const Cr = Components.results;
-
-Cu.import("resource://gre/modules/Services.jsm"); // https://developer.mozilla.org/en/JavaScript_code_modules/Services.jsm
-Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
+ChromeUtils.import("resource://gre/modules/Services.jsm"); // https://developer.mozilla.org/en/JavaScript_code_modules/Services.jsm
+ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
 /* import-globals-from ../stdlib/msgHdrUtils.js */
-Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
 /* import-globals-from ../stdlib/misc.js */
-Cu.import("resource://conversations/modules/stdlib/misc.js");
+ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
 /* import-globals-from ../stdlib/compose.js */
-Cu.import("resource://conversations/modules/stdlib/compose.js");
+ChromeUtils.import("resource://conversations/modules/stdlib/compose.js");
 /* import-globals-from ../misc.js */
-Cu.import("resource://conversations/modules/misc.js");
+ChromeUtils.import("resource://conversations/modules/misc.js");
 /* import-globals-from ../hook.js */
-Cu.import("resource://conversations/modules/hook.js");
+ChromeUtils.import("resource://conversations/modules/hook.js");
 /* import-globals-from ../log.js */
-Cu.import("resource://conversations/modules/log.js");
+ChromeUtils.import("resource://conversations/modules/log.js");
 
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
@@ -102,19 +97,19 @@ try {
   /* globals EnigmailCommon, EnigmailCore, EnigmailData, EnigmailLocale,
              EnigmailFuncs, Enigmail, EnigmailPrefs, EnigmailDialog,
              EnigmailConstants, EnigmailRules */
-  Cu.import("resource://enigmail/core.jsm");
-  Cu.import("resource://enigmail/data.jsm");
-  Cu.import("resource://enigmail/dialog.jsm");
-  Cu.import("resource://enigmail/prefs.jsm");
-  Cu.import("resource://enigmail/locale.jsm");
+  ChromeUtils.import("resource://enigmail/core.jsm");
+  ChromeUtils.import("resource://enigmail/data.jsm");
+  ChromeUtils.import("resource://enigmail/dialog.jsm");
+  ChromeUtils.import("resource://enigmail/prefs.jsm");
+  ChromeUtils.import("resource://enigmail/locale.jsm");
   hasEnigmail = true;
   Log.debug("Enigmail plugin for Thunderbird Conversations loaded!");
 } catch (e) {
   hasEnigmail = false;
   Log.debug("Enigmail is older than 1.9 or doesn't seem to be installed...");
   try {
-    Cu.import("resource://enigmail/enigmailCommon.jsm");
-    Cu.import("resource://enigmail/commonFuncs.jsm");
+    ChromeUtils.import("resource://enigmail/enigmailCommon.jsm");
+    ChromeUtils.import("resource://enigmail/commonFuncs.jsm");
     hasEnigmail = true;
     Log.debug("Enigmail plugin for Thunderbird Conversations loaded!");
   } catch (e) {
@@ -237,7 +232,7 @@ if (hasEnigmail) {
 
       // Show signed label of encrypted and signed pgp/mime.
       addSignedLabel(statusFlags, message._domNode, message);
-    }
+    };
 
     let originalHandleSMimeMessage = enigMimeHeaderSinkPrototype.handleSMimeMessage;
     enigMimeHeaderSinkPrototype.handleSMimeMessage = function _handleSMimeMessage_patched(uri) {
@@ -263,10 +258,11 @@ if (hasEnigmail) {
       }
       w.EnigmailVerify.unregisterContentTypeHandler();
       message._reloadMessage();
-    }
+    };
   }, true);
 }
 
+// eslint-disable-next-line complexity
 function tryEnigmail(aDocument, aMessage, aMsgWindow) {
   let bodyElement = aDocument.body;
   let findStr = "-----BEGIN PGP";
@@ -399,7 +395,7 @@ function tryEnigmail(aDocument, aMessage, aMsgWindow) {
     if (retry >= 2) {
       plainText = EnigmailData.convertFromUnicode(EnigmailData.convertToUnicode(plainText, "UTF-8"), charset);
     }
-    if (blockSeparationObj.value.indexOf(" ") >= 0) {
+    if (blockSeparationObj.value.includes(" ")) {
       let blocks = blockSeparationObj.value.split(/ /);
       let blockInfo = blocks[0].split(/:/);
       plainText = EnigmailData.convertFromUnicode(EnigmailLocale.getString("notePartEncrypted"), charset) +
@@ -437,6 +433,7 @@ function tryEnigmail(aDocument, aMessage, aMsgWindow) {
           node = pre;
         }
         msgRfc822Text = EnigmailData.convertToUnicode(msgRfc822Text, charset);
+        // eslint-disable-next-line no-unsanitized/property
         node.innerHTML = EnigmailFuncs.formatPlaintextMsg(msgRfc822Text);
         aMessage.decryptedText = msgRfc822Text;
       }
@@ -512,6 +509,7 @@ function showNotificationBar(aMessage) {
     if (w.Enigmail.msg.securityInfo.statusArr.length > 0) {
       message += "<br/>" + escapeHtml(w.Enigmail.msg.securityInfo.statusArr[0]);
     }
+    // eslint-disable-next-line no-unsanitized/property
     enigmailBar.querySelector(".enigmailMessage").innerHTML = message;
     enigmailBar.style.display = "block";
     let button = enigmailBar.querySelector(".enigmailDetails button");
@@ -644,7 +642,7 @@ let enigmailHook = {
         aMessage._domNode.classList.add("signed");
 
       // Current message uri should be blank to decrypt all PGP/MIME messages.
-      w.Enigmail.msg.getCurrentMsgUriSpec = function () { return ""; }
+      w.Enigmail.msg.getCurrentMsgUriSpec = function () { return ""; };
       verifyAttachments(aMessage);
       prepareForShowHdrIcons(aMessage);
       patchForShowSecurityInfo(w);
@@ -664,6 +662,7 @@ let enigmailHook = {
     }
   },
 
+  // eslint-disable-next-line complexity
   onMessageBeforeSendOrPopout: function _enigmailHook_onMessageBeforeSendOrPopout(aAddress, aEditor, aStatus, aPopout, aAttachmentList, aWindow) {
     if (hasEnigmail)
       this._originalText = null;
@@ -680,7 +679,7 @@ let enigmailHook = {
 
     let uiFlags = nsIEnigmail.UI_INTERACTIVE;
 
-    let identity = aAddress.params.identity
+    let identity = aAddress.params.identity;
     Enigmail.msg.identity = identity;
     Enigmail.msg.enableRules = true;
 
@@ -1009,6 +1008,7 @@ let enigmailHook = {
       }, 200);
     };
     waitLoadingBody(function () {
+      // eslint-disable-next-line no-unsanitized/property
       aEditor.node.contentDocument.querySelector("blockquote").innerHTML =
         escapeHtml(aMessage.decryptedText).replace(/\r?\n/g, '<br>');
     });
@@ -1020,6 +1020,6 @@ let enigmailHook = {
       updateSecurityInfo(aMessage);
     }
   },
-}
+};
 
 registerHook(enigmailHook);

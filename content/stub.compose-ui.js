@@ -36,26 +36,26 @@
 
 "use strict";
 
-Cu.import("resource://gre/modules/Services.jsm");
-Cu.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI
-Cu.import("resource:///modules/mailServices.js");
-Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
-Cu.import("resource:///modules/gloda/mimemsg.js");
+ChromeUtils.import("resource://gre/modules/Services.jsm");
+ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI
+ChromeUtils.import("resource:///modules/mailServices.js");
+ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
+ChromeUtils.import("resource:///modules/gloda/mimemsg.js");
 
 const gMessenger = Cc["@mozilla.org/messenger;1"]
                    .createInstance(Ci.nsIMessenger);
 
-Cu.import("resource://conversations/modules/stdlib/misc.js");
-Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
-Cu.import("resource://conversations/modules/stdlib/send.js");
-Cu.import("resource://conversations/modules/stdlib/compose.js");
-Cu.import("resource://conversations/modules/log.js");
-Cu.import("resource://conversations/modules/misc.js");
-Cu.import("resource://conversations/modules/hook.js");
+ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
+ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+ChromeUtils.import("resource://conversations/modules/stdlib/send.js");
+ChromeUtils.import("resource://conversations/modules/stdlib/compose.js");
+ChromeUtils.import("resource://conversations/modules/log.js");
+ChromeUtils.import("resource://conversations/modules/misc.js");
+ChromeUtils.import("resource://conversations/modules/hook.js");
 
 Log = setupLogging("Conversations.Stub.Compose");
 
-Cu.import("resource://conversations/modules/stdlib/SimpleStorage.js");
+ChromeUtils.import("resource://conversations/modules/stdlib/SimpleStorage.js");
 let ss = SimpleStorage.createIteratorStyle("conversations");
 window.addEventListener("unload", function () {
   // save if needed
@@ -264,10 +264,10 @@ function onPopOut(event, aType, aIsSelected) {
   if (!aIsSelected) {
     switch (aType) {
       case "reply":
-        getMessageForQuickReply().compose(Ci.nsIMsgCompType.ReplyToSender, event)
+        getMessageForQuickReply().compose(Ci.nsIMsgCompType.ReplyToSender, event);
         break;
       case "replyAll":
-        getMessageForQuickReply().compose(Ci.nsIMsgCompType.ReplyAll, event)
+        getMessageForQuickReply().compose(Ci.nsIMsgCompType.ReplyAll, event);
         break;
     }
   } else {
@@ -371,12 +371,13 @@ function getActiveEditor() {
   return {
     node: textarea,
     get value () {
-      return textarea.contentDocument.body.innerHTML
+      return textarea.contentDocument.body.innerHTML;
     },
     set value (val) {
-      textarea.contentDocument.body.innerHTML = val
+      // eslint-disable-next-line no-unsanitized/property
+      textarea.contentDocument.body.innerHTML = val;
     }
-  }
+  };
 }
 
 function createComposeSession(what) {
@@ -857,7 +858,7 @@ nsAttachmentOpener.prototype = {
   },
 
   getInterface: function(iid) {
-    if (iid.equals(Components.interfaces.nsIDOMWindow))
+    if (iid.equals(Ci.nsIDOMWindow))
       return window;
     else
       return this.QueryInterface(iid);
@@ -865,7 +866,7 @@ nsAttachmentOpener.prototype = {
 
   loadCookie: null,
   parentContentListener: null
-}
+};
 
 // ----- Attachment list
 
@@ -1209,7 +1210,7 @@ let sendListener = {
     Ci.nsIMsgSendListener,
     Ci.nsISupports
   ]),
-}
+};
 
 let copyListener = {
   onStopCopy: function (aStatus) {
@@ -1224,7 +1225,7 @@ let copyListener = {
     Ci.nsIMsgCopyServiceListener,
     Ci.nsISupports
   ]),
-}
+};
 
 function createStateListener (aComposeSession, aMsgHdrs, aId) {
   return {

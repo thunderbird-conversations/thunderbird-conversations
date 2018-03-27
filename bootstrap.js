@@ -36,14 +36,9 @@
 
 "use strict";
 
-const Ci = Components.interfaces;
-const Cc = Components.classes;
-const Cu = Components.utils;
-const Cr = Components.results;
-
-Cu.import("resource://gre/modules/XPCOMUtils.jsm");
-Cu.import("resource://gre/modules/Services.jsm");
-const {fixIterator} = Cu.import("resource:///modules/iteratorUtils.jsm", {});
+ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+ChromeUtils.import("resource://gre/modules/Services.jsm");
+const {fixIterator} = ChromeUtils.import("resource:///modules/iteratorUtils.jsm", {});
 
 let global = this;
 let Log;
@@ -110,13 +105,13 @@ function monkeyPatchWindow(window, aLater) {
           window.openTab("chromeTab", { chromePage: "chrome://conversations/content/stub.xhtml?quickCompose=1" });
         else
           window.open("chrome://conversations/content/stub.xhtml?quickCompose=1", "", "chrome,width=1020,height=600");
-      }
+      };
 
       // The modules below need to be loaded when a window exists, i.e. after
       // overlays have been properly loaded and applied
-      Cu.import("resource://conversations/modules/plugins/enigmail.js");
-      Cu.import("resource://conversations/modules/plugins/lightning.js");
-      Cu.import("resource://conversations/modules/plugins/dkimVerifier.js");
+      ChromeUtils.import("resource://conversations/modules/plugins/enigmail.js");
+      ChromeUtils.import("resource://conversations/modules/plugins/lightning.js");
+      ChromeUtils.import("resource://conversations/modules/plugins/dkimVerifier.js");
     } catch (e) {
       Log.error(e);
       dumpCallStack(e);
@@ -146,15 +141,15 @@ function monkeyPatchAllWindows() {
  */
 function loadImports(){
   /* import-globals-from modules/monkeypatch.js */
-  Cu.import("resource://conversations/modules/monkeypatch.js", global);
-  Cu.import("resource://conversations/modules/prefs.js", global);
+  ChromeUtils.import("resource://conversations/modules/monkeypatch.js", global);
+  ChromeUtils.import("resource://conversations/modules/prefs.js", global);
   /* import-globals-from modules/conversation.js */
-  Cu.import("resource://conversations/modules/conversation.js", global);
+  ChromeUtils.import("resource://conversations/modules/conversation.js", global);
   /* import-globals-from modules/keycustomization.js */
-  Cu.import("resource://conversations/modules/keycustomization.js", global);
+  ChromeUtils.import("resource://conversations/modules/keycustomization.js", global);
 
-  Cu.import("resource://conversations/modules/plugins/glodaAttrProviders.js");
-  Cu.import("resource://conversations/modules/plugins/embeds.js");
+  ChromeUtils.import("resource://conversations/modules/plugins/glodaAttrProviders.js");
+  ChromeUtils.import("resource://conversations/modules/plugins/embeds.js");
 }
 
 // This obserer is notified when a new window is created and injects our code
@@ -171,11 +166,11 @@ let windowObserver = {
 function startup(aData, aReason) {
   ResourceRegister.init(aData.installPath, "conversations");
   /* import-globals-from modules/log.js */
-  Cu.import("resource://conversations/modules/log.js", global);
+  ChromeUtils.import("resource://conversations/modules/log.js", global);
   /* import-globals-from modules/prefs.js */
-  Cu.import("resource://conversations/modules/prefs.js", global);
+  ChromeUtils.import("resource://conversations/modules/prefs.js", global);
   /* import-globals-from modules/config.js */
-  Cu.import("resource://conversations/modules/config.js", global);
+  ChromeUtils.import("resource://conversations/modules/config.js", global);
 
   Log = setupLogging("Conversations.MonkeyPatch");
   Log.debug("startup, aReason=", aReason);

@@ -36,21 +36,15 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ['CustomizeKeys']
-
-const Ci = Components.interfaces;
-const Cc = Components.classes;
-const Cu = Components.utils;
-const Cr = Components.results;
-
+var EXPORTED_SYMBOLS = ['CustomizeKeys'];
 
 /* import-globals-from stdlib/misc.js */
-Cu.import("resource://conversations/modules/stdlib/misc.js");
+ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
 /* import-globals-from message.js */
-Cu.import("resource://conversations/modules/message.js");
+ChromeUtils.import("resource://conversations/modules/message.js");
 /* import-globals-from log.js */
-Cu.import("resource://conversations/modules/log.js");
-Cu.import("resource:///modules/StringBundle.js"); // for StringBundle
+ChromeUtils.import("resource://conversations/modules/log.js");
+ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
 let strings = new StringBundle("chrome://conversations/locale/keycustomization.properties");
 let Log = setupLogging("Conversations.Message");
 
@@ -179,7 +173,7 @@ const PrefEditors = {
     bindings[key].push(binding);
     return binding;
   }
-}
+};
 
 
 const Listeners = {
@@ -248,9 +242,7 @@ const Listeners = {
     let keysVbox = showhide.previousElementSibling;
     if (keysVbox.hidden) {
       if (CustomizeKeys.alreadyEditing) {
-        let promptService = Components.classes["@mozilla.org/embedcomp/prompt-service;1"]
-          .getService(Components.interfaces.nsIPromptService);
-        promptService.alert(null, strings.get("alreadyEditingTitle"), strings.get("alreadyEditingText"));
+        Services.prompt.alert(null, strings.get("alreadyEditingTitle"), strings.get("alreadyEditingText"));
         return;
       }
       keysVbox.hidden = false;
@@ -303,7 +295,7 @@ const Listeners = {
     ConversationKeybindings.saveKeybindings();
     event.stopPropagation();
   }
-}
+};
 
 const Templates = {
   /**
@@ -416,7 +408,7 @@ const Templates = {
       item.setAttribute("label", describeKey(itemKey));
       if (itemKey === key)
         item.setAttribute("selected", "true");
-    }
+    };
     for (let i = "A".charCodeAt(0); i <= "Z".charCodeAt(0); i++)
       createItem(String.fromCharCode(i));
     for (let i = "0".charCodeAt(0); i <= "9".charCodeAt(0); i++)
@@ -480,7 +472,7 @@ const Templates = {
     btn.addEventListener("command", Listeners.onCreateClick, false);
     return hbox;
   }
-}
+};
 
 
 const CustomizeKeys = {
@@ -514,4 +506,4 @@ const CustomizeKeys = {
     while (keysVbox.hasChildNodes())
       keysVbox.removeChild(keysVbox.firstChild);
   }
-}
+};
