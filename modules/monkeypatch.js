@@ -328,8 +328,8 @@ MonkeyPatch.prototype = {
         // customization is not reverted)
         let mainWindow = getMail3Pane();
         let tabmail = mainWindow.document.getElementById("tabmail");
-        if (tabmail.tabContainer.selectedIndex != 0)
-          tabmail.tabContainer.selectedIndex = 0;
+        if (tabmail["tabmail-tabs"].selectedIndex != 0)
+          tabmail["tabmail-tabs"].selectedIndex = 0;
         // This is asynchronous, leave it a second
         mainWindow.setTimeout(() => self.undoCustomizations(), 1000);
         // Since this is called once per window, we don't want to uninstall
