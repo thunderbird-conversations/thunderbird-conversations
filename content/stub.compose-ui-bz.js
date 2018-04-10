@@ -51,6 +51,8 @@ let gBugzillaAPIs = {
     "https://api-dev.bugzilla.mozilla.org/latest/",
   "https://landfill.bugzilla.org/bzapi_sandbox/":
     "https://api-dev.bugzilla.mozilla.org/test/latest/",
+  "http://bugs.kde.org/":
+    "https://bugs.kde.org/rest/",
 };
 
 function addBzLink(aUrl) {
