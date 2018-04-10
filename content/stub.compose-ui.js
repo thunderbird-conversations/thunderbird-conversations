@@ -391,8 +391,8 @@ function createComposeSession(what) {
       elt.setAttribute("spellcheck", false);
   }
   if (gBzSetup) {
-    let [webUrl, bzUrl, cookie] = gBzSetup;
-    return new BzComposeSession(what, webUrl, bzUrl, cookie);
+    let [webUrl, bzUrl, apiType, cookie] = gBzSetup;
+    return new BzComposeSession(what, webUrl, bzUrl, apiType, cookie);
   } else {
     return new ComposeSession(what);
   }

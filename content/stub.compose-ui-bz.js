@@ -47,12 +47,18 @@ if (!("cookies" in Services)) {
 }
 
 let gBugzillaAPIs = {
-  "https://bugzilla.mozilla.org/":
-    "https://api-dev.bugzilla.mozilla.org/latest/",
-  "https://landfill.bugzilla.org/bzapi_sandbox/":
-    "https://api-dev.bugzilla.mozilla.org/test/latest/",
-  "http://bugs.kde.org/":
-    "https://bugs.kde.org/rest/",
+  "https://bugzilla.mozilla.org/": {
+    url: "https://api-dev.bugzilla.mozilla.org/latest/",
+    type: "bzapi",
+  },
+  "https://landfill.bugzilla.org/bzapi_sandbox/": {
+    url: "https://api-dev.bugzilla.mozilla.org/test/latest/",
+    type: "bzapi",
+  },
+  "http://bugs.kde.org/": {
+    url: "https://bugs.kde.org/rest/",
+    type: "native",
+  },
 };
 
 function addBzLink(aUrl) {
@@ -84,11 +90,12 @@ function bzSetup() {
     let url = lastMsg.bugzillaInfos.url;
     if (url in gBugzillaAPIs) {
       let cookie = getBugzillaCookie(url);
-      let bzUrl = gBugzillaAPIs[url];
+      let bzUrl = gBugzillaAPIs[url].url;
+      let apiType = gBugzillaAPIs[url].type;
       if (cookie) {
         document.querySelector(".quickReply li.reply .quickReplyIcon span")
           .textContent = strings.get("bzPlaceholder");
-        return [url, bzUrl, cookie];
+        return [url, bzUrl, apiType, cookie];
       } else {
         document.querySelector(".quickReply li.reply .quickReplyIcon span")
           .textContent = strings.get("bzNoCookieMsg");
@@ -124,7 +131,7 @@ function getBugzillaCookie(aUrl) {
     return null;
 }
 
-function BzComposeSession (match, webUrl, apiUrl, [login, loginCookie]) {
+function BzComposeSession (match, webUrl, apiUrl, apiType, [login, loginCookie]) {
   this.webUrl = webUrl;
   // A visitor pattern.
   //  match({ reply(nsIMsgDbHdr), draft({ msgUri, from, to, cc, bcc, body }) })
@@ -138,6 +145,7 @@ function BzComposeSession (match, webUrl, apiUrl, [login, loginCookie]) {
     msgHdr: null,
   };
   this.addedBzLink = false;
+  this.apiType = apiType;
 
   let conv = Conversations.currentConversation;
   this.message = conv.messages[conv.messages.length - 1].message;
@@ -184,7 +192,7 @@ BzComposeSession.prototype = {
     let results = RE_BUG_NUMBER.exec(this.message._msgHdr.messageId);
     if (results && results.length) {
       let bugNumber = results[1];
-      let url = this.makeQuery("bug/"+bugNumber+"/comment/");
+      let url = this.makeQuery("bug/"+bugNumber+"/comment");
 
       let req = new XMLHttpRequest();
       // Register a whole bunch of event listeners.
@@ -246,9 +254,16 @@ BzComposeSession.prototype = {
       req.open("POST", url);
       req.setRequestHeader('Accept', 'application/json');
       req.setRequestHeader('Content-Type', 'application/json');
-      req.send(JSON.stringify({
-        text: htmlToPlainText(getActiveEditor().value)
-      }));
+      if (self.apiType == "bzapi") {
+        req.send(JSON.stringify({
+          text: htmlToPlainText(getActiveEditor().value)
+        }));
+      } else {
+        req.send(JSON.stringify({
+          comment: htmlToPlainText(getActiveEditor().value),
+          is_private: false
+        }));
+      }
     } else {
       pText(strings.get("bzRegexpFail"));
     }
