@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<?xml version="1.0" encoding="UTF-8"?>
 
 <!-- ***** BEGIN LICENSE BLOCK *****
    - Version: MPL 1.1/GPL 2.0/LGPL 2.1
@@ -37,45 +37,104 @@
    -
    - ***** END LICENSE BLOCK ***** -->
 
-<!DOCTYPE window SYSTEM "chrome://conversations/locale/options.dtd">
- 
-<vbox xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+<!DOCTYPE prefwindow [
+  <!ENTITY % converstionsDTD SYSTEM "chrome://conversations/locale/options.dtd" >
+  %converstionsDTD;
+]>
 
-  <setting pref="conversations.expand_who" type="radio" title="&option.expand_who;">  
-    <radiogroup>  
-      <radio value="1" label="&option.expand_none;" />
-      <radio value="3" label="&option.expand_all;" />
-      <radio value="4" label="&option.expand_auto2;" tooltiptext="&option.expand_auto2.tooltip;"/>
-    </radiogroup>  
-  </setting>
+<?xml-stylesheet href="chrome://global/skin/global.css" type="text/css"?>
+<?xml-stylesheet href="chrome://communicator/skin/" type="text/css"?>
+<?xml-stylesheet type="text/css" href="chrome://messenger/skin/preferences/preferences.css"?>
 
-  <setting title="&title.quoting2;" desc="&desc.quoting;" pref="conversations.hide_quote_length" type="integer" />
-  <setting title="&title.hide_sigs;" desc="&desc.hide_sigs;" pref="conversations.hide_sigs" type="bool" />
+<prefwindow xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+            xmlns:html="http://www.w3.org/1999/xhtml"
+            id="conversationsprefs"
+            title="Thunderbird Conversations">
 
-  <setting title="&title.friendly_date;" desc="&option.no_friendly_date2;" pref="conversations.no_friendly_date" type="bool" />
+  <script type="application/javascript" src="chrome://converastions/content/options.js"/>
 
-  <setting title="&title.customize_keys;" desc="&desc.customize_keys;" type="control">
+  <prefpane>
+    <preferences>
+      <preference id="conversations.hide_sigs" name="conversations.hide_sigs" type="bool"/>
+      <preference id="conversations.expand_who" name="conversations.expand_who" type="int"/>
+      <preference id="conversations.hide_quote_length" name="conversations.hide_quote_length" type="int"/>
+      <preference id="conversations.no_friendly_date" name="conversations.no_friendly_date" type="bool"/>
+      <preference id="conversations.tweak_chrome" name="conversations.tweak_chrome" type="bool"/>
+      <preference id="conversations.tweak_bodies" name="conversations.tweak_bodies" type="bool"/>
+      <preference id="mailnews.sendInBackground" name="mailnews.sendInBackground" type="bool"/>
+      <preference id="conversations.operate_on_conversations" name="conversations.operate_on_conversations" type="bool"/>
+      <preference id="conversations.extra_attachments" name="conversations.extra_attachments" type="bool"/>
+      <preference id="conversations.compose_in_tab" name="conversations.compose_in_tab" type="bool"/>
+      <preference id="conversations.logging_enabled" name="conversations.logging_enabled" type="bool"/>
+      <preference id="conversations.monospaced_senders" name="conversations.monospaced_senders" type="string"/>
+      <preference id="conversations.add_embeds" name="conversations.add_embeds" type="bool"/>
+      <preference id="conversations.add_embeds" name="conversations.add_embeds" type="bool"/>
+      <preference id="conversations.add_embeds" name="conversations.add_embeds" type="bool"/>
+      <preference id="conversations.add_embeds" name="conversations.add_embeds" type="bool"/>
+    </preferences>
+
     <vbox>
-      <vbox id="keysettings" hidden="true"/>
-      <button id="showhidekeys" label="&label.expand_keys;"/>
+      <hbox align="center">
+        <label control="expand_who"
+               value="&option.expand_who;"/>
+        <radiogroup id="expand_who" preference="conversations.expand_who" orient="horizontal">
+          <radio value="1" label="&option.expand_none;" />
+          <radio value="3" label="&option.expand_all;" />
+          <radio value="4" label="&option.expand_auto2;" tooltiptext="&option.expand_auto2.tooltip;"/>
+        </radiogroup>
+      </hbox>
+
+      <hbox align="center">
+        <label control="quoting"
+               value="&title.quoting2;"
+               tooltiptext="&desc.quoting;"/>
+        <textbox type="number" tooltiptext="&desc.quoting;" size="3" preference="conversations.hide_quote_length" />
+      </hbox>
+      <hbox align="center">
+        <label control="monospaced_senders"
+               value="&title.monospaced_senders;"
+               tooltiptext="&option.monospaced_senders2;"/>
+        <textbox id="monospaced_senders" tooltiptext="&option.monospaced_senders2;"
+                 preference="conversations.monospaced_senders" size="50" />
+      </hbox>
+
+      <checkbox preference="conversations.hide_sigs"
+                label="&title.hide_sigs;"
+                tooltiptext="&desc.hide_sigs;"/>
+
+      <checkbox label="&title.friendly_date;" tooltiptext="&option.no_friendly_date2;" preference="conversations.no_friendly_date"/>
+
+      <!-- Doesn't yet work with the new format dialog -->
+      <!-- <setting title="&title.customize_keys;" desc="&desc.customize_keys;" type="control">
+        <vbox>
+          <vbox id="keysettings" hidden="true"/>
+          <button id="showhidekeys" label="&label.expand_keys;"/>
+        </vbox>
+      </setting> -->
+      <checkbox label="&title.tweak_chrome;" tooltiptext="&option.tweak_chrome;" preference="conversations.tweak_chrome"/>
+      <checkbox label="&title.tweak_bodies;" tooltiptext="&option.tweak_bodies;" preference="conversations.tweak_bodies"/>
+      <checkbox label="&title.add_embeds;" tooltiptext="&option.add_embeds;" preference="conversations.add_embeds" />
+
+      <checkbox label="&title.send_in_background;" tooltiptext="&desc.send_in_background;"
+        preference="mailnews.sendInBackground"/>
+
+      <checkbox label="&title.operate_on_conversations;" tooltiptext="&option.operate_on_conversations;"
+                preference="conversations.operate_on_conversations"/>
+
+      <checkbox label="&title.extra_attachments;" tooltiptext="&desc.extra_attachments2;"
+                preference="conversations.extra_attachments"/>
+      <checkbox label="&title.compose_in_tab;" tooltiptext="&desc.compose_in_tab;"
+                preference="conversations.compose_in_tab" />
+      <checkbox label="&title.debugging;" tooltiptext="&desc.debugging;"
+                preference="conversations.logging_enabled" />
+
+      <!-- Needs styling -->
+      <!-- <hbox>
+        <label control="assistantButton" value="&title.assistant;"/> -->
+        <button id="assistantButton" label="&option.assistant;"
+          oncommand="window.openDialog('chrome://conversations/content/assistant/assistant.xhtml', '', 'chrome,width=800,height=500');"
+         />
+      <!-- </hbox> -->
     </vbox>
-  </setting>
-  <setting title="&title.tweak_chrome;" desc="&option.tweak_chrome;" pref="conversations.tweak_chrome" type="bool" />
-  <setting title="&title.tweak_bodies;" desc="&option.tweak_bodies;" pref="conversations.tweak_bodies" type="bool" />
-  <setting title="&title.add_embeds;" desc="&option.add_embeds;" pref="conversations.add_embeds" type="bool" />
-  <setting title="&title.monospaced_senders;" desc="&option.monospaced_senders2;" pref="conversations.monospaced_senders" type="string" />
-
-  <setting title="&title.send_in_background;" desc="&desc.send_in_background;"
-    pref="mailnews.sendInBackground" type="bool" />
-
-  <setting title="&title.operate_on_conversations;" desc="&option.operate_on_conversations;" pref="conversations.operate_on_conversations" type="bool" />
-  <setting title="&title.assistant;" type="control">  
-    <button label="&option.assistant;"
-      oncommand="window.openDialog('chrome://conversations/content/assistant/assistant.xhtml', '', 'chrome,width=800,height=500');"
-     />
-  </setting>
-  <setting title="&title.extra_attachments;" desc="&desc.extra_attachments2;" pref="conversations.extra_attachments" type="bool" />
-  <setting title="&title.compose_in_tab;" desc="&desc.compose_in_tab;" pref="conversations.compose_in_tab" type="bool" />
-  <setting title="&title.debugging;" desc="&desc.debugging;" pref="conversations.logging_enabled" type="bool" />
- 
-</vbox>
+  </prefpane>
+</prefwindow>

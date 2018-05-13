@@ -7,6 +7,8 @@
   <Description about="urn:mozilla:install-manifest">
     <em:id>gconversation@xulforum.org</em:id>
     <em:version>2.14pre</em:version>
+    <em:optionsURL>chrome://conversations/content/options.xul</em:optionsURL>
+    <em:optionsType>3</em:optionsType>
 
     <!-- Target Application this theme can install into,
         with minimum and maximum supported versions. -->
