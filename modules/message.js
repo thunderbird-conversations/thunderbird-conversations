@@ -59,10 +59,6 @@ XPCOMUtils.defineLazyGetter(Services, "mMessenger",
                             function () {
                               return Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
                             });
-XPCOMUtils.defineLazyGetter(Services, "mAtomService",
-                            function() {
-                              return Cc["@mozilla.org/atom-service;1"].getService(Ci.nsIAtomService);
-                            });
 
 const kCharsetFromMetaTag = 9;
 const kCharsetFromChannel = 11;
@@ -1550,8 +1546,7 @@ Message.prototype = {
             }
 
             // Send "msgLoaded" event
-            let msgLoadedAtom = Services.mAtomService.getAtom("msgLoaded");
-            self._msgHdr.folder.NotifyPropertyFlagChanged(self._msgHdr, msgLoadedAtom, 0, 1);
+            self._msgHdr.folder.NotifyPropertyFlagChanged(self._msgHdr, "msgLoaded", 0, 1);
             self._msgHdr.folder.lastMessageLoaded = self._msgHdr.messageKey;
 
             self._didStream = true;
