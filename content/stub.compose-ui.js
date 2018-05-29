@@ -56,13 +56,13 @@ ChromeUtils.import("resource://conversations/modules/hook.js");
 Log = setupLogging("Conversations.Stub.Compose");
 
 ChromeUtils.import("resource://conversations/modules/stdlib/SimpleStorage.js");
-let ss = SimpleStorage.createIteratorStyle("conversations");
+
+const SIMPLE_STORAGE_TABLE_NAME = "conversations";
+
 window.addEventListener("unload", function () {
   // save if needed
   onSave(function () {
     Log.debug("Unload.");
-    // otherwise it leaks and makes about:memory crash
-    ss.ss.dbConnection.asyncClose();
   });
 }, false);
 
@@ -92,7 +92,7 @@ function registerQuickReply() {
         Log.debug("onDraftChanged", Conversations == mainWindow.Conversations);
         switch (aTopic) {
           case "modified":
-            newComposeSessionByDraftIf();
+            newComposeSessionByDraftIf().catch(Cu.reportError);
             break;
           case "removed":
             getActiveEditor().value = "";
@@ -165,22 +165,21 @@ function registerQuickReply() {
 //  non-strict threading or custom queries). That's problematic because the same
 //  conversation might end up having different Gloda ids... hell, that's too
 //  bad.
-function newComposeSessionByDraftIf() {
+async function newComposeSessionByDraftIf() {
   let id = Conversations.currentConversation.id; // Gloda ID
   if (!id) {
     $("#save").attr("disabled", "disabled");
     return;
   }
 
-  SimpleStorage.spin(function* () {
-    let r = yield ss.get(id);
-    if (r) {
-      gComposeSession = createComposeSession(x => x.draft(r));
-      startedEditing(true);
-      revealCompositionFields();
-      showQuickReply.call($(".quickReply li.reply"));
-    }
-  });
+  let r = await SimpleStorage.get(SIMPLE_STORAGE_TABLE_NAME, id);
+
+  if (r) {
+    gComposeSession = createComposeSession(x => x.draft(r));
+    startedEditing(true);
+    revealCompositionFields();
+    showQuickReply.call($(".quickReply li.reply"));
+  }
 }
 
 // Called when we need to expand the textarea and start editing a new message.
@@ -251,13 +250,13 @@ function editFields(aFocusId) {
 
 function confirmDiscard(event) {
   if (!startedEditing() || confirm(strings.get("confirmDiscard")))
-    onDiscard();
+    onDiscard().catch(Cu.reportError);
 }
 
 function onUseEditor() {
   gComposeSession.stripSignatureIfNeeded();
   gComposeSession.send({ popOut: true });
-  onDiscard();
+  onDiscard().catch(Cu.reportError);
 }
 
 function onPopOut(event, aType, aIsSelected) {
@@ -275,7 +274,7 @@ function onPopOut(event, aType, aIsSelected) {
   }
 }
 
-function onDiscard(event) {
+async function onDiscard(event) {
   if (isQuickCompose) {
     window.close();
     closeTab();
@@ -287,11 +286,10 @@ function onDiscard(event) {
     hideQuickReply();
     gComposeSession = null;
     let id = Conversations.currentConversation.id;
-    if (id)
-      SimpleStorage.spin(function* () {
-        let r = yield ss.remove(id);
-        gDraftListener.notifyDraftChanged("removed");
-      });
+    if (id) {
+      await SimpleStorage.remove(SIMPLE_STORAGE_TABLE_NAME, id);
+      gDraftListener.notifyDraftChanged("removed");
+    }
   }
 }
 
@@ -300,7 +298,7 @@ function onDiscard(event) {
  *  draft yet.
  * @param k (optional) A function to call once it's saved.
  */
-function onSave(k) {
+async function onSave(k) {
   // First codepath, we ain't got no nothing to save.
   if (!startedEditing()) {
     if (k)
@@ -310,25 +308,22 @@ function onSave(k) {
 
   // Second codepath. Heh, got some work to do.
   Log.debug("Saving because there's a compose session");
-  SimpleStorage.spin(function* () {
-    let id = Conversations.currentConversation.id; // Gloda ID
-    if (id) {
-      yield ss.set(id, {
-        msgUri: msgHdrGetUri(gComposeSession.params.msgHdr),
-        from: gComposeSession.params.identity.email,
-        to: JSON.parse($("#to").val()).join(","),
-        cc: JSON.parse($("#cc").val()).join(","),
-        bcc: JSON.parse($("#bcc").val()).join(","),
-        body: getActiveEditor().value,
-        attachments: gComposeSession.attachmentList.save(),
-      });
-      gDraftListener.notifyDraftChanged("modified");
-    }
-    if (k)
-      k();
-  });
+  let id = Conversations.currentConversation.id; // Gloda ID
+  if (id) {
+    await SimpleStorage.set(SIMPLE_STORAGE_TABLE_NAME, id, {
+      msgUri: msgHdrGetUri(gComposeSession.params.msgHdr),
+      from: gComposeSession.params.identity.email,
+      to: JSON.parse($("#to").val()).join(","),
+      cc: JSON.parse($("#cc").val()).join(","),
+      bcc: JSON.parse($("#bcc").val()).join(","),
+      body: getActiveEditor().value,
+      attachments: gComposeSession.attachmentList.save(),
+    });
+    gDraftListener.notifyDraftChanged("modified");
+  }
+  if (k)
+    k();
 }
-
 
 // ----- The whole composition session and related actions...
 
@@ -1239,7 +1234,7 @@ function createStateListener (aComposeSession, aMsgHdrs, aId) {
       // AdjustFocus();
     },
 
-    ComposeProcessDone: function(aResult) {
+    ComposeProcessDone(aResult) {
       Log.debug("ComposeProcessDone", NS_SUCCEEDED(aResult));
       if (NS_SUCCEEDED(aResult)) {
         // If the user didn't start a new composition session, hide the quick
@@ -1256,10 +1251,9 @@ function createStateListener (aComposeSession, aMsgHdrs, aId) {
         }
         // Remove the old stored draft, don't use onDiscard, because the compose
         //  params might have changed in the meanwhile.
-        if (aId)
-          SimpleStorage.spin(function* () {
-            yield ss.remove(aId);
-          });
+        if (aId) {
+          SimpleStorage.remove(SIMPLE_STORAGE_TABLE_NAME, aId).catch(Cu.reportError);
+        }
         // Do stuff to the message we replied to.
         let msgHdr = aComposeSession.params.msgHdr;
         if (msgHdr) {

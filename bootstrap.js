@@ -229,6 +229,9 @@ function startup(aData, aReason) {
 }
 
 function shutdown(aData, aReason) {
+  let {SimpleStorage} = ChromeUtils.import("resource://conversations/modules/stdlib/SimpleStorage.js", {});
+  SimpleStorage.close().catch(Cu.reportError);
+
   // No need to do extra work here
   Log.debug("shutdown, aReason=", aReason);
   if (aReason == BOOTSTRAP_REASONS.APP_SHUTDOWN)

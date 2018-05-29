@@ -228,10 +228,9 @@ BzComposeSession.prototype = {
             }
             // Remove the old stored draft, don't use onDiscard, because the
             // compose params might have changed in the meanwhile.
-            if (id)
-              SimpleStorage.spin(function* () {
-                yield ss.remove(id);
-              });
+            if (id) {
+              SimpleStorage.remove(SIMPLE_STORAGE_TABLE_NAME, id).catch(Cu.reportError);
+            }
             if (archive)
               msgHdrsArchive(conv.msgHdrs.filter(x => !msgHdrIsArchive(x)));
           }
