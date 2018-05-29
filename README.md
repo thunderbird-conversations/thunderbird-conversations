@@ -27,18 +27,17 @@ these steps.
 
 1. Download the [zip archive](https://github.com/protz/thunderbird-conversations/archive/master.zip) or clone the repository
 2. Change into the main folder, run `git submodule init` and `git submodule update`
-3. Change into the main folder and run `./build.sh`.
+3. Run `npm install`
+4. Run `npm run build`
 
 This will package an `.xpi` file of the latest codebase which can be installed via add-on manager in Thunderbird.
-Please note that the latest `thunderbird-conversations`-builds are only compatible with the `Daily`-version of Thunderbird. You can build this from source or get a pre-built binary at http://ftp.mozilla.org/pub/mozilla.org/thunderbird/nightly/latest-comm-central/.
+Please note that the latest `thunderbird-conversations`-builds are sometimes only compatible with the `Daily`-version of Thunderbird. You can build this from source or get a pre-built binary at http://ftp.mozilla.org/pub/mozilla.org/thunderbird/nightly/latest-comm-central/.
 
 TESTING
 =======
 
-There are tests for this addon. They are distributed as a MQ patch that you
-need to qimport into your comm-central tree. The file is
-tests/mozmill-conversations. Once you qimport'd it,
+To run the tests:
 
-    jonathan@ramona:~/Code/objdir-comm-central $ make \
-    MOZMILL_EXTRA=--addon=/home/jonathan/Code/gconversation@xulforum.org/conversations.xpi \
-    SOLO_TEST=conversations/test-attachments.js mozmill-one
+```
+$ npm test
+```
