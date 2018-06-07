@@ -758,6 +758,11 @@ MonkeyPatch.prototype = {
     this.pushUndo(() => messagepane.removeEventListener("load", fightAboutBlank, true));
     fightAboutBlank();
 
+    // Never allow prefetch, as we don't want to leak for pages.
+    let oldPrefetchSetting = htmlpane.docShell.allowDNSPrefetch;
+    htmlpane.docShell.allowDNSPrefetch = false;
+    this.pushUndo(() => htmlpane.docShell.allowDNSPrefetch = oldPrefetchSetting);
+
     Log.debug("Monkey patch successfully applied.");
   },
 };
