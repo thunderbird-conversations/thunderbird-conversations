@@ -34,6 +34,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/* exported bzSetup */
+
 "use strict";
 
 ChromeUtils.import("resource://gre/modules/Services.jsm");

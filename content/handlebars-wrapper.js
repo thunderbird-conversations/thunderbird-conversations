@@ -34,6 +34,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/* exported wrapHandlebars */
+
 "use strict";
 
 // Tiny compatibility wrapper so that we can use Handlebars just like we used

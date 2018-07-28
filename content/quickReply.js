@@ -34,6 +34,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/* exported hideQuickReply, registerQuickReplyEventListeners,
+            registerQuickReplyDocumentCommands */
+
 function makeEditable(aIframe, aMakeEditable) {
   // Setup the iframe to be editable in htmlmail mode (for blockquotes)
   let w = aIframe.contentWindow;
