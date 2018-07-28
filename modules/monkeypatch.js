@@ -404,7 +404,6 @@ MonkeyPatch.prototype = {
       if (!Prefs.enabled)
         return oldThreadPaneDoubleClick();
 
-      let tabmail = window.document.getElementById("tabmail");
       // ThreadPaneDoubleClick calls OnMsgOpenSelectedMessages. We don't want to
       // replace the whole ThreadPaneDoubleClick function, just the line that
       // calls OnMsgOpenSelectedMessages in that function. So we do that weird
@@ -586,9 +585,6 @@ MonkeyPatch.prototype = {
                 && (window.Conversations.currentConversation.counter != aConversation.counter);
               let isDifferentConversation = !window.Conversations.currentConversation
                   || (window.Conversations.currentConversation.counter != aConversation.counter);
-              let prevCounter = window.Conversations.currentConversation
-                ? window.Conversations.currentConversation.counter
-                : 0;
               // Make sure we have a global root --> conversation --> persistent
               //  query chain to prevent the Conversation object (and its inner
               //  query) to be collected. The Conversation keeps watching the
@@ -732,7 +728,7 @@ MonkeyPatch.prototype = {
       let msgListeners = window.Conversations.msgListeners;
       let messageId = aMsgHdr.messageId;
       if (messageId in msgListeners) {
-        for (let [i, listener] of entries(msgListeners[messageId])) {
+        for (let [/* i */, listener] of entries(msgListeners[messageId])) {
           let obj = listener.get();
           if (obj)
             obj.onMsgHasRemoteContent();

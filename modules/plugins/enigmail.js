@@ -121,6 +121,7 @@ try {
 
 let enigmailSvc;
 // used in enigmailMsgComposeOverlay.js
+/* exported gMsgCompose, gSMFields */
 let gMsgCompose = {
   compFields: {}
 };
@@ -624,7 +625,7 @@ let enigmailHook = {
 
   onMessageBeforeStreaming: function _enigmailHook_onBeforeStreaming(aMessage) {
     if (enigmailSvc) {
-      let { _attachments: attachments, _msgHdr: msgHdr, _domNode: domNode } = aMessage;
+      let { _attachments: attachments, /* _msgHdr: msgHdr, */ _domNode: domNode } = aMessage;
       this._domNode = domNode;
       let w = topMail3Pane(aMessage);
       let hasEnc = (aMessage.contentType+"").search(/^multipart\/encrypted(;|$)/i) == 0;
