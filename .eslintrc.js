@@ -29,6 +29,8 @@ module.exports = {
     "mozilla/avoid-removeChild": "off",
     "mozilla/no-useless-parameters": "off",
     "mozilla/no-useless-removeEventListener": "off",
+    // For now, turn this off, since we want to support TB 60 (only added in 62).
+    "mozilla/use-chromeutils-generateqi": "off",
     "mozilla/use-ownerGlobal": "off",
     "no-else-return": "off",
     "no-extra-bind": "off",
