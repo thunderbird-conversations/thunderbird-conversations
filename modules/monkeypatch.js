@@ -92,7 +92,7 @@ MonkeyPatch.prototype = {
     }
   },
 
-  applyOverlay: function _MonkeyPatch_applyOverlay (window) {
+  applyOverlay: function _MonkeyPatch_applyOverlay(window) {
     // Wow! I love restartless! Now I get to create all the items by hand!
     let strings = new StringBundle("chrome://conversations/locale/overlay.properties");
 
@@ -149,7 +149,7 @@ MonkeyPatch.prototype = {
   },
 
 
-  registerColumn: function _MonkeyPatch_registerColumn () {
+  registerColumn: function _MonkeyPatch_registerColumn() {
     // This has to be the first time that the documentation on MDC
     //  1) exists and
     //  2) is actually relevant!
@@ -159,13 +159,13 @@ MonkeyPatch.prototype = {
     // https://developer.mozilla.org/en/Extensions/Thunderbird/Creating_a_Custom_Column
     let window = this._window;
 
-    let participants = function (msgHdr) {
+    let participants = function(msgHdr) {
       try {
         // The array of people involved in this email.
         let people = [];
         // Helper for formatting; depending on the locale, we may need a different
         // for me as in "to me" or as in "from me".
-        let format = function (x, p) {
+        let format = function(x, p) {
           if (getIdentityForEmail(x.email)) {
             let display = (p
               ? strings.get("meBetweenMeAndSomeone")
@@ -179,7 +179,7 @@ MonkeyPatch.prototype = {
             return x.name || x.email;
         };
         // Add all the people found in one of the msgHdr's properties.
-        let addPeople = function (prop, pos) {
+        let addPeople = function(prop, pos) {
           let line = msgHdr[prop];
           parseMimeLine(line, true).forEach(function(x) {
             people.push(format(x, pos));
@@ -192,7 +192,7 @@ MonkeyPatch.prototype = {
         addPeople("bccList", false);
         // Then remove duplicates
         let seenAlready = {};
-        people = people.filter(function (x) {
+        people = people.filter(function(x) {
           let r = !(x in seenAlready);
           seenAlready[x] = true;
           return r;
@@ -209,29 +209,29 @@ MonkeyPatch.prototype = {
     };
 
     let columnHandler = {
-      getCellText: function(row, col) {
+      getCellText(row, col) {
         let msgHdr = window.gDBView.getMsgHdrAt(row);
         return participants(msgHdr);
       },
-      getSortStringForRow: function(msgHdr) {
+      getSortStringForRow(msgHdr) {
         return participants(msgHdr);
       },
-      isString: function() {
+      isString() {
         return true;
       },
-      getCellProperties: function(row, col, props) {},
-      getRowProperties: function(row, props) {},
-      getImageSrc: function(row, col) {
+      getCellProperties(row, col, props) {},
+      getRowProperties(row, props) {},
+      getImageSrc(row, col) {
         return null;
       },
-      getSortLongForRow: function(hdr) {
+      getSortLongForRow(hdr) {
         return 0;
       }
     };
 
     // The main window is loaded when the monkey-patch is applied
     Services.obs.addObserver({
-      observe: function(aMsgFolder, aTopic, aData) {
+      observe(aMsgFolder, aTopic, aData) {
         window.gDBView.addColumnHandler("betweenCol", columnHandler);
       }
     }, "MsgCreateDBView", false);
@@ -256,9 +256,9 @@ MonkeyPatch.prototype = {
     this.pushUndo(() => window.gDBView.removeColumnHandler("betweenCol"));
   },
 
-  registerFontPrefObserver: function _MonkeyPatch_registerFontPref (aHtmlpane) {
+  registerFontPrefObserver: function _MonkeyPatch_registerFontPref(aHtmlpane) {
     let observer = {
-      observe: function (aSubject, aTopic, aData) {
+      observe(aSubject, aTopic, aData) {
         if (aTopic == "nsPref:changed"
             && aData == "font.size.variable.x-western") {
           aHtmlpane.setAttribute("src", "about:blank");
@@ -266,20 +266,20 @@ MonkeyPatch.prototype = {
       },
     };
     Services.prefs.addObserver("", observer, false);
-    this._window.addEventListener("close", function () {
+    this._window.addEventListener("close", function() {
       Services.prefs.removeObserver("", observer);
     }, false);
     this.pushUndo(() => Services.prefs.removeObserver("", observer));
   },
 
-  clearTimer: function () {
+  clearTimer() {
     // If we changed conversations fast, clear the timeout
     if (this.markReadTimeout)
       this._window.clearTimeout(this.markReadTimeout);
   },
 
   // Don't touch. Too tricky.
-  determineScrollMode: function () {
+  determineScrollMode() {
     let window = this._window;
     let scrollMode = Prefs.kScrollUnreadOrLast;
 
@@ -315,11 +315,11 @@ MonkeyPatch.prototype = {
     return scrollMode;
   },
 
-  registerUndoCustomizations: function () {
+  registerUndoCustomizations() {
     shouldPerformUninstall = true;
 
     let self = this;
-    this.pushUndo(function (aReason) {
+    this.pushUndo(function(aReason) {
       // We don't want to undo all the customizations in the case of an
       // upgrade... but if the user disables the conversation view, or
       // uninstalls the addon, then we should revert them indeed.
@@ -339,7 +339,7 @@ MonkeyPatch.prototype = {
     });
   },
 
-  undoCustomizations: function () {
+  undoCustomizations() {
     let uninstallInfos = JSON.parse(Prefs.getString("conversations.uninstall_infos"));
     for (let [k, v] of entries(Customizations)) {
       if (k in uninstallInfos) {
@@ -355,14 +355,14 @@ MonkeyPatch.prototype = {
     Prefs.setString("conversations.uninstall_infos", "{}");
   },
 
-  activateMenuItem: function (window) {
+  activateMenuItem(window) {
     let menuItem = window.document.getElementById("menuConversationsEnabled");
     menuItem.setAttribute("checked", Prefs.enabled);
-    Prefs.watch(function (aPrefName, aPrefValue) {
+    Prefs.watch(function(aPrefName, aPrefValue) {
       if (aPrefName == "enabled")
         menuItem.setAttribute("checked", aPrefValue);
     });
-    menuItem.addEventListener("command", function (event) {
+    menuItem.addEventListener("command", function(event) {
       let checked = menuItem.hasAttribute("checked") &&
         menuItem.getAttribute("checked") == "true";
       Prefs.setBool("conversations.enabled", checked);
@@ -370,7 +370,7 @@ MonkeyPatch.prototype = {
     });
   },
 
-  apply: function () {
+  apply() {
     let window = this._window;
     // First of all: "apply" the "overlay"
     this.applyOverlay(window);
@@ -389,7 +389,7 @@ MonkeyPatch.prototype = {
     // Undo all our customizations at uninstall-time
     this.registerUndoCustomizations();
 
-    let mkConvUrl = function (msgHdrs) {
+    let mkConvUrl = function(msgHdrs) {
       let urls = msgHdrs.map(hdr => msgHdrGetUri(hdr)).join(",");
       let scrollMode = self.determineScrollMode();
       let queryString = "?urls="+window.encodeURIComponent(urls) +
@@ -400,7 +400,7 @@ MonkeyPatch.prototype = {
     // Below is the code that intercepts the double-click-on-a-message event,
     //  and reroutes the control flow to our conversation reader.
     let oldThreadPaneDoubleClick = window.ThreadPaneDoubleClick;
-    window.ThreadPaneDoubleClick = function () {
+    window.ThreadPaneDoubleClick = function() {
       if (!Prefs.enabled)
         return oldThreadPaneDoubleClick();
 
@@ -412,7 +412,7 @@ MonkeyPatch.prototype = {
       let oldMsgOpenSelectedMessages = window.MsgOpenSelectedMessages;
       let msgHdrs = window.gFolderDisplay.selectedMessages;
       if (!msgHdrs.some(msgHdrIsRss) && !msgHdrs.some(msgHdrIsNntp)) {
-        window.MsgOpenSelectedMessages = function () {
+        window.MsgOpenSelectedMessages = function() {
           openConversationInTabOrWindow(mkConvUrl(msgHdrs));
         };
       }
@@ -423,7 +423,7 @@ MonkeyPatch.prototype = {
 
     // Same thing for middle-click
     let oldTreeOnMouseDown = window.TreeOnMouseDown;
-    window.TreeOnMouseDown = function (event) {
+    window.TreeOnMouseDown = function(event) {
       if (!Prefs.enabled)
         return oldTreeOnMouseDown(event);
 
@@ -447,7 +447,7 @@ MonkeyPatch.prototype = {
 
     // Because we're not even fetching the conversation when the message pane is
     //  hidden, we need to trigger it manually when it's un-hidden.
-    let unhideListener = function () {
+    let unhideListener = function() {
       if (!Prefs.enabled)
         return;
 
@@ -457,13 +457,13 @@ MonkeyPatch.prototype = {
     this.pushUndo(() => window.removeEventListener("messagepane-unhide", unhideListener, true));
 
     window.summarizeMultipleSelection =
-      function _summarizeMultiple_patched (aSelectedMessages, aListener) {
+      function _summarizeMultiple_patched(aSelectedMessages, aListener) {
         if (!Prefs.enabled) {
           oldSummarizeMultipleSelection(aSelectedMessages, aListener);
           return;
         }
 
-        window.gSummaryFrameManager.loadAndCallback(kMultiMessageUrl, function () {
+        window.gSummaryFrameManager.loadAndCallback(kMultiMessageUrl, function() {
           oldSummarizeMultipleSelection(aSelectedMessages, aListener);
         });
       };
@@ -475,7 +475,7 @@ MonkeyPatch.prototype = {
     // This one completely nukes the original summarizeThread function, which is
     //  actually the entry point to the original ThreadSummary class.
     window.summarizeThread =
-      function _summarizeThread_patched (aSelectedMessages, aListener) {
+      function _summarizeThread_patched(aSelectedMessages, aListener) {
         if (!Prefs.enabled) {
           oldSummarizeThread(aSelectedMessages, aListener);
           return;
@@ -491,7 +491,7 @@ MonkeyPatch.prototype = {
 
         window.gMessageDisplay.singleMessageDisplay = false;
 
-        window.gSummaryFrameManager.loadAndCallback(kStubUrl, function (isRefresh) {
+        window.gSummaryFrameManager.loadAndCallback(kStubUrl, function(isRefresh) {
           // See issue #673
           if (htmlpane.contentDocument && htmlpane.contentDocument.body)
             htmlpane.contentDocument.body.hidden = false;
@@ -510,7 +510,7 @@ MonkeyPatch.prototype = {
             // It's crucial we register a non-capturing event listener here,
             //  otherwise the individual message nodes get no opportunity to do
             //  their own processing.
-            htmlpane.contentWindow.addEventListener("keypress", function (event) {
+            htmlpane.contentWindow.addEventListener("keypress", function(event) {
               try {
                 window.dispatchEvent(event);
               } catch (e) {
@@ -556,7 +556,7 @@ MonkeyPatch.prototype = {
                 window.Conversations.currentConversation.counter, Colors.default);
             else
               Log.debug("First conversation");
-            freshConversation.outputInto(htmlpane.contentWindow, function (aConversation) {
+            freshConversation.outputInto(htmlpane.contentWindow, function(aConversation) {
               if (aConversation.messages.length == 0) {
                 Log.debug(Colors.red, "0 messages in aConversation");
                 return;
@@ -606,7 +606,7 @@ MonkeyPatch.prototype = {
               Services.obs.notifyObservers(null, "Conversations", "Displayed");
 
               // Make sure we respect the user's preferences.
-              self.markReadTimeout = window.setTimeout(function () {
+              self.markReadTimeout = window.setTimeout(function() {
                 if (Prefs.getBool("mailnews.mark_message_read.auto")) {
                   // The idea is that usually, we're selecting a thread (so we
                   //  have kScrollUnreadOrLast). This means we mark the whole
@@ -656,7 +656,7 @@ MonkeyPatch.prototype = {
     let originalOnSelectedMessagesChanged =
       window.MessageDisplayWidget.prototype.onSelectedMessagesChanged;
     window.MessageDisplayWidget.prototype.onSelectedMessagesChanged =
-      function _onSelectedMessagesChanged_patched () {
+      function _onSelectedMessagesChanged_patched() {
         if (!Prefs.enabled) {
           return originalOnSelectedMessagesChanged.call(this);
         }
@@ -692,7 +692,7 @@ MonkeyPatch.prototype = {
             // asked for the old message reader, we give up as well.
             if (msgHdrIsRss(msgHdr) || msgHdrIsNntp(msgHdr)) {
               // Use the default pref.
-              self.markReadTimeout = window.setTimeout(function () {
+              self.markReadTimeout = window.setTimeout(function() {
                 if (Prefs.getBool("mailnews.mark_message_read.auto"))
                   msgHdrsMarkAsRead([msgHdr], true);
                 self.markReadTimeout = null;
@@ -728,7 +728,7 @@ MonkeyPatch.prototype = {
     //  a new tab). So we must find the message in the conversation and notify
     //  it if needed.
     let oldOnMsgHasRemoteContent = window.messageHeaderSink.onMsgHasRemoteContent;
-    window.messageHeaderSink.onMsgHasRemoteContent = function _onMsgHasRemoteContent_patched (aMsgHdr) {
+    window.messageHeaderSink.onMsgHasRemoteContent = function _onMsgHasRemoteContent_patched(aMsgHdr) {
       let msgListeners = window.Conversations.msgListeners;
       let messageId = aMsgHdr.messageId;
       if (messageId in msgListeners) {
@@ -746,7 +746,7 @@ MonkeyPatch.prototype = {
     this.pushUndo(() => window.messageHeaderSink.onMsgHasRemoteContent = oldOnMsgHasRemoteContent);
 
     let messagepane = window.document.getElementById("messagepane");
-    let fightAboutBlank = function () {
+    let fightAboutBlank = function() {
       if (messagepane.contentWindow.location.href == "about:blank") {
         Log.debug("Hockey-hack");
         // Workaround the "feature" that disables the context menu when the

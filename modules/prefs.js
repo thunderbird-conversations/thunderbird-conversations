@@ -7,12 +7,12 @@ const gConversationsPrefs = Services.prefs.getBranch("conversations.");
 const kStubUrl = "chrome://conversations/content/stub.xhtml";
 
 // That's why I'm lovin' restartless.
-function loadDefaultPrefs () {
+function loadDefaultPrefs() {
   let prefs = Services.prefs.QueryInterface(Ci.nsIPrefBranch);
   // All code below hamelessly stolen from the SDK
   let branch = prefs.getDefaultBranch("");
   let prefLoaderScope = {
-    pref: function(key, val) {
+    pref(key, val) {
       switch (typeof val) {
         case "boolean":
           branch.setBoolPref(key, val);
@@ -69,9 +69,9 @@ PrefManager.prototype = {
 
   split: s => s.split(",").map(s => s.trim()).map(s => s.toLowerCase()),
 
-  watch: function (watcher) { return this.watchers.push(watcher); },
+  watch(watcher) { return this.watchers.push(watcher); },
 
-  register: function mpo_register (observer) {
+  register: function mpo_register(observer) {
     gConversationsPrefs.QueryInterface(Ci.nsIPrefBranch);
     if (observer)
       gConversationsPrefs.addObserver("", observer, false);
@@ -79,13 +79,13 @@ PrefManager.prototype = {
       gConversationsPrefs.addObserver("", this, false);
   },
 
-  unregister: function mpo_unregister () {
+  unregister: function mpo_unregister() {
     if (!gConversationsPrefs)
       return;
     gConversationsPrefs.removeObserver("", this);
   },
 
-  observe: function mpo_observe (aSubject, aTopic, aData) {
+  observe: function mpo_observe(aSubject, aTopic, aData) {
     if (aTopic != "nsPref:changed")
       return;
 
@@ -122,39 +122,39 @@ PrefManager.prototype = {
     }
   },
 
-  hasPref: function (p) {
+  hasPref(p) {
     return (Services.prefs.getPrefType(p) != Ci.nsIPrefBranch.PREF_INVALID);
   },
 
-  getChar: function (p) {
+  getChar(p) {
     return Services.prefs.getCharPref(p);
   },
 
-  getInt: function (p) {
+  getInt(p) {
     return Services.prefs.getIntPref(p);
   },
 
-  getBool: function (p) {
+  getBool(p) {
     return Services.prefs.getBoolPref(p);
   },
 
-  getString: function (p) {
+  getString(p) {
     return Services.prefs.getStringPref(p);
   },
 
-  setChar: function (p, v) {
+  setChar(p, v) {
     return Services.prefs.setCharPref(p, v);
   },
 
-  setInt: function (p, v) {
+  setInt(p, v) {
     return Services.prefs.setIntPref(p, v);
   },
 
-  setBool: function (p, v) {
+  setBool(p, v) {
     return Services.prefs.setBoolPref(p, v);
   },
 
-  setString: function (p, v) {
+  setString(p, v) {
     return Services.prefs.setStringPref(p, v);
   },
 

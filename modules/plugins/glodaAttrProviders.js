@@ -68,11 +68,11 @@ const {Gloda} = ChromeUtils.import("resource:///modules/gloda/public.js", {});
 ChromeUtils.import("resource:///modules/gloda/mimemsg.js");
 
 let AlternativeSender = {
-  init: function _AlternativeSender_init () {
+  init: function _AlternativeSender_init() {
     this.defineAttributes();
   },
 
-  defineAttributes: function _AlternativeSender_defineAttributes () {
+  defineAttributes: function _AlternativeSender_defineAttributes() {
     this._alternativeSenderAttribute = Gloda.defineAttribute({
       provider: this,
       extensionName: "bugzilla-alternative-sender",
@@ -85,7 +85,7 @@ let AlternativeSender = {
     });
   },
 
-  process: function* _AlternativeSender_process (aGlodaMessage, aRawReps, aIsNew, aCallbackHandle) {
+  process: function* _AlternativeSender_process(aGlodaMessage, aRawReps, aIsNew, aCallbackHandle) {
     try {
       let alternativeSender = PluginHelpers.alternativeSender(aRawReps);
       if (alternativeSender)
@@ -101,11 +101,11 @@ let AlternativeSender = {
 AlternativeSender.init();
 
 let ContentType = {
-  init: function _ContentType_init () {
+  init: function _ContentType_init() {
     this.defineAttributes();
   },
 
-  defineAttributes: function _ContentType_defineAttributes () {
+  defineAttributes: function _ContentType_defineAttributes() {
     this._bugzillaAttribute = Gloda.defineAttribute({
       provider: this,
       extensionName: "content-type",
@@ -118,7 +118,7 @@ let ContentType = {
     });
   },
 
-  process: function* _ContentType_process (aGlodaMessage, aRawReps, aIsNew, aCallbackHandle) {
+  process: function* _ContentType_process(aGlodaMessage, aRawReps, aIsNew, aCallbackHandle) {
     try {
       if (aRawReps.mime)
         aGlodaMessage.contentType = aRawReps.mime.headers["content-type"];
@@ -133,11 +133,11 @@ let ContentType = {
 ContentType.init();
 
 let Bugzilla = {
-  init: function _Bugzilla_init () {
+  init: function _Bugzilla_init() {
     this.defineAttributes();
   },
 
-  defineAttributes: function _Bugzilla_defineAttributes () {
+  defineAttributes: function _Bugzilla_defineAttributes() {
     this._bugzillaAttribute = Gloda.defineAttribute({
       provider: this,
       extensionName: "bugzilla-infos",
@@ -150,7 +150,7 @@ let Bugzilla = {
     });
   },
 
-  process: function* _Bugzilla_process (aGlodaMessage, aRawReps, aIsNew, aCallbackHandle) {
+  process: function* _Bugzilla_process(aGlodaMessage, aRawReps, aIsNew, aCallbackHandle) {
     try {
       let bugzilla = PluginHelpers.bugzilla(aRawReps);
       if (bugzilla)
@@ -166,11 +166,11 @@ let Bugzilla = {
 Bugzilla.init();
 
 let ConversationSubject = {
-  init: function _ConversationSubject_init () {
+  init: function _ConversationSubject_init() {
     this.defineAttributes();
   },
 
-  defineAttributes: function _ConversationSubject_defineAttributes () {
+  defineAttributes: function _ConversationSubject_defineAttributes() {
     this._alternativeSenderAttribute = Gloda.defineAttribute({
       provider: this,
       extensionName: "conversation-subject",
@@ -186,7 +186,7 @@ let ConversationSubject = {
     });
   },
 
-  process: function* _ConversationSubject_process (aGlodaMessage, aRawReps, aIsNew, aCallbackHandle) {
+  process: function* _ConversationSubject_process(aGlodaMessage, aRawReps, aIsNew, aCallbackHandle) {
     let aMimeMsg = aRawReps.mime;
     yield Gloda.kWorkDone;
   },

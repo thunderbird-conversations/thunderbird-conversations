@@ -33,7 +33,7 @@ function asToken(thumb, name, email, guid) {
   let listItem = thumbStr + escapeHtml(nameStr); // this one is for injection
   let id = guid;
   let displayName = hasName ? name : email;
-  return { name: displayName, listItem: listItem, data: data, email: email, id: guid };
+  return { name: displayName, listItem, data, email, id: guid };
 }
 
 const MAX_POPULAR_CONTACTS = 200;
@@ -53,7 +53,7 @@ function ContactIdentityCompleter() {
 }
 
 ContactIdentityCompleter.prototype = {
-  _popularitySorter: function(a, b){ return b.popularity - a.popularity; },
+  _popularitySorter(a, b){ return b.popularity - a.popularity; },
   complete: function ContactIdentityCompleter_complete(aResult, aString) {
     if (aString.length < 3) {
       // In CJK, first name or last name is sometime used as 1 character only.
@@ -101,7 +101,7 @@ ContactIdentityCompleter.prototype = {
     aResult.addRows(rows);
 
     // - match against database contacts / identities
-    let pending = {contactToThing: contactToThing, pendingCount: 2};
+    let pending = {contactToThing, pendingCount: 2};
 
     let contactQuery = Gloda.newQuery(Gloda.NOUN_CONTACT);
     contactQuery.nameLike(contactQuery.WILDCARD, aString,
@@ -119,13 +119,13 @@ ContactIdentityCompleter.prototype = {
 
     return true;
   },
-  onItemsAdded: function(aItems, aCollection) {
+  onItemsAdded(aItems, aCollection) {
   },
-  onItemsModified: function(aItems, aCollection) {
+  onItemsModified(aItems, aCollection) {
   },
-  onItemsRemoved: function(aItems, aCollection) {
+  onItemsRemoved(aItems, aCollection) {
   },
-  onQueryCompleted: function(aCollection) {
+  onQueryCompleted(aCollection) {
     // handle the initial setup case...
     if (aCollection.data == null) {
       // cheat and explicitly add our own contact...
@@ -222,10 +222,10 @@ function glodaAutocomplete(query, callback) {
   let results = [];
   let completer = new ContactIdentityCompleter();
   completer.complete({
-    addRows: function (matches) {
+    addRows(matches) {
       results = results.concat(matches);
     },
-    markCompleted: function () {
+    markCompleted() {
       if (!results.length)
         callback([asToken(null, null, query, query)]);
       else
@@ -249,7 +249,7 @@ let autoCompleteClasses = {
 
 function setupAutocomplete(to, cc, bcc) {
   // This function assumes aInput is #something
-  let fill = function (aInput, aList, aData) {
+  let fill = function(aInput, aList, aData) {
     // Cleanup the mess left by tokenInput.
     let $parent = $(aInput).parent();
     $parent.empty();

@@ -52,7 +52,7 @@ wrapHandlebars();
 
 let gallery = null;
 
-function Gallery (aMsg) {
+function Gallery(aMsg) {
   this.msgHdr = aMsg;
   this.subject = null;
   this.attachments = null;
@@ -63,8 +63,8 @@ Gallery.prototype = {
    * This function takes care of obtaining a full representation of the message,
    *  and then taking all its attachments, to just keep track of the image ones.
    */
-  load: function () {
-    MsgHdrToMimeMessage(this.msgHdr, this, function (aMsgHdr, aMimeMsg) {
+  load() {
+    MsgHdrToMimeMessage(this.msgHdr, this, function(aMsgHdr, aMimeMsg) {
       let attachments = aMimeMsg.allAttachments;
       attachments =
         attachments.filter(x => x.contentType.indexOf("image/") === 0);
@@ -83,7 +83,7 @@ Gallery.prototype = {
    * It runs the handlebars template and then appends the result to the root
    *  DOM node.
    */
-  output: function (aGlodaMessages) {
+  output(aGlodaMessages) {
     let messenger = Cc["@mozilla.org/messenger;1"]
                     .createInstance(Ci.nsIMessenger);
     let data = [];
@@ -95,7 +95,7 @@ Gallery.prototype = {
         name: att.name,
         size: messenger.formatFileSize(att.size),
         i: i+1,
-        n: n,
+        n,
       });
     });
 
@@ -108,7 +108,7 @@ Gallery.prototype = {
   },
 };
 
-$(document).ready(function () {
+$(document).ready(function() {
   // Parse URL components
   let param = "?uri="; // only one param
   let url = document.location.href;

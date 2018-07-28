@@ -148,7 +148,7 @@ function convertOutlookQuotingToBlockquote(aWin, aDoc) {
   }
 }
 
-function citeLevel (line) {
+function citeLevel(line) {
   let i;
   for (i = 0; line[i] == ">" && i < line.length; ++i)
     ; // nop
@@ -160,7 +160,7 @@ function citeLevel (line) {
  * Fails 9 times out of 10. */
 function convertForwardedToBlockquote(aDoc) {
   let re = /^\s*(-{5,15})(?:\s*)(?:[^ \f\n\r\t\v\u00A0\u2028\u2029-]+\s+)*[^ \f\n\r\t\v\u00A0\u2028\u2029-]+(\s*)\1\s*/mg;
-  let walk = function (aNode) {
+  let walk = function(aNode) {
     for (let child of aNode.childNodes) {
       let txt = child.textContent;
       let m = txt.match(re);
@@ -203,14 +203,14 @@ function convertForwardedToBlockquote(aDoc) {
 function fusionBlockquotes(aDoc) {
   let blockquotes = new Set(aDoc.getElementsByTagName("blockquote"));
   for (let blockquote of blockquotes) {
-    let isWhitespace = function (n) {
+    let isWhitespace = function(n) {
       return (n && (n.tagName && n.tagName.toLowerCase() == "br"
           || n.nodeType == n.TEXT_NODE && n.textContent.match(/^\s*$/)));
     };
-    let isBlockquote = function (b) {
+    let isBlockquote = function(b) {
       return (b && b.tagName && b.tagName.toLowerCase() == "blockquote");
     };
-    let blockquoteFollows = function (n) {
+    let blockquoteFollows = function(n) {
       return n && (isBlockquote(n) || isWhitespace(n) && blockquoteFollows(n.nextSibling));
     };
     while (blockquoteFollows(blockquote.nextSibling)) {

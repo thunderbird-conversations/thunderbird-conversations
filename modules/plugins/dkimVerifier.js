@@ -65,7 +65,7 @@ try {
 if (hasDKIMVerifier) {
   let mailWindow = getMail3Pane();
   let onEndHeaders = mailWindow.DKIM_Verifier.Display.onEndHeaders;
-  mailWindow.DKIM_Verifier.Display.onEndHeaders = function () {
+  mailWindow.DKIM_Verifier.Display.onEndHeaders = function() {
     "use strict";
 
     // don't start a verification for the classic view if it is not shown
@@ -116,9 +116,9 @@ let dkimVerifierHook = {
   onMessageStreamed: function _dkimVerifierHook_onMessageStreamed(aMsgHdr, aDomNode/*, aMsgWindow, aMessage*/) {
     "use strict";
 
-    AuthVerifier.verify(aMsgHdr).then(function (result) {
+    AuthVerifier.verify(aMsgHdr).then(function(result) {
       displayResult(result, aDomNode);
-    }, function (exception) {
+    }, function(exception) {
       Log.debug("Exception in dkimVerifierHook: " + exception);
     });
  },

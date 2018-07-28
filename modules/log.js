@@ -7,7 +7,7 @@ const {Log4Moz} = ChromeUtils.import("resource:///modules/gloda/log4moz.js", {})
 function setupLogging(name) {
   let Log = Log4Moz.repository.getLogger(name);
 
-  Log.assert = function (aBool, aStr) {
+  Log.assert = function(aBool, aStr) {
     if (!aBool) {
       this.error("\n!!!!!!!!!!!!!!!!!!!!!!"+
                  "\n    ASSERT FAILURE    "+
@@ -44,7 +44,7 @@ function setupFullLogging(name) {
     root.addAppender(dapp);
   }
 
-  Log.assert = function (aBool, aStr) {
+  Log.assert = function(aBool, aStr) {
     if (!aBool) {
       this.error("\n!!!!!!!!!!!!!!!!!!!!!!"+
                  "\n    ASSERT FAILURE    "+

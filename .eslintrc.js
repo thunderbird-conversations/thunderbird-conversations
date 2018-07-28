@@ -50,10 +50,8 @@ module.exports = {
     "no-undef": "error",
     "no-unused-vars": "off",
     "no-useless-call": "off",
-    "object-shorthand": "off",
     "quotes": "off",
     "space-before-blocks": "off",
-    "space-before-function-paren": "off",
     "space-infix-ops": "off",
     "spaced-comment": "off",
   }

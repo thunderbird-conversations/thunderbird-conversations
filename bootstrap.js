@@ -45,7 +45,7 @@ let Log;
 
 // from wjohnston (cleary for Fennec)
 let ResourceRegister = {
-  init: function(aFile, aName) {
+  init(aFile, aName) {
     let resource = Services.io.getProtocolHandler("resource")
       .QueryInterface(Ci.nsIResProtocolHandler);
     let alias = Services.io.newFileURI(aFile);
@@ -55,7 +55,7 @@ let ResourceRegister = {
     resource.setSubstitution(aName, alias);
   },
 
-  uninit: function(aName) {
+  uninit(aName) {
     let resource = Services.io.getProtocolHandler("resource")
       .QueryInterface(Ci.nsIResProtocolHandler);
     resource.setSubstitution(aName, null);
@@ -63,7 +63,7 @@ let ResourceRegister = {
 };
 
 function monkeyPatchWindow(window, aLater) {
-  let doIt = function () {
+  let doIt = function() {
     try {
       if (window.document.location != "chrome://messenger/content/messenger.xul")
         return;
@@ -85,9 +85,9 @@ function monkeyPatchWindow(window, aLater) {
         currentConversation: null,
         counter: 0,
 
-        quickCompose: function () {},
+        quickCompose() {},
 
-        createDraftListenerArrayForId: function (aId) {
+        createDraftListenerArrayForId(aId) {
           window.Conversations.draftListeners[aId] = [];
         },
       };
@@ -100,7 +100,7 @@ function monkeyPatchWindow(window, aLater) {
       // Used by the in-stub.html detachTab function
       window.Conversations.monkeyPatch = monkeyPatch;
 
-      window.Conversations.quickCompose = function () {
+      window.Conversations.quickCompose = function() {
         if (Prefs.compose_in_tab)
           window.openTab("chromeTab", { chromePage: "chrome://conversations/content/stub.xhtml?quickCompose=1" });
         else
@@ -119,7 +119,7 @@ function monkeyPatchWindow(window, aLater) {
   };
 
   if (aLater)
-    window.addEventListener("load", function tmp () {
+    window.addEventListener("load", function tmp() {
       window.removeEventListener("load", tmp, false);
       doIt();
     }, false);
@@ -154,7 +154,7 @@ function loadImports(){
 
 // This obserer is notified when a new window is created and injects our code
 let windowObserver = {
-  observe: function (aSubject, aTopic, aData) {
+  observe(aSubject, aTopic, aData) {
     if (aTopic == "domwindowopened") {
       loadImports();
       aSubject.QueryInterface(Ci.nsIDOMWindow);
@@ -178,7 +178,7 @@ function startup(aData, aReason) {
   try {
     // Patch all existing windows when the UI is built; all locales should have been loaded here
     Services.obs.addObserver({
-      observe: function(aSubject, aTopic, aData) {
+      observe(aSubject, aTopic, aData) {
           loadImports();
           monkeyPatchAllWindows();
       }
@@ -207,7 +207,7 @@ function startup(aData, aReason) {
 
     // Hook into options window
     Services.obs.addObserver({
-      observe: function(aSubject, aTopic, aData) {
+      observe(aSubject, aTopic, aData) {
         if (aTopic == "addon-options-displayed" && aData == "gconversation@xulforum.org") {
           loadImports();
           CustomizeKeys.enable(aSubject); // aSubject is the options document
@@ -215,7 +215,7 @@ function startup(aData, aReason) {
       }
     }, "addon-options-displayed", false);
     Services.obs.addObserver({
-      observe: function(aSubject, aTopic, aData) {
+      observe(aSubject, aTopic, aData) {
         if (aTopic == "addon-options-hidden" && aData == "gconversation@xulforum.org") {
           loadImports();
           CustomizeKeys.disable(aSubject); // aSubject is the options document

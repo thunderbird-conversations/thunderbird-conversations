@@ -48,13 +48,13 @@ function SimpleCustomization(aDesiredValue, aGetter, aSetter) {
 }
 
 SimpleCustomization.prototype = {
-  install: function () {
+  install() {
     let oldValue = this.get();
     this.set(this.desiredValue);
     return oldValue;
   },
 
-  uninstall: function (oldValue) {
+  uninstall(oldValue) {
     let newValue = this.get();
     if (newValue == this.desiredValue) {
       this.set(oldValue);
@@ -70,7 +70,7 @@ function PrefCustomization({ name, type, value }) {
 }
 
 PrefCustomization.prototype = {
-  get: function () {
+  get() {
     switch (this.type) {
       case kPrefInt:
         return Prefs.getInt(this.name);
@@ -81,7 +81,7 @@ PrefCustomization.prototype = {
     }
   },
 
-  set: function (aValue) {
+  set(aValue) {
     switch (this.type) {
       case kPrefInt:
         Prefs.setInt(this.name, aValue);
@@ -104,11 +104,11 @@ function MultipleCustomization(aParams) {
 }
 
 MultipleCustomization.prototype = {
-  install: function () {
+  install() {
     return this.customizations.map(c => c.install());
   },
 
-  uninstall: function (uninstallInfos) {
+  uninstall(uninstallInfos) {
     this.customizations.forEach(function(x, i) {
       x.uninstall(uninstallInfos[i]);
     });
@@ -124,7 +124,7 @@ MultipleCustomization.prototype = {
 let eid = id => getMail3Pane().document.getElementById(id);
 
 let Customizations = {
-  ttop: function () {},
+  ttop() {},
 
   actionSetupViewDefaults: new MultipleCustomization([
     { name: "mailnews.default_sort_order", type: kPrefInt, value: 2 },
@@ -145,15 +145,15 @@ let Customizations = {
   }),
 
   actionEnsureMessagePaneVisible:
-    new SimpleCustomization("open", function _getter () {
+    new SimpleCustomization("open", function _getter() {
       return eid("threadpane-splitter").getAttribute("state");
-    }, function _setter (aValue) {
+    }, function _setter(aValue) {
       if (aValue != this.get())
         getMail3Pane().goDoCommand('cmd_toggleMessagePane');
     }),
 
   actionSetupView: {
-    install: function () {
+    install() {
       /**
        * const kShowUnthreaded = 0;
        * const kShowThreaded = 1;
@@ -193,7 +193,7 @@ let Customizations = {
       if (smartInbox)
         ftv.selectFolder(smartInbox);
 
-      let moveOn = function () {
+      let moveOn = function() {
         let tabmail = mainWindow.document.getElementById("tabmail");
         tabmail.switchToTab(0);
         mainWindow.MsgSortThreaded();
@@ -213,7 +213,7 @@ let Customizations = {
         Customizations.ttop();
       };
       let i = 0;
-      let waitForIt = function () {
+      let waitForIt = function() {
         if (smartInbox && mainWindow.gFolderDisplay.displayedFolder != smartInbox && i++ < 10) {
           mainWindow.setTimeout(waitForIt, 150);
         } else {
@@ -226,7 +226,7 @@ let Customizations = {
       return state;
     },
 
-    uninstall: function ({ ftvMode, senderCol, unreadCol, correspondentCol, initialFolder }) {
+    uninstall({ ftvMode, senderCol, unreadCol, correspondentCol, initialFolder }) {
       if (eid("senderCol").getAttribute("hidden") == "true")
         eid("senderCol").setAttribute("hidden", senderCol);
       if (eid("unreadCol").getAttribute("hidden") == "true")
@@ -254,7 +254,7 @@ let Customizations = {
   },
 
   actionUnifiedInboxSearchesSent: {
-    install: function () {
+    install() {
       let changedFolders = {};
 
       // Get a handle onto the virtual inbox, and mark all the folders it
@@ -297,7 +297,7 @@ let Customizations = {
       return changedFolders;
     },
 
-    uninstall: function (aChangedFolders) {
+    uninstall(aChangedFolders) {
       // Just remove from the smart inbox the folders we added if they're still
       //  here.
       let smartInbox = getSmartFolderNamed("Inbox");
@@ -316,7 +316,7 @@ let Customizations = {
   },
 
   actionOfflineDownload: {
-    install: function () {
+    install() {
       let changedFolders = [];
       let changedServers = [];
 
@@ -358,7 +358,7 @@ let Customizations = {
       return [changedFolders, changedServers];
     },
 
-    uninstall: function ([aChangedFolders, aChangedServers]) {
+    uninstall([aChangedFolders, aChangedServers]) {
       for (let uri of aChangedFolders) {
         let folder = MailUtils.getFolderForURI(uri);
         if (folder)
