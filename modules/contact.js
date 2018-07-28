@@ -337,8 +337,7 @@ let ContactMixIn = {
         : strings.get("meFromSomeoneToMe")
       );
       return [display, getIdentities().length > 1 ? this._email : ""];
-    }
-    else
+    } else
       return [this._name || this._email, ""];
   },
 
