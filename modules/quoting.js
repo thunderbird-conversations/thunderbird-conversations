@@ -135,7 +135,8 @@ function convertOutlookQuotingToBlockquote(aWin, aDoc) {
   trySel(aDoc, ".OutlookMessageHeader");
   for (let div of aDoc.getElementsByTagName("div")) {
     let style = aWin.getComputedStyle(div, null);
-    if (style.borderTopColor == "rgb(181, 196, 223)"
+    if ((style.borderTopColor == "rgb(181, 196, 223)"
+         || style.borderTopColor == "rgb(225, 225, 225)")
         && style.borderTopStyle == "solid"
         && style.borderLeftWidth == "0px"
         && style.borderRightWidth == "0px"
