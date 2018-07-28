@@ -1,5 +1,7 @@
 "use strict";
 
+/* exported setupAutocomplete */
+
 // ----- Autocomplete stuff. Understand it as a part of stub.compose-ui.js
 
 ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
@@ -31,7 +33,6 @@ function asToken(thumb, name, email, guid) {
   let nameStr = hasName ? name + " <" + email + ">" : email;
   let thumbStr = thumb ? "<img class='autocomplete-thumb' src=\""+escapeHtml(thumb)+"\" /> " : "";
   let listItem = thumbStr + escapeHtml(nameStr); // this one is for injection
-  let id = guid;
   let displayName = hasName ? name : email;
   return { name: displayName, listItem, data, email, id: guid };
 }

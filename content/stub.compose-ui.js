@@ -34,6 +34,10 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/* exported registerQuickReply, newComposeSessionByClick, changeComposeFields,
+            showCc, showBcc, addAttachment, confirmDiscard, quickReplyDragEnter,
+            quickReplyCheckDrag, quickReplyDrop */
+
 "use strict";
 
 ChromeUtils.import("resource://gre/modules/Services.jsm");
@@ -41,9 +45,6 @@ ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI
 ChromeUtils.import("resource:///modules/mailServices.js");
 ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
 ChromeUtils.import("resource:///modules/gloda/mimemsg.js");
-
-const gMessenger = Cc["@mozilla.org/messenger;1"]
-                   .createInstance(Ci.nsIMessenger);
 
 ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
 ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
@@ -189,7 +190,6 @@ function newComposeSessionByClick(type) {
   Log.assert(!gComposeSession,
     "We should only get here if there's no compose session already");
   Log.debug("Setting up the initial quick reply compose parameters...");
-  let messages = Conversations.currentConversation.messages;
   try {
     gComposeSession = createComposeSession(x => x.reply(getMessageForQuickReply(), type));
     // This could probably be refined, like only considering we started editing
@@ -251,27 +251,6 @@ function editFields(aFocusId) {
 function confirmDiscard(event) {
   if (!startedEditing() || confirm(strings.get("confirmDiscard")))
     onDiscard().catch(Cu.reportError);
-}
-
-function onUseEditor() {
-  gComposeSession.stripSignatureIfNeeded();
-  gComposeSession.send({ popOut: true });
-  onDiscard().catch(Cu.reportError);
-}
-
-function onPopOut(event, aType, aIsSelected) {
-  if (!aIsSelected) {
-    switch (aType) {
-      case "reply":
-        getMessageForQuickReply().compose(Ci.nsIMsgCompType.ReplyToSender, event);
-        break;
-      case "replyAll":
-        getMessageForQuickReply().compose(Ci.nsIMsgCompType.ReplyAll, event);
-        break;
-    }
-  } else {
-    onUseEditor();
-  }
 }
 
 async function onDiscard(event) {
@@ -872,7 +851,6 @@ function AttachmentList() {
 
 AttachmentList.prototype = {
   add() {
-    let self = this;
     let filePicker = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
     filePicker.init(window, strings.get("attachFiles"), Ci.nsIFilePicker.modeOpenMultiple);
     let rv = filePicker.show();
@@ -1030,7 +1008,7 @@ function parse(aMimeLine) {
   let emails = {};
   let fullNames = {};
   let names = {};
-  let numAddresses = MailServices.headerParser
+  MailServices.headerParser
     .parseHeadersWithArray(aMimeLine, emails, names, fullNames);
   return [names.value, emails.value];
 }
@@ -1203,21 +1181,6 @@ let sendListener = {
 
   QueryInterface: XPCOMUtils.generateQI([
     Ci.nsIMsgSendListener,
-    Ci.nsISupports
-  ]),
-};
-
-let copyListener = {
-  onStopCopy(aStatus) {
-    Log.debug("onStopCopy", aStatus);
-    if (NS_SUCCEEDED(aStatus)) {
-      //if (gOldDraftToDelete)
-      //  msgHdrsDelete(gOldDraftToDelete);
-    }
-  },
-
-  QueryInterface: XPCOMUtils.generateQI([
-    Ci.nsIMsgCopyServiceListener,
     Ci.nsISupports
   ]),
 };

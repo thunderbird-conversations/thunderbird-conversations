@@ -22,15 +22,6 @@ module.exports = {
       "no-undef": "off",
     },
   }, {
-    // XXX Enable no-unused-vars everywhere.
-    "files": [
-      "bootstrap.js",
-      "content/*.js",
-    ],
-    "rules": {
-      "no-unused-vars": "off",
-    },
-  }, {
     // This marks exported symbols as used for our modules.
     "files": [
       "modules/**/*.js",
@@ -67,6 +58,7 @@ module.exports = {
     "no-nested-ternary": "off",
     "no-trailing-spaces": "off",
     "no-undef": "error",
+    // We want to check the global scope everywhere.
     "no-unused-vars": ["error", {
       "args": "none",
       "vars": "all",

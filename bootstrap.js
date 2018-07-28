@@ -34,6 +34,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/* exported startup, shutdown, install, uninstall */
+
 "use strict";
 
 ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");

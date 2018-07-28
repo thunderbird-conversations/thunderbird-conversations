@@ -35,6 +35,8 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
+/* exported openLink */
+
 function openLink(uri) {
   if (!(uri instanceof Ci.nsIURI))
     uri = Services.io.newURI(uri, null, null);
