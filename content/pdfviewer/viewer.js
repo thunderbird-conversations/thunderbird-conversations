@@ -36,7 +36,11 @@
 
 "use strict";
 
-let Log; // filled from wrapper.js
+// Called from the outer wrapper JS code.
+/* exported init */
+
+// Imported via viewer.xhtml -> pdf.js
+/* global pdfjsLib */
 
 let viewer;
 
@@ -50,31 +54,27 @@ function Viewer() {
 
 Viewer.prototype = {
 
-  load(data) {
+  async load(data) {
     let self = this;
     let status = document.getElementById('status');
 
-    pdfjsLib.getDocument(data).then(
-      function getDocumentOk(pdfDocument) {
-        self.pdfDoc = pdfDocument;
-        document.getElementById('numPages').textContent = self.pdfDoc.numPages;
-        self.switchToPage(1);
-        status.classList.remove('loading');
-        status.classList.add('loaded');
-      },
-      function getDocumentError(message, e) {
-        // Log.error("Error loading the document", message);
-        document.getElementById('error').textContent = message;
-        status.classList.remove('loading');
-        status.classList.add('error');
-        throw e;
-      }
-    );
+    try {
+      let pdfDocument = await pdfjsLib.getDocument(data);
+
+      self.pdfDoc = pdfDocument;
+      document.getElementById('numPages').textContent = self.pdfDoc.numPages;
+      self.switchToPage(1);
+      status.classList.remove('loading');
+      status.classList.add('loaded');
+    } catch (error) {
+      document.getElementById('error').textContent = error;
+      status.classList.remove('loading');
+      status.classList.add('error');
+      throw error;
+    }
   },
 
   switchToPage(aPageNum) {
-    // Log.debug("Switching to page", aPageNum);
-
     let self = this;
 
     this.pdfDoc.getPage(aPageNum).then(function(page) {
@@ -127,13 +127,11 @@ Viewer.prototype = {
   },
 };
 
-// Called from the outer wrapper JS code.
 function init({ chunks }) {
   // Strangely enough, I can't get my typed array to cross the chrome/content
   // boundary, so let's make the data cross the boundary as a chunk of
   // strings...
   let length = chunks.reduce((acc, v) => acc + v.length, 0);
-  //Log.debug("chunk0", chunks[0]);
   let buffer = new ArrayBuffer(length);
   let array = new Uint8Array(buffer);
   let offset = 0;
@@ -149,5 +147,5 @@ function init({ chunks }) {
   }
 
   viewer = new Viewer();
-  viewer.load(buffer);
+  viewer.load(buffer).catch(console.error);
 }

@@ -39,12 +39,12 @@
 ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI
 ChromeUtils.import("resource://gre/modules/Services.jsm");
 ChromeUtils.import("resource://gre/modules/NetUtil.jsm");
-ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
-ChromeUtils.import("resource://conversations/modules/log.js");
-ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
+const {setupLogging} =
+  ChromeUtils.import("resource://conversations/modules/log.js", {});
+const {decodeUrlParameters} =
+  ChromeUtils.import("resource://conversations/modules/stdlib/misc.js", {});
 
 let Log = setupLogging("Conversations.PdfViewer");
-let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
 let wrapper;
 
@@ -59,7 +59,7 @@ Wrapper.prototype = {
    * The XMLHttpRequest thing doesn't seem to work properly, so use our own
    * little function to get the contents of the attachment into a TypedArray.
    */
-  _download(k) {
+  _download() {
     let url = Services.io.newURI(this.url, null, null);
     let channel = Services.io.newChannelFromURI2(url,
       null,
@@ -69,53 +69,50 @@ Wrapper.prototype = {
       Ci.nsIContentPolicy.TYPE_OTHER,
     );
     let chunks = [];
-    let listener = {
-      onStartRequest(/* nsIRequest */ aRequest, /* nsISupports */ aContext) {
-      },
 
-      onStopRequest(/* nsIRequest */ aRequest, /* nsISupports */ aContext, /* int */ aStatusCode) {
-        k(chunks);
-      },
+    return new Promise(resolve => {
+      let listener = {
+        onStartRequest(/* nsIRequest */ aRequest, /* nsISupports */ aContext) {
+        },
 
-      onDataAvailable(/* nsIRequest */ aRequest, /* nsISupports */ aContext,
-          /* nsIInputStream */ aStream, /* int */ aOffset, /* int */ aCount) {
-        // Fortunately, we have in Gecko 2.0 a nice wrapper
-        let data = NetUtil.readInputStreamToString(aStream, aCount);
-        // Now each character of the string is actually to be understood as a byte
-        // So charCodeAt is what we want here...
-        let array = [];
-        for (let i = 0; i < data.length; ++i)
-          array[i] = data.charCodeAt(i);
-        // Yay, good to go!
-        chunks.push(array);
-      },
+        onStopRequest(/* nsIRequest */ aRequest, /* nsISupports */ aContext, /* int */ aStatusCode) {
+          resolve(chunks);
+        },
 
-      QueryInterface: XPCOMUtils.generateQI([Ci.nsISupports, Ci.nsIStreamListener,
-        Ci.nsIRequestObserver])
-    };
-    channel.asyncOpen(listener, null);
+        onDataAvailable(/* nsIRequest */ aRequest, /* nsISupports */ aContext,
+            /* nsIInputStream */ aStream, /* int */ aOffset, /* int */ aCount) {
+          // Fortunately, we have in Gecko 2.0 a nice wrapper
+          let data = NetUtil.readInputStreamToString(aStream, aCount);
+          // Now each character of the string is actually to be understood as a byte
+          // So charCodeAt is what we want here...
+          let array = [];
+          for (let i = 0; i < data.length; ++i)
+            array[i] = data.charCodeAt(i);
+          // Yay, good to go!
+          chunks.push(array);
+        },
+
+        QueryInterface: XPCOMUtils.generateQI([Ci.nsISupports, Ci.nsIStreamListener,
+          Ci.nsIRequestObserver])
+      };
+      channel.asyncOpen(listener, null);
+    });
   },
 
-  load() {
+  async load() {
     Log.debug("Downloading", this.url);
 
-    this._download(function(chunks) {
-      let browser = document.getElementById("browser");
-      browser.addEventListener("load", function load_handler() {
-        browser.removeEventListener("load", load_handler, true);
-        let w = browser.contentWindow.wrappedJSObject;
-        w.Log = Cu.cloneInto(
-          setupLogging("Conversations.PdfViewer"),
-          w,
-          { cloneFunctions: true }
-        );
-        w.init(Cu.cloneInto({ chunks }, w));
-      }, true);
-      // Load from a resource:// URL so that it doesn't have chrome privileges.
-      browser.loadURI("resource://conversations/content/pdfviewer/viewer.xhtml", null, null);
-    }.bind(this));
-  },
+    let chunks = await this._download();
 
+    let browser = document.getElementById("browser");
+    browser.addEventListener("load", function load_handler() {
+      browser.removeEventListener("load", load_handler, true);
+      let w = browser.contentWindow.wrappedJSObject;
+      w.init(Cu.cloneInto({ chunks }, w));
+    }, true);
+    // Load from a resource:// URL so that it doesn't have chrome privileges.
+    browser.loadURI("resource://conversations/content/pdfviewer/viewer.xhtml", null, null);
+  },
 };
 
 window.addEventListener("load", function(event) {
@@ -125,5 +122,5 @@ window.addEventListener("load", function(event) {
   document.title = name;
 
   wrapper = new Wrapper(uri);
-  wrapper.load();
+  wrapper.load().catch(Log.error.bind(Log));
 }, false);

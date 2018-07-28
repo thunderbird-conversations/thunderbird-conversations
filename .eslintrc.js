@@ -15,10 +15,31 @@ module.exports = {
   ],
   "overrides": [{
     // XXX Fix the not really undefined variables in these files.
-    "files": "content/**",
+    "files": [
+      "content/*.js",
+      "content/gallery/js/*.js",
+    ],
     "rules": {
       "no-undef": "off",
-    }
+    },
+  }, {
+    // XXX Enable no-unused-vars everywhere.
+    "files": [
+      "bootstrap.js",
+      "content/*.js",
+      "modules/**/*.js",
+    ],
+    "rules": {
+      "no-unused-vars": "off",
+    },
+  }, {
+    // This marks exported symbols as used for our modules.
+    "files": [
+      "modules/**/*.js",
+    ],
+    "rules": {
+      "mozilla/mark-exported-symbols-as-used": "error",
+    },
   }],
   "plugins": [
     "mozilla"
@@ -48,7 +69,10 @@ module.exports = {
     "no-nested-ternary": "off",
     "no-trailing-spaces": "off",
     "no-undef": "error",
-    "no-unused-vars": "off",
+    "no-unused-vars": ["error", {
+      "args": "none",
+      "vars": "all",
+    }],
     "no-useless-call": "off",
     "quotes": "off",
     "space-before-blocks": "off",
