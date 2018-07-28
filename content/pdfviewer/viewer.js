@@ -50,12 +50,12 @@ function Viewer() {
 
 Viewer.prototype = {
 
-  load: function (data) {
+  load(data) {
     let self = this;
     let status = document.getElementById('status');
 
     pdfjsLib.getDocument(data).then(
-      function getDocumentOk (pdfDocument) {
+      function getDocumentOk(pdfDocument) {
         self.pdfDoc = pdfDocument;
         document.getElementById('numPages').textContent = self.pdfDoc.numPages;
         self.switchToPage(1);
@@ -72,12 +72,12 @@ Viewer.prototype = {
     );
   },
 
-  switchToPage: function (aPageNum) {
+  switchToPage(aPageNum) {
     // Log.debug("Switching to page", aPageNum);
 
     let self = this;
 
-    this.pdfDoc.getPage(aPageNum).then(function (page) {
+    this.pdfDoc.getPage(aPageNum).then(function(page) {
       self.curPage = aPageNum;
       let scale = 1.5;
       let viewport = page.getViewport(scale);
@@ -95,7 +95,7 @@ Viewer.prototype = {
       //
       let renderContext = {
         canvasContext: context,
-        viewport: viewport
+        viewport
       };
       page.render(renderContext);
 
@@ -103,19 +103,19 @@ Viewer.prototype = {
     });
   },
 
-  prevPage: function () {
+  prevPage() {
     if (this.curPage > 1)
       this.switchToPage(this.curPage - 1);
   },
 
-  nextPage: function () {
+  nextPage() {
     if (this.curPage < this.pdfDoc.numPages)
       this.switchToPage(this.curPage + 1);
   },
 
-  _initPageForm: function (pageForm, numBox) {
+  _initPageForm(pageForm, numBox) {
     let self = this;
-    pageForm.addEventListener('submit', function (event) {
+    pageForm.addEventListener('submit', function(event) {
       let page = parseInt(numBox.value, 10);
       if (!isNaN(page) && page != self.curPage && page > 0 && page <= self.pdfDoc.numPages) {
         self.switchToPage(page);

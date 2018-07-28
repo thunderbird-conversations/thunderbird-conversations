@@ -116,7 +116,7 @@ function registerQuickReplyEventListeners() {
     window.getComputedStyle(textarea, null).lineHeight
   );
   let getHeight = x => parseInt(window.getComputedStyle(x, null).height);
-  $('.quickReply .textarea').keypress(function (event) {
+  $('.quickReply .textarea').keypress(function(event) {
     if (event.which == KeyEvent.DOM_VK_RETURN) {
       let scrollHeight = textarea.contentDocument.body.scrollHeight;
       // Only grow if the contents of the reply don't fit into the viewport.
@@ -155,7 +155,7 @@ function registerQuickReplyDocumentCommands() {
   for (let iframe of document.querySelectorAll(".textarea")) {
     let w = iframe.contentWindow;
     let doc = iframe.contentDocument;
-    w.addEventListener("keypress", function (event) {
+    w.addEventListener("keypress", function(event) {
       if (isAccel(event) && event.which == 'b'.charCodeAt(0))
         doc.execCommand("bold");
       if (isAccel(event) && event.which == 'i'.charCodeAt(0))

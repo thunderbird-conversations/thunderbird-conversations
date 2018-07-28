@@ -56,7 +56,7 @@ ChromeUtils.import("resource://conversations/modules/plugins/lightning.js");
 // Services object is for.  We prefix with the "m" to ensure we stay out of their
 // namespace.
 XPCOMUtils.defineLazyGetter(Services, "mMessenger",
-                            function () {
+                            function() {
                               return Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
                             });
 
@@ -245,15 +245,15 @@ KeyListener.prototype = {
     return [msgNodes, index];
   },
 
-  saveKeybindings: function () {
+  saveKeybindings() {
     Prefs.setString("conversations.keybindings", JSON.stringify(KeyListener.prototype.keybindings));
   },
-  loadKeybindings: function () {
+  loadKeybindings() {
     if (Prefs.hasPref("conversations.keybindings"))
       for (let [os, bindings] of entries(JSON.parse(Prefs.getString("conversations.keybindings"))))
         KeyListener.prototype.keybindings[os] = bindings;
   },
-  restoreKeybindings: function () {
+  restoreKeybindings() {
     // We need to preserve object identity for KeyListener.prototype.keybindings,
     // So we can't just clone defaultKeybindings directly.  Instead, we clone
     // each key/value pair, but leave the outer object unchanged.
@@ -336,7 +336,7 @@ KeyListener.prototype = {
   //  this because otherwise events dont make it out of the <browser
   //  id="multimessage"> that holds us when the conversation view has focus.
   // That's what makes cmd/ctrl-n work properly.
-  onKeyUp: function _KeyListener_onKeyPress (event) {
+  onKeyUp: function _KeyListener_onKeyPress(event) {
     let bindings;
     if (isOSX) {
       bindings = [this.keybindings.OSX, this.keybindings.Generic];
@@ -376,8 +376,8 @@ const ConversationKeybindings = {
     return true;
   },
   availableActions: [],
-  saveKeybindings: function () { KeyListener.prototype.saveKeybindings(); },
-  restoreKeybindings: function () { KeyListener.prototype.restoreKeybindings(); },
+  saveKeybindings() { KeyListener.prototype.saveKeybindings(); },
+  restoreKeybindings() { KeyListener.prototype.restoreKeybindings(); },
 };
 
 // Copy default bindings
@@ -437,15 +437,15 @@ Message.prototype = {
   // Wraps the low-level header parser stuff.
   //  @param aMimeLine a line that looks like "John <john@cheese.com>, Jane <jane@wine.com>"
   //  @return a list of { email, name } objects
-  parse: function (aMimeLine) {
+  parse(aMimeLine) {
     return parseMimeLine(aMimeLine);
   },
 
-  get inView () {
+  get inView() {
     return this._domNode.classList.contains("inView");
   },
 
-  set inView (v) {
+  set inView(v) {
     if (v)
       this._domNode.classList.add("inView");
     else
@@ -458,12 +458,12 @@ Message.prototype = {
 
   // This function is called before toTmplData, and allows us to adjust our
   // template data according to the message that came before us.
-  updateTmplData: function (aPrevMsg) {
+  updateTmplData(aPrevMsg) {
     let oldInfos = aPrevMsg && aPrevMsg.bugzillaInfos;
     if (!oldInfos)
       oldInfos = {};
     let infos = this.bugzillaInfos;
-    let makeArrow = function (oldValue, newValue) {
+    let makeArrow = function(oldValue, newValue) {
       if (oldValue)
         return oldValue + " \u21d2 " + newValue;
       else
@@ -493,7 +493,7 @@ Message.prototype = {
   },
 
   // Output this message as a whole bunch of HTML
-  toTmplData: function (aQuickReply) {
+  toTmplData(aQuickReply) {
     let self = this;
     let extraClasses = [];
     let data = {
@@ -601,7 +601,7 @@ Message.prototype = {
   },
 
   // Generate Attachment objects
-  toTmplDataForAttachments: function (data) {
+  toTmplDataForAttachments(data) {
     if (!data) {
       data = {
         attachmentsPlural: null,
@@ -645,14 +645,14 @@ Message.prototype = {
 
       // We've got the right data, push it!
       data.attachments.push({
-        formattedSize: formattedSize,
+        formattedSize,
         thumb: sanitize(thumb),
-        imgClass: imgClass,
+        imgClass,
         name: sanitize(att.name),
         anchor: "msg"+self.initialPosition+"att"+i,
         /* Only advertise the preview for PDFs (images have the gallery view). */
         canPreview: isPdf,
-        sep: sep,
+        sep,
       });
     });
     return data;
@@ -660,7 +660,7 @@ Message.prototype = {
 
   // Once the conversation has added us into the DOM, we're notified about it
   //  (aDomNode is us), and we can start registering event handlers and stuff
-  onAddedToDom: function (aDomNode) {
+  onAddedToDom(aDomNode) {
     if (!aDomNode) {
       Log.error("onAddedToDom() && !aDomNode", this.from, this.to, this.subject);
     }
@@ -672,8 +672,8 @@ Message.prototype = {
 
     let self = this;
     this._domNode.getElementsByClassName("messageHeader")[0]
-      .addEventListener("click", function () {
-        self._conversation._runOnceAfterNSignals(function () {
+      .addEventListener("click", function() {
+        self._conversation._runOnceAfterNSignals(function() {
           if (self.expanded) {
             self._conversation._htmlPane.scrollNodeIntoView(self._domNode);
             self.read = true;
@@ -683,20 +683,20 @@ Message.prototype = {
       }, false);
 
     let keyListener = new KeyListener(this);
-    this._domNode.addEventListener("keydown", function (event) {
+    this._domNode.addEventListener("keydown", function(event) {
       keyListener.onKeyUp(event);
     }, false); // über-important: don't capture
 
     // Do this now because the star is visible even if we haven't been expanded
     // yet.
-    this.register(".star", function (event) {
+    this.register(".star", function(event) {
       self.starred = !self.starred;
       // Don't trust gloda. Big hack, self also has the "starred" property, so
       //  we don't have to create a new object.
       self.onAttributesChanged(self);
       event.stopPropagation();
     });
-    this.register(".top-right-more", function (event) {
+    this.register(".top-right-more", function(event) {
       event.stopPropagation();
     });
 
@@ -708,27 +708,27 @@ Message.prototype = {
     // occurs before click. Update display by focus event has posibility
     // to cause click failure. So we use mousedown to cancel focus event.
     let mousedown = false;
-    this._domNode.addEventListener("mousedown", function () {
+    this._domNode.addEventListener("mousedown", function() {
       mousedown = true;
     }, true);
-    this._domNode.addEventListener("blur", function () {
+    this._domNode.addEventListener("blur", function() {
       mousedown = false;
     }, true);
-    this._domNode.addEventListener("focus", function () {
+    this._domNode.addEventListener("focus", function() {
       if (!mousedown)
         self.onSelected();
     }, true);
-    this._domNode.addEventListener("click", function () {
+    this._domNode.addEventListener("click", function() {
       self.onSelected();
     }, true);
     // For the case when focused by mousedown but not clicked
-    this._domNode.addEventListener("mousemove", function () {
+    this._domNode.addEventListener("mousemove", function() {
       if (mousedown) {
         self.onSelected();
         mousedown = false;
       }
     }, true);
-    this._domNode.addEventListener("dragstart", function () {
+    this._domNode.addEventListener("dragstart", function() {
       self.onSelected();
     }, true);
   },
@@ -737,7 +737,7 @@ Message.prototype = {
 
   // The global monkey-patch finds us through the weak pointer table and
   //  notifies us.
-  onMsgHasRemoteContent: function _Message_onMsgHasRemoteContent () {
+  onMsgHasRemoteContent: function _Message_onMsgHasRemoteContent() {
     if (this.notifiedRemoteContentAlready)
       return;
     this.notifiedRemoteContentAlready = true;
@@ -822,7 +822,7 @@ Message.prototype = {
     // default. The three are mutually exclusive, so it's a sequence of if /
     // then / else, unlike the CSS classes above.
     if (this.isReplyListEnabled) {
-      this.register(".replyMainActionLink", function (event) {
+      this.register(".replyMainActionLink", function(event) {
         self.compose(Ci.nsIMsgCompType.ReplyToList, event);
         event.stopPropagation();
       });
@@ -830,7 +830,7 @@ Message.prototype = {
       mainActionLink.innerHTML = replyList.innerHTML;
       mainActionLink.title = replyList.title;
     } else if (this.isReplyAllEnabled) {
-      this.register(".replyMainActionLink", function (event) {
+      this.register(".replyMainActionLink", function(event) {
         self.compose(Ci.nsIMsgCompType.ReplyAll, event);
         event.stopPropagation();
       });
@@ -838,7 +838,7 @@ Message.prototype = {
       mainActionLink.innerHTML = replyAll.innerHTML;
       mainActionLink.title = replyAll.title;
     } else {
-      this.register(".replyMainActionLink", function (event) {
+      this.register(".replyMainActionLink", function(event) {
         self.compose(Ci.nsIMsgCompType.ReplyToSender, event);
         event.stopPropagation();
       });
@@ -854,11 +854,11 @@ Message.prototype = {
     //  event listener set on the click event for toggling the message. So we
     //  make sure that event listener is bubbling, and we register these with
     //  the bubbling model as well.
-    this.register(".action-archive", function (event) {
+    this.register(".action-archive", function(event) {
       msgHdrsArchive([self._msgHdr]);
       event.stopPropagation();
     });
-    this.register(".action-delete", function (event) {
+    this.register(".action-delete", function(event) {
       // We do this, otherwise we end up with messages in the conversation that
       //  don't have a message header, and that breaks pretty much all the
       //  assumptions...
@@ -877,7 +877,7 @@ Message.prototype = {
       this._domNode.getElementsByClassName("checkbox-monospace")[0].checked = true;
 
     // This one is located in the first contact tooltip
-    this.register(".checkbox-monospace", function (event) {
+    this.register(".checkbox-monospace", function(event) {
       let senders = Object.keys(Prefs.monospaced_senders);
       senders = senders.filter(x => x != realFrom);
       if (event.target.checked) {
@@ -888,21 +888,21 @@ Message.prototype = {
       self._reloadMessage();
       event.stopPropagation();
     });
-    this.register(".action-classic", function (event) {
+    this.register(".action-classic", function(event) {
       let tabmail = mainWindow.document.getElementById("tabmail");
       tabmail.openTab("message", { msgHdr: self._msgHdr, background: false });
       event.stopPropagation();
     });
-    this.register(".action-source", function (event) {
+    this.register(".action-source", function(event) {
       mainWindow.ViewPageSource([self._uri]);
       event.stopPropagation();
     });
-    this.register(".tooltip", function (event) {
+    this.register(".tooltip", function(event) {
       // Clicking inside a tooltip must not collapse the message.
       event.stopPropagation();
     });
 
-    this.register(".sendUnsent", function (event) {
+    this.register(".sendUnsent", function(event) {
       let w = topMail3Pane(self);
       if (Services.io.offline)
         w.MailOfflineMgr.goOnlineToSendMessages(w.msgWindow);
@@ -910,24 +910,24 @@ Message.prototype = {
         w.SendUnsentMessages();
     });
 
-    this.register(".notJunk", function (event) {
+    this.register(".notJunk", function(event) {
       self._domNode.getElementsByClassName("junkBar")[0].style.display = "none";
       // false = not junk
       topMail3Pane(self).JunkSelectedMessages(false);
     });
-    this.register(".ignore-warning", function (event) {
+    this.register(".ignore-warning", function(event) {
       self._domNode.getElementsByClassName("phishingBar")[0].style.display = "none";
       self._msgHdr.setUint32Property("notAPhishMessage", 1);
       // Force a commit of the underlying msgDatabase.
       self._msgHdr.folder.msgDatabase = null;
     });
-    this.register(".show-remote-content", function (event) {
+    this.register(".show-remote-content", function(event) {
       self._domNode.getElementsByClassName("show-remote-content")[0].style.display = "none";
       self._msgHdr.setUint32Property("remoteContentPolicy", kAllowRemoteContent);
       self._msgHdr.folder.msgDatabase = null;
       self._reloadMessage();
     });
-    this.register(".always-display", function (event) {
+    this.register(".always-display", function(event) {
       self._domNode.getElementsByClassName("remoteContent")[0].style.display = "none";
 
       let chromeUrl;
@@ -940,19 +940,19 @@ Message.prototype = {
       Services.perms.add(uri, "image", Services.perms.ALLOW_ACTION);
       self._reloadMessage();
     });
-    this.register(".messageBody .in-folder", function (event) {
+    this.register(".messageBody .in-folder", function(event) {
       mainWindow.gFolderTreeView.selectFolder(self._msgHdr.folder, true);
       mainWindow.gFolderDisplay.selectMessage(self._msgHdr);
     });
 
     // We only output this shitload of contact nodes when we have to...
-    this.register(".details > a", function (event) {
+    this.register(".details > a", function(event) {
       event.stopPropagation();
       event.preventDefault();
       self.showDetails();
     });
 
-    this.register(".hide-details > a", function (event) {
+    this.register(".hide-details > a", function(event) {
       event.stopPropagation();
       event.preventDefault();
       self._domNode.classList.remove("with-details");
@@ -979,10 +979,10 @@ Message.prototype = {
       attNode.attInfo = attInfos[i];
       attNode.setAttribute("contextmenu", "attachmentMenu");
 
-      this.register(attNode.getElementsByClassName("open-attachment")[0], function (event) {
+      this.register(attNode.getElementsByClassName("open-attachment")[0], function(event) {
         attInfos[j].open();
       });
-      this.register(attNode.getElementsByClassName("download-attachment")[0], function (event) {
+      this.register(attNode.getElementsByClassName("download-attachment")[0], function(event) {
         attInfos[j].save();
       });
 
@@ -994,7 +994,7 @@ Message.prototype = {
         let img = attNode.getElementsByTagName("img")[0];
         img.classList.add("view-attachment");
         img.setAttribute("title", strings.get("viewAttachment"));
-        let preview = function (event) {
+        let preview = function(event) {
           mainWindow.document.getElementById("tabmail").openTab(
             "contentTab",
             { contentPage: self._attachments[j].url }
@@ -1006,7 +1006,7 @@ Message.prototype = {
         let img = attNode.getElementsByTagName("img")[0];
         img.classList.add("view-attachment");
         img.setAttribute("title", strings.get("viewAttachment"));
-        let preview = function (event) {
+        let preview = function(event) {
           mainWindow.document.getElementById("tabmail").openTab(
             "chromeTab", { chromePage:
               makeViewerUrl(self._attachments[j].name, self._attachments[j].url)
@@ -1019,7 +1019,7 @@ Message.prototype = {
       }
 
       // Drag & drop
-      attNode.addEventListener("dragstart", function (event) {
+      attNode.addEventListener("dragstart", function(event) {
         // mail/base/content/mailCore.js:602
         let info;
         if (/(^file:|&filename=)/.test(self._attachments[j].url))
@@ -1037,16 +1037,16 @@ Message.prototype = {
         event.dataTransfer.setData("application/x-moz-file-promise", null);
       }, false);
     }
-    this.register(".download-all", function (event) {
+    this.register(".download-all", function(event) {
       mainWindow.HandleMultipleAttachments(attInfos, "save");
     });
-    this.register(".quickReply", function (event) {
+    this.register(".quickReply", function(event) {
       event.stopPropagation();
     }, { action: "keyup" });
-    this.register(".quickReply", function (event) {
+    this.register(".quickReply", function(event) {
       event.stopPropagation();
     }, { action: "keypress" });
-    this.register(".quickReply", function (event) {
+    this.register(".quickReply", function(event) {
       // Ok, so it's actually convenient to register our event listener on the
       //  .quickReply node because we can easily prevent it from bubbling
       //  upwards, but the problem is, if a message is appended at the end of
@@ -1077,7 +1077,7 @@ Message.prototype = {
     }, { action: "keydown" });
   },
 
-  _reloadMessage: function _Message_reloadMessage () {
+  _reloadMessage: function _Message_reloadMessage() {
     // The second one in for when we're expanded.
     let specialTags = this._domNode.getElementsByClassName("special-tags")[1];
     // Remove any extra tags because they will be re-added after reload, but
@@ -1091,11 +1091,11 @@ Message.prototype = {
     this.streamMessage();
   },
 
-  get iframe () {
+  get iframe() {
     return this._domNode.getElementsByTagName("iframe")[0];
   },
 
-  get tenPxFactor () {
+  get tenPxFactor() {
     return (isOSX ? .666 : (isWindows ? .7 : .625));
   },
 
@@ -1139,7 +1139,7 @@ Message.prototype = {
       let span = document.createElement("span");
       span.textContent = " x";
       span.classList.add("tag-x");
-      span.addEventListener("click", function (event) {
+      span.addEventListener("click", function(event) {
         let tags = this.tags.filter(x => x.key != tag.key);
         this.tags = tags;
         // And now let onAttributesChanged kick in... NOT
@@ -1182,7 +1182,7 @@ Message.prototype = {
           if (Prefs.extra_attachments) {
             self._attachments = aMimeMsg.allAttachments.concat(aMimeMsg.allUserAttachments);
             let hashMap = {};
-            self._attachments = self._attachments.filter(function (x) {
+            self._attachments = self._attachments.filter(function(x) {
               let seenAlready = (x.url in hashMap);
               hashMap[x.url] = null;
               return !seenAlready;
@@ -1232,7 +1232,7 @@ Message.prototype = {
       return;
     this.detailsFetched = true;
     let w = this._conversation._htmlPane;
-    msgHdrGetHeaders(this._msgHdr, function (aHeaders) {
+    msgHdrGetHeaders(this._msgHdr, function(aHeaders) {
       try {
         let $ = w.$;
         let data = {
@@ -1255,7 +1255,7 @@ Message.prototype = {
               key = strings.get("header-"+h);
             } catch (e) {}
             data.extraLines.push({
-              key: key,
+              key,
               value: sanitize(aHeaders.get(h)),
             });
           }
@@ -1314,39 +1314,39 @@ Message.prototype = {
   },
 
   // Convenience properties
-  get read () {
+  get read() {
     return this._msgHdr.isRead;
   },
 
-  set read (v) {
+  set read(v) {
     return msgHdrsMarkAsRead([this._msgHdr], v);
   },
 
-  get starred () {
+  get starred() {
     return this._msgHdr.isFlagged;
   },
 
-  set starred (v) {
+  set starred(v) {
     this._msgHdr.markFlagged(v);
   },
 
-  get tags () {
+  get tags() {
     return msgHdrGetTags(this._msgHdr);
   },
 
-  set tags (v) {
+  set tags(v) {
     return msgHdrSetTags(this._msgHdr, v);
   },
 
-  get collapsed () {
+  get collapsed() {
     return this._domNode.classList.contains("collapsed");
   },
 
-  get expanded () {
+  get expanded() {
     return !this.collapsed;
   },
 
-  toggle: function () {
+  toggle() {
     if (this.collapsed)
       this.expand();
     else if (this.expanded)
@@ -1355,16 +1355,16 @@ Message.prototype = {
       Log.error("WTF???");
   },
 
-  _signal: function _Message_signal () {
+  _signal: function _Message_signal() {
     this._conversation._signal();
   },
 
-  expand: function () {
+  expand() {
     this._domNode.classList.remove("collapsed");
     if (!this._didStream) {
       try {
         let self = this;
-        this.buildAttachmentViewIfNeeded(function () {
+        this.buildAttachmentViewIfNeeded(function() {
           self.registerActions();
           self.cosmeticFixups();
           self.streamMessage(); // will call _signal
@@ -1378,7 +1378,7 @@ Message.prototype = {
     }
   },
 
-  collapse: function () {
+  collapse() {
     this._domNode.classList.add("collapsed");
   },
 
@@ -1387,7 +1387,7 @@ Message.prototype = {
   // (BidiUI), applying the various heuristics for detecting quoted parts,
   // changing the monospace font for the default one, possibly decrypting the
   // message using Enigmail, making coffee...
-  streamMessage: function () {
+  streamMessage() {
     Log.assert(this.expanded, "Cannot stream a message if not expanded first!");
 
     let originalScroll = this._domNode.ownerDocument.documentElement.scrollTop;
@@ -1409,7 +1409,7 @@ Message.prototype = {
     iframe.setAttribute("style", "height: 20px; overflow-y: hidden");
     iframe.setAttribute("type", "content");
 
-    let adjustHeight = function () {
+    let adjustHeight = function() {
       let iframeDoc = iframe.contentDocument;
 
       // This is needed in case the timeout kicked in after the message
@@ -1508,7 +1508,7 @@ Message.prototype = {
                 let body = domDocument.body;
 
                 let BDMCharsetPhaseParams = {
-                  body: body,
+                  body,
                   charsetOverrideInEffect: msgWindow.charsetOverride,
                   currentCharset: msgWindow.mailCharacterSet,
                   messageHeader: self._msgHdr,
@@ -1628,8 +1628,8 @@ Message.prototype = {
         */
         let messageService = Services.mMessenger.messageServiceFromURI(url.spec);
         let urlListener = {
-          OnStartRunningUrl: function () {},
-          OnStopRunningUrl: function () {},
+          OnStartRunningUrl() {},
+          OnStopRunningUrl() {},
           QueryInterface: XPCOMUtils.generateQI([Ci.nsISupports, Ci.nsIUrlListener])
         };
 
@@ -1671,11 +1671,11 @@ Message.prototype = {
    * the <iframe>, modulo a few cosmetic cleanups. The collapsed quoted parts
    * are *not* included.
    */
-  get bodyAsText () {
+  get bodyAsText() {
     // This function tries to clean up the email's body by removing hidden
     // blockquotes, removing signatures, etc. Note: sometimes there's a little
     // quoted text left over, need to investigate why...
-    let prepare = function (aNode) {
+    let prepare = function(aNode) {
       let node = aNode.cloneNode(true);
       for (let x of node.getElementsByClassName("moz-txt-sig"))
         if (x)
@@ -1721,7 +1721,7 @@ Message.prototype = {
     // We try to convert the bodies to plain text, to enhance the readability in
     // the forwarded conversation. Note: <pre> tags are not converted properly
     // it seems, need to investigate...
-    quoteMsgHdr(this._msgHdr, function (body) {
+    quoteMsgHdr(this._msgHdr, function(body) {
       // UGLY HACK. I don't even wanna dig into the internals of the composition
       // window to figure out why this results in an extra <br> being added, so
       // let's just stay sane and use a hack.
@@ -1789,7 +1789,7 @@ function MessageFromGloda(aConversation, aGlodaMsg, aLateAttachments) {
   let seen = {};
   this.isReplyAllEnabled =
     [aGlodaMsg.from].concat(aGlodaMsg.to).concat(aGlodaMsg.cc).concat(aGlodaMsg.bcc)
-    .filter(function (x) {
+    .filter(function(x) {
       let r = !(getIdentityForEmail(x.value)) && !(x.value in seen);
       seen[x.value] = null;
       return r;
@@ -1854,7 +1854,7 @@ function MessageFromDbHdr(aConversation, aMsgHdr) {
           .concat(parseMimeLine(aMimeMsg.get("to"), true))
           .concat(parseMimeLine(aMimeMsg.get("cc"), true))
           .concat(parseMimeLine(aMimeMsg.get("bcc"), true))
-          .filter(function (x) {
+          .filter(function(x) {
             let r = !(getIdentityForEmail(x.email)) && !(x.email in seen);
             seen[x.email] = null;
             return r;
@@ -1887,7 +1887,7 @@ function MessageFromDbHdr(aConversation, aMsgHdr) {
 MessageFromDbHdr.prototype = {
   __proto__: Message.prototype,
 
-  _fallbackSnippet: function _MessageFromDbHdr_fallbackSnippet () {
+  _fallbackSnippet: function _MessageFromDbHdr_fallbackSnippet() {
     Log.debug("Using the default streaming code...");
     let body = msgHdrToMessageBody(this._msgHdr, true, kSnippetLength);
     Log.debug("Body is", body);
@@ -1907,11 +1907,11 @@ MessageFromDbHdr.prototype = {
  */
 let PostStreamingFixesMixIn = {
   // This is the naming convention to define a getter, per MixIn's definition
-  get_defaultSize: function () {
+  get_defaultSize() {
     return Prefs.getInt("font.size.variable.x-western");
   },
 
-  injectCss: function (iframeDoc) {
+  injectCss(iframeDoc) {
     let styleRules = [];
     // !important because messageContents.css is appended after us when the html
     // is rendered
@@ -1935,7 +1935,7 @@ let PostStreamingFixesMixIn = {
     head.appendChild(style);
   },
 
-  tweakFonts: function (iframeDoc) {
+  tweakFonts(iframeDoc) {
     if (!Prefs.tweak_bodies)
       return;
 
@@ -1998,7 +1998,7 @@ let PostStreamingFixesMixIn = {
       head.appendChild(style);
   },
 
-  convertCommonQuotingToBlockquote: function (iframe) {
+  convertCommonQuotingToBlockquote(iframe) {
     // Launch various crappy pieces of code^W^W^W^W heuristics to
     //  convert most common quoting styles to real blockquotes. Spoiler:
     //  most of them suck.
@@ -2015,7 +2015,7 @@ let PostStreamingFixesMixIn = {
     }
   },
 
-  detectBlocks: function (iframe, testNode, hideText, showText, linkClass, linkColor) {
+  detectBlocks(iframe, testNode, hideText, showText, linkClass, linkColor) {
     let self = this;
     let iframeDoc = iframe.contentDocument;
 
@@ -2025,14 +2025,14 @@ let PostStreamingFixesMixIn = {
 
     // this function adds a show/hide block text link to every topmost
     // block. Nested blocks are not taken into account.
-    let walk = function walk_ (elt) {
+    let walk = function walk_(elt) {
       for (let i = elt.childNodes.length - 1; i >= 0; --i) {
         let c = elt.childNodes[i];
 
         if (testNode(c)) {
           let div = iframeDoc.createElement("div");
           div.setAttribute("class", "link "+linkClass);
-          div.addEventListener("click", function div_listener (event) {
+          div.addEventListener("click", function div_listener(event) {
             let h = self._conversation._htmlPane.toggleBlock(event, showText, hideText);
             iframe.style.height = (parseFloat(iframe.style.height) + h)+"px";
           }, true);
@@ -2049,11 +2049,11 @@ let PostStreamingFixesMixIn = {
     walk(iframeDoc);
   },
 
-  detectQuotes: function (iframe) {
+  detectQuotes(iframe) {
     let self = this;
     self.convertCommonQuotingToBlockquote(iframe);
 
-    let isBlockquote = function isBlockquote_ (node) {
+    let isBlockquote = function isBlockquote_(node) {
       if (node.tagName && node.tagName.toLowerCase() == "blockquote") {
         // Compute the approximate number of lines while the element is still visible
         let style;
@@ -2086,10 +2086,10 @@ let PostStreamingFixesMixIn = {
       );
   },
 
-  detectSigs: function (iframe) {
+  detectSigs(iframe) {
     let self = this;
 
-    let isSignature = function isSignature_ (node) {
+    let isSignature = function isSignature_(node) {
       return (node.classList && node.classList.contains("moz-txt-sig"));
     };
 
@@ -2112,7 +2112,7 @@ let PostStreamingFixesMixIn = {
    * function, and still rely on the badly-designed underlying functions for the
    * low-level treatments.
    */
-  checkForFishing: function (iframeDoc) {
+  checkForFishing(iframeDoc) {
     if (!Prefs.getBool("mail.phishing.detection.enabled"))
       return false;
 
@@ -2167,7 +2167,7 @@ let PostStreamingFixesMixIn = {
     return isPhishing;
   },
 
-  _getAnchor: function (href) {
+  _getAnchor(href) {
     // Libmime has decided to rewrite the anchors for us, so try to
     // reverse-engineer that...
     if (!href.indexOf("imap://") == 0 && !href.indexOf("mailbox://") == 0)
@@ -2187,7 +2187,7 @@ let PostStreamingFixesMixIn = {
     }
   },
 
-  registerLinkHandlers: function (iframe) {
+  registerLinkHandlers(iframe) {
     let self = this;
     let iframeDoc = iframe.contentDocument;
     let mainWindow = topMail3Pane(this);
@@ -2198,7 +2198,7 @@ let PostStreamingFixesMixIn = {
       if (anchor) {
         // It's an anchor, do the scrolling ourselves since, for security
         // reasons, content cannot scroll its outer chrome document.
-        a.addEventListener("click", function link_listener (event) {
+        a.addEventListener("click", function link_listener(event) {
           let node = iframeDoc.getElementsByName(anchor)[0];
           let w = self._conversation._htmlPane;
           let o1 = w.$(node).offset().top;

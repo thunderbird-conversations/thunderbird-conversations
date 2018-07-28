@@ -133,7 +133,7 @@ ContactManager.prototype = {
     email = (email+"").toLowerCase();
     // Might change in the future... who knows? ...
     let key = email;
-    let cache = function _cache (name, contact) {
+    let cache = function _cache(name, contact) {
       for (let email of contact.emails) {
         email = (email+"").toLowerCase();
         self._cache[key] = contact;
@@ -171,7 +171,7 @@ let ContactMixIn = {
    * different. This allows one to share a common color for a same card in the
    * address book.
    */
-  toTmplData: function _ContactMixIn_toInlineHtml (aUseColor, aPosition, aEmail, aIsDetail) {
+  toTmplData: function _ContactMixIn_toInlineHtml(aUseColor, aPosition, aEmail, aIsDetail) {
     let [name, extra] = this.getName(aPosition, aIsDetail);
     let displayEmail = (name != aEmail ? aEmail : "");
     let hasCard = (this._card != null);
@@ -187,7 +187,7 @@ let ContactMixIn = {
       avatar: sanitize(this.avatar),
       avatarIsDefault: this.avatar.substr(0, 6) === 'chrome',
       profiles: this._profiles,
-      extra: extra,
+      extra,
       // Parameter aUseColor is optional, and undefined means true
       colorStyle: ((aUseColor === false)
         ? ""
@@ -203,7 +203,7 @@ let ContactMixIn = {
     this._domNode = aDomNode; // makes the line below possible
     let mainWindow = topMail3Pane(this);
 
-    aDomNode.parentNode.getElementsByClassName("moreExpander")[0].addEventListener("click", function (event) {
+    aDomNode.parentNode.getElementsByClassName("moreExpander")[0].addEventListener("click", function(event) {
       if (aDomNode.parentNode.getElementsByClassName("hiddenFooter")[0].style.display == "none") {
         aDomNode.parentNode.getElementsByClassName("hiddenFooter")[0].style.display = "block";
         event.originalTarget.classList.add("is-open");
@@ -215,7 +215,7 @@ let ContactMixIn = {
     }, false);
 
     /* Register the "send message" link */
-    this.register(".sendEmail", function (event) {
+    this.register(".sendEmail", function(event) {
       let dest = (this._name == this._email || !this._name)
         ? this._email
         : MailServices.headerParser.makeMimeAddress(this._name, this._email);
@@ -232,7 +232,7 @@ let ContactMixIn = {
     let cardAndBook = mainWindow.getCardForEmail(self._email);
     if (cardAndBook.card)
       aDomNode.parentNode.classList.add("inAddressBook");
-    this.register(".addContact", function (event) {
+    this.register(".addContact", function(event) {
       let args = {
         primaryEmail: self._email,
         displayName: self._name,
@@ -253,7 +253,7 @@ let ContactMixIn = {
         aDomNode.parentNode.classList.add("inAddressBook");
       }
     });
-    this.register(".editContact", function (event) {
+    this.register(".editContact", function(event) {
       let args = {
         abURI: cardAndBook.book.URI,
         card: cardAndBook.card,
@@ -263,10 +263,10 @@ let ContactMixIn = {
         "", "chrome,modal,resizable=no,centerscreen", args
       );
     });
-    this.register(".copyEmail", function (event) {
+    this.register(".copyEmail", function(event) {
       clipboardService.copyString(self._email);
     });
-    this.register(".showInvolving", function (event) {
+    this.register(".showInvolving", function(event) {
       let q1 = Gloda.newQuery(Gloda.NOUN_IDENTITY);
       q1.kind("email");
       q1.value(self._email);
@@ -296,7 +296,7 @@ let ContactMixIn = {
         }
       });
     });
-    this.register(".createFilter", function (event) {
+    this.register(".createFilter", function(event) {
       mainWindow.MsgFilters(self._email, null);
     });
 
@@ -320,7 +320,7 @@ let ContactMixIn = {
     }
   },
 
-  getTooltipName: function _ContactMixIn_getName (aPosition) {
+  getTooltipName: function _ContactMixIn_getName(aPosition) {
     Log.assert(aPosition === Contacts.kFrom || aPosition === Contacts.kTo,
       "Someone did not set the 'position' properly");
     if (getIdentityForEmail(this._email))
@@ -329,7 +329,7 @@ let ContactMixIn = {
       return this._name || this._email;
   },
 
-  getName: function _ContactMixIn_getName (aPosition, aIsDetail) {
+  getName: function _ContactMixIn_getName(aPosition, aIsDetail) {
     Log.assert(aPosition === Contacts.kFrom || aPosition === Contacts.kTo,
       "Someone did not set the 'position' properly");
     if (getIdentityForEmail(this._email) && !aIsDetail) {
@@ -343,7 +343,7 @@ let ContactMixIn = {
       return [this._name || this._email, ""];
   },
 
-  enrichWithName: function _ContactMixIn_enrichWithName (aName) {
+  enrichWithName: function _ContactMixIn_enrichWithName(aName) {
     if (this._name == this._email || !this._name)
       this._name = aName;
   },
@@ -408,7 +408,7 @@ ContactFromAB.prototype = {
     }
   },
 
-  get avatar () {
+  get avatar() {
     if (this._card) {
       let photoURI = this._card.getProperty("PhotoURI", "");
       if (photoURI)

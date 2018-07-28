@@ -169,7 +169,7 @@ const PrefEditors = {
     let bindings = isOSX ? bindingGroups.OSX : bindingGroups.Other;
     if (!(key in bindings))
       bindings[key] = [];
-    let binding = { mods: {}, func: func };
+    let binding = { mods: {}, func };
     bindings[key].push(binding);
     return binding;
   }

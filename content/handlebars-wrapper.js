@@ -58,7 +58,7 @@ function wrapHandlebars() {
   window.tmpl = (id, data) => $(tmpl0(id, data));
 
   let strings = new StringBundle("chrome://conversations/locale/template.properties");
-  let str0 = function (x, ...args) {
+  let str0 = function(x, ...args) {
     try {
       var s = strings.get(x);
       // One extra argument added by Handlebars
@@ -71,18 +71,18 @@ function wrapHandlebars() {
       dumpCallStack(e);
     }
   };
-  let str = function (x, ...args) {
+  let str = function(x, ...args) {
     return new Handlebars.SafeString(str0(x, ...args));
   };
-  let strC = function (x, ...args) {
+  let strC = function(x, ...args) {
     var s = str0(x, ...args);
     return new Handlebars.SafeString(s.charAt(0).toUpperCase() + s.substring(1));
   };
-  let tmpl = function (short, data) {
+  let tmpl = function(short, data) {
     var id = "#"+short+"Template";
     return new Handlebars.SafeString(tmpl0(id, data));
   };
-  let trim = function (s) {
+  let trim = function(s) {
     return String.prototype.trim.call(s || "");
   };
 

@@ -59,9 +59,9 @@ ChromeUtils.import("resource://conversations/modules/stdlib/SimpleStorage.js");
 
 const SIMPLE_STORAGE_TABLE_NAME = "conversations";
 
-window.addEventListener("unload", function () {
+window.addEventListener("unload", function() {
   // save if needed
-  onSave(function () {
+  onSave(function() {
     Log.debug("Unload.");
   });
 }, false);
@@ -87,7 +87,7 @@ function registerQuickReply() {
   let mainWindow = topMail3Pane(window);
 
   gDraftListener = {
-    onDraftChanged: function (aTopic) {
+    onDraftChanged(aTopic) {
       try {
         Log.debug("onDraftChanged", Conversations == mainWindow.Conversations);
         switch (aTopic) {
@@ -112,7 +112,7 @@ function registerQuickReply() {
       }
     },
 
-    notifyDraftChanged: function (aTopic) {
+    notifyDraftChanged(aTopic) {
       try {
         Log.debug("Notifying draft listeners for id", id);
         let listeners = mainWindow.Conversations.draftListeners[id] || [];
@@ -143,7 +143,7 @@ function registerQuickReply() {
   let weakRef = Cu.getWeakReference(gDraftListener);
   mainWindow.Conversations.draftListeners[id].push(weakRef);
 
-  $("textarea").blur(function () {
+  $("textarea").blur(function() {
     Log.debug("Autosave opportunity...");
     onSave();
   });
@@ -342,7 +342,7 @@ function getActiveEditor() {
   let textarea;
   if (gComposeSession) {
     gComposeSession.match({
-      reply: function (_, aReplyType) {
+      reply(_, aReplyType) {
         if (aReplyType == "reply")
           textarea = document.querySelector("li.reply .textarea");
         else if (aReplyType == "replyAll")
@@ -351,11 +351,11 @@ function getActiveEditor() {
           Log.assert(false, "Unknown reply type");
       },
 
-      new: function () {
+      new() {
         textarea = document.querySelector("li.reply .textarea");
       },
 
-      draft: function () {
+      draft() {
         textarea = document.querySelector("li.reply .textarea");
       },
     });
@@ -365,10 +365,10 @@ function getActiveEditor() {
   }
   return {
     node: textarea,
-    get value () {
+    get value() {
       return textarea.contentDocument.body.innerHTML;
     },
-    set value (val) {
+    set value(val) {
       // eslint-disable-next-line no-unsanitized/property
       textarea.contentDocument.body.innerHTML = val;
     }
@@ -396,7 +396,7 @@ function createComposeSession(what) {
 /**
  * A jquery-like API. Pass nothing to get the value, pass a value to set it.
  */
-function startedEditing (aVal) {
+function startedEditing(aVal) {
   if (aVal === undefined) {
     return gComposeSession && gComposeSession.startedEditing;
   } else {
@@ -409,7 +409,7 @@ function startedEditing (aVal) {
   }
 }
 
-function ComposeSession (match) {
+function ComposeSession(match) {
   // A visitor pattern.
   //  match({ reply(nsIMsgDbHdr), draft({ msgUri, from, to, cc, bcc, body }) })
   this.match = match;
@@ -428,7 +428,7 @@ function ComposeSession (match) {
     subject: null,
     otherRandomHeaders: null,
   };
-  this.stripSignatureIfNeeded = function () {
+  this.stripSignatureIfNeeded = function() {
     let w = getActiveEditor().node.contentWindow;
     for (let sig of w.document.querySelectorAll("blockquote[type=cite] .moz-signature"))
       sig.classList.add("moz-quoted-signature");
@@ -451,7 +451,7 @@ ComposeSession.prototype = {
    * you're using  for sending the message. The effect is that we cycle through the list of available identities
    * for sending that email. dir is either 1 or -1.
    */
-  cycleSender: function (dir) {
+  cycleSender(dir) {
     let self = this;
     let index = getIdentities().findIndex((ident) => ident.identity == self.params.identity);
     index = (index + dir + getIdentities().length) % getIdentities().length;
@@ -459,20 +459,20 @@ ComposeSession.prototype = {
     this.senderNameElem.text(this.params.identity.email);
   },
 
-  setupAttachments: function () {
+  setupAttachments() {
     let self = this;
     this.match({
-      new: function () {
+      new() {
         self.attachmentList = new AttachmentList();
         self.setupDone();
       },
 
-      reply: function () {
+      reply() {
         self.attachmentList = new AttachmentList();
         self.setupDone();
       },
 
-      draft: function ({ attachments }) {
+      draft({ attachments }) {
         self.attachmentList = new AttachmentList();
         self.attachmentList.restore(attachments);
         self.setupDone();
@@ -480,12 +480,12 @@ ComposeSession.prototype = {
     });
   },
 
-  setupIdentity: function () {
+  setupIdentity() {
     let self = this;
     let mainWindow = topMail3Pane(window);
     let identity;
     this.match({
-      reply: function (aMessage, aReplyType) {
+      reply(aMessage, aReplyType) {
         let aMsgHdr = aMessage._msgHdr;
         let compType;
         if (aReplyType == "reply")
@@ -501,7 +501,7 @@ ComposeSession.prototype = {
         self.setupDone();
       },
 
-      draft: function ({ from }) {
+      draft({ from }) {
         // The from parameter is a string, it's the email address that uniquely
         //  identifies the identity. We have a fallback plan in case the user
         //  has deleted the identity in-between (sounds unlikely, but who
@@ -510,7 +510,7 @@ ComposeSession.prototype = {
         self.setupDone();
       },
 
-      new: function () {
+      new() {
         // Do some work to figure what the "right" identity is for us.
         identity = getDefaultIdentity().identity;
         let selectedFolder = topMail3Pane(window).gFolderTreeView.getSelectedFolders()[0];
@@ -527,17 +527,17 @@ ComposeSession.prototype = {
     self.params.identity = identity;
   },
 
-  setupMisc: function () {
+  setupMisc() {
     let self = this;
     this.match({
-      reply: function (aMessage) {
+      reply(aMessage) {
         let aMsgHdr = aMessage._msgHdr;
         self.params.msgHdr = aMsgHdr;
         self.params.subject = "Re: "+aMsgHdr.mime2DecodedSubject;
         self.setupDone();
       },
 
-      draft: function ({ msgUri }) {
+      draft({ msgUri }) {
         let last = (a) => a[a.length-1];
         let msgHdr = msgUriToMsgHdr(msgUri);
         self.params.msgHdr = msgHdr || last(Conversations.currentConversation.msgHdrs);
@@ -545,11 +545,11 @@ ComposeSession.prototype = {
         self.setupDone();
       },
 
-      new: function () {
+      new() {
         let subjectNode = document.querySelector(".editSubject");
         subjectNode.style.display = "";
         let input = document.getElementById("subject");
-        input.addEventListener("change", function () {
+        input.addEventListener("change", function() {
           self.params.subject = input.value;
         }, false);
         self.setupDone();
@@ -559,7 +559,7 @@ ComposeSession.prototype = {
 
   // Calls k with the total number of people involved in a reply so that the
   // caller can determine whether to disable reply-all or not.
-  changeComposeFields: function (aMode, k) {
+  changeComposeFields(aMode, k) {
     let identity = this.params.identity;
     let msgHdr = this.params.msgHdr;
     let defaultCc = "";
@@ -569,7 +569,7 @@ ComposeSession.prototype = {
     if (identity.doBcc)
       defaultBcc = identity.doBccList || "";
 
-    let mergeDefault = function (aList, aDefault) {
+    let mergeDefault = function(aList, aDefault) {
       if (aDefault)
         aDefault = aDefault.replace(/\s/g, "");
       if (!aDefault) // "" evaluates to false
@@ -584,7 +584,7 @@ ComposeSession.prototype = {
 
     switch (aMode) {
       case "replyAll": {
-        replyAllParams(identity, msgHdr, function (params) {
+        replyAllParams(identity, msgHdr, function(params) {
           let to = params.to.map(([name, email]) => asToken(null, name, email, null));
           let cc = params.cc.map(([name, email]) => asToken(null, name, email, null));
           let bcc = params.bcc.map(([name, email]) => asToken(null, name, email, null));
@@ -616,7 +616,7 @@ ComposeSession.prototype = {
       default: {
         let cc = mergeDefault([], defaultCc);
         let bcc = mergeDefault([], defaultBcc);
-        replyAllParams(identity, msgHdr, function (params) {
+        replyAllParams(identity, msgHdr, function(params) {
           let to = params.to.map(([name, email]) => asToken(null, name, email, null));
           setupAutocomplete(to, cc, bcc);
           k && k(params.to.length + params.cc.length + params.bcc.length);
@@ -626,12 +626,12 @@ ComposeSession.prototype = {
     }
   },
 
-  setupAutocomplete: function () {
+  setupAutocomplete() {
     let self = this;
     this.match({
-      reply: function (aMessage, aReplyType) {
+      reply(aMessage, aReplyType) {
         // Make sure we're consistent with modules/message.js!
-        let showHideActions = function (n) {
+        let showHideActions = function(n) {
           // This basically says that while processing various headers, we
           // found out we reply to at most one person, then this means that
           // the reply method "reply all" makes no sense.
@@ -655,8 +655,8 @@ ComposeSession.prototype = {
         }
       },
 
-      draft: function ({ to, cc, bcc }) {
-        let makeTokens = function (aList) {
+      draft({ to, cc, bcc }) {
+        let makeTokens = function(aList) {
           let [list, listEmailAddresses] = parse(aList);
           return Array.prototype.map.call(list, function(item, i) {
             return asToken(null, item, listEmailAddresses[i], null);
@@ -666,17 +666,17 @@ ComposeSession.prototype = {
         self.setupDone();
       },
 
-      new: function () {
+      new() {
         setupAutocomplete([], [], []);
         self.setupDone();
       },
     });
   },
 
-  setupFinal: function () {
+  setupFinal() {
     let self = this;
     this.match({
-      reply: function (aMessage, aReplyType) {
+      reply(aMessage, aReplyType) {
         let aMsgHdr = aMessage._msgHdr;
         // Can't use getActiveEditor() at this stage because gComposeSession
         // hasn't been set yet.
@@ -690,12 +690,12 @@ ComposeSession.prototype = {
         });
       },
 
-      draft: function ({ body }) {
+      draft({ body }) {
         let node = getActiveEditor();
         node.value = body;
       },
 
-      new: function () {
+      new() {
         let iframe = document.querySelector("li.reply .textarea");
         composeInIframe(iframe, {
           msgHdr: null,
@@ -706,7 +706,7 @@ ComposeSession.prototype = {
     });
   },
 
-  setupDone: function() {
+  setupDone() {
     // wait till all (asynchronous) setup steps are finished
     if (!--this.asyncSetupSteps) {
       this.setupFinal();
@@ -727,7 +727,7 @@ ComposeSession.prototype = {
     }
   },
 
-  send: function (options) {
+  send(options) {
     let self = this;
     let popOut = options && options.popOut;
     this.archive = options && options.archive;
@@ -761,9 +761,9 @@ ComposeSession.prototype = {
           if ((typeof(h["onMessageBeforeSendOrPopout" + priority]) == "function") && (priority != "_canceled" || sendStatus.canceled)) {
             let newSendStatus = h["onMessageBeforeSendOrPopout" + priority]({
                 params: self.params,
-                to: to,
-                cc: cc,
-                bcc: bcc,
+                to,
+                cc,
+                bcc,
               }, ed, sendStatus, popOut, self.attachmentList, window);
             if (priority != "_canceled")
               sendStatus = newSendStatus;
@@ -796,8 +796,8 @@ ComposeSession.prototype = {
     }
 
     return sendMessage({
-        urls: urls,
-        identity: identity,
+        urls,
+        identity,
         to: to.join(","),
         cc: cc.join(","),
         bcc: bcc.join(","),
@@ -806,19 +806,19 @@ ComposeSession.prototype = {
         otherRandomHeaders: self.params.otherRandomHeaders,
         attachments: self.attachmentList.attachments,
       }, {
-        compType: compType,
+        compType,
         deliverType: deliverMode,
-      }, { match: function (x) {
+      }, { match(x) {
         x.editor(ed.node);
       }}, {
-        progressListener: progressListener,
-        sendListener: sendListener,
+        progressListener,
+        sendListener,
         stateListener: createStateListener(self,
           Conversations.currentConversation.msgHdrs,
           Conversations.currentConversation.id
         ),
       }, {
-        popOut: popOut,
+        popOut,
         archive: self.archive,
       });
   }
@@ -836,23 +836,23 @@ nsAttachmentOpener.prototype = {
     Ci.nsIInterfaceRequestor
   ]),
 
-  onStartURIOpen: function(uri) {
+  onStartURIOpen(uri) {
     return false;
   },
 
-  doContent: function(contentType, isContentPreferred, request, contentHandler) {
+  doContent(contentType, isContentPreferred, request, contentHandler) {
     return false;
   },
 
-  isPreferred: function(contentType, desiredContentType) {
+  isPreferred(contentType, desiredContentType) {
     return false;
   },
 
-  canHandleContent: function(contentType, isContentPreferred, desiredContentType) {
+  canHandleContent(contentType, isContentPreferred, desiredContentType) {
     return false;
   },
 
-  getInterface: function(iid) {
+  getInterface(iid) {
     if (iid.equals(Ci.nsIDOMWindow))
       return window;
     else
@@ -871,7 +871,7 @@ function AttachmentList() {
 }
 
 AttachmentList.prototype = {
-  add: function () {
+  add() {
     let self = this;
     let filePicker = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
     filePicker.init(window, strings.get("attachFiles"), Ci.nsIFilePicker.modeOpenMultiple);
@@ -890,10 +890,10 @@ AttachmentList.prototype = {
     }
   },
 
-  _populateUI: function (msgAttachment, data) {
+  _populateUI(msgAttachment, data) {
     let self = this;
     let line = tmpl("#quickReplyAttachmentTemplate", data);
-    line.find(".openAttachmentLink").click(function () {
+    line.find(".openAttachmentLink").click(function() {
       let url = Services.io.newURI(data.url, null, null);
       url = url.QueryInterface(Ci.nsIURL);
 
@@ -905,14 +905,14 @@ AttachmentList.prototype = {
         }
       }
     });
-    line.find(".removeAttachmentLink").click(function () {
+    line.find(".removeAttachmentLink").click(function() {
       line.remove();
       self._attachments = self._attachments.filter(x => x != msgAttachment);
     });
     line.appendTo($(".quickReplyAttachments"));
   },
 
-  addWithData: function (aData) {
+  addWithData(aData) {
     let msgAttachment = Cc["@mozilla.org/messengercompose/attachment;1"]
                         .createInstance(Ci.nsIMsgAttachment);
     msgAttachment.url = aData.url;
@@ -928,18 +928,18 @@ AttachmentList.prototype = {
     });
   },
 
-  restore: function (aData) {
+  restore(aData) {
     // Todo: check that all files still exist, etc.
     for (let data of aData) {
       this.addWithData(data);
     }
   },
 
-  save: function () {
+  save() {
     return this._attachments.map(x => ({ name: x.name, size: x.size, url: x.url }));
   },
 
-  get attachments () {
+  get attachments() {
     return this._attachments;
   },
 };
@@ -999,7 +999,7 @@ function attachmentDataFromDragData(event) {
     }
 
     if (isValid)
-      return { url: url, size: size, name: prettyName };
+      return { url, size, name: prettyName };
   }
 }
 
@@ -1040,25 +1040,25 @@ function parse(aMimeLine) {
 // These are notified about the outcome of the send process and take the right
 //  action accordingly (close window on success, etc. etc.)
 
-function pValue (v) {
+function pValue(v) {
   $(".statusPercentage")
     .show()
     .text(v+"%");
   $(".statusThrobber").hide();
 }
 
-function pUndetermined () {
+function pUndetermined() {
   $(".statusPercentage").hide();
   $(".statusThrobber").show();
 }
 
-function pText (t) {
+function pText(t) {
   $(".statusMessage").text(t);
 }
 
 // all progress notifications are done through the nsIWebProgressListener implementation...
 let progressListener = {
-  onStateChange: function (aWebProgress, aRequest, aStateFlags, aStatus) {
+  onStateChange(aWebProgress, aRequest, aStateFlags, aStatus) {
     Log.debug("onStateChange", aWebProgress, aRequest, aStateFlags, aStatus);
     if (aStateFlags & Ci.nsIWebProgressListener.STATE_START) {
       pUndetermined();
@@ -1071,7 +1071,7 @@ let progressListener = {
     }
   },
 
-  onProgressChange: function(aWebProgress, aRequest, aCurSelfProgress, aMaxSelfProgress, aCurTotalProgress, aMaxTotalProgress) {
+  onProgressChange(aWebProgress, aRequest, aCurSelfProgress, aMaxSelfProgress, aCurTotalProgress, aMaxTotalProgress) {
     Log.debug("onProgressChange", aWebProgress, aRequest, aCurSelfProgress, aMaxSelfProgress, aCurTotalProgress, aMaxTotalProgress);
     // Calculate percentage.
     var percent;
@@ -1088,15 +1088,15 @@ let progressListener = {
     }
   },
 
-  onLocationChange: function(aWebProgress, aRequest, aLocation) {
+  onLocationChange(aWebProgress, aRequest, aLocation) {
     // we can ignore this notification
   },
 
-  onStatusChange: function(aWebProgress, aRequest, aStatus, aMessage) {
+  onStatusChange(aWebProgress, aRequest, aStatus, aMessage) {
     pText(aMessage);
   },
 
-  onSecurityChange: function(aWebProgress, aRequest, state) {
+  onSecurityChange(aWebProgress, aRequest, state) {
     // we can ignore this notification
   },
 
@@ -1114,7 +1114,7 @@ let sendListener = {
    * @return The return value is currently ignored.  In the future it may be
    * used to cancel the URL load..
    */
-  onStartSending: function (aMsgID, aMsgSize) {
+  onStartSending(aMsgID, aMsgSize) {
     pText(strings.get("sendingMessage"));
     $("textarea, #send, #sendArchive").attr("disabled", "disabled");
     Log.debug("onStartSending", aMsgID, aMsgSize);
@@ -1123,14 +1123,14 @@ let sendListener = {
   /**
    * Notify the observer that progress as occurred for the message send
    */
-  onProgress: function (aMsgID, aProgress, aProgressMax) {
+  onProgress(aMsgID, aProgress, aProgressMax) {
     Log.debug("onProgress", aMsgID, aProgress, aProgressMax);
   },
 
   /**
    * Notify the observer with a status message for the message send
    */
-  onStatus: function (aMsgID, aMsg) {
+  onStatus(aMsgID, aMsg) {
     Log.debug("onStatus", aMsgID, aMsg);
   },
 
@@ -1145,7 +1145,7 @@ let sendListener = {
    * msg      A text string describing the error.
    * returnFileSpec The returned file spec for save to file operations.
    */
-  onStopSending: function (aMsgID, aStatus, aMsg, aReturnFile) {
+  onStopSending(aMsgID, aStatus, aMsg, aReturnFile) {
     // if (aExitCode == NS_ERROR_SMTP_SEND_FAILED_UNKNOWN_SERVER ||
     //     aExitCode == NS_ERROR_SMTP_SEND_FAILED_UNKNOWN_REASON ||
     //     aExitCode == NS_ERROR_SMTP_SEND_FAILED_REFUSED ||
@@ -1189,7 +1189,7 @@ let sendListener = {
   /**
    * Notify the observer with the folder uri before the draft is copied.
    */
-  onGetDraftFolderURI: function (aFolderURI) {
+  onGetDraftFolderURI(aFolderURI) {
     Log.debug("onGetDraftFolderURI", aFolderURI);
   },
 
@@ -1197,7 +1197,7 @@ let sendListener = {
    * Notify the observer when the user aborts the send without actually doing the send
    * eg : by closing the compose window without Send.
    */
-  onSendNotPerformed: function (aMsgID, aStatus) {
+  onSendNotPerformed(aMsgID, aStatus) {
     Log.debug("onSendNotPerformed", aMsgID, aStatus);
   },
 
@@ -1208,7 +1208,7 @@ let sendListener = {
 };
 
 let copyListener = {
-  onStopCopy: function (aStatus) {
+  onStopCopy(aStatus) {
     Log.debug("onStopCopy", aStatus);
     if (NS_SUCCEEDED(aStatus)) {
       //if (gOldDraftToDelete)
@@ -1222,13 +1222,13 @@ let copyListener = {
   ]),
 };
 
-function createStateListener (aComposeSession, aMsgHdrs, aId) {
+function createStateListener(aComposeSession, aMsgHdrs, aId) {
   return {
-    NotifyComposeFieldsReady: function() {
+    NotifyComposeFieldsReady() {
       // ComposeFieldsReady();
     },
 
-    NotifyComposeBodyReady: function() {
+    NotifyComposeBodyReady() {
       // if (gMsgCompose.composeHTML)
       //   loadHTMLMsgPrefs();
       // AdjustFocus();
@@ -1271,7 +1271,7 @@ function createStateListener (aComposeSession, aMsgHdrs, aId) {
       }
     },
 
-    SaveInFolderDone: function(folderURI) {
+    SaveInFolderDone(folderURI) {
       // DisplaySaveFolderDlg(folderURI);
     }
   };

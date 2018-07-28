@@ -59,7 +59,7 @@ Wrapper.prototype = {
    * The XMLHttpRequest thing doesn't seem to work properly, so use our own
    * little function to get the contents of the attachment into a TypedArray.
    */
-  _download: function (k) {
+  _download(k) {
     let url = Services.io.newURI(this.url, null, null);
     let channel = Services.io.newChannelFromURI2(url,
       null,
@@ -70,14 +70,14 @@ Wrapper.prototype = {
     );
     let chunks = [];
     let listener = {
-      onStartRequest: function (/* nsIRequest */ aRequest, /* nsISupports */ aContext) {
+      onStartRequest(/* nsIRequest */ aRequest, /* nsISupports */ aContext) {
       },
 
-      onStopRequest: function (/* nsIRequest */ aRequest, /* nsISupports */ aContext, /* int */ aStatusCode) {
+      onStopRequest(/* nsIRequest */ aRequest, /* nsISupports */ aContext, /* int */ aStatusCode) {
         k(chunks);
       },
 
-      onDataAvailable: function (/* nsIRequest */ aRequest, /* nsISupports */ aContext,
+      onDataAvailable(/* nsIRequest */ aRequest, /* nsISupports */ aContext,
           /* nsIInputStream */ aStream, /* int */ aOffset, /* int */ aCount) {
         // Fortunately, we have in Gecko 2.0 a nice wrapper
         let data = NetUtil.readInputStreamToString(aStream, aCount);
@@ -96,12 +96,12 @@ Wrapper.prototype = {
     channel.asyncOpen(listener, null);
   },
 
-  load: function () {
+  load() {
     Log.debug("Downloading", this.url);
 
-    this._download(function (chunks) {
+    this._download(function(chunks) {
       let browser = document.getElementById("browser");
-      browser.addEventListener("load", function load_handler () {
+      browser.addEventListener("load", function load_handler() {
         browser.removeEventListener("load", load_handler, true);
         let w = browser.contentWindow.wrappedJSObject;
         w.Log = Cu.cloneInto(
@@ -109,7 +109,7 @@ Wrapper.prototype = {
           w,
           { cloneFunctions: true }
         );
-        w.init(Cu.cloneInto({ chunks: chunks }, w));
+        w.init(Cu.cloneInto({ chunks }, w));
       }, true);
       // Load from a resource:// URL so that it doesn't have chrome privileges.
       browser.loadURI("resource://conversations/content/pdfviewer/viewer.xhtml", null, null);
@@ -118,7 +118,7 @@ Wrapper.prototype = {
 
 };
 
-window.addEventListener("load", function (event) {
+window.addEventListener("load", function(event) {
   let params = decodeUrlParameters(document.location.href);
   let uri = decodeURIComponent(params.uri);
   let name = decodeURIComponent(params.name);

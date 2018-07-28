@@ -89,7 +89,7 @@ function groupArray(aItems, aFn) {
 }
 
 // Joins together names and format them as "John, Jane and Julie"
-function joinWordList (aElements, aInsertHtml) {
+function joinWordList(aElements, aInsertHtml) {
   let wrap = aInsertHtml
     ? x => "<span>" + x + "</span>"
     : x => x
@@ -134,7 +134,7 @@ let fallbackMapping = [
   ["text/", "text-x-generic"],
 ];
 
-function iconForMimeType (aMimeType) {
+function iconForMimeType(aMimeType) {
   let idx = mapping.findIndex(function([k, ]) {
     return aMimeType == k;
   });
@@ -157,7 +157,7 @@ function iconForMimeType (aMimeType) {
  */
 let EventHelperMixIn = {
 
-  compose: function _EventHelper_compose (aCompType, aEvent) {
+  compose: function _EventHelper_compose(aCompType, aEvent) {
     let window = topMail3Pane(this);
     if (aEvent && aEvent.shiftKey) {
       window.ComposeMessage(aCompType, Ci.nsIMsgCompFormat.OppositeOfDefault, this._msgHdr.folder, [this._uri]);
@@ -166,7 +166,7 @@ let EventHelperMixIn = {
     }
   },
 
-  forward: function _EventHelper_forward (event) {
+  forward: function _EventHelper_forward(event) {
     let forwardType = 0;
     try {
       forwardType = Prefs.getInt("mail.forward_message_mode");
@@ -179,7 +179,7 @@ let EventHelperMixIn = {
       this.compose(Ci.nsIMsgCompType.ForwardInline, event);
   },
 
-  register: function _EventHelper_register (selector, f, options) {
+  register: function _EventHelper_register(selector, f, options) {
     let action;
     if (typeof(options) == "undefined" || typeof(options.action) == "undefined")
       action = "click";
@@ -210,7 +210,7 @@ function linkifySubject(subject, doc) {
     link.setAttribute("href", matches[1]);
     link.setAttribute("title", matches[1]);
     link.setAttribute("class","link");
-    link.addEventListener("click", function (event) {
+    link.addEventListener("click", function(event) {
         getMail3Pane().messenger.launchExternalURL(matches[1]);
         event.preventDefault();
       }, false);
@@ -248,7 +248,7 @@ function topMail3Pane(aObj) {
   if (!aObj)
     throw Error("Bad usage for topMail3Pane");
 
-  let moveOut = function (w) {
+  let moveOut = function(w) {
     if (w.frameElement)
       return w.frameElement.ownerDocument.defaultView;
     else

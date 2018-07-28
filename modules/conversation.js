@@ -82,7 +82,7 @@ let SignalManagerMixIn = {
   // Once more, we wait for N signals, because message loading is a
   //  asynchronous. Once we've done what's right for each message (expand,
   //  collapse, or do nothing), we do the final cleanup (mark as read, etc.).
-  _runOnceAfterNSignals: function (f, n) {
+  _runOnceAfterNSignals(f, n) {
     if (("_toRun" in this) && this._toRun !== null && this._toRun !== undefined)
       Log.error("You failed to call signal enough times. Bad developer, bad! Go fix your code!");
     this._toRun = [f, n+1];
@@ -118,7 +118,7 @@ let SignalManagerMixIn = {
 let OracleMixIn = {
   // Go through all the messages and determine which one is going to be focused
   //  according to the prefs
-  _tellMeWhoToScroll: function _Conversation_tellMeWhoToScroll () {
+  _tellMeWhoToScroll: function _Conversation_tellMeWhoToScroll() {
     // Determine which message is going to be scrolled into view
     let needsScroll = -1;
     if (this.scrollMode == Prefs.kScrollUnreadOrLast) {
@@ -153,16 +153,16 @@ let OracleMixIn = {
 
   // Go through all the messages and for each one of them, give the expected
   //  action
-  _tellMeWhoToExpand: function _Conversation_tellMeWhoToExpand (aNeedsFocus) {
+  _tellMeWhoToExpand: function _Conversation_tellMeWhoToExpand(aNeedsFocus) {
     let self = this;
     let actions = [];
-    let collapse = function _collapse (message) {
+    let collapse = function _collapse(message) {
       if (message.collapsed)
         actions.push(kActionDoNothing);
       else
         actions.push(kActionCollapse);
     };
-    let expand = function _expand (message) {
+    let expand = function _expand(message) {
       if (message.collapsed)
         actions.push(kActionExpand);
       else
@@ -174,7 +174,7 @@ let OracleMixIn = {
         //  message if all messages are read), and we expand all unread messages
         //  + the last one (which will probably be unread as well).
         if (this.scrollMode == Prefs.kScrollUnreadOrLast) {
-          this.messages.forEach(function ( { message }, i) {
+          this.messages.forEach(function( { message }, i) {
             if (!message.read || i == self.messages.length - 1)
               expand(message);
             else
@@ -214,7 +214,7 @@ let OracleMixIn = {
 // -- Some helpers for our message type
 
 // Get the message-id of a message, be it a msgHdr or a glodaMsg.
-function getMessageId ({ type, message, msgHdr, glodaMsg }) {
+function getMessageId({ type, message, msgHdr, glodaMsg }) {
   if (type == kMsgGloda)
     return glodaMsg.headerMessageID;
   else if (type == kMsgDbHdr)
@@ -225,7 +225,7 @@ function getMessageId ({ type, message, msgHdr, glodaMsg }) {
 
 // Get the underlying msgHdr of a message. Might return undefined if Gloda
 //  remembers dead messages (and YES this happens).
-function toMsgHdr ({ type, message, msgHdr, glodaMsg }) {
+function toMsgHdr({ type, message, msgHdr, glodaMsg }) {
   if (type == kMsgGloda)
     return glodaMsg.folderMessage;
   else if (type == kMsgDbHdr)
@@ -235,7 +235,7 @@ function toMsgHdr ({ type, message, msgHdr, glodaMsg }) {
 }
 
 // Get a Date instance for the given message.
-function msgDate ({ type, message, msgHdr, glodaMsg }) {
+function msgDate({ type, message, msgHdr, glodaMsg }) {
   if (type == kMsgDbHdr)
     return new Date(msgHdr.date/1000);
   else if (type == kMsgGloda)
@@ -244,7 +244,7 @@ function msgDate ({ type, message, msgHdr, glodaMsg }) {
     Log.error("Bad message type");
 }
 
-function msgDebugColor (aMsg) {
+function msgDebugColor(aMsg) {
   let msgHdr = toMsgHdr(aMsg);
   if (msgHdr) {
     if (msgHdr.getUint32Property("pseudoHdr") == 1)
@@ -257,7 +257,7 @@ function msgDebugColor (aMsg) {
   }
 }
 
-function messageFromGlodaIfOffline (aSelf, aGlodaMsg, aDebug) {
+function messageFromGlodaIfOffline(aSelf, aGlodaMsg, aDebug) {
   let aMsgHdr = aGlodaMsg.folderMessage;
   let needsLateAttachments =
     !(aMsgHdr.folder instanceof Ci.nsIMsgLocalMailFolder) &&
@@ -274,7 +274,7 @@ function messageFromGlodaIfOffline (aSelf, aGlodaMsg, aDebug) {
   };
 }
 
-function messageFromDbHdr (aSelf, aMsgHdr, aDebug) {
+function messageFromDbHdr(aSelf, aMsgHdr, aDebug) {
   return {
     type: kMsgDbHdr,
     message: new MessageFromDbHdr(aSelf, aMsgHdr), // will run signal
@@ -386,7 +386,7 @@ Conversation.prototype = {
   // output a conversation unless we're really sure the user hasn't changed his
   // mind.
   // XXX this logic is weird. Shouldn't we just compare a list of URLs?
-  _selectionChanged: function _Conversation_selectionChanged () {
+  _selectionChanged: function _Conversation_selectionChanged() {
     let gFolderDisplay = topMail3Pane(this).gFolderDisplay;
     let messageIds = this._initialSet.map(x => x.messageId);
     return !gFolderDisplay.selectedMessage ||
@@ -397,14 +397,14 @@ Conversation.prototype = {
   //  of messages in order to obtain the conversation. It takes care of filling
   //  this.messages with the right set of messages, and then moves on to
   //  _outputMessages.
-  _fetchMessages: function _Conversation_fetchMessages () {
+  _fetchMessages: function _Conversation_fetchMessages() {
     let self = this;
     // This is a "classic query", i.e. the one we use all the time: just obtain
     //  a GlodaMessage for the selected message headers, and then pick the
     //  first one, get its underlying GlodaConversation object, and then ask for
     //  the GlodaConversation's messages.
     Gloda.getMessageCollectionForHeaders(self._initialSet, {
-      onItemsAdded: function (aItems) {
+      onItemsAdded(aItems) {
         if (!aItems.length) {
           Log.warn("Warning: gloda query returned no messages");
           self._getReady(self._initialSet.length + 1);
@@ -419,15 +419,15 @@ Conversation.prototype = {
           self._query = aItems[0].conversation.getMessagesCollection(self, true);
         }
       },
-      onItemsModified: function () {},
-      onItemsRemoved: function () {},
-      onQueryCompleted: function (aCollection) {},
+      onItemsModified() {},
+      onItemsRemoved() {},
+      onQueryCompleted(aCollection) {},
     }, null);
   },
 
   // This is the observer for the second Gloda query, the one that returns a
   // conversation.
-  onItemsAdded: function (aItems) {
+  onItemsAdded(aItems) {
     // The first batch of messages will be treated in onQueryCompleted, this
     //  handler is only interested in subsequent messages.
     // If we are an old conversation that hasn't been collected, don't go
@@ -440,7 +440,7 @@ Conversation.prototype = {
     // SO LOLZ: the comment above was written in 2011, Gecko 42 has been
     //  released, bug still isn't fixed.
     let self = this;
-    this._window.setTimeout(function _Conversation_onQueryCompleted_bug547088 () {
+    this._window.setTimeout(function _Conversation_onQueryCompleted_bug547088() {
       try {
         // The MessageFromGloda constructor cannot work with gloda messages that
         //  don't have a message header
@@ -497,7 +497,7 @@ Conversation.prototype = {
 
   },
 
-  onItemsModified: function _Conversation_onItemsModified (aItems) {
+  onItemsModified: function _Conversation_onItemsModified(aItems) {
     Log.debug("Updating conversation", this.counter, "global state...");
     if (!this.completed)
       return;
@@ -522,7 +522,7 @@ Conversation.prototype = {
     }
   },
 
-  onItemsRemoved: function (aItems) {
+  onItemsRemoved(aItems) {
     Log.debug("Updating conversation", this.counter, "global state...");
     if (!this.completed)
       return;
@@ -542,7 +542,7 @@ Conversation.prototype = {
     this._updateConversationButtons();
   },
 
-  onQueryCompleted: function _Conversation_onQueryCompleted (aCollection) {
+  onQueryCompleted: function _Conversation_onQueryCompleted(aCollection) {
     // We'll receive this notification waaaay too many times, so if we've
     // already settled on a set of messages, let onItemsAdded handle the rest.
     // This is just for the initial building of the conversation.
@@ -560,7 +560,7 @@ Conversation.prototype = {
     //  bump the version requirements in install.rdf.template (might be fixed in
     //  time for Gecko 42, if we're lucky)
     let self = this;
-    this._window.setTimeout(function _Conversation_onQueryCompleted_bug547088 () {
+    this._window.setTimeout(function _Conversation_onQueryCompleted_bug547088() {
       try {
         // The MessageFromGloda constructor cannot work with gloda messages that
         //  don't have a message header
@@ -636,7 +636,7 @@ Conversation.prototype = {
   //  comment)
   _getReady: function _Conversation_getReady(n) {
     let self = this;
-    this._runOnceAfterNSignals(function () {
+    this._runOnceAfterNSignals(function() {
       self._filterOutDuplicates();
       self._outputMessages();
     }, n);
@@ -648,7 +648,7 @@ Conversation.prototype = {
   // Then, for different candidates for a single message id, we need to pick the
   //  best one, giving precedence to those which are selected and/or in the
   //  current view.
-  _filterOutDuplicates: function _Conversation_filterOutDuplicates () {
+  _filterOutDuplicates: function _Conversation_filterOutDuplicates() {
     let messages = this.messages;
     let mainWindow = topMail3Pane(this);
     this.viewWrapper = new ViewWrapper(this);
@@ -659,8 +659,8 @@ Conversation.prototype = {
     //  inconsistencies in case multiple identical messages are present in the
     //  same thread (e.g. message from to me).
     let self = this;
-    let selectRightMessage = function (aSimilarMessages) {
-      let findForCriterion = function (aCriterion) {
+    let selectRightMessage = function(aSimilarMessages) {
+      let findForCriterion = function(aCriterion) {
         let bestChoice;
         for (let msg of aSimilarMessages) {
           if (!toMsgHdr(msg))
@@ -693,7 +693,7 @@ Conversation.prototype = {
    * Remove a given message from the conversation.
    * @param aMessage {Message} a Message as in modules/message.js
    */
-  removeMessage: function _Conversation_removeMessage (aMessage) {
+  removeMessage: function _Conversation_removeMessage(aMessage) {
     // Move the quick reply to the previous message
     let i = this.messages.map(x => x.message).indexOf(aMessage);
     Log.debug("Removing message", i);
@@ -718,7 +718,7 @@ Conversation.prototype = {
   //  end of this conversation. This only works if the new messages arrive at
   //  the end of the conversation, I don't support the pathological case of new
   //  messages arriving in the middle of the conversation.
-  appendMessages: function _Conversation_appendMessages (aMessages) {
+  appendMessages: function _Conversation_appendMessages(aMessages) {
     // This is normal, the stupid folder tree view often reflows the
     //  whole thing and asks for a new ThreadSummary but the user hasn't
     //  actually changed selections.
@@ -807,7 +807,7 @@ Conversation.prototype = {
 
   // Once we're confident our set of messages is the right one, we actually
   // start outputting them inside the DOM element we were given.
-  _outputMessages: function _Conversation_outputMessages () {
+  _outputMessages: function _Conversation_outputMessages() {
     let self = this;
     // XXX I think this test is still valid because of the thread summary
     // stabilization interval (we might have changed selection and still be
@@ -851,7 +851,7 @@ Conversation.prototype = {
       let currentMsgUris = currentMsgSet.filter(x => toMsgHdr(x))
                                         .map(x => msgHdrGetUri(toMsgHdr(x)));
       // Is a1 a prefix of a2? (I wish JS had pattern matching!)
-      let isPrefix = function _isPrefix (a1, a2) {
+      let isPrefix = function _isPrefix(a1, a2) {
         if (!a1.length) {
           return [true, a2];
         } else if (a1.length && !a2.length) {
@@ -1035,7 +1035,7 @@ Conversation.prototype = {
     this._expandAndScroll();
   },
 
-  _updateConversationButtons: function _Conversation_updateConversationButtons () {
+  _updateConversationButtons: function _Conversation_updateConversationButtons() {
     // Bail if we're notified too early, or if someone stole the message pane
     // from us, or whatever.
     if (!this.messages || !this.messages.length || !this._domNode || !this._htmlPane.document)
@@ -1064,7 +1064,7 @@ Conversation.prototype = {
 
   // Do all the penible stuff about scrolling to the right message and expanding
   // the right message
-  _expandAndScroll: function _Conversation_expandAndScroll (aStart) {
+  _expandAndScroll: function _Conversation_expandAndScroll(aStart) {
     if (aStart === undefined)
       aStart = 0;
     let focusThis = this._tellMeWhoToScroll();
@@ -1073,7 +1073,7 @@ Conversation.prototype = {
     Log.assert(messageNodes.length == this.messages.length, "WTF?");
 
     let self = this;
-    this._runOnceAfterNSignals(function () {
+    this._runOnceAfterNSignals(function() {
       let focusedNode = messageNodes[focusThis];
       self._htmlPane.scrollNodeIntoView(focusedNode);
       self.messages[focusThis].message.onSelected();
@@ -1126,31 +1126,31 @@ Conversation.prototype = {
 
   // This is the starting point, this is where the Monkey-Patched threadSummary
   // or the event handlers ask for a conversation.
-  outputInto: function _Conversation_outputInto (aHtmlPane, k) {
+  outputInto: function _Conversation_outputInto(aHtmlPane, k) {
     this._htmlPane = aHtmlPane;
     this._domNode = this._htmlPane.document.getElementById("messageList");
     this._onComplete = () => k(this);
     this._fetchMessages();
   },
 
-  get msgHdrs () {
+  get msgHdrs() {
     return this.messages.filter(x => toMsgHdr(x)).map(x => toMsgHdr(x));
   },
 
   // Just an efficient way to mark a whole conversation as read
-  set read (read) {
+  set read(read) {
     Log.debug(Colors.red, "Marked as read", Colors.default);
     msgHdrsMarkAsRead(this.msgHdrs, read);
   },
 
   // For the "forward conversation" action
-  exportAsHtml: function _Conversation_exportAsHtml (k) {
+  exportAsHtml: function _Conversation_exportAsHtml(k) {
     // Somehow this seems to be needed... why? Dunno.
     let start = '<html><body>';
     let hr = '<div style="border-top: 1px solid #888; height: 15px; width: 70%; margin: 0 auto; margin-top: 15px">&nbsp;</div>';
     let html = start + '<p>' + strings.get("conversationFillInText") + '</p>' +hr;
     let count = 1;
-    let top = function () {
+    let top = function() {
       if (!--count) {
         html += "<div style=\"font-family: sans-serif !important;\">"+messagesHtml.join(hr)+"</div>";
         Log.debug("The HTML: ---------\n", html, "\n\n");
@@ -1158,10 +1158,10 @@ Conversation.prototype = {
       }
     };
     let messagesHtml = new Array(this.messages.length);
-    this.messages.forEach(function ({ message: message }, i) {
+    this.messages.forEach(function({ message: message }, i) {
       let j = i;
       count++;
-      message.exportAsHtml(function (aHtml) {
+      message.exportAsHtml(function(aHtml) {
         messagesHtml[j] = aHtml;
         top();
       });

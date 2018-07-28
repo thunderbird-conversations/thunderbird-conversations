@@ -65,7 +65,7 @@ function addBzLink(aUrl) {
         .css("text-decoration", "underline")
         .text(strings.get("bzDoLogin"))
         .attr("href", "javascript:")
-        .click(function () {
+        .click(function() {
           topMail3Pane(window).document.getElementById("tabmail")
             .openTab("contentTab",  { contentPage: aUrl });
         })
@@ -122,7 +122,7 @@ function getBugzillaCookie(aUrl) {
     return null;
 }
 
-function BzComposeSession (match, webUrl, apiUrl, [login, loginCookie]) {
+function BzComposeSession(match, webUrl, apiUrl, [login, loginCookie]) {
   this.webUrl = webUrl;
   // A visitor pattern.
   //  match({ reply(nsIMsgDbHdr), draft({ msgUri, from, to, cc, bcc, body }) })
@@ -147,7 +147,7 @@ function BzComposeSession (match, webUrl, apiUrl, [login, loginCookie]) {
   // Because loadDraft expects this to be JSON data...
   $("#to, #cc, #bcc").val("[]");
 
-  this.makeQuery = function (action) {
+  this.makeQuery = function(action) {
     let queryString =
       apiUrl + action + "?userid=" + login + "&cookie=" + loginCookie;
     return queryString;
@@ -157,13 +157,13 @@ function BzComposeSession (match, webUrl, apiUrl, [login, loginCookie]) {
   let self = this;
   // Implement the required minima so that loading and saving a draft work.
   match({
-    reply: function (aMessage) {
+    reply(aMessage) {
       let aMsgHdr = aMessage._msgHdr;
       let suggestedIdentity = mainWindow.getIdentityForHeader(aMsgHdr, Ci.nsIMsgCompType.ReplyAll);
       self.params.identity = suggestedIdentity || getDefaultIdentity().identity;
       self.params.msgHdr = aMsgHdr;
     },
-    draft: function ({ msgUri, from, body }) {
+    draft({ msgUri, from, body }) {
       self.params.identity = getIdentityForEmail(from).identity || getDefaultIdentity().identity;
       self.params.msgHdr = msgUriToMsgHdr(msgUri);
       $("textarea").val(body);
@@ -174,7 +174,7 @@ function BzComposeSession (match, webUrl, apiUrl, [login, loginCookie]) {
 const RE_BUG_NUMBER = /^bug-([\d]+)-/;
 
 BzComposeSession.prototype = {
-  send: function (options) {
+  send(options) {
     let self = this;
     let archive = options && options.archive;
     let id = Conversations.currentConversation.id;
@@ -186,21 +186,21 @@ BzComposeSession.prototype = {
 
       let req = new XMLHttpRequest();
       // Register a whole bunch of event listeners.
-      req.addEventListener("progress", function (event) {
+      req.addEventListener("progress", function(event) {
         if (event.lengthComputable) {
           pValue(event.loaded/event.total);
         } else {
           pUndetermined();
         }
       }, false);
-      req.addEventListener("error", function (event) {
+      req.addEventListener("error", function(event) {
         pText(strings.get("bzMsgXHRError"));
       }, false);
-      req.addEventListener("abort", function (event) {
+      req.addEventListener("abort", function(event) {
         pText(strings.get("bzMsgXHRAbort"));
       }, false);
       // This is where the real analysis is happening...
-      req.addEventListener("load", function (event) {
+      req.addEventListener("load", function(event) {
         pValue(100);
         let response = null;
         try {
@@ -217,7 +217,7 @@ BzComposeSession.prototype = {
             // Only operate if we haven't changed conversations in the
             // meanwhile.
             if (id == Conversations.currentConversation.id) {
-              setTimeout(function () {
+              setTimeout(function() {
                 $(".quickReplyHeader").hide();
               }, 1000);
               onDiscard();
