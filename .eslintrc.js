@@ -13,11 +13,18 @@ module.exports = {
   "extends": [
     "plugin:mozilla/recommended"
   ],
+  "overrides": [{
+    // XXX Fix the not really undefined variables in these files.
+    "files": "content/**",
+    "rules": {
+      "no-undef": "off",
+    }
+  }],
   "plugins": [
     "mozilla"
   ],
   "rules": {
-    // These are all rules that mozilla/recommended set, but we currently
+    // XXX These are all rules that mozilla/recommended set, but we currently
     // don't pass. We should enable these over time.
     "brace-style": "off",
     "comma-spacing": "off",
