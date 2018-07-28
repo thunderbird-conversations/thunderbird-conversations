@@ -61,7 +61,13 @@ Wrapper.prototype = {
    */
   _download: function (k) {
     let url = Services.io.newURI(this.url, null, null);
-    let channel = Services.io.newChannelFromURI(url);
+    let channel = Services.io.newChannelFromURI2(url,
+      null,
+      Services.scriptSecurityManager.getSystemPrincipal(),
+      null,
+      Ci.nsILoadInfo.SEC_ALLOW_CROSS_ORIGIN_DATA_IS_NULL,
+      Ci.nsIContentPolicy.TYPE_OTHER,
+    );
     let chunks = [];
     let listener = {
       onStartRequest: function (/* nsIRequest */ aRequest, /* nsISupports */ aContext) {

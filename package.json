@@ -13,7 +13,7 @@
     "thunderbird": ">=45.0a1"
   },
   "dependencies": {
-    "pdfjs-dist": "1.8.188"
+    "pdfjs-dist": "2.0.489"
   },
   "devDependencies": {
     "eslint": "5.2.0",
