@@ -37,7 +37,7 @@
 "use strict";
 
 ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
-ChromeUtils.import("resource:///modules/gloda/mimemsg.js");
+const {MsgHdrToMimeMessage} = ChromeUtils.import("resource:///modules/gloda/mimemsg.js", {});
 /* import-globals-from ../../../modules/stdlib/msgHdrUtils.js */
 ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
 /* import-globals-from ../../../modules/stdlib/misc.js */
@@ -48,6 +48,7 @@ ChromeUtils.import("resource://conversations/modules/log.js");
 let Log = setupLogging("Conversations.Gallery");
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
+/* global wrapHandlebars, tmpl, $ */
 wrapHandlebars();
 
 let gallery = null;
