@@ -60,12 +60,12 @@ XPCOMUtils.defineLazyGetter(Services, "mMessenger",
                               return Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
                             });
 
-const kCharsetFromMetaTag = 9;
+// const kCharsetFromMetaTag = 9;
 const kCharsetFromChannel = 11;
 const kAllowRemoteContent = 2;
 
 const kHeadersShowAll = 2;
-const kHeadersShowNormal = 1;
+// const kHeadersShowNormal = 1;
 
 const olderThan52 = Services.vc.compare(Services.sysinfo.version, "51.1") > 0;
 
@@ -384,7 +384,7 @@ const ConversationKeybindings = {
 KeyListener.prototype.defaultKeybindings = JSON.parse(JSON.stringify(KeyListener.prototype.keybindings));
 // Load any customizations
 KeyListener.prototype.loadKeybindings();
-for (let [actionName, j] of entries(KeyListener.prototype.functions)) {
+for (let [actionName, /* j */] of entries(KeyListener.prototype.functions)) {
   ConversationKeybindings.availableActions.push(actionName);
 }
 
@@ -552,7 +552,6 @@ Message.prototype = {
       extraClasses.push("bugzilla");
       try {
         let url = this.bugzillaInfos.url;
-        let uri = Services.io.newURI(url, null, null);
         data.bugzillaUrl = url;
       } catch (e) {
         if (e.result != Cr.NS_ERROR_MALFORMED_URI) {
@@ -1100,7 +1099,6 @@ Message.prototype = {
   },
 
   cosmeticFixups: function _Message_cosmeticFixups() {
-    let self = this;
     let window = this._conversation._htmlPane;
     window.alignAttachments(this);
   },
@@ -1822,7 +1820,7 @@ function MessageFromDbHdr(aConversation, aMsgHdr) {
           return;
         }
 
-        let [text, meta] = mimeMsgToContentSnippetAndMeta(aMimeMsg, aMsgHdr.folder, kSnippetLength);
+        let [text, /* meta */] = mimeMsgToContentSnippetAndMeta(aMimeMsg, aMsgHdr.folder, kSnippetLength);
         self._snippet = text;
         let alternativeSender = PluginHelpers.alternativeSender({ mime: aMimeMsg, header: aMsgHdr });
         if (alternativeSender) {
@@ -1960,7 +1958,7 @@ let PostStreamingFixesMixIn = {
 
     // Unless the user specifically asked for this message to be
     //  dislayed with a monospaced font...
-    let [{name, email}] = this.parse(this._msgHdr.author);
+    let [{/*name, */ email}] = this.parse(this._msgHdr.author);
     if (email && !(email.toLowerCase() in Prefs.monospaced_senders) &&
         !(this.mailingLists.some(x => (x.toLowerCase() in Prefs.monospaced_senders)))) {
       styleRules = styleRules.concat([

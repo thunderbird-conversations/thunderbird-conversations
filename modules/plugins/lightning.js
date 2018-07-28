@@ -69,7 +69,6 @@ try {
 // see http://mxr.mozilla.org/comm-central/source/calendar/lightning/content/imip-bar.js#186
 function imipOptions(rootNode, msgWindow, message, itipItem, rc, actionFunc, foundItems) {
   let imipBarText = rootNode.getElementsByClassName("lightningImipText")[0];
-  let doc = imipBarText.ownerDocument;
   let data = cal.itip.getOptionsText(itipItem, rc, actionFunc);
   let w = topMail3Pane(message);
 
@@ -132,7 +131,6 @@ let lightningHook = {
   onMessageStreamed: function _lightningHook_onMessageStreamed(aMsgHdr, aDomNode, aMsgWindow, aMessage) {
     let imipBar = aDomNode.getElementsByClassName("lightningImipBar")[0];
     let imipBarText = aDomNode.getElementsByClassName("lightningImipText")[0];
-    let doc = imipBar.ownerDocument;
 
     let itipItem = null;
     try {

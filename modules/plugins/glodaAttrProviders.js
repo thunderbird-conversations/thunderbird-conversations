@@ -187,7 +187,6 @@ let ConversationSubject = {
   },
 
   process: function* _ConversationSubject_process(aGlodaMessage, aRawReps, aIsNew, aCallbackHandle) {
-    let aMimeMsg = aRawReps.mime;
     yield Gloda.kWorkDone;
   },
 };

@@ -39,7 +39,6 @@
 var EXPORTED_SYMBOLS = ['ContactManager', 'Contacts', 'defaultPhotoURI'];
 
 ChromeUtils.import("resource://gre/modules/Services.jsm"); // https://developer.mozilla.org/en/JavaScript_code_modules/Services.jsm
-const {fixIterator} = ChromeUtils.import("resource:///modules/iteratorUtils.jsm", {}); // for fixIterator
 ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
 const {MailServices} = ChromeUtils.import("resource:///modules/mailServices.js", {});
 const {GlodaUtils} = ChromeUtils.import("resource:///modules/gloda/utils.js", {});

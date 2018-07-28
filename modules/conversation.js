@@ -650,7 +650,6 @@ Conversation.prototype = {
   //  current view.
   _filterOutDuplicates: function _Conversation_filterOutDuplicates() {
     let messages = this.messages;
-    let mainWindow = topMail3Pane(this);
     this.viewWrapper = new ViewWrapper(this);
     // Wicked cases, when we're asked to display a draft that's half-saved...
     messages = messages.filter(x => (toMsgHdr(x) && getMessageId(x)));
@@ -867,7 +866,7 @@ Conversation.prototype = {
       };
       let myMsgUris = this.messages.filter(x => toMsgHdr(x))
                                    .map(x => msgHdrGetUri(toMsgHdr(x)));
-      let [shouldRecycle, _whichMessageUris] = isPrefix(currentMsgUris, myMsgUris);
+      let [shouldRecycle /*, _whichMessageUris */] = isPrefix(currentMsgUris, myMsgUris);
       // Ok, some explanation needed. How can this possibly happen?
       // - Click on a conversation
       // - Conversation is built, becomes the global current conversation
@@ -986,7 +985,6 @@ Conversation.prototype = {
 
     // Fill in the HTML right away. The has the nice side-effect of erasing the
     // previous conversation (but not the conversation-wide event handlers!)
-    let t0  = (new Date()).getTime();
     let $ = this._htmlPane.$;
     for (let i of range(0, this.messages.length)) {
       // We need to set this before the call to toTmplData.

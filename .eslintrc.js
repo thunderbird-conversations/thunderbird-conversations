@@ -26,7 +26,6 @@ module.exports = {
     "files": [
       "bootstrap.js",
       "content/*.js",
-      "modules/**/*.js",
     ],
     "rules": {
       "no-unused-vars": "off",

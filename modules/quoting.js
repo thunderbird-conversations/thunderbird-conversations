@@ -41,18 +41,7 @@ var EXPORTED_SYMBOLS = [
   'fusionBlockquotes', 'convertMiscQuotingToBlockquote',
 ];
 
-const txttohtmlconv = Cc["@mozilla.org/txttohtmlconv;1"]
-                        .createInstance(Ci.mozITXTToHTMLConv);
-
 /* Below are hacks^W heuristics for finding quoted parts in a given email */
-
-/* (sigh...) */
-function insertAfter(newElement, referenceElt) {
-  if (referenceElt.nextSibling)
-    referenceElt.parentNode.insertBefore(newElement, referenceElt.nextSibling);
-  else
-    referenceElt.parentNode.appendChild(newElement);
-}
 
 function canInclude(aNode) {
   let v = aNode.tagName && aNode.tagName.toLowerCase() == "br"
@@ -146,13 +135,6 @@ function convertOutlookQuotingToBlockquote(aWin, aDoc) {
       break;
     }
   }
-}
-
-function citeLevel(line) {
-  let i;
-  for (i = 0; line[i] == ">" && i < line.length; ++i)
-    ; // nop
-  return i;
 }
 
 /* Stupid regexp that matches:

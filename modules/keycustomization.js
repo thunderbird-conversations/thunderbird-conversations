@@ -42,11 +42,8 @@ var EXPORTED_SYMBOLS = ['CustomizeKeys'];
 ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
 /* import-globals-from message.js */
 ChromeUtils.import("resource://conversations/modules/message.js");
-/* import-globals-from log.js */
-ChromeUtils.import("resource://conversations/modules/log.js");
 ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
 let strings = new StringBundle("chrome://conversations/locale/keycustomization.properties");
-let Log = setupLogging("Conversations.Message");
 
 // Binding groups will be an array containing
 // ConversationKeybindings.bindings.<OSX or Other> and
@@ -150,7 +147,7 @@ const PrefEditors = {
    * @param {Object} binding is the specific keybinding object to be removed
    */
   deleteBinding: function deleteBinding(key, binding) {
-    for (let [os, bindings] of entries(bindingGroups)) {
+    for (let [/* os */, bindings] of entries(bindingGroups)) {
       if (key in bindings) {
         bindings[key] = bindings[key].filter(x => x !== binding);
         if (!bindings[key].length)
@@ -392,7 +389,6 @@ const Templates = {
    * @returns the drop-down lost
    */
   buildLetterSelect: function buildLetterSelect(doc, parent, key) {
-    let keyCode = key.charCodeAt(0);
     let list = doc.createElement("menulist");
     parent.appendChild(list);
     list.setAttribute("sizetopopup", "always");
@@ -489,7 +485,7 @@ const CustomizeKeys = {
                        Generic: ConversationKeybindings.bindings.Generic};
     }
     let keysVbox = showhide.previousElementSibling;
-    for (let [os, bindings] of entries(bindingGroups)) {
+    for (let [/* os */, bindings] of entries(bindingGroups)) {
       for (let [key, keybinding] of entries(bindings)) {
         for (let binding of keybinding) {
           keysVbox.appendChild(Templates.buildHotKey(doc, ""+key, binding));
