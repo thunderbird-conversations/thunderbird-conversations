@@ -48,7 +48,7 @@ let Log = setupLogging("Conversations.Modules.Lightning");
 
 function isLightningInstalled() {
   return hasLightning;
-};
+}
 
 let hasLightning = false;
 let cal;

@@ -626,7 +626,7 @@ ComposeSession.prototype = {
         if (aReplyType == "replyAll") {
           self.changeComposeFields("replyAll", showHideActions);
           $(".replyMethod > input").val(["replyAll"]);
-        } else if (aReplyType == "reply"){
+        } else if (aReplyType == "reply") {
           self.changeComposeFields("reply", showHideActions);
           $(".replyMethod > input").val(["reply"]);
         } else {
@@ -701,7 +701,7 @@ ComposeSession.prototype = {
         } catch (e) {
           Log.warn("Plugin returned an error:", e);
           dumpCallStack(e);
-        };
+        }
       }
     }
   },
@@ -750,7 +750,7 @@ ComposeSession.prototype = {
         } catch (e) {
           Log.warn("Plugin returned an error:", e);
           dumpCallStack(e);
-        };
+        }
       }
     }
 
@@ -1160,7 +1160,7 @@ let sendListener = {
       } catch (e) {
         Log.warn("Plugin returned an error:", e);
         dumpCallStack(e);
-      };
+      }
         }
   },
 

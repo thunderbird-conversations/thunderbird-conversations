@@ -68,7 +68,7 @@ function dumpCallStack(e) {
     MyLog.debug("\n"+frame);
     frame = frame.caller;
   }
-};
+}
 
 let Colors = {
   yellow: "\u001b[01;33m",

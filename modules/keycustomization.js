@@ -472,7 +472,7 @@ const Templates = {
 
 
 const CustomizeKeys = {
-  enable : function enable(doc) {
+  enable: function enable(doc) {
     let showhide = doc.getElementById("showhidekeys");
     showhide.addEventListener("command", Listeners.onShowHideClick, false);
     // Must be here, rather than at top level, because load/restoreKeybindings will
@@ -495,7 +495,7 @@ const CustomizeKeys = {
     keysVbox.appendChild(Templates.buildCreate(doc));
     keysVbox.appendChild(Templates.buildRestore(doc));
   },
-  disable : function disable(doc) {
+  disable: function disable(doc) {
     let showhide = doc.getElementById("showhidekeys");
     showhide.removeEventListener("command", Listeners.onShowHideClick, false);
     let keysVbox = showhide.previousElementSibling;

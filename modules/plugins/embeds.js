@@ -57,6 +57,7 @@ let embedsHook = {
   onMessageBeforeStreaming: function _embedsHook_onBeforeSreaming(aMessage) {
   },
 
+  /* eslint-disable no-multi-spaces */
   // From http://stackoverflow.com/questions/5830387/php-regex-find-all-youtube-video-ids-in-string/5831191#5831191
   YOUTUBE_REGEXP: new RegExp(
     '(?:https?://)?'           + // Optional scheme. Either http or https
@@ -80,6 +81,7 @@ let embedsHook = {
     '|</a>'                    + // or <a> element text contents.
     ')'                          // End negative lookahead assertion.
   ),
+  /* eslint-enable no-multi-spaces */
 
   /**
    * Walks the DOM tree of the message, examines links, and tries to detect

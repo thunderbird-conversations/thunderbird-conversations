@@ -69,7 +69,7 @@ function addBzLink(aUrl) {
         .attr("href", "javascript:")
         .click(function() {
           topMail3Pane(window).document.getElementById("tabmail")
-            .openTab("contentTab",  { contentPage: aUrl });
+            .openTab("contentTab", { contentPage: aUrl });
         })
       )
     );
