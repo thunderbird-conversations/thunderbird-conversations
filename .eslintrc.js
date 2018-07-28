@@ -36,7 +36,6 @@ module.exports = {
   "rules": {
     // XXX These are all rules that mozilla/recommended set, but we currently
     // don't pass. We should enable these over time.
-    "brace-style": "off",
     "complexity": ["error", 34],
     "consistent-return": "off",
     "mozilla/avoid-nsISupportsString-preferences": "off",
@@ -47,7 +46,6 @@ module.exports = {
     "mozilla/use-chromeutils-generateqi": "off",
     "mozilla/use-ownerGlobal": "off",
     "no-else-return": "off",
-    "no-extra-bind": "off",
     "no-lonely-if": "off",
     "no-native-reassign": "off",
     "no-nested-ternary": "off",

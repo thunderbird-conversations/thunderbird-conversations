@@ -174,8 +174,7 @@ MonkeyPatch.prototype = {
             if (getIdentities().length > 1)
               display += " (" + x.email + ")";
             return display;
-          }
-          else
+          } else
             return x.name || x.email;
         };
         // Add all the people found in one of the msgHdr's properties.
