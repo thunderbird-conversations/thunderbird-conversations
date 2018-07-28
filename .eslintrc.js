@@ -17,7 +17,6 @@ module.exports = {
     // XXX Fix the not really undefined variables in these files.
     "files": [
       "content/*.js",
-      "content/gallery/js/*.js",
     ],
     "rules": {
       "no-undef": "off",
