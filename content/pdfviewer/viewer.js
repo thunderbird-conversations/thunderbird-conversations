@@ -54,7 +54,7 @@ Viewer.prototype = {
     let self = this;
     let status = document.getElementById('status');
 
-    PDFJS.getDocument(data).then(
+    pdfjsLib.getDocument(data).then(
       function getDocumentOk (pdfDocument) {
         self.pdfDoc = pdfDocument;
         document.getElementById('numPages').textContent = self.pdfDoc.numPages;
