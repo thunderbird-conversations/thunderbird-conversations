@@ -365,7 +365,7 @@ function freshColor(email) {
   let lightness = Math.floor((hue / 60 - j) * (l2 - l1) + l1);
 
   return "hsl(" + hue + ", 70%, " + Math.floor(lightness) + "%)";
-};
+}
 
 function ContactFromAB(manager, name, email, /* unused */ position, color) {
   this.emails = [];

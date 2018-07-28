@@ -37,11 +37,8 @@ module.exports = {
     // XXX These are all rules that mozilla/recommended set, but we currently
     // don't pass. We should enable these over time.
     "brace-style": "off",
-    "comma-spacing": "off",
     "complexity": ["error", 34],
     "consistent-return": "off",
-    "key-spacing": "off",
-    "keyword-spacing": "off",
     "mozilla/avoid-nsISupportsString-preferences": "off",
     "mozilla/avoid-removeChild": "off",
     "mozilla/no-useless-parameters": "off",
@@ -51,12 +48,9 @@ module.exports = {
     "mozilla/use-ownerGlobal": "off",
     "no-else-return": "off",
     "no-extra-bind": "off",
-    "no-extra-semi": "off",
     "no-lonely-if": "off",
-    "no-multi-spaces": "off",
     "no-native-reassign": "off",
     "no-nested-ternary": "off",
-    "no-trailing-spaces": "off",
     "no-undef": "error",
     // We want to check the global scope everywhere.
     "no-unused-vars": ["error", {
@@ -65,7 +59,6 @@ module.exports = {
     }],
     "no-useless-call": "off",
     "quotes": "off",
-    "space-before-blocks": "off",
     "space-infix-ops": "off",
     "spaced-comment": "off",
   }

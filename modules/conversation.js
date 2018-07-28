@@ -1015,7 +1015,7 @@ Conversation.prototype = {
     let subjectNode = this._domNode.ownerDocument.getElementsByClassName("subject")[0];
     let subject = this.messages[this.messages.length - 1].message.subject;
     // Clear out the subject node
-    while(subjectNode.firstChild) {
+    while (subjectNode.firstChild) {
       subjectNode.removeChild(subjectNode.firstChild);
     }
     if (LINKS_REGEX.test(subject)) {

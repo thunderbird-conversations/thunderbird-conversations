@@ -141,7 +141,7 @@ function monkeyPatchAllWindows() {
  *
  * Cu.import() just loads every imported file once, so there is no need for a guard (like if(!isLoaded){...})
  */
-function loadImports(){
+function loadImports() {
   /* import-globals-from modules/monkeypatch.js */
   ChromeUtils.import("resource://conversations/modules/monkeypatch.js", global);
   ChromeUtils.import("resource://conversations/modules/prefs.js", global);

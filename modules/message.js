@@ -368,7 +368,7 @@ KeyListener.prototype = {
 
 const ConversationKeybindings = {
   bindings: KeyListener.prototype.keybindings,
-  registerCustomListener : function registerCustomListener(name, func) {
+  registerCustomListener: function registerCustomListener(name, func) {
     if (this.availableActions.includes(name))
       return false;
     this.availableActions.push(name);
@@ -514,7 +514,7 @@ Message.prototype = {
       extraClasses: null,
       canUnJunk: false,
       isOutbox: false,
-      generateLightningTempl : false,
+      generateLightningTempl: false,
     };
 
     // 1) Generate Contact objects
@@ -634,11 +634,9 @@ Message.prototype = {
 
       // Separator... boring
       let sep = "";
-      if (i == self._attachments.length - 1) {
-        ;
-      } else if (i == self._attachments.length - 2) {
+      if (i == self._attachments.length - 2) {
         sep = strings.get("sepAnd");
-      } else {
+      } else if (i != self._attachments.length - 1) {
         sep = strings.get("sepComma");
       }
 
@@ -758,7 +756,7 @@ Message.prototype = {
       if (message != this) {
         message._selected = false;
       }
-    };
+    }
 
     try {
       for (let h of getHooks()) {
@@ -1399,7 +1397,7 @@ Message.prototype = {
       } catch (e) {
         Log.warn("Plugin returned an error:", e);
         dumpCallStack(e);
-      };
+      }
     }
 
     let iframe = this._domNode.ownerDocument
@@ -1484,7 +1482,7 @@ Message.prototype = {
               } catch (e) {
                 Log.warn("Plugin returned an error:", e);
                 dumpCallStack(e);
-              };
+              }
             }
 
             let iframeDoc = iframe.contentDocument;
@@ -2126,7 +2124,7 @@ let PostStreamingFixesMixIn = {
       // make sure relative link urls don't make us bail out
       try {
         hrefURL = Services.io.newURI(linkUrl, null, null);
-      } catch(ex) {
+      } catch (ex) {
         continue;
       }
 

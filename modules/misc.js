@@ -209,19 +209,19 @@ function linkifySubject(subject, doc) {
     link.appendChild(doc.createTextNode(matches[1]));
     link.setAttribute("href", matches[1]);
     link.setAttribute("title", matches[1]);
-    link.setAttribute("class","link");
+    link.setAttribute("class", "link");
     link.addEventListener("click", function(event) {
         getMail3Pane().messenger.launchExternalURL(matches[1]);
         event.preventDefault();
       }, false);
-    return [pre,link,post];
+    return [pre, link, post];
   }
   let text = subject;
   let node = doc.createElement("span");
   /* loop through multiple possible links in the subject */
-  while(text && LINKS_REGEX.test(text)) {
+  while (text && LINKS_REGEX.test(text)) {
     let pre, link, post = null;
-    [pre,link,post] = linkifySplit(text, doc);
+    [pre, link, post] = linkifySplit(text, doc);
     /* we can't assume that any pre or post text was given, only a link */
     if (pre && pre.length > 0)
       node.appendChild(doc.createTextNode(pre));

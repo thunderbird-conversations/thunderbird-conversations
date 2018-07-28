@@ -54,7 +54,7 @@ function ContactIdentityCompleter() {
 }
 
 ContactIdentityCompleter.prototype = {
-  _popularitySorter(a, b){ return b.popularity - a.popularity; },
+  _popularitySorter(a, b) { return b.popularity - a.popularity; },
   complete: function ContactIdentityCompleter_complete(aResult, aString) {
     if (aString.length < 3) {
       // In CJK, first name or last name is sometime used as 1 character only.
@@ -178,7 +178,7 @@ ContactIdentityCompleter.prototype = {
       // check identities first because they are better than contacts in terms
       //  of display
       items = pending.identityColl.items;
-      for (let iIdentity = 0; iIdentity < items.length; iIdentity++){
+      for (let iIdentity = 0; iIdentity < items.length; iIdentity++) {
         let identity = items[iIdentity];
         if (!(identity.contactID in contactToThing)) {
           contactToThing[identity.contactID] = identity;

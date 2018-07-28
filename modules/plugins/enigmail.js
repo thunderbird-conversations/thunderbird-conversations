@@ -615,7 +615,7 @@ function addSignedLabel(aStatus, aDomNode, aMessage) {
   if (aStatus & Ci.nsIEnigmail.UNVERIFIED_SIGNATURE) {
     for (let x of aDomNode.querySelectorAll(".tag-signed")) {
       x.setAttribute("title", strings.get("unknownGood"));
-    };
+    }
   }
 }
 
@@ -1005,7 +1005,7 @@ let enigmailHook = {
           waitLoadingBody(complete);
         } else {
            complete();
-        };
+        }
       }, 200);
     };
     waitLoadingBody(function() {
