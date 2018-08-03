@@ -122,6 +122,7 @@ let gMsgCompose = {
 };
 let gSMFields = {};
 let global = this;
+let nsIEnigmail = Ci.nsIEnigmail;
 
 if (hasEnigmail) {
   if (!global.EnigmailCore) {
@@ -156,6 +157,13 @@ if (hasEnigmail) {
     global.EnigmailConstants = EnigmailCommon;
   }
 
+  let isEnigmail2 = false;
+  if (!nsIEnigmail) {
+    // Ci.nsIEnigmail is moved to EnigmailConstants on Enigmail 2.0
+    nsIEnigmail = global.EnigmailConstants;
+    isEnigmail2 = true;
+  }
+
   let w = getMail3Pane();
   let iframe = w.document.createElement("iframe");
   iframe.addEventListener("load", function () {
@@ -165,97 +173,130 @@ if (hasEnigmail) {
   iframe.style.display = "none";
   w.document.getElementById("messagepane").appendChild(iframe);
 
-  // Override updateSecurityStatus for showing security info properly
-  // when plural messages in a thread are streamed at one time.
+  // Override updateSecurityStatus in load event handler.
+  // load-enigmail event is added on Enigmail 2.0.
   let messagepane = w.document.getElementById("messagepane");
   messagepane.addEventListener("load", function _overrideUpdateSecurity() {
     messagepane.removeEventListener("load", _overrideUpdateSecurity, true);
     let w = getMail3Pane();
-    // lastMsgWindow is needed to call updateSecurityStatus in mimeVerify.jsm.
-    w.EnigmailVerify.lastMsgWindow = w.msgWindow;
-    w.messageHeaderSink.enigmailPrepSecurityInfo();
+    if (isEnigmail2) {
+      w.addEventListener("load-enigmail", function _overrideUpdateSecurityInner() {
+        w.removeEventListener("load-enigmail", _overrideUpdateSecurityInner, true);
+        overrideUpdateSecurity(messagepane, w);
+      }, true);
+    } else {
+      overrideUpdateSecurity(messagepane, w);
+    }
+  }, true);
+}
 
+// Override updateSecurityStatus for showing security info properly
+// when plural messages in a thread are streamed at one time.
+function overrideUpdateSecurity(messagepane, w) {
+  // lastMsgWindow is needed to call updateSecurityStatus in mimeVerify.jsm.
+  w.EnigmailVerify.lastMsgWindow = w.msgWindow;
+  let headerSink;
+  if (w.Enigmail.hdrView.headerPane) {
+    // headerSink is moved to Enigmail.hdrView.headerPane on Enigmail 2.0
+    headerSink = w.Enigmail.hdrView.headerPane;
+  } else {
+    w.messageHeaderSink.enigmailPrepSecurityInfo();
     // EnigMimeHeaderSink.prototype in enigmailMsgHdrViewOverlay.js
     let enigMimeHeaderSinkPrototype =
       Object.getPrototypeOf(w.messageHeaderSink.securityInfo);
-    let originalUpdateSecurityStatus = enigMimeHeaderSinkPrototype.updateSecurityStatus;
-    // Called after decryption or verification is completed.
-    // Security status of a message is updated and shown at the status bar
-    // and the header box.
-    enigMimeHeaderSinkPrototype
-      .updateSecurityStatus = function _updateSecurityStatus_patched(unusedUriSpec, exitCode,
-        statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation, uri, encToDetails) {
-      // Use original if the classic reader is used.
-      if (messagepane.contentDocument.location.href !== "about:blank?") {
-        originalUpdateSecurityStatus.apply(this, arguments);
-        return;
-      }
-      let message;
-      let msgHdr = uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
-      let uriSpec = msgHdrGetUri(msgHdr);
-      if (w._currentConversation) {
-        for (let x of w._currentConversation.messages) {
-          if (x.message._uri == uriSpec) {
-            message = x.message;
-            break;
-          }
+    headerSink = enigMimeHeaderSinkPrototype;
+  }
+  let originalUpdateSecurityStatus = headerSink.updateSecurityStatus;
+
+  // Called after decryption or verification is completed.
+  // Security status of a message is updated and shown at the status bar
+  // and the header box.
+  headerSink.updateSecurityStatus = function _updateSecurityStatus_patched(unusedUriSpec, exitCode,
+      statusFlags, keyId, userId, sigDetails, errorMsg, blockSeparation, uri, extraDetails, mimePartNumber) {
+    // Use original if the classic reader is used.
+    if (messagepane.contentDocument.location.href !== "about:blank?") {
+      originalUpdateSecurityStatus.apply(this, arguments);
+      return;
+    }
+    let message;
+    let msgHdr = uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
+    let uriSpec = msgHdrGetUri(msgHdr);
+    if (w._currentConversation) {
+      for (let x of w._currentConversation.messages) {
+        if (x.message._uri == uriSpec) {
+          message = x.message;
+          break;
         }
       }
-      if (!message) {
-        Log.error("Message for the security info not found!");
-        return;
-      }
-      if (message._updateHdrIcons) {
-        // _updateHdrIcons is assgined if this is called before.
-        // This function will be called twice a PGP/MIME encrypted message.
-        return;
-      }
-
-      // Non-encrypted message may have decrypted labela since
-      // message.isEncrypted is true for only signed pgp/mime message.
-      // We reset decrypted label from decryption status.
-      if (statusFlags & Ci.nsIEnigmail.DECRYPTION_OKAY)
-        message._domNode.classList.add("decrypted");
-      else
-        message._domNode.classList.remove("decrypted");
-
-      let updateHdrIcons = function () {
-        w.Enigmail.hdrView.updateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails,
-          errorMsg, blockSeparation, encToDetails,
-          null); // xtraStatus
-      };
-      showHdrIconsOnStreamed(message, updateHdrIcons);
-
-      // Show signed label of encrypted and signed pgp/mime.
-      addSignedLabel(statusFlags, message._domNode, message);
+    }
+    if (!message) {
+      Log.error("Message for the security info not found!");
+      return;
+    }
+    if (message._updateHdrIcons) {
+      // _updateHdrIcons is assgined if this is called before.
+      // This function will be called twice a PGP/MIME encrypted message.
+      return;
     }
 
-    let originalHandleSMimeMessage = enigMimeHeaderSinkPrototype.handleSMimeMessage;
-    enigMimeHeaderSinkPrototype.handleSMimeMessage = function _handleSMimeMessage_patched(uri) {
-      // Use original if the classic reader is used.
-      if (messagepane.contentDocument.location.href !== "about:blank?") {
-        originalHandleSMimeMessage.apply(this, arguments);
-        return;
-      }
-      let message;
-      let msgHdr = uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
-      let uriSpec = msgHdrGetUri(msgHdr);
-      if (w._currentConversation) {
-        for (let x of w._currentConversation.messages) {
-          if (x.message._uri == uriSpec) {
-            message = x.message;
-            break;
-          }
+    // Non-encrypted message may have decrypted labela since
+    // message.isEncrypted is true for only signed pgp/mime message.
+    // We reset decrypted label from decryption status.
+    if (statusFlags & nsIEnigmail.DECRYPTION_OKAY)
+      message._domNode.classList.add("decrypted");
+    else
+      message._domNode.classList.remove("decrypted");
+
+    let encToDetails = "";
+    if (extraDetails && extraDetails.length > 0) {
+      try {
+        let o = JSON.parse(extraDetails);
+        if ("encryptedTo" in o) {
+          encToDetails = o.encryptedTo;
         }
       }
-      if (!message) {
-        Log.error("Message for the SMIME info not found!");
-        return;
+      catch (x) {
+	// extraDetails is plain text before Enigmail 2.0.
+	encToDetails = extraDetails;
       }
-      w.EnigmailVerify.unregisterContentTypeHandler();
-      message._reloadMessage();
     }
-  }, true);
+
+    let updateHdrIcons = function () {
+      w.Enigmail.hdrView.updateHdrIcons(exitCode, statusFlags, keyId, userId, sigDetails,
+        errorMsg, blockSeparation, encToDetails,
+        null); // xtraStatus
+    };
+    showHdrIconsOnStreamed(message, updateHdrIcons);
+
+    // Show signed label of encrypted and signed pgp/mime.
+    addSignedLabel(statusFlags, message._domNode, message);
+  }
+
+  let originalHandleSMimeMessage = headerSink.handleSMimeMessage;
+  headerSink.handleSMimeMessage = function _handleSMimeMessage_patched(uri) {
+    // Use original if the classic reader is used.
+    if (messagepane.contentDocument.location.href !== "about:blank?") {
+      originalHandleSMimeMessage.apply(this, arguments);
+      return;
+    }
+    let message;
+    let msgHdr = uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
+    let uriSpec = msgHdrGetUri(msgHdr);
+    if (w._currentConversation) {
+      for (let x of w._currentConversation.messages) {
+        if (x.message._uri == uriSpec) {
+          message = x.message;
+          break;
+        }
+      }
+    }
+    if (!message) {
+      Log.error("Message for the SMIME info not found!");
+      return;
+    }
+    w.EnigmailVerify.unregisterContentTypeHandler();
+    message._reloadMessage();
+  }
 }
 
 function tryEnigmail(aDocument, aMessage, aMsgWindow) {
@@ -454,9 +495,23 @@ function verifyAttachments(aMessage) {
   let w = topMail3Pane(aMessage);
   if ((contentType+"").search(/^multipart\/signed(;|$)/i) == 0) {
     w.Enigmail.msg.messageDecryptCb(null, true, {
-      headers: {'content-type': contentType },
+      headers: {
+        has: function () {
+          return false;
+        },
+        'content-type': contentType,
+        contentType: {
+          type: contentType+"",
+          mediatype: "",
+          subtype: ""
+        },
+        subParts: []
+      },
       contentType: contentType,
-      parts: null,
+      fullContentType: contentType+"",
+      body: "",
+      parent: null,
+      subParts: []
     });
     return;
   }
@@ -552,7 +607,7 @@ function patchForShowSecurityInfo(aWindow) {
     w.top.controllers.getControllerForCommand("button_enigmail_decrypt");
   w.top.controllers.removeController(oldTreeController);
   let treeController = {};
-  for ([i, x] of entries(oldTreeController)) {
+  for (let [i, x] of entries(oldTreeController)) {
     treeController[i] = x;
   }
   treeController.isCommandEnabled = function () {
@@ -593,18 +648,18 @@ function addViewSecurityInfoEvent(aMessage) {
 
 // Add signed label and click action to a signed message.
 function addSignedLabel(aStatus, aDomNode, aMessage) {
-  if (aStatus & (Ci.nsIEnigmail.BAD_SIGNATURE |
-      Ci.nsIEnigmail.GOOD_SIGNATURE |
-      Ci.nsIEnigmail.EXPIRED_KEY_SIGNATURE |
-      Ci.nsIEnigmail.EXPIRED_SIGNATURE |
-      Ci.nsIEnigmail.UNVERIFIED_SIGNATURE |
-      Ci.nsIEnigmail.REVOKED_KEY |
-      Ci.nsIEnigmail.EXPIRED_KEY_SIGNATURE |
-      Ci.nsIEnigmail.EXPIRED_SIGNATURE)) {
+  if (aStatus & (nsIEnigmail.BAD_SIGNATURE |
+      nsIEnigmail.GOOD_SIGNATURE |
+      nsIEnigmail.EXPIRED_KEY_SIGNATURE |
+      nsIEnigmail.EXPIRED_SIGNATURE |
+      nsIEnigmail.UNVERIFIED_SIGNATURE |
+      nsIEnigmail.REVOKED_KEY |
+      nsIEnigmail.EXPIRED_KEY_SIGNATURE |
+      nsIEnigmail.EXPIRED_SIGNATURE)) {
     aDomNode.classList.add("signed");
     addViewSecurityInfoEvent(aMessage);
   }
-  if (aStatus & Ci.nsIEnigmail.UNVERIFIED_SIGNATURE) {
+  if (aStatus & nsIEnigmail.UNVERIFIED_SIGNATURE) {
     for (let x of aDomNode.querySelectorAll(".tag-signed")) {
       x.setAttribute("title", strings.get("unknownGood"));
     };
@@ -620,11 +675,6 @@ let enigmailHook = {
       let { _attachments: attachments, _msgHdr: msgHdr, _domNode: domNode } = aMessage;
       this._domNode = domNode;
       let w = topMail3Pane(aMessage);
-      let hasEnc = (aMessage.contentType+"").search(/^multipart\/encrypted(;|$)/i) == 0;
-      if (hasEnc && enigmailSvc.mimeInitialized && !enigmailSvc.mimeInitialized()) {
-        Log.debug("Initializing EnigMime");
-        w.document.getElementById("messagepane").setAttribute("src", "enigmail:dummy");
-      }
 
       let hasSig = (aMessage.contentType+"").search(/^multipart\/signed(;|$)/i) == 0;
       for (let x of attachments) {
@@ -647,7 +697,7 @@ let enigmailHook = {
     let iframeDoc = iframe.contentDocument;
     if (iframeDoc.body.textContent.length > 0 && hasEnigmail) {
       let status = tryEnigmail(iframeDoc, aMessage, aMsgWindow);
-      if (status & Ci.nsIEnigmail.DECRYPTION_OKAY)
+      if (status & nsIEnigmail.DECRYPTION_OKAY)
         aDomNode.classList.add("decrypted");
       if (aDomNode.classList.contains("decrypted"))
         addViewSecurityInfoEvent(aMessage);
@@ -665,7 +715,6 @@ let enigmailHook = {
     // global window is used in Enigmail function
     window = getMail3Pane();
 
-    const nsIEnigmail = Ci.nsIEnigmail;
     const SIGN = nsIEnigmail.SEND_SIGNED;
     const ENCRYPT = nsIEnigmail.SEND_ENCRYPTED;
 
@@ -674,6 +723,9 @@ let enigmailHook = {
     let identity = aAddress.params.identity
     Enigmail.msg.identity = identity;
     Enigmail.msg.enableRules = true;
+    getCurrentIdentity = function () {
+      return identity;
+    }
 
     let fromAddr = identity.email;
     let userIdValue;
@@ -878,6 +930,9 @@ let enigmailHook = {
 
     // Set Enigmail.msg.sendMode from identity
     Enigmail.msg.identity = aComposeSession.params.identity;
+    getCurrentIdentity = function () {
+      return aComposeSession.params.identity;
+    }
     Enigmail.msg.setOwnKeyStatus = function () {};
     Enigmail.msg.processAccountSpecificDefaultOptions();
 
