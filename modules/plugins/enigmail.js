@@ -460,11 +460,7 @@ function verifyAttachments(aMessage) {
   let { _attachments: attachments, _uri: uri, contentType: contentType } = aMessage;
   let w = topMail3Pane(aMessage);
   if ((contentType+"").search(/^multipart\/signed(;|$)/i) == 0) {
-    w.Enigmail.msg.messageDecryptCb(null, true, {
-      headers: {'content-type': contentType },
-      contentType,
-      parts: null,
-    });
+    w.Enigmail.msg.messageDecryptCb(null, true, null);
     return;
   }
   if ((contentType+"").search(/^multipart\/mixed(;|$)/i) != 0)
