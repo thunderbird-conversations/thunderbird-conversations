@@ -53,14 +53,8 @@ function isLightningInstalled() {
 let hasLightning = false;
 let cal;
 try {
-  cal = ChromeUtils.import("resource://calendar/modules/calItipUtils.jsm", {});
-  if (cal.itip.getMethodText) {
-    // We need the patch from mozilla bug 626829 for this plugin to work. The
-    // patch adds the method cal.itip.getMethodText.
-    hasLightning = true;
-  } else {
-    Log.debug("Not loading Lightning plugin, you need a newer version of Lightning!");
-  }
+  cal = ChromeUtils.import("resource://calendar/modules/calUtils.jsm").cal;
+  hasLightning = true;
 } catch (e) {
   Log.debug("Did you know, Thunderbird Conversations supports Lightning?");
 }
@@ -79,12 +73,7 @@ function imipOptions(rootNode, msgWindow, message, itipItem, rc, actionFunc, fou
     // Short-circuit the listeners so that we can add our own routines for
     // adding the buttons, etc.
     let newListener = {
-      onOperationComplete: function imipAccept_onOpComplete(aCalendar,
-                                                            aStatus,
-                                                            aOperationType,
-                                                            aId,
-                                                            aDetail) {
-
+      onOperationComplete(aCalendar, aStatus, aOperationType, aId, aDetail) {
         let label = cal.itip.getCompleteText(aStatus, aOperationType);
         imipBarText.textContent = label;
 
@@ -117,7 +106,7 @@ function imipOptions(rootNode, msgWindow, message, itipItem, rc, actionFunc, fou
   };
 
   // data.buttons tells us which buttons should be shown
-  for (let c of data.buttons) {
+  for (let c of data.showItems) {
     if (c != "imipMoreButton") {
       showButton(c);
       // Working around the lack of dropdown buttons. See discussion in bug 1042741
@@ -128,7 +117,7 @@ function imipOptions(rootNode, msgWindow, message, itipItem, rc, actionFunc, fou
 }
 
 let lightningHook = {
-  onMessageStreamed: function _lightningHook_onMessageStreamed(aMsgHdr, aDomNode, aMsgWindow, aMessage) {
+  onMessageStreamed(aMsgHdr, aDomNode, aMsgWindow, aMessage) {
     let imipBar = aDomNode.getElementsByClassName("lightningImipBar")[0];
     let imipBarText = aDomNode.getElementsByClassName("lightningImipText")[0];
 
