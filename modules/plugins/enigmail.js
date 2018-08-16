@@ -668,6 +668,7 @@ let enigmailHook = {
       return aStatus;
 
     // global window is used in Enigmail function
+    // eslint-disable-next-line no-native-reassign
     window = getMail3Pane();
 
     const nsIEnigmail = Ci.nsIEnigmail;
