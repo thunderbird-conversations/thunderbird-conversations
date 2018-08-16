@@ -45,14 +45,9 @@ var LINKS_REGEX = /((\w+):\/\/[^<>()'"\s]+|www(\.[-\w]+){2,})/;
 
 ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
 const { GlodaMsgIndexer } = ChromeUtils.import("resource:///modules/gloda/index_msg.js", {});
-/* import-globals-from stdlib/misc.js */
-ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
-/* import-globals-from stdlib/msgHdrUtils.js */
-ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
-/* import-globals-from prefs.js */
-ChromeUtils.import("resource://conversations/modules/prefs.js");
-/* import-globals-from log.js */
-ChromeUtils.import("resource://conversations/modules/log.js");
+const {getMail3Pane} = ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js", {});
+const {Prefs} = ChromeUtils.import("resource://conversations/modules/prefs.js", {});
+const {setupLogging} = ChromeUtils.import("resource://conversations/modules/log.js", {});
 
 let Log = setupLogging("Conversations.Misc");
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
@@ -155,7 +150,7 @@ function iconForMimeType(aMimeType) {
  *  upon has a _domNode property. Also assumes it has a _msgHdr and _uri
  *  property if compose is to be called.
  */
-let EventHelperMixIn = {
+var EventHelperMixIn = {
 
   compose: function _EventHelper_compose(aCompType, aEvent) {
     let window = topMail3Pane(this);

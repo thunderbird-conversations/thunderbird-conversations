@@ -38,28 +38,23 @@
 
 var EXPORTED_SYMBOLS = ['ContactManager', 'Contacts', 'defaultPhotoURI'];
 
-ChromeUtils.import("resource://gre/modules/Services.jsm"); // https://developer.mozilla.org/en/JavaScript_code_modules/Services.jsm
 ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
 const {MailServices} = ChromeUtils.import("resource:///modules/mailServices.js", {});
 const {GlodaUtils} = ChromeUtils.import("resource:///modules/gloda/utils.js", {});
 const {Gloda} = ChromeUtils.import("resource:///modules/gloda/gloda.js", {});
 
-/* import-globals-from stdlib/compose.js */
-ChromeUtils.import("resource://conversations/modules/stdlib/compose.js");
-/* import-globals-from stdlib/misc.js */
-ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
-ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
-/* import-globals-from log.js */
-ChromeUtils.import("resource://conversations/modules/log.js");
-/* import-globals-from prefs.js */
-ChromeUtils.import("resource://conversations/modules/prefs.js");
-/* import-globals-from misc.js */
-ChromeUtils.import("resource://conversations/modules/misc.js");
+const {composeMessageTo} = ChromeUtils.import("resource://conversations/modules/stdlib/compose.js", {});
+const {getIdentities, getIdentityForEmail, MixIn, sanitize } =
+  ChromeUtils.import("resource://conversations/modules/stdlib/misc.js", {});
+// ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+const {setupLogging} = ChromeUtils.import("resource://conversations/modules/log.js", {});
+const {Prefs} = ChromeUtils.import("resource://conversations/modules/prefs.js", {});
+const {EventHelperMixIn, topMail3Pane} = ChromeUtils.import("resource://conversations/modules/misc.js", {});
 
 const clipboardService = Cc["@mozilla.org/widget/clipboardhelper;1"]
                          .getService(Ci.nsIClipboardHelper);
 
-const Contacts = {
+var Contacts = {
   kFrom: 0,
   kTo: 1
 };

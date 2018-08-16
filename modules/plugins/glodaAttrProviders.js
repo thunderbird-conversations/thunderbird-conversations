@@ -62,10 +62,9 @@ var EXPORTED_SYMBOLS = [];
  *  subject, hence this Gloda plugin
  */
 
-/* import-globals-from helpers.js */
-ChromeUtils.import("resource://conversations/modules/plugins/helpers.js");
+const {PluginHelpers} =
+  ChromeUtils.import("resource://conversations/modules/plugins/helpers.js", {});
 const {Gloda} = ChromeUtils.import("resource:///modules/gloda/public.js", {});
-ChromeUtils.import("resource:///modules/gloda/mimemsg.js");
 
 let AlternativeSender = {
   init: function _AlternativeSender_init() {

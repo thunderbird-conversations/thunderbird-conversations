@@ -38,12 +38,8 @@
 
 ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
 const {MsgHdrToMimeMessage} = ChromeUtils.import("resource:///modules/gloda/mimemsg.js", {});
-/* import-globals-from ../../../modules/stdlib/msgHdrUtils.js */
-ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
-/* import-globals-from ../../../modules/stdlib/misc.js */
-ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
-/* import-globals-from ../../../modules/log.js */
-ChromeUtils.import("resource://conversations/modules/log.js");
+const {msgUriToMsgHdr} = ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js", {});
+const {setupLogging} = ChromeUtils.import("resource://conversations/modules/log.js", {});
 
 let Log = setupLogging("Conversations.Gallery");
 let strings = new StringBundle("chrome://conversations/locale/message.properties");

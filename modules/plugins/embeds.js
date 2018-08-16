@@ -37,17 +37,13 @@
 var EXPORTED_SYMBOLS = [];
 
 ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
-ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
-ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
-/* import-globals-from ../prefs.js */
-ChromeUtils.import("resource://conversations/modules/prefs.js");
-/* import-globals-from ../misc.js */
-ChromeUtils.import("resource://conversations/modules/misc.js");
-/* import-globals-from ../hook.js */
-ChromeUtils.import("resource://conversations/modules/hook.js");
-/* import-globals-from ../log.js */
-ChromeUtils.import("resource://conversations/modules/log.js");
+ChromeUtils.import("resource:///modules/StringBundle.js");
+const {Prefs} =
+  ChromeUtils.import("resource://conversations/modules/prefs.js", {});
+const {registerHook} =
+  ChromeUtils.import("resource://conversations/modules/hook.js", {});
+const {setupLogging} =
+  ChromeUtils.import("resource://conversations/modules/log.js", {});
 
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 

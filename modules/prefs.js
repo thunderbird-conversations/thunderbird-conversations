@@ -41,6 +41,7 @@ function loadDefaultPrefs() {
 }
 
 function PrefManager() {
+  console.log("PrefManager init");
   loadDefaultPrefs();
 
   this.expand_who = gConversationsPrefs.getIntPref("expand_who");
@@ -158,6 +159,10 @@ PrefManager.prototype = {
     return Services.prefs.setStringPref(p, v);
   },
 
+  get kStubUrl() {
+    return kStubUrl;
+  },
+
   kScrollUnreadOrLast: 0,
   kScrollSelected: 1,
 
@@ -167,4 +172,4 @@ PrefManager.prototype = {
 };
 
 // Prefs is a singleton.
-let Prefs = new PrefManager();
+var Prefs = new PrefManager();
