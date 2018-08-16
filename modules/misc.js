@@ -194,7 +194,7 @@ let EventHelperMixIn = {
       nodes = [selector];
 
     for (let node of nodes)
-      node.addEventListener(action, f, false);
+      node.addEventListener(action, f);
   },
 
 };
@@ -213,7 +213,7 @@ function linkifySubject(subject, doc) {
     link.addEventListener("click", function(event) {
         getMail3Pane().messenger.launchExternalURL(matches[1]);
         event.preventDefault();
-      }, false);
+      });
     return [pre, link, post];
   }
   let text = subject;

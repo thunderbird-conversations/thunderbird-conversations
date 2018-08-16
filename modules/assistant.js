@@ -365,7 +365,7 @@ let Customizations = {
           folder.clearFlag(nsMsgFolderFlags_Offline);
       }
       for (let aUri of aChangedServers) {
-        let uri = Services.io.newURI(aUri, null, null);
+        let uri = Services.io.newURI(aUri);
         let server = msgAccountManager.findServerByURI(uri, false);
         if (server) {
           try {

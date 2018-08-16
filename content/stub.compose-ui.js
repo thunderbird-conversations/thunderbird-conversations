@@ -65,7 +65,7 @@ window.addEventListener("unload", function() {
   onSave(function() {
     Log.debug("Unload.");
   });
-}, false);
+});
 
 var gDraftListener;
 var gBzSetup;
@@ -529,7 +529,7 @@ ComposeSession.prototype = {
         let input = document.getElementById("subject");
         input.addEventListener("change", function() {
           self.params.subject = input.value;
-        }, false);
+        });
         self.setupDone();
       },
     });
@@ -872,7 +872,7 @@ AttachmentList.prototype = {
     let self = this;
     let line = tmpl("#quickReplyAttachmentTemplate", data);
     line.find(".openAttachmentLink").click(function() {
-      let url = Services.io.newURI(data.url, null, null);
+      let url = Services.io.newURI(data.url);
       url = url.QueryInterface(Ci.nsIURL);
 
       if (url) {
@@ -953,7 +953,7 @@ function attachmentDataFromDragData(event) {
         size = parseInt(pieces[2]);
       // If this is a local file, we may be able to recover some information...
       try {
-        let uri = Services.io.newURI(url, null, null);
+        let uri = Services.io.newURI(url);
         let file = uri.QueryInterface(Ci.nsIFileURL).file;
         if (!prettyName)
           prettyName = file.leafName;

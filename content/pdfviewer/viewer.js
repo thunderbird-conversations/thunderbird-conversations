@@ -123,7 +123,7 @@ Viewer.prototype = {
         numBox.value = self.curPage;
       }
       event.preventDefault();
-    }, false);
+    });
   },
 };
 

@@ -116,9 +116,9 @@ function registerQuickReplyEventListeners() {
   // Autoresize sorta-thingy.
   let textarea = document.querySelector(".textarea");
   let lineHeight = parseInt(
-    window.getComputedStyle(textarea, null).lineHeight
+    window.getComputedStyle(textarea).lineHeight
   );
-  let getHeight = x => parseInt(window.getComputedStyle(x, null).height);
+  let getHeight = x => parseInt(window.getComputedStyle(x).height);
   $('.quickReply .textarea').keypress(function(event) {
     if (event.which == KeyEvent.DOM_VK_RETURN) {
       let scrollHeight = textarea.contentDocument.body.scrollHeight;

@@ -130,7 +130,7 @@ let embedsHook = {
   tryGoogleMaps: function _embeds_googlemaps(a, aDomNode) {
     let url;
     try {
-      url = Services.io.newURI(a.href, null, null);
+      url = Services.io.newURI(a.href);
       url.QueryInterface(Ci.nsIURL);
     } catch (e) {
       // Log.debug(e);
