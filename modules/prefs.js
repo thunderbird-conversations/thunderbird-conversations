@@ -30,7 +30,7 @@ function loadDefaultPrefs() {
   let uri = Services.io.newURI(
       "defaults/preferences/defaults.js",
       null,
-      Services.io.newURI("resource://conversations/", null, null));
+      Services.io.newURI("resource://conversations/"));
 
   // setup default prefs
   try {
@@ -74,9 +74,9 @@ PrefManager.prototype = {
   register: function mpo_register(observer) {
     gConversationsPrefs.QueryInterface(Ci.nsIPrefBranch);
     if (observer)
-      gConversationsPrefs.addObserver("", observer, false);
+      gConversationsPrefs.addObserver("", observer);
     else
-      gConversationsPrefs.addObserver("", this, false);
+      gConversationsPrefs.addObserver("", this);
   },
 
   unregister: function mpo_unregister() {

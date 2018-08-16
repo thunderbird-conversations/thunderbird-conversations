@@ -52,7 +52,7 @@ let ResourceRegister = {
       .QueryInterface(Ci.nsIResProtocolHandler);
     let alias = Services.io.newFileURI(aFile);
     if (!aFile.isDirectory()) {
-      alias = Services.io.newURI("jar:" + alias.spec + "!/", null, null);
+      alias = Services.io.newURI("jar:" + alias.spec + "!/");
     }
     resource.setSubstitution(aName, alias);
   },
@@ -122,9 +122,9 @@ function monkeyPatchWindow(window, aLater) {
 
   if (aLater)
     window.addEventListener("load", function tmp() {
-      window.removeEventListener("load", tmp, false);
+      window.removeEventListener("load", tmp);
       doIt();
-    }, false);
+    });
   else
     doIt();
 }
@@ -184,7 +184,7 @@ function startup(aData, aReason) {
           loadImports();
           monkeyPatchAllWindows();
       }
-    }, "final-ui-startup", false);
+    }, "final-ui-startup");
 
 
     // Patch all future windows
@@ -215,7 +215,7 @@ function startup(aData, aReason) {
           CustomizeKeys.enable(aSubject); // aSubject is the options document
         }
       }
-    }, "addon-options-displayed", false);
+    }, "addon-options-displayed");
     Services.obs.addObserver({
       observe(aSubject, aTopic, aData) {
         if (aTopic == "addon-options-hidden" && aData == "gconversation@xulforum.org") {
@@ -223,7 +223,7 @@ function startup(aData, aReason) {
           CustomizeKeys.disable(aSubject); // aSubject is the options document
         }
       }
-    }, "addon-options-hidden", false);
+    }, "addon-options-hidden");
   } catch (e) {
     Log.error(e);
     dumpCallStack(e);

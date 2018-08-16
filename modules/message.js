@@ -678,12 +678,12 @@ Message.prototype = {
           }
         }, 1);
         self.toggle();
-      }, false);
+      });
 
     let keyListener = new KeyListener(this);
     this._domNode.addEventListener("keydown", function(event) {
       keyListener.onKeyUp(event);
-    }, false); // über-important: don't capture
+    }); // über-important: don't capture
 
     // Do this now because the star is visible even if we haven't been expanded
     // yet.
@@ -934,7 +934,7 @@ Message.prototype = {
       } else {
         chromeUrl = "chrome://messenger/content/email=" + self._from.email;
       }
-      let uri = Services.io.newURI(chromeUrl, null, null);
+      let uri = Services.io.newURI(chromeUrl);
       Services.perms.add(uri, "image", Services.perms.ALLOW_ACTION);
       self._reloadMessage();
     });
@@ -1033,7 +1033,7 @@ Message.prototype = {
                                    self._attachments[j].url);
         // XXX I have no idea whether this is useful...
         event.dataTransfer.setData("application/x-moz-file-promise", null);
-      }, false);
+      });
     }
     this.register(".download-all", function(event) {
       mainWindow.HandleMultipleAttachments(attInfos, "save");
@@ -1141,7 +1141,7 @@ Message.prototype = {
         this.tags = tags;
         // And now let onAttributesChanged kick in... NOT
         tagList.removeChild(tagNode);
-      }.bind(this), false);
+      }.bind(this));
       tagNode.appendChild(span);
       tagList.appendChild(tagNode);
     }
@@ -1420,7 +1420,7 @@ Message.prototype = {
       // So now we might overflow horizontally, which causes a horizontal
       // scrollbar to appear, which narrows the vertical height available,
       // which causes a vertical scrollbar to appear.
-      let iframeStyle = self._conversation._window.getComputedStyle(iframe, null);
+      let iframeStyle = self._conversation._window.getComputedStyle(iframe);
       let iframeExternalWidth = parseInt(iframeStyle.width);
       // 20px is a completely arbitrary default value which I hope is
       // greater
@@ -2055,7 +2055,7 @@ let PostStreamingFixesMixIn = {
         // Compute the approximate number of lines while the element is still visible
         let style;
         try {
-          style = iframe.contentWindow.getComputedStyle(node, null);
+          style = iframe.contentWindow.getComputedStyle(node);
         } catch (e) {
           // message arrived and window is not displayed, arg,
           // cannot get the computed style, BAD
@@ -2124,7 +2124,7 @@ let PostStreamingFixesMixIn = {
       let hrefURL;
       // make sure relative link urls don't make us bail out
       try {
-        hrefURL = Services.io.newURI(linkUrl, null, null);
+        hrefURL = Services.io.newURI(linkUrl);
       } catch (ex) {
         continue;
       }
@@ -2170,7 +2170,7 @@ let PostStreamingFixesMixIn = {
     if (!href.indexOf("imap://") == 0 && !href.indexOf("mailbox://") == 0)
       return false;
     try {
-      let uri = Services.io.newURI(href, null, null);
+      let uri = Services.io.newURI(href);
       if (!(uri instanceof Ci.nsIMsgMailNewsUrl))
         return false;
       uri.QueryInterface(Ci.nsIURL);

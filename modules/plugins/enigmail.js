@@ -512,7 +512,7 @@ function showNotificationBar(aMessage) {
     let button = enigmailBar.querySelector(".enigmailDetails button");
     button.addEventListener("click", function(event) {
       w.Enigmail.msg.viewSecurityInfo(event);
-    }, false);
+    });
   }
 }
 
@@ -590,7 +590,7 @@ function addViewSecurityInfoEvent(aMessage) {
   };
   for (let x of ["decrypted", "signed"]) {
     let tag = aMessage._domNode.querySelector(".keep-tag.tag-" + x);
-    tag.addEventListener("click", aMessage._viewSecurityInfo, false);
+    tag.addEventListener("click", aMessage._viewSecurityInfo);
     tag.style.cursor = "pointer";
   }
 }

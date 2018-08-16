@@ -211,7 +211,7 @@ let ContactMixIn = {
         event.originalTarget.classList.remove("is-open");
       }
       event.stopPropagation();
-    }, false);
+    });
 
     /* Register the "send message" link */
     this.register(".sendEmail", function(event) {
@@ -314,8 +314,7 @@ let ContactMixIn = {
         : (event) => (
             mainWindow.specialTabs.siteClickHandler(event, /^mailto:/),
             event.preventDefault()
-          ),
-        false);
+          ));
     }
   },
 

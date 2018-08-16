@@ -106,7 +106,7 @@ function bzSetup() {
 }
 
 function getBugzillaCookie(aUrl) {
-  let uri = Services.io.newURI(aUrl, null, null);
+  let uri = Services.io.newURI(aUrl);
   let cookies = Services.cookies.getCookiesFromHost(uri.host);
   let login = null;
   let loginCookie = null;
@@ -193,13 +193,13 @@ BzComposeSession.prototype = {
         } else {
           pUndetermined();
         }
-      }, false);
+      });
       req.addEventListener("error", function(event) {
         pText(strings.get("bzMsgXHRError"));
-      }, false);
+      });
       req.addEventListener("abort", function(event) {
         pText(strings.get("bzMsgXHRAbort"));
-      }, false);
+      });
       // This is where the real analysis is happening...
       req.addEventListener("load", function(event) {
         pValue(100);
@@ -236,7 +236,7 @@ BzComposeSession.prototype = {
               msgHdrsArchive(conv.msgHdrs.filter(x => !msgHdrIsArchive(x)));
           }
         }
-      }, false);
+      });
       // Now we're about to send.
       Log.debug("Sending a bugzilla comment to", url);
       pText(strings.get("bzMsgStartSending"));

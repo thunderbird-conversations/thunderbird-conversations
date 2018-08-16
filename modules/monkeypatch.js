@@ -233,7 +233,7 @@ MonkeyPatch.prototype = {
       observe(aMsgFolder, aTopic, aData) {
         window.gDBView.addColumnHandler("betweenCol", columnHandler);
       }
-    }, "MsgCreateDBView", false);
+    }, "MsgCreateDBView");
     try {
       window.gDBView.addColumnHandler("betweenCol", columnHandler);
     } catch (e) {
@@ -264,10 +264,10 @@ MonkeyPatch.prototype = {
         }
       },
     };
-    Services.prefs.addObserver("", observer, false);
+    Services.prefs.addObserver("", observer);
     this._window.addEventListener("close", function() {
       Services.prefs.removeObserver("", observer);
-    }, false);
+    });
     this.pushUndo(() => Services.prefs.removeObserver("", observer));
   },
 
@@ -514,7 +514,7 @@ MonkeyPatch.prototype = {
               } catch (e) {
                 // Log.debug("We failed to dispatch the event, don't know why...", e);
               }
-            }, false);
+            });
           }
 
           try {

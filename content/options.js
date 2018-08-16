@@ -39,7 +39,7 @@
 
 function openLink(uri) {
   if (!(uri instanceof Ci.nsIURI))
-    uri = Services.io.newURI(uri, null, null);
+    uri = Services.io.newURI(uri);
   Cc["@mozilla.org/uriloader/external-protocol-service;1"]
     .getService(Ci.nsIExternalProtocolService)
     .loadUrl(uri);
