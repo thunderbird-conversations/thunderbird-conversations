@@ -47,7 +47,6 @@ module.exports = {
     "mozilla/use-ownerGlobal": "off",
     "no-else-return": "off",
     "no-lonely-if": "off",
-    "no-native-reassign": "off",
     "no-nested-ternary": "off",
     "no-undef": "error",
     // We want to check the global scope everywhere.
