@@ -40,9 +40,11 @@ var EXPORTED_SYMBOLS = ['Message', 'MessageFromGloda', 'MessageFromDbHdr', 'Conv
 
 ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI
 ChromeUtils.import("resource://gre/modules/PluralForm.jsm");
-ChromeUtils.import("resource://gre/modules/Services.jsm"); // https://developer.mozilla.org/en/JavaScript_code_modules/Services.jsm
-/* import-globals-from stdlib/misc.js */
-ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
+ChromeUtils.import("resource://gre/modules/Services.jsm");
+const {
+  dateAsInMessageList, entries, escapeHtml, getIdentityForEmail, isAccel,
+  isOSX, isWindows, MixIn, parseMimeLine, sanitize
+} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js", {});
 const {MailServices} = ChromeUtils.import("resource:///modules/mailServices.js", {}); // bug 629462
 ChromeUtils.import("resource:///modules/StringBundle.js");
 const {makeFriendlyDateAgo} = ChromeUtils.import("resource:///modules/templateUtils.js", {});
@@ -50,8 +52,7 @@ const {GlodaUtils} = ChromeUtils.import("resource:///modules/gloda/utils.js", {}
 const {MsgHdrToMimeMessage} = ChromeUtils.import("resource:///modules/gloda/mimemsg.js", {});
 const {mimeMsgToContentSnippetAndMeta} = ChromeUtils.import("resource:///modules/gloda/connotent.js", {});
 
-/* import-globals-from plugins/lightning.js */
-ChromeUtils.import("resource://conversations/modules/plugins/lightning.js");
+const {isLightningInstalled} = ChromeUtils.import("resource://conversations/modules/plugins/lightning.js", {});
 // It's not really nice to write into someone elses object but this is what the
 // Services object is for.  We prefix with the "m" to ensure we stay out of their
 // namespace.
@@ -71,26 +72,26 @@ const olderThan52 = Services.vc.compare(Services.sysinfo.version, "51.1") > 0;
 
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
-/* import-globals-from stdlib/addressBookUtils.js */
-ChromeUtils.import("resource://conversations/modules/stdlib/addressBookUtils.js");
-/* import-globals-from stdlib/msgHdrUtils.js */
-ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
-/* import-globals-from stdlib/compose.js */
-ChromeUtils.import("resource://conversations/modules/stdlib/compose.js");
-/* import-globals-from plugins/helpers.js */
-ChromeUtils.import("resource://conversations/modules/plugins/helpers.js");
-/* import-globals-from quoting.js */
-ChromeUtils.import("resource://conversations/modules/quoting.js");
-/* import-globals-from contact.js */
-ChromeUtils.import("resource://conversations/modules/contact.js");
-/* import-globals-from prefs.js */
-ChromeUtils.import("resource://conversations/modules/prefs.js");
-/* import-globals-from misc.js */
-ChromeUtils.import("resource://conversations/modules/misc.js"); // for iconForMimeType
-/* import-globals-from hook.js */
-ChromeUtils.import("resource://conversations/modules/hook.js");
-/* import-globals-from log.js */
-ChromeUtils.import("resource://conversations/modules/log.js");
+const {
+  msgHdrsArchive, msgHdrGetHeaders, msgHdrGetUri, msgHdrIsDraft, msgHdrIsJunk,
+  msgHdrsDelete, msgHdrsMarkAsRead, msgHdrGetTags, msgHdrSetTags, msgHdrToNeckoURL,
+  msgHdrToMessageBody,
+} = ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js", {});
+const {htmlToPlainText, quoteMsgHdr} =
+  ChromeUtils.import("resource://conversations/modules/stdlib/compose.js", {});
+const {PluginHelpers} =
+  ChromeUtils.import("resource://conversations/modules/plugins/helpers.js", {});
+const {
+  convertOutlookQuotingToBlockquote, convertHotmailQuotingToBlockquote1,
+  convertForwardedToBlockquote, convertMiscQuotingToBlockquote,
+  fusionBlockquotes,
+} = ChromeUtils.import("resource://conversations/modules/quoting.js", {});
+const {Contacts} = ChromeUtils.import("resource://conversations/modules/contact.js", {});
+const {Prefs} = ChromeUtils.import("resource://conversations/modules/prefs.js", {});
+const {EventHelperMixIn, folderName, iconForMimeType, topMail3Pane} =
+  ChromeUtils.import("resource://conversations/modules/misc.js", {});
+const {getHooks} = ChromeUtils.import("resource://conversations/modules/hook.js", {});
+const {dumpCallStack, setupLogging, Colors} = ChromeUtils.import("resource://conversations/modules/log.js", {});
 
 let Log = setupLogging("Conversations.Message");
 // This is high because we want enough snippet to extract relevant data from

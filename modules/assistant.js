@@ -8,20 +8,15 @@ const msgAccountManager = Cc["@mozilla.org/messenger/account-manager;1"]
 
 const kPrefInt = 0, kPrefBool = 1, kPrefChar = 42;
 
+ChromeUtils.import("resource://gre/modules/Services.jsm");
 ChromeUtils.import("resource:///modules/MailUtils.js"); // for getFolderForURI
 const {fixIterator} = ChromeUtils.import("resource:///modules/iteratorUtils.jsm", {});
 const {VirtualFolderHelper} = ChromeUtils.import("resource:///modules/virtualFolderWrapper.js", {});
-ChromeUtils.import("resource:///modules/gloda/index_msg.js");
-ChromeUtils.import("resource:///modules/gloda/public.js");
 
-/* import-globals-from stdlib/misc.js */
-ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
-/* import-globals-from stdlib/msgHdrUtils.js */
-ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
-/* import-globals-from prefs.js */
-ChromeUtils.import("resource://conversations/modules/prefs.js");
-/* import-globals-from log.js */
-ChromeUtils.import("resource://conversations/modules/log.js");
+const {MixIn} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js", {});
+const {getMail3Pane} = ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js", {});
+const {Prefs} = ChromeUtils.import("resource://conversations/modules/prefs.js", {});
+const {dumpCallStack, setupLogging} = ChromeUtils.import("resource://conversations/modules/log.js", {});
 
 let Log = setupLogging("Conversations.Assistant");
 
@@ -123,7 +118,7 @@ MultipleCustomization.prototype = {
 // So we do a round of eta-expansion.
 let eid = id => getMail3Pane().document.getElementById(id);
 
-let Customizations = {
+var Customizations = {
   ttop() {},
 
   actionSetupViewDefaults: new MultipleCustomization([

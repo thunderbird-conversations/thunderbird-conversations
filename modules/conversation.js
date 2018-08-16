@@ -40,22 +40,21 @@ var EXPORTED_SYMBOLS = ['Conversation'];
 
 ChromeUtils.import("resource://gre/modules/Services.jsm");
 
-ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
+ChromeUtils.import("resource:///modules/StringBundle.js");
 const {Gloda} = ChromeUtils.import("resource:///modules/gloda/gloda.js", {});
-/* import-globals-from log.js */
-ChromeUtils.import("resource://conversations/modules/log.js");
-/* import-globals-from prefs.js */
-ChromeUtils.import("resource://conversations/modules/prefs.js");
+const {Colors, dumpCallStack, setupLogging} =
+  ChromeUtils.import("resource://conversations/modules/log.js", {});
+const {Prefs} = ChromeUtils.import("resource://conversations/modules/prefs.js", {});
 
-/* import-globals-from stdlib/msgHdrUtils.js */
-ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
-/* import-globals-from stdlib/misc.js */
-ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
-/* import-globals-from message.js */
-ChromeUtils.import("resource://conversations/modules/message.js");
-ChromeUtils.import("resource://conversations/modules/contact.js");
-ChromeUtils.import("resource://conversations/modules/misc.js"); // for groupArray
-ChromeUtils.import("resource://conversations/modules/hook.js");
+const {msgHdrGetUri, msgHdrIsArchive, msgHdrIsDraft, msgHdrIsInbox, msgHdrIsJunk,
+       msgHdrIsSent, msgHdrsMarkAsRead} =
+  ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js", {});
+const {MixIn, range} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js", {});
+const {Message, MessageFromGloda, MessageFromDbHdr} =
+  ChromeUtils.import("resource://conversations/modules/message.js", {});
+const {ContactManager} = ChromeUtils.import("resource://conversations/modules/contact.js", {});
+const {LINKS_REGEX, groupArray, linkifySubject, topMail3Pane} =
+  ChromeUtils.import("resource://conversations/modules/misc.js", {});
 
 let Log = setupLogging("Conversations.Conversation");
 

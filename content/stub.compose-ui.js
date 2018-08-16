@@ -48,10 +48,8 @@
 "use strict";
 
 ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI
-ChromeUtils.import("resource:///modules/mailServices.js");
-ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
-ChromeUtils.import("resource:///modules/gloda/mimemsg.js");
+ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+const {MailServices} = ChromeUtils.import("resource:///modules/mailServices.js", {});
 
 const {
   msgUriToMsgHdr, msgHdrsArchive, msgHdrIsArchive, msgHdrGetUri,

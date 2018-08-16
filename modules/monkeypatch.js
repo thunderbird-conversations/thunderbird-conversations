@@ -41,20 +41,27 @@ var EXPORTED_SYMBOLS = ['MonkeyPatch'];
 ChromeUtils.import("resource://gre/modules/AddonManager.jsm");
 ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
 
-/* import-globals-from stdlib/misc.js */
-ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
-/* import-globals-from stdlib/msgHdrUtils.js */
-ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
-/* import-globals-from assistant.js */
-ChromeUtils.import("resource://conversations/modules/assistant.js");
-/* import-globals-from misc.js */
-ChromeUtils.import("resource://conversations/modules/misc.js"); // for joinWordList, openConversationIn
-/* import-globals-from prefs.js */
-ChromeUtils.import("resource://conversations/modules/prefs.js");
-/* import-globals-from log.js */
-ChromeUtils.import("resource://conversations/modules/log.js");
-/* import-globals-from config.js */
-ChromeUtils.import("resource://conversations/modules/config.js");
+const {
+  entries, getIdentityForEmail, getIdentities, parseMimeLine,
+} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js", {});
+const {
+  getMail3Pane, msgHdrGetUri, msgHdrIsRss, msgHdrIsNntp, msgHdrsMarkAsRead,
+} = ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js", {});
+const {
+  Customizations,
+} = ChromeUtils.import("resource://conversations/modules/assistant.js", {});
+const {
+  arrayEquals, joinWordList, openConversationInTabOrWindow,
+} = ChromeUtils.import("resource://conversations/modules/misc.js", {});
+const {
+  Prefs,
+} = ChromeUtils.import("resource://conversations/modules/prefs.js", {});
+const {
+  Colors, dumpCallStack, setupLogging,
+} = ChromeUtils.import("resource://conversations/modules/log.js", {});
+const {
+  Config
+} = ChromeUtils.import("resource://conversations/modules/config.js", {});
 
 ChromeUtils.import("resource://gre/modules/Services.jsm");
 
@@ -322,7 +329,7 @@ MonkeyPatch.prototype = {
       // We don't want to undo all the customizations in the case of an
       // upgrade... but if the user disables the conversation view, or
       // uninstalls the addon, then we should revert them indeed.
-      if (shouldPerformUninstall && aReason != BOOTSTRAP_REASONS.ADDON_UPGRADE) {
+      if (shouldPerformUninstall && aReason != Config.BOOTSTRAP_REASONS.ADDON_UPGRADE) {
         // Switch to a 3pane view (otherwise the "display threaded"
         // customization is not reverted)
         let mainWindow = getMail3Pane();
@@ -393,7 +400,7 @@ MonkeyPatch.prototype = {
       let scrollMode = self.determineScrollMode();
       let queryString = "?urls="+window.encodeURIComponent(urls) +
         "&scrollMode="+scrollMode;
-      return kStubUrl + queryString;
+      return Prefs.kStubUrl + queryString;
     };
 
     // Below is the code that intercepts the double-click-on-a-message event,
@@ -489,7 +496,7 @@ MonkeyPatch.prototype = {
 
         window.gMessageDisplay.singleMessageDisplay = false;
 
-        window.gSummaryFrameManager.loadAndCallback(kStubUrl, function(isRefresh) {
+        window.gSummaryFrameManager.loadAndCallback(Prefs.kStubUrl, function(isRefresh) {
           // See issue #673
           if (htmlpane.contentDocument && htmlpane.contentDocument.body)
             htmlpane.contentDocument.body.hidden = false;

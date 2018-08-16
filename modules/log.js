@@ -70,7 +70,7 @@ function dumpCallStack(e) {
   }
 }
 
-let Colors = {
+var Colors = {
   yellow: "\u001b[01;33m",
   blue: "\u001b[01;36m",
   red: "\u001b[01;31m",

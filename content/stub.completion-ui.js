@@ -8,13 +8,8 @@
 // ----- Autocomplete stuff. Understand it as a part of stub.compose-ui.js
 
 ChromeUtils.import("resource:///modules/StringBundle.js");
-ChromeUtils.import("resource:///modules/errUtils.js");
 const {Gloda} = ChromeUtils.import("resource:///modules/gloda/gloda.js", {});
-ChromeUtils.import("resource:///modules/gloda/public.js");
-ChromeUtils.import("resource:///modules/gloda/utils.js");
 const {MultiSuffixTree} = ChromeUtils.import("resource:///modules/gloda/suffixtree.js", {});
-ChromeUtils.import("resource:///modules/gloda/noun_tag.js");
-ChromeUtils.import("resource:///modules/gloda/noun_freetag.js");
 const {
   entries, escapeHtml, getDefaultIdentity, getIdentityForEmail,
   getIdentities, NS_SUCCEEDED
@@ -27,6 +22,7 @@ let Log = setupLogging("Conversations.Stub.Completion");
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
 try {
+  // eslint-disable-next-line no-unused-vars
   ChromeUtils.import("resource://people/modules/people.js");
 } catch (e) {
   Log.debug("You don't have Contacts installed. Gloda will provide autocomplete.");

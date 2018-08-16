@@ -64,20 +64,27 @@ var EXPORTED_SYMBOLS = [];
  * That way, your conv-plugin.js won't export anything and AMO won't bother you.
  */
 
-ChromeUtils.import("resource://gre/modules/Services.jsm"); // https://developer.mozilla.org/en/JavaScript_code_modules/Services.jsm
-ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
-/* import-globals-from ../stdlib/msgHdrUtils.js */
-ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
-/* import-globals-from ../stdlib/misc.js */
-ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
-/* import-globals-from ../stdlib/compose.js */
-ChromeUtils.import("resource://conversations/modules/stdlib/compose.js");
-/* import-globals-from ../misc.js */
-ChromeUtils.import("resource://conversations/modules/misc.js");
-/* import-globals-from ../hook.js */
-ChromeUtils.import("resource://conversations/modules/hook.js");
-/* import-globals-from ../log.js */
-ChromeUtils.import("resource://conversations/modules/log.js");
+ChromeUtils.import("resource://gre/modules/Services.jsm");
+ChromeUtils.import("resource:///modules/StringBundle.js");
+const {
+  getMail3Pane, msgHdrGetUri,
+} = ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js", {});
+const {
+  escapeHtml, entries,
+} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js", {});
+const {
+  htmlToPlainText,
+  simpleWrap,
+} = ChromeUtils.import("resource://conversations/modules/stdlib/compose.js", {});
+const {
+  topMail3Pane,
+} = ChromeUtils.import("resource://conversations/modules/misc.js", {});
+const {
+  registerHook,
+} = ChromeUtils.import("resource://conversations/modules/hook.js", {});
+const {
+  setupLogging, dumpCallStack
+} = ChromeUtils.import("resource://conversations/modules/log.js", {});
 
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
@@ -91,6 +98,11 @@ let Log = setupLogging("Conversations.Modules.Enigmail");
 //  wiped)... just ask!
 
 // Enigmail support, thanks to Patrick Brunschwig!
+
+// XXX Work out how/where EnigmailFuncs, Enigmail, EnigmailConstants and EnigmailRules
+// get imported into this scope. It looks like they should be through the enigmail
+// resources, but all of those only appear to export a single item per jsm.
+/* eslint-disable no-unused-vars */
 let window = getMail3Pane();
 let hasEnigmail;
 try {
@@ -117,7 +129,7 @@ try {
     Log.debug("Enigmail doesn't seem to be installed...");
   }
 }
-
+/* eslint-enable no-unused-vars */
 
 let enigmailSvc;
 // used in enigmailMsgComposeOverlay.js
