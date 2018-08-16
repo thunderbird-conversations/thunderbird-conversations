@@ -139,7 +139,7 @@ function registerQuickReply() {
     // We can't use the (seemingly) simple line below because the array would be
     // allocated in the xhtml compartment, which would then get nuked, and
     // create errors later on while we expect the array to still be valid.
-    //mainWindow.Conversations.draftListeners[id] = [];
+    // mainWindow.Conversations.draftListeners[id] = [];
   }
   let weakRef = Cu.getWeakReference(gDraftListener);
   mainWindow.Conversations.draftListeners[id].push(weakRef);
@@ -1146,7 +1146,7 @@ let sendListener = {
     //  i.e. is not called when saving a draft (although msgCompose.SendMsg is
     //  called...)
     if (NS_SUCCEEDED(aStatus)) {
-      //if (gOldDraftToDelete)
+      // if (gOldDraftToDelete)
       //  msgHdrsDelete([gOldDraftToDelete]);
       pText(strings.get("messageSendingSuccess", [aMsgID]));
     } else {

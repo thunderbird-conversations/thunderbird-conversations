@@ -512,7 +512,7 @@ MonkeyPatch.prototype = {
               try {
                 window.dispatchEvent(event);
               } catch (e) {
-                //Log.debug("We failed to dispatch the event, don't know why...", e);
+                // Log.debug("We failed to dispatch the event, don't know why...", e);
               }
             }, false);
           }
@@ -667,7 +667,7 @@ MonkeyPatch.prototype = {
 
           let selectedCount = this.folderDisplay.selectedCount;
           Log.debug("Intercepted message load, ", selectedCount, " message(s) selected");
-          /*dump(Colors.red);
+          /* dump(Colors.red);
           for (let msgHdr of this.folderDisplay.selectedMessages)
             dump("  " + msgHdr.folder.URI + "#" + msgHdr.messageKey + "\n");
           dump(Colors.default);*/
