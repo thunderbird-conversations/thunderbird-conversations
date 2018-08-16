@@ -219,8 +219,8 @@ function getMessageId({ type, message, msgHdr, glodaMsg }) {
     return glodaMsg.headerMessageID;
   else if (type == kMsgDbHdr)
     return msgHdr.messageId;
-  else
-    Log.error("Bad message type");
+
+  Log.error("Bad message type");
 }
 
 // Get the underlying msgHdr of a message. Might return undefined if Gloda
@@ -230,8 +230,8 @@ function toMsgHdr({ type, message, msgHdr, glodaMsg }) {
     return glodaMsg.folderMessage;
   else if (type == kMsgDbHdr)
     return msgHdr;
-  else
-    Log.error("Bad message type");
+
+  Log.error("Bad message type");
 }
 
 // Get a Date instance for the given message.
@@ -240,8 +240,8 @@ function msgDate({ type, message, msgHdr, glodaMsg }) {
     return new Date(msgHdr.date/1000);
   else if (type == kMsgGloda)
     return new Date(glodaMsg.date);
-  else
-    Log.error("Bad message type");
+
+  Log.error("Bad message type");
 }
 
 function msgDebugColor(aMsg) {
@@ -249,12 +249,11 @@ function msgDebugColor(aMsg) {
   if (msgHdr) {
     if (msgHdr.getUint32Property("pseudoHdr") == 1)
       return Colors.yellow; // fake sent header
-    else
-      return Colors.blue; // real header
-  } else {
-    // red = no message header, shouldn't happen
-    return Colors.red;
+
+    return Colors.blue; // real header
   }
+  // red = no message header, shouldn't happen
+  return Colors.red;
 }
 
 function messageFromGlodaIfOffline(aSelf, aGlodaMsg, aDebug) {
@@ -308,9 +307,9 @@ ViewWrapper.prototype = {
         (this.mainWindow.gDBView.findIndexOfMsgHdr(msgHdr, false) != nsMsgViewIndex_None)
       ;
       return r;
-    } else {
-      return false;
     }
+
+    return false;
   },
 };
 
@@ -855,14 +854,14 @@ Conversation.prototype = {
           return [true, a2];
         } else if (a1.length && !a2.length) {
           return [false, null];
-        } else {
-          let hd1 = a1[0];
-          let hd2 = a2[0];
-          if (hd1 == hd2)
-            return isPrefix(a1.slice(1, a1.length), a2.slice(1, a2.length));
-          else
-            return [false, null];
         }
+
+        let hd1 = a1[0];
+        let hd2 = a2[0];
+        if (hd1 == hd2)
+          return isPrefix(a1.slice(1, a1.length), a2.slice(1, a2.length));
+
+        return [false, null];
       };
       let myMsgUris = this.messages.filter(x => toMsgHdr(x))
                                    .map(x => msgHdrGetUri(toMsgHdr(x)));
@@ -944,35 +943,34 @@ Conversation.prototype = {
 
         this.messages = [];
         return;
-      } else {
-        // We're about to blow up the old conversation. At this point, it's
-        //  still untouched, so if you need to save anything, do it NOW.
-        // If you want to do something once the new conversation is complete, do
-        //  it in monkeypatch.js
-        Log.debug("Not recycling conversation");
-        // Gotta save the quick reply, if there's one! Please note that
-        //  contentWindow.Conversations is still wired onto the old
-        //  conversation. Updating the global Conversations object and loading
-        //  the new conversation's draft is not our responsibility, it's that of
-        //  the monkey-patch, and it's done at the very end of the process.
-        // This call actually starts the save process off the main thread, but
-        //  we're not doing anything besides saving the quick reply, so we don't
-        //  need for this call to complete before going on.
-        try {
-          this._htmlPane.onSave();
-        } catch (e) {
-          Log.error(e);
-          dumpCallStack(e);
-        }
-        // We'll be replacing the old conversation. Do this after the call to
-        // onSave, because onSave calls getMessageForQuickReply...
-        this._window.Conversations.currentConversation.messages = [];
-        // We don't know yet if this is going to be a junkable conversation, so
-        //  when in doubt, reset. Actually, the final call to
-        //  _updateConversationButtons will update this.
-        this._domNode.ownerDocument.getElementById("conversationHeader")
-          .classList.remove("not-junkable");
       }
+      // We're about to blow up the old conversation. At this point, it's
+      //  still untouched, so if you need to save anything, do it NOW.
+      // If you want to do something once the new conversation is complete, do
+      //  it in monkeypatch.js
+      Log.debug("Not recycling conversation");
+      // Gotta save the quick reply, if there's one! Please note that
+      //  contentWindow.Conversations is still wired onto the old
+      //  conversation. Updating the global Conversations object and loading
+      //  the new conversation's draft is not our responsibility, it's that of
+      //  the monkey-patch, and it's done at the very end of the process.
+      // This call actually starts the save process off the main thread, but
+      //  we're not doing anything besides saving the quick reply, so we don't
+      //  need for this call to complete before going on.
+      try {
+        this._htmlPane.onSave();
+      } catch (e) {
+        Log.error(e);
+        dumpCallStack(e);
+      }
+      // We'll be replacing the old conversation. Do this after the call to
+      // onSave, because onSave calls getMessageForQuickReply...
+      this._window.Conversations.currentConversation.messages = [];
+      // We don't know yet if this is going to be a junkable conversation, so
+      //  when in doubt, reset. Actually, the final call to
+      //  _updateConversationButtons will update this.
+      this._domNode.ownerDocument.getElementById("conversationHeader")
+        .classList.remove("not-junkable");
     }
 
     Log.debug("Outputting",

@@ -120,9 +120,9 @@ let embedsHook = {
       this.insertEmbed(strings.get("foundYouTube"), "640", "385",
         "http://www.youtube.com/embed/"+videoId, aDomNode);
       return videoId;
-    } else {
-      return null;
     }
+
+    return null;
   },
 
   GMAPS_REGEXP: /q=([^&]+)(&|$)/,

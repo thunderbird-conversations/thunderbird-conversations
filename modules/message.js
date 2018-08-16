@@ -464,10 +464,11 @@ Message.prototype = {
       oldInfos = {};
     let infos = this.bugzillaInfos;
     let makeArrow = function(oldValue, newValue) {
-      if (oldValue)
+      if (oldValue) {
         return oldValue + " \u21d2 " + newValue;
-      else
-        return newValue;
+      }
+
+      return newValue;
     };
     if (Object.keys(infos).length) {
       let items = [];

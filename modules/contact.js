@@ -142,24 +142,24 @@ ContactManager.prototype = {
       if (name)
         this._cache[key].enrichWithName(name);
       return this._cache[key];
-    } else {
-      let contact = new ContactFromAB(this, name, email, position, this._colorCache[email]);
-      // Only cache contacts which are in the address book. This avoids weird
-      //  phenomena such as a bug tracker sending emails with different names
-      //  but with the same email address, resulting in people all sharing the
-      //  same name.
-      // For those that need to be in the address book (because we want to
-      //  display images, for instance), the user still has the option to uncheck
-      //  "prefer display name over header name".
-      if (contact._useCardName) {
-        cache(name, contact);
-      } else {
-        // We still want to cache the color...
-        if (!(email in this._colorCache))
-          this._colorCache[email] = contact.color;
-      }
-      return contact;
     }
+
+    let contact = new ContactFromAB(this, name, email, position, this._colorCache[email]);
+    // Only cache contacts which are in the address book. This avoids weird
+    //  phenomena such as a bug tracker sending emails with different names
+    //  but with the same email address, resulting in people all sharing the
+    //  same name.
+    // For those that need to be in the address book (because we want to
+    //  display images, for instance), the user still has the option to uncheck
+    //  "prefer display name over header name".
+    if (contact._useCardName) {
+      cache(name, contact);
+    } else {
+      // We still want to cache the color...
+      if (!(email in this._colorCache))
+        this._colorCache[email] = contact.color;
+    }
+    return contact;
   },
 };
 
@@ -322,10 +322,11 @@ let ContactMixIn = {
   getTooltipName: function _ContactMixIn_getName(aPosition) {
     Log.assert(aPosition === Contacts.kFrom || aPosition === Contacts.kTo,
       "Someone did not set the 'position' properly");
-    if (getIdentityForEmail(this._email))
+    if (getIdentityForEmail(this._email)) {
       return strings.get("meFromMeToSomeone");
-    else
-      return this._name || this._email;
+    }
+
+    return this._name || this._email;
   },
 
   getName: function _ContactMixIn_getName(aPosition, aIsDetail) {
@@ -337,8 +338,9 @@ let ContactMixIn = {
         : strings.get("meFromSomeoneToMe")
       );
       return [display, getIdentities().length > 1 ? this._email : ""];
-    } else
-      return [this._name || this._email, ""];
+    }
+
+    return [this._name || this._email, ""];
   },
 
   enrichWithName: function _ContactMixIn_enrichWithName(aName) {

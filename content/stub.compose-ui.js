@@ -367,9 +367,8 @@ function createComposeSession(what) {
   if (gBzSetup) {
     let [webUrl, bzUrl, cookie] = gBzSetup;
     return new BzComposeSession(what, webUrl, bzUrl, cookie);
-  } else {
-    return new ComposeSession(what);
   }
+  return new ComposeSession(what);
 }
 
 /**
@@ -378,13 +377,13 @@ function createComposeSession(what) {
 function startedEditing(aVal) {
   if (aVal === undefined) {
     return gComposeSession && gComposeSession.startedEditing;
+  }
+
+  if (!gComposeSession) {
+    Log.error("No composition session yet");
+    dumpCallStack();
   } else {
-    if (!gComposeSession) {
-      Log.error("No composition session yet");
-      dumpCallStack();
-    } else {
-      gComposeSession.startedEditing = aVal;
-    }
+    gComposeSession.startedEditing = aVal;
   }
 }
 
@@ -832,10 +831,11 @@ nsAttachmentOpener.prototype = {
   },
 
   getInterface(iid) {
-    if (iid.equals(Ci.nsIDOMWindow))
+    if (iid.equals(Ci.nsIDOMWindow)) {
       return window;
-    else
-      return this.QueryInterface(iid);
+    }
+
+    return this.QueryInterface(iid);
   },
 
   loadCookie: null,

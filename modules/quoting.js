@@ -53,23 +53,22 @@ function canInclude(aNode) {
 function isBody(aNode) {
   if (aNode.tagName && aNode.tagName.toLowerCase() == "body") {
     return true;
-  } else {
-    let count = 0;
-    for (let node of aNode.parentNode.childNodes) {
-      //dump(node+" "+node.nodeType+"\n");
-      switch (node.nodeType) {
-        case node.TEXT_NODE:
-          if (node.textContent.trim().length > 0)
-            count++;
-          break;
-        case node.ELEMENT_NODE:
-          count++;
-          break;
-      }
-    }
-    //dump(count+"\n");
-    return (count == 1) && isBody(aNode.parentNode);
   }
+  let count = 0;
+  for (let node of aNode.parentNode.childNodes) {
+    //dump(node+" "+node.nodeType+"\n");
+    switch (node.nodeType) {
+      case node.TEXT_NODE:
+        if (node.textContent.trim().length > 0)
+          count++;
+        break;
+      case node.ELEMENT_NODE:
+        count++;
+        break;
+    }
+  }
+  //dump(count+"\n");
+  return (count == 1) && isBody(aNode.parentNode);
 }
 
 function implies(a, b) {
