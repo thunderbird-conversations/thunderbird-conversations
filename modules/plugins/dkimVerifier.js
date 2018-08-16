@@ -113,7 +113,7 @@ function displayResult(result, aDomNode) {
 }
 
 let dkimVerifierHook = {
-  onMessageStreamed: function _dkimVerifierHook_onMessageStreamed(aMsgHdr, aDomNode/*, aMsgWindow, aMessage*/) {
+  onMessageStreamed: function _dkimVerifierHook_onMessageStreamed(aMsgHdr, aDomNode/* , aMsgWindow, aMessage*/) {
     "use strict";
 
     AuthVerifier.verify(aMsgHdr).then(function(result) {

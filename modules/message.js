@@ -1949,7 +1949,7 @@ let PostStreamingFixesMixIn = {
     if (iframeDoc.querySelectorAll(":not(.mimemail-body) > .moz-text-html").length) {
       styleRules = [
         "body, table {",
-        //"  line-height: 112.5%;",
+        // "  line-height: 112.5%;",
         "  font-size: "+textSize+"px;",
         "}",
       ];
@@ -1957,7 +1957,7 @@ let PostStreamingFixesMixIn = {
 
     // Unless the user specifically asked for this message to be
     //  dislayed with a monospaced font...
-    let [{/*name, */ email}] = this.parse(this._msgHdr.author);
+    let [{/* name, */ email}] = this.parse(this._msgHdr.author);
     if (email && !(email.toLowerCase() in Prefs.monospaced_senders) &&
         !(this.mailingLists.some(x => (x.toLowerCase() in Prefs.monospaced_senders)))) {
       styleRules = styleRules.concat([

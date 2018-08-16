@@ -133,7 +133,7 @@ let embedsHook = {
       url = Services.io.newURI(a.href, null, null);
       url.QueryInterface(Ci.nsIURL);
     } catch (e) {
-      //Log.debug(e);
+      // Log.debug(e);
       return false;
     }
     if (url.host == "maps.google.com") {

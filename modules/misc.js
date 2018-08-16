@@ -116,7 +116,7 @@ let mapping = [
   ["application/x-gzip", "package-x-generic"],
   ["application/x-tar", "package-x-generic"],
   ["application/x-compressed", "package-x-generic"],
-  //"message/": "email",
+  // "message/": "email",
   ["text/x-vcalendar", "x-office-calendar"],
   ["text/x-vcard", "x-office-address-book"],
   ["text/html", "text-html"],

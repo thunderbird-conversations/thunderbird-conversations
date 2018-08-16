@@ -865,7 +865,7 @@ Conversation.prototype = {
       };
       let myMsgUris = this.messages.filter(x => toMsgHdr(x))
                                    .map(x => msgHdrGetUri(toMsgHdr(x)));
-      let [shouldRecycle /*, _whichMessageUris */] = isPrefix(currentMsgUris, myMsgUris);
+      let [shouldRecycle /* , _whichMessageUris */] = isPrefix(currentMsgUris, myMsgUris);
       // Ok, some explanation needed. How can this possibly happen?
       // - Click on a conversation
       // - Conversation is built, becomes the global current conversation
@@ -976,7 +976,7 @@ Conversation.prototype = {
     Log.debug("Outputting",
       this.messages.map(x => msgDebugColor(x) + x.debug), Colors.default);
     Log.debug(this.messages.length, "messages in the conversation now");
-    /*for (let message of this.messages) {
+    /* for (let message of this.messages) {
       let msgHdr = toMsgHdr(message);
       dump("  " + msgHdr.folder.URI + "#" + msgHdr.messageKey + "\n");
     }*/

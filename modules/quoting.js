@@ -46,7 +46,7 @@ var EXPORTED_SYMBOLS = [
 function canInclude(aNode) {
   let v = aNode.tagName && aNode.tagName.toLowerCase() == "br"
     || aNode.nodeType == aNode.TEXT_NODE && aNode.textContent.trim() === "";
-  //if (v) dump("Including "+aNode+"\n");
+  // if (v) dump("Including "+aNode+"\n");
   return v;
 }
 
@@ -56,7 +56,7 @@ function isBody(aNode) {
   }
   let count = 0;
   for (let node of aNode.parentNode.childNodes) {
-    //dump(node+" "+node.nodeType+"\n");
+    // dump(node+" "+node.nodeType+"\n");
     switch (node.nodeType) {
       case node.TEXT_NODE:
         if (node.textContent.trim().length > 0)
@@ -67,7 +67,7 @@ function isBody(aNode) {
         break;
     }
   }
-  //dump(count+"\n");
+  // dump(count+"\n");
   return (count == 1) && isBody(aNode.parentNode);
 }
 
@@ -150,7 +150,7 @@ function convertForwardedToBlockquote(aDoc) {
           && txt.includes("----END PGP")
           && m && m.length) {
         let marker = m[0];
-        //dump("Found matching text "+marker+"\n");
+        // dump("Found matching text "+marker+"\n");
         let i = txt.indexOf(marker);
         let t1 = txt.substring(0, i);
         let t2 = txt.substring(i + 1, child.textContent.length);

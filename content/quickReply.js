@@ -47,10 +47,10 @@ function makeEditable(aIframe, aMakeEditable) {
            .QueryInterface(Ci.nsIInterfaceRequestor)
            .getInterface(Ci.nsIEditingSession);
   if (aMakeEditable) {
-    //aIframe.designMode = "on";
+    // aIframe.designMode = "on";
     s.makeWindowEditable(w, "htmlmail", false, true, false);
   } else {
-    //s.detachFromWindow(w);
+    // s.detachFromWindow(w);
     s.tearDownEditorOnWindow(w);
   }
 }
