@@ -174,8 +174,8 @@ MonkeyPatch.prototype = {
             if (getIdentities().length > 1)
               display += " (" + x.email + ")";
             return display;
-          } else
-            return x.name || x.email;
+          }
+          return x.name || x.email;
         };
         // Add all the people found in one of the msgHdr's properties.
         let addPeople = function(prop, pos) {
@@ -199,8 +199,8 @@ MonkeyPatch.prototype = {
         // And turn this into a human-readable line.
         if (people.length)
           return joinWordList(people);
-        else
-          return "-";
+
+        return "-";
       } catch (e) {
         Log.debug("Error in the special column", e);
         dumpCallStack(e);
@@ -695,15 +695,14 @@ MonkeyPatch.prototype = {
                 * Prefs.getBool("mailnews.mark_message_read.delay") * 1000);
               this.singleMessageDisplay = true;
               return false;
-            } else {
-              // Otherwise, we create a thread summary.
-              // We don't want to call this._showSummary because it has a built-in check
-              // for this.folderDisplay.selectedCount and returns immediately if
-              // selectedCount == 1
-              this.singleMessageDisplay = false;
-              window.summarizeThread(this.folderDisplay.selectedMessages, this);
-              return true;
             }
+            // Otherwise, we create a thread summary.
+            // We don't want to call this._showSummary because it has a built-in check
+            // for this.folderDisplay.selectedCount and returns immediately if
+            // selectedCount == 1
+            this.singleMessageDisplay = false;
+            window.summarizeThread(this.folderDisplay.selectedMessages, this);
+            return true;
           }
 
           // Else defer to showSummary to work it out based on thread selection.

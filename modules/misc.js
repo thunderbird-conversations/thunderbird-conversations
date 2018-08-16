@@ -95,15 +95,15 @@ function joinWordList(aElements, aInsertHtml) {
     : x => x
   ;
   let l = aElements.length;
-  if (l == 0)
+  if (l == 0) {
     return "";
-  else if (l == 1)
+  } else if (l == 1) {
     return aElements[0];
-  else {
-    let hd = aElements.slice(0, l - 1);
-    let tl = aElements[l-1];
-    return hd.join(wrap(strings.get("sepComma"))) + wrap(strings.get("sepAnd")) + tl;
   }
+
+  let hd = aElements.slice(0, l - 1);
+  let tl = aElements[l-1];
+  return hd.join(wrap(strings.get("sepComma"))) + wrap(strings.get("sepAnd")) + tl;
 }
 
 let mapping = [
@@ -249,10 +249,11 @@ function topMail3Pane(aObj) {
     throw Error("Bad usage for topMail3Pane");
 
   let moveOut = function(w) {
-    if (w.frameElement)
+    if (w.frameElement) {
       return w.frameElement.ownerDocument.defaultView;
-    else
-      return getMail3Pane();
+    }
+
+    return getMail3Pane();
   };
 
   if ("_conversation" in aObj) // Message
@@ -261,8 +262,9 @@ function topMail3Pane(aObj) {
     return moveOut(aObj._htmlPane);
   else if ("_manager" in aObj) // Contact
     return moveOut(aObj._domNode.ownerDocument.defaultView);
-  else // Standalone window, a tab, or in the htmlpane (common case)
-    return aObj.top.opener || moveOut(aObj) || aObj.top;
+
+  // Standalone window, a tab, or in the htmlpane (common case)
+  return aObj.top.opener || moveOut(aObj) || aObj.top;
 }
 
 function reindexMessages(aMsgHdrs) {

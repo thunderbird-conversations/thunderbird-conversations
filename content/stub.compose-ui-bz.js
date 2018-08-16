@@ -89,21 +89,20 @@ function bzSetup() {
         document.querySelector(".quickReply li.reply .quickReplyIcon span")
           .textContent = strings.get("bzPlaceholder");
         return [url, bzUrl, cookie];
-      } else {
-        document.querySelector(".quickReply li.reply .quickReplyIcon span")
-          .textContent = strings.get("bzNoCookieMsg");
-        addBzLink(url);
-        return null;
       }
-    } else {
+
       document.querySelector(".quickReply li.reply .quickReplyIcon span")
-        .textContent = strings.get("bzNoApiUrlMsg");
+        .textContent = strings.get("bzNoCookieMsg");
+      addBzLink(url);
       return null;
     }
-  } else {
+
+    document.querySelector(".quickReply li.reply .quickReplyIcon span")
+      .textContent = strings.get("bzNoApiUrlMsg");
     return null;
   }
 
+  return null;
 }
 
 function getBugzillaCookie(aUrl) {
@@ -120,8 +119,8 @@ function getBugzillaCookie(aUrl) {
   Log.debug(Colors.blue, "Bugzilla", login, loginCookie, Colors.default);
   if (login && loginCookie)
     return [login, loginCookie];
-  else
-    return null;
+
+  return null;
 }
 
 function BzComposeSession(match, webUrl, apiUrl, [login, loginCookie]) {
