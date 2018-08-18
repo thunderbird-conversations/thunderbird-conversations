@@ -51,8 +51,6 @@
             id="conversationsprefs"
             title="Thunderbird Conversations">
 
-  <script type="application/javascript" src="chrome://converastions/content/options.js"/>
-
   <prefpane>
     <preferences>
       <preference id="conversations.hide_sigs" name="conversations.hide_sigs" type="bool"/>
