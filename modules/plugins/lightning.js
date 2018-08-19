@@ -36,13 +36,12 @@
 
 var EXPORTED_SYMBOLS = ["isLightningInstalled"];
 
-/* import-globals-from ../hook.js */
-ChromeUtils.import("resource://conversations/modules/hook.js");
-/* import-globals-from ../log.js */
-ChromeUtils.import("resource://conversations/modules/log.js");
-/* import-globals-from ../misc.js */
-ChromeUtils.import("resource://conversations/modules/misc.js");
-ChromeUtils.import("resource://gre/modules/Services.jsm");
+const {registerHook} =
+  ChromeUtils.import("resource://conversations/modules/hook.js", {});
+const {setupLogging} =
+  ChromeUtils.import("resource://conversations/modules/log.js", {});
+const {topMail3Pane} =
+  ChromeUtils.import("resource://conversations/modules/misc.js", {});
 
 let Log = setupLogging("Conversations.Modules.Lightning");
 

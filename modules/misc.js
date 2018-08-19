@@ -35,24 +35,19 @@
  * ***** END LICENSE BLOCK ***** */
 
 var EXPORTED_SYMBOLS = [
-  'groupArray', 'joinWordList', 'iconForMimeType',
-  'EventHelperMixIn', 'arrayEquals', 'LINKS_REGEX',
-  'linkifySubject', 'topMail3Pane', 'reindexMessages',
-  'folderName', 'openConversationInTabOrWindow'
+  "groupArray", "joinWordList", "iconForMimeType",
+  "EventHelperMixIn", "arrayEquals", "LINKS_REGEX",
+  "linkifySubject", "topMail3Pane", "reindexMessages",
+  "folderName", "openConversationInTabOrWindow"
 ];
 
 var LINKS_REGEX = /((\w+):\/\/[^<>()'"\s]+|www(\.[-\w]+){2,})/;
 
 ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
 const { GlodaMsgIndexer } = ChromeUtils.import("resource:///modules/gloda/index_msg.js", {});
-/* import-globals-from stdlib/misc.js */
-ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
-/* import-globals-from stdlib/msgHdrUtils.js */
-ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
-/* import-globals-from prefs.js */
-ChromeUtils.import("resource://conversations/modules/prefs.js");
-/* import-globals-from log.js */
-ChromeUtils.import("resource://conversations/modules/log.js");
+const {getMail3Pane} = ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js", {});
+const {Prefs} = ChromeUtils.import("resource://conversations/modules/prefs.js", {});
+const {setupLogging} = ChromeUtils.import("resource://conversations/modules/log.js", {});
 
 let Log = setupLogging("Conversations.Misc");
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
@@ -95,15 +90,15 @@ function joinWordList(aElements, aInsertHtml) {
     : x => x
   ;
   let l = aElements.length;
-  if (l == 0)
+  if (l == 0) {
     return "";
-  else if (l == 1)
+  } else if (l == 1) {
     return aElements[0];
-  else {
-    let hd = aElements.slice(0, l - 1);
-    let tl = aElements[l-1];
-    return hd.join(wrap(strings.get("sepComma"))) + wrap(strings.get("sepAnd")) + tl;
   }
+
+  let hd = aElements.slice(0, l - 1);
+  let tl = aElements[l - 1];
+  return hd.join(wrap(strings.get("sepComma"))) + wrap(strings.get("sepAnd")) + tl;
 }
 
 let mapping = [
@@ -116,7 +111,7 @@ let mapping = [
   ["application/x-gzip", "package-x-generic"],
   ["application/x-tar", "package-x-generic"],
   ["application/x-compressed", "package-x-generic"],
-  //"message/": "email",
+  // "message/": "email",
   ["text/x-vcalendar", "x-office-calendar"],
   ["text/x-vcard", "x-office-address-book"],
   ["text/html", "text-html"],
@@ -155,7 +150,7 @@ function iconForMimeType(aMimeType) {
  *  upon has a _domNode property. Also assumes it has a _msgHdr and _uri
  *  property if compose is to be called.
  */
-let EventHelperMixIn = {
+var EventHelperMixIn = {
 
   compose: function _EventHelper_compose(aCompType, aEvent) {
     let window = topMail3Pane(this);
@@ -194,7 +189,7 @@ let EventHelperMixIn = {
       nodes = [selector];
 
     for (let node of nodes)
-      node.addEventListener(action, f, false);
+      node.addEventListener(action, f);
   },
 
 };
@@ -213,7 +208,7 @@ function linkifySubject(subject, doc) {
     link.addEventListener("click", function(event) {
         getMail3Pane().messenger.launchExternalURL(matches[1]);
         event.preventDefault();
-      }, false);
+      });
     return [pre, link, post];
   }
   let text = subject;
@@ -249,10 +244,11 @@ function topMail3Pane(aObj) {
     throw Error("Bad usage for topMail3Pane");
 
   let moveOut = function(w) {
-    if (w.frameElement)
+    if (w.frameElement) {
       return w.frameElement.ownerDocument.defaultView;
-    else
-      return getMail3Pane();
+    }
+
+    return getMail3Pane();
   };
 
   if ("_conversation" in aObj) // Message
@@ -261,8 +257,9 @@ function topMail3Pane(aObj) {
     return moveOut(aObj._htmlPane);
   else if ("_manager" in aObj) // Contact
     return moveOut(aObj._domNode.ownerDocument.defaultView);
-  else // Standalone window, a tab, or in the htmlpane (common case)
-    return aObj.top.opener || moveOut(aObj) || aObj.top;
+
+  // Standalone window, a tab, or in the htmlpane (common case)
+  return aObj.top.opener || moveOut(aObj) || aObj.top;
 }
 
 function reindexMessages(aMsgHdrs) {
@@ -282,13 +279,13 @@ function folderName(aFolder) {
 function openConversationInTabOrWindow(aUrl) {
   let window = getMail3Pane();
   // Counting some extra pixels for window decorations.
-  let height = Math.min(window.screen.availHeight-30, 1024);
+  let height = Math.min(window.screen.availHeight - 30, 1024);
   switch (Prefs.getInt("mail.openMessageBehavior")) {
     case 0:
-      window.open(aUrl, "_blank", "chrome,resizable,width=640,height="+height);
+      window.open(aUrl, "_blank", "chrome,resizable,width=640,height=" + height);
       break;
     case 1:
-      window.open(aUrl, "conversations", "chrome,resizable,width=640,height="+height);
+      window.open(aUrl, "conversations", "chrome,resizable,width=640,height=" + height);
       break;
     case 2:
       window.document.getElementById("tabmail").openTab("chromeTab", {

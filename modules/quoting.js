@@ -36,9 +36,9 @@
 
 var EXPORTED_SYMBOLS = [
   // heuristics for finding quoted parts
-  'convertHotmailQuotingToBlockquote1',
-  'convertOutlookQuotingToBlockquote', 'convertForwardedToBlockquote',
-  'fusionBlockquotes', 'convertMiscQuotingToBlockquote',
+  "convertHotmailQuotingToBlockquote1",
+  "convertOutlookQuotingToBlockquote", "convertForwardedToBlockquote",
+  "fusionBlockquotes", "convertMiscQuotingToBlockquote",
 ];
 
 /* Below are hacks^W heuristics for finding quoted parts in a given email */
@@ -46,30 +46,29 @@ var EXPORTED_SYMBOLS = [
 function canInclude(aNode) {
   let v = aNode.tagName && aNode.tagName.toLowerCase() == "br"
     || aNode.nodeType == aNode.TEXT_NODE && aNode.textContent.trim() === "";
-  //if (v) dump("Including "+aNode+"\n");
+  // if (v) dump("Including "+aNode+"\n");
   return v;
 }
 
 function isBody(aNode) {
   if (aNode.tagName && aNode.tagName.toLowerCase() == "body") {
     return true;
-  } else {
-    let count = 0;
-    for (let node of aNode.parentNode.childNodes) {
-      //dump(node+" "+node.nodeType+"\n");
-      switch (node.nodeType) {
-        case node.TEXT_NODE:
-          if (node.textContent.trim().length > 0)
-            count++;
-          break;
-        case node.ELEMENT_NODE:
-          count++;
-          break;
-      }
-    }
-    //dump(count+"\n");
-    return (count == 1) && isBody(aNode.parentNode);
   }
+  let count = 0;
+  for (let node of aNode.parentNode.childNodes) {
+    // dump(node+" "+node.nodeType+"\n");
+    switch (node.nodeType) {
+      case node.TEXT_NODE:
+        if (node.textContent.trim().length > 0)
+          count++;
+        break;
+      case node.ELEMENT_NODE:
+        count++;
+        break;
+    }
+  }
+  // dump(count+"\n");
+  return (count == 1) && isBody(aNode.parentNode);
 }
 
 function implies(a, b) {
@@ -123,7 +122,7 @@ function convertOutlookQuotingToBlockquote(aWin, aDoc) {
   /* Outlook uses a special thing for that */
   trySel(aDoc, ".OutlookMessageHeader");
   for (let div of aDoc.getElementsByTagName("div")) {
-    let style = aWin.getComputedStyle(div, null);
+    let style = aWin.getComputedStyle(div);
     if ((style.borderTopColor == "rgb(181, 196, 223)"
          || style.borderTopColor == "rgb(225, 225, 225)")
         && style.borderTopStyle == "solid"
@@ -151,7 +150,7 @@ function convertForwardedToBlockquote(aDoc) {
           && txt.includes("----END PGP")
           && m && m.length) {
         let marker = m[0];
-        //dump("Found matching text "+marker+"\n");
+        // dump("Found matching text "+marker+"\n");
         let i = txt.indexOf(marker);
         let t1 = txt.substring(0, i);
         let t2 = txt.substring(i + 1, child.textContent.length);

@@ -34,19 +34,15 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/* exported bzSetup */
+/* exported bzSetup, BzComposeSession */
+/* import-globals-from stub.completion-ui.js */
+/* import-globals-from stub.compose-ui.js */
+/* dfsf global $, gComposeSession, strings, topMail3Pane, Conversations, Log, Colors,
+          getDefaultIdentity, msgUriToMsgHdr, getIdentityForEmail, pValue, pUndetermined */
 
 "use strict";
 
 ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource:///modules/iteratorUtils.jsm");
-
-// Remove when switching to Thunderbird 7
-if (!("cookies" in Services)) {
-  XPCOMUtils.defineLazyServiceGetter(Services, "cookies",
-                                     "@mozilla.org/cookiemanager;1",
-                                     "nsICookieManager2");
-}
 
 let gBugzillaAPIs = {
   "https://bugzilla.mozilla.org/":
@@ -89,25 +85,24 @@ function bzSetup() {
         document.querySelector(".quickReply li.reply .quickReplyIcon span")
           .textContent = strings.get("bzPlaceholder");
         return [url, bzUrl, cookie];
-      } else {
-        document.querySelector(".quickReply li.reply .quickReplyIcon span")
-          .textContent = strings.get("bzNoCookieMsg");
-        addBzLink(url);
-        return null;
       }
-    } else {
+
       document.querySelector(".quickReply li.reply .quickReplyIcon span")
-        .textContent = strings.get("bzNoApiUrlMsg");
+        .textContent = strings.get("bzNoCookieMsg");
+      addBzLink(url);
       return null;
     }
-  } else {
+
+    document.querySelector(".quickReply li.reply .quickReplyIcon span")
+      .textContent = strings.get("bzNoApiUrlMsg");
     return null;
   }
 
+  return null;
 }
 
 function getBugzillaCookie(aUrl) {
-  let uri = Services.io.newURI(aUrl, null, null);
+  let uri = Services.io.newURI(aUrl);
   let cookies = Services.cookies.getCookiesFromHost(uri.host);
   let login = null;
   let loginCookie = null;
@@ -120,8 +115,8 @@ function getBugzillaCookie(aUrl) {
   Log.debug(Colors.blue, "Bugzilla", login, loginCookie, Colors.default);
   if (login && loginCookie)
     return [login, loginCookie];
-  else
-    return null;
+
+  return null;
 }
 
 function BzComposeSession(match, webUrl, apiUrl, [login, loginCookie]) {
@@ -184,23 +179,23 @@ BzComposeSession.prototype = {
     let results = RE_BUG_NUMBER.exec(this.message._msgHdr.messageId);
     if (results && results.length) {
       let bugNumber = results[1];
-      let url = this.makeQuery("bug/"+bugNumber+"/comment/");
+      let url = this.makeQuery("bug/" + bugNumber + "/comment/");
 
       let req = new XMLHttpRequest();
       // Register a whole bunch of event listeners.
       req.addEventListener("progress", function(event) {
         if (event.lengthComputable) {
-          pValue(event.loaded/event.total);
+          pValue(event.loaded / event.total);
         } else {
           pUndetermined();
         }
-      }, false);
+      });
       req.addEventListener("error", function(event) {
         pText(strings.get("bzMsgXHRError"));
-      }, false);
+      });
       req.addEventListener("abort", function(event) {
         pText(strings.get("bzMsgXHRAbort"));
-      }, false);
+      });
       // This is where the real analysis is happening...
       req.addEventListener("load", function(event) {
         pValue(100);
@@ -237,14 +232,14 @@ BzComposeSession.prototype = {
               msgHdrsArchive(conv.msgHdrs.filter(x => !msgHdrIsArchive(x)));
           }
         }
-      }, false);
+      });
       // Now we're about to send.
       Log.debug("Sending a bugzilla comment to", url);
       pText(strings.get("bzMsgStartSending"));
       $(".quickReplyHeader").show();
       req.open("POST", url);
-      req.setRequestHeader('Accept', 'application/json');
-      req.setRequestHeader('Content-Type', 'application/json');
+      req.setRequestHeader("Accept", "application/json");
+      req.setRequestHeader("Content-Type", "application/json");
       req.send(JSON.stringify({
         text: htmlToPlainText(getActiveEditor().value)
       }));

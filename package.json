@@ -16,8 +16,8 @@
     "pdfjs-dist": "2.0.489"
   },
   "devDependencies": {
-    "eslint": "5.2.0",
-    "eslint-plugin-mozilla": "0.14.0",
+    "eslint": "5.4.0",
+    "eslint-plugin-mozilla": "0.15.2",
     "eslint-plugin-no-unsanitized": "3.0.2",
     "npm-run-all": "4.1.3"
   },

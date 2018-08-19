@@ -30,17 +30,18 @@ function loadDefaultPrefs() {
   let uri = Services.io.newURI(
       "defaults/preferences/defaults.js",
       null,
-      Services.io.newURI("resource://conversations/", null, null));
+      Services.io.newURI("resource://conversations/"));
 
   // setup default prefs
   try {
     Services.scriptloader.loadSubScript(uri.spec, prefLoaderScope);
   } catch (e) {
-    dump("Error loading default preferences at "+uri.spec+": "+e+"\n");
+    dump("Error loading default preferences at " + uri.spec + ": " + e + "\n");
   }
 }
 
 function PrefManager() {
+  console.log("PrefManager init");
   loadDefaultPrefs();
 
   this.expand_who = gConversationsPrefs.getIntPref("expand_who");
@@ -74,9 +75,9 @@ PrefManager.prototype = {
   register: function mpo_register(observer) {
     gConversationsPrefs.QueryInterface(Ci.nsIPrefBranch);
     if (observer)
-      gConversationsPrefs.addObserver("", observer, false);
+      gConversationsPrefs.addObserver("", observer);
     else
-      gConversationsPrefs.addObserver("", this, false);
+      gConversationsPrefs.addObserver("", this);
   },
 
   unregister: function mpo_unregister() {
@@ -158,6 +159,10 @@ PrefManager.prototype = {
     return Services.prefs.setStringPref(p, v);
   },
 
+  get kStubUrl() {
+    return kStubUrl;
+  },
+
   kScrollUnreadOrLast: 0,
   kScrollSelected: 1,
 
@@ -167,4 +172,4 @@ PrefManager.prototype = {
 };
 
 // Prefs is a singleton.
-let Prefs = new PrefManager();
+var Prefs = new PrefManager();

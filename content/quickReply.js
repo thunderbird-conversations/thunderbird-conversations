@@ -37,6 +37,9 @@
 /* exported hideQuickReply, registerQuickReplyEventListeners,
             registerQuickReplyDocumentCommands */
 
+/* global $, isQuickCompose, scrollNodeIntoView, Log:true, newComposeSessionByClick,
+          isAccel */
+
 function makeEditable(aIframe, aMakeEditable) {
   // Setup the iframe to be editable in htmlmail mode (for blockquotes)
   let w = aIframe.contentWindow;
@@ -47,58 +50,58 @@ function makeEditable(aIframe, aMakeEditable) {
            .QueryInterface(Ci.nsIInterfaceRequestor)
            .getInterface(Ci.nsIEditingSession);
   if (aMakeEditable) {
-    //aIframe.designMode = "on";
+    // aIframe.designMode = "on";
     s.makeWindowEditable(w, "htmlmail", false, true, false);
   } else {
-    //s.detachFromWindow(w);
+    // s.detachFromWindow(w);
     s.tearDownEditorOnWindow(w);
   }
 }
 
 function showQuickReply() {
-  $(this).parent().addClass('noPad');
-  $(this).addClass('selected');
-  $(this).siblings().addClass('invisible');
-  $(this).closest('.messageFooter').find('.footerActions').hide();
+  $(this).parent().addClass("noPad");
+  $(this).addClass("selected");
+  $(this).siblings().addClass("invisible");
+  $(this).closest(".messageFooter").find(".footerActions").hide();
   if (isQuickCompose)
-    $('.replyHeader, .replyFooter').show();
+    $(".replyHeader, .replyFooter").show();
   else
     setTimeout(function() {
-      $('.replyHeader, .replyFooter').slideDown();
+      $(".replyHeader, .replyFooter").slideDown();
     }, 500);
 
-  var textarea = $(this).find('.textarea');
+  var textarea = $(this).find(".textarea");
   makeEditable(textarea.get(0), true);
-  textarea.addClass('ease selected');
+  textarea.addClass("ease selected");
   let delay = isQuickCompose ? 0 : 900;
   setTimeout(function() {
-    textarea.removeClass('ease');
+    textarea.removeClass("ease");
     scrollNodeIntoView(document.querySelector(".quickReply"));
   }, delay);
 }
 
 function hideQuickReply() {
-  $('.replyHeader, .replyFooter').slideUp();
+  $(".replyHeader, .replyFooter").slideUp();
   setTimeout(function() {
-    $('ul.inputs').removeClass('noPad');
-    $('ul.inputs li').removeClass('selected');
-    $('ul.inputs li').removeClass('invisible');
-    $('.quickReply').closest('.messageFooter').find('.footerActions').show();
+    $("ul.inputs").removeClass("noPad");
+    $("ul.inputs li").removeClass("selected");
+    $("ul.inputs li").removeClass("invisible");
+    $(".quickReply").closest(".messageFooter").find(".footerActions").show();
 
-    var textarea = $('.textarea.selected');
+    var textarea = $(".textarea.selected");
     makeEditable(textarea.get(0), false);
-    textarea.addClass('ease');
-    textarea.removeClass('selected');
-    textarea.removeAttr('style');
+    textarea.addClass("ease");
+    textarea.removeClass("selected");
+    textarea.removeAttr("style");
     setTimeout(function() {
-      textarea.removeClass('ease');
+      textarea.removeClass("ease");
     }, 500);
   }, 500);
 }
 
 function registerQuickReplyEventListeners() {
 
-  $('ul.inputs li.expand').click(function(event) {
+  $("ul.inputs li.expand").click(function(event) {
     if ($(this).hasClass("selected"))
       return;
     showQuickReply.call(this);
@@ -116,10 +119,10 @@ function registerQuickReplyEventListeners() {
   // Autoresize sorta-thingy.
   let textarea = document.querySelector(".textarea");
   let lineHeight = parseInt(
-    window.getComputedStyle(textarea, null).lineHeight
+    window.getComputedStyle(textarea).lineHeight
   );
-  let getHeight = x => parseInt(window.getComputedStyle(x, null).height);
-  $('.quickReply .textarea').keypress(function(event) {
+  let getHeight = x => parseInt(window.getComputedStyle(x).height);
+  $(".quickReply .textarea").keypress(function(event) {
     if (event.which == KeyEvent.DOM_VK_RETURN) {
       let scrollHeight = textarea.contentDocument.body.scrollHeight;
       // Only grow if the contents of the reply don't fit into the viewport.
@@ -134,9 +137,9 @@ function registerQuickReplyEventListeners() {
         Log.debug(totalTargetHeight, lineHeight, availableHeight);
         // We only grow the textarea if it doesn't exceed half of the available
         // vertical height.
-        if (totalTargetHeight <= availableHeight/2) {
-          Log.debug("Growing to", (getHeight(textarea)+lineHeight)+"px");
-          textarea.style.height = (getHeight(textarea)+lineHeight)+"px";
+        if (totalTargetHeight <= availableHeight / 2) {
+          Log.debug("Growing to", (getHeight(textarea) + lineHeight) + "px");
+          textarea.style.height = (getHeight(textarea) + lineHeight) + "px";
 
           // Scroll if we grew the reply area into overflow
           let pageTop = window.pageYOffset;
@@ -159,11 +162,11 @@ function registerQuickReplyDocumentCommands() {
     let w = iframe.contentWindow;
     let doc = iframe.contentDocument;
     w.addEventListener("keypress", function(event) {
-      if (isAccel(event) && event.which == 'b'.charCodeAt(0))
+      if (isAccel(event) && event.which == "b".charCodeAt(0))
         doc.execCommand("bold");
-      if (isAccel(event) && event.which == 'i'.charCodeAt(0))
+      if (isAccel(event) && event.which == "i".charCodeAt(0))
         doc.execCommand("italic");
-      if (isAccel(event) && event.which == 'u'.charCodeAt(0))
+      if (isAccel(event) && event.which == "u".charCodeAt(0))
         doc.execCommand("underline");
     });
   }

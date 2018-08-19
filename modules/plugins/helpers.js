@@ -34,7 +34,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var EXPORTED_SYMBOLS = ['PluginHelpers'];
+var EXPORTED_SYMBOLS = ["PluginHelpers"];
 
 /**
  * This file just contains helpers for our Gloda plugins. The function in
@@ -44,12 +44,11 @@ var EXPORTED_SYMBOLS = ['PluginHelpers'];
  */
 
 const {GlodaUtils} = ChromeUtils.import("resource:///modules/gloda/utils.js", {});
-ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
 
 const gsfnRegexp = /^(.+)(?:, an employee of Mozilla Messaging,)? (?:replied to|commented on|just asked)/;
 const gsfnFrom = "Mozilla Messaging <noreply.mozilla_messaging@getsatisfaction.com>";
 
-let PluginHelpers = {
+var PluginHelpers = {
   // About to do more special-casing here? Please check out the corresponding
   //  code in contact.js and make sure you modify it too.
   alternativeSender: function _PluginHelpers_alternativeSender(aRawReps) {
@@ -98,7 +97,7 @@ let PluginHelpers = {
       ];
       let o = {};
       for (let k of keys) {
-        let v = aMimeMsg.get("x-bugzilla-"+k);
+        let v = aMimeMsg.get("x-bugzilla-" + k);
         if (v)
           o[k] = GlodaUtils.deMime(v);
       }

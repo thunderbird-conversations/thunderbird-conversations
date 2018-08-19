@@ -36,12 +36,11 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ['CustomizeKeys'];
+var EXPORTED_SYMBOLS = ["CustomizeKeys"];
 
-/* import-globals-from stdlib/misc.js */
-ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
-/* import-globals-from message.js */
-ChromeUtils.import("resource://conversations/modules/message.js");
+ChromeUtils.import("resource://gre/modules/Services.jsm");
+const {entries, isOSX} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js", {});
+const {ConversationKeybindings} = ChromeUtils.import("resource://conversations/modules/message.js", {});
 ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
 let strings = new StringBundle("chrome://conversations/locale/keycustomization.properties");
 
@@ -97,9 +96,9 @@ function titleCaseToSpacedWords(str) {
     words.unshift("");
   for (let i = 0; i < words.length; i += 2) {
     if (i > 0)
-      ret += " " + words[i].toLowerCase() + words[i+1];
+      ret += " " + words[i].toLowerCase() + words[i + 1];
     else
-      ret += words[i].toUpperCase() + words[i+1];
+      ret += words[i].toUpperCase() + words[i + 1];
   }
   return ret;
 }
@@ -319,7 +318,7 @@ const Templates = {
       if (cmd == selected)
         item.setAttribute("selected", "true");
     }
-    list.addEventListener("select", Listeners.onActionMenuSelect, false);
+    list.addEventListener("select", Listeners.onActionMenuSelect);
     return list;
   },
 
@@ -361,7 +360,7 @@ const Templates = {
       state = INACTIVE_KEY;
     btn.setAttribute("checkState", state);
     btn.setAttribute("style", KeyStyles[state]);
-    btn.addEventListener("command", Listeners.onModifierButtonClick, false);
+    btn.addEventListener("command", Listeners.onModifierButtonClick);
     return btn;
   },
 
@@ -377,7 +376,7 @@ const Templates = {
     let btn = doc.createElement("button");
     btn.setAttribute("label", strings.get("removeHotkey"));
     parent.appendChild(btn);
-    btn.addEventListener("command", Listeners.onDeleteClick, false);
+    btn.addEventListener("command", Listeners.onDeleteClick);
   },
 
 
@@ -411,7 +410,7 @@ const Templates = {
       createItem(String.fromCharCode(i));
     createItem("\x0D");
     createItem("\x2E");
-    list.addEventListener("select", Listeners.onLetterSelected, false);
+    list.addEventListener("select", Listeners.onLetterSelected);
   },
 
 
@@ -451,7 +450,7 @@ const Templates = {
     let btn = doc.createElement("button");
     hbox.appendChild(btn);
     btn.setAttribute("label", strings.get("restoreKeys"));
-    btn.addEventListener("command", Listeners.onRestoreClick, false);
+    btn.addEventListener("command", Listeners.onRestoreClick);
     return hbox;
   },
 
@@ -465,7 +464,7 @@ const Templates = {
     let btn = doc.createElement("button");
     hbox.appendChild(btn);
     btn.setAttribute("label", strings.get("createHotkey"));
-    btn.addEventListener("command", Listeners.onCreateClick, false);
+    btn.addEventListener("command", Listeners.onCreateClick);
     return hbox;
   }
 };
@@ -474,7 +473,7 @@ const Templates = {
 const CustomizeKeys = {
   enable: function enable(doc) {
     let showhide = doc.getElementById("showhidekeys");
-    showhide.addEventListener("command", Listeners.onShowHideClick, false);
+    showhide.addEventListener("command", Listeners.onShowHideClick);
     // Must be here, rather than at top level, because load/restoreKeybindings will
     // destroy the previous values
     if (isOSX) {
@@ -488,7 +487,7 @@ const CustomizeKeys = {
     for (let [/* os */, bindings] of entries(bindingGroups)) {
       for (let [key, keybinding] of entries(bindings)) {
         for (let binding of keybinding) {
-          keysVbox.appendChild(Templates.buildHotKey(doc, ""+key, binding));
+          keysVbox.appendChild(Templates.buildHotKey(doc, "" + key, binding));
         }
       }
     }
@@ -497,7 +496,7 @@ const CustomizeKeys = {
   },
   disable: function disable(doc) {
     let showhide = doc.getElementById("showhidekeys");
-    showhide.removeEventListener("command", Listeners.onShowHideClick, false);
+    showhide.removeEventListener("command", Listeners.onShowHideClick);
     let keysVbox = showhide.previousElementSibling;
     while (keysVbox.hasChildNodes())
       keysVbox.removeChild(keysVbox.firstChild);

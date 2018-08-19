@@ -38,7 +38,6 @@
 
 "use strict";
 
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 ChromeUtils.import("resource://gre/modules/Services.jsm");
 const {fixIterator} = ChromeUtils.import("resource:///modules/iteratorUtils.jsm", {});
 
@@ -52,7 +51,7 @@ let ResourceRegister = {
       .QueryInterface(Ci.nsIResProtocolHandler);
     let alias = Services.io.newFileURI(aFile);
     if (!aFile.isDirectory()) {
-      alias = Services.io.newURI("jar:" + alias.spec + "!/", null, null);
+      alias = Services.io.newURI("jar:" + alias.spec + "!/");
     }
     resource.setSubstitution(aName, alias);
   },
@@ -111,9 +110,11 @@ function monkeyPatchWindow(window, aLater) {
 
       // The modules below need to be loaded when a window exists, i.e. after
       // overlays have been properly loaded and applied
+      /* eslint-disable no-unused-vars */
       ChromeUtils.import("resource://conversations/modules/plugins/enigmail.js");
       ChromeUtils.import("resource://conversations/modules/plugins/lightning.js");
       ChromeUtils.import("resource://conversations/modules/plugins/dkimVerifier.js");
+      /* eslint-enable no-unused-vars */
     } catch (e) {
       Log.error(e);
       dumpCallStack(e);
@@ -122,9 +123,9 @@ function monkeyPatchWindow(window, aLater) {
 
   if (aLater)
     window.addEventListener("load", function tmp() {
-      window.removeEventListener("load", tmp, false);
+      window.removeEventListener("load", tmp);
       doIt();
-    }, false);
+    });
   else
     doIt();
 }
@@ -142,16 +143,18 @@ function monkeyPatchAllWindows() {
  * Cu.import() just loads every imported file once, so there is no need for a guard (like if(!isLoaded){...})
  */
 function loadImports() {
-  /* import-globals-from modules/monkeypatch.js */
+  /* global MonkeyPatch */
   ChromeUtils.import("resource://conversations/modules/monkeypatch.js", global);
   ChromeUtils.import("resource://conversations/modules/prefs.js", global);
-  /* import-globals-from modules/conversation.js */
+  /* global Conversation */
   ChromeUtils.import("resource://conversations/modules/conversation.js", global);
-  /* import-globals-from modules/keycustomization.js */
+  /* global CustomizeKeys */
   ChromeUtils.import("resource://conversations/modules/keycustomization.js", global);
 
+  /* eslint-disable no-unused-vars */
   ChromeUtils.import("resource://conversations/modules/plugins/glodaAttrProviders.js");
   ChromeUtils.import("resource://conversations/modules/plugins/embeds.js");
+  /* eslint-enable no-unused-vars */
 }
 
 // This obserer is notified when a new window is created and injects our code
@@ -184,14 +187,14 @@ function startup(aData, aReason) {
           loadImports();
           monkeyPatchAllWindows();
       }
-    }, "final-ui-startup", false);
+    }, "final-ui-startup");
 
 
     // Patch all future windows
     Services.ww.registerNotification(windowObserver);
 
     // Show the assistant if the extension is installed or enabled
-    if (aReason == BOOTSTRAP_REASONS.ADDON_INSTALL || aReason == BOOTSTRAP_REASONS.ADDON_ENABLE) {
+    if (aReason == Config.BOOTSTRAP_REASONS.ADDON_INSTALL || aReason == Config.BOOTSTRAP_REASONS.ADDON_ENABLE) {
       loadImports();
       monkeyPatchAllWindows();
       Services.ww.openWindow(
@@ -202,7 +205,7 @@ function startup(aData, aReason) {
     }
 
     // In case of an up- or downgrade patch all windows again
-    if (aReason == BOOTSTRAP_REASONS.ADDON_UPGRADE || aReason == BOOTSTRAP_REASONS.ADDON_DOWNGRADE) {
+    if (aReason == Config.BOOTSTRAP_REASONS.ADDON_UPGRADE || aReason == Config.BOOTSTRAP_REASONS.ADDON_DOWNGRADE) {
       loadImports();
       monkeyPatchAllWindows();
     }
@@ -215,7 +218,7 @@ function startup(aData, aReason) {
           CustomizeKeys.enable(aSubject); // aSubject is the options document
         }
       }
-    }, "addon-options-displayed", false);
+    }, "addon-options-displayed");
     Services.obs.addObserver({
       observe(aSubject, aTopic, aData) {
         if (aTopic == "addon-options-hidden" && aData == "gconversation@xulforum.org") {
@@ -223,7 +226,7 @@ function startup(aData, aReason) {
           CustomizeKeys.disable(aSubject); // aSubject is the options document
         }
       }
-    }, "addon-options-hidden", false);
+    }, "addon-options-hidden");
   } catch (e) {
     Log.error(e);
     dumpCallStack(e);
@@ -236,7 +239,7 @@ function shutdown(aData, aReason) {
 
   // No need to do extra work here
   Log.debug("shutdown, aReason=", aReason);
-  if (aReason == BOOTSTRAP_REASONS.APP_SHUTDOWN)
+  if (aReason == Config.BOOTSTRAP_REASONS.APP_SHUTDOWN)
     return;
 
   Services.ww.unregisterNotification(windowObserver);

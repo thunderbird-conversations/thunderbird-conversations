@@ -1,24 +1,28 @@
 "use strict";
 
-/* exported setupAutocomplete */
+/* exported setupAutocomplete, Colors, getDefaultIdentity, getIdentityForEmail,
+            getIdentities, NS_SUCCEEDED */
+/* global $, Conversations, MailServices, showCc, showBcc */
+/* import-globals-from quickReply.js */
 
 // ----- Autocomplete stuff. Understand it as a part of stub.compose-ui.js
 
-ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
-ChromeUtils.import("resource:///modules/errUtils.js");
-ChromeUtils.import("resource:///modules/gloda/gloda.js");
-ChromeUtils.import("resource:///modules/gloda/public.js");
-ChromeUtils.import("resource:///modules/gloda/utils.js");
-ChromeUtils.import("resource:///modules/gloda/suffixtree.js");
-ChromeUtils.import("resource:///modules/gloda/noun_tag.js");
-ChromeUtils.import("resource:///modules/gloda/noun_freetag.js");
-ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
-ChromeUtils.import("resource://conversations/modules/log.js");
+ChromeUtils.import("resource:///modules/StringBundle.js");
+const {Gloda} = ChromeUtils.import("resource:///modules/gloda/gloda.js", {});
+const {MultiSuffixTree} = ChromeUtils.import("resource:///modules/gloda/suffixtree.js", {});
+const {
+  entries, escapeHtml, getDefaultIdentity, getIdentityForEmail,
+  getIdentities, NS_SUCCEEDED
+} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js", {});
+const {
+  setupLogging, dumpCallStack, Colors,
+} = ChromeUtils.import("resource://conversations/modules/log.js", {});
 
 let Log = setupLogging("Conversations.Stub.Completion");
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
 try {
+  // eslint-disable-next-line no-unused-vars
   ChromeUtils.import("resource://people/modules/people.js");
 } catch (e) {
   Log.debug("You don't have Contacts installed. Gloda will provide autocomplete.");
@@ -31,7 +35,7 @@ function asToken(thumb, name, email, guid) {
   let hasName = name && (name.trim().length > 0);
   let data = hasName ? MailServices.headerParser.makeMimeAddress(name, email) : email;
   let nameStr = hasName ? name + " <" + email + ">" : email;
-  let thumbStr = thumb ? "<img class='autocomplete-thumb' src=\""+escapeHtml(thumb)+"\" /> " : "";
+  let thumbStr = thumb ? "<img class='autocomplete-thumb' src=\"" + escapeHtml(thumb) + "\" /> " : "";
   let listItem = thumbStr + escapeHtml(nameStr); // this one is for injection
   let displayName = hasName ? name : email;
   return { name: displayName, listItem, data, email, id: guid };
@@ -253,7 +257,7 @@ function setupAutocomplete(to, cc, bcc) {
     // Cleanup the mess left by tokenInput.
     let $parent = $(aInput).parent();
     $parent.empty();
-    $parent.append($("<input type=\"text\" id=\""+aInput.substring(1)+"\" />"));
+    $parent.append($("<input type=\"text\" id=\"" + aInput.substring(1) + "\" />"));
     // Now we can start fresh.
     try {
       $(aInput).tokenInput(glodaAutocomplete, {
@@ -265,8 +269,8 @@ function setupAutocomplete(to, cc, bcc) {
       dumpCallStack(e);
       throw e;
     }
-    $(aList+" li:not(.add-more)").remove();
-    $(aList+" .recipientListSeparator").remove();
+    $(aList + " li:not(.add-more)").remove();
+    $(aList + " .recipientListSeparator").remove();
     let list = document.getElementsByClassName(aList.substring(1))[0];
     let marker = list.getElementsByClassName("add-more")[0];
     // Never, ever use jquery in a loop.

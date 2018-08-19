@@ -34,18 +34,14 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-// options for JSHint
-/* jshint strict:true, moz:true, unused:true, jquery:true */
-/* global Components */
-/* global setupLogging, registerHook, getMail3Pane */
-/* global AuthVerifier */
-/* exported EXPORTED_SYMBOLS */
-
 var EXPORTED_SYMBOLS = [];
 
-ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
-ChromeUtils.import("resource://conversations/modules/hook.js");
-ChromeUtils.import("resource://conversations/modules/log.js");
+const {getMail3Pane} =
+  ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js", {});
+const {registerHook} =
+  ChromeUtils.import("resource://conversations/modules/hook.js", {});
+const {setupLogging} =
+  ChromeUtils.import("resource://conversations/modules/log.js", {});
 
 let Log = setupLogging("Conversations.Modules.DKIMVerifier");
 
@@ -113,7 +109,7 @@ function displayResult(result, aDomNode) {
 }
 
 let dkimVerifierHook = {
-  onMessageStreamed: function _dkimVerifierHook_onMessageStreamed(aMsgHdr, aDomNode/*, aMsgWindow, aMessage*/) {
+  onMessageStreamed: function _dkimVerifierHook_onMessageStreamed(aMsgHdr, aDomNode/* , aMsgWindow, aMessage*/) {
     "use strict";
 
     AuthVerifier.verify(aMsgHdr).then(function(result) {

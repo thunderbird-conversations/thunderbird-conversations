@@ -37,22 +37,30 @@
 /* exported registerQuickReply, newComposeSessionByClick, changeComposeFields,
             showCc, showBcc, addAttachment, confirmDiscard, quickReplyDragEnter,
             quickReplyCheckDrag, quickReplyDrop */
+/* exported htmlToPlainText */
+// From stub.compose-ui-bz.js
+/* global bzSetup, BzComposeSession */
+// Via stub.xhtml
+/* global closeTab, Prefs, tmpl */
+
+/* import-globals-from stub.completion-ui.js */
 
 "use strict";
 
 ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI
-ChromeUtils.import("resource:///modules/mailServices.js");
-ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
-ChromeUtils.import("resource:///modules/gloda/mimemsg.js");
+ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+const {MailServices} = ChromeUtils.import("resource:///modules/mailServices.js", {});
 
-ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
-ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
-ChromeUtils.import("resource://conversations/modules/stdlib/send.js");
-ChromeUtils.import("resource://conversations/modules/stdlib/compose.js");
-ChromeUtils.import("resource://conversations/modules/log.js");
-ChromeUtils.import("resource://conversations/modules/misc.js");
-ChromeUtils.import("resource://conversations/modules/hook.js");
+const {
+  msgUriToMsgHdr, msgHdrsArchive, msgHdrIsArchive, msgHdrGetUri,
+} = ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js", {});
+const {sendMessage} = ChromeUtils.import("resource://conversations/modules/stdlib/send.js", {});
+const {
+  composeInIframe, htmlToPlainText, replyAllParams,
+} = ChromeUtils.import("resource://conversations/modules/stdlib/compose.js", {});
+const {topMail3Pane} = ChromeUtils.import("resource://conversations/modules/misc.js", {});
+const {getHooks} = ChromeUtils.import("resource://conversations/modules/hook.js", {});
+const {fixIterator} = ChromeUtils.import("resource:///modules/iteratorUtils.jsm", {});
 
 Log = setupLogging("Conversations.Stub.Compose");
 
@@ -65,7 +73,7 @@ window.addEventListener("unload", function() {
   onSave(function() {
     Log.debug("Unload.");
   });
-}, false);
+});
 
 var gDraftListener;
 var gBzSetup;
@@ -108,8 +116,8 @@ function registerQuickReply() {
         // Most likely, the window has been tore down, but the listener is still
         // alive, so all references it holds are dead. Failures usually look
         // like "Log is undefined".
-        dump(e+"\n");
-        dump(e.stack+"\n");
+        dump(e + "\n");
+        dump(e.stack + "\n");
       }
     },
 
@@ -128,8 +136,8 @@ function registerQuickReply() {
         mainWindow.Conversations.draftListeners[id] = listeners;
       } catch (e) {
         // See comment above
-        dump(e+"\n");
-        dump(e.stack+"\n");
+        dump(e + "\n");
+        dump(e.stack + "\n");
       }
     },
   };
@@ -139,7 +147,7 @@ function registerQuickReply() {
     // We can't use the (seemingly) simple line below because the array would be
     // allocated in the xhtml compartment, which would then get nuked, and
     // create errors later on while we expect the array to still be valid.
-    //mainWindow.Conversations.draftListeners[id] = [];
+    // mainWindow.Conversations.draftListeners[id] = [];
   }
   let weakRef = Cu.getWeakReference(gDraftListener);
   mainWindow.Conversations.draftListeners[id].push(weakRef);
@@ -205,18 +213,18 @@ function newComposeSessionByClick(type) {
 function revealCompositionFields() {
   document.querySelector(".quickReply")
     .classList.add("expand");
-  $('.quickReplyRecipients').show();
+  $(".quickReplyRecipients").show();
 }
 
 function hideCompositionFields() {
   document.querySelector(".quickReply")
     .classList.remove("expand");
-  $('.quickReplyRecipients').hide();
+  $(".quickReplyRecipients").hide();
 }
 
 function resetCompositionFields() {
   $(".showCc, .showBcc").show();
-  $('.quickReplyRecipients').removeClass('edit');
+  $(".quickReplyRecipients").removeClass("edit");
   $(".bccList, .editBccList").css("display", "none");
   $(".ccList, .editCcList").css("display", "none");
 }
@@ -244,8 +252,8 @@ function addAttachment() {
 }
 
 function editFields(aFocusId) {
-  $('.quickReplyRecipients').addClass('edit');
-  $("#"+aFocusId).next().find(".token-input-input-token-facebook input").last().focus();
+  $(".quickReplyRecipients").addClass("edit");
+  $("#" + aFocusId).next().find(".token-input-input-token-facebook input").last().focus();
 }
 
 function confirmDiscard(event) {
@@ -367,9 +375,8 @@ function createComposeSession(what) {
   if (gBzSetup) {
     let [webUrl, bzUrl, cookie] = gBzSetup;
     return new BzComposeSession(what, webUrl, bzUrl, cookie);
-  } else {
-    return new ComposeSession(what);
   }
+  return new ComposeSession(what);
 }
 
 /**
@@ -378,13 +385,13 @@ function createComposeSession(what) {
 function startedEditing(aVal) {
   if (aVal === undefined) {
     return gComposeSession && gComposeSession.startedEditing;
+  }
+
+  if (!gComposeSession) {
+    Log.error("No composition session yet");
+    dumpCallStack();
   } else {
-    if (!gComposeSession) {
-      Log.error("No composition session yet");
-      dumpCallStack();
-    } else {
-      gComposeSession.startedEditing = aVal;
-    }
+    gComposeSession.startedEditing = aVal;
   }
 }
 
@@ -512,15 +519,15 @@ ComposeSession.prototype = {
       reply(aMessage) {
         let aMsgHdr = aMessage._msgHdr;
         self.params.msgHdr = aMsgHdr;
-        self.params.subject = "Re: "+aMsgHdr.mime2DecodedSubject;
+        self.params.subject = "Re: " + aMsgHdr.mime2DecodedSubject;
         self.setupDone();
       },
 
       draft({ msgUri }) {
-        let last = (a) => a[a.length-1];
+        let last = (a) => a[a.length - 1];
         let msgHdr = msgUriToMsgHdr(msgUri);
         self.params.msgHdr = msgHdr || last(Conversations.currentConversation.msgHdrs);
-        self.params.subject = "Re: "+self.params.msgHdr.mime2DecodedSubject;
+        self.params.subject = "Re: " + self.params.msgHdr.mime2DecodedSubject;
         self.setupDone();
       },
 
@@ -530,7 +537,7 @@ ComposeSession.prototype = {
         let input = document.getElementById("subject");
         input.addEventListener("change", function() {
           self.params.subject = input.value;
-        }, false);
+        });
         self.setupDone();
       },
     });
@@ -731,7 +738,7 @@ ComposeSession.prototype = {
     else
       compType =  Ci.nsIMsgCompType.ReplyAll; // ReplyAll, Reply... ends up the same
 
-    let [to, cc, bcc] = ["to", "cc", "bcc"].map(x => JSON.parse($("#"+x).val()));
+    let [to, cc, bcc] = ["to", "cc", "bcc"].map(x => JSON.parse($("#" + x).val()));
 
     let sendStatus = { };
     for (let priority of ["_early", "", "_canceled"]) {
@@ -832,10 +839,11 @@ nsAttachmentOpener.prototype = {
   },
 
   getInterface(iid) {
-    if (iid.equals(Ci.nsIDOMWindow))
+    if (iid.equals(Ci.nsIDOMWindow)) {
       return window;
-    else
-      return this.QueryInterface(iid);
+    }
+
+    return this.QueryInterface(iid);
   },
 
   loadCookie: null,
@@ -872,7 +880,7 @@ AttachmentList.prototype = {
     let self = this;
     let line = tmpl("#quickReplyAttachmentTemplate", data);
     line.find(".openAttachmentLink").click(function() {
-      let url = Services.io.newURI(data.url, null, null);
+      let url = Services.io.newURI(data.url);
       url = url.QueryInterface(Ci.nsIURL);
 
       if (url) {
@@ -953,7 +961,7 @@ function attachmentDataFromDragData(event) {
         size = parseInt(pieces[2]);
       // If this is a local file, we may be able to recover some information...
       try {
-        let uri = Services.io.newURI(url, null, null);
+        let uri = Services.io.newURI(url);
         let file = uri.QueryInterface(Ci.nsIFileURL).file;
         if (!prettyName)
           prettyName = file.leafName;
@@ -1021,7 +1029,7 @@ function parse(aMimeLine) {
 function pValue(v) {
   $(".statusPercentage")
     .show()
-    .text(v+"%");
+    .text(v + "%");
   $(".statusThrobber").hide();
 }
 
@@ -1045,7 +1053,7 @@ let progressListener = {
 
     if (aStateFlags & Ci.nsIWebProgressListener.STATE_STOP) {
       pValue(0);
-      pText('');
+      pText("");
     }
   },
 
@@ -1054,7 +1062,7 @@ let progressListener = {
     // Calculate percentage.
     var percent;
     if (aMaxTotalProgress > 0) {
-      percent = Math.round( (aCurTotalProgress*100)/aMaxTotalProgress );
+      percent = Math.round( (aCurTotalProgress * 100) / aMaxTotalProgress );
       if (percent > 100)
         percent = 100;
 
@@ -1146,7 +1154,7 @@ let sendListener = {
     //  i.e. is not called when saving a draft (although msgCompose.SendMsg is
     //  called...)
     if (NS_SUCCEEDED(aStatus)) {
-      //if (gOldDraftToDelete)
+      // if (gOldDraftToDelete)
       //  msgHdrsDelete([gOldDraftToDelete]);
       pText(strings.get("messageSendingSuccess", [aMsgID]));
     } else {

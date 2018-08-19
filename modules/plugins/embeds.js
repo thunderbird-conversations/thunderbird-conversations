@@ -37,17 +37,13 @@
 var EXPORTED_SYMBOLS = [];
 
 ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
-ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
-ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
-/* import-globals-from ../prefs.js */
-ChromeUtils.import("resource://conversations/modules/prefs.js");
-/* import-globals-from ../misc.js */
-ChromeUtils.import("resource://conversations/modules/misc.js");
-/* import-globals-from ../hook.js */
-ChromeUtils.import("resource://conversations/modules/hook.js");
-/* import-globals-from ../log.js */
-ChromeUtils.import("resource://conversations/modules/log.js");
+ChromeUtils.import("resource:///modules/StringBundle.js");
+const {Prefs} =
+  ChromeUtils.import("resource://conversations/modules/prefs.js", {});
+const {registerHook} =
+  ChromeUtils.import("resource://conversations/modules/hook.js", {});
+const {setupLogging} =
+  ChromeUtils.import("resource://conversations/modules/log.js", {});
 
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
@@ -60,26 +56,26 @@ let embedsHook = {
   /* eslint-disable no-multi-spaces */
   // From http://stackoverflow.com/questions/5830387/php-regex-find-all-youtube-video-ids-in-string/5831191#5831191
   YOUTUBE_REGEXP: new RegExp(
-    '(?:https?://)?'           + // Optional scheme. Either http or https
-    '(?:www\\.)?'              + // Optional www subdomain
-    '(?:'                      + // Group host alternatives
-    'youtu\\.be/'              + // Either youtu.be,
-    '|youtube\\.com'           + // or youtube.com
-    '(?:'                      + // Group path alternatives
-    '/embed/'                  + // Either /embed/
-    '|/v/'                     + // or /v/
-    '|/watch\\?v='             + // or /watch\?v=
-    '|/user/\\S+/'             + // or /user/username#p/u/1/
-    '|/ytscreeningroom\?v='    + // or ytscreeningroom
-    ')'                        + // End path alternatives.
-    ')'                        + // End host alternatives.
-    '([\\w\\-]{10,12})'        + // $1: Allow 10-12 for 11 char youtube id.
-    '\\b'                      + // Anchor end to word boundary.
-    '[?=&\\w]*'                + // Consume any URL (query) remainder.
-    '(?!'                      + // But don\'t match URLs already linked.
+    "(?:https?://)?"           + // Optional scheme. Either http or https
+    "(?:www\\.)?"              + // Optional www subdomain
+    "(?:"                      + // Group host alternatives
+    "youtu\\.be/"              + // Either youtu.be,
+    "|youtube\\.com"           + // or youtube.com
+    "(?:"                      + // Group path alternatives
+    "/embed/"                  + // Either /embed/
+    "|/v/"                     + // or /v/
+    "|/watch\\?v="             + // or /watch\?v=
+    "|/user/\\S+/"             + // or /user/username#p/u/1/
+    "|/ytscreeningroom\?v="    + // or ytscreeningroom
+    ")"                        + // End path alternatives.
+    ")"                        + // End host alternatives.
+    "([\\w\\-]{10,12})"        + // $1: Allow 10-12 for 11 char youtube id.
+    "\\b"                      + // Anchor end to word boundary.
+    "[?=&\\w]*"                + // Consume any URL (query) remainder.
+    "(?!"                      + // But don\'t match URLs already linked.
     '[\\\'"][^<>]*>'           + // Not inside a start tag,
-    '|</a>'                    + // or <a> element text contents.
-    ')'                          // End negative lookahead assertion.
+    "|</a>"                    + // or <a> element text contents.
+    ")"                          // End negative lookahead assertion.
   ),
   /* eslint-enable no-multi-spaces */
 
@@ -118,11 +114,11 @@ let embedsHook = {
       let videoId = matches[1];
       Log.debug("Found a youtube video, video-id", videoId);
       this.insertEmbed(strings.get("foundYouTube"), "640", "385",
-        "http://www.youtube.com/embed/"+videoId, aDomNode);
+        "http://www.youtube.com/embed/" + videoId, aDomNode);
       return videoId;
-    } else {
-      return null;
     }
+
+    return null;
   },
 
   GMAPS_REGEXP: /q=([^&]+)(&|$)/,
@@ -130,10 +126,10 @@ let embedsHook = {
   tryGoogleMaps: function _embeds_googlemaps(a, aDomNode) {
     let url;
     try {
-      url = Services.io.newURI(a.href, null, null);
+      url = Services.io.newURI(a.href);
       url.QueryInterface(Ci.nsIURL);
     } catch (e) {
-      //Log.debug(e);
+      // Log.debug(e);
       return false;
     }
     if (url.host == "maps.google.com") {
@@ -142,7 +138,7 @@ let embedsHook = {
         let q = matches[1];
         this.insertEmbed(strings.get("foundGoogleMaps"),
           "600", "450",
-          "https://www.google.com/maps/embed/v1/place?key=AIzaSyCUitgLn5uy0kcU1pneLGiEfI_f0nhMvXw&q="+q,
+          "https://www.google.com/maps/embed/v1/place?key=AIzaSyCUitgLn5uy0kcU1pneLGiEfI_f0nhMvXw&q=" + q,
           aDomNode
         );
         return true;
@@ -162,8 +158,8 @@ let embedsHook = {
       "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul",
       "iframe");
     iframe.setAttribute("type", "content");
-    iframe.style.width = width+"px";
-    iframe.style.height = height+"px";
+    iframe.style.width = width + "px";
+    iframe.style.height = height + "px";
     iframe.style.marginTop = "3px";
     iframe.style.border = "0";
     iframe.setAttribute("src", src);

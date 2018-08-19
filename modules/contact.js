@@ -36,30 +36,25 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ['ContactManager', 'Contacts', 'defaultPhotoURI'];
+var EXPORTED_SYMBOLS = ["ContactManager", "Contacts", "defaultPhotoURI"];
 
-ChromeUtils.import("resource://gre/modules/Services.jsm"); // https://developer.mozilla.org/en/JavaScript_code_modules/Services.jsm
 ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
 const {MailServices} = ChromeUtils.import("resource:///modules/mailServices.js", {});
 const {GlodaUtils} = ChromeUtils.import("resource:///modules/gloda/utils.js", {});
 const {Gloda} = ChromeUtils.import("resource:///modules/gloda/gloda.js", {});
 
-/* import-globals-from stdlib/compose.js */
-ChromeUtils.import("resource://conversations/modules/stdlib/compose.js");
-/* import-globals-from stdlib/misc.js */
-ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
-ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
-/* import-globals-from log.js */
-ChromeUtils.import("resource://conversations/modules/log.js");
-/* import-globals-from prefs.js */
-ChromeUtils.import("resource://conversations/modules/prefs.js");
-/* import-globals-from misc.js */
-ChromeUtils.import("resource://conversations/modules/misc.js");
+const {composeMessageTo} = ChromeUtils.import("resource://conversations/modules/stdlib/compose.js", {});
+const {getIdentities, getIdentityForEmail, MixIn, sanitize } =
+  ChromeUtils.import("resource://conversations/modules/stdlib/misc.js", {});
+// ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+const {setupLogging} = ChromeUtils.import("resource://conversations/modules/log.js", {});
+const {Prefs} = ChromeUtils.import("resource://conversations/modules/prefs.js", {});
+const {EventHelperMixIn, topMail3Pane} = ChromeUtils.import("resource://conversations/modules/misc.js", {});
 
 const clipboardService = Cc["@mozilla.org/widget/clipboardhelper;1"]
                          .getService(Ci.nsIClipboardHelper);
 
-const Contacts = {
+var Contacts = {
   kFrom: 0,
   kTo: 1
 };
@@ -72,8 +67,8 @@ let strings = new StringBundle("chrome://conversations/locale/message.properties
 // Taken from
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/charAt#Fixing_charAt()_to_support_non-Basic-Multilingual-Plane_(BMP)_characters
 function fixedCharAt(str, idx) {
-  var ret = '';
-  str += '';
+  var ret = "";
+  str += "";
   var end = str.length;
 
   var surrogatePairs = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g;
@@ -87,7 +82,7 @@ function fixedCharAt(str, idx) {
   }
 
   if (idx >= end || idx < 0) {
-    return '';
+    return "";
   }
 
   ret += str.charAt(idx);
@@ -105,7 +100,7 @@ function fixedCharAt(str, idx) {
  * two letters of the first word if only one exists).
  */
 function getInitials(name) {
-  name = name.trim().split('@')[0];
+  name = name.trim().split("@")[0];
   let words = name.split(/[ .\-_]/).filter(function(word) {
     return word;
   });
@@ -129,12 +124,12 @@ ContactManager.prototype = {
   getContactFromNameAndEmail: function _ContactManager_getContactFromEmail(name, email, position) {
     // [name] and [email] are from the message header
     let self = this;
-    email = (email+"").toLowerCase();
+    email = (email + "").toLowerCase();
     // Might change in the future... who knows? ...
     let key = email;
     let cache = function _cache(name, contact) {
       for (let email of contact.emails) {
-        email = (email+"").toLowerCase();
+        email = (email + "").toLowerCase();
         self._cache[key] = contact;
       }
     };
@@ -142,24 +137,23 @@ ContactManager.prototype = {
       if (name)
         this._cache[key].enrichWithName(name);
       return this._cache[key];
-    } else {
-      let contact = new ContactFromAB(this, name, email, position, this._colorCache[email]);
-      // Only cache contacts which are in the address book. This avoids weird
-      //  phenomena such as a bug tracker sending emails with different names
-      //  but with the same email address, resulting in people all sharing the
-      //  same name.
-      // For those that need to be in the address book (because we want to
-      //  display images, for instance), the user still has the option to uncheck
-      //  "prefer display name over header name".
-      if (contact._useCardName) {
-        cache(name, contact);
-      } else {
-        // We still want to cache the color...
-        if (!(email in this._colorCache))
-          this._colorCache[email] = contact.color;
-      }
-      return contact;
     }
+
+    let contact = new ContactFromAB(this, name, email, position, this._colorCache[email]);
+    // Only cache contacts which are in the address book. This avoids weird
+    //  phenomena such as a bug tracker sending emails with different names
+    //  but with the same email address, resulting in people all sharing the
+    //  same name.
+    // For those that need to be in the address book (because we want to
+    //  display images, for instance), the user still has the option to uncheck
+    //  "prefer display name over header name".
+    if (contact._useCardName) {
+      cache(name, contact);
+    } else if (!(email in this._colorCache)) {
+      // We still want to cache the color...
+      this._colorCache[email] = contact.color;
+    }
+    return contact;
   },
 };
 
@@ -184,7 +178,7 @@ let ContactMixIn = {
       tooltipName: sanitize((tooltipName != aEmail) ? tooltipName : ""),
       email: sanitize(aEmail),
       avatar: sanitize(this.avatar),
-      avatarIsDefault: this.avatar.substr(0, 6) === 'chrome',
+      avatarIsDefault: this.avatar.substr(0, 6) === "chrome",
       profiles: this._profiles,
       extra,
       // Parameter aUseColor is optional, and undefined means true
@@ -211,14 +205,14 @@ let ContactMixIn = {
         event.originalTarget.classList.remove("is-open");
       }
       event.stopPropagation();
-    }, false);
+    });
 
     /* Register the "send message" link */
     this.register(".sendEmail", function(event) {
       let dest = (this._name == this._email || !this._name)
         ? this._email
         : MailServices.headerParser.makeMimeAddress(this._name, this._email);
-      dump(dest+"\n\n");
+      dump(dest + "\n\n");
       composeMessageTo(dest, mainWindow.gFolderDisplay.displayedFolder);
       event.stopPropagation();
     }.bind(this));
@@ -314,18 +308,18 @@ let ContactMixIn = {
         : (event) => (
             mainWindow.specialTabs.siteClickHandler(event, /^mailto:/),
             event.preventDefault()
-          ),
-        false);
+          ));
     }
   },
 
   getTooltipName: function _ContactMixIn_getName(aPosition) {
     Log.assert(aPosition === Contacts.kFrom || aPosition === Contacts.kTo,
       "Someone did not set the 'position' properly");
-    if (getIdentityForEmail(this._email))
+    if (getIdentityForEmail(this._email)) {
       return strings.get("meFromMeToSomeone");
-    else
-      return this._name || this._email;
+    }
+
+    return this._name || this._email;
   },
 
   getName: function _ContactMixIn_getName(aPosition, aIsDetail) {
@@ -337,8 +331,9 @@ let ContactMixIn = {
         : strings.get("meFromSomeoneToMe")
       );
       return [display, getIdentities().length > 1 ? this._email : ""];
-    } else
-      return [this._name || this._email, ""];
+    }
+
+    return [this._name || this._email, ""];
   },
 
   enrichWithName: function _ContactMixIn_enrichWithName(aName) {

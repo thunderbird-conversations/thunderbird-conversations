@@ -36,25 +36,32 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ['MonkeyPatch'];
+var EXPORTED_SYMBOLS = ["MonkeyPatch"];
 
 ChromeUtils.import("resource://gre/modules/AddonManager.jsm");
 ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
 
-/* import-globals-from stdlib/misc.js */
-ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
-/* import-globals-from stdlib/msgHdrUtils.js */
-ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
-/* import-globals-from assistant.js */
-ChromeUtils.import("resource://conversations/modules/assistant.js");
-/* import-globals-from misc.js */
-ChromeUtils.import("resource://conversations/modules/misc.js"); // for joinWordList, openConversationIn
-/* import-globals-from prefs.js */
-ChromeUtils.import("resource://conversations/modules/prefs.js");
-/* import-globals-from log.js */
-ChromeUtils.import("resource://conversations/modules/log.js");
-/* import-globals-from config.js */
-ChromeUtils.import("resource://conversations/modules/config.js");
+const {
+  entries, getIdentityForEmail, getIdentities, parseMimeLine,
+} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js", {});
+const {
+  getMail3Pane, msgHdrGetUri, msgHdrIsRss, msgHdrIsNntp, msgHdrsMarkAsRead,
+} = ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js", {});
+const {
+  Customizations,
+} = ChromeUtils.import("resource://conversations/modules/assistant.js", {});
+const {
+  arrayEquals, joinWordList, openConversationInTabOrWindow,
+} = ChromeUtils.import("resource://conversations/modules/misc.js", {});
+const {
+  Prefs,
+} = ChromeUtils.import("resource://conversations/modules/prefs.js", {});
+const {
+  Colors, dumpCallStack, setupLogging,
+} = ChromeUtils.import("resource://conversations/modules/log.js", {});
+const {
+  Config
+} = ChromeUtils.import("resource://conversations/modules/config.js", {});
 
 ChromeUtils.import("resource://gre/modules/Services.jsm");
 
@@ -174,8 +181,8 @@ MonkeyPatch.prototype = {
             if (getIdentities().length > 1)
               display += " (" + x.email + ")";
             return display;
-          } else
-            return x.name || x.email;
+          }
+          return x.name || x.email;
         };
         // Add all the people found in one of the msgHdr's properties.
         let addPeople = function(prop, pos) {
@@ -199,8 +206,8 @@ MonkeyPatch.prototype = {
         // And turn this into a human-readable line.
         if (people.length)
           return joinWordList(people);
-        else
-          return "-";
+
+        return "-";
       } catch (e) {
         Log.debug("Error in the special column", e);
         dumpCallStack(e);
@@ -233,7 +240,7 @@ MonkeyPatch.prototype = {
       observe(aMsgFolder, aTopic, aData) {
         window.gDBView.addColumnHandler("betweenCol", columnHandler);
       }
-    }, "MsgCreateDBView", false);
+    }, "MsgCreateDBView");
     try {
       window.gDBView.addColumnHandler("betweenCol", columnHandler);
     } catch (e) {
@@ -264,10 +271,10 @@ MonkeyPatch.prototype = {
         }
       },
     };
-    Services.prefs.addObserver("", observer, false);
+    Services.prefs.addObserver("", observer);
     this._window.addEventListener("close", function() {
       Services.prefs.removeObserver("", observer);
-    }, false);
+    });
     this.pushUndo(() => Services.prefs.removeObserver("", observer));
   },
 
@@ -294,7 +301,7 @@ MonkeyPatch.prototype = {
             && !window.gFolderDisplay.view.isCollapsedThreadAtIndex(rootIndex);
         }
       } catch (e) {
-        Log.debug("Error in the onLocationChange handler "+e+"\n");
+        Log.debug("Error in the onLocationChange handler " + e + "\n");
         dumpCallStack(e);
       }
     }
@@ -322,7 +329,7 @@ MonkeyPatch.prototype = {
       // We don't want to undo all the customizations in the case of an
       // upgrade... but if the user disables the conversation view, or
       // uninstalls the addon, then we should revert them indeed.
-      if (shouldPerformUninstall && aReason != BOOTSTRAP_REASONS.ADDON_UPGRADE) {
+      if (shouldPerformUninstall && aReason != Config.BOOTSTRAP_REASONS.ADDON_UPGRADE) {
         // Switch to a 3pane view (otherwise the "display threaded"
         // customization is not reverted)
         let mainWindow = getMail3Pane();
@@ -365,7 +372,7 @@ MonkeyPatch.prototype = {
       let checked = menuItem.hasAttribute("checked") &&
         menuItem.getAttribute("checked") == "true";
       Prefs.setBool("conversations.enabled", checked);
-      window.gMessageDisplay.onSelectedMessagesChanged.call(window.gMessageDisplay);
+      window.gMessageDisplay.onSelectedMessagesChanged();
     });
   },
 
@@ -391,9 +398,9 @@ MonkeyPatch.prototype = {
     let mkConvUrl = function(msgHdrs) {
       let urls = msgHdrs.map(hdr => msgHdrGetUri(hdr)).join(",");
       let scrollMode = self.determineScrollMode();
-      let queryString = "?urls="+window.encodeURIComponent(urls) +
-        "&scrollMode="+scrollMode;
-      return kStubUrl + queryString;
+      let queryString = "?urls=" + window.encodeURIComponent(urls) +
+        "&scrollMode=" + scrollMode;
+      return Prefs.kStubUrl + queryString;
     };
 
     // Below is the code that intercepts the double-click-on-a-message event,
@@ -425,7 +432,7 @@ MonkeyPatch.prototype = {
       if (!Prefs.enabled)
         return oldTreeOnMouseDown(event);
 
-      if (event.target.parentNode.id !== 'threadTree')
+      if (event.target.parentNode.id !== "threadTree")
         return oldTreeOnMouseDown(event);
 
       // Middle-click
@@ -489,7 +496,7 @@ MonkeyPatch.prototype = {
 
         window.gMessageDisplay.singleMessageDisplay = false;
 
-        window.gSummaryFrameManager.loadAndCallback(kStubUrl, function(isRefresh) {
+        window.gSummaryFrameManager.loadAndCallback(Prefs.kStubUrl, function(isRefresh) {
           // See issue #673
           if (htmlpane.contentDocument && htmlpane.contentDocument.body)
             htmlpane.contentDocument.body.hidden = false;
@@ -512,9 +519,9 @@ MonkeyPatch.prototype = {
               try {
                 window.dispatchEvent(event);
               } catch (e) {
-                //Log.debug("We failed to dispatch the event, don't know why...", e);
+                // Log.debug("We failed to dispatch the event, don't know why...", e);
               }
-            }, false);
+            });
           }
 
           try {
@@ -667,7 +674,7 @@ MonkeyPatch.prototype = {
 
           let selectedCount = this.folderDisplay.selectedCount;
           Log.debug("Intercepted message load, ", selectedCount, " message(s) selected");
-          /*dump(Colors.red);
+          /* dump(Colors.red);
           for (let msgHdr of this.folderDisplay.selectedMessages)
             dump("  " + msgHdr.folder.URI + "#" + msgHdr.messageKey + "\n");
           dump(Colors.default);*/
@@ -695,15 +702,14 @@ MonkeyPatch.prototype = {
                 * Prefs.getBool("mailnews.mark_message_read.delay") * 1000);
               this.singleMessageDisplay = true;
               return false;
-            } else {
-              // Otherwise, we create a thread summary.
-              // We don't want to call this._showSummary because it has a built-in check
-              // for this.folderDisplay.selectedCount and returns immediately if
-              // selectedCount == 1
-              this.singleMessageDisplay = false;
-              window.summarizeThread(this.folderDisplay.selectedMessages, this);
-              return true;
             }
+            // Otherwise, we create a thread summary.
+            // We don't want to call this._showSummary because it has a built-in check
+            // for this.folderDisplay.selectedCount and returns immediately if
+            // selectedCount == 1
+            this.singleMessageDisplay = false;
+            window.summarizeThread(this.folderDisplay.selectedMessages, this);
+            return true;
           }
 
           // Else defer to showSummary to work it out based on thread selection.

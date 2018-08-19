@@ -60,7 +60,7 @@ Wrapper.prototype = {
    * little function to get the contents of the attachment into a TypedArray.
    */
   _download() {
-    let url = Services.io.newURI(this.url, null, null);
+    let url = Services.io.newURI(this.url);
     let channel = Services.io.newChannelFromURI2(url,
       null,
       Services.scriptSecurityManager.getSystemPrincipal(),
@@ -123,4 +123,4 @@ window.addEventListener("load", function(event) {
 
   wrapper = new Wrapper(uri);
   wrapper.load().catch(Log.error.bind(Log));
-}, false);
+});

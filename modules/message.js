@@ -36,13 +36,15 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ['Message', 'MessageFromGloda', 'MessageFromDbHdr', 'ConversationKeybindings'];
+var EXPORTED_SYMBOLS = ["Message", "MessageFromGloda", "MessageFromDbHdr", "ConversationKeybindings"];
 
 ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI
 ChromeUtils.import("resource://gre/modules/PluralForm.jsm");
-ChromeUtils.import("resource://gre/modules/Services.jsm"); // https://developer.mozilla.org/en/JavaScript_code_modules/Services.jsm
-/* import-globals-from stdlib/misc.js */
-ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
+ChromeUtils.import("resource://gre/modules/Services.jsm");
+const {
+  dateAsInMessageList, entries, escapeHtml, getIdentityForEmail, isAccel,
+  isOSX, isWindows, MixIn, parseMimeLine, sanitize
+} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js", {});
 const {MailServices} = ChromeUtils.import("resource:///modules/mailServices.js", {}); // bug 629462
 ChromeUtils.import("resource:///modules/StringBundle.js");
 const {makeFriendlyDateAgo} = ChromeUtils.import("resource:///modules/templateUtils.js", {});
@@ -50,8 +52,7 @@ const {GlodaUtils} = ChromeUtils.import("resource:///modules/gloda/utils.js", {}
 const {MsgHdrToMimeMessage} = ChromeUtils.import("resource:///modules/gloda/mimemsg.js", {});
 const {mimeMsgToContentSnippetAndMeta} = ChromeUtils.import("resource:///modules/gloda/connotent.js", {});
 
-/* import-globals-from plugins/lightning.js */
-ChromeUtils.import("resource://conversations/modules/plugins/lightning.js");
+const {isLightningInstalled} = ChromeUtils.import("resource://conversations/modules/plugins/lightning.js", {});
 // It's not really nice to write into someone elses object but this is what the
 // Services object is for.  We prefix with the "m" to ensure we stay out of their
 // namespace.
@@ -71,26 +72,26 @@ const olderThan52 = Services.vc.compare(Services.sysinfo.version, "51.1") > 0;
 
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
-/* import-globals-from stdlib/addressBookUtils.js */
-ChromeUtils.import("resource://conversations/modules/stdlib/addressBookUtils.js");
-/* import-globals-from stdlib/msgHdrUtils.js */
-ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
-/* import-globals-from stdlib/compose.js */
-ChromeUtils.import("resource://conversations/modules/stdlib/compose.js");
-/* import-globals-from plugins/helpers.js */
-ChromeUtils.import("resource://conversations/modules/plugins/helpers.js");
-/* import-globals-from quoting.js */
-ChromeUtils.import("resource://conversations/modules/quoting.js");
-/* import-globals-from contact.js */
-ChromeUtils.import("resource://conversations/modules/contact.js");
-/* import-globals-from prefs.js */
-ChromeUtils.import("resource://conversations/modules/prefs.js");
-/* import-globals-from misc.js */
-ChromeUtils.import("resource://conversations/modules/misc.js"); // for iconForMimeType
-/* import-globals-from hook.js */
-ChromeUtils.import("resource://conversations/modules/hook.js");
-/* import-globals-from log.js */
-ChromeUtils.import("resource://conversations/modules/log.js");
+const {
+  msgHdrsArchive, msgHdrGetHeaders, msgHdrGetUri, msgHdrIsDraft, msgHdrIsJunk,
+  msgHdrsDelete, msgHdrsMarkAsRead, msgHdrGetTags, msgHdrSetTags, msgHdrToNeckoURL,
+  msgHdrToMessageBody,
+} = ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js", {});
+const {htmlToPlainText, quoteMsgHdr} =
+  ChromeUtils.import("resource://conversations/modules/stdlib/compose.js", {});
+const {PluginHelpers} =
+  ChromeUtils.import("resource://conversations/modules/plugins/helpers.js", {});
+const {
+  convertOutlookQuotingToBlockquote, convertHotmailQuotingToBlockquote1,
+  convertForwardedToBlockquote, convertMiscQuotingToBlockquote,
+  fusionBlockquotes,
+} = ChromeUtils.import("resource://conversations/modules/quoting.js", {});
+const {Contacts} = ChromeUtils.import("resource://conversations/modules/contact.js", {});
+const {Prefs} = ChromeUtils.import("resource://conversations/modules/prefs.js", {});
+const {EventHelperMixIn, folderName, iconForMimeType, topMail3Pane} =
+  ChromeUtils.import("resource://conversations/modules/misc.js", {});
+const {getHooks} = ChromeUtils.import("resource://conversations/modules/hook.js", {});
+const {dumpCallStack, setupLogging, Colors} = ChromeUtils.import("resource://conversations/modules/log.js", {});
 
 let Log = setupLogging("Conversations.Message");
 // This is high because we want enough snippet to extract relevant data from
@@ -109,6 +110,13 @@ let pdfMimeTypes = {
   "application/x-bzpdf": null,
   "application/x-gzpdf": null,
 };
+
+function tenPxFactor() {
+  if (isOSX) {
+    return .666;
+  }
+  return isWindows ? .7 : .625;
+}
 
 // Add in the global message listener table a weak reference to the given
 //  Message object. The monkey-patch which intercepts the "remote content
@@ -157,7 +165,7 @@ KeyListener.prototype = {
     nextMessage: function nextMessage(event) {
       let [msgNodes, index] = this.findMsgNode(this.message._domNode);
       if (index < (msgNodes.length - 1)) {
-        let next = msgNodes[index+1];
+        let next = msgNodes[index + 1];
         next.focus();
         this.message._conversation._htmlPane.scrollNodeIntoView(next);
       }
@@ -167,7 +175,7 @@ KeyListener.prototype = {
     prevMessage: function prevMessage(event) {
       let [msgNodes, index] = this.findMsgNode(this.message._domNode);
       if (index > 0) {
-        let prev = msgNodes[index-1];
+        let prev = msgNodes[index - 1];
         prev.focus();
         this.message._conversation._htmlPane.scrollNodeIntoView(prev);
       }
@@ -218,7 +226,7 @@ KeyListener.prototype = {
     tagHandling: function tagHandling(event) {
       // Tag handling.
       // 0 removes all tags, 1 to 9 set the corresponding tag, if it exists
-      let i = event.which - '1'.charCodeAt(0);
+      let i = event.which - "1".charCodeAt(0);
       if (i == -1) {
         this.message.tags = [];
       } else {
@@ -395,7 +403,7 @@ function Message(aConversation) {
   this._snippet = "";
   this._conversation = aConversation;
 
-  this._date = dateAccordingToPref(new Date(this._msgHdr.date/1000));
+  this._date = dateAccordingToPref(new Date(this._msgHdr.date / 1000));
   // This one is for display purposes. We should always parse the non-decoded
   // author because there's more information in the encoded form (see #602)
   this._from = this.parse(this._msgHdr.author)[0];
@@ -464,10 +472,11 @@ Message.prototype = {
       oldInfos = {};
     let infos = this.bugzillaInfos;
     let makeArrow = function(oldValue, newValue) {
-      if (oldValue)
+      if (oldValue) {
         return oldValue + " \u21d2 " + newValue;
-      else
-        return newValue;
+      }
+
+      return newValue;
     };
     if (Object.keys(infos).length) {
       let items = [];
@@ -477,11 +486,11 @@ Message.prototype = {
           let key =
             k.split("-").map(x => x.charAt(0).toUpperCase() + x.slice(1))
             .join(" ");
-          items.push(key+": "+makeArrow(oldInfos[k], infos[k]));
+          items.push(key + ": " + makeArrow(oldInfos[k], infos[k]));
         }
       }
       if (infos["changed-fields"] && infos["changed-fields"].trim().length)
-        items.push("Changed: "+infos["changed-fields"]);
+        items.push("Changed: " + infos["changed-fields"]);
       let m = this._snippet.match(this.RE_BZ_COMMENT);
       if (m && m.length && m[1].trim().length)
         items.push(m[1]);
@@ -569,7 +578,7 @@ Message.prototype = {
     data.date = sanitize(this._date);
     data.fullDate = Prefs.no_friendly_date
       ? ""
-      : dateAsInMessageList(new Date(this._msgHdr.date/1000))
+      : dateAsInMessageList(new Date(this._msgHdr.date / 1000))
     ;
     data.uri = sanitize(msgHdrGetUri(this._msgHdr));
 
@@ -620,10 +629,10 @@ Message.prototype = {
         data.gallery = true;
       let isPdf = (att.contentType in pdfMimeTypes);
       let key = self._msgHdr.messageKey;
-      let url = att.url.replace(self.RE_MSGKEY, "number="+key);
+      let url = att.url.replace(self.RE_MSGKEY, "number=" + key);
       let [thumb, imgClass] = isImage
         ? [url, "resize-me"]
-        : ["chrome://conversations/skin/icons/"+iconForMimeType(att.contentType), "mime-icon"]
+        : ["chrome://conversations/skin/icons/" + iconForMimeType(att.contentType), "mime-icon"]
       ;
 
       // This is bug 630011, remove when fixed
@@ -646,7 +655,7 @@ Message.prototype = {
         thumb: sanitize(thumb),
         imgClass,
         name: sanitize(att.name),
-        anchor: "msg"+self.initialPosition+"att"+i,
+        anchor: "msg" + self.initialPosition + "att" + i,
         /* Only advertise the preview for PDFs (images have the gallery view). */
         canPreview: isPdf,
         sep,
@@ -677,12 +686,12 @@ Message.prototype = {
           }
         }, 1);
         self.toggle();
-      }, false);
+      });
 
     let keyListener = new KeyListener(this);
     this._domNode.addEventListener("keydown", function(event) {
       keyListener.onKeyUp(event);
-    }, false); // über-important: don't capture
+    }); // über-important: don't capture
 
     // Do this now because the star is visible even if we haven't been expanded
     // yet.
@@ -933,7 +942,7 @@ Message.prototype = {
       } else {
         chromeUrl = "chrome://messenger/content/email=" + self._from.email;
       }
-      let uri = Services.io.newURI(chromeUrl, null, null);
+      let uri = Services.io.newURI(chromeUrl);
       Services.perms.add(uri, "image", Services.perms.ALLOW_ACTION);
       self._reloadMessage();
     });
@@ -1032,7 +1041,7 @@ Message.prototype = {
                                    self._attachments[j].url);
         // XXX I have no idea whether this is useful...
         event.dataTransfer.setData("application/x-moz-file-promise", null);
-      }, false);
+      });
     }
     this.register(".download-all", function(event) {
       mainWindow.HandleMultipleAttachments(attInfos, "save");
@@ -1092,10 +1101,6 @@ Message.prototype = {
     return this._domNode.getElementsByTagName("iframe")[0];
   },
 
-  get tenPxFactor() {
-    return (isOSX ? .666 : (isWindows ? .7 : .625));
-  },
-
   cosmeticFixups: function _Message_cosmeticFixups() {
     let window = this._conversation._htmlPane;
     window.alignAttachments(this);
@@ -1122,11 +1127,11 @@ Message.prototype = {
       let rgb = MailServices.tags.getColorForKey(tag.key).substr(1) || "FFFFFF";
       // This is just so we can figure out if the tag color is too light and we
       // need to have the text black or not.
-      let [, r, g, b] = rgb.match(/(..)(..)(..)/).map(x => parseInt(x, 16)/255);
+      let [, r, g, b] = rgb.match(/(..)(..)(..)/).map(x => parseInt(x, 16) / 255);
       let colorClass = "blc-" + rgb;
       let tagName = tag.tag;
       let tagNode = document.createElement("li");
-      let l = 0.2126*r + 0.7152*g + 0.0722*b;
+      let l = 0.2126 * r + 0.7152 * g + 0.0722 * b;
       if (l > .8)
         tagNode.classList.add("light-tag");
       tagNode.classList.add("tag");
@@ -1140,7 +1145,7 @@ Message.prototype = {
         this.tags = tags;
         // And now let onAttributesChanged kick in... NOT
         tagList.removeChild(tagNode);
-      }.bind(this), false);
+      }.bind(this));
       tagNode.appendChild(span);
       tagList.appendChild(tagNode);
     }
@@ -1248,7 +1253,7 @@ Message.prototype = {
           if (aHeaders.has(h)) {
             let key = h;
             try { // Note all the header names are translated.
-              key = strings.get("header-"+h);
+              key = strings.get("header-" + h);
             } catch (e) {}
             data.extraLines.push({
               key,
@@ -1295,7 +1300,7 @@ Message.prototype = {
         for (let [contactObjects, cssClass] of
             [[contactsFrom, ".fromLine"], [contactsTo, ".toLine"],
              [contactsCc, ".ccLine"], [contactsBcc, ".bccLine"]]) {
-          Array.prototype.forEach.call(this._domNode.querySelectorAll(cssClass+" .tooltip"), function(node, i) {
+          Array.prototype.forEach.call(this._domNode.querySelectorAll(cssClass + " .tooltip"), function(node, i) {
             contactObjects[i][0].onAddedToDom(node);
           });
         }
@@ -1414,18 +1419,18 @@ Message.prototype = {
       // scrollheight corresponds to its "real" height (there was an issue
       // with offsetheight, don't remember what, though).
       iframe.style.height = "20px";
-      iframe.style.height = iframeDoc.body.scrollHeight+"px";
+      iframe.style.height = iframeDoc.body.scrollHeight + "px";
 
       // So now we might overflow horizontally, which causes a horizontal
       // scrollbar to appear, which narrows the vertical height available,
       // which causes a vertical scrollbar to appear.
-      let iframeStyle = self._conversation._window.getComputedStyle(iframe, null);
+      let iframeStyle = self._conversation._window.getComputedStyle(iframe);
       let iframeExternalWidth = parseInt(iframeStyle.width);
       // 20px is a completely arbitrary default value which I hope is
       // greater
       if (iframeDoc.body.scrollWidth > iframeExternalWidth) {
         Log.debug("Horizontal overflow detected.");
-        iframe.style.height = (iframeDoc.body.scrollHeight + 20)+"px";
+        iframe.style.height = (iframeDoc.body.scrollHeight + 20) + "px";
       }
     };
 
@@ -1519,7 +1524,7 @@ Message.prototype = {
                   // XXX this doesn't take into account the case where we
                   // have a cycle with length > 0 in the reloadings.
                   // Currently, I only see UTF8 -> UTF8 cycles.
-                  Log.debug("Reloading with "+BDMCharsetPhaseParams.charsetToForce);
+                  Log.debug("Reloading with " + BDMCharsetPhaseParams.charsetToForce);
                   f_temp2(null, BDMCharsetPhaseParams.charsetToForce);
                   return;
                 }
@@ -1588,9 +1593,9 @@ Message.prototype = {
           Log.error(e);
           dumpCallStack(e);
           Log.error("The iframe doesn't have a docShell, it probably doesn't belong to the DOM anymore."
-            +" Possible reasons include: you modified the jquery-tmpl template, and you did it wrong."
-            +" You changed conversations very fast, and the streaming completed after the conversation"
-            +" was blown away by the newer one.");
+            + " Possible reasons include: you modified the jquery-tmpl template, and you did it wrong."
+            + " You changed conversations very fast, and the streaming completed after the conversation"
+            + " was blown away by the newer one.");
         }
         cv.hintCharacterSet = "UTF-8";
         cv.forceCharacterSet = "UTF-8";
@@ -1642,7 +1647,7 @@ Message.prototype = {
         * @param out aURL
         */
         let params = "&markRead=false";
-        messageService.DisplayMessage(self._uri+params, iframe.docShell,
+        messageService.DisplayMessage(self._uri + params, iframe.docShell,
                                       msgWindow, urlListener, aCharset, {});
       } catch (e) {
         Log.error(e);
@@ -1713,7 +1718,7 @@ Message.prototype = {
     let authorEmail = this._from.email;
     let authorAvatar = this._contacts[0][0].avatar;
     let authorColor = this._contacts[0][0].color;
-    let date = dateAccordingToPref(new Date(this._msgHdr.date/1000));
+    let date = dateAccordingToPref(new Date(this._msgHdr.date / 1000));
     // We try to convert the bodies to plain text, to enhance the readability in
     // the forwarded conversation. Note: <pre> tags are not converted properly
     // it seems, need to investigate...
@@ -1724,17 +1729,17 @@ Message.prototype = {
       body = body.replace(/\r?\n<br>/g, "<br>");
       body = body.replace(/<br>\r?\n/g, "<br>");
       if (!(body.indexOf("<pre wrap>") === 0))
-        body = "<br>"+body;
+        body = "<br>" + body;
       let html = [
         '<div style="overflow: auto">',
         '<img src="', authorAvatar, '" style="float: left; height: 48px; margin-right: 5px" />',
         '<b><span><a style="color: ', authorColor, ' !important; text-decoration: none !important; font-weight: bold" href="mailto:', authorEmail,
-        '">', author, '</a></span></b><br />',
-        '<span style="color: #666">', date, '</span>',
-        '</div>',
+        '">', author, "</a></span></b><br />",
+        '<span style="color: #666">', date, "</span>",
+        "</div>",
         '<div style="color: #666">',
           body,
-        '</div>',
+        "</div>",
       ].join("");
       k(html);
     });
@@ -1760,7 +1765,7 @@ function MessageFromGloda(aConversation, aGlodaMsg, aLateAttachments) {
 
   // FIXME messages that have no body end up with "..." as a snippet
   this._snippet = aGlodaMsg._indexedBodyText
-    ? aGlodaMsg._indexedBodyText.substring(0, kSnippetLength-1)
+    ? aGlodaMsg._indexedBodyText.substring(0, kSnippetLength - 1)
     : "..."; // it's probably an Enigmail message
 
   if ("attachmentInfos" in aGlodaMsg)
@@ -1887,7 +1892,7 @@ MessageFromDbHdr.prototype = {
     Log.debug("Using the default streaming code...");
     let body = msgHdrToMessageBody(this._msgHdr, true, kSnippetLength);
     Log.debug("Body is", body);
-    this._snippet = body.substring(0, kSnippetLength-1);
+    this._snippet = body.substring(0, kSnippetLength - 1);
     this._signal();
   },
 
@@ -1935,8 +1940,7 @@ let PostStreamingFixesMixIn = {
     if (!Prefs.tweak_bodies)
       return;
 
-    let tenPxFactor = isOSX ? .666 : (isWindows ? .7 : .625);
-    let textSize = Math.round(this.defaultSize * tenPxFactor * 1.2);
+    let textSize = Math.round(this.defaultSize * tenPxFactor() * 1.2);
 
     // Assuming 16px is the default (like on, say, Linux), this gives
     //  18px and 12px, which is what Andy had in mind.
@@ -1948,21 +1952,21 @@ let PostStreamingFixesMixIn = {
     if (iframeDoc.querySelectorAll(":not(.mimemail-body) > .moz-text-html").length) {
       styleRules = [
         "body, table {",
-        //"  line-height: 112.5%;",
-        "  font-size: "+textSize+"px;",
+        // "  line-height: 112.5%;",
+        "  font-size: " + textSize + "px;",
         "}",
       ];
     }
 
     // Unless the user specifically asked for this message to be
     //  dislayed with a monospaced font...
-    let [{/*name, */ email}] = this.parse(this._msgHdr.author);
+    let [{/* name, */ email}] = this.parse(this._msgHdr.author);
     if (email && !(email.toLowerCase() in Prefs.monospaced_senders) &&
         !(this.mailingLists.some(x => (x.toLowerCase() in Prefs.monospaced_senders)))) {
       styleRules = styleRules.concat([
         ".moz-text-flowed, .moz-text-plain {",
         "  font-family: sans-serif !important;",
-        "  font-size: "+textSize+"px !important;",
+        "  font-size: " + textSize + "px !important;",
         "  line-height: 112.5% !important;",
         "}",
       ]);
@@ -1978,7 +1982,7 @@ let PostStreamingFixesMixIn = {
     styleRules = styleRules.concat([
       "body {",
       "  margin: 0; padding: 0;",
-      "  color: "+fg+"; background-color: "+bg+";",
+      "  color: " + fg + "; background-color: " + bg + ";",
       "}",
     ]);
 
@@ -2016,7 +2020,7 @@ let PostStreamingFixesMixIn = {
     let iframeDoc = iframe.contentDocument;
 
     let smallSize = Prefs.tweak_chrome
-      ? this.defaultSize * this.tenPxFactor * 1.1
+      ? this.defaultSize * tenPxFactor() * 1.1
       : Math.round(100 * this.defaultSize * 11 / 12) / 100;
 
     // this function adds a show/hide block text link to every topmost
@@ -2027,13 +2031,13 @@ let PostStreamingFixesMixIn = {
 
         if (testNode(c)) {
           let div = iframeDoc.createElement("div");
-          div.setAttribute("class", "link "+linkClass);
+          div.setAttribute("class", "link " + linkClass);
           div.addEventListener("click", function div_listener(event) {
             let h = self._conversation._htmlPane.toggleBlock(event, showText, hideText);
-            iframe.style.height = (parseFloat(iframe.style.height) + h)+"px";
+            iframe.style.height = (parseFloat(iframe.style.height) + h) + "px";
           }, true);
-          div.setAttribute("style", "color: "+linkColor+"; cursor: pointer; font-size: "+smallSize+"px;");
-          div.appendChild(iframeDoc.createTextNode("- "+showText+" -"));
+          div.setAttribute("style", "color: " + linkColor + "; cursor: pointer; font-size: " + smallSize + "px;");
+          div.appendChild(iframeDoc.createTextNode("- " + showText + " -"));
           elt.insertBefore(div, c);
           c.style.display = "none";
         } else {
@@ -2054,7 +2058,7 @@ let PostStreamingFixesMixIn = {
         // Compute the approximate number of lines while the element is still visible
         let style;
         try {
-          style = iframe.contentWindow.getComputedStyle(node, null);
+          style = iframe.contentWindow.getComputedStyle(node);
         } catch (e) {
           // message arrived and window is not displayed, arg,
           // cannot get the computed style, BAD
@@ -2123,14 +2127,14 @@ let PostStreamingFixesMixIn = {
       let hrefURL;
       // make sure relative link urls don't make us bail out
       try {
-        hrefURL = Services.io.newURI(linkUrl, null, null);
+        hrefURL = Services.io.newURI(linkUrl);
       } catch (ex) {
         continue;
       }
 
       // only check for phishing urls if the url is an http or https link.
       // this prevents us from flagging imap and other internally handled urls
-      if (hrefURL.schemeIs('http') || hrefURL.schemeIs('https')) {
+      if (hrefURL.schemeIs("http") || hrefURL.schemeIs("https")) {
         // The link is not suspicious if the visible text is the same as the URL,
         // even if the URL is an IP address. URLs are commonly surrounded by
         // < > or "" (RFC2396E) - so strip those from the link text before comparing.
@@ -2169,7 +2173,7 @@ let PostStreamingFixesMixIn = {
     if (!href.indexOf("imap://") == 0 && !href.indexOf("mailbox://") == 0)
       return false;
     try {
-      let uri = Services.io.newURI(href, null, null);
+      let uri = Services.io.newURI(href);
       if (!(uri instanceof Ci.nsIMsgMailNewsUrl))
         return false;
       uri.QueryInterface(Ci.nsIURL);

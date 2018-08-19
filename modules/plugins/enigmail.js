@@ -64,20 +64,27 @@ var EXPORTED_SYMBOLS = [];
  * That way, your conv-plugin.js won't export anything and AMO won't bother you.
  */
 
-ChromeUtils.import("resource://gre/modules/Services.jsm"); // https://developer.mozilla.org/en/JavaScript_code_modules/Services.jsm
-ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
-/* import-globals-from ../stdlib/msgHdrUtils.js */
-ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
-/* import-globals-from ../stdlib/misc.js */
-ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
-/* import-globals-from ../stdlib/compose.js */
-ChromeUtils.import("resource://conversations/modules/stdlib/compose.js");
-/* import-globals-from ../misc.js */
-ChromeUtils.import("resource://conversations/modules/misc.js");
-/* import-globals-from ../hook.js */
-ChromeUtils.import("resource://conversations/modules/hook.js");
-/* import-globals-from ../log.js */
-ChromeUtils.import("resource://conversations/modules/log.js");
+ChromeUtils.import("resource://gre/modules/Services.jsm");
+ChromeUtils.import("resource:///modules/StringBundle.js");
+const {
+  getMail3Pane, msgHdrGetUri,
+} = ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js", {});
+const {
+  escapeHtml, entries,
+} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js", {});
+const {
+  htmlToPlainText,
+  simpleWrap,
+} = ChromeUtils.import("resource://conversations/modules/stdlib/compose.js", {});
+const {
+  topMail3Pane,
+} = ChromeUtils.import("resource://conversations/modules/misc.js", {});
+const {
+  registerHook,
+} = ChromeUtils.import("resource://conversations/modules/hook.js", {});
+const {
+  setupLogging, dumpCallStack
+} = ChromeUtils.import("resource://conversations/modules/log.js", {});
 
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
@@ -91,6 +98,11 @@ let Log = setupLogging("Conversations.Modules.Enigmail");
 //  wiped)... just ask!
 
 // Enigmail support, thanks to Patrick Brunschwig!
+
+// XXX Work out how/where EnigmailFuncs, Enigmail, EnigmailConstants and EnigmailRules
+// get imported into this scope. It looks like they should be through the enigmail
+// resources, but all of those only appear to export a single item per jsm.
+/* eslint-disable no-unused-vars */
 let window = getMail3Pane();
 let hasEnigmail;
 try {
@@ -117,7 +129,7 @@ try {
     Log.debug("Enigmail doesn't seem to be installed...");
   }
 }
-
+/* eslint-enable no-unused-vars */
 
 let enigmailSvc;
 // used in enigmailMsgComposeOverlay.js
@@ -325,7 +337,7 @@ function tryEnigmail(aDocument, aMessage, aMsgWindow) {
     let text = [];
     while (treeWalker.nextNode())
       text.push(treeWalker.currentNode.nodeValue);
-    msgText = text.join('');
+    msgText = text.join("");
     msgText = msgText.replace(/\r\n?/g, "\n");
 
     var charset = aMsgWindow ? aMsgWindow.mailCharacterSet : "";
@@ -439,7 +451,7 @@ function tryEnigmail(aDocument, aMessage, aMsgWindow) {
         aMessage.decryptedText = msgRfc822Text;
       }
     } else {
-      Log.error("Enigmail error: "+exitCode+" --- "+errorMsgObj.value+"\n");
+      Log.error("Enigmail error: " + exitCode + " --- " + errorMsgObj.value + "\n");
     }
     let w = topMail3Pane(aMessage);
     showHdrIconsOnStreamed(aMessage, function() {
@@ -450,7 +462,7 @@ function tryEnigmail(aDocument, aMessage, aMsgWindow) {
     return statusFlagsObj.value;
   } catch (ex) {
     dumpCallStack(ex);
-    Log.error("Enigmail error: "+ex+" --- "+errorMsgObj.value+"\n");
+    Log.error("Enigmail error: " + ex + " --- " + errorMsgObj.value + "\n");
     return null;
   }
 }
@@ -459,11 +471,11 @@ function tryEnigmail(aDocument, aMessage, aMsgWindow) {
 function verifyAttachments(aMessage) {
   let { _attachments: attachments, _uri: uri, contentType: contentType } = aMessage;
   let w = topMail3Pane(aMessage);
-  if ((contentType+"").search(/^multipart\/signed(;|$)/i) == 0) {
+  if ((contentType + "").search(/^multipart\/signed(;|$)/i) == 0) {
     w.Enigmail.msg.messageDecryptCb(null, true, null);
     return;
   }
-  if ((contentType+"").search(/^multipart\/mixed(;|$)/i) != 0)
+  if ((contentType + "").search(/^multipart\/mixed(;|$)/i) != 0)
     return;
   let embeddedSigned;
   for (let x of attachments) {
@@ -512,7 +524,7 @@ function showNotificationBar(aMessage) {
     let button = enigmailBar.querySelector(".enigmailDetails button");
     button.addEventListener("click", function(event) {
       w.Enigmail.msg.viewSecurityInfo(event);
-    }, false);
+    });
   }
 }
 
@@ -574,8 +586,8 @@ function patchForShowSecurityInfo(aWindow) {
   // Event listeners are added in enigmailMsgHdrViewOverlay.js,
   // but not needed. These display security info incorrectly when
   // resizing message view.
-  w.removeEventListener('messagepane-hide', w.Enigmail.hdrView.msgHdrViewHide, true);
-  w.removeEventListener('messagepane-unhide', w.Enigmail.hdrView.msgHdrViewUnide, true);
+  w.removeEventListener("messagepane-hide", w.Enigmail.hdrView.msgHdrViewHide, true);
+  w.removeEventListener("messagepane-unhide", w.Enigmail.hdrView.msgHdrViewUnide, true);
 }
 
 // Add click event to view security information.
@@ -590,7 +602,7 @@ function addViewSecurityInfoEvent(aMessage) {
   };
   for (let x of ["decrypted", "signed"]) {
     let tag = aMessage._domNode.querySelector(".keep-tag.tag-" + x);
-    tag.addEventListener("click", aMessage._viewSecurityInfo, false);
+    tag.addEventListener("click", aMessage._viewSecurityInfo);
     tag.style.cursor = "pointer";
   }
 }
@@ -624,13 +636,13 @@ let enigmailHook = {
       let { _attachments: attachments, /* _msgHdr: msgHdr, */ _domNode: domNode } = aMessage;
       this._domNode = domNode;
       let w = topMail3Pane(aMessage);
-      let hasEnc = (aMessage.contentType+"").search(/^multipart\/encrypted(;|$)/i) == 0;
+      let hasEnc = (aMessage.contentType + "").search(/^multipart\/encrypted(;|$)/i) == 0;
       if (hasEnc && enigmailSvc.mimeInitialized && !enigmailSvc.mimeInitialized()) {
         Log.debug("Initializing EnigMime");
         w.document.getElementById("messagepane").setAttribute("src", "enigmail:dummy");
       }
 
-      let hasSig = (aMessage.contentType+"").search(/^multipart\/signed(;|$)/i) == 0;
+      let hasSig = (aMessage.contentType + "").search(/^multipart\/signed(;|$)/i) == 0;
       for (let x of attachments) {
         if (x.contentType.search(/^application\/pgp-signature/i) == 0)
           hasSig = true;
@@ -668,6 +680,7 @@ let enigmailHook = {
       return aStatus;
 
     // global window is used in Enigmail function
+    // eslint-disable-next-line no-native-reassign
     window = getMail3Pane();
 
     const nsIEnigmail = Ci.nsIEnigmail;
@@ -822,10 +835,10 @@ let enigmailHook = {
             (charset.search(/^us-ascii$/i) != 0) ) {
             // Add Charset armor header for encrypted blocks
             cipherText = cipherText.replace(/(-----BEGIN PGP MESSAGE----- *)(\r?\n)/,
-              "$1$2Charset: "+charset+"$2");
+              "$1$2Charset: " + charset + "$2");
           }
           cipherText = EnigmailData.convertToUnicode(cipherText, charset);
-          aEditor.value = cipherText.replace(/\r?\n/g, '<br>');
+          aEditor.value = cipherText.replace(/\r?\n/g, "<br>");
           this._originalText = origText;
         } else {
           // Encryption/signing failed
@@ -839,7 +852,7 @@ let enigmailHook = {
 
       if ((!(sendFlags & nsIEnigmail.SAVE_MESSAGE)) &&
            EnigmailPrefs.getPref("confirmBeforeSending")) {
-        if (!Enigmail.msg.confirmBeforeSend(toAddrList.join(", "), toAddr+", "+bccAddr,
+        if (!Enigmail.msg.confirmBeforeSend(toAddrList.join(", "), toAddr + ", " + bccAddr,
              sendFlags, false)) {
           if (origText) {
             aEditor.value = origText;
@@ -850,10 +863,10 @@ let enigmailHook = {
       }
     } catch (ex) {
       dumpCallStack(ex);
-      Log.error("Enigmail encrypt error: "+ex+" --- "+errorMsgObj.value+"\n");
+      Log.error("Enigmail encrypt error: " + ex + " --- " + errorMsgObj.value + "\n");
       let msg = EnigmailLocale.getString("signFailed");
       if (enigmailSvc && enigmailSvc.initializationError) {
-        msg += "\n"+enigmailSvc.initializationError;
+        msg += "\n" + enigmailSvc.initializationError;
       }
       aStatus.canceled = !EnigmailDialog.confirmDlg(window, msg,
         EnigmailLocale.getString("msgCompose.button.sendUnencrypted"));
@@ -966,14 +979,14 @@ let enigmailHook = {
     // Add listeners to set final mode
     if (!aMessage._conversation._enigmailReplyEventListener) {
       aMessage._conversation._enigmailReplyEventListener = true;
-      replyEncrypt.addEventListener('click', function() {
+      replyEncrypt.addEventListener("click", function() {
         if (this.checked) {
           Enigmail.msg.encryptForced = EnigmailConstants.ENIG_ALWAYS; // force to encrypt
         } else {
           Enigmail.msg.encryptForced = EnigmailConstants.ENIG_NEVER; // force not to encrypt
         }
       });
-      replySign.addEventListener('click', function() {
+      replySign.addEventListener("click", function() {
         if (this.checked) {
           Enigmail.msg.signingNoLongerDependsOnEnc();
           Enigmail.msg.signForced = EnigmailConstants.ENIG_ALWAYS; // force to sign
@@ -982,7 +995,7 @@ let enigmailHook = {
           Enigmail.msg.signForced = EnigmailConstants.ENIG_NEVER; // force not to sign
         }
       });
-      replyPgpMime.addEventListener('click', function() {
+      replyPgpMime.addEventListener("click", function() {
         if (this.checked) {
           Enigmail.msg.pgpmimeForced = EnigmailConstants.ENIG_ALWAYS; // force to PGP/Mime
         } else {
@@ -1007,7 +1020,7 @@ let enigmailHook = {
     waitLoadingBody(function() {
       // eslint-disable-next-line no-unsanitized/property
       aEditor.node.contentDocument.querySelector("blockquote").innerHTML =
-        escapeHtml(aMessage.decryptedText).replace(/\r?\n/g, '<br>');
+        escapeHtml(aMessage.decryptedText).replace(/\r?\n/g, "<br>");
     });
   },
 

@@ -36,26 +36,25 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ['Conversation'];
+var EXPORTED_SYMBOLS = ["Conversation"];
 
 ChromeUtils.import("resource://gre/modules/Services.jsm");
 
-ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
+ChromeUtils.import("resource:///modules/StringBundle.js");
 const {Gloda} = ChromeUtils.import("resource:///modules/gloda/gloda.js", {});
-/* import-globals-from log.js */
-ChromeUtils.import("resource://conversations/modules/log.js");
-/* import-globals-from prefs.js */
-ChromeUtils.import("resource://conversations/modules/prefs.js");
+const {Colors, dumpCallStack, setupLogging} =
+  ChromeUtils.import("resource://conversations/modules/log.js", {});
+const {Prefs} = ChromeUtils.import("resource://conversations/modules/prefs.js", {});
 
-/* import-globals-from stdlib/msgHdrUtils.js */
-ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
-/* import-globals-from stdlib/misc.js */
-ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
-/* import-globals-from message.js */
-ChromeUtils.import("resource://conversations/modules/message.js");
-ChromeUtils.import("resource://conversations/modules/contact.js");
-ChromeUtils.import("resource://conversations/modules/misc.js"); // for groupArray
-ChromeUtils.import("resource://conversations/modules/hook.js");
+const {msgHdrGetUri, msgHdrIsArchive, msgHdrIsDraft, msgHdrIsInbox, msgHdrIsJunk,
+       msgHdrIsSent, msgHdrsMarkAsRead} =
+  ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js", {});
+const {MixIn, range} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js", {});
+const {Message, MessageFromGloda, MessageFromDbHdr} =
+  ChromeUtils.import("resource://conversations/modules/message.js", {});
+const {ContactManager} = ChromeUtils.import("resource://conversations/modules/contact.js", {});
+const {LINKS_REGEX, groupArray, linkifySubject, topMail3Pane} =
+  ChromeUtils.import("resource://conversations/modules/misc.js", {});
 
 let Log = setupLogging("Conversations.Conversation");
 
@@ -85,7 +84,7 @@ let SignalManagerMixIn = {
   _runOnceAfterNSignals(f, n) {
     if (("_toRun" in this) && this._toRun !== null && this._toRun !== undefined)
       Log.error("You failed to call signal enough times. Bad developer, bad! Go fix your code!");
-    this._toRun = [f, n+1];
+    this._toRun = [f, n + 1];
     try {
       this._signal();
     } catch (e) {
@@ -219,8 +218,8 @@ function getMessageId({ type, message, msgHdr, glodaMsg }) {
     return glodaMsg.headerMessageID;
   else if (type == kMsgDbHdr)
     return msgHdr.messageId;
-  else
-    Log.error("Bad message type");
+
+  Log.error("Bad message type");
 }
 
 // Get the underlying msgHdr of a message. Might return undefined if Gloda
@@ -230,18 +229,18 @@ function toMsgHdr({ type, message, msgHdr, glodaMsg }) {
     return glodaMsg.folderMessage;
   else if (type == kMsgDbHdr)
     return msgHdr;
-  else
-    Log.error("Bad message type");
+
+  Log.error("Bad message type");
 }
 
 // Get a Date instance for the given message.
 function msgDate({ type, message, msgHdr, glodaMsg }) {
   if (type == kMsgDbHdr)
-    return new Date(msgHdr.date/1000);
+    return new Date(msgHdr.date / 1000);
   else if (type == kMsgGloda)
     return new Date(glodaMsg.date);
-  else
-    Log.error("Bad message type");
+
+  Log.error("Bad message type");
 }
 
 function msgDebugColor(aMsg) {
@@ -249,12 +248,11 @@ function msgDebugColor(aMsg) {
   if (msgHdr) {
     if (msgHdr.getUint32Property("pseudoHdr") == 1)
       return Colors.yellow; // fake sent header
-    else
-      return Colors.blue; // real header
-  } else {
-    // red = no message header, shouldn't happen
-    return Colors.red;
+
+    return Colors.blue; // real header
   }
+  // red = no message header, shouldn't happen
+  return Colors.red;
 }
 
 function messageFromGlodaIfOffline(aSelf, aGlodaMsg, aDebug) {
@@ -308,9 +306,9 @@ ViewWrapper.prototype = {
         (this.mainWindow.gDBView.findIndexOfMsgHdr(msgHdr, false) != nsMsgViewIndex_None)
       ;
       return r;
-    } else {
-      return false;
     }
+
+    return false;
   },
 };
 
@@ -742,7 +740,7 @@ Conversation.prototype = {
           else
             oldMsg = null;
         } else {
-          oldMsg = aMessages[i-1].message;
+          oldMsg = aMessages[i - 1].message;
         }
         let msg = aMessages[i].message;
         msg.updateTmplData(oldMsg);
@@ -774,7 +772,7 @@ Conversation.prototype = {
       let domNodes = this._domNode.getElementsByClassName(Message.prototype.cssClass);
       for (let i of range(this.messages.length - aMessages.length, this.messages.length)) {
         this.messages[i].message.onAddedToDom(domNodes[i]);
-        domNodes[i].setAttribute("tabindex", (i+2)+"");
+        domNodes[i].setAttribute("tabindex", (i + 2) + "");
       }
     }
 
@@ -855,18 +853,18 @@ Conversation.prototype = {
           return [true, a2];
         } else if (a1.length && !a2.length) {
           return [false, null];
-        } else {
-          let hd1 = a1[0];
-          let hd2 = a2[0];
-          if (hd1 == hd2)
-            return isPrefix(a1.slice(1, a1.length), a2.slice(1, a2.length));
-          else
-            return [false, null];
         }
+
+        let hd1 = a1[0];
+        let hd2 = a2[0];
+        if (hd1 == hd2)
+          return isPrefix(a1.slice(1, a1.length), a2.slice(1, a2.length));
+
+        return [false, null];
       };
       let myMsgUris = this.messages.filter(x => toMsgHdr(x))
                                    .map(x => msgHdrGetUri(toMsgHdr(x)));
-      let [shouldRecycle /*, _whichMessageUris */] = isPrefix(currentMsgUris, myMsgUris);
+      let [shouldRecycle /* , _whichMessageUris */] = isPrefix(currentMsgUris, myMsgUris);
       // Ok, some explanation needed. How can this possibly happen?
       // - Click on a conversation
       // - Conversation is built, becomes the global current conversation
@@ -944,41 +942,40 @@ Conversation.prototype = {
 
         this.messages = [];
         return;
-      } else {
-        // We're about to blow up the old conversation. At this point, it's
-        //  still untouched, so if you need to save anything, do it NOW.
-        // If you want to do something once the new conversation is complete, do
-        //  it in monkeypatch.js
-        Log.debug("Not recycling conversation");
-        // Gotta save the quick reply, if there's one! Please note that
-        //  contentWindow.Conversations is still wired onto the old
-        //  conversation. Updating the global Conversations object and loading
-        //  the new conversation's draft is not our responsibility, it's that of
-        //  the monkey-patch, and it's done at the very end of the process.
-        // This call actually starts the save process off the main thread, but
-        //  we're not doing anything besides saving the quick reply, so we don't
-        //  need for this call to complete before going on.
-        try {
-          this._htmlPane.onSave();
-        } catch (e) {
-          Log.error(e);
-          dumpCallStack(e);
-        }
-        // We'll be replacing the old conversation. Do this after the call to
-        // onSave, because onSave calls getMessageForQuickReply...
-        this._window.Conversations.currentConversation.messages = [];
-        // We don't know yet if this is going to be a junkable conversation, so
-        //  when in doubt, reset. Actually, the final call to
-        //  _updateConversationButtons will update this.
-        this._domNode.ownerDocument.getElementById("conversationHeader")
-          .classList.remove("not-junkable");
       }
+      // We're about to blow up the old conversation. At this point, it's
+      //  still untouched, so if you need to save anything, do it NOW.
+      // If you want to do something once the new conversation is complete, do
+      //  it in monkeypatch.js
+      Log.debug("Not recycling conversation");
+      // Gotta save the quick reply, if there's one! Please note that
+      //  contentWindow.Conversations is still wired onto the old
+      //  conversation. Updating the global Conversations object and loading
+      //  the new conversation's draft is not our responsibility, it's that of
+      //  the monkey-patch, and it's done at the very end of the process.
+      // This call actually starts the save process off the main thread, but
+      //  we're not doing anything besides saving the quick reply, so we don't
+      //  need for this call to complete before going on.
+      try {
+        this._htmlPane.onSave();
+      } catch (e) {
+        Log.error(e);
+        dumpCallStack(e);
+      }
+      // We'll be replacing the old conversation. Do this after the call to
+      // onSave, because onSave calls getMessageForQuickReply...
+      this._window.Conversations.currentConversation.messages = [];
+      // We don't know yet if this is going to be a junkable conversation, so
+      //  when in doubt, reset. Actually, the final call to
+      //  _updateConversationButtons will update this.
+      this._domNode.ownerDocument.getElementById("conversationHeader")
+        .classList.remove("not-junkable");
     }
 
     Log.debug("Outputting",
       this.messages.map(x => msgDebugColor(x) + x.debug), Colors.default);
     Log.debug(this.messages.length, "messages in the conversation now");
-    /*for (let message of this.messages) {
+    /* for (let message of this.messages) {
       let msgHdr = toMsgHdr(message);
       dump("  " + msgHdr.folder.URI + "#" + msgHdr.messageKey + "\n");
     }*/
@@ -991,7 +988,7 @@ Conversation.prototype = {
       let msg = this.messages[i].message;
       msg.initialPosition = i;
 
-      let oldMsg = i > 0 ? this.messages[i-1].message : null;
+      let oldMsg = i > 0 ? this.messages[i - 1].message : null;
       msg.updateTmplData(oldMsg);
     }
     let tmplData = this.messages.map(function(m, i) {
@@ -1078,7 +1075,7 @@ Conversation.prototype = {
 
       Array.prototype.forEach.call(messageNodes, function(node, i) {
         if (i < messageNodes.length) {
-          node.setAttribute("tabindex", i+2);
+          node.setAttribute("tabindex", i + 2);
         }
       });
       focusedNode.setAttribute("tabindex", "1");
@@ -1144,13 +1141,13 @@ Conversation.prototype = {
   // For the "forward conversation" action
   exportAsHtml: function _Conversation_exportAsHtml(k) {
     // Somehow this seems to be needed... why? Dunno.
-    let start = '<html><body>';
+    let start = "<html><body>";
     let hr = '<div style="border-top: 1px solid #888; height: 15px; width: 70%; margin: 0 auto; margin-top: 15px">&nbsp;</div>';
-    let html = start + '<p>' + strings.get("conversationFillInText") + '</p>' +hr;
+    let html = start + "<p>" + strings.get("conversationFillInText") + "</p>" + hr;
     let count = 1;
     let top = function() {
       if (!--count) {
-        html += "<div style=\"font-family: sans-serif !important;\">"+messagesHtml.join(hr)+"</div>";
+        html += "<div style=\"font-family: sans-serif !important;\">" + messagesHtml.join(hr) + "</div>";
         Log.debug("The HTML: ---------\n", html, "\n\n");
         k(html);
       }
