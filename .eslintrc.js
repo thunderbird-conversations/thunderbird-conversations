@@ -14,14 +14,6 @@ module.exports = {
     "plugin:mozilla/recommended"
   ],
   "overrides": [{
-    // XXX Fix the not really undefined variables in these files.
-    "files": [
-      "content/*.js",
-    ],
-    "rules": {
-      "no-undef": "off",
-    },
-  }, {
     // This marks exported symbols as used for our modules.
     "files": [
       "modules/**/*.js",

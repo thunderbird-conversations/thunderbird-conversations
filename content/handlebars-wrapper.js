@@ -36,6 +36,8 @@
 
 /* exported wrapHandlebars */
 
+/* global $, Handlebars, Log, dumpCallStack, StringBundle */
+
 "use strict";
 
 // Tiny compatibility wrapper so that we can use Handlebars just like we used
