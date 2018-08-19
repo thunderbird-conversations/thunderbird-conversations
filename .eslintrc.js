@@ -41,6 +41,5 @@ module.exports = {
       "args": "none",
       "vars": "all",
     }],
-    "no-useless-call": "off",
   }
 };

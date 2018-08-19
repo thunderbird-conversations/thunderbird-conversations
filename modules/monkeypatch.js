@@ -372,7 +372,7 @@ MonkeyPatch.prototype = {
       let checked = menuItem.hasAttribute("checked") &&
         menuItem.getAttribute("checked") == "true";
       Prefs.setBool("conversations.enabled", checked);
-      window.gMessageDisplay.onSelectedMessagesChanged.call(window.gMessageDisplay);
+      window.gMessageDisplay.onSelectedMessagesChanged();
     });
   },
 
