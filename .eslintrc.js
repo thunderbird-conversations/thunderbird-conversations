@@ -35,7 +35,6 @@ module.exports = {
     // For now, turn this off, since we want to support TB 60 (only added in 62).
     "mozilla/use-chromeutils-generateqi": "off",
     "mozilla/use-ownerGlobal": "off",
-    "no-lonely-if": "off",
     "no-nested-ternary": "off",
     "no-undef": "error",
     // We want to check the global scope everywhere.
