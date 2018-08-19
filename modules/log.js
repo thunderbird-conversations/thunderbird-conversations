@@ -9,9 +9,9 @@ function setupLogging(name) {
 
   Log.assert = function(aBool, aStr) {
     if (!aBool) {
-      this.error("\n!!!!!!!!!!!!!!!!!!!!!!"+
-                 "\n    ASSERT FAILURE    "+
-                 "\n!!!!!!!!!!!!!!!!!!!!!!\n"+aStr);
+      this.error("\n!!!!!!!!!!!!!!!!!!!!!!" +
+                 "\n    ASSERT FAILURE    " +
+                 "\n!!!!!!!!!!!!!!!!!!!!!!\n" + aStr);
       dumpCallStack();
       throw Error("Assert failures are fatal, man");
     }
@@ -46,9 +46,9 @@ function setupFullLogging(name) {
 
   Log.assert = function(aBool, aStr) {
     if (!aBool) {
-      this.error("\n!!!!!!!!!!!!!!!!!!!!!!"+
-                 "\n    ASSERT FAILURE    "+
-                 "\n!!!!!!!!!!!!!!!!!!!!!!\n"+aStr);
+      this.error("\n!!!!!!!!!!!!!!!!!!!!!!" +
+                 "\n    ASSERT FAILURE    " +
+                 "\n!!!!!!!!!!!!!!!!!!!!!!\n" + aStr);
       throw Error("Assert failures are fatal, man");
     }
   };
@@ -65,7 +65,7 @@ let MyLog = setupFullLogging(logRoot);
 function dumpCallStack(e) {
   let frame = e ? e.stack : Components.stack;
   while (frame) {
-    MyLog.debug("\n"+frame);
+    MyLog.debug("\n" + frame);
     frame = frame.caller;
   }
 }

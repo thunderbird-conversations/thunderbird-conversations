@@ -90,7 +90,7 @@ let AlternativeSender = {
       if (alternativeSender)
         aGlodaMessage.alternativeSender = alternativeSender;
     } catch (e) {
-      dump(e+"\n"+e.stack+"\n");
+      dump(e + "\n" + e.stack + "\n");
     }
 
     yield Gloda.kWorkDone;
@@ -122,7 +122,7 @@ let ContentType = {
       if (aRawReps.mime)
         aGlodaMessage.contentType = aRawReps.mime.headers["content-type"];
     } catch (e) {
-      dump(e+"\n"+e.stack+"\n");
+      dump(e + "\n" + e.stack + "\n");
     }
 
     yield Gloda.kWorkDone;
@@ -155,7 +155,7 @@ let Bugzilla = {
       if (bugzilla)
         aGlodaMessage.bugzillaInfos = JSON.stringify(bugzilla);
     } catch (e) {
-      dump(e+"\n"+e.stack+"\n");
+      dump(e + "\n" + e.stack + "\n");
     }
 
     yield Gloda.kWorkDone;

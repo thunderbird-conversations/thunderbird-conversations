@@ -36,7 +36,7 @@ function loadDefaultPrefs() {
   try {
     Services.scriptloader.loadSubScript(uri.spec, prefLoaderScope);
   } catch (e) {
-    dump("Error loading default preferences at "+uri.spec+": "+e+"\n");
+    dump("Error loading default preferences at " + uri.spec + ": " + e + "\n");
   }
 }
 

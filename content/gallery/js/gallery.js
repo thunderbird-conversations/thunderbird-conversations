@@ -91,7 +91,7 @@ Gallery.prototype = {
         url: att.url,
         name: att.name,
         size: messenger.formatFileSize(att.size),
-        i: i+1,
+        i: i + 1,
         n,
       });
     });

@@ -158,7 +158,7 @@ KeyListener.prototype = {
     nextMessage: function nextMessage(event) {
       let [msgNodes, index] = this.findMsgNode(this.message._domNode);
       if (index < (msgNodes.length - 1)) {
-        let next = msgNodes[index+1];
+        let next = msgNodes[index + 1];
         next.focus();
         this.message._conversation._htmlPane.scrollNodeIntoView(next);
       }
@@ -168,7 +168,7 @@ KeyListener.prototype = {
     prevMessage: function prevMessage(event) {
       let [msgNodes, index] = this.findMsgNode(this.message._domNode);
       if (index > 0) {
-        let prev = msgNodes[index-1];
+        let prev = msgNodes[index - 1];
         prev.focus();
         this.message._conversation._htmlPane.scrollNodeIntoView(prev);
       }
@@ -396,7 +396,7 @@ function Message(aConversation) {
   this._snippet = "";
   this._conversation = aConversation;
 
-  this._date = dateAccordingToPref(new Date(this._msgHdr.date/1000));
+  this._date = dateAccordingToPref(new Date(this._msgHdr.date / 1000));
   // This one is for display purposes. We should always parse the non-decoded
   // author because there's more information in the encoded form (see #602)
   this._from = this.parse(this._msgHdr.author)[0];
@@ -479,11 +479,11 @@ Message.prototype = {
           let key =
             k.split("-").map(x => x.charAt(0).toUpperCase() + x.slice(1))
             .join(" ");
-          items.push(key+": "+makeArrow(oldInfos[k], infos[k]));
+          items.push(key + ": " + makeArrow(oldInfos[k], infos[k]));
         }
       }
       if (infos["changed-fields"] && infos["changed-fields"].trim().length)
-        items.push("Changed: "+infos["changed-fields"]);
+        items.push("Changed: " + infos["changed-fields"]);
       let m = this._snippet.match(this.RE_BZ_COMMENT);
       if (m && m.length && m[1].trim().length)
         items.push(m[1]);
@@ -571,7 +571,7 @@ Message.prototype = {
     data.date = sanitize(this._date);
     data.fullDate = Prefs.no_friendly_date
       ? ""
-      : dateAsInMessageList(new Date(this._msgHdr.date/1000))
+      : dateAsInMessageList(new Date(this._msgHdr.date / 1000))
     ;
     data.uri = sanitize(msgHdrGetUri(this._msgHdr));
 
@@ -622,10 +622,10 @@ Message.prototype = {
         data.gallery = true;
       let isPdf = (att.contentType in pdfMimeTypes);
       let key = self._msgHdr.messageKey;
-      let url = att.url.replace(self.RE_MSGKEY, "number="+key);
+      let url = att.url.replace(self.RE_MSGKEY, "number=" + key);
       let [thumb, imgClass] = isImage
         ? [url, "resize-me"]
-        : ["chrome://conversations/skin/icons/"+iconForMimeType(att.contentType), "mime-icon"]
+        : ["chrome://conversations/skin/icons/" + iconForMimeType(att.contentType), "mime-icon"]
       ;
 
       // This is bug 630011, remove when fixed
@@ -648,7 +648,7 @@ Message.prototype = {
         thumb: sanitize(thumb),
         imgClass,
         name: sanitize(att.name),
-        anchor: "msg"+self.initialPosition+"att"+i,
+        anchor: "msg" + self.initialPosition + "att" + i,
         /* Only advertise the preview for PDFs (images have the gallery view). */
         canPreview: isPdf,
         sep,
@@ -1124,11 +1124,11 @@ Message.prototype = {
       let rgb = MailServices.tags.getColorForKey(tag.key).substr(1) || "FFFFFF";
       // This is just so we can figure out if the tag color is too light and we
       // need to have the text black or not.
-      let [, r, g, b] = rgb.match(/(..)(..)(..)/).map(x => parseInt(x, 16)/255);
+      let [, r, g, b] = rgb.match(/(..)(..)(..)/).map(x => parseInt(x, 16) / 255);
       let colorClass = "blc-" + rgb;
       let tagName = tag.tag;
       let tagNode = document.createElement("li");
-      let l = 0.2126*r + 0.7152*g + 0.0722*b;
+      let l = 0.2126 * r + 0.7152 * g + 0.0722 * b;
       if (l > .8)
         tagNode.classList.add("light-tag");
       tagNode.classList.add("tag");
@@ -1250,7 +1250,7 @@ Message.prototype = {
           if (aHeaders.has(h)) {
             let key = h;
             try { // Note all the header names are translated.
-              key = strings.get("header-"+h);
+              key = strings.get("header-" + h);
             } catch (e) {}
             data.extraLines.push({
               key,
@@ -1297,7 +1297,7 @@ Message.prototype = {
         for (let [contactObjects, cssClass] of
             [[contactsFrom, ".fromLine"], [contactsTo, ".toLine"],
              [contactsCc, ".ccLine"], [contactsBcc, ".bccLine"]]) {
-          Array.prototype.forEach.call(this._domNode.querySelectorAll(cssClass+" .tooltip"), function(node, i) {
+          Array.prototype.forEach.call(this._domNode.querySelectorAll(cssClass + " .tooltip"), function(node, i) {
             contactObjects[i][0].onAddedToDom(node);
           });
         }
@@ -1416,7 +1416,7 @@ Message.prototype = {
       // scrollheight corresponds to its "real" height (there was an issue
       // with offsetheight, don't remember what, though).
       iframe.style.height = "20px";
-      iframe.style.height = iframeDoc.body.scrollHeight+"px";
+      iframe.style.height = iframeDoc.body.scrollHeight + "px";
 
       // So now we might overflow horizontally, which causes a horizontal
       // scrollbar to appear, which narrows the vertical height available,
@@ -1427,7 +1427,7 @@ Message.prototype = {
       // greater
       if (iframeDoc.body.scrollWidth > iframeExternalWidth) {
         Log.debug("Horizontal overflow detected.");
-        iframe.style.height = (iframeDoc.body.scrollHeight + 20)+"px";
+        iframe.style.height = (iframeDoc.body.scrollHeight + 20) + "px";
       }
     };
 
@@ -1521,7 +1521,7 @@ Message.prototype = {
                   // XXX this doesn't take into account the case where we
                   // have a cycle with length > 0 in the reloadings.
                   // Currently, I only see UTF8 -> UTF8 cycles.
-                  Log.debug("Reloading with "+BDMCharsetPhaseParams.charsetToForce);
+                  Log.debug("Reloading with " + BDMCharsetPhaseParams.charsetToForce);
                   f_temp2(null, BDMCharsetPhaseParams.charsetToForce);
                   return;
                 }
@@ -1590,9 +1590,9 @@ Message.prototype = {
           Log.error(e);
           dumpCallStack(e);
           Log.error("The iframe doesn't have a docShell, it probably doesn't belong to the DOM anymore."
-            +" Possible reasons include: you modified the jquery-tmpl template, and you did it wrong."
-            +" You changed conversations very fast, and the streaming completed after the conversation"
-            +" was blown away by the newer one.");
+            + " Possible reasons include: you modified the jquery-tmpl template, and you did it wrong."
+            + " You changed conversations very fast, and the streaming completed after the conversation"
+            + " was blown away by the newer one.");
         }
         cv.hintCharacterSet = "UTF-8";
         cv.forceCharacterSet = "UTF-8";
@@ -1644,7 +1644,7 @@ Message.prototype = {
         * @param out aURL
         */
         let params = "&markRead=false";
-        messageService.DisplayMessage(self._uri+params, iframe.docShell,
+        messageService.DisplayMessage(self._uri + params, iframe.docShell,
                                       msgWindow, urlListener, aCharset, {});
       } catch (e) {
         Log.error(e);
@@ -1715,7 +1715,7 @@ Message.prototype = {
     let authorEmail = this._from.email;
     let authorAvatar = this._contacts[0][0].avatar;
     let authorColor = this._contacts[0][0].color;
-    let date = dateAccordingToPref(new Date(this._msgHdr.date/1000));
+    let date = dateAccordingToPref(new Date(this._msgHdr.date / 1000));
     // We try to convert the bodies to plain text, to enhance the readability in
     // the forwarded conversation. Note: <pre> tags are not converted properly
     // it seems, need to investigate...
@@ -1726,7 +1726,7 @@ Message.prototype = {
       body = body.replace(/\r?\n<br>/g, "<br>");
       body = body.replace(/<br>\r?\n/g, "<br>");
       if (!(body.indexOf("<pre wrap>") === 0))
-        body = "<br>"+body;
+        body = "<br>" + body;
       let html = [
         '<div style="overflow: auto">',
         '<img src="', authorAvatar, '" style="float: left; height: 48px; margin-right: 5px" />',
@@ -1762,7 +1762,7 @@ function MessageFromGloda(aConversation, aGlodaMsg, aLateAttachments) {
 
   // FIXME messages that have no body end up with "..." as a snippet
   this._snippet = aGlodaMsg._indexedBodyText
-    ? aGlodaMsg._indexedBodyText.substring(0, kSnippetLength-1)
+    ? aGlodaMsg._indexedBodyText.substring(0, kSnippetLength - 1)
     : "..."; // it's probably an Enigmail message
 
   if ("attachmentInfos" in aGlodaMsg)
@@ -1889,7 +1889,7 @@ MessageFromDbHdr.prototype = {
     Log.debug("Using the default streaming code...");
     let body = msgHdrToMessageBody(this._msgHdr, true, kSnippetLength);
     Log.debug("Body is", body);
-    this._snippet = body.substring(0, kSnippetLength-1);
+    this._snippet = body.substring(0, kSnippetLength - 1);
     this._signal();
   },
 
@@ -1951,7 +1951,7 @@ let PostStreamingFixesMixIn = {
       styleRules = [
         "body, table {",
         // "  line-height: 112.5%;",
-        "  font-size: "+textSize+"px;",
+        "  font-size: " + textSize + "px;",
         "}",
       ];
     }
@@ -1964,7 +1964,7 @@ let PostStreamingFixesMixIn = {
       styleRules = styleRules.concat([
         ".moz-text-flowed, .moz-text-plain {",
         "  font-family: sans-serif !important;",
-        "  font-size: "+textSize+"px !important;",
+        "  font-size: " + textSize + "px !important;",
         "  line-height: 112.5% !important;",
         "}",
       ]);
@@ -1980,7 +1980,7 @@ let PostStreamingFixesMixIn = {
     styleRules = styleRules.concat([
       "body {",
       "  margin: 0; padding: 0;",
-      "  color: "+fg+"; background-color: "+bg+";",
+      "  color: " + fg + "; background-color: " + bg + ";",
       "}",
     ]);
 
@@ -2029,13 +2029,13 @@ let PostStreamingFixesMixIn = {
 
         if (testNode(c)) {
           let div = iframeDoc.createElement("div");
-          div.setAttribute("class", "link "+linkClass);
+          div.setAttribute("class", "link " + linkClass);
           div.addEventListener("click", function div_listener(event) {
             let h = self._conversation._htmlPane.toggleBlock(event, showText, hideText);
-            iframe.style.height = (parseFloat(iframe.style.height) + h)+"px";
+            iframe.style.height = (parseFloat(iframe.style.height) + h) + "px";
           }, true);
-          div.setAttribute("style", "color: "+linkColor+"; cursor: pointer; font-size: "+smallSize+"px;");
-          div.appendChild(iframeDoc.createTextNode("- "+showText+" -"));
+          div.setAttribute("style", "color: " + linkColor + "; cursor: pointer; font-size: " + smallSize + "px;");
+          div.appendChild(iframeDoc.createTextNode("- " + showText + " -"));
           elt.insertBefore(div, c);
           c.style.display = "none";
         } else {

@@ -301,7 +301,7 @@ MonkeyPatch.prototype = {
             && !window.gFolderDisplay.view.isCollapsedThreadAtIndex(rootIndex);
         }
       } catch (e) {
-        Log.debug("Error in the onLocationChange handler "+e+"\n");
+        Log.debug("Error in the onLocationChange handler " + e + "\n");
         dumpCallStack(e);
       }
     }
@@ -398,8 +398,8 @@ MonkeyPatch.prototype = {
     let mkConvUrl = function(msgHdrs) {
       let urls = msgHdrs.map(hdr => msgHdrGetUri(hdr)).join(",");
       let scrollMode = self.determineScrollMode();
-      let queryString = "?urls="+window.encodeURIComponent(urls) +
-        "&scrollMode="+scrollMode;
+      let queryString = "?urls=" + window.encodeURIComponent(urls) +
+        "&scrollMode=" + scrollMode;
       return Prefs.kStubUrl + queryString;
     };
 

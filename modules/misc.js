@@ -97,7 +97,7 @@ function joinWordList(aElements, aInsertHtml) {
   }
 
   let hd = aElements.slice(0, l - 1);
-  let tl = aElements[l-1];
+  let tl = aElements[l - 1];
   return hd.join(wrap(strings.get("sepComma"))) + wrap(strings.get("sepAnd")) + tl;
 }
 
@@ -279,13 +279,13 @@ function folderName(aFolder) {
 function openConversationInTabOrWindow(aUrl) {
   let window = getMail3Pane();
   // Counting some extra pixels for window decorations.
-  let height = Math.min(window.screen.availHeight-30, 1024);
+  let height = Math.min(window.screen.availHeight - 30, 1024);
   switch (Prefs.getInt("mail.openMessageBehavior")) {
     case 0:
-      window.open(aUrl, "_blank", "chrome,resizable,width=640,height="+height);
+      window.open(aUrl, "_blank", "chrome,resizable,width=640,height=" + height);
       break;
     case 1:
-      window.open(aUrl, "conversations", "chrome,resizable,width=640,height="+height);
+      window.open(aUrl, "conversations", "chrome,resizable,width=640,height=" + height);
       break;
     case 2:
       window.document.getElementById("tabmail").openTab("chromeTab", {

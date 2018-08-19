@@ -96,9 +96,9 @@ function titleCaseToSpacedWords(str) {
     words.unshift("");
   for (let i = 0; i < words.length; i += 2) {
     if (i > 0)
-      ret += " " + words[i].toLowerCase() + words[i+1];
+      ret += " " + words[i].toLowerCase() + words[i + 1];
     else
-      ret += words[i].toUpperCase() + words[i+1];
+      ret += words[i].toUpperCase() + words[i + 1];
   }
   return ret;
 }
@@ -487,7 +487,7 @@ const CustomizeKeys = {
     for (let [/* os */, bindings] of entries(bindingGroups)) {
       for (let [key, keybinding] of entries(bindings)) {
         for (let binding of keybinding) {
-          keysVbox.appendChild(Templates.buildHotKey(doc, ""+key, binding));
+          keysVbox.appendChild(Templates.buildHotKey(doc, "" + key, binding));
         }
       }
     }
