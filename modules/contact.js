@@ -36,7 +36,7 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ['ContactManager', 'Contacts', 'defaultPhotoURI'];
+var EXPORTED_SYMBOLS = ["ContactManager", "Contacts", "defaultPhotoURI"];
 
 ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
 const {MailServices} = ChromeUtils.import("resource:///modules/mailServices.js", {});
@@ -67,8 +67,8 @@ let strings = new StringBundle("chrome://conversations/locale/message.properties
 // Taken from
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/charAt#Fixing_charAt()_to_support_non-Basic-Multilingual-Plane_(BMP)_characters
 function fixedCharAt(str, idx) {
-  var ret = '';
-  str += '';
+  var ret = "";
+  str += "";
   var end = str.length;
 
   var surrogatePairs = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g;
@@ -82,7 +82,7 @@ function fixedCharAt(str, idx) {
   }
 
   if (idx >= end || idx < 0) {
-    return '';
+    return "";
   }
 
   ret += str.charAt(idx);
@@ -100,7 +100,7 @@ function fixedCharAt(str, idx) {
  * two letters of the first word if only one exists).
  */
 function getInitials(name) {
-  name = name.trim().split('@')[0];
+  name = name.trim().split("@")[0];
   let words = name.split(/[ .\-_]/).filter(function(word) {
     return word;
   });
@@ -179,7 +179,7 @@ let ContactMixIn = {
       tooltipName: sanitize((tooltipName != aEmail) ? tooltipName : ""),
       email: sanitize(aEmail),
       avatar: sanitize(this.avatar),
-      avatarIsDefault: this.avatar.substr(0, 6) === 'chrome',
+      avatarIsDefault: this.avatar.substr(0, 6) === "chrome",
       profiles: this._profiles,
       extra,
       // Parameter aUseColor is optional, and undefined means true

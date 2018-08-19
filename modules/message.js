@@ -36,7 +36,7 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ['Message', 'MessageFromGloda', 'MessageFromDbHdr', 'ConversationKeybindings'];
+var EXPORTED_SYMBOLS = ["Message", "MessageFromGloda", "MessageFromDbHdr", "ConversationKeybindings"];
 
 ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI
 ChromeUtils.import("resource://gre/modules/PluralForm.jsm");
@@ -219,7 +219,7 @@ KeyListener.prototype = {
     tagHandling: function tagHandling(event) {
       // Tag handling.
       // 0 removes all tags, 1 to 9 set the corresponding tag, if it exists
-      let i = event.which - '1'.charCodeAt(0);
+      let i = event.which - "1".charCodeAt(0);
       if (i == -1) {
         this.message.tags = [];
       } else {
@@ -1731,12 +1731,12 @@ Message.prototype = {
         '<div style="overflow: auto">',
         '<img src="', authorAvatar, '" style="float: left; height: 48px; margin-right: 5px" />',
         '<b><span><a style="color: ', authorColor, ' !important; text-decoration: none !important; font-weight: bold" href="mailto:', authorEmail,
-        '">', author, '</a></span></b><br />',
-        '<span style="color: #666">', date, '</span>',
-        '</div>',
+        '">', author, "</a></span></b><br />",
+        '<span style="color: #666">', date, "</span>",
+        "</div>",
         '<div style="color: #666">',
           body,
-        '</div>',
+        "</div>",
       ].join("");
       k(html);
     });
@@ -2132,7 +2132,7 @@ let PostStreamingFixesMixIn = {
 
       // only check for phishing urls if the url is an http or https link.
       // this prevents us from flagging imap and other internally handled urls
-      if (hrefURL.schemeIs('http') || hrefURL.schemeIs('https')) {
+      if (hrefURL.schemeIs("http") || hrefURL.schemeIs("https")) {
         // The link is not suspicious if the visible text is the same as the URL,
         // even if the URL is an IP address. URLs are commonly surrounded by
         // < > or "" (RFC2396E) - so strip those from the link text before comparing.

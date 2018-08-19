@@ -56,26 +56,26 @@ let embedsHook = {
   /* eslint-disable no-multi-spaces */
   // From http://stackoverflow.com/questions/5830387/php-regex-find-all-youtube-video-ids-in-string/5831191#5831191
   YOUTUBE_REGEXP: new RegExp(
-    '(?:https?://)?'           + // Optional scheme. Either http or https
-    '(?:www\\.)?'              + // Optional www subdomain
-    '(?:'                      + // Group host alternatives
-    'youtu\\.be/'              + // Either youtu.be,
-    '|youtube\\.com'           + // or youtube.com
-    '(?:'                      + // Group path alternatives
-    '/embed/'                  + // Either /embed/
-    '|/v/'                     + // or /v/
-    '|/watch\\?v='             + // or /watch\?v=
-    '|/user/\\S+/'             + // or /user/username#p/u/1/
-    '|/ytscreeningroom\?v='    + // or ytscreeningroom
-    ')'                        + // End path alternatives.
-    ')'                        + // End host alternatives.
-    '([\\w\\-]{10,12})'        + // $1: Allow 10-12 for 11 char youtube id.
-    '\\b'                      + // Anchor end to word boundary.
-    '[?=&\\w]*'                + // Consume any URL (query) remainder.
-    '(?!'                      + // But don\'t match URLs already linked.
+    "(?:https?://)?"           + // Optional scheme. Either http or https
+    "(?:www\\.)?"              + // Optional www subdomain
+    "(?:"                      + // Group host alternatives
+    "youtu\\.be/"              + // Either youtu.be,
+    "|youtube\\.com"           + // or youtube.com
+    "(?:"                      + // Group path alternatives
+    "/embed/"                  + // Either /embed/
+    "|/v/"                     + // or /v/
+    "|/watch\\?v="             + // or /watch\?v=
+    "|/user/\\S+/"             + // or /user/username#p/u/1/
+    "|/ytscreeningroom\?v="    + // or ytscreeningroom
+    ")"                        + // End path alternatives.
+    ")"                        + // End host alternatives.
+    "([\\w\\-]{10,12})"        + // $1: Allow 10-12 for 11 char youtube id.
+    "\\b"                      + // Anchor end to word boundary.
+    "[?=&\\w]*"                + // Consume any URL (query) remainder.
+    "(?!"                      + // But don\'t match URLs already linked.
     '[\\\'"][^<>]*>'           + // Not inside a start tag,
-    '|</a>'                    + // or <a> element text contents.
-    ')'                          // End negative lookahead assertion.
+    "|</a>"                    + // or <a> element text contents.
+    ")"                          // End negative lookahead assertion.
   ),
   /* eslint-enable no-multi-spaces */
 

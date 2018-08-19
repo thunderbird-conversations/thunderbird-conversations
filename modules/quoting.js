@@ -36,9 +36,9 @@
 
 var EXPORTED_SYMBOLS = [
   // heuristics for finding quoted parts
-  'convertHotmailQuotingToBlockquote1',
-  'convertOutlookQuotingToBlockquote', 'convertForwardedToBlockquote',
-  'fusionBlockquotes', 'convertMiscQuotingToBlockquote',
+  "convertHotmailQuotingToBlockquote1",
+  "convertOutlookQuotingToBlockquote", "convertForwardedToBlockquote",
+  "fusionBlockquotes", "convertMiscQuotingToBlockquote",
 ];
 
 /* Below are hacks^W heuristics for finding quoted parts in a given email */
