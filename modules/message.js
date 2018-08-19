@@ -111,6 +111,13 @@ let pdfMimeTypes = {
   "application/x-gzpdf": null,
 };
 
+function tenPxFactor() {
+  if (isOSX) {
+    return .666;
+  }
+  return isWindows ? .7 : .625;
+}
+
 // Add in the global message listener table a weak reference to the given
 //  Message object. The monkey-patch which intercepts the "remote content
 //  blocked" notification will then look for a suitable listener and notify it
@@ -1094,10 +1101,6 @@ Message.prototype = {
     return this._domNode.getElementsByTagName("iframe")[0];
   },
 
-  get tenPxFactor() {
-    return (isOSX ? .666 : (isWindows ? .7 : .625));
-  },
-
   cosmeticFixups: function _Message_cosmeticFixups() {
     let window = this._conversation._htmlPane;
     window.alignAttachments(this);
@@ -1937,8 +1940,7 @@ let PostStreamingFixesMixIn = {
     if (!Prefs.tweak_bodies)
       return;
 
-    let tenPxFactor = isOSX ? .666 : (isWindows ? .7 : .625);
-    let textSize = Math.round(this.defaultSize * tenPxFactor * 1.2);
+    let textSize = Math.round(this.defaultSize * tenPxFactor() * 1.2);
 
     // Assuming 16px is the default (like on, say, Linux), this gives
     //  18px and 12px, which is what Andy had in mind.
@@ -2018,7 +2020,7 @@ let PostStreamingFixesMixIn = {
     let iframeDoc = iframe.contentDocument;
 
     let smallSize = Prefs.tweak_chrome
-      ? this.defaultSize * this.tenPxFactor * 1.1
+      ? this.defaultSize * tenPxFactor() * 1.1
       : Math.round(100 * this.defaultSize * 11 / 12) / 100;
 
     // this function adds a show/hide block text link to every topmost
