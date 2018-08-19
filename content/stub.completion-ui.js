@@ -1,19 +1,27 @@
 "use strict";
 
-/* exported setupAutocomplete */
+/* exported setupAutocomplete, Colors, getDefaultIdentity, getIdentityForEmail,
+            getIdentities, NS_SUCCEEDED */
+/* global $, Conversations, MailServices, showCc, showBcc */
+/* import-globals-from quickReply.js */
 
 // ----- Autocomplete stuff. Understand it as a part of stub.compose-ui.js
 
-ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
+ChromeUtils.import("resource:///modules/StringBundle.js");
 ChromeUtils.import("resource:///modules/errUtils.js");
-ChromeUtils.import("resource:///modules/gloda/gloda.js");
+const {Gloda} = ChromeUtils.import("resource:///modules/gloda/gloda.js", {});
 ChromeUtils.import("resource:///modules/gloda/public.js");
 ChromeUtils.import("resource:///modules/gloda/utils.js");
-ChromeUtils.import("resource:///modules/gloda/suffixtree.js");
+const {MultiSuffixTree} = ChromeUtils.import("resource:///modules/gloda/suffixtree.js", {});
 ChromeUtils.import("resource:///modules/gloda/noun_tag.js");
 ChromeUtils.import("resource:///modules/gloda/noun_freetag.js");
-ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
-ChromeUtils.import("resource://conversations/modules/log.js");
+const {
+  entries, escapeHtml, getDefaultIdentity, getIdentityForEmail,
+  getIdentities, NS_SUCCEEDED
+} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js", {});
+const {
+  setupLogging, dumpCallStack, Colors,
+} = ChromeUtils.import("resource://conversations/modules/log.js", {});
 
 let Log = setupLogging("Conversations.Stub.Completion");
 let strings = new StringBundle("chrome://conversations/locale/message.properties");

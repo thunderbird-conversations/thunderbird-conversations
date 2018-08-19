@@ -37,6 +37,13 @@
 /* exported registerQuickReply, newComposeSessionByClick, changeComposeFields,
             showCc, showBcc, addAttachment, confirmDiscard, quickReplyDragEnter,
             quickReplyCheckDrag, quickReplyDrop */
+/* exported htmlToPlainText */
+// From stub.compose-ui-bz.js
+/* global bzSetup, BzComposeSession */
+// Via stub.xhtml
+/* global closeTab, Prefs, tmpl */
+
+/* import-globals-from stub.completion-ui.js */
 
 "use strict";
 
@@ -46,13 +53,16 @@ ChromeUtils.import("resource:///modules/mailServices.js");
 ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
 ChromeUtils.import("resource:///modules/gloda/mimemsg.js");
 
-ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
-ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
-ChromeUtils.import("resource://conversations/modules/stdlib/send.js");
-ChromeUtils.import("resource://conversations/modules/stdlib/compose.js");
-ChromeUtils.import("resource://conversations/modules/log.js");
-ChromeUtils.import("resource://conversations/modules/misc.js");
-ChromeUtils.import("resource://conversations/modules/hook.js");
+const {
+  msgUriToMsgHdr, msgHdrsArchive, msgHdrIsArchive, msgHdrGetUri,
+} = ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js", {});
+const {sendMessage} = ChromeUtils.import("resource://conversations/modules/stdlib/send.js", {});
+const {
+  composeInIframe, htmlToPlainText, replyAllParams,
+} = ChromeUtils.import("resource://conversations/modules/stdlib/compose.js", {});
+const {topMail3Pane} = ChromeUtils.import("resource://conversations/modules/misc.js", {});
+const {getHooks} = ChromeUtils.import("resource://conversations/modules/hook.js", {});
+const {fixIterator} = ChromeUtils.import("resource:///modules/iteratorUtils.jsm", {});
 
 Log = setupLogging("Conversations.Stub.Compose");
 

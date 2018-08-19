@@ -37,6 +37,9 @@
 /* exported hideQuickReply, registerQuickReplyEventListeners,
             registerQuickReplyDocumentCommands */
 
+/* global $, isQuickCompose, scrollNodeIntoView, Log:true, newComposeSessionByClick,
+          isAccel */
+
 function makeEditable(aIframe, aMakeEditable) {
   // Setup the iframe to be editable in htmlmail mode (for blockquotes)
   let w = aIframe.contentWindow;

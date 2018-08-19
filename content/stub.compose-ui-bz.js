@@ -34,19 +34,15 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/* exported bzSetup */
+/* exported bzSetup, BzComposeSession */
+/* import-globals-from stub.completion-ui.js */
+/* import-globals-from stub.compose-ui.js */
+/* dfsf global $, gComposeSession, strings, topMail3Pane, Conversations, Log, Colors,
+          getDefaultIdentity, msgUriToMsgHdr, getIdentityForEmail, pValue, pUndetermined */
 
 "use strict";
 
 ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource:///modules/iteratorUtils.jsm");
-
-// Remove when switching to Thunderbird 7
-if (!("cookies" in Services)) {
-  XPCOMUtils.defineLazyServiceGetter(Services, "cookies",
-                                     "@mozilla.org/cookiemanager;1",
-                                     "nsICookieManager2");
-}
 
 let gBugzillaAPIs = {
   "https://bugzilla.mozilla.org/":
