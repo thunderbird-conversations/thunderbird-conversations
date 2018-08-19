@@ -36,7 +36,7 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ['CustomizeKeys'];
+var EXPORTED_SYMBOLS = ["CustomizeKeys"];
 
 ChromeUtils.import("resource://gre/modules/Services.jsm");
 const {entries, isOSX} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js", {});

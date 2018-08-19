@@ -213,18 +213,18 @@ function newComposeSessionByClick(type) {
 function revealCompositionFields() {
   document.querySelector(".quickReply")
     .classList.add("expand");
-  $('.quickReplyRecipients').show();
+  $(".quickReplyRecipients").show();
 }
 
 function hideCompositionFields() {
   document.querySelector(".quickReply")
     .classList.remove("expand");
-  $('.quickReplyRecipients').hide();
+  $(".quickReplyRecipients").hide();
 }
 
 function resetCompositionFields() {
   $(".showCc, .showBcc").show();
-  $('.quickReplyRecipients').removeClass('edit');
+  $(".quickReplyRecipients").removeClass("edit");
   $(".bccList, .editBccList").css("display", "none");
   $(".ccList, .editCcList").css("display", "none");
 }
@@ -252,7 +252,7 @@ function addAttachment() {
 }
 
 function editFields(aFocusId) {
-  $('.quickReplyRecipients').addClass('edit');
+  $(".quickReplyRecipients").addClass("edit");
   $("#" + aFocusId).next().find(".token-input-input-token-facebook input").last().focus();
 }
 
@@ -1053,7 +1053,7 @@ let progressListener = {
 
     if (aStateFlags & Ci.nsIWebProgressListener.STATE_STOP) {
       pValue(0);
-      pText('');
+      pText("");
     }
   },
 

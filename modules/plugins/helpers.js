@@ -34,7 +34,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var EXPORTED_SYMBOLS = ['PluginHelpers'];
+var EXPORTED_SYMBOLS = ["PluginHelpers"];
 
 /**
  * This file just contains helpers for our Gloda plugins. The function in

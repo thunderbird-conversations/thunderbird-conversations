@@ -337,7 +337,7 @@ function tryEnigmail(aDocument, aMessage, aMsgWindow) {
     let text = [];
     while (treeWalker.nextNode())
       text.push(treeWalker.currentNode.nodeValue);
-    msgText = text.join('');
+    msgText = text.join("");
     msgText = msgText.replace(/\r\n?/g, "\n");
 
     var charset = aMsgWindow ? aMsgWindow.mailCharacterSet : "";
@@ -586,8 +586,8 @@ function patchForShowSecurityInfo(aWindow) {
   // Event listeners are added in enigmailMsgHdrViewOverlay.js,
   // but not needed. These display security info incorrectly when
   // resizing message view.
-  w.removeEventListener('messagepane-hide', w.Enigmail.hdrView.msgHdrViewHide, true);
-  w.removeEventListener('messagepane-unhide', w.Enigmail.hdrView.msgHdrViewUnide, true);
+  w.removeEventListener("messagepane-hide", w.Enigmail.hdrView.msgHdrViewHide, true);
+  w.removeEventListener("messagepane-unhide", w.Enigmail.hdrView.msgHdrViewUnide, true);
 }
 
 // Add click event to view security information.
@@ -838,7 +838,7 @@ let enigmailHook = {
               "$1$2Charset: " + charset + "$2");
           }
           cipherText = EnigmailData.convertToUnicode(cipherText, charset);
-          aEditor.value = cipherText.replace(/\r?\n/g, '<br>');
+          aEditor.value = cipherText.replace(/\r?\n/g, "<br>");
           this._originalText = origText;
         } else {
           // Encryption/signing failed
@@ -979,14 +979,14 @@ let enigmailHook = {
     // Add listeners to set final mode
     if (!aMessage._conversation._enigmailReplyEventListener) {
       aMessage._conversation._enigmailReplyEventListener = true;
-      replyEncrypt.addEventListener('click', function() {
+      replyEncrypt.addEventListener("click", function() {
         if (this.checked) {
           Enigmail.msg.encryptForced = EnigmailConstants.ENIG_ALWAYS; // force to encrypt
         } else {
           Enigmail.msg.encryptForced = EnigmailConstants.ENIG_NEVER; // force not to encrypt
         }
       });
-      replySign.addEventListener('click', function() {
+      replySign.addEventListener("click", function() {
         if (this.checked) {
           Enigmail.msg.signingNoLongerDependsOnEnc();
           Enigmail.msg.signForced = EnigmailConstants.ENIG_ALWAYS; // force to sign
@@ -995,7 +995,7 @@ let enigmailHook = {
           Enigmail.msg.signForced = EnigmailConstants.ENIG_NEVER; // force not to sign
         }
       });
-      replyPgpMime.addEventListener('click', function() {
+      replyPgpMime.addEventListener("click", function() {
         if (this.checked) {
           Enigmail.msg.pgpmimeForced = EnigmailConstants.ENIG_ALWAYS; // force to PGP/Mime
         } else {
@@ -1020,7 +1020,7 @@ let enigmailHook = {
     waitLoadingBody(function() {
       // eslint-disable-next-line no-unsanitized/property
       aEditor.node.contentDocument.querySelector("blockquote").innerHTML =
-        escapeHtml(aMessage.decryptedText).replace(/\r?\n/g, '<br>');
+        escapeHtml(aMessage.decryptedText).replace(/\r?\n/g, "<br>");
     });
   },
 

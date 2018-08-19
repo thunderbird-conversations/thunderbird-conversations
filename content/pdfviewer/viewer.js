@@ -47,8 +47,8 @@ let viewer;
 function Viewer() {
   this.pdfDoc = null;
   this.curPage = -1;
-  let form = document.getElementById('count');
-  let pageNumberBox = document.getElementById('pageNumberBox');
+  let form = document.getElementById("count");
+  let pageNumberBox = document.getElementById("pageNumberBox");
   this._initPageForm(form, pageNumberBox);
 }
 
@@ -56,20 +56,20 @@ Viewer.prototype = {
 
   async load(data) {
     let self = this;
-    let status = document.getElementById('status');
+    let status = document.getElementById("status");
 
     try {
       let pdfDocument = await pdfjsLib.getDocument(data);
 
       self.pdfDoc = pdfDocument;
-      document.getElementById('numPages').textContent = self.pdfDoc.numPages;
+      document.getElementById("numPages").textContent = self.pdfDoc.numPages;
       self.switchToPage(1);
-      status.classList.remove('loading');
-      status.classList.add('loaded');
+      status.classList.remove("loading");
+      status.classList.add("loaded");
     } catch (error) {
-      document.getElementById('error').textContent = error;
-      status.classList.remove('loading');
-      status.classList.add('error');
+      document.getElementById("error").textContent = error;
+      status.classList.remove("loading");
+      status.classList.add("error");
       throw error;
     }
   },
@@ -85,8 +85,8 @@ Viewer.prototype = {
       //
       // Prepare canvas using PDF page dimensions
       //
-      let canvas = document.getElementById('the-canvas');
-      let context = canvas.getContext('2d');
+      let canvas = document.getElementById("the-canvas");
+      let context = canvas.getContext("2d");
       canvas.height = viewport.height;
       canvas.width = viewport.width;
 
@@ -99,7 +99,7 @@ Viewer.prototype = {
       };
       page.render(renderContext);
 
-      document.getElementById('pageNumberBox').value = aPageNum;
+      document.getElementById("pageNumberBox").value = aPageNum;
     });
   },
 
@@ -115,7 +115,7 @@ Viewer.prototype = {
 
   _initPageForm(pageForm, numBox) {
     let self = this;
-    pageForm.addEventListener('submit', function(event) {
+    pageForm.addEventListener("submit", function(event) {
       let page = parseInt(numBox.value, 10);
       if (!isNaN(page) && page != self.curPage && page > 0 && page <= self.pdfDoc.numPages) {
         self.switchToPage(page);

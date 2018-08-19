@@ -36,7 +36,7 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ['Conversation'];
+var EXPORTED_SYMBOLS = ["Conversation"];
 
 ChromeUtils.import("resource://gre/modules/Services.jsm");
 
@@ -1141,9 +1141,9 @@ Conversation.prototype = {
   // For the "forward conversation" action
   exportAsHtml: function _Conversation_exportAsHtml(k) {
     // Somehow this seems to be needed... why? Dunno.
-    let start = '<html><body>';
+    let start = "<html><body>";
     let hr = '<div style="border-top: 1px solid #888; height: 15px; width: 70%; margin: 0 auto; margin-top: 15px">&nbsp;</div>';
-    let html = start + '<p>' + strings.get("conversationFillInText") + '</p>' + hr;
+    let html = start + "<p>" + strings.get("conversationFillInText") + "</p>" + hr;
     let count = 1;
     let top = function() {
       if (!--count) {

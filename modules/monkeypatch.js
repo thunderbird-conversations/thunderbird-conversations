@@ -36,7 +36,7 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ['MonkeyPatch'];
+var EXPORTED_SYMBOLS = ["MonkeyPatch"];
 
 ChromeUtils.import("resource://gre/modules/AddonManager.jsm");
 ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
@@ -432,7 +432,7 @@ MonkeyPatch.prototype = {
       if (!Prefs.enabled)
         return oldTreeOnMouseDown(event);
 
-      if (event.target.parentNode.id !== 'threadTree')
+      if (event.target.parentNode.id !== "threadTree")
         return oldTreeOnMouseDown(event);
 
       // Middle-click

@@ -1,4 +1,4 @@
-var EXPORTED_SYMBOLS = ['Config'];
+var EXPORTED_SYMBOLS = ["Config"];
 
 var Config = {
   get BOOTSTRAP_REASONS() {

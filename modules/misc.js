@@ -35,10 +35,10 @@
  * ***** END LICENSE BLOCK ***** */
 
 var EXPORTED_SYMBOLS = [
-  'groupArray', 'joinWordList', 'iconForMimeType',
-  'EventHelperMixIn', 'arrayEquals', 'LINKS_REGEX',
-  'linkifySubject', 'topMail3Pane', 'reindexMessages',
-  'folderName', 'openConversationInTabOrWindow'
+  "groupArray", "joinWordList", "iconForMimeType",
+  "EventHelperMixIn", "arrayEquals", "LINKS_REGEX",
+  "linkifySubject", "topMail3Pane", "reindexMessages",
+  "folderName", "openConversationInTabOrWindow"
 ];
 
 var LINKS_REGEX = /((\w+):\/\/[^<>()'"\s]+|www(\.[-\w]+){2,})/;

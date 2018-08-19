@@ -1,4 +1,4 @@
-var EXPORTED_SYMBOLS = ['Customizations'];
+var EXPORTED_SYMBOLS = ["Customizations"];
 
 const nsMsgFolderFlags_SentMail = 0x00000200;
 const nsMsgFolderFlags_Inbox    = 0x00001000;
@@ -144,7 +144,7 @@ var Customizations = {
       return eid("threadpane-splitter").getAttribute("state");
     }, function _setter(aValue) {
       if (aValue != this.get())
-        getMail3Pane().goDoCommand('cmd_toggleMessagePane');
+        getMail3Pane().goDoCommand("cmd_toggleMessagePane");
     }),
 
   actionSetupView: {
@@ -197,7 +197,7 @@ var Customizations = {
          */
         // mainWindow.MsgSortThreadPane('byDate');
         // mainWindow.MsgSortDescending();
-        mainWindow.goDoCommand('cmd_collapseAllThreads');
+        mainWindow.goDoCommand("cmd_collapseAllThreads");
         state.unreadCol = eid("unreadCol").getAttribute("hidden");
         state.senderCol = eid("senderCol").getAttribute("hidden");
         state.correspondentCol = eid("correspondentCol").getAttribute("hidden");

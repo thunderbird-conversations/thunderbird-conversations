@@ -1,4 +1,4 @@
-var EXPORTED_SYMBOLS = ['registerHook', 'getHooks', 'removeHook'];
+var EXPORTED_SYMBOLS = ["registerHook", "getHooks", "removeHook"];
 
 /* A hook is just a listener whose various methods get called at various stages
  *  of the conversation process.

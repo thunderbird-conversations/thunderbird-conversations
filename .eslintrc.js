@@ -44,6 +44,5 @@ module.exports = {
       "vars": "all",
     }],
     "no-useless-call": "off",
-    "quotes": "off",
   }
 };
