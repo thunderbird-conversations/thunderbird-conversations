@@ -149,10 +149,9 @@ ContactManager.prototype = {
     //  "prefer display name over header name".
     if (contact._useCardName) {
       cache(name, contact);
-    } else {
+    } else if (!(email in this._colorCache)) {
       // We still want to cache the color...
-      if (!(email in this._colorCache))
-        this._colorCache[email] = contact.color;
+      this._colorCache[email] = contact.color;
     }
     return contact;
   },
