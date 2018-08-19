@@ -179,13 +179,13 @@ BzComposeSession.prototype = {
     let results = RE_BUG_NUMBER.exec(this.message._msgHdr.messageId);
     if (results && results.length) {
       let bugNumber = results[1];
-      let url = this.makeQuery("bug/"+bugNumber+"/comment/");
+      let url = this.makeQuery("bug/" + bugNumber + "/comment/");
 
       let req = new XMLHttpRequest();
       // Register a whole bunch of event listeners.
       req.addEventListener("progress", function(event) {
         if (event.lengthComputable) {
-          pValue(event.loaded/event.total);
+          pValue(event.loaded / event.total);
         } else {
           pUndetermined();
         }

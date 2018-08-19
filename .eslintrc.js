@@ -45,6 +45,5 @@ module.exports = {
     }],
     "no-useless-call": "off",
     "quotes": "off",
-    "space-infix-ops": "off",
   }
 };

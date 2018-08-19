@@ -67,7 +67,7 @@ function wrapHandlebars() {
       var s = strings.get(x);
       // One extra argument added by Handlebars
       for (let i = 0; i < args.length - 1; ++i)
-        s = s.replace("#"+(i+1), Handlebars.Utils.escapeExpression(args[i]));
+        s = s.replace("#" + (i + 1), Handlebars.Utils.escapeExpression(args[i]));
       return s;
     } catch (e) {
       Log.error("No such string", x);
@@ -83,7 +83,7 @@ function wrapHandlebars() {
     return new Handlebars.SafeString(s.charAt(0).toUpperCase() + s.substring(1));
   };
   let tmpl = function(short, data) {
-    var id = "#"+short+"Template";
+    var id = "#" + short + "Template";
     return new Handlebars.SafeString(tmpl0(id, data));
   };
   let trim = function(s) {

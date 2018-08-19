@@ -84,7 +84,7 @@ let SignalManagerMixIn = {
   _runOnceAfterNSignals(f, n) {
     if (("_toRun" in this) && this._toRun !== null && this._toRun !== undefined)
       Log.error("You failed to call signal enough times. Bad developer, bad! Go fix your code!");
-    this._toRun = [f, n+1];
+    this._toRun = [f, n + 1];
     try {
       this._signal();
     } catch (e) {
@@ -236,7 +236,7 @@ function toMsgHdr({ type, message, msgHdr, glodaMsg }) {
 // Get a Date instance for the given message.
 function msgDate({ type, message, msgHdr, glodaMsg }) {
   if (type == kMsgDbHdr)
-    return new Date(msgHdr.date/1000);
+    return new Date(msgHdr.date / 1000);
   else if (type == kMsgGloda)
     return new Date(glodaMsg.date);
 
@@ -740,7 +740,7 @@ Conversation.prototype = {
           else
             oldMsg = null;
         } else {
-          oldMsg = aMessages[i-1].message;
+          oldMsg = aMessages[i - 1].message;
         }
         let msg = aMessages[i].message;
         msg.updateTmplData(oldMsg);
@@ -772,7 +772,7 @@ Conversation.prototype = {
       let domNodes = this._domNode.getElementsByClassName(Message.prototype.cssClass);
       for (let i of range(this.messages.length - aMessages.length, this.messages.length)) {
         this.messages[i].message.onAddedToDom(domNodes[i]);
-        domNodes[i].setAttribute("tabindex", (i+2)+"");
+        domNodes[i].setAttribute("tabindex", (i + 2) + "");
       }
     }
 
@@ -988,7 +988,7 @@ Conversation.prototype = {
       let msg = this.messages[i].message;
       msg.initialPosition = i;
 
-      let oldMsg = i > 0 ? this.messages[i-1].message : null;
+      let oldMsg = i > 0 ? this.messages[i - 1].message : null;
       msg.updateTmplData(oldMsg);
     }
     let tmplData = this.messages.map(function(m, i) {
@@ -1075,7 +1075,7 @@ Conversation.prototype = {
 
       Array.prototype.forEach.call(messageNodes, function(node, i) {
         if (i < messageNodes.length) {
-          node.setAttribute("tabindex", i+2);
+          node.setAttribute("tabindex", i + 2);
         }
       });
       focusedNode.setAttribute("tabindex", "1");
@@ -1143,11 +1143,11 @@ Conversation.prototype = {
     // Somehow this seems to be needed... why? Dunno.
     let start = '<html><body>';
     let hr = '<div style="border-top: 1px solid #888; height: 15px; width: 70%; margin: 0 auto; margin-top: 15px">&nbsp;</div>';
-    let html = start + '<p>' + strings.get("conversationFillInText") + '</p>' +hr;
+    let html = start + '<p>' + strings.get("conversationFillInText") + '</p>' + hr;
     let count = 1;
     let top = function() {
       if (!--count) {
-        html += "<div style=\"font-family: sans-serif !important;\">"+messagesHtml.join(hr)+"</div>";
+        html += "<div style=\"font-family: sans-serif !important;\">" + messagesHtml.join(hr) + "</div>";
         Log.debug("The HTML: ---------\n", html, "\n\n");
         k(html);
       }

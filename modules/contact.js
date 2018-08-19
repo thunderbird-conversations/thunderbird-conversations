@@ -124,12 +124,12 @@ ContactManager.prototype = {
   getContactFromNameAndEmail: function _ContactManager_getContactFromEmail(name, email, position) {
     // [name] and [email] are from the message header
     let self = this;
-    email = (email+"").toLowerCase();
+    email = (email + "").toLowerCase();
     // Might change in the future... who knows? ...
     let key = email;
     let cache = function _cache(name, contact) {
       for (let email of contact.emails) {
-        email = (email+"").toLowerCase();
+        email = (email + "").toLowerCase();
         self._cache[key] = contact;
       }
     };
@@ -213,7 +213,7 @@ let ContactMixIn = {
       let dest = (this._name == this._email || !this._name)
         ? this._email
         : MailServices.headerParser.makeMimeAddress(this._name, this._email);
-      dump(dest+"\n\n");
+      dump(dest + "\n\n");
       composeMessageTo(dest, mainWindow.gFolderDisplay.displayedFolder);
       event.stopPropagation();
     }.bind(this));

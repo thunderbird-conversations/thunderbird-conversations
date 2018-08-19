@@ -451,7 +451,7 @@ function tryEnigmail(aDocument, aMessage, aMsgWindow) {
         aMessage.decryptedText = msgRfc822Text;
       }
     } else {
-      Log.error("Enigmail error: "+exitCode+" --- "+errorMsgObj.value+"\n");
+      Log.error("Enigmail error: " + exitCode + " --- " + errorMsgObj.value + "\n");
     }
     let w = topMail3Pane(aMessage);
     showHdrIconsOnStreamed(aMessage, function() {
@@ -462,7 +462,7 @@ function tryEnigmail(aDocument, aMessage, aMsgWindow) {
     return statusFlagsObj.value;
   } catch (ex) {
     dumpCallStack(ex);
-    Log.error("Enigmail error: "+ex+" --- "+errorMsgObj.value+"\n");
+    Log.error("Enigmail error: " + ex + " --- " + errorMsgObj.value + "\n");
     return null;
   }
 }
@@ -471,11 +471,11 @@ function tryEnigmail(aDocument, aMessage, aMsgWindow) {
 function verifyAttachments(aMessage) {
   let { _attachments: attachments, _uri: uri, contentType: contentType } = aMessage;
   let w = topMail3Pane(aMessage);
-  if ((contentType+"").search(/^multipart\/signed(;|$)/i) == 0) {
+  if ((contentType + "").search(/^multipart\/signed(;|$)/i) == 0) {
     w.Enigmail.msg.messageDecryptCb(null, true, null);
     return;
   }
-  if ((contentType+"").search(/^multipart\/mixed(;|$)/i) != 0)
+  if ((contentType + "").search(/^multipart\/mixed(;|$)/i) != 0)
     return;
   let embeddedSigned;
   for (let x of attachments) {
@@ -636,13 +636,13 @@ let enigmailHook = {
       let { _attachments: attachments, /* _msgHdr: msgHdr, */ _domNode: domNode } = aMessage;
       this._domNode = domNode;
       let w = topMail3Pane(aMessage);
-      let hasEnc = (aMessage.contentType+"").search(/^multipart\/encrypted(;|$)/i) == 0;
+      let hasEnc = (aMessage.contentType + "").search(/^multipart\/encrypted(;|$)/i) == 0;
       if (hasEnc && enigmailSvc.mimeInitialized && !enigmailSvc.mimeInitialized()) {
         Log.debug("Initializing EnigMime");
         w.document.getElementById("messagepane").setAttribute("src", "enigmail:dummy");
       }
 
-      let hasSig = (aMessage.contentType+"").search(/^multipart\/signed(;|$)/i) == 0;
+      let hasSig = (aMessage.contentType + "").search(/^multipart\/signed(;|$)/i) == 0;
       for (let x of attachments) {
         if (x.contentType.search(/^application\/pgp-signature/i) == 0)
           hasSig = true;
@@ -835,7 +835,7 @@ let enigmailHook = {
             (charset.search(/^us-ascii$/i) != 0) ) {
             // Add Charset armor header for encrypted blocks
             cipherText = cipherText.replace(/(-----BEGIN PGP MESSAGE----- *)(\r?\n)/,
-              "$1$2Charset: "+charset+"$2");
+              "$1$2Charset: " + charset + "$2");
           }
           cipherText = EnigmailData.convertToUnicode(cipherText, charset);
           aEditor.value = cipherText.replace(/\r?\n/g, '<br>');
@@ -852,7 +852,7 @@ let enigmailHook = {
 
       if ((!(sendFlags & nsIEnigmail.SAVE_MESSAGE)) &&
            EnigmailPrefs.getPref("confirmBeforeSending")) {
-        if (!Enigmail.msg.confirmBeforeSend(toAddrList.join(", "), toAddr+", "+bccAddr,
+        if (!Enigmail.msg.confirmBeforeSend(toAddrList.join(", "), toAddr + ", " + bccAddr,
              sendFlags, false)) {
           if (origText) {
             aEditor.value = origText;
@@ -863,10 +863,10 @@ let enigmailHook = {
       }
     } catch (ex) {
       dumpCallStack(ex);
-      Log.error("Enigmail encrypt error: "+ex+" --- "+errorMsgObj.value+"\n");
+      Log.error("Enigmail encrypt error: " + ex + " --- " + errorMsgObj.value + "\n");
       let msg = EnigmailLocale.getString("signFailed");
       if (enigmailSvc && enigmailSvc.initializationError) {
-        msg += "\n"+enigmailSvc.initializationError;
+        msg += "\n" + enigmailSvc.initializationError;
       }
       aStatus.canceled = !EnigmailDialog.confirmDlg(window, msg,
         EnigmailLocale.getString("msgCompose.button.sendUnencrypted"));

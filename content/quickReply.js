@@ -137,9 +137,9 @@ function registerQuickReplyEventListeners() {
         Log.debug(totalTargetHeight, lineHeight, availableHeight);
         // We only grow the textarea if it doesn't exceed half of the available
         // vertical height.
-        if (totalTargetHeight <= availableHeight/2) {
-          Log.debug("Growing to", (getHeight(textarea)+lineHeight)+"px");
-          textarea.style.height = (getHeight(textarea)+lineHeight)+"px";
+        if (totalTargetHeight <= availableHeight / 2) {
+          Log.debug("Growing to", (getHeight(textarea) + lineHeight) + "px");
+          textarea.style.height = (getHeight(textarea) + lineHeight) + "px";
 
           // Scroll if we grew the reply area into overflow
           let pageTop = window.pageYOffset;

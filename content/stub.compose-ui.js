@@ -116,8 +116,8 @@ function registerQuickReply() {
         // Most likely, the window has been tore down, but the listener is still
         // alive, so all references it holds are dead. Failures usually look
         // like "Log is undefined".
-        dump(e+"\n");
-        dump(e.stack+"\n");
+        dump(e + "\n");
+        dump(e.stack + "\n");
       }
     },
 
@@ -136,8 +136,8 @@ function registerQuickReply() {
         mainWindow.Conversations.draftListeners[id] = listeners;
       } catch (e) {
         // See comment above
-        dump(e+"\n");
-        dump(e.stack+"\n");
+        dump(e + "\n");
+        dump(e.stack + "\n");
       }
     },
   };
@@ -253,7 +253,7 @@ function addAttachment() {
 
 function editFields(aFocusId) {
   $('.quickReplyRecipients').addClass('edit');
-  $("#"+aFocusId).next().find(".token-input-input-token-facebook input").last().focus();
+  $("#" + aFocusId).next().find(".token-input-input-token-facebook input").last().focus();
 }
 
 function confirmDiscard(event) {
@@ -519,15 +519,15 @@ ComposeSession.prototype = {
       reply(aMessage) {
         let aMsgHdr = aMessage._msgHdr;
         self.params.msgHdr = aMsgHdr;
-        self.params.subject = "Re: "+aMsgHdr.mime2DecodedSubject;
+        self.params.subject = "Re: " + aMsgHdr.mime2DecodedSubject;
         self.setupDone();
       },
 
       draft({ msgUri }) {
-        let last = (a) => a[a.length-1];
+        let last = (a) => a[a.length - 1];
         let msgHdr = msgUriToMsgHdr(msgUri);
         self.params.msgHdr = msgHdr || last(Conversations.currentConversation.msgHdrs);
-        self.params.subject = "Re: "+self.params.msgHdr.mime2DecodedSubject;
+        self.params.subject = "Re: " + self.params.msgHdr.mime2DecodedSubject;
         self.setupDone();
       },
 
@@ -738,7 +738,7 @@ ComposeSession.prototype = {
     else
       compType =  Ci.nsIMsgCompType.ReplyAll; // ReplyAll, Reply... ends up the same
 
-    let [to, cc, bcc] = ["to", "cc", "bcc"].map(x => JSON.parse($("#"+x).val()));
+    let [to, cc, bcc] = ["to", "cc", "bcc"].map(x => JSON.parse($("#" + x).val()));
 
     let sendStatus = { };
     for (let priority of ["_early", "", "_canceled"]) {
@@ -1029,7 +1029,7 @@ function parse(aMimeLine) {
 function pValue(v) {
   $(".statusPercentage")
     .show()
-    .text(v+"%");
+    .text(v + "%");
   $(".statusThrobber").hide();
 }
 
@@ -1062,7 +1062,7 @@ let progressListener = {
     // Calculate percentage.
     var percent;
     if (aMaxTotalProgress > 0) {
-      percent = Math.round( (aCurTotalProgress*100)/aMaxTotalProgress );
+      percent = Math.round( (aCurTotalProgress * 100) / aMaxTotalProgress );
       if (percent > 100)
         percent = 100;
 

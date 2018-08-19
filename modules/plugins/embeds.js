@@ -114,7 +114,7 @@ let embedsHook = {
       let videoId = matches[1];
       Log.debug("Found a youtube video, video-id", videoId);
       this.insertEmbed(strings.get("foundYouTube"), "640", "385",
-        "http://www.youtube.com/embed/"+videoId, aDomNode);
+        "http://www.youtube.com/embed/" + videoId, aDomNode);
       return videoId;
     }
 
@@ -138,7 +138,7 @@ let embedsHook = {
         let q = matches[1];
         this.insertEmbed(strings.get("foundGoogleMaps"),
           "600", "450",
-          "https://www.google.com/maps/embed/v1/place?key=AIzaSyCUitgLn5uy0kcU1pneLGiEfI_f0nhMvXw&q="+q,
+          "https://www.google.com/maps/embed/v1/place?key=AIzaSyCUitgLn5uy0kcU1pneLGiEfI_f0nhMvXw&q=" + q,
           aDomNode
         );
         return true;
@@ -158,8 +158,8 @@ let embedsHook = {
       "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul",
       "iframe");
     iframe.setAttribute("type", "content");
-    iframe.style.width = width+"px";
-    iframe.style.height = height+"px";
+    iframe.style.width = width + "px";
+    iframe.style.height = height + "px";
     iframe.style.marginTop = "3px";
     iframe.style.border = "0";
     iframe.setAttribute("src", src);

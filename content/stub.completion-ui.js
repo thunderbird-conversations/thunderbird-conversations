@@ -35,7 +35,7 @@ function asToken(thumb, name, email, guid) {
   let hasName = name && (name.trim().length > 0);
   let data = hasName ? MailServices.headerParser.makeMimeAddress(name, email) : email;
   let nameStr = hasName ? name + " <" + email + ">" : email;
-  let thumbStr = thumb ? "<img class='autocomplete-thumb' src=\""+escapeHtml(thumb)+"\" /> " : "";
+  let thumbStr = thumb ? "<img class='autocomplete-thumb' src=\"" + escapeHtml(thumb) + "\" /> " : "";
   let listItem = thumbStr + escapeHtml(nameStr); // this one is for injection
   let displayName = hasName ? name : email;
   return { name: displayName, listItem, data, email, id: guid };
@@ -257,7 +257,7 @@ function setupAutocomplete(to, cc, bcc) {
     // Cleanup the mess left by tokenInput.
     let $parent = $(aInput).parent();
     $parent.empty();
-    $parent.append($("<input type=\"text\" id=\""+aInput.substring(1)+"\" />"));
+    $parent.append($("<input type=\"text\" id=\"" + aInput.substring(1) + "\" />"));
     // Now we can start fresh.
     try {
       $(aInput).tokenInput(glodaAutocomplete, {
@@ -269,8 +269,8 @@ function setupAutocomplete(to, cc, bcc) {
       dumpCallStack(e);
       throw e;
     }
-    $(aList+" li:not(.add-more)").remove();
-    $(aList+" .recipientListSeparator").remove();
+    $(aList + " li:not(.add-more)").remove();
+    $(aList + " .recipientListSeparator").remove();
     let list = document.getElementsByClassName(aList.substring(1))[0];
     let marker = list.getElementsByClassName("add-more")[0];
     // Never, ever use jquery in a loop.

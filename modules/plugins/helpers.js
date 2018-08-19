@@ -97,7 +97,7 @@ var PluginHelpers = {
       ];
       let o = {};
       for (let k of keys) {
-        let v = aMimeMsg.get("x-bugzilla-"+k);
+        let v = aMimeMsg.get("x-bugzilla-" + k);
         if (v)
           o[k] = GlodaUtils.deMime(v);
       }
