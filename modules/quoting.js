@@ -146,8 +146,8 @@ function convertForwardedToBlockquote(aDoc) {
       let txt = child.textContent;
       let m = txt.match(re);
       if (child.nodeType == child.TEXT_NODE
-          && txt.includes("-----BEGIN PGP")
-          && txt.includes("----END PGP")
+          && !txt.includes("-----BEGIN PGP")
+          && !txt.includes("----END PGP")
           && m && m.length) {
         let marker = m[0];
         // dump("Found matching text "+marker+"\n");
