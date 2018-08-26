@@ -1,3 +1,5 @@
+[![Build Status](https://travis-ci.org/protz/thunderbird-conversations.svg?branch=master)](https://travis-ci.org/protz/thunderbird-conversations)
+
 Thunderbird Conversations
 =========================
 
@@ -11,29 +13,27 @@ vastly improves the UI by including some ideas from GMail. More specifically:
 * you can reply inline (through a "quick reply" feature).
 
 For screenshots and a stable version, please head to
-[AMO](https://addons.mozilla.org/en-US/thunderbird/addon/54035) which should
+[AMO](https://addons.thunderbird.net/thunderbird/addon/gmail-conversation-view/) which should
 provide you with a ready-to-install package.
 
-If you want to leave some feedback, we have a thread on [Google
-Groups](https://groups.google.com/forum/#!topic/mozilla-labs/Jx8CxMvAoVk).
+Branches
+========
 
-INSTALL
-=======
+The master branch of `thunderbird-conversations` is sometimes only compatible with the `Daily`-version of Thunderbird (sometimes it won't be, but we'll welcome pull requests to fix that). You can build this from source or get a pre-built binary at https://ftp.mozilla.org/pub/mozilla.org/thunderbird/nightly/latest-comm-central/.
 
-If you just want to start hacking, see
-[MDC](https://developer.mozilla.org/en/Setting_up_extension_development_environment)
-to learn how to use a proxy file. If you want to package a release, follow
-these steps.
+Each major release typically has a release branch for that release (e.g. 2.14+). All pull requests should be against the master branch, we may transplant them after landing to the release if we want them on the release branch.
 
-1. Download the [zip archive](https://github.com/protz/thunderbird-conversations/archive/master.zip) or clone the repository
+Building
+========
+
+1. Clone the repository
 2. Change into the main folder, run `git submodule init` and `git submodule update`
 3. Run `npm install`
 4. Run `npm run build`
 
-This will package an `.xpi` file of the latest codebase which can be installed via add-on manager in Thunderbird.
-Please note that the latest `thunderbird-conversations`-builds are sometimes only compatible with the `Daily`-version of Thunderbird. You can build this from source or get a pre-built binary at http://ftp.mozilla.org/pub/mozilla.org/thunderbird/nightly/latest-comm-central/.
+This will package an `.xpi` file of the latest codebase which can be installed via add-on manager in Thunderbird (hint: you can drag & drop it onto the add-on manager view).
 
-TESTING
+Testing
 =======
 
 To run the tests:
@@ -41,3 +41,13 @@ To run the tests:
 ```
 $ npm test
 ```
+
+Contributing
+============
+
+Please see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+License
+=======
+
+Please see [LICENSE](LICENSE).

@@ -4,6 +4,8 @@ Releasing a new version
 * Ensure L10n is up to date
 * Ensure the correct changeset is checked out
 * Ensure `npm install` has been run
+* Ensure `npm test` has been run
+* Ensure the build runs in the expected versions of Thunderbird
 * Run `npm version <version>` (see below for details on `<version>`)
 * Push the branch `git push upstream <branch>`
 * Push the tag `git push upstream v<version>`
@@ -17,4 +19,8 @@ tag, e.g.
 * 3.0.0-pre2
 * etc.
 
-Lastly, p
+Lastly:
+
+* Run `npm run build`
+* Check that the xpi installs in Thunderbird and is the correct version
+* Upload the xpi to the add-ons site.
