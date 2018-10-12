@@ -48,7 +48,6 @@
 "use strict";
 
 ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 const {MailServices} = ChromeUtils.import("resource:///modules/mailServices.js", {});
 
 const {
@@ -58,6 +57,7 @@ const {sendMessage} = ChromeUtils.import("resource://conversations/modules/stdli
 const {
   composeInIframe, htmlToPlainText, replyAllParams,
 } = ChromeUtils.import("resource://conversations/modules/stdlib/compose.js", {});
+const {generateQI} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js", {});
 const {topMail3Pane} = ChromeUtils.import("resource://conversations/modules/misc.js", {});
 const {getHooks} = ChromeUtils.import("resource://conversations/modules/hook.js", {});
 const {fixIterator} = ChromeUtils.import("resource:///modules/iteratorUtils.jsm", {});
@@ -817,7 +817,7 @@ function nsAttachmentOpener() {
 
 nsAttachmentOpener.prototype = {
 
-  QueryInterface: XPCOMUtils.generateQI([
+  QueryInterface: generateQI([
     Ci.nsIURIContentListener,
     Ci.nsIInterfaceRequestor,
   ]),
@@ -1089,7 +1089,7 @@ let progressListener = {
     // we can ignore this notification
   },
 
-  QueryInterface: XPCOMUtils.generateQI([
+  QueryInterface: generateQI([
     Ci.nsIWebProgressListener,
     Ci.nsISupports,
   ]),
@@ -1190,7 +1190,7 @@ let sendListener = {
     Log.debug("onSendNotPerformed", aMsgID, aStatus);
   },
 
-  QueryInterface: XPCOMUtils.generateQI([
+  QueryInterface: generateQI([
     Ci.nsIMsgSendListener,
     Ci.nsISupports,
   ]),

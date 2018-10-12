@@ -39,6 +39,13 @@
 var EXPORTED_SYMBOLS = ["ContactManager", "Contacts", "defaultPhotoURI"];
 
 ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
+var getCardForEmail;
+try {
+  getCardForEmail = ChromeUtils.import("resource:///modules/DisplayNameUtils.jsm", {}).DisplayNameUtils.getCardForEmail;
+} catch (ex) {
+  // Handle Thunderbird 60 compatibility.
+  getCardForEmail = ChromeUtils.import("resource:///modules/displayNameUtils.js", {}).GetCardForEmail;
+}
 const {MailServices} = ChromeUtils.import("resource:///modules/mailServices.js", {});
 const {GlodaUtils} = ChromeUtils.import("resource:///modules/gloda/utils.js", {});
 const {Gloda} = ChromeUtils.import("resource:///modules/gloda/gloda.js", {});
@@ -222,7 +229,7 @@ let ContactMixIn = {
     // Please note that cardAndBook is never overridden, so that the closure for
     //  the editContact event listener actually sees the updated fields of the
     //  object once the addContact event listener has updated them.
-    let cardAndBook = mainWindow.getCardForEmail(self._email);
+    let cardAndBook = getCardForEmail(self._email);
     if (cardAndBook.card)
       aDomNode.parentNode.classList.add("inAddressBook");
     this.register(".addContact", function(event) {
@@ -239,7 +246,7 @@ let ContactMixIn = {
         "", "chrome,resizable=no,titlebar,modal,centerscreen", args
       );
       // This is an approximation, but it should be good enough
-      let newCardAndBook = mainWindow.getCardForEmail(self._email);
+      let newCardAndBook = getCardForEmail(self._email);
       if (newCardAndBook.card) {
         cardAndBook.card = newCardAndBook.card;
         cardAndBook.book = newCardAndBook.book;

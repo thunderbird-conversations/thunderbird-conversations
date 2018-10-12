@@ -36,12 +36,11 @@
 
 "use strict";
 
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI
 ChromeUtils.import("resource://gre/modules/Services.jsm");
 ChromeUtils.import("resource://gre/modules/NetUtil.jsm");
 const {setupLogging} =
   ChromeUtils.import("resource://conversations/modules/log.js", {});
-const {decodeUrlParameters} =
+const {decodeUrlParameters, generateQI} =
   ChromeUtils.import("resource://conversations/modules/stdlib/misc.js", {});
 
 let Log = setupLogging("Conversations.PdfViewer");
@@ -92,7 +91,7 @@ Wrapper.prototype = {
           chunks.push(array);
         },
 
-        QueryInterface: XPCOMUtils.generateQI([Ci.nsISupports, Ci.nsIStreamListener,
+        QueryInterface: generateQI([Ci.nsISupports, Ci.nsIStreamListener,
           Ci.nsIRequestObserver]),
       };
       channel.asyncOpen(listener, null);

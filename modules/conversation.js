@@ -757,12 +757,14 @@ Conversation.prototype = {
       let w = this._htmlPane;
       w.markReadInView.disable();
 
-      this._htmlPane.tmpl("#messageTemplate", tmplData).appendTo($(this._domNode));
+      for (let x of this._htmlPane.tmpl("#messageTemplate", tmplData)) {
+        this._domNode.appendChild(x);
+      }
 
 
       // Important: don't forget to move the quick reply part into the last
       //  message.
-      $(".quickReply").appendTo($(".message:last"));
+      $(".message:last").appendChild($(".quickReply")[0]);
       // Re-enable to reply dropdown for the message that previously had the
       // quick reply.
       $(".messageFooter").removeClass("hide");
@@ -985,7 +987,6 @@ Conversation.prototype = {
 
     // Fill in the HTML right away. The has the nice side-effect of erasing the
     // previous conversation (but not the conversation-wide event handlers!)
-    let $ = this._htmlPane.$;
     for (let i of range(0, this.messages.length)) {
       // We need to set this before the call to toTmplData.
       let msg = this.messages[i].message;
@@ -1000,7 +1001,9 @@ Conversation.prototype = {
     // We must do this if we are to ever release the previous Conversation
     //  object. See comments in stub.html for the nice details.
     this._htmlPane.cleanup();
-    this._htmlPane.tmpl("#messageTemplate", tmplData).appendTo($(this._domNode));
+    for (let x of this._htmlPane.tmpl("#messageTemplate", tmplData)) {
+      this._domNode.appendChild(x);
+    }
 
     // Notify each message that it's been added to the DOM and that it can do
     // event registration and stuff...

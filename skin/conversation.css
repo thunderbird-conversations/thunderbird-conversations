@@ -872,3 +872,10 @@ html[xmlns] .clearfix {
 * html .clearfix {
   height: 1%;
 }
+
+.loader {
+  display: inline-block;
+  width: 16px;
+  height: 16px;
+  background-image: url(loader.gif);
+}

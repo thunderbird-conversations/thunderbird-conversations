@@ -18,11 +18,6 @@
     href="chrome://conversations/skin/tokeninput.css" />
   <link rel="stylesheet" type="text/css" media="print"
     href="chrome://conversations/skin/print.css" />
-  <script type="text/javascript">
-    <![CDATA[
-      document.allowUnsafeHTML = true;
-    ]]>
-  </script>
   <script type="text/javascript"
     src="chrome://conversations/content/js/jquery-3.2.1.min.js"></script>
   <script type="text/javascript"
@@ -766,6 +761,7 @@
     <menuitem label="&stub.context.delete;" onclick="getCurrentAttInfo().detach(false);"></menuitem>
   </menu>
   <script id="detailsTemplate" type="text/x-handlebars-template"><![CDATA[
+      <div>
       {{#if dataContactsFrom.length}}
         <div class="detailsLine fromLine">
           <u>{{str "fieldFrom"}}</u>
@@ -796,6 +792,7 @@
           {{value}}
         </div>
       {{/each}}
+      </div>
     ]]>
   </script>
   <script id="messageTemplate" type="text/x-handlebars-template"><![CDATA[
@@ -1377,8 +1374,7 @@
             <span class="statusMessage" style="float: left;"></span>
             <span class="statusPercentage" style="float: right;"></span>
             <span class="statusThrobber" style="float: right;">
-              <img src="chrome://conversations/content/i/loader.gif"
-                style="vertical-align: middle;" />
+              <span class="loader" style="vertical-align: middle;"></span>
             </span>
           </div>
         </div>
