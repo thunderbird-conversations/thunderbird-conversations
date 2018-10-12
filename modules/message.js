@@ -38,12 +38,12 @@
 
 var EXPORTED_SYMBOLS = ["Message", "MessageFromGloda", "MessageFromDbHdr", "ConversationKeybindings"];
 
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm"); // for generateQI
+ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 ChromeUtils.import("resource://gre/modules/PluralForm.jsm");
 ChromeUtils.import("resource://gre/modules/Services.jsm");
 const {
   dateAsInMessageList, entries, escapeHtml, getIdentityForEmail, isAccel,
-  isOSX, isWindows, MixIn, parseMimeLine, sanitize,
+  isOSX, isWindows, MixIn, parseMimeLine, sanitize, generateQI,
 } = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js", {});
 const {MailServices} = ChromeUtils.import("resource:///modules/mailServices.js", {}); // bug 629462
 ChromeUtils.import("resource:///modules/StringBundle.js");
@@ -836,7 +836,7 @@ Message.prototype = {
         event.stopPropagation();
       });
       // eslint-disable-next-line no-unsanitized/property
-      mainActionLink.innerHTML = replyList.innerHTML;
+      mainActionLink.appendChild(replyList.firstChild.cloneNode());
       mainActionLink.title = replyList.title;
     } else if (this.isReplyAllEnabled) {
       this.register(".replyMainActionLink", function(event) {
@@ -844,7 +844,7 @@ Message.prototype = {
         event.stopPropagation();
       });
       // eslint-disable-next-line no-unsanitized/property
-      mainActionLink.innerHTML = replyAll.innerHTML;
+      mainActionLink.appendChild(replyAll.firstChild.cloneNode());
       mainActionLink.title = replyAll.title;
     } else {
       this.register(".replyMainActionLink", function(event) {
@@ -852,7 +852,7 @@ Message.prototype = {
         event.stopPropagation();
       });
       // eslint-disable-next-line no-unsanitized/property
-      mainActionLink.innerHTML = reply.innerHTML;
+      mainActionLink.appendChild(reply.firstChild.cloneNode());
       mainActionLink.title = reply.title;
     }
 
@@ -1198,12 +1198,24 @@ Message.prototype = {
           let tmplData = self.toTmplDataForAttachments();
           let w = self._conversation._htmlPane;
           let $ = w.$;
-          w.tmpl("#attachmentIconTemplate", tmplData).appendTo(
-            $(self._domNode.querySelector(".attachmentIcon")).empty());
-          w.tmpl("#attachmentDetailsTemplate", tmplData).appendTo(
-            $(self._domNode.querySelector(".detailsLine")).empty());
-          w.tmpl("#attachmentsTemplate", tmplData).appendTo(
-            $(self._domNode.querySelector(".attachments-container")).empty());
+          let target = self._domNode.querySelector(".attachmentIcon");
+          $(target).empty();
+          let node = w.tmpl("#attachmentIconTemplate", tmplData);
+          if (node) {
+            target.appendChild(node);
+          }
+          target = self._domNode.querySelector(".detailsLine");
+          $(target).empty();
+          node = w.tmpl("#attachmentDetailsTemplate", tmplData);
+          if (node) {
+            target.appendChild(node);
+          }
+          target = self._domNode.querySelector(".attachments-container");
+          $(target).empty();
+          node = w.tmpl("#attachmentsTemplate", tmplData);
+          if (node) {
+            target.appendChild(node);
+          }
 
           try {
             k();
@@ -1238,7 +1250,6 @@ Message.prototype = {
     let w = this._conversation._htmlPane;
     msgHdrGetHeaders(this._msgHdr, function(aHeaders) {
       try {
-        let $ = w.$;
         let data = {
           dataContactsFrom: [],
           dataContactsTo: [],
@@ -1291,8 +1302,7 @@ Message.prototype = {
         data.dataContactsBcc = buildContactData(contactsBcc);
 
         // Output the template
-        w.tmpl("#detailsTemplate", data)
-          .appendTo($(this._domNode.getElementsByClassName("detailsPlaceholder")[0]));
+        this._domNode.getElementsByClassName("detailsPlaceholder")[0].appendChild(w.tmpl("#detailsTemplate", data));
         // Activate tooltip event listeners
         w.enableTooltips({
           _domNode:
@@ -1632,7 +1642,7 @@ Message.prototype = {
         let urlListener = {
           OnStartRunningUrl() {},
           OnStopRunningUrl() {},
-          QueryInterface: XPCOMUtils.generateQI([Ci.nsISupports, Ci.nsIUrlListener]),
+          QueryInterface: generateQI([Ci.nsISupports, Ci.nsIUrlListener]),
         };
 
         /**

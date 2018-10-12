@@ -60,7 +60,15 @@ function wrapHandlebars() {
     }
     return "";
   };
-  window.tmpl = (id, data) => $(tmpl0(id, data));
+  window.tmpl = function(id, data) {
+    let html = tmpl0(id, data);
+    let parser = new DOMParser();
+    let doc = parser.parseFromString(html, "text/html");
+    if ($.isArray(data)) {
+      return Array.from(doc.body.childNodes);
+    }
+    return doc.body.firstChild;
+  };
 
   let strings = new StringBundle("chrome://conversations/locale/template.properties");
   let str0 = function(x, ...args) {
