@@ -6,19 +6,13 @@
 <head>
   <title>&assistant.title;</title>
   <link rel="stylesheet" type="text/css" href="chrome://conversations/skin/assistant.css" />
-  <script type="text/javascript" src="chrome://conversations/content/js/jquery-3.2.1.min.js"></script>
   <script type="application/javascript">
     <![CDATA[
 
-    const Ci = Components.interfaces;
-    const Cc = Components.classes;
-    const Cu = Components.utils;
-    const Cr = Components.results;
-
-    Cu.import("resource://conversations/modules/config.js");
-    Cu.import("resource://conversations/modules/prefs.js");
-    Cu.import("resource://conversations/modules/log.js");
-    Cu.import("resource://conversations/modules/assistant.js");
+    ChromeUtils.import("resource://conversations/modules/config.js");
+    ChromeUtils.import("resource://conversations/modules/prefs.js");
+    ChromeUtils.import("resource://conversations/modules/log.js");
+    ChromeUtils.import("resource://conversations/modules/assistant.js");
 
     let Log = setupLogging("Conversations.AssistantUI");
     let uninstallInfos = JSON.parse(Prefs.getString("conversations.uninstall_infos"));
@@ -73,9 +67,13 @@
     function onFinish() {
       // Register uninstall information if the user closes the window now.
       window.addEventListener("unload", finish, true);
-
-      $(".working").show();
-      $(".applyChanges").attr("disabled", "disabled").text($(".working:first").text());
+      let workingItems = document.getElementsByClassName("working");
+      for (let item of workingItems) {
+        item.classList.remove("hidden");
+      }
+      let applyButton = document.getElementById("applyButton");
+      applyButton.disabled = true;
+      applyButton.textContent = workingItems[0].innerText;
 
       let checkboxes = document.querySelectorAll("input[type=\"checkbox\"]");
       for (let checkbox of checkboxes) {
@@ -88,9 +86,10 @@
     }
 
     function onCustomSetup(event) {
-      $(".more").fadeIn("slow");
-      $(".more").get(0).scrollIntoView();
-      $(event.target).hide();
+      let more = document.getElementById("more");
+      more.setAttribute("show", true);
+      more.scrollIntoView({alignToTop: false});
+      event.target.classList.add("hidden");
     }
 
     ]]>
@@ -114,7 +113,7 @@
         <p class="p3">
          <span class="orange">&assistant.p3;</span>
         </p>
-        <p class="working" style="text-align: left; margin-top: 50px">
+        <p class="working hidden" style="text-align: left; margin-top: 50px">
           &assistant.working;  <img src="loader.gif" />
         </p>
       </div>
@@ -122,10 +121,10 @@
 
     <div class="buttonBox">
       <button onclick="onCustomSetup(event);">&assistant.review;</button>
-      <button onclick="onFinish(event);" class="applyChanges">&assistant.apply;</button>
+      <button onclick="onFinish(event);" id="applyButton" class="applyChanges">&assistant.apply;</button>
     </div>
 
-    <div class="more">
+    <div id="more">
       <p>
         &assistant.settings;
       </p>
@@ -168,7 +167,7 @@
         &assistant.settings2;
       </p>
 
-      <p class="working">
+      <p class="working hidden">
         &assistant.working;  <img src="loader.gif" />
       </p>
 

@@ -16,6 +16,10 @@ body {
   background-repeat: no-repeat;
 }
 
+.hidden {
+  display: none;
+}
+
 .title {
   margin-top: 0;
 }
@@ -30,11 +34,11 @@ body {
   padding-bottom: 60px;
 }
 
-.more ul, .more p {
+#more ul, #more p {
   margin: 20px;
 }
 
-.more ul {
+#more ul {
   list-style-type: none;
 }
 
@@ -55,13 +59,22 @@ body {
   width: 300px;
 }
 
-.more {
+#more {
   display: none;
+}
+
+#more[show="true"] {
+  display: block;
+  animation: fadein .4s;
+}
+
+@keyframes fadein {
+    from { opacity: 0; }
+    to   { opacity: 1; }
 }
 
 .working {
   text-align: right;
-  display: none;
 }
 
 #footer {
