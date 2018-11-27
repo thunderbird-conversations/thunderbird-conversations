@@ -43,7 +43,7 @@ ChromeUtils.import("resource://gre/modules/PluralForm.jsm");
 ChromeUtils.import("resource://gre/modules/Services.jsm");
 const {
   dateAsInMessageList, entries, escapeHtml, getIdentityForEmail, isAccel,
-  isOSX, isWindows, MixIn, parseMimeLine, sanitize
+  isOSX, isWindows, MixIn, parseMimeLine, sanitize,
 } = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js", {});
 const {MailServices} = ChromeUtils.import("resource:///modules/mailServices.js", {}); // bug 629462
 ChromeUtils.import("resource:///modules/StringBundle.js");
@@ -336,7 +336,7 @@ KeyListener.prototype = {
               func: "tagHandling" }],
       "9": [{ mods: { ctrlKey: false, altKey: false, shiftKey: false, metaKey: false },
               func: "tagHandling" }],
-    }
+    },
   },
   // Any event that's handled *must* be stopped from bubbling upwards, because
   //  there's a topmost event listener on the DOM window that re-fires any
@@ -392,7 +392,7 @@ const ConversationKeybindings = {
 KeyListener.prototype.defaultKeybindings = JSON.parse(JSON.stringify(KeyListener.prototype.keybindings));
 // Load any customizations
 KeyListener.prototype.loadKeybindings();
-for (let [actionName, /* j */] of entries(KeyListener.prototype.functions)) {
+for (let [actionName /* j */] of entries(KeyListener.prototype.functions)) {
   ConversationKeybindings.availableActions.push(actionName);
 }
 
@@ -530,7 +530,7 @@ Message.prototype = {
     let contactFrom = [
       this._conversation._contactManager
         .getContactFromNameAndEmail(this._from.name, this._from.email),
-      this._from.email
+      this._from.email,
     ];
     this._contacts.push(contactFrom);
     // true means "with colors"
@@ -620,7 +620,7 @@ Message.prototype = {
     }
     let self = this;
     let l = this._attachments.length;
-    let [makePlural, ] = PluralForm.makeGetter(strings.get("pluralForm"));
+    let [makePlural ] = PluralForm.makeGetter(strings.get("pluralForm"));
     data.attachmentsPlural = makePlural(l, strings.get("attachments")).replace("#1", l);
     this._attachments.forEach(function(att, i) {
       // Special treatment for images
@@ -787,7 +787,7 @@ Message.prototype = {
 
     // Forward the calls to each contact.
     let people = this._domNode.getElementsByClassName("tooltip");
-    this._contacts.forEach(function([x, ], i) {
+    this._contacts.forEach(function([x ], i) {
       x.onAddedToDom(people[i]);
     });
 
@@ -1015,7 +1015,7 @@ Message.prototype = {
         let preview = function(event) {
           mainWindow.document.getElementById("tabmail").openTab(
             "chromeTab", { chromePage:
-              makeViewerUrl(self._attachments[j].name, self._attachments[j].url)
+              makeViewerUrl(self._attachments[j].name, self._attachments[j].url),
             }
           );
         };
@@ -1516,7 +1516,7 @@ Message.prototype = {
                   unusableCharsetHandler: mainWindow
                     .BiDiMailUI.MessageOverlay.promptForDefaultCharsetChange,
                   needCharsetForcing: false,
-                  charsetToForce: null
+                  charsetToForce: null,
                 };
                 ActionPhases.charsetMisdetectionCorrection(BDMCharsetPhaseParams);
                 if (BDMCharsetPhaseParams.needCharsetForcing
@@ -1631,7 +1631,7 @@ Message.prototype = {
         let urlListener = {
           OnStartRunningUrl() {},
           OnStopRunningUrl() {},
-          QueryInterface: XPCOMUtils.generateQI([Ci.nsISupports, Ci.nsIUrlListener])
+          QueryInterface: XPCOMUtils.generateQI([Ci.nsISupports, Ci.nsIUrlListener]),
         };
 
         /**
@@ -1823,7 +1823,7 @@ function MessageFromDbHdr(aConversation, aMsgHdr) {
           return;
         }
 
-        let [text, /* meta */] = mimeMsgToContentSnippetAndMeta(aMimeMsg, aMsgHdr.folder, kSnippetLength);
+        let [text /* meta */] = mimeMsgToContentSnippetAndMeta(aMimeMsg, aMsgHdr.folder, kSnippetLength);
         self._snippet = text;
         let alternativeSender = PluginHelpers.alternativeSender({ mime: aMimeMsg, header: aMsgHdr });
         if (alternativeSender) {

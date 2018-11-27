@@ -24,7 +24,7 @@ function loadDefaultPrefs() {
           branch.setCharPref(key, val);
           break;
       }
-    }
+    },
   };
 
   let uri = Services.io.newURI(

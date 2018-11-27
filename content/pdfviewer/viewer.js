@@ -95,7 +95,7 @@ Viewer.prototype = {
       //
       let renderContext = {
         canvasContext: context,
-        viewport
+        viewport,
       };
       page.render(renderContext);
 

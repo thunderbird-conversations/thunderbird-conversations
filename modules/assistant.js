@@ -107,7 +107,7 @@ MultipleCustomization.prototype = {
     this.customizations.forEach(function(x, i) {
       x.uninstall(uninstallInfos[i]);
     });
-  }
+  },
 };
 
 // let eid = getMail3Pane().document.getElementById;
@@ -124,19 +124,19 @@ var Customizations = {
   actionSetupViewDefaults: new MultipleCustomization([
     { name: "mailnews.default_sort_order", type: kPrefInt, value: 2 },
     { name: "mailnews.default_sort_type", type: kPrefInt, value: 18 },
-    { name: "mailnews.default_view_flags", type: kPrefInt, value: 1 }
+    { name: "mailnews.default_view_flags", type: kPrefInt, value: 1 },
   ]),
 
   actionAttachmentsInline: new PrefCustomization({
-    name: "mail.inline_attachments", type: kPrefBool, value: false
+    name: "mail.inline_attachments", type: kPrefBool, value: false,
   }),
 
   actionDontExpand: new PrefCustomization({
-    name: "mailnews.scroll_to_new_message", type: kPrefBool, value: false
+    name: "mailnews.scroll_to_new_message", type: kPrefBool, value: false,
   }),
 
   actionEnableGloda: new PrefCustomization({
-    name: "mailnews.database.global.indexer.enabled", type: kPrefBool, value: true
+    name: "mailnews.database.global.indexer.enabled", type: kPrefBool, value: true,
   }),
 
   actionEnsureMessagePaneVisible:
@@ -162,7 +162,7 @@ var Customizations = {
         initialFolder: {
           uri: null,
           show: null,
-        }
+        },
       };
 
       let mainWindow = getMail3Pane();

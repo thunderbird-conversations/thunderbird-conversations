@@ -78,7 +78,7 @@ const KeyStyles = [
   // UNNEEDED_KEY
   "border: 0px solid white;" +
   "padding: 2px;" +
-  "color: gray;"
+  "color: gray;",
 ];
 
 
@@ -168,7 +168,7 @@ const PrefEditors = {
     let binding = { mods: {}, func };
     bindings[key].push(binding);
     return binding;
-  }
+  },
 };
 
 
@@ -290,7 +290,7 @@ const Listeners = {
     parent.parentNode.removeChild(parent);
     ConversationKeybindings.saveKeybindings();
     event.stopPropagation();
-  }
+  },
 };
 
 const Templates = {
@@ -466,7 +466,7 @@ const Templates = {
     btn.setAttribute("label", strings.get("createHotkey"));
     btn.addEventListener("command", Listeners.onCreateClick);
     return hbox;
-  }
+  },
 };
 
 
@@ -500,5 +500,5 @@ const CustomizeKeys = {
     let keysVbox = showhide.previousElementSibling;
     while (keysVbox.hasChildNodes())
       keysVbox.removeChild(keysVbox.firstChild);
-  }
+  },
 };

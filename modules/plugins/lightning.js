@@ -84,7 +84,7 @@ function imipOptions(rootNode, msgWindow, message, itipItem, rc, actionFunc, fou
         listener.onOperationComplete(aCalendar, aStatus, aOperationType, aId, aDetail);
       },
 
-      onGetResult() {}
+      onGetResult() {},
     };
 
     actionFunc(newListener, actionMethod);
@@ -137,7 +137,7 @@ let lightningHook = {
       cal.itip.processItipItem(itipItem, imipOptions.bind(null, aDomNode, aMsgWindow, aMessage));
       imipBar.style.display = "block";
     }
-  }
+  },
 };
 
 if (hasLightning) {

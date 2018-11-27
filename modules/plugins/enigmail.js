@@ -83,7 +83,7 @@ const {
   registerHook,
 } = ChromeUtils.import("resource://conversations/modules/hook.js", {});
 const {
-  setupLogging, dumpCallStack
+  setupLogging, dumpCallStack,
 } = ChromeUtils.import("resource://conversations/modules/log.js", {});
 
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
@@ -136,7 +136,7 @@ let enigmailSvc;
 // used in enigmailMsgComposeOverlay.js
 /* exported gMsgCompose, gSMFields, getCurrentIdentity */
 let gMsgCompose = {
-  compFields: {}
+  compFields: {},
 };
 let gSMFields = {};
 let getCurrentIdentity = function() {
@@ -361,7 +361,7 @@ function tryEnigmail(aDocument, aMessage, aMsgWindow) {
   var errorMsgObj = {};
   var encToDetailsObj = {};
   var blockSeparationObj = {
-    value: ""
+    value: "",
   };
 
   try {
@@ -379,7 +379,7 @@ function tryEnigmail(aDocument, aMessage, aMsgWindow) {
             return NodeFilter.FILTER_SKIP;
           }
           return NodeFilter.FILTER_ACCEPT;
-        }
+        },
       }
     );
     let text = [];
@@ -785,7 +785,7 @@ let enigmailHook = {
       return aStatus;
 
     // global window is used in Enigmail function
-    // eslint-disable-next-line no-native-reassign
+    // eslint-disable-next-line no-native-reassign, no-global-assign
     window = getMail3Pane();
 
     const SIGN = nsIEnigmail.SEND_SIGNED;

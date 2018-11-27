@@ -11,7 +11,7 @@ module.exports = {
   // "globals": {
   // },
   "extends": [
-    "plugin:mozilla/recommended"
+    "plugin:mozilla/recommended",
   ],
   "overrides": [{
     // This marks exported symbols as used for our modules.
@@ -23,7 +23,7 @@ module.exports = {
     },
   }],
   "plugins": [
-    "mozilla"
+    "mozilla",
   ],
   "rules": {
     // XXX These are all rules that mozilla/recommended set, but we currently
@@ -41,5 +41,5 @@ module.exports = {
       "args": "none",
       "vars": "all",
     }],
-  }
+  },
 };

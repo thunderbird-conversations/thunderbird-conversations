@@ -12,7 +12,7 @@ const {Gloda} = ChromeUtils.import("resource:///modules/gloda/gloda.js", {});
 const {MultiSuffixTree} = ChromeUtils.import("resource:///modules/gloda/suffixtree.js", {});
 const {
   entries, escapeHtml, getDefaultIdentity, getIdentityForEmail,
-  getIdentities, NS_SUCCEEDED
+  getIdentities, NS_SUCCEEDED,
 } = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js", {});
 const {
   setupLogging, dumpCallStack, Colors,
@@ -219,7 +219,7 @@ ContactIdentityCompleter.prototype = {
       // the result object no longer needs us or our data
       delete result._contactCompleterPending;
     }
-  }
+  },
 };
 
 function glodaAutocomplete(query, callback) {
@@ -248,7 +248,7 @@ let autoCompleteClasses = {
   dropdownItem: "token-input-dropdown-item-facebook",
   dropdownItem2: "token-input-dropdown-item2-facebook",
   selectedDropdownItem: "token-input-selected-dropdown-item-facebook",
-  inputToken: "token-input-input-token-facebook"
+  inputToken: "token-input-input-token-facebook",
 };
 
 function setupAutocomplete(to, cc, bcc) {

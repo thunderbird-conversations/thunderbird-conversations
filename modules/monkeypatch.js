@@ -60,7 +60,7 @@ const {
   Colors, dumpCallStack, setupLogging,
 } = ChromeUtils.import("resource://conversations/modules/log.js", {});
 const {
-  Config
+  Config,
 } = ChromeUtils.import("resource://conversations/modules/config.js", {});
 
 ChromeUtils.import("resource://gre/modules/Services.jsm");
@@ -111,7 +111,7 @@ MonkeyPatch.prototype = {
     [
       ["type", "checkbox"],
       ["id", "menuConversationsEnabled"],
-      ["label", strings.get("menuConversationsEnabled")]
+      ["label", strings.get("menuConversationsEnabled")],
     ].forEach(function([k, v]) {
       menuitem.setAttribute(k, v);
     });
@@ -142,7 +142,7 @@ MonkeyPatch.prototype = {
       ["flex", "4"],
       ["persist", "width hidden ordinal"],
       ["label", strings.get("betweenColumnName")],
-      ["tooltiptext", strings.get("betweenColumnTooltip")]
+      ["tooltiptext", strings.get("betweenColumnTooltip")],
     ].forEach(function([k, v]) {
       treecol.setAttribute(k, v);
     });
@@ -232,14 +232,14 @@ MonkeyPatch.prototype = {
       },
       getSortLongForRow(hdr) {
         return 0;
-      }
+      },
     };
 
     // The main window is loaded when the monkey-patch is applied
     Services.obs.addObserver({
       observe(aMsgFolder, aTopic, aData) {
         window.gDBView.addColumnHandler("betweenCol", columnHandler);
-      }
+      },
     }, "MsgCreateDBView");
     try {
       window.gDBView.addColumnHandler("betweenCol", columnHandler);

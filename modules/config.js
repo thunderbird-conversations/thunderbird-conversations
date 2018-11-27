@@ -10,7 +10,7 @@ var Config = {
       ADDON_INSTALL: 5,
       ADDON_UNINSTALL: 6,
       ADDON_UPGRADE: 7,
-      ADDON_DOWNGRADE: 8
+      ADDON_DOWNGRADE: 8,
     };
-  }
+  },
 };

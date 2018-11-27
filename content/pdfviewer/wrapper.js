@@ -93,7 +93,7 @@ Wrapper.prototype = {
         },
 
         QueryInterface: XPCOMUtils.generateQI([Ci.nsISupports, Ci.nsIStreamListener,
-          Ci.nsIRequestObserver])
+          Ci.nsIRequestObserver]),
       };
       channel.asyncOpen(listener, null);
     });
