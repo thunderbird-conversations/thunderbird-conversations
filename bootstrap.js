@@ -60,7 +60,7 @@ let ResourceRegister = {
     let resource = Services.io.getProtocolHandler("resource")
       .QueryInterface(Ci.nsIResProtocolHandler);
     resource.setSubstitution(aName, null);
-  }
+  },
 };
 
 function monkeyPatchWindow(window, aLater) {
@@ -165,7 +165,7 @@ let windowObserver = {
       aSubject.QueryInterface(Ci.nsIDOMWindow);
       monkeyPatchWindow(aSubject.window, true);
     }
-  }
+  },
 };
 
 function startup(aData, aReason) {
@@ -186,7 +186,7 @@ function startup(aData, aReason) {
       observe(aSubject, aTopic, aData) {
           loadImports();
           monkeyPatchAllWindows();
-      }
+      },
     }, "final-ui-startup");
 
 
@@ -217,7 +217,7 @@ function startup(aData, aReason) {
           loadImports();
           CustomizeKeys.enable(aSubject); // aSubject is the options document
         }
-      }
+      },
     }, "addon-options-displayed");
     Services.obs.addObserver({
       observe(aSubject, aTopic, aData) {
@@ -225,7 +225,7 @@ function startup(aData, aReason) {
           loadImports();
           CustomizeKeys.disable(aSubject); // aSubject is the options document
         }
-      }
+      },
     }, "addon-options-hidden");
   } catch (e) {
     Log.error(e);

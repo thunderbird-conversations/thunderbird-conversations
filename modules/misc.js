@@ -38,7 +38,7 @@ var EXPORTED_SYMBOLS = [
   "groupArray", "joinWordList", "iconForMimeType",
   "EventHelperMixIn", "arrayEquals", "LINKS_REGEX",
   "linkifySubject", "topMail3Pane", "reindexMessages",
-  "folderName", "openConversationInTabOrWindow"
+  "folderName", "openConversationInTabOrWindow",
 ];
 
 var LINKS_REGEX = /((\w+):\/\/[^<>()'"\s]+|www(\.[-\w]+){2,})/;
@@ -130,13 +130,13 @@ let fallbackMapping = [
 ];
 
 function iconForMimeType(aMimeType) {
-  let idx = mapping.findIndex(function([k, ]) {
+  let idx = mapping.findIndex(function([k ]) {
     return aMimeType == k;
   });
   if (idx != -1) {
     return mapping[idx][1] + ".svg";
   }
-  idx = fallbackMapping.findIndex(function([k, ]) {
+  idx = fallbackMapping.findIndex(function([k ]) {
     return aMimeType.startsWith(k);
   });
   if (idx != -1) {

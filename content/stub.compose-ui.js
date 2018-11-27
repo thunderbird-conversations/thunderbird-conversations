@@ -358,7 +358,7 @@ function getActiveEditor() {
     set value(val) {
       // eslint-disable-next-line no-unsanitized/property
       textarea.contentDocument.body.innerHTML = val;
-    }
+    },
   };
 }
 
@@ -807,7 +807,7 @@ ComposeSession.prototype = {
         popOut,
         archive: self.archive,
       });
-  }
+  },
 };
 
 // Stolen from MsgComposeCommands.js
@@ -819,7 +819,7 @@ nsAttachmentOpener.prototype = {
 
   QueryInterface: XPCOMUtils.generateQI([
     Ci.nsIURIContentListener,
-    Ci.nsIInterfaceRequestor
+    Ci.nsIInterfaceRequestor,
   ]),
 
   onStartURIOpen(uri) {
@@ -847,7 +847,7 @@ nsAttachmentOpener.prototype = {
   },
 
   loadCookie: null,
-  parentContentListener: null
+  parentContentListener: null,
 };
 
 // ----- Attachment list
@@ -1088,7 +1088,7 @@ let progressListener = {
 
   QueryInterface: XPCOMUtils.generateQI([
     Ci.nsIWebProgressListener,
-    Ci.nsISupports
+    Ci.nsISupports,
   ]),
 };
 
@@ -1189,7 +1189,7 @@ let sendListener = {
 
   QueryInterface: XPCOMUtils.generateQI([
     Ci.nsIMsgSendListener,
-    Ci.nsISupports
+    Ci.nsISupports,
   ]),
 };
 
@@ -1244,6 +1244,6 @@ function createStateListener(aComposeSession, aMsgHdrs, aId) {
 
     SaveInFolderDone(folderURI) {
       // DisplaySaveFolderDlg(folderURI);
-    }
+    },
   };
 }

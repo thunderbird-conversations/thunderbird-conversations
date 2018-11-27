@@ -56,7 +56,7 @@ const clipboardService = Cc["@mozilla.org/widget/clipboardhelper;1"]
 
 var Contacts = {
   kFrom: 0,
-  kTo: 1
+  kTo: 1,
 };
 
 const defaultPhotoURI = "chrome://messenger/skin/addressbook/icons/contact-generic.png";
@@ -282,11 +282,11 @@ let ContactMixIn = {
               tabmail.openTab("glodaList", {
                 collection: aCollection,
                 title: strings.get("involvingTabTitle").replace("#1", self._name),
-                background: false
+                background: false,
               });
-            }
+            },
           });
-        }
+        },
       });
     });
     this.register(".createFilter", function(event) {
@@ -298,17 +298,17 @@ let ContactMixIn = {
       let a = a1;
       a.addEventListener("click",
         a.classList.contains("profile-link")
-        ? (event) => (
+        ? (event) => {
             mainWindow.document.getElementById("tabmail").openTab("contentTab", {
               contentPage: a.href,
-              clickHandler: "specialTabs.defaultClickHandler(event);"
-            }),
-            event.preventDefault()
-          )
-        : (event) => (
-            mainWindow.specialTabs.siteClickHandler(event, /^mailto:/),
-            event.preventDefault()
-          ));
+              clickHandler: "specialTabs.defaultClickHandler(event);",
+            });
+            event.preventDefault();
+          }
+        : (event) => {
+            mainWindow.specialTabs.siteClickHandler(event, /^mailto:/);
+            event.preventDefault();
+          });
     }
   },
 
