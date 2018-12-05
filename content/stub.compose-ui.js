@@ -862,7 +862,7 @@ AttachmentList.prototype = {
     let filePicker = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
     filePicker.init(window, strings.get("attachFiles"), Ci.nsIFilePicker.modeOpenMultiple);
     let self = this;
-    filePicker.open(function  (rv) {
+    filePicker.open(function(rv) {
         if (rv != Ci.nsIFilePicker.returnOK) {
           Log.debug("User canceled, returning");
         } else {
