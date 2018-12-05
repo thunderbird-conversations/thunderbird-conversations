@@ -106,29 +106,23 @@ let Log = setupLogging("Conversations.Modules.Enigmail");
 let window = getMail3Pane();
 let hasEnigmail;
 try {
-  /* globals EnigmailCommon, EnigmailCore, EnigmailData, EnigmailLocale,
+  /* globals EnigmailCore, EnigmailData, EnigmailLocale,
              EnigmailFuncs, Enigmail, EnigmailPrefs, EnigmailDialog,
              EnigmailConstants, EnigmailRules, EnigmailArmor,
-             EnigmailDecryption */
-  ChromeUtils.import("resource://enigmail/core.jsm");
-  ChromeUtils.import("resource://enigmail/data.jsm");
-  ChromeUtils.import("resource://enigmail/dialog.jsm");
-  ChromeUtils.import("resource://enigmail/prefs.jsm");
-  ChromeUtils.import("resource://enigmail/locale.jsm");
+             EnigmailDecryption, EnigmailExecution */
+  ChromeUtils.import("chrome://enigmail/content/modules/core.jsm");
+  ChromeUtils.import("chrome://enigmail/content/modules/data.jsm");
+  ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm");
+  ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm");
+  ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm");
+  ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm");
+  // eslint-disable-next-line no-unused-vars
+  ChromeUtils.import("chrome://enigmail/content/modules/execution.jsm");
   hasEnigmail = true;
   Log.debug("Enigmail plugin for Thunderbird Conversations loaded!");
 } catch (e) {
   hasEnigmail = false;
-  Log.debug("Enigmail is older than 1.9 or doesn't seem to be installed...");
-  try {
-    ChromeUtils.import("resource://enigmail/enigmailCommon.jsm");
-    ChromeUtils.import("resource://enigmail/commonFuncs.jsm");
-    hasEnigmail = true;
-    Log.debug("Enigmail plugin for Thunderbird Conversations loaded!");
-  } catch (e) {
-    hasEnigmail = false;
-    Log.debug("Enigmail doesn't seem to be installed...");
-  }
+  Log.debug("Enigmail doesn't seem to be installed...");
 }
 /* eslint-enable no-unused-vars */
 
@@ -143,24 +137,10 @@ let getCurrentIdentity = function() {
   return Enigmail.msg.identity;
 };
 let global = this;
-let nsIEnigmail = Ci.nsIEnigmail;
+let nsIEnigmail = {};
 
 if (hasEnigmail) {
-  if (!global.EnigmailCore) {
-    global.EnigmailCore = EnigmailCommon;
-  }
-  if (!global.EnigmailData) {
-    global.EnigmailData = EnigmailCommon;
-  }
-  if (!global.EnigmailDialog) {
-    global.EnigmailDialog = EnigmailCommon;
-  }
-  if (!global.EnigmailPrefs) {
-    global.EnigmailPrefs = EnigmailCommon;
-  }
-  if (!global.EnigmailLocale) {
-    global.EnigmailLocale = EnigmailCommon;
-  }
+  nsIEnigmail = EnigmailConstants;
   enigmailSvc = EnigmailCore.getService(window);
   if (!enigmailSvc) {
     Log.debug("Error loading the Enigmail service. Is Enigmail disabled?\n");
@@ -169,25 +149,13 @@ if (hasEnigmail) {
   try {
     let loader = Services.scriptloader;
     /* globals EnigmailMsgCompFields, EnigmailEncryption */
-    loader.loadSubScript("chrome://enigmail/content/enigmailMsgComposeOverlay.js", global);
-    loader.loadSubScript("chrome://enigmail/content/enigmailMsgComposeHelper.js", global);
+    loader.loadSubScript("chrome://enigmail/content/ui/enigmailMsgComposeOverlay.js", global);
+    loader.loadSubScript("chrome://enigmail/content/ui/enigmailMsgComposeHelper.js", global);
   } catch (e) {
     hasEnigmail = false;
     Log.debug("Enigmail script doesn't seem to be loaded. Error: " + e);
   }
-  if (!global.EnigmailConstants) {
-    global.EnigmailConstants = EnigmailCommon;
-  }
 
-  let isEnigmail2 = false;
-  if (!nsIEnigmail) {
-    // Ci.nsIEnigmail is moved to EnigmailConstants on Enigmail 2.0
-    nsIEnigmail = global.EnigmailConstants;
-    isEnigmail2 = true;
-    /* globals EnigmailExecution */
-    // eslint-disable-next-line no-unused-vars
-    ChromeUtils.import("resource://enigmail/execution.jsm");
-  }
 
   let w = getMail3Pane();
   let iframe = w.document.createElement("iframe");
@@ -203,7 +171,7 @@ if (hasEnigmail) {
   let messagepane = w.document.getElementById("messagepane");
   messagepane.addEventListener("load", function _overrideUpdateSecurity() {
     let w = getMail3Pane();
-    if (!isEnigmail2 || w.Enigmail.hdrView) {
+    if (w.Enigmail.hdrView) {
         overrideUpdateSecurity(messagepane, w);
     } else {
       w.addEventListener("load-enigmail", function _overrideUpdateSecurityInner() {
@@ -438,75 +406,24 @@ function tryEnigmail(aDocument, aMessage, aMsgWindow) {
       }
     }
 
-    var plainText;
-    var exitCode;
-    if (enigmailSvc.decryptMessage) {
-      plainText =
-        enigmailSvc.decryptMessage(window, 0, msgText,
-          signatureObj, exitCodeObj,
-          statusFlagsObj, keyIdObj, userIdObj, sigDetailsObj,
-          errorMsgObj, blockSeparationObj, encToDetailsObj);
-    } else {
-      // Enigmail 2.0
-      var beginIndexObj = {};
-      var endIndexObj = {};
-      var indentStrObj = {};
-      var blockType = EnigmailArmor.locateArmoredBlock(msgText, 0, "", beginIndexObj, endIndexObj, indentStrObj);
-      var verifyOnly = (blockType == "SIGNED MESSAGE");
-      var startErrorMsgObj = {};
-      var noOutput = false;
+    var uiFlags = 0;
 
-      var pgpBlock = msgText.substr(beginIndexObj.value,
-        endIndexObj.value - beginIndexObj.value + 1);
+    var plainText = EnigmailDecryption.decryptMessage(window, uiFlags, msgText,
+      signatureObj, exitCodeObj, statusFlagsObj,
+      keyIdObj, userIdObj, sigDetailsObj,
+      errorMsgObj, blockSeparationObj, encToDetailsObj);
 
-      if (indentStrObj.value) {
-        var indentRegexp = new RegExp("^" + indentStrObj.value, "gm");
-        pgpBlock = pgpBlock.replace(indentRegexp, "");
-        if (indentStrObj.value.substr(-1) == " ") {
-          var indentRegexpStr = "^" + indentStrObj.value.replace(/ $/m, "$");
-          indentRegexp = new RegExp(indentRegexpStr, "gm");
-          pgpBlock = pgpBlock.replace(indentRegexp, "");
-        }
-      }
+    var exitCode = exitCodeObj.value;
 
-      var listener = EnigmailExecution.newSimpleListener(
-        function _stdin(pipe) {
-          pipe.write(pgpBlock);
-          pipe.close();
-        });
-      var maxOutput = pgpBlock.length * 100; // limit output to 100 times message size
-      var proc = EnigmailDecryption.decryptMessageStart(window, verifyOnly, noOutput, listener,
-        statusFlagsObj, startErrorMsgObj, null, maxOutput);
-      if (!proc) {
-        errorMsgObj.value = startErrorMsgObj.value;
-        statusFlagsObj.value |= EnigmailConstants.DISPLAY_MESSAGE;
-        return statusFlagsObj.value;
-      }
-      // Wait for child to close
-      proc.wait();
-
-      plainText = EnigmailData.getUnicodeData(listener.stdoutData);
-
-      var uiFlags = 0;
-      var retStatusObj = {};
-      exitCode = EnigmailDecryption.decryptMessageEnd(EnigmailData.getUnicodeData(listener.stderrData), listener.exitCode,
-        plainText.length, verifyOnly, noOutput,
-        uiFlags, retStatusObj);
-      exitCodeObj.value = exitCode;
-      statusFlagsObj.value = retStatusObj.statusFlags;
-      errorMsgObj.value = retStatusObj.errorMsg;
-
-      // do not return anything if gpg signales DECRYPTION_FAILED
-      // (which could be possible in case of MDC errors)
-      if ((uiFlags & EnigmailConstants.UI_IGNORE_MDC_ERROR) &&
-        (retStatusObj.statusFlags & EnigmailConstants.MISSING_MDC)) {
-        Log.debug("enigmail.js: Enigmail.decryptMessage: ignoring MDC error");
-      } else if (retStatusObj.statusFlags & EnigmailConstants.DECRYPTION_FAILED) {
-        plainText = "";
-      }
+    // do not return anything if gpg signales DECRYPTION_FAILED
+    // (which could be possible in case of MDC errors)
+    if ((uiFlags & EnigmailConstants.UI_IGNORE_MDC_ERROR) &&
+      (statusFlagsObj.value & EnigmailConstants.MISSING_MDC)) {
+      Log.debug("enigmail.js: Enigmail.decryptMessage: ignoring MDC error");
+    } else if (statusFlagsObj.value & EnigmailConstants.DECRYPTION_FAILED) {
+      plainText = "";
     }
 
-    exitCode = exitCodeObj.value;
     if (plainText === "" && exitCode === 0) {
       plainText = " ";
     }
