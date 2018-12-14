@@ -863,18 +863,18 @@ AttachmentList.prototype = {
     filePicker.init(window, strings.get("attachFiles"), Ci.nsIFilePicker.modeOpenMultiple);
     let self = this;
     filePicker.open(function(rv) {
-        if (rv != Ci.nsIFilePicker.returnOK) {
-          Log.debug("User canceled, returning");
-        } else {
-          // Iterate over all files
-          for (let file of fixIterator(filePicker.files, Ci.nsIFile)) {
-            self.addWithData({
-              url: Services.io.newFileURI(file).spec,
-              name: file.leafName,
-              size: file.fileSize,
-            });
-          }
+      if (rv != Ci.nsIFilePicker.returnOK) {
+        Log.debug("User canceled, returning");
+      } else {
+        // Iterate over all files
+        for (let file of fixIterator(filePicker.files, Ci.nsIFile)) {
+          self.addWithData({
+            url: Services.io.newFileURI(file).spec,
+            name: file.leafName,
+            size: file.fileSize,
+          });
         }
+      }
     });
   },
 
