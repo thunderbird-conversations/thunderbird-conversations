@@ -861,19 +861,21 @@ AttachmentList.prototype = {
   add() {
     let filePicker = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
     filePicker.init(window, strings.get("attachFiles"), Ci.nsIFilePicker.modeOpenMultiple);
-    let rv = filePicker.show();
-    if (rv != Ci.nsIFilePicker.returnOK) {
-      Log.debug("User canceled, returning");
-    } else {
-      // Iterate over all files
-      for (let file of fixIterator(filePicker.files, Ci.nsIFile)) {
-        this.addWithData({
-          url: Services.io.newFileURI(file).spec,
-          name: file.leafName,
-          size: file.fileSize,
-        });
+    let self = this;
+    filePicker.open(function(rv) {
+      if (rv != Ci.nsIFilePicker.returnOK) {
+        Log.debug("User canceled, returning");
+      } else {
+        // Iterate over all files
+        for (let file of fixIterator(filePicker.files, Ci.nsIFile)) {
+          self.addWithData({
+            url: Services.io.newFileURI(file).spec,
+            name: file.leafName,
+            size: file.fileSize,
+          });
+        }
       }
-    }
+    });
   },
 
   _populateUI(msgAttachment, data) {
