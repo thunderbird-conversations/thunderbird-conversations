@@ -51,10 +51,12 @@ function makeEditable(aIframe, aMakeEditable) {
            .getInterface(Ci.nsIEditingSession);
   if (aMakeEditable) {
     // aIframe.designMode = "on";
-    s.makeWindowEditable(w, "htmlmail", false, true, false);
+    //s.makeWindowEditable(w, "htmlmail", false, true, false);
+    w.document.designMode = "on";
   } else {
     // s.detachFromWindow(w);
-    s.tearDownEditorOnWindow(w);
+    //s.tearDownEditorOnWindow(w);
+    w.document.designMode = "off";
   }
 }
 
