@@ -45,17 +45,17 @@ function makeEditable(aIframe, aMakeEditable) {
   let w = aIframe.contentWindow;
   // let nav = w.QueryInterface(Ci.nsIInterfaceRequestor)
   //             .getInterface(Ci.nsIWebNavigation);
-  let s = w.QueryInterface(Ci.nsIInterfaceRequestor)
-           .getInterface(Ci.nsIWebNavigation)
-           .QueryInterface(Ci.nsIInterfaceRequestor)
-           .getInterface(Ci.nsIEditingSession);
+  // let s = w.QueryInterface(Ci.nsIInterfaceRequestor)
+  //          .getInterface(Ci.nsIWebNavigation)
+  //          .QueryInterface(Ci.nsIInterfaceRequestor)
+  //          .getInterface(Ci.nsIEditingSession);
   if (aMakeEditable) {
     // aIframe.designMode = "on";
-    //s.makeWindowEditable(w, "htmlmail", false, true, false);
+    // s.makeWindowEditable(w, "htmlmail", false, true, false);
     w.document.designMode = "on";
   } else {
     // s.detachFromWindow(w);
-    //s.tearDownEditorOnWindow(w);
+    // s.tearDownEditorOnWindow(w);
     w.document.designMode = "off";
   }
 }
