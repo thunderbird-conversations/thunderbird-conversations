@@ -383,16 +383,15 @@ function createComposeSession(what) {
  * A jquery-like API. Pass nothing to get the value, pass a value to set it.
  */
 function startedEditing(aVal) {
-  if (aVal === undefined) {
-    return gComposeSession && gComposeSession.startedEditing;
+  if (aVal !== undefined) {
+    if (!gComposeSession) {
+      Log.error("No composition session yet");
+      dumpCallStack();
+    } else {
+      gComposeSession.startedEditing = aVal;
+    }
   }
-
-  if (!gComposeSession) {
-    Log.error("No composition session yet");
-    dumpCallStack();
-  } else {
-    gComposeSession.startedEditing = aVal;
-  }
+  return gComposeSession && gComposeSession.startedEditing;
 }
 
 function ComposeSession(match) {
@@ -719,8 +718,9 @@ ComposeSession.prototype = {
     this.archive = options && options.archive;
     let ed = getActiveEditor();
     let msg = strings.get("sendAnEmptyMessage");
-    if (!popOut && !ed.value.length && !confirm(msg))
-      return;
+    if (!popOut && !ed.value.length && !confirm(msg)) {
+      return null;
+    }
 
     let deliverMode;
     if (Services.io.offline)
@@ -766,7 +766,7 @@ ComposeSession.prototype = {
       $(".statusPercentage").hide();
       $(".statusThrobber").hide();
       $(".quickReplyHeader").show();
-      return;
+      return null;
     }
 
     let urls = self.params.msgHdr ? [msgHdrGetUri(self.params.msgHdr)] : [];
@@ -989,6 +989,7 @@ function attachmentDataFromDragData(event) {
     if (isValid)
       return { url, size, name: prettyName };
   }
+  return null;
 }
 
 function quickReplyDragEnter(event) {

@@ -58,6 +58,7 @@ function wrapHandlebars() {
       Log.error("Couldn't compile template", id, "because of:", e);
       dumpCallStack(e);
     }
+    return "";
   };
   window.tmpl = (id, data) => $(tmpl0(id, data));
 
@@ -74,6 +75,7 @@ function wrapHandlebars() {
       Log.debug(e);
       dumpCallStack(e);
     }
+    return "";
   };
   let str = function(x, ...args) {
     return new Handlebars.SafeString(str0(x, ...args));

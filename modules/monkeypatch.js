@@ -204,14 +204,14 @@ MonkeyPatch.prototype = {
           return r;
         });
         // And turn this into a human-readable line.
-        if (people.length)
+        if (people.length) {
           return joinWordList(people);
-
-        return "-";
+        }
       } catch (e) {
         Log.debug("Error in the special column", e);
         dumpCallStack(e);
       }
+      return "-";
     };
 
     let columnHandler = {
@@ -407,8 +407,10 @@ MonkeyPatch.prototype = {
     //  and reroutes the control flow to our conversation reader.
     let oldThreadPaneDoubleClick = window.ThreadPaneDoubleClick;
     window.ThreadPaneDoubleClick = function() {
-      if (!Prefs.enabled)
-        return oldThreadPaneDoubleClick();
+      if (!Prefs.enabled) {
+        oldThreadPaneDoubleClick();
+        return;
+      }
 
       // ThreadPaneDoubleClick calls OnMsgOpenSelectedMessages. We don't want to
       // replace the whole ThreadPaneDoubleClick function, just the line that
@@ -429,11 +431,15 @@ MonkeyPatch.prototype = {
     // Same thing for middle-click
     let oldTreeOnMouseDown = window.TreeOnMouseDown;
     window.TreeOnMouseDown = function(event) {
-      if (!Prefs.enabled)
-        return oldTreeOnMouseDown(event);
+      if (!Prefs.enabled) {
+        oldTreeOnMouseDown(event);
+        return;
+      }
 
-      if (event.target.parentNode.id !== "threadTree")
-        return oldTreeOnMouseDown(event);
+      if (event.target.parentNode.id !== "threadTree") {
+        oldTreeOnMouseDown(event);
+        return;
+      }
 
       // Middle-click
       if (event.button == 1) {
@@ -443,10 +449,11 @@ MonkeyPatch.prototype = {
         let msgHdrs = window.gFolderDisplay.selectedMessages;
         if (!msgHdrs.some(msgHdrIsRss) && !msgHdrs.some(msgHdrIsNntp))
           tabmail.openTab("chromeTab", { chromePage: mkConvUrl(msgHdrs) });
-        else
-          return oldTreeOnMouseDown(event);
+        else {
+          oldTreeOnMouseDown(event);
+        }
       } else {
-        return oldTreeOnMouseDown(event);
+        oldTreeOnMouseDown(event);
       }
     };
 
@@ -719,6 +726,7 @@ MonkeyPatch.prototype = {
           Log.error(e);
           dumpCallStack(e);
         }
+        return false;
       };
     this.pushUndo(() =>
       window.MessageDisplayWidget.prototype.onSelectedMessagesChanged = originalOnSelectedMessagesChanged);
