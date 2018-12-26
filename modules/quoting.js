@@ -96,7 +96,7 @@ function trySel(aDoc, sel, remove) {
   if (marker) {
     encloseInBlockquote(aDoc, marker);
     if (remove)
-      marker.parentNode.removeChild(marker);
+      marker.remove();
   }
   return marker != null;
 }
@@ -158,7 +158,7 @@ function convertForwardedToBlockquote(aDoc) {
         let tn2 = aDoc.createTextNode(t2);
         child.parentNode.insertBefore(tn1, child);
         child.parentNode.insertBefore(tn2, child);
-        child.parentNode.removeChild(child);
+        child.remove();
         encloseInBlockquote(aDoc, tn2);
         throw { found: true };
       } else if (m && m.length) {

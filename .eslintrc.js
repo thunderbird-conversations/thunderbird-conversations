@@ -30,7 +30,6 @@ module.exports = {
     // don't pass. We should enable these over time.
     "complexity": ["error", 34],
     "consistent-return": "off",
-    "mozilla/avoid-removeChild": "off",
     "mozilla/no-useless-removeEventListener": "off",
     // For now, turn this off, since we want to support TB 60 (only added in 62).
     "mozilla/use-chromeutils-generateqi": "off",
