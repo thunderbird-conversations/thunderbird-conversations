@@ -105,11 +105,10 @@ Wrapper.prototype = {
     let chunks = await this._download();
 
     let browser = document.getElementById("browser");
-    browser.addEventListener("load", function load_handler() {
-      browser.removeEventListener("load", load_handler, true);
+    browser.addEventListener("load", () => {
       let w = browser.contentWindow.wrappedJSObject;
       w.init(Cu.cloneInto({ chunks }, w));
-    }, true);
+    }, {once: true, capture: true});
     // Load from a resource:// URL so that it doesn't have chrome privileges.
     browser.loadURI("resource://conversations/content/pdfviewer/viewer.xhtml", null, null);
   },

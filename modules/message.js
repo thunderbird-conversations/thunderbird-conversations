@@ -1455,8 +1455,6 @@ Message.prototype = {
 
         // Early adjustments
         iframe.addEventListener("DOMContentLoaded", function f_temp3(event) {
-          iframe.removeEventListener("DOMContentLoaded", f_temp3);
-
           let iframeDoc = iframe.contentDocument;
           self.tweakFonts(iframeDoc);
           if (!(self._realFrom && self._realFrom.email.indexOf("bugzilla-daemon") == 0))
@@ -1466,7 +1464,7 @@ Message.prototype = {
           self.injectCss(iframeDoc);
 
           adjustHeight();
-        });
+        }, {once: true});
 
         // The second load event is triggered by loadURI with the URL
         // being the necko URL to the given message. These are the late

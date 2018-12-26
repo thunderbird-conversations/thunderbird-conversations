@@ -122,10 +122,9 @@ function monkeyPatchWindow(window, aLater) {
   };
 
   if (aLater)
-    window.addEventListener("load", function tmp() {
-      window.removeEventListener("load", tmp);
+    window.addEventListener("load", () => {
       doIt();
-    });
+    }, {once: true});
   else
     doIt();
 }
