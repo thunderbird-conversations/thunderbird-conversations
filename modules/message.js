@@ -815,10 +815,10 @@ Message.prototype = {
     //  not off.
     let replyListLink = self._domNode.getElementsByClassName("action-replyList")[0];
     if (!this.isReplyListEnabled)
-      replyListLink.parentNode.removeChild(replyListLink);
+      replyListLink.remove();
     let replyAllLink = self._domNode.getElementsByClassName("action-replyAll")[0];
     if (!this.isReplyAllEnabled)
-      replyAllLink.parentNode.removeChild(replyAllLink);
+      replyAllLink.remove();
     // Make sure we add the right CSS classes.
     if (this.isReplyAllEnabled)
       this._domNode.classList.add("isReplyAllEnabled");
@@ -1093,7 +1093,7 @@ Message.prototype = {
       if (!child.classList.contains("keep-tag"))
         specialTags.removeChild(child);
     }
-    this.iframe.parentNode.removeChild(this.iframe);
+    this.iframe.remove();
     this.streamMessage();
   },
 
@@ -1120,7 +1120,7 @@ Message.prototype = {
     // Update tags
     let tagList = this._domNode.getElementsByClassName("regular-tags")[1];
     while (tagList.firstChild)
-      tagList.removeChild(tagList.firstChild);
+      tagList.firstChild.remove();
     for (let mtag of tags) {
       let tag = mtag;
       let document = this._domNode.ownerDocument;
@@ -1151,7 +1151,7 @@ Message.prototype = {
     }
     let otherTagList = this._domNode.getElementsByClassName("regular-tags")[0];
     while (otherTagList.firstChild)
-      otherTagList.removeChild(otherTagList.firstChild);
+      otherTagList.firstChild.remove();
     for (let node of tagList.childNodes)
       otherTagList.appendChild(node.cloneNode(true));
   },
@@ -1680,10 +1680,10 @@ Message.prototype = {
       let node = aNode.cloneNode(true);
       for (let x of node.getElementsByClassName("moz-txt-sig"))
         if (x)
-          x.parentNode.removeChild(x);
+          x.remove();
       for (let x of node.querySelectorAll("blockquote, div"))
         if (x && x.style.display == "none")
-          x.parentNode.removeChild(x);
+          x.remove();
       return node.innerHTML;
     };
     let body = htmlToPlainText(prepare(this.iframe.contentWindow.document.body));

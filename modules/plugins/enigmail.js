@@ -192,7 +192,7 @@ if (hasEnigmail) {
   let w = getMail3Pane();
   let iframe = w.document.createElement("iframe");
   iframe.addEventListener("load", function() {
-    iframe.parentNode.removeChild(iframe);
+    iframe.remove();
   }, true);
   iframe.setAttribute("src", "enigmail:dummy");
   iframe.style.display = "none";
@@ -550,7 +550,7 @@ function tryEnigmail(aDocument, aMessage, aMsgWindow) {
         // for ourselves... (happends with messages sent as html, duh).
         if (!node) {
           while (bodyElement.firstChild)
-            bodyElement.removeChild(bodyElement.firstChild);
+            bodyElement.firstChild.remove();
           let pre = bodyElement.ownerDocument.createElement("pre");
           bodyElement.appendChild(pre);
           node = pre;

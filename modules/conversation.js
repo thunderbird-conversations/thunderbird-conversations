@@ -1013,7 +1013,7 @@ Conversation.prototype = {
     let subject = this.messages[this.messages.length - 1].message.subject;
     // Clear out the subject node
     while (subjectNode.firstChild) {
-      subjectNode.removeChild(subjectNode.firstChild);
+      subjectNode.firstChild.remove();
     }
     if (LINKS_REGEX.test(subject)) {
       subjectNode.appendChild(linkifySubject(subject, this._domNode.ownerDocument));

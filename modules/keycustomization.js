@@ -287,7 +287,7 @@ const Listeners = {
     PrefEditors.deleteBinding(parent.hotkey, parent.hotkeyBinding);
     delete parent.hotkey;
     delete parent.hotkeyBinding;
-    parent.parentNode.removeChild(parent);
+    parent.remove();
     ConversationKeybindings.saveKeybindings();
     event.stopPropagation();
   },
@@ -499,6 +499,6 @@ const CustomizeKeys = {
     showhide.removeEventListener("command", Listeners.onShowHideClick);
     let keysVbox = showhide.previousElementSibling;
     while (keysVbox.hasChildNodes())
-      keysVbox.removeChild(keysVbox.firstChild);
+      keysVbox.firstChild.remove();
   },
 };

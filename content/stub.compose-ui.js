@@ -419,7 +419,7 @@ function ComposeSession(match) {
     for (let sig of w.document.querySelectorAll("blockquote[type=cite] .moz-signature"))
       sig.classList.add("moz-quoted-signature");
     for (let sig of w.document.querySelectorAll(".moz-signature:not(.moz-quoted-signature)"))
-      sig.parentNode.removeChild(sig);
+      sig.remove(sig);
   };
 
   // Go!
