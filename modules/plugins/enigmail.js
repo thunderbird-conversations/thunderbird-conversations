@@ -202,17 +202,15 @@ if (hasEnigmail) {
   // load-enigmail event is added on Enigmail 2.0.
   let messagepane = w.document.getElementById("messagepane");
   messagepane.addEventListener("load", function _overrideUpdateSecurity() {
-    messagepane.removeEventListener("load", _overrideUpdateSecurity, true);
     let w = getMail3Pane();
     if (!isEnigmail2 || w.Enigmail.hdrView) {
         overrideUpdateSecurity(messagepane, w);
     } else {
       w.addEventListener("load-enigmail", function _overrideUpdateSecurityInner() {
-        w.removeEventListener("load-enigmail", _overrideUpdateSecurityInner, true);
         overrideUpdateSecurity(messagepane, w);
-      }, true);
+      }, {once: true, capture: true});
     }
-  }, true);
+  }, {once: true, capture: true});
 }
 
 // Override updateSecurityStatus for showing security info properly
