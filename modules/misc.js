@@ -54,9 +54,9 @@ let strings = new StringBundle("chrome://conversations/locale/message.properties
 
 function arrayEquals(a1, a2) {
   if (a1.length != a2.length)
-    return;
+    return false;
 
-  return a1.every(function(v, i) {
+  return a1.every((v, i) => {
     return v == a2[i];
   });
 }

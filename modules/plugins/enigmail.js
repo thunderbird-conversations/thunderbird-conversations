@@ -689,6 +689,7 @@ function patchForShowSecurityInfo(aWindow) {
       return (w.gFolderDisplay.selectedCount == 1);
     }
     w.Enigmail.hdrView.statusBarHide();
+    return false;
   };
   w.top.controllers.appendController(treeController);
   w._newTreeController = treeController;

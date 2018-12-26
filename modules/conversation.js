@@ -220,6 +220,7 @@ function getMessageId({ type, message, msgHdr, glodaMsg }) {
     return msgHdr.messageId;
 
   Log.error("Bad message type");
+  return null;
 }
 
 // Get the underlying msgHdr of a message. Might return undefined if Gloda
@@ -231,6 +232,7 @@ function toMsgHdr({ type, message, msgHdr, glodaMsg }) {
     return msgHdr;
 
   Log.error("Bad message type");
+  return undefined;
 }
 
 // Get a Date instance for the given message.
@@ -241,6 +243,7 @@ function msgDate({ type, message, msgHdr, glodaMsg }) {
     return new Date(glodaMsg.date);
 
   Log.error("Bad message type");
+  return new Date();
 }
 
 function msgDebugColor(aMsg) {

@@ -73,6 +73,8 @@ PrefCustomization.prototype = {
         return Prefs.getChar(this.name);
       case kPrefBool:
         return Prefs.getBool(this.name);
+      default:
+        throw new Error(`Unexpected type ${this.type}`);
     }
   },
 
