@@ -5,40 +5,14 @@
   <title>tbGallery</title>
   <meta charset="utf-8">
   <link rel="stylesheet" href="style.css" type="text/css" media="screen" />
-  <link rel="stylesheet" type="text/css" href="css/jquery.lightbox-0.5.css" media="screen" />
   <script type="text/javascript"
-    src="chrome://conversations/content/js/jquery-3.2.1.min.js"></script>
+    src="chrome://conversations/content/vendor/react.js"></script>
   <script type="text/javascript"
-    src="chrome://conversations/content/js/handlebars-v3.0.0.js"></script>
-  <script type="application/javascript"
-    src="chrome://conversations/content/handlebars-wrapper.js"></script>
+    src="chrome://conversations/content/vendor/react-dom.js"></script>
   <script src="js/gallery.js" type="application/javascript"></script>
-  <script type="text/javascript" src="js/jquery.lightbox-0.5.js"></script>
 </head>
 
 <body>
-  <script id="imageTemplate" type="text/x-handlebars-template">
-    <li class="photoWrap">
-      <a href="{{url}}" title="{{name}}" class="lightBox">
-        <img src="{{url}}">
-      </a>
-      <div class="hbox">
-        <span class="filename">{{name}}</span>
-        <span class="size">{{size}}</span>
-        <span class="count boxFlex">{{i}}/{{n}}</span>
-      </div>
-    </li>
-  </script>
-
-  <div id="wrapper">
-    <nav>
-      <a class="next" href="#">next</a>
-      <a class="prev" href="#">prev</a>
-    </nav>
-    <ul class="images">
-
-    </ul>
-  </div>
-
+  <div id="gallery"></div>
 </body>
 </html>
