@@ -682,7 +682,10 @@ Message.prototype = {
         self._conversation._runOnceAfterNSignals(function() {
           if (self.expanded) {
             self._conversation._htmlPane.scrollNodeIntoView(self._domNode);
-            self.read = true;
+            if (Prefs.getBool("mailnews.mark_message_read.auto") ||
+                Prefs.getBool("mailnews.mark_message_read.delay")) {
+              self.read = true;
+            }
           }
         }, 1);
         self.toggle();
