@@ -4,4 +4,4 @@ conversations.xpi
 .vimsession
 .DS_Store
 node_modules
-content/vendor/pdf*.js
+content/vendor/

@@ -39,40 +39,89 @@
 ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
 const {MsgHdrToMimeMessage} = ChromeUtils.import("resource:///modules/gloda/mimemsg.js", {});
 const {msgUriToMsgHdr} = ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js", {});
-const {setupLogging} = ChromeUtils.import("resource://conversations/modules/log.js", {});
-
-let Log = setupLogging("Conversations.Gallery");
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
-/* global wrapHandlebars, tmpl, $ */
-wrapHandlebars();
+/* globals React, ReactDOM */
 
-let gallery = null;
-
-function Gallery(aMsg) {
-  this.msgHdr = aMsg;
-  this.subject = null;
-  this.attachments = null;
+class Photo extends React.Component {
+  render() {
+    return React.createElement(
+      "div", {
+        className: "photoWrap",
+      }, [
+        React.createElement("img", {
+          key: "image",
+          src: this.props.src,
+        }),
+        React.createElement("div", {
+          key: "informationline",
+          className: "informationline",
+        }, [
+          React.createElement("div", {
+            key: "filename",
+            className: "filename",
+          }, [
+            this.props.name,
+          ]),
+          React.createElement("div", {
+            key: "size",
+            className: "size",
+          }, [
+            this.props.size,
+          ]),
+          React.createElement("div", {
+            key: "count",
+            className: "count",
+          }, [
+            this.props.index + " / " + this.props.length,
+          ]),
+        ]),
+      ]
+    );
+  }
 }
 
-Gallery.prototype = {
+class MyComponent extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = {
+      images: [],
+    };
+  }
+
+  componentDidMount() {
+    // Parse URL components
+    let param = "?uri="; // only one param
+    let url = document.location.href;
+    let uri = url.substr(url.indexOf(param) + param.length, url.length);
+
+    // Create the Gallery object.
+    let msgHdr = msgUriToMsgHdr(uri);
+    if (msgHdr && msgHdr.messageId) {
+      this.load(msgHdr);
+    } else {
+      document.getElementsByClassName("gallery")[0].textContent =
+        strings.get("messageMovedOrDeletedGallery2");
+    }
+  }
+
   /**
    * This function takes care of obtaining a full representation of the message,
    *  and then taking all its attachments, to just keep track of the image ones.
    */
-  load() {
-    MsgHdrToMimeMessage(this.msgHdr, this, function(aMsgHdr, aMimeMsg) {
+  load(msgHdr) {
+    MsgHdrToMimeMessage(msgHdr, this, (mimeHdr, aMimeMsg) => {
       let attachments = aMimeMsg.allAttachments;
       attachments =
         attachments.filter(x => x.contentType.indexOf("image/") === 0);
-      this.attachments = attachments;
-      this.subject = aMsgHdr.mime2DecodedSubject;
-      this.output();
+      document.title =
+        strings.get("galleryTitle").replace("#1", mimeHdr.mime2DecodedSubject);
+      this.output(attachments);
     }, true, {
       partsOnDemand: true,
       examineEncryptedParts: true,
     });
-  },
+  }
 
   /**
    * This function is called once the message has been streamed and the relevant
@@ -80,44 +129,35 @@ Gallery.prototype = {
    * It runs the handlebars template and then appends the result to the root
    *  DOM node.
    */
-  output(aGlodaMessages) {
+  output(attachments) {
     let messenger = Cc["@mozilla.org/messenger;1"]
                     .createInstance(Ci.nsIMessenger);
-    let data = [];
-    let n = this.attachments.length;
-    Log.debug(n, "attachments in this gallery view");
-    this.attachments.forEach(function(att, i) {
-      data.push({
-        url: att.url,
-        name: att.name,
-        size: messenger.formatFileSize(att.size),
-        i: i + 1,
-        n,
-      });
+    let i = 1;
+    this.setState({
+      images: attachments.map(attachment => {
+        return {
+          index: i++,
+          name: attachment.name,
+          size: messenger.formatFileSize(attachment.size),
+          src: attachment.url,
+        };
+      }),
     });
-
-    // Output the data
-    tmpl("#imageTemplate", data).appendTo($(".images"));
-    // This will also update the tab title
-    document.title = strings.get("galleryTitle").replace("#1", this.subject);
-
-    $("a.lightBox").lightBox(); // Select all links that contains lightbox in the attribute rel
-  },
-};
-
-$(document).ready(function() {
-  // Parse URL components
-  let param = "?uri="; // only one param
-  let url = document.location.href;
-  let uri = url.substr(url.indexOf(param) + param.length, url.length);
-
-  // Create the Gallery object.
-  let msgHdr = msgUriToMsgHdr(uri);
-  if (msgHdr && msgHdr.messageId) {
-    gallery = new Gallery(msgHdr);
-    gallery.load();
-  } else {
-    document.getElementsByClassName("images")[0].textContent =
-      strings.get("messageMovedOrDeletedGallery2");
   }
-});
+
+  render() {
+    return this.state.images.map(image => React.createElement(
+      Photo, {
+        ...image,
+        key: image.index,
+        className: "gallery",
+        length: this.state.images.length,
+      }
+    ));
+  }
+}
+
+window.addEventListener("load", () => {
+  const domContainer = document.getElementById("gallery");
+  ReactDOM.render(React.createElement(MyComponent), domContainer);
+}, {once: true});
