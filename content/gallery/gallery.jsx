@@ -41,45 +41,37 @@ const {MsgHdrToMimeMessage} = ChromeUtils.import("resource:///modules/gloda/mime
 const {msgUriToMsgHdr} = ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js", {});
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
-/* globals React, ReactDOM */
+/* globals React, ReactDOM, PropTypes */
 
 class Photo extends React.Component {
   render() {
-    return React.createElement(
-      "div", {
-        className: "photoWrap",
-      }, [
-        React.createElement("img", {
-          key: "image",
-          src: this.props.src,
-        }),
-        React.createElement("div", {
-          key: "informationline",
-          className: "informationline",
-        }, [
-          React.createElement("div", {
-            key: "filename",
-            className: "filename",
-          }, [
-            this.props.name,
-          ]),
-          React.createElement("div", {
-            key: "size",
-            className: "size",
-          }, [
-            this.props.size,
-          ]),
-          React.createElement("div", {
-            key: "count",
-            className: "count",
-          }, [
-            this.props.index + " / " + this.props.length,
-          ]),
-        ]),
-      ]
+    return (
+      <div className="photoWrap">
+        <img src={this.props.src}/>
+        <div className="informationline">
+          <div className="filename">
+            {this.props.name}
+          </div>
+          <div className="size">
+            {this.props.size}
+          </div>
+          <div className="count">
+            {this.props.index + " / " + this.props.length}
+          </div>
+        </div>
+      </div>
     );
   }
 }
+
+Photo.propTypes = {
+  index: PropTypes.number.isRequired,
+  length: PropTypes.number.isRequired,
+  name: PropTypes.string.isRequired,
+  size: PropTypes.number.isRequired,
+  src: PropTypes.string.isRequired,
+};
+
 
 class MyComponent extends React.Component {
   constructor(props) {
@@ -146,14 +138,16 @@ class MyComponent extends React.Component {
   }
 
   render() {
-    return this.state.images.map(image => React.createElement(
-      Photo, {
-        ...image,
-        key: image.index,
-        className: "gallery",
-        length: this.state.images.length,
-      }
-    ));
+    return this.state.images.map(image =>
+      <Photo
+        index={image.index}
+        key={image.index}
+        name={image.name}
+        size={image.size}
+        src={image.src}
+        className="gallery"
+        length={this.state.images.length}/>
+    );
   }
 }
 

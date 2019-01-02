@@ -12,6 +12,7 @@ module.exports = {
   // },
   "extends": [
     "plugin:mozilla/recommended",
+    "plugin:react/recommended",
   ],
   "overrides": [{
     // This marks exported symbols as used for our modules.
@@ -24,6 +25,7 @@ module.exports = {
   }],
   "plugins": [
     "mozilla",
+    "react",
   ],
   "rules": {
     // XXX These are all rules that mozilla/recommended set, but we currently
@@ -38,5 +40,10 @@ module.exports = {
       "args": "none",
       "vars": "all",
     }],
+  },
+  "settings": {
+    "react": {
+      "version": "16.0",
+    },
   },
 };
