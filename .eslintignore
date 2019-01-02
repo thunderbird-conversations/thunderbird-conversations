@@ -1,10 +1,12 @@
 # Don't ignore .eslintrc.js
 !.eslintrc.js
 
+# Build directory
+dist/**
+
 # Third party libraries.
 content/js/**
 content/gallery/js/jquery.lightbox-0.5.js
-content/vendor/**
 
 # Ignore sub-module directories
 modules/stdlib/**
