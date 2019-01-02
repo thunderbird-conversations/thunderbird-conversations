@@ -3,5 +3,5 @@ gconv.jar
 conversations.xpi
 .vimsession
 .DS_Store
+dist
 node_modules
-content/vendor/
