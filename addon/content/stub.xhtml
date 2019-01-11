@@ -24,6 +24,12 @@
     src="chrome://conversations/content/js/handlebars-v3.0.0.js"></script>
   <script type="text/javascript"
     src="chrome://conversations/content/js/jquery.tokeninput.js"></script>
+  <script type="text/javascript"
+    src="chrome://conversations/content/vendor/react.js"></script>
+  <script type="text/javascript"
+    src="chrome://conversations/content/vendor/react-dom.js"></script>
+  <script type="text/javascript"
+    src="chrome://conversations/content/conversationFooter.js"></script>
   <!-- The two scripts below share the same scope, they were split for the sake
     of readability. -->
   <script type="application/javascript"
@@ -377,23 +383,6 @@
       topMail3Pane(window).SetFocusThreadPane(event);
     }
 
-    function forwardConversation(event) {
-      let conv = Conversations.currentConversation;
-      let fields = Cc["@mozilla.org/messengercompose/composefields;1"]
-                      .createInstance(Components.interfaces.nsIMsgCompFields);
-      fields.characterSet = "UTF-8";
-      fields.bodyIsAsciiOnly = false;
-      fields.forcePlainText = false;
-      Conversations.currentConversation.exportAsHtml(function (html) {
-        fields.body = html;
-        let params = Cc["@mozilla.org/messengercompose/composeparams;1"]
-                        .createInstance(Ci.nsIMsgComposeParams);
-        params.format = Ci.nsIMsgCompFormat.HTML;
-        params.composeFields = fields;
-        return MailServices.compose.OpenComposeWindowWithParams(null, params);
-      });
-    }
-
     let oldPrint = window.print;
 
     function printConversation(event) {
@@ -541,6 +530,12 @@
         masqueradeAsQuickCompose();
       }
     });
+
+    // This starts building parts that are React based.
+    window.addEventListener("load", () => {
+      const domContainer = document.getElementById("footerContainer");
+      ReactDOM.render(React.createElement(ConversationFooter), domContainer);
+    }, {once: true});
 
     var isQuickCompose = false;
 
@@ -1452,11 +1447,7 @@
     </div>
     <ul id="messageList">
     </ul>
-    <div class="bottom-links">
-      <a class="link" href="javascript:" onclick="forwardConversation(event);">
-        &stub.forward.tooltip;</a> –
-      <a class="link" href="javascript:" onclick="printConversation(event);">
-        &stub.print.tooltip;</a>
+    <div id="footerContainer">
     </div>
   </div>
 </body>
