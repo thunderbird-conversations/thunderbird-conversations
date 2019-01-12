@@ -2,12 +2,11 @@
 
 /* exported setupAutocomplete, Colors, getDefaultIdentity, getIdentityForEmail,
             getIdentities, NS_SUCCEEDED */
-/* global $, Conversations, MailServices, showCc, showBcc */
+/* global $, Conversations, MailServices, showCc, showBcc, StringBundle */
 /* import-globals-from quickReply.js */
 
 // ----- Autocomplete stuff. Understand it as a part of stub.compose-ui.js
 
-ChromeUtils.import("resource:///modules/StringBundle.js");
 const {Gloda} = ChromeUtils.import("resource:///modules/gloda/gloda.js", {});
 const {MultiSuffixTree} = ChromeUtils.import("resource:///modules/gloda/suffixtree.js", {});
 const {
@@ -19,7 +18,7 @@ const {
 } = ChromeUtils.import("resource://conversations/modules/log.js", {});
 
 let Log = setupLogging("Conversations.Stub.Completion");
-let strings = new StringBundle("chrome://conversations/locale/message.properties");
+let strings;
 
 try {
   // eslint-disable-next-line no-unused-vars
@@ -252,6 +251,9 @@ let autoCompleteClasses = {
 };
 
 function setupAutocomplete(to, cc, bcc) {
+  if (!strings) {
+    strings = new StringBundle("chrome://conversations/locale/message.properties");
+  }
   // This function assumes aInput is #something
   let fill = function(aInput, aList, aData) {
     // Cleanup the mess left by tokenInput.

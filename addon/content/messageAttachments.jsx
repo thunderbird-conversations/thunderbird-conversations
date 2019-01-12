@@ -34,44 +34,68 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/* globals React, ReactDOM, Conversations, MailServices, printConversation
-           StringBundle */
-/* exported ConversationFooter */
+/* globals React, ReactDOM, topMail3Pane, StringBundle */
+/* exported AttachmentMenu */
 
-class ConversationFooter extends React.Component {
+class AttachmentMenu extends React.Component {
   constructor() {
     super();
     this.strings = new StringBundle("chrome://conversations/locale/pages.properties");
+    this.open = this.open.bind(this);
+    this.save = this.save.bind(this);
+    this.detach = this.detach.bind(this);
+    this.delete = this.delete.bind(this);
   }
-  forwardConversation(event) {
-    let fields = Cc["@mozilla.org/messengercompose/composefields;1"]
-                    .createInstance(Ci.nsIMsgCompFields);
-    fields.characterSet = "UTF-8";
-    fields.bodyIsAsciiOnly = false;
-    fields.forcePlainText = false;
-    Conversations.currentConversation.exportAsHtml(function(html) {
-      fields.body = html;
-      let params = Cc["@mozilla.org/messengercompose/composeparams;1"]
-                      .createInstance(Ci.nsIMsgComposeParams);
-      params.format = Ci.nsIMsgCompFormat.HTML;
-      params.composeFields = fields;
-      return MailServices.compose.OpenComposeWindowWithParams(null, params);
-    });
+
+  /**
+   * This function finds the right node that holds the attachment information
+   * and returns its information.
+   *
+   * @returns {object} The attachment information.
+   */
+  get currentAttInfo() {
+    let node = topMail3Pane(window).document.popupNode;
+    while (!node.attInfo)
+      node = node.parentNode;
+    return node.attInfo;
+  }
+
+  open() {
+    this.currentAttInfo.open();
+  }
+
+  save() {
+    this.currentAttInfo.save();
+  }
+
+  detach() {
+    this.currentAttInfo.detach(true);
+  }
+
+  delete() {
+    this.currentAttInfo.detach(false);
   }
 
   render() {
     return (
-      <div className="bottom-links">
-        <a className="link"
-           href="javascript:"
-           onClick={this.forwardConversation}>
-          {this.strings.get("stub.forward.tooltip")}
-        </a> – <a className="link"
-           href="javascript:"
-           onClick={printConversation}>
-           {this.strings.get("stub.print.tooltip")}
-        </a>
-      </div>
+      <menu id="attachmentMenu" type="context">
+        <menuitem
+          label={this.strings.get("stub.context.open")}
+          onClick={this.open}>
+        </menuitem>
+        <menuitem
+          label={this.strings.get("stub.context.save")}
+          onClick={this.save}>
+        </menuitem>
+        <menuitem
+          label={this.strings.get("stub.context.detach")}
+          onClick={this.detach}>
+        </menuitem>
+        <menuitem
+          label={this.strings.get("stub.context.delete")}
+          onClick={this.delete}>
+        </menuitem>
+      </menu>
     );
   }
 }
