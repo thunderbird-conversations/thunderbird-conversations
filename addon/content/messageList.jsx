@@ -34,43 +34,15 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/* globals React, ReactDOM, Conversations, MailServices, printConversation
-           StringBundle */
-/* exported ConversationFooter */
+/* globals React, AttachmentMenu, ConversationFooter */
+/* exported MessageList */
 
-class ConversationFooter extends React.Component {
-  constructor() {
-    super();
-    this.strings = new StringBundle("chrome://conversations/locale/pages.properties");
-  }
-  forwardConversation(event) {
-    let fields = Cc["@mozilla.org/messengercompose/composefields;1"]
-                    .createInstance(Ci.nsIMsgCompFields);
-    fields.characterSet = "UTF-8";
-    fields.bodyIsAsciiOnly = false;
-    fields.forcePlainText = false;
-    Conversations.currentConversation.exportAsHtml(function(html) {
-      fields.body = html;
-      let params = Cc["@mozilla.org/messengercompose/composeparams;1"]
-                      .createInstance(Ci.nsIMsgComposeParams);
-      params.format = Ci.nsIMsgCompFormat.HTML;
-      params.composeFields = fields;
-      return MailServices.compose.OpenComposeWindowWithParams(null, params);
-    });
-  }
-
+class MessageList extends React.Component {
   render() {
     return (
-      <div className="bottom-links">
-        <a className="link"
-           href="javascript:"
-           onClick={this.forwardConversation}>
-          {this.strings.get("stub.forward.tooltip")}
-        </a> – <a className="link"
-           href="javascript:"
-           onClick={printConversation}>
-           {this.strings.get("stub.print.tooltip")}
-        </a>
+      <div>
+        <AttachmentMenu/>
+        <ConversationFooter/>
       </div>
     );
   }

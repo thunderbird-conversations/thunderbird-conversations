@@ -30,6 +30,10 @@
     src="chrome://conversations/content/vendor/react-dom.js"></script>
   <script type="text/javascript"
     src="chrome://conversations/content/conversationFooter.js"></script>
+  <script type="text/javascript"
+    src="chrome://conversations/content/messageAttachments.js"></script>
+  <script type="text/javascript"
+    src="chrome://conversations/content/messageList.js"></script>
   <!-- The two scripts below share the same scope, they were split for the sake
     of readability. -->
   <script type="application/javascript"
@@ -43,6 +47,8 @@
   <script type="application/javascript"
     src="chrome://conversations/content/handlebars-wrapper.js"></script>
   <script type="application/javascript"><![CDATA[
+    const {StringBundle} = ChromeUtils.import("resource:///modules/StringBundle.js", null);
+
     // Below are mostly UI utility functions.
     (function ($) {
       $.fn.vAlign = function(container) {
@@ -434,17 +440,6 @@
     }
 
     /**
-     * This function finds the right node that holds the attachment information
-     * and returns its information.
-     */
-    function getCurrentAttInfo() {
-      let node = topMail3Pane(window).document.popupNode;
-      while (!node.attInfo)
-        node = node.parentNode;
-      return node.attInfo;
-    }
-
-    /**
      * That big event handler tries to parse URL query parameters, and then acts
      * upon these, by firing a conversation on its own. This is a very
      * stripped-down version of the logic that's in monkeypatch.js, and it
@@ -533,8 +528,8 @@
 
     // This starts building parts that are React based.
     window.addEventListener("load", () => {
-      const domContainer = document.getElementById("footerContainer");
-      ReactDOM.render(React.createElement(ConversationFooter), domContainer);
+      const domContainer = document.getElementById("messageListContainer");
+      ReactDOM.render(React.createElement(MessageList), domContainer);
     }, {once: true});
 
     var isQuickCompose = false;
@@ -749,12 +744,6 @@
 </head>
 
 <body>
-  <menu id="attachmentMenu" type="context">
-    <menuitem label="&stub.context.open;" onclick="getCurrentAttInfo().open();"></menuitem>
-    <menuitem label="&stub.context.save;" onclick="getCurrentAttInfo().save();"></menuitem>
-    <menuitem label="&stub.context.detach;" onclick="getCurrentAttInfo().detach(true);"></menuitem>
-    <menuitem label="&stub.context.delete;" onclick="getCurrentAttInfo().detach(false);"></menuitem>
-  </menu>
   <script id="detailsTemplate" type="text/x-handlebars-template"><![CDATA[
       <div>
       {{#if dataContactsFrom.length}}
@@ -1447,7 +1436,7 @@
     </div>
     <ul id="messageList">
     </ul>
-    <div id="footerContainer">
+    <div id="messageListContainer">
     </div>
   </div>
 </body>
