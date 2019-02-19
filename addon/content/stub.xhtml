@@ -29,6 +29,8 @@
   <script type="text/javascript"
     src="chrome://conversations/content/vendor/react-dom.js"></script>
   <script type="text/javascript"
+    src="chrome://conversations/content/conversationHeader.js"></script>
+  <script type="text/javascript"
     src="chrome://conversations/content/conversationFooter.js"></script>
   <script type="text/javascript"
     src="chrome://conversations/content/messageAttachments.js"></script>
@@ -332,63 +334,6 @@
       }
     });
 
-    // Mark the current conversation as read/unread. The conversation driver
-    //  takes care of setting the right class on us whenever the state
-    //  changes...
-    function toggleRead(event) {
-      let $span = $(event.target).find(".icon.read");
-      if ($span.hasClass("unread")) {
-        Conversations.currentConversation.read = true;
-        $span.removeClass("unread");
-      } else {
-        Conversations.currentConversation.read = false;
-        $span.addClass("unread");
-        markReadInView.disable();
-      }
-    }
-
-    function expandCollapse(event) {
-      let $span = $(event.target).find(".icon.expand");
-      if ($span.hasClass("collapse")) {
-        for (let { message } of Conversations.currentConversation.messages) {
-          message.collapse();
-        }
-        $span.removeClass("collapse");
-      } else {
-        for (let { message } of Conversations.currentConversation.messages) {
-          message.expand();
-        }
-        $span.addClass("collapse");
-      }
-    }
-
-    function archiveToolbar(event) {
-      if (isInTab || Prefs.operate_on_conversations)
-        archiveConversation(event);
-      else
-        msgHdrsArchive(topMail3Pane(window).gFolderDisplay.selectedMessages);
-    }
-
-    function archiveConversation(event) {
-      msgHdrsArchive(Conversations.currentConversation.msgHdrs);
-      if (!isInTab)
-        topMail3Pane(window).SetFocusThreadPane(event);
-    }
-
-    function deleteToolbar(event) {
-      if (isInTab || Prefs.operate_on_conversations)
-        deleteConversation();
-      else
-        msgHdrsDelete(topMail3Pane(window).gFolderDisplay.selectedMessages);
-    }
-
-    function deleteConversation(event) {
-      msgHdrsDelete(Conversations.currentConversation.msgHdrs);
-      if (isInTab)
-        closeTab();
-      topMail3Pane(window).SetFocusThreadPane(event);
-    }
-
     let oldPrint = window.print;
 
     function printConversation(event) {
@@ -400,42 +345,12 @@
 
     window.print = printConversation;
 
-    function junkConversation(event) {
-      // This callback is only activated when the conversation is not a
-      //  conversation in a tab AND there's only one message in the conversation,
-      //  i.e. the currently selected message
-      topMail3Pane(window).JunkSelectedMessages(true);
-      $("#conversationHeader").addClass("not-junkable");
-      topMail3Pane(window).SetFocusThreadPane(event);
-    }
-
     const kGalleryUrl = "chrome://conversations/content/gallery/index.html";
 
     function galleryView(uri) {
       let tabmail = topMail3Pane(window).document.getElementById("tabmail");
       tabmail.openTab("chromeTab", {
         chromePage: kGalleryUrl+"?uri="+uri,
-      });
-    }
-
-    /**
-     * This function gathers various information, encodes it in a URL query
-     * string, and then opens a regular chrome tab that contains our
-     * conversation.
-     */
-    function detachTab(event) {
-      let tabmail = topMail3Pane(window).document.getElementById("tabmail");
-      let willExpand = $("textarea").parent().hasClass("expand") && startedEditing();
-      // Pick _initialSet and not msgHdrs so as to enforce the invariant
-      //  that the messages from _initialSet are in the current view.
-      let urls =
-        Conversations.currentConversation._initialSet.map(x => msgHdrGetUri(x)).join(",");
-      let queryString = "?urls="+encodeURIComponent(urls)
-        +"&willExpand="+Number(willExpand);
-      // First, save the draft, and once it's saved, then move on to opening the
-      // conversation in a new tab...
-      onSave(function () {
-        openConversationInTabOrWindow(Prefs.kStubUrl+queryString);
       });
     }
 
@@ -530,6 +445,8 @@
     window.addEventListener("load", () => {
       const domContainer = document.getElementById("messageListContainer");
       ReactDOM.render(React.createElement(MessageList), domContainer);
+      const headerContainer = document.getElementById("messageListHeader");
+      ReactDOM.render(React.createElement(ConversationHeader), headerContainer);
     }, {once: true});
 
     var isQuickCompose = false;
@@ -1405,34 +1322,7 @@
     ]]>
   </script>
   <div id="wrapper">
-    <div id="conversationHeaderWrapper">
-      <div id="conversationHeader" class="hbox">
-        <div class="subject boxFlex">&stub.loading;</div>
-        <div class="actions">
-          <button class="button-flat" title="&stub.trash.tooltip;" onclick="deleteToolbar(event);">
-            <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#delete"></use></svg>
-          </button>
-          <button class="button-flat" title="&stub.archive.tooltip;" onclick="archiveToolbar(event);">
-            <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#archive"></use></svg>
-          </button>
-          <button class="button-flat junk-button" title="&stub.junk.tooltip;" onclick="junkConversation(event);">
-            <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#whatshot"></use></svg>
-          </button>
-          <button class="button-flat" title="&stub.expand.tooltip;" onclick="expandCollapse(event);">
-            <svg class="icon expand" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-              <use class="expand-more" xlink:href="chrome://conversations/skin/material-icons.svg#expand_more"></use>
-              <use class="expand-less" xlink:href="chrome://conversations/skin/material-icons.svg#expand_less"></use>
-            </svg>
-          </button>
-          <button class="button-flat" title="&stub.read.tooltip;" onclick="toggleRead(event);">
-            <svg class="icon read" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#new"></use></svg>
-          </button>
-          <button class="button-flat" title="&stub.detach.tooltip2;" onclick="detachTab(event);">
-            <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#open_in_new"></use></svg>
-          </button>
-          <!--<button><span class="mode"></span></button>-->
-        </div>
-      </div>
+    <div id="messageListHeader" class="conversationHeaderWrapper">
     </div>
     <ul id="messageList">
     </ul>

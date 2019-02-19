@@ -116,7 +116,7 @@ a img {
   text-decoration: underline;
 }
 
-#conversationHeaderWrapper {
+.conversationHeaderWrapper {
   position: fixed;
   top: 0;
   left: 0;
@@ -125,14 +125,14 @@ a img {
   box-shadow: 0 0 2px rgba(0,0,0,0.25);
 }
 
-#conversationHeader {
+.conversationHeader {
   padding: 5px 10px;
   background-color: Menu;
   border-bottom: 1px solid ThreeDShadow;
   color: MenuText;
 }
 
-#conversationHeader.not-junkable .junk-button {
+.conversationHeader.not-junkable .junk-button {
   display: none;
 }
 
