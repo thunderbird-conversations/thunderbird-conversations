@@ -65,10 +65,6 @@
       <preference id="conversations.compose_in_tab" name="conversations.compose_in_tab" type="bool"/>
       <preference id="conversations.logging_enabled" name="conversations.logging_enabled" type="bool"/>
       <preference id="conversations.monospaced_senders" name="conversations.monospaced_senders" type="string"/>
-      <preference id="conversations.add_embeds" name="conversations.add_embeds" type="bool"/>
-      <preference id="conversations.add_embeds" name="conversations.add_embeds" type="bool"/>
-      <preference id="conversations.add_embeds" name="conversations.add_embeds" type="bool"/>
-      <preference id="conversations.add_embeds" name="conversations.add_embeds" type="bool"/>
     </preferences>
 
     <vbox>
@@ -111,7 +107,6 @@
       </setting> -->
       <checkbox label="&title.tweak_chrome;" tooltiptext="&option.tweak_chrome;" preference="conversations.tweak_chrome"/>
       <checkbox label="&title.tweak_bodies;" tooltiptext="&option.tweak_bodies;" preference="conversations.tweak_bodies"/>
-      <checkbox label="&title.add_embeds;" tooltiptext="&option.add_embeds;" preference="conversations.add_embeds" />
 
       <checkbox label="&title.send_in_background;" tooltiptext="&desc.send_in_background;"
         preference="mailnews.sendInBackground"/>
