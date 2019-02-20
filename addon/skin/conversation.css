@@ -132,10 +132,6 @@ a img {
   color: MenuText;
 }
 
-.conversationHeader.not-junkable .junk-button {
-  display: none;
-}
-
 .subject {
   font-size: 1.2rem;
   font-weight: bold;

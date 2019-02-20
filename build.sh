@@ -10,6 +10,8 @@ mkdir -p $DIST/modules/stdlib
 
 #cp node_modules/react/umd/react.production.min.js $VENDOR_DIR/react.js
 #cp node_modules/react-dom/umd/react-dom.production.min.js $VENDOR_DIR/react-dom.js
+cp node_modules/redux/dist/redux.js $VENDOR_DIR/redux.js
+cp node_modules/react-redux/dist/react-redux.js $VENDOR_DIR/react-redux.js
 cp node_modules/react/umd/react.development.js $VENDOR_DIR/react.js
 cp node_modules/react-dom/umd/react-dom.development.js $VENDOR_DIR/react-dom.js
 cp node_modules/prop-types/prop-types.min.js $VENDOR_DIR/prop-types.js

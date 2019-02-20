@@ -53,7 +53,7 @@ const {MixIn, range} = ChromeUtils.import("resource://conversations/modules/stdl
 const {Message, MessageFromGloda, MessageFromDbHdr} =
   ChromeUtils.import("resource://conversations/modules/message.js", {});
 const {ContactManager} = ChromeUtils.import("resource://conversations/modules/contact.js", {});
-const {LINKS_REGEX, groupArray, linkifySubject, topMail3Pane} =
+const {groupArray, topMail3Pane} =
   ChromeUtils.import("resource://conversations/modules/misc.js", {});
 
 let Log = setupLogging("Conversations.Conversation");
@@ -973,8 +973,10 @@ Conversation.prototype = {
       // We don't know yet if this is going to be a junkable conversation, so
       //  when in doubt, reset. Actually, the final call to
       //  _updateConversationButtons will update this.
-      this._domNode.ownerDocument.getElementById("conversationHeader")
-        .classList.remove("not-junkable");
+      this._htmlPane.conversationDispatch({
+        type: "UPDATE_CANJUNK_STATUS",
+        canJunk: true,
+      });
     }
 
     Log.debug("Outputting",
@@ -1015,19 +1017,10 @@ Conversation.prototype = {
     });
 
     // Set the subject properly
-    let subjectNode = this._domNode.ownerDocument.getElementsByClassName("subject")[0];
-    let subject = this.messages[this.messages.length - 1].message.subject;
-    // Clear out the subject node
-    while (subjectNode.firstChild) {
-      subjectNode.firstChild.remove();
-    }
-    if (LINKS_REGEX.test(subject)) {
-      subjectNode.appendChild(linkifySubject(subject, this._domNode.ownerDocument));
-    } else {
-      subjectNode.textContent = subject || "(no subject)";
-    }
-    subjectNode.setAttribute("title", subject);
-    this._htmlPane.document.title = subject;
+    this._htmlPane.conversationDispatch({
+      type: "UPDATE_SUBJECT",
+      subject: this.messages[this.messages.length - 1].message.subject,
+    });
     // Invalidate the composition session so that compose-ui.js can setup the
     //  fields next time.
     this._htmlPane.gComposeSession = null;
@@ -1042,25 +1035,15 @@ Conversation.prototype = {
     if (!this.messages || !this.messages.length || !this._domNode || !this._htmlPane.document)
       return;
 
-    // Make sure the toggle read/unread button is in the right state
-    let markReadButton = this._htmlPane.document.querySelector(".icon.read");
-    if (this.messages.some(x => !x.message.read))
-      markReadButton.classList.add("unread");
-    else
-      markReadButton.classList.remove("unread");
-
-    // If some message is collapsed, then the initial state is "expand"
-    let collapseExpandButton = this._htmlPane.document.querySelector(".icon.expand");
-    if (this.messages.some(x => x.message.collapsed))
-      collapseExpandButton.classList.remove("collapse");
-    else
-      collapseExpandButton.classList.add("collapse");
-
-    // If we have more than one message, then "junk this message" doesn't make
-    //  sense anymore.
-    if (this.messages.length > 1 || msgHdrIsJunk(toMsgHdr(this.messages[0])))
-      this._domNode.ownerDocument.getElementById("conversationHeader")
-        .classList.add("not-junkable");
+    this._htmlPane.conversationDispatch({
+      type: "UPDATE_STATUS",
+      // If some message is collapsed, then the initial state is "expand"
+      expanded: !this.messages.some(x => x.message.collapsed),
+      read: !this.messages.some(x => !x.message.read),
+      // If we have more than one message, then "junk this message" doesn't make
+      // sense anymore.
+      canJunk: !(this.messages.length > 1 || msgHdrIsJunk(toMsgHdr(this.messages[0]))),
+    });
   },
 
   // Do all the penible stuff about scrolling to the right message and expanding
