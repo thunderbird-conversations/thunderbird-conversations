@@ -36,12 +36,10 @@
 
 var EXPORTED_SYMBOLS = [
   "groupArray", "joinWordList", "iconForMimeType",
-  "EventHelperMixIn", "arrayEquals", "LINKS_REGEX",
-  "linkifySubject", "topMail3Pane", "reindexMessages",
+  "EventHelperMixIn", "arrayEquals", "topMail3Pane", "reindexMessages",
   "folderName", "openConversationInTabOrWindow",
 ];
 
-var LINKS_REGEX = /((\w+):\/\/[^<>()'"\s]+|www(\.[-\w]+){2,})/;
 
 ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
 const { GlodaMsgIndexer } = ChromeUtils.import("resource:///modules/gloda/index_msg.js", {});
@@ -193,41 +191,6 @@ var EventHelperMixIn = {
   },
 
 };
-
-function linkifySubject(subject, doc) {
-  /* utility function to split text and links */
-  function linkifySplit(text, doc) {
-    let matches = LINKS_REGEX.exec(text);
-    let pre, post = null;
-    [pre, post] = text.split(matches[1]);
-    let link = doc.createElement("a");
-    link.appendChild(doc.createTextNode(matches[1]));
-    link.setAttribute("href", matches[1]);
-    link.setAttribute("title", matches[1]);
-    link.setAttribute("class", "link");
-    link.addEventListener("click", function(event) {
-        getMail3Pane().messenger.launchExternalURL(matches[1]);
-        event.preventDefault();
-      });
-    return [pre, link, post];
-  }
-  let text = subject;
-  let node = doc.createElement("span");
-  /* loop through multiple possible links in the subject */
-  while (text && LINKS_REGEX.test(text)) {
-    let pre, link, post = null;
-    [pre, link, post] = linkifySplit(text, doc);
-    /* we can't assume that any pre or post text was given, only a link */
-    if (pre && pre.length > 0)
-      node.appendChild(doc.createTextNode(pre));
-    node.appendChild(link);
-    text = post;
-  }
-  if (text && text.length > 0) {
-    node.appendChild(doc.createTextNode(text));
-  }
-  return node;
-}
 
 /**
  * This is a super-polymorphic function that allows you to get the topmost

@@ -16,7 +16,9 @@
   "dependencies": {
     "pdfjs-dist": "2.0.943",
     "react": "16.7.0",
-    "react-dom": "16.7.0"
+    "react-dom": "16.7.0",
+    "react-redux": "6.0.1",
+    "redux": "4.0.1"
   },
   "devDependencies": {
     "@babel/cli": "7.2.3",

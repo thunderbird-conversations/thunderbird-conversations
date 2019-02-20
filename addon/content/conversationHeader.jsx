@@ -34,20 +34,81 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/* globals React, ReactDOM, Conversations, MailServices, printConversation
+/* globals React, ReactRedux, Conversations, MailServices, PropTypes,
            StringBundle, isInTab, Prefs, topMail3Pane, msgHdrsDelete, closeTab,
-           msgHdrsArchive, markReadInView */
+           msgHdrsArchive */
 /* exported ConversationHeader */
 
-class ConversationHeader extends React.Component {
-  constructor() {
-    super();
+const LINKS_REGEX = /((\w+):\/\/[^<>()'"\s]+|www(\.[-\w]+){2,})/;
+
+class LinkifiedSubject extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    this.handleClick = this.handleClick.bind(this);
+  }
+
+  handleClick(event) {
+    this.props.dispatch({
+      type: "OPEN_LINK",
+      url: event.target.title,
+    });
+    event.preventDefault();
+  }
+
+  render() {
+    let subject = this.props.subject;
+    if (this.props.loading) {
+      subject = this.props.strings.get("stub.loading");
+    } else if (!subject) {
+      subject = this.props.strings.get("stub.no.subject");
+    }
+
+    if (LINKS_REGEX.test(this.props.subject)) {
+      let contents = [];
+      let text = subject;
+      while (text && LINKS_REGEX.test(text)) {
+        let matches = LINKS_REGEX.exec(text);
+        let [pre, ...post] = text.split(matches[1]);
+        console.log({pre, post});
+        let link = <a href={matches[1]} title={matches[1]} className="link" onClick={this.handleClick}>{matches[1]}</a>;
+        if (pre) {
+          contents.push(pre);
+        }
+        contents.push(link);
+        text = post.join(matches[1]);
+      }
+      if (text) {
+        contents.push(text);
+      }
+
+      return (
+        <div className="subject boxFlex" title={this.props.subject}>
+          <span>
+            {contents}
+          </span>
+        </div>
+      );
+    }
+
+    return (
+      <div className="subject boxFlex" title={this.props.subject}>
+        {this.props.subject}
+      </div>
+    );
+  }
+}
+
+LinkifiedSubject.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+  loading: PropTypes.bool.isRequired,
+  strings: PropTypes.object.isRequired,
+  subject: PropTypes.string.isRequired,
+};
+
+class _ConversationHeader extends React.PureComponent {
+  constructor(props) {
+    super(props);
     this.strings = new StringBundle("chrome://conversations/locale/pages.properties");
-    this.state = {
-      expanded: true,
-      canJunk: true,
-      read: true,
-    };
     this.archiveToolbar = this.archiveToolbar.bind(this);
     this.delete = this.delete.bind(this);
     this.detachTab = this.detachTab.bind(this);
@@ -85,61 +146,53 @@ class ConversationHeader extends React.Component {
    * conversation.
    */
   detachTab(event) {
-    let willExpand = $("textarea").parent().hasClass("expand") && startedEditing();
-    // Pick _initialSet and not msgHdrs so as to enforce the invariant
-    //  that the messages from _initialSet are in the current view.
-    let urls =
-      Conversations.currentConversation._initialSet.map(x => msgHdrGetUri(x)).join(",");
-    let queryString = "?urls="+encodeURIComponent(urls)
-      +"&willExpand="+Number(willExpand);
-    // First, save the draft, and once it's saved, then move on to opening the
-    // conversation in a new tab...
-    onSave(function () {
-      openConversationInTabOrWindow(Prefs.kStubUrl+queryString);
-    });
+    // let willExpand = $("textarea").parent().hasClass("expand") && startedEditing();
+    // // Pick _initialSet and not msgHdrs so as to enforce the invariant
+    // //  that the messages from _initialSet are in the current view.
+    // let urls =
+    //   Conversations.currentConversation._initialSet.map(x => msgHdrGetUri(x)).join(",");
+    // let queryString = "?urls="+encodeURIComponent(urls)
+    //   +"&willExpand="+Number(willExpand);
+    // // First, save the draft, and once it's saved, then move on to opening the
+    // // conversation in a new tab...
+    // onSave(function () {
+    //   openConversationInTabOrWindow(Prefs.kStubUrl+queryString);
+    // });
   }
 
   expandCollapse(event) {
-    if (this.state.expanded) {
-      for (let { message } of Conversations.currentConversation.messages) {
-        message.collapse();
-      }
-      this.setState({expanded: false});
-    } else {
-      for (let { message } of Conversations.currentConversation.messages) {
-        message.expand();
-      }
-      this.setState({expanded: true});
-    }
+    this.props.dispatch({
+      type: "TOGGLE_CONVERSATION_EXPANDED",
+      expanded: !this.props.expanded,
+    });
   }
 
   junkConversation(event) {
     // This callback is only activated when the conversation is not a
     //  conversation in a tab AND there's only one message in the conversation,
     //  i.e. the currently selected message
-    topMail3Pane(window).JunkSelectedMessages(true);
-    this.setState({canJunk: false});
-    topMail3Pane(window).SetFocusThreadPane(event);
+    this.props.dispatch({
+      type: "MARK_AS_JUNK",
+    });
   }
 
   // Mark the current conversation as read/unread. The conversation driver
   //  takes care of setting the right class on us whenever the state
   //  changes...
   toggleRead(event) {
-    let read = !this.state.read;
-    Conversations.currentConversation.read = read;
-    if (!read) {
-      markReadInView.disable();
-    }
-    this.setState({
-      read,
+    this.props.dispatch({
+      type: "TOGGLE_CONVERSATION_READ",
+      read: !this.props.read,
     });
   }
 
   render() {
     return (
       <div className="conversationHeader hbox">
-        <div className="subject boxFlex">{this.strings.get("stub.loading")}</div>
+        <LinkifiedSubject dispatch={this.props.dispatch}
+                          loading={this.props.loading}
+                          strings={this.strings}
+                          subject={this.props.subject}/>
         <div className="actions">
           <button className="button-flat"
                   title={this.strings.get("stub.trash.tooltip")}
@@ -161,7 +214,7 @@ class ConversationHeader extends React.Component {
               <use xlinkHref="chrome://conversations/skin/material-icons.svg#archive"></use>
             </svg>
           </button>
-          {this.state.canJunk &&
+          {this.props.canJunk &&
             <button className="button-flat junk-button"
                     title={this.strings.get("stub.junk.tooltip")}
                     onClick={this.junkConversation}>
@@ -176,7 +229,7 @@ class ConversationHeader extends React.Component {
           <button className="button-flat"
                   title={this.strings.get("stub.expand.tooltip")}
                   onClick={this.expandCollapse}>
-            <svg className={`icon expand ${this.state.expanded ? "collapse" : ""}`}
+            <svg className={`icon expand ${this.props.expanded ? "collapse" : ""}`}
                  viewBox="0 0 24 24"
                  xmlns="http://www.w3.org/2000/svg"
                  xmlnsXlink="http://www.w3.org/1999/xlink">
@@ -189,7 +242,7 @@ class ConversationHeader extends React.Component {
           <button className="button-flat"
                   title={this.strings.get("stub.read.tooltip")}
                   onClick={this.toggleRead}>
-            <svg className={`icon read ${this.state.read ? "" : "unread"}`}
+            <svg className={`icon read ${this.props.read ? "" : "unread"}`}
                  viewBox="0 0 24 24"
                  xmlns="http://www.w3.org/2000/svg"
                  xmlnsXlink="http://www.w3.org/1999/xlink">
@@ -211,3 +264,14 @@ class ConversationHeader extends React.Component {
     );
   }
 }
+
+_ConversationHeader.propTypes = {
+  canJunk: PropTypes.bool.isRequired,
+  dispatch: PropTypes.func.isRequired,
+  expanded: PropTypes.bool.isRequired,
+  loading: PropTypes.bool.isRequired,
+  read: PropTypes.bool.isRequired,
+  subject: PropTypes.string.isRequired,
+};
+
+const ConversationHeader = ReactRedux.connect(state => state.summary)(_ConversationHeader);

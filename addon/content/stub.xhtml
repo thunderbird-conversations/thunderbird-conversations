@@ -29,6 +29,14 @@
   <script type="text/javascript"
     src="chrome://conversations/content/vendor/react-dom.js"></script>
   <script type="text/javascript"
+    src="chrome://conversations/content/vendor/redux.js"></script>
+  <script type="text/javascript"
+    src="chrome://conversations/content/vendor/react-redux.js"></script>
+  <script type="text/javascript"
+    src="chrome://conversations/content/vendor/prop-types.js"></script>
+  <script type="text/javascript"
+    src="chrome://conversations/content/reducer.js"></script>
+  <script type="text/javascript"
     src="chrome://conversations/content/conversationHeader.js"></script>
   <script type="text/javascript"
     src="chrome://conversations/content/conversationFooter.js"></script>
@@ -49,7 +57,12 @@
   <script type="application/javascript"
     src="chrome://conversations/content/handlebars-wrapper.js"></script>
   <script type="application/javascript"><![CDATA[
+    let store;
     const {StringBundle} = ChromeUtils.import("resource:///modules/StringBundle.js", null);
+
+    function conversationDispatch(...args) {
+      store.dispatch(...args);
+    }
 
     // Below are mostly UI utility functions.
     (function ($) {
@@ -421,7 +434,10 @@
               // We can never junk a conversation in a new tab, because the junk
               // command only operates on selected messages, and we're not in a
               // 3pane context anymore.
-              document.getElementById("conversationHeader").classList.add("not-junkable");
+              conversationDispatch({
+                type: "UPDATE_CANJUNK_STATUS",
+                canJunk: false,
+              });
               // Do this now so as to not defeat the whole expand/collapse
               // logic.
               if (Prefs.getBool("mailnews.mark_message_read.auto")) {
@@ -443,10 +459,13 @@
 
     // This starts building parts that are React based.
     window.addEventListener("load", () => {
+      store = Redux.createStore(conversationApp);
+
       const domContainer = document.getElementById("messageListContainer");
       ReactDOM.render(React.createElement(MessageList), domContainer);
       const headerContainer = document.getElementById("messageListHeader");
-      ReactDOM.render(React.createElement(ConversationHeader), headerContainer);
+      ReactDOM.render(React.createElement(ReactRedux.Provider, {store},
+        React.createElement(ConversationHeader)), headerContainer);
     }, {once: true});
 
     var isQuickCompose = false;
