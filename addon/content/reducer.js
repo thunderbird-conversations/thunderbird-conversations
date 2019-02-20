@@ -36,7 +36,8 @@
 
 /* global Redux, Conversations, markReadInView, topMail3Pane, getMail3Pane,
           isInTab, msgHdrsArchive, Prefs, msgHdrsDelete, closeTab, startedEditing,
-          msgHdrGetUri, onSave, openConversationInTabOrWindow */
+          msgHdrGetUri, onSave, openConversationInTabOrWindow,
+          printConversation */
 
 /* exported conversationApp */
 
@@ -93,6 +94,10 @@ function summary(state = initialSummary, action) {
       });
       return state;
     }
+    case "FORWARD_CONVERSATION": {
+      Conversations.currentConversation.forward();
+      return state;
+    }
     case "TOGGLE_CONVERSATION_READ": {
       Conversations.currentConversation.read = action.read;
       if (!action.read) {
@@ -117,6 +122,10 @@ function summary(state = initialSummary, action) {
     }
     case "OPEN_LINK": {
       getMail3Pane().messenger.launchExternalURL(action.url);
+      return state;
+    }
+    case "PRINT_CONVERSATION": {
+      printConversation();
       return state;
     }
     case "UPDATE_SUBJECT": {

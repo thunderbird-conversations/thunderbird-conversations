@@ -37,12 +37,10 @@
 /* globals React, AttachmentMenu, ConversationHeader, ConversationFooter */
 /* exported MessageList */
 
-class MessageList extends React.Component {
+class MessageList extends React.PureComponent {
   render() {
     return (
       <div>
-        <AttachmentMenu/>
-        <ConversationFooter/>
       </div>
     );
   }

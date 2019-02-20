@@ -44,6 +44,8 @@
     src="chrome://conversations/content/messageAttachments.js"></script>
   <script type="text/javascript"
     src="chrome://conversations/content/messageList.js"></script>
+  <script type="text/javascript"
+    src="chrome://conversations/content/conversationWrapper.js"></script>
   <!-- The two scripts below share the same scope, they were split for the sake
     of readability. -->
   <script type="application/javascript"
@@ -461,11 +463,9 @@
     window.addEventListener("load", () => {
       store = Redux.createStore(conversationApp);
 
-      const domContainer = document.getElementById("messageListContainer");
-      ReactDOM.render(React.createElement(MessageList), domContainer);
-      const headerContainer = document.getElementById("messageListHeader");
+      const conversationContainer = document.getElementById("conversationWrapper");
       ReactDOM.render(React.createElement(ReactRedux.Provider, {store},
-        React.createElement(ConversationHeader)), headerContainer);
+        React.createElement(ConversationWrapper)), conversationContainer);
     }, {once: true});
 
     var isQuickCompose = false;
@@ -1341,11 +1341,9 @@
     ]]>
   </script>
   <div id="wrapper">
-    <div id="messageListHeader" class="conversationHeaderWrapper">
-    </div>
     <ul id="messageList">
     </ul>
-    <div id="messageListContainer">
+    <div id="conversationWrapper">
     </div>
   </div>
 </body>

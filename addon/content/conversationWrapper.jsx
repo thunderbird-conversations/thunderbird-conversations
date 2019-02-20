@@ -34,48 +34,19 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/* globals printConversation, PropTypes, React, ReactRedux, StringBundle */
-/* exported ConversationFooter */
+/* globals AttachmentMenu, ConversationHeader, ConversationFooter, MessageList,
+           React, ReactRedux */
+/* exported ConversationWrapper */
 
-class _ConversationFooter extends React.PureComponent {
-  constructor() {
-    super();
-    this.strings = new StringBundle("chrome://conversations/locale/pages.properties");
-    this.forwardConversation = this.forwardConversation.bind(this);
-    this.printConversation = this.printConversation.bind(this);
-  }
-
-  forwardConversation() {
-    this.props.dispatch({
-      type: "FORWARD_CONVERSATION",
-    });
-  }
-
-  printConversation() {
-    this.props.dispatch({
-      type: "PRINT_CONVERSATION",
-    });
-  }
-
+class ConversationWrapper extends React.PureComponent {
   render() {
     return (
-      <div className="bottom-links">
-        <a className="link"
-           href="javascript:"
-           onClick={this.forwardConversation}>
-          {this.strings.get("stub.forward.tooltip")}
-        </a> – <a className="link"
-           href="javascript:"
-           onClick={this.printConversation}>
-           {this.strings.get("stub.print.tooltip")}
-        </a>
+      <div>
+        <ConversationHeader/>
+        <MessageList/>
+        <ConversationFooter/>
+        <AttachmentMenu/>
       </div>
     );
   }
 }
-
-_ConversationFooter.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-};
-
-const ConversationFooter = ReactRedux.connect()(_ConversationFooter);
