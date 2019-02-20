@@ -2,7 +2,7 @@
 
 /* exported setupAutocomplete, Colors, getDefaultIdentity, getIdentityForEmail,
             getIdentities, NS_SUCCEEDED */
-/* global $, Conversations, MailServices, showCc, showBcc, StringBundle */
+/* global $, Conversations, MailServices, showCc, showBcc, strings */
 /* import-globals-from quickReply.js */
 
 // ----- Autocomplete stuff. Understand it as a part of stub.compose-ui.js
@@ -18,7 +18,6 @@ const {
 } = ChromeUtils.import("resource://conversations/modules/log.js", {});
 
 let Log = setupLogging("Conversations.Stub.Completion");
-let strings;
 
 try {
   // eslint-disable-next-line no-unused-vars
@@ -251,9 +250,6 @@ let autoCompleteClasses = {
 };
 
 function setupAutocomplete(to, cc, bcc) {
-  if (!strings) {
-    strings = new StringBundle("chrome://conversations/locale/message.properties");
-  }
   // This function assumes aInput is #something
   let fill = function(aInput, aList, aData) {
     // Cleanup the mess left by tokenInput.
