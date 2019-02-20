@@ -38,7 +38,8 @@
 
 var EXPORTED_SYMBOLS = ["Conversation"];
 
-ChromeUtils.import("resource://gre/modules/Services.jsm");
+const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm", null);
+const {MailServices} = ChromeUtils.import("resource:///modules/mailServices.js", null);
 
 ChromeUtils.import("resource:///modules/StringBundle.js");
 const {Gloda} = ChromeUtils.import("resource:///modules/gloda/gloda.js", {});
@@ -1127,8 +1128,24 @@ Conversation.prototype = {
     msgHdrsMarkAsRead(this.msgHdrs, read);
   },
 
+  forward() {
+    let fields = Cc["@mozilla.org/messengercompose/composefields;1"]
+                    .createInstance(Ci.nsIMsgCompFields);
+    fields.characterSet = "UTF-8";
+    fields.bodyIsAsciiOnly = false;
+    fields.forcePlainText = false;
+    this.exportAsHtml(function(html) {
+      fields.body = html;
+      let params = Cc["@mozilla.org/messengercompose/composeparams;1"]
+                      .createInstance(Ci.nsIMsgComposeParams);
+      params.format = Ci.nsIMsgCompFormat.HTML;
+      params.composeFields = fields;
+      return MailServices.compose.OpenComposeWindowWithParams(null, params);
+    });
+  },
+
   // For the "forward conversation" action
-  exportAsHtml: function _Conversation_exportAsHtml(k) {
+  exportAsHtml(k) {
     // Somehow this seems to be needed... why? Dunno.
     let start = "<html><body>";
     let hr = '<div style="border-top: 1px solid #888; height: 15px; width: 70%; margin: 0 auto; margin-top: 15px">&nbsp;</div>';

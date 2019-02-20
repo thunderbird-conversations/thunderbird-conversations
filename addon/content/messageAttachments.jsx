@@ -37,7 +37,7 @@
 /* globals React, ReactDOM, topMail3Pane, StringBundle */
 /* exported AttachmentMenu */
 
-class AttachmentMenu extends React.Component {
+class AttachmentMenu extends React.PureComponent {
   constructor() {
     super();
     this.strings = new StringBundle("chrome://conversations/locale/pages.properties");

@@ -168,77 +168,79 @@ class _ConversationHeader extends React.PureComponent {
 
   render() {
     return (
-      <div className="conversationHeader hbox">
-        <LinkifiedSubject dispatch={this.props.dispatch}
-                          loading={this.props.loading}
-                          strings={this.strings}
-                          subject={this.props.subject}/>
-        <div className="actions">
-          <button className="button-flat"
-                  title={this.strings.get("stub.trash.tooltip")}
-                  onClick={this.delete}>
-            <svg className="icon"
-                 viewBox="0 0 24 24"
-                 xmlns="http://www.w3.org/2000/svg"
-                 xmlnsXlink="http://www.w3.org/1999/xlink">
-              <use xlinkHref="chrome://conversations/skin/material-icons.svg#delete"></use>
-            </svg>
-          </button>
-          <button className="button-flat"
-                  title={this.strings.get("stub.archive.tooltip")}
-                  onClick={this.archiveToolbar}>
-            <svg className="icon"
-                 viewBox="0 0 24 24"
-                 xmlns="http://www.w3.org/2000/svg"
-                 xmlnsXlink="http://www.w3.org/1999/xlink">
-              <use xlinkHref="chrome://conversations/skin/material-icons.svg#archive"></use>
-            </svg>
-          </button>
-          {this.props.canJunk &&
-            <button className="button-flat junk-button"
-                    title={this.strings.get("stub.junk.tooltip")}
-                    onClick={this.junkConversation}>
+      <div className="conversationHeaderWrapper">
+        <div className="conversationHeader hbox">
+          <LinkifiedSubject dispatch={this.props.dispatch}
+                            loading={this.props.loading}
+                            strings={this.strings}
+                            subject={this.props.subject}/>
+          <div className="actions">
+            <button className="button-flat"
+                    title={this.strings.get("stub.trash.tooltip")}
+                    onClick={this.delete}>
               <svg className="icon"
                    viewBox="0 0 24 24"
                    xmlns="http://www.w3.org/2000/svg"
                    xmlnsXlink="http://www.w3.org/1999/xlink">
-                <use xlinkHref="chrome://conversations/skin/material-icons.svg#whatshot"></use>
+                <use xlinkHref="chrome://conversations/skin/material-icons.svg#delete"></use>
               </svg>
             </button>
-          }
-          <button className="button-flat"
-                  title={this.strings.get("stub.expand.tooltip")}
-                  onClick={this.expandCollapse}>
-            <svg className={`icon expand ${this.props.expanded ? "collapse" : ""}`}
-                 viewBox="0 0 24 24"
-                 xmlns="http://www.w3.org/2000/svg"
-                 xmlnsXlink="http://www.w3.org/1999/xlink">
-              <use className="expand-more"
-                   xlinkHref="chrome://conversations/skin/material-icons.svg#expand_more"></use>
-              <use className="expand-less"
-                   xlinkHref="chrome://conversations/skin/material-icons.svg#expand_less"></use>
-            </svg>
-          </button>
-          <button className="button-flat"
-                  title={this.strings.get("stub.read.tooltip")}
-                  onClick={this.toggleRead}>
-            <svg className={`icon read ${this.props.read ? "" : "unread"}`}
-                 viewBox="0 0 24 24"
-                 xmlns="http://www.w3.org/2000/svg"
-                 xmlnsXlink="http://www.w3.org/1999/xlink">
-              <use xlinkHref="chrome://conversations/skin/material-icons.svg#new"></use>
-            </svg>
-          </button>
-          <button className="button-flat"
-                  title={this.strings.get("stub.detach.tooltip2")}
-                  onClick={this.detachTab}>
-            <svg className="icon"
-                 viewBox="0 0 24 24"
-                 xmlns="http://www.w3.org/2000/svg"
-                 xmlnsXlink="http://www.w3.org/1999/xlink">
-              <use xlinkHref="chrome://conversations/skin/material-icons.svg#open_in_new"></use>
-            </svg>
-          </button>
+            <button className="button-flat"
+                    title={this.strings.get("stub.archive.tooltip")}
+                    onClick={this.archiveToolbar}>
+              <svg className="icon"
+                   viewBox="0 0 24 24"
+                   xmlns="http://www.w3.org/2000/svg"
+                   xmlnsXlink="http://www.w3.org/1999/xlink">
+                <use xlinkHref="chrome://conversations/skin/material-icons.svg#archive"></use>
+              </svg>
+            </button>
+            {this.props.canJunk &&
+              <button className="button-flat junk-button"
+                      title={this.strings.get("stub.junk.tooltip")}
+                      onClick={this.junkConversation}>
+                <svg className="icon"
+                     viewBox="0 0 24 24"
+                     xmlns="http://www.w3.org/2000/svg"
+                     xmlnsXlink="http://www.w3.org/1999/xlink">
+                  <use xlinkHref="chrome://conversations/skin/material-icons.svg#whatshot"></use>
+                </svg>
+              </button>
+            }
+            <button className="button-flat"
+                    title={this.strings.get("stub.expand.tooltip")}
+                    onClick={this.expandCollapse}>
+              <svg className={`icon expand ${this.props.expanded ? "collapse" : ""}`}
+                   viewBox="0 0 24 24"
+                   xmlns="http://www.w3.org/2000/svg"
+                   xmlnsXlink="http://www.w3.org/1999/xlink">
+                <use className="expand-more"
+                     xlinkHref="chrome://conversations/skin/material-icons.svg#expand_more"></use>
+                <use className="expand-less"
+                     xlinkHref="chrome://conversations/skin/material-icons.svg#expand_less"></use>
+              </svg>
+            </button>
+            <button className="button-flat"
+                    title={this.strings.get("stub.read.tooltip")}
+                    onClick={this.toggleRead}>
+              <svg className={`icon read ${this.props.read ? "" : "unread"}`}
+                   viewBox="0 0 24 24"
+                   xmlns="http://www.w3.org/2000/svg"
+                   xmlnsXlink="http://www.w3.org/1999/xlink">
+                <use xlinkHref="chrome://conversations/skin/material-icons.svg#new"></use>
+              </svg>
+            </button>
+            <button className="button-flat"
+                    title={this.strings.get("stub.detach.tooltip2")}
+                    onClick={this.detachTab}>
+              <svg className="icon"
+                   viewBox="0 0 24 24"
+                   xmlns="http://www.w3.org/2000/svg"
+                   xmlnsXlink="http://www.w3.org/1999/xlink">
+                <use xlinkHref="chrome://conversations/skin/material-icons.svg#open_in_new"></use>
+              </svg>
+            </button>
+          </div>
         </div>
       </div>
     );
