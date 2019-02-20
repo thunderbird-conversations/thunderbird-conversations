@@ -118,26 +118,15 @@ class _ConversationHeader extends React.PureComponent {
   }
 
   archiveToolbar(event) {
-    if (isInTab || Prefs.operate_on_conversations) {
-      msgHdrsArchive(Conversations.currentConversation.msgHdrs);
-      if (!isInTab) {
-        topMail3Pane(window).SetFocusThreadPane(event);
-      }
-    } else {
-      msgHdrsArchive(topMail3Pane(window).gFolderDisplay.selectedMessages);
-    }
+    this.props.dispatch({
+      type: "ARCHIVE_CONVERSATION",
+    });
   }
 
   delete(event) {
-    if (isInTab || Prefs.operate_on_conversations) {
-      msgHdrsDelete(Conversations.currentConversation.msgHdrs);
-      if (isInTab) {
-        closeTab();
-      }
-      topMail3Pane(window).SetFocusThreadPane(event);
-    } else {
-      msgHdrsDelete(topMail3Pane(window).gFolderDisplay.selectedMessages);
-    }
+    this.props.dispatch({
+      type: "DELETE_CONVERSATION",
+    });
   }
 
   /**
@@ -146,18 +135,9 @@ class _ConversationHeader extends React.PureComponent {
    * conversation.
    */
   detachTab(event) {
-    // let willExpand = $("textarea").parent().hasClass("expand") && startedEditing();
-    // // Pick _initialSet and not msgHdrs so as to enforce the invariant
-    // //  that the messages from _initialSet are in the current view.
-    // let urls =
-    //   Conversations.currentConversation._initialSet.map(x => msgHdrGetUri(x)).join(",");
-    // let queryString = "?urls="+encodeURIComponent(urls)
-    //   +"&willExpand="+Number(willExpand);
-    // // First, save the draft, and once it's saved, then move on to opening the
-    // // conversation in a new tab...
-    // onSave(function () {
-    //   openConversationInTabOrWindow(Prefs.kStubUrl+queryString);
-    // });
+    this.props.dispatch({
+      type: "DETACH_TAB",
+    });
   }
 
   expandCollapse(event) {

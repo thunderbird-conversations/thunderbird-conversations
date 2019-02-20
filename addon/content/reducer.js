@@ -34,7 +34,9 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/* global Redux, Conversations, markReadInView, topMail3Pane, getMail3Pane */
+/* global Redux, Conversations, markReadInView, topMail3Pane, getMail3Pane,
+          isInTab, msgHdrsArchive, Prefs, msgHdrsDelete, closeTab, startedEditing,
+          msgHdrGetUri, onSave, openConversationInTabOrWindow */
 
 /* exported conversationApp */
 
@@ -51,6 +53,46 @@ const initialSummary = {
 function summary(state = initialSummary, action) {
   console.log({action});
   switch (action.type) {
+    case "ARCHIVE_CONVERSATION": {
+      if (isInTab || Prefs.operate_on_conversations) {
+        msgHdrsArchive(Conversations.currentConversation.msgHdrs);
+        if (!isInTab) {
+          topMail3Pane(window).SetFocusThreadPane();
+        }
+      } else {
+        msgHdrsArchive(topMail3Pane(window).gFolderDisplay.selectedMessages);
+      }
+      return state;
+    }
+    case "DELETE_CONVERSATION": {
+      if (isInTab || Prefs.operate_on_conversations) {
+        msgHdrsDelete(Conversations.currentConversation.msgHdrs);
+        if (isInTab) {
+          closeTab();
+          return state;
+        }
+        topMail3Pane(window).SetFocusThreadPane();
+      } else {
+        msgHdrsDelete(topMail3Pane(window).gFolderDisplay.selectedMessages);
+      }
+      return state;
+    }
+    case "DETACH_TAB": {
+      const element = document.getElementsByClassName("textarea")[0].parent();
+      let willExpand = element.hasClass("expand") && startedEditing();
+      // Pick _initialSet and not msgHdrs so as to enforce the invariant
+      //  that the messages from _initialSet are in the current view.
+      let urls =
+        Conversations.currentConversation._initialSet.map(x => msgHdrGetUri(x)).join(",");
+      let queryString = "?urls=" + encodeURIComponent(urls) +
+        "&willExpand=" + Number(willExpand);
+      // First, save the draft, and once it's saved, then move on to opening the
+      // conversation in a new tab...
+      onSave(() => {
+        openConversationInTabOrWindow(Prefs.kStubUrl + queryString);
+      });
+      return state;
+    }
     case "TOGGLE_CONVERSATION_READ": {
       Conversations.currentConversation.read = action.read;
       if (!action.read) {
