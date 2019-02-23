@@ -5,11 +5,11 @@
 dist/**
 
 # Third party libraries.
-content/js/**
-content/gallery/js/jquery.lightbox-0.5.js
+addon/content/js/**
+addon/content/gallery/js/jquery.lightbox-0.5.js
 
 # Ignore sub-module directories
-modules/stdlib/**
+addon/modules/stdlib/**
 
 # Ignore old add-on.
 other/oembed-addon/**

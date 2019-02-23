@@ -31,7 +31,7 @@ Building
 3. Run `npm install`
 4. Run `npm run build`
 
-This will package an `.xpi` file of the latest codebase which can be installed via add-on manager in Thunderbird (hint: you can drag & drop it onto the add-on manager view).
+This will package a `converstions.xpi` file of the latest codebase which can be installed via add-on manager in Thunderbird (hint: you can drag & drop it onto the add-on manager view).
 
 Testing
 =======

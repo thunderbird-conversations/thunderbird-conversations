@@ -2,6 +2,7 @@
 NOT='.sh$|^.git|.jsx$|^tests|^.eslint|^.travis|^package.json$|^package-lock.json$'
 DIST=dist
 VENDOR_DIR=$DIST/content/vendor
+ADDON_DIR=addon
 
 rm -rf $DIST
 mkdir -p $VENDOR_DIR
@@ -13,32 +14,29 @@ cp node_modules/prop-types/prop-types.min.js $VENDOR_DIR/prop-types.js
 cp node_modules/pdfjs-dist/build/pdf.js $VENDOR_DIR
 cp node_modules/pdfjs-dist/build/pdf.worker.js $VENDOR_DIR
 
-git ls-files | egrep -v $NOT > files
+cp LICENSE README.md $DIST/
+
+pushd $ADDON_DIR
 
 for a in $(git ls-files | grep '.jsx$'); do
   echo $a
-  babel $a --out-dir $DIST/$(dirname $a)
-  echo ${a%.*}.js >> files
+  babel --config-file=../babel.config.js $a --out-dir ../$DIST/$(dirname $a)
 done
 
 for a in $(git ls-files | egrep -v $NOT | egrep -v '^modules/stdlib'); do
-  mkdir -p $(dirname "${DIST}/${a}")
-  cp $a $DIST/$a
+  mkdir -p $(dirname "../${DIST}/${a}")
+  cp $a ../$DIST/$a
 done
 
 for a in $(cd modules/stdlib && git ls-files | egrep -v $NOT); do
   if [ $a != "" ]; then
-    cp modules/stdlib/$a $DIST/modules/stdlib
-    echo modules/stdlib/$a >> files
+    cp modules/stdlib/$a ../$DIST/modules/stdlib
   fi
 done
 
-for a in $(cd $VENDOR_DIR && ls); do
-  echo content/vendor/$a >> files
-done
+popd
 
 rm -f conversations.xpi
 pushd dist
-zip ../conversations.xpi $(cat ../files)
+zip -r ../conversations.xpi *
 popd
-rm files
