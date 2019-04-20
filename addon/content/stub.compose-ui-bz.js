@@ -37,12 +37,8 @@
 /* exported bzSetup, BzComposeSession */
 /* import-globals-from stub.completion-ui.js */
 /* import-globals-from stub.compose-ui.js */
-/* dfsf global $, gComposeSession, strings, topMail3Pane, Conversations, Log, Colors,
-          getDefaultIdentity, msgUriToMsgHdr, getIdentityForEmail, pValue, pUndetermined */
 
 "use strict";
-
-ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 let gBugzillaAPIs = {
   "https://bugzilla.mozilla.org/":

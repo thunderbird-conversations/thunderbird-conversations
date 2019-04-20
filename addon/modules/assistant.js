@@ -8,8 +8,8 @@ const msgAccountManager = Cc["@mozilla.org/messenger/account-manager;1"]
 
 const kPrefInt = 0, kPrefBool = 1, kPrefChar = 42;
 
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource:///modules/MailUtils.js"); // for getFolderForURI
+const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm", null);
+const {MailUtils} = ChromeUtils.import("resource:///modules/MailUtils.js", null);
 const {fixIterator} = ChromeUtils.import("resource:///modules/iteratorUtils.jsm", {});
 const {VirtualFolderHelper} = ChromeUtils.import("resource:///modules/virtualFolderWrapper.js", {});
 

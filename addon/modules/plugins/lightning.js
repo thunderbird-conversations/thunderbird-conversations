@@ -68,7 +68,6 @@ function imipOptions(rootNode, msgWindow, message, itipItem, rc, actionFunc, fou
   // Set the right globals so that actionFunc works properly.
   w.ltnImipBar.itipItem = itipItem;
   w.ltnImipBar.actionFunc = function(listener, actionMethod) {
-
     // Short-circuit the listeners so that we can add our own routines for
     // adding the buttons, etc.
     let newListener = {

@@ -36,8 +36,8 @@
 
 var EXPORTED_SYMBOLS = [];
 
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource:///modules/StringBundle.js");
+const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm", null);
+const {StringBundle} = ChromeUtils.import("resource:///modules/StringBundle.js", null);
 const {Prefs} =
   ChromeUtils.import("resource://conversations/modules/prefs.js", {});
 const {registerHook} =

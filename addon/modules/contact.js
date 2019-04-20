@@ -38,7 +38,7 @@
 
 var EXPORTED_SYMBOLS = ["ContactManager", "Contacts", "defaultPhotoURI"];
 
-ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
+const {StringBundle} = ChromeUtils.import("resource:///modules/StringBundle.js", null);
 var getCardForEmail;
 try {
   getCardForEmail = ChromeUtils.import("resource:///modules/DisplayNameUtils.jsm", {}).DisplayNameUtils.getCardForEmail;

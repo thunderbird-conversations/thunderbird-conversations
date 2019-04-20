@@ -64,8 +64,8 @@ var EXPORTED_SYMBOLS = [];
  * That way, your conv-plugin.js won't export anything and AMO won't bother you.
  */
 
-ChromeUtils.import("resource://gre/modules/Services.jsm");
-ChromeUtils.import("resource:///modules/StringBundle.js");
+const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm", null);
+const {StringBundle} = ChromeUtils.import("resource:///modules/StringBundle.js", null);
 const {
   getMail3Pane, msgHdrGetUri,
 } = ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js", {});
@@ -830,7 +830,6 @@ let enigmailHook = {
           EnigmailMsgCompFields.setValue(newSecurityInfo, "originalSubject", aAddress.params.subject);
         }
         aStatus.securityInfo = newSecurityInfo;
-
       } else if (sendFlags & (ENCRYPT | SIGN)) {
         // inline-PGP
         let plainText = htmlToPlainText(aEditor.value);

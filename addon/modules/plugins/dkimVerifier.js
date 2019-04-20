@@ -46,8 +46,9 @@ const {setupLogging} =
 let Log = setupLogging("Conversations.Modules.DKIMVerifier");
 
 let hasDKIMVerifier = false;
+var AuthVerifier;
 try {
-  ChromeUtils.import("resource://dkim_verifier/AuthVerifier.jsm");
+  AuthVerifier = ChromeUtils.import("resource://dkim_verifier/AuthVerifier.jsm", null).AuthVerifier;
   if (AuthVerifier.version.match(/^[0-9]+/)[0] === "1") {
     hasDKIMVerifier = true;
     Log.debug("DKIM Verifier plugin for Thunderbird Conversations loaded!");

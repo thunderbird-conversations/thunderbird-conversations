@@ -61,6 +61,7 @@
   <script type="application/javascript"><![CDATA[
     let store;
     const {StringBundle} = ChromeUtils.import("resource:///modules/StringBundle.js", null);
+    const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm", null);
     var strings = new StringBundle("chrome://conversations/locale/message.properties");
 
     function conversationDispatch(...args) {

@@ -38,15 +38,15 @@
 
 var EXPORTED_SYMBOLS = ["Message", "MessageFromGloda", "MessageFromDbHdr", "ConversationKeybindings"];
 
-ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
-ChromeUtils.import("resource://gre/modules/PluralForm.jsm");
-ChromeUtils.import("resource://gre/modules/Services.jsm");
+const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm", null);
+const {PluralForm} = ChromeUtils.import("resource://gre/modules/PluralForm.jsm", null);
+const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm", null);
 const {
   dateAsInMessageList, entries, escapeHtml, getIdentityForEmail, isAccel,
   isOSX, isWindows, MixIn, parseMimeLine, sanitize, generateQI,
 } = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js", {});
 const {MailServices} = ChromeUtils.import("resource:///modules/mailServices.js", {}); // bug 629462
-ChromeUtils.import("resource:///modules/StringBundle.js");
+const {StringBundle} = ChromeUtils.import("resource:///modules/StringBundle.js", null);
 const {makeFriendlyDateAgo} = ChromeUtils.import("resource:///modules/templateUtils.js", {});
 const {GlodaUtils} = ChromeUtils.import("resource:///modules/gloda/utils.js", {});
 const {MsgHdrToMimeMessage} = ChromeUtils.import("resource:///modules/gloda/mimemsg.js", {});

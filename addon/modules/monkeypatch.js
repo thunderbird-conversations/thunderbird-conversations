@@ -39,7 +39,7 @@
 var EXPORTED_SYMBOLS = ["MonkeyPatch"];
 
 ChromeUtils.import("resource://gre/modules/AddonManager.jsm");
-ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
+const {StringBundle} = ChromeUtils.import("resource:///modules/StringBundle.js", null);
 
 const {
   entries, getIdentityForEmail, getIdentities, parseMimeLine,
@@ -63,7 +63,7 @@ const {
   Config,
 } = ChromeUtils.import("resource://conversations/modules/config.js", {});
 
-ChromeUtils.import("resource://gre/modules/Services.jsm");
+const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm", null);
 
 const kMultiMessageUrl = "chrome://messenger/content/multimessageview.xhtml";
 
@@ -447,9 +447,9 @@ MonkeyPatch.prototype = {
         window.ChangeSelectionWithoutContentLoad(event, event.target.parentNode, false);
 
         let msgHdrs = window.gFolderDisplay.selectedMessages;
-        if (!msgHdrs.some(msgHdrIsRss) && !msgHdrs.some(msgHdrIsNntp))
+        if (!msgHdrs.some(msgHdrIsRss) && !msgHdrs.some(msgHdrIsNntp)) {
           tabmail.openTab("chromeTab", { chromePage: mkConvUrl(msgHdrs) });
-        else {
+        } else {
           oldTreeOnMouseDown(event);
         }
       } else {

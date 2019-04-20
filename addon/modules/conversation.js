@@ -41,7 +41,7 @@ var EXPORTED_SYMBOLS = ["Conversation"];
 const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm", null);
 const {MailServices} = ChromeUtils.import("resource:///modules/mailServices.js", null);
 
-ChromeUtils.import("resource:///modules/StringBundle.js");
+const {StringBundle} = ChromeUtils.import("resource:///modules/StringBundle.js", null);
 const {Gloda} = ChromeUtils.import("resource:///modules/gloda/gloda.js", {});
 const {Colors, dumpCallStack, setupLogging} =
   ChromeUtils.import("resource://conversations/modules/log.js", {});
@@ -496,7 +496,6 @@ Conversation.prototype = {
         dumpCallStack(e);
       }
     }, 0);
-
   },
 
   onItemsModified: function _Conversation_onItemsModified(aItems) {

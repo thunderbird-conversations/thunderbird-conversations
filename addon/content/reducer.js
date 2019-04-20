@@ -52,7 +52,6 @@ const initialSummary = {
 };
 
 function summary(state = initialSummary, action) {
-  console.log({action});
   switch (action.type) {
     case "ARCHIVE_CONVERSATION": {
       if (isInTab || Prefs.operate_on_conversations) {

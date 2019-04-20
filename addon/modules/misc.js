@@ -41,7 +41,7 @@ var EXPORTED_SYMBOLS = [
 ];
 
 
-ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
+const {StringBundle} = ChromeUtils.import("resource:///modules/StringBundle.js", null);
 const { GlodaMsgIndexer } = ChromeUtils.import("resource:///modules/gloda/index_msg.js", {});
 const {getMail3Pane} = ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js", {});
 const {Prefs} = ChromeUtils.import("resource://conversations/modules/prefs.js", {});

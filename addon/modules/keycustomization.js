@@ -38,10 +38,10 @@
 
 var EXPORTED_SYMBOLS = ["CustomizeKeys"];
 
-ChromeUtils.import("resource://gre/modules/Services.jsm");
+const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm", null);
 const {entries, isOSX} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js", {});
 const {ConversationKeybindings} = ChromeUtils.import("resource://conversations/modules/message.js", {});
-ChromeUtils.import("resource:///modules/StringBundle.js"); // for StringBundle
+const {StringBundle} = ChromeUtils.import("resource:///modules/StringBundle.js", null);
 let strings = new StringBundle("chrome://conversations/locale/keycustomization.properties");
 
 // Binding groups will be an array containing

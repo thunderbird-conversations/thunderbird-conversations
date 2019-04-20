@@ -160,6 +160,7 @@ function convertForwardedToBlockquote(aDoc) {
         child.parentNode.insertBefore(tn2, child);
         child.remove();
         encloseInBlockquote(aDoc, tn2);
+        // eslint-disable-next-line no-throw-literal
         throw { found: true };
       } else if (m && m.length) {
         // We only move on if we found the matching text in the parent's text

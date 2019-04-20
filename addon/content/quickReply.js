@@ -100,7 +100,6 @@ function hideQuickReply() {
 }
 
 function registerQuickReplyEventListeners() {
-
   $("ul.inputs li.expand").click(function(event) {
     if ($(this).hasClass("selected"))
       return;

@@ -41,13 +41,12 @@
 // From stub.compose-ui-bz.js
 /* global bzSetup, BzComposeSession */
 // Via stub.xhtml
-/* global closeTab, Prefs, tmpl */
+/* global closeTab, Prefs, tmpl, Services */
 
 /* import-globals-from stub.completion-ui.js */
 
 "use strict";
 
-ChromeUtils.import("resource://gre/modules/Services.jsm");
 const {MailServices} = ChromeUtils.import("resource:///modules/mailServices.js", {});
 
 const {
@@ -64,7 +63,7 @@ const {fixIterator} = ChromeUtils.import("resource:///modules/iteratorUtils.jsm"
 
 Log = setupLogging("Conversations.Stub.Compose");
 
-ChromeUtils.import("resource://conversations/modules/stdlib/SimpleStorage.js");
+const {SimpleStorage} = ChromeUtils.import("resource://conversations/modules/stdlib/SimpleStorage.js", {});
 
 const SIMPLE_STORAGE_TABLE_NAME = "conversations";
 
@@ -1008,7 +1007,6 @@ function quickReplyDrop(event) {
   let data = attachmentDataFromDragData(event);
   if (data)
     gComposeSession.attachmentList.addWithData(data);
-
 }
 
 // ----- Helpers

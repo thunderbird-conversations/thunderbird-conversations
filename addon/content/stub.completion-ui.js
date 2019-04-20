@@ -73,8 +73,9 @@ ContactIdentityCompleter.prototype = {
     let matches;
     if (this.suffixTree) {
       matches = this.suffixTree.findMatches(aString.toLowerCase());
-    } else
+    } else {
       matches = [];
+    }
 
     // let's filter out duplicates due to identity/contact double-hits by
     //  establishing a map based on the contact id for these guys.
