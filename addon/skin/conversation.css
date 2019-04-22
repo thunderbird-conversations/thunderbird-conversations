@@ -244,14 +244,6 @@ a img {
   line-height: 1.8;
 }
 
-.contact:not(.inAddressBook) .editContact {
-  display: none;
-}
-
-.contact.inAddressBook .addContact {
-  display: none;
-}
-
 .tooltipWrapper {
   position: relative;
 }
@@ -271,12 +263,37 @@ a img {
   border: 1px solid ThreeDShadow;
   box-shadow: 0 0 8px rgba(0,0,0,0.25);
   z-index: 1000;
+}
+
+.tooltip[fadein=true] {
+  animation: fadein 400ms ease-out;
+}
+
+@keyframes fadein {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+.tooltip[fadein=false] {
+  animation: fadeout 400ms ease-in;
+}
+
+@keyframes fadeout {
+  from { opacity: 1; }
+  to { opacity: 0; }
+}
+
+.tooltip-menu {
   display: none;
 }
 
 .contactTooltipWrapper .tooltip {
   /* override generic tooltip, so to look closer to contact name */
   left: 0;
+}
+
+.createFilter {
+  height: 1.86em;
 }
 
 .contactExtra {
@@ -445,13 +462,6 @@ a img {
 
 .moreExpander {
   float: right;
-}
-.moreExpander.is-open .moreExpander-open,
-.moreExpander-close {
-  display: none;
-}
-.moreExpander.is-open .moreExpander-close {
-  display: initial;
 }
 
 .message:not(.with-details) .show-with-details {

@@ -36,7 +36,9 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["ContactManager", "Contacts", "defaultPhotoURI"];
+var EXPORTED_SYMBOLS = [
+  "ContactManager", "Contacts", "defaultPhotoURI", "ContactHelpers",
+];
 
 const {StringBundle} = ChromeUtils.import("resource:///modules/StringBundle.js", null);
 var getCardForEmail;
@@ -46,20 +48,15 @@ try {
   // Handle Thunderbird 60 compatibility.
   getCardForEmail = ChromeUtils.import("resource:///modules/displayNameUtils.js", {}).GetCardForEmail;
 }
-const {MailServices} = ChromeUtils.import("resource:///modules/MailServices.jsm", {});
 const {GlodaUtils} = ChromeUtils.import("resource:///modules/gloda/utils.js", {});
 const {Gloda} = ChromeUtils.import("resource:///modules/gloda/gloda.js", {});
 
-const {composeMessageTo} = ChromeUtils.import("resource://conversations/modules/stdlib/compose.js", {});
 const {getIdentities, getIdentityForEmail, MixIn, sanitize } =
   ChromeUtils.import("resource://conversations/modules/stdlib/misc.js", {});
 // ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
 const {setupLogging} = ChromeUtils.import("resource://conversations/modules/log.js", {});
 const {Prefs} = ChromeUtils.import("resource://conversations/modules/prefs.js", {});
-const {EventHelperMixIn, topMail3Pane} = ChromeUtils.import("resource://conversations/modules/misc.js", {});
-
-const clipboardService = Cc["@mozilla.org/widget/clipboardhelper;1"]
-                         .getService(Ci.nsIClipboardHelper);
+const {EventHelperMixIn} = ChromeUtils.import("resource://conversations/modules/misc.js", {});
 
 var Contacts = {
   kFrom: 0,
@@ -121,6 +118,72 @@ function getInitials(name) {
   return initials.toUpperCase();
 }
 
+var ContactHelpers = {
+  addContact(win, name, email) {
+    let cardAndBook = getCardForEmail(email);
+    let args = {
+      primaryEmail: email,
+      displayName: name,
+      allowRemoteContent: true,
+      // This is too messed up, there's no easy way to interact with this
+      //  dialog, just forget about it. RegisterSaveListener seems to be
+      //  uncallable... and okCallback just short-circuit the whole logic
+    };
+    win.openDialog("chrome://messenger/content/addressbook/abNewCardDialog.xul",
+                   "", "chrome,resizable=no,titlebar,modal,centerscreen", args);
+    // This is an approximation, but it should be good enough
+    let newCardAndBook = getCardForEmail(email);
+    if (newCardAndBook.card) {
+      cardAndBook.card = newCardAndBook.card;
+      cardAndBook.book = newCardAndBook.book;
+    }
+    return cardAndBook;
+  },
+
+  editContact(win, name, email) {
+    let cardAndBook = getCardForEmail(email);
+    let args = {
+      abURI: cardAndBook.book.URI,
+      card: cardAndBook.card,
+    };
+    win.openDialog(
+      "chrome://messenger/content/addressbook/abEditCardDialog.xul",
+      "", "chrome,modal,resizable=no,centerscreen", args
+    );
+  },
+
+  showMessagesInvolving(win, name, email) {
+    let q1 = Gloda.newQuery(Gloda.NOUN_IDENTITY);
+    q1.kind("email");
+    q1.value(email);
+    q1.getCollection({
+      onItemsAdded: function _onItemsAdded(aItems, aCollection) { },
+      onItemsModified: function _onItemsModified(aItems, aCollection) { },
+      onItemsRemoved: function _onItemsRemoved(aItems, aCollection) { },
+      onQueryCompleted: function _onQueryCompleted(aCollection) {
+        if (!aCollection.items.length)
+          return;
+
+        let q2 = Gloda.newQuery(Gloda.NOUN_MESSAGE);
+        q2.involves.apply(q2, aCollection.items);
+        q2.getCollection({
+          onItemsAdded: function _onItemsAdded(aItems, aCollection) { },
+          onItemsModified: function _onItemsModified(aItems, aCollection) { },
+          onItemsRemoved: function _onItemsRemoved(aItems, aCollection) { },
+          onQueryCompleted: function _onQueryCompleted(aCollection) {
+            let tabmail = win.document.getElementById("tabmail");
+            tabmail.openTab("glodaList", {
+              collection: aCollection,
+              title: strings.get("involvingTabTitle").replace("#1", name),
+              background: false,
+            });
+          },
+        });
+      },
+    });
+  },
+};
+
 function ContactManager() {
   this._cache = {};
   this._colorCache = {};
@@ -128,7 +191,7 @@ function ContactManager() {
 }
 
 ContactManager.prototype = {
-  getContactFromNameAndEmail: function _ContactManager_getContactFromEmail(name, email, position) {
+  getContactFromNameAndEmail(name, email, position) {
     // [name] and [email] are from the message header
     let self = this;
     email = (email + "").toLowerCase();
@@ -171,7 +234,7 @@ let ContactMixIn = {
    * different. This allows one to share a common color for a same card in the
    * address book.
    */
-  toTmplData: function _ContactMixIn_toInlineHtml(aUseColor, aPosition, aEmail, aIsDetail) {
+  toTmplData(aUseColor, aPosition, aEmail, aIsDetail) {
     let [name, extra] = this.getName(aPosition, aIsDetail);
     let displayEmail = (name != aEmail ? aEmail : "");
     let hasCard = (this._card != null);
@@ -186,7 +249,7 @@ let ContactMixIn = {
       email: sanitize(aEmail),
       avatar: sanitize(this.avatar),
       avatarIsDefault: this.avatar.substr(0, 6) === "chrome",
-      profiles: this._profiles,
+      hasCard,
       extra,
       // Parameter aUseColor is optional, and undefined means true
       colorStyle: ((aUseColor === false)
@@ -198,128 +261,7 @@ let ContactMixIn = {
     return data;
   },
 
-  onAddedToDom: function _ContactMixIn_onAddedToDom(aDomNode) {
-    let self = this;
-    this._domNode = aDomNode; // makes the line below possible
-    let mainWindow = topMail3Pane(this);
-
-    aDomNode.parentNode.getElementsByClassName("moreExpander")[0].addEventListener("click", function(event) {
-      if (aDomNode.parentNode.getElementsByClassName("hiddenFooter")[0].style.display == "none") {
-        aDomNode.parentNode.getElementsByClassName("hiddenFooter")[0].style.display = "block";
-        event.originalTarget.classList.add("is-open");
-      } else {
-        aDomNode.parentNode.getElementsByClassName("hiddenFooter")[0].style.display = "none";
-        event.originalTarget.classList.remove("is-open");
-      }
-      event.stopPropagation();
-    });
-
-    /* Register the "send message" link */
-    this.register(".sendEmail", function(event) {
-      let dest = (this._name == this._email || !this._name)
-        ? this._email
-        : MailServices.headerParser.makeMimeAddress(this._name, this._email);
-      dump(dest + "\n\n");
-      composeMessageTo(dest, mainWindow.gFolderDisplay.displayedFolder);
-      event.stopPropagation();
-    }.bind(this));
-
-    // XXX We already called getCardForEmail if we're runnning without contacts
-    //  installed...
-    // Please note that cardAndBook is never overridden, so that the closure for
-    //  the editContact event listener actually sees the updated fields of the
-    //  object once the addContact event listener has updated them.
-    let cardAndBook = getCardForEmail(self._email);
-    if (cardAndBook.card)
-      aDomNode.parentNode.classList.add("inAddressBook");
-    this.register(".addContact", function(event) {
-      let args = {
-        primaryEmail: self._email,
-        displayName: self._name,
-        allowRemoteContent: true,
-        // This is too messed up, there's no easy way to interact with this
-        //  dialog, just forget about it. RegisterSaveListener seems to be
-        //  uncallable... and okCallback just short-circuit the whole logic
-      };
-      mainWindow.openDialog(
-        "chrome://messenger/content/addressbook/abNewCardDialog.xul",
-        "", "chrome,resizable=no,titlebar,modal,centerscreen", args
-      );
-      // This is an approximation, but it should be good enough
-      let newCardAndBook = getCardForEmail(self._email);
-      if (newCardAndBook.card) {
-        cardAndBook.card = newCardAndBook.card;
-        cardAndBook.book = newCardAndBook.book;
-        aDomNode.parentNode.classList.add("inAddressBook");
-      }
-    });
-    this.register(".editContact", function(event) {
-      let args = {
-        abURI: cardAndBook.book.URI,
-        card: cardAndBook.card,
-      };
-      mainWindow.openDialog(
-        "chrome://messenger/content/addressbook/abEditCardDialog.xul",
-        "", "chrome,modal,resizable=no,centerscreen", args
-      );
-    });
-    this.register(".copyEmail", function(event) {
-      clipboardService.copyString(self._email);
-    });
-    this.register(".showInvolving", function(event) {
-      let q1 = Gloda.newQuery(Gloda.NOUN_IDENTITY);
-      q1.kind("email");
-      q1.value(self._email);
-      q1.getCollection({
-        onItemsAdded: function _onItemsAdded(aItems, aCollection) { },
-        onItemsModified: function _onItemsModified(aItems, aCollection) { },
-        onItemsRemoved: function _onItemsRemoved(aItems, aCollection) { },
-        onQueryCompleted: function _onQueryCompleted(aCollection) {
-          if (!aCollection.items.length)
-            return;
-
-          let q2 = Gloda.newQuery(Gloda.NOUN_MESSAGE);
-          q2.involves.apply(q2, aCollection.items);
-          q2.getCollection({
-            onItemsAdded: function _onItemsAdded(aItems, aCollection) { },
-            onItemsModified: function _onItemsModified(aItems, aCollection) { },
-            onItemsRemoved: function _onItemsRemoved(aItems, aCollection) { },
-            onQueryCompleted: function _onQueryCompleted(aCollection) {
-              let tabmail = mainWindow.document.getElementById("tabmail");
-              tabmail.openTab("glodaList", {
-                collection: aCollection,
-                title: strings.get("involvingTabTitle").replace("#1", self._name),
-                background: false,
-              });
-            },
-          });
-        },
-      });
-    });
-    this.register(".createFilter", function(event) {
-      mainWindow.MsgFilters(self._email, null);
-    });
-
-    /* The links to various profiles */
-    for (let a1 of aDomNode.getElementsByTagName("a")) {
-      let a = a1;
-      a.addEventListener("click",
-        a.classList.contains("profile-link")
-        ? (event) => {
-            mainWindow.document.getElementById("tabmail").openTab("contentTab", {
-              contentPage: a.href,
-              clickHandler: "specialTabs.defaultClickHandler(event);",
-            });
-            event.preventDefault();
-          }
-        : (event) => {
-            mainWindow.specialTabs.siteClickHandler(event, /^mailto:/);
-            event.preventDefault();
-          });
-    }
-  },
-
-  getTooltipName: function _ContactMixIn_getName(aPosition) {
+  getTooltipName(aPosition) {
     Log.assert(aPosition === Contacts.kFrom || aPosition === Contacts.kTo,
       "Someone did not set the 'position' properly");
     if (getIdentityForEmail(this._email)) {
@@ -329,7 +271,7 @@ let ContactMixIn = {
     return this._name || this._email;
   },
 
-  getName: function _ContactMixIn_getName(aPosition, aIsDetail) {
+  getName(aPosition, aIsDetail) {
     Log.assert(aPosition === Contacts.kFrom || aPosition === Contacts.kTo,
       "Someone did not set the 'position' properly");
     if (getIdentityForEmail(this._email) && !aIsDetail) {
@@ -343,7 +285,7 @@ let ContactMixIn = {
     return [this._name || this._email, ""];
   },
 
-  enrichWithName: function _ContactMixIn_enrichWithName(aName) {
+  enrichWithName(aName) {
     if (this._name == this._email || !this._name)
       this._name = aName;
   },
@@ -375,7 +317,6 @@ function ContactFromAB(manager, name, email, /* unused */ position, color) {
   this._manager = manager;
   this._name = name; // Initially, the displayed name. Might be enhanced later.
   this._email = email; // The original email. Use to pick a gravatar.
-  this._profiles = {};
   this._card = null;
   this._useCardName = false;
 
@@ -383,7 +324,7 @@ function ContactFromAB(manager, name, email, /* unused */ position, color) {
 }
 
 ContactFromAB.prototype = {
-  fetch: function _ContactFromAB_fetch() {
+  fetch() {
     let card = GlodaUtils.getCardForEmail(this._email);
     this._card = card;
     if (card) {

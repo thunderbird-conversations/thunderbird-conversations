@@ -794,12 +794,6 @@ Message.prototype = {
     let self = this;
     let mainWindow = topMail3Pane(this);
 
-    // Forward the calls to each contact.
-    let people = this._domNode.getElementsByClassName("tooltip");
-    this._contacts.forEach(function([x ], i) {
-      x.onAddedToDom(people[i]);
-    });
-
     // Let the UI do its stuff with the tooltips
     this._conversation._htmlPane.enableTooltips(this);
 
@@ -1310,19 +1304,7 @@ Message.prototype = {
         // Output the template
         this._domNode.getElementsByClassName("detailsPlaceholder")[0].appendChild(w.tmpl("#detailsTemplate", data));
         // Activate tooltip event listeners
-        w.enableTooltips({
-          _domNode:
-            this._domNode.getElementsByClassName("detailsPlaceholder")[0],
-        });
-        // Notify contact nodes they've been added to the DOM. This is all very
-        // higher-order...
-        for (let [contactObjects, cssClass] of
-            [[contactsFrom, ".fromLine"], [contactsTo, ".toLine"],
-             [contactsCc, ".ccLine"], [contactsBcc, ".bccLine"]]) {
-          Array.prototype.forEach.call(this._domNode.querySelectorAll(cssClass + " .tooltip"), function(node, i) {
-            contactObjects[i][0].onAddedToDom(node);
-          });
-        }
+        w.enableTooltips(this);
       } catch (e) {
         Log.error(e);
         dumpCallStack(e);

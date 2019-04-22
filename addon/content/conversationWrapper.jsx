@@ -42,6 +42,7 @@ class ConversationWrapper extends React.PureComponent {
   render() {
     return (
       <div>
+        <div className="hidden" id="tooltipContainer"></div>
         <ConversationHeader/>
         <MessageList/>
         <ConversationFooter/>

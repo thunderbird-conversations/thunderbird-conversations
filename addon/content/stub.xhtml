@@ -41,6 +41,8 @@
   <script type="text/javascript"
     src="chrome://conversations/content/conversationFooter.js"></script>
   <script type="text/javascript"
+    src="chrome://conversations/content/contactDetail.js"></script>
+  <script type="text/javascript"
     src="chrome://conversations/content/messageAttachments.js"></script>
   <script type="text/javascript"
     src="chrome://conversations/content/messageList.js"></script>
@@ -62,7 +64,7 @@
     /* import-globals-from quickReply.js */
     /* import-globals-from reducer.js */
     /* global $, jQuery, wrapHandlebars, registerQuickReply, newComposeSessionByDraftIf
-              Redux, ReactDOM, React, ReactRedux, ConversationWrapper,
+              Redux, ReactDOM, React, ReactRedux, ConversationWrapper, ContactDetail,
               gComposeSession:true, tmpl, createComposeSession, revealCompositionFields,
               editFields, asToken, setupAutocomplete, Gloda, Log:true,
               setupLogging, dumpCallStack */
@@ -192,80 +194,106 @@
     function enableTooltips(aMsg) {
       let $aMsgNode = $(aMsg._domNode);
 
-      let self = this;
+      $aMsgNode.find(".contactName").each(function() {
+        let $contact = $(this);
 
-      // enable tooltip for all contacts but recipients
-      $aMsgNode.find(":not(.recipient-tooltips) .tooltip").each(function() {
-        // "contact" is a hypothetical "contact" link that, when
-        // hovered/clicked, starts the interaction with the tooltip
-        let $tooltip = $(this);
-
-        if ($tooltip.hasClass("tooltip-menu"))
+        if ($contact.hasClass("tooltip-menu")) {
           return;
+        }
 
-        let $contact = $tooltip.prev();
-        if ($contact.hasClass("contactBr"))
-          $contact = $contact.prev();
-
-        self.setTooltipEventHandlers(aMsg, $contact, $tooltip, false);
-      });
-
-      let $contactLabels = $aMsgNode.find(".to .contactName");
-
-      // enable tooltip for recipient contacts
-      $aMsgNode.find(".recipient-tooltips .tooltip").each(function(index) {
-        // "contact" is a hypothetical "contact" link that, when
-        // hovered/clicked, starts the interaction with the tooltip
-        let $tooltip = $(this);
-
-        let $contact = index > 0
-          ? $contactLabels.eq(index - 1)
-          : $aMsgNode.find(".author .contactName");
-
-        self.setTooltipEventHandlers(aMsg, $contact, $tooltip, true);
+        setTooltipEventHandlers(aMsg, $contact, false);
       });
     }
 
-    // Set events on a contact and its respective tooltip so to show/hide
-    //  the tooltip over the contact when mouse enters/leaves their areas.
-    /* exported setTooltipEventHandlers */
-    function setTooltipEventHandlers(aMsg, $contact, $tooltip, isRecipient) {
+    // Set events on a contact to show/hide the tooltip over the contact when
+    // mouse enters/leaves their areas.
+    function setTooltipEventHandlers(aMsg, $contact, isRecipient) {
       let timeout;
 
-      $contact.hover(function() {
-        if (aMsg.collapsed)
-          return;
-
-        clearTimeout(timeout);
-
-        timeout = setTimeout(function() {
-          if (isRecipient) {
-            // move tooltip close to its respective recipient contact
-            let contactWrapperPosition = $contact.parents(".tooltipWrapper").position();
-            let $tooltipWrapper = $tooltip.parents(".contactTooltipWrapper");
-            $tooltipWrapper.css(contactWrapperPosition);
+      function findDiv(msgId, contactId) {
+        const tooltipContainer = document.getElementById("tooltipContainer");
+        for (let child of tooltipContainer.children) {
+          if (child.getAttribute("MsgId") == msgId) {
+            return child;
           }
+        }
+        return null;
+      }
 
-          $tooltip.fadeIn();
+      let contactPos = $contact.parent().position();
+
+      function renderContact(div, fadeIn) {
+        ReactDOM.render(React.createElement(ReactRedux.Provider, {store},
+          React.createElement(ContactDetail, {
+            left: contactPos.left,
+            top: contactPos.top + $contact.parent().height() * 2,
+            name: $contact.attr("name"),
+            email: $contact.attr("email"),
+            realEmail: $contact.attr("realemail"),
+            avatar: $contact.attr("avatar"),
+            hasCard: $contact.attr("hascard"),
+            fadeIn,
+          })), div);
+      }
+
+      let fadeTimeout;
+
+      function removeContactDisplay(div) {
+        renderContact(div, "false");
+        fadeTimeout = setTimeout(function() {
+          ReactDOM.unmountComponentAtNode(div);
+          div.remove();
         }, kPopupTimeout);
-      }, function() {
+      }
+
+      $contact.hover(function() {
+        if (aMsg.collapsed) {
+          return;
+        }
+
         clearTimeout(timeout);
+        clearTimeout(fadeTimeout);
 
         timeout = setTimeout(function() {
-          $tooltip.fadeOut();
+          if (findDiv(aMsg._msgHdr.messageId + $contact.attr("realemail"))) {
+            // Already displayed, just ignore.
+            return;
+          }
+          const tooltipContainer = document.getElementById("tooltipContainer");
+          let div = document.createElement("div");
+          div.setAttribute("MsgId", aMsg._msgHdr.messageId + $contact.attr("realemail"));
+          tooltipContainer.appendChild(div);
+
+          renderContact(div, "true");
+
+          tooltipContainer.addEventListener("mouseover", () => {
+            clearTimeout(timeout);
+          });
+          tooltipContainer.addEventListener("mouseout", () => {
+            const tooltipDiv = findDiv(aMsg._msgHdr.messageId + $contact.attr("realemail"));
+            if (!tooltipDiv) {
+              // Not displayed, just ignore.
+              return;
+            }
+            clearTimeout(timeout);
+            timeout = setTimeout(function() {
+              removeContactDisplay(tooltipDiv);
+            }, kPopupTimeout);
+          });
         }, kPopupTimeout);
-      });
-
-      $tooltip.hover(function() {
-        clearTimeout(timeout);
       }, function() {
-        if ($tooltip.is(":visible")) {
-          clearTimeout(timeout);
+        clearTimeout(timeout);
+        clearTimeout(fadeTimeout);
 
-          timeout = setTimeout(function() {
-            $tooltip.fadeOut();
-          }, kPopupTimeout);
+        const tooltipDiv = findDiv(aMsg._msgHdr.messageId + $contact.attr("realemail"));
+
+        if (!tooltipDiv) {
+          return;
         }
+
+        timeout = setTimeout(function() {
+          removeContactDisplay(tooltipDiv);
+        }, kPopupTimeout);
       });
     }
 
@@ -720,6 +748,7 @@
   <script id="messageTemplate" type="text/x-handlebars-template"><![CDATA[
     <li class="message collapsed {{extraClasses}}">
       <div class="messageHeader hbox">
+        <div class="tooltipInsertionBox"></div>
         <div class="shrink-box">
           <div class="star"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#star"></use></svg></div>
           {{#if dataContactFrom.avatarIsDefault}}
@@ -729,7 +758,7 @@
           {{/if}}
           <span class="author">{{tmpl "contactLabel" dataContactFrom}}</span>
           <span class="to hide-with-details"> {{str "to"}} {{tmpl "contactLabel" dataContactsTo}}</span>
-          <span class="recipient-tooltips">{{tmpl "contactTooltip" dataContactFrom}}{{tmpl "contactTooltip" dataContactsTo}}</span>
+          <span class="recipient-tooltips"></span>
           <span class="bzTo"> {{str "at"}} {{bugzillaUrl}}</span>
           <span class="snippet"><ul class="tags regular-tags"></ul><ul
               class="tags special-tags"
@@ -1046,13 +1075,15 @@
   -->
   <!-- Generic contact template with tooltip -->
   <script id="contactTemplate" type="text/x-handlebars-template"><![CDATA[
-    {{tmpl "contactLabel" this}}{{tmpl "contactTooltip" this}}
+    {{tmpl "contactLabel" this}}
   ]]></script>
   <!-- Contact template specific to recipients, without tooltip -->
   <script id="contactLabelTemplate" type="text/x-handlebars-template"><![CDATA[<span
     >{{separator}}</span
     ><span class="tooltipWrapper contact"
-      ><span class="contactName"
+      ><span class="contactName" name="{{name}}" email="{{displayEmail}}"
+        realemail={{email}}
+        avatar="{{avatar}}" hascard="{{hasCard}}"
         >{{#if star}}&#x2605; {{/if}}{{trim name}}{{#if extra}}
         <label xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
           crop="center" class="contactExtra"

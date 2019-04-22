@@ -492,6 +492,7 @@ Conversation.prototype = {
         if (messages.length)
           self.appendMessages(messages);
       } catch (e) {
+        console.error(e);
         Log.error(e);
         dumpCallStack(e);
       }

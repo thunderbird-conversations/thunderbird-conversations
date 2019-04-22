@@ -37,11 +37,18 @@
 /* global Redux, Conversations, markReadInView, topMail3Pane, getMail3Pane,
           isInTab, msgHdrsArchive, Prefs, closeTab, startedEditing,
           msgHdrGetUri, onSave, openConversationInTabOrWindow,
-          printConversation */
+          printConversation, MailServices */
 
 /* exported conversationApp */
 
 "use strict";
+
+const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+XPCOMUtils.defineLazyModuleGetters(this, {
+  ContactHelpers: "resource://conversations/modules/contact.js",
+  msgHdrsDelete: "resource://conversations/modules/stdlib/msgHdrUtils.js",
+  composeMessageTo: "resource://conversations/modules/stdlib/compose.js",
+});
 
 const initialSummary = {
   loading: true,
@@ -53,6 +60,15 @@ const initialSummary = {
 
 function summary(state = initialSummary, action) {
   switch (action.type) {
+    case "ADD_CONTACT": {
+      ContactHelpers.addContact(topMail3Pane(window), action.name, action.email);
+      // TODO: In theory we should be updating the store so that the button can
+      // then be updated to indicate this is now in the address book. However,
+      // until we start getting the full conversation messages hooked up, this
+      // won't be easy. As this is only a small bit of hidden UI, we can punt on
+      // this for now.
+      return state;
+    }
     case "ARCHIVE_CONVERSATION": {
       if (isInTab || Prefs.operate_on_conversations) {
         msgHdrsArchive(Conversations.currentConversation.msgHdrs);
@@ -64,9 +80,15 @@ function summary(state = initialSummary, action) {
       }
       return state;
     }
+    case "COPY_EMAIL": {
+      navigator.clipboard.writeText(action.email);
+      return state;
+    }
+    case "CREATE_FILTER": {
+      topMail3Pane(window).MsgFilters(action.email, null);
+      return state;
+    }
     case "DELETE_CONVERSATION": {
-      const {msgHdrsDelete} = ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
-
       if (isInTab || Prefs.operate_on_conversations) {
         msgHdrsDelete(Conversations.currentConversation.msgHdrs);
         if (isInTab) {
@@ -93,6 +115,10 @@ function summary(state = initialSummary, action) {
       onSave(() => {
         openConversationInTabOrWindow(Prefs.kStubUrl + queryString);
       });
+      return state;
+    }
+    case "EDIT_CONTACT": {
+      ContactHelpers.editContact(topMail3Pane(window), action.name, action.email);
       return state;
     }
     case "FORWARD_CONVERSATION": {
@@ -127,6 +153,17 @@ function summary(state = initialSummary, action) {
     }
     case "PRINT_CONVERSATION": {
       printConversation();
+      return state;
+    }
+    case "SEND_EMAIL": {
+      let dest = (!action.name || action.name == action.email) ?
+        action.email :
+        MailServices.headerParser.makeMimeAddress(action.name, action.email);
+      composeMessageTo(dest, topMail3Pane(window).gFolderDisplay.displayedFolder);
+      return state;
+    }
+    case "SHOW_MESSAGES_INVOLVING": {
+      ContactHelpers.showMessagesInvolving(topMail3Pane(window), action.name, action.email);
       return state;
     }
     case "UPDATE_SUBJECT": {
