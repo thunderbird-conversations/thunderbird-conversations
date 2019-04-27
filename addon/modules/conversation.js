@@ -39,7 +39,7 @@
 var EXPORTED_SYMBOLS = ["Conversation"];
 
 const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm", null);
-const {MailServices} = ChromeUtils.import("resource:///modules/mailServices.js", null);
+const {MailServices} = ChromeUtils.import("resource:///modules/MailServices.jsm", null);
 
 const {StringBundle} = ChromeUtils.import("resource:///modules/StringBundle.js", null);
 const {Gloda} = ChromeUtils.import("resource:///modules/gloda/gloda.js", {});

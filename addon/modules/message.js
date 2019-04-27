@@ -45,7 +45,7 @@ const {
   dateAsInMessageList, entries, escapeHtml, getIdentityForEmail, isAccel,
   isOSX, isWindows, MixIn, parseMimeLine, sanitize, generateQI,
 } = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js", {});
-const {MailServices} = ChromeUtils.import("resource:///modules/mailServices.js", {}); // bug 629462
+const {MailServices} = ChromeUtils.import("resource:///modules/MailServices.jsm", {}); // bug 629462
 const {StringBundle} = ChromeUtils.import("resource:///modules/StringBundle.js", null);
 const {makeFriendlyDateAgo} = ChromeUtils.import("resource:///modules/templateUtils.js", {});
 const {GlodaUtils} = ChromeUtils.import("resource:///modules/gloda/utils.js", {});
@@ -53,6 +53,12 @@ const {MsgHdrToMimeMessage} = ChromeUtils.import("resource:///modules/gloda/mime
 const {mimeMsgToContentSnippetAndMeta} = ChromeUtils.import("resource:///modules/gloda/connotent.js", {});
 
 const {isLightningInstalled} = ChromeUtils.import("resource://conversations/modules/plugins/lightning.js", {});
+
+XPCOMUtils.defineLazyModuleGetters(this, {
+  isLegalIPAddress: "resource:///modules/hostnameUtils.jsm",
+  isLegalLocalIPAddress: "resource:///modules/hostnameUtils.jsm",
+});
+
 // It's not really nice to write into someone elses object but this is what the
 // Services object is for.  We prefix with the "m" to ensure we stay out of their
 // namespace.
@@ -2154,18 +2160,12 @@ let PostStreamingFixesMixIn = {
 
         let failsStaticTests = false;
         if (linkText != linkUrl) {
-          // Bug 80855
-          let isLegalIpAddress = gPhishingDetector.hostNameIsIPAddress || gPhishingDetector.isLegalIPAddress;
-          let isLegalLocalIpAddress = gPhishingDetector.isLocalIPAddress || gPhishingDetector.isLegalLocalIPAddress;
-          // Yes, the third parameter to misMatchedHostWithLinkText is actually
-          //  required, but it's some kind of an out value that's useless for
-          //  us, so just pass it {} so that it's happy...
-          let unobscuredHostNameValue = isLegalIpAddress.call(gPhishingDetector, hrefURL.host);
+          let unobscuredHostNameValue = isLegalIPAddress(hrefURL.host);
           failsStaticTests =
             unobscuredHostNameValue
-              && !isLegalLocalIpAddress.call(gPhishingDetector, unobscuredHostNameValue)
+              && !isLegalLocalIPAddress(unobscuredHostNameValue)
             || linkText
-              && gPhishingDetector.misMatchedHostWithLinkText(hrefURL, linkText, {});
+              && gPhishingDetector.misMatchedHostWithLinkText(hrefURL, linkText);
         }
 
         if (failsStaticTests) {

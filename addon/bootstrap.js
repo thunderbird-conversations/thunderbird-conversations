@@ -38,21 +38,17 @@
 
 "use strict";
 
-const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm", {});
-const {fixIterator} = ChromeUtils.import("resource:///modules/iteratorUtils.jsm", {});
+const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 let global = this;
 let Log;
 
 // from wjohnston (cleary for Fennec)
 let ResourceRegister = {
-  init(aFile, aName) {
+  init(aURI, aName) {
     let resource = Services.io.getProtocolHandler("resource")
       .QueryInterface(Ci.nsIResProtocolHandler);
-    let alias = Services.io.newFileURI(aFile);
-    if (!aFile.isDirectory()) {
-      alias = Services.io.newURI("jar:" + alias.spec + "!/");
-    }
+    let alias = Services.io.newURI(aURI);
     resource.setSubstitution(aName, alias);
   },
 
@@ -102,6 +98,7 @@ function monkeyPatchWindow(window, aLater) {
       window.Conversations.monkeyPatch = monkeyPatch;
 
       window.Conversations.quickCompose = function() {
+        const {Prefs} = ChromeUtils.import("resource://conversations/modules/prefs.js");
         if (Prefs.compose_in_tab)
           window.openTab("chromeTab", { chromePage: "chrome://conversations/content/stub.xhtml?quickCompose=1" });
         else
@@ -116,8 +113,7 @@ function monkeyPatchWindow(window, aLater) {
       ChromeUtils.import("resource://conversations/modules/plugins/dkimVerifier.js");
       /* eslint-enable no-unused-vars */
     } catch (e) {
-      Log.error(e);
-      dumpCallStack(e);
+      Cu.reportError(e);
     }
   };
 
@@ -130,7 +126,7 @@ function monkeyPatchWindow(window, aLater) {
 }
 
 function monkeyPatchAllWindows() {
-  for (let w of fixIterator(Services.wm.getEnumerator("mail:3pane")))
+  for (let w of Services.wm.getEnumerator("mail:3pane"))
     monkeyPatchWindow(w, false);
 }
 
@@ -168,13 +164,9 @@ let windowObserver = {
 };
 
 function startup(aData, aReason) {
-  ResourceRegister.init(aData.installPath, "conversations");
-  /* import-globals-from modules/log.js */
-  ChromeUtils.import("resource://conversations/modules/log.js", global);
-  /* import-globals-from modules/prefs.js */
-  ChromeUtils.import("resource://conversations/modules/prefs.js", global);
-  /* import-globals-from modules/config.js */
-  ChromeUtils.import("resource://conversations/modules/config.js", global);
+  ResourceRegister.init(aData.resourceURI.spec, "conversations");
+  const {setupLogging, dumpCallStack} = ChromeUtils.import("resource://conversations/modules/log.js");
+  const {Config} = ChromeUtils.import("resource://conversations/modules/config.js");
 
   Log = setupLogging("Conversations.MonkeyPatch");
   Log.debug("startup, aReason=", aReason);
@@ -227,13 +219,14 @@ function startup(aData, aReason) {
       },
     }, "addon-options-hidden");
   } catch (e) {
-    Log.error(e);
+    Cu.reportError(e);
     dumpCallStack(e);
   }
 }
 
 function shutdown(aData, aReason) {
-  let {SimpleStorage} = ChromeUtils.import("resource://conversations/modules/stdlib/SimpleStorage.js", {});
+  const {SimpleStorage} = ChromeUtils.import("resource://conversations/modules/stdlib/SimpleStorage.js");
+  const {Config} = ChromeUtils.import("resource://conversations/modules/config.js");
   SimpleStorage.close().catch(Cu.reportError);
 
   // No need to do extra work here
@@ -245,7 +238,7 @@ function shutdown(aData, aReason) {
 
   // Reasons to be here can be DISABLE or UNINSTALL
   ResourceRegister.uninit("conversations");
-  for (let w of fixIterator(Services.wm.getEnumerator("mail:3pane")))
+  for (let w of Services.wm.getEnumerator("mail:3pane"))
     w.Conversations.monkeyPatch.undo(aReason);
 }
 

@@ -46,7 +46,7 @@ try {
   // Handle Thunderbird 60 compatibility.
   getCardForEmail = ChromeUtils.import("resource:///modules/displayNameUtils.js", {}).GetCardForEmail;
 }
-const {MailServices} = ChromeUtils.import("resource:///modules/mailServices.js", {});
+const {MailServices} = ChromeUtils.import("resource:///modules/MailServices.jsm", {});
 const {GlodaUtils} = ChromeUtils.import("resource:///modules/gloda/utils.js", {});
 const {Gloda} = ChromeUtils.import("resource:///modules/gloda/gloda.js", {});
 

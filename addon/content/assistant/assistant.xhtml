@@ -9,10 +9,10 @@
   <script type="application/javascript">
     <![CDATA[
 
-    ChromeUtils.import("resource://conversations/modules/config.js");
-    ChromeUtils.import("resource://conversations/modules/prefs.js");
-    ChromeUtils.import("resource://conversations/modules/log.js");
-    ChromeUtils.import("resource://conversations/modules/assistant.js");
+    const {Config} = ChromeUtils.import("resource://conversations/modules/config.js");
+    const {Prefs} = ChromeUtils.import("resource://conversations/modules/prefs.js");
+    const {setupLogging} = ChromeUtils.import("resource://conversations/modules/log.js");
+    const {Customizations} = ChromeUtils.import("resource://conversations/modules/assistant.js");
 
     let Log = setupLogging("Conversations.AssistantUI");
     let uninstallInfos = JSON.parse(Prefs.getString("conversations.uninstall_infos"));

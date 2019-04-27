@@ -36,9 +36,9 @@
 
 "use strict";
 
-const {StringBundle} = ChromeUtils.import("resource:///modules/StringBundle.js", null);
-const {MsgHdrToMimeMessage} = ChromeUtils.import("resource:///modules/gloda/mimemsg.js", {});
-const {msgUriToMsgHdr} = ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js", {});
+const {StringBundle} = ChromeUtils.import("resource:///modules/StringBundle.js");
+const {MsgHdrToMimeMessage} = ChromeUtils.import("resource:///modules/gloda/mimemsg.js");
+const {msgUriToMsgHdr} = ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
 /* globals React, ReactDOM, PropTypes */

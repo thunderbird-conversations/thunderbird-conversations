@@ -7,15 +7,15 @@
 
 // ----- Autocomplete stuff. Understand it as a part of stub.compose-ui.js
 
-const {Gloda} = ChromeUtils.import("resource:///modules/gloda/gloda.js", {});
-const {MultiSuffixTree} = ChromeUtils.import("resource:///modules/gloda/suffixtree.js", {});
-const {
+var {Gloda} = ChromeUtils.import("resource:///modules/gloda/gloda.js");
+var {MultiSuffixTree} = ChromeUtils.import("resource:///modules/gloda/suffixtree.js");
+var {
   entries, escapeHtml, getDefaultIdentity, getIdentityForEmail,
   getIdentities, NS_SUCCEEDED,
-} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js", {});
-const {
+} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
+var {
   setupLogging, dumpCallStack, Colors,
-} = ChromeUtils.import("resource://conversations/modules/log.js", {});
+} = ChromeUtils.import("resource://conversations/modules/log.js");
 
 let Log = setupLogging("Conversations.Stub.Completion");
 

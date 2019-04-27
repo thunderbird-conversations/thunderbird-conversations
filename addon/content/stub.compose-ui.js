@@ -47,23 +47,23 @@
 
 "use strict";
 
-const {MailServices} = ChromeUtils.import("resource:///modules/mailServices.js", {});
+var {MailServices} = ChromeUtils.import("resource:///modules/MailServices.jsm");
 
-const {
+var {
   msgUriToMsgHdr, msgHdrsArchive, msgHdrIsArchive, msgHdrGetUri,
-} = ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js", {});
-const {sendMessage} = ChromeUtils.import("resource://conversations/modules/stdlib/send.js", {});
-const {
+} = ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+var {sendMessage} = ChromeUtils.import("resource://conversations/modules/stdlib/send.js");
+var {
   composeInIframe, htmlToPlainText, replyAllParams,
-} = ChromeUtils.import("resource://conversations/modules/stdlib/compose.js", {});
-const {generateQI} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js", {});
-const {topMail3Pane} = ChromeUtils.import("resource://conversations/modules/misc.js", {});
-const {getHooks} = ChromeUtils.import("resource://conversations/modules/hook.js", {});
-const {fixIterator} = ChromeUtils.import("resource:///modules/iteratorUtils.jsm", {});
+} = ChromeUtils.import("resource://conversations/modules/stdlib/compose.js");
+var {generateQI} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
+var {topMail3Pane} = ChromeUtils.import("resource://conversations/modules/misc.js");
+var {getHooks} = ChromeUtils.import("resource://conversations/modules/hook.js");
+var {fixIterator} = ChromeUtils.import("resource:///modules/iteratorUtils.jsm");
 
 Log = setupLogging("Conversations.Stub.Compose");
 
-const {SimpleStorage} = ChromeUtils.import("resource://conversations/modules/stdlib/SimpleStorage.js", {});
+var {SimpleStorage} = ChromeUtils.import("resource://conversations/modules/stdlib/SimpleStorage.js", {});
 
 const SIMPLE_STORAGE_TABLE_NAME = "conversations";
 

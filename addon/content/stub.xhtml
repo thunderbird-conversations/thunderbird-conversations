@@ -60,8 +60,8 @@
     src="chrome://conversations/content/handlebars-wrapper.js"></script>
   <script type="application/javascript"><![CDATA[
     let store;
-    const {StringBundle} = ChromeUtils.import("resource:///modules/StringBundle.js", null);
-    const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm", null);
+    var {StringBundle} = ChromeUtils.import("resource:///modules/StringBundle.js", null);
+    var {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm", null);
     var strings = new StringBundle("chrome://conversations/locale/message.properties");
 
     function conversationDispatch(...args) {
@@ -310,7 +310,7 @@
     //  be used either in a standalone tab or in the multimessage pane.
     // let Conversations = window.top.Conversations;
 
-    Components.utils.import("resource:///modules/mailServices.js");
+    Components.utils.import("resource:///modules/MailServices.jsm");
     Components.utils.import("resource://conversations/modules/stdlib/misc.js");
     Components.utils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
     Components.utils.import("resource://conversations/modules/prefs.js");

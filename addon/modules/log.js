@@ -1,8 +1,8 @@
 var EXPORTED_SYMBOLS = ["setupLogging", "dumpCallStack", "logRoot", "Colors"];
 
 /* import-globals-from prefs.js */
-ChromeUtils.import("resource://conversations/modules/prefs.js");
-const {Log4Moz} = ChromeUtils.import("resource:///modules/gloda/log4moz.js", {});
+const {Prefs} = ChromeUtils.import("resource://conversations/modules/prefs.js");
+const {Log4Moz} = ChromeUtils.import("resource:///modules/gloda/log4moz.js");
 
 function setupLogging(name) {
   let Log = Log4Moz.repository.getLogger(name);
