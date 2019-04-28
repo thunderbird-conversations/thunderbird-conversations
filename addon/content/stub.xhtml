@@ -59,9 +59,17 @@
   <script type="application/javascript"
     src="chrome://conversations/content/handlebars-wrapper.js"></script>
   <script type="application/javascript"><![CDATA[
+    /* import-globals-from quickReply.js */
+    /* import-globals-from reducer.js */
+    /* global $, jQuery, wrapHandlebars, registerQuickReply, newComposeSessionByDraftIf
+              Redux, ReactDOM, React, ReactRedux, ConversationWrapper,
+              gComposeSession:true, tmpl, createComposeSession, revealCompositionFields,
+              editFields, asToken, setupAutocomplete, Gloda, Log:true,
+              setupLogging, dumpCallStack */
     let store;
-    var {StringBundle} = ChromeUtils.import("resource:///modules/StringBundle.js", null);
-    var {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm", null);
+    var {StringBundle} = ChromeUtils.import("resource:///modules/StringBundle.js");
+    /* exported Services */
+    var {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
     var strings = new StringBundle("chrome://conversations/locale/message.properties");
 
     function conversationDispatch(...args) {
@@ -69,22 +77,22 @@
     }
 
     // Below are mostly UI utility functions.
-    (function ($) {
+    (function($) {
       $.fn.vAlign = function(container) {
-        $(document).ready(function () {
+        $(document).ready(function() {
           if (!container)
             container = "div";
 
           this.each(function(i) {
             $(this).wrap("<div />");
             var el = $(this);
-            var elh = el.height(); //new element height
-            var ph = el.parent().height(); //parent height
-            var nh = (ph - elh) / 2; //new margin to apply
+            var elh = el.height(); // new element height
+            var ph = el.parent().height(); // parent height
+            var nh = (ph - elh) / 2; // new margin to apply
             if (!nh) {
               $(this).unwrap();
             } else {
-              el.css('margin-top', nh);
+              el.css("margin-top", nh);
               // don't align again now we've succeeded
               el.removeClass("align");
             }
@@ -99,6 +107,7 @@
       }
     }
 
+    /* exported displayMenu */
     function displayMenu(event) {
       let target = event.target;
       // This is a hack to make it work when we click the downwardArrow.
@@ -115,27 +124,28 @@
       }
     }
 
-    $(document).ready(function () {
-      document.addEventListener("click", function (event) {
+    $(document).ready(function() {
+      document.addEventListener("click", function(event) {
         clearMenu();
-      }, false);
-      document.addEventListener("keypress", function (event) {
+      });
+      document.addEventListener("keypress", function(event) {
         if (event.keyCode == KeyEvent.DOM_VK_ESCAPE)
           clearMenu();
-      }, false);
+      });
     });
 
+    /* exported alignAttachments */
     function alignAttachments(aMsgNode) {
       $(aMsgNode._domNode).find(".align").vAlign();
     }
 
     // This function only works for our message nodes, use $(...).offset() for
     //  more complicated computations.
-    function offsetFromTop (aNode) {
+    function offsetFromTop(aNode) {
       let offset = aNode.offsetTop || 0;
       let parent = aNode.parentNode;
       while (parent && !(parent instanceof HTMLDocument)) {
-        let style = window.getComputedStyle(parent, null);
+        let style = window.getComputedStyle(parent);
         if (style.position == "relative")
           offset += parent.offsetTop;
         parent = parent.parentNode;
@@ -143,30 +153,31 @@
       return offset;
     }
 
-    function scrollNodeIntoView (aNode) {
+    /* exported scrollNodeIntoView */
+    function scrollNodeIntoView(aNode) {
       let offset = offsetFromTop(aNode);
       // The header is 44px high (yes, this is harcodeadly ugly).
       window.scrollTo(0, offset + 5 - 44);
     }
 
+    /* exported toggleBlock */
     function toggleBlock(event, showtext, hidetext) {
       let link = event.target;
       let div = link.nextSibling;
-      let cs = window.getComputedStyle(div, null);
+      let cs = window.getComputedStyle(div);
       if (div.style.display == "none") {
-        link.textContent = "- "+hidetext+" -";
+        link.textContent = "- " + hidetext + " -";
         div.style.display = "";
         let h = div.getBoundingClientRect().height +
           parseFloat(cs.marginTop) + parseFloat(cs.marginBottom);
         return h;
-      } else {
-        let h = div.getBoundingClientRect().height;
-        h += parseFloat(cs.marginTop);
-        h += parseFloat(cs.marginBottom);
-        link.textContent = "- "+showtext+" -";
-        div.style.display = "none";
-        return -h;
       }
+      let h = div.getBoundingClientRect().height;
+      h += parseFloat(cs.marginTop);
+      h += parseFloat(cs.marginBottom);
+      link.textContent = "- " + showtext + " -";
+      div.style.display = "none";
+      return -h;
     }
 
     const kPopupTimeout = 400;
@@ -177,13 +188,14 @@
     // It turns out the "more" menu reuses the tooltip style for various
     //  reasons, mostly to keep the same appearance, so we differentiate that
     //  one with a tooltip-menu extra class.
+    /* exported enableTooltips */
     function enableTooltips(aMsg) {
       let $aMsgNode = $(aMsg._domNode);
 
       let self = this;
 
       // enable tooltip for all contacts but recipients
-      $aMsgNode.find(':not(.recipient-tooltips) .tooltip').each(function () {
+      $aMsgNode.find(":not(.recipient-tooltips) .tooltip").each(function() {
         // "contact" is a hypothetical "contact" link that, when
         // hovered/clicked, starts the interaction with the tooltip
         let $tooltip = $(this);
@@ -198,17 +210,17 @@
         self.setTooltipEventHandlers(aMsg, $contact, $tooltip, false);
       });
 
-      let $contactLabels = $aMsgNode.find('.to .contactName');
+      let $contactLabels = $aMsgNode.find(".to .contactName");
 
       // enable tooltip for recipient contacts
-      $aMsgNode.find('.recipient-tooltips .tooltip').each(function (index) {
+      $aMsgNode.find(".recipient-tooltips .tooltip").each(function(index) {
         // "contact" is a hypothetical "contact" link that, when
         // hovered/clicked, starts the interaction with the tooltip
         let $tooltip = $(this);
 
         let $contact = index > 0
-          ? $contactLabels.eq(index-1)
-          : $aMsgNode.find('.author .contactName');
+          ? $contactLabels.eq(index - 1)
+          : $aMsgNode.find(".author .contactName");
 
         self.setTooltipEventHandlers(aMsg, $contact, $tooltip, true);
       });
@@ -216,6 +228,7 @@
 
     // Set events on a contact and its respective tooltip so to show/hide
     //  the tooltip over the contact when mouse enters/leaves their areas.
+    /* exported setTooltipEventHandlers */
     function setTooltipEventHandlers(aMsg, $contact, $tooltip, isRecipient) {
       let timeout;
 
@@ -225,39 +238,38 @@
 
         clearTimeout(timeout);
 
-        timeout = setTimeout(function () {
+        timeout = setTimeout(function() {
           if (isRecipient) {
             // move tooltip close to its respective recipient contact
-            let contactWrapperPosition = $contact.parents('.tooltipWrapper').position();
-            let $tooltipWrapper = $tooltip.parents('.contactTooltipWrapper');
+            let contactWrapperPosition = $contact.parents(".tooltipWrapper").position();
+            let $tooltipWrapper = $tooltip.parents(".contactTooltipWrapper");
             $tooltipWrapper.css(contactWrapperPosition);
           }
 
           $tooltip.fadeIn();
         }, kPopupTimeout);
-
       }, function() {
         clearTimeout(timeout);
 
-        timeout = setTimeout(function () {
+        timeout = setTimeout(function() {
           $tooltip.fadeOut();
         }, kPopupTimeout);
       });
 
-      $tooltip.hover(function () {
+      $tooltip.hover(function() {
         clearTimeout(timeout);
-
-      }, function () {
+      }, function() {
         if ($tooltip.is(":visible")) {
           clearTimeout(timeout);
 
-          timeout = setTimeout(function () {
+          timeout = setTimeout(function() {
             $tooltip.fadeOut();
           }, kPopupTimeout);
         }
       });
     }
 
+    /* exported cleanup */
     function cleanup() {
       // These shouldn't be necessary because we're blasting away everything by
       //  setting .innerHTML BUT jQuery won't remove its persistent event
@@ -268,11 +280,7 @@
       $("#messageList").empty();
     }
 
-    function openLink(event) {
-      gMessenger.launchExternalURL(event.originalTarget.getAttribute("href"));
-    }
-
-    document.addEventListener("focus", function (event) {
+    document.addEventListener("focus", function(event) {
       /* This is a persistent event listener. It can operate multiple
        * times. We have the invariant that for a given conversation, there's at
        * most one such element (recycling doesn't use tabindex 1). */
@@ -291,6 +299,7 @@
       }
     }, true);
 
+    /* exported closeTab */
     function closeTab() {
       let browser = window.frameElement;
       let tabmail = window.top.document.getElementById("tabmail");
@@ -310,24 +319,24 @@
     //  be used either in a standalone tab or in the multimessage pane.
     // let Conversations = window.top.Conversations;
 
-    Components.utils.import("resource:///modules/MailServices.jsm");
-    Components.utils.import("resource://conversations/modules/stdlib/misc.js");
-    Components.utils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
-    Components.utils.import("resource://conversations/modules/prefs.js");
-    Components.utils.import("resource://conversations/modules/log.js");
-    Components.utils.import("resource://conversations/modules/misc.js");
-    Components.utils.import("resource://conversations/modules/contact.js");
+    const {MailServices} = ChromeUtils.import("resource:///modules/MailServices.jsm");
+    const {decodeUrlParameters, isOSX, isWindows, parseMimeLine} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
+    const {msgUriToMsgHdr, msgHdrsMarkAsRead} = ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+    const {Prefs} = ChromeUtils.import("resource://conversations/modules/prefs.js");
+    const {topMail3Pane} = ChromeUtils.import("resource://conversations/modules/misc.js");
+    const {defaultPhotoURI} = ChromeUtils.import("resource://conversations/modules/contact.js");
 
     Log = setupLogging("Conversations.Stub");
     // Declare with var, not let, so that it's in the global scope, not the lexical scope.
+    /* exported isInTab */
     var isInTab = false;
 
     wrapHandlebars();
 
-    $(document).ready(function () {
+    $(document).ready(function() {
       let stylesheet;
       for (let x of document.styleSheets) {
-        if (x.href.indexOf("/conversation.css") >= 0) {
+        if (x.href.includes("/conversation.css")) {
           stylesheet = x;
           break;
         }
@@ -364,10 +373,11 @@
 
     const kGalleryUrl = "chrome://conversations/content/gallery/index.html";
 
+    /* exported galleryView */
     function galleryView(uri) {
       let tabmail = topMail3Pane(window).document.getElementById("tabmail");
       tabmail.openTab("chromeTab", {
-        chromePage: kGalleryUrl+"?uri="+uri,
+        chromePage: kGalleryUrl + "?uri=" + uri,
       });
     }
 
@@ -378,7 +388,7 @@
      * serves the purpose of being able to create a standalone conversation view
      * in a new tab.
      */
-    $(document).ready(function () {
+    $(document).ready(function() {
       // I just imagined Javascript would have some function for that
       // built-in... looks like even jQuery doesn't have it.
       let params = decodeUrlParameters(document.location.href);
@@ -400,7 +410,7 @@
           if (window.frameElement)
             window.frameElement.setAttribute("tooltip", "aHTMLTooltip");
           let mainWindow = topMail3Pane(window);
-          let willExpand = parseInt(params.willExpand);
+          // let willExpand = parseInt(params.willExpand);
           let msgHdrs = params.urls.split(",").map(x => msgUriToMsgHdr(x))
                                               .filter(x => x != null && x.messageId);
           // It might happen that there are no messages left...
@@ -422,7 +432,7 @@
             // Because Thunderbird still hasn't fixed that...
             if (browser)
               browser.setAttribute("context", "mailContext");
-            freshConversation.outputInto(window, function (aConversation) {
+            freshConversation.outputInto(window, function(aConversation) {
               // This is a stripped-down version of what's in monkeypatch.js,
               //  make sure the two are in sync!
               Conversations.currentConversation = aConversation;
@@ -430,8 +440,9 @@
               registerQuickReply();
               // That's why we saved it before...
               newComposeSessionByDraftIf();
-              if (willExpand)
-                expandQuickReply();
+              // TODO: expandQuickReply isn't defined anywhere. Should it be?
+              // if (willExpand)
+              //   expandQuickReply();
               // Create a new rule that will override the default rule, so that
               // the expanded quick reply is twice higher.
               document.body.classList.add("inTab");
@@ -445,7 +456,7 @@
               // Do this now so as to not defeat the whole expand/collapse
               // logic.
               if (Prefs.getBool("mailnews.mark_message_read.auto")) {
-                setTimeout(function () {
+                setTimeout(function() {
                   msgHdrsMarkAsRead(msgHdrs, true);
                 }, Prefs.getInt("mailnews.mark_message_read.delay.interval")
                    * Prefs.getBool("mailnews.mark_message_read.delay") * 1000);
@@ -470,6 +481,7 @@
         React.createElement(ConversationWrapper)), conversationContainer);
     }, {once: true});
 
+    /* exported isQuickCompose */
     var isQuickCompose = false;
 
     /* This is our new hack: reuse this file to provide a standalone composition
@@ -486,7 +498,7 @@
       $(".replyAll, #save, .replyMethod").remove();
 
       // TODO figure out why this timeout is needed
-      setTimeout(function () {
+      setTimeout(function() {
         showQuickReply.call($(".reply.expand"));
         gComposeSession = createComposeSession(x => x.new());
         revealCompositionFields();
@@ -500,7 +512,7 @@
         },
       };
 
-      document.querySelector(".quickReply").addEventListener("keypress", function (event) {
+      document.querySelector(".quickReply").addEventListener("keypress", function(event) {
         switch (event.keyCode) {
           case KeyEvent.DOM_VK_RETURN:
             if (isAccel(event)) {
@@ -511,13 +523,13 @@
             }
             break;
         }
-      }, false);
+      });
 
 
       let data = [];
 
       // Push a new contact item in the list
-      let pushNewPopularContacts = function (n) {
+      let pushNewPopularContacts = function(n) {
         let items = data.splice(0, n);
         let nodes = tmpl("#popularContactTemplate", items);
 
@@ -526,7 +538,7 @@
           let node = nodes.eq(i);
           Log.debug("Adding", data.name, data.email);
 
-          node.find(".popularRemove").click(function () {
+          node.find(".popularRemove").click(function() {
             Log.debug("Removing", data.name, data.email);
             // Mark it in the prefs
             let unwantedRecipients = JSON.parse(Prefs.getString("conversations.unwanted_recipients"));
@@ -538,7 +550,7 @@
             pushNewPopularContacts(1);
           });
 
-          node.find(".popularName").click(function () {
+          node.find(".popularName").click(function() {
             // Get all the current parameters
             let to = JSON.parse($("#to").val());
             let cc = JSON.parse($("#cc").val());
@@ -553,7 +565,6 @@
             node.remove();
             pushNewPopularContacts(1);
           });
-
         });
 
         nodes.appendTo($(".quickReplyContactsBox"));
@@ -565,40 +576,40 @@
       let contactQuery = Gloda.newQuery(Gloda.NOUN_CONTACT);
       contactQuery.orderBy("-popularity").limit(100);
       let contactCollection = contactQuery.getCollection({
-        onItemsAdded: function(aItems, aCollection) {
-        },
-        onItemsModified: function(aItems, aCollection) {
-        },
-        onItemsRemoved: function(aItems, aCollection) {
-        },
-        onQueryCompleted: function(aCollection) {
-          let items = aCollection.items;
-          let unwantedRecipients = JSON.parse(Prefs.getString("conversations.unwanted_recipients"));
+        onItemsAdded(aItems, aCollection) {
+    },
+        onItemsModified(aItems, aCollection) {
+    },
+        onItemsRemoved(aItems, aCollection) {
+    },
+        onQueryCompleted(aCollection) {
+      let items = aCollection.items;
+      let unwantedRecipients = JSON.parse(Prefs.getString("conversations.unwanted_recipients"));
 
-          for (let contact of items) {
-            if (contact.identities.length) {
-              let id = contact.identities[0];
-              let photoForAbCard = function (card) {
-                if (!card)
-                  return defaultPhotoURI;
-                let url = card.getProperty("PhotoURI", "");
-                if (!url)
-                  return defaultPhotoURI;
-                return url;
-              };
-              if (id.kind == "email" && !(id.value in unwantedRecipients)) {
-                // Log.debug("Pushing", id.value, contact.name, contact.popularity);
-                data.push({
-                  email: id.value,
-                  name: contact.name,
-                  photo: photoForAbCard(id.abCard),
-                });
-              }
-            }
+      for (let contact of items) {
+        if (contact.identities.length) {
+          let id = contact.identities[0];
+          let photoForAbCard = function(card) {
+            if (!card)
+              return defaultPhotoURI;
+            let url = card.getProperty("PhotoURI", "");
+            if (!url)
+              return defaultPhotoURI;
+            return url;
+          };
+          if (id.kind == "email" && !(id.value in unwantedRecipients)) {
+            // Log.debug("Pushing", id.value, contact.name, contact.popularity);
+            data.push({
+              email: id.value,
+              name: contact.name,
+              photo: photoForAbCard(id.abCard),
+            });
           }
+        }
+      }
 
-          pushNewPopularContacts(10);
-        },
+      pushNewPopularContacts(10);
+    },
       }, null);
       contactCollection.becomeExplicit();
 
@@ -630,7 +641,7 @@
       }
       document.removeEventListener("scroll", markReadInView, true);
       clearTimeout(markReadInView.timeout);
-      markReadInView.timeout = setTimeout(function () {
+      markReadInView.timeout = setTimeout(function() {
         document.addEventListener("scroll", markReadInView, true);
       }, 200);
       if (!Conversations.currentConversation)
@@ -660,14 +671,14 @@
         }
       });
     }
-    (function () {
+    (function() {
       let w = window;
-      markReadInView.enable = function () {
+      markReadInView.enable = function() {
         for (let x of ["mouseover", "focus", "keydown"]) {
           w.document.addEventListener(x, w.markReadInView, true);
         }
       };
-      markReadInView.disable = function () {
+      markReadInView.disable = function() {
         w.clearTimeout(w.markReadInView.timeout);
         for (let x of ["mouseover", "focus", "keydown", "scroll"]) {
           w.document.removeEventListener(x, w.markReadInView, true);
@@ -676,8 +687,9 @@
     })();
 
     // Lightning
+    /* exported ltnImipBar */
     var ltnImipBar = topMail3Pane(window).ltnImipBar;
-  ]]>
+]]>
   </script>
 </head>
 

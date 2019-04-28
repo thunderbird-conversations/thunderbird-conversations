@@ -9,9 +9,8 @@
   <script type="application/javascript">
     <![CDATA[
 
-    const {Config} = ChromeUtils.import("resource://conversations/modules/config.js");
     const {Prefs} = ChromeUtils.import("resource://conversations/modules/prefs.js");
-    const {setupLogging} = ChromeUtils.import("resource://conversations/modules/log.js");
+    const {setupLogging, dumpCallStack} = ChromeUtils.import("resource://conversations/modules/log.js");
     const {Customizations} = ChromeUtils.import("resource://conversations/modules/assistant.js");
 
     let Log = setupLogging("Conversations.AssistantUI");
@@ -55,7 +54,7 @@
     // This is the usual API: if you launch something asynchronous, just do
     // expect () and call top () when you're done.
     let expected = 1;
-    let ttop = function () {
+    let ttop = function() {
       if (--expected == 0)
         finish();
     };
@@ -63,6 +62,7 @@
     Customizations.ttop = ttop;
 
     // --- UI event handlers
+    /* exported onFinish, onCustomSetup */
 
     function onFinish() {
       // Register uninstall information if the user closes the window now.

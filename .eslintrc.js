@@ -25,6 +25,7 @@ module.exports = {
   }],
   "plugins": [
     "mozilla",
+    "html",
     "react",
   ],
   "rules": {

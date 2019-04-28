@@ -41,23 +41,21 @@
 // From stub.compose-ui-bz.js
 /* global bzSetup, BzComposeSession */
 // Via stub.xhtml
-/* global closeTab, Prefs, tmpl, Services */
+/* global closeTab, Prefs, msgUriToMsgHdr, tmpl, Services, topMail3Pane */
 
 /* import-globals-from stub.completion-ui.js */
 
+
 "use strict";
 
-var {MailServices} = ChromeUtils.import("resource:///modules/MailServices.jsm");
-
 var {
-  msgUriToMsgHdr, msgHdrsArchive, msgHdrIsArchive, msgHdrGetUri,
+  msgHdrsArchive, msgHdrIsArchive, msgHdrGetUri,
 } = ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
 var {sendMessage} = ChromeUtils.import("resource://conversations/modules/stdlib/send.js");
 var {
   composeInIframe, htmlToPlainText, replyAllParams,
 } = ChromeUtils.import("resource://conversations/modules/stdlib/compose.js");
 var {generateQI} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
-var {topMail3Pane} = ChromeUtils.import("resource://conversations/modules/misc.js");
 var {getHooks} = ChromeUtils.import("resource://conversations/modules/hook.js");
 var {fixIterator} = ChromeUtils.import("resource:///modules/iteratorUtils.jsm");
 

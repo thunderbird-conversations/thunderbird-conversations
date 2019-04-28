@@ -1,19 +1,19 @@
 "use strict";
 
 /* exported setupAutocomplete, Colors, getDefaultIdentity, getIdentityForEmail,
-            getIdentities, NS_SUCCEEDED */
+            getIdentities, NS_SUCCEEDED, setupLogging, dumpCallStack */
 /* global $, Conversations, MailServices, showCc, showBcc, strings */
 /* import-globals-from quickReply.js */
 
 // ----- Autocomplete stuff. Understand it as a part of stub.compose-ui.js
 
-var {Gloda} = ChromeUtils.import("resource:///modules/gloda/gloda.js");
-var {MultiSuffixTree} = ChromeUtils.import("resource:///modules/gloda/suffixtree.js");
-var {
+const {Gloda} = ChromeUtils.import("resource:///modules/gloda/gloda.js");
+const {MultiSuffixTree} = ChromeUtils.import("resource:///modules/gloda/suffixtree.js");
+const {
   entries, escapeHtml, getDefaultIdentity, getIdentityForEmail,
   getIdentities, NS_SUCCEEDED,
 } = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
-var {
+const {
   setupLogging, dumpCallStack, Colors,
 } = ChromeUtils.import("resource://conversations/modules/log.js");
 
