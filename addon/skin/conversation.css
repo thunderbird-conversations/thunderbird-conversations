@@ -41,15 +41,6 @@
   padding: 0;
 }
 
-html {
-  /* This is what we set from stub.xhtml, for Linux/Windows:
-   *   font-size: 62.5%; (16px default size => we rebase to 10px)
-   * for MacOSX:
-   *   font-size: 66.6%; (15px default size => we rebase to 10px).
-   * This rule is added dynamically by stub.xhtml.
-   */
-}
-
 body {
   font-family: sans-serif;
   font-size: 1.2rem;
@@ -59,6 +50,22 @@ body {
   margin: 0;
   padding: 0;
   overflow-y: scroll;
+}
+
+html {
+  font-size: 83.3%;
+}
+
+html[os=windows] {
+  font-size: 70%;
+}
+
+html[os=osx] {
+  font-size: 66.6%;
+}
+
+html[os=linux] {
+  font-size: 62.5%;
 }
 
 p {

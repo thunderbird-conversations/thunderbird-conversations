@@ -334,29 +334,17 @@
     wrapHandlebars();
 
     $(document).ready(function() {
-      let stylesheet;
-      for (let x of document.styleSheets) {
-        if (x.href.includes("/conversation.css")) {
-          stylesheet = x;
-          break;
-        }
-      }
-
-      if (stylesheet) {
-        if (Prefs.tweak_chrome) {
-          // Set the root size to 10px on Linux, and equivalent font sizes on
-          // other platforms.
-          if (isOSX)
-            stylesheet.insertRule("html { font-size: 66.6%; }", 0);
-          else if (isWindows)
-            stylesheet.insertRule("html { font-size: 70%; }", 0);
-          else
-            stylesheet.insertRule("html { font-size: 62.5%; }", 0);
+      let html = document.body.parentNode;
+      if (Prefs.tweak_chrome) {
+        if (isWindows) {
+          html.setAttribute("os", "windows");
+        } else if (isOSX) {
+          html.setAttribute("os", "osx");
         } else {
-          stylesheet.insertRule("html { font-size: 83.3%; }", 0);
+          html.setAttribute("os", "linux");
         }
       } else {
-        Log.error("No stylesheet. This is unexpected.");
+        html.removeAttribute("os");
       }
     });
 

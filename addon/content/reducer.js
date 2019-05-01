@@ -35,7 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 /* global Redux, Conversations, markReadInView, topMail3Pane, getMail3Pane,
-          isInTab, msgHdrsArchive, Prefs, msgHdrsDelete, closeTab, startedEditing,
+          isInTab, msgHdrsArchive, Prefs, closeTab, startedEditing,
           msgHdrGetUri, onSave, openConversationInTabOrWindow,
           printConversation */
 
@@ -65,6 +65,8 @@ function summary(state = initialSummary, action) {
       return state;
     }
     case "DELETE_CONVERSATION": {
+      const {msgHdrsDelete} = ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+
       if (isInTab || Prefs.operate_on_conversations) {
         msgHdrsDelete(Conversations.currentConversation.msgHdrs);
         if (isInTab) {

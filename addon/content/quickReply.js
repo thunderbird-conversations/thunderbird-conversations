@@ -37,24 +37,18 @@
 /* exported hideQuickReply, registerQuickReplyEventListeners,
             registerQuickReplyDocumentCommands */
 
-/* global $, isQuickCompose, scrollNodeIntoView, Log:true, newComposeSessionByClick,
-          isAccel */
+/* global $, isQuickCompose, scrollNodeIntoView, Log:true, newComposeSessionByClick */
+
+const {isAccel} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
 
 function makeEditable(aIframe, aMakeEditable) {
   // Setup the iframe to be editable in htmlmail mode (for blockquotes)
-  let w = aIframe.contentWindow;
-  // let nav = w.QueryInterface(Ci.nsIInterfaceRequestor)
-  //             .getInterface(Ci.nsIWebNavigation);
-  let s = w.QueryInterface(Ci.nsIInterfaceRequestor)
-           .getInterface(Ci.nsIWebNavigation)
-           .QueryInterface(Ci.nsIInterfaceRequestor)
-           .getInterface(Ci.nsIEditingSession);
+  let contentWin = aIframe.contentWindow;
+  let session = contentWin.docShell.editingSession;
   if (aMakeEditable) {
-    // aIframe.designMode = "on";
-    s.makeWindowEditable(w, "htmlmail", false, true, false);
+    session.makeWindowEditable(contentWin, "htmlmail", false, true, false);
   } else {
-    // s.detachFromWindow(w);
-    s.tearDownEditorOnWindow(w);
+    session.tearDownEditorOnWindow(contentWin);
   }
 }
 
