@@ -36,7 +36,10 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["Message", "MessageFromGloda", "MessageFromDbHdr", "ConversationKeybindings"];
+var EXPORTED_SYMBOLS = [
+  "Message", "MessageFromGloda", "MessageFromDbHdr",
+  "ConversationKeybindings", "previewAttachment",
+];
 
 const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm", null);
 const {PluralForm} = ChromeUtils.import("resource://gre/modules/PluralForm.jsm", null);
@@ -110,12 +113,12 @@ let makeViewerUrl = (name, url) =>
   "&name=" + encodeURIComponent(name)
 ;
 
-let pdfMimeTypes = {
-  "application/pdf": null,
-  "application/x-pdf": null,
-  "application/x-bzpdf": null,
-  "application/x-gzpdf": null,
-};
+const pdfMimeTypes = [
+  "application/pdf",
+  "application/x-pdf",
+  "application/x-bzpdf",
+  "application/x-gzpdf",
+];
 
 function tenPxFactor() {
   if (isOSX) {
@@ -144,6 +147,20 @@ function dateAccordingToPref(date) {
     return Prefs.no_friendly_date ? dateAsInMessageList(date) : makeFriendlyDateAgo(date);
   } catch (e) {
     return dateAsInMessageList(date);
+  }
+}
+
+function previewAttachment(win, name, url, isPdf, maybeViewable) {
+  if (maybeViewable) {
+    win.document.getElementById("tabmail").openTab(
+      "contentTab",
+      { contentPage: url }
+    );
+  }
+  if (isPdf) {
+    win.document.getElementById("tabmail").openTab(
+      "chromeTab", { chromePage: makeViewerUrl(name, url) }
+    );
   }
 }
 
@@ -628,12 +645,13 @@ Message.prototype = {
     let l = this._attachments.length;
     let [makePlural ] = PluralForm.makeGetter(strings.get("pluralForm"));
     data.attachmentsPlural = makePlural(l, strings.get("attachments")).replace("#1", l);
-    this._attachments.forEach(function(att, i) {
+    for (let i = 0; i < l; i++) {
+      const att = this._attachments[i];
       // Special treatment for images
       let isImage = (att.contentType.indexOf("image/") === 0);
       if (isImage)
         data.gallery = true;
-      let isPdf = (att.contentType in pdfMimeTypes);
+      let isPdf = pdfMimeTypes.includes(att.contentType);
       let key = self._msgHdr.messageKey;
       let url = att.url.replace(self.RE_MSGKEY, "number=" + key);
       let [thumb, imgClass] = isImage
@@ -647,26 +665,20 @@ Message.prototype = {
       if (att.size != -1)
         formattedSize = Services.mMessenger.formatFileSize(att.size);
 
-      // Separator... boring
-      let sep = "";
-      if (i == self._attachments.length - 2) {
-        sep = strings.get("sepAnd");
-      } else if (i != self._attachments.length - 1) {
-        sep = strings.get("sepComma");
-      }
-
       // We've got the right data, push it!
       data.attachments.push({
         formattedSize,
         thumb: sanitize(thumb),
         imgClass,
         name: sanitize(att.name),
+        url: att.url,
         anchor: "msg" + self.initialPosition + "att" + i,
         /* Only advertise the preview for PDFs (images have the gallery view). */
-        canPreview: isPdf,
-        sep,
+        isPdf,
+        maybeViewable: att.contentType.indexOf("image/") === 0 ||
+          att.contentType.indexOf("text/") === 0,
       });
-    });
+    }
     return data;
   },
 
@@ -972,83 +984,15 @@ Message.prototype = {
      * We now assume that all the information is correct. I've done enough work
      * on the Gloda side to ensure this. All hail to Gloda!
      */
-    let attInfos = self._attachments.map(att =>
-      new mainWindow.AttachmentInfo(
-        att.contentType, att.url, att.name, self._uri, att.isExternal, 42
-      ));
-    /* So for some strange reason, Gecko decided that Iterator would now yield
-     * both the element's id attribute and its index in the collection... which
-     * screws us up, so let's forget about using modern JS features. */
     for (let i = 0; i < attachmentNodes.length; ++i) {
-      let j = i;
-      let attNode = attachmentNodes[j];
-      let att = this._attachments[j];
-
+      let att = self._attachments[i];
+      // TODO: Make messageAttachments not require this and handle it itself.
       // For the context menu event handlers
-      attNode.attInfo = attInfos[i];
-      attNode.setAttribute("contextmenu", "attachmentMenu");
-
-      this.register(attNode.getElementsByClassName("open-attachment")[0], function(event) {
-        attInfos[j].open();
-      });
-      this.register(attNode.getElementsByClassName("download-attachment")[0], function(event) {
-        attInfos[j].save();
-      });
-
-      let maybeViewable =
-        att.contentType.indexOf("image/") === 0
-        || att.contentType.indexOf("text/") === 0
-      ;
-      if (maybeViewable) {
-        let img = attNode.getElementsByTagName("img")[0];
-        img.classList.add("view-attachment");
-        img.setAttribute("title", strings.get("viewAttachment"));
-        let preview = function(event) {
-          mainWindow.document.getElementById("tabmail").openTab(
-            "contentTab",
-            { contentPage: self._attachments[j].url }
-          );
-        };
-        this.register(img, preview);
-      }
-      if (att.contentType in pdfMimeTypes) {
-        let img = attNode.getElementsByTagName("img")[0];
-        img.classList.add("view-attachment");
-        img.setAttribute("title", strings.get("viewAttachment"));
-        let preview = function(event) {
-          mainWindow.document.getElementById("tabmail").openTab(
-            "chromeTab", { chromePage:
-              makeViewerUrl(self._attachments[j].name, self._attachments[j].url),
-            }
-          );
-        };
-        this.register(img, preview);
-        let previewLink = attNode.getElementsByClassName("preview-attachment")[0];
-        this.register(previewLink, preview);
-      }
-
-      // Drag & drop
-      attNode.addEventListener("dragstart", function(event) {
-        // mail/base/content/mailCore.js:602
-        let info;
-        if (/(^file:|&filename=)/.test(self._attachments[j].url))
-          info = self._attachments[j].url;
-        else
-          info = self._attachments[j].url + "&type=" + att.contentType +
-                     "&filename=" + encodeURIComponent(att.name);
-        event.dataTransfer.setData("text/x-moz-url",
-                                   info + "\n" + att.name + "\n" + att.size);
-        event.dataTransfer.setData("text/x-moz-url-data", self._attachments[j].url);
-        event.dataTransfer.setData("text/x-moz-url-desc", att.name);
-        event.dataTransfer.setData("application/x-moz-file-promise-url",
-                                   self._attachments[j].url);
-        // XXX I have no idea whether this is useful...
-        event.dataTransfer.setData("application/x-moz-file-promise", null);
-      });
+      attachmentNodes[i].attInfo =
+        new mainWindow.AttachmentInfo(
+          att.contentType, att.url, att.name, self._uri, att.isExternal, 42
+        );
     }
-    this.register(".download-all", function(event) {
-      mainWindow.HandleMultipleAttachments(attInfos, "save");
-    });
     this.register(".quickReply", function(event) {
       event.stopPropagation();
     }, { action: "keyup" });
@@ -1201,18 +1145,6 @@ Message.prototype = {
           let target = self._domNode.querySelector(".attachmentIcon");
           $(target).empty();
           let node = w.tmpl("#attachmentIconTemplate", tmplData);
-          if (node) {
-            target.appendChild(node);
-          }
-          target = self._domNode.querySelector(".detailsLine");
-          $(target).empty();
-          node = w.tmpl("#attachmentDetailsTemplate", tmplData);
-          if (node) {
-            target.appendChild(node);
-          }
-          target = self._domNode.querySelector(".attachments-container");
-          $(target).empty();
-          node = w.tmpl("#attachmentsTemplate", tmplData);
           if (node) {
             target.appendChild(node);
           }
@@ -1742,6 +1674,37 @@ Message.prototype = {
       ].join("");
       k(html);
     });
+  },
+
+  getAttachmentInfos(win) {
+    /**
+     * We now assume that all the information is correct. I've done enough work
+     * on the Gloda side to ensure this. All hail to Gloda!
+     */
+    return this._attachments.map(att =>
+      new win.AttachmentInfo(
+        att.contentType, att.url, att.name, this._uri, att.isExternal, 42
+      ));
+  },
+
+  downloadAllAttachments(win) {
+    win.HandleMultipleAttachments(this.getAttachmentInfos(win), "save");
+  },
+
+  downloadAttachment(mainWindow, url) {
+    const att = this._attachments.find(att => att.url == url);
+    const attInfo = new mainWindow.AttachmentInfo(
+      att.contentType, att.url, att.name, this._uri, att.isExternal, 42
+    );
+    attInfo.save();
+  },
+
+  openAttachment(mainWindow, url) {
+    const att = this._attachments.find(att => att.url == url);
+    const attInfo = new mainWindow.AttachmentInfo(
+      att.contentType, att.url, att.name, this._uri, att.isExternal, 42
+    );
+    attInfo.open();
   },
 };
 

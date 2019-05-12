@@ -165,16 +165,17 @@ let windowObserver = {
 
 function startup(aData, aReason) {
   ResourceRegister.init(aData.resourceURI.spec, "conversations");
-  const {setupLogging, dumpCallStack} = ChromeUtils.import("resource://conversations/modules/log.js");
+  const {setupFullLogging, dumpCallStack} = ChromeUtils.import("resource://conversations/modules/log.js");
   const {Config} = ChromeUtils.import("resource://conversations/modules/config.js");
 
-  Log = setupLogging("Conversations.MonkeyPatch");
+  Log = setupFullLogging("Conversations.MonkeyPatch");
   Log.debug("startup, aReason=", aReason);
 
   try {
     // Patch all existing windows when the UI is built; all locales should have been loaded here
     Services.obs.addObserver({
       observe(aSubject, aTopic, aData) {
+          Log.debug("observe: mail-startup-done");
           loadImports();
           monkeyPatchAllWindows();
       },

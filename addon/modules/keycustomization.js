@@ -304,14 +304,14 @@ const Templates = {
    * @return The menu list
    */
   buildActionMenuList: function buildActionMenuList(doc, parent, arr, selected) {
-    let list = doc.createElement("menulist");
+    let list = doc.createXULElement("menulist");
     parent.appendChild(list);
     list.setAttribute("sizetopopup", "always");
     list.setAttribute("class", "actionList");
-    let popup = doc.createElement("menupopup");
+    let popup = doc.createXULElement("menupopup");
     list.appendChild(popup);
     for (let cmd of arr) {
-      let item = doc.createElement("menuitem");
+      let item = doc.createXULElement("menuitem");
       popup.appendChild(item);
       item.setAttribute("value", cmd);
       item.setAttribute("label", titleCaseToSpacedWords(cmd));
@@ -330,7 +330,7 @@ const Templates = {
    * @return The label
    */
   buildLbl: function buildLbl(doc, parent, text) {
-    let lbl = doc.createElement("label");
+    let lbl = doc.createXULElement("label");
     parent.appendChild(lbl);
     lbl.setAttribute("value", text);
     return lbl;
@@ -346,7 +346,7 @@ const Templates = {
    * @returns the button
    */
   buildButton: function buildButton(doc, parent, label, state) {
-    let btn = doc.createElement("button");
+    let btn = doc.createXULElement("button");
     parent.appendChild(btn);
     btn.setAttribute("type", "checkbox");
     btn.setAttribute("autoCheck", false);
@@ -373,7 +373,7 @@ const Templates = {
    * @returns the button
    */
   buildDelete: function buildDelete(doc, parent, key) {
-    let btn = doc.createElement("button");
+    let btn = doc.createXULElement("button");
     btn.setAttribute("label", strings.get("removeHotkey"));
     parent.appendChild(btn);
     btn.addEventListener("command", Listeners.onDeleteClick);
@@ -388,16 +388,16 @@ const Templates = {
    * @returns the drop-down lost
    */
   buildLetterSelect: function buildLetterSelect(doc, parent, key) {
-    let list = doc.createElement("menulist");
+    let list = doc.createXULElement("menulist");
     parent.appendChild(list);
     list.setAttribute("sizetopopup", "always");
-    let popup = doc.createElement("menupopup");
+    let popup = doc.createXULElement("menupopup");
     list.appendChild(popup);
     // Helper function for use in creating drop-down list menuitems
     // for each letter, digit and symbol that we support
     // Todo: list these elsewhere more explicitly.
     let createItem = function(itemKey) {
-      let item = doc.createElement("menuitem");
+      let item = doc.createXULElement("menuitem");
       popup.appendChild(item);
       item.setAttribute("value", itemKey);
       item.setAttribute("label", describeKey(itemKey));
@@ -422,20 +422,20 @@ const Templates = {
    * @returns the hbox widget
    */
   buildHotKey: function buildHotKey(doc, key, binding) {
-    let hbox = doc.createElement("hbox");
+    let hbox = doc.createXULElement("hbox");
     hbox.hotkey = key;
     hbox.hotkeyBinding = binding;
     Templates.buildDelete(doc, hbox, key);
     for (let k of ["super", "ctrl", "shift", "meta", "alt"]) {
       Templates.buildButton(doc, hbox, k, binding.mods[k + "Key"]);
-      hbox.appendChild(doc.createElement("separator"));
+      hbox.appendChild(doc.createXULElement("separator"));
       Templates.buildLbl(doc, hbox, "+");
-      hbox.appendChild(doc.createElement("separator"));
+      hbox.appendChild(doc.createXULElement("separator"));
     }
     Templates.buildLetterSelect(doc, hbox, key);
-    hbox.appendChild(doc.createElement("separator"));
+    hbox.appendChild(doc.createXULElement("separator"));
     Templates.buildLbl(doc, hbox, ":");
-    hbox.appendChild(doc.createElement("separator"));
+    hbox.appendChild(doc.createXULElement("separator"));
     Templates.buildActionMenuList(doc, hbox, ConversationKeybindings.availableActions, binding.func);
     return hbox;
   },
@@ -446,8 +446,8 @@ const Templates = {
    * @return the hbox containing the button
    */
   buildRestore: function buildRestore(doc) {
-    let hbox = doc.createElement("hbox");
-    let btn = doc.createElement("button");
+    let hbox = doc.createXULElement("hbox");
+    let btn = doc.createXULElement("button");
     hbox.appendChild(btn);
     btn.setAttribute("label", strings.get("restoreKeys"));
     btn.addEventListener("command", Listeners.onRestoreClick);
@@ -460,8 +460,8 @@ const Templates = {
    * @return the hbox containing the button
    */
   buildCreate: function buildCreate(doc) {
-    let hbox = doc.createElement("hbox");
-    let btn = doc.createElement("button");
+    let hbox = doc.createXULElement("hbox");
+    let btn = doc.createXULElement("button");
     hbox.appendChild(btn);
     btn.setAttribute("label", strings.get("createHotkey"));
     btn.addEventListener("command", Listeners.onCreateClick);

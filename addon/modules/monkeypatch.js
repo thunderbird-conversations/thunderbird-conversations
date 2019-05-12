@@ -107,7 +107,7 @@ MonkeyPatch.prototype = {
     window.document.getElementById("multimessage").setAttribute("context", "mailContext");
 
     // 2) View > Conversation View
-    let menuitem = window.document.createElement("menuitem");
+    let menuitem = window.document.createXULElement("menuitem");
     [
       ["type", "checkbox"],
       ["id", "menuConversationsEnabled"],
@@ -121,7 +121,7 @@ MonkeyPatch.prototype = {
     this.pushUndo(() => parent1.removeChild(menuitem));
 
     // 3) Keyboard shortcut
-    let key = window.document.createElement("key");
+    let key = window.document.createXULElement("key");
     [
       ["id", "key_conversationsQuickCompose"],
       ["key", "n"],
@@ -135,7 +135,7 @@ MonkeyPatch.prototype = {
     this.pushUndo(() => parent2.removeChild(key));
 
     // 4) Tree column
-    let treecol = window.document.createElement("treecol");
+    let treecol = window.document.createXULElement("treecol");
     [
       ["id", "betweenCol"],
       ["hidden", "false"],
@@ -149,7 +149,7 @@ MonkeyPatch.prototype = {
     let parent3 = window.document.getElementById("threadCols");
     parent3.appendChild(treecol);
     this.pushUndo(() => parent3.removeChild(treecol));
-    let splitter = window.document.createElement("splitter");
+    let splitter = window.document.createXULElement("splitter");
     splitter.classList.add("tree-splitter");
     parent3.appendChild(splitter);
     this.pushUndo(() => parent3.removeChild(splitter));

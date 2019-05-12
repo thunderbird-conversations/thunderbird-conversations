@@ -69,7 +69,6 @@ class LinkifiedSubject extends React.PureComponent {
       while (text && LINKS_REGEX.test(text)) {
         let matches = LINKS_REGEX.exec(text);
         let [pre, ...post] = text.split(matches[1]);
-        console.log({pre, post});
         let link = <a href={matches[1]} title={matches[1]} className="link" onClick={this.handleClick}>{matches[1]}</a>;
         if (pre) {
           contents.push(pre);

@@ -1,4 +1,4 @@
-var EXPORTED_SYMBOLS = ["setupLogging", "dumpCallStack", "logRoot", "Colors"];
+var EXPORTED_SYMBOLS = ["setupFullLogging", "setupLogging", "dumpCallStack", "logRoot", "Colors"];
 
 /* import-globals-from prefs.js */
 const {Prefs} = ChromeUtils.import("resource://conversations/modules/prefs.js");
@@ -35,7 +35,7 @@ function setupFullLogging(name) {
   if (Prefs.logging_enabled) {
     // A console appender outputs to the JS Error Console
     let capp = new Log4Moz.ConsoleAppender(formatter);
-    capp.level = Log4Moz.Level.Warn;
+    capp.level = Log4Moz.Level.All;
     root.addAppender(capp);
 
     // A dump appender outputs to standard out

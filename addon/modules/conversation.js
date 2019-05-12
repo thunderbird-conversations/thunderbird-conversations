@@ -384,6 +384,14 @@ function Conversation(aWindow, aSelectedMessages, aScrollMode, aCounter) {
 }
 
 Conversation.prototype = {
+  getMessage(uri) {
+    const msg = this.messages.find(m => m.message._uri == uri);
+    if (msg) {
+      return msg.message;
+    }
+    return null;
+  },
+
   // Before the Gloda query returns, the user might change selection. Don't
   // output a conversation unless we're really sure the user hasn't changed his
   // mind.
@@ -758,10 +766,11 @@ Conversation.prototype = {
       let w = this._htmlPane;
       w.markReadInView.disable();
 
-      for (let x of this._htmlPane.tmpl("#messageTemplate", tmplData)) {
+      for (let msgData of tmplData) {
+        let x = this._htmlPane.tmpl("#messageTemplate", msgData);
         this._domNode.appendChild(x);
+        this._htmlPane.renderAttachmentDetails(x, msgData);
       }
-
 
       // Important: don't forget to move the quick reply part into the last
       //  message.
@@ -1004,8 +1013,10 @@ Conversation.prototype = {
     // We must do this if we are to ever release the previous Conversation
     //  object. See comments in stub.html for the nice details.
     this._htmlPane.cleanup();
-    for (let x of this._htmlPane.tmpl("#messageTemplate", tmplData)) {
+    for (let msgData of tmplData) {
+      let x = this._htmlPane.tmpl("#messageTemplate", msgData);
       this._domNode.appendChild(x);
+      this._htmlPane.renderAttachmentDetails(x, msgData);
     }
 
     // Notify each message that it's been added to the DOM and that it can do

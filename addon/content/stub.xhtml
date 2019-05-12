@@ -37,6 +37,8 @@
   <script type="text/javascript"
     src="chrome://conversations/content/reducer.js"></script>
   <script type="text/javascript"
+    src="chrome://conversations/content/attachments.js"></script>
+  <script type="text/javascript"
     src="chrome://conversations/content/conversationHeader.js"></script>
   <script type="text/javascript"
     src="chrome://conversations/content/conversationFooter.js"></script>
@@ -67,7 +69,7 @@
               Redux, ReactDOM, React, ReactRedux, ConversationWrapper, ContactDetail,
               gComposeSession:true, tmpl, createComposeSession, revealCompositionFields,
               editFields, asToken, setupAutocomplete, Gloda, Log:true,
-              setupLogging, dumpCallStack */
+              setupLogging, dumpCallStack, Attachments */
     let store;
     var {StringBundle} = ChromeUtils.import("resource:///modules/StringBundle.js");
     /* exported Services */
@@ -297,6 +299,20 @@
       });
     }
 
+    /* exported renderAttachmentDetails */
+    function renderAttachmentDetails(messageDiv, msgData) {
+      const details = messageDiv.getElementsByClassName("attachments-container")[0];
+      if (msgData.attachments.length) {
+        ReactDOM.render(React.createElement(ReactRedux.Provider, {store},
+          React.createElement(Attachments, {
+            attachments: msgData.attachments,
+            attachmentsPlural: msgData.attachmentsPlural,
+            gallery: msgData.gallery,
+            msgUri: msgData.uri,
+          })), details);
+      }
+    }
+
     /* exported cleanup */
     function cleanup() {
       // These shouldn't be necessary because we're blasting away everything by
@@ -347,7 +363,7 @@
     //  be used either in a standalone tab or in the multimessage pane.
     // let Conversations = window.top.Conversations;
 
-    const {MailServices} = ChromeUtils.import("resource:///modules/MailServices.jsm");
+    var {MailServices} = ChromeUtils.import("resource:///modules/MailServices.jsm");
     const {decodeUrlParameters, isOSX, isWindows, parseMimeLine} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
     const {msgUriToMsgHdr, msgHdrsMarkAsRead} = ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
     const {Prefs} = ChromeUtils.import("resource://conversations/modules/prefs.js");
@@ -386,16 +402,6 @@
     }
 
     window.print = printConversation;
-
-    const kGalleryUrl = "chrome://conversations/content/gallery/index.html";
-
-    /* exported galleryView */
-    function galleryView(uri) {
-      let tabmail = topMail3Pane(window).document.getElementById("tabmail");
-      tabmail.openTab("chromeTab", {
-        chromePage: kGalleryUrl + "?uri=" + uri,
-      });
-    }
 
     /**
      * That big event handler tries to parse URL query parameters, and then acts
@@ -846,9 +852,6 @@
       </div>
       <div class="detailsPlaceholder show-with-details">
       </div>
-      <div class="detailsLine">
-        {{tmpl "attachmentDetails" this}}
-      </div>
 
       {{#if generateLightningTempl}}
       <div class="lightningImipBar notificationBar" style="display: none">
@@ -1050,7 +1053,6 @@
         <div class="iframe-container"></div>
         <div class="body-container"></div>
         <div class="attachments-container">
-          {{tmpl "attachments" this}}
         </div>
         <div class="embedsContainer">
         </div>
@@ -1065,16 +1067,11 @@
         </div>
       </div>
       {{#if quickReply}}
-        <div>
-          Quick Reply is temporarily disabled due to not working in Thunderbird 68 beta.
-        </div>
+        {{tmpl "quickReply" this}}
       {{/if}}
     </li>
     ]]>
   </script>
-  <!-- This should be in the quickReply if above -->
-  <!-- {{tmpl "quickReply" this}} -->
-
   <!-- Weird markup again, otherwise, the comma is separated from the name by a
     space because of the #text whitespace-only nodes that end up in the DOM.
   -->
@@ -1100,68 +1097,6 @@
   <script id="attachmentIconTemplate" type="text/x-handlebars-template"><![CDATA[
     {{#if attachments.length}}
       <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#attachment"></use></svg>
-    {{/if}}
-  ]]></script>
-  <script id="attachmentDetailsTemplate" type="text/x-handlebars-template"><![CDATA[
-    {{#if attachments.length}}
-      <u>{{attachmentsPlural}}:</u>
-      {{#each attachments}}
-        <a href="javascript:"
-          onclick="scrollNodeIntoView(document.getElementById('{{anchor}}'));">
-          {{name}} ({{formattedSize}})</a>{{sep}}
-      {{/each}}
-    {{/if}}
-  ]]></script>
-  <script id="attachmentsTemplate" type="text/x-handlebars-template"><![CDATA[
-    {{#if attachments.length}}
-      <ul class="attachments">
-        <div class="attachHeader">
-          {{attachmentsPlural}}
-          <a href="javascript:" class="icon-link download-all" title="{{str 'downloadAll2'}}">
-            <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-              <use xlink:href="chrome://conversations/skin/material-icons.svg#file_download"></use>
-            </svg>
-          </a>
-          {{#if gallery}}
-          <a href="javascript:" onclick="galleryView('{{uri}}')" class="icon-link view-all" title="{{str 'galleryView'}}">
-            <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-              <use xlink:href="chrome://conversations/skin/material-icons.svg#photo_library"></use>
-            </svg>
-            </a>
-          {{/if}}
-        </div>
-        {{#each attachments}}
-        <li class="clearfix hbox attachment" draggable="true" id="{{anchor}}">
-          <div class="attachmentThumb">
-            <img onload="$(this).closest('.attachment').find('.align').vAlign()"
-            class="{{imgClass}}" src="{{thumb}}" />
-          </div>
-          <div class="attachmentInfo align">
-            <span class="filename">{{name}}</span>
-            <span class="filesize">{{formattedSize}}</span>
-            <div class="attachActions">
-              {{#if canPreview}}
-              <a href="javascript:" class="icon-link preview-attachment" title="{{str "preview"}}">
-                <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                  <use xlink:href="chrome://conversations/skin/material-icons.svg#visibility"></use>
-                </svg>
-              </a>
-              {{/if}}
-              <a href="javascript:" class="icon-link download-attachment" title="{{str 'download2'}}">
-                <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                  <use xlink:href="chrome://conversations/skin/material-icons.svg#file_download"></use>
-                </svg>
-              </a>
-              <a href="javascript:" class="icon-link open-attachment" title="{{str 'open'}}">
-                <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-                  <use xlink:href="chrome://conversations/skin/material-icons.svg#search"></use>
-                </svg>
-              </a>
-            </div>
-          </div>
-        </li>
-        {{/each}}
-      </ul>
     {{/if}}
   ]]></script>
   <script id="popularContactTemplate" type="text/x-handlebars-template"><![CDATA[

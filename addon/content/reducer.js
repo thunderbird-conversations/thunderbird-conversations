@@ -48,7 +48,10 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   ContactHelpers: "resource://conversations/modules/contact.js",
   msgHdrsDelete: "resource://conversations/modules/stdlib/msgHdrUtils.js",
   composeMessageTo: "resource://conversations/modules/stdlib/compose.js",
+  previewAttachment: "resource://conversations/modules/message.js",
 });
+
+const initialAttachments = {};
 
 const initialSummary = {
   loading: true,
@@ -57,6 +60,44 @@ const initialSummary = {
   expanded: true,
   read: true,
 };
+
+function attachments(state = initialAttachments, action) {
+  switch (action.type) {
+    case "PREVIEW_ATTACHMENT": {
+      previewAttachment(topMail3Pane(window), action.name, action.url,
+        action.isPdf, action.maybeViewable);
+      return state;
+    }
+    case "DOWNLOAD_ALL": {
+      const msg = Conversations.currentConversation.getMessage(action.msgUri);
+      msg.downloadAllAttachments(topMail3Pane(window));
+      return state;
+    }
+    case "DOWNLOAD_ATTACHMENT": {
+      const msg = Conversations.currentConversation.getMessage(action.msgUri);
+      msg.downloadAttachment(topMail3Pane(window), action.url);
+      return state;
+    }
+    case "OPEN_ATTACHMENT": {
+      const msg = Conversations.currentConversation.getMessage(action.msgUri);
+      msg.openAttachment(topMail3Pane(window), action.url);
+      return state;
+    }
+    case "SHOW_GALLERY_VIEW": {
+      const kGalleryUrl = "chrome://conversations/content/gallery/index.html";
+
+      let tabmail = topMail3Pane(window).document.getElementById("tabmail");
+      tabmail.openTab("chromeTab", {
+        chromePage: kGalleryUrl + "?uri=" + action.msgUri,
+      });
+
+      return state;
+    }
+    default: {
+      return state;
+    }
+  }
+}
 
 function summary(state = initialSummary, action) {
   switch (action.type) {
@@ -191,5 +232,6 @@ function summary(state = initialSummary, action) {
 }
 
 const conversationApp = Redux.combineReducers({
+  attachments,
   summary,
 });

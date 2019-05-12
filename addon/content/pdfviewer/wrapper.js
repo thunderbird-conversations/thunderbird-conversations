@@ -36,7 +36,7 @@
 
 "use strict";
 
-const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm", null);
+var {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm", null);
 const {NetUtil} = ChromeUtils.import("resource://gre/modules/NetUtil.jsm", null);
 const {setupLogging} =
   ChromeUtils.import("resource://conversations/modules/log.js", {});
@@ -60,7 +60,7 @@ Wrapper.prototype = {
    */
   _download() {
     let url = Services.io.newURI(this.url);
-    let channel = Services.io.newChannelFromURI2(url,
+    let channel = Services.io.newChannelFromURI(url,
       null,
       Services.scriptSecurityManager.getSystemPrincipal(),
       null,
@@ -71,15 +71,14 @@ Wrapper.prototype = {
 
     return new Promise(resolve => {
       let listener = {
-        onStartRequest(/* nsIRequest */ aRequest, /* nsISupports */ aContext) {
+        onStartRequest(aRequest) {
         },
 
-        onStopRequest(/* nsIRequest */ aRequest, /* nsISupports */ aContext, /* int */ aStatusCode) {
+        onStopRequest(aRequest, aStatusCode) {
           resolve(chunks);
         },
 
-        onDataAvailable(/* nsIRequest */ aRequest, /* nsISupports */ aContext,
-            /* nsIInputStream */ aStream, /* int */ aOffset, /* int */ aCount) {
+        onDataAvailable(aRequest, aStream, aOffset, aCount) {
           // Fortunately, we have in Gecko 2.0 a nice wrapper
           let data = NetUtil.readInputStreamToString(aStream, aCount);
           // Now each character of the string is actually to be understood as a byte
@@ -91,7 +90,7 @@ Wrapper.prototype = {
           chunks.push(array);
         },
 
-        QueryInterface: generateQI([Ci.nsISupports, Ci.nsIStreamListener,
+        QueryInterface: generateQI([Ci.nsIStreamListener,
           Ci.nsIRequestObserver]),
       };
       channel.asyncOpen(listener, null);
@@ -109,7 +108,8 @@ Wrapper.prototype = {
       w.init(Cu.cloneInto({ chunks }, w));
     }, {once: true, capture: true});
     // Load from a resource:// URL so that it doesn't have chrome privileges.
-    browser.loadURI("resource://conversations/content/pdfviewer/viewer.xhtml", null, null);
+    browser.loadURI("resource://conversations/content/pdfviewer/viewer.xhtml",
+      {triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal()});
   },
 };
 
