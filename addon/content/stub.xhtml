@@ -1092,68 +1092,6 @@
           > &lt;{{trim displayEmail}}&gt;</span>{{/if}}{{#if writeBr}}<br />{{/if}}</span
       ></span
   >]]></script>
-  <!-- Tooltip template specific to recipients -->
-  <script id="contactTooltipTemplate" type="text/x-handlebars-template"><![CDATA[<span
-    class="contactTooltipWrapper contact">{{tmpl "innerTooltip" this}}</span
-  >]]></script>
-  <!-- Inner tooltip template, to be used by other templates. Currently only used by the template above. -->
-  <script id="innerTooltipTemplate" type="text/x-handlebars-template"><![CDATA[<div
-    class="tooltip">
-      <div class="arrow"></div>
-      <div class="arrow inside"></div>
-      <div class="authorInfoContainer">
-        <div class="authorInfo">
-          <span class="name" title="{{tooltipName}}">{{tooltipName}}</span>
-          <span class="authorEmail">
-            <span class="authorEmailAddress" title="{{email}}">{{email}}</span>
-            <button class="copyEmail" title="{{str 'copyEmail'}}">
-              <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#content_copy"></use></svg>
-            </button>
-          </span>
-        </div>
-        <div class="authorPicture">
-          <img src="{{avatar}}" />
-        </div>
-      </div>
-      <div class="tipFooter hiddenFooter" style="display:none;">
-        {{#if showMonospace}}
-        <div style="margin-bottom:5px;">
-          <input type="checkbox" style="vertical-align: text-top" class="checkbox-monospace" />
-          <label style="color:#666; font-weight: normal">{{str "messagesMonospace"}}</label>
-        </div>
-        {{/if}}
-        <button class="createFilter">{{str "createFilter"}}</button>
-        <button class="addContact" title="{{str 'addToAb'}}">
-          <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-            <use xlink:href="chrome://conversations/skin/material-icons.svg#add"></use>
-          </svg>
-        </button>
-        <button class="editContact" title="{{str 'editCardAb'}}">
-          <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-            <use xlink:href="chrome://conversations/skin/material-icons.svg#edit"></use>
-          </svg>
-        </button>
-      </div>
-      <div class="tipFooter">
-        <button class="sendEmail" title="{{str 'sendEmail'}}">
-          <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-            <use xlink:href="chrome://conversations/skin/material-icons.svg#mail"></use>
-          </svg>
-        </button>
-        <button class="showInvolving" title="{{str 'recentConversations'}}">
-          <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-            <use xlink:href="chrome://conversations/skin/material-icons.svg#history"></use>
-          </svg>
-        </button>
-        <button class="moreExpander" title="{{str 'more'}}">
-          <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
-            <use class="moreExpander-close" xlink:href="chrome://conversations/skin/material-icons.svg#expand_less"></use>
-            <use class="moreExpander-open" xlink:href="chrome://conversations/skin/material-icons.svg#expand_more"></use>
-          </svg>
-        </button>
-      </div>
-    </div
-  >]]></script>
   <script id="attachmentIconTemplate" type="text/x-handlebars-template"><![CDATA[
     {{#if attachments.length}}
       <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#attachment"></use></svg>
