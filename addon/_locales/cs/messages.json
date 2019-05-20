@@ -1,0 +1,11 @@
+{
+  "extensionName": {
+    "message": "Konverzace pro Thunderbird",
+    "description": "Name of the extension."
+  },
+
+  "extensionDescription": {
+    "message": "Přináší do Thunderbirdu zobrazení konverzací!",
+    "description": "Description of the extension."
+  }
+}

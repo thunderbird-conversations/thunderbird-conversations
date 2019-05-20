@@ -1,0 +1,11 @@
+{
+  "extensionName": {
+    "message": "Thunderbird Conversations",
+    "description": "Name of the extension."
+  },
+
+  "extensionDescription": {
+    "message": "Permette di visualizzare le e-mail sotto forma di conversazioni in modo analogo al sito web di Gmail",
+    "description": "Description of the extension."
+  }
+}

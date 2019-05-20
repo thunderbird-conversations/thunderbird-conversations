@@ -1,0 +1,11 @@
+{
+  "extensionName": {
+    "message": "Thunderbird Conversations",
+    "description": "Name of the extension."
+  },
+
+  "extensionDescription": {
+    "message": "Προσφέρει εμφάνιση μηνυμάτων σε μορφή συνομιλίας στον Thunderbird!",
+    "description": "Description of the extension."
+  }
+}

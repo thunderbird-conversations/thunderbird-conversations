@@ -1,0 +1,11 @@
+{
+  "extensionName": {
+    "message": "Thunderbird Conversations",
+    "description": "Name of the extension."
+  },
+
+  "extensionDescription": {
+    "message": "Porta un visor de conversa cap al teu Thunderbird",
+    "description": "Description of the extension."
+  }
+}

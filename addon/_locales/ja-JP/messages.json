@@ -1,0 +1,11 @@
+{
+  "extensionName": {
+    "message": "Thunderbird Conversations",
+    "description": "Name of the extension."
+  },
+
+  "extensionDescription": {
+    "message": "返信メールが一目でわかるスレッドビューをあなたの Thunderbirdに!",
+    "description": "Description of the extension."
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "extensionName": {
+    "message": "Thunderbird Conversations",
+    "description": "Name of the extension."
+  },
+
+  "extensionDescription": {
+    "message": "Групише е-поруке у разговоре, укључујући и Ваше поруке, као што то чини Gmail.",
+    "description": "Description of the extension."
+  }
+}

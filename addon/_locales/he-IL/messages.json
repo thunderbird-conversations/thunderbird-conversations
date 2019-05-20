@@ -1,0 +1,11 @@
+{
+  "extensionName": {
+    "message": "Thunderbird Conversations",
+    "description": "Name of the extension."
+  },
+
+  "extensionDescription": {
+    "message": "כווץ את הודעות הדוא\"ל בשיחות, כולל ההודעות שלך, בדומה לג'יימל.‏",
+    "description": "Description of the extension."
+  }
+}

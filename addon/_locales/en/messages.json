@@ -1,0 +1,11 @@
+{
+  "extensionName": {
+    "message": "Thunderbird Conversations",
+    "description": "Name of the extension."
+  },
+
+  "extensionDescription": {
+    "message": "Brings a conversation view to a Thunderbird near you!",
+    "description": "Description of the extension."
+  }
+}

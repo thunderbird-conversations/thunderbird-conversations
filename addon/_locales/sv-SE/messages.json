@@ -1,0 +1,11 @@
+{
+  "extensionName": {
+    "message": "Thunderbird Conversations",
+    "description": "Name of the extension."
+  },
+
+  "extensionDescription": {
+    "message": "Visa dina e-brev som fullständiga trådar eller grupperade och med trådsammanfattningar, precis som hos Gmail.",
+    "description": "Description of the extension."
+  }
+}

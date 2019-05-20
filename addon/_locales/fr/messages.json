@@ -1,0 +1,11 @@
+{
+  "extensionName": {
+    "message": "Thunderbird Conversations",
+    "description": "Name of the extension."
+  },
+
+  "extensionDescription": {
+    "message": "Affiche vos emails sous la forme de \"conversations\" comme sur Gmail. Vos emails sont regroupés et s'affichent sous forme de résumés de fils de discussion.",
+    "description": "Description of the extension."
+  }
+}

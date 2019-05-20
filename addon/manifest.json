@@ -1,0 +1,22 @@
+{
+  "manifest_version": 2,
+  "applications": {
+    "gecko": {
+      "id": "gconversation@xulforum.org",
+      "strict_min_version": "68.0a1"
+    }
+  },
+  "author": "Jonathan Protzenko",
+  "name": "__MSG_extensionName__",
+  "default_locale": "en",
+  "description": "__MSG_extensionDescription__",
+  "version": "2.15pre",
+  "homepage_url": "http://github.com/protz/thunderbird-conversations/wiki",
+  "legacy": {
+    "options": {
+      "page": "chrome://conversations/content/options.xul",
+      "open_in_tab": true
+    },
+    "type": "bootstrap"
+  }
+}

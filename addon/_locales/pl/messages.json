@@ -1,0 +1,11 @@
+{
+  "extensionName": {
+    "message": "Thunderbird Conversations",
+    "description": "Name of the extension."
+  },
+
+  "extensionDescription": {
+    "message": "Rozszerzenie dodaje do Thunderbirda widok konwersacji.",
+    "description": "Description of the extension."
+  }
+}
