@@ -178,8 +178,7 @@ function startup(aData, aReason) {
           loadImports();
           monkeyPatchAllWindows();
       },
-    }, "final-ui-startup");
-
+    }, "mail-startup-done");
 
     // Patch all future windows
     Services.ww.registerNotification(windowObserver);
