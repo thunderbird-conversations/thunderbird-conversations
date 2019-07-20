@@ -1065,11 +1065,16 @@
         </div>
       </div>
       {{#if quickReply}}
-        {{tmpl "quickReply" this}}
+        <div>
+          Quick Reply is temporarily disabled due to not working in Thunderbird 68 beta.
+        </div>
       {{/if}}
     </li>
     ]]>
   </script>
+  <!-- This should be in the quickReply if above -->
+  <!-- {{tmpl "quickReply" this}} -->
+
   <!-- Weird markup again, otherwise, the comma is separated from the name by a
     space because of the #text whitespace-only nodes that end up in the DOM.
   -->
