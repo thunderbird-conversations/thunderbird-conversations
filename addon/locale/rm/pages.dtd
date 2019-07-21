@@ -20,17 +20,3 @@
 <!ENTITY feedback.no "Na, grazia">
 <!ENTITY feedback.yes "Dar in resun">
 <!ENTITY feedback.pageTitle "Dai tes resun">
-<!ENTITY stub.loading "Chargiar…">
-<!ENTITY stub.trash.tooltip "Stizzar questa conversaziun">
-<!ENTITY stub.archive.tooltip "Archivar questa conversaziun">
-<!ENTITY stub.forward.tooltip "Renviar questa conversaziun">
-<!ENTITY stub.print.tooltip "Stampar questa conversaziun">
-<!ENTITY stub.junk.tooltip "Marcar quest messadi sco nungiavischà">
-<!ENTITY stub.expand.tooltip "Extender/cumprimer tut ils messadis">
-<!ENTITY stub.read.tooltip "Midar legì/betg legì tar tut ils messadis">
-<!ENTITY stub.detach.tooltip2 "Mussar questa conversaziun en in nov tab">
-<!ENTITY stub.menu.tooltip "Acziuns da la conversaziun">
-<!ENTITY stub.context.open "Avrir l'agiunta">
-<!ENTITY stub.context.save "Memorisar l'agiunta">
-<!ENTITY stub.context.detach "Allontanar l'agiunta">
-<!ENTITY stub.context.delete "Stizzar l'agiunta">

@@ -20,17 +20,3 @@
 <!ENTITY feedback.no "不，謝謝">
 <!ENTITY feedback.yes "反饋意見">
 <!ENTITY feedback.pageTitle "我的意見">
-<!ENTITY stub.loading "加載中……">
-<!ENTITY stub.trash.tooltip "刪除此次對話">
-<!ENTITY stub.archive.tooltip "將此次對話進行歸檔">
-<!ENTITY stub.forward.tooltip "轉寄此對話">
-<!ENTITY stub.print.tooltip "打印此對話">
-<!ENTITY stub.junk.tooltip "將此郵件標記為垃圾郵件">
-<!ENTITY stub.expand.tooltip "展開/折疊所有郵件">
-<!ENTITY stub.read.tooltip "將所有郵件標記為已讀/未讀">
-<!ENTITY stub.detach.tooltip2 "在新標簽頁中顯示對話">
-<!ENTITY stub.menu.tooltip "對話動作">
-<!ENTITY stub.context.open "Open attachment">
-<!ENTITY stub.context.save "Save attachment">
-<!ENTITY stub.context.detach "Detach attachment">
-<!ENTITY stub.context.delete "Delete attachment">

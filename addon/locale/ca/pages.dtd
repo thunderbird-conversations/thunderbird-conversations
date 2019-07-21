@@ -20,17 +20,3 @@
 <!ENTITY feedback.no "No, gràcies">
 <!ENTITY feedback.yes "Deixa'ns el teu Feedback">
 <!ENTITY feedback.pageTitle "Dona el Feedback">
-<!ENTITY stub.loading "Carregant-se...">
-<!ENTITY stub.trash.tooltip "Elimina aquesta conversa">
-<!ENTITY stub.archive.tooltip "Arxiva aquesta conversa">
-<!ENTITY stub.forward.tooltip "Reenvia la conversa">
-<!ENTITY stub.print.tooltip "Imprimeix aquesta conversa">
-<!ENTITY stub.junk.tooltip "Aquest missatge és brossa">
-<!ENTITY stub.expand.tooltip "Expandeix/Redueix tots els missatges">
-<!ENTITY stub.read.tooltip "Marca com a Llegit/No llegit tots els missatge">
-<!ENTITY stub.detach.tooltip2 "Mostra aquesta conversa en una nova pestanya">
-<!ENTITY stub.menu.tooltip "Accions de conversa">
-<!ENTITY stub.context.open "Obre l'adjunt">
-<!ENTITY stub.context.save "Guarda l'adjunt">
-<!ENTITY stub.context.detach "Desenganxa l'adjunt">
-<!ENTITY stub.context.delete "Elimina l'adjunt">

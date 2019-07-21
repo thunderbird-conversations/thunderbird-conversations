@@ -20,17 +20,3 @@
 <!ENTITY feedback.no "Ez, eskerrik asko">
 <!ENTITY feedback.yes "Utzi iritzia">
 <!ENTITY feedback.pageTitle "Iritzi jasotzea">
-<!ENTITY stub.loading "Kargatzen...">
-<!ENTITY stub.trash.tooltip "Ezabatu hizketaldi hau">
-<!ENTITY stub.archive.tooltip "Artxibatu hizketaldi hau">
-<!ENTITY stub.forward.tooltip "Aurrera hizketaldi hau">
-<!ENTITY stub.print.tooltip "Inprimatu hizketaldi hau">
-<!ENTITY stub.junk.tooltip "Mezu hau zabor-postara">
-<!ENTITY stub.expand.tooltip "Zabaldu/Tolestu mezu guztiak">
-<!ENTITY stub.read.tooltip "Aldatu irakurrita/irakurri gabe mezu guztiak">
-<!ENTITY stub.detach.tooltip2 "Ikusi hizketaldi hau fitxa berrian">
-<!ENTITY stub.menu.tooltip "Hizketaldi ekintzak">
-<!ENTITY stub.context.open "Ireki eranskina">
-<!ENTITY stub.context.save "Gorde eranskina">
-<!ENTITY stub.context.detach "Askatu eranskina">
-<!ENTITY stub.context.delete "Ezabatu eranskina">

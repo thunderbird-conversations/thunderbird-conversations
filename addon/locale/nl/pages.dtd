@@ -20,17 +20,3 @@
 <!ENTITY feedback.no "Nee, bedankt">
 <!ENTITY feedback.yes "Feedback geven">
 <!ENTITY feedback.pageTitle "Feedback geven">
-<!ENTITY stub.loading "Laden...">
-<!ENTITY stub.trash.tooltip "Deze conversatie verwijderen">
-<!ENTITY stub.archive.tooltip "Deze conversatie archiveren">
-<!ENTITY stub.forward.tooltip "Conversatie doorsturen">
-<!ENTITY stub.print.tooltip "Conversatie afdrukken">
-<!ENTITY stub.junk.tooltip "Dit bericht is junk">
-<!ENTITY stub.expand.tooltip "Alle berichten uitklappen/inklappen">
-<!ENTITY stub.read.tooltip "Alle gelezen/ongelezen berichten wisselen">
-<!ENTITY stub.detach.tooltip2 "Deze conversatie in een nieuw scherm tonen">
-<!ENTITY stub.menu.tooltip "Conversatie-acties">
-<!ENTITY stub.context.open "Bijlage openen">
-<!ENTITY stub.context.save "Bijlage opslaan">
-<!ENTITY stub.context.detach "Bijlage ontkoppelen">
-<!ENTITY stub.context.delete "Bijlage verwijderen">

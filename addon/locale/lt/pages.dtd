@@ -20,17 +20,3 @@
 <!ENTITY feedback.no "Ne, dėkui">
 <!ENTITY feedback.yes "Palikti atsiliepimą">
 <!ENTITY feedback.pageTitle "Suteikti atsiliepimą">
-<!ENTITY stub.loading "Įkraunama...">
-<!ENTITY stub.trash.tooltip "Pašalinti šį pokalbį">
-<!ENTITY stub.archive.tooltip "Archyvuoti šį pokalbį">
-<!ENTITY stub.forward.tooltip "Persiųsti šį pokalbį">
-<!ENTITY stub.print.tooltip "Spausdinti šį pokalbį">
-<!ENTITY stub.junk.tooltip "Pažymėti kaip brukalą">
-<!ENTITY stub.expand.tooltip "Išskleisti/Suskleisti visus laiškus">
-<!ENTITY stub.read.tooltip "Perjungti visų laiškų būseną kaip skaityti/neskaityti">
-<!ENTITY stub.detach.tooltip2 "Rodyti šį pokalbį naujoje kortelėje">
-<!ENTITY stub.menu.tooltip "Pokalbio veiksmai">
-<!ENTITY stub.context.open "Atverti priedą">
-<!ENTITY stub.context.save "Išsaugoti priedą">
-<!ENTITY stub.context.detach "Atsegti priedą">
-<!ENTITY stub.context.delete "Ištrinti priedą">

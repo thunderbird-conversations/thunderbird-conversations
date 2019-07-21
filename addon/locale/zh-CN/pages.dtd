@@ -20,17 +20,3 @@
 <!ENTITY feedback.no "不，谢谢">
 <!ENTITY feedback.yes "反馈意见">
 <!ENTITY feedback.pageTitle "我的意见">
-<!ENTITY stub.loading "加载中……">
-<!ENTITY stub.trash.tooltip "删除此次会话">
-<!ENTITY stub.archive.tooltip "将此次会话进行归档">
-<!ENTITY stub.forward.tooltip "转发此会话">
-<!ENTITY stub.print.tooltip "打印此会话">
-<!ENTITY stub.junk.tooltip "将此邮件标记为垃圾邮件">
-<!ENTITY stub.expand.tooltip "展开/折叠所有邮件">
-<!ENTITY stub.read.tooltip "将所有邮件标记为已读/未读">
-<!ENTITY stub.detach.tooltip2 "在新标签页中显示会话">
-<!ENTITY stub.menu.tooltip "会话动作">
-<!ENTITY stub.context.open "打开附件">
-<!ENTITY stub.context.save "保存附件">
-<!ENTITY stub.context.detach "分离附件">
-<!ENTITY stub.context.delete "删除附件">

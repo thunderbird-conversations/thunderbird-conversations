@@ -20,17 +20,3 @@
 <!ENTITY feedback.no "Ne, hvala">
 <!ENTITY feedback.yes "Sporočite povratne informacije">
 <!ENTITY feedback.pageTitle "Podajte povratne informacije">
-<!ENTITY stub.loading "Nalaganje ...">
-<!ENTITY stub.trash.tooltip "Izbriši ta pogovor">
-<!ENTITY stub.archive.tooltip "Arhiviraj ta pogovor">
-<!ENTITY stub.forward.tooltip "Posreduj ta pogovor">
-<!ENTITY stub.print.tooltip "Natisni ta pogovor">
-<!ENTITY stub.junk.tooltip "Označi to sporočilo kot neželeno">
-<!ENTITY stub.expand.tooltip "Razširi/strni vsa sporočila">
-<!ENTITY stub.read.tooltip "Preklopi vsa sporočila med prebrano/neprebrano">
-<!ENTITY stub.detach.tooltip2 "Prikaži ta pogovor v novem zavihku">
-<!ENTITY stub.menu.tooltip "Dejanja pogovora">
-<!ENTITY stub.context.open "Odpri priponko">
-<!ENTITY stub.context.save "Shrani priponko">
-<!ENTITY stub.context.detach "Odpni priponko">
-<!ENTITY stub.context.delete "Izbriši priponko">

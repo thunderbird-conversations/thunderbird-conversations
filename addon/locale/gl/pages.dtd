@@ -20,17 +20,3 @@
 <!ENTITY feedback.no "Non, grazas">
 <!ENTITY feedback.yes "Deixar opinións">
 <!ENTITY feedback.pageTitle "Opinar">
-<!ENTITY stub.loading "A cargar...">
-<!ENTITY stub.trash.tooltip "Eliminar esta conversa">
-<!ENTITY stub.archive.tooltip "Arquivar esta conversa">
-<!ENTITY stub.forward.tooltip "Encamiñar esta conversa">
-<!ENTITY stub.print.tooltip "Imprimir esta conversa">
-<!ENTITY stub.junk.tooltip "Junk this message">
-<!ENTITY stub.expand.tooltip "Expandir/recoller todas as mensaxes">
-<!ENTITY stub.read.tooltip "Toggle read/unread all messages">
-<!ENTITY stub.detach.tooltip2 "Mostrar esta conversa nunha lapela nova">
-<!ENTITY stub.menu.tooltip "Accións de conversa">
-<!ENTITY stub.context.open "Abrir anexo">
-<!ENTITY stub.context.save "Gardar anexo">
-<!ENTITY stub.context.detach "Separar anexo">
-<!ENTITY stub.context.delete "Eliminar anexo">

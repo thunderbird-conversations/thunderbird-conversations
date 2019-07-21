@@ -20,17 +20,3 @@
 <!ENTITY feedback.no "Nie, dziękuję">
 <!ENTITY feedback.yes "Wystaw opinię">
 <!ENTITY feedback.pageTitle "Prześlij opinię">
-<!ENTITY stub.loading "Wczytywanie…">
-<!ENTITY stub.trash.tooltip "Usuń konwersację">
-<!ENTITY stub.archive.tooltip "Archiwizuj konwersację">
-<!ENTITY stub.forward.tooltip "Przekaż tę konwersację">
-<!ENTITY stub.print.tooltip "Drukuj konwersację">
-<!ENTITY stub.junk.tooltip "Oznacz konwersację jako niechcianą">
-<!ENTITY stub.expand.tooltip "Rozwiń/zwiń wszystkie wiadomości">
-<!ENTITY stub.read.tooltip "Oznacz wszystkie wiadomości jako przeczytane/nieprzeczytane">
-<!ENTITY stub.detach.tooltip2 "Wyświetl konwersację w nowej karcie">
-<!ENTITY stub.menu.tooltip "Czynności konwersacji">
-<!ENTITY stub.context.open "Otwórz załącznik">
-<!ENTITY stub.context.save "Zapisz załącznik">
-<!ENTITY stub.context.detach "Odłącz załącznik">
-<!ENTITY stub.context.delete "Usuń załącznik">

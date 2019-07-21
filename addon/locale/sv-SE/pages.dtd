@@ -20,17 +20,3 @@
 <!ENTITY feedback.no "Nej tack">
 <!ENTITY feedback.yes "Ge feedback">
 <!ENTITY feedback.pageTitle "Ge feedback">
-<!ENTITY stub.loading "Läser in…">
-<!ENTITY stub.trash.tooltip "Ta bort denna konversation">
-<!ENTITY stub.archive.tooltip "Arkivera denna konversation">
-<!ENTITY stub.forward.tooltip "Vidarebefordra denna konversation">
-<!ENTITY stub.print.tooltip "Skriv ut denna konversation">
-<!ENTITY stub.junk.tooltip "Märk detta meddelande som skräppost">
-<!ENTITY stub.expand.tooltip "Visa/dölj alla meddelanden">
-<!ENTITY stub.read.tooltip "Växla lästa/olästa för alla meddelanden">
-<!ENTITY stub.detach.tooltip2 "Visa denna konversation i en ny flik">
-<!ENTITY stub.menu.tooltip "Konversationsåtgärder">
-<!ENTITY stub.context.open "Öppna bilaga">
-<!ENTITY stub.context.save "Spara bilaga">
-<!ENTITY stub.context.detach "Koppla loss bilaga">
-<!ENTITY stub.context.delete "Ta bort bilaga">

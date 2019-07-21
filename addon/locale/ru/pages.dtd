@@ -20,17 +20,3 @@
 <!ENTITY feedback.no "Нет, спасибо!">
 <!ENTITY feedback.yes "Оставить отзыв">
 <!ENTITY feedback.pageTitle "Дать отзыв">
-<!ENTITY stub.loading "Загрузка...">
-<!ENTITY stub.trash.tooltip "Удалить это общение">
-<!ENTITY stub.archive.tooltip "Архивировать это общение">
-<!ENTITY stub.forward.tooltip "Forward this conversation">
-<!ENTITY stub.print.tooltip "Печать этого общения">
-<!ENTITY stub.junk.tooltip "Это сообщение - спам">
-<!ENTITY stub.expand.tooltip "Развернуть/свернуть все сообщения">
-<!ENTITY stub.read.tooltip "Переключить статус прочтения всех сообщений">
-<!ENTITY stub.detach.tooltip2 "Показать общение в новой вкладке">
-<!ENTITY stub.menu.tooltip "Conversation actions">
-<!ENTITY stub.context.open "Open attachment">
-<!ENTITY stub.context.save "Save attachment">
-<!ENTITY stub.context.detach "Detach attachment">
-<!ENTITY stub.context.delete "Delete attachment">

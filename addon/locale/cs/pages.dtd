@@ -20,17 +20,3 @@
 <!ENTITY feedback.no "Ne, děkuji">
 <!ENTITY feedback.yes "Odeslat zpětnou vazbu">
 <!ENTITY feedback.pageTitle "Odeslat zpětnou vazbu">
-<!ENTITY stub.loading "Načítá se...">
-<!ENTITY stub.trash.tooltip "Smazat konverzaci">
-<!ENTITY stub.archive.tooltip "Archivovat konverzaci">
-<!ENTITY stub.forward.tooltip "Přeposlat konverzaci">
-<!ENTITY stub.print.tooltip "Vytisknout konverzaci">
-<!ENTITY stub.junk.tooltip "Označit zprávu jako nevyžádaná">
-<!ENTITY stub.expand.tooltip "Rozbalit / sbalit všechny zprávy">
-<!ENTITY stub.read.tooltip "Označit všechny zprávy jako ne/přečtené">
-<!ENTITY stub.detach.tooltip2 "Zobrazit konverzaci v novém panelu">
-<!ENTITY stub.menu.tooltip "Akce s konverzací">
-<!ENTITY stub.context.open "Otevřít přílohu">
-<!ENTITY stub.context.save "Uložit přílohu">
-<!ENTITY stub.context.detach "Vyčlenit přílohu">
-<!ENTITY stub.context.delete "Smazat přílohu">

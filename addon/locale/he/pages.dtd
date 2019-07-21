@@ -20,17 +20,3 @@
 <!ENTITY feedback.no "לא, תודה">
 <!ENTITY feedback.yes "השאר משוב">
 <!ENTITY feedback.pageTitle "מתן משוב">
-<!ENTITY stub.loading "טוען...‏">
-<!ENTITY stub.trash.tooltip "מחק את השיחה">
-<!ENTITY stub.archive.tooltip "העבר את השיחה לארכיון">
-<!ENTITY stub.forward.tooltip "העבר את השיחה הזאת האלה">
-<!ENTITY stub.print.tooltip "הדפס את השיחה">
-<!ENTITY stub.junk.tooltip "סמן את השיחה כדוא&quot;ז (דואר זבל)‏">
-<!ENTITY stub.expand.tooltip "הרחב/קפל כל ההודעות">
-<!ENTITY stub.read.tooltip "חלף בין הודעות נקראות לבין הודעות שלא נקראות">
-<!ENTITY stub.detach.tooltip2 "הצג את השיחה בתוית חדשה">
-<!ENTITY stub.menu.tooltip "פעולות על השיחה">
-<!ENTITY stub.context.open "Open attachment">
-<!ENTITY stub.context.save "Save attachment">
-<!ENTITY stub.context.detach "Detach attachment">
-<!ENTITY stub.context.delete "Delete attachment">

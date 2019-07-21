@@ -20,17 +20,3 @@
 <!ENTITY feedback.no "Ne hvala">
 <!ENTITY feedback.yes "Ostavite povratnu informaciju">
 <!ENTITY feedback.pageTitle "Ostavite povratnu informaciju">
-<!ENTITY stub.loading "Učitavanje...">
-<!ENTITY stub.trash.tooltip "Obriši ovaj razgovor">
-<!ENTITY stub.archive.tooltip "Arhiviraj ovaj razgovor">
-<!ENTITY stub.forward.tooltip "Proslijedi ovaj razgovor">
-<!ENTITY stub.print.tooltip "Ispiši ovaj razgovor">
-<!ENTITY stub.junk.tooltip "Označi ovu poruku kao neželjenu">
-<!ENTITY stub.expand.tooltip "Proširi/skupi sve poruke">
-<!ENTITY stub.read.tooltip "Označi sve poruke pročitanim/nepročitanim">
-<!ENTITY stub.detach.tooltip2 "Prikaži ovaj razgovor u novoj kartici">
-<!ENTITY stub.menu.tooltip "Radnje razgovora">
-<!ENTITY stub.context.open "Otvori privitak">
-<!ENTITY stub.context.save "Spremi privitak">
-<!ENTITY stub.context.detach "Odvoji privitak">
-<!ENTITY stub.context.delete "Obriši privitak">

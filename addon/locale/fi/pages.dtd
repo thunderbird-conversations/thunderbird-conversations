@@ -83,17 +83,4 @@ Kuulisimme mielellämme kaikki sinun mahdollisett kommentit!">
 <!ENTITY feedback.no "Ei kiitos">
 <!ENTITY feedback.yes "Jätä palautetta">
 <!ENTITY feedback.pageTitle "Anna palautetta">
-<!ENTITY stub.loading "Ladataan...">
-<!ENTITY stub.trash.tooltip "Poista tämä keskustelu">
-<!ENTITY stub.archive.tooltip "Arkistoi tämä keskustelu">
-<!ENTITY stub.forward.tooltip "Välitä tämä keskustelu">
-<!ENTITY stub.print.tooltip "Tulosta tämä keskustelu">
-<!ENTITY stub.junk.tooltip "Poista tämä viesti">
-<!ENTITY stub.expand.tooltip "Laajenna/kutista kaikki viestit">
-<!ENTITY stub.read.tooltip "Vaihda luetuksi/lukemattomaksi kaikki viestit">
-<!ENTITY stub.detach.tooltip2 "Näytä tämä keskustelu uudessa välilehdessä">
 <!ENTITY stub.menu.tooltip "Keskustelun toiminnot">
-<!ENTITY stub.context.open "Avaa liite">
-<!ENTITY stub.context.save "Tallenna liite">
-<!ENTITY stub.context.detach "Irrota liite">
-<!ENTITY stub.context.delete "Poista liite">

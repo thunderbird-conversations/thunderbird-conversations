@@ -20,17 +20,3 @@
 <!ENTITY feedback.no "Не, благодаря">
 <!ENTITY feedback.yes "Оставяне на отзив">
 <!ENTITY feedback.pageTitle "Отзив">
-<!ENTITY stub.loading "Зареждане...">
-<!ENTITY stub.trash.tooltip "Изтриване на този разговор">
-<!ENTITY stub.archive.tooltip "Архивиране на този разговор">
-<!ENTITY stub.forward.tooltip "Препращане на този разговор">
-<!ENTITY stub.print.tooltip "Принтиране на този разговор">
-<!ENTITY stub.junk.tooltip "Преместване на това съобщение в кошчето">
-<!ENTITY stub.expand.tooltip "Разгъване/свиване на всички съобщения">
-<!ENTITY stub.read.tooltip "Превключване на състоянието на прочетеност за всички съобщения">
-<!ENTITY stub.detach.tooltip2 "Показване на този разговор в нов подпрозорец">
-<!ENTITY stub.menu.tooltip "Действия за разговора">
-<!ENTITY stub.context.open "Отваряне на притурката">
-<!ENTITY stub.context.save "Запазване на притурката">
-<!ENTITY stub.context.detach "Премахване на притурката">
-<!ENTITY stub.context.delete "Изтриване на притурката">

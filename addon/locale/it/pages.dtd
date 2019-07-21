@@ -20,17 +20,3 @@
 <!ENTITY feedback.no "No, grazie">
 <!ENTITY feedback.yes "Lascia feedback">
 <!ENTITY feedback.pageTitle "Rilascio del feedback">
-<!ENTITY stub.loading "Caricamento in corso…">
-<!ENTITY stub.trash.tooltip "Elimina la discussione">
-<!ENTITY stub.archive.tooltip "Archivia la discussione">
-<!ENTITY stub.forward.tooltip "Inoltra la discussione">
-<!ENTITY stub.print.tooltip "Stampa la discussione">
-<!ENTITY stub.junk.tooltip "Marca come posta indesiderata">
-<!ENTITY stub.expand.tooltip "Espandi/contrai tutti i messaggi">
-<!ENTITY stub.read.tooltip "Marca come letto/non letto">
-<!ENTITY stub.detach.tooltip2 "Apri in una nuova scheda">
-<!ENTITY stub.menu.tooltip "Opzioni per la discussione">
-<!ENTITY stub.context.open "Apri l&apos;allegato">
-<!ENTITY stub.context.save "Salva l&apos;allegato">
-<!ENTITY stub.context.detach "Separa l&apos;allegato">
-<!ENTITY stub.context.delete "Elimina l&apos;allegato">
