@@ -16,9 +16,9 @@ PACKAGE_VERSION=`grep -m1 version package.json | \
 echo ${PACKAGE_VERSION}
 
 # Ubuntu's version of sed doesn't have -i
-sed -e "s/<em:version>.*<\/em:version>/<em:version>${PACKAGE_VERSION}<\/em:version>/" \
-    ${ADDON}/install.rdf > ${ADDON}/install.rdf.gen
-mv ${ADDON}/install.rdf.gen ${ADDON}/install.rdf
+sed -e "s/\"version\": \".*\",/\"version\": \"${PACKAGE_VERSION}\",/" \
+    ${ADDON}/addon/manifest.json > ${ADDON}/addon/manifest.json.gen
+mv ${ADDON}/addon/manifest.json.gen ${ADDON}/addon/manifest.json
 # Add package.json for the case where `npm version` is used with
 # `--no-git-tag-version` - to make it easier to commit.
-git add ${ADDON}/install.rdf
+git add ${ADDON}/addon/manifest.json
