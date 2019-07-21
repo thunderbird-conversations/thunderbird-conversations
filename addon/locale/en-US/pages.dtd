@@ -20,6 +20,3 @@
 <!ENTITY feedback.no "No, thanks">
 <!ENTITY feedback.yes "Leave feedback">
 <!ENTITY feedback.pageTitle "Give feedback">
-<!ENTITY stub.forward.tooltip "Forward this conversation">
-<!ENTITY stub.print.tooltip "Print this conversation">
-<!ENTITY stub.menu.tooltip "Conversation actions">
