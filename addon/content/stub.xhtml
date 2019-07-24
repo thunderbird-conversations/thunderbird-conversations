@@ -459,7 +459,8 @@
               //  make sure the two are in sync!
               Conversations.currentConversation = aConversation;
               aConversation.completed = true;
-              registerQuickReply();
+              // TODO: Re-enable this.
+              // registerQuickReply();
               // That's why we saved it before...
               newComposeSessionByDraftIf();
               // TODO: expandQuickReply isn't defined anywhere. Should it be?
