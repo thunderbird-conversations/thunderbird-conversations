@@ -607,7 +607,8 @@ MonkeyPatch.prototype = {
                 // Here, put the final touches to our new conversation object.
                 htmlpane.contentWindow.newComposeSessionByDraftIf();
                 aConversation.completed = true;
-                htmlpane.contentWindow.registerQuickReply();
+                // TODO: Re-enable this.
+                // htmlpane.contentWindow.registerQuickReply();
               }
               if (needsGC)
                 Cu.forceGC();
