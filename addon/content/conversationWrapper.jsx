@@ -35,7 +35,7 @@
  * ***** END LICENSE BLOCK ***** */
 
 /* globals AttachmentMenu, ConversationHeader, ConversationFooter, MessageList,
-           React, ReactRedux */
+           React */
 /* exported ConversationWrapper */
 
 class ConversationWrapper extends React.PureComponent {

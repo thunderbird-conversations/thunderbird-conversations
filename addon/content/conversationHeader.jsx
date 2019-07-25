@@ -34,9 +34,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/* globals React, ReactRedux, Conversations, MailServices, PropTypes,
-           StringBundle, isInTab, Prefs, topMail3Pane, msgHdrsDelete, closeTab,
-           msgHdrsArchive */
+/* globals React, ReactRedux, PropTypes, StringBundle */
 /* exported ConversationHeader */
 
 const LINKS_REGEX = /((\w+):\/\/[^<>()'"\s]+|www(\.[-\w]+){2,})/;

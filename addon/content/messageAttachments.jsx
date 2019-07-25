@@ -34,7 +34,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/* globals React, ReactDOM, topMail3Pane, StringBundle */
+/* globals React, topMail3Pane, StringBundle */
 /* exported AttachmentMenu */
 
 class AttachmentMenu extends React.PureComponent {

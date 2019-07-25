@@ -381,6 +381,7 @@ KeyListener.prototype = {
         for (let action of actions) {
           let match = true;
           for (let mod in action.mods) {
+            // eslint-disable-next-line no-prototype-builtins
             if (action.mods.hasOwnProperty(mod)) {
               match = match && (action.mods[mod] == event[mod]);
             }

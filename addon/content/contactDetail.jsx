@@ -34,7 +34,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/* globals printConversation, PropTypes, React, ReactRedux, StringBundle */
+/* globals PropTypes, React, ReactRedux, StringBundle */
 /* exported ContactDetail */
 
 class _ContactDetail extends React.PureComponent {

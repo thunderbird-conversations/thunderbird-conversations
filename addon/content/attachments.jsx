@@ -34,7 +34,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/* globals printConversation, PropTypes, React, ReactRedux, StringBundle */
+/* globals PropTypes, React, ReactRedux, StringBundle */
 /* exported Attachments */
 
 class _Attachment extends React.PureComponent {
