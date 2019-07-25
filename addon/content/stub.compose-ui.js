@@ -58,6 +58,7 @@ var {
 var {generateQI} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
 var {getHooks} = ChromeUtils.import("resource://conversations/modules/hook.js");
 var {fixIterator} = ChromeUtils.import("resource:///modules/iteratorUtils.jsm");
+var {MailUtils} = ChromeUtils.import("resource:///modules/MailUtils.jsm");
 
 Log = setupLogging("Conversations.Stub.Compose");
 
@@ -464,7 +465,6 @@ ComposeSession.prototype = {
 
   setupIdentity() {
     let self = this;
-    let mainWindow = topMail3Pane(window);
     let identity;
     this.match({
       reply(aMessage, aReplyType) {
@@ -478,7 +478,7 @@ ComposeSession.prototype = {
           Log.assert(false, "Unknown reply type");
         // Standard procedure for finding which identity to send with, as per
         //  http://mxr.mozilla.org/comm-central/source/mail/base/content/mailCommands.js#210
-        let suggestedIdentity = mainWindow.getIdentityForHeader(aMsgHdr, compType);
+        let suggestedIdentity = MailUtils.getIdentityForHeader(aMsgHdr, compType);
         identity = suggestedIdentity || getDefaultIdentity().identity;
         self.setupDone();
       },

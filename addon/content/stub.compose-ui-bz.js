@@ -146,13 +146,12 @@ function BzComposeSession(match, webUrl, apiUrl, [login, loginCookie]) {
     return queryString;
   };
 
-  let mainWindow = topMail3Pane(window);
   let self = this;
   // Implement the required minima so that loading and saving a draft work.
   match({
     reply(aMessage) {
       let aMsgHdr = aMessage._msgHdr;
-      let suggestedIdentity = mainWindow.getIdentityForHeader(aMsgHdr, Ci.nsIMsgCompType.ReplyAll);
+      let suggestedIdentity = MailUtils.getIdentityForHeader(aMsgHdr, Ci.nsIMsgCompType.ReplyAll);
       self.params.identity = suggestedIdentity || getDefaultIdentity().identity;
       self.params.msgHdr = aMsgHdr;
     },

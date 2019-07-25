@@ -225,23 +225,6 @@ body.inTab .quickReply li.selected .textarea {
   color: -moz-default-color;
 }
 
-/* hide the right UI items */
-.message:not(.isReplyAllEnabled) .action-replyAll {
-  display: none;
-}
-
-.message:not(.isReplyListEnabled) .action-replyList {
-  display: none;
-}
-
-.message:not(.isReplyAllEnabled) .quickReply li.replyAll {
-  display: none;
-}
-
-.message:not(.isReplyAllEnabled) .quickReply li.reply {
-  width: 100%;
-}
-
 /* misc */
 
 .autocomplete-thumb {
