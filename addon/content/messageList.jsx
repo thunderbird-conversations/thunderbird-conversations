@@ -34,7 +34,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/* globals React, AttachmentMenu, ConversationHeader, ConversationFooter */
+/* globals React */
 /* exported MessageList */
 
 class MessageList extends React.PureComponent {

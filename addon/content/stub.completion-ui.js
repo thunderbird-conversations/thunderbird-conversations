@@ -2,7 +2,7 @@
 
 /* exported setupAutocomplete, Colors, getDefaultIdentity, getIdentityForEmail,
             getIdentities, NS_SUCCEEDED, setupLogging, dumpCallStack */
-/* global $, Conversations, MailServices, showCc, showBcc, strings */
+/* global $, MailServices, showCc, showBcc, strings */
 /* import-globals-from quickReply.js */
 
 // ----- Autocomplete stuff. Understand it as a part of stub.compose-ui.js

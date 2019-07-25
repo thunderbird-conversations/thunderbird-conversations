@@ -41,7 +41,7 @@
 // From stub.compose-ui-bz.js
 /* global bzSetup, BzComposeSession */
 // Via stub.xhtml
-/* global closeTab, Prefs, msgUriToMsgHdr, tmpl, Services, topMail3Pane */
+/* global Conversations, closeTab, Prefs, msgUriToMsgHdr, tmpl, Services, topMail3Pane */
 
 /* import-globals-from stub.completion-ui.js */
 

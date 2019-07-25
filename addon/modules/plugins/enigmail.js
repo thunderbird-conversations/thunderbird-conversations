@@ -103,6 +103,7 @@ let Log = setupLogging("Conversations.Modules.Enigmail");
 // get imported into this scope. It looks like they should be through the enigmail
 // resources, but all of those only appear to export a single item per jsm.
 /* eslint-disable no-unused-vars */
+// eslint-disable-next-line no-redeclare
 let window = getMail3Pane();
 let hasEnigmail;
 try {
