@@ -215,6 +215,13 @@ a img {
   vertical-align: text-top;
 }
 
+.mainActionButton > .icon-link,
+.dropDown > .icon-link,
+.optionsButton {
+  background: none;
+  border: 0;
+}
+
 .author {
   font-weight: bold;
   margin-right: .3rem;
@@ -283,10 +290,6 @@ a img {
   to { opacity: 0; }
 }
 
-.tooltip-menu {
-  display: none;
-}
-
 .contactTooltipWrapper .tooltip {
   /* override generic tooltip, so to look closer to contact name */
   left: 0;
@@ -310,14 +313,25 @@ a img {
   line-height: 1;
 }
 
+.options > .date {
+  padding-inline-end: 0.5ch;
+}
+
 .dropDown {
   position: relative;
+}
+
+.dropDown > .tooltip-menu button {
+  width: 100%;
+  height: 100%;
+  text-align: start;
+  padding: 3px 5px;
 }
 
 .dropDown .tooltip {
   min-width: 15.2em;
   left: auto;
-  right: .5em;
+  right: -0.2em;
   line-height: 1.8;
 }
 
@@ -328,7 +342,6 @@ a img {
 }
 
 .dropDown li {
-  padding: 3px 5px;
   white-space: nowrap;
 }
 
@@ -846,25 +859,6 @@ a img {
   box-shadow: 0 0 0 6px rgba(0,0,0,0.25);
   border-radius: 5px;
   z-index: 1000;
-}
-
-/* for drafts only */
-.message.draft :-moz-any(
-  .buttonReply,
-  .buttonReplyAll,
-  .buttonReplyList,
-  .buttonForward,
-  .replyLinkWrapper
-) {
-  display: none;
-}
-
-.message:not(.draft) :-moz-any(.edit-draft, .editDraftLinkWrapper) {
-  display: none;
-}
-
-.editDraftLinkWrapper {
-  font-weight: bold;
 }
 
 /* clearfix */

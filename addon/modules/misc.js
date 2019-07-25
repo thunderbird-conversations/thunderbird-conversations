@@ -150,16 +150,16 @@ function iconForMimeType(aMimeType) {
  */
 var EventHelperMixIn = {
 
-  compose: function _EventHelper_compose(aCompType, aEvent) {
+  compose: function _EventHelper_compose(compType, shiftKey = false) {
     let window = topMail3Pane(this);
-    if (aEvent && aEvent.shiftKey) {
-      window.ComposeMessage(aCompType, Ci.nsIMsgCompFormat.OppositeOfDefault, this._msgHdr.folder, [this._uri]);
+    if (shiftKey) {
+      window.ComposeMessage(compType, Ci.nsIMsgCompFormat.OppositeOfDefault, this._msgHdr.folder, [this._uri]);
     } else {
-      window.ComposeMessage(aCompType, Ci.nsIMsgCompFormat.Default, this._msgHdr.folder, [this._uri]);
+      window.ComposeMessage(compType, Ci.nsIMsgCompFormat.Default, this._msgHdr.folder, [this._uri]);
     }
   },
 
-  forward: function _EventHelper_forward(event) {
+  forward: function _EventHelper_forward(shiftKey) {
     let forwardType = 0;
     try {
       forwardType = Prefs.getInt("mail.forward_message_mode");
@@ -167,9 +167,9 @@ var EventHelperMixIn = {
       Log.error("Unable to fetch preferred forward mode\n");
     }
     if (forwardType == 0)
-      this.compose(Ci.nsIMsgCompType.ForwardAsAttachment, event);
+      this.compose(Ci.nsIMsgCompType.ForwardAsAttachment, shiftKey);
     else
-      this.compose(Ci.nsIMsgCompType.ForwardInline, event);
+      this.compose(Ci.nsIMsgCompType.ForwardInline, shiftKey);
   },
 
   register: function _EventHelper_register(selector, f, options) {

@@ -207,9 +207,9 @@ KeyListener.prototype = {
     },
     reply: function reply(event) {
       if (event.shiftKey) {
-        this.message.compose(Ci.nsIMsgCompType.ReplyAll, null);
+        this.message.compose(Ci.nsIMsgCompType.ReplyAll);
       } else {
-        this.message.compose(Ci.nsIMsgCompType.ReplyToSender, null);
+        this.message.compose(Ci.nsIMsgCompType.ReplyToSender);
       }
       event.preventDefault();
       event.stopPropagation();
@@ -237,7 +237,7 @@ KeyListener.prototype = {
       event.stopPropagation();
     },
     composeTemplate: function composeTemplate(event) {
-      this.message.compose(Ci.nsIMsgCompType.Template, null);
+      this.message.compose(Ci.nsIMsgCompType.Template);
       event.preventDefault();
       event.stopPropagation();
     },
@@ -548,6 +548,9 @@ Message.prototype = {
       canUnJunk: false,
       isOutbox: false,
       generateLightningTempl: false,
+      multipleRecipients: this.isReplyAllEnabled,
+      recipientsIncludeLists: this.isReplyListEnabled,
+      isDraft: false,
     };
 
     // 1) Generate Contact objects
@@ -612,8 +615,10 @@ Message.prototype = {
     data.shortFolderName = sanitize(name);
 
     // 5) Custom tag telling the user if this is a draft
-    if (msgHdrIsDraft(this._msgHdr))
+    if (msgHdrIsDraft(this._msgHdr)) {
+      data.isDraft = true;
       extraClasses.push("draft");
+    }
 
     // 6) For the "show remote content" thing
     data.realFrom = sanitize(this._realFrom.email || this._from.email);
@@ -697,7 +702,12 @@ Message.prototype = {
 
     let self = this;
     this._domNode.getElementsByClassName("messageHeader")[0]
-      .addEventListener("click", function() {
+      .addEventListener("click", function(event) {
+        // Don't do any collapsing if we're clicking on one of the header buttons.
+        if (event.target.localName == "button" ||
+            event.target.className.includes("action-")) {
+          return;
+        }
         self._conversation._runOnceAfterNSignals(function() {
           if (self.expanded) {
             self._conversation._htmlPane.scrollNodeIntoView(self._domNode);
@@ -722,9 +732,6 @@ Message.prototype = {
       // Don't trust gloda. Big hack, self also has the "starred" property, so
       //  we don't have to create a new object.
       self.onAttributesChanged(self);
-      event.stopPropagation();
-    });
-    this.register(".top-right-more", function(event) {
       event.stopPropagation();
     });
 
@@ -812,113 +819,30 @@ Message.prototype = {
 
     // Register all the needed event handlers. Nice wrappers below.
 
-    // This is for the smart reply button, we need to determine what's the best
-    // action.
-    this.register(".buttonReply, .action-reply", event => self.compose(Ci.nsIMsgCompType.ReplyToSender, event));
-    this.register(".buttonReplyAll, .action-replyAll", event => self.compose(Ci.nsIMsgCompType.ReplyAll, event));
-    this.register(".buttonReplyList, .action-replyList", event => self.compose(Ci.nsIMsgCompType.ReplyToList, event));
-    this.register(".buttonForward, .action-forward", event => self.forward(event));
-    let mainActionLink = self._domNode.getElementsByClassName("replyMainActionLink")[0];
-    let replyList = self._domNode.getElementsByClassName("buttonReplyList")[0];
-    let replyAll = self._domNode.getElementsByClassName("buttonReplyAll")[0];
-    let reply = self._domNode.getElementsByClassName("buttonReply")[0];
-    // Hide items if needed
-    if (!this.isReplyListEnabled)
-      replyList.style.display = "none";
-    if (!this.isReplyAllEnabled)
-      replyAll.style.display = "none";
-    // These items must be removed completely so that the alternate colors are
-    //  not off.
-    let replyListLink = self._domNode.getElementsByClassName("action-replyList")[0];
-    if (!this.isReplyListEnabled)
-      replyListLink.remove();
-    let replyAllLink = self._domNode.getElementsByClassName("action-replyAll")[0];
-    if (!this.isReplyAllEnabled)
-      replyAllLink.remove();
-    // Make sure we add the right CSS classes.
-    if (this.isReplyAllEnabled)
-      this._domNode.classList.add("isReplyAllEnabled");
-    if (this.isReplyListEnabled)
-      this._domNode.classList.add("isReplyListEnabled");
-    // Then, a sequence that prioritizes replyList over replyAll over the
-    // default. The three are mutually exclusive, so it's a sequence of if /
-    // then / else, unlike the CSS classes above.
-    if (this.isReplyListEnabled) {
-      this.register(".replyMainActionLink", function(event) {
-        self.compose(Ci.nsIMsgCompType.ReplyToList, event);
-        event.stopPropagation();
-      });
-      // eslint-disable-next-line no-unsanitized/property
-      mainActionLink.appendChild(replyList.firstChild.cloneNode());
-      mainActionLink.title = replyList.title;
-    } else if (this.isReplyAllEnabled) {
-      this.register(".replyMainActionLink", function(event) {
-        self.compose(Ci.nsIMsgCompType.ReplyAll, event);
-        event.stopPropagation();
-      });
-      // eslint-disable-next-line no-unsanitized/property
-      mainActionLink.appendChild(replyAll.firstChild.cloneNode());
-      mainActionLink.title = replyAll.title;
-    } else {
-      this.register(".replyMainActionLink", function(event) {
-        self.compose(Ci.nsIMsgCompType.ReplyToSender, event);
-        event.stopPropagation();
-      });
-      // eslint-disable-next-line no-unsanitized/property
-      mainActionLink.appendChild(reply.firstChild.cloneNode());
-      mainActionLink.title = reply.title;
-    }
-
-    this.register(".edit-draft", event => self.compose(Ci.nsIMsgCompType.Draft, event));
-    this.register(".action-editNew", event => self.compose(Ci.nsIMsgCompType.Template, event));
-    this.register(".action-print", event => self.print());
-    // These event listeners are all in the header, which happens to have an
-    //  event listener set on the click event for toggling the message. So we
-    //  make sure that event listener is bubbling, and we register these with
-    //  the bubbling model as well.
-    this.register(".action-archive", function(event) {
-      msgHdrsArchive([self._msgHdr]);
-      event.stopPropagation();
-    });
-    this.register(".action-delete", function(event) {
-      // We do this, otherwise we end up with messages in the conversation that
-      //  don't have a message header, and that breaks pretty much all the
-      //  assumptions...
-      self.removeFromConversation();
-      event.stopPropagation();
-    });
-
     // Pre-set the right value
-    let realFrom = "";
-    if (this._from.email)
-      realFrom = this._from.email.trim().toLowerCase();
-    // _realFrom is better.
-    if (this._realFrom.email)
-      realFrom = this._realFrom.email.trim().toLowerCase();
-    if (realFrom in Prefs.monospaced_senders)
-      this._domNode.getElementsByClassName("checkbox-monospace")[0].checked = true;
+    // let realFrom = "";
+    // if (this._from.email)
+    //   realFrom = this._from.email.trim().toLowerCase();
+    // // _realFrom is better.
+    // if (this._realFrom.email)
+    //   realFrom = this._realFrom.email.trim().toLowerCase();
+
+    // TODO: This toggle is currently disabled.
+    // if (realFrom in Prefs.monospaced_senders)
+    //   this._domNode.getElementsByClassName("checkbox-monospace")[0].checked = true;
 
     // This one is located in the first contact tooltip
-    this.register(".checkbox-monospace", function(event) {
-      let senders = Object.keys(Prefs.monospaced_senders);
-      senders = senders.filter(x => x != realFrom);
-      if (event.target.checked) {
-        Prefs.setChar("conversations.monospaced_senders", senders.concat([realFrom]).join(","));
-      } else {
-        Prefs.setChar("conversations.monospaced_senders", senders.join(","));
-      }
-      self._reloadMessage();
-      event.stopPropagation();
-    });
-    this.register(".action-classic", function(event) {
-      let tabmail = mainWindow.document.getElementById("tabmail");
-      tabmail.openTab("message", { msgHdr: self._msgHdr, background: false });
-      event.stopPropagation();
-    });
-    this.register(".action-source", function(event) {
-      mainWindow.ViewPageSource([self._uri]);
-      event.stopPropagation();
-    });
+    // this.register(".checkbox-monospace", function(event) {
+    //   let senders = Object.keys(Prefs.monospaced_senders);
+    //   senders = senders.filter(x => x != realFrom);
+    //   if (event.target.checked) {
+    //     Prefs.setChar("conversations.monospaced_senders", senders.concat([realFrom]).join(","));
+    //   } else {
+    //     Prefs.setChar("conversations.monospaced_senders", senders.join(","));
+    //   }
+    //   self._reloadMessage();
+    //   event.stopPropagation();
+    // });
     this.register(".tooltip", function(event) {
       // Clicking inside a tooltip must not collapse the message.
       event.stopPropagation();
@@ -1139,15 +1063,6 @@ Message.prototype = {
           } else {
             self._attachments = aMimeMsg.allUserAttachments
               .filter(x => x.isRealAttachment);
-          }
-          let tmplData = self.toTmplDataForAttachments();
-          let w = self._conversation._htmlPane;
-          let $ = w.$;
-          let target = self._domNode.querySelector(".attachmentIcon");
-          $(target).empty();
-          let node = w.tmpl("#attachmentIconTemplate", tmplData);
-          if (node) {
-            target.appendChild(node);
           }
 
           try {
@@ -1706,6 +1621,15 @@ Message.prototype = {
       att.contentType, att.url, att.name, this._uri, att.isExternal, 42
     );
     attInfo.open();
+  },
+
+  openInClassic(mainWindow) {
+    let tabmail = mainWindow.document.getElementById("tabmail");
+    tabmail.openTab("message", { msgHdr: this._msgHdr, background: false });
+  },
+
+  openInSourceView(mainWindow) {
+    mainWindow.ViewPageSource([this._uri]);
   },
 };
 

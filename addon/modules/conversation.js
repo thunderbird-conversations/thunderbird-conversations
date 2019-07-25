@@ -770,6 +770,8 @@ Conversation.prototype = {
         let x = this._htmlPane.tmpl("#messageTemplate", msgData);
         this._domNode.appendChild(x);
         this._htmlPane.renderAttachmentDetails(x, msgData);
+        this._htmlPane.renderMessageFooter(x, msgData);
+        this._htmlPane.renderMessageHeaderOptions(x, msgData);
       }
 
       // Important: don't forget to move the quick reply part into the last
@@ -1017,6 +1019,8 @@ Conversation.prototype = {
       let x = this._htmlPane.tmpl("#messageTemplate", msgData);
       this._domNode.appendChild(x);
       this._htmlPane.renderAttachmentDetails(x, msgData);
+      this._htmlPane.renderMessageFooter(x, msgData);
+      this._htmlPane.renderMessageHeaderOptions(x, msgData);
     }
 
     // Notify each message that it's been added to the DOM and that it can do

@@ -53,6 +53,8 @@ XPCOMUtils.defineLazyModuleGetters(this, {
 
 const initialAttachments = {};
 
+const initialMessages = {};
+
 const initialSummary = {
   loading: true,
   subject: "",
@@ -91,6 +93,67 @@ function attachments(state = initialAttachments, action) {
         chromePage: kGalleryUrl + "?uri=" + action.msgUri,
       });
 
+      return state;
+    }
+    default: {
+      return state;
+    }
+  }
+}
+
+function messages(state = initialMessages, action) {
+  switch (action.type) {
+    case "EDIT_DRAFT": {
+      const msg = Conversations.currentConversation.getMessage(action.msgUri);
+      msg.compose(Ci.nsIMsgCompType.Draft, action.shiftKey);
+      return state;
+    }
+    case "EDIT_AS_NEW": {
+      const msg = Conversations.currentConversation.getMessage(action.msgUri);
+      msg.compose(Ci.nsIMsgCompType.Template, action.shiftKey);
+      return state;
+    }
+    case "MSG_REPLY": {
+      const msg = Conversations.currentConversation.getMessage(action.msgUri);
+      msg.compose(Ci.nsIMsgCompType.ReplyToSender, action.shiftKey);
+      return state;
+    }
+    case "MSG_REPLY_ALL": {
+      const msg = Conversations.currentConversation.getMessage(action.msgUri);
+      msg.compose(Ci.nsIMsgCompType.ReplyAll, action.shiftKey);
+      return state;
+    }
+    case "MSG_REPLY_LIST": {
+      const msg = Conversations.currentConversation.getMessage(action.msgUri);
+      msg.compose(Ci.nsIMsgCompType.ReplyToList, action.shiftKey);
+      return state;
+    }
+    case "MSG_FORWARD": {
+      const msg = Conversations.currentConversation.getMessage(action.msgUri);
+      msg.forward(action.shiftKey);
+      return state;
+    }
+    case "MSG_ARCHIVE": {
+      const msg = Conversations.currentConversation.getMessage(action.msgUri);
+      msgHdrsArchive([msg._msgHdr]);
+      return state;
+    }
+    case "MSG_DELETE": {
+      const msg = Conversations.currentConversation.getMessage(action.msgUri);
+      // We do this, otherwise we end up with messages in the conversation that
+      //  don't have a message header, and that breaks pretty much all the
+      //  assumptions...
+      msg.removeFromConversation();
+      return state;
+    }
+    case "MSG_OPEN_CLASSIC": {
+      const msg = Conversations.currentConversation.getMessage(action.msgUri);
+      msg.openInClassic(topMail3Pane(window));
+      return state;
+    }
+    case "MSG_OPEN_SOURCE": {
+      const msg = Conversations.currentConversation.getMessage(action.msgUri);
+      msg.openInSourceView(topMail3Pane(window));
       return state;
     }
     default: {
@@ -233,5 +296,6 @@ function summary(state = initialSummary, action) {
 
 const conversationApp = Redux.combineReducers({
   attachments,
+  messages,
   summary,
 });
