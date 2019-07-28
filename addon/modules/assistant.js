@@ -8,15 +8,19 @@ const msgAccountManager = Cc["@mozilla.org/messenger/account-manager;1"]
 
 const kPrefInt = 0, kPrefBool = 1, kPrefChar = 42;
 
-const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm", null);
-const {MailUtils} = ChromeUtils.import("resource:///modules/MailUtils.jsm", null);
-const {fixIterator} = ChromeUtils.import("resource:///modules/iteratorUtils.jsm", {});
-const {VirtualFolderHelper} = ChromeUtils.import("resource:///modules/virtualFolderWrapper.js", {});
+const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 
-const {MixIn} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js", {});
-const {getMail3Pane} = ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js", {});
-const {Prefs} = ChromeUtils.import("resource://conversations/modules/prefs.js", {});
-const {dumpCallStack, setupLogging} = ChromeUtils.import("resource://conversations/modules/log.js", {});
+XPCOMUtils.defineLazyModuleGetters(this, {
+  getMail3Pane: "resource://conversations/modules/stdlib/msgHdrUtils.js",
+  fixIterator: "resource:///modules/iteratorUtils.jsm",
+  MailUtils: "resource:///modules/MailUtils.jsm",
+  MixIn: "resource://conversations/modules/stdlib/misc.js",
+  Prefs: "resource://conversations/modules/prefs.js",
+  Services: "resource://gre/modules/Services.jsm",
+  VirtualFolderHelper: "resource:///modules/virtualFolderWrapper.js",
+});
+
+const {dumpCallStack, setupLogging} = ChromeUtils.import("resource://conversations/modules/log.js");
 
 let Log = setupLogging("Conversations.Assistant");
 

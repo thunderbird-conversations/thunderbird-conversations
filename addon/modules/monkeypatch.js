@@ -38,32 +38,28 @@
 
 var EXPORTED_SYMBOLS = ["MonkeyPatch"];
 
-ChromeUtils.import("resource://gre/modules/AddonManager.jsm");
-const {StringBundle} = ChromeUtils.import("resource:///modules/StringBundle.js", null);
+const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+
+XPCOMUtils.defineLazyModuleGetters(this, {
+  Config: "resource://conversations/modules/config.js",
+  Customizations: "resource://conversations/modules/assistant.js",
+  Prefs: "resource://conversations/modules/prefs.js",
+  Services: "resource://gre/modules/Services.jsm",
+  StringBundle: "resource:///modules/StringBundle.js",
+});
 
 const {
   entries, getIdentityForEmail, getIdentities, parseMimeLine,
-} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js", {});
+} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
 const {
   getMail3Pane, msgHdrGetUri, msgHdrIsRss, msgHdrIsNntp, msgHdrsMarkAsRead,
-} = ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js", {});
-const {
-  Customizations,
-} = ChromeUtils.import("resource://conversations/modules/assistant.js", {});
+} = ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
 const {
   arrayEquals, joinWordList, openConversationInTabOrWindow,
-} = ChromeUtils.import("resource://conversations/modules/misc.js", {});
-const {
-  Prefs,
-} = ChromeUtils.import("resource://conversations/modules/prefs.js", {});
+} = ChromeUtils.import("resource://conversations/modules/misc.js");
 const {
   Colors, dumpCallStack, setupLogging,
-} = ChromeUtils.import("resource://conversations/modules/log.js", {});
-const {
-  Config,
-} = ChromeUtils.import("resource://conversations/modules/config.js", {});
-
-const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm", null);
+} = ChromeUtils.import("resource://conversations/modules/log.js");
 
 const kMultiMessageUrl = "chrome://messenger/content/multimessageview.xhtml";
 

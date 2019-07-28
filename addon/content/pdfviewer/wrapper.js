@@ -36,12 +36,15 @@
 
 "use strict";
 
-var {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm", null);
-const {NetUtil} = ChromeUtils.import("resource://gre/modules/NetUtil.jsm", null);
-const {setupLogging} =
-  ChromeUtils.import("resource://conversations/modules/log.js", {});
+const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+
+XPCOMUtils.defineLazyModuleGetters(this, {
+  NetUtil: "resource://gre/modules/NetUtil.jsm",
+  Services: "resource://gre/modules/Services.jsm",
+  setupLogging: "resource://conversations/modules/log.js",
+});
 const {decodeUrlParameters, generateQI} =
-  ChromeUtils.import("resource://conversations/modules/stdlib/misc.js", {});
+  ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
 
 let Log = setupLogging("Conversations.PdfViewer");
 

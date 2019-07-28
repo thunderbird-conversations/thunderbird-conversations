@@ -34,7 +34,7 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var EXPORTED_SYMBOLS = [];
+var EXPORTED_SYMBOLS = ["GlodaAttrProviders"];
 
 /*
  * This file contains various attribute providers for Gloda, we're all storing
@@ -63,8 +63,8 @@ var EXPORTED_SYMBOLS = [];
  */
 
 const {PluginHelpers} =
-  ChromeUtils.import("resource://conversations/modules/plugins/helpers.js", {});
-const {Gloda} = ChromeUtils.import("resource:///modules/gloda/public.js", {});
+  ChromeUtils.import("resource://conversations/modules/plugins/helpers.js");
+const {Gloda} = ChromeUtils.import("resource:///modules/gloda/public.js");
 
 let AlternativeSender = {
   init: function _AlternativeSender_init() {
@@ -190,4 +190,8 @@ let ConversationSubject = {
   },
 };
 
-ConversationSubject.init();
+var GlodaAttrProviders = {
+  init() {
+    ConversationSubject.init();
+  },
+};

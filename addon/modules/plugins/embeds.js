@@ -34,16 +34,17 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-var EXPORTED_SYMBOLS = [];
+var EXPORTED_SYMBOLS = ["Embeds"];
 
-const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm", null);
-const {StringBundle} = ChromeUtils.import("resource:///modules/StringBundle.js", null);
-const {Prefs} =
-  ChromeUtils.import("resource://conversations/modules/prefs.js", {});
-const {registerHook} =
-  ChromeUtils.import("resource://conversations/modules/hook.js", {});
-const {setupLogging} =
-  ChromeUtils.import("resource://conversations/modules/log.js", {});
+const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+
+XPCOMUtils.defineLazyModuleGetters(this, {
+  registerHook: "resource://conversations/modules/hook.js",
+  Prefs: "resource://conversations/modules/prefs.js",
+  Services: "resource://gre/modules/Services.jsm",
+  setupLogging: "resource://conversations/modules/log.js",
+  StringBundle: "resource:///modules/StringBundle.js",
+});
 
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
@@ -175,4 +176,8 @@ let embedsHook = {
   },
 };
 
-registerHook(embedsHook);
+var Embeds = {
+  init() {
+    registerHook(embedsHook);
+  },
+};

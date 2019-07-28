@@ -36,12 +36,13 @@
 
 var EXPORTED_SYMBOLS = [];
 
-const {getMail3Pane} =
-  ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js", {});
-const {registerHook} =
-  ChromeUtils.import("resource://conversations/modules/hook.js", {});
-const {setupLogging} =
-  ChromeUtils.import("resource://conversations/modules/log.js", {});
+const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+
+XPCOMUtils.defineLazyModuleGetters(this, {
+  getMail3Pane: "resource://conversations/modules/stdlib/msgHdrUtils.js",
+  registerHook: "resource://conversations/modules/hook.js",
+  setupLogging: "resource://conversations/modules/log.js",
+});
 
 let Log = setupLogging("Conversations.Modules.DKIMVerifier");
 

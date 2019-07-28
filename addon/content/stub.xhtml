@@ -366,8 +366,10 @@
     // let Conversations = window.top.Conversations;
 
     var {MailServices} = ChromeUtils.import("resource:///modules/MailServices.jsm");
-    const {decodeUrlParameters, isOSX, isWindows, parseMimeLine} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
-    const {msgUriToMsgHdr, msgHdrsMarkAsRead} = ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+    const {decodeUrlParameters, isOSX, isWindows, parseMimeLine} =
+      ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
+    const {msgUriToMsgHdr, msgHdrsMarkAsRead} =
+      ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
     const {Prefs} = ChromeUtils.import("resource://conversations/modules/prefs.js");
     const {topMail3Pane} = ChromeUtils.import("resource://conversations/modules/misc.js");
     const {defaultPhotoURI} = ChromeUtils.import("resource://conversations/modules/contact.js");

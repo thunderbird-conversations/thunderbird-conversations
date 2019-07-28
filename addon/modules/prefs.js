@@ -1,6 +1,6 @@
 var EXPORTED_SYMBOLS = ["Prefs", "kStubUrl"];
 
-const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm", null);
+const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 const gConversationsPrefs = Services.prefs.getBranch("conversations.");
 
