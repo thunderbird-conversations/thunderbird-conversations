@@ -177,7 +177,7 @@ function startup(aData, aReason) {
     // Show the assistant if the extension is installed or enabled
     if (aReason == Config.BOOTSTRAP_REASONS.ADDON_INSTALL || aReason == Config.BOOTSTRAP_REASONS.ADDON_ENABLE) {
       // loadImports();
-      monkeyPatchAllWindows();
+      // monkeyPatchAllWindows();
       Services.ww.openWindow(
         null,
         "chrome://conversations/content/assistant/assistant.xhtml",
@@ -185,12 +185,12 @@ function startup(aData, aReason) {
         "chrome,width=800,height=500", {});
     }
 
-    // In case of an up- or downgrade patch all windows again
-    if (aReason == Config.BOOTSTRAP_REASONS.ADDON_UPGRADE || aReason == Config.BOOTSTRAP_REASONS.ADDON_DOWNGRADE) {
-      // loadImports();
-      monkeyPatchAllWindows();
-    }
-
+    // // In case of an up- or downgrade patch all windows again
+    // if (aReason == Config.BOOTSTRAP_REASONS.ADDON_UPGRADE || aReason == Config.BOOTSTRAP_REASONS.ADDON_DOWNGRADE) {
+    //   // loadImports();
+    //   // monkeyPatchAllWindows();
+    // }
+    //
     // Hook into options window
     // TODO: Maybe bring this back?
     // Services.obs.addObserver({
