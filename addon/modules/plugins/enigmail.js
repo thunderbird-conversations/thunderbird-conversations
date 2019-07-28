@@ -64,27 +64,28 @@ var EXPORTED_SYMBOLS = [];
  * That way, your conv-plugin.js won't export anything and AMO won't bother you.
  */
 
-const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm", null);
-const {StringBundle} = ChromeUtils.import("resource:///modules/StringBundle.js", null);
+const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+
+XPCOMUtils.defineLazyModuleGetters(this, {
+  registerHook: "resource://conversations/modules/hook.js",
+  Services: "resource://gre/modules/Services.jsm",
+  StringBundle: "resource:///modules/StringBundle.js",
+  topMail3Pane: "resource://conversations/modules/misc.js",
+});
+
 const {
   getMail3Pane, msgHdrGetUri,
-} = ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js", {});
+} = ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
 const {
   escapeHtml, entries,
-} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js", {});
+} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
 const {
   htmlToPlainText,
   simpleWrap,
-} = ChromeUtils.import("resource://conversations/modules/stdlib/compose.js", {});
-const {
-  topMail3Pane,
-} = ChromeUtils.import("resource://conversations/modules/misc.js", {});
-const {
-  registerHook,
-} = ChromeUtils.import("resource://conversations/modules/hook.js", {});
+} = ChromeUtils.import("resource://conversations/modules/stdlib/compose.js");
 const {
   setupLogging, dumpCallStack,
-} = ChromeUtils.import("resource://conversations/modules/log.js", {});
+} = ChromeUtils.import("resource://conversations/modules/log.js");
 
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 

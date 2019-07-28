@@ -38,24 +38,28 @@
 
 var EXPORTED_SYMBOLS = ["Conversation"];
 
-const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm", null);
-const {MailServices} = ChromeUtils.import("resource:///modules/MailServices.jsm", null);
+const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 
-const {StringBundle} = ChromeUtils.import("resource:///modules/StringBundle.js", null);
-const {Gloda} = ChromeUtils.import("resource:///modules/gloda/gloda.js", {});
+XPCOMUtils.defineLazyModuleGetters(this, {
+  ContactManager: "resource://conversations/modules/contact.js",
+  Gloda: "resource:///modules/gloda/gloda.js",
+  MailServices: "resource:///modules/MailServices.jsm",
+  Prefs: "resource://conversations/modules/prefs.js",
+  Services: "resource://gre/modules/Services.jsm",
+  StringBundle: "resource:///modules/StringBundle.js",
+});
+
 const {Colors, dumpCallStack, setupLogging} =
-  ChromeUtils.import("resource://conversations/modules/log.js", {});
-const {Prefs} = ChromeUtils.import("resource://conversations/modules/prefs.js", {});
+  ChromeUtils.import("resource://conversations/modules/log.js");
 
 const {msgHdrGetUri, msgHdrIsArchive, msgHdrIsDraft, msgHdrIsInbox, msgHdrIsJunk,
        msgHdrIsSent, msgHdrsMarkAsRead} =
-  ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js", {});
-const {MixIn, range} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js", {});
+  ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
+const {MixIn, range} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
 const {Message, MessageFromGloda, MessageFromDbHdr} =
-  ChromeUtils.import("resource://conversations/modules/message.js", {});
-const {ContactManager} = ChromeUtils.import("resource://conversations/modules/contact.js", {});
+  ChromeUtils.import("resource://conversations/modules/message.js");
 const {groupArray, topMail3Pane} =
-  ChromeUtils.import("resource://conversations/modules/misc.js", {});
+  ChromeUtils.import("resource://conversations/modules/misc.js");
 
 let Log = setupLogging("Conversations.Conversation");
 

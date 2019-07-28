@@ -1,8 +1,11 @@
 var EXPORTED_SYMBOLS = ["setupFullLogging", "setupLogging", "dumpCallStack", "logRoot", "Colors"];
 
-/* import-globals-from prefs.js */
-const {Prefs} = ChromeUtils.import("resource://conversations/modules/prefs.js");
-const {Log4Moz} = ChromeUtils.import("resource:///modules/gloda/log4moz.js");
+const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+
+XPCOMUtils.defineLazyModuleGetters(this, {
+  Log4Moz: "resource:///modules/gloda/log4moz.js",
+  Prefs: "resource://conversations/modules/prefs.js",
+});
 
 function setupLogging(name) {
   let Log = Log4Moz.repository.getLogger(name);

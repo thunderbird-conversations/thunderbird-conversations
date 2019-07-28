@@ -43,7 +43,7 @@ var EXPORTED_SYMBOLS = ["PluginHelpers"];
  *  gloda yet (see message.js).
  */
 
-const {GlodaUtils} = ChromeUtils.import("resource:///modules/gloda/utils.js", {});
+const {GlodaUtils} = ChromeUtils.import("resource:///modules/gloda/utils.js");
 
 const gsfnRegexp = /^(.+)(?:, an employee of Mozilla Messaging,)? (?:replied to|commented on|just asked)/;
 const gsfnFrom = "Mozilla Messaging <noreply.mozilla_messaging@getsatisfaction.com>";

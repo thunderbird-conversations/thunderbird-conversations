@@ -40,23 +40,20 @@ var EXPORTED_SYMBOLS = [
   "ContactManager", "Contacts", "defaultPhotoURI", "ContactHelpers",
 ];
 
-const {StringBundle} = ChromeUtils.import("resource:///modules/StringBundle.js", null);
-var getCardForEmail;
-try {
-  getCardForEmail = ChromeUtils.import("resource:///modules/DisplayNameUtils.jsm", {}).DisplayNameUtils.getCardForEmail;
-} catch (ex) {
-  // Handle Thunderbird 60 compatibility.
-  getCardForEmail = ChromeUtils.import("resource:///modules/displayNameUtils.js", {}).GetCardForEmail;
-}
-const {GlodaUtils} = ChromeUtils.import("resource:///modules/gloda/utils.js", {});
-const {Gloda} = ChromeUtils.import("resource:///modules/gloda/gloda.js", {});
+const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+
+XPCOMUtils.defineLazyModuleGetters(this, {
+  EventHelperMixIn: "resource://conversations/modules/misc.js",
+  getCardForEmail: "resource:///modules/DisplayNameUtils.jsm",
+  Gloda: "resource:///modules/gloda/gloda.js",
+  GlodaUtils: "resource:///modules/gloda/utils.js",
+  Prefs: "resource://conversations/modules/prefs.js",
+  setupLogging: "resource://conversations/modules/log.js",
+  StringBundle: "resource:///modules/StringBundle.js",
+});
 
 const {getIdentities, getIdentityForEmail, MixIn, sanitize } =
-  ChromeUtils.import("resource://conversations/modules/stdlib/misc.js", {});
-// ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
-const {setupLogging} = ChromeUtils.import("resource://conversations/modules/log.js", {});
-const {Prefs} = ChromeUtils.import("resource://conversations/modules/prefs.js", {});
-const {EventHelperMixIn} = ChromeUtils.import("resource://conversations/modules/misc.js", {});
+  ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
 
 var Contacts = {
   kFrom: 0,

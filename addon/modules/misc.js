@@ -40,12 +40,15 @@ var EXPORTED_SYMBOLS = [
   "folderName", "openConversationInTabOrWindow",
 ];
 
+const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 
-const {StringBundle} = ChromeUtils.import("resource:///modules/StringBundle.js", null);
-const { GlodaMsgIndexer } = ChromeUtils.import("resource:///modules/gloda/index_msg.js", {});
-const {getMail3Pane} = ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js", {});
-const {Prefs} = ChromeUtils.import("resource://conversations/modules/prefs.js", {});
-const {setupLogging} = ChromeUtils.import("resource://conversations/modules/log.js", {});
+XPCOMUtils.defineLazyModuleGetters(this, {
+  GlodaMsgIndexer: "resource:///modules/gloda/index_msg.js",
+  getMail3Pane: "resource://conversations/modules/stdlib/msgHdrUtils.js",
+  Prefs: "resource://conversations/modules/prefs.js",
+  setupLogging: "resource://conversations/modules/log.js",
+  StringBundle: "resource:///modules/StringBundle.js",
+});
 
 let Log = setupLogging("Conversations.Misc");
 let strings = new StringBundle("chrome://conversations/locale/message.properties");

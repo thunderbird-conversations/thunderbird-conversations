@@ -36,12 +36,13 @@
 
 var EXPORTED_SYMBOLS = ["isLightningInstalled"];
 
-const {registerHook} =
-  ChromeUtils.import("resource://conversations/modules/hook.js", {});
-const {setupLogging} =
-  ChromeUtils.import("resource://conversations/modules/log.js", {});
-const {topMail3Pane} =
-  ChromeUtils.import("resource://conversations/modules/misc.js", {});
+const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+
+XPCOMUtils.defineLazyModuleGetters(this, {
+  registerHook: "resource://conversations/modules/hook.js",
+  setupLogging: "resource://conversations/modules/log.js",
+  topMail3Pane: "resource://conversations/modules/misc.js",
+});
 
 let Log = setupLogging("Conversations.Modules.Lightning");
 

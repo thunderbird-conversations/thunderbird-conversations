@@ -41,26 +41,25 @@ var EXPORTED_SYMBOLS = [
   "ConversationKeybindings", "previewAttachment",
 ];
 
-const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm", null);
-const {PluralForm} = ChromeUtils.import("resource://gre/modules/PluralForm.jsm", null);
-const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm", null);
+const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+
+XPCOMUtils.defineLazyModuleGetters(this, {
+  GlodaUtils: "resource:///modules/gloda/utils.js",
+  isLightningInstalled: "resource://conversations/modules/plugins/lightning.js",
+  isLegalIPAddress: "resource:///modules/hostnameUtils.jsm",
+  isLegalLocalIPAddress: "resource:///modules/hostnameUtils.jsm",
+  MailServices: "resource:///modules/MailServices.jsm",
+  makeFriendlyDateAgo: "resource:///modules/templateUtils.js",
+  MsgHdrToMimeMessage: "resource:///modules/gloda/mimemsg.js",
+  mimeMsgToContentSnippetAndMeta: "resource:///modules/gloda/connotent.js",
+  PluralForm: "resource://gre/modules/PluralForm.jsm",
+  Services: "resource://gre/modules/Services.jsm",
+  StringBundle: "resource:///modules/StringBundle.js",
+});
 const {
   dateAsInMessageList, entries, escapeHtml, getIdentityForEmail, isAccel,
   isOSX, isWindows, MixIn, parseMimeLine, sanitize, generateQI,
-} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js", {});
-const {MailServices} = ChromeUtils.import("resource:///modules/MailServices.jsm", {}); // bug 629462
-const {StringBundle} = ChromeUtils.import("resource:///modules/StringBundle.js", null);
-const {makeFriendlyDateAgo} = ChromeUtils.import("resource:///modules/templateUtils.js", {});
-const {GlodaUtils} = ChromeUtils.import("resource:///modules/gloda/utils.js", {});
-const {MsgHdrToMimeMessage} = ChromeUtils.import("resource:///modules/gloda/mimemsg.js", {});
-const {mimeMsgToContentSnippetAndMeta} = ChromeUtils.import("resource:///modules/gloda/connotent.js", {});
-
-const {isLightningInstalled} = ChromeUtils.import("resource://conversations/modules/plugins/lightning.js", {});
-
-XPCOMUtils.defineLazyModuleGetters(this, {
-  isLegalIPAddress: "resource:///modules/hostnameUtils.jsm",
-  isLegalLocalIPAddress: "resource:///modules/hostnameUtils.jsm",
-});
+} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
 
 // It's not really nice to write into someone elses object but this is what the
 // Services object is for.  We prefix with the "m" to ensure we stay out of their
