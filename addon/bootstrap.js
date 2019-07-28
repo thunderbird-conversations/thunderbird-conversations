@@ -38,9 +38,17 @@
 
 "use strict";
 
-const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
+const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 
-let global = this;
+XPCOMUtils.defineLazyModuleGetters(this, {
+  Conversation: "resource://conversations/modules/conversation.js",
+  // CustomizeKeys: "resource://conversations/modules/keycustomization.js",
+  Embeds: "resource://conversations/modules/plugins/embeds.js",
+  GlodaAttrProviders: "resource://conversations/modules/plugins/glodaAttrProviders.js",
+  MonkeyPatch: "resource://conversations/modules/monkeypatch.js",
+  Services: "resource://gre/modules/Services.jsm",
+});
+
 let Log;
 
 // from wjohnston (cleary for Fennec)
@@ -130,33 +138,11 @@ function monkeyPatchAllWindows() {
     monkeyPatchWindow(w, false);
 }
 
-/* We don't load all imports at initialization time because of bug #622:
- * Some of these imports import gloda/public.js, gloda/index_msg.js or gloda/index_msg.js.
- * These trigger some code which loads the language strings for some folders ("inbox", "sent", etc.)
- * before other locales were loaded. The result were some English strings although another locale was selected.
- *
- * Cu.import() just loads every imported file once, so there is no need for a guard (like if(!isLoaded){...})
- */
-function loadImports() {
-  /* global MonkeyPatch */
-  ChromeUtils.import("resource://conversations/modules/monkeypatch.js", global);
-  ChromeUtils.import("resource://conversations/modules/prefs.js", global);
-  /* global Conversation */
-  ChromeUtils.import("resource://conversations/modules/conversation.js", global);
-  /* global CustomizeKeys */
-  ChromeUtils.import("resource://conversations/modules/keycustomization.js", global);
-
-  /* eslint-disable no-unused-vars */
-  ChromeUtils.import("resource://conversations/modules/plugins/glodaAttrProviders.js");
-  ChromeUtils.import("resource://conversations/modules/plugins/embeds.js");
-  /* eslint-enable no-unused-vars */
-}
-
 // This obserer is notified when a new window is created and injects our code
 let windowObserver = {
   observe(aSubject, aTopic, aData) {
     if (aTopic == "domwindowopened") {
-      loadImports();
+      // loadImports();
       aSubject.QueryInterface(Ci.nsIDOMWindow);
       monkeyPatchWindow(aSubject.window, true);
     }
@@ -173,20 +159,24 @@ function startup(aData, aReason) {
 
   try {
     // Patch all existing windows when the UI is built; all locales should have been loaded here
-    Services.obs.addObserver({
-      observe(aSubject, aTopic, aData) {
-          Log.debug("observe: mail-startup-done");
-          loadImports();
-          monkeyPatchAllWindows();
-      },
-    }, "mail-startup-done");
+    // Hook in the embedding and gloda attribute providers.
+    Embeds.init();
+    GlodaAttrProviders.init();
+    monkeyPatchAllWindows();
+    // Services.obs.addObserver({
+    //   observe(aSubject, aTopic, aData) {
+    //       Log.debug("observe: mail-startup-done");
+    //       loadImports();
+    //       monkeyPatchAllWindows();
+    //   },
+    // }, "mail-startup-done");
 
     // Patch all future windows
     Services.ww.registerNotification(windowObserver);
 
     // Show the assistant if the extension is installed or enabled
     if (aReason == Config.BOOTSTRAP_REASONS.ADDON_INSTALL || aReason == Config.BOOTSTRAP_REASONS.ADDON_ENABLE) {
-      loadImports();
+      // loadImports();
       monkeyPatchAllWindows();
       Services.ww.openWindow(
         null,
@@ -197,27 +187,26 @@ function startup(aData, aReason) {
 
     // In case of an up- or downgrade patch all windows again
     if (aReason == Config.BOOTSTRAP_REASONS.ADDON_UPGRADE || aReason == Config.BOOTSTRAP_REASONS.ADDON_DOWNGRADE) {
-      loadImports();
+      // loadImports();
       monkeyPatchAllWindows();
     }
 
     // Hook into options window
-    Services.obs.addObserver({
-      observe(aSubject, aTopic, aData) {
-        if (aTopic == "addon-options-displayed" && aData == "gconversation@xulforum.org") {
-          loadImports();
-          CustomizeKeys.enable(aSubject); // aSubject is the options document
-        }
-      },
-    }, "addon-options-displayed");
-    Services.obs.addObserver({
-      observe(aSubject, aTopic, aData) {
-        if (aTopic == "addon-options-hidden" && aData == "gconversation@xulforum.org") {
-          loadImports();
-          CustomizeKeys.disable(aSubject); // aSubject is the options document
-        }
-      },
-    }, "addon-options-hidden");
+    // TODO: Maybe bring this back?
+    // Services.obs.addObserver({
+    //   observe(aSubject, aTopic, aData) {
+    //     if (aTopic == "addon-options-displayed" && aData == "gconversation@xulforum.org") {
+    //       CustomizeKeys.enable(aSubject); // aSubject is the options document
+    //     }
+    //   },
+    // }, "addon-options-displayed");
+    // Services.obs.addObserver({
+    //   observe(aSubject, aTopic, aData) {
+    //     if (aTopic == "addon-options-hidden" && aData == "gconversation@xulforum.org") {
+    //       CustomizeKeys.disable(aSubject); // aSubject is the options document
+    //     }
+    //   },
+    // }, "addon-options-hidden");
   } catch (e) {
     Cu.reportError(e);
     dumpCallStack(e);
