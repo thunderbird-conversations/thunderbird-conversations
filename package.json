@@ -6,12 +6,12 @@
     "type": "git",
     "url": "git@github.com:protz/thunderbird-conversations.git"
   },
-  "browserslist": "Firefox > 60",
+  "browserslist": "Firefox > 68",
   "bugs": {
     "url": "https://github.com/protz/thunderbird-conversations/issues"
   },
   "engines": {
-    "thunderbird": ">=45.0a1"
+    "thunderbird": ">=68.0a1"
   },
   "dependencies": {
     "pdfjs-dist": "2.1.266",
