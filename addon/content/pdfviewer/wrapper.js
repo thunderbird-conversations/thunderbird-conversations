@@ -39,12 +39,11 @@
 const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 
 XPCOMUtils.defineLazyModuleGetters(this, {
+  decodeUrlParameters: "resource://conversations/modules/stdlib/misc.js",
   NetUtil: "resource://gre/modules/NetUtil.jsm",
   Services: "resource://gre/modules/Services.jsm",
   setupLogging: "resource://conversations/modules/log.js",
 });
-const {decodeUrlParameters, generateQI} =
-  ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
 
 let Log = setupLogging("Conversations.PdfViewer");
 
@@ -93,7 +92,7 @@ Wrapper.prototype = {
           chunks.push(array);
         },
 
-        QueryInterface: generateQI([Ci.nsIStreamListener,
+        QueryInterface: ChromeUtils.generateQI([Ci.nsIStreamListener,
           Ci.nsIRequestObserver]),
       };
       channel.asyncOpen(listener, null);
