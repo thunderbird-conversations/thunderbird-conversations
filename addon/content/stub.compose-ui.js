@@ -55,7 +55,6 @@ var {sendMessage} = ChromeUtils.import("resource://conversations/modules/stdlib/
 var {
   composeInIframe, htmlToPlainText, replyAllParams,
 } = ChromeUtils.import("resource://conversations/modules/stdlib/compose.js");
-var {generateQI} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
 var {getHooks} = ChromeUtils.import("resource://conversations/modules/hook.js");
 var {fixIterator} = ChromeUtils.import("resource:///modules/iteratorUtils.jsm");
 var {MailUtils} = ChromeUtils.import("resource:///modules/MailUtils.jsm");
@@ -814,7 +813,7 @@ function nsAttachmentOpener() {
 
 nsAttachmentOpener.prototype = {
 
-  QueryInterface: generateQI([
+  QueryInterface: ChromeUtils.generateQI([
     Ci.nsIURIContentListener,
     Ci.nsIInterfaceRequestor,
   ]),
@@ -1085,9 +1084,8 @@ let progressListener = {
     // we can ignore this notification
   },
 
-  QueryInterface: generateQI([
+  QueryInterface: ChromeUtils.generateQI([
     Ci.nsIWebProgressListener,
-    Ci.nsISupports,
   ]),
 };
 
@@ -1186,9 +1184,8 @@ let sendListener = {
     Log.debug("onSendNotPerformed", aMsgID, aStatus);
   },
 
-  QueryInterface: generateQI([
+  QueryInterface: ChromeUtils.generateQI([
     Ci.nsIMsgSendListener,
-    Ci.nsISupports,
   ]),
 };
 

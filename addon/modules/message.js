@@ -58,7 +58,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
 });
 const {
   dateAsInMessageList, entries, escapeHtml, getIdentityForEmail, isAccel,
-  isOSX, isWindows, MixIn, parseMimeLine, sanitize, generateQI,
+  isOSX, isWindows, MixIn, parseMimeLine, sanitize,
 } = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
 
 // It's not really nice to write into someone elses object but this is what the
@@ -1477,7 +1477,7 @@ Message.prototype = {
         let urlListener = {
           OnStartRunningUrl() {},
           OnStopRunningUrl() {},
-          QueryInterface: generateQI([Ci.nsISupports, Ci.nsIUrlListener]),
+          QueryInterface: ChromeUtils.generateQI([Ci.nsIUrlListener]),
         };
 
         /**
