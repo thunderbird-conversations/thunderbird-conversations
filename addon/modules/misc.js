@@ -36,14 +36,13 @@
 
 var EXPORTED_SYMBOLS = [
   "groupArray", "joinWordList", "iconForMimeType",
-  "EventHelperMixIn", "arrayEquals", "topMail3Pane", "reindexMessages",
+  "EventHelperMixIn", "arrayEquals", "topMail3Pane",
   "folderName", "openConversationInTabOrWindow",
 ];
 
 const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 
 XPCOMUtils.defineLazyModuleGetters(this, {
-  GlodaMsgIndexer: "resource:///modules/gloda/index_msg.js",
   getMail3Pane: "resource://conversations/modules/stdlib/msgHdrUtils.js",
   Prefs: "resource://conversations/modules/prefs.js",
   setupLogging: "resource://conversations/modules/log.js",
@@ -153,7 +152,7 @@ function iconForMimeType(aMimeType) {
  */
 var EventHelperMixIn = {
 
-  compose: function _EventHelper_compose(compType, shiftKey = false) {
+  compose(compType, shiftKey = false) {
     let window = topMail3Pane(this);
     if (shiftKey) {
       window.ComposeMessage(compType, Ci.nsIMsgCompFormat.OppositeOfDefault, this._msgHdr.folder, [this._uri]);
@@ -162,7 +161,7 @@ var EventHelperMixIn = {
     }
   },
 
-  forward: function _EventHelper_forward(shiftKey) {
+  forward(shiftKey) {
     let forwardType = 0;
     try {
       forwardType = Prefs.getInt("mail.forward_message_mode");
@@ -175,7 +174,7 @@ var EventHelperMixIn = {
       this.compose(Ci.nsIMsgCompType.ForwardInline, shiftKey);
   },
 
-  register: function _EventHelper_register(selector, f, options) {
+  register(selector, f, options) {
     let action;
     if (typeof(options) == "undefined" || typeof(options.action) == "undefined")
       action = "click";
@@ -226,10 +225,6 @@ function topMail3Pane(aObj) {
 
   // Standalone window, a tab, or in the htmlpane (common case)
   return aObj.top.opener || moveOut(aObj) || aObj.top;
-}
-
-function reindexMessages(aMsgHdrs) {
-  GlodaMsgIndexer.indexMessages(aMsgHdrs.map(x => [x.folder, x.messageKey]));
 }
 
 function folderName(aFolder) {
