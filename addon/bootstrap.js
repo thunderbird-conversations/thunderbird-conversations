@@ -67,7 +67,7 @@ let ResourceRegister = {
   },
 };
 
-function monkeyPatchWindow(window, aLater) {
+function monkeyPatchWindow(window) {
   let doIt = function() {
     try {
       if (window.document.location != "chrome://messenger/content/messenger.xul")
@@ -125,26 +125,28 @@ function monkeyPatchWindow(window, aLater) {
     }
   };
 
-  if (aLater)
+  if (window.document.readyState == "complete") {
+    Log.debug("Document is ready...");
+    doIt();
+  } else {
+    Log.debug(`Document is not ready (${window.document.readyState}), waiting...`);
     window.addEventListener("load", () => {
       doIt();
     }, {once: true});
-  else
-    doIt();
+  }
 }
 
 function monkeyPatchAllWindows() {
   for (let w of Services.wm.getEnumerator("mail:3pane"))
-    monkeyPatchWindow(w, false);
+    monkeyPatchWindow(w);
 }
 
 // This obserer is notified when a new window is created and injects our code
 let windowObserver = {
   observe(aSubject, aTopic, aData) {
     if (aTopic == "domwindowopened") {
-      // loadImports();
       aSubject.QueryInterface(Ci.nsIDOMWindow);
-      monkeyPatchWindow(aSubject.window, true);
+      monkeyPatchWindow(aSubject.window);
     }
   },
 };
@@ -163,21 +165,12 @@ function startup(aData, aReason) {
     Embeds.init();
     GlodaAttrProviders.init();
     monkeyPatchAllWindows();
-    // Services.obs.addObserver({
-    //   observe(aSubject, aTopic, aData) {
-    //       Log.debug("observe: mail-startup-done");
-    //       loadImports();
-    //       monkeyPatchAllWindows();
-    //   },
-    // }, "mail-startup-done");
 
     // Patch all future windows
     Services.ww.registerNotification(windowObserver);
 
     // Show the assistant if the extension is installed or enabled
     if (aReason == Config.BOOTSTRAP_REASONS.ADDON_INSTALL || aReason == Config.BOOTSTRAP_REASONS.ADDON_ENABLE) {
-      // loadImports();
-      // monkeyPatchAllWindows();
       Services.ww.openWindow(
         null,
         "chrome://conversations/content/assistant/assistant.xhtml",
@@ -185,12 +178,6 @@ function startup(aData, aReason) {
         "chrome,width=800,height=500", {});
     }
 
-    // // In case of an up- or downgrade patch all windows again
-    // if (aReason == Config.BOOTSTRAP_REASONS.ADDON_UPGRADE || aReason == Config.BOOTSTRAP_REASONS.ADDON_DOWNGRADE) {
-    //   // loadImports();
-    //   // monkeyPatchAllWindows();
-    // }
-    //
     // Hook into options window
     // TODO: Maybe bring this back?
     // Services.obs.addObserver({
@@ -227,8 +214,11 @@ function shutdown(aData, aReason) {
 
   // Reasons to be here can be DISABLE or UNINSTALL
   ResourceRegister.uninit("conversations");
-  for (let w of Services.wm.getEnumerator("mail:3pane"))
-    w.Conversations.monkeyPatch.undo(aReason);
+  for (let w of Services.wm.getEnumerator("mail:3pane")) {
+    if ("Conversations" in w) {
+      w.Conversations.monkeyPatch.undo(aReason);
+    }
+  }
 }
 
 function install(aData, aReason) {
