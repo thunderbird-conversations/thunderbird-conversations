@@ -38,8 +38,6 @@
             showCc, showBcc, addAttachment, confirmDiscard, quickReplyDragEnter,
             quickReplyCheckDrag, quickReplyDrop */
 /* exported htmlToPlainText */
-// From stub.compose-ui-bz.js
-/* global bzSetup, BzComposeSession */
 // Via stub.xhtml
 /* global Conversations, closeTab, Prefs, msgUriToMsgHdr, tmpl, Services, topMail3Pane */
 
@@ -73,7 +71,6 @@ window.addEventListener("unload", function() {
 });
 
 var gDraftListener;
-var gBzSetup;
 
 /**
  * Called either by the monkey-patch when the conversation is fully built, or by
@@ -154,8 +151,7 @@ function registerQuickReply() {
     onSave();
   });
 
-  // Will set the placeholder and return the bz params
-  gBzSetup = bzSetup();
+  // Will set the placeholder.
   registerQuickReplyEventListeners();
 
   // Bold, italics, etC.
@@ -368,10 +364,6 @@ function createComposeSession(what) {
   } else {
     for (let elt of document.getElementsByTagName("textarea"))
       elt.setAttribute("spellcheck", false);
-  }
-  if (gBzSetup) {
-    let [webUrl, bzUrl, cookie] = gBzSetup;
-    return new BzComposeSession(what, webUrl, bzUrl, cookie);
   }
   return new ComposeSession(what);
 }
