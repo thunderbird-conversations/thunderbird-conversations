@@ -1,4 +1,4 @@
-var EXPORTED_SYMBOLS = ["setupFullLogging", "setupLogging", "dumpCallStack", "logRoot", "Colors"];
+var EXPORTED_SYMBOLS = ["setupLogging", "dumpCallStack", "logRoot", "Colors"];
 
 const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 
