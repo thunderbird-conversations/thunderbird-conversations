@@ -153,10 +153,10 @@ let windowObserver = {
 
 function startup(aData, aReason) {
   ResourceRegister.init(aData.resourceURI.spec, "conversations");
-  const {setupFullLogging, dumpCallStack} = ChromeUtils.import("resource://conversations/modules/log.js");
+  const {setupLogging, dumpCallStack} = ChromeUtils.import("resource://conversations/modules/log.js");
   const {Config} = ChromeUtils.import("resource://conversations/modules/config.js");
 
-  Log = setupFullLogging("Conversations.MonkeyPatch");
+  Log = setupLogging("Conversations.MonkeyPatch");
   Log.debug("startup, aReason=", aReason);
 
   try {
