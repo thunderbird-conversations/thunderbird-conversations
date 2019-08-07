@@ -45,6 +45,8 @@
   <script type="text/javascript"
     src="chrome://conversations/content/conversationFooter.js"></script>
   <script type="text/javascript"
+    src="chrome://conversations/content/message.js"></script>
+  <script type="text/javascript"
     src="chrome://conversations/content/messageActionButton.js"></script>
   <script type="text/javascript"
     src="chrome://conversations/content/messageHeaderOptions.js"></script>
@@ -240,58 +242,6 @@
           removeContactDisplay(tooltipDiv);
         }, kPopupTimeout);
       });
-    }
-
-    /* exported renderAttachmentDetails */
-    function renderAttachmentDetails(messageDiv, msgData) {
-      const details = messageDiv.getElementsByClassName("attachments-container")[0];
-      if (msgData.attachments.length) {
-        ReactDOM.render(React.createElement(ReactRedux.Provider, {store},
-          React.createElement(Attachments, {
-            attachments: msgData.attachments,
-            attachmentsPlural: msgData.attachmentsPlural,
-            gallery: msgData.gallery,
-            msgUri: msgData.uri,
-          })), details);
-      }
-    }
-
-    /* exported renderMessageFooter */
-    function renderMessageFooter(messageDiv, msgData) {
-      const details = messageDiv.getElementsByClassName("messageFooter")[0];
-      ReactDOM.render(React.createElement(ReactRedux.Provider, {store},
-        React.createElement(MessageFooter, {
-          msgUri: msgData.uri,
-          multipleRecipients: msgData.multipleRecipients,
-          recipientsIncludeLists: msgData.recipientsIncludeLists,
-          isDraft: msgData.isDraft,
-        })), details);
-    }
-
-    /* exported renderMessageHeaderOptions */
-    function renderMessageHeaderOptions(messageDiv, msgData) {
-      const details = messageDiv.getElementsByClassName("optionswrapper")[0];
-      ReactDOM.render(React.createElement(ReactRedux.Provider, {store},
-        React.createElement(MessageHeaderOptions, {
-          msgUri: msgData.uri,
-          date: msgData.date,
-          fullDate: msgData.fullDate,
-          attachments: msgData.attachments,
-          multipleRecipients: msgData.multipleRecipients,
-          recipientsIncludeLists: msgData.recipientsIncludeLists,
-          isDraft: msgData.isDraft,
-        })), details);
-    }
-
-    /* exported cleanup */
-    function cleanup() {
-      // These shouldn't be necessary because we're blasting away everything by
-      //  setting .innerHTML BUT jQuery won't remove its persistent event
-      //  listeners if we don't do that which will in turn cause memory leaks!
-      // Indeed, the listeners are actually closures on Message instances. These
-      //  contain a pointer to their parent Conversation, so that would prevent
-      //  the GC from collecting anything! Argh!
-      $("#messageList").empty();
     }
 
     document.addEventListener("focus", function(event) {
@@ -1163,8 +1113,8 @@
     ]]>
   </script>
   <div id="wrapper">
-    <ul id="messageList">
-    </ul>
+    <!-- <ul id="messageList">
+    </ul> -->
     <div id="conversationWrapper">
     </div>
   </div>

@@ -87,7 +87,7 @@ OptionsMoreMenu.propTypes = {
   msgSendAction: PropTypes.func.isRequired,
 };
 
-class _MessageHeaderOptions extends React.PureComponent {
+class MessageHeaderOptions extends React.PureComponent {
   constructor() {
     super();
     this.strings = new StringBundle("chrome://conversations/locale/template.properties");
@@ -203,7 +203,7 @@ class _MessageHeaderOptions extends React.PureComponent {
   }
 }
 
-_MessageHeaderOptions.propTypes = {
+MessageHeaderOptions.propTypes = {
   dispatch: PropTypes.func.isRequired,
   date: PropTypes.string.isRequired,
   fullDate: PropTypes.string.isRequired,
@@ -213,5 +213,3 @@ _MessageHeaderOptions.propTypes = {
   recipientsIncludeLists: PropTypes.bool.isRequired,
   isDraft: PropTypes.bool.isRequired,
 };
-
-const MessageHeaderOptions = ReactRedux.connect()(_MessageHeaderOptions);

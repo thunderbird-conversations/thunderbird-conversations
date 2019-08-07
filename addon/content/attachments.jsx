@@ -5,7 +5,7 @@
 /* globals PropTypes, React, ReactRedux, StringBundle */
 /* exported Attachments */
 
-class _Attachment extends React.PureComponent {
+class Attachment extends React.PureComponent {
   constructor() {
     super();
     this.preview = this.preview.bind(this);
@@ -92,7 +92,7 @@ class _Attachment extends React.PureComponent {
   }
 }
 
-_Attachment.propTypes = {
+Attachment.propTypes = {
   dispatch: PropTypes.func.isRequired,
   formattedSize: PropTypes.string.isRequired,
   imgClass: PropTypes.string.isRequired,
@@ -105,9 +105,7 @@ _Attachment.propTypes = {
   url: PropTypes.string.isRequired,
 };
 
-const Attachment = ReactRedux.connect()(_Attachment);
-
-class _Attachments extends React.PureComponent {
+class Attachments extends React.PureComponent {
   constructor() {
     super();
     this.strings = new StringBundle("chrome://conversations/locale/template.properties");
@@ -174,12 +172,10 @@ class _Attachments extends React.PureComponent {
   }
 }
 
-_Attachments.propTypes = {
+Attachments.propTypes = {
   dispatch: PropTypes.func.isRequired,
   attachments: PropTypes.array.isRequired,
   attachmentsPlural: PropTypes.string.isRequired,
   msgUri: PropTypes.string.isRequired,
   gallery: PropTypes.bool.isRequired,
 };
-
-const Attachments = ReactRedux.connect()(_Attachments);

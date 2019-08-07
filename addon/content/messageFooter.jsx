@@ -6,7 +6,7 @@
            ActionButton */
 /* exported MessageFooter */
 
-class _MessageFooter extends React.PureComponent {
+class MessageFooter extends React.PureComponent {
   constructor() {
     super();
     this.strings = new StringBundle("chrome://conversations/locale/template.properties");
@@ -20,38 +20,38 @@ class _MessageFooter extends React.PureComponent {
 
   render() {
     return (
-      <div className="footerActions">
-        { this.props.isDraft &&
-          <ActionButton callback={this.action}
-                        type="draft"/>
-        }
-        { !this.props.isDraft &&
-          <ActionButton callback={this.action}
-                        type="reply"/>
-        }
-        { !this.props.isDraft && this.props.multipleRecipients &&
-          <ActionButton callback={this.action}
-                        type="replyAll"/>
-        }
-        { !this.props.isDraft && this.props.recipientsIncludeLists &&
-          <ActionButton callback={this.action}
-                        type="replyList"/>
-        }
-        { !this.props.isDraft &&
-          <ActionButton callback={this.action}
-                        type="forward"/>
-        }
+      <div className="messageFooter">
+        <div className="footerActions">
+          { this.props.isDraft &&
+            <ActionButton callback={this.action}
+                          type="draft"/>
+          }
+          { !this.props.isDraft &&
+            <ActionButton callback={this.action}
+                          type="reply"/>
+          }
+          { !this.props.isDraft && this.props.multipleRecipients &&
+            <ActionButton callback={this.action}
+                          type="replyAll"/>
+          }
+          { !this.props.isDraft && this.props.recipientsIncludeLists &&
+            <ActionButton callback={this.action}
+                          type="replyList"/>
+          }
+          { !this.props.isDraft &&
+            <ActionButton callback={this.action}
+                          type="forward"/>
+          }
+        </div>
       </div>
     );
   }
 }
 
-_MessageFooter.propTypes = {
+MessageFooter.propTypes = {
   dispatch: PropTypes.func.isRequired,
   msgUri: PropTypes.string.isRequired,
   multipleRecipients: PropTypes.bool.isRequired,
   recipientsIncludeLists: PropTypes.bool.isRequired,
   isDraft: PropTypes.bool.isRequired,
 };
-
-const MessageFooter = ReactRedux.connect()(_MessageFooter);

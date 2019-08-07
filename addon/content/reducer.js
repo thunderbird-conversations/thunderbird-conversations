@@ -72,6 +72,13 @@ function attachments(state = initialAttachments, action) {
 
 function messages(state = initialMessages, action) {
   switch (action.type) {
+    case "REPLACE_CONVERSATION_DETAILS": {
+      console.log("REPLACE_CONVERSATION_DETAILS: messages");
+      return {
+        ...state,
+        ...action.messages,
+      };
+    }
     case "EDIT_DRAFT": {
       const msg = Conversations.currentConversation.getMessage(action.msgUri);
       msg.compose(Ci.nsIMsgCompType.Draft, action.shiftKey);
@@ -133,6 +140,13 @@ function messages(state = initialMessages, action) {
 
 function summary(state = initialSummary, action) {
   switch (action.type) {
+    case "REPLACE_CONVERSATION_DETAILS": {
+      console.log("REPLACE_CONVERSATION_DETAILS: summary");
+      return {
+        ...state,
+        ...action.summary,
+      };
+    }
     case "ADD_CONTACT": {
       ContactHelpers.addContact(topMail3Pane(window), action.name, action.email);
       // TODO: In theory we should be updating the store so that the button can

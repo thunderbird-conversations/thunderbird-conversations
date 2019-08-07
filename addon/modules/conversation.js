@@ -834,26 +834,27 @@ Conversation.prototype = {
       //  throw an exception here, we're fucked, and we can't recover ever,
       //  because every test trying to determine whether we can recycle will end
       //  up running over the buggy set of messages.
-      let currentMsgUris = currentMsgSet.filter(x => toMsgHdr(x))
-                                        .map(x => msgHdrGetUri(toMsgHdr(x)));
-      // Is a1 a prefix of a2? (I wish JS had pattern matching!)
-      let isPrefix = function _isPrefix(a1, a2) {
-        if (!a1.length) {
-          return [true, a2];
-        } else if (a1.length && !a2.length) {
-          return [false, null];
-        }
-
-        let hd1 = a1[0];
-        let hd2 = a2[0];
-        if (hd1 == hd2)
-          return isPrefix(a1.slice(1, a1.length), a2.slice(1, a2.length));
-
-        return [false, null];
-      };
-      let myMsgUris = this.messages.filter(x => toMsgHdr(x))
-                                   .map(x => msgHdrGetUri(toMsgHdr(x)));
-      let [shouldRecycle /* , _whichMessageUris */] = isPrefix(currentMsgUris, myMsgUris);
+      // let currentMsgUris = currentMsgSet.filter(x => toMsgHdr(x))
+      //                                   .map(x => msgHdrGetUri(toMsgHdr(x)));
+      // // Is a1 a prefix of a2? (I wish JS had pattern matching!)
+      // let isPrefix = function _isPrefix(a1, a2) {
+      //   if (!a1.length) {
+      //     return [true, a2];
+      //   } else if (a1.length && !a2.length) {
+      //     return [false, null];
+      //   }
+      //
+      //   let hd1 = a1[0];
+      //   let hd2 = a2[0];
+      //   if (hd1 == hd2)
+      //     return isPrefix(a1.slice(1, a1.length), a2.slice(1, a2.length));
+      //
+      //   return [false, null];
+      // };
+      // let myMsgUris = this.messages.filter(x => toMsgHdr(x))
+      //                              .map(x => msgHdrGetUri(toMsgHdr(x)));
+      // let [shouldRecycle /* , _whichMessageUris */] = isPrefix(currentMsgUris, myMsgUris);
+      const shouldRecycle = false;
       // Ok, some explanation needed. How can this possibly happen?
       // - Click on a conversation
       // - Conversation is built, becomes the global current conversation
@@ -863,23 +864,23 @@ Conversation.prototype = {
       // Beware, if the previous conversation's messages have been deleted, we
       //  need to test for currentMsgUri's length, which removes dead msgHdrs,
       //  not just currentMsgset.
-      if (currentMsgUris.length == 0)
-        shouldRecycle = false;
+      // if (currentMsgUris.length == 0)
+      //   shouldRecycle = false;
       // Be super-conservative (but I fail to see how we could possibly end up
       // in a different situation → famous last words): we can recycle the
       // conversation only if there's one draft in it and it's the last message
       // in the conversation.
-      let drafts = currentMsgSet.filter(x =>
-        !toMsgHdr(x) || msgHdrIsDraft(toMsgHdr(x))
-      );
-      if (drafts.length) {
-        if (drafts.length > 1)
-          shouldRecycle = false;
-        else
-          shouldRecycle = shouldRecycle
-            && (currentMsgSet.indexOf(drafts[0]) == currentMsgSet.length - 1);
-        Log.debug("Found drafts, recycling?", shouldRecycle);
-      }
+      // let drafts = currentMsgSet.filter(x =>
+      //   !toMsgHdr(x) || msgHdrIsDraft(toMsgHdr(x))
+      // );
+      // if (drafts.length) {
+      //   if (drafts.length > 1)
+      //     shouldRecycle = false;
+      //   else
+      //     shouldRecycle = shouldRecycle
+      //       && (currentMsgSet.indexOf(drafts[0]) == currentMsgSet.length - 1);
+      //   Log.debug("Found drafts, recycling?", shouldRecycle);
+      // }
       if (shouldRecycle) {
         // NB: we get here even if there's 0 new messages, understood?
         // Just get the extra messages
@@ -957,10 +958,10 @@ Conversation.prototype = {
       // We don't know yet if this is going to be a junkable conversation, so
       //  when in doubt, reset. Actually, the final call to
       //  _updateConversationButtons will update this.
-      this._htmlPane.conversationDispatch({
-        type: "UPDATE_CANJUNK_STATUS",
-        canJunk: true,
-      });
+      // this._htmlPane.conversationDispatch({
+      //   type: "UPDATE_CANJUNK_STATUS",
+      //   canJunk: true,
+      // });
     }
 
     Log.debug("Outputting",
@@ -986,28 +987,41 @@ Conversation.prototype = {
     });
     // We must do this if we are to ever release the previous Conversation
     //  object. See comments in stub.html for the nice details.
-    this._htmlPane.cleanup();
+    let reactMsgData = [];
     for (let msgData of tmplData) {
-      let x = this._htmlPane.tmpl("#messageTemplate", msgData);
-      this._domNode.appendChild(x);
-      this._htmlPane.renderAttachmentDetails(x, msgData);
-      this._htmlPane.renderMessageFooter(x, msgData);
-      this._htmlPane.renderMessageHeaderOptions(x, msgData);
+        // let x = this._htmlPane.tmpl("#messageTemplate", msgData);
+        // // this._domNode.appendChild(x);
+      reactMsgData.push({
+        msgUri: msgData.uri,
+        date: msgData.date,
+        fullDate: msgData.fullDate,
+        attachments: msgData.attachments,
+        attachmentsPlural: msgData.attachmentsPlural,
+        gallery: msgData.gallery,
+        multipleRecipients: msgData.multipleRecipients,
+        recipientsIncludeLists: msgData.recipientsIncludeLists,
+        isDraft: msgData.isDraft,
+      });
     }
 
     // Notify each message that it's been added to the DOM and that it can do
     // event registration and stuff...
-    let domNodes = this._domNode.getElementsByClassName(Message.prototype.cssClass);
+    // let domNodes = this._domNode.getElementsByClassName(Message.prototype.cssClass);
     this.messages.forEach(function(m, i) {
-      m.message.onAddedToDom(domNodes[i]);
-      // Determine which messages should get a nice folder tag
-      m.message.inView = self.viewWrapper.isInView(m);
+      // m.message.onAddedToDom(domNodes[i]);
+      // // Determine which messages should get a nice folder tag
+      // m.message.inView = self.viewWrapper.isInView(m);
     });
 
-    // Set the subject properly
     this._htmlPane.conversationDispatch({
-      type: "UPDATE_SUBJECT",
-      subject: this.messages[this.messages.length - 1].message.subject,
+      type: "REPLACE_CONVERSATION_DETAILS",
+      summary: {
+        subject: this.messages[this.messages.length - 1].message.subject,
+        canJunk: true,
+      },
+      messages: {
+        msgData: reactMsgData,
+      },
     });
     // Invalidate the composition session so that compose-ui.js can setup the
     //  fields next time.
