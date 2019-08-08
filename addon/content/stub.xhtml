@@ -86,36 +86,6 @@
       store.dispatch(...args);
     }
 
-    // Below are mostly UI utility functions.
-    (function($) {
-      $.fn.vAlign = function(container) {
-        $(document).ready(function() {
-          if (!container)
-            container = "div";
-
-          this.each(function(i) {
-            $(this).wrap("<div />");
-            var el = $(this);
-            var elh = el.height(); // new element height
-            var ph = el.parent().height(); // parent height
-            var nh = (ph - elh) / 2; // new margin to apply
-            if (!nh) {
-              $(this).unwrap();
-            } else {
-              el.css("margin-top", nh);
-              // don't align again now we've succeeded
-              el.removeClass("align");
-            }
-          });
-        }.bind(this));
-      };
-    })(jQuery);
-
-    /* exported alignAttachments */
-    function alignAttachments(aMsgNode) {
-      $(aMsgNode._domNode).find(".align").vAlign();
-    }
-
     // This function only works for our message nodes, use $(...).offset() for
     //  more complicated computations.
     function offsetFromTop(aNode) {
