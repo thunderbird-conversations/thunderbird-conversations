@@ -518,6 +518,7 @@ Message.prototype = {
       multipleRecipients: this.isReplyAllEnabled,
       recipientsIncludeLists: this.isReplyListEnabled,
       isDraft: false,
+      starred: this.starred,
     };
 
     // 1) Generate Contact objects
@@ -693,15 +694,16 @@ Message.prototype = {
       keyListener.onKeyUp(event);
     }); // über-important: don't capture
 
-    // Do this now because the star is visible even if we haven't been expanded
-    // yet.
-    this.register(".star", function(event) {
-      self.starred = !self.starred;
-      // Don't trust gloda. Big hack, self also has the "starred" property, so
-      //  we don't have to create a new object.
-      self.onAttributesChanged(self);
-      event.stopPropagation();
-    });
+    // // Do this now because the star is visible even if we haven't been expanded
+    // // yet.
+    // TODO: Move this across.
+    // this.register(".star", function(event) {
+    //   self.starred = !self.starred;
+    //   // Don't trust gloda. Big hack, self also has the "starred" property, so
+    //   //  we don't have to create a new object.
+    //   self.onAttributesChanged(self);
+    //   event.stopPropagation();
+    // });
 
     // Register event handlers for onSelected.
     // Set useCapture: true for preventing this from being canceled

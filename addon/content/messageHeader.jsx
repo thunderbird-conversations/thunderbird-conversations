@@ -34,44 +34,49 @@
  *
  * ***** END LICENSE BLOCK ***** */
 
-/* globals React, PropTypes, Attachments, MessageHeader, MessageFooter */
-/* exported Message */
+/* globals React, PropTypes, MessageHeaderOptions */
+/* exported MessageHeader */
 
-class Message extends React.PureComponent {
+class MessageHeader extends React.PureComponent {
   render() {
+    // {this.props.avatarIsDefault ?
+    //   <abbr className="contactInitials"
+    //         style="{{dataContactFrom.colorStyle}}">
+    //     {dataContactFrom.initials}
+    //   </abbr> :
+    //   <span className="contactAvatar" style="background-image: url('{{dataContactFrom.avatar}}')"></span>
+    // }
     return (
-      <li className="message">
-        <MessageHeader
-          dispatch={this.props.dispatch}
-          date={this.props.message.date}
-          fullDate={this.props.message.fullDate}
-          msgUri={this.props.message.msgUri}
-          attachments={this.props.message.attachments}
-          multipleRecipients={this.props.message.multipleRecipients}
-          recipientsIncludeLists={this.props.message.recipientsIncludeLists}
-          isDraft={this.props.message.isDraft}
-          starred={this.props.message.starred}/>
-        <div className="messageBody">
-          <Attachments
-            dispatch={this.props.dispatch}
-            attachments={this.props.message.attachments}
-            attachmentsPlural={this.props.message.attachmentsPlural}
-            msgUri={this.props.message.msgUri}
-            gallery={this.props.message.gallery}/>
+      <div className="messageHeader hbox">
+        <div className={"star" + (this.props.starred ? " starred" : "")}>
+          <svg className="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
+            <use xlinkHref="chrome://conversations/skin/material-icons.svg#star">
+            </use>
+          </svg>
         </div>
-        <MessageFooter
+
+        <MessageHeaderOptions
           dispatch={this.props.dispatch}
-          msgUri={this.props.message.msgUri}
-          multipleRecipients={this.props.message.multipleRecipients}
-          recipientsIncludeLists={this.props.message.recipientsIncludeLists}
-          isDraft={this.props.message.isDraft}/>
-      </li>
+          date={this.props.date}
+          fullDate={this.props.fullDate}
+          msgUri={this.props.msgUri}
+          attachments={this.props.attachments}
+          multipleRecipients={this.props.multipleRecipients}
+          recipientsIncludeLists={this.props.recipientsIncludeLists}
+          isDraft={this.props.isDraft}/>
+      </div>
     );
   }
 }
 
-Message.propTypes = {
+MessageHeader.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  index: PropTypes.number.isRequired,
-  message: PropTypes.object.isRequired,
+  date: PropTypes.string.isRequired,
+  fullDate: PropTypes.string.isRequired,
+  msgUri: PropTypes.string.isRequired,
+  attachments: PropTypes.array.isRequired,
+  multipleRecipients: PropTypes.bool.isRequired,
+  recipientsIncludeLists: PropTypes.bool.isRequired,
+  isDraft: PropTypes.bool.isRequired,
+  starred: PropTypes.bool.isRequired,
 };

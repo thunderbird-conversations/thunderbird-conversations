@@ -1001,6 +1001,7 @@ Conversation.prototype = {
         multipleRecipients: msgData.multipleRecipients,
         recipientsIncludeLists: msgData.recipientsIncludeLists,
         isDraft: msgData.isDraft,
+        starred: msgData.starred,
       });
     }
 
