@@ -940,11 +940,6 @@ Message.prototype = {
     return this._domNode.getElementsByTagName("iframe")[0];
   },
 
-  cosmeticFixups: function _Message_cosmeticFixups() {
-    let window = this._conversation._htmlPane;
-    window.alignAttachments(this);
-  },
-
   // {
   //  starred: bool,
   //  tags: nsIMsgTag list,
@@ -1183,7 +1178,6 @@ Message.prototype = {
         let self = this;
         this.buildAttachmentViewIfNeeded(function() {
           self.registerActions();
-          self.cosmeticFixups();
           self.streamMessage(); // will call _signal
         });
       } catch (e) {
