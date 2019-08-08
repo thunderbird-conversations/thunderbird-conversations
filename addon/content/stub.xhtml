@@ -19,12 +19,6 @@
   <link rel="stylesheet" type="text/css" media="print"
     href="chrome://conversations/skin/print.css" />
   <script type="text/javascript"
-    src="chrome://conversations/content/js/jquery-3.2.1.min.js"></script>
-  <script type="text/javascript"
-    src="chrome://conversations/content/js/handlebars-v3.0.0.js"></script>
-  <script type="text/javascript"
-    src="chrome://conversations/content/js/jquery.tokeninput.js"></script>
-  <script type="text/javascript"
     src="chrome://conversations/content/vendor/react.js"></script>
   <script type="text/javascript"
     src="chrome://conversations/content/vendor/react-dom.js"></script>
@@ -64,18 +58,16 @@
     src="chrome://conversations/content/conversationWrapper.js"></script>
   <!-- The two scripts below share the same scope, they were split for the sake
     of readability. -->
-  <script type="application/javascript"
+  <!-- <script type="application/javascript"
     src="chrome://conversations/content/quickReply.js"></script>
   <script type="application/javascript"
     src="chrome://conversations/content/stub.completion-ui.js"></script>
   <script type="application/javascript"
-    src="chrome://conversations/content/stub.compose-ui.js"></script>
-  <script type="application/javascript"
-    src="chrome://conversations/content/handlebars-wrapper.js"></script>
+    src="chrome://conversations/content/stub.compose-ui.js"></script> -->
   <script type="application/javascript"><![CDATA[
     /* import-globals-from quickReply.js */
     /* import-globals-from reducer.js */
-    /* global $, jQuery, wrapHandlebars, registerQuickReply, newComposeSessionByDraftIf
+    /* global $, registerQuickReply, newComposeSessionByDraftIf
               Redux, ReactDOM, React, ReactRedux, ConversationWrapper, ContactDetail,
               gComposeSession:true, tmpl, createComposeSession, revealCompositionFields,
               editFields, asToken, setupAutocomplete, Gloda, Log:true,
@@ -293,15 +285,17 @@
     const {Prefs} = ChromeUtils.import("resource://conversations/modules/prefs.js");
     const {topMail3Pane} = ChromeUtils.import("resource://conversations/modules/misc.js");
     const {defaultPhotoURI} = ChromeUtils.import("resource://conversations/modules/contact.js");
+    const {
+      setupLogging, dumpCallStack,
+    } = ChromeUtils.import("resource://conversations/modules/log.js");
+
 
     Log = setupLogging("Conversations.Stub");
     // Declare with var, not let, so that it's in the global scope, not the lexical scope.
     /* exported isInTab */
     var isInTab = false;
 
-    wrapHandlebars();
-
-    $(document).ready(function() {
+    document.addEventListener("DOMContentLoaded", () => {
       let html = document.body.parentNode;
       if (Prefs.tweak_chrome) {
         if (isWindows) {
@@ -314,7 +308,7 @@
       } else {
         html.removeAttribute("os");
       }
-    });
+    }, {once: true});
 
     let oldPrint = window.print;
 
@@ -342,7 +336,7 @@
      * serves the purpose of being able to create a standalone conversation view
      * in a new tab.
      */
-    $(document).ready(function() {
+    document.addEventListener("DOMContentLoaded", () => {
       // I just imagined Javascript would have some function for that
       // built-in... looks like even jQuery doesn't have it.
       let params = decodeUrlParameters(document.location.href);
@@ -427,7 +421,7 @@
       } else if ("quickCompose" in params) {
         masqueradeAsQuickCompose();
       }
-    });
+    }, {once: true});
 
     /* exported isQuickCompose */
     var isQuickCompose = false;
