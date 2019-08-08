@@ -41,5 +41,5 @@
     "preversion": "npm test",
     "version": "scripts/update-version.sh"
   },
-  "license": "MPL-1.1"
+  "license": "MPL-2.0"
 }
