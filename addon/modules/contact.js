@@ -218,10 +218,8 @@ let ContactMixIn = {
       extra,
       // Parameter aUseColor is optional, and undefined means true
       colorStyle: ((aUseColor === false)
-        ? ""
-        : ("background-color :" + this.color)),
-      writeBr: aIsDetail,
-      star: aIsDetail && hasCard,
+        ? {}
+        : {backgroundColor: this.color}),
     };
     return data;
   },

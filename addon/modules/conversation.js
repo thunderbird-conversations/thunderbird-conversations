@@ -993,6 +993,8 @@ Conversation.prototype = {
         // // this._domNode.appendChild(x);
       reactMsgData.push({
         msgUri: msgData.uri,
+        from: msgData.dataContactFrom,
+        to: msgData.dataContactsTo,
         date: msgData.date,
         fullDate: msgData.fullDate,
         attachments: msgData.attachments,
