@@ -132,6 +132,13 @@ function messages(state = initialMessages, action) {
       msg.openInSourceView(topMail3Pane(window));
       return state;
     }
+    case "MSG_STREAM_MSG": {
+      console.log({neckoUrl: action.neckoUrl.spec, msgUri: action.msgUri});
+      let messageService = Services.mMessenger.messageServiceFromURI(action.neckoUrl.spec);
+      messageService.DisplayMessage(action.msgUri + "&markRead=false", action.docshell,
+                                    topMail3Pane(window).msgWindow, {}, "UTF-8", {});
+      return state;
+    }
     default: {
       return state;
     }

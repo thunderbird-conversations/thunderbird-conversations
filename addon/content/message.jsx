@@ -2,7 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals React, PropTypes, Attachments, MessageHeader, MessageFooter */
+/* globals React, PropTypes, Attachments, MessageHeader, MessageFooter,
+           MessageIFrame */
 /* exported Message */
 
 class Message extends React.PureComponent {
@@ -22,6 +23,10 @@ class Message extends React.PureComponent {
           isDraft={this.props.message.isDraft}
           starred={this.props.message.starred}/>
         <div className="messageBody">
+          <MessageIFrame
+            dispatch={this.props.dispatch}
+            msgUri={this.props.message.msgUri}
+            neckoUrl={this.props.message.neckoUrl}/>
           <Attachments
             dispatch={this.props.dispatch}
             attachments={this.props.message.attachments}

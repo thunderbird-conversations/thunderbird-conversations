@@ -508,6 +508,7 @@ Message.prototype = {
       shortFolderName: null,
       gallery: false,
       uri: null,
+      neckoUrl: msgHdrToNeckoURL(self._msgHdr),
       quickReply: aQuickReply,
       bugzillaUrl: "[unknown bugzilla instance]",
       extraClasses: null,

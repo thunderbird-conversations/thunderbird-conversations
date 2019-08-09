@@ -853,3 +853,9 @@ html[xmlns] .clearfix {
   height: 16px;
   background-image: url(loader.gif);
 }
+
+.messageBody > iframe {
+  height: 20px;
+  overflow-y: hidden;
+  border: none;
+}
