@@ -7,8 +7,8 @@
 /* exported MessageFooter */
 
 class MessageFooter extends React.PureComponent {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.strings = new StringBundle("chrome://conversations/locale/template.properties");
     this.action = this.action.bind(this);
   }

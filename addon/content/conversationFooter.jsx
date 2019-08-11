@@ -6,8 +6,8 @@
 /* exported ConversationFooter */
 
 class _ConversationFooter extends React.PureComponent {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.strings = new StringBundle("chrome://conversations/locale/pages.properties");
     this.forwardConversation = this.forwardConversation.bind(this);
     this.printConversation = this.printConversation.bind(this);

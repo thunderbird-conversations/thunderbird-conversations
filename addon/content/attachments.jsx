@@ -6,8 +6,8 @@
 /* exported Attachments */
 
 class Attachment extends React.PureComponent {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.preview = this.preview.bind(this);
     this.downloadAttachment = this.downloadAttachment.bind(this);
     this.openAttachment = this.openAttachment.bind(this);

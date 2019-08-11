@@ -855,7 +855,6 @@ html[xmlns] .clearfix {
 }
 
 .messageBody > iframe {
-  height: 20px;
   overflow-y: hidden;
   border: none;
 }

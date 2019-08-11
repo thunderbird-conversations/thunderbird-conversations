@@ -1013,6 +1013,7 @@ Conversation.prototype = {
     // let domNodes = this._domNode.getElementsByClassName(Message.prototype.cssClass);
     this.messages.forEach(function(m, i) {
       // m.message.onAddedToDom(domNodes[i]);
+      // TODO: Do we need this?
       // // Determine which messages should get a nice folder tag
       // m.message.inView = self.viewWrapper.isInView(m);
     });

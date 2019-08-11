@@ -42,8 +42,8 @@ ContactLabel.propTypes = {
 };
 
 class MessageHeader extends React.PureComponent {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.strings = new StringBundle("chrome://conversations/locale/template.properties");
   }
 

@@ -5,7 +5,7 @@
 /* global Redux, Conversations, markReadInView, topMail3Pane, getMail3Pane,
           isInTab, msgHdrsArchive, Prefs, closeTab, startedEditing,
           msgHdrGetUri, onSave, openConversationInTabOrWindow,
-          printConversation, MailServices */
+          printConversation, MailServices, Services */
 
 /* exported conversationApp */
 
@@ -133,10 +133,14 @@ function messages(state = initialMessages, action) {
       return state;
     }
     case "MSG_STREAM_MSG": {
-      console.log({neckoUrl: action.neckoUrl.spec, msgUri: action.msgUri});
+      // TODO: Add a call to addMsgListener
+      // TODO: We need to allow for plugins here and call onMessageBeforeStreaming
+      // hooks.
+      // Future TODO: Can we stream the message by just assigning the url in
+      // the iframe.
       let messageService = Services.mMessenger.messageServiceFromURI(action.neckoUrl.spec);
       messageService.DisplayMessage(action.msgUri + "&markRead=false", action.docshell,
-                                    topMail3Pane(window).msgWindow, {}, "UTF-8", {});
+                                    topMail3Pane(window).msgWindow, null, "UTF-8", {});
       return state;
     }
     default: {

@@ -6,7 +6,7 @@
 
 var EXPORTED_SYMBOLS = [
   "Message", "MessageFromGloda", "MessageFromDbHdr",
-  "ConversationKeybindings", "previewAttachment",
+  "ConversationKeybindings", "previewAttachment", "watchIFrame",
 ];
 
 const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
@@ -37,8 +37,6 @@ XPCOMUtils.defineLazyGetter(Services, "mMessenger",
                               return Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
                             });
 
-// const kCharsetFromMetaTag = 9;
-const kCharsetFromChannel = 11;
 const kAllowRemoteContent = 2;
 
 const kHeadersShowAll = 2;
@@ -1223,30 +1221,6 @@ Message.prototype = {
     iframe.setAttribute("style", "height: 20px; overflow-y: hidden");
     iframe.setAttribute("type", "content");
 
-    let adjustHeight = function() {
-      let iframeDoc = iframe.contentDocument;
-
-      // This is needed in case the timeout kicked in after the message
-      // was loaded but before we collapsed quotes. Then, the scrollheight
-      // is too big, so we need to make the iframe small, so that its
-      // scrollheight corresponds to its "real" height (there was an issue
-      // with offsetheight, don't remember what, though).
-      iframe.style.height = "20px";
-      iframe.style.height = iframeDoc.body.scrollHeight + "px";
-
-      // So now we might overflow horizontally, which causes a horizontal
-      // scrollbar to appear, which narrows the vertical height available,
-      // which causes a vertical scrollbar to appear.
-      let iframeStyle = self._conversation._window.getComputedStyle(iframe);
-      let iframeExternalWidth = parseInt(iframeStyle.width);
-      // 20px is a completely arbitrary default value which I hope is
-      // greater
-      if (iframeDoc.body.scrollWidth > iframeExternalWidth) {
-        Log.debug("Horizontal overflow detected.");
-        iframe.style.height = (iframeDoc.body.scrollHeight + 20) + "px";
-      }
-    };
-
     // The xul:iframe automatically loads about:blank when it is added
     // into the tree. We need to wait for the document to be loaded before
     // doing things.
@@ -1276,7 +1250,7 @@ Message.prototype = {
           self.registerLinkHandlers(iframe);
           self.injectCss(iframeDoc);
 
-          adjustHeight();
+          // adjustHeight();
         }, {once: true});
 
         // The second load event is triggered by loadURI with the URL
@@ -1349,7 +1323,7 @@ Message.prototype = {
             }
 
             // Everything's done, so now we're able to settle for a height.
-            adjustHeight();
+            // adjustHeight();
 
             // Sometimes setting the iframe's content and height changes
             // the scroll value, don't know why.
@@ -1368,7 +1342,7 @@ Message.prototype = {
               self._signal();
           } catch (e) {
             try {
-              adjustHeight();
+              // adjustHeight();
             } catch (e) {
               iframe.style.height = "800px";
             }
@@ -1379,87 +1353,6 @@ Message.prototype = {
             self._signal();
           }
         }, true); /* end iframe.addEventListener */
-
-        /* Unbelievable as it may seem, the code below works.
-         * Some references :
-         * - http://mxr.mozilla.org/comm-central/source/mailnews/base/src/nsMessenger.cpp#564
-         * - http://mxr.mozilla.org/comm-central/source/mailnews/base/src/nsMessenger.cpp#388
-         * - https://developer.mozilla.org/@api/deki/files/3579/=MessageRepresentations.png
-         *
-         * According to dmose, we should get the regular content policy
-         * for free (regarding image loading, JS...) by using a content
-         * iframe with a classical call to loadURI. AFAICT, this works
-         * pretty well (no JS is executed, the images are loaded IFF we
-         * authorized that recipient).
-         * */
-        let url = msgHdrToNeckoURL(self._msgHdr);
-
-        /* These steps are mandatory. Basically, the code that loads the
-         * messages will always output UTF-8 as the OUTPUT ENCODING, so
-         * we need to tell the iframe's docshell about it. */
-        let cv;
-        try {
-          cv = iframe.docShell.contentViewer;
-        } catch (e) {
-          Log.error(e);
-          dumpCallStack(e);
-          Log.error("The iframe doesn't have a docShell, it probably doesn't belong to the DOM anymore."
-            + " Possible reasons include: you modified the jquery-tmpl template, and you did it wrong."
-            + " You changed conversations very fast, and the streaming completed after the conversation"
-            + " was blown away by the newer one.");
-        }
-        cv.hintCharacterSet = "UTF-8";
-        cv.forceCharacterSet = "UTF-8";
-        cv.hintCharacterSetSource = kCharsetFromChannel;
-        /* Is this even remotely useful? */
-        iframe.docShell.appType = Ci.nsIDocShell.APP_TYPE_MAIL;
-
-        /* Now that's about the input encoding. Here's the catch: the
-         * right way to do that would be to query nsIMsgI18NUrl [1] on the
-         * nsIURI and set charsetOverRide on it. For this parameter to
-         * take effect, we would have to pass the nsIURI to LoadURI, not a
-         * string as in url.spec, but a real nsIURI. Next step:
-         * nsIWebNavigation.loadURI only takes a string... so let's have a
-         * look at nsIDocShell... good, loadURI takes a a nsIURI there.
-         * BUT IT'S [noscript]!!! I'm doomed.
-         *
-         * Workaround: call DisplayMessage that in turns calls the
-         * docShell from C++ code. Oh and why are we doing this? Oh, yes,
-         * see [2].
-         *
-         * Some remarks: I don't know if the nsIUrlListener [3] is useful,
-         * but let's leave it like that, it might come in handy later. And
-         * we _cannot instanciate directly_ the nsIMsgMessageService because
-         * there are different ones for each type of account. So we must ask
-         * nsIMessenger for it, so that it instanciates the right component.
-         *
-        [1] http://mxr.mozilla.org/comm-central/source/mailnews/base/public/nsIMsgMailNewsUrl.idl#172
-        [2] https://www.mozdev.org/bugs/show_bug.cgi?id=22775
-        [3] http://mxr.mozilla.org/comm-central/source/mailnews/base/public/nsIUrlListener.idl#48
-        [4] http://mxr.mozilla.org/comm-central/source/mailnews/base/public/nsIMsgMessageService.idl#112
-        */
-        let messageService = Services.mMessenger.messageServiceFromURI(url.spec);
-        let urlListener = {
-          OnStartRunningUrl() {},
-          OnStopRunningUrl() {},
-          QueryInterface: ChromeUtils.generateQI([Ci.nsIUrlListener]),
-        };
-
-        /**
-        * When you want a message displayed....
-        *
-        * @param in aMessageURI Is a uri representing the message to display.
-        * @param in aDisplayConsumer Is (for now) an nsIDocShell which we'll use to load
-        *                         the message into.
-        *                         XXXbz Should it be an nsIWebNavigation or something?
-        * @param in aMsgWindow
-        * @param in aUrlListener
-        * @param in aCharsetOverride (optional) character set override to force the message to use.
-        * @param out aURL
-        */
-        let params = "&markRead=false";
-        messageService.DisplayMessage(self._uri + params, iframe.docShell,
-                                      msgWindow, urlListener, aCharset, {});
       } catch (e) {
         Log.error(e);
         dumpCallStack(e);

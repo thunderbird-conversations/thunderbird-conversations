@@ -6,8 +6,8 @@
 /* exported MessageHeaderOptions */
 
 class OptionsMoreMenu extends React.PureComponent {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.strings = new StringBundle("chrome://conversations/locale/template.properties");
   }
 
@@ -88,8 +88,8 @@ OptionsMoreMenu.propTypes = {
 };
 
 class MessageHeaderOptions extends React.PureComponent {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.strings = new StringBundle("chrome://conversations/locale/template.properties");
     this.replyAction = this.replyAction.bind(this);
     this.displayMenu = this.displayMenu.bind(this);
