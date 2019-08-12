@@ -44,12 +44,22 @@ ContactLabel.propTypes = {
 class MessageHeader extends React.PureComponent {
   constructor(props) {
     super(props);
+    this.onClickHeader = this.onClickHeader.bind(this);
     this.strings = new StringBundle("chrome://conversations/locale/template.properties");
+  }
+
+  onClickHeader() {
+    this.props.dispatch({
+      type: "MSG_EXPAND",
+      expand: !this.props.expanded,
+      msgUri: this.props.msgUri,
+    });
   }
 
   render() {
     return (
-      <div className="messageHeader hbox">
+      <div className={"messageHeader hbox" + (this.props.expanded ? " expanded" : "")}
+           onClick={this.onClickHeader}>
         <div className="shrink-box">
           <div className={"star" + (this.props.starred ? " starred" : "")}>
             <svg className="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
@@ -71,19 +81,23 @@ class MessageHeader extends React.PureComponent {
             className="author"
             contact={this.props.from}
             detail={false}/>
-          {this.strings.get("to")}
-          {" "}
-          {this.props.to.map((contact, index) =>
+          {this.props.expanded &&
+           (this.strings.get("to") + " ")}
+          {this.props.expanded && this.props.to.map((contact, index) =>
             <ContactLabel
               className="to"
               contact={contact}
               detail={false}
               key={index}/>
           )}
+          {!this.props.expanded &&
+            <span className="snippet">{this.props.snippet}</span>
+          }
         </div>
         <MessageHeaderOptions
           dispatch={this.props.dispatch}
           date={this.props.date}
+          expanded={this.props.expanded}
           fullDate={this.props.fullDate}
           msgUri={this.props.msgUri}
           attachments={this.props.attachments}
@@ -98,6 +112,7 @@ class MessageHeader extends React.PureComponent {
 MessageHeader.propTypes = {
   dispatch: PropTypes.func.isRequired,
   date: PropTypes.string.isRequired,
+  expanded: PropTypes.bool.isRequired,
   from: PropTypes.object.isRequired,
   fullDate: PropTypes.string.isRequired,
   msgUri: PropTypes.string.isRequired,
@@ -105,6 +120,7 @@ MessageHeader.propTypes = {
   multipleRecipients: PropTypes.bool.isRequired,
   recipientsIncludeLists: PropTypes.bool.isRequired,
   isDraft: PropTypes.bool.isRequired,
+  snippet: PropTypes.string.isRequired,
   starred: PropTypes.bool.isRequired,
   to: PropTypes.array.isRequired,
 };

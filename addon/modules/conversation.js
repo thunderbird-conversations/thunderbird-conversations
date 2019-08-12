@@ -34,10 +34,6 @@ let Log = setupLogging("Conversations.Conversation");
 const kMsgDbHdr = 0;
 const kMsgGloda = 1;
 
-const kActionDoNothing = 0;
-const kActionExpand    = 1;
-const kActionCollapse  = 2;
-
 const nsMsgViewIndex_None = 0xffffffff;
 
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
@@ -90,13 +86,13 @@ let SignalManagerMixIn = {
 let OracleMixIn = {
   // Go through all the messages and determine which one is going to be focused
   //  according to the prefs
-  _tellMeWhoToScroll: function _Conversation_tellMeWhoToScroll() {
+  _tellMeWhoToScroll(messages) {
     // Determine which message is going to be scrolled into view
     let needsScroll = -1;
     if (this.scrollMode == Prefs.kScrollUnreadOrLast) {
-      needsScroll = this.messages.length - 1;
-      for (let i = 0; i < this.messages.length; ++i) {
-        if (!this.messages[i].message.read) {
+      needsScroll = messages.length - 1;
+      for (let i = 0; i < messages.length; ++i) {
+        if (!messages[i].message.read) {
           needsScroll = i;
           break;
         }
@@ -104,8 +100,8 @@ let OracleMixIn = {
     } else if (this.scrollMode == Prefs.kScrollSelected) {
       let gFolderDisplay = topMail3Pane(this).gFolderDisplay;
       let key = msgHdrGetUri(gFolderDisplay.selectedMessage);
-      for (let i = 0; i < this.messages.length; ++i) {
-        if (this.messages[i].message._uri == key) {
+      for (let i = 0; i < messages.length; ++i) {
+        if (messages[i].message._uri == key) {
           needsScroll = i;
           break;
         }
@@ -114,7 +110,7 @@ let OracleMixIn = {
       //  just in case...
       if (needsScroll < 0) {
         Log.error("kScrollSelected && didn't find the selected message");
-        needsScroll = this.messages.length - 1;
+        needsScroll = messages.length - 1;
       }
     } else {
       Log.assert(false, "Unknown value for kScroll* constant");
@@ -125,61 +121,43 @@ let OracleMixIn = {
 
   // Go through all the messages and for each one of them, give the expected
   //  action
-  _tellMeWhoToExpand: function _Conversation_tellMeWhoToExpand(aNeedsFocus) {
-    let self = this;
-    let actions = [];
-    let collapse = function _collapse(message) {
-      if (message.collapsed)
-        actions.push(kActionDoNothing);
-      else
-        actions.push(kActionCollapse);
-    };
-    let expand = function _expand(message) {
-      if (message.collapsed)
-        actions.push(kActionExpand);
-      else
-        actions.push(kActionDoNothing);
-    };
+  _tellMeWhoToExpand(messages, reactMsgData, aNeedsFocus) {
     switch (Prefs.expand_who) {
-      case Prefs.kExpandAuto:
+      case Prefs.kExpandAuto: {
         // In this mode, we scroll to the first unread message (or the last
         //  message if all messages are read), and we expand all unread messages
         //  + the last one (which will probably be unread as well).
         if (this.scrollMode == Prefs.kScrollUnreadOrLast) {
-          this.messages.forEach(function( { message }, i) {
-            if (!message.read || i == self.messages.length - 1)
-              expand(message);
-            else
-              collapse(message);
+          this.messages.forEach(({ message }, i) => {
+            reactMsgData[i].expanded = (!message.read || i == this.messages.length - 1);
           });
         // In this mode, we scroll to the selected message, and we only expand
         //  the selected message.
         } else if (this.scrollMode == Prefs.kScrollSelected) {
-          this.messages.forEach(function( { message }, i) {
-            if (i == aNeedsFocus)
-              expand(message);
-            else
-              collapse(message);
+          this.messages.forEach(({ message }, i) => {
+            reactMsgData[i].expanded = i == aNeedsFocus;
           });
         } else {
           Log.assert(false, "Unknown value for pref scroll_who");
         }
-
         break;
-      case Prefs.kExpandAll:
-        this.messages.forEach(function( { message }) {
-          expand(message);
-        });
+      }
+      case Prefs.kExpandAll: {
+        for (const msgData of reactMsgData) {
+          msgData.expanded = true;
+        }
         break;
-      case Prefs.kExpandNone:
-        this.messages.forEach(function( { message }) {
-          collapse(message);
-        });
+      }
+      case Prefs.kExpandNone: {
+        for (const msgData of reactMsgData) {
+          msgData.expanded = false;
+        }
         break;
-      default:
+      }
+      default: {
         Log.assert(false, "Unknown value for pref expand_who");
+      }
     }
-    return actions;
   },
 };
 
@@ -1004,9 +982,13 @@ Conversation.prototype = {
         multipleRecipients: msgData.multipleRecipients,
         recipientsIncludeLists: msgData.recipientsIncludeLists,
         isDraft: msgData.isDraft,
+        snippet: msgData.snippet,
         starred: msgData.starred,
       });
     }
+
+    // Move on to the next step
+    this._expandAndScroll(this.messages, reactMsgData);
 
     // Notify each message that it's been added to the DOM and that it can do
     // event registration and stuff...
@@ -1031,9 +1013,6 @@ Conversation.prototype = {
     // Invalidate the composition session so that compose-ui.js can setup the
     //  fields next time.
     this._htmlPane.gComposeSession = null;
-
-    // Move on to the next step
-    this._expandAndScroll();
   },
 
   _updateConversationButtons: function _Conversation_updateConversationButtons() {
@@ -1055,69 +1034,70 @@ Conversation.prototype = {
 
   // Do all the penible stuff about scrolling to the right message and expanding
   // the right message
-  _expandAndScroll: function _Conversation_expandAndScroll(aStart) {
+  _expandAndScroll(messages, reactMsgData, aStart) {
     if (aStart === undefined)
       aStart = 0;
-    let focusThis = this._tellMeWhoToScroll();
-    let expandThese = this._tellMeWhoToExpand(focusThis);
-    let messageNodes = this._domNode.getElementsByClassName(Message.prototype.cssClass);
-    Log.assert(messageNodes.length == this.messages.length, "WTF?");
+    let focusThis = this._tellMeWhoToScroll(messages);
+    // let expandThese =
+    this._tellMeWhoToExpand(messages, reactMsgData, focusThis);
+    // let messageNodes = this._domNode.getElementsByClassName(Message.prototype.cssClass);
+    // Log.assert(messageNodes.length == this.messages.length, "WTF?");
 
-    let self = this;
-    this._runOnceAfterNSignals(function() {
-      let focusedNode = messageNodes[focusThis];
-      self._htmlPane.scrollNodeIntoView(focusedNode);
-      self.messages[focusThis].message.onSelected();
+    // let self = this;
+    // this._runOnceAfterNSignals(function() {
+    //   let focusedNode = messageNodes[focusThis];
+    //   self._htmlPane.scrollNodeIntoView(focusedNode);
+    //   self.messages[focusThis].message.onSelected();
+    //
+    //   Array.prototype.forEach.call(messageNodes, function(node, i) {
+    //     if (i < messageNodes.length) {
+    //       node.setAttribute("tabindex", i + 2);
+    //     }
+    //   });
+    //   focusedNode.setAttribute("tabindex", "1");
+    //
+    //   // It doesn't matter if it's an update after all, we will just set
+    //   // currentConversation to the same value in the _onComplete handler.
+    //   self._onComplete();
+    //   // _onComplete will potentially set a timeout that, when fired, takes care
+    //   //  of notifying us that we should update the conversation buttons.
+    //
+    //   let w = self._htmlPane;
+    //   if (Prefs.getBool("mailnews.mark_message_read.auto") &&
+    //       !Prefs.getBool("mailnews.mark_message_read.delay")) {
+    //     w.markReadInView.enable();
+    //   } else {
+    //     w.markReadInView.disable();
+    //   }
+    // }, this.messages.length);
 
-      Array.prototype.forEach.call(messageNodes, function(node, i) {
-        if (i < messageNodes.length) {
-          node.setAttribute("tabindex", i + 2);
-        }
-      });
-      focusedNode.setAttribute("tabindex", "1");
-
-      // It doesn't matter if it's an update after all, we will just set
-      // currentConversation to the same value in the _onComplete handler.
-      self._onComplete();
-      // _onComplete will potentially set a timeout that, when fired, takes care
-      //  of notifying us that we should update the conversation buttons.
-
-      let w = self._htmlPane;
-      if (Prefs.getBool("mailnews.mark_message_read.auto") &&
-          !Prefs.getBool("mailnews.mark_message_read.delay")) {
-        w.markReadInView.enable();
-      } else {
-        w.markReadInView.disable();
-      }
-    }, this.messages.length);
-
-    expandThese.forEach(function(action, i) {
-      // If we were instructed to start operating only after the i-1 messages,
-      // don't do anything.
-      if (i < aStart) {
-        self._signal();
-      } else {
-        switch (action) {
-          case kActionExpand:
-            self.messages[i].message.expand();
-            break;
-          case kActionCollapse:
-            self.messages[i].message.collapse();
-            self._signal();
-            break;
-          case kActionDoNothing:
-            self._signal();
-            break;
-          default:
-            Log.error("Unknown action");
-        }
-      }
-    });
+    // expandThese.forEach(function(action, i) {
+    //   // If we were instructed to start operating only after the i-1 messages,
+    //   // don't do anything.
+    //   if (i < aStart) {
+    //     self._signal();
+    //   } else {
+    //     switch (action) {
+    //       case kActionExpand:
+    //         self.messages[i].message.expand();
+    //         break;
+    //       case kActionCollapse:
+    //         self.messages[i].message.collapse();
+    //         self._signal();
+    //         break;
+    //       case kActionDoNothing:
+    //         self._signal();
+    //         break;
+    //       default:
+    //         Log.error("Unknown action");
+    //     }
+    //   }
+    // });
   },
 
   // This is the starting point, this is where the Monkey-Patched threadSummary
   // or the event handlers ask for a conversation.
-  outputInto: function _Conversation_outputInto(aHtmlPane, k) {
+  outputInto(aHtmlPane, k) {
     this._htmlPane = aHtmlPane;
     this._domNode = this._htmlPane.document.getElementById("messageList");
     this._onComplete = () => k(this);

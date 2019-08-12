@@ -13,6 +13,7 @@ class Message extends React.PureComponent {
         <MessageHeader
           dispatch={this.props.dispatch}
           date={this.props.message.date}
+          expanded={this.props.message.expanded}
           from={this.props.message.from}
           to={this.props.message.to}
           fullDate={this.props.message.fullDate}
@@ -21,25 +22,31 @@ class Message extends React.PureComponent {
           multipleRecipients={this.props.message.multipleRecipients}
           recipientsIncludeLists={this.props.message.recipientsIncludeLists}
           isDraft={this.props.message.isDraft}
+          snippet={this.props.message.snippet}
           starred={this.props.message.starred}/>
         <div className="messageBody">
           <MessageIFrame
             dispatch={this.props.dispatch}
+            expanded={this.props.message.expanded}
             msgUri={this.props.message.msgUri}
             neckoUrl={this.props.message.neckoUrl}/>
-          <Attachments
-            dispatch={this.props.dispatch}
-            attachments={this.props.message.attachments}
-            attachmentsPlural={this.props.message.attachmentsPlural}
-            msgUri={this.props.message.msgUri}
-            gallery={this.props.message.gallery}/>
+          {this.props.message.expanded && !!this.props.message.attachments.length &&
+            <Attachments
+              dispatch={this.props.dispatch}
+              attachments={this.props.message.attachments}
+              attachmentsPlural={this.props.message.attachmentsPlural}
+              msgUri={this.props.message.msgUri}
+              gallery={this.props.message.gallery}/>
+          }
         </div>
-        <MessageFooter
-          dispatch={this.props.dispatch}
-          msgUri={this.props.message.msgUri}
-          multipleRecipients={this.props.message.multipleRecipients}
-          recipientsIncludeLists={this.props.message.recipientsIncludeLists}
-          isDraft={this.props.message.isDraft}/>
+        {this.props.message.expanded &&
+          <MessageFooter
+            dispatch={this.props.dispatch}
+            msgUri={this.props.message.msgUri}
+            multipleRecipients={this.props.message.multipleRecipients}
+            recipientsIncludeLists={this.props.message.recipientsIncludeLists}
+            isDraft={this.props.message.isDraft}/>
+        }
       </li>
     );
   }

@@ -117,6 +117,8 @@ class MessageHeaderOptions extends React.PureComponent {
   }
 
   displayMenu(event) {
+    event.preventDefault();
+    event.stopPropagation();
     if (!this.clickListener) {
       this.clickListener = event => {
         this.clearMenu();
@@ -167,37 +169,45 @@ class MessageHeaderOptions extends React.PureComponent {
         <span className="date">
           <span title={this.props.fullDate}>{this.props.date}</span>
         </span>
-        <span className="mainActionButton">
-          <ActionButton callback={this.replyAction}
-                        className="icon-link"
-                        type={actionButtonType}/>
-        </span>
-        <span className="details hide-with-details">
-          <a href="javascript:" className="icon-link" title={this.strings.get("details")}>
-            <svg className="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
-              <use xlinkHref="chrome://conversations/skin/material-icons.svg#info_outline"></use>
-            </svg>
-          </a>
-        </span>
-        <span className="hide-details show-with-details">
-          <a href="javascript:" className="icon-link" title={this.strings.get("hideDetails")}>
-            <svg className="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
-              <use xlinkHref="chrome://conversations/skin/material-icons.svg#info"></use>
-            </svg>
-          </a>
-        </span>
-        <span className="dropDown">
-          <button onClick={this.displayMenu} className="icon-link top-right-more" title={this.strings.get("more")}>
-            <svg className="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
-              <use xlinkHref="chrome://conversations/skin/material-icons.svg#more_vert"></use>
-            </svg>
-          </button>
-          { this.state.expanded &&
-            <OptionsMoreMenu recipientsIncludeLists={this.props.recipientsIncludeLists}
-                             msgSendAction={this.replyAction}
-                             multipleRecipients={this.props.multipleRecipients}/>
-          }
-        </span>
+        {this.props.expanded &&
+          <span className="mainActionButton">
+            <ActionButton callback={this.replyAction}
+                          className="icon-link"
+                          type={actionButtonType}/>
+          </span>
+        }
+        {this.props.expanded &&
+          <span className="details hide-with-details">
+            <a href="javascript:" className="icon-link" title={this.strings.get("details")}>
+              <svg className="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
+                <use xlinkHref="chrome://conversations/skin/material-icons.svg#info_outline"></use>
+              </svg>
+            </a>
+          </span>
+        }
+        {this.props.expanded &&
+          <span className="hide-details show-with-details">
+            <a href="javascript:" className="icon-link" title={this.strings.get("hideDetails")}>
+              <svg className="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
+                <use xlinkHref="chrome://conversations/skin/material-icons.svg#info"></use>
+              </svg>
+            </a>
+          </span>
+        }
+        {this.props.expanded &&
+          <span className="dropDown">
+            <button onClick={this.displayMenu} className="icon-link top-right-more" title={this.strings.get("more")}>
+              <svg className="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
+                <use xlinkHref="chrome://conversations/skin/material-icons.svg#more_vert"></use>
+              </svg>
+            </button>
+            { this.state.expanded &&
+              <OptionsMoreMenu recipientsIncludeLists={this.props.recipientsIncludeLists}
+                               msgSendAction={this.replyAction}
+                               multipleRecipients={this.props.multipleRecipients}/>
+            }
+          </span>
+        }
       </div>
     );
   }
@@ -206,6 +216,7 @@ class MessageHeaderOptions extends React.PureComponent {
 MessageHeaderOptions.propTypes = {
   dispatch: PropTypes.func.isRequired,
   date: PropTypes.string.isRequired,
+  expanded: PropTypes.bool.isRequired,
   fullDate: PropTypes.string.isRequired,
   msgUri: PropTypes.string.isRequired,
   attachments: PropTypes.array.isRequired,

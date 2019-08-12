@@ -73,7 +73,6 @@ function attachments(state = initialAttachments, action) {
 function messages(state = initialMessages, action) {
   switch (action.type) {
     case "REPLACE_CONVERSATION_DETAILS": {
-      console.log("REPLACE_CONVERSATION_DETAILS: messages");
       return {
         ...state,
         ...action.messages,
@@ -143,6 +142,19 @@ function messages(state = initialMessages, action) {
                                     topMail3Pane(window).msgWindow, null, "UTF-8", {});
       return state;
     }
+    case "MSG_EXPAND": {
+      const newState = {...state};
+      const newMsgData = [];
+      for (let msg of newState.msgData) {
+        const newMsg = {...msg};
+        if (newMsg.msgUri == action.msgUri) {
+          newMsg.expanded = action.expand;
+        }
+        newMsgData.push(newMsg);
+      }
+      newState.msgData = newMsgData;
+      return newState;
+    }
     default: {
       return state;
     }
@@ -152,7 +164,6 @@ function messages(state = initialMessages, action) {
 function summary(state = initialSummary, action) {
   switch (action.type) {
     case "REPLACE_CONVERSATION_DETAILS": {
-      console.log("REPLACE_CONVERSATION_DETAILS: summary");
       return {
         ...state,
         ...action.summary,

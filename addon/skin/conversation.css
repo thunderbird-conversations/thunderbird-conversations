@@ -43,6 +43,10 @@ button {
   -moz-appearance: button;
 }
 
+.hidden {
+  display: none;
+}
+
 .button-flat {
   -moz-appearance: none;
   background: none;
@@ -460,23 +464,14 @@ a img {
   display: none;
 }
 
-.message.collapsed .to,
 .message.collapsed .bzTo,
-.message.collapsed .details,
-.message.collapsed .hide-details,
-.message.collapsed .dropDown,
-.message.collapsed .replyLinkWrapper,
-.message.collapsed .editDraftLinkWrapper,
 .message.collapsed .messageBody,
-.message.collapsed .messageFooter,
 .message.collapsed .quickReply,
 .message.collapsed .notificationBar,
 .message.collapsed .smallEmail,
 .message.collapsed p,
 .message.collapsed iframe,
-.message.collapsed .attachments,
-.message.collapsed .detailsLine,
-.message:not(.collapsed) .snippet {
+.message.collapsed .detailsLine {
   display: none !important;
 }
 

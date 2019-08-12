@@ -10,19 +10,47 @@ let index = 0;
 // From https://searchfox.org/mozilla-central/rev/ec806131cb7bcd1c26c254d25cd5ab8a61b2aeb6/parser/nsCharsetSource.h
 const kCharsetFromChannel = 11;
 
+/**
+ * This class exists because we need to manually manage the iframe - we don't
+ * want it reloading every time a prop changes.
+ *
+ * We only load the iframe when we need to - when it is expanded. If it is
+ * collapsed, we avoid it. This helps performance.
+ *
+ * The height mechanism is awkward - we generally set the height short when
+ * we start to render it, then expand it to the correct height once loaded,
+ * which attempts to avoid a sub-scroll.
+ */
 class MessageIFrame extends React.Component {
   constructor(props) {
     super(props);
     this.index = index++;
+    this.currentUrl = null;
   }
 
   componentWillReceiveProps(nextProps) {
-    if (this.props.neckoUrl.spec != nextProps.neckoUrl.spec) {
+    let startLoad = false;
+    if (this.props.neckoUrl.spec != nextProps.neckoUrl.spec && nextProps.expanded) {
       // This is a hack which ensures that the iframe is a minimal height, so
       // that when the message loads, the scroll height is set correctly, rather
       // than to the potential height of the previously loaded message.
       // TODO: Could we use a client height somewhere along the line?
+      this.iframe.classList.remove("hidden");
       this.iframe.style.height = "20px";
+      startLoad = true;
+    }
+    if (nextProps.expanded) {
+      this.iframe.classList.remove("hidden");
+      if (this.currentUrl != nextProps.msgUri) {
+        startLoad = true;
+        this.iframe.style.height = "20px";
+      }
+    } else {
+      // Never start a load if we're going to be hidden.
+      startLoad = false;
+      this.iframe.classList.add("hidden");
+    }
+    if (startLoad) {
       this.props.dispatch({
         type: "MSG_STREAM_MSG",
         docshell: this.iframe.contentWindow.docShell,
@@ -40,12 +68,17 @@ class MessageIFrame extends React.Component {
     cv.forceCharacterSet = "UTF-8";
     cv.hintCharacterSetSource = kCharsetFromChannel;
     this.registerListeners();
-    this.props.dispatch({
-      type: "MSG_STREAM_MSG",
-      docshell: docShell,
-      msgUri: this.props.msgUri,
-      neckoUrl: this.props.neckoUrl,
-    });
+    if (this.props.expanded) {
+      this.currentUrl = this.props.msgUri;
+      this.props.dispatch({
+        type: "MSG_STREAM_MSG",
+        docshell: docShell,
+        msgUri: this.props.msgUri,
+        neckoUrl: this.props.neckoUrl,
+      });
+    } else {
+      this.iframe.classList.add("hidden");
+    }
   }
 
   componentWillUnmount() {
@@ -73,20 +106,14 @@ class MessageIFrame extends React.Component {
 
   adjustHeight() {
     const iframeDoc = this.iframe.contentDocument;
-    console.log({adjustheight: this.iframe.contentDocument.readyState});
 
     // This is needed in case the timeout kicked in after the message
     // was loaded but before we collapsed quotes. Then, the scrollheight
     // is too big, so we need to make the iframe small, so that its
     // scrollheight corresponds to its "real" height (there was an issue
     // with offsetheight, don't remember what, though).
-    const orig = this.iframe.style.height;
     const scrollHeight = iframeDoc.body.scrollHeight;
     this.iframe.style.height = scrollHeight + "px";
-    console.log({
-      orig,
-      scrollHeight,
-    });
 
     // So now we might overflow horizontally, which causes a horizontal
     // scrollbar to appear, which narrows the vertical height available,
@@ -131,6 +158,7 @@ class MessageIFrame extends React.Component {
 
 MessageIFrame.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  expanded: PropTypes.bool.isRequired,
   msgUri: PropTypes.string.isRequired,
   neckoUrl: PropTypes.object.isRequired,
 };

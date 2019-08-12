@@ -41,7 +41,6 @@ function loadDefaultPrefs() {
 }
 
 function PrefManager() {
-  console.log("PrefManager init");
   loadDefaultPrefs();
 
   this.expand_who = gConversationsPrefs.getIntPref("expand_who");
