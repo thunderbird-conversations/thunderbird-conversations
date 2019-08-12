@@ -16,8 +16,8 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   ContactHelpers: "resource://conversations/modules/contact.js",
   msgHdrsDelete: "resource://conversations/modules/stdlib/msgHdrUtils.js",
   composeMessageTo: "resource://conversations/modules/stdlib/compose.js",
-  previewAttachment: "resource://conversations/modules/message.js",
   openConversationInTabOrWindow: "resource://conversations/modules/misc.js",
+  MessageUtils: "resource://conversations/modules/message.js",
 });
 
 const initialAttachments = {};
@@ -35,23 +35,25 @@ const initialSummary = {
 function attachments(state = initialAttachments, action) {
   switch (action.type) {
     case "PREVIEW_ATTACHMENT": {
-      previewAttachment(topMail3Pane(window), action.name, action.url,
+      MessageUtils.previewAttachment(topMail3Pane(window), action.name, action.url,
         action.isPdf, action.maybeViewable);
       return state;
     }
     case "DOWNLOAD_ALL": {
-      const msg = Conversations.currentConversation.getMessage(action.msgUri);
-      msg.downloadAllAttachments(topMail3Pane(window));
+      MessageUtils.downloadAllAttachments(topMail3Pane(window), action.msgUri,
+        action.attachmentDetails);
       return state;
     }
     case "DOWNLOAD_ATTACHMENT": {
+      MessageUtils.downloadAttachment(topMail3Pane(window), action.msgUri,
+        action.attachment);
       const msg = Conversations.currentConversation.getMessage(action.msgUri);
       msg.downloadAttachment(topMail3Pane(window), action.url);
       return state;
     }
     case "OPEN_ATTACHMENT": {
-      const msg = Conversations.currentConversation.getMessage(action.msgUri);
-      msg.openAttachment(topMail3Pane(window), action.url);
+      MessageUtils.openAttachment(topMail3Pane(window), action.msgUri,
+        action.attachment);
       return state;
     }
     case "SHOW_GALLERY_VIEW": {
@@ -79,33 +81,27 @@ function messages(state = initialMessages, action) {
       };
     }
     case "EDIT_DRAFT": {
-      const msg = Conversations.currentConversation.getMessage(action.msgUri);
-      msg.compose(Ci.nsIMsgCompType.Draft, action.shiftKey);
+      MessageUtils.editDraft(topMail3Pane(window), action.msgUri, action.shiftKey);
       return state;
     }
     case "EDIT_AS_NEW": {
-      const msg = Conversations.currentConversation.getMessage(action.msgUri);
-      msg.compose(Ci.nsIMsgCompType.Template, action.shiftKey);
+      MessageUtils.editAsNew(topMail3Pane(window), action.msgUri, action.shiftKey);
       return state;
     }
     case "MSG_REPLY": {
-      const msg = Conversations.currentConversation.getMessage(action.msgUri);
-      msg.compose(Ci.nsIMsgCompType.ReplyToSender, action.shiftKey);
+      MessageUtils.reply(topMail3Pane(window), action.msgUri, action.shiftKey);
       return state;
     }
     case "MSG_REPLY_ALL": {
-      const msg = Conversations.currentConversation.getMessage(action.msgUri);
-      msg.compose(Ci.nsIMsgCompType.ReplyAll, action.shiftKey);
+      MessageUtils.replyAll(topMail3Pane(window), action.msgUri, action.shiftKey);
       return state;
     }
     case "MSG_REPLY_LIST": {
-      const msg = Conversations.currentConversation.getMessage(action.msgUri);
-      msg.compose(Ci.nsIMsgCompType.ReplyToList, action.shiftKey);
+      MessageUtils.replyList(topMail3Pane(window), action.msgUri, action.shiftKey);
       return state;
     }
     case "MSG_FORWARD": {
-      const msg = Conversations.currentConversation.getMessage(action.msgUri);
-      msg.forward(action.shiftKey);
+      MessageUtils.forward(topMail3Pane(window), action.msgUri, action.shiftKey);
       return state;
     }
     case "MSG_ARCHIVE": {

@@ -6,7 +6,7 @@
 
 var EXPORTED_SYMBOLS = [
   "Message", "MessageFromGloda", "MessageFromDbHdr",
-  "ConversationKeybindings", "previewAttachment", "watchIFrame",
+  "ConversationKeybindings", "MessageUtils", "watchIFrame",
 ];
 
 const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
@@ -49,7 +49,7 @@ let strings = new StringBundle("chrome://conversations/locale/message.properties
 const {
   msgHdrsArchive, msgHdrGetHeaders, msgHdrGetUri, msgHdrIsDraft, msgHdrIsJunk,
   msgHdrsDelete, msgHdrsMarkAsRead, msgHdrGetTags, msgHdrSetTags, msgHdrToNeckoURL,
-  msgHdrToMessageBody,
+  msgHdrToMessageBody, msgUriToMsgHdr,
 } = ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js", {});
 const {htmlToPlainText, quoteMsgHdr} =
   ChromeUtils.import("resource://conversations/modules/stdlib/compose.js", {});
@@ -115,19 +115,90 @@ function dateAccordingToPref(date) {
   }
 }
 
-function previewAttachment(win, name, url, isPdf, maybeViewable) {
-  if (maybeViewable) {
-    win.document.getElementById("tabmail").openTab(
-      "contentTab",
-      { contentPage: url }
-    );
+class _MessageUtils {
+  previewAttachment(win, name, url, isPdf, maybeViewable) {
+    if (maybeViewable) {
+      win.document.getElementById("tabmail").openTab(
+        "contentTab",
+        { contentPage: url }
+      );
+    }
+    if (isPdf) {
+      win.document.getElementById("tabmail").openTab(
+        "chromeTab", { chromePage: makeViewerUrl(name, url) }
+      );
+    }
   }
-  if (isPdf) {
-    win.document.getElementById("tabmail").openTab(
-      "chromeTab", { chromePage: makeViewerUrl(name, url) }
+
+  _getAttachmentInfo(win, msgUri, attachment) {
+    const attInfo = new win.AttachmentInfo(
+      attachment.contentType, attachment.url, attachment.name,
+      msgUri, attachment.isExternal
     );
+    attInfo.size = attachment.size;
+    if (attInfo.size != -1) {
+      attInfo.sizeResolved = true;
+    }
+    return attInfo;
+  }
+
+  downloadAllAttachments(win, msgUri, attachments) {
+    win.HandleMultipleAttachments(attachments.map(att =>
+      this._getAttachmentInfo(win, msgUri, att)), "save");
+  }
+
+  downloadAttachment(win, msgUri, attachment) {
+    this._getAttachmentInfo(win, msgUri, attachment).save();
+  }
+
+  openAttachment(win, msgUri, attachment) {
+    this._getAttachmentInfo(win, msgUri, attachment).open();
+  }
+
+  _compose(win, compType, msgUri, shiftKey) {
+    const msgHdr = msgUriToMsgHdr(msgUri);
+    if (shiftKey) {
+      win.ComposeMessage(compType, Ci.nsIMsgCompFormat.OppositeOfDefault, msgHdr.folder, [msgUri]);
+    } else {
+      win.ComposeMessage(compType, Ci.nsIMsgCompFormat.Default, msgHdr.folder, [msgUri]);
+    }
+  }
+
+  editDraft(win, msgUri, shiftKey = false) {
+    this._compose(win, Ci.nsIMsgCompType.Draft, msgUri, shiftKey);
+  }
+
+  editAsNew(win, msgUri, shiftKey = false) {
+    this._compose(win, Ci.nsIMsgCompType.Template, msgUri, shiftKey);
+  }
+
+  reply(win, msgUri, shiftKey = false) {
+    this._compose(win, Ci.nsIMsgCompType.ReplyToSender, msgUri, shiftKey);
+  }
+
+  replyAll(win, msgUri, shiftKey = false) {
+    this._compose(win, Ci.nsIMsgCompType.ReplyAll, msgUri, shiftKey);
+  }
+
+  replyList(win, msgUri, shiftKey = false) {
+    this._compose(win, Ci.nsIMsgCompType.ReplyToList, msgUri, shiftKey);
+  }
+
+  forward(win, msgUri, shiftKey = false) {
+    let forwardType = 0;
+    try {
+      forwardType = Prefs.getInt("mail.forward_message_mode");
+    } catch (e) {
+      Log.error("Unable to fetch preferred forward mode\n");
+    }
+    if (forwardType == 0)
+      this._compose(win, Ci.nsIMsgCompType.ForwardAsAttachment, msgUri, shiftKey);
+    else
+      this._compose(win, Ci.nsIMsgCompType.ForwardInline, msgUri, shiftKey);
   }
 }
+
+var MessageUtils = new _MessageUtils();
 
 function KeyListener(aMessage) {
   this.message = aMessage;
@@ -573,7 +644,7 @@ Message.prototype = {
       ? ""
       : dateAsInMessageList(new Date(this._msgHdr.date / 1000))
     ;
-    data.uri = sanitize(msgHdrGetUri(this._msgHdr));
+    data.uri = sanitize(this._uri);
 
     // 4) Custom tag telling the user if the message is not in the current view
     let [name, fullName] = folderName(this._msgHdr.folder);
@@ -640,9 +711,11 @@ Message.prototype = {
       // We've got the right data, push it!
       data.attachments.push({
         size: att.size,
+        contentType: att.contentType,
         formattedSize,
         thumb: sanitize(thumb),
         imgClass,
+        isExternal: att.isExternal,
         name: sanitize(att.name),
         url: att.url,
         anchor: "msg" + self.initialPosition + "att" + i,
@@ -1002,7 +1075,7 @@ Message.prototype = {
 
   // Build attachment view if we have a `MessageFromGloda` that's encrypted
   // because Gloda has not indexed attachments.
-  buildAttachmentViewIfNeeded: function _Message_buildAttachmentViewIfNeeded(k) {
+  buildAttachmentViewIfNeeded(k) {
     if (!this.needsLateAttachments) {
       k();
       return;
@@ -1447,41 +1520,6 @@ Message.prototype = {
       ].join("");
       k(html);
     });
-  },
-
-  getAttachmentInfos(win) {
-    /**
-     * We now assume that all the information is correct. I've done enough work
-     * on the Gloda side to ensure this. All hail to Gloda!
-     */
-    return this._attachments.map(att =>
-      new win.AttachmentInfo(
-        att.contentType, att.url, att.name, this._uri, att.isExternal, 42
-      ));
-  },
-
-  downloadAllAttachments(win) {
-    win.HandleMultipleAttachments(this.getAttachmentInfos(win), "save");
-  },
-
-  _getAttrInfo(mainWindow, url) {
-    const att = this._attachments.find(att => att.url == url);
-    const attInfo = new mainWindow.AttachmentInfo(
-      att.contentType, att.url, att.name, this._uri, att.isExternal
-    );
-    attInfo.size = att.size;
-    if (attInfo.size != -1) {
-      attInfo.sizeResolved = true;
-    }
-    return attInfo;
-  },
-
-  downloadAttachment(mainWindow, url) {
-    this._getAttrInfo(mainWindow, url).save();
-  },
-
-  openAttachment(mainWindow, url) {
-    this._getAttrInfo(mainWindow, url).open();
   },
 
   openInClassic(mainWindow) {

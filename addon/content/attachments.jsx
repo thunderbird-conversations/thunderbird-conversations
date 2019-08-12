@@ -27,7 +27,13 @@ class Attachment extends React.PureComponent {
     this.props.dispatch({
       type: "DOWNLOAD_ATTACHMENT",
       msgUri: this.props.msgUri,
-      url: this.props.url,
+      attachment: {
+        contentType: this.props.contentType,
+        isExternal: this.props.isExternal,
+        name: this.props.name,
+        size: this.props.size,
+        url: this.props.url,
+      },
     });
   }
 
@@ -35,7 +41,13 @@ class Attachment extends React.PureComponent {
     this.props.dispatch({
       type: "OPEN_ATTACHMENT",
       msgUri: this.props.msgUri,
-      url: this.props.url,
+      attachment: {
+        contentType: this.props.contentType,
+        isExternal: this.props.isExternal,
+        name: this.props.name,
+        size: this.props.size,
+        url: this.props.url,
+      },
     });
   }
 
@@ -94,12 +106,15 @@ class Attachment extends React.PureComponent {
 
 Attachment.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  contentType: PropTypes.string.isRequired,
   formattedSize: PropTypes.string.isRequired,
   imgClass: PropTypes.string.isRequired,
+  isExternal: PropTypes.bool.isRequired,
   isPdf: PropTypes.bool.isRequired,
   maybeViewable: PropTypes.bool.isRequired,
   msgUri: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
+  size: PropTypes.number.isRequired,
   strings: PropTypes.object.isRequired,
   thumb: PropTypes.string.isRequired,
   url: PropTypes.string.isRequired,
@@ -124,6 +139,15 @@ class Attachments extends React.PureComponent {
     this.props.dispatch({
       type: "DOWNLOAD_ALL",
       msgUri: this.props.msgUri,
+      attachmentDetails: this.props.attachments.map(attachment => {
+        return {
+          contentType: attachment.contentType,
+          isExternal: attachment.isExternal,
+          name: attachment.name,
+          size: attachment.size,
+          url: attachment.url,
+        };
+      }),
     });
   }
 
@@ -155,11 +179,14 @@ class Attachments extends React.PureComponent {
               <Attachment
                 dispatch={this.props.dispatch}
                 key={attachment.anchor}
+                contentType={attachment.contentType}
+                isExternal={attachment.isExternal}
                 isPdf={attachment.isPdf}
                 formattedSize={attachment.formattedSize}
                 imgClass={attachment.imgClass}
                 msgUri={this.props.msgUri}
                 name={attachment.name}
+                size={attachment.size}
                 strings={this.strings}
                 thumb={attachment.thumb}
                 maybeViewable={attachment.maybeViewable}
