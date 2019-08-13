@@ -104,26 +104,19 @@ function messages(state = initialMessages, action) {
       return state;
     }
     case "MSG_ARCHIVE": {
-      const msg = Conversations.currentConversation.getMessage(action.msgUri);
-      msgHdrsArchive([msg._msgHdr]);
+      MessageUtils.archive(action.msgUri);
       return state;
     }
     case "MSG_DELETE": {
-      const msg = Conversations.currentConversation.getMessage(action.msgUri);
-      // We do this, otherwise we end up with messages in the conversation that
-      //  don't have a message header, and that breaks pretty much all the
-      //  assumptions...
-      msg.removeFromConversation();
+      MessageUtils.delete(action.msgUri);
       return state;
     }
     case "MSG_OPEN_CLASSIC": {
-      const msg = Conversations.currentConversation.getMessage(action.msgUri);
-      msg.openInClassic(topMail3Pane(window));
+      MessageUtils.openInClassic(topMail3Pane(window), action.msgUri);
       return state;
     }
     case "MSG_OPEN_SOURCE": {
-      const msg = Conversations.currentConversation.getMessage(action.msgUri);
-      msg.openInSourceView(topMail3Pane(window));
+      MessageUtils.openInSourceView(topMail3Pane(window), action.msgUri);
       return state;
     }
     case "MSG_STREAM_MSG": {
@@ -164,6 +157,11 @@ function messages(state = initialMessages, action) {
       ConversationUtils.markAllAsRead(state.msgData.map(msg => msg.msgUri), action.read);
       return state;
     }
+    case "ARCHIVE_CONVERSATION": {
+      ConversationUtils.archive(topMail3Pane(window), isInTab,
+        state.msgData.map(msg => msg.msgUri));
+      return state;
+    }
     case "MSG_UPDATE_DATA": {
       const newState = {...state};
       const newMsgData = [];
@@ -181,7 +179,7 @@ function messages(state = initialMessages, action) {
       // This action should only be activated when the conversation is not a
       //  conversation in a tab AND there's only one message in the conversation,
       //  i.e. the currently selected message
-      ConversationUtils.markAsJunk();
+      ConversationUtils.markAsJunk(topMail3Pane(window));
       return state;
     }
     default: {
@@ -205,17 +203,6 @@ function summary(state = initialSummary, action) {
       // until we start getting the full conversation messages hooked up, this
       // won't be easy. As this is only a small bit of hidden UI, we can punt on
       // this for now.
-      return state;
-    }
-    case "ARCHIVE_CONVERSATION": {
-      if (isInTab || Prefs.operate_on_conversations) {
-        msgHdrsArchive(Conversations.currentConversation.msgHdrs);
-        if (!isInTab) {
-          topMail3Pane(window).SetFocusThreadPane();
-        }
-      } else {
-        msgHdrsArchive(topMail3Pane(window).gFolderDisplay.selectedMessages);
-      }
       return state;
     }
     case "COPY_EMAIL": {

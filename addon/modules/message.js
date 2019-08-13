@@ -196,6 +196,32 @@ class _MessageUtils {
     else
       this._compose(win, Ci.nsIMsgCompType.ForwardInline, msgUri, shiftKey);
   }
+
+  archive(msgUri) {
+    const msgHdr = msgUriToMsgHdr(msgUri);
+    msgHdrsArchive([msgHdr]);
+  }
+
+  delete(msgUri) {
+    // this._conversation.removeMessage(this);
+    const msgHdr = msgUriToMsgHdr(msgUri);
+    msgHdrsDelete([msgHdr]);
+    // TODO: implement this with isintab. Could it be controlled from reducer?
+    // if (this._conversation._htmlPane.isInTab
+    //     && !this._conversation.messages.length) {
+    //   win.closeTab();
+    // }
+  }
+
+  openInClassic(win, msgUri) {
+    const msgHdr = msgUriToMsgHdr(msgUri);
+    const tabmail = win.document.getElementById("tabmail");
+    tabmail.openTab("message", { msgHdr, background: false });
+  }
+
+  openInSourceView(win, msgUri) {
+    win.ViewPageSource([msgUri]);
+  }
 }
 
 var MessageUtils = new _MessageUtils();
@@ -278,7 +304,8 @@ KeyListener.prototype = {
       event.stopPropagation();
     },
     deleteMessage: function deleteMessage(event) {
-      this.message.removeFromConversation();
+      // TODO: This should use MessageUtils.delete().
+      // this.message.removeFromConversation();
       event.preventDefault();
       event.stopPropagation();
     },
@@ -1085,15 +1112,6 @@ Message.prototype = {
       otherTagList.appendChild(node.cloneNode(true));
   },
 
-  removeFromConversation: function _Message_removeFromConversation() {
-    this._conversation.removeMessage(this);
-    msgHdrsDelete([this._msgHdr]);
-    let w = this._conversation._window;
-    if (this._conversation._htmlPane.isInTab
-        && !this._conversation.messages.length)
-      w.closeTab();
-  },
-
   // Build attachment view if we have a `MessageFromGloda` that's encrypted
   // because Gloda has not indexed attachments.
   buildAttachmentViewIfNeeded(k) {
@@ -1541,15 +1559,6 @@ Message.prototype = {
       ].join("");
       k(html);
     });
-  },
-
-  openInClassic(mainWindow) {
-    let tabmail = mainWindow.document.getElementById("tabmail");
-    tabmail.openTab("message", { msgHdr: this._msgHdr, background: false });
-  },
-
-  openInSourceView(mainWindow) {
-    mainWindow.ViewPageSource([this._uri]);
   },
 };
 
