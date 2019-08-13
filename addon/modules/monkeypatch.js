@@ -569,7 +569,8 @@ MonkeyPatch.prototype = {
               window.Conversations.currentConversation = aConversation;
               if (isDifferentConversation) {
                 // Here, put the final touches to our new conversation object.
-                htmlpane.contentWindow.newComposeSessionByDraftIf();
+                // TODO: Maybe re-enable this.
+                // htmlpane.contentWindow.newComposeSessionByDraftIf();
                 aConversation.completed = true;
                 // TODO: Re-enable this.
                 // htmlpane.contentWindow.registerQuickReply();
@@ -608,7 +609,8 @@ MonkeyPatch.prototype = {
                 // Hehe, do that now, because the conversation potentially
                 //  includes messages that are not in the gloda collection and
                 //  that do not trigger the "conversation updated" notification.
-                aConversation._updateConversationButtons();
+                // TODO: What do we need to do about updates?
+                // aConversation._updateConversationButtons();
               }, Prefs.getInt("mailnews.mark_message_read.delay.interval")
                 * Prefs.getBool("mailnews.mark_message_read.delay") * 1000);
             });

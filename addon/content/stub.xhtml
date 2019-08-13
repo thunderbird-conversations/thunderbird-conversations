@@ -80,6 +80,7 @@
     var {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
     var strings = new StringBundle("chrome://conversations/locale/message.properties");
 
+    /* exported conversationDispatch */
     function conversationDispatch(...args) {
       store.dispatch(...args);
     }
@@ -399,13 +400,6 @@
               // Create a new rule that will override the default rule, so that
               // the expanded quick reply is twice higher.
               document.body.classList.add("inTab");
-              // We can never junk a conversation in a new tab, because the junk
-              // command only operates on selected messages, and we're not in a
-              // 3pane context anymore.
-              conversationDispatch({
-                type: "UPDATE_CANJUNK_STATUS",
-                canJunk: false,
-              });
               // Do this now so as to not defeat the whole expand/collapse
               // logic.
               if (Prefs.getBool("mailnews.mark_message_read.auto")) {

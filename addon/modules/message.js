@@ -561,6 +561,28 @@ Message.prototype = {
     }
   },
 
+  toReactData(aQuickReply) {
+    let msgData = this.toTmplData(aQuickReply);
+    return {
+      attachments: msgData.attachments,
+      attachmentsPlural: msgData.attachmentsPlural,
+      date: msgData.date,
+      from: msgData.dataContactFrom,
+      fullDate: msgData.fullDate,
+      gallery: msgData.gallery,
+      isDraft: msgData.isDraft,
+      isJunk: msgData.isJunk,
+      msgUri: msgData.uri,
+      multipleRecipients: msgData.multipleRecipients,
+      neckoUrl: msgData.neckoUrl,
+      read: msgData.read,
+      recipientsIncludeLists: msgData.recipientsIncludeLists,
+      snippet: msgData.snippet,
+      starred: msgData.starred,
+      to: msgData.dataContactsTo,
+    };
+  },
+
   // Output this message as a whole bunch of HTML
   toTmplData(aQuickReply) {
     let self = this;
@@ -577,17 +599,18 @@ Message.prototype = {
       shortFolderName: null,
       gallery: false,
       uri: null,
-      neckoUrl: msgHdrToNeckoURL(self._msgHdr),
+      neckoUrl: msgHdrToNeckoURL(this._msgHdr),
       quickReply: aQuickReply,
       bugzillaUrl: "[unknown bugzilla instance]",
       extraClasses: null,
-      canUnJunk: false,
+      isJunk: msgHdrIsJunk(this._msgHdr),
       isOutbox: false,
       generateLightningTempl: false,
       multipleRecipients: this.isReplyAllEnabled,
       recipientsIncludeLists: this.isReplyListEnabled,
       isDraft: false,
       starred: this.starred,
+      read: this.read,
     };
 
     // 1) Generate Contact objects
@@ -664,8 +687,6 @@ Message.prototype = {
     if (this.isEncrypted)
       extraClasses.push("decrypted");
     data.extraClasses = extraClasses.join(" ");
-    if (this._conversation.messages.length == 1 && msgHdrIsJunk(this._msgHdr))
-      data.canUnJunk = true;
     if (this._msgHdr.folder.getFlag(Ci.nsMsgFolderFlags.Queue))
       data.isOutbox = true;
 

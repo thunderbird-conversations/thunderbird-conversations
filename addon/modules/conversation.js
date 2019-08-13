@@ -4,7 +4,7 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["Conversation"];
+var EXPORTED_SYMBOLS = ["Conversation", "ConversationUtils"];
 
 const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 
@@ -20,8 +20,8 @@ XPCOMUtils.defineLazyModuleGetters(this, {
 const {Colors, dumpCallStack, setupLogging} =
   ChromeUtils.import("resource://conversations/modules/log.js");
 
-const {msgHdrGetUri, msgHdrIsArchive, msgHdrIsDraft, msgHdrIsInbox, msgHdrIsJunk,
-       msgHdrIsSent, msgHdrsMarkAsRead} =
+const {msgHdrGetUri, msgHdrIsArchive, msgHdrIsDraft, msgHdrIsInbox,
+       msgHdrIsSent, msgHdrsMarkAsRead, msgUriToMsgHdr} =
   ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
 const {MixIn, range} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
 const {Message, MessageFromGloda, MessageFromDbHdr} =
@@ -266,6 +266,19 @@ ViewWrapper.prototype = {
   },
 };
 
+class _ConversationUtils {
+  markAllAsRead(msgUris, read) {
+    msgHdrsMarkAsRead(msgUris.map(msg => msgUriToMsgHdr(msg)), read);
+  }
+
+  markAsJunk() {
+    topMail3Pane(window).JunkSelectedMessages(true);
+    topMail3Pane(window).SetFocusThreadPane();
+  }
+}
+
+var ConversationUtils = new _ConversationUtils();
+
 // -- The actual conversation object
 
 // We maintain the invariant that, once the conversation is built, this.messages
@@ -462,23 +475,24 @@ Conversation.prototype = {
     if (!this.completed)
       return;
 
-    // This updates conversation-wide buttons (the conversation "read" status,
-    //  for instance).
-    this._updateConversationButtons();
-
     // Now we forward individual updates to each messages (e.g. tags, starred)
     let byMessageId = {};
-    for (let x of this.messages) {
+    for (const x of this.messages) {
       byMessageId[getMessageId(x)] = x.message;
     }
-    for (let glodaMsg of aItems) {
+    for (const glodaMsg of aItems) {
       // If you see big failures coming from the lines below, don't worry: it's
       //  just that an old conversation hasn't been GC'd and still receives
       //  notifications from Gloda. However, its DOM nodes are long gone, so the
       //  call to onAttributesChanged fails.
       let message = byMessageId[glodaMsg.headerMessageID];
-      if (message)
-        message.onAttributesChanged(glodaMsg);
+      if (message) {
+        const msgData = message.toReactData();
+        this._htmlPane.conversationDispatch({
+          type: "MSG_UPDATE_DATA",
+          msgData,
+        });
+      }
     }
   },
 
@@ -498,8 +512,6 @@ Conversation.prototype = {
       if ((msgId in byMessageId) && byMessageId[msgId]._msgHdr.messageKey == glodaMsg.messageKey)
         this.removeMessage(byMessageId[msgId]);
     }
-
-    this._updateConversationButtons();
   },
 
   onQueryCompleted: function _Conversation_onQueryCompleted(aCollection) {
@@ -743,16 +755,6 @@ Conversation.prototype = {
       }
     }
 
-    // Don't forget to update the conversation buttons, even if we have no new
-    //  messages: the reflow might be because some message became unread or
-    //  whatever.
-    try {
-      this._updateConversationButtons();
-    } catch (e) {
-      Log.warn("Failed to update the conversation buttons", e);
-      dumpCallStack(e);
-    }
-
     // Re-do the expand/collapse + scroll to the right node stuff. What this
     // means is if: if we just added new messages, don't touch the other ones,
     // and expand/collapse only the newer messages. If we have no new messages,
@@ -933,13 +935,6 @@ Conversation.prototype = {
       // We'll be replacing the old conversation. Do this after the call to
       // onSave, because onSave calls getMessageForQuickReply...
       this._window.Conversations.currentConversation.messages = [];
-      // We don't know yet if this is going to be a junkable conversation, so
-      //  when in doubt, reset. Actually, the final call to
-      //  _updateConversationButtons will update this.
-      // this._htmlPane.conversationDispatch({
-      //   type: "UPDATE_CANJUNK_STATUS",
-      //   canJunk: true,
-      // });
     }
 
     Log.debug("Outputting",
@@ -953,39 +948,16 @@ Conversation.prototype = {
     // Fill in the HTML right away. The has the nice side-effect of erasing the
     // previous conversation (but not the conversation-wide event handlers!)
     for (let i of range(0, this.messages.length)) {
-      // We need to set this before the call to toTmplData.
+      // We need to set this before the call to reactMsgData.
       let msg = this.messages[i].message;
       msg.initialPosition = i;
 
       let oldMsg = i > 0 ? this.messages[i - 1].message : null;
       msg.updateTmplData(oldMsg);
     }
-    let tmplData = this.messages.map(function(m, i) {
-      return m.message.toTmplData(i == self.messages.length - 1);
+    let reactMsgData = this.messages.map(function(m, i) {
+      return m.message.toReactData(i == self.messages.length - 1);
     });
-    // We must do this if we are to ever release the previous Conversation
-    //  object. See comments in stub.html for the nice details.
-    let reactMsgData = [];
-    for (let msgData of tmplData) {
-        // let x = this._htmlPane.tmpl("#messageTemplate", msgData);
-        // // this._domNode.appendChild(x);
-      reactMsgData.push({
-        msgUri: msgData.uri,
-        neckoUrl: msgData.neckoUrl,
-        from: msgData.dataContactFrom,
-        to: msgData.dataContactsTo,
-        date: msgData.date,
-        fullDate: msgData.fullDate,
-        attachments: msgData.attachments,
-        attachmentsPlural: msgData.attachmentsPlural,
-        gallery: msgData.gallery,
-        multipleRecipients: msgData.multipleRecipients,
-        recipientsIncludeLists: msgData.recipientsIncludeLists,
-        isDraft: msgData.isDraft,
-        snippet: msgData.snippet,
-        starred: msgData.starred,
-      });
-    }
 
     // Move on to the next step
     this._expandAndScroll(this.messages, reactMsgData);
@@ -1004,7 +976,6 @@ Conversation.prototype = {
       type: "REPLACE_CONVERSATION_DETAILS",
       summary: {
         subject: this.messages[this.messages.length - 1].message.subject,
-        canJunk: true,
       },
       messages: {
         msgData: reactMsgData,
@@ -1013,23 +984,8 @@ Conversation.prototype = {
     // Invalidate the composition session so that compose-ui.js can setup the
     //  fields next time.
     this._htmlPane.gComposeSession = null;
-  },
-
-  _updateConversationButtons: function _Conversation_updateConversationButtons() {
-    // Bail if we're notified too early, or if someone stole the message pane
-    // from us, or whatever.
-    if (!this.messages || !this.messages.length || !this._domNode || !this._htmlPane.document)
-      return;
-
-    this._htmlPane.conversationDispatch({
-      type: "UPDATE_STATUS",
-      // If some message is collapsed, then the initial state is "expand"
-      expanded: !this.messages.some(x => x.message.collapsed),
-      read: !this.messages.some(x => !x.message.read),
-      // If we have more than one message, then "junk this message" doesn't make
-      // sense anymore.
-      canJunk: !(this.messages.length > 1 || msgHdrIsJunk(toMsgHdr(this.messages[0]))),
-    });
+    // Now tell the monkeypatch that we've queued everything up.
+    Services.tm.dispatchToMainThread(() => this._onComplete());
   },
 
   // Do all the penible stuff about scrolling to the right message and expanding

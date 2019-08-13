@@ -18,6 +18,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   composeMessageTo: "resource://conversations/modules/stdlib/compose.js",
   openConversationInTabOrWindow: "resource://conversations/modules/misc.js",
   MessageUtils: "resource://conversations/modules/message.js",
+  ConversationUtils: "resource://conversations/modules/conversation.js",
 });
 
 const initialAttachments = {};
@@ -25,11 +26,9 @@ const initialAttachments = {};
 const initialMessages = {};
 
 const initialSummary = {
+  // TODO: What is loading used for?
   loading: true,
   subject: "",
-  canJunk: true,
-  expanded: true,
-  read: true,
 };
 
 function attachments(state = initialAttachments, action) {
@@ -151,6 +150,40 @@ function messages(state = initialMessages, action) {
       newState.msgData = newMsgData;
       return newState;
     }
+    case "TOGGLE_CONVERSATION_EXPANDED": {
+      const newState = {...state};
+      const newMsgData = [];
+      for (let msg of newState.msgData) {
+        const newMsg = {...msg, expanded: action.expand};
+        newMsgData.push(newMsg);
+      }
+      newState.msgData = newMsgData;
+      return newState;
+    }
+    case "TOGGLE_CONVERSATION_READ": {
+      ConversationUtils.markAllAsRead(state.msgData.map(msg => msg.msgUri), action.read);
+      return state;
+    }
+    case "MSG_UPDATE_DATA": {
+      const newState = {...state};
+      const newMsgData = [];
+      for (let i = 0; i < state.msgData.length; i++) {
+        if (state.msgData[i].msgUri == action.msgData.msgUri) {
+          newMsgData.push({...state.msgData[i], ...action.msgData});
+        } else {
+          newMsgData.push(state.msgData[i]);
+        }
+      }
+      newState.msgData = newMsgData;
+      return newState;
+    }
+    case "MARK_AS_JUNK": {
+      // This action should only be activated when the conversation is not a
+      //  conversation in a tab AND there's only one message in the conversation,
+      //  i.e. the currently selected message
+      ConversationUtils.markAsJunk();
+      return state;
+    }
     default: {
       return state;
     }
@@ -231,28 +264,6 @@ function summary(state = initialSummary, action) {
       Conversations.currentConversation.forward();
       return state;
     }
-    case "TOGGLE_CONVERSATION_READ": {
-      Conversations.currentConversation.read = action.read;
-      if (!action.read) {
-        markReadInView.disable();
-      }
-      return {...state, read: action.read};
-    }
-    case "TOGGLE_CONVERSATION_EXPANDED": {
-      for (let {message} of Conversations.currentConversation.messages) {
-        if (action.expanded) {
-          message.expand();
-        } else {
-          message.collapse();
-        }
-      }
-      return {...state, expanded: action.expanded};
-    }
-    case "MARK_AS_JUNK": {
-      topMail3Pane(window).JunkSelectedMessages(true);
-      topMail3Pane(window).SetFocusThreadPane();
-      return {...state, canJunk: false};
-    }
     case "OPEN_LINK": {
       getMail3Pane().messenger.launchExternalURL(action.url);
       return state;
@@ -271,24 +282,6 @@ function summary(state = initialSummary, action) {
     case "SHOW_MESSAGES_INVOLVING": {
       ContactHelpers.showMessagesInvolving(topMail3Pane(window), action.name, action.email);
       return state;
-    }
-    case "UPDATE_SUBJECT": {
-      document.title = action.subject;
-      return {...state, subject: action.subject, loading: false};
-    }
-    case "UPDATE_READ_STATUS": {
-      return {...state, read: action.read};
-    }
-    case "UPDATE_CANJUNK_STATUS": {
-      return {...state, canJunk: action.canJunk};
-    }
-    case "UPDATE_STATUS": {
-      return {
-        ...state,
-        canJunk: action.canJunk,
-        expanded: action.expanded,
-        read: action.read,
-      };
     }
     default: {
       return state;
