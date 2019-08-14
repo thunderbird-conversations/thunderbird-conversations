@@ -251,7 +251,7 @@ function ViewWrapper(aConversation) {
 }
 
 ViewWrapper.prototype = {
-  isInView: function _ViewWrapper_isInView(aMsg) {
+  isInView(aMsg) {
     if (this.mainWindow.gDBView) {
       let msgHdr = toMsgHdr(aMsg);
       if (!msgHdr)
@@ -500,17 +500,16 @@ Conversation.prototype = {
     if (!this.completed)
       return;
 
-    // Now we forward individual updates to each messages (e.g. tags, starred)
-    let byMessageId = {};
+    const byMessageId = new Map();
     for (const x of this.messages) {
-      byMessageId[getMessageId(x)] = x.message;
+      byMessageId.set(getMessageId(x), x.message);
     }
     for (const glodaMsg of aItems) {
       // If you see big failures coming from the lines below, don't worry: it's
       //  just that an old conversation hasn't been GC'd and still receives
       //  notifications from Gloda. However, its DOM nodes are long gone, so the
-      //  call to onAttributesChanged fails.
-      let message = byMessageId[glodaMsg.headerMessageID];
+      //  calls fail.
+      const message = byMessageId.get(glodaMsg.headerMessageID);
       if (message) {
         const msgData = message.toReactData();
         this._htmlPane.conversationDispatch({
@@ -789,9 +788,11 @@ Conversation.prototype = {
       this._expandAndScroll(this.messages.length - aMessages.length);
     else
       this._expandAndScroll();
-    // Update the folder tags, maybe we were called because we changed folders
+
     this.viewWrapper = new ViewWrapper(this);
     for (let m of this.messages) {
+      // inView indicates if the message is currently in the message list
+      // view or not. If it isn't we don't show the folder tags.
       m.message.inView = this.viewWrapper.isInView(m);
     }
   },
@@ -965,10 +966,6 @@ Conversation.prototype = {
     Log.debug("Outputting",
       this.messages.map(x => msgDebugColor(x) + x.debug), Colors.default);
     Log.debug(this.messages.length, "messages in the conversation now");
-    /* for (let message of this.messages) {
-      let msgHdr = toMsgHdr(message);
-      dump("  " + msgHdr.folder.URI + "#" + msgHdr.messageKey + "\n");
-    }*/
 
     // Fill in the HTML right away. The has the nice side-effect of erasing the
     // previous conversation (but not the conversation-wide event handlers!)
@@ -980,22 +977,15 @@ Conversation.prototype = {
       let oldMsg = i > 0 ? this.messages[i - 1].message : null;
       msg.updateTmplData(oldMsg);
     }
-    let reactMsgData = this.messages.map(function(m, i) {
-      return m.message.toReactData(i == self.messages.length - 1);
+    let reactMsgData = this.messages.map((m, i) => {
+      // inView indicates if the message is currently in the message list
+      // view or not. If it isn't we don't show the folder name.
+      const inView = this.viewWrapper.isInView(m);
+      return m.message.toReactData(i == self.messages.length - 1, inView);
     });
 
     // Move on to the next step
     this._expandAndScroll(this.messages, reactMsgData);
-
-    // Notify each message that it's been added to the DOM and that it can do
-    // event registration and stuff...
-    // let domNodes = this._domNode.getElementsByClassName(Message.prototype.cssClass);
-    this.messages.forEach(function(m, i) {
-      // m.message.onAddedToDom(domNodes[i]);
-      // TODO: Do we need this?
-      // // Determine which messages should get a nice folder tag
-      // m.message.inView = self.viewWrapper.isInView(m);
-    });
 
     this._htmlPane.conversationDispatch({
       type: "REPLACE_CONVERSATION_DETAILS",

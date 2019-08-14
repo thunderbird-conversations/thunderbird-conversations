@@ -325,7 +325,6 @@ KeyListener.prototype = {
             this.message.tags = this.message.tags.concat([tag]);
         }
       }
-      this.message.onAttributesChanged(this.message);
       event.preventDefault();
       event.stopPropagation();
     },
@@ -536,20 +535,8 @@ Message.prototype = {
     return parseMimeLine(aMimeLine);
   },
 
-  get inView() {
-    return this._domNode.classList.contains("inView");
-  },
-
-  set inView(v) {
-    if (v)
-      this._domNode.classList.add("inView");
-    else
-      this._domNode.classList.remove("inView");
-  },
-
   RE_BZ_COMMENT: /^--- Comment #\d+ from .* \d{4}.*? ---([\s\S]*)/m,
   RE_MSGKEY: /number=(\d+)/,
-
 
   // This function is called before toTmplData, and allows us to adjust our
   // template data according to the message that came before us.
@@ -588,15 +575,17 @@ Message.prototype = {
     }
   },
 
-  toReactData(aQuickReply) {
+  toReactData(aQuickReply, inView) {
     let msgData = this.toTmplData(aQuickReply);
     return {
       attachments: msgData.attachments,
       attachmentsPlural: msgData.attachmentsPlural,
       date: msgData.date,
+      folderName: msgData.folderName,
       from: msgData.dataContactFrom,
       fullDate: msgData.fullDate,
       gallery: msgData.gallery,
+      inView,
       isDraft: msgData.isDraft,
       isJunk: msgData.isJunk,
       msgUri: msgData.uri,
@@ -604,8 +593,10 @@ Message.prototype = {
       neckoUrl: msgData.neckoUrl,
       read: msgData.read,
       recipientsIncludeLists: msgData.recipientsIncludeLists,
+      shortFolderName: msgData.shortFolderName,
       snippet: msgData.snippet,
       starred: msgData.starred,
+      tags: msgData.tags,
       to: msgData.dataContactsTo,
     };
   },
@@ -717,6 +708,14 @@ Message.prototype = {
     if (this._msgHdr.folder.getFlag(Ci.nsMsgFolderFlags.Queue))
       data.isOutbox = true;
 
+    const tags = msgHdrGetTags(this._msgHdr);
+    data.tags = tags.map(tag => {
+      return {
+        color: tag.color,
+        name: tag.tag,
+      };
+    });
+
     // 8) Decide whether Lightning is installed and Lightning content should be generated
     data.generateLightningTempl = isLightningInstalled();
     return data;
@@ -783,10 +782,7 @@ Message.prototype = {
       Log.error("onAddedToDom() && !aDomNode", this.from, this.to, this.subject);
     }
 
-    // This allows us to pre-set the star and the tags in the right original
-    //  state
     this._domNode = aDomNode;
-    this.onAttributesChanged(this);
 
     let self = this;
     this._domNode.getElementsByClassName("messageHeader")[0]
@@ -812,17 +808,6 @@ Message.prototype = {
     this._domNode.addEventListener("keydown", function(event) {
       keyListener.onKeyUp(event);
     }); // über-important: don't capture
-
-    // // Do this now because the star is visible even if we haven't been expanded
-    // // yet.
-    // TODO: Move this across.
-    // this.register(".star", function(event) {
-    //   self.starred = !self.starred;
-    //   // Don't trust gloda. Big hack, self also has the "starred" property, so
-    //   //  we don't have to create a new object.
-    //   self.onAttributesChanged(self);
-    //   event.stopPropagation();
-    // });
 
     // Register event handlers for onSelected.
     // Set useCapture: true for preventing this from being canceled
@@ -945,11 +930,6 @@ Message.prototype = {
         w.SendUnsentMessages();
     });
 
-    this.register(".notJunk", function(event) {
-      self._domNode.getElementsByClassName("junkBar")[0].style.display = "none";
-      // false = not junk
-      topMail3Pane(self).JunkSelectedMessages(false);
-    });
     this.register(".ignore-warning", function(event) {
       self._domNode.getElementsByClassName("phishingBar")[0].style.display = "none";
       self._msgHdr.setUint32Property("notAPhishMessage", 1);
@@ -975,10 +955,6 @@ Message.prototype = {
       Services.perms.add(uri, "image", Services.perms.ALLOW_ACTION);
       self._reloadMessage();
     });
-    this.register(".messageBody .in-folder", function(event) {
-      mainWindow.gFolderTreeView.selectFolder(self._msgHdr.folder, true);
-      mainWindow.gFolderDisplay.selectMessage(self._msgHdr);
-    });
 
     // We only output this shitload of contact nodes when we have to...
     this.register(".details > a", function(event) {
@@ -993,20 +969,6 @@ Message.prototype = {
       self._domNode.classList.remove("with-details");
     });
 
-    let attachmentNodes = this._domNode.getElementsByClassName("attachment");
-    /**
-     * We now assume that all the information is correct. I've done enough work
-     * on the Gloda side to ensure this. All hail to Gloda!
-     */
-    for (let i = 0; i < attachmentNodes.length; ++i) {
-      let att = self._attachments[i];
-      // TODO: Make messageAttachments not require this and handle it itself.
-      // For the context menu event handlers
-      attachmentNodes[i].attInfo =
-        new mainWindow.AttachmentInfo(
-          att.contentType, att.url, att.name, self._uri, att.isExternal, 42
-        );
-    }
     this.register(".quickReply", function(event) {
       event.stopPropagation();
     }, { action: "keyup" });
@@ -1046,70 +1008,20 @@ Message.prototype = {
 
   _reloadMessage: function _Message_reloadMessage() {
     // The second one in for when we're expanded.
-    let specialTags = this._domNode.getElementsByClassName("special-tags")[1];
+    // let specialTags = this._domNode.getElementsByClassName("special-tags")[1];
     // Remove any extra tags because they will be re-added after reload, but
     //  leave the "show remote content" tag.
-    for (let i = specialTags.children.length - 1; i >= 0; i--) {
-      let child = specialTags.children[i];
-      if (!child.classList.contains("keep-tag"))
-        specialTags.removeChild(child);
-    }
-    this.iframe.remove();
-    this.streamMessage();
+    // for (let i = specialTags.children.length - 1; i >= 0; i--) {
+    //   let child = specialTags.children[i];
+    //   if (!child.classList.contains("keep-tag"))
+    //     specialTags.removeChild(child);
+    // }
+    // this.iframe.remove();
+    // this.streamMessage();
   },
 
   get iframe() {
     return this._domNode.getElementsByTagName("iframe")[0];
-  },
-
-  // {
-  //  starred: bool,
-  //  tags: nsIMsgTag list,
-  // } --> both Message and GlodaMessage implement these attributes
-  onAttributesChanged: function _Message_onAttributesChanged({ starred, tags }) {
-    // Update "starred" attribute
-    if (starred)
-      this._domNode.getElementsByClassName("star")[0].classList.add("starred");
-    else
-      this._domNode.getElementsByClassName("star")[0].classList.remove("starred");
-
-    // Update tags
-    let tagList = this._domNode.getElementsByClassName("regular-tags")[1];
-    while (tagList.firstChild)
-      tagList.firstChild.remove();
-    for (let mtag of tags) {
-      let tag = mtag;
-      let document = this._domNode.ownerDocument;
-      let rgb = MailServices.tags.getColorForKey(tag.key).substr(1) || "FFFFFF";
-      // This is just so we can figure out if the tag color is too light and we
-      // need to have the text black or not.
-      let [, r, g, b] = rgb.match(/(..)(..)(..)/).map(x => parseInt(x, 16) / 255);
-      let colorClass = "blc-" + rgb;
-      let tagName = tag.tag;
-      let tagNode = document.createElement("li");
-      let l = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-      if (l > .8)
-        tagNode.classList.add("light-tag");
-      tagNode.classList.add("tag");
-      tagNode.classList.add(colorClass);
-      tagNode.appendChild(document.createTextNode(tagName));
-      let span = document.createElement("span");
-      span.textContent = " x";
-      span.classList.add("tag-x");
-      span.addEventListener("click", function(event) {
-        let tags = this.tags.filter(x => x.key != tag.key);
-        this.tags = tags;
-        // And now let onAttributesChanged kick in... NOT
-        tagList.removeChild(tagNode);
-      }.bind(this));
-      tagNode.appendChild(span);
-      tagList.appendChild(tagNode);
-    }
-    let otherTagList = this._domNode.getElementsByClassName("regular-tags")[0];
-    while (otherTagList.firstChild)
-      otherTagList.firstChild.remove();
-    for (let node of tagList.childNodes)
-      otherTagList.appendChild(node.cloneNode(true));
   },
 
   // Build attachment view if we have a `MessageFromGloda` that's encrypted

@@ -533,10 +533,6 @@ a img {
 }
 
 .tags li.light-tag .tag-x {
-  border-color: rgb(10, 10, 10);
-}
-
-.tags li.blc-FFFFFF {
   border: 1px solid black;
 }
 
@@ -550,10 +546,6 @@ a img {
 
 .in-folder {
   cursor: pointer;
-}
-
-.message.inView .in-folder {
-  display: none;
 }
 
 .notificationBar {

@@ -3,10 +3,15 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 /* globals React, PropTypes, Attachments, MessageHeader, MessageFooter,
-           MessageIFrame */
+           MessageIFrame, StringBundle, SpecialMessageTags, MessageTags */
 /* exported Message */
 
 class Message extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    this.strings = new StringBundle("chrome://conversations/locale/template.properties");
+  }
+
   render() {
     return (
       <li className="message">
@@ -21,10 +26,25 @@ class Message extends React.PureComponent {
           attachments={this.props.message.attachments}
           multipleRecipients={this.props.message.multipleRecipients}
           recipientsIncludeLists={this.props.message.recipientsIncludeLists}
+          inView={this.props.message.inView}
           isDraft={this.props.message.isDraft}
+          shortFolderName={this.props.message.shortFolderName}
           snippet={this.props.message.snippet}
-          starred={this.props.message.starred}/>
+          starred={this.props.message.starred}
+          tags={this.props.message.tags}/>
         <div className="messageBody">
+          {this.props.message.expanded &&
+            <SpecialMessageTags
+              inView={this.props.message.inView}
+              folderName={this.props.message.folderName}
+              strings={this.strings}/>
+          }
+          {this.props.message.expanded &&
+            <MessageTags
+              dispatch={this.props.dispatch}
+              expanded={true}
+              tags={this.props.message.tags}/>
+          }
           <MessageIFrame
             dispatch={this.props.dispatch}
             expanded={this.props.message.expanded}

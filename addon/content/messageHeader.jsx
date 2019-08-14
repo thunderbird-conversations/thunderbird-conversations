@@ -2,7 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals React, PropTypes, MessageHeaderOptions, StringBundle */
+/* globals React, PropTypes, MessageHeaderOptions, StringBundle, MessageTags
+           SpecialMessageTags */
 /* exported MessageHeader */
 
 class ContactLabel extends React.PureComponent {
@@ -56,12 +57,18 @@ class MessageHeader extends React.PureComponent {
     });
   }
 
+  onClickStar() {
+    // TODO: Make this work. See:
+    //   self.starred = !self.starred;
+  }
+
   render() {
     return (
       <div className={"messageHeader hbox" + (this.props.expanded ? " expanded" : "")}
            onClick={this.onClickHeader}>
         <div className="shrink-box">
-          <div className={"star" + (this.props.starred ? " starred" : "")}>
+          <div className={"star" + (this.props.starred ? " starred" : "")}
+               onClick={this.onClickStar}>
             <svg className="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
               <use xlinkHref="chrome://conversations/skin/material-icons.svg#star">
               </use>
@@ -91,7 +98,17 @@ class MessageHeader extends React.PureComponent {
               key={index}/>
           )}
           {!this.props.expanded &&
-            <span className="snippet">{this.props.snippet}</span>
+            <span className="snippet">
+              <MessageTags
+                dispatch={this.props.dispatch}
+                expanded={false}
+                tags={this.props.tags}/>
+              <SpecialMessageTags
+                inView={this.props.inView}
+                folderName={this.props.shortFolderName}
+                strings={this.strings}/>
+              {this.props.snippet}
+            </span>
           }
         </div>
         <MessageHeaderOptions
@@ -119,8 +136,11 @@ MessageHeader.propTypes = {
   attachments: PropTypes.array.isRequired,
   multipleRecipients: PropTypes.bool.isRequired,
   recipientsIncludeLists: PropTypes.bool.isRequired,
+  inView: PropTypes.bool.isRequired,
   isDraft: PropTypes.bool.isRequired,
+  shortFolderName: PropTypes.string.isRequired,
   snippet: PropTypes.string.isRequired,
   starred: PropTypes.bool.isRequired,
+  tags: PropTypes.array.isRequired,
   to: PropTypes.array.isRequired,
 };
