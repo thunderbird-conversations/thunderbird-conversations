@@ -21,7 +21,8 @@ const {Colors, dumpCallStack, setupLogging} =
   ChromeUtils.import("resource://conversations/modules/log.js");
 
 const {msgHdrGetUri, msgHdrIsArchive, msgHdrIsDraft, msgHdrIsInbox,
-       msgHdrIsSent, msgHdrsMarkAsRead, msgUriToMsgHdr, msgHdrsArchive} =
+       msgHdrIsSent, msgHdrsMarkAsRead, msgUriToMsgHdr, msgHdrsArchive,
+       msgHdrsDelete} =
   ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
 const {MixIn, range} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
 const {Message, MessageFromGloda, MessageFromDbHdr} =
@@ -285,6 +286,19 @@ class _ConversationUtils {
     } else {
       msgHdrsArchive(win.gFolderDisplay.selectedMessages);
     }
+  }
+
+  delete(win, isInTab, msgUris) {
+    if (isInTab || Prefs.operate_on_conversations) {
+      msgHdrsDelete(msgUris.map(msg => msgUriToMsgHdr(msg)));
+      if (isInTab) {
+        return true;
+      }
+      win.SetFocusThreadPane();
+    } else {
+      msgHdrsDelete(win.gFolderDisplay.selectedMessages);
+    }
+    return false;
   }
 }
 

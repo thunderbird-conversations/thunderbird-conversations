@@ -14,7 +14,6 @@
 const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 XPCOMUtils.defineLazyModuleGetters(this, {
   ContactHelpers: "resource://conversations/modules/contact.js",
-  msgHdrsDelete: "resource://conversations/modules/stdlib/msgHdrUtils.js",
   composeMessageTo: "resource://conversations/modules/stdlib/compose.js",
   openConversationInTabOrWindow: "resource://conversations/modules/misc.js",
   MessageUtils: "resource://conversations/modules/message.js",
@@ -162,6 +161,14 @@ function messages(state = initialMessages, action) {
         state.msgData.map(msg => msg.msgUri));
       return state;
     }
+    case "DELETE_CONVERSATION": {
+      if (ConversationUtils.delete(topMail3Pane(window), isInTab,
+            state.msgData.map(msg => msg.msgUri))) {
+        // TODO: Could we just use window.close here?
+        closeTab();
+      }
+      return state;
+    }
     case "MSG_UPDATE_DATA": {
       const newState = {...state};
       const newMsgData = [];
@@ -213,19 +220,6 @@ function summary(state = initialSummary, action) {
       topMail3Pane(window).MsgFilters(action.email, null);
       return state;
     }
-    case "DELETE_CONVERSATION": {
-      if (isInTab || Prefs.operate_on_conversations) {
-        msgHdrsDelete(Conversations.currentConversation.msgHdrs);
-        if (isInTab) {
-          closeTab();
-          return state;
-        }
-        topMail3Pane(window).SetFocusThreadPane();
-      } else {
-        msgHdrsDelete(topMail3Pane(window).gFolderDisplay.selectedMessages);
-      }
-      return state;
-    }
     case "DETACH_TAB": {
       // TODO: Fix re-enabling composition when expanded into new tab.
       // const element = document.getElementsByClassName("textarea")[0].parent();
@@ -256,6 +250,7 @@ function summary(state = initialSummary, action) {
       return state;
     }
     case "PRINT_CONVERSATION": {
+      // TODO: Fix printing
       printConversation();
       return state;
     }
