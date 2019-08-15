@@ -130,11 +130,9 @@ function messages(state = initialMessages, action) {
       // TODO: Add a call to addMsgListener
       // TODO: We need to allow for plugins here and call onMessageBeforeStreaming
       // hooks.
-      // Future TODO: Can we stream the message by just assigning the url in
-      // the iframe.
       let messageService = Services.mMessenger.messageServiceFromURI(action.neckoUrl.spec);
       messageService.DisplayMessage(action.msgUri + "&markRead=false", action.docshell,
-                                    topMail3Pane(window).msgWindow, null, "UTF-8", {});
+                                    topMail3Pane(window).msgWindow, undefined, undefined, {});
       return state;
     }
     case "MSG_EXPAND": {

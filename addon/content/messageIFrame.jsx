@@ -61,6 +61,16 @@ class MessageIFrame extends React.Component {
   }
 
   componentDidMount() {
+    // TODO: Currently this must be an iframe created in the xul namespace,
+    // otherwise remote content blocking doesn't work. Figure out why the normal
+    // iframe has a originator location of `chrome://messenger/content/messenger.xul`
+    // rather than imap://.... (or whatever).
+    this.iframe = this.div.ownerDocument
+      .createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "iframe");
+    this.iframe.setAttribute("style", "height: 20px; overflow-y: hidden");
+    this.iframe.setAttribute("type", "content");
+    this.div.appendChild(this.iframe);
+
     const docShell = this.iframe.contentWindow.docShell;
     docShell.appType = Ci.nsIDocShell.APP_TYPE_MAIL;
     const cv = docShell.contentViewer;
@@ -150,8 +160,10 @@ class MessageIFrame extends React.Component {
   }
 
   render() {
+    // TODO: See comment in componentDidMount
+    // <iframe className={`iframe${this.index}`} type="content" ref={f => this.iframe = f}/>
     return (
-      <iframe className={`iframe${this.index}`} type="content" src="about:blank" ref={f => this.iframe = f}/>
+      <div className={`iframewrap${this.index}`} ref={d => this.div = d}/>
     );
   }
 }
