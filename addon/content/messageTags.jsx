@@ -6,7 +6,7 @@
            MessageIFrame */
 /* exported MessageTags */
 
-class MessageTags extends React.PureComponent {
+class MessageTag extends React.PureComponent {
   constructor(props) {
     super(props);
     this.onClick = this.onClick.bind(this);
@@ -22,25 +22,60 @@ class MessageTags extends React.PureComponent {
   }
 
   onClick() {
-    // TODO: Actually remove the tag. See Message.tags setter.
-    // let tags = this.tags.filter(x => x.key != tag.key);
-    //     this.tags = tags;
+    this.props.onClickX(this.props.id);
+    console.log("Clicked " + this.props.id);
+  }
+
+  render() {
+    return (
+      <li className={"tag" +
+                     (this.getIsLight(this.props.color) ? " light-tag" : "")}
+          style={{backgroundColor: this.props.color}}>
+        {this.props.name}
+        {this.props.expanded &&
+          <span className="tag-x" onClick={this.onClick}> x</span>
+        }
+      </li>
+    );
+  }
+}
+
+MessageTag.propTypes = {
+  onClickX: PropTypes.func.isRequired,
+  expanded: PropTypes.bool.isRequired,
+  id: PropTypes.string.isRequired,
+  key: PropTypes.number.isRequired,
+  name: PropTypes.string.isRequired,
+  color: PropTypes.string.isRequired,
+};
+
+class MessageTags extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    this.onRemoveTag = this.onRemoveTag.bind(this);
+  }
+
+  onRemoveTag(tagId) {
+    const tags = this.props.tags.filter(tag => tag.id != tagId);
+    this.props.dispatch({
+      type: "MSG_SET_TAGS",
+      msgUri: this.props.msgUri,
+      tags,
+    });
   }
 
   render() {
     return (
       <ul className="tags regular-tags">
-        { !!this.props.tags && this.props.tags.map((tag, i) => {
+        {!!this.props.tags && this.props.tags.map((tag, i) => {
           return (
-            <li className={"tag" +
-                           (this.getIsLight(tag.color) ? " light-tag" : "")}
-                key={i}
-                style={{backgroundColor: tag.color}}>
-              {tag.name}
-              { this.props.expanded &&
-                <span className="tag-x" onClick={this.onClick}> x</span>
-              }
-            </li>
+            <MessageTag
+              color={tag.color}
+              id={tag.id}
+              expanded={this.props.expanded}
+              key={i}
+              name={tag.name}
+              onClickX={this.onRemoveTag}/>
           );
         })}
       </ul>
@@ -51,6 +86,7 @@ class MessageTags extends React.PureComponent {
 MessageTags.propTypes = {
   dispatch: PropTypes.func.isRequired,
   expanded: PropTypes.bool.isRequired,
+  msgUri: PropTypes.string.isRequired,
   tags: PropTypes.array.isRequired,
 };
 
@@ -61,9 +97,14 @@ class SpecialMessageTags extends React.PureComponent {
   }
 
   onClickInFolder() {
-    // TODO: Click on in-folder when expanded should open the folder.
-    // mainWindow.gFolderTreeView.selectFolder(self._msgHdr.folder, true);
-    // mainWindow.gFolderDisplay.selectMessage(self._msgHdr);
+    if (!this.props.canClickFolder) {
+      return;
+    }
+
+    this.props.dispatch({
+      type: "SWITCH_TO_FOLDER",
+      msgUri: this.props.msgUri,
+    });
   }
 
   render() {
@@ -105,7 +146,10 @@ class SpecialMessageTags extends React.PureComponent {
 }
 
 SpecialMessageTags.propTypes = {
-  inView: PropTypes.bool.isRequired,
-  strings: PropTypes.object.isRequired,
+  canClickFolder: PropTypes.bool.isRequired,
+  dispatch: PropTypes.func.isRequired,
   folderName: PropTypes.string.isRequired,
+  inView: PropTypes.bool.isRequired,
+  msgUri: PropTypes.string.isRequired,
+  strings: PropTypes.object.isRequired,
 };

@@ -118,6 +118,14 @@ function messages(state = initialMessages, action) {
       MessageUtils.openInSourceView(topMail3Pane(window), action.msgUri);
       return state;
     }
+    case "MSG_SET_TAGS": {
+      MessageUtils.setTags(action.msgUri, action.tags);
+      return state;
+    }
+    case "MSG_STAR": {
+      MessageUtils.setStar(action.msgUri, action.star);
+      return state;
+    }
     case "MSG_STREAM_MSG": {
       // TODO: Add a call to addMsgListener
       // TODO: We need to allow for plugins here and call onMessageBeforeStreaming
@@ -263,6 +271,10 @@ function summary(state = initialSummary, action) {
     }
     case "SHOW_MESSAGES_INVOLVING": {
       ContactHelpers.showMessagesInvolving(topMail3Pane(window), action.name, action.email);
+      return state;
+    }
+    case "SWITCH_TO_FOLDER": {
+      ConversationUtils.switchToFolderAndMsg(topMail3Pane(window), action.msgUri);
       return state;
     }
     default: {

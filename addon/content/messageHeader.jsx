@@ -46,6 +46,7 @@ class MessageHeader extends React.PureComponent {
   constructor(props) {
     super(props);
     this.onClickHeader = this.onClickHeader.bind(this);
+    this.onClickStar = this.onClickStar.bind(this);
     this.strings = new StringBundle("chrome://conversations/locale/template.properties");
   }
 
@@ -57,9 +58,14 @@ class MessageHeader extends React.PureComponent {
     });
   }
 
-  onClickStar() {
-    // TODO: Make this work. See:
-    //   self.starred = !self.starred;
+  onClickStar(event) {
+    event.stopPropagation();
+    event.preventDefault();
+    this.props.dispatch({
+      type: "MSG_STAR",
+      msgUri: this.props.msgUri,
+      star: !this.props.starred,
+    });
   }
 
   render() {
@@ -102,10 +108,14 @@ class MessageHeader extends React.PureComponent {
               <MessageTags
                 dispatch={this.props.dispatch}
                 expanded={false}
+                msgUri={this.props.msgUri}
                 tags={this.props.tags}/>
               <SpecialMessageTags
-                inView={this.props.inView}
+                canClickFolder={false}
+                dispatch={this.props.dispatch}
                 folderName={this.props.shortFolderName}
+                inView={this.props.inView}
+                msgUri={this.props.msgUri}
                 strings={this.strings}/>
               {this.props.snippet}
             </span>

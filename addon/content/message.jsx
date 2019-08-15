@@ -35,14 +35,18 @@ class Message extends React.PureComponent {
         <div className="messageBody">
           {this.props.message.expanded &&
             <SpecialMessageTags
-              inView={this.props.message.inView}
+              canClickFolder={true}
+              dispatch={this.props.dispatch}
               folderName={this.props.message.folderName}
+              inView={this.props.message.inView}
+              msgUri={this.props.message.msgUri}
               strings={this.strings}/>
           }
           {this.props.message.expanded &&
             <MessageTags
               dispatch={this.props.dispatch}
               expanded={true}
+              msgUri={this.props.message.msgUri}
               tags={this.props.message.tags}/>
           }
           <MessageIFrame

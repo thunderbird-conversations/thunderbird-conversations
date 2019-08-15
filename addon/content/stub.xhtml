@@ -684,27 +684,7 @@
           <span class="to hide-with-details"> {{str "to"}} {{tmpl "contactLabel" dataContactsTo}}</span>
           <span class="recipient-tooltips"></span>
           <span class="bzTo"> {{str "at"}} {{bugzillaUrl}}</span>
-          <span class="snippet"><ul class="tags regular-tags"></ul><ul
-              class="tags special-tags"
-            ><li
-              class="tag-signed"
-              title="{{str 'messageSignedLong'}}"
-              ><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#edit"></use></svg>
-              {{str "messageSigned"}}</li
-            ><li
-              class="tag-decrypted"
-              title="{{str 'messageDecryptedLong'}}"
-              ><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#vpn_key"></use></svg>
-              {{str "messageDecrypted"}}</li
-            ><li
-              class="tag-dkim-signed"
-              ><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#edit"></use></svg>
-              {{str "messageDKIMSigned"}}</li
-            ><li
-              class="in-folder"
-              title="{{str 'jumpToFolder'}}"
-              >{{str "inFolder" shortFolderName}}</li
-            ></ul>{{snippet}}</span>
+          <span class="snippet"{{snippet}}</span>
         </div>
         <div class="optionswrapper">
         </div>
@@ -886,29 +866,7 @@
       </div>
 
       <div class="messageBody">
-        <!-- Weird markup to deal with whitespace DOM nodes -->
-        <ul class="tags special-tags"
-          ><li
-            class="keep-tag tag-signed"
-            title="{{str 'messageSignedLong'}}"
-            ><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#edit"></use></svg>
-            {{str "messageSigned"}}</li
-          ><li
-            class="keep-tag tag-decrypted"
-            title="{{str 'messageDecryptedLong'}}"
-            ><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#vpn_key"></use></svg>
-            {{str "messageDecrypted"}}</li
-          ><li
-            class="keep-tag tag-dkim-signed"
-            ><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#edit"></use></svg>
-            {{str "messageDKIMSigned"}}</li
-          ><li
-            class="keep-tag in-folder"
-            title="{{str 'jumpToFolder'}}"
-            >{{str "inFolder" folderName}}</li
-          ></ul
-        >
-        <ul class="tags regular-tags"></ul>
+        <!-- just tags and stuff was before here. -->
         <div class="iframe-container"></div>
         <div class="body-container"></div>
         <div class="attachments-container">

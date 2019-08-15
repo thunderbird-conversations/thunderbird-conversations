@@ -222,6 +222,20 @@ class _MessageUtils {
   openInSourceView(win, msgUri) {
     win.ViewPageSource([msgUri]);
   }
+
+  setTags(msgUri, tags) {
+    msgHdrSetTags(msgUriToMsgHdr(msgUri),
+      tags.map(tag => {
+        return {
+          key: tag.id,
+        };
+      })
+    );
+  }
+
+  setStar(msgUri, star) {
+    msgUriToMsgHdr(msgUri).markFlagged(star);
+  }
 }
 
 var MessageUtils = new _MessageUtils();
@@ -575,7 +589,7 @@ Message.prototype = {
     }
   },
 
-  toReactData(aQuickReply, inView) {
+  toReactData(aQuickReply) {
     let msgData = this.toTmplData(aQuickReply);
     return {
       attachments: msgData.attachments,
@@ -585,7 +599,6 @@ Message.prototype = {
       from: msgData.dataContactFrom,
       fullDate: msgData.fullDate,
       gallery: msgData.gallery,
-      inView,
       isDraft: msgData.isDraft,
       isJunk: msgData.isJunk,
       msgUri: msgData.uri,
@@ -627,7 +640,7 @@ Message.prototype = {
       multipleRecipients: this.isReplyAllEnabled,
       recipientsIncludeLists: this.isReplyListEnabled,
       isDraft: false,
-      starred: this.starred,
+      starred: this._msgHdr.isFlagged,
       read: this.read,
     };
 
@@ -712,6 +725,7 @@ Message.prototype = {
     data.tags = tags.map(tag => {
       return {
         color: tag.color,
+        id: tag.key,
         name: tag.tag,
       };
     });
@@ -1157,14 +1171,6 @@ Message.prototype = {
 
   set read(v) {
     msgHdrsMarkAsRead([this._msgHdr], v);
-  },
-
-  get starred() {
-    return this._msgHdr.isFlagged;
-  },
-
-  set starred(v) {
-    this._msgHdr.markFlagged(v);
   },
 
   get tags() {

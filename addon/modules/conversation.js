@@ -300,6 +300,12 @@ class _ConversationUtils {
     }
     return false;
   }
+
+  switchToFolderAndMsg(win, msgUri) {
+    const msgHdr = msgUriToMsgHdr(msgUri);
+    win.gFolderTreeView.selectFolder(msgHdr.folder, true);
+    win.gFolderDisplay.selectMessage(msgHdr);
+  }
 }
 
 var ConversationUtils = new _ConversationUtils();
@@ -978,10 +984,11 @@ Conversation.prototype = {
       msg.updateTmplData(oldMsg);
     }
     let reactMsgData = this.messages.map((m, i) => {
+      const msgData = m.message.toReactData(i == self.messages.length - 1);
       // inView indicates if the message is currently in the message list
       // view or not. If it isn't we don't show the folder name.
-      const inView = this.viewWrapper.isInView(m);
-      return m.message.toReactData(i == self.messages.length - 1, inView);
+      msgData.inView = this.viewWrapper.isInView(m);
+      return msgData;
     });
 
     // Move on to the next step
