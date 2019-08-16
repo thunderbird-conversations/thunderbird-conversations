@@ -128,121 +128,6 @@
       return -h;
     }
 
-    const kPopupTimeout = 400;
-
-    // This only works for contact tooltips. The "more" menu is treated like a
-    //  real menu (it uses displayMenu and falls under clearMenu's operations),
-    //  and the reply menu with various choices is also treated like a menu.
-    // It turns out the "more" menu reuses the tooltip style for various
-    //  reasons, mostly to keep the same appearance, so we differentiate that
-    //  one with a tooltip-menu extra class.
-    /* exported enableTooltips */
-    function enableTooltips(aMsg) {
-      let $aMsgNode = $(aMsg._domNode);
-
-      $aMsgNode.find(".contactName").each(function() {
-        let $contact = $(this);
-
-        if ($contact.hasClass("tooltip-menu")) {
-          return;
-        }
-
-        setTooltipEventHandlers(aMsg, $contact, false);
-      });
-    }
-
-    // Set events on a contact to show/hide the tooltip over the contact when
-    // mouse enters/leaves their areas.
-    function setTooltipEventHandlers(aMsg, $contact, isRecipient) {
-      let timeout;
-
-      function findDiv(msgId, contactId) {
-        const tooltipContainer = document.getElementById("tooltipContainer");
-        for (let child of tooltipContainer.children) {
-          if (child.getAttribute("MsgId") == msgId) {
-            return child;
-          }
-        }
-        return null;
-      }
-
-      let contactPos = $contact.parent().position();
-
-      function renderContact(div, fadeIn) {
-        ReactDOM.render(React.createElement(ReactRedux.Provider, {store},
-          React.createElement(ContactDetail, {
-            left: contactPos.left,
-            top: contactPos.top + $contact.parent().height() * 2,
-            name: $contact.attr("name"),
-            email: $contact.attr("email"),
-            realEmail: $contact.attr("realemail"),
-            avatar: $contact.attr("avatar"),
-            hasCard: $contact.attr("hascard"),
-            fadeIn,
-          })), div);
-      }
-
-      let fadeTimeout;
-
-      function removeContactDisplay(div) {
-        renderContact(div, "false");
-        fadeTimeout = setTimeout(function() {
-          ReactDOM.unmountComponentAtNode(div);
-          div.remove();
-        }, kPopupTimeout);
-      }
-
-      $contact.hover(function() {
-        if (aMsg.collapsed) {
-          return;
-        }
-
-        clearTimeout(timeout);
-        clearTimeout(fadeTimeout);
-
-        timeout = setTimeout(function() {
-          if (findDiv(aMsg._msgHdr.messageId + $contact.attr("realemail"))) {
-            // Already displayed, just ignore.
-            return;
-          }
-          const tooltipContainer = document.getElementById("tooltipContainer");
-          let div = document.createElement("div");
-          div.setAttribute("MsgId", aMsg._msgHdr.messageId + $contact.attr("realemail"));
-          tooltipContainer.appendChild(div);
-
-          renderContact(div, "true");
-
-          tooltipContainer.addEventListener("mouseover", () => {
-            clearTimeout(timeout);
-          });
-          tooltipContainer.addEventListener("mouseout", () => {
-            const tooltipDiv = findDiv(aMsg._msgHdr.messageId + $contact.attr("realemail"));
-            if (!tooltipDiv) {
-              // Not displayed, just ignore.
-              return;
-            }
-            clearTimeout(timeout);
-            timeout = setTimeout(function() {
-              removeContactDisplay(tooltipDiv);
-            }, kPopupTimeout);
-          });
-        }, kPopupTimeout);
-      }, function() {
-        clearTimeout(timeout);
-        clearTimeout(fadeTimeout);
-
-        const tooltipDiv = findDiv(aMsg._msgHdr.messageId + $contact.attr("realemail"));
-
-        if (!tooltipDiv) {
-          return;
-        }
-
-        timeout = setTimeout(function() {
-          removeContactDisplay(tooltipDiv);
-        }, kPopupTimeout);
-      });
-    }
-
     document.addEventListener("focus", function(event) {
       /* This is a persistent event listener. It can operate multiple
        * times. We have the invariant that for a given conversation, there's at
@@ -293,7 +178,6 @@
     const {
       setupLogging, dumpCallStack,
     } = ChromeUtils.import("resource://conversations/modules/log.js");
-
 
     Log = setupLogging("Conversations.Stub");
     // Declare with var, not let, so that it's in the global scope, not the lexical scope.
@@ -907,11 +791,6 @@
           > &lt;{{trim displayEmail}}&gt;</span>{{/if}}{{#if writeBr}}<br />{{/if}}</span
       ></span
   >]]></script>
-  <script id="attachmentIconTemplate" type="text/x-handlebars-template"><![CDATA[
-    {{#if attachments.length}}
-      <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#attachment"></use></svg>
-    {{/if}}
-  ]]></script>
   <script id="popularContactTemplate" type="text/x-handlebars-template"><![CDATA[
     <div class="popularContact">
       <img class="popularPhoto" src="{{photo}}" style="float: left" />

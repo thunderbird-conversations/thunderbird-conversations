@@ -19,9 +19,17 @@ class _ContactDetail extends React.PureComponent {
     this.copyEmail = this.copyEmail.bind(this);
     this.sendEmail = this.sendEmail.bind(this);
     this.showInvolving = this.showInvolving.bind(this);
+    this.onGeneralClick = this.onGeneralClick.bind(this);
   }
 
-  addContact() {
+  onGeneralClick(event) {
+    event.stopPropagation();
+    event.preventDefault();
+  }
+
+  addContact(event) {
+    event.stopPropagation();
+    event.preventDefault();
     this.props.dispatch({
       type: "ADD_CONTACT",
       name: this.props.name,
@@ -29,21 +37,27 @@ class _ContactDetail extends React.PureComponent {
     });
   }
 
-  createFilter() {
+  createFilter(event) {
+    event.stopPropagation();
+    event.preventDefault();
     this.props.dispatch({
       type: "CREATE_FILTER",
       email: this.props.realEmail,
     });
   }
 
-  copyEmail() {
+  copyEmail(event) {
+    event.stopPropagation();
+    event.preventDefault();
     this.props.dispatch({
       type: "COPY_EMAIL",
       email: this.props.realEmail,
     });
   }
 
-  editContact() {
+  editContact(event) {
+    event.stopPropagation();
+    event.preventDefault();
     this.props.dispatch({
       type: "EDIT_CONTACT",
       name: this.props.name,
@@ -51,11 +65,15 @@ class _ContactDetail extends React.PureComponent {
     });
   }
 
-  expandFooter() {
+  expandFooter(event) {
+    event.stopPropagation();
+    event.preventDefault();
     this.setState({expanded: true});
   }
 
-  sendEmail() {
+  sendEmail(event) {
+    event.stopPropagation();
+    event.preventDefault();
     this.props.dispatch({
       type: "SEND_EMAIL",
       name: this.props.name,
@@ -63,7 +81,9 @@ class _ContactDetail extends React.PureComponent {
     });
   }
 
-  showInvolving() {
+  showInvolving(event) {
+    event.stopPropagation();
+    event.preventDefault();
     this.props.dispatch({
       type: "SHOW_MESSAGES_INVOLVING",
       name: this.props.name,
@@ -73,9 +93,14 @@ class _ContactDetail extends React.PureComponent {
 
   render() {
     const name = this.props.name;
+    const pos = this.props.parentRect || { left: 0, top: 0, bottom: 0};
     // TODO: Show monospace?
     return (
-      <div className="tooltip" style={{left: this.props.left, top: this.props.top}} fadein={this.props.fadeIn}>
+      <div className="tooltip" style={{
+          left: pos.left,
+          top: pos.top +
+               (pos.bottom - pos.top) * 2,
+        }} onClick={this.onGeneralClick}>
         <div className="arrow"></div>
         <div className="arrow inside"></div>
         <div className="authorInfoContainer">
@@ -102,19 +127,19 @@ class _ContactDetail extends React.PureComponent {
                     onClick={this.createFilter}>
               {this.strings.get("createFilter")}
             </button>
-            { this.props.hasCard == "false" ?
-              <button className="addContact"
-                      title={this.strings.get("addToAb")}
-                      onClick={this.addContact}>
-                <svg className="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
-                  <use xlinkHref="chrome://conversations/skin/material-icons.svg#add"></use>
-                </svg>
-              </button> :
+            { this.props.hasCard ?
               <button className="editContact"
                       title={this.strings.get("editCardAb")}
                       onClick={this.editContact}>
                 <svg className="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
                   <use xlinkHref="chrome://conversations/skin/material-icons.svg#edit"></use>
+                </svg>
+              </button> :
+              <button className="addContact"
+                      title={this.strings.get("addToAb")}
+                      onClick={this.addContact}>
+                <svg className="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
+                  <use xlinkHref="chrome://conversations/skin/material-icons.svg#add"></use>
                 </svg>
               </button>
             }
@@ -156,10 +181,8 @@ _ContactDetail.propTypes = {
   email: PropTypes.string.isRequired,
   realEmail: PropTypes.string.isRequired,
   avatar: PropTypes.string.isRequired,
-  hasCard: PropTypes.string.isRequired,
-  left: PropTypes.number.isRequired,
-  top: PropTypes.number.isRequired,
-  fadeIn: PropTypes.string.isRequired,
+  hasCard: PropTypes.bool.isRequired,
+  parentRect: PropTypes.object.isRequired,
 };
 
 const ContactDetail = ReactRedux.connect()(_ContactDetail);

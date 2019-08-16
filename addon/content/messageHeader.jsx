@@ -3,13 +3,111 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 /* globals React, PropTypes, MessageHeaderOptions, StringBundle, MessageTags
-           SpecialMessageTags */
+           SpecialMessageTags, ContactDetail */
 /* exported MessageHeader */
 
+class Fade extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    this.state = {
+      fadeIn: false,
+      fadeOut: false,
+    };
+  }
+
+  componentWillReceiveProps(nextProps) {
+    if (!this.props.trigger && nextProps.trigger) {
+      let stateUpdate = {};
+      if (this.fadeOutTimeout) {
+        clearTimeout(this.fadeOutTimeout);
+        delete this.fadeOutTimeout;
+        if (this.state.fadeOut) {
+          stateUpdate.fadeOut = false;
+        }
+        // Since we're already showing the tooltip, don't bother
+        // with fading it in again.
+        this.setState({
+          fadeIn: false,
+          fadeOut: false,
+        });
+        return;
+      }
+      stateUpdate.fadeIn = true;
+      this.setState(stateUpdate);
+      this.fadeInTimeout = setTimeout(() => {
+        this.setState({fadeIn: false});
+        delete this.fadeInTimeout;
+      }, 400);
+    } else if (this.props.trigger && !nextProps.trigger) {
+      let stateUpdate = {};
+      if (this.fadeInTimeout) {
+        clearTimeout(this.fadeInTimeout);
+        delete this.fadeInTimeout;
+      }
+      console.log("fade out");
+      stateUpdate.fadeOut = true;
+      this.setState(stateUpdate);
+      this.fadeOutTimeout = setTimeout(() => {
+        this.setState({fadeOut: false});
+        delete this.fadeOutTimeout;
+      }, 400);
+    }
+  }
+
+  render() {
+    if (this.props.trigger || this.state.fadeOut) {
+      let transition = this.state.fadeIn ? "transition-in" : "";
+      if (!transition && this.state.fadeOut) {
+        transition = "transition-out";
+      }
+      return (
+        <span className={transition}>
+          {this.props.children}
+        </span>
+      );
+    }
+    return null;
+  }
+}
+
+Fade.propTypes = {
+  children: PropTypes.object.isRequired,
+  trigger: PropTypes.bool.isRequired,
+};
+
 class ContactLabel extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    this.onMouseOver = this.onMouseOver.bind(this);
+    this.onMouseOut = this.onMouseOut.bind(this);
+    this.state = {
+      hover: false,
+    };
+  }
+
+  onMouseOver(event) {
+    this.setState({hover: true});
+  }
+
+  onMouseOut(event) {
+    this.setState({hover: false});
+  }
+
   render() {
     return (
-      <span className={this.props.className}>
+      <span className={this.props.className}
+            onMouseOver={this.onMouseOver}
+            onMouseOut={this.onMouseOut}
+            ref={s => this.span = s}>
+        <Fade trigger={this.state.hover}>
+          <ContactDetail
+            parentRect={this.span && this.span.getBoundingClientRect()}
+            name={this.props.contact.name}
+            email={this.props.contact.displayEmail}
+            realEmail={this.props.contact.email}
+            avatar={this.props.contact.avatar}
+            hasCard={this.props.contact.hasCard}/>
+        </Fade>
         <span>{this.props.contact.separator}</span>
           <span className="tooltipWrapper contact">
             <span className="contactName"
