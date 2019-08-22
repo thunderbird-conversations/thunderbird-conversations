@@ -107,7 +107,7 @@ class ContactLabel extends React.PureComponent {
             ref={s => this.span = s}>
         <Fade trigger={this.state.hover}>
           <ContactDetail
-            parentRect={this.span && this.span.getBoundingClientRect()}
+            parentSpan={this.span}
             name={this.props.contact.name}
             email={this.props.contact.displayEmail}
             realEmail={this.props.contact.email}

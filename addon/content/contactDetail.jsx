@@ -93,12 +93,13 @@ class _ContactDetail extends React.PureComponent {
 
   render() {
     const name = this.props.name;
-    const pos = this.props.parentRect || { left: 0, top: 0, bottom: 0};
+    const pos = (this.props.parentSpan && this.props.parentSpan.getBoundingClientRect()) ||
+      { left: 0, top: 0, bottom: 0};
     // TODO: Show monospace?
     return (
       <div className="tooltip" style={{
           left: pos.left,
-          top: pos.top +
+          top: pos.top + window.scrollY +
                (pos.bottom - pos.top) * 2,
         }} onClick={this.onGeneralClick}>
         <div className="arrow"></div>
@@ -182,7 +183,7 @@ _ContactDetail.propTypes = {
   realEmail: PropTypes.string.isRequired,
   avatar: PropTypes.string.isRequired,
   hasCard: PropTypes.bool.isRequired,
-  parentRect: PropTypes.object.isRequired,
+  parentSpan: PropTypes.object.isRequired,
 };
 
 const ContactDetail = ReactRedux.connect()(_ContactDetail);
