@@ -44,7 +44,6 @@ class Fade extends React.PureComponent {
         clearTimeout(this.fadeInTimeout);
         delete this.fadeInTimeout;
       }
-      console.log("fade out");
       stateUpdate.fadeOut = true;
       this.setState(stateUpdate);
       this.fadeOutTimeout = setTimeout(() => {
@@ -86,10 +85,17 @@ class ContactLabel extends React.PureComponent {
   }
 
   onMouseOver(event) {
-    this.setState({hover: true});
+    this.timeout = setTimeout(() => {
+      this.setState({hover: true});
+      delete this.timeout;
+    }, 400);
   }
 
   onMouseOut(event) {
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+      delete this.timeout;
+    }
     this.setState({hover: false});
   }
 
