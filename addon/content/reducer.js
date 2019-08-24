@@ -27,6 +27,7 @@ const initialMessages = {};
 const initialSummary = {
   // TODO: What is loading used for?
   loading: true,
+  iframesLoading: 0,
   subject: "",
 };
 
@@ -195,6 +196,11 @@ function messages(state = initialMessages, action) {
       ConversationUtils.markAsJunk(topMail3Pane(window));
       return state;
     }
+    case "MSG_CLICK_IFRAME": {
+      // Hand this off to Thunderbird's content clicking algorithm as that's simplest.
+      topMail3Pane(window).contentAreaClick(action.event);
+      return state;
+    }
     default: {
       return state;
     }
@@ -274,6 +280,23 @@ function summary(state = initialSummary, action) {
     case "SWITCH_TO_FOLDER": {
       ConversationUtils.switchToFolderAndMsg(topMail3Pane(window), action.msgUri);
       return state;
+    }
+    case "MSG_STREAM_MSG": {
+      let newState = {...state};
+      if (!action.dueToExpansion) {
+        newState.iframesLoading++;
+      }
+      return newState;
+    }
+    case "MSG_STREAM_LOAD_FINISHED": {
+      let newState = {...state};
+      if (!action.dueToExpansion) {
+        newState.iframesLoading--;
+        if (newState.iframesLoading < 0) {
+          newState.iframesLoading = 0;
+        }
+      }
+      return newState;
     }
     default: {
       return state;

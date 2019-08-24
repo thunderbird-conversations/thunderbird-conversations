@@ -26,10 +26,17 @@ class MessageIFrame extends React.Component {
     super(props);
     this.index = index++;
     this.currentUrl = null;
+    this.loading = false;
+    this.onClickIframe = this.onClickIframe.bind(this);
   }
 
   componentWillReceiveProps(nextProps) {
     let startLoad = false;
+    // dueToExpansion is used so that we can indicate if this load is happening
+    // as a result of an expansion or not. If it is a user expansion, we don't
+    // want to scroll the message to view, since the user may be viewing somewhere
+    // else.
+    this.dueToExpansion = undefined;
     if (this.props.neckoUrl.spec != nextProps.neckoUrl.spec && nextProps.expanded) {
       // This is a hack which ensures that the iframe is a minimal height, so
       // that when the message loads, the scroll height is set correctly, rather
@@ -38,11 +45,15 @@ class MessageIFrame extends React.Component {
       this.iframe.classList.remove("hidden");
       this.iframe.style.height = "20px";
       startLoad = true;
+      this.dueToExpansion = false;
     }
     if (nextProps.expanded) {
       this.iframe.classList.remove("hidden");
       if (this.currentUrl != nextProps.msgUri) {
         startLoad = true;
+        if (this.dueToExpansion === undefined) {
+          this.dueToExpansion = true;
+        }
         this.iframe.style.height = "20px";
       }
     } else {
@@ -51,9 +62,12 @@ class MessageIFrame extends React.Component {
       this.iframe.classList.add("hidden");
     }
     if (startLoad) {
+      this.loading = true;
+      this.currentUrl = nextProps.msgUri;
       this.props.dispatch({
         type: "MSG_STREAM_MSG",
         docshell: this.iframe.contentWindow.docShell,
+        dueToExpansion: this.dueToExpansion,
         msgUri: nextProps.msgUri,
         neckoUrl: nextProps.neckoUrl,
       });
@@ -69,6 +83,7 @@ class MessageIFrame extends React.Component {
       .createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "iframe");
     this.iframe.setAttribute("style", "height: 20px; overflow-y: hidden");
     this.iframe.setAttribute("type", "content");
+    this.iframe.addEventListener("click", this.onClickIframe);
     this.div.appendChild(this.iframe);
 
     const docShell = this.iframe.contentWindow.docShell;
@@ -80,6 +95,8 @@ class MessageIFrame extends React.Component {
     this.registerListeners();
     if (this.props.expanded) {
       this.currentUrl = this.props.msgUri;
+      this.loading = true;
+      this.dueToExpansion = false;
       this.props.dispatch({
         type: "MSG_STREAM_MSG",
         docshell: docShell,
@@ -92,6 +109,13 @@ class MessageIFrame extends React.Component {
   }
 
   componentWillUnmount() {
+    if (this.loading) {
+      this.props.dispatch({
+        type: "MSG_STREAM_LOAD_FINISHED",
+        dueToExpansion: this.dueToExpansion,
+      });
+      this.loading = false;
+    }
     if (!this._loadListener) {
       return;
     }
@@ -137,11 +161,20 @@ class MessageIFrame extends React.Component {
     }
   }
 
-  _onLoad() {
+  _onLoad(event) {
+    if (event.target.documentURI == "about:blank") {
+      return;
+    }
     // TODO: Should somehow trigger hooks.onMessageStreamed here.
     // TODO: Check for phishing, see also https://searchfox.org/comm-central/rev/99e635c4517ff1689d25f01b41f0753160abf7ac/mail/base/content/phishingDetector.js#50
     // TODO: Handle BIDI
+
     this.adjustHeight();
+    this.loading = false;
+    this.props.dispatch({
+      type: "MSG_STREAM_LOAD_FINISHED",
+      dueToExpansion: this.dueToExpansion,
+    });
     // TODO: Do we need to re-check the original scroll point?
     // TODO: Send Msg loaded event
   }
@@ -153,10 +186,18 @@ class MessageIFrame extends React.Component {
     // if (!(self._realFrom && self._realFrom.email.indexOf("bugzilla-daemon") == 0))
     //   self.detectQuotes(iframe);
     // self.detectSigs(iframe);
-    // self.registerLinkHandlers(iframe);
     // self.injectCss(iframeDoc);
 
     this.adjustHeight();
+  }
+
+  onClickIframe(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.props.dispatch({
+      type: "MSG_CLICK_IFRAME",
+      event,
+    });
   }
 
   render() {

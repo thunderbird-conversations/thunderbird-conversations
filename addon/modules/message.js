@@ -65,7 +65,7 @@ const {Prefs} = ChromeUtils.import("resource://conversations/modules/prefs.js", 
 const {EventHelperMixIn, folderName, iconForMimeType, topMail3Pane} =
   ChromeUtils.import("resource://conversations/modules/misc.js", {});
 const {getHooks} = ChromeUtils.import("resource://conversations/modules/hook.js", {});
-const {dumpCallStack, setupLogging, Colors} = ChromeUtils.import("resource://conversations/modules/log.js", {});
+const {dumpCallStack, setupLogging} = ChromeUtils.import("resource://conversations/modules/log.js", {});
 
 let Log = setupLogging("Conversations.Message");
 // This is high because we want enough snippet to extract relevant data from
@@ -1038,56 +1038,6 @@ Message.prototype = {
     return this._domNode.getElementsByTagName("iframe")[0];
   },
 
-  // Build attachment view if we have a `MessageFromGloda` that's encrypted
-  // because Gloda has not indexed attachments.
-  buildAttachmentViewIfNeeded(k) {
-    if (!this.needsLateAttachments) {
-      k();
-      return;
-    }
-    let self = this;
-    Log.debug(Colors.blue, "Building attachment view", Colors.default);
-    try {
-      MsgHdrToMimeMessage(this._msgHdr, null, function(aMsgHdr, aMimeMsg) {
-        try {
-          if (aMimeMsg == null)
-            return;
-
-          if (Prefs.extra_attachments) {
-            self._attachments = aMimeMsg.allAttachments.concat(aMimeMsg.allUserAttachments);
-            let hashMap = {};
-            self._attachments = self._attachments.filter(function(x) {
-              let seenAlready = (x.url in hashMap);
-              hashMap[x.url] = null;
-              return !seenAlready;
-            });
-          } else {
-            self._attachments = aMimeMsg.allUserAttachments
-              .filter(x => x.isRealAttachment);
-          }
-
-          try {
-            k();
-          } catch (e) {
-            Log.error(e);
-            dumpCallStack(e);
-          }
-        } catch (e) {
-          Log.error(e);
-          dumpCallStack(e);
-          k();
-        }
-      }, true, {
-        partsOnDemand: true,
-        examineEncryptedParts: true,
-      });
-    } catch (e) {
-      Log.warn("Failed to stream the attachments properly, this is VERY BAD");
-      Log.warn(e);
-      k();
-    }
-  },
-
   // Adds the details if needed... done after the message has been streamed, so
   // in theory, that should be pretty fast...
   showDetails: function _Message_showDetails(k) {
@@ -1181,47 +1131,8 @@ Message.prototype = {
     msgHdrSetTags(this._msgHdr, v);
   },
 
-  get collapsed() {
-    return this._domNode.classList.contains("collapsed");
-  },
-
-  get expanded() {
-    return !this.collapsed;
-  },
-
-  toggle() {
-    if (this.collapsed)
-      this.expand();
-    else if (this.expanded)
-      this.collapse();
-    else
-      Log.error("WTF???");
-  },
-
-  _signal: function _Message_signal() {
+  _signal() {
     this._conversation._signal();
-  },
-
-  expand() {
-    this._domNode.classList.remove("collapsed");
-    if (!this._didStream) {
-      try {
-        let self = this;
-        this.buildAttachmentViewIfNeeded(function() {
-          self.registerActions();
-          self.streamMessage(); // will call _signal
-        });
-      } catch (e) {
-        Log.error(e);
-        dumpCallStack(e);
-      }
-    } else {
-      this._signal();
-    }
-  },
-
-  collapse() {
-    this._domNode.classList.add("collapsed");
   },
 
   // This function takes care of streaming the message into the <iframe>, adding
@@ -1912,34 +1823,6 @@ let PostStreamingFixesMixIn = {
     } catch (e) {
       Log.debug(e);
       return false;
-    }
-  },
-
-  registerLinkHandlers(iframe) {
-    let self = this;
-    let iframeDoc = iframe.contentDocument;
-    let mainWindow = topMail3Pane(this);
-    for (let a of iframeDoc.querySelectorAll("a")) {
-      if (!a)
-        continue;
-      let anchor = this._getAnchor(a.href);
-      if (anchor) {
-        // It's an anchor, do the scrolling ourselves since, for security
-        // reasons, content cannot scroll its outer chrome document.
-        a.addEventListener("click", function link_listener(event) {
-          let node = iframeDoc.getElementsByName(anchor)[0];
-          let w = self._conversation._htmlPane;
-          let o1 = w.$(node).offset().top;
-          let o2 = w.$(iframe).offset().top;
-          w.scrollTo(0, o1 + o2 + 5 - 44);
-        }, true);
-      } else {
-        // Attach the required event handler so that links open in the external
-        // browser.
-        a.addEventListener("click",
-          event => mainWindow.specialTabs.siteClickHandler(event, /^mailto:/),
-          true);
-      }
     }
   },
 };

@@ -1016,6 +1016,7 @@ Conversation.prototype = {
     if (aStart === undefined)
       aStart = 0;
     let focusThis = this._tellMeWhoToScroll(messages);
+    reactMsgData[focusThis].scrollTo = true;
     // let expandThese =
     this._tellMeWhoToExpand(messages, reactMsgData, focusThis);
     // let messageNodes = this._domNode.getElementsByClassName(Message.prototype.cssClass);
@@ -1048,29 +1049,6 @@ Conversation.prototype = {
     //     w.markReadInView.disable();
     //   }
     // }, this.messages.length);
-
-    // expandThese.forEach(function(action, i) {
-    //   // If we were instructed to start operating only after the i-1 messages,
-    //   // don't do anything.
-    //   if (i < aStart) {
-    //     self._signal();
-    //   } else {
-    //     switch (action) {
-    //       case kActionExpand:
-    //         self.messages[i].message.expand();
-    //         break;
-    //       case kActionCollapse:
-    //         self.messages[i].message.collapse();
-    //         self._signal();
-    //         break;
-    //       case kActionDoNothing:
-    //         self._signal();
-    //         break;
-    //       default:
-    //         Log.error("Unknown action");
-    //     }
-    //   }
-    // });
   },
 
   // This is the starting point, this is where the Monkey-Patched threadSummary

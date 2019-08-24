@@ -12,9 +12,34 @@ class Message extends React.PureComponent {
     this.strings = new StringBundle("chrome://conversations/locale/template.properties");
   }
 
+  componentDidMount() {
+    if (this.lastScrolledMsgUri != this.props.message.msgUri &&
+        this.props.message.scrollTo) {
+      this.lastScrolledMsgUri = this.props.message.msgUri;
+      // The header is 44px high (yes, this is harcodeadly ugly).
+      window.requestAnimationFrame(() => {
+        window.scrollTo(0, this.li.getBoundingClientRect().top + window.scrollY + 5 - 44);
+      });
+    }
+  }
+
+  componentDidUpdate(prevProps) {
+    if (!this.props.message.scrollTo) {
+      return;
+    }
+    if ((this.lastScrolledMsgUri != this.props.message.msgUri) ||
+        (prevProps.iframesLoading && !this.props.iframesLoading)) {
+      this.lastScrolledMsgUri = this.props.message.msgUri;
+      // The header is 44px high (yes, this is harcodeadly ugly).
+      window.requestAnimationFrame(() => {
+        window.scrollTo(500, this.li.getBoundingClientRect().top + window.scrollY + 5 - 44);
+      });
+    }
+  }
+
   render() {
     return (
-      <li className="message">
+      <li className="message" ref={li => this.li = li}>
         <MessageHeader
           dispatch={this.props.dispatch}
           date={this.props.message.date}
@@ -78,6 +103,7 @@ class Message extends React.PureComponent {
 
 Message.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  iframesLoading: PropTypes.number.isRequired,
   index: PropTypes.number.isRequired,
   message: PropTypes.object.isRequired,
 };

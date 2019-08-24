@@ -9,9 +9,11 @@ class _MessageList extends React.PureComponent {
   render() {
     return (
       <ul id="messageList">
-        {!!this.props.msgData && this.props.msgData.map((message, index) => (
+        {!!this.props.messages.msgData &&
+           this.props.messages.msgData.map((message, index) => (
           <Message key={index}
             dispatch={this.props.dispatch}
+            iframesLoading={this.props.summary.iframesLoading}
             index={index}
             message={message}/>
         ))}
@@ -22,7 +24,13 @@ class _MessageList extends React.PureComponent {
 
 _MessageList.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  msgData: PropTypes.array.isRequired,
+  messages: PropTypes.object.isRequired,
+  summary: PropTypes.object.isRequired,
 };
 
-const MessageList = ReactRedux.connect(state => state.messages)(_MessageList);
+const MessageList = ReactRedux.connect(state => {
+  return {
+    messages: state.messages,
+    summary: state.summary,
+  };
+})(_MessageList);
