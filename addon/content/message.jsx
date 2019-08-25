@@ -77,8 +77,12 @@ class Message extends React.PureComponent {
           <MessageIFrame
             dispatch={this.props.dispatch}
             expanded={this.props.message.expanded}
+            from={this.props.message.from}
+            initialPosition={this.props.message.initialPosition}
             msgUri={this.props.message.msgUri}
-            neckoUrl={this.props.message.neckoUrl}/>
+            neckoUrl={this.props.message.neckoUrl}
+            prefs={this.props.prefs}
+            strings={this.strings}/>
           {this.props.message.expanded && !!this.props.message.attachments.length &&
             <Attachments
               dispatch={this.props.dispatch}
@@ -106,4 +110,5 @@ Message.propTypes = {
   iframesLoading: PropTypes.number.isRequired,
   index: PropTypes.number.isRequired,
   message: PropTypes.object.isRequired,
+  prefs: PropTypes.object.isRequired,
 };

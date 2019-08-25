@@ -24,7 +24,8 @@ const {msgHdrGetUri, msgHdrIsArchive, msgHdrIsDraft, msgHdrIsInbox,
        msgHdrIsSent, msgHdrsMarkAsRead, msgUriToMsgHdr, msgHdrsArchive,
        msgHdrsDelete} =
   ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
-const {MixIn, range} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
+const {MixIn, range, isOSX, isWindows } =
+  ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
 const {Message, MessageFromGloda, MessageFromDbHdr} =
   ChromeUtils.import("resource://conversations/modules/message.js");
 const {groupArray, topMail3Pane} =
@@ -38,6 +39,14 @@ const kMsgGloda = 1;
 const nsMsgViewIndex_None = 0xffffffff;
 
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
+
+function tenPxFactor() {
+  if (isOSX) {
+    return .666;
+  }
+  return isWindows ? .7 : .625;
+}
+
 
 // The SignalManager class handles stuff related to spawing asynchronous
 //  requests and waiting for all of them to complete. Basic, but works well.
@@ -988,6 +997,7 @@ Conversation.prototype = {
       // inView indicates if the message is currently in the message list
       // view or not. If it isn't we don't show the folder name.
       msgData.inView = this.viewWrapper.isInView(m);
+      msgData.initialPosition = i;
       return msgData;
     });
 
@@ -998,6 +1008,16 @@ Conversation.prototype = {
       type: "REPLACE_CONVERSATION_DETAILS",
       summary: {
         subject: this.messages[this.messages.length - 1].message.subject,
+        prefs: {
+          defaultFontSize: Prefs.getInt("font.size.variable.x-western"),
+          browserForegroundColor: Prefs.getChar("browser.display.foreground_color"),
+          browserBackgroundColor: Prefs.getChar("browser.display.background_color"),
+          hideSigs: Prefs.hide_sigs,
+          hideQuoteLength: Prefs.hide_quote_length,
+          tenPxFactor: tenPxFactor(),
+          tweakBodies: Prefs.tweak_bodies,
+          tweakChrome: Prefs.tweak_chrome,
+        },
       },
       messages: {
         msgData: reactMsgData,

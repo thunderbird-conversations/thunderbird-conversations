@@ -26,7 +26,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
 });
 const {
   dateAsInMessageList, entries, escapeHtml, getIdentityForEmail, isAccel,
-  isOSX, isWindows, MixIn, parseMimeLine, sanitize,
+  isOSX, MixIn, parseMimeLine, sanitize,
 } = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
 
 // It's not really nice to write into someone elses object but this is what the
@@ -55,11 +55,6 @@ const {htmlToPlainText, quoteMsgHdr} =
   ChromeUtils.import("resource://conversations/modules/stdlib/compose.js", {});
 const {PluginHelpers} =
   ChromeUtils.import("resource://conversations/modules/plugins/helpers.js", {});
-const {
-  convertOutlookQuotingToBlockquote, convertHotmailQuotingToBlockquote1,
-  convertForwardedToBlockquote, convertMiscQuotingToBlockquote,
-  fusionBlockquotes,
-} = ChromeUtils.import("resource://conversations/modules/quoting.js", {});
 const {Contacts} = ChromeUtils.import("resource://conversations/modules/contact.js", {});
 const {Prefs} = ChromeUtils.import("resource://conversations/modules/prefs.js", {});
 const {EventHelperMixIn, folderName, iconForMimeType, topMail3Pane} =
@@ -84,13 +79,6 @@ const pdfMimeTypes = [
   "application/x-bzpdf",
   "application/x-gzpdf",
 ];
-
-function tenPxFactor() {
-  if (isOSX) {
-    return .666;
-  }
-  return isWindows ? .7 : .625;
-}
 
 // Add in the global message listener table a weak reference to the given
 //  Message object. The monkey-patch which intercepts the "remote content
@@ -1143,7 +1131,6 @@ Message.prototype = {
   streamMessage() {
     Log.assert(this.expanded, "Cannot stream a message if not expanded first!");
 
-    let originalScroll = this._domNode.ownerDocument.documentElement.scrollTop;
     let msgWindow = topMail3Pane(this).msgWindow;
     let self = this;
 
@@ -1180,20 +1167,6 @@ Message.prototype = {
         // But still need to do some more processing after the message has been
         // fully loaded. We adjust the height again.
 
-
-        // Early adjustments
-        iframe.addEventListener("DOMContentLoaded", function f_temp3(event) {
-          let iframeDoc = iframe.contentDocument;
-          self.tweakFonts(iframeDoc);
-          if (!(self._realFrom && self._realFrom.email.indexOf("bugzilla-daemon") == 0))
-            self.detectQuotes(iframe);
-          self.detectSigs(iframe);
-          self.registerLinkHandlers(iframe);
-          self.injectCss(iframeDoc);
-
-          // adjustHeight();
-        }, {once: true});
-
         // The second load event is triggered by loadURI with the URL
         // being the necko URL to the given message. These are the late
         // adjustments that (possibly) depend on the message being actually,
@@ -1206,6 +1179,7 @@ Message.prototype = {
             //  performed now, not later. This gives plugins a chance to modify
             //  the DOM of the message (i.e. decrypt it) before we tweak the
             //  fonts and stuff.
+
             for (let h of getHooks()) {
               try {
                 if (typeof(h.onMessageStreamed) == "function")
@@ -1265,12 +1239,6 @@ Message.prototype = {
 
             // Everything's done, so now we're able to settle for a height.
             // adjustHeight();
-
-            // Sometimes setting the iframe's content and height changes
-            // the scroll value, don't know why.
-            if (false && originalScroll) {
-              self._domNode.ownerDocument.documentElement.scrollTop = originalScroll;
-            }
 
             // Send "msgLoaded" event
             self._msgHdr.folder.NotifyPropertyFlagChanged(self._msgHdr, "msgLoaded", 0, 1);
@@ -1552,203 +1520,6 @@ MessageFromDbHdr.prototype = {
  *  that's MixIn'd the Message class.
  */
 let PostStreamingFixesMixIn = {
-  // This is the naming convention to define a getter, per MixIn's definition
-  get_defaultSize() {
-    return Prefs.getInt("font.size.variable.x-western");
-  },
-
-  injectCss(iframeDoc) {
-    let styleRules = [];
-    // !important because messageContents.css is appended after us when the html
-    // is rendered
-    styleRules = styleRules.concat([
-      "blockquote[type=\"cite\"] {",
-      "  border-right-width: 0px;",
-      "  border-left: 1px #ccc solid;",
-      "  color: #666 !important;",
-      "}",
-      "span.moz-txt-formfeed {",
-      "  height: auto;",
-      "}",
-    ]);
-
-    // Ugly hack (once again) to get the style inside the
-    // <iframe>. I don't think we can use a chrome:// url for
-    // the stylesheet because the iframe has a type="content"
-    let style = iframeDoc.createElement("style");
-    style.appendChild(iframeDoc.createTextNode(styleRules.join("\n")));
-    let head = iframeDoc.body.previousElementSibling;
-    head.appendChild(style);
-  },
-
-  tweakFonts(iframeDoc) {
-    if (!Prefs.tweak_bodies)
-      return;
-
-    let textSize = Math.round(this.defaultSize * tenPxFactor() * 1.2);
-
-    // Assuming 16px is the default (like on, say, Linux), this gives
-    //  18px and 12px, which is what Andy had in mind.
-    // We're applying the style at the beginning of the <head> tag and
-    //  on the body element so that it can be easily overridden by the
-    //  html.
-    // This is for HTML messages only.
-    let styleRules = [];
-    if (iframeDoc.querySelectorAll(":not(.mimemail-body) > .moz-text-html").length) {
-      styleRules = [
-        "body, table {",
-        // "  line-height: 112.5%;",
-        "  font-size: " + textSize + "px;",
-        "}",
-      ];
-    }
-
-    // Unless the user specifically asked for this message to be
-    //  dislayed with a monospaced font...
-    let [{/* name, */ email}] = this.parse(this._msgHdr.author);
-    if (email && !(email.toLowerCase() in Prefs.monospaced_senders) &&
-        !(this.mailingLists.some(x => (x.toLowerCase() in Prefs.monospaced_senders)))) {
-      styleRules = styleRules.concat([
-        ".moz-text-flowed, .moz-text-plain {",
-        "  font-family: sans-serif !important;",
-        "  font-size: " + textSize + "px !important;",
-        "  line-height: 112.5% !important;",
-        "}",
-      ]);
-    }
-
-    // Do some reformatting + deal with people who have bad taste. All these
-    // rules are important: some people just send messages with horrible colors,
-    // which ruins the conversation view. Gecko tends to automatically add
-    // padding/margin to html mails. We still want to honor these prefs but
-    // usually they just black/white so this is pretty much what we want.
-    let fg = Prefs.getChar("browser.display.foreground_color");
-    let bg = Prefs.getChar("browser.display.background_color");
-    styleRules = styleRules.concat([
-      "body {",
-      "  margin: 0; padding: 0;",
-      "  color: " + fg + "; background-color: " + bg + ";",
-      "}",
-    ]);
-
-    // Ugly hack (once again) to get the style inside the
-    // <iframe>. I don't think we can use a chrome:// url for
-    // the stylesheet because the iframe has a type="content"
-    let style = iframeDoc.createElement("style");
-    style.appendChild(iframeDoc.createTextNode(styleRules.join("\n")));
-    let head = iframeDoc.body.previousElementSibling;
-    if (head.firstChild)
-      head.insertBefore(style, head.firstChild);
-    else
-      head.appendChild(style);
-  },
-
-  convertCommonQuotingToBlockquote(iframe) {
-    // Launch various crappy pieces of code^W^W^W^W heuristics to
-    //  convert most common quoting styles to real blockquotes. Spoiler:
-    //  most of them suck.
-    let iframeDoc = iframe.contentDocument;
-    try {
-      convertOutlookQuotingToBlockquote(iframe.contentWindow, iframeDoc);
-      convertHotmailQuotingToBlockquote1(iframeDoc);
-      convertForwardedToBlockquote(iframeDoc);
-      convertMiscQuotingToBlockquote(iframeDoc);
-      fusionBlockquotes(iframeDoc);
-    } catch (e) {
-      Log.warn(e);
-      dumpCallStack(e);
-    }
-  },
-
-  detectBlocks(iframe, testNode, hideText, showText, linkClass, linkColor) {
-    let self = this;
-    let iframeDoc = iframe.contentDocument;
-
-    let smallSize = Prefs.tweak_chrome
-      ? this.defaultSize * tenPxFactor() * 1.1
-      : Math.round(100 * this.defaultSize * 11 / 12) / 100;
-
-    // this function adds a show/hide block text link to every topmost
-    // block. Nested blocks are not taken into account.
-    let walk = function walk_(elt) {
-      for (let i = elt.childNodes.length - 1; i >= 0; --i) {
-        let c = elt.childNodes[i];
-
-        if (testNode(c)) {
-          let div = iframeDoc.createElement("div");
-          div.setAttribute("class", "link " + linkClass);
-          div.addEventListener("click", function div_listener(event) {
-            let h = self._conversation._htmlPane.toggleBlock(event, showText, hideText);
-            iframe.style.height = (parseFloat(iframe.style.height) + h) + "px";
-          }, true);
-          div.setAttribute("style", "color: " + linkColor + "; cursor: pointer; font-size: " + smallSize + "px;");
-          div.appendChild(iframeDoc.createTextNode("- " + showText + " -"));
-          elt.insertBefore(div, c);
-          c.style.display = "none";
-        } else {
-          walk(c);
-        }
-      }
-    };
-
-    walk(iframeDoc);
-  },
-
-  detectQuotes(iframe) {
-    let self = this;
-    self.convertCommonQuotingToBlockquote(iframe);
-
-    let isBlockquote = function isBlockquote_(node) {
-      if (node.tagName && node.tagName.toLowerCase() == "blockquote") {
-        // Compute the approximate number of lines while the element is still visible
-        let style;
-        try {
-          style = iframe.contentWindow.getComputedStyle(node);
-        } catch (e) {
-          // message arrived and window is not displayed, arg,
-          // cannot get the computed style, BAD
-        }
-        if (style) {
-          let numLines = parseInt(style.height) / parseInt(style.lineHeight);
-          if (numLines > Prefs.hide_quote_length) {
-            return true;
-          }
-        }
-      }
-
-      return false;
-    };
-
-    // https://github.com/protz/thunderbird-conversations/issues#issue/179
-    // See link above for a rationale ^^
-    if (self.initialPosition > 0)
-      self.detectBlocks(iframe,
-        isBlockquote,
-        strings.get("hideQuotedText"),
-        strings.get("showQuotedText"),
-        "showhidequote",
-        "orange"
-      );
-  },
-
-  detectSigs(iframe) {
-    let self = this;
-
-    let isSignature = function isSignature_(node) {
-      return (node.classList && node.classList.contains("moz-txt-sig"));
-    };
-
-    if (Prefs.hide_sigs) {
-      self.detectBlocks(iframe,
-        isSignature,
-        strings.get("hideSigText"),
-        strings.get("showSigText"),
-        "showhidesig",
-        "rgb(56, 117, 215)"
-      );
-    }
-  },
-
   /**
    * The phishing detector that's in Thunderbird would need a lot of rework:
    * it's not easily extensible, and the code has a lot of noise, i.e. it just
@@ -1804,26 +1575,6 @@ let PostStreamingFixesMixIn = {
       }
     }
     return isPhishing;
-  },
-
-  _getAnchor(href) {
-    // Libmime has decided to rewrite the anchors for us, so try to
-    // reverse-engineer that...
-    if (!href.indexOf("imap://") == 0 && !href.indexOf("mailbox://") == 0)
-      return false;
-    try {
-      let uri = Services.io.newURI(href);
-      if (!(uri instanceof Ci.nsIMsgMailNewsUrl))
-        return false;
-      uri.QueryInterface(Ci.nsIURL);
-      let ref = uri.ref;
-      if (!ref.length)
-        return false;
-      return ref;
-    } catch (e) {
-      Log.debug(e);
-      return false;
-    }
   },
 };
 

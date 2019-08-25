@@ -15,7 +15,8 @@ class _MessageList extends React.PureComponent {
             dispatch={this.props.dispatch}
             iframesLoading={this.props.summary.iframesLoading}
             index={index}
-            message={message}/>
+            message={message}
+            prefs={this.props.summary.prefs}/>
         ))}
       </ul>
     );
