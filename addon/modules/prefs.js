@@ -49,7 +49,6 @@ function PrefManager() {
   this.logging_enabled = gConversationsPrefs.getBoolPref("logging_enabled");
   this.tweak_bodies = gConversationsPrefs.getBoolPref("tweak_bodies");
   this.tweak_chrome = gConversationsPrefs.getBoolPref("tweak_chrome");
-  this.add_embeds = gConversationsPrefs.getBoolPref("add_embeds");
   this.operate_on_conversations = gConversationsPrefs.getBoolPref("operate_on_conversations");
   this.enabled = gConversationsPrefs.getBoolPref("enabled");
   this.extra_attachments = gConversationsPrefs.getBoolPref("extra_attachments");
@@ -95,7 +94,6 @@ PrefManager.prototype = {
       case "logging_enabled":
       case "tweak_bodies":
       case "tweak_chrome":
-      case "add_embeds":
       case "operate_on_conversations":
       case "extra_attachments":
       case "compose_in_tab":
