@@ -6,8 +6,8 @@
 /* exported ContactDetail */
 
 class _ContactDetail extends React.PureComponent {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.strings = new StringBundle("chrome://conversations/locale/template.properties");
     this.state = {
       expanded: false,
@@ -73,7 +73,6 @@ class _ContactDetail extends React.PureComponent {
 
   render() {
     const name = this.props.name;
-    const email = this.props.email;
     // TODO: Show monospace?
     return (
       <div className="tooltip" style={{left: this.props.left, top: this.props.top}} fadein={this.props.fadeIn}>
@@ -83,7 +82,7 @@ class _ContactDetail extends React.PureComponent {
           <div className="authorInfo">
             <span className="name" title={name}>{name}</span>
             <span className="authorEmail">
-              <span className="authorEmailAddress" title={email}>{email}</span>
+              <span className="authorEmailAddress" title={this.props.realEmail}>{this.props.realEmail}</span>
               <button className="copyEmail"
                       title={this.strings.get("copyEmail")}
                       onClick={this.copyEmail}>
