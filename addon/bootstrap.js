@@ -11,7 +11,6 @@ const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm")
 XPCOMUtils.defineLazyModuleGetters(this, {
   Conversation: "resource://conversations/modules/conversation.js",
   // CustomizeKeys: "resource://conversations/modules/keycustomization.js",
-  Embeds: "resource://conversations/modules/plugins/embeds.js",
   GlodaAttrProviders: "resource://conversations/modules/plugins/glodaAttrProviders.js",
   MonkeyPatch: "resource://conversations/modules/monkeypatch.js",
   Services: "resource://gre/modules/Services.jsm",
@@ -130,7 +129,6 @@ function startup(aData, aReason) {
   try {
     // Patch all existing windows when the UI is built; all locales should have been loaded here
     // Hook in the embedding and gloda attribute providers.
-    Embeds.init();
     GlodaAttrProviders.init();
     monkeyPatchAllWindows();
 

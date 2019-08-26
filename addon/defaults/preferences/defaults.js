@@ -8,7 +8,6 @@ pref("conversations.uninstall_infos", "{}");
 pref("conversations.logging_enabled", false);
 pref("conversations.tweak_bodies", true);
 pref("conversations.tweak_chrome", true);
-pref("conversations.add_embeds", false);
 pref("conversations.operate_on_conversations", false);
 pref("conversations.enabled", true);
 pref("conversations.extra_attachments", false);
