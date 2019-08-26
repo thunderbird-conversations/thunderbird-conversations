@@ -199,7 +199,10 @@ function messages(state = initialMessages, action) {
     }
     case "MSG_CLICK_IFRAME": {
       // Hand this off to Thunderbird's content clicking algorithm as that's simplest.
-      topMail3Pane(window).contentAreaClick(action.event);
+      if (!topMail3Pane(window).contentAreaClick(action.event)) {
+        action.event.preventDefault();
+        action.event.stopPropagation();
+      }
       return state;
     }
     case "MSG_SHOW_DETAILS": {

@@ -394,8 +394,6 @@ class MessageIFrame extends React.Component {
   }
 
   onClickIframe(event) {
-    event.preventDefault();
-    event.stopPropagation();
     this.props.dispatch({
       type: "MSG_CLICK_IFRAME",
       event,
