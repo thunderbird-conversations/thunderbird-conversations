@@ -702,7 +702,7 @@ MonkeyPatch.prototype = {
     //  a new tab). So we must find the message in the conversation and notify
     //  it if needed.
     let oldOnMsgHasRemoteContent = window.messageHeaderSink.onMsgHasRemoteContent;
-    window.messageHeaderSink.onMsgHasRemoteContent = function _onMsgHasRemoteContent_patched(aMsgHdr) {
+    window.messageHeaderSink.onMsgHasRemoteContent = function _onMsgHasRemoteContent_patched(aMsgHdr, aContentURI, aCanOverride) {
       let msgListeners = window.Conversations.msgListeners;
       let messageId = aMsgHdr.messageId;
       if (messageId in msgListeners) {
@@ -715,7 +715,7 @@ MonkeyPatch.prototype = {
       }
       // Wicked case: we have the conversation and another tab with a message
       //  from the conversation in that tab. So to be safe, forward the call.
-      oldOnMsgHasRemoteContent(aMsgHdr);
+      oldOnMsgHasRemoteContent(aMsgHdr, aContentURI, aCanOverride);
     };
     this.pushUndo(() => window.messageHeaderSink.onMsgHasRemoteContent = oldOnMsgHasRemoteContent);
 
