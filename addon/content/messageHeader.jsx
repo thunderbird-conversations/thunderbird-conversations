@@ -114,14 +114,14 @@ class ContactLabel extends React.PureComponent {
             avatar={this.props.contact.avatar}
             hasCard={this.props.contact.hasCard}/>
         </Fade>
-        <span>{this.props.contact.separator}</span>
+        <span>{this.props.separator}</span>
           <span className="tooltipWrapper contact">
             <span className="contactName"
                   name={this.props.contact.name}
                   email={this.props.contact.displayEmail}
                   realemail={this.props.contact.email}
                   avatar={this.props.contact.avatar}>
-              {this.props.contact.detail && this.props.contact.hasCard && "&#x2605; "}
+              {this.props.detailView && this.props.contact.hasCard && "\u2605 "}
               {this.props.contact.name.trim()}
               {this.props.contact.extra &&
                 <label xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
@@ -129,10 +129,13 @@ class ContactLabel extends React.PureComponent {
                   className="contactExtra"
                   value={`(${this.props.contact.extra})`}/>
               }
-              {this.props.contact.displayEmail &&
+              {!this.props.detailView && this.props.contact.displayEmail &&
                 <span className="smallEmail"> &lt;{this.props.contact.displayEmail.trim()}&gt;</span>
               }
-              {this.props.contact.detail && <br />}
+              {this.props.detailView && this.props.contact.email &&
+                <span className="smallEmail"> &lt;{this.props.contact.email.trim()}&gt;</span>
+              }
+              {this.props.detailView && <br />}
           </span>
         </span>
       </span>
@@ -143,7 +146,8 @@ class ContactLabel extends React.PureComponent {
 ContactLabel.propTypes = {
   className: PropTypes.string.isRequired,
   contact: PropTypes.object.isRequired,
-  detail: PropTypes.bool.isRequired,
+  detailView: PropTypes.bool.isRequired,
+  separator: PropTypes.string.isRequired,
 };
 
 class MessageHeader extends React.PureComponent {
@@ -172,7 +176,24 @@ class MessageHeader extends React.PureComponent {
     });
   }
 
+  _getSeparator(index, length) {
+    if (index == 0) {
+      return "";
+    }
+    if (index < length - 1) {
+      return this.strings.get("sepComma");
+    }
+    return this.strings.get("sepAnd");
+  }
+
   render() {
+    const allTo = [
+      ...this.props.to,
+      ...this.props.cc,
+      ...this.props.bcc,
+    ];
+    // TODO: Maybe insert this after contacts but before snippet:
+    // <span class="bzTo"> {{str "at"}} {{bugzillaUrl}}</span>
     return (
       <div className={"messageHeader hbox" + (this.props.expanded ? " expanded" : "")}
            onClick={this.onClickHeader}>
@@ -197,15 +218,16 @@ class MessageHeader extends React.PureComponent {
           <ContactLabel
             className="author"
             contact={this.props.from}
-            detail={false}/>
-          {this.props.expanded &&
+            detailView={false}/>
+          {this.props.expanded && !this.props.detailsShowing &&
            (this.strings.get("to") + " ")}
-          {this.props.expanded && this.props.to.map((contact, index) =>
+          {this.props.expanded && !this.props.detailsShowing && allTo.map((contact, index) =>
             <ContactLabel
               className="to"
               contact={contact}
-              detail={false}
-              key={index}/>
+              detailView={false}
+              key={index}
+              separator={this._getSeparator(index, allTo.length)}/>
           )}
           {!this.props.expanded &&
             <span className="snippet">
@@ -228,6 +250,7 @@ class MessageHeader extends React.PureComponent {
         <MessageHeaderOptions
           dispatch={this.props.dispatch}
           date={this.props.date}
+          detailsShowing={this.props.detailsShowing}
           expanded={this.props.expanded}
           fullDate={this.props.fullDate}
           msgUri={this.props.msgUri}
@@ -241,8 +264,11 @@ class MessageHeader extends React.PureComponent {
 }
 
 MessageHeader.propTypes = {
+  bcc: PropTypes.array.isRequired,
+  cc: PropTypes.array.isRequired,
   dispatch: PropTypes.func.isRequired,
   date: PropTypes.string.isRequired,
+  detailsShowing: PropTypes.bool.isRequired,
   expanded: PropTypes.bool.isRequired,
   from: PropTypes.object.isRequired,
   fullDate: PropTypes.string.isRequired,

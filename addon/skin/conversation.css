@@ -276,7 +276,7 @@ a img {
   display: inline;
 }
 
-.options .hide-details {
+.options > .details-hidden {
   color: -moz-CellHighlight;
 }
 
@@ -447,14 +447,6 @@ a img {
 
 .moreExpander {
   float: right;
-}
-
-.message:not(.with-details) .show-with-details {
-  display: none;
-}
-
-.message.with-details .hide-with-details {
-  display: none !important;
 }
 
 .message:not(.bugzilla) .bzTo {

@@ -3,7 +3,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 /* globals React, PropTypes, Attachments, MessageHeader, MessageFooter,
-           MessageIFrame, StringBundle, SpecialMessageTags, MessageTags */
+           MessageIFrame, StringBundle, SpecialMessageTags, MessageTags,
+           MessageDetails */
 /* exported Message */
 
 class Message extends React.PureComponent {
@@ -42,7 +43,10 @@ class Message extends React.PureComponent {
       <li className="message" ref={li => this.li = li}>
         <MessageHeader
           dispatch={this.props.dispatch}
+          bcc={this.props.message.bcc}
+          cc={this.props.message.cc}
           date={this.props.message.date}
+          detailsShowing={this.props.message.detailsShowing}
           expanded={this.props.message.expanded}
           from={this.props.message.from}
           to={this.props.message.to}
@@ -57,6 +61,15 @@ class Message extends React.PureComponent {
           snippet={this.props.message.snippet}
           starred={this.props.message.starred}
           tags={this.props.message.tags}/>
+        {this.props.message.detailsShowing &&
+          <MessageDetails
+            bcc={this.props.message.bcc}
+            cc={this.props.message.cc}
+            extraLines={this.props.message.extraLines}
+            from={this.props.message.from}
+            to={this.props.message.to}
+            strings={this.strings}/>
+        }
         <div className="messageBody">
           {this.props.message.expanded &&
             <SpecialMessageTags

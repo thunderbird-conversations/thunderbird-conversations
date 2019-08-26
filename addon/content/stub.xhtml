@@ -49,6 +49,8 @@
   <script type="text/javascript"
     src="chrome://conversations/content/messageHeader.js"></script>
   <script type="text/javascript"
+    src="chrome://conversations/content/messageDetails.js"></script>
+  <script type="text/javascript"
     src="chrome://conversations/content/messageFooter.js"></script>
   <script type="text/javascript"
     src="chrome://conversations/content/contactDetail.js"></script>
@@ -74,10 +76,10 @@
     /* import-globals-from quickReply.js */
     /* import-globals-from reducer.js */
     /* global $, registerQuickReply, newComposeSessionByDraftIf
-              Redux, ReactDOM, React, ReactRedux, ConversationWrapper, ContactDetail,
+              Redux, ReactDOM, React, ReactRedux, ConversationWrapper,
               gComposeSession:true, tmpl, createComposeSession, revealCompositionFields,
               editFields, asToken, setupAutocomplete, Gloda, Log:true,
-              setupLogging, dumpCallStack, Attachments, MessageFooter, MessageHeaderOptions */
+              setupLogging, dumpCallStack */
     let store;
     var {StringBundle} = ChromeUtils.import("resource:///modules/StringBundle.js");
     /* exported Services */
@@ -500,63 +502,9 @@
 </head>
 
 <body>
-  <script id="detailsTemplate" type="text/x-handlebars-template"><![CDATA[
-      <div>
-      {{#if dataContactsFrom.length}}
-        <div class="detailsLine fromLine">
-          <u>{{str "fieldFrom"}}</u>
-          {{tmpl "contact" dataContactsFrom}}
-        </div>
-      {{/if}}
-      {{#if dataContactsTo.length}}
-        <div class="detailsLine toLine">
-          <u>{{str "fieldTo"}}</u>
-          {{tmpl "contact" dataContactsTo}}
-        </div>
-      {{/if}}
-      {{#if dataContactsCc.length}}
-        <div class="detailsLine ccLine">
-          <u>{{str "fieldCc"}}</u>
-          {{tmpl "contact" dataContactsCc}}
-        </div>
-      {{/if}}
-      {{#if dataContactsBcc.length}}
-        <div class="detailsLine bccLine">
-          <u>{{str "fieldBcc"}}</u>
-          {{tmpl "contact" dataContactsBcc}}
-        </div>
-      {{/if}}
-      {{#each extraLines}}
-        <div class="detailsLine">
-          <u>{{key}}:</u>
-          {{value}}
-        </div>
-      {{/each}}
-      </div>
-    ]]>
-  </script>
   <script id="messageTemplate" type="text/x-handlebars-template"><![CDATA[
     <li class="message collapsed {{extraClasses}}">
-      <div class="messageHeader hbox">
-        <div class="tooltipInsertionBox"></div>
-        <div class="shrink-box">
-          <div class="star"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#star"></use></svg></div>
-          {{#if dataContactFrom.avatarIsDefault}}
-            <abbr class="contactInitials" style="{{dataContactFrom.colorStyle}}">{{dataContactFrom.initials}}</abbr>
-          {{else}}
-            <span class="contactAvatar" style="background-image: url('{{dataContactFrom.avatar}}')"> </span>
-          {{/if}}
-          <span class="author">{{tmpl "contactLabel" dataContactFrom}}</span>
-          <span class="to hide-with-details"> {{str "to"}} {{tmpl "contactLabel" dataContactsTo}}</span>
-          <span class="recipient-tooltips"></span>
-          <span class="bzTo"> {{str "at"}} {{bugzillaUrl}}</span>
-          <span class="snippet"{{snippet}}</span>
-        </div>
-        <div class="optionswrapper">
-        </div>
-      </div>
-      <div class="detailsPlaceholder show-with-details">
-      </div>
+      <!-- The following goes after the messageDetails -->
 
       {{#if generateLightningTempl}}
       <div class="lightningImipBar notificationBar" style="display: none">
@@ -750,37 +698,6 @@
   </script>
   <!-- This should be in the quickReply if above -->
   <!-- {{tmpl "quickReply" this}} -->
-
-  <!-- Weird markup again, otherwise, the comma is separated from the name by a
-    space because of the #text whitespace-only nodes that end up in the DOM.
-  -->
-  <!-- Generic contact template with tooltip -->
-  <script id="contactTemplate" type="text/x-handlebars-template"><![CDATA[
-    {{tmpl "contactLabel" this}}
-  ]]></script>
-  <!-- Contact template specific to recipients, without tooltip -->
-  <script id="contactLabelTemplate" type="text/x-handlebars-template"><![CDATA[<span
-    >{{separator}}</span
-    ><span class="tooltipWrapper contact"
-      ><span class="contactName" name="{{name}}" email="{{displayEmail}}"
-        realemail={{email}}
-        avatar="{{avatar}}" hascard="{{hasCard}}"
-        >{{#if star}}&#x2605; {{/if}}{{trim name}}{{#if extra}}
-        <label xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-          crop="center" class="contactExtra"
-          value="({{extra}})"
-        />{{/if}}{{#if displayEmail}}<span class="smallEmail"
-          > &lt;{{trim displayEmail}}&gt;</span>{{/if}}{{#if writeBr}}<br />{{/if}}</span
-      ></span
-  >]]></script>
-  <script id="popularContactTemplate" type="text/x-handlebars-template"><![CDATA[
-    <div class="popularContact">
-      <img class="popularPhoto" src="{{photo}}" style="float: left" />
-      <span class="popularRemove">×</span>
-      <span class="popularName">{{name}}</span><br />
-      <span class="popularEmail">{{email}}</span>
-    </div>
-  ]]></script>
   <script id="quickReplyTemplate" type="text/x-handlebars-template"><![CDATA[
     <div class="quickReply" ondragover="quickReplyCheckDrag(event);" ondrop="quickReplyDrop(event);">
       <div class="quickReplyContacts">
@@ -925,11 +842,7 @@
     </ul>
     ]]>
   </script>
-  <div id="wrapper">
-    <!-- <ul id="messageList">
-    </ul> -->
-    <div id="conversationWrapper">
-    </div>
+  <div id="conversationWrapper">
   </div>
 </body>
 </html>

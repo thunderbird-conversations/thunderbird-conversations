@@ -92,6 +92,7 @@ class MessageHeaderOptions extends React.PureComponent {
     super(props);
     this.strings = new StringBundle("chrome://conversations/locale/template.properties");
     this.replyAction = this.replyAction.bind(this);
+    this.showDetails = this.showDetails.bind(this);
     this.displayMenu = this.displayMenu.bind(this);
     this.state = {
       expanded: false,
@@ -114,6 +115,18 @@ class MessageHeaderOptions extends React.PureComponent {
     this.props.dispatch({
       ...msg,
       msgUri: this.props.msgUri,
+    });
+  }
+
+  showDetails(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    // Force a blur, so that the button looks correct after clicking.
+    event.target.blur();
+    this.props.dispatch({
+      type: "MSG_SHOW_DETAILS",
+      msgUri: this.props.msgUri,
+      show: !this.props.detailsShowing,
     });
   }
 
@@ -183,19 +196,20 @@ class MessageHeaderOptions extends React.PureComponent {
           </span>
         }
         {this.props.expanded &&
-          <span className="details hide-with-details">
-            <a href="javascript:" className="icon-link" title={this.strings.get("details")}>
+          <span className={"details" + this.props.detailsShowing ? "details-hidden" : "" }>
+            <a href="javascript:"
+               className="icon-link"
+               onClick={this.showDetails}
+               title={
+                this.props.detailsShowing ? this.strings.get("hideDetails") : this.strings.get("details")
+               }>
               <svg className="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
-                <use xlinkHref="chrome://conversations/skin/material-icons.svg#info_outline"></use>
-              </svg>
-            </a>
-          </span>
-        }
-        {this.props.expanded &&
-          <span className="hide-details show-with-details">
-            <a href="javascript:" className="icon-link" title={this.strings.get("hideDetails")}>
-              <svg className="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
-                <use xlinkHref="chrome://conversations/skin/material-icons.svg#info"></use>
+                <use xlinkHref={
+                  this.props.detailsShowing
+                    ? "chrome://conversations/skin/material-icons.svg#info"
+                    : "chrome://conversations/skin/material-icons.svg#info_outline"
+
+                  }></use>
               </svg>
             </a>
           </span>
@@ -222,6 +236,7 @@ class MessageHeaderOptions extends React.PureComponent {
 MessageHeaderOptions.propTypes = {
   dispatch: PropTypes.func.isRequired,
   date: PropTypes.string.isRequired,
+  detailsShowing: PropTypes.bool.isRequired,
   expanded: PropTypes.bool.isRequired,
   fullDate: PropTypes.string.isRequired,
   msgUri: PropTypes.string.isRequired,

@@ -71,6 +71,7 @@ function attachments(state = initialAttachments, action) {
   }
 }
 
+/* eslint-disable-next-line complexity */
 function messages(state = initialMessages, action) {
   switch (action.type) {
     case "REPLACE_CONVERSATION_DETAILS": {
@@ -200,6 +201,39 @@ function messages(state = initialMessages, action) {
       // Hand this off to Thunderbird's content clicking algorithm as that's simplest.
       topMail3Pane(window).contentAreaClick(action.event);
       return state;
+    }
+    case "MSG_SHOW_DETAILS": {
+      const newState = {...state};
+      const newMsgData = [];
+      for (let i = 0; i < state.msgData.length; i++) {
+        if (state.msgData[i].msgUri == action.msgUri) {
+          newMsgData.push({...state.msgData[i], detailsShowing: action.show});
+          if (!newMsgData.hdrDetails) {
+            console.log("Getting details");
+            // Let this exit before we start the function.
+            setTimeout(() => {
+              MessageUtils.getMsgHdrDetails(window, action.msgUri);
+            }, 0);
+          }
+        } else {
+          newMsgData.push(state.msgData[i]);
+        }
+      }
+      newState.msgData = newMsgData;
+      return newState;
+    }
+    case "MSG_HDR_DETAILS": {
+      const newState = {...state};
+      const newMsgData = [];
+      for (let i = 0; i < state.msgData.length; i++) {
+        if (state.msgData[i].msgUri == action.msgUri) {
+          newMsgData.push({...state.msgData[i], extraLines: action.extraLines});
+        } else {
+          newMsgData.push(state.msgData[i]);
+        }
+      }
+      newState.msgData = newMsgData;
+      return newState;
     }
     default: {
       return state;

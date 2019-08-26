@@ -998,6 +998,9 @@ Conversation.prototype = {
       // view or not. If it isn't we don't show the folder name.
       msgData.inView = this.viewWrapper.isInView(m);
       msgData.initialPosition = i;
+      // This is a new display of a conversation, so ensure we don't display
+      // the detailed view of the header.
+      msgData.detailsShowing = false;
       return msgData;
     });
 

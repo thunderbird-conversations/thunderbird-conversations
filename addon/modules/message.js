@@ -42,8 +42,6 @@ const kAllowRemoteContent = 2;
 const kHeadersShowAll = 2;
 // const kHeadersShowNormal = 1;
 
-const olderThan52 = Services.vc.compare(Services.sysinfo.version, "51.1") > 0;
-
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
 const {
@@ -223,6 +221,46 @@ class _MessageUtils {
 
   setStar(msgUri, star) {
     msgUriToMsgHdr(msgUri).markFlagged(star);
+  }
+
+  getMsgHdrDetails(win, msgUri) {
+    const msgHdr = msgUriToMsgHdr(msgUri);
+    msgHdrGetHeaders(msgHdr, (headers) => {
+      try {
+        let extraLines = [{
+          key: strings.get("header-folder"),
+          value: sanitize(folderName(msgHdr.folder)[1]),
+        }];
+        let interestingHeaders =
+          ["mailed-by", "x-mailer", "mailer", "date", "user-agent", "reply-to"];
+        for (let h of interestingHeaders) {
+          if (headers.has(h)) {
+            let key = h;
+            try { // Note all the header names are translated.
+              key = strings.get("header-" + h);
+            } catch (e) {}
+            extraLines.push({
+              key,
+              value: sanitize(headers.get(h)),
+            });
+          }
+        }
+        let subject = headers.get("subject");
+        extraLines.push({
+          key: strings.get("header-subject"),
+          value: subject ? sanitize(GlodaUtils.deMime(subject)) : "",
+        });
+
+        win.conversationDispatch({
+          type: "MSG_HDR_DETAILS",
+          extraLines,
+          msgUri,
+        });
+      } catch (e) {
+        Log.error(e);
+        dumpCallStack(e);
+      }
+    });
   }
 }
 
@@ -582,6 +620,8 @@ Message.prototype = {
     return {
       attachments: msgData.attachments,
       attachmentsPlural: msgData.attachmentsPlural,
+      bcc: msgData.dataContactsBcc,
+      cc: msgData.dataContactsCc,
       date: msgData.date,
       folderName: msgData.folderName,
       from: msgData.dataContactFrom,
@@ -643,24 +683,20 @@ Message.prototype = {
     data.dataContactFrom = contactFrom[0].toTmplData(true, Contacts.kFrom, contactFrom[1]);
     data.dataContactFrom.separator = "";
 
-    let to = this._to.concat(this._cc).concat(this._bcc);
-    let contactsTo = to.map(x =>
-      [self._conversation._contactManager
-        .getContactFromNameAndEmail(x.name, x.email),
-       x.email]
-    );
-    this._contacts = this._contacts.concat(contactsTo);
-    // false means "no colors"
-    data.dataContactsTo = contactsTo.map(([x, email]) => x.toTmplData(false, Contacts.kTo, email));
-    let l = data.dataContactsTo.length;
-    data.dataContactsTo.forEach(function(data, i) {
-      if (i == 0)
-        data.separator = "";
-      else if (i < l - 1)
-        data.separator = strings.get("sepComma");
-      else
-        data.separator = strings.get("sepAnd");
-    });
+    function getContactsFrom(detail) {
+      let contacts = detail.map(x =>
+        [self._conversation._contactManager
+          .getContactFromNameAndEmail(x.name, x.email),
+         x.email]
+      );
+      self._contacts = self._contacts.concat(contacts);
+      // false means "no colors"
+      return contacts.map(([x, email]) => x.toTmplData(false, Contacts.kTo, email));
+    }
+
+    data.dataContactsTo = getContactsFrom(this._to);
+    data.dataContactsCc = getContactsFrom(this._cc);
+    data.dataContactsBcc = getContactsFrom(this._bcc);
 
     // 1b) Don't show "to me" if this is a bugzilla email
     if (Object.keys(this.bugzillaInfos).length) {
@@ -947,28 +983,10 @@ Message.prototype = {
     this.register(".always-display", function(event) {
       self._domNode.getElementsByClassName("remoteContent")[0].style.display = "none";
 
-      let chromeUrl;
-      if (olderThan52) {
-        chromeUrl = "chrome://messenger/content/?email=" + self._from.email;
-      } else {
-        chromeUrl = "chrome://messenger/content/email=" + self._from.email;
-      }
+      let chromeUrl = "chrome://messenger/content/?email=" + self._from.email;
       let uri = Services.io.newURI(chromeUrl);
       Services.perms.add(uri, "image", Services.perms.ALLOW_ACTION);
       self._reloadMessage();
-    });
-
-    // We only output this shitload of contact nodes when we have to...
-    this.register(".details > a", function(event) {
-      event.stopPropagation();
-      event.preventDefault();
-      self.showDetails();
-    });
-
-    this.register(".hide-details > a", function(event) {
-      event.stopPropagation();
-      event.preventDefault();
-      self._domNode.classList.remove("with-details");
     });
 
     this.register(".quickReply", function(event) {
@@ -1024,82 +1042,6 @@ Message.prototype = {
 
   get iframe() {
     return this._domNode.getElementsByTagName("iframe")[0];
-  },
-
-  // Adds the details if needed... done after the message has been streamed, so
-  // in theory, that should be pretty fast...
-  showDetails: function _Message_showDetails(k) {
-    // Hide all irrelevant UI items now we're showing details
-    this._domNode.classList.add("with-details");
-    if (this.detailsFetched)
-      return;
-    this.detailsFetched = true;
-    let w = this._conversation._htmlPane;
-    msgHdrGetHeaders(this._msgHdr, function(aHeaders) {
-      try {
-        let data = {
-          dataContactsFrom: [],
-          dataContactsTo: [],
-          dataContactsCc: [],
-          dataContactsBcc: [],
-          extraLines: [],
-        };
-        data.extraLines.push({
-          key: strings.get("header-folder"),
-          value: sanitize(folderName(this._msgHdr.folder)[1]),
-        });
-        let interestingHeaders =
-          ["mailed-by", "x-mailer", "mailer", "date", "user-agent", "reply-to"];
-        for (let h of interestingHeaders) {
-          if (aHeaders.has(h)) {
-            let key = h;
-            try { // Note all the header names are translated.
-              key = strings.get("header-" + h);
-            } catch (e) {}
-            data.extraLines.push({
-              key,
-              value: sanitize(aHeaders.get(h)),
-            });
-          }
-        }
-        let subject = aHeaders.get("subject");
-        data.extraLines.push({
-          key: strings.get("header-subject"),
-          value: subject ? sanitize(GlodaUtils.deMime(subject)) : "",
-        });
-        let self = this;
-        let buildContactObjects = nameEmails =>
-          nameEmails.map(x =>
-            [self._conversation._contactManager
-              .getContactFromNameAndEmail(x.name, x.email),
-             x.email]
-          );
-        let buildContactData = contactObjects =>
-          contactObjects.map(([x, email]) =>
-            // Fourth parameter: aIsDetail
-            x.toTmplData(false, Contacts.kTo, email, true)
-          );
-        let contactsFrom = buildContactObjects([this._from]);
-        let contactsTo = buildContactObjects(this._to);
-        let contactsCc = buildContactObjects(this._cc);
-        let contactsBcc = buildContactObjects(this._bcc);
-        data.dataContactsFrom = buildContactData(contactsFrom);
-        data.dataContactsTo = buildContactData(contactsTo);
-        data.dataContactsCc = buildContactData(contactsCc);
-        data.dataContactsBcc = buildContactData(contactsBcc);
-
-        // Output the template
-        this._domNode.getElementsByClassName("detailsPlaceholder")[0].appendChild(w.tmpl("#detailsTemplate", data));
-        // Activate tooltip event listeners
-        w.enableTooltips(this);
-      } catch (e) {
-        Log.error(e);
-        dumpCallStack(e);
-      }
-      // It's asynchronous, so move on if needed.
-      if (k)
-        k();
-    }.bind(this));
   },
 
   // Convenience properties
