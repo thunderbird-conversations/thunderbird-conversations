@@ -4,7 +4,7 @@
 
 /* globals React, PropTypes, Attachments, MessageHeader, MessageFooter,
            MessageIFrame, StringBundle, SpecialMessageTags, MessageTags,
-           MessageDetails */
+           MessageDetails, MessageNotification */
 /* exported Message */
 
 class Message extends React.PureComponent {
@@ -70,6 +70,14 @@ class Message extends React.PureComponent {
             to={this.props.message.to}
             strings={this.strings}/>
         }
+        {this.props.message.expanded &&
+          <MessageNotification
+            dispatch={this.props.dispatch}
+            hasRemoteContent={this.props.message.hasRemoteContent}
+            msgUri={this.props.message.msgUri}
+            realFrom={this.props.message.realFrom}
+            strings={this.strings}/>
+        }
         <div className="messageBody">
           {this.props.message.expanded &&
             <SpecialMessageTags
@@ -90,11 +98,12 @@ class Message extends React.PureComponent {
           <MessageIFrame
             dispatch={this.props.dispatch}
             expanded={this.props.message.expanded}
-            from={this.props.message.from}
+            hasRemoteContent={this.props.message.hasRemoteContent}
             initialPosition={this.props.message.initialPosition}
             msgUri={this.props.message.msgUri}
             neckoUrl={this.props.message.neckoUrl}
             prefs={this.props.prefs}
+            realFrom={this.props.message.realFrom}
             strings={this.strings}/>
           {this.props.message.expanded && !!this.props.message.attachments.length &&
             <Attachments
@@ -102,7 +111,8 @@ class Message extends React.PureComponent {
               attachments={this.props.message.attachments}
               attachmentsPlural={this.props.message.attachmentsPlural}
               msgUri={this.props.message.msgUri}
-              gallery={this.props.message.gallery}/>
+              gallery={this.props.message.gallery}
+              strings={this.strings}/>
           }
         </div>
         {this.props.message.expanded &&

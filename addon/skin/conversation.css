@@ -460,7 +460,6 @@ a img {
 .message.collapsed .bzTo,
 .message.collapsed .messageBody,
 .message.collapsed .quickReply,
-.message.collapsed .notificationBar,
 .message.collapsed .smallEmail,
 .message.collapsed p,
 .message.collapsed iframe,
@@ -568,6 +567,7 @@ a img {
 .notificationBar a {
   text-decoration: underline;
   font-weight: bold;
+  color: black;
 }
 
 .notificationBar .icon {

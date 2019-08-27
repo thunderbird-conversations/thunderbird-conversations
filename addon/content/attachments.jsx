@@ -123,7 +123,6 @@ Attachment.propTypes = {
 class Attachments extends React.PureComponent {
   constructor() {
     super();
-    this.strings = new StringBundle("chrome://conversations/locale/template.properties");
     this.showGalleryView = this.showGalleryView.bind(this);
     this.downloadAll = this.downloadAll.bind(this);
   }
@@ -158,7 +157,7 @@ class Attachments extends React.PureComponent {
           {this.props.attachmentsPlural}
           <a className="icon-link download-all"
              onClick={this.downloadAll}
-             title={this.strings.get("downloadAll2")}>
+             title={this.props.strings.get("downloadAll2")}>
             <svg className="icon" viewBox="0 0 24 24"
                  xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
               <use xlinkHref="chrome://conversations/skin/material-icons.svg#file_download"></use>
@@ -167,7 +166,7 @@ class Attachments extends React.PureComponent {
           { this.props.gallery &&
             <a onClick={this.showGalleryView}
                className="icon-link view-all"
-               title={this.strings.get("galleryView")}>
+               title={this.props.strings.get("galleryView")}>
               <svg className="icon" viewBox="0 0 24 24"
                    xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
                 <use xlinkHref="chrome://conversations/skin/material-icons.svg#photo_library"></use>
@@ -187,7 +186,7 @@ class Attachments extends React.PureComponent {
                 msgUri={this.props.msgUri}
                 name={attachment.name}
                 size={attachment.size}
-                strings={this.strings}
+                strings={this.props.strings}
                 thumb={attachment.thumb}
                 maybeViewable={attachment.maybeViewable}
                 url={attachment.url}/>
@@ -205,4 +204,5 @@ Attachments.propTypes = {
   attachmentsPlural: PropTypes.string.isRequired,
   msgUri: PropTypes.string.isRequired,
   gallery: PropTypes.bool.isRequired,
+  strings: PropTypes.object.isRequired,
 };

@@ -35,6 +35,7 @@ let Log = setupLogging("Conversations.Conversation");
 
 const kMsgDbHdr = 0;
 const kMsgGloda = 1;
+const kAllowRemoteContent = 2;
 
 const nsMsgViewIndex_None = 0xffffffff;
 
@@ -393,6 +394,40 @@ Conversation.prototype = {
       return msg.message;
     }
     return null;
+  },
+
+  // TODO: Ideally, the remote content methods would be part of Message,
+  // however that currently has no way of triggering a reload of the message.
+  showRemoteContent(msgUri) {
+    msgUriToMsgHdr(msgUri).setUint32Property("remoteContentPolicy", kAllowRemoteContent);
+    const msg = this.getMessage(msgUri);
+    // Turn remote content message "off", as although it has it, it can be loaded.
+    msg.hasRemoteContent = false;
+    // We can't turn dispatch back straight away, so give it a moment.
+    Services.tm.dispatchToMainThread(() => {
+      const msgData = msg.toReactData();
+      this._htmlPane.conversationDispatch({
+        type: "MSG_UPDATE_DATA",
+        msgData,
+      });
+    });
+  },
+
+  alwaysShowRemoteContent(from, msgUri) {
+    const chromeUrl = "chrome://messenger/content/email=" + from;
+    const uri = Services.io.newURI(chromeUrl);
+    Services.perms.add(uri, "image", Services.perms.ALLOW_ACTION);
+    const msg = this.getMessage(msgUri);
+    // Turn remote content message "off", as although it has it, it can be loaded.
+    msg.hasRemoteContent = false;
+    // We can't turn dispatch back straight away, so give it a moment.
+    Services.tm.dispatchToMainThread(() => {
+      const msgData = msg.toReactData();
+      this._htmlPane.conversationDispatch({
+        type: "MSG_UPDATE_DATA",
+        msgData,
+      });
+    });
   },
 
   // Before the Gloda query returns, the user might change selection. Don't

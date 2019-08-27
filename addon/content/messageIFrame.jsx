@@ -49,7 +49,8 @@ class MessageIFrame extends React.Component {
     }
     if (nextProps.expanded) {
       this.iframe.classList.remove("hidden");
-      if (this.currentUrl != nextProps.msgUri) {
+      if (this.currentUrl != nextProps.msgUri ||
+          this.props.hasRemoteContent && !nextProps.hasRemoteContent) {
         startLoad = true;
         if (this.dueToExpansion === undefined) {
           this.dueToExpansion = true;
@@ -342,19 +343,21 @@ class MessageIFrame extends React.Component {
   }
 
   detectSigs(iframe) {
-    let isSignature = function isSignature_(node) {
-      return (node.classList && node.classList.contains("moz-txt-sig"));
-    };
-
-    if (this.props.prefs.hideSigs) {
-      this.detectBlocks(iframe,
-        isSignature,
-        this.props.strings.get("hideSigText"),
-        this.props.strings.get("showSigText"),
-        "showhidesig",
-        "rgb(56, 117, 215)"
-      );
+    if (!this.props.prefs.hideSigs) {
+      return;
     }
+
+    function isSignature(node) {
+      return (node.classList && node.classList.contains("moz-txt-sig"));
+    }
+
+    this.detectBlocks(iframe,
+      isSignature,
+      this.props.strings.get("hideSigText"),
+      this.props.strings.get("showSigText"),
+      "showhidesig",
+      "rgb(56, 117, 215)"
+    );
   }
 
   injectCss(iframeDoc) {
@@ -375,8 +378,8 @@ class MessageIFrame extends React.Component {
   _onDOMLoaded() {
     const iframeDoc = this.iframe.contentDocument;
     let styleRules = this.tweakFonts(iframeDoc);
-    if (!(this.props.from.email &&
-          this.props.from.email.includes("bugzilla-daemon"))) {
+    if (!(this.props.realFrom &&
+          this.props.realFrom.includes("bugzilla-daemon"))) {
       this.detectQuotes(this.iframe);
     }
     this.detectSigs(this.iframe);
@@ -412,10 +415,11 @@ class MessageIFrame extends React.Component {
 MessageIFrame.propTypes = {
   dispatch: PropTypes.func.isRequired,
   expanded: PropTypes.bool.isRequired,
-  from: PropTypes.string.isRequired,
+  hasRemoteContent: PropTypes.bool.isRequired,
   initialPosition: PropTypes.number.isRequired,
   msgUri: PropTypes.string.isRequired,
   neckoUrl: PropTypes.object.isRequired,
   prefs: PropTypes.object.isRequired,
+  realFrom: PropTypes.string.isRequired,
   strings: PropTypes.object.isRequired,
 };

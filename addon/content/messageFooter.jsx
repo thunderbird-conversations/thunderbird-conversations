@@ -9,7 +9,6 @@
 class MessageFooter extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.strings = new StringBundle("chrome://conversations/locale/template.properties");
     this.action = this.action.bind(this);
   }
 

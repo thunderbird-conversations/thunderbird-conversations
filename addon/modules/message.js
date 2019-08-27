@@ -37,8 +37,6 @@ XPCOMUtils.defineLazyGetter(Services, "mMessenger",
                               return Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
                             });
 
-const kAllowRemoteContent = 2;
-
 const kHeadersShowAll = 2;
 // const kHeadersShowNormal = 1;
 
@@ -549,6 +547,7 @@ function Message(aConversation) {
   this._contacts = [];
   this._attachments = [];
   this.contentType = "";
+  this.hasRemoteContent = false;
 
   // A list of email addresses
   this.mailingLists = [];
@@ -616,6 +615,10 @@ Message.prototype = {
   },
 
   toReactData(aQuickReply) {
+    // Ok, brace ourselves for notifications happening during the message load
+    //  process.
+    addMsgListener(this);
+
     let msgData = this.toTmplData(aQuickReply);
     return {
       attachments: msgData.attachments,
@@ -627,12 +630,14 @@ Message.prototype = {
       from: msgData.dataContactFrom,
       fullDate: msgData.fullDate,
       gallery: msgData.gallery,
+      hasRemoteContent: msgData.hasRemoteContent,
       isDraft: msgData.isDraft,
       isJunk: msgData.isJunk,
       msgUri: msgData.uri,
       multipleRecipients: msgData.multipleRecipients,
       neckoUrl: msgData.neckoUrl,
       read: msgData.read,
+      realFrom: msgData.realFrom,
       recipientsIncludeLists: msgData.recipientsIncludeLists,
       shortFolderName: msgData.shortFolderName,
       snippet: msgData.snippet,
@@ -657,6 +662,7 @@ Message.prototype = {
       folderName: null,
       shortFolderName: null,
       gallery: false,
+      hasRemoteContent: this.hasRemoteContent,
       uri: null,
       neckoUrl: msgHdrToNeckoURL(this._msgHdr),
       quickReply: aQuickReply,
@@ -884,13 +890,19 @@ Message.prototype = {
 
   // The global monkey-patch finds us through the weak pointer table and
   //  notifies us.
-  onMsgHasRemoteContent: function _Message_onMsgHasRemoteContent() {
+  onMsgHasRemoteContent() {
     if (this.notifiedRemoteContentAlready)
       return;
     this.notifiedRemoteContentAlready = true;
+    this.hasRemoteContent = true;
     Log.debug("This message's remote content was blocked");
 
-    this._domNode.getElementsByClassName("remoteContent")[0].style.display = "block";
+    const msgData = this.toReactData();
+    // TODO: make getting the window less ugly.
+    this._conversation._htmlPane.conversationDispatch({
+      type: "MSG_UPDATE_DATA",
+      msgData,
+    });
   },
 
   // This function should be called whenever the message is selected
@@ -974,20 +986,6 @@ Message.prototype = {
       // Force a commit of the underlying msgDatabase.
       self._msgHdr.folder.msgDatabase = null;
     });
-    this.register(".show-remote-content", function(event) {
-      self._domNode.getElementsByClassName("show-remote-content")[0].style.display = "none";
-      self._msgHdr.setUint32Property("remoteContentPolicy", kAllowRemoteContent);
-      self._msgHdr.folder.msgDatabase = null;
-      self._reloadMessage();
-    });
-    this.register(".always-display", function(event) {
-      self._domNode.getElementsByClassName("remoteContent")[0].style.display = "none";
-
-      let chromeUrl = "chrome://messenger/content/?email=" + self._from.email;
-      let uri = Services.io.newURI(chromeUrl);
-      Services.perms.add(uri, "image", Services.perms.ALLOW_ACTION);
-      self._reloadMessage();
-    });
 
     this.register(".quickReply", function(event) {
       event.stopPropagation();
@@ -1024,20 +1022,6 @@ Message.prototype = {
       }
       event.stopPropagation();
     }, { action: "keydown" });
-  },
-
-  _reloadMessage: function _Message_reloadMessage() {
-    // The second one in for when we're expanded.
-    // let specialTags = this._domNode.getElementsByClassName("special-tags")[1];
-    // Remove any extra tags because they will be re-added after reload, but
-    //  leave the "show remote content" tag.
-    // for (let i = specialTags.children.length - 1; i >= 0; i--) {
-    //   let child = specialTags.children[i];
-    //   if (!child.classList.contains("keep-tag"))
-    //     specialTags.removeChild(child);
-    // }
-    // this.iframe.remove();
-    // this.streamMessage();
   },
 
   get iframe() {

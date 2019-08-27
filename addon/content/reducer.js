@@ -238,6 +238,14 @@ function messages(state = initialMessages, action) {
       newState.msgData = newMsgData;
       return newState;
     }
+    case "MSG_SHOW_REMOTE_CONTENT": {
+      Conversations.currentConversation.showRemoteContent(action.msgUri);
+      return state;
+    }
+    case "MSG_ALWAYS_SHOW_REMOTE_CONTENT": {
+      Conversations.currentConversation.alwaysShowRemoteContent(action.realFrom, action.msgUri);
+      return state;
+    }
     default: {
       return state;
     }
