@@ -793,7 +793,7 @@ Conversation.prototype = {
 
   // Once we're confident our set of messages is the right one, we actually
   // start outputting them inside the DOM element we were given.
-  _outputMessages: function _Conversation_outputMessages() {
+  _outputMessages() {
     let self = this;
     // XXX I think this test is still valid because of the thread summary
     // stabilization interval (we might have changed selection and still be
