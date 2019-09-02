@@ -1,0 +1,38 @@
+[
+  {
+    "namespace": "conversations",
+    "functions": [
+      {
+        "name": "getPref",
+        "type": "function",
+        "description": "Gets a conversation preference.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "name",
+            "type": "string",
+            "description": "The preference name"
+          }
+        ]
+      },
+      {
+        "name": "setPref",
+        "type": "function",
+        "description": "Sets a conversation preference.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "name",
+            "type": "string",
+            "description": "The preference name"
+          },
+          {
+            "name": "value",
+            "type": "any",
+            "description": "The preference value"
+          }
+        ]
+      }
+    ]
+  }
+]

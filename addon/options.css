@@ -1,0 +1,27 @@
+#preferencesGrid {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr;
+  grid-gap: 1ch 0px;
+  grid-auto-rows: auto;
+}
+
+#preferencesGrid > div {
+  padding: 0.5em 1em;
+  border-bottom: 1px solid grey;
+}
+
+#preferencesGrid > .prefSectionContent {
+  padding-top: 1.5em;
+}
+
+#preferencesGrid > div > input[type="text"] {
+  width: 90%;
+}
+
+.title {
+  font-weight: bold;
+}
+
+h1 {
+  text-align: center;
+}
