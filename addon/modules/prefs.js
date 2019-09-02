@@ -1,4 +1,4 @@
-var EXPORTED_SYMBOLS = ["Prefs", "kStubUrl"];
+var EXPORTED_SYMBOLS = ["Prefs"];
 
 const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
@@ -66,6 +66,28 @@ function PrefManager() {
 }
 
 PrefManager.prototype = {
+  getAllLegacyPrefs() {
+    let result = {
+      "expand_who": gConversationsPrefs.getIntPref("expand_who"),
+      "no_friendly_date": gConversationsPrefs.getBoolPref("no_friendly_date"),
+      "logging_enabled": gConversationsPrefs.getBoolPref("logging_enabled"),
+      "tweak_bodies": gConversationsPrefs.getBoolPref("tweak_bodies"),
+      "tweak_chrome": gConversationsPrefs.getBoolPref("tweak_chrome"),
+      "operate_on_conversations": gConversationsPrefs.getBoolPref("operate_on_conversations"),
+      "enabled": gConversationsPrefs.getBoolPref("enabled"),
+      "extra_attachments": gConversationsPrefs.getBoolPref("extra_attachments"),
+      "hide_quote_length": gConversationsPrefs.getIntPref("hide_quote_length"),
+      "hide_sigs": gConversationsPrefs.getBoolPref("hide_sigs"),
+      "compose_in_tab": gConversationsPrefs.getBoolPref("compose_in_tab"),
+      "keybindings": gConversationsPrefs.getStringPref("keybindings"),
+    };
+    // This is a hashmap
+    result.monospaced_senders = {};
+    for (let s of this.split(gConversationsPrefs.getCharPref("monospaced_senders")))
+      result.monospaced_senders[s] = null;
+
+    return result;
+  },
 
   split: s => s.split(",").map(s => s.trim()).map(s => s.toLowerCase()),
 

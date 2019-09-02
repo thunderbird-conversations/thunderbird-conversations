@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+
+<html>
+  <head>
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="options.css" type="text/css">
+    <title>Thunderbird Conversations</title>
+  </head>
+
+  <body>
+    <h1 data-l10n-id="extensionName"></h1>
+    <form id="conversationOptions">
+      <div id="preferencesGrid">
+        <div>
+          <label data-l10n-id="options.expand_who"></label>
+        </div>
+        <div>
+          <input type="radio" class="pref" name="expand_who" value="1" onchange="saveOptions();" />
+          <label data-l10n-id="options.expand_none"></label>
+          <input type="radio" class="pref" name="expand_who" value="3" onchange="saveOptions();" />
+          <label data-l10n-id="options.expand_all"></label>
+          <input type="radio" class="pref" name="expand_who" value="4" onchange="saveOptions();" />
+          <label data-l10n-id="options.expand_auto"
+                 data-l10n-tooltip="option.expand_auto.tooltip"></label>
+        </div>
+        <div>
+          <label class="title" data-l10n-id="options.quoting_title"></label>
+          <br>
+          <label data-l10n-id="options.quoting_desc"></label>
+        </div>
+        <div class="prefSectionContent">
+          <input type="number" min="0" class="pref" name="hide_quote_length"/>
+        </div>
+        <div>
+          <label class="title" data-l10n-id="options.monospaced_senders_title"></label>
+          <br>
+          <label data-l10n-id="options.monospaced_senders_desc"></label>
+        </div>
+        <div class="prefSectionContent">
+          <input type="text" class="pref" name="monospaced_senders"/>
+        </div>
+        <div>
+          <label class="title" data-l10n-id="options.hide_sigs_title"></label>
+          <br>
+          <label data-l10n-id="options.hide_sigs_desc"></label>
+        </div>
+        <div class="prefSectionContent">
+          <input type="checkbox" class="pref" name="hide_sigs"/>
+        </div>
+        <div>
+          <label class="title" data-l10n-id="options.friendly_date_title"></label>
+          <br>
+          <label data-l10n-id="options.friendly_date_desc"></label>
+        </div>
+        <div class="prefSectionContent">
+          <input type="checkbox" class="pref" name="no_friendly_date"/>
+        </div>
+        <div>
+          <label class="title" data-l10n-id="options.tweak_chrome_title"></label>
+          <br>
+          <label data-l10n-id="options.tweak_chrome_desc"></label>
+        </div>
+        <div class="prefSectionContent">
+          <input type="checkbox" class="pref" name="tweak_chrome"/>
+        </div>
+        <div>
+          <label class="title" data-l10n-id="options.tweak_bodies_title"></label>
+          <br>
+          <label data-l10n-id="options.tweak_bodies_desc"></label>
+        </div>
+        <div class="prefSectionContent">
+          <input type="checkbox" class="pref" name="tweak_bodies"/>
+        </div>
+        <div>
+          <label class="title" data-l10n-id="options.operate_on_conversations_title"></label>
+          <br>
+          <label data-l10n-id="options.operate_on_conversations_desc"></label>
+        </div>
+        <div class="prefSectionContent">
+          <input type="checkbox" class="pref" name="operate_on_conversations"/>
+        </div>
+        <div>
+          <label class="title" data-l10n-id="options.extra_attachments_title"></label>
+          <br>
+          <label data-l10n-id="options.extra_attachments_desc"></label>
+        </div>
+        <div class="prefSectionContent">
+          <input type="checkbox" class="pref" name="extra_attachments"/>
+        </div>
+        <div>
+          <label class="title" data-l10n-id="options.compose_in_tab_title"></label>
+          <br>
+          <label data-l10n-id="options.compose_in_tab_desc"></label>
+        </div>
+        <div class="prefSectionContent">
+          <input type="checkbox" class="pref" name="compose_in_tab"/>
+        </div>
+        <div>
+          <label class="title" data-l10n-id="options.debugging_title"></label>
+          <br>
+          <label data-l10n-id="options.debugging_desc"></label>
+        </div>
+        <div class="prefSectionContent">
+          <input type="checkbox" class="pref" name="logging_enabled"/>
+        </div>
+      </div>
+<!--
+      <setting title="&title.customize_keys;" desc="&desc.customize_keys;" type="control">
+        <vbox>
+          <vbox id="keysettings" hidden="true"/>
+          <button id="showhidekeys" label="&label.expand_keys;"/>
+        </vbox>
+      </setting>
+    </form>
+    -->
+    <script src="options.js"></script>
+  </body>
+</html>
