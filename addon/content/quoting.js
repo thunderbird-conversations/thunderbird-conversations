@@ -105,28 +105,29 @@ class _Quoting {
    * ----- Something that supposedly says the text below is quoted -----
    * Fails 9 times out of 10. */
   convertForwardedToBlockquote(aDoc) {
-    let re = /^\s*(-{5,15})(?:\s*)(?:[^ \f\n\r\t\v\u00A0\u2028\u2029-]+\s+)*[^ \f\n\r\t\v\u00A0\u2028\u2029-]+(\s*)\1\s*/mg;
-    let walk = function(aNode) {
-      for (let child of aNode.childNodes) {
-        let txt = child.textContent;
-        let m = txt.match(re);
+    const re = /^\s*(-{5,15})(?:\s*)(?:[^ \f\n\r\t\v\u00A0\u2028\u2029-]+\s+)*[^ \f\n\r\t\v\u00A0\u2028\u2029-]+(\s*)\1\s*/mg;
+    const walk = (aNode) => {
+      for (const child of aNode.childNodes) {
+        const txt = child.textContent;
+        const m = txt.match(re);
         if (child.nodeType == child.TEXT_NODE
             && !txt.includes("-----BEGIN PGP")
             && !txt.includes("----END PGP")
             && m && m.length) {
-          let marker = m[0];
+          const marker = m[0];
           // dump("Found matching text "+marker+"\n");
-          let i = txt.indexOf(marker);
-          let t1 = txt.substring(0, i);
-          let t2 = txt.substring(i + 1, child.textContent.length);
-          let tn1 = aDoc.createTextNode(t1);
-          let tn2 = aDoc.createTextNode(t2);
+          const i = txt.indexOf(marker);
+          const t1 = txt.substring(0, i);
+          const t2 = txt.substring(i + 1, child.textContent.length);
+          const tn1 = aDoc.createTextNode(t1);
+          const tn2 = aDoc.createTextNode(t2);
           child.parentNode.insertBefore(tn1, child);
           child.parentNode.insertBefore(tn2, child);
           child.remove();
           this.encloseInBlockquote(aDoc, tn2);
-          // eslint-disable-next-line no-throw-literal
-          throw { found: true };
+          let ex = new Error();
+          ex.found = true;
+          throw ex;
         } else if (m && m.length) {
           // We only move on if we found the matching text in the parent's text
           // content, otherwise, there's no chance we'll find it in the child's
@@ -137,9 +138,9 @@ class _Quoting {
     };
     try {
       walk(aDoc.body);
-    } catch ( { found }) {
-      if (!found) {
-        throw new Error();
+    } catch (ex) {
+      if (!ex.found) {
+        throw ex;
       }
     }
   }
