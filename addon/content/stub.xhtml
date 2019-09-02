@@ -375,6 +375,14 @@
 
     window.print = printConversation;
 
+    document.addEventListener("DOMContentLoaded", () => {
+      store = Redux.createStore(conversationApp);
+
+      const conversationContainer = document.getElementById("conversationWrapper");
+      ReactDOM.render(React.createElement(ReactRedux.Provider, {store},
+        React.createElement(ConversationWrapper)), conversationContainer);
+    }, {once: true});
+
     /**
      * That big event handler tries to parse URL query parameters, and then acts
      * upon these, by firing a conversation on its own. This is a very
@@ -424,8 +432,10 @@
             );
             let browser = window.frameElement;
             // Because Thunderbird still hasn't fixed that...
-            if (browser)
+            if (browser) {
               browser.setAttribute("context", "mailContext");
+            }
+
             freshConversation.outputInto(window, function(aConversation) {
               // This is a stripped-down version of what's in monkeypatch.js,
               //  make sure the two are in sync!
@@ -466,15 +476,6 @@
         masqueradeAsQuickCompose();
       }
     });
-
-    // This starts building parts that are React based.
-    window.addEventListener("load", () => {
-      store = Redux.createStore(conversationApp);
-
-      const conversationContainer = document.getElementById("conversationWrapper");
-      ReactDOM.render(React.createElement(ReactRedux.Provider, {store},
-        React.createElement(ConversationWrapper)), conversationContainer);
-    }, {once: true});
 
     /* exported isQuickCompose */
     var isQuickCompose = false;
