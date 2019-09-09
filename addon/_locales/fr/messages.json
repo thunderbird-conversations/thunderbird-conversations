@@ -7,5 +7,130 @@
   "extensionDescription": {
     "message": "Affiche vos emails sous la forme de \"conversations\" comme sur Gmail. Vos emails sont regroupés et s'affichent sous forme de résumés de fils de discussion.",
     "description": "Description of the extension."
+  },
+
+  "options.expand_who": {
+    "message": "Par défaut, développer :",
+    "description": "Options - label for which messages should be expanded."
+  },
+
+  "options.expand_auto": {
+    "message": "Automatiquement",
+    "description": "Options - label for automatically expanding messages."
+  },
+
+  "options.expand_auto.tooltip": {
+    "message": "Si le fil de discussion est replié, développe tous les messages non-lus ou le dernier message. S'il est développé, n'étend que que le message sélectionné de la liste.",
+    "description": "Options - tooltip for automatically expanding messages."
+  },
+
+  "options.expand_none": {
+    "message": "Aucun message",
+    "description": "Options - label for not expanding messages."
+  },
+
+  "options.expand_all": {
+    "message": "Tous les messages",
+    "description": "Options - label for expanding all messages."
+  },
+
+  "options.quoting_title": {
+    "message": "Texte cité",
+    "description": "Options - title for quoted text."
+  },
+
+  "options.quoting_desc": {
+    "message": "Les citations plus longues que ce nombre de lignes seront masquées.",
+    "description": "Options - description for quoted text."
+  },
+
+  "options.hide_sigs_title": {
+    "message": "Cacher les signatures",
+    "description": "Options - title for hiding signatures."
+  },
+
+  "options.hide_sigs_desc": {
+    "message": "Détermine si les signatures sont cachées par défaut.",
+    "description": "Options - description for hiding signatures."
+  },
+
+  "options.friendly_date_title": {
+    "message": "Dates sympas",
+    "description": "Options - title for if to show friendly dates."
+  },
+
+  "options.friendly_date_desc": {
+    "message": "Dans l'angle supérieur droit, utilisez les dates \"normales\", tout comme dans la liste de messages, au lieu de \"hier\" et autres.",
+    "description": "Options - description for if to show friendly dates."
+  },
+
+  "options.tweak_chrome_title": {
+    "message": "Modifier les polices de l'interface",
+    "description": "Options - title for tweaking chrome fonts."
+  },
+
+  "options.tweak_chrome_desc": {
+    "message": "Diminuer la taille de la police pour qu'elle coïncide avec l'aspect de Conversations (recommandé, nécessite un redémarrage).",
+    "description": "Options - description for tweaking chrome fonts."
+  },
+
+  "options.tweak_bodies_title": {
+    "message": "Modifier les polices du corps du message",
+    "description": "Options - title for tweaking message body fonts."
+  },
+
+  "options.tweak_bodies_desc": {
+    "message": "Modifier les polices des corps de messages pour les rendre cohérentes avec la police externe (recommandé, nécessite un redémarrage).",
+    "description": "Options - description for tweaking message body fonts."
+  },
+
+  "options.operate_on_conversations_title": {
+    "message": "Boutons de la barre d'outils",
+    "description": "Options - title for archive/delete behavior."
+  },
+
+  "options.operate_on_conversations_desc": {
+    "message": "Les boutons de la barre d'outils devraient archiver et supprimer la conversation entière, pas seulement les messages sélectionnés",
+    "description": "Options - description for archive/delete behavior."
+  },
+
+  "options.extra_attachments_title": {
+    "message": "J'adore les pièces jointes",
+    "description": "Options - title for attachment settings."
+  },
+
+  "options.extra_attachments_desc": {
+    "message": "Il peut arriver dans certains cas particuliers que Thunderbird ne reconnaisse pas certaines pièces jointes. Les options vous permettent de contourner cette défaillance et d'afficher le plus de pièces jointes possible. À utiliser en association avec l'extension Show All Body Parts.",
+    "description": "Options - description for attachment settings."
+  },
+
+  "options.compose_in_tab_title": {
+    "message": "Fenêtre de composition cachée",
+    "description": "Options - title for hidden compose window enabling."
+  },
+
+  "options.compose_in_tab_desc": {
+    "message": "Ctrl+Maj+N ouvre la fenêtre de composition cachée dans un nouvel onglet",
+    "description": "Options - description for hidden compose window enabling."
+  },
+
+  "options.debugging_title": {
+    "message": "Débogage",
+    "description": "Options - title for debugging setting."
+  },
+
+  "options.debugging_desc": {
+    "message": "Activer le résultat de débogage dans la console système et la console d'erreurs. Cela déclenchera énormément de messages.",
+    "description": "Options - description for debugging setting."
+  },
+
+  "options.monospaced_senders_title": {
+    "message": "Affichage monospace",
+    "description": "Options - title for monospaced sender setting."
+  },
+
+  "options.monospaced_senders_desc": {
+    "message": "Les messages venant de ces adresses ou listes de discussion devraient être affichés en polices monospace (séparer les adresses par des virgules)",
+    "description": "Options - description for monospaced sender setting."
   }
 }

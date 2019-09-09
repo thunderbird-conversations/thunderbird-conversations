@@ -7,5 +7,130 @@
   "extensionDescription": {
     "message": "Traz o modo de conversa para um Thunderbird perto de você!",
     "description": "Description of the extension."
+  },
+
+  "options.expand_who": {
+    "message": "Por padrão, expandir:",
+    "description": "Options - label for which messages should be expanded."
+  },
+
+  "options.expand_auto": {
+    "message": "Automático",
+    "description": "Options - label for automatically expanding messages."
+  },
+
+  "options.expand_auto.tooltip": {
+    "message": "Se o tópico estiver recolhido, expandir todas as mensagens não lidas ou a última mensagem. Se o tópico estiver expandido, somente expandir a mensagem selecionada na lista de mensagens.",
+    "description": "Options - tooltip for automatically expanding messages."
+  },
+
+  "options.expand_none": {
+    "message": "Nenhuma mensagem",
+    "description": "Options - label for not expanding messages."
+  },
+
+  "options.expand_all": {
+    "message": "Todas as mensagens",
+    "description": "Options - label for expanding all messages."
+  },
+
+  "options.quoting_title": {
+    "message": "Texto entre aspas",
+    "description": "Options - title for quoted text."
+  },
+
+  "options.quoting_desc": {
+    "message": "Textos entre aspas com mais linhas que este número serão recolhidas.",
+    "description": "Options - description for quoted text."
+  },
+
+  "options.hide_sigs_title": {
+    "message": "Ocultar assinaturas",
+    "description": "Options - title for hiding signatures."
+  },
+
+  "options.hide_sigs_desc": {
+    "message": "Assinaturas por padrão recolhidas ou expandidas.",
+    "description": "Options - description for hiding signatures."
+  },
+
+  "options.friendly_date_title": {
+    "message": "Datas amigáveis",
+    "description": "Options - title for if to show friendly dates."
+  },
+
+  "options.friendly_date_desc": {
+    "message": "No canto superior direito, usar data \"normais\", como na lista de mensagens, em vez de usar \"ontem\", \"hoje\", etc.",
+    "description": "Options - description for if to show friendly dates."
+  },
+
+  "options.tweak_chrome_title": {
+    "message": "Ajustar fontes da interface",
+    "description": "Options - title for tweaking chrome fonts."
+  },
+
+  "options.tweak_chrome_desc": {
+    "message": "Reduzir o tamanho da fonte dos elementos visuais das conversas (recomendado, necessário reiniciar)",
+    "description": "Options - description for tweaking chrome fonts."
+  },
+
+  "options.tweak_bodies_title": {
+    "message": "Ajustar fontes do corpo das mensagens",
+    "description": "Options - title for tweaking message body fonts."
+  },
+
+  "options.tweak_bodies_desc": {
+    "message": "Ajustar as fontes no corpo da mensagem para torná-las consistentes com a fonte externa (recomendado, necessário reiniciar)",
+    "description": "Options - description for tweaking message body fonts."
+  },
+
+  "options.operate_on_conversations_title": {
+    "message": "Botões da barra de ferramentas",
+    "description": "Options - title for archive/delete behavior."
+  },
+
+  "options.operate_on_conversations_desc": {
+    "message": "Os botões da barra de ferramentas devem arquivar e excluir a conversa inteira e não apenas as mensagens selecionadas",
+    "description": "Options - description for archive/delete behavior."
+  },
+
+  "options.extra_attachments_title": {
+    "message": "Eu adoro anexos",
+    "description": "Options - title for attachment settings."
+  },
+
+  "options.extra_attachments_desc": {
+    "message": "Em certos casos, o Thunderbird não consegue reconhecer alguns anexos. Estas opções permitem contornar o bug do Thunderbird e garantem que tentemos exibir o máximo de anexos que pudermos. Usar junto com a extensão \"Show All Body Parts\".",
+    "description": "Options - description for attachment settings."
+  },
+
+  "options.compose_in_tab_title": {
+    "message": "Janela de composição oculta",
+    "description": "Options - title for hidden compose window enabling."
+  },
+
+  "options.compose_in_tab_desc": {
+    "message": "Ctrl-Shift-N abre a janela de composição oculta, não suportada, em nova aba",
+    "description": "Options - description for hidden compose window enabling."
+  },
+
+  "options.debugging_title": {
+    "message": "Depuração",
+    "description": "Options - title for debugging setting."
+  },
+
+  "options.debugging_desc": {
+    "message": "Habilitar mensagens de depuração no console do sistema e no console de erros. Isto vai gerar uma grande quantidade de mensagens.",
+    "description": "Options - description for debugging setting."
+  },
+
+  "options.monospaced_senders_title": {
+    "message": "Exibir com espaçamento fixo",
+    "description": "Options - title for monospaced sender setting."
+  },
+
+  "options.monospaced_senders_desc": {
+    "message": "Mensagens desses endereços e listas (separar com vírgulas) devem ser exibidas com tipos de letra de espaçamento fixo",
+    "description": "Options - description for monospaced sender setting."
   }
 }

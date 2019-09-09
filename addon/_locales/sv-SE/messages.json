@@ -7,5 +7,130 @@
   "extensionDescription": {
     "message": "Visa dina e-brev som fullständiga trådar eller grupperade och med trådsammanfattningar, precis som hos Gmail.",
     "description": "Description of the extension."
+  },
+
+  "options.expand_who": {
+    "message": "Som standard, visa:",
+    "description": "Options - label for which messages should be expanded."
+  },
+
+  "options.expand_auto": {
+    "message": "Automatiskt",
+    "description": "Options - label for automatically expanding messages."
+  },
+
+  "options.expand_auto.tooltip": {
+    "message": "Om tråden är dold, visa alla olästa meddelanden eller det sista meddelandet. Om tråden visas, visa endast det i meddelandelistan markerade meddelandet.",
+    "description": "Options - tooltip for automatically expanding messages."
+  },
+
+  "options.expand_none": {
+    "message": "Inga meddelanden",
+    "description": "Options - label for not expanding messages."
+  },
+
+  "options.expand_all": {
+    "message": "Alla meddelanden",
+    "description": "Options - label for expanding all messages."
+  },
+
+  "options.quoting_title": {
+    "message": "Citerad text",
+    "description": "Options - title for quoted text."
+  },
+
+  "options.quoting_desc": {
+    "message": "Citat längre än detta antal rader kommer att minimeras.",
+    "description": "Options - description for quoted text."
+  },
+
+  "options.hide_sigs_title": {
+    "message": "Hide Signatures",
+    "description": "Options - title for hiding signatures."
+  },
+
+  "options.hide_sigs_desc": {
+    "message": "Whether signatures are collapsed by default.",
+    "description": "Options - description for hiding signatures."
+  },
+
+  "options.friendly_date_title": {
+    "message": "Konsekventa datum",
+    "description": "Options - title for if to show friendly dates."
+  },
+
+  "options.friendly_date_desc": {
+    "message": "Använd \"vanliga\" datum i det övre högra hörnet, precis som i meddelandelistan, istället för \"igår\" och liknande.",
+    "description": "Options - description for if to show friendly dates."
+  },
+
+  "options.tweak_chrome_title": {
+    "message": "Justera chrome-teckensnitten",
+    "description": "Options - title for tweaking chrome fonts."
+  },
+
+  "options.tweak_chrome_desc": {
+    "message": "Skala ner teckenstorleken i konversationernas chrome (rekommenderas, kräver omstart).",
+    "description": "Options - description for tweaking chrome fonts."
+  },
+
+  "options.tweak_bodies_title": {
+    "message": "Justera brödtextteckensnitten",
+    "description": "Options - title for tweaking message body fonts."
+  },
+
+  "options.tweak_bodies_desc": {
+    "message": "Ställ in teckensnitten i meddelandebrödtexterna så att de stämmer överens med de yttre teckensnitten (rekommenderas, kräver omstart).",
+    "description": "Options - description for tweaking message body fonts."
+  },
+
+  "options.operate_on_conversations_title": {
+    "message": "Verktygsfältsknappar",
+    "description": "Options - title for archive/delete behavior."
+  },
+
+  "options.operate_on_conversations_desc": {
+    "message": "Verktygsfältsknappar skall arkivera och ta bort hela konversationen, inte endast markerade meddelanden",
+    "description": "Options - description for archive/delete behavior."
+  },
+
+  "options.extra_attachments_title": {
+    "message": "Jag älskar bilagor",
+    "description": "Options - title for attachment settings."
+  },
+
+  "options.extra_attachments_desc": {
+    "message": "I enstaka fall känner inte Thunderbird igen vissa bilagor. Detta alternativ låter dig kringgå den buggen och ser till att vi försöker visa så många bilagor som möjligt. Använd tillsammans med tillägget Show All Body Parts.",
+    "description": "Options - description for attachment settings."
+  },
+
+  "options.compose_in_tab_title": {
+    "message": "Hidden composition window",
+    "description": "Options - title for hidden compose window enabling."
+  },
+
+  "options.compose_in_tab_desc": {
+    "message": "Dolt Skriv-fönster",
+    "description": "Ctrl+Skift+N öppnar det dolda, ej stödda Skriv-fönstret i en ny flik"
+  },
+
+  "options.debugging_title": {
+    "message": "Felsökning",
+    "description": "Options - title for debugging setting."
+  },
+
+  "options.debugging_desc": {
+    "message": "Aktivera felsökningsutdata i systemkonsolen och felkonsolen. Detta kommer att generera mängder av meddelanden.",
+    "description": "Options - description for debugging setting."
+  },
+
+  "options.monospaced_senders_title": {
+    "message": "Visa i enbreddsteckensnitt",
+    "description": "Options - title for monospaced sender setting."
+  },
+
+  "options.monospaced_senders_desc": {
+    "message": "Meddelanden från dessa adresser/e-postlistor skall visas i enbreddsteckensnitt (avgränsa med kommatecken)",
+    "description": "Options - description for monospaced sender setting."
   }
 }

@@ -7,5 +7,130 @@
   "extensionDescription": {
     "message": "Gruppiert Ihre Nachrichten (inklusive Ihrer gesendeten) in Konversationen, ähnlich wie Googlemail es tut.",
     "description": "Description of the extension."
+  },
+
+  "options.expand_who": {
+    "message": "Standardmäßig ausklappen:",
+    "description": "Options - label for which messages should be expanded."
+  },
+
+  "options.expand_auto": {
+    "message": "Automatisch",
+    "description": "Options - label for automatically expanding messages."
+  },
+
+  "options.expand_auto.tooltip": {
+    "message": "Wenn der Thread eingeklappt ist, werden alle ungelesenen Nachrichten bzw. nur die letzte Nachricht ausgeklappt. Ist der Thread aber ausgeklappt, wird nur die ausgewählte Nachricht angezeigt.",
+    "description": "Options - tooltip for automatically expanding messages."
+  },
+
+  "options.expand_none": {
+    "message": "Keine Nachrichten",
+    "description": "Options - label for not expanding messages."
+  },
+
+  "options.expand_all": {
+    "message": "Alle Nachrichten",
+    "description": "Options - label for expanding all messages."
+  },
+
+  "options.quoting_title": {
+    "message": "Zitierter Text",
+    "description": "Options - title for quoted text."
+  },
+
+  "options.quoting_desc": {
+    "message": "Zitate mit mehr als der angegeben Anzahl von Zeilen einklappen.",
+    "description": "Options - description for quoted text."
+  },
+
+  "options.hide_sigs_title": {
+    "message": "Die Signaturen verstecken.",
+    "description": "Options - title for hiding signatures."
+  },
+
+  "options.hide_sigs_desc": {
+    "message": "Mit dieser Einstellung wird festgelegt, ob die Signaturen standardmäßig verkleinert dargestellt werden.",
+    "description": "Options - description for hiding signatures."
+  },
+
+  "options.friendly_date_title": {
+    "message": "Freundliches Datum",
+    "description": "Options - title for if to show friendly dates."
+  },
+
+  "options.friendly_date_desc": {
+    "message": "\"Normale\" Datumsangaben anstelle von \"gestern\" oder ähnlichem in der oberen rechten Ecke verwenden, genau wie in der Nachrichtenliste.",
+    "description": "Options - description for if to show friendly dates."
+  },
+
+  "options.tweak_chrome_title": {
+    "message": "Chrom-Schriften optimieren",
+    "description": "Options - title for tweaking chrome fonts."
+  },
+
+  "options.tweak_chrome_desc": {
+    "message": "Chrom-Schriften für die Konversation verkleinern (empfohlen, Neustart erforderlich).",
+    "description": "Options - description for tweaking chrome fonts."
+  },
+
+  "options.tweak_bodies_title": {
+    "message": "Body-Schriften optimieren",
+    "description": "Options - title for tweaking message body fonts."
+  },
+
+  "options.tweak_bodies_desc": {
+    "message": "Schriften in der Nachrichten-Ansicht optimieren, um die Kompatibilität zu den äußeren Schriften herzsutellen (empfohlen, Neustart erforderlich).",
+    "description": "Options - description for tweaking message body fonts."
+  },
+
+  "options.operate_on_conversations_title": {
+    "message": "Schaltflächen der Symbolleiste",
+    "description": "Options - title for archive/delete behavior."
+  },
+
+  "options.operate_on_conversations_desc": {
+    "message": "Durch die Schaltflächen der Symbolleiste wird die komplette Konversation archiviert bzw. gelöscht und nicht nur die ausgewählte Nachricht.",
+    "description": "Options - description for archive/delete behavior."
+  },
+
+  "options.extra_attachments_title": {
+    "message": "Ich liebe Anhänge",
+    "description": "Options - title for attachment settings."
+  },
+
+  "options.extra_attachments_desc": {
+    "message": "In einigen seltenen Fällen erkennt Thunderbird Email-Anhänge nicht. Durch diese Option wird der Fehler in Thunderbird umgangen und es wird versucht so viele Anhänge wie möglich anzuzeigen. In Verbindung mit dem \"Show All Body Parts\" Add-on benutzen.",
+    "description": "Options - description for attachment settings."
+  },
+
+  "options.compose_in_tab_title": {
+    "message": "Verborgenes Aufbau-Fenster",
+    "description": "Options - title for hidden compose window enabling."
+  },
+
+  "options.compose_in_tab_desc": {
+    "message": "Strg-Shift-N öffnet das verborgene, nicht unterstützte Aufbau-Fenster in einem neuen Tab.",
+    "description": "Options - description for hidden compose window enabling."
+  },
+
+  "options.debugging_title": {
+    "message": "Debugging",
+    "description": "Options - title for debugging setting."
+  },
+
+  "options.debugging_desc": {
+    "message": "Debug-Ausgabe in der System- und Fehlerkonsole aktivieren. Es werden dadurch zahlreiche Nachrichten erzeugt.",
+    "description": "Options - description for debugging setting."
+  },
+
+  "options.monospaced_senders_title": {
+    "message": "In unproportionaler Schriftart anzeigen",
+    "description": "Options - title for monospaced sender setting."
+  },
+
+  "options.monospaced_senders_desc": {
+    "message": "Nachrichten von dieser Adresse/Mailingliste sollen in unproportionaler Schriftart angezeigt werden (durch Kommata trennen).",
+    "description": "Options - description for monospaced sender setting."
   }
 }

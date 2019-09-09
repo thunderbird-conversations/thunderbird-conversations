@@ -7,5 +7,130 @@
   "extensionDescription": {
     "message": "Permette di visualizzare le e-mail sotto forma di conversazioni in modo analogo al sito web di Gmail",
     "description": "Description of the extension."
+  },
+
+  "options.expand_who": {
+    "message": "Messaggi da espandere (come opzione predefinita)",
+    "description": "Options - label for which messages should be expanded."
+  },
+
+  "options.expand_auto": {
+    "message": "L'ultimo messaggio selezionato o il primo non letto",
+    "description": "Options - label for automatically expanding messages."
+  },
+
+  "options.expand_auto.tooltip": {
+    "message": "Visualizza l'ultimo messaggio selezionato se la discussione è già espansa oppure il primo messaggio non letto se la discussione è contratta",
+    "description": "Options - tooltip for automatically expanding messages."
+  },
+
+  "options.expand_none": {
+    "message": "Non espandere alcun messaggio",
+    "description": "Options - label for not expanding messages."
+  },
+
+  "options.expand_all": {
+    "message": "Espandi tutti i messaggi",
+    "description": "Options - label for expanding all messages."
+  },
+
+  "options.quoting_title": {
+    "message": "Citazioni",
+    "description": "Options - title for quoted text."
+  },
+
+  "options.quoting_desc": {
+    "message": "Righe dopo le quali nascondere il testo citato:",
+    "description": "Options - description for quoted text."
+  },
+
+  "options.hide_sigs_title": {
+    "message": "Nascondi firme",
+    "description": "Options - title for hiding signatures."
+  },
+
+  "options.hide_sigs_desc": {
+    "message": "Whether signatures are collapsed by default.",
+    "description": "Options - description for hiding signatures."
+  },
+
+  "options.friendly_date_title": {
+    "message": "Aspetto delle discussioni",
+    "description": "Options - title for if to show friendly dates."
+  },
+
+  "options.friendly_date_desc": {
+    "message": "Nell'angolo in alto a destra utilizzare date \"normali\", come per la lista dei messaggi, invece di \"ieri\" e di altre",
+    "description": "Options - description for if to show friendly dates."
+  },
+
+  "options.tweak_chrome_title": {
+    "message": "Ridimensionamento dei caratteri",
+    "description": "Options - title for tweaking chrome fonts."
+  },
+
+  "options.tweak_chrome_desc": {
+    "message": "Ridimensiona i caratteri affinché coincidano con quelli nella sezione conversazione (raccomandato, riavvio necessario)",
+    "description": "Options - description for tweaking chrome fonts."
+  },
+
+  "options.tweak_bodies_title": {
+    "message": "Modifica dei caratteri",
+    "description": "Options - title for tweaking message body fonts."
+  },
+
+  "options.tweak_bodies_desc": {
+    "message": "Modifica i caratteri nel corpo dei messaggi per renderli compatibili con i caratteri esterni (raccomandato, riavvio necessario)",
+    "description": "Options - description for tweaking message body fonts."
+  },
+
+  "options.operate_on_conversations_title": {
+    "message": "Pulsanti nella barra degli strumenti",
+    "description": "Options - title for archive/delete behavior."
+  },
+
+  "options.operate_on_conversations_desc": {
+    "message": "I pulsanti nella barra degli strumenti permettono di archiviare ed eliminare intere conversazioni, non solo i messaggi selezionati",
+    "description": "Options - description for archive/delete behavior."
+  },
+
+  "options.extra_attachments_title": {
+    "message": "Amo gli allegati!",
+    "description": "Options - title for attachment settings."
+  },
+
+  "options.extra_attachments_desc": {
+    "message": "In alcuni casi limite, Thunderbird non riuscirà a riconoscere alcuni allegati. Questa opzione permette di visualizzare tutti gli allegati possibili. Da utilizzare in combinazione al componente aggiuntivo 'Show All Body Parts'",
+    "description": "Options - description for attachment settings."
+  },
+
+  "options.compose_in_tab_title": {
+    "message": "Finestra di composizione nascosta",
+    "description": "Options - title for hidden compose window enabling."
+  },
+
+  "options.compose_in_tab_desc": {
+    "message": "Ctrl+Maiusc+N apre la finestra di composizione nascosta e non supportata in una nuova scheda",
+    "description": "Options - description for hidden compose window enabling."
+  },
+
+  "options.debugging_title": {
+    "message": "Debug",
+    "description": "Options - title for debugging setting."
+  },
+
+  "options.debugging_desc": {
+    "message": "Attiva le registrazioni per il debug nella console di sistema e nella console degli errori. Verranno generati molti messaggi",
+    "description": "Options - description for debugging setting."
+  },
+
+  "options.monospaced_senders_title": {
+    "message": "Caratteri a larghezza fissa",
+    "description": "Options - title for monospaced sender setting."
+  },
+
+  "options.monospaced_senders_desc": {
+    "message": "È possibile utilizzare i caratteri a larghezza fissa per i messaggi provenienti da determinati indirizzi e-mail aggiungendoli qui sotto (separati con una virgola)",
+    "description": "Options - description for monospaced sender setting."
   }
 }

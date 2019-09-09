@@ -7,5 +7,130 @@
   "extensionDescription": {
     "message": "Permite visualizar los mensajes en modo de conversación, de igual manera que en GMail",
     "description": "Description of the extension."
+  },
+
+  "options.expand_who": {
+    "message": "Por defecto, expandir:",
+    "description": "Options - label for which messages should be expanded."
+  },
+
+  "options.expand_auto": {
+    "message": "Automático",
+    "description": "Options - label for automatically expanding messages."
+  },
+
+  "options.expand_auto.tooltip": {
+    "message": "Si el hilo está contraido, expandir todos los mensajes no leído o el último mensaje. Si está expandido, sólo expandir el mensaje seleccionado.",
+    "description": "Options - tooltip for automatically expanding messages."
+  },
+
+  "options.expand_none": {
+    "message": "Sin mensajes",
+    "description": "Options - label for not expanding messages."
+  },
+
+  "options.expand_all": {
+    "message": "Todos los mensajes",
+    "description": "Options - label for expanding all messages."
+  },
+
+  "options.quoting_title": {
+    "message": "¿Texto citado?",
+    "description": "Options - title for quoted text."
+  },
+
+  "options.quoting_desc": {
+    "message": "Las citas mayores que el número de líneas serán contraídas.",
+    "description": "Options - description for quoted text."
+  },
+
+  "options.hide_sigs_title": {
+    "message": "Ocultar firmas",
+    "description": "Options - title for hiding signatures."
+  },
+
+  "options.hide_sigs_desc": {
+    "message": "Si las firmas están contraídas por defecto.",
+    "description": "Options - description for hiding signatures."
+  },
+
+  "options.friendly_date_title": {
+    "message": "Fechas agradables",
+    "description": "Options - title for if to show friendly dates."
+  },
+
+  "options.friendly_date_desc": {
+    "message": "En la esquina superior derecha, usar fechas \"normales\", como en la lista de mensajes, en lugar de \"ayer\" y similares.",
+    "description": "Options - description for if to show friendly dates."
+  },
+
+  "options.tweak_chrome_title": {
+    "message": "Ajustar fuentes",
+    "description": "Options - title for tweaking chrome fonts."
+  },
+
+  "options.tweak_chrome_desc": {
+    "message": "Reducir el tamaño de la fuente para el apartado de conversación (recomendado, requiere reiniciar).",
+    "description": "Options - description for tweaking chrome fonts."
+  },
+
+  "options.tweak_bodies_title": {
+    "message": "Ajustar fuentes del contenido",
+    "description": "Options - title for tweaking message body fonts."
+  },
+
+  "options.tweak_bodies_desc": {
+    "message": "Ajustar las fuentes del cuerpo del mensaje para hacerlas consistentes con el resto de fuentes (recomendado, requiere reiniciar).",
+    "description": "Options - description for tweaking message body fonts."
+  },
+
+  "options.operate_on_conversations_title": {
+    "message": "Botones de la barra de herramientas",
+    "description": "Options - title for archive/delete behavior."
+  },
+
+  "options.operate_on_conversations_desc": {
+    "message": "Los botones archivan y borran la conversación completa, no sólo el mensaje seleccionado",
+    "description": "Options - description for archive/delete behavior."
+  },
+
+  "options.extra_attachments_title": {
+    "message": "Me gustan los adjuntos",
+    "description": "Options - title for attachment settings."
+  },
+
+  "options.extra_attachments_desc": {
+    "message": "En algunos casos Thunderbird fallará al reconocer los adjuntos. Esta opción le permite evitar el fallo de Thunderbird, y asegurarse de que se muestran tantos adjuntos como sea posible. Usarlo en combinación con el comprlmento «Mostrar todas las partes del cuerpo».",
+    "description": "Options - description for attachment settings."
+  },
+
+  "options.compose_in_tab_title": {
+    "message": "Ocultar la ventana de redacción",
+    "description": "Options - title for hidden compose window enabling."
+  },
+
+  "options.compose_in_tab_desc": {
+    "message": "Ctrl-Mays-N abre en una nueva pestaña la ventana oculta y no soportada de redacción",
+    "description": "Options - description for hidden compose window enabling."
+  },
+
+  "options.debugging_title": {
+    "message": "Depuración",
+    "description": "Options - title for debugging setting."
+  },
+
+  "options.debugging_desc": {
+    "message": "Habilitar la depuración en la consola del sistema y en la consola de errores. Puede generar muchos mensajes.",
+    "description": "Options - description for debugging setting."
+  },
+
+  "options.monospaced_senders_title": {
+    "message": "Mostrar en monoespacio",
+    "description": "Options - title for monospaced sender setting."
+  },
+
+  "options.monospaced_senders_desc": {
+    "message": "Los mensajes de estas direcciones/listas de correo deben mostrarse en fuentes monoespacio (separados por comas)",
+    "description": "Options - description for monospaced sender setting."
   }
 }
