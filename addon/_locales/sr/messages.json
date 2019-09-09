@@ -7,5 +7,130 @@
   "extensionDescription": {
     "message": "Групише е-поруке у разговоре, укључујући и Ваше поруке, као што то чини Gmail.",
     "description": "Description of the extension."
+  },
+
+  "options.expand_who": {
+    "message": "Подразумевано, рашири:",
+    "description": "Options - label for which messages should be expanded."
+  },
+
+  "options.expand_auto": {
+    "message": "аутоматски",
+    "description": "Options - label for automatically expanding messages."
+  },
+
+  "options.expand_auto.tooltip": {
+    "message": "Ако је тема скупљена, рашири све непрочитане поруке или последњу поруку. Ако је раширена, рашири само поруку одабрану на списку.",
+    "description": "Options - tooltip for automatically expanding messages."
+  },
+
+  "options.expand_none": {
+    "message": "Нема порука",
+    "description": "Options - label for not expanding messages."
+  },
+
+  "options.expand_all": {
+    "message": "Све поруке",
+    "description": "Options - label for expanding all messages."
+  },
+
+  "options.quoting_title": {
+    "message": "Наведени текст",
+    "description": "Options - title for quoted text."
+  },
+
+  "options.quoting_desc": {
+    "message": "Наводи који имају више линија од наведеног броја ће бити скупљени.",
+    "description": "Options - description for quoted text."
+  },
+
+  "options.hide_sigs_title": {
+    "message": "Hide Signatures",
+    "description": "Options - title for hiding signatures."
+  },
+
+  "options.hide_sigs_desc": {
+    "message": "Whether signatures are collapsed by default.",
+    "description": "Options - description for hiding signatures."
+  },
+
+  "options.friendly_date_title": {
+    "message": "Пријатељски датуми",
+    "description": "Options - title for if to show friendly dates."
+  },
+
+  "options.friendly_date_desc": {
+    "message": "У горњем левом углу користите „нормалне” датуме, као списак порука, уместо „јуче” и осталих.",
+    "description": "Options - description for if to show friendly dates."
+  },
+
+  "options.tweak_chrome_title": {
+    "message": "Подеси фонтове за chrome",
+    "description": "Options - title for tweaking chrome fonts."
+  },
+
+  "options.tweak_chrome_desc": {
+    "message": "Умањи фонт за разговоре (препоручено, потребно поновно покретање)",
+    "description": "Options - description for tweaking chrome fonts."
+  },
+
+  "options.tweak_bodies_title": {
+    "message": "Подеси фонтове за body",
+    "description": "Options - title for tweaking message body fonts."
+  },
+
+  "options.tweak_bodies_desc": {
+    "message": "Подеси фонтове у телу поруке тако да се подударају са окружењем (потребно поновно покретање).",
+    "description": "Options - description for tweaking message body fonts."
+  },
+
+  "options.operate_on_conversations_title": {
+    "message": "Дугмад у траци са алаткама",
+    "description": "Options - title for archive/delete behavior."
+  },
+
+  "options.operate_on_conversations_desc": {
+    "message": "Дугмад у траци са алаткама служе за архивирање и брисање целог разговора, а не само одабраних порука.",
+    "description": "Options - description for archive/delete behavior."
+  },
+
+  "options.extra_attachments_title": {
+    "message": "Волим прилоге",
+    "description": "Options - title for attachment settings."
+  },
+
+  "options.extra_attachments_desc": {
+    "message": "У неким случајевима, Тандерберд неће успети да препозна неке прилоге.Ова опција омогућава привремено решавање ове грешке у Тандерберду и омогућава да буде приказано што више прилога. Користите је у комбинацији са додатком Show All Body Parts.",
+    "description": "Options - description for attachment settings."
+  },
+
+  "options.compose_in_tab_title": {
+    "message": "Сакривен прозор са писање",
+    "description": "Options - title for hidden compose window enabling."
+  },
+
+  "options.compose_in_tab_desc": {
+    "message": "Ктрл+шифт+С отвара сакривени, неподржани прозор за писање у новом језичку",
+    "description": "Options - description for hidden compose window enabling."
+  },
+
+  "options.debugging_title": {
+    "message": "Отклањање грешака",
+    "description": "Options - title for debugging setting."
+  },
+
+  "options.debugging_desc": {
+    "message": "Омогућите приказ порука у системској конзоли и конзоли за грешке, ако желите да радите на њиховом отклањању.",
+    "description": "Options - description for debugging setting."
+  },
+
+  "options.monospaced_senders_title": {
+    "message": "Прикажи у једнаком размаку",
+    "description": "Options - title for monospaced sender setting."
+  },
+
+  "options.monospaced_senders_desc": {
+    "message": "Поруке са ових адреса/спискова за слање требају бити приказане у фонтовима фиксне ширине (одвојеним зарезима)",
+    "description": "Options - description for monospaced sender setting."
   }
 }

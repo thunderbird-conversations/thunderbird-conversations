@@ -7,5 +7,130 @@
   "extensionDescription": {
     "message": "כווץ את הודעות הדוא\"ל בשיחות, כולל ההודעות שלך, בדומה לג'יימל.‏",
     "description": "Description of the extension."
+  },
+
+  "options.expand_who": {
+    "message": "כברירת מחדל, הרחב:‏",
+    "description": "Options - label for which messages should be expanded."
+  },
+
+  "options.expand_auto": {
+    "message": "אוטומטי",
+    "description": "Options - label for automatically expanding messages."
+  },
+
+  "options.expand_auto.tooltip": {
+    "message": "במידה והחוט מקופל, הרחב כל הודעות שלא נקראו או הודעה האחרונה. במידה והחוט מורחב, הרחב רק את ההודעות הנבחרות ברשימת ההודעות.‏",
+    "description": "Options - tooltip for automatically expanding messages."
+  },
+
+  "options.expand_none": {
+    "message": "אף הודעה",
+    "description": "Options - label for not expanding messages."
+  },
+
+  "options.expand_all": {
+    "message": "את כל ההודעות",
+    "description": "Options - label for expanding all messages."
+  },
+
+  "options.quoting_title": {
+    "message": "טקסט מצוטט‏",
+    "description": "Options - title for quoted text."
+  },
+
+  "options.quoting_desc": {
+    "message": "טקסט מצוטט ברמת גבוהה מזה לא ייצג.‏",
+    "description": "Options - description for quoted text."
+  },
+
+  "options.hide_sigs_title": {
+    "message": "Hide Signatures",
+    "description": "Options - title for hiding signatures."
+  },
+
+  "options.hide_sigs_desc": {
+    "message": "Whether signatures are collapsed by default.",
+    "description": "Options - description for hiding signatures."
+  },
+
+  "options.friendly_date_title": {
+    "message": "תאריכים ידודתיים",
+    "description": "Options - title for if to show friendly dates."
+  },
+
+  "options.friendly_date_desc": {
+    "message": "בפינה הימינית העליונה השתמש בתאריכים רגילים, במקום מילים כגון \"אתמול\".‏",
+    "description": "Options - description for if to show friendly dates."
+  },
+
+  "options.tweak_chrome_title": {
+    "message": "שפר את גופני הממשק",
+    "description": "Options - title for tweaking chrome fonts."
+  },
+
+  "options.tweak_chrome_desc": {
+    "message": "Scale down the font size for the conversation chrome (recommended, requires restart).",
+    "description": "Options - description for tweaking chrome fonts."
+  },
+
+  "options.tweak_bodies_title": {
+    "message": "שפר את גופני גוף ההודעה",
+    "description": "Options - title for tweaking message body fonts."
+  },
+
+  "options.tweak_bodies_desc": {
+    "message": "Tweak the fonts in the message bodies to make them consistent with the outer font (recommended, requires restart).",
+    "description": "Options - description for tweaking message body fonts."
+  },
+
+  "options.operate_on_conversations_title": {
+    "message": "מקשי פס הכלים",
+    "description": "Options - title for archive/delete behavior."
+  },
+
+  "options.operate_on_conversations_desc": {
+    "message": "מקשי פס הכלים ישלחו וימחקו את כל השיחה, לא רק את ההודעות הנבחרות",
+    "description": "Options - description for archive/delete behavior."
+  },
+
+  "options.extra_attachments_title": {
+    "message": "I love attachments",
+    "description": "Options - title for attachment settings."
+  },
+
+  "options.extra_attachments_desc": {
+    "message": "In some corner cases, Thunderbird will fail to recognize some attachments. This option allows you to workaround the Thunderbird bug, and makes sure we try to display as many attachments as we can. Use in combination with the Show All Body Parts addon.",
+    "description": "Options - description for attachment settings."
+  },
+
+  "options.compose_in_tab_title": {
+    "message": "Hidden composition window",
+    "description": "Options - title for hidden compose window enabling."
+  },
+
+  "options.compose_in_tab_desc": {
+    "message": "Ctrl-Shift-N opens the hidden, unsupported composition window in a new tab",
+    "description": "Options - description for hidden compose window enabling."
+  },
+
+  "options.debugging_title": {
+    "message": "מערכת הצגת פרטים במטרה לגלות שגיות בתוכנה",
+    "description": "Options - title for debugging setting."
+  },
+
+  "options.debugging_desc": {
+    "message": "אישר את מערכת הצגת פרטים במטרה לגלות שגיות בתוכנה שייראה פלט למסוף המערכת ומסוף שגיות. פעולה זאת עלולה לגרום להצפת הודעות.‏",
+    "description": "Options - description for debugging setting."
+  },
+
+  "options.monospaced_senders_title": {
+    "message": "הצג בגופן רוחב-קבוע",
+    "description": "Options - title for monospaced sender setting."
+  },
+
+  "options.monospaced_senders_desc": {
+    "message": "הודעות מכתובות/תפוצות אלו יוצגו בגופן רוחב-קבוע (הפרד באמצעות פסיקים)‏",
+    "description": "Options - description for monospaced sender setting."
   }
 }

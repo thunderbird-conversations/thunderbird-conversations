@@ -7,5 +7,130 @@
   "extensionDescription": {
     "message": "按邮件话题集中显示相关邮件（包括你自己发出的邮件）, 同Gmail目前的邮件显示方式一致",
     "description": "Description of the extension."
+  },
+
+  "options.expand_who": {
+    "message": "默认：展开",
+    "description": "Options - label for which messages should be expanded."
+  },
+
+  "options.expand_auto": {
+    "message": "自动",
+    "description": "Options - label for automatically expanding messages."
+  },
+
+  "options.expand_auto.tooltip": {
+    "message": "如果折叠会话，则显示所有未读邮件或最后一封邮件。如果展开会话，仅展开邮件列表中的指定邮件.",
+    "description": "Options - tooltip for automatically expanding messages."
+  },
+
+  "options.expand_none": {
+    "message": "没有邮件",
+    "description": "Options - label for not expanding messages."
+  },
+
+  "options.expand_all": {
+    "message": "所有邮件",
+    "description": "Options - label for expanding all messages."
+  },
+
+  "options.quoting_title": {
+    "message": "引用文本",
+    "description": "Options - title for quoted text."
+  },
+
+  "options.quoting_desc": {
+    "message": "多余此行数的引用文本将隐藏（折叠）.",
+    "description": "Options - description for quoted text."
+  },
+
+  "options.hide_sigs_title": {
+    "message": "Hide Signatures",
+    "description": "Options - title for hiding signatures."
+  },
+
+  "options.hide_sigs_desc": {
+    "message": "Whether signatures are collapsed by default.",
+    "description": "Options - description for hiding signatures."
+  },
+
+  "options.friendly_date_title": {
+    "message": "日期",
+    "description": "Options - title for if to show friendly dates."
+  },
+
+  "options.friendly_date_desc": {
+    "message": "在右上角，如同在邮件列表中一致，使用\"普通\"日期，而不是使用\"昨天\"之类.",
+    "description": "Options - description for if to show friendly dates."
+  },
+
+  "options.tweak_chrome_title": {
+    "message": "调整Chrome字体",
+    "description": "Options - title for tweaking chrome fonts."
+  },
+
+  "options.tweak_chrome_desc": {
+    "message": "减小会话列表的字体大小（推荐，需要重启）.",
+    "description": "Options - description for tweaking chrome fonts."
+  },
+
+  "options.tweak_bodies_title": {
+    "message": "调整正文字体",
+    "description": "Options - title for tweaking message body fonts."
+  },
+
+  "options.tweak_bodies_desc": {
+    "message": "调整邮件正文的字体以确保与外部字体相一致（推荐，需要重启）.",
+    "description": "Options - description for tweaking message body fonts."
+  },
+
+  "options.operate_on_conversations_title": {
+    "message": "工具条按钮",
+    "description": "Options - title for archive/delete behavior."
+  },
+
+  "options.operate_on_conversations_desc": {
+    "message": "工具条上的按钮归档并删除整个邮件回话，而不仅包括选中的邮件",
+    "description": "Options - description for archive/delete behavior."
+  },
+
+  "options.extra_attachments_title": {
+    "message": "附件",
+    "description": "Options - title for attachment settings."
+  },
+
+  "options.extra_attachments_desc": {
+    "message": "在某些情况下，Thunderbird可能会无法识别某些附件。此设置项允许您可以跟踪Thunderbird缺陷，以确认已尽可能多的显示了附件。可与Show All Body Parts联合使用本设置项.",
+    "description": "Options - description for attachment settings."
+  },
+
+  "options.compose_in_tab_title": {
+    "message": "隐藏邮件编写窗口",
+    "description": "Options - title for hidden compose window enabling."
+  },
+
+  "options.compose_in_tab_desc": {
+    "message": "Ctrl-Shift-N 在新页面中打开隐藏的、为支持的邮件编写窗口",
+    "description": "Options - description for hidden compose window enabling."
+  },
+
+  "options.debugging_title": {
+    "message": "调试",
+    "description": "Options - title for debugging setting."
+  },
+
+  "options.debugging_desc": {
+    "message": "调试信息输出到系统终端和错误终端。本操作将可能产生大量信息.",
+    "description": "Options - description for debugging setting."
+  },
+
+  "options.monospaced_senders_title": {
+    "message": "使用等宽字体显示",
+    "description": "Options - title for monospaced sender setting."
+  },
+
+  "options.monospaced_senders_desc": {
+    "message": "从指定地址或邮件列表中发出的邮件需以等宽字体显示（使用逗号分隔）",
+    "description": "Options - description for monospaced sender setting."
   }
 }

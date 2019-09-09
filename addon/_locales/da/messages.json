@@ -7,5 +7,130 @@
   "extensionDescription": {
     "message": "Bringer samtalevisning til Din Thunderbird!",
     "description": "Description of the extension."
+  },
+
+  "options.expand_who": {
+    "message": "Som standard, udvid:",
+    "description": "Options - label for which messages should be expanded."
+  },
+
+  "options.expand_auto": {
+    "message": "Automatisk",
+    "description": "Options - label for automatically expanding messages."
+  },
+
+  "options.expand_auto.tooltip": {
+    "message": "Hvis tråden er sammenfoldet, udvid alle ulæste meddelelser eller den sidste meddelelse. Hvis den er udvidet, udvid kun den valgte meddelelse i meddelelseslisten.",
+    "description": "Options - tooltip for automatically expanding messages."
+  },
+
+  "options.expand_none": {
+    "message": "Ingen meddelelser",
+    "description": "Options - label for not expanding messages."
+  },
+
+  "options.expand_all": {
+    "message": "Alle meddelelser",
+    "description": "Options - label for expanding all messages."
+  },
+
+  "options.quoting_title": {
+    "message": "Citeret tekst",
+    "description": "Options - title for quoted text."
+  },
+
+  "options.quoting_desc": {
+    "message": "Sammenfold citeret tekst med flere end dette antal linjer.",
+    "description": "Options - description for quoted text."
+  },
+
+  "options.hide_sigs_title": {
+    "message": "Skjul signaturer",
+    "description": "Options - title for hiding signatures."
+  },
+
+  "options.hide_sigs_desc": {
+    "message": "Om signaturer er sammenfoldede som standard.",
+    "description": "Options - description for hiding signatures."
+  },
+
+  "options.friendly_date_title": {
+    "message": "Venlige datoer",
+    "description": "Options - title for if to show friendly dates."
+  },
+
+  "options.friendly_date_desc": {
+    "message": "Brug \"normale\" datoer, ligesom i meddelelseslisten, i stedet for \"i går\" og lignende.",
+    "description": "Options - description for if to show friendly dates."
+  },
+
+  "options.tweak_chrome_title": {
+    "message": "Juster chrome skrifttyper",
+    "description": "Options - title for tweaking chrome fonts."
+  },
+
+  "options.tweak_chrome_desc": {
+    "message": "Reducer skriftstørrelsen for rammen rundt om samtalen (anbefales, kræver genstart).",
+    "description": "Options - description for tweaking chrome fonts."
+  },
+
+  "options.tweak_bodies_title": {
+    "message": "Juster skrifttyper i meddelelsesteksten",
+    "description": "Options - title for tweaking message body fonts."
+  },
+
+  "options.tweak_bodies_desc": {
+    "message": "Juster skrifttyperne i meddelelserne for at bringe dem i overensstemmelse med den ydre skrifttype (anbefalet, kræver genstart).",
+    "description": "Options - description for tweaking message body fonts."
+  },
+
+  "options.operate_on_conversations_title": {
+    "message": "Knapper på værktøjslinjen",
+    "description": "Options - title for archive/delete behavior."
+  },
+
+  "options.operate_on_conversations_desc": {
+    "message": "Knapper på værktøjslinjen vil arkivere og slette hele samtalen, ikke kun valgte meddelelser.",
+    "description": "Options - description for archive/delete behavior."
+  },
+
+  "options.extra_attachments_title": {
+    "message": "Jeg elsker vedhæftede filer",
+    "description": "Options - title for attachment settings."
+  },
+
+  "options.extra_attachments_desc": {
+    "message": "I sjældne tilfælde kan Thunderbird ikke genkende visse vedhæftede filer. Denne indstilling lader dig omgå den Thunderbird-fejl, og sørger for, vi forsøger at vise så mange vedhæftede filer som vi kan. Brug sammen med tilføjelsen Show All Body Parts.",
+    "description": "Options - description for attachment settings."
+  },
+
+  "options.compose_in_tab_title": {
+    "message": "Skjult \"Skriv\"-vindue",
+    "description": "Options - title for hidden compose window enabling."
+  },
+
+  "options.compose_in_tab_desc": {
+    "message": "Ctrl+Shift+N åbner det skjulte, ikke-understøttede \"Skriv\"-vindue i et nyt faneblad",
+    "description": "Options - description for hidden compose window enabling."
+  },
+
+  "options.debugging_title": {
+    "message": "Fejlretning",
+    "description": "Options - title for debugging setting."
+  },
+
+  "options.debugging_desc": {
+    "message": "Tillad fejlretningsinformation i system- og fejlkonsollen. Dette vil generere rigtigt mange beskeder.",
+    "description": "Options - description for debugging setting."
+  },
+
+  "options.monospaced_senders_title": {
+    "message": "Vis i monospatieret",
+    "description": "Options - title for monospaced sender setting."
+  },
+
+  "options.monospaced_senders_desc": {
+    "message": "Meddelelser fra de adresser/mailinglister skal vises i monospatierede skrifttyper (separer med komma).",
+    "description": "Options - description for monospaced sender setting."
   }
 }

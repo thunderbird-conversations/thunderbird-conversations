@@ -7,5 +7,130 @@
   "extensionDescription": {
     "message": "Προσφέρει εμφάνιση μηνυμάτων σε μορφή συνομιλίας στον Thunderbird!",
     "description": "Description of the extension."
+  },
+
+  "options.expand_who": {
+    "message": "Ανάπτυξη (σαν προεπιλογή):",
+    "description": "Options - label for which messages should be expanded."
+  },
+
+  "options.expand_auto": {
+    "message": "Αυτόματο",
+    "description": "Options - label for automatically expanding messages."
+  },
+
+  "options.expand_auto.tooltip": {
+    "message": "Αν το νήμα έχει συμπτυχθεί, γίνεται ανάπτυξη όλων των μη αναγνωσμένων μηνυμάτων ή του τελευταίου μηνύματος. Αν έχει αναπτυχθεί, γίνεται ανάπτυξη μόνο του επιλεγμένου μηνύματος από τη λίστα.",
+    "description": "Options - tooltip for automatically expanding messages."
+  },
+
+  "options.expand_none": {
+    "message": "Κανένα μήνυμα",
+    "description": "Options - label for not expanding messages."
+  },
+
+  "options.expand_all": {
+    "message": "Όλα τα μηνύματα",
+    "description": "Options - label for expanding all messages."
+  },
+
+  "options.quoting_title": {
+    "message": "Κείμενο σε παράθεση",
+    "description": "Options - title for quoted text."
+  },
+
+  "options.quoting_desc": {
+    "message": "Παραθέσεις κειμένου μεγαλύτερες από τόσες γραμμές θα συμπτύσσονται.",
+    "description": "Options - description for quoted text."
+  },
+
+  "options.hide_sigs_title": {
+    "message": "Hide Signatures",
+    "description": "Options - title for hiding signatures."
+  },
+
+  "options.hide_sigs_desc": {
+    "message": "Whether signatures are collapsed by default.",
+    "description": "Options - description for hiding signatures."
+  },
+
+  "options.friendly_date_title": {
+    "message": "Φιλικές ημερομηνίες",
+    "description": "Options - title for if to show friendly dates."
+  },
+
+  "options.friendly_date_desc": {
+    "message": "Χρήση «κανονικής» ημερομηνίας όπως στη λίστα μηνυμάτων αντί για «χθες» κλπ. στη δεξιά πάνω γωνία.",
+    "description": "Options - description for if to show friendly dates."
+  },
+
+  "options.tweak_chrome_title": {
+    "message": "Προσαρμογή γραμματοσειράς προγράμματος",
+    "description": "Options - title for tweaking chrome fonts."
+  },
+
+  "options.tweak_chrome_desc": {
+    "message": "Σμίκρυνση γραμματοσειράς για το περιβάλλον συζήτησης (συνιστάται - απαιτεί επανεκκίνηση).",
+    "description": "Options - description for tweaking chrome fonts."
+  },
+
+  "options.tweak_bodies_title": {
+    "message": "Προσαρμογή γραμματοσειράς κυρίως σώματος",
+    "description": "Options - title for tweaking message body fonts."
+  },
+
+  "options.tweak_bodies_desc": {
+    "message": "Ρύθμιση της γραμματοσειράς στο σώμα μηνύματος ώστε να συμβαδίζει με τη γραμματοσειρά πέρα απ' αυτό (συνιστάται - απαιτεί επανεκκίνηση).",
+    "description": "Options - description for tweaking message body fonts."
+  },
+
+  "options.operate_on_conversations_title": {
+    "message": "Κουμπιά εργαλειοθήκης",
+    "description": "Options - title for archive/delete behavior."
+  },
+
+  "options.operate_on_conversations_desc": {
+    "message": "Τα κουμπιά εργαλειοθήκης θα αρχειοθετούν και θα διαγράφουν ολόκληρες τις συζητήσεις κι όχι μόνο τα επιλεγμένα μηνύματα.",
+    "description": "Options - description for archive/delete behavior."
+  },
+
+  "options.extra_attachments_title": {
+    "message": "Μου αρέσουν τα συνημμένα",
+    "description": "Options - title for attachment settings."
+  },
+
+  "options.extra_attachments_desc": {
+    "message": "Σε μερικές σπάνιες περιπτώσεις, ο Thunderbird ίσως δεν μπορέσει να αναγνωρίσει μερικά επισυναπτόμενα. Αυτή η επιλογή παρακάμπτει το σφάλμα του Thunderbird και εμφανίζει όσα περισσότερα επισυναπτόμενα γίνεται. Χρησιμοποιήστε την σε συνδυασμό με το πρόσθετο: Show All Body Parts.",
+    "description": "Options - description for attachment settings."
+  },
+
+  "options.compose_in_tab_title": {
+    "message": "Κρυμμένο παράθυρο σύνταξης",
+    "description": "Options - title for hidden compose window enabling."
+  },
+
+  "options.compose_in_tab_desc": {
+    "message": "Η συντόμευση «Ctrl-Shift-N» ανοίγει το κρυμμένο, μη υποστηριζόμενο παράθυρο σύνταξης σε νέα καρτέλα.",
+    "description": "Options - description for hidden compose window enabling."
+  },
+
+  "options.debugging_title": {
+    "message": "Αποσφαλμάτωση",
+    "description": "Options - title for debugging setting."
+  },
+
+  "options.debugging_desc": {
+    "message": "Ενεργοποίηση πληροφοριών αποσφαλμάτωσης στις κονσόλες συστήματος και σφαλμάτων.",
+    "description": "Options - description for debugging setting."
+  },
+
+  "options.monospaced_senders_title": {
+    "message": "Προβολή σε γραμματοσειρά σταθερού πλάτους",
+    "description": "Options - title for monospaced sender setting."
+  },
+
+  "options.monospaced_senders_desc": {
+    "message": "Τα μηνύματα από αυτές τις διευθύνσεις/λίστες να εμφανίζονται με γραμματοσειρές σταθερού πλάτους (διαχωρισμός με κόμματα)",
+    "description": "Options - description for monospaced sender setting."
   }
 }

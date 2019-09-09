@@ -7,5 +7,130 @@
   "extensionDescription": {
     "message": "Přináší do Thunderbirdu zobrazení konverzací!",
     "description": "Description of the extension."
+  },
+
+  "options.expand_who": {
+    "message": "Při otevření rozbalit:",
+    "description": "Options - label for which messages should be expanded."
+  },
+
+  "options.expand_auto": {
+    "message": "automaticky",
+    "description": "Options - label for automatically expanding messages."
+  },
+
+  "options.expand_auto.tooltip": {
+    "message": "Pokud je vlákno sbalené, rozbalit všechny nepřečtené, nebo poslední zprávu. Pokud je rozbalené, rozbalit pouze zprávu vybranou v seznamu zpráv.",
+    "description": "Options - tooltip for automatically expanding messages."
+  },
+
+  "options.expand_none": {
+    "message": "žádné zprávy",
+    "description": "Options - label for not expanding messages."
+  },
+
+  "options.expand_all": {
+    "message": "všechny zprávy",
+    "description": "Options - label for expanding all messages."
+  },
+
+  "options.quoting_title": {
+    "message": "Citovaný text",
+    "description": "Options - title for quoted text."
+  },
+
+  "options.quoting_desc": {
+    "message": "Citace delší než tento počet řádek budou sbaleny.",
+    "description": "Options - description for quoted text."
+  },
+
+  "options.hide_sigs_title": {
+    "message": "Skrýt podpisy",
+    "description": "Options - title for hiding signatures."
+  },
+
+  "options.hide_sigs_desc": {
+    "message": "Zobrazovat podpisy sbalené",
+    "description": "Options - description for hiding signatures."
+  },
+
+  "options.friendly_date_title": {
+    "message": "Vlastní formáty data",
+    "description": "Options - title for if to show friendly dates."
+  },
+
+  "options.friendly_date_desc": {
+    "message": "V pravém horním rohu zobrazovat \"normální\" data, stejně jako v seznamu zpráv, místo \"včera\" a dalších.",
+    "description": "Options - description for if to show friendly dates."
+  },
+
+  "options.tweak_chrome_title": {
+    "message": "Upravit písma chrome",
+    "description": "Options - title for tweaking chrome fonts."
+  },
+
+  "options.tweak_chrome_desc": {
+    "message": "Upravit písma v těle zprávy, aby ladila s vnějšími písmy (doporučeno, vyžaduje restart).",
+    "description": "Options - description for tweaking chrome fonts."
+  },
+
+  "options.tweak_bodies_title": {
+    "message": "Upravit písma těla",
+    "description": "Options - title for tweaking message body fonts."
+  },
+
+  "options.tweak_bodies_desc": {
+    "message": "Zmenšit velikost písma konverzací (doporučeno, vyžaduje restart).",
+    "description": "Options - description for tweaking message body fonts."
+  },
+
+  "options.operate_on_conversations_title": {
+    "message": "Tlačítka na liště",
+    "description": "Options - title for archive/delete behavior."
+  },
+
+  "options.operate_on_conversations_desc": {
+    "message": "Tlačítka na liště budou archivovat, nebo mazat celou konverzaci, ne jen vybranou zprávu.",
+    "description": "Options - description for archive/delete behavior."
+  },
+
+  "options.extra_attachments_title": {
+    "message": "Miluji přílohy",
+    "description": "Options - title for attachment settings."
+  },
+
+  "options.extra_attachments_desc": {
+    "message": "V několika krajních případech Thunderbird není schopen rozeznat některé přílohy. Tato předvolba vám chybu umožní obejít. Použijte ji v kombinaci s doplňkem \"Show All Body Parts\".",
+    "description": "Options - description for attachment settings."
+  },
+
+  "options.compose_in_tab_title": {
+    "message": "Skryté okno psaní zprávy",
+    "description": "Options - title for hidden compose window enabling."
+  },
+
+  "options.compose_in_tab_desc": {
+    "message": "Ctrl+Shift+N otevře v novém okně skryté, nepodporované okno psaní zprávy",
+    "description": "Options - description for hidden compose window enabling."
+  },
+
+  "options.debugging_title": {
+    "message": "Ladění",
+    "description": "Options - title for debugging setting."
+  },
+
+  "options.debugging_desc": {
+    "message": "Aktivuje ladící výstup v systémové a chybové konzoli. Tato volba bude generovat mnoho zpráv.",
+    "description": "Options - description for debugging setting."
+  },
+
+  "options.monospaced_senders_title": {
+    "message": "Zobrazit písmem s pevnou šířkou",
+    "description": "Options - title for monospaced sender setting."
+  },
+
+  "options.monospaced_senders_desc": {
+    "message": "Zprávy z následujících adres/poštovních konferencí budou zobrazeny písmem s pevnou šířkou. (Adresy oddělujte čárkami.)",
+    "description": "Options - description for monospaced sender setting."
   }
 }

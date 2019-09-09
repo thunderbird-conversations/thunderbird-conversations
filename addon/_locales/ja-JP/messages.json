@@ -7,5 +7,130 @@
   "extensionDescription": {
     "message": "返信メールが一目でわかるスレッドビューをあなたの Thunderbirdに!",
     "description": "Description of the extension."
+  },
+
+  "options.expand_who": {
+    "message": "既定で展開するメッセージ:",
+    "description": "Options - label for which messages should be expanded."
+  },
+
+  "options.expand_auto": {
+    "message": "自動",
+    "description": "Options - label for automatically expanding messages."
+  },
+
+  "options.expand_auto.tooltip": {
+    "message": "スレッドが折りたたまれているならば、未読か最後のメッセージを展開します。スレッドが展開されているならば、メッセージリストで選択したメッセージを展開します。",
+    "description": "Options - tooltip for automatically expanding messages."
+  },
+
+  "options.expand_none": {
+    "message": "展開しない",
+    "description": "Options - label for not expanding messages."
+  },
+
+  "options.expand_all": {
+    "message": "すべてのメッセージ",
+    "description": "Options - label for expanding all messages."
+  },
+
+  "options.quoting_title": {
+    "message": "引用文",
+    "description": "Options - title for quoted text."
+  },
+
+  "options.quoting_desc": {
+    "message": "この行数より長い引用文は畳まれます。",
+    "description": "Options - description for quoted text."
+  },
+
+  "options.hide_sigs_title": {
+    "message": "署名を隠す",
+    "description": "Options - title for hiding signatures."
+  },
+
+  "options.hide_sigs_desc": {
+    "message": "署名部分を折りたたんだ状態にします。",
+    "description": "Options - description for hiding signatures."
+  },
+
+  "options.friendly_date_title": {
+    "message": "わかりやすい日付",
+    "description": "Options - title for if to show friendly dates."
+  },
+
+  "options.friendly_date_desc": {
+    "message": "右上部分に、\"昨日\"のような表記ではなくメッセージリストと同じ\"普通の\"日付表記を使用します。",
+    "description": "Options - description for if to show friendly dates."
+  },
+
+  "options.tweak_chrome_title": {
+    "message": "外観フォントを調節",
+    "description": "Options - title for tweaking chrome fonts."
+  },
+
+  "options.tweak_chrome_desc": {
+    "message": "スレッドビューのフォントサイズを縮小します。 (おすすめ, 要再起動)",
+    "description": "Options - description for tweaking chrome fonts."
+  },
+
+  "options.tweak_bodies_title": {
+    "message": "メッセージフォントを調節",
+    "description": "Options - title for tweaking message body fonts."
+  },
+
+  "options.tweak_bodies_desc": {
+    "message": "メッセージ本文のフォントを外側と調和するように調整します。 (おすすめ, 要再起動)",
+    "description": "Options - description for tweaking message body fonts."
+  },
+
+  "options.operate_on_conversations_title": {
+    "message": "ツールバーボタン",
+    "description": "Options - title for archive/delete behavior."
+  },
+
+  "options.operate_on_conversations_desc": {
+    "message": "ツールバーボタンで、選択したメッセージだけではなくスレッド全体をアーカイブ・削除します。",
+    "description": "Options - description for archive/delete behavior."
+  },
+
+  "options.extra_attachments_title": {
+    "message": "添付ファイルが大好き",
+    "description": "Options - title for attachment settings."
+  },
+
+  "options.extra_attachments_desc": {
+    "message": "まれに Thunderbird が添付ファイルを認識できないことがあります。このオプションはそのような Thunderbird のバグを回避して、できるだけ多くの添付ファイルを表示します。Show All Body Parts アドオンが必要です。",
+    "description": "Options - description for attachment settings."
+  },
+
+  "options.compose_in_tab_title": {
+    "message": "隠しメール作成ウインドウ",
+    "description": "Options - title for hidden compose window enabling."
+  },
+
+  "options.compose_in_tab_desc": {
+    "message": "Ctrl-Shift-N でメール作成ウインドウを新しいタブで開きます。これは隠し機能でサポート対象外です。",
+    "description": "Options - description for hidden compose window enabling."
+  },
+
+  "options.debugging_title": {
+    "message": "デバッグモード",
+    "description": "Options - title for debugging setting."
+  },
+
+  "options.debugging_desc": {
+    "message": "コンソールへデバッグ出力を記録します。大量のメッセージが生成されます。",
+    "description": "Options - description for debugging setting."
+  },
+
+  "options.monospaced_senders_title": {
+    "message": "等幅で表示",
+    "description": "Options - title for monospaced sender setting."
+  },
+
+  "options.monospaced_senders_desc": {
+    "message": "次のアドレス/メーリングリストからのメッセージを等幅フォントで表示します。 (半角カンマ区切り)",
+    "description": "Options - description for monospaced sender setting."
   }
 }
