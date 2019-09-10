@@ -1,35 +1,4 @@
-<!ENTITY option.expand_who "Lehenespenez, zabaldu:">
-<!ENTITY option.expand_auto2 "Automatikoa">
-<!ENTITY option.expand_auto2.tooltip "Haria tolestuta badago, zabaldu irakurri gabeak edo azken mezua. Haria zabalduta badago, aukeratutako mezua bakarrik zabaldu mezu zerrendan.">
-<!ENTITY option.expand_none "Mezurik ez">
-<!ENTITY option.expand_all "Mezu guztiak">
-<!ENTITY title.quoting2 "testua komatxo artean">
-<!ENTITY desc.quoting "Lerro kopuru hau baino komatxo arteko testuak tolestuak izango dira.">
-<!ENTITY title.hide_sigs "gorde sinadurak">
-<!ENTITY desc.hide_sigs "Whether signatures are collapsed by default.">
-<!ENTITY title.assistant "Konfigurazio-laguntzailea">
-<!ENTITY option.assistant "Hasi konfigurazio-laguntzailea">
-<!ENTITY title.friendly_date "Data atseginagoak">
-<!ENTITY option.no_friendly_date2 "Goiko eskumako ertzean, erabili data &quot;normalak&quot; mezu zerrendan bezala, &quot;atzo&quot; eta horrelakoen ordez.">
 <!ENTITY title.customize_keys "Teklak pertsonalizatu">
 <!ENTITY desc.customize_keys "Laster-teklak pertsonalizatu">
 <!ENTITY label.expand_keys "Zabaldu tekla ezarpenak">
 <!ENTITY label.collapse_keys "Tolestu tekla ezarpenak">
-<!ENTITY title.monospaced_senders "monospace erabili">
-<!ENTITY option.monospaced_senders2 "Erakutsi helbide/posta-zerrenda hauetako mezuak tarte-bakarreko letra-tipoaz (komaz banaturik)">
-<!ENTITY title.tweak_chrome "Doitu interfazeko letra-tipoak">
-<!ENTITY option.tweak_bodies "Doitu mezuen gorputzetako letra-tipoak, irteerako letra-tipoarekin koherentzia mantentzeko (gomendatua, berrabiaraztea behar du).">
-<!ENTITY title.tweak_bodies "Doitu mezuen gorputzetako letra-tipoak">
-<!ENTITY option.tweak_chrome "Txikitu hizketaldien interfazerako letra-tamaina (gomendatua, berrabiaraztea behar du).">
-<!ENTITY title.add_embeds "Gehitu kapsulatuak">
-<!ENTITY option.add_embeds "Antzeman hainbat zerbitzuri loturak mezuetan eta ikusi hauek lerroartean. (Adibidez Youtube)">
-<!ENTITY title.debugging "Arazketa">
-<!ENTITY desc.debugging "Gaitu arazketa irteera sistemako kontsolan eta errore kontsolan. Honek mezu ugari sortuko ditu.">
-<!ENTITY title.operate_on_conversations "Tresna-barra botoiak">
-<!ENTITY option.operate_on_conversations "Tresna-barra botoiek hizketaldi osoa artxibatu edo ezabatuko dute, ez hautatutako mezua bakarrik.">
-<!ENTITY title.extra_attachments "Maite ditut eranskinak">
-<!ENTITY desc.extra_attachments2 "Zenbait kasu ezohikotan, Thunderbird eranskin batzuk errekonozitzen kale egin dezake. Aukera honek thunderbird bug horren aurrean eragiteko aukera ematen dizu, ziurtatuz ahal den guztietan eranskin guztiak erakutsiko direla. Erabil ezazu hau &quot;All Body Parts&quot; gehigarriaz.">
-<!ENTITY title.send_in_background "Atzeko planoan bidali">
-<!ENTITY desc.send_in_background "Honek mezuak bidaltzeko ilaran jartzen ditu, ez duzu bidaltzea amaitzera itxaron beharrik hizketaldiz aldatzeko. Kontuz: eginbide hau ez dago amaitua (ikus SendInBackground wiki.mozilla.org webgunean) eta gaitu ohiko prestatze prozesuari ere. Berrabiaraztea beharrezkoa da.">
-<!ENTITY title.compose_in_tab "Ezkutuan prestatzeko leihoa">
-<!ENTITY desc.compose_in_tab "Ctrl-Shift-N ezkutukoa irekitzen du, sostengu gabeko prestatze leihoa fitxa berrian">

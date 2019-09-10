@@ -1,35 +1,4 @@
-<!ENTITY option.expand_who "Při otevření rozbalit:">
-<!ENTITY option.expand_auto2 "automaticky">
-<!ENTITY option.expand_auto2.tooltip "Pokud je vlákno sbalené, rozbalit všechny nepřečtené, nebo poslední zprávu. Pokud je rozbalené, rozbalit pouze zprávu vybranou v seznamu zpráv.">
-<!ENTITY option.expand_none "žádné zprávy">
-<!ENTITY option.expand_all "všechny zprávy">
-<!ENTITY title.quoting2 "Citovaný text">
-<!ENTITY desc.quoting "Citace delší než tento počet řádek budou sbaleny.">
-<!ENTITY title.hide_sigs "Skrýt podpisy">
-<!ENTITY desc.hide_sigs "Zobrazovat podpisy sbalené">
-<!ENTITY title.assistant "Pomocník s nastavením">
-<!ENTITY option.assistant "Spustit pomocníka s nastavením">
-<!ENTITY title.friendly_date "Vlastní formáty data">
-<!ENTITY option.no_friendly_date2 "V pravém horním rohu zobrazovat &quot;normální&quot; data, stejně jako v seznamu zpráv, místo &quot;včera&quot; a dalších.">
 <!ENTITY title.customize_keys "Upravit klávesové zkratky">
 <!ENTITY desc.customize_keys "Upravit klávesové zkratky tohoto rozšíření">
 <!ENTITY label.expand_keys "Rozbalit nastavení klávesových zkratek">
 <!ENTITY label.collapse_keys "Sbalit nastavení klávesových zkratek">
-<!ENTITY title.monospaced_senders "Zobrazit písmem s pevnou šířkou">
-<!ENTITY option.monospaced_senders2 "Zprávy z následujících adres/poštovních konferencí budou zobrazeny písmem s pevnou šířkou. (Adresy oddělujte čárkami.)">
-<!ENTITY title.tweak_chrome "Upravit písma chrome">
-<!ENTITY option.tweak_bodies "Upravit písma v těle zprávy, aby ladila s vnějšími písmy (doporučeno, vyžaduje restart).">
-<!ENTITY title.tweak_bodies "Upravit písma těla">
-<!ENTITY option.tweak_chrome "Zmenšit velikost písma konverzací (doporučeno, vyžaduje restart).">
-<!ENTITY title.add_embeds "Přidat prvky">
-<!ENTITY option.add_embeds "Rozpoznávat odkazy na různé služby (např. YouTube) a zobrazovat je v e-mailech.">
-<!ENTITY title.debugging "Ladění">
-<!ENTITY desc.debugging "Aktivuje ladící výstup v systémové a chybové konzoli. Tato volba bude generovat mnoho zpráv.">
-<!ENTITY title.operate_on_conversations "Tlačítka na liště">
-<!ENTITY option.operate_on_conversations "Tlačítka na liště budou archivovat, nebo mazat celou konverzaci, ne jen vybranou zprávu.">
-<!ENTITY title.extra_attachments "Miluji přílohy">
-<!ENTITY desc.extra_attachments2 "V několika krajních případech Thunderbird není schopen rozeznat některé přílohy. Tato předvolba vám chybu umožní obejít. Použijte ji v kombinaci s doplňkem &quot;Show All Body Parts&quot;.">
-<!ENTITY title.send_in_background "Odeslat na pozadí">
-<!ENTITY desc.send_in_background "Tímto zařadíte odesílané zprávy na pozadí, takže již nemusíte čekat, až se zpráva odešle, ale můžete okamžitě pokračovat další konverzací. VAROVÁNÍ: Tato funkce ještě není zcela kompletní (stav rozpracování najdete na wiki.mozilla.org po vyhledání hesla SendInBackground). Vyžadován restart.">
-<!ENTITY title.compose_in_tab "Skryté okno psaní zprávy">
-<!ENTITY desc.compose_in_tab "Ctrl+Shift+N otevře v novém okně skryté, nepodporované okno psaní zprávy">

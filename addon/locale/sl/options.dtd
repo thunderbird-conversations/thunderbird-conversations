@@ -1,35 +1,4 @@
-<!ENTITY option.expand_who "Privzeto razširi:">
-<!ENTITY option.expand_auto2 "samodejno">
-<!ENTITY option.expand_auto2.tooltip "Če je nit strnjena, razširi neprebrana sporočila ali zadnje sporočilo. Če je razširjena, razširi samo izbrano sporočilo iz seznama sporočil.">
-<!ENTITY option.expand_none "nobenih sporočil">
-<!ENTITY option.expand_all "vsa sporočila">
-<!ENTITY title.quoting2 "Navedeno besedilo">
-<!ENTITY desc.quoting "Navedena besedila večja od tega števila vrstic bodo strnjena.">
-<!ENTITY title.hide_sigs "Skrij podpise">
-<!ENTITY desc.hide_sigs "Ali naj bodo podpisi privzeto strnjeni.">
-<!ENTITY title.assistant "Pomočnik za nastavitev">
-<!ENTITY option.assistant "Zaženi pomočnika za nastavitev">
-<!ENTITY title.friendly_date "Prijazni datumi">
-<!ENTITY option.no_friendly_date2 "V zgornjem desnem kotu namesto &quot;včeraj&quot; in drugih uporabi &quot;običajne&quot; datume kot v seznamu sporočil.">
 <!ENTITY title.customize_keys "Nastavi tipke">
 <!ENTITY desc.customize_keys "Nastavi hitre tipke za to razširitev">
 <!ENTITY label.expand_keys "Razširi nastavitve tipk">
 <!ENTITY label.collapse_keys "Strni nastavitve tipk">
-<!ENTITY title.monospaced_senders "Prikaži s stalno širino">
-<!ENTITY option.monospaced_senders2 "Sporočila iz teh naslovov/poštnih seznamov naj bodo prikazana v pisavah s stalno širino (ločite z vejico)">
-<!ENTITY title.tweak_chrome "Prilagodi pisave chrome">
-<!ENTITY option.tweak_bodies "Prilagodi pisave v telesu sporočila, da jih naredite dosledne z zunanjo pisavo (priporočeno, zahteva ponoven zagon).">
-<!ENTITY title.tweak_bodies "Prilagodi pisave telesa">
-<!ENTITY option.tweak_chrome "Pomanjšaj velikost pisave za okvir pogovora (priporočeno, zahteva ponoven zagon).">
-<!ENTITY title.add_embeds "Dodaj vgraditve">
-<!ENTITY option.add_embeds "V sporočilih odkrij povezave na različne storitve (npr. YouTube) in jih pokaži v besedilu.">
-<!ENTITY title.debugging "Razhroščevanje">
-<!ENTITY desc.debugging "Omogoči izpis razhroščevanja v sistemski konzoli in konzoli z napakami. To bo ustvarilo veliko sporočil.">
-<!ENTITY title.operate_on_conversations "Gumbi orodne vrstice">
-<!ENTITY option.operate_on_conversations "Gumbi orodne vrstice naj arhivirajo in izbrišejo ves pogovor in ne samo izbrana sporočila">
-<!ENTITY title.extra_attachments "Rad imam priponke">
-<!ENTITY desc.extra_attachments2 "V skrajnih primerih Thunderbird ne bo prepoznal nekaterih priponk. Ta možnost vam omogoča, da obidete ta Thunderbirdov hrošč in zagotavlja prikaz čim večjega števila priponk. Uporabite v kombinaciji z dodatkom Show All Body Parts.">
-<!ENTITY title.send_in_background "Pošlji v ozadju">
-<!ENTITY desc.send_in_background "To bo postavilo sporočila za pošiljanje v čakalno vrsto, tako da vam ni treba čakati, da se opravilo pošiljanja zaključi pred preklopom na drug pogovor. Opozorilo: ta značilnost še ni dokončana (glejte SendInBackground na wiki.mozilla.org) in velja tudi za običajno opravilo sestavljanja. Zahteva ponovni zagon.">
-<!ENTITY title.compose_in_tab "Skrito okno za sestavljanje">
-<!ENTITY desc.compose_in_tab "Ctrl-Shift-N odpre skrito, nepodprto okno za sestavljanje v novem zavihku">

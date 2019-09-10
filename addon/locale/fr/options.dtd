@@ -1,35 +1,4 @@
-<!ENTITY option.expand_who "Par défaut, développer :">
-<!ENTITY option.expand_auto2 "Automatiquement">
-<!ENTITY option.expand_auto2.tooltip "Si le fil de discussion est replié, développe tous les messages non-lus ou le dernier message. S'il est développé, n'étend que que le message sélectionné de la liste.">
-<!ENTITY option.expand_none "Aucun message">
-<!ENTITY option.expand_all "Tous les messages">
-<!ENTITY title.quoting2 "Texte cité">
-<!ENTITY desc.quoting "Les citations plus longues que ce nombre de lignes seront masquées.">
-<!ENTITY title.hide_sigs "Cacher les signatures">
-<!ENTITY desc.hide_sigs "Détermine si les signatures sont cachées par défaut.">
-<!ENTITY title.assistant "Assistant d'installation">
-<!ENTITY option.assistant "Lancer l'assistant d'installation">
-<!ENTITY title.friendly_date "Dates sympas">
-<!ENTITY option.no_friendly_date2 "Dans l'angle supérieur droit, utilisez les dates &quot;normales&quot;, tout comme dans la liste de messages, au lieu de &quot;hier&quot; et autres.">
 <!ENTITY title.customize_keys "Personnaliser les touches">
 <!ENTITY desc.customize_keys "Personnaliser les raccourcis pour cette extension">
 <!ENTITY label.expand_keys "Déplier les paramètres de touches">
 <!ENTITY label.collapse_keys "Replier les paramètres de touches">
-<!ENTITY title.monospaced_senders "Affichage monospace">
-<!ENTITY option.monospaced_senders2 "Les messages venant de ces adresses ou listes de discussion devraient être affichés en polices monospace (séparer les adresses par des virgules)">
-<!ENTITY title.tweak_chrome "Modifier les polices de l'interface">
-<!ENTITY option.tweak_bodies "Modifier les polices des corps de messages pour les rendre cohérentes avec la police externe (recommandé, nécessite un redémarrage).">
-<!ENTITY title.tweak_bodies "Modifier les polices du corps du message">
-<!ENTITY option.tweak_chrome "Diminuer la taille de la police pour qu'elle coïncide avec l'aspect de Conversations (recommandé, nécessite un redémarrage).">
-<!ENTITY title.add_embeds "Ajouter les objets intégrés">
-<!ENTITY option.add_embeds "Détecter les liens vers divers services (par ex. YouTube) dans les messages, et les afficher dans le message lui-même.">
-<!ENTITY title.debugging "Débogage">
-<!ENTITY desc.debugging "Activer le résultat de débogage dans la console système et la console d'erreurs. Cela déclenchera énormément de messages.">
-<!ENTITY title.operate_on_conversations "Boutons de la barre d'outils">
-<!ENTITY option.operate_on_conversations "Les boutons de la barre d'outils devraient archiver et supprimer la conversation entière, pas seulement les messages sélectionnés">
-<!ENTITY title.extra_attachments "J'adore les pièces jointes">
-<!ENTITY desc.extra_attachments2 "Il peut arriver dans certains cas particuliers que Thunderbird ne reconnaisse pas certaines pièces jointes. Les options vous permettent de contourner cette défaillance et d'afficher le plus de pièces jointes possible. À utiliser en association avec l'extension Show All Body Parts.">
-<!ENTITY title.send_in_background "Envoyer en arrière-plan">
-<!ENTITY desc.send_in_background "Ceci va mettre dans une file d'attente les messages à envoyer, vous n'aurez donc pas à attendre que le processus d'envoi soit terminé pour changer de fil de conversation. Attention : cette fonctionnalité n'est pas aboutie (voyez SendInBackground sur wiki.mozilla.org) et ne s'applique que sur le mode de composition classique des messages. redémarrage nécessaire.">
-<!ENTITY title.compose_in_tab "Fenêtre de composition cachée">
-<!ENTITY desc.compose_in_tab "Ctrl+Maj+N ouvre la fenêtre de composition cachée dans un nouvel onglet">

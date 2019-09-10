@@ -1,35 +1,4 @@
-<!ENTITY option.expand_who "Messaggi da espandere (come opzione predefinita)">
-<!ENTITY option.expand_auto2 "L&apos;ultimo messaggio selezionato o il primo non letto">
-<!ENTITY option.expand_auto2.tooltip "Visualizza l&apos;ultimo messaggio selezionato se la discussione è già espansa oppure il primo messaggio non letto se la discussione è contratta">
-<!ENTITY option.expand_none "Non espandere alcun messaggio">
-<!ENTITY option.expand_all "Espandi tutti i messaggi">
-<!ENTITY title.quoting2 "Citazioni">
-<!ENTITY desc.quoting "Righe dopo le quali nascondere il testo citato:">
-<!ENTITY title.hide_sigs "Nascondi firme">
-<!ENTITY desc.hide_sigs "Whether signatures are collapsed by default.">
-<!ENTITY title.assistant "Configurazione guidata">
-<!ENTITY option.assistant "Avvia la configurazione guidata">
-<!ENTITY title.friendly_date "Aspetto delle discussioni">
-<!ENTITY option.no_friendly_date2 "Nell&apos;angolo in alto a destra utilizzare date &quot;normali&quot;, come per la lista dei messaggi, invece di &quot;ieri&quot; e di altre">
 <!ENTITY title.customize_keys "Modifica tasti">
 <!ENTITY desc.customize_keys "Customize the hotkeys of this extension">
 <!ENTITY label.expand_keys "Expand keysettings">
 <!ENTITY label.collapse_keys "Collapse keysettings">
-<!ENTITY title.monospaced_senders "Caratteri a larghezza fissa">
-<!ENTITY option.monospaced_senders2 "È possibile utilizzare i caratteri a larghezza fissa per i messaggi provenienti da determinati indirizzi e-mail aggiungendoli qui sotto (separati con una virgola)">
-<!ENTITY title.tweak_chrome "Ridimensionamento dei caratteri">
-<!ENTITY option.tweak_bodies "Modifica i caratteri nel corpo dei messaggi per renderli compatibili con i caratteri esterni (raccomandato, riavvio necessario)">
-<!ENTITY title.tweak_bodies "Modifica dei caratteri">
-<!ENTITY option.tweak_chrome "Ridimensiona i caratteri affinché coincidano con quelli nella sezione conversazione (raccomandato, riavvio necessario)">
-<!ENTITY title.add_embeds "Rilevazione di link">
-<!ENTITY option.add_embeds "Rileva i link a vari servizi (es: YouTube) nelle e-mail e visualizzali in linea">
-<!ENTITY title.debugging "Debug">
-<!ENTITY desc.debugging "Attiva le registrazioni per il debug nella console di sistema e nella console degli errori. Verranno generati molti messaggi">
-<!ENTITY title.operate_on_conversations "Pulsanti nella barra degli strumenti">
-<!ENTITY option.operate_on_conversations "I pulsanti nella barra degli strumenti permettono di archiviare ed eliminare intere conversazioni, non solo i messaggi selezionati">
-<!ENTITY title.extra_attachments "Amo gli allegati!">
-<!ENTITY desc.extra_attachments2 "In alcuni casi limite, Thunderbird non riuscirà a riconoscere alcuni allegati. Questa opzione permette di visualizzare tutti gli allegati possibili. Da utilizzare in combinazione al componente aggiuntivo 'Show All Body Parts'">
-<!ENTITY title.send_in_background "Invia in modalità silenziosa">
-<!ENTITY desc.send_in_background "I messaggi verranno messi in coda per l&apos;invio, così da non dover attendere il completamento del procedimento di invio prima di poter attivare la visualizzazione a conversazione. Attenzione: l&apos;opzione è ancora incompleta (consultare SendInBackground su wiki.mozilla.org) e viene applicata anche alla composizione regolare. Sarà necessario riavviare per attivare l&apos;opzione">
-<!ENTITY title.compose_in_tab "Finestra di composizione nascosta">
-<!ENTITY desc.compose_in_tab "Ctrl+Maiusc+N apre la finestra di composizione nascosta e non supportata in una nuova scheda">

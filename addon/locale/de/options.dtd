@@ -1,35 +1,4 @@
-<!ENTITY option.expand_who "Standardmäßig ausklappen:">
-<!ENTITY option.expand_auto2 "Automatisch">
-<!ENTITY option.expand_auto2.tooltip "Wenn der Thread eingeklappt ist, werden alle ungelesenen Nachrichten bzw. nur die letzte Nachricht ausgeklappt. Ist der Thread aber ausgeklappt, wird nur die ausgewählte Nachricht angezeigt.">
-<!ENTITY option.expand_none "Keine Nachrichten">
-<!ENTITY option.expand_all "Alle Nachrichten">
-<!ENTITY title.quoting2 "Zitierter Text">
-<!ENTITY desc.quoting "Zitate mit mehr als der angegeben Anzahl von Zeilen einklappen.">
-<!ENTITY title.hide_sigs "Die Signaturen verstecken.">
-<!ENTITY desc.hide_sigs "Mit dieser Einstellung wird festgelegt, ob die Signaturen standardmäßig verkleinert dargestellt werden.">
-<!ENTITY title.assistant "Installationsassistent">
-<!ENTITY option.assistant "Installationsassistenten starten">
-<!ENTITY title.friendly_date "Freundliches Datum">
-<!ENTITY option.no_friendly_date2 "&quot;Normale&quot; Datumsangaben anstelle von &quot;gestern&quot; oder ähnlichem in der oberen rechten Ecke verwenden, genau wie in der Nachrichtenliste.">
 <!ENTITY title.customize_keys "Hotkeys anpassen.">
 <!ENTITY desc.customize_keys "Hier können die Tastenkombinationen der Erweiterung individuell angepasst werden.">
 <!ENTITY label.expand_keys "Tasteneinstellungen öffnen.">
 <!ENTITY label.collapse_keys "Tasteneinstellungen schließen.">
-<!ENTITY title.monospaced_senders "In unproportionaler Schriftart anzeigen">
-<!ENTITY option.monospaced_senders2 "Nachrichten von dieser Adresse/Mailingliste sollen in unproportionaler Schriftart angezeigt werden (durch Kommata trennen).">
-<!ENTITY title.tweak_chrome "Chrom-Schriften optimieren">
-<!ENTITY option.tweak_bodies "Schriften in der Nachrichten-Ansicht optimieren, um die Kompatibilität zu den äußeren Schriften herzsutellen (empfohlen, Neustart erforderlich).">
-<!ENTITY title.tweak_bodies "Body-Schriften optimieren">
-<!ENTITY option.tweak_chrome "Chrom-Schriften für die Konversation verkleinern (empfohlen, Neustart erforderlich).">
-<!ENTITY title.add_embeds "Eingebette Inhalte anzeigen">
-<!ENTITY option.add_embeds "Links zu verschiedenen Diensten (z.B. YouTube) in Nachrichten erkennen und deren Inhalt eingebettet anzeigen.">
-<!ENTITY title.debugging "Debugging">
-<!ENTITY desc.debugging "Debug-Ausgabe in der System- und Fehlerkonsole aktivieren. Es werden dadurch zahlreiche Nachrichten erzeugt.">
-<!ENTITY title.operate_on_conversations "Schaltflächen der Symbolleiste">
-<!ENTITY option.operate_on_conversations "Durch die Schaltflächen der Symbolleiste wird die komplette Konversation archiviert bzw. gelöscht und nicht nur die ausgewählte Nachricht.">
-<!ENTITY title.extra_attachments "Ich liebe Anhänge">
-<!ENTITY desc.extra_attachments2 "In einigen seltenen Fällen erkennt Thunderbird Email-Anhänge nicht. Durch diese Option wird der Fehler in Thunderbird umgangen und es wird versucht so viele Anhänge wie möglich anzuzeigen. In Verbindung mit dem &quot;Show All Body Parts&quot; Add-on benutzen.">
-<!ENTITY title.send_in_background "Im Hintergrund senden">
-<!ENTITY desc.send_in_background "Gesendete Nachrichten werden in einer Warteschlange aufgereiht, sodass man nicht abwarten muss bis die Nachricht gesendet wurde, wenn man zu einer anderen Konversation wechseln möchte. Warnung: Diese Funktion ist nocht nicht fertig und betrifft auch den normalen Aufbau-Prozess (siehe SendInBackground auf wiki.mozilla.org)(Neustart erforderlich).">
-<!ENTITY title.compose_in_tab "Verborgenes Aufbau-Fenster">
-<!ENTITY desc.compose_in_tab "Strg-Shift-N öffnet das verborgene, nicht unterstützte Aufbau-Fenster in einem neuen Tab.">

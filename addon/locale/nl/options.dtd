@@ -1,35 +1,4 @@
-<!ENTITY option.expand_who "Standaard, uitklappen:">
-<!ENTITY option.expand_auto2 "Automatisch">
-<!ENTITY option.expand_auto2.tooltip "Wanneer het bericht is ingeklapt, bekijk alle ongelezen of het laatste bericht. Wanneer het uitgeklapt, alleen de geselecteerde berichten in de lijst uitvouwen.">
-<!ENTITY option.expand_none "Geen berichten">
-<!ENTITY option.expand_all "Alle berichten">
-<!ENTITY title.quoting2 "Aangehaalde tekst">
-<!ENTITY desc.quoting "Aangehaalde tekst met meer dan dit aantal regels zal ingeklapt worden.">
-<!ENTITY title.hide_sigs "Ondertekeningen verbergen">
-<!ENTITY desc.hide_sigs "Of ondertekeningen standaard ingeklapt zijn.">
-<!ENTITY title.assistant "Instelassistent">
-<!ENTITY option.assistant "Start de instelassistent">
-<!ENTITY title.friendly_date "Vriendelijke data">
-<!ENTITY option.no_friendly_date2 "Gebruik in de rechterbovenhoek &quot;normale&quot; data, net als de berichtenlijst, in plaats van &quot;gisteren&quot; en andere.">
 <!ENTITY title.customize_keys "Toetsen aanpassen">
 <!ENTITY desc.customize_keys "Pas de sneltoetsen van deze add-on aan">
 <!ENTITY label.expand_keys "Sneltoetsen uitklappen">
 <!ENTITY label.collapse_keys "Sneltoetsen inklappen">
-<!ENTITY title.monospaced_senders "Tonen in monospace">
-<!ENTITY option.monospaced_senders2 "Berichten van deze adressen/mailing-lijsten moeten worden weergegeven in mono lettertypen (gescheiden door komma's)">
-<!ENTITY title.tweak_chrome "Tweak chrome lettertypes">
-<!ENTITY option.tweak_bodies "Tweak de lettertypen in het bericht om ze gelijk te maken met het omliggende lettertype (aanbevolen, herstart nodig)">
-<!ENTITY title.tweak_bodies "Tweak lettertypes kerntekst">
-<!ENTITY option.tweak_chrome "De schaal van de lettergrootte van de conversatie chrome (aanbevolen, herstart nodig).">
-<!ENTITY title.add_embeds "Insluitingen toevoegen">
-<!ENTITY option.add_embeds "Detecteer koppelingen naar verschillende services (als YouTube) in e-mails en bekijk ze inline.">
-<!ENTITY title.debugging "Debugging">
-<!ENTITY desc.debugging "Schakel debuguitvoer in de systeem- en foutconsole in. Dit zal een groot aantal berichten genereren.">
-<!ENTITY title.operate_on_conversations "Werkbalkknoppen">
-<!ENTITY option.operate_on_conversations "Werkbalkknoppen moeten de gehele conversatie archiveren en verwijderen, niet alleen de geselecteerde berichten.">
-<!ENTITY title.extra_attachments "Ik houd van bijlagen">
-<!ENTITY desc.extra_attachments2 "In sommige rare gevallen zal het Thunderbird niet lukken om bepaalde bijlagen te herkennen. Deze optie biedt u een workaround voor deze bug van Thunderbird en maakt het mogelijk om zo veel mogelijk bijlagen te tonen. Gebruik dit in combinatie met de add-on All Body Parts.">
-<!ENTITY title.send_in_background "Verstuur op de achtergrond">
-<!ENTITY desc.send_in_background "Dit zal berichten verzamelen voor versturen, zodat u niet hoeft te wachten tot het verzendproces voltooid is om te wisselen naar een andere conversatie. Waarschuwing: deze functie is nog niet compleet (zie SendInBacjground op wiki.mozilla.org) en heeft ook invloed op het reguliere opstelproces. Herstart is nodig.">
-<!ENTITY title.compose_in_tab "Verborgen opstelvenster">
-<!ENTITY desc.compose_in_tab "Ctrl-Shift-N opent het verborgen, nietgesupporte opstelvenster in een nieuw tabblad">
