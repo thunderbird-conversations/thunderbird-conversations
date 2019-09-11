@@ -640,6 +640,7 @@ Message.prototype = {
 
       // We've got the right data, push it!
       data.attachments.push({
+        size: att.size,
         formattedSize,
         thumb: sanitize(thumb),
         imgClass,
@@ -1568,20 +1569,24 @@ Message.prototype = {
     win.HandleMultipleAttachments(this.getAttachmentInfos(win), "save");
   },
 
-  downloadAttachment(mainWindow, url) {
+  _getAttrInfo(mainWindow, url) {
     const att = this._attachments.find(att => att.url == url);
     const attInfo = new mainWindow.AttachmentInfo(
-      att.contentType, att.url, att.name, this._uri, att.isExternal, 42
+      att.contentType, att.url, att.name, this._uri, att.isExternal
     );
-    attInfo.save();
+    attInfo.size = att.size;
+    if (attInfo.size != -1) {
+      attInfo.sizeResolved = true;
+    }
+    return attInfo;
+  },
+
+  downloadAttachment(mainWindow, url) {
+    this._getAttrInfo(mainWindow, url).save();
   },
 
   openAttachment(mainWindow, url) {
-    const att = this._attachments.find(att => att.url == url);
-    const attInfo = new mainWindow.AttachmentInfo(
-      att.contentType, att.url, att.name, this._uri, att.isExternal, 42
-    );
-    attInfo.open();
+    this._getAttrInfo(mainWindow, url).open();
   },
 
   openInClassic(mainWindow) {
