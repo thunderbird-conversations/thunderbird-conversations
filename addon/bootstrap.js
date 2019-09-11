@@ -112,8 +112,10 @@ function monkeyPatchAllWindows() {
 let windowObserver = {
   observe(aSubject, aTopic, aData) {
     if (aTopic == "domwindowopened") {
-      aSubject.QueryInterface(Ci.nsIDOMWindow);
-      monkeyPatchWindow(aSubject.window);
+      if (aSubject && ("QueryInterface" in aSubject)) {
+        aSubject.QueryInterface(Ci.nsIDOMWindow);
+        monkeyPatchWindow(aSubject.window);
+      }
     }
   },
 };
