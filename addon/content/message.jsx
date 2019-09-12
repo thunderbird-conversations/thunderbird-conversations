@@ -39,6 +39,10 @@ class Message extends React.PureComponent {
   }
 
   render() {
+    // TODO: For printing, we used to have a container in-between the iframe
+    // and attachments container. Need to figure out how to get that back in
+    // and working.
+    // <div class="body-container"></div>
     return (
       <li className="message" ref={li => this.li = li}>
         <MessageHeader
@@ -72,8 +76,10 @@ class Message extends React.PureComponent {
         }
         {this.props.message.expanded &&
           <MessageNotification
+            canUnJunk={this.props.message.isJunk && !this.props.displayingMultipleMsgs}
             dispatch={this.props.dispatch}
             hasRemoteContent={this.props.message.hasRemoteContent}
+            isOutbox={this.props.message.isOutbox}
             msgUri={this.props.message.msgUri}
             realFrom={this.props.message.realFrom}
             strings={this.strings}/>
@@ -130,6 +136,7 @@ class Message extends React.PureComponent {
 
 Message.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  displayingMultipleMsgs: PropTypes.bool.isRequired,
   iframesLoading: PropTypes.number.isRequired,
   index: PropTypes.number.isRequired,
   message: PropTypes.object.isRequired,

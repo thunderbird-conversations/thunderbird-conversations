@@ -51,6 +51,94 @@ RemoteContentNotification.propTypes = {
   strings: PropTypes.object.isRequired,
 };
 
+class GenericSingleButtonNotification extends React.PureComponent {
+  render() {
+    return (
+      <div className={this.props.barClassName + " notificationBar"}>
+        <svg className="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
+          <use xlinkHref={`chrome://conversations/skin/material-icons.svg#${this.props.iconName}`}></use>
+        </svg>
+        {this.props.notificationText}{" "}
+        <span className="notJunk">
+          <a onClick={this.props.onButtonClick()}>
+            {this.props.buttonTitle}
+          </a>
+        </span>
+      </div>
+    );
+  }
+}
+
+GenericSingleButtonNotification.propTypes = {
+  barClassName: PropTypes.string.isRequired,
+  buttonClassName: PropTypes.string.isRequired,
+  onButtonClick: PropTypes.func.isRequired,
+  buttonTitle: PropTypes.string.isRequired,
+  iconName: PropTypes.string.isRequired,
+  notificationText: PropTypes.string.isRequired,
+};
+
+class JunkNotification extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    this.onClick = this.onClick.bind(this);
+  }
+
+  onClick() {
+    // false = not junk
+    // topMail3Pane(self).JunkSelectedMessages(false);
+  }
+
+  render() {
+    return (
+      <GenericSingleButtonNotification
+        barClassName="junkBar"
+        buttonClassName="notJunk"
+        buttonTitle={this.props.strings.get("notJunk")}
+        iconName="whatshot"
+        notificationText={this.props.strings.get("junk")}
+        onButtonClick={this.onClick}/>
+    );
+  }
+}
+
+JunkNotification.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+  strings: PropTypes.object.isRequired,
+};
+
+class OutboxNotification extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    this.onClick = this.onClick.bind(this);
+  }
+
+  onClick() {
+    // let w = topMail3Pane(self);
+    // if (Services.io.offline)
+    //   w.MailOfflineMgr.goOnlineToSendMessages(w.msgWindow);
+    // else
+    //   w.SendUnsentMessages();
+  }
+
+  render() {
+    return (
+      <GenericSingleButtonNotification
+        barClassName="outboxBar"
+        buttonClassName="sendUnsent"
+        buttonTitle={this.props.strings.get("sendUnsent")}
+        iconName="inbox"
+        notificationText={this.props.strings.get("isOutbox")}
+        onButtonClick={this.onClick}/>
+    );
+  }
+}
+
+OutboxNotification.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+  strings: PropTypes.object.isRequired,
+};
+
 class MessageNotification extends React.PureComponent {
   render() {
     if (this.props.hasRemoteContent) {
@@ -62,13 +150,29 @@ class MessageNotification extends React.PureComponent {
           strings={this.props.strings}/>
       );
     }
+    if (this.props.canUnJunk) {
+      return (
+        <JunkNotification
+          dispatch={this.props.dispatch}
+          strings={this.props.strings}/>
+      );
+    }
+    if (this.props.isOutbox) {
+      return (
+        <OutboxNotification
+          dispatch={this.props.dispatch}
+          strings={this.props.strings}/>
+      );
+    }
     return null;
   }
 }
 
 MessageNotification.propTypes = {
+  canUnJunk: PropTypes.bool.isRequired,
   dispatch: PropTypes.func.isRequired,
   hasRemoteContent: PropTypes.bool.isRequired,
+  isOutbox: PropTypes.bool.isRequired,
   msgUri: PropTypes.string.isRequired,
   realFrom: PropTypes.string.isRequired,
   strings: PropTypes.object.isRequired,

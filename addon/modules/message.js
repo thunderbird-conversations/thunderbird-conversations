@@ -633,6 +633,7 @@ Message.prototype = {
       hasRemoteContent: msgData.hasRemoteContent,
       isDraft: msgData.isDraft,
       isJunk: msgData.isJunk,
+      isOutbox: msgData.isOutbox,
       msgUri: msgData.uri,
       multipleRecipients: msgData.multipleRecipients,
       neckoUrl: msgData.neckoUrl,
