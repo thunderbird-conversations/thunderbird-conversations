@@ -17,26 +17,5 @@
   },
   "background": {
     "scripts": ["prefs.js"]
-  },
-  "options_ui": {
-    "open_in_tab": true,
-    "page": "options.html"
-  },
-  "permissions": ["storage"],
-  "experiment_apis": {
-    "conversations": {
-      "schema": "experiment-api/schema.json",
-      "parent": {
-        "scopes": [
-          "addon_parent"
-        ],
-        "paths": [
-          [
-            "conversations"
-          ]
-        ],
-        "script": "experiment-api/api.js"
-      }
-    }
   }
 }
