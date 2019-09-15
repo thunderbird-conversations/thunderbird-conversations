@@ -17,6 +17,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   msgHdrsDelete: "resource://conversations/modules/stdlib/msgHdrUtils.js",
   composeMessageTo: "resource://conversations/modules/stdlib/compose.js",
   previewAttachment: "resource://conversations/modules/message.js",
+  openConversationInTabOrWindow: "resource://conversations/modules/misc.js",
 });
 
 const initialAttachments = {};
@@ -174,19 +175,20 @@ function summary(state = initialSummary, action) {
       return state;
     }
     case "DETACH_TAB": {
-      const element = document.getElementsByClassName("textarea")[0].parent();
-      let willExpand = element.hasClass("expand") && startedEditing();
+      // TODO: Fix re-enabling composition when expanded into new tab.
+      // const element = document.getElementsByClassName("textarea")[0].parent();
+      // let willExpand = element.hasClass("expand") && startedEditing();
       // Pick _initialSet and not msgHdrs so as to enforce the invariant
       //  that the messages from _initialSet are in the current view.
       let urls =
         Conversations.currentConversation._initialSet.map(x => msgHdrGetUri(x)).join(",");
-      let queryString = "?urls=" + encodeURIComponent(urls) +
-        "&willExpand=" + Number(willExpand);
+      let queryString = "?urls=" + encodeURIComponent(urls);// +
+        // "&willExpand=" + Number(willExpand);
       // First, save the draft, and once it's saved, then move on to opening the
       // conversation in a new tab...
-      onSave(() => {
+      // onSave(() => {
         openConversationInTabOrWindow(Prefs.kStubUrl + queryString);
-      });
+      // });
       return state;
     }
     case "EDIT_CONTACT": {
