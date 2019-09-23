@@ -1046,6 +1046,7 @@ Conversation.prototype = {
       type: "REPLACE_CONVERSATION_DETAILS",
       summary: {
         subject: this.messages[this.messages.length - 1].message.subject,
+        loading: false,
         prefs: {
           defaultFontSize: Prefs.getInt("font.size.variable.x-western"),
           browserForegroundColor: Prefs.getChar("browser.display.foreground_color"),
