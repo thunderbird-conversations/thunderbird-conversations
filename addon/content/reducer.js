@@ -255,6 +255,17 @@ function messages(state = initialMessages, action) {
       Conversations.currentConversation.alwaysShowRemoteContent(action.realFrom, action.msgUri);
       return state;
     }
+    case "REMOVE_MESSAGE_FROM_CONVERSATION": {
+      const newState = {...state};
+      const newMsgData = [];
+      for (let i = 0; i < state.msgData.length; i++) {
+        if (state.msgData[i].msgUri != action.msgUri) {
+          newMsgData.push(state.msgData[i]);
+        }
+      }
+      newState.msgData = newMsgData;
+      return newState;
+    }
     default: {
       return state;
     }
@@ -264,6 +275,9 @@ function messages(state = initialMessages, action) {
 function summary(state = initialSummary, action) {
   switch (action.type) {
     case "REPLACE_CONVERSATION_DETAILS": {
+      if (!("summary" in action)) {
+        return state;
+      }
       return {
         ...state,
         ...action.summary,

@@ -553,7 +553,7 @@ Conversation.prototype = {
     }, 0);
   },
 
-  onItemsModified: function _Conversation_onItemsModified(aItems) {
+  onItemsModified(aItems) {
     Log.debug("Updating conversation", this.counter, "global state...");
     if (!this.completed)
       return;
@@ -744,26 +744,23 @@ Conversation.prototype = {
 
   /**
    * Remove a given message from the conversation.
-   * @param aMessage {Message} a Message as in modules/message.js
+   * @param {Message} msg a Message as in modules/message.js
    */
-  removeMessage: function _Conversation_removeMessage(aMessage) {
+  removeMessage(msg) {
+    Log.debug("Removing message", msg);
     // Move the quick reply to the previous message
-    let i = this.messages.map(x => x.message).indexOf(aMessage);
-    Log.debug("Removing message", i);
-    if (i == this.messages.length - 1 && this.messages.length > 1) {
-      let $ = this._htmlPane.$;
-      $(".message:last").prev().append($(".quickReply"));
-      // Re-enable to reply dropdown for the message that previously had the
-      // quick reply.
-      $(".messageFooter").removeClass("hide");
-      if ($(".quickReply").hasClass("expand")) {
-        $(".message:last .messageFooter").addClass("hide");
-      }
-    }
+    this.messages = this.messages.filter(x => x.message != msg);
+    this._initialSet = this._initialSet.filter(x => x.message != msg);
 
-    this.messages = this.messages.filter(x => x.message != aMessage);
-    this._initialSet = this._initialSet.filter(x => x.message != aMessage);
-    this._domNode.removeChild(aMessage._domNode);
+    // TODO As everything is synchronous but react doesn't let us dispatch
+    // from within a dispatch, then we have to dispatch this off to the main
+    // thread.
+    Services.tm.dispatchToMainThread(() => {
+      this._htmlPane.conversationDispatch({
+        type: "REMOVE_MESSAGE_FROM_CONVERSATION",
+        msgUri: msg._uri,
+      });
+    });
   },
 
   // If a new conversation was launched, and that conversation finds out it can
@@ -858,7 +855,6 @@ Conversation.prototype = {
   // Once we're confident our set of messages is the right one, we actually
   // start outputting them inside the DOM element we were given.
   _outputMessages() {
-    let self = this;
     // XXX I think this test is still valid because of the thread summary
     // stabilization interval (we might have changed selection and still be
     // waiting to fire the new conversation).
@@ -888,120 +884,6 @@ Conversation.prototype = {
 
     // Try to reuse the previous conversation if possible
     if (this._window.Conversations.currentConversation) {
-      let currentMsgSet = this._window.Conversations.currentConversation.messages;
-      // We gotta use URIs, because using Message-IDs can create inconsistencies
-      //  when different messages with the same Message-ID are present in the
-      //  current, expanded thread (breaks the invariant that the selected
-      //  message is also the one that's in this.messages).
-      // The extra check on valid msgHdrs is required, because some messages
-      //  might have been moved / have disappeared in the meanwhile, and if we
-      //  throw an exception here, we're fucked, and we can't recover ever,
-      //  because every test trying to determine whether we can recycle will end
-      //  up running over the buggy set of messages.
-      // let currentMsgUris = currentMsgSet.filter(x => toMsgHdr(x))
-      //                                   .map(x => msgHdrGetUri(toMsgHdr(x)));
-      // // Is a1 a prefix of a2? (I wish JS had pattern matching!)
-      // let isPrefix = function _isPrefix(a1, a2) {
-      //   if (!a1.length) {
-      //     return [true, a2];
-      //   } else if (a1.length && !a2.length) {
-      //     return [false, null];
-      //   }
-      //
-      //   let hd1 = a1[0];
-      //   let hd2 = a2[0];
-      //   if (hd1 == hd2)
-      //     return isPrefix(a1.slice(1, a1.length), a2.slice(1, a2.length));
-      //
-      //   return [false, null];
-      // };
-      // let myMsgUris = this.messages.filter(x => toMsgHdr(x))
-      //                              .map(x => msgHdrGetUri(toMsgHdr(x)));
-      // let [shouldRecycle /* , _whichMessageUris */] = isPrefix(currentMsgUris, myMsgUris);
-      const shouldRecycle = false;
-      // Ok, some explanation needed. How can this possibly happen?
-      // - Click on a conversation
-      // - Conversation is built, becomes the global current conversation
-      // - The message takes forever to stream (happens...)
-      // - User gets fed up, picks another conversation
-      // - Bang! Current conversation has no messages.
-      // Beware, if the previous conversation's messages have been deleted, we
-      //  need to test for currentMsgUri's length, which removes dead msgHdrs,
-      //  not just currentMsgset.
-      // if (currentMsgUris.length == 0)
-      //   shouldRecycle = false;
-      // Be super-conservative (but I fail to see how we could possibly end up
-      // in a different situation → famous last words): we can recycle the
-      // conversation only if there's one draft in it and it's the last message
-      // in the conversation.
-      // let drafts = currentMsgSet.filter(x =>
-      //   !toMsgHdr(x) || msgHdrIsDraft(toMsgHdr(x))
-      // );
-      // if (drafts.length) {
-      //   if (drafts.length > 1)
-      //     shouldRecycle = false;
-      //   else
-      //     shouldRecycle = shouldRecycle
-      //       && (currentMsgSet.indexOf(drafts[0]) == currentMsgSet.length - 1);
-      //   Log.debug("Found drafts, recycling?", shouldRecycle);
-      // }
-      if (shouldRecycle) {
-        // NB: we get here even if there's 0 new messages, understood?
-        // Just get the extra messages
-        let whichMessages = this.messages.slice(currentMsgSet.length, this.messages.length);
-        // So the deal with drafts is a little bit simpler here, because we
-        // don't know which drafts are new, and which are not...
-        // - this.messages in the NEW message set
-        // - currentMsgSet =
-        // this._window.Conversations.currentConversation.messages is the OLD
-        // set of messages
-        // - whichMessages is the set of messages we're about to append
-        for (let x of currentMsgSet) {
-          if (!toMsgHdr(x)) {
-            Log.debug("Discarding null msgHdr");
-            // Not much we can do here... since that message hasn't been taken
-            // into account earlier (see if (toMsgHdr(x))), if we have a
-            // replacement for it, it's already in "whichMessages".
-            this._window.Conversations.currentConversation.removeMessage(x.message);
-          } else if (msgHdrIsDraft(toMsgHdr(x))) {
-            // 20110801 XXX this codepath is not tested (but you get the idea)
-            //   because I don't know how to possibly trigger it.
-            Log.debug("Replacing draft...");
-            this._window.Conversations.currentConversation.removeMessage(x.message);
-            let uri = msgHdrGetUri(toMsgHdr(x));
-            // Find the replacement message, and move it back into the list of
-            // messages we have to append to the old conversation.
-            let correspondingMessage =
-              this.messages.filter(x => (msgHdrGetUri(toMsgHdr(x)) == uri))[0];
-            whichMessages.push(correspondingMessage);
-          }
-        }
-        let compare = (m1, m2) => msgDate(m1) - msgDate(m2);
-        whichMessages.sort(compare);
-        let currentConversation = this._window.Conversations.currentConversation;
-        // Modify the old conversation in-place. BEWARE: don't forget anything
-        Log.debug("Recycling conversation! We are eco-responsible.", whichMessages.length,
-          "new messages");
-        currentConversation.scrollMode = this.scrollMode;
-        currentConversation._initialSet = this._initialSet;
-        // - KEEP the old contact manager (we don't want fresh colors!)
-        // - KEEP the counter
-        // - _domNode, _window are the same because we can only recycle a
-        //    conversation from the main mail:3pane
-        // - KEEP the _query because it's set to notify currentConversation
-        currentConversation._onComplete = this._onComplete;
-        // And pass them to the old conversation. It will take care of setting
-        // _conversation properly on Message instances.
-        currentConversation.appendMessages(whichMessages);
-
-        this.messages = [];
-        return;
-      }
-      // We're about to blow up the old conversation. At this point, it's
-      //  still untouched, so if you need to save anything, do it NOW.
-      // If you want to do something once the new conversation is complete, do
-      //  it in monkeypatch.js
-      Log.debug("Not recycling conversation");
       // Gotta save the quick reply, if there's one! Please note that
       //  contentWindow.Conversations is still wired onto the old
       //  conversation. Updating the global Conversations object and loading
@@ -1011,7 +893,8 @@ Conversation.prototype = {
       //  we're not doing anything besides saving the quick reply, so we don't
       //  need for this call to complete before going on.
       try {
-        this._htmlPane.onSave();
+        // TODO: Re-enable this.
+        // this._htmlPane.onSave();
       } catch (e) {
         Log.error(e);
         dumpCallStack(e);
@@ -1035,8 +918,8 @@ Conversation.prototype = {
       let oldMsg = i > 0 ? this.messages[i - 1].message : null;
       msg.updateTmplData(oldMsg);
     }
-    let reactMsgData = this.messages.map((m, i) => {
-      const msgData = m.message.toReactData(i == self.messages.length - 1);
+    const reactMsgData = this.messages.map((m, i) => {
+      const msgData = m.message.toReactData(i == this.messages.length - 1);
       // inView indicates if the message is currently in the message list
       // view or not. If it isn't we don't show the folder name.
       msgData.inView = this.viewWrapper.isInView(m);
