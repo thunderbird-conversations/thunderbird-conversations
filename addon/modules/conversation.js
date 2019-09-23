@@ -282,8 +282,8 @@ class _ConversationUtils {
     msgHdrsMarkAsRead(msgUris.map(msg => msgUriToMsgHdr(msg)), read);
   }
 
-  markAsJunk(win) {
-    win.JunkSelectedMessages(true);
+  markAsJunk(win, isJunk) {
+    win.JunkSelectedMessages(isJunk);
     win.SetFocusThreadPane();
   }
 
@@ -315,6 +315,14 @@ class _ConversationUtils {
     const msgHdr = msgUriToMsgHdr(msgUri);
     win.gFolderTreeView.selectFolder(msgHdr.folder, true);
     win.gFolderDisplay.selectMessage(msgHdr);
+  }
+
+  sendUnsent(win) {
+    if (Services.io.offline) {
+      win.MailOfflineMgr.goOnlineToSendMessages(win.msgWindow);
+    } else {
+      win.SendUnsentMessages();
+    }
   }
 }
 

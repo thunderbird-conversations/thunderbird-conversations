@@ -137,6 +137,7 @@ class _ConversationHeader extends React.PureComponent {
     //  i.e. the currently selected message
     this.props.dispatch({
       type: "MARK_AS_JUNK",
+      isJunk: true,
     });
   }
 

@@ -60,7 +60,7 @@ class GenericSingleButtonNotification extends React.PureComponent {
         </svg>
         {this.props.notificationText}{" "}
         <span className="notJunk">
-          <a onClick={this.props.onButtonClick()}>
+          <a onClick={this.props.onButtonClick}>
             {this.props.buttonTitle}
           </a>
         </span>
@@ -85,8 +85,11 @@ class JunkNotification extends React.PureComponent {
   }
 
   onClick() {
-    // false = not junk
-    // topMail3Pane(self).JunkSelectedMessages(false);
+    this.props.dispatch({
+      type: "MARK_AS_JUNK",
+      isJunk: false,
+      msgUri: this.props.msgUri,
+    });
   }
 
   render() {
@@ -104,6 +107,7 @@ class JunkNotification extends React.PureComponent {
 
 JunkNotification.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  msgUri: PropTypes.string.isRequired,
   strings: PropTypes.object.isRequired,
 };
 
@@ -114,11 +118,9 @@ class OutboxNotification extends React.PureComponent {
   }
 
   onClick() {
-    // let w = topMail3Pane(self);
-    // if (Services.io.offline)
-    //   w.MailOfflineMgr.goOnlineToSendMessages(w.msgWindow);
-    // else
-    //   w.SendUnsentMessages();
+    this.props.dispatch({
+      type: "SEND_UNSENT",
+    });
   }
 
   render() {
@@ -154,6 +156,7 @@ class MessageNotification extends React.PureComponent {
       return (
         <JunkNotification
           dispatch={this.props.dispatch}
+          msgUri={this.props.msgUri}
           strings={this.props.strings}/>
       );
     }

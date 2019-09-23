@@ -31,6 +31,20 @@ const initialSummary = {
   subject: "",
 };
 
+function modifyOnlyMsg(currentState, msgUri, modifier) {
+  const newState = {...currentState};
+  const newMsgData = [];
+  for (let i = 0; i < currentState.msgData.length; i++) {
+    if (currentState.msgData[i].msgUri == msgUri) {
+      newMsgData.push(modifier({...currentState.msgData[i]}));
+    } else {
+      newMsgData.push(currentState.msgData[i]);
+    }
+  }
+  newState.msgData = newMsgData;
+  return newState;
+}
+
 function attachments(state = initialAttachments, action) {
   switch (action.type) {
     case "PREVIEW_ATTACHMENT": {
@@ -138,17 +152,11 @@ function messages(state = initialMessages, action) {
       return state;
     }
     case "MSG_EXPAND": {
-      const newState = {...state};
-      const newMsgData = [];
-      for (let msg of newState.msgData) {
+      return modifyOnlyMsg(state, action.msgUri, msg => {
         const newMsg = {...msg};
-        if (newMsg.msgUri == action.msgUri) {
-          newMsg.expanded = action.expand;
-        }
-        newMsgData.push(newMsg);
-      }
-      newState.msgData = newMsgData;
-      return newState;
+        newMsg.expanded = action.expand;
+        return newMsg;
+      });
     }
     case "TOGGLE_CONVERSATION_EXPANDED": {
       const newState = {...state};
@@ -178,23 +186,24 @@ function messages(state = initialMessages, action) {
       return state;
     }
     case "MSG_UPDATE_DATA": {
-      const newState = {...state};
-      const newMsgData = [];
-      for (let i = 0; i < state.msgData.length; i++) {
-        if (state.msgData[i].msgUri == action.msgData.msgUri) {
-          newMsgData.push({...state.msgData[i], ...action.msgData});
-        } else {
-          newMsgData.push(state.msgData[i]);
-        }
-      }
-      newState.msgData = newMsgData;
-      return newState;
+      return modifyOnlyMsg(state, action.msgUri, msg => {
+        return {...msg, ...action.msgData};
+      });
     }
     case "MARK_AS_JUNK": {
       // This action should only be activated when the conversation is not a
       //  conversation in a tab AND there's only one message in the conversation,
       //  i.e. the currently selected message
-      ConversationUtils.markAsJunk(topMail3Pane(window));
+      ConversationUtils.markAsJunk(topMail3Pane(window), action.isJunk);
+      if (!action.isJunk) {
+        // TODO: We should possibly wait until we get the notification before
+        // clearing the state here.
+        return modifyOnlyMsg(state, action.msgUri, msg => {
+          const newMsg = {...msg};
+          newMsg.isJunk = action.isJunk;
+          return newMsg;
+        });
+      }
       return state;
     }
     case "MSG_CLICK_IFRAME": {
@@ -316,6 +325,10 @@ function summary(state = initialSummary, action) {
         action.email :
         MailServices.headerParser.makeMimeAddress(action.name, action.email);
       composeMessageTo(dest, topMail3Pane(window).gFolderDisplay.displayedFolder);
+      return state;
+    }
+    case "SEND_UNSENT": {
+      ConversationUtils.sendUnsent(topMail3Pane(window));
       return state;
     }
     case "SHOW_MESSAGES_INVOLVING": {

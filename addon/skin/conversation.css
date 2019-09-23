@@ -568,6 +568,7 @@ a img {
   text-decoration: underline;
   font-weight: bold;
   color: black;
+  cursor: pointer;
 }
 
 .notificationBar .icon {
