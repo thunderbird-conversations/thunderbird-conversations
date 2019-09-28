@@ -266,6 +266,11 @@ function messages(state = initialMessages, action) {
       newState.msgData = newMsgData;
       return newState;
     }
+    case "APPEND_MESSAGES": {
+      const newState = {...state};
+      newState.msgData = newState.msgData.concat(action.msgData);
+      return newState;
+    }
     default: {
       return state;
     }

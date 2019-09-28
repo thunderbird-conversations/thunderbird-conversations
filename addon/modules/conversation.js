@@ -26,7 +26,7 @@ const {msgHdrGetUri, msgHdrIsArchive, msgHdrIsDraft, msgHdrIsInbox,
   ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
 const {MixIn, range, isOSX, isWindows } =
   ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
-const {Message, MessageFromGloda, MessageFromDbHdr} =
+const {MessageFromGloda, MessageFromDbHdr} =
   ChromeUtils.import("resource://conversations/modules/message.js");
 const {groupArray, topMail3Pane} =
   ChromeUtils.import("resource://conversations/modules/misc.js");
@@ -331,7 +331,8 @@ var ConversationUtils = new _ConversationUtils();
 // -- The actual conversation object
 
 // We maintain the invariant that, once the conversation is built, this.messages
-//  matches exactly the DOM nodes with class "message" inside this._domNode.
+// matches exactly the DOM nodes with class "message" inside the displayed
+// message list.
 // So the i-th _message is also the i-th DOM node.
 function Conversation(aWindow, aSelectedMessages, aScrollMode, aCounter) {
   this._contactManager = new ContactManager();
@@ -364,8 +365,6 @@ function Conversation(aWindow, aSelectedMessages, aScrollMode, aCounter) {
   this.counter = aCounter; // RO
   // The Gloda query, so that it's not collected.
   this._query = null;
-  // The DOM node that holds all the messages.
-  this._domNode = null;
   // Function provided by the monkey-patch to do cleanup
   this._onComplete = null;
   this.viewWrapper = null;
@@ -488,36 +487,37 @@ Conversation.prototype = {
     //  handler is only interested in subsequent messages.
     // If we are an old conversation that hasn't been collected, don't go
     //  polluting some other conversation!
+    console.log("Items added 123?");
     if (!this.completed || this._window.Conversations.counter != this.counter)
       return;
+    console.log("Items added?");
     // That's XPConnect bug 547088, so remove the setTimeout when it's fixed and
     //  bump the version requirements in install.rdf.template (might be fixed in
     //  time for Gecko 42, if we're lucky)
     // SO LOLZ: the comment above was written in 2011, Gecko 42 has been
     //  released, bug still isn't fixed.
-    let self = this;
-    this._window.setTimeout(function _Conversation_onQueryCompleted_bug547088() {
+    Services.tm.dispatchToMainThread(() => {
       try {
         // The MessageFromGloda constructor cannot work with gloda messages that
         //  don't have a message header
         aItems = aItems.filter(glodaMsg => glodaMsg.folderMessage);
         // We want at least all messages from the Gloda collection
         // will fire signal when done
-        let messages = aItems.map(glodaMsg => messageFromGlodaIfOffline(self, glodaMsg, "GA"));
+        let messages = aItems.map(glodaMsg => messageFromGlodaIfOffline(this, glodaMsg, "GA"));
         Log.debug("onItemsAdded",
           messages.map(x => msgDebugColor(x) + x.debug + " " + getMessageId(x)).join(" "),
           Colors.default);
-        Log.debug(self.messages.length, "messages already in the conversation");
+        Log.debug(this.messages.length, "messages already in the conversation");
         // The message ids we already hold.
         let messageIds = {};
         // Remove all messages which don't have a msgHdr anymore
-        for (let message of self.messages) {
+        for (let message of this.messages) {
           if (!toMsgHdr(message)) {
             Log.debug("Removing a message with no msgHdr");
-            self.removeMessage(message.message);
+            this.removeMessage(message.message);
           }
         }
-        self.messages.map(m => {
+        this.messages.map(m => {
           messageIds[getMessageId(m)] = !toMsgHdr(m) || msgHdrIsDraft(toMsgHdr(m));
         });
         // If we've got a new header for a message that we used to know as a
@@ -528,10 +528,10 @@ Conversation.prototype = {
           let newMessageId = getMessageId(x);
           if (messageIds[newMessageId]) {
             Log.debug("Removing a draft...");
-            let draft = self.messages.filter(y =>
+            let draft = this.messages.filter(y =>
               getMessageId(y) == newMessageId
             )[0];
-            self.removeMessage(draft.message);
+            this.removeMessage(draft.message);
             delete messageIds[newMessageId];
           }
         }
@@ -544,13 +544,13 @@ Conversation.prototype = {
         // fully created to get the date of a message.
         messages.sort(compare);
         if (messages.length)
-          self.appendMessages(messages);
+          this.appendMessages(messages);
       } catch (e) {
         console.error(e);
         Log.error(e);
         dumpCallStack(e);
       }
-    }, 0);
+    });
   },
 
   onItemsModified(aItems) {
@@ -689,10 +689,9 @@ Conversation.prototype = {
   // This is the function that waits for everyone to be ready (that was a useful
   //  comment)
   _getReady: function _Conversation_getReady(n) {
-    let self = this;
-    this._runOnceAfterNSignals(function() {
-      self._filterOutDuplicates();
-      self._outputMessages();
+    this._runOnceAfterNSignals(() => {
+      this._filterOutDuplicates();
+      this._outputMessages();
     }, n);
   },
 
@@ -768,88 +767,63 @@ Conversation.prototype = {
   //  end of this conversation. This only works if the new messages arrive at
   //  the end of the conversation, I don't support the pathological case of new
   //  messages arriving in the middle of the conversation.
-  appendMessages: function _Conversation_appendMessages(aMessages) {
+  appendMessages(aMessages) {
     // This is normal, the stupid folder tree view often reflows the
     //  whole thing and asks for a new ThreadSummary but the user hasn't
     //  actually changed selections.
-    if (aMessages.length) {
-      Log.debug("Appending",
-        aMessages.map(x => msgDebugColor(x) + x.debug).join(" "), Colors.default);
-
-      // All your messages are belong to us. This is especially important so
-      //  that contacts query the right _contactManager through their parent
-      //  Message.
-      for (let x of aMessages) {
-        x.message._conversation = this;
-      }
-      this.messages = this.messages.concat(aMessages);
-
-      let $ = this._htmlPane.$;
-      for (let i of range(0, aMessages.length)) {
-        let oldMsg;
-        if (i == 0) {
-          if (this.messages.length)
-            oldMsg = this.messages[this.messages.length - 1].message;
-          else
-            oldMsg = null;
-        } else {
-          oldMsg = aMessages[i - 1].message;
-        }
-        let msg = aMessages[i].message;
-        msg.updateTmplData(oldMsg);
-      }
-      // Update initialPosition
-      for (let i of range(this.messages.length - aMessages.length, this.messages.length)) {
-        this.messages[i].message.initialPosition = i;
-      }
-      let tmplData = aMessages.map(m => m.message.toTmplData(false));
-
-      let w = this._htmlPane;
-      w.markReadInView.disable();
-
-      for (let msgData of tmplData) {
-        let x = this._htmlPane.tmpl("#messageTemplate", msgData);
-        this._domNode.appendChild(x);
-        this._htmlPane.renderAttachmentDetails(x, msgData);
-        this._htmlPane.renderMessageFooter(x, msgData);
-        this._htmlPane.renderMessageHeaderOptions(x, msgData);
-      }
-
-      // Important: don't forget to move the quick reply part into the last
-      //  message.
-      $(".message:last").appendChild($(".quickReply")[0]);
-      // Re-enable to reply dropdown for the message that previously had the
-      // quick reply.
-      $(".messageFooter").removeClass("hide");
-      if ($(".quickReply").hasClass("expand")) {
-        $(".message:last .messageFooter").addClass("hide");
-      }
-
-      // Notify each message that it's been added to the DOM and that it can do
-      //  event registration and stuff...
-      let domNodes = this._domNode.getElementsByClassName(Message.prototype.cssClass);
-      for (let i of range(this.messages.length - aMessages.length, this.messages.length)) {
-        this.messages[i].message.onAddedToDom(domNodes[i]);
-        domNodes[i].setAttribute("tabindex", (i + 2) + "");
-      }
+    if (!aMessages.length) {
+      return;
     }
 
-    // Re-do the expand/collapse + scroll to the right node stuff. What this
-    // means is if: if we just added new messages, don't touch the other ones,
-    // and expand/collapse only the newer messages. If we have no new messages,
-    // we probably have a different selection in the thread pane, which means we
-    // have to redo the expand/collapse.
-    if (aMessages.length)
-      this._expandAndScroll(this.messages.length - aMessages.length);
-    else
-      this._expandAndScroll();
+    Log.debug("Appending",
+      aMessages.map(x => msgDebugColor(x) + x.debug).join(" "), Colors.default);
 
+    // All your messages are belong to us. This is especially important so
+    //  that contacts query the right _contactManager through their parent
+    //  Message.
+    for (let x of aMessages) {
+      x.message._conversation = this;
+    }
+    this.messages = this.messages.concat(aMessages);
+
+    for (let i of range(0, aMessages.length)) {
+      let oldMsg;
+      if (i == 0) {
+        if (this.messages.length)
+          oldMsg = this.messages[this.messages.length - 1].message;
+        else
+          oldMsg = null;
+      } else {
+        oldMsg = aMessages[i - 1].message;
+      }
+      let msg = aMessages[i].message;
+      msg.updateTmplData(oldMsg);
+    }
+    // Update initialPosition
+    for (let i of range(this.messages.length - aMessages.length, this.messages.length)) {
+      this.messages[i].message.initialPosition = i;
+    }
     this.viewWrapper = new ViewWrapper(this);
-    for (let m of this.messages) {
+    const reactMsgData = aMessages.map(m => {
+      const msgData = m.message.toReactData(m.message.initialPosition == this.messages.length - 1);
       // inView indicates if the message is currently in the message list
       // view or not. If it isn't we don't show the folder tags.
       m.message.inView = this.viewWrapper.isInView(m);
-    }
+      return msgData;
+    });
+
+    let w = this._htmlPane;
+    w.markReadInView.disable();
+    // Re-do the expand/collapse + scroll to the right node stuff. What this
+    // means is if: if we just added new messages, don't touch the other ones,
+    // and expand/collapse only the newer messages.
+    // TODO:
+    //   this._expandAndScroll(this.messages.length - aMessages.length);
+
+    w.conversationDispatch({
+      type: "APPEND_MESSAGES",
+      msgData: reactMsgData,
+    });
   },
 
   // Once we're confident our set of messages is the right one, we actually
@@ -1005,7 +979,6 @@ Conversation.prototype = {
   // or the event handlers ask for a conversation.
   outputInto(aHtmlPane, k) {
     this._htmlPane = aHtmlPane;
-    this._domNode = this._htmlPane.document.getElementById("messageList");
     this._onComplete = () => k(this);
     this._fetchMessages();
   },

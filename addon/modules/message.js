@@ -5,7 +5,7 @@
 "use strict";
 
 var EXPORTED_SYMBOLS = [
-  "Message", "MessageFromGloda", "MessageFromDbHdr",
+  "MessageFromGloda", "MessageFromDbHdr",
   "ConversationKeybindings", "MessageUtils", "watchIFrame",
 ];
 
@@ -971,14 +971,6 @@ Message.prototype = {
     this.register(".tooltip", function(event) {
       // Clicking inside a tooltip must not collapse the message.
       event.stopPropagation();
-    });
-
-    this.register(".sendUnsent", function(event) {
-      let w = topMail3Pane(self);
-      if (Services.io.offline)
-        w.MailOfflineMgr.goOnlineToSendMessages(w.msgWindow);
-      else
-        w.SendUnsentMessages();
     });
 
     this.register(".ignore-warning", function(event) {
