@@ -93,27 +93,6 @@
       store.dispatch(...args);
     }
 
-    // This function only works for our message nodes, use $(...).offset() for
-    //  more complicated computations.
-    function offsetFromTop(aNode) {
-      let offset = aNode.offsetTop || 0;
-      let parent = aNode.parentNode;
-      while (parent && !(parent instanceof HTMLDocument)) {
-        let style = window.getComputedStyle(parent);
-        if (style.position == "relative")
-          offset += parent.offsetTop;
-        parent = parent.parentNode;
-      }
-      return offset;
-    }
-
-    /* exported scrollNodeIntoView */
-    function scrollNodeIntoView(aNode) {
-      let offset = offsetFromTop(aNode);
-      // The header is 44px high (yes, this is harcodeadly ugly).
-      window.scrollTo(0, offset + 5 - 44);
-    }
-
     document.addEventListener("focus", function(event) {
       /* This is a persistent event listener. It can operate multiple
        * times. We have the invariant that for a given conversation, there's at

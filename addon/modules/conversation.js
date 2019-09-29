@@ -949,7 +949,6 @@ Conversation.prototype = {
     // let self = this;
     // this._runOnceAfterNSignals(function() {
     //   let focusedNode = messageNodes[focusThis];
-    //   self._htmlPane.scrollNodeIntoView(focusedNode);
     //   self.messages[focusThis].message.onSelected();
     //
     //   Array.prototype.forEach.call(messageNodes, function(node, i) {

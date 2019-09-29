@@ -290,7 +290,7 @@ KeyListener.prototype = {
       if (index < (msgNodes.length - 1)) {
         let next = msgNodes[index + 1];
         next.focus();
-        this.message._conversation._htmlPane.scrollNodeIntoView(next);
+        // this.message._conversation._htmlPane.scrollNodeIntoView(next);
       }
       event.preventDefault();
       event.stopPropagation();
@@ -300,7 +300,7 @@ KeyListener.prototype = {
       if (index > 0) {
         let prev = msgNodes[index - 1];
         prev.focus();
-        this.message._conversation._htmlPane.scrollNodeIntoView(prev);
+        // this.message._conversation._htmlPane.scrollNodeIntoView(prev);
       }
       event.preventDefault();
       event.stopPropagation();
@@ -839,7 +839,7 @@ Message.prototype = {
         }
         self._conversation._runOnceAfterNSignals(function() {
           if (self.expanded) {
-            self._conversation._htmlPane.scrollNodeIntoView(self._domNode);
+            // self._conversation._htmlPane.scrollNodeIntoView(self._domNode);
             if (Prefs.getBool("mailnews.mark_message_read.auto") ||
                 Prefs.getBool("mailnews.mark_message_read.delay")) {
               self.read = true;
