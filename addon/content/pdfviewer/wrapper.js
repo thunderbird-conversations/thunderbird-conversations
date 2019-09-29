@@ -7,7 +7,6 @@
 const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 
 XPCOMUtils.defineLazyModuleGetters(this, {
-  decodeUrlParameters: "resource://conversations/modules/stdlib/misc.js",
   NetUtil: "resource://gre/modules/NetUtil.jsm",
   Services: "resource://gre/modules/Services.jsm",
   setupLogging: "resource://conversations/modules/log.js",
@@ -84,11 +83,9 @@ Wrapper.prototype = {
 };
 
 window.addEventListener("load", function(event) {
-  let params = decodeUrlParameters(document.location.href);
-  let uri = decodeURIComponent(params.uri);
-  let name = decodeURIComponent(params.name);
-  document.title = name;
+  const params = (new URL(document.location.href)).searchParams;
+  document.title = params.get("name");
 
-  wrapper = new Wrapper(uri);
+  wrapper = new Wrapper(params.get("uri"));
   wrapper.load().catch(Log.error.bind(Log));
 });
