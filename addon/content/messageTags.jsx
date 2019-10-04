@@ -23,7 +23,6 @@ class MessageTag extends React.PureComponent {
 
   onClick() {
     this.props.onClickX(this.props.id);
-    console.log("Clicked " + this.props.id);
   }
 
   render() {

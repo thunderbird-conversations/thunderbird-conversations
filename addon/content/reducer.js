@@ -186,7 +186,7 @@ function messages(state = initialMessages, action) {
       return state;
     }
     case "MSG_UPDATE_DATA": {
-      return modifyOnlyMsg(state, action.msgUri, msg => {
+      return modifyOnlyMsg(state, action.msgData.msgUri, msg => {
         return {...msg, ...action.msgData};
       });
     }
@@ -221,7 +221,6 @@ function messages(state = initialMessages, action) {
         if (state.msgData[i].msgUri == action.msgUri) {
           newMsgData.push({...state.msgData[i], detailsShowing: action.show});
           if (!newMsgData.hdrDetails) {
-            console.log("Getting details");
             // Let this exit before we start the function.
             setTimeout(() => {
               MessageUtils.getMsgHdrDetails(window, action.msgUri);

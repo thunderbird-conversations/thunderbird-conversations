@@ -487,10 +487,8 @@ Conversation.prototype = {
     //  handler is only interested in subsequent messages.
     // If we are an old conversation that hasn't been collected, don't go
     //  polluting some other conversation!
-    console.log("Items added 123?");
     if (!this.completed || this._window.Conversations.counter != this.counter)
       return;
-    console.log("Items added?");
     // That's XPConnect bug 547088, so remove the setTimeout when it's fixed and
     //  bump the version requirements in install.rdf.template (might be fixed in
     //  time for Gecko 42, if we're lucky)
