@@ -3,7 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 /* global Redux, Conversations, markReadInView, topMail3Pane, getMail3Pane,
-          isInTab, msgHdrsArchive, Prefs, closeTab, startedEditing,
+          isInTab, msgHdrsArchive, Prefs, startedEditing,
           msgHdrGetUri, onSave, openConversationInTabOrWindow,
           printConversation, MailServices, Services */
 
@@ -124,6 +124,9 @@ function messages(state = initialMessages, action) {
     }
     case "MSG_DELETE": {
       MessageUtils.delete(action.msgUri);
+      if (isInTab && state.msgData.length <= 1) {
+        ConversationUtils.closeTab(window);
+      }
       return state;
     }
     case "MSG_OPEN_CLASSIC": {
@@ -180,8 +183,7 @@ function messages(state = initialMessages, action) {
     case "DELETE_CONVERSATION": {
       if (ConversationUtils.delete(topMail3Pane(window), isInTab,
             state.msgData.map(msg => msg.msgUri))) {
-        // TODO: Could we just use window.close here?
-        closeTab();
+        ConversationUtils.closeTab(window);
       }
       return state;
     }

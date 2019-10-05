@@ -112,19 +112,6 @@
       }
     }, true);
 
-    /* exported closeTab */
-    function closeTab() {
-      let browser = window.frameElement;
-      let tabmail = window.top.document.getElementById("tabmail");
-      let tabs = tabmail.tabInfo;
-      let candidates = tabs.filter(x => x.browser == browser);
-      if (candidates.length == 1) {
-        tabmail.closeTab(candidates[0]);
-      } else {
-        Log.error("Couldn't find a tab to close...");
-      }
-    }
-
     // Below are event listeners for various actions. There is some logic
     //  involved, and they may talk to other parts of the code.
 

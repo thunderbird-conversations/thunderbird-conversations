@@ -311,6 +311,18 @@ class _ConversationUtils {
     return false;
   }
 
+  closeTab(win) {
+    const browser = win.frameElement;
+    const tabmail = win.top.document.getElementById("tabmail");
+    const tabs = tabmail.tabInfo;
+    const candidates = tabs.filter(x => x.browser == browser);
+    if (candidates.length == 1) {
+      tabmail.closeTab(candidates[0]);
+    } else {
+      Log.error("Couldn't find a tab to close...");
+    }
+  }
+
   switchToFolderAndMsg(win, msgUri) {
     const msgHdr = msgUriToMsgHdr(msgUri);
     win.gFolderTreeView.selectFolder(msgHdr.folder, true);
@@ -854,7 +866,6 @@ Conversation.prototype = {
       return;
     }
 
-    // Try to reuse the previous conversation if possible
     if (this._window.Conversations.currentConversation) {
       // Gotta save the quick reply, if there's one! Please note that
       //  contentWindow.Conversations is still wired onto the old

@@ -187,14 +187,8 @@ class _MessageUtils {
   }
 
   delete(msgUri) {
-    // this._conversation.removeMessage(this);
     const msgHdr = msgUriToMsgHdr(msgUri);
     msgHdrsDelete([msgHdr]);
-    // TODO: implement this with isintab. Could it be controlled from reducer?
-    // if (this._conversation._htmlPane.isInTab
-    //     && !this._conversation.messages.length) {
-    //   win.closeTab();
-    // }
   }
 
   openInClassic(win, msgUri) {
