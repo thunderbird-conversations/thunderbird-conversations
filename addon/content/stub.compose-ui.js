@@ -11,7 +11,6 @@
 
 /* import-globals-from stub.completion-ui.js */
 
-
 "use strict";
 
 var {
@@ -24,6 +23,10 @@ var {
 var {getHooks} = ChromeUtils.import("resource://conversations/modules/hook.js");
 var {fixIterator} = ChromeUtils.import("resource:///modules/iteratorUtils.jsm");
 var {MailUtils} = ChromeUtils.import("resource:///modules/MailUtils.jsm");
+var {parseMimeLine} =
+  ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
+var {defaultPhotoURI} = ChromeUtils.import("resource://conversations/modules/contact.js");
+
 
 Log = setupLogging("Conversations.Stub.Compose");
 
@@ -1202,4 +1205,141 @@ function createStateListener(aComposeSession, aMsgHdrs, aId) {
       // DisplaySaveFolderDlg(folderURI);
     },
   };
+}
+
+/* This is our new hack: reuse this file to provide a standalone composition
+ * window. Why? Because it uses gloda autocomplete and provides a
+ * no-frills composition experience. */
+ /* exported masqueradeAsQuickCompose */
+function masqueradeAsQuickCompose() {
+  isQuickCompose = true;
+  document.title = strings.get("write");
+  document.querySelector("#conversationHeader").style.display = "none";
+  document.querySelector(".bottom-links").style.display = "none";
+  document.querySelector("#messageList").style.marginTop = "0";
+  document.querySelector("#messageList").classList.add("quickCompose");
+  tmpl("#quickReplyTemplate").appendTo($("#messageList"));
+  $(".replyAll, #save, .replyMethod").remove();
+
+  // TODO figure out why this timeout is needed
+  setTimeout(function() {
+    showQuickReply.call($(".reply.expand"));
+    gComposeSession = createComposeSession(x => x.new());
+    revealCompositionFields();
+    editFields("to");
+  }, 0);
+
+  window.Conversations = {
+    currentConversation: {
+      msgHdrs: [],
+      id: null,
+    },
+  };
+
+  document.querySelector(".quickReply").addEventListener("keypress", function(event) {
+    switch (event.keyCode) {
+      case KeyEvent.DOM_VK_RETURN:
+        if (isAccel(event)) {
+          if (event.shiftKey)
+            gComposeSession.send({ archive: true });
+          else
+            gComposeSession.send();
+        }
+        break;
+    }
+  });
+
+
+  let data = [];
+
+  // Push a new contact item in the list
+  let pushNewPopularContacts = function(n) {
+    let items = data.splice(0, n);
+    let nodes = tmpl("#popularContactTemplate", items);
+
+    items.forEach(function(data2, i) {
+      let data = data2;
+      let node = nodes.eq(i);
+      Log.debug("Adding", data.name, data.email);
+
+      node.find(".popularRemove").click(function() {
+        Log.debug("Removing", data.name, data.email);
+        // Mark it in the prefs
+        let unwantedRecipients = JSON.parse(Prefs.getString("conversations.unwanted_recipients"));
+        unwantedRecipients[data.email] = null;
+        Prefs.setString("conversations.unwanted_recipients",
+          JSON.stringify(unwantedRecipients));
+        // Update the UI
+        $(this).closest(".popularContact").remove();
+        pushNewPopularContacts(1);
+      });
+
+      node.find(".popularName").click(function() {
+        // Get all the current parameters
+        let to = JSON.parse($("#to").val());
+        let cc = JSON.parse($("#cc").val());
+        let bcc = JSON.parse($("#bcc").val());
+        // Append our new value
+        to.push(MailServices.headerParser.makeMimeAddress(data.name, data.email));
+        // Re-set everything
+        let format = items => items.map(parseMimeLine)
+                                   .map(([{ name, email }]) => asToken(null, name, email, null));
+        setupAutocomplete(format(to), format(cc), format(bcc));
+        // Remove the node!
+        node.remove();
+        pushNewPopularContacts(1);
+      });
+    });
+
+    nodes.appendTo($(".quickReplyContactsBox"));
+  };
+
+  $(".quickReplyContactsMoreLink").click(() => pushNewPopularContacts(10));
+
+  // Fill in the "10 most popular contacts" thing
+  let contactQuery = Gloda.newQuery(Gloda.NOUN_CONTACT);
+  contactQuery.orderBy("-popularity").limit(100);
+  let contactCollection = contactQuery.getCollection({
+    onItemsAdded(aItems, aCollection) {
+},
+    onItemsModified(aItems, aCollection) {
+},
+    onItemsRemoved(aItems, aCollection) {
+},
+    onQueryCompleted(aCollection) {
+  let items = aCollection.items;
+  let unwantedRecipients = JSON.parse(Prefs.getString("conversations.unwanted_recipients"));
+
+  for (let contact of items) {
+    if (contact.identities.length) {
+      let id = contact.identities[0];
+      let photoForAbCard = function(card) {
+        if (!card)
+          return defaultPhotoURI;
+        let url = card.getProperty("PhotoURI", "");
+        if (!url)
+          return defaultPhotoURI;
+        return url;
+      };
+      if (id.kind == "email" && !(id.value in unwantedRecipients)) {
+        // Log.debug("Pushing", id.value, contact.name, contact.popularity);
+        data.push({
+          email: id.value,
+          name: contact.name,
+          photo: photoForAbCard(id.abCard),
+        });
+      }
+    }
+  }
+
+  pushNewPopularContacts(10);
+},
+  }, null);
+  contactCollection.becomeExplicit();
+
+  // Misc
+  if (!top.opener) {
+    window.frameElement.setAttribute("tooltip", "aHTMLTooltip");
+    window.frameElement.setAttribute("context", "mailContext");
+  }
 }

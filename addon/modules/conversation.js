@@ -48,7 +48,6 @@ function tenPxFactor() {
   return isWindows ? .7 : .625;
 }
 
-
 // The SignalManager class handles stuff related to spawing asynchronous
 //  requests and waiting for all of them to complete. Basic, but works well.
 //  Warning: sometimes yells at the developer.
@@ -404,6 +403,13 @@ function Conversation(aWindow, aSelectedMessages, aScrollMode, aCounter) {
   this._intermediateResults = [];
   // For timing purposes
   this.t0 = Date.now();
+
+  this.OS = "linux";
+  if (isWindows) {
+    this.OS = "windows";
+  } else if (isOSX) {
+    this.OS = "osx";
+  }
 }
 
 Conversation.prototype = {
@@ -931,6 +937,7 @@ Conversation.prototype = {
           tweakBodies: Prefs.tweak_bodies,
           tweakChrome: Prefs.tweak_chrome,
         },
+        OS: this.OS,
       },
       messages: {
         msgData: reactMsgData,
