@@ -11,7 +11,6 @@ var EXPORTED_SYMBOLS = [
 const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 
 XPCOMUtils.defineLazyModuleGetters(this, {
-  EventHelperMixIn: "resource://conversations/modules/misc.js",
   DisplayNameUtils: "resource:///modules/DisplayNameUtils.jsm",
   Gloda: "resource:///modules/gloda/gloda.js",
   GlodaUtils: "resource:///modules/gloda/utils.js",
@@ -323,4 +322,3 @@ ContactFromAB.prototype = {
 };
 
 MixIn(ContactFromAB, ContactMixIn);
-MixIn(ContactFromAB, EventHelperMixIn);

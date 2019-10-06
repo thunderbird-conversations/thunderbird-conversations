@@ -53,7 +53,7 @@ const {PluginHelpers} =
   ChromeUtils.import("resource://conversations/modules/plugins/helpers.js", {});
 const {Contacts} = ChromeUtils.import("resource://conversations/modules/contact.js", {});
 const {Prefs} = ChromeUtils.import("resource://conversations/modules/prefs.js", {});
-const {EventHelperMixIn, folderName, iconForMimeType, topMail3Pane} =
+const {folderName, iconForMimeType, topMail3Pane} =
   ChromeUtils.import("resource://conversations/modules/misc.js", {});
 const {getHooks} = ChromeUtils.import("resource://conversations/modules/hook.js", {});
 const {dumpCallStack, setupLogging} = ChromeUtils.import("resource://conversations/modules/log.js", {});
@@ -1271,8 +1271,6 @@ Message.prototype = {
     });
   },
 };
-
-MixIn(Message, EventHelperMixIn);
 
 function MessageFromGloda(aConversation, aGlodaMsg, aLateAttachments) {
   this._msgHdr = aGlodaMsg.folderMessage;

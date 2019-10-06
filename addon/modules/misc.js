@@ -13,11 +13,9 @@ const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm")
 XPCOMUtils.defineLazyModuleGetters(this, {
   getMail3Pane: "resource://conversations/modules/stdlib/msgHdrUtils.js",
   Prefs: "resource://conversations/modules/prefs.js",
-  setupLogging: "resource://conversations/modules/log.js",
   StringBundle: "resource:///modules/StringBundle.js",
 });
 
-let Log = setupLogging("Conversations.Misc");
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
 function arrayEquals(a1, a2) {
@@ -112,55 +110,6 @@ function iconForMimeType(aMimeType) {
   }
   return "gtk-file.png";
 }
-
-/**
- * Used to enrich the Message and Contact objects. Assumes the object it's added
- *  upon has a _domNode property. Also assumes it has a _msgHdr and _uri
- *  property if compose is to be called.
- */
-var EventHelperMixIn = {
-
-  compose(compType, shiftKey = false) {
-    let window = topMail3Pane(this);
-    if (shiftKey) {
-      window.ComposeMessage(compType, Ci.nsIMsgCompFormat.OppositeOfDefault, this._msgHdr.folder, [this._uri]);
-    } else {
-      window.ComposeMessage(compType, Ci.nsIMsgCompFormat.Default, this._msgHdr.folder, [this._uri]);
-    }
-  },
-
-  forward(shiftKey) {
-    let forwardType = 0;
-    try {
-      forwardType = Prefs.getInt("mail.forward_message_mode");
-    } catch (e) {
-      Log.error("Unable to fetch preferred forward mode\n");
-    }
-    if (forwardType == 0)
-      this.compose(Ci.nsIMsgCompType.ForwardAsAttachment, shiftKey);
-    else
-      this.compose(Ci.nsIMsgCompType.ForwardInline, shiftKey);
-  },
-
-  register(selector, f, options) {
-    let action;
-    if (typeof(options) == "undefined" || typeof(options.action) == "undefined")
-      action = "click";
-    else
-      action = options.action;
-    let nodes;
-    if (selector === null)
-      nodes = [this._domNode];
-    else if (typeof(selector) == "string")
-      nodes = this._domNode.querySelectorAll(selector);
-    else
-      nodes = [selector];
-
-    for (let node of nodes)
-      node.addEventListener(action, f);
-  },
-
-};
 
 /**
  * This is a super-polymorphic function that allows you to get the topmost
