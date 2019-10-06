@@ -85,6 +85,12 @@ class ContactLabel extends React.PureComponent {
   }
 
   onMouseOver(event) {
+    if (this.fadeOutTimeout) {
+      clearTimeout(this.fadeOutTimeout);
+      delete this.fadeOutTimeout;
+      this.setState({hover: true});
+      return;
+    }
     this.timeout = setTimeout(() => {
       this.setState({hover: true});
       delete this.timeout;
@@ -96,7 +102,10 @@ class ContactLabel extends React.PureComponent {
       clearTimeout(this.timeout);
       delete this.timeout;
     }
-    this.setState({hover: false});
+    this.fadeOutTimeout = setTimeout(() => {
+      this.setState({hover: false});
+      delete this.fadeOutTimeout;
+    }, 400);
   }
 
   render() {
