@@ -130,7 +130,7 @@ class _MessageHeaderOptions extends React.PureComponent {
       document.addEventListener("keypress", this.keyListener);
     }
 
-    this.setState({expanded: !this.state.expanded});
+    this.setState(prevState => ({expanded: !prevState.expanded}));
   }
 
   clearMenu() {
