@@ -1132,7 +1132,7 @@ Message.prototype = {
   },
 
   set read(v) {
-    return msgHdrsMarkAsRead([this._msgHdr], v);
+    msgHdrsMarkAsRead([this._msgHdr], v);
   },
 
   get starred() {
@@ -1148,7 +1148,7 @@ Message.prototype = {
   },
 
   set tags(v) {
-    return msgHdrSetTags(this._msgHdr, v);
+    msgHdrSetTags(this._msgHdr, v);
   },
 
   get collapsed() {
