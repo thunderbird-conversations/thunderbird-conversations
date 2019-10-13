@@ -65,7 +65,8 @@ class Message extends React.PureComponent {
           snippet={this.props.message.snippet}
           starred={this.props.message.starred}
           tags={this.props.message.tags}/>
-        {this.props.message.detailsShowing &&
+        {this.props.message.expanded &&
+         this.props.message.detailsShowing &&
           <MessageDetails
             bcc={this.props.message.bcc}
             cc={this.props.message.cc}

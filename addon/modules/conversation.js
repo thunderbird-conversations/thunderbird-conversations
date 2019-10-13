@@ -26,7 +26,7 @@ const {msgHdrGetUri, msgHdrIsArchive, msgHdrIsDraft, msgHdrIsInbox,
   ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
 const {MixIn, range, isOSX, isWindows } =
   ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
-const {MessageFromGloda, MessageFromDbHdr} =
+const {MessageUtils, MessageFromGloda, MessageFromDbHdr} =
   ChromeUtils.import("resource://conversations/modules/message.js");
 const {groupArray, topMail3Pane} =
   ChromeUtils.import("resource://conversations/modules/misc.js");
@@ -36,6 +36,8 @@ let Log = setupLogging("Conversations.Conversation");
 const kMsgDbHdr = 0;
 const kMsgGloda = 1;
 const kAllowRemoteContent = 2;
+
+const kHeadersShowAll = 2;
 
 const nsMsgViewIndex_None = 0xffffffff;
 
@@ -910,6 +912,8 @@ Conversation.prototype = {
       let oldMsg = i > 0 ? this.messages[i - 1].message : null;
       msg.updateTmplData(oldMsg);
     }
+    const shouldShowHeaders = Prefs.getInt("mail.show_headers") == kHeadersShowAll;
+
     const reactMsgData = this.messages.map((m, i) => {
       const msgData = m.message.toReactData(i == this.messages.length - 1);
       // inView indicates if the message is currently in the message list
@@ -917,13 +921,23 @@ Conversation.prototype = {
       msgData.inView = this.viewWrapper.isInView(m);
       msgData.initialPosition = i;
       // This is a new display of a conversation, so ensure we don't display
-      // the detailed view of the header.
-      msgData.detailsShowing = false;
+      // the detailed view of the header unless the user wants us to.
+      msgData.detailsShowing = shouldShowHeaders;
       return msgData;
     });
 
     // Move on to the next step
     this._expandAndScroll(this.messages, reactMsgData);
+
+    // If we're showing message hdr details, then get them here so we're ready
+    // when we first display.
+    if (shouldShowHeaders) {
+      for (const msg of reactMsgData) {
+        Services.tm.dispatchToMainThread(() => {
+          MessageUtils.getMsgHdrDetails(this._htmlPane, msg.msgUri);
+        });
+      }
+    }
 
     this._htmlPane.conversationDispatch({
       type: "REPLACE_CONVERSATION_DETAILS",
@@ -949,6 +963,7 @@ Conversation.prototype = {
     // Invalidate the composition session so that compose-ui.js can setup the
     //  fields next time.
     this._htmlPane.gComposeSession = null;
+
     // Now tell the monkeypatch that we've queued everything up.
     Services.tm.dispatchToMainThread(() => this._onComplete());
   },

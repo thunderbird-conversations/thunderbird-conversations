@@ -37,9 +37,6 @@ XPCOMUtils.defineLazyGetter(Services, "mMessenger",
                               return Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
                             });
 
-const kHeadersShowAll = 2;
-// const kHeadersShowNormal = 1;
-
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
 const {
@@ -915,18 +912,7 @@ Message.prototype = {
     let self = this;
     let mainWindow = topMail3Pane(this);
 
-    // Let the UI do its stuff with the tooltips
-    this._conversation._htmlPane.enableTooltips(this);
-
     // Register all the needed event handlers. Nice wrappers below.
-
-    // Pre-set the right value
-    // let realFrom = "";
-    // if (this._from.email)
-    //   realFrom = this._from.email.trim().toLowerCase();
-    // // _realFrom is better.
-    // if (this._realFrom.email)
-    //   realFrom = this._realFrom.email.trim().toLowerCase();
 
     // TODO: This toggle is currently disabled.
     // if (realFrom in Prefs.monospaced_senders)
@@ -944,11 +930,6 @@ Message.prototype = {
     //   self._reloadMessage();
     //   event.stopPropagation();
     // });
-    this.register(".tooltip", function(event) {
-      // Clicking inside a tooltip must not collapse the message.
-      event.stopPropagation();
-    });
-
     this.register(".ignore-warning", function(event) {
       self._domNode.getElementsByClassName("phishingBar")[0].style.display = "none";
       self._msgHdr.setUint32Property("notAPhishMessage", 1);
@@ -1140,10 +1121,7 @@ Message.prototype = {
             self._msgHdr.folder.lastMessageLoaded = self._msgHdr.messageKey;
 
             self._didStream = true;
-            if (Prefs.getInt("mail.show_headers") == kHeadersShowAll)
-              self.showDetails(() => self._signal());
-            else
-              self._signal();
+            self._signal();
           } catch (e) {
             try {
               // adjustHeight();

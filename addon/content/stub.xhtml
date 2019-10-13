@@ -93,25 +93,6 @@
       store.dispatch(...args);
     }
 
-    document.addEventListener("focus", function(event) {
-      /* This is a persistent event listener. It can operate multiple
-       * times. We have the invariant that for a given conversation, there's at
-       * most one such element (recycling doesn't use tabindex 1). */
-      let msgNode = document.querySelector(".message[tabindex=\"1\"]");
-      if (!msgNode)
-        return;
-
-      /* Restore the proper tab order. This event is fired *after* the
-       * right message has been focused in Gecko 1.9.2, *before* the right
-       * message has been focused in Gecko 1.9.1 (so it's basically
-       * useless). */
-      let msgNodes = document.getElementsByClassName("message");
-      let index = Array.prototype.indexOf.call(msgNodes, msgNode);
-      if (index != -1) {
-        msgNode.setAttribute("tabindex", index + 2);
-      }
-    }, true);
-
     // Below are event listeners for various actions. There is some logic
     //  involved, and they may talk to other parts of the code.
 
