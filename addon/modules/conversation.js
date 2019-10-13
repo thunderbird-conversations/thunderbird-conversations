@@ -277,8 +277,12 @@ ViewWrapper.prototype = {
 };
 
 class _ConversationUtils {
-  markAllAsRead(msgUris, read) {
-    msgHdrsMarkAsRead(msgUris.map(msg => msgUriToMsgHdr(msg)), read);
+  markAllAsRead(msgUris, read, withChecks = false) {
+    if (!withChecks ||
+        Prefs.getBool("mailnews.mark_message_read.auto") ||
+        Prefs.getBool("mailnews.mark_message_read.delay")) {
+      msgHdrsMarkAsRead(msgUris.map(msg => msgUriToMsgHdr(msg)), read);
+    }
   }
 
   markAsJunk(win, isJunk) {

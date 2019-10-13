@@ -824,24 +824,6 @@ Message.prototype = {
     this._domNode = aDomNode;
 
     let self = this;
-    this._domNode.getElementsByClassName("messageHeader")[0]
-      .addEventListener("click", function(event) {
-        // Don't do any collapsing if we're clicking on one of the header buttons.
-        if (event.target.localName == "button" ||
-            event.target.className.includes("action-")) {
-          return;
-        }
-        self._conversation._runOnceAfterNSignals(function() {
-          if (self.expanded) {
-            // self._conversation._htmlPane.scrollNodeIntoView(self._domNode);
-            if (Prefs.getBool("mailnews.mark_message_read.auto") ||
-                Prefs.getBool("mailnews.mark_message_read.delay")) {
-              self.read = true;
-            }
-          }
-        }, 1);
-        self.toggle();
-      });
 
     let keyListener = new KeyListener(this);
     this._domNode.addEventListener("keydown", function(event) {

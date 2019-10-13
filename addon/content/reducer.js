@@ -154,6 +154,13 @@ function messages(state = initialMessages, action) {
                                     topMail3Pane(window).msgWindow, undefined, undefined, {});
       return state;
     }
+    case "MARK_AS_READ": {
+      let msg = state.msgData.find(m => m.msgUri == action.msgUri);
+      if (msg && !msg.read) {
+        ConversationUtils.markAllAsRead([action.msgUri], true, true);
+      }
+      return state;
+    }
     case "MSG_EXPAND": {
       return modifyOnlyMsg(state, action.msgUri, msg => {
         const newMsg = {...msg};

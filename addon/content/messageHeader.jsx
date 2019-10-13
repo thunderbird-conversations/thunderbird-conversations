@@ -173,6 +173,13 @@ class MessageHeader extends React.PureComponent {
       expand: !this.props.expanded,
       msgUri: this.props.msgUri,
     });
+    if (!this.props.expanded) {
+      this.props.dispatch({
+        type: "MARK_AS_READ",
+        expand: !this.props.expanded,
+        msgUri: this.props.msgUri,
+      });
+    }
   }
 
   onClickStar(event) {
