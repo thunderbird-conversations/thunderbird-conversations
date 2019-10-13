@@ -721,7 +721,7 @@ Conversation.prototype = {
   // Then, for different candidates for a single message id, we need to pick the
   //  best one, giving precedence to those which are selected and/or in the
   //  current view.
-  _filterOutDuplicates: function _Conversation_filterOutDuplicates() {
+  _filterOutDuplicates() {
     let messages = this.messages;
     this.viewWrapper = new ViewWrapper(this);
     // Wicked cases, when we're asked to display a draft that's half-saved...
@@ -730,9 +730,8 @@ Conversation.prototype = {
     // The message that's selected has the highest priority to avoid
     //  inconsistencies in case multiple identical messages are present in the
     //  same thread (e.g. message from to me).
-    let self = this;
-    let selectRightMessage = function(aSimilarMessages) {
-      let findForCriterion = function(aCriterion) {
+    let selectRightMessage = (aSimilarMessages) => {
+      let findForCriterion = (aCriterion) => {
         let bestChoice;
         for (let msg of aSimilarMessages) {
           if (!toMsgHdr(msg))
@@ -745,7 +744,7 @@ Conversation.prototype = {
         return bestChoice;
       };
       let r =
-        findForCriterion(aMsg => self.viewWrapper.isInView(aMsg)) ||
+        findForCriterion(aMsg => this.viewWrapper.isInView(aMsg)) ||
         findForCriterion(aMsg => msgHdrIsInbox(toMsgHdr(aMsg))) ||
         findForCriterion(aMsg => msgHdrIsSent(toMsgHdr(aMsg))) ||
         findForCriterion(aMsg => !msgHdrIsArchive(toMsgHdr(aMsg))) ||
