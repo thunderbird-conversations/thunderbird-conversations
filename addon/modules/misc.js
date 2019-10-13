@@ -3,9 +3,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 var EXPORTED_SYMBOLS = [
-  "groupArray", "joinWordList", "iconForMimeType",
-  "EventHelperMixIn", "arrayEquals", "topMail3Pane",
-  "folderName", "openConversationInTabOrWindow",
+  "groupArray", "joinWordList", "iconForMimeType", "arrayEquals",
+  "topMail3Pane", "folderName", "openConversationInTabOrWindow",
 ];
 
 const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
