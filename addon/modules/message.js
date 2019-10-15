@@ -513,7 +513,6 @@ for (let [actionName /* j */] of entries(KeyListener.prototype.functions)) {
 
 // Call that one after setting this._msgHdr;
 function Message(aConversation) {
-  this._didStream = false;
   this._domNode = null;
   this._snippet = "";
   this._conversation = aConversation;
@@ -1120,7 +1119,6 @@ Message.prototype = {
             self._msgHdr.folder.NotifyPropertyFlagChanged(self._msgHdr, "msgLoaded", 0, 1);
             self._msgHdr.folder.lastMessageLoaded = self._msgHdr.messageKey;
 
-            self._didStream = true;
             self._signal();
           } catch (e) {
             try {
@@ -1131,7 +1129,6 @@ Message.prototype = {
             Log.error(e);
             dumpCallStack(e);
             Log.warn("Running signal once more to make sure we move on with our life... (warning, this WILL cause bugs)");
-            self._didStream = true;
             self._signal();
           }
         }, true); /* end iframe.addEventListener */

@@ -618,7 +618,7 @@ Conversation.prototype = {
     }
   },
 
-  onQueryCompleted: function _Conversation_onQueryCompleted(aCollection) {
+  onQueryCompleted(aCollection) {
     // We'll receive this notification waaaay too many times, so if we've
     // already settled on a set of messages, let onItemsAdded handle the rest.
     // This is just for the initial building of the conversation.
@@ -635,8 +635,7 @@ Conversation.prototype = {
     // That's XPConnect bug 547088, so remove the setTimeout when it's fixed and
     //  bump the version requirements in install.rdf.template (might be fixed in
     //  time for Gecko 42, if we're lucky)
-    let self = this;
-    this._window.setTimeout(function _Conversation_onQueryCompleted_bug547088() {
+    Services.tm.dispatchToMainThread(() => {
       try {
         // The MessageFromGloda constructor cannot work with gloda messages that
         //  don't have a message header
@@ -649,35 +648,35 @@ Conversation.prototype = {
         // I've seen cases where we do have intermediate results for the message
         // header but the final collection after filtering has zero items.
         if (aCollection.items.length)
-          self.id = aCollection.items[0].conversation.id;
+          this.id = aCollection.items[0].conversation.id;
         // Beware, some bad things might have happened in the meanwhile...
-        self._initialSet =
-          self._initialSet.filter(msgHdr => msgHdr && msgHdr.folder.msgDatabase.ContainsKey(msgHdr.messageKey));
-        self._intermediateResults =
-          self._intermediateResults.filter(glodaMsg => glodaMsg.folderMessage);
+        this._initialSet =
+          this._initialSet.filter(msgHdr => msgHdr && msgHdr.folder.msgDatabase.ContainsKey(msgHdr.messageKey));
+        this._intermediateResults =
+          this._intermediateResults.filter(glodaMsg => glodaMsg.folderMessage);
         // When the right number of signals has been fired, move on...
-        self._getReady(aCollection.items.length
-          + self._intermediateResults.length
-          + self._initialSet.length
+        this._getReady(aCollection.items.length
+          + this._intermediateResults.length
+          + this._initialSet.length
           + 1
         );
         // We want at least all messages from the Gloda collection + all
         //  messages from the intermediate set (see rationale in the
         //  initialization of this._intermediateResults).
         // will fire signal when done
-        self.messages =
-          aCollection.items.map(glodaMsg => messageFromGlodaIfOffline(self, glodaMsg, "GF"));
+        this.messages =
+          aCollection.items.map(glodaMsg => messageFromGlodaIfOffline(this, glodaMsg, "GF"));
         let intermediateSet =
-          self._intermediateResults.filter(glodaMsg => glodaMsg.folderMessage)
-                                   .map(glodaMsg => messageFromGlodaIfOffline(self, glodaMsg, "GM"));
-        self.messages = self.messages.concat(intermediateSet);
+          this._intermediateResults.filter(glodaMsg => glodaMsg.folderMessage)
+                                   .map(glodaMsg => messageFromGlodaIfOffline(this, glodaMsg, "GM"));
+        this.messages = this.messages.concat(intermediateSet);
         // Here's the message IDs we know
         let messageIds = {};
-        for (let m of self.messages) {
+        for (let m of this.messages) {
           messageIds[getMessageId(m)] = true;
         }
         // But Gloda might also miss some message headers
-        for (let msgHdr of self._initialSet) {
+        for (let msgHdr of this._initialSet) {
           // Although _filterOutDuplicates is called eventually, don't uselessly
           //  create messages. The typical use case is when the user has a
           //  conversation selected, a new message arrives in that conversation,
@@ -688,9 +687,9 @@ Conversation.prototype = {
           //  with the real header...
           if (!(msgHdr.messageId in messageIds)) {
             // Will call signal when done.
-            self.messages.push(messageFromDbHdr(self, msgHdr, "MI+G"));
+            this.messages.push(messageFromDbHdr(this, msgHdr, "MI+G"));
           } else {
-            self._signal();
+            this._signal();
           }
         }
         // Sort all the messages according to the date so that they are inserted
@@ -698,14 +697,14 @@ Conversation.prototype = {
         let compare = (m1, m2) => msgDate(m1) - msgDate(m2);
         // We can sort now because we don't need the Message instance to be
         // fully created to get the date of a message.
-        self.messages.sort(compare);
+        this.messages.sort(compare);
         // Move on! (Actually, will move on when all messages are ready)
-        self._signal();
+        this._signal();
       } catch (e) {
         Log.error(e);
         dumpCallStack(e);
       }
-    }, 0);
+    });
   },
 
   // This is the function that waits for everyone to be ready (that was a useful
