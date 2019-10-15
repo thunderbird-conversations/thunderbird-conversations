@@ -1009,6 +1009,7 @@ Message.prototype = {
     let msgWindow = topMail3Pane(this).msgWindow;
     let self = this;
 
+    // Pre msg loading.
     for (let h of getHooks()) {
       try {
         if (typeof(h.onMessageBeforeStreaming) == "function")
@@ -1019,134 +1020,35 @@ Message.prototype = {
       }
     }
 
-    let iframe = this._domNode.ownerDocument
-      .createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "iframe");
-    iframe.setAttribute("style", "height: 20px; overflow-y: hidden");
-    iframe.setAttribute("type", "content");
+    // iframe created + loads...
 
-    // The xul:iframe automatically loads about:blank when it is added
-    // into the tree. We need to wait for the document to be loaded before
-    // doing things.
-    //
-    // Why do we do that? Basically because we want the <xul:iframe> to
-    // have a docShell and a webNavigation. If we don't do that, and we
-    // set directly src="about:blank" above, sometimes we are too fast and
-    // the docShell isn't ready by the time we get there.
-    iframe.addEventListener("load", function f_temp2(event, aCharset) {
+    // happens just after creation at start of load.
+
+    // post iframe loading
+
+    // Notify hooks that we just finished displaying a message. Must be
+    //  performed now, not later. This gives plugins a chance to modify
+    //  the DOM of the message (i.e. decrypt it) before we tweak the
+    //  fonts and stuff.
+
+    for (let h of getHooks()) {
       try {
-        iframe.removeEventListener("load", f_temp2, true);
-
-        // The post-display adjustments are now divided in two phases. Some
-        // stuff takes place directly after the message has been streamed but
-        // _before_ images have been loaded. We adjust the height after that.
-        // But still need to do some more processing after the message has been
-        // fully loaded. We adjust the height again.
-
-        // The second load event is triggered by loadURI with the URL
-        // being the necko URL to the given message. These are the late
-        // adjustments that (possibly) depend on the message being actually,
-        // fully, completely loaded.
-        iframe.addEventListener("load", function f_temp1(event) {
-          try {
-            iframe.removeEventListener("load", f_temp1, true);
-
-            // Notify hooks that we just finished displaying a message. Must be
-            //  performed now, not later. This gives plugins a chance to modify
-            //  the DOM of the message (i.e. decrypt it) before we tweak the
-            //  fonts and stuff.
-
-            for (let h of getHooks()) {
-              try {
-                if (typeof(h.onMessageStreamed) == "function")
-                  h.onMessageStreamed(self._msgHdr, self._domNode, msgWindow, self);
-              } catch (e) {
-                Log.warn("Plugin returned an error:", e);
-                dumpCallStack(e);
-              }
-            }
-
-            let iframeDoc = iframe.contentDocument;
-            if (self.checkForFishing(iframeDoc) && !self._msgHdr.getUint32Property("notAPhishMessage")) {
-              Log.debug("Phishing attempt");
-              self._domNode.getElementsByClassName("phishingBar")[0].style.display = "block";
-            }
-
-            // For bidiUI. Do that now because the DOM manipulations are
-            //  over. We can't do this before because BidiUI screws up the
-            //  DOM. Don't know why :(.
-            // We can't do this as a plugin (I wish I could!) because this is
-            //  too entangled with the display logic.
-            let mainWindow = topMail3Pane(self);
-            if ("BiDiMailUI" in mainWindow) {
-              let ActionPhases = mainWindow.BiDiMailUI.Display.ActionPhases;
-              try {
-                let domDocument = iframe.docShell.contentViewer.DOMDocument;
-                let body = domDocument.body;
-
-                let BDMCharsetPhaseParams = {
-                  body,
-                  charsetOverrideInEffect: msgWindow.charsetOverride,
-                  currentCharset: msgWindow.mailCharacterSet,
-                  messageHeader: self._msgHdr,
-                  unusableCharsetHandler: mainWindow
-                    .BiDiMailUI.MessageOverlay.promptForDefaultCharsetChange,
-                  needCharsetForcing: false,
-                  charsetToForce: null,
-                };
-                ActionPhases.charsetMisdetectionCorrection(BDMCharsetPhaseParams);
-                if (BDMCharsetPhaseParams.needCharsetForcing
-                    && BDMCharsetPhaseParams.charsetToForce != aCharset) {
-                  // XXX this doesn't take into account the case where we
-                  // have a cycle with length > 0 in the reloadings.
-                  // Currently, I only see UTF8 -> UTF8 cycles.
-                  Log.debug("Reloading with " + BDMCharsetPhaseParams.charsetToForce);
-                  f_temp2(null, BDMCharsetPhaseParams.charsetToForce);
-                  return;
-                }
-                ActionPhases.htmlNumericEntitiesDecoding(body);
-                ActionPhases.quoteBarsCSSFix(domDocument);
-                ActionPhases.directionAutodetection(domDocument);
-              } catch (e) {
-                Log.error(e);
-                dumpCallStack(e);
-              }
-            }
-
-            // Everything's done, so now we're able to settle for a height.
-            // adjustHeight();
-
-            // Send "msgLoaded" event
-            self._msgHdr.folder.NotifyPropertyFlagChanged(self._msgHdr, "msgLoaded", 0, 1);
-            self._msgHdr.folder.lastMessageLoaded = self._msgHdr.messageKey;
-
-            self._signal();
-          } catch (e) {
-            try {
-              // adjustHeight();
-            } catch (e) {
-              iframe.style.height = "800px";
-            }
-            Log.error(e);
-            dumpCallStack(e);
-            Log.warn("Running signal once more to make sure we move on with our life... (warning, this WILL cause bugs)");
-            self._signal();
-          }
-        }, true); /* end iframe.addEventListener */
+        if (typeof(h.onMessageStreamed) == "function")
+          h.onMessageStreamed(self._msgHdr, self._domNode, msgWindow, self);
       } catch (e) {
-        Log.error(e);
+        Log.warn("Plugin returned an error:", e);
         dumpCallStack(e);
       }
-    }, true); /* end document.addEventListener */
+    }
 
-    // Ok, brace ourselves for notifications happening during the message load
-    //  process.
-    addMsgListener(this);
+    // More post iframe.
+    // let iframeDoc = iframe.contentDocument;
+    // if (self.checkForFishing(iframeDoc) && !self._msgHdr.getUint32Property("notAPhishMessage")) {
+    //   Log.debug("Phishing attempt");
+    //   self._domNode.getElementsByClassName("phishingBar")[0].style.display = "block";
+    // }
 
-    // This triggers the whole process. We assume (see beginning) that the
-    // message is expanded which means the <iframe> will be visible right away
-    // which means we can use offsetHeight, getComputedStyle and stuff on it.
-    let container = this._domNode.getElementsByClassName("iframe-container")[0];
-    container.appendChild(iframe);
+    // signal!
   },
 
   /**
