@@ -998,17 +998,7 @@ Message.prototype = {
     this._conversation._signal();
   },
 
-  // This function takes care of streaming the message into the <iframe>, adding
-  // it into the DOM tree, watching for completion, reloading if necessary
-  // (BidiUI), applying the various heuristics for detecting quoted parts,
-  // changing the monospace font for the default one, possibly decrypting the
-  // message using Enigmail, making coffee...
-  streamMessage() {
-    Log.assert(this.expanded, "Cannot stream a message if not expanded first!");
-
-    let msgWindow = topMail3Pane(this).msgWindow;
-    let self = this;
-
+  streamMessage(msgWindow, docshell) {
     // Pre msg loading.
     for (let h of getHooks()) {
       try {
@@ -1020,21 +1010,24 @@ Message.prototype = {
       }
     }
 
-    // iframe created + loads...
+    addMsgListener(this);
 
-    // happens just after creation at start of load.
+    const neckoUrl = msgHdrToNeckoURL(this._msgHdr).spec;
 
-    // post iframe loading
+    const messageService = Services.mMessenger.messageServiceFromURI(neckoUrl);
+    messageService.DisplayMessage(this._uri + "&markRead=false", docshell,
+                                  msgWindow, undefined, undefined, {});
+  },
 
+  postStreamMessage(msgWindow, iframe) {
     // Notify hooks that we just finished displaying a message. Must be
     //  performed now, not later. This gives plugins a chance to modify
     //  the DOM of the message (i.e. decrypt it) before we tweak the
     //  fonts and stuff.
-
     for (let h of getHooks()) {
       try {
         if (typeof(h.onMessageStreamed) == "function")
-          h.onMessageStreamed(self._msgHdr, self._domNode, msgWindow, self);
+          h.onMessageStreamed(this._msgHdr, iframe, msgWindow, this);
       } catch (e) {
         Log.warn("Plugin returned an error:", e);
         dumpCallStack(e);
@@ -1048,7 +1041,7 @@ Message.prototype = {
     //   self._domNode.getElementsByClassName("phishingBar")[0].style.display = "block";
     // }
 
-    // signal!
+    // signal! ?
   },
 
   /**

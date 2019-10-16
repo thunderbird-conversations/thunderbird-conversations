@@ -3,7 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 /* global Redux, Conversations, markReadInView, topMail3Pane, getMail3Pane,
-          isInTab, msgHdrsArchive, Prefs, startedEditing,
+          isInTab, msgHdrsArchive, Prefs, closeTab, startedEditing,
           msgHdrGetUri, onSave, openConversationInTabOrWindow,
           printConversation, MailServices, Services */
 
@@ -25,6 +25,7 @@ const initialAttachments = {};
 const initialMessages = {};
 
 const initialSummary = {
+  conversation: null,
   // TODO: What is loading used for?
   loading: true,
   iframesLoading: 0,
@@ -124,9 +125,6 @@ function messages(state = initialMessages, action) {
     }
     case "MSG_DELETE": {
       MessageUtils.delete(action.msgUri);
-      if (isInTab && state.msgData.length <= 1) {
-        ConversationUtils.closeTab(window);
-      }
       return state;
     }
     case "MSG_OPEN_CLASSIC": {
@@ -143,22 +141,6 @@ function messages(state = initialMessages, action) {
     }
     case "MSG_STAR": {
       MessageUtils.setStar(action.msgUri, action.star);
-      return state;
-    }
-    case "MSG_STREAM_MSG": {
-      // TODO: Add a call to addMsgListener
-      // TODO: We need to allow for plugins here and call onMessageBeforeStreaming
-      // hooks.
-      let messageService = Services.mMessenger.messageServiceFromURI(action.neckoUrl.spec);
-      messageService.DisplayMessage(action.msgUri + "&markRead=false", action.docshell,
-                                    topMail3Pane(window).msgWindow, undefined, undefined, {});
-      return state;
-    }
-    case "MARK_AS_READ": {
-      let msg = state.msgData.find(m => m.msgUri == action.msgUri);
-      if (msg && !msg.read) {
-        ConversationUtils.markAllAsRead([action.msgUri], true, true);
-      }
       return state;
     }
     case "MSG_EXPAND": {
@@ -190,7 +172,8 @@ function messages(state = initialMessages, action) {
     case "DELETE_CONVERSATION": {
       if (ConversationUtils.delete(topMail3Pane(window), isInTab,
             state.msgData.map(msg => msg.msgUri))) {
-        ConversationUtils.closeTab(window);
+        // TODO: Could we just use window.close here?
+        closeTab();
       }
       return state;
     }
@@ -279,22 +262,6 @@ function messages(state = initialMessages, action) {
       newState.msgData = newState.msgData.concat(action.msgData);
       return newState;
     }
-    case "DETACH_TAB": {
-      // TODO: Fix re-enabling composition when expanded into new tab.
-      // const element = document.getElementsByClassName("textarea")[0].parent();
-      // let willExpand = element.hasClass("expand") && startedEditing();
-      // Pick _initialSet and not msgHdrs so as to enforce the invariant
-      //  that the messages from _initialSet are in the current view.
-      const urls = state.msgData.map(m => m.msgUri).join(",");
-      let queryString = "?urls=" + encodeURIComponent(urls);// +
-        // "&willExpand=" + Number(willExpand);
-      // First, save the draft, and once it's saved, then move on to opening the
-      // conversation in a new tab...
-      // onSave(() => {
-        openConversationInTabOrWindow(Prefs.kStubUrl + queryString);
-      // });
-      return state;
-    }
     default: {
       return state;
     }
@@ -327,6 +294,23 @@ function summary(state = initialSummary, action) {
     }
     case "CREATE_FILTER": {
       topMail3Pane(window).MsgFilters(action.email, null);
+      return state;
+    }
+    case "DETACH_TAB": {
+      // TODO: Fix re-enabling composition when expanded into new tab.
+      // const element = document.getElementsByClassName("textarea")[0].parent();
+      // let willExpand = element.hasClass("expand") && startedEditing();
+      // Pick _initialSet and not msgHdrs so as to enforce the invariant
+      //  that the messages from _initialSet are in the current view.
+      let urls =
+        Conversations.currentConversation._initialSet.map(x => msgHdrGetUri(x)).join(",");
+      let queryString = "?urls=" + encodeURIComponent(urls);// +
+        // "&willExpand=" + Number(willExpand);
+      // First, save the draft, and once it's saved, then move on to opening the
+      // conversation in a new tab...
+      // onSave(() => {
+        openConversationInTabOrWindow(Prefs.kStubUrl + queryString);
+      // });
       return state;
     }
     case "EDIT_CONTACT": {
@@ -370,6 +354,11 @@ function summary(state = initialSummary, action) {
       if (!action.dueToExpansion) {
         newState.iframesLoading++;
       }
+      state.conversation.getMessage(action.msgUri)
+        .streamMessage(
+          topMail3Pane(window).msgWindow,
+          action.docshell
+        );
       return newState;
     }
     case "MSG_STREAM_LOAD_FINISHED": {
@@ -380,6 +369,11 @@ function summary(state = initialSummary, action) {
           newState.iframesLoading = 0;
         }
       }
+      state.conversation.getMessage(action.msgUri)
+        .postStreamMessage(
+          topMail3Pane(window).msgWindow,
+          action.iframe
+      );
       return newState;
     }
     default: {

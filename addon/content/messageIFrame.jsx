@@ -175,6 +175,8 @@ class MessageIFrame extends React.Component {
     this.props.dispatch({
       type: "MSG_STREAM_LOAD_FINISHED",
       dueToExpansion: this.dueToExpansion,
+      msgUri: this.props.msgUri,
+      iframe: this.iframe,
     });
     // TODO: Do we need to re-check the original scroll point?
     // TODO: Send Msg loaded event maybe

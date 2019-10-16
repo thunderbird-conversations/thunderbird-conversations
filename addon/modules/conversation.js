@@ -941,6 +941,7 @@ Conversation.prototype = {
     this._htmlPane.conversationDispatch({
       type: "REPLACE_CONVERSATION_DETAILS",
       summary: {
+        conversation: this,
         subject: this.messages[this.messages.length - 1].message.subject,
         loading: false,
         prefs: {
