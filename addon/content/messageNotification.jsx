@@ -141,8 +141,48 @@ OutboxNotification.propTypes = {
   strings: PropTypes.object.isRequired,
 };
 
+class PhishingNotification extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    this.onClick = this.onClick.bind(this);
+  }
+
+  onClick() {
+    this.props.dispatch({
+      type: "MSG_IGNORE_PHISHING",
+      msgUri: this.props.msgUri,
+    });
+  }
+
+  render() {
+    return (
+      <GenericSingleButtonNotification
+        barClassName="phishingBar"
+        buttonClassName="ignore-warning"
+        buttonTitle={this.props.strings.get("ignoreWarning")}
+        iconName="warning"
+        notificationText={this.props.strings.get("scam")}
+        onButtonClick={this.onClick}/>
+    );
+  }
+}
+
+PhishingNotification.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+  msgUri: PropTypes.string.isRequired,
+  strings: PropTypes.object.isRequired,
+};
+
 class MessageNotification extends React.PureComponent {
   render() {
+    if (this.props.isPhishing) {
+      return (
+        <PhishingNotification
+          dispatch={this.props.dispatch}
+          msgUri={this.props.msgUri}
+          strings={this.props.strings}/>
+      );
+    }
     if (this.props.hasRemoteContent) {
       return (
         <RemoteContentNotification
@@ -175,6 +215,7 @@ MessageNotification.propTypes = {
   canUnJunk: PropTypes.bool.isRequired,
   dispatch: PropTypes.func.isRequired,
   hasRemoteContent: PropTypes.bool.isRequired,
+  isPhishing: PropTypes.bool.isRequired,
   isOutbox: PropTypes.bool.isRequired,
   msgUri: PropTypes.string.isRequired,
   realFrom: PropTypes.string.isRequired,

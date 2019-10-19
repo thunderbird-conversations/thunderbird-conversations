@@ -14,8 +14,6 @@ const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm")
 XPCOMUtils.defineLazyModuleGetters(this, {
   GlodaUtils: "resource:///modules/gloda/utils.js",
   isLightningInstalled: "resource://conversations/modules/plugins/lightning.js",
-  isLegalIPAddress: "resource:///modules/hostnameUtils.jsm",
-  isLegalLocalIPAddress: "resource:///modules/hostnameUtils.jsm",
   MailServices: "resource:///modules/MailServices.jsm",
   makeFriendlyDateAgo: "resource:///modules/templateUtils.js",
   MsgHdrToMimeMessage: "resource:///modules/gloda/mimemsg.js",
@@ -26,7 +24,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
 });
 const {
   dateAsInMessageList, entries, escapeHtml, getIdentityForEmail, isAccel,
-  isOSX, MixIn, parseMimeLine, sanitize,
+  isOSX, parseMimeLine, sanitize,
 } = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
 
 // It's not really nice to write into someone elses object but this is what the
@@ -186,6 +184,13 @@ class _MessageUtils {
   delete(msgUri) {
     const msgHdr = msgUriToMsgHdr(msgUri);
     msgHdrsDelete([msgHdr]);
+  }
+
+  ignorePhishing(msgUri) {
+    const msgHdr = msgUriToMsgHdr(msgUri);
+    msgHdr.setUint32Property("notAPhishMessage", 1);
+    // Force a commit of the underlying msgDatabase.
+    msgHdr.folder.msgDatabase = null;
   }
 
   openInClassic(win, msgUri) {
@@ -538,6 +543,7 @@ function Message(aConversation) {
   this._attachments = [];
   this.contentType = "";
   this.hasRemoteContent = false;
+  this.isPhishing = false;
 
   // A list of email addresses
   this.mailingLists = [];
@@ -624,6 +630,7 @@ Message.prototype = {
       isDraft: msgData.isDraft,
       isJunk: msgData.isJunk,
       isOutbox: msgData.isOutbox,
+      isPhishing: msgData.isPhishing,
       msgUri: msgData.uri,
       multipleRecipients: msgData.multipleRecipients,
       neckoUrl: msgData.neckoUrl,
@@ -654,6 +661,7 @@ Message.prototype = {
       shortFolderName: null,
       gallery: false,
       hasRemoteContent: this.hasRemoteContent,
+      isPhishing: this.isPhishing,
       uri: null,
       neckoUrl: msgHdrToNeckoURL(this._msgHdr),
       quickReply: aQuickReply,
@@ -929,12 +937,6 @@ Message.prototype = {
     //   self._reloadMessage();
     //   event.stopPropagation();
     // });
-    this.register(".ignore-warning", function(event) {
-      self._domNode.getElementsByClassName("phishingBar")[0].style.display = "none";
-      self._msgHdr.setUint32Property("notAPhishMessage", 1);
-      // Force a commit of the underlying msgDatabase.
-      self._msgHdr.folder.msgDatabase = null;
-    });
 
     this.register(".quickReply", function(event) {
       event.stopPropagation();
@@ -1034,14 +1036,67 @@ Message.prototype = {
       }
     }
 
-    // More post iframe.
-    // let iframeDoc = iframe.contentDocument;
-    // if (self.checkForFishing(iframeDoc) && !self._msgHdr.getUint32Property("notAPhishMessage")) {
-    //   Log.debug("Phishing attempt");
-    //   self._domNode.getElementsByClassName("phishingBar")[0].style.display = "block";
-    // }
-
+    Services.tm.dispatchToMainThread(() => {
+      this._checkForPhishing(iframe);
+    });
     // signal! ?
+  },
+
+  _checkForPhishing(iframe) {
+    if (!Prefs.getBool("mail.phishing.detection.enabled")) {
+      return;
+    }
+
+    if (this._msgHdr.getUint32Property("notAPhishMessage")) {
+      return;
+    }
+
+    // If the message contains forms with action attributes, warn the user.
+    let formNodes = iframe.contentWindow.document
+      .querySelectorAll("form[action]");
+
+    const url =
+      Services.io.newURI(this._uri).QueryInterface(Ci.nsIMsgMailNewsUrl);
+
+    try {
+      // nsIMsgMailNewsUrl.folder can throw an NS_ERROR_FAILURE, especially if
+      // we are opening an .eml file.
+      var folder = url.folder;
+
+      // Ignore nntp and RSS messages.
+      if (folder.server.type == "nntp" || folder.server.type == "rss") {
+        return;
+      }
+
+      // Also ignore messages in Sent/Drafts/Templates/Outbox.
+      let outgoingFlags =
+        Ci.nsMsgFolderFlags.SentMail |
+        Ci.nsMsgFolderFlags.Drafts |
+        Ci.nsMsgFolderFlags.Templates |
+        Ci.nsMsgFolderFlags.Queue;
+      if (folder.isSpecialFolder(outgoingFlags, true)) {
+        return;
+      }
+    } catch (ex) {
+      if (
+        ex.result != Cr.NS_ERROR_FAILURE &&
+        ex.result != Cr.NS_ERROR_ILLEGAL_VALUE
+      ) {
+        throw ex;
+      }
+    }
+    if (
+      Prefs.getBool("mail.phishing.detection.disallow_form_actions") &&
+      formNodes.length > 0
+    ) {
+      this.isPhishing = true;
+      const msgData = this.toReactData();
+      // TODO: make getting the window less ugly.
+      this._conversation._htmlPane.conversationDispatch({
+        type: "MSG_UPDATE_DATA",
+        msgData,
+      });
+    }
   },
 
   /**
@@ -1274,71 +1329,3 @@ MessageFromDbHdr.prototype = {
 
   RE_LIST_POST: /<mailto:([^>]+)>/,
 };
-
-/**
- * This additional class holds all of the bad heuristics we're performing on a
- *  message's inner DOM once it's been displayed in the conversation view. These
- *  include tweaking the fonts, detectin quotes, etc.
- * As it doesn't belong to the main logic, we're doing this in a separate class
- *  that's MixIn'd the Message class.
- */
-let PostStreamingFixesMixIn = {
-  /**
-   * The phishing detector that's in Thunderbird would need a lot of rework:
-   * it's not easily extensible, and the code has a lot of noise, i.e. it just
-   * performs simple operations but it's written in a convoluted way. We should
-   * just rewrite everything, but for now, we just rewrite+simplify the main
-   * function, and still rely on the badly-designed underlying functions for the
-   * low-level treatments.
-   */
-  checkForFishing(iframeDoc) {
-    if (!Prefs.getBool("mail.phishing.detection.enabled"))
-      return false;
-
-    let gPhishingDetector = topMail3Pane(this).gPhishingDetector;
-    let isPhishing = false;
-    let links = iframeDoc.getElementsByTagName("a");
-    for (let a of links) {
-      if (!a)
-        continue;
-      let linkText = a.textContent;
-      let linkUrl = a.getAttribute("href");
-      let hrefURL;
-      // make sure relative link urls don't make us bail out
-      try {
-        hrefURL = Services.io.newURI(linkUrl);
-      } catch (ex) {
-        continue;
-      }
-
-      // only check for phishing urls if the url is an http or https link.
-      // this prevents us from flagging imap and other internally handled urls
-      if (hrefURL.schemeIs("http") || hrefURL.schemeIs("https")) {
-        // The link is not suspicious if the visible text is the same as the URL,
-        // even if the URL is an IP address. URLs are commonly surrounded by
-        // < > or "" (RFC2396E) - so strip those from the link text before comparing.
-        if (linkText)
-          linkText = linkText.replace(/^<(.+)>$|^"(.+)"$/, "$1$2");
-
-        let failsStaticTests = false;
-        if (linkText != linkUrl) {
-          let unobscuredHostNameValue = isLegalIPAddress(hrefURL.host);
-          failsStaticTests =
-            unobscuredHostNameValue
-              && !isLegalLocalIPAddress(unobscuredHostNameValue)
-            || linkText
-              && gPhishingDetector.misMatchedHostWithLinkText(hrefURL, linkText);
-        }
-
-        if (failsStaticTests) {
-          Log.debug("Suspicious link", linkUrl);
-          isPhishing = true;
-          break;
-        }
-      }
-    }
-    return isPhishing;
-  },
-};
-
-MixIn(Message, PostStreamingFixesMixIn);

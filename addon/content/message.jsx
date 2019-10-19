@@ -80,6 +80,7 @@ class Message extends React.PureComponent {
             canUnJunk={this.props.message.isJunk && !this.props.displayingMultipleMsgs}
             dispatch={this.props.dispatch}
             hasRemoteContent={this.props.message.hasRemoteContent}
+            isPhishing={this.props.message.isPhishing}
             isOutbox={this.props.message.isOutbox}
             msgUri={this.props.message.msgUri}
             realFrom={this.props.message.realFrom}

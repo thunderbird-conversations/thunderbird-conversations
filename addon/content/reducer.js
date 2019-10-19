@@ -198,6 +198,14 @@ function messages(state = initialMessages, action) {
       }
       return state;
     }
+    case "MSG_IGNORE_PHISHING": {
+      MessageUtils.ignorePhishing(action.msgUri);
+      return modifyOnlyMsg(state, action.msgUri, msg => {
+        const newMsg = {...msg};
+        newMsg.isPhishing = false;
+        return newMsg;
+      });
+    }
     case "MSG_CLICK_IFRAME": {
       // Hand this off to Thunderbird's content clicking algorithm as that's simplest.
       if (!topMail3Pane(window).contentAreaClick(action.event)) {
