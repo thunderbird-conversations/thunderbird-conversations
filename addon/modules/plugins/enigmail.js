@@ -652,6 +652,7 @@ let enigmailHook = {
     let iframeDoc = iframe.contentDocument;
     if (iframeDoc.body.textContent.length > 0 && hasEnigmail) {
       // TODO: FIXME
+      /* exported tryEnigmail */
       // let status = tryEnigmail(iframeDoc, message, msgWindow);
       // if (status & nsIEnigmail.DECRYPTION_OKAY)
       //   aDomNode.classList.add("decrypted");
