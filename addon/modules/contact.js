@@ -11,8 +11,7 @@ var EXPORTED_SYMBOLS = [
 const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 
 XPCOMUtils.defineLazyModuleGetters(this, {
-  EventHelperMixIn: "resource://conversations/modules/misc.js",
-  getCardForEmail: "resource:///modules/DisplayNameUtils.jsm",
+  DisplayNameUtils: "resource:///modules/DisplayNameUtils.jsm",
   Gloda: "resource:///modules/gloda/gloda.js",
   GlodaUtils: "resource:///modules/gloda/utils.js",
   Prefs: "resource://conversations/modules/prefs.js",
@@ -85,7 +84,7 @@ function getInitials(name) {
 
 var ContactHelpers = {
   addContact(win, name, email) {
-    let cardAndBook = getCardForEmail(email);
+    let cardAndBook = DisplayNameUtils.getCardForEmail(email);
     let args = {
       primaryEmail: email,
       displayName: name,
@@ -97,7 +96,7 @@ var ContactHelpers = {
     win.openDialog("chrome://messenger/content/addressbook/abNewCardDialog.xul",
                    "", "chrome,resizable=no,titlebar,modal,centerscreen", args);
     // This is an approximation, but it should be good enough
-    let newCardAndBook = getCardForEmail(email);
+    let newCardAndBook = DisplayNameUtils.getCardForEmail(email);
     if (newCardAndBook.card) {
       cardAndBook.card = newCardAndBook.card;
       cardAndBook.book = newCardAndBook.book;
@@ -106,7 +105,7 @@ var ContactHelpers = {
   },
 
   editContact(win, name, email) {
-    let cardAndBook = getCardForEmail(email);
+    let cardAndBook = DisplayNameUtils.getCardForEmail(email);
     let args = {
       abURI: cardAndBook.book.URI,
       card: cardAndBook.card,
@@ -218,10 +217,8 @@ let ContactMixIn = {
       extra,
       // Parameter aUseColor is optional, and undefined means true
       colorStyle: ((aUseColor === false)
-        ? ""
-        : ("background-color :" + this.color)),
-      writeBr: aIsDetail,
-      star: aIsDetail && hasCard,
+        ? {}
+        : {backgroundColor: this.color}),
     };
     return data;
   },
@@ -325,4 +322,3 @@ ContactFromAB.prototype = {
 };
 
 MixIn(ContactFromAB, ContactMixIn);
-MixIn(ContactFromAB, EventHelperMixIn);

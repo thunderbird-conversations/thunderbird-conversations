@@ -648,16 +648,17 @@ let enigmailHook = {
     }
   },
 
-  onMessageStreamed: function _enigmailHook_onMessageStreamed(aMsgHdr, aDomNode, aMsgWindow, aMessage) {
-    let iframe = aDomNode.getElementsByTagName("iframe")[0];
+  onMessageStreamed(msgHdr, iframe, msgWindow, message) {
     let iframeDoc = iframe.contentDocument;
     if (iframeDoc.body.textContent.length > 0 && hasEnigmail) {
-      let status = tryEnigmail(iframeDoc, aMessage, aMsgWindow);
-      if (status & nsIEnigmail.DECRYPTION_OKAY)
-        aDomNode.classList.add("decrypted");
-      if (aDomNode.classList.contains("decrypted"))
-        addViewSecurityInfoEvent(aMessage);
-      addSignedLabel(status, aDomNode, aMessage);
+      // TODO: FIXME
+      /* exported tryEnigmail */
+      // let status = tryEnigmail(iframeDoc, message, msgWindow);
+      // if (status & nsIEnigmail.DECRYPTION_OKAY)
+      //   aDomNode.classList.add("decrypted");
+      // if (aDomNode.classList.contains("decrypted"))
+      //   addViewSecurityInfoEvent(message);
+      // addSignedLabel(status, aDomNode, message);
     }
   },
 

@@ -2,14 +2,38 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals React */
+/* globals React, ReactRedux, PropTypes, Message */
 /* exported MessageList */
 
-class MessageList extends React.PureComponent {
+class _MessageList extends React.PureComponent {
   render() {
     return (
-      <div>
-      </div>
+      <ul id="messageList">
+        {!!this.props.messages.msgData &&
+           this.props.messages.msgData.map((message, index) => (
+          <Message key={index}
+            dispatch={this.props.dispatch}
+            displayingMultipleMsgs={!!this.props.messages.length}
+            iframesLoading={this.props.summary.iframesLoading}
+            index={index}
+            isLastMessage={index == this.props.messages.msgData.length - 1}
+            message={message}
+            prefs={this.props.summary.prefs}/>
+        ))}
+      </ul>
     );
   }
 }
+
+_MessageList.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+  messages: PropTypes.object.isRequired,
+  summary: PropTypes.object.isRequired,
+};
+
+const MessageList = ReactRedux.connect(state => {
+  return {
+    messages: state.messages,
+    summary: state.summary,
+  };
+})(_MessageList);

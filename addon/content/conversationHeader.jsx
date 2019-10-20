@@ -105,10 +105,29 @@ class _ConversationHeader extends React.PureComponent {
     });
   }
 
+  get areSomeMessagesCollapsed() {
+    return !this.props.msgData || this.props.msgData.some(msg => !msg.expanded);
+  }
+
+  get areSomeMessagesUnread() {
+    return !this.props.msgData || this.props.msgData.some(msg => !msg.read);
+  }
+
+  get canJunk() {
+    // TODO: Disable if in just a new tab? (e.g. double-click)
+    // as per old comment:
+    // We can never junk a conversation in a new tab, because the junk
+    // command only operates on selected messages, and we're not in a
+    // 3pane context anymore.
+
+    return this.props.msgData && this.props.msgData.length <= 1 &&
+      this.props.msgData.some(msg => !msg.isJunk); // msgmsgHdrIsJunk(toMsgHdr(this.messages[0]))),
+  }
+
   expandCollapse(event) {
     this.props.dispatch({
       type: "TOGGLE_CONVERSATION_EXPANDED",
-      expanded: !this.props.expanded,
+      expand: this.areSomeMessagesCollapsed,
     });
   }
 
@@ -118,6 +137,7 @@ class _ConversationHeader extends React.PureComponent {
     //  i.e. the currently selected message
     this.props.dispatch({
       type: "MARK_AS_JUNK",
+      isJunk: true,
     });
   }
 
@@ -127,7 +147,7 @@ class _ConversationHeader extends React.PureComponent {
   toggleRead(event) {
     this.props.dispatch({
       type: "TOGGLE_CONVERSATION_READ",
-      read: !this.props.read,
+      read: this.areSomeMessagesUnread,
     });
   }
 
@@ -160,7 +180,7 @@ class _ConversationHeader extends React.PureComponent {
                 <use xlinkHref="chrome://conversations/skin/material-icons.svg#archive"></use>
               </svg>
             </button>
-            {this.props.canJunk &&
+            {this.canJunk &&
               <button className="button-flat junk-button"
                       title={this.strings.get("stub.junk.tooltip")}
                       onClick={this.junkConversation}>
@@ -175,7 +195,7 @@ class _ConversationHeader extends React.PureComponent {
             <button className="button-flat"
                     title={this.strings.get("stub.expand.tooltip")}
                     onClick={this.expandCollapse}>
-              <svg className={`icon expand ${this.props.expanded ? "collapse" : ""}`}
+              <svg className={`icon expand ${this.areSomeMessagesCollapsed ? "" : "collapse"}`}
                    viewBox="0 0 24 24"
                    xmlns="http://www.w3.org/2000/svg"
                    xmlnsXlink="http://www.w3.org/1999/xlink">
@@ -188,7 +208,7 @@ class _ConversationHeader extends React.PureComponent {
             <button className="button-flat"
                     title={this.strings.get("stub.read.tooltip")}
                     onClick={this.toggleRead}>
-              <svg className={`icon read ${this.props.read ? "" : "unread"}`}
+              <svg className={`icon read ${this.areSomeMessagesUnread ? "unread" : ""}`}
                    viewBox="0 0 24 24"
                    xmlns="http://www.w3.org/2000/svg"
                    xmlnsXlink="http://www.w3.org/1999/xlink">
@@ -213,12 +233,16 @@ class _ConversationHeader extends React.PureComponent {
 }
 
 _ConversationHeader.propTypes = {
-  canJunk: PropTypes.bool.isRequired,
   dispatch: PropTypes.func.isRequired,
-  expanded: PropTypes.bool.isRequired,
   loading: PropTypes.bool.isRequired,
-  read: PropTypes.bool.isRequired,
   subject: PropTypes.string.isRequired,
+  msgData: PropTypes.array.isRequired,
 };
 
-const ConversationHeader = ReactRedux.connect(state => state.summary)(_ConversationHeader);
+const ConversationHeader = ReactRedux.connect(state => {
+  return {
+    loading: state.summary.loading,
+    subject: state.summary.subject,
+    msgData: state.messages.msgData,
+  };
+})(_ConversationHeader);

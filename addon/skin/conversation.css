@@ -43,6 +43,10 @@ button {
   -moz-appearance: button;
 }
 
+.hidden {
+  display: none;
+}
+
 .button-flat {
   -moz-appearance: none;
   background: none;
@@ -237,9 +241,10 @@ a img {
   border: 1px solid ThreeDShadow;
   box-shadow: 0 0 8px rgba(0,0,0,0.25);
   z-index: 1000;
+  line-height: 1.8;
 }
 
-.tooltip[fadein=true] {
+.transition-in > .tooltip {
   animation: fadein 400ms ease-out;
 }
 
@@ -248,7 +253,7 @@ a img {
   to { opacity: 1; }
 }
 
-.tooltip[fadein=false] {
+.transition-out > .tooltip {
   animation: fadeout 400ms ease-in;
 }
 
@@ -271,7 +276,7 @@ a img {
   display: inline;
 }
 
-.options .hide-details {
+.options > .details-hidden {
   color: -moz-CellHighlight;
 }
 
@@ -444,14 +449,6 @@ a img {
   float: right;
 }
 
-.message:not(.with-details) .show-with-details {
-  display: none;
-}
-
-.message.with-details .hide-with-details {
-  display: none !important;
-}
-
 .message:not(.bugzilla) .bzTo {
   display: none;
 }
@@ -460,23 +457,13 @@ a img {
   display: none;
 }
 
-.message.collapsed .to,
 .message.collapsed .bzTo,
-.message.collapsed .details,
-.message.collapsed .hide-details,
-.message.collapsed .dropDown,
-.message.collapsed .replyLinkWrapper,
-.message.collapsed .editDraftLinkWrapper,
 .message.collapsed .messageBody,
-.message.collapsed .messageFooter,
 .message.collapsed .quickReply,
-.message.collapsed .notificationBar,
 .message.collapsed .smallEmail,
 .message.collapsed p,
 .message.collapsed iframe,
-.message.collapsed .attachments,
-.message.collapsed .detailsLine,
-.message:not(.collapsed) .snippet {
+.message.collapsed .detailsLine {
   display: none !important;
 }
 
@@ -538,10 +525,6 @@ a img {
 }
 
 .tags li.light-tag .tag-x {
-  border-color: rgb(10, 10, 10);
-}
-
-.tags li.blc-FFFFFF {
   border: 1px solid black;
 }
 
@@ -555,10 +538,6 @@ a img {
 
 .in-folder {
   cursor: pointer;
-}
-
-.message.inView .in-folder {
-  display: none;
 }
 
 .notificationBar {
@@ -588,6 +567,8 @@ a img {
 .notificationBar a {
   text-decoration: underline;
   font-weight: bold;
+  color: black;
+  cursor: pointer;
 }
 
 .notificationBar .icon {
@@ -852,4 +833,9 @@ html[xmlns] .clearfix {
   width: 16px;
   height: 16px;
   background-image: url(loader.gif);
+}
+
+.messageBody > iframe {
+  overflow-y: hidden;
+  border: none;
 }

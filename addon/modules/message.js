@@ -5,8 +5,8 @@
 "use strict";
 
 var EXPORTED_SYMBOLS = [
-  "Message", "MessageFromGloda", "MessageFromDbHdr",
-  "ConversationKeybindings", "previewAttachment",
+  "MessageFromGloda", "MessageFromDbHdr",
+  "ConversationKeybindings", "MessageUtils", "watchIFrame",
 ];
 
 const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
@@ -14,8 +14,6 @@ const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm")
 XPCOMUtils.defineLazyModuleGetters(this, {
   GlodaUtils: "resource:///modules/gloda/utils.js",
   isLightningInstalled: "resource://conversations/modules/plugins/lightning.js",
-  isLegalIPAddress: "resource:///modules/hostnameUtils.jsm",
-  isLegalLocalIPAddress: "resource:///modules/hostnameUtils.jsm",
   MailServices: "resource:///modules/MailServices.jsm",
   makeFriendlyDateAgo: "resource:///modules/templateUtils.js",
   MsgHdrToMimeMessage: "resource:///modules/gloda/mimemsg.js",
@@ -25,8 +23,8 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   StringBundle: "resource:///modules/StringBundle.js",
 });
 const {
-  dateAsInMessageList, entries, escapeHtml, getIdentityForEmail, isAccel,
-  isOSX, isWindows, MixIn, parseMimeLine, sanitize,
+  dateAsInMessageList, entries, escapeHtml, getIdentityForEmail,
+  isOSX, parseMimeLine, sanitize,
 } = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
 
 // It's not really nice to write into someone elses object but this is what the
@@ -37,37 +35,23 @@ XPCOMUtils.defineLazyGetter(Services, "mMessenger",
                               return Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
                             });
 
-// const kCharsetFromMetaTag = 9;
-const kCharsetFromChannel = 11;
-const kAllowRemoteContent = 2;
-
-const kHeadersShowAll = 2;
-// const kHeadersShowNormal = 1;
-
-const olderThan52 = Services.vc.compare(Services.sysinfo.version, "51.1") > 0;
-
 let strings = new StringBundle("chrome://conversations/locale/message.properties");
 
 const {
   msgHdrsArchive, msgHdrGetHeaders, msgHdrGetUri, msgHdrIsDraft, msgHdrIsJunk,
   msgHdrsDelete, msgHdrsMarkAsRead, msgHdrGetTags, msgHdrSetTags, msgHdrToNeckoURL,
-  msgHdrToMessageBody,
+  msgHdrToMessageBody, msgUriToMsgHdr,
 } = ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js", {});
 const {htmlToPlainText, quoteMsgHdr} =
   ChromeUtils.import("resource://conversations/modules/stdlib/compose.js", {});
 const {PluginHelpers} =
   ChromeUtils.import("resource://conversations/modules/plugins/helpers.js", {});
-const {
-  convertOutlookQuotingToBlockquote, convertHotmailQuotingToBlockquote1,
-  convertForwardedToBlockquote, convertMiscQuotingToBlockquote,
-  fusionBlockquotes,
-} = ChromeUtils.import("resource://conversations/modules/quoting.js", {});
 const {Contacts} = ChromeUtils.import("resource://conversations/modules/contact.js", {});
 const {Prefs} = ChromeUtils.import("resource://conversations/modules/prefs.js", {});
-const {EventHelperMixIn, folderName, iconForMimeType, topMail3Pane} =
+const {folderName, iconForMimeType, topMail3Pane} =
   ChromeUtils.import("resource://conversations/modules/misc.js", {});
 const {getHooks} = ChromeUtils.import("resource://conversations/modules/hook.js", {});
-const {dumpCallStack, setupLogging, Colors} = ChromeUtils.import("resource://conversations/modules/log.js", {});
+const {dumpCallStack, setupLogging} = ChromeUtils.import("resource://conversations/modules/log.js", {});
 
 let Log = setupLogging("Conversations.Message");
 // This is high because we want enough snippet to extract relevant data from
@@ -86,13 +70,6 @@ const pdfMimeTypes = [
   "application/x-bzpdf",
   "application/x-gzpdf",
 ];
-
-function tenPxFactor() {
-  if (isOSX) {
-    return .666;
-  }
-  return isWindows ? .7 : .625;
-}
 
 // Add in the global message listener table a weak reference to the given
 //  Message object. The monkey-patch which intercepts the "remote content
@@ -117,19 +94,171 @@ function dateAccordingToPref(date) {
   }
 }
 
-function previewAttachment(win, name, url, isPdf, maybeViewable) {
-  if (maybeViewable) {
-    win.document.getElementById("tabmail").openTab(
-      "contentTab",
-      { contentPage: url }
+class _MessageUtils {
+  previewAttachment(win, name, url, isPdf, maybeViewable) {
+    if (maybeViewable) {
+      win.document.getElementById("tabmail").openTab(
+        "contentTab",
+        { contentPage: url }
+      );
+    }
+    if (isPdf) {
+      win.document.getElementById("tabmail").openTab(
+        "chromeTab", { chromePage: makeViewerUrl(name, url) }
+      );
+    }
+  }
+
+  _getAttachmentInfo(win, msgUri, attachment) {
+    const attInfo = new win.AttachmentInfo(
+      attachment.contentType, attachment.url, attachment.name,
+      msgUri, attachment.isExternal
+    );
+    attInfo.size = attachment.size;
+    if (attInfo.size != -1) {
+      attInfo.sizeResolved = true;
+    }
+    return attInfo;
+  }
+
+  downloadAllAttachments(win, msgUri, attachments) {
+    win.HandleMultipleAttachments(attachments.map(att =>
+      this._getAttachmentInfo(win, msgUri, att)), "save");
+  }
+
+  downloadAttachment(win, msgUri, attachment) {
+    this._getAttachmentInfo(win, msgUri, attachment).save();
+  }
+
+  openAttachment(win, msgUri, attachment) {
+    this._getAttachmentInfo(win, msgUri, attachment).open();
+  }
+
+  _compose(win, compType, msgUri, shiftKey) {
+    const msgHdr = msgUriToMsgHdr(msgUri);
+    if (shiftKey) {
+      win.ComposeMessage(compType, Ci.nsIMsgCompFormat.OppositeOfDefault, msgHdr.folder, [msgUri]);
+    } else {
+      win.ComposeMessage(compType, Ci.nsIMsgCompFormat.Default, msgHdr.folder, [msgUri]);
+    }
+  }
+
+  editDraft(win, msgUri, shiftKey = false) {
+    this._compose(win, Ci.nsIMsgCompType.Draft, msgUri, shiftKey);
+  }
+
+  editAsNew(win, msgUri, shiftKey = false) {
+    this._compose(win, Ci.nsIMsgCompType.Template, msgUri, shiftKey);
+  }
+
+  reply(win, msgUri, shiftKey = false) {
+    this._compose(win, Ci.nsIMsgCompType.ReplyToSender, msgUri, shiftKey);
+  }
+
+  replyAll(win, msgUri, shiftKey = false) {
+    this._compose(win, Ci.nsIMsgCompType.ReplyAll, msgUri, shiftKey);
+  }
+
+  replyList(win, msgUri, shiftKey = false) {
+    this._compose(win, Ci.nsIMsgCompType.ReplyToList, msgUri, shiftKey);
+  }
+
+  forward(win, msgUri, shiftKey = false) {
+    let forwardType = 0;
+    try {
+      forwardType = Prefs.getInt("mail.forward_message_mode");
+    } catch (e) {
+      Log.error("Unable to fetch preferred forward mode\n");
+    }
+    if (forwardType == 0)
+      this._compose(win, Ci.nsIMsgCompType.ForwardAsAttachment, msgUri, shiftKey);
+    else
+      this._compose(win, Ci.nsIMsgCompType.ForwardInline, msgUri, shiftKey);
+  }
+
+  archive(msgUri) {
+    const msgHdr = msgUriToMsgHdr(msgUri);
+    msgHdrsArchive([msgHdr]);
+  }
+
+  delete(msgUri) {
+    const msgHdr = msgUriToMsgHdr(msgUri);
+    msgHdrsDelete([msgHdr]);
+  }
+
+  ignorePhishing(msgUri) {
+    const msgHdr = msgUriToMsgHdr(msgUri);
+    msgHdr.setUint32Property("notAPhishMessage", 1);
+    // Force a commit of the underlying msgDatabase.
+    msgHdr.folder.msgDatabase = null;
+  }
+
+  openInClassic(win, msgUri) {
+    const msgHdr = msgUriToMsgHdr(msgUri);
+    const tabmail = win.document.getElementById("tabmail");
+    tabmail.openTab("message", { msgHdr, background: false });
+  }
+
+  openInSourceView(win, msgUri) {
+    win.ViewPageSource([msgUri]);
+  }
+
+  setTags(msgUri, tags) {
+    msgHdrSetTags(msgUriToMsgHdr(msgUri),
+      tags.map(tag => {
+        return {
+          key: tag.id,
+        };
+      })
     );
   }
-  if (isPdf) {
-    win.document.getElementById("tabmail").openTab(
-      "chromeTab", { chromePage: makeViewerUrl(name, url) }
-    );
+
+  setStar(msgUri, star) {
+    msgUriToMsgHdr(msgUri).markFlagged(star);
+  }
+
+  getMsgHdrDetails(win, msgUri) {
+    const msgHdr = msgUriToMsgHdr(msgUri);
+    msgHdrGetHeaders(msgHdr, (headers) => {
+      try {
+        let extraLines = [{
+          key: strings.get("header-folder"),
+          value: sanitize(folderName(msgHdr.folder)[1]),
+        }];
+        let interestingHeaders =
+          ["mailed-by", "x-mailer", "mailer", "date", "user-agent", "reply-to"];
+        for (let h of interestingHeaders) {
+          if (headers.has(h)) {
+            let key = h;
+            try { // Note all the header names are translated.
+              key = strings.get("header-" + h);
+            } catch (e) {}
+            extraLines.push({
+              key,
+              value: sanitize(headers.get(h)),
+            });
+          }
+        }
+        let subject = headers.get("subject");
+        extraLines.push({
+          key: strings.get("header-subject"),
+          value: subject ? sanitize(GlodaUtils.deMime(subject)) : "",
+        });
+
+        win.conversationDispatch({
+          type: "MSG_HDR_DETAILS",
+          extraLines,
+          msgUri,
+        });
+      } catch (e) {
+        Log.error(e);
+        dumpCallStack(e);
+      }
+    });
   }
 }
+
+var MessageUtils = new _MessageUtils();
 
 function KeyListener(aMessage) {
   this.message = aMessage;
@@ -157,7 +286,7 @@ KeyListener.prototype = {
       if (index < (msgNodes.length - 1)) {
         let next = msgNodes[index + 1];
         next.focus();
-        this.message._conversation._htmlPane.scrollNodeIntoView(next);
+        // this.message._conversation._htmlPane.scrollNodeIntoView(next);
       }
       event.preventDefault();
       event.stopPropagation();
@@ -167,7 +296,7 @@ KeyListener.prototype = {
       if (index > 0) {
         let prev = msgNodes[index - 1];
         prev.focus();
-        this.message._conversation._htmlPane.scrollNodeIntoView(prev);
+        // this.message._conversation._htmlPane.scrollNodeIntoView(prev);
       }
       event.preventDefault();
       event.stopPropagation();
@@ -209,7 +338,8 @@ KeyListener.prototype = {
       event.stopPropagation();
     },
     deleteMessage: function deleteMessage(event) {
-      this.message.removeFromConversation();
+      // TODO: This should use MessageUtils.delete().
+      // this.message.removeFromConversation();
       event.preventDefault();
       event.stopPropagation();
     },
@@ -229,7 +359,6 @@ KeyListener.prototype = {
             this.message.tags = this.message.tags.concat([tag]);
         }
       }
-      this.message.onAttributesChanged(this.message);
       event.preventDefault();
       event.stopPropagation();
     },
@@ -389,7 +518,6 @@ for (let [actionName /* j */] of entries(KeyListener.prototype.functions)) {
 
 // Call that one after setting this._msgHdr;
 function Message(aConversation) {
-  this._didStream = false;
   this._domNode = null;
   this._snippet = "";
   this._conversation = aConversation;
@@ -414,6 +542,8 @@ function Message(aConversation) {
   this._contacts = [];
   this._attachments = [];
   this.contentType = "";
+  this.hasRemoteContent = false;
+  this.isPhishing = false;
 
   // A list of email addresses
   this.mailingLists = [];
@@ -440,20 +570,8 @@ Message.prototype = {
     return parseMimeLine(aMimeLine);
   },
 
-  get inView() {
-    return this._domNode.classList.contains("inView");
-  },
-
-  set inView(v) {
-    if (v)
-      this._domNode.classList.add("inView");
-    else
-      this._domNode.classList.remove("inView");
-  },
-
   RE_BZ_COMMENT: /^--- Comment #\d+ from .* \d{4}.*? ---([\s\S]*)/m,
   RE_MSGKEY: /number=(\d+)/,
-
 
   // This function is called before toTmplData, and allows us to adjust our
   // template data according to the message that came before us.
@@ -492,14 +610,48 @@ Message.prototype = {
     }
   },
 
+  toReactData() {
+    // Ok, brace ourselves for notifications happening during the message load
+    //  process.
+    addMsgListener(this);
+
+    let msgData = this.toTmplData();
+    return {
+      attachments: msgData.attachments,
+      attachmentsPlural: msgData.attachmentsPlural,
+      bcc: msgData.dataContactsBcc,
+      cc: msgData.dataContactsCc,
+      date: msgData.date,
+      folderName: msgData.folderName,
+      from: msgData.dataContactFrom,
+      fullDate: msgData.fullDate,
+      gallery: msgData.gallery,
+      hasRemoteContent: msgData.hasRemoteContent,
+      isDraft: msgData.isDraft,
+      isJunk: msgData.isJunk,
+      isOutbox: msgData.isOutbox,
+      isPhishing: msgData.isPhishing,
+      msgUri: msgData.uri,
+      multipleRecipients: msgData.multipleRecipients,
+      neckoUrl: msgData.neckoUrl,
+      read: msgData.read,
+      realFrom: msgData.realFrom,
+      recipientsIncludeLists: msgData.recipientsIncludeLists,
+      shortFolderName: msgData.shortFolderName,
+      snippet: msgData.snippet,
+      starred: msgData.starred,
+      tags: msgData.tags,
+      to: msgData.dataContactsTo,
+    };
+  },
+
   // Output this message as a whole bunch of HTML
-  toTmplData(aQuickReply) {
+  toTmplData() {
     let self = this;
     let extraClasses = [];
     let data = {
       dataContactFrom: null,
       dataContactsTo: null,
-      initialsFrom: null,
       snippet: null,
       date: null,
       fullDate: null,
@@ -508,16 +660,20 @@ Message.prototype = {
       folderName: null,
       shortFolderName: null,
       gallery: false,
+      hasRemoteContent: this.hasRemoteContent,
+      isPhishing: this.isPhishing,
       uri: null,
-      quickReply: aQuickReply,
+      neckoUrl: msgHdrToNeckoURL(this._msgHdr),
       bugzillaUrl: "[unknown bugzilla instance]",
       extraClasses: null,
-      canUnJunk: false,
+      isJunk: msgHdrIsJunk(this._msgHdr),
       isOutbox: false,
       generateLightningTempl: false,
       multipleRecipients: this.isReplyAllEnabled,
       recipientsIncludeLists: this.isReplyListEnabled,
       isDraft: false,
+      starred: this._msgHdr.isFlagged,
+      read: this.read,
     };
 
     // 1) Generate Contact objects
@@ -531,24 +687,20 @@ Message.prototype = {
     data.dataContactFrom = contactFrom[0].toTmplData(true, Contacts.kFrom, contactFrom[1]);
     data.dataContactFrom.separator = "";
 
-    let to = this._to.concat(this._cc).concat(this._bcc);
-    let contactsTo = to.map(x =>
-      [self._conversation._contactManager
-        .getContactFromNameAndEmail(x.name, x.email),
-       x.email]
-    );
-    this._contacts = this._contacts.concat(contactsTo);
-    // false means "no colors"
-    data.dataContactsTo = contactsTo.map(([x, email]) => x.toTmplData(false, Contacts.kTo, email));
-    let l = data.dataContactsTo.length;
-    data.dataContactsTo.forEach(function(data, i) {
-      if (i == 0)
-        data.separator = "";
-      else if (i < l - 1)
-        data.separator = strings.get("sepComma");
-      else
-        data.separator = strings.get("sepAnd");
-    });
+    function getContactsFrom(detail) {
+      let contacts = detail.map(x =>
+        [self._conversation._contactManager
+          .getContactFromNameAndEmail(x.name, x.email),
+         x.email]
+      );
+      self._contacts = self._contacts.concat(contacts);
+      // false means "no colors"
+      return contacts.map(([x, email]) => x.toTmplData(false, Contacts.kTo, email));
+    }
+
+    data.dataContactsTo = getContactsFrom(this._to);
+    data.dataContactsCc = getContactsFrom(this._cc);
+    data.dataContactsBcc = getContactsFrom(this._bcc);
 
     // 1b) Don't show "to me" if this is a bugzilla email
     if (Object.keys(this.bugzillaInfos).length) {
@@ -574,7 +726,7 @@ Message.prototype = {
       ? ""
       : dateAsInMessageList(new Date(this._msgHdr.date / 1000))
     ;
-    data.uri = sanitize(msgHdrGetUri(this._msgHdr));
+    data.uri = sanitize(this._uri);
 
     // 4) Custom tag telling the user if the message is not in the current view
     let [name, fullName] = folderName(this._msgHdr.folder);
@@ -594,10 +746,17 @@ Message.prototype = {
     if (this.isEncrypted)
       extraClasses.push("decrypted");
     data.extraClasses = extraClasses.join(" ");
-    if (this._conversation.messages.length == 1 && msgHdrIsJunk(this._msgHdr))
-      data.canUnJunk = true;
     if (this._msgHdr.folder.getFlag(Ci.nsMsgFolderFlags.Queue))
       data.isOutbox = true;
+
+    const tags = msgHdrGetTags(this._msgHdr);
+    data.tags = tags.map(tag => {
+      return {
+        color: tag.color,
+        id: tag.key,
+        name: tag.tag,
+      };
+    });
 
     // 8) Decide whether Lightning is installed and Lightning content should be generated
     data.generateLightningTempl = isLightningInstalled();
@@ -641,9 +800,11 @@ Message.prototype = {
       // We've got the right data, push it!
       data.attachments.push({
         size: att.size,
+        contentType: att.contentType,
         formattedSize,
         thumb: sanitize(thumb),
         imgClass,
+        isExternal: att.isExternal,
         name: sanitize(att.name),
         url: att.url,
         anchor: "msg" + self.initialPosition + "att" + i,
@@ -663,45 +824,14 @@ Message.prototype = {
       Log.error("onAddedToDom() && !aDomNode", this.from, this.to, this.subject);
     }
 
-    // This allows us to pre-set the star and the tags in the right original
-    //  state
     this._domNode = aDomNode;
-    this.onAttributesChanged(this);
 
     let self = this;
-    this._domNode.getElementsByClassName("messageHeader")[0]
-      .addEventListener("click", function(event) {
-        // Don't do any collapsing if we're clicking on one of the header buttons.
-        if (event.target.localName == "button" ||
-            event.target.className.includes("action-")) {
-          return;
-        }
-        self._conversation._runOnceAfterNSignals(function() {
-          if (self.expanded) {
-            self._conversation._htmlPane.scrollNodeIntoView(self._domNode);
-            if (Prefs.getBool("mailnews.mark_message_read.auto") ||
-                Prefs.getBool("mailnews.mark_message_read.delay")) {
-              self.read = true;
-            }
-          }
-        }, 1);
-        self.toggle();
-      });
 
     let keyListener = new KeyListener(this);
     this._domNode.addEventListener("keydown", function(event) {
       keyListener.onKeyUp(event);
     }); // über-important: don't capture
-
-    // Do this now because the star is visible even if we haven't been expanded
-    // yet.
-    this.register(".star", function(event) {
-      self.starred = !self.starred;
-      // Don't trust gloda. Big hack, self also has the "starred" property, so
-      //  we don't have to create a new object.
-      self.onAttributesChanged(self);
-      event.stopPropagation();
-    });
 
     // Register event handlers for onSelected.
     // Set useCapture: true for preventing this from being canceled
@@ -740,13 +870,19 @@ Message.prototype = {
 
   // The global monkey-patch finds us through the weak pointer table and
   //  notifies us.
-  onMsgHasRemoteContent: function _Message_onMsgHasRemoteContent() {
+  onMsgHasRemoteContent() {
     if (this.notifiedRemoteContentAlready)
       return;
     this.notifiedRemoteContentAlready = true;
+    this.hasRemoteContent = true;
     Log.debug("This message's remote content was blocked");
 
-    this._domNode.getElementsByClassName("remoteContent")[0].style.display = "block";
+    const msgData = this.toReactData();
+    // TODO: make getting the window less ugly.
+    this._conversation._htmlPane.conversationDispatch({
+      type: "MSG_UPDATE_DATA",
+      msgData,
+    });
   },
 
   // This function should be called whenever the message is selected
@@ -779,21 +915,7 @@ Message.prototype = {
   // Actually, we only do these expensive DOM calls when we need to, i.e. when
   //  we're expanded for the first time (expand calls us).
   registerActions: function _Message_registerActions() {
-    let self = this;
-    let mainWindow = topMail3Pane(this);
-
-    // Let the UI do its stuff with the tooltips
-    this._conversation._htmlPane.enableTooltips(this);
-
     // Register all the needed event handlers. Nice wrappers below.
-
-    // Pre-set the right value
-    // let realFrom = "";
-    // if (this._from.email)
-    //   realFrom = this._from.email.trim().toLowerCase();
-    // // _realFrom is better.
-    // if (this._realFrom.email)
-    //   realFrom = this._realFrom.email.trim().toLowerCase();
 
     // TODO: This toggle is currently disabled.
     // if (realFrom in Prefs.monospaced_senders)
@@ -811,319 +933,10 @@ Message.prototype = {
     //   self._reloadMessage();
     //   event.stopPropagation();
     // });
-    this.register(".tooltip", function(event) {
-      // Clicking inside a tooltip must not collapse the message.
-      event.stopPropagation();
-    });
-
-    this.register(".sendUnsent", function(event) {
-      let w = topMail3Pane(self);
-      if (Services.io.offline)
-        w.MailOfflineMgr.goOnlineToSendMessages(w.msgWindow);
-      else
-        w.SendUnsentMessages();
-    });
-
-    this.register(".notJunk", function(event) {
-      self._domNode.getElementsByClassName("junkBar")[0].style.display = "none";
-      // false = not junk
-      topMail3Pane(self).JunkSelectedMessages(false);
-    });
-    this.register(".ignore-warning", function(event) {
-      self._domNode.getElementsByClassName("phishingBar")[0].style.display = "none";
-      self._msgHdr.setUint32Property("notAPhishMessage", 1);
-      // Force a commit of the underlying msgDatabase.
-      self._msgHdr.folder.msgDatabase = null;
-    });
-    this.register(".show-remote-content", function(event) {
-      self._domNode.getElementsByClassName("show-remote-content")[0].style.display = "none";
-      self._msgHdr.setUint32Property("remoteContentPolicy", kAllowRemoteContent);
-      self._msgHdr.folder.msgDatabase = null;
-      self._reloadMessage();
-    });
-    this.register(".always-display", function(event) {
-      self._domNode.getElementsByClassName("remoteContent")[0].style.display = "none";
-
-      let chromeUrl;
-      if (olderThan52) {
-        chromeUrl = "chrome://messenger/content/?email=" + self._from.email;
-      } else {
-        chromeUrl = "chrome://messenger/content/email=" + self._from.email;
-      }
-      let uri = Services.io.newURI(chromeUrl);
-      Services.perms.add(uri, "image", Services.perms.ALLOW_ACTION);
-      self._reloadMessage();
-    });
-    this.register(".messageBody .in-folder", function(event) {
-      mainWindow.gFolderTreeView.selectFolder(self._msgHdr.folder, true);
-      mainWindow.gFolderDisplay.selectMessage(self._msgHdr);
-    });
-
-    // We only output this shitload of contact nodes when we have to...
-    this.register(".details > a", function(event) {
-      event.stopPropagation();
-      event.preventDefault();
-      self.showDetails();
-    });
-
-    this.register(".hide-details > a", function(event) {
-      event.stopPropagation();
-      event.preventDefault();
-      self._domNode.classList.remove("with-details");
-    });
-
-    let attachmentNodes = this._domNode.getElementsByClassName("attachment");
-    /**
-     * We now assume that all the information is correct. I've done enough work
-     * on the Gloda side to ensure this. All hail to Gloda!
-     */
-    for (let i = 0; i < attachmentNodes.length; ++i) {
-      let att = self._attachments[i];
-      // TODO: Make messageAttachments not require this and handle it itself.
-      // For the context menu event handlers
-      attachmentNodes[i].attInfo =
-        new mainWindow.AttachmentInfo(
-          att.contentType, att.url, att.name, self._uri, att.isExternal, 42
-        );
-    }
-    this.register(".quickReply", function(event) {
-      event.stopPropagation();
-    }, { action: "keyup" });
-    this.register(".quickReply", function(event) {
-      event.stopPropagation();
-    }, { action: "keypress" });
-    this.register(".quickReply", function(event) {
-      // Ok, so it's actually convenient to register our event listener on the
-      //  .quickReply node because we can easily prevent it from bubbling
-      //  upwards, but the problem is, if a message is appended at the end of
-      //  the conversation view, this event listener is active and the one from
-      //  the new message is active too. So we check that the quick reply still
-      //  is inside our dom node.
-      if (!self._domNode.getElementsByClassName("quickReply").length)
-        return;
-
-      let window = self._conversation._htmlPane;
-
-      switch (event.keyCode) {
-        case mainWindow.KeyEvent.DOM_VK_RETURN:
-          if (isAccel(event)) {
-            if (event.shiftKey)
-              window.gComposeSession.send({ archive: true });
-            else
-              window.gComposeSession.send();
-          }
-          break;
-
-        case mainWindow.KeyEvent.DOM_VK_ESCAPE:
-          Log.debug("Escape from quickReply");
-          self._domNode.focus();
-          break;
-      }
-      event.stopPropagation();
-    }, { action: "keydown" });
-  },
-
-  _reloadMessage: function _Message_reloadMessage() {
-    // The second one in for when we're expanded.
-    let specialTags = this._domNode.getElementsByClassName("special-tags")[1];
-    // Remove any extra tags because they will be re-added after reload, but
-    //  leave the "show remote content" tag.
-    for (let i = specialTags.children.length - 1; i >= 0; i--) {
-      let child = specialTags.children[i];
-      if (!child.classList.contains("keep-tag"))
-        specialTags.removeChild(child);
-    }
-    this.iframe.remove();
-    this.streamMessage();
   },
 
   get iframe() {
     return this._domNode.getElementsByTagName("iframe")[0];
-  },
-
-  // {
-  //  starred: bool,
-  //  tags: nsIMsgTag list,
-  // } --> both Message and GlodaMessage implement these attributes
-  onAttributesChanged: function _Message_onAttributesChanged({ starred, tags }) {
-    // Update "starred" attribute
-    if (starred)
-      this._domNode.getElementsByClassName("star")[0].classList.add("starred");
-    else
-      this._domNode.getElementsByClassName("star")[0].classList.remove("starred");
-
-    // Update tags
-    let tagList = this._domNode.getElementsByClassName("regular-tags")[1];
-    while (tagList.firstChild)
-      tagList.firstChild.remove();
-    for (let mtag of tags) {
-      let tag = mtag;
-      let document = this._domNode.ownerDocument;
-      let rgb = MailServices.tags.getColorForKey(tag.key).substr(1) || "FFFFFF";
-      // This is just so we can figure out if the tag color is too light and we
-      // need to have the text black or not.
-      let [, r, g, b] = rgb.match(/(..)(..)(..)/).map(x => parseInt(x, 16) / 255);
-      let colorClass = "blc-" + rgb;
-      let tagName = tag.tag;
-      let tagNode = document.createElement("li");
-      let l = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-      if (l > .8)
-        tagNode.classList.add("light-tag");
-      tagNode.classList.add("tag");
-      tagNode.classList.add(colorClass);
-      tagNode.appendChild(document.createTextNode(tagName));
-      let span = document.createElement("span");
-      span.textContent = " x";
-      span.classList.add("tag-x");
-      span.addEventListener("click", function(event) {
-        let tags = this.tags.filter(x => x.key != tag.key);
-        this.tags = tags;
-        // And now let onAttributesChanged kick in... NOT
-        tagList.removeChild(tagNode);
-      }.bind(this));
-      tagNode.appendChild(span);
-      tagList.appendChild(tagNode);
-    }
-    let otherTagList = this._domNode.getElementsByClassName("regular-tags")[0];
-    while (otherTagList.firstChild)
-      otherTagList.firstChild.remove();
-    for (let node of tagList.childNodes)
-      otherTagList.appendChild(node.cloneNode(true));
-  },
-
-  removeFromConversation: function _Message_removeFromConversation() {
-    this._conversation.removeMessage(this);
-    msgHdrsDelete([this._msgHdr]);
-    let w = this._conversation._window;
-    if (this._conversation._htmlPane.isInTab
-        && !this._conversation.messages.length)
-      w.closeTab();
-  },
-
-  // Build attachment view if we have a `MessageFromGloda` that's encrypted
-  // because Gloda has not indexed attachments.
-  buildAttachmentViewIfNeeded: function _Message_buildAttachmentViewIfNeeded(k) {
-    if (!this.needsLateAttachments) {
-      k();
-      return;
-    }
-    let self = this;
-    Log.debug(Colors.blue, "Building attachment view", Colors.default);
-    try {
-      MsgHdrToMimeMessage(this._msgHdr, null, function(aMsgHdr, aMimeMsg) {
-        try {
-          if (aMimeMsg == null)
-            return;
-
-          if (Prefs.extra_attachments) {
-            self._attachments = aMimeMsg.allAttachments.concat(aMimeMsg.allUserAttachments);
-            let hashMap = {};
-            self._attachments = self._attachments.filter(function(x) {
-              let seenAlready = (x.url in hashMap);
-              hashMap[x.url] = null;
-              return !seenAlready;
-            });
-          } else {
-            self._attachments = aMimeMsg.allUserAttachments
-              .filter(x => x.isRealAttachment);
-          }
-
-          try {
-            k();
-          } catch (e) {
-            Log.error(e);
-            dumpCallStack(e);
-          }
-        } catch (e) {
-          Log.error(e);
-          dumpCallStack(e);
-          k();
-        }
-      }, true, {
-        partsOnDemand: true,
-        examineEncryptedParts: true,
-      });
-    } catch (e) {
-      Log.warn("Failed to stream the attachments properly, this is VERY BAD");
-      Log.warn(e);
-      k();
-    }
-  },
-
-  // Adds the details if needed... done after the message has been streamed, so
-  // in theory, that should be pretty fast...
-  showDetails: function _Message_showDetails(k) {
-    // Hide all irrelevant UI items now we're showing details
-    this._domNode.classList.add("with-details");
-    if (this.detailsFetched)
-      return;
-    this.detailsFetched = true;
-    let w = this._conversation._htmlPane;
-    msgHdrGetHeaders(this._msgHdr, function(aHeaders) {
-      try {
-        let data = {
-          dataContactsFrom: [],
-          dataContactsTo: [],
-          dataContactsCc: [],
-          dataContactsBcc: [],
-          extraLines: [],
-        };
-        data.extraLines.push({
-          key: strings.get("header-folder"),
-          value: sanitize(folderName(this._msgHdr.folder)[1]),
-        });
-        let interestingHeaders =
-          ["mailed-by", "x-mailer", "mailer", "date", "user-agent", "reply-to"];
-        for (let h of interestingHeaders) {
-          if (aHeaders.has(h)) {
-            let key = h;
-            try { // Note all the header names are translated.
-              key = strings.get("header-" + h);
-            } catch (e) {}
-            data.extraLines.push({
-              key,
-              value: sanitize(aHeaders.get(h)),
-            });
-          }
-        }
-        let subject = aHeaders.get("subject");
-        data.extraLines.push({
-          key: strings.get("header-subject"),
-          value: subject ? sanitize(GlodaUtils.deMime(subject)) : "",
-        });
-        let self = this;
-        let buildContactObjects = nameEmails =>
-          nameEmails.map(x =>
-            [self._conversation._contactManager
-              .getContactFromNameAndEmail(x.name, x.email),
-             x.email]
-          );
-        let buildContactData = contactObjects =>
-          contactObjects.map(([x, email]) =>
-            // Fourth parameter: aIsDetail
-            x.toTmplData(false, Contacts.kTo, email, true)
-          );
-        let contactsFrom = buildContactObjects([this._from]);
-        let contactsTo = buildContactObjects(this._to);
-        let contactsCc = buildContactObjects(this._cc);
-        let contactsBcc = buildContactObjects(this._bcc);
-        data.dataContactsFrom = buildContactData(contactsFrom);
-        data.dataContactsTo = buildContactData(contactsTo);
-        data.dataContactsCc = buildContactData(contactsCc);
-        data.dataContactsBcc = buildContactData(contactsBcc);
-
-        // Output the template
-        this._domNode.getElementsByClassName("detailsPlaceholder")[0].appendChild(w.tmpl("#detailsTemplate", data));
-        // Activate tooltip event listeners
-        w.enableTooltips(this);
-      } catch (e) {
-        Log.error(e);
-        dumpCallStack(e);
-      }
-      // It's asynchronous, so move on if needed.
-      if (k)
-        k();
-    }.bind(this));
   },
 
   // Convenience properties
@@ -1135,14 +948,6 @@ Message.prototype = {
     msgHdrsMarkAsRead([this._msgHdr], v);
   },
 
-  get starred() {
-    return this._msgHdr.isFlagged;
-  },
-
-  set starred(v) {
-    this._msgHdr.markFlagged(v);
-  },
-
   get tags() {
     return msgHdrGetTags(this._msgHdr);
   },
@@ -1151,61 +956,12 @@ Message.prototype = {
     msgHdrSetTags(this._msgHdr, v);
   },
 
-  get collapsed() {
-    return this._domNode.classList.contains("collapsed");
-  },
-
-  get expanded() {
-    return !this.collapsed;
-  },
-
-  toggle() {
-    if (this.collapsed)
-      this.expand();
-    else if (this.expanded)
-      this.collapse();
-    else
-      Log.error("WTF???");
-  },
-
-  _signal: function _Message_signal() {
+  _signal() {
     this._conversation._signal();
   },
 
-  expand() {
-    this._domNode.classList.remove("collapsed");
-    if (!this._didStream) {
-      try {
-        let self = this;
-        this.buildAttachmentViewIfNeeded(function() {
-          self.registerActions();
-          self.streamMessage(); // will call _signal
-        });
-      } catch (e) {
-        Log.error(e);
-        dumpCallStack(e);
-      }
-    } else {
-      this._signal();
-    }
-  },
-
-  collapse() {
-    this._domNode.classList.add("collapsed");
-  },
-
-  // This function takes care of streaming the message into the <iframe>, adding
-  // it into the DOM tree, watching for completion, reloading if necessary
-  // (BidiUI), applying the various heuristics for detecting quoted parts,
-  // changing the monospace font for the default one, possibly decrypting the
-  // message using Enigmail, making coffee...
-  streamMessage() {
-    Log.assert(this.expanded, "Cannot stream a message if not expanded first!");
-
-    let originalScroll = this._domNode.ownerDocument.documentElement.scrollTop;
-    let msgWindow = topMail3Pane(this).msgWindow;
-    let self = this;
-
+  streamMessage(msgWindow, docshell) {
+    // Pre msg loading.
     for (let h of getHooks()) {
       try {
         if (typeof(h.onMessageBeforeStreaming) == "function")
@@ -1216,263 +972,91 @@ Message.prototype = {
       }
     }
 
-    let iframe = this._domNode.ownerDocument
-      .createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "iframe");
-    iframe.setAttribute("style", "height: 20px; overflow-y: hidden");
-    iframe.setAttribute("type", "content");
-
-    let adjustHeight = function() {
-      let iframeDoc = iframe.contentDocument;
-
-      // This is needed in case the timeout kicked in after the message
-      // was loaded but before we collapsed quotes. Then, the scrollheight
-      // is too big, so we need to make the iframe small, so that its
-      // scrollheight corresponds to its "real" height (there was an issue
-      // with offsetheight, don't remember what, though).
-      iframe.style.height = "20px";
-      iframe.style.height = iframeDoc.body.scrollHeight + "px";
-
-      // So now we might overflow horizontally, which causes a horizontal
-      // scrollbar to appear, which narrows the vertical height available,
-      // which causes a vertical scrollbar to appear.
-      let iframeStyle = self._conversation._window.getComputedStyle(iframe);
-      let iframeExternalWidth = parseInt(iframeStyle.width);
-      // 20px is a completely arbitrary default value which I hope is
-      // greater
-      if (iframeDoc.body.scrollWidth > iframeExternalWidth) {
-        Log.debug("Horizontal overflow detected.");
-        iframe.style.height = (iframeDoc.body.scrollHeight + 20) + "px";
-      }
-    };
-
-    // The xul:iframe automatically loads about:blank when it is added
-    // into the tree. We need to wait for the document to be loaded before
-    // doing things.
-    //
-    // Why do we do that? Basically because we want the <xul:iframe> to
-    // have a docShell and a webNavigation. If we don't do that, and we
-    // set directly src="about:blank" above, sometimes we are too fast and
-    // the docShell isn't ready by the time we get there.
-    iframe.addEventListener("load", function f_temp2(event, aCharset) {
-      try {
-        iframe.removeEventListener("load", f_temp2, true);
-
-        // The post-display adjustments are now divided in two phases. Some
-        // stuff takes place directly after the message has been streamed but
-        // _before_ images have been loaded. We adjust the height after that.
-        // But still need to do some more processing after the message has been
-        // fully loaded. We adjust the height again.
-
-
-        // Early adjustments
-        iframe.addEventListener("DOMContentLoaded", function f_temp3(event) {
-          let iframeDoc = iframe.contentDocument;
-          self.tweakFonts(iframeDoc);
-          if (!(self._realFrom && self._realFrom.email.indexOf("bugzilla-daemon") == 0))
-            self.detectQuotes(iframe);
-          self.detectSigs(iframe);
-          self.registerLinkHandlers(iframe);
-          self.injectCss(iframeDoc);
-
-          adjustHeight();
-        }, {once: true});
-
-        // The second load event is triggered by loadURI with the URL
-        // being the necko URL to the given message. These are the late
-        // adjustments that (possibly) depend on the message being actually,
-        // fully, completely loaded.
-        iframe.addEventListener("load", function f_temp1(event) {
-          try {
-            iframe.removeEventListener("load", f_temp1, true);
-
-            // Notify hooks that we just finished displaying a message. Must be
-            //  performed now, not later. This gives plugins a chance to modify
-            //  the DOM of the message (i.e. decrypt it) before we tweak the
-            //  fonts and stuff.
-            for (let h of getHooks()) {
-              try {
-                if (typeof(h.onMessageStreamed) == "function")
-                  h.onMessageStreamed(self._msgHdr, self._domNode, msgWindow, self);
-              } catch (e) {
-                Log.warn("Plugin returned an error:", e);
-                dumpCallStack(e);
-              }
-            }
-
-            let iframeDoc = iframe.contentDocument;
-            if (self.checkForFishing(iframeDoc) && !self._msgHdr.getUint32Property("notAPhishMessage")) {
-              Log.debug("Phishing attempt");
-              self._domNode.getElementsByClassName("phishingBar")[0].style.display = "block";
-            }
-
-            // For bidiUI. Do that now because the DOM manipulations are
-            //  over. We can't do this before because BidiUI screws up the
-            //  DOM. Don't know why :(.
-            // We can't do this as a plugin (I wish I could!) because this is
-            //  too entangled with the display logic.
-            let mainWindow = topMail3Pane(self);
-            if ("BiDiMailUI" in mainWindow) {
-              let ActionPhases = mainWindow.BiDiMailUI.Display.ActionPhases;
-              try {
-                let domDocument = iframe.docShell.contentViewer.DOMDocument;
-                let body = domDocument.body;
-
-                let BDMCharsetPhaseParams = {
-                  body,
-                  charsetOverrideInEffect: msgWindow.charsetOverride,
-                  currentCharset: msgWindow.mailCharacterSet,
-                  messageHeader: self._msgHdr,
-                  unusableCharsetHandler: mainWindow
-                    .BiDiMailUI.MessageOverlay.promptForDefaultCharsetChange,
-                  needCharsetForcing: false,
-                  charsetToForce: null,
-                };
-                ActionPhases.charsetMisdetectionCorrection(BDMCharsetPhaseParams);
-                if (BDMCharsetPhaseParams.needCharsetForcing
-                    && BDMCharsetPhaseParams.charsetToForce != aCharset) {
-                  // XXX this doesn't take into account the case where we
-                  // have a cycle with length > 0 in the reloadings.
-                  // Currently, I only see UTF8 -> UTF8 cycles.
-                  Log.debug("Reloading with " + BDMCharsetPhaseParams.charsetToForce);
-                  f_temp2(null, BDMCharsetPhaseParams.charsetToForce);
-                  return;
-                }
-                ActionPhases.htmlNumericEntitiesDecoding(body);
-                ActionPhases.quoteBarsCSSFix(domDocument);
-                ActionPhases.directionAutodetection(domDocument);
-              } catch (e) {
-                Log.error(e);
-                dumpCallStack(e);
-              }
-            }
-
-            // Everything's done, so now we're able to settle for a height.
-            adjustHeight();
-
-            // Sometimes setting the iframe's content and height changes
-            // the scroll value, don't know why.
-            if (false && originalScroll) {
-              self._domNode.ownerDocument.documentElement.scrollTop = originalScroll;
-            }
-
-            // Send "msgLoaded" event
-            self._msgHdr.folder.NotifyPropertyFlagChanged(self._msgHdr, "msgLoaded", 0, 1);
-            self._msgHdr.folder.lastMessageLoaded = self._msgHdr.messageKey;
-
-            self._didStream = true;
-            if (Prefs.getInt("mail.show_headers") == kHeadersShowAll)
-              self.showDetails(() => self._signal());
-            else
-              self._signal();
-          } catch (e) {
-            try {
-              adjustHeight();
-            } catch (e) {
-              iframe.style.height = "800px";
-            }
-            Log.error(e);
-            dumpCallStack(e);
-            Log.warn("Running signal once more to make sure we move on with our life... (warning, this WILL cause bugs)");
-            self._didStream = true;
-            self._signal();
-          }
-        }, true); /* end iframe.addEventListener */
-
-        /* Unbelievable as it may seem, the code below works.
-         * Some references :
-         * - http://mxr.mozilla.org/comm-central/source/mailnews/base/src/nsMessenger.cpp#564
-         * - http://mxr.mozilla.org/comm-central/source/mailnews/base/src/nsMessenger.cpp#388
-         * - https://developer.mozilla.org/@api/deki/files/3579/=MessageRepresentations.png
-         *
-         * According to dmose, we should get the regular content policy
-         * for free (regarding image loading, JS...) by using a content
-         * iframe with a classical call to loadURI. AFAICT, this works
-         * pretty well (no JS is executed, the images are loaded IFF we
-         * authorized that recipient).
-         * */
-        let url = msgHdrToNeckoURL(self._msgHdr);
-
-        /* These steps are mandatory. Basically, the code that loads the
-         * messages will always output UTF-8 as the OUTPUT ENCODING, so
-         * we need to tell the iframe's docshell about it. */
-        let cv;
-        try {
-          cv = iframe.docShell.contentViewer;
-        } catch (e) {
-          Log.error(e);
-          dumpCallStack(e);
-          Log.error("The iframe doesn't have a docShell, it probably doesn't belong to the DOM anymore."
-            + " Possible reasons include: you modified the jquery-tmpl template, and you did it wrong."
-            + " You changed conversations very fast, and the streaming completed after the conversation"
-            + " was blown away by the newer one.");
-        }
-        cv.hintCharacterSet = "UTF-8";
-        cv.forceCharacterSet = "UTF-8";
-        cv.hintCharacterSetSource = kCharsetFromChannel;
-        /* Is this even remotely useful? */
-        iframe.docShell.appType = Ci.nsIDocShell.APP_TYPE_MAIL;
-
-        /* Now that's about the input encoding. Here's the catch: the
-         * right way to do that would be to query nsIMsgI18NUrl [1] on the
-         * nsIURI and set charsetOverRide on it. For this parameter to
-         * take effect, we would have to pass the nsIURI to LoadURI, not a
-         * string as in url.spec, but a real nsIURI. Next step:
-         * nsIWebNavigation.loadURI only takes a string... so let's have a
-         * look at nsIDocShell... good, loadURI takes a a nsIURI there.
-         * BUT IT'S [noscript]!!! I'm doomed.
-         *
-         * Workaround: call DisplayMessage that in turns calls the
-         * docShell from C++ code. Oh and why are we doing this? Oh, yes,
-         * see [2].
-         *
-         * Some remarks: I don't know if the nsIUrlListener [3] is useful,
-         * but let's leave it like that, it might come in handy later. And
-         * we _cannot instanciate directly_ the nsIMsgMessageService because
-         * there are different ones for each type of account. So we must ask
-         * nsIMessenger for it, so that it instanciates the right component.
-         *
-        [1] http://mxr.mozilla.org/comm-central/source/mailnews/base/public/nsIMsgMailNewsUrl.idl#172
-        [2] https://www.mozdev.org/bugs/show_bug.cgi?id=22775
-        [3] http://mxr.mozilla.org/comm-central/source/mailnews/base/public/nsIUrlListener.idl#48
-        [4] http://mxr.mozilla.org/comm-central/source/mailnews/base/public/nsIMsgMessageService.idl#112
-        */
-        let messageService = Services.mMessenger.messageServiceFromURI(url.spec);
-        let urlListener = {
-          OnStartRunningUrl() {},
-          OnStopRunningUrl() {},
-          QueryInterface: ChromeUtils.generateQI([Ci.nsIUrlListener]),
-        };
-
-        /**
-        * When you want a message displayed....
-        *
-        * @param in aMessageURI Is a uri representing the message to display.
-        * @param in aDisplayConsumer Is (for now) an nsIDocShell which we'll use to load
-        *                         the message into.
-        *                         XXXbz Should it be an nsIWebNavigation or something?
-        * @param in aMsgWindow
-        * @param in aUrlListener
-        * @param in aCharsetOverride (optional) character set override to force the message to use.
-        * @param out aURL
-        */
-        let params = "&markRead=false";
-        messageService.DisplayMessage(self._uri + params, iframe.docShell,
-                                      msgWindow, urlListener, aCharset, {});
-      } catch (e) {
-        Log.error(e);
-        dumpCallStack(e);
-      }
-    }, true); /* end document.addEventListener */
-
-    // Ok, brace ourselves for notifications happening during the message load
-    //  process.
     addMsgListener(this);
 
-    // This triggers the whole process. We assume (see beginning) that the
-    // message is expanded which means the <iframe> will be visible right away
-    // which means we can use offsetHeight, getComputedStyle and stuff on it.
-    let container = this._domNode.getElementsByClassName("iframe-container")[0];
-    container.appendChild(iframe);
+    const neckoUrl = msgHdrToNeckoURL(this._msgHdr).spec;
+
+    const messageService = Services.mMessenger.messageServiceFromURI(neckoUrl);
+    messageService.DisplayMessage(this._uri + "&markRead=false", docshell,
+                                  msgWindow, undefined, undefined, {});
+  },
+
+  postStreamMessage(msgWindow, iframe) {
+    // Notify hooks that we just finished displaying a message. Must be
+    //  performed now, not later. This gives plugins a chance to modify
+    //  the DOM of the message (i.e. decrypt it) before we tweak the
+    //  fonts and stuff.
+    for (let h of getHooks()) {
+      try {
+        if (typeof(h.onMessageStreamed) == "function")
+          h.onMessageStreamed(this._msgHdr, iframe, msgWindow, this);
+      } catch (e) {
+        Log.warn("Plugin returned an error:", e);
+        dumpCallStack(e);
+      }
+    }
+
+    Services.tm.dispatchToMainThread(() => {
+      this._checkForPhishing(iframe);
+    });
+    // signal! ?
+  },
+
+  _checkForPhishing(iframe) {
+    if (!Prefs.getBool("mail.phishing.detection.enabled")) {
+      return;
+    }
+
+    if (this._msgHdr.getUint32Property("notAPhishMessage")) {
+      return;
+    }
+
+    // If the message contains forms with action attributes, warn the user.
+    let formNodes = iframe.contentWindow.document
+      .querySelectorAll("form[action]");
+
+    const url =
+      Services.io.newURI(this._uri).QueryInterface(Ci.nsIMsgMailNewsUrl);
+
+    try {
+      // nsIMsgMailNewsUrl.folder can throw an NS_ERROR_FAILURE, especially if
+      // we are opening an .eml file.
+      var folder = url.folder;
+
+      // Ignore nntp and RSS messages.
+      if (folder.server.type == "nntp" || folder.server.type == "rss") {
+        return;
+      }
+
+      // Also ignore messages in Sent/Drafts/Templates/Outbox.
+      let outgoingFlags =
+        Ci.nsMsgFolderFlags.SentMail |
+        Ci.nsMsgFolderFlags.Drafts |
+        Ci.nsMsgFolderFlags.Templates |
+        Ci.nsMsgFolderFlags.Queue;
+      if (folder.isSpecialFolder(outgoingFlags, true)) {
+        return;
+      }
+    } catch (ex) {
+      if (
+        ex.result != Cr.NS_ERROR_FAILURE &&
+        ex.result != Cr.NS_ERROR_ILLEGAL_VALUE
+      ) {
+        throw ex;
+      }
+    }
+    if (
+      Prefs.getBool("mail.phishing.detection.disallow_form_actions") &&
+      formNodes.length > 0
+    ) {
+      this.isPhishing = true;
+      const msgData = this.toReactData();
+      // TODO: make getting the window less ugly.
+      this._conversation._htmlPane.conversationDispatch({
+        type: "MSG_UPDATE_DATA",
+        msgData,
+      });
+    }
   },
 
   /**
@@ -1553,53 +1137,7 @@ Message.prototype = {
       k(html);
     });
   },
-
-  getAttachmentInfos(win) {
-    /**
-     * We now assume that all the information is correct. I've done enough work
-     * on the Gloda side to ensure this. All hail to Gloda!
-     */
-    return this._attachments.map(att =>
-      new win.AttachmentInfo(
-        att.contentType, att.url, att.name, this._uri, att.isExternal, 42
-      ));
-  },
-
-  downloadAllAttachments(win) {
-    win.HandleMultipleAttachments(this.getAttachmentInfos(win), "save");
-  },
-
-  _getAttrInfo(mainWindow, url) {
-    const att = this._attachments.find(att => att.url == url);
-    const attInfo = new mainWindow.AttachmentInfo(
-      att.contentType, att.url, att.name, this._uri, att.isExternal
-    );
-    attInfo.size = att.size;
-    if (attInfo.size != -1) {
-      attInfo.sizeResolved = true;
-    }
-    return attInfo;
-  },
-
-  downloadAttachment(mainWindow, url) {
-    this._getAttrInfo(mainWindow, url).save();
-  },
-
-  openAttachment(mainWindow, url) {
-    this._getAttrInfo(mainWindow, url).open();
-  },
-
-  openInClassic(mainWindow) {
-    let tabmail = mainWindow.document.getElementById("tabmail");
-    tabmail.openTab("message", { msgHdr: this._msgHdr, background: false });
-  },
-
-  openInSourceView(mainWindow) {
-    mainWindow.ViewPageSource([this._uri]);
-  },
 };
-
-MixIn(Message, EventHelperMixIn);
 
 function MessageFromGloda(aConversation, aGlodaMsg, aLateAttachments) {
   this._msgHdr = aGlodaMsg.folderMessage;
@@ -1751,316 +1289,3 @@ MessageFromDbHdr.prototype = {
 
   RE_LIST_POST: /<mailto:([^>]+)>/,
 };
-
-/**
- * This additional class holds all of the bad heuristics we're performing on a
- *  message's inner DOM once it's been displayed in the conversation view. These
- *  include tweaking the fonts, detectin quotes, etc.
- * As it doesn't belong to the main logic, we're doing this in a separate class
- *  that's MixIn'd the Message class.
- */
-let PostStreamingFixesMixIn = {
-  // This is the naming convention to define a getter, per MixIn's definition
-  get_defaultSize() {
-    return Prefs.getInt("font.size.variable.x-western");
-  },
-
-  injectCss(iframeDoc) {
-    let styleRules = [];
-    // !important because messageContents.css is appended after us when the html
-    // is rendered
-    styleRules = styleRules.concat([
-      "blockquote[type=\"cite\"] {",
-      "  border-right-width: 0px;",
-      "  border-left: 1px #ccc solid;",
-      "  color: #666 !important;",
-      "}",
-      "span.moz-txt-formfeed {",
-      "  height: auto;",
-      "}",
-    ]);
-
-    // Ugly hack (once again) to get the style inside the
-    // <iframe>. I don't think we can use a chrome:// url for
-    // the stylesheet because the iframe has a type="content"
-    let style = iframeDoc.createElement("style");
-    style.appendChild(iframeDoc.createTextNode(styleRules.join("\n")));
-    let head = iframeDoc.body.previousElementSibling;
-    head.appendChild(style);
-  },
-
-  tweakFonts(iframeDoc) {
-    if (!Prefs.tweak_bodies)
-      return;
-
-    let textSize = Math.round(this.defaultSize * tenPxFactor() * 1.2);
-
-    // Assuming 16px is the default (like on, say, Linux), this gives
-    //  18px and 12px, which is what Andy had in mind.
-    // We're applying the style at the beginning of the <head> tag and
-    //  on the body element so that it can be easily overridden by the
-    //  html.
-    // This is for HTML messages only.
-    let styleRules = [];
-    if (iframeDoc.querySelectorAll(":not(.mimemail-body) > .moz-text-html").length) {
-      styleRules = [
-        "body, table {",
-        // "  line-height: 112.5%;",
-        "  font-size: " + textSize + "px;",
-        "}",
-      ];
-    }
-
-    // Unless the user specifically asked for this message to be
-    //  dislayed with a monospaced font...
-    let [{/* name, */ email}] = this.parse(this._msgHdr.author);
-    if (email && !(email.toLowerCase() in Prefs.monospaced_senders) &&
-        !(this.mailingLists.some(x => (x.toLowerCase() in Prefs.monospaced_senders)))) {
-      styleRules = styleRules.concat([
-        ".moz-text-flowed, .moz-text-plain {",
-        "  font-family: sans-serif !important;",
-        "  font-size: " + textSize + "px !important;",
-        "  line-height: 112.5% !important;",
-        "}",
-      ]);
-    }
-
-    // Do some reformatting + deal with people who have bad taste. All these
-    // rules are important: some people just send messages with horrible colors,
-    // which ruins the conversation view. Gecko tends to automatically add
-    // padding/margin to html mails. We still want to honor these prefs but
-    // usually they just black/white so this is pretty much what we want.
-    let fg = Prefs.getChar("browser.display.foreground_color");
-    let bg = Prefs.getChar("browser.display.background_color");
-    styleRules = styleRules.concat([
-      "body {",
-      "  margin: 0; padding: 0;",
-      "  color: " + fg + "; background-color: " + bg + ";",
-      "}",
-    ]);
-
-    // Ugly hack (once again) to get the style inside the
-    // <iframe>. I don't think we can use a chrome:// url for
-    // the stylesheet because the iframe has a type="content"
-    let style = iframeDoc.createElement("style");
-    style.appendChild(iframeDoc.createTextNode(styleRules.join("\n")));
-    let head = iframeDoc.body.previousElementSibling;
-    if (head.firstChild)
-      head.insertBefore(style, head.firstChild);
-    else
-      head.appendChild(style);
-  },
-
-  convertCommonQuotingToBlockquote(iframe) {
-    // Launch various crappy pieces of code^W^W^W^W heuristics to
-    //  convert most common quoting styles to real blockquotes. Spoiler:
-    //  most of them suck.
-    let iframeDoc = iframe.contentDocument;
-    try {
-      convertOutlookQuotingToBlockquote(iframe.contentWindow, iframeDoc);
-      convertHotmailQuotingToBlockquote1(iframeDoc);
-      convertForwardedToBlockquote(iframeDoc);
-      convertMiscQuotingToBlockquote(iframeDoc);
-      fusionBlockquotes(iframeDoc);
-    } catch (e) {
-      Log.warn(e);
-      dumpCallStack(e);
-    }
-  },
-
-  detectBlocks(iframe, testNode, hideText, showText, linkClass, linkColor) {
-    let self = this;
-    let iframeDoc = iframe.contentDocument;
-
-    let smallSize = Prefs.tweak_chrome
-      ? this.defaultSize * tenPxFactor() * 1.1
-      : Math.round(100 * this.defaultSize * 11 / 12) / 100;
-
-    // this function adds a show/hide block text link to every topmost
-    // block. Nested blocks are not taken into account.
-    let walk = function walk_(elt) {
-      for (let i = elt.childNodes.length - 1; i >= 0; --i) {
-        let c = elt.childNodes[i];
-
-        if (testNode(c)) {
-          let div = iframeDoc.createElement("div");
-          div.setAttribute("class", "link " + linkClass);
-          div.addEventListener("click", function div_listener(event) {
-            let h = self._conversation._htmlPane.toggleBlock(event, showText, hideText);
-            iframe.style.height = (parseFloat(iframe.style.height) + h) + "px";
-          }, true);
-          div.setAttribute("style", "color: " + linkColor + "; cursor: pointer; font-size: " + smallSize + "px;");
-          div.appendChild(iframeDoc.createTextNode("- " + showText + " -"));
-          elt.insertBefore(div, c);
-          c.style.display = "none";
-        } else {
-          walk(c);
-        }
-      }
-    };
-
-    walk(iframeDoc);
-  },
-
-  detectQuotes(iframe) {
-    let self = this;
-    self.convertCommonQuotingToBlockquote(iframe);
-
-    let isBlockquote = function isBlockquote_(node) {
-      if (node.tagName && node.tagName.toLowerCase() == "blockquote") {
-        // Compute the approximate number of lines while the element is still visible
-        let style;
-        try {
-          style = iframe.contentWindow.getComputedStyle(node);
-        } catch (e) {
-          // message arrived and window is not displayed, arg,
-          // cannot get the computed style, BAD
-        }
-        if (style) {
-          let numLines = parseInt(style.height) / parseInt(style.lineHeight);
-          if (numLines > Prefs.hide_quote_length) {
-            return true;
-          }
-        }
-      }
-
-      return false;
-    };
-
-    // https://github.com/protz/thunderbird-conversations/issues#issue/179
-    // See link above for a rationale ^^
-    if (self.initialPosition > 0)
-      self.detectBlocks(iframe,
-        isBlockquote,
-        strings.get("hideQuotedText"),
-        strings.get("showQuotedText"),
-        "showhidequote",
-        "orange"
-      );
-  },
-
-  detectSigs(iframe) {
-    let self = this;
-
-    let isSignature = function isSignature_(node) {
-      return (node.classList && node.classList.contains("moz-txt-sig"));
-    };
-
-    if (Prefs.hide_sigs) {
-      self.detectBlocks(iframe,
-        isSignature,
-        strings.get("hideSigText"),
-        strings.get("showSigText"),
-        "showhidesig",
-        "rgb(56, 117, 215)"
-      );
-    }
-  },
-
-  /**
-   * The phishing detector that's in Thunderbird would need a lot of rework:
-   * it's not easily extensible, and the code has a lot of noise, i.e. it just
-   * performs simple operations but it's written in a convoluted way. We should
-   * just rewrite everything, but for now, we just rewrite+simplify the main
-   * function, and still rely on the badly-designed underlying functions for the
-   * low-level treatments.
-   */
-  checkForFishing(iframeDoc) {
-    if (!Prefs.getBool("mail.phishing.detection.enabled"))
-      return false;
-
-    let gPhishingDetector = topMail3Pane(this).gPhishingDetector;
-    let isPhishing = false;
-    let links = iframeDoc.getElementsByTagName("a");
-    for (let a of links) {
-      if (!a)
-        continue;
-      let linkText = a.textContent;
-      let linkUrl = a.getAttribute("href");
-      let hrefURL;
-      // make sure relative link urls don't make us bail out
-      try {
-        hrefURL = Services.io.newURI(linkUrl);
-      } catch (ex) {
-        continue;
-      }
-
-      // only check for phishing urls if the url is an http or https link.
-      // this prevents us from flagging imap and other internally handled urls
-      if (hrefURL.schemeIs("http") || hrefURL.schemeIs("https")) {
-        // The link is not suspicious if the visible text is the same as the URL,
-        // even if the URL is an IP address. URLs are commonly surrounded by
-        // < > or "" (RFC2396E) - so strip those from the link text before comparing.
-        if (linkText)
-          linkText = linkText.replace(/^<(.+)>$|^"(.+)"$/, "$1$2");
-
-        let failsStaticTests = false;
-        if (linkText != linkUrl) {
-          let unobscuredHostNameValue = isLegalIPAddress(hrefURL.host);
-          failsStaticTests =
-            unobscuredHostNameValue
-              && !isLegalLocalIPAddress(unobscuredHostNameValue)
-            || linkText
-              && gPhishingDetector.misMatchedHostWithLinkText(hrefURL, linkText);
-        }
-
-        if (failsStaticTests) {
-          Log.debug("Suspicious link", linkUrl);
-          isPhishing = true;
-          break;
-        }
-      }
-    }
-    return isPhishing;
-  },
-
-  _getAnchor(href) {
-    // Libmime has decided to rewrite the anchors for us, so try to
-    // reverse-engineer that...
-    if (!href.indexOf("imap://") == 0 && !href.indexOf("mailbox://") == 0)
-      return false;
-    try {
-      let uri = Services.io.newURI(href);
-      if (!(uri instanceof Ci.nsIMsgMailNewsUrl))
-        return false;
-      uri.QueryInterface(Ci.nsIURL);
-      let ref = uri.ref;
-      if (!ref.length)
-        return false;
-      return ref;
-    } catch (e) {
-      Log.debug(e);
-      return false;
-    }
-  },
-
-  registerLinkHandlers(iframe) {
-    let self = this;
-    let iframeDoc = iframe.contentDocument;
-    let mainWindow = topMail3Pane(this);
-    for (let a of iframeDoc.querySelectorAll("a")) {
-      if (!a)
-        continue;
-      let anchor = this._getAnchor(a.href);
-      if (anchor) {
-        // It's an anchor, do the scrolling ourselves since, for security
-        // reasons, content cannot scroll its outer chrome document.
-        a.addEventListener("click", function link_listener(event) {
-          let node = iframeDoc.getElementsByName(anchor)[0];
-          let w = self._conversation._htmlPane;
-          let o1 = w.$(node).offset().top;
-          let o2 = w.$(iframe).offset().top;
-          w.scrollTo(0, o1 + o2 + 5 - 44);
-        }, true);
-      } else {
-        // Attach the required event handler so that links open in the external
-        // browser.
-        a.addEventListener("click",
-          event => mainWindow.specialTabs.siteClickHandler(event, /^mailto:/),
-          true);
-      }
-    }
-  },
-};
-
-MixIn(Message, PostStreamingFixesMixIn);

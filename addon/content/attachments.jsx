@@ -5,9 +5,9 @@
 /* globals PropTypes, React, ReactRedux, StringBundle */
 /* exported Attachments */
 
-class _Attachment extends React.PureComponent {
-  constructor() {
-    super();
+class Attachment extends React.PureComponent {
+  constructor(props) {
+    super(props);
     this.preview = this.preview.bind(this);
     this.downloadAttachment = this.downloadAttachment.bind(this);
     this.openAttachment = this.openAttachment.bind(this);
@@ -27,7 +27,13 @@ class _Attachment extends React.PureComponent {
     this.props.dispatch({
       type: "DOWNLOAD_ATTACHMENT",
       msgUri: this.props.msgUri,
-      url: this.props.url,
+      attachment: {
+        contentType: this.props.contentType,
+        isExternal: this.props.isExternal,
+        name: this.props.name,
+        size: this.props.size,
+        url: this.props.url,
+      },
     });
   }
 
@@ -35,7 +41,13 @@ class _Attachment extends React.PureComponent {
     this.props.dispatch({
       type: "OPEN_ATTACHMENT",
       msgUri: this.props.msgUri,
-      url: this.props.url,
+      attachment: {
+        contentType: this.props.contentType,
+        isExternal: this.props.isExternal,
+        name: this.props.name,
+        size: this.props.size,
+        url: this.props.url,
+      },
     });
   }
 
@@ -92,25 +104,25 @@ class _Attachment extends React.PureComponent {
   }
 }
 
-_Attachment.propTypes = {
+Attachment.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  contentType: PropTypes.string.isRequired,
   formattedSize: PropTypes.string.isRequired,
   imgClass: PropTypes.string.isRequired,
+  isExternal: PropTypes.bool.isRequired,
   isPdf: PropTypes.bool.isRequired,
   maybeViewable: PropTypes.bool.isRequired,
   msgUri: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
+  size: PropTypes.number.isRequired,
   strings: PropTypes.object.isRequired,
   thumb: PropTypes.string.isRequired,
   url: PropTypes.string.isRequired,
 };
 
-const Attachment = ReactRedux.connect()(_Attachment);
-
-class _Attachments extends React.PureComponent {
+class Attachments extends React.PureComponent {
   constructor() {
     super();
-    this.strings = new StringBundle("chrome://conversations/locale/template.properties");
     this.showGalleryView = this.showGalleryView.bind(this);
     this.downloadAll = this.downloadAll.bind(this);
   }
@@ -126,6 +138,15 @@ class _Attachments extends React.PureComponent {
     this.props.dispatch({
       type: "DOWNLOAD_ALL",
       msgUri: this.props.msgUri,
+      attachmentDetails: this.props.attachments.map(attachment => {
+        return {
+          contentType: attachment.contentType,
+          isExternal: attachment.isExternal,
+          name: attachment.name,
+          size: attachment.size,
+          url: attachment.url,
+        };
+      }),
     });
   }
 
@@ -136,7 +157,7 @@ class _Attachments extends React.PureComponent {
           {this.props.attachmentsPlural}
           <a className="icon-link download-all"
              onClick={this.downloadAll}
-             title={this.strings.get("downloadAll2")}>
+             title={this.props.strings.get("downloadAll2")}>
             <svg className="icon" viewBox="0 0 24 24"
                  xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
               <use xlinkHref="chrome://conversations/skin/material-icons.svg#file_download"></use>
@@ -145,7 +166,7 @@ class _Attachments extends React.PureComponent {
           { this.props.gallery &&
             <a onClick={this.showGalleryView}
                className="icon-link view-all"
-               title={this.strings.get("galleryView")}>
+               title={this.props.strings.get("galleryView")}>
               <svg className="icon" viewBox="0 0 24 24"
                    xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
                 <use xlinkHref="chrome://conversations/skin/material-icons.svg#photo_library"></use>
@@ -157,12 +178,15 @@ class _Attachments extends React.PureComponent {
               <Attachment
                 dispatch={this.props.dispatch}
                 key={attachment.anchor}
+                contentType={attachment.contentType}
+                isExternal={attachment.isExternal}
                 isPdf={attachment.isPdf}
                 formattedSize={attachment.formattedSize}
                 imgClass={attachment.imgClass}
                 msgUri={this.props.msgUri}
                 name={attachment.name}
-                strings={this.strings}
+                size={attachment.size}
+                strings={this.props.strings}
                 thumb={attachment.thumb}
                 maybeViewable={attachment.maybeViewable}
                 url={attachment.url}/>
@@ -174,12 +198,11 @@ class _Attachments extends React.PureComponent {
   }
 }
 
-_Attachments.propTypes = {
+Attachments.propTypes = {
   dispatch: PropTypes.func.isRequired,
   attachments: PropTypes.array.isRequired,
   attachmentsPlural: PropTypes.string.isRequired,
   msgUri: PropTypes.string.isRequired,
   gallery: PropTypes.bool.isRequired,
+  strings: PropTypes.object.isRequired,
 };
-
-const Attachments = ReactRedux.connect()(_Attachments);

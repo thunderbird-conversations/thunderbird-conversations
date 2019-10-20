@@ -3,10 +3,33 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 /* globals AttachmentMenu, ConversationHeader, ConversationFooter, MessageList,
-           React */
+           React, ReactRedux, PropTypes */
 /* exported ConversationWrapper */
 
-class ConversationWrapper extends React.PureComponent {
+class _ConversationWrapper extends React.PureComponent {
+  componentDidMount() {
+    this._setHTMLAttributes();
+  }
+
+  componentDidUpdate(prevProps) {
+    this._setHTMLAttributes(prevProps);
+  }
+
+  _setHTMLAttributes(prevProps) {
+    if (prevProps &&
+        this.props.OS == prevProps.OS &&
+        this.props.tweakChrome == prevProps.tweakChrome) {
+      return;
+    }
+
+    const html = document.body.parentNode;
+    if (this.props.tweakChrome && this.props.OS) {
+      html.setAttribute("os", this.props.OS);
+    } else {
+      html.removeAttribute("os");
+    }
+  }
+
   render() {
     return (
       <div>
@@ -19,3 +42,15 @@ class ConversationWrapper extends React.PureComponent {
     );
   }
 }
+
+_ConversationWrapper.propTypes = {
+  tweakChrome: PropTypes.bool.isRequired,
+  OS: PropTypes.string.isRequired,
+};
+
+const ConversationWrapper = ReactRedux.connect(state => {
+  return {
+    tweakChrome: !!state.summary.prefs && state.summary.prefs.tweakChrome,
+    OS: state.summary.OS,
+  };
+})(_ConversationWrapper);

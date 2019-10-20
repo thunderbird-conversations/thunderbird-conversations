@@ -2,8 +2,10 @@
 
 /* exported setupAutocomplete, Colors, getDefaultIdentity, getIdentityForEmail,
             getIdentities, NS_SUCCEEDED, setupLogging, dumpCallStack */
-/* global $, MailServices, showCc, showBcc, strings */
+/* global $, showCc, showBcc, strings */
 /* import-globals-from quickReply.js */
+
+var {MailServices} = ChromeUtils.import("resource:///modules/MailServices.jsm");
 
 // ----- Autocomplete stuff. Understand it as a part of stub.compose-ui.js
 

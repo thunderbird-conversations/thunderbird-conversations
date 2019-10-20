@@ -6,8 +6,8 @@
 /* exported AttachmentMenu */
 
 class AttachmentMenu extends React.PureComponent {
-  constructor() {
-    super();
+  constructor(props) {
+    super(props);
     this.strings = new StringBundle("chrome://conversations/locale/pages.properties");
     this.open = this.open.bind(this);
     this.save = this.save.bind(this);

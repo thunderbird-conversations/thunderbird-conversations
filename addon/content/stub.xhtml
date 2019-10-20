@@ -19,12 +19,6 @@
   <link rel="stylesheet" type="text/css" media="print"
     href="chrome://conversations/skin/print.css" />
   <script type="text/javascript"
-    src="chrome://conversations/content/js/jquery-3.2.1.min.js"></script>
-  <script type="text/javascript"
-    src="chrome://conversations/content/js/handlebars-v3.0.0.js"></script>
-  <script type="text/javascript"
-    src="chrome://conversations/content/js/jquery.tokeninput.js"></script>
-  <script type="text/javascript"
     src="chrome://conversations/content/vendor/react.js"></script>
   <script type="text/javascript"
     src="chrome://conversations/content/vendor/react-dom.js"></script>
@@ -45,9 +39,19 @@
   <script type="text/javascript"
     src="chrome://conversations/content/conversationFooter.js"></script>
   <script type="text/javascript"
+    src="chrome://conversations/content/messageIFrame.js"></script>
+  <script type="text/javascript"
+    src="chrome://conversations/content/message.js"></script>
+  <script type="text/javascript"
     src="chrome://conversations/content/messageActionButton.js"></script>
   <script type="text/javascript"
     src="chrome://conversations/content/messageHeaderOptions.js"></script>
+  <script type="text/javascript"
+    src="chrome://conversations/content/messageHeader.js"></script>
+  <script type="text/javascript"
+    src="chrome://conversations/content/messageDetails.js"></script>
+  <script type="text/javascript"
+    src="chrome://conversations/content/messageNotification.js"></script>
   <script type="text/javascript"
     src="chrome://conversations/content/messageFooter.js"></script>
   <script type="text/javascript"
@@ -57,273 +61,36 @@
   <script type="text/javascript"
     src="chrome://conversations/content/messageList.js"></script>
   <script type="text/javascript"
+    src="chrome://conversations/content/quoting.js"></script>
+  <script type="text/javascript"
+    src="chrome://conversations/content/messageTags.js"></script>
+  <script type="text/javascript"
     src="chrome://conversations/content/conversationWrapper.js"></script>
   <!-- The two scripts below share the same scope, they were split for the sake
     of readability. -->
-  <script type="application/javascript"
+  <!-- <script type="application/javascript"
     src="chrome://conversations/content/quickReply.js"></script>
   <script type="application/javascript"
     src="chrome://conversations/content/stub.completion-ui.js"></script>
   <script type="application/javascript"
-    src="chrome://conversations/content/stub.compose-ui.js"></script>
-  <script type="application/javascript"
-    src="chrome://conversations/content/handlebars-wrapper.js"></script>
+    src="chrome://conversations/content/stub.compose-ui.js"></script> -->
   <script type="application/javascript"><![CDATA[
     /* import-globals-from quickReply.js */
     /* import-globals-from reducer.js */
-    /* global $, jQuery, wrapHandlebars, registerQuickReply, newComposeSessionByDraftIf
-              Redux, ReactDOM, React, ReactRedux, ConversationWrapper, ContactDetail,
+    /* global $, registerQuickReply, newComposeSessionByDraftIf
+              Redux, ReactDOM, React, ReactRedux, ConversationWrapper,
               gComposeSession:true, tmpl, createComposeSession, revealCompositionFields,
               editFields, asToken, setupAutocomplete, Gloda, Log:true,
-              setupLogging, dumpCallStack, Attachments, MessageFooter, MessageHeaderOptions */
+              setupLogging, dumpCallStack, masqueradeAsQuickCompose */
     let store;
     var {StringBundle} = ChromeUtils.import("resource:///modules/StringBundle.js");
     /* exported Services */
     var {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
     var strings = new StringBundle("chrome://conversations/locale/message.properties");
 
+    /* exported conversationDispatch */
     function conversationDispatch(...args) {
       store.dispatch(...args);
-    }
-
-    // This function only works for our message nodes, use $(...).offset() for
-    //  more complicated computations.
-    function offsetFromTop(aNode) {
-      let offset = aNode.offsetTop || 0;
-      let parent = aNode.parentNode;
-      while (parent && !(parent instanceof HTMLDocument)) {
-        let style = window.getComputedStyle(parent);
-        if (style.position == "relative")
-          offset += parent.offsetTop;
-        parent = parent.parentNode;
-      }
-      return offset;
-    }
-
-    /* exported scrollNodeIntoView */
-    function scrollNodeIntoView(aNode) {
-      let offset = offsetFromTop(aNode);
-      // The header is 44px high (yes, this is harcodeadly ugly).
-      window.scrollTo(0, offset + 5 - 44);
-    }
-
-    /* exported toggleBlock */
-    function toggleBlock(event, showtext, hidetext) {
-      let link = event.target;
-      let div = link.nextSibling;
-      let cs = window.getComputedStyle(div);
-      if (div.style.display == "none") {
-        link.textContent = "- " + hidetext + " -";
-        div.style.display = "";
-        let h = div.getBoundingClientRect().height +
-          parseFloat(cs.marginTop) + parseFloat(cs.marginBottom);
-        return h;
-      }
-      let h = div.getBoundingClientRect().height;
-      h += parseFloat(cs.marginTop);
-      h += parseFloat(cs.marginBottom);
-      link.textContent = "- " + showtext + " -";
-      div.style.display = "none";
-      return -h;
-    }
-
-    const kPopupTimeout = 400;
-
-    // This only works for contact tooltips. The "more" menu is treated like a
-    //  real menu (it uses displayMenu and falls under clearMenu's operations),
-    //  and the reply menu with various choices is also treated like a menu.
-    // It turns out the "more" menu reuses the tooltip style for various
-    //  reasons, mostly to keep the same appearance, so we differentiate that
-    //  one with a tooltip-menu extra class.
-    /* exported enableTooltips */
-    function enableTooltips(aMsg) {
-      let $aMsgNode = $(aMsg._domNode);
-
-      $aMsgNode.find(".contactName").each(function() {
-        let $contact = $(this);
-
-        if ($contact.hasClass("tooltip-menu")) {
-          return;
-        }
-
-        setTooltipEventHandlers(aMsg, $contact, false);
-      });
-    }
-
-    // Set events on a contact to show/hide the tooltip over the contact when
-    // mouse enters/leaves their areas.
-    function setTooltipEventHandlers(aMsg, $contact, isRecipient) {
-      let timeout;
-
-      function findDiv(msgId, contactId) {
-        const tooltipContainer = document.getElementById("tooltipContainer");
-        for (let child of tooltipContainer.children) {
-          if (child.getAttribute("MsgId") == msgId) {
-            return child;
-          }
-        }
-        return null;
-      }
-
-      let contactPos = $contact.parent().position();
-
-      function renderContact(div, fadeIn) {
-        ReactDOM.render(React.createElement(ReactRedux.Provider, {store},
-          React.createElement(ContactDetail, {
-            left: contactPos.left,
-            top: contactPos.top + $contact.parent().height() * 2,
-            name: $contact.attr("name"),
-            email: $contact.attr("email"),
-            realEmail: $contact.attr("realemail"),
-            avatar: $contact.attr("avatar"),
-            hasCard: $contact.attr("hascard"),
-            fadeIn,
-          })), div);
-      }
-
-      let fadeTimeout;
-
-      function removeContactDisplay(div) {
-        renderContact(div, "false");
-        fadeTimeout = setTimeout(function() {
-          ReactDOM.unmountComponentAtNode(div);
-          div.remove();
-        }, kPopupTimeout);
-      }
-
-      $contact.hover(function() {
-        if (aMsg.collapsed) {
-          return;
-        }
-
-        clearTimeout(timeout);
-        clearTimeout(fadeTimeout);
-
-        timeout = setTimeout(function() {
-          if (findDiv(aMsg._msgHdr.messageId + $contact.attr("realemail"))) {
-            // Already displayed, just ignore.
-            return;
-          }
-          const tooltipContainer = document.getElementById("tooltipContainer");
-          let div = document.createElement("div");
-          div.setAttribute("MsgId", aMsg._msgHdr.messageId + $contact.attr("realemail"));
-          tooltipContainer.appendChild(div);
-
-          renderContact(div, "true");
-
-          tooltipContainer.addEventListener("mouseover", () => {
-            clearTimeout(timeout);
-          });
-          tooltipContainer.addEventListener("mouseout", () => {
-            const tooltipDiv = findDiv(aMsg._msgHdr.messageId + $contact.attr("realemail"));
-            if (!tooltipDiv) {
-              // Not displayed, just ignore.
-              return;
-            }
-            clearTimeout(timeout);
-            timeout = setTimeout(function() {
-              removeContactDisplay(tooltipDiv);
-            }, kPopupTimeout);
-          });
-        }, kPopupTimeout);
-      }, function() {
-        clearTimeout(timeout);
-        clearTimeout(fadeTimeout);
-
-        const tooltipDiv = findDiv(aMsg._msgHdr.messageId + $contact.attr("realemail"));
-
-        if (!tooltipDiv) {
-          return;
-        }
-
-        timeout = setTimeout(function() {
-          removeContactDisplay(tooltipDiv);
-        }, kPopupTimeout);
-      });
-    }
-
-    /* exported renderAttachmentDetails */
-    function renderAttachmentDetails(messageDiv, msgData) {
-      const details = messageDiv.getElementsByClassName("attachments-container")[0];
-      if (msgData.attachments.length) {
-        ReactDOM.render(React.createElement(ReactRedux.Provider, {store},
-          React.createElement(Attachments, {
-            attachments: msgData.attachments,
-            attachmentsPlural: msgData.attachmentsPlural,
-            gallery: msgData.gallery,
-            msgUri: msgData.uri,
-          })), details);
-      }
-    }
-
-    /* exported renderMessageFooter */
-    function renderMessageFooter(messageDiv, msgData) {
-      const details = messageDiv.getElementsByClassName("messageFooter")[0];
-      ReactDOM.render(React.createElement(ReactRedux.Provider, {store},
-        React.createElement(MessageFooter, {
-          msgUri: msgData.uri,
-          multipleRecipients: msgData.multipleRecipients,
-          recipientsIncludeLists: msgData.recipientsIncludeLists,
-          isDraft: msgData.isDraft,
-        })), details);
-    }
-
-    /* exported renderMessageHeaderOptions */
-    function renderMessageHeaderOptions(messageDiv, msgData) {
-      const details = messageDiv.getElementsByClassName("optionswrapper")[0];
-      ReactDOM.render(React.createElement(ReactRedux.Provider, {store},
-        React.createElement(MessageHeaderOptions, {
-          msgUri: msgData.uri,
-          date: msgData.date,
-          fullDate: msgData.fullDate,
-          attachments: msgData.attachments,
-          multipleRecipients: msgData.multipleRecipients,
-          recipientsIncludeLists: msgData.recipientsIncludeLists,
-          isDraft: msgData.isDraft,
-        })), details);
-    }
-
-    /* exported cleanup */
-    function cleanup() {
-      // These shouldn't be necessary because we're blasting away everything by
-      //  setting .innerHTML BUT jQuery won't remove its persistent event
-      //  listeners if we don't do that which will in turn cause memory leaks!
-      // Indeed, the listeners are actually closures on Message instances. These
-      //  contain a pointer to their parent Conversation, so that would prevent
-      //  the GC from collecting anything! Argh!
-      $("#messageList").empty();
-    }
-
-    document.addEventListener("focus", function(event) {
-      /* This is a persistent event listener. It can operate multiple
-       * times. We have the invariant that for a given conversation, there's at
-       * most one such element (recycling doesn't use tabindex 1). */
-      let msgNode = document.querySelector(".message[tabindex=\"1\"]");
-      if (!msgNode)
-        return;
-
-      /* Restore the proper tab order. This event is fired *after* the
-       * right message has been focused in Gecko 1.9.2, *before* the right
-       * message has been focused in Gecko 1.9.1 (so it's basically
-       * useless). */
-      let msgNodes = document.getElementsByClassName("message");
-      let index = Array.prototype.indexOf.call(msgNodes, msgNode);
-      if (index != -1) {
-        msgNode.setAttribute("tabindex", index + 2);
-      }
-    }, true);
-
-    /* exported closeTab */
-    function closeTab() {
-      let browser = window.frameElement;
-      let tabmail = window.top.document.getElementById("tabmail");
-      let tabs = tabmail.tabInfo;
-      let candidates = tabs.filter(x => x.browser == browser);
-      if (candidates.length == 1) {
-        tabmail.closeTab(candidates[0]);
-      } else {
-        Log.error("Couldn't find a tab to close...");
-      }
     }
 
     // Below are event listeners for various actions. There is some logic
@@ -333,36 +100,18 @@
     //  be used either in a standalone tab or in the multimessage pane.
     // let Conversations = window.top.Conversations;
 
-    var {MailServices} = ChromeUtils.import("resource:///modules/MailServices.jsm");
-    const {decodeUrlParameters, isOSX, isWindows, parseMimeLine} =
-      ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
     const {msgUriToMsgHdr, msgHdrsMarkAsRead} =
       ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
     const {Prefs} = ChromeUtils.import("resource://conversations/modules/prefs.js");
     const {topMail3Pane} = ChromeUtils.import("resource://conversations/modules/misc.js");
-    const {defaultPhotoURI} = ChromeUtils.import("resource://conversations/modules/contact.js");
+    const {
+      setupLogging, dumpCallStack,
+    } = ChromeUtils.import("resource://conversations/modules/log.js");
 
     Log = setupLogging("Conversations.Stub");
     // Declare with var, not let, so that it's in the global scope, not the lexical scope.
     /* exported isInTab */
     var isInTab = false;
-
-    wrapHandlebars();
-
-    $(document).ready(function() {
-      let html = document.body.parentNode;
-      if (Prefs.tweak_chrome) {
-        if (isWindows) {
-          html.setAttribute("os", "windows");
-        } else if (isOSX) {
-          html.setAttribute("os", "osx");
-        } else {
-          html.setAttribute("os", "linux");
-        }
-      } else {
-        html.removeAttribute("os");
-      }
-    });
 
     let oldPrint = window.print;
 
@@ -390,16 +139,14 @@
      * serves the purpose of being able to create a standalone conversation view
      * in a new tab.
      */
-    $(document).ready(function() {
-      // I just imagined Javascript would have some function for that
-      // built-in... looks like even jQuery doesn't have it.
-      let params = decodeUrlParameters(document.location.href);
+    document.addEventListener("DOMContentLoaded", () => {
+      const params = (new URL(document.location)).searchParams;
 
       // Oh, are we expected to build a conversation on our own? Let's do it,
       // yay!
-      if ("urls" in params) {
+      if (params.has("urls")) {
         try {
-          let scrollMode = ("scrollMode" in params)
+          let scrollMode = (params.get("scrollMode"))
             ? parseInt(params.scrollMode)
             : Prefs.kScrollUnreadOrLast;
           /* If we start up Thunderbird with a saved conversation tab, then we
@@ -412,9 +159,9 @@
           if (window.frameElement)
             window.frameElement.setAttribute("tooltip", "aHTMLTooltip");
           let mainWindow = topMail3Pane(window);
-          // let willExpand = parseInt(params.willExpand);
-          let msgHdrs = params.urls.split(",").map(x => msgUriToMsgHdr(x))
-                                              .filter(x => x != null && x.messageId);
+          // let willExpand = parseInt(params.get("willExpand"));
+          let msgHdrs = params.get("urls").split(",").map(x => msgUriToMsgHdr(x))
+                              .filter(x => x != null && x.messageId);
           // It might happen that there are no messages left...
           if (!msgHdrs.length) {
             document.getElementById("messageList").textContent =
@@ -451,13 +198,6 @@
               // Create a new rule that will override the default rule, so that
               // the expanded quick reply is twice higher.
               document.body.classList.add("inTab");
-              // We can never junk a conversation in a new tab, because the junk
-              // command only operates on selected messages, and we're not in a
-              // 3pane context anymore.
-              conversationDispatch({
-                type: "UPDATE_CANJUNK_STATUS",
-                canJunk: false,
-              });
               // Do this now so as to not defeat the whole expand/collapse
               // logic.
               if (Prefs.getBool("mailnews.mark_message_read.auto")) {
@@ -472,149 +212,13 @@
           Log.debug(e);
           dumpCallStack(e);
         }
-      } else if ("quickCompose" in params) {
+      } else if (params.get("quickCompose")) {
         masqueradeAsQuickCompose();
       }
-    });
+    }, {once: true});
 
     /* exported isQuickCompose */
     var isQuickCompose = false;
-
-    /* This is our new hack: reuse this file to provide a standalone composition
-     * window. Why? Because it uses gloda autocomplete and provides a
-     * no-frills composition experience. */
-    function masqueradeAsQuickCompose() {
-      isQuickCompose = true;
-      document.title = strings.get("write");
-      document.querySelector("#conversationHeader").style.display = "none";
-      document.querySelector(".bottom-links").style.display = "none";
-      document.querySelector("#messageList").style.marginTop = "0";
-      document.querySelector("#messageList").classList.add("quickCompose");
-      tmpl("#quickReplyTemplate").appendTo($("#messageList"));
-      $(".replyAll, #save, .replyMethod").remove();
-
-      // TODO figure out why this timeout is needed
-      setTimeout(function() {
-        showQuickReply.call($(".reply.expand"));
-        gComposeSession = createComposeSession(x => x.new());
-        revealCompositionFields();
-        editFields("to");
-      }, 0);
-
-      window.Conversations = {
-        currentConversation: {
-          msgHdrs: [],
-          id: null,
-        },
-      };
-
-      document.querySelector(".quickReply").addEventListener("keypress", function(event) {
-        switch (event.keyCode) {
-          case KeyEvent.DOM_VK_RETURN:
-            if (isAccel(event)) {
-              if (event.shiftKey)
-                gComposeSession.send({ archive: true });
-              else
-                gComposeSession.send();
-            }
-            break;
-        }
-      });
-
-
-      let data = [];
-
-      // Push a new contact item in the list
-      let pushNewPopularContacts = function(n) {
-        let items = data.splice(0, n);
-        let nodes = tmpl("#popularContactTemplate", items);
-
-        items.forEach(function(data2, i) {
-          let data = data2;
-          let node = nodes.eq(i);
-          Log.debug("Adding", data.name, data.email);
-
-          node.find(".popularRemove").click(function() {
-            Log.debug("Removing", data.name, data.email);
-            // Mark it in the prefs
-            let unwantedRecipients = JSON.parse(Prefs.getString("conversations.unwanted_recipients"));
-            unwantedRecipients[data.email] = null;
-            Prefs.setString("conversations.unwanted_recipients",
-              JSON.stringify(unwantedRecipients));
-            // Update the UI
-            $(this).closest(".popularContact").remove();
-            pushNewPopularContacts(1);
-          });
-
-          node.find(".popularName").click(function() {
-            // Get all the current parameters
-            let to = JSON.parse($("#to").val());
-            let cc = JSON.parse($("#cc").val());
-            let bcc = JSON.parse($("#bcc").val());
-            // Append our new value
-            to.push(MailServices.headerParser.makeMimeAddress(data.name, data.email));
-            // Re-set everything
-            let format = items => items.map(parseMimeLine)
-                                       .map(([{ name, email }]) => asToken(null, name, email, null));
-            setupAutocomplete(format(to), format(cc), format(bcc));
-            // Remove the node!
-            node.remove();
-            pushNewPopularContacts(1);
-          });
-        });
-
-        nodes.appendTo($(".quickReplyContactsBox"));
-      };
-
-      $(".quickReplyContactsMoreLink").click(() => pushNewPopularContacts(10));
-
-      // Fill in the "10 most popular contacts" thing
-      let contactQuery = Gloda.newQuery(Gloda.NOUN_CONTACT);
-      contactQuery.orderBy("-popularity").limit(100);
-      let contactCollection = contactQuery.getCollection({
-        onItemsAdded(aItems, aCollection) {
-    },
-        onItemsModified(aItems, aCollection) {
-    },
-        onItemsRemoved(aItems, aCollection) {
-    },
-        onQueryCompleted(aCollection) {
-      let items = aCollection.items;
-      let unwantedRecipients = JSON.parse(Prefs.getString("conversations.unwanted_recipients"));
-
-      for (let contact of items) {
-        if (contact.identities.length) {
-          let id = contact.identities[0];
-          let photoForAbCard = function(card) {
-            if (!card)
-              return defaultPhotoURI;
-            let url = card.getProperty("PhotoURI", "");
-            if (!url)
-              return defaultPhotoURI;
-            return url;
-          };
-          if (id.kind == "email" && !(id.value in unwantedRecipients)) {
-            // Log.debug("Pushing", id.value, contact.name, contact.popularity);
-            data.push({
-              email: id.value,
-              name: contact.name,
-              photo: photoForAbCard(id.abCard),
-            });
-          }
-        }
-      }
-
-      pushNewPopularContacts(10);
-    },
-      }, null);
-      contactCollection.becomeExplicit();
-
-      // Misc
-      if (!top.opener) {
-        window.frameElement.setAttribute("tooltip", "aHTMLTooltip");
-        window.frameElement.setAttribute("context", "mailContext");
-      }
-    }
 
     // Mark a message as read if a user scrolls past top and bottom of an
     // unread message.
@@ -690,83 +294,9 @@
 </head>
 
 <body>
-  <script id="detailsTemplate" type="text/x-handlebars-template"><![CDATA[
-      <div>
-      {{#if dataContactsFrom.length}}
-        <div class="detailsLine fromLine">
-          <u>{{str "fieldFrom"}}</u>
-          {{tmpl "contact" dataContactsFrom}}
-        </div>
-      {{/if}}
-      {{#if dataContactsTo.length}}
-        <div class="detailsLine toLine">
-          <u>{{str "fieldTo"}}</u>
-          {{tmpl "contact" dataContactsTo}}
-        </div>
-      {{/if}}
-      {{#if dataContactsCc.length}}
-        <div class="detailsLine ccLine">
-          <u>{{str "fieldCc"}}</u>
-          {{tmpl "contact" dataContactsCc}}
-        </div>
-      {{/if}}
-      {{#if dataContactsBcc.length}}
-        <div class="detailsLine bccLine">
-          <u>{{str "fieldBcc"}}</u>
-          {{tmpl "contact" dataContactsBcc}}
-        </div>
-      {{/if}}
-      {{#each extraLines}}
-        <div class="detailsLine">
-          <u>{{key}}:</u>
-          {{value}}
-        </div>
-      {{/each}}
-      </div>
-    ]]>
-  </script>
   <script id="messageTemplate" type="text/x-handlebars-template"><![CDATA[
     <li class="message collapsed {{extraClasses}}">
-      <div class="messageHeader hbox">
-        <div class="tooltipInsertionBox"></div>
-        <div class="shrink-box">
-          <div class="star"><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#star"></use></svg></div>
-          {{#if dataContactFrom.avatarIsDefault}}
-            <abbr class="contactInitials" style="{{dataContactFrom.colorStyle}}">{{dataContactFrom.initials}}</abbr>
-          {{else}}
-            <span class="contactAvatar" style="background-image: url('{{dataContactFrom.avatar}}')"> </span>
-          {{/if}}
-          <span class="author">{{tmpl "contactLabel" dataContactFrom}}</span>
-          <span class="to hide-with-details"> {{str "to"}} {{tmpl "contactLabel" dataContactsTo}}</span>
-          <span class="recipient-tooltips"></span>
-          <span class="bzTo"> {{str "at"}} {{bugzillaUrl}}</span>
-          <span class="snippet"><ul class="tags regular-tags"></ul><ul
-              class="tags special-tags"
-            ><li
-              class="tag-signed"
-              title="{{str 'messageSignedLong'}}"
-              ><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#edit"></use></svg>
-              {{str "messageSigned"}}</li
-            ><li
-              class="tag-decrypted"
-              title="{{str 'messageDecryptedLong'}}"
-              ><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#vpn_key"></use></svg>
-              {{str "messageDecrypted"}}</li
-            ><li
-              class="tag-dkim-signed"
-              ><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#edit"></use></svg>
-              {{str "messageDKIMSigned"}}</li
-            ><li
-              class="in-folder"
-              title="{{str 'jumpToFolder'}}"
-              >{{str "inFolder" shortFolderName}}</li
-            ></ul>{{snippet}}</span>
-        </div>
-        <div class="optionswrapper">
-        </div>
-      </div>
-      <div class="detailsPlaceholder show-with-details">
-      </div>
+      <!-- The following goes after the messageDetails -->
 
       {{#if generateLightningTempl}}
       <div class="lightningImipBar notificationBar" style="display: none">
@@ -904,269 +434,17 @@
         </button>
       </div>
       {{/if}}
-      <div class="phishingBar notificationBar" style="display: none">
-        <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#warning"></use></svg>
-        {{str "scam"}}
-        <span class="ignore-warning">
-          <a href="javascript:">{{str "ignoreWarning"}}</a>
-        </span>
-      </div>
-      <div class="remoteContent notificationBar" style="display: none">
-        {{str "remoteContentBlocked"}}
-        <span class="show-remote-content">
-          <a href="javascript:">{{str "showRemote"}}</a> -
-        </span>
-        <span class="always-display">
-          <a href="javascript:">{{str "alwaysShowRemote" realFrom}}</a>
-        </span>
-      </div>
-      <div class="junkBar notificationBar" {{#unless canUnJunk}}style="display: none"{{/unless}}>
-        <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#whatshot"></use></svg>
-        {{str "junk"}}
-        <span class="notJunk">
-          <a href="javascript:">{{str "notJunk"}}</a>
-        </span>
-      </div>
-      <div class="outboxBar notificationBar" {{#unless isOutbox}}style="display: none"{{/unless}}>
-        <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#inbox"></use></svg>
-        {{str "isOutbox"}}
-        <span class="sendUnsent">
-          <a href="javascript:">{{str "sendUnsent"}}</a>
-        </span>
-      </div>
+      <!-- Phishing / Remote Content / Junk / Outbox bars went here */
       <div class="enigmailBar notificationBar" style="display: none">
         <span class="enigmailMessage"></span>
         <span class="enigmailDetails">
           <button>{{str "Details"}}</button>
         </span>
       </div>
-
-      <div class="messageBody">
-        <!-- Weird markup to deal with whitespace DOM nodes -->
-        <ul class="tags special-tags"
-          ><li
-            class="keep-tag tag-signed"
-            title="{{str 'messageSignedLong'}}"
-            ><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#edit"></use></svg>
-            {{str "messageSigned"}}</li
-          ><li
-            class="keep-tag tag-decrypted"
-            title="{{str 'messageDecryptedLong'}}"
-            ><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#vpn_key"></use></svg>
-            {{str "messageDecrypted"}}</li
-          ><li
-            class="keep-tag tag-dkim-signed"
-            ><svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#edit"></use></svg>
-            {{str "messageDKIMSigned"}}</li
-          ><li
-            class="keep-tag in-folder"
-            title="{{str 'jumpToFolder'}}"
-            >{{str "inFolder" folderName}}</li
-          ></ul
-        >
-        <ul class="tags regular-tags"></ul>
-        <div class="iframe-container"></div>
-        <div class="body-container"></div>
-        <div class="attachments-container">
-        </div>
-      </div>
-      <div class="messageFooter">
-      </div>
-      {{#if quickReply}}
-        <div>
-          <small><i>Quick Reply is temporarily disabled due to needing more work for Thunderbird 68.</i></small>
-        </div>
-      {{/if}}
     </li>
     ]]>
   </script>
-  <!-- This should be in the quickReply if above -->
-  <!-- {{tmpl "quickReply" this}} -->
-
-  <!-- Weird markup again, otherwise, the comma is separated from the name by a
-    space because of the #text whitespace-only nodes that end up in the DOM.
-  -->
-  <!-- Generic contact template with tooltip -->
-  <script id="contactTemplate" type="text/x-handlebars-template"><![CDATA[
-    {{tmpl "contactLabel" this}}
-  ]]></script>
-  <!-- Contact template specific to recipients, without tooltip -->
-  <script id="contactLabelTemplate" type="text/x-handlebars-template"><![CDATA[<span
-    >{{separator}}</span
-    ><span class="tooltipWrapper contact"
-      ><span class="contactName" name="{{name}}" email="{{displayEmail}}"
-        realemail={{email}}
-        avatar="{{avatar}}" hascard="{{hasCard}}"
-        >{{#if star}}&#x2605; {{/if}}{{trim name}}{{#if extra}}
-        <label xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-          crop="center" class="contactExtra"
-          value="({{extra}})"
-        />{{/if}}{{#if displayEmail}}<span class="smallEmail"
-          > &lt;{{trim displayEmail}}&gt;</span>{{/if}}{{#if writeBr}}<br />{{/if}}</span
-      ></span
-  >]]></script>
-  <script id="attachmentIconTemplate" type="text/x-handlebars-template"><![CDATA[
-    {{#if attachments.length}}
-      <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#attachment"></use></svg>
-    {{/if}}
-  ]]></script>
-  <script id="popularContactTemplate" type="text/x-handlebars-template"><![CDATA[
-    <div class="popularContact">
-      <img class="popularPhoto" src="{{photo}}" style="float: left" />
-      <span class="popularRemove">×</span>
-      <span class="popularName">{{name}}</span><br />
-      <span class="popularEmail">{{email}}</span>
-    </div>
-  ]]></script>
-  <script id="quickReplyTemplate" type="text/x-handlebars-template"><![CDATA[
-    <div class="quickReply" ondragover="quickReplyCheckDrag(event);" ondrop="quickReplyDrop(event);">
-      <div class="quickReplyContacts">
-        <div class="quickReplyContactsHeader">
-          {{str "mostFrequentContacts"}}
-        </div>
-        <div class="quickReplyContactsBox">
-        </div>
-        <div class="quickReplyContactsMore">
-          <a class="quickReplyContactsMoreLink">
-            {{str "showMore"}}
-          </a>
-        </div>
-      </div>
-      <div class="quickReplyBox">
-        <div class="replyHeader">
-          <div class="quickReplyRecipients">
-            <ul class="fromField">
-              {{str "fieldFrom"}}
-              <li class="senderSwitcher"><a class="switchLeft" onclick="gComposeSession.cycleSender(-1)">◂</a> <a class="switchRight" onclick="gComposeSession.cycleSender(1)">▸</a></li>
-              <li class="senderName"></li>,
-              <li class="replyMethod">
-                <input type="radio" name="reply-method" value="reply"
-                  onchange="changeComposeFields('reply')" id="reply-radio"
-                /><label for="reply-radio">{{str "reply"}}</label>
-              </li>
-              <li class="replyMethod replyMethod-replyAll">
-                <input type="radio" name="reply-method" value="replyAll"
-                  onchange="changeComposeFields('replyAll')" id="replyAll-radio"
-                /><label for="replyAll-radio">{{str "replyAll"}}</label>
-              </li>
-              <li class="replyMethod replyMethod-replyList">
-                <input type="radio" name="reply-method" value="replyList"
-                  onchange="changeComposeFields('replyList')" id="replyList-radio"
-                /><label for="replyList-radio">{{str "replyList"}}</label>
-              </li>
-              <li class="replyMethod">
-                <input type="radio" name="reply-method" value="forward"
-                  onchange="changeComposeFields('forward')" id="forward-radio"
-                /><label for="forward-radio">{{str "forward"}}</label>
-              </li>
-              <li class="firstBar">|</li>
-              <li class="showCc"><a onclick="showCc(); editFields('cc');" href="javascript:">{{str "addCc"}}</a> |</li>
-              <li class="showBcc"><a onclick="showBcc(); editFields('bcc');" href="javascript:">{{str "addBcc"}}</a> |</li>
-              <li class="addAttachment"><a onclick="addAttachment();" href="javascript:">{{str "addAttachment"}}</a></li>
-            </ul>
-            <div class="editRecipientList editToList hbox">
-              <div class="label">{{str "fieldTo"}}</div>
-              <div class="boxFlex"><input type="text" id="to" /></div>
-            </div>
-            <div class="editRecipientList editCcList hbox" style="display: none">
-              <div class="label">{{str "fieldCc"}}</div>
-              <div class="boxFlex"><input type="text" id="cc" /></div>
-            </div>
-            <div class="editRecipientList editBccList hbox" style="display: none">
-              <div class="label">{{str "fieldBcc"}}</div>
-              <div class="boxFlex"><input type="text" id="bcc" /></div>
-            </div>
-            <div class="editRecipientList editSubject hbox" style="display: none">
-              <div class="label">{{str "fieldSubject"}}</div>
-              <div class="boxFlex"><input type="text" id="subject" /></div>
-            </div>
-            <ul class="recipientList toList">
-              {{str "fieldTo"}}
-              <li>{{str "pleaseWait"}}</li>
-              <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('to');">{{str "edit"}}</a></li>
-            </ul>
-            <ul class="recipientList ccList" style="display: none;">
-              {{str "fieldCc"}}
-              <li>{{str "pleaseWait"}}</li>
-              <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('cc');">{{str "edit"}}</a></li>
-            </ul>
-            <ul class="recipientList bccList" style="display: none;">
-              {{str "fieldBcc"}}
-              <li>{{str "pleaseWait"}}</li>
-              <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('bcc');">{{str "edit"}}</a></li>
-            </ul>
-          </div>
-          <ul class="enigmail" style="display: none;">
-            <li class="replyEncrypt">
-              <input type="checkbox" name="enigmail-reply-encrypt" id="enigmail-reply-encrypt"
-              /><label for="enigmail-reply-encrypt">{{str "encrypt"}}</label>
-            </li>
-            <li class="replySign">
-              <input type="checkbox" name="enigmail-reply-sign" id="enigmail-reply-sign"
-              /><label for="enigmail-reply-sign">{{str "sign"}}</label>
-            </li>
-            <li class="replyPgpMime">
-              <input type="checkbox" name="enigmail-reply-pgpmime" id="enigmail-reply-pgpmime"
-              /><label for="enigmail-reply-pgpmime">PGP/MIME</label>
-            </li>
-          </ul>
-          <div class="quickReplyAttachments">
-          </div>
-          <div class="quickReplyHeader" style="display: none; overflow: auto">
-            <span class="statusMessage" style="float: left;"></span>
-            <span class="statusPercentage" style="float: right;"></span>
-            <span class="statusThrobber" style="float: right;">
-              <span class="loader" style="vertical-align: middle;"></span>
-            </span>
-          </div>
-        </div>
-
-        <ul class="inputs">
-          <li class="reply expand" ondragenter="quickReplyDragEnter(event);">
-            <div class="textWrap">
-              <div class="quickReplyIcon"><span>{{str "reply"}}</span> <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#reply"></use></svg></div>
-              <iframe mozframetype="content" class="textarea sans"></iframe>
-            </div>
-          </li>
-
-          <li class="replyAll expand" ondragenter="quickReplyDragEnter(event);">
-            <div class="textWrap">
-              <div class="quickReplyIcon"><span>{{str "replyAll"}}</span> <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#reply_all"></use></svg></div>
-              <iframe mozframetype="content" class="textarea sans"></iframe>
-            </div>
-          </li>
-        </ul>
-
-        <div class="replyFooter" style="overflow: auto" tabindex="-1">
-          <button id="send" style="float:right;margin-left:3px;" onclick="gComposeSession.send();">
-            {{str "send"}}
-          </button>
-          <button id="sendArchive" style="float:right;margin-left:3px;"
-              onclick="gComposeSession.send({ archive: true });">
-            {{str "sendArchive"}}
-          </button>
-          <button id="save" style="float:right" onclick="onSave();">{{str "save"}}</button>
-          <a class="discard" href="javascript:" id="discard"
-            onclick="confirmDiscard()">{{str "discard"}}</a>
-        </div>
-      </div>
-    </div>
-    ]]>
-  </script>
-  <script id="quickReplyAttachmentTemplate" type="text/x-handlebars-template"><![CDATA[
-    <ul class="quickReplyAttachment">
-      {{str "attachment"}}:
-      <li>{{name}}</li> ({{size}}) -
-      <a href="javascript:" class="openAttachmentLink">{{str "open"}}</a> -
-      <a href="javascript:" class="removeAttachmentLink">{{str "removeAttachment"}}</a>
-    </ul>
-    ]]>
-  </script>
-  <div id="wrapper">
-    <ul id="messageList">
-    </ul>
-    <div id="conversationWrapper">
-    </div>
+  <div id="conversationWrapper">
   </div>
 </body>
 </html>

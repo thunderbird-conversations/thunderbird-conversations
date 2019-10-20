@@ -5,7 +5,7 @@
 /* global Redux, Conversations, markReadInView, topMail3Pane, getMail3Pane,
           isInTab, msgHdrsArchive, Prefs, closeTab, startedEditing,
           msgHdrGetUri, onSave, openConversationInTabOrWindow,
-          printConversation, MailServices */
+          printConversation, MailServices, Services */
 
 /* exported conversationApp */
 
@@ -14,10 +14,10 @@
 const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
 XPCOMUtils.defineLazyModuleGetters(this, {
   ContactHelpers: "resource://conversations/modules/contact.js",
-  msgHdrsDelete: "resource://conversations/modules/stdlib/msgHdrUtils.js",
   composeMessageTo: "resource://conversations/modules/stdlib/compose.js",
-  previewAttachment: "resource://conversations/modules/message.js",
   openConversationInTabOrWindow: "resource://conversations/modules/misc.js",
+  MessageUtils: "resource://conversations/modules/message.js",
+  ConversationUtils: "resource://conversations/modules/conversation.js",
 });
 
 const initialAttachments = {};
@@ -25,33 +25,49 @@ const initialAttachments = {};
 const initialMessages = {};
 
 const initialSummary = {
+  conversation: null,
+  // TODO: What is loading used for?
   loading: true,
+  iframesLoading: 0,
   subject: "",
-  canJunk: true,
-  expanded: true,
-  read: true,
 };
+
+function modifyOnlyMsg(currentState, msgUri, modifier) {
+  const newState = {...currentState};
+  const newMsgData = [];
+  for (let i = 0; i < currentState.msgData.length; i++) {
+    if (currentState.msgData[i].msgUri == msgUri) {
+      newMsgData.push(modifier({...currentState.msgData[i]}));
+    } else {
+      newMsgData.push(currentState.msgData[i]);
+    }
+  }
+  newState.msgData = newMsgData;
+  return newState;
+}
 
 function attachments(state = initialAttachments, action) {
   switch (action.type) {
     case "PREVIEW_ATTACHMENT": {
-      previewAttachment(topMail3Pane(window), action.name, action.url,
+      MessageUtils.previewAttachment(topMail3Pane(window), action.name, action.url,
         action.isPdf, action.maybeViewable);
       return state;
     }
     case "DOWNLOAD_ALL": {
-      const msg = Conversations.currentConversation.getMessage(action.msgUri);
-      msg.downloadAllAttachments(topMail3Pane(window));
+      MessageUtils.downloadAllAttachments(topMail3Pane(window), action.msgUri,
+        action.attachmentDetails);
       return state;
     }
     case "DOWNLOAD_ATTACHMENT": {
+      MessageUtils.downloadAttachment(topMail3Pane(window), action.msgUri,
+        action.attachment);
       const msg = Conversations.currentConversation.getMessage(action.msgUri);
       msg.downloadAttachment(topMail3Pane(window), action.url);
       return state;
     }
     case "OPEN_ATTACHMENT": {
-      const msg = Conversations.currentConversation.getMessage(action.msgUri);
-      msg.openAttachment(topMail3Pane(window), action.url);
+      MessageUtils.openAttachment(topMail3Pane(window), action.msgUri,
+        action.attachment);
       return state;
     }
     case "SHOW_GALLERY_VIEW": {
@@ -70,60 +86,189 @@ function attachments(state = initialAttachments, action) {
   }
 }
 
+/* eslint-disable-next-line complexity */
 function messages(state = initialMessages, action) {
   switch (action.type) {
+    case "REPLACE_CONVERSATION_DETAILS": {
+      return {
+        ...state,
+        ...action.messages,
+      };
+    }
     case "EDIT_DRAFT": {
-      const msg = Conversations.currentConversation.getMessage(action.msgUri);
-      msg.compose(Ci.nsIMsgCompType.Draft, action.shiftKey);
+      MessageUtils.editDraft(topMail3Pane(window), action.msgUri, action.shiftKey);
       return state;
     }
     case "EDIT_AS_NEW": {
-      const msg = Conversations.currentConversation.getMessage(action.msgUri);
-      msg.compose(Ci.nsIMsgCompType.Template, action.shiftKey);
+      MessageUtils.editAsNew(topMail3Pane(window), action.msgUri, action.shiftKey);
       return state;
     }
     case "MSG_REPLY": {
-      const msg = Conversations.currentConversation.getMessage(action.msgUri);
-      msg.compose(Ci.nsIMsgCompType.ReplyToSender, action.shiftKey);
+      MessageUtils.reply(topMail3Pane(window), action.msgUri, action.shiftKey);
       return state;
     }
     case "MSG_REPLY_ALL": {
-      const msg = Conversations.currentConversation.getMessage(action.msgUri);
-      msg.compose(Ci.nsIMsgCompType.ReplyAll, action.shiftKey);
+      MessageUtils.replyAll(topMail3Pane(window), action.msgUri, action.shiftKey);
       return state;
     }
     case "MSG_REPLY_LIST": {
-      const msg = Conversations.currentConversation.getMessage(action.msgUri);
-      msg.compose(Ci.nsIMsgCompType.ReplyToList, action.shiftKey);
+      MessageUtils.replyList(topMail3Pane(window), action.msgUri, action.shiftKey);
       return state;
     }
     case "MSG_FORWARD": {
-      const msg = Conversations.currentConversation.getMessage(action.msgUri);
-      msg.forward(action.shiftKey);
+      MessageUtils.forward(topMail3Pane(window), action.msgUri, action.shiftKey);
       return state;
     }
     case "MSG_ARCHIVE": {
-      const msg = Conversations.currentConversation.getMessage(action.msgUri);
-      msgHdrsArchive([msg._msgHdr]);
+      MessageUtils.archive(action.msgUri);
       return state;
     }
     case "MSG_DELETE": {
-      const msg = Conversations.currentConversation.getMessage(action.msgUri);
-      // We do this, otherwise we end up with messages in the conversation that
-      //  don't have a message header, and that breaks pretty much all the
-      //  assumptions...
-      msg.removeFromConversation();
+      MessageUtils.delete(action.msgUri);
       return state;
     }
     case "MSG_OPEN_CLASSIC": {
-      const msg = Conversations.currentConversation.getMessage(action.msgUri);
-      msg.openInClassic(topMail3Pane(window));
+      MessageUtils.openInClassic(topMail3Pane(window), action.msgUri);
       return state;
     }
     case "MSG_OPEN_SOURCE": {
-      const msg = Conversations.currentConversation.getMessage(action.msgUri);
-      msg.openInSourceView(topMail3Pane(window));
+      MessageUtils.openInSourceView(topMail3Pane(window), action.msgUri);
       return state;
+    }
+    case "MSG_SET_TAGS": {
+      MessageUtils.setTags(action.msgUri, action.tags);
+      return state;
+    }
+    case "MSG_STAR": {
+      MessageUtils.setStar(action.msgUri, action.star);
+      return state;
+    }
+    case "MSG_EXPAND": {
+      return modifyOnlyMsg(state, action.msgUri, msg => {
+        const newMsg = {...msg};
+        newMsg.expanded = action.expand;
+        return newMsg;
+      });
+    }
+    case "TOGGLE_CONVERSATION_EXPANDED": {
+      const newState = {...state};
+      const newMsgData = [];
+      for (let msg of newState.msgData) {
+        const newMsg = {...msg, expanded: action.expand};
+        newMsgData.push(newMsg);
+      }
+      newState.msgData = newMsgData;
+      return newState;
+    }
+    case "TOGGLE_CONVERSATION_READ": {
+      ConversationUtils.markAllAsRead(state.msgData.map(msg => msg.msgUri), action.read);
+      return state;
+    }
+    case "ARCHIVE_CONVERSATION": {
+      ConversationUtils.archive(topMail3Pane(window), isInTab,
+        state.msgData.map(msg => msg.msgUri));
+      return state;
+    }
+    case "DELETE_CONVERSATION": {
+      if (ConversationUtils.delete(topMail3Pane(window), isInTab,
+            state.msgData.map(msg => msg.msgUri))) {
+        // TODO: Could we just use window.close here?
+        closeTab();
+      }
+      return state;
+    }
+    case "MSG_UPDATE_DATA": {
+      return modifyOnlyMsg(state, action.msgData.msgUri, msg => {
+        return {...msg, ...action.msgData};
+      });
+    }
+    case "MARK_AS_JUNK": {
+      // This action should only be activated when the conversation is not a
+      //  conversation in a tab AND there's only one message in the conversation,
+      //  i.e. the currently selected message
+      ConversationUtils.markAsJunk(topMail3Pane(window), action.isJunk);
+      if (!action.isJunk) {
+        // TODO: We should possibly wait until we get the notification before
+        // clearing the state here.
+        return modifyOnlyMsg(state, action.msgUri, msg => {
+          const newMsg = {...msg};
+          newMsg.isJunk = action.isJunk;
+          return newMsg;
+        });
+      }
+      return state;
+    }
+    case "MSG_IGNORE_PHISHING": {
+      MessageUtils.ignorePhishing(action.msgUri);
+      return modifyOnlyMsg(state, action.msgUri, msg => {
+        const newMsg = {...msg};
+        newMsg.isPhishing = false;
+        return newMsg;
+      });
+    }
+    case "MSG_CLICK_IFRAME": {
+      // Hand this off to Thunderbird's content clicking algorithm as that's simplest.
+      if (!topMail3Pane(window).contentAreaClick(action.event)) {
+        action.event.preventDefault();
+        action.event.stopPropagation();
+      }
+      return state;
+    }
+    case "MSG_SHOW_DETAILS": {
+      const newState = {...state};
+      const newMsgData = [];
+      for (let i = 0; i < state.msgData.length; i++) {
+        if (state.msgData[i].msgUri == action.msgUri) {
+          newMsgData.push({...state.msgData[i], detailsShowing: action.show});
+          if (!newMsgData.hdrDetails) {
+            // Let this exit before we start the function.
+            setTimeout(() => {
+              MessageUtils.getMsgHdrDetails(window, action.msgUri);
+            }, 0);
+          }
+        } else {
+          newMsgData.push(state.msgData[i]);
+        }
+      }
+      newState.msgData = newMsgData;
+      return newState;
+    }
+    case "MSG_HDR_DETAILS": {
+      const newState = {...state};
+      const newMsgData = [];
+      for (let i = 0; i < state.msgData.length; i++) {
+        if (state.msgData[i].msgUri == action.msgUri) {
+          newMsgData.push({...state.msgData[i], extraLines: action.extraLines});
+        } else {
+          newMsgData.push(state.msgData[i]);
+        }
+      }
+      newState.msgData = newMsgData;
+      return newState;
+    }
+    case "MSG_SHOW_REMOTE_CONTENT": {
+      Conversations.currentConversation.showRemoteContent(action.msgUri);
+      return state;
+    }
+    case "MSG_ALWAYS_SHOW_REMOTE_CONTENT": {
+      Conversations.currentConversation.alwaysShowRemoteContent(action.realFrom, action.msgUri);
+      return state;
+    }
+    case "REMOVE_MESSAGE_FROM_CONVERSATION": {
+      const newState = {...state};
+      const newMsgData = [];
+      for (let i = 0; i < state.msgData.length; i++) {
+        if (state.msgData[i].msgUri != action.msgUri) {
+          newMsgData.push(state.msgData[i]);
+        }
+      }
+      newState.msgData = newMsgData;
+      return newState;
+    }
+    case "APPEND_MESSAGES": {
+      const newState = {...state};
+      newState.msgData = newState.msgData.concat(action.msgData);
+      return newState;
     }
     default: {
       return state;
@@ -133,6 +278,15 @@ function messages(state = initialMessages, action) {
 
 function summary(state = initialSummary, action) {
   switch (action.type) {
+    case "REPLACE_CONVERSATION_DETAILS": {
+      if (!("summary" in action)) {
+        return state;
+      }
+      return {
+        ...state,
+        ...action.summary,
+      };
+    }
     case "ADD_CONTACT": {
       ContactHelpers.addContact(topMail3Pane(window), action.name, action.email);
       // TODO: In theory we should be updating the store so that the button can
@@ -142,36 +296,12 @@ function summary(state = initialSummary, action) {
       // this for now.
       return state;
     }
-    case "ARCHIVE_CONVERSATION": {
-      if (isInTab || Prefs.operate_on_conversations) {
-        msgHdrsArchive(Conversations.currentConversation.msgHdrs);
-        if (!isInTab) {
-          topMail3Pane(window).SetFocusThreadPane();
-        }
-      } else {
-        msgHdrsArchive(topMail3Pane(window).gFolderDisplay.selectedMessages);
-      }
-      return state;
-    }
     case "COPY_EMAIL": {
       navigator.clipboard.writeText(action.email);
       return state;
     }
     case "CREATE_FILTER": {
       topMail3Pane(window).MsgFilters(action.email, null);
-      return state;
-    }
-    case "DELETE_CONVERSATION": {
-      if (isInTab || Prefs.operate_on_conversations) {
-        msgHdrsDelete(Conversations.currentConversation.msgHdrs);
-        if (isInTab) {
-          closeTab();
-          return state;
-        }
-        topMail3Pane(window).SetFocusThreadPane();
-      } else {
-        msgHdrsDelete(topMail3Pane(window).gFolderDisplay.selectedMessages);
-      }
       return state;
     }
     case "DETACH_TAB": {
@@ -199,33 +329,12 @@ function summary(state = initialSummary, action) {
       Conversations.currentConversation.forward();
       return state;
     }
-    case "TOGGLE_CONVERSATION_READ": {
-      Conversations.currentConversation.read = action.read;
-      if (!action.read) {
-        markReadInView.disable();
-      }
-      return {...state, read: action.read};
-    }
-    case "TOGGLE_CONVERSATION_EXPANDED": {
-      for (let {message} of Conversations.currentConversation.messages) {
-        if (action.expanded) {
-          message.expand();
-        } else {
-          message.collapse();
-        }
-      }
-      return {...state, expanded: action.expanded};
-    }
-    case "MARK_AS_JUNK": {
-      topMail3Pane(window).JunkSelectedMessages(true);
-      topMail3Pane(window).SetFocusThreadPane();
-      return {...state, canJunk: false};
-    }
     case "OPEN_LINK": {
       getMail3Pane().messenger.launchExternalURL(action.url);
       return state;
     }
     case "PRINT_CONVERSATION": {
+      // TODO: Fix printing
       printConversation();
       return state;
     }
@@ -236,27 +345,44 @@ function summary(state = initialSummary, action) {
       composeMessageTo(dest, topMail3Pane(window).gFolderDisplay.displayedFolder);
       return state;
     }
+    case "SEND_UNSENT": {
+      ConversationUtils.sendUnsent(topMail3Pane(window));
+      return state;
+    }
     case "SHOW_MESSAGES_INVOLVING": {
       ContactHelpers.showMessagesInvolving(topMail3Pane(window), action.name, action.email);
       return state;
     }
-    case "UPDATE_SUBJECT": {
-      document.title = action.subject;
-      return {...state, subject: action.subject, loading: false};
+    case "SWITCH_TO_FOLDER": {
+      ConversationUtils.switchToFolderAndMsg(topMail3Pane(window), action.msgUri);
+      return state;
     }
-    case "UPDATE_READ_STATUS": {
-      return {...state, read: action.read};
+    case "MSG_STREAM_MSG": {
+      let newState = {...state};
+      if (!action.dueToExpansion) {
+        newState.iframesLoading++;
+      }
+      state.conversation.getMessage(action.msgUri)
+        .streamMessage(
+          topMail3Pane(window).msgWindow,
+          action.docshell
+        );
+      return newState;
     }
-    case "UPDATE_CANJUNK_STATUS": {
-      return {...state, canJunk: action.canJunk};
-    }
-    case "UPDATE_STATUS": {
-      return {
-        ...state,
-        canJunk: action.canJunk,
-        expanded: action.expanded,
-        read: action.read,
-      };
+    case "MSG_STREAM_LOAD_FINISHED": {
+      let newState = {...state};
+      if (!action.dueToExpansion) {
+        newState.iframesLoading--;
+        if (newState.iframesLoading < 0) {
+          newState.iframesLoading = 0;
+        }
+      }
+      state.conversation.getMessage(action.msgUri)
+        .postStreamMessage(
+          topMail3Pane(window).msgWindow,
+          action.iframe
+      );
+      return newState;
     }
     default: {
       return state;
