@@ -1,0 +1,22 @@
+<!ENTITY assistant.title "Assistent per cumenzar">
+<!ENTITY assistant.intro "Ueila, quai è <strong>Thunderbird Conversations</strong>!">
+<!ENTITY assistant.p1 "Per simplifitgar la midada a Thunderbird Conversations vegn quest assistent far las midadas necessarias per che tut possia funcziunar optimal. Nus na vulain betg che ti sajas trumpà dal program.">
+<!ENTITY assistant.p2 "Las midadas che nus faschain pos ti revocar tuttas, nagina tema: Sche Thunderbird Conversations na ta plascha betg, po quest assistent revocar tut las midadas ch'el fa sche ti deinstalleschas quest supplement.">
+<!ENTITY assistant.p3 "Quai po cuzzar in mument. Ti pos u spetgar enfin che questa fanestra vegn serrada automaticamain ni che ti pos serrar la fanestra ed observar il progress dal menu Utensils &gt; Activitads.">
+<!ENTITY assistant.working "Lavurar…">
+<!ENTITY assistant.review "Controllar las midadas">
+<!ENTITY assistant.apply "Applitgar las midadas">
+<!ENTITY assistant.settings "Intginas opziuns èn necessarias per che Thunderbird Conversations possia funcziunar. Intginas èn fermamain recummandadas ed intginas èn opziunalas.">
+<!ENTITY assistant.actionEnableGloda "Controllar che la tschertga globala ed l'indexer èn activads.">
+<!ENTITY assistant.actionDontExpand "Betg extender temas che cuntegnan messadis betg legids en la glista da messadis.">
+<!ENTITY assistant.actionAttachmentsInline "Betg mussar las agiuntas cun incorporar (<strong>fermamain</strong> recummandà).">
+<!ENTITY assistant.actionOfflineDownload "Sincronisar la posta entrada ed ils e-mails tramess per la memoria offline (<strong>fermamain</strong> recummandà).">
+<!ENTITY assistant.actionUnifiedInboxSearchesSent "La posta entrada unifitgada tschertga era en ordinaturs cun e-mails tramess (<strong>fermamain</strong> recummandà).">
+<!ENTITY assistant.actionSetupView "Midar a la posta entrada globala, activar la vista gruppada, zavrar tenor data, activar la colonna cun il dumber dad e-mails nunlegids ed la nova colonna &quot;tranter&quot; (<strong>fermamain</strong> recummandà).">
+<!ENTITY assistant.actionSetupViewDefaults "Utilisar questas preferenzas da zavrar persunalisadas per tut ils ordinaturs.">
+<!ENTITY assistant.actionEnsureMessagePaneVisible "Controllar che la zona da prevista da messadis è visibla.">
+<!ENTITY assistant.settings2 "Sche ti vuls activar pli tard dapli opziuns, pos ti acceder quest assisent en las preferenzas dal supplement, en la secziun &quot;extendì&quot;.">
+<!ENTITY feedback.message "Ti utiliseschas ussa dapi in temps Thunderbird Conversations. Nus appreziassan sche ti ans raquintassas tge che ti pensas da quai.">
+<!ENTITY feedback.no "Na, grazia">
+<!ENTITY feedback.yes "Dar in resun">
+<!ENTITY feedback.pageTitle "Dai tes resun">

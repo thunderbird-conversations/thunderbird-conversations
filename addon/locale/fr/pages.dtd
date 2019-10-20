@@ -1,0 +1,22 @@
+<!ENTITY assistant.title "Assistant d'aide au démarrage">
+<!ENTITY assistant.intro "Bonjour, voici <strong>Thunderbird Conversations</strong> !">
+<!ENTITY assistant.p1 "Pour vous faciliter la vie, cet assistant va vous permettre de modifier Thunderbird et de profiter sans souci de l'extension. Nous voulons que vous soyez pleinement satisfait !">
+<!ENTITY assistant.p2 "Les modifications que nous allons opérer sont toutes réversibles, donc pas de panique : si vous n'êtes pas convaincu par Thunderbird Conversations, vous retrouverez tous vos paramètres précédents dès la désinstallation de l'extension.">
+<!ENTITY assistant.p3 "Il se peut que cela prenne un peu de temps. Vous pouvez soit attendre que la fenêtre se ferme, soit la fermer vous-même et vérifier la progression dans Outils &gt; Activités.">
+<!ENTITY assistant.working "En cours…">
+<!ENTITY assistant.review "Vérifier les modifications">
+<!ENTITY assistant.apply "Appliquer les modifications">
+<!ENTITY assistant.settings "Certains paramétrages sont nécessaires au bon fonctionnement de Thunderbird Conversations. Certains sont vivement recommandés, d'autres seulement facultatifs.">
+<!ENTITY assistant.actionEnableGloda "Vérifier que la recherche globale et l'indexeur sont activés.">
+<!ENTITY assistant.actionDontExpand "Dans la liste des messages, ne pas développer les fils de discussion qui contiennent des messages non-lus.">
+<!ENTITY assistant.actionAttachmentsInline "Ne pas afficher les pièces jointes dans le message (<strong>fortement</strong> recommandé).">
+<!ENTITY assistant.actionOfflineDownload "La boîte de réception et celle des courriers envoyés sont synchronisés pour le stockage hors-connexion (<strong>fortement</strong> recommandé).">
+<!ENTITY assistant.actionUnifiedInboxSearchesSent "Les dossiers unifiés prennent aussi en compte les dossiers Envoyés (<strong>fortement</strong> recommandé).">
+<!ENTITY assistant.actionSetupView "Basculer sur la boîte de réception globale, l'affichage en fils de discussion, le classement chronologique, activer la colonne des non-lus et la nouvelle colonne &quot;entre&quot;(<strong>fortement</strong> recommandé).">
+<!ENTITY assistant.actionSetupViewDefaults "Utiliser ces paramètres personnalisés de tri pour tous les dossiers.">
+<!ENTITY assistant.actionEnsureMessagePaneVisible "Vérifier que le panneau des messages est visible.">
+<!ENTITY assistant.settings2 "Si vous souhaitez activer davantage d'options par la suite, vous pouvez accéder à cet assistant dans les préférences de l'extension, dans la partie &quot; avancé &quot;.">
+<!ENTITY feedback.message "Voilà maintenant un certain temps que vous utilisez Thunderbird Conversations, auriez-vous la gentillesse de nous dire ce que vous en pensez ? Nous serions ravis de recevoir vos commentaires !">
+<!ENTITY feedback.no "Non, merci">
+<!ENTITY feedback.yes "Laisser des commentaires">
+<!ENTITY feedback.pageTitle "Réactions et commentaires">

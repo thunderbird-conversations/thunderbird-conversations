@@ -1,0 +1,22 @@
+<!ENTITY assistant.title "Prvo pokrenite čarobnjaka">
+<!ENTITY assistant.intro "Pozdrav, ovo je <strong>Thunderbird Conversations</strong>!">
+<!ENTITY assistant.p1 "Kako bi vam olakšali, čarobnjak će prilagoditi vaše Thunderbird postavke kako bi osigurali optimalno iskustvo. Ne želimo da se osjećate nezadovoljno!">
+<!ENTITY assistant.p2 "Ne brinite, sve prilagodbe koje smo napravili se mogu vratiti. Ukoliko nećete uživati u Thunderbird Conversations vratit ćemo sve postavke na početne vrijednosti čim uklonite dodatak.">
+<!ENTITY assistant.p3 "Ovo može potrajati. Možete pričekati da se ovaj prozor zatvori ili ga sami zatvoriti i pratiti napredak iz Alati &gt; Upravitelj aktivnostima.">
+<!ENTITY assistant.working "Obrada...">
+<!ENTITY assistant.review "Pregled promjena">
+<!ENTITY assistant.apply "Primijeni promjene">
+<!ENTITY assistant.settings "Neke postavke su obavezne kako bi Thunderbird Conversations ispravno radio, neke se izrazito preporučuju, a neke su opcionalne.">
+<!ENTITY assistant.actionEnableGloda "Provjerite da je globalno pretraživanje i indeksiranje uključeno.">
+<!ENTITY assistant.actionDontExpand "U popisu poruka ne proširuj teme koje sadrže nepročitane poruke.">
+<!ENTITY assistant.actionAttachmentsInline "Ne prikazuj privitke umetnuto (<strong>izrazito</strong> preporučeno).">
+<!ENTITY assistant.actionOfflineDownload "Primljena pošta i Poslano se sinkronizira za izvanmrežnu pohranu (<strong>izrazito</strong> preporučeno).">
+<!ENTITY assistant.actionUnifiedInboxSearchesSent "Zajednička Primljena pošta također pretražuje mape Poslano (<strong>izrazito</strong> preporučeno).">
+<!ENTITY assistant.actionSetupView "Prebacite se na Globalnu primljenu poštu, sortirajte po datumu, omogućite stupac za brojanje nepročitanih poruka i novi stupac &quot;između&quot; (<strong>izrazito</strong> preporučeno).">
+<!ENTITY assistant.actionSetupViewDefaults "Koristi ove prilagođene postavke za sortiranje za sve mape.">
+<!ENTITY assistant.actionEnsureMessagePaneVisible "Provjerite da li je okno poruka vidljivo.">
+<!ENTITY assistant.settings2 "Ukoliko želite promjeniti neke postavke kasnije, možete pristupiti ovom čarobnjaku kroz postavke dodatka, pod odjelom &quot;napredno&quot;.">
+<!ENTITY feedback.message "Već neko vrijeme koristite Thunderbird Conversations, želite li nam reći šta mislite o njemu? Željeli bi čuti vaše komentare.">
+<!ENTITY feedback.no "Ne hvala">
+<!ENTITY feedback.yes "Ostavite povratnu informaciju">
+<!ENTITY feedback.pageTitle "Ostavite povratnu informaciju">

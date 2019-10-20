@@ -1,0 +1,22 @@
+<!ENTITY assistant.title "Pirmo paleidimo padėjėjas">
+<!ENTITY assistant.intro "Sveiki, jus sveikina <strong>Thunderbird Conversations</strong>!">
+<!ENTITY assistant.p1 "Norėdamas palengvinti jūsų gyvenimą, šis padėjėjas nustatys jūsų Thunderbird nustatymus, kad būtų užtikrintas optimalus darbas. Mes nenorime jog jūs nusiviltumėte!">
+<!ENTITY assistant.p2 "Patobulinimai kuriuos mes padarome yra atšaukiami, nesijaudinkite: kai tik išdiegsite Thunderbird Conversations plėtinį visi pakeitimai bus atkeisti į prieš tai buvusį būvį.">
+<!ENTITY assistant.p3 "Tai gali užtrukti. Galite palaukti kol langas užsidarys arba patys uždaryti šį langą ir stebėti pažangą iš Priemonės &gt; Veiklų tvarkytuvė.">
+<!ENTITY assistant.working "Vykdoma...">
+<!ENTITY assistant.review "Peržiūrėti keitimus">
+<!ENTITY assistant.apply "Pritaikyti pakeitimus">
+<!ENTITY assistant.settings "Kai kurie nustatymai yra būtini teisingam Thunderbird Conversations darbui. Kai kurie yra itin rekomenduojami, kiti yra nebūtini.">
+<!ENTITY assistant.actionEnableGloda "Įsitikinkite jog Globali paieška ir indeksavimas yra įjungti.">
+<!ENTITY assistant.actionDontExpand "Laiškų sąraše, neišskleisti temų kuriose yra neskaitytų laiškų.">
+<!ENTITY assistant.actionAttachmentsInline "Nerodyti priedų šalia (<strong>labai</strong> rekomenduotina).">
+<!ENTITY assistant.actionOfflineDownload "„Gauti laiškai“ ir „Išsiųsti laiškai“ yra sinchronizuoti darbui atsijungus (<strong>labai</strong> rekomenduotina).">
+<!ENTITY assistant.actionUnifiedInboxSearchesSent "Suvestinių aplankų gautieji taipogi ieško Išsiųstųjų aplankų (<strong>labai</strong> rekomenduotina).">
+<!ENTITY assistant.actionSetupView "Persijungti į globalų gautųjų aplanką, rodyti temomis, rikiuoti pagal datą, įjungti neskaitytų skaičiaus stulpelį ir „tarp“ stulpelį (<strong>labai</strong> rekomenduotina).">
+<!ENTITY assistant.actionSetupViewDefaults "Šiuos pasirinktinius rikiavimo nustatymus naudoti visiems aplankams.">
+<!ENTITY assistant.actionEnsureMessagePaneVisible "Įsitikinkite jog laiškų skydelis matomas.">
+<!ENTITY assistant.settings2 "Jei vėliau norėsite įjungti daugiau parinkčių, galėsite pasiekti šį vedlį per papildinių nustatymų meniu, „papildoma“ skyriuj.">
+<!ENTITY feedback.message "Jūs naudojate Thunderbird Conversations jau kurį laiką, ar norite papasakoti mums ką manote apie šį plėtinį? Mes labai norime išgirsti visus komentarus!">
+<!ENTITY feedback.no "Ne, dėkui">
+<!ENTITY feedback.yes "Palikti atsiliepimą">
+<!ENTITY feedback.pageTitle "Suteikti atsiliepimą">
