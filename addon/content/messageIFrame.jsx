@@ -37,7 +37,10 @@ class MessageIFrame extends React.Component {
     // want to scroll the message to view, since the user may be viewing somewhere
     // else.
     this.dueToExpansion = undefined;
-    if (this.props.neckoUrl.spec != nextProps.neckoUrl.spec && nextProps.expanded) {
+    if (
+      this.props.neckoUrl.spec != nextProps.neckoUrl.spec &&
+      nextProps.expanded
+    ) {
       // This is a hack which ensures that the iframe is a minimal height, so
       // that when the message loads, the scroll height is set correctly, rather
       // than to the potential height of the previously loaded message.
@@ -49,8 +52,10 @@ class MessageIFrame extends React.Component {
     }
     if (nextProps.expanded) {
       this.iframe.classList.remove("hidden");
-      if (this.currentUrl != nextProps.msgUri ||
-          this.props.hasRemoteContent && !nextProps.hasRemoteContent) {
+      if (
+        this.currentUrl != nextProps.msgUri ||
+        (this.props.hasRemoteContent && !nextProps.hasRemoteContent)
+      ) {
         startLoad = true;
         if (this.dueToExpansion === undefined) {
           this.dueToExpansion = true;
@@ -80,8 +85,10 @@ class MessageIFrame extends React.Component {
     // otherwise remote content blocking doesn't work. Figure out why the normal
     // iframe has a originator location of `chrome://messenger/content/messenger.xul`
     // rather than imap://.... (or whatever).
-    this.iframe = this.div.ownerDocument
-      .createElementNS("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul", "iframe");
+    this.iframe = this.div.ownerDocument.createElementNS(
+      "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul",
+      "iframe"
+    );
     this.iframe.setAttribute("style", "height: 20px; overflow-y: hidden");
     this.iframe.setAttribute("type", "content");
     this.iframe.addEventListener("click", this.onClickIframe);
@@ -120,9 +127,13 @@ class MessageIFrame extends React.Component {
     if (!this._loadListener) {
       return;
     }
-    this.iframe.removeEventListener("load", this._loadListener, {capture: true});
+    this.iframe.removeEventListener("load", this._loadListener, {
+      capture: true,
+    });
     delete this._loadListener;
-    this.iframe.removeEventListener("DOMContentLoaded", this._domloadListener, {capture: true});
+    this.iframe.removeEventListener("DOMContentLoaded", this._domloadListener, {
+      capture: true,
+    });
     delete this._domloadListener;
   }
 
@@ -133,9 +144,13 @@ class MessageIFrame extends React.Component {
   registerListeners() {
     if (!this._loadListener) {
       this._loadListener = this._onLoad.bind(this);
-      this.iframe.addEventListener("load", this._loadListener, {capture: true});
+      this.iframe.addEventListener("load", this._loadListener, {
+        capture: true,
+      });
       this._domloadListener = this._onDOMLoaded.bind(this);
-      this.iframe.addEventListener("DOMContentLoaded", this._domloadListener, {capture: true});
+      this.iframe.addEventListener("DOMContentLoaded", this._domloadListener, {
+        capture: true,
+      });
     }
   }
 
@@ -158,7 +173,7 @@ class MessageIFrame extends React.Component {
     // 20px is a completely arbitrary default value which I hope is
     // greater
     if (iframeDoc.body.scrollWidth > iframeExternalWidth) {
-      this.iframe.style.height = (iframeDoc.body.scrollHeight + 20) + "px";
+      this.iframe.style.height = iframeDoc.body.scrollHeight + 20 + "px";
     }
   }
 
@@ -187,8 +202,9 @@ class MessageIFrame extends React.Component {
       return [];
     }
 
-    let textSize = Math.round(this.props.prefs.defaultFontSize *
-      this.props.prefs.tenPxFactor * 1.2);
+    let textSize = Math.round(
+      this.props.prefs.defaultFontSize * this.props.prefs.tenPxFactor * 1.2
+    );
 
     // Assuming 16px is the default (like on, say, Linux), this gives
     //  18px and 12px, which is what Andy had in mind.
@@ -197,7 +213,9 @@ class MessageIFrame extends React.Component {
     //  html.
     // This is for HTML messages only.
     let styleRules = [];
-    if (iframeDoc.querySelectorAll(":not(.mimemail-body) > .moz-text-html").length) {
+    if (
+      iframeDoc.querySelectorAll(":not(.mimemail-body) > .moz-text-html").length
+    ) {
       styleRules = [
         "body, table {",
         // "  line-height: 112.5%;",
@@ -244,7 +262,10 @@ class MessageIFrame extends React.Component {
     //  most of them suck.
     let iframeDoc = iframe.contentDocument;
     try {
-      Quoting.convertOutlookQuotingToBlockquote(iframe.contentWindow, iframeDoc);
+      Quoting.convertOutlookQuotingToBlockquote(
+        iframe.contentWindow,
+        iframeDoc
+      );
       Quoting.convertHotmailQuotingToBlockquote1(iframeDoc);
       Quoting.convertForwardedToBlockquote(iframeDoc);
       Quoting.convertMiscQuotingToBlockquote(iframeDoc);
@@ -261,8 +282,10 @@ class MessageIFrame extends React.Component {
     if (div.style.display == "none") {
       link.textContent = "- " + hidetext + " -";
       div.style.display = "";
-      let h = div.getBoundingClientRect().height +
-        parseFloat(cs.marginTop) + parseFloat(cs.marginBottom);
+      let h =
+        div.getBoundingClientRect().height +
+        parseFloat(cs.marginTop) +
+        parseFloat(cs.marginBottom);
       return h;
     }
     let h = div.getBoundingClientRect().height;
@@ -278,7 +301,7 @@ class MessageIFrame extends React.Component {
 
     let smallSize = this.props.prefs.tweakChrome
       ? this.props.prefs.defaultFontSize * this.props.prefs.tenPxFactor * 1.1
-      : Math.round(100 * this.props.prefs.defaultFontSize * 11 / 12) / 100;
+      : Math.round((100 * this.props.prefs.defaultFontSize * 11) / 12) / 100;
 
     // this function adds a show/hide block text link to every topmost
     // block. Nested blocks are not taken into account.
@@ -289,11 +312,22 @@ class MessageIFrame extends React.Component {
         if (testNode(c)) {
           let div = iframeDoc.createElement("div");
           div.setAttribute("class", "link " + linkClass);
-          div.addEventListener("click", (event) => {
-            let h = this.toggleBlock(event, showText, hideText);
-            iframe.style.height = (parseFloat(iframe.style.height) + h) + "px";
-          }, true);
-          div.setAttribute("style", "color: " + linkColor + "; cursor: pointer; font-size: " + smallSize + "px;");
+          div.addEventListener(
+            "click",
+            event => {
+              let h = this.toggleBlock(event, showText, hideText);
+              iframe.style.height = parseFloat(iframe.style.height) + h + "px";
+            },
+            true
+          );
+          div.setAttribute(
+            "style",
+            "color: " +
+              linkColor +
+              "; cursor: pointer; font-size: " +
+              smallSize +
+              "px;"
+          );
           div.appendChild(iframeDoc.createTextNode("- " + showText + " -"));
           elt.insertBefore(div, c);
           c.style.display = "none";
@@ -334,14 +368,16 @@ class MessageIFrame extends React.Component {
 
     // https://github.com/protz/thunderbird-conversations/issues#issue/179
     // See link above for a rationale ^^
-    if (this.props.initialPosition > 0)
-      this.detectBlocks(iframe,
+    if (this.props.initialPosition > 0) {
+      this.detectBlocks(
+        iframe,
         isBlockquote.bind(this),
         this.props.strings.get("hideQuotedText"),
         this.props.strings.get("showQuotedText"),
         "showhidequote",
         "orange"
       );
+    }
   }
 
   detectSigs(iframe) {
@@ -350,10 +386,11 @@ class MessageIFrame extends React.Component {
     }
 
     function isSignature(node) {
-      return (node.classList && node.classList.contains("moz-txt-sig"));
+      return node.classList && node.classList.contains("moz-txt-sig");
     }
 
-    this.detectBlocks(iframe,
+    this.detectBlocks(
+      iframe,
       isSignature,
       this.props.strings.get("hideSigText"),
       this.props.strings.get("showSigText"),
@@ -366,7 +403,7 @@ class MessageIFrame extends React.Component {
     // !important because messageContents.css is appended after us when the html
     // is rendered
     return [
-      "blockquote[type=\"cite\"] {",
+      'blockquote[type="cite"] {',
       "  border-right-width: 0px;",
       "  border-left: 1px #ccc solid;",
       "  color: #666 !important;",
@@ -380,8 +417,9 @@ class MessageIFrame extends React.Component {
   _onDOMLoaded() {
     const iframeDoc = this.iframe.contentDocument;
     let styleRules = this.tweakFonts(iframeDoc);
-    if (!(this.props.realFrom &&
-          this.props.realFrom.includes("bugzilla-daemon"))) {
+    if (
+      !(this.props.realFrom && this.props.realFrom.includes("bugzilla-daemon"))
+    ) {
       this.detectQuotes(this.iframe);
     }
     this.detectSigs(this.iframe);
@@ -409,7 +447,7 @@ class MessageIFrame extends React.Component {
     // TODO: See comment in componentDidMount
     // <iframe className={`iframe${this.index}`} type="content" ref={f => this.iframe = f}/>
     return (
-      <div className={`iframewrap${this.index}`} ref={d => this.div = d}/>
+      <div className={`iframewrap${this.index}`} ref={d => (this.div = d)} />
     );
   }
 }

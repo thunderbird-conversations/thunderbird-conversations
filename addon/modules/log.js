@@ -1,6 +1,8 @@
 var EXPORTED_SYMBOLS = ["setupLogging", "dumpCallStack", "logRoot", "Colors"];
 
-const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   Log4Moz: "resource:///modules/gloda/log4moz.js",
@@ -12,9 +14,12 @@ function setupLogging(name) {
 
   Log.assert = function(aBool, aStr) {
     if (!aBool) {
-      this.error("\n!!!!!!!!!!!!!!!!!!!!!!" +
-                 "\n    ASSERT FAILURE    " +
-                 "\n!!!!!!!!!!!!!!!!!!!!!!\n" + aStr);
+      this.error(
+        "\n!!!!!!!!!!!!!!!!!!!!!!" +
+          "\n    ASSERT FAILURE    " +
+          "\n!!!!!!!!!!!!!!!!!!!!!!\n" +
+          aStr
+      );
       dumpCallStack();
       throw Error("Assert failures are fatal, man");
     }
@@ -49,9 +54,12 @@ function setupFullLogging(name) {
 
   Log.assert = function(aBool, aStr) {
     if (!aBool) {
-      this.error("\n!!!!!!!!!!!!!!!!!!!!!!" +
-                 "\n    ASSERT FAILURE    " +
-                 "\n!!!!!!!!!!!!!!!!!!!!!!\n" + aStr);
+      this.error(
+        "\n!!!!!!!!!!!!!!!!!!!!!!" +
+          "\n    ASSERT FAILURE    " +
+          "\n!!!!!!!!!!!!!!!!!!!!!!\n" +
+          aStr
+      );
       throw Error("Assert failures are fatal, man");
     }
   };

@@ -2,12 +2,20 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-const {Prefs} = ChromeUtils.import("resource://conversations/modules/prefs.js");
-const {setupLogging, dumpCallStack} = ChromeUtils.import("resource://conversations/modules/log.js");
-const {Customizations} = ChromeUtils.import("resource://conversations/modules/assistant.js");
+const { Prefs } = ChromeUtils.import(
+  "resource://conversations/modules/prefs.js"
+);
+const { setupLogging, dumpCallStack } = ChromeUtils.import(
+  "resource://conversations/modules/log.js"
+);
+const { Customizations } = ChromeUtils.import(
+  "resource://conversations/modules/assistant.js"
+);
 
 let Log = setupLogging("Conversations.AssistantUI");
-let uninstallInfos = JSON.parse(Prefs.getString("conversations.uninstall_infos"));
+let uninstallInfos = JSON.parse(
+  Prefs.getString("conversations.uninstall_infos")
+);
 
 function install(aKey) {
   if (!(aKey in Customizations)) {
@@ -29,8 +37,9 @@ let finishedAlready = false;
 function finish() {
   // The user closed the window, so we ran finish() already, and now we're
   //  running it again because indexed just finished. Abort abort abort.
-  if (finishedAlready)
+  if (finishedAlready) {
     return;
+  }
 
   if (Prefs.getString("conversations.uninstall_infos") == "{}") {
     let str = JSON.stringify(uninstallInfos);
@@ -48,8 +57,9 @@ function finish() {
 // expect () and call top () when you're done.
 let expected = 1;
 let ttop = function() {
-  if (--expected == 0)
+  if (--expected == 0) {
     finish();
+  }
 };
 Customizations.expect = () => expected++;
 Customizations.ttop = ttop;
@@ -68,12 +78,13 @@ function onFinish() {
   applyButton.disabled = true;
   applyButton.textContent = workingItems[0].innerText;
 
-  let checkboxes = document.querySelectorAll("input[type=\"checkbox\"]");
+  let checkboxes = document.querySelectorAll('input[type="checkbox"]');
   for (let checkbox of checkboxes) {
-    if (checkbox.checked)
+    if (checkbox.checked) {
       install(checkbox.id);
-    else
+    } else {
       Log.debug("User declined", checkbox.id);
+    }
   }
   ttop();
 }
@@ -81,6 +92,6 @@ function onFinish() {
 function onCustomSetup(event) {
   let more = document.getElementById("more");
   more.setAttribute("show", true);
-  more.scrollIntoView({alignToTop: false});
+  more.scrollIntoView({ alignToTop: false });
   event.target.classList.add("hidden");
 }

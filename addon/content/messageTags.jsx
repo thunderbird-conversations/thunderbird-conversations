@@ -2,8 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals React, PropTypes, Attachments, MessageHeader, MessageFooter,
-           MessageIFrame */
+/* globals React, PropTypes */
 /* exported MessageTags */
 
 class MessageTag extends React.PureComponent {
@@ -16,9 +15,11 @@ class MessageTag extends React.PureComponent {
     const rgb = color.substr(1) || "FFFFFF";
     // This is just so we can figure out if the tag color is too light and we
     // need to have the text black or not.
-    const [, r, g, b] = rgb.match(/(..)(..)(..)/).map(x => parseInt(x, 16) / 255);
+    const [, r, g, b] = rgb
+      .match(/(..)(..)(..)/)
+      .map(x => parseInt(x, 16) / 255);
     const l = 0.2126 * r + 0.7152 * g + 0.0722 * b;
-    return l > .8;
+    return l > 0.8;
   }
 
   onClick() {
@@ -27,13 +28,19 @@ class MessageTag extends React.PureComponent {
 
   render() {
     return (
-      <li className={"tag" +
-                     (this.getIsLight(this.props.color) ? " light-tag" : "")}
-          style={{backgroundColor: this.props.color}}>
-        {this.props.name}
-        {this.props.expanded &&
-          <span className="tag-x" onClick={this.onClick}> x</span>
+      <li
+        className={
+          "tag" + (this.getIsLight(this.props.color) ? " light-tag" : "")
         }
+        style={{ backgroundColor: this.props.color }}
+      >
+        {this.props.name}
+        {this.props.expanded && (
+          <span className="tag-x" onClick={this.onClick}>
+            {" "}
+            x
+          </span>
+        )}
       </li>
     );
   }
@@ -66,17 +73,19 @@ class MessageTags extends React.PureComponent {
   render() {
     return (
       <ul className="tags regular-tags">
-        {!!this.props.tags && this.props.tags.map((tag, i) => {
-          return (
-            <MessageTag
-              color={tag.color}
-              id={tag.id}
-              expanded={this.props.expanded}
-              key={i}
-              name={tag.name}
-              onClickX={this.onRemoveTag}/>
-          );
-        })}
+        {!!this.props.tags &&
+          this.props.tags.map((tag, i) => {
+            return (
+              <MessageTag
+                color={tag.color}
+                id={tag.id}
+                expanded={this.props.expanded}
+                key={i}
+                name={tag.name}
+                onClickX={this.onRemoveTag}
+              />
+            );
+          })}
       </ul>
     );
   }
@@ -112,33 +121,54 @@ class SpecialMessageTags extends React.PureComponent {
     // them to set the icons/text to display?
     return (
       <ul className="tags special-tags">
-        <li className="keep-tag tag-signed"
-            title={this.props.strings.get("messageSignedLong")}>
-            <svg className="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
-              <use xlinkHref="chrome://conversations/skin/material-icons.svg#edit"></use>
-            </svg>
+        <li
+          className="keep-tag tag-signed"
+          title={this.props.strings.get("messageSignedLong")}
+        >
+          <svg
+            className="icon"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+            xmlnsXlink="http://www.w3.org/1999/xlink"
+          >
+            <use xlinkHref="chrome://conversations/skin/material-icons.svg#edit"></use>
+          </svg>
           {this.props.strings.get("messageSigned")}
         </li>
-        <li className="keep-tag tag-decrypted"
-            title={this.props.strings.get("messageDecryptedLong")}>
-          <svg className="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
+        <li
+          className="keep-tag tag-decrypted"
+          title={this.props.strings.get("messageDecryptedLong")}
+        >
+          <svg
+            className="icon"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+            xmlnsXlink="http://www.w3.org/1999/xlink"
+          >
             <use xlinkHref="chrome://conversations/skin/material-icons.svg#vpn_key"></use>
           </svg>
           {this.props.strings.get("messageDecrypted")}
         </li>
         <li className="keep-tag tag-dkim-signed">
-          <svg className="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
+          <svg
+            className="icon"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
+            xmlnsXlink="http://www.w3.org/1999/xlink"
+          >
             <use xlinkHref="chrome://conversations/skin/material-icons.svg#edit"></use>
           </svg>
           {this.props.strings.get("messageDKIMSigned")}
         </li>
-        { !!this.props.folderName && !this.props.inView &&
-          <li className="keep-tag in-folder"
-              onClick={this.onClickInFolder}
-              title={this.props.strings.get("jumpToFolder")}>
+        {!!this.props.folderName && !this.props.inView && (
+          <li
+            className="keep-tag in-folder"
+            onClick={this.onClickInFolder}
+            title={this.props.strings.get("jumpToFolder")}
+          >
             {this.props.strings.get("inFolder", [this.props.folderName])}
           </li>
-        }
+        )}
       </ul>
     );
   }

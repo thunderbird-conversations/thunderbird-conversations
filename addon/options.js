@@ -18,7 +18,8 @@ function prefsSaveNeeded(prefs) {
     let hasChanged = false;
     if (element && element.name) {
       if (element.type == "number") {
-        hasChanged = prefs.preferences[element.name] != parseInt(element.value, 10);
+        hasChanged =
+          prefs.preferences[element.name] != parseInt(element.value, 10);
       } else if (element.type == "radio") {
         if (element.checked) {
           hasChanged = prefs.preferences[element.name] != element.value;
@@ -45,7 +46,10 @@ async function saveOptions() {
   for (let element of document.forms.conversationOptions.elements) {
     if (element && element.name) {
       if (element.type == "number") {
-        currentPreferences.preferences[element.name] = parseInt(element.value, 10);
+        currentPreferences.preferences[element.name] = parseInt(
+          element.value,
+          10
+        );
       } else if (element.type == "radio") {
         if (element.checked) {
           currentPreferences.preferences[element.name] = element.value;
@@ -104,8 +108,12 @@ async function restoreOptions() {
 document.addEventListener("DOMContentLoaded", initOptions);
 document.querySelector("form").addEventListener("change", saveOptions);
 
-window.addEventListener("beforeunload", event => {
-  document.removeEventListener("DOMContentLoaded", initOptions);
-  document.querySelector("form").removeEventListener("change", saveOptions);
-  saveOptions();
-}, {once: true});
+window.addEventListener(
+  "beforeunload",
+  event => {
+    document.removeEventListener("DOMContentLoaded", initOptions);
+    document.querySelector("form").removeEventListener("change", saveOptions);
+    saveOptions();
+  },
+  { once: true }
+);

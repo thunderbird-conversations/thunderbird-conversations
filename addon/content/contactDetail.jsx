@@ -8,7 +8,9 @@
 class _ContactDetail extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.strings = new StringBundle("chrome://conversations/locale/template.properties");
+    this.strings = new StringBundle(
+      "chrome://conversations/locale/template.properties"
+    );
     this.state = {
       expanded: false,
     };
@@ -68,7 +70,7 @@ class _ContactDetail extends React.PureComponent {
   expandFooter(event) {
     event.stopPropagation();
     event.preventDefault();
-    this.setState({expanded: true});
+    this.setState({ expanded: true });
   }
 
   sendEmail(event) {
@@ -93,26 +95,44 @@ class _ContactDetail extends React.PureComponent {
 
   render() {
     const name = this.props.name;
-    const pos = (this.props.parentSpan && this.props.parentSpan.getBoundingClientRect()) ||
-      { left: 0, top: 0, bottom: 0};
+    const pos = (this.props.parentSpan &&
+      this.props.parentSpan.getBoundingClientRect()) || {
+      left: 0,
+      top: 0,
+      bottom: 0,
+    };
     // TODO: Show monospace?
     return (
-      <div className="tooltip" style={{
+      <div
+        className="tooltip"
+        style={{
           left: pos.left,
-          top: pos.top + window.scrollY +
-               (pos.bottom - pos.top) * 2,
-        }} onClick={this.onGeneralClick}>
+          top: pos.top + window.scrollY + (pos.bottom - pos.top) * 2,
+        }}
+        onClick={this.onGeneralClick}
+      >
         <div className="arrow"></div>
         <div className="arrow inside"></div>
         <div className="authorInfoContainer">
           <div className="authorInfo">
-            <span className="name" title={name}>{name}</span>
+            <span className="name" title={name}>
+              {name}
+            </span>
             <span className="authorEmail">
-              <span className="authorEmailAddress" title={this.props.realEmail}>{this.props.realEmail}</span>
-              <button className="copyEmail"
-                      title={this.strings.get("copyEmail")}
-                      onClick={this.copyEmail}>
-                <svg className="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
+              <span className="authorEmailAddress" title={this.props.realEmail}>
+                {this.props.realEmail}
+              </span>
+              <button
+                className="copyEmail"
+                title={this.strings.get("copyEmail")}
+                onClick={this.copyEmail}
+              >
+                <svg
+                  className="icon"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  xmlnsXlink="http://www.w3.org/1999/xlink"
+                >
                   <use xlinkHref="chrome://conversations/skin/material-icons.svg#content_copy"></use>
                 </svg>
               </button>
@@ -122,54 +142,89 @@ class _ContactDetail extends React.PureComponent {
             <img src={this.props.avatar} />
           </div>
         </div>
-        { this.state.expanded &&
+        {this.state.expanded && (
           <div className="tipFooter hiddenFooter">
-            <button className="createFilter"
-                    onClick={this.createFilter}>
+            <button className="createFilter" onClick={this.createFilter}>
               {this.strings.get("createFilter")}
             </button>
-            { this.props.hasCard ?
-              <button className="editContact"
-                      title={this.strings.get("editCardAb")}
-                      onClick={this.editContact}>
-                <svg className="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
+            {this.props.hasCard ? (
+              <button
+                className="editContact"
+                title={this.strings.get("editCardAb")}
+                onClick={this.editContact}
+              >
+                <svg
+                  className="icon"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  xmlnsXlink="http://www.w3.org/1999/xlink"
+                >
                   <use xlinkHref="chrome://conversations/skin/material-icons.svg#edit"></use>
                 </svg>
-              </button> :
-              <button className="addContact"
-                      title={this.strings.get("addToAb")}
-                      onClick={this.addContact}>
-                <svg className="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
+              </button>
+            ) : (
+              <button
+                className="addContact"
+                title={this.strings.get("addToAb")}
+                onClick={this.addContact}
+              >
+                <svg
+                  className="icon"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  xmlnsXlink="http://www.w3.org/1999/xlink"
+                >
                   <use xlinkHref="chrome://conversations/skin/material-icons.svg#add"></use>
                 </svg>
               </button>
-            }
+            )}
           </div>
-        }
+        )}
         <div className="tipFooter">
-          <button className="sendEmail"
-                  title={this.strings.get("sendEmail")}
-                  onClick={this.sendEmail}>
-            <svg className="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
+          <button
+            className="sendEmail"
+            title={this.strings.get("sendEmail")}
+            onClick={this.sendEmail}
+          >
+            <svg
+              className="icon"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+              xmlnsXlink="http://www.w3.org/1999/xlink"
+            >
               <use xlinkHref="chrome://conversations/skin/material-icons.svg#mail"></use>
             </svg>
           </button>
-          <button className="showInvolving"
-                  title={this.strings.get("recentConversations")}
-                  onClick={this.showInvolving}>
-            <svg className="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
+          <button
+            className="showInvolving"
+            title={this.strings.get("recentConversations")}
+            onClick={this.showInvolving}
+          >
+            <svg
+              className="icon"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+              xmlnsXlink="http://www.w3.org/1999/xlink"
+            >
               <use xlinkHref="chrome://conversations/skin/material-icons.svg#history"></use>
             </svg>
           </button>
-          { !this.state.expanded &&
-            <button className="moreExpander"
-                    title={this.strings.get("more")}
-                    onClick={this.expandFooter}>
-              <svg className="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
+          {!this.state.expanded && (
+            <button
+              className="moreExpander"
+              title={this.strings.get("more")}
+              onClick={this.expandFooter}
+            >
+              <svg
+                className="icon"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlnsXlink="http://www.w3.org/1999/xlink"
+              >
                 <use xlinkHref="chrome://conversations/skin/material-icons.svg#expand_more"></use>
               </svg>
             </button>
-          }
+          )}
         </div>
       </div>
     );

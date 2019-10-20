@@ -21,7 +21,6 @@ function Viewer() {
 }
 
 Viewer.prototype = {
-
   async load(data) {
     let self = this;
     let status = document.getElementById("status");
@@ -72,20 +71,27 @@ Viewer.prototype = {
   },
 
   prevPage() {
-    if (this.curPage > 1)
+    if (this.curPage > 1) {
       this.switchToPage(this.curPage - 1);
+    }
   },
 
   nextPage() {
-    if (this.curPage < this.pdfDoc.numPages)
+    if (this.curPage < this.pdfDoc.numPages) {
       this.switchToPage(this.curPage + 1);
+    }
   },
 
   _initPageForm(pageForm, numBox) {
     let self = this;
     pageForm.addEventListener("submit", function(event) {
       let page = parseInt(numBox.value, 10);
-      if (!isNaN(page) && page != self.curPage && page > 0 && page <= self.pdfDoc.numPages) {
+      if (
+        !isNaN(page) &&
+        page != self.curPage &&
+        page > 0 &&
+        page <= self.pdfDoc.numPages
+      ) {
         self.switchToPage(page);
       } else {
         numBox.value = self.curPage;

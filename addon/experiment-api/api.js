@@ -1,5 +1,7 @@
 // Get various parts of the WebExtension framework that we need.
-var { ExtensionCommon } = ChromeUtils.import("resource://gre/modules/ExtensionCommon.jsm");
+var { ExtensionCommon } = ChromeUtils.import(
+  "resource://gre/modules/ExtensionCommon.jsm"
+);
 
 // You probably already know what this does.
 var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");

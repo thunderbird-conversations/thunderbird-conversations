@@ -5,10 +5,15 @@
 "use strict";
 
 var EXPORTED_SYMBOLS = [
-  "ContactManager", "Contacts", "defaultPhotoURI", "ContactHelpers",
+  "ContactManager",
+  "Contacts",
+  "defaultPhotoURI",
+  "ContactHelpers",
 ];
 
-const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   DisplayNameUtils: "resource:///modules/DisplayNameUtils.jsm",
@@ -19,18 +24,25 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   StringBundle: "resource:///modules/StringBundle.js",
 });
 
-const {getIdentities, getIdentityForEmail, MixIn, sanitize } =
-  ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
+const {
+  getIdentities,
+  getIdentityForEmail,
+  MixIn,
+  sanitize,
+} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
 
 var Contacts = {
   kFrom: 0,
   kTo: 1,
 };
 
-const defaultPhotoURI = "chrome://messenger/skin/addressbook/icons/contact-generic.png";
+const defaultPhotoURI =
+  "chrome://messenger/skin/addressbook/icons/contact-generic.png";
 
 let Log = setupLogging("Conversations.Contact");
-let strings = new StringBundle("chrome://conversations/locale/message.properties");
+let strings = new StringBundle(
+  "chrome://conversations/locale/message.properties"
+);
 
 // Taken from
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/charAt#Fixing_charAt()_to_support_non-Basic-Multilingual-Plane_(BMP)_characters
@@ -40,7 +52,7 @@ function fixedCharAt(str, idx) {
   var end = str.length;
 
   var surrogatePairs = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g;
-  while ((surrogatePairs.exec(str)) != null) {
+  while (surrogatePairs.exec(str) != null) {
     var li = surrogatePairs.lastIndex;
     if (li - 2 < idx) {
       idx++;
@@ -55,7 +67,10 @@ function fixedCharAt(str, idx) {
 
   ret += str.charAt(idx);
 
-  if (/[\uD800-\uDBFF]/.test(ret) && /[\uDC00-\uDFFF]/.test(str.charAt(idx + 1))) {
+  if (
+    /[\uD800-\uDBFF]/.test(ret) &&
+    /[\uDC00-\uDFFF]/.test(str.charAt(idx + 1))
+  ) {
     // Go one further, since one of the "characters" is part of a surrogate pair
     ret += str.charAt(idx + 1);
   }
@@ -93,8 +108,12 @@ var ContactHelpers = {
       //  dialog, just forget about it. RegisterSaveListener seems to be
       //  uncallable... and okCallback just short-circuit the whole logic
     };
-    win.openDialog("chrome://messenger/content/addressbook/abNewCardDialog.xul",
-                   "", "chrome,resizable=no,titlebar,modal,centerscreen", args);
+    win.openDialog(
+      "chrome://messenger/content/addressbook/abNewCardDialog.xul",
+      "",
+      "chrome,resizable=no,titlebar,modal,centerscreen",
+      args
+    );
     // This is an approximation, but it should be good enough
     let newCardAndBook = DisplayNameUtils.getCardForEmail(email);
     if (newCardAndBook.card) {
@@ -112,7 +131,9 @@ var ContactHelpers = {
     };
     win.openDialog(
       "chrome://messenger/content/addressbook/abEditCardDialog.xul",
-      "", "chrome,modal,resizable=no,centerscreen", args
+      "",
+      "chrome,modal,resizable=no,centerscreen",
+      args
     );
   },
 
@@ -121,19 +142,20 @@ var ContactHelpers = {
     q1.kind("email");
     q1.value(email);
     q1.getCollection({
-      onItemsAdded: function _onItemsAdded(aItems, aCollection) { },
-      onItemsModified: function _onItemsModified(aItems, aCollection) { },
-      onItemsRemoved: function _onItemsRemoved(aItems, aCollection) { },
+      onItemsAdded: function _onItemsAdded(aItems, aCollection) {},
+      onItemsModified: function _onItemsModified(aItems, aCollection) {},
+      onItemsRemoved: function _onItemsRemoved(aItems, aCollection) {},
       onQueryCompleted: function _onQueryCompleted(aCollection) {
-        if (!aCollection.items.length)
+        if (!aCollection.items.length) {
           return;
+        }
 
         let q2 = Gloda.newQuery(Gloda.NOUN_MESSAGE);
         q2.involves.apply(q2, aCollection.items);
         q2.getCollection({
-          onItemsAdded: function _onItemsAdded(aItems, aCollection) { },
-          onItemsModified: function _onItemsModified(aItems, aCollection) { },
-          onItemsRemoved: function _onItemsRemoved(aItems, aCollection) { },
+          onItemsAdded: function _onItemsAdded(aItems, aCollection) {},
+          onItemsModified: function _onItemsModified(aItems, aCollection) {},
+          onItemsRemoved: function _onItemsRemoved(aItems, aCollection) {},
           onQueryCompleted: function _onQueryCompleted(aCollection) {
             let tabmail = win.document.getElementById("tabmail");
             tabmail.openTab("glodaList", {
@@ -168,12 +190,19 @@ ContactManager.prototype = {
       }
     };
     if (key in this._cache) {
-      if (name)
+      if (name) {
         this._cache[key].enrichWithName(name);
+      }
       return this._cache[key];
     }
 
-    let contact = new ContactFromAB(this, name, email, position, this._colorCache[email]);
+    let contact = new ContactFromAB(
+      this,
+      name,
+      email,
+      position,
+      this._colorCache[email]
+    );
     // Only cache contacts which are in the address book. This avoids weird
     //  phenomena such as a bug tracker sending emails with different names
     //  but with the same email address, resulting in people all sharing the
@@ -200,32 +229,33 @@ let ContactMixIn = {
    */
   toTmplData(aUseColor, aPosition, aEmail, aIsDetail) {
     let [name, extra] = this.getName(aPosition, aIsDetail);
-    let displayEmail = (name != aEmail ? aEmail : "");
-    let hasCard = (this._card != null);
-    let skipEmail = !aIsDetail && hasCard && Prefs.getBool("mail.showCondensedAddresses");
+    let displayEmail = name != aEmail ? aEmail : "";
+    let hasCard = this._card != null;
+    let skipEmail =
+      !aIsDetail && hasCard && Prefs.getBool("mail.showCondensedAddresses");
     let tooltipName = this.getTooltipName(aPosition);
     let data = {
       showMonospace: aPosition == Contacts.kFrom,
       name: sanitize(name),
       initials: getInitials(sanitize(name)),
       displayEmail: sanitize(skipEmail ? "" : displayEmail),
-      tooltipName: sanitize((tooltipName != aEmail) ? tooltipName : ""),
+      tooltipName: sanitize(tooltipName != aEmail ? tooltipName : ""),
       email: sanitize(aEmail),
       avatar: sanitize(this.avatar),
       avatarIsDefault: this.avatar.substr(0, 6) === "chrome",
       hasCard,
       extra,
       // Parameter aUseColor is optional, and undefined means true
-      colorStyle: ((aUseColor === false)
-        ? {}
-        : {backgroundColor: this.color}),
+      colorStyle: aUseColor === false ? {} : { backgroundColor: this.color },
     };
     return data;
   },
 
   getTooltipName(aPosition) {
-    Log.assert(aPosition === Contacts.kFrom || aPosition === Contacts.kTo,
-      "Someone did not set the 'position' properly");
+    Log.assert(
+      aPosition === Contacts.kFrom || aPosition === Contacts.kTo,
+      "Someone did not set the 'position' properly"
+    );
     if (getIdentityForEmail(this._email)) {
       return strings.get("meFromMeToSomeone");
     }
@@ -234,13 +264,15 @@ let ContactMixIn = {
   },
 
   getName(aPosition, aIsDetail) {
-    Log.assert(aPosition === Contacts.kFrom || aPosition === Contacts.kTo,
-      "Someone did not set the 'position' properly");
+    Log.assert(
+      aPosition === Contacts.kFrom || aPosition === Contacts.kTo,
+      "Someone did not set the 'position' properly"
+    );
     if (getIdentityForEmail(this._email) && !aIsDetail) {
-      let display = ((aPosition === Contacts.kFrom)
-        ? strings.get("meFromMeToSomeone")
-        : strings.get("meFromSomeoneToMe")
-      );
+      let display =
+        aPosition === Contacts.kFrom
+          ? strings.get("meFromMeToSomeone")
+          : strings.get("meFromSomeoneToMe");
       return [display, getIdentities().length > 1 ? this._email : ""];
     }
 
@@ -248,8 +280,9 @@ let ContactMixIn = {
   },
 
   enrichWithName(aName) {
-    if (this._name == this._email || !this._name)
+    if (this._name == this._email || !this._name) {
       this._name = aName;
+    }
   },
 };
 
@@ -257,10 +290,10 @@ function freshColor(email) {
   let hash = 0;
   for (let i = 0; i < email.length; i++) {
     let chr = email.charCodeAt(i);
-    hash = ((hash << 5) - hash) + chr;
+    hash = (hash << 5) - hash + chr;
     hash &= 0xffff;
   }
-  let hue = Math.floor(360 * hash / 0xffff);
+  let hue = Math.floor((360 * hash) / 0xffff);
 
   // try to provide a consistent lightness across hues
   let lightnessStops = [48, 25, 28, 27, 62, 42];
@@ -299,12 +332,15 @@ ContactFromAB.prototype = {
       // - firstName lastName (if one of these is non-empty)
       // - the parsed name
       // - the email
-      if (this._useCardName && card.displayName)
+      if (this._useCardName && card.displayName) {
         this._name = card.displayName;
-      if (this._useCardName && (card.firstName || card.lastName))
+      }
+      if (this._useCardName && (card.firstName || card.lastName)) {
         this._name = card.firstName + " " + card.lastName;
-      if (!this._name)
+      }
+      if (!this._name) {
         this._name = this._email;
+      }
     } else {
       this.emails = [this._email];
       this._name = this._name || this._email;
@@ -314,8 +350,9 @@ ContactFromAB.prototype = {
   get avatar() {
     if (this._card) {
       let photoURI = this._card.getProperty("PhotoURI", "");
-      if (photoURI)
+      if (photoURI) {
         return photoURI;
+      }
     }
     return defaultPhotoURI;
   },

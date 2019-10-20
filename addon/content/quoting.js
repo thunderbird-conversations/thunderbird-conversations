@@ -8,8 +8,9 @@
 
 class _Quoting {
   canInclude(aNode) {
-    let v = aNode.tagName && aNode.tagName.toLowerCase() == "br"
-      || aNode.nodeType == aNode.TEXT_NODE && aNode.textContent.trim() === "";
+    let v =
+      (aNode.tagName && aNode.tagName.toLowerCase() == "br") ||
+      (aNode.nodeType == aNode.TEXT_NODE && aNode.textContent.trim() === "");
     // if (v) dump("Including "+aNode+"\n");
     return v;
   }
@@ -23,8 +24,9 @@ class _Quoting {
       // dump(node+" "+node.nodeType+"\n");
       switch (node.nodeType) {
         case node.TEXT_NODE:
-          if (node.textContent.trim().length > 0)
+          if (node.textContent.trim().length) {
             count++;
+          }
           break;
         case node.ELEMENT_NODE:
           count++;
@@ -32,11 +34,11 @@ class _Quoting {
       }
     }
     // dump(count+"\n");
-    return (count == 1) && this.isBody(aNode.parentNode);
+    return count == 1 && this.isBody(aNode.parentNode);
   }
 
   implies(a, b) {
-    return !a || a && b;
+    return !a || (a && b);
   }
 
   /* Create a blockquote that encloses everything relevant, starting from marker.
@@ -46,13 +48,18 @@ class _Quoting {
       this.encloseInBlockquote(aDoc, marker.previousSibling);
     } else if (!marker.previousSibling && !this.isBody(marker.parentNode)) {
       this.encloseInBlockquote(aDoc, marker.parentNode);
-    } else if (this.implies(marker == marker.parentNode.firstChild,
-                            !this.isBody(marker.parentNode))) {
+    } else if (
+      this.implies(
+        marker == marker.parentNode.firstChild,
+        !this.isBody(marker.parentNode)
+      )
+    ) {
       let blockquote = aDoc.createElement("blockquote");
       blockquote.setAttribute("type", "cite");
       marker.parentNode.insertBefore(blockquote, marker);
-      while (blockquote.nextSibling)
+      while (blockquote.nextSibling) {
         blockquote.appendChild(blockquote.nextSibling);
+      }
     }
   }
 
@@ -60,8 +67,9 @@ class _Quoting {
     let marker = aDoc.querySelector(sel);
     if (marker) {
       this.encloseInBlockquote(aDoc, marker);
-      if (remove)
+      if (remove) {
         marker.remove();
+      }
     }
     return marker != null;
   }
@@ -70,12 +78,15 @@ class _Quoting {
   convertHotmailQuotingToBlockquote1(aDoc) {
     /* We make the assumption that no one uses a <hr> in their emails except for
      * separating a quoted message from the rest */
-    this.trySel(aDoc,
+    this.trySel(
+      aDoc,
       "body > hr, \
        body > div > hr, \
        body > pre > hr, \
        body > div > div > hr, \
-       hr#stopSpelling", true);
+       hr#stopSpelling",
+      true
+    );
   }
 
   convertMiscQuotingToBlockquote(aDoc) {
@@ -88,12 +99,14 @@ class _Quoting {
     this.trySel(aDoc, ".OutlookMessageHeader");
     for (let div of aDoc.getElementsByTagName("div")) {
       let style = aWin.getComputedStyle(div);
-      if ((style.borderTopColor == "rgb(181, 196, 223)"
-           || style.borderTopColor == "rgb(225, 225, 225)")
-          && style.borderTopStyle == "solid"
-          && style.borderLeftWidth == "0px"
-          && style.borderRightWidth == "0px"
-          && style.borderBottomWidth == "0px") {
+      if (
+        (style.borderTopColor == "rgb(181, 196, 223)" ||
+          style.borderTopColor == "rgb(225, 225, 225)") &&
+        style.borderTopStyle == "solid" &&
+        style.borderLeftWidth == "0px" &&
+        style.borderRightWidth == "0px" &&
+        style.borderBottomWidth == "0px"
+      ) {
         this.encloseInBlockquote(aDoc, div);
         div.style.borderTopWidth = 0;
         break;
@@ -105,15 +118,18 @@ class _Quoting {
    * ----- Something that supposedly says the text below is quoted -----
    * Fails 9 times out of 10. */
   convertForwardedToBlockquote(aDoc) {
-    const re = /^\s*(-{5,15})(?:\s*)(?:[^ \f\n\r\t\v\u00A0\u2028\u2029-]+\s+)*[^ \f\n\r\t\v\u00A0\u2028\u2029-]+(\s*)\1\s*/mg;
-    const walk = (aNode) => {
+    const re = /^\s*(-{5,15})(?:\s*)(?:[^ \f\n\r\t\v\u00A0\u2028\u2029-]+\s+)*[^ \f\n\r\t\v\u00A0\u2028\u2029-]+(\s*)\1\s*/gm;
+    const walk = aNode => {
       for (const child of aNode.childNodes) {
         const txt = child.textContent;
         const m = txt.match(re);
-        if (child.nodeType == child.TEXT_NODE
-            && !txt.includes("-----BEGIN PGP")
-            && !txt.includes("----END PGP")
-            && m && m.length) {
+        if (
+          child.nodeType == child.TEXT_NODE &&
+          !txt.includes("-----BEGIN PGP") &&
+          !txt.includes("----END PGP") &&
+          m &&
+          m.length
+        ) {
           const marker = m[0];
           // dump("Found matching text "+marker+"\n");
           const i = txt.indexOf(marker);
@@ -152,22 +168,31 @@ class _Quoting {
     let blockquotes = new Set(aDoc.getElementsByTagName("blockquote"));
     for (let blockquote of blockquotes) {
       let isWhitespace = function(n) {
-        return (n && (n.tagName && n.tagName.toLowerCase() == "br"
-            || n.nodeType == n.TEXT_NODE && n.textContent.match(/^\s*$/)));
+        return (
+          n &&
+          ((n.tagName && n.tagName.toLowerCase() == "br") ||
+            (n.nodeType == n.TEXT_NODE && n.textContent.match(/^\s*$/)))
+        );
       };
       let isBlockquote = function(b) {
-        return (b && b.tagName && b.tagName.toLowerCase() == "blockquote");
+        return b && b.tagName && b.tagName.toLowerCase() == "blockquote";
       };
       let blockquoteFollows = function(n) {
-        return n && (isBlockquote(n) || isWhitespace(n) && blockquoteFollows(n.nextSibling));
+        return (
+          n &&
+          (isBlockquote(n) ||
+            (isWhitespace(n) && blockquoteFollows(n.nextSibling)))
+        );
       };
       while (blockquoteFollows(blockquote.nextSibling)) {
-        while (isWhitespace(blockquote.nextSibling))
+        while (isWhitespace(blockquote.nextSibling)) {
           blockquote.appendChild(blockquote.nextSibling);
+        }
         if (isBlockquote(blockquote.nextSibling)) {
           let next = blockquote.nextSibling;
-          while (next.firstChild)
+          while (next.firstChild) {
             blockquote.appendChild(next.firstChild);
+          }
           blockquote.parentNode.removeChild(next);
           blockquotes.delete(next);
         } else {

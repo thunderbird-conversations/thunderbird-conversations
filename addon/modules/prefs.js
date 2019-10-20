@@ -1,6 +1,6 @@
 var EXPORTED_SYMBOLS = ["Prefs"];
 
-const {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
+const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 const gConversationsPrefs = Services.prefs.getBranch("conversations.");
 
@@ -28,9 +28,10 @@ function loadDefaultPrefs() {
   };
 
   let uri = Services.io.newURI(
-      "defaults/preferences/defaults.js",
-      null,
-      Services.io.newURI("resource://conversations/"));
+    "defaults/preferences/defaults.js",
+    null,
+    Services.io.newURI("resource://conversations/")
+  );
 
   // setup default prefs
   try {
@@ -48,7 +49,9 @@ function PrefManager() {
   this.logging_enabled = gConversationsPrefs.getBoolPref("logging_enabled");
   this.tweak_bodies = gConversationsPrefs.getBoolPref("tweak_bodies");
   this.tweak_chrome = gConversationsPrefs.getBoolPref("tweak_chrome");
-  this.operate_on_conversations = gConversationsPrefs.getBoolPref("operate_on_conversations");
+  this.operate_on_conversations = gConversationsPrefs.getBoolPref(
+    "operate_on_conversations"
+  );
   this.enabled = gConversationsPrefs.getBoolPref("enabled");
   this.extra_attachments = gConversationsPrefs.getBoolPref("extra_attachments");
   this.hide_quote_length = gConversationsPrefs.getIntPref("hide_quote_length");
@@ -56,8 +59,11 @@ function PrefManager() {
   this.compose_in_tab = gConversationsPrefs.getBoolPref("compose_in_tab");
   // This is a hashmap
   this.monospaced_senders = {};
-  for (let s of this.split(gConversationsPrefs.getCharPref("monospaced_senders")))
+  for (let s of this.split(
+    gConversationsPrefs.getCharPref("monospaced_senders")
+  )) {
     this.monospaced_senders[s] = null;
+  }
 
   this.watchers = [];
 
@@ -67,47 +73,61 @@ function PrefManager() {
 PrefManager.prototype = {
   getAllLegacyPrefs() {
     let result = {
-      "expand_who": gConversationsPrefs.getIntPref("expand_who"),
-      "no_friendly_date": gConversationsPrefs.getBoolPref("no_friendly_date"),
-      "logging_enabled": gConversationsPrefs.getBoolPref("logging_enabled"),
-      "tweak_bodies": gConversationsPrefs.getBoolPref("tweak_bodies"),
-      "tweak_chrome": gConversationsPrefs.getBoolPref("tweak_chrome"),
-      "operate_on_conversations": gConversationsPrefs.getBoolPref("operate_on_conversations"),
-      "enabled": gConversationsPrefs.getBoolPref("enabled"),
-      "extra_attachments": gConversationsPrefs.getBoolPref("extra_attachments"),
-      "hide_quote_length": gConversationsPrefs.getIntPref("hide_quote_length"),
-      "hide_sigs": gConversationsPrefs.getBoolPref("hide_sigs"),
-      "compose_in_tab": gConversationsPrefs.getBoolPref("compose_in_tab"),
+      expand_who: gConversationsPrefs.getIntPref("expand_who"),
+      no_friendly_date: gConversationsPrefs.getBoolPref("no_friendly_date"),
+      logging_enabled: gConversationsPrefs.getBoolPref("logging_enabled"),
+      tweak_bodies: gConversationsPrefs.getBoolPref("tweak_bodies"),
+      tweak_chrome: gConversationsPrefs.getBoolPref("tweak_chrome"),
+      operate_on_conversations: gConversationsPrefs.getBoolPref(
+        "operate_on_conversations"
+      ),
+      enabled: gConversationsPrefs.getBoolPref("enabled"),
+      extra_attachments: gConversationsPrefs.getBoolPref("extra_attachments"),
+      hide_quote_length: gConversationsPrefs.getIntPref("hide_quote_length"),
+      hide_sigs: gConversationsPrefs.getBoolPref("hide_sigs"),
+      compose_in_tab: gConversationsPrefs.getBoolPref("compose_in_tab"),
     };
     // This is a hashmap
     result.monospaced_senders = {};
-    for (let s of this.split(gConversationsPrefs.getCharPref("monospaced_senders")))
+    for (let s of this.split(
+      gConversationsPrefs.getCharPref("monospaced_senders")
+    )) {
       result.monospaced_senders[s] = null;
+    }
 
     return result;
   },
 
-  split: s => s.split(",").map(s => s.trim()).map(s => s.toLowerCase()),
+  split: s =>
+    s
+      .split(",")
+      .map(s => s.trim())
+      .map(s => s.toLowerCase()),
 
-  watch(watcher) { return this.watchers.push(watcher); },
+  watch(watcher) {
+    return this.watchers.push(watcher);
+  },
 
   register: function mpo_register(observer) {
     gConversationsPrefs.QueryInterface(Ci.nsIPrefBranch);
-    if (observer)
+    if (observer) {
       gConversationsPrefs.addObserver("", observer);
-    else
+    } else {
       gConversationsPrefs.addObserver("", this);
+    }
   },
 
   unregister: function mpo_unregister() {
-    if (!gConversationsPrefs)
+    if (!gConversationsPrefs) {
       return;
+    }
     gConversationsPrefs.removeObserver("", this);
   },
 
   observe: function mpo_observe(aSubject, aTopic, aData) {
-    if (aTopic != "nsPref:changed")
+    if (aTopic != "nsPref:changed") {
       return;
+    }
 
     switch (aData) {
       case "no_friendly_date":
@@ -135,14 +155,17 @@ PrefManager.prototype = {
 
       case "monospaced_senders":
         this.monospaced_senders = {};
-        for (let s of this.split(gConversationsPrefs.getCharPref("monospaced_senders")))
+        for (let s of this.split(
+          gConversationsPrefs.getCharPref("monospaced_senders")
+        )) {
           this.monospaced_senders[s] = null;
+        }
         break;
     }
   },
 
   hasPref(p) {
-    return (Services.prefs.getPrefType(p) != Ci.nsIPrefBranch.PREF_INVALID);
+    return Services.prefs.getPrefType(p) != Ci.nsIPrefBranch.PREF_INVALID;
   },
 
   getChar(p) {

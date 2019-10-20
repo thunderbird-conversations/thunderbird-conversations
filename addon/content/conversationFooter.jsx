@@ -8,7 +8,9 @@
 class _ConversationFooter extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.strings = new StringBundle("chrome://conversations/locale/pages.properties");
+    this.strings = new StringBundle(
+      "chrome://conversations/locale/pages.properties"
+    );
     this.forwardConversation = this.forwardConversation.bind(this);
     this.printConversation = this.printConversation.bind(this);
   }
@@ -28,14 +30,16 @@ class _ConversationFooter extends React.PureComponent {
   render() {
     return (
       <div className="bottom-links">
-        <a className="link"
-           href="javascript:"
-           onClick={this.forwardConversation}>
+        <a
+          className="link"
+          href="javascript:"
+          onClick={this.forwardConversation}
+        >
           {this.strings.get("stub.forward.tooltip")}
-        </a> – <a className="link"
-           href="javascript:"
-           onClick={this.printConversation}>
-           {this.strings.get("stub.print.tooltip")}
+        </a>{" "}
+        –{" "}
+        <a className="link" href="javascript:" onClick={this.printConversation}>
+          {this.strings.get("stub.print.tooltip")}
         </a>
       </div>
     );

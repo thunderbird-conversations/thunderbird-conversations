@@ -8,7 +8,9 @@
 class AttachmentMenu extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.strings = new StringBundle("chrome://conversations/locale/pages.properties");
+    this.strings = new StringBundle(
+      "chrome://conversations/locale/pages.properties"
+    );
     this.open = this.open.bind(this);
     this.save = this.save.bind(this);
     this.detach = this.detach.bind(this);
@@ -23,8 +25,9 @@ class AttachmentMenu extends React.PureComponent {
    */
   get currentAttInfo() {
     let node = topMail3Pane(window).document.popupNode;
-    while (!node.attInfo)
+    while (!node.attInfo) {
       node = node.parentNode;
+    }
     return node.attInfo;
   }
 
@@ -49,20 +52,20 @@ class AttachmentMenu extends React.PureComponent {
       <menu id="attachmentMenu" type="context">
         <menuitem
           label={this.strings.get("stub.context.open")}
-          onClick={this.open}>
-        </menuitem>
+          onClick={this.open}
+        ></menuitem>
         <menuitem
           label={this.strings.get("stub.context.save")}
-          onClick={this.save}>
-        </menuitem>
+          onClick={this.save}
+        ></menuitem>
         <menuitem
           label={this.strings.get("stub.context.detach")}
-          onClick={this.detach}>
-        </menuitem>
+          onClick={this.detach}
+        ></menuitem>
         <menuitem
           label={this.strings.get("stub.context.delete")}
-          onClick={this.delete}>
-        </menuitem>
+          onClick={this.delete}
+        ></menuitem>
       </menu>
     );
   }

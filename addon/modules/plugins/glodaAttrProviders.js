@@ -30,9 +30,10 @@ var EXPORTED_SYMBOLS = ["GlodaAttrProviders"];
  *  subject, hence this Gloda plugin
  */
 
-const {PluginHelpers} =
-  ChromeUtils.import("resource://conversations/modules/plugins/helpers.js");
-const {Gloda} = ChromeUtils.import("resource:///modules/gloda/public.js");
+const { PluginHelpers } = ChromeUtils.import(
+  "resource://conversations/modules/plugins/helpers.js"
+);
+const { Gloda } = ChromeUtils.import("resource:///modules/gloda/public.js");
 
 let AlternativeSender = {
   init: function _AlternativeSender_init() {
@@ -52,11 +53,17 @@ let AlternativeSender = {
     });
   },
 
-  process: function* _AlternativeSender_process(aGlodaMessage, aRawReps, aIsNew, aCallbackHandle) {
+  process: function* _AlternativeSender_process(
+    aGlodaMessage,
+    aRawReps,
+    aIsNew,
+    aCallbackHandle
+  ) {
     try {
       let alternativeSender = PluginHelpers.alternativeSender(aRawReps);
-      if (alternativeSender)
+      if (alternativeSender) {
         aGlodaMessage.alternativeSender = alternativeSender;
+      }
     } catch (e) {
       dump(e + "\n" + e.stack + "\n");
     }
@@ -85,10 +92,16 @@ let ContentType = {
     });
   },
 
-  process: function* _ContentType_process(aGlodaMessage, aRawReps, aIsNew, aCallbackHandle) {
+  process: function* _ContentType_process(
+    aGlodaMessage,
+    aRawReps,
+    aIsNew,
+    aCallbackHandle
+  ) {
     try {
-      if (aRawReps.mime)
+      if (aRawReps.mime) {
         aGlodaMessage.contentType = aRawReps.mime.headers["content-type"];
+      }
     } catch (e) {
       dump(e + "\n" + e.stack + "\n");
     }
@@ -117,11 +130,17 @@ let Bugzilla = {
     });
   },
 
-  process: function* _Bugzilla_process(aGlodaMessage, aRawReps, aIsNew, aCallbackHandle) {
+  process: function* _Bugzilla_process(
+    aGlodaMessage,
+    aRawReps,
+    aIsNew,
+    aCallbackHandle
+  ) {
     try {
       let bugzilla = PluginHelpers.bugzilla(aRawReps);
-      if (bugzilla)
+      if (bugzilla) {
         aGlodaMessage.bugzillaInfos = JSON.stringify(bugzilla);
+      }
     } catch (e) {
       dump(e + "\n" + e.stack + "\n");
     }
@@ -153,7 +172,12 @@ let ConversationSubject = {
     });
   },
 
-  process: function* _ConversationSubject_process(aGlodaMessage, aRawReps, aIsNew, aCallbackHandle) {
+  process: function* _ConversationSubject_process(
+    aGlodaMessage,
+    aRawReps,
+    aIsNew,
+    aCallbackHandle
+  ) {
     yield Gloda.kWorkDone;
   },
 };

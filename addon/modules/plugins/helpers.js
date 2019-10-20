@@ -11,7 +11,7 @@ var EXPORTED_SYMBOLS = ["PluginHelpers"];
  *  gloda yet (see message.js).
  */
 
-const {GlodaUtils} = ChromeUtils.import("resource:///modules/gloda/utils.js");
+const { GlodaUtils } = ChromeUtils.import("resource:///modules/gloda/utils.js");
 
 var PluginHelpers = {
   // About to do more special-casing here? Please check out the corresponding
@@ -20,16 +20,18 @@ var PluginHelpers = {
     const aMimeMsg = aRawReps.mime;
 
     // This header is a bare email address
-    if (aMimeMsg && ("x-bugzilla-who" in aMimeMsg.headers))
-        return aMimeMsg.headers["x-bugzilla-who"];
+    if (aMimeMsg && "x-bugzilla-who" in aMimeMsg.headers) {
+      return aMimeMsg.headers["x-bugzilla-who"];
+    }
 
     return null;
   },
 
   bugzilla(aRawReps) {
     const aMimeMsg = aRawReps.mime;
-    if (!aMimeMsg)
+    if (!aMimeMsg) {
       return null;
+    }
 
     if (aMimeMsg.has("x-bugzilla-who")) {
       const keys = [
@@ -48,8 +50,9 @@ var PluginHelpers = {
       const o = {};
       for (const k of keys) {
         const v = aMimeMsg.get("x-bugzilla-" + k);
-        if (v)
+        if (v) {
           o[k] = GlodaUtils.deMime(v);
+        }
       }
       return o;
     }

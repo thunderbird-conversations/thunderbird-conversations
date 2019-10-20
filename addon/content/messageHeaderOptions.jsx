@@ -2,13 +2,15 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals PropTypes, React, ReactRedux, StringBundle, ActionButton */
+/* globals PropTypes, React, StringBundle, ActionButton */
 /* exported MessageHeaderOptions */
 
 class OptionsMoreMenu extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.strings = new StringBundle("chrome://conversations/locale/template.properties");
+    this.strings = new StringBundle(
+      "chrome://conversations/locale/template.properties"
+    );
   }
 
   render() {
@@ -18,62 +20,80 @@ class OptionsMoreMenu extends React.PureComponent {
         <div className="arrow inside"></div>
         <ul>
           <li className="action-reply">
-            <ActionButton callback={this.props.msgSendAction}
-                          className="optionsButton"
-                          showString={true}
-                          type="reply"/>
+            <ActionButton
+              callback={this.props.msgSendAction}
+              className="optionsButton"
+              showString={true}
+              type="reply"
+            />
           </li>
-          { this.props.multipleRecipients &&
+          {this.props.multipleRecipients && (
             <li className="action-replyAll">
-              <ActionButton callback={this.props.msgSendAction}
-                            className="optionsButton"
-                            showString={true}
-                            type="replyAll"/>
+              <ActionButton
+                callback={this.props.msgSendAction}
+                className="optionsButton"
+                showString={true}
+                type="replyAll"
+              />
             </li>
-          }
-          { this.props.recipientsIncludeLists &&
+          )}
+          {this.props.recipientsIncludeLists && (
             <li className="action-replyList">
-              <ActionButton callback={this.props.msgSendAction}
-                            className="optionsButton"
-                            showString={true}
-                            type="replyList"/>
+              <ActionButton
+                callback={this.props.msgSendAction}
+                className="optionsButton"
+                showString={true}
+                type="replyList"
+              />
             </li>
-          }
+          )}
           <li className="action-editNew">
-            <ActionButton callback={this.props.msgSendAction}
-                          className="optionsButton"
-                          showString={true}
-                          type="editAsNew"/>
+            <ActionButton
+              callback={this.props.msgSendAction}
+              className="optionsButton"
+              showString={true}
+              type="editAsNew"
+            />
           </li>
           <li className="action-forward dropdown-sep">
-            <ActionButton callback={this.props.msgSendAction}
-                          className="optionsButton"
-                          showString={true}
-                          type="forward"/>
+            <ActionButton
+              callback={this.props.msgSendAction}
+              className="optionsButton"
+              showString={true}
+              type="forward"
+            />
           </li>
           <li className="action-archive">
-            <ActionButton callback={this.props.msgSendAction}
-                          className="optionsButton"
-                          showString={true}
-                          type="archive"/>
+            <ActionButton
+              callback={this.props.msgSendAction}
+              className="optionsButton"
+              showString={true}
+              type="archive"
+            />
           </li>
           <li className="action-delete">
-            <ActionButton callback={this.props.msgSendAction}
-                          className="optionsButton"
-                          showString={true}
-                          type="delete"/>
+            <ActionButton
+              callback={this.props.msgSendAction}
+              className="optionsButton"
+              showString={true}
+              type="delete"
+            />
           </li>
           <li className="action-classic">
-            <ActionButton callback={this.props.msgSendAction}
-                          className="optionsButton"
-                          showString={true}
-                          type="classic"/>
+            <ActionButton
+              callback={this.props.msgSendAction}
+              className="optionsButton"
+              showString={true}
+              type="classic"
+            />
           </li>
           <li className="action-source">
-            <ActionButton callback={this.props.msgSendAction}
-                          className="optionsButton"
-                          showString={true}
-                          type="source"/>
+            <ActionButton
+              callback={this.props.msgSendAction}
+              className="optionsButton"
+              showString={true}
+              type="source"
+            />
           </li>
         </ul>
       </div>
@@ -90,7 +110,9 @@ OptionsMoreMenu.propTypes = {
 class MessageHeaderOptions extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.strings = new StringBundle("chrome://conversations/locale/template.properties");
+    this.strings = new StringBundle(
+      "chrome://conversations/locale/template.properties"
+    );
     this.replyAction = this.replyAction.bind(this);
     this.showDetails = this.showDetails.bind(this);
     this.displayMenu = this.displayMenu.bind(this);
@@ -150,11 +172,11 @@ class MessageHeaderOptions extends React.PureComponent {
       document.addEventListener("blur", this.onBlur);
     }
 
-    this.setState(prevState => ({expanded: !prevState.expanded}));
+    this.setState(prevState => ({ expanded: !prevState.expanded }));
   }
 
   clearMenu() {
-    this.setState({expanded: false});
+    this.setState({ expanded: false });
     if (this.clickListener) {
       document.removeEventListener("click", this.clickListener);
       document.removeEventListener("keypress", this.keyListener);
@@ -178,56 +200,88 @@ class MessageHeaderOptions extends React.PureComponent {
     // once we've got more of the actual message display into react.
     return (
       <div className="options">
-        { !!this.props.attachments.length &&
+        {!!this.props.attachments.length && (
           <span className="attachmentIcon">
-            <svg className="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
+            <svg
+              className="icon"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+              xmlnsXlink="http://www.w3.org/1999/xlink"
+            >
               <use xlinkHref="chrome://conversations/skin/material-icons.svg#attachment"></use>
             </svg>
           </span>
-        }
+        )}
         <span className="date">
           <span title={this.props.fullDate}>{this.props.date}</span>
         </span>
-        {this.props.expanded &&
+        {this.props.expanded && (
           <span className="mainActionButton">
-            <ActionButton callback={this.replyAction}
-                          className="icon-link"
-                          type={actionButtonType}/>
+            <ActionButton
+              callback={this.replyAction}
+              className="icon-link"
+              type={actionButtonType}
+            />
           </span>
-        }
-        {this.props.expanded &&
-          <span className={"details" + this.props.detailsShowing ? "details-hidden" : "" }>
-            <a href="javascript:"
-               className="icon-link"
-               onClick={this.showDetails}
-               title={
-                this.props.detailsShowing ? this.strings.get("hideDetails") : this.strings.get("details")
-               }>
-              <svg className="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
-                <use xlinkHref={
-                  this.props.detailsShowing
-                    ? "chrome://conversations/skin/material-icons.svg#info"
-                    : "chrome://conversations/skin/material-icons.svg#info_outline"
-
-                  }></use>
+        )}
+        {this.props.expanded && (
+          <span
+            className={
+              "details" + this.props.detailsShowing ? "details-hidden" : ""
+            }
+          >
+            <a
+              href="javascript:"
+              className="icon-link"
+              onClick={this.showDetails}
+              title={
+                this.props.detailsShowing
+                  ? this.strings.get("hideDetails")
+                  : this.strings.get("details")
+              }
+            >
+              <svg
+                className="icon"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlnsXlink="http://www.w3.org/1999/xlink"
+              >
+                <use
+                  xlinkHref={
+                    this.props.detailsShowing
+                      ? "chrome://conversations/skin/material-icons.svg#info"
+                      : "chrome://conversations/skin/material-icons.svg#info_outline"
+                  }
+                ></use>
               </svg>
             </a>
           </span>
-        }
-        {this.props.expanded &&
+        )}
+        {this.props.expanded && (
           <span className="dropDown">
-            <button onClick={this.displayMenu} className="icon-link top-right-more" title={this.strings.get("more")}>
-              <svg className="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
+            <button
+              onClick={this.displayMenu}
+              className="icon-link top-right-more"
+              title={this.strings.get("more")}
+            >
+              <svg
+                className="icon"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlnsXlink="http://www.w3.org/1999/xlink"
+              >
                 <use xlinkHref="chrome://conversations/skin/material-icons.svg#more_vert"></use>
               </svg>
             </button>
-            { this.state.expanded &&
-              <OptionsMoreMenu recipientsIncludeLists={this.props.recipientsIncludeLists}
-                               msgSendAction={this.replyAction}
-                               multipleRecipients={this.props.multipleRecipients}/>
-            }
+            {this.state.expanded && (
+              <OptionsMoreMenu
+                recipientsIncludeLists={this.props.recipientsIncludeLists}
+                msgSendAction={this.replyAction}
+                multipleRecipients={this.props.multipleRecipients}
+              />
+            )}
           </span>
-        }
+        )}
       </div>
     );
   }

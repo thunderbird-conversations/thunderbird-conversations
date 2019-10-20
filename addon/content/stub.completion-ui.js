@@ -5,19 +5,27 @@
 /* global $, showCc, showBcc, strings */
 /* import-globals-from quickReply.js */
 
-var {MailServices} = ChromeUtils.import("resource:///modules/MailServices.jsm");
+var { MailServices } = ChromeUtils.import(
+  "resource:///modules/MailServices.jsm"
+);
 
 // ----- Autocomplete stuff. Understand it as a part of stub.compose-ui.js
 
-const {Gloda} = ChromeUtils.import("resource:///modules/gloda/gloda.js");
-const {MultiSuffixTree} = ChromeUtils.import("resource:///modules/gloda/suffixtree.js");
+const { Gloda } = ChromeUtils.import("resource:///modules/gloda/gloda.js");
+const { MultiSuffixTree } = ChromeUtils.import(
+  "resource:///modules/gloda/suffixtree.js"
+);
 const {
-  entries, escapeHtml, getDefaultIdentity, getIdentityForEmail,
-  getIdentities, NS_SUCCEEDED,
+  entries,
+  escapeHtml,
+  getDefaultIdentity,
+  getIdentityForEmail,
+  getIdentities,
+  NS_SUCCEEDED,
 } = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
-const {
-  setupLogging, dumpCallStack, Colors,
-} = ChromeUtils.import("resource://conversations/modules/log.js");
+const { setupLogging, dumpCallStack, Colors } = ChromeUtils.import(
+  "resource://conversations/modules/log.js"
+);
 
 let Log = setupLogging("Conversations.Stub.Completion");
 
@@ -25,17 +33,22 @@ try {
   // eslint-disable-next-line no-unused-vars
   ChromeUtils.import("resource://people/modules/people.js");
 } catch (e) {
-  Log.debug("You don't have Contacts installed. Gloda will provide autocomplete.");
+  Log.debug(
+    "You don't have Contacts installed. Gloda will provide autocomplete."
+  );
 }
-
 
 // Wrap the given parameters in an object that's compatible with the
 //  facebook-style autocomplete.
 function asToken(thumb, name, email, guid) {
-  let hasName = name && (name.trim().length > 0);
-  let data = hasName ? MailServices.headerParser.makeMimeAddress(name, email) : email;
+  let hasName = name && !!name.trim().length;
+  let data = hasName
+    ? MailServices.headerParser.makeMimeAddress(name, email)
+    : email;
   let nameStr = hasName ? name + " <" + email + ">" : email;
-  let thumbStr = thumb ? "<img class='autocomplete-thumb' src=\"" + escapeHtml(thumb) + "\" /> " : "";
+  let thumbStr = thumb
+    ? "<img class='autocomplete-thumb' src=\"" + escapeHtml(thumb) + '" /> '
+    : "";
   let listItem = thumbStr + escapeHtml(nameStr); // this one is for injection
   let displayName = hasName ? name : email;
   return { name: displayName, listItem, data, email, id: guid };
@@ -58,7 +71,9 @@ function ContactIdentityCompleter() {
 }
 
 ContactIdentityCompleter.prototype = {
-  _popularitySorter(a, b) { return b.popularity - a.popularity; },
+  _popularitySorter(a, b) {
+    return b.popularity - a.popularity;
+  },
   complete: function ContactIdentityCompleter_complete(aResult, aString) {
     if (aString.length < 3) {
       // In CJK, first name or last name is sometime used as 1 character only.
@@ -68,8 +83,9 @@ ContactIdentityCompleter.prototype = {
       //                      and CJK Ideograph
       // [U+AC00 - U+D7FF ... Hangul
       // [U+F900 - U+FFDC ... CJK compatibility ideograph
-      if (!aString.match(/[\u3041-\u9fff\uac00-\ud7ff\uf900-\uffdc]/))
+      if (!aString.match(/[\u3041-\u9fff\uac00-\ud7ff\uf900-\uffdc]/)) {
         return false;
+      }
     }
 
     let matches;
@@ -86,37 +102,47 @@ ContactIdentityCompleter.prototype = {
     let contactToThing = {};
     for (let iMatch = 0; iMatch < matches.length; iMatch++) {
       let thing = matches[iMatch];
-      if (thing.NOUN_ID == Gloda.NOUN_CONTACT && !(thing.id in contactToThing))
+      if (
+        thing.NOUN_ID == Gloda.NOUN_CONTACT &&
+        !(thing.id in contactToThing)
+      ) {
         contactToThing[thing.id] = thing;
-      else if (thing.NOUN_ID == Gloda.NOUN_IDENTITY)
+      } else if (thing.NOUN_ID == Gloda.NOUN_IDENTITY) {
         contactToThing[thing.contactID] = thing;
+      }
     }
     // and since we can now map from contacts down to identities, map contacts
     //  to the first identity for them that we find...
     matches = Array.from(entries(contactToThing)).map(([, val]) =>
-      val.NOUN_ID == Gloda.NOUN_IDENTITY ? val : val.identities[0]);
+      val.NOUN_ID == Gloda.NOUN_IDENTITY ? val : val.identities[0]
+    );
 
-    let rows =
-      matches.map(match => asToken(
-                            match.pictureURL(),
-                            match.contact.name != match.value ? match.contact.name : null,
-                            match.value,
-                            match.value
-                          ));
+    let rows = matches.map(match =>
+      asToken(
+        match.pictureURL(),
+        match.contact.name != match.value ? match.contact.name : null,
+        match.value,
+        match.value
+      )
+    );
     aResult.addRows(rows);
 
     // - match against database contacts / identities
-    let pending = {contactToThing, pendingCount: 2};
+    let pending = { contactToThing, pendingCount: 2 };
 
     let contactQuery = Gloda.newQuery(Gloda.NOUN_CONTACT);
-    contactQuery.nameLike(contactQuery.WILDCARD, aString,
-        contactQuery.WILDCARD);
+    contactQuery.nameLike(
+      contactQuery.WILDCARD,
+      aString,
+      contactQuery.WILDCARD
+    );
     pending.contactColl = contactQuery.getCollection(this, aResult);
     pending.contactColl.becomeExplicit();
 
     let identityQuery = Gloda.newQuery(Gloda.NOUN_IDENTITY);
-    identityQuery.kind("email").valueLike(identityQuery.WILDCARD, aString,
-        identityQuery.WILDCARD);
+    identityQuery
+      .kind("email")
+      .valueLike(identityQuery.WILDCARD, aString, identityQuery.WILDCARD);
     pending.identityColl = identityQuery.getCollection(this, aResult);
     pending.identityColl.becomeExplicit();
 
@@ -124,24 +150,23 @@ ContactIdentityCompleter.prototype = {
 
     return true;
   },
-  onItemsAdded(aItems, aCollection) {
-  },
-  onItemsModified(aItems, aCollection) {
-  },
-  onItemsRemoved(aItems, aCollection) {
-  },
+  onItemsAdded(aItems, aCollection) {},
+  onItemsModified(aItems, aCollection) {},
+  onItemsRemoved(aItems, aCollection) {},
   onQueryCompleted(aCollection) {
     // handle the initial setup case...
     if (aCollection.data == null) {
       // cheat and explicitly add our own contact...
-      if (!(Gloda.myContact.id in this.contactCollection._idMap))
+      if (!(Gloda.myContact.id in this.contactCollection._idMap)) {
         this.contactCollection._onItemsAdded([Gloda.myContact]);
+      }
 
       // the set of identities owned by the contacts is automatically loaded as part
       //  of the contact loading...
       // (but only if we actually have any contacts)
-      this.identityCollection =
-        this.contactCollection.subCollections[Gloda.NOUN_IDENTITY];
+      this.identityCollection = this.contactCollection.subCollections[
+        Gloda.NOUN_IDENTITY
+      ];
 
       let contactNames = this.contactCollection.items.map(function(c) {
         return c.name.replace(" ", "").toLowerCase() || "x";
@@ -161,9 +186,12 @@ ContactIdentityCompleter.prototype = {
       //  duplicates the list we called concat on, and is thus harmless.  Our
       //  use of && on identityCollection allows its undefined value to be
       //  passed through to concat.  identityMails will likewise be undefined.
-      this.suffixTree = new MultiSuffixTree(contactNames.concat(identityMails),
-        this.contactCollection.items.concat(this.identityCollection &&
-          this.identityCollection.items));
+      this.suffixTree = new MultiSuffixTree(
+        contactNames.concat(identityMails),
+        this.contactCollection.items.concat(
+          this.identityCollection && this.identityCollection.items
+        )
+      );
 
       return;
     }
@@ -196,20 +224,21 @@ ContactIdentityCompleter.prototype = {
         let contact = items[iContact];
         if (!(contact.id in contactToThing)) {
           contactToThing[contact.id] = contact;
-          if (contact.identities)
+          if (contact.identities) {
             possibleDudes.push(contact.identities[0]);
+          }
         }
       }
 
       // sort in order of descending popularity
       possibleDudes.sort(this._popularitySorter);
       let rows = possibleDudes.map(function(dude) {
-          return asToken(
-            dude.pictureURL(),
-            dude.contact.name != dude.value ? dude.contact.name : null,
-            dude.value,
-            dude.value
-          );
+        return asToken(
+          dude.pictureURL(),
+          dude.contact.name != dude.value ? dude.contact.name : null,
+          dude.value,
+          dude.value
+        );
       });
       result.addRows(rows);
       result.markCompleted(this);
@@ -226,17 +255,21 @@ ContactIdentityCompleter.prototype = {
 function glodaAutocomplete(query, callback) {
   let results = [];
   let completer = new ContactIdentityCompleter();
-  completer.complete({
-    addRows(matches) {
-      results = results.concat(matches);
+  completer.complete(
+    {
+      addRows(matches) {
+        results = results.concat(matches);
+      },
+      markCompleted() {
+        if (!results.length) {
+          callback([asToken(null, null, query, query)]);
+        } else {
+          callback(results.slice(0, MAX_RESULTS));
+        }
+      },
     },
-    markCompleted() {
-      if (!results.length)
-        callback([asToken(null, null, query, query)]);
-      else
-        callback(results.slice(0, MAX_RESULTS));
-    },
-  }, query);
+    query
+  );
 }
 
 let autoCompleteClasses = {
@@ -258,7 +291,7 @@ function setupAutocomplete(to, cc, bcc) {
     // Cleanup the mess left by tokenInput.
     let $parent = $(aInput).parent();
     $parent.empty();
-    $parent.append($("<input type=\"text\" id=\"" + aInput.substring(1) + "\" />"));
+    $parent.append($('<input type="text" id="' + aInput.substring(1) + '" />'));
     // Now we can start fresh.
     try {
       $(aInput).tokenInput(glodaAutocomplete, {
@@ -278,14 +311,15 @@ function setupAutocomplete(to, cc, bcc) {
     aData.forEach(function({ name, email }, i) {
       if (email) {
         let sep;
-        if (aData.length <= 1)
+        if (aData.length <= 1) {
           sep = "";
-        else if (i == aData.length - 2)
+        } else if (i == aData.length - 2) {
           sep = strings.get("sepAnd");
-        else if (i == aData.length - 1)
+        } else if (i == aData.length - 1) {
           sep = "";
-        else
+        } else {
           sep = strings.get("sepComma");
+        }
         let li = document.createElement("li");
         li.setAttribute("title", email);
         li.textContent = name;
@@ -301,8 +335,10 @@ function setupAutocomplete(to, cc, bcc) {
   fill("#cc", ".ccList", cc);
   fill("#bcc", ".bccList", bcc);
 
-  if (cc.length)
+  if (cc.length) {
     showCc();
-  if (bcc.length)
+  }
+  if (bcc.length) {
     showBcc();
+  }
 }

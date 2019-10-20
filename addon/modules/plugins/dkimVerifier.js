@@ -4,7 +4,9 @@
 
 var EXPORTED_SYMBOLS = [];
 
-const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   getMail3Pane: "resource://conversations/modules/stdlib/msgHdrUtils.js",
@@ -17,7 +19,10 @@ let Log = setupLogging("Conversations.Modules.DKIMVerifier");
 let hasDKIMVerifier = false;
 var AuthVerifier;
 try {
-  AuthVerifier = ChromeUtils.import("resource://dkim_verifier/AuthVerifier.jsm", null).AuthVerifier;
+  AuthVerifier = ChromeUtils.import(
+    "resource://dkim_verifier/AuthVerifier.jsm",
+    null
+  ).AuthVerifier;
   if (AuthVerifier.version.match(/^[0-9]+/)[0] === "1") {
     hasDKIMVerifier = true;
     Log.debug("DKIM Verifier plugin for Thunderbird Conversations loaded!");
@@ -25,7 +30,9 @@ try {
     Log.debug("DKIM Verifier has incompatible version.");
   }
 } catch (e) {
-  Log.debug("DKIM Verifier doesn't seem to be installed or has incompatible version.");
+  Log.debug(
+    "DKIM Verifier doesn't seem to be installed or has incompatible version."
+  );
 }
 
 if (hasDKIMVerifier) {
@@ -52,7 +59,7 @@ function setTooltip(aDomNode, status, warnings) {
   t_status.textContent = status;
   tooltip.appendChild(t_status);
 
-  if (warnings.length > 0) {
+  if (warnings.length) {
     let d = document.createElementNS("http://www.w3.org/1999/xhtml", "hr");
     tooltip.appendChild(d);
   }
@@ -74,20 +81,30 @@ function displayResult(result, aDomNode) {
 
   if (result.dkim[0].res_num <= 30) {
     aDomNode.classList.add("dkim-signed");
-    setTooltip(aDomNode, result.dkim[0].result_str, result.dkim[0].warnings_str);
+    setTooltip(
+      aDomNode,
+      result.dkim[0].result_str,
+      result.dkim[0].warnings_str
+    );
   }
 }
 
 let dkimVerifierHook = {
-  onMessageStreamed: function _dkimVerifierHook_onMessageStreamed(aMsgHdr, aDomNode/* , aMsgWindow, aMessage*/) {
+  onMessageStreamed: function _dkimVerifierHook_onMessageStreamed(
+    aMsgHdr,
+    aDomNode /* , aMsgWindow, aMessage*/
+  ) {
     "use strict";
 
-    AuthVerifier.verify(aMsgHdr).then(function(result) {
-      displayResult(result, aDomNode);
-    }, function(exception) {
-      Log.debug("Exception in dkimVerifierHook: " + exception);
-    });
- },
+    AuthVerifier.verify(aMsgHdr).then(
+      function(result) {
+        displayResult(result, aDomNode);
+      },
+      function(exception) {
+        Log.debug("Exception in dkimVerifierHook: " + exception);
+      }
+    );
+  },
 };
 
 if (hasDKIMVerifier) {

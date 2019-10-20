@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals PropTypes, React, ReactRedux, StringBundle */
+/* globals PropTypes, React */
 /* exported Attachments */
 
 class Attachment extends React.PureComponent {
@@ -53,46 +53,74 @@ class Attachment extends React.PureComponent {
 
   render() {
     const enablePreview = this.props.isPdf || this.props.maybeViewable;
-    const imgTitle =  enablePreview ?
-      this.props.strings.get("viewAttachment") : "";
+    const imgTitle = enablePreview
+      ? this.props.strings.get("viewAttachment")
+      : "";
     // TODO: Drag n drop
     // Due to "contextmenu". We probably should change this to use
     // the newer "onContextMenu".
     /* eslint-disable react/no-unknown-property */
     return (
-      <li className="clearfix hbox attachment"
-          contextmenu="attachmentMenu"
-          draggable="true">
+      <li
+        className="clearfix hbox attachment"
+        contextmenu="attachmentMenu"
+        draggable="true"
+      >
         <div className="attachmentThumb">
-          <img className={this.props.imgClass + (enablePreview ? " view-attachment" : "")}
-               src={this.props.thumb}
-               onClick={this.preview}
-               title={imgTitle} />
+          <img
+            className={
+              this.props.imgClass + (enablePreview ? " view-attachment" : "")
+            }
+            src={this.props.thumb}
+            onClick={this.preview}
+            title={imgTitle}
+          />
         </div>
         <div className="attachmentInfo align">
           <span className="filename">{this.props.name}</span>
           <span className="filesize">{this.props.formattedSize}</span>
           <div className="attachActions">
-            { this.props.isPdf &&
-              <a className="icon-link preview-attachment"
-                 title={this.props.strings.get("preview")}
-                 onClick={this.preview}>
-                <svg className="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
+            {this.props.isPdf && (
+              <a
+                className="icon-link preview-attachment"
+                title={this.props.strings.get("preview")}
+                onClick={this.preview}
+              >
+                <svg
+                  className="icon"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  xmlnsXlink="http://www.w3.org/1999/xlink"
+                >
                   <use xlinkHref="chrome://conversations/skin/material-icons.svg#visibility"></use>
                 </svg>
               </a>
-            }
-            <a className="icon-link download-attachment"
-                title={this.props.strings.get("download2")}
-                onClick={this.downloadAttachment}>
-              <svg className="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
+            )}
+            <a
+              className="icon-link download-attachment"
+              title={this.props.strings.get("download2")}
+              onClick={this.downloadAttachment}
+            >
+              <svg
+                className="icon"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlnsXlink="http://www.w3.org/1999/xlink"
+              >
                 <use xlinkHref="chrome://conversations/skin/material-icons.svg#file_download"></use>
               </svg>
             </a>
-            <a className="icon-link open-attachment"
-               title={this.props.strings.get("open")}
-               onClick={this.openAttachment}>
-              <svg className="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
+            <a
+              className="icon-link open-attachment"
+              title={this.props.strings.get("open")}
+              onClick={this.openAttachment}
+            >
+              <svg
+                className="icon"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlnsXlink="http://www.w3.org/1999/xlink"
+              >
                 <use xlinkHref="chrome://conversations/skin/material-icons.svg#search"></use>
               </svg>
             </a>
@@ -155,43 +183,54 @@ class Attachments extends React.PureComponent {
       <ul className="attachments">
         <div className="attachHeader">
           {this.props.attachmentsPlural}
-          <a className="icon-link download-all"
-             onClick={this.downloadAll}
-             title={this.props.strings.get("downloadAll2")}>
-            <svg className="icon" viewBox="0 0 24 24"
-                 xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
+          <a
+            className="icon-link download-all"
+            onClick={this.downloadAll}
+            title={this.props.strings.get("downloadAll2")}
+          >
+            <svg
+              className="icon"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+              xmlnsXlink="http://www.w3.org/1999/xlink"
+            >
               <use xlinkHref="chrome://conversations/skin/material-icons.svg#file_download"></use>
             </svg>
           </a>
-          { this.props.gallery &&
-            <a onClick={this.showGalleryView}
-               className="icon-link view-all"
-               title={this.props.strings.get("galleryView")}>
-              <svg className="icon" viewBox="0 0 24 24"
-                   xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
+          {this.props.gallery && (
+            <a
+              onClick={this.showGalleryView}
+              className="icon-link view-all"
+              title={this.props.strings.get("galleryView")}
+            >
+              <svg
+                className="icon"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlnsXlink="http://www.w3.org/1999/xlink"
+              >
                 <use xlinkHref="chrome://conversations/skin/material-icons.svg#photo_library"></use>
               </svg>
             </a>
-          }
-          {
-            this.props.attachments.map((attachment) =>
-              <Attachment
-                dispatch={this.props.dispatch}
-                key={attachment.anchor}
-                contentType={attachment.contentType}
-                isExternal={attachment.isExternal}
-                isPdf={attachment.isPdf}
-                formattedSize={attachment.formattedSize}
-                imgClass={attachment.imgClass}
-                msgUri={this.props.msgUri}
-                name={attachment.name}
-                size={attachment.size}
-                strings={this.props.strings}
-                thumb={attachment.thumb}
-                maybeViewable={attachment.maybeViewable}
-                url={attachment.url}/>
-            )
-          }
+          )}
+          {this.props.attachments.map(attachment => (
+            <Attachment
+              dispatch={this.props.dispatch}
+              key={attachment.anchor}
+              contentType={attachment.contentType}
+              isExternal={attachment.isExternal}
+              isPdf={attachment.isPdf}
+              formattedSize={attachment.formattedSize}
+              imgClass={attachment.imgClass}
+              msgUri={this.props.msgUri}
+              name={attachment.name}
+              size={attachment.size}
+              strings={this.props.strings}
+              thumb={attachment.thumb}
+              maybeViewable={attachment.maybeViewable}
+              url={attachment.url}
+            />
+          ))}
         </div>
       </ul>
     );

@@ -3,11 +3,18 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 var EXPORTED_SYMBOLS = [
-  "groupArray", "joinWordList", "iconForMimeType", "arrayEquals",
-  "topMail3Pane", "folderName", "openConversationInTabOrWindow",
+  "groupArray",
+  "joinWordList",
+  "iconForMimeType",
+  "arrayEquals",
+  "topMail3Pane",
+  "folderName",
+  "openConversationInTabOrWindow",
 ];
 
-const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   getMail3Pane: "resource://conversations/modules/stdlib/msgHdrUtils.js",
@@ -15,11 +22,14 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   StringBundle: "resource:///modules/StringBundle.js",
 });
 
-let strings = new StringBundle("chrome://conversations/locale/message.properties");
+let strings = new StringBundle(
+  "chrome://conversations/locale/message.properties"
+);
 
 function arrayEquals(a1, a2) {
-  if (a1.length != a2.length)
+  if (a1.length != a2.length) {
     return false;
+  }
 
   return a1.every((v, i) => {
     return v == a2[i];
@@ -50,10 +60,7 @@ function groupArray(aItems, aFn) {
 
 // Joins together names and format them as "John, Jane and Julie"
 function joinWordList(aElements, aInsertHtml) {
-  let wrap = aInsertHtml
-    ? x => "<span>" + x + "</span>"
-    : x => x
-  ;
+  let wrap = aInsertHtml ? x => "<span>" + x + "</span>" : x => x;
   let l = aElements.length;
   if (l == 0) {
     return "";
@@ -63,7 +70,9 @@ function joinWordList(aElements, aInsertHtml) {
 
   let hd = aElements.slice(0, l - 1);
   let tl = aElements[l - 1];
-  return hd.join(wrap(strings.get("sepComma"))) + wrap(strings.get("sepAnd")) + tl;
+  return (
+    hd.join(wrap(strings.get("sepComma"))) + wrap(strings.get("sepAnd")) + tl
+  );
 }
 
 let mapping = [
@@ -95,13 +104,13 @@ let fallbackMapping = [
 ];
 
 function iconForMimeType(aMimeType) {
-  let idx = mapping.findIndex(function([k ]) {
+  let idx = mapping.findIndex(function([k]) {
     return aMimeType == k;
   });
   if (idx != -1) {
     return mapping[idx][1] + ".svg";
   }
-  idx = fallbackMapping.findIndex(function([k ]) {
+  idx = fallbackMapping.findIndex(function([k]) {
     return aMimeType.startsWith(k);
   });
   if (idx != -1) {
@@ -121,8 +130,9 @@ function iconForMimeType(aMimeType) {
  *   a pointer to _any_ mail:3pane
  */
 function topMail3Pane(aObj) {
-  if (!aObj)
+  if (!aObj) {
     throw Error("Bad usage for topMail3Pane");
+  }
 
   let moveOut = function(w) {
     if (w.frameElement) {
@@ -132,12 +142,16 @@ function topMail3Pane(aObj) {
     return getMail3Pane();
   };
 
-  if ("_conversation" in aObj) // Message
+  if ("_conversation" in aObj) {
+    // Message
     return moveOut(aObj._conversation._htmlPane);
-  else if ("_htmlPane" in aObj) // Conversation
+  } else if ("_htmlPane" in aObj) {
+    // Conversation
     return moveOut(aObj._htmlPane);
-  else if ("_manager" in aObj) // Contact
+  } else if ("_manager" in aObj) {
+    // Contact
     return moveOut(aObj._domNode.ownerDocument.defaultView);
+  }
 
   // Standalone window, a tab, or in the htmlpane (common case)
   return aObj.top.opener || moveOut(aObj) || aObj.top;
@@ -159,10 +173,18 @@ function openConversationInTabOrWindow(aUrl) {
   let height = Math.min(window.screen.availHeight - 30, 1024);
   switch (Prefs.getInt("mail.openMessageBehavior")) {
     case 0:
-      window.open(aUrl, "_blank", "chrome,resizable,width=640,height=" + height);
+      window.open(
+        aUrl,
+        "_blank",
+        "chrome,resizable,width=640,height=" + height
+      );
       break;
     case 1:
-      window.open(aUrl, "conversations", "chrome,resizable,width=640,height=" + height);
+      window.open(
+        aUrl,
+        "conversations",
+        "chrome,resizable,width=640,height=" + height
+      );
       break;
     case 2:
       window.document.getElementById("tabmail").openTab("chromeTab", {

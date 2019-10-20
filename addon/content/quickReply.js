@@ -7,7 +7,9 @@
 
 /* global $, isQuickCompose, scrollNodeIntoView, Log:true, newComposeSessionByClick */
 
-const {isAccel} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
+const { isAccel } = ChromeUtils.import(
+  "resource://conversations/modules/stdlib/misc.js"
+);
 
 function makeEditable(aIframe, aMakeEditable) {
   // Setup the iframe to be editable in htmlmail mode (for blockquotes)
@@ -21,16 +23,24 @@ function makeEditable(aIframe, aMakeEditable) {
 }
 
 function showQuickReply() {
-  $(this).parent().addClass("noPad");
+  $(this)
+    .parent()
+    .addClass("noPad");
   $(this).addClass("selected");
-  $(this).siblings().addClass("invisible");
-  $(this).closest(".messageFooter").find(".footerActions").hide();
-  if (isQuickCompose)
+  $(this)
+    .siblings()
+    .addClass("invisible");
+  $(this)
+    .closest(".messageFooter")
+    .find(".footerActions")
+    .hide();
+  if (isQuickCompose) {
     $(".replyHeader, .replyFooter").show();
-  else
+  } else {
     setTimeout(function() {
       $(".replyHeader, .replyFooter").slideDown();
     }, 500);
+  }
 
   var textarea = $(this).find(".textarea");
   makeEditable(textarea.get(0), true);
@@ -48,7 +58,10 @@ function hideQuickReply() {
     $("ul.inputs").removeClass("noPad");
     $("ul.inputs li").removeClass("selected");
     $("ul.inputs li").removeClass("invisible");
-    $(".quickReply").closest(".messageFooter").find(".footerActions").show();
+    $(".quickReply")
+      .closest(".messageFooter")
+      .find(".footerActions")
+      .show();
 
     var textarea = $(".textarea.selected");
     makeEditable(textarea.get(0), false);
@@ -63,25 +76,25 @@ function hideQuickReply() {
 
 function registerQuickReplyEventListeners() {
   $("ul.inputs li.expand").click(function(event) {
-    if ($(this).hasClass("selected"))
+    if ($(this).hasClass("selected")) {
       return;
+    }
     showQuickReply.call(this);
     let type;
-    if ($(this).hasClass("reply"))
+    if ($(this).hasClass("reply")) {
       type = "reply";
-    else if ($(this).hasClass("replyAll"))
+    } else if ($(this).hasClass("replyAll")) {
       type = "replyAll";
-    else
+    } else {
       Log.assert(false, "There's only two type of textareas");
+    }
     Log.debug("New quick reply (event listener) →", type);
     newComposeSessionByClick(type);
   });
 
   // Autoresize sorta-thingy.
   let textarea = document.querySelector(".textarea");
-  let lineHeight = parseInt(
-    window.getComputedStyle(textarea).lineHeight
-  );
+  let lineHeight = parseInt(window.getComputedStyle(textarea).lineHeight);
   let getHeight = x => parseInt(window.getComputedStyle(x).height);
   $(".quickReply .textarea").keypress(function(event) {
     if (event.which == KeyEvent.DOM_VK_RETURN) {
@@ -99,18 +112,20 @@ function registerQuickReplyEventListeners() {
         // We only grow the textarea if it doesn't exceed half of the available
         // vertical height.
         if (totalTargetHeight <= availableHeight / 2) {
-          Log.debug("Growing to", (getHeight(textarea) + lineHeight) + "px");
-          textarea.style.height = (getHeight(textarea) + lineHeight) + "px";
+          Log.debug("Growing to", getHeight(textarea) + lineHeight + "px");
+          textarea.style.height = getHeight(textarea) + lineHeight + "px";
 
           // Scroll if we grew the reply area into overflow
           let pageTop = window.pageYOffset;
           let pageBottom = pageTop + window.innerHeight;
-          let textareaBottom = $(".textarea").offset().top + $(".textarea").outerHeight();
+          let textareaBottom =
+            $(".textarea").offset().top + $(".textarea").outerHeight();
           // 20px for good measure...
           let diff = pageBottom - textareaBottom - 20;
           Log.debug(pageBottom, textareaBottom, diff);
-          if (diff < 0)
+          if (diff < 0) {
             window.scrollTo(0, pageTop - diff);
+          }
         }
       }
       Log.debug("---");
@@ -123,12 +138,15 @@ function registerQuickReplyDocumentCommands() {
     let w = iframe.contentWindow;
     let doc = iframe.contentDocument;
     w.addEventListener("keypress", function(event) {
-      if (isAccel(event) && event.which == "b".charCodeAt(0))
+      if (isAccel(event) && event.which == "b".charCodeAt(0)) {
         doc.execCommand("bold");
-      if (isAccel(event) && event.which == "i".charCodeAt(0))
+      }
+      if (isAccel(event) && event.which == "i".charCodeAt(0)) {
         doc.execCommand("italic");
-      if (isAccel(event) && event.which == "u".charCodeAt(0))
+      }
+      if (isAccel(event) && event.which == "u".charCodeAt(0)) {
         doc.execCommand("underline");
+      }
     });
   }
 }

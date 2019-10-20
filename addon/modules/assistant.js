@@ -1,14 +1,19 @@
 var EXPORTED_SYMBOLS = ["Customizations"];
 
 const nsMsgFolderFlags_SentMail = 0x00000200;
-const nsMsgFolderFlags_Inbox    = 0x00001000;
-const nsMsgFolderFlags_Offline  = 0x08000000;
-const msgAccountManager = Cc["@mozilla.org/messenger/account-manager;1"]
-                            .getService(Ci.nsIMsgAccountManager);
+const nsMsgFolderFlags_Inbox = 0x00001000;
+const nsMsgFolderFlags_Offline = 0x08000000;
+const msgAccountManager = Cc[
+  "@mozilla.org/messenger/account-manager;1"
+].getService(Ci.nsIMsgAccountManager);
 
-const kPrefInt = 0, kPrefBool = 1, kPrefChar = 42;
+const kPrefInt = 0,
+  kPrefBool = 1,
+  kPrefChar = 42;
 
-const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   getMail3Pane: "resource://conversations/modules/stdlib/msgHdrUtils.js",
@@ -20,25 +25,27 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   VirtualFolderHelper: "resource:///modules/virtualFolderWrapper.js",
 });
 
-const {dumpCallStack, setupLogging} = ChromeUtils.import("resource://conversations/modules/log.js");
+const { dumpCallStack, setupLogging } = ChromeUtils.import(
+  "resource://conversations/modules/log.js"
+);
 
 let Log = setupLogging("Conversations.Assistant");
 
 // Thanks, Andrew!
 function getSmartFolderNamed(aFolderName) {
-  let acctMgr = Cc["@mozilla.org/messenger/account-manager;1"]
-                  .getService(Ci.nsIMsgAccountManager);
+  let acctMgr = Cc["@mozilla.org/messenger/account-manager;1"].getService(
+    Ci.nsIMsgAccountManager
+  );
   let smartServer = acctMgr.FindServer("nobody", "smart mailboxes", "none");
   let smartInbox = null;
   try {
-   smartInbox = smartServer.rootFolder.getChildNamed(aFolderName);
+    smartInbox = smartServer.rootFolder.getChildNamed(aFolderName);
   } catch (e) {
     Log.debug(e);
     Log.debug("Is there only one account?");
   }
   return smartInbox;
 }
-
 
 function SimpleCustomization(aDesiredValue, aGetter, aSetter) {
   this.desiredValue = aDesiredValue;
@@ -60,7 +67,6 @@ SimpleCustomization.prototype = {
     }
   },
 };
-
 
 function PrefCustomization({ name, type, value }) {
   this.type = type;
@@ -99,9 +105,10 @@ PrefCustomization.prototype = {
 
 MixIn(PrefCustomization, SimpleCustomization.prototype);
 
-
 function MultipleCustomization(aParams) {
-  this.customizations = aParams ? aParams.map(p => new PrefCustomization(p)) : [];
+  this.customizations = aParams
+    ? aParams.map(p => new PrefCustomization(p))
+    : [];
 }
 
 MultipleCustomization.prototype = {
@@ -134,24 +141,34 @@ var Customizations = {
   ]),
 
   actionAttachmentsInline: new PrefCustomization({
-    name: "mail.inline_attachments", type: kPrefBool, value: false,
+    name: "mail.inline_attachments",
+    type: kPrefBool,
+    value: false,
   }),
 
   actionDontExpand: new PrefCustomization({
-    name: "mailnews.scroll_to_new_message", type: kPrefBool, value: false,
+    name: "mailnews.scroll_to_new_message",
+    type: kPrefBool,
+    value: false,
   }),
 
   actionEnableGloda: new PrefCustomization({
-    name: "mailnews.database.global.indexer.enabled", type: kPrefBool, value: true,
+    name: "mailnews.database.global.indexer.enabled",
+    type: kPrefBool,
+    value: true,
   }),
 
-  actionEnsureMessagePaneVisible:
-    new SimpleCustomization("open", function _getter() {
+  actionEnsureMessagePaneVisible: new SimpleCustomization(
+    "open",
+    function _getter() {
       return eid("threadpane-splitter").getAttribute("state");
-    }, function _setter(aValue) {
-      if (aValue != this.get())
+    },
+    function _setter(aValue) {
+      if (aValue != this.get()) {
         getMail3Pane().goDoCommand("cmd_toggleMessagePane");
-    }),
+      }
+    }
+  ),
 
   actionSetupView: {
     install() {
@@ -177,12 +194,13 @@ var Customizations = {
       state.ftvMode = ftv.mode;
       if (mainWindow.gFolderDisplay.displayedFolder) {
         state.initialFolder.uri = mainWindow.gFolderDisplay.displayedFolder.URI;
-        if (mainWindow.gFolderDisplay.view.showUnthreaded)
+        if (mainWindow.gFolderDisplay.view.showUnthreaded) {
           state.initialFolder.show = 0;
-        else if (mainWindow.gFolderDisplay.view.showThreaded)
+        } else if (mainWindow.gFolderDisplay.view.showThreaded) {
           state.initialFolder.show = 1;
-        else if (mainWindow.gFolderDisplay.view.showGroupedBySort)
+        } else if (mainWindow.gFolderDisplay.view.showGroupedBySort) {
           state.initialFolder.show = 2;
+        }
       }
 
       // start customizing things
@@ -191,8 +209,9 @@ var Customizations = {
       let smartInbox = getSmartFolderNamed("Inbox");
 
       // Might not be created yet if only one account
-      if (smartInbox)
+      if (smartInbox) {
         ftv.selectFolder(smartInbox);
+      }
 
       let moveOn = function() {
         let tabmail = mainWindow.document.getElementById("tabmail");
@@ -215,7 +234,11 @@ var Customizations = {
       };
       let i = 0;
       let waitForIt = function() {
-        if (smartInbox && mainWindow.gFolderDisplay.displayedFolder != smartInbox && i++ < 10) {
+        if (
+          smartInbox &&
+          mainWindow.gFolderDisplay.displayedFolder != smartInbox &&
+          i++ < 10
+        ) {
           mainWindow.setTimeout(waitForIt, 150);
         } else {
           moveOn();
@@ -227,18 +250,29 @@ var Customizations = {
       return state;
     },
 
-    uninstall({ ftvMode, senderCol, unreadCol, correspondentCol, initialFolder }) {
-      if (eid("senderCol").getAttribute("hidden") == "true")
+    uninstall({
+      ftvMode,
+      senderCol,
+      unreadCol,
+      correspondentCol,
+      initialFolder,
+    }) {
+      if (eid("senderCol").getAttribute("hidden") == "true") {
         eid("senderCol").setAttribute("hidden", senderCol);
-      if (eid("unreadCol").getAttribute("hidden") == "true")
+      }
+      if (eid("unreadCol").getAttribute("hidden") == "true") {
         eid("unreadCol").setAttribute("hidden", unreadCol);
-      if (eid("correspondentCol").getAttribute("hidden") == "true")
+      }
+      if (eid("correspondentCol").getAttribute("hidden") == "true") {
         eid("correspondentCol").setAttribute("hidden", correspondentCol);
+      }
       let mainWindow = getMail3Pane();
       mainWindow.gFolderTreeView.mode = ftvMode;
 
       if (initialFolder.uri) {
-        mainWindow.gFolderDisplay.show(MailUtils.getFolderForURI(initialFolder.uri));
+        mainWindow.gFolderDisplay.show(
+          MailUtils.getFolderForURI(initialFolder.uri)
+        );
         switch (initialFolder.show) {
           case 0:
             mainWindow.gFolderDisplay.view.showUnthreaded = true;
@@ -262,29 +296,45 @@ var Customizations = {
       //  already searches.
       let smartInbox = getSmartFolderNamed("Inbox");
 
-      if (!smartInbox)
+      if (!smartInbox) {
         return changedFolders;
+      }
 
       let vFolder = VirtualFolderHelper.wrapVirtualFolder(smartInbox);
       let searchFolders = {};
       for (let folder of vFolder.searchFolders) {
-        Log.debug("Folder", folder.folderURL, "is in the unified inbox already");
+        Log.debug(
+          "Folder",
+          folder.folderURL,
+          "is in the unified inbox already"
+        );
         searchFolders[folder.folderURL] = true;
       }
       let extraSearchFolders = [];
 
       // Go through all accounts and through all folders, and add each one
       //  that's either an inbox or a sent folder to the global inbox.
-      for (let account of fixIterator(msgAccountManager.accounts, Ci.nsIMsgAccount)) {
-        if (!account.incomingServer)
+      for (let account of fixIterator(
+        msgAccountManager.accounts,
+        Ci.nsIMsgAccount
+      )) {
+        if (!account.incomingServer) {
           continue;
+        }
 
         let rootFolder = account.incomingServer.rootFolder;
         let allFolders = rootFolder.descendants;
         for (let folder of fixIterator(allFolders, Ci.nsIMsgFolder)) {
-          if ((folder.getFlag(nsMsgFolderFlags_SentMail) || folder.getFlag(nsMsgFolderFlags_Inbox))
-              && !searchFolders[folder.folderURL]) {
-            Log.debug("Searching folder", folder.folderURL, "inside Global Inbox");
+          if (
+            (folder.getFlag(nsMsgFolderFlags_SentMail) ||
+              folder.getFlag(nsMsgFolderFlags_Inbox)) &&
+            !searchFolders[folder.folderURL]
+          ) {
+            Log.debug(
+              "Searching folder",
+              folder.folderURL,
+              "inside Global Inbox"
+            );
             extraSearchFolders.push(folder);
             changedFolders[folder.URI] = true;
           }
@@ -303,8 +353,9 @@ var Customizations = {
       //  here.
       let smartInbox = getSmartFolderNamed("Inbox");
 
-      if (!smartInbox)
+      if (!smartInbox) {
         return;
+      }
 
       let vFolder = VirtualFolderHelper.wrapVirtualFolder(smartInbox);
       vFolder.searchFolders = vFolder.searchFolders.filter(
@@ -313,7 +364,6 @@ var Customizations = {
       vFolder.cleanUpMessageDatabase();
       msgAccountManager.saveVirtualFolders();
     },
-
   },
 
   actionOfflineDownload: {
@@ -321,9 +371,13 @@ var Customizations = {
       let changedFolders = [];
       let changedServers = [];
 
-      for (let account of fixIterator(msgAccountManager.accounts, Ci.nsIMsgAccount)) {
-        if (!account.incomingServer)
+      for (let account of fixIterator(
+        msgAccountManager.accounts,
+        Ci.nsIMsgAccount
+      )) {
+        if (!account.incomingServer) {
           continue;
+        }
 
         let isImap;
         try {
@@ -336,8 +390,9 @@ var Customizations = {
             throw e;
           }
         }
-        if (!isImap)
+        if (!isImap) {
           continue;
+        }
 
         // Don't forget to restore the pref properly!
         if (!account.incomingServer.offlineDownload) {
@@ -347,8 +402,11 @@ var Customizations = {
         let rootFolder = account.incomingServer.rootFolder;
         let allFolders = rootFolder.descendants;
         for (let folder of fixIterator(allFolders, Ci.nsIMsgFolder)) {
-          if ((folder.getFlag(nsMsgFolderFlags_SentMail) || folder.getFlag(nsMsgFolderFlags_Inbox))
-              && !folder.getFlag(nsMsgFolderFlags_Offline)) {
+          if (
+            (folder.getFlag(nsMsgFolderFlags_SentMail) ||
+              folder.getFlag(nsMsgFolderFlags_Inbox)) &&
+            !folder.getFlag(nsMsgFolderFlags_Offline)
+          ) {
             Log.debug("Marking folder", folder.folderURL, "for offline use");
             folder.setFlag(nsMsgFolderFlags_Offline);
             changedFolders.push(folder.URI);
@@ -362,8 +420,9 @@ var Customizations = {
     uninstall([aChangedFolders, aChangedServers]) {
       for (let uri of aChangedFolders) {
         let folder = MailUtils.getFolderForURI(uri);
-        if (folder)
+        if (folder) {
           folder.clearFlag(nsMsgFolderFlags_Offline);
+        }
       }
       for (let aUri of aChangedServers) {
         let uri = Services.io.newURI(aUri);

@@ -13,24 +13,35 @@
 
 "use strict";
 
-var {
-  msgHdrsArchive, msgHdrIsArchive, msgHdrGetUri,
-} = ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
-var {sendMessage} = ChromeUtils.import("resource://conversations/modules/stdlib/send.js");
-var {
-  composeInIframe, htmlToPlainText, replyAllParams,
-} = ChromeUtils.import("resource://conversations/modules/stdlib/compose.js");
-var {getHooks} = ChromeUtils.import("resource://conversations/modules/hook.js");
-var {fixIterator} = ChromeUtils.import("resource:///modules/iteratorUtils.jsm");
-var {MailUtils} = ChromeUtils.import("resource:///modules/MailUtils.jsm");
-var {parseMimeLine} =
-  ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
-var {defaultPhotoURI} = ChromeUtils.import("resource://conversations/modules/contact.js");
-
+var { msgHdrsArchive, msgHdrIsArchive, msgHdrGetUri } = ChromeUtils.import(
+  "resource://conversations/modules/stdlib/msgHdrUtils.js"
+);
+var { sendMessage } = ChromeUtils.import(
+  "resource://conversations/modules/stdlib/send.js"
+);
+var { composeInIframe, htmlToPlainText, replyAllParams } = ChromeUtils.import(
+  "resource://conversations/modules/stdlib/compose.js"
+);
+var { getHooks } = ChromeUtils.import(
+  "resource://conversations/modules/hook.js"
+);
+var { fixIterator } = ChromeUtils.import(
+  "resource:///modules/iteratorUtils.jsm"
+);
+var { MailUtils } = ChromeUtils.import("resource:///modules/MailUtils.jsm");
+var { parseMimeLine } = ChromeUtils.import(
+  "resource://conversations/modules/stdlib/misc.js"
+);
+var { defaultPhotoURI } = ChromeUtils.import(
+  "resource://conversations/modules/contact.js"
+);
 
 Log = setupLogging("Conversations.Stub.Compose");
 
-var {SimpleStorage} = ChromeUtils.import("resource://conversations/modules/stdlib/SimpleStorage.js", {});
+var { SimpleStorage } = ChromeUtils.import(
+  "resource://conversations/modules/stdlib/SimpleStorage.js",
+  {}
+);
 
 const SIMPLE_STORAGE_TABLE_NAME = "conversations";
 
@@ -92,8 +103,9 @@ function registerQuickReply() {
         let listeners = mainWindow.Conversations.draftListeners[id] || [];
         for (let listener of listeners) {
           let obj = listener.get();
-          if (!obj || obj == this)
+          if (!obj || obj == this) {
             continue;
+          }
           obj.onDraftChanged(aTopic);
         }
         // While we're at it, cleanup...
@@ -159,11 +171,15 @@ async function newComposeSessionByDraftIf() {
 // The type parameter is determined by the event listeners (see quickReply.js)
 // as they know whether the user clicked reply or reply all.
 function newComposeSessionByClick(type) {
-  Log.assert(!gComposeSession,
-    "We should only get here if there's no compose session already");
+  Log.assert(
+    !gComposeSession,
+    "We should only get here if there's no compose session already"
+  );
   Log.debug("Setting up the initial quick reply compose parameters...");
   try {
-    gComposeSession = createComposeSession(x => x.reply(getMessageForQuickReply(), type));
+    gComposeSession = createComposeSession(x =>
+      x.reply(getMessageForQuickReply(), type)
+    );
     // This could probably be refined, like only considering we started editing
     // if we modified the body and/or the composition fields.
     startedEditing(true);
@@ -175,14 +191,12 @@ function newComposeSessionByClick(type) {
 }
 
 function revealCompositionFields() {
-  document.querySelector(".quickReply")
-    .classList.add("expand");
+  document.querySelector(".quickReply").classList.add("expand");
   $(".quickReplyRecipients").show();
 }
 
 function hideCompositionFields() {
-  document.querySelector(".quickReply")
-    .classList.remove("expand");
+  document.querySelector(".quickReply").classList.remove("expand");
   $(".quickReplyRecipients").hide();
 }
 
@@ -217,12 +231,17 @@ function addAttachment() {
 
 function editFields(aFocusId) {
   $(".quickReplyRecipients").addClass("edit");
-  $("#" + aFocusId).next().find(".token-input-input-token-facebook input").last().focus();
+  $("#" + aFocusId)
+    .next()
+    .find(".token-input-input-token-facebook input")
+    .last()
+    .focus();
 }
 
 function confirmDiscard(event) {
-  if (!startedEditing() || confirm(strings.get("confirmDiscard")))
+  if (!startedEditing() || confirm(strings.get("confirmDiscard"))) {
     onDiscard().catch(Cu.reportError);
+  }
 }
 
 async function onDiscard(event) {
@@ -252,8 +271,9 @@ async function onDiscard(event) {
 async function onSave(k) {
   // First codepath, we ain't got no nothing to save.
   if (!startedEditing()) {
-    if (k)
+    if (k) {
       k();
+    }
     return;
   }
 
@@ -272,8 +292,9 @@ async function onSave(k) {
     });
     gDraftListener.notifyDraftChanged("modified");
   }
-  if (k)
+  if (k) {
     k();
+  }
 }
 
 // ----- The whole composition session and related actions...
@@ -294,12 +315,13 @@ function getActiveEditor() {
   if (gComposeSession) {
     gComposeSession.match({
       reply(_, aReplyType) {
-        if (aReplyType == "reply")
+        if (aReplyType == "reply") {
           textarea = document.querySelector("li.reply .textarea");
-        else if (aReplyType == "replyAll")
+        } else if (aReplyType == "replyAll") {
           textarea = document.querySelector("li.replyAll .textarea");
-        else
+        } else {
           Log.assert(false, "Unknown reply type");
+        }
       },
 
       new() {
@@ -330,11 +352,13 @@ function createComposeSession(what) {
   // Do that now so that it doesn't have to be implemented by each compose
   // session type.
   if (Prefs.getBool("mail.spellcheck.inline")) {
-    for (let elt of document.getElementsByTagName("textarea"))
+    for (let elt of document.getElementsByTagName("textarea")) {
       elt.setAttribute("spellcheck", true);
+    }
   } else {
-    for (let elt of document.getElementsByTagName("textarea"))
+    for (let elt of document.getElementsByTagName("textarea")) {
       elt.setAttribute("spellcheck", false);
+    }
   }
   return new ComposeSession(what);
 }
@@ -375,10 +399,16 @@ function ComposeSession(match) {
   };
   this.stripSignatureIfNeeded = function() {
     let w = getActiveEditor().node.contentWindow;
-    for (let sig of w.document.querySelectorAll("blockquote[type=cite] .moz-signature"))
+    for (let sig of w.document.querySelectorAll(
+      "blockquote[type=cite] .moz-signature"
+    )) {
       sig.classList.add("moz-quoted-signature");
-    for (let sig of w.document.querySelectorAll(".moz-signature:not(.moz-quoted-signature)"))
+    }
+    for (let sig of w.document.querySelectorAll(
+      ".moz-signature:not(.moz-quoted-signature)"
+    )) {
       sig.remove(sig);
+    }
   };
 
   // Go!
@@ -391,14 +421,15 @@ function ComposeSession(match) {
 }
 
 ComposeSession.prototype = {
-
   /* This function is called when you click on the small arrows in the quick reply next to the email address
    * you're using  for sending the message. The effect is that we cycle through the list of available identities
    * for sending that email. dir is either 1 or -1.
    */
   cycleSender(dir) {
     let self = this;
-    let index = getIdentities().findIndex((ident) => ident.identity == self.params.identity);
+    let index = getIdentities().findIndex(
+      ident => ident.identity == self.params.identity
+    );
     index = (index + dir + getIdentities().length) % getIdentities().length;
     this.params.identity = getIdentities()[index].identity;
     this.senderNameElem.text(this.params.identity.email);
@@ -432,15 +463,19 @@ ComposeSession.prototype = {
       reply(aMessage, aReplyType) {
         let aMsgHdr = aMessage._msgHdr;
         let compType;
-        if (aReplyType == "reply")
+        if (aReplyType == "reply") {
           compType = Ci.nsIMsgCompType.ReplyToSender;
-        else if (aReplyType == "replyAll")
+        } else if (aReplyType == "replyAll") {
           compType = Ci.nsIMsgCompType.ReplyAll;
-        else
+        } else {
           Log.assert(false, "Unknown reply type");
+        }
         // Standard procedure for finding which identity to send with, as per
         //  http://mxr.mozilla.org/comm-central/source/mail/base/content/mailCommands.js#210
-        let suggestedIdentity = MailUtils.getIdentityForHeader(aMsgHdr, compType);
+        let suggestedIdentity = MailUtils.getIdentityForHeader(
+          aMsgHdr,
+          compType
+        );
         identity = suggestedIdentity || getDefaultIdentity().identity;
         self.setupDone();
       },
@@ -450,16 +485,20 @@ ComposeSession.prototype = {
         //  identifies the identity. We have a fallback plan in case the user
         //  has deleted the identity in-between (sounds unlikely, but who
         //  knows?).
-        identity = getIdentityForEmail(from).identity || getDefaultIdentity().identity;
+        identity =
+          getIdentityForEmail(from).identity || getDefaultIdentity().identity;
         self.setupDone();
       },
 
       new() {
         // Do some work to figure what the "right" identity is for us.
         identity = getDefaultIdentity().identity;
-        let selectedFolder = topMail3Pane(window).gFolderTreeView.getSelectedFolders()[0];
+        let selectedFolder = topMail3Pane(
+          window
+        ).gFolderTreeView.getSelectedFolders()[0];
         if (selectedFolder) {
-          identity = selectedFolder.customIdentity ||
+          identity =
+            selectedFolder.customIdentity ||
             topMail3Pane(window).getIdentityForServer(selectedFolder.server) ||
             identity;
         }
@@ -482,9 +521,10 @@ ComposeSession.prototype = {
       },
 
       draft({ msgUri }) {
-        let last = (a) => a[a.length - 1];
+        let last = a => a[a.length - 1];
         let msgHdr = msgUriToMsgHdr(msgUri);
-        self.params.msgHdr = msgHdr || last(Conversations.currentConversation.msgHdrs);
+        self.params.msgHdr =
+          msgHdr || last(Conversations.currentConversation.msgHdrs);
         self.params.subject = "Re: " + self.params.msgHdr.mime2DecodedSubject;
         self.setupDone();
       },
@@ -508,16 +548,21 @@ ComposeSession.prototype = {
     let msgHdr = this.params.msgHdr;
     let defaultCc = "";
     let defaultBcc = "";
-    if (identity.doCc)
+    if (identity.doCc) {
       defaultCc = identity.doCcList || "";
-    if (identity.doBcc)
+    }
+    if (identity.doBcc) {
       defaultBcc = identity.doBccList || "";
+    }
 
     let mergeDefault = function(aList, aDefault) {
-      if (aDefault)
+      if (aDefault) {
         aDefault = aDefault.replace(/\s/g, "");
-      if (!aDefault) // "" evaluates to false
+      }
+      if (!aDefault) {
+        // "" evaluates to false
         return aList;
+      }
       for (let email of aDefault.split(/,/)) {
         if (!aList.some(x => x.email == email)) {
           aList.push(asToken(null, null, email, null));
@@ -529,9 +574,15 @@ ComposeSession.prototype = {
     switch (aMode) {
       case "replyAll": {
         replyAllParams(identity, msgHdr, function(params) {
-          let to = params.to.map(([name, email]) => asToken(null, name, email, null));
-          let cc = params.cc.map(([name, email]) => asToken(null, name, email, null));
-          let bcc = params.bcc.map(([name, email]) => asToken(null, name, email, null));
+          let to = params.to.map(([name, email]) =>
+            asToken(null, name, email, null)
+          );
+          let cc = params.cc.map(([name, email]) =>
+            asToken(null, name, email, null)
+          );
+          let bcc = params.bcc.map(([name, email]) =>
+            asToken(null, name, email, null)
+          );
           cc = mergeDefault(cc, defaultCc);
           bcc = mergeDefault(bcc, defaultBcc);
           setupAutocomplete(to, cc, bcc);
@@ -561,7 +612,9 @@ ComposeSession.prototype = {
         let cc = mergeDefault([], defaultCc);
         let bcc = mergeDefault([], defaultBcc);
         replyAllParams(identity, msgHdr, function(params) {
-          let to = params.to.map(([name, email]) => asToken(null, name, email, null));
+          let to = params.to.map(([name, email]) =>
+            asToken(null, name, email, null)
+          );
           setupAutocomplete(to, cc, bcc);
           k && k(params.to.length + params.cc.length + params.bcc.length);
         });
@@ -624,9 +677,10 @@ ComposeSession.prototype = {
         let aMsgHdr = aMessage._msgHdr;
         // Can't use getActiveEditor() at this stage because gComposeSession
         // hasn't been set yet.
-        let iframe = aReplyType == "reply" ?
-          document.querySelector("li.reply .textarea") :
-          document.querySelector("li.replyAll .textarea");
+        let iframe =
+          aReplyType == "reply"
+            ? document.querySelector("li.reply .textarea")
+            : document.querySelector("li.replyAll .textarea");
         composeInIframe(iframe, {
           msgHdr: aMsgHdr,
           compType: Ci.nsIMsgCompType.ReplyAll,
@@ -661,8 +715,15 @@ ComposeSession.prototype = {
       };
       for (let h of getHooks()) {
         try {
-          if (typeof(h.onComposeSessionChanged) == "function")
-            h.onComposeSessionChanged(this, getMessageForQuickReply(), recipients, getActiveEditor(), window);
+          if (typeof h.onComposeSessionChanged == "function") {
+            h.onComposeSessionChanged(
+              this,
+              getMessageForQuickReply(),
+              recipients,
+              getActiveEditor(),
+              window
+            );
+          }
         } catch (e) {
           Log.warn("Plugin returned an error:", e);
           dumpCallStack(e);
@@ -682,36 +743,51 @@ ComposeSession.prototype = {
     }
 
     let deliverMode;
-    if (Services.io.offline)
+    if (Services.io.offline) {
       deliverMode = Ci.nsIMsgCompDeliverMode.Later;
-    else if (Prefs.getBool("mailnews.sendInBackground"))
+    } else if (Prefs.getBool("mailnews.sendInBackground")) {
       deliverMode = Ci.nsIMsgCompDeliverMode.Background;
-    else
+    } else {
       deliverMode = Ci.nsIMsgCompDeliverMode.Now;
+    }
 
     let compType;
-    if (isQuickCompose)
+    if (isQuickCompose) {
       compType = Ci.nsIMsgCompType.New;
-    else if (document.getElementById("forward-radio").checked)
+    } else if (document.getElementById("forward-radio").checked) {
       compType = Ci.nsIMsgCompType.ForwardInline;
-    else
-      compType =  Ci.nsIMsgCompType.ReplyAll; // ReplyAll, Reply... ends up the same
+    } else {
+      compType = Ci.nsIMsgCompType.ReplyAll;
+    } // ReplyAll, Reply... ends up the same
 
-    let [to, cc, bcc] = ["to", "cc", "bcc"].map(x => JSON.parse($("#" + x).val()));
+    let [to, cc, bcc] = ["to", "cc", "bcc"].map(x =>
+      JSON.parse($("#" + x).val())
+    );
 
-    let sendStatus = { };
+    let sendStatus = {};
     for (let priority of ["_early", "", "_canceled"]) {
       for (let h of getHooks()) {
         try {
-          if ((typeof(h["onMessageBeforeSendOrPopout" + priority]) == "function") && (priority != "_canceled" || sendStatus.canceled)) {
-            let newSendStatus = h["onMessageBeforeSendOrPopout" + priority]({
+          if (
+            typeof h["onMessageBeforeSendOrPopout" + priority] == "function" &&
+            (priority != "_canceled" || sendStatus.canceled)
+          ) {
+            let newSendStatus = h["onMessageBeforeSendOrPopout" + priority](
+              {
                 params: self.params,
                 to,
                 cc,
                 bcc,
-              }, ed, sendStatus, popOut, self.attachmentList, window);
-            if (priority != "_canceled")
+              },
+              ed,
+              sendStatus,
+              popOut,
+              self.attachmentList,
+              window
+            );
+            if (priority != "_canceled") {
               sendStatus = newSendStatus;
+            }
           }
         } catch (e) {
           Log.warn("Plugin returned an error:", e);
@@ -740,7 +816,8 @@ ComposeSession.prototype = {
       identity = self._fakeIdentity;
     }
 
-    return sendMessage({
+    return sendMessage(
+      {
         urls,
         identity,
         to: to.join(","),
@@ -750,32 +827,38 @@ ComposeSession.prototype = {
         securityInfo: sendStatus.securityInfo,
         otherRandomHeaders: self.params.otherRandomHeaders,
         attachments: self.attachmentList.attachments,
-      }, {
+      },
+      {
         compType,
         deliverType: deliverMode,
-      }, { match(x) {
-        x.editor(ed.node);
-      }}, {
+      },
+      {
+        match(x) {
+          x.editor(ed.node);
+        },
+      },
+      {
         progressListener,
         sendListener,
-        stateListener: createStateListener(self,
+        stateListener: createStateListener(
+          self,
           Conversations.currentConversation.msgHdrs,
           Conversations.currentConversation.id
         ),
-      }, {
+      },
+      {
         popOut,
         archive: self.archive,
-      });
+      }
+    );
   },
 };
 
 // Stolen from MsgComposeCommands.js
 
-function nsAttachmentOpener() {
-}
+function nsAttachmentOpener() {}
 
 nsAttachmentOpener.prototype = {
-
   QueryInterface: ChromeUtils.generateQI([
     Ci.nsIURIContentListener,
     Ci.nsIInterfaceRequestor,
@@ -818,8 +901,14 @@ function AttachmentList() {
 
 AttachmentList.prototype = {
   add() {
-    let filePicker = Cc["@mozilla.org/filepicker;1"].createInstance(Ci.nsIFilePicker);
-    filePicker.init(window, strings.get("attachFiles"), Ci.nsIFilePicker.modeOpenMultiple);
+    let filePicker = Cc["@mozilla.org/filepicker;1"].createInstance(
+      Ci.nsIFilePicker
+    );
+    filePicker.init(
+      window,
+      strings.get("attachFiles"),
+      Ci.nsIFilePicker.modeOpenMultiple
+    );
     let self = this;
     filePicker.open(function(rv) {
       if (rv != Ci.nsIFilePicker.returnOK) {
@@ -847,7 +936,9 @@ AttachmentList.prototype = {
       if (url) {
         let channel = Services.io.newChannelFromURI(url);
         if (channel) {
-          let uriLoader = Cc["@mozilla.org/uriloader;1"].getService(Ci.nsIURILoader);
+          let uriLoader = Cc["@mozilla.org/uriloader;1"].getService(
+            Ci.nsIURILoader
+          );
           uriLoader.openURI(channel, true, new nsAttachmentOpener());
         }
       }
@@ -860,17 +951,21 @@ AttachmentList.prototype = {
   },
 
   addWithData(aData) {
-    let msgAttachment = Cc["@mozilla.org/messengercompose/attachment;1"]
-                        .createInstance(Ci.nsIMsgAttachment);
+    let msgAttachment = Cc[
+      "@mozilla.org/messengercompose/attachment;1"
+    ].createInstance(Ci.nsIMsgAttachment);
     msgAttachment.url = aData.url;
-    if (aData.size != undefined)
+    if (aData.size != undefined) {
       msgAttachment.size = aData.size;
+    }
     msgAttachment.name = aData.name || strings.get("attachment");
     this._attachments.push(msgAttachment);
 
     this._populateUI(msgAttachment, {
       name: aData.name || strings.get("attachment"),
-      size: aData.size ? topMail3Pane(window).messenger.formatFileSize(aData.size) : strings.get("sizeUnknown"),
+      size: aData.size
+        ? topMail3Pane(window).messenger.formatFileSize(aData.size)
+        : strings.get("sizeUnknown"),
       url: aData.url,
     });
   },
@@ -883,7 +978,11 @@ AttachmentList.prototype = {
   },
 
   save() {
-    return this._attachments.map(x => ({ name: x.name, size: x.size, url: x.url }));
+    return this._attachments.map(x => ({
+      name: x.name,
+      size: x.size,
+      url: x.url,
+    }));
   },
 
   get attachments() {
@@ -899,7 +998,7 @@ function attachmentDataFromDragData(event) {
   // Log.debug("file", fileData, "url", urlData, "message", messageData);
 
   if (fileData || urlData || messageData) {
-     /* if (fileData) {
+    /* if (fileData) {
       // I don't understand how this is supposed to work since the newer
       // DataTransfer API doesn't allow putting nsIFiles in drag data...
       let fileHandler = Services.io.getProtocolHandler("file").QueryInterface(Ci.nsIFileProtocolHandler);
@@ -907,27 +1006,30 @@ function attachmentDataFromDragData(event) {
       url = fileHandler.getURLSpecFromFile(fileData);
     } else */
     if (messageData) {
-      size = topMail3Pane(window).messenger
-              .messageServiceFromURI(messageData)
-              .messageURIToMsgHdr(messageData)
-              .messageSize;
+      size = topMail3Pane(window)
+        .messenger.messageServiceFromURI(messageData)
+        .messageURIToMsgHdr(messageData).messageSize;
       url = messageData;
       prettyName = strings.get("attachedMessage");
     } else if (urlData) {
       let pieces = urlData.split("\n");
       url = pieces[0];
-      if (pieces.length > 1)
+      if (pieces.length > 1) {
         prettyName = pieces[1];
-      if (pieces.length > 2)
+      }
+      if (pieces.length > 2) {
         size = parseInt(pieces[2]);
+      }
       // If this is a local file, we may be able to recover some information...
       try {
         let uri = Services.io.newURI(url);
         let file = uri.QueryInterface(Ci.nsIFileURL).file;
-        if (!prettyName)
+        if (!prettyName) {
           prettyName = file.leafName;
-        if (!size)
+        }
+        if (!size) {
           size = file.fileSize;
+        }
       } catch (e) {
         Log.debug("This is probably okay", e);
       }
@@ -938,15 +1040,17 @@ function attachmentDataFromDragData(event) {
       try {
         let scheme = Services.io.extractScheme(url);
         // don't attach mailto: urls
-        if (scheme == "mailto")
+        if (scheme == "mailto") {
           isValid = false;
+        }
       } catch (ex) {
         isValid = false;
       }
     }
 
-    if (isValid)
+    if (isValid) {
       return { url, size, name: prettyName };
+    }
   }
   return null;
 }
@@ -959,14 +1063,16 @@ function quickReplyDragEnter(event) {
 }
 
 function quickReplyCheckDrag(event) {
-  if (attachmentDataFromDragData(event))
+  if (attachmentDataFromDragData(event)) {
     event.preventDefault();
+  }
 }
 
 function quickReplyDrop(event) {
   let data = attachmentDataFromDragData(event);
-  if (data)
+  if (data) {
     gComposeSession.attachmentList.addWithData(data);
+  }
 }
 
 // ----- Helpers
@@ -977,8 +1083,12 @@ function parse(aMimeLine) {
   let emails = {};
   let fullNames = {};
   let names = {};
-  MailServices.headerParser
-    .parseHeadersWithArray(aMimeLine, emails, names, fullNames);
+  MailServices.headerParser.parseHeadersWithArray(
+    aMimeLine,
+    emails,
+    names,
+    fullNames
+  );
   return [names.value, emails.value];
 }
 
@@ -1018,14 +1128,30 @@ let progressListener = {
     }
   },
 
-  onProgressChange(aWebProgress, aRequest, aCurSelfProgress, aMaxSelfProgress, aCurTotalProgress, aMaxTotalProgress) {
-    Log.debug("onProgressChange", aWebProgress, aRequest, aCurSelfProgress, aMaxSelfProgress, aCurTotalProgress, aMaxTotalProgress);
+  onProgressChange(
+    aWebProgress,
+    aRequest,
+    aCurSelfProgress,
+    aMaxSelfProgress,
+    aCurTotalProgress,
+    aMaxTotalProgress
+  ) {
+    Log.debug(
+      "onProgressChange",
+      aWebProgress,
+      aRequest,
+      aCurSelfProgress,
+      aMaxSelfProgress,
+      aCurTotalProgress,
+      aMaxTotalProgress
+    );
     // Calculate percentage.
     var percent;
     if (aMaxTotalProgress > 0) {
-      percent = Math.round( (aCurTotalProgress * 100) / aMaxTotalProgress );
-      if (percent > 100)
+      percent = Math.round((aCurTotalProgress * 100) / aMaxTotalProgress);
+      if (percent > 100) {
         percent = 100;
+      }
 
       // Advance progress meter.
       pValue(percent);
@@ -1047,9 +1173,7 @@ let progressListener = {
     // we can ignore this notification
   },
 
-  QueryInterface: ChromeUtils.generateQI([
-    Ci.nsIWebProgressListener,
-  ]),
+  QueryInterface: ChromeUtils.generateQI([Ci.nsIWebProgressListener]),
 };
 
 let sendListener = {
@@ -1123,13 +1247,14 @@ let sendListener = {
     }
     for (let h of getHooks()) {
       try {
-        if (typeof(h.onStopSending) == "function")
+        if (typeof h.onStopSending == "function") {
           h.onStopSending(aMsgID, aStatus, aMsg, aReturnFile);
+        }
       } catch (e) {
         Log.warn("Plugin returned an error:", e);
         dumpCallStack(e);
       }
-        }
+    }
   },
 
   /**
@@ -1147,9 +1272,7 @@ let sendListener = {
     Log.debug("onSendNotPerformed", aMsgID, aStatus);
   },
 
-  QueryInterface: ChromeUtils.generateQI([
-    Ci.nsIMsgSendListener,
-  ]),
+  QueryInterface: ChromeUtils.generateQI([Ci.nsIMsgSendListener]),
 };
 
 function createStateListener(aComposeSession, aMsgHdrs, aId) {
@@ -1182,17 +1305,23 @@ function createStateListener(aComposeSession, aMsgHdrs, aId) {
         // Remove the old stored draft, don't use onDiscard, because the compose
         //  params might have changed in the meanwhile.
         if (aId) {
-          SimpleStorage.remove(SIMPLE_STORAGE_TABLE_NAME, aId).catch(Cu.reportError);
+          SimpleStorage.remove(SIMPLE_STORAGE_TABLE_NAME, aId).catch(
+            Cu.reportError
+          );
         }
         // Do stuff to the message we replied to.
         let msgHdr = aComposeSession.params.msgHdr;
         if (msgHdr) {
-          msgHdr.folder.addMessageDispositionState(msgHdr, Ci.nsIMsgFolder.nsMsgDispositionState_Replied);
+          msgHdr.folder.addMessageDispositionState(
+            msgHdr,
+            Ci.nsIMsgFolder.nsMsgDispositionState_Replied
+          );
           msgHdr.folder.msgDatabase = null;
         }
         // Archive the whole conversation if needed
-        if (aComposeSession.archive)
+        if (aComposeSession.archive) {
           msgHdrsArchive(aMsgHdrs.filter(x => !msgHdrIsArchive(x)));
+        }
         if (isQuickCompose) {
           // Try both, the first one will do nothing if in a tab.
           window.close();
@@ -1210,9 +1339,10 @@ function createStateListener(aComposeSession, aMsgHdrs, aId) {
 /* This is our new hack: reuse this file to provide a standalone composition
  * window. Why? Because it uses gloda autocomplete and provides a
  * no-frills composition experience. */
- /* exported masqueradeAsQuickCompose */
+/* exported masqueradeAsQuickCompose */
 function masqueradeAsQuickCompose() {
-  isQuickCompose = true;
+  // TODO: Re-enable?
+  // isQuickCompose = true;
   document.title = strings.get("write");
   document.querySelector("#conversationHeader").style.display = "none";
   document.querySelector(".bottom-links").style.display = "none";
@@ -1236,19 +1366,21 @@ function masqueradeAsQuickCompose() {
     },
   };
 
-  document.querySelector(".quickReply").addEventListener("keypress", function(event) {
-    switch (event.keyCode) {
-      case KeyEvent.DOM_VK_RETURN:
-        if (isAccel(event)) {
-          if (event.shiftKey)
-            gComposeSession.send({ archive: true });
-          else
-            gComposeSession.send();
-        }
-        break;
-    }
-  });
-
+  document
+    .querySelector(".quickReply")
+    .addEventListener("keypress", function(event) {
+      switch (event.keyCode) {
+        case KeyEvent.DOM_VK_RETURN:
+          if (isAccel(event)) {
+            if (event.shiftKey) {
+              gComposeSession.send({ archive: true });
+            } else {
+              gComposeSession.send();
+            }
+          }
+          break;
+      }
+    });
 
   let data = [];
 
@@ -1265,12 +1397,18 @@ function masqueradeAsQuickCompose() {
       node.find(".popularRemove").click(function() {
         Log.debug("Removing", data.name, data.email);
         // Mark it in the prefs
-        let unwantedRecipients = JSON.parse(Prefs.getString("conversations.unwanted_recipients"));
+        let unwantedRecipients = JSON.parse(
+          Prefs.getString("conversations.unwanted_recipients")
+        );
         unwantedRecipients[data.email] = null;
-        Prefs.setString("conversations.unwanted_recipients",
-          JSON.stringify(unwantedRecipients));
+        Prefs.setString(
+          "conversations.unwanted_recipients",
+          JSON.stringify(unwantedRecipients)
+        );
         // Update the UI
-        $(this).closest(".popularContact").remove();
+        $(this)
+          .closest(".popularContact")
+          .remove();
         pushNewPopularContacts(1);
       });
 
@@ -1280,10 +1418,14 @@ function masqueradeAsQuickCompose() {
         let cc = JSON.parse($("#cc").val());
         let bcc = JSON.parse($("#bcc").val());
         // Append our new value
-        to.push(MailServices.headerParser.makeMimeAddress(data.name, data.email));
+        to.push(
+          MailServices.headerParser.makeMimeAddress(data.name, data.email)
+        );
         // Re-set everything
-        let format = items => items.map(parseMimeLine)
-                                   .map(([{ name, email }]) => asToken(null, name, email, null));
+        let format = items =>
+          items
+            .map(parseMimeLine)
+            .map(([{ name, email }]) => asToken(null, name, email, null));
         setupAutocomplete(format(to), format(cc), format(bcc));
         // Remove the node!
         node.remove();
@@ -1299,42 +1441,46 @@ function masqueradeAsQuickCompose() {
   // Fill in the "10 most popular contacts" thing
   let contactQuery = Gloda.newQuery(Gloda.NOUN_CONTACT);
   contactQuery.orderBy("-popularity").limit(100);
-  let contactCollection = contactQuery.getCollection({
-    onItemsAdded(aItems, aCollection) {
-},
-    onItemsModified(aItems, aCollection) {
-},
-    onItemsRemoved(aItems, aCollection) {
-},
-    onQueryCompleted(aCollection) {
-  let items = aCollection.items;
-  let unwantedRecipients = JSON.parse(Prefs.getString("conversations.unwanted_recipients"));
+  let contactCollection = contactQuery.getCollection(
+    {
+      onItemsAdded(aItems, aCollection) {},
+      onItemsModified(aItems, aCollection) {},
+      onItemsRemoved(aItems, aCollection) {},
+      onQueryCompleted(aCollection) {
+        let items = aCollection.items;
+        let unwantedRecipients = JSON.parse(
+          Prefs.getString("conversations.unwanted_recipients")
+        );
 
-  for (let contact of items) {
-    if (contact.identities.length) {
-      let id = contact.identities[0];
-      let photoForAbCard = function(card) {
-        if (!card)
-          return defaultPhotoURI;
-        let url = card.getProperty("PhotoURI", "");
-        if (!url)
-          return defaultPhotoURI;
-        return url;
-      };
-      if (id.kind == "email" && !(id.value in unwantedRecipients)) {
-        // Log.debug("Pushing", id.value, contact.name, contact.popularity);
-        data.push({
-          email: id.value,
-          name: contact.name,
-          photo: photoForAbCard(id.abCard),
-        });
-      }
-    }
-  }
+        for (let contact of items) {
+          if (contact.identities.length) {
+            let id = contact.identities[0];
+            let photoForAbCard = function(card) {
+              if (!card) {
+                return defaultPhotoURI;
+              }
+              let url = card.getProperty("PhotoURI", "");
+              if (!url) {
+                return defaultPhotoURI;
+              }
+              return url;
+            };
+            if (id.kind == "email" && !(id.value in unwantedRecipients)) {
+              // Log.debug("Pushing", id.value, contact.name, contact.popularity);
+              data.push({
+                email: id.value,
+                name: contact.name,
+                photo: photoForAbCard(id.abCard),
+              });
+            }
+          }
+        }
 
-  pushNewPopularContacts(10);
-},
-  }, null);
+        pushNewPopularContacts(10);
+      },
+    },
+    null
+  );
   contactCollection.becomeExplicit();
 
   // Misc

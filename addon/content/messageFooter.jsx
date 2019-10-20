@@ -2,8 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals printConversation, PropTypes, React, ReactRedux, StringBundle,
-           ActionButton */
+/* globals PropTypes, React, ActionButton */
 /* exported MessageFooter */
 
 class MessageFooter extends React.PureComponent {
@@ -21,26 +20,21 @@ class MessageFooter extends React.PureComponent {
     return (
       <div className="messageFooter">
         <div className="footerActions">
-          { this.props.isDraft &&
-            <ActionButton callback={this.action}
-                          type="draft"/>
-          }
-          { !this.props.isDraft &&
-            <ActionButton callback={this.action}
-                          type="reply"/>
-          }
-          { !this.props.isDraft && this.props.multipleRecipients &&
-            <ActionButton callback={this.action}
-                          type="replyAll"/>
-          }
-          { !this.props.isDraft && this.props.recipientsIncludeLists &&
-            <ActionButton callback={this.action}
-                          type="replyList"/>
-          }
-          { !this.props.isDraft &&
-            <ActionButton callback={this.action}
-                          type="forward"/>
-          }
+          {this.props.isDraft && (
+            <ActionButton callback={this.action} type="draft" />
+          )}
+          {!this.props.isDraft && (
+            <ActionButton callback={this.action} type="reply" />
+          )}
+          {!this.props.isDraft && this.props.multipleRecipients && (
+            <ActionButton callback={this.action} type="replyAll" />
+          )}
+          {!this.props.isDraft && this.props.recipientsIncludeLists && (
+            <ActionButton callback={this.action} type="replyList" />
+          )}
+          {!this.props.isDraft && (
+            <ActionButton callback={this.action} type="forward" />
+          )}
         </div>
       </div>
     );

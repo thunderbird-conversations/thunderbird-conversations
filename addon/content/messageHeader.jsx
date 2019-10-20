@@ -35,7 +35,7 @@ class Fade extends React.PureComponent {
       stateUpdate.fadeIn = true;
       this.setState(stateUpdate);
       this.fadeInTimeout = setTimeout(() => {
-        this.setState({fadeIn: false});
+        this.setState({ fadeIn: false });
         delete this.fadeInTimeout;
       }, 400);
     } else if (this.props.trigger && !nextProps.trigger) {
@@ -47,7 +47,7 @@ class Fade extends React.PureComponent {
       stateUpdate.fadeOut = true;
       this.setState(stateUpdate);
       this.fadeOutTimeout = setTimeout(() => {
-        this.setState({fadeOut: false});
+        this.setState({ fadeOut: false });
         delete this.fadeOutTimeout;
       }, 400);
     }
@@ -59,11 +59,7 @@ class Fade extends React.PureComponent {
       if (!transition && this.state.fadeOut) {
         transition = "transition-out";
       }
-      return (
-        <span className={transition}>
-          {this.props.children}
-        </span>
-      );
+      return <span className={transition}>{this.props.children}</span>;
     }
     return null;
   }
@@ -88,11 +84,11 @@ class ContactLabel extends React.PureComponent {
     if (this.fadeOutTimeout) {
       clearTimeout(this.fadeOutTimeout);
       delete this.fadeOutTimeout;
-      this.setState({hover: true});
+      this.setState({ hover: true });
       return;
     }
     this.timeout = setTimeout(() => {
-      this.setState({hover: true});
+      this.setState({ hover: true });
       delete this.timeout;
     }, 400);
   }
@@ -103,17 +99,19 @@ class ContactLabel extends React.PureComponent {
       delete this.timeout;
     }
     this.fadeOutTimeout = setTimeout(() => {
-      this.setState({hover: false});
+      this.setState({ hover: false });
       delete this.fadeOutTimeout;
     }, 400);
   }
 
   render() {
     return (
-      <span className={this.props.className}
-            onMouseOver={this.onMouseOver}
-            onMouseOut={this.onMouseOut}
-            ref={s => this.span = s}>
+      <span
+        className={this.props.className}
+        onMouseOver={this.onMouseOver}
+        onMouseOut={this.onMouseOut}
+        ref={s => (this.span = s)}
+      >
         <Fade trigger={this.state.hover}>
           <ContactDetail
             parentSpan={this.span}
@@ -121,30 +119,41 @@ class ContactLabel extends React.PureComponent {
             email={this.props.contact.displayEmail}
             realEmail={this.props.contact.email}
             avatar={this.props.contact.avatar}
-            hasCard={this.props.contact.hasCard}/>
+            hasCard={this.props.contact.hasCard}
+          />
         </Fade>
         <span>{this.props.separator}</span>
-          <span className="tooltipWrapper contact">
-            <span className="contactName"
-                  name={this.props.contact.name}
-                  email={this.props.contact.displayEmail}
-                  realemail={this.props.contact.email}
-                  avatar={this.props.contact.avatar}>
-              {this.props.detailView && this.props.contact.hasCard && "\u2605 "}
-              {this.props.contact.name.trim()}
-              {this.props.contact.extra &&
-                <label xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-                  crop="center"
-                  className="contactExtra"
-                  value={`(${this.props.contact.extra})`}/>
-              }
-              {!this.props.detailView && this.props.contact.displayEmail &&
-                <span className="smallEmail"> &lt;{this.props.contact.displayEmail.trim()}&gt;</span>
-              }
-              {this.props.detailView && this.props.contact.email &&
-                <span className="smallEmail"> &lt;{this.props.contact.email.trim()}&gt;</span>
-              }
-              {this.props.detailView && <br />}
+        <span className="tooltipWrapper contact">
+          <span
+            className="contactName"
+            name={this.props.contact.name}
+            email={this.props.contact.displayEmail}
+            realemail={this.props.contact.email}
+            avatar={this.props.contact.avatar}
+          >
+            {this.props.detailView && this.props.contact.hasCard && "\u2605 "}
+            {this.props.contact.name.trim()}
+            {this.props.contact.extra && (
+              <label
+                xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+                crop="center"
+                className="contactExtra"
+                value={`(${this.props.contact.extra})`}
+              />
+            )}
+            {!this.props.detailView && this.props.contact.displayEmail && (
+              <span className="smallEmail">
+                {" "}
+                &lt;{this.props.contact.displayEmail.trim()}&gt;
+              </span>
+            )}
+            {this.props.detailView && this.props.contact.email && (
+              <span className="smallEmail">
+                {" "}
+                &lt;{this.props.contact.email.trim()}&gt;
+              </span>
+            )}
+            {this.props.detailView && <br />}
           </span>
         </span>
       </span>
@@ -164,7 +173,9 @@ class MessageHeader extends React.PureComponent {
     super(props);
     this.onClickHeader = this.onClickHeader.bind(this);
     this.onClickStar = this.onClickStar.bind(this);
-    this.strings = new StringBundle("chrome://conversations/locale/template.properties");
+    this.strings = new StringBundle(
+      "chrome://conversations/locale/template.properties"
+    );
   }
 
   onClickHeader() {
@@ -203,65 +214,83 @@ class MessageHeader extends React.PureComponent {
   }
 
   render() {
-    const allTo = [
-      ...this.props.to,
-      ...this.props.cc,
-      ...this.props.bcc,
-    ];
+    const allTo = [...this.props.to, ...this.props.cc, ...this.props.bcc];
     // TODO: Maybe insert this after contacts but before snippet:
     // <span class="bzTo"> {{str "at"}} {{bugzillaUrl}}</span>
     return (
-      <div className={"messageHeader hbox" + (this.props.expanded ? " expanded" : "")}
-           onClick={this.onClickHeader}>
+      <div
+        className={
+          "messageHeader hbox" + (this.props.expanded ? " expanded" : "")
+        }
+        onClick={this.onClickHeader}
+      >
         <div className="shrink-box">
-          <div className={"star" + (this.props.starred ? " starred" : "")}
-               onClick={this.onClickStar}>
-            <svg className="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
-              <use xlinkHref="chrome://conversations/skin/material-icons.svg#star">
-              </use>
+          <div
+            className={"star" + (this.props.starred ? " starred" : "")}
+            onClick={this.onClickStar}
+          >
+            <svg
+              className="icon"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
+              xmlnsXlink="http://www.w3.org/1999/xlink"
+            >
+              <use xlinkHref="chrome://conversations/skin/material-icons.svg#star"></use>
             </svg>
           </div>
-          {this.props.from.avatarIsDefault ?
-            <abbr className="contactInitials"
-                  style={this.props.from.colorStyle}>
+          {this.props.from.avatarIsDefault ? (
+            <abbr
+              className="contactInitials"
+              style={this.props.from.colorStyle}
+            >
               {this.props.from.initials}
-            </abbr> :
-            <span className="contactAvatar" style={{backgroundImage: `url('${this.props.from.avatar}')`}}>
+            </abbr>
+          ) : (
+            <span
+              className="contactAvatar"
+              style={{ backgroundImage: `url('${this.props.from.avatar}')` }}
+            >
               {"\u00a0"}
             </span>
-          }
-          {" "}
+          )}{" "}
           <ContactLabel
             className="author"
             contact={this.props.from}
-            detailView={false}/>
-          {this.props.expanded && !this.props.detailsShowing &&
-           (this.strings.get("to") + " ")}
-          {this.props.expanded && !this.props.detailsShowing && allTo.map((contact, index) =>
-            <ContactLabel
-              className="to"
-              contact={contact}
-              detailView={false}
-              key={index}
-              separator={this._getSeparator(index, allTo.length)}/>
-          )}
-          {!this.props.expanded &&
+            detailView={false}
+          />
+          {this.props.expanded &&
+            !this.props.detailsShowing &&
+            this.strings.get("to") + " "}
+          {this.props.expanded &&
+            !this.props.detailsShowing &&
+            allTo.map((contact, index) => (
+              <ContactLabel
+                className="to"
+                contact={contact}
+                detailView={false}
+                key={index}
+                separator={this._getSeparator(index, allTo.length)}
+              />
+            ))}
+          {!this.props.expanded && (
             <span className="snippet">
               <MessageTags
                 dispatch={this.props.dispatch}
                 expanded={false}
                 msgUri={this.props.msgUri}
-                tags={this.props.tags}/>
+                tags={this.props.tags}
+              />
               <SpecialMessageTags
                 canClickFolder={false}
                 dispatch={this.props.dispatch}
                 folderName={this.props.shortFolderName}
                 inView={this.props.inView}
                 msgUri={this.props.msgUri}
-                strings={this.strings}/>
+                strings={this.strings}
+              />
               {this.props.snippet}
             </span>
-          }
+          )}
         </div>
         <MessageHeaderOptions
           dispatch={this.props.dispatch}
@@ -273,7 +302,8 @@ class MessageHeader extends React.PureComponent {
           attachments={this.props.attachments}
           multipleRecipients={this.props.multipleRecipients}
           recipientsIncludeLists={this.props.recipientsIncludeLists}
-          isDraft={this.props.isDraft}/>
+          isDraft={this.props.isDraft}
+        />
       </div>
     );
   }

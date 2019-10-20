@@ -4,7 +4,9 @@
 
 "use strict";
 
-const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   NetUtil: "resource://gre/modules/NetUtil.jsm",
@@ -29,19 +31,19 @@ Wrapper.prototype = {
    */
   _download() {
     let url = Services.io.newURI(this.url);
-    let channel = Services.io.newChannelFromURI(url,
+    let channel = Services.io.newChannelFromURI(
+      url,
       null,
       Services.scriptSecurityManager.getSystemPrincipal(),
       null,
       Ci.nsILoadInfo.SEC_ALLOW_CROSS_ORIGIN_DATA_IS_NULL,
-      Ci.nsIContentPolicy.TYPE_OTHER,
+      Ci.nsIContentPolicy.TYPE_OTHER
     );
     let chunks = [];
 
     return new Promise(resolve => {
       let listener = {
-        onStartRequest(aRequest) {
-        },
+        onStartRequest(aRequest) {},
 
         onStopRequest(aRequest, aStatusCode) {
           resolve(chunks);
@@ -53,14 +55,17 @@ Wrapper.prototype = {
           // Now each character of the string is actually to be understood as a byte
           // So charCodeAt is what we want here...
           let array = [];
-          for (let i = 0; i < data.length; ++i)
+          for (let i = 0; i < data.length; ++i) {
             array[i] = data.charCodeAt(i);
+          }
           // Yay, good to go!
           chunks.push(array);
         },
 
-        QueryInterface: ChromeUtils.generateQI([Ci.nsIStreamListener,
-          Ci.nsIRequestObserver]),
+        QueryInterface: ChromeUtils.generateQI([
+          Ci.nsIStreamListener,
+          Ci.nsIRequestObserver,
+        ]),
       };
       channel.asyncOpen(listener, null);
     });
@@ -72,18 +77,23 @@ Wrapper.prototype = {
     let chunks = await this._download();
 
     let browser = document.getElementById("browser");
-    browser.addEventListener("load", () => {
-      let w = browser.contentWindow.wrappedJSObject;
-      w.init(Cu.cloneInto({ chunks }, w));
-    }, {once: true, capture: true});
+    browser.addEventListener(
+      "load",
+      () => {
+        let w = browser.contentWindow.wrappedJSObject;
+        w.init(Cu.cloneInto({ chunks }, w));
+      },
+      { once: true, capture: true }
+    );
     // Load from a resource:// URL so that it doesn't have chrome privileges.
-    browser.loadURI("resource://conversations/content/pdfviewer/viewer.xhtml",
-      {triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal()});
+    browser.loadURI("resource://conversations/content/pdfviewer/viewer.xhtml", {
+      triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
+    });
   },
 };
 
 window.addEventListener("load", function(event) {
-  const params = (new URL(document.location.href)).searchParams;
+  const params = new URL(document.location.href).searchParams;
   document.title = params.get("name");
 
   wrapper = new Wrapper(params.get("uri"));

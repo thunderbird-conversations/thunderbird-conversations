@@ -35,7 +35,16 @@ class LinkifiedSubject extends React.PureComponent {
       while (text && LINKS_REGEX.test(text)) {
         let matches = LINKS_REGEX.exec(text);
         let [pre, ...post] = text.split(matches[1]);
-        let link = <a href={matches[1]} title={matches[1]} className="link" onClick={this.handleClick}>{matches[1]}</a>;
+        let link = (
+          <a
+            href={matches[1]}
+            title={matches[1]}
+            className="link"
+            onClick={this.handleClick}
+          >
+            {matches[1]}
+          </a>
+        );
         if (pre) {
           contents.push(pre);
         }
@@ -48,9 +57,7 @@ class LinkifiedSubject extends React.PureComponent {
 
       return (
         <div className="subject boxFlex" title={this.props.subject}>
-          <span>
-            {contents}
-          </span>
+          <span>{contents}</span>
         </div>
       );
     }
@@ -73,7 +80,9 @@ LinkifiedSubject.propTypes = {
 class _ConversationHeader extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.strings = new StringBundle("chrome://conversations/locale/pages.properties");
+    this.strings = new StringBundle(
+      "chrome://conversations/locale/pages.properties"
+    );
     this.archiveToolbar = this.archiveToolbar.bind(this);
     this.delete = this.delete.bind(this);
     this.detachTab = this.detachTab.bind(this);
@@ -120,8 +129,11 @@ class _ConversationHeader extends React.PureComponent {
     // command only operates on selected messages, and we're not in a
     // 3pane context anymore.
 
-    return this.props.msgData && this.props.msgData.length <= 1 &&
-      this.props.msgData.some(msg => !msg.isJunk); // msgmsgHdrIsJunk(toMsgHdr(this.messages[0]))),
+    return (
+      this.props.msgData &&
+      this.props.msgData.length <= 1 &&
+      this.props.msgData.some(msg => !msg.isJunk)
+    ); // msgmsgHdrIsJunk(toMsgHdr(this.messages[0]))),
   }
 
   expandCollapse(event) {
@@ -155,73 +167,107 @@ class _ConversationHeader extends React.PureComponent {
     return (
       <div className="conversationHeaderWrapper">
         <div className="conversationHeader hbox">
-          <LinkifiedSubject dispatch={this.props.dispatch}
-                            loading={this.props.loading}
-                            strings={this.strings}
-                            subject={this.props.subject}/>
+          <LinkifiedSubject
+            dispatch={this.props.dispatch}
+            loading={this.props.loading}
+            strings={this.strings}
+            subject={this.props.subject}
+          />
           <div className="actions">
-            <button className="button-flat"
-                    title={this.strings.get("stub.trash.tooltip")}
-                    onClick={this.delete}>
-              <svg className="icon"
-                   viewBox="0 0 24 24"
-                   xmlns="http://www.w3.org/2000/svg"
-                   xmlnsXlink="http://www.w3.org/1999/xlink">
+            <button
+              className="button-flat"
+              title={this.strings.get("stub.trash.tooltip")}
+              onClick={this.delete}
+            >
+              <svg
+                className="icon"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlnsXlink="http://www.w3.org/1999/xlink"
+              >
                 <use xlinkHref="chrome://conversations/skin/material-icons.svg#delete"></use>
               </svg>
             </button>
-            <button className="button-flat"
-                    title={this.strings.get("stub.archive.tooltip")}
-                    onClick={this.archiveToolbar}>
-              <svg className="icon"
-                   viewBox="0 0 24 24"
-                   xmlns="http://www.w3.org/2000/svg"
-                   xmlnsXlink="http://www.w3.org/1999/xlink">
+            <button
+              className="button-flat"
+              title={this.strings.get("stub.archive.tooltip")}
+              onClick={this.archiveToolbar}
+            >
+              <svg
+                className="icon"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlnsXlink="http://www.w3.org/1999/xlink"
+              >
                 <use xlinkHref="chrome://conversations/skin/material-icons.svg#archive"></use>
               </svg>
             </button>
-            {this.canJunk &&
-              <button className="button-flat junk-button"
-                      title={this.strings.get("stub.junk.tooltip")}
-                      onClick={this.junkConversation}>
-                <svg className="icon"
-                     viewBox="0 0 24 24"
-                     xmlns="http://www.w3.org/2000/svg"
-                     xmlnsXlink="http://www.w3.org/1999/xlink">
+            {this.canJunk && (
+              <button
+                className="button-flat junk-button"
+                title={this.strings.get("stub.junk.tooltip")}
+                onClick={this.junkConversation}
+              >
+                <svg
+                  className="icon"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                  xmlnsXlink="http://www.w3.org/1999/xlink"
+                >
                   <use xlinkHref="chrome://conversations/skin/material-icons.svg#whatshot"></use>
                 </svg>
               </button>
-            }
-            <button className="button-flat"
-                    title={this.strings.get("stub.expand.tooltip")}
-                    onClick={this.expandCollapse}>
-              <svg className={`icon expand ${this.areSomeMessagesCollapsed ? "" : "collapse"}`}
-                   viewBox="0 0 24 24"
-                   xmlns="http://www.w3.org/2000/svg"
-                   xmlnsXlink="http://www.w3.org/1999/xlink">
-                <use className="expand-more"
-                     xlinkHref="chrome://conversations/skin/material-icons.svg#expand_more"></use>
-                <use className="expand-less"
-                     xlinkHref="chrome://conversations/skin/material-icons.svg#expand_less"></use>
+            )}
+            <button
+              className="button-flat"
+              title={this.strings.get("stub.expand.tooltip")}
+              onClick={this.expandCollapse}
+            >
+              <svg
+                className={`icon expand ${
+                  this.areSomeMessagesCollapsed ? "" : "collapse"
+                }`}
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlnsXlink="http://www.w3.org/1999/xlink"
+              >
+                <use
+                  className="expand-more"
+                  xlinkHref="chrome://conversations/skin/material-icons.svg#expand_more"
+                ></use>
+                <use
+                  className="expand-less"
+                  xlinkHref="chrome://conversations/skin/material-icons.svg#expand_less"
+                ></use>
               </svg>
             </button>
-            <button className="button-flat"
-                    title={this.strings.get("stub.read.tooltip")}
-                    onClick={this.toggleRead}>
-              <svg className={`icon read ${this.areSomeMessagesUnread ? "unread" : ""}`}
-                   viewBox="0 0 24 24"
-                   xmlns="http://www.w3.org/2000/svg"
-                   xmlnsXlink="http://www.w3.org/1999/xlink">
+            <button
+              className="button-flat"
+              title={this.strings.get("stub.read.tooltip")}
+              onClick={this.toggleRead}
+            >
+              <svg
+                className={`icon read ${
+                  this.areSomeMessagesUnread ? "unread" : ""
+                }`}
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlnsXlink="http://www.w3.org/1999/xlink"
+              >
                 <use xlinkHref="chrome://conversations/skin/material-icons.svg#new"></use>
               </svg>
             </button>
-            <button className="button-flat"
-                    title={this.strings.get("stub.detach.tooltip2")}
-                    onClick={this.detachTab}>
-              <svg className="icon"
-                   viewBox="0 0 24 24"
-                   xmlns="http://www.w3.org/2000/svg"
-                   xmlnsXlink="http://www.w3.org/1999/xlink">
+            <button
+              className="button-flat"
+              title={this.strings.get("stub.detach.tooltip2")}
+              onClick={this.detachTab}
+            >
+              <svg
+                className="icon"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlnsXlink="http://www.w3.org/1999/xlink"
+              >
                 <use xlinkHref="chrome://conversations/skin/material-icons.svg#open_in_new"></use>
               </svg>
             </button>

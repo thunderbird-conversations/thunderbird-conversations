@@ -4,16 +4,19 @@
 
 /* import-globals-from quickReply.js */
 /* import-globals-from reducer.js */
-/* global $, registerQuickReply, newComposeSessionByDraftIf
+/* global $, newComposeSessionByDraftIf
           Redux, ReactDOM, React, ReactRedux, ConversationWrapper,
-          gComposeSession:true, tmpl, createComposeSession, revealCompositionFields,
-          editFields, asToken, setupAutocomplete, Gloda, Log:true,
-          setupLogging, dumpCallStack, masqueradeAsQuickCompose */
+          Log:true, masqueradeAsQuickCompose */
+
 let store;
-var {StringBundle} = ChromeUtils.import("resource:///modules/StringBundle.js");
+var { StringBundle } = ChromeUtils.import(
+  "resource:///modules/StringBundle.js"
+);
 /* exported Services */
-var {Services} = ChromeUtils.import("resource://gre/modules/Services.jsm");
-var strings = new StringBundle("chrome://conversations/locale/message.properties");
+var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+var strings = new StringBundle(
+  "chrome://conversations/locale/message.properties"
+);
 
 /* exported conversationDispatch */
 function conversationDispatch(...args) {
@@ -27,13 +30,18 @@ function conversationDispatch(...args) {
 //  be used either in a standalone tab or in the multimessage pane.
 // let Conversations = window.top.Conversations;
 
-const {msgUriToMsgHdr, msgHdrsMarkAsRead} =
-  ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
-const {Prefs} = ChromeUtils.import("resource://conversations/modules/prefs.js");
-const {topMail3Pane} = ChromeUtils.import("resource://conversations/modules/misc.js");
-const {
-  setupLogging, dumpCallStack,
-} = ChromeUtils.import("resource://conversations/modules/log.js");
+const { msgUriToMsgHdr, msgHdrsMarkAsRead } = ChromeUtils.import(
+  "resource://conversations/modules/stdlib/msgHdrUtils.js"
+);
+const { Prefs } = ChromeUtils.import(
+  "resource://conversations/modules/prefs.js"
+);
+const { topMail3Pane } = ChromeUtils.import(
+  "resource://conversations/modules/misc.js"
+);
+const { setupLogging, dumpCallStack } = ChromeUtils.import(
+  "resource://conversations/modules/log.js"
+);
 
 Log = setupLogging("Conversations.Stub");
 // Declare with var, not let, so that it's in the global scope, not the lexical scope.
@@ -51,13 +59,25 @@ function printConversation(event) {
 
 window.print = printConversation;
 
-document.addEventListener("DOMContentLoaded", () => {
-  store = Redux.createStore(conversationApp);
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
+    store = Redux.createStore(conversationApp);
 
-  const conversationContainer = document.getElementById("conversationWrapper");
-  ReactDOM.render(React.createElement(ReactRedux.Provider, {store},
-    React.createElement(ConversationWrapper)), conversationContainer);
-}, {once: true});
+    const conversationContainer = document.getElementById(
+      "conversationWrapper"
+    );
+    ReactDOM.render(
+      React.createElement(
+        ReactRedux.Provider,
+        { store },
+        React.createElement(ConversationWrapper)
+      ),
+      conversationContainer
+    );
+  },
+  { once: true }
+);
 
 /**
  * That big event handler tries to parse URL query parameters, and then acts
@@ -66,83 +86,96 @@ document.addEventListener("DOMContentLoaded", () => {
  * serves the purpose of being able to create a standalone conversation view
  * in a new tab.
  */
-document.addEventListener("DOMContentLoaded", () => {
-  const params = (new URL(document.location)).searchParams;
+document.addEventListener(
+  "DOMContentLoaded",
+  () => {
+    const params = new URL(document.location).searchParams;
 
-  // Oh, are we expected to build a conversation on our own? Let's do it,
-  // yay!
-  if (params.has("urls")) {
-    try {
-      let scrollMode = (params.get("scrollMode"))
-        ? parseInt(params.scrollMode)
-        : Prefs.kScrollUnreadOrLast;
-      /* If we start up Thunderbird with a saved conversation tab, then we
-       * have no selected message. Fallback to the usual mode. */
-      if (scrollMode == Prefs.kScrollSelected &&
-          !topMail3Pane(window).gFolderDisplay.selectedMessage)
-        scrollMode = Prefs.kScrollUnreadOrLast;
-
-      isInTab = true;
-      if (window.frameElement)
-        window.frameElement.setAttribute("tooltip", "aHTMLTooltip");
-      let mainWindow = topMail3Pane(window);
-      // let willExpand = parseInt(params.get("willExpand"));
-      let msgHdrs = params.get("urls").split(",").map(x => msgUriToMsgHdr(x))
-                          .filter(x => x != null && x.messageId);
-      // It might happen that there are no messages left...
-      if (!msgHdrs.length) {
-        document.getElementById("messageList").textContent =
-          strings.get("messageMovedOrDeletedConversation");
-      } else {
-        window.Conversations = {
-          currentConversation: null,
-          counter: 0,
-        };
-        let freshConversation = new mainWindow.Conversations.monkeyPatch._Conversation(
-          window,
-          msgHdrs,
-          scrollMode,
-          ++Conversations.counter
-        );
-        let browser = window.frameElement;
-        // Because Thunderbird still hasn't fixed that...
-        if (browser) {
-          browser.setAttribute("context", "mailContext");
+    // Oh, are we expected to build a conversation on our own? Let's do it,
+    // yay!
+    if (params.has("urls")) {
+      try {
+        let scrollMode = params.get("scrollMode")
+          ? parseInt(params.scrollMode)
+          : Prefs.kScrollUnreadOrLast;
+        /* If we start up Thunderbird with a saved conversation tab, then we
+         * have no selected message. Fallback to the usual mode. */
+        if (
+          scrollMode == Prefs.kScrollSelected &&
+          !topMail3Pane(window).gFolderDisplay.selectedMessage
+        ) {
+          scrollMode = Prefs.kScrollUnreadOrLast;
         }
 
-        freshConversation.outputInto(window, function(aConversation) {
-          // This is a stripped-down version of what's in monkeypatch.js,
-          //  make sure the two are in sync!
-          Conversations.currentConversation = aConversation;
-          aConversation.completed = true;
-          // TODO: Re-enable this.
-          // registerQuickReply();
-          // That's why we saved it before...
-          newComposeSessionByDraftIf();
-          // TODO: expandQuickReply isn't defined anywhere. Should it be?
-          // if (willExpand)
-          //   expandQuickReply();
-          // Create a new rule that will override the default rule, so that
-          // the expanded quick reply is twice higher.
-          document.body.classList.add("inTab");
-          // Do this now so as to not defeat the whole expand/collapse
-          // logic.
-          if (Prefs.getBool("mailnews.mark_message_read.auto")) {
-            setTimeout(function() {
-              msgHdrsMarkAsRead(msgHdrs, true);
-            }, Prefs.getInt("mailnews.mark_message_read.delay.interval")
-               * Prefs.getBool("mailnews.mark_message_read.delay") * 1000);
+        isInTab = true;
+        if (window.frameElement) {
+          window.frameElement.setAttribute("tooltip", "aHTMLTooltip");
+        }
+        let mainWindow = topMail3Pane(window);
+        // let willExpand = parseInt(params.get("willExpand"));
+        let msgHdrs = params
+          .get("urls")
+          .split(",")
+          .map(x => msgUriToMsgHdr(x))
+          .filter(x => x != null && x.messageId);
+        // It might happen that there are no messages left...
+        if (!msgHdrs.length) {
+          document.getElementById("messageList").textContent = strings.get(
+            "messageMovedOrDeletedConversation"
+          );
+        } else {
+          window.Conversations = {
+            currentConversation: null,
+            counter: 0,
+          };
+          let freshConversation = new mainWindow.Conversations.monkeyPatch._Conversation(
+            window,
+            msgHdrs,
+            scrollMode,
+            ++Conversations.counter
+          );
+          let browser = window.frameElement;
+          // Because Thunderbird still hasn't fixed that...
+          if (browser) {
+            browser.setAttribute("context", "mailContext");
           }
-        });
+
+          freshConversation.outputInto(window, function(aConversation) {
+            // This is a stripped-down version of what's in monkeypatch.js,
+            //  make sure the two are in sync!
+            Conversations.currentConversation = aConversation;
+            aConversation.completed = true;
+            // TODO: Re-enable this.
+            // registerQuickReply();
+            // That's why we saved it before...
+            newComposeSessionByDraftIf();
+            // TODO: expandQuickReply isn't defined anywhere. Should it be?
+            // if (willExpand)
+            //   expandQuickReply();
+            // Create a new rule that will override the default rule, so that
+            // the expanded quick reply is twice higher.
+            document.body.classList.add("inTab");
+            // Do this now so as to not defeat the whole expand/collapse
+            // logic.
+            if (Prefs.getBool("mailnews.mark_message_read.auto")) {
+              setTimeout(function() {
+                msgHdrsMarkAsRead(msgHdrs, true);
+              }, Prefs.getInt("mailnews.mark_message_read.delay.interval") *
+                Prefs.getBool("mailnews.mark_message_read.delay") *
+                1000);
+            }
+          });
+        }
+      } catch (e) {
+        Log.debug(e);
+        dumpCallStack(e);
       }
-    } catch (e) {
-      Log.debug(e);
-      dumpCallStack(e);
+    } else if (params.get("quickCompose")) {
+      masqueradeAsQuickCompose();
     }
-  } else if (params.get("quickCompose")) {
-    masqueradeAsQuickCompose();
-  }
-}, {once: true});
+  },
+  { once: true }
+);
 
 /* exported isQuickCompose */
 var isQuickCompose = false;
@@ -155,8 +188,9 @@ function markReadInView(event) {
   markReadInView.timeout = setTimeout(function() {
     document.addEventListener("scroll", markReadInView, true);
   }, 200);
-  if (!Conversations.currentConversation)
+  if (!Conversations.currentConversation) {
     return;
+  }
 
   let pageTop = window.pageYOffset;
   let pageBottom = pageTop + window.innerHeight;
@@ -165,14 +199,18 @@ function markReadInView(event) {
     if (!message.read && message.expanded) {
       if (!message._topInView) {
         let top = $(message._domNode).offset().top;
-        if (top > pageTop && top < pageBottom)
+        if (top > pageTop && top < pageBottom) {
           message._topInView = true;
+        }
       }
       if (!message._bottomInView) {
-        let footerClass = (i == messages.length - 1) ? ".quickReply" : ".messageFooter";
-        let bottom = $(message._domNode.querySelector(footerClass)).offset().top;
-        if (bottom > pageTop && bottom < pageBottom)
+        let footerClass =
+          i == messages.length - 1 ? ".quickReply" : ".messageFooter";
+        let bottom = $(message._domNode.querySelector(footerClass)).offset()
+          .top;
+        if (bottom > pageTop && bottom < pageBottom) {
           message._bottomInView = true;
+        }
       }
       if (message._topInView && message._bottomInView) {
         message._topInView = false;

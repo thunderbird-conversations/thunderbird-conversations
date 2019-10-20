@@ -10,16 +10,18 @@ class _MessageList extends React.PureComponent {
     return (
       <ul id="messageList">
         {!!this.props.messages.msgData &&
-           this.props.messages.msgData.map((message, index) => (
-          <Message key={index}
-            dispatch={this.props.dispatch}
-            displayingMultipleMsgs={!!this.props.messages.length}
-            iframesLoading={this.props.summary.iframesLoading}
-            index={index}
-            isLastMessage={index == this.props.messages.msgData.length - 1}
-            message={message}
-            prefs={this.props.summary.prefs}/>
-        ))}
+          this.props.messages.msgData.map((message, index) => (
+            <Message
+              key={index}
+              dispatch={this.props.dispatch}
+              displayingMultipleMsgs={!!this.props.messages.length}
+              iframesLoading={this.props.summary.iframesLoading}
+              index={index}
+              isLastMessage={index == this.props.messages.msgData.length - 1}
+              message={message}
+              prefs={this.props.summary.prefs}
+            />
+          ))}
       </ul>
     );
   }

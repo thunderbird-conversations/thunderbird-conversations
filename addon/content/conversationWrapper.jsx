@@ -16,9 +16,11 @@ class _ConversationWrapper extends React.PureComponent {
   }
 
   _setHTMLAttributes(prevProps) {
-    if (prevProps &&
-        this.props.OS == prevProps.OS &&
-        this.props.tweakChrome == prevProps.tweakChrome) {
+    if (
+      prevProps &&
+      this.props.OS == prevProps.OS &&
+      this.props.tweakChrome == prevProps.tweakChrome
+    ) {
       return;
     }
 
@@ -34,10 +36,10 @@ class _ConversationWrapper extends React.PureComponent {
     return (
       <div>
         <div className="hidden" id="tooltipContainer"></div>
-        <ConversationHeader/>
-        <MessageList/>
-        <ConversationFooter/>
-        <AttachmentMenu/>
+        <ConversationHeader />
+        <MessageList />
+        <ConversationFooter />
+        <AttachmentMenu />
       </div>
     );
   }

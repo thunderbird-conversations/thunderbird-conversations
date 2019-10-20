@@ -32,7 +32,10 @@ class RemoteContentNotification extends React.PureComponent {
       <div className="remoteContent notificationBar">
         {this.props.strings.get("remoteContentBlocked") + " "}
         <span className="show-remote-content">
-          <a className="link" onClick={this.onShowRemote}>{this.props.strings.get("showRemote")}</a>{" - "}
+          <a className="link" onClick={this.onShowRemote}>
+            {this.props.strings.get("showRemote")}
+          </a>
+          {" - "}
         </span>
         <span className="always-display">
           <a className="link" onClick={this.onAlwaysShowRemote}>
@@ -55,14 +58,19 @@ class GenericSingleButtonNotification extends React.PureComponent {
   render() {
     return (
       <div className={this.props.barClassName + " notificationBar"}>
-        <svg className="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlnsXlink="http://www.w3.org/1999/xlink">
-          <use xlinkHref={`chrome://conversations/skin/material-icons.svg#${this.props.iconName}`}></use>
+        <svg
+          className="icon"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+          xmlnsXlink="http://www.w3.org/1999/xlink"
+        >
+          <use
+            xlinkHref={`chrome://conversations/skin/material-icons.svg#${this.props.iconName}`}
+          ></use>
         </svg>
         {this.props.notificationText}{" "}
         <span className="notJunk">
-          <a onClick={this.props.onButtonClick}>
-            {this.props.buttonTitle}
-          </a>
+          <a onClick={this.props.onButtonClick}>{this.props.buttonTitle}</a>
         </span>
       </div>
     );
@@ -100,7 +108,8 @@ class JunkNotification extends React.PureComponent {
         buttonTitle={this.props.strings.get("notJunk")}
         iconName="whatshot"
         notificationText={this.props.strings.get("junk")}
-        onButtonClick={this.onClick}/>
+        onButtonClick={this.onClick}
+      />
     );
   }
 }
@@ -131,7 +140,8 @@ class OutboxNotification extends React.PureComponent {
         buttonTitle={this.props.strings.get("sendUnsent")}
         iconName="inbox"
         notificationText={this.props.strings.get("isOutbox")}
-        onButtonClick={this.onClick}/>
+        onButtonClick={this.onClick}
+      />
     );
   }
 }
@@ -162,7 +172,8 @@ class PhishingNotification extends React.PureComponent {
         buttonTitle={this.props.strings.get("ignoreWarning")}
         iconName="warning"
         notificationText={this.props.strings.get("scam")}
-        onButtonClick={this.onClick}/>
+        onButtonClick={this.onClick}
+      />
     );
   }
 }
@@ -180,7 +191,8 @@ class MessageNotification extends React.PureComponent {
         <PhishingNotification
           dispatch={this.props.dispatch}
           msgUri={this.props.msgUri}
-          strings={this.props.strings}/>
+          strings={this.props.strings}
+        />
       );
     }
     if (this.props.hasRemoteContent) {
@@ -189,7 +201,8 @@ class MessageNotification extends React.PureComponent {
           dispatch={this.props.dispatch}
           msgUri={this.props.msgUri}
           realFrom={this.props.realFrom}
-          strings={this.props.strings}/>
+          strings={this.props.strings}
+        />
       );
     }
     if (this.props.canUnJunk) {
@@ -197,14 +210,16 @@ class MessageNotification extends React.PureComponent {
         <JunkNotification
           dispatch={this.props.dispatch}
           msgUri={this.props.msgUri}
-          strings={this.props.strings}/>
+          strings={this.props.strings}
+        />
       );
     }
     if (this.props.isOutbox) {
       return (
         <OutboxNotification
           dispatch={this.props.dispatch}
-          strings={this.props.strings}/>
+          strings={this.props.strings}
+        />
       );
     }
     return null;

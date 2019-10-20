@@ -4,7 +4,9 @@
 
 var EXPORTED_SYMBOLS = ["isLightningInstalled"];
 
-const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   registerHook: "resource://conversations/modules/hook.js",
@@ -29,7 +31,15 @@ try {
 
 // This is a version of setupOptions suitable for Conversations
 // see http://mxr.mozilla.org/comm-central/source/calendar/lightning/content/imip-bar.js#186
-function imipOptions(rootNode, msgWindow, message, itipItem, rc, actionFunc, foundItems) {
+function imipOptions(
+  rootNode,
+  msgWindow,
+  message,
+  itipItem,
+  rc,
+  actionFunc,
+  foundItems
+) {
   let imipBarText = rootNode.getElementsByClassName("lightningImipText")[0];
   let data = cal.itip.getOptionsText(itipItem, rc, actionFunc);
   let w = topMail3Pane(message);
@@ -45,11 +55,20 @@ function imipOptions(rootNode, msgWindow, message, itipItem, rc, actionFunc, fou
         imipBarText.textContent = label;
 
         // Hide all buttons
-        for (let button of rootNode.getElementsByClassName("lightningImipButton"))
+        for (let button of rootNode.getElementsByClassName(
+          "lightningImipButton"
+        )) {
           button.style.display = "none";
+        }
 
         // In case it's useful
-        listener.onOperationComplete(aCalendar, aStatus, aOperationType, aId, aDetail);
+        listener.onOperationComplete(
+          aCalendar,
+          aStatus,
+          aOperationType,
+          aId,
+          aDetail
+        );
       },
 
       onGetResult() {},
@@ -68,7 +87,10 @@ function imipOptions(rootNode, msgWindow, message, itipItem, rc, actionFunc, fou
     buttonElement.style.display = "block";
     // Fill in the right tooltip and label by re-using the original (hidden)
     // elements.
-    buttonElement.setAttribute("tooltiptext", originalButtonElement.getAttribute("tooltiptext"));
+    buttonElement.setAttribute(
+      "tooltiptext",
+      originalButtonElement.getAttribute("tooltiptext")
+    );
     buttonElement.textContent = originalButtonElement.label;
   };
 
@@ -77,8 +99,9 @@ function imipOptions(rootNode, msgWindow, message, itipItem, rc, actionFunc, fou
     if (c != "imipMoreButton") {
       showButton(c);
       // Working around the lack of dropdown buttons. See discussion in bug 1042741
-      if (c == "imipAcceptButton" || c == "imipAcceptRecurrencesButton")
+      if (c == "imipAcceptButton" || c == "imipAcceptRecurrencesButton") {
         showButton("imipTentativeButton");
+      }
     }
   }
 }
@@ -92,17 +115,19 @@ let lightningHook = {
     try {
       let sinkProps = aMsgWindow.msgHeaderSink.properties;
       itipItem = sinkProps.getPropertyAsInterface("itipItem", Ci.calIItipItem);
-    } catch (e) {
-    }
+    } catch (e) {}
 
     if (itipItem) {
       let method = aMsgHdr.getStringProperty("imip_method");
       let label = cal.itip.getMethodText(method);
       cal.itip.initItemFromMsgData(itipItem, method, aMsgHdr);
 
-      imipBarText.textContent  = label;
+      imipBarText.textContent = label;
 
-      cal.itip.processItipItem(itipItem, imipOptions.bind(null, aDomNode, aMsgWindow, aMessage));
+      cal.itip.processItipItem(
+        itipItem,
+        imipOptions.bind(null, aDomNode, aMsgWindow, aMessage)
+      );
       imipBar.style.display = "block";
     }
   },

@@ -10,16 +10,23 @@
 class Message extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.strings = new StringBundle("chrome://conversations/locale/template.properties");
+    this.strings = new StringBundle(
+      "chrome://conversations/locale/template.properties"
+    );
   }
 
   componentDidMount() {
-    if (this.lastScrolledMsgUri != this.props.message.msgUri &&
-        this.props.message.scrollTo) {
+    if (
+      this.lastScrolledMsgUri != this.props.message.msgUri &&
+      this.props.message.scrollTo
+    ) {
       this.lastScrolledMsgUri = this.props.message.msgUri;
       // The header is 44px high (yes, this is harcodeadly ugly).
       window.requestAnimationFrame(() => {
-        window.scrollTo(0, this.li.getBoundingClientRect().top + window.scrollY + 5 - 44);
+        window.scrollTo(
+          0,
+          this.li.getBoundingClientRect().top + window.scrollY + 5 - 44
+        );
       });
     }
   }
@@ -28,12 +35,17 @@ class Message extends React.PureComponent {
     if (!this.props.message.scrollTo) {
       return;
     }
-    if ((this.lastScrolledMsgUri != this.props.message.msgUri) ||
-        (prevProps.iframesLoading && !this.props.iframesLoading)) {
+    if (
+      this.lastScrolledMsgUri != this.props.message.msgUri ||
+      (prevProps.iframesLoading && !this.props.iframesLoading)
+    ) {
       this.lastScrolledMsgUri = this.props.message.msgUri;
       // The header is 44px high (yes, this is harcodeadly ugly).
       window.requestAnimationFrame(() => {
-        window.scrollTo(500, this.li.getBoundingClientRect().top + window.scrollY + 5 - 44);
+        window.scrollTo(
+          500,
+          this.li.getBoundingClientRect().top + window.scrollY + 5 - 44
+        );
       });
     }
   }
@@ -44,7 +56,7 @@ class Message extends React.PureComponent {
     // and working.
     // <div class="body-container"></div>
     return (
-      <li className="message" ref={li => this.li = li}>
+      <li className="message" ref={li => (this.li = li)}>
         <MessageHeader
           dispatch={this.props.dispatch}
           bcc={this.props.message.bcc}
@@ -64,45 +76,51 @@ class Message extends React.PureComponent {
           shortFolderName={this.props.message.shortFolderName}
           snippet={this.props.message.snippet}
           starred={this.props.message.starred}
-          tags={this.props.message.tags}/>
-        {this.props.message.expanded &&
-         this.props.message.detailsShowing &&
+          tags={this.props.message.tags}
+        />
+        {this.props.message.expanded && this.props.message.detailsShowing && (
           <MessageDetails
             bcc={this.props.message.bcc}
             cc={this.props.message.cc}
             extraLines={this.props.message.extraLines}
             from={this.props.message.from}
             to={this.props.message.to}
-            strings={this.strings}/>
-        }
-        {this.props.message.expanded &&
+            strings={this.strings}
+          />
+        )}
+        {this.props.message.expanded && (
           <MessageNotification
-            canUnJunk={this.props.message.isJunk && !this.props.displayingMultipleMsgs}
+            canUnJunk={
+              this.props.message.isJunk && !this.props.displayingMultipleMsgs
+            }
             dispatch={this.props.dispatch}
             hasRemoteContent={this.props.message.hasRemoteContent}
             isPhishing={this.props.message.isPhishing}
             isOutbox={this.props.message.isOutbox}
             msgUri={this.props.message.msgUri}
             realFrom={this.props.message.realFrom}
-            strings={this.strings}/>
-        }
+            strings={this.strings}
+          />
+        )}
         <div className="messageBody">
-          {this.props.message.expanded &&
+          {this.props.message.expanded && (
             <SpecialMessageTags
               canClickFolder={true}
               dispatch={this.props.dispatch}
               folderName={this.props.message.folderName}
               inView={this.props.message.inView}
               msgUri={this.props.message.msgUri}
-              strings={this.strings}/>
-          }
-          {this.props.message.expanded &&
+              strings={this.strings}
+            />
+          )}
+          {this.props.message.expanded && (
             <MessageTags
               dispatch={this.props.dispatch}
               expanded={true}
               msgUri={this.props.message.msgUri}
-              tags={this.props.message.tags}/>
-          }
+              tags={this.props.message.tags}
+            />
+          )}
           <MessageIFrame
             dispatch={this.props.dispatch}
             expanded={this.props.message.expanded}
@@ -112,32 +130,39 @@ class Message extends React.PureComponent {
             neckoUrl={this.props.message.neckoUrl}
             prefs={this.props.prefs}
             realFrom={this.props.message.realFrom}
-            strings={this.strings}/>
-          {this.props.message.expanded && !!this.props.message.attachments.length &&
-            <Attachments
-              dispatch={this.props.dispatch}
-              attachments={this.props.message.attachments}
-              attachmentsPlural={this.props.message.attachmentsPlural}
-              msgUri={this.props.message.msgUri}
-              gallery={this.props.message.gallery}
-              strings={this.strings}/>
-          }
+            strings={this.strings}
+          />
+          {this.props.message.expanded &&
+            !!this.props.message.attachments.length && (
+              <Attachments
+                dispatch={this.props.dispatch}
+                attachments={this.props.message.attachments}
+                attachmentsPlural={this.props.message.attachmentsPlural}
+                msgUri={this.props.message.msgUri}
+                gallery={this.props.message.gallery}
+                strings={this.strings}
+              />
+            )}
         </div>
-        {this.props.message.expanded &&
+        {this.props.message.expanded && (
           <MessageFooter
             dispatch={this.props.dispatch}
             msgUri={this.props.message.msgUri}
             multipleRecipients={this.props.message.multipleRecipients}
             recipientsIncludeLists={this.props.message.recipientsIncludeLists}
-            isDraft={this.props.message.isDraft}/>
-        }
-        {this.props.isLastMessage &&
+            isDraft={this.props.message.isDraft}
+          />
+        )}
+        {this.props.isLastMessage && (
           <div>
             <small>
-              <i>Quick Reply is temporarily disabled due to needing more work for Thunderbird 68.</i>
+              <i>
+                Quick Reply is temporarily disabled due to needing more work for
+                Thunderbird 68.
+              </i>
             </small>
           </div>
-        }
+        )}
       </li>
     );
   }
