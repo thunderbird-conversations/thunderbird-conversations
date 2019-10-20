@@ -23,7 +23,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   StringBundle: "resource:///modules/StringBundle.js",
 });
 const {
-  dateAsInMessageList, entries, escapeHtml, getIdentityForEmail, isAccel,
+  dateAsInMessageList, entries, escapeHtml, getIdentityForEmail,
   isOSX, parseMimeLine, sanitize,
 } = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
 
@@ -610,12 +610,12 @@ Message.prototype = {
     }
   },
 
-  toReactData(aQuickReply) {
+  toReactData() {
     // Ok, brace ourselves for notifications happening during the message load
     //  process.
     addMsgListener(this);
 
-    let msgData = this.toTmplData(aQuickReply);
+    let msgData = this.toTmplData();
     return {
       attachments: msgData.attachments,
       attachmentsPlural: msgData.attachmentsPlural,
@@ -646,7 +646,7 @@ Message.prototype = {
   },
 
   // Output this message as a whole bunch of HTML
-  toTmplData(aQuickReply) {
+  toTmplData() {
     let self = this;
     let extraClasses = [];
     let data = {
@@ -664,7 +664,6 @@ Message.prototype = {
       isPhishing: this.isPhishing,
       uri: null,
       neckoUrl: msgHdrToNeckoURL(this._msgHdr),
-      quickReply: aQuickReply,
       bugzillaUrl: "[unknown bugzilla instance]",
       extraClasses: null,
       isJunk: msgHdrIsJunk(this._msgHdr),
@@ -916,9 +915,6 @@ Message.prototype = {
   // Actually, we only do these expensive DOM calls when we need to, i.e. when
   //  we're expanded for the first time (expand calls us).
   registerActions: function _Message_registerActions() {
-    let self = this;
-    let mainWindow = topMail3Pane(this);
-
     // Register all the needed event handlers. Nice wrappers below.
 
     // TODO: This toggle is currently disabled.
@@ -937,42 +933,6 @@ Message.prototype = {
     //   self._reloadMessage();
     //   event.stopPropagation();
     // });
-
-    this.register(".quickReply", function(event) {
-      event.stopPropagation();
-    }, { action: "keyup" });
-    this.register(".quickReply", function(event) {
-      event.stopPropagation();
-    }, { action: "keypress" });
-    this.register(".quickReply", function(event) {
-      // Ok, so it's actually convenient to register our event listener on the
-      //  .quickReply node because we can easily prevent it from bubbling
-      //  upwards, but the problem is, if a message is appended at the end of
-      //  the conversation view, this event listener is active and the one from
-      //  the new message is active too. So we check that the quick reply still
-      //  is inside our dom node.
-      if (!self._domNode.getElementsByClassName("quickReply").length)
-        return;
-
-      let window = self._conversation._htmlPane;
-
-      switch (event.keyCode) {
-        case mainWindow.KeyEvent.DOM_VK_RETURN:
-          if (isAccel(event)) {
-            if (event.shiftKey)
-              window.gComposeSession.send({ archive: true });
-            else
-              window.gComposeSession.send();
-          }
-          break;
-
-        case mainWindow.KeyEvent.DOM_VK_ESCAPE:
-          Log.debug("Escape from quickReply");
-          self._domNode.focus();
-          break;
-      }
-      event.stopPropagation();
-    }, { action: "keydown" });
   },
 
   get iframe() {

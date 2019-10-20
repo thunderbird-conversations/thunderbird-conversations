@@ -16,6 +16,7 @@ class _MessageList extends React.PureComponent {
             displayingMultipleMsgs={!!this.props.messages.length}
             iframesLoading={this.props.summary.iframesLoading}
             index={index}
+            isLastMessage={index == this.props.messages.msgData.length - 1}
             message={message}
             prefs={this.props.summary.prefs}/>
         ))}

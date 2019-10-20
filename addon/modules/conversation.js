@@ -825,7 +825,7 @@ Conversation.prototype = {
     }
     this.viewWrapper = new ViewWrapper(this);
     const reactMsgData = aMessages.map(m => {
-      const msgData = m.message.toReactData(m.message.initialPosition == this.messages.length - 1);
+      const msgData = m.message.toReactData();
       // inView indicates if the message is currently in the message list
       // view or not. If it isn't we don't show the folder tags.
       m.message.inView = this.viewWrapper.isInView(m);
@@ -914,7 +914,7 @@ Conversation.prototype = {
     const shouldShowHeaders = Prefs.getInt("mail.show_headers") == kHeadersShowAll;
 
     const reactMsgData = this.messages.map((m, i) => {
-      const msgData = m.message.toReactData(i == this.messages.length - 1);
+      const msgData = m.message.toReactData();
       // inView indicates if the message is currently in the message list
       // view or not. If it isn't we don't show the folder name.
       msgData.inView = this.viewWrapper.isInView(m);

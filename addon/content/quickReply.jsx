@@ -154,3 +154,41 @@
    ]]>
  </script>
 */
+
+// Old Message.js event handlers:
+//
+// this.register(".quickReply", function(event) {
+//   event.stopPropagation();
+// }, { action: "keyup" });
+// this.register(".quickReply", function(event) {
+//   event.stopPropagation();
+// }, { action: "keypress" });
+// this.register(".quickReply", function(event) {
+//   // Ok, so it's actually convenient to register our event listener on the
+//   //  .quickReply node because we can easily prevent it from bubbling
+//   //  upwards, but the problem is, if a message is appended at the end of
+//   //  the conversation view, this event listener is active and the one from
+//   //  the new message is active too. So we check that the quick reply still
+//   //  is inside our dom node.
+//   if (!self._domNode.getElementsByClassName("quickReply").length)
+//     return;
+//
+//   let window = self._conversation._htmlPane;
+//
+//   switch (event.keyCode) {
+//     case mainWindow.KeyEvent.DOM_VK_RETURN:
+//       if (isAccel(event)) {
+//         if (event.shiftKey)
+//           window.gComposeSession.send({ archive: true });
+//         else
+//           window.gComposeSession.send();
+//       }
+//       break;
+//
+//     case mainWindow.KeyEvent.DOM_VK_ESCAPE:
+//       Log.debug("Escape from quickReply");
+//       self._domNode.focus();
+//       break;
+//   }
+//   event.stopPropagation();
+// }, { action: "keydown" });

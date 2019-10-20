@@ -131,6 +131,13 @@ class Message extends React.PureComponent {
             recipientsIncludeLists={this.props.message.recipientsIncludeLists}
             isDraft={this.props.message.isDraft}/>
         }
+        {this.props.isLastMessage &&
+          <div>
+            <small>
+              <i>Quick Reply is temporarily disabled due to needing more work for Thunderbird 68.</i>
+            </small>
+          </div>
+        }
       </li>
     );
   }
@@ -141,6 +148,7 @@ Message.propTypes = {
   displayingMultipleMsgs: PropTypes.bool.isRequired,
   iframesLoading: PropTypes.number.isRequired,
   index: PropTypes.number.isRequired,
+  isLastMessage: PropTypes.bool.isRequired,
   message: PropTypes.object.isRequired,
   prefs: PropTypes.object.isRequired,
 };
