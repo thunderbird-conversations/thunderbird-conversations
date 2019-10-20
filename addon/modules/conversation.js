@@ -985,13 +985,6 @@ Conversation.prototype = {
     //   let focusedNode = messageNodes[focusThis];
     //   self.messages[focusThis].message.onSelected();
     //
-    //   Array.prototype.forEach.call(messageNodes, function(node, i) {
-    //     if (i < messageNodes.length) {
-    //       node.setAttribute("tabindex", i + 2);
-    //     }
-    //   });
-    //   focusedNode.setAttribute("tabindex", "1");
-    //
     //   // It doesn't matter if it's an update after all, we will just set
     //   // currentConversation to the same value in the _onComplete handler.
     //   self._onComplete();

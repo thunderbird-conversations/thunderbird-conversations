@@ -10,7 +10,6 @@ const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm")
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   Conversation: "resource://conversations/modules/conversation.js",
-  // CustomizeKeys: "resource://conversations/modules/keycustomization.js",
   GlodaAttrProviders: "resource://conversations/modules/plugins/glodaAttrProviders.js",
   MonkeyPatch: "resource://conversations/modules/monkeypatch.js",
   Services: "resource://gre/modules/Services.jsm",
@@ -145,23 +144,6 @@ function startup(aData, aReason) {
         "",
         "chrome,width=800,height=500", {});
     }
-
-    // Hook into options window
-    // TODO: Maybe bring this back?
-    // Services.obs.addObserver({
-    //   observe(aSubject, aTopic, aData) {
-    //     if (aTopic == "addon-options-displayed" && aData == "gconversation@xulforum.org") {
-    //       CustomizeKeys.enable(aSubject); // aSubject is the options document
-    //     }
-    //   },
-    // }, "addon-options-displayed");
-    // Services.obs.addObserver({
-    //   observe(aSubject, aTopic, aData) {
-    //     if (aTopic == "addon-options-hidden" && aData == "gconversation@xulforum.org") {
-    //       CustomizeKeys.disable(aSubject); // aSubject is the options document
-    //     }
-    //   },
-    // }, "addon-options-hidden");
   } catch (e) {
     Cu.reportError(e);
     dumpCallStack(e);

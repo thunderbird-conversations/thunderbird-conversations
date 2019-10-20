@@ -20,7 +20,6 @@ const kPrefDefaults = {
   "compose_in_tab": true,
   "unwanted_recipients": "{}",
   "hide_sigs": false,
-  "keybindings": "",
 };
 
 browser.storage.local.get("preferences").then(async results => {

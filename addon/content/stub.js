@@ -150,22 +150,6 @@ var isQuickCompose = false;
 // Mark a message as read if a user scrolls past top and bottom of an
 // unread message.
 function markReadInView(event) {
-  if (event.type == "keydown") {
-    // for scroll by keyboard shortcut
-    switch (event.which) {
-      case KeyEvent.DOM_VK_SPACE:
-      case KeyEvent.DOM_VK_TAB:
-      case KeyEvent.DOM_VK_PAGE_UP:
-      case KeyEvent.DOM_VK_PAGE_DOWN:
-      case KeyEvent.DOM_VK_UP:
-      case KeyEvent.DOM_VK_DOWN:
-      case KeyEvent.DOM_VK_F:
-      case KeyEvent.DOM_VK_B:
-        break;
-      default:
-        return;
-    }
-  }
   document.removeEventListener("scroll", markReadInView, true);
   clearTimeout(markReadInView.timeout);
   markReadInView.timeout = setTimeout(function() {

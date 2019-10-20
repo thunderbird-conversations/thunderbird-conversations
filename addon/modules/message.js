@@ -5,8 +5,7 @@
 "use strict";
 
 var EXPORTED_SYMBOLS = [
-  "MessageFromGloda", "MessageFromDbHdr",
-  "ConversationKeybindings", "MessageUtils", "watchIFrame",
+  "MessageFromGloda", "MessageFromDbHdr", "MessageUtils", "watchIFrame",
 ];
 
 const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm");
@@ -14,7 +13,6 @@ const {XPCOMUtils} = ChromeUtils.import("resource://gre/modules/XPCOMUtils.jsm")
 XPCOMUtils.defineLazyModuleGetters(this, {
   GlodaUtils: "resource:///modules/gloda/utils.js",
   isLightningInstalled: "resource://conversations/modules/plugins/lightning.js",
-  MailServices: "resource:///modules/MailServices.jsm",
   makeFriendlyDateAgo: "resource:///modules/templateUtils.js",
   MsgHdrToMimeMessage: "resource:///modules/gloda/mimemsg.js",
   mimeMsgToContentSnippetAndMeta: "resource:///modules/gloda/connotent.js",
@@ -23,8 +21,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   StringBundle: "resource:///modules/StringBundle.js",
 });
 const {
-  dateAsInMessageList, entries, escapeHtml, getIdentityForEmail,
-  isOSX, parseMimeLine, sanitize,
+  dateAsInMessageList, escapeHtml, getIdentityForEmail, parseMimeLine, sanitize,
 } = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
 
 // It's not really nice to write into someone elses object but this is what the
@@ -259,262 +256,6 @@ class _MessageUtils {
 }
 
 var MessageUtils = new _MessageUtils();
-
-function KeyListener(aMessage) {
-  this.message = aMessage;
-  this.mail3PaneWindow = topMail3Pane(aMessage);
-  this.KeyEvent = this.mail3PaneWindow.KeyEvent;
-  this.navigator = this.mail3PaneWindow.navigator;
-}
-
-KeyListener.prototype = {
-  functions: {
-    doNothing: function doNothing(event) {
-      event.preventDefault();
-      event.stopPropagation();
-    },
-    toggleMessage: function toggleMessage(event) {
-      // If we expand a collapsed, when in doubt, mark it read.
-      if (this.message.collapsed)
-        this.message.read = true;
-      this.message.toggle();
-      event.preventDefault();
-      event.stopPropagation();
-    },
-    nextMessage: function nextMessage(event) {
-      let [msgNodes, index] = this.findMsgNode(this.message._domNode);
-      if (index < (msgNodes.length - 1)) {
-        let next = msgNodes[index + 1];
-        next.focus();
-        // this.message._conversation._htmlPane.scrollNodeIntoView(next);
-      }
-      event.preventDefault();
-      event.stopPropagation();
-    },
-    prevMessage: function prevMessage(event) {
-      let [msgNodes, index] = this.findMsgNode(this.message._domNode);
-      if (index > 0) {
-        let prev = msgNodes[index - 1];
-        prev.focus();
-        // this.message._conversation._htmlPane.scrollNodeIntoView(prev);
-      }
-      event.preventDefault();
-      event.stopPropagation();
-    },
-    reply: function reply(event) {
-      if (event.shiftKey) {
-        this.message.compose(Ci.nsIMsgCompType.ReplyAll);
-      } else {
-        this.message.compose(Ci.nsIMsgCompType.ReplyToSender);
-      }
-      event.preventDefault();
-      event.stopPropagation();
-    },
-    forward: function forward(event) {
-      this.message.forward(event);
-      event.preventDefault();
-      event.stopPropagation();
-    },
-    setFocus: function setFocus(event) {
-      // Hey, let's move back to this message next time!
-      this.message._domNode.setAttribute("tabindex", "1");
-      this.mail3PaneWindow.SetFocusThreadPane(event);
-      event.preventDefault();
-      event.stopPropagation();
-    },
-    viewSource: function viewSource(event) {
-      topMail3Pane(this.message).ViewPageSource([this.message._uri]);
-      event.preventDefault();
-      event.stopPropagation();
-    },
-    archive: function archive(event) {
-      msgHdrsArchive(this.message._conversation.msgHdrs);
-      event.preventDefault();
-      event.stopPropagation();
-    },
-    composeTemplate: function composeTemplate(event) {
-      this.message.compose(Ci.nsIMsgCompType.Template);
-      event.preventDefault();
-      event.stopPropagation();
-    },
-    deleteMessage: function deleteMessage(event) {
-      // TODO: This should use MessageUtils.delete().
-      // this.message.removeFromConversation();
-      event.preventDefault();
-      event.stopPropagation();
-    },
-    tagHandling: function tagHandling(event) {
-      // Tag handling.
-      // 0 removes all tags, 1 to 9 set the corresponding tag, if it exists
-      let i = event.which - "1".charCodeAt(0);
-      if (i == -1) {
-        this.message.tags = [];
-      } else {
-        let tag = MailServices.tags.getAllTags({})[i];
-        if (tag) {
-          if (this.message.tags.some(x => x.key == tag.key))
-            this.message.tags = this.message.tags
-            .filter(x => x.key != tag.key);
-          else
-            this.message.tags = this.message.tags.concat([tag]);
-        }
-      }
-      event.preventDefault();
-      event.stopPropagation();
-    },
-  },
-
-  findMsgNode: function findMsgNode(msgNode) {
-    let msgNodes = this.message._domNode.ownerDocument
-      .getElementsByClassName(Message.prototype.cssClass);
-    msgNodes = Array.from(msgNodes);
-    let index = msgNodes.indexOf(msgNode);
-    return [msgNodes, index];
-  },
-
-  saveKeybindings() {
-    Prefs.setString("conversations.keybindings", JSON.stringify(KeyListener.prototype.keybindings));
-  },
-  loadKeybindings() {
-    if (Prefs.hasPref("conversations.keybindings"))
-      for (let [os, bindings] of entries(JSON.parse(Prefs.getString("conversations.keybindings"))))
-        KeyListener.prototype.keybindings[os] = bindings;
-  },
-  restoreKeybindings() {
-    // We need to preserve object identity for KeyListener.prototype.keybindings,
-    // So we can't just clone defaultKeybindings directly.  Instead, we clone
-    // each key/value pair, but leave the outer object unchanged.
-    for (let [os, bindings] of entries(KeyListener.prototype.defaultKeybindings))
-      KeyListener.prototype.keybindings[os] = JSON.parse(JSON.stringify(bindings));
-  },
-  defaultKeybindings: null, // To be filled in below with a copy of these keybindings
-  keybindings: {
-    "OSX": {
-      "R": [{ mods: { metaKey: true, ctrlKey: false },
-              func: "reply" },
-            { mods: { metaKey: false, ctrlKey: true },
-              func: "reply"}],
-      "L": [{ mods: { metaKey: true, ctrlKey: false },
-              func: "forward" },
-            { mods: { metaKey: false, ctrlKey: true },
-              func: "forward" }],
-      "U": [{ mods: { metaKey: true, ctrlKey: false },
-              func: "viewSource" },
-            { mods: { metaKey: false, ctrlKey: true },
-              func: "viewSource" }],
-      "E": [{ mods: { metaKey: true, ctrlKey: false },
-              func: "composeTemplate" },
-            { mods: { metaKey: false, ctrlKey: true },
-              func: "composeTemplate" }],
-    },
-    "Other": {
-      "R": [{ mods: { ctrlKey: true },
-              func: "reply"}],
-      "L": [{ mods: { ctrlKey: true },
-              func: "forward" }],
-      "U": [{ mods: { ctrlKey: true },
-              func: "viewSource" }],
-      "E": [{ mods: { ctrlKey: true },
-              func: "composeTemplate" }],
-    },
-    "Generic": {
-      "\x0D": // \x0D = 13 = KeyboardEvent.DOM_VK_RETURN
-        [{ mods: { metaKey: false, ctrlKey: false },
-           func: "toggleMessage" }],
-      "O": [{ mods: { metaKey: false, ctrlKey: false },
-              func: "toggleMessage" }],
-      "F": [{ mods: { metaKey: false, ctrlKey: false },
-              func: "nextMessage" }],
-      "B": [{ mods: { metaKey: false, ctrlKey: false },
-              func: "prevMessage" }],
-      "A": [{ mods: { metaKey: false, ctrlKey: false },
-              func: "archive" }],
-      "U": [{ mods: { metaKey: false, ctrlKey: false },
-              func: "setFocus" }],
-      "\x2E": // \x2E = 46 = KeyboardEvent.DOM_VK_DELETE
-        [{ mods: { metaKey: false, ctrlKey: false },
-           func: "deleteMessage" }],
-
-      "0": [{ mods: { ctrlKey: false, altKey: false, shiftKey: false, metaKey: false },
-              func: "tagHandling" }],
-      "1": [{ mods: { ctrlKey: false, altKey: false, shiftKey: false, metaKey: false },
-              func: "tagHandling" }],
-      "2": [{ mods: { ctrlKey: false, altKey: false, shiftKey: false, metaKey: false },
-              func: "tagHandling" }],
-      "3": [{ mods: { ctrlKey: false, altKey: false, shiftKey: false, metaKey: false },
-              func: "tagHandling" }],
-      "4": [{ mods: { ctrlKey: false, altKey: false, shiftKey: false, metaKey: false },
-              func: "tagHandling" }],
-      "5": [{ mods: { ctrlKey: false, altKey: false, shiftKey: false, metaKey: false },
-              func: "tagHandling" }],
-      "6": [{ mods: { ctrlKey: false, altKey: false, shiftKey: false, metaKey: false },
-              func: "tagHandling" }],
-      "7": [{ mods: { ctrlKey: false, altKey: false, shiftKey: false, metaKey: false },
-              func: "tagHandling" }],
-      "8": [{ mods: { ctrlKey: false, altKey: false, shiftKey: false, metaKey: false },
-              func: "tagHandling" }],
-      "9": [{ mods: { ctrlKey: false, altKey: false, shiftKey: false, metaKey: false },
-              func: "tagHandling" }],
-    },
-  },
-  // Any event that's handled *must* be stopped from bubbling upwards, because
-  //  there's a topmost event listener on the DOM window that re-fires any
-  //  keypress (that one is not capturing) into the main window. We have to do
-  //  this because otherwise events dont make it out of the <browser
-  //  id="multimessage"> that holds us when the conversation view has focus.
-  // That's what makes cmd/ctrl-n work properly.
-  onKeyUp: function _KeyListener_onKeyPress(event) {
-    let bindings;
-    if (isOSX) {
-      bindings = [this.keybindings.OSX, this.keybindings.Generic];
-    } else { // TODO: Windows, Linux or other platform-specific bindings, rather than just "Other"?
-      bindings = [this.keybindings.Other, this.keybindings.Generic];
-    }
-    let key = String.fromCharCode(event.which);
-    for (let binding of bindings) {
-      if (key in binding) {
-        let actions = binding[key];
-        for (let action of actions) {
-          let match = true;
-          for (let mod in action.mods) {
-            // eslint-disable-next-line no-prototype-builtins
-            if (action.mods.hasOwnProperty(mod)) {
-              match = match && (action.mods[mod] == event[mod]);
-            }
-          }
-          if (match) {
-            let func = this.functions[action.func];
-            if (typeof func === "function")
-              func.call(this, event);
-            return;
-          }
-        }
-      }
-    }
-  },
-};
-
-const ConversationKeybindings = {
-  bindings: KeyListener.prototype.keybindings,
-  registerCustomListener: function registerCustomListener(name, func) {
-    if (this.availableActions.includes(name))
-      return false;
-    this.availableActions.push(name);
-    KeyListener.prototype.functions[name] = func;
-    return true;
-  },
-  availableActions: [],
-  saveKeybindings() { KeyListener.prototype.saveKeybindings(); },
-  restoreKeybindings() { KeyListener.prototype.restoreKeybindings(); },
-};
-
-// Copy default bindings
-KeyListener.prototype.defaultKeybindings = JSON.parse(JSON.stringify(KeyListener.prototype.keybindings));
-// Load any customizations
-KeyListener.prototype.loadKeybindings();
-for (let [actionName /* j */] of entries(KeyListener.prototype.functions)) {
-  ConversationKeybindings.availableActions.push(actionName);
-}
 
 // Call that one after setting this._msgHdr;
 function Message(aConversation) {
@@ -827,11 +568,6 @@ Message.prototype = {
     this._domNode = aDomNode;
 
     let self = this;
-
-    let keyListener = new KeyListener(this);
-    this._domNode.addEventListener("keydown", function(event) {
-      keyListener.onKeyUp(event);
-    }); // über-important: don't capture
 
     // Register event handlers for onSelected.
     // Set useCapture: true for preventing this from being canceled

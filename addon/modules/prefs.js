@@ -78,7 +78,6 @@ PrefManager.prototype = {
       "hide_quote_length": gConversationsPrefs.getIntPref("hide_quote_length"),
       "hide_sigs": gConversationsPrefs.getBoolPref("hide_sigs"),
       "compose_in_tab": gConversationsPrefs.getBoolPref("compose_in_tab"),
-      "keybindings": gConversationsPrefs.getStringPref("keybindings"),
     };
     // This is a hashmap
     result.monospaced_senders = {};
