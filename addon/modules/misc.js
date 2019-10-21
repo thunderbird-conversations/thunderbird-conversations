@@ -167,28 +167,26 @@ function folderName(aFolder) {
   return [aFolder.prettyName, folderStr];
 }
 
-function openConversationInTabOrWindow(aUrl) {
+function openConversationInTabOrWindow(urls) {
+  let url = Prefs.kStubUrl + "?urls=" + encodeURIComponent(urls.join(","));
+
   let window = getMail3Pane();
   // Counting some extra pixels for window decorations.
   let height = Math.min(window.screen.availHeight - 30, 1024);
   switch (Prefs.getInt("mail.openMessageBehavior")) {
     case 0:
-      window.open(
-        aUrl,
-        "_blank",
-        "chrome,resizable,width=640,height=" + height
-      );
+      window.open(url, "_blank", "chrome,resizable,width=640,height=" + height);
       break;
     case 1:
       window.open(
-        aUrl,
+        url,
         "conversations",
         "chrome,resizable,width=640,height=" + height
       );
       break;
     case 2:
       window.document.getElementById("tabmail").openTab("chromeTab", {
-        chromePage: aUrl,
+        chromePage: url,
       });
       break;
   }
