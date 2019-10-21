@@ -153,7 +153,7 @@ class Message extends React.PureComponent {
             isDraft={this.props.message.isDraft}
           />
         )}
-        {this.props.isLastMessage && (
+        {this.props.isLastMessage && this.props.message.expanded && (
           <div>
             <small>
               <i>
