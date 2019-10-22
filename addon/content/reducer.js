@@ -383,7 +383,7 @@ function summary(state = initialSummary, action) {
       return state;
     }
     case "FORWARD_CONVERSATION": {
-      Conversations.currentConversation.forward();
+      Conversations.currentConversation.forward().catch(console.error);
       return state;
     }
     case "OPEN_LINK": {

@@ -1109,53 +1109,43 @@ Conversation.prototype = {
     msgHdrsMarkAsRead(this.msgHdrs, read);
   },
 
-  forward() {
+  async forward() {
     let fields = Cc[
       "@mozilla.org/messengercompose/composefields;1"
     ].createInstance(Ci.nsIMsgCompFields);
     fields.characterSet = "UTF-8";
     fields.bodyIsAsciiOnly = false;
     fields.forcePlainText = false;
-    this.exportAsHtml(function(html) {
-      fields.body = html;
-      let params = Cc[
-        "@mozilla.org/messengercompose/composeparams;1"
-      ].createInstance(Ci.nsIMsgComposeParams);
-      params.format = Ci.nsIMsgCompFormat.HTML;
-      params.composeFields = fields;
-      return MailServices.compose.OpenComposeWindowWithParams(null, params);
-    });
+    fields.body = await this.exportAsHtml();
+    let params = Cc[
+      "@mozilla.org/messengercompose/composeparams;1"
+    ].createInstance(Ci.nsIMsgComposeParams);
+    params.format = Ci.nsIMsgCompFormat.HTML;
+    params.composeFields = fields;
+    return MailServices.compose.OpenComposeWindowWithParams(null, params);
   },
 
   // For the "forward conversation" action
-  exportAsHtml(k) {
+  async exportAsHtml() {
     // Somehow this seems to be needed... why? Dunno.
     let start = "<html><body>";
     let hr =
       '<div style="border-top: 1px solid #888; height: 15px; width: 70%; margin: 0 auto; margin-top: 15px">&nbsp;</div>';
     let html =
       start + "<p>" + strings.get("conversationFillInText") + "</p>" + hr;
-    let count = 1;
-    let top = function() {
-      if (!--count) {
-        html +=
-          '<div style="font-family: sans-serif !important;">' +
-          messagesHtml.join(hr) +
-          "</div>";
-        Log.debug("The HTML: ---------\n", html, "\n\n");
-        k(html);
-      }
-    };
-    let messagesHtml = new Array(this.messages.length);
-    this.messages.forEach(function({ message: message }, i) {
-      let j = i;
-      count++;
-      message.exportAsHtml(function(aHtml) {
-        messagesHtml[j] = aHtml;
-        top();
-      });
-    });
-    top();
+    let promises = [];
+    for (const msg of this.messages) {
+      promises.push(msg.message.exportAsHtml());
+    }
+
+    let messagesHtml = await Promise.all(promises);
+
+    html +=
+      '<div style="font-family: sans-serif !important;">' +
+      messagesHtml.join(hr) +
+      "</div>";
+    Log.debug("The HTML: ---------\n", html, "\n\n");
+    return html;
   },
 };
 

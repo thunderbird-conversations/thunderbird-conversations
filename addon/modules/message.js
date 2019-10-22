@@ -891,8 +891,9 @@ Message.prototype = {
       "form[action]"
     );
 
+    const neckoUrl = msgHdrToNeckoURL(this._msgHdr).spec;
     const url = Services.io
-      .newURI(this._uri)
+      .newURI(neckoUrl)
       .QueryInterface(Ci.nsIMsgMailNewsUrl);
 
     try {
@@ -991,7 +992,7 @@ Message.prototype = {
    * that we want to forward a plaintext version of the message, so we try and
    * do our best to give this. We're trying not to stream it once more!
    */
-  exportAsHtml: function _Message_exportAsHtml(k) {
+  async exportAsHtml() {
     let author = escapeHtml(this._contacts[0][0]._name);
     let authorEmail = this._from.email;
     let authorAvatar = this._contacts[0][0].avatar;
@@ -1000,37 +1001,38 @@ Message.prototype = {
     // We try to convert the bodies to plain text, to enhance the readability in
     // the forwarded conversation. Note: <pre> tags are not converted properly
     // it seems, need to investigate...
-    quoteMsgHdr(this._msgHdr, function(body) {
-      // UGLY HACK. I don't even wanna dig into the internals of the composition
-      // window to figure out why this results in an extra <br> being added, so
-      // let's just stay sane and use a hack.
-      body = body.replace(/\r?\n<br>/g, "<br>");
-      body = body.replace(/<br>\r?\n/g, "<br>");
-      if (!(body.indexOf("<pre wrap>") === 0)) {
-        body = "<br>" + body;
-      }
-      let html = [
-        '<div style="overflow: auto">',
-        '<img src="',
-        authorAvatar,
-        '" style="float: left; height: 48px; margin-right: 5px" />',
-        '<b><span><a style="color: ',
-        authorColor,
-        ' !important; text-decoration: none !important; font-weight: bold" href="mailto:',
-        authorEmail,
-        '">',
-        author,
-        "</a></span></b><br />",
-        '<span style="color: #666">',
-        date,
-        "</span>",
-        "</div>",
-        '<div style="color: #666">',
-        body,
-        "</div>",
-      ].join("");
-      k(html);
-    });
+    let body = await quoteMsgHdr(this._msgHdr);
+
+    // UGLY HACK. I don't even wanna dig into the internals of the composition
+    // window to figure out why this results in an extra <br> being added, so
+    // let's just stay sane and use a hack.
+    body = body.replace(/\r?\n<br>/g, "<br>");
+    body = body.replace(/<br>\r?\n/g, "<br>");
+    if (!(body.indexOf("<pre wrap>") === 0)) {
+      body = "<br>" + body;
+    }
+    let html = [
+      '<div style="overflow: auto">',
+      '<img src="',
+      authorAvatar,
+      '" style="float: left; height: 48px; margin-right: 5px" />',
+      '<b><span><a style="color: ',
+      authorColor,
+      ' !important; text-decoration: none !important; font-weight: bold" href="mailto:',
+      authorEmail,
+      '">',
+      author,
+      "</a></span></b><br />",
+      '<span style="color: #666">',
+      date,
+      "</span>",
+      "</div>",
+      '<div style="color: #666">',
+      body,
+      "</div>",
+    ].join("");
+
+    return html;
   },
 };
 

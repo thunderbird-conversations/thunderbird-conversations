@@ -4,8 +4,7 @@
 
 /* import-globals-from quickReply.js */
 /* import-globals-from reducer.js */
-/* global $, newComposeSessionByDraftIf
-          Redux, ReactDOM, React, ReactRedux, ConversationWrapper,
+/* global $, Redux, ReactDOM, React, ReactRedux, ConversationWrapper,
           Log:true, masqueradeAsQuickCompose */
 
 let store;
