@@ -30,19 +30,16 @@ class _ConversationFooter extends React.PureComponent {
   render() {
     return (
       <div className="bottom-links">
-        <a
-          className="link"
-          href="javascript:"
-          onClick={this.forwardConversation}
-        >
+        <a className="link" onClick={this.forwardConversation}>
           {this.strings.get("stub.forward.tooltip")}
         </a>{" "}
-        –{" "}
-        <a className="link" href="javascript:" onClick={this.printConversation}>
-          {this.strings.get("stub.print.tooltip")}
-        </a>
       </div>
     );
+    // TODO: Get printing working again.
+    // –{" "}
+    // <a className="link" onClick={this.printConversation}>
+    //   {this.strings.get("stub.print.tooltip")}
+    // </a>
   }
 }
 

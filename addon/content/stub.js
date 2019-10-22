@@ -148,7 +148,7 @@ document.addEventListener(
             // TODO: Re-enable this.
             // registerQuickReply();
             // That's why we saved it before...
-            newComposeSessionByDraftIf();
+            // newComposeSessionByDraftIf();
             // TODO: expandQuickReply isn't defined anywhere. Should it be?
             // if (willExpand)
             //   expandQuickReply();

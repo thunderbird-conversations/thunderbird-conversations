@@ -231,7 +231,6 @@ class MessageHeaderOptions extends React.PureComponent {
             }
           >
             <a
-              href="javascript:"
               className="icon-link"
               onClick={this.showDetails}
               title={
