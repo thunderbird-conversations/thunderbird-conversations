@@ -644,10 +644,12 @@ Conversation.prototype = {
       //  calls fail.
       const message = byMessageId.get(glodaMsg.headerMessageID);
       if (message) {
-        const msgData = message.toReactData();
-        this._htmlPane.conversationDispatch({
-          type: "MSG_UPDATE_DATA",
-          msgData,
+        Services.tm.dispatchToMainThread(() => {
+          const msgData = message.toReactData();
+          this._htmlPane.conversationDispatch({
+            type: "MSG_UPDATE_DATA",
+            msgData,
+          });
         });
       }
     }
