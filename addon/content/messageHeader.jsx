@@ -15,8 +15,8 @@ class Fade extends React.PureComponent {
     };
   }
 
-  componentWillReceiveProps(nextProps) {
-    if (!this.props.trigger && nextProps.trigger) {
+  componentDidUpdate(prevProps) {
+    if (!prevProps.trigger && this.props.trigger) {
       let stateUpdate = {};
       if (this.fadeOutTimeout) {
         clearTimeout(this.fadeOutTimeout);
@@ -38,7 +38,7 @@ class Fade extends React.PureComponent {
         this.setState({ fadeIn: false });
         delete this.fadeInTimeout;
       }, 400);
-    } else if (this.props.trigger && !nextProps.trigger) {
+    } else if (prevProps.trigger && !this.props.trigger) {
       let stateUpdate = {};
       if (this.fadeInTimeout) {
         clearTimeout(this.fadeInTimeout);
@@ -50,6 +50,17 @@ class Fade extends React.PureComponent {
         this.setState({ fadeOut: false });
         delete this.fadeOutTimeout;
       }, 400);
+    }
+  }
+
+  componentWillUnmount() {
+    if (this.fadeInTimeout) {
+      clearTimeout(this.fadeInTimeout);
+      delete this.fadeInTimeout;
+    }
+    if (this.fadeOutTimeout) {
+      clearTimeout(this.fadeOutTimeout);
+      delete this.fadeOutTimeout;
     }
   }
 
@@ -102,6 +113,13 @@ class ContactLabel extends React.PureComponent {
       this.setState({ hover: false });
       delete this.fadeOutTimeout;
     }, 400);
+  }
+
+  componentWillUnmount() {
+    if (this.fadeOutTimeout) {
+      clearTimeout(this.fadeOutTimeout);
+      delete this.fadeOutTimeout;
+    }
   }
 
   render() {

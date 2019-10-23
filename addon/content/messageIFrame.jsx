@@ -30,7 +30,7 @@ class MessageIFrame extends React.Component {
     this.onClickIframe = this.onClickIframe.bind(this);
   }
 
-  componentWillReceiveProps(nextProps) {
+  componentDidUpdate(prevProps) {
     let startLoad = false;
     // dueToExpansion is used so that we can indicate if this load is happening
     // as a result of an expansion or not. If it is a user expansion, we don't
@@ -38,8 +38,8 @@ class MessageIFrame extends React.Component {
     // else.
     this.dueToExpansion = undefined;
     if (
-      this.props.neckoUrl.spec != nextProps.neckoUrl.spec &&
-      nextProps.expanded
+      prevProps.neckoUrl.spec != this.props.neckoUrl.spec &&
+      this.props.expanded
     ) {
       // This is a hack which ensures that the iframe is a minimal height, so
       // that when the message loads, the scroll height is set correctly, rather
@@ -50,11 +50,11 @@ class MessageIFrame extends React.Component {
       startLoad = true;
       this.dueToExpansion = false;
     }
-    if (nextProps.expanded) {
+    if (this.props.expanded) {
       this.iframe.classList.remove("hidden");
       if (
-        this.currentUrl != nextProps.msgUri ||
-        (this.props.hasRemoteContent && !nextProps.hasRemoteContent)
+        this.currentUrl != this.props.msgUri ||
+        (prevProps.hasRemoteContent && !this.props.hasRemoteContent)
       ) {
         startLoad = true;
         if (this.dueToExpansion === undefined) {
@@ -69,13 +69,13 @@ class MessageIFrame extends React.Component {
     }
     if (startLoad) {
       this.loading = true;
-      this.currentUrl = nextProps.msgUri;
+      this.currentUrl = this.props.msgUri;
       this.props.dispatch({
         type: "MSG_STREAM_MSG",
         docshell: this.iframe.contentWindow.docShell,
         dueToExpansion: this.dueToExpansion,
-        msgUri: nextProps.msgUri,
-        neckoUrl: nextProps.neckoUrl,
+        msgUri: this.props.msgUri,
+        neckoUrl: this.props.neckoUrl,
       });
     }
   }
@@ -135,10 +135,6 @@ class MessageIFrame extends React.Component {
       capture: true,
     });
     delete this._domloadListener;
-  }
-
-  shouldComponentUpdate() {
-    return false;
   }
 
   registerListeners() {
