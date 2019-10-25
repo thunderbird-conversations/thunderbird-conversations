@@ -446,9 +446,15 @@ function summary(state = initialSummary, action) {
           newState.iframesLoading = 0;
         }
       }
-      state.conversation
-        .getMessage(action.msgUri)
-        .postStreamMessage(topMail3Pane(window).msgWindow, action.iframe);
+      // It might be that we're trying to send a message on unmount, but the
+      // conversation/message has gone away. If that's the case, we just skip
+      // and move on.
+      if (state.conversation && state.conversation.getMessage) {
+        const msg = state.conversation.getMessage(action.msgUri);
+        if (msg) {
+          msg.postStreamMessage(topMail3Pane(window).msgWindow, action.iframe);
+        }
+      }
       return newState;
     }
     default: {
