@@ -30,16 +30,16 @@ function conversationDispatch(...args) {
 // let Conversations = window.top.Conversations;
 
 const { msgUriToMsgHdr, msgHdrsMarkAsRead } = ChromeUtils.import(
-  "resource://conversations/modules/stdlib/msgHdrUtils.js"
+  "chrome://conversations/content/modules/stdlib/msgHdrUtils.js"
 );
 const { Prefs } = ChromeUtils.import(
-  "resource://conversations/modules/prefs.js"
+  "chrome://conversations/content/modules/prefs.js"
 );
 const { topMail3Pane } = ChromeUtils.import(
-  "resource://conversations/modules/misc.js"
+  "chrome://conversations/content/modules/misc.js"
 );
 const { setupLogging, dumpCallStack } = ChromeUtils.import(
-  "resource://conversations/modules/log.js"
+  "chrome://conversations/content/modules/log.js"
 );
 
 Log = setupLogging("Conversations.Stub");

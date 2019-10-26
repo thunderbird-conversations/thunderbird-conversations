@@ -6,7 +6,7 @@ const { XPCOMUtils } = ChromeUtils.import(
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   Log4Moz: "resource:///modules/gloda/log4moz.js",
-  Prefs: "resource://conversations/modules/prefs.js",
+  Prefs: "chrome://conversations/content/modules/prefs.js",
 });
 
 function setupLogging(name) {

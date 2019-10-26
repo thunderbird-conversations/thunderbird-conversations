@@ -3,13 +3,13 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 const { Prefs } = ChromeUtils.import(
-  "resource://conversations/modules/prefs.js"
+  "chrome://conversations/content/modules/prefs.js"
 );
 const { setupLogging, dumpCallStack } = ChromeUtils.import(
-  "resource://conversations/modules/log.js"
+  "chrome://conversations/content/modules/log.js"
 );
 const { Customizations } = ChromeUtils.import(
-  "resource://conversations/modules/assistant.js"
+  "chrome://conversations/content/modules/assistant.js"
 );
 
 let Log = setupLogging("Conversations.AssistantUI");

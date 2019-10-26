@@ -4,12 +4,8 @@
 # Build directory
 dist/**
 
-# Third party libraries.
-addon/content/js/**
-addon/content/gallery/js/jquery.lightbox-0.5.js
-
 # Ignore sub-module directories
-addon/modules/stdlib/**
+addon/content/modules/stdlib/**
 
 # Ignore old add-on.
 other/oembed-addon/**

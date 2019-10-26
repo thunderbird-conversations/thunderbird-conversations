@@ -31,7 +31,7 @@ var EXPORTED_SYMBOLS = ["GlodaAttrProviders"];
  */
 
 const { PluginHelpers } = ChromeUtils.import(
-  "resource://conversations/modules/plugins/helpers.js"
+  "chrome://conversations/content/modules/plugins/helpers.js"
 );
 const { Gloda } = ChromeUtils.import("resource:///modules/gloda/public.js");
 

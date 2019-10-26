@@ -9,9 +9,9 @@ const { XPCOMUtils } = ChromeUtils.import(
 );
 
 XPCOMUtils.defineLazyModuleGetters(this, {
-  registerHook: "resource://conversations/modules/hook.js",
-  setupLogging: "resource://conversations/modules/log.js",
-  topMail3Pane: "resource://conversations/modules/misc.js",
+  registerHook: "chrome://conversations/content/modules/hook.js",
+  setupLogging: "chrome://conversations/content/modules/log.js",
+  topMail3Pane: "chrome://conversations/content/modules/misc.js",
 });
 
 let Log = setupLogging("Conversations.Modules.Lightning");

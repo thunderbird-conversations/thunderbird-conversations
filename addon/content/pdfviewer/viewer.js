@@ -9,6 +9,8 @@
 
 // Imported via viewer.xhtml -> pdf.js
 /* global pdfjsLib */
+pdfjsLib.GlobalWorkerOptions.workerSrc =
+  "chrome://conversations/content/vendor/pdf.worker.js";
 
 let viewer;
 
@@ -26,7 +28,7 @@ Viewer.prototype = {
     let status = document.getElementById("status");
 
     try {
-      let pdfDocument = await pdfjsLib.getDocument(data);
+      let pdfDocument = await pdfjsLib.getDocument(data).promise;
 
       self.pdfDoc = pdfDocument;
       document.getElementById("numPages").textContent = self.pdfDoc.numPages;
@@ -47,7 +49,7 @@ Viewer.prototype = {
     this.pdfDoc.getPage(aPageNum).then(function(page) {
       self.curPage = aPageNum;
       let scale = 1.5;
-      let viewport = page.getViewport(scale);
+      let viewport = page.getViewport({ scale });
 
       //
       // Prepare canvas using PDF page dimensions

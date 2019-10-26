@@ -14,32 +14,32 @@
 "use strict";
 
 var { msgHdrsArchive, msgHdrIsArchive, msgHdrGetUri } = ChromeUtils.import(
-  "resource://conversations/modules/stdlib/msgHdrUtils.js"
+  "chrome://conversations/content/modules/stdlib/msgHdrUtils.js"
 );
 var { sendMessage } = ChromeUtils.import(
-  "resource://conversations/modules/stdlib/send.js"
+  "chrome://conversations/content/modules/stdlib/send.js"
 );
 var { composeInIframe, htmlToPlainText, replyAllParams } = ChromeUtils.import(
-  "resource://conversations/modules/stdlib/compose.js"
+  "chrome://conversations/content/modules/stdlib/compose.js"
 );
 var { getHooks } = ChromeUtils.import(
-  "resource://conversations/modules/hook.js"
+  "chrome://conversations/content/modules/hook.js"
 );
 var { fixIterator } = ChromeUtils.import(
   "resource:///modules/iteratorUtils.jsm"
 );
 var { MailUtils } = ChromeUtils.import("resource:///modules/MailUtils.jsm");
 var { parseMimeLine } = ChromeUtils.import(
-  "resource://conversations/modules/stdlib/misc.js"
+  "chrome://conversations/content/modules/stdlib/misc.js"
 );
 var { defaultPhotoURI } = ChromeUtils.import(
-  "resource://conversations/modules/contact.js"
+  "chrome://conversations/content/modules/contact.js"
 );
 
 Log = setupLogging("Conversations.Stub.Compose");
 
 var { SimpleStorage } = ChromeUtils.import(
-  "resource://conversations/modules/stdlib/SimpleStorage.js",
+  "chrome://conversations/content/modules/stdlib/SimpleStorage.js",
   {}
 );
 

@@ -17,8 +17,8 @@ const { XPCOMUtils } = ChromeUtils.import(
 );
 
 XPCOMUtils.defineLazyModuleGetters(this, {
-  getMail3Pane: "resource://conversations/modules/stdlib/msgHdrUtils.js",
-  Prefs: "resource://conversations/modules/prefs.js",
+  getMail3Pane: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
+  Prefs: "chrome://conversations/content/modules/prefs.js",
   StringBundle: "resource:///modules/StringBundle.js",
 });
 

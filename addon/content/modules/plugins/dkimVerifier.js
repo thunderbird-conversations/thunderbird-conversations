@@ -9,9 +9,9 @@ const { XPCOMUtils } = ChromeUtils.import(
 );
 
 XPCOMUtils.defineLazyModuleGetters(this, {
-  getMail3Pane: "resource://conversations/modules/stdlib/msgHdrUtils.js",
-  registerHook: "resource://conversations/modules/hook.js",
-  setupLogging: "resource://conversations/modules/log.js",
+  getMail3Pane: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
+  registerHook: "chrome://conversations/content/modules/hook.js",
+  setupLogging: "chrome://conversations/content/modules/log.js",
 });
 
 let Log = setupLogging("Conversations.Modules.DKIMVerifier");

@@ -6,7 +6,7 @@ ADDON_DIR=addon
 
 rm -rf $DIST
 mkdir -p $VENDOR_DIR
-mkdir -p $DIST/modules/stdlib
+mkdir -p $DIST/content/modules/stdlib
 
 #cp node_modules/react/umd/react.production.min.js $VENDOR_DIR/react.js
 #cp node_modules/react-dom/umd/react-dom.production.min.js $VENDOR_DIR/react-dom.js
@@ -27,14 +27,14 @@ for a in $(git ls-files | grep '.jsx$'); do
   babel --config-file=../babel.config.js $a --out-dir ../$DIST/$(dirname $a)
 done
 
-for a in $(git ls-files | egrep -v $NOT | egrep -v '^modules/stdlib'); do
+for a in $(git ls-files | egrep -v $NOT | egrep -v '^content/modules/stdlib'); do
   mkdir -p $(dirname "../${DIST}/${a}")
   cp $a ../$DIST/$a
 done
 
-for a in $(cd modules/stdlib && git ls-files | egrep -v $NOT); do
+for a in $(cd content/modules/stdlib && git ls-files | egrep -v $NOT); do
   if [ $a != "" ]; then
-    cp modules/stdlib/$a ../$DIST/modules/stdlib
+    cp content/modules/stdlib/$a ../$DIST/content/modules/stdlib
   fi
 done
 

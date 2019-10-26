@@ -11,9 +11,9 @@ const { XPCOMUtils } = ChromeUtils.import(
 );
 
 XPCOMUtils.defineLazyModuleGetters(this, {
-  Config: "resource://conversations/modules/config.js",
-  Customizations: "resource://conversations/modules/assistant.js",
-  Prefs: "resource://conversations/modules/prefs.js",
+  Config: "chrome://conversations/content/modules/config.js",
+  Customizations: "chrome://conversations/content/modules/assistant.js",
+  Prefs: "chrome://conversations/content/modules/prefs.js",
   Services: "resource://gre/modules/Services.jsm",
   StringBundle: "resource:///modules/StringBundle.js",
 });
@@ -23,7 +23,7 @@ const {
   getIdentityForEmail,
   getIdentities,
   parseMimeLine,
-} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
+} = ChromeUtils.import("chrome://conversations/content/modules/stdlib/misc.js");
 const {
   getMail3Pane,
   msgHdrGetUri,
@@ -31,15 +31,15 @@ const {
   msgHdrIsNntp,
   msgHdrsMarkAsRead,
 } = ChromeUtils.import(
-  "resource://conversations/modules/stdlib/msgHdrUtils.js"
+  "chrome://conversations/content/modules/stdlib/msgHdrUtils.js"
 );
 const {
   arrayEquals,
   joinWordList,
   openConversationInTabOrWindow,
-} = ChromeUtils.import("resource://conversations/modules/misc.js");
+} = ChromeUtils.import("chrome://conversations/content/modules/misc.js");
 const { Colors, dumpCallStack, setupLogging } = ChromeUtils.import(
-  "resource://conversations/modules/log.js"
+  "chrome://conversations/content/modules/log.js"
 );
 
 const kMultiMessageUrl = "chrome://messenger/content/multimessageview.xhtml";

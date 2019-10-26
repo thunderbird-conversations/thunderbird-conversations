@@ -8,7 +8,7 @@
 /* global $, isQuickCompose, scrollNodeIntoView, Log:true, newComposeSessionByClick */
 
 const { isAccel } = ChromeUtils.import(
-  "resource://conversations/modules/stdlib/misc.js"
+  "chrome://conversations/content/modules/stdlib/misc.js"
 );
 
 function makeEditable(aIframe, aMakeEditable) {

@@ -120,13 +120,13 @@ function doStuff() {
 
   try {
     /* import-globals-from ../../modules/stdlib/msgHdrUtils.js */
-    Cu.import("resource://conversations/modules/stdlib/msgHdrUtils.js", global);
+    Cu.import("chrome://conversations/content/modules/stdlib/msgHdrUtils.js", global);
     /* import-globals-from ../../modules/hook.js */
-    Cu.import("resource://conversations/modules/hook.js", global);
+    Cu.import("chrome://conversations/content/modules/hook.js", global);
     /* import-globals-from ../../modules/prefs.js */
-    Cu.import("resource://conversations/modules/prefs.js", global);
+    Cu.import("chrome://conversations/content/modules/prefs.js", global);
     /* import-globals-from ../../modules/log.js */
-    Cu.import("resource://conversations/modules/log.js", global);
+    Cu.import("chrome://conversations/content/modules/log.js", global);
 
     Log = setupLogging("Conversations.OEmbed");
     Log.debug("Registering OEmbed plugin for Conversations...");

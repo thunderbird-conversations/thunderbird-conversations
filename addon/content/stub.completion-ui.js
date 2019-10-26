@@ -22,9 +22,9 @@ const {
   getIdentityForEmail,
   getIdentities,
   NS_SUCCEEDED,
-} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
+} = ChromeUtils.import("chrome://conversations/content/modules/stdlib/misc.js");
 const { setupLogging, dumpCallStack, Colors } = ChromeUtils.import(
-  "resource://conversations/modules/log.js"
+  "chrome://conversations/content/modules/log.js"
 );
 
 let Log = setupLogging("Conversations.Stub.Completion");

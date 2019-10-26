@@ -11,32 +11,14 @@ const { XPCOMUtils } = ChromeUtils.import(
 );
 
 XPCOMUtils.defineLazyModuleGetters(this, {
-  Conversation: "resource://conversations/modules/conversation.js",
+  Conversation: "chrome://conversations/content/modules/conversation.js",
   GlodaAttrProviders:
-    "resource://conversations/modules/plugins/glodaAttrProviders.js",
-  MonkeyPatch: "resource://conversations/modules/monkeypatch.js",
+    "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
+  MonkeyPatch: "chrome://conversations/content/modules/monkeypatch.js",
   Services: "resource://gre/modules/Services.jsm",
 });
 
 let Log;
-
-// from wjohnston (cleary for Fennec)
-let ResourceRegister = {
-  init(aURI, aName) {
-    let resource = Services.io
-      .getProtocolHandler("resource")
-      .QueryInterface(Ci.nsIResProtocolHandler);
-    let alias = Services.io.newURI(aURI);
-    resource.setSubstitution(aName, alias);
-  },
-
-  uninit(aName) {
-    let resource = Services.io
-      .getProtocolHandler("resource")
-      .QueryInterface(Ci.nsIResProtocolHandler);
-    resource.setSubstitution(aName, null);
-  },
-};
 
 function monkeyPatchWindow(window) {
   let doIt = function() {
@@ -81,7 +63,7 @@ function monkeyPatchWindow(window) {
 
       window.Conversations.quickCompose = function() {
         const { Prefs } = ChromeUtils.import(
-          "resource://conversations/modules/prefs.js"
+          "chrome://conversations/content/modules/prefs.js"
         );
         if (Prefs.compose_in_tab) {
           window.openTab("chromeTab", {
@@ -101,13 +83,13 @@ function monkeyPatchWindow(window) {
       // overlays have been properly loaded and applied
       /* eslint-disable no-unused-vars */
       ChromeUtils.import(
-        "resource://conversations/modules/plugins/enigmail.js"
+        "chrome://conversations/content/modules/plugins/enigmail.js"
       );
       ChromeUtils.import(
-        "resource://conversations/modules/plugins/lightning.js"
+        "chrome://conversations/content/modules/plugins/lightning.js"
       );
       ChromeUtils.import(
-        "resource://conversations/modules/plugins/dkimVerifier.js"
+        "chrome://conversations/content/modules/plugins/dkimVerifier.js"
       );
       /* eslint-enable no-unused-vars */
     } catch (e) {
@@ -151,12 +133,11 @@ let windowObserver = {
 };
 
 function startup(aData, aReason) {
-  ResourceRegister.init(aData.resourceURI.spec, "conversations");
   const { setupLogging, dumpCallStack } = ChromeUtils.import(
-    "resource://conversations/modules/log.js"
+    "chrome://conversations/content/modules/log.js"
   );
   const { Config } = ChromeUtils.import(
-    "resource://conversations/modules/config.js"
+    "chrome://conversations/content/modules/config.js"
   );
 
   Log = setupLogging("Conversations.MonkeyPatch");
@@ -192,10 +173,10 @@ function startup(aData, aReason) {
 
 function shutdown(aData, aReason) {
   const { SimpleStorage } = ChromeUtils.import(
-    "resource://conversations/modules/stdlib/SimpleStorage.js"
+    "chrome://conversations/content/modules/stdlib/SimpleStorage.js"
   );
   const { Config } = ChromeUtils.import(
-    "resource://conversations/modules/config.js"
+    "chrome://conversations/content/modules/config.js"
   );
   SimpleStorage.close().catch(Cu.reportError);
 
@@ -208,7 +189,6 @@ function shutdown(aData, aReason) {
   Services.ww.unregisterNotification(windowObserver);
 
   // Reasons to be here can be DISABLE or UNINSTALL
-  ResourceRegister.uninit("conversations");
   for (let w of Services.wm.getEnumerator("mail:3pane")) {
     if ("Conversations" in w) {
       w.Conversations.monkeyPatch.undo(aReason);

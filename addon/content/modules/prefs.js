@@ -30,7 +30,7 @@ function loadDefaultPrefs() {
   let uri = Services.io.newURI(
     "defaults/preferences/defaults.js",
     null,
-    Services.io.newURI("resource://conversations/")
+    Services.io.newURI("chrome://conversations/content/")
   );
 
   // setup default prefs

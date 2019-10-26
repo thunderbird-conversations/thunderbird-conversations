@@ -11,16 +11,16 @@ const { XPCOMUtils } = ChromeUtils.import(
 );
 
 XPCOMUtils.defineLazyModuleGetters(this, {
-  ContactManager: "resource://conversations/modules/contact.js",
+  ContactManager: "chrome://conversations/content/modules/contact.js",
   Gloda: "resource:///modules/gloda/gloda.js",
   MailServices: "resource:///modules/MailServices.jsm",
-  Prefs: "resource://conversations/modules/prefs.js",
+  Prefs: "chrome://conversations/content/modules/prefs.js",
   Services: "resource://gre/modules/Services.jsm",
   StringBundle: "resource:///modules/StringBundle.js",
 });
 
 const { Colors, dumpCallStack, setupLogging } = ChromeUtils.import(
-  "resource://conversations/modules/log.js"
+  "chrome://conversations/content/modules/log.js"
 );
 
 const {
@@ -34,16 +34,16 @@ const {
   msgHdrsArchive,
   msgHdrsDelete,
 } = ChromeUtils.import(
-  "resource://conversations/modules/stdlib/msgHdrUtils.js"
+  "chrome://conversations/content/modules/stdlib/msgHdrUtils.js"
 );
 const { MixIn, range, isOSX, isWindows } = ChromeUtils.import(
-  "resource://conversations/modules/stdlib/misc.js"
+  "chrome://conversations/content/modules/stdlib/misc.js"
 );
 const { MessageUtils, MessageFromGloda, MessageFromDbHdr } = ChromeUtils.import(
-  "resource://conversations/modules/message.js"
+  "chrome://conversations/content/modules/message.js"
 );
 const { groupArray, topMail3Pane } = ChromeUtils.import(
-  "resource://conversations/modules/misc.js"
+  "chrome://conversations/content/modules/misc.js"
 );
 
 let Log = setupLogging("Conversations.Conversation");

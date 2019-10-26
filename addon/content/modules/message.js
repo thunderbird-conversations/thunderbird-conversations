@@ -17,7 +17,8 @@ const { XPCOMUtils } = ChromeUtils.import(
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   GlodaUtils: "resource:///modules/gloda/utils.js",
-  isLightningInstalled: "resource://conversations/modules/plugins/lightning.js",
+  isLightningInstalled:
+    "chrome://conversations/content/modules/plugins/lightning.js",
   makeFriendlyDateAgo: "resource:///modules/templateUtils.js",
   MsgHdrToMimeMessage: "resource:///modules/gloda/mimemsg.js",
   mimeMsgToContentSnippetAndMeta: "resource:///modules/gloda/connotent.js",
@@ -31,7 +32,7 @@ const {
   getIdentityForEmail,
   parseMimeLine,
   sanitize,
-} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
+} = ChromeUtils.import("chrome://conversations/content/modules/stdlib/misc.js");
 
 // It's not really nice to write into someone elses object but this is what the
 // Services object is for.  We prefix with the "m" to ensure we stay out of their
@@ -58,35 +59,35 @@ const {
   msgHdrToMessageBody,
   msgUriToMsgHdr,
 } = ChromeUtils.import(
-  "resource://conversations/modules/stdlib/msgHdrUtils.js",
+  "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   {}
 );
 const { htmlToPlainText, quoteMsgHdr } = ChromeUtils.import(
-  "resource://conversations/modules/stdlib/compose.js",
+  "chrome://conversations/content/modules/stdlib/compose.js",
   {}
 );
 const { PluginHelpers } = ChromeUtils.import(
-  "resource://conversations/modules/plugins/helpers.js",
+  "chrome://conversations/content/modules/plugins/helpers.js",
   {}
 );
 const { Contacts } = ChromeUtils.import(
-  "resource://conversations/modules/contact.js",
+  "chrome://conversations/content/modules/contact.js",
   {}
 );
 const { Prefs } = ChromeUtils.import(
-  "resource://conversations/modules/prefs.js",
+  "chrome://conversations/content/modules/prefs.js",
   {}
 );
 const { folderName, iconForMimeType, topMail3Pane } = ChromeUtils.import(
-  "resource://conversations/modules/misc.js",
+  "chrome://conversations/content/modules/misc.js",
   {}
 );
 const { getHooks } = ChromeUtils.import(
-  "resource://conversations/modules/hook.js",
+  "chrome://conversations/content/modules/hook.js",
   {}
 );
 const { dumpCallStack, setupLogging } = ChromeUtils.import(
-  "resource://conversations/modules/log.js",
+  "chrome://conversations/content/modules/log.js",
   {}
 );
 

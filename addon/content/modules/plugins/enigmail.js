@@ -18,7 +18,7 @@ var EXPORTED_SYMBOLS = [];
  *
  *    let hasConversations;
  *    try {
- *      Components.utils.import("resource://conversations/modules/hook.js");
+ *      Components.utils.import("chrome://conversations/content/modules/hook.js");
  *      hasConversations = true;
  *    } catch (e) {
  *      hasConversations = false;
@@ -36,23 +36,23 @@ const { XPCOMUtils } = ChromeUtils.import(
 );
 
 XPCOMUtils.defineLazyModuleGetters(this, {
-  registerHook: "resource://conversations/modules/hook.js",
+  registerHook: "chrome://conversations/content/modules/hook.js",
   Services: "resource://gre/modules/Services.jsm",
   StringBundle: "resource:///modules/StringBundle.js",
-  topMail3Pane: "resource://conversations/modules/misc.js",
+  topMail3Pane: "chrome://conversations/content/modules/misc.js",
 });
 
 const { getMail3Pane, msgHdrGetUri } = ChromeUtils.import(
-  "resource://conversations/modules/stdlib/msgHdrUtils.js"
+  "chrome://conversations/content/modules/stdlib/msgHdrUtils.js"
 );
 const { escapeHtml, entries } = ChromeUtils.import(
-  "resource://conversations/modules/stdlib/misc.js"
+  "chrome://conversations/content/modules/stdlib/misc.js"
 );
 const { htmlToPlainText, simpleWrap } = ChromeUtils.import(
-  "resource://conversations/modules/stdlib/compose.js"
+  "chrome://conversations/content/modules/stdlib/compose.js"
 );
 const { setupLogging, dumpCallStack } = ChromeUtils.import(
-  "resource://conversations/modules/log.js"
+  "chrome://conversations/content/modules/log.js"
 );
 
 let strings = new StringBundle(

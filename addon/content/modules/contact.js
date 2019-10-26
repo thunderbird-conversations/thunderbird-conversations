@@ -19,8 +19,8 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   DisplayNameUtils: "resource:///modules/DisplayNameUtils.jsm",
   Gloda: "resource:///modules/gloda/gloda.js",
   GlodaUtils: "resource:///modules/gloda/utils.js",
-  Prefs: "resource://conversations/modules/prefs.js",
-  setupLogging: "resource://conversations/modules/log.js",
+  Prefs: "chrome://conversations/content/modules/prefs.js",
+  setupLogging: "chrome://conversations/content/modules/log.js",
   StringBundle: "resource:///modules/StringBundle.js",
 });
 
@@ -29,7 +29,7 @@ const {
   getIdentityForEmail,
   MixIn,
   sanitize,
-} = ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
+} = ChromeUtils.import("chrome://conversations/content/modules/stdlib/misc.js");
 
 var Contacts = {
   kFrom: 0,

@@ -14,7 +14,7 @@ module.exports = {
   overrides: [
     {
       // This marks exported symbols as used for our modules.
-      files: ["addon/modules/**/*.js"],
+      files: ["addon/content/modules/**/*.js"],
       rules: {
         "mozilla/mark-exported-symbols-as-used": "error",
       },

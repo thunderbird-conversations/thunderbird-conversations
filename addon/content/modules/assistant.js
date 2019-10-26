@@ -16,17 +16,17 @@ const { XPCOMUtils } = ChromeUtils.import(
 );
 
 XPCOMUtils.defineLazyModuleGetters(this, {
-  getMail3Pane: "resource://conversations/modules/stdlib/msgHdrUtils.js",
+  getMail3Pane: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   fixIterator: "resource:///modules/iteratorUtils.jsm",
   MailUtils: "resource:///modules/MailUtils.jsm",
-  MixIn: "resource://conversations/modules/stdlib/misc.js",
-  Prefs: "resource://conversations/modules/prefs.js",
+  MixIn: "chrome://conversations/content/modules/stdlib/misc.js",
+  Prefs: "chrome://conversations/content/modules/prefs.js",
   Services: "resource://gre/modules/Services.jsm",
   VirtualFolderHelper: "resource:///modules/virtualFolderWrapper.js",
 });
 
 const { dumpCallStack, setupLogging } = ChromeUtils.import(
-  "resource://conversations/modules/log.js"
+  "chrome://conversations/content/modules/log.js"
 );
 
 let Log = setupLogging("Conversations.Assistant");

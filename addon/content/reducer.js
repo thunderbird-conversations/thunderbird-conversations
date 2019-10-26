@@ -14,11 +14,12 @@ const { XPCOMUtils } = ChromeUtils.import(
   "resource://gre/modules/XPCOMUtils.jsm"
 );
 XPCOMUtils.defineLazyModuleGetters(this, {
-  ContactHelpers: "resource://conversations/modules/contact.js",
-  composeMessageTo: "resource://conversations/modules/stdlib/compose.js",
-  openConversationInTabOrWindow: "resource://conversations/modules/misc.js",
-  MessageUtils: "resource://conversations/modules/message.js",
-  ConversationUtils: "resource://conversations/modules/conversation.js",
+  ContactHelpers: "chrome://conversations/content/modules/contact.js",
+  composeMessageTo: "chrome://conversations/content/modules/stdlib/compose.js",
+  openConversationInTabOrWindow:
+    "chrome://conversations/content/modules/misc.js",
+  MessageUtils: "chrome://conversations/content/modules/message.js",
+  ConversationUtils: "chrome://conversations/content/modules/conversation.js",
 });
 
 const initialAttachments = {};

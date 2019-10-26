@@ -11,7 +11,7 @@ const { XPCOMUtils } = ChromeUtils.import(
 XPCOMUtils.defineLazyModuleGetters(this, {
   NetUtil: "resource://gre/modules/NetUtil.jsm",
   Services: "resource://gre/modules/Services.jsm",
-  setupLogging: "resource://conversations/modules/log.js",
+  setupLogging: "chrome://conversations/content/modules/log.js",
 });
 
 let Log = setupLogging("Conversations.PdfViewer");
@@ -86,7 +86,7 @@ Wrapper.prototype = {
       { once: true, capture: true }
     );
     // Load from a resource:// URL so that it doesn't have chrome privileges.
-    browser.loadURI("resource://conversations/content/pdfviewer/viewer.xhtml", {
+    browser.loadURI("chrome://conversations/content/pdfviewer/viewer.xhtml", {
       triggeringPrincipal: Services.scriptSecurityManager.getSystemPrincipal(),
     });
   },
