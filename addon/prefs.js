@@ -2,10 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-"use strict";
-
-/* eslint-env webextensions */
-
 const kCurrentLegacyMigration = 1;
 
 // XXX This list should be kept in sync with the one in options.js.
@@ -26,9 +22,20 @@ const kPrefDefaults = {
   hide_sigs: false,
 };
 
-browser.storage.local
-  .get("preferences")
-  .then(async results => {
+export class Prefs {
+  async init() {
+    try {
+      await this._migrate();
+    } catch (ex) {
+      console.log(ex);
+    }
+
+    this._addListener();
+  }
+
+  async _migrate() {
+    const results = await browser.storage.local.get("preferences");
+
     if (
       !results.preferences ||
       !results.preferences.migratedLegacy ||
@@ -43,11 +50,9 @@ browser.storage.local
       }
       browser.storage.local.set({ preferences: prefs }).catch(console.error);
     }
-  })
-  .catch(ex => {
-    console.error(ex);
-  })
-  .then(() => {
+  }
+
+  _addListener() {
     browser.storage.onChanged.addListener((changed, areaName) => {
       if (areaName != "local" || !("preferences" in changed)) {
         return;
@@ -66,4 +71,5 @@ browser.storage.local
         }
       }
     });
-  });
+  }
+}

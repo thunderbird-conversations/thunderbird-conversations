@@ -19,6 +19,16 @@ module.exports = {
         "mozilla/mark-exported-symbols-as-used": "error",
       },
     },
+    {
+      env: {
+        webextensions: true,
+      },
+      excludedFiles: ["addon/bootstrap.js"],
+      files: ["addon/*.js"],
+      parserOptions: {
+        sourceType: "module",
+      },
+    },
   ],
   plugins: ["mozilla", "html", "react"],
   rules: {

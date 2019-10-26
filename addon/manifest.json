@@ -16,7 +16,7 @@
     "type": "bootstrap"
   },
   "background": {
-    "scripts": ["prefs.js"]
+    "page": "background.html"
   },
   "options_ui": {
     "open_in_tab": true,
