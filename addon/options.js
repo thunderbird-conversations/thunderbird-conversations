@@ -1,3 +1,7 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
+
 // TODO: Some of this preference code should be in the background script prefs.js,
 // however we currently aren't able to use sendMessage to send to both the
 // background script and to bootstrap.js.
