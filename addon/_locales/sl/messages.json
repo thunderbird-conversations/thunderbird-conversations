@@ -1,0 +1,136 @@
+{
+  "extensionName": {
+    "message": "Thunderbird Conversations",
+    "description": "Name of the extension."
+  },
+
+  "extensionDescription": {
+    "message": "Doda pogovorni pogled v vaš Thunderbird!",
+    "description": "Description of the extension."
+  },
+
+  "options.expand_who": {
+    "message": "Privzeto razširi:",
+    "description": "Options - label for which messages should be expanded."
+  },
+
+  "options.expand_auto": {
+    "message": "Samodejno",
+    "description": "Options - label for automatically expanding messages."
+  },
+
+  "options.expand_auto.tooltip": {
+    "message": "Če je nit strnjena, razširi vsa neprebrana sporočila ali zadnje sporočilo. Če je razširjena, razširi samo izbrano sporočilo na seznamu.",
+    "description": "Options - tooltip for automatically expanding messages."
+  },
+
+  "options.expand_none": {
+    "message": "Nobenih sporočil",
+    "description": "Options - label for not expanding messages."
+  },
+
+  "options.expand_all": {
+    "message": "Vsa sporočila",
+    "description": "Options - label for expanding all messages."
+  },
+
+  "options.quoting_title": {
+    "message": "Navedeno besedilo",
+    "description": "Options - title for quoted text."
+  },
+
+  "options.quoting_desc": {
+    "message": "Navedki, večji od tega števila vrstic, bodo strnjeni.",
+    "description": "Options - description for quoted text."
+  },
+
+  "options.hide_sigs_title": {
+    "message": "Skrij podpise",
+    "description": "Options - title for hiding signatures."
+  },
+
+  "options.hide_sigs_desc": {
+    "message": "Ali naj se podpisi privzeto strnejo.",
+    "description": "Options - description for hiding signatures."
+  },
+
+  "options.friendly_date_title": {
+    "message": "Brez prijaznih datumov",
+    "description": "Options - title for if to show friendly dates."
+  },
+
+  "options.friendly_date_desc": {
+    "message": "V zgornjem desnem kotu namesto \"včeraj\" in drugih uporabi \"običajne\" datume, tako kot na seznamu sporočil.",
+    "description": "Options - description for if to show friendly dates."
+  },
+
+  "options.tweak_chrome_title": {
+    "message": "Prilagodi pisave uporabniškega vmesnika",
+    "description": "Options - title for tweaking chrome fonts."
+  },
+
+  "options.tweak_chrome_desc": {
+    "message": "Pomanjšaj velikost pisave uporabniškega vmesnika pogovorov (priporočljivo, zahteva ponovni zagon).",
+    "description": "Options - description for tweaking chrome fonts."
+  },
+
+  "options.tweak_bodies_title": {
+    "message": "Prilagodi pisave telesa sporočila",
+    "description": "Options - title for tweaking message body fonts."
+  },
+
+  "options.tweak_bodies_desc": {
+    "message": "Prilagodi pisave teles sporočil, da se uskladijo z zunanjo pisavo (priporočljivo, zahteva ponovni zagon).",
+    "description": "Options - description for tweaking message body fonts."
+  },
+
+  "options.operate_on_conversations_title": {
+    "message": "Vedenje arhiviranja/brisanja",
+    "description": "Options - title for archive/delete behavior."
+  },
+
+  "options.operate_on_conversations_desc": {
+    "message": "Gumbi orodne vrstice naj arhivirajo celoten pogovor in ne samo izbrana sporočila.",
+    "description": "Options - description for archive/delete behavior."
+  },
+
+  "options.extra_attachments_title": {
+    "message": "Rad imam priponke",
+    "description": "Options - title for attachment settings."
+  },
+
+  "options.extra_attachments_desc": {
+    "message": "V nekaterih primerih bo Thunderbirdu spodletelo prepoznati nekatere priponke. Ta možnosti omogoča zaobiti Thunderbirdovega hrošča in zagotovi, da se prikaže čim več priponk. Uporabite v kombinaciji z dodatkom Show All Body Parts.",
+    "description": "Options - description for attachment settings."
+  },
+
+  "options.compose_in_tab_title": {
+    "message": "Skrito okno za sestavljanje",
+    "description": "Options - title for hidden compose window enabling."
+  },
+
+  "options.compose_in_tab_desc": {
+    "message": "Ctrl-Shift-N odpre skrito, nepodprto okno za sestavljanje v novem zavihku",
+    "description": "Options - description for hidden compose window enabling."
+  },
+
+  "options.debugging_title": {
+    "message": "Razhroščevanje",
+    "description": "Options - title for debugging setting."
+  },
+
+  "options.debugging_desc": {
+    "message": "Omogoči razhroščevalni izpis v sistemski konzoli in konzoli z napakami. To bo ustvarilo veliko sporočil.",
+    "description": "Options - description for debugging setting."
+  },
+
+  "options.monospaced_senders_title": {
+    "message": "Prikaži s stalno širino",
+    "description": "Options - title for monospaced sender setting."
+  },
+
+  "options.monospaced_senders_desc": {
+    "message": "Sporočila s teh naslovov/dopisnih seznamov naj bodo prikazana v pisavi s stalno širino (ločite z vejicami).",
+    "description": "Options - description for monospaced sender setting."
+  }
+}
