@@ -861,21 +861,35 @@ Message.prototype = {
     //  performed now, not later. This gives plugins a chance to modify
     //  the DOM of the message (i.e. decrypt it) before we tweak the
     //  fonts and stuff.
-    for (let h of getHooks()) {
-      try {
-        if (typeof h.onMessageStreamed == "function") {
-          h.onMessageStreamed(this._msgHdr, iframe, msgWindow, this);
-        }
-      } catch (e) {
-        Log.warn("Plugin returned an error:", e);
-        dumpCallStack(e);
-      }
-    }
-
     Services.tm.dispatchToMainThread(() => {
+      for (let h of getHooks()) {
+        try {
+          if (typeof h.onMessageStreamed == "function") {
+            h.onMessageStreamed(this._msgHdr, iframe, msgWindow, this);
+          }
+        } catch (e) {
+          Log.warn("Plugin returned an error:", e);
+          dumpCallStack(e);
+        }
+      }
+
       this._checkForPhishing(iframe);
     });
     // signal! ?
+  },
+
+  msgPluginNotification(win, notificationType, extraData) {
+    Services.tm.dispatchToMainThread(() => {
+      for (let h of getHooks()) {
+        try {
+          if (typeof h.onMessageNotification == "function") {
+            h.onMessageNotification(win, notificationType, extraData);
+          }
+        } catch (ex) {
+          Log.warn("Plugin returned an error:", ex);
+        }
+      }
+    });
   },
 
   _checkForPhishing(iframe) {

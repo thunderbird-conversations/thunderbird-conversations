@@ -337,6 +337,37 @@ function messages(state = initialMessages, action) {
       // });
       return state;
     }
+    case "MSG_SHOW_NOTIFICATION": {
+      return modifyOnlyMsg(state, action.msgData.msgUri, msg => {
+        const newMsg = { ...msg };
+        if ("extraNotifications" in msg) {
+          let i = msg.extraNotifications.findIndex(
+            n => n.type == action.msgData.notification.type
+          );
+          if (i != -1) {
+            newMsg.extraNotifications = [...msg.extraNotifications];
+            newMsg.extraNotifications[i] = action.msgData.notification;
+          } else {
+            newMsg.extraNotifications = [
+              ...msg.extraNotifications,
+              action.msgData.notification,
+            ];
+          }
+        } else {
+          newMsg.extraNotifications = [action.msgData.notification];
+        }
+        return newMsg;
+      });
+    }
+    case "NOTIFICATION_CLICK": {
+      const msg = Conversations.currentConversation.getMessage(action.msgUri);
+      msg.msgPluginNotification(
+        topMail3Pane(window),
+        action.notificationType,
+        action.extraData
+      );
+      return state;
+    }
     default: {
       return state;
     }

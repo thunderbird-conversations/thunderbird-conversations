@@ -94,6 +94,7 @@ class Message extends React.PureComponent {
               this.props.message.isJunk && !this.props.displayingMultipleMsgs
             }
             dispatch={this.props.dispatch}
+            extraNotifications={this.props.message.extraNotifications}
             hasRemoteContent={this.props.message.hasRemoteContent}
             isPhishing={this.props.message.isPhishing}
             isOutbox={this.props.message.isOutbox}

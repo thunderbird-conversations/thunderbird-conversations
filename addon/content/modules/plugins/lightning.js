@@ -31,18 +31,10 @@ try {
 
 // This is a version of setupOptions suitable for Conversations
 // see http://mxr.mozilla.org/comm-central/source/calendar/lightning/content/imip-bar.js#186
-function imipOptions(
-  rootNode,
-  msgWindow,
-  message,
-  itipItem,
-  rc,
-  actionFunc,
-  foundItems
-) {
-  let imipBarText = rootNode.getElementsByClassName("lightningImipText")[0];
+function imipOptions(msgWindow, msg, itipItem, rc, actionFunc, foundItems) {
+  // let imipBarText = rootNode.getElementsByClassName("lightningImipText")[0];
   let data = cal.itip.getOptionsText(itipItem, rc, actionFunc);
-  let w = topMail3Pane(message);
+  let w = topMail3Pane(msg);
 
   // Set the right globals so that actionFunc works properly.
   w.ltnImipBar.itipItem = itipItem;
@@ -52,14 +44,18 @@ function imipOptions(
     let newListener = {
       onOperationComplete(aCalendar, aStatus, aOperationType, aId, aDetail) {
         let label = cal.itip.getCompleteText(aStatus, aOperationType);
-        imipBarText.textContent = label;
 
-        // Hide all buttons
-        for (let button of rootNode.getElementsByClassName(
-          "lightningImipButton"
-        )) {
-          button.style.display = "none";
-        }
+        msg._conversation._htmlPane.conversationDispatch({
+          type: "MSG_SHOW_NOTIFICATION",
+          msgData: {
+            msgUri: msg._uri,
+            notification: {
+              iconName: "calendar_today",
+              label,
+              type: "lightning",
+            },
+          },
+        });
 
         // In case it's useful
         listener.onOperationComplete(
@@ -77,59 +73,95 @@ function imipOptions(
     actionFunc(newListener, actionMethod);
   };
 
-  // Update the Conversation UI
-  imipBarText.textContent = data.label;
+  const idToActionMap = {
+    imipAcceptButton: "ACCEPTED",
+    imipTentativeButton: "TENTATIVE",
+    imipDeclineButton: "DECLINED",
+  };
 
-  let showButton = function(c) {
-    let buttonElement = rootNode.getElementsByClassName(c)[0];
-    let originalButtonElement = w.document.getElementById(buttonElement.id);
-    // Show the button!
-    buttonElement.style.display = "block";
-    // Fill in the right tooltip and label by re-using the original (hidden)
-    // elements.
-    buttonElement.setAttribute(
-      "tooltiptext",
-      originalButtonElement.getAttribute("tooltiptext")
-    );
-    buttonElement.textContent = originalButtonElement.label;
+  const buttons = [];
+
+  let addButton = function(c) {
+    if (buttons.find(b => b.id == c)) {
+      return;
+    }
+    let originalButtonElement = w.document.getElementById(c);
+    buttons.push({
+      id: c,
+      actionParams: {
+        extraData: {
+          execute: idToActionMap[c],
+        },
+      },
+      classNames: `imip-button lightningImipButton msgHeaderView-button ${c}`,
+      textContent: originalButtonElement.label,
+      tooltiptext: originalButtonElement.getAttribute("tooltiptext"),
+    });
   };
 
   // data.buttons tells us which buttons should be shown
   for (let c of data.showItems) {
     if (c != "imipMoreButton") {
-      showButton(c);
+      addButton(c);
       // Working around the lack of dropdown buttons. See discussion in bug 1042741
       if (c == "imipAcceptButton" || c == "imipAcceptRecurrencesButton") {
-        showButton("imipTentativeButton");
+        addButton("imipTentativeButton");
       }
     }
   }
+
+  // Update the Conversation UI
+  msg._conversation._htmlPane.conversationDispatch({
+    type: "MSG_SHOW_NOTIFICATION",
+    msgData: {
+      msgUri: msg._uri,
+      notification: {
+        buttons,
+        iconName: "calendar_today",
+        label: data.label,
+        type: "lightning",
+      },
+    },
+  });
 }
 
 let lightningHook = {
-  onMessageStreamed(aMsgHdr, aDomNode, aMsgWindow, aMessage) {
-    let imipBar = aDomNode.getElementsByClassName("lightningImipBar")[0];
-    let imipBarText = aDomNode.getElementsByClassName("lightningImipText")[0];
-
+  onMessageStreamed(msgHdr, unused, msgWindow, msg) {
     let itipItem = null;
     try {
-      let sinkProps = aMsgWindow.msgHeaderSink.properties;
+      let sinkProps = msgWindow.msgHeaderSink.properties;
       itipItem = sinkProps.getPropertyAsInterface("itipItem", Ci.calIItipItem);
     } catch (e) {}
 
     if (itipItem) {
-      let method = aMsgHdr.getStringProperty("imip_method");
+      let method = msgHdr.getStringProperty("imip_method");
       let label = cal.itip.getMethodText(method);
-      cal.itip.initItemFromMsgData(itipItem, method, aMsgHdr);
-
-      imipBarText.textContent = label;
+      cal.itip.initItemFromMsgData(itipItem, method, msgHdr);
+      msg._conversation._htmlPane.conversationDispatch({
+        type: "MSG_SHOW_NOTIFICATION",
+        msgData: {
+          msgUri: msg._uri,
+          notification: {
+            iconName: "calendar_today",
+            type: "lightning",
+            label,
+          },
+        },
+      });
 
       cal.itip.processItipItem(
         itipItem,
-        imipOptions.bind(null, aDomNode, aMsgWindow, aMessage)
+        imipOptions.bind(null, msgWindow, msg)
       );
-      imipBar.style.display = "block";
     }
+  },
+
+  onMessageNotification(win, notificationType, extraData) {
+    if (notificationType != "lightning") {
+      return;
+    }
+
+    win.ltnImipBar.executeAction(extraData.execute);
   },
 };
 

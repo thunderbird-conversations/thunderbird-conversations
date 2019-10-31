@@ -69,7 +69,7 @@ class GenericSingleButtonNotification extends React.PureComponent {
           ></use>
         </svg>
         {this.props.notificationText}{" "}
-        <span className="notJunk">
+        <span className={this.props.buttonClassName}>
           <a onClick={this.props.onButtonClick}>{this.props.buttonTitle}</a>
         </span>
       </div>
@@ -80,10 +80,65 @@ class GenericSingleButtonNotification extends React.PureComponent {
 GenericSingleButtonNotification.propTypes = {
   barClassName: PropTypes.string.isRequired,
   buttonClassName: PropTypes.string.isRequired,
+  hideIcon: PropTypes.bool,
   onButtonClick: PropTypes.func.isRequired,
   buttonTitle: PropTypes.string.isRequired,
   iconName: PropTypes.string.isRequired,
   notificationText: PropTypes.string.isRequired,
+};
+
+class GenericMultiButtonNotification extends React.PureComponent {
+  constructor(props) {
+    super(props);
+  }
+
+  onClick(actionParams) {
+    this.props.dispatch({
+      type: "NOTIFICATION_CLICK",
+      msgUri: this.props.msgUri,
+      notificationType: this.props.type,
+      ...actionParams,
+    });
+  }
+
+  render() {
+    return (
+      <div className={this.props.barClassName + " notificationBar"}>
+        <svg
+          className="icon"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+          xmlnsXlink="http://www.w3.org/1999/xlink"
+        >
+          <use
+            xlinkHref={`chrome://conversations/skin/material-icons.svg#${this.props.iconName}`}
+          ></use>
+        </svg>
+        {this.props.notificationText}{" "}
+        {this.props.buttons.map((button, i) => (
+          <button
+            className={button.classNames}
+            tooltiptext={button.tooltiptext}
+            key={i}
+            onClick={this.onClick.bind(this, button.actionParams)}
+          >
+            {button.textContent}
+          </button>
+        ))}
+      </div>
+    );
+  }
+}
+
+GenericMultiButtonNotification.propTypes = {
+  barClassName: PropTypes.string.isRequired,
+  buttons: PropTypes.object.isRequired,
+  dispatch: PropTypes.func.isRequired,
+  hideIcon: PropTypes.bool,
+  iconName: PropTypes.string.isRequired,
+  msgUri: PropTypes.string.isRequired,
+  notificationText: PropTypes.string.isRequired,
+  type: PropTypes.string.isRequired,
 };
 
 class JunkNotification extends React.PureComponent {
@@ -222,6 +277,21 @@ class MessageNotification extends React.PureComponent {
         />
       );
     }
+    if (this.props.extraNotifications && this.props.extraNotifications.length) {
+      // Only display the first notification.
+      const notification = this.props.extraNotifications[0];
+      return (
+        <GenericMultiButtonNotification
+          barClassName={notification.type + "Bar"}
+          buttons={notification.buttons || []}
+          iconName={notification.iconName}
+          dispatch={this.props.dispatch}
+          msgUri={this.props.msgUri}
+          notificationText={notification.label}
+          type={notification.type}
+        />
+      );
+    }
     return null;
   }
 }
@@ -229,6 +299,7 @@ class MessageNotification extends React.PureComponent {
 MessageNotification.propTypes = {
   canUnJunk: PropTypes.bool.isRequired,
   dispatch: PropTypes.func.isRequired,
+  extraNotifications: PropTypes.array.isRequired,
   hasRemoteContent: PropTypes.bool.isRequired,
   isPhishing: PropTypes.bool.isRequired,
   isOutbox: PropTypes.bool.isRequired,
