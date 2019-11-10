@@ -233,7 +233,3 @@ function markReadInView(event) {
     }
   };
 })();
-
-// Lightning
-/* exported ltnImipBar */
-var ltnImipBar = topMail3Pane(window).ltnImipBar;

@@ -17,8 +17,6 @@ const { XPCOMUtils } = ChromeUtils.import(
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   GlodaUtils: "resource:///modules/gloda/utils.js",
-  isLightningInstalled:
-    "chrome://conversations/content/modules/plugins/lightning.js",
   makeFriendlyDateAgo: "resource:///modules/templateUtils.js",
   MsgHdrToMimeMessage: "resource:///modules/gloda/mimemsg.js",
   mimeMsgToContentSnippetAndMeta: "resource:///modules/gloda/connotent.js",
@@ -492,7 +490,6 @@ Message.prototype = {
       extraClasses: null,
       isJunk: msgHdrIsJunk(this._msgHdr),
       isOutbox: false,
-      generateLightningTempl: false,
       multipleRecipients: this.isReplyAllEnabled,
       recipientsIncludeLists: this.isReplyListEnabled,
       isDraft: false,
@@ -593,8 +590,6 @@ Message.prototype = {
       };
     });
 
-    // 8) Decide whether Lightning is installed and Lightning content should be generated
-    data.generateLightningTempl = isLightningInstalled();
     return data;
   },
 

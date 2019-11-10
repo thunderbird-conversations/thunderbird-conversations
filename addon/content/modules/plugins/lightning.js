@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-var EXPORTED_SYMBOLS = ["isLightningInstalled"];
+var EXPORTED_SYMBOLS = [""];
 
 const { XPCOMUtils } = ChromeUtils.import(
   "resource://gre/modules/XPCOMUtils.jsm"
@@ -16,10 +16,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
 
 let Log = setupLogging("Conversations.Modules.Lightning");
 
-function isLightningInstalled() {
-  return hasLightning;
-}
-
 let hasLightning = false;
 let cal;
 try {
@@ -32,7 +28,6 @@ try {
 // This is a version of setupOptions suitable for Conversations
 // see http://mxr.mozilla.org/comm-central/source/calendar/lightning/content/imip-bar.js#186
 function imipOptions(msgWindow, msg, itipItem, rc, actionFunc, foundItems) {
-  // let imipBarText = rootNode.getElementsByClassName("lightningImipText")[0];
   let data = cal.itip.getOptionsText(itipItem, rc, actionFunc);
   let w = topMail3Pane(msg);
 
