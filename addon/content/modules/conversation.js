@@ -314,7 +314,10 @@ class _ConversationUtils {
       Prefs.getBool("mailnews.mark_message_read.auto") ||
       Prefs.getBool("mailnews.mark_message_read.delay")
     ) {
-      msgHdrsMarkAsRead(msgUris.map(msg => msgUriToMsgHdr(msg)), read);
+      msgHdrsMarkAsRead(
+        msgUris.map(msg => msgUriToMsgHdr(msg)),
+        read
+      );
     }
   }
 

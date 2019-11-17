@@ -739,7 +739,7 @@ ComposeSession.prototype = {
     let ed = getActiveEditor();
     let msg = strings.get("sendAnEmptyMessage");
     if (!popOut && !ed.value.length && !confirm(msg)) {
-      return null;
+      return;
     }
 
     let deliverMode;
@@ -801,7 +801,7 @@ ComposeSession.prototype = {
       $(".statusPercentage").hide();
       $(".statusThrobber").hide();
       $(".quickReplyHeader").show();
-      return null;
+      return;
     }
 
     let urls = self.params.msgHdr ? [msgHdrGetUri(self.params.msgHdr)] : [];
@@ -816,7 +816,7 @@ ComposeSession.prototype = {
       identity = self._fakeIdentity;
     }
 
-    return sendMessage(
+    sendMessage(
       {
         urls,
         identity,
