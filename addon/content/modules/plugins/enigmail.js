@@ -148,23 +148,18 @@ if (hasEnigmail) {
   w.document.getElementById("messagepane").appendChild(iframe);
 
   // Override updateSecurityStatus in load event handler.
-  // load-enigmail event is added on Enigmail 2.0.
   let messagepane = w.document.getElementById("messagepane");
   messagepane.addEventListener(
     "load",
     function _overrideUpdateSecurity() {
       let w = getMail3Pane();
-      if (w.Enigmail.hdrView) {
-        overrideUpdateSecurity(messagepane, w);
-      } else {
-        w.addEventListener(
-          "load-enigmail",
-          function _overrideUpdateSecurityInner() {
-            overrideUpdateSecurity(messagepane, w);
-          },
-          { once: true, capture: true }
-        );
-      }
+      w.addEventListener(
+        "load-enigmail",
+        function _overrideUpdateSecurityInner() {
+          overrideUpdateSecurity(messagepane, w);
+        },
+        { once: true, capture: true }
+      );
     },
     { once: true, capture: true }
   );
@@ -175,18 +170,7 @@ if (hasEnigmail) {
 function overrideUpdateSecurity(messagepane, w) {
   // lastMsgWindow is needed to call updateSecurityStatus in mimeVerify.jsm.
   w.EnigmailVerify.lastMsgWindow = w.msgWindow;
-  let headerSink;
-  if (w.Enigmail.hdrView.headerPane) {
-    // headerSink is moved to Enigmail.hdrView.headerPane on Enigmail 2.0
-    headerSink = w.Enigmail.hdrView.headerPane;
-  } else {
-    w.messageHeaderSink.enigmailPrepSecurityInfo();
-    // EnigMimeHeaderSink.prototype in enigmailMsgHdrViewOverlay.js
-    let enigMimeHeaderSinkPrototype = Object.getPrototypeOf(
-      w.messageHeaderSink.securityInfo
-    );
-    headerSink = enigMimeHeaderSinkPrototype;
-  }
+  let headerSink = w.Enigmail.hdrView.headerPane;
   let originalUpdateSecurityStatus = headerSink.updateSecurityStatus;
 
   // Called after decryption or verification is completed.
@@ -242,14 +226,9 @@ function overrideUpdateSecurity(messagepane, w) {
 
     let encToDetails = "";
     if (extraDetails && extraDetails.length) {
-      try {
-        let o = JSON.parse(extraDetails);
-        if ("encryptedTo" in o) {
-          encToDetails = o.encryptedTo;
-        }
-      } catch (x) {
-        // extraDetails is plain text before Enigmail 2.0.
-        encToDetails = extraDetails;
+      let o = JSON.parse(extraDetails);
+      if ("encryptedTo" in o) {
+        encToDetails = o.encryptedTo;
       }
     }
 
@@ -827,13 +806,7 @@ let enigmailHook = {
     Enigmail.msg.enableRules = true;
 
     let fromAddr = identity.email;
-    let userIdValue;
-    // Enigmail <= 1.3.2 doesn't support getSenderUserId.
-    if (Enigmail.msg.getSenderUserId) {
-      userIdValue = Enigmail.msg.getSenderUserId();
-    } else if (identity.getIntAttribute("pgpKeyMode") > 0) {
-      userIdValue = identity.getCharAttribute("pgpkeyId");
-    }
+    let userIdValue = Enigmail.msg.getSenderUserId();
     if (userIdValue) {
       fromAddr = userIdValue;
     }
@@ -932,52 +905,27 @@ let enigmailHook = {
       if (usingPGPMime) {
         uiFlags |= nsIEnigmail.UI_PGP_MIME;
 
-        let newSecurityInfo;
-        if (Enigmail.msg.compFieldsEnig_CID) {
-          newSecurityInfo = Cc[Enigmail.msg.compFieldsEnig_CID].createInstance(
-            Ci.nsIEnigMsgCompFields
-          );
-          newSecurityInfo.sendFlags = sendFlags;
-          newSecurityInfo.UIFlags = uiFlags;
-          newSecurityInfo.senderEmailAddr = fromAddr;
-          newSecurityInfo.recipients = toAddr;
-          newSecurityInfo.bccRecipients = bccAddr;
-          if (Enigmail.msg.mimeHashAlgo) {
-            // Enigmail < 1.5.1
-            // hashAlgorithm was removed since Enigmail 1.5.1
-            newSecurityInfo.hashAlgorithm =
-              Enigmail.msg.mimeHashAlgo[
-                EnigmailPrefs.getPref("mimeHashAlgorithm")
-              ];
-          }
-        } else {
-          // Enigmail 2.0
-          newSecurityInfo = EnigmailMsgCompFields.createObject(
-            gMsgCompose.compFields.securityInfo
-          );
-          EnigmailMsgCompFields.setValue(
-            newSecurityInfo,
-            "sendFlags",
-            sendFlags
-          );
-          EnigmailMsgCompFields.setValue(newSecurityInfo, "UIFlags", uiFlags);
-          EnigmailMsgCompFields.setValue(
-            newSecurityInfo,
-            "senderEmailAddr",
-            fromAddr
-          );
-          EnigmailMsgCompFields.setValue(newSecurityInfo, "recipients", toAddr);
-          EnigmailMsgCompFields.setValue(
-            newSecurityInfo,
-            "bccRecipients",
-            bccAddr
-          );
-          EnigmailMsgCompFields.setValue(
-            newSecurityInfo,
-            "originalSubject",
-            aAddress.params.subject
-          );
-        }
+        let newSecurityInfo = EnigmailMsgCompFields.createObject(
+          gMsgCompose.compFields.securityInfo
+        );
+        EnigmailMsgCompFields.setValue(newSecurityInfo, "sendFlags", sendFlags);
+        EnigmailMsgCompFields.setValue(newSecurityInfo, "UIFlags", uiFlags);
+        EnigmailMsgCompFields.setValue(
+          newSecurityInfo,
+          "senderEmailAddr",
+          fromAddr
+        );
+        EnigmailMsgCompFields.setValue(newSecurityInfo, "recipients", toAddr);
+        EnigmailMsgCompFields.setValue(
+          newSecurityInfo,
+          "bccRecipients",
+          bccAddr
+        );
+        EnigmailMsgCompFields.setValue(
+          newSecurityInfo,
+          "originalSubject",
+          aAddress.params.subject
+        );
         aStatus.securityInfo = newSecurityInfo;
       } else if (sendFlags & (ENCRYPT | SIGN)) {
         // inline-PGP
@@ -996,51 +944,18 @@ let enigmailHook = {
           plainText = simpleWrap(plainText, width);
         }
         plainText = EnigmailData.convertFromUnicode(plainText, charset);
-        let cipherText;
-        if (Enigmail.msg.mimeHashAlgo) {
-          // Enigmail < 1.5.1
-          cipherText = enigmailSvc.encryptMessage(
-            window,
-            uiFlags,
-            null,
-            plainText,
-            fromAddr,
-            toAddr,
-            bccAddr,
-            sendFlags,
-            exitCodeObj,
-            statusFlagsObj,
-            errorMsgObj
-          );
-        } else if (global.EnigmailEncryption) {
-          // Enigmail 2.0
-          cipherText = EnigmailEncryption.encryptMessage(
-            window,
-            uiFlags,
-            plainText,
-            fromAddr,
-            toAddr,
-            bccAddr,
-            sendFlags,
-            exitCodeObj,
-            statusFlagsObj,
-            errorMsgObj
-          );
-        } else {
-          // Third argument(hashAlgorithm) was removed since Enigmail 1.5.1
-          cipherText = enigmailSvc.encryptMessage(
-            window,
-            uiFlags,
-            plainText,
-            fromAddr,
-            toAddr,
-            bccAddr,
-            sendFlags,
-            exitCodeObj,
-            statusFlagsObj,
-            errorMsgObj
-          );
-        }
+        let cipherText = EnigmailEncryption.encryptMessage(
+          window,
+          uiFlags,
+          plainText,
+          fromAddr,
+          toAddr,
+          bccAddr,
+          sendFlags,
+          exitCodeObj,
+          statusFlagsObj,
+          errorMsgObj
+        );
 
         let exitCode = exitCodeObj.value;
         if (cipherText && exitCode == 0) {
@@ -1163,25 +1078,13 @@ let enigmailHook = {
     if (toAddrList.length && EnigmailPrefs.getPref("assignKeysByRules")) {
       let matchedKeysObj = {};
       let flagsObj = {};
-      let success;
-      if (global.EnigmailRules) {
-        success = EnigmailRules.mapAddrsToKeys(
-          toAddrList.join(", "),
-          false, // no interaction if not all addrs have a key
-          window,
-          matchedKeysObj, // resulting matching keys
-          flagsObj
-        ); // resulting flags (0/1/2/3 for each type)
-      } else {
-        // Enigmail before 1.9
-        success = Enigmail.hlp.getRecipientsKeys(
-          toAddrList.join(", "),
-          false, // not interactive
-          false, // forceRecipientSettings (ignored due to not interactive)
-          matchedKeysObj, // resulting matching keys
-          flagsObj
-        ); // resulting flags (0/1/2/3 for each type)
-      }
+      let success = EnigmailRules.mapAddrsToKeys(
+        toAddrList.join(", "),
+        false, // no interaction if not all addrs have a key
+        window,
+        matchedKeysObj, // resulting matching keys
+        flagsObj
+      ); // resulting flags (0/1/2/3 for each type)
       if (success) {
         Enigmail.msg.encryptByRules = flagsObj.encrypt;
         Enigmail.msg.signByRules = flagsObj.sign;
