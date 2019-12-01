@@ -367,6 +367,7 @@ function Message(aConversation) {
 
   // Selected state for onSelected function
   this._selected = false;
+  this._specialTags = [];
 }
 
 Message.prototype = {
@@ -461,6 +462,7 @@ Message.prototype = {
       recipientsIncludeLists: msgData.recipientsIncludeLists,
       shortFolderName: msgData.shortFolderName,
       snippet: msgData.snippet,
+      specialTags: this._specialTags,
       starred: msgData.starred,
       tags: msgData.tags,
       to: msgData.dataContactsTo,
@@ -817,6 +819,16 @@ Message.prototype = {
 
   set tags(v) {
     msgHdrSetTags(this._msgHdr, v);
+  },
+
+  addSpecialTag(tagDetails) {
+    this._specialTags.push(tagDetails);
+
+    this._conversation._htmlPane.conversationDispatch({
+      type: "MSG_UPDATE_SPECIAL_TAGS",
+      specialTags: this._specialTags,
+      uri: sanitize(this._uri),
+    });
   },
 
   _signal() {

@@ -65,6 +65,13 @@ class MessageIFrame extends React.Component {
     } else {
       // Never start a load if we're going to be hidden.
       startLoad = false;
+      // If we're changing URL, then also force the iframe to be about:blank.
+      // This ensures that if the message is subsequently expanded, the proper
+      // notifications are sent.
+      if (prevProps.neckoUrl.spec != this.props.neckoUrl.spec) {
+        this.iframe.src = "about:blank";
+        this.currentUrl = "about:blank";
+      }
       this.iframe.classList.add("hidden");
     }
     if (startLoad) {

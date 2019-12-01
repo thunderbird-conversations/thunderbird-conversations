@@ -763,34 +763,27 @@ a img {
 }
 
 /* DKIM Verifier plugin */
-.message:not(.dkim-signed) .tag-dkim-signed {
-  display: none;
-}
-
-.message[dkimStatus="SUCCESS"] .tag-dkim-signed {
+.special-tag.dkim-signed.SUCCESS {
   background-color: #68AB57 !important;
 }
 
-.message[dkimStatus="SUCCESS"][warnings="true"] .tag-dkim-signed {
+.special-tag.dkim-signed.SUCCESS.warnings {
   background-color: orange !important;
 }
 
-.message[dkimStatus="PERMFAIL"] .tag-dkim-signed {
+.special-tag.dkim-signed.PERMFAIL {
   background-color: red!important;
 }
 
-.message[dkimStatus="TEMPFAIL"] .tag-dkim-signed {
-}
-
-.tag-dkim-signed {
+.dkim-signed {
   position: relative;
 }
 
-.tag-dkim-signed span {
+.dkim-signed span {
   display:none;
 }
 
-.tag-dkim-signed:hover span {
+.dkim-signed:hover span {
   display: inline;
   position: absolute;
   top: 24px;
@@ -800,6 +793,7 @@ a img {
   border: 1px solid #aaa;
   box-shadow: 0 0 0 6px rgba(0,0,0,0.25);
   border-radius: 5px;
+  width: -moz-max-content;
   z-index: 1000;
 }
 

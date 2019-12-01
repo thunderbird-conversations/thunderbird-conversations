@@ -229,6 +229,12 @@ function messages(state = initialMessages, action) {
         return { ...msg, ...action.msgData };
       });
     }
+    case "MSG_UPDATE_SPECIAL_TAGS": {
+      return modifyOnlyMsg(state, action.uri, msg => {
+        const newSpecialTags = [...action.specialTags];
+        return { ...msg, specialTags: newSpecialTags };
+      });
+    }
     case "MARK_AS_JUNK": {
       // This action should only be activated when the conversation is not a
       //  conversation in a tab AND there's only one message in the conversation,

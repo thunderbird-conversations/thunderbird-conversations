@@ -98,6 +98,44 @@ MessageTags.propTypes = {
   tags: PropTypes.array.isRequired,
 };
 
+class SpecialMessageTag extends React.PureComponent {
+  render() {
+    return (
+      <li className={this.props.classNames + " special-tag"}>
+        <svg
+          className="icon"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
+          xmlnsXlink="http://www.w3.org/1999/xlink"
+        >
+          <use xlinkHref={this.props.icon}></use>
+        </svg>
+        {this.props.name}
+        {!!this.props.tooltip && this.props.tooltip.type == "dkim" && (
+          <span>
+            <div>{this.props.tooltip.strings[0]}</div>
+            {!!this.props.tooltip.strings[1] &&
+              !!this.props.tooltip.strings[1].length && <hr />}
+            {!!this.props.tooltip.strings[1] &&
+              !!this.props.tooltip.strings[1].length &&
+              this.props.tooltip.strings[1].map((s, i) => {
+                return <div key={i}>{s}</div>;
+              })}
+            <div></div>
+          </span>
+        )}
+      </li>
+    );
+  }
+}
+
+SpecialMessageTag.propTypes = {
+  classNames: PropTypes.string.isRequired,
+  icon: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
+  tooltip: PropTypes.object.isRequired,
+};
+
 class SpecialMessageTags extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -116,13 +154,14 @@ class SpecialMessageTags extends React.PureComponent {
   }
 
   render() {
-    // TODO: Get the signed/decrypted/dkim-signed tags working properly.
+    // TODO: Get the signed/decrypted tags working properly.
     // Maybe use plugins to feed the data into the message display, and allow
     // them to set the icons/text to display?
+
     return (
       <ul className="tags special-tags">
         <li
-          className="keep-tag tag-signed"
+          className="tag-signed"
           title={this.props.strings.get("messageSignedLong")}
         >
           <svg
@@ -136,7 +175,7 @@ class SpecialMessageTags extends React.PureComponent {
           {this.props.strings.get("messageSigned")}
         </li>
         <li
-          className="keep-tag tag-decrypted"
+          className="tag-decrypted"
           title={this.props.strings.get("messageDecryptedLong")}
         >
           <svg
@@ -149,20 +188,22 @@ class SpecialMessageTags extends React.PureComponent {
           </svg>
           {this.props.strings.get("messageDecrypted")}
         </li>
-        <li className="keep-tag tag-dkim-signed">
-          <svg
-            className="icon"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-            xmlnsXlink="http://www.w3.org/1999/xlink"
-          >
-            <use xlinkHref="chrome://conversations/skin/material-icons.svg#edit"></use>
-          </svg>
-          {this.props.strings.get("messageDKIMSigned")}
-        </li>
+        {!!this.props.specialTags &&
+          !!this.props.specialTags.length &&
+          this.props.specialTags.map((tag, i) => {
+            return (
+              <SpecialMessageTag
+                classNames={tag.classNames}
+                icon={tag.icon}
+                key={i}
+                name={tag.name}
+                tooltip={tag.tooltip}
+              />
+            );
+          })}
         {!!this.props.folderName && !this.props.inView && (
           <li
-            className="keep-tag in-folder"
+            className="in-folder"
             onClick={this.onClickInFolder}
             title={this.props.strings.get("jumpToFolder")}
           >
@@ -180,5 +221,6 @@ SpecialMessageTags.propTypes = {
   folderName: PropTypes.string.isRequired,
   inView: PropTypes.bool.isRequired,
   msgUri: PropTypes.string.isRequired,
+  specialTags: PropTypes.array.isRequired,
   strings: PropTypes.object.isRequired,
 };

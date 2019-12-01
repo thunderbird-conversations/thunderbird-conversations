@@ -111,6 +111,7 @@ class Message extends React.PureComponent {
               folderName={this.props.message.folderName}
               inView={this.props.message.inView}
               msgUri={this.props.message.msgUri}
+              specialTags={this.props.message.specialTags}
               strings={this.strings}
             />
           )}

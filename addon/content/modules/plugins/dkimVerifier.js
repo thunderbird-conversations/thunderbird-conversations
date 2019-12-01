@@ -2,6 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
+"use strict";
+
 var EXPORTED_SYMBOLS = [];
 
 const { XPCOMUtils } = ChromeUtils.import(
@@ -12,6 +14,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   getMail3Pane: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   registerHook: "chrome://conversations/content/modules/hook.js",
   setupLogging: "chrome://conversations/content/modules/log.js",
+  StringBundle: "resource:///modules/StringBundle.js",
 });
 
 let Log = setupLogging("Conversations.Modules.DKIMVerifier");
@@ -35,7 +38,13 @@ try {
   );
 }
 
+let stringBundle;
+
 if (hasDKIMVerifier) {
+  stringBundle = new StringBundle(
+    "chrome://conversations/locale/template.properties"
+  );
+
   let mailWindow = getMail3Pane();
   let onEndHeaders = mailWindow.DKIM_Verifier.Display.onEndHeaders;
   mailWindow.DKIM_Verifier.Display.onEndHeaders = function() {
@@ -48,59 +57,35 @@ if (hasDKIMVerifier) {
   };
 }
 
-function setTooltip(aDomNode, status, warnings) {
-  "use strict";
-
-  let document = getMail3Pane().document;
-  warnings = warnings || [];
-
-  let tooltip = document.createElement("span");
-  let t_status = document.createElement("div");
-  t_status.textContent = status;
-  tooltip.appendChild(t_status);
-
-  if (warnings.length) {
-    let d = document.createElementNS("http://www.w3.org/1999/xhtml", "hr");
-    tooltip.appendChild(d);
+function displayResult(result, msg) {
+  if (result.dkim[0].result == "none") {
+    return;
   }
 
-  for (let w of warnings) {
-    let d = document.createElement("div");
-    d.textContent = w;
-    tooltip.appendChild(d);
-  }
+  const warningsClassName = result.dkim[0].warnings_str.length
+    ? "warnings"
+    : "";
 
-  let dkimTag = aDomNode.querySelector(".keep-tag.tag-dkim-signed");
-  dkimTag.appendChild(tooltip);
-}
-
-function displayResult(result, aDomNode) {
-  "use strict";
-
-  aDomNode.setAttribute("dkimStatus", result.dkim[0].result);
-
-  if (result.dkim[0].res_num <= 30) {
-    aDomNode.classList.add("dkim-signed");
-    setTooltip(
-      aDomNode,
-      result.dkim[0].result_str,
-      result.dkim[0].warnings_str
-    );
-  }
+  msg.addSpecialTag({
+    classNames: `dkim-signed ${warningsClassName} ${result.dkim[0].result}`,
+    icon: "chrome://conversations/skin/material-icons.svg#edit",
+    name: stringBundle.get("messageDKIMSigned"),
+    tooltip: {
+      type: "dkim",
+      strings: [result.dkim[0].result_str, result.dkim[0].warnings_str],
+    },
+  });
 }
 
 let dkimVerifierHook = {
-  onMessageStreamed: function _dkimVerifierHook_onMessageStreamed(
-    aMsgHdr,
-    aDomNode /* , aMsgWindow, aMessage*/
-  ) {
+  onMessageStreamed(msgHdr, domNode, msgWindow, msg) {
     "use strict";
 
-    AuthVerifier.verify(aMsgHdr).then(
-      function(result) {
-        displayResult(result, aDomNode);
+    AuthVerifier.verify(msgHdr).then(
+      result => {
+        displayResult(result, msg);
       },
-      function(exception) {
+      exception => {
         Log.debug("Exception in dkimVerifierHook: " + exception);
       }
     );

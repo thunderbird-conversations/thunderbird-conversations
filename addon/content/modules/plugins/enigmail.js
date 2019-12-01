@@ -698,7 +698,7 @@ function addViewSecurityInfoEvent(aMessage) {
     w.Enigmail.msg.viewSecurityInfo(event);
   };
   for (let x of ["decrypted", "signed"]) {
-    let tag = aMessage._domNode.querySelector(".keep-tag.tag-" + x);
+    let tag = aMessage._domNode.querySelector(".tag-" + x);
     tag.addEventListener("click", aMessage._viewSecurityInfo);
     tag.style.cursor = "pointer";
   }
