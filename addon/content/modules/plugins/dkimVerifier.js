@@ -58,13 +58,14 @@ if (hasDKIMVerifier) {
 }
 
 function displayResult(result, msg) {
-  if (result.dkim[0].result == "none") {
+  if (result.dkim[0].result == "none" || result.dkim[0].res_num > 30) {
     return;
   }
 
-  const warningsClassName = result.dkim[0].warnings_str.length
-    ? "warnings"
-    : "";
+  const warningsClassName =
+    result.dkim[0].warnings_str && result.dkim[0].warnings_str.length
+      ? "warnings"
+      : "";
 
   msg.addSpecialTag({
     classNames: `dkim-signed ${warningsClassName} ${result.dkim[0].result}`,
