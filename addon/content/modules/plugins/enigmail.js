@@ -77,26 +77,29 @@ let Log = setupLogging("Conversations.Modules.Enigmail");
 // eslint-disable-next-line no-redeclare
 let window = getMail3Pane();
 let hasEnigmail;
+
 try {
-  /* globals EnigmailCore, EnigmailData, EnigmailLocale,
-             EnigmailFuncs, Enigmail, EnigmailPrefs, EnigmailDialog,
-             EnigmailConstants, EnigmailRules, EnigmailArmor,
-             EnigmailDecryption, EnigmailExecution */
-  ChromeUtils.import("chrome://enigmail/content/modules/core.jsm");
-  ChromeUtils.import("chrome://enigmail/content/modules/data.jsm");
-  ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm");
-  ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm");
-  ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm");
-  ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm");
-  // eslint-disable-next-line no-unused-vars
-  ChromeUtils.import("chrome://enigmail/content/modules/execution.jsm");
   hasEnigmail = true;
+  ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm");
   Log.debug("Enigmail plugin for Thunderbird Conversations loaded!");
-} catch (e) {
+} catch (ex) {
   hasEnigmail = false;
   Log.debug("Enigmail doesn't seem to be installed...");
 }
-/* eslint-enable no-unused-vars */
+
+if (hasEnigmail) {
+  XPCOMUtils.defineLazyModuleGetters(this, {
+    EnigmailConstants: "chrome://enigmail/content/modules/constants.jsm",
+    EnigmailCore: "chrome://enigmail/content/modules/core.jsm",
+    EnigmailData: "chrome://enigmail/content/modules/data.jsm",
+    EnigmailDecryption: "chrome://enigmail/content/modules/decryption.jsm",
+    EnigmailDialog: "chrome://enigmail/content/modules/dialog.jsm",
+    EnigmailFuncs: "chrome://enigmail/content/modules/funcs.jsm",
+    EnigmailLocale: "chrome://enigmail/content/modules/locale.jsm",
+    EnigmailPrefs: "chrome://enigmail/content/modules/prefs.jsm",
+    EnigmailRules: "chrome://enigmail/content/modules/rules.jsm",
+  });
+}
 
 let enigmailSvc;
 // used in enigmailMsgComposeOverlay.js
@@ -120,7 +123,8 @@ if (hasEnigmail) {
   }
   try {
     let loader = Services.scriptloader;
-    /* globals EnigmailMsgCompFields, EnigmailEncryption */
+    // The Enigmail global comes from enigmailMsgComposeOverlay.js.
+    /* globals Enigmail, EnigmailMsgCompFields, EnigmailEncryption */
     loader.loadSubScript(
       "chrome://enigmail/content/ui/enigmailMsgComposeOverlay.js",
       global
@@ -176,7 +180,7 @@ function overrideUpdateSecurity(messagepane, w) {
   // Called after decryption or verification is completed.
   // Security status of a message is updated and shown at the status bar
   // and the header box.
-  headerSink.updateSecurityStatus = function _updateSecurityStatus_patched(
+  headerSink.updateSecurityStatus = function(
     unusedUriSpec,
     exitCode,
     statusFlags,
@@ -210,7 +214,7 @@ function overrideUpdateSecurity(messagepane, w) {
       return;
     }
     if (message._updateHdrIcons) {
-      // _updateHdrIcons is assgined if this is called before.
+      // _updateHdrIcons is assigned if this is called before.
       // This function will be called twice a PGP/MIME encrypted message.
       return;
     }
@@ -252,7 +256,7 @@ function overrideUpdateSecurity(messagepane, w) {
   };
 
   let originalHandleSMimeMessage = headerSink.handleSMimeMessage;
-  headerSink.handleSMimeMessage = function _handleSMimeMessage_patched(uri) {
+  headerSink.handleSMimeMessage = function(uri) {
     // Use original if the classic reader is used.
     if (messagepane.contentDocument.location.href !== "about:blank?") {
       originalHandleSMimeMessage.apply(this, arguments);
@@ -731,7 +735,7 @@ let enigmailHook = {
   _domNode: null,
   _originalText: null, // for restoring original text when sending message is canceled
 
-  onMessageBeforeStreaming: function _enigmailHook_onBeforeStreaming(aMessage) {
+  onMessageBeforeStreaming(aMessage) {
     if (enigmailSvc) {
       let {
         _attachments: attachments,
@@ -776,7 +780,7 @@ let enigmailHook = {
   },
 
   // eslint-disable-next-line complexity
-  onMessageBeforeSendOrPopout: function _enigmailHook_onMessageBeforeSendOrPopout(
+  onMessageBeforeSendOrPopout(
     aAddress,
     aEditor,
     aStatus,
@@ -1023,7 +1027,7 @@ let enigmailHook = {
     return aStatus;
   },
 
-  onMessageBeforeSendOrPopout_canceled: function _enigmailHook_onMessageBeforeSendOrPopout_canceled(
+  onMessageBeforeSendOrPopout_canceled(
     aAddress,
     aEditor,
     aStatus,
@@ -1040,7 +1044,7 @@ let enigmailHook = {
     }
   },
 
-  onComposeSessionChanged: function _enigmailHook_onComposeSessionChanged(
+  onComposeSessionChanged(
     aComposeSession,
     aMessage,
     aAddress,
@@ -1204,7 +1208,7 @@ let enigmailHook = {
   },
 
   // Update security info when the message is selected.
-  onMessageSelected: function _enigmailHook_onMessageSelected(aMessage) {
+  onMessageSelected(aMessage) {
     if (hasEnigmail) {
       updateSecurityInfo(aMessage);
     }
