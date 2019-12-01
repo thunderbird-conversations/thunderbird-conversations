@@ -5,40 +5,35 @@
 /* globals PropTypes, React, ActionButton */
 /* exported MessageFooter */
 
-class MessageFooter extends React.PureComponent {
-  constructor(props) {
-    super(props);
-    this.action = this.action.bind(this);
+function MessageFooter({
+  dispatch,
+  msgUri,
+  multipleRecipients,
+  recipientsIncludeLists,
+  isDraft,
+}) {
+  function action(msg) {
+    dispatch({ ...msg, msgUri });
   }
 
-  action(msg) {
-    msg.msgUri = this.props.msgUri;
-    this.props.dispatch(msg);
-  }
+  let footerActions = isDraft ? (
+    <ActionButton callback={action} type="draft" />
+  ) : (
+    <>
+      <ActionButton callback={action} type="reply" />
+      {multipleRecipients && <ActionButton callback={action} type="replyAll" />}
+      {recipientsIncludeLists && (
+        <ActionButton callback={action} type="replyList" />
+      )}
+      <ActionButton callback={action} type="forward" />
+    </>
+  );
 
-  render() {
-    return (
-      <div className="messageFooter">
-        <div className="footerActions">
-          {this.props.isDraft && (
-            <ActionButton callback={this.action} type="draft" />
-          )}
-          {!this.props.isDraft && (
-            <ActionButton callback={this.action} type="reply" />
-          )}
-          {!this.props.isDraft && this.props.multipleRecipients && (
-            <ActionButton callback={this.action} type="replyAll" />
-          )}
-          {!this.props.isDraft && this.props.recipientsIncludeLists && (
-            <ActionButton callback={this.action} type="replyList" />
-          )}
-          {!this.props.isDraft && (
-            <ActionButton callback={this.action} type="forward" />
-          )}
-        </div>
-      </div>
-    );
-  }
+  return (
+    <div className="messageFooter">
+      <div className="footerActions">{footerActions}</div>
+    </div>
+  );
 }
 
 MessageFooter.propTypes = {
