@@ -737,11 +737,7 @@ let enigmailHook = {
 
   onMessageBeforeStreaming(aMessage) {
     if (enigmailSvc) {
-      let {
-        _attachments: attachments,
-        /* _msgHdr: msgHdr, */ _domNode: domNode,
-      } = aMessage;
-      this._domNode = domNode;
+      let { _attachments: attachments } = aMessage;
       let w = topMail3Pane(aMessage);
 
       let hasSig =
