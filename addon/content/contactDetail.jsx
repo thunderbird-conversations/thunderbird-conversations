@@ -5,6 +5,27 @@
 /* globals PropTypes, React, ReactRedux, StringBundle */
 /* exported ContactDetail */
 
+/**
+ * Returns an SVG icon from `.../material-icons.svg#{hash}`
+ *
+ * @param {string} { type }
+ * @returnType {React.Node}
+ */
+function MaterialIcon({ type }) {
+  return (
+    <svg
+      className="icon"
+      viewBox="0 0 24 24"
+      xmlns="http://www.w3.org/2000/svg"
+      xmlnsXlink="http://www.w3.org/1999/xlink"
+    >
+      <use
+        xlinkHref={`chrome://conversations/skin/material-icons.svg#${type}`}
+      ></use>
+    </svg>
+  );
+}
+MaterialIcon.propTypes = { type: PropTypes.string };
 class _ContactDetail extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -127,14 +148,7 @@ class _ContactDetail extends React.PureComponent {
                 title={this.strings.get("copyEmail")}
                 onClick={this.copyEmail}
               >
-                <svg
-                  className="icon"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                  xmlnsXlink="http://www.w3.org/1999/xlink"
-                >
-                  <use xlinkHref="chrome://conversations/skin/material-icons.svg#content_copy"></use>
-                </svg>
+                <MaterialIcon type="content_copy" />
               </button>
             </span>
           </div>
@@ -153,14 +167,7 @@ class _ContactDetail extends React.PureComponent {
                 title={this.strings.get("editCardAb")}
                 onClick={this.editContact}
               >
-                <svg
-                  className="icon"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                  xmlnsXlink="http://www.w3.org/1999/xlink"
-                >
-                  <use xlinkHref="chrome://conversations/skin/material-icons.svg#edit"></use>
-                </svg>
+                <MaterialIcon type="edit" />
               </button>
             ) : (
               <button
@@ -168,14 +175,7 @@ class _ContactDetail extends React.PureComponent {
                 title={this.strings.get("addToAb")}
                 onClick={this.addContact}
               >
-                <svg
-                  className="icon"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                  xmlnsXlink="http://www.w3.org/1999/xlink"
-                >
-                  <use xlinkHref="chrome://conversations/skin/material-icons.svg#add"></use>
-                </svg>
+                <MaterialIcon type="add" />
               </button>
             )}
           </div>
@@ -186,28 +186,14 @@ class _ContactDetail extends React.PureComponent {
             title={this.strings.get("sendEmail")}
             onClick={this.sendEmail}
           >
-            <svg
-              className="icon"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-              xmlnsXlink="http://www.w3.org/1999/xlink"
-            >
-              <use xlinkHref="chrome://conversations/skin/material-icons.svg#mail"></use>
-            </svg>
+            <MaterialIcon type="mail" />
           </button>
           <button
             className="showInvolving"
             title={this.strings.get("recentConversations")}
             onClick={this.showInvolving}
           >
-            <svg
-              className="icon"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-              xmlnsXlink="http://www.w3.org/1999/xlink"
-            >
-              <use xlinkHref="chrome://conversations/skin/material-icons.svg#history"></use>
-            </svg>
+            <MaterialIcon type="history" />
           </button>
           {!this.state.expanded && (
             <button
@@ -215,14 +201,7 @@ class _ContactDetail extends React.PureComponent {
               title={this.strings.get("more")}
               onClick={this.expandFooter}
             >
-              <svg
-                className="icon"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-                xmlnsXlink="http://www.w3.org/1999/xlink"
-              >
-                <use xlinkHref="chrome://conversations/skin/material-icons.svg#expand_more"></use>
-              </svg>
+              <MaterialIcon type="expand_more" />
             </button>
           )}
         </div>
