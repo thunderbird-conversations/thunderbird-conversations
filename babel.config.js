@@ -2,7 +2,11 @@
 
 module.exports = function(api) {
   const presets = [
-    ["@babel/preset-env"],
+    [
+      "@babel/preset-env",
+      // We don't want es modules to be bundled; we'll use native loading!
+      { targets: { esmodules: true }, modules: false },
+    ],
     [
       "@babel/preset-react",
       {

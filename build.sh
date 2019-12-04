@@ -17,6 +17,7 @@ cp node_modules/react-dom/umd/react-dom.development.js $VENDOR_DIR/react-dom.js
 cp node_modules/prop-types/prop-types.min.js $VENDOR_DIR/prop-types.js
 cp node_modules/pdfjs-dist/build/pdf.js $VENDOR_DIR
 cp node_modules/pdfjs-dist/build/pdf.worker.js $VENDOR_DIR
+cp "node_modules/@reduxjs/toolkit/dist/redux-toolkit.umd.js" $VENDOR_DIR
 
 cp LICENSE README.md $DIST/
 

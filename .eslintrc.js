@@ -18,7 +18,12 @@ module.exports = {
         webextensions: true,
       },
       excludedFiles: ["addon/bootstrap.js"],
-      files: ["addon/*.js"],
+      files: [
+        "addon/*.js",
+        "addon/*.jsx",
+        "addon/content/es-modules/**/*.js",
+        "addon/content/es-modules/**/*.jsx",
+      ],
       parserOptions: {
         sourceType: "module",
       },
