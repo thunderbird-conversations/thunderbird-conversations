@@ -55,9 +55,8 @@ const { setupLogging, dumpCallStack } = ChromeUtils.import(
   "chrome://conversations/content/modules/log.js"
 );
 
-let strings = new StringBundle(
-  "chrome://conversations/locale/message.properties"
-);
+let strings;
+let templateStrings;
 
 let Log = setupLogging("Conversations.Modules.Enigmail");
 
@@ -99,6 +98,13 @@ if (hasEnigmail) {
     EnigmailPrefs: "chrome://enigmail/content/modules/prefs.jsm",
     EnigmailRules: "chrome://enigmail/content/modules/rules.jsm",
   });
+
+  strings = new StringBundle(
+    "chrome://conversations/locale/message.properties"
+  );
+  templateStrings = new StringBundle(
+    "chrome://conversations/locale/template.properties"
+  );
 }
 
 let enigmailSvc;
@@ -159,7 +165,7 @@ if (hasEnigmail) {
       let w = getMail3Pane();
       w.addEventListener(
         "load-enigmail",
-        function _overrideUpdateSecurityInner() {
+        () => {
           overrideUpdateSecurity(messagepane, w);
         },
         { once: true, capture: true }
@@ -252,7 +258,7 @@ function overrideUpdateSecurity(messagepane, w) {
     showHdrIconsOnStreamed(message, updateHdrIcons);
 
     // Show signed label of encrypted and signed pgp/mime.
-    addSignedLabel(statusFlags, message._domNode, message);
+    addSignedLabel(statusFlags, message);
   };
 
   let originalHandleSMimeMessage = headerSink.handleSMimeMessage;
@@ -585,7 +591,7 @@ function prepareForShowHdrIcons(aMessage) {
   let w = topMail3Pane(aMessage);
   let conversation = aMessage._conversation;
 
-  // w.Conversations.currentConversation is assined when conversation
+  // w.Conversations.currentConversation is assigned when conversation
   // _onComplete(), but we need currentConversation in
   // updateSecurityStatus() which is possible to be called before
   // _onComplete().
@@ -709,9 +715,9 @@ function addViewSecurityInfoEvent(aMessage) {
 }
 
 // Add signed label and click action to a signed message.
-function addSignedLabel(aStatus, aDomNode, aMessage) {
+function addSignedLabel(status, msg) {
   if (
-    aStatus &
+    status &
     (nsIEnigmail.BAD_SIGNATURE |
       nsIEnigmail.GOOD_SIGNATURE |
       nsIEnigmail.EXPIRED_KEY_SIGNATURE |
@@ -721,13 +727,21 @@ function addSignedLabel(aStatus, aDomNode, aMessage) {
       nsIEnigmail.EXPIRED_KEY_SIGNATURE |
       nsIEnigmail.EXPIRED_SIGNATURE)
   ) {
-    aDomNode.classList.add("signed");
-    addViewSecurityInfoEvent(aMessage);
-  }
-  if (aStatus & nsIEnigmail.UNVERIFIED_SIGNATURE) {
-    for (let x of aDomNode.querySelectorAll(".tag-signed")) {
-      x.setAttribute("title", strings.get("unknownGood"));
-    }
+    msg.addSpecialTag({
+      classNames: "enigmail-signed",
+      icon: "chrome://conversations/skin/material-icons.svg#edit",
+      name: templateStrings.get("messageSigned"),
+      onClick: {
+        type: "enigmail",
+        detail: "viewSecurityInfo",
+      },
+      title:
+        status & nsIEnigmail.UNVERIFIED_SIGNATURE
+          ? templateStrings.get("messageSignedLong")
+          : templateStrings.get("messageSignedLong"),
+    });
+    // TODO: enable this.
+    // addViewSecurityInfoEvent(msg);
   }
 }
 
@@ -735,28 +749,31 @@ let enigmailHook = {
   _domNode: null,
   _originalText: null, // for restoring original text when sending message is canceled
 
-  onMessageBeforeStreaming(aMessage) {
+  onMessageBeforeStreaming(msg) {
     if (enigmailSvc) {
-      let { _attachments: attachments } = aMessage;
-      let w = topMail3Pane(aMessage);
+      let { _attachments: attachments } = msg;
+      let w = topMail3Pane(msg);
 
-      let hasSig =
-        (aMessage.contentType + "").search(/^multipart\/signed(;|$)/i) == 0;
-      for (let x of attachments) {
-        if (x.contentType.search(/^application\/pgp-signature/i) == 0) {
-          hasSig = true;
-        }
-      }
-      if (hasSig) {
-        aMessage._domNode.classList.add("signed");
-      }
+      // TODO: Not sure why we were adding this here, when we do it in post
+      // streaming anyway.
+      //
+      // let hasSig =
+      //   (msg.contentType + "").search(/^multipart\/signed(;|$)/i) == 0;
+      // for (let x of attachments) {
+      //   if (x.contentType.search(/^application\/pgp-signature/i) == 0) {
+      //     hasSig = true;
+      //   }
+      // }
+      // if (hasSig) {
+      //   msg._domNode.classList.add("signed");
+      // }
 
       // Current message uri should be blank to decrypt all PGP/MIME messages.
       w.Enigmail.msg.getCurrentMsgUriSpec = function() {
         return "";
       };
-      verifyAttachments(aMessage);
-      prepareForShowHdrIcons(aMessage);
+      verifyAttachments(msg);
+      prepareForShowHdrIcons(msg);
       patchForShowSecurityInfo(w);
     }
   },
@@ -765,13 +782,23 @@ let enigmailHook = {
     let iframeDoc = iframe.contentDocument;
     if (iframeDoc.body.textContent.length && hasEnigmail) {
       // TODO: FIXME
-      /* exported tryEnigmail */
-      // let status = tryEnigmail(iframeDoc, message, msgWindow);
+      let status = tryEnigmail(iframeDoc, message, msgWindow);
+      console.log({ status });
       // if (status & nsIEnigmail.DECRYPTION_OKAY)
       //   aDomNode.classList.add("decrypted");
       // if (aDomNode.classList.contains("decrypted"))
       //   addViewSecurityInfoEvent(message);
-      // addSignedLabel(status, aDomNode, message);
+      addSignedLabel(status, message);
+    }
+  },
+
+  onMessageTagClick(win, event, extraData) {
+    if (extraData.type != "enigmail") {
+      return;
+    }
+
+    if (extraData.detail == "viewSecurityInfo") {
+      win.Enigmail.msg.viewSecurityInfo(event);
     }
   },
 

@@ -824,6 +824,23 @@ Message.prototype = {
     });
   },
 
+  msgPluginTagClick(win, event, ...extraData) {
+    let newEvent = {
+      button: event.button,
+    };
+    Services.tm.dispatchToMainThread(() => {
+      for (let h of getHooks()) {
+        try {
+          if (typeof h.onMessageTagClick == "function") {
+            h.onMessageTagClick(win, newEvent, ...extraData);
+          }
+        } catch (ex) {
+          Log.warn("Plugin returned an error:", ex);
+        }
+      }
+    });
+  },
+
   _checkForPhishing(iframe) {
     if (!Prefs.getBool("mail.phishing.detection.enabled")) {
       return;
