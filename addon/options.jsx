@@ -6,7 +6,7 @@
 // however we currently aren't able to use sendMessage to send to both the
 // background script and to bootstrap.js.
 
-import { browser } from "./content/es-modules/thunderbird-compat.js";
+import { browser, i18n } from "./content/es-modules/thunderbird-compat.js";
 import {
   React,
   ReactDOM,
@@ -14,6 +14,40 @@ import {
   ReactRedux,
   PropTypes,
 } from "./content/es-modules/ui.js";
+
+//
+// Create the redux store and appropriate actions/thunks
+// using Redux Toolkit (RTK)
+//
+const { createSlice, configureStore } = RTK;
+
+const prefsSlice = createSlice({
+  name: "prefs",
+  initialState: {},
+  reducers: {
+    set(state, { payload }) {
+      return { ...state, ...payload };
+    },
+  },
+});
+const actions = {
+  initPrefs() {
+    return async function(dispatch) {
+      const prefs = await browser.storage.local.get("preferences");
+      dispatch(prefsSlice.actions.set(prefs.preferences));
+    };
+  },
+  savePref(name, value) {
+    return async function(dispatch, getState) {
+      const newPrefs = { ...getState(), [name]: value };
+      await browser.storage.local.set({ preferences: newPrefs });
+      dispatch(prefsSlice.actions.set(newPrefs));
+    };
+  },
+};
+
+const store = configureStore({ reducer: prefsSlice.reducer });
+store.dispatch(actions.initPrefs());
 
 // A list of all preferences that can be set via the GUI.
 // `desc` and `name` will get run through l10n before being rendered
@@ -115,31 +149,34 @@ const PREFS_INFO = [
 
 /**
  * Localize `PREFS_INFO` or a single string using
- * `browser.i18n.getMessage(...)`
+ * `i18n.getMessage(...)`
  *
  * @param {(string | object[])} prefsInfo
  * @returns {(string | object[])}
  */
-function localize(prefsInfo) {
+function localize(prefsInfo, i18n = browser.i18n) {
+  if (!i18n) {
+    throw new Error("`i18n` object not specified");
+  }
   if (typeof prefsInfo === "string") {
-    return browser.i18n.getMessage(prefsInfo);
+    return i18n.getMessage(prefsInfo);
   }
   // If `prefsInfo` is an array, it is an array of information used
   // to render the prefernce setting GUI. Localize all `desc` and `title`
   // properties
   if (Array.isArray(prefsInfo)) {
     return prefsInfo.map(pref => {
-      const retProps = pref.props;
+      const retProps = { ...pref.props };
       if (retProps.desc) {
-        retProps.desc = browser.i18n.getMessage(retProps.desc);
+        retProps.desc = i18n.getMessage(retProps.desc);
       }
       if (retProps.title) {
-        retProps.title = browser.i18n.getMessage(retProps.title);
+        retProps.title = i18n.getMessage(retProps.title);
       }
       if (retProps.choices) {
         retProps.choices = retProps.choices.map(choice => {
           if (choice.desc) {
-            return { ...choice, desc: browser.i18n.getMessage(choice.desc) };
+            return { ...choice, desc: i18n.getMessage(choice.desc) };
           }
           return choice;
         });
@@ -337,52 +374,46 @@ _ConversationOptions.propTypes = {
 };
 
 const ConversationOptions = ReactRedux.connect(state => ({ prefs: state }), {
-  setPref: savePref,
+  setPref: actions.savePref,
 })(_ConversationOptions);
 
-//
-// Create the redux store and appropriate actions/thunks
-// using Redux Toolkit (RTK)
-//
-const { createSlice, configureStore } = RTK;
+// The entry point for the options page
+function Main() {
+  const [localizedName, setLocalizedName] = React.useState(
+    localize("extensionName", i18n)
+  );
+  const [localizedPrefsInfo, setLocalizedPrefsInfo] = React.useState(
+    localize(PREFS_INFO, i18n)
+  );
 
-const prefsSlice = createSlice({
-  name: "prefs",
-  initialState: {},
-  reducers: {
-    set(state, { payload }) {
-      return { ...state, ...payload };
-    },
-  },
-});
+  // When the i18n library is loaded, we want to translate all
+  // the localized strings.
+  React.useEffect(() => {
+    if (!i18n.isPolyfilled) {
+      // The native `browser.i18n` is syncronous, so if we're using
+      // that version, the translations have already been loaded; do
+      // nothing here
+      return;
+    }
+    i18n.isLoaded
+      .then(() => {
+        setLocalizedName(localize("extensionName", i18n));
+        setLocalizedPrefsInfo(localize(PREFS_INFO, i18n));
+      })
+      .catch(e => {
+        throw e;
+      });
+  }, []);
 
-function initPrefs() {
-  return async function(dispatch) {
-    const prefs = await browser.storage.local.get("preferences");
-    dispatch(prefsSlice.actions.set(prefs.preferences));
-  };
+  return (
+    <ReactRedux.Provider store={store}>
+      <ConversationOptions
+        localizedPrefsInfo={localizedPrefsInfo}
+        localizedName={localizedName}
+      />
+    </ReactRedux.Provider>
+  );
 }
-
-function savePref(name, value) {
-  return async function(dispatch, getState) {
-    const newPrefs = { ...getState(), [name]: value };
-    await browser.storage.local.set({ preferences: newPrefs });
-    dispatch(prefsSlice.actions.set(newPrefs));
-  };
-}
-
-const store = configureStore({ reducer: prefsSlice.reducer });
-
-// Initialize the preferences
-store.dispatch(initPrefs());
 
 // Render the preferences page
-ReactDOM.render(
-  <ReactRedux.Provider store={store}>
-    <ConversationOptions
-      localizedPrefsInfo={localize(PREFS_INFO)}
-      localizedName={localize("extensionName")}
-    />
-  </ReactRedux.Provider>,
-  document.querySelector("#root")
-);
+ReactDOM.render(<Main />, document.querySelector("#root"));

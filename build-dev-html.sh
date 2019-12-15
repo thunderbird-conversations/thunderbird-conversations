@@ -31,7 +31,7 @@ for a in $(git ls-files | grep '.jsx$'); do
 done
 
 echo "    Copying non-jsx files"
-npx cpx "**/*.{js,html,xhtml,css,svg,png,gif,ico,dtd,properties}" ../${DIST}/ --watch --verbose &
+npx cpx "**/*.{js,html,xhtml,css,svg,png,gif,ico,dtd,properties,json}" ../${DIST}/ --watch --verbose &
 
 popd
 
