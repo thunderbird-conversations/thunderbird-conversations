@@ -39,9 +39,9 @@ amdModuleNames.forEach((name, i) => {
   initializedDeps[name] = callWithDeps(amdItem, initializedDeps);
 });
 
-const React = initializedDeps["react"];
+const React = initializedDeps.react;
 const ReactDOM = initializedDeps["react-dom"];
-const Redux = initializedDeps["redux"];
+const Redux = initializedDeps.redux;
 const ReactRedux = initializedDeps["react-redux"];
 const RTK = initializedDeps["redux-toolkit"];
 const PropTypes = initializedDeps["prop-types"];
