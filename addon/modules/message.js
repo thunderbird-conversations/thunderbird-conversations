@@ -1530,7 +1530,7 @@ Message.prototype = {
     // We try to convert the bodies to plain text, to enhance the readability in
     // the forwarded conversation. Note: <pre> tags are not converted properly
     // it seems, need to investigate...
-    quoteMsgHdr(this._msgHdr, function(body) {
+    quoteMsgHdr(this._msgHdr).then((body) => {
       // UGLY HACK. I don't even wanna dig into the internals of the composition
       // window to figure out why this results in an extra <br> being added, so
       // let's just stay sane and use a hack.

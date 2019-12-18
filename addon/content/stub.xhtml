@@ -334,7 +334,7 @@
     // let Conversations = window.top.Conversations;
 
     var {MailServices} = ChromeUtils.import("resource:///modules/MailServices.jsm");
-    const {decodeUrlParameters, isOSX, isWindows, parseMimeLine} =
+    const {isOSX, isWindows, parseMimeLine} =
       ChromeUtils.import("resource://conversations/modules/stdlib/misc.js");
     const {msgUriToMsgHdr, msgHdrsMarkAsRead} =
       ChromeUtils.import("resource://conversations/modules/stdlib/msgHdrUtils.js");
@@ -393,14 +393,14 @@
     $(document).ready(function() {
       // I just imagined Javascript would have some function for that
       // built-in... looks like even jQuery doesn't have it.
-      let params = decodeUrlParameters(document.location.href);
+      const params = (new URL(document.location.href)).searchParams;
 
       // Oh, are we expected to build a conversation on our own? Let's do it,
       // yay!
-      if ("urls" in params) {
+      if (params.has("urls")) {
         try {
-          let scrollMode = ("scrollMode" in params)
-            ? parseInt(params.scrollMode)
+          let scrollMode = params.has("scrollMode")
+            ? parseInt(params.get("scrollMode"))
             : Prefs.kScrollUnreadOrLast;
           /* If we start up Thunderbird with a saved conversation tab, then we
            * have no selected message. Fallback to the usual mode. */
@@ -413,8 +413,8 @@
             window.frameElement.setAttribute("tooltip", "aHTMLTooltip");
           let mainWindow = topMail3Pane(window);
           // let willExpand = parseInt(params.willExpand);
-          let msgHdrs = params.urls.split(",").map(x => msgUriToMsgHdr(x))
-                                              .filter(x => x != null && x.messageId);
+          let msgHdrs = params.get("urls").split(",").map(x => msgUriToMsgHdr(x))
+                                          .filter(x => x != null && x.messageId);
           // It might happen that there are no messages left...
           if (!msgHdrs.length) {
             document.getElementById("messageList").textContent =
@@ -472,7 +472,7 @@
           Log.debug(e);
           dumpCallStack(e);
         }
-      } else if ("quickCompose" in params) {
+      } else if (params.has("quickCompose")) {
         masqueradeAsQuickCompose();
       }
     });
