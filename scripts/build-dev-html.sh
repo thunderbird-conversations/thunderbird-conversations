@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/bin/bash
 NOT='.sh$|^.git|.jsx$|^tests|^.eslint|^.travis|^package.json$|^package-lock.json$'
 DIST=dist-dev-html
 VENDOR_DIR=$DIST/content/vendor
