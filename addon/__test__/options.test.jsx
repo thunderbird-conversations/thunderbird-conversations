@@ -184,7 +184,7 @@ describe("Option full page tests", () => {
     const beforeChange = mockedSet.mock.calls.pop();
     expect(beforeChange[0]).toMatchObject({ preferences: { [name]: false } });
 
-    input.simulate("change", { target: { checked: true } });
+    input.simulate("change", { target: { checked: false } });
     const afterChange = mockedSet.mock.calls.pop();
     expect(afterChange[0]).toMatchObject({ preferences: { [name]: true } });
   });
