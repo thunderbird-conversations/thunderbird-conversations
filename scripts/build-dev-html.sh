@@ -9,14 +9,22 @@ rm -rf $DIST
 mkdir -p $VENDOR_DIR
 mkdir -p $DIST/content/modules/stdlib
 
-cp node_modules/redux/dist/redux.js $VENDOR_DIR/redux.js
-cp node_modules/react-redux/dist/react-redux.js $VENDOR_DIR/react-redux.js
-cp node_modules/react/umd/react.development.js $VENDOR_DIR/react.js
-cp node_modules/react-dom/umd/react-dom.development.js $VENDOR_DIR/react-dom.js
-cp node_modules/prop-types/prop-types.min.js $VENDOR_DIR/prop-types.js
+# disable CJS-style module loading for specific vendor scripts
+# Instead of directly copying, we prepend some Javascript
+cat other/disable-cjs-module.js >> $VENDOR_DIR/redux.js
+cat node_modules/redux/dist/redux.js >> $VENDOR_DIR/redux.js
+cat other/disable-cjs-module.js >> $VENDOR_DIR/react-redux.js
+cat node_modules/react-redux/dist/react-redux.js >> $VENDOR_DIR/react-redux.js
+cat other/disable-cjs-module.js >> $VENDOR_DIR/react.js
+cat node_modules/react/umd/react.development.js >> $VENDOR_DIR/react.js
+cat other/disable-cjs-module.js >> $VENDOR_DIR/react-dom.js
+cat node_modules/react-dom/umd/react-dom.development.js >> $VENDOR_DIR/react-dom.js
+cat other/disable-cjs-module.js >> $VENDOR_DIR/prop-types.js
+cat node_modules/prop-types/prop-types.min.js >> $VENDOR_DIR/prop-types.js
 cp node_modules/pdfjs-dist/build/pdf.js $VENDOR_DIR
 cp node_modules/pdfjs-dist/build/pdf.worker.js $VENDOR_DIR
-cp "node_modules/@reduxjs/toolkit/dist/redux-toolkit.umd.js" $VENDOR_DIR
+cat other/disable-cjs-module.js >> $VENDOR_DIR/redux-toolkit.umd.js
+cat "node_modules/@reduxjs/toolkit/dist/redux-toolkit.umd.js" >> $VENDOR_DIR/redux-toolkit.umd.js
 
 cp LICENSE README.md $DIST/
 

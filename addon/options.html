@@ -11,6 +11,15 @@
 
   <body>
     <div id="root"></div>
-    <script type="module" src="options.js"></script> 
+    <script type="module">
+      import {
+        React,
+        ReactDOM
+      } from "./content/es-modules/ui.js";
+      import { Main } from "./options.js";
+
+      // Render the options to the root of the page
+      ReactDOM.render(React.createElement(Main, null), document.querySelector("#root"));
+    </script>
   </body>
 </html>
