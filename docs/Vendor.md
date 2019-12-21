@@ -9,7 +9,7 @@ with `v2.15.5`. These are listed on the releases page.
 
 The third party packages and their versions are listed in the top-level
 `package.json`. The packages are obtained by using `npm ci` run in the top-level
-directory, and then `build.sh` is used to copy the vendor files out of
+directory, and then `scripts/build.sh` is used to copy the vendor files out of
 `node_modules/` sub-directories by build.sh.
 
 The original repositories and their relevant npmjs hosting locations are given
@@ -26,3 +26,5 @@ below:
   * https://www.npmjs.com/package/react-redux
 * https://github.com/reduxjs/redux
   * https://www.npmjs.com/package/redux
+* https://github.com/reduxjs/redux-toolkit
+  * https://www.npmjs.com/package/@reduxjs/redux-toolkit

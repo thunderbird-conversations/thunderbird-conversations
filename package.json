@@ -46,10 +46,11 @@
     "serve": "11.2.0"
   },
   "scripts": {
-    "build": "./scripts/build.sh",
-    "dev-html": "./scripts/build-dev-html.sh",
+    "build": "scripts/build.sh",
+    "dev": "(scripts/build-dev-html.sh --watch &) && sleep 4 && scripts/dev-html-serve.sh",
     "test": "npm-run-all test:*",
-    "test:lint": "eslint --ext js,jsx .",
+    "test:lint": "eslint --ext js,jsx ./addon",
+    "test:jest": "scripts/build-dev-html.sh && jest ./dist-dev-html/",
     "preversion": "npm test",
     "version": "scripts/update-version.sh"
   },

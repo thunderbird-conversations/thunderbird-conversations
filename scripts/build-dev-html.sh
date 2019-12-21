@@ -5,6 +5,13 @@ VENDOR_DIR=$DIST/content/vendor
 ADDON_DIR=addon
 DEV_SERVER_PORT=8126
 
+WATCH_FLAG=""
+if [ $1 = "--watch" ]
+then
+  echo "Watching files for changes with --watch"
+  WATCH_FLAG="--watch"
+fi
+
 rm -rf $DIST
 mkdir -p $VENDOR_DIR
 mkdir -p $DIST/content/modules/stdlib
@@ -32,23 +39,13 @@ pushd $ADDON_DIR
 
 echo "    Watching JSX files"
 for a in $(git ls-files | grep '.jsx$'); do
-  echo "Watching $a"
-  npx babel --watch --verbose --config-file=../babel.config.js $a --out-dir ../$DIST/$(dirname $a) &
+  echo "Compiling $a"
+  npx babel --verbose --config-file=../babel.config.js $a --out-dir ../$DIST/$(dirname $a) $WATCH_FLAG &
 done
 
 echo "    Copying non-jsx files"
-npx cpx "**/*.{js,html,xhtml,css,svg,png,gif,ico,dtd,properties,json}" ../${DIST}/ --watch --verbose &
+npx cpx "**/*.{js,html,xhtml,css,svg,png,gif,ico,dtd,properties,json}" ../${DIST}/ --verbose $WATCH_FLAG &
 
 popd
-
-# This is a bit of a hack, but since all processes are being backgrounded, if
-# we don't wait for them to finish, our user message will get burried
-sleep 4
-
-echo "    Starting dev server on localhost:${DEV_SERVER_PORT}"
-npx serve -l ${DEV_SERVER_PORT} $DIST/ &
-echo "    You can now navigate to localhost:${DEV_SERVER_PORT} to load"
-echo "    a browser-compatible file. Any changes to the"
-echo "    source will cause an automatic recompile."
 
 wait $(jobs -p)
