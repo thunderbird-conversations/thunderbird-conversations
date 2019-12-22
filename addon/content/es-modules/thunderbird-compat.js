@@ -43,8 +43,6 @@ if (browser.i18n) {
   });
 }
 
-window.ii = i18n;
-
 if (!browser.storage) {
   const DEFAULT_PREFS = {
     ...kPrefDefaults,
