@@ -194,7 +194,7 @@ function localize(prefsInfo, i18n = browser.i18n) {
 function ChoiceOption({ title, desc, choices = [], value, name, onChange }) {
   const elementName = `choice_${title}`.replace(/\s+/g, "");
   return (
-    <>
+    <React.Fragment>
       <div>
         <label className="title">{title}</label>
         <br />
@@ -218,7 +218,7 @@ function ChoiceOption({ title, desc, choices = [], value, name, onChange }) {
           </span>
         ))}
       </div>
-    </>
+    </React.Fragment>
   );
 }
 ChoiceOption.propTypes = {
@@ -234,7 +234,7 @@ ChoiceOption.propTypes = {
 
 function TextOption({ title, desc, value = "", name, onChange = () => {} }) {
   return (
-    <>
+    <React.Fragment>
       <div>
         <label className="title">{title}</label>
         <br />
@@ -250,7 +250,7 @@ function TextOption({ title, desc, value = "", name, onChange = () => {} }) {
           }}
         />
       </div>
-    </>
+    </React.Fragment>
   );
 }
 TextOption.propTypes = {
@@ -263,7 +263,7 @@ TextOption.propTypes = {
 
 function NumericOption({ title, desc, value = 0, name, onChange = () => {} }) {
   return (
-    <>
+    <React.Fragment>
       <div>
         <label className="title">{title}</label>
         <br />
@@ -280,7 +280,7 @@ function NumericOption({ title, desc, value = 0, name, onChange = () => {} }) {
           value={value}
         />
       </div>
-    </>
+    </React.Fragment>
   );
 }
 NumericOption.propTypes = {
@@ -299,7 +299,7 @@ function BinaryOption({
   onChange = () => {},
 }) {
   return (
-    <>
+    <React.Fragment>
       <div>
         <label className="title">{title}</label>
         <br />
@@ -315,7 +315,7 @@ function BinaryOption({
           }}
         />
       </div>
-    </>
+    </React.Fragment>
   );
 }
 BinaryOption.propTypes = {
@@ -349,7 +349,7 @@ function _ConversationOptions({
   setPref,
 }) {
   return (
-    <>
+    <React.Fragment>
       <h1>{localizedName}</h1>
       <form id="conversationOptions">
         <div id="preferencesGrid">
@@ -363,7 +363,7 @@ function _ConversationOptions({
           ))}
         </div>
       </form>
-    </>
+    </React.Fragment>
   );
 }
 _ConversationOptions.propTypes = {

@@ -8,11 +8,10 @@
 
 export const amdModules = [];
 
-// eslint-disalbe-next-line
 window.define = function define(deps, moduleFactory = deps) {
   // Sometimes the function is called `define(f)` and sometimes
   // it's called `define([],f)` when there are no deps. Either way,
-  // normailze the result.
+  // normalize the result.
   if (deps === moduleFactory) {
     deps = [];
   }
