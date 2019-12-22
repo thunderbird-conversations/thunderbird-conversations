@@ -1,5 +1,5 @@
 #!/bin/sh
-NOT='.sh$|^.git|.jsx$|^tests|^.eslint|^.travis|^package.json$|^package-lock.json$'
+NOT='.sh$|^.git|.jsx$|^tests|^.eslint|^.travis|^package.json$|^package-lock.json$|^__test__'
 DIST=dist
 VENDOR_DIR=$DIST/content/vendor
 ADDON_DIR=addon
