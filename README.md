@@ -33,6 +33,18 @@ Building
 
 This will package a `converstions.xpi` file of the latest codebase which can be installed via add-on manager in Thunderbird (hint: you can drag & drop it onto the add-on manager view).
 
+Development
+===========
+
+Some `thunderbird-conversations` components can be developed fully in the browser. To build these components do
+
+```
+npm run build:dev-html
+```
+
+and then browse to http://localhost:8126 and select a browser-compatible component file. For example, http://localhost:8126/options.html  Missing Thunderbird APIs are mocked in `addon/content/es-modules/thunderbird-compat.js`.
+
+
 Testing
 =======
 
