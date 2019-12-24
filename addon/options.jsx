@@ -195,7 +195,7 @@ export function ChoiceOption({
 }) {
   const elementName = `choice_${title}`.replace(/\s+/g, "");
   return (
-    <>
+    <React.Fragment>
       <div>
         <label className="title">{title}</label>
         <br />
@@ -219,7 +219,7 @@ export function ChoiceOption({
           </span>
         ))}
       </div>
-    </>
+    </React.Fragment>
   );
 }
 ChoiceOption.propTypes = {
@@ -241,7 +241,7 @@ export function TextOption({
   onChange = () => {},
 }) {
   return (
-    <>
+    <React.Fragment>
       <div>
         <label className="title">{title}</label>
         <br />
@@ -257,7 +257,7 @@ export function TextOption({
           }}
         />
       </div>
-    </>
+    </React.Fragment>
   );
 }
 TextOption.propTypes = {
@@ -276,7 +276,7 @@ export function NumericOption({
   onChange = () => {},
 }) {
   return (
-    <>
+    <React.Fragment>
       <div>
         <label className="title">{title}</label>
         <br />
@@ -293,7 +293,7 @@ export function NumericOption({
           value={value}
         />
       </div>
-    </>
+    </React.Fragment>
   );
 }
 NumericOption.propTypes = {
@@ -312,7 +312,7 @@ export function BinaryOption({
   onChange = () => {},
 }) {
   return (
-    <>
+    <React.Fragment>
       <div>
         <label className="title">{title}</label>
         <br />
@@ -328,7 +328,7 @@ export function BinaryOption({
           }}
         />
       </div>
-    </>
+    </React.Fragment>
   );
 }
 BinaryOption.propTypes = {
@@ -362,7 +362,7 @@ function _ConversationOptions({
   setPref,
 }) {
   return (
-    <>
+    <React.Fragment>
       <h1>{localizedName}</h1>
       <form id="conversationOptions">
         <div id="preferencesGrid">
@@ -376,7 +376,7 @@ function _ConversationOptions({
           ))}
         </div>
       </form>
-    </>
+    </React.Fragment>
   );
 }
 _ConversationOptions.propTypes = {

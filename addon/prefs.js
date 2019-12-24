@@ -4,7 +4,6 @@
 
 const kCurrentLegacyMigration = 1;
 
-// XXX This list should be kept in sync with the one in options.js.
 export const kPrefDefaults = {
   hide_quote_length: 5,
   expand_who: 4, // kExpandAuto

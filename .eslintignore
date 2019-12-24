@@ -3,6 +3,7 @@
 
 # Build directory
 dist/**
+dist-dev-html/**
 
 # Ignore sub-module directories
 addon/content/modules/stdlib/**

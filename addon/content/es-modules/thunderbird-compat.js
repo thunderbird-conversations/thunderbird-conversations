@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-// A compatability layer that can be imported whether in the browser or
+// A compatibility layer that can be imported whether in the browser or
 // in Thunderbird
 
 import { kPrefDefaults } from "../../prefs.js";
