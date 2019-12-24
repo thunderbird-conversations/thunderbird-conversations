@@ -383,7 +383,7 @@ Message.prototype = {
   RE_BZ_COMMENT: /^--- Comment #\d+ from .* \d{4}.*? ---([\s\S]*)/m,
   RE_MSGKEY: /number=(\d+)/,
 
-  // This function is called before toTmplData, and allows us to adjust our
+  // This function is called before toReactData, and allows us to adjust our
   // template data according to the message that came before us.
   updateTmplData(aPrevMsg) {
     let oldInfos = aPrevMsg && aPrevMsg.bugzillaInfos;
@@ -433,70 +433,42 @@ Message.prototype = {
     }
   },
 
+  getContactsFrom(detail) {
+    let contacts = detail.map(x => [
+      this._conversation._contactManager.getContactFromNameAndEmail(
+        x.name,
+        x.email
+      ),
+      x.email,
+    ]);
+    this._contacts = this._contacts.concat(contacts);
+    // false means "no colors"
+    return contacts.map(([x, email]) =>
+      x.toTmplData(false, Contacts.kTo, email)
+    );
+  },
+
   toReactData() {
     // Ok, brace ourselves for notifications happening during the message load
     //  process.
     addMsgListener(this);
 
-    let msgData = this.toTmplData();
-    return {
-      attachments: msgData.attachments,
-      attachmentsPlural: msgData.attachmentsPlural,
-      bcc: msgData.dataContactsBcc,
-      cc: msgData.dataContactsCc,
-      date: msgData.date,
-      folderName: msgData.folderName,
-      from: msgData.dataContactFrom,
-      fullDate: msgData.fullDate,
-      gallery: msgData.gallery,
-      hasRemoteContent: msgData.hasRemoteContent,
-      isDraft: msgData.isDraft,
-      isJunk: msgData.isJunk,
-      isOutbox: msgData.isOutbox,
-      isPhishing: msgData.isPhishing,
-      msgUri: msgData.uri,
-      multipleRecipients: msgData.multipleRecipients,
-      neckoUrl: msgData.neckoUrl,
-      read: msgData.read,
-      realFrom: msgData.realFrom,
-      recipientsIncludeLists: msgData.recipientsIncludeLists,
-      shortFolderName: msgData.shortFolderName,
-      snippet: msgData.snippet,
-      specialTags: this._specialTags,
-      starred: msgData.starred,
-      tags: msgData.tags,
-      to: msgData.dataContactsTo,
-    };
-  },
-
-  // Output this message as a whole bunch of HTML
-  toTmplData() {
-    let self = this;
-    let extraClasses = [];
     let data = {
-      dataContactFrom: null,
-      dataContactsTo: null,
-      snippet: null,
-      date: null,
-      fullDate: null,
-      attachmentsPlural: null,
-      attachments: [],
-      folderName: null,
-      shortFolderName: null,
-      gallery: false,
+      date: sanitize(this._date),
       hasRemoteContent: this.hasRemoteContent,
-      isPhishing: this.isPhishing,
-      uri: null,
-      neckoUrl: msgHdrToNeckoURL(this._msgHdr),
-      bugzillaUrl: "[unknown bugzilla instance]",
-      extraClasses: null,
+      isDraft: !!msgHdrIsDraft(this._msgHdr),
       isJunk: msgHdrIsJunk(this._msgHdr),
-      isOutbox: false,
+      isOutbox: !!this._msgHdr.folder.getFlag(Ci.nsMsgFolderFlags.Queue),
+      isPhishing: this.isPhishing,
+      msgUri: sanitize(this._uri),
       multipleRecipients: this.isReplyAllEnabled,
-      recipientsIncludeLists: this.isReplyListEnabled,
-      isDraft: false,
-      starred: this._msgHdr.isFlagged,
+      neckoUrl: msgHdrToNeckoURL(this._msgHdr),
       read: this.read,
+      realFrom: sanitize(this._realFrom.email || this._from.email),
+      recipientsIncludeLists: this.isReplyListEnabled,
+      snippet: sanitize(this._snippet),
+      specialTags: this._specialTags,
+      starred: this._msgHdr.isFlagged,
     };
 
     // 1) Generate Contact objects
@@ -509,79 +481,37 @@ Message.prototype = {
     ];
     this._contacts.push(contactFrom);
     // true means "with colors"
-    data.dataContactFrom = contactFrom[0].toTmplData(
-      true,
-      Contacts.kFrom,
-      contactFrom[1]
-    );
-    data.dataContactFrom.separator = "";
+    data.from = contactFrom[0].toTmplData(true, Contacts.kFrom, contactFrom[1]);
+    data.from.separator = "";
 
-    function getContactsFrom(detail) {
-      let contacts = detail.map(x => [
-        self._conversation._contactManager.getContactFromNameAndEmail(
-          x.name,
-          x.email
-        ),
-        x.email,
-      ]);
-      self._contacts = self._contacts.concat(contacts);
-      // false means "no colors"
-      return contacts.map(([x, email]) =>
-        x.toTmplData(false, Contacts.kTo, email)
-      );
-    }
+    data.to = this.getContactsFrom(this._to);
+    data.cc = this.getContactsFrom(this._cc);
+    data.bcc = this.getContactsFrom(this._bcc);
 
-    data.dataContactsTo = getContactsFrom(this._to);
-    data.dataContactsCc = getContactsFrom(this._cc);
-    data.dataContactsBcc = getContactsFrom(this._bcc);
+    // Don't show "to me" if this is a bugzilla email
+    // TODO: Make this work again?
+    // if (Object.keys(this.bugzillaInfos).length) {
+    //   extraClasses.push("bugzilla");
+    //   try {
+    //     let url = this.bugzillaInfos.url;
+    //     data.bugzillaUrl = url;
+    //   } catch (e) {
+    //     if (e.result != Cr.NS_ERROR_MALFORMED_URI) {
+    //       throw e;
+    //     }
+    //     // why not?
+    //   }
+    // }
 
-    // 1b) Don't show "to me" if this is a bugzilla email
-    if (Object.keys(this.bugzillaInfos).length) {
-      extraClasses.push("bugzilla");
-      try {
-        let url = this.bugzillaInfos.url;
-        data.bugzillaUrl = url;
-      } catch (e) {
-        if (e.result != Cr.NS_ERROR_MALFORMED_URI) {
-          throw e;
-        }
-        // why not?
-      }
-    }
+    data = { ...data, ...this.toTmplDataForAttachments(data) };
 
-    // 2) Generate Attachment objects
-    data = this.toTmplDataForAttachments(data);
-
-    // 3) Generate extra information: snippet, date, uri
-    data.snippet = sanitize(this._snippet);
-    data.date = sanitize(this._date);
     data.fullDate = Prefs.no_friendly_date
       ? ""
       : dateAsInMessageList(new Date(this._msgHdr.date / 1000));
-    data.uri = sanitize(this._uri);
 
-    // 4) Custom tag telling the user if the message is not in the current view
     let [name, fullName] = folderName(this._msgHdr.folder);
     data.folderName = sanitize(fullName);
     data.shortFolderName = sanitize(name);
-
-    // 5) Custom tag telling the user if this is a draft
-    if (msgHdrIsDraft(this._msgHdr)) {
-      data.isDraft = true;
-      extraClasses.push("draft");
-    }
-
-    // 6) For the "show remote content" thing
-    data.realFrom = sanitize(this._realFrom.email || this._from.email);
-
-    // 7) Extra classes we want to add to the message
-    if (this.isEncrypted) {
-      extraClasses.push("decrypted");
-    }
-    data.extraClasses = extraClasses.join(" ");
-    if (this._msgHdr.folder.getFlag(Ci.nsMsgFolderFlags.Queue)) {
-      data.isOutbox = true;
-    }
 
     const tags = msgHdrGetTags(this._msgHdr);
     data.tags = tags.map(tag => {
@@ -596,32 +526,27 @@ Message.prototype = {
   },
 
   // Generate Attachment objects
-  toTmplDataForAttachments(data) {
-    if (!data) {
-      data = {
-        attachmentsPlural: null,
-        attachments: [],
-        gallery: false,
-        uri: msgHdrGetUri(this._msgHdr),
-      };
-    }
-    let self = this;
+  toTmplDataForAttachments() {
     let l = this._attachments.length;
     let [makePlural] = PluralForm.makeGetter(strings.get("pluralForm"));
-    data.attachmentsPlural = makePlural(l, strings.get("attachments")).replace(
-      "#1",
-      l
-    );
+    const result = {
+      attachments: [],
+      attachmentsPlural: makePlural(l, strings.get("attachments")).replace(
+        "#1",
+        l
+      ),
+      gallery: false,
+    };
     for (let i = 0; i < l; i++) {
       const att = this._attachments[i];
       // Special treatment for images
       let isImage = att.contentType.indexOf("image/") === 0;
       if (isImage) {
-        data.gallery = true;
+        result.gallery = true;
       }
       let isPdf = pdfMimeTypes.includes(att.contentType);
-      let key = self._msgHdr.messageKey;
-      let url = att.url.replace(self.RE_MSGKEY, "number=" + key);
+      let key = this._msgHdr.messageKey;
+      let url = att.url.replace(this.RE_MSGKEY, "number=" + key);
       let [thumb, imgClass] = isImage
         ? [url, "resize-me"]
         : [
@@ -637,7 +562,7 @@ Message.prototype = {
       }
 
       // We've got the right data, push it!
-      data.attachments.push({
+      result.attachments.push({
         size: att.size,
         contentType: att.contentType,
         formattedSize,
@@ -646,7 +571,7 @@ Message.prototype = {
         isExternal: att.isExternal,
         name: sanitize(att.name),
         url: att.url,
-        anchor: "msg" + self.initialPosition + "att" + i,
+        anchor: "msg" + this.initialPosition + "att" + i,
         /* Only advertise the preview for PDFs (images have the gallery view). */
         isPdf,
         maybeViewable:
@@ -654,7 +579,7 @@ Message.prototype = {
           att.contentType.indexOf("text/") === 0,
       });
     }
-    return data;
+    return result;
   },
 
   // Once the conversation has added us into the DOM, we're notified about it
