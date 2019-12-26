@@ -186,6 +186,11 @@ function messages(state = initialMessages, action) {
         return newMsg;
       });
     }
+    case "MSG_MARK_AS_READ": {
+      const msg = Conversations.currentConversation.getMessage(action.msgUri);
+      msg.read = true;
+      return state;
+    }
     case "TOGGLE_CONVERSATION_EXPANDED": {
       const newState = { ...state };
       const newMsgData = [];

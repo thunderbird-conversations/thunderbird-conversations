@@ -32,6 +32,11 @@ class Message extends React.PureComponent {
   }
 
   componentDidUpdate(prevProps) {
+    if (this.props.message.expanded && !this.props.iframesLoading) {
+      this.handleAutoMarkAsRead();
+    } else if (!this.props.message.expanded || this.props.message.read) {
+      this.removeScrollListener();
+    }
     if (!this.props.message.scrollTo) {
       return;
     }
@@ -47,6 +52,66 @@ class Message extends React.PureComponent {
           this.li.getBoundingClientRect().top + window.scrollY + 5 - 44
         );
       });
+    }
+  }
+
+  componentWillUnmount() {
+    this.removeScrollListener();
+  }
+
+  removeScrollListener() {
+    if (this._scrollListener) {
+      document.removeEventListener("scroll", this._scrollListener, true);
+      delete this._scrollListener;
+    }
+  }
+
+  // Handles setting up the listeners for if we should mark as read when scrolling.
+  handleAutoMarkAsRead() {
+    // If we're already read, not expanded or auto read is turned off, then we
+    // don't need to add listeners.
+    if (
+      !this.props.autoMarkAsRead ||
+      !this.props.message.expanded ||
+      this.props.message.read
+    ) {
+      this.removeScrollListener();
+      return;
+    }
+
+    if (this._scrollListener) {
+      return;
+    }
+
+    this._topInView = false;
+    this._bottomInView = false;
+
+    this._scrollListener = this.onScroll.bind(this);
+    document.addEventListener("scroll", this._scrollListener, true);
+  }
+
+  onScroll() {
+    const rect = this.li.getBoundingClientRect();
+
+    if (!this._topInView) {
+      const top = rect.y;
+      if (top > 0 && top < window.innerHeight) {
+        this._topInView = true;
+      }
+    }
+    if (!this._bottomInView) {
+      const bottom = rect.y + rect.height;
+      if (bottom > 0 && bottom < window.innerHeight) {
+        this._bottomInView = true;
+      }
+    }
+    if (this._topInView && this._bottomInView) {
+      this.read = true;
+      this.props.dispatch({
+        type: "MSG_MARK_AS_READ",
+        msgUri: this.props.message.msgUri,
+      });
+      this.removeScrollListener();
     }
   }
 
@@ -171,6 +236,7 @@ class Message extends React.PureComponent {
 }
 
 Message.propTypes = {
+  autoMarkAsRead: PropTypes.bool.isRequired,
   dispatch: PropTypes.func.isRequired,
   displayingMultipleMsgs: PropTypes.bool.isRequired,
   iframesLoading: PropTypes.number.isRequired,

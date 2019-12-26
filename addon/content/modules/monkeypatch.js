@@ -659,8 +659,8 @@ MonkeyPatch.prototype = {
             Services.obs.notifyObservers(null, "Conversations", "Displayed");
 
             // Make sure we respect the user's preferences.
-            self.markReadTimeout = window.setTimeout(function() {
-              if (Prefs.getBool("mailnews.mark_message_read.auto")) {
+            if (Prefs.getBool("mailnews.mark_message_read.auto")) {
+              self.markReadTimeout = window.setTimeout(function() {
                 // The idea is that usually, we're selecting a thread (so we
                 //  have kScrollUnreadOrLast). This means we mark the whole
                 //  conversation as read. However, sometimes the user selects
@@ -691,15 +691,10 @@ MonkeyPatch.prototype = {
                   Log.assert(false, "GIVE ME ALGEBRAIC DATA TYPES!!!");
                 }
                 self.markReadTimeout = null;
-              }
-              // Hehe, do that now, because the conversation potentially
-              //  includes messages that are not in the gloda collection and
-              //  that do not trigger the "conversation updated" notification.
-              // TODO: What do we need to do about updates?
-              // aConversation._updateConversationButtons();
-            }, Prefs.getInt("mailnews.mark_message_read.delay.interval") *
-              Prefs.getBool("mailnews.mark_message_read.delay") *
-              1000);
+              }, Prefs.getInt("mailnews.mark_message_read.delay.interval") *
+                Prefs.getBool("mailnews.mark_message_read.delay") *
+                1000);
+            }
           });
         } catch (e) {
           Log.error(e);
@@ -759,14 +754,14 @@ MonkeyPatch.prototype = {
           // asked for the old message reader, we give up as well.
           if (msgHdrIsRss(msgHdr) || msgHdrIsNntp(msgHdr)) {
             // Use the default pref.
-            self.markReadTimeout = window.setTimeout(function() {
-              if (Prefs.getBool("mailnews.mark_message_read.auto")) {
+            if (Prefs.getBool("mailnews.mark_message_read.auto")) {
+              self.markReadTimeout = window.setTimeout(function() {
                 msgHdrsMarkAsRead([msgHdr], true);
-              }
-              self.markReadTimeout = null;
-            }, Prefs.getInt("mailnews.mark_message_read.delay.interval") *
-              Prefs.getBool("mailnews.mark_message_read.delay") *
-              1000);
+                self.markReadTimeout = null;
+              }, Prefs.getInt("mailnews.mark_message_read.delay.interval") *
+                Prefs.getBool("mailnews.mark_message_read.delay") *
+                1000);
+            }
             this.singleMessageDisplay = true;
             return false;
           }

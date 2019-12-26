@@ -913,15 +913,13 @@ Conversation.prototype = {
       return msgData;
     });
 
-    let w = this._htmlPane;
-    w.markReadInView.disable();
     // Re-do the expand/collapse + scroll to the right node stuff. What this
     // means is if: if we just added new messages, don't touch the other ones,
     // and expand/collapse only the newer messages.
     // TODO:
     //   this._expandAndScroll(this.messages.length - aMessages.length);
 
-    w.conversationDispatch({
+    this._htmlPane.conversationDispatch({
       type: "APPEND_MESSAGES",
       msgData: reactMsgData,
     });
@@ -1049,6 +1047,9 @@ Conversation.prototype = {
           tweakChrome: Prefs.tweak_chrome,
         },
         OS: this.OS,
+        autoMarkAsRead:
+          Prefs.getBool("mailnews.mark_message_read.auto") &&
+          !Prefs.getBool("mailnews.mark_message_read.delay"),
       },
       messages: {
         msgData: reactMsgData,
@@ -1085,14 +1086,6 @@ Conversation.prototype = {
     //   self._onComplete();
     //   // _onComplete will potentially set a timeout that, when fired, takes care
     //   //  of notifying us that we should update the conversation buttons.
-    //
-    //   let w = self._htmlPane;
-    //   if (Prefs.getBool("mailnews.mark_message_read.auto") &&
-    //       !Prefs.getBool("mailnews.mark_message_read.delay")) {
-    //     w.markReadInView.enable();
-    //   } else {
-    //     w.markReadInView.disable();
-    //   }
     // }, this.messages.length);
   },
 
