@@ -68,6 +68,7 @@ function displayResult(result, msg) {
       : "";
 
   msg.addSpecialTag({
+    canClick: false,
     classNames: `dkim-signed ${warningsClassName} ${result.dkim[0].result}`,
     icon: "chrome://conversations/skin/material-icons.svg#edit",
     name: stringBundle.get("messageDKIMSigned"),

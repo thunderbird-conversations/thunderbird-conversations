@@ -116,9 +116,13 @@ class SpecialMessageTag extends React.PureComponent {
   render() {
     return (
       <li
-        className={this.props.classNames + " special-tag"}
+        className={
+          this.props.classNames +
+          " special-tag" +
+          (this.props.canClick ? " can-click" : "")
+        }
         title={this.props.title || ""}
-        onClick={this.onClick}
+        onClick={this.props.canClick ? this.onClick : null}
       >
         <svg
           className="icon"
@@ -148,6 +152,7 @@ class SpecialMessageTag extends React.PureComponent {
 }
 
 SpecialMessageTag.propTypes = {
+  canClick: PropTypes.bool.isRequired,
   classNames: PropTypes.string.isRequired,
   dispatch: PropTypes.func.isRequired,
   icon: PropTypes.string.isRequired,
@@ -201,6 +206,7 @@ class SpecialMessageTags extends React.PureComponent {
           this.props.specialTags.map((tag, i) => {
             return (
               <SpecialMessageTag
+                canClick={tag.canClick}
                 classNames={tag.classNames}
                 dispatch={this.props.dispatch}
                 icon={tag.icon}

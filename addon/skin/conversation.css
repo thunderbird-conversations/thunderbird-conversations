@@ -536,6 +536,10 @@ a img {
   vertical-align: middle;
 }
 
+.tags li.can-click {
+  cursor: pointer;
+}
+
 .in-folder {
   cursor: pointer;
 }

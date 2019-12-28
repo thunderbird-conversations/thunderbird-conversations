@@ -163,13 +163,17 @@ if (hasEnigmail) {
     "load",
     function _overrideUpdateSecurity() {
       let w = getMail3Pane();
-      w.addEventListener(
-        "load-enigmail",
-        () => {
-          overrideUpdateSecurity(messagepane, w);
-        },
-        { once: true, capture: true }
-      );
+      if (w.Enigmail.hdrView) {
+        overrideUpdateSecurity(messagepane, w);
+      } else {
+        w.addEventListener(
+          "load-enigmail",
+          () => {
+            overrideUpdateSecurity(messagepane, w);
+          },
+          { once: true, capture: true }
+        );
+      }
     },
     { once: true, capture: true }
   );
@@ -228,10 +232,11 @@ function overrideUpdateSecurity(messagepane, w) {
     // Non-encrypted message may have decrypted labela since
     // message.isEncrypted is true for only signed pgp/mime message.
     // We reset decrypted label from decryption status.
+    // TODO: Fix decryption flags.
     if (statusFlags & nsIEnigmail.DECRYPTION_OKAY) {
-      message._domNode.classList.add("decrypted");
+      // message._domNode.classList.add("decrypted");
     } else {
-      message._domNode.classList.remove("decrypted");
+      // message._domNode.classList.remove("decrypted");
     }
 
     let encToDetails = "";
@@ -600,6 +605,7 @@ function prepareForShowHdrIcons(aMessage) {
 
 // Show signed status in the notification bar.
 // Click event of Details button is set.
+// TODO: Do we really need this since we have the signed tag? which is clickable.
 function showNotificationBar(aMessage) {
   let w = topMail3Pane(aMessage);
   let enigmailBar = aMessage._domNode.querySelector(".enigmailBar");
@@ -633,22 +639,13 @@ function updateSecurityInfo(aMessage) {
 }
 
 // Show security info only if the message is focused.
-function showHdrIconsOnStreamed(aMessage, updateHdrIcons) {
-  let w = topMail3Pane(aMessage);
-  let { _domNode: node, _conversation: conversation } = aMessage;
-  let focused = node == node.ownerDocument.activeElement;
-  if (!focused) {
-    let focusThis = conversation._tellMeWhoToScroll();
-    focused = aMessage == conversation.messages[focusThis].message;
-  }
+function showHdrIconsOnStreamed(message, updateHdrIcons) {
+  let w = topMail3Pane(message);
   w.Enigmail.hdrView.statusBarHide();
   updateHdrIcons();
-  showNotificationBar(aMessage);
-  if (!focused) {
-    w.Enigmail.hdrView.statusBarHide();
-  }
+  // showNotificationBar(aMessage);
   // Prepare for showing on focus.
-  aMessage._updateHdrIcons = updateHdrIcons;
+  message._updateHdrIcons = updateHdrIcons;
 }
 
 // Override treeController defined in enigmailMessengerOverlay.js
@@ -696,24 +693,6 @@ function patchForShowSecurityInfo(aWindow) {
   );
 }
 
-// Add click event to view security information.
-// The event is added to decrypted and signed tags.
-function addViewSecurityInfoEvent(aMessage) {
-  if (aMessage._viewSecurityInfo) {
-    return;
-  }
-  let w = getMail3Pane();
-  aMessage._viewSecurityInfo = function(event) {
-    // Open alert dialog which contains security info.
-    w.Enigmail.msg.viewSecurityInfo(event);
-  };
-  for (let x of ["decrypted", "signed"]) {
-    let tag = aMessage._domNode.querySelector(".tag-" + x);
-    tag.addEventListener("click", aMessage._viewSecurityInfo);
-    tag.style.cursor = "pointer";
-  }
-}
-
 // Add signed label and click action to a signed message.
 function addSignedLabel(status, msg) {
   if (
@@ -728,6 +707,7 @@ function addSignedLabel(status, msg) {
       nsIEnigmail.EXPIRED_SIGNATURE)
   ) {
     msg.addSpecialTag({
+      canClick: true,
       classNames: "enigmail-signed",
       icon: "chrome://conversations/skin/material-icons.svg#edit",
       name: templateStrings.get("messageSigned"),
@@ -737,11 +717,9 @@ function addSignedLabel(status, msg) {
       },
       title:
         status & nsIEnigmail.UNVERIFIED_SIGNATURE
-          ? templateStrings.get("messageSignedLong")
+          ? templateStrings.get("unknownGood")
           : templateStrings.get("messageSignedLong"),
     });
-    // TODO: enable this.
-    // addViewSecurityInfoEvent(msg);
   }
 }
 
@@ -786,8 +764,6 @@ let enigmailHook = {
       console.log({ status });
       // if (status & nsIEnigmail.DECRYPTION_OKAY)
       //   aDomNode.classList.add("decrypted");
-      // if (aDomNode.classList.contains("decrypted"))
-      //   addViewSecurityInfoEvent(message);
       addSignedLabel(status, message);
     }
   },
