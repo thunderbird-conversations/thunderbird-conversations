@@ -80,7 +80,7 @@ function displayResult(result, msg) {
 }
 
 let dkimVerifierHook = {
-  onMessageStreamed(msgHdr, domNode, msgWindow, msg) {
+  onMessageStreamed(msgHdr, unused, msgWindow, msg) {
     "use strict";
 
     AuthVerifier.verify(msgHdr).then(

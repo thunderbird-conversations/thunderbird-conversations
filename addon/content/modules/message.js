@@ -678,18 +678,15 @@ Message.prototype = {
 
   // This function should be called whenever the message is selected
   // by focus, click, scrollNodeIntoView, etc.
-  onSelected: function _Message_onSelected() {
+  onSelected() {
     if (this._selected) {
       return;
     }
 
     // We run below code only for the first time after messages selected.
     Log.debug("A message is selected: " + this._uri);
-    this._selected = true;
     for (let { message } of this._conversation.messages) {
-      if (message != this) {
-        message._selected = false;
-      }
+      message._selected = message == this;
     }
 
     try {
@@ -754,6 +751,10 @@ Message.prototype = {
       specialTags: this._specialTags,
       uri: sanitize(this._uri),
     });
+  },
+
+  removeSpecialTag(tagDetails) {
+    this._specialTags = this.specialTags.filter(t => t.name != tagDetails.name);
   },
 
   _signal() {

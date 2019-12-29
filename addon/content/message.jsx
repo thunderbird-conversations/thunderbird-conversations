@@ -13,9 +13,13 @@ class Message extends React.PureComponent {
     this.strings = new StringBundle(
       "chrome://conversations/locale/template.properties"
     );
+    this.onSelected = this.onSelected.bind(this);
   }
 
   componentDidMount() {
+    this.li.addEventListener("focus", this.onSelected, true);
+    this.li.addEventListener("click", this.onSelected, true);
+    this.li.addEventListener("keydown", this.onSelected, true);
     if (
       this.lastScrolledMsgUri != this.props.message.msgUri &&
       this.props.message.scrollTo
@@ -27,6 +31,7 @@ class Message extends React.PureComponent {
           0,
           this.li.getBoundingClientRect().top + window.scrollY + 5 - 44
         );
+        this.onSelected();
       });
     }
   }
@@ -51,11 +56,15 @@ class Message extends React.PureComponent {
           500,
           this.li.getBoundingClientRect().top + window.scrollY + 5 - 44
         );
+        this.onSelected();
       });
     }
   }
 
   componentWillUnmount() {
+    this.li.removeEventListener("focus", this.onSelected, true);
+    this.li.removeEventListener("click", this.onSelected, true);
+    this.li.removeEventListener("keydown", this.onSelected, true);
     this.removeScrollListener();
   }
 
@@ -88,6 +97,13 @@ class Message extends React.PureComponent {
 
     this._scrollListener = this.onScroll.bind(this);
     document.addEventListener("scroll", this._scrollListener, true);
+  }
+
+  onSelected() {
+    this.props.dispatch({
+      type: "MSG_SELECTED",
+      msgUri: this.props.message.msgUri,
+    });
   }
 
   onScroll() {

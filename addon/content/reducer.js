@@ -191,6 +191,13 @@ function messages(state = initialMessages, action) {
       msg.read = true;
       return state;
     }
+    case "MSG_SELECTED": {
+      const msg = Conversations.currentConversation.getMessage(action.msgUri);
+      if (msg) {
+        msg.onSelected();
+      }
+      return state;
+    }
     case "TOGGLE_CONVERSATION_EXPANDED": {
       const newState = { ...state };
       const newMsgData = [];

@@ -227,11 +227,10 @@ function overrideUpdateSecurity(messagepane, w) {
     // Non-encrypted message may have decrypted labela since
     // message.isEncrypted is true for only signed pgp/mime message.
     // We reset decrypted label from decryption status.
-    // TODO: Fix decryption flags.
     if (statusFlags & nsIEnigmail.DECRYPTION_OKAY) {
       addEncryptedTag(message);
     } else {
-      // message._domNode.classList.remove("decrypted");
+      removeEncryptedTag(message);
     }
 
     let encToDetails = "";
@@ -732,6 +731,13 @@ function addEncryptedTag(msg) {
   });
 }
 
+function removeEncryptedTag(msg) {
+  msg.removeSpecialTag({
+    classNames: "enigmail-decrypted",
+    name: templateStrings.get("messageDecrypted"),
+  });
+}
+
 let enigmailHook = {
   _domNode: null,
   _originalText: null, // for restoring original text when sending message is canceled
@@ -740,20 +746,6 @@ let enigmailHook = {
     if (enigmailSvc) {
       let { _attachments: attachments } = msg;
       let w = topMail3Pane(msg);
-
-      // TODO: Not sure why we were adding this here, when we do it in post
-      // streaming anyway.
-      //
-      // let hasSig =
-      //   (msg.contentType + "").search(/^multipart\/signed(;|$)/i) == 0;
-      // for (let x of attachments) {
-      //   if (x.contentType.search(/^application\/pgp-signature/i) == 0) {
-      //     hasSig = true;
-      //   }
-      // }
-      // if (hasSig) {
-      //   msg._domNode.classList.add("signed");
-      // }
 
       // Current message uri should be blank to decrypt all PGP/MIME messages.
       w.Enigmail.msg.getCurrentMsgUriSpec = function() {
@@ -768,7 +760,6 @@ let enigmailHook = {
   onMessageStreamed(msgHdr, iframe, msgWindow, message) {
     let iframeDoc = iframe.contentDocument;
     if (iframeDoc.body.textContent.length && hasEnigmail) {
-      // TODO: FIXME
       let status = tryEnigmail(iframeDoc, message, msgWindow);
       if (status & nsIEnigmail.DECRYPTION_OKAY) {
         addEncryptedTag(message);
