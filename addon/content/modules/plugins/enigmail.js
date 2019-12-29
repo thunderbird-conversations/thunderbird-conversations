@@ -69,11 +69,6 @@ let Log = setupLogging("Conversations.Modules.Enigmail");
 
 // Enigmail support, thanks to Patrick Brunschwig!
 
-// XXX Work out how/where EnigmailFuncs, Enigmail, EnigmailConstants and EnigmailRules
-// get imported into this scope. It looks like they should be through the enigmail
-// resources, but all of those only appear to export a single item per jsm.
-/* eslint-disable no-unused-vars */
-// eslint-disable-next-line no-redeclare
 let window = getMail3Pane();
 let hasEnigmail;
 
@@ -129,7 +124,6 @@ if (hasEnigmail) {
   }
   try {
     let loader = Services.scriptloader;
-    // The Enigmail global comes from enigmailMsgComposeOverlay.js.
     /* globals Enigmail, EnigmailMsgCompFields, EnigmailEncryption */
     loader.loadSubScript(
       "chrome://enigmail/content/ui/enigmailMsgComposeOverlay.js",
@@ -716,18 +710,18 @@ let enigmailHook = {
   _originalText: null, // for restoring original text when sending message is canceled
 
   onMessageBeforeStreaming(msg) {
-    if (enigmailSvc) {
-      let { _attachments: attachments } = msg;
-      let w = topMail3Pane(msg);
-
-      // Current message uri should be blank to decrypt all PGP/MIME messages.
-      w.Enigmail.msg.getCurrentMsgUriSpec = function() {
-        return "";
-      };
-      verifyAttachments(msg);
-      prepareForShowHdrIcons(msg);
-      patchForShowSecurityInfo(w);
+    if (!enigmailSvc) {
+      return;
     }
+    let w = topMail3Pane(msg);
+
+    // Current message uri should be blank to decrypt all PGP/MIME messages.
+    w.Enigmail.msg.getCurrentMsgUriSpec = function() {
+      return "";
+    };
+    verifyAttachments(msg);
+    prepareForShowHdrIcons(msg);
+    patchForShowSecurityInfo(w);
   },
 
   onMessageStreamed(msgHdr, iframe, msgWindow, message) {
