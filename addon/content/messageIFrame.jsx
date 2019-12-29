@@ -184,8 +184,6 @@ class MessageIFrame extends React.Component {
     if (event.target.documentURI == "about:blank") {
       return;
     }
-    // TODO: Should somehow trigger hooks.onMessageStreamed here.
-    // TODO: Check for phishing, see also https://searchfox.org/comm-central/rev/99e635c4517ff1689d25f01b41f0753160abf7ac/mail/base/content/phishingDetector.js#50
     // TODO: Handle BIDI
 
     this.adjustHeight();
@@ -196,8 +194,6 @@ class MessageIFrame extends React.Component {
       msgUri: this.props.msgUri,
       iframe: this.iframe,
     });
-    // TODO: Do we need to re-check the original scroll point?
-    // TODO: Send Msg loaded event maybe
   }
 
   tweakFonts(iframeDoc) {

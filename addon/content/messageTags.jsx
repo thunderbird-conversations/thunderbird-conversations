@@ -181,26 +181,8 @@ class SpecialMessageTags extends React.PureComponent {
   }
 
   render() {
-    // TODO: Get the signed/decrypted tags working properly.
-    // Maybe use plugins to feed the data into the message display, and allow
-    // them to set the icons/text to display?
-
     return (
       <ul className="tags special-tags">
-        <li
-          className="tag-decrypted"
-          title={this.props.strings.get("messageDecryptedLong")}
-        >
-          <svg
-            className="icon"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-            xmlnsXlink="http://www.w3.org/1999/xlink"
-          >
-            <use xlinkHref="chrome://conversations/skin/material-icons.svg#vpn_key"></use>
-          </svg>
-          {this.props.strings.get("messageDecrypted")}
-        </li>
         {!!this.props.specialTags &&
           !!this.props.specialTags.length &&
           this.props.specialTags.map((tag, i) => {
