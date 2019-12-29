@@ -597,32 +597,6 @@ function prepareForShowHdrIcons(aMessage) {
   w._currentConversation = conversation;
 }
 
-// Show signed status in the notification bar.
-// Click event of Details button is set.
-// TODO: Do we really need this since we have the signed tag? which is clickable.
-function showNotificationBar(aMessage) {
-  let w = topMail3Pane(aMessage);
-  let enigmailBar = aMessage._domNode.querySelector(".enigmailBar");
-  if (enigmailBar.style.display === "block") {
-    return;
-  }
-  let signed = w.Enigmail.hdrView.statusBar.getAttribute("signed");
-  if (signed) {
-    enigmailBar.classList.add(signed);
-    let message = escapeHtml(w.Enigmail.msg.securityInfo.statusLine);
-    if (w.Enigmail.msg.securityInfo.statusArr.length) {
-      message += "<br/>" + escapeHtml(w.Enigmail.msg.securityInfo.statusArr[0]);
-    }
-    // eslint-disable-next-line no-unsanitized/property
-    enigmailBar.querySelector(".enigmailMessage").innerHTML = message;
-    enigmailBar.style.display = "block";
-    let button = enigmailBar.querySelector(".enigmailDetails button");
-    button.addEventListener("click", function(event) {
-      w.Enigmail.msg.viewSecurityInfo(event);
-    });
-  }
-}
-
 // Update security info display of the message.
 function updateSecurityInfo(aMessage) {
   let w = topMail3Pane(aMessage);
@@ -637,7 +611,6 @@ function showHdrIconsOnStreamed(message, updateHdrIcons) {
   let w = topMail3Pane(message);
   w.Enigmail.hdrView.statusBarHide();
   updateHdrIcons();
-  // showNotificationBar(aMessage);
   // Prepare for showing on focus.
   message._updateHdrIcons = updateHdrIcons;
 }
