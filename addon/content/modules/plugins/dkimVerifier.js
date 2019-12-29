@@ -68,6 +68,7 @@ function displayResult(result, msg) {
       : "";
 
   msg.addSpecialTag({
+    canClick: false,
     classNames: `dkim-signed ${warningsClassName} ${result.dkim[0].result}`,
     icon: "chrome://conversations/skin/material-icons.svg#edit",
     name: stringBundle.get("messageDKIMSigned"),
@@ -79,7 +80,7 @@ function displayResult(result, msg) {
 }
 
 let dkimVerifierHook = {
-  onMessageStreamed(msgHdr, domNode, msgWindow, msg) {
+  onMessageStreamed(msgHdr, unused, msgWindow, msg) {
     "use strict";
 
     AuthVerifier.verify(msgHdr).then(

@@ -191,6 +191,15 @@ function messages(state = initialMessages, action) {
       msg.read = true;
       return state;
     }
+    case "MSG_SELECTED": {
+      if (Conversations.currentConversation) {
+        const msg = Conversations.currentConversation.getMessage(action.msgUri);
+        if (msg) {
+          msg.onSelected();
+        }
+      }
+      return state;
+    }
     case "TOGGLE_CONVERSATION_EXPANDED": {
       const newState = { ...state };
       const newMsgData = [];
@@ -377,6 +386,11 @@ function messages(state = initialMessages, action) {
         action.notificationType,
         action.extraData
       );
+      return state;
+    }
+    case "TAG_CLICK": {
+      const msg = Conversations.currentConversation.getMessage(action.msgUri);
+      msg.msgPluginTagClick(topMail3Pane(window), action.event, action.detail);
       return state;
     }
     default: {

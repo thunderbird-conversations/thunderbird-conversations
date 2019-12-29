@@ -99,9 +99,31 @@ MessageTags.propTypes = {
 };
 
 class SpecialMessageTag extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    this.onClick = this.onClick.bind(this);
+  }
+
+  onClick(event) {
+    this.props.dispatch({
+      type: "TAG_CLICK",
+      event,
+      msgUri: this.props.msgUri,
+      detail: this.props.onClick,
+    });
+  }
+
   render() {
     return (
-      <li className={this.props.classNames + " special-tag"}>
+      <li
+        className={
+          this.props.classNames +
+          " special-tag" +
+          (this.props.canClick ? " can-click" : "")
+        }
+        title={this.props.title || ""}
+        onClick={this.props.canClick ? this.onClick : null}
+      >
         <svg
           className="icon"
           viewBox="0 0 24 24"
@@ -130,9 +152,14 @@ class SpecialMessageTag extends React.PureComponent {
 }
 
 SpecialMessageTag.propTypes = {
+  canClick: PropTypes.bool.isRequired,
   classNames: PropTypes.string.isRequired,
+  dispatch: PropTypes.func.isRequired,
   icon: PropTypes.string.isRequired,
+  msgUri: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
+  title: PropTypes.string.isRequired,
+  onClick: PropTypes.object.isRequired,
   tooltip: PropTypes.object.isRequired,
 };
 
@@ -154,49 +181,22 @@ class SpecialMessageTags extends React.PureComponent {
   }
 
   render() {
-    // TODO: Get the signed/decrypted tags working properly.
-    // Maybe use plugins to feed the data into the message display, and allow
-    // them to set the icons/text to display?
-
     return (
       <ul className="tags special-tags">
-        <li
-          className="tag-signed"
-          title={this.props.strings.get("messageSignedLong")}
-        >
-          <svg
-            className="icon"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-            xmlnsXlink="http://www.w3.org/1999/xlink"
-          >
-            <use xlinkHref="chrome://conversations/skin/material-icons.svg#edit"></use>
-          </svg>
-          {this.props.strings.get("messageSigned")}
-        </li>
-        <li
-          className="tag-decrypted"
-          title={this.props.strings.get("messageDecryptedLong")}
-        >
-          <svg
-            className="icon"
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-            xmlnsXlink="http://www.w3.org/1999/xlink"
-          >
-            <use xlinkHref="chrome://conversations/skin/material-icons.svg#vpn_key"></use>
-          </svg>
-          {this.props.strings.get("messageDecrypted")}
-        </li>
         {!!this.props.specialTags &&
           !!this.props.specialTags.length &&
           this.props.specialTags.map((tag, i) => {
             return (
               <SpecialMessageTag
+                canClick={tag.canClick}
                 classNames={tag.classNames}
+                dispatch={this.props.dispatch}
                 icon={tag.icon}
                 key={i}
+                msgUri={this.props.msgUri}
                 name={tag.name}
+                onClick={tag.onClick}
+                title={tag.title}
                 tooltip={tag.tooltip}
               />
             );

@@ -582,80 +582,6 @@ Message.prototype = {
     return result;
   },
 
-  // Once the conversation has added us into the DOM, we're notified about it
-  //  (aDomNode is us), and we can start registering event handlers and stuff
-  onAddedToDom(aDomNode) {
-    if (!aDomNode) {
-      Log.error(
-        "onAddedToDom() && !aDomNode",
-        this.from,
-        this.to,
-        this.subject
-      );
-    }
-
-    this._domNode = aDomNode;
-
-    let self = this;
-
-    // Register event handlers for onSelected.
-    // Set useCapture: true for preventing this from being canceled
-    // by stopPropagation. This should be always called.
-    // Use focus event for shortcut keys 'F', 'B' and Tab.
-    // When trying to click a link or a collapsed message, focus event
-    // occurs before click. Update display by focus event has posibility
-    // to cause click failure. So we use mousedown to cancel focus event.
-    let mousedown = false;
-    this._domNode.addEventListener(
-      "mousedown",
-      function() {
-        mousedown = true;
-      },
-      true
-    );
-    this._domNode.addEventListener(
-      "blur",
-      function() {
-        mousedown = false;
-      },
-      true
-    );
-    this._domNode.addEventListener(
-      "focus",
-      function() {
-        if (!mousedown) {
-          self.onSelected();
-        }
-      },
-      true
-    );
-    this._domNode.addEventListener(
-      "click",
-      function() {
-        self.onSelected();
-      },
-      true
-    );
-    // For the case when focused by mousedown but not clicked
-    this._domNode.addEventListener(
-      "mousemove",
-      function() {
-        if (mousedown) {
-          self.onSelected();
-          mousedown = false;
-        }
-      },
-      true
-    );
-    this._domNode.addEventListener(
-      "dragstart",
-      function() {
-        self.onSelected();
-      },
-      true
-    );
-  },
-
   notifiedRemoteContentAlready: false,
 
   // The global monkey-patch finds us through the weak pointer table and
@@ -678,18 +604,15 @@ Message.prototype = {
 
   // This function should be called whenever the message is selected
   // by focus, click, scrollNodeIntoView, etc.
-  onSelected: function _Message_onSelected() {
+  onSelected() {
     if (this._selected) {
       return;
     }
 
     // We run below code only for the first time after messages selected.
     Log.debug("A message is selected: " + this._uri);
-    this._selected = true;
     for (let { message } of this._conversation.messages) {
-      if (message != this) {
-        message._selected = false;
-      }
+      message._selected = message == this;
     }
 
     try {
@@ -756,6 +679,10 @@ Message.prototype = {
     });
   },
 
+  removeSpecialTag(tagDetails) {
+    this._specialTags = this.specialTags.filter(t => t.name != tagDetails.name);
+  },
+
   _signal() {
     this._conversation._signal();
   },
@@ -816,6 +743,23 @@ Message.prototype = {
         try {
           if (typeof h.onMessageNotification == "function") {
             h.onMessageNotification(win, notificationType, extraData);
+          }
+        } catch (ex) {
+          Log.warn("Plugin returned an error:", ex);
+        }
+      }
+    });
+  },
+
+  msgPluginTagClick(win, event, ...extraData) {
+    let newEvent = {
+      button: event.button,
+    };
+    Services.tm.dispatchToMainThread(() => {
+      for (let h of getHooks()) {
+        try {
+          if (typeof h.onMessageTagClick == "function") {
+            h.onMessageTagClick(win, newEvent, ...extraData);
           }
         } catch (ex) {
           Log.warn("Plugin returned an error:", ex);

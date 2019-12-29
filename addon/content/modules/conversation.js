@@ -501,7 +501,7 @@ Conversation.prototype = {
   // Before the Gloda query returns, the user might change selection. Don't
   // output a conversation unless we're really sure the user hasn't changed his
   // mind.
-  // XXX this logic is weird. Shouldn't we just compare a list of URLs?
+  // TODO: this logic is weird. Shouldn't we just compare a list of URLs?
   _selectionChanged: function _Conversation_selectionChanged() {
     let gFolderDisplay = topMail3Pane(this).gFolderDisplay;
     let messageIds = this._initialSet.map(x => x.messageId);
@@ -928,7 +928,7 @@ Conversation.prototype = {
   // Once we're confident our set of messages is the right one, we actually
   // start outputting them inside the DOM element we were given.
   _outputMessages() {
-    // XXX I think this test is still valid because of the thread summary
+    // TODO: I think this test is still valid because of the thread summary
     // stabilization interval (we might have changed selection and still be
     // waiting to fire the new conversation).
     if (!this._htmlPane.isInTab && this._selectionChanged()) {
@@ -1071,22 +1071,7 @@ Conversation.prototype = {
     }
     let focusThis = this._tellMeWhoToScroll(messages);
     reactMsgData[focusThis].scrollTo = true;
-    // let expandThese =
     this._tellMeWhoToExpand(messages, reactMsgData, focusThis);
-    // let messageNodes = this._domNode.getElementsByClassName(Message.prototype.cssClass);
-    // Log.assert(messageNodes.length == this.messages.length, "WTF?");
-
-    // let self = this;
-    // this._runOnceAfterNSignals(function() {
-    //   let focusedNode = messageNodes[focusThis];
-    //   self.messages[focusThis].message.onSelected();
-    //
-    //   // It doesn't matter if it's an update after all, we will just set
-    //   // currentConversation to the same value in the _onComplete handler.
-    //   self._onComplete();
-    //   // _onComplete will potentially set a timeout that, when fired, takes care
-    //   //  of notifying us that we should update the conversation buttons.
-    // }, this.messages.length);
   },
 
   // This is the starting point, this is where the Monkey-Patched threadSummary
