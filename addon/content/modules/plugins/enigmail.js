@@ -210,14 +210,9 @@ function overrideUpdateSecurity(messagepane, w) {
     }
     let message;
     let msgHdr = uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
-    let uriSpec = msgHdrGetUri(msgHdr);
     if (w._currentConversation) {
-      for (let x of w._currentConversation.messages) {
-        if (x.message._uri == uriSpec) {
-          message = x.message;
-          break;
-        }
-      }
+      let uriSpec = msgHdrGetUri(msgHdr);
+      message = w._currentConversation.getMessage(uriSpec);
     }
     if (!message) {
       Log.error("Message for the security info not found!");
@@ -234,7 +229,7 @@ function overrideUpdateSecurity(messagepane, w) {
     // We reset decrypted label from decryption status.
     // TODO: Fix decryption flags.
     if (statusFlags & nsIEnigmail.DECRYPTION_OKAY) {
-      // message._domNode.classList.add("decrypted");
+      addEncryptedTag(message);
     } else {
       // message._domNode.classList.remove("decrypted");
     }
@@ -723,6 +718,20 @@ function addSignedLabel(status, msg) {
   }
 }
 
+function addEncryptedTag(msg) {
+  msg.addSpecialTag({
+    canClick: true,
+    classNames: "enigmail-decrypted",
+    icon: "chrome://conversations/skin/material-icons.svg#vpn_key",
+    name: templateStrings.get("messageDecrypted"),
+    onClick: {
+      type: "enigmail",
+      detail: "viewSecurityInfo",
+    },
+    title: templateStrings.get("messageDecryptedLong"),
+  });
+}
+
 let enigmailHook = {
   _domNode: null,
   _originalText: null, // for restoring original text when sending message is canceled
@@ -761,9 +770,9 @@ let enigmailHook = {
     if (iframeDoc.body.textContent.length && hasEnigmail) {
       // TODO: FIXME
       let status = tryEnigmail(iframeDoc, message, msgWindow);
-      console.log({ status });
-      // if (status & nsIEnigmail.DECRYPTION_OKAY)
-      //   aDomNode.classList.add("decrypted");
+      if (status & nsIEnigmail.DECRYPTION_OKAY) {
+        addEncryptedTag(message);
+      }
       addSignedLabel(status, message);
     }
   },
