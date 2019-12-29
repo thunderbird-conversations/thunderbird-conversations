@@ -1071,22 +1071,7 @@ Conversation.prototype = {
     }
     let focusThis = this._tellMeWhoToScroll(messages);
     reactMsgData[focusThis].scrollTo = true;
-    // let expandThese =
     this._tellMeWhoToExpand(messages, reactMsgData, focusThis);
-    // let messageNodes = this._domNode.getElementsByClassName(Message.prototype.cssClass);
-    // Log.assert(messageNodes.length == this.messages.length, "WTF?");
-
-    // let self = this;
-    // this._runOnceAfterNSignals(function() {
-    //   let focusedNode = messageNodes[focusThis];
-    //   self.messages[focusThis].message.onSelected();
-    //
-    //   // It doesn't matter if it's an update after all, we will just set
-    //   // currentConversation to the same value in the _onComplete handler.
-    //   self._onComplete();
-    //   // _onComplete will potentially set a timeout that, when fired, takes care
-    //   //  of notifying us that we should update the conversation buttons.
-    // }, this.messages.length);
   },
 
   // This is the starting point, this is where the Monkey-Patched threadSummary
