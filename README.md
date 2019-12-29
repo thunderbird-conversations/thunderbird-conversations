@@ -28,7 +28,7 @@ Building
 
 1. Clone the repository
 2. Change into the main folder, run `git submodule init` and `git submodule update`
-3. Run `npm install`
+3. Run `npm ci`
 4. Run `npm run build`
 
 This will package a `converstions.xpi` file of the latest codebase which can be installed via add-on manager in Thunderbird (hint: you can drag & drop it onto the add-on manager view).
