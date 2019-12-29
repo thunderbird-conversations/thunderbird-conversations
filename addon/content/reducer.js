@@ -192,9 +192,11 @@ function messages(state = initialMessages, action) {
       return state;
     }
     case "MSG_SELECTED": {
-      const msg = Conversations.currentConversation.getMessage(action.msgUri);
-      if (msg) {
-        msg.onSelected();
+      if (Conversations.currentConversation) {
+        const msg = Conversations.currentConversation.getMessage(action.msgUri);
+        if (msg) {
+          msg.onSelected();
+        }
       }
       return state;
     }
