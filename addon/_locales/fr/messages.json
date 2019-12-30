@@ -132,5 +132,95 @@
   "options.monospaced_senders_desc": {
     "message": "Les messages venant de ces adresses ou listes de discussion devraient être affichés en polices monospace (séparer les adresses par des virgules)",
     "description": "Options - description for monospaced sender setting."
+  },
+
+  "assistant.title": {
+    "message": "Assistant d'aide au démarrage",
+    "description": "The document title of the assistant page."
+  },
+
+  "assistant.intro": {
+    "message": "Bonjour, voici Thunderbird Conversations !",
+    "description": "Introduction paragraph for the assistant."
+  },
+
+  "assistant.p1": {
+    "message": "Pour vous faciliter la vie, cet assistant va vous permettre de modifier Thunderbird et de profiter sans souci de l'extension. Nous voulons que vous soyez pleinement satisfait !",
+    "description": "First detail paragraph for the assistant."
+  },
+
+  "assistant.p2": {
+    "message": "Les modifications que nous allons opérer sont toutes réversibles, donc pas de panique : si vous n'êtes pas convaincu par Thunderbird Conversations, vous retrouverez tous vos paramètres précédents dès la désinstallation de l'extension.",
+    "description": "Second detail paragraph for the assistant."
+  },
+
+  "assistant.p3": {
+    "message": "Il se peut que cela prenne un peu de temps. Vous pouvez soit attendre que la fenêtre se ferme, soit la fermer vous-même et vérifier la progression dans Outils > Activités.",
+    "description": "Third detail paragraph for the assistant."
+  },
+
+  "assistant.working": {
+    "message": "En cours…",
+    "description": "An indication that the assistant is working."
+  },
+
+  "assistant.review": {
+    "message": "Vérifier les modifications",
+    "description": "The review button title for the assistant."
+  },
+
+  "assistant.apply": {
+    "message": "Appliquer les modifications",
+    "description": "The apply button title for the assistant."
+  },
+
+  "assistant.settings": {
+    "message": "Settings",
+    "description": "The settings section legend for the assistant."
+  },
+
+  "assistant.actionEnableGloda": {
+    "message": "Vérifier que la recherche globale et l'indexeur sont activés.",
+    "description": "Option text for enabling Gloda."
+  },
+
+  "assistant.actionDontExpand": {
+    "message": "Dans la liste des messages, ne pas développer les fils de discussion qui contiennent des messages non-lus.",
+    "description": "Option text for not expanding message threads."
+  },
+
+  "assistant.actionAttachmentsInline": {
+    "message": "Ne pas afficher les pièces jointes dans le message (fortement recommandé).",
+    "description": "Option text for showing attachments inline."
+  },
+
+  "assistant.actionOfflineDownload": {
+    "message": "La boîte de réception et celle des courriers envoyés sont synchronisés pour le stockage hors-connexion (fortement recommandé).",
+    "description": "Option text for allowing offline download."
+  },
+
+  "assistant.actionUnifiedInboxSearchesSent": {
+    "message": "Les dossiers unifiés prennent aussi en compte les dossiers Envoyés (fortement recommandé).",
+    "description": "Option text for adding sent to the unified inbox."
+  },
+
+  "assistant.actionSetupView": {
+    "message": "Basculer sur la boîte de réception globale, l'affichage en fils de discussion, le classement chronologique, activer la colonne des non-lus et la nouvelle colonne \"entre\"(fortement recommandé).",
+    "description": "Option text for how the view is set."
+  },
+
+  "assistant.actionSetupViewDefaults": {
+    "message": "Utiliser ces paramètres personnalisés de tri pour tous les dossiers.",
+    "description": "Option text for setting the view defaults."
+  },
+
+  "assistant.actionEnsureMessagePaneVisible": {
+    "message": "Vérifier que le panneau des messages est visible.",
+    "description": "Option text for ensuring the message pane is visible."
+  },
+
+  "assistant.settings2": {
+    "message": "Si vous souhaitez activer davantage d'options par la suite, vous pouvez accéder à cet assistant dans les préférences de l'extension, dans la partie \" avancé \".",
+    "description": "Paragraph informing users of the ability to change settings later."
   }
 }

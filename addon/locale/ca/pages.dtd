@@ -1,21 +1,3 @@
-<!ENTITY assistant.title "Assistent de la primera sessió">
-<!ENTITY assistant.intro "Hola, això és<strong>Thunderbird Conversations</strong>!">
-<!ENTITY assistant.p1 "Per tal de fer la teva vida més fàcil, aquest assistent ajustarà la configuració del Thunderbird per assegurar-nos que disfrutes de una experiència òptima. No volem que et sentis insatisfet">
-<!ENTITY assistant.p2 "Els ajustos que fem són tots reversibles, per tant no et preocupis: si no vols seguir usant les Thunderbird Conversations, revertirem tots els canvis en les preferències que vam fer al moment que tu  suprimeixis la extensió.">
-<!ENTITY assistant.p3 "Això pot tardar un temps. Et pots esperar a que la finestra es tanqui sola, o tancar-la tu mateix, i pots seguir el procés des de les eines &gt; Monitor d'activitat.">
-<!ENTITY assistant.working "Treballant...">
-<!ENTITY assistant.review "Revisa els canvis">
-<!ENTITY assistant.apply "Aplica els canvis">
-<!ENTITY assistant.settings "Alguns ajustos de configuració són necessaris perquè Thunderbird Conversations funcioni. Altres estàn fortament recomanats, i altres són opcionals.">
-<!ENTITY assistant.actionEnableGloda "Assegura't que la Búsqueda Global i l'Indexer estàn activats.">
-<!ENTITY assistant.actionDontExpand "Dins la llista de missatges, no expandeixis els fils de conversa de missatges no llegits.">
-<!ENTITY assistant.actionAttachmentsInline "NO mostris els adjunts en la línia (<strong>fortament</strong> recomanat).">
-<!ENTITY assistant.actionOfflineDownload "La bústia d'Entrada i els missatges enviats estàn sicronitzats per un emmagatzematge fora de línia  (<strong>fortament</strong> recomanat).">
-<!ENTITY assistant.actionUnifiedInboxSearchesSent "La bústia d'entrada unificada també busca a la bústia d'enviats (<strong>fortament</strong> recomanat).">
-<!ENTITY assistant.actionSetupView "Canvia a la bústia d'entrada global, se't mostra una mica embolicada, separa per data,  activa la columna de recompte de missatges no llegits i una nova columna d'&quot;entremig&quot;(<strong>fortament</strong> recomanat).">
-<!ENTITY assistant.actionSetupViewDefaults "Fes servir totes aquestes preferències personalitzades de separació per a totes les carpetes.">
-<!ENTITY assistant.actionEnsureMessagePaneVisible "Assegura't que el panell de missatges és visible.">
-<!ENTITY assistant.settings2 "T'agradaria activar més opcions després ? Pots accedir a aquest assistent a través del panell de preferències,  es troba a sota de  la secció : &quot;Avançat&quot; .">
 <!ENTITY feedback.message "Ja has estat fent servir Thunderbird Conversations un bon temps, et podries prendre la molèstia de explicar-nos com ho estem duent a terme? Ens encantaria rebre qualsevol comentari que poguessis tenir al respecte!">
 <!ENTITY feedback.no "No, gràcies">
 <!ENTITY feedback.yes "Deixa'ns el teu Feedback">

@@ -133,8 +133,6 @@ class MultipleCustomization {
 let eid = id => getMail3Pane().document.getElementById(id);
 
 var Customizations = {
-  ttop() {},
-
   actionSetupViewDefaults: new MultipleCustomization([
     { name: "mailnews.default_sort_order", type: kPrefInt, value: 2 },
     { name: "mailnews.default_sort_type", type: kPrefInt, value: 18 },
@@ -172,7 +170,7 @@ var Customizations = {
   ),
 
   actionSetupView: {
-    install() {
+    async install() {
       /**
        * const kShowUnthreaded = 0;
        * const kShowThreaded = 1;
@@ -214,40 +212,38 @@ var Customizations = {
         ftv.selectFolder(smartInbox);
       }
 
-      let moveOn = function() {
-        let tabmail = mainWindow.document.getElementById("tabmail");
-        tabmail.switchToTab(0);
-        mainWindow.MsgSortThreaded();
-        /**
-         * We don't know how to revert these, so forget about it for now.
-         */
-        // mainWindow.MsgSortThreadPane('byDate');
-        // mainWindow.MsgSortDescending();
-        mainWindow.goDoCommand("cmd_collapseAllThreads");
-        state.unreadCol = eid("unreadCol").getAttribute("hidden");
-        state.senderCol = eid("senderCol").getAttribute("hidden");
-        state.correspondentCol = eid("correspondentCol").getAttribute("hidden");
-        eid("unreadCol").setAttribute("hidden", "false");
-        eid("senderCol").setAttribute("hidden", "true");
-        eid("correspondentCol").setAttribute("hidden", "true");
-        eid("betweenCol").setAttribute("hidden", "false");
-        Customizations.ttop();
-      };
-      let i = 0;
-      let waitForIt = function() {
-        if (
-          smartInbox &&
-          mainWindow.gFolderDisplay.displayedFolder != smartInbox &&
-          i++ < 10
-        ) {
-          mainWindow.setTimeout(waitForIt, 150);
-        } else {
-          moveOn();
-        }
-      };
-      Customizations.expect();
-      waitForIt(); // will top()
+      await new Promise(resolve => {
+        let i = 0;
+        let waitForIt = function() {
+          if (
+            smartInbox &&
+            mainWindow.gFolderDisplay.displayedFolder != smartInbox &&
+            i++ < 10
+          ) {
+            mainWindow.setTimeout(waitForIt, 150);
+          } else {
+            resolve();
+          }
+        };
+        waitForIt();
+      });
 
+      let tabmail = mainWindow.document.getElementById("tabmail");
+      tabmail.switchToTab(0);
+      mainWindow.MsgSortThreaded();
+      /**
+       * We don't know how to revert these, so forget about it for now.
+       */
+      // mainWindow.MsgSortThreadPane('byDate');
+      // mainWindow.MsgSortDescending();
+      mainWindow.goDoCommand("cmd_collapseAllThreads");
+      state.unreadCol = eid("unreadCol").getAttribute("hidden");
+      state.senderCol = eid("senderCol").getAttribute("hidden");
+      state.correspondentCol = eid("correspondentCol").getAttribute("hidden");
+      eid("unreadCol").setAttribute("hidden", "false");
+      eid("senderCol").setAttribute("hidden", "true");
+      eid("correspondentCol").setAttribute("hidden", "true");
+      eid("betweenCol").setAttribute("hidden", "false");
       return state;
     },
 
@@ -271,9 +267,10 @@ var Customizations = {
       mainWindow.gFolderTreeView.mode = ftvMode;
 
       if (initialFolder.uri) {
-        mainWindow.gFolderDisplay.show(
-          MailUtils.getFolderForURI(initialFolder.uri)
-        );
+        const folder = MailUtils.getExistingFolder(initialFolder.uri);
+        if (folder) {
+          mainWindow.gFolderDisplay.show(folder);
+        }
         switch (initialFolder.show) {
           case 0:
             mainWindow.gFolderDisplay.view.showUnthreaded = true;
@@ -420,7 +417,7 @@ var Customizations = {
 
     uninstall([aChangedFolders, aChangedServers]) {
       for (let uri of aChangedFolders) {
-        let folder = MailUtils.getFolderForURI(uri);
+        let folder = MailUtils.getExistingFolder(uri);
         if (folder) {
           folder.clearFlag(nsMsgFolderFlags_Offline);
         }

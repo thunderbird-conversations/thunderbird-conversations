@@ -1,21 +1,3 @@
-<!ENTITY assistant.title "首次运行向导">
-<!ENTITY assistant.intro "Hi, 这是<strong>Thunderbird Conversations</strong>!">
-<!ENTITY assistant.p1 "为了让日子过得再轻松些，此辅助工具将对你的Thunderbird进行微调，以便获得更好的使用体验。">
-<!ENTITY assistant.p2 "所有的调整都是可恢复的。隐藏不必担心：一旦你卸载了此扩展程序，所有本程序修改的设置项都将恢复原样（到安装本程序以前）。">
-<!ENTITY assistant.p3 "此操作将花费一些时间。你可以等待此窗口关闭，也可以直接关闭，并在“工具”菜单中“活动管理器”里查看进度">
-<!ENTITY assistant.working "操作中……">
-<!ENTITY assistant.review "检查变更项">
-<!ENTITY assistant.apply "应用">
-<!ENTITY assistant.settings "部分设置是Thunderbird Conversations正常工作的必选设置，部分为推荐设置，其他为可选设置">
-<!ENTITY assistant.actionEnableGloda "请确认全局检索和索引已经激活">
-<!ENTITY assistant.actionDontExpand "在邮件列表中，不要展开含有未读邮件的会话">
-<!ENTITY assistant.actionAttachmentsInline "不要嵌入显示附件(<strong>强烈</strong>推荐).">
-<!ENTITY assistant.actionOfflineDownload "收件箱和已发邮件箱相同步使用离线存储(<strong>强烈</strong>推荐).">
-<!ENTITY assistant.actionUnifiedInboxSearchesSent "统一收件箱同样检索已发送文件夹（推荐）.">
-<!ENTITY assistant.actionSetupView "切换至全局收件箱，按日期排序显示会话，激活未读技术栏和新&quot;参与方&quot;栏（推荐）.">
-<!ENTITY assistant.actionSetupViewDefaults "对所有文件夹使用自定义排序设置.">
-<!ENTITY assistant.actionEnsureMessagePaneVisible "请确认邮件面板可见。">
-<!ENTITY assistant.settings2 "如果需要再次调整其他设置，可以从本插件的选项页中“高级”栏目中访问本设置向导">
 <!ENTITY feedback.message "您已经使用Thunderbird Conversations相当长的一段时间了。您愿意告我们您的想法吗？我们迫切希望听到您的建议！">
 <!ENTITY feedback.no "不，谢谢">
 <!ENTITY feedback.yes "反馈意见">

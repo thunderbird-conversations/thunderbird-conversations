@@ -132,5 +132,95 @@
   "options.monospaced_senders_desc": {
     "message": "Nachrichten von dieser Adresse/Mailingliste sollen in unproportionaler Schriftart angezeigt werden (durch Kommata trennen).",
     "description": "Options - description for monospaced sender setting."
+  },
+
+  "assistant.title": {
+    "message": "Installationsassistent",
+    "description": "The document title of the assistant page."
+  },
+
+  "assistant.intro": {
+    "message": "Willkommen bei Thunderbird Conversations!",
+    "description": "Introduction paragraph for the assistant."
+  },
+
+  "assistant.p1": {
+    "message": "Um Ihnen Ihr Leben zu erleichtern, wird dieser Assistent Ihre Thunderbird-Installation optimieren. Dadurch wird sichergestellt, dass Sie von den besten Erfahrungen profitieren. Wir möchten, dass Sie zufrieden sind!",
+    "description": "First detail paragraph for the assistant."
+  },
+
+  "assistant.p2": {
+    "message": "Alle Verbesserungen können Rückgängig gemacht werden, also machen Sie sich keine Sorgen: Sollte Ihnen Thunderbird Conversations nicht gefallen, werden alle geänderten Einstellungen zurückgesetzt, sobald Sie die Erweiterung deinstallieren.",
+    "description": "Second detail paragraph for the assistant."
+  },
+
+  "assistant.p3": {
+    "message": "Dies kann einige Zeit in Anspruch nehmen. Sie können entweder warten, bis sich dieses Fenster automatisch schließt oder Sie schließen es selbst. Den Fortschritt können Sie dann unter \"Extras > Aktivitäten\" verfolgen.",
+    "description": "Third detail paragraph for the assistant."
+  },
+
+  "assistant.working": {
+    "message": "Beschäftigt...",
+    "description": "An indication that the assistant is working."
+  },
+
+  "assistant.review": {
+    "message": "Änderungen bearbeiten",
+    "description": "The review button title for the assistant."
+  },
+
+  "assistant.apply": {
+    "message": "Änderungen anwenden",
+    "description": "The apply button title for the assistant."
+  },
+
+  "assistant.settings": {
+    "message": "Settings",
+    "description": "The settings section legend for the assistant."
+  },
+
+  "assistant.actionEnableGloda": {
+    "message": "Sicherstellen, dass die globale Suche und die Indizierung aktiviert sind.",
+    "description": "Option text for enabling Gloda."
+  },
+
+  "assistant.actionDontExpand": {
+    "message": "Threads, die ungelesene Nachrichten enthalten in der Nachrichtenliste nicht ausklappen.",
+    "description": "Option text for not expanding message threads."
+  },
+
+  "assistant.actionAttachmentsInline": {
+    "message": "Anhänge nicht im Inhalt eingebettet anzeigen (dringend empfohlen).",
+    "description": "Option text for showing attachments inline."
+  },
+
+  "assistant.actionOfflineDownload": {
+    "message": "Posteingang und gesendete Nachrichten für den Offlinebetrieb synchronisieren (dringend empfohlen).",
+    "description": "Option text for allowing offline download."
+  },
+
+  "assistant.actionUnifiedInboxSearchesSent": {
+    "message": "Der gruppierte Posteingang soll auch den \"Gesendet\"-Ordner durchsuchen (dringend empfohlen).",
+    "description": "Option text for adding sent to the unified inbox."
+  },
+
+  "assistant.actionSetupView": {
+    "message": "Zum globalen Posteingang wechseln, nach Themen gruppieren, nach Datum sortieren, die Spalte \"Ungelesen\" und die neue Spalte \"Zwischen\" aktivieren (dringend empfohlen).",
+    "description": "Option text for how the view is set."
+  },
+
+  "assistant.actionSetupViewDefaults": {
+    "message": "Benutzerdefinierte Sortiereinstellungen für alle Ordner anwenden.",
+    "description": "Option text for setting the view defaults."
+  },
+
+  "assistant.actionEnsureMessagePaneVisible": {
+    "message": "Sicherstellen, dass der Nachrichtenbereich aktiviert ist.",
+    "description": "Option text for ensuring the message pane is visible."
+  },
+
+  "assistant.settings2": {
+    "message": "Wenn Sie diese Optionen nachträglich ändern möchten, können Sie erneut auf diesen Assistenten zugreifen über \"Extras > Add-ons &gt; Einstellungen\", im Abschnitt \"Erweiterungen\".",
+    "description": "Paragraph informing users of the ability to change settings later."
   }
 }

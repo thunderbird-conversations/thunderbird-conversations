@@ -132,5 +132,95 @@
   "options.monospaced_senders_desc": {
     "message": "次のアドレス/メーリングリストからのメッセージを等幅フォントで表示します。 (半角カンマ区切り)",
     "description": "Options - description for monospaced sender setting."
+  },
+
+  "assistant.title": {
+    "message": "初回起動アシスタント",
+    "description": "The document title of the assistant page."
+  },
+
+  "assistant.intro": {
+    "message": "Thunderbird Conversations からお知らせです。<style>h2{margin:6px 0}p{margin:0 0 6px 0}</style>",
+    "description": "Introduction paragraph for the assistant."
+  },
+
+  "assistant.p1": {
+    "message": "このアシスタントは Thunderbird の設定を調整し、 Thunderbird Conversations の動作をより快適にします。",
+    "description": "First detail paragraph for the assistant."
+  },
+
+  "assistant.p2": {
+    "message": "調整で変更される設定は元に戻すことができます。 Thunderbird Conversations が気に入らなかった場合、アドオンの削除と同時に変更された設定がすべて元に戻ります。",
+    "description": "Second detail paragraph for the assistant."
+  },
+
+  "assistant.p3": {
+    "message": "調整には多少時間がかかるかもしれません。このウインドウは完了時に自動的に閉じますが、完了前に自分で閉じて、進行状況を ツール > イベントログの管理 より確認することもできます。",
+    "description": "Third detail paragraph for the assistant."
+  },
+
+  "assistant.working": {
+    "message": "処理中...",
+    "description": "An indication that the assistant is working."
+  },
+
+  "assistant.review": {
+    "message": "変更を確認する",
+    "description": "The review button title for the assistant."
+  },
+
+  "assistant.apply": {
+    "message": "変更を適用する",
+    "description": "The apply button title for the assistant."
+  },
+
+  "assistant.settings": {
+    "message": "Settings",
+    "description": "The settings section legend for the assistant."
+  },
+
+  "assistant.actionEnableGloda": {
+    "message": "グローバル検索と索引データベースを有効にする",
+    "description": "Option text for enabling Gloda."
+  },
+
+  "assistant.actionDontExpand": {
+    "message": "メッセージリストで未読を含むスレッドを展開しない",
+    "description": "Option text for not expanding message threads."
+  },
+
+  "assistant.actionAttachmentsInline": {
+    "message": "添付ファイルをインライン表示しない (おすすめ)",
+    "description": "Option text for showing attachments inline."
+  },
+
+  "assistant.actionOfflineDownload": {
+    "message": "受信トレイと送信済みトレイをオフライン表示用に同期する (おすすめ)",
+    "description": "Option text for allowing offline download."
+  },
+
+  "assistant.actionUnifiedInboxSearchesSent": {
+    "message": "受信トレイから送信済みトレイ内を参照する (おすすめ)",
+    "description": "Option text for adding sent to the unified inbox."
+  },
+
+  "assistant.actionSetupView": {
+    "message": "共通受信トレイに切り替え、スレッド表示、送信日時で並び替え、未読列と新機能\"参加者\"列を表示する (おすすめ)",
+    "description": "Option text for how the view is set."
+  },
+
+  "assistant.actionSetupViewDefaults": {
+    "message": "すべてのフォルダで上記の設定を使用する",
+    "description": "Option text for setting the view defaults."
+  },
+
+  "assistant.actionEnsureMessagePaneVisible": {
+    "message": "メッセージペインを表示する",
+    "description": "Option text for ensuring the message pane is visible."
+  },
+
+  "assistant.settings2": {
+    "message": "オプションを後で変更したい場合、アドオンの設定画面にある\"詳細\"タブよりこのアシスタント画面を表示できます。",
+    "description": "Paragraph informing users of the ability to change settings later."
   }
 }

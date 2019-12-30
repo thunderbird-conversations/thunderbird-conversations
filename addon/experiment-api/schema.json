@@ -32,6 +32,22 @@
             "description": "The preference value"
           }
         ]
+      },
+      {
+        "name": "installCustomisations",
+        "type": "function",
+        "description": "Sets initial customisations",
+        "async": true,
+        "parameters": [
+          {
+            "name": "ids",
+            "type": "array",
+            "description": "The customizations to enable",
+            "items": {
+              "type": "string"
+            }
+          }
+        ]
       }
     ]
   }

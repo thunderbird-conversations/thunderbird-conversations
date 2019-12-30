@@ -132,5 +132,95 @@
   "options.monospaced_senders_desc": {
     "message": "Сообщения от этих адресов/списков рассылки следует показывать моноширинными шрифтами (разделяйте имена запятыми)",
     "description": "Options - description for monospaced sender setting."
+  },
+
+  "assistant.title": {
+    "message": "Помощник начальной настройки",
+    "description": "The document title of the assistant page."
+  },
+
+  "assistant.intro": {
+    "message": "Привет- это Thunderbird Conversations!",
+    "description": "Introduction paragraph for the assistant."
+  },
+
+  "assistant.p1": {
+    "message": "Я помогу вам настроить Thunderbird на оптимальную, приятную и удобную работу.",
+    "description": "First detail paragraph for the assistant."
+  },
+
+  "assistant.p2": {
+    "message": "Все, что будет настроено, можно вернуть к начальному состоянию, поэтому, если вы решите убрать Thunderbird Conversations, вы вернетесь к состоянию, которое было до его установки.",
+    "description": "Second detail paragraph for the assistant."
+  },
+
+  "assistant.p3": {
+    "message": "Процесс займет некоторое время. Вы можете дождаться, когда это окно закроется само, или закрыть его и следить за выполнением через Инструменты > Менеджер активности (Tools &gt; Activity Manager)",
+    "description": "Third detail paragraph for the assistant."
+  },
+
+  "assistant.working": {
+    "message": "Работаю...",
+    "description": "An indication that the assistant is working."
+  },
+
+  "assistant.review": {
+    "message": "Просмотр изменений",
+    "description": "The review button title for the assistant."
+  },
+
+  "assistant.apply": {
+    "message": "Применить изменения",
+    "description": "The apply button title for the assistant."
+  },
+
+  "assistant.settings": {
+    "message": "Settings",
+    "description": "The settings section legend for the assistant."
+  },
+
+  "assistant.actionEnableGloda": {
+    "message": "Убедитесь, что Глобальный поиск и Индексатор включены.",
+    "description": "Option text for enabling Gloda."
+  },
+
+  "assistant.actionDontExpand": {
+    "message": "В списке сообщений не раскрывать нити, содержащие непрочтенные сообщения.",
+    "description": "Option text for not expanding message threads."
+  },
+
+  "assistant.actionAttachmentsInline": {
+    "message": "Не поазывать вложения в сообщениях (рекомендуется).",
+    "description": "Option text for showing attachments inline."
+  },
+
+  "assistant.actionOfflineDownload": {
+    "message": "Синхронизовать Входящие и Отправленные для работы без сети (рекомендуется).",
+    "description": "Option text for allowing offline download."
+  },
+
+  "assistant.actionUnifiedInboxSearchesSent": {
+    "message": "Универсальный ящик включает ящики Отправленные (рекомендуется).",
+    "description": "Option text for adding sent to the unified inbox."
+  },
+
+  "assistant.actionSetupView": {
+    "message": "Переключиться в \"Вся почта\", показать нити, сортировать по дате, показывать количество непрочтенных и новую колонку \"между\" (рекомендуется).",
+    "description": "Option text for how the view is set."
+  },
+
+  "assistant.actionSetupViewDefaults": {
+    "message": "Использовать такую настройку сортировки для всех папок.",
+    "description": "Option text for setting the view defaults."
+  },
+
+  "assistant.actionEnsureMessagePaneVisible": {
+    "message": "Убедиться, что панель сообщения видна.",
+    "description": "Option text for ensuring the message pane is visible."
+  },
+
+  "assistant.settings2": {
+    "message": "При необходимости изменить параметры, вы всегда можете найти этот помощник через Менеджер дополнений, во вкладке \"Дополнительно\".",
+    "description": "Paragraph informing users of the ability to change settings later."
   }
 }

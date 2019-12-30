@@ -1,21 +1,3 @@
-<!ENTITY assistant.title "Første start assistent">
-<!ENTITY assistant.intro "Hej, dette er <strong>Thunderbird Conversations</strong>!">
-<!ENTITY assistant.p1 "For at gøre dit liv lidt nemmere, vil denne assistent tilpasse din opsætning af Thunderbird for at sikre du vil opnå den bedste oplevelse. Vi vil ikke have at du bliver skuffet!">
-<!ENTITY assistant.p2 "Tilpasningerne vi vil lave kan alle fortrydes, så du skal ikke være urolig: hvis du ikke nyder Thunderbird Conversations, kan vi gendanne alle indstillinger vi har ændret så snart du afinstallerer denne udvidelse.">
-<!ENTITY assistant.p3 "Dette vil tage et stykke tid. Du kan enten vente på dette vindue lukker af sig selv, eller lukke vinduet og holde øje med fremgangen ved at klikke på menuen Funktioner &gt; Aktivitet.">
-<!ENTITY assistant.working "Arbejder...">
-<!ENTITY assistant.review "Gennemse ændringer">
-<!ENTITY assistant.apply "Anvend ændringer">
-<!ENTITY assistant.settings "Nogle indstillinger er obligatoriske for at Thunderbird Conversations kan fungere ordenligt. Nogle kan stærkt anbefales, mens andre er valgfrie.">
-<!ENTITY assistant.actionEnableGloda "Sørg for global søgning og indeksering er aktiveret.">
-<!ENTITY assistant.actionDontExpand "Udvid ikke tråde der indeholder ulæste meddelelser på meddelelseslisten.">
-<!ENTITY assistant.actionAttachmentsInline "Vis ikke vedhæftede filer i meddelelserne (<strong>anbefales</strong> kraftigt).">
-<!ENTITY assistant.actionOfflineDownload "Mapperne Indbakke og Sendte er synkroniseret til offline-lagring (<strong>anbefales</strong> kraftigt).">
-<!ENTITY assistant.actionUnifiedInboxSearchesSent "Den Samlede Indbakke søger også i mappen Sendt (<strong>anbefales</strong> kraftigt).">
-<!ENTITY assistant.actionSetupView "Skift til Global Indbakke, gør visningen til trådet, sorter efter dato, aktiver kolonnen &quot;Ulæste i tråden&quot; og den nye kolonne &quot;Imellem&quot; (<strong>anbefales</strong> kraftigt).">
-<!ENTITY assistant.actionSetupViewDefaults "Brug disse personlige sorteringsindstillinger for alle mapper.">
-<!ENTITY assistant.actionEnsureMessagePaneVisible "Sørg for meddelelsespanelet er synligt.">
-<!ENTITY assistant.settings2 "Ønsker du at aktivere flere indstillinger senere kan du altid tilgå denne assistent igennem tilføjelsens indstillingsknap under &quot;Avanceret&quot;.">
 <!ENTITY feedback.message "Du har nu kørt med Thunderbird Conversations i et stykke tid. Er du interesseret i at fortælle os om hvad du syntes om tilføjelsen? Vi ville elske at høre dine kommentarer!">
 <!ENTITY feedback.no "Nej tak">
 <!ENTITY feedback.yes "Giv feedback">
