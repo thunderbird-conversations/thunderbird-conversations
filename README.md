@@ -27,7 +27,7 @@ Building
 ========
 
 1. Clone the repository
-2. Change into the main folder, run `git submodule init` and `git submodule update`
+2. Change into the main folder, run `git submodule update --init`
 3. Run `npm ci`
 4. Run `npm run build`
 
