@@ -132,5 +132,95 @@
   "options.monospaced_senders_desc": {
     "message": "从指定地址或邮件列表中发出的邮件需以等宽字体显示（使用逗号分隔）",
     "description": "Options - description for monospaced sender setting."
+  },
+
+  "assistant.title": {
+    "message": "首次运行向导",
+    "description": "The document title of the assistant page."
+  },
+
+  "assistant.intro": {
+    "message": "Hi, 这是Thunderbird Conversations!",
+    "description": "Introduction paragraph for the assistant."
+  },
+
+  "assistant.p1": {
+    "message": "为了让日子过得再轻松些，此辅助工具将对你的Thunderbird进行微调，以便获得更好的使用体验。",
+    "description": "First detail paragraph for the assistant."
+  },
+
+  "assistant.p2": {
+    "message": "所有的调整都是可恢复的。隐藏不必担心：一旦你卸载了此扩展程序，所有本程序修改的设置项都将恢复原样（到安装本程序以前）。",
+    "description": "Second detail paragraph for the assistant."
+  },
+
+  "assistant.p3": {
+    "message": "此操作将花费一些时间。你可以等待此窗口关闭，也可以直接关闭，并在“工具”菜单中“活动管理器”里查看进度",
+    "description": "Third detail paragraph for the assistant."
+  },
+
+  "assistant.working": {
+    "message": "操作中……",
+    "description": "An indication that the assistant is working."
+  },
+
+  "assistant.review": {
+    "message": "检查变更项",
+    "description": "The review button title for the assistant."
+  },
+
+  "assistant.apply": {
+    "message": "应用",
+    "description": "The apply button title for the assistant."
+  },
+
+  "assistant.settings": {
+    "message": "Settings",
+    "description": "The settings section legend for the assistant."
+  },
+
+  "assistant.actionEnableGloda": {
+    "message": "请确认全局检索和索引已经激活",
+    "description": "Option text for enabling Gloda."
+  },
+
+  "assistant.actionDontExpand": {
+    "message": "在邮件列表中，不要展开含有未读邮件的会话",
+    "description": "Option text for not expanding message threads."
+  },
+
+  "assistant.actionAttachmentsInline": {
+    "message": "不要嵌入显示附件(强烈推荐).",
+    "description": "Option text for showing attachments inline."
+  },
+
+  "assistant.actionOfflineDownload": {
+    "message": "收件箱和已发邮件箱相同步使用离线存储(强烈推荐).",
+    "description": "Option text for allowing offline download."
+  },
+
+  "assistant.actionUnifiedInboxSearchesSent": {
+    "message": "统一收件箱同样检索已发送文件夹（推荐）.",
+    "description": "Option text for adding sent to the unified inbox."
+  },
+
+  "assistant.actionSetupView": {
+    "message": "切换至全局收件箱，按日期排序显示会话，激活未读技术栏和新\"参与方\"栏（推荐）.",
+    "description": "Option text for how the view is set."
+  },
+
+  "assistant.actionSetupViewDefaults": {
+    "message": "对所有文件夹使用自定义排序设置.",
+    "description": "Option text for setting the view defaults."
+  },
+
+  "assistant.actionEnsureMessagePaneVisible": {
+    "message": "请确认邮件面板可见。",
+    "description": "Option text for ensuring the message pane is visible."
+  },
+
+  "assistant.settings2": {
+    "message": "如果需要再次调整其他设置，可以从本插件的选项页中“高级”栏目中访问本设置向导",
+    "description": "Paragraph informing users of the ability to change settings later."
   }
 }

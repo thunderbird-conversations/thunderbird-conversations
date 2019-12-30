@@ -1,10 +1,18 @@
-// Get various parts of the WebExtension framework that we need.
-var { ExtensionCommon } = ChromeUtils.import(
-  "resource://gre/modules/ExtensionCommon.jsm"
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
 );
 
-// You probably already know what this does.
-var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
+XPCOMUtils.defineLazyModuleGetters(this, {
+  // Get various parts of the WebExtension framework that we need.
+  Customizations: "chrome://conversations/content/modules/assistant.js",
+  dumpCallStack: "chrome://conversations/content/modules/log.js",
+  ExtensionCommon: "resource://gre/modules/ExtensionCommon.jsm",
+  Prefs: "chrome://conversations/content/modules/prefs.js",
+  Services: "resource://gre/modules/Services.jsm",
+  setupLogging: "chrome://conversations/content/modules/log.js",
+});
+
+let Log = setupLogging("Conversations.AssistantUI");
 
 function prefType(name) {
   switch (name) {
@@ -36,7 +44,6 @@ function prefType(name) {
 var conversations = class extends ExtensionCommon.ExtensionAPI {
   getAPI(context) {
     return {
-      // Again, this key must have the same name.
       conversations: {
         async setPref(name, value) {
           switch (prefType(name)) {
@@ -67,6 +74,34 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             }
           }
           throw new Error("Unexpected pref type");
+        },
+        async installCustomisations(ids) {
+          let uninstallInfos = JSON.parse(
+            Prefs.getString("conversations.uninstall_infos")
+          );
+          for (const id of ids) {
+            if (!(id in Customizations)) {
+              Log.error("Couldn't find a suitable customization for", id);
+            } else {
+              try {
+                Log.debug("Installing customization", id);
+                let uninstallInfo = await Customizations[id].install();
+                uninstallInfos[id] = uninstallInfo;
+              } catch (e) {
+                Log.error("Error in customization", id);
+                Log.error(e);
+                dumpCallStack(e);
+              }
+            }
+          }
+
+          if (Prefs.getString("conversations.uninstall_infos") == "{}") {
+            let str = JSON.stringify(uninstallInfos);
+            Log.debug("Saving JSON uninstall information", str);
+            Prefs.setString("conversations.uninstall_infos", str);
+          } else {
+            Log.warn("Uninstall information already there, not overwriting...");
+          }
         },
       },
     };

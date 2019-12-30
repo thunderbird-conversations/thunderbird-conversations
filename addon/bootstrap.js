@@ -136,9 +136,6 @@ function startup(aData, aReason) {
   const { setupLogging, dumpCallStack } = ChromeUtils.import(
     "chrome://conversations/content/modules/log.js"
   );
-  const { Config } = ChromeUtils.import(
-    "chrome://conversations/content/modules/config.js"
-  );
 
   Log = setupLogging("Conversations.MonkeyPatch");
   Log.debug("startup, aReason=", aReason);
@@ -151,20 +148,6 @@ function startup(aData, aReason) {
 
     // Patch all future windows
     Services.ww.registerNotification(windowObserver);
-
-    // Show the assistant if the extension is installed or enabled
-    if (
-      aReason == Config.BOOTSTRAP_REASONS.ADDON_INSTALL ||
-      aReason == Config.BOOTSTRAP_REASONS.ADDON_ENABLE
-    ) {
-      Services.ww.openWindow(
-        null,
-        "chrome://conversations/content/assistant/assistant.xhtml",
-        "",
-        "chrome,width=800,height=500",
-        {}
-      );
-    }
   } catch (e) {
     Cu.reportError(e);
     dumpCallStack(e);

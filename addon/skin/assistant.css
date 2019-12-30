@@ -11,7 +11,7 @@ body {
 }
 
 #wrapper {
-  background-image: url("chrome://conversations/content/assistant/feature-background.jpg");
+  background-image: url("../content/assistant/feature-background.jpg");
   background-position: center top;
   background-repeat: no-repeat;
 }
@@ -34,7 +34,7 @@ body {
   padding-bottom: 60px;
 }
 
-#more ul, #more p {
+#more fieldset, #more p {
   margin: 20px;
 }
 
@@ -78,7 +78,7 @@ body {
 }
 
 #footer {
-  background: url("chrome://conversations/content/assistant/tile.jpg") repeat-x scroll center top #394345;
+  background: url("../content/assistant/tile.jpg") repeat-x scroll center top #394345;
   clear: both;
   color: #EEEEEE;
   min-height: 34px;

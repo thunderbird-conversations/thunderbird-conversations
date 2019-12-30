@@ -59,9 +59,13 @@ export class Prefs {
       for (const prefName of Object.getOwnPropertyNames(
         changed.preferences.newValue
       )) {
+        if (prefName == "migratedLegacy") {
+          continue;
+        }
         if (
+          !changed.preferences.oldValue ||
           changed.preferences.oldValue[prefName] !=
-          changed.preferences.newValue[prefName]
+            changed.preferences.newValue[prefName]
         ) {
           browser.conversations.setPref(
             prefName,

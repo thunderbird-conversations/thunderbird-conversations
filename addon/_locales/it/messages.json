@@ -132,5 +132,95 @@
   "options.monospaced_senders_desc": {
     "message": "È possibile utilizzare i caratteri a larghezza fissa per i messaggi provenienti da determinati indirizzi e-mail aggiungendoli qui sotto (separati con una virgola)",
     "description": "Options - description for monospaced sender setting."
+  },
+
+  "assistant.title": {
+    "message": "Configurazione guidata di Thunderbird Conversations",
+    "description": "The document title of the assistant page."
+  },
+
+  "assistant.intro": {
+    "message": "Benvenuti nella configurazione guidata di Thunderbird Conversations",
+    "description": "Introduction paragraph for the assistant."
+  },
+
+  "assistant.p1": {
+    "message": "La configurazione guidata aiuta ad ottimizzare le impostazioni di Thunderbird",
+    "description": "First detail paragraph for the assistant."
+  },
+
+  "assistant.p2": {
+    "message": "Tutte le modifiche alle opzioni dell&apos;estensione sono reversibili, inoltre per ripristinare le precedenti impostazioni predefinite di Thunderbird sarà sufficiente disinstallare Thunderbird Conversations",
+    "description": "Second detail paragraph for the assistant."
+  },
+
+  "assistant.p3": {
+    "message": "Potrebbero essere necessari alcuni minuti. È possibile attendere la chiusura automatica di questa finestra oppure chiuderla manualmente e verificare l&apos;avanzamento selezionando il menu principale \"Strumenti\" > Registro attività",
+    "description": "Third detail paragraph for the assistant."
+  },
+
+  "assistant.working": {
+    "message": "Attendere…",
+    "description": "An indication that the assistant is working."
+  },
+
+  "assistant.review": {
+    "message": "Esamina le opzioni",
+    "description": "The review button title for the assistant."
+  },
+
+  "assistant.apply": {
+    "message": "Applica",
+    "description": "The apply button title for the assistant."
+  },
+
+  "assistant.settings": {
+    "message": "Settings",
+    "description": "The settings section legend for the assistant."
+  },
+
+  "assistant.actionEnableGloda": {
+    "message": "Attiva le opzioni di ricerca globale e di indicizzazione nel menu Strumenti > Opzioni… (oppure Modifica &gt; Preferenze…) &gt; Avanzate &gt; Generale",
+    "description": "Option text for enabling Gloda."
+  },
+
+  "assistant.actionDontExpand": {
+    "message": "Non espandere le discussioni contenenti messaggi non letti nella lista dei messaggi",
+    "description": "Option text for not expanding message threads."
+  },
+
+  "assistant.actionAttachmentsInline": {
+    "message": "Non mostrare gli allegati in linea (opzione fortemente raccomandata)",
+    "description": "Option text for showing attachments inline."
+  },
+
+  "assistant.actionOfflineDownload": {
+    "message": "Sincronizza le cartelle &apos;Posta in arrivo&apos; e &apos;Posta inviata&apos; per la conservazione dei messaggi quando non in linea (opzione fortemente raccomandata)",
+    "description": "Option text for allowing offline download."
+  },
+
+  "assistant.actionUnifiedInboxSearchesSent": {
+    "message": "Effettua le ricerche sia in &apos;Posta in arrivo&apos; con cartelle unificate che in &apos;Posta inviata&apos; (opzione fortemente raccomandata)",
+    "description": "Option text for adding sent to the unified inbox."
+  },
+
+  "assistant.actionSetupView": {
+    "message": "Passa alla cartella &apos;Posta in arrivo globale&apos; mostrando le discussioni, ordina per data/ora, attiva le colonne dei messaggi non letti e \"Partecipanti\" (opzione fortemente raccomandata)",
+    "description": "Option text for how the view is set."
+  },
+
+  "assistant.actionSetupViewDefaults": {
+    "message": "Utilizza un ordine personalizzato per tutte le cartelle",
+    "description": "Option text for setting the view defaults."
+  },
+
+  "assistant.actionEnsureMessagePaneVisible": {
+    "message": "Accertarsi che il pannello dei messaggi sia visibile",
+    "description": "Option text for ensuring the message pane is visible."
+  },
+
+  "assistant.settings2": {
+    "message": "È possibile attivare/disattivare le opzioni qui sopra successivamente selezionando &apos;Avvia la configurazione guidata&apos; nella finestra delle impostazioni di Thunderbird Conversations → Avanzate → Configurazione guidata",
+    "description": "Paragraph informing users of the ability to change settings later."
   }
 }

@@ -132,5 +132,95 @@
   "options.monospaced_senders_desc": {
     "message": "Sporočila s teh naslovov/dopisnih seznamov naj bodo prikazana v pisavi s stalno širino (ločite z vejicami).",
     "description": "Options - description for monospaced sender setting."
+  },
+
+  "assistant.title": {
+    "message": "Najprej zaženite pomočnika",
+    "description": "The document title of the assistant page."
+  },
+
+  "assistant.intro": {
+    "message": "Pozdravljeni! To je dodatek Thunderbird Conversations!",
+    "description": "Introduction paragraph for the assistant."
+  },
+
+  "assistant.p1": {
+    "message": "Za lažjo namestitev bo pomočnik prilagodil vaše nastavitve Thunderbirda, da zagotovi optimalno izkušnjo. Ne želimo, da se počutite nezadovoljni!",
+    "description": "First detail paragraph for the assistant."
+  },
+
+  "assistant.p2": {
+    "message": "Narejene prilagoditve se da povrniti, tako da vam ni potrebno skrbeti: če ne boste uživali v dodatku Thunderbird Conversations, bodo nastavitve povrnjene takoj, ko boste odstranili dodatek.",
+    "description": "Second detail paragraph for the assistant."
+  },
+
+  "assistant.p3": {
+    "message": "To lahko traja nekaj časa. Lahko počakate, da se to okno zapre ali pa ga zaprete sami in preverite napredek na Orodja > Upravitelj dejavnosti.",
+    "description": "Third detail paragraph for the assistant."
+  },
+
+  "assistant.working": {
+    "message": "Obdelovanje …",
+    "description": "An indication that the assistant is working."
+  },
+
+  "assistant.review": {
+    "message": "Preglej spremembe",
+    "description": "The review button title for the assistant."
+  },
+
+  "assistant.apply": {
+    "message": "Uveljavi spremembe",
+    "description": "The apply button title for the assistant."
+  },
+
+  "assistant.settings": {
+    "message": "Settings",
+    "description": "The settings section legend for the assistant."
+  },
+
+  "assistant.actionEnableGloda": {
+    "message": "Zagotovi, da je omogočeno splošno iskanje in kazalo.",
+    "description": "Option text for enabling Gloda."
+  },
+
+  "assistant.actionDontExpand": {
+    "message": "Na seznamu sporočil ne razširi niti, ki vsebujejo neprebrana sporočila.",
+    "description": "Option text for not expanding message threads."
+  },
+
+  "assistant.actionAttachmentsInline": {
+    "message": "Ne prikaži priponk v besedilu (zelo priporočeno).",
+    "description": "Option text for showing attachments inline."
+  },
+
+  "assistant.actionOfflineDownload": {
+    "message": "Mapi \"Prejeto\" in \"Poslano\" sta usklajeni za hrambo v nepovezanem načinu (zelo priporočeno).",
+    "description": "Option text for allowing offline download."
+  },
+
+  "assistant.actionUnifiedInboxSearchesSent": {
+    "message": "Iskanje v poenoteni mapi \"Prejeto\" išče tudi v mapi \"Poslano\" (zelo priporočeno).",
+    "description": "Option text for adding sent to the unified inbox."
+  },
+
+  "assistant.actionSetupView": {
+    "message": "Preklopi na splošno mapo \"Prejeto\", omogoči prikaz niti, razvrsti po datumu, omogoči stolpec za prikaz števila neprebranih sporočil in nov stolpec \"Med\" (zelo priporočeno).",
+    "description": "Option text for how the view is set."
+  },
+
+  "assistant.actionSetupViewDefaults": {
+    "message": "Uporabi nastavitve razvrščanja po meri za vse mape.",
+    "description": "Option text for setting the view defaults."
+  },
+
+  "assistant.actionEnsureMessagePaneVisible": {
+    "message": "Zagotovi, da je podokno sporočil vidno.",
+    "description": "Option text for ensuring the message pane is visible."
+  },
+
+  "assistant.settings2": {
+    "message": "Če bi morda želeli kasneje omogočiti več možnosti, lahko dostopate do tega čarovnika v nastavitvah dodatka v odseku  \"napredno\".",
+    "description": "Paragraph informing users of the ability to change settings later."
   }
 }

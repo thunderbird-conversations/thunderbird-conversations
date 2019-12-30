@@ -132,5 +132,95 @@
   "options.monospaced_senders_desc": {
     "message": "Meddelelser fra de adresser/mailinglister skal vises i monospatierede skrifttyper (separer med komma).",
     "description": "Options - description for monospaced sender setting."
+  },
+
+  "assistant.title": {
+    "message": "Første start assistent",
+    "description": "The document title of the assistant page."
+  },
+
+  "assistant.intro": {
+    "message": "Hej, dette er Thunderbird Conversations!",
+    "description": "Introduction paragraph for the assistant."
+  },
+
+  "assistant.p1": {
+    "message": "For at gøre dit liv lidt nemmere, vil denne assistent tilpasse din opsætning af Thunderbird for at sikre du vil opnå den bedste oplevelse. Vi vil ikke have at du bliver skuffet!",
+    "description": "First detail paragraph for the assistant."
+  },
+
+  "assistant.p2": {
+    "message": "Tilpasningerne vi vil lave kan alle fortrydes, så du skal ikke være urolig: hvis du ikke nyder Thunderbird Conversations, kan vi gendanne alle indstillinger vi har ændret så snart du afinstallerer denne udvidelse.",
+    "description": "Second detail paragraph for the assistant."
+  },
+
+  "assistant.p3": {
+    "message": "Dette vil tage et stykke tid. Du kan enten vente på dette vindue lukker af sig selv, eller lukke vinduet og holde øje med fremgangen ved at klikke på menuen Funktioner > Aktivitet.",
+    "description": "Third detail paragraph for the assistant."
+  },
+
+  "assistant.working": {
+    "message": "Arbejder...",
+    "description": "An indication that the assistant is working."
+  },
+
+  "assistant.review": {
+    "message": "Gennemse ændringer",
+    "description": "The review button title for the assistant."
+  },
+
+  "assistant.apply": {
+    "message": "Anvend ændringer",
+    "description": "The apply button title for the assistant."
+  },
+
+  "assistant.settings": {
+    "message": "Settings",
+    "description": "The settings section legend for the assistant."
+  },
+
+  "assistant.actionEnableGloda": {
+    "message": "Sørg for global søgning og indeksering er aktiveret.",
+    "description": "Option text for enabling Gloda."
+  },
+
+  "assistant.actionDontExpand": {
+    "message": "Udvid ikke tråde der indeholder ulæste meddelelser på meddelelseslisten.",
+    "description": "Option text for not expanding message threads."
+  },
+
+  "assistant.actionAttachmentsInline": {
+    "message": "Vis ikke vedhæftede filer i meddelelserne (anbefales kraftigt).",
+    "description": "Option text for showing attachments inline."
+  },
+
+  "assistant.actionOfflineDownload": {
+    "message": "Mapperne Indbakke og Sendte er synkroniseret til offline-lagring (anbefales kraftigt).",
+    "description": "Option text for allowing offline download."
+  },
+
+  "assistant.actionUnifiedInboxSearchesSent": {
+    "message": "Den Samlede Indbakke søger også i mappen Sendt (anbefales kraftigt).",
+    "description": "Option text for adding sent to the unified inbox."
+  },
+
+  "assistant.actionSetupView": {
+    "message": "Skift til Global Indbakke, gør visningen til trådet, sorter efter dato, aktiver kolonnen \"Ulæste i tråden\" og den nye kolonne \"Imellem\" (anbefales kraftigt).",
+    "description": "Option text for how the view is set."
+  },
+
+  "assistant.actionSetupViewDefaults": {
+    "message": "Brug disse personlige sorteringsindstillinger for alle mapper.",
+    "description": "Option text for setting the view defaults."
+  },
+
+  "assistant.actionEnsureMessagePaneVisible": {
+    "message": "Sørg for meddelelsespanelet er synligt.",
+    "description": "Option text for ensuring the message pane is visible."
+  },
+
+  "assistant.settings2": {
+    "message": "Ønsker du at aktivere flere indstillinger senere kan du altid tilgå denne assistent igennem tilføjelsens indstillingsknap under \"Avanceret\".",
+    "description": "Paragraph informing users of the ability to change settings later."
   }
 }

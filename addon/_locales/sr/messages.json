@@ -132,5 +132,95 @@
   "options.monospaced_senders_desc": {
     "message": "Поруке са ових адреса/спискова за слање требају бити приказане у фонтовима фиксне ширине (одвојеним зарезима)",
     "description": "Options - description for monospaced sender setting."
+  },
+
+  "assistant.title": {
+    "message": "First run assistant",
+    "description": "The document title of the assistant page."
+  },
+
+  "assistant.intro": {
+    "message": "Hi, this is Thunderbird Conversations!",
+    "description": "Introduction paragraph for the assistant."
+  },
+
+  "assistant.p1": {
+    "message": "In order to make your life easier, this assistant will tweak your Thunderbird setup to ensure you enjoy the optimal experience. We don't want you to feel dissatisfied!",
+    "description": "First detail paragraph for the assistant."
+  },
+
+  "assistant.p2": {
+    "message": "The tweaks we make are all reversible, so don't worry: should you not enjoy Thunderbird Conversations, we will revert any preference change we made as soon as you uninstall the extension.",
+    "description": "Second detail paragraph for the assistant."
+  },
+
+  "assistant.p3": {
+    "message": "This may take quite some time. You can either wait for this window to close, or close the window yourself, and check the progress from Tools > Activity Manager.",
+    "description": "Third detail paragraph for the assistant."
+  },
+
+  "assistant.working": {
+    "message": "Working...",
+    "description": "An indication that the assistant is working."
+  },
+
+  "assistant.review": {
+    "message": "Review changes",
+    "description": "The review button title for the assistant."
+  },
+
+  "assistant.apply": {
+    "message": "Apply changes",
+    "description": "The apply button title for the assistant."
+  },
+
+  "assistant.settings": {
+    "message": "Settings",
+    "description": "The settings section legend for the assistant."
+  },
+
+  "assistant.actionEnableGloda": {
+    "message": "Make sure Global Search and Indexer is enabled.",
+    "description": "Option text for enabling Gloda."
+  },
+
+  "assistant.actionDontExpand": {
+    "message": "In the message list, don't expand threads containing unread messages.",
+    "description": "Option text for not expanding message threads."
+  },
+
+  "assistant.actionAttachmentsInline": {
+    "message": "Don't display attachments inline (strongly recommended).",
+    "description": "Option text for showing attachments inline."
+  },
+
+  "assistant.actionOfflineDownload": {
+    "message": "Inbox and Sent are synchronized for offline storage (strongly recommended).",
+    "description": "Option text for allowing offline download."
+  },
+
+  "assistant.actionUnifiedInboxSearchesSent": {
+    "message": "The Unified Inbox also searches Sent folders (strongly recommended).",
+    "description": "Option text for adding sent to the unified inbox."
+  },
+
+  "assistant.actionSetupView": {
+    "message": "Switch to Global Inbox, make display threaded, sort by date, enable unread count column and new \"between\" column (strongly recommended).",
+    "description": "Option text for how the view is set."
+  },
+
+  "assistant.actionSetupViewDefaults": {
+    "message": "Use these custom sort settings for all folders.",
+    "description": "Option text for setting the view defaults."
+  },
+
+  "assistant.actionEnsureMessagePaneVisible": {
+    "message": "Make sure the message pane is visible.",
+    "description": "Option text for ensuring the message pane is visible."
+  },
+
+  "assistant.settings2": {
+    "message": "Should you wish to enable more options later, you can access this wizard through the addon's preferences, under the \"advanced\" section.",
+    "description": "Paragraph informing users of the ability to change settings later."
   }
 }
