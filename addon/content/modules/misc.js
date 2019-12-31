@@ -23,7 +23,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
 });
 
 let strings = new StringBundle(
-  "chrome://conversations/locale/message.properties"
+  "chrome://conversations/locale/template.properties"
 );
 
 function arrayEquals(a1, a2) {
