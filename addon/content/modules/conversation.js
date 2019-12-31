@@ -36,7 +36,7 @@ const {
 } = ChromeUtils.import(
   "chrome://conversations/content/modules/stdlib/msgHdrUtils.js"
 );
-const { MixIn, range, isOSX, isWindows } = ChromeUtils.import(
+const { range, isOSX, isWindows } = ChromeUtils.import(
   "chrome://conversations/content/modules/stdlib/misc.js"
 );
 const { MessageUtils, MessageFromGloda, MessageFromDbHdr } = ChromeUtils.import(
@@ -66,134 +66,6 @@ function tenPxFactor() {
   }
   return isWindows ? 0.7 : 0.625;
 }
-
-// The SignalManager class handles stuff related to spawing asynchronous
-//  requests and waiting for all of them to complete. Basic, but works well.
-//  Warning: sometimes yells at the developer.
-
-let SignalManagerMixIn = {
-  // Because fetching snippets is possibly asynchronous (in the case of a
-  //  MessageFromDbHdr), each message calls "signal" once it's done. After we've
-  //  seen N signals pass by, we wait for the N+1-th signal that says that nodes
-  //  have all been inserted into the DOM, and then we move on.
-  // Once more, we wait for N signals, because message loading is a
-  //  asynchronous. Once we've done what's right for each message (expand,
-  //  collapse, or do nothing), we do the final cleanup (mark as read, etc.).
-  _runOnceAfterNSignals(f, n) {
-    if ("_toRun" in this && this._toRun !== null && this._toRun !== undefined) {
-      Log.error(
-        "You failed to call signal enough times. Bad developer, bad! Go fix your code!"
-      );
-    }
-    this._toRun = [f, n + 1];
-    try {
-      this._signal();
-    } catch (e) {
-      Log.error(e);
-      dumpCallStack(e);
-    }
-  },
-
-  // This is the helper function that each of the messages is supposed to call.
-  _signal: function _Conversation_signal() {
-    // This is normal, expanding a message after the conversation has been built
-    //  will trigger a signal the first time. We can safely discard these.
-    if (!this._toRun) {
-      return;
-    }
-    let [f, n] = this._toRun;
-    n--;
-    if (n == 0) {
-      this._toRun = null;
-      f();
-    } else {
-      this._toRun = [f, n];
-    }
-  },
-};
-
-// The Oracle just decides who to expand and who to scroll into view. As this is
-//  quite obscure logic and does not really belong to the main control flow, I
-//  thought it would be better to have it in a separate class
-//
-let OracleMixIn = {
-  // Go through all the messages and determine which one is going to be focused
-  //  according to the prefs
-  _tellMeWhoToScroll(messages) {
-    // Determine which message is going to be scrolled into view
-    let needsScroll = -1;
-    if (this.scrollMode == Prefs.kScrollUnreadOrLast) {
-      needsScroll = messages.length - 1;
-      for (let i = 0; i < messages.length; ++i) {
-        if (!messages[i].message.read) {
-          needsScroll = i;
-          break;
-        }
-      }
-    } else if (this.scrollMode == Prefs.kScrollSelected) {
-      let gFolderDisplay = topMail3Pane(this).gFolderDisplay;
-      let key = msgHdrGetUri(gFolderDisplay.selectedMessage);
-      for (let i = 0; i < messages.length; ++i) {
-        if (messages[i].message._uri == key) {
-          needsScroll = i;
-          break;
-        }
-      }
-      // I can't see why we wouldn't break at some point in the loop below, but
-      //  just in case...
-      if (needsScroll < 0) {
-        Log.error("kScrollSelected && didn't find the selected message");
-        needsScroll = messages.length - 1;
-      }
-    } else {
-      Log.assert(false, "Unknown value for kScroll* constant");
-    }
-
-    return needsScroll;
-  },
-
-  // Go through all the messages and for each one of them, give the expected
-  //  action
-  _tellMeWhoToExpand(messages, reactMsgData, aNeedsFocus) {
-    switch (Prefs.expand_who) {
-      case Prefs.kExpandAuto: {
-        // In this mode, we scroll to the first unread message (or the last
-        //  message if all messages are read), and we expand all unread messages
-        //  + the last one (which will probably be unread as well).
-        if (this.scrollMode == Prefs.kScrollUnreadOrLast) {
-          this.messages.forEach(({ message }, i) => {
-            reactMsgData[i].expanded =
-              !message.read || i == this.messages.length - 1;
-          });
-          // In this mode, we scroll to the selected message, and we only expand
-          //  the selected message.
-        } else if (this.scrollMode == Prefs.kScrollSelected) {
-          this.messages.forEach(({ message }, i) => {
-            reactMsgData[i].expanded = i == aNeedsFocus;
-          });
-        } else {
-          Log.assert(false, "Unknown value for pref scroll_who");
-        }
-        break;
-      }
-      case Prefs.kExpandAll: {
-        for (const msgData of reactMsgData) {
-          msgData.expanded = true;
-        }
-        break;
-      }
-      case Prefs.kExpandNone: {
-        for (const msgData of reactMsgData) {
-          msgData.expanded = false;
-        }
-        break;
-      }
-      default: {
-        Log.assert(false, "Unknown value for pref expand_who");
-      }
-    }
-  },
-};
 
 // -- Some helpers for our message type
 
@@ -247,7 +119,7 @@ function msgDebugColor(aMsg) {
   return Colors.red;
 }
 
-function messageFromGlodaIfOffline(aSelf, aGlodaMsg, aDebug) {
+async function messageFromGlodaIfOffline(aSelf, aGlodaMsg, aDebug) {
   let aMsgHdr = aGlodaMsg.folderMessage;
   let needsLateAttachments =
     (!(aMsgHdr.folder instanceof Ci.nsIMsgLocalMailFolder) &&
@@ -255,19 +127,23 @@ function messageFromGlodaIfOffline(aSelf, aGlodaMsg, aDebug) {
     aGlodaMsg.isEncrypted || // encrypted message
     (aGlodaMsg.contentType + "").search(/^multipart\/encrypted(;|$)/i) == 0 || // encrypted message
     Prefs.extra_attachments; // user request
+  const message = new MessageFromGloda(aSelf, aGlodaMsg, needsLateAttachments);
+  await message.init();
   return {
     type: kMsgGloda,
-    message: new MessageFromGloda(aSelf, aGlodaMsg, needsLateAttachments), // will fire signal when done
+    message,
     glodaMsg: aGlodaMsg,
     msgHdr: null,
     debug: aDebug,
   };
 }
 
-function messageFromDbHdr(aSelf, aMsgHdr, aDebug) {
+async function messageFromDbHdr(aSelf, aMsgHdr, aDebug) {
+  const message = new MessageFromDbHdr(aSelf, aMsgHdr);
+  await message.init();
   return {
     type: kMsgDbHdr,
-    message: new MessageFromDbHdr(aSelf, aMsgHdr), // will run signal
+    message,
     msgHdr: aMsgHdr,
     glodaMsg: null,
     debug: aDebug,
@@ -524,16 +400,16 @@ Conversation.prototype = {
     Gloda.getMessageCollectionForHeaders(
       self._initialSet,
       {
-        onItemsAdded(aItems) {
+        async onItemsAdded(aItems) {
           if (!aItems.length) {
             Log.warn("Warning: gloda query returned no messages");
-            self._getReady(self._initialSet.length + 1);
             // M = msgHdr, I = Initial, NG = there was no gloda query
             // will run signal
-            self.messages = self._initialSet.map(msgHdr =>
+            const messagePromises = self._initialSet.map(msgHdr =>
               messageFromDbHdr(self, msgHdr, "MI+NG")
             );
-            self._signal();
+            self.messages = await Promise.all(messagePromises);
+            self._whenReady();
           } else {
             self._intermediateResults = aItems;
             self._query = aItems[0].conversation.getMessagesCollection(
@@ -701,7 +577,7 @@ Conversation.prototype = {
     // That's XPConnect bug 547088, so remove the setTimeout when it's fixed and
     //  bump the version requirements in install.rdf.template (might be fixed in
     //  time for Gecko 42, if we're lucky)
-    Services.tm.dispatchToMainThread(() => {
+    Services.tm.dispatchToMainThread(async () => {
       try {
         // The MessageFromGloda constructor cannot work with gloda messages that
         //  don't have a message header
@@ -726,24 +602,17 @@ Conversation.prototype = {
         this._intermediateResults = this._intermediateResults.filter(
           glodaMsg => glodaMsg.folderMessage
         );
-        // When the right number of signals has been fired, move on...
-        this._getReady(
-          aCollection.items.length +
-            this._intermediateResults.length +
-            this._initialSet.length +
-            1
-        );
         // We want at least all messages from the Gloda collection + all
         //  messages from the intermediate set (see rationale in the
         //  initialization of this._intermediateResults).
         // will fire signal when done
-        this.messages = aCollection.items.map(glodaMsg =>
+        let msgPromises = aCollection.items.map(glodaMsg =>
           messageFromGlodaIfOffline(this, glodaMsg, "GF")
         );
         let intermediateSet = this._intermediateResults
           .filter(glodaMsg => glodaMsg.folderMessage)
           .map(glodaMsg => messageFromGlodaIfOffline(this, glodaMsg, "GM"));
-        this.messages = this.messages.concat(intermediateSet);
+        this.messages = await Promise.all([...msgPromises, ...intermediateSet]);
         // Here's the message IDs we know
         let messageIds = {};
         for (let m of this.messages) {
@@ -760,10 +629,7 @@ Conversation.prototype = {
           //  represents the sent message has been replaced in the meanwhile
           //  with the real header...
           if (!(msgHdr.messageId in messageIds)) {
-            // Will call signal when done.
-            this.messages.push(messageFromDbHdr(this, msgHdr, "MI+G"));
-          } else {
-            this._signal();
+            this.messages.push(await messageFromDbHdr(this, msgHdr, "MI+G"));
           }
         }
         // Sort all the messages according to the date so that they are inserted
@@ -772,8 +638,7 @@ Conversation.prototype = {
         // We can sort now because we don't need the Message instance to be
         // fully created to get the date of a message.
         this.messages.sort(compare);
-        // Move on! (Actually, will move on when all messages are ready)
-        this._signal();
+        this._whenReady();
       } catch (e) {
         Log.error(e);
         dumpCallStack(e);
@@ -783,11 +648,9 @@ Conversation.prototype = {
 
   // This is the function that waits for everyone to be ready (that was a useful
   //  comment)
-  _getReady: function _Conversation_getReady(n) {
-    this._runOnceAfterNSignals(() => {
-      this._filterOutDuplicates();
-      this._outputMessages();
-    }, n);
+  _whenReady(n) {
+    this._filterOutDuplicates();
+    this._outputMessages();
   },
 
   // This is a core function. It decides which messages to keep and which
@@ -1130,7 +993,81 @@ Conversation.prototype = {
     Log.debug("The HTML: ---------\n", html, "\n\n");
     return html;
   },
-};
 
-MixIn(Conversation, SignalManagerMixIn);
-MixIn(Conversation, OracleMixIn);
+  // Go through all the messages and determine which one is going to be focused
+  //  according to the prefs
+  _tellMeWhoToScroll(messages) {
+    // Determine which message is going to be scrolled into view
+    let needsScroll = -1;
+    if (this.scrollMode == Prefs.kScrollUnreadOrLast) {
+      needsScroll = messages.length - 1;
+      for (let i = 0; i < messages.length; ++i) {
+        if (!messages[i].message.read) {
+          needsScroll = i;
+          break;
+        }
+      }
+    } else if (this.scrollMode == Prefs.kScrollSelected) {
+      let gFolderDisplay = topMail3Pane(this).gFolderDisplay;
+      let key = msgHdrGetUri(gFolderDisplay.selectedMessage);
+      for (let i = 0; i < messages.length; ++i) {
+        if (messages[i].message._uri == key) {
+          needsScroll = i;
+          break;
+        }
+      }
+      // I can't see why we wouldn't break at some point in the loop below, but
+      //  just in case...
+      if (needsScroll < 0) {
+        Log.error("kScrollSelected && didn't find the selected message");
+        needsScroll = messages.length - 1;
+      }
+    } else {
+      Log.assert(false, "Unknown value for kScroll* constant");
+    }
+
+    return needsScroll;
+  },
+
+  // Go through all the messages and for each one of them, give the expected
+  //  action
+  _tellMeWhoToExpand(messages, reactMsgData, aNeedsFocus) {
+    switch (Prefs.expand_who) {
+      case Prefs.kExpandAuto: {
+        // In this mode, we scroll to the first unread message (or the last
+        //  message if all messages are read), and we expand all unread messages
+        //  + the last one (which will probably be unread as well).
+        if (this.scrollMode == Prefs.kScrollUnreadOrLast) {
+          this.messages.forEach(({ message }, i) => {
+            reactMsgData[i].expanded =
+              !message.read || i == this.messages.length - 1;
+          });
+          // In this mode, we scroll to the selected message, and we only expand
+          //  the selected message.
+        } else if (this.scrollMode == Prefs.kScrollSelected) {
+          this.messages.forEach(({ message }, i) => {
+            reactMsgData[i].expanded = i == aNeedsFocus;
+          });
+        } else {
+          Log.assert(false, "Unknown value for pref scroll_who");
+        }
+        break;
+      }
+      case Prefs.kExpandAll: {
+        for (const msgData of reactMsgData) {
+          msgData.expanded = true;
+        }
+        break;
+      }
+      case Prefs.kExpandNone: {
+        for (const msgData of reactMsgData) {
+          msgData.expanded = false;
+        }
+        break;
+      }
+      default: {
+        Log.assert(false, "Unknown value for pref expand_who");
+      }
+    }
+  },
+};
