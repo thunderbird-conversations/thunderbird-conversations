@@ -19,7 +19,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   getMail3Pane: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   fixIterator: "resource:///modules/iteratorUtils.jsm",
   MailUtils: "resource:///modules/MailUtils.jsm",
-  MixIn: "chrome://conversations/content/modules/stdlib/misc.js",
   Prefs: "chrome://conversations/content/modules/prefs.js",
   Services: "resource://gre/modules/Services.jsm",
   VirtualFolderHelper: "resource:///modules/virtualFolderWrapper.js",
@@ -47,34 +46,38 @@ function getSmartFolderNamed(aFolderName) {
   return smartInbox;
 }
 
-function SimpleCustomization(aDesiredValue, aGetter, aSetter) {
-  this.desiredValue = aDesiredValue;
-  this.get = aGetter;
-  this.set = aSetter;
-}
+class SimpleCustomization {
+  constructor(aDesiredValue, aGetter, aSetter) {
+    this.desiredValue = aDesiredValue;
+    if (aGetter) {
+      this.get = aGetter;
+    }
+    if (aSetter) {
+      this.set = aSetter;
+    }
+  }
 
-SimpleCustomization.prototype = {
   install() {
     let oldValue = this.get();
     this.set(this.desiredValue);
     return oldValue;
-  },
+  }
 
   uninstall(oldValue) {
     let newValue = this.get();
     if (newValue == this.desiredValue) {
       this.set(oldValue);
     }
-  },
-};
-
-function PrefCustomization({ name, type, value }) {
-  this.type = type;
-  this.name = name;
-  this.desiredValue = value;
+  }
 }
 
-PrefCustomization.prototype = {
+class PrefCustomization extends SimpleCustomization {
+  constructor({ name, type, value }) {
+    super(value);
+    this.type = type;
+    this.name = name;
+  }
+
   get() {
     switch (this.type) {
       case kPrefInt:
@@ -86,7 +89,7 @@ PrefCustomization.prototype = {
       default:
         throw new Error(`Unexpected type ${this.type}`);
     }
-  },
+  }
 
   set(aValue) {
     switch (this.type) {
@@ -100,28 +103,26 @@ PrefCustomization.prototype = {
         Prefs.setBool(this.name, aValue);
         break;
     }
-  },
-};
-
-MixIn(PrefCustomization, SimpleCustomization.prototype);
-
-function MultipleCustomization(aParams) {
-  this.customizations = aParams
-    ? aParams.map(p => new PrefCustomization(p))
-    : [];
+  }
 }
 
-MultipleCustomization.prototype = {
+class MultipleCustomization {
+  constructor(aParams) {
+    this.customizations = aParams
+      ? aParams.map(p => new PrefCustomization(p))
+      : [];
+  }
+
   install() {
     return this.customizations.map(c => c.install());
-  },
+  }
 
   uninstall(uninstallInfos) {
     this.customizations.forEach(function(x, i) {
       x.uninstall(uninstallInfos[i]);
     });
-  },
-};
+  }
+}
 
 // let eid = getMail3Pane().document.getElementById;
 //

@@ -24,12 +24,9 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   StringBundle: "resource:///modules/StringBundle.js",
 });
 
-const {
-  getIdentities,
-  getIdentityForEmail,
-  MixIn,
-  sanitize,
-} = ChromeUtils.import("chrome://conversations/content/modules/stdlib/misc.js");
+const { getIdentities, getIdentityForEmail, sanitize } = ChromeUtils.import(
+  "chrome://conversations/content/modules/stdlib/misc.js"
+);
 
 var Contacts = {
   kFrom: 0,
@@ -220,72 +217,6 @@ ContactManager.prototype = {
   },
 };
 
-let ContactMixIn = {
-  /**
-   * The aEmail parameter is here because the same contact object is shared for
-   * all instances of a contact, even though the original email address is
-   * different. This allows one to share a common color for a same card in the
-   * address book.
-   */
-  toTmplData(aUseColor, aPosition, aEmail, aIsDetail) {
-    let [name, extra] = this.getName(aPosition, aIsDetail);
-    let displayEmail = name != aEmail ? aEmail : "";
-    let hasCard = this._card != null;
-    let skipEmail =
-      !aIsDetail && hasCard && Prefs.getBool("mail.showCondensedAddresses");
-    let tooltipName = this.getTooltipName(aPosition);
-    let data = {
-      showMonospace: aPosition == Contacts.kFrom,
-      name: sanitize(name),
-      initials: getInitials(sanitize(name)),
-      displayEmail: sanitize(skipEmail ? "" : displayEmail),
-      tooltipName: sanitize(tooltipName != aEmail ? tooltipName : ""),
-      email: sanitize(aEmail),
-      avatar: sanitize(this.avatar),
-      avatarIsDefault: this.avatar.substr(0, 6) === "chrome",
-      hasCard,
-      extra,
-      // Parameter aUseColor is optional, and undefined means true
-      colorStyle: aUseColor === false ? {} : { backgroundColor: this.color },
-    };
-    return data;
-  },
-
-  getTooltipName(aPosition) {
-    Log.assert(
-      aPosition === Contacts.kFrom || aPosition === Contacts.kTo,
-      "Someone did not set the 'position' properly"
-    );
-    if (getIdentityForEmail(this._email)) {
-      return strings.get("meFromMeToSomeone");
-    }
-
-    return this._name || this._email;
-  },
-
-  getName(aPosition, aIsDetail) {
-    Log.assert(
-      aPosition === Contacts.kFrom || aPosition === Contacts.kTo,
-      "Someone did not set the 'position' properly"
-    );
-    if (getIdentityForEmail(this._email) && !aIsDetail) {
-      let display =
-        aPosition === Contacts.kFrom
-          ? strings.get("meFromMeToSomeone")
-          : strings.get("meFromSomeoneToMe");
-      return [display, getIdentities().length > 1 ? this._email : ""];
-    }
-
-    return [this._name || this._email, ""];
-  },
-
-  enrichWithName(aName) {
-    if (this._name == this._email || !this._name) {
-      this._name = aName;
-    }
-  },
-};
-
 function freshColor(email) {
   let hash = 0;
   for (let i = 0; i < email.length; i++) {
@@ -356,6 +287,68 @@ ContactFromAB.prototype = {
     }
     return defaultPhotoURI;
   },
-};
 
-MixIn(ContactFromAB, ContactMixIn);
+  /**
+   * The aEmail parameter is here because the same contact object is shared for
+   * all instances of a contact, even though the original email address is
+   * different. This allows one to share a common color for a same card in the
+   * address book.
+   */
+  toTmplData(aUseColor, aPosition, aEmail, aIsDetail) {
+    let [name, extra] = this.getName(aPosition, aIsDetail);
+    let displayEmail = name != aEmail ? aEmail : "";
+    let hasCard = this._card != null;
+    let skipEmail =
+      !aIsDetail && hasCard && Prefs.getBool("mail.showCondensedAddresses");
+    let tooltipName = this.getTooltipName(aPosition);
+    let data = {
+      showMonospace: aPosition == Contacts.kFrom,
+      name: sanitize(name),
+      initials: getInitials(sanitize(name)),
+      displayEmail: sanitize(skipEmail ? "" : displayEmail),
+      tooltipName: sanitize(tooltipName != aEmail ? tooltipName : ""),
+      email: sanitize(aEmail),
+      avatar: sanitize(this.avatar),
+      avatarIsDefault: this.avatar.substr(0, 6) === "chrome",
+      hasCard,
+      extra,
+      // Parameter aUseColor is optional, and undefined means true
+      colorStyle: aUseColor === false ? {} : { backgroundColor: this.color },
+    };
+    return data;
+  },
+
+  getTooltipName(aPosition) {
+    Log.assert(
+      aPosition === Contacts.kFrom || aPosition === Contacts.kTo,
+      "Someone did not set the 'position' properly"
+    );
+    if (getIdentityForEmail(this._email)) {
+      return strings.get("meFromMeToSomeone");
+    }
+
+    return this._name || this._email;
+  },
+
+  getName(aPosition, aIsDetail) {
+    Log.assert(
+      aPosition === Contacts.kFrom || aPosition === Contacts.kTo,
+      "Someone did not set the 'position' properly"
+    );
+    if (getIdentityForEmail(this._email) && !aIsDetail) {
+      let display =
+        aPosition === Contacts.kFrom
+          ? strings.get("meFromMeToSomeone")
+          : strings.get("meFromSomeoneToMe");
+      return [display, getIdentities().length > 1 ? this._email : ""];
+    }
+
+    return [this._name || this._email, ""];
+  },
+
+  enrichWithName(aName) {
+    if (this._name == this._email || !this._name) {
+      this._name = aName;
+    }
+  },
+};
