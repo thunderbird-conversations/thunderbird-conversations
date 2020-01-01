@@ -11,7 +11,7 @@ body {
 }
 
 #wrapper {
-  background-image: url("../content/assistant/feature-background.jpg");
+  background-image: url("feature-background.jpg");
   background-position: center top;
   background-repeat: no-repeat;
 }
@@ -78,7 +78,7 @@ body {
 }
 
 #footer {
-  background: url("../content/assistant/tile.jpg") repeat-x scroll center top #394345;
+  background: url("tile.jpg") repeat-x scroll center top #394345;
   clear: both;
   color: #EEEEEE;
   min-height: 34px;
