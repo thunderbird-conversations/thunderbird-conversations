@@ -19,7 +19,12 @@ var { msgHdrsArchive, msgHdrIsArchive, msgHdrGetUri } = ChromeUtils.import(
 var { sendMessage } = ChromeUtils.import(
   "chrome://conversations/content/modules/stdlib/send.js"
 );
-var { composeInIframe, htmlToPlainText, replyAllParams } = ChromeUtils.import(
+var {
+  composeInIframe,
+  htmlToPlainText,
+  replyAllParams,
+  parse,
+} = ChromeUtils.import(
   "chrome://conversations/content/modules/stdlib/compose.js"
 );
 var { getHooks } = ChromeUtils.import(
@@ -1073,23 +1078,6 @@ function quickReplyDrop(event) {
   if (data) {
     gComposeSession.attachmentList.addWithData(data);
   }
-}
-
-// ----- Helpers
-
-// Just get the email and/or name from a MIME-style "John Doe <john@blah.com>"
-//  line.
-function parse(aMimeLine) {
-  let emails = {};
-  let fullNames = {};
-  let names = {};
-  MailServices.headerParser.parseHeadersWithArray(
-    aMimeLine,
-    emails,
-    names,
-    fullNames
-  );
-  return [names.value, emails.value];
 }
 
 // ----- Listeners.
