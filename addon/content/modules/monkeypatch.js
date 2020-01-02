@@ -89,18 +89,18 @@ MonkeyPatch.prototype = {
       .setAttribute("context", "mailContext");
 
     // 2) View > Conversation View
-    let menuitem = window.document.createXULElement("menuitem");
-    [
-      ["type", "checkbox"],
-      ["id", "menuConversationsEnabled"],
-      ["label", strings.get("menuConversationsEnabled")],
-    ].forEach(function([k, v]) {
-      menuitem.setAttribute(k, v);
-    });
-    let after = window.document.getElementById("viewMessagesMenu");
-    let parent1 = window.document.getElementById("menu_View_Popup");
-    parent1.insertBefore(menuitem, after.nextElementSibling);
-    this.pushUndo(() => parent1.removeChild(menuitem));
+    // let menuitem = window.document.createXULElement("menuitem");
+    // [
+    //   ["type", "checkbox"],
+    //   ["id", "menuConversationsEnabled"],
+    //   ["label", strings.get("menuConversationsEnabled")],
+    // ].forEach(function([k, v]) {
+    //   menuitem.setAttribute(k, v);
+    // });
+    // let after = window.document.getElementById("viewMessagesMenu");
+    // let parent1 = window.document.getElementById("menu_View_Popup");
+    // parent1.insertBefore(menuitem, after.nextElementSibling);
+    // this.pushUndo(() => parent1.removeChild(menuitem));
 
     // 3) Keyboard shortcut
     let key = window.document.createXULElement("key");
@@ -391,7 +391,7 @@ MonkeyPatch.prototype = {
     this.registerColumn();
     this.registerFontPrefObserver(htmlpane);
 
-    this.activateMenuItem(window);
+    // this.activateMenuItem(window);
 
     // Undo all our customizations at uninstall-time
     this.registerUndoCustomizations();
