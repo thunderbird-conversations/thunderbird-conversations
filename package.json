@@ -6,7 +6,6 @@
     "type": "git",
     "url": "git@github.com:protz/thunderbird-conversations.git"
   },
-  "browserslist": "Firefox > 68",
   "bugs": {
     "url": "https://github.com/protz/thunderbird-conversations/issues"
   },
