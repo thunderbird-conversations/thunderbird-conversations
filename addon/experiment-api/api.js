@@ -12,7 +12,9 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   setupLogging: "chrome://conversations/content/modules/log.js",
 });
 
-let Log = setupLogging("Conversations.AssistantUI");
+// Note: we must not use any modules until after initialization of prefs,
+// otherwise the prefs might not get loaded correctly.
+let Log = null;
 
 function prefType(name) {
   switch (name) {
@@ -46,32 +48,23 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
     return {
       conversations: {
         async setPref(name, value) {
-          switch (prefType(name)) {
-            case "bool": {
-              Services.prefs.setBoolPref(`conversations.${name}`, value);
-              break;
-            }
-            case "int": {
-              Services.prefs.setIntPref(`conversations.${name}`, value);
-              break;
-            }
-            case "char": {
-              Services.prefs.setCharPref(`conversations.${name}`, value);
-              break;
-            }
-          }
+          Prefs[name] = value;
         },
         async getPref(name) {
-          switch (prefType(name)) {
-            case "bool": {
-              return Services.prefs.getBoolPref(`conversations.${name}`);
+          try {
+            switch (prefType(name)) {
+              case "bool": {
+                return Services.prefs.getBoolPref(`conversations.${name}`);
+              }
+              case "int": {
+                return Services.prefs.getIntPref(`conversations.${name}`);
+              }
+              case "char": {
+                return Services.prefs.getCharPref(`conversations.${name}`);
+              }
             }
-            case "int": {
-              return Services.prefs.getIntPref(`conversations.${name}`);
-            }
-            case "char": {
-              return Services.prefs.getCharPref(`conversations.${name}`, "");
-            }
+          } catch (ex) {
+            return undefined;
           }
           throw new Error("Unexpected pref type");
         },
@@ -79,6 +72,9 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           let uninstallInfos = JSON.parse(
             Prefs.getString("conversations.uninstall_infos")
           );
+          if (!Log) {
+            Log = setupLogging("Conversations.AssistantUI");
+          }
           for (const id of ids) {
             if (!(id in Customizations)) {
               Log.error("Couldn't find a suitable customization for", id);

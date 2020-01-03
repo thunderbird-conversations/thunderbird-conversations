@@ -15,6 +15,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   GlodaAttrProviders:
     "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
   MonkeyPatch: "chrome://conversations/content/modules/monkeypatch.js",
+  Prefs: "chrome://conversations/content/modules/prefs.js",
   Services: "resource://gre/modules/Services.jsm",
 });
 
@@ -132,7 +133,9 @@ let windowObserver = {
   },
 };
 
-function startup(aData, aReason) {
+async function startup(aData, aReason) {
+  await Prefs.initialized;
+
   const { setupLogging, dumpCallStack } = ChromeUtils.import(
     "chrome://conversations/content/modules/log.js"
   );
