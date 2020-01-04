@@ -19,7 +19,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   getMail3Pane: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   fixIterator: "resource:///modules/iteratorUtils.jsm",
   MailUtils: "resource:///modules/MailUtils.jsm",
-  Prefs: "chrome://conversations/content/modules/prefs.js",
   Services: "resource://gre/modules/Services.jsm",
   VirtualFolderHelper: "resource:///modules/virtualFolderWrapper.js",
 });
@@ -81,11 +80,11 @@ class PrefCustomization extends SimpleCustomization {
   get() {
     switch (this.type) {
       case kPrefInt:
-        return Prefs.getInt(this.name);
+        return Services.prefs.getIntPref(this.name);
       case kPrefChar:
-        return Prefs.getChar(this.name);
+        return Services.prefs.getCharPref(this.name);
       case kPrefBool:
-        return Prefs.getBool(this.name);
+        return Services.prefs.getBoolPref(this.name);
       default:
         throw new Error(`Unexpected type ${this.type}`);
     }
@@ -94,13 +93,13 @@ class PrefCustomization extends SimpleCustomization {
   set(aValue) {
     switch (this.type) {
       case kPrefInt:
-        Prefs.setInt(this.name, aValue);
+        Services.prefs.setIntPref(this.name, aValue);
         break;
       case kPrefChar:
-        Prefs.setChar(this.name, aValue);
+        Services.prefs.setCharPref(this.name, aValue);
         break;
       case kPrefBool:
-        Prefs.setBool(this.name, aValue);
+        Services.prefs.setBoolPref(this.name, aValue);
         break;
     }
   }

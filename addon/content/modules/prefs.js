@@ -1,7 +1,5 @@
 var EXPORTED_SYMBOLS = ["Prefs"];
 
-const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
-
 /**
  * Preference manager has various values saved on it by the background script,
  * prefs.js, on startup (via the api). These are currently saved here to make
@@ -31,38 +29,6 @@ class PrefManager {
     if (value) {
       this.notifyStartupComplete();
     }
-  }
-
-  getChar(p) {
-    return Services.prefs.getCharPref(p);
-  }
-
-  getInt(p) {
-    return Services.prefs.getIntPref(p);
-  }
-
-  getBool(p) {
-    return Services.prefs.getBoolPref(p);
-  }
-
-  getString(p) {
-    return Services.prefs.getStringPref(p);
-  }
-
-  setChar(p, v) {
-    return Services.prefs.setCharPref(p, v);
-  }
-
-  setInt(p, v) {
-    return Services.prefs.setIntPref(p, v);
-  }
-
-  setBool(p, v) {
-    return Services.prefs.setBoolPref(p, v);
-  }
-
-  setString(p, v) {
-    return Services.prefs.setStringPref(p, v);
   }
 
   get kStubUrl() {

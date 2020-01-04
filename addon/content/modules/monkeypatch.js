@@ -344,9 +344,7 @@ MonkeyPatch.prototype = {
   },
 
   undoCustomizations() {
-    let uninstallInfos = JSON.parse(
-      Prefs.getString("conversations.uninstall_infos")
-    );
+    let uninstallInfos = JSON.parse(Prefs.uninstall_infos);
     for (let [k, v] of entries(Customizations)) {
       if (k in uninstallInfos) {
         try {
@@ -358,25 +356,28 @@ MonkeyPatch.prototype = {
         }
       }
     }
-    Prefs.setString("conversations.uninstall_infos", "{}");
+    // TODO: We may need to fix this to pass data back to local storage, but
+    // generally if we're being uninstalled, we'll be removing the local storage
+    // anyway, so maybe this is ok? Or do we need to handle the disable case?
+    // Prefs.setString("conversations.uninstall_infos", "{}");
   },
 
-  activateMenuItem(window) {
-    let menuItem = window.document.getElementById("menuConversationsEnabled");
-    menuItem.setAttribute("checked", Prefs.enabled);
-    Prefs.watch(function(aPrefName, aPrefValue) {
-      if (aPrefName == "enabled") {
-        menuItem.setAttribute("checked", aPrefValue);
-      }
-    });
-    menuItem.addEventListener("command", function(event) {
-      let checked =
-        menuItem.hasAttribute("checked") &&
-        menuItem.getAttribute("checked") == "true";
-      Prefs.setBool("conversations.enabled", checked);
-      window.gMessageDisplay.onSelectedMessagesChanged();
-    });
-  },
+  // activateMenuItem(window) {
+  //   let menuItem = window.document.getElementById("menuConversationsEnabled");
+  //   menuItem.setAttribute("checked", Prefs.enabled);
+  //   Prefs.watch(function(aPrefName, aPrefValue) {
+  //     if (aPrefName == "enabled") {
+  //       menuItem.setAttribute("checked", aPrefValue);
+  //     }
+  //   });
+  //   menuItem.addEventListener("command", function(event) {
+  //     let checked =
+  //       menuItem.hasAttribute("checked") &&
+  //       menuItem.getAttribute("checked") == "true";
+  //     Prefs.setBool("conversations.enabled", checked);
+  //     window.gMessageDisplay.onSelectedMessagesChanged();
+  //   });
+  // },
 
   apply() {
     let window = this._window;
@@ -653,7 +654,7 @@ MonkeyPatch.prototype = {
             Services.obs.notifyObservers(null, "Conversations", "Displayed");
 
             // Make sure we respect the user's preferences.
-            if (Prefs.getBool("mailnews.mark_message_read.auto")) {
+            if (Services.prefs.getBoolPref("mailnews.mark_message_read.auto")) {
               self.markReadTimeout = window.setTimeout(function() {
                 // The idea is that usually, we're selecting a thread (so we
                 //  have kScrollUnreadOrLast). This means we mark the whole
@@ -685,8 +686,10 @@ MonkeyPatch.prototype = {
                   Log.assert(false, "GIVE ME ALGEBRAIC DATA TYPES!!!");
                 }
                 self.markReadTimeout = null;
-              }, Prefs.getInt("mailnews.mark_message_read.delay.interval") *
-                Prefs.getBool("mailnews.mark_message_read.delay") *
+              }, Services.prefs.getIntPref(
+                "mailnews.mark_message_read.delay.interval"
+              ) *
+                Services.prefs.getBoolPref("mailnews.mark_message_read.delay") *
                 1000);
             }
           });
@@ -748,12 +751,14 @@ MonkeyPatch.prototype = {
           // asked for the old message reader, we give up as well.
           if (msgHdrIsRss(msgHdr) || msgHdrIsNntp(msgHdr)) {
             // Use the default pref.
-            if (Prefs.getBool("mailnews.mark_message_read.auto")) {
+            if (Services.prefs.getBoolPref("mailnews.mark_message_read.auto")) {
               self.markReadTimeout = window.setTimeout(function() {
                 msgHdrsMarkAsRead([msgHdr], true);
                 self.markReadTimeout = null;
-              }, Prefs.getInt("mailnews.mark_message_read.delay.interval") *
-                Prefs.getBool("mailnews.mark_message_read.delay") *
+              }, Services.prefs.getIntPref(
+                "mailnews.mark_message_read.delay.interval"
+              ) *
+                Services.prefs.getBoolPref("mailnews.mark_message_read.delay") *
                 1000);
             }
             this.singleMessageDisplay = true;

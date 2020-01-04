@@ -20,6 +20,7 @@ const { XPCOMUtils } = ChromeUtils.import(
 XPCOMUtils.defineLazyModuleGetters(this, {
   getMail3Pane: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   Prefs: "chrome://conversations/content/modules/prefs.js",
+  Services: "resource://gre/modules/Services.jsm",
   StringBundle: "resource:///modules/StringBundle.js",
 });
 
@@ -199,7 +200,7 @@ function openConversationInTabOrWindow(urls, scrollMode) {
   let window = getMail3Pane();
   // Counting some extra pixels for window decorations.
   let height = Math.min(window.screen.availHeight - 30, 1024);
-  switch (Prefs.getInt("mail.openMessageBehavior")) {
+  switch (Services.prefs.getIntPref("mail.openMessageBehavior")) {
     case 0:
       window.open(url, "_blank", "chrome,resizable,width=640,height=" + height);
       break;

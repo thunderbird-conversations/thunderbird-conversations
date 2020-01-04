@@ -69,9 +69,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           throw new Error("Unexpected pref type");
         },
         async installCustomisations(ids) {
-          let uninstallInfos = JSON.parse(
-            Prefs.getString("conversations.uninstall_infos")
-          );
+          let uninstallInfos = JSON.parse(Prefs.uninstall_infos);
           if (!Log) {
             Log = setupLogging("Conversations.AssistantUI");
           }
@@ -91,13 +89,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             }
           }
 
-          if (Prefs.getString("conversations.uninstall_infos") == "{}") {
-            let str = JSON.stringify(uninstallInfos);
-            Log.debug("Saving JSON uninstall information", str);
-            Prefs.setString("conversations.uninstall_infos", str);
-          } else {
-            Log.warn("Uninstall information already there, not overwriting...");
-          }
+          return JSON.stringify(uninstallInfos);
         },
       },
     };

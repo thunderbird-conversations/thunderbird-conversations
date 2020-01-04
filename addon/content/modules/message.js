@@ -213,12 +213,7 @@ class _MessageUtils {
   }
 
   forward(win, msgUri, shiftKey = false) {
-    let forwardType = 0;
-    try {
-      forwardType = Prefs.getInt("mail.forward_message_mode");
-    } catch (e) {
-      Log.error("Unable to fetch preferred forward mode\n");
-    }
+    let forwardType = Services.prefs.getIntPref("mail.forward_message_mode", 0);
     if (forwardType == 0) {
       this._compose(
         win,
@@ -638,9 +633,9 @@ class Message {
     //   let senders = Object.keys(Prefs.monospaced_senders);
     //   senders = senders.filter(x => x != realFrom);
     //   if (event.target.checked) {
-    //     Prefs.setChar("conversations.monospaced_senders", senders.concat([realFrom]).join(","));
+    //     Servies.prefs.setCharPref("conversations.monospaced_senders", senders.concat([realFrom]).join(","));
     //   } else {
-    //     Prefs.setChar("conversations.monospaced_senders", senders.join(","));
+    //     Services.prefs.setCharPref("conversations.monospaced_senders", senders.join(","));
     //   }
     //   self._reloadMessage();
     //   event.stopPropagation();
@@ -763,7 +758,7 @@ class Message {
   }
 
   _checkForPhishing(iframe) {
-    if (!Prefs.getBool("mail.phishing.detection.enabled")) {
+    if (!Services.prefs.getBoolPref("mail.phishing.detection.enabled")) {
       return;
     }
 
@@ -809,7 +804,9 @@ class Message {
       }
     }
     if (
-      Prefs.getBool("mail.phishing.detection.disallow_form_actions") &&
+      Services.prefs.getBoolPref(
+        "mail.phishing.detection.disallow_form_actions"
+      ) &&
       formNodes.length
     ) {
       this.isPhishing = true;

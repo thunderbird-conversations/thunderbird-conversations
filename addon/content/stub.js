@@ -159,11 +159,13 @@ document.addEventListener(
             document.body.classList.add("inTab");
             // Do this now so as to not defeat the whole expand/collapse
             // logic.
-            if (Prefs.getBool("mailnews.mark_message_read.auto")) {
+            if (Services.prefs.getBoolPref("mailnews.mark_message_read.auto")) {
               setTimeout(function() {
                 msgHdrsMarkAsRead(msgHdrs, true);
-              }, Prefs.getInt("mailnews.mark_message_read.delay.interval") *
-                Prefs.getBool("mailnews.mark_message_read.delay") *
+              }, Services.prefs.getIntPref(
+                "mailnews.mark_message_read.delay.interval"
+              ) *
+                Services.prefs.getBoolPref("mailnews.mark_message_read.delay") *
                 1000);
             }
           });

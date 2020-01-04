@@ -356,7 +356,7 @@ function getActiveEditor() {
 function createComposeSession(what) {
   // Do that now so that it doesn't have to be implemented by each compose
   // session type.
-  if (Prefs.getBool("mail.spellcheck.inline")) {
+  if (Services.prefs.getBoolPref("mail.spellcheck.inline")) {
     for (let elt of document.getElementsByTagName("textarea")) {
       elt.setAttribute("spellcheck", true);
     }
@@ -750,7 +750,7 @@ ComposeSession.prototype = {
     let deliverMode;
     if (Services.io.offline) {
       deliverMode = Ci.nsIMsgCompDeliverMode.Later;
-    } else if (Prefs.getBool("mailnews.sendInBackground")) {
+    } else if (Services.prefs.getBoolPref("mailnews.sendInBackground")) {
       deliverMode = Ci.nsIMsgCompDeliverMode.Background;
     } else {
       deliverMode = Ci.nsIMsgCompDeliverMode.Now;
@@ -1385,6 +1385,7 @@ function masqueradeAsQuickCompose() {
       node.find(".popularRemove").click(function() {
         Log.debug("Removing", data.name, data.email);
         // Mark it in the prefs
+        // TODO: Fix how these work.
         let unwantedRecipients = JSON.parse(
           Prefs.getString("conversations.unwanted_recipients")
         );
