@@ -38,7 +38,17 @@ async function onFinish() {
       itemsToInstall.push(checkbox.id);
     }
   }
-  await browser.conversations.installCustomisations(itemsToInstall);
+  const uninstallInfos = await browser.conversations.installCustomisations(
+    itemsToInstall
+  );
+  const result = await browser.storage.local.get("preferences");
+
+  if (result.preferences.uninstall_infos == "{}") {
+    result.preferences.uninstall_infos = uninstallInfos;
+    await browser.storage.local.set({ preferences: result.preferences });
+  } else {
+    console.warn("Uninstall information already there, not overwriting...");
+  }
   finish();
 }
 

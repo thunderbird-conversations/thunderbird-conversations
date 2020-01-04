@@ -21,7 +21,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   MailServices: "resource:///modules/MailServices.jsm",
   Gloda: "resource:///modules/gloda/gloda.js",
   GlodaUtils: "resource:///modules/gloda/utils.js",
-  Prefs: "chrome://conversations/content/modules/prefs.js",
+  Services: "resource://gre/modules/Services.jsm",
   setupLogging: "chrome://conversations/content/modules/log.js",
   StringBundle: "resource:///modules/StringBundle.js",
 });
@@ -309,7 +309,9 @@ ContactFromAB.prototype = {
     let displayEmail = name != aEmail ? aEmail : "";
     let hasCard = this._card != null;
     let skipEmail =
-      !aIsDetail && hasCard && Prefs.getBool("mail.showCondensedAddresses");
+      !aIsDetail &&
+      hasCard &&
+      Services.prefs.getBoolPref("mail.showCondensedAddresses");
     let tooltipName = this.getTooltipName(aPosition);
     let data = {
       showMonospace: aPosition == Contacts.kFrom,

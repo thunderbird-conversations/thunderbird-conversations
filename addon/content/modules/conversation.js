@@ -187,8 +187,8 @@ class _ConversationUtils {
   markAllAsRead(msgUris, read, withChecks = false) {
     if (
       !withChecks ||
-      Prefs.getBool("mailnews.mark_message_read.auto") ||
-      Prefs.getBool("mailnews.mark_message_read.delay")
+      Services.prefs.getBoolPref("mailnews.mark_message_read.auto") ||
+      Services.prefs.getBoolPref("mailnews.mark_message_read.delay")
     ) {
       msgHdrsMarkAsRead(
         msgUris.map(msg => msgUriToMsgHdr(msg)),
@@ -862,7 +862,7 @@ Conversation.prototype = {
       msg.updateTmplData(oldMsg);
     }
     const shouldShowHeaders =
-      Prefs.getInt("mail.show_headers") == kHeadersShowAll;
+      Services.prefs.getIntPref("mail.show_headers") == kHeadersShowAll;
 
     const reactMsgData = this.messages.map((m, i) => {
       const msgData = m.message.toReactData();
@@ -896,11 +896,13 @@ Conversation.prototype = {
         subject: this.messages[this.messages.length - 1].message.subject,
         loading: false,
         prefs: {
-          defaultFontSize: Prefs.getInt("font.size.variable.x-western"),
-          browserForegroundColor: Prefs.getChar(
+          defaultFontSize: Services.prefs.getIntPref(
+            "font.size.variable.x-western"
+          ),
+          browserForegroundColor: Services.prefs.getCharPref(
             "browser.display.foreground_color"
           ),
-          browserBackgroundColor: Prefs.getChar(
+          browserBackgroundColor: Services.prefs.getCharPref(
             "browser.display.background_color"
           ),
           hideSigs: Prefs.hide_sigs,
@@ -911,8 +913,8 @@ Conversation.prototype = {
         },
         OS: this.OS,
         autoMarkAsRead:
-          Prefs.getBool("mailnews.mark_message_read.auto") &&
-          !Prefs.getBool("mailnews.mark_message_read.delay"),
+          Services.prefs.getBoolPref("mailnews.mark_message_read.auto") &&
+          !Services.prefs.getBoolPref("mailnews.mark_message_read.delay"),
       },
       messages: {
         msgData: reactMsgData,
