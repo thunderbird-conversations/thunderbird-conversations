@@ -9,6 +9,7 @@ var EXPORTED_SYMBOLS = [
   "arrayEquals",
   "topMail3Pane",
   "folderName",
+  "makeConversationUrl",
   "openConversationInTabOrWindow",
 ];
 
@@ -167,8 +168,33 @@ function folderName(aFolder) {
   return [aFolder.prettyName, folderStr];
 }
 
-function openConversationInTabOrWindow(urls) {
-  let url = Prefs.kStubUrl + "?urls=" + encodeURIComponent(urls.join(","));
+/**
+ * Makes a conversation url for opening in new windows/tabs.
+ *
+ * @param {Array} urls
+ *   An array of urls to be opened.
+ * @param {Integer} [scrollMode]
+ *   The scroll mode to use.
+ */
+function makeConversationUrl(urls, scrollMode) {
+  let queryString = "?urls=" + encodeURIComponent(urls.join(","));
+
+  if (scrollMode) {
+    queryString += "&scrollMode=" + scrollMode;
+  }
+  return Prefs.kStubUrl + queryString;
+}
+
+/**
+ * Opens a conversation in a new tab or window.
+ *
+ * @param {Array} urls
+ *   An array of urls to be opened.
+ * @param {Integer} [scrollMode]
+ *   The scroll mode to use.
+ */
+function openConversationInTabOrWindow(urls, scrollMode) {
+  let url = makeConversationUrl(urls, scrollMode);
 
   let window = getMail3Pane();
   // Counting some extra pixels for window decorations.

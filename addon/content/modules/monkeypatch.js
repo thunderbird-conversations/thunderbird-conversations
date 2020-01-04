@@ -36,6 +36,7 @@ const {
 const {
   arrayEquals,
   joinWordList,
+  makeConversationUrl,
   openConversationInTabOrWindow,
 } = ChromeUtils.import("chrome://conversations/content/modules/misc.js");
 const { Colors, dumpCallStack, setupLogging } = ChromeUtils.import(
@@ -396,17 +397,6 @@ MonkeyPatch.prototype = {
     // Undo all our customizations at uninstall-time
     this.registerUndoCustomizations();
 
-    let mkConvUrl = function(msgHdrs) {
-      let urls = msgHdrs.map(hdr => msgHdrGetUri(hdr)).join(",");
-      let scrollMode = self.determineScrollMode();
-      let queryString =
-        "?urls=" +
-        window.encodeURIComponent(urls) +
-        "&scrollMode=" +
-        scrollMode;
-      return Prefs.kStubUrl + queryString;
-    };
-
     // Below is the code that intercepts the double-click-on-a-message event,
     //  and reroutes the control flow to our conversation reader.
     let oldThreadPaneDoubleClick = window.ThreadPaneDoubleClick;
@@ -424,7 +414,8 @@ MonkeyPatch.prototype = {
       let msgHdrs = window.gFolderDisplay.selectedMessages;
       if (!msgHdrs.some(msgHdrIsRss) && !msgHdrs.some(msgHdrIsNntp)) {
         window.MsgOpenSelectedMessages = function() {
-          openConversationInTabOrWindow(mkConvUrl(msgHdrs));
+          const urls = msgHdrs.map(hdr => msgHdrGetUri(hdr));
+          openConversationInTabOrWindow(urls, self.determineScrollMode());
         };
       }
       oldThreadPaneDoubleClick();
@@ -458,7 +449,10 @@ MonkeyPatch.prototype = {
 
         let msgHdrs = window.gFolderDisplay.selectedMessages;
         if (!msgHdrs.some(msgHdrIsRss) && !msgHdrs.some(msgHdrIsNntp)) {
-          tabmail.openTab("chromeTab", { chromePage: mkConvUrl(msgHdrs) });
+          const urls = msgHdrs.map(hdr => msgHdrGetUri(hdr));
+          tabmail.openTab("chromeTab", {
+            chromePage: makeConversationUrl(urls, self.determineScrollMode()),
+          });
         } else {
           oldTreeOnMouseDown(event);
         }

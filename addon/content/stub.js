@@ -94,9 +94,12 @@ document.addEventListener(
     // yay!
     if (params.has("urls")) {
       try {
-        let scrollMode = params.get("scrollMode")
-          ? parseInt(params.scrollMode)
-          : Prefs.kScrollUnreadOrLast;
+        let scrollMode = params.get("scrollMode");
+        if (scrollMode) {
+          scrollMode = parseInt(scrollMode);
+        } else {
+          scrollMode = Prefs.kScrollUnreadOrLast;
+        }
         /* If we start up Thunderbird with a saved conversation tab, then we
          * have no selected message. Fallback to the usual mode. */
         if (
