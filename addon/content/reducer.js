@@ -4,7 +4,7 @@
 
 /* global Redux, Conversations, topMail3Pane, getMail3Pane,
           isInTab:true, closeTab, openConversationInTabOrWindow,
-          printConversation, MailServices */
+          printConversation */
 
 /* exported conversationApp */
 
@@ -15,7 +15,6 @@ const { XPCOMUtils } = ChromeUtils.import(
 );
 XPCOMUtils.defineLazyModuleGetters(this, {
   ContactHelpers: "chrome://conversations/content/modules/contact.js",
-  composeMessageTo: "chrome://conversations/content/modules/stdlib/compose.js",
   openConversationInTabOrWindow:
     "chrome://conversations/content/modules/misc.js",
   MessageUtils: "chrome://conversations/content/modules/message.js",
@@ -453,15 +452,9 @@ function summary(state = initialSummary, action) {
       return state;
     }
     case "SEND_EMAIL": {
-      let dest =
-        !action.name || action.name == action.email
-          ? action.email
-          : MailServices.headerParser.makeMimeAddress(
-              action.name,
-              action.email
-            );
-      composeMessageTo(
-        dest,
+      ContactHelpers.composeMessage(
+        action.name,
+        action.email,
         topMail3Pane(window).gFolderDisplay.displayedFolder
       );
       return state;
