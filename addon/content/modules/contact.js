@@ -17,6 +17,8 @@ const { XPCOMUtils } = ChromeUtils.import(
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   DisplayNameUtils: "resource:///modules/DisplayNameUtils.jsm",
+  composeMessageTo: "chrome://conversations/content/modules/stdlib/compose.js",
+  MailServices: "resource:///modules/MailServices.jsm",
   Gloda: "resource:///modules/gloda/gloda.js",
   GlodaUtils: "resource:///modules/gloda/utils.js",
   Prefs: "chrome://conversations/content/modules/prefs.js",
@@ -132,6 +134,14 @@ var ContactHelpers = {
       "chrome,modal,resizable=no,centerscreen",
       args
     );
+  },
+
+  composeMessage(name, email, displayedFolder) {
+    let dest =
+      !name || name == email
+        ? email
+        : MailServices.headerParser.makeMimeAddress(name, email);
+    composeMessageTo(dest, displayedFolder);
   },
 
   showMessagesInvolving(win, name, email) {
