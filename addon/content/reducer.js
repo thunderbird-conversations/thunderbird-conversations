@@ -73,8 +73,6 @@ function attachments(state = initialAttachments, action) {
         action.msgUri,
         action.attachment
       );
-      const msg = Conversations.currentConversation.getMessage(action.msgUri);
-      msg.downloadAttachment(topMail3Pane(window), action.url);
       return state;
     }
     case "OPEN_ATTACHMENT": {
@@ -82,6 +80,15 @@ function attachments(state = initialAttachments, action) {
         topMail3Pane(window),
         action.msgUri,
         action.attachment
+      );
+      return state;
+    }
+    case "DETACH_ATTACHMENT": {
+      MessageUtils.detachAttachment(
+        topMail3Pane(window),
+        action.msgUri,
+        action.attachment,
+        action.shouldSave
       );
       return state;
     }

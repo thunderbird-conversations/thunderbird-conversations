@@ -2,11 +2,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals AttachmentMenu, ConversationHeader, ConversationFooter, MessageList,
-           React, ReactRedux, PropTypes */
+/* globals ConversationHeader, ConversationFooter, MessageList,
+           React, ReactRedux, PropTypes, StringBundle */
 /* exported ConversationWrapper */
 
 class _ConversationWrapper extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    this.strings = new StringBundle(
+      "chrome://conversations/locale/template.properties"
+    );
+  }
   componentDidMount() {
     this._setHTMLAttributes();
   }
@@ -36,10 +42,9 @@ class _ConversationWrapper extends React.PureComponent {
     return (
       <div>
         <div className="hidden" id="tooltipContainer"></div>
-        <ConversationHeader />
+        <ConversationHeader strings={this.strings} />
         <MessageList />
-        <ConversationFooter />
-        <AttachmentMenu />
+        <ConversationFooter strings={this.strings} />
       </div>
     );
   }
