@@ -176,6 +176,10 @@ class _MessageUtils {
     this._getAttachmentInfo(win, msgUri, attachment).open();
   }
 
+  detachAttachment(win, msgUri, attachment, shouldSave) {
+    this._getAttachmentInfo(win, msgUri, attachment).detach(shouldSave);
+  }
+
   _compose(win, compType, msgUri, shiftKey) {
     const msgHdr = msgUriToMsgHdr(msgUri);
     if (shiftKey) {
