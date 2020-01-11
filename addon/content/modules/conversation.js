@@ -404,7 +404,6 @@ Conversation.prototype = {
           if (!aItems.length) {
             Log.warn("Warning: gloda query returned no messages");
             // M = msgHdr, I = Initial, NG = there was no gloda query
-            // will run signal
             const messagePromises = self._initialSet.map(msgHdr =>
               messageFromDbHdr(self, msgHdr, "MI+NG")
             );
@@ -447,7 +446,6 @@ Conversation.prototype = {
         //  don't have a message header
         aItems = aItems.filter(glodaMsg => glodaMsg.folderMessage);
         // We want at least all messages from the Gloda collection
-        // will fire signal when done
         let messages = aItems.map(glodaMsg =>
           messageFromGlodaIfOffline(this, glodaMsg, "GA")
         );
@@ -605,7 +603,6 @@ Conversation.prototype = {
         // We want at least all messages from the Gloda collection + all
         //  messages from the intermediate set (see rationale in the
         //  initialization of this._intermediateResults).
-        // will fire signal when done
         let msgPromises = aCollection.items.map(glodaMsg =>
           messageFromGlodaIfOffline(this, glodaMsg, "GF")
         );
