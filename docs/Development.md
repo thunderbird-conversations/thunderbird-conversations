@@ -5,11 +5,11 @@ Building
 --------
 
 1. Clone the repository
-2. Change into the main folder, run `git submodule init` and `git submodule update`
+2. Change into the main folder, run `git submodule update --init`
 3. Run `npm install`
 4. Run `npm run build`
 
-This will package a `converstions.xpi` file of the latest codebase which can be installed via add-on manager in Thunderbird (hint: you can drag & drop it onto the add-on manager view).
+This will package a `conversations.xpi` file of the latest codebase which can be installed via add-on manager in Thunderbird (hint: you can drag & drop it onto the add-on manager view).
 
 Development in the Browser
 --------------------------
@@ -58,6 +58,6 @@ To run just the *jest* tests, do
 $ npm test:jest
 ```
 
-Tests are stored in `__test__` directories. Because native ESM modules are used while
+Tests are stored in `test` directories. Because native ESM modules are used while
 tests are preformed on Node.js (which defaults to CJS modules), some care must be
 taken when importing. Please see existing tests for details.
