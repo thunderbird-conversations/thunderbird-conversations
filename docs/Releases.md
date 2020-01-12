@@ -23,6 +23,6 @@ It can also be just `patch`, `minor` or `major` depending on the release.
 
 Lastly:
 
-* Run `npm run build`
+* Run `npm run prod`
 * Check that the xpi installs in Thunderbird and is the correct version
 * Upload the xpi to the add-ons site.

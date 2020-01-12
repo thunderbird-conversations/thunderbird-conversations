@@ -41,6 +41,7 @@
   },
   "scripts": {
     "build": "./scripts/build.sh",
+    "prod": "./scripts/build.sh --prod",
     "dev-html": "./scripts/build-dev-html.sh",
     "test": "npm-run-all test:*",
     "test:lint": "eslint --ext js,jsx .",
