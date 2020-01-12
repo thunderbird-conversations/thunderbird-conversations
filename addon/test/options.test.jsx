@@ -1,53 +1,16 @@
-/* eslint-disable */
-const esmImport = require("esm")(module, { cjs: false, force: true });
-const { act } = require("react-dom/test-utils");
-const enzyme = require("enzyme");
-const Adapter = require("enzyme-adapter-react-16");
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
+/* eslint-env jest */
 
-enzyme.configure({ adapter: new Adapter() });
-
-// Browser code expects window to be the global object
-global.window = global.globalThis = global;
-// We need to make a global nodeRequire function so that our module
-// loading will use native node module loading instead of the default.
-global.nodeRequire = require;
-
-// Mock `fetch`, which is used to get localization info when running in the browser
-global.fetch = function(url) {
-  const fileSystem = require("fs");
-  const path = require("path");
-  const ROOT_PATH = path.join(__dirname, "..");
-  const filePath = path.join(ROOT_PATH, url);
-
-  const data = fileSystem.readFileSync(filePath, "utf8");
-  return Promise.resolve({
-    json: function() {
-      return Promise.resolve(JSON.parse(data));
-    },
-  });
-};
-
-// Workaround for warnings about component not being wrapped in `act()`/
-// Taken from https://github.com/airbnb/enzyme/issues/2073#issuecomment-565736674
-const waitForComponentToPaint = async wrapper => {
-  await act(async () => {
-    await new Promise(resolve => setTimeout(resolve, 0));
-    wrapper.update();
-  });
-};
-
-//
-// Load the modules for our tests. Since we are using native ESM
-// modules here, we need to use esmImport to load the files.
-//
-//esmImport("../content/es-modules/modules-compat.js");
-const { browser, i18n } = esmImport(
-  "../content/es-modules/thunderbird-compat.js"
-);
-// Import the same copy of React that the ui components are using
-// because multiple versions of react can cause trouble. ui components
-// import `ui.js`.
-const { React } = esmImport("../content/es-modules/ui.js");
+// Standard imports for all tests
+const {
+  esmImport,
+  enzyme,
+  React,
+  waitForComponentToPaint,
+  browser,
+} = require("./utils");
 
 // Import the components we want to test
 const {
@@ -141,7 +104,6 @@ describe("Option Reducer and Actions tests", () => {
   const mockedSet = jest.spyOn(browser.storage.local, "set");
 
   test("initPrefs() retrieves preferences from `browser.storage.local`", async () => {
-    const initailCallLength = mockedGet.mock.calls.length;
     await store.dispatch(actions.initPrefs());
     // When we initialize preferences, there should be one call to "get"
     expect(mockedGet).toHaveBeenCalled();
@@ -160,12 +122,6 @@ describe("Option Reducer and Actions tests", () => {
   });
 });
 
-function Abc(props) {
-  //const a=5
-  const [a, b] = React.useState("no val");
-  return <div>{a}</div>;
-}
-
 describe("Option full page tests", () => {
   const mockedSet = jest.spyOn(browser.storage.local, "set");
 
@@ -176,7 +132,7 @@ describe("Option full page tests", () => {
 
     const option = main.find(BinaryOption).at(0);
     const input = option.find("input");
-    const name = option.props()["name"];
+    const name = option.props().name;
 
     // We are going to click on the option and we expect that it's new value
     // is saved via `browser.storage.local.set`
