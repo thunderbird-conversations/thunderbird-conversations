@@ -6,7 +6,7 @@ ADDON_DIR=addon
 DEV_SERVER_PORT=8126
 
 WATCH_FLAG=""
-if [ $1 = "--watch" ]
+if [ "$1" = "--watch" ]
 then
   echo "Watching files for changes with --watch"
   WATCH_FLAG="--watch"
