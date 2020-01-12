@@ -97,15 +97,17 @@ class Attachment extends React.PureComponent {
       <li
         className="clearfix hbox attachment"
         contextmenu={`attachmentMenu-${this.props.anchor}`}
-        draggable="true"
       >
-        <div className="attachmentThumb">
+        <div
+          className={
+            "attachmentThumb" + (enablePreview ? " view-attachment" : "")
+          }
+          draggable="true"
+          onClick={this.preview}
+        >
           <img
-            className={
-              this.props.imgClass + (enablePreview ? " view-attachment" : "")
-            }
+            className={this.props.imgClass}
             src={this.props.thumb}
-            onClick={this.preview}
             title={imgTitle}
           />
         </div>
