@@ -11,6 +11,8 @@ class Attachment extends React.PureComponent {
     this.preview = this.preview.bind(this);
     this.downloadAttachment = this.downloadAttachment.bind(this);
     this.openAttachment = this.openAttachment.bind(this);
+    this.deleteAttachment = this.deleteAttachment.bind(this);
+    this.detachAttachment = this.detachAttachment.bind(this);
   }
 
   preview() {
@@ -51,28 +53,61 @@ class Attachment extends React.PureComponent {
     });
   }
 
+  detachAttachment() {
+    this.props.dispatch({
+      type: "DETACH_ATTACHMENT",
+      msgUri: this.props.msgUri,
+      shouldSave: true,
+      attachment: {
+        contentType: this.props.contentType,
+        isExternal: this.props.isExternal,
+        name: this.props.name,
+        size: this.props.size,
+        url: this.props.url,
+      },
+    });
+  }
+
+  deleteAttachment() {
+    this.props.dispatch({
+      type: "DETACH_ATTACHMENT",
+      msgUri: this.props.msgUri,
+      shouldSave: false,
+      attachment: {
+        contentType: this.props.contentType,
+        isExternal: this.props.isExternal,
+        name: this.props.name,
+        size: this.props.size,
+        url: this.props.url,
+      },
+    });
+  }
+
   render() {
     const enablePreview = this.props.isPdf || this.props.maybeViewable;
     const imgTitle = enablePreview
       ? this.props.strings.get("viewAttachment")
       : "";
     // TODO: Drag n drop
-    // Due to "contextmenu". We probably should change this to use
-    // the newer "onContextMenu".
+    // Disabled due to contextmenu which is only supported in Gecko.
+    // Hoping to turn this into WebExtension based context menus at some
+    // stage: https://github.com/protz/thunderbird-conversations/issues/1416
     /* eslint-disable react/no-unknown-property */
     return (
       <li
         className="clearfix hbox attachment"
-        contextmenu="attachmentMenu"
-        draggable="true"
+        contextmenu={`attachmentMenu-${this.props.anchor}`}
       >
-        <div className="attachmentThumb">
+        <div
+          className={
+            "attachmentThumb" + (enablePreview ? " view-attachment" : "")
+          }
+          draggable="true"
+          onClick={this.preview}
+        >
           <img
-            className={
-              this.props.imgClass + (enablePreview ? " view-attachment" : "")
-            }
+            className={this.props.imgClass}
             src={this.props.thumb}
-            onClick={this.preview}
             title={imgTitle}
           />
         </div>
@@ -126,6 +161,24 @@ class Attachment extends React.PureComponent {
             </a>
           </div>
         </div>
+        <menu id={`attachmentMenu-${this.props.anchor}`} type="context">
+          <menuitem
+            label={this.props.strings.get("stub.context.open")}
+            onClick={this.openAttachment}
+          ></menuitem>
+          <menuitem
+            label={this.props.strings.get("stub.context.save")}
+            onClick={this.downloadAttachment}
+          ></menuitem>
+          <menuitem
+            label={this.props.strings.get("stub.context.detach")}
+            onClick={this.detachAttachment}
+          ></menuitem>
+          <menuitem
+            label={this.props.strings.get("stub.context.delete")}
+            onClick={this.deleteAttachment}
+          ></menuitem>
+        </menu>
       </li>
     );
     /* eslint-enable react/no-unknown-property */
@@ -133,6 +186,7 @@ class Attachment extends React.PureComponent {
 }
 
 Attachment.propTypes = {
+  anchor: PropTypes.string.isRequired,
   dispatch: PropTypes.func.isRequired,
   contentType: PropTypes.string.isRequired,
   formattedSize: PropTypes.string.isRequired,
@@ -215,6 +269,7 @@ class Attachments extends React.PureComponent {
           )}
           {this.props.attachments.map(attachment => (
             <Attachment
+              anchor={attachment.anchor}
               dispatch={this.props.dispatch}
               key={attachment.anchor}
               contentType={attachment.contentType}

@@ -4,7 +4,7 @@
 
 /* global Redux, Conversations, topMail3Pane, getMail3Pane,
           isInTab:true, closeTab, openConversationInTabOrWindow,
-          printConversation, MailServices */
+          printConversation */
 
 /* exported conversationApp */
 
@@ -15,7 +15,6 @@ const { XPCOMUtils } = ChromeUtils.import(
 );
 XPCOMUtils.defineLazyModuleGetters(this, {
   ContactHelpers: "chrome://conversations/content/modules/contact.js",
-  composeMessageTo: "chrome://conversations/content/modules/stdlib/compose.js",
   openConversationInTabOrWindow:
     "chrome://conversations/content/modules/misc.js",
   MessageUtils: "chrome://conversations/content/modules/message.js",
@@ -74,8 +73,6 @@ function attachments(state = initialAttachments, action) {
         action.msgUri,
         action.attachment
       );
-      const msg = Conversations.currentConversation.getMessage(action.msgUri);
-      msg.downloadAttachment(topMail3Pane(window), action.url);
       return state;
     }
     case "OPEN_ATTACHMENT": {
@@ -83,6 +80,15 @@ function attachments(state = initialAttachments, action) {
         topMail3Pane(window),
         action.msgUri,
         action.attachment
+      );
+      return state;
+    }
+    case "DETACH_ATTACHMENT": {
+      MessageUtils.detachAttachment(
+        topMail3Pane(window),
+        action.msgUri,
+        action.attachment,
+        action.shouldSave
       );
       return state;
     }
@@ -185,6 +191,20 @@ function messages(state = initialMessages, action) {
         newMsg.expanded = action.expand;
         return newMsg;
       });
+    }
+    case "MSG_MARK_AS_READ": {
+      const msg = Conversations.currentConversation.getMessage(action.msgUri);
+      msg.read = true;
+      return state;
+    }
+    case "MSG_SELECTED": {
+      if (Conversations.currentConversation) {
+        const msg = Conversations.currentConversation.getMessage(action.msgUri);
+        if (msg) {
+          msg.onSelected();
+        }
+      }
+      return state;
     }
     case "TOGGLE_CONVERSATION_EXPANDED": {
       const newState = { ...state };
@@ -374,6 +394,11 @@ function messages(state = initialMessages, action) {
       );
       return state;
     }
+    case "TAG_CLICK": {
+      const msg = Conversations.currentConversation.getMessage(action.msgUri);
+      msg.msgPluginTagClick(topMail3Pane(window), action.event, action.detail);
+      return state;
+    }
     default: {
       return state;
     }
@@ -434,15 +459,9 @@ function summary(state = initialSummary, action) {
       return state;
     }
     case "SEND_EMAIL": {
-      let dest =
-        !action.name || action.name == action.email
-          ? action.email
-          : MailServices.headerParser.makeMimeAddress(
-              action.name,
-              action.email
-            );
-      composeMessageTo(
-        dest,
+      ContactHelpers.composeMessage(
+        action.name,
+        action.email,
         topMail3Pane(window).gFolderDisplay.displayedFolder
       );
       return state;

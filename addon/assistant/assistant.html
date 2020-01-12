@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/. -->
+<html>
+<head>
+  <meta charset="utf-8">
+  <title data-i18n="assistant.title"></title>
+  <link rel="stylesheet" type="text/css" href="assistant.css" />
+  <script type="application/javascript" src="assistant.js"></script>
+</head>
+
+<body>
+  <div id="wrapper">
+    <div class="main">
+      <h1 class="title" data-i18n="extensionName"></h1>
+      <div class="text">
+        <p data-i18n="assistant.intro">
+        </p>
+        <p class="p1" data-i18n="assistant.p1">
+        </p>
+        <p class="p2" data-i18n="assistant.p2">
+        </p>
+        <p class="p3 orange" data-i18n="assistant.p3">
+        </p>
+        <p class="working hidden" style="text-align: left; margin-top: 50px"
+           data-i18n="assistant.working">
+          <img src="loader.gif" />
+        </p>
+      </div>
+    </div>
+
+    <div class="buttonBox">
+      <button id="review" data-i18n="assistant.review"></button>
+      <button id="applyButton" class="applyChanges" data-i18n="assistant.apply"></button>
+    </div>
+
+    <div id="more">
+      <fieldset class="settings">
+        <legend data-i18n="assistant.settings"></legend>
+        <input type="checkbox" disabled="disabled" checked="checked" id="actionEnableGloda" />
+        <label for="actionEnableGloda" data-i18n="assistant.actionEnableGloda"></label>
+        <br/>
+        <input type="checkbox" disabled="disabled" checked="checked" id="actionDontExpand" />
+        <label for="actionDontExpand" data-i18n="assistant.actionDontExpand"></label>
+        <br/>
+        <input type="checkbox" checked="checked" id="actionAttachmentsInline" />
+        <label for="actionAttachmentsInline" data-i18n="assistant.actionAttachmentsInline"></label>
+        <br/>
+        <input type="checkbox" checked="checked" id="actionOfflineDownload" />
+        <label for="actionOfflineDownload" data-i18n="assistant.actionOfflineDownload"></label>
+        <br/>
+        <input type="checkbox" checked="checked" id="actionUnifiedInboxSearchesSent" />
+        <label for="actionUnifiedInboxSearchesSent" data-i18n="assistant.actionUnifiedInboxSearchesSent"></label>
+        <br/>
+        <input type="checkbox" checked="checked" id="actionSetupView" />
+        <label for="actionSetupView" data-i18n="assistant.actionSetupView"></label>
+        <br/>
+        <input type="checkbox" checked="checked" id="actionSetupViewDefaults" />
+        <label for="actionSetupViewDefaults" data-i18n="assistant.actionSetupViewDefaults"></label>
+        <br/>
+        <input type="checkbox" checked="checked" id="actionEnsureMessagePaneVisible" />
+        <label for="actionEnsureMessagePaneVisible" data-i18n="assistant.actionEnsureMessagePaneVisible"></label>
+      </fieldset>
+
+      <p data-i18n="assistant.settings2">
+      </p>
+
+      <p class="working hidden" data-i18n="assistant.working">
+        <img src="loader.gif" />
+      </p>
+
+      <div id="footer">
+      </div>
+    </div>
+
+  </div>
+</body>
+
+</html>

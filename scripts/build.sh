@@ -8,14 +8,26 @@ rm -rf $DIST
 mkdir -p $VENDOR_DIR
 mkdir -p $DIST/content/modules/stdlib
 
-cp node_modules/redux/dist/redux.js $VENDOR_DIR/redux.js
-cp node_modules/react-redux/dist/react-redux.js $VENDOR_DIR/react-redux.js
-cp node_modules/react/umd/react.development.js $VENDOR_DIR/react.js
-cp node_modules/react-dom/umd/react-dom.development.js $VENDOR_DIR/react-dom.js
-cp node_modules/prop-types/prop-types.min.js $VENDOR_DIR/prop-types.js
-cp node_modules/pdfjs-dist/build/pdf.js $VENDOR_DIR
-cp node_modules/pdfjs-dist/build/pdf.worker.js $VENDOR_DIR
-cp "node_modules/@reduxjs/toolkit/dist/redux-toolkit.umd.js" $VENDOR_DIR
+if [ "$1" == "--prod" ]
+then
+  cp node_modules/redux/dist/redux.min.js $VENDOR_DIR/redux.js
+  cp node_modules/react-redux/dist/react-redux.min.js $VENDOR_DIR/react-redux.js
+  cp node_modules/react/umd/react.production.min.js $VENDOR_DIR/react.js
+  cp node_modules/react-dom/umd/react-dom.production.min.js $VENDOR_DIR/react-dom.js
+  cp node_modules/prop-types/prop-types.min.js $VENDOR_DIR/prop-types.js
+  cp "node_modules/@reduxjs/toolkit/dist/redux-toolkit.umd.min.js" $VENDOR_DIR/redux-toolkit.umd.js
+  cp node_modules/pdfjs-dist/build/pdf.min.js $VENDOR_DIR/pdf.js
+  cp node_modules/pdfjs-dist/build/pdf.worker.min.js $VENDOR_DIR/pdf.worker.js
+else
+  cp node_modules/redux/dist/redux.js $VENDOR_DIR/redux.js
+  cp node_modules/react-redux/dist/react-redux.js $VENDOR_DIR/react-redux.js
+  cp node_modules/react/umd/react.development.js $VENDOR_DIR/react.js
+  cp node_modules/react-dom/umd/react-dom.development.js $VENDOR_DIR/react-dom.js
+  cp node_modules/prop-types/prop-types.js $VENDOR_DIR/prop-types.js
+  cp "node_modules/@reduxjs/toolkit/dist/redux-toolkit.umd.js" $VENDOR_DIR/redux-toolkit.umd.js
+  cp node_modules/pdfjs-dist/build/pdf.js $VENDOR_DIR/pdf.js
+  cp node_modules/pdfjs-dist/build/pdf.worker.js $VENDOR_DIR/pdf.worker.js
+fi
 
 cp LICENSE README.md $DIST/
 

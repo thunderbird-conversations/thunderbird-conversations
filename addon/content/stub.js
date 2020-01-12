@@ -4,7 +4,7 @@
 
 /* import-globals-from quickReply.js */
 /* import-globals-from reducer.js */
-/* global $, Redux, ReactDOM, React, ReactRedux, ConversationWrapper,
+/* global Redux, ReactDOM, React, ReactRedux, ConversationWrapper,
           Log:true, masqueradeAsQuickCompose */
 
 let store;
@@ -94,9 +94,12 @@ document.addEventListener(
     // yay!
     if (params.has("urls")) {
       try {
-        let scrollMode = params.get("scrollMode")
-          ? parseInt(params.scrollMode)
-          : Prefs.kScrollUnreadOrLast;
+        let scrollMode = params.get("scrollMode");
+        if (scrollMode) {
+          scrollMode = parseInt(scrollMode);
+        } else {
+          scrollMode = Prefs.kScrollUnreadOrLast;
+        }
         /* If we start up Thunderbird with a saved conversation tab, then we
          * have no selected message. Fallback to the usual mode. */
         if (
@@ -156,11 +159,13 @@ document.addEventListener(
             document.body.classList.add("inTab");
             // Do this now so as to not defeat the whole expand/collapse
             // logic.
-            if (Prefs.getBool("mailnews.mark_message_read.auto")) {
+            if (Services.prefs.getBoolPref("mailnews.mark_message_read.auto")) {
               setTimeout(function() {
                 msgHdrsMarkAsRead(msgHdrs, true);
-              }, Prefs.getInt("mailnews.mark_message_read.delay.interval") *
-                Prefs.getBool("mailnews.mark_message_read.delay") *
+              }, Services.prefs.getIntPref(
+                "mailnews.mark_message_read.delay.interval"
+              ) *
+                Services.prefs.getBoolPref("mailnews.mark_message_read.delay") *
                 1000);
             }
           });
@@ -178,58 +183,3 @@ document.addEventListener(
 
 /* exported isQuickCompose */
 var isQuickCompose = false;
-
-// Mark a message as read if a user scrolls past top and bottom of an
-// unread message.
-function markReadInView(event) {
-  document.removeEventListener("scroll", markReadInView, true);
-  clearTimeout(markReadInView.timeout);
-  markReadInView.timeout = setTimeout(function() {
-    document.addEventListener("scroll", markReadInView, true);
-  }, 200);
-  if (!Conversations.currentConversation) {
-    return;
-  }
-
-  let pageTop = window.pageYOffset;
-  let pageBottom = pageTop + window.innerHeight;
-  let messages = Conversations.currentConversation.messages;
-  messages.forEach(function({ message }, i) {
-    if (!message.read && message.expanded) {
-      if (!message._topInView) {
-        let top = $(message._domNode).offset().top;
-        if (top > pageTop && top < pageBottom) {
-          message._topInView = true;
-        }
-      }
-      if (!message._bottomInView) {
-        let footerClass =
-          i == messages.length - 1 ? ".quickReply" : ".messageFooter";
-        let bottom = $(message._domNode.querySelector(footerClass)).offset()
-          .top;
-        if (bottom > pageTop && bottom < pageBottom) {
-          message._bottomInView = true;
-        }
-      }
-      if (message._topInView && message._bottomInView) {
-        message._topInView = false;
-        message._bottomInView = false;
-        message.read = true;
-      }
-    }
-  });
-}
-(function() {
-  let w = window;
-  markReadInView.enable = function() {
-    for (let x of ["mouseover", "focus", "keydown"]) {
-      w.document.addEventListener(x, w.markReadInView, true);
-    }
-  };
-  markReadInView.disable = function() {
-    w.clearTimeout(w.markReadInView.timeout);
-    for (let x of ["mouseover", "focus", "keydown", "scroll"]) {
-      w.document.removeEventListener(x, w.markReadInView, true);
-    }
-  };
-})();

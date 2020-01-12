@@ -15,3 +15,11 @@ class Background {
 
 let background = new Background();
 background.init().catch(console.error);
+
+browser.runtime.onInstalled.addListener(details => {
+  if (details.reason == "install") {
+    browser.tabs.create({
+      url: "assistant/assistant.html",
+    });
+  }
+});

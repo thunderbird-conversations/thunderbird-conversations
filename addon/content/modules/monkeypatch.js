@@ -36,6 +36,7 @@ const {
 const {
   arrayEquals,
   joinWordList,
+  makeConversationUrl,
   openConversationInTabOrWindow,
 } = ChromeUtils.import("chrome://conversations/content/modules/misc.js");
 const { Colors, dumpCallStack, setupLogging } = ChromeUtils.import(
@@ -89,18 +90,18 @@ MonkeyPatch.prototype = {
       .setAttribute("context", "mailContext");
 
     // 2) View > Conversation View
-    let menuitem = window.document.createXULElement("menuitem");
-    [
-      ["type", "checkbox"],
-      ["id", "menuConversationsEnabled"],
-      ["label", strings.get("menuConversationsEnabled")],
-    ].forEach(function([k, v]) {
-      menuitem.setAttribute(k, v);
-    });
-    let after = window.document.getElementById("viewMessagesMenu");
-    let parent1 = window.document.getElementById("menu_View_Popup");
-    parent1.insertBefore(menuitem, after.nextElementSibling);
-    this.pushUndo(() => parent1.removeChild(menuitem));
+    // let menuitem = window.document.createXULElement("menuitem");
+    // [
+    //   ["type", "checkbox"],
+    //   ["id", "menuConversationsEnabled"],
+    //   ["label", strings.get("menuConversationsEnabled")],
+    // ].forEach(function([k, v]) {
+    //   menuitem.setAttribute(k, v);
+    // });
+    // let after = window.document.getElementById("viewMessagesMenu");
+    // let parent1 = window.document.getElementById("menu_View_Popup");
+    // parent1.insertBefore(menuitem, after.nextElementSibling);
+    // this.pushUndo(() => parent1.removeChild(menuitem));
 
     // 3) Keyboard shortcut
     let key = window.document.createXULElement("key");
@@ -343,9 +344,7 @@ MonkeyPatch.prototype = {
   },
 
   undoCustomizations() {
-    let uninstallInfos = JSON.parse(
-      Prefs.getString("conversations.uninstall_infos")
-    );
+    let uninstallInfos = JSON.parse(Prefs.uninstall_infos);
     for (let [k, v] of entries(Customizations)) {
       if (k in uninstallInfos) {
         try {
@@ -357,25 +356,28 @@ MonkeyPatch.prototype = {
         }
       }
     }
-    Prefs.setString("conversations.uninstall_infos", "{}");
+    // TODO: We may need to fix this to pass data back to local storage, but
+    // generally if we're being uninstalled, we'll be removing the local storage
+    // anyway, so maybe this is ok? Or do we need to handle the disable case?
+    // Prefs.setString("conversations.uninstall_infos", "{}");
   },
 
-  activateMenuItem(window) {
-    let menuItem = window.document.getElementById("menuConversationsEnabled");
-    menuItem.setAttribute("checked", Prefs.enabled);
-    Prefs.watch(function(aPrefName, aPrefValue) {
-      if (aPrefName == "enabled") {
-        menuItem.setAttribute("checked", aPrefValue);
-      }
-    });
-    menuItem.addEventListener("command", function(event) {
-      let checked =
-        menuItem.hasAttribute("checked") &&
-        menuItem.getAttribute("checked") == "true";
-      Prefs.setBool("conversations.enabled", checked);
-      window.gMessageDisplay.onSelectedMessagesChanged();
-    });
-  },
+  // activateMenuItem(window) {
+  //   let menuItem = window.document.getElementById("menuConversationsEnabled");
+  //   menuItem.setAttribute("checked", Prefs.enabled);
+  //   Prefs.watch(function(aPrefName, aPrefValue) {
+  //     if (aPrefName == "enabled") {
+  //       menuItem.setAttribute("checked", aPrefValue);
+  //     }
+  //   });
+  //   menuItem.addEventListener("command", function(event) {
+  //     let checked =
+  //       menuItem.hasAttribute("checked") &&
+  //       menuItem.getAttribute("checked") == "true";
+  //     Prefs.setBool("conversations.enabled", checked);
+  //     window.gMessageDisplay.onSelectedMessagesChanged();
+  //   });
+  // },
 
   apply() {
     let window = this._window;
@@ -391,21 +393,10 @@ MonkeyPatch.prototype = {
     this.registerColumn();
     this.registerFontPrefObserver(htmlpane);
 
-    this.activateMenuItem(window);
+    // this.activateMenuItem(window);
 
     // Undo all our customizations at uninstall-time
     this.registerUndoCustomizations();
-
-    let mkConvUrl = function(msgHdrs) {
-      let urls = msgHdrs.map(hdr => msgHdrGetUri(hdr)).join(",");
-      let scrollMode = self.determineScrollMode();
-      let queryString =
-        "?urls=" +
-        window.encodeURIComponent(urls) +
-        "&scrollMode=" +
-        scrollMode;
-      return Prefs.kStubUrl + queryString;
-    };
 
     // Below is the code that intercepts the double-click-on-a-message event,
     //  and reroutes the control flow to our conversation reader.
@@ -424,7 +415,8 @@ MonkeyPatch.prototype = {
       let msgHdrs = window.gFolderDisplay.selectedMessages;
       if (!msgHdrs.some(msgHdrIsRss) && !msgHdrs.some(msgHdrIsNntp)) {
         window.MsgOpenSelectedMessages = function() {
-          openConversationInTabOrWindow(mkConvUrl(msgHdrs));
+          const urls = msgHdrs.map(hdr => msgHdrGetUri(hdr));
+          openConversationInTabOrWindow(urls, self.determineScrollMode());
         };
       }
       oldThreadPaneDoubleClick();
@@ -458,7 +450,10 @@ MonkeyPatch.prototype = {
 
         let msgHdrs = window.gFolderDisplay.selectedMessages;
         if (!msgHdrs.some(msgHdrIsRss) && !msgHdrs.some(msgHdrIsNntp)) {
-          tabmail.openTab("chromeTab", { chromePage: mkConvUrl(msgHdrs) });
+          const urls = msgHdrs.map(hdr => msgHdrGetUri(hdr));
+          tabmail.openTab("chromeTab", {
+            chromePage: makeConversationUrl(urls, self.determineScrollMode()),
+          });
         } else {
           oldTreeOnMouseDown(event);
         }
@@ -659,8 +654,8 @@ MonkeyPatch.prototype = {
             Services.obs.notifyObservers(null, "Conversations", "Displayed");
 
             // Make sure we respect the user's preferences.
-            self.markReadTimeout = window.setTimeout(function() {
-              if (Prefs.getBool("mailnews.mark_message_read.auto")) {
+            if (Services.prefs.getBoolPref("mailnews.mark_message_read.auto")) {
+              self.markReadTimeout = window.setTimeout(function() {
                 // The idea is that usually, we're selecting a thread (so we
                 //  have kScrollUnreadOrLast). This means we mark the whole
                 //  conversation as read. However, sometimes the user selects
@@ -691,15 +686,12 @@ MonkeyPatch.prototype = {
                   Log.assert(false, "GIVE ME ALGEBRAIC DATA TYPES!!!");
                 }
                 self.markReadTimeout = null;
-              }
-              // Hehe, do that now, because the conversation potentially
-              //  includes messages that are not in the gloda collection and
-              //  that do not trigger the "conversation updated" notification.
-              // TODO: What do we need to do about updates?
-              // aConversation._updateConversationButtons();
-            }, Prefs.getInt("mailnews.mark_message_read.delay.interval") *
-              Prefs.getBool("mailnews.mark_message_read.delay") *
-              1000);
+              }, Services.prefs.getIntPref(
+                "mailnews.mark_message_read.delay.interval"
+              ) *
+                Services.prefs.getBoolPref("mailnews.mark_message_read.delay") *
+                1000);
+            }
           });
         } catch (e) {
           Log.error(e);
@@ -759,14 +751,16 @@ MonkeyPatch.prototype = {
           // asked for the old message reader, we give up as well.
           if (msgHdrIsRss(msgHdr) || msgHdrIsNntp(msgHdr)) {
             // Use the default pref.
-            self.markReadTimeout = window.setTimeout(function() {
-              if (Prefs.getBool("mailnews.mark_message_read.auto")) {
+            if (Services.prefs.getBoolPref("mailnews.mark_message_read.auto")) {
+              self.markReadTimeout = window.setTimeout(function() {
                 msgHdrsMarkAsRead([msgHdr], true);
-              }
-              self.markReadTimeout = null;
-            }, Prefs.getInt("mailnews.mark_message_read.delay.interval") *
-              Prefs.getBool("mailnews.mark_message_read.delay") *
-              1000);
+                self.markReadTimeout = null;
+              }, Services.prefs.getIntPref(
+                "mailnews.mark_message_read.delay.interval"
+              ) *
+                Services.prefs.getBoolPref("mailnews.mark_message_read.delay") *
+                1000);
+            }
             this.singleMessageDisplay = true;
             return false;
           }

@@ -132,5 +132,95 @@
   "options.monospaced_senders_desc": {
     "message": "Mensagens desses endereços e listas (separar com vírgulas) devem ser exibidas com tipos de letra de espaçamento fixo",
     "description": "Options - description for monospaced sender setting."
+  },
+
+  "assistant.title": {
+    "message": "Assistente de instalação",
+    "description": "The document title of the assistant page."
+  },
+
+  "assistant.intro": {
+    "message": "Olá! Este é o Thunderbird Conversations!",
+    "description": "Introduction paragraph for the assistant."
+  },
+
+  "assistant.p1": {
+    "message": "Para facilitar sua vida, este assistente vai ajustar as configurações do Thunderbird para garantir que você aproveite a experiência ideal. Não queremos que você se sinta insatisfeito!",
+    "description": "First detail paragraph for the assistant."
+  },
+
+  "assistant.p2": {
+    "message": "Os ajustes que faremos são todos reversíveis, por isso não se preocupe. Se você não gostar do Thunderbird Conversations, vamos reverter todas as alterações que fizermos assim que você desinstalar esta extensão.",
+    "description": "Second detail paragraph for the assistant."
+  },
+
+  "assistant.p3": {
+    "message": "Isso deve demorar um pouco. Você pode esperar esta janela se fechar sozinha ou então você pode fechá-la e verificar o andamento em Ferramentas -> Gerenciador de atividade.",
+    "description": "Third detail paragraph for the assistant."
+  },
+
+  "assistant.working": {
+    "message": "Trabalhando...",
+    "description": "An indication that the assistant is working."
+  },
+
+  "assistant.review": {
+    "message": "Conferir alterações",
+    "description": "The review button title for the assistant."
+  },
+
+  "assistant.apply": {
+    "message": "Aplicar alterações",
+    "description": "The apply button title for the assistant."
+  },
+
+  "assistant.settings": {
+    "message": "Settings",
+    "description": "The settings section legend for the assistant."
+  },
+
+  "assistant.actionEnableGloda": {
+    "message": "Garantir que pesquisa global e indexação estejam ativadas.",
+    "description": "Option text for enabling Gloda."
+  },
+
+  "assistant.actionDontExpand": {
+    "message": "Na lista de mensagens, não expandir tópicos que contenham mensagens não lidas.",
+    "description": "Option text for not expanding message threads."
+  },
+
+  "assistant.actionAttachmentsInline": {
+    "message": "Não exibir anexos direto nas mensagens (altamente recomendado).",
+    "description": "Option text for showing attachments inline."
+  },
+
+  "assistant.actionOfflineDownload": {
+    "message": "A caixa de entrada e as mensagens enviadas são sincronizadas para leitura offline (altamente recomendado).",
+    "description": "Option text for allowing offline download."
+  },
+
+  "assistant.actionUnifiedInboxSearchesSent": {
+    "message": "A caixa de entrada unificada também engloba as pastas de mensagens enviadas (altamente recomendado).",
+    "description": "Option text for adding sent to the unified inbox."
+  },
+
+  "assistant.actionSetupView": {
+    "message": "Mudar para caixa de entrada global, exibição por tópicos, ordenar por data, ativar coluna com número de mensagens não lidas e acrescentar nova coluna \"Entre\" (altamente recomendado).",
+    "description": "Option text for how the view is set."
+  },
+
+  "assistant.actionSetupViewDefaults": {
+    "message": "Usar essa configuração de ordenação para todas as pastas.",
+    "description": "Option text for setting the view defaults."
+  },
+
+  "assistant.actionEnsureMessagePaneVisible": {
+    "message": "Garantir que o painel de mensagens esteja visível.",
+    "description": "Option text for ensuring the message pane is visible."
+  },
+
+  "assistant.settings2": {
+    "message": "Caso queira ativar outras opções mais tarde, você pode abrir este assistente de instalação através das opções do Thunderbird Conversations, na aba \"Avançado\".",
+    "description": "Paragraph informing users of the ability to change settings later."
   }
 }

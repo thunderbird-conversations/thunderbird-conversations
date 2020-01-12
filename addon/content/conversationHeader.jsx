@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals React, ReactRedux, PropTypes, StringBundle */
+/* globals React, ReactRedux, PropTypes */
 /* exported ConversationHeader */
 
 const LINKS_REGEX = /((\w+):\/\/[^<>()'"\s]+|www(\.[-\w]+){2,})/;
@@ -80,9 +80,6 @@ LinkifiedSubject.propTypes = {
 class _ConversationHeader extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.strings = new StringBundle(
-      "chrome://conversations/locale/pages.properties"
-    );
     this.archiveToolbar = this.archiveToolbar.bind(this);
     this.delete = this.delete.bind(this);
     this.detachTab = this.detachTab.bind(this);
@@ -170,13 +167,13 @@ class _ConversationHeader extends React.PureComponent {
           <LinkifiedSubject
             dispatch={this.props.dispatch}
             loading={this.props.loading}
-            strings={this.strings}
+            strings={this.props.strings}
             subject={this.props.subject}
           />
           <div className="actions">
             <button
               className="button-flat"
-              title={this.strings.get("stub.trash.tooltip")}
+              title={this.props.strings.get("stub.trash.tooltip")}
               onClick={this.delete}
             >
               <svg
@@ -190,7 +187,7 @@ class _ConversationHeader extends React.PureComponent {
             </button>
             <button
               className="button-flat"
-              title={this.strings.get("stub.archive.tooltip")}
+              title={this.props.strings.get("stub.archive.tooltip")}
               onClick={this.archiveToolbar}
             >
               <svg
@@ -205,7 +202,7 @@ class _ConversationHeader extends React.PureComponent {
             {this.canJunk && (
               <button
                 className="button-flat junk-button"
-                title={this.strings.get("stub.junk.tooltip")}
+                title={this.props.strings.get("stub.junk.tooltip")}
                 onClick={this.junkConversation}
               >
                 <svg
@@ -220,7 +217,7 @@ class _ConversationHeader extends React.PureComponent {
             )}
             <button
               className="button-flat"
-              title={this.strings.get("stub.expand.tooltip")}
+              title={this.props.strings.get("stub.expand.tooltip")}
               onClick={this.expandCollapse}
             >
               <svg
@@ -243,7 +240,7 @@ class _ConversationHeader extends React.PureComponent {
             </button>
             <button
               className="button-flat"
-              title={this.strings.get("stub.read.tooltip")}
+              title={this.props.strings.get("stub.read.tooltip")}
               onClick={this.toggleRead}
             >
               <svg
@@ -259,7 +256,7 @@ class _ConversationHeader extends React.PureComponent {
             </button>
             <button
               className="button-flat"
-              title={this.strings.get("stub.detach.tooltip2")}
+              title={this.props.strings.get("stub.detach.tooltip2")}
               onClick={this.detachTab}
             >
               <svg
@@ -281,6 +278,7 @@ class _ConversationHeader extends React.PureComponent {
 _ConversationHeader.propTypes = {
   dispatch: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
+  strings: PropTypes.object.isRequired,
   subject: PropTypes.string.isRequired,
   msgData: PropTypes.array.isRequired,
 };

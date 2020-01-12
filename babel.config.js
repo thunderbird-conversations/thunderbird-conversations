@@ -5,7 +5,10 @@ module.exports = function(api) {
     [
       "@babel/preset-env",
       // We don't want es modules to be bundled; we'll use native loading!
-      { targets: { esmodules: true }, modules: false },
+      {
+        targets: { browsers: "Firefox >= 68.0" },
+        modules: false,
+      },
     ],
     [
       "@babel/preset-react",

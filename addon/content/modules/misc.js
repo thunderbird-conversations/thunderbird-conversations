@@ -9,6 +9,7 @@ var EXPORTED_SYMBOLS = [
   "arrayEquals",
   "topMail3Pane",
   "folderName",
+  "makeConversationUrl",
   "openConversationInTabOrWindow",
 ];
 
@@ -19,11 +20,12 @@ const { XPCOMUtils } = ChromeUtils.import(
 XPCOMUtils.defineLazyModuleGetters(this, {
   getMail3Pane: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   Prefs: "chrome://conversations/content/modules/prefs.js",
+  Services: "resource://gre/modules/Services.jsm",
   StringBundle: "resource:///modules/StringBundle.js",
 });
 
 let strings = new StringBundle(
-  "chrome://conversations/locale/message.properties"
+  "chrome://conversations/locale/template.properties"
 );
 
 function arrayEquals(a1, a2) {
@@ -167,13 +169,38 @@ function folderName(aFolder) {
   return [aFolder.prettyName, folderStr];
 }
 
-function openConversationInTabOrWindow(urls) {
-  let url = Prefs.kStubUrl + "?urls=" + encodeURIComponent(urls.join(","));
+/**
+ * Makes a conversation url for opening in new windows/tabs.
+ *
+ * @param {Array} urls
+ *   An array of urls to be opened.
+ * @param {Integer} [scrollMode]
+ *   The scroll mode to use.
+ */
+function makeConversationUrl(urls, scrollMode) {
+  let queryString = "?urls=" + encodeURIComponent(urls.join(","));
+
+  if (scrollMode) {
+    queryString += "&scrollMode=" + scrollMode;
+  }
+  return Prefs.kStubUrl + queryString;
+}
+
+/**
+ * Opens a conversation in a new tab or window.
+ *
+ * @param {Array} urls
+ *   An array of urls to be opened.
+ * @param {Integer} [scrollMode]
+ *   The scroll mode to use.
+ */
+function openConversationInTabOrWindow(urls, scrollMode) {
+  let url = makeConversationUrl(urls, scrollMode);
 
   let window = getMail3Pane();
   // Counting some extra pixels for window decorations.
   let height = Math.min(window.screen.availHeight - 30, 1024);
-  switch (Prefs.getInt("mail.openMessageBehavior")) {
+  switch (Services.prefs.getIntPref("mail.openMessageBehavior")) {
     case 0:
       window.open(url, "_blank", "chrome,resizable,width=640,height=" + height);
       break;

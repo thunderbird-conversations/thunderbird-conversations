@@ -196,8 +196,6 @@ class MessageHeaderOptions extends React.PureComponent {
       actionButtonType = "draft";
     }
 
-    // TODO: Hide and show details buttons should have all control merged into here
-    // once we've got more of the actual message display into react.
     return (
       <div className="options">
         {!!this.props.attachments.length && (

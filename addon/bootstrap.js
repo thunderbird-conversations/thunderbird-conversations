@@ -15,6 +15,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   GlodaAttrProviders:
     "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
   MonkeyPatch: "chrome://conversations/content/modules/monkeypatch.js",
+  Prefs: "chrome://conversations/content/modules/prefs.js",
   Services: "resource://gre/modules/Services.jsm",
 });
 
@@ -132,12 +133,11 @@ let windowObserver = {
   },
 };
 
-function startup(aData, aReason) {
+async function startup(aData, aReason) {
+  await Prefs.initialized;
+
   const { setupLogging, dumpCallStack } = ChromeUtils.import(
     "chrome://conversations/content/modules/log.js"
-  );
-  const { Config } = ChromeUtils.import(
-    "chrome://conversations/content/modules/config.js"
   );
 
   Log = setupLogging("Conversations.MonkeyPatch");
@@ -151,20 +151,6 @@ function startup(aData, aReason) {
 
     // Patch all future windows
     Services.ww.registerNotification(windowObserver);
-
-    // Show the assistant if the extension is installed or enabled
-    if (
-      aReason == Config.BOOTSTRAP_REASONS.ADDON_INSTALL ||
-      aReason == Config.BOOTSTRAP_REASONS.ADDON_ENABLE
-    ) {
-      Services.ww.openWindow(
-        null,
-        "chrome://conversations/content/assistant/assistant.xhtml",
-        "",
-        "chrome,width=800,height=500",
-        {}
-      );
-    }
   } catch (e) {
     Cu.reportError(e);
     dumpCallStack(e);

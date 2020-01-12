@@ -132,5 +132,95 @@
   "options.monospaced_senders_desc": {
     "message": "Els  missatges provinents d'aquestes adreçes haurien de mostrar-se en fonts monoespaiades (separades utilitzant comes)",
     "description": "Options - description for monospaced sender setting."
+  },
+
+  "assistant.title": {
+    "message": "Assistent de la primera sessió",
+    "description": "The document title of the assistant page."
+  },
+
+  "assistant.intro": {
+    "message": "Hola, això ésThunderbird Conversations!",
+    "description": "Introduction paragraph for the assistant."
+  },
+
+  "assistant.p1": {
+    "message": "Per tal de fer la teva vida més fàcil, aquest assistent ajustarà la configuració del Thunderbird per assegurar-nos que disfrutes de una experiència òptima. No volem que et sentis insatisfet",
+    "description": "First detail paragraph for the assistant."
+  },
+
+  "assistant.p2": {
+    "message": "Els ajustos que fem són tots reversibles, per tant no et preocupis: si no vols seguir usant les Thunderbird Conversations, revertirem tots els canvis en les preferències que vam fer al moment que tu  suprimeixis la extensió.",
+    "description": "Second detail paragraph for the assistant."
+  },
+
+  "assistant.p3": {
+    "message": "Això pot tardar un temps. Et pots esperar a que la finestra es tanqui sola, o tancar-la tu mateix, i pots seguir el procés des de les eines > Monitor d'activitat.",
+    "description": "Third detail paragraph for the assistant."
+  },
+
+  "assistant.working": {
+    "message": "Treballant...",
+    "description": "An indication that the assistant is working."
+  },
+
+  "assistant.review": {
+    "message": "Revisa els canvis",
+    "description": "The review button title for the assistant."
+  },
+
+  "assistant.apply": {
+    "message": "Aplica els canvis",
+    "description": "The apply button title for the assistant."
+  },
+
+  "assistant.settings": {
+    "message": "Settings",
+    "description": "The settings section legend for the assistant."
+  },
+
+  "assistant.actionEnableGloda": {
+    "message": "Assegura't que la Búsqueda Global i l'Indexer estàn activats.",
+    "description": "Option text for enabling Gloda."
+  },
+
+  "assistant.actionDontExpand": {
+    "message": "Dins la llista de missatges, no expandeixis els fils de conversa de missatges no llegits.",
+    "description": "Option text for not expanding message threads."
+  },
+
+  "assistant.actionAttachmentsInline": {
+    "message": "NO mostris els adjunts en la línia (fortament recomanat).",
+    "description": "Option text for showing attachments inline."
+  },
+
+  "assistant.actionOfflineDownload": {
+    "message": "La bústia d'Entrada i els missatges enviats estàn sicronitzats per un emmagatzematge fora de línia  (fortament recomanat).",
+    "description": "Option text for allowing offline download."
+  },
+
+  "assistant.actionUnifiedInboxSearchesSent": {
+    "message": "La bústia d'entrada unificada també busca a la bústia d'enviats (fortament recomanat).",
+    "description": "Option text for adding sent to the unified inbox."
+  },
+
+  "assistant.actionSetupView": {
+    "message": "Canvia a la bústia d'entrada global, se't mostra una mica embolicada, separa per data,  activa la columna de recompte de missatges no llegits i una nova columna d'\"entremig\"(fortament recomanat).",
+    "description": "Option text for how the view is set."
+  },
+
+  "assistant.actionSetupViewDefaults": {
+    "message": "Fes servir totes aquestes preferències personalitzades de separació per a totes les carpetes.",
+    "description": "Option text for setting the view defaults."
+  },
+
+  "assistant.actionEnsureMessagePaneVisible": {
+    "message": "Assegura't que el panell de missatges és visible.",
+    "description": "Option text for ensuring the message pane is visible."
+  },
+
+  "assistant.settings2": {
+    "message": "T'agradaria activar més opcions després ? Pots accedir a aquest assistent a través del panell de preferències,  es troba a sota de  la secció : \"Avançat\" .",
+    "description": "Paragraph informing users of the ability to change settings later."
   }
 }

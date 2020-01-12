@@ -55,9 +55,8 @@ const { setupLogging, dumpCallStack } = ChromeUtils.import(
   "chrome://conversations/content/modules/log.js"
 );
 
-let strings = new StringBundle(
-  "chrome://conversations/locale/message.properties"
-);
+let strings;
+let templateStrings;
 
 let Log = setupLogging("Conversations.Modules.Enigmail");
 
@@ -70,33 +69,38 @@ let Log = setupLogging("Conversations.Modules.Enigmail");
 
 // Enigmail support, thanks to Patrick Brunschwig!
 
-// XXX Work out how/where EnigmailFuncs, Enigmail, EnigmailConstants and EnigmailRules
-// get imported into this scope. It looks like they should be through the enigmail
-// resources, but all of those only appear to export a single item per jsm.
-/* eslint-disable no-unused-vars */
-// eslint-disable-next-line no-redeclare
 let window = getMail3Pane();
 let hasEnigmail;
+
 try {
-  /* globals EnigmailCore, EnigmailData, EnigmailLocale,
-             EnigmailFuncs, Enigmail, EnigmailPrefs, EnigmailDialog,
-             EnigmailConstants, EnigmailRules, EnigmailArmor,
-             EnigmailDecryption, EnigmailExecution */
-  ChromeUtils.import("chrome://enigmail/content/modules/core.jsm");
-  ChromeUtils.import("chrome://enigmail/content/modules/data.jsm");
-  ChromeUtils.import("chrome://enigmail/content/modules/dialog.jsm");
-  ChromeUtils.import("chrome://enigmail/content/modules/prefs.jsm");
-  ChromeUtils.import("chrome://enigmail/content/modules/locale.jsm");
-  ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm");
-  // eslint-disable-next-line no-unused-vars
-  ChromeUtils.import("chrome://enigmail/content/modules/execution.jsm");
   hasEnigmail = true;
+  ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm");
   Log.debug("Enigmail plugin for Thunderbird Conversations loaded!");
-} catch (e) {
+} catch (ex) {
   hasEnigmail = false;
   Log.debug("Enigmail doesn't seem to be installed...");
 }
-/* eslint-enable no-unused-vars */
+
+if (hasEnigmail) {
+  XPCOMUtils.defineLazyModuleGetters(this, {
+    EnigmailConstants: "chrome://enigmail/content/modules/constants.jsm",
+    EnigmailCore: "chrome://enigmail/content/modules/core.jsm",
+    EnigmailData: "chrome://enigmail/content/modules/data.jsm",
+    EnigmailDecryption: "chrome://enigmail/content/modules/decryption.jsm",
+    EnigmailDialog: "chrome://enigmail/content/modules/dialog.jsm",
+    EnigmailFuncs: "chrome://enigmail/content/modules/funcs.jsm",
+    EnigmailLocale: "chrome://enigmail/content/modules/locale.jsm",
+    EnigmailPrefs: "chrome://enigmail/content/modules/prefs.jsm",
+    EnigmailRules: "chrome://enigmail/content/modules/rules.jsm",
+  });
+
+  strings = new StringBundle(
+    "chrome://conversations/locale/message.properties"
+  );
+  templateStrings = new StringBundle(
+    "chrome://conversations/locale/template.properties"
+  );
+}
 
 let enigmailSvc;
 // used in enigmailMsgComposeOverlay.js
@@ -120,7 +124,7 @@ if (hasEnigmail) {
   }
   try {
     let loader = Services.scriptloader;
-    /* globals EnigmailMsgCompFields, EnigmailEncryption */
+    /* globals Enigmail, EnigmailMsgCompFields, EnigmailEncryption */
     loader.loadSubScript(
       "chrome://enigmail/content/ui/enigmailMsgComposeOverlay.js",
       global
@@ -153,13 +157,17 @@ if (hasEnigmail) {
     "load",
     function _overrideUpdateSecurity() {
       let w = getMail3Pane();
-      w.addEventListener(
-        "load-enigmail",
-        function _overrideUpdateSecurityInner() {
-          overrideUpdateSecurity(messagepane, w);
-        },
-        { once: true, capture: true }
-      );
+      if (w.Enigmail.hdrView) {
+        overrideUpdateSecurity(messagepane, w);
+      } else {
+        w.addEventListener(
+          "load-enigmail",
+          () => {
+            overrideUpdateSecurity(messagepane, w);
+          },
+          { once: true, capture: true }
+        );
+      }
     },
     { once: true, capture: true }
   );
@@ -176,7 +184,7 @@ function overrideUpdateSecurity(messagepane, w) {
   // Called after decryption or verification is completed.
   // Security status of a message is updated and shown at the status bar
   // and the header box.
-  headerSink.updateSecurityStatus = function _updateSecurityStatus_patched(
+  headerSink.updateSecurityStatus = function(
     unusedUriSpec,
     exitCode,
     statusFlags,
@@ -196,21 +204,16 @@ function overrideUpdateSecurity(messagepane, w) {
     }
     let message;
     let msgHdr = uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
-    let uriSpec = msgHdrGetUri(msgHdr);
     if (w._currentConversation) {
-      for (let x of w._currentConversation.messages) {
-        if (x.message._uri == uriSpec) {
-          message = x.message;
-          break;
-        }
-      }
+      let uriSpec = msgHdrGetUri(msgHdr);
+      message = w._currentConversation.getMessage(uriSpec);
     }
     if (!message) {
       Log.error("Message for the security info not found!");
       return;
     }
     if (message._updateHdrIcons) {
-      // _updateHdrIcons is assgined if this is called before.
+      // _updateHdrIcons is assigned if this is called before.
       // This function will be called twice a PGP/MIME encrypted message.
       return;
     }
@@ -219,9 +222,9 @@ function overrideUpdateSecurity(messagepane, w) {
     // message.isEncrypted is true for only signed pgp/mime message.
     // We reset decrypted label from decryption status.
     if (statusFlags & nsIEnigmail.DECRYPTION_OKAY) {
-      message._domNode.classList.add("decrypted");
+      addEncryptedTag(message);
     } else {
-      message._domNode.classList.remove("decrypted");
+      removeEncryptedTag(message);
     }
 
     let encToDetails = "";
@@ -248,11 +251,11 @@ function overrideUpdateSecurity(messagepane, w) {
     showHdrIconsOnStreamed(message, updateHdrIcons);
 
     // Show signed label of encrypted and signed pgp/mime.
-    addSignedLabel(statusFlags, message._domNode, message);
+    addSignedLabel(statusFlags, message);
   };
 
   let originalHandleSMimeMessage = headerSink.handleSMimeMessage;
-  headerSink.handleSMimeMessage = function _handleSMimeMessage_patched(uri) {
+  headerSink.handleSMimeMessage = function(uri) {
     // Use original if the classic reader is used.
     if (messagepane.contentDocument.location.href !== "about:blank?") {
       originalHandleSMimeMessage.apply(this, arguments);
@@ -581,36 +584,11 @@ function prepareForShowHdrIcons(aMessage) {
   let w = topMail3Pane(aMessage);
   let conversation = aMessage._conversation;
 
-  // w.Conversations.currentConversation is assined when conversation
+  // w.Conversations.currentConversation is assigned when conversation
   // _onComplete(), but we need currentConversation in
   // updateSecurityStatus() which is possible to be called before
   // _onComplete().
   w._currentConversation = conversation;
-}
-
-// Show signed status in the notification bar.
-// Click event of Details button is set.
-function showNotificationBar(aMessage) {
-  let w = topMail3Pane(aMessage);
-  let enigmailBar = aMessage._domNode.querySelector(".enigmailBar");
-  if (enigmailBar.style.display === "block") {
-    return;
-  }
-  let signed = w.Enigmail.hdrView.statusBar.getAttribute("signed");
-  if (signed) {
-    enigmailBar.classList.add(signed);
-    let message = escapeHtml(w.Enigmail.msg.securityInfo.statusLine);
-    if (w.Enigmail.msg.securityInfo.statusArr.length) {
-      message += "<br/>" + escapeHtml(w.Enigmail.msg.securityInfo.statusArr[0]);
-    }
-    // eslint-disable-next-line no-unsanitized/property
-    enigmailBar.querySelector(".enigmailMessage").innerHTML = message;
-    enigmailBar.style.display = "block";
-    let button = enigmailBar.querySelector(".enigmailDetails button");
-    button.addEventListener("click", function(event) {
-      w.Enigmail.msg.viewSecurityInfo(event);
-    });
-  }
 }
 
 // Update security info display of the message.
@@ -623,22 +601,12 @@ function updateSecurityInfo(aMessage) {
 }
 
 // Show security info only if the message is focused.
-function showHdrIconsOnStreamed(aMessage, updateHdrIcons) {
-  let w = topMail3Pane(aMessage);
-  let { _domNode: node, _conversation: conversation } = aMessage;
-  let focused = node == node.ownerDocument.activeElement;
-  if (!focused) {
-    let focusThis = conversation._tellMeWhoToScroll();
-    focused = aMessage == conversation.messages[focusThis].message;
-  }
+function showHdrIconsOnStreamed(message, updateHdrIcons) {
+  let w = topMail3Pane(message);
   w.Enigmail.hdrView.statusBarHide();
   updateHdrIcons();
-  showNotificationBar(aMessage);
-  if (!focused) {
-    w.Enigmail.hdrView.statusBarHide();
-  }
   // Prepare for showing on focus.
-  aMessage._updateHdrIcons = updateHdrIcons;
+  message._updateHdrIcons = updateHdrIcons;
 }
 
 // Override treeController defined in enigmailMessengerOverlay.js
@@ -686,28 +654,10 @@ function patchForShowSecurityInfo(aWindow) {
   );
 }
 
-// Add click event to view security information.
-// The event is added to decrypted and signed tags.
-function addViewSecurityInfoEvent(aMessage) {
-  if (aMessage._viewSecurityInfo) {
-    return;
-  }
-  let w = getMail3Pane();
-  aMessage._viewSecurityInfo = function(event) {
-    // Open alert dialog which contains security info.
-    w.Enigmail.msg.viewSecurityInfo(event);
-  };
-  for (let x of ["decrypted", "signed"]) {
-    let tag = aMessage._domNode.querySelector(".tag-" + x);
-    tag.addEventListener("click", aMessage._viewSecurityInfo);
-    tag.style.cursor = "pointer";
-  }
-}
-
 // Add signed label and click action to a signed message.
-function addSignedLabel(aStatus, aDomNode, aMessage) {
+function addSignedLabel(status, msg) {
   if (
-    aStatus &
+    status &
     (nsIEnigmail.BAD_SIGNATURE |
       nsIEnigmail.GOOD_SIGNATURE |
       nsIEnigmail.EXPIRED_KEY_SIGNATURE |
@@ -717,66 +667,86 @@ function addSignedLabel(aStatus, aDomNode, aMessage) {
       nsIEnigmail.EXPIRED_KEY_SIGNATURE |
       nsIEnigmail.EXPIRED_SIGNATURE)
   ) {
-    aDomNode.classList.add("signed");
-    addViewSecurityInfoEvent(aMessage);
+    msg.addSpecialTag({
+      canClick: true,
+      classNames: "enigmail-signed",
+      icon: "chrome://conversations/skin/material-icons.svg#edit",
+      name: templateStrings.get("messageSigned"),
+      onClick: {
+        type: "enigmail",
+        detail: "viewSecurityInfo",
+      },
+      title:
+        status & nsIEnigmail.UNVERIFIED_SIGNATURE
+          ? templateStrings.get("unknownGood")
+          : templateStrings.get("messageSignedLong"),
+    });
   }
-  if (aStatus & nsIEnigmail.UNVERIFIED_SIGNATURE) {
-    for (let x of aDomNode.querySelectorAll(".tag-signed")) {
-      x.setAttribute("title", strings.get("unknownGood"));
-    }
-  }
+}
+
+function addEncryptedTag(msg) {
+  msg.addSpecialTag({
+    canClick: true,
+    classNames: "enigmail-decrypted",
+    icon: "chrome://conversations/skin/material-icons.svg#vpn_key",
+    name: templateStrings.get("messageDecrypted"),
+    onClick: {
+      type: "enigmail",
+      detail: "viewSecurityInfo",
+    },
+    title: templateStrings.get("messageDecryptedLong"),
+  });
+}
+
+function removeEncryptedTag(msg) {
+  msg.removeSpecialTag({
+    classNames: "enigmail-decrypted",
+    name: templateStrings.get("messageDecrypted"),
+  });
 }
 
 let enigmailHook = {
   _domNode: null,
   _originalText: null, // for restoring original text when sending message is canceled
 
-  onMessageBeforeStreaming: function _enigmailHook_onBeforeStreaming(aMessage) {
-    if (enigmailSvc) {
-      let {
-        _attachments: attachments,
-        /* _msgHdr: msgHdr, */ _domNode: domNode,
-      } = aMessage;
-      this._domNode = domNode;
-      let w = topMail3Pane(aMessage);
-
-      let hasSig =
-        (aMessage.contentType + "").search(/^multipart\/signed(;|$)/i) == 0;
-      for (let x of attachments) {
-        if (x.contentType.search(/^application\/pgp-signature/i) == 0) {
-          hasSig = true;
-        }
-      }
-      if (hasSig) {
-        aMessage._domNode.classList.add("signed");
-      }
-
-      // Current message uri should be blank to decrypt all PGP/MIME messages.
-      w.Enigmail.msg.getCurrentMsgUriSpec = function() {
-        return "";
-      };
-      verifyAttachments(aMessage);
-      prepareForShowHdrIcons(aMessage);
-      patchForShowSecurityInfo(w);
+  onMessageBeforeStreaming(msg) {
+    if (!enigmailSvc) {
+      return;
     }
+    let w = topMail3Pane(msg);
+
+    // Current message uri should be blank to decrypt all PGP/MIME messages.
+    w.Enigmail.msg.getCurrentMsgUriSpec = function() {
+      return "";
+    };
+    verifyAttachments(msg);
+    prepareForShowHdrIcons(msg);
+    patchForShowSecurityInfo(w);
   },
 
   onMessageStreamed(msgHdr, iframe, msgWindow, message) {
     let iframeDoc = iframe.contentDocument;
     if (iframeDoc.body.textContent.length && hasEnigmail) {
-      // TODO: FIXME
-      /* exported tryEnigmail */
-      // let status = tryEnigmail(iframeDoc, message, msgWindow);
-      // if (status & nsIEnigmail.DECRYPTION_OKAY)
-      //   aDomNode.classList.add("decrypted");
-      // if (aDomNode.classList.contains("decrypted"))
-      //   addViewSecurityInfoEvent(message);
-      // addSignedLabel(status, aDomNode, message);
+      let status = tryEnigmail(iframeDoc, message, msgWindow);
+      if (status & nsIEnigmail.DECRYPTION_OKAY) {
+        addEncryptedTag(message);
+      }
+      addSignedLabel(status, message);
+    }
+  },
+
+  onMessageTagClick(win, event, extraData) {
+    if (extraData.type != "enigmail") {
+      return;
+    }
+
+    if (extraData.detail == "viewSecurityInfo") {
+      win.Enigmail.msg.viewSecurityInfo(event);
     }
   },
 
   // eslint-disable-next-line complexity
-  onMessageBeforeSendOrPopout: function _enigmailHook_onMessageBeforeSendOrPopout(
+  onMessageBeforeSendOrPopout(
     aAddress,
     aEditor,
     aStatus,
@@ -1023,7 +993,7 @@ let enigmailHook = {
     return aStatus;
   },
 
-  onMessageBeforeSendOrPopout_canceled: function _enigmailHook_onMessageBeforeSendOrPopout_canceled(
+  onMessageBeforeSendOrPopout_canceled(
     aAddress,
     aEditor,
     aStatus,
@@ -1040,7 +1010,7 @@ let enigmailHook = {
     }
   },
 
-  onComposeSessionChanged: function _enigmailHook_onComposeSessionChanged(
+  onComposeSessionChanged(
     aComposeSession,
     aMessage,
     aAddress,
@@ -1204,7 +1174,7 @@ let enigmailHook = {
   },
 
   // Update security info when the message is selected.
-  onMessageSelected: function _enigmailHook_onMessageSelected(aMessage) {
+  onMessageSelected(aMessage) {
     if (hasEnigmail) {
       updateSecurityInfo(aMessage);
     }

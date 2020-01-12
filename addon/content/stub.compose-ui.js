@@ -19,7 +19,12 @@ var { msgHdrsArchive, msgHdrIsArchive, msgHdrGetUri } = ChromeUtils.import(
 var { sendMessage } = ChromeUtils.import(
   "chrome://conversations/content/modules/stdlib/send.js"
 );
-var { composeInIframe, htmlToPlainText, replyAllParams } = ChromeUtils.import(
+var {
+  composeInIframe,
+  htmlToPlainText,
+  replyAllParams,
+  parse,
+} = ChromeUtils.import(
   "chrome://conversations/content/modules/stdlib/compose.js"
 );
 var { getHooks } = ChromeUtils.import(
@@ -351,7 +356,7 @@ function getActiveEditor() {
 function createComposeSession(what) {
   // Do that now so that it doesn't have to be implemented by each compose
   // session type.
-  if (Prefs.getBool("mail.spellcheck.inline")) {
+  if (Services.prefs.getBoolPref("mail.spellcheck.inline")) {
     for (let elt of document.getElementsByTagName("textarea")) {
       elt.setAttribute("spellcheck", true);
     }
@@ -745,7 +750,7 @@ ComposeSession.prototype = {
     let deliverMode;
     if (Services.io.offline) {
       deliverMode = Ci.nsIMsgCompDeliverMode.Later;
-    } else if (Prefs.getBool("mailnews.sendInBackground")) {
+    } else if (Services.prefs.getBoolPref("mailnews.sendInBackground")) {
       deliverMode = Ci.nsIMsgCompDeliverMode.Background;
     } else {
       deliverMode = Ci.nsIMsgCompDeliverMode.Now;
@@ -1075,23 +1080,6 @@ function quickReplyDrop(event) {
   }
 }
 
-// ----- Helpers
-
-// Just get the email and/or name from a MIME-style "John Doe <john@blah.com>"
-//  line.
-function parse(aMimeLine) {
-  let emails = {};
-  let fullNames = {};
-  let names = {};
-  MailServices.headerParser.parseHeadersWithArray(
-    aMimeLine,
-    emails,
-    names,
-    fullNames
-  );
-  return [names.value, emails.value];
-}
-
 // ----- Listeners.
 //
 // These are notified about the outcome of the send process and take the right
@@ -1397,6 +1385,7 @@ function masqueradeAsQuickCompose() {
       node.find(".popularRemove").click(function() {
         Log.debug("Removing", data.name, data.email);
         // Mark it in the prefs
+        // TODO: Fix how these work.
         let unwantedRecipients = JSON.parse(
           Prefs.getString("conversations.unwanted_recipients")
         );

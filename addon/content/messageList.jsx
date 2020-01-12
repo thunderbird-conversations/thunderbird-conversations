@@ -13,6 +13,7 @@ class _MessageList extends React.PureComponent {
           this.props.messages.msgData.map((message, index) => (
             <Message
               key={index}
+              autoMarkAsRead={this.props.summary.autoMarkAsRead}
               dispatch={this.props.dispatch}
               displayingMultipleMsgs={!!this.props.messages.length}
               iframesLoading={this.props.summary.iframesLoading}

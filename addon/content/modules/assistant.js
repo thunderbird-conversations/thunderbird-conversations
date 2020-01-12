@@ -19,8 +19,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   getMail3Pane: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   fixIterator: "resource:///modules/iteratorUtils.jsm",
   MailUtils: "resource:///modules/MailUtils.jsm",
-  MixIn: "chrome://conversations/content/modules/stdlib/misc.js",
-  Prefs: "chrome://conversations/content/modules/prefs.js",
   Services: "resource://gre/modules/Services.jsm",
   VirtualFolderHelper: "resource:///modules/virtualFolderWrapper.js",
 });
@@ -47,81 +45,83 @@ function getSmartFolderNamed(aFolderName) {
   return smartInbox;
 }
 
-function SimpleCustomization(aDesiredValue, aGetter, aSetter) {
-  this.desiredValue = aDesiredValue;
-  this.get = aGetter;
-  this.set = aSetter;
-}
+class SimpleCustomization {
+  constructor(aDesiredValue, aGetter, aSetter) {
+    this.desiredValue = aDesiredValue;
+    if (aGetter) {
+      this.get = aGetter;
+    }
+    if (aSetter) {
+      this.set = aSetter;
+    }
+  }
 
-SimpleCustomization.prototype = {
   install() {
     let oldValue = this.get();
     this.set(this.desiredValue);
     return oldValue;
-  },
+  }
 
   uninstall(oldValue) {
     let newValue = this.get();
     if (newValue == this.desiredValue) {
       this.set(oldValue);
     }
-  },
-};
-
-function PrefCustomization({ name, type, value }) {
-  this.type = type;
-  this.name = name;
-  this.desiredValue = value;
+  }
 }
 
-PrefCustomization.prototype = {
+class PrefCustomization extends SimpleCustomization {
+  constructor({ name, type, value }) {
+    super(value);
+    this.type = type;
+    this.name = name;
+  }
+
   get() {
     switch (this.type) {
       case kPrefInt:
-        return Prefs.getInt(this.name);
+        return Services.prefs.getIntPref(this.name);
       case kPrefChar:
-        return Prefs.getChar(this.name);
+        return Services.prefs.getCharPref(this.name);
       case kPrefBool:
-        return Prefs.getBool(this.name);
+        return Services.prefs.getBoolPref(this.name);
       default:
         throw new Error(`Unexpected type ${this.type}`);
     }
-  },
+  }
 
   set(aValue) {
     switch (this.type) {
       case kPrefInt:
-        Prefs.setInt(this.name, aValue);
+        Services.prefs.setIntPref(this.name, aValue);
         break;
       case kPrefChar:
-        Prefs.setChar(this.name, aValue);
+        Services.prefs.setCharPref(this.name, aValue);
         break;
       case kPrefBool:
-        Prefs.setBool(this.name, aValue);
+        Services.prefs.setBoolPref(this.name, aValue);
         break;
     }
-  },
-};
-
-MixIn(PrefCustomization, SimpleCustomization.prototype);
-
-function MultipleCustomization(aParams) {
-  this.customizations = aParams
-    ? aParams.map(p => new PrefCustomization(p))
-    : [];
+  }
 }
 
-MultipleCustomization.prototype = {
+class MultipleCustomization {
+  constructor(aParams) {
+    this.customizations = aParams
+      ? aParams.map(p => new PrefCustomization(p))
+      : [];
+  }
+
   install() {
     return this.customizations.map(c => c.install());
-  },
+  }
 
   uninstall(uninstallInfos) {
     this.customizations.forEach(function(x, i) {
       x.uninstall(uninstallInfos[i]);
     });
-  },
-};
+  }
+}
 
 // let eid = getMail3Pane().document.getElementById;
 //
@@ -132,8 +132,6 @@ MultipleCustomization.prototype = {
 let eid = id => getMail3Pane().document.getElementById(id);
 
 var Customizations = {
-  ttop() {},
-
   actionSetupViewDefaults: new MultipleCustomization([
     { name: "mailnews.default_sort_order", type: kPrefInt, value: 2 },
     { name: "mailnews.default_sort_type", type: kPrefInt, value: 18 },
@@ -171,7 +169,7 @@ var Customizations = {
   ),
 
   actionSetupView: {
-    install() {
+    async install() {
       /**
        * const kShowUnthreaded = 0;
        * const kShowThreaded = 1;
@@ -213,40 +211,38 @@ var Customizations = {
         ftv.selectFolder(smartInbox);
       }
 
-      let moveOn = function() {
-        let tabmail = mainWindow.document.getElementById("tabmail");
-        tabmail.switchToTab(0);
-        mainWindow.MsgSortThreaded();
-        /**
-         * We don't know how to revert these, so forget about it for now.
-         */
-        // mainWindow.MsgSortThreadPane('byDate');
-        // mainWindow.MsgSortDescending();
-        mainWindow.goDoCommand("cmd_collapseAllThreads");
-        state.unreadCol = eid("unreadCol").getAttribute("hidden");
-        state.senderCol = eid("senderCol").getAttribute("hidden");
-        state.correspondentCol = eid("correspondentCol").getAttribute("hidden");
-        eid("unreadCol").setAttribute("hidden", "false");
-        eid("senderCol").setAttribute("hidden", "true");
-        eid("correspondentCol").setAttribute("hidden", "true");
-        eid("betweenCol").setAttribute("hidden", "false");
-        Customizations.ttop();
-      };
-      let i = 0;
-      let waitForIt = function() {
-        if (
-          smartInbox &&
-          mainWindow.gFolderDisplay.displayedFolder != smartInbox &&
-          i++ < 10
-        ) {
-          mainWindow.setTimeout(waitForIt, 150);
-        } else {
-          moveOn();
-        }
-      };
-      Customizations.expect();
-      waitForIt(); // will top()
+      await new Promise(resolve => {
+        let i = 0;
+        let waitForIt = function() {
+          if (
+            smartInbox &&
+            mainWindow.gFolderDisplay.displayedFolder != smartInbox &&
+            i++ < 10
+          ) {
+            mainWindow.setTimeout(waitForIt, 150);
+          } else {
+            resolve();
+          }
+        };
+        waitForIt();
+      });
 
+      let tabmail = mainWindow.document.getElementById("tabmail");
+      tabmail.switchToTab(0);
+      mainWindow.MsgSortThreaded();
+      /**
+       * We don't know how to revert these, so forget about it for now.
+       */
+      // mainWindow.MsgSortThreadPane('byDate');
+      // mainWindow.MsgSortDescending();
+      mainWindow.goDoCommand("cmd_collapseAllThreads");
+      state.unreadCol = eid("unreadCol").getAttribute("hidden");
+      state.senderCol = eid("senderCol").getAttribute("hidden");
+      state.correspondentCol = eid("correspondentCol").getAttribute("hidden");
+      eid("unreadCol").setAttribute("hidden", "false");
+      eid("senderCol").setAttribute("hidden", "true");
+      eid("correspondentCol").setAttribute("hidden", "true");
+      eid("betweenCol").setAttribute("hidden", "false");
       return state;
     },
 
@@ -270,9 +266,10 @@ var Customizations = {
       mainWindow.gFolderTreeView.mode = ftvMode;
 
       if (initialFolder.uri) {
-        mainWindow.gFolderDisplay.show(
-          MailUtils.getFolderForURI(initialFolder.uri)
-        );
+        const folder = MailUtils.getExistingFolder(initialFolder.uri);
+        if (folder) {
+          mainWindow.gFolderDisplay.show(folder);
+        }
         switch (initialFolder.show) {
           case 0:
             mainWindow.gFolderDisplay.view.showUnthreaded = true;
@@ -419,7 +416,7 @@ var Customizations = {
 
     uninstall([aChangedFolders, aChangedServers]) {
       for (let uri of aChangedFolders) {
-        let folder = MailUtils.getFolderForURI(uri);
+        let folder = MailUtils.getExistingFolder(uri);
         if (folder) {
           folder.clearFlag(nsMsgFolderFlags_Offline);
         }

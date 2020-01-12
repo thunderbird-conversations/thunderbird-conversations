@@ -29,6 +29,21 @@ export class Prefs {
       console.log(ex);
     }
 
+    // Now we've done the migration, tell the backend about all our prefs.
+    const results = await browser.storage.local.get("preferences");
+    if (results.preferences) {
+      for (const prefName of Object.getOwnPropertyNames(kPrefDefaults)) {
+        await browser.conversations.setPref(
+          prefName,
+          results.preferences[prefName]
+        );
+      }
+      // Set a special pref so bootstrap knows it can continue.
+      await browser.conversations.setPref("finishedStartup", true);
+    } else {
+      console.error("Could not find the preferences to send to the API.");
+    }
+
     this._addListener();
   }
 
@@ -46,6 +61,9 @@ export class Prefs {
 
       for (const prefName of Object.getOwnPropertyNames(kPrefDefaults)) {
         prefs[prefName] = await browser.conversations.getPref(prefName);
+        if (prefs[prefName] === undefined) {
+          prefs[prefName] = kPrefDefaults[prefName];
+        }
       }
       browser.storage.local.set({ preferences: prefs }).catch(console.error);
     }
@@ -59,9 +77,13 @@ export class Prefs {
       for (const prefName of Object.getOwnPropertyNames(
         changed.preferences.newValue
       )) {
+        if (prefName == "migratedLegacy") {
+          continue;
+        }
         if (
+          !changed.preferences.oldValue ||
           changed.preferences.oldValue[prefName] !=
-          changed.preferences.newValue[prefName]
+            changed.preferences.newValue[prefName]
         ) {
           browser.conversations.setPref(
             prefName,

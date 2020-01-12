@@ -3,7 +3,7 @@ Releasing a new version
 
 * Ensure L10n is up to date
 * Ensure the correct changeset is checked out
-* Ensure `npm install` has been run
+* Ensure `npm ci` has been run
 * Ensure `npm test` has been run
 * Ensure the build runs in the expected versions of Thunderbird
 * Run `npm version <version>` (see below for details on `<version>`)
@@ -19,8 +19,10 @@ tag, e.g.
 * 3.0.0-pre2
 * etc.
 
+It can also be just `patch`, `minor` or `major` depending on the release.
+
 Lastly:
 
-* Run `npm run build`
+* Run `npm run prod`
 * Check that the xpi installs in Thunderbird and is the correct version
 * Upload the xpi to the add-ons site.

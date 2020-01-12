@@ -5,11 +5,11 @@ var EXPORTED_SYMBOLS = ["registerHook", "getHooks", "removeHook"];
  *
  * let hook = {
  *  // Called before the given message is streamed into the <iframe>.
- *  onMessageBeforeStreaming (aMessage) {
+ *  onMessageBeforeStreaming(message) {
  *  },
  *
  *  // Called when the given message has been displayed.
- *  onMessageStreamed (aMsgHdr, aDomNode, aMsgWindow, aMessage) {
+ *  onMessageStreamed(msgHdr, iframe, msgWindow, message) {
  *  },
  *
  *  // Called before the quick reply message is send or opened in a new
@@ -31,16 +31,16 @@ var EXPORTED_SYMBOLS = ["registerHook", "getHooks", "removeHook"];
  *  // @param aAttachmentList The AttachmentList object.
  *  // @param aWindow window object of compose UI.
  *  // @return aStatus Same remark.
- *  onMessageBeforeSendOrPopout_early: function (aAddress, aEditor, aStatus, aPopout, aAttachmentList, aWindow) {
+ *  onMessageBeforeSendOrPopout_early(address, editor, status, popout, attachmentList, window) {
  *  },
- *  onMessageBeforeSendOrPopout: function (aAddress, aEditor, aStatus, aPopout, aAttachmentList, aWindow) {
+ *  onMessageBeforeSendOrPopout(address, editor, status, popout, attachmentList, window) {
  *  },
- *  onMessageBeforeSendOrPopout_canceled: function (aAddress, aEditor, aStatus, aPopout, aAttachmentList, aWindow) {
+ *  onMessageBeforeSendOrPopout_canceled(address, editor, status, popout, attachmentList, window) {
  *  },
  *
  *  // Called when a message is selected.
  *  // @param aMessage Selected message instance.
- *  onMessageSelected (aMessage) {
+ *  onMessageSelected(message) {
  *  },
  *
  *  // Called whenever a new quickreply Compose-Session was
@@ -53,14 +53,14 @@ var EXPORTED_SYMBOLS = ["registerHook", "getHooks", "removeHook"];
  *  // @param aAddress.bcc Same remark.
  *  // @param aEditor a wrapper around the iframe that stands for the editor.
  *  // @param aWindow window object of compose UI.
- *  onComposeSessionChanged (aComposeSession, aMessage, aAddress, aEditor, aWindow) {
+ *  onComposeSessionChanged(composeSession, message, address, editor, window) {
  *  },
  *
  *  // Called whenever a recipient is added to the quickreply
  *  // @param aData list data containing user input
  *  // @param aType type of changed recipient (to, cc, bcc)
  *  // @param aCount number of recipients of this type
- *  onRecipientAdded(aData, aType, aCount) {
+ *  onRecipientAdded(data, type, count) {
  *  },
  *
  *  // Called regardless of whether the Sending operation was successful.
@@ -68,7 +68,7 @@ var EXPORTED_SYMBOLS = ["registerHook", "getHooks", "removeHook"];
  *  // @param aStatus   Status code for the message send.
  *  // @param aMsg      A text string describing the error.
  *  // @param aReturnFile The returned file spec for save to file operations.
- *  onStopSending (aMsgID, aStatus, aMsg, aReturnFile) {
+ *  onStopSending(msgID, status, msg, returnFile) {
  *  }
  * }
  *

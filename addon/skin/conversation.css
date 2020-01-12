@@ -536,6 +536,10 @@ a img {
   vertical-align: middle;
 }
 
+.tags li.can-click {
+  cursor: pointer;
+}
+
 .in-folder {
   cursor: pointer;
 }
@@ -753,11 +757,7 @@ a img {
   display: none;
 }
 
-.message:not(.signed) .tag-signed {
-  display: none;
-}
-
-.tag-signed,
+.special-tag.enigmail-signed,
 .tag-decrypted {
   background-color: #68AB57 !important;
 }
