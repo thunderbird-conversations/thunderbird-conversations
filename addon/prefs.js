@@ -26,13 +26,19 @@ export class Prefs {
     try {
       await this._migrate();
     } catch (ex) {
-      console.log(ex);
+      console.error(ex);
     }
 
     // Now we've done the migration, tell the backend about all our prefs.
     const results = await browser.storage.local.get("preferences");
     if (results.preferences) {
+      let updatePrefs = false;
       for (const prefName of Object.getOwnPropertyNames(kPrefDefaults)) {
+        // Ensure all preference values are defined.
+        if (results.preferences[prefName] === "undefined") {
+          updatePrefs = true;
+          results.preferences[prefName] = kPrefDefaults[prefName];
+        }
         await browser.conversations.setPref(
           prefName,
           results.preferences[prefName]
@@ -40,6 +46,14 @@ export class Prefs {
       }
       // Set a special pref so bootstrap knows it can continue.
       await browser.conversations.setPref("finishedStartup", true);
+
+      if (updatePrefs) {
+        try {
+          await browser.storage.local.set({ preferences: results.preferences });
+        } catch (ex) {
+          console.error(ex);
+        }
+      }
     } else {
       console.error("Could not find the preferences to send to the API.");
     }
