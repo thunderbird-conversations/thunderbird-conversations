@@ -47,8 +47,6 @@ function monkeyPatchWindow(window) {
         currentConversation: null,
         counter: 0,
 
-        quickCompose() {},
-
         createDraftListenerArrayForId(aId) {
           window.Conversations.draftListeners[aId] = [];
         },
@@ -61,24 +59,6 @@ function monkeyPatchWindow(window) {
 
       // Used by the in-stub.html detachTab function
       window.Conversations.monkeyPatch = monkeyPatch;
-
-      window.Conversations.quickCompose = function() {
-        const { Prefs } = ChromeUtils.import(
-          "chrome://conversations/content/modules/prefs.js"
-        );
-        if (Prefs.compose_in_tab) {
-          window.openTab("chromeTab", {
-            chromePage:
-              "chrome://conversations/content/stub.xhtml?quickCompose=1",
-          });
-        } else {
-          window.open(
-            "chrome://conversations/content/stub.xhtml?quickCompose=1",
-            "",
-            "chrome,width=1020,height=600"
-          );
-        }
-      };
 
       // The modules below need to be loaded when a window exists, i.e. after
       // overlays have been properly loaded and applied
