@@ -158,13 +158,9 @@ async function startup(aData, aReason) {
 }
 
 function shutdown(aData, aReason) {
-  const { SimpleStorage } = ChromeUtils.import(
-    "chrome://conversations/content/modules/stdlib/SimpleStorage.js"
-  );
   const { Config } = ChromeUtils.import(
     "chrome://conversations/content/modules/config.js"
   );
-  SimpleStorage.close().catch(Cu.reportError);
 
   // No need to do extra work here
   Log.debug("shutdown, aReason=", aReason);

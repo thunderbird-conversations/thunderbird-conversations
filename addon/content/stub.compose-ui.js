@@ -43,6 +43,8 @@ var { defaultPhotoURI } = ChromeUtils.import(
 
 Log = setupLogging("Conversations.Stub.Compose");
 
+// SimpleStorage has been removed, and this data is migrated into the store.
+// See addon/prefs.js for more info.
 var { SimpleStorage } = ChromeUtils.import(
   "chrome://conversations/content/modules/stdlib/SimpleStorage.js",
   {}
