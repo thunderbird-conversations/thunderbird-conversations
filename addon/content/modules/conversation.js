@@ -1032,6 +1032,12 @@ Conversation.prototype = {
   //  action
   _tellMeWhoToExpand(messages, reactMsgData, aNeedsFocus) {
     switch (Prefs.expand_who) {
+      default:
+        Log.error(
+          false,
+          `Unknown value '${Prefs.expand_who}' for pref expand_who, try changing in the add-on preferences.`
+        );
+      // Falls through so we can default to the same as the pref and keep going.
       case Prefs.kExpandAuto: {
         // In this mode, we scroll to the first unread message (or the last
         //  message if all messages are read), and we expand all unread messages
@@ -1063,9 +1069,6 @@ Conversation.prototype = {
           msgData.expanded = false;
         }
         break;
-      }
-      default: {
-        Log.assert(false, "Unknown value for pref expand_who");
       }
     }
   },

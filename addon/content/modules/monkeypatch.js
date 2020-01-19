@@ -103,21 +103,7 @@ MonkeyPatch.prototype = {
     // parent1.insertBefore(menuitem, after.nextElementSibling);
     // this.pushUndo(() => parent1.removeChild(menuitem));
 
-    // 3) Keyboard shortcut
-    let key = window.document.createXULElement("key");
-    [
-      ["id", "key_conversationsQuickCompose"],
-      ["key", "n"],
-      ["modifiers", "accel,shift"],
-      ["oncommand", "Conversations.quickCompose();"],
-    ].forEach(function([k, v]) {
-      key.setAttribute(k, v);
-    });
-    let parent2 = window.document.getElementById("mailKeys");
-    parent2.appendChild(key);
-    this.pushUndo(() => parent2.removeChild(key));
-
-    // 4) Tree column
+    // 3) Tree column
     let treecol = window.document.createXULElement("treecol");
     [
       ["id", "betweenCol"],

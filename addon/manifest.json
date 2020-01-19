@@ -38,5 +38,13 @@
         "script": "experiment-api/api.js"
       }
     }
+  },
+  "commands": {
+    "quick_compose": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+N"
+      },
+      "description": "Open the quick compose window"
+    }
   }
 }
