@@ -7,13 +7,7 @@
 // background script and to bootstrap.js.
 
 import { browser, i18n } from "./content/es-modules/thunderbird-compat.js";
-import {
-  React,
-  ReactDOM,
-  RTK,
-  ReactRedux,
-  PropTypes,
-} from "./content/es-modules/ui.js";
+import { React, RTK, ReactRedux, PropTypes } from "./content/es-modules/ui.js";
 
 //
 // Create the redux store and appropriate actions/thunks
@@ -30,7 +24,7 @@ const prefsSlice = createSlice({
     },
   },
 });
-const actions = {
+export const actions = {
   initPrefs() {
     return async function(dispatch) {
       const prefs = await browser.storage.local.get("preferences");
@@ -46,7 +40,7 @@ const actions = {
   },
 };
 
-const store = configureStore({ reducer: prefsSlice.reducer });
+export const store = configureStore({ reducer: prefsSlice.reducer });
 store.dispatch(actions.initPrefs());
 
 // A list of all preferences that can be set via the GUI.
@@ -191,7 +185,14 @@ function localize(prefsInfo, i18n = browser.i18n) {
 // React components to render the options types
 //
 
-function ChoiceOption({ title, desc, choices = [], value, name, onChange }) {
+export function ChoiceOption({
+  title,
+  desc,
+  choices = [],
+  value,
+  name,
+  onChange,
+}) {
   const elementName = `choice_${title}`.replace(/\s+/g, "");
   return (
     <React.Fragment>
@@ -232,7 +233,13 @@ ChoiceOption.propTypes = {
   ).isRequired,
 };
 
-function TextOption({ title, desc, value = "", name, onChange = () => {} }) {
+export function TextOption({
+  title,
+  desc,
+  value = "",
+  name,
+  onChange = () => {},
+}) {
   return (
     <React.Fragment>
       <div>
@@ -261,7 +268,13 @@ TextOption.propTypes = {
   onChange: PropTypes.func.isRequired,
 };
 
-function NumericOption({ title, desc, value = 0, name, onChange = () => {} }) {
+export function NumericOption({
+  title,
+  desc,
+  value = 0,
+  name,
+  onChange = () => {},
+}) {
   return (
     <React.Fragment>
       <div>
@@ -291,7 +304,7 @@ NumericOption.propTypes = {
   onChange: PropTypes.func.isRequired,
 };
 
-function BinaryOption({
+export function BinaryOption({
   title,
   desc,
   value = false,
@@ -378,7 +391,7 @@ const ConversationOptions = ReactRedux.connect(state => ({ prefs: state }), {
 })(_ConversationOptions);
 
 // The entry point for the options page
-function Main() {
+export function Main() {
   const [localizedName, setLocalizedName] = React.useState(
     localize("extensionName", i18n)
   );
@@ -414,6 +427,3 @@ function Main() {
     </ReactRedux.Provider>
   );
 }
-
-// Render the preferences page
-ReactDOM.render(<Main />, document.querySelector("#root"));

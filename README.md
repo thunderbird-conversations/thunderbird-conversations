@@ -39,11 +39,12 @@ Development
 Some `thunderbird-conversations` components can be developed fully in the browser. To build these components do
 
 ```
-npm run build:dev-html
+$ npm run dev
 ```
 
 and then browse to http://localhost:8126 and select a browser-compatible component file. For example, http://localhost:8126/options.html  Missing Thunderbird APIs are mocked in `addon/content/es-modules/thunderbird-compat.js`.
 
+Please see [Development.md](docs/Development.md) for details.
 
 Testing
 =======
@@ -53,6 +54,7 @@ To run the tests:
 ```
 $ npm test
 ```
+Please see [Development.md](docs/Development.md) for details.
 
 Contributing
 ============
