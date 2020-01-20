@@ -361,8 +361,8 @@ class Message {
 
     // A list of email addresses
     this.mailingLists = [];
-    this.isReplyListEnabled = null;
-    this.isReplyAllEnabled = null;
+    this.isReplyListEnabled = false;
+    this.isReplyAllEnabled = false;
     this.isEncrypted = false;
     this.bugzillaInfos = {};
     this.notifiedRemoteContentAlready = false;
@@ -971,7 +971,7 @@ class MessageFromGloda extends Message {
     }
 
     this.isReplyListEnabled =
-      "mailingLists" in this._glodaMsg && this._glodaMsg.mailingLists.length;
+      "mailingLists" in this._glodaMsg && !!this._glodaMsg.mailingLists.length;
     let seen = {};
     this.isReplyAllEnabled =
       [this._glodaMsg.from]

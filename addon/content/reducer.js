@@ -23,7 +23,9 @@ XPCOMUtils.defineLazyModuleGetters(this, {
 
 const initialAttachments = {};
 
-const initialMessages = {};
+const initialMessages = {
+  msgData: [],
+};
 
 const initialSummary = {
   conversation: null,
