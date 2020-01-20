@@ -5,27 +5,48 @@
 /* globals React, ReactRedux, PropTypes, Message */
 /* exported MessageList */
 
-class _MessageList extends React.PureComponent {
-  render() {
-    return (
-      <ul id="messageList">
-        {!!this.props.messages.msgData &&
-          this.props.messages.msgData.map((message, index) => (
-            <Message
-              key={index}
-              autoMarkAsRead={this.props.summary.autoMarkAsRead}
-              dispatch={this.props.dispatch}
-              displayingMultipleMsgs={!!this.props.messages.length}
-              iframesLoading={this.props.summary.iframesLoading}
-              index={index}
-              isLastMessage={index == this.props.messages.msgData.length - 1}
-              message={message}
-              prefs={this.props.summary.prefs}
-            />
-          ))}
-      </ul>
-    );
+function _MessageList(props) {
+  // Keep a reference to child elements so `.focus()`
+  // can be called on them in response to a `advanceMessage()`
+  // call. The actual ref is stored in `React.useRef().current`
+  const { current: childRefs } = React.useRef([]);
+
+  function setRef(index, ref) {
+    childRefs[index] = ref;
   }
+
+  function advanceMessage(index, step) {
+    const ref = childRefs[index + step];
+    if (!ref) {
+      return;
+    }
+    ref.focus();
+  }
+
+  return (
+    <ul id="messageList">
+      {!!props.messages.msgData &&
+        props.messages.msgData.map((message, index) => (
+          <Message
+            key={index}
+            autoMarkAsRead={props.summary.autoMarkAsRead}
+            dispatch={props.dispatch}
+            displayingMultipleMsgs={!!props.messages.length}
+            iframesLoading={props.summary.iframesLoading}
+            index={index}
+            isLastMessage={index == props.messages.msgData.length - 1}
+            message={message}
+            prefs={props.summary.prefs}
+            advanceMessage={(step = 1) => {
+              advanceMessage(index, step);
+            }}
+            setRef={ref => {
+              setRef(index, ref);
+            }}
+          />
+        ))}
+    </ul>
+  );
 }
 
 _MessageList.propTypes = {

@@ -19,6 +19,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
     "chrome://conversations/content/modules/misc.js",
   MessageUtils: "chrome://conversations/content/modules/message.js",
   ConversationUtils: "chrome://conversations/content/modules/conversation.js",
+  MailServices: "resource:///modules/MailServices.jsm",
 });
 
 const initialAttachments = {};
@@ -32,6 +33,14 @@ const initialSummary = {
   iframesLoading: 0,
   subject: "",
 };
+
+// conversations sometimes stores a tag as
+// { color, id, name } but the internal TB
+// representation is { color, key, tag }.
+// This function converts to the conversations representation
+function normalizeTag(tag) {
+  return { id: tag.id || tag.key, name: tag.name || tag.tag, color: tag.color };
+}
 
 function modifyOnlyMsg(currentState, msgUri, modifier) {
   const newState = { ...currentState };
@@ -179,6 +188,29 @@ function messages(state = initialMessages, action) {
     }
     case "MSG_SET_TAGS": {
       MessageUtils.setTags(action.msgUri, action.tags);
+      return state;
+    }
+    case "MSG_TOGGLE_TAG_BY_INDEX": {
+      // If we're here we've been passed the index of a tag to toggle on the
+      // given message as well as the existing tags.
+      const allTags = MailServices.tags.getAllTags({}).map(normalizeTag);
+      let { index, tags } = action;
+      let origLength = tags.length;
+      const tagToToggle = allTags[index];
+      if (!tagToToggle) {
+        // We may not have tags set for all indices 0-8. Just do nothing
+        // in case of an out-of-range index.
+        return state;
+      }
+
+      tags = tags.filter(t => t.id !== tagToToggle.id);
+      // If the tag list has gotten shorter, we've removed a tag.
+      // If it's length hasn't changed, we need to insert a tag.
+      if (tags.length === origLength) {
+        tags.push(tagToToggle);
+      }
+
+      MessageUtils.setTags(action.msgUri, tags);
       return state;
     }
     case "MSG_STAR": {
