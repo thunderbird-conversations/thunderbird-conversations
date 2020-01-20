@@ -293,9 +293,14 @@ class MessageHeader extends React.PureComponent {
           {!this.props.expanded && (
             <span className="snippet">
               <MessageTags
-                dispatch={this.props.dispatch}
+                onTagsChange={tags => {
+                  this.props.dispatch({
+                    type: "MSG_SET_TAGS",
+                    msgUri: this.props.msgUri,
+                    tags,
+                  });
+                }}
                 expanded={false}
-                msgUri={this.props.msgUri}
                 tags={this.props.tags}
               />
               <SpecialMessageTags

@@ -198,9 +198,14 @@ class Message extends React.PureComponent {
           )}
           {this.props.message.expanded && (
             <MessageTags
-              dispatch={this.props.dispatch}
+              onTagsChange={tags => {
+                this.props.dispatch({
+                  type: "MSG_SET_TAGS",
+                  msgUri: this.props.message.msgUri,
+                  tags,
+                });
+              }}
               expanded={true}
-              msgUri={this.props.message.msgUri}
               tags={this.props.message.tags}
             />
           )}
