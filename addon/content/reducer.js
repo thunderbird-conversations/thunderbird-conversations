@@ -191,26 +191,7 @@ function messages(state = initialMessages, action) {
       return state;
     }
     case "MSG_TOGGLE_TAG_BY_INDEX": {
-      // If we're here we've been passed the index of a tag to toggle on the
-      // given message as well as the existing tags.
-      const allTags = MailServices.tags.getAllTags({}).map(normalizeTag);
-      let { index, tags } = action;
-      let origLength = tags.length;
-      const tagToToggle = allTags[index];
-      if (!tagToToggle) {
-        // We may not have tags set for all indices 0-8. Just do nothing
-        // in case of an out-of-range index.
-        return state;
-      }
-
-      tags = tags.filter(t => t.id !== tagToToggle.id);
-      // If the tag list has gotten shorter, we've removed a tag.
-      // If it's length hasn't changed, we need to insert a tag.
-      if (tags.length === origLength) {
-        tags.push(tagToToggle);
-      }
-
-      MessageUtils.setTags(action.msgUri, tags);
+      MessageUtils.toggleTagByIndex(action.msgUri, action.index);
       return state;
     }
     case "MSG_STAR": {

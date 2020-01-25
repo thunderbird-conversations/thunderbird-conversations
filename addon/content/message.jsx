@@ -7,9 +7,13 @@
            MessageDetails, MessageNotification */
 /* exported Message */
 
-const { isAccel } = ChromeUtils.import(
-  "chrome://conversations/content/modules/stdlib/misc.js"
-);
+function isAccel(event) {
+  if (window.navigator.platform.includes("Mac")) {
+    return event.metaKey;
+  }
+  return event.ctrlKey;
+}
+
 class Message extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -353,6 +357,6 @@ Message.propTypes = {
   isLastMessage: PropTypes.bool.isRequired,
   message: PropTypes.object.isRequired,
   prefs: PropTypes.object.isRequired,
-  setRef: PropTypes.function.isRequired,
-  advanceMessage: PropTypes.function.isRequired,
+  setRef: PropTypes.func.isRequired,
+  advanceMessage: PropTypes.func.isRequired,
 };

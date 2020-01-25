@@ -23,6 +23,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   PluralForm: "resource://gre/modules/PluralForm.jsm",
   Services: "resource://gre/modules/Services.jsm",
   StringBundle: "resource:///modules/StringBundle.js",
+  MailServices: "resource:///modules/MailServices.jsm",
 });
 const {
   dateAsInMessageList,
@@ -266,6 +267,25 @@ class _MessageUtils {
         };
       })
     );
+  }
+
+  toggleTagByIndex(msgUri, index) {
+    const allTags = MailServices.tags.getAllTags({});
+    const toggledTag = allTags[index];
+    // Toggling a tag that is out of range does nothing.
+    if (!toggledTag) {
+      return;
+    }
+    const msgHdr = msgUriToMsgHdr(msgUri);
+    const currentTags = msgHdrGetTags(msgHdr);
+    if (currentTags.find(tag => tag.key === toggledTag.key)) {
+      msgHdrSetTags(
+        msgHdr,
+        currentTags.filter(tag => tag.key !== toggledTag.key)
+      );
+    } else {
+      msgHdrSetTags(msgHdr, [...currentTags, toggledTag]);
+    }
   }
 
   setStar(msgUri, star) {
