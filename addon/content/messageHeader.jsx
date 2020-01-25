@@ -304,12 +304,18 @@ class MessageHeader extends React.PureComponent {
                 tags={this.props.tags}
               />
               <SpecialMessageTags
-                canClickFolder={false}
-                dispatch={this.props.dispatch}
+                onTagClick={(event, tag) => {
+                  this.props.dispatch({
+                    type: "TAG_CLICK",
+                    event,
+                    msgUri: this.props.msgUri,
+                    details: tag.details,
+                  });
+                }}
                 folderName={this.props.shortFolderName}
                 inView={this.props.inView}
-                msgUri={this.props.msgUri}
                 strings={this.strings}
+                specialTags={this.props.specialTags}
               />
               {this.props.snippet}
             </span>
@@ -352,4 +358,5 @@ MessageHeader.propTypes = {
   starred: PropTypes.bool.isRequired,
   tags: PropTypes.array.isRequired,
   to: PropTypes.array.isRequired,
+  specialTags: PropTypes.array.isRequired,
 };

@@ -115,116 +115,84 @@ function DkimTooltip(props) {
 }
 DkimTooltip.propTypes = { strings: PropTypes.array.isRequired };
 
-class SpecialMessageTag extends React.PureComponent {
-  constructor(props) {
-    super(props);
-    this.onClick = this.onClick.bind(this);
-  }
+function SpecialMessageTag(props) {
+  const {
+    icon,
+    name,
+    title = "",
+    tooltip = {},
+    onClick = null,
+    classNames,
+  } = props;
 
-  onClick(event) {
-    this.props.dispatch({
-      type: "TAG_CLICK",
-      event,
-      msgUri: this.props.msgUri,
-      detail: this.props.onClick,
-    });
-  }
-
-  render() {
-    const {
-      icon,
-      name,
-      title = "",
-      tooltip = {},
-      canClick,
-      onClick,
-      classNames,
-    } = this.props;
-
-    return (
-      <li
-        className={classNames + " special-tag" + (canClick ? " can-click" : "")}
-        title={title}
-        onClick={canClick ? onClick : null}
-      >
-        <Icon path={icon} />
-        {name}
-        {tooltip.type === "dkim" && <DkimTooltip strings={tooltip.strings} />}
-      </li>
-    );
-  }
+  return (
+    <li
+      className={classNames + " special-tag" + (onClick ? " can-click" : "")}
+      title={title}
+      onClick={onClick}
+    >
+      <Icon path={icon} />
+      {name}
+      {tooltip.type === "dkim" && <DkimTooltip strings={tooltip.strings} />}
+    </li>
+  );
 }
 
 SpecialMessageTag.propTypes = {
-  canClick: PropTypes.bool.isRequired,
   classNames: PropTypes.string.isRequired,
-  dispatch: PropTypes.func.isRequired,
   icon: PropTypes.string.isRequired,
-  msgUri: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   title: PropTypes.string.isRequired,
-  onClick: PropTypes.object.isRequired,
+  onClick: PropTypes.func,
   tooltip: PropTypes.object.isRequired,
 };
 
-class SpecialMessageTags extends React.PureComponent {
-  constructor(props) {
-    super(props);
-    this.onClickInFolder = this.onClickInFolder.bind(this);
-  }
+function SpecialMessageTags(props) {
+  const {
+    onTagClick,
+    onFolderClick = null,
+    specialTags,
+    strings,
+    inView,
+    folderName,
+  } = props;
 
-  onClickInFolder() {
-    if (!this.props.canClickFolder) {
-      return;
-    }
-
-    this.props.dispatch({
-      type: "SWITCH_TO_FOLDER",
-      msgUri: this.props.msgUri,
-    });
-  }
-
-  render() {
-    return (
-      <ul className="tags special-tags">
-        {!!this.props.specialTags &&
-          !!this.props.specialTags.length &&
-          this.props.specialTags.map((tag, i) => {
-            return (
-              <SpecialMessageTag
-                canClick={tag.canClick}
-                classNames={tag.classNames}
-                dispatch={this.props.dispatch}
-                icon={tag.icon}
-                key={i}
-                msgUri={this.props.msgUri}
-                name={tag.name}
-                onClick={tag.onClick}
-                title={tag.title}
-                tooltip={tag.tooltip}
-              />
-            );
-          })}
-        {!!this.props.folderName && !this.props.inView && (
-          <li
-            className="in-folder"
-            onClick={this.onClickInFolder}
-            title={this.props.strings.get("jumpToFolder")}
-          >
-            {this.props.strings.get("inFolder", [this.props.folderName])}
-          </li>
-        )}
-      </ul>
+  let folderItem = null;
+  if (folderName && !inView) {
+    folderItem = (
+      <li
+        className="in-folder"
+        onClick={onFolderClick}
+        title={strings.get("jumpToFolder")}
+      >
+        {strings.get("inFolder", [this.props.folderName])}
+      </li>
     );
   }
+
+  return (
+    <ul className="tags special-tags">
+      {specialTags.map((tag, i) => (
+        <SpecialMessageTag
+          classNames={tag.classNames}
+          icon={tag.icon}
+          key={i}
+          name={tag.name}
+          onClick={tag.details && (event => onTagClick(event, tag))}
+          title={tag.title}
+          tooltip={tag.tooltip}
+        />
+      ))}
+      {folderItem}
+    </ul>
+  );
 }
 
 SpecialMessageTags.propTypes = {
-  canClickFolder: PropTypes.bool.isRequired,
-  dispatch: PropTypes.func.isRequired,
+  onTagClick: PropTypes.func.isRequired,
+  onFolderClick: PropTypes.func,
   folderName: PropTypes.string.isRequired,
   inView: PropTypes.bool.isRequired,
-  msgUri: PropTypes.string.isRequired,
   specialTags: PropTypes.array.isRequired,
   strings: PropTypes.object.isRequired,
 };
