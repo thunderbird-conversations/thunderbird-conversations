@@ -19,7 +19,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
     "chrome://conversations/content/modules/misc.js",
   MessageUtils: "chrome://conversations/content/modules/message.js",
   ConversationUtils: "chrome://conversations/content/modules/conversation.js",
-  MailServices: "resource:///modules/MailServices.jsm",
 });
 
 const initialAttachments = {};
@@ -38,10 +37,6 @@ const initialSummary = {
 // { color, id, name } but the internal TB
 // representation is { color, key, tag }.
 // This function converts to the conversations representation
-function normalizeTag(tag) {
-  return { id: tag.id || tag.key, name: tag.name || tag.tag, color: tag.color };
-}
-
 function modifyOnlyMsg(currentState, msgUri, modifier) {
   const newState = { ...currentState };
   const newMsgData = [];
