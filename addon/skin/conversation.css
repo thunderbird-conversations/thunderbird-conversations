@@ -195,7 +195,7 @@ a img {
 
 .author {
   font-weight: bold;
-  margin-right: .3rem;
+  margin-inline-end: .3rem;
 }
 
 .to,
@@ -211,15 +211,7 @@ a img {
   text-overflow:  ellipsis;
   overflow:       hidden;
   flex:           1;
-  margin-right:   .4em;
-}
-
-.recipient-tooltips {
-  /* place it over '.to' sibling element */
-  position: absolute;
-  top: 0;
-  left: 0;
-  line-height: 1.8;
+  margin-inline-end:   .4em;
 }
 
 .tooltipWrapper {
@@ -244,6 +236,11 @@ a img {
   line-height: 1.8;
 }
 
+html[dir="rtl"] .tooltip {
+  left: 0;
+  right: 16px;
+}
+
 .transition-in > .tooltip {
   animation: fadein 400ms ease-out;
 }
@@ -265,6 +262,12 @@ a img {
 .contactTooltipWrapper .tooltip {
   /* override generic tooltip, so to look closer to contact name */
   left: 0;
+}
+
+html[dir="rtl"] .contactTooltipWrapper .tooltip {
+  /* override generic tooltip, so to look closer to contact name */
+  left: 16px;
+  right: 0;
 }
 
 .createFilter {
@@ -307,6 +310,11 @@ a img {
   line-height: 1.8;
 }
 
+html[dir="rtl"] .dropDown .tooltip {
+  left: right: -0.2em;
+  right: auto;
+}
+
 .dropDown ul {
   margin-top: 0;
   list-style-type: none;
@@ -344,9 +352,19 @@ a img {
   width: 0;
 }
 
+html[dir="rtl"] .arrow {
+  right: 10px;
+  left: 0;
+}
+
 .dropDown .arrow {
   left: auto;
   right: .5em;
+}
+
+html[dir="rtl"] .dropDown .arrow {
+  right: auto;
+  left: .5em;
 }
 
 .arrow.inside {
@@ -394,13 +412,13 @@ a img {
 }
 
 .authorLinks {
-  clear: left;
+  clear: inline-start;
 }
 
 .name {
   font-size: 1.4rem;
-  float: left;
-  clear: left;
+  float: inline-start;
+  clear: inline-start;
   max-width: calc(40rem - 100px);
   text-overflow: ellipsis;
   overflow: hidden;
@@ -417,7 +435,7 @@ a img {
 .authorEmailAddress {
   text-overflow: ellipsis;
   overflow: hidden;
-  margin-right: 5px;
+  margin-inline-end: 5px;
 }
 
 .authorPicture {
@@ -435,18 +453,18 @@ a img {
   padding: 5px 10px;
   background-color: rgba(160, 160, 160, 0.1);
   border-top: 1px solid ThreeDShadow;
-  float: left;
+  float: inline-start;
   border-radius: 0 0 5px 5px;
 }
 
 .tipFooter button {
   padding: 0 5px;
-  float: left;
+  float: inline-start;
   margin: 0 3px 0 0;
 }
 
 .moreExpander {
-  float: right;
+  float: inline-end;
 }
 
 .message:not(.bugzilla) .bzTo {
@@ -499,7 +517,7 @@ a img {
   font-size: 1.0rem;
   line-height: 1.8;
   padding: 0 .9em;
-  margin-right: .4rem;
+  margin-inline-end: .4rem;
   border-radius: .9em;
   color: #fff;
 }
@@ -510,9 +528,9 @@ a img {
   text-align: center;
   font-weight: bold;
   width: 1.8em;
-  margin-right: -0.9em;
+  margin-inline-end: -0.9em;
   border-radius: .9em;
-  margin-left: .5em;
+  margin-inline-start: .5em;
   background-color: rgba(255,255,255,0.4);
 }
 
@@ -580,11 +598,11 @@ a img {
 }
 
 .lightningImipButton {
-  float: right;
+  float: inline-end;
 }
 
 .enigmailBar .enigmailDetails {
-  float: right;
+  float: inline-end;
 }
 
 .detailsLine {
@@ -667,7 +685,7 @@ a img {
 
 .attachmentInfo {
   display: inline-block;
-  float: left;
+  float: inline-start;
 }
 
 .filename,
@@ -685,7 +703,7 @@ a img {
 }
 
 .footerActions {
-  float: right;
+  float: inline-end;
 }
 
 .footerActions button {
@@ -722,10 +740,11 @@ a img {
 
 .star {
   display: inline;
-  margin-right: 3px;
+  margin-inline-end: 3px;
   color: #888a85;
   font-size: 80%;
 }
+
 .star .icon {
   fill: none;
   stroke: currentColor;
@@ -742,7 +761,7 @@ a img {
 
 /* bottom links: forward this conversation, print this conversation */
 .bottom-links {
-  text-align: right;
+  text-align: end;
   padding: 5px 10px 10px 10px;
 }
 
