@@ -237,7 +237,7 @@ class Message extends React.PureComponent {
           />
         )}
         {this.props.isLastMessage && this.props.message.expanded && (
-          <div>
+          <div dir="ltr">
             <small>
               <i>
                 Quick Reply is temporarily disabled due to needing more work for
