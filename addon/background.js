@@ -3,12 +3,13 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import { Prefs } from "./prefs.js";
+import { UIHandler } from "./uiHandler.js";
 import { Window } from "./window.js";
 
 class Background {
   constructor() {
     this._prefs = new Prefs();
-    this._keyHandler = new KeyHandler();
+    this._uiHandler = new UIHandler();
     this._window = new Window();
   }
   async init() {
@@ -25,7 +26,7 @@ class Background {
     );
 
     await this._prefs.init();
-    await this._keyHandler.init();
+    await this._uiHandler.init();
     await this._window.init();
 
     // Reset the message pane if the font size is changed, that seems to be
@@ -34,30 +35,6 @@ class Background {
     browser.conversations.onCorePrefChanged.addListener(() => {
       browser.conversations.resetMessagePane().catch(console.error);
     }, "font.size.variable.x-western");
-  }
-}
-
-class KeyHandler {
-  init() {
-    browser.commands.onCommand.addListener((command) => {
-      if (command == "quick_compose") {
-        console.warn("Quick Compose is currently disabled");
-        // The title/description for this pref is really confusing, we should
-        // reconsider it when we re-enable.
-        // if (Prefs.compose_in_tab) {
-        //   window.openTab("chromeTab", {
-        //     chromePage:
-        //       "chrome://conversations/content/stub.xhtml?quickCompose=1",
-        //   });
-        // } else {
-        //   window.open(
-        //     "chrome://conversations/content/stub.xhtml?quickCompose=1",
-        //     "",
-        //     "chrome,width=1020,height=600"
-        //   );
-        // }
-      }
-    });
   }
 }
 
