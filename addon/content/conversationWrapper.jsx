@@ -52,7 +52,7 @@ class _ConversationWrapper extends React.PureComponent {
 
 _ConversationWrapper.propTypes = {
   tweakChrome: PropTypes.bool.isRequired,
-  OS: PropTypes.string.isRequired,
+  OS: PropTypes.string,
 };
 
 const ConversationWrapper = ReactRedux.connect(state => {

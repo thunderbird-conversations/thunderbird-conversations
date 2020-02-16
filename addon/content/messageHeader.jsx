@@ -116,6 +116,10 @@ class ContactLabel extends React.PureComponent {
   }
 
   componentWillUnmount() {
+    if (this.timeout) {
+      clearTimeout(this.timeout);
+      delete this.timeout;
+    }
     if (this.fadeOutTimeout) {
       clearTimeout(this.fadeOutTimeout);
       delete this.fadeOutTimeout;
@@ -183,7 +187,7 @@ ContactLabel.propTypes = {
   className: PropTypes.string.isRequired,
   contact: PropTypes.object.isRequired,
   detailView: PropTypes.bool.isRequired,
-  separator: PropTypes.string.isRequired,
+  separator: PropTypes.string,
 };
 
 class MessageHeader extends React.PureComponent {

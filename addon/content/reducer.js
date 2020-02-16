@@ -3,7 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 /* global Redux, Conversations, topMail3Pane, getMail3Pane,
-          isInTab:true, closeTab, openConversationInTabOrWindow,
+          isInTab:true, openConversationInTabOrWindow,
           printConversation */
 
 /* exported conversationApp */
@@ -23,7 +23,9 @@ XPCOMUtils.defineLazyModuleGetters(this, {
 
 const initialAttachments = {};
 
-const initialMessages = {};
+const initialMessages = {
+  msgData: [],
+};
 
 const initialSummary = {
   conversation: null,
@@ -236,15 +238,15 @@ function messages(state = initialMessages, action) {
       return state;
     }
     case "DELETE_CONVERSATION": {
+      const win = topMail3Pane(window);
       if (
         ConversationUtils.delete(
-          topMail3Pane(window),
+          win,
           isInTab,
           state.msgData.map(msg => msg.msgUri)
         )
       ) {
-        // TODO: Could we just use window.close here?
-        closeTab();
+        ConversationUtils.closeTab(win, window.frameElement);
       }
       return state;
     }
