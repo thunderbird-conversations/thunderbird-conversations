@@ -33,10 +33,6 @@ const initialSummary = {
   subject: "",
 };
 
-// conversations sometimes stores a tag as
-// { color, id, name } but the internal TB
-// representation is { color, key, tag }.
-// This function converts to the conversations representation
 function modifyOnlyMsg(currentState, msgUri, modifier) {
   const newState = { ...currentState };
   const newMsgData = [];
