@@ -222,5 +222,15 @@
   "assistant.settings2": {
     "message": "Si vous souhaitez activer davantage d'options par la suite, vous pouvez accéder à cet assistant dans les préférences de l'extension, dans la partie \" avancé \".",
     "description": "Paragraph informing users of the ability to change settings later."
+  },
+
+  "gallery.messageMovedOrDeleted": {
+    "message": "Nous sommes désolés, il est impossible d'afficher cette vue en galerie, parce que le message a été déplacé ou supprimé.",
+    "description": "Message displayed if the email that the gallery is trying to view cannot be found."
+  },
+
+  "gallery.title": {
+    "message": "Vue en galerie pour : $1",
+    "description": "The tab title for the image gallery"
   }
 }

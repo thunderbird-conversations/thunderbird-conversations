@@ -222,5 +222,15 @@
   "assistant.settings2": {
     "message": "Puede habilitar más opciones después, puede acceder a este asistente a través de las opciones del navegador en la sección de Avanzadas.",
     "description": "Paragraph informing users of the ability to change settings later."
+  },
+
+  "gallery.messageMovedOrDeleted": {
+    "message": "Lo sentimos, pero no se puede mostrar la vista de galería porque el mensaje se ha movido o borrado.",
+    "description": "Message displayed if the email that the gallery is trying to view cannot be found."
+  },
+
+  "gallery.title": {
+    "message": "Vista de galería para: $1",
+    "description": "The tab title for the image gallery"
   }
 }

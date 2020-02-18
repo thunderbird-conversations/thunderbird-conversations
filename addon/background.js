@@ -12,6 +12,12 @@ class Background {
   async init() {
     await this._prefs.init();
     await this._keyHandler.init();
+
+    browser.conversations.onOpenTab.addListener(url => {
+      browser.tabs.create({
+        url,
+      });
+    });
   }
 }
 

@@ -22,7 +22,7 @@
     "open_in_tab": true,
     "page": "options.html"
   },
-  "permissions": ["storage"],
+  "permissions": ["messagesRead", "storage"],
   "experiment_apis": {
     "conversations": {
       "schema": "experiment-api/schema.json",

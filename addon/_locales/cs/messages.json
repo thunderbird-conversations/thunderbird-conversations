@@ -222,5 +222,15 @@
   "assistant.settings2": {
     "message": "Tato nastavení můžete upravit i později, spuštěním pomocníka v předvolbách rozšíření, v sekci \"Pokročilé\".",
     "description": "Paragraph informing users of the ability to change settings later."
+  },
+
+  "gallery.messageMovedOrDeleted": {
+    "message": "Je nám líto, ale náhled všech obrázků nelze zobrazit, jelikož zpráva která je obsahovala byla přesunuta, nebo smazána.",
+    "description": "Message displayed if the email that the gallery is trying to view cannot be found."
+  },
+
+  "gallery.title": {
+    "message": "Všechny obrázky ze zprávy: $1",
+    "description": "The tab title for the image gallery"
   }
 }

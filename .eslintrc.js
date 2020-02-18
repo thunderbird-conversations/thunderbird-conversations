@@ -22,6 +22,7 @@ module.exports = {
         "addon/*.js",
         "addon/*.jsx",
         "addon/assistant/*.js",
+        "addon/gallery/*.js*",
         "addon/content/es-modules/**/*.js",
         "addon/content/es-modules/**/*.jsx",
       ],

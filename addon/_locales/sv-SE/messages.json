@@ -222,5 +222,15 @@
   "assistant.settings2": {
     "message": "Om du skulle vilja aktivera fler alternativ senare, så kommer du åt denna guide via tilläggets inställningar, under avsnittet \"Avancerat\".",
     "description": "Paragraph informing users of the ability to change settings later."
+  },
+
+  "gallery.messageMovedOrDeleted": {
+    "message": "Ledsen, men vi kan inte visa denna gallerivy eftersom meddelandet har flyttats eller tagits bort.",
+    "description": "Message displayed if the email that the gallery is trying to view cannot be found."
+  },
+
+  "gallery.title": {
+    "message": "Gallerivy för: $1",
+    "description": "The tab title for the image gallery"
   }
 }

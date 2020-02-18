@@ -222,5 +222,15 @@
   "assistant.settings2": {
     "message": "Caso queira ativar outras opções mais tarde, você pode abrir este assistente de instalação através das opções do Thunderbird Conversations, na aba \"Avançado\".",
     "description": "Paragraph informing users of the ability to change settings later."
+  },
+
+  "gallery.messageMovedOrDeleted": {
+    "message": "Desculpe, mas não podemos exibir essa galeria, porque a mensagem foi movida ou excluída.",
+    "description": "Message displayed if the email that the gallery is trying to view cannot be found."
+  },
+
+  "gallery.title": {
+    "message": "Modo galeria para: $1",
+    "description": "The tab title for the image gallery"
   }
 }

@@ -7,6 +7,11 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   Customizations: "chrome://conversations/content/modules/assistant.js",
   dumpCallStack: "chrome://conversations/content/modules/log.js",
   ExtensionCommon: "resource://gre/modules/ExtensionCommon.jsm",
+  MessageUtils: "chrome://conversations/content/modules/message.js",
+  MsgHdrToMimeMessage: "resource:///modules/gloda/mimemsg.js",
+  msgUriToMsgHdr:
+    "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
+  NetUtil: "resource://gre/modules/NetUtil.jsm",
   Prefs: "chrome://conversations/content/modules/prefs.js",
   Services: "resource://gre/modules/Services.jsm",
   setupLogging: "chrome://conversations/content/modules/log.js",
@@ -20,6 +25,37 @@ const SIMPLE_STORAGE_TABLE_NAME = "conversations";
 // Note: we must not use any modules until after initialization of prefs,
 // otherwise the prefs might not get loaded correctly.
 let Log = null;
+
+function StreamListener(resolve, reject) {
+  return {
+    _data: "",
+    _stream: null,
+
+    QueryInterface: ChromeUtils.generateQI([
+      Ci.nsIStreamListener,
+      Ci.nsIRequestObserver,
+    ]),
+
+    onStartRequest(aRequest) {},
+    onStopRequest(aRequest, aStatusCode) {
+      try {
+        resolve(this._data);
+      } catch (e) {
+        reject("Error inside stream listener:\n" + e + "\n");
+      }
+    },
+
+    onDataAvailable(aRequest, aInputStream, aOffset, aCount) {
+      if (this._stream == null) {
+        this._stream = Cc["@mozilla.org/binaryinputstream;1"].createInstance(
+          Ci.nsIBinaryInputStream
+        );
+        this._stream.setInputStream(aInputStream);
+      }
+      this._data += this._stream.readBytes(aCount);
+    },
+  };
+}
 
 function prefType(name) {
   switch (name) {
@@ -129,6 +165,61 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             };
           });
         },
+        async getMessageIdForUri(uri) {
+          const msgHdr = msgUriToMsgHdr(uri);
+          if (!msgHdr) {
+            return null;
+          }
+          return context.extension.messageManager.convert(msgHdr).id;
+        },
+        async getAttachmentBody(id, partName) {
+          const msgHdr = context.extension.messageManager.get(id);
+          return new Promise((resolve, reject) => {
+            MsgHdrToMimeMessage(
+              msgHdr,
+              this,
+              (mimeHdr, aMimeMsg) => {
+                const attachments = aMimeMsg.allAttachments.filter(
+                  x => x.partName == partName
+                );
+                const msgUri = Services.io.newURI(attachments[0].url);
+                const tmpChannel = NetUtil.newChannel({
+                  uri: msgUri,
+                  loadUsingSystemPrincipal: true,
+                });
+                tmpChannel.asyncOpen(
+                  new StreamListener(resolve, reject),
+                  msgUri
+                );
+              },
+              true,
+              {
+                partsOnDemand: false,
+                examineEncryptedParts: true,
+              }
+            );
+          });
+        },
+        async formatFileSize(size) {
+          const messenger = Cc["@mozilla.org/messenger;1"].createInstance(
+            Ci.nsIMessenger
+          );
+          return messenger.formatFileSize(size);
+        },
+        onOpenTab: new ExtensionCommon.EventManager({
+          context,
+          name: "conversations.onOpenTab",
+          register(fire) {
+            function callback(url) {
+              return fire.async(url);
+            }
+
+            MessageUtils.setOpenTabListener(callback);
+            return function() {
+              MessageUtils.setOpenTabListener(null);
+            };
+          },
+        }).api(),
       },
     };
   }

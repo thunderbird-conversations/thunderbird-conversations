@@ -222,5 +222,15 @@
   "assistant.settings2": {
     "message": "Jeżeli chcesz dokonać zmian funkcji w późniejszym czasie, możesz to zrobić, uruchamiając asystenta z poziomu sekcji „Zaawansowane” znajdującej się w ustawieniach dodatku.",
     "description": "Paragraph informing users of the ability to change settings later."
+  },
+
+  "gallery.messageMovedOrDeleted": {
+    "message": "Nie można wyświetlić tej galerii, ponieważ wiadomości zostały przeniesione lub usunięte.",
+    "description": "Message displayed if the email that the gallery is trying to view cannot be found."
+  },
+
+  "gallery.title": {
+    "message": "Widok galerii $1",
+    "description": "The tab title for the image gallery"
   }
 }

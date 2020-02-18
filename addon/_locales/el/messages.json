@@ -222,5 +222,15 @@
   "assistant.settings2": {
     "message": "Αν θελήσετε να ενεργοποιήσετε περισσότερες επιλογές αργότερα, μπορείτε να φορτώσετε τον οδηγό από τις επιλογές του πρόσθετου - από το τμήμα «Για προχωρημένους».",
     "description": "Paragraph informing users of the ability to change settings later."
+  },
+
+  "gallery.messageMovedOrDeleted": {
+    "message": "Λυπούμαστε αλλά δεν μπορούμε να εμφανίζουμε τη συλλογή γιατί το μήνυμα έχει μετακινηθεί ή διαγραφεί.",
+    "description": "Message displayed if the email that the gallery is trying to view cannot be found."
+  },
+
+  "gallery.title": {
+    "message": "Προβολή συλλογής για: $1",
+    "description": "The tab title for the image gallery"
   }
 }

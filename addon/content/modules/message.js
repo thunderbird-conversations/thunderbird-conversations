@@ -134,6 +134,18 @@ function dateAccordingToPref(date) {
 }
 
 class _MessageUtils {
+  setOpenTabListener(listener) {
+    this._openTabListener = listener;
+  }
+
+  openGallery(msgUri) {
+    if (!this._openTabListener) {
+      Log.error("No open tab listener!");
+      return;
+    }
+    this._openTabListener("/gallery/index.html?uri=" + encodeURI(msgUri));
+  }
+
   previewAttachment(win, name, url, isPdf, maybeViewable) {
     if (maybeViewable) {
       win.document

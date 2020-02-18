@@ -222,5 +222,15 @@
   "assistant.settings2": {
     "message": "È possibile attivare/disattivare le opzioni qui sopra successivamente selezionando &apos;Avvia la configurazione guidata&apos; nella finestra delle impostazioni di Thunderbird Conversations → Avanzate → Configurazione guidata",
     "description": "Paragraph informing users of the ability to change settings later."
+  },
+
+  "gallery.messageMovedOrDeleted": {
+    "message": "Impossibile visualizzare la discussione a galleria, poiché il messaggio è stato spostato oppure eliminato",
+    "description": "Message displayed if the email that the gallery is trying to view cannot be found."
+  },
+
+  "gallery.title": {
+    "message": "Visualizzazione a galleria per $1",
+    "description": "The tab title for the image gallery"
   }
 }

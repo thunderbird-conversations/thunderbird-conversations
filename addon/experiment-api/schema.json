@@ -5,7 +5,7 @@
       {
         "name": "getPref",
         "type": "function",
-        "description": "Gets a conversation preference.",
+        "description": "Temporary. Gets a conversation preference.",
         "async": true,
         "parameters": [
           {
@@ -18,7 +18,7 @@
       {
         "name": "setPref",
         "type": "function",
-        "description": "Sets a conversation preference.",
+        "description": "Temporary. Sets a conversation preference.",
         "async": true,
         "parameters": [
           {
@@ -36,7 +36,7 @@
       {
         "name": "installCustomisations",
         "type": "function",
-        "description": "Sets initial customisations",
+        "description": "Temporary. Sets initial customisations",
         "async": true,
         "parameters": [
           {
@@ -52,9 +52,67 @@
       {
         "name": "getLegacyStorageData",
         "type": "function",
-        "description": "Gets the legacy storage data - namely the drafts information.",
+        "description": "Temporary. Gets the legacy storage data - namely the drafts information.",
         "async": true,
         "parameters": []
+      },
+      {
+        "name": "getMessageIdForUri",
+        "type": "function",
+        "description": "Temporary. Gets the WebExtension message ID for a message uri (xref bug 1606573)",
+        "async": "true",
+        "parameters": [
+          {
+            "name": "uri",
+            "type": "string",
+            "description": "The uri to convert"
+          }
+        ]
+      },
+      {
+        "name": "getAttachmentBody",
+        "type": "function",
+        "description": "Temporary. Gets the attachment body for a particular message and part (xref bug 1606552)",
+        "async": "true",
+        "parameters": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "The message id"
+          },
+          {
+            "name": "partName",
+            "type": "string",
+            "description": "The part name"
+          }
+        ]
+      },
+      {
+        "name": "formatFileSize",
+        "type": "function",
+        "description": "Temporary. Formats the file size (xref bug 1606575).",
+        "async": "true",
+        "parameters": [
+          {
+            "name": "size",
+            "type": "integer",
+            "description": "The size to format"
+          }
+        ]
+      }
+    ],
+    "events": [
+      {
+        "name": "onOpenTab",
+        "type": "function",
+        "description": "Temporary. Fires for selected actions to open a tab.",
+        "parameters": [
+          {
+            "name": "page",
+            "type": "string",
+            "description": "Temporary. The page and query uri (if appropriate) to open."
+          }
+        ]
       }
     ]
   }

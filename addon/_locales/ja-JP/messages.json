@@ -222,5 +222,15 @@
   "assistant.settings2": {
     "message": "オプションを後で変更したい場合、アドオンの設定画面にある\"詳細\"タブよりこのアシスタント画面を表示できます。",
     "description": "Paragraph informing users of the ability to change settings later."
+  },
+
+  "gallery.messageMovedOrDeleted": {
+    "message": "残念ながら、ギャラリー表示できません。メッセージが移動されたか削除されています。",
+    "description": "Message displayed if the email that the gallery is trying to view cannot be found."
+  },
+
+  "gallery.title": {
+    "message": "ギャラリー表示: $1",
+    "description": "The tab title for the image gallery"
   }
 }

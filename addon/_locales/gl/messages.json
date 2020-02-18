@@ -222,5 +222,15 @@
   "assistant.settings2": {
     "message": "Should you wish to enable more options later, you can access this wizard through the addon's preferences, under the \"advanced\" section.",
     "description": "Paragraph informing users of the ability to change settings later."
+  },
+
+  "gallery.messageMovedOrDeleted": {
+    "message": "Desculpe, mais non é posíbel mostrar esta vista de galería porque a mensaxe foi movida ou eliminada.",
+    "description": "Message displayed if the email that the gallery is trying to view cannot be found."
+  },
+
+  "gallery.title": {
+    "message": "Vista da galería de: $1",
+    "description": "The tab title for the image gallery"
   }
 }
