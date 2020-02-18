@@ -222,5 +222,15 @@
   "assistant.settings2": {
     "message": "如果需要再次调整其他设置，可以从本插件的选项页中“高级”栏目中访问本设置向导",
     "description": "Paragraph informing users of the ability to change settings later."
+  },
+
+  "gallery.messageMovedOrDeleted": {
+    "message": "无法显示画廊视图：邮件已经被移动或删除.",
+    "description": "Message displayed if the email that the gallery is trying to view cannot be found."
+  },
+
+  "gallery.title": {
+    "message": "画廊视图: $1",
+    "description": "The tab title for the image gallery"
   }
 }

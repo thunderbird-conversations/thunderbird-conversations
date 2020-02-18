@@ -222,5 +222,15 @@
   "assistant.settings2": {
     "message": "Haluaisitko ottaa käyttöön muita valintoja myöhemmin? Voit käynnistää tämän asennusvelhon lisäosien asetuksista.",
     "description": "Paragraph informing users of the ability to change settings later."
+  },
+
+  "gallery.messageMovedOrDeleted": {
+    "message": "Olemme pahoillamme, mutta emme voi näyttää tätä kuvagalleriaa, koska viesti on siirretty tai poistettu.",
+    "description": "Message displayed if the email that the gallery is trying to view cannot be found."
+  },
+
+  "gallery.title": {
+    "message": "Galleria näkymä:$1",
+    "description": "The tab title for the image gallery"
   }
 }

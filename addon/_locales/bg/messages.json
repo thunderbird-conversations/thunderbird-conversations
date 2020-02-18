@@ -222,5 +222,15 @@
   "assistant.settings2": {
     "message": "Ако искате да включите още от тези настройки по-късно, можете да намерите този съветник в настройките на добавката, в раздела „разширени“.",
     "description": "Paragraph informing users of the ability to change settings later."
+  },
+
+  "gallery.messageMovedOrDeleted": {
+    "message": "Съжаляваме, но не можем да покажем този изглед от тип „галерия“, тъй като съобщението е било преместено или изтрито.",
+    "description": "Message displayed if the email that the gallery is trying to view cannot be found."
+  },
+
+  "gallery.title": {
+    "message": "Изглед „галерия“ за: $1",
+    "description": "The tab title for the image gallery"
   }
 }

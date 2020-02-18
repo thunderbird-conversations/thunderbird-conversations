@@ -95,13 +95,7 @@ function attachments(state = initialAttachments, action) {
       return state;
     }
     case "SHOW_GALLERY_VIEW": {
-      const kGalleryUrl = "chrome://conversations/content/gallery/index.html";
-
-      let tabmail = topMail3Pane(window).document.getElementById("tabmail");
-      tabmail.openTab("chromeTab", {
-        chromePage: kGalleryUrl + "?uri=" + action.msgUri,
-      });
-
+      MessageUtils.openGallery(action.msgUri);
       return state;
     }
     default: {

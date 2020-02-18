@@ -4,19 +4,19 @@
 
 "use strict";
 
-const { StringBundle } = ChromeUtils.import(
-  "resource:///modules/StringBundle.js"
-);
-const { MsgHdrToMimeMessage } = ChromeUtils.import(
-  "resource:///modules/gloda/mimemsg.js"
-);
-const { msgUriToMsgHdr } = ChromeUtils.import(
-  "chrome://conversations/content/modules/stdlib/msgHdrUtils.js"
-);
-let strings = new StringBundle(
-  "chrome://conversations/locale/message.properties"
-);
-
+// const { StringBundle } = ChromeUtils.import(
+//   "resource:///modules/StringBundle.js"
+// );
+// const { MsgHdrToMimeMessage } = ChromeUtils.import(
+//   "resource:///modules/gloda/mimemsg.js"
+// );
+// const { msgUriToMsgHdr } = ChromeUtils.import(
+//   "chrome://conversations/content/modules/stdlib/msgHdrUtils.js"
+// );
+// let strings = new StringBundle(
+//   "chrome://conversations/locale/message.properties"
+// );
+//
 /* globals React, ReactDOM, PropTypes */
 
 class Photo extends React.Component {
@@ -40,7 +40,7 @@ Photo.propTypes = {
   index: PropTypes.number.isRequired,
   length: PropTypes.number.isRequired,
   name: PropTypes.string.isRequired,
-  size: PropTypes.number.isRequired,
+  size: PropTypes.string.isRequired,
   src: PropTypes.string.isRequired,
 };
 
@@ -58,41 +58,33 @@ class MyComponent extends React.Component {
     let url = document.location.href;
     let uri = url.substr(url.indexOf(param) + param.length, url.length);
 
-    // Create the Gallery object.
-    let msgHdr = msgUriToMsgHdr(uri);
-    if (msgHdr && msgHdr.messageId) {
-      this.load(msgHdr);
-    } else {
-      document.getElementsByClassName("gallery")[0].textContent = strings.get(
-        "messageMovedOrDeletedGallery2"
-      );
-    }
+    this.load(decodeURI(uri)).catch(console.error);
   }
 
   /**
    * This function takes care of obtaining a full representation of the message,
    *  and then taking all its attachments, to just keep track of the image ones.
    */
-  load(msgHdr) {
-    MsgHdrToMimeMessage(
-      msgHdr,
-      this,
-      (mimeHdr, aMimeMsg) => {
-        let attachments = aMimeMsg.allAttachments;
-        attachments = attachments.filter(
-          x => x.contentType.indexOf("image/") === 0
-        );
-        document.title = strings
-          .get("galleryTitle")
-          .replace("#1", mimeHdr.mime2DecodedSubject);
-        this.output(attachments);
-      },
-      true,
-      {
-        partsOnDemand: true,
-        examineEncryptedParts: true,
-      }
+  async load(uri) {
+    const id = await browser.conversations.getMessageIdForUri(uri);
+    if (!id) {
+      // TODO: Render this in react.
+      document.getElementById("gallery").textContent = browser.i18n.getMessage(
+        "gallery.messageMovedOrDeleted"
+      );
+      return;
+    }
+    const header = await browser.messages.get(id);
+    document.title = browser.i18n.getMessage("gallery.title", [header.subject]);
+
+    let messageParts = await browser.messages.getFull(id);
+    messageParts = messageParts.parts[0].parts;
+
+    messageParts = messageParts.filter(
+      p => p.contentType.indexOf("image/") == 0
     );
+
+    await this.output(messageParts, id);
   }
 
   /**
@@ -101,18 +93,28 @@ class MyComponent extends React.Component {
    * It runs the handlebars template and then appends the result to the root
    *  DOM node.
    */
-  output(attachments) {
-    let messenger = Cc["@mozilla.org/messenger;1"].createInstance(
-      Ci.nsIMessenger
-    );
+  async output(attachments, id) {
     let i = 1;
+    for (const attachment of attachments) {
+      attachment.url = await browser.conversations.getAttachmentBody(
+        id,
+        attachment.partName
+      );
+      attachment.size = await browser.conversations.formatFileSize(
+        attachment.size
+      );
+    }
     this.setState({
       images: attachments.map(attachment => {
         return {
           index: i++,
           name: attachment.name,
-          size: messenger.formatFileSize(attachment.size),
-          src: attachment.url,
+          size: attachment.size,
+          src:
+            "data:" +
+            attachment.contentType +
+            ";base64," +
+            btoa(attachment.url),
         };
       }),
     });

@@ -222,5 +222,15 @@
   "assistant.settings2": {
     "message": "Sche ti vuls activar pli tard dapli opziuns, pos ti acceder quest assisent en las preferenzas dal supplement, en la secziun \"extendì\".",
     "description": "Paragraph informing users of the ability to change settings later."
+  },
+
+  "gallery.messageMovedOrDeleted": {
+    "message": "Perstgisa, igl n'à betg pussaivel da mussar questa galaria, perquai ch'il messadi è vegnì spustà u stizzà.",
+    "description": "Message displayed if the email that the gallery is trying to view cannot be found."
+  },
+
+  "gallery.title": {
+    "message": "Vista da galaria per: $1",
+    "description": "The tab title for the image gallery"
   }
 }

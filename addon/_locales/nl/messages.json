@@ -222,5 +222,15 @@
   "assistant.settings2": {
     "message": "Indien u meer opties wilt inschakelen, kunt u deze wizard via de add-on-instellingen, onder het \"geavanceerd\" deel, opnieuw starten.",
     "description": "Paragraph informing users of the ability to change settings later."
+  },
+
+  "gallery.messageMovedOrDeleted": {
+    "message": "Helaas, we kunnen de galerijweergave niet tonen omdat het bericht is verplaatst of verwijderd.",
+    "description": "Message displayed if the email that the gallery is trying to view cannot be found."
+  },
+
+  "gallery.title": {
+    "message": "Galerijweergave voor: $1",
+    "description": "The tab title for the image gallery"
   }
 }

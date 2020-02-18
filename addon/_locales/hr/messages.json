@@ -222,5 +222,15 @@
   "assistant.settings2": {
     "message": "Ukoliko želite promjeniti neke postavke kasnije, možete pristupiti ovom čarobnjaku kroz postavke dodatka, pod odjelom \"napredno\".",
     "description": "Paragraph informing users of the ability to change settings later."
+  },
+
+  "gallery.messageMovedOrDeleted": {
+    "message": "Ne možemo prikazati ovu galeriju, poruke su premještene ili obrisane.",
+    "description": "Message displayed if the email that the gallery is trying to view cannot be found."
+  },
+
+  "gallery.title": {
+    "message": "Prikaz galerije za: $1",
+    "description": "The tab title for the image gallery"
   }
 }
