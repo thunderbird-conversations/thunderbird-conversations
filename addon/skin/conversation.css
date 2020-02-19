@@ -311,7 +311,7 @@ html[dir="rtl"] .contactTooltipWrapper .tooltip {
 }
 
 html[dir="rtl"] .dropDown .tooltip {
-  left: right: -0.2em;
+  left: -0.2em;
   right: auto;
 }
 
