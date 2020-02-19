@@ -183,6 +183,10 @@ function messages(state = initialMessages, action) {
       MessageUtils.setTags(action.msgUri, action.tags);
       return state;
     }
+    case "MSG_TOGGLE_TAG_BY_INDEX": {
+      MessageUtils.toggleTagByIndex(action.msgUri, action.index);
+      return state;
+    }
     case "MSG_STAR": {
       MessageUtils.setStar(action.msgUri, action.star);
       return state;

@@ -50,7 +50,6 @@ MessageTag.propTypes = {
   onClickX: PropTypes.func.isRequired,
   expanded: PropTypes.bool.isRequired,
   id: PropTypes.string.isRequired,
-  key: PropTypes.number.isRequired,
   name: PropTypes.string.isRequired,
   color: PropTypes.string.isRequired,
 };
@@ -74,18 +73,16 @@ class MessageTags extends React.PureComponent {
     return (
       <ul className="tags regular-tags">
         {!!this.props.tags &&
-          this.props.tags.map((tag, i) => {
-            return (
-              <MessageTag
-                color={tag.color}
-                id={tag.id}
-                expanded={this.props.expanded}
-                key={i}
-                name={tag.name}
-                onClickX={this.onRemoveTag}
-              />
-            );
-          })}
+          this.props.tags.map((tag, i) => (
+            <MessageTag
+              color={tag.color}
+              id={tag.id}
+              key={i}
+              expanded={this.props.expanded}
+              name={tag.name}
+              onClickX={this.onRemoveTag}
+            />
+          ))}
       </ul>
     );
   }
