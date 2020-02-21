@@ -26,7 +26,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   StringBundle: "resource:///modules/StringBundle.js",
 });
 
-const { getIdentities, getIdentityForEmail, sanitize } = ChromeUtils.import(
+const { getIdentities, getIdentityForEmail } = ChromeUtils.import(
   "chrome://conversations/content/modules/stdlib/misc.js"
 );
 
@@ -304,28 +304,28 @@ ContactFromAB.prototype = {
    * different. This allows one to share a common color for a same card in the
    * address book.
    */
-  toTmplData(aUseColor, aPosition, aEmail, aIsDetail) {
-    let [name, extra] = this.getName(aPosition, aIsDetail);
-    let displayEmail = name != aEmail ? aEmail : "";
+  toTmplData(useColor, position, email, isDetail) {
+    let [name, extra] = this.getName(position, isDetail);
+    let displayEmail = name != email ? email : "";
     let hasCard = this._card != null;
     let skipEmail =
-      !aIsDetail &&
+      !isDetail &&
       hasCard &&
       Services.prefs.getBoolPref("mail.showCondensedAddresses");
-    let tooltipName = this.getTooltipName(aPosition);
+    let tooltipName = this.getTooltipName(position);
     let data = {
-      showMonospace: aPosition == Contacts.kFrom,
-      name: sanitize(name),
-      initials: getInitials(sanitize(name)),
-      displayEmail: sanitize(skipEmail ? "" : displayEmail),
-      tooltipName: sanitize(tooltipName != aEmail ? tooltipName : ""),
-      email: sanitize(aEmail),
-      avatar: sanitize(this.avatar),
+      showMonospace: position == Contacts.kFrom,
+      name,
+      initials: getInitials(name),
+      displayEmail: skipEmail ? "" : displayEmail,
+      tooltipName: tooltipName != email ? tooltipName : "",
+      email,
+      avatar: this.avatar,
       avatarIsDefault: this.avatar.substr(0, 6) === "chrome",
       hasCard,
       extra,
       // Parameter aUseColor is optional, and undefined means true
-      colorStyle: aUseColor === false ? {} : { backgroundColor: this.color },
+      colorStyle: useColor === false ? {} : { backgroundColor: this.color },
     };
     return data;
   },
