@@ -30,7 +30,6 @@ const {
   escapeHtml,
   getIdentityForEmail,
   parseMimeLine,
-  sanitize,
 } = ChromeUtils.import("chrome://conversations/content/modules/stdlib/misc.js");
 
 // It's not really nice to write into someone elses object but this is what the
@@ -311,7 +310,7 @@ class _MessageUtils {
         let extraLines = [
           {
             key: strings.get("header-folder"),
-            value: sanitize(folderName(msgHdr.folder)[1]),
+            value: folderName(msgHdr.folder)[1],
           },
         ];
         let interestingHeaders = [
@@ -331,14 +330,14 @@ class _MessageUtils {
             } catch (e) {}
             extraLines.push({
               key,
-              value: sanitize(headers.get(h)),
+              value: headers.get(h),
             });
           }
         }
         let subject = headers.get("subject");
         extraLines.push({
           key: strings.get("header-subject"),
-          value: subject ? sanitize(GlodaUtils.deMime(subject)) : "",
+          value: subject ? GlodaUtils.deMime(subject) : "",
         });
 
         win.conversationDispatch({
@@ -486,19 +485,19 @@ class Message {
     addMsgListener(this);
 
     let data = {
-      date: sanitize(this._date),
+      date: this._date,
       hasRemoteContent: this.hasRemoteContent,
       isDraft: !!msgHdrIsDraft(this._msgHdr),
       isJunk: msgHdrIsJunk(this._msgHdr),
       isOutbox: !!this._msgHdr.folder.getFlag(Ci.nsMsgFolderFlags.Queue),
       isPhishing: this.isPhishing,
-      msgUri: sanitize(this._uri),
+      msgUri: this._uri,
       multipleRecipients: this.isReplyAllEnabled,
       neckoUrl: msgHdrToNeckoURL(this._msgHdr),
       read: this.read,
-      realFrom: sanitize(this._realFrom.email || this._from.email),
+      realFrom: this._realFrom.email || this._from.email,
       recipientsIncludeLists: this.isReplyListEnabled,
-      snippet: sanitize(this._snippet),
+      snippet: this._snippet,
       specialTags: this._specialTags,
       starred: this._msgHdr.isFlagged,
     };
@@ -542,8 +541,8 @@ class Message {
       : dateAsInMessageList(new Date(this._msgHdr.date / 1000));
 
     let [name, fullName] = folderName(this._msgHdr.folder);
-    data.folderName = sanitize(fullName);
-    data.shortFolderName = sanitize(name);
+    data.folderName = fullName;
+    data.shortFolderName = name;
 
     const tags = msgHdrGetTags(this._msgHdr);
     data.tags = tags.map(tag => {
@@ -598,10 +597,10 @@ class Message {
         size: att.size,
         contentType: att.contentType,
         formattedSize,
-        thumb: sanitize(thumb),
+        thumb,
         imgClass,
         isExternal: att.isExternal,
-        name: sanitize(att.name),
+        name: att.name,
         url: att.url,
         anchor: "msg" + this.initialPosition + "att" + i,
         /* Only advertise the preview for PDFs (images have the gallery view). */
@@ -705,7 +704,7 @@ class Message {
     this._conversation._htmlPane.conversationDispatch({
       type: "MSG_UPDATE_SPECIAL_TAGS",
       specialTags: this._specialTags,
-      uri: sanitize(this._uri),
+      uri: this._uri,
     });
   }
 
