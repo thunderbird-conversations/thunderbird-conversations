@@ -20,7 +20,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   composeMessageTo: "chrome://conversations/content/modules/stdlib/compose.js",
   MailServices: "resource:///modules/MailServices.jsm",
   Gloda: "resource:///modules/gloda/gloda.js",
-  GlodaUtils: "resource:///modules/gloda/utils.js",
   Services: "resource://gre/modules/Services.jsm",
   setupLogging: "chrome://conversations/content/modules/log.js",
   StringBundle: "resource:///modules/StringBundle.js",
@@ -261,7 +260,7 @@ function ContactFromAB(manager, name, email, /* unused */ position, color) {
 
 ContactFromAB.prototype = {
   fetch() {
-    let card = GlodaUtils.getCardForEmail(this._email);
+    let card = DisplayNameUtils.getCardForEmail(this._email).card;
     this._card = card;
     if (card) {
       // getProperty may return "0" or "1" which must be "== false"'d to be
