@@ -96,45 +96,6 @@ function getInitials(name) {
 }
 
 var ContactHelpers = {
-  addContact(win, name, email) {
-    let cardAndBook = DisplayNameUtils.getCardForEmail(email);
-    let args = {
-      primaryEmail: email,
-      displayName: name,
-      allowRemoteContent: true,
-      // This is too messed up, there's no easy way to interact with this
-      //  dialog, just forget about it. RegisterSaveListener seems to be
-      //  uncallable... and okCallback just short-circuit the whole logic
-    };
-    win.openDialog(
-      "chrome://messenger/content/addressbook/abNewCardDialog.xul",
-      "",
-      "chrome,resizable=no,titlebar,modal,centerscreen",
-      args
-    );
-    // This is an approximation, but it should be good enough
-    let newCardAndBook = DisplayNameUtils.getCardForEmail(email);
-    if (newCardAndBook.card) {
-      cardAndBook.card = newCardAndBook.card;
-      cardAndBook.book = newCardAndBook.book;
-    }
-    return cardAndBook;
-  },
-
-  editContact(win, name, email) {
-    let cardAndBook = DisplayNameUtils.getCardForEmail(email);
-    let args = {
-      abURI: cardAndBook.book.URI,
-      card: cardAndBook.card,
-    };
-    win.openDialog(
-      "chrome://messenger/content/addressbook/abEditCardDialog.xul",
-      "",
-      "chrome,modal,resizable=no,centerscreen",
-      args
-    );
-  },
-
   composeMessage(name, email, displayedFolder) {
     let dest =
       !name || name == email

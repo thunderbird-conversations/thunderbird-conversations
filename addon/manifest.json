@@ -22,7 +22,7 @@
     "open_in_tab": true,
     "page": "options.html"
   },
-  "permissions": ["messagesRead", "storage"],
+  "permissions": ["addressBooks", "messagesRead", "storage"],
   "experiment_apis": {
     "conversations": {
       "schema": "experiment-api/schema.json",
@@ -36,6 +36,20 @@
           ]
         ],
         "script": "experiment-api/api.js"
+      }
+    },
+    "convContacts": {
+      "schema": "experiment-api/contactsSchema.json",
+      "parent": {
+        "scopes": [
+          "addon_parent"
+        ],
+        "paths": [
+          [
+            "convContacts"
+          ]
+        ],
+        "script": "experiment-api/contactsApi.js"
       }
     }
   },

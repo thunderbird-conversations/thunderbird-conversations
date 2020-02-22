@@ -186,7 +186,7 @@ ViewWrapper.prototype = {
 // This is a workaround whilst we still have stub.xhtml being loaded in the
 // privileged scope. _ConversationUtils.getBrowser() simulates APIs and passes
 // them back to the webExtension process for handling by the real APIs.
-const SUPPORTED_BASE_APIS = ["tabs"];
+const SUPPORTED_BASE_APIS = ["convContacts", "tabs"];
 
 class _ConversationUtils {
   setBrowserListener(listener) {

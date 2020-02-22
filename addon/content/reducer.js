@@ -418,11 +418,10 @@ function summary(state = initialSummary, action) {
       };
     }
     case "ADD_CONTACT": {
-      ContactHelpers.addContact(
-        topMail3Pane(window),
-        action.name,
-        action.email
-      );
+      browser.convContacts.beginNew({
+        email: action.email,
+        displayName: action.name,
+      });
       // TODO: In theory we should be updating the store so that the button can
       // then be updated to indicate this is now in the address book. However,
       // until we start getting the full conversation messages hooked up, this
@@ -439,11 +438,9 @@ function summary(state = initialSummary, action) {
       return state;
     }
     case "EDIT_CONTACT": {
-      ContactHelpers.editContact(
-        topMail3Pane(window),
-        action.name,
-        action.email
-      );
+      browser.convContacts.beginEdit({
+        email: action.email,
+      });
       return state;
     }
     case "FORWARD_CONVERSATION": {
