@@ -1,0 +1,66 @@
+[
+  {
+    "namespace": "convContacts",
+    "functions": [
+      {
+        "name": "beginNew",
+        "type": "function",
+        "description": "Temporary. Opens the address book new card dialog.",
+        "async": true,
+        "parameters": [
+          {
+            "type": "object",
+            "name": "beginNewProperties",
+            "properties": {
+              "email": {
+                "type": "string",
+                "optional": "true",
+                "description": "The email to add."
+              },
+              "displayName": {
+                "type": "string",
+                "optional": "true",
+                "description": "The display name to add for the contact."
+              },
+              "parentId": {
+                "type": "string",
+                "optional": "true",
+                "description": "The default parent address book (the user may change this),"
+              },
+              "windowId": {
+                "type": "integer",
+                "optional": true,
+                "minimum": -2,
+                "description": "The window to create the new tab in. Defaults to the current window."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "beginEdit",
+        "type": "function",
+        "description": "Temporary. Opens the address book edit card dialog.",
+        "async": true,
+        "parameters": [
+          {
+            "type": "object",
+            "name": "beginEditProperties",
+            "properties": {
+              "email": {
+                "type": "string",
+                "description": "The contact email to edit."
+              },
+              "windowId": {
+                "type": "integer",
+                "optional": true,
+                "minimum": -2,
+                "description": "The window to create the new tab in. Defaults to the current window."
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+]
