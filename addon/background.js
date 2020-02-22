@@ -13,11 +13,12 @@ class Background {
     await this._prefs.init();
     await this._keyHandler.init();
 
-    browser.conversations.onOpenTab.addListener(url => {
-      browser.tabs.create({
-        url,
-      });
-    });
+    // Setup the temporary API caller that stub.xhtml uses.
+    browser.conversations.onCallAPI.addListener(
+      async (apiName, apiItem, args) => {
+        return browser[apiName][apiItem](...args);
+      }
+    );
   }
 }
 

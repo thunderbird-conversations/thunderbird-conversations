@@ -4,7 +4,7 @@
 
 /* global Redux, Conversations, topMail3Pane, getMail3Pane,
           isInTab:true, openConversationInTabOrWindow,
-          printConversation */
+          printConversation, ConversationUtils */
 
 /* exported conversationApp */
 
@@ -18,7 +18,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   openConversationInTabOrWindow:
     "chrome://conversations/content/modules/misc.js",
   MessageUtils: "chrome://conversations/content/modules/message.js",
-  ConversationUtils: "chrome://conversations/content/modules/conversation.js",
 });
 
 const initialAttachments = {};
@@ -95,7 +94,9 @@ function attachments(state = initialAttachments, action) {
       return state;
     }
     case "SHOW_GALLERY_VIEW": {
-      MessageUtils.openGallery(action.msgUri);
+      browser.tabs.create({
+        url: "/gallery/index.html?uri=" + encodeURI(action.msgUri),
+      });
       return state;
     }
     default: {

@@ -103,14 +103,28 @@
     ],
     "events": [
       {
-        "name": "onOpenTab",
+        "name": "onCallAPI",
         "type": "function",
-        "description": "Temporary. Fires for selected actions to open a tab.",
+        "description": "Temporary. Fires the specified API.",
         "parameters": [
           {
-            "name": "page",
+            "name": "apiName",
             "type": "string",
-            "description": "Temporary. The page and query uri (if appropriate) to open."
+            "description": "The general of the API to call (e.g. 'tabs' for 'browser.tabs')."
+          },
+          {
+            "name": "apiItem",
+            "type": "string",
+            "description": "The name of the API to call."
+          },
+          {
+            "name": "args",
+            "type": "array",
+            "optional": true,
+            "items": {
+              "type": "any"
+            },
+            "description": "The arguments to call."
           }
         ]
       }

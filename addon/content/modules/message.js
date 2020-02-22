@@ -93,10 +93,7 @@ let Log = setupLogging("Conversations.Message");
 // This is high because we want enough snippet to extract relevant data from
 // bugzilla snippets.
 const kSnippetLength = 700;
-const kViewerUrl = "chrome://conversations/content/pdfviewer/wrapper.xul?uri=";
 
-let makeViewerUrl = (name, url) =>
-  kViewerUrl + encodeURIComponent(url) + "&name=" + encodeURIComponent(name);
 const pdfMimeTypes = [
   "application/pdf",
   "application/x-pdf",
@@ -133,31 +130,6 @@ function dateAccordingToPref(date) {
 }
 
 class _MessageUtils {
-  setOpenTabListener(listener) {
-    this._openTabListener = listener;
-  }
-
-  openGallery(msgUri) {
-    if (!this._openTabListener) {
-      Log.error("No open tab listener!");
-      return;
-    }
-    this._openTabListener("/gallery/index.html?uri=" + encodeURI(msgUri));
-  }
-
-  previewAttachment(win, name, url, isPdf, maybeViewable) {
-    if (maybeViewable) {
-      win.document
-        .getElementById("tabmail")
-        .openTab("contentTab", { contentPage: url });
-    }
-    if (isPdf) {
-      win.document
-        .getElementById("tabmail")
-        .openTab("chromeTab", { chromePage: makeViewerUrl(name, url) });
-    }
-  }
-
   _getAttachmentInfo(win, msgUri, attachment) {
     const attInfo = new win.AttachmentInfo(
       attachment.contentType,

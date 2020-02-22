@@ -41,6 +41,9 @@ const { topMail3Pane } = ChromeUtils.import(
 const { setupLogging, dumpCallStack } = ChromeUtils.import(
   "chrome://conversations/content/modules/log.js"
 );
+const { ConversationUtils } = ChromeUtils.import(
+  "chrome://conversations/content/modules/conversation.js"
+);
 
 Log = setupLogging("Conversations.Stub");
 // Declare with var, not let, so that it's in the global scope, not the lexical scope.
@@ -48,6 +51,11 @@ Log = setupLogging("Conversations.Stub");
 var isInTab = false;
 
 let oldPrint = window.print;
+
+// This provides simulation for the WebExtension environment whilst we're still
+// being loaded in a privileged process.
+/* exported browser */
+let browser = ConversationUtils.getBrowser();
 
 function printConversation(event) {
   for (let { message: m } of Conversations.currentConversation.messages) {
