@@ -220,7 +220,7 @@ class MessageHeader extends React.PureComponent {
     event.preventDefault();
     this.props.dispatch({
       type: "MSG_STAR",
-      msgUri: this.props.msgUri,
+      id: this.props.id,
       star: !this.props.starred,
     });
   }
@@ -300,7 +300,7 @@ class MessageHeader extends React.PureComponent {
                 onTagsChange={tags => {
                   this.props.dispatch({
                     type: "MSG_SET_TAGS",
-                    msgUri: this.props.msgUri,
+                    id: this.props.id,
                     tags,
                   });
                 }}
@@ -331,6 +331,7 @@ class MessageHeader extends React.PureComponent {
           detailsShowing={this.props.detailsShowing}
           expanded={this.props.expanded}
           fullDate={this.props.fullDate}
+          id={this.props.id}
           msgUri={this.props.msgUri}
           attachments={this.props.attachments}
           multipleRecipients={this.props.multipleRecipients}
@@ -351,6 +352,7 @@ MessageHeader.propTypes = {
   expanded: PropTypes.bool.isRequired,
   from: PropTypes.object.isRequired,
   fullDate: PropTypes.string.isRequired,
+  id: PropTypes.number.isRequired,
   msgUri: PropTypes.string.isRequired,
   attachments: PropTypes.array.isRequired,
   multipleRecipients: PropTypes.bool.isRequired,

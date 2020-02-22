@@ -99,6 +99,28 @@
             "description": "The size to format"
           }
         ]
+      },
+      {
+        "name": "createTab",
+        "type": "function",
+        "description": "Temporary. Creates a content or chrome tab. What we'll need to replace with depends on Message Attachments API",
+        "async": "true",
+        "parameters": [
+          {
+            "name": "createTabProperties",
+            "type": "object",
+            "properties": {
+              "url": {
+                "type": "string",
+                "description": "The url to open"
+              },
+              "type": {
+                "type": "string",
+                "description": "The type of tab to open."
+              }
+            }
+          }
+        ]
       }
     ],
     "events": [

@@ -136,6 +136,7 @@ class MessageHeaderOptions extends React.PureComponent {
     event.preventDefault();
     this.props.dispatch({
       ...msg,
+      id: this.props.id,
       msgUri: this.props.msgUri,
     });
   }
@@ -290,6 +291,7 @@ MessageHeaderOptions.propTypes = {
   detailsShowing: PropTypes.bool.isRequired,
   expanded: PropTypes.bool.isRequired,
   fullDate: PropTypes.string.isRequired,
+  id: PropTypes.number.isRequired,
   msgUri: PropTypes.string.isRequired,
   attachments: PropTypes.array.isRequired,
   multipleRecipients: PropTypes.bool.isRequired,

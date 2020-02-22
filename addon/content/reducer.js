@@ -51,13 +51,24 @@ function modifyOnlyMsg(currentState, msgUri, modifier) {
 function attachments(state = initialAttachments, action) {
   switch (action.type) {
     case "PREVIEW_ATTACHMENT": {
-      MessageUtils.previewAttachment(
-        topMail3Pane(window),
-        action.name,
-        action.url,
-        action.isPdf,
-        action.maybeViewable
-      );
+      if (action.maybeViewable) {
+        // Can't use browser.tabs.create because imap://user@bar/ is an
+        // illegal url.
+        browser.conversations.createTab({
+          url: action.url,
+          type: "contentTab",
+        });
+      }
+      if (action.isPdf) {
+        browser.conversations.createTab({
+          url:
+            "chrome://conversations/content/pdfviewer/wrapper.xul?uri=" +
+            encodeURIComponent(action.url) +
+            "&name=" +
+            encodeURIComponent(action.name),
+          type: "chromeTab",
+        });
+      }
       return state;
     }
     case "DOWNLOAD_ALL": {
@@ -159,11 +170,11 @@ function messages(state = initialMessages, action) {
       return state;
     }
     case "MSG_ARCHIVE": {
-      MessageUtils.archive(action.msgUri);
+      browser.messages.archive([action.id]).catch(console.error);
       return state;
     }
     case "MSG_DELETE": {
-      MessageUtils.delete(action.msgUri);
+      browser.messages.delete([action.id]).catch(console.error);
       return state;
     }
     case "MSG_OPEN_CLASSIC": {
@@ -175,15 +186,41 @@ function messages(state = initialMessages, action) {
       return state;
     }
     case "MSG_SET_TAGS": {
-      MessageUtils.setTags(action.msgUri, action.tags);
+      browser.messages
+        .update(action.id, {
+          tags: action.tags.map(t => t.id),
+        })
+        .catch(console.error);
       return state;
     }
     case "MSG_TOGGLE_TAG_BY_INDEX": {
-      MessageUtils.toggleTagByIndex(action.msgUri, action.index);
+      browser.messages
+        .listTags()
+        .then(allTags => {
+          const toggledTag = allTags[action.index];
+          // Toggling a tag that is out of range does nothing.
+          if (!toggledTag) {
+            return null;
+          }
+          if (action.tags.find(tag => tag.key === toggledTag.key)) {
+            return browser.messages.update(action.id, {
+              tags: action.tags.filter(tag => tag.key !== toggledTag.key),
+            });
+          }
+
+          return browser.messages.update(action.id, {
+            tags: [...action.tags, toggledTag],
+          });
+        })
+        .catch(console.error);
       return state;
     }
     case "MSG_STAR": {
-      MessageUtils.setStar(action.msgUri, action.star);
+      browser.messages
+        .update(action.id, {
+          flagged: action.star,
+        })
+        .catch(console.error);
       return state;
     }
     case "MSG_EXPAND": {
@@ -218,10 +255,11 @@ function messages(state = initialMessages, action) {
       return newState;
     }
     case "TOGGLE_CONVERSATION_READ": {
-      ConversationUtils.markAllAsRead(
-        state.msgData.map(msg => msg.msgUri),
-        action.read
-      );
+      for (let msg of state.msgData) {
+        browser.messages
+          .update(msg.id, { read: action.read })
+          .catch(console.error);
+      }
       return state;
     }
     case "ARCHIVE_CONVERSATION": {
