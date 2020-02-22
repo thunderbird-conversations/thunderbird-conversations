@@ -13,6 +13,7 @@ class MessageFooter extends React.PureComponent {
 
   action(msg) {
     msg.msgUri = this.props.msgUri;
+    msg.id = this.props.id;
     this.props.dispatch(msg);
   }
 
@@ -43,6 +44,7 @@ class MessageFooter extends React.PureComponent {
 
 MessageFooter.propTypes = {
   dispatch: PropTypes.func.isRequired,
+  id: PropTypes.number.isRequired,
   msgUri: PropTypes.string.isRequired,
   multipleRecipients: PropTypes.bool.isRequired,
   recipientsIncludeLists: PropTypes.bool.isRequired,

@@ -142,7 +142,7 @@ class Message extends React.PureComponent {
       case "a":
         this.props.dispatch({
           type: "MSG_ARCHIVE",
-          msgUri: this.props.message.msgUri,
+          id: this.props.message.id,
         });
         break;
       case "o":
@@ -162,7 +162,7 @@ class Message extends React.PureComponent {
       case "9":
         this.props.dispatch({
           type: "MSG_TOGGLE_TAG_BY_INDEX",
-          msgUri: this.props.message.msgUri,
+          id: this.props.message.id,
           tags: this.props.message.tags,
           // Tag indexes start at 0
           index: +shortcut - 1,
@@ -173,7 +173,7 @@ class Message extends React.PureComponent {
         // Remove all tags
         this.props.dispatch({
           type: "MSG_SET_TAGS",
-          msgUri: this.props.message.msgUri,
+          id: this.props.message.id,
           tags: [],
         });
         stopEvent();
@@ -245,6 +245,7 @@ class Message extends React.PureComponent {
           from={this.props.message.from}
           to={this.props.message.to}
           fullDate={this.props.message.fullDate}
+          id={this.props.message.id}
           msgUri={this.props.message.msgUri}
           attachments={this.props.message.attachments}
           multipleRecipients={this.props.message.multipleRecipients}
@@ -310,7 +311,7 @@ class Message extends React.PureComponent {
               onTagsChange={tags => {
                 this.props.dispatch({
                   type: "MSG_SET_TAGS",
-                  msgUri: this.props.message.msgUri,
+                  id: this.props.message.id,
                   tags,
                 });
               }}
