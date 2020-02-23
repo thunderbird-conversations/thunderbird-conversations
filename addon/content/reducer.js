@@ -3,7 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 /* global Redux, Conversations, topMail3Pane, getMail3Pane,
-          isInTab:true, closeTab, openConversationInTabOrWindow,
+          isInTab:true, openConversationInTabOrWindow,
           printConversation */
 
 /* exported conversationApp */
@@ -23,7 +23,9 @@ XPCOMUtils.defineLazyModuleGetters(this, {
 
 const initialAttachments = {};
 
-const initialMessages = {};
+const initialMessages = {
+  msgData: [],
+};
 
 const initialSummary = {
   conversation: null,
@@ -93,13 +95,7 @@ function attachments(state = initialAttachments, action) {
       return state;
     }
     case "SHOW_GALLERY_VIEW": {
-      const kGalleryUrl = "chrome://conversations/content/gallery/index.html";
-
-      let tabmail = topMail3Pane(window).document.getElementById("tabmail");
-      tabmail.openTab("chromeTab", {
-        chromePage: kGalleryUrl + "?uri=" + action.msgUri,
-      });
-
+      MessageUtils.openGallery(action.msgUri);
       return state;
     }
     default: {
@@ -181,6 +177,10 @@ function messages(state = initialMessages, action) {
       MessageUtils.setTags(action.msgUri, action.tags);
       return state;
     }
+    case "MSG_TOGGLE_TAG_BY_INDEX": {
+      MessageUtils.toggleTagByIndex(action.msgUri, action.index);
+      return state;
+    }
     case "MSG_STAR": {
       MessageUtils.setStar(action.msgUri, action.star);
       return state;
@@ -232,15 +232,15 @@ function messages(state = initialMessages, action) {
       return state;
     }
     case "DELETE_CONVERSATION": {
+      const win = topMail3Pane(window);
       if (
         ConversationUtils.delete(
-          topMail3Pane(window),
+          win,
           isInTab,
           state.msgData.map(msg => msg.msgUri)
         )
       ) {
-        // TODO: Could we just use window.close here?
-        closeTab();
+        ConversationUtils.closeTab(win, window.frameElement);
       }
       return state;
     }

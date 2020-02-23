@@ -222,5 +222,15 @@
   "assistant.settings2": {
     "message": "Gerora aukera gehiago gaitu nahi izanez gero, laguntzaile hau abiarazi ahal duzu gehigarrien kudeatzaileko aukeretatik, \"Aurreratuak\" atalean.",
     "description": "Paragraph informing users of the ability to change settings later."
+  },
+
+  "gallery.messageMovedOrDeleted": {
+    "message": "Barkaiguzu, hizketaldi hau ezin dizugu erakutsi, mezua mugitua edo ezabatua izan baita.",
+    "description": "Message displayed if the email that the gallery is trying to view cannot be found."
+  },
+
+  "gallery.title": {
+    "message": "Galeria ikuspegia: $1",
+    "description": "The tab title for the image gallery"
   }
 }

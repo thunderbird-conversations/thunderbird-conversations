@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals PropTypes, React, ReactRedux, StringBundle */
+/* globals PropTypes, React, ReactDOM, ReactRedux, StringBundle */
 /* exported ContactDetail */
 
 class _ContactDetail extends React.PureComponent {
@@ -102,7 +102,7 @@ class _ContactDetail extends React.PureComponent {
       bottom: 0,
     };
     // TODO: Show monospace?
-    return (
+    const elm = (
       <div
         className="tooltip"
         style={{
@@ -228,6 +228,11 @@ class _ContactDetail extends React.PureComponent {
         </div>
       </div>
     );
+    // In TB 68, when an element with `tabIndex` gets focused,
+    // it gets set as the position parent. It shouldn't. To resolve
+    // this issue, reparent the popup to <body> so its parent will never
+    // change. See https://github.com/protz/thunderbird-conversations/pull/1432
+    return ReactDOM.createPortal(elm, document.querySelector("body"));
   }
 }
 

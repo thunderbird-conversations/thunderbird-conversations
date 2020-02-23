@@ -107,7 +107,6 @@ MonkeyPatch.prototype = {
     let treecol = window.document.createXULElement("treecol");
     [
       ["id", "betweenCol"],
-      ["hidden", "false"],
       ["flex", "4"],
       ["persist", "width hidden ordinal"],
       ["label", strings.get("betweenColumnName")],
@@ -115,6 +114,21 @@ MonkeyPatch.prototype = {
     ].forEach(function([k, v]) {
       treecol.setAttribute(k, v);
     });
+    // Work around for Thunderbird not managing to restore the column
+    // state properly any more for mixed-WebExtensions.
+    // This is coupled with the `unload` handler below.
+    window.setTimeout(() => {
+      console.log("delayed");
+      if (
+        !Services.prefs.getBoolPref("conversations.betweenColumnVisible", true)
+      ) {
+        console.log("hiding");
+        treecol.setAttribute("hidden", "true");
+      } else {
+        treecol.removeAttribute("hidden");
+        console.log("Show!");
+      }
+    }, 1000);
     let parent3 = window.document.getElementById("threadCols");
     parent3.appendChild(treecol);
     this.pushUndo(() => parent3.removeChild(treecol));
@@ -231,6 +245,21 @@ MonkeyPatch.prototype = {
       //  would work as well.
     }
     this.pushUndo(() => window.gDBView.removeColumnHandler("betweenCol"));
+
+    window.addEventListener(
+      "unload",
+      () => {
+        let col = window.document.getElementById("betweenCol");
+        if (col) {
+          let isHidden = col.getAttribute("hidden");
+          Services.prefs.setBoolPref(
+            "conversations.betweenColumnVisible",
+            isHidden != "true"
+          );
+        }
+      },
+      { once: true }
+    );
   },
 
   registerFontPrefObserver: function _MonkeyPatch_registerFontPref(aHtmlpane) {

@@ -222,5 +222,15 @@
   "assistant.settings2": {
     "message": "Ønsker du at aktivere flere indstillinger senere kan du altid tilgå denne assistent igennem tilføjelsens indstillingsknap under \"Avanceret\".",
     "description": "Paragraph informing users of the ability to change settings later."
+  },
+
+  "gallery.messageMovedOrDeleted": {
+    "message": "Vi beklager, men vi kan ikke vise galleriet fordi meddelelserne er blevet flyttet eller slettet.",
+    "description": "Message displayed if the email that the gallery is trying to view cannot be found."
+  },
+
+  "gallery.title": {
+    "message": "Galleri visning for: $1",
+    "description": "The tab title for the image gallery"
   }
 }

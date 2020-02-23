@@ -40,6 +40,7 @@ function MessageTag(props) {
 MessageTag.propTypes = {
   onClickX: PropTypes.func.isRequired,
   expanded: PropTypes.bool.isRequired,
+  id: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   color: PropTypes.string.isRequired,
 };
@@ -61,6 +62,7 @@ function MessageTags(props) {
         <MessageTag
           color={tag.color}
           expanded={expanded}
+          id={tag.id}
           key={i}
           name={tag.name}
           onClickX={() => {

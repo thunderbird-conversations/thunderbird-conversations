@@ -226,8 +226,7 @@ class _ConversationUtils {
     return false;
   }
 
-  closeTab(win) {
-    const browser = win.frameElement;
+  closeTab(win, browser) {
     const tabmail = win.top.document.getElementById("tabmail");
     const tabs = tabmail.tabInfo;
     const candidates = tabs.filter(x => x.browser == browser);

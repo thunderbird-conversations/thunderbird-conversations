@@ -7,6 +7,13 @@
            MessageDetails, MessageNotification */
 /* exported Message */
 
+function isAccel(event) {
+  if (window.navigator.platform.includes("Mac")) {
+    return event.metaKey;
+  }
+  return event.ctrlKey;
+}
+
 class Message extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -14,12 +21,10 @@ class Message extends React.PureComponent {
       "chrome://conversations/locale/template.properties"
     );
     this.onSelected = this.onSelected.bind(this);
+    this.onKeyDown = this.onKeyDown.bind(this);
   }
 
   componentDidMount() {
-    this.li.addEventListener("focus", this.onSelected, true);
-    this.li.addEventListener("click", this.onSelected, true);
-    this.li.addEventListener("keydown", this.onSelected, true);
     if (
       this.lastScrolledMsgUri != this.props.message.msgUri &&
       this.props.message.scrollTo
@@ -62,9 +67,6 @@ class Message extends React.PureComponent {
   }
 
   componentWillUnmount() {
-    this.li.removeEventListener("focus", this.onSelected, true);
-    this.li.removeEventListener("click", this.onSelected, true);
-    this.li.removeEventListener("keydown", this.onSelected, true);
     this.removeScrollListener();
   }
 
@@ -106,6 +108,91 @@ class Message extends React.PureComponent {
     });
   }
 
+  onKeyDown(event = {}) {
+    const { key, shiftKey } = event;
+    const shortcut = `${isAccel(event) ? "accel-" : ""}${key}`;
+    function stopEvent() {
+      event.stopPropagation();
+      event.preventDefault();
+    }
+
+    // Handle the basic keyboard shortcuts
+    switch (shortcut) {
+      case "accel-r":
+      case "accel-R":
+        this.props.dispatch({
+          type: "MSG_REPLY",
+          msgUri: this.props.message.msgUri,
+          shiftKey,
+        });
+        stopEvent();
+        break;
+      case "accel-l":
+        this.props.dispatch({
+          type: "MSG_OPEN_FORWARD",
+          msgUri: this.props.message.msgUri,
+        });
+        break;
+      case "accel-u":
+        this.props.dispatch({
+          type: "MSG_OPEN_SOURCE",
+          msgUri: this.props.message.msgUri,
+        });
+        break;
+      case "a":
+        this.props.dispatch({
+          type: "MSG_ARCHIVE",
+          msgUri: this.props.message.msgUri,
+        });
+        break;
+      case "o":
+        this.props.dispatch({
+          type: "MSG_EXPAND",
+          msgUri: this.props.message.msgUri,
+        });
+        break;
+      case "1":
+      case "2":
+      case "3":
+      case "4":
+      case "5":
+      case "6":
+      case "7":
+      case "8":
+      case "9":
+        this.props.dispatch({
+          type: "MSG_TOGGLE_TAG_BY_INDEX",
+          msgUri: this.props.message.msgUri,
+          tags: this.props.message.tags,
+          // Tag indexes start at 0
+          index: +shortcut - 1,
+        });
+        stopEvent();
+        break;
+      case "0":
+        // Remove all tags
+        this.props.dispatch({
+          type: "MSG_SET_TAGS",
+          msgUri: this.props.message.msgUri,
+          tags: [],
+        });
+        stopEvent();
+        break;
+      case "f":
+        this.props.advanceMessage(1);
+        stopEvent();
+        break;
+      case "b":
+        this.props.advanceMessage(-1);
+        stopEvent();
+        break;
+      default:
+        break;
+    }
+
+    this.onSelected();
+  }
+
   onScroll() {
     const rect = this.li.getBoundingClientRect();
 
@@ -137,7 +224,17 @@ class Message extends React.PureComponent {
     // and working.
     // <div class="body-container"></div>
     return (
-      <li className="message" ref={li => (this.li = li)}>
+      <li
+        className="message"
+        ref={li => {
+          this.li = li;
+          this.props.setRef(li);
+        }}
+        tabIndex={this.props.index + 1}
+        onFocusCapture={this.onSelected}
+        onClickCapture={this.onSelected}
+        onKeyDownCapture={this.onKeyDown}
+      >
         <MessageHeader
           dispatch={this.props.dispatch}
           bcc={this.props.message.bcc}
@@ -254,7 +351,7 @@ class Message extends React.PureComponent {
           />
         )}
         {this.props.isLastMessage && this.props.message.expanded && (
-          <div>
+          <div dir="ltr">
             <small>
               <i>
                 Quick Reply is temporarily disabled due to needing more work for
@@ -277,4 +374,6 @@ Message.propTypes = {
   isLastMessage: PropTypes.bool.isRequired,
   message: PropTypes.object.isRequired,
   prefs: PropTypes.object.isRequired,
+  setRef: PropTypes.func.isRequired,
+  advanceMessage: PropTypes.func.isRequired,
 };

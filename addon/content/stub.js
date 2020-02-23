@@ -58,6 +58,11 @@ function printConversation(event) {
 
 window.print = printConversation;
 
+// When moving to a WebExtension page this can simply be moved to CSS (see
+// options.css).
+const direction = Services.locale.isAppLocaleRTL ? "rtl" : "ltr";
+document.documentElement.setAttribute("dir", direction);
+
 document.addEventListener(
   "DOMContentLoaded",
   () => {

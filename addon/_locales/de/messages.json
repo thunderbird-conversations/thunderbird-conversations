@@ -222,5 +222,15 @@
   "assistant.settings2": {
     "message": "Wenn Sie diese Optionen nachträglich ändern möchten, können Sie erneut auf diesen Assistenten zugreifen über \"Extras > Add-ons &gt; Einstellungen\", im Abschnitt \"Erweiterungen\".",
     "description": "Paragraph informing users of the ability to change settings later."
+  },
+
+  "gallery.messageMovedOrDeleted": {
+    "message": "Es tut uns leid, aber wir können diese Gallerieansicht nicht mehr anzeigen, da die Nachricht gelöscht oder verschoben wurde.",
+    "description": "Message displayed if the email that the gallery is trying to view cannot be found."
+  },
+
+  "gallery.title": {
+    "message": "Galerieansicht für: $1",
+    "description": "The tab title for the image gallery"
   }
 }

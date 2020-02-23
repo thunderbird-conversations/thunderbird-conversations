@@ -222,5 +222,15 @@
   "assistant.settings2": {
     "message": "T'agradaria activar més opcions després ? Pots accedir a aquest assistent a través del panell de preferències,  es troba a sota de  la secció : \"Avançat\" .",
     "description": "Paragraph informing users of the ability to change settings later."
+  },
+
+  "gallery.messageMovedOrDeleted": {
+    "message": "Ho sentim molt, però no podem mostrar aquesta vista de galeria, Ja que els missatges han estat moguts o bé eliminats.",
+    "description": "Message displayed if the email that the gallery is trying to view cannot be found."
+  },
+
+  "gallery.title": {
+    "message": "Vista de la galeria per :$1",
+    "description": "The tab title for the image gallery"
   }
 }

@@ -23,13 +23,13 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   PluralForm: "resource://gre/modules/PluralForm.jsm",
   Services: "resource://gre/modules/Services.jsm",
   StringBundle: "resource:///modules/StringBundle.js",
+  MailServices: "resource:///modules/MailServices.jsm",
 });
 const {
   dateAsInMessageList,
   escapeHtml,
   getIdentityForEmail,
   parseMimeLine,
-  sanitize,
 } = ChromeUtils.import("chrome://conversations/content/modules/stdlib/misc.js");
 
 // It's not really nice to write into someone elses object but this is what the
@@ -133,6 +133,18 @@ function dateAccordingToPref(date) {
 }
 
 class _MessageUtils {
+  setOpenTabListener(listener) {
+    this._openTabListener = listener;
+  }
+
+  openGallery(msgUri) {
+    if (!this._openTabListener) {
+      Log.error("No open tab listener!");
+      return;
+    }
+    this._openTabListener("/gallery/index.html?uri=" + encodeURI(msgUri));
+  }
+
   previewAttachment(win, name, url, isPdf, maybeViewable) {
     if (maybeViewable) {
       win.document
@@ -268,6 +280,25 @@ class _MessageUtils {
     );
   }
 
+  toggleTagByIndex(msgUri, index) {
+    const allTags = MailServices.tags.getAllTags({});
+    const toggledTag = allTags[index];
+    // Toggling a tag that is out of range does nothing.
+    if (!toggledTag) {
+      return;
+    }
+    const msgHdr = msgUriToMsgHdr(msgUri);
+    const currentTags = msgHdrGetTags(msgHdr);
+    if (currentTags.find(tag => tag.key === toggledTag.key)) {
+      msgHdrSetTags(
+        msgHdr,
+        currentTags.filter(tag => tag.key !== toggledTag.key)
+      );
+    } else {
+      msgHdrSetTags(msgHdr, [...currentTags, toggledTag]);
+    }
+  }
+
   setStar(msgUri, star) {
     msgUriToMsgHdr(msgUri).markFlagged(star);
   }
@@ -279,7 +310,7 @@ class _MessageUtils {
         let extraLines = [
           {
             key: strings.get("header-folder"),
-            value: sanitize(folderName(msgHdr.folder)[1]),
+            value: folderName(msgHdr.folder)[1],
           },
         ];
         let interestingHeaders = [
@@ -299,14 +330,14 @@ class _MessageUtils {
             } catch (e) {}
             extraLines.push({
               key,
-              value: sanitize(headers.get(h)),
+              value: headers.get(h),
             });
           }
         }
         let subject = headers.get("subject");
         extraLines.push({
           key: strings.get("header-subject"),
-          value: subject ? sanitize(GlodaUtils.deMime(subject)) : "",
+          value: subject ? GlodaUtils.deMime(subject) : "",
         });
 
         win.conversationDispatch({
@@ -361,8 +392,8 @@ class Message {
 
     // A list of email addresses
     this.mailingLists = [];
-    this.isReplyListEnabled = null;
-    this.isReplyAllEnabled = null;
+    this.isReplyListEnabled = false;
+    this.isReplyAllEnabled = false;
     this.isEncrypted = false;
     this.bugzillaInfos = {};
     this.notifiedRemoteContentAlready = false;
@@ -454,19 +485,19 @@ class Message {
     addMsgListener(this);
 
     let data = {
-      date: sanitize(this._date),
+      date: this._date,
       hasRemoteContent: this.hasRemoteContent,
       isDraft: !!msgHdrIsDraft(this._msgHdr),
       isJunk: msgHdrIsJunk(this._msgHdr),
       isOutbox: !!this._msgHdr.folder.getFlag(Ci.nsMsgFolderFlags.Queue),
       isPhishing: this.isPhishing,
-      msgUri: sanitize(this._uri),
+      msgUri: this._uri,
       multipleRecipients: this.isReplyAllEnabled,
       neckoUrl: msgHdrToNeckoURL(this._msgHdr),
       read: this.read,
-      realFrom: sanitize(this._realFrom.email || this._from.email),
+      realFrom: this._realFrom.email || this._from.email,
       recipientsIncludeLists: this.isReplyListEnabled,
-      snippet: sanitize(this._snippet),
+      snippet: this._snippet,
       specialTags: this._specialTags,
       starred: this._msgHdr.isFlagged,
     };
@@ -510,8 +541,8 @@ class Message {
       : dateAsInMessageList(new Date(this._msgHdr.date / 1000));
 
     let [name, fullName] = folderName(this._msgHdr.folder);
-    data.folderName = sanitize(fullName);
-    data.shortFolderName = sanitize(name);
+    data.folderName = fullName;
+    data.shortFolderName = name;
 
     const tags = msgHdrGetTags(this._msgHdr);
     data.tags = tags.map(tag => {
@@ -566,10 +597,10 @@ class Message {
         size: att.size,
         contentType: att.contentType,
         formattedSize,
-        thumb: sanitize(thumb),
+        thumb,
         imgClass,
         isExternal: att.isExternal,
-        name: sanitize(att.name),
+        name: att.name,
         url: att.url,
         anchor: "msg" + this.initialPosition + "att" + i,
         /* Only advertise the preview for PDFs (images have the gallery view). */
@@ -673,7 +704,7 @@ class Message {
     this._conversation._htmlPane.conversationDispatch({
       type: "MSG_UPDATE_SPECIAL_TAGS",
       specialTags: this._specialTags,
-      uri: sanitize(this._uri),
+      uri: this._uri,
     });
   }
 
@@ -971,7 +1002,7 @@ class MessageFromGloda extends Message {
     }
 
     this.isReplyListEnabled =
-      "mailingLists" in this._glodaMsg && this._glodaMsg.mailingLists.length;
+      "mailingLists" in this._glodaMsg && !!this._glodaMsg.mailingLists.length;
     let seen = {};
     this.isReplyAllEnabled =
       [this._glodaMsg.from]

@@ -299,7 +299,7 @@ class MessageNotification extends React.PureComponent {
 MessageNotification.propTypes = {
   canUnJunk: PropTypes.bool.isRequired,
   dispatch: PropTypes.func.isRequired,
-  extraNotifications: PropTypes.array.isRequired,
+  extraNotifications: PropTypes.array,
   hasRemoteContent: PropTypes.bool.isRequired,
   isPhishing: PropTypes.bool.isRequired,
   isOutbox: PropTypes.bool.isRequired,
