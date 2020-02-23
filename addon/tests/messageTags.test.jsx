@@ -116,7 +116,25 @@ describe("MessageTags test", () => {
       id: "$label5",
       name: "Later",
     },
+    {
+      color: "#993399",
+      id: "$label1",
+      name: "Important",
+    },
   ];
+
+  test("Basic tags", async () => {
+    const callback = jest.fn();
+    const wrapper = enzyme.mount(
+      <MessageTags onTagsChange={callback} tags={SAMPLE_TAGS} expanded={true} />
+    );
+
+    expect(wrapper.find(MessageTag)).toHaveLength(SAMPLE_TAGS.length);
+    const tag = wrapper.find(MessageTag).at(0);
+
+    // Make sure the name actually shows up in the tag
+    expect(tag.text()).toEqual(expect.stringContaining(SAMPLE_TAGS[0].name));
+  });
 
   test("Expanded tags", async () => {
     const callback = jest.fn();
@@ -124,12 +142,18 @@ describe("MessageTags test", () => {
       <MessageTags onTagsChange={callback} tags={SAMPLE_TAGS} expanded={true} />
     );
 
-    expect(wrapper.find(MessageTag)).toHaveLength(2);
+    expect(wrapper.find(MessageTag)).toHaveLength(SAMPLE_TAGS.length);
     const tag = wrapper.find(MessageTag).at(0);
     // There should be an "x" button that triggers the callback when clicked
     expect(tag.find(".tag-x")).toHaveLength(1);
     tag.find(".tag-x").simulate("click");
     expect(callback.mock.calls).toHaveLength(1);
+
+    // The callback should be called with a list of tags with the clicked
+    // tag removed.
+    const payload = callback.mock.calls[0][0];
+    expect(payload).toHaveLength(SAMPLE_TAGS.length - 1);
+    expect(payload).toMatchObject(SAMPLE_TAGS.slice(1));
   });
 
   test("Unexpanded tags", async () => {
@@ -142,7 +166,7 @@ describe("MessageTags test", () => {
       />
     );
 
-    expect(wrapper.find(MessageTag)).toHaveLength(2);
+    expect(wrapper.find(MessageTag)).toHaveLength(SAMPLE_TAGS.length);
     const tag = wrapper.find(MessageTag).at(0);
     // There should be no "x" button in an unexpanded tag
     expect(tag.find(".tag-x")).toHaveLength(0);
