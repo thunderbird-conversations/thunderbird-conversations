@@ -181,6 +181,12 @@ function localize(prefsInfo, i18n = browser.i18n) {
   throw new Error("Don't know how to localize the object", prefsInfo);
 }
 
+function openSetupAssistant() {
+  browser.tabs.create({
+    url: "assistant/assistant.html",
+  });
+}
+
 //
 // React components to render the options types
 //
@@ -358,8 +364,10 @@ BinaryOption.propTypes = {
 function _ConversationOptions({
   localizedPrefsInfo,
   localizedName,
+  localizedStartAssistant,
   prefs,
   setPref,
+  startSetupAssistant,
 }) {
   return (
     <React.Fragment>
@@ -376,14 +384,17 @@ function _ConversationOptions({
           ))}
         </div>
       </form>
+      <button onClick={startSetupAssistant}>{localizedStartAssistant}</button>
     </React.Fragment>
   );
 }
 _ConversationOptions.propTypes = {
   localizedPrefsInfo: PropTypes.array.isRequired,
   localizedName: PropTypes.string.isRequired,
+  localizedStartAssistant: PropTypes.string.isRequired,
   prefs: PropTypes.object.isRequired,
   setPref: PropTypes.func.isRequired,
+  startSetupAssistant: PropTypes.func.isRequired,
 };
 
 const ConversationOptions = ReactRedux.connect(state => ({ prefs: state }), {
@@ -397,6 +408,9 @@ export function Main() {
   );
   const [localizedPrefsInfo, setLocalizedPrefsInfo] = React.useState(
     localize(PREFS_INFO, i18n)
+  );
+  const [localizedStartAssistant, setLocalizedStartAssistant] = React.useState(
+    localize("options.start_setup_assistant", i18n)
   );
 
   // When the i18n library is loaded, we want to translate all
@@ -412,6 +426,9 @@ export function Main() {
       .then(() => {
         setLocalizedName(localize("extensionName", i18n));
         setLocalizedPrefsInfo(localize(PREFS_INFO, i18n));
+        setLocalizedStartAssistant(
+          localize("options.start_setup_assistant", i18n)
+        );
       })
       .catch(e => {
         throw e;
@@ -423,6 +440,8 @@ export function Main() {
       <ConversationOptions
         localizedPrefsInfo={localizedPrefsInfo}
         localizedName={localizedName}
+        localizedStartAssistant={localizedStartAssistant}
+        startSetupAssistant={openSetupAssistant}
       />
     </ReactRedux.Provider>
   );

@@ -85,4 +85,10 @@ if (!browser.storage) {
   };
 }
 
+if (!browser.tabs) {
+  browser.tabs = {
+    create() {},
+  };
+}
+
 export { browser };
