@@ -18,8 +18,7 @@ function isColorLight(color) {
   return l > 0.8;
 }
 
-function MessageTag(props) {
-  const { onClickX, expanded, name, color } = props;
+function MessageTag({ onClickX, expanded, name, color }) {
   const isLight = isColorLight(color);
 
   return (
@@ -45,9 +44,7 @@ MessageTag.propTypes = {
   color: PropTypes.string.isRequired,
 };
 
-function MessageTags(props) {
-  const { expanded, tags = [], onTagsChange } = props;
-
+function MessageTags({ expanded, tags = [], onTagsChange }) {
   function removeTag(tagId) {
     const filtered = tags.filter(tag => tag.id !== tagId);
     if (filtered.length !== tags.length) {
@@ -94,8 +91,7 @@ function Icon(props) {
 }
 Icon.propTypes = { path: PropTypes.string.isRequired };
 
-function DkimTooltip(props) {
-  const { strings } = props;
+function DkimTooltip({ strings }) {
   const [primaryString, secondaryStrings = []] = strings;
   const primaryTooltip = <div>{primaryString}</div>;
   const secondaryTooltip = secondaryStrings.length ? (
@@ -117,16 +113,14 @@ function DkimTooltip(props) {
 }
 DkimTooltip.propTypes = { strings: PropTypes.array.isRequired };
 
-function SpecialMessageTag(props) {
-  const {
-    icon,
-    name,
-    title = "",
-    tooltip = {},
-    onClick = null,
-    classNames,
-  } = props;
-
+function SpecialMessageTag({
+  icon,
+  name,
+  title = "",
+  tooltip = {},
+  onClick = null,
+  classNames,
+}) {
   return (
     <li
       className={classNames + " special-tag" + (onClick ? " can-click" : "")}
@@ -149,16 +143,14 @@ SpecialMessageTag.propTypes = {
   tooltip: PropTypes.object.isRequired,
 };
 
-function SpecialMessageTags(props) {
-  const {
-    onTagClick,
-    onFolderClick = null,
-    specialTags,
-    strings,
-    inView,
-    folderName,
-  } = props;
-
+function SpecialMessageTags({
+  onTagClick,
+  onFolderClick = null,
+  specialTags,
+  strings,
+  inView,
+  folderName,
+}) {
   let folderItem = null;
   if (folderName && !inView) {
     folderItem = (
@@ -167,7 +159,7 @@ function SpecialMessageTags(props) {
         onClick={onFolderClick}
         title={strings.get("jumpToFolder")}
       >
-        {strings.get("inFolder", [this.props.folderName])}
+        {strings.get("inFolder", [folderName])}
       </li>
     );
   }

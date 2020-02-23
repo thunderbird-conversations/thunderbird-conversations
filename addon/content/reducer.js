@@ -396,8 +396,7 @@ function messages(state = initialMessages, action) {
     }
     case "TAG_CLICK": {
       const msg = Conversations.currentConversation.getMessage(action.msgUri);
-      const { event, details } = action;
-      msg.msgPluginTagClick(topMail3Pane(window), event, details);
+      msg.msgPluginTagClick(topMail3Pane(window), action.event, action.details);
       return state;
     }
     default: {
