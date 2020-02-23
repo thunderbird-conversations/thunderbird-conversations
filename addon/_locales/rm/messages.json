@@ -232,5 +232,10 @@
   "gallery.title": {
     "message": "Vista da galaria per: $1",
     "description": "The tab title for the image gallery"
+  },
+
+  "options.start_setup_assistant": {
+    "message": "Aviar l'assistent d'installaziun",
+    "description": "Title of the button to open the setup assistant."
   }
 }

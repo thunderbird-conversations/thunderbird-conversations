@@ -232,5 +232,10 @@
   "gallery.title": {
     "message": "Изглед „галерия“ за: $1",
     "description": "The tab title for the image gallery"
+  },
+
+  "options.start_setup_assistant": {
+    "message": "Стартиране на помощника",
+    "description": "Title of the button to open the setup assistant."
   }
 }

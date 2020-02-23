@@ -29,3 +29,10 @@ body {
 h1 {
   text-align: center;
 }
+
+button {
+  display: block;
+  font-size: 1em;
+  margin: 0.5em auto;
+  padding: 0.5em;
+}

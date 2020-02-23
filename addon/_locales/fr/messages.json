@@ -232,5 +232,10 @@
   "gallery.title": {
     "message": "Vue en galerie pour : $1",
     "description": "The tab title for the image gallery"
+  },
+
+  "options.start_setup_assistant": {
+    "message": "Lancer l'assistant d'installation",
+    "description": "Title of the button to open the setup assistant."
   }
 }

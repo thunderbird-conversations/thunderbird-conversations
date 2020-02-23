@@ -232,5 +232,10 @@
   "gallery.title": {
     "message": "画廊视图: $1",
     "description": "The tab title for the image gallery"
+  },
+
+  "options.start_setup_assistant": {
+    "message": "启动安装助手",
+    "description": "Title of the button to open the setup assistant."
   }
 }
