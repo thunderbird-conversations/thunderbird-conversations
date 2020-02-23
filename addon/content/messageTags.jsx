@@ -144,7 +144,7 @@ SpecialMessageTag.propTypes = {
   classNames: PropTypes.string.isRequired,
   icon: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
-  title: PropTypes.string.isRequired,
+  title: PropTypes.string,
   onClick: PropTypes.func,
   tooltip: PropTypes.object.isRequired,
 };
