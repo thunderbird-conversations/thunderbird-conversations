@@ -144,4 +144,20 @@ describe("Option full page tests", () => {
     const afterChange = mockedSet.mock.calls.pop();
     expect(afterChange[0]).toMatchObject({ preferences: { [name]: true } });
   });
+
+  test("Pressing the button opens the setup assistant", async () => {
+    const mockedTabCreate = jest.spyOn(browser.tabs, "create");
+    const main = enzyme.mount(<Main />);
+
+    waitForComponentToPaint(main);
+
+    const button = main.find("button");
+
+    button.simulate("click");
+
+    expect(mockedTabCreate).toHaveBeenCalled();
+    expect(mockedTabCreate.mock.calls[0][0]).toStrictEqual({
+      url: "assistant/assistant.html",
+    });
+  });
 });

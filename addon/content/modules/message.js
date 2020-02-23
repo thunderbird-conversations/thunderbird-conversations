@@ -4,18 +4,14 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = [
-  "MessageFromGloda",
-  "MessageFromDbHdr",
-  "MessageUtils",
-  "watchIFrame",
-];
+var EXPORTED_SYMBOLS = ["MessageFromGloda", "MessageFromDbHdr", "MessageUtils"];
 
 const { XPCOMUtils } = ChromeUtils.import(
   "resource://gre/modules/XPCOMUtils.jsm"
 );
 
 XPCOMUtils.defineLazyModuleGetters(this, {
+  ConversationUtils: "chrome://conversations/content/modules/conversation.js",
   GlodaUtils: "resource:///modules/gloda/utils.js",
   makeFriendlyDateAgo: "resource:///modules/templateUtils.js",
   MsgHdrToMimeMessage: "resource:///modules/gloda/mimemsg.js",
@@ -23,7 +19,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   PluralForm: "resource://gre/modules/PluralForm.jsm",
   Services: "resource://gre/modules/Services.jsm",
   StringBundle: "resource:///modules/StringBundle.js",
-  MailServices: "resource:///modules/MailServices.jsm",
 });
 const {
   dateAsInMessageList,
@@ -44,12 +39,10 @@ let strings = new StringBundle(
 );
 
 const {
-  msgHdrsArchive,
   msgHdrGetHeaders,
   msgHdrGetUri,
   msgHdrIsDraft,
   msgHdrIsJunk,
-  msgHdrsDelete,
   msgHdrsMarkAsRead,
   msgHdrGetTags,
   msgHdrSetTags,
@@ -93,10 +86,7 @@ let Log = setupLogging("Conversations.Message");
 // This is high because we want enough snippet to extract relevant data from
 // bugzilla snippets.
 const kSnippetLength = 700;
-const kViewerUrl = "chrome://conversations/content/pdfviewer/wrapper.xul?uri=";
 
-let makeViewerUrl = (name, url) =>
-  kViewerUrl + encodeURIComponent(url) + "&name=" + encodeURIComponent(name);
 const pdfMimeTypes = [
   "application/pdf",
   "application/x-pdf",
@@ -133,31 +123,6 @@ function dateAccordingToPref(date) {
 }
 
 class _MessageUtils {
-  setOpenTabListener(listener) {
-    this._openTabListener = listener;
-  }
-
-  openGallery(msgUri) {
-    if (!this._openTabListener) {
-      Log.error("No open tab listener!");
-      return;
-    }
-    this._openTabListener("/gallery/index.html?uri=" + encodeURI(msgUri));
-  }
-
-  previewAttachment(win, name, url, isPdf, maybeViewable) {
-    if (maybeViewable) {
-      win.document
-        .getElementById("tabmail")
-        .openTab("contentTab", { contentPage: url });
-    }
-    if (isPdf) {
-      win.document
-        .getElementById("tabmail")
-        .openTab("chromeTab", { chromePage: makeViewerUrl(name, url) });
-    }
-  }
-
   _getAttachmentInfo(win, msgUri, attachment) {
     const attInfo = new win.AttachmentInfo(
       attachment.contentType,
@@ -242,16 +207,6 @@ class _MessageUtils {
     }
   }
 
-  archive(msgUri) {
-    const msgHdr = msgUriToMsgHdr(msgUri);
-    msgHdrsArchive([msgHdr]);
-  }
-
-  delete(msgUri) {
-    const msgHdr = msgUriToMsgHdr(msgUri);
-    msgHdrsDelete([msgHdr]);
-  }
-
   ignorePhishing(msgUri) {
     const msgHdr = msgUriToMsgHdr(msgUri);
     msgHdr.setUint32Property("notAPhishMessage", 1);
@@ -267,40 +222,6 @@ class _MessageUtils {
 
   openInSourceView(win, msgUri) {
     win.ViewPageSource([msgUri]);
-  }
-
-  setTags(msgUri, tags) {
-    msgHdrSetTags(
-      msgUriToMsgHdr(msgUri),
-      tags.map(tag => {
-        return {
-          key: tag.id,
-        };
-      })
-    );
-  }
-
-  toggleTagByIndex(msgUri, index) {
-    const allTags = MailServices.tags.getAllTags({});
-    const toggledTag = allTags[index];
-    // Toggling a tag that is out of range does nothing.
-    if (!toggledTag) {
-      return;
-    }
-    const msgHdr = msgUriToMsgHdr(msgUri);
-    const currentTags = msgHdrGetTags(msgHdr);
-    if (currentTags.find(tag => tag.key === toggledTag.key)) {
-      msgHdrSetTags(
-        msgHdr,
-        currentTags.filter(tag => tag.key !== toggledTag.key)
-      );
-    } else {
-      msgHdrSetTags(msgHdr, [...currentTags, toggledTag]);
-    }
-  }
-
-  setStar(msgUri, star) {
-    msgUriToMsgHdr(msgUri).markFlagged(star);
   }
 
   getMsgHdrDetails(win, msgUri) {
@@ -358,6 +279,7 @@ var MessageUtils = new _MessageUtils();
 class Message {
   constructor(aConversation, msgHdr) {
     this._msgHdr = msgHdr;
+    this._id = null;
     this._domNode = null;
     this._snippet = "";
     this._conversation = aConversation;
@@ -485,6 +407,7 @@ class Message {
     addMsgListener(this);
 
     let data = {
+      id: this._id,
       date: this._date,
       hasRemoteContent: this.hasRemoteContent,
       isDraft: !!msgHdrIsDraft(this._msgHdr),
@@ -961,6 +884,9 @@ class MessageFromGloda extends Message {
   }
 
   async init() {
+    let browser = ConversationUtils.getBrowser();
+    this._id = await browser.conversations.getMessageIdForUri(this._uri);
+
     // Our gloda plugin found something for us, thanks dude!
     if (this._glodaMsg.alternativeSender) {
       this._realFrom = this._from;
@@ -1101,6 +1027,8 @@ class MessageFromDbHdr extends Message {
   }
 
   async init() {
+    let browser = ConversationUtils.getBrowser();
+    this._id = await browser.conversations.getMessageIdForUri(this._uri);
     // Gloda is not with us, so stream the message... the MimeMsg API says that
     //  the streaming will fail and the underlying exception will be re-thrown in
     //  case the message is not on disk. In that case, the fallback is to just get

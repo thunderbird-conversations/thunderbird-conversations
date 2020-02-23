@@ -183,18 +183,33 @@ ViewWrapper.prototype = {
   },
 };
 
+// This is a workaround whilst we still have stub.xhtml being loaded in the
+// privileged scope. _ConversationUtils.getBrowser() simulates APIs and passes
+// them back to the webExtension process for handling by the real APIs.
+const SUPPORTED_BASE_APIS = [
+  "convContacts",
+  "conversations",
+  "messages",
+  "tabs",
+];
+
 class _ConversationUtils {
-  markAllAsRead(msgUris, read, withChecks = false) {
-    if (
-      !withChecks ||
-      Services.prefs.getBoolPref("mailnews.mark_message_read.auto") ||
-      Services.prefs.getBoolPref("mailnews.mark_message_read.delay")
-    ) {
-      msgHdrsMarkAsRead(
-        msgUris.map(msg => msgUriToMsgHdr(msg)),
-        read
-      );
+  setBrowserListener(listener) {
+    this._browserListener = listener;
+  }
+
+  getBrowser() {
+    const browser = {};
+    const self = this;
+    for (const api of SUPPORTED_BASE_APIS) {
+      const subApiHandler = {
+        get(obj, prop) {
+          return self._browserListener.bind(null, api, prop);
+        },
+      };
+      browser[api] = new Proxy({}, subApiHandler);
     }
+    return browser;
   }
 
   markAsJunk(win, isJunk) {

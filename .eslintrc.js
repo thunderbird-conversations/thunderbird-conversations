@@ -30,6 +30,13 @@ module.exports = {
         sourceType: "module",
       },
     },
+    {
+      env: {
+        webextensions: true,
+      },
+      excludedFiles: ["addon/content/modules/**/*.js"],
+      files: ["addon/content/**/*.js", "addon/content/**/*.jsx"],
+    },
   ],
   plugins: ["mozilla", "html", "react"],
   rules: {

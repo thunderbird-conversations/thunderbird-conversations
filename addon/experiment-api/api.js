@@ -1,13 +1,12 @@
-const { XPCOMUtils } = ChromeUtils.import(
+var { XPCOMUtils } = ChromeUtils.import(
   "resource://gre/modules/XPCOMUtils.jsm"
 );
 
 XPCOMUtils.defineLazyModuleGetters(this, {
-  // Get various parts of the WebExtension framework that we need.
+  ConversationUtils: "chrome://conversations/content/modules/conversation.js",
   Customizations: "chrome://conversations/content/modules/assistant.js",
   dumpCallStack: "chrome://conversations/content/modules/log.js",
   ExtensionCommon: "resource://gre/modules/ExtensionCommon.jsm",
-  MessageUtils: "chrome://conversations/content/modules/message.js",
   MsgHdrToMimeMessage: "resource:///modules/gloda/mimemsg.js",
   msgUriToMsgHdr:
     "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
@@ -206,17 +205,29 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           );
           return messenger.formatFileSize(size);
         },
-        onOpenTab: new ExtensionCommon.EventManager({
+        async createTab(createTabProperties) {
+          const params = {};
+          if (createTabProperties.type == "contentTab") {
+            params.contentPage = createTabProperties.url;
+          } else {
+            params.chromePage = createTabProperties.url;
+          }
+          Services.wm
+            .getMostRecentWindow("mail:3pane")
+            .document.getElementById("tabmail")
+            .openTab(createTabProperties.type, params);
+        },
+        onCallAPI: new ExtensionCommon.EventManager({
           context,
-          name: "conversations.onOpenTab",
+          name: "conversations.onCallAPI",
           register(fire) {
-            function callback(url) {
-              return fire.async(url);
+            function callback(apiName, apiItem, ...args) {
+              return fire.async(apiName, apiItem, args);
             }
 
-            MessageUtils.setOpenTabListener(callback);
+            ConversationUtils.setBrowserListener(callback);
             return function() {
-              MessageUtils.setOpenTabListener(null);
+              ConversationUtils.setBrowserListener(null);
             };
           },
         }).api(),

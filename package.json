@@ -52,7 +52,8 @@
     "test:lint": "eslint --ext js,jsx ./addon",
     "test:jest": "scripts/build-dev-html.sh && jest ./dist-dev-html/",
     "preversion": "npm test",
-    "version": "scripts/update-version.sh"
+    "version": "scripts/update-version.sh",
+    "postversion": "npm run prod"
   },
   "license": "MPL-2.0"
 }

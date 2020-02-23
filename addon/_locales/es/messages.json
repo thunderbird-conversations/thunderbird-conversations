@@ -232,5 +232,10 @@
   "gallery.title": {
     "message": "Vista de galería para: $1",
     "description": "The tab title for the image gallery"
+  },
+
+  "options.start_setup_assistant": {
+    "message": "Iniciar el asistente de configuración",
+    "description": "Title of the button to open the setup assistant."
   }
 }
