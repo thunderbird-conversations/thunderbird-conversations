@@ -4,13 +4,7 @@
 /* eslint-env jest */
 
 // Standard imports for all tests
-const {
-  esmImport,
-  enzyme,
-  React,
-  waitForComponentToPaint,
-  browser,
-} = require("./utils");
+const { esmImport, enzyme, React } = require("./utils");
 
 // Import the components we want to test
 const {
@@ -20,6 +14,8 @@ const {
   SpecialMessageTags,
 } = esmImport("../content/es-modules/components/message-tags.js");
 
+// We don't care about translations in these tests, so create a dummy `strings`
+// object.
 const strings = {
   get(x) {
     return x;
@@ -64,7 +60,7 @@ describe("SpecialMessageTags test", () => {
     const callback = jest.fn();
     const tagData = [
       {
-        details: false,
+        details: null,
         classNames: "dkim-signed SUCCESS",
         icon: "chrome://conversations/skin/material-icons.svg#edit",
         name: "DKIM signed",
@@ -95,19 +91,60 @@ describe("SpecialMessageTags test", () => {
       />
     );
 
-    const special = wrapper.find(SpecialMessageTag).at(0);
-    console.log(callback.mock);
-    special.simulate("click");
-    console.log(callback.mock);
-    // There should be one react child `SpecialMessageTag`
-    expect([1]).toHaveLength(1);
-    // That child should have all relevant classes applied
-    expect(wrapper.find(".dkim-signed.SUCCESS.special-tag")).toHaveLength(1);
+    // The first tag cannot be clicked
+    const special1 = wrapper.find(SpecialMessageTag).at(0);
+    special1.simulate("click");
+    expect(callback.mock.calls).toHaveLength(0);
+
+    // The second tag can be clicked
+    const special2 = wrapper.find(SpecialMessageTag).at(1);
+    callback.mockReset();
+    special2.simulate("click");
+    expect(callback.mock.calls).toHaveLength(1);
   });
 });
 
 describe("MessageTags test", () => {
-  test("test 1", async () => {
-    expect(4).toBe(4);
+  const SAMPLE_TAGS = [
+    {
+      color: "#3333FF",
+      id: "$label4",
+      name: "To Do",
+    },
+    {
+      color: "#993399",
+      id: "$label5",
+      name: "Later",
+    },
+  ];
+
+  test("Expanded tags", async () => {
+    const callback = jest.fn();
+    const wrapper = enzyme.mount(
+      <MessageTags onTagsChange={callback} tags={SAMPLE_TAGS} expanded={true} />
+    );
+
+    expect(wrapper.find(MessageTag)).toHaveLength(2);
+    const tag = wrapper.find(MessageTag).at(0);
+    // There should be an "x" button that triggers the callback when clicked
+    expect(tag.find(".tag-x")).toHaveLength(1);
+    tag.find(".tag-x").simulate("click");
+    expect(callback.mock.calls).toHaveLength(1);
+  });
+
+  test("Unexpanded tags", async () => {
+    const callback = jest.fn();
+    const wrapper = enzyme.mount(
+      <MessageTags
+        onTagsChange={callback}
+        tags={SAMPLE_TAGS}
+        expanded={false}
+      />
+    );
+
+    expect(wrapper.find(MessageTag)).toHaveLength(2);
+    const tag = wrapper.find(MessageTag).at(0);
+    // There should be no "x" button in an unexpanded tag
+    expect(tag.find(".tag-x")).toHaveLength(0);
   });
 });
