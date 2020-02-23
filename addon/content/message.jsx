@@ -255,6 +255,7 @@ class Message extends React.PureComponent {
           snippet={this.props.message.snippet}
           starred={this.props.message.starred}
           tags={this.props.message.tags}
+          specialTags={this.props.message.specialTags}
         />
         {this.props.message.expanded && this.props.message.detailsShowing && (
           <MessageDetails
@@ -284,20 +285,36 @@ class Message extends React.PureComponent {
         <div className="messageBody">
           {this.props.message.expanded && (
             <SpecialMessageTags
-              canClickFolder={true}
-              dispatch={this.props.dispatch}
+              onFolderClick={() => {
+                this.dispatch({
+                  type: "SWITCH_TO_FOLDER",
+                  msgUri: this.props.message.msgUri,
+                });
+              }}
+              onTagClick={(event, tag) => {
+                this.props.dispatch({
+                  type: "TAG_CLICK",
+                  event,
+                  msgUri: this.props.message.msgUri,
+                  details: tag.details,
+                });
+              }}
               folderName={this.props.message.folderName}
               inView={this.props.message.inView}
-              msgUri={this.props.message.msgUri}
               specialTags={this.props.message.specialTags}
               strings={this.strings}
             />
           )}
           {this.props.message.expanded && (
             <MessageTags
-              dispatch={this.props.dispatch}
+              onTagsChange={tags => {
+                this.props.dispatch({
+                  type: "MSG_SET_TAGS",
+                  msgUri: this.props.message.msgUri,
+                  tags,
+                });
+              }}
               expanded={true}
-              msgUri={this.props.message.msgUri}
               tags={this.props.message.tags}
             />
           )}

@@ -672,7 +672,7 @@ function addSignedLabel(status, msg) {
       classNames: "enigmail-signed",
       icon: "chrome://conversations/skin/material-icons.svg#edit",
       name: templateStrings.get("messageSigned"),
-      onClick: {
+      details: {
         type: "enigmail",
         detail: "viewSecurityInfo",
       },
@@ -690,7 +690,7 @@ function addEncryptedTag(msg) {
     classNames: "enigmail-decrypted",
     icon: "chrome://conversations/skin/material-icons.svg#vpn_key",
     name: templateStrings.get("messageDecrypted"),
-    onClick: {
+    details: {
       type: "enigmail",
       detail: "viewSecurityInfo",
     },
