@@ -159,18 +159,18 @@ class _MessageUtils {
 
   _compose(win, compType, msgUri, shiftKey) {
     const msgHdr = msgUriToMsgHdr(msgUri);
-    if (shiftKey) {
-      win.ComposeMessage(
-        compType,
-        Ci.nsIMsgCompFormat.OppositeOfDefault,
-        msgHdr.folder,
-        [msgUri]
-      );
-    } else {
-      win.ComposeMessage(compType, Ci.nsIMsgCompFormat.Default, msgHdr.folder, [
-        msgUri,
-      ]);
-    }
+    // if (shiftKey) {
+    //   win.ComposeMessage(
+    //     compType,
+    //     Ci.nsIMsgCompFormat.OppositeOfDefault,
+    //     msgHdr.folder,
+    //     [msgUri]
+    //   );
+    // } else {
+    win.ComposeMessage(compType, Ci.nsIMsgCompFormat.Default, msgHdr.folder, [
+      msgUri,
+    ]);
+    // }
   }
 
   editDraft(win, msgUri, shiftKey = false) {
