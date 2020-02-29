@@ -4,7 +4,7 @@
 
 /*
  * This is a temporary wrapper. Privileged code doesn't allow es-modules, but
- * eventually all components should be exported as es-modules. This code 
+ * eventually all components should be exported as es-modules. This code
  * "re-exports" globals as es-modules, which enables them to be imported
  * (e.g. for tests) or used as globals.
  *
@@ -20,9 +20,10 @@ Object.assign(window, { React, ReactDOM, Redux, ReactRedux, RTK, PropTypes });
 
 // Set up an object for the make-shift module emulation
 window.esExports = {};
+
 // The node.js `esm` loader won't share globals. Since this is only used
 // by tests at the moment, which are run by node.js, use the `require`
-// function.
+// function as a fallback
 require("../../messageTags.js");
 
 export const MessageTag = window.esExports.MessageTag;
