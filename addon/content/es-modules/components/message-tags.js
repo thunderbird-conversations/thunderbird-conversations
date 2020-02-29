@@ -20,7 +20,7 @@ Object.assign(window, { React, ReactDOM, Redux, ReactRedux, RTK, PropTypes });
 
 // Set up an object for the make-shift module emulation
 window.esExports = {};
-// the node.js `esm` loader won't share globals. Since this is only used
+// The node.js `esm` loader won't share globals. Since this is only used
 // by tests at the moment, which are run by node.js, use the `require`
 // function.
 require("../../messageTags.js");
