@@ -12,6 +12,7 @@ const { XPCOMUtils } = ChromeUtils.import(
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   Config: "chrome://conversations/content/modules/config.js",
+  Conversation: "chrome://conversations/content/modules/conversation.js",
   Customizations: "chrome://conversations/content/modules/assistant.js",
   Prefs: "chrome://conversations/content/modules/prefs.js",
   Services: "resource://gre/modules/Services.jsm",
@@ -53,9 +54,8 @@ let Log = setupLogging("Conversations.MonkeyPatch");
 
 let shouldPerformUninstall;
 
-function MonkeyPatch(aWindow, aConversation) {
-  this._Conversation = aConversation;
-  this._window = aWindow;
+function MonkeyPatch(window) {
+  this._window = window;
   this._markReadTimeout = null;
   this._beingUninstalled = false;
   this._undoFuncs = [];
@@ -118,15 +118,12 @@ MonkeyPatch.prototype = {
     // state properly any more for mixed-WebExtensions.
     // This is coupled with the `unload` handler below.
     window.setTimeout(() => {
-      console.log("delayed");
       if (
         !Services.prefs.getBoolPref("conversations.betweenColumnVisible", true)
       ) {
-        console.log("hiding");
         treecol.setAttribute("hidden", "true");
       } else {
         treecol.removeAttribute("hidden");
-        console.log("Show!");
       }
     }, 1000);
     let parent3 = window.document.getElementById("threadCols");
@@ -594,7 +591,7 @@ MonkeyPatch.prototype = {
             return;
           }
 
-          let freshConversation = new self._Conversation(
+          let freshConversation = new Conversation(
             window,
             aSelectedMessages,
             scrollMode,
