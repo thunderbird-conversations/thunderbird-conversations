@@ -57,5 +57,5 @@ wait $(jobs -p)
 
 rm -f conversations.xpi
 pushd dist
-zip -r ../conversations.xpi *
+zip -r ../conversations.xpi * -x "tests/*"
 popd
