@@ -3,7 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 /* globals React, PropTypes */
-/* exported MessageTags */
+/* exported MessageTags, SpecialMessageTags */
 
 /**
  * Determine if a background color is light enough to require dark text.
@@ -190,3 +190,15 @@ SpecialMessageTags.propTypes = {
   specialTags: PropTypes.array.isRequired,
   strings: PropTypes.object.isRequired,
 };
+
+// This is temporary code to allow using using this as both
+// an es-module and as-is with global variables. This code
+// should be removed when the transition to a WebExtension is
+// complete.
+
+if (window.esExports) {
+  window.esExports.MessageTag = MessageTag;
+  window.esExports.MessageTags = MessageTags;
+  window.esExports.SpecialMessageTag = SpecialMessageTag;
+  window.esExports.SpecialMessageTags = SpecialMessageTags;
+}
