@@ -124,16 +124,6 @@
     "description": "Options - description for debugging setting."
   },
 
-  "options.monospaced_senders_title": {
-    "message": "等幅で表示",
-    "description": "Options - title for monospaced sender setting."
-  },
-
-  "options.monospaced_senders_desc": {
-    "message": "次のアドレス/メーリングリストからのメッセージを等幅フォントで表示します。 (半角カンマ区切り)",
-    "description": "Options - description for monospaced sender setting."
-  },
-
   "assistant.title": {
     "message": "初回起動アシスタント",
     "description": "The document title of the assistant page."

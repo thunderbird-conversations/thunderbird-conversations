@@ -124,16 +124,6 @@
     "description": "Options - description for debugging setting."
   },
 
-  "options.monospaced_senders_title": {
-    "message": "Прикажи у једнаком размаку",
-    "description": "Options - title for monospaced sender setting."
-  },
-
-  "options.monospaced_senders_desc": {
-    "message": "Поруке са ових адреса/спискова за слање требају бити приказане у фонтовима фиксне ширине (одвојеним зарезима)",
-    "description": "Options - description for monospaced sender setting."
-  },
-
   "assistant.title": {
     "message": "First run assistant",
     "description": "The document title of the assistant page."

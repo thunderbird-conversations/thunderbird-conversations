@@ -124,16 +124,6 @@
     "description": "Options - description for debugging setting."
   },
 
-  "options.monospaced_senders_title": {
-    "message": "Visa i enbreddsteckensnitt",
-    "description": "Options - title for monospaced sender setting."
-  },
-
-  "options.monospaced_senders_desc": {
-    "message": "Meddelanden från dessa adresser/e-postlistor skall visas i enbreddsteckensnitt (avgränsa med kommatecken)",
-    "description": "Options - description for monospaced sender setting."
-  },
-
   "assistant.title": {
     "message": "Guiden Första körningen",
     "description": "The document title of the assistant page."

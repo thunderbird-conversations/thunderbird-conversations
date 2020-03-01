@@ -124,16 +124,6 @@
     "description": "Options - description for debugging setting."
   },
 
-  "options.monospaced_senders_title": {
-    "message": "Prikaži s stalno širino",
-    "description": "Options - title for monospaced sender setting."
-  },
-
-  "options.monospaced_senders_desc": {
-    "message": "Sporočila s teh naslovov/dopisnih seznamov naj bodo prikazana v pisavi s stalno širino (ločite z vejicami).",
-    "description": "Options - description for monospaced sender setting."
-  },
-
   "assistant.title": {
     "message": "Najprej zaženite pomočnika",
     "description": "The document title of the assistant page."
