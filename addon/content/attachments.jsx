@@ -9,6 +9,7 @@ class Attachment extends React.PureComponent {
   constructor(props) {
     super(props);
     this.preview = this.preview.bind(this);
+    this.onDragStart = this.onDragStart.bind(this);
     this.downloadAttachment = this.downloadAttachment.bind(this);
     this.openAttachment = this.openAttachment.bind(this);
     this.deleteAttachment = this.deleteAttachment.bind(this);
@@ -23,6 +24,32 @@ class Attachment extends React.PureComponent {
       isPdf: this.props.isPdf,
       maybeViewable: this.props.maybeViewable,
     });
+  }
+
+  onDragStart(event) {
+    let info;
+    if (/(^file:|&filename=)/.test(this.props.url)) {
+      info = this.props.url;
+    } else {
+      info =
+        this.props.url +
+        "&type=" +
+        this.props.contentType +
+        "&filename=" +
+        encodeURIComponent(this.props.name);
+    }
+    event.dataTransfer.setData(
+      "text/x-moz-url",
+      `${info}\n${this.props.name}\n${this.props.size}`
+    );
+    event.dataTransfer.setData("text/x-moz-url-data", this.props.url);
+    event.dataTransfer.setData("text/x-moz-url-desc", this.props.name);
+    event.dataTransfer.setData(
+      "application/x-moz-file-promise-url",
+      this.props.url
+    );
+    event.dataTransfer.setData("application/x-moz-file-promise", null);
+    event.stopPropagation();
   }
 
   downloadAttachment() {
@@ -104,6 +131,7 @@ class Attachment extends React.PureComponent {
           }
           draggable="true"
           onClick={this.preview}
+          onDragStart={this.onDragStart}
         >
           <img
             className={this.props.imgClass}
