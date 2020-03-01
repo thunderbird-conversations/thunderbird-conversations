@@ -124,16 +124,6 @@
     "description": "Options - description for debugging setting."
   },
 
-  "options.monospaced_senders_title": {
-    "message": "Mostrar en monoespacio",
-    "description": "Options - title for monospaced sender setting."
-  },
-
-  "options.monospaced_senders_desc": {
-    "message": "Los mensajes de estas direcciones/listas de correo deben mostrarse en fuentes monoespacio (separados por comas)",
-    "description": "Options - description for monospaced sender setting."
-  },
-
   "assistant.title": {
     "message": "Asistente del primer uso",
     "description": "The document title of the assistant page."

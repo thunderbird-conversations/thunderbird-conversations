@@ -101,7 +101,6 @@ class _ContactDetail extends React.PureComponent {
       top: 0,
       bottom: 0,
     };
-    // TODO: Show monospace?
     const elm = (
       <div
         className="tooltip"

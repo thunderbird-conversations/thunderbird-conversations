@@ -124,16 +124,6 @@
     "description": "Options - description for debugging setting."
   },
 
-  "options.monospaced_senders_title": {
-    "message": "Προβολή σε γραμματοσειρά σταθερού πλάτους",
-    "description": "Options - title for monospaced sender setting."
-  },
-
-  "options.monospaced_senders_desc": {
-    "message": "Τα μηνύματα από αυτές τις διευθύνσεις/λίστες να εμφανίζονται με γραμματοσειρές σταθερού πλάτους (διαχωρισμός με κόμματα)",
-    "description": "Options - description for monospaced sender setting."
-  },
-
   "assistant.title": {
     "message": "Βοηθός πρώτης εκτέλεσης",
     "description": "The document title of the assistant page."

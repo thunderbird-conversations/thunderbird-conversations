@@ -67,14 +67,6 @@ const PREFS_INFO = [
     },
     component: NumericOption,
   },
-  // {
-  //   props: {
-  //     title: "options.monospaced_senders_title",
-  //     desc: "options.monospaced_senders_desc",
-  //     name: "monospaced_senders",
-  //   },
-  //   component: TextOption,
-  // },
   {
     props: {
       title: "options.hide_sigs_title",

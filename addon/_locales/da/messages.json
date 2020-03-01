@@ -124,16 +124,6 @@
     "description": "Options - description for debugging setting."
   },
 
-  "options.monospaced_senders_title": {
-    "message": "Vis i monospatieret",
-    "description": "Options - title for monospaced sender setting."
-  },
-
-  "options.monospaced_senders_desc": {
-    "message": "Meddelelser fra de adresser/mailinglister skal vises i monospatierede skrifttyper (separer med komma).",
-    "description": "Options - description for monospaced sender setting."
-  },
-
   "assistant.title": {
     "message": "Første start assistent",
     "description": "The document title of the assistant page."

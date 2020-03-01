@@ -124,16 +124,6 @@
     "description": "Options - description for debugging setting."
   },
 
-  "options.monospaced_senders_title": {
-    "message": "Display in monospaced",
-    "description": "Options - title for monospaced sender setting."
-  },
-
-  "options.monospaced_senders_desc": {
-    "message": "Messages from those addresses/mailing-lists should be displayed in monospaced fonts (separate using commas).",
-    "description": "Options - description for monospaced sender setting."
-  },
-
   "assistant.title": {
     "message": "İlk çalıştırma yardımcısı",
     "description": "The document title of the assistant page."

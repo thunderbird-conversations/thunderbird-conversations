@@ -124,16 +124,6 @@
     "description": "Options - description for debugging setting."
   },
 
-  "options.monospaced_senders_title": {
-    "message": "Zobrazit písmem s pevnou šířkou",
-    "description": "Options - title for monospaced sender setting."
-  },
-
-  "options.monospaced_senders_desc": {
-    "message": "Zprávy z následujících adres/poštovních konferencí budou zobrazeny písmem s pevnou šířkou. (Adresy oddělujte čárkami.)",
-    "description": "Options - description for monospaced sender setting."
-  },
-
   "assistant.title": {
     "message": "Pomocník s nastavením",
     "description": "The document title of the assistant page."

@@ -124,16 +124,6 @@
     "description": "Options - description for debugging setting."
   },
 
-  "options.monospaced_senders_title": {
-    "message": "Affichage monospace",
-    "description": "Options - title for monospaced sender setting."
-  },
-
-  "options.monospaced_senders_desc": {
-    "message": "Les messages venant de ces adresses ou listes de discussion devraient être affichés en polices monospace (séparer les adresses par des virgules)",
-    "description": "Options - description for monospaced sender setting."
-  },
-
   "assistant.title": {
     "message": "Assistant d'aide au démarrage",
     "description": "The document title of the assistant page."

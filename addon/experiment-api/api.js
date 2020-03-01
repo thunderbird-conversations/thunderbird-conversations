@@ -73,7 +73,6 @@ function prefType(name) {
     case "hide_quote_length": {
       return "int";
     }
-    case "monospaced_senders":
     case "unwanted_recipients":
     case "uninstall_infos": {
       return "char";

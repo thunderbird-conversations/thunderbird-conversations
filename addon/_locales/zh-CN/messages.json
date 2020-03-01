@@ -124,16 +124,6 @@
     "description": "Options - description for debugging setting."
   },
 
-  "options.monospaced_senders_title": {
-    "message": "使用等宽字体显示",
-    "description": "Options - title for monospaced sender setting."
-  },
-
-  "options.monospaced_senders_desc": {
-    "message": "从指定地址或邮件列表中发出的邮件需以等宽字体显示（使用逗号分隔）",
-    "description": "Options - description for monospaced sender setting."
-  },
-
   "assistant.title": {
     "message": "首次运行向导",
     "description": "The document title of the assistant page."

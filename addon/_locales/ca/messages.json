@@ -124,16 +124,6 @@
     "description": "Options - description for debugging setting."
   },
 
-  "options.monospaced_senders_title": {
-    "message": "Mostra en  monoespaiat",
-    "description": "Options - title for monospaced sender setting."
-  },
-
-  "options.monospaced_senders_desc": {
-    "message": "Els  missatges provinents d'aquestes adreçes haurien de mostrar-se en fonts monoespaiades (separades utilitzant comes)",
-    "description": "Options - description for monospaced sender setting."
-  },
-
   "assistant.title": {
     "message": "Assistent de la primera sessió",
     "description": "The document title of the assistant page."

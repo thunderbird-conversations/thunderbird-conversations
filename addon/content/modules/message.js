@@ -579,27 +579,6 @@ class Message {
     }
   }
 
-  // Actually, we only do these expensive DOM calls when we need to, i.e. when
-  //  we're expanded for the first time (expand calls us).
-  registerActions() {
-    // Register all the needed event handlers. Nice wrappers below.
-    // TODO: This toggle is currently disabled.
-    // if (realFrom in Prefs.monospaced_senders)
-    //   this._domNode.getElementsByClassName("checkbox-monospace")[0].checked = true;
-    // This one is located in the first contact tooltip
-    // this.register(".checkbox-monospace", function(event) {
-    //   let senders = Object.keys(Prefs.monospaced_senders);
-    //   senders = senders.filter(x => x != realFrom);
-    //   if (event.target.checked) {
-    //     Servies.prefs.setCharPref("conversations.monospaced_senders", senders.concat([realFrom]).join(","));
-    //   } else {
-    //     Services.prefs.setCharPref("conversations.monospaced_senders", senders.join(","));
-    //   }
-    //   self._reloadMessage();
-    //   event.stopPropagation();
-    // });
-  }
-
   get iframe() {
     return this._domNode.getElementsByTagName("iframe")[0];
   }
