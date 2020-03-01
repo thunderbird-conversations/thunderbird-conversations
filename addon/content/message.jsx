@@ -345,6 +345,7 @@ class Message extends React.PureComponent {
         {this.props.message.expanded && (
           <MessageFooter
             dispatch={this.props.dispatch}
+            id={this.props.message.id}
             msgUri={this.props.message.msgUri}
             multipleRecipients={this.props.message.multipleRecipients}
             recipientsIncludeLists={this.props.message.recipientsIncludeLists}
