@@ -4,7 +4,11 @@
 /* eslint sort-keys: "error" */
 
 module.exports = {
-  extends: ["plugin:mozilla/recommended", "plugin:react/recommended"],
+  extends: [
+    "plugin:mozilla/recommended",
+    "plugin:react/recommended",
+    "plugin:json/recommended",
+  ],
   overrides: [
     {
       // This marks exported symbols as used for our modules.
@@ -38,7 +42,7 @@ module.exports = {
       files: ["addon/content/**/*.js", "addon/content/**/*.jsx"],
     },
   ],
-  plugins: ["mozilla", "html", "react"],
+  plugins: ["mozilla", "html", "json", "react"],
   rules: {
     // We want to check the global scope everywhere.
     "no-unused-vars": [
