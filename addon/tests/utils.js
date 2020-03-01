@@ -8,7 +8,7 @@
 
 /* eslint-env node */
 
-const esmImport = require("esm")(module, { cjs: false, force: true });
+const esmImport = require("esm")(module, { cjs: true, force: true });
 const { act } = require("react-dom/test-utils");
 const enzyme = require("enzyme");
 const Adapter = require("enzyme-adapter-react-16");
@@ -49,7 +49,6 @@ const waitForComponentToPaint = async wrapper => {
 // Load the modules for our tests. Since we are using native ESM
 // modules here, we need to use esmImport to load the files.
 //
-//esmImport("../content/es-modules/modules-compat.js");
 const { browser, i18n } = esmImport(
   "../content/es-modules/thunderbird-compat.js"
 );
