@@ -124,16 +124,6 @@
     "description": "Options - description for debugging setting."
   },
 
-  "options.monospaced_senders_title": {
-    "message": "In unproportionaler Schriftart anzeigen",
-    "description": "Options - title for monospaced sender setting."
-  },
-
-  "options.monospaced_senders_desc": {
-    "message": "Nachrichten von dieser Adresse/Mailingliste sollen in unproportionaler Schriftart angezeigt werden (durch Kommata trennen).",
-    "description": "Options - description for monospaced sender setting."
-  },
-
   "assistant.title": {
     "message": "Installationsassistent",
     "description": "The document title of the assistant page."

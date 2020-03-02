@@ -124,16 +124,6 @@
     "description": "Options - description for debugging setting."
   },
 
-  "options.monospaced_senders_title": {
-    "message": "Exibir com espaçamento fixo",
-    "description": "Options - title for monospaced sender setting."
-  },
-
-  "options.monospaced_senders_desc": {
-    "message": "Mensagens desses endereços e listas (separar com vírgulas) devem ser exibidas com tipos de letra de espaçamento fixo",
-    "description": "Options - description for monospaced sender setting."
-  },
-
   "assistant.title": {
     "message": "Assistente de instalação",
     "description": "The document title of the assistant page."

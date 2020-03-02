@@ -5,7 +5,7 @@
 /* import-globals-from quickReply.js */
 /* import-globals-from reducer.js */
 /* global Redux, ReactDOM, React, ReactRedux, ConversationWrapper,
-          Log:true, masqueradeAsQuickCompose */
+          masqueradeAsQuickCompose */
 
 let store;
 var { StringBundle } = ChromeUtils.import(
@@ -38,14 +38,10 @@ const { Prefs } = ChromeUtils.import(
 const { topMail3Pane } = ChromeUtils.import(
   "chrome://conversations/content/modules/misc.js"
 );
-const { setupLogging, dumpCallStack } = ChromeUtils.import(
-  "chrome://conversations/content/modules/log.js"
-);
-const { ConversationUtils } = ChromeUtils.import(
+const { ConversationUtils, Conversation } = ChromeUtils.import(
   "chrome://conversations/content/modules/conversation.js"
 );
 
-Log = setupLogging("Conversations.Stub");
 // Declare with var, not let, so that it's in the global scope, not the lexical scope.
 /* exported isInTab */
 var isInTab = false;
@@ -126,7 +122,6 @@ document.addEventListener(
         if (window.frameElement) {
           window.frameElement.setAttribute("tooltip", "aHTMLTooltip");
         }
-        let mainWindow = topMail3Pane(window);
         // let willExpand = parseInt(params.get("willExpand"));
         let msgHdrs = params
           .get("urls")
@@ -143,7 +138,7 @@ document.addEventListener(
             currentConversation: null,
             counter: 0,
           };
-          let freshConversation = new mainWindow.Conversations.monkeyPatch._Conversation(
+          let freshConversation = new Conversation(
             window,
             msgHdrs,
             scrollMode,
@@ -183,9 +178,8 @@ document.addEventListener(
             }
           });
         }
-      } catch (e) {
-        Log.debug(e);
-        dumpCallStack(e);
+      } catch (ex) {
+        console.error(ex);
       }
     } else if (params.get("quickCompose")) {
       masqueradeAsQuickCompose();

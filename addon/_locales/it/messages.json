@@ -124,16 +124,6 @@
     "description": "Options - description for debugging setting."
   },
 
-  "options.monospaced_senders_title": {
-    "message": "Caratteri a larghezza fissa",
-    "description": "Options - title for monospaced sender setting."
-  },
-
-  "options.monospaced_senders_desc": {
-    "message": "È possibile utilizzare i caratteri a larghezza fissa per i messaggi provenienti da determinati indirizzi e-mail aggiungendoli qui sotto (separati con una virgola)",
-    "description": "Options - description for monospaced sender setting."
-  },
-
   "assistant.title": {
     "message": "Configurazione guidata di Thunderbird Conversations",
     "description": "The document title of the assistant page."

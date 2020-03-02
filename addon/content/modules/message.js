@@ -159,18 +159,18 @@ class _MessageUtils {
 
   _compose(win, compType, msgUri, shiftKey) {
     const msgHdr = msgUriToMsgHdr(msgUri);
-    if (shiftKey) {
-      win.ComposeMessage(
-        compType,
-        Ci.nsIMsgCompFormat.OppositeOfDefault,
-        msgHdr.folder,
-        [msgUri]
-      );
-    } else {
-      win.ComposeMessage(compType, Ci.nsIMsgCompFormat.Default, msgHdr.folder, [
-        msgUri,
-      ]);
-    }
+    // if (shiftKey) {
+    //   win.ComposeMessage(
+    //     compType,
+    //     Ci.nsIMsgCompFormat.OppositeOfDefault,
+    //     msgHdr.folder,
+    //     [msgUri]
+    //   );
+    // } else {
+    win.ComposeMessage(compType, Ci.nsIMsgCompFormat.Default, msgHdr.folder, [
+      msgUri,
+    ]);
+    // }
   }
 
   editDraft(win, msgUri, shiftKey = false) {
@@ -577,27 +577,6 @@ class Message {
       Log.warn("Plugin returned an error:", e);
       dumpCallStack(e);
     }
-  }
-
-  // Actually, we only do these expensive DOM calls when we need to, i.e. when
-  //  we're expanded for the first time (expand calls us).
-  registerActions() {
-    // Register all the needed event handlers. Nice wrappers below.
-    // TODO: This toggle is currently disabled.
-    // if (realFrom in Prefs.monospaced_senders)
-    //   this._domNode.getElementsByClassName("checkbox-monospace")[0].checked = true;
-    // This one is located in the first contact tooltip
-    // this.register(".checkbox-monospace", function(event) {
-    //   let senders = Object.keys(Prefs.monospaced_senders);
-    //   senders = senders.filter(x => x != realFrom);
-    //   if (event.target.checked) {
-    //     Servies.prefs.setCharPref("conversations.monospaced_senders", senders.concat([realFrom]).join(","));
-    //   } else {
-    //     Services.prefs.setCharPref("conversations.monospaced_senders", senders.join(","));
-    //   }
-    //   self._reloadMessage();
-    //   event.stopPropagation();
-    // });
   }
 
   get iframe() {

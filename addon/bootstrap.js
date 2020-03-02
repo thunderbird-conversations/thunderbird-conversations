@@ -11,7 +11,6 @@ const { XPCOMUtils } = ChromeUtils.import(
 );
 
 XPCOMUtils.defineLazyModuleGetters(this, {
-  Conversation: "chrome://conversations/content/modules/conversation.js",
   GlodaAttrProviders:
     "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
   MonkeyPatch: "chrome://conversations/content/modules/monkeypatch.js",
@@ -53,7 +52,7 @@ function monkeyPatchWindow(window) {
       };
 
       // We instantiate the Monkey-Patch for the given Conversation object.
-      let monkeyPatch = new MonkeyPatch(window, Conversation);
+      let monkeyPatch = new MonkeyPatch(window);
       // And then we seize the window and insert our code into it
       monkeyPatch.apply();
 

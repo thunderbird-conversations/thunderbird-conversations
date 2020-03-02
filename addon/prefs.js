@@ -7,7 +7,6 @@ const kCurrentLegacyMigration = 2;
 export const kPrefDefaults = {
   hide_quote_length: 5,
   expand_who: 4, // kExpandAuto
-  monospaced_senders: "bugzilla-daemon@mozilla.org",
   no_friendly_date: false,
   uninstall_infos: "{}",
   logging_enabled: false,

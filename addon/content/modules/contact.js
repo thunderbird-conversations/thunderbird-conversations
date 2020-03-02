@@ -274,7 +274,6 @@ ContactFromAB.prototype = {
       Services.prefs.getBoolPref("mail.showCondensedAddresses");
     let tooltipName = this.getTooltipName(position);
     let data = {
-      showMonospace: position == Contacts.kFrom,
       name,
       initials: getInitials(name),
       displayEmail: skipEmail ? "" : displayEmail,
