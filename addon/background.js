@@ -10,15 +10,17 @@ class Background {
     this._keyHandler = new KeyHandler();
   }
   async init() {
-    await this._prefs.init();
-    await this._keyHandler.init();
-
     // Setup the temporary API caller that stub.xhtml uses.
+    // Do this first to ensure it is set before bootstrap fires after
+    // preference startup.
     browser.conversations.onCallAPI.addListener(
       async (apiName, apiItem, args) => {
         return browser[apiName][apiItem](...args);
       }
     );
+
+    await this._prefs.init();
+    await this._keyHandler.init();
   }
 }
 

@@ -71,6 +71,7 @@ function monkeyPatchWindow(window) {
       ChromeUtils.import(
         "chrome://conversations/content/modules/plugins/dkimVerifier.js"
       );
+      monkeyPatch.finishedStartup = true;
       /* eslint-enable no-unused-vars */
     } catch (e) {
       Cu.reportError(e);
