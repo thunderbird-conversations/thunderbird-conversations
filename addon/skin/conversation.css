@@ -463,10 +463,6 @@ html[dir="rtl"] .dropDown .arrow {
   margin: 0 3px 0 0;
 }
 
-.moreExpander {
-  float: inline-end;
-}
-
 .message:not(.bugzilla) .bzTo {
   display: none;
 }

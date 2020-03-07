@@ -11,12 +11,8 @@ class _ContactDetail extends React.PureComponent {
     this.strings = new StringBundle(
       "chrome://conversations/locale/template.properties"
     );
-    this.state = {
-      expanded: false,
-    };
     this.addContact = this.addContact.bind(this);
     this.editContact = this.editContact.bind(this);
-    this.expandFooter = this.expandFooter.bind(this);
     this.createFilter = this.createFilter.bind(this);
     this.copyEmail = this.copyEmail.bind(this);
     this.sendEmail = this.sendEmail.bind(this);
@@ -65,12 +61,6 @@ class _ContactDetail extends React.PureComponent {
       name: this.props.name,
       email: this.props.realEmail,
     });
-  }
-
-  expandFooter(event) {
-    event.stopPropagation();
-    event.preventDefault();
-    this.setState({ expanded: true });
   }
 
   sendEmail(event) {
@@ -141,44 +131,6 @@ class _ContactDetail extends React.PureComponent {
             <img src={this.props.avatar} />
           </div>
         </div>
-        {this.state.expanded && (
-          <div className="tipFooter hiddenFooter">
-            <button className="createFilter" onClick={this.createFilter}>
-              {this.strings.get("createFilter")}
-            </button>
-            {this.props.hasCard ? (
-              <button
-                className="editContact"
-                title={this.strings.get("editCardAb")}
-                onClick={this.editContact}
-              >
-                <svg
-                  className="icon"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                  xmlnsXlink="http://www.w3.org/1999/xlink"
-                >
-                  <use xlinkHref="chrome://conversations/skin/material-icons.svg#edit"></use>
-                </svg>
-              </button>
-            ) : (
-              <button
-                className="addContact"
-                title={this.strings.get("addToAb")}
-                onClick={this.addContact}
-              >
-                <svg
-                  className="icon"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                  xmlnsXlink="http://www.w3.org/1999/xlink"
-                >
-                  <use xlinkHref="chrome://conversations/skin/material-icons.svg#add"></use>
-                </svg>
-              </button>
-            )}
-          </div>
-        )}
         <div className="tipFooter">
           <button
             className="sendEmail"
@@ -208,11 +160,11 @@ class _ContactDetail extends React.PureComponent {
               <use xlinkHref="chrome://conversations/skin/material-icons.svg#history"></use>
             </svg>
           </button>
-          {!this.state.expanded && (
+          {this.props.hasCard ? (
             <button
-              className="moreExpander"
-              title={this.strings.get("more")}
-              onClick={this.expandFooter}
+              className="editContact"
+              title={this.strings.get("editCardAb")}
+              onClick={this.editContact}
             >
               <svg
                 className="icon"
@@ -220,10 +172,28 @@ class _ContactDetail extends React.PureComponent {
                 xmlns="http://www.w3.org/2000/svg"
                 xmlnsXlink="http://www.w3.org/1999/xlink"
               >
-                <use xlinkHref="chrome://conversations/skin/material-icons.svg#expand_more"></use>
+                <use xlinkHref="chrome://conversations/skin/material-icons.svg#edit"></use>
+              </svg>
+            </button>
+          ) : (
+            <button
+              className="addContact"
+              title={this.strings.get("addToAb")}
+              onClick={this.addContact}
+            >
+              <svg
+                className="icon"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
+                xmlnsXlink="http://www.w3.org/1999/xlink"
+              >
+                <use xlinkHref="chrome://conversations/skin/material-icons.svg#add"></use>
               </svg>
             </button>
           )}
+          <button className="createFilter" onClick={this.createFilter}>
+            {this.strings.get("createFilter")}
+          </button>
         </div>
       </div>
     );
