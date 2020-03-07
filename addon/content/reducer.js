@@ -197,19 +197,25 @@ function messages(state = initialMessages, action) {
       browser.messages
         .listTags()
         .then(allTags => {
+          // browser.messages.tags works via arrays of tag id/keys only,
+          // so strip away all non-key information
+          allTags = allTags.map(t => t.key);
+          // for some reason a mix of `tag.key` and `tag.id` is used in Conversations
+          let tags = action.tags.map(t => t.id);
           const toggledTag = allTags[action.index];
+
           // Toggling a tag that is out of range does nothing.
           if (!toggledTag) {
             return null;
           }
-          if (action.tags.find(tag => tag.key === toggledTag.key)) {
-            return browser.messages.update(action.id, {
-              tags: action.tags.filter(tag => tag.key !== toggledTag.key),
-            });
+          if (tags.includes(toggledTag)) {
+            tags = tags.filter(t => t !== toggledTag);
+          } else {
+            tags.push(toggledTag);
           }
 
           return browser.messages.update(action.id, {
-            tags: [...action.tags, toggledTag],
+            tags,
           });
         })
         .catch(console.error);
