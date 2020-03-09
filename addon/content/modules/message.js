@@ -12,14 +12,19 @@ const { XPCOMUtils } = ChromeUtils.import(
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   ConversationUtils: "chrome://conversations/content/modules/conversation.js",
+  dumpCallStack: "chrome://conversations/content/modules/log.js",
   GlodaUtils: "resource:///modules/gloda/utils.js",
+  htmlToPlainText: "chrome://conversations/content/modules/stdlib/compose.js",
   makeFriendlyDateAgo: "resource:///modules/templateUtils.js",
   MsgHdrToMimeMessage: "resource:///modules/gloda/mimemsg.js",
   mimeMsgToContentSnippetAndMeta: "resource:///modules/gloda/connotent.js",
   PluralForm: "resource://gre/modules/PluralForm.jsm",
+  quoteMsgHdr: "chrome://conversations/content/modules/stdlib/compose.js",
+  setupLogging: "chrome://conversations/content/modules/log.js",
   Services: "resource://gre/modules/Services.jsm",
   StringBundle: "resource:///modules/StringBundle.js",
 });
+
 const {
   dateAsInMessageList,
   escapeHtml,
@@ -53,10 +58,6 @@ const {
   "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   {}
 );
-const { htmlToPlainText, quoteMsgHdr } = ChromeUtils.import(
-  "chrome://conversations/content/modules/stdlib/compose.js",
-  {}
-);
 const { PluginHelpers } = ChromeUtils.import(
   "chrome://conversations/content/modules/plugins/helpers.js",
   {}
@@ -77,12 +78,11 @@ const { getHooks } = ChromeUtils.import(
   "chrome://conversations/content/modules/hook.js",
   {}
 );
-const { dumpCallStack, setupLogging } = ChromeUtils.import(
-  "chrome://conversations/content/modules/log.js",
-  {}
-);
 
-let Log = setupLogging("Conversations.Message");
+XPCOMUtils.defineLazyGetter(this, "Log", () => {
+  return setupLogging("Conversations.Message");
+});
+
 // This is high because we want enough snippet to extract relevant data from
 // bugzilla snippets.
 const kSnippetLength = 700;

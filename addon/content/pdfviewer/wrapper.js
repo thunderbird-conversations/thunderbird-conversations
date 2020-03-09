@@ -11,10 +11,7 @@ const { XPCOMUtils } = ChromeUtils.import(
 XPCOMUtils.defineLazyModuleGetters(this, {
   NetUtil: "resource://gre/modules/NetUtil.jsm",
   Services: "resource://gre/modules/Services.jsm",
-  setupLogging: "chrome://conversations/content/modules/log.js",
 });
-
-let Log = setupLogging("Conversations.PdfViewer");
 
 let wrapper;
 
@@ -72,8 +69,6 @@ Wrapper.prototype = {
   },
 
   async load() {
-    Log.debug("Downloading", this.url);
-
     let chunks = await this._download();
 
     let browser = document.getElementById("browser");
@@ -97,5 +92,5 @@ window.addEventListener("load", function(event) {
   document.title = params.get("name");
 
   wrapper = new Wrapper(params.get("uri"));
-  wrapper.load().catch(Log.error.bind(Log));
+  wrapper.load().catch(console.error);
 });

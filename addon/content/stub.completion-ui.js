@@ -4,6 +4,7 @@
             getIdentities, NS_SUCCEEDED, setupLogging, dumpCallStack */
 /* global $, showCc, showBcc, strings */
 /* import-globals-from quickReply.js */
+/* import-globals-from reducer.js */
 
 var { MailServices } = ChromeUtils.import(
   "resource:///modules/MailServices.jsm"
@@ -27,7 +28,9 @@ const { setupLogging, dumpCallStack, Colors } = ChromeUtils.import(
   "chrome://conversations/content/modules/log.js"
 );
 
-let Log = setupLogging("Conversations.Stub.Completion");
+XPCOMUtils.defineLazyGetter(this, "Log", () => {
+  return setupLogging("Conversations.Stub.Completion");
+});
 
 try {
   // eslint-disable-next-line no-unused-vars

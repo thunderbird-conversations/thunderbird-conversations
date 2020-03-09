@@ -23,7 +23,9 @@ const SIMPLE_STORAGE_TABLE_NAME = "conversations";
 
 // Note: we must not use any modules until after initialization of prefs,
 // otherwise the prefs might not get loaded correctly.
-let Log = null;
+XPCOMUtils.defineLazyGetter(this, "Log", () => {
+  return setupLogging("Conversations.AssistantUI");
+});
 
 function StreamListener(resolve, reject) {
   return {
@@ -109,9 +111,6 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
         },
         async installCustomisations(ids) {
           let uninstallInfos = JSON.parse(Prefs.uninstall_infos);
-          if (!Log) {
-            Log = setupLogging("Conversations.AssistantUI");
-          }
           for (const id of ids) {
             if (!(id in Customizations)) {
               Log.error("Couldn't find a suitable customization for", id);

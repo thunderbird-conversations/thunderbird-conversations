@@ -18,16 +18,14 @@ const { XPCOMUtils } = ChromeUtils.import(
 XPCOMUtils.defineLazyModuleGetters(this, {
   DisplayNameUtils: "resource:///modules/DisplayNameUtils.jsm",
   composeMessageTo: "chrome://conversations/content/modules/stdlib/compose.js",
+  getIdentities: "chrome://conversations/content/modules/stdlib/misc.js",
+  getIdentityForEmail: "chrome://conversations/content/modules/stdlib/misc.js",
   MailServices: "resource:///modules/MailServices.jsm",
   Gloda: "resource:///modules/gloda/gloda.js",
   Services: "resource://gre/modules/Services.jsm",
   setupLogging: "chrome://conversations/content/modules/log.js",
   StringBundle: "resource:///modules/StringBundle.js",
 });
-
-const { getIdentities, getIdentityForEmail } = ChromeUtils.import(
-  "chrome://conversations/content/modules/stdlib/misc.js"
-);
 
 var Contacts = {
   kFrom: 0,
@@ -37,7 +35,10 @@ var Contacts = {
 const defaultPhotoURI =
   "chrome://messenger/skin/addressbook/icons/contact-generic.png";
 
-let Log = setupLogging("Conversations.Contact");
+XPCOMUtils.defineLazyGetter(this, "Log", () => {
+  return setupLogging("Conversations.Contact");
+});
+
 let strings = new StringBundle(
   "chrome://conversations/locale/message.properties"
 );

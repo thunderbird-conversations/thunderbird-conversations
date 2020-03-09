@@ -11,42 +11,41 @@ const { XPCOMUtils } = ChromeUtils.import(
 );
 
 XPCOMUtils.defineLazyModuleGetters(this, {
+  Colors: "chrome://conversations/content/modules/log.js",
   ContactManager: "chrome://conversations/content/modules/contact.js",
+  dumpCallStack: "chrome://conversations/content/modules/log.js",
   Gloda: "resource:///modules/gloda/gloda.js",
+  groupArray: "chrome://conversations/content/modules/misc.js",
+  isOSX: "chrome://conversations/content/modules/stdlib/misc.js",
+  isWindows: "chrome://conversations/content/modules/stdlib/misc.js",
   MailServices: "resource:///modules/MailServices.jsm",
+  MessageFromDbHdr: "chrome://conversations/content/modules/message.js",
+  MessageFromGloda: "chrome://conversations/content/modules/message.js",
+  MessageUtils: "chrome://conversations/content/modules/message.js",
+  msgHdrGetUri: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
+  msgHdrIsArchive:
+    "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
+  msgHdrIsDraft: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
+  msgHdrIsInbox: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
+  msgHdrIsSent: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
+  msgHdrsMarkAsRead:
+    "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
+  msgUriToMsgHdr:
+    "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
+  msgHdrsArchive:
+    "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
+  msgHdrsDelete: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   Prefs: "chrome://conversations/content/modules/prefs.js",
+  range: "chrome://conversations/content/modules/stdlib/misc.js",
+  setupLogging: "chrome://conversations/content/modules/log.js",
   Services: "resource://gre/modules/Services.jsm",
   StringBundle: "resource:///modules/StringBundle.js",
+  topMail3Pane: "chrome://conversations/content/modules/misc.js",
 });
 
-const { Colors, dumpCallStack, setupLogging } = ChromeUtils.import(
-  "chrome://conversations/content/modules/log.js"
-);
-
-const {
-  msgHdrGetUri,
-  msgHdrIsArchive,
-  msgHdrIsDraft,
-  msgHdrIsInbox,
-  msgHdrIsSent,
-  msgHdrsMarkAsRead,
-  msgUriToMsgHdr,
-  msgHdrsArchive,
-  msgHdrsDelete,
-} = ChromeUtils.import(
-  "chrome://conversations/content/modules/stdlib/msgHdrUtils.js"
-);
-const { range, isOSX, isWindows } = ChromeUtils.import(
-  "chrome://conversations/content/modules/stdlib/misc.js"
-);
-const { MessageUtils, MessageFromGloda, MessageFromDbHdr } = ChromeUtils.import(
-  "chrome://conversations/content/modules/message.js"
-);
-const { groupArray, topMail3Pane } = ChromeUtils.import(
-  "chrome://conversations/content/modules/misc.js"
-);
-
-let Log = setupLogging("Conversations.Conversation");
+XPCOMUtils.defineLazyGetter(this, "Log", () => {
+  return setupLogging("Conversations.Conversation");
+});
 
 const kMsgDbHdr = 0;
 const kMsgGloda = 1;

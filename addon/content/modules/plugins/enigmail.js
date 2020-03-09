@@ -36,24 +36,19 @@ const { XPCOMUtils } = ChromeUtils.import(
 );
 
 XPCOMUtils.defineLazyModuleGetters(this, {
+  dumpCallStack: "chrome://conversations/content/modules/log.js",
+  entries: "chrome://conversations/content/modules/stdlib/misc.js",
+  escapeHtml: "chrome://conversations/content/modules/stdlib/misc.js",
+  getMail3Pane: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
+  htmlToPlainText: "chrome://conversations/content/modules/stdlib/compose.js",
+  msgHdrGetUri: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   registerHook: "chrome://conversations/content/modules/hook.js",
+  setupLogging: "chrome://conversations/content/modules/log.js",
   Services: "resource://gre/modules/Services.jsm",
+  simpleWrap: "chrome://conversations/content/modules/stdlib/compose.js",
   StringBundle: "resource:///modules/StringBundle.js",
   topMail3Pane: "chrome://conversations/content/modules/misc.js",
 });
-
-const { getMail3Pane, msgHdrGetUri } = ChromeUtils.import(
-  "chrome://conversations/content/modules/stdlib/msgHdrUtils.js"
-);
-const { escapeHtml, entries } = ChromeUtils.import(
-  "chrome://conversations/content/modules/stdlib/misc.js"
-);
-const { htmlToPlainText, simpleWrap } = ChromeUtils.import(
-  "chrome://conversations/content/modules/stdlib/compose.js"
-);
-const { setupLogging, dumpCallStack } = ChromeUtils.import(
-  "chrome://conversations/content/modules/log.js"
-);
 
 let strings;
 let templateStrings;
@@ -69,7 +64,6 @@ let Log = setupLogging("Conversations.Modules.Enigmail");
 
 // Enigmail support, thanks to Patrick Brunschwig!
 
-let window = getMail3Pane();
 let hasEnigmail;
 
 try {
@@ -114,8 +108,12 @@ let getCurrentIdentity = function() {
 };
 let global = this;
 let nsIEnigmail = {};
+// eslint-disable-next-line no-redeclare
+/* global window:true */
+let window;
 
 if (hasEnigmail) {
+  window = getMail3Pane();
   nsIEnigmail = EnigmailConstants;
   enigmailSvc = EnigmailCore.getService(window);
   if (!enigmailSvc) {

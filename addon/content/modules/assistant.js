@@ -19,15 +19,14 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   getMail3Pane: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   fixIterator: "resource:///modules/iteratorUtils.jsm",
   MailUtils: "resource:///modules/MailUtils.jsm",
+  setupLogging: "chrome://conversations/content/modules/log.js",
   Services: "resource://gre/modules/Services.jsm",
   VirtualFolderHelper: "resource:///modules/virtualFolderWrapper.js",
 });
 
-const { dumpCallStack, setupLogging } = ChromeUtils.import(
-  "chrome://conversations/content/modules/log.js"
-);
-
-let Log = setupLogging("Conversations.Assistant");
+XPCOMUtils.defineLazyGetter(this, "Log", () => {
+  return setupLogging("Conversations.Assistant");
+});
 
 // Thanks, Andrew!
 function getSmartFolderNamed(aFolderName) {
@@ -429,8 +428,7 @@ var Customizations = {
             server.QueryInterface(Ci.nsIImapIncomingServer);
             server.offlineDownload = false;
           } catch (e) {
-            Log.error(e);
-            dumpCallStack(e);
+            console.error(e);
           }
         }
       }

@@ -9,6 +9,7 @@
 // Via stub.xhtml
 /* global Conversations, closeTab, Prefs, msgUriToMsgHdr, tmpl, Services, topMail3Pane */
 
+/* import-globals-from reducer.js */
 /* import-globals-from stub.completion-ui.js */
 
 "use strict";
@@ -41,7 +42,9 @@ var { defaultPhotoURI } = ChromeUtils.import(
   "chrome://conversations/content/modules/contact.js"
 );
 
-Log = setupLogging("Conversations.Stub.Compose");
+XPCOMUtils.defineLazyGetter(this, "Log", () => {
+  return setupLogging("Conversations.Stub.Compose");
+});
 
 // SimpleStorage has been removed, and this data is migrated into the store.
 // See addon/prefs.js for more info.

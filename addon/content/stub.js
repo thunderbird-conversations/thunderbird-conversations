@@ -29,15 +29,15 @@ function conversationDispatch(...args) {
 //  be used either in a standalone tab or in the multimessage pane.
 // let Conversations = window.top.Conversations;
 
-const { msgUriToMsgHdr, msgHdrsMarkAsRead } = ChromeUtils.import(
-  "chrome://conversations/content/modules/stdlib/msgHdrUtils.js"
-);
-const { Prefs } = ChromeUtils.import(
-  "chrome://conversations/content/modules/prefs.js"
-);
-const { topMail3Pane } = ChromeUtils.import(
-  "chrome://conversations/content/modules/misc.js"
-);
+XPCOMUtils.defineLazyModuleGetters(this, {
+  Prefs: "chrome://conversations/content/modules/prefs.js",
+  msgUriToMsgHdr:
+    "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
+  msgHdrsMarkAsRead:
+    "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
+  topMail3Pane: "chrome://conversations/content/modules/misc.js",
+});
+
 const { ConversationUtils, Conversation } = ChromeUtils.import(
   "chrome://conversations/content/modules/conversation.js"
 );

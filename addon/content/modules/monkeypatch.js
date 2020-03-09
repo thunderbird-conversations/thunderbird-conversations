@@ -11,38 +11,31 @@ const { XPCOMUtils } = ChromeUtils.import(
 );
 
 XPCOMUtils.defineLazyModuleGetters(this, {
+  arrayEquals: "chrome://conversations/content/modules/misc.js",
+  Colors: "chrome://conversations/content/modules/log.js",
   Config: "chrome://conversations/content/modules/config.js",
   Conversation: "chrome://conversations/content/modules/conversation.js",
   Customizations: "chrome://conversations/content/modules/assistant.js",
+  dumpCallStack: "chrome://conversations/content/modules/log.js",
+  entries: "chrome://conversations/content/modules/stdlib/misc.js",
+  getIdentityForEmail: "chrome://conversations/content/modules/stdlib/misc.js",
+  getIdentities: "chrome://conversations/content/modules/stdlib/misc.js",
+  getMail3Pane: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
+  joinWordList: "chrome://conversations/content/modules/misc.js",
+  makeConversationUrl: "chrome://conversations/content/modules/misc.js",
+  msgHdrGetUri: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
+  msgHdrIsRss: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
+  msgHdrIsNntp: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
+  msgHdrsMarkAsRead:
+    "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
+  openConversationInTabOrWindow:
+    "chrome://conversations/content/modules/misc.js",
+  parseMimeLine: "chrome://conversations/content/modules/stdlib/misc.js",
   Prefs: "chrome://conversations/content/modules/prefs.js",
+  setupLogging: "chrome://conversations/content/modules/log.js",
   Services: "resource://gre/modules/Services.jsm",
   StringBundle: "resource:///modules/StringBundle.js",
 });
-
-const {
-  entries,
-  getIdentityForEmail,
-  getIdentities,
-  parseMimeLine,
-} = ChromeUtils.import("chrome://conversations/content/modules/stdlib/misc.js");
-const {
-  getMail3Pane,
-  msgHdrGetUri,
-  msgHdrIsRss,
-  msgHdrIsNntp,
-  msgHdrsMarkAsRead,
-} = ChromeUtils.import(
-  "chrome://conversations/content/modules/stdlib/msgHdrUtils.js"
-);
-const {
-  arrayEquals,
-  joinWordList,
-  makeConversationUrl,
-  openConversationInTabOrWindow,
-} = ChromeUtils.import("chrome://conversations/content/modules/misc.js");
-const { Colors, dumpCallStack, setupLogging } = ChromeUtils.import(
-  "chrome://conversations/content/modules/log.js"
-);
 
 const kMultiMessageUrl = "chrome://messenger/content/multimessageview.xhtml";
 
@@ -50,7 +43,9 @@ let strings = new StringBundle(
   "chrome://conversations/locale/message.properties"
 );
 
-let Log = setupLogging("Conversations.MonkeyPatch");
+XPCOMUtils.defineLazyGetter(this, "Log", () => {
+  return setupLogging("Conversations.MonkeyPatch");
+});
 
 let shouldPerformUninstall;
 
