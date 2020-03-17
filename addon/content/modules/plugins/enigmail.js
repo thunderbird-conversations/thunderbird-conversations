@@ -37,7 +37,6 @@ const { XPCOMUtils } = ChromeUtils.import(
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   dumpCallStack: "chrome://conversations/content/modules/log.js",
-  entries: "chrome://conversations/content/modules/stdlib/misc.js",
   escapeHtml: "chrome://conversations/content/modules/stdlib/misc.js",
   getMail3Pane: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   htmlToPlainText: "chrome://conversations/content/modules/stdlib/compose.js",
@@ -621,7 +620,7 @@ function patchForShowSecurityInfo(aWindow) {
   );
   w.top.controllers.removeController(oldTreeController);
   let treeController = {};
-  for (let [i, x] of entries(oldTreeController)) {
+  for (let [i, x] of Object.entries(oldTreeController)) {
     treeController[i] = x;
   }
   treeController.isCommandEnabled = function() {

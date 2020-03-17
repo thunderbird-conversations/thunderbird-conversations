@@ -35,7 +35,7 @@ var { fixIterator } = ChromeUtils.import(
   "resource:///modules/iteratorUtils.jsm"
 );
 var { MailUtils } = ChromeUtils.import("resource:///modules/MailUtils.jsm");
-var { parseMimeLine } = ChromeUtils.import(
+var { NS_SUCCEEDED, parseMimeLine } = ChromeUtils.import(
   "chrome://conversations/content/modules/stdlib/misc.js"
 );
 var { defaultPhotoURI } = ChromeUtils.import(

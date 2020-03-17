@@ -1,7 +1,7 @@
 "use strict";
 
 /* exported setupAutocomplete, Colors, getDefaultIdentity, getIdentityForEmail,
-            getIdentities, NS_SUCCEEDED, setupLogging, dumpCallStack */
+            getIdentities, setupLogging, dumpCallStack */
 /* global $, showCc, showBcc, strings */
 /* import-globals-from quickReply.js */
 /* import-globals-from reducer.js */
@@ -17,12 +17,10 @@ const { MultiSuffixTree } = ChromeUtils.import(
   "resource:///modules/gloda/suffixtree.js"
 );
 const {
-  entries,
   escapeHtml,
   getDefaultIdentity,
   getIdentityForEmail,
   getIdentities,
-  NS_SUCCEEDED,
 } = ChromeUtils.import("chrome://conversations/content/modules/stdlib/misc.js");
 const { setupLogging, dumpCallStack, Colors } = ChromeUtils.import(
   "chrome://conversations/content/modules/log.js"
@@ -116,7 +114,7 @@ ContactIdentityCompleter.prototype = {
     }
     // and since we can now map from contacts down to identities, map contacts
     //  to the first identity for them that we find...
-    matches = Array.from(entries(contactToThing)).map(([, val]) =>
+    matches = Array.from(Object.entries(contactToThing)).map(([, val]) =>
       val.NOUN_ID == Gloda.NOUN_IDENTITY ? val : val.identities[0]
     );
 

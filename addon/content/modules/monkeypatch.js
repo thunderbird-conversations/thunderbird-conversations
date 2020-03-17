@@ -17,7 +17,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   Conversation: "chrome://conversations/content/modules/conversation.js",
   Customizations: "chrome://conversations/content/modules/assistant.js",
   dumpCallStack: "chrome://conversations/content/modules/log.js",
-  entries: "chrome://conversations/content/modules/stdlib/misc.js",
   getIdentityForEmail: "chrome://conversations/content/modules/stdlib/misc.js",
   getIdentities: "chrome://conversations/content/modules/stdlib/misc.js",
   getMail3Pane: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
@@ -352,7 +351,7 @@ MonkeyPatch.prototype = {
 
   undoCustomizations() {
     let uninstallInfos = JSON.parse(Prefs.uninstall_infos);
-    for (let [k, v] of entries(Customizations)) {
+    for (let [k, v] of Object.entries(Customizations)) {
       if (k in uninstallInfos) {
         try {
           Log.debug("Uninstalling", k, uninstallInfos[k]);
@@ -809,7 +808,9 @@ MonkeyPatch.prototype = {
       let msgListeners = window.Conversations.msgListeners;
       let messageId = aMsgHdr.messageId;
       if (messageId in msgListeners) {
-        for (let [, /* i */ listener] of entries(msgListeners[messageId])) {
+        for (let [, /* i */ listener] of Object.entries(
+          msgListeners[messageId]
+        )) {
           let obj = listener.get();
           if (obj) {
             obj.onMsgHasRemoteContent();
