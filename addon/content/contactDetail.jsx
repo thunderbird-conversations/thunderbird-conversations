@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals PropTypes, React, ReactDOM, ReactRedux, StringBundle */
+/* globals PropTypes, React, ReactDOM, ReactRedux, StringBundle, SvgIcon */
 /* exported ContactDetail */
 
 class _ContactDetail extends React.PureComponent {
@@ -116,14 +116,7 @@ class _ContactDetail extends React.PureComponent {
                 title={this.strings.get("copyEmail")}
                 onClick={this.copyEmail}
               >
-                <svg
-                  className="icon"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                  xmlnsXlink="http://www.w3.org/1999/xlink"
-                >
-                  <use xlinkHref="chrome://conversations/skin/material-icons.svg#content_copy"></use>
-                </svg>
+                <SvgIcon hash={"content_copy"} />
               </button>
             </span>
           </div>
@@ -137,28 +130,14 @@ class _ContactDetail extends React.PureComponent {
             title={this.strings.get("sendEmail")}
             onClick={this.sendEmail}
           >
-            <svg
-              className="icon"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-              xmlnsXlink="http://www.w3.org/1999/xlink"
-            >
-              <use xlinkHref="chrome://conversations/skin/material-icons.svg#mail"></use>
-            </svg>
+            <SvgIcon hash={"mail"} />
           </button>
           <button
             className="showInvolving"
             title={this.strings.get("recentConversations")}
             onClick={this.showInvolving}
           >
-            <svg
-              className="icon"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-              xmlnsXlink="http://www.w3.org/1999/xlink"
-            >
-              <use xlinkHref="chrome://conversations/skin/material-icons.svg#history"></use>
-            </svg>
+            <SvgIcon hash={"history"} />
           </button>
           {this.props.hasCard ? (
             <button
@@ -166,14 +145,7 @@ class _ContactDetail extends React.PureComponent {
               title={this.strings.get("editCardAb")}
               onClick={this.editContact}
             >
-              <svg
-                className="icon"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-                xmlnsXlink="http://www.w3.org/1999/xlink"
-              >
-                <use xlinkHref="chrome://conversations/skin/material-icons.svg#edit"></use>
-              </svg>
+              <SvgIcon hash={"edit"} />
             </button>
           ) : (
             <button
@@ -181,14 +153,7 @@ class _ContactDetail extends React.PureComponent {
               title={this.strings.get("addToAb")}
               onClick={this.addContact}
             >
-              <svg
-                className="icon"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-                xmlnsXlink="http://www.w3.org/1999/xlink"
-              >
-                <use xlinkHref="chrome://conversations/skin/material-icons.svg#add"></use>
-              </svg>
+              <SvgIcon hash={"add"} />
             </button>
           )}
           <button className="createFilter" onClick={this.createFilter}>

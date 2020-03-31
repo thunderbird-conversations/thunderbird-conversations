@@ -3,7 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 /* globals React, PropTypes, MessageHeaderOptions, StringBundle, MessageTags
-           SpecialMessageTags, ContactDetail */
+           SpecialMessageTags, ContactDetail, SvgIcon */
 /* exported MessageHeader */
 
 class Fade extends React.PureComponent {
@@ -251,14 +251,7 @@ class MessageHeader extends React.PureComponent {
             className={"star" + (this.props.starred ? " starred" : "")}
             onClick={this.onClickStar}
           >
-            <svg
-              className="icon"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-              xmlnsXlink="http://www.w3.org/1999/xlink"
-            >
-              <use xlinkHref="chrome://conversations/skin/material-icons.svg#star"></use>
-            </svg>
+            <SvgIcon hash={"star"} />
           </div>
           {this.props.from.avatarIsDefault ? (
             <abbr

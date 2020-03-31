@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals PropTypes, React, StringBundle, ActionButton */
+/* globals PropTypes, React, StringBundle, ActionButton, SvgIcon */
 /* exported MessageHeaderOptions */
 
 class OptionsMoreMenu extends React.PureComponent {
@@ -201,14 +201,7 @@ class MessageHeaderOptions extends React.PureComponent {
       <div className="options">
         {!!this.props.attachments.length && (
           <span className="attachmentIcon">
-            <svg
-              className="icon"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-              xmlnsXlink="http://www.w3.org/1999/xlink"
-            >
-              <use xlinkHref="chrome://conversations/skin/material-icons.svg#attachment"></use>
-            </svg>
+            <SvgIcon hash={"attachment"} />
           </span>
         )}
         <span className="date">
@@ -238,20 +231,9 @@ class MessageHeaderOptions extends React.PureComponent {
                   : this.strings.get("details")
               }
             >
-              <svg
-                className="icon"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-                xmlnsXlink="http://www.w3.org/1999/xlink"
-              >
-                <use
-                  xlinkHref={
-                    this.props.detailsShowing
-                      ? "chrome://conversations/skin/material-icons.svg#info"
-                      : "chrome://conversations/skin/material-icons.svg#info_outline"
-                  }
-                ></use>
-              </svg>
+              <SvgIcon
+                hash={this.props.detailsShowing ? "info" : "info_outline"}
+              />
             </a>
           </span>
         )}
@@ -262,14 +244,7 @@ class MessageHeaderOptions extends React.PureComponent {
               className="icon-link top-right-more"
               title={this.strings.get("more")}
             >
-              <svg
-                className="icon"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-                xmlnsXlink="http://www.w3.org/1999/xlink"
-              >
-                <use xlinkHref="chrome://conversations/skin/material-icons.svg#more_vert"></use>
-              </svg>
+              <SvgIcon hash={"more_vert"} />
             </button>
             {this.state.expanded && (
               <OptionsMoreMenu
