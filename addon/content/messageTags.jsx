@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals React, PropTypes */
+/* globals React, PropTypes, SvgIcon */
 /* exported MessageTags, SpecialMessageTags */
 
 /**
@@ -76,21 +76,6 @@ MessageTags.propTypes = {
   onTagsChange: PropTypes.func.isRequired,
 };
 
-function Icon(props) {
-  const { path } = props;
-  return (
-    <svg
-      className="icon"
-      viewBox="0 0 24 24"
-      xmlns="http://www.w3.org/2000/svg"
-      xmlnsXlink="http://www.w3.org/1999/xlink"
-    >
-      <use xlinkHref={path}></use>
-    </svg>
-  );
-}
-Icon.propTypes = { path: PropTypes.string.isRequired };
-
 function DkimTooltip({ strings }) {
   const [primaryString, secondaryStrings = []] = strings;
   const primaryTooltip = <div>{primaryString}</div>;
@@ -127,7 +112,7 @@ function SpecialMessageTag({
       title={title}
       onClick={onClick}
     >
-      <Icon path={icon} />
+      <SvgIcon fullPath={icon} />
       {name}
       {tooltip.type === "dkim" && <DkimTooltip strings={tooltip.strings} />}
     </li>
