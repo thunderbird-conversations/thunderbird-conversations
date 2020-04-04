@@ -6,7 +6,7 @@
           isInTab:true, openConversationInTabOrWindow,
           printConversation, ConversationUtils */
 
-/* exported conversationApp */
+/* exported conversationApp, attachmentActions */
 
 "use strict";
 
@@ -19,8 +19,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
     "chrome://conversations/content/modules/misc.js",
   MessageUtils: "chrome://conversations/content/modules/message.js",
 });
-
-const initialAttachments = {};
 
 const initialMessages = {
   msgData: [],
@@ -48,73 +46,66 @@ function modifyOnlyMsg(currentState, msgUri, modifier) {
   return newState;
 }
 
-function attachments(state = initialAttachments, action) {
-  switch (action.type) {
-    case "PREVIEW_ATTACHMENT": {
-      if (action.maybeViewable) {
+const attachmentActions = {
+  previewAttachment({ name, url, isPdf, maybeViewable }) {
+    return async () => {
+      if (maybeViewable) {
         // Can't use browser.tabs.create because imap://user@bar/ is an
         // illegal url.
         browser.conversations.createTab({
-          url: action.url,
+          url,
           type: "contentTab",
         });
       }
-      if (action.isPdf) {
+      if (isPdf) {
         browser.conversations.createTab({
           url:
             "chrome://conversations/content/pdfviewer/wrapper.xul?uri=" +
-            encodeURIComponent(action.url) +
+            encodeURIComponent(url) +
             "&name=" +
-            encodeURIComponent(action.name),
+            encodeURIComponent(name),
           type: "chromeTab",
         });
       }
-      return state;
-    }
-    case "DOWNLOAD_ALL": {
+    };
+  },
+  downloadAll({ msgUri, attachmentDetails }) {
+    return async () => {
       MessageUtils.downloadAllAttachments(
         topMail3Pane(window),
-        action.msgUri,
-        action.attachmentDetails
+        msgUri,
+        attachmentDetails
       );
-      return state;
-    }
-    case "DOWNLOAD_ATTACHMENT": {
-      MessageUtils.downloadAttachment(
-        topMail3Pane(window),
-        action.msgUri,
-        action.attachment
-      );
-      return state;
-    }
-    case "OPEN_ATTACHMENT": {
-      MessageUtils.openAttachment(
-        topMail3Pane(window),
-        action.msgUri,
-        action.attachment
-      );
-      return state;
-    }
-    case "DETACH_ATTACHMENT": {
+    };
+  },
+  downloadAttachment({ msgUri, attachment }) {
+    return async () => {
+      MessageUtils.downloadAttachment(topMail3Pane(window), msgUri, attachment);
+    };
+  },
+  openAttachment({ msgUri, attachment }) {
+    return async () => {
+      MessageUtils.openAttachment(topMail3Pane(window), msgUri, attachment);
+    };
+  },
+  detachAttachment({ msgUri, attachment, shouldSave }) {
+    return async () => {
       MessageUtils.detachAttachment(
         topMail3Pane(window),
-        action.msgUri,
-        action.attachment,
-        action.shouldSave
+        msgUri,
+        attachment,
+        shouldSave
       );
-      return state;
-    }
-    case "SHOW_GALLERY_VIEW": {
+    };
+  },
+  showGalleryView({ msgUri }) {
+    return async () => {
       browser.tabs.create({
-        url: "/gallery/index.html?uri=" + encodeURI(action.msgUri),
+        url: "/gallery/index.html?uri=" + encodeURI(msgUri),
       });
-      return state;
-    }
-    default: {
-      return state;
-    }
-  }
-}
+    };
+  },
+};
 
 /* eslint-disable-next-line complexity */
 function messages(state = initialMessages, action) {
@@ -563,7 +554,6 @@ function summary(state = initialSummary, action) {
 }
 
 const conversationApp = Redux.combineReducers({
-  attachments,
   messages,
   summary,
 });

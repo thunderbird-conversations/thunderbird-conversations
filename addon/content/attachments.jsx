@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals PropTypes, React, SvgIcon */
+/* globals PropTypes, React, SvgIcon, attachmentActions */
 /* exported Attachments */
 
 class Attachment extends React.PureComponent {
@@ -17,13 +17,14 @@ class Attachment extends React.PureComponent {
   }
 
   preview() {
-    this.props.dispatch({
-      type: "PREVIEW_ATTACHMENT",
-      name: this.props.name,
-      url: this.props.url,
-      isPdf: this.props.isPdf,
-      maybeViewable: this.props.maybeViewable,
-    });
+    this.props.dispatch(
+      attachmentActions.previewAttachment({
+        name: this.props.name,
+        url: this.props.url,
+        isPdf: this.props.isPdf,
+        maybeViewable: this.props.maybeViewable,
+      })
+    );
   }
 
   onDragStart(event) {
@@ -53,61 +54,65 @@ class Attachment extends React.PureComponent {
   }
 
   downloadAttachment() {
-    this.props.dispatch({
-      type: "DOWNLOAD_ATTACHMENT",
-      msgUri: this.props.msgUri,
-      attachment: {
-        contentType: this.props.contentType,
-        isExternal: this.props.isExternal,
-        name: this.props.name,
-        size: this.props.size,
-        url: this.props.url,
-      },
-    });
+    this.props.dispatch(
+      attachmentActions.downloadAttachment({
+        msgUri: this.props.msgUri,
+        attachment: {
+          contentType: this.props.contentType,
+          isExternal: this.props.isExternal,
+          name: this.props.name,
+          size: this.props.size,
+          url: this.props.url,
+        },
+      })
+    );
   }
 
   openAttachment() {
-    this.props.dispatch({
-      type: "OPEN_ATTACHMENT",
-      msgUri: this.props.msgUri,
-      attachment: {
-        contentType: this.props.contentType,
-        isExternal: this.props.isExternal,
-        name: this.props.name,
-        size: this.props.size,
-        url: this.props.url,
-      },
-    });
+    this.props.dispatch(
+      attachmentActions.openAttachment({
+        msgUri: this.props.msgUri,
+        attachment: {
+          contentType: this.props.contentType,
+          isExternal: this.props.isExternal,
+          name: this.props.name,
+          size: this.props.size,
+          url: this.props.url,
+        },
+      })
+    );
   }
 
   detachAttachment() {
-    this.props.dispatch({
-      type: "DETACH_ATTACHMENT",
-      msgUri: this.props.msgUri,
-      shouldSave: true,
-      attachment: {
-        contentType: this.props.contentType,
-        isExternal: this.props.isExternal,
-        name: this.props.name,
-        size: this.props.size,
-        url: this.props.url,
-      },
-    });
+    this.props.dispatch(
+      attachmentActions.detachAttachment({
+        msgUri: this.props.msgUri,
+        shouldSave: true,
+        attachment: {
+          contentType: this.props.contentType,
+          isExternal: this.props.isExternal,
+          name: this.props.name,
+          size: this.props.size,
+          url: this.props.url,
+        },
+      })
+    );
   }
 
   deleteAttachment() {
-    this.props.dispatch({
-      type: "DETACH_ATTACHMENT",
-      msgUri: this.props.msgUri,
-      shouldSave: false,
-      attachment: {
-        contentType: this.props.contentType,
-        isExternal: this.props.isExternal,
-        name: this.props.name,
-        size: this.props.size,
-        url: this.props.url,
-      },
-    });
+    this.props.dispatch(
+      attachmentActions.detachAttachment({
+        msgUri: this.props.msgUri,
+        shouldSave: false,
+        attachment: {
+          contentType: this.props.contentType,
+          isExternal: this.props.isExternal,
+          name: this.props.name,
+          size: this.props.size,
+          url: this.props.url,
+        },
+      })
+    );
   }
 
   render() {
@@ -123,7 +128,7 @@ class Attachment extends React.PureComponent {
     return (
       <li
         className="clearfix hbox attachment"
-        contextmenu={`attachmentMenu-${this.props.anchor}`}
+        contextMenu={`attachmentMenu-${this.props.anchor}`}
       >
         <div
           className={
@@ -224,19 +229,18 @@ class Attachments extends React.PureComponent {
   }
 
   downloadAll() {
-    this.props.dispatch({
-      type: "DOWNLOAD_ALL",
-      msgUri: this.props.msgUri,
-      attachmentDetails: this.props.attachments.map(attachment => {
-        return {
+    this.props.dispatch(
+      attachmentActions.downloadAll({
+        msgUri: this.props.msgUri,
+        attachmentDetails: this.props.attachments.map(attachment => ({
           contentType: attachment.contentType,
           isExternal: attachment.isExternal,
           name: attachment.name,
           size: attachment.size,
           url: attachment.url,
-        };
-      }),
-    });
+        })),
+      })
+    );
   }
 
   render() {
