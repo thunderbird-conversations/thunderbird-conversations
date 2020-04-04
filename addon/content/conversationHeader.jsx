@@ -102,7 +102,7 @@ class _ConversationHeader extends React.PureComponent {
    * conversation.
    */
   detachTab(event) {
-    this.props.dispatch(messageActions.detachTab())
+    this.props.dispatch(messageActions.detachTab());
   }
 
   get areSomeMessagesCollapsed() {
