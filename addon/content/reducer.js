@@ -107,84 +107,69 @@ const attachmentActions = {
   },
 };
 
-/* eslint-disable-next-line complexity */
-function messages(state = initialMessages, action) {
-  switch (action.type) {
-    case "REPLACE_CONVERSATION_DETAILS": {
-      return {
-        ...state,
-        ...action.messages,
-      };
-    }
-    case "EDIT_DRAFT": {
-      MessageUtils.editDraft(
-        topMail3Pane(window),
-        action.msgUri,
-        action.shiftKey
-      );
-      return state;
-    }
-    case "EDIT_AS_NEW": {
-      MessageUtils.editAsNew(
-        topMail3Pane(window),
-        action.msgUri,
-        action.shiftKey
-      );
-      return state;
-    }
-    case "MSG_REPLY": {
-      MessageUtils.reply(topMail3Pane(window), action.msgUri, action.shiftKey);
-      return state;
-    }
-    case "MSG_REPLY_ALL": {
-      MessageUtils.replyAll(
-        topMail3Pane(window),
-        action.msgUri,
-        action.shiftKey
-      );
-      return state;
-    }
-    case "MSG_REPLY_LIST": {
-      MessageUtils.replyList(
-        topMail3Pane(window),
-        action.msgUri,
-        action.shiftKey
-      );
-      return state;
-    }
-    case "MSG_FORWARD": {
-      MessageUtils.forward(
-        topMail3Pane(window),
-        action.msgUri,
-        action.shiftKey
-      );
-      return state;
-    }
-    case "MSG_ARCHIVE": {
-      browser.messages.archive([action.id]).catch(console.error);
-      return state;
-    }
-    case "MSG_DELETE": {
-      browser.messages.delete([action.id]).catch(console.error);
-      return state;
-    }
-    case "MSG_OPEN_CLASSIC": {
-      MessageUtils.openInClassic(topMail3Pane(window), action.msgUri);
-      return state;
-    }
-    case "MSG_OPEN_SOURCE": {
-      MessageUtils.openInSourceView(topMail3Pane(window), action.msgUri);
-      return state;
-    }
-    case "MSG_SET_TAGS": {
+const messageActions = {
+  editDraft({ msgUri, shiftKey }) {
+    return async () => {
+      MessageUtils.editDraft(topMail3Pane(window), msgUri, shiftKey);
+    };
+  },
+
+  editAsNew({ msgUri, shiftKey }) {
+    return async () => {
+      MessageUtils.editAsNew(topMail3Pane(window), msgUri, shiftKey);
+    };
+  },
+  msgReply({ msgUri, shiftKey }) {
+    return async () => {
+      MessageUtils.reply(topMail3Pane(window), msgUri, shiftKey);
+    };
+  },
+  msgReplyAll({ msgUri, shiftKey }) {
+    return async () => {
+      MessageUtils.replyAll(topMail3Pane(window), msgUri, shiftKey);
+    };
+  },
+  msgReplyList({ msgUri, shiftKey }) {
+    return async () => {
+      MessageUtils.replyList(topMail3Pane(window), msgUri, shiftKey);
+    };
+  },
+  msgForward({ msgUri, shiftKey }) {
+    return async () => {
+      MessageUtils.forward(topMail3Pane(window), msgUri, shiftKey);
+    };
+  },
+  msgArchive({ id }) {
+    return async () => {
+      browser.messages.archive([id]).catch(console.error);
+    };
+  },
+  msgDelete({ id }) {
+    return async () => {
+      browser.messages.delete([id]).catch(console.error);
+    };
+  },
+  msgOpenClassic({ msgUri }) {
+    return async () => {
+      MessageUtils.openInClassic(topMail3Pane(window), msgUri);
+    };
+  },
+  msgOpenSource({ msgUri }) {
+    return async () => {
+      MessageUtils.openInSourceView(topMail3Pane(window), msgUri);
+    };
+  },
+  msgSetTags({ id, tags }) {
+    return async () => {
       browser.messages
-        .update(action.id, {
-          tags: action.tags.map(t => t.id),
+        .update(id, {
+          tags: tags.map(t => t.id),
         })
         .catch(console.error);
-      return state;
-    }
-    case "MSG_TOGGLE_TAG_BY_INDEX": {
+    };
+  },
+  msgToggleTagByIndex({ id, index, tags }) {
+    return async () => {
       browser.messages
         .listTags()
         .then(allTags => {
@@ -192,8 +177,8 @@ function messages(state = initialMessages, action) {
           // so strip away all non-key information
           allTags = allTags.map(t => t.key);
           // for some reason a mix of `tag.key` and `tag.id` is used in Conversations
-          let tags = action.tags.map(t => t.id);
-          const toggledTag = allTags[action.index];
+          tags = tags.map(t => t.id);
+          const toggledTag = allTags[index];
 
           // Toggling a tag that is out of range does nothing.
           if (!toggledTag) {
@@ -205,69 +190,59 @@ function messages(state = initialMessages, action) {
             tags.push(toggledTag);
           }
 
-          return browser.messages.update(action.id, {
+          return browser.messages.update(id, {
             tags,
           });
         })
         .catch(console.error);
-      return state;
-    }
-    case "MSG_STAR": {
+    };
+  },
+  msgStar({ id, star }) {
+    return async () => {
       browser.messages
-        .update(action.id, {
-          flagged: action.star,
+        .update(id, {
+          flagged: star,
         })
         .catch(console.error);
-      return state;
-    }
-    case "MSG_EXPAND": {
-      return modifyOnlyMsg(state, action.msgUri, msg => {
-        const newMsg = { ...msg };
-        newMsg.expanded = action.expand;
-        return newMsg;
-      });
-    }
-    case "MSG_MARK_AS_READ": {
-      const msg = Conversations.currentConversation.getMessage(action.msgUri);
+    };
+  },
+  msgMarkAsRead({ msgUri }) {
+    return async () => {
+      const msg = Conversations.currentConversation.getMessage(msgUri);
       msg.read = true;
-      return state;
-    }
-    case "MSG_SELECTED": {
+    };
+  },
+  msgSelected({ msgUri }) {
+    return async () => {
       if (Conversations.currentConversation) {
-        const msg = Conversations.currentConversation.getMessage(action.msgUri);
+        const msg = Conversations.currentConversation.getMessage(msgUri);
         if (msg) {
           msg.onSelected();
         }
       }
-      return state;
-    }
-    case "TOGGLE_CONVERSATION_EXPANDED": {
-      const newState = { ...state };
-      const newMsgData = [];
-      for (let msg of newState.msgData) {
-        const newMsg = { ...msg, expanded: action.expand };
-        newMsgData.push(newMsg);
-      }
-      newState.msgData = newMsgData;
-      return newState;
-    }
-    case "TOGGLE_CONVERSATION_READ": {
+    };
+  },
+  toggleConversationRead({ read }) {
+    return async (dispatch, getState) => {
+      const state = getState().messages;
       for (let msg of state.msgData) {
-        browser.messages
-          .update(msg.id, { read: action.read })
-          .catch(console.error);
+        browser.messages.update(msg.id, { read }).catch(console.error);
       }
-      return state;
-    }
-    case "ARCHIVE_CONVERSATION": {
+    };
+  },
+  archiveConversation() {
+    return async (dispatch, getState) => {
+      const state = getState().messages;
       ConversationUtils.archive(
         topMail3Pane(window),
         isInTab,
         state.msgData.map(msg => msg.msgUri)
       );
-      return state;
-    }
-    case "DELETE_CONVERSATION": {
+    };
+  },
+  deleteConversation() {
+    return async (dispatch, getState) => {
+      const state = getState().messages;
       const win = topMail3Pane(window);
       if (
         ConversationUtils.delete(
@@ -278,7 +253,89 @@ function messages(state = initialMessages, action) {
       ) {
         ConversationUtils.closeTab(win, window.frameElement);
       }
-      return state;
+    };
+  },
+  msgClickIframe({ event }) {
+    return () => {
+      // Hand this off to Thunderbird's content clicking algorithm as that's simplest.
+      if (!topMail3Pane(window).contentAreaClick(event)) {
+        event.preventDefault();
+        event.stopPropagation();
+      }
+    };
+  },
+  msgShowRemoteContent({ msgUri }) {
+    return async () => {
+      Conversations.currentConversation.showRemoteContent(msgUri);
+    };
+  },
+  msgAlwaysShowRemoteContent({ msgUri, realFrom }) {
+    return async () => {
+      Conversations.currentConversation.alwaysShowRemoteContent(
+        realFrom,
+        msgUri
+      );
+    };
+  },
+  detachTab() {
+    return async (dispatch, getState) => {
+      const state = getState().messages;
+      // TODO: Fix re-enabling composition when expanded into new tab.
+      // let willExpand = element.hasClass("expand") && startedEditing();
+      // Pick _initialSet and not msgHdrs so as to enforce the invariant
+      //  that the messages from _initialSet are in the current view.
+      const urls = state.msgData.map(x => x.msgUri);
+      // "&willExpand=" + Number(willExpand);
+      // First, save the draft, and once it's saved, then move on to opening the
+      // conversation in a new tab...
+      // onSave(() => {
+      openConversationInTabOrWindow(urls);
+      // });
+    };
+  },
+  notificationClick({ msgUri, notificationType, extraData }) {
+    return async () => {
+      const msg = Conversations.currentConversation.getMessage(msgUri);
+      msg.msgPluginNotification(
+        topMail3Pane(window),
+        notificationType,
+        extraData
+      );
+    };
+  },
+  tagClick({ msgUri, event, details }) {
+    return async () => {
+      const msg = Conversations.currentConversation.getMessage(msgUri);
+      msg.msgPluginTagClick(topMail3Pane(window), event, details);
+    };
+  },
+};
+
+/* eslint-disable-next-line complexity */
+function messages(state = initialMessages, action) {
+  switch (action.type) {
+    case "REPLACE_CONVERSATION_DETAILS": {
+      return {
+        ...state,
+        ...action.messages,
+      };
+    }
+    case "MSG_EXPAND": {
+      return modifyOnlyMsg(state, action.msgUri, msg => {
+        const newMsg = { ...msg };
+        newMsg.expanded = action.expand;
+        return newMsg;
+      });
+    }
+    case "TOGGLE_CONVERSATION_EXPANDED": {
+      const newState = { ...state };
+      const newMsgData = [];
+      for (let msg of newState.msgData) {
+        const newMsg = { ...msg, expanded: action.expand };
+        newMsgData.push(newMsg);
+      }
+      newState.msgData = newMsgData;
+      return newState;
     }
     case "MSG_UPDATE_DATA": {
       return modifyOnlyMsg(state, action.msgData.msgUri, msg => {
@@ -315,14 +372,6 @@ function messages(state = initialMessages, action) {
         return newMsg;
       });
     }
-    case "MSG_CLICK_IFRAME": {
-      // Hand this off to Thunderbird's content clicking algorithm as that's simplest.
-      if (!topMail3Pane(window).contentAreaClick(action.event)) {
-        action.event.preventDefault();
-        action.event.stopPropagation();
-      }
-      return state;
-    }
     case "MSG_SHOW_DETAILS": {
       const newState = { ...state };
       const newMsgData = [];
@@ -358,17 +407,6 @@ function messages(state = initialMessages, action) {
       newState.msgData = newMsgData;
       return newState;
     }
-    case "MSG_SHOW_REMOTE_CONTENT": {
-      Conversations.currentConversation.showRemoteContent(action.msgUri);
-      return state;
-    }
-    case "MSG_ALWAYS_SHOW_REMOTE_CONTENT": {
-      Conversations.currentConversation.alwaysShowRemoteContent(
-        action.realFrom,
-        action.msgUri
-      );
-      return state;
-    }
     case "REMOVE_MESSAGE_FROM_CONVERSATION": {
       const newState = { ...state };
       const newMsgData = [];
@@ -384,20 +422,6 @@ function messages(state = initialMessages, action) {
       const newState = { ...state };
       newState.msgData = newState.msgData.concat(action.msgData);
       return newState;
-    }
-    case "DETACH_TAB": {
-      // TODO: Fix re-enabling composition when expanded into new tab.
-      // let willExpand = element.hasClass("expand") && startedEditing();
-      // Pick _initialSet and not msgHdrs so as to enforce the invariant
-      //  that the messages from _initialSet are in the current view.
-      const urls = state.msgData.map(x => x.msgUri);
-      // "&willExpand=" + Number(willExpand);
-      // First, save the draft, and once it's saved, then move on to opening the
-      // conversation in a new tab...
-      // onSave(() => {
-      openConversationInTabOrWindow(urls);
-      // });
-      return state;
     }
     case "MSG_SHOW_NOTIFICATION": {
       return modifyOnlyMsg(state, action.msgData.msgUri, msg => {
@@ -420,20 +444,6 @@ function messages(state = initialMessages, action) {
         }
         return newMsg;
       });
-    }
-    case "NOTIFICATION_CLICK": {
-      const msg = Conversations.currentConversation.getMessage(action.msgUri);
-      msg.msgPluginNotification(
-        topMail3Pane(window),
-        action.notificationType,
-        action.extraData
-      );
-      return state;
-    }
-    case "TAG_CLICK": {
-      const msg = Conversations.currentConversation.getMessage(action.msgUri);
-      msg.msgPluginTagClick(topMail3Pane(window), action.event, action.details);
-      return state;
     }
     default: {
       return state;

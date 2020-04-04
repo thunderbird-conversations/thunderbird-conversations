@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals React, ReactRedux, PropTypes, SvgIcon */
+/* globals React, ReactRedux, PropTypes, SvgIcon, messageActions */
 /* exported ConversationHeader */
 
 const LINKS_REGEX = /((\w+):\/\/[^<>()'"\s]+|www(\.[-\w]+){2,})/;
@@ -89,15 +89,11 @@ class _ConversationHeader extends React.PureComponent {
   }
 
   archiveToolbar(event) {
-    this.props.dispatch({
-      type: "ARCHIVE_CONVERSATION",
-    });
+    this.props.dispatch(messageActions.archiveConversation());
   }
 
   delete(event) {
-    this.props.dispatch({
-      type: "DELETE_CONVERSATION",
-    });
+    this.props.dispatch(messageActions.deleteConversation());
   }
 
   /**
@@ -106,9 +102,7 @@ class _ConversationHeader extends React.PureComponent {
    * conversation.
    */
   detachTab(event) {
-    this.props.dispatch({
-      type: "DETACH_TAB",
-    });
+    this.props.dispatch(messageActions.detachTab())
   }
 
   get areSomeMessagesCollapsed() {
@@ -154,10 +148,11 @@ class _ConversationHeader extends React.PureComponent {
   //  takes care of setting the right class on us whenever the state
   //  changes...
   toggleRead(event) {
-    this.props.dispatch({
-      type: "TOGGLE_CONVERSATION_READ",
-      read: this.areSomeMessagesUnread,
-    });
+    this.props.dispatch(
+      messageActions.toggleConversationRead({
+        read: this.areSomeMessagesUnread,
+      })
+    );
   }
 
   render() {

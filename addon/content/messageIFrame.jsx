@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals React, PropTypes, Quoting */
+/* globals React, PropTypes, Quoting, messageActions */
 /* exported MessageIFrame */
 
 let index = 0;
@@ -416,10 +416,11 @@ class MessageIFrame extends React.Component {
   }
 
   onClickIframe(event) {
-    this.props.dispatch({
-      type: "MSG_CLICK_IFRAME",
-      event,
-    });
+    this.props.dispatch(
+      messageActions.msgClickIframe({
+        event,
+      })
+    );
   }
 
   render() {
