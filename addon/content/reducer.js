@@ -311,7 +311,6 @@ const messageActions = {
   },
 };
 
-/* eslint-disable-next-line complexity */
 function messages(state = initialMessages, action) {
   switch (action.type) {
     case "REPLACE_CONVERSATION_DETAILS": {
