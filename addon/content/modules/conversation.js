@@ -902,7 +902,7 @@ Conversation.prototype = {
     this._htmlPane.conversationDispatch({
       type: "REPLACE_CONVERSATION_DETAILS",
       summary: {
-        conversation: this,
+        conversation: { getMessage: uri => this.getMessage(uri) },
         subject: this.messages[this.messages.length - 1].message.subject,
         loading: false,
         prefs: {

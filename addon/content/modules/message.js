@@ -416,7 +416,7 @@ class Message {
       isPhishing: this.isPhishing,
       msgUri: this._uri,
       multipleRecipients: this.isReplyAllEnabled,
-      neckoUrl: msgHdrToNeckoURL(this._msgHdr),
+      neckoUrl: msgHdrToNeckoURL(this._msgHdr).spec,
       read: this.read,
       realFrom: this._realFrom.email || this._from.email,
       recipientsIncludeLists: this.isReplyListEnabled,

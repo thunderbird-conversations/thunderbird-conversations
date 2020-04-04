@@ -37,10 +37,7 @@ class MessageIFrame extends React.Component {
     // want to scroll the message to view, since the user may be viewing somewhere
     // else.
     this.dueToExpansion = undefined;
-    if (
-      prevProps.neckoUrl.spec != this.props.neckoUrl.spec &&
-      this.props.expanded
-    ) {
+    if (prevProps.neckoUrl != this.props.neckoUrl && this.props.expanded) {
       // This is a hack which ensures that the iframe is a minimal height, so
       // that when the message loads, the scroll height is set correctly, rather
       // than to the potential height of the previously loaded message.
@@ -68,7 +65,7 @@ class MessageIFrame extends React.Component {
       // If we're changing URL, then also force the iframe to be about:blank.
       // This ensures that if the message is subsequently expanded, the proper
       // notifications are sent.
-      if (prevProps.neckoUrl.spec != this.props.neckoUrl.spec) {
+      if (prevProps.neckoUrl != this.props.neckoUrl) {
         this.iframe.src = "about:blank";
         this.currentUrl = "about:blank";
       }
@@ -82,7 +79,6 @@ class MessageIFrame extends React.Component {
         docshell: this.iframe.contentWindow.docShell,
         dueToExpansion: this.dueToExpansion,
         msgUri: this.props.msgUri,
-        neckoUrl: this.props.neckoUrl,
       });
     }
   }
@@ -116,7 +112,6 @@ class MessageIFrame extends React.Component {
         type: "MSG_STREAM_MSG",
         docshell: docShell,
         msgUri: this.props.msgUri,
-        neckoUrl: this.props.neckoUrl,
       });
     } else {
       this.iframe.classList.add("hidden");
@@ -442,7 +437,7 @@ MessageIFrame.propTypes = {
   hasRemoteContent: PropTypes.bool.isRequired,
   initialPosition: PropTypes.number.isRequired,
   msgUri: PropTypes.string.isRequired,
-  neckoUrl: PropTypes.object.isRequired,
+  neckoUrl: PropTypes.string.isRequired,
   prefs: PropTypes.object.isRequired,
   realFrom: PropTypes.string.isRequired,
   strings: PropTypes.object.isRequired,
