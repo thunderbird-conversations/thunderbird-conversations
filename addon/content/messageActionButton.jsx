@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals PropTypes, React, StringBundle */
+/* globals PropTypes, React, StringBundle, SvgIcon */
 /* exported ActionButton */
 
 const ActionsToInfoMap = {
@@ -86,17 +86,7 @@ class ActionButton extends React.PureComponent {
         title={title}
         onClick={this.action}
       >
-        <svg
-          className="icon"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-          xmlnsXlink="http://www.w3.org/1999/xlink"
-        >
-          <use
-            xlinkHref={`chrome://conversations/skin/material-icons.svg#${info.icon}`}
-          ></use>
-        </svg>{" "}
-        {!!this.props.showString && title}
+        <SvgIcon hash={info.icon} /> {!!this.props.showString && title}
       </button>
     );
   }

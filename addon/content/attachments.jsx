@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals PropTypes, React */
+/* globals PropTypes, React, SvgIcon */
 /* exported Attachments */
 
 class Attachment extends React.PureComponent {
@@ -149,14 +149,7 @@ class Attachment extends React.PureComponent {
                 title={this.props.strings.get("preview")}
                 onClick={this.preview}
               >
-                <svg
-                  className="icon"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                  xmlnsXlink="http://www.w3.org/1999/xlink"
-                >
-                  <use xlinkHref="chrome://conversations/skin/material-icons.svg#visibility"></use>
-                </svg>
+                <SvgIcon hash={"visibility"} />
               </a>
             )}
             <a
@@ -164,28 +157,14 @@ class Attachment extends React.PureComponent {
               title={this.props.strings.get("download2")}
               onClick={this.downloadAttachment}
             >
-              <svg
-                className="icon"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-                xmlnsXlink="http://www.w3.org/1999/xlink"
-              >
-                <use xlinkHref="chrome://conversations/skin/material-icons.svg#file_download"></use>
-              </svg>
+              <SvgIcon hash={"file_download"} />
             </a>
             <a
               className="icon-link open-attachment"
               title={this.props.strings.get("open")}
               onClick={this.openAttachment}
             >
-              <svg
-                className="icon"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-                xmlnsXlink="http://www.w3.org/1999/xlink"
-              >
-                <use xlinkHref="chrome://conversations/skin/material-icons.svg#search"></use>
-              </svg>
+              <SvgIcon hash={"search"} />
             </a>
           </div>
         </div>
@@ -270,14 +249,7 @@ class Attachments extends React.PureComponent {
             onClick={this.downloadAll}
             title={this.props.strings.get("downloadAll2")}
           >
-            <svg
-              className="icon"
-              viewBox="0 0 24 24"
-              xmlns="http://www.w3.org/2000/svg"
-              xmlnsXlink="http://www.w3.org/1999/xlink"
-            >
-              <use xlinkHref="chrome://conversations/skin/material-icons.svg#file_download"></use>
-            </svg>
+            <SvgIcon hash={"file_download"} />
           </a>
           {this.props.gallery && (
             <a
@@ -285,14 +257,7 @@ class Attachments extends React.PureComponent {
               className="icon-link view-all"
               title={this.props.strings.get("galleryView")}
             >
-              <svg
-                className="icon"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-                xmlnsXlink="http://www.w3.org/1999/xlink"
-              >
-                <use xlinkHref="chrome://conversations/skin/material-icons.svg#photo_library"></use>
-              </svg>
+              <SvgIcon hash={"photo_library"} />
             </a>
           )}
           {this.props.attachments.map(attachment => (

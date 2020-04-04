@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals React, ReactRedux, PropTypes */
+/* globals React, ReactRedux, PropTypes, SvgIcon */
 /* exported ConversationHeader */
 
 const LINKS_REGEX = /((\w+):\/\/[^<>()'"\s]+|www(\.[-\w]+){2,})/;
@@ -177,28 +177,14 @@ class _ConversationHeader extends React.PureComponent {
               title={this.props.strings.get("stub.trash.tooltip")}
               onClick={this.delete}
             >
-              <svg
-                className="icon"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-                xmlnsXlink="http://www.w3.org/1999/xlink"
-              >
-                <use xlinkHref="chrome://conversations/skin/material-icons.svg#delete"></use>
-              </svg>
+              <SvgIcon hash={"delete"} />
             </button>
             <button
               className="button-flat"
               title={this.props.strings.get("stub.archive.tooltip")}
               onClick={this.archiveToolbar}
             >
-              <svg
-                className="icon"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-                xmlnsXlink="http://www.w3.org/1999/xlink"
-              >
-                <use xlinkHref="chrome://conversations/skin/material-icons.svg#archive"></use>
-              </svg>
+              <SvgIcon hash={"archive"} />
             </button>
             {this.canJunk && (
               <button
@@ -206,14 +192,7 @@ class _ConversationHeader extends React.PureComponent {
                 title={this.props.strings.get("stub.junk.tooltip")}
                 onClick={this.junkConversation}
               >
-                <svg
-                  className="icon"
-                  viewBox="0 0 24 24"
-                  xmlns="http://www.w3.org/2000/svg"
-                  xmlnsXlink="http://www.w3.org/1999/xlink"
-                >
-                  <use xlinkHref="chrome://conversations/skin/material-icons.svg#whatshot"></use>
-                </svg>
+                <SvgIcon hash={"whatshot"} />
               </button>
             )}
             <button
@@ -244,30 +223,14 @@ class _ConversationHeader extends React.PureComponent {
               title={this.props.strings.get("stub.read.tooltip")}
               onClick={this.toggleRead}
             >
-              <svg
-                className={`icon read ${
-                  this.areSomeMessagesUnread ? "unread" : ""
-                }`}
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-                xmlnsXlink="http://www.w3.org/1999/xlink"
-              >
-                <use xlinkHref="chrome://conversations/skin/material-icons.svg#new"></use>
-              </svg>
+              <SvgIcon hash={"new"} />
             </button>
             <button
               className="button-flat"
               title={this.props.strings.get("stub.detach.tooltip2")}
               onClick={this.detachTab}
             >
-              <svg
-                className="icon"
-                viewBox="0 0 24 24"
-                xmlns="http://www.w3.org/2000/svg"
-                xmlnsXlink="http://www.w3.org/1999/xlink"
-              >
-                <use xlinkHref="chrome://conversations/skin/material-icons.svg#open_in_new"></use>
-              </svg>
+              <SvgIcon hash={"open_in_new"} />
             </button>
           </div>
         </div>

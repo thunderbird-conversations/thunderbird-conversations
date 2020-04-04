@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals PropTypes, React */
+/* globals PropTypes, React, SvgIcon */
 /* exported MessageNotification */
 
 class RemoteContentNotification extends React.PureComponent {
@@ -58,16 +58,7 @@ class GenericSingleButtonNotification extends React.PureComponent {
   render() {
     return (
       <div className={this.props.barClassName + " notificationBar"}>
-        <svg
-          className="icon"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-          xmlnsXlink="http://www.w3.org/1999/xlink"
-        >
-          <use
-            xlinkHref={`chrome://conversations/skin/material-icons.svg#${this.props.iconName}`}
-          ></use>
-        </svg>
+        <SvgIcon hash={this.props.iconName} />
         {this.props.notificationText}{" "}
         <span className={this.props.buttonClassName}>
           <a onClick={this.props.onButtonClick}>{this.props.buttonTitle}</a>
@@ -104,16 +95,7 @@ class GenericMultiButtonNotification extends React.PureComponent {
   render() {
     return (
       <div className={this.props.barClassName + " notificationBar"}>
-        <svg
-          className="icon"
-          viewBox="0 0 24 24"
-          xmlns="http://www.w3.org/2000/svg"
-          xmlnsXlink="http://www.w3.org/1999/xlink"
-        >
-          <use
-            xlinkHref={`chrome://conversations/skin/material-icons.svg#${this.props.iconName}`}
-          ></use>
-        </svg>
+        <SvgIcon hash={this.props.iconName} />
         {this.props.notificationText}{" "}
         {this.props.buttons.map((button, i) => (
           <button
