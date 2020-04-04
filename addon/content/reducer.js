@@ -6,7 +6,7 @@
           isInTab:true, openConversationInTabOrWindow,
           printConversation, ConversationUtils */
 
-/* exported conversationApp, attachmentActions */
+/* exported conversationApp, attachmentActions, messageActions */
 
 "use strict";
 
