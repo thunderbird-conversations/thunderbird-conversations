@@ -287,7 +287,7 @@ class Message extends React.PureComponent {
           {this.props.message.expanded && (
             <SpecialMessageTags
               onFolderClick={() => {
-                this.dispatch({
+                this.props.dispatch({
                   type: "SWITCH_TO_FOLDER",
                   msgUri: this.props.message.msgUri,
                 });
