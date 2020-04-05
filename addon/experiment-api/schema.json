@@ -3,6 +3,19 @@
     "namespace": "conversations",
     "functions": [
       {
+        "name": "getCorePref",
+        "type": "function",
+        "description": "Temporary. Gets a core preference.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "name",
+            "type": "string",
+            "description": "The preference name"
+          }
+        ]
+      },
+      {
         "name": "getPref",
         "type": "function",
         "description": "Temporary. Gets a conversation preference.",
@@ -32,6 +45,12 @@
             "description": "The preference value"
           }
         ]
+      },
+      {
+        "name": "getLocaleDirection",
+        "type": "function",
+        "description": "Temporary. Gets the current locale direction.",
+        "async": true
       },
       {
         "name": "installCustomisations",

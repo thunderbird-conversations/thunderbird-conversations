@@ -227,5 +227,221 @@
   "options.start_setup_assistant": {
     "message": "Стартиране на помощника",
     "description": "Title of the button to open the setup assistant."
+  },
+
+  "message.movedOrDeletedConversation": {
+    "message": "Съжаляваме, но не можем да покажем този разговор, тъй като съобщенията са били преместени или изтрити.",
+    "description": "Error message for the conversation tab"
+  },
+
+  "contact.copyEmailTooltip": {
+    "message": "Копиране на адреса на е-пощата",
+    "description": "Tooltip shown on the copy email to clipboard button"
+  },
+
+  "contact.createFilterTooltip": {
+    "message": "създаване на филтър за подателя",
+    "description": "Tooltip shown on the create filter for contact button"
+  },
+
+  "contact.addContactTooltip": {
+    "message": "Добавяне в адресника",
+    "description": "Tooltip shown on the add contact button"
+  },
+
+  "contact.editContactTooltip": {
+    "message": "Редактиране на контакта в адресника",
+    "description": "Tooltip shown on the edit contact button"
+  },
+
+  "contact.sendEmailTooltip": {
+    "message": "изпращане на е-писмо",
+    "description": "Tooltip shown on the send email button"
+  },
+
+  "contact.recentConversationsTooltip": {
+    "message": "скорошни разговори",
+    "description": "Tooltip shown on the recent conversations button"
+  },
+
+  "message.archive.tooltip": {
+    "message": "Архивиране на този разговор",
+    "description": "Tooltip for the archive button in the conversation header"
+  },
+
+  "message.detach.tooltip": {
+    "message": "Показване на този разговор в нов подпрозорец",
+    "description": "Tooltip for the detach to new tab button in the conversation header"
+  },
+
+  "message.expand.tooltip": {
+    "message": "Разгъване/свиване на всички съобщения",
+    "description": "Tooltip for the expand button in the conversation header"
+  },
+
+  "message.forwardConversation": {
+    "message": "Препращане на този разговор",
+    "description": "The link text for forwarding a conversation"
+  },
+
+  "message.junk.tooltip": {
+    "message": "Преместване на това съобщение в кошчето",
+    "description": "Tooltip for the junk button in the conversation header"
+  },
+
+  "message.loading": {
+    "message": "Зареждане...",
+    "description": "Displayed when the message is loading"
+  },
+
+  "message.printConversation": {
+    "message": "Принтиране на този разговор",
+    "description": "The link text for printing a conversation"
+  },
+
+  "message.read.tooltip": {
+    "message": "Превключване на състоянието на прочетеност за всички съобщения",
+    "description": "Tooltip for the mark as read button in the conversation header"
+  },
+
+  "message.trash.tooltip": {
+    "message": "Изтриване на този разговор",
+    "description": "Tooltip for the trash button in the conversation header"
+  },
+
+  "message.noSubject": {
+    "message": "(no subject)",
+    "description": "Displayed when a message has no subject"
+  },
+
+  "message.showDetails.tooltip": {
+    "message": "показване на подробностите",
+    "description": "Tooltip for showing message header details"
+  },
+
+  "message.hideDetails.tooltip": {
+    "message": "скриване на подробностите",
+    "description": "Tooltip for hiding message header details"
+  },
+
+  "message.moreMenu.tooltip": {
+    "message": "още",
+    "description": "Tooltip for the more menu"
+  },
+
+  "action.archive": {
+    "message": "архивиране на това съобщение",
+    "description": "Archive button name in the message more menu"
+  },
+
+  "action.delete": {
+    "message": "изтриване на това съобщение",
+    "description": "Delete button name in the message more menu"
+  },
+
+  "action.viewClassic": {
+    "message": "преглед с обикновения четец",
+    "description": "Show in classic view button name in the message more menu"
+  },
+
+  "action.viewSource": {
+    "message": "преглед на изходния код на съобщението",
+    "description": "View source button name in the message more menu"
+  },
+
+  "notification.scamMsg": {
+    "message": "Това съобщение може да е измамно:",
+    "description": "Notification message shown for a junk/scam message"
+  },
+
+  "notification.ignoreScamWarning": {
+    "message": "пренебрегване на предупреждението",
+    "description": "Button title to ignore a junk/scam message"
+  },
+
+  "notification.junkMsg": {
+    "message": "Това е за боклука",
+    "description": "Notification message shown for junk messages"
+  },
+
+  "notification.notJunk": {
+    "message": "Не е за боклука",
+    "description": "Button title to mark as not junk"
+  },
+
+  "notification.isOutboxMsg": {
+    "message": "Това е неизпратено съобщение.",
+    "description": "Notification message shown for a message in the outbox"
+  },
+
+  "notification.sendUnsent": {
+    "message": "Изпращане на неизпратените съобщения сега?",
+    "description": "Button title to send a message in the outbox"
+  },
+
+  "notification.remoteContentBlockedMsg": {
+    "message": "Отдалеченото съдържание беше скрито:",
+    "description": "Notification message shown when remote content is blocked"
+  },
+
+  "notification.showRemote": {
+    "message": "показване на отдалеченото съдържание",
+    "description": "Button title to show remote content"
+  },
+
+  "notification.alwaysShowRemote": {
+    "message": "винаги показвай отдалеченото съдържание от $fromEmail$",
+    "description": "Button title to always show remote content.",
+    "placeholders": {
+      "fromEmail": {
+        "content": "$1",
+        "example": "me@example.com"
+      }
+    }
+  },
+
+  "action.editDraft": {
+    "message": "редактиране на черновата",
+    "description": "Edit draft button name in the message more menu"
+  },
+
+  "action.reply": {
+    "message": "отговор",
+    "description": "Reply button name in the message more menu"
+  },
+
+  "action.replyAll": {
+    "message": "отговор до всички",
+    "description": "Reply all button name in the message more menu"
+  },
+
+  "action.replyList": {
+    "message": "отговор до списъка",
+    "description": "Reply list button name in the message more menu"
+  },
+
+  "action.editNew": {
+    "message": "редактиране като ново",
+    "description": "Edit as new button name in the message more menu"
+  },
+
+  "action.forward": {
+    "message": "препращане",
+    "description": "Forward button name in the message more menu"
+  },
+
+  "message.fromHeader": {
+    "message": "от:",
+    "description": "Header name displayed for the from field"
+  },
+
+  "message.toHeader": {
+    "message": "до:",
+    "description": "Header name displayed for the to field"
+  },
+
+  "message.ccHeader": {
+    "message": "копие до:",
+    "description": "Header name displayed for the cc field"
   }
 }

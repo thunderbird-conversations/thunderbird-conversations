@@ -2,58 +2,55 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals PropTypes, React, StringBundle, SvgIcon */
+/* globals PropTypes, React, SvgIcon */
 /* exported ActionButton */
 
 const ActionsToInfoMap = {
   draft: {
-    title: "editDraft2",
+    title: "action.editDraft",
     icon: "edit",
   },
   editAsNew: {
-    title: "editNew",
+    title: "action.editNew",
     icon: "edit",
   },
   reply: {
-    title: "reply",
+    title: "action.reply",
     icon: "reply",
   },
   replyAll: {
-    title: "replyAll",
+    title: "action.replyAll",
     icon: "reply_all",
   },
   replyList: {
-    title: "replyList",
+    title: "action.replyList",
     icon: "list",
   },
   forward: {
-    title: "forward",
+    title: "action.forward",
     icon: "forward",
   },
   archive: {
-    title: "archive",
+    title: "action.archive",
     icon: "archive",
   },
   delete: {
-    title: "delete",
+    title: "action.delete",
     icon: "delete",
   },
   classic: {
-    title: "viewClassic",
+    title: "action.viewClassic",
     icon: "open_in_new",
   },
   source: {
-    title: "viewSource",
+    title: "action.viewSource",
     icon: "code",
   },
 };
 
 function ActionButton({ type, callback, className, showString }) {
-  const strings = new StringBundle(
-    "chrome://conversations/locale/template.properties"
-  );
   const info = ActionsToInfoMap[type];
-  const title = strings.get(info.title);
+  const title = browser.i18n.getMessage(info.title);
 
   function action(event) {
     callback(

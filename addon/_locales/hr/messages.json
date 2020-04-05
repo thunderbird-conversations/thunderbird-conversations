@@ -227,5 +227,221 @@
   "options.start_setup_assistant": {
     "message": "Pokreni čarobnjaka za postavke",
     "description": "Title of the button to open the setup assistant."
+  },
+
+  "message.movedOrDeletedConversation": {
+    "message": "Ne možemo prikazati ovaj razgovor, poruke su premještene ili obrisane.",
+    "description": "Error message for the conversation tab"
+  },
+
+  "contact.copyEmailTooltip": {
+    "message": "Kopiraj adresu e-pošte u međuspremnik",
+    "description": "Tooltip shown on the copy email to clipboard button"
+  },
+
+  "contact.createFilterTooltip": {
+    "message": "stvori filter za pošiljatelja",
+    "description": "Tooltip shown on the create filter for contact button"
+  },
+
+  "contact.addContactTooltip": {
+    "message": "Dodaj u adresar",
+    "description": "Tooltip shown on the add contact button"
+  },
+
+  "contact.editContactTooltip": {
+    "message": "Uredi kontakt u adresaru",
+    "description": "Tooltip shown on the edit contact button"
+  },
+
+  "contact.sendEmailTooltip": {
+    "message": "pošalji e-poštu",
+    "description": "Tooltip shown on the send email button"
+  },
+
+  "contact.recentConversationsTooltip": {
+    "message": "nedavni razgovori",
+    "description": "Tooltip shown on the recent conversations button"
+  },
+
+  "message.archive.tooltip": {
+    "message": "Arhiviraj ovaj razgovor",
+    "description": "Tooltip for the archive button in the conversation header"
+  },
+
+  "message.detach.tooltip": {
+    "message": "Prikaži ovaj razgovor u novoj kartici",
+    "description": "Tooltip for the detach to new tab button in the conversation header"
+  },
+
+  "message.expand.tooltip": {
+    "message": "Proširi/skupi sve poruke",
+    "description": "Tooltip for the expand button in the conversation header"
+  },
+
+  "message.forwardConversation": {
+    "message": "Proslijedi ovaj razgovor",
+    "description": "The link text for forwarding a conversation"
+  },
+
+  "message.junk.tooltip": {
+    "message": "Označi ovu poruku kao neželjenu",
+    "description": "Tooltip for the junk button in the conversation header"
+  },
+
+  "message.loading": {
+    "message": "Učitavanje...",
+    "description": "Displayed when the message is loading"
+  },
+
+  "message.printConversation": {
+    "message": "Ispiši ovaj razgovor",
+    "description": "The link text for printing a conversation"
+  },
+
+  "message.read.tooltip": {
+    "message": "Označi sve poruke pročitanim/nepročitanim",
+    "description": "Tooltip for the mark as read button in the conversation header"
+  },
+
+  "message.trash.tooltip": {
+    "message": "Obriši ovaj razgovor",
+    "description": "Tooltip for the trash button in the conversation header"
+  },
+
+  "message.noSubject": {
+    "message": "(no subject)",
+    "description": "Displayed when a message has no subject"
+  },
+
+  "message.showDetails.tooltip": {
+    "message": "prikaži detalje",
+    "description": "Tooltip for showing message header details"
+  },
+
+  "message.hideDetails.tooltip": {
+    "message": "sakrij detalje",
+    "description": "Tooltip for hiding message header details"
+  },
+
+  "message.moreMenu.tooltip": {
+    "message": "više",
+    "description": "Tooltip for the more menu"
+  },
+
+  "action.archive": {
+    "message": "arhiviraj ovu poruku",
+    "description": "Archive button name in the message more menu"
+  },
+
+  "action.delete": {
+    "message": "obriši ovu poruku",
+    "description": "Delete button name in the message more menu"
+  },
+
+  "action.viewClassic": {
+    "message": "prikaži koristeći klasični čitač",
+    "description": "Show in classic view button name in the message more menu"
+  },
+
+  "action.viewSource": {
+    "message": "prikaži izvorni kod poruke",
+    "description": "View source button name in the message more menu"
+  },
+
+  "notification.scamMsg": {
+    "message": "Ova poruka je možda prevara:",
+    "description": "Notification message shown for a junk/scam message"
+  },
+
+  "notification.ignoreScamWarning": {
+    "message": "ignoriraj upozorenje",
+    "description": "Button title to ignore a junk/scam message"
+  },
+
+  "notification.junkMsg": {
+    "message": "Ovo je neželjena pošta",
+    "description": "Notification message shown for junk messages"
+  },
+
+  "notification.notJunk": {
+    "message": "Nije neželjena pošta",
+    "description": "Button title to mark as not junk"
+  },
+
+  "notification.isOutboxMsg": {
+    "message": "Ova poruka nije poslana.",
+    "description": "Notification message shown for a message in the outbox"
+  },
+
+  "notification.sendUnsent": {
+    "message": "Pošalji neposlane poruke sada?",
+    "description": "Button title to send a message in the outbox"
+  },
+
+  "notification.remoteContentBlockedMsg": {
+    "message": "Vanjski sadržaj je skriven:",
+    "description": "Notification message shown when remote content is blocked"
+  },
+
+  "notification.showRemote": {
+    "message": "prikaži vanjski sadržaj",
+    "description": "Button title to show remote content"
+  },
+
+  "notification.alwaysShowRemote": {
+    "message": "uvijek prikaži vanjski sadržaj od $fromEmail$",
+    "description": "Button title to always show remote content.",
+    "placeholders": {
+      "fromEmail": {
+        "content": "$1",
+        "example": "me@example.com"
+      }
+    }
+  },
+
+  "action.editDraft": {
+    "message": "uredi skicu",
+    "description": "Edit draft button name in the message more menu"
+  },
+
+  "action.reply": {
+    "message": "odgovori",
+    "description": "Reply button name in the message more menu"
+  },
+
+  "action.replyAll": {
+    "message": "odgovori svima",
+    "description": "Reply all button name in the message more menu"
+  },
+
+  "action.replyList": {
+    "message": "odgovori na popis",
+    "description": "Reply list button name in the message more menu"
+  },
+
+  "action.editNew": {
+    "message": "uredi kao novo",
+    "description": "Edit as new button name in the message more menu"
+  },
+
+  "action.forward": {
+    "message": "proslijedi",
+    "description": "Forward button name in the message more menu"
+  },
+
+  "message.fromHeader": {
+    "message": "šalje:",
+    "description": "Header name displayed for the from field"
+  },
+
+  "message.toHeader": {
+    "message": "prima:",
+    "description": "Header name displayed for the to field"
+  },
+
+  "message.ccHeader": {
+    "message": "cc:",
+    "description": "Header name displayed for the cc field"
   }
 }

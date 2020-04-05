@@ -32,16 +32,18 @@ class RemoteContentNotification extends React.PureComponent {
   render() {
     return (
       <div className="remoteContent notificationBar">
-        {this.props.strings.get("remoteContentBlocked") + " "}
+        {browser.i18n.getMessage("notification.remoteContentBlockedMsg") + " "}
         <span className="show-remote-content">
           <a className="link" onClick={this.onShowRemote}>
-            {this.props.strings.get("showRemote")}
+            {browser.i18n.getMessage("notification.showRemote")}
           </a>
           {" - "}
         </span>
         <span className="always-display">
           <a className="link" onClick={this.onAlwaysShowRemote}>
-            {this.props.strings.get("alwaysShowRemote", [this.props.realFrom])}
+            {browser.i18n.getMessage("notification.alwaysShowRemote", [
+              this.props.realFrom,
+            ])}
           </a>
         </span>
       </div>
@@ -53,7 +55,6 @@ RemoteContentNotification.propTypes = {
   dispatch: PropTypes.func.isRequired,
   msgUri: PropTypes.string.isRequired,
   realFrom: PropTypes.string.isRequired,
-  strings: PropTypes.object.isRequired,
 };
 
 class GenericSingleButtonNotification extends React.PureComponent {
@@ -145,9 +146,9 @@ class JunkNotification extends React.PureComponent {
       <GenericSingleButtonNotification
         barClassName="junkBar"
         buttonClassName="notJunk"
-        buttonTitle={this.props.strings.get("notJunk")}
+        buttonTitle={browser.i18n.getMessage("notification.notJunk")}
         iconName="whatshot"
-        notificationText={this.props.strings.get("junk")}
+        notificationText={browser.i18n.getMessage("notification.junkMsg")}
         onButtonClick={this.onClick}
       />
     );
@@ -157,7 +158,6 @@ class JunkNotification extends React.PureComponent {
 JunkNotification.propTypes = {
   dispatch: PropTypes.func.isRequired,
   msgUri: PropTypes.string.isRequired,
-  strings: PropTypes.object.isRequired,
 };
 
 class OutboxNotification extends React.PureComponent {
@@ -177,9 +177,9 @@ class OutboxNotification extends React.PureComponent {
       <GenericSingleButtonNotification
         barClassName="outboxBar"
         buttonClassName="sendUnsent"
-        buttonTitle={this.props.strings.get("sendUnsent")}
+        buttonTitle={browser.i18n.getMessage("notification.sendUnsent")}
         iconName="inbox"
-        notificationText={this.props.strings.get("isOutbox")}
+        notificationText={browser.i18n.getMessage("notification.isOutboxMsg")}
         onButtonClick={this.onClick}
       />
     );
@@ -188,7 +188,6 @@ class OutboxNotification extends React.PureComponent {
 
 OutboxNotification.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  strings: PropTypes.object.isRequired,
 };
 
 class PhishingNotification extends React.PureComponent {
@@ -209,9 +208,9 @@ class PhishingNotification extends React.PureComponent {
       <GenericSingleButtonNotification
         barClassName="phishingBar"
         buttonClassName="ignore-warning"
-        buttonTitle={this.props.strings.get("ignoreWarning")}
+        buttonTitle={browser.i18n.getMessage("notification.ignoreScamWarning")}
         iconName="warning"
-        notificationText={this.props.strings.get("scam")}
+        notificationText={browser.i18n.getMessage("notification.scamMsg")}
         onButtonClick={this.onClick}
       />
     );
@@ -221,7 +220,6 @@ class PhishingNotification extends React.PureComponent {
 PhishingNotification.propTypes = {
   dispatch: PropTypes.func.isRequired,
   msgUri: PropTypes.string.isRequired,
-  strings: PropTypes.object.isRequired,
 };
 
 class MessageNotification extends React.PureComponent {
@@ -231,7 +229,6 @@ class MessageNotification extends React.PureComponent {
         <PhishingNotification
           dispatch={this.props.dispatch}
           msgUri={this.props.msgUri}
-          strings={this.props.strings}
         />
       );
     }
@@ -241,7 +238,6 @@ class MessageNotification extends React.PureComponent {
           dispatch={this.props.dispatch}
           msgUri={this.props.msgUri}
           realFrom={this.props.realFrom}
-          strings={this.props.strings}
         />
       );
     }
@@ -250,17 +246,11 @@ class MessageNotification extends React.PureComponent {
         <JunkNotification
           dispatch={this.props.dispatch}
           msgUri={this.props.msgUri}
-          strings={this.props.strings}
         />
       );
     }
     if (this.props.isOutbox) {
-      return (
-        <OutboxNotification
-          dispatch={this.props.dispatch}
-          strings={this.props.strings}
-        />
-      );
+      return <OutboxNotification dispatch={this.props.dispatch} />;
     }
     if (this.props.extraNotifications && this.props.extraNotifications.length) {
       // Only display the first notification.
@@ -290,5 +280,4 @@ MessageNotification.propTypes = {
   isOutbox: PropTypes.bool.isRequired,
   msgUri: PropTypes.string.isRequired,
   realFrom: PropTypes.string.isRequired,
-  strings: PropTypes.object.isRequired,
 };

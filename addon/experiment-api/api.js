@@ -109,6 +109,23 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           }
           throw new Error("Unexpected pref type");
         },
+        async getCorePref(name) {
+          try {
+            switch (name) {
+              case "mailnews.mark_message_read.auto":
+              case "mailnews.mark_message_read.delay":
+                return Services.prefs.getBoolPref(name);
+              case "mailnews.mark_message_read.delay.interval":
+                return Services.prefs.getIntPref(name);
+            }
+          } catch (ex) {
+            // Do nothing
+          }
+          return undefined;
+        },
+        async getLocaleDirection() {
+          return Services.locale.isAppLocaleRTL ? "rtl" : "ltr";
+        },
         async installCustomisations(ids) {
           let uninstallInfos = JSON.parse(Prefs.uninstall_infos);
           for (const id of ids) {

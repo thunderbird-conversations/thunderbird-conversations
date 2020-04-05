@@ -28,21 +28,20 @@ class _ConversationFooter extends React.PureComponent {
     return (
       <div className="bottom-links">
         <a className="link" onClick={this.forwardConversation}>
-          {this.props.strings.get("stub.forward.tooltip")}
+          {browser.i18n.getMessage("message.forwardConversation")}
         </a>{" "}
       </div>
     );
     // TODO: Get printing working again.
     // –{" "}
     // <a className="link" onClick={this.printConversation}>
-    //   {this.props.strings.get("stub.print.tooltip")}
+    //   {browser.i18n.getMessage("message.printConversation")}
     // </a>
   }
 }
 
 _ConversationFooter.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  strings: PropTypes.object.isRequired,
 };
 
 const ConversationFooter = ReactRedux.connect()(_ConversationFooter);

@@ -2,17 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals PropTypes, React, StringBundle, ActionButton, SvgIcon, messageActions */
+/* globals PropTypes, React, ActionButton, SvgIcon, messageActions */
 /* exported MessageHeaderOptions */
 
 class OptionsMoreMenu extends React.PureComponent {
-  constructor(props) {
-    super(props);
-    this.strings = new StringBundle(
-      "chrome://conversations/locale/template.properties"
-    );
-  }
-
   render() {
     return (
       <div className="tooltip tooltip-menu menu">
@@ -110,9 +103,6 @@ OptionsMoreMenu.propTypes = {
 class MessageHeaderOptions extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.strings = new StringBundle(
-      "chrome://conversations/locale/template.properties"
-    );
     this.replyAction = this.replyAction.bind(this);
     this.showDetails = this.showDetails.bind(this);
     this.displayMenu = this.displayMenu.bind(this);
@@ -258,11 +248,11 @@ class MessageHeaderOptions extends React.PureComponent {
             <a
               className="icon-link"
               onClick={this.showDetails}
-              title={
+              title={browser.i18n.getMessage(
                 this.props.detailsShowing
-                  ? this.strings.get("hideDetails")
-                  : this.strings.get("details")
-              }
+                  ? "message.hideDetails.tooltip"
+                  : "message.showDetails.tooltip"
+              )}
             >
               <SvgIcon
                 hash={this.props.detailsShowing ? "info" : "info_outline"}
@@ -275,7 +265,7 @@ class MessageHeaderOptions extends React.PureComponent {
             <button
               onClick={this.displayMenu}
               className="icon-link top-right-more"
-              title={this.strings.get("more")}
+              title={browser.i18n.getMessage("message.moreMenu.tooltip")}
             >
               <SvgIcon hash={"more_vert"} />
             </button>

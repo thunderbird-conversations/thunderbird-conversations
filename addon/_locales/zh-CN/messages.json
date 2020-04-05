@@ -227,5 +227,221 @@
   "options.start_setup_assistant": {
     "message": "启动安装助手",
     "description": "Title of the button to open the setup assistant."
+  },
+
+  "message.movedOrDeletedConversation": {
+    "message": "无法显示此会话：邮件已经被移动或删除.",
+    "description": "Error message for the conversation tab"
+  },
+
+  "contact.copyEmailTooltip": {
+    "message": "复制邮件地址到剪贴板",
+    "description": "Tooltip shown on the copy email to clipboard button"
+  },
+
+  "contact.createFilterTooltip": {
+    "message": "为此邮件发送人创建过滤器",
+    "description": "Tooltip shown on the create filter for contact button"
+  },
+
+  "contact.addContactTooltip": {
+    "message": "添加到地址簿",
+    "description": "Tooltip shown on the add contact button"
+  },
+
+  "contact.editContactTooltip": {
+    "message": "编辑地址簿中的联系人信息",
+    "description": "Tooltip shown on the edit contact button"
+  },
+
+  "contact.sendEmailTooltip": {
+    "message": "发送邮件",
+    "description": "Tooltip shown on the send email button"
+  },
+
+  "contact.recentConversationsTooltip": {
+    "message": "最近的会话",
+    "description": "Tooltip shown on the recent conversations button"
+  },
+
+  "message.archive.tooltip": {
+    "message": "将此次会话进行归档",
+    "description": "Tooltip for the archive button in the conversation header"
+  },
+
+  "message.detach.tooltip": {
+    "message": "在新标签页中显示会话",
+    "description": "Tooltip for the detach to new tab button in the conversation header"
+  },
+
+  "message.expand.tooltip": {
+    "message": "展开/折叠所有邮件",
+    "description": "Tooltip for the expand button in the conversation header"
+  },
+
+  "message.forwardConversation": {
+    "message": "转发此会话",
+    "description": "The link text for forwarding a conversation"
+  },
+
+  "message.junk.tooltip": {
+    "message": "将此邮件标记为垃圾邮件",
+    "description": "Tooltip for the junk button in the conversation header"
+  },
+
+  "message.loading": {
+    "message": "加载中……",
+    "description": "Displayed when the message is loading"
+  },
+
+  "message.printConversation": {
+    "message": "打印此会话",
+    "description": "The link text for printing a conversation"
+  },
+
+  "message.read.tooltip": {
+    "message": "将所有邮件标记为已读/未读",
+    "description": "Tooltip for the mark as read button in the conversation header"
+  },
+
+  "message.trash.tooltip": {
+    "message": "删除此次会话",
+    "description": "Tooltip for the trash button in the conversation header"
+  },
+
+  "message.noSubject": {
+    "message": "(no subject)",
+    "description": "Displayed when a message has no subject"
+  },
+
+  "message.showDetails.tooltip": {
+    "message": "显示详情",
+    "description": "Tooltip for showing message header details"
+  },
+
+  "message.hideDetails.tooltip": {
+    "message": "隐藏细节",
+    "description": "Tooltip for hiding message header details"
+  },
+
+  "message.moreMenu.tooltip": {
+    "message": "更多",
+    "description": "Tooltip for the more menu"
+  },
+
+  "action.archive": {
+    "message": "归档邮件",
+    "description": "Archive button name in the message more menu"
+  },
+
+  "action.delete": {
+    "message": "删除邮件",
+    "description": "Delete button name in the message more menu"
+  },
+
+  "action.viewClassic": {
+    "message": "使用经典阅读器阅读",
+    "description": "Show in classic view button name in the message more menu"
+  },
+
+  "action.viewSource": {
+    "message": "查看邮件源码",
+    "description": "View source button name in the message more menu"
+  },
+
+  "notification.scamMsg": {
+    "message": "此邮件可能为欺诈邮件:",
+    "description": "Notification message shown for a junk/scam message"
+  },
+
+  "notification.ignoreScamWarning": {
+    "message": "忽略告警",
+    "description": "Button title to ignore a junk/scam message"
+  },
+
+  "notification.junkMsg": {
+    "message": "垃圾邮件",
+    "description": "Notification message shown for junk messages"
+  },
+
+  "notification.notJunk": {
+    "message": "非垃圾邮件",
+    "description": "Button title to mark as not junk"
+  },
+
+  "notification.isOutboxMsg": {
+    "message": "有一封未发送的邮件.",
+    "description": "Notification message shown for a message in the outbox"
+  },
+
+  "notification.sendUnsent": {
+    "message": "现在发送所有未发送的邮件吗?",
+    "description": "Button title to send a message in the outbox"
+  },
+
+  "notification.remoteContentBlockedMsg": {
+    "message": "远程内容已经隐藏",
+    "description": "Notification message shown when remote content is blocked"
+  },
+
+  "notification.showRemote": {
+    "message": "显示远程内容",
+    "description": "Button title to show remote content"
+  },
+
+  "notification.alwaysShowRemote": {
+    "message": "总是显示来自 $fromEmail$ 的远程内容",
+    "description": "Button title to always show remote content.",
+    "placeholders": {
+      "fromEmail": {
+        "content": "$1",
+        "example": "me@example.com"
+      }
+    }
+  },
+
+  "action.editDraft": {
+    "message": "编辑草稿",
+    "description": "Edit draft button name in the message more menu"
+  },
+
+  "action.reply": {
+    "message": "回复",
+    "description": "Reply button name in the message more menu"
+  },
+
+  "action.replyAll": {
+    "message": "全部回复",
+    "description": "Reply all button name in the message more menu"
+  },
+
+  "action.replyList": {
+    "message": "回复至邮件列表",
+    "description": "Reply list button name in the message more menu"
+  },
+
+  "action.editNew": {
+    "message": "按新邮件编辑",
+    "description": "Edit as new button name in the message more menu"
+  },
+
+  "action.forward": {
+    "message": "转发",
+    "description": "Forward button name in the message more menu"
+  },
+
+  "message.fromHeader": {
+    "message": "来此",
+    "description": "Header name displayed for the from field"
+  },
+
+  "message.toHeader": {
+    "message": "到:",
+    "description": "Header name displayed for the to field"
+  },
+
+  "message.ccHeader": {
+    "message": "抄送:",
+    "description": "Header name displayed for the cc field"
   }
 }

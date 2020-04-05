@@ -227,5 +227,221 @@
   "options.start_setup_assistant": {
     "message": "Avvia la configurazione guidata",
     "description": "Title of the button to open the setup assistant."
+  },
+
+  "message.movedOrDeletedConversation": {
+    "message": "Impossibile visualizzare la discussione recente, poiché il messaggio è stato spostato oppure eliminato",
+    "description": "Error message for the conversation tab"
+  },
+
+  "contact.copyEmailTooltip": {
+    "message": "Copia l'indirizzo e-mail negli appunti",
+    "description": "Tooltip shown on the copy email to clipboard button"
+  },
+
+  "contact.createFilterTooltip": {
+    "message": "Crea un filtro per questo mittente",
+    "description": "Tooltip shown on the create filter for contact button"
+  },
+
+  "contact.addContactTooltip": {
+    "message": "Aggiungi in rubrica",
+    "description": "Tooltip shown on the add contact button"
+  },
+
+  "contact.editContactTooltip": {
+    "message": "Modifica il contatto nella rubrica",
+    "description": "Tooltip shown on the edit contact button"
+  },
+
+  "contact.sendEmailTooltip": {
+    "message": "Invia e-mail",
+    "description": "Tooltip shown on the send email button"
+  },
+
+  "contact.recentConversationsTooltip": {
+    "message": "Discussioni recenti",
+    "description": "Tooltip shown on the recent conversations button"
+  },
+
+  "message.archive.tooltip": {
+    "message": "Archivia la discussione",
+    "description": "Tooltip for the archive button in the conversation header"
+  },
+
+  "message.detach.tooltip": {
+    "message": "Apri in una nuova scheda",
+    "description": "Tooltip for the detach to new tab button in the conversation header"
+  },
+
+  "message.expand.tooltip": {
+    "message": "Espandi/contrai tutti i messaggi",
+    "description": "Tooltip for the expand button in the conversation header"
+  },
+
+  "message.forwardConversation": {
+    "message": "Inoltra la discussione",
+    "description": "The link text for forwarding a conversation"
+  },
+
+  "message.junk.tooltip": {
+    "message": "Marca come posta indesiderata",
+    "description": "Tooltip for the junk button in the conversation header"
+  },
+
+  "message.loading": {
+    "message": "Caricamento in corso…",
+    "description": "Displayed when the message is loading"
+  },
+
+  "message.printConversation": {
+    "message": "Stampa la discussione",
+    "description": "The link text for printing a conversation"
+  },
+
+  "message.read.tooltip": {
+    "message": "Marca come letto/non letto",
+    "description": "Tooltip for the mark as read button in the conversation header"
+  },
+
+  "message.trash.tooltip": {
+    "message": "Elimina la discussione",
+    "description": "Tooltip for the trash button in the conversation header"
+  },
+
+  "message.noSubject": {
+    "message": "(no subject)",
+    "description": "Displayed when a message has no subject"
+  },
+
+  "message.showDetails.tooltip": {
+    "message": "Mostra i dettagli",
+    "description": "Tooltip for showing message header details"
+  },
+
+  "message.hideDetails.tooltip": {
+    "message": "Nascondi i dettagli",
+    "description": "Tooltip for hiding message header details"
+  },
+
+  "message.moreMenu.tooltip": {
+    "message": "Altre azioni",
+    "description": "Tooltip for the more menu"
+  },
+
+  "action.archive": {
+    "message": "Archivia il messaggio",
+    "description": "Archive button name in the message more menu"
+  },
+
+  "action.delete": {
+    "message": "Elimina il messaggio",
+    "description": "Delete button name in the message more menu"
+  },
+
+  "action.viewClassic": {
+    "message": "Visualizza in maniera predefinita",
+    "description": "Show in classic view button name in the message more menu"
+  },
+
+  "action.viewSource": {
+    "message": "Visualizza sorgente del messaggio",
+    "description": "View source button name in the message more menu"
+  },
+
+  "notification.scamMsg": {
+    "message": "Questo messaggio potrebbe essere una frode:",
+    "description": "Notification message shown for a junk/scam message"
+  },
+
+  "notification.ignoreScamWarning": {
+    "message": "ignora l'avviso",
+    "description": "Button title to ignore a junk/scam message"
+  },
+
+  "notification.junkMsg": {
+    "message": "Messaggio di posta indesiderato",
+    "description": "Notification message shown for junk messages"
+  },
+
+  "notification.notJunk": {
+    "message": "Messaggio di posta non indesiderato",
+    "description": "Button title to mark as not junk"
+  },
+
+  "notification.isOutboxMsg": {
+    "message": "Messaggio non inviato.",
+    "description": "Notification message shown for a message in the outbox"
+  },
+
+  "notification.sendUnsent": {
+    "message": "Inviare i messaggi in attesa ora?",
+    "description": "Button title to send a message in the outbox"
+  },
+
+  "notification.remoteContentBlockedMsg": {
+    "message": "I contenuti remoti sono nascosti:",
+    "description": "Notification message shown when remote content is blocked"
+  },
+
+  "notification.showRemote": {
+    "message": "mostra i contenuti remoti",
+    "description": "Button title to show remote content"
+  },
+
+  "notification.alwaysShowRemote": {
+    "message": "mostra sempre i contenuti remoti da $fromEmail$",
+    "description": "Button title to always show remote content.",
+    "placeholders": {
+      "fromEmail": {
+        "content": "$1",
+        "example": "me@example.com"
+      }
+    }
+  },
+
+  "action.editDraft": {
+    "message": "Modifica la bozza…",
+    "description": "Edit draft button name in the message more menu"
+  },
+
+  "action.reply": {
+    "message": "Rispondi",
+    "description": "Reply button name in the message more menu"
+  },
+
+  "action.replyAll": {
+    "message": "Rispondi a tutti",
+    "description": "Reply all button name in the message more menu"
+  },
+
+  "action.replyList": {
+    "message": "Rispondi alla lista",
+    "description": "Reply list button name in the message more menu"
+  },
+
+  "action.editNew": {
+    "message": "Modifica come nuovo",
+    "description": "Edit as new button name in the message more menu"
+  },
+
+  "action.forward": {
+    "message": "Inoltra",
+    "description": "Forward button name in the message more menu"
+  },
+
+  "message.fromHeader": {
+    "message": "Da:",
+    "description": "Header name displayed for the from field"
+  },
+
+  "message.toHeader": {
+    "message": "A:",
+    "description": "Header name displayed for the to field"
+  },
+
+  "message.ccHeader": {
+    "message": "Cc:",
+    "description": "Header name displayed for the cc field"
   }
 }

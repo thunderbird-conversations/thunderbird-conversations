@@ -601,7 +601,7 @@ MonkeyPatch.prototype = {
           } else {
             Log.debug("First conversation");
           }
-          freshConversation.outputInto(htmlpane.contentWindow, function(
+          freshConversation.outputInto(htmlpane.contentWindow, async function(
             aConversation
           ) {
             if (!aConversation.messages.length) {

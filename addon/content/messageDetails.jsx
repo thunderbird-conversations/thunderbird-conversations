@@ -26,7 +26,7 @@ class MessageDetails extends React.PureComponent {
       <div>
         {!!this.props.from && (
           <div className="detailsLine fromLine">
-            <u>{this.props.strings.get("fieldFrom")}</u>{" "}
+            <u>{browser.i18n.getMessage("message.fromHeader")}</u>{" "}
             <ContactLabel
               className=""
               contact={this.props.from}
@@ -36,19 +36,19 @@ class MessageDetails extends React.PureComponent {
         )}
         {!!this.props.to.length && (
           <div className="detailsLine toLine">
-            <u>{this.props.strings.get("fieldTo")}</u>{" "}
+            <u>{browser.i18n.getMessage("message.toHeader")}</u>{" "}
             <ContactLine className="to" contacts={this.props.to} />
           </div>
         )}
         {!!this.props.cc.length && (
           <div className="detailsLine ccLine">
-            <u>{this.props.strings.get("fieldCc")}</u>{" "}
+            <u>{browser.i18n.getMessage("message.ccHeader")}</u>{" "}
             <ContactLine className="cc" contacts={this.props.cc} />
           </div>
         )}
         {!!this.props.bcc.length && (
           <div className="detailsLine bccLine">
-            <u>{this.props.strings.get("fieldBcc")}</u>{" "}
+            <u>{browser.i18n.getMessage("message.bccHeader")}</u>{" "}
             <ContactLine className="bcc" contacts={this.props.bcc} />
           </div>
         )}
@@ -71,6 +71,5 @@ MessageDetails.propTypes = {
   cc: PropTypes.array.isRequired,
   extraLines: PropTypes.array.isRequired,
   from: PropTypes.object.isRequired,
-  strings: PropTypes.object.isRequired,
   to: PropTypes.array.isRequired,
 };

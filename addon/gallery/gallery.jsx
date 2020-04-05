@@ -4,19 +4,6 @@
 
 "use strict";
 
-// const { StringBundle } = ChromeUtils.import(
-//   "resource:///modules/StringBundle.js"
-// );
-// const { MsgHdrToMimeMessage } = ChromeUtils.import(
-//   "resource:///modules/gloda/mimemsg.js"
-// );
-// const { msgUriToMsgHdr } = ChromeUtils.import(
-//   "chrome://conversations/content/modules/stdlib/msgHdrUtils.js"
-// );
-// let strings = new StringBundle(
-//   "chrome://conversations/locale/message.properties"
-// );
-//
 /* globals React, ReactDOM, PropTypes */
 
 class Photo extends React.Component {

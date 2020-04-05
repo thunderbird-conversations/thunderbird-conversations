@@ -273,7 +273,6 @@ class Message extends React.PureComponent {
             extraLines={this.props.message.extraLines}
             from={this.props.message.from}
             to={this.props.message.to}
-            strings={this.strings}
           />
         )}
         {this.props.message.expanded && (
@@ -288,14 +287,13 @@ class Message extends React.PureComponent {
             isOutbox={this.props.message.isOutbox}
             msgUri={this.props.message.msgUri}
             realFrom={this.props.message.realFrom}
-            strings={this.strings}
           />
         )}
         <div className="messageBody">
           {this.props.message.expanded && (
             <SpecialMessageTags
               onFolderClick={() => {
-                this.dispatch({
+                this.props.dispatch({
                   type: "SWITCH_TO_FOLDER",
                   msgUri: this.props.message.msgUri,
                 });
