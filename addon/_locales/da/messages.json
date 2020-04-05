@@ -227,5 +227,10 @@
   "options.start_setup_assistant": {
     "message": "Start opsætningsassistenten",
     "description": "Title of the button to open the setup assistant."
+  },
+
+  "message.movedOrDeletedConversation": {
+    "message": "Vi beklager, men vi kan ikke vise samtalen fordi meddelelserne er blevet flyttet eller slettet.",
+    "description": "Error message for the conversation tab"
   }
 }

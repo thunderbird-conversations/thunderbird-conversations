@@ -227,5 +227,10 @@
   "options.start_setup_assistant": {
     "message": "Uruchom asystenta konfiguracji",
     "description": "Title of the button to open the setup assistant."
+  },
+
+  "message.movedOrDeletedConversation": {
+    "message": "Nie można wyświetlić tej konwersacji, ponieważ wiadomości zostały przeniesione lub usunięte.",
+    "description": "Error message for the conversation tab"
   }
 }

@@ -227,5 +227,10 @@
   "options.start_setup_assistant": {
     "message": "Pokreni čarobnjaka za postavke",
     "description": "Title of the button to open the setup assistant."
+  },
+
+  "message.movedOrDeletedConversation": {
+    "message": "Ne možemo prikazati ovaj razgovor, poruke su premještene ili obrisane.",
+    "description": "Error message for the conversation tab"
   }
 }

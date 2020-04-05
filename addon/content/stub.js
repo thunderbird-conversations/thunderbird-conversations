@@ -30,14 +30,12 @@ const store = RTK.configureStore({
   }),
 });
 
+/* exported StringBundle */
 var { StringBundle } = ChromeUtils.import(
   "resource:///modules/StringBundle.js"
 );
 /* exported Services */
 var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
-var strings = new StringBundle(
-  "chrome://conversations/locale/message.properties"
-);
 
 /* exported conversationDispatch */
 function conversationDispatch(...args) {
@@ -135,8 +133,10 @@ function setupConversationInTab(params) {
     .filter(x => x != null && x.messageId);
   // It might happen that there are no messages left...
   if (!msgHdrs.length) {
-    document.getElementById("messageList").textContent = strings.get(
-      "messageMovedOrDeletedConversation"
+    document.getElementById(
+      "messageList"
+    ).textContent = browser.i18n.getMessage(
+      "message.movedOrDeletedConversation"
     );
   } else {
     window.Conversations = {

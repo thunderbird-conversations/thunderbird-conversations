@@ -227,5 +227,10 @@
   "options.start_setup_assistant": {
     "message": "Zaženi pomočnika za nastavitev",
     "description": "Title of the button to open the setup assistant."
+  },
+
+  "message.movedOrDeletedConversation": {
+    "message": "Pogovora ni mogoče prikazati, ker so bila sporočila premaknjena ali izbrisana.",
+    "description": "Error message for the conversation tab"
   }
 }

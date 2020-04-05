@@ -227,5 +227,10 @@
   "options.start_setup_assistant": {
     "message": "Aloita asennusvelho",
     "description": "Title of the button to open the setup assistant."
+  },
+
+  "message.movedOrDeletedConversation": {
+    "message": "Olemme pahoillamme, mutta emme voi näyttää tätä keskustelua, koska viesti on siirretty tai poistettu.",
+    "description": "Error message for the conversation tab"
   }
 }

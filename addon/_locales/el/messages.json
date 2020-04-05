@@ -227,5 +227,10 @@
   "options.start_setup_assistant": {
     "message": "Εκκίνηση του βοηθού ρυθμίσεων",
     "description": "Title of the button to open the setup assistant."
+  },
+
+  "message.movedOrDeletedConversation": {
+    "message": "Λυπούμαστε αλλά δεν μπορούμε να παρουσιάσουμε αυτή τη συνομιλία γιατί τα μηνύματα έχουν μεταφερθεί ή διαγραφεί.",
+    "description": "Error message for the conversation tab"
   }
 }

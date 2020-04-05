@@ -227,5 +227,10 @@
   "options.start_setup_assistant": {
     "message": "Aviar l'assistent d'installaziun",
     "description": "Title of the button to open the setup assistant."
+  },
+
+  "message.movedOrDeletedConversation": {
+    "message": "Perstgisa, igl n'è betg pussaivel da mussar questa conversaziun, perquai ch'ils messadis èn vegnids spustads u stizzads.",
+    "description": "Error message for the conversation tab"
   }
 }

@@ -227,5 +227,10 @@
   "options.start_setup_assistant": {
     "message": "Стартиране на помощника",
     "description": "Title of the button to open the setup assistant."
+  },
+
+  "message.movedOrDeletedConversation": {
+    "message": "Съжаляваме, но не можем да покажем този разговор, тъй като съобщенията са били преместени или изтрити.",
+    "description": "Error message for the conversation tab"
   }
 }

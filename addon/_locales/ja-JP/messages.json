@@ -227,5 +227,10 @@
   "options.start_setup_assistant": {
     "message": "設定アシスタントを起動する",
     "description": "Title of the button to open the setup assistant."
+  },
+
+  "message.movedOrDeletedConversation": {
+    "message": "残念ながら、スレッドを表示できません。メッセージが移動されたか削除されています。",
+    "description": "Error message for the conversation tab"
   }
 }

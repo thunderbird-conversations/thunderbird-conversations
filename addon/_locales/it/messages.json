@@ -227,5 +227,10 @@
   "options.start_setup_assistant": {
     "message": "Avvia la configurazione guidata",
     "description": "Title of the button to open the setup assistant."
+  },
+
+  "message.movedOrDeletedConversation": {
+    "message": "Impossibile visualizzare la discussione recente, poiché il messaggio è stato spostato oppure eliminato",
+    "description": "Error message for the conversation tab"
   }
 }

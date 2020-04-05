@@ -227,5 +227,10 @@
   "options.start_setup_assistant": {
     "message": "Iniciar assistente de instalação",
     "description": "Title of the button to open the setup assistant."
+  },
+
+  "message.movedOrDeletedConversation": {
+    "message": "Desculpe, mas não podemos exibir essa conversa porque as mensagens foram movidas ou excluídas.",
+    "description": "Error message for the conversation tab"
   }
 }

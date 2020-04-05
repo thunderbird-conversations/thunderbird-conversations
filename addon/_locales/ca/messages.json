@@ -227,5 +227,10 @@
   "options.start_setup_assistant": {
     "message": "Engega  l'Assistent de configuració",
     "description": "Title of the button to open the setup assistant."
+  },
+
+  "message.movedOrDeletedConversation": {
+    "message": "Ho sentim molt, però no podem mostrar la conversa, Ja que els missatges han estat moguts o bé eliminats.",
+    "description": "Error message for the conversation tab"
   }
 }

@@ -227,5 +227,10 @@
   "options.start_setup_assistant": {
     "message": "התחל את אשף ההתקנה",
     "description": "Title of the button to open the setup assistant."
+  },
+
+  "message.movedOrDeletedConversation": {
+    "message": "לא ניתן להציג את השיחה, כיוון שההודעות הועברו או נמחקו.‏",
+    "description": "Error message for the conversation tab"
   }
 }

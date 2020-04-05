@@ -227,5 +227,10 @@
   "options.start_setup_assistant": {
     "message": "啟動安裝助手",
     "description": "Title of the button to open the setup assistant."
+  },
+
+  "message.movedOrDeletedConversation": {
+    "message": "無法顯示此對話：郵件已經被移動或刪除.",
+    "description": "Error message for the conversation tab"
   }
 }

@@ -227,5 +227,10 @@
   "options.start_setup_assistant": {
     "message": "Kurulum Yardımcısı'nı başlat",
     "description": "Title of the button to open the setup assistant."
+  },
+
+  "message.movedOrDeletedConversation": {
+    "message": "Üzgünüz, bu görüşmeyi silindiği veya taşındığı için gösteremiyoruz.",
+    "description": "Error message for the conversation tab"
   }
 }

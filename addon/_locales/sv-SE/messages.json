@@ -227,5 +227,10 @@
   "options.start_setup_assistant": {
     "message": "Starta konfigurationsguiden",
     "description": "Title of the button to open the setup assistant."
+  },
+
+  "message.movedOrDeletedConversation": {
+    "message": "Ledsen, men vi kan inte visa denna konversation eftersom meddelandena har flyttats eller tagits bort.",
+    "description": "Error message for the conversation tab"
   }
 }

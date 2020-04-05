@@ -227,5 +227,10 @@
   "options.start_setup_assistant": {
     "message": "Hasi konfigurazio-laguntzailea",
     "description": "Title of the button to open the setup assistant."
+  },
+
+  "message.movedOrDeletedConversation": {
+    "message": "Barkaiguzu, hizketaldi hau ezin dizugu erakutsi, mezuak mugituak edo ezabatuak izan baitira.",
+    "description": "Error message for the conversation tab"
   }
 }

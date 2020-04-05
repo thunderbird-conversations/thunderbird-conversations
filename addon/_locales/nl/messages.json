@@ -227,5 +227,10 @@
   "options.start_setup_assistant": {
     "message": "Start de instelassistent",
     "description": "Title of the button to open the setup assistant."
+  },
+
+  "message.movedOrDeletedConversation": {
+    "message": "Helaas, we kunnen de conversatie niet tonen omdat het bericht is verplaatst of verwijderd.",
+    "description": "Error message for the conversation tab"
   }
 }

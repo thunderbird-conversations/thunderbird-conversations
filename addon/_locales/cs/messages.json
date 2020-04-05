@@ -227,5 +227,10 @@
   "options.start_setup_assistant": {
     "message": "Spustit pomocníka s nastavením",
     "description": "Title of the button to open the setup assistant."
+  },
+
+  "message.movedOrDeletedConversation": {
+    "message": "Je nám líto, ale tuto konverzaci nelze zobrazit, jelikož její zprávy byly přesunuty, nebo smazány.",
+    "description": "Error message for the conversation tab"
   }
 }
