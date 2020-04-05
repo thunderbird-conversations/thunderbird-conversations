@@ -262,5 +262,55 @@
   "contact.recentConversationsTooltip": {
     "message": "שיחות אחרונות",
     "description": "Tooltip shown on the recent conversations button"
+  },
+
+  "message.archive.tooltip": {
+    "message": "העבר את השיחה לארכיון",
+    "description": "Tooltip for the archive button in the conversation header"
+  },
+
+  "message.detach.tooltip": {
+    "message": "הצג את השיחה בתוית חדשה",
+    "description": "Tooltip for the detach to new tab button in the conversation header"
+  },
+
+  "message.expand.tooltip": {
+    "message": "הרחב/קפל כל ההודעות",
+    "description": "Tooltip for the expand button in the conversation header"
+  },
+
+  "message.forwardConversation": {
+    "message": "העבר את השיחה הזאת האלה",
+    "description": "The link text for forwarding a conversation"
+  },
+
+  "message.junk.tooltip": {
+    "message": "סמן את השיחה כדוא&quot;ז (דואר זבל)‏",
+    "description": "Tooltip for the junk button in the conversation header"
+  },
+
+  "message.loading": {
+    "message": "טוען...‏",
+    "description": "Displayed when the message is loading"
+  },
+
+  "message.printConversation": {
+    "message": "הדפס את השיחה",
+    "description": "The link text for printing a conversation"
+  },
+
+  "message.read.tooltip": {
+    "message": "חלף בין הודעות נקראות לבין הודעות שלא נקראות",
+    "description": "Tooltip for the mark as read button in the conversation header"
+  },
+
+  "message.trash.tooltip": {
+    "message": "מחק את השיחה",
+    "description": "Tooltip for the trash button in the conversation header"
+  },
+
+  "message.noSubject": {
+    "message": "(no subject)",
+    "description": "Displayed when a message has no subject"
   }
 }

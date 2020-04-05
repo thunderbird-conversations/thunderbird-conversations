@@ -24,9 +24,9 @@ class LinkifiedSubject extends React.PureComponent {
   render() {
     let subject = this.props.subject;
     if (this.props.loading) {
-      subject = this.props.strings.get("stub.loading");
+      subject = browser.i18n.getMessage("message.loading");
     } else if (!subject) {
-      subject = this.props.strings.get("stub.no.subject");
+      subject = browser.i18n.getMessage("message.noSubject");
     }
 
     if (LINKS_REGEX.test(this.props.subject)) {
@@ -73,7 +73,6 @@ class LinkifiedSubject extends React.PureComponent {
 LinkifiedSubject.propTypes = {
   dispatch: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
-  strings: PropTypes.object.isRequired,
   subject: PropTypes.string.isRequired,
 };
 
@@ -168,20 +167,19 @@ class _ConversationHeader extends React.PureComponent {
           <LinkifiedSubject
             dispatch={this.props.dispatch}
             loading={this.props.loading}
-            strings={this.props.strings}
             subject={this.props.subject}
           />
           <div className="actions">
             <button
               className="button-flat"
-              title={this.props.strings.get("stub.trash.tooltip")}
+              title={browser.i18n.getMessage("message.trash.tooltip")}
               onClick={this.delete}
             >
               <SvgIcon hash={"delete"} />
             </button>
             <button
               className="button-flat"
-              title={this.props.strings.get("stub.archive.tooltip")}
+              title={browser.i18n.getMessage("message.archive.tooltip")}
               onClick={this.archiveToolbar}
             >
               <SvgIcon hash={"archive"} />
@@ -189,7 +187,7 @@ class _ConversationHeader extends React.PureComponent {
             {this.canJunk && (
               <button
                 className="button-flat junk-button"
-                title={this.props.strings.get("stub.junk.tooltip")}
+                title={browser.i18n.getMessage("message.junk.tooltip")}
                 onClick={this.junkConversation}
               >
                 <SvgIcon hash={"whatshot"} />
@@ -197,7 +195,7 @@ class _ConversationHeader extends React.PureComponent {
             )}
             <button
               className="button-flat"
-              title={this.props.strings.get("stub.expand.tooltip")}
+              title={browser.i18n.getMessage("message.expand.tooltip")}
               onClick={this.expandCollapse}
             >
               <svg
@@ -220,14 +218,14 @@ class _ConversationHeader extends React.PureComponent {
             </button>
             <button
               className="button-flat"
-              title={this.props.strings.get("stub.read.tooltip")}
+              title={browser.i18n.getMessage("message.read.tooltip")}
               onClick={this.toggleRead}
             >
               <SvgIcon hash={"new"} />
             </button>
             <button
               className="button-flat"
-              title={this.props.strings.get("stub.detach.tooltip2")}
+              title={browser.i18n.getMessage("message.detach.tooltip")}
               onClick={this.detachTab}
             >
               <SvgIcon hash={"open_in_new"} />
@@ -242,7 +240,6 @@ class _ConversationHeader extends React.PureComponent {
 _ConversationHeader.propTypes = {
   dispatch: PropTypes.func.isRequired,
   loading: PropTypes.bool.isRequired,
-  strings: PropTypes.object.isRequired,
   subject: PropTypes.string.isRequired,
   msgData: PropTypes.array.isRequired,
 };

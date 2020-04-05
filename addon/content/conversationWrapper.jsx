@@ -3,15 +3,12 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 /* globals ConversationHeader, ConversationFooter, MessageList,
-           React, ReactRedux, PropTypes, StringBundle */
+           React, ReactRedux, PropTypes */
 /* exported ConversationWrapper */
 
 class _ConversationWrapper extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.strings = new StringBundle(
-      "chrome://conversations/locale/template.properties"
-    );
   }
   componentDidMount() {
     this._setHTMLAttributes();
@@ -42,9 +39,9 @@ class _ConversationWrapper extends React.PureComponent {
     return (
       <div>
         <div className="hidden" id="tooltipContainer"></div>
-        <ConversationHeader strings={this.strings} />
+        <ConversationHeader />
         <MessageList />
-        <ConversationFooter strings={this.strings} />
+        <ConversationFooter />
       </div>
     );
   }
