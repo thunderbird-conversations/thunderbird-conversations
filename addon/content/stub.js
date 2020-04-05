@@ -34,8 +34,6 @@ const store = RTK.configureStore({
 var { StringBundle } = ChromeUtils.import(
   "resource:///modules/StringBundle.js"
 );
-/* exported Services */
-var { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 
 /* exported conversationDispatch */
 function conversationDispatch(...args) {
@@ -84,8 +82,10 @@ window.print = printConversation;
 
 // When moving to a WebExtension page this can simply be moved to CSS (see
 // options.css).
-const direction = Services.locale.isAppLocaleRTL ? "rtl" : "ltr";
-document.documentElement.setAttribute("dir", direction);
+document.documentElement.setAttribute(
+  "dir",
+  browser.conversations.getLocaleDirection()
+);
 
 document.addEventListener(
   "DOMContentLoaded",
@@ -149,13 +149,13 @@ function setupConversationInTab(params) {
       scrollMode,
       ++Conversations.counter
     );
-    let browser = window.frameElement;
+    let browserFrame = window.frameElement;
     // Because Thunderbird still hasn't fixed that...
-    if (browser) {
-      browser.setAttribute("context", "mailContext");
+    if (browserFrame) {
+      browserFrame.setAttribute("context", "mailContext");
     }
 
-    freshConversation.outputInto(window, function(aConversation) {
+    freshConversation.outputInto(window, async function(aConversation) {
       // This is a stripped-down version of what's in monkeypatch.js,
       //  make sure the two are in sync!
       Conversations.currentConversation = aConversation;
@@ -172,13 +172,19 @@ function setupConversationInTab(params) {
       document.body.classList.add("inTab");
       // Do this now so as to not defeat the whole expand/collapse
       // logic.
-      if (Services.prefs.getBoolPref("mailnews.mark_message_read.auto")) {
+      if (
+        await browser.conversations.getCorePref(
+          "mailnews.mark_message_read.auto"
+        )
+      ) {
         setTimeout(function() {
           msgHdrsMarkAsRead(msgHdrs, true);
-        }, Services.prefs.getIntPref(
+        }, (await browser.conversations.getCorePref(
           "mailnews.mark_message_read.delay.interval"
-        ) *
-          Services.prefs.getBoolPref("mailnews.mark_message_read.delay") *
+        )) *
+          (await browser.conversations.getCorePref(
+            "mailnews.mark_message_read.delay"
+          )) *
           1000);
       }
     });

@@ -972,7 +972,9 @@ Conversation.prototype = {
     this._htmlPane.gComposeSession = null;
 
     // Now tell the monkeypatch that we've queued everything up.
-    Services.tm.dispatchToMainThread(() => this._onComplete());
+    Services.tm.dispatchToMainThread(() =>
+      this._onComplete().catch(console.error)
+    );
   },
 
   // Do all the penible stuff about scrolling to the right message and expanding
