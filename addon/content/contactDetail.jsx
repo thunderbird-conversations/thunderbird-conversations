@@ -2,15 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals PropTypes, React, ReactDOM, ReactRedux, StringBundle, SvgIcon */
+/* globals PropTypes, React, ReactDOM, ReactRedux, SvgIcon */
 /* exported ContactDetail */
 
 class _ContactDetail extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.strings = new StringBundle(
-      "chrome://conversations/locale/template.properties"
-    );
     this.addContact = this.addContact.bind(this);
     this.editContact = this.editContact.bind(this);
     this.createFilter = this.createFilter.bind(this);
@@ -113,7 +110,7 @@ class _ContactDetail extends React.PureComponent {
               </span>
               <button
                 className="copyEmail"
-                title={this.strings.get("copyEmail")}
+                title={browser.i18n.getMessage("contact.copyEmailTooltip")}
                 onClick={this.copyEmail}
               >
                 <SvgIcon hash={"content_copy"} />
@@ -127,14 +124,16 @@ class _ContactDetail extends React.PureComponent {
         <div className="tipFooter">
           <button
             className="sendEmail"
-            title={this.strings.get("sendEmail")}
+            title={browser.i18n.getMessage("contact.sendEmailTooltip")}
             onClick={this.sendEmail}
           >
             <SvgIcon hash={"mail"} />
           </button>
           <button
             className="showInvolving"
-            title={this.strings.get("recentConversations")}
+            title={browser.i18n.getMessage(
+              "contact.recentConversationsTooltip"
+            )}
             onClick={this.showInvolving}
           >
             <SvgIcon hash={"history"} />
@@ -142,7 +141,7 @@ class _ContactDetail extends React.PureComponent {
           {this.props.hasCard ? (
             <button
               className="editContact"
-              title={this.strings.get("editCardAb")}
+              title={browser.i18n.getMessage("contact.editContactTooltip")}
               onClick={this.editContact}
             >
               <SvgIcon hash={"edit"} />
@@ -150,14 +149,14 @@ class _ContactDetail extends React.PureComponent {
           ) : (
             <button
               className="addContact"
-              title={this.strings.get("addToAb")}
+              title={browser.i18n.getMessage("contact.addContactTooltip")}
               onClick={this.addContact}
             >
               <SvgIcon hash={"add"} />
             </button>
           )}
           <button className="createFilter" onClick={this.createFilter}>
-            {this.strings.get("createFilter")}
+            {browser.i18n.getMessage("contact.createFilterTooltip")}
           </button>
         </div>
       </div>

@@ -232,5 +232,35 @@
   "message.movedOrDeletedConversation": {
     "message": "Ledsen, men vi kan inte visa denna konversation eftersom meddelandena har flyttats eller tagits bort.",
     "description": "Error message for the conversation tab"
+  },
+
+  "contact.copyEmailTooltip": {
+    "message": "Kopiera e-postadress till Urklipp",
+    "description": "Tooltip shown on the copy email to clipboard button"
+  },
+
+  "contact.createFilterTooltip": {
+    "message": "skapa filter för avsändare",
+    "description": "Tooltip shown on the create filter for contact button"
+  },
+
+  "contact.addContactTooltip": {
+    "message": "Lägg till i adressboken",
+    "description": "Tooltip shown on the add contact button"
+  },
+
+  "contact.editContactTooltip": {
+    "message": "Redigera kontakt i adressboken",
+    "description": "Tooltip shown on the edit contact button"
+  },
+
+  "contact.sendEmailTooltip": {
+    "message": "skicka e-post",
+    "description": "Tooltip shown on the send email button"
+  },
+
+  "contact.recentConversationsTooltip": {
+    "message": "nyligen använda konversationer",
+    "description": "Tooltip shown on the recent conversations button"
   }
 }

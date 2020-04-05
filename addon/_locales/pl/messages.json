@@ -232,5 +232,35 @@
   "message.movedOrDeletedConversation": {
     "message": "Nie można wyświetlić tej konwersacji, ponieważ wiadomości zostały przeniesione lub usunięte.",
     "description": "Error message for the conversation tab"
+  },
+
+  "contact.copyEmailTooltip": {
+    "message": "Kopiuj adres wiadomości do schowka",
+    "description": "Tooltip shown on the copy email to clipboard button"
+  },
+
+  "contact.createFilterTooltip": {
+    "message": "Utwórz filtr dla nadawcy",
+    "description": "Tooltip shown on the create filter for contact button"
+  },
+
+  "contact.addContactTooltip": {
+    "message": "Dodaj adres do książki adresowej",
+    "description": "Tooltip shown on the add contact button"
+  },
+
+  "contact.editContactTooltip": {
+    "message": "Edytuj kontakt w książce adresowej",
+    "description": "Tooltip shown on the edit contact button"
+  },
+
+  "contact.sendEmailTooltip": {
+    "message": "Wyślij wiadomość",
+    "description": "Tooltip shown on the send email button"
+  },
+
+  "contact.recentConversationsTooltip": {
+    "message": "Ostatnie konwersacje",
+    "description": "Tooltip shown on the recent conversations button"
   }
 }

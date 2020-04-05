@@ -232,5 +232,35 @@
   "message.movedOrDeletedConversation": {
     "message": "Vi beklager, men vi kan ikke vise samtalen fordi meddelelserne er blevet flyttet eller slettet.",
     "description": "Error message for the conversation tab"
+  },
+
+  "contact.copyEmailTooltip": {
+    "message": "Kopier mailadresse til udklipsholder",
+    "description": "Tooltip shown on the copy email to clipboard button"
+  },
+
+  "contact.createFilterTooltip": {
+    "message": "opret filter for afsender",
+    "description": "Tooltip shown on the create filter for contact button"
+  },
+
+  "contact.addContactTooltip": {
+    "message": "Føj til adressebog",
+    "description": "Tooltip shown on the add contact button"
+  },
+
+  "contact.editContactTooltip": {
+    "message": "Rediger kontakt i adressebogen",
+    "description": "Tooltip shown on the edit contact button"
+  },
+
+  "contact.sendEmailTooltip": {
+    "message": "send mail",
+    "description": "Tooltip shown on the send email button"
+  },
+
+  "contact.recentConversationsTooltip": {
+    "message": "seneste samtaler",
+    "description": "Tooltip shown on the recent conversations button"
   }
 }

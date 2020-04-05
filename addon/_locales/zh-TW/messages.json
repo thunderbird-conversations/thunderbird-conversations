@@ -232,5 +232,35 @@
   "message.movedOrDeletedConversation": {
     "message": "無法顯示此對話：郵件已經被移動或刪除.",
     "description": "Error message for the conversation tab"
+  },
+
+  "contact.copyEmailTooltip": {
+    "message": "複製郵件地址到剪貼簿",
+    "description": "Tooltip shown on the copy email to clipboard button"
+  },
+
+  "contact.createFilterTooltip": {
+    "message": "為此郵件發送人創建過濾器",
+    "description": "Tooltip shown on the create filter for contact button"
+  },
+
+  "contact.addContactTooltip": {
+    "message": "新增到地址簿",
+    "description": "Tooltip shown on the add contact button"
+  },
+
+  "contact.editContactTooltip": {
+    "message": "編輯地址簿中的聯系人信息",
+    "description": "Tooltip shown on the edit contact button"
+  },
+
+  "contact.sendEmailTooltip": {
+    "message": "發送郵件",
+    "description": "Tooltip shown on the send email button"
+  },
+
+  "contact.recentConversationsTooltip": {
+    "message": "最近的會話",
+    "description": "Tooltip shown on the recent conversations button"
   }
 }

@@ -232,5 +232,35 @@
   "message.movedOrDeletedConversation": {
     "message": "Ho sentim molt, però no podem mostrar la conversa, Ja que els missatges han estat moguts o bé eliminats.",
     "description": "Error message for the conversation tab"
+  },
+
+  "contact.copyEmailTooltip": {
+    "message": "Copia l'adreça mail al portapapers",
+    "description": "Tooltip shown on the copy email to clipboard button"
+  },
+
+  "contact.createFilterTooltip": {
+    "message": "Crea un filtre per aquest sender",
+    "description": "Tooltip shown on the create filter for contact button"
+  },
+
+  "contact.addContactTooltip": {
+    "message": "Afegeix al llibre de adreçes.",
+    "description": "Tooltip shown on the add contact button"
+  },
+
+  "contact.editContactTooltip": {
+    "message": "Edita el contacte en el llibre d'adreçes",
+    "description": "Tooltip shown on the edit contact button"
+  },
+
+  "contact.sendEmailTooltip": {
+    "message": "Envia l'email",
+    "description": "Tooltip shown on the send email button"
+  },
+
+  "contact.recentConversationsTooltip": {
+    "message": "Conversacions recents",
+    "description": "Tooltip shown on the recent conversations button"
   }
 }

@@ -232,5 +232,35 @@
   "message.movedOrDeletedConversation": {
     "message": "Üzgünüz, bu görüşmeyi silindiği veya taşındığı için gösteremiyoruz.",
     "description": "Error message for the conversation tab"
+  },
+
+  "contact.copyEmailTooltip": {
+    "message": "E-posta adresini panoya kopyala.",
+    "description": "Tooltip shown on the copy email to clipboard button"
+  },
+
+  "contact.createFilterTooltip": {
+    "message": "gönderen için filitre oluştur",
+    "description": "Tooltip shown on the create filter for contact button"
+  },
+
+  "contact.addContactTooltip": {
+    "message": "Adres defterine ekle",
+    "description": "Tooltip shown on the add contact button"
+  },
+
+  "contact.editContactTooltip": {
+    "message": "Adres defterinde kişiyi düzenle",
+    "description": "Tooltip shown on the edit contact button"
+  },
+
+  "contact.sendEmailTooltip": {
+    "message": "posta gönder",
+    "description": "Tooltip shown on the send email button"
+  },
+
+  "contact.recentConversationsTooltip": {
+    "message": "son konuşmalar",
+    "description": "Tooltip shown on the recent conversations button"
   }
 }

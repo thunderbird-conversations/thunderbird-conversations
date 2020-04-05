@@ -232,5 +232,35 @@
   "message.movedOrDeletedConversation": {
     "message": "Pogovora ni mogoče prikazati, ker so bila sporočila premaknjena ali izbrisana.",
     "description": "Error message for the conversation tab"
+  },
+
+  "contact.copyEmailTooltip": {
+    "message": "Kopiraj e-poštni naslov na odložišče",
+    "description": "Tooltip shown on the copy email to clipboard button"
+  },
+
+  "contact.createFilterTooltip": {
+    "message": "ustvari filter za pošiljatelja",
+    "description": "Tooltip shown on the create filter for contact button"
+  },
+
+  "contact.addContactTooltip": {
+    "message": "Dodaj v imenik",
+    "description": "Tooltip shown on the add contact button"
+  },
+
+  "contact.editContactTooltip": {
+    "message": "Uredi stik v imeniku",
+    "description": "Tooltip shown on the edit contact button"
+  },
+
+  "contact.sendEmailTooltip": {
+    "message": "pošlji pošto",
+    "description": "Tooltip shown on the send email button"
+  },
+
+  "contact.recentConversationsTooltip": {
+    "message": "nedavni pogovori",
+    "description": "Tooltip shown on the recent conversations button"
   }
 }

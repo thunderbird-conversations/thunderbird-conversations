@@ -232,5 +232,35 @@
   "message.movedOrDeletedConversation": {
     "message": "Je nám líto, ale tuto konverzaci nelze zobrazit, jelikož její zprávy byly přesunuty, nebo smazány.",
     "description": "Error message for the conversation tab"
+  },
+
+  "contact.copyEmailTooltip": {
+    "message": "Kopírovat e-mailovou adresu",
+    "description": "Tooltip shown on the copy email to clipboard button"
+  },
+
+  "contact.createFilterTooltip": {
+    "message": "Vytvořit filtr",
+    "description": "Tooltip shown on the create filter for contact button"
+  },
+
+  "contact.addContactTooltip": {
+    "message": "Přidat do kontaktů",
+    "description": "Tooltip shown on the add contact button"
+  },
+
+  "contact.editContactTooltip": {
+    "message": "Upravit kontakt v adresáři",
+    "description": "Tooltip shown on the edit contact button"
+  },
+
+  "contact.sendEmailTooltip": {
+    "message": "odeslat zprávu",
+    "description": "Tooltip shown on the send email button"
+  },
+
+  "contact.recentConversationsTooltip": {
+    "message": "nedávné konverzace",
+    "description": "Tooltip shown on the recent conversations button"
   }
 }

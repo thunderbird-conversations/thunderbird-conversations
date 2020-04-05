@@ -232,5 +232,35 @@
   "message.movedOrDeletedConversation": {
     "message": "לא ניתן להציג את השיחה, כיוון שההודעות הועברו או נמחקו.‏",
     "description": "Error message for the conversation tab"
+  },
+
+  "contact.copyEmailTooltip": {
+    "message": "העתק כתובת דוא\"ל ללוח עריכה",
+    "description": "Tooltip shown on the copy email to clipboard button"
+  },
+
+  "contact.createFilterTooltip": {
+    "message": "צור מסנן עבוד שולח הזה",
+    "description": "Tooltip shown on the create filter for contact button"
+  },
+
+  "contact.addContactTooltip": {
+    "message": "הוסף לפנקס כתובות",
+    "description": "Tooltip shown on the add contact button"
+  },
+
+  "contact.editContactTooltip": {
+    "message": "ערוך איש קשר בפנקס כתובות",
+    "description": "Tooltip shown on the edit contact button"
+  },
+
+  "contact.sendEmailTooltip": {
+    "message": "שלח דוא\"ל",
+    "description": "Tooltip shown on the send email button"
+  },
+
+  "contact.recentConversationsTooltip": {
+    "message": "שיחות אחרונות",
+    "description": "Tooltip shown on the recent conversations button"
   }
 }

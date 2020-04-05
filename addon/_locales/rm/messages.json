@@ -232,5 +232,35 @@
   "message.movedOrDeletedConversation": {
     "message": "Perstgisa, igl n'è betg pussaivel da mussar questa conversaziun, perquai ch'ils messadis èn vegnids spustads u stizzads.",
     "description": "Error message for the conversation tab"
+  },
+
+  "contact.copyEmailTooltip": {
+    "message": "Copiar l'adressa dad e-mail en l'archiv provisoric",
+    "description": "Tooltip shown on the copy email to clipboard button"
+  },
+
+  "contact.createFilterTooltip": {
+    "message": "crear in fliter per il speditur",
+    "description": "Tooltip shown on the create filter for contact button"
+  },
+
+  "contact.addContactTooltip": {
+    "message": "Agiuntar al cudeschet d'adressas",
+    "description": "Tooltip shown on the add contact button"
+  },
+
+  "contact.editContactTooltip": {
+    "message": "Modifitgar il contact en il cudeschet d'adressas",
+    "description": "Tooltip shown on the edit contact button"
+  },
+
+  "contact.sendEmailTooltip": {
+    "message": "trametter l'e-mail",
+    "description": "Tooltip shown on the send email button"
+  },
+
+  "contact.recentConversationsTooltip": {
+    "message": "ultimas conversaziuns",
+    "description": "Tooltip shown on the recent conversations button"
   }
 }

@@ -227,5 +227,35 @@
   "options.start_setup_assistant": {
     "message": "Start the setup assistant",
     "description": "Title of the button to open the setup assistant."
+  },
+
+  "contact.copyEmailTooltip": {
+    "message": "Copy email address to clipboard",
+    "description": "Tooltip shown on the copy email to clipboard button"
+  },
+
+  "contact.createFilterTooltip": {
+    "message": "create filter for sender",
+    "description": "Tooltip shown on the create filter for contact button"
+  },
+
+  "contact.addContactTooltip": {
+    "message": "Add to address book",
+    "description": "Tooltip shown on the add contact button"
+  },
+
+  "contact.editContactTooltip": {
+    "message": "Edit contact in address book",
+    "description": "Tooltip shown on the edit contact button"
+  },
+
+  "contact.sendEmailTooltip": {
+    "message": "send email",
+    "description": "Tooltip shown on the send email button"
+  },
+
+  "contact.recentConversationsTooltip": {
+    "message": "recent conversations",
+    "description": "Tooltip shown on the recent conversations button"
   }
 }

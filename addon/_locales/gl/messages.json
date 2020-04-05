@@ -232,5 +232,35 @@
   "message.movedOrDeletedConversation": {
     "message": "Desculpe, mais non é posíbel mostrar esta conversa porque as mensaxes foron movidas ou eliminadas.",
     "description": "Error message for the conversation tab"
+  },
+
+  "contact.copyEmailTooltip": {
+    "message": "Copiar o enderezo de correo ao portapapeis",
+    "description": "Tooltip shown on the copy email to clipboard button"
+  },
+
+  "contact.createFilterTooltip": {
+    "message": "crear un filtro para o remitente",
+    "description": "Tooltip shown on the create filter for contact button"
+  },
+
+  "contact.addContactTooltip": {
+    "message": "Engadir ao caderno de enderezos",
+    "description": "Tooltip shown on the add contact button"
+  },
+
+  "contact.editContactTooltip": {
+    "message": "Editar o contacto no caderno de enderezos",
+    "description": "Tooltip shown on the edit contact button"
+  },
+
+  "contact.sendEmailTooltip": {
+    "message": "enviar o correo",
+    "description": "Tooltip shown on the send email button"
+  },
+
+  "contact.recentConversationsTooltip": {
+    "message": "conversas recentes",
+    "description": "Tooltip shown on the recent conversations button"
   }
 }

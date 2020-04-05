@@ -232,5 +232,35 @@
   "message.movedOrDeletedConversation": {
     "message": "Жаль, но показать это общение невозможно, потому что сообщения перемещены или удалены.",
     "description": "Error message for the conversation tab"
+  },
+
+  "contact.copyEmailTooltip": {
+    "message": "Копировать адрес почты в буфер обмена",
+    "description": "Tooltip shown on the copy email to clipboard button"
+  },
+
+  "contact.createFilterTooltip": {
+    "message": "создать фильтр для отправителя",
+    "description": "Tooltip shown on the create filter for contact button"
+  },
+
+  "contact.addContactTooltip": {
+    "message": "Добавить в адресную книгу",
+    "description": "Tooltip shown on the add contact button"
+  },
+
+  "contact.editContactTooltip": {
+    "message": "Править контакт в адресной книге",
+    "description": "Tooltip shown on the edit contact button"
+  },
+
+  "contact.sendEmailTooltip": {
+    "message": "отправить почту",
+    "description": "Tooltip shown on the send email button"
+  },
+
+  "contact.recentConversationsTooltip": {
+    "message": "недавнее общение",
+    "description": "Tooltip shown on the recent conversations button"
   }
 }

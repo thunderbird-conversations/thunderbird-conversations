@@ -232,5 +232,35 @@
   "message.movedOrDeletedConversation": {
     "message": "Désolé, mais il nous est impossible d'afficher cette conversation, parce que les messages ont été déplacés ou supprimés.",
     "description": "Error message for the conversation tab"
+  },
+
+  "contact.copyEmailTooltip": {
+    "message": "Copier l'adresse dans le presse-papiers",
+    "description": "Tooltip shown on the copy email to clipboard button"
+  },
+
+  "contact.createFilterTooltip": {
+    "message": "créer un filtre expéditeur",
+    "description": "Tooltip shown on the create filter for contact button"
+  },
+
+  "contact.addContactTooltip": {
+    "message": "Ajouter au carnet d'adresses",
+    "description": "Tooltip shown on the add contact button"
+  },
+
+  "contact.editContactTooltip": {
+    "message": "Modifier le contact dans le carnet d'adresses",
+    "description": "Tooltip shown on the edit contact button"
+  },
+
+  "contact.sendEmailTooltip": {
+    "message": "envoyer un courrier",
+    "description": "Tooltip shown on the send email button"
+  },
+
+  "contact.recentConversationsTooltip": {
+    "message": "conversations récentes",
+    "description": "Tooltip shown on the recent conversations button"
   }
 }

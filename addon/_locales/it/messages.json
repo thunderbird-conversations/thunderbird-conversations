@@ -232,5 +232,35 @@
   "message.movedOrDeletedConversation": {
     "message": "Impossibile visualizzare la discussione recente, poiché il messaggio è stato spostato oppure eliminato",
     "description": "Error message for the conversation tab"
+  },
+
+  "contact.copyEmailTooltip": {
+    "message": "Copia l'indirizzo e-mail negli appunti",
+    "description": "Tooltip shown on the copy email to clipboard button"
+  },
+
+  "contact.createFilterTooltip": {
+    "message": "Crea un filtro per questo mittente",
+    "description": "Tooltip shown on the create filter for contact button"
+  },
+
+  "contact.addContactTooltip": {
+    "message": "Aggiungi in rubrica",
+    "description": "Tooltip shown on the add contact button"
+  },
+
+  "contact.editContactTooltip": {
+    "message": "Modifica il contatto nella rubrica",
+    "description": "Tooltip shown on the edit contact button"
+  },
+
+  "contact.sendEmailTooltip": {
+    "message": "Invia e-mail",
+    "description": "Tooltip shown on the send email button"
+  },
+
+  "contact.recentConversationsTooltip": {
+    "message": "Discussioni recenti",
+    "description": "Tooltip shown on the recent conversations button"
   }
 }

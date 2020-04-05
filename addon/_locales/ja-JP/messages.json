@@ -232,5 +232,35 @@
   "message.movedOrDeletedConversation": {
     "message": "残念ながら、スレッドを表示できません。メッセージが移動されたか削除されています。",
     "description": "Error message for the conversation tab"
+  },
+
+  "contact.copyEmailTooltip": {
+    "message": "メールアドレスをコピーします",
+    "description": "Tooltip shown on the copy email to clipboard button"
+  },
+
+  "contact.createFilterTooltip": {
+    "message": "この送信者をフィルタ",
+    "description": "Tooltip shown on the create filter for contact button"
+  },
+
+  "contact.addContactTooltip": {
+    "message": "アドレス帳に追加します",
+    "description": "Tooltip shown on the add contact button"
+  },
+
+  "contact.editContactTooltip": {
+    "message": "連絡先を編集",
+    "description": "Tooltip shown on the edit contact button"
+  },
+
+  "contact.sendEmailTooltip": {
+    "message": "メールを作成",
+    "description": "Tooltip shown on the send email button"
+  },
+
+  "contact.recentConversationsTooltip": {
+    "message": "最近のスレッド",
+    "description": "Tooltip shown on the recent conversations button"
   }
 }

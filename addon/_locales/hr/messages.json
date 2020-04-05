@@ -232,5 +232,35 @@
   "message.movedOrDeletedConversation": {
     "message": "Ne možemo prikazati ovaj razgovor, poruke su premještene ili obrisane.",
     "description": "Error message for the conversation tab"
+  },
+
+  "contact.copyEmailTooltip": {
+    "message": "Kopiraj adresu e-pošte u međuspremnik",
+    "description": "Tooltip shown on the copy email to clipboard button"
+  },
+
+  "contact.createFilterTooltip": {
+    "message": "stvori filter za pošiljatelja",
+    "description": "Tooltip shown on the create filter for contact button"
+  },
+
+  "contact.addContactTooltip": {
+    "message": "Dodaj u adresar",
+    "description": "Tooltip shown on the add contact button"
+  },
+
+  "contact.editContactTooltip": {
+    "message": "Uredi kontakt u adresaru",
+    "description": "Tooltip shown on the edit contact button"
+  },
+
+  "contact.sendEmailTooltip": {
+    "message": "pošalji e-poštu",
+    "description": "Tooltip shown on the send email button"
+  },
+
+  "contact.recentConversationsTooltip": {
+    "message": "nedavni razgovori",
+    "description": "Tooltip shown on the recent conversations button"
   }
 }

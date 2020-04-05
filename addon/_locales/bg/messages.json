@@ -232,5 +232,35 @@
   "message.movedOrDeletedConversation": {
     "message": "Съжаляваме, но не можем да покажем този разговор, тъй като съобщенията са били преместени или изтрити.",
     "description": "Error message for the conversation tab"
+  },
+
+  "contact.copyEmailTooltip": {
+    "message": "Копиране на адреса на е-пощата",
+    "description": "Tooltip shown on the copy email to clipboard button"
+  },
+
+  "contact.createFilterTooltip": {
+    "message": "създаване на филтър за подателя",
+    "description": "Tooltip shown on the create filter for contact button"
+  },
+
+  "contact.addContactTooltip": {
+    "message": "Добавяне в адресника",
+    "description": "Tooltip shown on the add contact button"
+  },
+
+  "contact.editContactTooltip": {
+    "message": "Редактиране на контакта в адресника",
+    "description": "Tooltip shown on the edit contact button"
+  },
+
+  "contact.sendEmailTooltip": {
+    "message": "изпращане на е-писмо",
+    "description": "Tooltip shown on the send email button"
+  },
+
+  "contact.recentConversationsTooltip": {
+    "message": "скорошни разговори",
+    "description": "Tooltip shown on the recent conversations button"
   }
 }

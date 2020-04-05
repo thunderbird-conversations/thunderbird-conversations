@@ -232,5 +232,35 @@
   "message.movedOrDeletedConversation": {
     "message": "Helaas, we kunnen de conversatie niet tonen omdat het bericht is verplaatst of verwijderd.",
     "description": "Error message for the conversation tab"
+  },
+
+  "contact.copyEmailTooltip": {
+    "message": "E-mailadres naar klembord kopiëren",
+    "description": "Tooltip shown on the copy email to clipboard button"
+  },
+
+  "contact.createFilterTooltip": {
+    "message": "filter voor afzender maken",
+    "description": "Tooltip shown on the create filter for contact button"
+  },
+
+  "contact.addContactTooltip": {
+    "message": "Aan adresboek toevoegen",
+    "description": "Tooltip shown on the add contact button"
+  },
+
+  "contact.editContactTooltip": {
+    "message": "Contact in adresboek wijzigen",
+    "description": "Tooltip shown on the edit contact button"
+  },
+
+  "contact.sendEmailTooltip": {
+    "message": "E-mail versturen",
+    "description": "Tooltip shown on the send email button"
+  },
+
+  "contact.recentConversationsTooltip": {
+    "message": "recente conversaties",
+    "description": "Tooltip shown on the recent conversations button"
   }
 }

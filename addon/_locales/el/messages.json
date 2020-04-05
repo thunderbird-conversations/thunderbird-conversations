@@ -232,5 +232,35 @@
   "message.movedOrDeletedConversation": {
     "message": "Λυπούμαστε αλλά δεν μπορούμε να παρουσιάσουμε αυτή τη συνομιλία γιατί τα μηνύματα έχουν μεταφερθεί ή διαγραφεί.",
     "description": "Error message for the conversation tab"
+  },
+
+  "contact.copyEmailTooltip": {
+    "message": "Αντιγραφή διεύθυνσης στο πρόχειρο",
+    "description": "Tooltip shown on the copy email to clipboard button"
+  },
+
+  "contact.createFilterTooltip": {
+    "message": "Δημιουργία φίλτρου για τον αποστολέα",
+    "description": "Tooltip shown on the create filter for contact button"
+  },
+
+  "contact.addContactTooltip": {
+    "message": "Προσθήκη στο ευρετήριο διευθύνσεων",
+    "description": "Tooltip shown on the add contact button"
+  },
+
+  "contact.editContactTooltip": {
+    "message": "Επεξεργασία επαφής στο ευρετήριο διευθύνσεων",
+    "description": "Tooltip shown on the edit contact button"
+  },
+
+  "contact.sendEmailTooltip": {
+    "message": "Αποστολή μηνύματος",
+    "description": "Tooltip shown on the send email button"
+  },
+
+  "contact.recentConversationsTooltip": {
+    "message": "Πρόσφατες συνομιλίες",
+    "description": "Tooltip shown on the recent conversations button"
   }
 }

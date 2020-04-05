@@ -232,5 +232,35 @@
   "message.movedOrDeletedConversation": {
     "message": "Olemme pahoillamme, mutta emme voi näyttää tätä keskustelua, koska viesti on siirretty tai poistettu.",
     "description": "Error message for the conversation tab"
+  },
+
+  "contact.copyEmailTooltip": {
+    "message": "Kopioi osoite leikepöydälle",
+    "description": "Tooltip shown on the copy email to clipboard button"
+  },
+
+  "contact.createFilterTooltip": {
+    "message": "Luo suodin lähettäjälle",
+    "description": "Tooltip shown on the create filter for contact button"
+  },
+
+  "contact.addContactTooltip": {
+    "message": "Lisää osoitekirjaan",
+    "description": "Tooltip shown on the add contact button"
+  },
+
+  "contact.editContactTooltip": {
+    "message": "Muokkaa yhteystietoa",
+    "description": "Tooltip shown on the edit contact button"
+  },
+
+  "contact.sendEmailTooltip": {
+    "message": "Lähetä viesti",
+    "description": "Tooltip shown on the send email button"
+  },
+
+  "contact.recentConversationsTooltip": {
+    "message": "Aiemmat keskustelut",
+    "description": "Tooltip shown on the recent conversations button"
   }
 }

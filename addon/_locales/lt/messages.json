@@ -232,5 +232,35 @@
   "message.movedOrDeletedConversation": {
     "message": "Deja šio pokalbio parodyti neįmanoma, nes pranešimai buvo perkelti arba pašalinti.",
     "description": "Error message for the conversation tab"
+  },
+
+  "contact.copyEmailTooltip": {
+    "message": "Kopijuoti el. pašto adresą į iškarpinę",
+    "description": "Tooltip shown on the copy email to clipboard button"
+  },
+
+  "contact.createFilterTooltip": {
+    "message": "sukurti filtrą šiam siuntėjui",
+    "description": "Tooltip shown on the create filter for contact button"
+  },
+
+  "contact.addContactTooltip": {
+    "message": "Pridėti šį į adresų knygelę",
+    "description": "Tooltip shown on the add contact button"
+  },
+
+  "contact.editContactTooltip": {
+    "message": "Taisyti adresatą adresų knygelėje",
+    "description": "Tooltip shown on the edit contact button"
+  },
+
+  "contact.sendEmailTooltip": {
+    "message": "siųsti el. laišką",
+    "description": "Tooltip shown on the send email button"
+  },
+
+  "contact.recentConversationsTooltip": {
+    "message": "naujausi pokalbiai",
+    "description": "Tooltip shown on the recent conversations button"
   }
 }

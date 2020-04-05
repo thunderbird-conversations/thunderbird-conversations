@@ -232,5 +232,35 @@
   "message.movedOrDeletedConversation": {
     "message": "Barkaiguzu, hizketaldi hau ezin dizugu erakutsi, mezuak mugituak edo ezabatuak izan baitira.",
     "description": "Error message for the conversation tab"
+  },
+
+  "contact.copyEmailTooltip": {
+    "message": "Kopiatu eposta helbidea arbelera",
+    "description": "Tooltip shown on the copy email to clipboard button"
+  },
+
+  "contact.createFilterTooltip": {
+    "message": "sortu iragazkia...",
+    "description": "Tooltip shown on the create filter for contact button"
+  },
+
+  "contact.addContactTooltip": {
+    "message": "Gehitu helbide-liburuan",
+    "description": "Tooltip shown on the add contact button"
+  },
+
+  "contact.editContactTooltip": {
+    "message": "Editatu kontaktua helbide-liburuan",
+    "description": "Tooltip shown on the edit contact button"
+  },
+
+  "contact.sendEmailTooltip": {
+    "message": "Idatzi mezua honi",
+    "description": "Tooltip shown on the send email button"
+  },
+
+  "contact.recentConversationsTooltip": {
+    "message": "Azken hizketaldiak",
+    "description": "Tooltip shown on the recent conversations button"
   }
 }
