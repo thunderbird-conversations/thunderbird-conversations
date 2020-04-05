@@ -312,5 +312,136 @@
   "message.noSubject": {
     "message": "(no subject)",
     "description": "Displayed when a message has no subject"
+  },
+
+  "message.showDetails.tooltip": {
+    "message": "显示详情",
+    "description": "Tooltip for showing message header details"
+  },
+
+  "message.hideDetails.tooltip": {
+    "message": "隐藏细节",
+    "description": "Tooltip for hiding message header details"
+  },
+
+  "message.moreMenu.tooltip": {
+    "message": "更多",
+    "description": "Tooltip for the more menu"
+  },
+
+  "action.archive": {
+    "message": "归档邮件",
+    "description": "Archive button name in the message more menu"
+  },
+
+  "action.delete": {
+    "message": "删除邮件",
+    "description": "Delete button name in the message more menu"
+  },
+
+  "action.viewClassic": {
+    "message": "使用经典阅读器阅读",
+    "description": "Show in classic view button name in the message more menu"
+  },
+
+  "action.viewSource": {
+    "message": "查看邮件源码",
+    "description": "View source button name in the message more menu"
+  },
+
+  "notification.scamMsg": {
+    "message": "此邮件可能为欺诈邮件:",
+    "description": "Notification message shown for a junk/scam message"
+  },
+
+  "notification.ignoreScamWarning": {
+    "message": "忽略告警",
+    "description": "Button title to ignore a junk/scam message"
+  },
+
+  "notification.junkMsg": {
+    "message": "垃圾邮件",
+    "description": "Notification message shown for junk messages"
+  },
+
+  "notification.notJunk": {
+    "message": "非垃圾邮件",
+    "description": "Button title to mark as not junk"
+  },
+
+  "notification.isOutboxMsg": {
+    "message": "有一封未发送的邮件.",
+    "description": "Notification message shown for a message in the outbox"
+  },
+
+  "notification.sendUnsent": {
+    "message": "现在发送所有未发送的邮件吗?",
+    "description": "Button title to send a message in the outbox"
+  },
+
+  "notification.remoteContentBlockedMsg": {
+    "message": "远程内容已经隐藏",
+    "description": "Notification message shown when remote content is blocked"
+  },
+
+  "notification.showRemote": {
+    "message": "显示远程内容",
+    "description": "Button title to show remote content"
+  },
+
+  "notification.alwaysShowRemote": {
+    "message": "总是显示来自 $fromEmail$ 的远程内容",
+    "description": "Button title to always show remote content.",
+    "placeholders": {
+      "fromEmail": {
+        "content": "$1",
+        "example": "me@example.com"
+      }
+    }
+  },
+
+  "action.editDraft": {
+    "message": "编辑草稿",
+    "description": "Edit draft button name in the message more menu"
+  },
+
+  "action.reply": {
+    "message": "回复",
+    "description": "Reply button name in the message more menu"
+  },
+
+  "action.replyAll": {
+    "message": "全部回复",
+    "description": "Reply all button name in the message more menu"
+  },
+
+  "action.replyList": {
+    "message": "回复至邮件列表",
+    "description": "Reply list button name in the message more menu"
+  },
+
+  "action.editNew": {
+    "message": "按新邮件编辑",
+    "description": "Edit as new button name in the message more menu"
+  },
+
+  "action.forward": {
+    "message": "转发",
+    "description": "Forward button name in the message more menu"
+  },
+
+  "message.fromHeader": {
+    "message": "来此",
+    "description": "Header name displayed for the from field"
+  },
+
+  "message.toHeader": {
+    "message": "到:",
+    "description": "Header name displayed for the to field"
+  },
+
+  "message.ccHeader": {
+    "message": "抄送:",
+    "description": "Header name displayed for the cc field"
   }
 }

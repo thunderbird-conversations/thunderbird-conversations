@@ -312,5 +312,136 @@
   "message.noSubject": {
     "message": "(no subject)",
     "description": "Displayed when a message has no subject"
+  },
+
+  "message.showDetails.tooltip": {
+    "message": "prikaži detalje",
+    "description": "Tooltip for showing message header details"
+  },
+
+  "message.hideDetails.tooltip": {
+    "message": "sakrij detalje",
+    "description": "Tooltip for hiding message header details"
+  },
+
+  "message.moreMenu.tooltip": {
+    "message": "više",
+    "description": "Tooltip for the more menu"
+  },
+
+  "action.archive": {
+    "message": "arhiviraj ovu poruku",
+    "description": "Archive button name in the message more menu"
+  },
+
+  "action.delete": {
+    "message": "obriši ovu poruku",
+    "description": "Delete button name in the message more menu"
+  },
+
+  "action.viewClassic": {
+    "message": "prikaži koristeći klasični čitač",
+    "description": "Show in classic view button name in the message more menu"
+  },
+
+  "action.viewSource": {
+    "message": "prikaži izvorni kod poruke",
+    "description": "View source button name in the message more menu"
+  },
+
+  "notification.scamMsg": {
+    "message": "Ova poruka je možda prevara:",
+    "description": "Notification message shown for a junk/scam message"
+  },
+
+  "notification.ignoreScamWarning": {
+    "message": "ignoriraj upozorenje",
+    "description": "Button title to ignore a junk/scam message"
+  },
+
+  "notification.junkMsg": {
+    "message": "Ovo je neželjena pošta",
+    "description": "Notification message shown for junk messages"
+  },
+
+  "notification.notJunk": {
+    "message": "Nije neželjena pošta",
+    "description": "Button title to mark as not junk"
+  },
+
+  "notification.isOutboxMsg": {
+    "message": "Ova poruka nije poslana.",
+    "description": "Notification message shown for a message in the outbox"
+  },
+
+  "notification.sendUnsent": {
+    "message": "Pošalji neposlane poruke sada?",
+    "description": "Button title to send a message in the outbox"
+  },
+
+  "notification.remoteContentBlockedMsg": {
+    "message": "Vanjski sadržaj je skriven:",
+    "description": "Notification message shown when remote content is blocked"
+  },
+
+  "notification.showRemote": {
+    "message": "prikaži vanjski sadržaj",
+    "description": "Button title to show remote content"
+  },
+
+  "notification.alwaysShowRemote": {
+    "message": "uvijek prikaži vanjski sadržaj od $fromEmail$",
+    "description": "Button title to always show remote content.",
+    "placeholders": {
+      "fromEmail": {
+        "content": "$1",
+        "example": "me@example.com"
+      }
+    }
+  },
+
+  "action.editDraft": {
+    "message": "uredi skicu",
+    "description": "Edit draft button name in the message more menu"
+  },
+
+  "action.reply": {
+    "message": "odgovori",
+    "description": "Reply button name in the message more menu"
+  },
+
+  "action.replyAll": {
+    "message": "odgovori svima",
+    "description": "Reply all button name in the message more menu"
+  },
+
+  "action.replyList": {
+    "message": "odgovori na popis",
+    "description": "Reply list button name in the message more menu"
+  },
+
+  "action.editNew": {
+    "message": "uredi kao novo",
+    "description": "Edit as new button name in the message more menu"
+  },
+
+  "action.forward": {
+    "message": "proslijedi",
+    "description": "Forward button name in the message more menu"
+  },
+
+  "message.fromHeader": {
+    "message": "šalje:",
+    "description": "Header name displayed for the from field"
+  },
+
+  "message.toHeader": {
+    "message": "prima:",
+    "description": "Header name displayed for the to field"
+  },
+
+  "message.ccHeader": {
+    "message": "cc:",
+    "description": "Header name displayed for the cc field"
   }
 }

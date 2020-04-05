@@ -312,5 +312,136 @@
   "message.noSubject": {
     "message": "(no subject)",
     "description": "Displayed when a message has no subject"
+  },
+
+  "message.showDetails.tooltip": {
+    "message": "Mostra i dettagli",
+    "description": "Tooltip for showing message header details"
+  },
+
+  "message.hideDetails.tooltip": {
+    "message": "Nascondi i dettagli",
+    "description": "Tooltip for hiding message header details"
+  },
+
+  "message.moreMenu.tooltip": {
+    "message": "Altre azioni",
+    "description": "Tooltip for the more menu"
+  },
+
+  "action.archive": {
+    "message": "Archivia il messaggio",
+    "description": "Archive button name in the message more menu"
+  },
+
+  "action.delete": {
+    "message": "Elimina il messaggio",
+    "description": "Delete button name in the message more menu"
+  },
+
+  "action.viewClassic": {
+    "message": "Visualizza in maniera predefinita",
+    "description": "Show in classic view button name in the message more menu"
+  },
+
+  "action.viewSource": {
+    "message": "Visualizza sorgente del messaggio",
+    "description": "View source button name in the message more menu"
+  },
+
+  "notification.scamMsg": {
+    "message": "Questo messaggio potrebbe essere una frode:",
+    "description": "Notification message shown for a junk/scam message"
+  },
+
+  "notification.ignoreScamWarning": {
+    "message": "ignora l'avviso",
+    "description": "Button title to ignore a junk/scam message"
+  },
+
+  "notification.junkMsg": {
+    "message": "Messaggio di posta indesiderato",
+    "description": "Notification message shown for junk messages"
+  },
+
+  "notification.notJunk": {
+    "message": "Messaggio di posta non indesiderato",
+    "description": "Button title to mark as not junk"
+  },
+
+  "notification.isOutboxMsg": {
+    "message": "Messaggio non inviato.",
+    "description": "Notification message shown for a message in the outbox"
+  },
+
+  "notification.sendUnsent": {
+    "message": "Inviare i messaggi in attesa ora?",
+    "description": "Button title to send a message in the outbox"
+  },
+
+  "notification.remoteContentBlockedMsg": {
+    "message": "I contenuti remoti sono nascosti:",
+    "description": "Notification message shown when remote content is blocked"
+  },
+
+  "notification.showRemote": {
+    "message": "mostra i contenuti remoti",
+    "description": "Button title to show remote content"
+  },
+
+  "notification.alwaysShowRemote": {
+    "message": "mostra sempre i contenuti remoti da $fromEmail$",
+    "description": "Button title to always show remote content.",
+    "placeholders": {
+      "fromEmail": {
+        "content": "$1",
+        "example": "me@example.com"
+      }
+    }
+  },
+
+  "action.editDraft": {
+    "message": "Modifica la bozza…",
+    "description": "Edit draft button name in the message more menu"
+  },
+
+  "action.reply": {
+    "message": "Rispondi",
+    "description": "Reply button name in the message more menu"
+  },
+
+  "action.replyAll": {
+    "message": "Rispondi a tutti",
+    "description": "Reply all button name in the message more menu"
+  },
+
+  "action.replyList": {
+    "message": "Rispondi alla lista",
+    "description": "Reply list button name in the message more menu"
+  },
+
+  "action.editNew": {
+    "message": "Modifica come nuovo",
+    "description": "Edit as new button name in the message more menu"
+  },
+
+  "action.forward": {
+    "message": "Inoltra",
+    "description": "Forward button name in the message more menu"
+  },
+
+  "message.fromHeader": {
+    "message": "Da:",
+    "description": "Header name displayed for the from field"
+  },
+
+  "message.toHeader": {
+    "message": "A:",
+    "description": "Header name displayed for the to field"
+  },
+
+  "message.ccHeader": {
+    "message": "Cc:",
+    "description": "Header name displayed for the cc field"
   }
 }

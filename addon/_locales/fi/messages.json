@@ -312,5 +312,136 @@
   "message.noSubject": {
     "message": "(no subject)",
     "description": "Displayed when a message has no subject"
+  },
+
+  "message.showDetails.tooltip": {
+    "message": "näytä yksityiskohdat",
+    "description": "Tooltip for showing message header details"
+  },
+
+  "message.hideDetails.tooltip": {
+    "message": "piilota yksityiskohdat",
+    "description": "Tooltip for hiding message header details"
+  },
+
+  "message.moreMenu.tooltip": {
+    "message": "enemmän",
+    "description": "Tooltip for the more menu"
+  },
+
+  "action.archive": {
+    "message": "arkistoi viesti",
+    "description": "Archive button name in the message more menu"
+  },
+
+  "action.delete": {
+    "message": "poista viesti",
+    "description": "Delete button name in the message more menu"
+  },
+
+  "action.viewClassic": {
+    "message": "näytä perinteisellä lukijalla",
+    "description": "Show in classic view button name in the message more menu"
+  },
+
+  "action.viewSource": {
+    "message": "näytä viestin lähde",
+    "description": "View source button name in the message more menu"
+  },
+
+  "notification.scamMsg": {
+    "message": "Tämä viesti voi olla huijausta:",
+    "description": "Notification message shown for a junk/scam message"
+  },
+
+  "notification.ignoreScamWarning": {
+    "message": "ohita varoitus",
+    "description": "Button title to ignore a junk/scam message"
+  },
+
+  "notification.junkMsg": {
+    "message": "Roskapostia",
+    "description": "Notification message shown for junk messages"
+  },
+
+  "notification.notJunk": {
+    "message": "Ei roskapostia",
+    "description": "Button title to mark as not junk"
+  },
+
+  "notification.isOutboxMsg": {
+    "message": "This is an unsent message.",
+    "description": "Notification message shown for a message in the outbox"
+  },
+
+  "notification.sendUnsent": {
+    "message": "Send unsent messages now?",
+    "description": "Button title to send a message in the outbox"
+  },
+
+  "notification.remoteContentBlockedMsg": {
+    "message": "Ulkoinen sisältö on piilotettu:",
+    "description": "Notification message shown when remote content is blocked"
+  },
+
+  "notification.showRemote": {
+    "message": "näytä ulkoinen sisältö",
+    "description": "Button title to show remote content"
+  },
+
+  "notification.alwaysShowRemote": {
+    "message": "näytä aina ulkoinen sisältö lähettäjältä",
+    "description": "Button title to always show remote content.",
+    "placeholders": {
+      "fromEmail": {
+        "content": "$1",
+        "example": "me@example.com"
+      }
+    }
+  },
+
+  "action.editDraft": {
+    "message": "muokkaa luonnosta",
+    "description": "Edit draft button name in the message more menu"
+  },
+
+  "action.reply": {
+    "message": "vastaa",
+    "description": "Reply button name in the message more menu"
+  },
+
+  "action.replyAll": {
+    "message": "vastaa kaikille",
+    "description": "Reply all button name in the message more menu"
+  },
+
+  "action.replyList": {
+    "message": "vastaa listalla oleville",
+    "description": "Reply list button name in the message more menu"
+  },
+
+  "action.editNew": {
+    "message": "muokkaa uutena",
+    "description": "Edit as new button name in the message more menu"
+  },
+
+  "action.forward": {
+    "message": "välitä",
+    "description": "Forward button name in the message more menu"
+  },
+
+  "message.fromHeader": {
+    "message": "Lähettäjä",
+    "description": "Header name displayed for the from field"
+  },
+
+  "message.toHeader": {
+    "message": "Vastaanottaja",
+    "description": "Header name displayed for the to field"
+  },
+
+  "message.ccHeader": {
+    "message": "Kopio",
+    "description": "Header name displayed for the cc field"
   }
 }

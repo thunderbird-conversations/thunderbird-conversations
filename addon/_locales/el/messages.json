@@ -312,5 +312,136 @@
   "message.noSubject": {
     "message": "(no subject)",
     "description": "Displayed when a message has no subject"
+  },
+
+  "message.showDetails.tooltip": {
+    "message": "Προβολή λεπτομερειών",
+    "description": "Tooltip for showing message header details"
+  },
+
+  "message.hideDetails.tooltip": {
+    "message": "Απόκρυψη λεπτομερειών",
+    "description": "Tooltip for hiding message header details"
+  },
+
+  "message.moreMenu.tooltip": {
+    "message": "Περισσότερα",
+    "description": "Tooltip for the more menu"
+  },
+
+  "action.archive": {
+    "message": "Αρχειοθέτηση του μηνύματος",
+    "description": "Archive button name in the message more menu"
+  },
+
+  "action.delete": {
+    "message": "Διαγραφή του μηνύματος",
+    "description": "Delete button name in the message more menu"
+  },
+
+  "action.viewClassic": {
+    "message": "Προβολή με χρήση της κλασσικής ανάγνωσης",
+    "description": "Show in classic view button name in the message more menu"
+  },
+
+  "action.viewSource": {
+    "message": "Προβολή πηγαίου κώδικα μηνύματος",
+    "description": "View source button name in the message more menu"
+  },
+
+  "notification.scamMsg": {
+    "message": "Αυτό το μήνυμα πιθανόν να είναι απάτη:",
+    "description": "Notification message shown for a junk/scam message"
+  },
+
+  "notification.ignoreScamWarning": {
+    "message": "Αγνόησή προειδοποίησης",
+    "description": "Button title to ignore a junk/scam message"
+  },
+
+  "notification.junkMsg": {
+    "message": "Ανεπιθύμητη αλληλογραφία",
+    "description": "Notification message shown for junk messages"
+  },
+
+  "notification.notJunk": {
+    "message": "Μη ανεπιθύμητο",
+    "description": "Button title to mark as not junk"
+  },
+
+  "notification.isOutboxMsg": {
+    "message": "Το μήνυμα δεν έχει αποσταλεί.",
+    "description": "Notification message shown for a message in the outbox"
+  },
+
+  "notification.sendUnsent": {
+    "message": "Να γίνει αποστολή μηνυμάτων τώρα;",
+    "description": "Button title to send a message in the outbox"
+  },
+
+  "notification.remoteContentBlockedMsg": {
+    "message": "Αποκρύφτηκε το απομακρυσμένο περιεχόμενο:",
+    "description": "Notification message shown when remote content is blocked"
+  },
+
+  "notification.showRemote": {
+    "message": "Προβολή απομακρυσμένου περιεχόμενου",
+    "description": "Button title to show remote content"
+  },
+
+  "notification.alwaysShowRemote": {
+    "message": "Να προβάλλεται πάντα απομακρυσμένο περιεχόμενο από $fromEmail$",
+    "description": "Button title to always show remote content.",
+    "placeholders": {
+      "fromEmail": {
+        "content": "$1",
+        "example": "me@example.com"
+      }
+    }
+  },
+
+  "action.editDraft": {
+    "message": "Επεξεργασία πρόχειρου",
+    "description": "Edit draft button name in the message more menu"
+  },
+
+  "action.reply": {
+    "message": "Απάντηση",
+    "description": "Reply button name in the message more menu"
+  },
+
+  "action.replyAll": {
+    "message": "Απάντηση σε όλους",
+    "description": "Reply all button name in the message more menu"
+  },
+
+  "action.replyList": {
+    "message": "Απάντηση στη λίστα",
+    "description": "Reply list button name in the message more menu"
+  },
+
+  "action.editNew": {
+    "message": "Τροποποίηση ως νέου",
+    "description": "Edit as new button name in the message more menu"
+  },
+
+  "action.forward": {
+    "message": "Προώθηση",
+    "description": "Forward button name in the message more menu"
+  },
+
+  "message.fromHeader": {
+    "message": "Από:",
+    "description": "Header name displayed for the from field"
+  },
+
+  "message.toHeader": {
+    "message": "Προς:",
+    "description": "Header name displayed for the to field"
+  },
+
+  "message.ccHeader": {
+    "message": "Κοιν:",
+    "description": "Header name displayed for the cc field"
   }
 }
