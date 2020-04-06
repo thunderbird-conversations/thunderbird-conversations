@@ -30,11 +30,6 @@ const store = RTK.configureStore({
   }),
 });
 
-/* exported StringBundle */
-var { StringBundle } = ChromeUtils.import(
-  "resource:///modules/StringBundle.js"
-);
-
 /* exported conversationDispatch */
 function conversationDispatch(...args) {
   store.dispatch(...args);

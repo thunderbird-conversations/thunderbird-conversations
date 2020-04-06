@@ -118,7 +118,7 @@ class Attachment extends React.PureComponent {
   render() {
     const enablePreview = this.props.isPdf || this.props.maybeViewable;
     const imgTitle = enablePreview
-      ? this.props.strings.get("viewAttachment")
+      ? browser.i18n.getMessage("attachments.viewAttachment.tooltip")
       : "";
     // TODO: Drag n drop
     // Disabled due to contextmenu which is only supported in Gecko.
@@ -151,7 +151,7 @@ class Attachment extends React.PureComponent {
             {this.props.isPdf && (
               <a
                 className="icon-link preview-attachment"
-                title={this.props.strings.get("preview")}
+                title={browser.i18n.getMessage("attachments.preview.tooltip")}
                 onClick={this.preview}
               >
                 <SvgIcon hash={"visibility"} />
@@ -159,14 +159,14 @@ class Attachment extends React.PureComponent {
             )}
             <a
               className="icon-link download-attachment"
-              title={this.props.strings.get("download2")}
+              title={browser.i18n.getMessage("attachments.download.tooltip")}
               onClick={this.downloadAttachment}
             >
               <SvgIcon hash={"file_download"} />
             </a>
             <a
               className="icon-link open-attachment"
-              title={this.props.strings.get("open")}
+              title={browser.i18n.getMessage("attachments.open.tooltip")}
               onClick={this.openAttachment}
             >
               <SvgIcon hash={"search"} />
@@ -175,19 +175,19 @@ class Attachment extends React.PureComponent {
         </div>
         <menu id={`attachmentMenu-${this.props.anchor}`} type="context">
           <menuitem
-            label={this.props.strings.get("stub.context.open")}
+            label={browser.i18n.getMessage("attachments.context.open")}
             onClick={this.openAttachment}
           ></menuitem>
           <menuitem
-            label={this.props.strings.get("stub.context.save")}
+            label={browser.i18n.getMessage("attachments.context.save")}
             onClick={this.downloadAttachment}
           ></menuitem>
           <menuitem
-            label={this.props.strings.get("stub.context.detach")}
+            label={browser.i18n.getMessage("attachments.context.detach")}
             onClick={this.detachAttachment}
           ></menuitem>
           <menuitem
-            label={this.props.strings.get("stub.context.delete")}
+            label={browser.i18n.getMessage("attachments.context.delete")}
             onClick={this.deleteAttachment}
           ></menuitem>
         </menu>
@@ -209,7 +209,6 @@ Attachment.propTypes = {
   msgUri: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   size: PropTypes.number.isRequired,
-  strings: PropTypes.object.isRequired,
   thumb: PropTypes.string.isRequired,
   url: PropTypes.string.isRequired,
 };
@@ -251,7 +250,7 @@ class Attachments extends React.PureComponent {
           <a
             className="icon-link download-all"
             onClick={this.downloadAll}
-            title={this.props.strings.get("downloadAll2")}
+            title={browser.i18n.getMessage("attachments.downloadAll.tooltip")}
           >
             <SvgIcon hash={"file_download"} />
           </a>
@@ -259,7 +258,7 @@ class Attachments extends React.PureComponent {
             <a
               onClick={this.showGalleryView}
               className="icon-link view-all"
-              title={this.props.strings.get("galleryView")}
+              title={browser.i18n.getMessage("attachments.gallery.tooltip")}
             >
               <SvgIcon hash={"photo_library"} />
             </a>
@@ -277,7 +276,6 @@ class Attachments extends React.PureComponent {
               msgUri={this.props.msgUri}
               name={attachment.name}
               size={attachment.size}
-              strings={this.props.strings}
               thumb={attachment.thumb}
               maybeViewable={attachment.maybeViewable}
               url={attachment.url}
@@ -295,5 +293,4 @@ Attachments.propTypes = {
   attachmentsPlural: PropTypes.string.isRequired,
   msgUri: PropTypes.string.isRequired,
   gallery: PropTypes.bool.isRequired,
-  strings: PropTypes.object.isRequired,
 };

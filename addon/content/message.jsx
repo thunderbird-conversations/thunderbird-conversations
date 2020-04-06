@@ -3,7 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 /* globals React, PropTypes, Attachments, MessageHeader, MessageFooter,
-           MessageIFrame, StringBundle, SpecialMessageTags, MessageTags,
+           MessageIFrame, SpecialMessageTags, MessageTags,
            MessageDetails, MessageNotification */
 /* exported Message */
 
@@ -17,9 +17,6 @@ function isAccel(event) {
 class Message extends React.PureComponent {
   constructor(props) {
     super(props);
-    this.strings = new StringBundle(
-      "chrome://conversations/locale/template.properties"
-    );
     this.onSelected = this.onSelected.bind(this);
     this.onKeyDown = this.onKeyDown.bind(this);
   }
@@ -301,7 +298,6 @@ class Message extends React.PureComponent {
               folderName={this.props.message.folderName}
               inView={this.props.message.inView}
               specialTags={this.props.message.specialTags}
-              strings={this.strings}
             />
           )}
           {this.props.message.expanded && (
@@ -326,7 +322,6 @@ class Message extends React.PureComponent {
             neckoUrl={this.props.message.neckoUrl}
             prefs={this.props.prefs}
             realFrom={this.props.message.realFrom}
-            strings={this.strings}
           />
           {this.props.message.expanded &&
             !!this.props.message.attachments.length && (
@@ -336,7 +331,6 @@ class Message extends React.PureComponent {
                 attachmentsPlural={this.props.message.attachmentsPlural}
                 msgUri={this.props.message.msgUri}
                 gallery={this.props.message.gallery}
-                strings={this.strings}
               />
             )}
         </div>

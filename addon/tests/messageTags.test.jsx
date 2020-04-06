@@ -14,14 +14,6 @@ const {
   SpecialMessageTags,
 } = esmImport("../content/es-modules/components/message-tags.js");
 
-// We don't care about translations in these tests, so create a dummy `strings`
-// object.
-const strings = {
-  get(x) {
-    return x;
-  },
-};
-
 describe("SpecialMessageTags test", () => {
   test("special-tag classes are applied", async () => {
     const callback = jest.fn();
@@ -43,7 +35,6 @@ describe("SpecialMessageTags test", () => {
         onTagClick={callback}
         folderName="n/a"
         inView={true}
-        strings={strings}
         specialTags={tagData}
       />
     );
@@ -86,7 +77,6 @@ describe("SpecialMessageTags test", () => {
         onTagClick={callback}
         folderName="n/a"
         inView={true}
-        strings={strings}
         specialTags={tagData}
       />
     );

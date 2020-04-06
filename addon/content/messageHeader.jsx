@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals React, PropTypes, MessageHeaderOptions, StringBundle, MessageTags
+/* globals React, PropTypes, MessageHeaderOptions, MessageTags
            SpecialMessageTags, ContactDetail, SvgIcon */
 /* exported MessageHeader */
 
@@ -195,9 +195,6 @@ class MessageHeader extends React.PureComponent {
     super(props);
     this.onClickHeader = this.onClickHeader.bind(this);
     this.onClickStar = this.onClickStar.bind(this);
-    this.strings = new StringBundle(
-      "chrome://conversations/locale/template.properties"
-    );
   }
 
   onClickHeader() {
@@ -230,9 +227,9 @@ class MessageHeader extends React.PureComponent {
       return "";
     }
     if (index < length - 1) {
-      return this.strings.get("sepComma");
+      return browser.i18n.getMessage("header.commaSeparator");
     }
-    return this.strings.get("sepAnd");
+    return browser.i18n.getMessage("header.andSeparator");
   }
 
   render() {
@@ -275,7 +272,7 @@ class MessageHeader extends React.PureComponent {
           />
           {this.props.expanded &&
             !this.props.detailsShowing &&
-            this.strings.get("to") + " "}
+            browser.i18n.getMessage("header.to") + " "}
           {this.props.expanded &&
             !this.props.detailsShowing &&
             allTo.map((contact, index) => (
@@ -311,7 +308,6 @@ class MessageHeader extends React.PureComponent {
                 }}
                 folderName={this.props.shortFolderName}
                 inView={this.props.inView}
-                strings={this.strings}
                 specialTags={this.props.specialTags}
               />
               {this.props.snippet}
