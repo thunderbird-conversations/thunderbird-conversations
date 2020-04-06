@@ -121,14 +121,16 @@ class Attachment extends React.PureComponent {
       ? browser.i18n.getMessage("attachments.viewAttachment.tooltip")
       : "";
     // TODO: Drag n drop
-    // Disabled due to contextmenu which is only supported in Gecko.
+
+    // Note: contextmenu is only supported in Gecko, though React will complain
+    // about it.
     // Hoping to turn this into WebExtension based context menus at some
     // stage: https://github.com/protz/thunderbird-conversations/issues/1416
     /* eslint-disable react/no-unknown-property */
     return (
       <li
         className="clearfix hbox attachment"
-        contextMenu={`attachmentMenu-${this.props.anchor}`}
+        contextmenu={`attachmentMenu-${this.props.anchor}`}
       >
         <div
           className={
@@ -221,10 +223,12 @@ class Attachments extends React.PureComponent {
   }
 
   showGalleryView() {
-    this.props.dispatch({
-      type: "SHOW_GALLERY_VIEW",
-      msgUri: this.props.msgUri,
-    });
+    this.props.dispatch(
+      attachmentActions.showGalleryView({
+        type: "SHOW_GALLERY_VIEW",
+        msgUri: this.props.msgUri,
+      })
+    );
   }
 
   downloadAll() {
