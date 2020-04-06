@@ -326,7 +326,11 @@ function Conversation(aWindow, aSelectedMessages, aScrollMode, aCounter) {
   // The invariant doesn't hold if the same message is present twice in the
   //  thread (like, you sent a message to yourself so it appears twice in your
   //  inbox that also searches sent folders). But we handle that case well.
-  this._initialSet = aSelectedMessages;
+  if (aSelectedMessages && typeof aSelectedMessages[0] == "string") {
+    this._initialSet = aSelectedMessages.map(url => msgUriToMsgHdr(url));
+  } else {
+    this._initialSet = aSelectedMessages;
+  }
   // === Our "message" composite type ==
   //
   // this.messages = [

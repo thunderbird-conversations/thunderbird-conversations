@@ -43,10 +43,6 @@ function conversationDispatch(...args) {
 // let Conversations = window.top.Conversations;
 
 XPCOMUtils.defineLazyModuleGetters(this, {
-  msgUriToMsgHdr:
-    "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
-  msgHdrsMarkAsRead:
-    "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   topMail3Pane: "chrome://conversations/content/modules/misc.js",
 });
 
@@ -105,7 +101,7 @@ document.addEventListener(
   { once: true }
 );
 
-function setupConversationInTab(params) {
+async function setupConversationInTab(params) {
   let scrollMode = params.get("scrollMode");
   if (scrollMode) {
     scrollMode = parseInt(scrollMode);
@@ -126,13 +122,16 @@ function setupConversationInTab(params) {
     window.frameElement.setAttribute("tooltip", "aHTMLTooltip");
   }
   // let willExpand = parseInt(params.get("willExpand"));
-  let msgHdrs = params
-    .get("urls")
-    .split(",")
-    .map(x => msgUriToMsgHdr(x))
-    .filter(x => x != null && x.messageId);
+  const msgUrls = params.get("urls").split(",");
+  const msgIds = [];
+  for (const url of msgUrls) {
+    const id = await browser.conversations.getMessageIdForUri(url);
+    if (id) {
+      msgIds.push(id);
+    }
+  }
   // It might happen that there are no messages left...
-  if (!msgHdrs.length) {
+  if (!msgIds.length) {
     document.getElementById(
       "messageList"
     ).textContent = browser.i18n.getMessage(
@@ -145,7 +144,9 @@ function setupConversationInTab(params) {
     };
     let freshConversation = new Conversation(
       window,
-      msgHdrs,
+      // TODO: This should really become ids at some stage, but we need to
+      // teach Conversation how to handle those.
+      msgUrls,
       scrollMode,
       ++Conversations.counter
     );
@@ -178,7 +179,9 @@ function setupConversationInTab(params) {
         )
       ) {
         setTimeout(function() {
-          msgHdrsMarkAsRead(msgHdrs, true);
+          for (const id of msgIds) {
+            browser.messages.update(id, { read: true }).catch(console.error);
+          }
         }, (await browser.conversations.getCorePref(
           "mailnews.mark_message_read.delay.interval"
         )) *
@@ -213,11 +216,7 @@ document.addEventListener(
           mainWindow.Conversations.monkeyPatch &&
           mainWindow.Conversations.monkeyPatch.finishedStartup
         ) {
-          try {
-            setupConversationInTab(params);
-          } catch (ex) {
-            console.error(ex);
-          }
+          setupConversationInTab(params).catch(console.error);
         } else {
           setTimeout(checkStarted, 100);
         }
