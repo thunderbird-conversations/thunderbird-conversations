@@ -43,7 +43,6 @@ function conversationDispatch(...args) {
 // let Conversations = window.top.Conversations;
 
 XPCOMUtils.defineLazyModuleGetters(this, {
-  Prefs: "chrome://conversations/content/modules/prefs.js",
   msgUriToMsgHdr:
     "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   msgHdrsMarkAsRead:
@@ -54,6 +53,12 @@ XPCOMUtils.defineLazyModuleGetters(this, {
 const { ConversationUtils, Conversation } = ChromeUtils.import(
   "chrome://conversations/content/modules/conversation.js"
 );
+
+// TODO: Once the WebExtension parts work themselves out a bit more,
+// determine if this is worth sharing via a shared module with the background
+// scripts, or if it doesn't need it.
+const kScrollUnreadOrLast = 0;
+const kScrollSelected = 1;
 
 // Declare with var, not let, so that it's in the global scope, not the lexical scope.
 /* exported isInTab */
@@ -105,15 +110,15 @@ function setupConversationInTab(params) {
   if (scrollMode) {
     scrollMode = parseInt(scrollMode);
   } else {
-    scrollMode = Prefs.kScrollUnreadOrLast;
+    scrollMode = kScrollUnreadOrLast;
   }
   // If we start up Thunderbird with a saved conversation tab, then we
   // have no selected message. Fallback to the usual mode.
   if (
-    scrollMode == Prefs.kScrollSelected &&
+    scrollMode == kScrollSelected &&
     !topMail3Pane(window).gFolderDisplay.selectedMessage
   ) {
-    scrollMode = Prefs.kScrollUnreadOrLast;
+    scrollMode = kScrollUnreadOrLast;
   }
 
   isInTab = true;
