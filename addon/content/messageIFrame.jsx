@@ -351,8 +351,8 @@ class MessageIFrame extends React.Component {
       this.detectBlocks(
         iframe,
         isBlockquote.bind(this),
-        this.props.strings.get("hideQuotedText"),
-        this.props.strings.get("showQuotedText"),
+        browser.i18n.getMessage("messageBody.hideQuotedText"),
+        browser.i18n.getMessage("messageBody.showQuotedText"),
         "showhidequote",
         "orange"
       );
@@ -371,8 +371,8 @@ class MessageIFrame extends React.Component {
     this.detectBlocks(
       iframe,
       isSignature,
-      this.props.strings.get("hideSigText"),
-      this.props.strings.get("showSigText"),
+      browser.i18n.getMessage("messageBody.hideSigText"),
+      browser.i18n.getMessage("messageBody.showSigText"),
       "showhidesig",
       "rgb(56, 117, 215)"
     );
@@ -441,5 +441,4 @@ MessageIFrame.propTypes = {
   neckoUrl: PropTypes.string.isRequired,
   prefs: PropTypes.object.isRequired,
   realFrom: PropTypes.string.isRequired,
-  strings: PropTypes.object.isRequired,
 };

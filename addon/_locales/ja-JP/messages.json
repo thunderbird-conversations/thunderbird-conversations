@@ -443,5 +443,106 @@
   "message.ccHeader": {
     "message": "Cc:",
     "description": "Header name displayed for the cc field"
+  },
+
+  "header.to": {
+    "message": "から",
+    "description": "Used in the header, inserted in 'from me to you'."
+  },
+
+  "tags.jumpToFolder.tooltip": {
+    "message": "このフォルダへ移動",
+    "description": "Tooltip for the jump to folder tag."
+  },
+
+  "tags.inFolder": {
+    "message": "$folderName$ 内",
+    "description": "Folder indication for the jump to folder tag.",
+    "placeholders": {
+      "folderName": {
+        "content": "$1",
+        "example": "Sent"
+      }
+    }
+  },
+
+  "attachments.downloadAll.tooltip": {
+    "message": "すべてを保存",
+    "description": "Tooltip for the download all attachments button."
+  },
+
+  "attachments.gallery.tooltip": {
+    "message": "ギャラリー表示",
+    "description": "Tooltip for the view attachments in gallery button."
+  },
+
+  "attachments.preview.tooltip": {
+    "message": "プレビュー",
+    "description": "Tooltip displayed for the preview button of an attachment."
+  },
+
+  "attachments.open.tooltip": {
+    "message": "開く",
+    "description": "Tooltip displayed for the preview button of an attachment."
+  },
+
+  "attachments.viewAttachment.tooltip": {
+    "message": "添付ファイルを新しいタブで表示",
+    "description": "Tooltip displayed for an attachment that can be previewed in a tab."
+  },
+
+  "attachments.download.tooltip": {
+    "message": "保存",
+    "description": "Tooltip displayed for the download button of an attachment."
+  },
+
+  "messageBody.hideQuotedText": {
+    "message": "元のメッセージを隠す",
+    "description": "String displayed in a message body to collapse the quoted text."
+  },
+
+  "messageBody.showQuotedText": {
+    "message": "元のメッセージを表示",
+    "description": "String displayed in a message body to expand the quoted text."
+  },
+
+  "messageBody.hideSigText": {
+    "message": "署名を隠す",
+    "description": "String displayed in a message body to collapse the signature."
+  },
+
+  "messageBody.showSigText": {
+    "message": "署名を表示",
+    "description": "String displayed in a message body to expand the signature."
+  },
+
+  "header.commaSeparator": {
+    "message": ",\u0020",
+    "description": "This is used in messages, for the recipients, and the 'between' column as well. In English, space after the comma."
+  },
+
+  "header.andSeparator": {
+    "message": ",\u0020",
+    "description": "This is used in messages, for the recipients, and the 'between' column as well. In English, space after and before « and »."
+  },
+
+  "attachments.context.detach": {
+    "message": "添付ファイルを分離",
+    "description": "Context menu item to detach an attachment."
+  },
+
+  "attachments.context.delete": {
+    "message": "添付ファイルを削除",
+    "description": "Context menu item to delete an attachment."
+  },
+
+  "attachments.context.open": {
+    "message": "添付ファイルを開く",
+    "description": "Context menu item to open an attachment."
+  },
+
+  "attachments.context.save": {
+    "message": "添付ファイルを保存",
+    "description": "Context menu item to save an attachment."
   }
 }

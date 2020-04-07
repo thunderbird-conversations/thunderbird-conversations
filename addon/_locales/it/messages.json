@@ -443,5 +443,106 @@
   "message.ccHeader": {
     "message": "Cc:",
     "description": "Header name displayed for the cc field"
+  },
+
+  "header.to": {
+    "message": "a",
+    "description": "Used in the header, inserted in 'from me to you'."
+  },
+
+  "tags.jumpToFolder.tooltip": {
+    "message": "Passa a questa cartella",
+    "description": "Tooltip for the jump to folder tag."
+  },
+
+  "tags.inFolder": {
+    "message": "Nella cartella $folderName$",
+    "description": "Folder indication for the jump to folder tag.",
+    "placeholders": {
+      "folderName": {
+        "content": "$1",
+        "example": "Sent"
+      }
+    }
+  },
+
+  "attachments.downloadAll.tooltip": {
+    "message": "Salva tutto",
+    "description": "Tooltip for the download all attachments button."
+  },
+
+  "attachments.gallery.tooltip": {
+    "message": "Visualizza a galleria",
+    "description": "Tooltip for the view attachments in gallery button."
+  },
+
+  "attachments.preview.tooltip": {
+    "message": "Anteprima",
+    "description": "Tooltip displayed for the preview button of an attachment."
+  },
+
+  "attachments.open.tooltip": {
+    "message": "Apri",
+    "description": "Tooltip displayed for the preview button of an attachment."
+  },
+
+  "attachments.viewAttachment.tooltip": {
+    "message": "Apri i #1 allegati in nuove schede",
+    "description": "Tooltip displayed for an attachment that can be previewed in a tab."
+  },
+
+  "attachments.download.tooltip": {
+    "message": "Salva",
+    "description": "Tooltip displayed for the download button of an attachment."
+  },
+
+  "messageBody.hideQuotedText": {
+    "message": "Nascondi il testo citato",
+    "description": "String displayed in a message body to collapse the quoted text."
+  },
+
+  "messageBody.showQuotedText": {
+    "message": "Mostra il testo citato",
+    "description": "String displayed in a message body to expand the quoted text."
+  },
+
+  "messageBody.hideSigText": {
+    "message": "nascondi firma",
+    "description": "String displayed in a message body to collapse the signature."
+  },
+
+  "messageBody.showSigText": {
+    "message": "mostra firma",
+    "description": "String displayed in a message body to expand the signature."
+  },
+
+  "header.commaSeparator": {
+    "message": ",\u0020",
+    "description": "This is used in messages, for the recipients, and the 'between' column as well. In English, space after the comma."
+  },
+
+  "header.andSeparator": {
+    "message": "\u0020e\u0020",
+    "description": "This is used in messages, for the recipients, and the 'between' column as well. In English, space after and before « and »."
+  },
+
+  "attachments.context.detach": {
+    "message": "Separa l&apos;allegato",
+    "description": "Context menu item to detach an attachment."
+  },
+
+  "attachments.context.delete": {
+    "message": "Elimina l&apos;allegato",
+    "description": "Context menu item to delete an attachment."
+  },
+
+  "attachments.context.open": {
+    "message": "Apri l&apos;allegato",
+    "description": "Context menu item to open an attachment."
+  },
+
+  "attachments.context.save": {
+    "message": "Salva l&apos;allegato",
+    "description": "Context menu item to save an attachment."
   }
 }

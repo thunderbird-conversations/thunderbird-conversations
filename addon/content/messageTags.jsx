@@ -132,7 +132,6 @@ function SpecialMessageTags({
   onTagClick,
   onFolderClick = null,
   specialTags,
-  strings,
   inView,
   folderName,
 }) {
@@ -142,9 +141,9 @@ function SpecialMessageTags({
       <li
         className="in-folder"
         onClick={onFolderClick}
-        title={strings.get("jumpToFolder")}
+        title={browser.i18n.getMessage("tags.jumpToFolder.tooltip")}
       >
-        {strings.get("inFolder", [folderName])}
+        {browser.i18n.getMessage("tags.inFolder", [folderName])}
       </li>
     );
   }
@@ -173,7 +172,6 @@ SpecialMessageTags.propTypes = {
   folderName: PropTypes.string.isRequired,
   inView: PropTypes.bool.isRequired,
   specialTags: PropTypes.array.isRequired,
-  strings: PropTypes.object.isRequired,
 };
 
 // This is temporary code to allow using using this as both
