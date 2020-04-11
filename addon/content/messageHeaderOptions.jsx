@@ -132,31 +132,31 @@ class MessageHeaderOptions extends React.PureComponent {
     let action = null;
     switch (msg.type) {
       case "reply":
-        action = messageActions.msgReply(payload);
+        action = messageActions.reply(payload);
         break;
       case "replyAll":
-        action = messageActions.msgReplyAll(payload);
+        action = messageActions.replyAll(payload);
         break;
       case "replyList":
-        action = messageActions.msgReplyList(payload);
+        action = messageActions.replyList(payload);
         break;
       case "forward":
-        action = messageActions.msgForward(payload);
+        action = messageActions.forward(payload);
         break;
       case "editAsNew":
         action = messageActions.editAsNew(payload);
         break;
       case "archive":
-        action = messageActions.msgArchive({ id: this.props.id });
+        action = messageActions.archive({ id: this.props.id });
         break;
       case "delete":
-        action = messageActions.msgDelete({ id: this.props.id });
+        action = messageActions.delete({ id: this.props.id });
         break;
       case "classic":
-        action = messageActions.msgOpenClassic(payload);
+        action = messageActions.openClassic(payload);
         break;
       case "source":
-        action = messageActions.msgOpenSource(payload);
+        action = messageActions.openSource(payload);
         break;
       default:
         console.error("Don't know how to create an action for", msg);

@@ -119,47 +119,47 @@ const messageActions = {
       MessageUtils.editAsNew(topMail3Pane(window), msgUri, shiftKey);
     };
   },
-  msgReply({ msgUri, shiftKey }) {
+  reply({ msgUri, shiftKey }) {
     return async () => {
       MessageUtils.reply(topMail3Pane(window), msgUri, shiftKey);
     };
   },
-  msgReplyAll({ msgUri, shiftKey }) {
+  replyAll({ msgUri, shiftKey }) {
     return async () => {
       MessageUtils.replyAll(topMail3Pane(window), msgUri, shiftKey);
     };
   },
-  msgReplyList({ msgUri, shiftKey }) {
+  replyList({ msgUri, shiftKey }) {
     return async () => {
       MessageUtils.replyList(topMail3Pane(window), msgUri, shiftKey);
     };
   },
-  msgForward({ msgUri, shiftKey }) {
+  forward({ msgUri, shiftKey }) {
     return async () => {
       MessageUtils.forward(topMail3Pane(window), msgUri, shiftKey);
     };
   },
-  msgArchive({ id }) {
+  archive({ id }) {
     return async () => {
       browser.messages.archive([id]).catch(console.error);
     };
   },
-  msgDelete({ id }) {
+  delete({ id }) {
     return async () => {
       browser.messages.delete([id]).catch(console.error);
     };
   },
-  msgOpenClassic({ msgUri }) {
+  openClassic({ msgUri }) {
     return async () => {
       MessageUtils.openInClassic(topMail3Pane(window), msgUri);
     };
   },
-  msgOpenSource({ msgUri }) {
+  openSource({ msgUri }) {
     return async () => {
       MessageUtils.openInSourceView(topMail3Pane(window), msgUri);
     };
   },
-  msgSetTags({ id, tags }) {
+  setTags({ id, tags }) {
     return async () => {
       browser.messages
         .update(id, {
@@ -168,7 +168,7 @@ const messageActions = {
         .catch(console.error);
     };
   },
-  msgToggleTagByIndex({ id, index, tags }) {
+  toggleTagByIndex({ id, index, tags }) {
     return async () => {
       browser.messages
         .listTags()
@@ -197,22 +197,22 @@ const messageActions = {
         .catch(console.error);
     };
   },
-  msgStar({ id, star }) {
+  setStarred({ id, starred }) {
     return async () => {
       browser.messages
         .update(id, {
-          flagged: star,
+          flagged: starred,
         })
         .catch(console.error);
     };
   },
-  msgMarkAsRead({ msgUri }) {
+  markAsRead({ msgUri }) {
     return async () => {
       const msg = Conversations.currentConversation.getMessage(msgUri);
       msg.read = true;
     };
   },
-  msgSelected({ msgUri }) {
+  selected({ msgUri }) {
     return async () => {
       if (Conversations.currentConversation) {
         const msg = Conversations.currentConversation.getMessage(msgUri);
@@ -255,7 +255,7 @@ const messageActions = {
       }
     };
   },
-  msgClickIframe({ event }) {
+  clickIframe({ event }) {
     return () => {
       // Hand this off to Thunderbird's content clicking algorithm as that's simplest.
       if (!topMail3Pane(window).contentAreaClick(event)) {
@@ -264,12 +264,12 @@ const messageActions = {
       }
     };
   },
-  msgShowRemoteContent({ msgUri }) {
+  showRemoteContent({ msgUri }) {
     return async () => {
       Conversations.currentConversation.showRemoteContent(msgUri);
     };
   },
-  msgAlwaysShowRemoteContent({ msgUri, realFrom }) {
+  alwaysShowRemoteContent({ msgUri, realFrom }) {
     return async () => {
       Conversations.currentConversation.alwaysShowRemoteContent(
         realFrom,

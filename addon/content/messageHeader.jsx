@@ -216,9 +216,9 @@ class MessageHeader extends React.PureComponent {
     event.stopPropagation();
     event.preventDefault();
     this.props.dispatch(
-      messageActions.msgStar({
+      messageActions.setStarred({
         id: this.props.id,
-        star: !this.props.starred,
+        starred: !this.props.starred,
       })
     );
   }
@@ -290,7 +290,7 @@ class MessageHeader extends React.PureComponent {
               <MessageTags
                 onTagsChange={tags => {
                   this.props.dispatch(
-                    messageActions.msgSetTags({
+                    messageActions.setTags({
                       id: this.props.id,
                       tags,
                     })

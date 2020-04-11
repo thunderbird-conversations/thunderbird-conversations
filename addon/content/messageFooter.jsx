@@ -22,16 +22,16 @@ class MessageFooter extends React.PureComponent {
         action = messageActions.editDraft(payload);
         break;
       case "reply":
-        action = messageActions.msgReply(payload);
+        action = messageActions.reply(payload);
         break;
       case "replyAll":
-        action = messageActions.msgReplyAll(payload);
+        action = messageActions.replyAll(payload);
         break;
       case "replyList":
-        action = messageActions.msgReplyList(payload);
+        action = messageActions.replyList(payload);
         break;
       case "forward":
-        action = messageActions.msgForward(payload);
+        action = messageActions.forward(payload);
         break;
       default:
         console.error("Don't know how to create an action for", msg);

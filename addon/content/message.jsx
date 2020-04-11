@@ -100,7 +100,7 @@ class Message extends React.PureComponent {
 
   onSelected() {
     this.props.dispatch(
-      messageActions.msgSelected({
+      messageActions.selected({
         msgUri: this.props.message.msgUri,
       })
     );
@@ -119,7 +119,7 @@ class Message extends React.PureComponent {
       case "accel-r":
       case "accel-R":
         this.props.dispatch(
-          messageActions.msgReply({
+          messageActions.reply({
             msgUri: this.props.message.msgUri,
             shiftKey,
           })
@@ -128,21 +128,21 @@ class Message extends React.PureComponent {
         break;
       case "accel-l":
         this.props.dispatch(
-          messageActions.msgForward({
+          messageActions.forward({
             msgUri: this.props.message.msgUri,
           })
         );
         break;
       case "accel-u":
         this.props.dispatch(
-          messageActions.msgOpenSource({
+          messageActions.openSource({
             msgUri: this.props.message.msgUri,
           })
         );
         break;
       case "a":
         this.props.dispatch(
-          messageActions.msgArchive({
+          messageActions.archive({
             id: this.props.message.id,
           })
         );
@@ -163,7 +163,7 @@ class Message extends React.PureComponent {
       case "8":
       case "9":
         this.props.dispatch(
-          messageActions.msgToggleTagByIndex({
+          messageActions.toggleTagByIndex({
             id: this.props.message.id,
             tags: this.props.message.tags,
             // Tag indexes start at 0
@@ -175,7 +175,7 @@ class Message extends React.PureComponent {
       case "0":
         // Remove all tags
         this.props.dispatch(
-          messageActions.msgSetTags({
+          messageActions.setTags({
             id: this.props.message.id,
             tags: [],
           })
@@ -215,7 +215,7 @@ class Message extends React.PureComponent {
     if (this._topInView && this._bottomInView) {
       this.read = true;
       this.props.dispatch(
-        messageActions.msgMarkAsRead({
+        messageActions.markAsRead({
           msgUri: this.props.message.msgUri,
         })
       );
@@ -313,7 +313,7 @@ class Message extends React.PureComponent {
             <MessageTags
               onTagsChange={tags => {
                 this.props.dispatch(
-                  messageActions.msgSetTags({
+                  messageActions.setTags({
                     id: this.props.message.id,
                     tags,
                   })

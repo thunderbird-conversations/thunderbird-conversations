@@ -14,7 +14,7 @@ class RemoteContentNotification extends React.PureComponent {
 
   onShowRemote() {
     this.props.dispatch(
-      messageActions.msgShowRemoteContent({
+      messageActions.showRemoteContent({
         msgUri: this.props.msgUri,
       })
     );
@@ -22,7 +22,7 @@ class RemoteContentNotification extends React.PureComponent {
 
   onAlwaysShowRemote() {
     this.props.dispatch(
-      messageActions.msgShowRemoteContent({
+      messageActions.showRemoteContent({
         msgUri: this.props.msgUri,
         realFrom: this.props.realFrom,
       })

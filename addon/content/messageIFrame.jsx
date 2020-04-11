@@ -417,7 +417,7 @@ class MessageIFrame extends React.Component {
 
   onClickIframe(event) {
     this.props.dispatch(
-      messageActions.msgClickIframe({
+      messageActions.clickIframe({
         event,
       })
     );
