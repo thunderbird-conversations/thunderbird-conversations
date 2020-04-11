@@ -3,10 +3,13 @@ var { XPCOMUtils } = ChromeUtils.import(
 );
 
 XPCOMUtils.defineLazyModuleGetters(this, {
-  ConversationUtils: "chrome://conversations/content/modules/conversation.js",
+  BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   Customizations: "chrome://conversations/content/modules/assistant.js",
   dumpCallStack: "chrome://conversations/content/modules/log.js",
   ExtensionCommon: "resource://gre/modules/ExtensionCommon.jsm",
+  GlodaAttrProviders:
+    "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
+  MonkeyPatch: "chrome://conversations/content/modules/monkeypatch.js",
   MsgHdrToMimeMessage: "resource:///modules/gloda/mimemsg.js",
   msgUriToMsgHdr:
     "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
@@ -83,8 +86,180 @@ function prefType(name) {
   throw new Error(`Unexpected pref type ${name}`);
 }
 
+function monkeyPatchWindow(window) {
+  let doIt = function() {
+    console.log(window.document.location);
+    try {
+      if (
+        window.document.location !=
+          "chrome://messenger/content/messenger.xul" &&
+        window.document.location != "chrome://messenger/content/messenger.xhtml"
+      ) {
+        return;
+      }
+      Log.debug("The window looks like a mail:3pane, monkey-patching...");
+
+      // Insert our own global Conversations object
+      window.Conversations = {
+        // These two belong here, use getMail3Pane().Conversations to access them
+        monkeyPatch: null,
+        // key: Message-ID
+        // value: a list of listeners
+        msgListeners: {},
+        // key: Gloda Conversation ID
+        // value: a list of listeners that have a onDraftChanged method
+        draftListeners: {},
+
+        // These two are replicated in the case of a conversation tab, so use
+        //  Conversation._window.Conversations to access the right instance
+        currentConversation: null,
+        counter: 0,
+
+        createDraftListenerArrayForId(aId) {
+          window.Conversations.draftListeners[aId] = [];
+        },
+      };
+
+      // We instantiate the Monkey-Patch for the given Conversation object.
+      let monkeyPatch = new MonkeyPatch(window);
+      // And then we seize the window and insert our code into it
+      monkeyPatch.apply();
+
+      // Used by the in-stub.html detachTab function
+      window.Conversations.monkeyPatch = monkeyPatch;
+
+      // The modules below need to be loaded when a window exists, i.e. after
+      // overlays have been properly loaded and applied
+      /* eslint-disable no-unused-vars */
+      ChromeUtils.import(
+        "chrome://conversations/content/modules/plugins/enigmail.js"
+      );
+      ChromeUtils.import(
+        "chrome://conversations/content/modules/plugins/lightning.js"
+      );
+      ChromeUtils.import(
+        "chrome://conversations/content/modules/plugins/dkimVerifier.js"
+      );
+      monkeyPatch.finishedStartup = true;
+      /* eslint-enable no-unused-vars */
+    } catch (e) {
+      Cu.reportError(e);
+    }
+  };
+
+  if (window.document.readyState == "complete") {
+    Log.debug("Document is ready...");
+    doIt();
+  } else {
+    Log.debug(
+      `Document is not ready (${window.document.readyState}), waiting...`
+    );
+    window.addEventListener(
+      "load",
+      () => {
+        doIt();
+      },
+      { once: true }
+    );
+  }
+}
+
+function monkeyPatchAllWindows() {
+  for (let w of Services.wm.getEnumerator("mail:3pane")) {
+    monkeyPatchWindow(w);
+  }
+}
+
+// This obserer is notified when a new window is created and injects our code
+let windowObserver = {
+  observe(aSubject, aTopic, aData) {
+    if (aTopic == "domwindowopened") {
+      if (aSubject && "QueryInterface" in aSubject) {
+        aSubject.QueryInterface(Ci.nsIDOMWindow);
+        monkeyPatchWindow(aSubject.window);
+      }
+    }
+  },
+};
+
 /* exported conversations */
 var conversations = class extends ExtensionCommon.ExtensionAPI {
+  onStartup() {
+    const aomStartup = Cc[
+      "@mozilla.org/addons/addon-manager-startup;1"
+    ].getService(Ci.amIAddonManagerStartup);
+    const manifestURI = Services.io.newURI(
+      "manifest.json",
+      null,
+      this.extension.rootURI
+    );
+    this.chromeHandle = aomStartup.registerChrome(manifestURI, [
+      ["content", "conversations", "content/"],
+    ]);
+
+    // Until we move locales and our skin across to be loaded from the
+    // webExtension side, we need to register manually via the
+    // chrome.manifest.
+    if (this.extension.rootURI instanceof Ci.nsIJARURI) {
+      this.autofillManifest = this.extension.rootURI.JARFile.QueryInterface(
+        Ci.nsIFileURL
+      ).file;
+    } else if (this.extension.rootURI instanceof Ci.nsIFileURL) {
+      this.autofillManifest = this.extension.rootURI.file;
+    }
+
+    if (this.autofillManifest) {
+      Components.manager.addBootstrappedManifestLocation(this.autofillManifest);
+    } else {
+      Cu.reportError(
+        "Cannot find conversations chrome.manifest for registring translated strings"
+      );
+    }
+
+    (async () => {
+      await Prefs.initialized;
+
+      Log.debug("startup");
+
+      try {
+        // Patch all existing windows when the UI is built; all locales should have been loaded here
+        // Hook in the embedding and gloda attribute providers.
+        GlodaAttrProviders.init();
+        monkeyPatchAllWindows();
+
+        // Patch all future windows
+        Services.ww.registerNotification(windowObserver);
+      } catch (e) {
+        Cu.reportError(e);
+        dumpCallStack(e);
+      }
+    })().catch(console.error);
+  }
+  onShutdown(isAppShutdown) {
+    Log.debug("shutdown, isApp=", isAppShutdown);
+    if (isAppShutdown) {
+      return;
+    }
+
+    Services.ww.unregisterNotification(windowObserver);
+
+    for (let w of Services.wm.getEnumerator("mail:3pane")) {
+      if ("Conversations" in w) {
+        w.Conversations.monkeyPatch.undo();
+      }
+    }
+
+    BrowserSim.setBrowserListener(null);
+
+    this.chromeHandle.destruct();
+    this.chromeHandle = null;
+
+    if (this.autofillManifest) {
+      Components.manager.removeBootstrappedManifestLocation(
+        this.autofillManifest
+      );
+    }
+  }
   getAPI(context) {
     return {
       conversations: {
@@ -240,9 +415,9 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
               return fire.async(apiName, apiItem, args);
             }
 
-            ConversationUtils.setBrowserListener(callback);
+            BrowserSim.setBrowserListener(callback);
             return function() {
-              ConversationUtils.setBrowserListener(null);
+              BrowserSim.setBrowserListener(null);
             };
           },
         }).api(),

@@ -18,15 +18,11 @@ const { XPCOMUtils } = ChromeUtils.import(
 );
 
 XPCOMUtils.defineLazyModuleGetters(this, {
+  BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   getMail3Pane: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   Prefs: "chrome://conversations/content/modules/prefs.js",
   Services: "resource://gre/modules/Services.jsm",
-  StringBundle: "resource:///modules/StringBundle.js",
 });
-
-let strings = new StringBundle(
-  "chrome://conversations/locale/template.properties"
-);
 
 function arrayEquals(a1, a2) {
   if (a1.length != a2.length) {
@@ -72,8 +68,11 @@ function joinWordList(aElements, aInsertHtml) {
 
   let hd = aElements.slice(0, l - 1);
   let tl = aElements[l - 1];
+  const browser = BrowserSim.getBrowser();
   return (
-    hd.join(wrap(strings.get("sepComma"))) + wrap(strings.get("sepAnd")) + tl
+    hd.join(wrap(browser.i18n.getMessage("header.commaSeparator"))) +
+    wrap(browser.i18n.getMessage("header.andSeparator")) +
+    tl
   );
 }
 

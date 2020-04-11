@@ -13,7 +13,6 @@ const { XPCOMUtils } = ChromeUtils.import(
 XPCOMUtils.defineLazyModuleGetters(this, {
   arrayEquals: "chrome://conversations/content/modules/misc.js",
   Colors: "chrome://conversations/content/modules/log.js",
-  Config: "chrome://conversations/content/modules/config.js",
   Conversation: "chrome://conversations/content/modules/conversation.js",
   Customizations: "chrome://conversations/content/modules/assistant.js",
   dumpCallStack: "chrome://conversations/content/modules/log.js",
@@ -56,11 +55,11 @@ function MonkeyPatch(window) {
 }
 
 MonkeyPatch.prototype = {
-  pushUndo: function _MonkeyPatch_pushUndo(f) {
+  pushUndo(f) {
     this._undoFuncs.push(f);
   },
 
-  undo: function _MonkeyPatch_undo(aReason) {
+  undo(aReason) {
     let f;
     while ((f = this._undoFuncs.pop())) {
       try {
@@ -324,15 +323,11 @@ MonkeyPatch.prototype = {
   registerUndoCustomizations() {
     shouldPerformUninstall = true;
 
-    let self = this;
-    this.pushUndo(function(aReason) {
+    this.pushUndo(aReason => {
       // We don't want to undo all the customizations in the case of an
       // upgrade... but if the user disables the conversation view, or
       // uninstalls the addon, then we should revert them indeed.
-      if (
-        shouldPerformUninstall &&
-        aReason != Config.BOOTSTRAP_REASONS.ADDON_UPGRADE
-      ) {
+      if (shouldPerformUninstall) {
         // Switch to a 3pane view (otherwise the "display threaded"
         // customization is not reverted)
         let mainWindow = getMail3Pane();
@@ -340,8 +335,7 @@ MonkeyPatch.prototype = {
         if (tabmail.tabContainer.selectedIndex != 0) {
           tabmail.tabContainer.selectedIndex = 0;
         }
-        // This is asynchronous, leave it a second
-        mainWindow.setTimeout(() => self.undoCustomizations(), 1000);
+        this.undoCustomizations();
         // Since this is called once per window, we don't want to uninstall
         // multiple times...
         shouldPerformUninstall = false;

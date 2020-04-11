@@ -11,7 +11,7 @@ const { XPCOMUtils } = ChromeUtils.import(
 );
 
 XPCOMUtils.defineLazyModuleGetters(this, {
-  ConversationUtils: "chrome://conversations/content/modules/conversation.js",
+  BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   dumpCallStack: "chrome://conversations/content/modules/log.js",
   GlodaUtils: "resource:///modules/gloda/utils.js",
   htmlToPlainText: "chrome://conversations/content/modules/stdlib/compose.js",
@@ -863,7 +863,7 @@ class MessageFromGloda extends Message {
   }
 
   async init() {
-    let browser = ConversationUtils.getBrowser();
+    let browser = BrowserSim.getBrowser();
     this._id = await browser.conversations.getMessageIdForUri(this._uri);
 
     // Our gloda plugin found something for us, thanks dude!
@@ -1006,7 +1006,7 @@ class MessageFromDbHdr extends Message {
   }
 
   async init() {
-    let browser = ConversationUtils.getBrowser();
+    let browser = BrowserSim.getBrowser();
     this._id = await browser.conversations.getMessageIdForUri(this._uri);
     // Gloda is not with us, so stream the message... the MimeMsg API says that
     //  the streaming will fail and the underlying exception will be re-thrown in

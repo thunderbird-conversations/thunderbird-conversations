@@ -43,11 +43,12 @@ function conversationDispatch(...args) {
 // let Conversations = window.top.Conversations;
 
 XPCOMUtils.defineLazyModuleGetters(this, {
+  Conversation: "chrome://conversations/content/modules/conversation.js",
   topMail3Pane: "chrome://conversations/content/modules/misc.js",
 });
 
-const { ConversationUtils, Conversation } = ChromeUtils.import(
-  "chrome://conversations/content/modules/conversation.js"
+const { BrowserSim } = ChromeUtils.import(
+  "chrome://conversations/content/modules/browserSim.js"
 );
 
 // TODO: Once the WebExtension parts work themselves out a bit more,
@@ -65,7 +66,7 @@ let oldPrint = window.print;
 // This provides simulation for the WebExtension environment whilst we're still
 // being loaded in a privileged process.
 /* exported browser */
-let browser = ConversationUtils.getBrowser();
+let browser = BrowserSim.getBrowser();
 
 function printConversation(event) {
   for (let { message: m } of Conversations.currentConversation.messages) {

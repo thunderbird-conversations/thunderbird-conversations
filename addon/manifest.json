@@ -12,9 +12,6 @@
   "description": "__MSG_extensionDescription__",
   "version": "3.1pre",
   "homepage_url": "http://github.com/protz/thunderbird-conversations/wiki",
-  "legacy": {
-    "type": "bootstrap"
-  },
   "background": {
     "page": "background.html"
   },
@@ -35,7 +32,8 @@
             "conversations"
           ]
         ],
-        "script": "experiment-api/api.js"
+        "script": "experiment-api/api.js",
+        "events": ["startup"]
       }
     },
     "convContacts": {
