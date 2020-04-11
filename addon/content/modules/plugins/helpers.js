@@ -10,8 +10,19 @@ var EXPORTED_SYMBOLS = ["PluginHelpers"];
  *  main message code that kicks in when the message hasn't been indexed by
  *  gloda yet (see message.js).
  */
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
 
-const { GlodaUtils } = ChromeUtils.import("resource:///modules/gloda/utils.js");
+XPCOMUtils.defineLazyGetter(this, "GlodaUtils", () => {
+  let tmp = {};
+  try {
+    ChromeUtils.import("resource:///modules/gloda/utils.js", tmp);
+  } catch (ex) {
+    ChromeUtils.import("resource:///modules/gloda/GlodaUtils.jsm", tmp);
+  }
+  return tmp.GlodaUtils;
+});
 
 var PluginHelpers = {
   // About to do more special-casing here? Please check out the corresponding

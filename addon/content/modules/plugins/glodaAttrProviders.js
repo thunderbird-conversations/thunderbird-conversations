@@ -33,7 +33,19 @@ var EXPORTED_SYMBOLS = ["GlodaAttrProviders"];
 const { PluginHelpers } = ChromeUtils.import(
   "chrome://conversations/content/modules/plugins/helpers.js"
 );
-const { Gloda } = ChromeUtils.import("resource:///modules/gloda/public.js");
+const { XPCOMUtils } = ChromeUtils.import(
+  "resource://gre/modules/XPCOMUtils.jsm"
+);
+
+XPCOMUtils.defineLazyGetter(this, "Gloda", () => {
+  let tmp = {};
+  try {
+    ChromeUtils.import("resource:///modules/gloda/public.js", tmp);
+  } catch (ex) {
+    ChromeUtils.import("resource:///modules/gloda/GlodaPublic.jsm", tmp);
+  }
+  return tmp.Gloda;
+});
 
 let AlternativeSender = {
   init: function _AlternativeSender_init() {

@@ -5,8 +5,17 @@ const { XPCOMUtils } = ChromeUtils.import(
 );
 
 XPCOMUtils.defineLazyModuleGetters(this, {
-  Log4Moz: "resource:///modules/gloda/log4moz.js",
   Prefs: "chrome://conversations/content/modules/prefs.js",
+});
+
+XPCOMUtils.defineLazyGetter(this, "Log4Moz", () => {
+  let tmp = {};
+  try {
+    ChromeUtils.import("resource:///modules/gloda/log4moz.js", tmp);
+  } catch (ex) {
+    ChromeUtils.import("resource:///modules/gloda/Log4moz.jsm", tmp);
+  }
+  return tmp.Log4Moz;
 });
 
 function setupLogging(name) {
