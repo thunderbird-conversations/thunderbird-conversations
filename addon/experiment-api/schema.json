@@ -50,7 +50,8 @@
         "name": "getLocaleDirection",
         "type": "function",
         "description": "Temporary. Gets the current locale direction.",
-        "async": true
+        "async": true,
+        "parameters": []
       },
       {
         "name": "installCustomisations",

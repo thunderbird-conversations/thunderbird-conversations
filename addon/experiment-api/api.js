@@ -10,7 +10,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   GlodaAttrProviders:
     "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
   MonkeyPatch: "chrome://conversations/content/modules/monkeypatch.js",
-  MsgHdrToMimeMessage: "resource:///modules/gloda/mimemsg.js",
   msgUriToMsgHdr:
     "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   NetUtil: "resource://gre/modules/NetUtil.jsm",
@@ -19,6 +18,16 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   setupLogging: "chrome://conversations/content/modules/log.js",
   Sqlite: "resource://gre/modules/Sqlite.jsm",
   OS: "resource://gre/modules/osfile.jsm",
+});
+
+XPCOMUtils.defineLazyGetter(this, "MsgHdrToMimeMessage", () => {
+  let tmp = {};
+  try {
+    ChromeUtils.import("resource:///modules/gloda/mimemsg.js", tmp);
+  } catch (ex) {
+    ChromeUtils.import("resource:///modules/gloda/MimeMessage.jsm", tmp);
+  }
+  return tmp.MsgHdrToMimeMessage;
 });
 
 const FILE_SIMPLE_STORAGE = "simple_storage.sqlite";

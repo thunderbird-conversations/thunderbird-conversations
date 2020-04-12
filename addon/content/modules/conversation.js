@@ -15,7 +15,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   Colors: "chrome://conversations/content/modules/log.js",
   ContactManager: "chrome://conversations/content/modules/contact.js",
   dumpCallStack: "chrome://conversations/content/modules/log.js",
-  Gloda: "resource:///modules/gloda/gloda.js",
   groupArray: "chrome://conversations/content/modules/misc.js",
   isOSX: "chrome://conversations/content/modules/stdlib/misc.js",
   isWindows: "chrome://conversations/content/modules/stdlib/misc.js",
@@ -45,6 +44,16 @@ XPCOMUtils.defineLazyModuleGetters(this, {
 
 XPCOMUtils.defineLazyGetter(this, "Log", () => {
   return setupLogging("Conversations.Conversation");
+});
+
+XPCOMUtils.defineLazyGetter(this, "Gloda", () => {
+  let tmp = {};
+  try {
+    ChromeUtils.import("resource:///modules/gloda/public.js", tmp);
+  } catch (ex) {
+    ChromeUtils.import("resource:///modules/gloda/GlodaPublic.jsm", tmp);
+  }
+  return tmp.Gloda;
 });
 
 const kMsgDbHdr = 0;
