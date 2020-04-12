@@ -45,11 +45,7 @@ XPCOMUtils.defineLazyGetter(this, "browser", function() {
 const {
   msgHdrGetHeaders,
   msgHdrGetUri,
-  msgHdrIsDraft,
-  msgHdrIsJunk,
   msgHdrsMarkAsRead,
-  msgHdrGetTags,
-  msgHdrSetTags,
   msgHdrToNeckoURL,
   msgHdrToMessageBody,
   msgUriToMsgHdr,
@@ -399,18 +395,27 @@ class Message {
     );
   }
 
-  toReactData() {
+  async toReactData() {
     // Ok, brace ourselves for notifications happening during the message load
     //  process.
     addMsgListener(this);
 
+    const messageHeader = await browser.messages.get(this._id);
+    const messageFolderType = messageHeader.folderType;
+    let isJunk;
+    if (!("junk" in messageHeader)) {
+      // Supports TB 68.
+      isJunk = await browser.conversations.getIsJunk(this._id);
+    } else {
+      isJunk = messageHeader.junk;
+    }
     let data = {
       id: this._id,
       date: this._date,
       hasRemoteContent: this.hasRemoteContent,
-      isDraft: !!msgHdrIsDraft(this._msgHdr),
-      isJunk: msgHdrIsJunk(this._msgHdr),
-      isOutbox: !!this._msgHdr.folder.getFlag(Ci.nsMsgFolderFlags.Queue),
+      isDraft: messageFolderType == "drafts",
+      isJunk,
+      isOutbox: messageFolderType == "outbox",
       isPhishing: this.isPhishing,
       msgUri: this._uri,
       multipleRecipients: this.isReplyAllEnabled,
@@ -419,7 +424,7 @@ class Message {
       realFrom: this._realFrom.email || this._from.email,
       recipientsIncludeLists: this.isReplyListEnabled,
       snippet: this._snippet,
-      starred: this._msgHdr.isFlagged,
+      starred: messageHeader.flagged,
     };
 
     // 1) Generate Contact objects
@@ -464,12 +469,17 @@ class Message {
     data.folderName = fullName;
     data.shortFolderName = name;
 
-    const tags = msgHdrGetTags(this._msgHdr);
-    data.tags = tags.map(tag => {
+    const userTags = await browser.messages.listTags();
+    data.tags = messageHeader.tags.map(tagKey => {
+      // The fallback here shouldn't ever happen, but just in case...
+      const tagDetails = userTags.find(t => t.key == tagKey) || {
+        color: "#FFFFFF",
+        name: "unknown",
+      };
       return {
-        color: tag.color,
-        id: tag.key,
-        name: tag.tag,
+        color: tagDetails.color,
+        key: tagDetails.key,
+        name: tagDetails.tag,
       };
     });
 
@@ -537,7 +547,7 @@ class Message {
 
   // The global monkey-patch finds us through the weak pointer table and
   //  notifies us.
-  onMsgHasRemoteContent() {
+  async onMsgHasRemoteContent() {
     if (this.notifiedRemoteContentAlready) {
       return;
     }
@@ -545,7 +555,7 @@ class Message {
     this.hasRemoteContent = true;
     Log.debug("This message's remote content was blocked");
 
-    const msgData = this.toReactData();
+    const msgData = await this.toReactData();
     // TODO: make getting the window less ugly.
     this._conversation._htmlPane.conversationDispatch({
       type: "MSG_UPDATE_DATA",
@@ -588,14 +598,6 @@ class Message {
 
   set read(v) {
     msgHdrsMarkAsRead([this._msgHdr], v);
-  }
-
-  get tags() {
-    return msgHdrGetTags(this._msgHdr);
-  }
-
-  set tags(v) {
-    msgHdrSetTags(this._msgHdr, v);
   }
 
   addSpecialTag(tagDetails) {
@@ -658,7 +660,7 @@ class Message {
         }
       }
 
-      this._checkForPhishing(iframe);
+      this._checkForPhishing(iframe).catch(console.error);
     });
   }
 
@@ -693,7 +695,7 @@ class Message {
     });
   }
 
-  _checkForPhishing(iframe) {
+  async _checkForPhishing(iframe) {
     if (!Services.prefs.getBoolPref("mail.phishing.detection.enabled")) {
       return;
     }
@@ -746,7 +748,7 @@ class Message {
       formNodes.length
     ) {
       this.isPhishing = true;
-      const msgData = this.toReactData();
+      const msgData = await this.toReactData();
       // TODO: make getting the window less ugly.
       this._conversation._htmlPane.conversationDispatch({
         type: "MSG_UPDATE_DATA",

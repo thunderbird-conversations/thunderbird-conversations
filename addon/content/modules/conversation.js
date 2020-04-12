@@ -333,8 +333,8 @@ Conversation.prototype = {
     // Turn remote content message "off", as although it has it, it can be loaded.
     msg.hasRemoteContent = false;
     // We can't turn dispatch back straight away, so give it a moment.
-    Services.tm.dispatchToMainThread(() => {
-      const msgData = msg.toReactData();
+    Services.tm.dispatchToMainThread(async () => {
+      const msgData = await msg.toReactData();
       this._htmlPane.conversationDispatch({
         type: "MSG_UPDATE_DATA",
         msgData,
@@ -350,8 +350,8 @@ Conversation.prototype = {
     // Turn remote content message "off", as although it has it, it can be loaded.
     msg.hasRemoteContent = false;
     // We can't turn dispatch back straight away, so give it a moment.
-    Services.tm.dispatchToMainThread(() => {
-      const msgData = msg.toReactData();
+    Services.tm.dispatchToMainThread(async () => {
+      const msgData = await msg.toReactData();
       this._htmlPane.conversationDispatch({
         type: "MSG_UPDATE_DATA",
         msgData,
@@ -479,7 +479,7 @@ Conversation.prototype = {
         // fully created to get the date of a message.
         messages.sort(compare);
         if (messages.length) {
-          this.appendMessages(messages);
+          this.appendMessages(messages).catch(console.error);
         }
       } catch (e) {
         console.error(e);
@@ -506,8 +506,8 @@ Conversation.prototype = {
       //  calls fail.
       const message = byMessageId.get(glodaMsg.headerMessageID);
       if (message) {
-        Services.tm.dispatchToMainThread(() => {
-          const msgData = message.toReactData();
+        Services.tm.dispatchToMainThread(async () => {
+          const msgData = await message.toReactData();
           this._htmlPane.conversationDispatch({
             type: "MSG_UPDATE_DATA",
             msgData,
@@ -632,7 +632,7 @@ Conversation.prototype = {
   //  comment)
   _whenReady(n) {
     this._filterOutDuplicates();
-    this._outputMessages();
+    this._outputMessages().catch(console.error);
   },
 
   // This is a core function. It decides which messages to keep and which
@@ -706,7 +706,7 @@ Conversation.prototype = {
   //  end of this conversation. This only works if the new messages arrive at
   //  the end of the conversation, I don't support the pathological case of new
   //  messages arriving in the middle of the conversation.
-  appendMessages(aMessages) {
+  async appendMessages(aMessages) {
     // This is normal, the stupid folder tree view often reflows the
     //  whole thing and asks for a new ThreadSummary but the user hasn't
     //  actually changed selections.
@@ -750,13 +750,14 @@ Conversation.prototype = {
       this.messages[i].message.initialPosition = i;
     }
     this.viewWrapper = new ViewWrapper(this);
-    const reactMsgData = aMessages.map(m => {
-      const msgData = m.message.toReactData();
+    const reactMsgData = [];
+    for (const m of aMessages) {
+      const msgData = await m.message.toReactData();
       // inView indicates if the message is currently in the message list
       // view or not. If it isn't we don't show the folder tags.
       m.message.inView = this.viewWrapper.isInView(m);
-      return msgData;
-    });
+      reactMsgData.push(msgData);
+    }
 
     // Re-do the expand/collapse + scroll to the right node stuff. What this
     // means is if: if we just added new messages, don't touch the other ones,
@@ -772,7 +773,7 @@ Conversation.prototype = {
 
   // Once we're confident our set of messages is the right one, we actually
   // start outputting them inside the DOM element we were given.
-  _outputMessages() {
+  async _outputMessages() {
     // TODO: I think this test is still valid because of the thread summary
     // stabilization interval (we might have changed selection and still be
     // waiting to fire the new conversation).
@@ -846,8 +847,9 @@ Conversation.prototype = {
     const shouldShowHeaders =
       Services.prefs.getIntPref("mail.show_headers") == kHeadersShowAll;
 
-    const reactMsgData = this.messages.map((m, i) => {
-      const msgData = m.message.toReactData();
+    const reactMsgData = [];
+    for (let [i, m] of this.messages.entries()) {
+      const msgData = await m.message.toReactData();
       // inView indicates if the message is currently in the message list
       // view or not. If it isn't we don't show the folder name.
       msgData.inView = this.viewWrapper.isInView(m);
@@ -855,8 +857,8 @@ Conversation.prototype = {
       // This is a new display of a conversation, so ensure we don't display
       // the detailed view of the header unless the user wants us to.
       msgData.detailsShowing = shouldShowHeaders;
-      return msgData;
-    });
+      reactMsgData.push(msgData);
+    }
 
     // Move on to the next step
     this._expandAndScroll(this.messages, reactMsgData);

@@ -39,14 +39,13 @@ function MessageTag({ onClickX, expanded, name, color }) {
 MessageTag.propTypes = {
   onClickX: PropTypes.func.isRequired,
   expanded: PropTypes.bool.isRequired,
-  id: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   color: PropTypes.string.isRequired,
 };
 
 function MessageTags({ expanded, tags = [], onTagsChange }) {
   function removeTag(tagId) {
-    const filtered = tags.filter(tag => tag.id !== tagId);
+    const filtered = tags.filter(tag => tag.key !== tagId);
     if (filtered.length !== tags.length) {
       // Only trigger a change if we actually removed a tag
       onTagsChange(filtered);
@@ -59,11 +58,10 @@ function MessageTags({ expanded, tags = [], onTagsChange }) {
         <MessageTag
           color={tag.color}
           expanded={expanded}
-          id={tag.id}
           key={i}
           name={tag.name}
           onClickX={() => {
-            removeTag(tag.id);
+            removeTag(tag.key);
           }}
         />
       ))}

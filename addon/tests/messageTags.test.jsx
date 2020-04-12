@@ -98,17 +98,17 @@ describe("MessageTags test", () => {
   const SAMPLE_TAGS = [
     {
       color: "#3333FF",
-      id: "$label4",
+      key: "$label4",
       name: "To Do",
     },
     {
       color: "#993399",
-      id: "$label5",
+      key: "$label5",
       name: "Later",
     },
     {
       color: "#993399",
-      id: "$label1",
+      key: "$label1",
       name: "Important",
     },
   ];

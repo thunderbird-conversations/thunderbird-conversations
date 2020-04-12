@@ -416,6 +416,13 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             .document.getElementById("tabmail")
             .openTab(createTabProperties.type, params);
         },
+        async getIsJunk(id) {
+          const msgHdr = context.extension.messageManager.get(id);
+          return (
+            msgHdr.getStringProperty("junkscore") ==
+            Ci.nsIJunkMailPlugin.IS_SPAM_SCORE
+          );
+        },
         onCallAPI: new ExtensionCommon.EventManager({
           context,
           name: "conversations.onCallAPI",

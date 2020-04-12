@@ -2,8 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* global Redux, Conversations, getMail3Pane,
-          openConversationInTabOrWindow, ConversationUtils */
+/* global Redux, Conversations, getMail3Pane, openConversationInTabOrWindow */
 
 /* exported conversationApp, attachmentActions, messageActions */
 
@@ -16,6 +15,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   ContactHelpers: "chrome://conversations/content/modules/contact.js",
   Conversation: "chrome://conversations/content/modules/conversation.js",
+  ConversationUtils: "chrome://conversations/content/modules/conversation.js",
   openConversationInTabOrWindow:
     "chrome://conversations/content/modules/misc.js",
   MessageUtils: "chrome://conversations/content/modules/message.js",
@@ -366,11 +366,10 @@ const messageActions = {
       browser.messages
         .listTags()
         .then(allTags => {
-          // browser.messages.tags works via arrays of tag id/keys only,
+          // browser.messages.update works via arrays of tag keys only,
           // so strip away all non-key information
           allTags = allTags.map(t => t.key);
-          // for some reason a mix of `tag.key` and `tag.id` is used in Conversations
-          tags = tags.map(t => t.id);
+          tags = tags.map(t => t.key);
           const toggledTag = allTags[index];
 
           // Toggling a tag that is out of range does nothing.

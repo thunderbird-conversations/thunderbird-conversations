@@ -123,7 +123,7 @@ class _ConversationHeader extends React.PureComponent {
       this.props.msgData &&
       this.props.msgData.length <= 1 &&
       this.props.msgData.some(msg => !msg.isJunk)
-    ); // msgmsgHdrIsJunk(toMsgHdr(this.messages[0]))),
+    );
   }
 
   expandCollapse(event) {
