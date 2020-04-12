@@ -26,8 +26,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   msgHdrIsDraft: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   msgHdrIsInbox: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   msgHdrIsSent: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
-  msgHdrsMarkAsRead:
-    "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   msgUriToMsgHdr:
     "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   msgHdrsArchive:
@@ -929,16 +927,6 @@ Conversation.prototype = {
     this._htmlPane = aHtmlPane;
     this._onComplete = () => k(this);
     this._fetchMessages();
-  },
-
-  get msgHdrs() {
-    return this.messages.filter(x => toMsgHdr(x)).map(x => toMsgHdr(x));
-  },
-
-  // Just an efficient way to mark a whole conversation as read
-  set read(read) {
-    Log.debug(Colors.red, "Marked as read", Colors.default);
-    msgHdrsMarkAsRead(this.msgHdrs, read);
   },
 
   async forward() {
