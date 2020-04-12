@@ -16,6 +16,7 @@ const SUPPORTED_BASE_APIS = [
   "conversations",
   "i18n",
   "messages",
+  "runtime",
   "tabs",
 ];
 

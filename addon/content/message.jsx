@@ -330,6 +330,7 @@ class Message extends React.PureComponent {
             initialPosition={this.props.message.initialPosition}
             msgUri={this.props.message.msgUri}
             neckoUrl={this.props.message.neckoUrl}
+            tenPxFactor={this.props.tenPxFactor}
             prefs={this.props.prefs}
             realFrom={this.props.message.realFrom}
           />
@@ -377,6 +378,7 @@ Message.propTypes = {
   index: PropTypes.number.isRequired,
   isLastMessage: PropTypes.bool.isRequired,
   message: PropTypes.object.isRequired,
+  tenPxFactor: PropTypes.number.isRequired,
   prefs: PropTypes.object.isRequired,
   setRef: PropTypes.func.isRequired,
   advanceMessage: PropTypes.func.isRequired,

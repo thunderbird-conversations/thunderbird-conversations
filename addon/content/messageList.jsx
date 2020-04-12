@@ -36,6 +36,7 @@ function _MessageList(props) {
             index={index}
             isLastMessage={index == props.messages.msgData.length - 1}
             message={message}
+            tenPxFactor={props.summary.tenPxFactor}
             prefs={props.summary.prefs}
             advanceMessage={(step = 1) => {
               advanceMessage(index, step);

@@ -48,6 +48,9 @@ const initialSummary = {
   // TODO: What is loading used for?
   loading: true,
   iframesLoading: 0,
+  isInTab: false,
+  OS: "win",
+  tenPxFactor: 0.7,
   subject: "",
 };
 
@@ -129,29 +132,31 @@ const attachmentActions = {
 // TODO: Once the WebExtension parts work themselves out a bit more,
 // determine if this is worth sharing via a shared module with the background
 // scripts, or if it doesn't need it.
-const kScrollUnreadOrLast = 0;
-const kScrollSelected = 1;
+
+const scrollModes = {
+  kScrollUnreadOrLast: 0,
+  kScrollSelected: 1,
+};
 
 async function setupConversationInTab(params, isInTab) {
   let scrollMode = params.get("scrollMode");
   if (scrollMode) {
     scrollMode = parseInt(scrollMode);
   } else {
-    scrollMode = kScrollUnreadOrLast;
+    scrollMode = scrollModes.kScrollUnreadOrLast;
   }
   // If we start up Thunderbird with a saved conversation tab, then we
   // have no selected message. Fallback to the usual mode.
   if (
-    scrollMode == kScrollSelected &&
+    scrollMode == scrollModes.kScrollSelected &&
     !topMail3Pane(window).gFolderDisplay.selectedMessage
   ) {
-    scrollMode = kScrollUnreadOrLast;
+    scrollMode = scrollModes.kScrollUnreadOrLast;
   }
 
   if (window.frameElement) {
     window.frameElement.setAttribute("tooltip", "aHTMLTooltip");
   }
-  // let willExpand = parseInt(params.get("willExpand"));
   const msgUrls = params.get("urls").split(",");
   const msgIds = [];
   for (const url of msgUrls) {
@@ -197,6 +202,7 @@ async function setupConversationInTab(params, isInTab) {
       // That's why we saved it before...
       // newComposeSessionByDraftIf();
       // TODO: expandQuickReply isn't defined anywhere. Should it be?
+      // let willExpand = parseInt(params.get("willExpand"));
       // if (willExpand)
       //   expandQuickReply();
       // Create a new rule that will override the default rule, so that
@@ -209,17 +215,20 @@ async function setupConversationInTab(params, isInTab) {
           "mailnews.mark_message_read.auto"
         )
       ) {
+        const markAsReadAfterDelay = await browser.conversations.getCorePref(
+          "mailnews.mark_message_read.delay"
+        );
+        let markAsReadDelay = 0;
+        if (markAsReadAfterDelay) {
+          markAsReadDelay = await browser.conversations.getCorePref(
+            "mailnews.mark_message_read.delay.interval"
+          );
+        }
         setTimeout(function() {
           for (const id of msgIds) {
             browser.messages.update(id, { read: true }).catch(console.error);
           }
-        }, (await browser.conversations.getCorePref(
-          "mailnews.mark_message_read.delay.interval"
-        )) *
-          (await browser.conversations.getCorePref(
-            "mailnews.mark_message_read.delay"
-          )) *
-          1000);
+        }, markAsReadDelay * 1000);
       }
     });
   }
@@ -230,35 +239,46 @@ const messageActions = {
     return async dispatch => {
       const params = new URL(document.location).searchParams;
 
-      if (!params.has("urls")) {
-        await dispatch({
-          type: "SET_IN_TAB",
-          isInTab: false,
-        });
+      const isInTab = params.has("urls");
+
+      await dispatch({
+        type: "SET_IN_TAB",
+        isInTab,
+      });
+
+      const platformInfo = await browser.runtime.getPlatformInfo();
+      await dispatch({
+        type: "SET_OS",
+        OS: platformInfo.os,
+      });
+
+      if (!isInTab) {
         return;
       }
 
-      await Promise.all([
-        new Promise(resolve => {
-          function checkStarted() {
-            let mainWindow = topMail3Pane(window);
-            if (
-              mainWindow.Conversations &&
-              mainWindow.Conversations.monkeyPatch &&
-              mainWindow.Conversations.monkeyPatch.finishedStartup
-            ) {
-              resolve();
-            } else {
-              setTimeout(checkStarted, 100);
+      await new Promise((resolve, reject) => {
+        let tries = 0;
+        function checkStarted() {
+          let mainWindow = topMail3Pane(window);
+          if (
+            mainWindow.Conversations &&
+            mainWindow.Conversations.monkeyPatch &&
+            mainWindow.Conversations.monkeyPatch.finishedStartup
+          ) {
+            resolve();
+          } else {
+            // Wait up to 10 seconds, if it is that slow we're in trouble.
+            if (tries >= 100) {
+              console.error("Failed waiting for monkeypatch to finish startup");
+              reject();
+              return;
             }
+            tries++;
+            setTimeout(checkStarted, 100);
           }
-          checkStarted();
-        }),
-        dispatch({
-          type: "SET_IN_TAB",
-          isInTab: true,
-        }),
-      ]);
+        }
+        checkStarted();
+      });
       await dispatch(
         messageActions.initializeMessageThread({ isInTab: true, params })
       );
@@ -642,10 +662,23 @@ function messages(state = initialMessages, action) {
 function summary(state = initialSummary, action) {
   switch (action.type) {
     case "SET_IN_TAB": {
-      console.log(action.isInTab);
       return {
         ...state,
         isInTab: action.isInTab,
+      };
+    }
+    case "SET_OS": {
+      let tenPxFactor = 0.625;
+      if (action.OS == "mac") {
+        tenPxFactor = 0.666;
+      } else if (action.OS == "win") {
+        tenPxFactor = 0.7;
+      }
+
+      return {
+        ...state,
+        OS: action.OS,
+        tenPxFactor,
       };
     }
     case "REPLACE_CONVERSATION_DETAILS": {

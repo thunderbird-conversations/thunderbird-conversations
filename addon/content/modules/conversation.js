@@ -16,8 +16,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   ContactManager: "chrome://conversations/content/modules/contact.js",
   dumpCallStack: "chrome://conversations/content/modules/log.js",
   groupArray: "chrome://conversations/content/modules/misc.js",
-  isOSX: "chrome://conversations/content/modules/stdlib/misc.js",
-  isWindows: "chrome://conversations/content/modules/stdlib/misc.js",
   MailServices: "resource:///modules/MailServices.jsm",
   MessageFromDbHdr: "chrome://conversations/content/modules/message.js",
   MessageFromGloda: "chrome://conversations/content/modules/message.js",
@@ -63,13 +61,6 @@ const kAllowRemoteContent = 2;
 const kHeadersShowAll = 2;
 
 const nsMsgViewIndex_None = 0xffffffff;
-
-function tenPxFactor() {
-  if (isOSX) {
-    return 0.666;
-  }
-  return isWindows ? 0.7 : 0.625;
-}
 
 // -- Some helpers for our message type
 
@@ -320,13 +311,6 @@ function Conversation(
   this._intermediateResults = [];
   // For timing purposes
   this.t0 = Date.now();
-
-  this.OS = "linux";
-  if (isWindows) {
-    this.OS = "windows";
-  } else if (isOSX) {
-    this.OS = "osx";
-  }
 }
 
 Conversation.prototype = {
@@ -905,11 +889,9 @@ Conversation.prototype = {
           ),
           hideSigs: Prefs.hide_sigs,
           hideQuoteLength: Prefs.hide_quote_length,
-          tenPxFactor: tenPxFactor(),
           tweakBodies: Prefs.tweak_bodies,
           tweakChrome: Prefs.tweak_chrome,
         },
-        OS: this.OS,
         autoMarkAsRead:
           Services.prefs.getBoolPref("mailnews.mark_message_read.auto") &&
           !Services.prefs.getBoolPref("mailnews.mark_message_read.delay"),

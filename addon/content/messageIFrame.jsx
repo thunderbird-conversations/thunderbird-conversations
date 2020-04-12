@@ -197,7 +197,7 @@ class MessageIFrame extends React.Component {
     }
 
     let textSize = Math.round(
-      this.props.prefs.defaultFontSize * this.props.prefs.tenPxFactor * 1.2
+      this.props.prefs.defaultFontSize * this.props.tenPxFactor * 1.2
     );
 
     // Assuming 16px is the default (like on, say, Linux), this gives
@@ -279,7 +279,7 @@ class MessageIFrame extends React.Component {
     let iframeDoc = iframe.contentDocument;
 
     let smallSize = this.props.prefs.tweakChrome
-      ? this.props.prefs.defaultFontSize * this.props.prefs.tenPxFactor * 1.1
+      ? this.props.prefs.defaultFontSize * this.tenPxFactor * 1.1
       : Math.round((100 * this.props.prefs.defaultFontSize * 11) / 12) / 100;
 
     // this function adds a show/hide block text link to every topmost
@@ -439,6 +439,7 @@ MessageIFrame.propTypes = {
   initialPosition: PropTypes.number.isRequired,
   msgUri: PropTypes.string.isRequired,
   neckoUrl: PropTypes.string.isRequired,
+  tenPxFactor: PropTypes.number.isRequired,
   prefs: PropTypes.object.isRequired,
   realFrom: PropTypes.string.isRequired,
 };

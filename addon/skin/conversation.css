@@ -23,11 +23,11 @@ html {
   font-size: 83.3%;
 }
 
-html[os=windows] {
+html[os=win] {
   font-size: 70%;
 }
 
-html[os=osx] {
+html[os=mac] {
   font-size: 66.6%;
 }
 
