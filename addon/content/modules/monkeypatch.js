@@ -33,13 +33,16 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   Prefs: "chrome://conversations/content/modules/prefs.js",
   setupLogging: "chrome://conversations/content/modules/log.js",
   Services: "resource://gre/modules/Services.jsm",
-  StringBundle: "resource:///modules/StringBundle.js",
 });
 
 const kMultiMessageUrl = "chrome://messenger/content/multimessageview.xhtml";
 
 XPCOMUtils.defineLazyGetter(this, "Log", () => {
   return setupLogging("Conversations.MonkeyPatch");
+});
+
+XPCOMUtils.defineLazyGetter(this, "browser", function() {
+  return BrowserSim.getBrowser();
 });
 
 let shouldPerformUninstall;
@@ -70,37 +73,20 @@ MonkeyPatch.prototype = {
 
   applyOverlay: function _MonkeyPatch_applyOverlay(window) {
     // Wow! I love restartless! Now I get to create all the items by hand!
-    let strings = new StringBundle(
-      "chrome://conversations/locale/overlay.properties"
-    );
 
     // 1) Get a context menu in the multimessage
     window.document
       .getElementById("multimessage")
       .setAttribute("context", "mailContext");
 
-    // 2) View > Conversation View
-    // let menuitem = window.document.createXULElement("menuitem");
-    // [
-    //   ["type", "checkbox"],
-    //   ["id", "menuConversationsEnabled"],
-    //   ["label", strings.get("menuConversationsEnabled")],
-    // ].forEach(function([k, v]) {
-    //   menuitem.setAttribute(k, v);
-    // });
-    // let after = window.document.getElementById("viewMessagesMenu");
-    // let parent1 = window.document.getElementById("menu_View_Popup");
-    // parent1.insertBefore(menuitem, after.nextElementSibling);
-    // this.pushUndo(() => parent1.removeChild(menuitem));
-
-    // 3) Tree column
+    // 2) Tree column
     let treecol = window.document.createXULElement("treecol");
     [
       ["id", "betweenCol"],
       ["flex", "4"],
       ["persist", "width hidden ordinal"],
-      ["label", strings.get("betweenColumnName")],
-      ["tooltiptext", strings.get("betweenColumnTooltip")],
+      ["label", browser.i18n.getMessage("between.columnName")],
+      ["tooltiptext", browser.i18n.getMessage("between.columnTooltip")],
     ].forEach(function([k, v]) {
       treecol.setAttribute(k, v);
     });
@@ -134,7 +120,6 @@ MonkeyPatch.prototype = {
     //
     // https://developer.mozilla.org/en/Extensions/Thunderbird/Creating_a_Custom_Column
     let window = this._window;
-    const browser = BrowserSim.getBrowser();
 
     let participants = function(msgHdr) {
       try {

@@ -677,5 +677,15 @@
   "compose.write": {
     "message": "Pisanje...",
     "description": "Document title for composing an email in a new tab."
+  },
+
+  "between.columnName": {
+    "message": "Između",
+    "description": "The displayed name of the between column."
+  },
+
+  "between.columnTooltip": {
+    "message": "Kliknite za sortiranje prema sudionicima",
+    "description": "The tooltip of the between column."
   }
 }

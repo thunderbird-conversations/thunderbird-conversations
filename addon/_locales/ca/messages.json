@@ -677,5 +677,15 @@
   "compose.write": {
     "message": "Redacta...",
     "description": "Document title for composing an email in a new tab."
+  },
+
+  "between.columnName": {
+    "message": "Entremig",
+    "description": "The displayed name of the between column."
+  },
+
+  "between.columnTooltip": {
+    "message": "Clica per classificar per participants",
+    "description": "The tooltip of the between column."
   }
 }

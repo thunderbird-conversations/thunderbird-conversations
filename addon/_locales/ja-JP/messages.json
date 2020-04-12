@@ -677,5 +677,15 @@
   "compose.write": {
     "message": "メール作成",
     "description": "Document title for composing an email in a new tab."
+  },
+
+  "between.columnName": {
+    "message": "参加者",
+    "description": "The displayed name of the between column."
+  },
+
+  "between.columnTooltip": {
+    "message": "クリックすると参加者で並べ替えます",
+    "description": "The tooltip of the between column."
   }
 }

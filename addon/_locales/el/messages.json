@@ -677,5 +677,15 @@
   "compose.write": {
     "message": "Σύνταξη...",
     "description": "Document title for composing an email in a new tab."
+  },
+
+  "between.columnName": {
+    "message": "Μεταξύ",
+    "description": "The displayed name of the between column."
+  },
+
+  "between.columnTooltip": {
+    "message": "Κάντε κλικ για ταξινόμηση ανά συμμετέχοντα",
+    "description": "The tooltip of the between column."
   }
 }

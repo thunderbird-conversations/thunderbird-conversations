@@ -677,5 +677,15 @@
   "compose.write": {
     "message": "Scriver…",
     "description": "Document title for composing an email in a new tab."
+  },
+
+  "between.columnName": {
+    "message": "Tranter",
+    "description": "The displayed name of the between column."
+  },
+
+  "between.columnTooltip": {
+    "message": "Clicca per zavrar tenor participants",
+    "description": "The tooltip of the between column."
   }
 }

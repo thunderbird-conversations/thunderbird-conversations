@@ -677,5 +677,15 @@
   "compose.write": {
     "message": "Skriv…",
     "description": "Document title for composing an email in a new tab."
+  },
+
+  "between.columnName": {
+    "message": "Imellem",
+    "description": "The displayed name of the between column."
+  },
+
+  "between.columnTooltip": {
+    "message": "Klik for at sortere efter deltagere",
+    "description": "The tooltip of the between column."
   }
 }

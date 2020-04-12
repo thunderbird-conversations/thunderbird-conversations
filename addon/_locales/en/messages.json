@@ -672,5 +672,15 @@
   "compose.write": {
     "message": "Write...",
     "description": "Document title for composing an email in a new tab."
+  },
+
+  "between.columnName": {
+    "message": "Between",
+    "description": "The displayed name of the between column."
+  },
+
+  "between.columnTooltip": {
+    "message": "Click to sort by participants",
+    "description": "The tooltip of the between column."
   }
 }
