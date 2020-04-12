@@ -3,15 +3,25 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 /* globals ConversationHeader, ConversationFooter, MessageList,
-           React, ReactRedux, PropTypes */
+           React, ReactRedux, PropTypes, messageActions */
 /* exported ConversationWrapper */
 
 class _ConversationWrapper extends React.PureComponent {
   constructor(props) {
     super(props);
   }
+
   componentDidMount() {
     this._setHTMLAttributes();
+
+    // When moving to a WebExtension page this can simply be moved to CSS (see
+    // options.css).
+    document.documentElement.setAttribute(
+      "dir",
+      browser.conversations.getLocaleDirection()
+    );
+
+    this.props.dispatch(messageActions.waitForStartup());
   }
 
   componentDidUpdate(prevProps) {
@@ -48,6 +58,7 @@ class _ConversationWrapper extends React.PureComponent {
 }
 
 _ConversationWrapper.propTypes = {
+  dispatch: PropTypes.func.isRequired,
   tweakChrome: PropTypes.bool.isRequired,
   OS: PropTypes.string,
 };

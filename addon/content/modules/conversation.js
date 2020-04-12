@@ -251,12 +251,19 @@ var ConversationUtils = new _ConversationUtils();
 // matches exactly the DOM nodes with class "message" inside the displayed
 // message list.
 // So the i-th _message is also the i-th DOM node.
-function Conversation(aWindow, aSelectedMessages, aScrollMode, aCounter) {
+function Conversation(
+  win,
+  selectedMessages,
+  scrollMode,
+  counter,
+  isInTab = false
+) {
   this._contactManager = new ContactManager();
-  this._window = aWindow;
+  this._window = win;
+  this._isInTab = isInTab;
   // This is set by the monkey-patch which knows whether we were viewing a
   //  message inside a thread or viewing a closed thread.
-  this.scrollMode = aScrollMode;
+  this.scrollMode = scrollMode;
   // We have the COOL invariant that this._initialSet is a subset of
   //   this.messages.map(x => toMsgHdr(x))
   // This is actually trickier than it seems because of the different view modes
@@ -266,10 +273,10 @@ function Conversation(aWindow, aSelectedMessages, aScrollMode, aCounter) {
   // The invariant doesn't hold if the same message is present twice in the
   //  thread (like, you sent a message to yourself so it appears twice in your
   //  inbox that also searches sent folders). But we handle that case well.
-  if (aSelectedMessages && typeof aSelectedMessages[0] == "string") {
-    this._initialSet = aSelectedMessages.map(url => msgUriToMsgHdr(url));
+  if (selectedMessages && typeof selectedMessages[0] == "string") {
+    this._initialSet = selectedMessages.map(url => msgUriToMsgHdr(url));
   } else {
-    this._initialSet = aSelectedMessages;
+    this._initialSet = selectedMessages;
   }
   // === Our "message" composite type ==
   //
@@ -283,7 +290,7 @@ function Conversation(aWindow, aSelectedMessages, aScrollMode, aCounter) {
   //  ... (moar messages) ...
   // ]
   this.messages = [];
-  this.counter = aCounter; // RO
+  this.counter = counter; // RO
   // The Gloda query, so that it's not collected.
   this._query = null;
   // Function provided by the monkey-patch to do cleanup
@@ -785,7 +792,7 @@ Conversation.prototype = {
     // TODO: I think this test is still valid because of the thread summary
     // stabilization interval (we might have changed selection and still be
     // waiting to fire the new conversation).
-    if (!this._htmlPane.isInTab && this._selectionChanged()) {
+    if (!this._isInTab && this._selectionChanged()) {
       Log.debug("Selection changed, aborting...");
       return;
     }

@@ -638,7 +638,7 @@ MonkeyPatch.prototype = {
 
             // Make sure we respect the user's preferences.
             if (Services.prefs.getBoolPref("mailnews.mark_message_read.auto")) {
-              self.markReadTimeout = window.setTimeout(function() {
+              self.markReadTimeout = window.setTimeout(async function() {
                 // The idea is that usually, we're selecting a thread (so we
                 //  have kScrollUnreadOrLast). This means we mark the whole
                 //  conversation as read. However, sometimes the user selects
@@ -654,7 +654,17 @@ MonkeyPatch.prototype = {
                       "Marking the whole conversation as read",
                       Colors.default
                     );
-                    aConversation.read = true;
+                    for (const m of aConversation.messages) {
+                      if (!m.message.read) {
+                        m.message.read = true;
+                        // TODO: Swap to use the browser API.
+                        // Unfortunately this is broken for IMAP accounts:
+                        // https://bugzilla.mozilla.org/show_bug.cgi?id=1631184
+                        // await browser.messages
+                        //   .update(m.message._id, { read: true });
+                        // }
+                      }
+                    }
                   }
                 } else if (scrollMode == Prefs.kScrollSelected) {
                   // We don't seem to have a reflow when the thread is expanded

@@ -2,9 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* global Redux, Conversations, topMail3Pane, getMail3Pane,
-          isInTab:true, openConversationInTabOrWindow,
-          printConversation, ConversationUtils */
+/* global Redux, Conversations, getMail3Pane,
+          openConversationInTabOrWindow, ConversationUtils */
 
 /* exported conversationApp, attachmentActions, messageActions */
 
@@ -14,11 +13,31 @@ const { XPCOMUtils } = ChromeUtils.import(
   "resource://gre/modules/XPCOMUtils.jsm"
 );
 XPCOMUtils.defineLazyModuleGetters(this, {
+  BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   ContactHelpers: "chrome://conversations/content/modules/contact.js",
+  Conversation: "chrome://conversations/content/modules/conversation.js",
   openConversationInTabOrWindow:
     "chrome://conversations/content/modules/misc.js",
   MessageUtils: "chrome://conversations/content/modules/message.js",
+  topMail3Pane: "chrome://conversations/content/modules/misc.js",
 });
+
+// This provides simulation for the WebExtension environment whilst we're still
+// being loaded in a privileged process.
+XPCOMUtils.defineLazyGetter(this, "browser", () => {
+  return BrowserSim.getBrowser();
+});
+
+let oldPrint = window.print;
+
+function printConversation(event) {
+  for (let { message: m } of Conversations.currentConversation.messages) {
+    m.dumpPlainTextForPrinting();
+  }
+  oldPrint();
+}
+
+window.print = printConversation;
 
 const initialMessages = {
   msgData: [],
@@ -107,7 +126,161 @@ const attachmentActions = {
   },
 };
 
+// TODO: Once the WebExtension parts work themselves out a bit more,
+// determine if this is worth sharing via a shared module with the background
+// scripts, or if it doesn't need it.
+const kScrollUnreadOrLast = 0;
+const kScrollSelected = 1;
+
+async function setupConversationInTab(params, isInTab) {
+  let scrollMode = params.get("scrollMode");
+  if (scrollMode) {
+    scrollMode = parseInt(scrollMode);
+  } else {
+    scrollMode = kScrollUnreadOrLast;
+  }
+  // If we start up Thunderbird with a saved conversation tab, then we
+  // have no selected message. Fallback to the usual mode.
+  if (
+    scrollMode == kScrollSelected &&
+    !topMail3Pane(window).gFolderDisplay.selectedMessage
+  ) {
+    scrollMode = kScrollUnreadOrLast;
+  }
+
+  if (window.frameElement) {
+    window.frameElement.setAttribute("tooltip", "aHTMLTooltip");
+  }
+  // let willExpand = parseInt(params.get("willExpand"));
+  const msgUrls = params.get("urls").split(",");
+  const msgIds = [];
+  for (const url of msgUrls) {
+    const id = await browser.conversations.getMessageIdForUri(url);
+    if (id) {
+      msgIds.push(id);
+    }
+  }
+  // It might happen that there are no messages left...
+  if (!msgIds.length) {
+    document.getElementById(
+      "messageList"
+    ).textContent = browser.i18n.getMessage(
+      "message.movedOrDeletedConversation"
+    );
+  } else {
+    window.Conversations = {
+      currentConversation: null,
+      counter: 0,
+    };
+    let freshConversation = new Conversation(
+      window,
+      // TODO: This should really become ids at some stage, but we need to
+      // teach Conversation how to handle those.
+      msgUrls,
+      scrollMode,
+      ++Conversations.counter,
+      isInTab
+    );
+    let browserFrame = window.frameElement;
+    // Because Thunderbird still hasn't fixed that...
+    if (browserFrame) {
+      browserFrame.setAttribute("context", "mailContext");
+    }
+
+    freshConversation.outputInto(window, async function(aConversation) {
+      // This is a stripped-down version of what's in monkeypatch.js,
+      //  make sure the two are in sync!
+      Conversations.currentConversation = aConversation;
+      aConversation.completed = true;
+      // TODO: Re-enable this.
+      // registerQuickReply();
+      // That's why we saved it before...
+      // newComposeSessionByDraftIf();
+      // TODO: expandQuickReply isn't defined anywhere. Should it be?
+      // if (willExpand)
+      //   expandQuickReply();
+      // Create a new rule that will override the default rule, so that
+      // the expanded quick reply is twice higher.
+      document.body.classList.add("inTab");
+      // Do this now so as to not defeat the whole expand/collapse
+      // logic.
+      if (
+        await browser.conversations.getCorePref(
+          "mailnews.mark_message_read.auto"
+        )
+      ) {
+        setTimeout(function() {
+          for (const id of msgIds) {
+            browser.messages.update(id, { read: true }).catch(console.error);
+          }
+        }, (await browser.conversations.getCorePref(
+          "mailnews.mark_message_read.delay.interval"
+        )) *
+          (await browser.conversations.getCorePref(
+            "mailnews.mark_message_read.delay"
+          )) *
+          1000);
+      }
+    });
+  }
+}
+
 const messageActions = {
+  waitForStartup() {
+    return async dispatch => {
+      const params = new URL(document.location).searchParams;
+
+      if (!params.has("urls")) {
+        await dispatch({
+          type: "SET_IN_TAB",
+          isInTab: false,
+        });
+        return;
+      }
+
+      await Promise.all([
+        new Promise(resolve => {
+          function checkStarted() {
+            let mainWindow = topMail3Pane(window);
+            if (
+              mainWindow.Conversations &&
+              mainWindow.Conversations.monkeyPatch &&
+              mainWindow.Conversations.monkeyPatch.finishedStartup
+            ) {
+              resolve();
+            } else {
+              setTimeout(checkStarted, 100);
+            }
+          }
+          checkStarted();
+        }),
+        dispatch({
+          type: "SET_IN_TAB",
+          isInTab: true,
+        }),
+      ]);
+      await dispatch(
+        messageActions.initializeMessageThread({ isInTab: true, params })
+      );
+
+      // We used to have a function for opening the window as a quick compose
+      // in a tab. We'll need to figure out how to do this once we finish
+      // rewriting - it may be better to have a completely seperate message
+      // composition option.
+      // } else if (params.get("quickCompose")) {
+      //   masqueradeAsQuickCompose();
+      // }
+    };
+  },
+
+  initializeMessageThread({ isInTab, params }) {
+    return async (dispatch, getState) => {
+      if (getState().summary.isInTab) {
+        setupConversationInTab(params, isInTab).catch(console.error);
+      }
+    };
+  },
+
   editDraft({ msgUri, shiftKey }) {
     return async () => {
       MessageUtils.editDraft(topMail3Pane(window), msgUri, shiftKey);
@@ -232,23 +405,23 @@ const messageActions = {
   },
   archiveConversation() {
     return async (dispatch, getState) => {
-      const state = getState().messages;
+      const state = getState();
       ConversationUtils.archive(
         topMail3Pane(window),
-        isInTab,
-        state.msgData.map(msg => msg.msgUri)
+        state.summary.isInTab,
+        state.messages.msgData.map(msg => msg.msgUri)
       );
     };
   },
   deleteConversation() {
     return async (dispatch, getState) => {
-      const state = getState().messages;
+      const state = getState();
       const win = topMail3Pane(window);
       if (
         ConversationUtils.delete(
           win,
-          isInTab,
-          state.msgData.map(msg => msg.msgUri)
+          state.summary.isInTab,
+          state.messages.msgData.map(msg => msg.msgUri)
         )
       ) {
         ConversationUtils.closeTab(win, window.frameElement);
@@ -468,6 +641,13 @@ function messages(state = initialMessages, action) {
 
 function summary(state = initialSummary, action) {
   switch (action.type) {
+    case "SET_IN_TAB": {
+      console.log(action.isInTab);
+      return {
+        ...state,
+        isInTab: action.isInTab,
+      };
+    }
     case "REPLACE_CONVERSATION_DETAILS": {
       if (!("summary" in action)) {
         return state;
