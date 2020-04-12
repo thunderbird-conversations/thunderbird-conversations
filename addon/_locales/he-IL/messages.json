@@ -687,5 +687,105 @@
   "between.columnTooltip": {
     "message": "Click to sort by participants",
     "description": "The tooltip of the between column."
+  },
+
+  "message.at": {
+    "message": "מ־",
+    "description": "Used for concatenation of two strings, e.g. John Doe at http://bugzilla.mozilla.org"
+  },
+
+  "enigmail.messageSigned": {
+    "message": "חתום",
+    "description": "Tag description displayed when a message is signed."
+  },
+
+  "enigmail.messageSignedLong": {
+    "message": "ההודעה חתומה",
+    "description": "Tooltip displayed when a signature is good and verified."
+  },
+
+  "enigmail.messageDecrypted": {
+    "message": "גלוי מהצפנה",
+    "description": "Tag description displayed when a message has been decrypted."
+  },
+
+  "enigmail.messageDecryptedLong": {
+    "message": "הודעה זאת עברה להליך גלויה מהצפנה תרם הצגתה",
+    "description": "Tooltip displayed when a message has been decrypted."
+  },
+
+  "dkimVerifier.messageDKIMSigned": {
+    "message": "DKIM signed",
+    "description": "Tag description displayed when a message is DKIM signed."
+  },
+
+  "compose.addCc": {
+    "message": "הוסף עותק",
+    "description": "Link to click to add a cc when composing messages."
+  },
+
+  "compose.addBcc": {
+    "message": "הוסף עותק נסתר",
+    "description": "Link to click to add bcc when composing messages."
+  },
+
+  "compose.addAttachment": {
+    "message": "add attachments",
+    "description": "Link to add an attachment when composing messages."
+  },
+
+  "compose.removeAttachment": {
+    "message": "remove",
+    "description": "Link to remove an attachment when composing messages."
+  },
+
+  "compose.fieldBcc": {
+    "message": "עותק נסתר:‏",
+    "description": "Field name for the bcc field when composing messages."
+  },
+
+  "compose.fieldSubject": {
+    "message": "subject:",
+    "description": "Field name for the subject field when composing messages."
+  },
+
+  "compose.editField": {
+    "message": "ערוך",
+    "description": "Link title to edit a particular field when composing messages."
+  },
+
+  "compose.send": {
+    "message": "שלח",
+    "description": "Button name to send a message."
+  },
+
+  "compose.sendArchive": {
+    "message": "שלח והעבר לארכיון",
+    "description": "Button name to send and archive a message."
+  },
+
+  "compose.save": {
+    "message": "שמור",
+    "description": "Button name to save a message as draft."
+  },
+
+  "compose.discard": {
+    "message": "בטל",
+    "description": "Button name to discard a message draft."
+  },
+
+  "compose.mostFrequentContacts": {
+    "message": "Most frequently emailed contacts:",
+    "description": "Field name for showing the most frequently used contacts."
+  },
+
+  "compose.showMore": {
+    "message": "show more…",
+    "description": "Show more link for showing more contacts."
+  },
+
+  "enigmail.unknownGood": {
+    "message": "חתימה טובה ממקור לא ידוע",
+    "description": "Tooltip displayed when a signature is good but unverified."
   }
 }

@@ -687,5 +687,105 @@
   "between.columnTooltip": {
     "message": "Klicken, um nach Teilnehmern zu sortieren",
     "description": "The tooltip of the between column."
+  },
+
+  "message.at": {
+    "message": "auf",
+    "description": "Used for concatenation of two strings, e.g. John Doe at http://bugzilla.mozilla.org"
+  },
+
+  "enigmail.messageSigned": {
+    "message": "Signiert",
+    "description": "Tag description displayed when a message is signed."
+  },
+
+  "enigmail.messageSignedLong": {
+    "message": "Diese Nachricht wurde signiert",
+    "description": "Tooltip displayed when a signature is good and verified."
+  },
+
+  "enigmail.messageDecrypted": {
+    "message": "Entschlüsselt",
+    "description": "Tag description displayed when a message has been decrypted."
+  },
+
+  "enigmail.messageDecryptedLong": {
+    "message": "Nachricht wurde vor dem Anzeigen entschlüsselt",
+    "description": "Tooltip displayed when a message has been decrypted."
+  },
+
+  "dkimVerifier.messageDKIMSigned": {
+    "message": "Mit DKIM signiert.",
+    "description": "Tag description displayed when a message is DKIM signed."
+  },
+
+  "compose.addCc": {
+    "message": "Kopie (CC) hinzufügen",
+    "description": "Link to click to add a cc when composing messages."
+  },
+
+  "compose.addBcc": {
+    "message": "Blindkopie (BCC) hinzufügen",
+    "description": "Link to click to add bcc when composing messages."
+  },
+
+  "compose.addAttachment": {
+    "message": "Anhang hinzufügen",
+    "description": "Link to add an attachment when composing messages."
+  },
+
+  "compose.removeAttachment": {
+    "message": "Entfernen",
+    "description": "Link to remove an attachment when composing messages."
+  },
+
+  "compose.fieldBcc": {
+    "message": "Blindkopie (BCC):",
+    "description": "Field name for the bcc field when composing messages."
+  },
+
+  "compose.fieldSubject": {
+    "message": "Betreff:",
+    "description": "Field name for the subject field when composing messages."
+  },
+
+  "compose.editField": {
+    "message": "Bearbeiten",
+    "description": "Link title to edit a particular field when composing messages."
+  },
+
+  "compose.send": {
+    "message": "Senden",
+    "description": "Button name to send a message."
+  },
+
+  "compose.sendArchive": {
+    "message": "Senden und Archivieren",
+    "description": "Button name to send and archive a message."
+  },
+
+  "compose.save": {
+    "message": "Speichern",
+    "description": "Button name to save a message as draft."
+  },
+
+  "compose.discard": {
+    "message": "Abbrechen",
+    "description": "Button name to discard a message draft."
+  },
+
+  "compose.mostFrequentContacts": {
+    "message": "Häufige Email-Kontakte:",
+    "description": "Field name for showing the most frequently used contacts."
+  },
+
+  "compose.showMore": {
+    "message": "Zeige mehr...",
+    "description": "Show more link for showing more contacts."
+  },
+
+  "enigmail.unknownGood": {
+    "message": "Unbekannte Signatur",
+    "description": "Tooltip displayed when a signature is good but unverified."
   }
 }

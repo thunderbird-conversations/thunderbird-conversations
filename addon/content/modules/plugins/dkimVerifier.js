@@ -11,10 +11,14 @@ const { XPCOMUtils } = ChromeUtils.import(
 );
 
 XPCOMUtils.defineLazyModuleGetters(this, {
+  BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   getMail3Pane: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   registerHook: "chrome://conversations/content/modules/hook.js",
   setupLogging: "chrome://conversations/content/modules/log.js",
-  StringBundle: "resource:///modules/StringBundle.js",
+});
+
+XPCOMUtils.defineLazyGetter(this, "browser", function() {
+  return BrowserSim.getBrowser();
 });
 
 let Log = setupLogging("Conversations.Modules.DKIMVerifier");
@@ -38,13 +42,7 @@ try {
   );
 }
 
-let stringBundle;
-
 if (hasDKIMVerifier) {
-  stringBundle = new StringBundle(
-    "chrome://conversations/locale/template.properties"
-  );
-
   let mailWindow = getMail3Pane();
   let onEndHeaders = mailWindow.DKIM_Verifier.Display.onEndHeaders;
   mailWindow.DKIM_Verifier.Display.onEndHeaders = function() {
@@ -71,7 +69,7 @@ function displayResult(result, msg) {
     canClick: false,
     classNames: `dkim-signed ${warningsClassName} ${result.dkim[0].result}`,
     icon: "chrome://conversations/skin/material-icons.svg#edit",
-    name: stringBundle.get("messageDKIMSigned"),
+    name: browser.i18n.getMessage("dkimVerifier.messageDKIMSigned"),
     tooltip: {
       type: "dkim",
       strings: [result.dkim[0].result_str, result.dkim[0].warnings_str],

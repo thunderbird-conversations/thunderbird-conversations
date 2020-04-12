@@ -74,17 +74,17 @@
            <ul class="recipientList toList">
              {{str "fieldTo"}}
              <li>{{str "pleaseWait"}}</li>
-             <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('to');">{{str "edit"}}</a></li>
+             <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('to');">{{str "compose.editField}}</a></li>
            </ul>
            <ul class="recipientList ccList" style="display: none;">
              {{str "fieldCc"}}
              <li>{{str "pleaseWait"}}</li>
-             <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('cc');">{{str "edit"}}</a></li>
+             <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('cc');">{{str "compose.editField"}}</a></li>
            </ul>
            <ul class="recipientList bccList" style="display: none;">
              {{str "fieldBcc"}}
              <li>{{str "pleaseWait"}}</li>
-             <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('bcc');">{{str "edit"}}</a></li>
+             <li class="add-more">&#xa0;- <a href="javascript:" onclick="editFields('bcc');">{{str "compose.editField"}}</a></li>
            </ul>
          </div>
          <ul class="enigmail" style="display: none;">

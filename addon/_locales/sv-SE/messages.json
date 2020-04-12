@@ -687,5 +687,105 @@
   "between.columnTooltip": {
     "message": "Klicka för att sortera efter deltagare",
     "description": "The tooltip of the between column."
+  },
+
+  "message.at": {
+    "message": "på",
+    "description": "Used for concatenation of two strings, e.g. John Doe at http://bugzilla.mozilla.org"
+  },
+
+  "enigmail.messageSigned": {
+    "message": "signerat",
+    "description": "Tag description displayed when a message is signed."
+  },
+
+  "enigmail.messageSignedLong": {
+    "message": "Detta meddelande har signerats",
+    "description": "Tooltip displayed when a signature is good and verified."
+  },
+
+  "enigmail.messageDecrypted": {
+    "message": "avkrypterat",
+    "description": "Tag description displayed when a message has been decrypted."
+  },
+
+  "enigmail.messageDecryptedLong": {
+    "message": "Detta meddelande har avkrypterats innan visning",
+    "description": "Tooltip displayed when a message has been decrypted."
+  },
+
+  "dkimVerifier.messageDKIMSigned": {
+    "message": "DKIM signed",
+    "description": "Tag description displayed when a message is DKIM signed."
+  },
+
+  "compose.addCc": {
+    "message": "lägg till kopia",
+    "description": "Link to click to add a cc when composing messages."
+  },
+
+  "compose.addBcc": {
+    "message": "lägg till dold kopia",
+    "description": "Link to click to add bcc when composing messages."
+  },
+
+  "compose.addAttachment": {
+    "message": "lägg till bilagor",
+    "description": "Link to add an attachment when composing messages."
+  },
+
+  "compose.removeAttachment": {
+    "message": "ta bort",
+    "description": "Link to remove an attachment when composing messages."
+  },
+
+  "compose.fieldBcc": {
+    "message": "dold kopia:",
+    "description": "Field name for the bcc field when composing messages."
+  },
+
+  "compose.fieldSubject": {
+    "message": "ämne:",
+    "description": "Field name for the subject field when composing messages."
+  },
+
+  "compose.editField": {
+    "message": "redigera",
+    "description": "Link title to edit a particular field when composing messages."
+  },
+
+  "compose.send": {
+    "message": "skicka",
+    "description": "Button name to send a message."
+  },
+
+  "compose.sendArchive": {
+    "message": "skicka och arkivera",
+    "description": "Button name to send and archive a message."
+  },
+
+  "compose.save": {
+    "message": "spara",
+    "description": "Button name to save a message as draft."
+  },
+
+  "compose.discard": {
+    "message": "kasta bort",
+    "description": "Button name to discard a message draft."
+  },
+
+  "compose.mostFrequentContacts": {
+    "message": "Oftast använda e-postkontakter:",
+    "description": "Field name for showing the most frequently used contacts."
+  },
+
+  "compose.showMore": {
+    "message": "visa mer…",
+    "description": "Show more link for showing more contacts."
+  },
+
+  "enigmail.unknownGood": {
+    "message": "okänd godtagbar signatur",
+    "description": "Tooltip displayed when a signature is good but unverified."
   }
 }

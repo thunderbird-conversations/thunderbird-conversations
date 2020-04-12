@@ -46,11 +46,8 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   setupLogging: "chrome://conversations/content/modules/log.js",
   Services: "resource://gre/modules/Services.jsm",
   simpleWrap: "chrome://conversations/content/modules/stdlib/compose.js",
-  StringBundle: "resource:///modules/StringBundle.js",
   topMail3Pane: "chrome://conversations/content/modules/misc.js",
 });
-
-let templateStrings;
 
 let Log = setupLogging("Conversations.Modules.Enigmail");
 
@@ -86,11 +83,11 @@ if (hasEnigmail) {
     EnigmailPrefs: "chrome://enigmail/content/modules/prefs.jsm",
     EnigmailRules: "chrome://enigmail/content/modules/rules.jsm",
   });
-
-  templateStrings = new StringBundle(
-    "chrome://conversations/locale/template.properties"
-  );
 }
+
+XPCOMUtils.defineLazyGetter(this, "browser", function() {
+  return BrowserSim.getBrowser();
+});
 
 let enigmailSvc;
 // used in enigmailMsgComposeOverlay.js
@@ -665,15 +662,15 @@ function addSignedLabel(status, msg) {
       canClick: true,
       classNames: "enigmail-signed",
       icon: "chrome://conversations/skin/material-icons.svg#edit",
-      name: templateStrings.get("messageSigned"),
+      name: browser.i18n.getMessage("enigmail.messageSigned"),
       details: {
         type: "enigmail",
         detail: "viewSecurityInfo",
       },
       title:
         status & nsIEnigmail.UNVERIFIED_SIGNATURE
-          ? templateStrings.get("unknownGood")
-          : templateStrings.get("messageSignedLong"),
+          ? browser.i18n.getMessage("enigmail.unknownGood")
+          : browser.i18n.getMessage("enigmail.messageSignedLong"),
     });
   }
 }
@@ -683,19 +680,19 @@ function addEncryptedTag(msg) {
     canClick: true,
     classNames: "enigmail-decrypted",
     icon: "chrome://conversations/skin/material-icons.svg#vpn_key",
-    name: templateStrings.get("messageDecrypted"),
+    name: browser.i18n.getMessage("enigmail.messageDecrypted"),
     details: {
       type: "enigmail",
       detail: "viewSecurityInfo",
     },
-    title: templateStrings.get("messageDecryptedLong"),
+    title: browser.i18n.getMessage("enigmail.messageDecryptedLong"),
   });
 }
 
 function removeEncryptedTag(msg) {
   msg.removeSpecialTag({
     classNames: "enigmail-decrypted",
-    name: templateStrings.get("messageDecrypted"),
+    name: browser.i18n.getMessage("enigmail.messageDecrypted"),
   });
 }
 
@@ -848,7 +845,6 @@ let enigmailHook = {
         aAttachmentList &&
         aAttachmentList.attachments.length
       ) {
-        const browser = BrowserSim.getBrowser();
         // Attachments will not be encrypted using inline-PGP.
         // We switch to PGP/MIME if possible.
         if (

@@ -687,5 +687,105 @@
   "between.columnTooltip": {
     "message": "Kliknutím seřadíte podle účastníků",
     "description": "The tooltip of the between column."
+  },
+
+  "message.at": {
+    "message": "na",
+    "description": "Used for concatenation of two strings, e.g. John Doe at http://bugzilla.mozilla.org"
+  },
+
+  "enigmail.messageSigned": {
+    "message": "podepsáno",
+    "description": "Tag description displayed when a message is signed."
+  },
+
+  "enigmail.messageSignedLong": {
+    "message": "Zpráva je podepsána",
+    "description": "Tooltip displayed when a signature is good and verified."
+  },
+
+  "enigmail.messageDecrypted": {
+    "message": "rozšifrováno",
+    "description": "Tag description displayed when a message has been decrypted."
+  },
+
+  "enigmail.messageDecryptedLong": {
+    "message": "Zpráva byla před zobrazením rozšifrována",
+    "description": "Tooltip displayed when a message has been decrypted."
+  },
+
+  "dkimVerifier.messageDKIMSigned": {
+    "message": "podepsáno DKIM",
+    "description": "Tag description displayed when a message is DKIM signed."
+  },
+
+  "compose.addCc": {
+    "message": "přidat kopii",
+    "description": "Link to click to add a cc when composing messages."
+  },
+
+  "compose.addBcc": {
+    "message": "přidat skrytou kopii",
+    "description": "Link to click to add bcc when composing messages."
+  },
+
+  "compose.addAttachment": {
+    "message": "přidat přílohy",
+    "description": "Link to add an attachment when composing messages."
+  },
+
+  "compose.removeAttachment": {
+    "message": "smazat",
+    "description": "Link to remove an attachment when composing messages."
+  },
+
+  "compose.fieldBcc": {
+    "message": "skrytá kopie:",
+    "description": "Field name for the bcc field when composing messages."
+  },
+
+  "compose.fieldSubject": {
+    "message": "předmět:",
+    "description": "Field name for the subject field when composing messages."
+  },
+
+  "compose.editField": {
+    "message": "upravit",
+    "description": "Link title to edit a particular field when composing messages."
+  },
+
+  "compose.send": {
+    "message": "odeslat",
+    "description": "Button name to send a message."
+  },
+
+  "compose.sendArchive": {
+    "message": "odeslat a archivovat",
+    "description": "Button name to send and archive a message."
+  },
+
+  "compose.save": {
+    "message": "uložit",
+    "description": "Button name to save a message as draft."
+  },
+
+  "compose.discard": {
+    "message": "neukládat",
+    "description": "Button name to discard a message draft."
+  },
+
+  "compose.mostFrequentContacts": {
+    "message": "Nejčastější kontakty:",
+    "description": "Field name for showing the most frequently used contacts."
+  },
+
+  "compose.showMore": {
+    "message": "ukázat více...",
+    "description": "Show more link for showing more contacts."
+  },
+
+  "enigmail.unknownGood": {
+    "message": "neznámý platný podpis",
+    "description": "Tooltip displayed when a signature is good but unverified."
   }
 }

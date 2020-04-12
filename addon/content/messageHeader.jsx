@@ -236,7 +236,7 @@ class MessageHeader extends React.PureComponent {
   render() {
     const allTo = [...this.props.to, ...this.props.cc, ...this.props.bcc];
     // TODO: Maybe insert this after contacts but before snippet:
-    // <span class="bzTo"> {{str "at"}} {{bugzillaUrl}}</span>
+    // <span class="bzTo"> {{str "message.at"}} {{bugzillaUrl}}</span>
     return (
       <div
         className={
