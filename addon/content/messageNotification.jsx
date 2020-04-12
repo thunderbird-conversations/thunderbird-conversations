@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals PropTypes, React, SvgIcon */
+/* globals PropTypes, React, SvgIcon, messageActions */
 /* exported MessageNotification */
 
 class RemoteContentNotification extends React.PureComponent {
@@ -13,18 +13,20 @@ class RemoteContentNotification extends React.PureComponent {
   }
 
   onShowRemote() {
-    this.props.dispatch({
-      type: "MSG_SHOW_REMOTE_CONTENT",
-      msgUri: this.props.msgUri,
-    });
+    this.props.dispatch(
+      messageActions.showRemoteContent({
+        msgUri: this.props.msgUri,
+      })
+    );
   }
 
   onAlwaysShowRemote() {
-    this.props.dispatch({
-      type: "MSG_ALWAYS_SHOW_REMOTE_CONTENT",
-      realFrom: this.props.realFrom,
-      msgUri: this.props.msgUri,
-    });
+    this.props.dispatch(
+      messageActions.showRemoteContent({
+        msgUri: this.props.msgUri,
+        realFrom: this.props.realFrom,
+      })
+    );
   }
 
   render() {
@@ -85,12 +87,13 @@ class GenericMultiButtonNotification extends React.PureComponent {
   }
 
   onClick(actionParams) {
-    this.props.dispatch({
-      type: "NOTIFICATION_CLICK",
-      msgUri: this.props.msgUri,
-      notificationType: this.props.type,
-      ...actionParams,
-    });
+    this.props.dispatch(
+      messageActions.notificationClick({
+        msgUri: this.props.msgUri,
+        notificationType: this.props.type,
+        ...actionParams,
+      })
+    );
   }
 
   render() {

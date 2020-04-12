@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals PropTypes, React, ActionButton, SvgIcon */
+/* globals PropTypes, React, ActionButton, SvgIcon, messageActions */
 /* exported MessageHeaderOptions */
 
 class OptionsMoreMenu extends React.PureComponent {
@@ -124,11 +124,44 @@ class MessageHeaderOptions extends React.PureComponent {
   replyAction(msg, event) {
     event.stopPropagation();
     event.preventDefault();
-    this.props.dispatch({
-      ...msg,
-      id: this.props.id,
+
+    const payload = {
       msgUri: this.props.msgUri,
-    });
+      shiftKey: msg.shiftKey,
+    };
+    let action = null;
+    switch (msg.type) {
+      case "reply":
+        action = messageActions.reply(payload);
+        break;
+      case "replyAll":
+        action = messageActions.replyAll(payload);
+        break;
+      case "replyList":
+        action = messageActions.replyList(payload);
+        break;
+      case "forward":
+        action = messageActions.forward(payload);
+        break;
+      case "editAsNew":
+        action = messageActions.editAsNew(payload);
+        break;
+      case "archive":
+        action = messageActions.archive({ id: this.props.id });
+        break;
+      case "delete":
+        action = messageActions.delete({ id: this.props.id });
+        break;
+      case "classic":
+        action = messageActions.openClassic(payload);
+        break;
+      case "source":
+        action = messageActions.openSource(payload);
+        break;
+      default:
+        console.error("Don't know how to create an action for", msg);
+    }
+    this.props.dispatch(action);
   }
 
   showDetails(event) {

@@ -3,7 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 /* globals React, PropTypes, MessageHeaderOptions, MessageTags
-           SpecialMessageTags, ContactDetail, SvgIcon */
+           SpecialMessageTags, ContactDetail, SvgIcon, messageActions */
 /* exported MessageHeader */
 
 class Fade extends React.PureComponent {
@@ -215,11 +215,12 @@ class MessageHeader extends React.PureComponent {
   onClickStar(event) {
     event.stopPropagation();
     event.preventDefault();
-    this.props.dispatch({
-      type: "MSG_STAR",
-      id: this.props.id,
-      star: !this.props.starred,
-    });
+    this.props.dispatch(
+      messageActions.setStarred({
+        id: this.props.id,
+        starred: !this.props.starred,
+      })
+    );
   }
 
   _getSeparator(index, length) {
@@ -288,23 +289,25 @@ class MessageHeader extends React.PureComponent {
             <span className="snippet">
               <MessageTags
                 onTagsChange={tags => {
-                  this.props.dispatch({
-                    type: "MSG_SET_TAGS",
-                    id: this.props.id,
-                    tags,
-                  });
+                  this.props.dispatch(
+                    messageActions.setTags({
+                      id: this.props.id,
+                      tags,
+                    })
+                  );
                 }}
                 expanded={false}
                 tags={this.props.tags}
               />
               <SpecialMessageTags
                 onTagClick={(event, tag) => {
-                  this.props.dispatch({
-                    type: "TAG_CLICK",
-                    event,
-                    msgUri: this.props.msgUri,
-                    details: tag.details,
-                  });
+                  this.props.dispatch(
+                    messageActions.tagClick({
+                      event,
+                      msgUri: this.props.msgUri,
+                      details: tag.details,
+                    })
+                  );
                 }}
                 folderName={this.props.shortFolderName}
                 inView={this.props.inView}

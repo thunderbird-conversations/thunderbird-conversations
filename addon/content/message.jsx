@@ -4,7 +4,7 @@
 
 /* globals React, PropTypes, Attachments, MessageHeader, MessageFooter,
            MessageIFrame, SpecialMessageTags, MessageTags,
-           MessageDetails, MessageNotification */
+           MessageDetails, MessageNotification, messageActions */
 /* exported Message */
 
 function isAccel(event) {
@@ -27,7 +27,7 @@ class Message extends React.PureComponent {
       this.props.message.scrollTo
     ) {
       this.lastScrolledMsgUri = this.props.message.msgUri;
-      // The header is 44px high (yes, this is harcodeadly ugly).
+      // The header is 44px high (yes, this is hard coded and ugly).
       window.requestAnimationFrame(() => {
         window.scrollTo(
           0,
@@ -99,10 +99,11 @@ class Message extends React.PureComponent {
   }
 
   onSelected() {
-    this.props.dispatch({
-      type: "MSG_SELECTED",
-      msgUri: this.props.message.msgUri,
-    });
+    this.props.dispatch(
+      messageActions.selected({
+        msgUri: this.props.message.msgUri,
+      })
+    );
   }
 
   onKeyDown(event = {}) {
@@ -117,30 +118,34 @@ class Message extends React.PureComponent {
     switch (shortcut) {
       case "accel-r":
       case "accel-R":
-        this.props.dispatch({
-          type: "MSG_REPLY",
-          msgUri: this.props.message.msgUri,
-          shiftKey,
-        });
+        this.props.dispatch(
+          messageActions.reply({
+            msgUri: this.props.message.msgUri,
+            shiftKey,
+          })
+        );
         stopEvent();
         break;
       case "accel-l":
-        this.props.dispatch({
-          type: "MSG_OPEN_FORWARD",
-          msgUri: this.props.message.msgUri,
-        });
+        this.props.dispatch(
+          messageActions.forward({
+            msgUri: this.props.message.msgUri,
+          })
+        );
         break;
       case "accel-u":
-        this.props.dispatch({
-          type: "MSG_OPEN_SOURCE",
-          msgUri: this.props.message.msgUri,
-        });
+        this.props.dispatch(
+          messageActions.openSource({
+            msgUri: this.props.message.msgUri,
+          })
+        );
         break;
       case "a":
-        this.props.dispatch({
-          type: "MSG_ARCHIVE",
-          id: this.props.message.id,
-        });
+        this.props.dispatch(
+          messageActions.archive({
+            id: this.props.message.id,
+          })
+        );
         break;
       case "o":
         this.props.dispatch({
@@ -157,22 +162,24 @@ class Message extends React.PureComponent {
       case "7":
       case "8":
       case "9":
-        this.props.dispatch({
-          type: "MSG_TOGGLE_TAG_BY_INDEX",
-          id: this.props.message.id,
-          tags: this.props.message.tags,
-          // Tag indexes start at 0
-          index: +shortcut - 1,
-        });
+        this.props.dispatch(
+          messageActions.toggleTagByIndex({
+            id: this.props.message.id,
+            tags: this.props.message.tags,
+            // Tag indexes start at 0
+            index: +shortcut - 1,
+          })
+        );
         stopEvent();
         break;
       case "0":
         // Remove all tags
-        this.props.dispatch({
-          type: "MSG_SET_TAGS",
-          id: this.props.message.id,
-          tags: [],
-        });
+        this.props.dispatch(
+          messageActions.setTags({
+            id: this.props.message.id,
+            tags: [],
+          })
+        );
         stopEvent();
         break;
       case "f":
@@ -207,10 +214,11 @@ class Message extends React.PureComponent {
     }
     if (this._topInView && this._bottomInView) {
       this.read = true;
-      this.props.dispatch({
-        type: "MSG_MARK_AS_READ",
-        msgUri: this.props.message.msgUri,
-      });
+      this.props.dispatch(
+        messageActions.markAsRead({
+          msgUri: this.props.message.msgUri,
+        })
+      );
       this.removeScrollListener();
     }
   }
@@ -288,12 +296,13 @@ class Message extends React.PureComponent {
                 });
               }}
               onTagClick={(event, tag) => {
-                this.props.dispatch({
-                  type: "TAG_CLICK",
-                  event,
-                  msgUri: this.props.message.msgUri,
-                  details: tag.details,
-                });
+                this.props.dispatch(
+                  messageActions.tagClick({
+                    event,
+                    msgUri: this.props.message.msgUri,
+                    details: tag.details,
+                  })
+                );
               }}
               folderName={this.props.message.folderName}
               inView={this.props.message.inView}
@@ -303,11 +312,12 @@ class Message extends React.PureComponent {
           {this.props.message.expanded && (
             <MessageTags
               onTagsChange={tags => {
-                this.props.dispatch({
-                  type: "MSG_SET_TAGS",
-                  id: this.props.message.id,
-                  tags,
-                });
+                this.props.dispatch(
+                  messageActions.setTags({
+                    id: this.props.message.id,
+                    tags,
+                  })
+                );
               }}
               expanded={true}
               tags={this.props.message.tags}
