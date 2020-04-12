@@ -6,10 +6,21 @@ Building
 
 1. Clone the repository
 2. Change into the main folder, run `git submodule update --init`
-3. Run `npm install`
+3. Run `npm ci`
 4. Run `npm run build`
 
-This will package a `conversations.xpi` file of the latest codebase which can be installed via add-on manager in Thunderbird (hint: you can drag & drop it onto the add-on manager view).
+You will need to do the last step every time you change something.
+
+Running in Thunderbird
+----------------------
+
+Note: At the moment when making changes, espeically to the modules, it is best
+to load the add-on via temporary, and restart Thunderbird which each change.
+
+1. Start (or restart) Thunderbird with `$ /path/to/thunderbird -purgecaches`
+2. Go to three-bar menu -> Tools -> Developer Tools -> Debug Add-ons
+3. Select Load Temporary Add-on
+4. Navigate to the `dist` directory and select a file there.
 
 Development in the Browser
 --------------------------
@@ -29,7 +40,7 @@ files that change.
 
 ### Missing Thunderbird APIs
 
-The browser lacks some of Thunderbird's APIs. These are mocked in 
+The browser lacks some of Thunderbird's APIs. These are mocked in
 `addon/content/es-modules/thunderbird-compat.js`. All components may import
 from `thunderbird-compat.js`, which will use native APIs if available, otherwise
 fall back to mocked APIs.
@@ -46,7 +57,7 @@ the same copy of `React`.
 Testing
 -------
 
-`thunderbird-conversations` has linting tests and [jest](https://jestjs.io) tests. To run all tests, do 
+`thunderbird-conversations` has linting tests and [jest](https://jestjs.io) tests. To run all tests, do
 
 ```
 $ npm test

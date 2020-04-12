@@ -23,26 +23,8 @@ The master branch of `thunderbird-conversations` is sometimes only compatible wi
 
 Each major release typically has a release branch for that release (e.g. 2.14+). All pull requests should be against the master branch, we may transplant them after landing to the release if we want them on the release branch.
 
-Building
-========
-
-1. Clone the repository
-2. Change into the main folder, run `git submodule update --init`
-3. Run `npm ci`
-4. Run `npm run build`
-
-This will package a `converstions.xpi` file of the latest codebase which can be installed via add-on manager in Thunderbird (hint: you can drag & drop it onto the add-on manager view).
-
-Development
-===========
-
-Some `thunderbird-conversations` components can be developed fully in the browser. To build these components do
-
-```
-$ npm run dev
-```
-
-and then browse to http://localhost:8126 and select a browser-compatible component file. For example, http://localhost:8126/options.html  Missing Thunderbird APIs are mocked in `addon/content/es-modules/thunderbird-compat.js`.
+Building and Development
+========================
 
 Please see [Development.md](docs/Development.md) for details.
 
