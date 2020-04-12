@@ -544,5 +544,138 @@
   "attachments.context.save": {
     "message": "Guardar adjunto",
     "description": "Context menu item to save an attachment."
+  },
+
+  "pluralForm": {
+    "message": "1",
+    "description": "Please make sure you read and understood https://developer.mozilla.org/en/Localization_and_Plurals. pluralForm corresponds to the 'pluralRule' variable that's described in the page, it's just a mistake if the name doesn't match the MDC page."
+  },
+
+  "attachments.numAttachments": {
+    "message": "un adjunto;$num$ adjuntos",
+    "description": "The description used for how many attachments there are. This should take the form of a plural form, see also 'pluralForm'.",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+
+  "message.meFromMeToSomeone": {
+    "message": "Yo",
+    "description": "One of four different strings are required to accomodate some languages which have specific declensions."
+  },
+
+  "message.meFromSomeoneToMe": {
+    "message": "Yo",
+    "description": "One of four different strings are required to accomodate some languages which have specific declensions."
+  },
+
+  "message.meBetweenMeAndSomeone": {
+    "message": "Yo",
+    "description": "One of four different strings are required to accomodate some languages which have specific declensions."
+  },
+
+  "message.meBetweenSomeoneAndMe": {
+    "message": "Yo",
+    "description": "One of four different strings are required to accomodate some languages which have specific declensions."
+  },
+
+  "message.headerSubject": {
+    "message": "asunto",
+    "description": "Name for the Subject header that is displayed when you click the show details button."
+  },
+
+  "message.headerDate": {
+    "message": "fecha",
+    "description": "Name for the Date header that is displayed when you click the show details button."
+  },
+
+  "message.headerFolder": {
+    "message": "carpeta",
+    "description": "Name for the Folder header that is displayed when you click the show details button."
+  },
+
+  "involvingTabTitle": {
+    "message": "Mensajes acerca de $contactName$",
+    "description": "This is used when we click on the \"recent conversations\" button in a contact tooltip. This is the title of the tab that opens.",
+    "placeholders": {
+      "contactName": {
+        "content": "$1",
+        "example": "John Smith"
+      }
+    }
+  },
+
+  "compose.confirmDiscard": {
+    "message": "¿Confirma que quiere descartar el mensaje?",
+    "description": "Confirmation message when discarding a compose draft."
+  },
+
+  "compose.attachFiles": {
+    "message": "Adjuntar archivo(s)",
+    "description": "Title of the file picker to attach files to a compose draft."
+  },
+
+  "compose.attachedMessage": {
+    "message": "Adjuntar mensaje.eml",
+    "description": "The filename name to use for an attachment when attaching an email."
+  },
+
+  "compose.attachment": {
+    "message": "Adjunto",
+    "description": "Attachment header when composing a draft."
+  },
+
+  "attachments.sizeUnknown": {
+    "message": "tamaño desconocido",
+    "description": "The message displayed when an attachment size is unknown."
+  },
+
+  "compose.sendAnEmptyMessage": {
+    "message": "¿Enviar un mensaje vacío?",
+    "description": "Confirmation message for sending an empty email."
+  },
+
+  "compose.sendingMessage": {
+    "message": "Enviando mensaje...",
+    "description": "Information text when sending an email."
+  },
+
+  "compose.messageSendingSuccess": {
+    "message": "Mensaje $msgId$ enviado correctamente",
+    "description": "Information text for email sent success.",
+    "placeholders": {
+      "msgId": {
+        "content": "$1",
+        "example": "1234"
+      }
+    }
+  },
+
+  "compose.couldntSendTheMessage": {
+    "message": "No se ha podido enviar el mensaje.",
+    "description": "Information text for when sending email failed."
+  },
+
+  "conversation.forwardFillInText": {
+    "message": "Esta esta una conversación que pienso que puede encontrar interesante",
+    "description": "Text displayed when a conversation is forwarded."
+  },
+
+  "compose.messageSendingCanceled": {
+    "message": "El envío del mensaje se ha cancelado.",
+    "description": "Information text when sending email was canceled."
+  },
+
+  "enigmail.attachmentsNotEncrypted": {
+    "message": "Usando PGP-integrado los adjuntos no se encriptarán.\n¿Enviar el mensaje usando PGP/MIME en su lugar?",
+    "description": "For the enigmail plugin to indicate attachments are not encrypted on sending."
+  },
+
+  "compose.write": {
+    "message": "Escribir...",
+    "description": "Document title for composing an email in a new tab."
   }
 }

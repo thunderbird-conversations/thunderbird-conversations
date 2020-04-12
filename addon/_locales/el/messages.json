@@ -544,5 +544,138 @@
   "attachments.context.save": {
     "message": "Αποθήκευση συνημμένου",
     "description": "Context menu item to save an attachment."
+  },
+
+  "pluralForm": {
+    "message": "1",
+    "description": "Please make sure you read and understood https://developer.mozilla.org/en/Localization_and_Plurals. pluralForm corresponds to the 'pluralRule' variable that's described in the page, it's just a mistake if the name doesn't match the MDC page."
+  },
+
+  "attachments.numAttachments": {
+    "message": "ένα επισυναπτόμενο;$num$ επισυναπτόμενα",
+    "description": "The description used for how many attachments there are. This should take the form of a plural form, see also 'pluralForm'.",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+
+  "message.meFromMeToSomeone": {
+    "message": "Εγώ",
+    "description": "One of four different strings are required to accomodate some languages which have specific declensions."
+  },
+
+  "message.meFromSomeoneToMe": {
+    "message": "Εμένα",
+    "description": "One of four different strings are required to accomodate some languages which have specific declensions."
+  },
+
+  "message.meBetweenMeAndSomeone": {
+    "message": "Εμού",
+    "description": "One of four different strings are required to accomodate some languages which have specific declensions."
+  },
+
+  "message.meBetweenSomeoneAndMe": {
+    "message": "Εμού",
+    "description": "One of four different strings are required to accomodate some languages which have specific declensions."
+  },
+
+  "message.headerSubject": {
+    "message": "Θέμα",
+    "description": "Name for the Subject header that is displayed when you click the show details button."
+  },
+
+  "message.headerDate": {
+    "message": "Ημερομηνία",
+    "description": "Name for the Date header that is displayed when you click the show details button."
+  },
+
+  "message.headerFolder": {
+    "message": "φάκελος",
+    "description": "Name for the Folder header that is displayed when you click the show details button."
+  },
+
+  "involvingTabTitle": {
+    "message": "Μηνύματα σχετικά με $contactName$",
+    "description": "This is used when we click on the \"recent conversations\" button in a contact tooltip. This is the title of the tab that opens.",
+    "placeholders": {
+      "contactName": {
+        "content": "$1",
+        "example": "John Smith"
+      }
+    }
+  },
+
+  "compose.confirmDiscard": {
+    "message": "Θέλετε σίγουρα να αγνοήσετε το μήνυμα;",
+    "description": "Confirmation message when discarding a compose draft."
+  },
+
+  "compose.attachFiles": {
+    "message": "Επισύναψη αρχείου(ων)",
+    "description": "Title of the file picker to attach files to a compose draft."
+  },
+
+  "compose.attachedMessage": {
+    "message": "Συνημμένο μήνυμα.eml",
+    "description": "The filename name to use for an attachment when attaching an email."
+  },
+
+  "compose.attachment": {
+    "message": "Συνημμένο",
+    "description": "Attachment header when composing a draft."
+  },
+
+  "attachments.sizeUnknown": {
+    "message": "άγνωστο μέγεθος",
+    "description": "The message displayed when an attachment size is unknown."
+  },
+
+  "compose.sendAnEmptyMessage": {
+    "message": "Αποστολή κενού μηνύματος;",
+    "description": "Confirmation message for sending an empty email."
+  },
+
+  "compose.sendingMessage": {
+    "message": "Γίνεται αποστολή του μηνύματος...",
+    "description": "Information text when sending an email."
+  },
+
+  "compose.messageSendingSuccess": {
+    "message": "Επιτυχία αποστολής του μηνύματος $msgId$",
+    "description": "Information text for email sent success.",
+    "placeholders": {
+      "msgId": {
+        "content": "$1",
+        "example": "1234"
+      }
+    }
+  },
+
+  "compose.couldntSendTheMessage": {
+    "message": "Δεν ήταν δυνατή η αποστολή του μηνύματος.",
+    "description": "Information text for when sending email failed."
+  },
+
+  "conversation.forwardFillInText": {
+    "message": "Ιδού μια συνομιλία που πιθανόν να σας ενδιαφέρει!",
+    "description": "Text displayed when a conversation is forwarded."
+  },
+
+  "compose.messageSendingCanceled": {
+    "message": "Η αποστολή του μηνύματος ακυρώθηκε.",
+    "description": "Information text when sending email was canceled."
+  },
+
+  "enigmail.attachmentsNotEncrypted": {
+    "message": "Τα συνημμένα δεν θα κρυπτογραφηθούν με το ενσωματωμένο-PGP.\nΘέλετε να στείλετε το μήνυμα ως PGP/MIME;",
+    "description": "For the enigmail plugin to indicate attachments are not encrypted on sending."
+  },
+
+  "compose.write": {
+    "message": "Σύνταξη...",
+    "description": "Document title for composing an email in a new tab."
   }
 }

@@ -544,5 +544,138 @@
   "attachments.context.save": {
     "message": "Gem vedhæftet fil",
     "description": "Context menu item to save an attachment."
+  },
+
+  "pluralForm": {
+    "message": "1",
+    "description": "Please make sure you read and understood https://developer.mozilla.org/en/Localization_and_Plurals. pluralForm corresponds to the 'pluralRule' variable that's described in the page, it's just a mistake if the name doesn't match the MDC page."
+  },
+
+  "attachments.numAttachments": {
+    "message": "en vedhæftet fil;$num$ vedhæftede filer",
+    "description": "The description used for how many attachments there are. This should take the form of a plural form, see also 'pluralForm'.",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+
+  "message.meFromMeToSomeone": {
+    "message": "Mig",
+    "description": "One of four different strings are required to accomodate some languages which have specific declensions."
+  },
+
+  "message.meFromSomeoneToMe": {
+    "message": "mig",
+    "description": "One of four different strings are required to accomodate some languages which have specific declensions."
+  },
+
+  "message.meBetweenMeAndSomeone": {
+    "message": "Mig",
+    "description": "One of four different strings are required to accomodate some languages which have specific declensions."
+  },
+
+  "message.meBetweenSomeoneAndMe": {
+    "message": "mig",
+    "description": "One of four different strings are required to accomodate some languages which have specific declensions."
+  },
+
+  "message.headerSubject": {
+    "message": "emne",
+    "description": "Name for the Subject header that is displayed when you click the show details button."
+  },
+
+  "message.headerDate": {
+    "message": "dato",
+    "description": "Name for the Date header that is displayed when you click the show details button."
+  },
+
+  "message.headerFolder": {
+    "message": "mappe",
+    "description": "Name for the Folder header that is displayed when you click the show details button."
+  },
+
+  "involvingTabTitle": {
+    "message": "Meddelelser der omfatter $contactName$",
+    "description": "This is used when we click on the \"recent conversations\" button in a contact tooltip. This is the title of the tab that opens.",
+    "placeholders": {
+      "contactName": {
+        "content": "$1",
+        "example": "John Smith"
+      }
+    }
+  },
+
+  "compose.confirmDiscard": {
+    "message": "Er du sikker på du vil slette denne meddelelse?",
+    "description": "Confirmation message when discarding a compose draft."
+  },
+
+  "compose.attachFiles": {
+    "message": "Vedhæft filer",
+    "description": "Title of the file picker to attach files to a compose draft."
+  },
+
+  "compose.attachedMessage": {
+    "message": "Vedhæftet Message.eml",
+    "description": "The filename name to use for an attachment when attaching an email."
+  },
+
+  "compose.attachment": {
+    "message": "Vedhæftet fil",
+    "description": "Attachment header when composing a draft."
+  },
+
+  "attachments.sizeUnknown": {
+    "message": "ukendt størrelse",
+    "description": "The message displayed when an attachment size is unknown."
+  },
+
+  "compose.sendAnEmptyMessage": {
+    "message": "Send en tom meddelelse?",
+    "description": "Confirmation message for sending an empty email."
+  },
+
+  "compose.sendingMessage": {
+    "message": "Sender meddelelse...",
+    "description": "Information text when sending an email."
+  },
+
+  "compose.messageSendingSuccess": {
+    "message": "Meddelelsen $msgId$ blev afsendt",
+    "description": "Information text for email sent success.",
+    "placeholders": {
+      "msgId": {
+        "content": "$1",
+        "example": "1234"
+      }
+    }
+  },
+
+  "compose.couldntSendTheMessage": {
+    "message": "Kunne ikke afsende meddelelsen.",
+    "description": "Information text for when sending email failed."
+  },
+
+  "conversation.forwardFillInText": {
+    "message": "Her er en samtale jeg tror du vil finde interessant!",
+    "description": "Text displayed when a conversation is forwarded."
+  },
+
+  "compose.messageSendingCanceled": {
+    "message": "Afsendelse af beskeden blev annulleret.",
+    "description": "Information text when sending email was canceled."
+  },
+
+  "enigmail.attachmentsNotEncrypted": {
+    "message": "Vedhæftede filer vil ikke blive krypteret med inline-PGP.\nSend i stedet meddelelse med PGP/MIME?",
+    "description": "For the enigmail plugin to indicate attachments are not encrypted on sending."
+  },
+
+  "compose.write": {
+    "message": "Skriv…",
+    "description": "Document title for composing an email in a new tab."
   }
 }

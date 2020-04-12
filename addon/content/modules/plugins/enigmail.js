@@ -36,6 +36,7 @@ const { XPCOMUtils } = ChromeUtils.import(
 );
 
 XPCOMUtils.defineLazyModuleGetters(this, {
+  BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   dumpCallStack: "chrome://conversations/content/modules/log.js",
   escapeHtml: "chrome://conversations/content/modules/stdlib/misc.js",
   getMail3Pane: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
@@ -49,7 +50,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   topMail3Pane: "chrome://conversations/content/modules/misc.js",
 });
 
-let strings;
 let templateStrings;
 
 let Log = setupLogging("Conversations.Modules.Enigmail");
@@ -87,9 +87,6 @@ if (hasEnigmail) {
     EnigmailRules: "chrome://enigmail/content/modules/rules.jsm",
   });
 
-  strings = new StringBundle(
-    "chrome://conversations/locale/message.properties"
-  );
   templateStrings = new StringBundle(
     "chrome://conversations/locale/template.properties"
   );
@@ -851,12 +848,13 @@ let enigmailHook = {
         aAttachmentList &&
         aAttachmentList.attachments.length
       ) {
+        const browser = BrowserSim.getBrowser();
         // Attachments will not be encrypted using inline-PGP.
         // We switch to PGP/MIME if possible.
         if (
           EnigmailDialog.confirmDlg(
             window,
-            strings.get("attachmentsNotEncrypted"),
+            browser.i18n.getMessage("enigmail.attachmentsNotEncrypted"),
             EnigmailLocale.getString("pgpMime_sMime.dlg.pgpMime.button"),
             EnigmailLocale.getString("dlg.button.cancel")
           )

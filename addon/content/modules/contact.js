@@ -16,6 +16,7 @@ const { XPCOMUtils } = ChromeUtils.import(
 );
 
 XPCOMUtils.defineLazyModuleGetters(this, {
+  BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   DisplayNameUtils: "resource:///modules/DisplayNameUtils.jsm",
   composeMessageTo: "chrome://conversations/content/modules/stdlib/compose.js",
   getIdentities: "chrome://conversations/content/modules/stdlib/misc.js",
@@ -24,7 +25,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   Gloda: "resource:///modules/gloda/gloda.js",
   Services: "resource://gre/modules/Services.jsm",
   setupLogging: "chrome://conversations/content/modules/log.js",
-  StringBundle: "resource:///modules/StringBundle.js",
 });
 
 var Contacts = {
@@ -38,10 +38,6 @@ const defaultPhotoURI =
 XPCOMUtils.defineLazyGetter(this, "Log", () => {
   return setupLogging("Conversations.Contact");
 });
-
-let strings = new StringBundle(
-  "chrome://conversations/locale/message.properties"
-);
 
 // Taken from
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/charAt#Fixing_charAt()_to_support_non-Basic-Multilingual-Plane_(BMP)_characters
@@ -125,10 +121,11 @@ var ContactHelpers = {
           onItemsModified: function _onItemsModified(aItems, aCollection) {},
           onItemsRemoved: function _onItemsRemoved(aItems, aCollection) {},
           onQueryCompleted: function _onQueryCompleted(aCollection) {
+            const browser = BrowserSim.getBrowser();
             let tabmail = win.document.getElementById("tabmail");
             tabmail.openTab("glodaList", {
               collection: aCollection,
-              title: strings.get("involvingTabTitle").replace("#1", name),
+              title: browser.i18n.getMessage("involvingTabTitle", [name]),
               background: false,
             });
           },
@@ -291,18 +288,21 @@ ContactFromAB.prototype = {
   },
 
   getTooltipName(aPosition) {
+    const browser = BrowserSim.getBrowser();
+
     Log.assert(
       aPosition === Contacts.kFrom || aPosition === Contacts.kTo,
       "Someone did not set the 'position' properly"
     );
     if (getIdentityForEmail(this._email)) {
-      return strings.get("meFromMeToSomeone");
+      return browser.i18n.getMessage("message.meFromMeToSomeone");
     }
 
     return this._name || this._email;
   },
 
   getName(aPosition, aIsDetail) {
+    const browser = BrowserSim.getBrowser();
     Log.assert(
       aPosition === Contacts.kFrom || aPosition === Contacts.kTo,
       "Someone did not set the 'position' properly"
@@ -310,8 +310,8 @@ ContactFromAB.prototype = {
     if (getIdentityForEmail(this._email) && !aIsDetail) {
       let display =
         aPosition === Contacts.kFrom
-          ? strings.get("meFromMeToSomeone")
-          : strings.get("meFromSomeoneToMe");
+          ? browser.i18n.getMessage("message.meFromMeToSomeone")
+          : browser.i18n.getMessage("message.meFromSomeoneToMe");
       return [display, getIdentities().length > 1 ? this._email : ""];
     }
 

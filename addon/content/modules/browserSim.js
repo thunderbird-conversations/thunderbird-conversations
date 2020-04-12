@@ -27,6 +27,9 @@ class _BrowserSim {
   }
 
   getBrowser() {
+    if (this._browser) {
+      return this._browser;
+    }
     let extension = ExtensionParent.GlobalManager.getExtension(ADDON_ID);
     function implementation(api, name) {
       let impl = api.getAPI({ extension })[name];
@@ -70,6 +73,7 @@ class _BrowserSim {
         browser[apiName] = new Proxy({}, subApiHandler);
       }
     }
+    this._browser = browser;
     return browser;
   }
 }

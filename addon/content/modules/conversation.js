@@ -11,6 +11,7 @@ const { XPCOMUtils } = ChromeUtils.import(
 );
 
 XPCOMUtils.defineLazyModuleGetters(this, {
+  BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   Colors: "chrome://conversations/content/modules/log.js",
   ContactManager: "chrome://conversations/content/modules/contact.js",
   dumpCallStack: "chrome://conversations/content/modules/log.js",
@@ -39,7 +40,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   range: "chrome://conversations/content/modules/stdlib/misc.js",
   setupLogging: "chrome://conversations/content/modules/log.js",
   Services: "resource://gre/modules/Services.jsm",
-  StringBundle: "resource:///modules/StringBundle.js",
   topMail3Pane: "chrome://conversations/content/modules/misc.js",
 });
 
@@ -54,10 +54,6 @@ const kAllowRemoteContent = 2;
 const kHeadersShowAll = 2;
 
 const nsMsgViewIndex_None = 0xffffffff;
-
-let strings = new StringBundle(
-  "chrome://conversations/locale/message.properties"
-);
 
 function tenPxFactor() {
   if (isOSX) {
@@ -963,12 +959,17 @@ Conversation.prototype = {
 
   // For the "forward conversation" action
   async exportAsHtml() {
+    const browser = BrowserSim.getBrowser();
     // Somehow this seems to be needed... why? Dunno.
     let start = "<html><body>";
     let hr =
       '<div style="border-top: 1px solid #888; height: 15px; width: 70%; margin: 0 auto; margin-top: 15px">&nbsp;</div>';
     let html =
-      start + "<p>" + strings.get("conversationFillInText") + "</p>" + hr;
+      start +
+      "<p>" +
+      browser.i18n.getMessage("conversation.forwardFillInText") +
+      "</p>" +
+      hr;
     let promises = [];
     for (const msg of this.messages) {
       promises.push(msg.message.exportAsHtml());

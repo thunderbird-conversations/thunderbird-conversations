@@ -544,5 +544,138 @@
   "attachments.context.save": {
     "message": "Uložit přílohu",
     "description": "Context menu item to save an attachment."
+  },
+
+  "pluralForm": {
+    "message": "8",
+    "description": "Please make sure you read and understood https://developer.mozilla.org/en/Localization_and_Plurals. pluralForm corresponds to the 'pluralRule' variable that's described in the page, it's just a mistake if the name doesn't match the MDC page."
+  },
+
+  "attachments.numAttachments": {
+    "message": "jedna příloha;$num$ přílohy;$num$ příloh",
+    "description": "The description used for how many attachments there are. This should take the form of a plural form, see also 'pluralForm'.",
+    "placeholders": {
+      "num": {
+        "content": "$1",
+        "example": "2"
+      }
+    }
+  },
+
+  "message.meFromMeToSomeone": {
+    "message": "já",
+    "description": "One of four different strings are required to accomodate some languages which have specific declensions."
+  },
+
+  "message.meFromSomeoneToMe": {
+    "message": "mě",
+    "description": "One of four different strings are required to accomodate some languages which have specific declensions."
+  },
+
+  "message.meBetweenMeAndSomeone": {
+    "message": "já",
+    "description": "One of four different strings are required to accomodate some languages which have specific declensions."
+  },
+
+  "message.meBetweenSomeoneAndMe": {
+    "message": "já",
+    "description": "One of four different strings are required to accomodate some languages which have specific declensions."
+  },
+
+  "message.headerSubject": {
+    "message": "předmět",
+    "description": "Name for the Subject header that is displayed when you click the show details button."
+  },
+
+  "message.headerDate": {
+    "message": "datum",
+    "description": "Name for the Date header that is displayed when you click the show details button."
+  },
+
+  "message.headerFolder": {
+    "message": "složka",
+    "description": "Name for the Folder header that is displayed when you click the show details button."
+  },
+
+  "involvingTabTitle": {
+    "message": "Zprávy zahrnující $contactName$",
+    "description": "This is used when we click on the \"recent conversations\" button in a contact tooltip. This is the title of the tab that opens.",
+    "placeholders": {
+      "contactName": {
+        "content": "$1",
+        "example": "John Smith"
+      }
+    }
+  },
+
+  "compose.confirmDiscard": {
+    "message": "Opravdu si tuto zprávu přejete smazat?",
+    "description": "Confirmation message when discarding a compose draft."
+  },
+
+  "compose.attachFiles": {
+    "message": "Připojit soubor(y)",
+    "description": "Title of the file picker to attach files to a compose draft."
+  },
+
+  "compose.attachedMessage": {
+    "message": "Přiloženo Message.eml",
+    "description": "The filename name to use for an attachment when attaching an email."
+  },
+
+  "compose.attachment": {
+    "message": "Příloha",
+    "description": "Attachment header when composing a draft."
+  },
+
+  "attachments.sizeUnknown": {
+    "message": "neznámá velikost",
+    "description": "The message displayed when an attachment size is unknown."
+  },
+
+  "compose.sendAnEmptyMessage": {
+    "message": "Odeslat prázdnou zprávu?",
+    "description": "Confirmation message for sending an empty email."
+  },
+
+  "compose.sendingMessage": {
+    "message": "Odesílání zprávy...",
+    "description": "Information text when sending an email."
+  },
+
+  "compose.messageSendingSuccess": {
+    "message": "Zpráva $msgId$ úspěšně odeslána",
+    "description": "Information text for email sent success.",
+    "placeholders": {
+      "msgId": {
+        "content": "$1",
+        "example": "1234"
+      }
+    }
+  },
+
+  "compose.couldntSendTheMessage": {
+    "message": "Nelze odeslat zprávu.",
+    "description": "Information text for when sending email failed."
+  },
+
+  "conversation.forwardFillInText": {
+    "message": "Tato konverzace by Vás mohla zajímat.",
+    "description": "Text displayed when a conversation is forwarded."
+  },
+
+  "compose.messageSendingCanceled": {
+    "message": "Odesílání zprávy bylo zrušeno.",
+    "description": "Information text when sending email was canceled."
+  },
+
+  "enigmail.attachmentsNotEncrypted": {
+    "message": "Přílohy nebudou kódovány pomocí inline-PGP.\nOdeslat místo toho zprávu pomocí PGP/MIME?",
+    "description": "For the enigmail plugin to indicate attachments are not encrypted on sending."
+  },
+
+  "compose.write": {
+    "message": "Psaní zprávy...",
+    "description": "Document title for composing an email in a new tab."
   }
 }

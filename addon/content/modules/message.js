@@ -22,7 +22,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   quoteMsgHdr: "chrome://conversations/content/modules/stdlib/compose.js",
   setupLogging: "chrome://conversations/content/modules/log.js",
   Services: "resource://gre/modules/Services.jsm",
-  StringBundle: "resource:///modules/StringBundle.js",
 });
 
 const {
@@ -39,9 +38,9 @@ XPCOMUtils.defineLazyGetter(Services, "mMessenger", function() {
   return Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
 });
 
-let strings = new StringBundle(
-  "chrome://conversations/locale/message.properties"
-);
+XPCOMUtils.defineLazyGetter(this, "browser", function() {
+  return BrowserSim.getBrowser();
+});
 
 const {
   msgHdrGetHeaders,
@@ -230,11 +229,11 @@ class _MessageUtils {
       try {
         let extraLines = [
           {
-            key: strings.get("header-folder"),
+            key: browser.i18n.getMessage("message.headerFolder"),
             value: folderName(msgHdr.folder)[1],
           },
         ];
-        let interestingHeaders = [
+        const interestingHeaders = [
           "mailed-by",
           "x-mailer",
           "mailer",
@@ -242,22 +241,22 @@ class _MessageUtils {
           "user-agent",
           "reply-to",
         ];
-        for (let h of interestingHeaders) {
+        for (const h of interestingHeaders) {
           if (headers.has(h)) {
             let key = h;
-            try {
-              // Note all the header names are translated.
-              key = strings.get("header-" + h);
-            } catch (e) {}
+            // Not all the header names are translated.
+            if (h == "date") {
+              key = browser.i18n.getMessage("message.headerDate");
+            }
             extraLines.push({
               key,
               value: headers.get(h),
             });
           }
         }
-        let subject = headers.get("subject");
+        const subject = headers.get("subject");
         extraLines.push({
-          key: strings.get("header-subject"),
+          key: browser.i18n.getMessage("message.headerSubject"),
           value: subject ? GlodaUtils.deMime(subject) : "",
         });
 
@@ -482,13 +481,15 @@ class Message {
   // Generate Attachment objects
   toTmplDataForAttachments() {
     let l = this._attachments.length;
-    let [makePlural] = PluralForm.makeGetter(strings.get("pluralForm"));
+    let [makePlural] = PluralForm.makeGetter(
+      browser.i18n.getMessage("pluralForm")
+    );
     const result = {
       attachments: [],
-      attachmentsPlural: makePlural(l, strings.get("attachments")).replace(
-        "#1",
-        l
-      ),
+      attachmentsPlural: makePlural(
+        l,
+        browser.i18n.getMessage("attachments.numAttachments")
+      ).replace("#1", l),
       gallery: false,
     };
     for (let i = 0; i < l; i++) {
@@ -509,7 +510,7 @@ class Message {
             "mime-icon",
           ];
       // This is bug 630011, remove when fixed
-      let formattedSize = strings.get("sizeUnknown");
+      let formattedSize = browser.i18n.getMessage("attachments.sizeUnknown");
       // -1 means size unknown
       if (att.size != -1) {
         formattedSize = Services.mMessenger.formatFileSize(att.size);
@@ -863,7 +864,6 @@ class MessageFromGloda extends Message {
   }
 
   async init() {
-    let browser = BrowserSim.getBrowser();
     this._id = await browser.conversations.getMessageIdForUri(this._uri);
 
     // Our gloda plugin found something for us, thanks dude!
@@ -1006,7 +1006,6 @@ class MessageFromDbHdr extends Message {
   }
 
   async init() {
-    let browser = BrowserSim.getBrowser();
     this._id = await browser.conversations.getMessageIdForUri(this._uri);
     // Gloda is not with us, so stream the message... the MimeMsg API says that
     //  the streaming will fail and the underlying exception will be re-thrown in

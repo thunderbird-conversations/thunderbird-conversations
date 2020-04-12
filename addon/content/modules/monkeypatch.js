@@ -12,6 +12,7 @@ const { XPCOMUtils } = ChromeUtils.import(
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   arrayEquals: "chrome://conversations/content/modules/misc.js",
+  BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   Colors: "chrome://conversations/content/modules/log.js",
   Conversation: "chrome://conversations/content/modules/conversation.js",
   Customizations: "chrome://conversations/content/modules/assistant.js",
@@ -36,10 +37,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
 });
 
 const kMultiMessageUrl = "chrome://messenger/content/multimessageview.xhtml";
-
-let strings = new StringBundle(
-  "chrome://conversations/locale/message.properties"
-);
 
 XPCOMUtils.defineLazyGetter(this, "Log", () => {
   return setupLogging("Conversations.MonkeyPatch");
@@ -137,6 +134,7 @@ MonkeyPatch.prototype = {
     //
     // https://developer.mozilla.org/en/Extensions/Thunderbird/Creating_a_Custom_Column
     let window = this._window;
+    const browser = BrowserSim.getBrowser();
 
     let participants = function(msgHdr) {
       try {
@@ -147,8 +145,8 @@ MonkeyPatch.prototype = {
         let format = function(x, p) {
           if (getIdentityForEmail(x.email)) {
             let display = p
-              ? strings.get("meBetweenMeAndSomeone")
-              : strings.get("meBetweenSomeoneAndMe");
+              ? browser.i18n.getMessage("meBetweenMeAndSomeone")
+              : browser.i18n.getMessage("meBetweenSomeoneAndMe");
             if (getIdentities().length > 1) {
               display += " (" + x.email + ")";
             }
