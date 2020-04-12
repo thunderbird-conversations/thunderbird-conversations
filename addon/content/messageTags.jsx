@@ -125,7 +125,7 @@ SpecialMessageTag.propTypes = {
   name: PropTypes.string.isRequired,
   title: PropTypes.string,
   onClick: PropTypes.func,
-  tooltip: PropTypes.object.isRequired,
+  tooltip: PropTypes.object,
 };
 
 function SpecialMessageTags({
@@ -150,17 +150,18 @@ function SpecialMessageTags({
 
   return (
     <ul className="tags special-tags">
-      {specialTags.map((tag, i) => (
-        <SpecialMessageTag
-          classNames={tag.classNames}
-          icon={tag.icon}
-          key={i}
-          name={tag.name}
-          onClick={tag.details && (event => onTagClick(event, tag))}
-          title={tag.title}
-          tooltip={tag.tooltip}
-        />
-      ))}
+      {specialTags &&
+        specialTags.map((tag, i) => (
+          <SpecialMessageTag
+            classNames={tag.classNames}
+            icon={tag.icon}
+            key={i}
+            name={tag.name}
+            onClick={tag.details && (event => onTagClick(event, tag))}
+            title={tag.title}
+            tooltip={tag.tooltip}
+          />
+        ))}
       {folderItem}
     </ul>
   );
@@ -171,7 +172,7 @@ SpecialMessageTags.propTypes = {
   onFolderClick: PropTypes.func,
   folderName: PropTypes.string.isRequired,
   inView: PropTypes.bool.isRequired,
-  specialTags: PropTypes.array.isRequired,
+  specialTags: PropTypes.array,
 };
 
 // This is temporary code to allow using using this as both

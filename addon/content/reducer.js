@@ -341,10 +341,26 @@ function messages(state = initialMessages, action) {
         return { ...msg, ...action.msgData };
       });
     }
-    case "MSG_UPDATE_SPECIAL_TAGS": {
+    case "MSG_ADD_SPECIAL_TAG": {
       return modifyOnlyMsg(state, action.uri, msg => {
-        const newSpecialTags = [...action.specialTags];
+        let newSpecialTags;
+        if (!("specialTags" in msg)) {
+          newSpecialTags = [action.tagDetails];
+        } else {
+          newSpecialTags = [...msg.specialTags, action.tagDetails];
+        }
         return { ...msg, specialTags: newSpecialTags };
+      });
+    }
+    case "MSG_REMOVE_SPECIAL_TAG": {
+      return modifyOnlyMsg(state, action.uri, msg => {
+        const newSpecialTags = [...msg.specialTags];
+        return {
+          ...msg,
+          specialTags: newSpecialTags.filter(
+            t => t.name != action.tagDetails.name
+          ),
+        };
       });
     }
     case "MARK_AS_JUNK": {

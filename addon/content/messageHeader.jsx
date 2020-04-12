@@ -356,5 +356,5 @@ MessageHeader.propTypes = {
   starred: PropTypes.bool.isRequired,
   tags: PropTypes.array.isRequired,
   to: PropTypes.array.isRequired,
-  specialTags: PropTypes.array.isRequired,
+  specialTags: PropTypes.array,
 };

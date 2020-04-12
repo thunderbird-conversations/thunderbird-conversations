@@ -325,7 +325,6 @@ class Message {
 
     // Selected state for onSelected function
     this._selected = false;
-    this._specialTags = [];
   }
 
   // Wraps the low-level header parser stuff.
@@ -420,7 +419,6 @@ class Message {
       realFrom: this._realFrom.email || this._from.email,
       recipientsIncludeLists: this.isReplyListEnabled,
       snippet: this._snippet,
-      specialTags: this._specialTags,
       starred: this._msgHdr.isFlagged,
     };
 
@@ -575,8 +573,7 @@ class Message {
         }
       }
     } catch (e) {
-      Log.warn("Plugin returned an error:", e);
-      dumpCallStack(e);
+      console.error("Plugin returned an error:", e);
     }
   }
 
@@ -602,17 +599,20 @@ class Message {
   }
 
   addSpecialTag(tagDetails) {
-    this._specialTags.push(tagDetails);
-
     this._conversation._htmlPane.conversationDispatch({
-      type: "MSG_UPDATE_SPECIAL_TAGS",
-      specialTags: this._specialTags,
+      type: "MSG_ADD_SPECIAL_TAG",
+      tagDetails,
       uri: this._uri,
     });
   }
 
   removeSpecialTag(tagDetails) {
-    this._specialTags = this.specialTags.filter(t => t.name != tagDetails.name);
+    this._conversation._htmlPane.conversationDispatch({
+      type: "MSG_REMOVE_SPECIAL_TAG",
+      tagDetails,
+      uri: this._uri,
+    });
+    // this._specialTags = this.specialTags.filter(t => t.name != tagDetails.name);
   }
 
   streamMessage(msgWindow, docshell) {
@@ -623,8 +623,7 @@ class Message {
           h.onMessageBeforeStreaming(this);
         }
       } catch (e) {
-        Log.warn("Plugin returned an error:", e);
-        dumpCallStack(e);
+        console.error("Plugin returned an error:", e);
       }
     }
 
@@ -655,8 +654,7 @@ class Message {
             h.onMessageStreamed(this._msgHdr, iframe, msgWindow, this);
           }
         } catch (e) {
-          Log.warn("Plugin returned an error:", e);
-          dumpCallStack(e);
+          console.error("Plugin returned an error:", e);
         }
       }
 
@@ -672,7 +670,7 @@ class Message {
             h.onMessageNotification(win, notificationType, extraData);
           }
         } catch (ex) {
-          Log.warn("Plugin returned an error:", ex);
+          console.error("Plugin returned an error:", ex);
         }
       }
     });
@@ -689,7 +687,7 @@ class Message {
             h.onMessageTagClick(win, newEvent, ...extraData);
           }
         } catch (ex) {
-          Log.warn("Plugin returned an error:", ex);
+          console.error("Plugin returned an error:", ex);
         }
       }
     });
