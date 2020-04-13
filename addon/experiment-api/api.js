@@ -5,7 +5,6 @@ var { XPCOMUtils } = ChromeUtils.import(
 XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   Customizations: "chrome://conversations/content/modules/assistant.js",
-  dumpCallStack: "chrome://conversations/content/modules/log.js",
   ExtensionCommon: "resource://gre/modules/ExtensionCommon.jsm",
   GlodaAttrProviders:
     "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
@@ -97,7 +96,6 @@ function prefType(name) {
 
 function monkeyPatchWindow(window) {
   let doIt = function() {
-    console.log(window.document.location);
     try {
       if (
         window.document.location !=
@@ -238,9 +236,8 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
 
         // Patch all future windows
         Services.ww.registerNotification(windowObserver);
-      } catch (e) {
-        Cu.reportError(e);
-        dumpCallStack(e);
+      } catch (ex) {
+        console.error(ex);
       }
     })().catch(console.error);
   }
@@ -320,10 +317,8 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
                 Log.debug("Installing customization", id);
                 let uninstallInfo = await Customizations[id].install();
                 uninstallInfos[id] = uninstallInfo;
-              } catch (e) {
-                Log.error("Error in customization", id);
-                Log.error(e);
-                dumpCallStack(e);
+              } catch (ex) {
+                console.error("Error in customization", id, ex);
               }
             }
           }

@@ -12,9 +12,7 @@ const { XPCOMUtils } = ChromeUtils.import(
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
-  Colors: "chrome://conversations/content/modules/log.js",
   ContactManager: "chrome://conversations/content/modules/contact.js",
-  dumpCallStack: "chrome://conversations/content/modules/log.js",
   groupArray: "chrome://conversations/content/modules/misc.js",
   MailServices: "resource:///modules/MailServices.jsm",
   MessageFromDbHdr: "chrome://conversations/content/modules/message.js",
@@ -97,19 +95,6 @@ function msgDate({ type, message, msgHdr, glodaMsg }) {
 
   Log.error("Bad message type");
   return new Date();
-}
-
-function msgDebugColor(aMsg) {
-  let msgHdr = toMsgHdr(aMsg);
-  if (msgHdr) {
-    if (msgHdr.getUint32Property("pseudoHdr") == 1) {
-      return Colors.yellow;
-    } // fake sent header
-
-    return Colors.blue; // real header
-  }
-  // red = no message header, shouldn't happen
-  return Colors.red;
 }
 
 async function messageFromGlodaIfOffline(aSelf, aGlodaMsg, aDebug) {
@@ -434,10 +419,7 @@ Conversation.prototype = {
         );
         Log.debug(
           "onItemsAdded",
-          messages
-            .map(x => msgDebugColor(x) + x.debug + " " + getMessageId(x))
-            .join(" "),
-          Colors.default
+          messages.map(x => x.debug + " " + getMessageId(x)).join(" ")
         );
         Log.debug(this.messages.length, "messages already in the conversation");
         // The message ids we already hold.
@@ -481,8 +463,6 @@ Conversation.prototype = {
         }
       } catch (e) {
         console.error(e);
-        Log.error(e);
-        dumpCallStack(e);
       }
     });
   },
@@ -620,8 +600,7 @@ Conversation.prototype = {
         this.messages.sort(compare);
         this._whenReady();
       } catch (e) {
-        Log.error(e);
-        dumpCallStack(e);
+        console.error(e);
       }
     });
   },
@@ -712,11 +691,7 @@ Conversation.prototype = {
       return;
     }
 
-    Log.debug(
-      "Appending",
-      aMessages.map(x => msgDebugColor(x) + x.debug).join(" "),
-      Colors.default
-    );
+    Log.debug("Appending", aMessages.map(x => x.debug).join(" "));
 
     // All your messages are belong to us. This is especially important so
     //  that contacts query the right _contactManager through their parent
@@ -817,8 +792,7 @@ Conversation.prototype = {
         // TODO: Re-enable this.
         // this._htmlPane.onSave();
       } catch (e) {
-        Log.error(e);
-        dumpCallStack(e);
+        console.error(e);
       }
       // We'll be replacing the old conversation. Do this after the call to
       // onSave, because onSave calls getMessageForQuickReply...
@@ -827,8 +801,7 @@ Conversation.prototype = {
 
     Log.debug(
       "Outputting",
-      this.messages.map(x => msgDebugColor(x) + x.debug),
-      Colors.default
+      this.messages.map(x => x.debug)
     );
     Log.debug(this.messages.length, "messages in the conversation now");
 

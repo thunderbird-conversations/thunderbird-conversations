@@ -1,7 +1,7 @@
 "use strict";
 
-/* exported setupAutocomplete, Colors, getDefaultIdentity, getIdentityForEmail,
-            getIdentities, setupLogging, dumpCallStack */
+/* exported setupAutocomplete, getDefaultIdentity, getIdentityForEmail,
+            getIdentities, setupLogging */
 /* global $, showCc, showBcc, strings */
 /* import-globals-from quickReply.js */
 /* import-globals-from reducer.js */
@@ -22,7 +22,7 @@ const {
   getIdentityForEmail,
   getIdentities,
 } = ChromeUtils.import("chrome://conversations/content/modules/stdlib/misc.js");
-const { setupLogging, dumpCallStack, Colors } = ChromeUtils.import(
+const { setupLogging } = ChromeUtils.import(
   "chrome://conversations/content/modules/log.js"
 );
 
@@ -299,10 +299,9 @@ function setupAutocomplete(to, cc, bcc) {
         classes: autoCompleteClasses,
         prePopulate: aData,
       });
-    } catch (e) {
-      Log.debug("Error in jquery-autocomplete", e);
-      dumpCallStack(e);
-      throw e;
+    } catch (ex) {
+      console.error("Error in jquery-autocomplete", ex);
+      throw ex;
     }
     $(aList + " li:not(.add-more)").remove();
     $(aList + " .recipientListSeparator").remove();

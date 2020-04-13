@@ -194,9 +194,8 @@ function newComposeSessionByClick(type) {
     // if we modified the body and/or the composition fields.
     startedEditing(true);
     revealCompositionFields();
-  } catch (e) {
-    Log.debug(e);
-    dumpCallStack(e);
+  } catch (ex) {
+    console.error(ex);
   }
 }
 
@@ -379,8 +378,7 @@ function createComposeSession(what) {
 function startedEditing(aVal) {
   if (aVal !== undefined) {
     if (!gComposeSession) {
-      Log.error("No composition session yet");
-      dumpCallStack();
+      console.error("No composition session yet");
     } else {
       gComposeSession.startedEditing = aVal;
     }
@@ -734,9 +732,8 @@ ComposeSession.prototype = {
               window
             );
           }
-        } catch (e) {
-          Log.warn("Plugin returned an error:", e);
-          dumpCallStack(e);
+        } catch (ex) {
+          console.error("Plugin returned an error:", ex);
         }
       }
     }
@@ -799,9 +796,8 @@ ComposeSession.prototype = {
               sendStatus = newSendStatus;
             }
           }
-        } catch (e) {
-          Log.warn("Plugin returned an error:", e);
-          dumpCallStack(e);
+        } catch (ex) {
+          console.error("Plugin returned an error:", ex);
         }
       }
     }
@@ -1243,9 +1239,8 @@ let sendListener = {
         if (typeof h.onStopSending == "function") {
           h.onStopSending(aMsgID, aStatus, aMsg, aReturnFile);
         }
-      } catch (e) {
-        Log.warn("Plugin returned an error:", e);
-        dumpCallStack(e);
+      } catch (ex) {
+        console.error("Plugin returned an error:", ex);
       }
     }
   },

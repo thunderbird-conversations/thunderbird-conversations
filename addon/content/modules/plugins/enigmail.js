@@ -37,7 +37,6 @@ const { XPCOMUtils } = ChromeUtils.import(
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
-  dumpCallStack: "chrome://conversations/content/modules/log.js",
   escapeHtml: "chrome://conversations/content/modules/stdlib/misc.js",
   getMail3Pane: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   htmlToPlainText: "chrome://conversations/content/modules/stdlib/compose.js",
@@ -527,8 +526,7 @@ function tryEnigmail(aDocument, aMessage, aMsgWindow) {
     });
     return statusFlagsObj.value;
   } catch (ex) {
-    dumpCallStack(ex);
-    Log.error("Enigmail error: " + ex + " --- " + errorMsgObj.value + "\n");
+    console.error("Enigmail error:", errorMsgObj.value, ex);
     return null;
   }
 }
@@ -967,10 +965,7 @@ let enigmailHook = {
         }
       }
     } catch (ex) {
-      dumpCallStack(ex);
-      Log.error(
-        "Enigmail encrypt error: " + ex + " --- " + errorMsgObj.value + "\n"
-      );
+      console.error("Enigmail encrypt error:", errorMsgObj.value, ex);
       let msg = EnigmailLocale.getString("signFailed");
       if (enigmailSvc && enigmailSvc.initializationError) {
         msg += "\n" + enigmailSvc.initializationError;

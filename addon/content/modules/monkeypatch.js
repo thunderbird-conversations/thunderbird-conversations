@@ -13,10 +13,8 @@ const { XPCOMUtils } = ChromeUtils.import(
 XPCOMUtils.defineLazyModuleGetters(this, {
   arrayEquals: "chrome://conversations/content/modules/misc.js",
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
-  Colors: "chrome://conversations/content/modules/log.js",
   Conversation: "chrome://conversations/content/modules/conversation.js",
   Customizations: "chrome://conversations/content/modules/assistant.js",
-  dumpCallStack: "chrome://conversations/content/modules/log.js",
   getIdentityForEmail: "chrome://conversations/content/modules/stdlib/misc.js",
   getIdentities: "chrome://conversations/content/modules/stdlib/misc.js",
   getMail3Pane: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
@@ -64,9 +62,8 @@ MonkeyPatch.prototype = {
     while ((f = this._undoFuncs.pop())) {
       try {
         f(aReason);
-      } catch (e) {
-        Log.error("Failed to undo some customization", e);
-        dumpCallStack(e);
+      } catch (ex) {
+        console.error("Failed to undo some customization", ex);
       }
     }
   },
@@ -162,9 +159,8 @@ MonkeyPatch.prototype = {
         if (people.length) {
           return joinWordList(people);
         }
-      } catch (e) {
-        Log.debug("Error in the special column", e);
-        dumpCallStack(e);
+      } catch (ex) {
+        console.error("Error in the special column", ex);
       }
       return "-";
     };
@@ -281,9 +277,8 @@ MonkeyPatch.prototype = {
             window.gDBView.isContainer(rootIndex) &&
             !window.gFolderDisplay.view.isCollapsedThreadAtIndex(rootIndex);
         }
-      } catch (e) {
-        Log.debug("Error in the onLocationChange handler " + e + "\n");
-        dumpCallStack(e);
+      } catch (ex) {
+        console.error("Error in the onLocationChange handler", ex);
       }
     }
     if (window.gFolderDisplay.view.showThreaded) {
@@ -333,9 +328,8 @@ MonkeyPatch.prototype = {
         try {
           Log.debug("Uninstalling", k, uninstallInfos[k]);
           v.uninstall(uninstallInfos[k]);
-        } catch (e) {
-          Log.error("Failed to uninstall", k, e);
-          dumpCallStack(e);
+        } catch (ex) {
+          console.error("Failed to uninstall", k, ex);
         }
       }
     }
@@ -571,9 +565,7 @@ MonkeyPatch.prototype = {
           if (window.Conversations.currentConversation) {
             Log.debug(
               "Current conversation is",
-              Colors.red,
-              window.Conversations.currentConversation.counter,
-              Colors.default
+              window.Conversations.currentConversation.counter
             );
           } else {
             Log.debug("First conversation");
@@ -582,7 +574,7 @@ MonkeyPatch.prototype = {
             aConversation
           ) {
             if (!aConversation.messages.length) {
-              Log.debug(Colors.red, "0 messages in aConversation");
+              Log.debug("0 messages in aConversation");
               return;
             }
             // So we've been promoted to be the new conversation! Remember
@@ -649,11 +641,7 @@ MonkeyPatch.prototype = {
                   //  mark as read. Otherwise, it's not, since we may silently
                   //  mark new messages as read.
                   if (isDifferentConversation) {
-                    Log.debug(
-                      Colors.red,
-                      "Marking the whole conversation as read",
-                      Colors.default
-                    );
+                    Log.debug("Marking the whole conversation as read");
                     for (const m of aConversation.messages) {
                       if (!m.message.read) {
                         m.message.read = true;
@@ -669,11 +657,7 @@ MonkeyPatch.prototype = {
                 } else if (scrollMode == Prefs.kScrollSelected) {
                   // We don't seem to have a reflow when the thread is expanded
                   //  so no risk of silently marking conversations as read.
-                  Log.debug(
-                    Colors.red,
-                    "Marking selected messages as read",
-                    Colors.default
-                  );
+                  Log.debug("Marking selected messages as read");
                   msgHdrsMarkAsRead(aSelectedMessages, true);
                 } else {
                   Log.assert(false, "GIVE ME ALGEBRAIC DATA TYPES!!!");
@@ -686,9 +670,8 @@ MonkeyPatch.prototype = {
                 1000);
             }
           });
-        } catch (e) {
-          Log.error(e);
-          dumpCallStack(e);
+        } catch (ex) {
+          console.error(ex);
         }
       });
     };
@@ -709,9 +692,6 @@ MonkeyPatch.prototype = {
       }
 
       try {
-        // What a nice pun! If bug 320550 was fixed, I could print
-        // \u2633\u1f426 and that would be very smart.
-        // dump("\n"+Colors.red+"\u2633 New Conversation"+Colors.default+"\n");
         if (!this.active) {
           return true;
         }
@@ -724,10 +704,6 @@ MonkeyPatch.prototype = {
           selectedCount,
           " message(s) selected"
         );
-        /* dump(Colors.red);
-          for (let msgHdr of this.folderDisplay.selectedMessages)
-            dump("  " + msgHdr.folder.URI + "#" + msgHdr.messageKey + "\n");
-          dump(Colors.default);*/
 
         if (selectedCount == 0) {
           // So we're not copying the code here. This changes nothing, and the
@@ -769,9 +745,8 @@ MonkeyPatch.prototype = {
         // Else defer to showSummary to work it out based on thread selection.
         // (This might be a MultiMessageSummary after all!)
         return this._showSummary();
-      } catch (e) {
-        Log.error(e);
-        dumpCallStack(e);
+      } catch (ex) {
+        console.error(ex);
       }
       return false;
     };

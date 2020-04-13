@@ -12,7 +12,6 @@ const { XPCOMUtils } = ChromeUtils.import(
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
-  dumpCallStack: "chrome://conversations/content/modules/log.js",
   GlodaUtils: "resource:///modules/gloda/utils.js",
   htmlToPlainText: "chrome://conversations/content/modules/stdlib/compose.js",
   makeFriendlyDateAgo: "resource:///modules/templateUtils.js",
@@ -261,9 +260,8 @@ class _MessageUtils {
           extraLines,
           msgUri,
         });
-      } catch (e) {
-        Log.error(e);
-        dumpCallStack(e);
+      } catch (ex) {
+        console.error(ex);
       }
     });
   }
