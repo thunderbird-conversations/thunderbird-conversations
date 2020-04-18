@@ -78,7 +78,6 @@ function prefType(name) {
     case "operate_on_conversations":
     case "extra_attachments":
     case "compose_in_tab":
-    case "enabled":
     case "hide_sigs": {
       return "bool";
     }

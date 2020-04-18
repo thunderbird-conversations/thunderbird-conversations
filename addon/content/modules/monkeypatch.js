@@ -339,23 +339,6 @@ MonkeyPatch.prototype = {
     // Prefs.setString("conversations.uninstall_infos", "{}");
   },
 
-  // activateMenuItem(window) {
-  //   let menuItem = window.document.getElementById("menuConversationsEnabled");
-  //   menuItem.setAttribute("checked", Prefs.enabled);
-  //   Prefs.watch(function(aPrefName, aPrefValue) {
-  //     if (aPrefName == "enabled") {
-  //       menuItem.setAttribute("checked", aPrefValue);
-  //     }
-  //   });
-  //   menuItem.addEventListener("command", function(event) {
-  //     let checked =
-  //       menuItem.hasAttribute("checked") &&
-  //       menuItem.getAttribute("checked") == "true";
-  //     Prefs.setBool("conversations.enabled", checked);
-  //     window.gMessageDisplay.onSelectedMessagesChanged();
-  //   });
-  // },
-
   apply() {
     let window = this._window;
     // First of all: "apply" the "overlay"
@@ -379,11 +362,6 @@ MonkeyPatch.prototype = {
     //  and reroutes the control flow to our conversation reader.
     let oldThreadPaneDoubleClick = window.ThreadPaneDoubleClick;
     window.ThreadPaneDoubleClick = function() {
-      if (!Prefs.enabled) {
-        oldThreadPaneDoubleClick();
-        return;
-      }
-
       // ThreadPaneDoubleClick calls OnMsgOpenSelectedMessages. We don't want to
       // replace the whole ThreadPaneDoubleClick function, just the line that
       // calls OnMsgOpenSelectedMessages in that function. So we do that weird
@@ -406,11 +384,6 @@ MonkeyPatch.prototype = {
     // Same thing for middle-click
     let oldTreeOnMouseDown = window.TreeOnMouseDown;
     window.TreeOnMouseDown = function(event) {
-      if (!Prefs.enabled) {
-        oldTreeOnMouseDown(event);
-        return;
-      }
-
       if (event.target.parentNode.id !== "threadTree") {
         oldTreeOnMouseDown(event);
         return;
@@ -442,10 +415,6 @@ MonkeyPatch.prototype = {
     // Because we're not even fetching the conversation when the message pane is
     //  hidden, we need to trigger it manually when it's un-hidden.
     let unhideListener = function() {
-      if (!Prefs.enabled) {
-        return;
-      }
-
       window.summarizeThread(window.gFolderDisplay.selectedMessages);
     };
     window.addEventListener("messagepane-unhide", unhideListener, true);
@@ -457,11 +426,6 @@ MonkeyPatch.prototype = {
       aSelectedMessages,
       aListener
     ) {
-      if (!Prefs.enabled) {
-        oldSummarizeMultipleSelection(aSelectedMessages, aListener);
-        return;
-      }
-
       window.gSummaryFrameManager.loadAndCallback(kMultiMessageUrl, function() {
         oldSummarizeMultipleSelection(aSelectedMessages, aListener);
       });
@@ -479,11 +443,6 @@ MonkeyPatch.prototype = {
       aSelectedMessages,
       aListener
     ) {
-      if (!Prefs.enabled) {
-        oldSummarizeThread(aSelectedMessages, aListener);
-        return;
-      }
-
       if (!aSelectedMessages.length) {
         return;
       }
@@ -687,10 +646,6 @@ MonkeyPatch.prototype = {
     let originalOnSelectedMessagesChanged =
       window.MessageDisplayWidget.prototype.onSelectedMessagesChanged;
     window.MessageDisplayWidget.prototype.onSelectedMessagesChanged = function _onSelectedMessagesChanged_patched() {
-      if (!Prefs.enabled) {
-        return originalOnSelectedMessagesChanged.call(this);
-      }
-
       try {
         if (!this.active) {
           return true;

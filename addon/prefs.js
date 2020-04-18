@@ -13,7 +13,6 @@ export const kPrefDefaults = {
   tweak_bodies: true,
   tweak_chrome: true,
   operate_on_conversations: false,
-  enabled: true,
   extra_attachments: false,
   compose_in_tab: true,
   unwanted_recipients: "{}",
