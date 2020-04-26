@@ -115,14 +115,14 @@
        <ul class="inputs">
          <li class="reply expand" ondragenter="quickReplyDragEnter(event);">
            <div class="textWrap">
-             <div class="quickReplyIcon"><span>{{str "reply"}}</span> <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#reply"></use></svg></div>
+             <div class="quickReplyIcon"><span>{{str "reply"}}</span> <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="material-icons.svg#reply"></use></svg></div>
              <iframe mozframetype="content" class="textarea sans"></iframe>
            </div>
          </li>
 
          <li class="replyAll expand" ondragenter="quickReplyDragEnter(event);">
            <div class="textWrap">
-             <div class="quickReplyIcon"><span>{{str "replyAll"}}</span> <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="chrome://conversations/skin/material-icons.svg#reply_all"></use></svg></div>
+             <div class="quickReplyIcon"><span>{{str "replyAll"}}</span> <svg class="icon" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"><use xlink:href="material-icons.svg#reply_all"></use></svg></div>
              <iframe mozframetype="content" class="textarea sans"></iframe>
            </div>
          </li>

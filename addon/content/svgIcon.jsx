@@ -13,8 +13,7 @@
  * @returns {React.ReactNode}
  */
 function SvgIcon({ fullPath, hash }) {
-  fullPath =
-    fullPath || `chrome://conversations/skin/material-icons.svg#${hash}`;
+  fullPath = fullPath || `material-icons.svg#${hash}`;
   return (
     <svg
       className="icon"

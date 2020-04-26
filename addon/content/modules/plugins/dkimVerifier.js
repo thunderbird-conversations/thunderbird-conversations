@@ -58,7 +58,7 @@ function displayResult(result, msg) {
   msg.addSpecialTag({
     canClick: false,
     classNames: `dkim-signed ${warningsClassName} ${result.dkim[0].result}`,
-    icon: "chrome://conversations/skin/material-icons.svg#edit",
+    icon: "material-icons.svg#edit",
     name: browser.i18n.getMessage("dkimVerifier.messageDKIMSigned"),
     tooltip: {
       type: "dkim",

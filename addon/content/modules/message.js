@@ -510,11 +510,7 @@ class Message {
       let url = att.url.replace(RE_MSGKEY, "number=" + key);
       let [thumb, imgClass] = isImage
         ? [url, "resize-me"]
-        : [
-            "chrome://conversations/skin/icons/" +
-              iconForMimeType(att.contentType),
-            "mime-icon",
-          ];
+        : ["icons/" + iconForMimeType(att.contentType), "mime-icon"];
       // This is bug 630011, remove when fixed
       let formattedSize = browser.i18n.getMessage("attachments.sizeUnknown");
       // -1 means size unknown

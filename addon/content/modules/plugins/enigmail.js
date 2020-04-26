@@ -657,7 +657,7 @@ function addSignedLabel(status, msg) {
     msg.addSpecialTag({
       canClick: true,
       classNames: "enigmail-signed",
-      icon: "chrome://conversations/skin/material-icons.svg#edit",
+      icon: "material-icons.svg#edit",
       name: browser.i18n.getMessage("enigmail.messageSigned"),
       details: {
         type: "enigmail",
@@ -675,7 +675,7 @@ function addEncryptedTag(msg) {
   msg.addSpecialTag({
     canClick: true,
     classNames: "enigmail-decrypted",
-    icon: "chrome://conversations/skin/material-icons.svg#vpn_key",
+    icon: "material-icons.svg#vpn_key",
     name: browser.i18n.getMessage("enigmail.messageDecrypted"),
     details: {
       type: "enigmail",

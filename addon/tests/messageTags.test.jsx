@@ -21,7 +21,7 @@ describe("SpecialMessageTags test", () => {
       {
         canClick: false,
         classNames: "dkim-signed SUCCESS",
-        icon: "chrome://conversations/skin/material-icons.svg#edit",
+        icon: "material-icons.svg#edit",
         name: "DKIM signed",
         tooltip: {
           type: "dkim",
@@ -53,7 +53,7 @@ describe("SpecialMessageTags test", () => {
       {
         details: null,
         classNames: "dkim-signed SUCCESS",
-        icon: "chrome://conversations/skin/material-icons.svg#edit",
+        icon: "material-icons.svg#edit",
         name: "DKIM signed",
         tooltip: {
           type: "dkim",
@@ -63,7 +63,7 @@ describe("SpecialMessageTags test", () => {
       {
         details: true,
         classNames: "dkim-signed SUCCESS",
-        icon: "chrome://conversations/skin/material-icons.svg#edit",
+        icon: "material-icons.svg#edit",
         name: "DKIM signed",
         tooltip: {
           type: "dkim",
