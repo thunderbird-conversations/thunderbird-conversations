@@ -24,7 +24,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   MailServices: "resource:///modules/MailServices.jsm",
   Gloda: "resource:///modules/gloda/gloda.js",
   Services: "resource://gre/modules/Services.jsm",
-  setupLogging: "chrome://conversations/content/modules/log.js",
 });
 
 var Contacts = {
@@ -34,10 +33,6 @@ var Contacts = {
 
 const defaultPhotoURI =
   "chrome://messenger/skin/addressbook/icons/contact-generic.png";
-
-XPCOMUtils.defineLazyGetter(this, "Log", () => {
-  return setupLogging("Conversations.Contact");
-});
 
 // Taken from
 // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/charAt#Fixing_charAt()_to_support_non-Basic-Multilingual-Plane_(BMP)_characters
@@ -290,10 +285,9 @@ ContactFromAB.prototype = {
   getTooltipName(aPosition) {
     const browser = BrowserSim.getBrowser();
 
-    Log.assert(
-      aPosition === Contacts.kFrom || aPosition === Contacts.kTo,
-      "Someone did not set the 'position' properly"
-    );
+    if (aPosition !== Contacts.kFrom && aPosition !== Contacts.kTo) {
+      throw new Error("Someone did not set the 'position' properly");
+    }
     if (getIdentityForEmail(this._email)) {
       return browser.i18n.getMessage("message.meFromMeToSomeone");
     }
@@ -303,10 +297,9 @@ ContactFromAB.prototype = {
 
   getName(aPosition, aIsDetail) {
     const browser = BrowserSim.getBrowser();
-    Log.assert(
-      aPosition === Contacts.kFrom || aPosition === Contacts.kTo,
-      "Someone did not set the 'position' properly"
-    );
+    if (aPosition !== Contacts.kFrom && aPosition !== Contacts.kTo) {
+      throw new Error("Someone did not set the 'position' properly");
+    }
     if (getIdentityForEmail(this._email) && !aIsDetail) {
       let display =
         aPosition === Contacts.kFrom

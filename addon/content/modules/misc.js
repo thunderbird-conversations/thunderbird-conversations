@@ -3,6 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 var EXPORTED_SYMBOLS = [
+  "setupLogging",
   "groupArray",
   "joinWordList",
   "iconForMimeType",
@@ -23,6 +24,13 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   Prefs: "chrome://conversations/content/modules/prefs.js",
   Services: "resource://gre/modules/Services.jsm",
 });
+
+function setupLogging(name) {
+  return console.createInstance({
+    prefix: name,
+    maxLogLevel: Prefs.logging_enabled ? "Debug" : "Warn",
+  });
+}
 
 function arrayEquals(a1, a2) {
   if (a1.length != a2.length) {

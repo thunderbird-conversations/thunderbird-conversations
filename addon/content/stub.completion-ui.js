@@ -23,7 +23,7 @@ const {
   getIdentities,
 } = ChromeUtils.import("chrome://conversations/content/modules/stdlib/misc.js");
 const { setupLogging } = ChromeUtils.import(
-  "chrome://conversations/content/modules/log.js"
+  "chrome://conversations/content/modules/misc.js"
 );
 
 XPCOMUtils.defineLazyGetter(this, "Log", () => {

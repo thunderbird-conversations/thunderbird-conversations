@@ -19,7 +19,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   mimeMsgToContentSnippetAndMeta: "resource:///modules/gloda/connotent.js",
   PluralForm: "resource://gre/modules/PluralForm.jsm",
   quoteMsgHdr: "chrome://conversations/content/modules/stdlib/compose.js",
-  setupLogging: "chrome://conversations/content/modules/log.js",
+  setupLogging: "chrome://conversations/content/modules/misc.js",
   Services: "resource://gre/modules/Services.jsm",
 });
 

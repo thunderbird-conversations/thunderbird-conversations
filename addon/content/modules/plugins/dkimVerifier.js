@@ -14,14 +14,11 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   getMail3Pane: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   registerHook: "chrome://conversations/content/modules/hook.js",
-  setupLogging: "chrome://conversations/content/modules/log.js",
 });
 
 XPCOMUtils.defineLazyGetter(this, "browser", function() {
   return BrowserSim.getBrowser();
 });
-
-let Log = setupLogging("Conversations.Modules.DKIMVerifier");
 
 let hasDKIMVerifier = false;
 var AuthVerifier;
@@ -32,15 +29,8 @@ try {
   ).AuthVerifier;
   if (AuthVerifier.version.match(/^[0-9]+/)[0] === "1") {
     hasDKIMVerifier = true;
-    Log.debug("DKIM Verifier plugin for Thunderbird Conversations loaded!");
-  } else {
-    Log.debug("DKIM Verifier has incompatible version.");
   }
-} catch (e) {
-  Log.debug(
-    "DKIM Verifier doesn't seem to be installed or has incompatible version."
-  );
-}
+} catch (e) {}
 
 if (hasDKIMVerifier) {
   let mailWindow = getMail3Pane();
@@ -86,13 +76,12 @@ let dkimVerifierHook = {
         displayResult(result, msg);
       },
       exception => {
-        Log.debug("Exception in dkimVerifierHook: " + exception);
+        console.error("Exception in dkimVerifierHook: " + exception);
       }
     );
   },
 };
 
 if (hasDKIMVerifier) {
-  registerHook(dkimVerifierHook);
-  Log.debug("DKIM Verifier plugin for Thunderbird Conversations loaded!");
+  registerHook("dkimVerifier", dkimVerifierHook);
 }

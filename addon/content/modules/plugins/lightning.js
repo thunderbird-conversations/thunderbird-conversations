@@ -10,20 +10,15 @@ const { XPCOMUtils } = ChromeUtils.import(
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   registerHook: "chrome://conversations/content/modules/hook.js",
-  setupLogging: "chrome://conversations/content/modules/log.js",
   topMail3Pane: "chrome://conversations/content/modules/misc.js",
 });
-
-let Log = setupLogging("Conversations.Modules.Lightning");
 
 let hasLightning = false;
 let cal;
 try {
   cal = ChromeUtils.import("resource://calendar/modules/calUtils.jsm").cal;
   hasLightning = true;
-} catch (e) {
-  Log.debug("Did you know, Thunderbird Conversations supports Lightning?");
-}
+} catch (e) {}
 
 // This is a version of setupOptions suitable for Conversations
 // see http://mxr.mozilla.org/comm-central/source/calendar/lightning/content/imip-bar.js#186
@@ -161,6 +156,5 @@ let lightningHook = {
 };
 
 if (hasLightning) {
-  registerHook(lightningHook);
-  Log.debug("Lightning plugin for Thunderbird Conversations loaded!");
+  registerHook("lightning", lightningHook);
 }

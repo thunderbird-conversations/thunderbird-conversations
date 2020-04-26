@@ -42,7 +42,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   htmlToPlainText: "chrome://conversations/content/modules/stdlib/compose.js",
   msgHdrGetUri: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   registerHook: "chrome://conversations/content/modules/hook.js",
-  setupLogging: "chrome://conversations/content/modules/log.js",
+  setupLogging: "chrome://conversations/content/modules/misc.js",
   Services: "resource://gre/modules/Services.jsm",
   simpleWrap: "chrome://conversations/content/modules/stdlib/compose.js",
   topMail3Pane: "chrome://conversations/content/modules/misc.js",
@@ -64,10 +64,8 @@ let hasEnigmail;
 try {
   hasEnigmail = true;
   ChromeUtils.import("chrome://enigmail/content/modules/constants.jsm");
-  Log.debug("Enigmail plugin for Thunderbird Conversations loaded!");
 } catch (ex) {
   hasEnigmail = false;
-  Log.debug("Enigmail doesn't seem to be installed...");
 }
 
 if (hasEnigmail) {
@@ -125,7 +123,7 @@ if (hasEnigmail) {
     );
   } catch (e) {
     hasEnigmail = false;
-    Log.debug("Enigmail script doesn't seem to be loaded. Error: " + e);
+    console.error("Enigmail script doesn't seem to be loaded. Error: " + e);
   }
 
   let w = getMail3Pane();
@@ -199,7 +197,7 @@ function overrideUpdateSecurity(messagepane, w) {
       message = w._currentConversation.getMessage(uriSpec);
     }
     if (!message) {
-      Log.error("Message for the security info not found!");
+      console.error("Message for the security info not found!");
       return;
     }
     if (message._updateHdrIcons) {
@@ -263,7 +261,7 @@ function overrideUpdateSecurity(messagepane, w) {
       }
     }
     if (!message) {
-      Log.error("Message for the SMIME info not found!");
+      console.error("Message for the SMIME info not found!");
       return;
     }
     w.EnigmailVerify.unregisterContentTypeHandler();
@@ -1167,4 +1165,4 @@ let enigmailHook = {
   },
 };
 
-registerHook(enigmailHook);
+registerHook("enigmail", enigmailHook);

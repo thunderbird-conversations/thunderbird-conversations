@@ -1,6 +1,6 @@
 #!/bin/sh
 NOT='.sh$|^.git|.jsx$|^tests|^.eslint|^.travis|^package.json$|^package-lock.json$|^.prettierrc'
-NOT_STDLIB="$NOT|^RestartlessMenuItems.js$|^addressBookUtils.js$|.md$"
+NOT_STDLIB="$NOT|.md$"
 DIST=dist
 VENDOR_DIR=$DIST/content/vendor
 ADDON_DIR=addon

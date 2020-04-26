@@ -14,7 +14,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   NetUtil: "resource://gre/modules/NetUtil.jsm",
   Prefs: "chrome://conversations/content/modules/prefs.js",
   Services: "resource://gre/modules/Services.jsm",
-  setupLogging: "chrome://conversations/content/modules/log.js",
+  setupLogging: "chrome://conversations/content/modules/misc.js",
   Sqlite: "resource://gre/modules/Sqlite.jsm",
   OS: "resource://gre/modules/osfile.jsm",
 });

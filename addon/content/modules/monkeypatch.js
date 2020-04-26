@@ -29,7 +29,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
     "chrome://conversations/content/modules/misc.js",
   parseMimeLine: "chrome://conversations/content/modules/stdlib/misc.js",
   Prefs: "chrome://conversations/content/modules/prefs.js",
-  setupLogging: "chrome://conversations/content/modules/log.js",
+  setupLogging: "chrome://conversations/content/modules/misc.js",
   Services: "resource://gre/modules/Services.jsm",
 });
 

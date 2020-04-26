@@ -31,7 +31,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   msgHdrsDelete: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   Prefs: "chrome://conversations/content/modules/prefs.js",
   range: "chrome://conversations/content/modules/stdlib/misc.js",
-  setupLogging: "chrome://conversations/content/modules/log.js",
+  setupLogging: "chrome://conversations/content/modules/misc.js",
   Services: "resource://gre/modules/Services.jsm",
   topMail3Pane: "chrome://conversations/content/modules/misc.js",
 });
