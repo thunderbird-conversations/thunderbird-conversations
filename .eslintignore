@@ -7,6 +7,3 @@ dist-dev-html/**
 
 # Ignore sub-module directories
 addon/content/modules/stdlib/**
-
-# Ignore old add-on.
-other/oembed-addon/**
