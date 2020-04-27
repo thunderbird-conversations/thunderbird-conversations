@@ -96,7 +96,7 @@ function fixedCharAt(str, idx) {
 // should be removed when the transition to a WebExtension is
 // complete.
 
-if (window.esExports) {
+if (typeof window !== "undefined" && window.esExports) {
   window.esExports.getInitials = getInitials;
   window.esExports.freshColor = freshColor;
 }
