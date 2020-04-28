@@ -8,6 +8,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   Services: "resource://gre/modules/Services.jsm",
   Gloda: "resource:///modules/gloda/gloda.js",
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
+  MailServices: "resource:///modules/MailServices.jsm",
 });
 
 /**
@@ -126,6 +127,13 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
             title: browser.i18n.getMessage("involvingTabTitle", [name]),
             background: false,
           });
+        },
+        // For some reason, this needs to be implemented as an async function
+        async makeMimeAddress(options) {
+          const { name, email } = options;
+          return !name || name == email
+            ? email
+            : MailServices.headerParser.makeMimeAddress(name, email);
         },
       },
     };

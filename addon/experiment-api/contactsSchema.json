@@ -88,6 +88,29 @@
             }
           }
         ]
+      },
+      {
+        "name": "makeMimeAddress",
+        "type": "function",
+        "description": "Temporary. Returns a properly formatted email string from a name and email",
+        "async": true,
+        "parameters": [
+          {
+            "type": "object",
+            "name": "makeMimeAddressProperties",
+            "properties": {
+              "email": {
+                "type": "string",
+                "description": "The email address"
+              },
+              "name": {
+                "type": "string",
+                "optional": true,
+                "description": "Name of the contact"
+              }
+            }
+          }
+        ]
       }
     ]
   }

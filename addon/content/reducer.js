@@ -19,7 +19,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
     "chrome://conversations/content/modules/misc.js",
   MessageUtils: "chrome://conversations/content/modules/message.js",
   topMail3Pane: "chrome://conversations/content/modules/misc.js",
-  MailServices: "resource:///modules/MailServices.jsm",
 });
 
 // This provides simulation for the WebExtension environment whilst we're still
@@ -670,11 +669,8 @@ const summaryActions = {
     };
   },
   sendEmail({ name, email }) {
-    const dest =
-      !name || name == email
-        ? email
-        : MailServices.headerParser.makeMimeAddress(name, email);
     return async () => {
+      const dest = await browser.convContacts.makeMimeAddress({ name, email });
       await browser.compose.beginNew({ to: [dest] }).catch(console.error);
     };
   },
