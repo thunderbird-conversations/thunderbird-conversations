@@ -294,6 +294,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             switch (name) {
               case "mailnews.mark_message_read.auto":
               case "mailnews.mark_message_read.delay":
+              case "mail.showCondensedAddresses":
                 return Services.prefs.getBoolPref(name);
               case "mailnews.mark_message_read.delay.interval":
                 return Services.prefs.getIntPref(name);

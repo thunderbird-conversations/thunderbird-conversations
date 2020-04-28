@@ -12,10 +12,6 @@ const { XPCOMUtils } = ChromeUtils.import(
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
-  DisplayNameUtils: "resource:///modules/DisplayNameUtils.jsm",
-  getIdentities: "chrome://conversations/content/modules/stdlib/misc.js",
-  getIdentityForEmail: "chrome://conversations/content/modules/stdlib/misc.js",
-  Services: "resource://gre/modules/Services.jsm",
   getInitials: "chrome://conversations/content/utils.js",
   freshColor: "chrome://conversations/content/utils.js",
 });
@@ -27,6 +23,21 @@ var Contacts = {
 
 const defaultPhotoURI =
   "chrome://messenger/skin/addressbook/icons/contact-generic.png";
+
+/*
+ * Searches a given email address in all identities and returns the corresponding identity.
+ * @param {String} anEmailAddress Email address to be searched in the identities
+ * @returns {{Boolean} isDefault, {{nsIMsgIdentity} identity} if found, otherwise undefined
+ */
+async function getIdentityForEmail(email) {
+  const browser = BrowserSim.getBrowser();
+  const identities = await browser.convContacts
+    .getIdentities({ includeNntpIdentities: true })
+    .catch(console.error);
+  return identities.find(
+    ident => ident.identity.email.toLowerCase() == email.toLowerCase()
+  );
+}
 
 function ContactManager() {
   this._cache = {};
@@ -92,14 +103,18 @@ function ContactFromAB(manager, name, email, /* unused */ position, color) {
 }
 
 ContactFromAB.prototype = {
-  fetch() {
-    let card = DisplayNameUtils.getCardForEmail(this._email).card;
+  async fetch() {
+    const browser = BrowserSim.getBrowser();
+
+    const matchingCards = await browser.contacts.quickSearch(this._email);
+    let card = matchingCards.length !== 0 ? matchingCards[0].properties : null;
     this._card = card;
     if (card) {
-      // getProperty may return "0" or "1" which must be "== false"'d to be
-      //  properly evaluated
-      this._useCardName = !!card.getProperty("PreferDisplayName", true);
-      this.emails = [card.primaryEmail, card.getProperty("SecondEmail", "")];
+      // PreferDisplayName returns a literal string "0" or "1". We must convert it
+      // to a boolean appropriately.
+      this._useCardName =
+        card.PreferDisplayName != null ? !!+card.PreferDisplayName : true;
+      this.emails = [card.primaryEmail, card.SecondEmail || ""];
       // Prefer:
       // - displayName
       // - firstName lastName (if one of these is non-empty)
@@ -122,7 +137,7 @@ ContactFromAB.prototype = {
 
   get avatar() {
     if (this._card) {
-      let photoURI = this._card.getProperty("PhotoURI", "");
+      let photoURI = this._card.PhotoURI || "";
       if (photoURI) {
         return photoURI;
       }
@@ -131,20 +146,22 @@ ContactFromAB.prototype = {
   },
 
   /**
-   * The aEmail parameter is here because the same contact object is shared for
+   * The `email` parameter is here because the same contact object is shared for
    * all instances of a contact, even though the original email address is
    * different. This allows one to share a common color for a same card in the
    * address book.
    */
-  toTmplData(useColor, position, email, isDetail) {
-    let [name, extra] = this.getName(position, isDetail);
+  async toTmplData(useColor, position, email, isDetail) {
+    const browser = BrowserSim.getBrowser();
+
+    let [name, extra] = await this.getName(position, isDetail);
     let displayEmail = name != email ? email : "";
     let hasCard = this._card != null;
     let skipEmail =
       !isDetail &&
       hasCard &&
-      Services.prefs.getBoolPref("mail.showCondensedAddresses");
-    let tooltipName = this.getTooltipName(position);
+      (await browser.conversations.getCorePref("mail.showCondensedAddresses"));
+    let tooltipName = await this.getTooltipName(position);
     let data = {
       name,
       initials: getInitials(name),
@@ -161,30 +178,34 @@ ContactFromAB.prototype = {
     return data;
   },
 
-  getTooltipName(aPosition) {
+  async getTooltipName(aPosition) {
     const browser = BrowserSim.getBrowser();
 
     if (aPosition !== Contacts.kFrom && aPosition !== Contacts.kTo) {
       throw new Error("Someone did not set the 'position' properly");
     }
-    if (getIdentityForEmail(this._email)) {
+    if (await getIdentityForEmail(this._email)) {
       return browser.i18n.getMessage("message.meFromMeToSomeone");
     }
 
     return this._name || this._email;
   },
 
-  getName(aPosition, aIsDetail) {
+  async getName(aPosition, aIsDetail) {
     const browser = BrowserSim.getBrowser();
     if (aPosition !== Contacts.kFrom && aPosition !== Contacts.kTo) {
       throw new Error("Someone did not set the 'position' properly");
     }
-    if (getIdentityForEmail(this._email) && !aIsDetail) {
+    if ((await getIdentityForEmail(this._email)) && !aIsDetail) {
       let display =
         aPosition === Contacts.kFrom
           ? browser.i18n.getMessage("message.meFromMeToSomeone")
           : browser.i18n.getMessage("message.meFromSomeoneToMe");
-      return [display, getIdentities().length > 1 ? this._email : ""];
+
+      let identities = await browser.convContacts
+        .getIdentities()
+        .catch(console.error);
+      return [display, identities.length > 1 ? this._email : ""];
     }
 
     return [this._name || this._email, ""];

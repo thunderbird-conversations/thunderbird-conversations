@@ -111,6 +111,28 @@
             }
           }
         ]
+      },
+      {
+        "name": "getIdentities",
+        "type": "function",
+        "description": "Temporary. Returns a list of identities",
+        "async": true,
+        "parameters": [
+          {
+            "type": "object",
+            "name": "getIdentitiesProperties",
+            "properties": {
+              "includeNntpIdentities": {
+                "type": "boolean",
+                "description": "Whether or not to include NNTP identities",
+                "optional": true,
+                "default": false
+              }
+            },
+            "optional": true,
+            "default": {}
+          }
+        ]
       }
     ]
   }

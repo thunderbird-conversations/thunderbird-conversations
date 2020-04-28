@@ -378,7 +378,7 @@ class Message {
     }
   }
 
-  getContactsFrom(detail) {
+  async getContactsFrom(detail) {
     let contacts = detail.map(x => [
       this._conversation._contactManager.getContactFromNameAndEmail(
         x.name,
@@ -388,8 +388,8 @@ class Message {
     ]);
     this._contacts = this._contacts.concat(contacts);
     // false means "no colors"
-    return contacts.map(([x, email]) =>
-      x.toTmplData(false, Contacts.kTo, email)
+    return Promise.all(
+      contacts.map(([x, email]) => x.toTmplData(false, Contacts.kTo, email))
     );
   }
 
@@ -435,12 +435,12 @@ class Message {
     ];
     this._contacts.push(contactFrom);
     // true means "with colors"
-    data.from = contactFrom[0].toTmplData(true, Contacts.kFrom, contactFrom[1]);
+    data.from = await contactFrom[0].toTmplData(true, Contacts.kFrom, contactFrom[1]);
     data.from.separator = "";
 
-    data.to = this.getContactsFrom(this._to);
-    data.cc = this.getContactsFrom(this._cc);
-    data.bcc = this.getContactsFrom(this._bcc);
+    data.to = await this.getContactsFrom(this._to);
+    data.cc = await this.getContactsFrom(this._cc);
+    data.bcc = await this.getContactsFrom(this._bcc);
 
     // Don't show "to me" if this is a bugzilla email
     // TODO: Make this work again?

@@ -9,6 +9,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   Gloda: "resource:///modules/gloda/gloda.js",
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   MailServices: "resource:///modules/MailServices.jsm",
+  getIdentities: "chrome://conversations/content/modules/stdlib/misc.js",
 });
 
 /**
@@ -134,6 +135,16 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
           return !name || name == email
             ? email
             : MailServices.headerParser.makeMimeAddress(name, email);
+        },
+        async getIdentities(options) {
+          const { includeNntpIdentities } = options;
+
+          // `getIdentities` returns NCPWrapper objects, but we want
+          // javascript objects. JSON.stringify is an easy way to convert
+          // to a serializable native object.
+          return JSON.parse(
+            JSON.stringify(getIdentities(!includeNntpIdentities))
+          );
         },
       },
     };
