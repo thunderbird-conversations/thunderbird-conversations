@@ -4,7 +4,7 @@
 
 /* global Redux, Conversations, getMail3Pane, openConversationInTabOrWindow */
 
-/* exported conversationApp, attachmentActions, messageActions */
+/* exported conversationApp, attachmentActions, messageActions, summaryActions */
 
 "use strict";
 
@@ -13,13 +13,13 @@ const { XPCOMUtils } = ChromeUtils.import(
 );
 XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
-  ContactHelpers: "chrome://conversations/content/modules/contact.js",
   Conversation: "chrome://conversations/content/modules/conversation.js",
   ConversationUtils: "chrome://conversations/content/modules/conversation.js",
   openConversationInTabOrWindow:
     "chrome://conversations/content/modules/misc.js",
   MessageUtils: "chrome://conversations/content/modules/message.js",
   topMail3Pane: "chrome://conversations/content/modules/misc.js",
+  MailServices: "resource:///modules/MailServices.jsm",
 });
 
 // This provides simulation for the WebExtension environment whilst we're still
@@ -658,6 +658,28 @@ function messages(state = initialMessages, action) {
   }
 }
 
+const summaryActions = {
+  showMessagesInvolving({ name, email }) {
+    return async () => {
+      await browser.convContacts
+        .showMessagesInvolving({
+          name,
+          email,
+        })
+        .catch(console.error);
+    };
+  },
+  sendEmail({ name, email }) {
+    const dest =
+      !name || name == email
+        ? email
+        : MailServices.headerParser.makeMimeAddress(name, email);
+    return async () => {
+      await browser.compose.beginNew({ to: [dest] }).catch(console.error);
+    };
+  },
+};
+
 function summary(state = initialSummary, action) {
   switch (action.type) {
     case "SET_IN_TAB": {
@@ -728,24 +750,8 @@ function summary(state = initialSummary, action) {
       printConversation();
       return state;
     }
-    case "SEND_EMAIL": {
-      ContactHelpers.composeMessage(
-        action.name,
-        action.email,
-        topMail3Pane(window).gFolderDisplay.displayedFolder
-      );
-      return state;
-    }
     case "SEND_UNSENT": {
       ConversationUtils.sendUnsent(topMail3Pane(window));
-      return state;
-    }
-    case "SHOW_MESSAGES_INVOLVING": {
-      ContactHelpers.showMessagesInvolving(
-        topMail3Pane(window),
-        action.name,
-        action.email
-      );
       return state;
     }
     case "SWITCH_TO_FOLDER": {

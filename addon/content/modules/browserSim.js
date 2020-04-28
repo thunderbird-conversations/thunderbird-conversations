@@ -18,6 +18,9 @@ const SUPPORTED_BASE_APIS = [
   "messages",
   "runtime",
   "tabs",
+  "compose",
+  "contacts",
+  "addressBooks",
 ];
 
 const ADDON_ID = "gconversation@xulforum.org";

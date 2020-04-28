@@ -60,6 +60,34 @@
             }
           }
         ]
+      },
+      {
+        "name": "showMessagesInvolving",
+        "type": "function",
+        "description": "Temporary. Shows all messages involving a particular email.",
+        "async": true,
+        "parameters": [
+          {
+            "type": "object",
+            "name": "showMessagesInvolvingProperties",
+            "properties": {
+              "email": {
+                "type": "string",
+                "description": "The contact to find involved messages via."
+              },
+              "name": {
+                "type": "string",
+                "description": "Name of the contact (displays in tab title)."
+              },
+              "windowId": {
+                "type": "integer",
+                "optional": true,
+                "minimum": -2,
+                "description": "The window to create the new tab in. Defaults to the current window."
+              }
+            }
+          }
+        ]
       }
     ]
   }

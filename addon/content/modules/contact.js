@@ -4,12 +4,7 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = [
-  "ContactManager",
-  "Contacts",
-  "defaultPhotoURI",
-  "ContactHelpers",
-];
+var EXPORTED_SYMBOLS = ["ContactManager", "Contacts", "defaultPhotoURI"];
 
 const { XPCOMUtils } = ChromeUtils.import(
   "resource://gre/modules/XPCOMUtils.jsm"
@@ -18,11 +13,8 @@ const { XPCOMUtils } = ChromeUtils.import(
 XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   DisplayNameUtils: "resource:///modules/DisplayNameUtils.jsm",
-  composeMessageTo: "chrome://conversations/content/modules/stdlib/compose.js",
   getIdentities: "chrome://conversations/content/modules/stdlib/misc.js",
   getIdentityForEmail: "chrome://conversations/content/modules/stdlib/misc.js",
-  MailServices: "resource:///modules/MailServices.jsm",
-  Gloda: "resource:///modules/gloda/gloda.js",
   Services: "resource://gre/modules/Services.jsm",
   getInitials: "chrome://conversations/content/utils.js",
   freshColor: "chrome://conversations/content/utils.js",
@@ -35,49 +27,6 @@ var Contacts = {
 
 const defaultPhotoURI =
   "chrome://messenger/skin/addressbook/icons/contact-generic.png";
-
-var ContactHelpers = {
-  composeMessage(name, email, displayedFolder) {
-    let dest =
-      !name || name == email
-        ? email
-        : MailServices.headerParser.makeMimeAddress(name, email);
-    composeMessageTo(dest, displayedFolder);
-  },
-
-  showMessagesInvolving(win, name, email) {
-    let q1 = Gloda.newQuery(Gloda.NOUN_IDENTITY);
-    q1.kind("email");
-    q1.value(email);
-    q1.getCollection({
-      onItemsAdded: function _onItemsAdded(aItems, aCollection) {},
-      onItemsModified: function _onItemsModified(aItems, aCollection) {},
-      onItemsRemoved: function _onItemsRemoved(aItems, aCollection) {},
-      onQueryCompleted: function _onQueryCompleted(aCollection) {
-        if (!aCollection.items.length) {
-          return;
-        }
-
-        let q2 = Gloda.newQuery(Gloda.NOUN_MESSAGE);
-        q2.involves.apply(q2, aCollection.items);
-        q2.getCollection({
-          onItemsAdded: function _onItemsAdded(aItems, aCollection) {},
-          onItemsModified: function _onItemsModified(aItems, aCollection) {},
-          onItemsRemoved: function _onItemsRemoved(aItems, aCollection) {},
-          onQueryCompleted: function _onQueryCompleted(aCollection) {
-            const browser = BrowserSim.getBrowser();
-            let tabmail = win.document.getElementById("tabmail");
-            tabmail.openTab("glodaList", {
-              collection: aCollection,
-              title: browser.i18n.getMessage("involvingTabTitle", [name]),
-              background: false,
-            });
-          },
-        });
-      },
-    });
-  },
-};
 
 function ContactManager() {
   this._cache = {};
