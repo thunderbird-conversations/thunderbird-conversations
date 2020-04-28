@@ -435,7 +435,11 @@ class Message {
     ];
     this._contacts.push(contactFrom);
     // true means "with colors"
-    data.from = await contactFrom[0].toTmplData(true, Contacts.kFrom, contactFrom[1]);
+    data.from = await contactFrom[0].toTmplData(
+      true,
+      Contacts.kFrom,
+      contactFrom[1]
+    );
     data.from.separator = "";
 
     data.to = await this.getContactsFrom(this._to);
