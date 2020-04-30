@@ -10,6 +10,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   MailServices: "resource:///modules/MailServices.jsm",
   getIdentities: "chrome://conversations/content/modules/stdlib/misc.js",
+  composeMessageTo: "chrome://conversations/content/modules/stdlib/compose.js",
 });
 
 /**
@@ -98,6 +99,14 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
             "chrome,modal,resizable=no,centerscreen",
             args
           );
+        },
+        async composeNew(properties) {
+          const window =
+            properties.windowId !== null
+              ? windowManager.get(properties.windowId, context).window
+              : Services.wm.getMostRecentWindow("mail:3pane");
+          const { to } = properties;
+          composeMessageTo(to, window.gFolderDisplay.displayedFolder);
         },
         async showMessagesInvolving(options) {
           const window =

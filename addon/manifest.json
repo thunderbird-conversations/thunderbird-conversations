@@ -25,8 +25,7 @@
     "messagesRead",
     "messagesMove",
     "storage",
-    "contacts",
-    "compose"
+    "contacts"
   ],
   "experiment_apis": {
     "conversations": {

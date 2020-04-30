@@ -90,6 +90,30 @@
         ]
       },
       {
+        "name": "composeNew",
+        "type": "function",
+        "description": "Temporary. Composes a message to an address.",
+        "async": true,
+        "parameters": [
+          {
+            "type": "object",
+            "name": "composeNewProperties",
+            "properties": {
+              "to": {
+                "type": "string",
+                "description": "The to address. This should be a properly formatted MIME address."
+              },
+              "windowId": {
+                "type": "integer",
+                "optional": true,
+                "minimum": -2,
+                "description": "The window to create the new tab in. Defaults to the current window."
+              }
+            }
+          }
+        ]
+      },
+      {
         "name": "makeMimeAddress",
         "type": "function",
         "description": "Temporary. Returns a properly formatted email string from a name and email",

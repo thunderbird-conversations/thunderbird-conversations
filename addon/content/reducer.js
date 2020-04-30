@@ -671,7 +671,7 @@ const summaryActions = {
   sendEmail({ name, email }) {
     return async () => {
       const dest = await browser.convContacts.makeMimeAddress({ name, email });
-      await browser.compose.beginNew({ to: [dest] }).catch(console.error);
+      await browser.convContacts.composeNew({ to: dest }).catch(console.error);
     };
   },
 };
