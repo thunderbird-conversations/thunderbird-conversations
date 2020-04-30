@@ -16,6 +16,10 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   freshColor: "chrome://conversations/content/utils.js",
 });
 
+XPCOMUtils.defineLazyGetter(this, "browser", function() {
+  return BrowserSim.getBrowser();
+});
+
 var Contacts = {
   kFrom: 0,
   kTo: 1,
@@ -30,7 +34,6 @@ const defaultPhotoURI =
  * @returns {{Boolean} isDefault, {{nsIMsgIdentity} identity} if found, otherwise undefined
  */
 async function getIdentityForEmail(email) {
-  const browser = BrowserSim.getBrowser();
   const identities = await browser.convContacts
     .getIdentities({ includeNntpIdentities: true })
     .catch(console.error);
@@ -104,8 +107,6 @@ function ContactFromAB(manager, name, email, /* unused */ position, color) {
 
 ContactFromAB.prototype = {
   async fetch() {
-    const browser = BrowserSim.getBrowser();
-
     const matchingCards = await browser.contacts.quickSearch(this._email);
     let card = matchingCards.length !== 0 ? matchingCards[0].properties : null;
     this._card = card;
@@ -152,8 +153,6 @@ ContactFromAB.prototype = {
    * address book.
    */
   async toTmplData(useColor, position, email, isDetail) {
-    const browser = BrowserSim.getBrowser();
-
     let [name, extra] = await this.getName(position, isDetail);
     let displayEmail = name != email ? email : "";
     let hasCard = this._card != null;
@@ -179,8 +178,6 @@ ContactFromAB.prototype = {
   },
 
   async getTooltipName(aPosition) {
-    const browser = BrowserSim.getBrowser();
-
     if (aPosition !== Contacts.kFrom && aPosition !== Contacts.kTo) {
       throw new Error("Someone did not set the 'position' properly");
     }
@@ -192,7 +189,6 @@ ContactFromAB.prototype = {
   },
 
   async getName(aPosition, aIsDetail) {
-    const browser = BrowserSim.getBrowser();
     if (aPosition !== Contacts.kFrom && aPosition !== Contacts.kTo) {
       throw new Error("Someone did not set the 'position' properly");
     }
