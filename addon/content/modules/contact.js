@@ -28,20 +28,6 @@ var Contacts = {
 const defaultPhotoURI =
   "chrome://messenger/skin/addressbook/icons/contact-generic.png";
 
-/*
- * Searches a given email address in all identities and returns the corresponding identity.
- * @param {String} anEmailAddress Email address to be searched in the identities
- * @returns {{Boolean} isDefault, {{nsIMsgIdentity} identity} if found, otherwise undefined
- */
-async function getIdentityForEmail(email) {
-  const identities = await browser.convContacts
-    .getIdentities({ includeNntpIdentities: true })
-    .catch(console.error);
-  return identities.find(
-    ident => ident.identity.email.toLowerCase() == email.toLowerCase()
-  );
-}
-
 function ContactManager() {
   this._cache = {};
   this._colorCache = {};
@@ -49,7 +35,7 @@ function ContactManager() {
 }
 
 ContactManager.prototype = {
-  getContactFromNameAndEmail(name, email, position) {
+  getContactFromNameAndEmail(name, email) {
     // [name] and [email] are from the message header
     let self = this;
     email = (email + "").toLowerCase();
@@ -68,13 +54,7 @@ ContactManager.prototype = {
       return this._cache[key];
     }
 
-    let contact = new ContactFromAB(
-      this,
-      name,
-      email,
-      position,
-      this._colorCache[email]
-    );
+    let contact = new ContactFromAB(this, name, email, this._colorCache[email]);
     // Only cache contacts which are in the address book. This avoids weird
     //  phenomena such as a bug tracker sending emails with different names
     //  but with the same email address, resulting in people all sharing the
@@ -92,7 +72,7 @@ ContactManager.prototype = {
   },
 };
 
-function ContactFromAB(manager, name, email, /* unused */ position, color) {
+function ContactFromAB(manager, name, email, color) {
   this.emails = [];
   this.color = color || freshColor(email);
 
@@ -153,14 +133,38 @@ ContactFromAB.prototype = {
    * address book.
    */
   async toTmplData(useColor, position, email, isDetail) {
-    let [name, extra] = await this.getName(position, isDetail);
-    let displayEmail = name != email ? email : "";
-    let hasCard = this._card != null;
-    let skipEmail =
+    const allIdentities = await browser.convContacts
+      .getIdentities({ includeNntpIdentities: true })
+      .catch(console.error);
+    const identities = await browser.convContacts
+      .getIdentities({ includeNntpIdentities: false })
+      .catch(console.error);
+    const identity = allIdentities.find(
+      ident => ident.identity.email.toLowerCase() == this._email.toLowerCase()
+    );
+    const multipleIdentities = identities.length > 1;
+
+    // `name` and `extra` are the only attributes that depend on `position`
+    let name = this._name || this._email;
+    let extra = "";
+    if (!isDetail && identity != null) {
+      name =
+        position === Contacts.kFrom
+          ? browser.i18n.getMessage("message.meFromMeToSomeone")
+          : browser.i18n.getMessage("message.meFromSomeoneToMe");
+      extra = multipleIdentities ? this._email : "";
+    }
+    const displayEmail = name != email ? email : "";
+    const hasCard = this._card != null;
+    const skipEmail =
       !isDetail &&
       hasCard &&
       (await browser.conversations.getCorePref("mail.showCondensedAddresses"));
-    let tooltipName = await this.getTooltipName(position);
+    let tooltipName = this._name || this._email;
+    if (identity != null) {
+      tooltipName = browser.i18n.getMessage("message.meFromMeToSomeone");
+    }
+
     let data = {
       name,
       initials: getInitials(name),
@@ -175,36 +179,6 @@ ContactFromAB.prototype = {
       colorStyle: useColor === false ? {} : { backgroundColor: this.color },
     };
     return data;
-  },
-
-  async getTooltipName(aPosition) {
-    if (aPosition !== Contacts.kFrom && aPosition !== Contacts.kTo) {
-      throw new Error("Someone did not set the 'position' properly");
-    }
-    if (await getIdentityForEmail(this._email)) {
-      return browser.i18n.getMessage("message.meFromMeToSomeone");
-    }
-
-    return this._name || this._email;
-  },
-
-  async getName(aPosition, aIsDetail) {
-    if (aPosition !== Contacts.kFrom && aPosition !== Contacts.kTo) {
-      throw new Error("Someone did not set the 'position' properly");
-    }
-    if ((await getIdentityForEmail(this._email)) && !aIsDetail) {
-      let display =
-        aPosition === Contacts.kFrom
-          ? browser.i18n.getMessage("message.meFromMeToSomeone")
-          : browser.i18n.getMessage("message.meFromSomeoneToMe");
-
-      let identities = await browser.convContacts
-        .getIdentities()
-        .catch(console.error);
-      return [display, identities.length > 1 ? this._email : ""];
-    }
-
-    return [this._name || this._email, ""];
   },
 
   enrichWithName(aName) {
