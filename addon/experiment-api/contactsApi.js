@@ -14,6 +14,38 @@ XPCOMUtils.defineLazyModuleGetters(this, {
 });
 
 /**
+ * Creates a Gloda query object
+ *
+ * @param {string} [options={
+ *     kind: "email",
+ *     value: null,
+ *     query: "NOUN_IDENTITY",
+ *     involvesItems: null,
+ *   }]
+ * @returns {object}
+ */
+function getQuery(
+  options = {
+    kind: "email",
+    value: null,
+    query: "NOUN_IDENTITY",
+    involvesItems: null,
+  }
+) {
+  const q = Gloda.newQuery(Gloda[options.query]);
+  if (options.kind != null) {
+    q.kind(options.kind);
+  }
+  if (options.value != null) {
+    q.value(options.value);
+  }
+  if (options.involvesItems != null) {
+    q.involves.apply(q, options.involvesItems);
+  }
+  return q;
+}
+
+/**
  * Runs a Gloda query and returns a promise.
  *
  * @param {string} [options={
@@ -32,17 +64,7 @@ async function glodaQuery(
     involvesItems: null,
   }
 ) {
-  const q = Gloda.newQuery(Gloda[options.query]);
-  if (options.kind != null) {
-    q.kind(options.kind);
-  }
-  if (options.value != null) {
-    q.value(options.value);
-  }
-  if (options.involvesItems != null) {
-    q.involves.apply(q, options.involvesItems);
-  }
-
+  const q = getQuery(options);
   return new Promise((resolve, reject) => {
     q.getCollection({
       onItemsAdded(aItems, aCollection) {},
@@ -55,6 +77,12 @@ async function glodaQuery(
   });
 }
 
+function getWindowFromId(windowManager, context, id) {
+  return id !== null && id !== undefined
+    ? windowManager.get(id, context).window
+    : Services.wm.getMostRecentWindow("mail:3pane");
+}
+
 /* exported convContacts */
 var convContacts = class extends ExtensionCommon.ExtensionAPI {
   getAPI(context) {
@@ -63,10 +91,11 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
     return {
       convContacts: {
         async beginNew(beginNewProperties) {
-          const window =
-            beginNewProperties.windowId !== null
-              ? windowManager.get(beginNewProperties.windowId, context).window
-              : Services.wm.getMostRecentWindow("mail:3pane");
+          const window = getWindowFromId(
+            windowManager,
+            context,
+            beginNewProperties.windowId
+          );
           const args = {};
           if (beginNewProperties.email !== null) {
             args.primaryEmail = beginNewProperties.email;
@@ -82,10 +111,11 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
           );
         },
         async beginEdit(beginEditProperties) {
-          const window =
-            beginEditProperties.windowId !== null
-              ? windowManager.get(beginEditProperties.windowId, context).window
-              : Services.wm.getMostRecentWindow("mail:3pane");
+          const window = getWindowFromId(
+            windowManager,
+            context,
+            beginEditProperties.windowId
+          );
           let cardAndBook = DisplayNameUtils.getCardForEmail(
             beginEditProperties.email
           );
@@ -101,18 +131,20 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
           );
         },
         async composeNew(properties) {
-          const window =
-            properties.windowId !== null
-              ? windowManager.get(properties.windowId, context).window
-              : Services.wm.getMostRecentWindow("mail:3pane");
+          const window = getWindowFromId(
+            windowManager,
+            context,
+            properties.windowId
+          );
           const { to } = properties;
           composeMessageTo(to, window.gFolderDisplay.displayedFolder);
         },
         async showMessagesInvolving(options) {
-          const window =
-            options.windowId !== null
-              ? windowManager.get(options.windowId, context).window
-              : Services.wm.getMostRecentWindow("mail:3pane");
+          const window = getWindowFromId(
+            windowManager,
+            context,
+            options.windowId
+          );
 
           const { name, email } = options;
 
@@ -125,7 +157,7 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
             return;
           }
 
-          const result = await glodaQuery({
+          const query = getQuery({
             query: "NOUN_MESSAGE",
             involvesItems: collection.items,
           });
@@ -133,7 +165,7 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
           const browser = BrowserSim.getBrowser();
           let tabmail = window.document.getElementById("tabmail");
           tabmail.openTab("glodaList", {
-            collection: result,
+            query,
             title: browser.i18n.getMessage("involvingTabTitle", [name]),
             background: false,
           });
