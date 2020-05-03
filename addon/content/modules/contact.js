@@ -133,16 +133,12 @@ ContactFromAB.prototype = {
    * address book.
    */
   async toTmplData(useColor, position, email, isDetail) {
-    const allIdentities = await browser.convContacts
-      .getIdentities({ includeNntpIdentities: true })
-      .catch(console.error);
     const identities = await browser.convContacts
       .getIdentities({ includeNntpIdentities: false })
       .catch(console.error);
-    const identity = allIdentities.find(
+    const identity = identities.find(
       ident => ident.identity.email.toLowerCase() == this._email.toLowerCase()
     );
-    const multipleIdentities = identities.length > 1;
 
     // `name` and `extra` are the only attributes that depend on `position`
     let name = this._name || this._email;
@@ -152,7 +148,7 @@ ContactFromAB.prototype = {
         position === Contacts.kFrom
           ? browser.i18n.getMessage("message.meFromMeToSomeone")
           : browser.i18n.getMessage("message.meFromSomeoneToMe");
-      extra = multipleIdentities ? this._email : "";
+      extra = this._email;
     }
     const displayEmail = name != email ? email : "";
     const hasCard = this._card != null;
