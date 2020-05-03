@@ -138,7 +138,6 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
             background: false,
           });
         },
-        // For some reason, this needs to be implemented as an async function
         async makeMimeAddress(options) {
           const { name, email } = options;
           return !name || name == email
