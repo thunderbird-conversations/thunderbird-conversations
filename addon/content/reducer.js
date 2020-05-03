@@ -398,10 +398,9 @@ const messageActions = {
         .catch(console.error);
     };
   },
-  markAsRead({ msgUri }) {
+  markAsRead({ id }) {
     return async () => {
-      const msg = Conversations.currentConversation.getMessage(msgUri);
-      msg.read = true;
+      browser.messages.update(id, { read: true }).catch(console.error);
     };
   },
   selected({ msgUri }) {

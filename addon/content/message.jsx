@@ -213,12 +213,13 @@ class Message extends React.PureComponent {
       }
     }
     if (this._topInView && this._bottomInView) {
-      this.read = true;
-      this.props.dispatch(
-        messageActions.markAsRead({
-          msgUri: this.props.message.msgUri,
-        })
-      );
+      if (!this.props.message.read) {
+        this.props.dispatch(
+          messageActions.markAsRead({
+            id: this.props.message.id,
+          })
+        );
+      }
       this.removeScrollListener();
     }
   }
