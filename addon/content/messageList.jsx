@@ -30,6 +30,7 @@ function _MessageList(props) {
           <Message
             key={index}
             autoMarkAsRead={props.summary.autoMarkAsRead}
+            defaultFontSize={props.summary.defaultFontSize}
             dispatch={props.dispatch}
             displayingMultipleMsgs={!!props.messages.length}
             iframesLoading={props.summary.iframesLoading}

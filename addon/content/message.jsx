@@ -325,6 +325,7 @@ class Message extends React.PureComponent {
             />
           )}
           <MessageIFrame
+            defaultFontSize={this.props.defaultFontSize}
             dispatch={this.props.dispatch}
             expanded={this.props.message.expanded}
             hasRemoteContent={this.props.message.hasRemoteContent}
@@ -373,6 +374,7 @@ class Message extends React.PureComponent {
 
 Message.propTypes = {
   autoMarkAsRead: PropTypes.bool.isRequired,
+  defaultFontSize: PropTypes.number.isRequired,
   dispatch: PropTypes.func.isRequired,
   displayingMultipleMsgs: PropTypes.bool.isRequired,
   iframesLoading: PropTypes.number.isRequired,

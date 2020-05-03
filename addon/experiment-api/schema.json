@@ -154,6 +154,13 @@
             "description": "The message id to get"
           }
         ]
+      },
+      {
+        "name": "resetMessagePane",
+        "type": "function",
+        "description": "Temporary, resets the message pane.",
+        "async": "true",
+        "parameters": []
       }
     ],
     "events": [
@@ -180,6 +187,25 @@
               "type": "any"
             },
             "description": "The arguments to call."
+          }
+        ]
+      },
+      {
+        "name": "onCorePrefChanged",
+        "type": "function",
+        "description": "Temporary. Listens for pref changes.",
+        "parameters": [
+          {
+            "name": "prefValue",
+            "type": "any",
+            "description": "The new value of the pref."
+          }
+        ],
+        "extraParameters": [
+          {
+            "name": "prefName",
+            "type": "string",
+            "description": "The preference name to listen to."
           }
         ]
       }

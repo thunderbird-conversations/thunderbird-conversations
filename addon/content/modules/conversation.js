@@ -855,9 +855,6 @@ Conversation.prototype = {
         subject: this.messages[this.messages.length - 1].message.subject,
         loading: false,
         prefs: {
-          defaultFontSize: Services.prefs.getIntPref(
-            "font.size.variable.x-western"
-          ),
           browserForegroundColor: Services.prefs.getCharPref(
             "browser.display.foreground_color"
           ),

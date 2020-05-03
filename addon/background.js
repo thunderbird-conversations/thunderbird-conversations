@@ -21,6 +21,13 @@ class Background {
 
     await this._prefs.init();
     await this._keyHandler.init();
+
+    // Reset the message pane if the font size is changed, that seems to be
+    // the best we can do at the moment, as the message pane doesn't get
+    // told otherwise.
+    browser.conversations.onCorePrefChanged.addListener(() => {
+      browser.conversations.resetMessagePane().catch(console.error);
+    }, "font.size.variable.x-western");
   }
 }
 

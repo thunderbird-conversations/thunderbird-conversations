@@ -231,24 +231,6 @@ MonkeyPatch.prototype = {
     );
   },
 
-  registerFontPrefObserver: function _MonkeyPatch_registerFontPref(aHtmlpane) {
-    let observer = {
-      observe(aSubject, aTopic, aData) {
-        if (
-          aTopic == "nsPref:changed" &&
-          aData == "font.size.variable.x-western"
-        ) {
-          aHtmlpane.setAttribute("src", "about:blank");
-        }
-      },
-    };
-    Services.prefs.addObserver("", observer);
-    this._window.addEventListener("close", function() {
-      Services.prefs.removeObserver("", observer);
-    });
-    this.pushUndo(() => Services.prefs.removeObserver("", observer));
-  },
-
   clearTimer() {
     // If we changed conversations fast, clear the timeout
     if (this.markReadTimeout) {
@@ -351,9 +333,6 @@ MonkeyPatch.prototype = {
 
     // Register our new column type
     this.registerColumn();
-    this.registerFontPrefObserver(htmlpane);
-
-    // this.activateMenuItem(window);
 
     // Undo all our customizations at uninstall-time
     this.registerUndoCustomizations();

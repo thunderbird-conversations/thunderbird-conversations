@@ -296,6 +296,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
               case "mailnews.mark_message_read.delay":
               case "mail.showCondensedAddresses":
                 return Services.prefs.getBoolPref(name);
+              case "font.size.variable.x-western":
               case "mailnews.mark_message_read.delay.interval":
                 return Services.prefs.getIntPref(name);
             }
@@ -418,6 +419,18 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             Ci.nsIJunkMailPlugin.IS_SPAM_SCORE
           );
         },
+        async resetMessagePane() {
+          for (const win of Services.wm.getEnumerator("mail:3pane")) {
+            const messagepane = win.document.getElementById("multimessage");
+            if (
+              messagepane.contentDocument.documentURI.includes("stub.xhtml")
+            ) {
+              // The best we can do here is to clear via the summary manager,
+              // so that we get re-loaded with the new correct size.
+              win.gSummaryFrameManager.clear();
+            }
+          }
+        },
         onCallAPI: new ExtensionCommon.EventManager({
           context,
           name: "conversations.onCallAPI",
@@ -426,9 +439,40 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
               return fire.async(apiName, apiItem, args);
             }
 
-            BrowserSim.setBrowserListener(callback);
+            BrowserSim.setBrowserListener(callback, context);
             return function() {
               BrowserSim.setBrowserListener(null);
+            };
+          },
+        }).api(),
+        onCorePrefChanged: new ExtensionCommon.EventManager({
+          context,
+          name: "conversations.onCorePrefChanged",
+          register(fire, prefName) {
+            const observer = {
+              observe(subject, topic, data) {
+                if (topic == "nsPref:changed" && data == prefName) {
+                  const prefType = Services.prefs.getPrefType(prefName);
+                  switch (prefType) {
+                    case 32: {
+                      fire.async(Services.prefs.getStringPref(prefName));
+                      break;
+                    }
+                    case 64: {
+                      fire.async(Services.prefs.getIntPref(prefName));
+                      break;
+                    }
+                    case 128: {
+                      fire.async(Services.prefs.getBoolPref(prefName));
+                      break;
+                    }
+                  }
+                }
+              },
+            };
+            Services.prefs.addObserver(prefName, observer);
+            return () => {
+              Services.prefs.removeObserver(prefName, observer);
             };
           },
         }).api(),

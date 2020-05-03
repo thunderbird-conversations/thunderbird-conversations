@@ -3,8 +3,10 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 /* global Redux, Conversations, getMail3Pane, openConversationInTabOrWindow */
-
-/* exported conversationApp, attachmentActions, messageActions, summaryActions */
+// eslint-disable-next-line no-redeclare
+/* global browser:true */
+/* exported conversationApp, attachmentActions, messageActions, summaryActions,
+            initialize */
 
 "use strict";
 
@@ -21,11 +23,13 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   topMail3Pane: "chrome://conversations/content/modules/misc.js",
 });
 
-// This provides simulation for the WebExtension environment whilst we're still
-// being loaded in a privileged process.
-XPCOMUtils.defineLazyGetter(this, "browser", () => {
-  return BrowserSim.getBrowser();
-});
+let browser;
+
+async function initialize() {
+  // This provides simulation for the WebExtension environment whilst we're still
+  // being loaded in a privileged process.
+  browser = await BrowserSim.getBrowserAsync();
+}
 
 let oldPrint = window.print;
 
@@ -44,6 +48,7 @@ const initialMessages = {
 
 const initialSummary = {
   conversation: null,
+  defaultFontSize: 15,
   // TODO: What is loading used for?
   loading: true,
   iframesLoading: 0,
@@ -249,6 +254,13 @@ const messageActions = {
       await dispatch({
         type: "SET_OS",
         OS: platformInfo.os,
+      });
+      const defaultFontSize = await browser.conversations.getCorePref(
+        "font.size.variable.x-western"
+      );
+      await dispatch({
+        type: "SET_FONT_SIZE",
+        defaultFontSize,
       });
 
       if (!isInTab) {
@@ -695,6 +707,12 @@ function summary(state = initialSummary, action) {
         ...state,
         OS: action.OS,
         tenPxFactor,
+      };
+    }
+    case "SET_FONT_SIZE": {
+      return {
+        ...state,
+        defaultFontSize: action.defaultFontSize,
       };
     }
     case "REPLACE_CONVERSATION_DETAILS": {

@@ -37,17 +37,24 @@ function conversationDispatch(...args) {
 document.addEventListener(
   "DOMContentLoaded",
   () => {
-    const conversationContainer = document.getElementById(
-      "conversationWrapper"
-    );
-    ReactDOM.render(
-      React.createElement(
-        ReactRedux.Provider,
-        { store },
-        React.createElement(ConversationWrapper)
-      ),
-      conversationContainer
-    );
+    // Call initalize to set up the `browser` variable before we do anything.
+    // Once we can potentially load in a WebExtension scope, then we should
+    // be able to remove this.
+    initialize()
+      .then(() => {
+        const conversationContainer = document.getElementById(
+          "conversationWrapper"
+        );
+        ReactDOM.render(
+          React.createElement(
+            ReactRedux.Provider,
+            { store },
+            React.createElement(ConversationWrapper)
+          ),
+          conversationContainer
+        );
+      })
+      .catch(console.error);
   },
   { once: true }
 );
