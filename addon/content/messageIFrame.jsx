@@ -223,8 +223,8 @@ class MessageIFrame extends React.Component {
     // which ruins the conversation view. Gecko tends to automatically add
     // padding/margin to html mails. We still want to honor these prefs but
     // usually they just black/white so this is pretty much what we want.
-    let fg = this.props.prefs.browserForegroundColor;
-    let bg = this.props.prefs.browserBackgroundColor;
+    let fg = this.props.browserForegroundColor;
+    let bg = this.props.browserBackgroundColor;
     styleRules = styleRules.concat([
       "body {",
       "  margin: 0; padding: 0;",
@@ -433,6 +433,8 @@ class MessageIFrame extends React.Component {
 }
 
 MessageIFrame.propTypes = {
+  browserBackgroundColor: PropTypes.string.isRequired,
+  browserForegroundColor: PropTypes.string.isRequired,
   defaultFontSize: PropTypes.number.isRequired,
   dispatch: PropTypes.func.isRequired,
   expanded: PropTypes.bool.isRequired,

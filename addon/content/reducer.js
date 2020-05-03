@@ -47,6 +47,8 @@ const initialMessages = {
 };
 
 const initialSummary = {
+  browserForegroundColor: "#000000",
+  browserBackgroundColor: "#FFFFFF",
   conversation: null,
   defaultFontSize: 15,
   // TODO: What is loading used for?
@@ -251,16 +253,21 @@ const messageActions = {
       });
 
       const platformInfo = await browser.runtime.getPlatformInfo();
-      await dispatch({
-        type: "SET_OS",
-        OS: platformInfo.os,
-      });
       const defaultFontSize = await browser.conversations.getCorePref(
         "font.size.variable.x-western"
       );
+      const browserForegroundColor = await browser.conversations.getCorePref(
+        "browser.display.foreground_color"
+      );
+      const browserBackgroundColor = await browser.conversations.getCorePref(
+        "browser.display.background_color"
+      );
       await dispatch({
-        type: "SET_FONT_SIZE",
+        type: "SET_SYSTEM_OPTIONS",
+        browserForegroundColor,
+        browserBackgroundColor,
         defaultFontSize,
+        OS: platformInfo.os,
       });
 
       if (!isInTab) {
@@ -695,7 +702,7 @@ function summary(state = initialSummary, action) {
         isInTab: action.isInTab,
       };
     }
-    case "SET_OS": {
+    case "SET_SYSTEM_OPTIONS": {
       let tenPxFactor = 0.625;
       if (action.OS == "mac") {
         tenPxFactor = 0.666;
@@ -705,14 +712,11 @@ function summary(state = initialSummary, action) {
 
       return {
         ...state,
+        browserForegroundColor: action.browserForegroundColor,
+        browserBackgroundColor: action.browserBackgroundColor,
+        defaultFontSize: action.defaultFontSize,
         OS: action.OS,
         tenPxFactor,
-      };
-    }
-    case "SET_FONT_SIZE": {
-      return {
-        ...state,
-        defaultFontSize: action.defaultFontSize,
       };
     }
     case "REPLACE_CONVERSATION_DETAILS": {

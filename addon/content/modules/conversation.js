@@ -855,12 +855,6 @@ Conversation.prototype = {
         subject: this.messages[this.messages.length - 1].message.subject,
         loading: false,
         prefs: {
-          browserForegroundColor: Services.prefs.getCharPref(
-            "browser.display.foreground_color"
-          ),
-          browserBackgroundColor: Services.prefs.getCharPref(
-            "browser.display.background_color"
-          ),
           hideSigs: Prefs.hide_sigs,
           hideQuoteLength: Prefs.hide_quote_length,
           tweakBodies: Prefs.tweak_bodies,

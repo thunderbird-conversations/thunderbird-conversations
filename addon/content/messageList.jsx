@@ -30,6 +30,8 @@ function _MessageList(props) {
           <Message
             key={index}
             autoMarkAsRead={props.summary.autoMarkAsRead}
+            browserBackgroundColor={props.summary.browserBackgroundColor}
+            browserForegroundColor={props.summary.browserForegroundColor}
             defaultFontSize={props.summary.defaultFontSize}
             dispatch={props.dispatch}
             displayingMultipleMsgs={!!props.messages.length}

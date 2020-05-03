@@ -325,6 +325,8 @@ class Message extends React.PureComponent {
             />
           )}
           <MessageIFrame
+            browserBackgroundColor={this.props.browserBackgroundColor}
+            browserForegroundColor={this.props.browserForegroundColor}
             defaultFontSize={this.props.defaultFontSize}
             dispatch={this.props.dispatch}
             expanded={this.props.message.expanded}
@@ -374,6 +376,8 @@ class Message extends React.PureComponent {
 
 Message.propTypes = {
   autoMarkAsRead: PropTypes.bool.isRequired,
+  browserBackgroundColor: PropTypes.string.isRequired,
+  browserForegroundColor: PropTypes.string.isRequired,
   defaultFontSize: PropTypes.number.isRequired,
   dispatch: PropTypes.func.isRequired,
   displayingMultipleMsgs: PropTypes.bool.isRequired,

@@ -291,6 +291,9 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
         },
         async getCorePref(name) {
           try {
+            // There are simpler ways to do this, but at the moment it gives
+            // an easy list for things we might want to have exposed in the
+            // main WebExtension APIs.
             switch (name) {
               case "mailnews.mark_message_read.auto":
               case "mailnews.mark_message_read.delay":
@@ -299,6 +302,9 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
               case "font.size.variable.x-western":
               case "mailnews.mark_message_read.delay.interval":
                 return Services.prefs.getIntPref(name);
+              case "browser.display.foreground_color":
+              case "browser.display.background_color":
+                return Services.prefs.getCharPref(name);
             }
           } catch (ex) {
             // Do nothing
