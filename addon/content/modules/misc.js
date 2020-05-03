@@ -25,6 +25,10 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   Services: "resource://gre/modules/Services.jsm",
 });
 
+XPCOMUtils.defineLazyGetter(this, "browser", function() {
+  return BrowserSim.getBrowser();
+});
+
 function setupLogging(name) {
   return console.createInstance({
     prefix: name,
@@ -76,7 +80,6 @@ function joinWordList(aElements, aInsertHtml) {
 
   let hd = aElements.slice(0, l - 1);
   let tl = aElements[l - 1];
-  const browser = BrowserSim.getBrowser();
   return (
     hd.join(wrap(browser.i18n.getMessage("header.commaSeparator"))) +
     wrap(browser.i18n.getMessage("header.andSeparator")) +

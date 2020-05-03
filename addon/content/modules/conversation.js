@@ -36,6 +36,10 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   topMail3Pane: "chrome://conversations/content/modules/misc.js",
 });
 
+XPCOMUtils.defineLazyGetter(this, "browser", function() {
+  return BrowserSim.getBrowser();
+});
+
 XPCOMUtils.defineLazyGetter(this, "Log", () => {
   return setupLogging("Conversations.Conversation");
 });
@@ -920,7 +924,6 @@ Conversation.prototype = {
 
   // For the "forward conversation" action
   async exportAsHtml() {
-    const browser = BrowserSim.getBrowser();
     // Somehow this seems to be needed... why? Dunno.
     let start = "<html><body>";
     let hr =
