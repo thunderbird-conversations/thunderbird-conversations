@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals PropTypes, React, ReactDOM, ReactRedux, SvgIcon */
+/* globals PropTypes, React, ReactDOM, ReactRedux, SvgIcon, summaryActions */
 /* exported ContactDetail */
 
 class _ContactDetail extends React.PureComponent {
@@ -63,21 +63,23 @@ class _ContactDetail extends React.PureComponent {
   sendEmail(event) {
     event.stopPropagation();
     event.preventDefault();
-    this.props.dispatch({
-      type: "SEND_EMAIL",
-      name: this.props.name,
-      email: this.props.realEmail,
-    });
+    this.props.dispatch(
+      summaryActions.sendEmail({
+        name: this.props.name,
+        email: this.props.realEmail,
+      })
+    );
   }
 
   showInvolving(event) {
     event.stopPropagation();
     event.preventDefault();
-    this.props.dispatch({
-      type: "SHOW_MESSAGES_INVOLVING",
-      name: this.props.name,
-      email: this.props.realEmail,
-    });
+    this.props.dispatch(
+      summaryActions.showMessagesInvolving({
+        name: this.props.name,
+        email: this.props.realEmail,
+      })
+    );
   }
 
   render() {

@@ -4,12 +4,7 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = [
-  "ContactManager",
-  "Contacts",
-  "defaultPhotoURI",
-  "ContactHelpers",
-];
+var EXPORTED_SYMBOLS = ["ContactManager", "Contacts", "defaultPhotoURI"];
 
 const { XPCOMUtils } = ChromeUtils.import(
   "resource://gre/modules/XPCOMUtils.jsm"
@@ -17,15 +12,12 @@ const { XPCOMUtils } = ChromeUtils.import(
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
-  DisplayNameUtils: "resource:///modules/DisplayNameUtils.jsm",
-  composeMessageTo: "chrome://conversations/content/modules/stdlib/compose.js",
-  getIdentities: "chrome://conversations/content/modules/stdlib/misc.js",
-  getIdentityForEmail: "chrome://conversations/content/modules/stdlib/misc.js",
-  MailServices: "resource:///modules/MailServices.jsm",
-  Gloda: "resource:///modules/gloda/gloda.js",
-  Services: "resource://gre/modules/Services.jsm",
   getInitials: "chrome://conversations/content/utils.js",
   freshColor: "chrome://conversations/content/utils.js",
+});
+
+XPCOMUtils.defineLazyGetter(this, "browser", function() {
+  return BrowserSim.getBrowser();
 });
 
 var Contacts = {
@@ -36,49 +28,6 @@ var Contacts = {
 const defaultPhotoURI =
   "chrome://messenger/skin/addressbook/icons/contact-generic.png";
 
-var ContactHelpers = {
-  composeMessage(name, email, displayedFolder) {
-    let dest =
-      !name || name == email
-        ? email
-        : MailServices.headerParser.makeMimeAddress(name, email);
-    composeMessageTo(dest, displayedFolder);
-  },
-
-  showMessagesInvolving(win, name, email) {
-    let q1 = Gloda.newQuery(Gloda.NOUN_IDENTITY);
-    q1.kind("email");
-    q1.value(email);
-    q1.getCollection({
-      onItemsAdded: function _onItemsAdded(aItems, aCollection) {},
-      onItemsModified: function _onItemsModified(aItems, aCollection) {},
-      onItemsRemoved: function _onItemsRemoved(aItems, aCollection) {},
-      onQueryCompleted: function _onQueryCompleted(aCollection) {
-        if (!aCollection.items.length) {
-          return;
-        }
-
-        let q2 = Gloda.newQuery(Gloda.NOUN_MESSAGE);
-        q2.involves.apply(q2, aCollection.items);
-        q2.getCollection({
-          onItemsAdded: function _onItemsAdded(aItems, aCollection) {},
-          onItemsModified: function _onItemsModified(aItems, aCollection) {},
-          onItemsRemoved: function _onItemsRemoved(aItems, aCollection) {},
-          onQueryCompleted: function _onQueryCompleted(aCollection) {
-            const browser = BrowserSim.getBrowser();
-            let tabmail = win.document.getElementById("tabmail");
-            tabmail.openTab("glodaList", {
-              collection: aCollection,
-              title: browser.i18n.getMessage("involvingTabTitle", [name]),
-              background: false,
-            });
-          },
-        });
-      },
-    });
-  },
-};
-
 function ContactManager() {
   this._cache = {};
   this._colorCache = {};
@@ -86,7 +35,7 @@ function ContactManager() {
 }
 
 ContactManager.prototype = {
-  getContactFromNameAndEmail(name, email, position) {
+  getContactFromNameAndEmail(name, email) {
     // [name] and [email] are from the message header
     let self = this;
     email = (email + "").toLowerCase();
@@ -105,13 +54,7 @@ ContactManager.prototype = {
       return this._cache[key];
     }
 
-    let contact = new ContactFromAB(
-      this,
-      name,
-      email,
-      position,
-      this._colorCache[email]
-    );
+    let contact = new ContactFromAB(this, name, email, this._colorCache[email]);
     // Only cache contacts which are in the address book. This avoids weird
     //  phenomena such as a bug tracker sending emails with different names
     //  but with the same email address, resulting in people all sharing the
@@ -129,7 +72,7 @@ ContactManager.prototype = {
   },
 };
 
-function ContactFromAB(manager, name, email, /* unused */ position, color) {
+function ContactFromAB(manager, name, email, color) {
   this.emails = [];
   this.color = color || freshColor(email);
 
@@ -143,14 +86,16 @@ function ContactFromAB(manager, name, email, /* unused */ position, color) {
 }
 
 ContactFromAB.prototype = {
-  fetch() {
-    let card = DisplayNameUtils.getCardForEmail(this._email).card;
+  async fetch() {
+    const matchingCards = await browser.contacts.quickSearch(this._email);
+    let card = matchingCards.length !== 0 ? matchingCards[0].properties : null;
     this._card = card;
     if (card) {
-      // getProperty may return "0" or "1" which must be "== false"'d to be
-      //  properly evaluated
-      this._useCardName = !!card.getProperty("PreferDisplayName", true);
-      this.emails = [card.primaryEmail, card.getProperty("SecondEmail", "")];
+      // PreferDisplayName returns a literal string "0" or "1". We must convert it
+      // to a boolean appropriately.
+      this._useCardName =
+        card.PreferDisplayName != null ? !!+card.PreferDisplayName : true;
+      this.emails = [card.primaryEmail, card.SecondEmail || ""];
       // Prefer:
       // - displayName
       // - firstName lastName (if one of these is non-empty)
@@ -173,7 +118,7 @@ ContactFromAB.prototype = {
 
   get avatar() {
     if (this._card) {
-      let photoURI = this._card.getProperty("PhotoURI", "");
+      let photoURI = this._card.PhotoURI || "";
       if (photoURI) {
         return photoURI;
       }
@@ -182,20 +127,40 @@ ContactFromAB.prototype = {
   },
 
   /**
-   * The aEmail parameter is here because the same contact object is shared for
+   * The `email` parameter is here because the same contact object is shared for
    * all instances of a contact, even though the original email address is
    * different. This allows one to share a common color for a same card in the
    * address book.
    */
-  toTmplData(useColor, position, email, isDetail) {
-    let [name, extra] = this.getName(position, isDetail);
-    let displayEmail = name != email ? email : "";
-    let hasCard = this._card != null;
-    let skipEmail =
+  async toTmplData(useColor, position, email, isDetail) {
+    const identities = await browser.convContacts
+      .getIdentities({ includeNntpIdentities: false })
+      .catch(console.error);
+    const identity = identities.find(
+      ident => ident.identity.email.toLowerCase() == this._email.toLowerCase()
+    );
+
+    // `name` and `extra` are the only attributes that depend on `position`
+    let name = this._name || this._email;
+    let extra = "";
+    if (!isDetail && identity != null) {
+      name =
+        position === Contacts.kFrom
+          ? browser.i18n.getMessage("message.meFromMeToSomeone")
+          : browser.i18n.getMessage("message.meFromSomeoneToMe");
+      extra = this._email;
+    }
+    const displayEmail = name != email ? email : "";
+    const hasCard = this._card != null;
+    const skipEmail =
       !isDetail &&
       hasCard &&
-      Services.prefs.getBoolPref("mail.showCondensedAddresses");
-    let tooltipName = this.getTooltipName(position);
+      (await browser.conversations.getCorePref("mail.showCondensedAddresses"));
+    let tooltipName = this._name || this._email;
+    if (identity != null) {
+      tooltipName = browser.i18n.getMessage("message.meFromMeToSomeone");
+    }
+
     let data = {
       name,
       initials: getInitials(name),
@@ -210,35 +175,6 @@ ContactFromAB.prototype = {
       colorStyle: useColor === false ? {} : { backgroundColor: this.color },
     };
     return data;
-  },
-
-  getTooltipName(aPosition) {
-    const browser = BrowserSim.getBrowser();
-
-    if (aPosition !== Contacts.kFrom && aPosition !== Contacts.kTo) {
-      throw new Error("Someone did not set the 'position' properly");
-    }
-    if (getIdentityForEmail(this._email)) {
-      return browser.i18n.getMessage("message.meFromMeToSomeone");
-    }
-
-    return this._name || this._email;
-  },
-
-  getName(aPosition, aIsDetail) {
-    const browser = BrowserSim.getBrowser();
-    if (aPosition !== Contacts.kFrom && aPosition !== Contacts.kTo) {
-      throw new Error("Someone did not set the 'position' properly");
-    }
-    if (getIdentityForEmail(this._email) && !aIsDetail) {
-      let display =
-        aPosition === Contacts.kFrom
-          ? browser.i18n.getMessage("message.meFromMeToSomeone")
-          : browser.i18n.getMessage("message.meFromSomeoneToMe");
-      return [display, getIdentities().length > 1 ? this._email : ""];
-    }
-
-    return [this._name || this._email, ""];
   },
 
   enrichWithName(aName) {

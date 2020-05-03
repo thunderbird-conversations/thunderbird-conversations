@@ -19,19 +19,20 @@
     "open_in_tab": true,
     "page": "options.html"
   },
-  "permissions": ["accountsRead", "addressBooks", "messagesRead", "messagesMove", "storage"],
+  "permissions": [
+    "accountsRead",
+    "addressBooks",
+    "messagesRead",
+    "messagesMove",
+    "storage",
+    "contacts"
+  ],
   "experiment_apis": {
     "conversations": {
       "schema": "experiment-api/schema.json",
       "parent": {
-        "scopes": [
-          "addon_parent"
-        ],
-        "paths": [
-          [
-            "conversations"
-          ]
-        ],
+        "scopes": ["addon_parent"],
+        "paths": [["conversations"]],
         "script": "experiment-api/api.js",
         "events": ["startup"]
       }
@@ -39,14 +40,8 @@
     "convContacts": {
       "schema": "experiment-api/contactsSchema.json",
       "parent": {
-        "scopes": [
-          "addon_parent"
-        ],
-        "paths": [
-          [
-            "convContacts"
-          ]
-        ],
+        "scopes": ["addon_parent"],
+        "paths": [["convContacts"]],
         "script": "experiment-api/contactsApi.js"
       }
     }

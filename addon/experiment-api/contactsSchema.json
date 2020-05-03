@@ -60,6 +60,103 @@
             }
           }
         ]
+      },
+      {
+        "name": "showMessagesInvolving",
+        "type": "function",
+        "description": "Temporary. Shows all messages involving a particular email.",
+        "async": true,
+        "parameters": [
+          {
+            "type": "object",
+            "name": "showMessagesInvolvingProperties",
+            "properties": {
+              "email": {
+                "type": "string",
+                "description": "The contact to find involved messages via."
+              },
+              "name": {
+                "type": "string",
+                "description": "Name of the contact (displays in tab title)."
+              },
+              "windowId": {
+                "type": "integer",
+                "optional": true,
+                "minimum": -2,
+                "description": "The window to create the new tab in. Defaults to the current window."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "composeNew",
+        "type": "function",
+        "description": "Temporary. Composes a message to an address.",
+        "async": true,
+        "parameters": [
+          {
+            "type": "object",
+            "name": "composeNewProperties",
+            "properties": {
+              "to": {
+                "type": "string",
+                "description": "The to address. This should be a properly formatted MIME address."
+              },
+              "windowId": {
+                "type": "integer",
+                "optional": true,
+                "minimum": -2,
+                "description": "The window to create the new tab in. Defaults to the current window."
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "makeMimeAddress",
+        "type": "function",
+        "description": "Temporary. Returns a properly formatted email string from a name and email",
+        "async": true,
+        "parameters": [
+          {
+            "type": "object",
+            "name": "makeMimeAddressProperties",
+            "properties": {
+              "email": {
+                "type": "string",
+                "description": "The email address"
+              },
+              "name": {
+                "type": "string",
+                "optional": true,
+                "description": "Name of the contact"
+              }
+            }
+          }
+        ]
+      },
+      {
+        "name": "getIdentities",
+        "type": "function",
+        "description": "Temporary. Returns a list of identities",
+        "async": true,
+        "parameters": [
+          {
+            "type": "object",
+            "name": "getIdentitiesProperties",
+            "properties": {
+              "includeNntpIdentities": {
+                "type": "boolean",
+                "description": "Whether or not to include NNTP identities",
+                "optional": true,
+                "default": false
+              }
+            },
+            "optional": true,
+            "default": {}
+          }
+        ]
       }
     ]
   }
