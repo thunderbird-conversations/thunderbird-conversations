@@ -488,13 +488,19 @@ Conversation.prototype = {
       //  calls fail.
       const message = byMessageId.get(glodaMsg.headerMessageID);
       if (message) {
-        Services.tm.dispatchToMainThread(async () => {
-          const msgData = await message.toReactData();
-          this._htmlPane.conversationDispatch({
-            type: "MSG_UPDATE_DATA",
-            msgData,
-          });
-        });
+        (async () => {
+          try {
+            const msgData = await message.toReactData();
+            this._htmlPane.conversationDispatch({
+              type: "MSG_UPDATE_DATA",
+              msgData,
+            });
+          } catch (ex) {
+            if (ex.message != "Message no longer exists") {
+              throw ex;
+            }
+          }
+        })();
       }
     }
   },

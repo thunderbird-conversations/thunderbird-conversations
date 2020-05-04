@@ -399,6 +399,10 @@ class Message {
     addMsgListener(this);
 
     const messageHeader = await browser.messages.get(this._id);
+    if (!messageHeader) {
+      throw new Error("Message no longer exists");
+    }
+
     const messageFolderType = messageHeader.folderType;
     let isJunk;
     if (!("junk" in messageHeader)) {
