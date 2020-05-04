@@ -264,6 +264,8 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
         this.autofillManifest
       );
     }
+
+    Services.obs.notifyObservers(null, "startupcache-invalidate");
   }
   getAPI(context) {
     return {
