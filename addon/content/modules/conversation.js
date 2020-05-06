@@ -412,14 +412,16 @@ Conversation.prototype = {
     //  time for Gecko 42, if we're lucky)
     // SO LOLZ: the comment above was written in 2011, Gecko 42 has been
     //  released, bug still isn't fixed.
-    Services.tm.dispatchToMainThread(() => {
+    Services.tm.dispatchToMainThread(async () => {
       try {
         // The MessageFromGloda constructor cannot work with gloda messages that
         //  don't have a message header
         aItems = aItems.filter(glodaMsg => glodaMsg.folderMessage);
         // We want at least all messages from the Gloda collection
-        let messages = aItems.map(glodaMsg =>
-          messageFromGlodaIfOffline(this, glodaMsg, "GA")
+        let messages = await Promise.all(
+          aItems.map(glodaMsg =>
+            messageFromGlodaIfOffline(this, glodaMsg, "GA")
+          )
         );
         Log.debug(
           "onItemsAdded",
