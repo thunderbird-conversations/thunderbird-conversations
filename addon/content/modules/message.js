@@ -44,7 +44,6 @@ XPCOMUtils.defineLazyGetter(this, "browser", function() {
 const {
   msgHdrGetHeaders,
   msgHdrGetUri,
-  msgHdrsMarkAsRead,
   msgHdrToNeckoURL,
   msgHdrToMessageBody,
   msgUriToMsgHdr,
@@ -596,10 +595,6 @@ class Message {
   // Convenience properties
   get read() {
     return this._msgHdr.isRead;
-  }
-
-  set read(v) {
-    msgHdrsMarkAsRead([this._msgHdr], v);
   }
 
   addSpecialTag(tagDetails) {

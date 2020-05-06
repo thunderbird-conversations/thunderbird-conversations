@@ -23,8 +23,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   msgHdrGetUri: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   msgHdrIsRss: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   msgHdrIsNntp: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
-  msgHdrsMarkAsRead:
-    "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   openConversationInTabOrWindow:
     "chrome://conversations/content/modules/misc.js",
   parseMimeLine: "chrome://conversations/content/modules/stdlib/misc.js",
@@ -583,13 +581,9 @@ MonkeyPatch.prototype = {
                     Log.debug("Marking the whole conversation as read");
                     for (const m of aConversation.messages) {
                       if (!m.message.read) {
-                        m.message.read = true;
-                        // TODO: Swap to use the browser API.
-                        // Unfortunately this is broken for IMAP accounts:
-                        // https://bugzilla.mozilla.org/show_bug.cgi?id=1631184
-                        // await browser.messages
-                        //   .update(m.message._id, { read: true });
-                        // }
+                        await browser.messages.update(m.message._id, {
+                          read: true,
+                        });
                       }
                     }
                   }
@@ -597,7 +591,16 @@ MonkeyPatch.prototype = {
                   // We don't seem to have a reflow when the thread is expanded
                   //  so no risk of silently marking conversations as read.
                   Log.debug("Marking selected messages as read");
-                  msgHdrsMarkAsRead(aSelectedMessages, true);
+                  for (const msgHdr of aSelectedMessages) {
+                    const id = await browser.conversations.getMessageIdForUri(
+                      msgHdrGetUri(msgHdr)
+                    );
+                    if (!msgHdr.read) {
+                      await browser.messages.update(id, {
+                        read: true,
+                      });
+                    }
+                  }
                 } else {
                   Log.assert(false, "GIVE ME ALGEBRAIC DATA TYPES!!!");
                 }
@@ -656,8 +659,16 @@ MonkeyPatch.prototype = {
           if (msgHdrIsRss(msgHdr) || msgHdrIsNntp(msgHdr)) {
             // Use the default pref.
             if (Services.prefs.getBoolPref("mailnews.mark_message_read.auto")) {
-              self.markReadTimeout = window.setTimeout(function() {
-                msgHdrsMarkAsRead([msgHdr], true);
+              self.markReadTimeout = window.setTimeout(async function() {
+                Log.debug(`Marking as read:`, msgHdr);
+                const id = await browser.conversations.getMessageIdForUri(
+                  msgHdrGetUri(msgHdr)
+                );
+                if (!msgHdr.read) {
+                  await browser.messages.update(id, {
+                    read: true,
+                  });
+                }
                 self.markReadTimeout = null;
               }, Services.prefs.getIntPref(
                 "mailnews.mark_message_read.delay.interval"
