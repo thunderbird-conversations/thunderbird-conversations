@@ -127,8 +127,8 @@ MonkeyPatch.prototype = {
         let format = function(x, p) {
           if (getIdentityForEmail(x.email)) {
             let display = p
-              ? browser.i18n.getMessage("meBetweenMeAndSomeone")
-              : browser.i18n.getMessage("meBetweenSomeoneAndMe");
+              ? browser.i18n.getMessage("message.meBetweenMeAndSomeone")
+              : browser.i18n.getMessage("message.meBetweenSomeoneAndMe");
             if (getIdentities().length > 1) {
               display += " (" + x.email + ")";
             }
