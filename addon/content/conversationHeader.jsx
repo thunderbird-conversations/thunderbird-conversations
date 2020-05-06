@@ -212,7 +212,9 @@ class _ConversationHeader extends React.PureComponent {
               </svg>
             </button>
             <button
-              className="button-flat"
+              className={`button-flat ${
+                this.areSomeMessagesUnread ? "unread" : ""
+              }`}
               title={browser.i18n.getMessage("message.read.tooltip")}
               onClick={this.toggleRead}
             >
