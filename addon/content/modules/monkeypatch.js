@@ -493,6 +493,11 @@ MonkeyPatch.prototype = {
             Services.obs.notifyObservers(null, "Conversations", "Displayed");
             return;
           }
+          // Remember the previously selected URIs now, so that if we get
+          // a duplicate conversation, we don't try to start rending the same
+          // conversation again whilst the previous one is still in progress.
+          previouslySelectedUris = newlySelectedUris;
+          previousScrollMode = scrollMode;
 
           let freshConversation = new Conversation(
             window,
@@ -500,6 +505,7 @@ MonkeyPatch.prototype = {
             scrollMode,
             ++window.Conversations.counter
           );
+          Log.debug(`New conversation ${freshConversation.counter}`);
           if (window.Conversations.currentConversation) {
             Log.debug(
               "Current conversation is",
@@ -515,11 +521,6 @@ MonkeyPatch.prototype = {
               Log.debug("0 messages in aConversation");
               return;
             }
-            // So we've been promoted to be the new conversation! Remember
-            //  that and update the currently selected URIs to prevent further
-            //  reflows.
-            previouslySelectedUris = newlySelectedUris;
-            previousScrollMode = scrollMode;
             // One nasty behavior of the folder tree view is that it calls us
             //  every time a new message has been downloaded. So if you open
             //  your inbox all of a sudden and select a conversation, it's not
