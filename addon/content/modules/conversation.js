@@ -30,7 +30,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
     "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   msgHdrsDelete: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   Prefs: "chrome://conversations/content/modules/prefs.js",
-  range: "chrome://conversations/content/modules/stdlib/misc.js",
   setupLogging: "chrome://conversations/content/modules/misc.js",
   Services: "resource://gre/modules/Services.jsm",
   topMail3Pane: "chrome://conversations/content/modules/misc.js",
@@ -713,7 +712,7 @@ Conversation.prototype = {
     }
     this.messages = this.messages.concat(aMessages);
 
-    for (let i of range(0, aMessages.length)) {
+    for (let i = 0; i < aMessages.length; i++) {
       let oldMsg;
       if (i == 0) {
         if (this.messages.length) {
@@ -728,10 +727,11 @@ Conversation.prototype = {
       msg.updateTmplData(oldMsg);
     }
     // Update initialPosition
-    for (let i of range(
-      this.messages.length - aMessages.length,
-      this.messages.length
-    )) {
+    for (
+      let i = this.messages.length - aMessages.length;
+      this.messages.length;
+      i++
+    ) {
       this.messages[i].message.initialPosition = i;
     }
     this.viewWrapper = new ViewWrapper(this);
@@ -819,7 +819,7 @@ Conversation.prototype = {
 
     // Fill in the HTML right away. The has the nice side-effect of erasing the
     // previous conversation (but not the conversation-wide event handlers!)
-    for (let i of range(0, this.messages.length)) {
+    for (let i = 0; i < this.messages.length; i++) {
       // We need to set this before the call to reactMsgData.
       let msg = this.messages[i].message;
       msg.initialPosition = i;
