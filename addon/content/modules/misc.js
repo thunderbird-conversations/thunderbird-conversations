@@ -10,7 +10,6 @@ var EXPORTED_SYMBOLS = [
   "arrayEquals",
   "topMail3Pane",
   "folderName",
-  "makeConversationUrl",
 ];
 
 const { XPCOMUtils } = ChromeUtils.import(
@@ -175,21 +174,4 @@ function folderName(aFolder) {
     folderStr = folder.name + "/" + folderStr;
   }
   return [aFolder.prettyName, folderStr];
-}
-
-/**
- * Makes a conversation url for opening in new windows/tabs.
- *
- * @param {Array} urls
- *   An array of urls to be opened.
- * @param {Boolean} [isSelectionThreaded]
- *   Is the selection threaded
- */
-function makeConversationUrl(urls, isSelectionThreaded) {
-  let queryString = "?urls=" + encodeURIComponent(urls.join(","));
-
-  if (isSelectionThreaded) {
-    queryString += "&isThreaded=" + isSelectionThreaded ? 1 : 0;
-  }
-  return Prefs.kStubUrl + queryString;
 }

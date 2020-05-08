@@ -74,6 +74,34 @@
             }
           }
         }
+      },
+      {
+        "name": "onThreadPaneMiddleClick",
+        "type": "function",
+        "description": "Temporary. Listens for middle clicks on the thread pane.",
+        "parameters": [
+          {
+            "name": "window",
+            "type": "integer",
+            "optional": true,
+            "minimum": -2,
+            "description": "The window id."
+          },
+          {
+            "name": "message",
+            "$ref": "messages.MessageHeader"
+          }
+        ],
+        "returns": {
+          "type": "object",
+          "properties": {
+            "cancel": {
+              "type": "boolean",
+              "optional": true,
+              "description": "Cancels the middle click, e.g. the add-on has handled it."
+            }
+          }
+        }
       }
     ]
   }

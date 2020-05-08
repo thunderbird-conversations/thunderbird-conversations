@@ -22,6 +22,32 @@ export class Window {
         };
       }
     );
+
+    browser.convMsgWindow.onThreadPaneMiddleClick.addListener(
+      async (windowId, msgHdrs) => {
+        for (const hdr of msgHdrs) {
+          const account = await browser.accounts.get(hdr.folder.accountId);
+          if (account.type == "nntp" || account.type == "rss") {
+            return {};
+          }
+        }
+        const urls = [];
+        for (const hdr of msgHdrs) {
+          urls.push(await browser.conversations.getMessageUriForId(hdr.id));
+        }
+        const url = this.makeConversationUrl(
+          urls,
+          await browser.convMsgWindow.isSelectionThreaded(self._windowId)
+        );
+        await browser.conversations.createTab({
+          url,
+          type: "chromeTab",
+        });
+        return {
+          cancel: true,
+        };
+      }
+    );
   }
 
   async openConversation(windowId, urls) {

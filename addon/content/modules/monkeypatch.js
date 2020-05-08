@@ -19,7 +19,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   getIdentities: "chrome://conversations/content/modules/stdlib/misc.js",
   getMail3Pane: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   joinWordList: "chrome://conversations/content/modules/misc.js",
-  makeConversationUrl: "chrome://conversations/content/modules/misc.js",
   msgHdrGetUri: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   msgHdrIsRss: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   msgHdrIsNntp: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
@@ -291,40 +290,6 @@ MonkeyPatch.prototype = {
 
     // Undo all our customizations at uninstall-time
     this.registerUndoCustomizations();
-
-    // Same thing for middle-click
-    let oldTreeOnMouseDown = window.TreeOnMouseDown;
-    window.TreeOnMouseDown = async function(event) {
-      if (event.target.parentNode.id !== "threadTree") {
-        oldTreeOnMouseDown(event);
-        return;
-      }
-
-      // Middle-click
-      if (event.button == 1) {
-        let tabmail = window.document.getElementById("tabmail");
-        window.ChangeSelectionWithoutContentLoad(
-          event,
-          event.target.parentNode,
-          false
-        );
-
-        let msgHdrs = window.gFolderDisplay.selectedMessages;
-        if (!msgHdrs.some(msgHdrIsRss) && !msgHdrs.some(msgHdrIsNntp)) {
-          const urls = msgHdrs.map(hdr => msgHdrGetUri(hdr));
-          tabmail.openTab("chromeTab", {
-            chromePage: makeConversationUrl(
-              urls,
-              await browser.convMsgWindow.isSelectionThreaded(self._windowId)
-            ),
-          });
-        } else {
-          oldTreeOnMouseDown(event);
-        }
-      } else {
-        oldTreeOnMouseDown(event);
-      }
-    };
 
     // Because we're not even fetching the conversation when the message pane is
     //  hidden, we need to trigger it manually when it's un-hidden.

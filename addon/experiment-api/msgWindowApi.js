@@ -143,6 +143,68 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
             };
           },
         }).api(),
+        onThreadPaneMiddleClick: new ExtensionCommon.EventManager({
+          context,
+          name: "convMsgWindow.onThreadPaneMiddleClick",
+          register(fire) {
+            // Same thing for middle-click
+            const patchMiddleClick = (win, id) => {
+              win.oldTreeOnMouseDown = win.TreeOnMouseDown;
+              win.TreeOnMouseDown = async event => {
+                if (
+                  event.target.parentNode.id !== "threadTree" ||
+                  event.button != 1
+                ) {
+                  win.oldTreeOnMouseDown(event);
+                  return;
+                }
+
+                // Middle-click
+                win.ChangeSelectionWithoutContentLoad(
+                  event,
+                  event.target.parentNode,
+                  false
+                );
+
+                let msgHdrs = win.gFolderDisplay.selectedMessages;
+                msgHdrs = msgHdrs.map(hdr => messageManager.convert(hdr));
+                let result = await fire.async(id, msgHdrs).catch(console.error);
+                if (result && result.cancel) {
+                  return;
+                }
+                win.oldTreeOnMouseDown();
+              };
+            };
+
+            // This obserer is notified when a new window is created and injects our code
+            let windowObserver = {
+              observe(aSubject, aTopic, aData) {
+                if (aTopic == "domwindowopened") {
+                  if (aSubject && "QueryInterface" in aSubject) {
+                    aSubject.QueryInterface(Ci.nsIDOMWindow);
+                    waitForWindow(aSubject.window).then(() =>
+                      patchMiddleClick(
+                        aSubject.window,
+                        windowManager.getWrapper(aSubject.window).id
+                      )
+                    );
+                  }
+                }
+              },
+            };
+
+            monkeyPatchAllWindows(windowManager, patchMiddleClick);
+            Services.ww.registerNotification(windowObserver);
+
+            return function() {
+              Services.ww.unregisterNotification(windowObserver);
+              monkeyPatchAllWindows(windowManager, (win, id) => {
+                win.TreeOnMouseDown = win.oldTreeOnMouseDown;
+                delete win.oldTreeOnMouseDown;
+              });
+            };
+          },
+        }).api(),
       },
     };
   }
