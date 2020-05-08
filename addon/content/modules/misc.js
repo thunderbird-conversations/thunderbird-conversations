@@ -11,7 +11,6 @@ var EXPORTED_SYMBOLS = [
   "topMail3Pane",
   "folderName",
   "makeConversationUrl",
-  "openConversationInTabOrWindow",
 ];
 
 const { XPCOMUtils } = ChromeUtils.import(
@@ -193,38 +192,4 @@ function makeConversationUrl(urls, isSelectionThreaded) {
     queryString += "&isThreaded=" + isSelectionThreaded ? 1 : 0;
   }
   return Prefs.kStubUrl + queryString;
-}
-
-/**
- * Opens a conversation in a new tab or window.
- *
- * @param {Array} urls
- *   An array of urls to be opened.
- * @param {Boolean} [isSelectionThreaded]
- *   Is the selection threaded
- */
-async function openConversationInTabOrWindow(urls, isSelectionThreaded) {
-  let url = makeConversationUrl(urls, isSelectionThreaded);
-
-  let window = getMail3Pane();
-  // Counting some extra pixels for window decorations.
-  let height = Math.min(window.screen.availHeight - 30, 1024);
-  switch (await browser.conversations.getCorePref("mail.openMessageBehavior")) {
-    case 0:
-      window.open(url, "_blank", "chrome,resizable,width=640,height=" + height);
-      break;
-    case 1:
-      window.open(
-        url,
-        "conversations",
-        "chrome,resizable,width=640,height=" + height
-      );
-      break;
-    case 2:
-      await browser.conversations.createTab({
-        url,
-        type: "chromeTab",
-      });
-      break;
-  }
 }

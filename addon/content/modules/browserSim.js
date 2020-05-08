@@ -112,6 +112,17 @@ class _BrowserSim {
     return browser;
   }
 
+  // This is provided so that we can call background scripts from stub.html.
+  // Really this should be using the ports and browser.runtime.connect, but they
+  // won't work until we're proper WeBextension page.
+  callBackgroundFunc(apiName, apiFunc, args) {
+    return this._browserListener(apiName, apiFunc, ...args);
+  }
+
+  getWindowId(win) {
+    return this._context.extension.windowManager.convert(win).id;
+  }
+
   _implementation(extension, api, name) {
     let impl = api.getAPI(this._context)[name];
 

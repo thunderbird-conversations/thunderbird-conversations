@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* global Redux, Conversations, getMail3Pane, openConversationInTabOrWindow */
+/* global Redux, Conversations, getMail3Pane */
 // eslint-disable-next-line no-redeclare
 /* global browser:true */
 /* exported conversationApp, attachmentActions, messageActions, summaryActions,
@@ -17,8 +17,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   Conversation: "chrome://conversations/content/modules/conversation.js",
   ConversationUtils: "chrome://conversations/content/modules/conversation.js",
-  openConversationInTabOrWindow:
-    "chrome://conversations/content/modules/misc.js",
   MessageUtils: "chrome://conversations/content/modules/message.js",
   topMail3Pane: "chrome://conversations/content/modules/misc.js",
 });
@@ -480,15 +478,15 @@ const messageActions = {
       const state = getState().messages;
       // TODO: Fix re-enabling composition when expanded into new tab.
       // let willExpand = element.hasClass("expand") && startedEditing();
-      // Pick _initialSet and not msgHdrs so as to enforce the invariant
-      //  that the messages from _initialSet are in the current view.
-      const urls = state.msgData.map(x => x.msgUri);
-      // "&willExpand=" + Number(willExpand);
       // First, save the draft, and once it's saved, then move on to opening the
       // conversation in a new tab...
       // onSave(() => {
-      openConversationInTabOrWindow(urls);
-      // });
+      const urls = state.msgData.map(x => x.msgUri);
+      BrowserSim.callBackgroundFunc("_window", "openConversation", [
+        BrowserSim.getWindowId(window),
+        urls,
+        // "&willExpand=" + Number(willExpand);
+      ]);
     };
   },
   notificationClick({ msgUri, notificationType, extraData }) {

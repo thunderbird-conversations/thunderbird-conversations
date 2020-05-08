@@ -12,7 +12,11 @@ export class Window {
             return {};
           }
         }
-        await this.openConversation(windowId, msgHdrs);
+        const urls = [];
+        for (const hdr of msgHdrs) {
+          urls.push(await browser.conversations.getMessageUriForId(hdr.id));
+        }
+        await this.openConversation(windowId, urls);
         return {
           cancel: true,
         };
@@ -20,11 +24,7 @@ export class Window {
     );
   }
 
-  async openConversation(windowId, msgHdrs) {
-    const urls = [];
-    for (const hdr of msgHdrs) {
-      urls.push(await browser.conversations.getMessageUriForId(hdr.id));
-    }
+  async openConversation(windowId, urls) {
     const url = this.makeConversationUrl(
       urls,
       await browser.convMsgWindow.isSelectionThreaded(self._windowId)

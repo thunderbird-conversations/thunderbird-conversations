@@ -17,6 +17,9 @@ class Background {
     // preference startup.
     browser.conversations.onCallAPI.addListener(
       async (apiName, apiItem, args) => {
+        if (apiName.startsWith("_")) {
+          return this[apiName][apiItem](...args);
+        }
         return browser[apiName][apiItem](...args);
       }
     );
