@@ -22,7 +22,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   getMail3Pane: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   Prefs: "chrome://conversations/content/modules/prefs.js",
-  Services: "resource://gre/modules/Services.jsm",
 });
 
 XPCOMUtils.defineLazyGetter(this, "browser", function() {
@@ -204,13 +203,13 @@ function makeConversationUrl(urls, isSelectionThreaded) {
  * @param {Boolean} [isSelectionThreaded]
  *   Is the selection threaded
  */
-function openConversationInTabOrWindow(urls, isSelectionThreaded) {
+async function openConversationInTabOrWindow(urls, isSelectionThreaded) {
   let url = makeConversationUrl(urls, isSelectionThreaded);
 
   let window = getMail3Pane();
   // Counting some extra pixels for window decorations.
   let height = Math.min(window.screen.availHeight - 30, 1024);
-  switch (Services.prefs.getIntPref("mail.openMessageBehavior")) {
+  switch (await browser.conversations.getCorePref("mail.openMessageBehavior")) {
     case 0:
       window.open(url, "_blank", "chrome,resizable,width=640,height=" + height);
       break;
@@ -222,8 +221,9 @@ function openConversationInTabOrWindow(urls, isSelectionThreaded) {
       );
       break;
     case 2:
-      window.document.getElementById("tabmail").openTab("chromeTab", {
-        chromePage: url,
+      await browser.conversations.createTab({
+        url,
+        type: "chromeTab",
       });
       break;
   }

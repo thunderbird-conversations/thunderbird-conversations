@@ -31,6 +31,49 @@
             "description": "The window id."
           }
         ]
+      },
+      {
+        "name": "openNewWindow",
+        "type": "function",
+        "description": "Opens a new window with the specified url.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "url",
+            "type": "string",
+            "description": "The url to load in the window."
+          }
+        ]
+      }
+    ],
+    "events": [
+      {
+        "name": "onThreadPaneDoubleClick",
+        "type": "function",
+        "description": "Temporary. Listens for double clicks on the thread pane.",
+        "parameters": [
+          {
+            "name": "window",
+            "type": "integer",
+            "optional": true,
+            "minimum": -2,
+            "description": "The window id."
+          },
+          {
+            "name": "message",
+            "$ref": "messages.MessageHeader"
+          }
+        ],
+        "returns": {
+          "type": "object",
+          "properties": {
+            "cancel": {
+              "type": "boolean",
+              "optional": true,
+              "description": "Cancels the double click, e.g. the add-on has handled it."
+            }
+          }
+        }
       }
     ]
   }

@@ -90,6 +90,19 @@
         ]
       },
       {
+        "name": "getMessageUriForId",
+        "type": "function",
+        "description": "Temporary. Gets the message uri for a given message id",
+        "async": "true",
+        "parameters": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "The messageId"
+          }
+        ]
+      },
+      {
         "name": "getAttachmentBody",
         "type": "function",
         "description": "Temporary. Gets the attachment body for a particular message and part (xref bug 1606552)",

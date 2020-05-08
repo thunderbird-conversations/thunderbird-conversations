@@ -23,8 +23,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   msgHdrGetUri: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   msgHdrIsRss: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   msgHdrIsNntp: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
-  openConversationInTabOrWindow:
-    "chrome://conversations/content/modules/misc.js",
   parseMimeLine: "chrome://conversations/content/modules/stdlib/misc.js",
   Prefs: "chrome://conversations/content/modules/prefs.js",
   setupLogging: "chrome://conversations/content/modules/misc.js",
@@ -293,32 +291,6 @@ MonkeyPatch.prototype = {
 
     // Undo all our customizations at uninstall-time
     this.registerUndoCustomizations();
-
-    // Below is the code that intercepts the double-click-on-a-message event,
-    //  and reroutes the control flow to our conversation reader.
-    let oldThreadPaneDoubleClick = window.ThreadPaneDoubleClick;
-    window.ThreadPaneDoubleClick = function() {
-      // ThreadPaneDoubleClick calls OnMsgOpenSelectedMessages. We don't want to
-      // replace the whole ThreadPaneDoubleClick function, just the line that
-      // calls OnMsgOpenSelectedMessages in that function. So we do that weird
-      // thing here.
-      let oldMsgOpenSelectedMessages = window.MsgOpenSelectedMessages;
-      let msgHdrs = window.gFolderDisplay.selectedMessages;
-      if (!msgHdrs.some(msgHdrIsRss) && !msgHdrs.some(msgHdrIsNntp)) {
-        window.MsgOpenSelectedMessages = async function() {
-          const urls = msgHdrs.map(hdr => msgHdrGetUri(hdr));
-          openConversationInTabOrWindow(
-            urls,
-            await browser.convMsgWindow.isSelectionThreaded(self._windowId)
-          );
-        };
-      }
-      oldThreadPaneDoubleClick();
-      window.MsgOpenSelectedMessages = oldMsgOpenSelectedMessages;
-    };
-    this.pushUndo(
-      () => (window.ThreadPaneDoubleClick = oldThreadPaneDoubleClick)
-    );
 
     // Same thing for middle-click
     let oldTreeOnMouseDown = window.TreeOnMouseDown;

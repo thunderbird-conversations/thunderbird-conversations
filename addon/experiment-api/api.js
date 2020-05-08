@@ -309,6 +309,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
                 return Services.prefs.getBoolPref(name);
               case "font.size.variable.x-western":
               case "mailnews.mark_message_read.delay.interval":
+              case "mail.openMessageBehavior":
                 return Services.prefs.getIntPref(name);
               case "browser.display.foreground_color":
               case "browser.display.background_color":
@@ -379,6 +380,13 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             return null;
           }
           return context.extension.messageManager.convert(msgHdr).id;
+        },
+        async getMessageUriForId(id) {
+          const msgHdr = context.extension.messageManager.get(id);
+          if (!msgHdr) {
+            return null;
+          }
+          return msgHdr.folder.getUriForMsg(msgHdr);
         },
         async getAttachmentBody(id, partName) {
           const msgHdr = context.extension.messageManager.get(id);

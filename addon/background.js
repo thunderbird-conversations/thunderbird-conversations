@@ -3,11 +3,13 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import { Prefs } from "./prefs.js";
+import { Window } from "./window.js";
 
 class Background {
   constructor() {
     this._prefs = new Prefs();
     this._keyHandler = new KeyHandler();
+    this._window = new Window();
   }
   async init() {
     // Setup the temporary API caller that stub.xhtml uses.
@@ -21,6 +23,7 @@ class Background {
 
     await this._prefs.init();
     await this._keyHandler.init();
+    await this._window.init();
 
     // Reset the message pane if the font size is changed, that seems to be
     // the best we can do at the moment, as the message pane doesn't get
