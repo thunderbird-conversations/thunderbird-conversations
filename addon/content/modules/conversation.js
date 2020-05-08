@@ -231,7 +231,7 @@ var ConversationUtils = new _ConversationUtils();
 function Conversation(
   win,
   selectedMessages,
-  scrollMode,
+  isSelectionThreaded,
   counter,
   isInTab = false
 ) {
@@ -240,7 +240,7 @@ function Conversation(
   this._isInTab = isInTab;
   // This is set by the monkey-patch which knows whether we were viewing a
   //  message inside a thread or viewing a closed thread.
-  this.scrollMode = scrollMode;
+  this.isSelectionThreaded = isSelectionThreaded;
   // We have the COOL invariant that this._initialSet is a subset of
   //   this.messages.map(x => toMsgHdr(x))
   // This is actually trickier than it seems because of the different view modes
@@ -953,7 +953,7 @@ Conversation.prototype = {
   _tellMeWhoToScroll(messages) {
     // Determine which message is going to be scrolled into view
     let needsScroll = -1;
-    if (this.scrollMode == Prefs.kScrollUnreadOrLast) {
+    if (this.isSelectionThreaded) {
       needsScroll = messages.length - 1;
       for (let i = 0; i < messages.length; ++i) {
         if (!messages[i].message.read) {
@@ -961,7 +961,7 @@ Conversation.prototype = {
           break;
         }
       }
-    } else if (this.scrollMode == Prefs.kScrollSelected) {
+    } else {
       let gFolderDisplay = topMail3Pane(this).gFolderDisplay;
       let key = msgHdrGetUri(gFolderDisplay.selectedMessage);
       for (let i = 0; i < messages.length; ++i) {
@@ -976,8 +976,6 @@ Conversation.prototype = {
         Log.error("kScrollSelected && didn't find the selected message");
         needsScroll = messages.length - 1;
       }
-    } else {
-      Log.assert(false, "Unknown value for kScroll* constant");
     }
 
     return needsScroll;
@@ -997,19 +995,17 @@ Conversation.prototype = {
         // In this mode, we scroll to the first unread message (or the last
         //  message if all messages are read), and we expand all unread messages
         //  + the last one (which will probably be unread as well).
-        if (this.scrollMode == Prefs.kScrollUnreadOrLast) {
-          this.messages.forEach(({ message }, i) => {
+        if (this.isSelectionThreaded) {
+          for (const [i, { message }] of this.messages.entries()) {
             reactMsgData[i].expanded =
               !message.read || i == this.messages.length - 1;
-          });
+          }
           // In this mode, we scroll to the selected message, and we only expand
           //  the selected message.
-        } else if (this.scrollMode == Prefs.kScrollSelected) {
-          this.messages.forEach(({ message }, i) => {
-            reactMsgData[i].expanded = i == aNeedsFocus;
-          });
         } else {
-          Log.assert(false, "Unknown value for pref scroll_who");
+          for (const [i] of this.messages.entries()) {
+            reactMsgData[i].expanded = i == aNeedsFocus;
+          }
         }
         break;
       }

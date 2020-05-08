@@ -9,6 +9,7 @@ var EXPORTED_SYMBOLS = ["BrowserSim"];
 // them back to the webExtension process for handling by the real APIs.
 const SUPPORTED_BASE_APIS = [
   "convContacts",
+  "convMsgWindow",
   "conversations",
   "i18n",
   "messages",
@@ -31,8 +32,8 @@ class _BrowserSim {
     this._browserListener = listener;
     this._context = context;
     if (this._waitingForContext) {
-      delete this._waitingForContext;
       this._waitingForContext();
+      delete this._waitingForContext;
     }
   }
 

@@ -43,6 +43,14 @@
         "paths": [["convContacts"]],
         "script": "experiment-api/contactsApi.js"
       }
+    },
+    "convMsgWindow": {
+      "schema": "experiment-api/msgWindowSchema.json",
+      "parent": {
+        "scopes": ["addon_parent"],
+        "paths": [["convMsgWindow"]],
+        "script": "experiment-api/msgWindowApi.js"
+      }
     }
   },
   "commands": {

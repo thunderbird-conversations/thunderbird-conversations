@@ -139,25 +139,14 @@ const attachmentActions = {
 // determine if this is worth sharing via a shared module with the background
 // scripts, or if it doesn't need it.
 
-const scrollModes = {
-  kScrollUnreadOrLast: 0,
-  kScrollSelected: 1,
-};
-
 async function setupConversationInTab(params, isInTab) {
-  let scrollMode = params.get("scrollMode");
-  if (scrollMode) {
-    scrollMode = parseInt(scrollMode);
-  } else {
-    scrollMode = scrollModes.kScrollUnreadOrLast;
-  }
+  let isThreaded = params.get("isThreaded");
+  isThreaded = !!parseInt(isThreaded);
+
   // If we start up Thunderbird with a saved conversation tab, then we
   // have no selected message. Fallback to the usual mode.
-  if (
-    scrollMode == scrollModes.kScrollSelected &&
-    !topMail3Pane(window).gFolderDisplay.selectedMessage
-  ) {
-    scrollMode = scrollModes.kScrollUnreadOrLast;
+  if (!isThreaded && !topMail3Pane(window).gFolderDisplay.selectedMessage) {
+    isThreaded = true;
   }
 
   if (window.frameElement) {
@@ -188,7 +177,7 @@ async function setupConversationInTab(params, isInTab) {
       // TODO: This should really become ids at some stage, but we need to
       // teach Conversation how to handle those.
       msgUrls,
-      scrollMode,
+      isThreaded,
       ++Conversations.counter,
       isInTab
     );

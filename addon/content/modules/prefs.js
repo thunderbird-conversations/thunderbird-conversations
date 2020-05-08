@@ -10,9 +10,6 @@ var EXPORTED_SYMBOLS = ["Prefs"];
  */
 class PrefManager {
   constructor() {
-    this.kScrollUnreadOrLast = 0;
-    this.kScrollSelected = 1;
-
     this.kExpandNone = 1;
     this.kExpandAll = 3;
     this.kExpandAuto = 4;

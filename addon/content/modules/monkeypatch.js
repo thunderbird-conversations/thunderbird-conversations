@@ -43,8 +43,9 @@ XPCOMUtils.defineLazyGetter(this, "browser", function() {
 
 let shouldPerformUninstall;
 
-function MonkeyPatch(window) {
+function MonkeyPatch(window, windowId) {
   this._window = window;
+  this._windowId = windowId;
   this._markReadTimeout = null;
   this._beingUninstalled = false;
   this._undoFuncs = [];
@@ -236,48 +237,6 @@ MonkeyPatch.prototype = {
     }
   },
 
-  // Don't touch. Too tricky.
-  determineScrollMode() {
-    let window = this._window;
-    let scrollMode = Prefs.kScrollUnreadOrLast;
-
-    let isExpanded = false;
-    let msgIndex = window.gFolderDisplay
-      ? window.gFolderDisplay.selectedIndices[0]
-      : -1;
-    if (msgIndex >= 0) {
-      try {
-        let viewThread = window.gDBView.getThreadContainingIndex(msgIndex);
-        let rootIndex = window.gDBView.findIndexOfMsgHdr(
-          viewThread.getChildHdrAt(0),
-          false
-        );
-        if (rootIndex >= 0) {
-          isExpanded =
-            window.gDBView.isContainer(rootIndex) &&
-            !window.gFolderDisplay.view.isCollapsedThreadAtIndex(rootIndex);
-        }
-      } catch (ex) {
-        console.error("Error in the onLocationChange handler", ex);
-      }
-    }
-    if (window.gFolderDisplay.view.showThreaded) {
-      // The || is for the wicked case that Standard8 sent me a screencast for.
-      // This makes sure we *always* mark the selected message as read, even in
-      //  the tricky case where we recycle a conversation \emph{and} end up with
-      //  only one message left in the thread pane.
-      if (isExpanded || window.gFolderDisplay.selectedMessages.length == 1) {
-        scrollMode = Prefs.kScrollSelected;
-      } else {
-        scrollMode = Prefs.kScrollUnreadOrLast;
-      }
-    } else {
-      scrollMode = Prefs.kScrollSelected;
-    }
-
-    return scrollMode;
-  },
-
   registerUndoCustomizations() {
     shouldPerformUninstall = true;
 
@@ -346,9 +305,12 @@ MonkeyPatch.prototype = {
       let oldMsgOpenSelectedMessages = window.MsgOpenSelectedMessages;
       let msgHdrs = window.gFolderDisplay.selectedMessages;
       if (!msgHdrs.some(msgHdrIsRss) && !msgHdrs.some(msgHdrIsNntp)) {
-        window.MsgOpenSelectedMessages = function() {
+        window.MsgOpenSelectedMessages = async function() {
           const urls = msgHdrs.map(hdr => msgHdrGetUri(hdr));
-          openConversationInTabOrWindow(urls, self.determineScrollMode());
+          openConversationInTabOrWindow(
+            urls,
+            await browser.convMsgWindow.isSelectionThreaded(self._windowId)
+          );
         };
       }
       oldThreadPaneDoubleClick();
@@ -360,7 +322,7 @@ MonkeyPatch.prototype = {
 
     // Same thing for middle-click
     let oldTreeOnMouseDown = window.TreeOnMouseDown;
-    window.TreeOnMouseDown = function(event) {
+    window.TreeOnMouseDown = async function(event) {
       if (event.target.parentNode.id !== "threadTree") {
         oldTreeOnMouseDown(event);
         return;
@@ -379,7 +341,10 @@ MonkeyPatch.prototype = {
         if (!msgHdrs.some(msgHdrIsRss) && !msgHdrs.some(msgHdrIsNntp)) {
           const urls = msgHdrs.map(hdr => msgHdrGetUri(hdr));
           tabmail.openTab("chromeTab", {
-            chromePage: makeConversationUrl(urls, self.determineScrollMode()),
+            chromePage: makeConversationUrl(
+              urls,
+              await browser.convMsgWindow.isSelectionThreaded(self._windowId)
+            ),
           });
         } else {
           oldTreeOnMouseDown(event);
@@ -412,7 +377,7 @@ MonkeyPatch.prototype = {
     );
 
     let previouslySelectedUris = [];
-    let previousScrollMode = null;
+    let previousIsSelectionThreaded = null;
 
     // This one completely nukes the original summarizeThread function, which is
     //  actually the entry point to the original ThreadSummary class.
@@ -462,14 +427,16 @@ MonkeyPatch.prototype = {
           });
         }
 
-        try {
+        (async () => {
           // Should cancel most intempestive view refreshes, but only after we
           //  made sure the multimessage pane is shown. The logic behind this
           //  is the conversation in the message pane is already alive, and
           //  the gloda query is updating messages just fine, so we should not
           //  worry about messages which are not in the view.
           let newlySelectedUris = aSelectedMessages.map(m => msgHdrGetUri(m));
-          let scrollMode = self.determineScrollMode();
+          let isSelectionThreaded = await browser.convMsgWindow.isSelectionThreaded(
+            this._windowId
+          );
           // If the scroll mode changes, we should go a little bit further
           //  down that code path, so that we can figure out that the message
           //  set is the same, but that we ought to do a round of
@@ -483,7 +450,7 @@ MonkeyPatch.prototype = {
           //  ony the scroll mode.
           if (
             arrayEquals(newlySelectedUris, previouslySelectedUris) &&
-            previousScrollMode == scrollMode
+            previousIsSelectionThreaded == isSelectionThreaded
           ) {
             Log.debug(
               "Hey, know what? The selection hasn't changed, so we're good!"
@@ -495,12 +462,12 @@ MonkeyPatch.prototype = {
           // a duplicate conversation, we don't try to start rending the same
           // conversation again whilst the previous one is still in progress.
           previouslySelectedUris = newlySelectedUris;
-          previousScrollMode = scrollMode;
+          previousIsSelectionThreaded = isSelectionThreaded;
 
           let freshConversation = new Conversation(
             window,
             aSelectedMessages,
-            scrollMode,
+            isSelectionThreaded,
             ++window.Conversations.counter
           );
           Log.debug(`New conversation ${freshConversation.counter}`);
@@ -531,7 +498,7 @@ MonkeyPatch.prototype = {
             //  freshConversation will actually end up being used, we take the
             //  new conversation as parameter.
             Log.assert(
-              aConversation.scrollMode == scrollMode,
+              aConversation.isSelectionThreaded == isSelectionThreaded,
               "Someone forgot to put the right scroll mode!"
             );
             // So we force a GC cycle if we change conversations, so that the
@@ -573,7 +540,7 @@ MonkeyPatch.prototype = {
                 //  conversation as read. However, sometimes the user selects
                 //  individual messages. In that case, don't do something weird!
                 //  Just mark the selected messages as read.
-                if (scrollMode == Prefs.kScrollUnreadOrLast) {
+                if (!isSelectionThreaded) {
                   // Did we juste change conversations? If we did, it's ok to
                   //  mark as read. Otherwise, it's not, since we may silently
                   //  mark new messages as read.
@@ -587,7 +554,7 @@ MonkeyPatch.prototype = {
                       }
                     }
                   }
-                } else if (scrollMode == Prefs.kScrollSelected) {
+                } else {
                   // We don't seem to have a reflow when the thread is expanded
                   //  so no risk of silently marking conversations as read.
                   Log.debug("Marking selected messages as read");
@@ -601,8 +568,6 @@ MonkeyPatch.prototype = {
                       });
                     }
                   }
-                } else {
-                  Log.assert(false, "GIVE ME ALGEBRAIC DATA TYPES!!!");
                 }
                 self.markReadTimeout = null;
               }, Services.prefs.getIntPref(
@@ -612,9 +577,7 @@ MonkeyPatch.prototype = {
                 1000);
             }
           });
-        } catch (ex) {
-          console.error(ex);
-        }
+        })().catch(console.error);
       });
     };
     this.pushUndo(() => (window.summarizeThread = oldSummarizeThread));

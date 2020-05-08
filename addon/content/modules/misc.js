@@ -184,14 +184,14 @@ function folderName(aFolder) {
  *
  * @param {Array} urls
  *   An array of urls to be opened.
- * @param {Integer} [scrollMode]
- *   The scroll mode to use.
+ * @param {Boolean} [isSelectionThreaded]
+ *   Is the selection threaded
  */
-function makeConversationUrl(urls, scrollMode) {
+function makeConversationUrl(urls, isSelectionThreaded) {
   let queryString = "?urls=" + encodeURIComponent(urls.join(","));
 
-  if (scrollMode) {
-    queryString += "&scrollMode=" + scrollMode;
+  if (isSelectionThreaded) {
+    queryString += "&isThreaded=" + isSelectionThreaded ? 1 : 0;
   }
   return Prefs.kStubUrl + queryString;
 }
@@ -201,11 +201,11 @@ function makeConversationUrl(urls, scrollMode) {
  *
  * @param {Array} urls
  *   An array of urls to be opened.
- * @param {Integer} [scrollMode]
- *   The scroll mode to use.
+ * @param {Boolean} [isSelectionThreaded]
+ *   Is the selection threaded
  */
-function openConversationInTabOrWindow(urls, scrollMode) {
-  let url = makeConversationUrl(urls, scrollMode);
+function openConversationInTabOrWindow(urls, isSelectionThreaded) {
+  let url = makeConversationUrl(urls, isSelectionThreaded);
 
   let window = getMail3Pane();
   // Counting some extra pixels for window decorations.

@@ -93,7 +93,7 @@ function prefType(name) {
   throw new Error(`Unexpected pref type ${name}`);
 }
 
-function monkeyPatchWindow(window) {
+function monkeyPatchWindow(window, windowId) {
   let doIt = function() {
     try {
       if (
@@ -127,7 +127,7 @@ function monkeyPatchWindow(window) {
       };
 
       // We instantiate the Monkey-Patch for the given Conversation object.
-      let monkeyPatch = new MonkeyPatch(window);
+      let monkeyPatch = new MonkeyPatch(window, windowId);
       // And then we seize the window and insert our code into it
       monkeyPatch.apply();
 
@@ -170,9 +170,9 @@ function monkeyPatchWindow(window) {
   }
 }
 
-function monkeyPatchAllWindows() {
+function monkeyPatchAllWindows(windowManager) {
   for (let w of Services.wm.getEnumerator("mail:3pane")) {
-    monkeyPatchWindow(w);
+    monkeyPatchWindow(w, windowManager.getWrapper(w).id);
   }
 }
 
@@ -182,7 +182,12 @@ let windowObserver = {
     if (aTopic == "domwindowopened") {
       if (aSubject && "QueryInterface" in aSubject) {
         aSubject.QueryInterface(Ci.nsIDOMWindow);
-        monkeyPatchWindow(aSubject.window);
+        monkeyPatchWindow(
+          aSubject.window,
+          BrowserSim._context.extension.windowManager.getWrapper(
+            aSubject.window
+          ).id
+        );
       }
     }
   },
@@ -221,25 +226,8 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
         "Cannot find conversations chrome.manifest for registring translated strings"
       );
     }
-
-    (async () => {
-      await Prefs.initialized;
-
-      Log.debug("startup");
-
-      try {
-        // Patch all existing windows when the UI is built; all locales should have been loaded here
-        // Hook in the embedding and gloda attribute providers.
-        GlodaAttrProviders.init();
-        monkeyPatchAllWindows();
-
-        // Patch all future windows
-        Services.ww.registerNotification(windowObserver);
-      } catch (ex) {
-        console.error(ex);
-      }
-    })().catch(console.error);
   }
+
   onShutdown(isAppShutdown) {
     Log.debug("shutdown, isApp=", isAppShutdown);
     if (isAppShutdown) {
@@ -268,10 +256,28 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
     Services.obs.notifyObservers(null, "startupcache-invalidate");
   }
   getAPI(context) {
+    const { extension } = context;
+    const { windowManager } = extension;
     return {
       conversations: {
         async setPref(name, value) {
           Prefs[name] = value;
+
+          if (name == "finishedStartup") {
+            Log.debug("startup");
+
+            try {
+              // Patch all existing windows when the UI is built; all locales should have been loaded here
+              // Hook in the embedding and gloda attribute providers.
+              GlodaAttrProviders.init();
+              monkeyPatchAllWindows(windowManager);
+
+              // Patch all future windows
+              Services.ww.registerNotification(windowObserver);
+            } catch (ex) {
+              console.error(ex);
+            }
+          }
         },
         async getPref(name) {
           try {
