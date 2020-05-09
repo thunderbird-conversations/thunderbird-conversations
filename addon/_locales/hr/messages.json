@@ -787,5 +787,20 @@
   "enigmail.unknownGood": {
     "message": "nepoznati dobar potpis",
     "description": "Tooltip displayed when a signature is good but unverified."
+  },
+
+  "pdfViewer.loading": {
+    "message": "Učitavanje...",
+    "description": "Description displayed when a pdf is loading."
+  },
+
+  "pdfViewer.next": {
+    "message": "Slijedeća",
+    "description": "Description for the next page button."
+  },
+
+  "pdfViewer.previous": {
+    "message": "Prethodna",
+    "description": "Description for the previous page button."
   }
 }

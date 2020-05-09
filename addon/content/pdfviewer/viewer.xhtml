@@ -1,6 +1,3 @@
-<!DOCTYPE html [
-  <!ENTITY % pageDTD SYSTEM "chrome://conversations/locale/pdfviewer.dtd"> %pageDTD;
-]>
 <html xmlns="http://www.w3.org/1999/xhtml">
 
 <head>
@@ -45,12 +42,12 @@
   <div id="nav">
     <div id="status" class="loading">
       <span id="error"></span>
-      <span id="loading"><span id="loadingMessage">&pdfViewer.loading;</span> <img src="../i/loader.gif" /></span>
+      <span id="loading"><span id="loadingMessage" data-i18n="pdfViewer.loading"></span> <img src="../i/loader.gif" /></span>
       <form action="" id="count"><input id="pageNumberBox" /> / <span id="numPages" /></form>
     </div>
     <p>
-      <button class="clean-gray" id="prev" onclick="viewer.prevPage()">&pdfViewer.previous;</button> &#8212;
-      <button class="clean-gray" id="next" onclick="viewer.nextPage()">&pdfViewer.next;</button>
+      <button class="clean-gray" id="prev" onclick="viewer.prevPage()" data-i18n="pdfViewer.previous"></button> &#8212;
+      <button class="clean-gray" id="next" onclick="viewer.nextPage()" data-i18n="pdfViewer.next"></button>
     </p>
   </div>
 

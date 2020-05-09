@@ -9,6 +9,7 @@ const { XPCOMUtils } = ChromeUtils.import(
 );
 
 XPCOMUtils.defineLazyModuleGetters(this, {
+  BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   NetUtil: "resource://gre/modules/NetUtil.jsm",
   Services: "resource://gre/modules/Services.jsm",
 });
@@ -75,6 +76,19 @@ Wrapper.prototype = {
     browser.addEventListener(
       "load",
       () => {
+        let browserSim = BrowserSim.getBrowser();
+        // This section based on https://github.com/erosman/HTML-Internationalization
+        // MPL2 License: https://discourse.mozilla.org/t/translating-options-pages/19604/23
+        for (const node of browser.contentDocument.querySelectorAll(
+          "[data-i18n]"
+        )) {
+          let [text, attr] = node.dataset.i18n.split("|");
+          text = browserSim.i18n.getMessage(text);
+          attr
+            ? (node[attr] = text)
+            : node.appendChild(browser.contentDocument.createTextNode(text));
+        }
+
         let w = browser.contentWindow.wrappedJSObject;
         w.init(Cu.cloneInto({ chunks }, w));
       },

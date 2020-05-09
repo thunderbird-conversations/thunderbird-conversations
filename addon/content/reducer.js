@@ -86,7 +86,7 @@ const attachmentActions = {
       if (isPdf) {
         browser.conversations.createTab({
           url:
-            "chrome://conversations/content/pdfviewer/wrapper.xul?uri=" +
+            "chrome://conversations/content/pdfviewer/wrapper.xhtml?uri=" +
             encodeURIComponent(url) +
             "&name=" +
             encodeURIComponent(name),

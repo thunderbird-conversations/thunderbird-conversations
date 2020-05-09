@@ -207,25 +207,6 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
     this.chromeHandle = aomStartup.registerChrome(manifestURI, [
       ["content", "conversations", "content/"],
     ]);
-
-    // Until we move locales and our skin across to be loaded from the
-    // webExtension side, we need to register manually via the
-    // chrome.manifest.
-    if (this.extension.rootURI instanceof Ci.nsIJARURI) {
-      this.autofillManifest = this.extension.rootURI.JARFile.QueryInterface(
-        Ci.nsIFileURL
-      ).file;
-    } else if (this.extension.rootURI instanceof Ci.nsIFileURL) {
-      this.autofillManifest = this.extension.rootURI.file;
-    }
-
-    if (this.autofillManifest) {
-      Components.manager.addBootstrappedManifestLocation(this.autofillManifest);
-    } else {
-      Cu.reportError(
-        "Cannot find conversations chrome.manifest for registring translated strings"
-      );
-    }
   }
 
   onShutdown(isAppShutdown) {
@@ -246,12 +227,6 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
 
     this.chromeHandle.destruct();
     this.chromeHandle = null;
-
-    if (this.autofillManifest) {
-      Components.manager.removeBootstrappedManifestLocation(
-        this.autofillManifest
-      );
-    }
 
     Services.obs.notifyObservers(null, "startupcache-invalidate");
   }

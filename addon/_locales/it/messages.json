@@ -787,5 +787,20 @@
   "enigmail.unknownGood": {
     "message": "firma valida sconosciuta",
     "description": "Tooltip displayed when a signature is good but unverified."
+  },
+
+  "pdfViewer.loading": {
+    "message": "Caricamento in corso…",
+    "description": "Description displayed when a pdf is loading."
+  },
+
+  "pdfViewer.next": {
+    "message": "Successivo",
+    "description": "Description for the next page button."
+  },
+
+  "pdfViewer.previous": {
+    "message": "Precedente",
+    "description": "Description for the previous page button."
   }
 }
