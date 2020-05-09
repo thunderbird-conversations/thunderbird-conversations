@@ -11,7 +11,6 @@ const { XPCOMUtils } = ChromeUtils.import(
 );
 
 XPCOMUtils.defineLazyModuleGetters(this, {
-  arrayEquals: "chrome://conversations/content/modules/misc.js",
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   Conversation: "chrome://conversations/content/modules/conversation.js",
   Customizations: "chrome://conversations/content/modules/assistant.js",
@@ -352,19 +351,37 @@ MonkeyPatch.prototype = {
           let isSelectionThreaded = await browser.convMsgWindow.isSelectionThreaded(
             this._windowId
           );
-          // If the scroll mode changes, we should go a little bit further
-          //  down that code path, so that we can figure out that the message
-          //  set is the same, but that we ought to do a round of
-          //  expand/collapse + "scroll to the right message" on the current
-          //  message list. We could optimize that, but I'll assume that since
-          //  the message set is the same, the resulting gloda query will be
-          //  fast, and this doesn't impact performance too much.
-          // Anyways, this is just for the weird edge case where the user has
-          //  expanded the thread and selected all messages, and then
-          //  collapses the thread, which does not change the selection, but
-          //  ony the scroll mode.
+
+          function isSubSetOrEqual(a1, a2) {
+            if (!a1.length || !a2.length || a1.length > a2.length) {
+              return false;
+            }
+
+            return a1.every((v, i) => {
+              return v == a2[i];
+            });
+          }
+          // If the selection is still threaded (or still not threaded), then
+          // avoid redisplaying if we're displaying the same set or super-set.
+          //
+          // We avoid redisplay for the same set, as sometimes Thunderbird will
+          // call the selection update twice when it hasn't changed.
+          //
+          // We avoid redisplay for the case when the previous set is a subset
+          // as this can occur when:
+          // - we've received a new message(s), but Gloda hasn't told us about
+          //   it yet, and we pick it up in a future onItemsAddedn notification.
+          // - the user has expended the selection. We won't update the
+          //   expanded state of messages in this case, but that's probably okay
+          //   since the user is probably selecting them to move them or
+          //   something, rather than getting them expanded in the conversation
+          //   view.
+          //
+          // In both cases, we should be safe to avoid regenerating the
+          // conversation. If we find issues, we might need to revisit this
+          // assumption.
           if (
-            arrayEquals(newlySelectedUris, previouslySelectedUris) &&
+            isSubSetOrEqual(previouslySelectedUris, newlySelectedUris) &&
             previousIsSelectionThreaded == isSelectionThreaded
           ) {
             Log.debug(

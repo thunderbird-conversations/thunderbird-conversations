@@ -7,7 +7,6 @@ var EXPORTED_SYMBOLS = [
   "groupArray",
   "joinWordList",
   "iconForMimeType",
-  "arrayEquals",
   "topMail3Pane",
   "folderName",
   "escapeHtml",
@@ -44,16 +43,6 @@ function setupLogging(name) {
   return console.createInstance({
     prefix: name,
     maxLogLevel: Prefs.logging_enabled ? "Debug" : "Warn",
-  });
-}
-
-function arrayEquals(a1, a2) {
-  if (a1.length != a2.length) {
-    return false;
-  }
-
-  return a1.every((v, i) => {
-    return v == a2[i];
   });
 }
 
