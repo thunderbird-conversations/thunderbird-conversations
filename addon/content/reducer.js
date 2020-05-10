@@ -128,6 +128,9 @@ const attachmentActions = {
     return async () => {
       browser.tabs.create({
         url: "/gallery/index.html?uri=" + encodeURI(msgUri),
+        // For some reason, with how we're extending the API here we
+        // have to pass an explicit null.
+        windowId: null,
       });
     };
   },
