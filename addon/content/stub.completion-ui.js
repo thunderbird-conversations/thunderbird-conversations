@@ -3,7 +3,7 @@
 /* exported setupAutocomplete, getDefaultIdentity, getIdentityForEmail,
             getIdentities, setupLogging */
 /* global $, showCc, showBcc, strings */
-/* import-globals-from quickReply.js */
+/* import-globals-from quickReplyOld.js */
 /* import-globals-from reducer.js */
 
 var { MailServices } = ChromeUtils.import(
