@@ -12,7 +12,7 @@ const { XPCOMUtils } = ChromeUtils.import(
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
-  getMail3Pane: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
+  getMail3Pane: "chrome://conversations/content/modules/misc.js",
   registerHook: "chrome://conversations/content/modules/hook.js",
 });
 

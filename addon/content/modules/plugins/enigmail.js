@@ -38,9 +38,9 @@ const { XPCOMUtils } = ChromeUtils.import(
 XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   escapeHtml: "chrome://conversations/content/modules/misc.js",
-  getMail3Pane: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
+  getMail3Pane: "chrome://conversations/content/modules/misc.js",
   htmlToPlainText: "chrome://conversations/content/modules/misc.js",
-  msgHdrGetUri: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
+  msgHdrGetUri: "chrome://conversations/content/modules/misc.js",
   registerHook: "chrome://conversations/content/modules/hook.js",
   setupLogging: "chrome://conversations/content/modules/misc.js",
   Services: "resource://gre/modules/Services.jsm",

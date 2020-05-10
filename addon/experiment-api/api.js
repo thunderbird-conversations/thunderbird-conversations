@@ -9,8 +9,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   GlodaAttrProviders:
     "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
   MonkeyPatch: "chrome://conversations/content/modules/monkeypatch.js",
-  msgUriToMsgHdr:
-    "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
+  msgUriToMsgHdr: "chrome://conversations/content/modules/misc.js",
   NetUtil: "resource://gre/modules/NetUtil.jsm",
   Prefs: "chrome://conversations/content/modules/prefs.js",
   Services: "resource://gre/modules/Services.jsm",
@@ -49,7 +48,6 @@ const conversationModules = [
   "chrome://conversations/content/modules/misc.js",
   "chrome://conversations/content/modules/monkeypatch.js",
   "chrome://conversations/content/modules/prefs.js",
-  "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
 ];
 
 // Note: we must not use any modules until after initialization of prefs,

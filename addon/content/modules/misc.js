@@ -15,6 +15,9 @@ var EXPORTED_SYMBOLS = [
   "getIdentities",
   "parseMimeLine",
   "htmlToPlainText",
+  "getMail3Pane",
+  "msgUriToMsgHdr",
+  "msgHdrGetUri",
 ];
 
 const { XPCOMUtils } = ChromeUtils.import(
@@ -24,13 +27,17 @@ const { XPCOMUtils } = ChromeUtils.import(
 XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   fixIterator: "resource:///modules/iteratorUtils.jsm",
-  getMail3Pane: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   MailServices: "resource:///modules/MailServices.jsm",
   Prefs: "chrome://conversations/content/modules/prefs.js",
+  Services: "resource://gre/modules/Services.jsm",
 });
 
 XPCOMUtils.defineLazyGetter(this, "browser", function() {
   return BrowserSim.getBrowser();
+});
+
+XPCOMUtils.defineLazyGetter(this, "gMessenger", function() {
+  return Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
 });
 
 function setupLogging(name) {
@@ -322,4 +329,37 @@ function htmlToPlainText(aHtml) {
   fields.forcePlainText = true;
   fields.ConvertBodyToPlainText();
   return fields.body;
+}
+
+/**
+ * Get the main Thunderbird window. Used heavily to get a reference to globals
+ *  that are defined in mail/base/content/.
+ * @return The window object for the main window.
+ */
+function getMail3Pane() {
+  return Services.wm.getMostRecentWindow("mail:3pane");
+}
+
+/**
+ * Get a msgHdr from a message URI (msgHdr.URI).
+ * @param {String} aUri The URI of the message
+ * @return {nsIMsgDbHdr}
+ */
+function msgUriToMsgHdr(aUri) {
+  try {
+    let messageService = gMessenger.messageServiceFromURI(aUri);
+    return messageService.messageURIToMsgHdr(aUri);
+  } catch (e) {
+    dump("Unable to get " + aUri + " — returning null instead");
+    return null;
+  }
+}
+
+/**
+ * Get a given message header's uri.
+ * @param {nsIMsgDbHdr} aMsg The message
+ * @return {String}
+ */
+function msgHdrGetUri(aMsg) {
+  return aMsg.folder.getUriForMsg(aMsg);
 }

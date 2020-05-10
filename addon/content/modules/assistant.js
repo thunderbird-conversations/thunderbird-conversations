@@ -16,7 +16,7 @@ const { XPCOMUtils } = ChromeUtils.import(
 );
 
 XPCOMUtils.defineLazyModuleGetters(this, {
-  getMail3Pane: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
+  getMail3Pane: "chrome://conversations/content/modules/misc.js",
   fixIterator: "resource:///modules/iteratorUtils.jsm",
   MailUtils: "resource:///modules/MailUtils.jsm",
   setupLogging: "chrome://conversations/content/modules/misc.js",

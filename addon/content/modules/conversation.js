@@ -13,22 +13,16 @@ const { XPCOMUtils } = ChromeUtils.import(
 XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   ContactManager: "chrome://conversations/content/modules/contact.js",
+  getMail3Pane: "chrome://conversations/content/modules/misc.js",
   groupArray: "chrome://conversations/content/modules/misc.js",
   MailServices: "resource:///modules/MailServices.jsm",
+  MailUtils: "resource:///modules/MailUtils.jsm",
+  MessageArchiver: "resource:///modules/MessageArchiver.jsm",
   MessageFromDbHdr: "chrome://conversations/content/modules/message.js",
   MessageFromGloda: "chrome://conversations/content/modules/message.js",
   MessageUtils: "chrome://conversations/content/modules/message.js",
-  msgHdrGetUri: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
-  msgHdrIsArchive:
-    "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
-  msgHdrIsDraft: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
-  msgHdrIsInbox: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
-  msgHdrIsSent: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
-  msgUriToMsgHdr:
-    "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
-  msgHdrsArchive:
-    "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
-  msgHdrsDelete: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
+  msgHdrGetUri: "chrome://conversations/content/modules/misc.js",
+  msgUriToMsgHdr: "chrome://conversations/content/modules/misc.js",
   Prefs: "chrome://conversations/content/modules/prefs.js",
   setupLogging: "chrome://conversations/content/modules/misc.js",
   Services: "resource://gre/modules/Services.jsm",
@@ -60,6 +54,12 @@ const kAllowRemoteContent = 2;
 const kHeadersShowAll = 2;
 
 const nsMsgViewIndex_None = 0xffffffff;
+
+// from mailnews/base/public/nsMsgFolderFlags.idl
+const nsMsgFolderFlags_SentMail = 0x00000200;
+const nsMsgFolderFlags_Drafts = 0x00000400;
+const nsMsgFolderFlags_Archive = 0x00004000;
+const nsMsgFolderFlags_Inbox = 0x00001000;
 
 // -- Some helpers for our message type
 
@@ -1024,3 +1024,81 @@ Conversation.prototype = {
     }
   },
 };
+
+/**
+ * Tells if the message is an archived message
+ * @param {nsIMsgDbHdr} msgHdr The message header to examine
+ * @return {bool}
+ */
+function msgHdrIsArchive(msgHdr) {
+  return msgHdr.folder.getFlag(nsMsgFolderFlags_Archive);
+}
+
+/**
+ * Tells if the message is a draft message
+ * @param {nsIMsgDbHdr} msgHdr The message header to examine
+ * @return {bool}
+ */
+function msgHdrIsDraft(msgHdr) {
+  return msgHdr.folder.getFlag(nsMsgFolderFlags_Drafts);
+}
+
+/**
+ * Tells if the message is in the account's inbox
+ * @param {nsIMsgDbHdr} msgHdr The message header to examine
+ * @return {bool}
+ */
+function msgHdrIsInbox(msgHdr) {
+  return msgHdr.folder.getFlag(nsMsgFolderFlags_Inbox);
+}
+
+/**
+ * Tells if the message is a sent message
+ * @param {nsIMsgDbHdr} msgHdr The message header to examine
+ * @return {bool}
+ */
+function msgHdrIsSent(msgHdr) {
+  return msgHdr.folder.getFlag(nsMsgFolderFlags_SentMail);
+}
+
+/**
+ * Delete a set of messages.
+ * @param {nsIMsgDbHdr array} msgHdrs The message headers
+ */
+function msgHdrsDelete(msgHdrs) {
+  let pending = {};
+  for (let msgHdr of msgHdrs) {
+    if (!pending[msgHdr.folder.URI]) {
+      pending[msgHdr.folder.URI] = {
+        folder: msgHdr.folder,
+        msgs: Cc["@mozilla.org/array;1"].createInstance(Ci.nsIMutableArray),
+      };
+    }
+    pending[msgHdr.folder.URI].msgs.appendElement(msgHdr);
+  }
+  for (let [, { folder, msgs }] of Object.entries(pending)) {
+    folder.deleteMessages(
+      msgs,
+      getMail3Pane().msgWindow,
+      false,
+      false,
+      null,
+      true
+    );
+    folder.msgDatabase = null; /* don't leak */
+  }
+}
+
+/**
+ * Archive a set of messages
+ * @param {nsIMsgDbHdr array} msgHdrs The message headers
+ */
+function msgHdrsArchive(msgHdrs) {
+  const archiver = new MessageArchiver();
+  archiver.archiveMessages(
+    msgHdrs.filter(
+      x =>
+        !msgHdrIsArchive(x) && MailUtils.getIdentityForHeader(x).archiveEnabled
+    )
+  );
+}

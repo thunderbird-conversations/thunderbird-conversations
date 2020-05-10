@@ -16,11 +16,9 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   Conversation: "chrome://conversations/content/modules/conversation.js",
   Customizations: "chrome://conversations/content/modules/assistant.js",
   getIdentityForEmail: "chrome://conversations/content/modules/misc.js",
-  getMail3Pane: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
+  getMail3Pane: "chrome://conversations/content/modules/misc.js",
   joinWordList: "chrome://conversations/content/modules/misc.js",
-  msgHdrGetUri: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
-  msgHdrIsRss: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
-  msgHdrIsNntp: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
+  msgHdrGetUri: "chrome://conversations/content/modules/misc.js",
   parseMimeLine: "chrome://conversations/content/modules/misc.js",
   Prefs: "chrome://conversations/content/modules/prefs.js",
   setupLogging: "chrome://conversations/content/modules/misc.js",
@@ -584,3 +582,21 @@ MonkeyPatch.prototype = {
     Log.debug("Monkey patch successfully applied.");
   },
 };
+
+/**
+ * Tell if a message is an RSS feed iteme
+ * @param {nsIMsgDbHdr} msgHdr The message header
+ * @return {Bool}
+ */
+function msgHdrIsRss(msgHdr) {
+  return msgHdr.folder.server instanceof Ci.nsIRssIncomingServer;
+}
+
+/**
+ * Tell if a message is a NNTP message
+ * @param {nsIMsgDbHdr} msgHdr The message header
+ * @return {Bool}
+ */
+function msgHdrIsNntp(msgHdr) {
+  return msgHdr.folder.server instanceof Ci.nsINntpIncomingServer;
+}
