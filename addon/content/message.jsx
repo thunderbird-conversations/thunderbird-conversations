@@ -3,7 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 /* globals React, PropTypes, Attachments, MessageHeader, MessageFooter,
-           MessageIFrame, SpecialMessageTags, MessageTags,
+           MessageIFrame, SpecialMessageTags, MessageTags, QuickReply,
            MessageDetails, MessageNotification, messageActions */
 /* exported Message */
 
@@ -360,14 +360,7 @@ class Message extends React.PureComponent {
           />
         )}
         {this.props.isLastMessage && this.props.message.expanded && (
-          <div dir="ltr">
-            <small>
-              <i>
-                Quick Reply is temporarily disabled due to needing more work for
-                Thunderbird 68.
-              </i>
-            </small>
-          </div>
+          <QuickReply />
         )}
       </li>
     );

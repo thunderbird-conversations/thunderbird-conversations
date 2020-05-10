@@ -2,6 +2,23 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
+/* globals React */
+/* exported QuickReply */
+
+function QuickReply() {
+  return (
+    <div className="quickReply disabled" dir="ltr">
+      <small>
+        <i>
+          Quick Reply is temporarily disabled due to needing rewriting for
+          Thunderbird 68+.
+        </i>
+      </small>
+    </div>
+  );
+}
+QuickReply.propTypes = {};
+
 // These are the templates originally from stub.xhtml for quickReply. Moved here
 // to help tidy that up and prepare.
 // The quick reply goes after the messaeFooter - if it is the last message
