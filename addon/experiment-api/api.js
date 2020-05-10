@@ -32,6 +32,27 @@ XPCOMUtils.defineLazyGetter(this, "MsgHdrToMimeMessage", () => {
 const FILE_SIMPLE_STORAGE = "simple_storage.sqlite";
 const SIMPLE_STORAGE_TABLE_NAME = "conversations";
 
+// To help updates to apply successfully, we need to properly unload the modules
+// that Conversations loads.
+const conversationModules = [
+  "chrome://conversations/content/modules/plugins/dkimVerifier.js",
+  "chrome://conversations/content/modules/plugins/enigmail.js",
+  "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
+  "chrome://conversations/content/modules/plugins/helpers.js",
+  "chrome://conversations/content/modules/plugins/lightning.js",
+  "chrome://conversations/content/modules/assistant.js",
+  "chrome://conversations/content/modules/browserSim.js",
+  "chrome://conversations/content/modules/contact.js",
+  "chrome://conversations/content/modules/conversation.js",
+  "chrome://conversations/content/modules/hook.js",
+  "chrome://conversations/content/modules/message.js",
+  "chrome://conversations/content/modules/misc.js",
+  "chrome://conversations/content/modules/monkeypatch.js",
+  "chrome://conversations/content/modules/prefs.js",
+  "chrome://conversations/content/modules/stdlib/misc.js",
+  "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
+];
+
 // Note: we must not use any modules until after initialization of prefs,
 // otherwise the prefs might not get loaded correctly.
 XPCOMUtils.defineLazyGetter(this, "Log", () => {
@@ -224,6 +245,10 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
     }
 
     BrowserSim.setBrowserListener(null);
+
+    for (const module of conversationModules) {
+      Cu.unload(module);
+    }
 
     this.chromeHandle.destruct();
     this.chromeHandle = null;
