@@ -1,6 +1,5 @@
 #!/bin/sh
 NOT='.sh$|^.git|.jsx$|^tests|^.eslint|^.travis|^package.json$|^package-lock.json$|^.prettierrc'
-NOT_STDLIB="$NOT|.md$"
 DIST=dist
 VENDOR_DIR=$DIST/content/vendor
 ADDON_DIR=addon
@@ -42,12 +41,6 @@ done
 for a in $(git ls-files | egrep -v $NOT | egrep -v '^content/modules/stdlib'); do
   mkdir -p $(dirname "../${DIST}/${a}")
   cp $a ../$DIST/$a
-done
-
-for a in $(cd content/modules/stdlib && git ls-files | egrep -v $NOT_STDLIB); do
-  if [ $a != "" ]; then
-    cp content/modules/stdlib/$a ../$DIST/content/modules/stdlib
-  fi
 done
 
 popd

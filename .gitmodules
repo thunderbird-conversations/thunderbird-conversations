@@ -1,3 +1,0 @@
-[submodule "modules/stdlib"]
-	path = addon/content/modules/stdlib
-	url = git://github.com/protz/thunderbird-stdlib.git
