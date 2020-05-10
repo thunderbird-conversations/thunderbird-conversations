@@ -39,12 +39,11 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   escapeHtml: "chrome://conversations/content/modules/misc.js",
   getMail3Pane: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
-  htmlToPlainText: "chrome://conversations/content/modules/stdlib/compose.js",
+  htmlToPlainText: "chrome://conversations/content/modules/misc.js",
   msgHdrGetUri: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   registerHook: "chrome://conversations/content/modules/hook.js",
   setupLogging: "chrome://conversations/content/modules/misc.js",
   Services: "resource://gre/modules/Services.jsm",
-  simpleWrap: "chrome://conversations/content/modules/stdlib/compose.js",
   topMail3Pane: "chrome://conversations/content/modules/misc.js",
 });
 
@@ -1164,5 +1163,85 @@ let enigmailHook = {
     }
   },
 };
+
+/**
+ * Wrap some text. Beware, that function doesn't do rewrapping, and only
+ *  operates on non-quoted lines. This is only useful in our very specific case
+ *  where the quoted lines have been properly wrapped for format=flowed already,
+ *  and the non-quoted lines are the only ones that need wrapping for
+ *  format=flowed.
+ * Beware, this function will treat all lines starting with >'s as quotations,
+ *  even user-inserted ones. We would need support from the editor to proceed
+ *  otherwise, and the current textarea doesn't provide this.
+ * This function, when breaking lines, will do space-stuffing per the RFC if
+ *  after the break the text starts with From or &gt;.
+ * @param {String} txt The text that should be wrapped.
+ * @param {Number} width (optional) The width we should wrap to. Default to 72.
+ * @return {String} The text with non-quoted lines wrapped. This is suitable for
+ *  sending as format=flowed.
+ */
+function simpleWrap(txt, width) {
+  if (!width) {
+    width = 72;
+  }
+
+  function maybeEscape(line) {
+    if (line.indexOf("From") === 0 || line.indexOf(">") === 0) {
+      return " " + line;
+    }
+    return line;
+  }
+
+  /**
+   * That function takes a (long) line, and splits it into many lines.
+   * @param soFar {Array String} an accumulator of the lines we've wrapped already
+   * @param remaining {String} the remaining string to wrap
+   */
+  function splitLongLine(soFar, remaining) {
+    if (remaining.length > width) {
+      // Start at the end of the line, and move back until we find a word
+      // boundary.
+      let i = width - 1;
+      while (remaining[i] != " " && i > 0) {
+        i--;
+      }
+      // We found a word boundary, break there
+      if (i > 0) {
+        // This includes the trailing space that indicates that we are wrapping
+        //  a long line with format=flowed.
+        soFar.push(maybeEscape(remaining.substring(0, i + 1)));
+        return splitLongLine(
+          soFar,
+          remaining.substring(i + 1, remaining.length)
+        );
+      }
+      // No word boundary, break at the first space
+      let j = remaining.indexOf(" ");
+      if (j > 0) {
+        // Same remark about the trailing space.
+        soFar.push(maybeEscape(remaining.substring(0, j + 1)));
+        return splitLongLine(
+          soFar,
+          remaining.substring(j + 1, remaining.length)
+        );
+      }
+      // Make sure no one interprets this as a line continuation.
+      soFar.push(remaining.trimRight());
+      return soFar.join("\n");
+    }
+    // Same remark about the trailing space.
+    soFar.push(maybeEscape(remaining.trimRight()));
+    return soFar.join("\n");
+  }
+
+  let lines = txt.split(/\r?\n/);
+
+  lines.forEach(function(line, i) {
+    if (line.length > width && line[0] != ">") {
+      lines[i] = splitLongLine([], line);
+    }
+  });
+  return lines.join("\n");
+}
 
 registerHook("enigmail", enigmailHook);

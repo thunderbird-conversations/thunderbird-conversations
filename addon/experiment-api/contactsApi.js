@@ -10,7 +10,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   MailServices: "resource:///modules/MailServices.jsm",
   getIdentities: "chrome://conversations/content/modules/misc.js",
-  composeMessageTo: "chrome://conversations/content/modules/stdlib/compose.js",
 });
 
 /**
@@ -190,3 +189,27 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
     };
   }
 };
+
+/**
+ * Open a composition window for the given email address.
+ * @param aEmail {String}
+ * @param aDisplayedFolder {nsIMsgFolder} pass gFolderDisplay.displayedFolder
+ */
+function composeMessageTo(aEmail, aDisplayedFolder) {
+  let fields = Cc[
+    "@mozilla.org/messengercompose/composefields;1"
+  ].createInstance(Ci.nsIMsgCompFields);
+  let params = Cc[
+    "@mozilla.org/messengercompose/composeparams;1"
+  ].createInstance(Ci.nsIMsgComposeParams);
+  fields.to = aEmail;
+  params.type = Ci.nsIMsgCompType.New;
+  params.format = Ci.nsIMsgCompFormat.Default;
+  if (aDisplayedFolder) {
+    params.identity = MailServices.accounts.getFirstIdentityForServer(
+      aDisplayedFolder.server
+    );
+  }
+  params.composeFields = fields;
+  MailServices.compose.OpenComposeWindowWithParams(null, params);
+}
