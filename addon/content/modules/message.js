@@ -12,23 +12,19 @@ const { XPCOMUtils } = ChromeUtils.import(
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
+  escapeHtml: "chrome://conversations/content/modules/misc.js",
+  getIdentityForEmail: "chrome://conversations/content/modules/misc.js",
   GlodaUtils: "resource:///modules/gloda/utils.js",
   htmlToPlainText: "chrome://conversations/content/modules/stdlib/compose.js",
   makeFriendlyDateAgo: "resource:///modules/templateUtils.js",
   MsgHdrToMimeMessage: "resource:///modules/gloda/mimemsg.js",
   mimeMsgToContentSnippetAndMeta: "resource:///modules/gloda/connotent.js",
+  parseMimeLine: "chrome://conversations/content/modules/misc.js",
   PluralForm: "resource://gre/modules/PluralForm.jsm",
   quoteMsgHdr: "chrome://conversations/content/modules/stdlib/compose.js",
   setupLogging: "chrome://conversations/content/modules/misc.js",
   Services: "resource://gre/modules/Services.jsm",
 });
-
-const {
-  dateAsInMessageList,
-  escapeHtml,
-  getIdentityForEmail,
-  parseMimeLine,
-} = ChromeUtils.import("chrome://conversations/content/modules/stdlib/misc.js");
 
 // It's not really nice to write into someone elses object but this is what the
 // Services object is for.  We prefix with the "m" to ensure we stay out of their
@@ -1031,4 +1027,25 @@ class MessageFromDbHdr extends Message {
     Log.debug("Body is", body);
     this._snippet = body.substring(0, kSnippetLength - 1);
   }
+}
+
+/**
+ * A stupid formatting function that uses Services.intl
+ * to format a date just like in the message list
+ * @param {Date} aDate a javascript Date object
+ * @return {String} a string containing the formatted date
+ */
+function dateAsInMessageList(aDate) {
+  const now = new Date();
+  // Is it today?
+  const isToday =
+    now.getFullYear() == aDate.getFullYear() &&
+    now.getMonth() == aDate.getMonth() &&
+    now.getDate() == aDate.getDate();
+
+  const format = isToday
+    ? { timeStyle: "short" }
+    : { dateStyle: "short", timeStyle: "short" };
+  const dateTimeFormatter = new Services.intl.DateTimeFormat(undefined, format);
+  return dateTimeFormatter.format(aDate);
 }

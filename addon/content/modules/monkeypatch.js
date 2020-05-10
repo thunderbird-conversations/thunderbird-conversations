@@ -15,14 +15,13 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   Conversation: "chrome://conversations/content/modules/conversation.js",
   Customizations: "chrome://conversations/content/modules/assistant.js",
-  getIdentityForEmail: "chrome://conversations/content/modules/stdlib/misc.js",
-  getIdentities: "chrome://conversations/content/modules/stdlib/misc.js",
+  getIdentityForEmail: "chrome://conversations/content/modules/misc.js",
   getMail3Pane: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   joinWordList: "chrome://conversations/content/modules/misc.js",
   msgHdrGetUri: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   msgHdrIsRss: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
   msgHdrIsNntp: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
-  parseMimeLine: "chrome://conversations/content/modules/stdlib/misc.js",
+  parseMimeLine: "chrome://conversations/content/modules/misc.js",
   Prefs: "chrome://conversations/content/modules/prefs.js",
   setupLogging: "chrome://conversations/content/modules/misc.js",
   Services: "resource://gre/modules/Services.jsm",
@@ -102,7 +101,7 @@ MonkeyPatch.prototype = {
     this.pushUndo(() => parent3.removeChild(splitter));
   },
 
-  registerColumn: function _MonkeyPatch_registerColumn() {
+  async registerColumn() {
     // This has to be the first time that the documentation on MDC
     //  1) exists and
     //  2) is actually relevant!
@@ -111,6 +110,12 @@ MonkeyPatch.prototype = {
     //
     // https://developer.mozilla.org/en/Extensions/Thunderbird/Creating_a_Custom_Column
     let window = this._window;
+
+    // It isn't quite right to do this ahead of time, but it saves us having
+    // to get the number of identities twice for every cell. Users don't often
+    // add or remove identities/accounts anyway.
+    const multipleIdentities =
+      (await browser.convContacts.getIdentities()).length > 1;
 
     let participants = function(msgHdr) {
       try {
@@ -123,7 +128,7 @@ MonkeyPatch.prototype = {
             let display = p
               ? browser.i18n.getMessage("message.meBetweenMeAndSomeone")
               : browser.i18n.getMessage("message.meBetweenSomeoneAndMe");
-            if (getIdentities().length > 1) {
+            if (multipleIdentities) {
               display += " (" + x.email + ")";
             }
             return display;
@@ -273,7 +278,7 @@ MonkeyPatch.prototype = {
     // Prefs.setString("conversations.uninstall_infos", "{}");
   },
 
-  apply() {
+  async apply() {
     let window = this._window;
     // First of all: "apply" the "overlay"
     this.applyOverlay(window);
@@ -283,7 +288,7 @@ MonkeyPatch.prototype = {
     let oldSummarizeThread = window.summarizeThread;
 
     // Register our new column type
-    this.registerColumn();
+    await this.registerColumn();
 
     // Undo all our customizations at uninstall-time
     this.registerUndoCustomizations();

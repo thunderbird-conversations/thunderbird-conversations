@@ -10,6 +10,10 @@ var EXPORTED_SYMBOLS = [
   "arrayEquals",
   "topMail3Pane",
   "folderName",
+  "escapeHtml",
+  "getIdentityForEmail",
+  "getIdentities",
+  "parseMimeLine",
 ];
 
 const { XPCOMUtils } = ChromeUtils.import(
@@ -18,7 +22,9 @@ const { XPCOMUtils } = ChromeUtils.import(
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
+  fixIterator: "resource:///modules/iteratorUtils.jsm",
   getMail3Pane: "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
+  MailServices: "resource:///modules/MailServices.jsm",
   Prefs: "chrome://conversations/content/modules/prefs.js",
 });
 
@@ -174,4 +180,119 @@ function folderName(aFolder) {
     folderStr = folder.name + "/" + folderStr;
   }
   return [aFolder.prettyName, folderStr];
+}
+
+/**
+ * Helper function to escape some XML chars, so they display properly in
+ *  innerHTML.
+ * @param {String} s input text
+ * @return {String} The string with &lt;, &gt;, and &amp; replaced by the corresponding entities.
+ */
+function escapeHtml(s) {
+  s += "";
+  // stolen from selectionsummaries.js (thanks davida!)
+  return s.replace(/[<>&]/g, function(s) {
+    switch (s) {
+      case "<":
+        return "&lt;";
+      case ">":
+        return "&gt;";
+      case "&":
+        return "&amp;";
+      default:
+        throw Error("Unexpected match");
+    }
+  });
+}
+
+/**
+ * Returns a list of all identities in the form [{ boolean isDefault; nsIMsgIdentity identity }].
+ * It is assured that there is exactly one default identity.
+ * If only the default identity is needed, getDefaultIdentity() can be used.
+ * @param aSkipNntpIdentities (default: true) Should we avoid including nntp identities in the list?
+ */
+function getIdentities(aSkipNntpIdentities = true) {
+  let identities = [];
+  // TB 68 has accounts as an nsIArray.
+  // TB 78 has accounts an an directly iterable array.
+  for (let account of fixIterator(
+    MailServices.accounts.accounts,
+    Ci.nsIMsgAccount
+  )) {
+    let server = account.incomingServer;
+    if (
+      aSkipNntpIdentities &&
+      (!server || (server.type != "pop3" && server.type != "imap"))
+    ) {
+      continue;
+    }
+    const defaultIdentity = MailServices.accounts.defaultAccount
+      ? MailServices.accounts.defaultAccount.defaultIdentity
+      : null;
+    // TB 68 has identities as an nsIArray.
+    // TB 78 has identities an an directly iterable array.
+    for (let currentIdentity of fixIterator(
+      account.identities,
+      Ci.nsIMsgIdentity
+    )) {
+      // We're only interested in identities that have a real email.
+      if (currentIdentity.email) {
+        identities.push({
+          isDefault: currentIdentity == defaultIdentity,
+          identity: currentIdentity,
+        });
+      }
+    }
+  }
+  if (!identities.length) {
+    console.warn("Didn't find any identities!");
+  } else if (!identities.some(x => x.isDefault)) {
+    console.warn(
+      "Didn't find any default key - mark the first identity as default!"
+    );
+    identities[0].isDefault = true;
+  }
+  return identities;
+}
+
+/*
+ * Searches a given email address in all identities and returns the corresponding identity.
+ * @param {String} anEmailAddress Email address to be searched in the identities
+ * @returns {{Boolean} isDefault, {{nsIMsgIdentity} identity} if found, otherwise undefined
+ */
+function getIdentityForEmail(anEmailAddress) {
+  return getIdentities(false).find(
+    ident => ident.identity.email.toLowerCase() == anEmailAddress.toLowerCase()
+  );
+}
+
+/**
+ * Wraps the low-level header parser stuff.
+ * @param {String} mimeLine
+ *   A line that looks like "John &lt;john@cheese.com&gt;, Jane &lt;jane@wine.com&gt;"
+ * @param {Boolean} [dontFix]
+ *   Defaults to false. Shall we return an empty array in case aMimeLine is empty?
+ * @return {Array}
+ *   A list of { email, name } objects
+ */
+function parseMimeLine(mimeLine, dontFix) {
+  if (mimeLine == null) {
+    console.debug("Empty aMimeLine?!!");
+    return [];
+  }
+  // The null here copes with pre-Thunderbird 71 compatibility.
+  let addresses = MailServices.headerParser.parseEncodedHeader(mimeLine, null);
+  if (addresses.length) {
+    return addresses.map(addr => {
+      return {
+        email: addr.email,
+        name: addr.name,
+        fullName: addr.toString(),
+      };
+    });
+  }
+  if (dontFix) {
+    return [];
+  }
+  return [{ email: "", name: "-", fullName: "-" }];
 }

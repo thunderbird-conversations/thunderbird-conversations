@@ -9,7 +9,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   Gloda: "resource:///modules/gloda/gloda.js",
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   MailServices: "resource:///modules/MailServices.jsm",
-  getIdentities: "chrome://conversations/content/modules/stdlib/misc.js",
+  getIdentities: "chrome://conversations/content/modules/misc.js",
   composeMessageTo: "chrome://conversations/content/modules/stdlib/compose.js",
 });
 

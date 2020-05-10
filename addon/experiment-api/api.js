@@ -49,7 +49,6 @@ const conversationModules = [
   "chrome://conversations/content/modules/misc.js",
   "chrome://conversations/content/modules/monkeypatch.js",
   "chrome://conversations/content/modules/prefs.js",
-  "chrome://conversations/content/modules/stdlib/misc.js",
   "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
 ];
 
@@ -115,7 +114,7 @@ function prefType(name) {
 }
 
 function monkeyPatchWindow(window, windowId) {
-  let doIt = function() {
+  let doIt = async function() {
     try {
       if (
         window.document.location !=
@@ -150,7 +149,7 @@ function monkeyPatchWindow(window, windowId) {
       // We instantiate the Monkey-Patch for the given Conversation object.
       let monkeyPatch = new MonkeyPatch(window, windowId);
       // And then we seize the window and insert our code into it
-      monkeyPatch.apply();
+      await monkeyPatch.apply();
 
       // Used by the in-stub.html detachTab function
       window.Conversations.monkeyPatch = monkeyPatch;
@@ -176,7 +175,7 @@ function monkeyPatchWindow(window, windowId) {
 
   if (window.document.readyState == "complete") {
     Log.debug("Document is ready...");
-    doIt();
+    doIt().catch(console.error);
   } else {
     Log.debug(
       `Document is not ready (${window.document.readyState}), waiting...`
@@ -184,7 +183,7 @@ function monkeyPatchWindow(window, windowId) {
     window.addEventListener(
       "load",
       () => {
-        doIt();
+        doIt().catch(console.error);
       },
       { once: true }
     );
