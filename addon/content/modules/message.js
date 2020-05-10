@@ -99,10 +99,10 @@ function addMsgListener(aMessage) {
   let weakPtr = Cu.getWeakReference(aMessage);
   let msgListeners = window.Conversations.msgListeners;
   let messageId = aMessage._msgHdr.messageId;
-  if (!(messageId in msgListeners)) {
-    msgListeners[messageId] = [];
+  if (!msgListeners.has(messageId)) {
+    msgListeners.set(messageId, []);
   }
-  msgListeners[messageId].push(weakPtr);
+  msgListeners.get(messageId).push(weakPtr);
 }
 
 function dateAccordingToPref(date) {

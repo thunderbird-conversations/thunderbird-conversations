@@ -132,7 +132,7 @@ function monkeyPatchWindow(window, windowId) {
         monkeyPatch: null,
         // key: Message-ID
         // value: a list of listeners
-        msgListeners: {},
+        msgListeners: new Map(),
         // key: Gloda Conversation ID
         // value: a list of listeners that have a onDraftChanged method
         draftListeners: {},

@@ -102,6 +102,12 @@
             }
           }
         }
+      },
+      {
+        "name": "onMonkeyPatch",
+        "type": "function",
+        "description": "Temporary. Fake Listener, actually used for monkey patching various things (With automatic tidy up)",
+        "parameters": []
       }
     ]
   }

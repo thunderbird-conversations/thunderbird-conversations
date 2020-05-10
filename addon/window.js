@@ -4,6 +4,10 @@
 
 export class Window {
   async init() {
+    // Set up our monkey patches which aren't really listeners, but this
+    // is a good way to manage them.
+    browser.convMsgWindow.onMonkeyPatch.addListener(() => {});
+
     browser.convMsgWindow.onThreadPaneDoubleClick.addListener(
       async (windowId, msgHdrs) => {
         for (const hdr of msgHdrs) {

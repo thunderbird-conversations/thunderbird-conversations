@@ -7,31 +7,34 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   Services: "resource://gre/modules/Services.jsm",
 });
 
-function getWindowFromId(windowManager, context, id) {
-  return id !== null && id !== undefined
-    ? windowManager.get(id, context).window
-    : Services.wm.getMostRecentWindow("mail:3pane");
-}
+const kMultiMessageUrl = "chrome://messenger/content/multimessageview.xhtml";
 
-function waitForWindow(win) {
-  return new Promise(resolve => {
-    if (win.document.readyState == "complete") {
-      resolve();
-    } else {
-      win.addEventListener(
-        "load",
-        () => {
-          resolve();
-        },
-        { once: true }
-      );
+class WindowObserver {
+  constructor(windowManager, callback) {
+    this._windowManager = windowManager;
+    this._callback = callback;
+  }
+
+  observe(aSubject, aTopic, aData) {
+    if (aTopic == "domwindowopened") {
+      if (aSubject && "QueryInterface" in aSubject) {
+        const win = aSubject.QueryInterface(Ci.nsIDOMWindow).window;
+        waitForWindow(win).then(() => {
+          if (
+            win.document.location !=
+              "chrome://messenger/content/messenger.xul" &&
+            win.document.location !=
+              "chrome://messenger/content/messenger.xhtml"
+          ) {
+            return;
+          }
+          this._callback(
+            aSubject.window,
+            this._windowManager.getWrapper(aSubject.window).id
+          );
+        });
+      }
     }
-  });
-}
-
-function monkeyPatchAllWindows(windowManager, callback) {
-  for (let w of Services.wm.getEnumerator("mail:3pane")) {
-    waitForWindow(w).then(() => callback(w, windowManager.getWrapper(w).id));
   }
 }
 
@@ -114,23 +117,10 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
               };
             };
 
-            // This obserer is notified when a new window is created and injects our code
-            let windowObserver = {
-              observe(aSubject, aTopic, aData) {
-                if (aTopic == "domwindowopened") {
-                  if (aSubject && "QueryInterface" in aSubject) {
-                    aSubject.QueryInterface(Ci.nsIDOMWindow);
-                    waitForWindow(aSubject.window).then(() =>
-                      patchDoubleClick(
-                        aSubject.window,
-                        windowManager.getWrapper(aSubject.window).id
-                      )
-                    );
-                  }
-                }
-              },
-            };
-
+            const windowObserver = new WindowObserver(
+              windowManager,
+              patchDoubleClick
+            );
             monkeyPatchAllWindows(windowManager, patchDoubleClick);
             Services.ww.registerNotification(windowObserver);
 
@@ -176,23 +166,10 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
               };
             };
 
-            // This obserer is notified when a new window is created and injects our code
-            let windowObserver = {
-              observe(aSubject, aTopic, aData) {
-                if (aTopic == "domwindowopened") {
-                  if (aSubject && "QueryInterface" in aSubject) {
-                    aSubject.QueryInterface(Ci.nsIDOMWindow);
-                    waitForWindow(aSubject.window).then(() =>
-                      patchMiddleClick(
-                        aSubject.window,
-                        windowManager.getWrapper(aSubject.window).id
-                      )
-                    );
-                  }
-                }
-              },
-            };
-
+            const windowObserver = new WindowObserver(
+              windowManager,
+              patchMiddleClick
+            );
             monkeyPatchAllWindows(windowManager, patchMiddleClick);
             Services.ww.registerNotification(windowObserver);
 
@@ -205,7 +182,140 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
             };
           },
         }).api(),
+        onMonkeyPatch: new ExtensionCommon.EventManager({
+          context,
+          name: "convMsgWindow.onMonkeyPatch",
+          register(fire) {
+            const windowObserver = new WindowObserver(
+              windowManager,
+              specialPatches
+            );
+            monkeyPatchAllWindows(windowManager, specialPatches);
+            Services.ww.registerNotification(windowObserver);
+
+            return function() {
+              Services.ww.unregisterNotification(windowObserver);
+              monkeyPatchAllWindows(windowManager, (win, id) => {
+                for (const undo of win.conversationUndoFuncs) {
+                  undo();
+                }
+              });
+            };
+          },
+        }).api(),
       },
     };
   }
+};
+
+function getWindowFromId(windowManager, context, id) {
+  return id !== null && id !== undefined
+    ? windowManager.get(id, context).window
+    : Services.wm.getMostRecentWindow("mail:3pane");
+}
+
+function waitForWindow(win) {
+  return new Promise(resolve => {
+    if (win.document.readyState == "complete") {
+      resolve();
+    } else {
+      win.addEventListener(
+        "load",
+        () => {
+          resolve();
+        },
+        { once: true }
+      );
+    }
+  });
+}
+
+function monkeyPatchAllWindows(windowManager, callback) {
+  for (const win of Services.wm.getEnumerator("mail:3pane")) {
+    waitForWindow(win).then(() => {
+      console.log(win.document.location);
+      callback(win, windowManager.getWrapper(win).id);
+    });
+  }
+}
+
+const specialPatches = (win, id) => {
+  win.conversationUndoFuncs = [];
+  const htmlpane = win.document.getElementById("multimessage");
+  const messagepane = win.document.getElementById("messagepane");
+
+  // Because we're not even fetching the conversation when the message pane is
+  //  hidden, we need to trigger it manually when it's un-hidden.
+  let unhideListener = function() {
+    win.summarizeThread(window.gFolderDisplay.selectedMessages);
+  };
+  win.addEventListener("messagepane-unhide", unhideListener, true);
+  win.conversationUndoFuncs.push(() =>
+    win.removeEventListener("messagepane-unhide", unhideListener, true)
+  );
+
+  let oldSummarizeMultipleSelection = win.summarizeMultipleSelection;
+  win.summarizeMultipleSelection = function _summarizeMultiple_patched(
+    aSelectedMessages,
+    aListener
+  ) {
+    win.gSummaryFrameManager.loadAndCallback(kMultiMessageUrl, function() {
+      oldSummarizeMultipleSelection(aSelectedMessages, aListener);
+    });
+  };
+  win.conversationUndoFuncs.push(
+    () => (win.summarizeMultipleSelection = oldSummarizeMultipleSelection)
+  );
+
+  // Ok, this is slightly tricky. The C++ code notifies the global msgWindow
+  //  when content has been blocked, and we can't really afford to just
+  //  replace the code, because that would defeat the standard reader (e.g. in
+  //  a new tab). So we must find the message in the conversation and notify
+  //  it if needed.
+  win.oldOnMsgHasRemoteContent = win.messageHeaderSink.onMsgHasRemoteContent;
+  win.messageHeaderSink.onMsgHasRemoteContent = function(
+    msgHdr,
+    contentURI,
+    canOverride
+  ) {
+    const msgListeners = win.Conversations.msgListeners;
+    const messageId = msgHdr.messageId;
+    if (msgListeners.has(messageId)) {
+      const listeners = msgListeners.get(messageId);
+      for (const listener of listeners) {
+        const obj = listener.get();
+        if (obj) {
+          obj.onMsgHasRemoteContent();
+        }
+      }
+      msgListeners.set(
+        messageId,
+        listeners.filter(x => x.get() != null)
+      );
+    }
+    // Wicked case: we have the conversation and another tab with a message
+    //  from the conversation in that tab. So to be safe, forward the call.
+    win.oldOnMsgHasRemoteContent(msgHdr, contentURI, canOverride);
+  };
+  win.conversationUndoFuncs.push(
+    () =>
+      (win.messageHeaderSink.onMsgHasRemoteContent =
+        win.oldOnMsgHasRemoteContent)
+  );
+
+  function fightAboutBlank() {
+    if (messagepane.contentWindow.location.href == "about:blank") {
+      // Workaround the "feature" that disables the context menu when the
+      // messagepane points to about:blank
+      messagepane.contentWindow.location.href = "about:blank?";
+    }
+  }
+  messagepane.addEventListener("load", fightAboutBlank, true);
+  win.conversationUndoFuncs.push(() =>
+    messagepane.removeEventListener("load", fightAboutBlank, true)
+  );
+  fightAboutBlank();
+
+  // Never allow prefetch, as we don't want to leak for pages.
+  htmlpane.docShell.allowDNSPrefetch = false;
 };

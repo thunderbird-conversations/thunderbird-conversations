@@ -28,8 +28,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   Services: "resource://gre/modules/Services.jsm",
 });
 
-const kMultiMessageUrl = "chrome://messenger/content/multimessageview.xhtml";
-
 XPCOMUtils.defineLazyGetter(this, "Log", () => {
   return setupLogging("Conversations.MonkeyPatch");
 });
@@ -282,7 +280,6 @@ MonkeyPatch.prototype = {
 
     let self = this;
     let htmlpane = window.document.getElementById("multimessage");
-    let oldSummarizeMultipleSelection = window.summarizeMultipleSelection;
     let oldSummarizeThread = window.summarizeThread;
 
     // Register our new column type
@@ -290,28 +287,6 @@ MonkeyPatch.prototype = {
 
     // Undo all our customizations at uninstall-time
     this.registerUndoCustomizations();
-
-    // Because we're not even fetching the conversation when the message pane is
-    //  hidden, we need to trigger it manually when it's un-hidden.
-    let unhideListener = function() {
-      window.summarizeThread(window.gFolderDisplay.selectedMessages);
-    };
-    window.addEventListener("messagepane-unhide", unhideListener, true);
-    this.pushUndo(() =>
-      window.removeEventListener("messagepane-unhide", unhideListener, true)
-    );
-
-    window.summarizeMultipleSelection = function _summarizeMultiple_patched(
-      aSelectedMessages,
-      aListener
-    ) {
-      window.gSummaryFrameManager.loadAndCallback(kMultiMessageUrl, function() {
-        oldSummarizeMultipleSelection(aSelectedMessages, aListener);
-      });
-    };
-    this.pushUndo(
-      () => (window.summarizeMultipleSelection = oldSummarizeMultipleSelection)
-    );
 
     let previouslySelectedUris = [];
     let previousIsSelectionThreaded = null;
@@ -599,64 +574,6 @@ MonkeyPatch.prototype = {
     this.pushUndo(
       () =>
         (window.MessageDisplayWidget.prototype.onSelectedMessagesChanged = originalOnSelectedMessagesChanged)
-    );
-
-    // Ok, this is slightly tricky. The C++ code notifies the global msgWindow
-    //  when content has been blocked, and we can't really afford to just
-    //  replace the code, because that would defeat the standard reader (e.g. in
-    //  a new tab). So we must find the message in the conversation and notify
-    //  it if needed.
-    let oldOnMsgHasRemoteContent =
-      window.messageHeaderSink.onMsgHasRemoteContent;
-    window.messageHeaderSink.onMsgHasRemoteContent = function _onMsgHasRemoteContent_patched(
-      aMsgHdr,
-      aContentURI,
-      aCanOverride
-    ) {
-      let msgListeners = window.Conversations.msgListeners;
-      let messageId = aMsgHdr.messageId;
-      if (messageId in msgListeners) {
-        for (let [, /* i */ listener] of Object.entries(
-          msgListeners[messageId]
-        )) {
-          let obj = listener.get();
-          if (obj) {
-            obj.onMsgHasRemoteContent();
-          }
-        }
-        msgListeners[messageId] = msgListeners[messageId].filter(
-          x => x.get() != null
-        );
-      }
-      // Wicked case: we have the conversation and another tab with a message
-      //  from the conversation in that tab. So to be safe, forward the call.
-      oldOnMsgHasRemoteContent(aMsgHdr, aContentURI, aCanOverride);
-    };
-    this.pushUndo(
-      () =>
-        (window.messageHeaderSink.onMsgHasRemoteContent = oldOnMsgHasRemoteContent)
-    );
-
-    let messagepane = window.document.getElementById("messagepane");
-    let fightAboutBlank = function() {
-      if (messagepane.contentWindow.location.href == "about:blank") {
-        Log.debug("Hockey-hack");
-        // Workaround the "feature" that disables the context menu when the
-        // messagepane points to about:blank
-        messagepane.contentWindow.location.href = "about:blank?";
-      }
-    };
-    messagepane.addEventListener("load", fightAboutBlank, true);
-    this.pushUndo(() =>
-      messagepane.removeEventListener("load", fightAboutBlank, true)
-    );
-    fightAboutBlank();
-
-    // Never allow prefetch, as we don't want to leak for pages.
-    let oldPrefetchSetting = htmlpane.docShell.allowDNSPrefetch;
-    htmlpane.docShell.allowDNSPrefetch = false;
-    this.pushUndo(
-      () => (htmlpane.docShell.allowDNSPrefetch = oldPrefetchSetting)
     );
 
     Log.debug("Monkey patch successfully applied.");
