@@ -16,8 +16,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   getMail3Pane: "chrome://conversations/content/modules/misc.js",
   groupArray: "chrome://conversations/content/modules/misc.js",
   MailServices: "resource:///modules/MailServices.jsm",
-  MailUtils: "resource:///modules/MailUtils.jsm",
-  MessageArchiver: "resource:///modules/MessageArchiver.jsm",
   MessageFromDbHdr: "chrome://conversations/content/modules/message.js",
   MessageFromGloda: "chrome://conversations/content/modules/message.js",
   MessageUtils: "chrome://conversations/content/modules/message.js",
@@ -168,17 +166,6 @@ class _ConversationUtils {
   markAsJunk(win, isJunk) {
     win.JunkSelectedMessages(isJunk);
     win.SetFocusThreadPane();
-  }
-
-  archive(win, isInTab, msgUris) {
-    if (isInTab || Prefs.operate_on_conversations) {
-      msgHdrsArchive(msgUris.map(msg => msgUriToMsgHdr(msg)));
-      if (!isInTab) {
-        win.SetFocusThreadPane();
-      }
-    } else {
-      msgHdrsArchive(win.gFolderDisplay.selectedMessages);
-    }
   }
 
   delete(win, isInTab, msgUris) {
@@ -1087,18 +1074,4 @@ function msgHdrsDelete(msgHdrs) {
     );
     folder.msgDatabase = null; /* don't leak */
   }
-}
-
-/**
- * Archive a set of messages
- * @param {nsIMsgDbHdr array} msgHdrs The message headers
- */
-function msgHdrsArchive(msgHdrs) {
-  const archiver = new MessageArchiver();
-  archiver.archiveMessages(
-    msgHdrs.filter(
-      x =>
-        !msgHdrIsArchive(x) && MailUtils.getIdentityForHeader(x).archiveEnabled
-    )
-  );
 }

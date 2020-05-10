@@ -18,6 +18,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   Conversation: "chrome://conversations/content/modules/conversation.js",
   ConversationUtils: "chrome://conversations/content/modules/conversation.js",
   MessageUtils: "chrome://conversations/content/modules/message.js",
+  Prefs: "chrome://conversations/content/modules/prefs.js",
   topMail3Pane: "chrome://conversations/content/modules/misc.js",
 });
 
@@ -432,11 +433,16 @@ const messageActions = {
   archiveConversation() {
     return async (dispatch, getState) => {
       const state = getState();
-      ConversationUtils.archive(
-        topMail3Pane(window),
-        state.summary.isInTab,
-        state.messages.msgData.map(msg => msg.msgUri)
-      );
+      let msgs;
+      if (state.summary.isInTab || Prefs.operate_on_conversations) {
+        msgs = state.messages.msgData.map(msg => msg.id);
+      } else {
+        msgs = await browser.convMsgWindow.selectedMessages(
+          topMail3Pane(window).conversationWindowId
+        );
+        msgs = msgs.map(m => m.id);
+      }
+      browser.messages.archive(msgs).catch(console.error);
     };
   },
   deleteConversation() {

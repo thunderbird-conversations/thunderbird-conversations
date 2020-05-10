@@ -33,6 +33,21 @@
         ]
       },
       {
+        "name": "selectedMessages",
+        "type": "function",
+        "description": "Returns the currently selected message headers.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "windowId",
+            "type": "integer",
+            "optional": true,
+            "minimum": -2,
+            "description": "The window id."
+          }
+        ]
+      },
+      {
         "name": "openNewWindow",
         "type": "function",
         "description": "Opens a new window with the specified url.",

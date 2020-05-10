@@ -79,6 +79,13 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
 
           return !(await this.isSelectionExpanded(windowId));
         },
+        async selectedMessages(windowId) {
+          const win = getWindowFromId(windowManager, context, windowId);
+
+          return win.gFolderDisplay.selectedMessages.map(hdr =>
+            messageManager.convert(hdr)
+          );
+        },
         async openNewWindow(url) {
           const win = getWindowFromId();
           // Counting some extra pixels for window decorations.
@@ -240,6 +247,7 @@ function monkeyPatchAllWindows(windowManager, callback) {
 }
 
 const specialPatches = (win, id) => {
+  win.conversationWindowId = id;
   win.conversationUndoFuncs = [];
   const htmlpane = win.document.getElementById("multimessage");
   const messagepane = win.document.getElementById("messagepane");
