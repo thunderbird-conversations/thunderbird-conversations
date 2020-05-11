@@ -448,15 +448,27 @@ const messageActions = {
   deleteConversation() {
     return async (dispatch, getState) => {
       const state = getState();
-      const win = topMail3Pane(window);
-      if (
-        ConversationUtils.delete(
-          win,
-          state.summary.isInTab,
-          state.messages.msgData.map(msg => msg.msgUri)
-        )
-      ) {
-        ConversationUtils.closeTab(win, window.frameElement);
+      let msgs;
+      if (state.summary.isInTab || Prefs.operate_on_conversations) {
+        msgs = state.messages.msgData.map(msg => msg.id);
+      } else {
+        msgs = await browser.convMsgWindow.selectedMessages(
+          topMail3Pane(window).conversationWindowId
+        );
+        msgs = msgs.map(m => m.id);
+      }
+      browser.messages.delete(msgs).catch(console.error);
+      if (state.summary.isInTab) {
+        // The additional nulls appear to be necessary due to our browser proxying.
+        let currentTab = await browser.tabs.query({
+          active: true,
+          currentWindow: null,
+          lastFocusedWindow: null,
+          title: null,
+          windowId: topMail3Pane(window).conversationWindowId,
+          windowType: null,
+        });
+        await browser.tabs.remove(currentTab[0].id);
       }
     };
   },

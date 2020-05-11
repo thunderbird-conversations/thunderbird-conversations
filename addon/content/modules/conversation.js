@@ -13,7 +13,6 @@ const { XPCOMUtils } = ChromeUtils.import(
 XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   ContactManager: "chrome://conversations/content/modules/contact.js",
-  getMail3Pane: "chrome://conversations/content/modules/misc.js",
   groupArray: "chrome://conversations/content/modules/misc.js",
   MailServices: "resource:///modules/MailServices.jsm",
   MessageFromDbHdr: "chrome://conversations/content/modules/message.js",
@@ -166,30 +165,6 @@ class _ConversationUtils {
   markAsJunk(win, isJunk) {
     win.JunkSelectedMessages(isJunk);
     win.SetFocusThreadPane();
-  }
-
-  delete(win, isInTab, msgUris) {
-    if (isInTab || Prefs.operate_on_conversations) {
-      msgHdrsDelete(msgUris.map(msg => msgUriToMsgHdr(msg)));
-      if (isInTab) {
-        return true;
-      }
-      win.SetFocusThreadPane();
-    } else {
-      msgHdrsDelete(win.gFolderDisplay.selectedMessages);
-    }
-    return false;
-  }
-
-  closeTab(win, browser) {
-    const tabmail = win.top.document.getElementById("tabmail");
-    const tabs = tabmail.tabInfo;
-    const candidates = tabs.filter(x => x.browser == browser);
-    if (candidates.length == 1) {
-      tabmail.closeTab(candidates[0]);
-    } else {
-      Log.error("Couldn't find a tab to close...");
-    }
   }
 
   switchToFolderAndMsg(win, msgUri) {
@@ -1046,32 +1021,4 @@ function msgHdrIsInbox(msgHdr) {
  */
 function msgHdrIsSent(msgHdr) {
   return msgHdr.folder.getFlag(nsMsgFolderFlags_SentMail);
-}
-
-/**
- * Delete a set of messages.
- * @param {nsIMsgDbHdr array} msgHdrs The message headers
- */
-function msgHdrsDelete(msgHdrs) {
-  let pending = {};
-  for (let msgHdr of msgHdrs) {
-    if (!pending[msgHdr.folder.URI]) {
-      pending[msgHdr.folder.URI] = {
-        folder: msgHdr.folder,
-        msgs: Cc["@mozilla.org/array;1"].createInstance(Ci.nsIMutableArray),
-      };
-    }
-    pending[msgHdr.folder.URI].msgs.appendElement(msgHdr);
-  }
-  for (let [, { folder, msgs }] of Object.entries(pending)) {
-    folder.deleteMessages(
-      msgs,
-      getMail3Pane().msgWindow,
-      false,
-      false,
-      null,
-      true
-    );
-    folder.msgDatabase = null; /* don't leak */
-  }
 }

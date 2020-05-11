@@ -24,7 +24,8 @@
     "addressBooks",
     "messagesRead",
     "messagesMove",
-    "storage"
+    "storage",
+    "tabs"
   ],
   "experiment_apis": {
     "conversations": {
