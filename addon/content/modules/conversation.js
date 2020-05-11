@@ -691,7 +691,7 @@ Conversation.prototype = {
     // Update initialPosition
     for (
       let i = this.messages.length - aMessages.length;
-      this.messages.length;
+      i < this.messages.length;
       i++
     ) {
       this.messages[i].message.initialPosition = i;
