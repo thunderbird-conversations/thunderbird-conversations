@@ -574,7 +574,7 @@ class Message {
     }
 
     // We run below code only for the first time after messages selected.
-    Log.debug("A message is selected: " + this._uri);
+    Log.debug("A message is selected:", this._uri);
     for (let { message } of this._conversation.messages) {
       message._selected = message == this;
     }

@@ -385,7 +385,7 @@ MonkeyPatch.prototype = {
             isSelectionThreaded,
             ++window.Conversations.counter
           );
-          Log.debug(`New conversation ${freshConversation.counter}`);
+          Log.debug("New conversation", freshConversation.counter);
           if (window.Conversations.currentConversation) {
             Log.debug(
               "Current conversation is",
@@ -516,9 +516,9 @@ MonkeyPatch.prototype = {
 
         let selectedCount = this.folderDisplay.selectedCount;
         Log.debug(
-          "Intercepted message load, ",
+          "Intercepted message load,",
           selectedCount,
-          " message(s) selected"
+          "message(s) selected"
         );
 
         if (selectedCount == 0) {
@@ -538,7 +538,7 @@ MonkeyPatch.prototype = {
             // Use the default pref.
             if (Services.prefs.getBoolPref("mailnews.mark_message_read.auto")) {
               self.markReadTimeout = window.setTimeout(async function() {
-                Log.debug(`Marking as read:`, msgHdr);
+                Log.debug("Marking as read:", msgHdr);
                 const id = await browser.conversations.getMessageIdForUri(
                   msgHdrGetUri(msgHdr)
                 );

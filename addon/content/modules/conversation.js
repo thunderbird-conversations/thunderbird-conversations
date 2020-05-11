@@ -777,7 +777,6 @@ Conversation.prototype = {
       "Outputting",
       this.messages.map(x => x.debug)
     );
-    Log.debug(this.messages.length, "messages in the conversation now");
 
     // Fill in the HTML right away. The has the nice side-effect of erasing the
     // previous conversation (but not the conversation-wide event handlers!)
