@@ -387,7 +387,6 @@ MonkeyPatch.prototype = {
             Log.debug(
               "Hey, know what? The selection hasn't changed, so we're good!"
             );
-            Services.obs.notifyObservers(null, "Conversations", "Displayed");
             return;
           }
           // Remember the previously selected URIs now, so that if we get
@@ -402,15 +401,14 @@ MonkeyPatch.prototype = {
             isSelectionThreaded,
             ++window.Conversations.counter
           );
-          Log.debug("New conversation", freshConversation.counter);
-          if (window.Conversations.currentConversation) {
-            Log.debug(
-              "Current conversation is",
+          Log.debug(
+            "New conversation:",
+            freshConversation.counter,
+            "Old conversation:",
+            window.Conversations.currentConversation &&
               window.Conversations.currentConversation.counter
-            );
-          } else {
-            Log.debug("First conversation");
-          }
+          );
+          window.Conversations.currentConversation = freshConversation;
           freshConversation.outputInto(htmlpane.contentWindow, async function(
             aConversation
           ) {
@@ -433,36 +431,12 @@ MonkeyPatch.prototype = {
               aConversation.isSelectionThreaded == isSelectionThreaded,
               "Someone forgot to put the right scroll mode!"
             );
-            // So we force a GC cycle if we change conversations, so that the
-            //  previous collection is actually deleted and we don't vomit a
-            //  ton of errors from the listener that tries to modify the DOM
-            //  nodes and fails at it because they don't exist anymore.
-            let needsGC =
-              window.Conversations.currentConversation &&
-              window.Conversations.currentConversation.counter !=
-                aConversation.counter;
-            let isDifferentConversation =
-              !window.Conversations.currentConversation ||
-              window.Conversations.currentConversation.counter !=
-                aConversation.counter;
-            // Make sure we have a global root --> conversation --> persistent
-            //  query chain to prevent the Conversation object (and its inner
-            //  query) to be collected. The Conversation keeps watching the
-            //  Gloda query for modified items (read/unread, starred, tags...).
-            window.Conversations.currentConversation = aConversation;
-            if (isDifferentConversation) {
-              // Here, put the final touches to our new conversation object.
-              // TODO: Maybe re-enable this.
-              // htmlpane.contentWindow.newComposeSessionByDraftIf();
-              aConversation.completed = true;
-              // TODO: Re-enable this.
-              // htmlpane.contentWindow.registerQuickReply();
-            }
-            if (needsGC) {
-              Cu.forceGC();
-            }
-
-            Services.obs.notifyObservers(null, "Conversations", "Displayed");
+            // Here, put the final touches to our new conversation object.
+            // TODO: Maybe re-enable this.
+            // htmlpane.contentWindow.newComposeSessionByDraftIf();
+            aConversation.completed = true;
+            // TODO: Re-enable this.
+            // htmlpane.contentWindow.registerQuickReply();
 
             // Make sure we respect the user's preferences.
             if (Services.prefs.getBoolPref("mailnews.mark_message_read.auto")) {
@@ -473,17 +447,12 @@ MonkeyPatch.prototype = {
                 //  individual messages. In that case, don't do something weird!
                 //  Just mark the selected messages as read.
                 if (isSelectionThreaded) {
-                  // Did we juste change conversations? If we did, it's ok to
-                  //  mark as read. Otherwise, it's not, since we may silently
-                  //  mark new messages as read.
-                  if (isDifferentConversation) {
-                    Log.debug("Marking the whole conversation as read");
-                    for (const m of aConversation.messages) {
-                      if (!m.message.read) {
-                        await browser.messages.update(m.message._id, {
-                          read: true,
-                        });
-                      }
+                  Log.debug("Marking the whole conversation as read");
+                  for (const m of aConversation.messages) {
+                    if (!m.message.read) {
+                      await browser.messages.update(m.message._id, {
+                        read: true,
+                      });
                     }
                   }
                 } else {

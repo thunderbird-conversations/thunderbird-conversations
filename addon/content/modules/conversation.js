@@ -437,6 +437,7 @@ Conversation.prototype = {
   onItemsModified(aItems) {
     Log.debug("Updating conversation", this.counter, "global state...");
     if (!this.completed) {
+      Log.debug(`Abandoning items modified as not completed.`, aItems);
       return;
     }
 
@@ -728,21 +729,9 @@ Conversation.prototype = {
       Log.debug("Selection changed, aborting...");
       return;
     }
-    // In some pathological cases, the folder tree view will fire two consecutive
-    //  thread summaries very fast. This will MITIGATE race conditions, not solve
-    //  them. To solve them, we would need to make sure the two lines below are
-    //  atomic.
-    // This happens sometimes for drafts, a conversation is fired for the old
-    //  thread, a message in the thread is replaced, a new conversation is
-    //  fired. If the old conversation is conversation #2, and the new one is
-    //  conversation #3, then #3 succeeds and then #2 succeeds. In that case,
-    //  #2 gives up at that point.
-    // The invariant is that if one conversation has been fired while we were
-    //  fetching our messages, we give up, which implies that #3's output takes
-    //  precedence. If #3 decided to reuse an old conversation, it necessarily
-    //  reused conversation #1, because currentConversation is only set when a
-    //  conversation reaches completion (and #2 never reaches completion).
-    // I hope I will understand this when I read it again in a few days.
+
+    // Check to see if another conversation has started loading whilst we've
+    // been creating. If so, abort and get out of here.
     if (this._window.Conversations.counter != this.counter) {
       Log.debug(
         "Race condition,",
@@ -768,9 +757,6 @@ Conversation.prototype = {
       } catch (e) {
         console.error(e);
       }
-      // We'll be replacing the old conversation. Do this after the call to
-      // onSave, because onSave calls getMessageForQuickReply...
-      this._window.Conversations.currentConversation.messages = [];
     }
 
     Log.debug(
@@ -806,6 +792,18 @@ Conversation.prototype = {
 
     // Move on to the next step
     this._expandAndScroll(this.messages, reactMsgData);
+
+    // Final check to see if another conversation has started loading whilst
+    // we've been creating. If so, abort and get out of here.
+    if (this._window.Conversations.counter != this.counter) {
+      Log.debug(
+        "Race condition,",
+        this.counter,
+        "dying for",
+        this._window.Conversations.counter
+      );
+      return;
+    }
 
     // If we're showing message hdr details, then get them here so we're ready
     // when we first display.
