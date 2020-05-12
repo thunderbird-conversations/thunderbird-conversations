@@ -455,7 +455,7 @@ MonkeyPatch.prototype = {
                 //  conversation as read. However, sometimes the user selects
                 //  individual messages. In that case, don't do something weird!
                 //  Just mark the selected messages as read.
-                if (!isSelectionThreaded) {
+                if (isSelectionThreaded) {
                   // Did we juste change conversations? If we did, it's ok to
                   //  mark as read. Otherwise, it's not, since we may silently
                   //  mark new messages as read.
