@@ -657,25 +657,25 @@ Conversation.prototype = {
   //  end of this conversation. This only works if the new messages arrive at
   //  the end of the conversation, I don't support the pathological case of new
   //  messages arriving in the middle of the conversation.
-  async appendMessages(aMessages) {
+  async appendMessages(newMsgs) {
     // This is normal, the stupid folder tree view often reflows the
     //  whole thing and asks for a new ThreadSummary but the user hasn't
     //  actually changed selections.
-    if (!aMessages.length) {
+    if (!newMsgs.length) {
       return;
     }
 
-    Log.debug("Appending", aMessages.map(x => x.debug).join(" "));
+    Log.debug("Appending", newMsgs);
 
     // All your messages are belong to us. This is especially important so
     //  that contacts query the right _contactManager through their parent
     //  Message.
-    for (let x of aMessages) {
+    for (let x of newMsgs) {
       x.message._conversation = this;
     }
-    this.messages = this.messages.concat(aMessages);
+    this.messages = this.messages.concat(newMsgs);
 
-    for (let i = 0; i < aMessages.length; i++) {
+    for (let i = 0; i < newMsgs.length; i++) {
       let oldMsg;
       if (i == 0) {
         if (this.messages.length) {
@@ -684,14 +684,14 @@ Conversation.prototype = {
           oldMsg = null;
         }
       } else {
-        oldMsg = aMessages[i - 1].message;
+        oldMsg = newMsgs[i - 1].message;
       }
-      let msg = aMessages[i].message;
+      let msg = newMsgs[i].message;
       msg.updateTmplData(oldMsg);
     }
     // Update initialPosition
     for (
-      let i = this.messages.length - aMessages.length;
+      let i = this.messages.length - newMsgs.length;
       i < this.messages.length;
       i++
     ) {
@@ -699,7 +699,7 @@ Conversation.prototype = {
     }
     this.viewWrapper = new ViewWrapper(this);
     const reactMsgData = [];
-    for (const m of aMessages) {
+    for (const m of newMsgs) {
       const msgData = await m.message.toReactData();
       // inView indicates if the message is currently in the message list
       // view or not. If it isn't we don't show the folder tags.
@@ -707,11 +707,9 @@ Conversation.prototype = {
       reactMsgData.push(msgData);
     }
 
-    // Re-do the expand/collapse + scroll to the right node stuff. What this
-    // means is if: if we just added new messages, don't touch the other ones,
-    // and expand/collapse only the newer messages.
-    // TODO:
-    //   this._expandAndScroll(this.messages.length - aMessages.length);
+    // We don't want to disturb the user's viewing, so only expand the new
+    // messages if required, not scroll to them.
+    this._tellMeWhoToExpand(newMsgs, reactMsgData, -1);
 
     this._htmlPane.conversationDispatch({
       type: "APPEND_MESSAGES",
@@ -951,18 +949,18 @@ Conversation.prototype = {
         );
       // Falls through so we can default to the same as the pref and keep going.
       case Prefs.kExpandAuto: {
-        // In this mode, we scroll to the first unread message (or the last
-        //  message if all messages are read), and we expand all unread messages
-        //  + the last one (which will probably be unread as well).
         if (this.isSelectionThreaded) {
-          for (const [i, { message }] of this.messages.entries()) {
+          // In this mode, we scroll to the first unread message (or the last
+          //  message if all messages are read), and we expand all unread messages
+          //  + the last one (which will probably be unread as well).
+          for (const [i, { message }] of messages.entries()) {
             reactMsgData[i].expanded =
-              !message.read || i == this.messages.length - 1;
+              !message.read || i == messages.length - 1;
           }
+        } else {
           // In this mode, we scroll to the selected message, and we only expand
           //  the selected message.
-        } else {
-          for (const [i] of this.messages.entries()) {
+          for (const [i] of messages.entries()) {
             reactMsgData[i].expanded = i == aNeedsFocus;
           }
         }
