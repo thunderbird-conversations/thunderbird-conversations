@@ -22,7 +22,7 @@ global.window = global.globalThis = global;
 global.nodeRequire = require;
 
 // Mock `fetch`, which is used to get localization info when running in the browser
-global.fetch = function(url) {
+global.fetch = function (url) {
   const fileSystem = require("fs");
   const path = require("path");
   const ROOT_PATH = path.join(__dirname, "..");
@@ -38,9 +38,9 @@ global.fetch = function(url) {
 
 // Workaround for warnings about component not being wrapped in `act()`/
 // Taken from https://github.com/airbnb/enzyme/issues/2073#issuecomment-565736674
-const waitForComponentToPaint = async wrapper => {
+const waitForComponentToPaint = async (wrapper) => {
   await act(async () => {
-    await new Promise(resolve => setTimeout(resolve, 0));
+    await new Promise((resolve) => setTimeout(resolve, 0));
     wrapper.update();
   });
 };

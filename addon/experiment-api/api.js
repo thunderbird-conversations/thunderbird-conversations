@@ -114,7 +114,7 @@ function prefType(name) {
 }
 
 function monkeyPatchWindow(window, windowId) {
-  let doIt = async function() {
+  let doIt = async function () {
     try {
       if (
         window.document.location !=
@@ -366,7 +366,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
 
           await dbConnection.close();
 
-          return rows.map(row => {
+          return rows.map((row) => {
             return {
               key: row.getResultByName("key"),
               value: JSON.parse(row.getResultByName("value")),
@@ -395,7 +395,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
               this,
               (mimeHdr, aMimeMsg) => {
                 const attachments = aMimeMsg.allAttachments.filter(
-                  x => x.partName == partName
+                  (x) => x.partName == partName
                 );
                 const msgUri = Services.io.newURI(attachments[0].url);
                 const tmpChannel = NetUtil.newChannel({
@@ -461,7 +461,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             }
 
             BrowserSim.setBrowserListener(callback, context);
-            return function() {
+            return function () {
               BrowserSim.setBrowserListener(null);
             };
           },

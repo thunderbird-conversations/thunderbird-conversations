@@ -63,7 +63,7 @@ _ConversationWrapper.propTypes = {
   OS: PropTypes.string,
 };
 
-const ConversationWrapper = ReactRedux.connect(state => {
+const ConversationWrapper = ReactRedux.connect((state) => {
   return {
     tweakChrome: !!state.summary.prefs && state.summary.prefs.tweakChrome,
     OS: state.summary.OS,

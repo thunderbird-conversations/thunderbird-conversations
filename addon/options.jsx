@@ -26,13 +26,13 @@ const prefsSlice = createSlice({
 });
 export const actions = {
   initPrefs() {
-    return async function(dispatch) {
+    return async function (dispatch) {
       const prefs = await browser.storage.local.get("preferences");
       dispatch(prefsSlice.actions.set(prefs.preferences));
     };
   },
   savePref(name, value) {
-    return async function(dispatch, getState) {
+    return async function (dispatch, getState) {
       const newPrefs = { ...getState(), [name]: value };
       await browser.storage.local.set({ preferences: newPrefs });
       dispatch(prefsSlice.actions.set(newPrefs));
@@ -151,7 +151,7 @@ function localize(prefsInfo, i18n = browser.i18n) {
   // to render the prefernce setting GUI. Localize all `desc` and `title`
   // properties
   if (Array.isArray(prefsInfo)) {
-    return prefsInfo.map(pref => {
+    return prefsInfo.map((pref) => {
       const retProps = { ...pref.props };
       if (retProps.desc) {
         retProps.desc = i18n.getMessage(retProps.desc);
@@ -160,7 +160,7 @@ function localize(prefsInfo, i18n = browser.i18n) {
         retProps.title = i18n.getMessage(retProps.title);
       }
       if (retProps.choices) {
-        retProps.choices = retProps.choices.map(choice => {
+        retProps.choices = retProps.choices.map((choice) => {
           if (choice.desc) {
             return { ...choice, desc: i18n.getMessage(choice.desc) };
           }
@@ -250,7 +250,7 @@ export function TextOption({
           type="text"
           className="pref"
           value={value}
-          onChange={e => {
+          onChange={(e) => {
             onChange(name, e.target.value);
           }}
         />
@@ -285,7 +285,7 @@ export function NumericOption({
           type="number"
           className="pref"
           min={0}
-          onChange={e => {
+          onChange={(e) => {
             onChange(name, parseInt(e.target.value || value, 10));
           }}
           value={value}
@@ -321,7 +321,7 @@ export function BinaryOption({
           type="checkbox"
           className="pref"
           checked={value}
-          onChange={e => {
+          onChange={(e) => {
             onChange(name, e.target.checked);
           }}
         />
@@ -389,7 +389,7 @@ _ConversationOptions.propTypes = {
   startSetupAssistant: PropTypes.func.isRequired,
 };
 
-const ConversationOptions = ReactRedux.connect(state => ({ prefs: state }), {
+const ConversationOptions = ReactRedux.connect((state) => ({ prefs: state }), {
   setPref: actions.savePref,
 })(_ConversationOptions);
 
@@ -422,7 +422,7 @@ export function Main() {
           localize("options.start_setup_assistant", i18n)
         );
       })
-      .catch(e => {
+      .catch((e) => {
         throw e;
       });
   }, []);

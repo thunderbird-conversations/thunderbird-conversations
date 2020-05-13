@@ -55,9 +55,9 @@ var { SimpleStorage } = ChromeUtils.import(
 
 const SIMPLE_STORAGE_TABLE_NAME = "conversations";
 
-window.addEventListener("unload", function() {
+window.addEventListener("unload", function () {
   // save if needed
-  onSave(function() {
+  onSave(function () {
     Log.debug("Unload.");
   });
 });
@@ -119,7 +119,7 @@ function registerQuickReply() {
           obj.onDraftChanged(aTopic);
         }
         // While we're at it, cleanup...
-        listeners = listeners.filter(x => x.get());
+        listeners = listeners.filter((x) => x.get());
         mainWindow.Conversations.draftListeners[id] = listeners;
       } catch (e) {
         // See comment above
@@ -139,7 +139,7 @@ function registerQuickReply() {
   let weakRef = Cu.getWeakReference(gDraftListener);
   mainWindow.Conversations.draftListeners[id].push(weakRef);
 
-  $("textarea").blur(function() {
+  $("textarea").blur(function () {
     Log.debug("Autosave opportunity...");
     onSave();
   });
@@ -170,7 +170,7 @@ async function newComposeSessionByDraftIf() {
   let r = await SimpleStorage.get(SIMPLE_STORAGE_TABLE_NAME, id);
 
   if (r) {
-    gComposeSession = createComposeSession(x => x.draft(r));
+    gComposeSession = createComposeSession((x) => x.draft(r));
     startedEditing(true);
     revealCompositionFields();
     showQuickReply.call($(".quickReply li.reply"));
@@ -187,7 +187,7 @@ function newComposeSessionByClick(type) {
   );
   Log.debug("Setting up the initial quick reply compose parameters...");
   try {
-    gComposeSession = createComposeSession(x =>
+    gComposeSession = createComposeSession((x) =>
       x.reply(getMessageForQuickReply(), type)
     );
     // This could probably be refined, like only considering we started editing
@@ -405,7 +405,7 @@ function ComposeSession(match) {
     subject: null,
     otherRandomHeaders: null,
   };
-  this.stripSignatureIfNeeded = function() {
+  this.stripSignatureIfNeeded = function () {
     let w = getActiveEditor().node.contentWindow;
     for (let sig of w.document.querySelectorAll(
       "blockquote[type=cite] .moz-signature"
@@ -436,7 +436,7 @@ ComposeSession.prototype = {
   cycleSender(dir) {
     let self = this;
     let index = getIdentities().findIndex(
-      ident => ident.identity == self.params.identity
+      (ident) => ident.identity == self.params.identity
     );
     index = (index + dir + getIdentities().length) % getIdentities().length;
     this.params.identity = getIdentities()[index].identity;
@@ -529,7 +529,7 @@ ComposeSession.prototype = {
       },
 
       draft({ msgUri }) {
-        let last = a => a[a.length - 1];
+        let last = (a) => a[a.length - 1];
         let msgHdr = msgUriToMsgHdr(msgUri);
         self.params.msgHdr =
           msgHdr || last(Conversations.currentConversation.msgHdrs);
@@ -541,7 +541,7 @@ ComposeSession.prototype = {
         let subjectNode = document.querySelector(".editSubject");
         subjectNode.style.display = "";
         let input = document.getElementById("subject");
-        input.addEventListener("change", function() {
+        input.addEventListener("change", function () {
           self.params.subject = input.value;
         });
         self.setupDone();
@@ -563,7 +563,7 @@ ComposeSession.prototype = {
       defaultBcc = identity.doBccList || "";
     }
 
-    let mergeDefault = function(aList, aDefault) {
+    let mergeDefault = function (aList, aDefault) {
       if (aDefault) {
         aDefault = aDefault.replace(/\s/g, "");
       }
@@ -572,7 +572,7 @@ ComposeSession.prototype = {
         return aList;
       }
       for (let email of aDefault.split(/,/)) {
-        if (!aList.some(x => x.email == email)) {
+        if (!aList.some((x) => x.email == email)) {
           aList.push(asToken(null, null, email, null));
         }
       }
@@ -581,7 +581,7 @@ ComposeSession.prototype = {
 
     switch (aMode) {
       case "replyAll": {
-        replyAllParams(identity, msgHdr, function(params) {
+        replyAllParams(identity, msgHdr, function (params) {
           let to = params.to.map(([name, email]) =>
             asToken(null, name, email, null)
           );
@@ -619,7 +619,7 @@ ComposeSession.prototype = {
       default: {
         let cc = mergeDefault([], defaultCc);
         let bcc = mergeDefault([], defaultBcc);
-        replyAllParams(identity, msgHdr, function(params) {
+        replyAllParams(identity, msgHdr, function (params) {
           let to = params.to.map(([name, email]) =>
             asToken(null, name, email, null)
           );
@@ -636,7 +636,7 @@ ComposeSession.prototype = {
     this.match({
       reply(aMessage, aReplyType) {
         // Make sure we're consistent with modules/message.js!
-        let showHideActions = function(n) {
+        let showHideActions = function (n) {
           // This basically says that while processing various headers, we
           // found out we reply to at most one person, then this means that
           // the reply method "reply all" makes no sense.
@@ -661,9 +661,9 @@ ComposeSession.prototype = {
       },
 
       draft({ to, cc, bcc }) {
-        let makeTokens = function(aList) {
+        let makeTokens = function (aList) {
           let [list, listEmailAddresses] = parse(aList);
-          return Array.prototype.map.call(list, function(item, i) {
+          return Array.prototype.map.call(list, function (item, i) {
             return asToken(null, item, listEmailAddresses[i], null);
           });
         };
@@ -767,7 +767,7 @@ ComposeSession.prototype = {
       compType = Ci.nsIMsgCompType.ReplyAll;
     } // ReplyAll, Reply... ends up the same
 
-    let [to, cc, bcc] = ["to", "cc", "bcc"].map(x =>
+    let [to, cc, bcc] = ["to", "cc", "bcc"].map((x) =>
       JSON.parse($("#" + x).val())
     );
 
@@ -916,7 +916,7 @@ AttachmentList.prototype = {
       Ci.nsIFilePicker.modeOpenMultiple
     );
     let self = this;
-    filePicker.open(function(rv) {
+    filePicker.open(function (rv) {
       if (rv != Ci.nsIFilePicker.returnOK) {
         Log.debug("User canceled, returning");
       } else {
@@ -935,7 +935,7 @@ AttachmentList.prototype = {
   _populateUI(msgAttachment, data) {
     let self = this;
     let line = tmpl("#quickReplyAttachmentTemplate", data);
-    line.find(".openAttachmentLink").click(function() {
+    line.find(".openAttachmentLink").click(function () {
       let url = Services.io.newURI(data.url);
       url = url.QueryInterface(Ci.nsIURL);
 
@@ -949,9 +949,9 @@ AttachmentList.prototype = {
         }
       }
     });
-    line.find(".removeAttachmentLink").click(function() {
+    line.find(".removeAttachmentLink").click(function () {
       line.remove();
-      self._attachments = self._attachments.filter(x => x != msgAttachment);
+      self._attachments = self._attachments.filter((x) => x != msgAttachment);
     });
     line.appendTo($(".quickReplyAttachments"));
   },
@@ -984,7 +984,7 @@ AttachmentList.prototype = {
   },
 
   save() {
-    return this._attachments.map(x => ({
+    return this._attachments.map((x) => ({
       name: x.name,
       size: x.size,
       url: x.url,
@@ -1308,7 +1308,7 @@ function createStateListener(aComposeSession, aMsgHdrs, aId) {
         }
         // Archive the whole conversation if needed
         if (aComposeSession.archive) {
-          msgHdrsArchive(aMsgHdrs.filter(x => !msgHdrIsArchive(x)));
+          msgHdrsArchive(aMsgHdrs.filter((x) => !msgHdrIsArchive(x)));
         }
         if (isQuickCompose) {
           // Try both, the first one will do nothing if in a tab.
@@ -1340,9 +1340,9 @@ function masqueradeAsQuickCompose() {
   $(".replyAll, #save, .replyMethod").remove();
 
   // TODO figure out why this timeout is needed
-  setTimeout(function() {
+  setTimeout(function () {
     showQuickReply.call($(".reply.expand"));
-    gComposeSession = createComposeSession(x => x.new());
+    gComposeSession = createComposeSession((x) => x.new());
     revealCompositionFields();
     editFields("to");
   }, 0);
@@ -1356,7 +1356,7 @@ function masqueradeAsQuickCompose() {
 
   document
     .querySelector(".quickReply")
-    .addEventListener("keypress", function(event) {
+    .addEventListener("keypress", function (event) {
       switch (event.keyCode) {
         case KeyEvent.DOM_VK_RETURN:
           if (isAccel(event)) {
@@ -1373,16 +1373,16 @@ function masqueradeAsQuickCompose() {
   let data = [];
 
   // Push a new contact item in the list
-  let pushNewPopularContacts = function(n) {
+  let pushNewPopularContacts = function (n) {
     let items = data.splice(0, n);
     let nodes = tmpl("#popularContactTemplate", items);
 
-    items.forEach(function(data2, i) {
+    items.forEach(function (data2, i) {
       let data = data2;
       let node = nodes.eq(i);
       Log.debug("Adding", data.name, data.email);
 
-      node.find(".popularRemove").click(function() {
+      node.find(".popularRemove").click(function () {
         Log.debug("Removing", data.name, data.email);
         // Mark it in the prefs
         // TODO: Fix how these work.
@@ -1395,13 +1395,11 @@ function masqueradeAsQuickCompose() {
           JSON.stringify(unwantedRecipients)
         );
         // Update the UI
-        $(this)
-          .closest(".popularContact")
-          .remove();
+        $(this).closest(".popularContact").remove();
         pushNewPopularContacts(1);
       });
 
-      node.find(".popularName").click(function() {
+      node.find(".popularName").click(function () {
         // Get all the current parameters
         let to = JSON.parse($("#to").val());
         let cc = JSON.parse($("#cc").val());
@@ -1411,7 +1409,7 @@ function masqueradeAsQuickCompose() {
           MailServices.headerParser.makeMimeAddress(data.name, data.email)
         );
         // Re-set everything
-        let format = items =>
+        let format = (items) =>
           items
             .map(parseMimeLine)
             .map(([{ name, email }]) => asToken(null, name, email, null));
@@ -1444,7 +1442,7 @@ function masqueradeAsQuickCompose() {
         for (let contact of items) {
           if (contact.identities.length) {
             let id = contact.identities[0];
-            let photoForAbCard = function(card) {
+            let photoForAbCard = function (card) {
               if (!card) {
                 return defaultPhotoURI;
               }

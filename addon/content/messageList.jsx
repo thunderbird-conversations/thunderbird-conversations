@@ -44,7 +44,7 @@ function _MessageList(props) {
             advanceMessage={(step = 1) => {
               advanceMessage(index, step);
             }}
-            setRef={ref => {
+            setRef={(ref) => {
               setRef(index, ref);
             }}
           />
@@ -59,7 +59,7 @@ _MessageList.propTypes = {
   summary: PropTypes.object.isRequired,
 };
 
-const MessageList = ReactRedux.connect(state => {
+const MessageList = ReactRedux.connect((state) => {
   return {
     messages: state.messages,
     summary: state.summary,

@@ -46,7 +46,7 @@ Viewer.prototype = {
   switchToPage(aPageNum) {
     let self = this;
 
-    this.pdfDoc.getPage(aPageNum).then(function(page) {
+    this.pdfDoc.getPage(aPageNum).then(function (page) {
       self.curPage = aPageNum;
       let scale = 1.5;
       let viewport = page.getViewport({ scale });
@@ -86,7 +86,7 @@ Viewer.prototype = {
 
   _initPageForm(pageForm, numBox) {
     let self = this;
-    pageForm.addEventListener("submit", function(event) {
+    pageForm.addEventListener("submit", function (event) {
       let page = parseInt(numBox.value, 10);
       if (
         !isNaN(page) &&

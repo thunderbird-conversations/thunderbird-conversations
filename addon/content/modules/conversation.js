@@ -26,7 +26,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   topMail3Pane: "chrome://conversations/content/modules/misc.js",
 });
 
-XPCOMUtils.defineLazyGetter(this, "browser", function() {
+XPCOMUtils.defineLazyGetter(this, "browser", function () {
   return BrowserSim.getBrowser();
 });
 
@@ -138,7 +138,7 @@ function ViewWrapper(aConversation) {
   this.byUri = {};
   if (this.mainWindow.gFolderDisplay.selectedMessages) {
     this.mainWindow.gFolderDisplay.selectedMessages.map(
-      x => (this.byUri[msgHdrGetUri(x)] = true)
+      (x) => (this.byUri[msgHdrGetUri(x)] = true)
     );
   }
 }
@@ -213,7 +213,7 @@ function Conversation(
   //  thread (like, you sent a message to yourself so it appears twice in your
   //  inbox that also searches sent folders). But we handle that case well.
   if (selectedMessages && typeof selectedMessages[0] == "string") {
-    this._initialSet = selectedMessages.map(url => msgUriToMsgHdr(url));
+    this._initialSet = selectedMessages.map((url) => msgUriToMsgHdr(url));
   } else {
     this._initialSet = selectedMessages;
   }
@@ -276,7 +276,7 @@ Conversation.prototype = {
   },
 
   getMessage(uri) {
-    const msg = this.messages.find(m => m.message._uri == uri);
+    const msg = this.messages.find((m) => m.message._uri == uri);
     if (msg) {
       return msg.message;
     }
@@ -326,10 +326,10 @@ Conversation.prototype = {
   // TODO: this logic is weird. Shouldn't we just compare a list of URLs?
   _selectionChanged: function _Conversation_selectionChanged() {
     let gFolderDisplay = topMail3Pane(this).gFolderDisplay;
-    let messageIds = this._initialSet.map(x => x.messageId);
+    let messageIds = this._initialSet.map((x) => x.messageId);
     return (
       !gFolderDisplay.selectedMessage ||
-      !messageIds.some(x => x == gFolderDisplay.selectedMessage.messageId)
+      !messageIds.some((x) => x == gFolderDisplay.selectedMessage.messageId)
     );
   },
 
@@ -350,7 +350,7 @@ Conversation.prototype = {
           if (!aItems.length) {
             Log.warn("Warning: gloda query returned no messages");
             // M = msgHdr, I = Initial, NG = there was no gloda query
-            const messagePromises = self._initialSet.map(msgHdr =>
+            const messagePromises = self._initialSet.map((msgHdr) =>
               messageFromDbHdr(self, msgHdr, "MI+NG")
             );
             self.messages = await Promise.all(messagePromises);
@@ -390,16 +390,16 @@ Conversation.prototype = {
       try {
         // The MessageFromGloda constructor cannot work with gloda messages that
         //  don't have a message header
-        aItems = aItems.filter(glodaMsg => glodaMsg.folderMessage);
+        aItems = aItems.filter((glodaMsg) => glodaMsg.folderMessage);
         // We want at least all messages from the Gloda collection
         let messages = await Promise.all(
-          aItems.map(glodaMsg =>
+          aItems.map((glodaMsg) =>
             messageFromGlodaIfOffline(this, glodaMsg, "GA")
           )
         );
         Log.debug(
           "onItemsAdded",
-          messages.map(x => x.debug + " " + getMessageId(x)).join(" ")
+          messages.map((x) => x.debug + " " + getMessageId(x)).join(" ")
         );
         Log.debug(this.messages.length, "messages already in the conversation");
         // The message ids we already hold.
@@ -411,7 +411,7 @@ Conversation.prototype = {
             this.removeMessage(message.message);
           }
         }
-        this.messages.map(m => {
+        this.messages.map((m) => {
           messageIds[getMessageId(m)] =
             !toMsgHdr(m) || msgHdrIsDraft(toMsgHdr(m));
         });
@@ -424,14 +424,14 @@ Conversation.prototype = {
           if (messageIds[newMessageId]) {
             Log.debug("Removing a draft...");
             let draft = this.messages.filter(
-              y => getMessageId(y) == newMessageId
+              (y) => getMessageId(y) == newMessageId
             )[0];
             this.removeMessage(draft.message);
             delete messageIds[newMessageId];
           }
         }
         // Don't add a message if we already have it.
-        messages = messages.filter(x => !(getMessageId(x) in messageIds));
+        messages = messages.filter((x) => !(getMessageId(x) in messageIds));
         // Sort all the messages according to the date so that they are inserted
         // in the right order.
         let compare = (m1, m2) => msgDate(m1) - msgDate(m2);
@@ -520,7 +520,7 @@ Conversation.prototype = {
         // The MessageFromGloda constructor cannot work with gloda messages that
         //  don't have a message header
         aCollection.items = aCollection.items.filter(
-          glodaMsg => glodaMsg.folderMessage
+          (glodaMsg) => glodaMsg.folderMessage
         );
         // In most cases, all messages share the same conversation id (i.e. they
         //  all belong to the same gloda conversations). There are rare cases
@@ -534,21 +534,21 @@ Conversation.prototype = {
         }
         // Beware, some bad things might have happened in the meanwhile...
         this._initialSet = this._initialSet.filter(
-          msgHdr =>
+          (msgHdr) =>
             msgHdr && msgHdr.folder.msgDatabase.ContainsKey(msgHdr.messageKey)
         );
         this._intermediateResults = this._intermediateResults.filter(
-          glodaMsg => glodaMsg.folderMessage
+          (glodaMsg) => glodaMsg.folderMessage
         );
         // We want at least all messages from the Gloda collection + all
         //  messages from the intermediate set (see rationale in the
         //  initialization of this._intermediateResults).
-        let msgPromises = aCollection.items.map(glodaMsg =>
+        let msgPromises = aCollection.items.map((glodaMsg) =>
           messageFromGlodaIfOffline(this, glodaMsg, "GF")
         );
         let intermediateSet = this._intermediateResults
-          .filter(glodaMsg => glodaMsg.folderMessage)
-          .map(glodaMsg => messageFromGlodaIfOffline(this, glodaMsg, "GM"));
+          .filter((glodaMsg) => glodaMsg.folderMessage)
+          .map((glodaMsg) => messageFromGlodaIfOffline(this, glodaMsg, "GM"));
         this.messages = await Promise.all([...msgPromises, ...intermediateSet]);
         // Here's the message IDs we know
         let messageIds = {};
@@ -599,13 +599,13 @@ Conversation.prototype = {
     let messages = this.messages;
     this.viewWrapper = new ViewWrapper(this);
     // Wicked cases, when we're asked to display a draft that's half-saved...
-    messages = messages.filter(x => toMsgHdr(x) && getMessageId(x));
+    messages = messages.filter((x) => toMsgHdr(x) && getMessageId(x));
     messages = groupArray(this.messages, getMessageId);
     // The message that's selected has the highest priority to avoid
     //  inconsistencies in case multiple identical messages are present in the
     //  same thread (e.g. message from to me).
-    let selectRightMessage = aSimilarMessages => {
-      let findForCriterion = aCriterion => {
+    let selectRightMessage = (aSimilarMessages) => {
+      let findForCriterion = (aCriterion) => {
         let bestChoice;
         for (let msg of aSimilarMessages) {
           if (!toMsgHdr(msg)) {
@@ -619,16 +619,16 @@ Conversation.prototype = {
         return bestChoice;
       };
       let r =
-        findForCriterion(aMsg => this.viewWrapper.isInView(aMsg)) ||
-        findForCriterion(aMsg => msgHdrIsInbox(toMsgHdr(aMsg))) ||
-        findForCriterion(aMsg => msgHdrIsSent(toMsgHdr(aMsg))) ||
-        findForCriterion(aMsg => !msgHdrIsArchive(toMsgHdr(aMsg))) ||
+        findForCriterion((aMsg) => this.viewWrapper.isInView(aMsg)) ||
+        findForCriterion((aMsg) => msgHdrIsInbox(toMsgHdr(aMsg))) ||
+        findForCriterion((aMsg) => msgHdrIsSent(toMsgHdr(aMsg))) ||
+        findForCriterion((aMsg) => !msgHdrIsArchive(toMsgHdr(aMsg))) ||
         aSimilarMessages[0];
       return r;
     };
     // Select right message will try to pick the message that has an
     //  existing msgHdr.
-    messages = messages.map(group => selectRightMessage(group));
+    messages = messages.map((group) => selectRightMessage(group));
     // But sometimes it just fails, and gloda remembers dead messages...
     messages = messages.filter(toMsgHdr);
     this.messages = messages;
@@ -641,8 +641,8 @@ Conversation.prototype = {
   removeMessage(msg) {
     Log.debug("Removing message", msg);
     // Move the quick reply to the previous message
-    this.messages = this.messages.filter(x => x.message != msg);
-    this._initialSet = this._initialSet.filter(x => x.message != msg);
+    this.messages = this.messages.filter((x) => x.message != msg);
+    this._initialSet = this._initialSet.filter((x) => x.message != msg);
 
     // TODO As everything is synchronous but react doesn't let us dispatch
     // from within a dispatch, then we have to dispatch this off to the main
@@ -762,7 +762,7 @@ Conversation.prototype = {
 
     Log.debug(
       "Outputting",
-      this.messages.map(x => x.debug)
+      this.messages.map((x) => x.debug)
     );
 
     // Fill in the HTML right away. The has the nice side-effect of erasing the
@@ -819,7 +819,7 @@ Conversation.prototype = {
     this.dispatch({
       type: "REPLACE_CONVERSATION_DETAILS",
       summary: {
-        conversation: { getMessage: uri => this.getMessage(uri) },
+        conversation: { getMessage: (uri) => this.getMessage(uri) },
         subject: this.messages[this.messages.length - 1].message.subject,
         loading: false,
         prefs: {

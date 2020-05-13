@@ -31,11 +31,11 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   Services: "resource://gre/modules/Services.jsm",
 });
 
-XPCOMUtils.defineLazyGetter(this, "browser", function() {
+XPCOMUtils.defineLazyGetter(this, "browser", function () {
   return BrowserSim.getBrowser();
 });
 
-XPCOMUtils.defineLazyGetter(this, "gMessenger", function() {
+XPCOMUtils.defineLazyGetter(this, "gMessenger", function () {
   return Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
 });
 
@@ -65,12 +65,12 @@ function groupArray(aItems, aFn) {
       groups[id].push(item);
     }
   }
-  return orderedIds.map(id => groups[id]);
+  return orderedIds.map((id) => groups[id]);
 }
 
 // Joins together names and format them as "John, Jane and Julie"
 function joinWordList(aElements, aInsertHtml) {
-  let wrap = aInsertHtml ? x => "<span>" + x + "</span>" : x => x;
+  let wrap = aInsertHtml ? (x) => "<span>" + x + "</span>" : (x) => x;
   let l = aElements.length;
   if (l == 0) {
     return "";
@@ -116,13 +116,13 @@ let fallbackMapping = [
 ];
 
 function iconForMimeType(aMimeType) {
-  let idx = mapping.findIndex(function([k]) {
+  let idx = mapping.findIndex(function ([k]) {
     return aMimeType == k;
   });
   if (idx != -1) {
     return mapping[idx][1] + ".svg";
   }
-  idx = fallbackMapping.findIndex(function([k]) {
+  idx = fallbackMapping.findIndex(function ([k]) {
     return aMimeType.startsWith(k);
   });
   if (idx != -1) {
@@ -146,7 +146,7 @@ function topMail3Pane(aObj) {
     throw Error("Bad usage for topMail3Pane");
   }
 
-  let moveOut = function(w) {
+  let moveOut = function (w) {
     if (w && w.frameElement) {
       return w.frameElement.ownerGlobal;
     }
@@ -188,7 +188,7 @@ function folderName(aFolder) {
 function escapeHtml(s) {
   s += "";
   // stolen from selectionsummaries.js (thanks davida!)
-  return s.replace(/[<>&]/g, function(s) {
+  return s.replace(/[<>&]/g, function (s) {
     switch (s) {
       case "<":
         return "&lt;";
@@ -243,7 +243,7 @@ function getIdentities(aSkipNntpIdentities = true) {
   }
   if (!identities.length) {
     console.warn("Didn't find any identities!");
-  } else if (!identities.some(x => x.isDefault)) {
+  } else if (!identities.some((x) => x.isDefault)) {
     console.warn(
       "Didn't find any default key - mark the first identity as default!"
     );
@@ -259,7 +259,8 @@ function getIdentities(aSkipNntpIdentities = true) {
  */
 function getIdentityForEmail(anEmailAddress) {
   return getIdentities(false).find(
-    ident => ident.identity.email.toLowerCase() == anEmailAddress.toLowerCase()
+    (ident) =>
+      ident.identity.email.toLowerCase() == anEmailAddress.toLowerCase()
   );
 }
 
@@ -280,7 +281,7 @@ function parseMimeLine(mimeLine, dontFix) {
   // The null here copes with pre-Thunderbird 71 compatibility.
   let addresses = MailServices.headerParser.parseEncodedHeader(mimeLine, null);
   if (addresses.length) {
-    return addresses.map(addr => {
+    return addresses.map((addr) => {
       return {
         email: addr.email,
         name: addr.name,
