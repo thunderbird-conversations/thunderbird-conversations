@@ -16,7 +16,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   freshColor: "chrome://conversations/content/utils.js",
 });
 
-XPCOMUtils.defineLazyGetter(this, "browser", function() {
+XPCOMUtils.defineLazyGetter(this, "browser", function () {
   return BrowserSim.getBrowser();
 });
 
@@ -137,7 +137,7 @@ ContactFromAB.prototype = {
       .getIdentities({ includeNntpIdentities: false })
       .catch(console.error);
     const identity = identities.find(
-      ident => ident.identity.email.toLowerCase() == this._email.toLowerCase()
+      (ident) => ident.identity.email.toLowerCase() == this._email.toLowerCase()
     );
 
     // `name` and `extra` are the only attributes that depend on `position`

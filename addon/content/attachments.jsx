@@ -235,7 +235,7 @@ class Attachments extends React.PureComponent {
     this.props.dispatch(
       attachmentActions.downloadAll({
         msgUri: this.props.msgUri,
-        attachmentDetails: this.props.attachments.map(attachment => ({
+        attachmentDetails: this.props.attachments.map((attachment) => ({
           contentType: attachment.contentType,
           isExternal: attachment.isExternal,
           name: attachment.name,
@@ -267,7 +267,7 @@ class Attachments extends React.PureComponent {
               <SvgIcon hash={"photo_library"} />
             </a>
           )}
-          {this.props.attachments.map(attachment => (
+          {this.props.attachments.map((attachment) => (
             <Attachment
               anchor={attachment.anchor}
               dispatch={this.props.dispatch}

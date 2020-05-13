@@ -13,7 +13,7 @@ class PrefManager {
     this.kExpandNone = 1;
     this.kExpandAll = 3;
     this.kExpandAuto = 4;
-    this.initialized = new Promise(resolve => {
+    this.initialized = new Promise((resolve) => {
       this.notifyStartupComplete = resolve;
     });
   }

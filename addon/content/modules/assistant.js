@@ -107,16 +107,16 @@ class PrefCustomization extends SimpleCustomization {
 class MultipleCustomization {
   constructor(aParams) {
     this.customizations = aParams
-      ? aParams.map(p => new PrefCustomization(p))
+      ? aParams.map((p) => new PrefCustomization(p))
       : [];
   }
 
   install() {
-    return this.customizations.map(c => c.install());
+    return this.customizations.map((c) => c.install());
   }
 
   uninstall(uninstallInfos) {
-    this.customizations.forEach(function(x, i) {
+    this.customizations.forEach(function (x, i) {
       x.uninstall(uninstallInfos[i]);
     });
   }
@@ -128,7 +128,7 @@ class MultipleCustomization {
 //  "Illegal operation on WrappedNative prototype object"  nsresult:
 //  "0x8057000c (NS_ERROR_XPC_BAD_OP_ON_WN_PROTO)"
 // So we do a round of eta-expansion.
-let eid = id => getMail3Pane().document.getElementById(id);
+let eid = (id) => getMail3Pane().document.getElementById(id);
 
 var Customizations = {
   actionSetupViewDefaults: new MultipleCustomization([
@@ -210,9 +210,9 @@ var Customizations = {
         ftv.selectFolder(smartInbox);
       }
 
-      await new Promise(resolve => {
+      await new Promise((resolve) => {
         let i = 0;
-        let waitForIt = function() {
+        let waitForIt = function () {
           if (
             smartInbox &&
             mainWindow.gFolderDisplay.displayedFolder != smartInbox &&
@@ -355,7 +355,7 @@ var Customizations = {
 
       let vFolder = VirtualFolderHelper.wrapVirtualFolder(smartInbox);
       vFolder.searchFolders = vFolder.searchFolders.filter(
-        x => !(x.URI in aChangedFolders)
+        (x) => !(x.URI in aChangedFolders)
       );
       vFolder.cleanUpMessageDatabase();
       msgAccountManager.saveVirtualFolders();

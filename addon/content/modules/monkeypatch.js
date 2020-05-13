@@ -28,7 +28,7 @@ XPCOMUtils.defineLazyGetter(this, "Log", () => {
   return setupLogging("Conversations.MonkeyPatch");
 });
 
-XPCOMUtils.defineLazyGetter(this, "browser", function() {
+XPCOMUtils.defineLazyGetter(this, "browser", function () {
   return BrowserSim.getBrowser();
 });
 
@@ -74,7 +74,7 @@ MonkeyPatch.prototype = {
       ["persist", "width hidden ordinal"],
       ["label", browser.i18n.getMessage("between.columnName")],
       ["tooltiptext", browser.i18n.getMessage("between.columnTooltip")],
-    ].forEach(function([k, v]) {
+    ].forEach(function ([k, v]) {
       treecol.setAttribute(k, v);
     });
     // Work around for Thunderbird not managing to restore the column
@@ -114,13 +114,13 @@ MonkeyPatch.prototype = {
     const multipleIdentities =
       (await browser.convContacts.getIdentities()).length > 1;
 
-    let participants = function(msgHdr) {
+    let participants = function (msgHdr) {
       try {
         // The array of people involved in this email.
         let people = [];
         // Helper for formatting; depending on the locale, we may need a different
         // for me as in "to me" or as in "from me".
-        let format = function(x, p) {
+        let format = function (x, p) {
           if (getIdentityForEmail(x.email)) {
             let display = p
               ? browser.i18n.getMessage("message.meBetweenMeAndSomeone")
@@ -133,9 +133,9 @@ MonkeyPatch.prototype = {
           return x.name || x.email;
         };
         // Add all the people found in one of the msgHdr's properties.
-        let addPeople = function(prop, pos) {
+        let addPeople = function (prop, pos) {
           let line = msgHdr[prop];
-          parseMimeLine(line, true).forEach(function(x) {
+          parseMimeLine(line, true).forEach(function (x) {
             people.push(format(x, pos));
           });
         };
@@ -146,7 +146,7 @@ MonkeyPatch.prototype = {
         addPeople("bccList", false);
         // Then remove duplicates
         let seenAlready = {};
-        people = people.filter(function(x) {
+        people = people.filter(function (x) {
           let r = !(x in seenAlready);
           seenAlready[x] = true;
           return r;
@@ -237,7 +237,7 @@ MonkeyPatch.prototype = {
   registerUndoCustomizations() {
     shouldPerformUninstall = true;
 
-    this.pushUndo(aReason => {
+    this.pushUndo((aReason) => {
       // We don't want to undo all the customizations in the case of an
       // upgrade... but if the user disables the conversation view, or
       // uninstalls the addon, then we should revert them indeed.
@@ -310,7 +310,7 @@ MonkeyPatch.prototype = {
 
       window.gMessageDisplay.singleMessageDisplay = false;
 
-      window.gSummaryFrameManager.loadAndCallback(Prefs.kStubUrl, function(
+      window.gSummaryFrameManager.loadAndCallback(Prefs.kStubUrl, function (
         isRefresh
       ) {
         // See issue #673
@@ -335,7 +335,7 @@ MonkeyPatch.prototype = {
           // It's crucial we register a non-capturing event listener here,
           //  otherwise the individual message nodes get no opportunity to do
           //  their own processing.
-          htmlpane.contentWindow.addEventListener("keypress", function(event) {
+          htmlpane.contentWindow.addEventListener("keypress", function (event) {
             try {
               window.dispatchEvent(event);
             } catch (e) {
@@ -350,7 +350,7 @@ MonkeyPatch.prototype = {
           //  is the conversation in the message pane is already alive, and
           //  the gloda query is updating messages just fine, so we should not
           //  worry about messages which are not in the view.
-          let newlySelectedUris = aSelectedMessages.map(m => msgHdrGetUri(m));
+          let newlySelectedUris = aSelectedMessages.map((m) => msgHdrGetUri(m));
           let isSelectionThreaded = await browser.convMsgWindow.isSelectionThreaded(
             this._windowId
           );
@@ -415,7 +415,7 @@ MonkeyPatch.prototype = {
             window.Conversations.currentConversation.cleanup();
           }
           window.Conversations.currentConversation = freshConversation;
-          freshConversation.outputInto(htmlpane.contentWindow, async function(
+          freshConversation.outputInto(htmlpane.contentWindow, async function (
             aConversation
           ) {
             if (!aConversation.messages.length) {
@@ -446,7 +446,7 @@ MonkeyPatch.prototype = {
 
             // Make sure we respect the user's preferences.
             if (Services.prefs.getBoolPref("mailnews.mark_message_read.auto")) {
-              self.markReadTimeout = window.setTimeout(async function() {
+              self.markReadTimeout = window.setTimeout(async function () {
                 // The idea is that usually, we're selecting a thread (so we
                 //  have kScrollUnreadOrLast). This means we mark the whole
                 //  conversation as read. However, sometimes the user selects
@@ -529,7 +529,7 @@ MonkeyPatch.prototype = {
           if (msgHdrIsRss(msgHdr) || msgHdrIsNntp(msgHdr)) {
             // Use the default pref.
             if (Services.prefs.getBoolPref("mailnews.mark_message_read.auto")) {
-              self.markReadTimeout = window.setTimeout(async function() {
+              self.markReadTimeout = window.setTimeout(async function () {
                 Log.debug("Marking as read:", msgHdr);
                 const id = await browser.conversations.getMessageIdForUri(
                   msgHdrGetUri(msgHdr)

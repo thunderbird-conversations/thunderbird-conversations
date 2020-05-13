@@ -84,7 +84,7 @@ class _BrowserSim {
       return this._asyncBrowser;
     }
     if (!this._context) {
-      await new Promise(resolve => {
+      await new Promise((resolve) => {
         this._waitingForContext = resolve;
       });
     }

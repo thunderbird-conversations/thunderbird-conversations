@@ -19,7 +19,7 @@ var EXPORTED_SYMBOLS = ["getInitials", "freshColor"];
  */
 function getInitials(name) {
   name = name.trim().split("@")[0];
-  let words = name.split(/[ .\-_]/).filter(function(word) {
+  let words = name.split(/[ .\-_]/).filter(function (word) {
     return word;
   });
   let initials = "??";

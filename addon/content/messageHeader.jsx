@@ -132,7 +132,7 @@ class ContactLabel extends React.PureComponent {
         className={this.props.className}
         onMouseOver={this.onMouseOver}
         onMouseOut={this.onMouseOut}
-        ref={s => (this.span = s)}
+        ref={(s) => (this.span = s)}
       >
         <Fade trigger={this.state.hover}>
           <ContactDetail
@@ -288,7 +288,7 @@ class MessageHeader extends React.PureComponent {
           {!this.props.expanded && (
             <span className="snippet">
               <MessageTags
-                onTagsChange={tags => {
+                onTagsChange={(tags) => {
                   this.props.dispatch(
                     messageActions.setTags({
                       id: this.props.id,

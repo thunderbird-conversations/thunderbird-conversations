@@ -1,6 +1,6 @@
 /* eslint-env node */
 
-module.exports = function(api) {
+module.exports = function (api) {
   const presets = [
     [
       "@babel/preset-env",

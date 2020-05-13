@@ -31,11 +31,11 @@ XPCOMUtils.defineLazyModuleGetters(this, {
 // It's not really nice to write into someone elses object but this is what the
 // Services object is for.  We prefix with the "m" to ensure we stay out of their
 // namespace.
-XPCOMUtils.defineLazyGetter(Services, "mMessenger", function() {
+XPCOMUtils.defineLazyGetter(Services, "mMessenger", function () {
   return Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
 });
 
-XPCOMUtils.defineLazyGetter(this, "browser", function() {
+XPCOMUtils.defineLazyGetter(this, "browser", function () {
   return BrowserSim.getBrowser();
 });
 
@@ -49,7 +49,7 @@ XPCOMUtils.defineLazyGetter(this, "MimeMessage", () => {
   return tmp.MimeMessage;
 });
 
-XPCOMUtils.defineLazyGetter(this, "gMessenger", function() {
+XPCOMUtils.defineLazyGetter(this, "gMessenger", function () {
   return Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
 });
 
@@ -135,7 +135,7 @@ class _MessageUtils {
 
   downloadAllAttachments(win, msgUri, attachments) {
     win.HandleMultipleAttachments(
-      attachments.map(att => this._getAttachmentInfo(win, msgUri, att)),
+      attachments.map((att) => this._getAttachmentInfo(win, msgUri, att)),
       "save"
     );
   }
@@ -221,7 +221,7 @@ class _MessageUtils {
 
   getMsgHdrDetails(win, msgUri) {
     const msgHdr = msgUriToMsgHdr(msgUri);
-    msgHdrGetHeaders(msgHdr, headers => {
+    msgHdrGetHeaders(msgHdr, (headers) => {
       try {
         let extraLines = [
           {
@@ -337,7 +337,7 @@ class Message {
       oldInfos = {};
     }
     let infos = this.bugzillaInfos;
-    let makeArrow = function(oldValue, newValue) {
+    let makeArrow = function (oldValue, newValue) {
       if (oldValue) {
         return oldValue + " \u21d2 " + newValue;
       }
@@ -359,7 +359,7 @@ class Message {
         if ((!aPrevMsg || k in oldInfos) && oldInfos[k] != infos[k]) {
           let key = k
             .split("-")
-            .map(x => x.charAt(0).toUpperCase() + x.slice(1))
+            .map((x) => x.charAt(0).toUpperCase() + x.slice(1))
             .join(" ");
           items.push(key + ": " + makeArrow(oldInfos[k], infos[k]));
         }
@@ -380,7 +380,7 @@ class Message {
   }
 
   async getContactsFrom(detail) {
-    let contacts = detail.map(x => [
+    let contacts = detail.map((x) => [
       this._conversation._contactManager.getContactFromNameAndEmail(
         x.name,
         x.email
@@ -477,9 +477,9 @@ class Message {
     data.shortFolderName = name;
 
     const userTags = await browser.messages.listTags();
-    data.tags = messageHeader.tags.map(tagKey => {
+    data.tags = messageHeader.tags.map((tagKey) => {
       // The fallback here shouldn't ever happen, but just in case...
-      const tagDetails = userTags.find(t => t.key == tagKey) || {
+      const tagDetails = userTags.find((t) => t.key == tagKey) || {
         color: "#FFFFFF",
         name: "unknown",
       };
@@ -766,7 +766,7 @@ class Message {
     // This function tries to clean up the email's body by removing hidden
     // blockquotes, removing signatures, etc. Note: sometimes there's a little
     // quoted text left over, need to investigate why...
-    let prepare = function(aNode) {
+    let prepare = function (aNode) {
       let node = aNode.cloneNode(true);
       for (let x of node.getElementsByClassName("moz-txt-sig")) {
         if (x) {
@@ -902,7 +902,7 @@ class MessageFromGloda extends Message {
     }
 
     if ("mailingLists" in this._glodaMsg) {
-      this.mailingLists = this._glodaMsg.mailingLists.map(x => x.value);
+      this.mailingLists = this._glodaMsg.mailingLists.map((x) => x.value);
     }
 
     this.isReplyListEnabled =
@@ -913,7 +913,7 @@ class MessageFromGloda extends Message {
         .concat(this._glodaMsg.to)
         .concat(this._glodaMsg.cc)
         .concat(this._glodaMsg.bcc)
-        .filter(function(x) {
+        .filter(function (x) {
           let r = !getIdentityForEmail(x.value) && !(x.value in seen);
           seen[x.value] = null;
           return r;
@@ -957,7 +957,7 @@ class MessageFromDbHdr extends Message {
               PluginHelpers.bugzilla({ mime: aMimeMsg, header: aMsgHdr }) || {};
 
             this._attachments = aMimeMsg.allUserAttachments.filter(
-              x => x.isRealAttachment
+              (x) => x.isRealAttachment
             );
             this.contentType =
               aMimeMsg.headers["content-type"] || "message/rfc822";
@@ -980,13 +980,13 @@ class MessageFromDbHdr extends Message {
                 .concat(parseMimeLine(aMimeMsg.get("to"), true))
                 .concat(parseMimeLine(aMimeMsg.get("cc"), true))
                 .concat(parseMimeLine(aMimeMsg.get("bcc"), true))
-                .filter(function(x) {
+                .filter(function (x) {
                   let r = !getIdentityForEmail(x.email) && !(x.email in seen);
                   seen[x.email] = null;
                   return r;
                 }).length > 1;
 
-            let findIsEncrypted = x =>
+            let findIsEncrypted = (x) =>
               x.isEncrypted ||
               (x.parts ? x.parts.some(findIsEncrypted) : false);
             this.isEncrypted = findIsEncrypted(aMimeMsg);
@@ -1066,7 +1066,7 @@ function dateAsInMessageList(aDate) {
  *   You can pass this to htmlToPlainText if you're running a plaintext editor
  */
 function quoteMsgHdr(aMsgHdr) {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     let chunks = [];
     const decoder = new TextDecoder();
     let listener = {
@@ -1184,7 +1184,7 @@ function msgHdrGetHeaders(aMsgHdr, k) {
     MsgHdrToMimeMessage(
       aMsgHdr,
       null,
-      function(aMsgHdr, aMimeMsg) {
+      function (aMsgHdr, aMimeMsg) {
         k(aMimeMsg);
       },
       true,
@@ -1199,7 +1199,7 @@ function msgHdrGetHeaders(aMsgHdr, k) {
     try {
       messageService.streamHeaders(
         uri,
-        createStreamListener(aRawString => {
+        createStreamListener((aRawString) => {
           let re = /\r?\n\s+/g;
           let str = aRawString.replace(re, " ");
           let lines = str.split(/\r?\n/);

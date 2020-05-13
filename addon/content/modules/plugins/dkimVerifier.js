@@ -16,17 +16,15 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   registerHook: "chrome://conversations/content/modules/hook.js",
 });
 
-XPCOMUtils.defineLazyGetter(this, "browser", function() {
+XPCOMUtils.defineLazyGetter(this, "browser", function () {
   return BrowserSim.getBrowser();
 });
 
 let hasDKIMVerifier = false;
 var AuthVerifier;
 try {
-  AuthVerifier = ChromeUtils.import(
-    "resource://dkim_verifier/AuthVerifier.jsm",
-    null
-  ).AuthVerifier;
+  AuthVerifier = ChromeUtils.import("resource://dkim_verifier/AuthVerifier.jsm")
+    .AuthVerifier;
   if (AuthVerifier.version.match(/^[0-9]+/)[0] === "1") {
     hasDKIMVerifier = true;
   }
@@ -35,7 +33,7 @@ try {
 if (hasDKIMVerifier) {
   let mailWindow = getMail3Pane();
   let onEndHeaders = mailWindow.DKIM_Verifier.Display.onEndHeaders;
-  mailWindow.DKIM_Verifier.Display.onEndHeaders = function() {
+  mailWindow.DKIM_Verifier.Display.onEndHeaders = function () {
     "use strict";
 
     // don't start a verification for the classic view if it is not shown
@@ -72,10 +70,10 @@ let dkimVerifierHook = {
     "use strict";
 
     AuthVerifier.verify(msgHdr).then(
-      result => {
+      (result) => {
         displayResult(result, msg);
       },
-      exception => {
+      (exception) => {
         console.error("Exception in dkimVerifierHook: " + exception);
       }
     );
