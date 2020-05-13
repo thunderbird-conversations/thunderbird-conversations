@@ -34,6 +34,6 @@ export function callWithDeps(amdItem, deps) {
   if (!("exports" in deps)) {
     deps = { ...deps, exports: {} };
   }
-  const ret = amdItem.moduleFactory(...amdItem.deps.map(dep => deps[dep]));
+  const ret = amdItem.moduleFactory(...amdItem.deps.map((dep) => deps[dep]));
   return ret != null ? ret : deps.exports;
 }

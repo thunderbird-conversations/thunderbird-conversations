@@ -23,21 +23,14 @@ function makeEditable(aIframe, aMakeEditable) {
 }
 
 function showQuickReply() {
-  $(this)
-    .parent()
-    .addClass("noPad");
+  $(this).parent().addClass("noPad");
   $(this).addClass("selected");
-  $(this)
-    .siblings()
-    .addClass("invisible");
-  $(this)
-    .closest(".messageFooter")
-    .find(".footerActions")
-    .hide();
+  $(this).siblings().addClass("invisible");
+  $(this).closest(".messageFooter").find(".footerActions").hide();
   if (isQuickCompose) {
     $(".replyHeader, .replyFooter").show();
   } else {
-    setTimeout(function() {
+    setTimeout(function () {
       $(".replyHeader, .replyFooter").slideDown();
     }, 500);
   }
@@ -46,7 +39,7 @@ function showQuickReply() {
   makeEditable(textarea.get(0), true);
   textarea.addClass("ease selected");
   let delay = isQuickCompose ? 0 : 900;
-  setTimeout(function() {
+  setTimeout(function () {
     textarea.removeClass("ease");
     scrollNodeIntoView(document.querySelector(".quickReply"));
   }, delay);
@@ -54,28 +47,25 @@ function showQuickReply() {
 
 function hideQuickReply() {
   $(".replyHeader, .replyFooter").slideUp();
-  setTimeout(function() {
+  setTimeout(function () {
     $("ul.inputs").removeClass("noPad");
     $("ul.inputs li").removeClass("selected");
     $("ul.inputs li").removeClass("invisible");
-    $(".quickReply")
-      .closest(".messageFooter")
-      .find(".footerActions")
-      .show();
+    $(".quickReply").closest(".messageFooter").find(".footerActions").show();
 
     var textarea = $(".textarea.selected");
     makeEditable(textarea.get(0), false);
     textarea.addClass("ease");
     textarea.removeClass("selected");
     textarea.removeAttr("style");
-    setTimeout(function() {
+    setTimeout(function () {
       textarea.removeClass("ease");
     }, 500);
   }, 500);
 }
 
 function registerQuickReplyEventListeners() {
-  $("ul.inputs li.expand").click(function(event) {
+  $("ul.inputs li.expand").click(function (event) {
     if ($(this).hasClass("selected")) {
       return;
     }
@@ -95,8 +85,8 @@ function registerQuickReplyEventListeners() {
   // Autoresize sorta-thingy.
   let textarea = document.querySelector(".textarea");
   let lineHeight = parseInt(window.getComputedStyle(textarea).lineHeight);
-  let getHeight = x => parseInt(window.getComputedStyle(x).height);
-  $(".quickReply .textarea").keypress(function(event) {
+  let getHeight = (x) => parseInt(window.getComputedStyle(x).height);
+  $(".quickReply .textarea").keypress(function (event) {
     if (event.which == KeyEvent.DOM_VK_RETURN) {
       let scrollHeight = textarea.contentDocument.body.scrollHeight;
       // Only grow if the contents of the reply don't fit into the viewport.
@@ -137,7 +127,7 @@ function registerQuickReplyDocumentCommands() {
   for (let iframe of document.querySelectorAll(".textarea")) {
     let w = iframe.contentWindow;
     let doc = iframe.contentDocument;
-    w.addEventListener("keypress", function(event) {
+    w.addEventListener("keypress", function (event) {
       if (isAccel(event) && event.which == "b".charCodeAt(0)) {
         doc.execCommand("bold");
       }

@@ -68,7 +68,7 @@ class MyComponent extends React.Component {
     messageParts = messageParts.parts[0].parts;
 
     messageParts = messageParts.filter(
-      p => p.contentType.indexOf("image/") == 0
+      (p) => p.contentType.indexOf("image/") == 0
     );
 
     await this.output(messageParts, id);
@@ -92,7 +92,7 @@ class MyComponent extends React.Component {
       );
     }
     this.setState({
-      images: attachments.map(attachment => {
+      images: attachments.map((attachment) => {
         return {
           index: i++,
           name: attachment.name,
@@ -108,7 +108,7 @@ class MyComponent extends React.Component {
   }
 
   render() {
-    return this.state.images.map(image => (
+    return this.state.images.map((image) => (
       <Photo
         index={image.index}
         key={image.index}

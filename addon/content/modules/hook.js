@@ -94,7 +94,7 @@ function registerHook(name, h) {
 }
 
 function removeHook(h) {
-  hooks = hooks.filter(x => x != h);
+  hooks = hooks.filter((x) => x != h);
 }
 
 function getHooks() {

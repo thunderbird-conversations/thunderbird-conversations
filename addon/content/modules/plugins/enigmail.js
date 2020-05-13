@@ -81,7 +81,7 @@ if (hasEnigmail) {
   });
 }
 
-XPCOMUtils.defineLazyGetter(this, "browser", function() {
+XPCOMUtils.defineLazyGetter(this, "browser", function () {
   return BrowserSim.getBrowser();
 });
 
@@ -92,7 +92,7 @@ let gMsgCompose = {
   compFields: {},
 };
 let gSMFields = {};
-let getCurrentIdentity = function() {
+let getCurrentIdentity = function () {
   return Enigmail.msg.identity;
 };
 let global = this;
@@ -129,7 +129,7 @@ if (hasEnigmail) {
   let iframe = w.document.createElement("iframe");
   iframe.addEventListener(
     "load",
-    function() {
+    function () {
       iframe.remove();
     },
     true
@@ -171,7 +171,7 @@ function overrideUpdateSecurity(messagepane, w) {
   // Called after decryption or verification is completed.
   // Security status of a message is updated and shown at the status bar
   // and the header box.
-  headerSink.updateSecurityStatus = function(
+  headerSink.updateSecurityStatus = function (
     unusedUriSpec,
     exitCode,
     statusFlags,
@@ -222,7 +222,7 @@ function overrideUpdateSecurity(messagepane, w) {
       }
     }
 
-    let updateHdrIcons = function() {
+    let updateHdrIcons = function () {
       w.Enigmail.hdrView.updateHdrIcons(
         exitCode,
         statusFlags,
@@ -242,7 +242,7 @@ function overrideUpdateSecurity(messagepane, w) {
   };
 
   let originalHandleSMimeMessage = headerSink.handleSMimeMessage;
-  headerSink.handleSMimeMessage = function(uri) {
+  headerSink.handleSMimeMessage = function (uri) {
     // Use original if the classic reader is used.
     if (messagepane.contentDocument.location.href !== "about:blank?") {
       originalHandleSMimeMessage.apply(this, arguments);
@@ -509,7 +509,7 @@ function tryEnigmail(aDocument, aMessage, aMsgWindow) {
       );
     }
     let w = topMail3Pane(aMessage);
-    showHdrIconsOnStreamed(aMessage, function() {
+    showHdrIconsOnStreamed(aMessage, function () {
       w.Enigmail.hdrView.updateHdrIcons(
         exitCode,
         statusFlagsObj.value,
@@ -612,7 +612,7 @@ function patchForShowSecurityInfo(aWindow) {
   for (let [i, x] of Object.entries(oldTreeController)) {
     treeController[i] = x;
   }
-  treeController.isCommandEnabled = function() {
+  treeController.isCommandEnabled = function () {
     if (w.gFolderDisplay.messageDisplay.visible) {
       if (w.gFolderDisplay.selectedCount == 0) {
         w.Enigmail.hdrView.statusBarHide();
@@ -702,7 +702,7 @@ let enigmailHook = {
     let w = topMail3Pane(msg);
 
     // Current message uri should be blank to decrypt all PGP/MIME messages.
-    w.Enigmail.msg.getCurrentMsgUriSpec = function() {
+    w.Enigmail.msg.getCurrentMsgUriSpec = function () {
       return "";
     };
     verifyAttachments(msg);
@@ -767,7 +767,7 @@ let enigmailHook = {
       fromAddr = userIdValue;
     }
 
-    Enigmail.msg.setOwnKeyStatus = function() {};
+    Enigmail.msg.setOwnKeyStatus = function () {};
     Enigmail.msg.processAccountSpecificDefaultOptions();
     // Get flags from UI checkboxes.
     if (aWindow.document.getElementById("enigmail-reply-encrypt").checked) {
@@ -1016,7 +1016,7 @@ let enigmailHook = {
 
     // Set Enigmail.msg.sendMode from identity
     Enigmail.msg.identity = aComposeSession.params.identity;
-    Enigmail.msg.setOwnKeyStatus = function() {};
+    Enigmail.msg.setOwnKeyStatus = function () {};
     Enigmail.msg.processAccountSpecificDefaultOptions();
 
     // Set sendMode from messages
@@ -1104,14 +1104,14 @@ let enigmailHook = {
     // Add listeners to set final mode
     if (!aMessage._conversation._enigmailReplyEventListener) {
       aMessage._conversation._enigmailReplyEventListener = true;
-      replyEncrypt.addEventListener("click", function() {
+      replyEncrypt.addEventListener("click", function () {
         if (this.checked) {
           Enigmail.msg.encryptForced = EnigmailConstants.ENIG_ALWAYS; // force to encrypt
         } else {
           Enigmail.msg.encryptForced = EnigmailConstants.ENIG_NEVER; // force not to encrypt
         }
       });
-      replySign.addEventListener("click", function() {
+      replySign.addEventListener("click", function () {
         if (this.checked) {
           Enigmail.msg.signingNoLongerDependsOnEnc();
           Enigmail.msg.signForced = EnigmailConstants.ENIG_ALWAYS; // force to sign
@@ -1120,7 +1120,7 @@ let enigmailHook = {
           Enigmail.msg.signForced = EnigmailConstants.ENIG_NEVER; // force not to sign
         }
       });
-      replyPgpMime.addEventListener("click", function() {
+      replyPgpMime.addEventListener("click", function () {
         if (this.checked) {
           Enigmail.msg.pgpmimeForced = EnigmailConstants.ENIG_ALWAYS; // force to PGP/Mime
         } else {
@@ -1134,8 +1134,8 @@ let enigmailHook = {
     }
 
     // Replace inline PGP body to decrypted body.
-    let waitLoadingBody = function(complete) {
-      window.setTimeout(function() {
+    let waitLoadingBody = function (complete) {
+      window.setTimeout(function () {
         if (
           aEditor.node.contentDocument.querySelector("blockquote").length === 0
         ) {
@@ -1145,7 +1145,7 @@ let enigmailHook = {
         }
       }, 200);
     };
-    waitLoadingBody(function() {
+    waitLoadingBody(function () {
       // eslint-disable-next-line no-unsanitized/property
       aEditor.node.contentDocument.querySelector(
         "blockquote"
@@ -1236,7 +1236,7 @@ function simpleWrap(txt, width) {
 
   let lines = txt.split(/\r?\n/);
 
-  lines.forEach(function(line, i) {
+  lines.forEach(function (line, i) {
     if (line.length > width && line[0] != ">") {
       lines[i] = splitLongLine([], line);
     }

@@ -39,7 +39,7 @@ class Background {
 
 class KeyHandler {
   init() {
-    browser.commands.onCommand.addListener(command => {
+    browser.commands.onCommand.addListener((command) => {
       if (command == "quick_compose") {
         console.warn("Quick Compose is currently disabled");
         // The title/description for this pref is really confusing, we should
@@ -64,7 +64,7 @@ class KeyHandler {
 let background = new Background();
 background.init().catch(console.error);
 
-browser.runtime.onInstalled.addListener(details => {
+browser.runtime.onInstalled.addListener((details) => {
   if (details.reason == "install") {
     browser.tabs.create({
       url: "assistant/assistant.html",

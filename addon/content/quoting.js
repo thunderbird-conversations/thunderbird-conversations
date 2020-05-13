@@ -119,7 +119,7 @@ class _Quoting {
    * Fails 9 times out of 10. */
   convertForwardedToBlockquote(aDoc) {
     const re = /^\s*(-{5,15})(?:\s*)(?:[^ \f\n\r\t\v\u00A0\u2028\u2029-]+\s+)*[^ \f\n\r\t\v\u00A0\u2028\u2029-]+(\s*)\1\s*/gm;
-    const walk = aNode => {
+    const walk = (aNode) => {
       for (const child of aNode.childNodes) {
         const txt = child.textContent;
         const m = txt.match(re);
@@ -167,17 +167,17 @@ class _Quoting {
   fusionBlockquotes(aDoc) {
     let blockquotes = new Set(aDoc.getElementsByTagName("blockquote"));
     for (let blockquote of blockquotes) {
-      let isWhitespace = function(n) {
+      let isWhitespace = function (n) {
         return (
           n &&
           ((n.tagName && n.tagName.toLowerCase() == "br") ||
             (n.nodeType == n.TEXT_NODE && n.textContent.match(/^\s*$/)))
         );
       };
-      let isBlockquote = function(b) {
+      let isBlockquote = function (b) {
         return b && b.tagName && b.tagName.toLowerCase() == "blockquote";
       };
-      let blockquoteFollows = function(n) {
+      let blockquoteFollows = function (n) {
         return (
           n &&
           (isBlockquote(n) ||

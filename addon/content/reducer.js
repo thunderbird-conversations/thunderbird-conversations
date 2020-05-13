@@ -189,7 +189,7 @@ async function setupConversationInTab(params, isInTab) {
       browserFrame.setAttribute("context", "mailContext");
     }
 
-    freshConversation.outputInto(window, async function(aConversation) {
+    freshConversation.outputInto(window, async function (aConversation) {
       // This is a stripped-down version of what's in monkeypatch.js,
       //  make sure the two are in sync!
       Conversations.currentConversation = aConversation;
@@ -221,7 +221,7 @@ async function setupConversationInTab(params, isInTab) {
             "mailnews.mark_message_read.delay.interval"
           );
         }
-        setTimeout(function() {
+        setTimeout(function () {
           for (const id of msgIds) {
             browser.messages.update(id, { read: true }).catch(console.error);
           }
@@ -233,7 +233,7 @@ async function setupConversationInTab(params, isInTab) {
 
 const messageActions = {
   waitForStartup() {
-    return async dispatch => {
+    return async (dispatch) => {
       const params = new URL(document.location).searchParams;
 
       const isInTab = params.has("urls");
@@ -365,7 +365,7 @@ const messageActions = {
     return async () => {
       browser.messages
         .update(id, {
-          tags: tags.map(t => t.id),
+          tags: tags.map((t) => t.id),
         })
         .catch(console.error);
     };
@@ -374,11 +374,11 @@ const messageActions = {
     return async () => {
       browser.messages
         .listTags()
-        .then(allTags => {
+        .then((allTags) => {
           // browser.messages.update works via arrays of tag keys only,
           // so strip away all non-key information
-          allTags = allTags.map(t => t.key);
-          tags = tags.map(t => t.key);
+          allTags = allTags.map((t) => t.key);
+          tags = tags.map((t) => t.key);
           const toggledTag = allTags[index];
 
           // Toggling a tag that is out of range does nothing.
@@ -386,7 +386,7 @@ const messageActions = {
             return null;
           }
           if (tags.includes(toggledTag)) {
-            tags = tags.filter(t => t !== toggledTag);
+            tags = tags.filter((t) => t !== toggledTag);
           } else {
             tags.push(toggledTag);
           }
@@ -435,12 +435,12 @@ const messageActions = {
       const state = getState();
       let msgs;
       if (state.summary.isInTab || Prefs.operate_on_conversations) {
-        msgs = state.messages.msgData.map(msg => msg.id);
+        msgs = state.messages.msgData.map((msg) => msg.id);
       } else {
         msgs = await browser.convMsgWindow.selectedMessages(
           topMail3Pane(window).conversationWindowId
         );
-        msgs = msgs.map(m => m.id);
+        msgs = msgs.map((m) => m.id);
       }
       browser.messages.archive(msgs).catch(console.error);
     };
@@ -450,12 +450,12 @@ const messageActions = {
       const state = getState();
       let msgs;
       if (state.summary.isInTab || Prefs.operate_on_conversations) {
-        msgs = state.messages.msgData.map(msg => msg.id);
+        msgs = state.messages.msgData.map((msg) => msg.id);
       } else {
         msgs = await browser.convMsgWindow.selectedMessages(
           topMail3Pane(window).conversationWindowId
         );
-        msgs = msgs.map(m => m.id);
+        msgs = msgs.map((m) => m.id);
       }
       browser.messages.delete(msgs).catch(console.error);
       if (state.summary.isInTab) {
@@ -502,7 +502,7 @@ const messageActions = {
       // First, save the draft, and once it's saved, then move on to opening the
       // conversation in a new tab...
       // onSave(() => {
-      const urls = state.msgData.map(x => x.msgUri);
+      const urls = state.msgData.map((x) => x.msgUri);
       BrowserSim.callBackgroundFunc("_window", "openConversation", [
         BrowserSim.getWindowId(window),
         urls,
@@ -537,7 +537,7 @@ function messages(state = initialMessages, action) {
       };
     }
     case "MSG_EXPAND": {
-      return modifyOnlyMsg(state, action.msgUri, msg => {
+      return modifyOnlyMsg(state, action.msgUri, (msg) => {
         const newMsg = { ...msg };
         newMsg.expanded = action.expand;
         return newMsg;
@@ -554,12 +554,12 @@ function messages(state = initialMessages, action) {
       return newState;
     }
     case "MSG_UPDATE_DATA": {
-      return modifyOnlyMsg(state, action.msgData.msgUri, msg => {
+      return modifyOnlyMsg(state, action.msgData.msgUri, (msg) => {
         return { ...msg, ...action.msgData };
       });
     }
     case "MSG_ADD_SPECIAL_TAG": {
-      return modifyOnlyMsg(state, action.uri, msg => {
+      return modifyOnlyMsg(state, action.uri, (msg) => {
         let newSpecialTags;
         if (!("specialTags" in msg)) {
           newSpecialTags = [action.tagDetails];
@@ -570,12 +570,12 @@ function messages(state = initialMessages, action) {
       });
     }
     case "MSG_REMOVE_SPECIAL_TAG": {
-      return modifyOnlyMsg(state, action.uri, msg => {
+      return modifyOnlyMsg(state, action.uri, (msg) => {
         const newSpecialTags = [...msg.specialTags];
         return {
           ...msg,
           specialTags: newSpecialTags.filter(
-            t => t.name != action.tagDetails.name
+            (t) => t.name != action.tagDetails.name
           ),
         };
       });
@@ -588,7 +588,7 @@ function messages(state = initialMessages, action) {
       if (!action.isJunk) {
         // TODO: We should possibly wait until we get the notification before
         // clearing the state here.
-        return modifyOnlyMsg(state, action.msgUri, msg => {
+        return modifyOnlyMsg(state, action.msgUri, (msg) => {
           const newMsg = { ...msg };
           newMsg.isJunk = action.isJunk;
           return newMsg;
@@ -598,7 +598,7 @@ function messages(state = initialMessages, action) {
     }
     case "MSG_IGNORE_PHISHING": {
       MessageUtils.ignorePhishing(action.msgUri);
-      return modifyOnlyMsg(state, action.msgUri, msg => {
+      return modifyOnlyMsg(state, action.msgUri, (msg) => {
         const newMsg = { ...msg };
         newMsg.isPhishing = false;
         return newMsg;
@@ -656,11 +656,11 @@ function messages(state = initialMessages, action) {
       return newState;
     }
     case "MSG_SHOW_NOTIFICATION": {
-      return modifyOnlyMsg(state, action.msgData.msgUri, msg => {
+      return modifyOnlyMsg(state, action.msgData.msgUri, (msg) => {
         const newMsg = { ...msg };
         if ("extraNotifications" in msg) {
           let i = msg.extraNotifications.findIndex(
-            n => n.type == action.msgData.notification.type
+            (n) => n.type == action.msgData.notification.type
           );
           if (i != -1) {
             newMsg.extraNotifications = [...msg.extraNotifications];

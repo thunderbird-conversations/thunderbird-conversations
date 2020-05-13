@@ -43,6 +43,7 @@ module.exports = {
     },
   ],
   plugins: ["mozilla", "html", "json", "react"],
+  root: true,
   rules: {
     // We want to check the global scope everywhere.
     "no-unused-vars": [

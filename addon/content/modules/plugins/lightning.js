@@ -34,7 +34,7 @@ function imipOptions(msgWindow, msg, itipItem, rc, actionFunc, foundItems) {
 
   // Set the right globals so that actionFunc works properly.
   w.ltnImipBar.itipItem = itipItem;
-  w.ltnImipBar.actionFunc = function(listener, actionMethod) {
+  w.ltnImipBar.actionFunc = function (listener, actionMethod) {
     // Short-circuit the listeners so that we can add our own routines for
     // adding the buttons, etc.
     let newListener = {
@@ -77,8 +77,8 @@ function imipOptions(msgWindow, msg, itipItem, rc, actionFunc, foundItems) {
 
   const buttons = [];
 
-  let addButton = function(c) {
-    if (buttons.find(b => b.id == c)) {
+  let addButton = function (c) {
+    if (buttons.find((b) => b.id == c)) {
       return;
     }
     let originalButtonElement = w.document.getElementById(c);

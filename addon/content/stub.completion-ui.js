@@ -118,7 +118,7 @@ ContactIdentityCompleter.prototype = {
       val.NOUN_ID == Gloda.NOUN_IDENTITY ? val : val.identities[0]
     );
 
-    let rows = matches.map(match =>
+    let rows = matches.map((match) =>
       asToken(
         match.pictureURL(),
         match.contact.name != match.value ? match.contact.name : null,
@@ -169,13 +169,13 @@ ContactIdentityCompleter.prototype = {
         Gloda.NOUN_IDENTITY
       ];
 
-      let contactNames = this.contactCollection.items.map(function(c) {
+      let contactNames = this.contactCollection.items.map(function (c) {
         return c.name.replace(" ", "").toLowerCase() || "x";
       });
       // if we had no contacts, we will have no identity collection!
       let identityMails;
       if (this.identityCollection) {
-        identityMails = this.identityCollection.items.map(function(i) {
+        identityMails = this.identityCollection.items.map(function (i) {
           return i.value.toLowerCase();
         });
       }
@@ -233,7 +233,7 @@ ContactIdentityCompleter.prototype = {
 
       // sort in order of descending popularity
       possibleDudes.sort(this._popularitySorter);
-      let rows = possibleDudes.map(function(dude) {
+      let rows = possibleDudes.map(function (dude) {
         return asToken(
           dude.pictureURL(),
           dude.contact.name != dude.value ? dude.contact.name : null,
@@ -288,7 +288,7 @@ let autoCompleteClasses = {
 
 function setupAutocomplete(to, cc, bcc) {
   // This function assumes aInput is #something
-  let fill = function(aInput, aList, aData) {
+  let fill = function (aInput, aList, aData) {
     // Cleanup the mess left by tokenInput.
     let $parent = $(aInput).parent();
     $parent.empty();
@@ -308,7 +308,7 @@ function setupAutocomplete(to, cc, bcc) {
     let list = document.getElementsByClassName(aList.substring(1))[0];
     let marker = list.getElementsByClassName("add-more")[0];
     // Never, ever use jquery in a loop.
-    aData.forEach(function({ name, email }, i) {
+    aData.forEach(function ({ name, email }, i) {
       if (email) {
         let sep;
         if (aData.length <= 1) {

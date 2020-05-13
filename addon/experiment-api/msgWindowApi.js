@@ -82,7 +82,7 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
         async selectedMessages(windowId) {
           const win = getWindowFromId(windowManager, context, windowId);
 
-          return win.gFolderDisplay.selectedMessages.map(hdr =>
+          return win.gFolderDisplay.selectedMessages.map((hdr) =>
             messageManager.convert(hdr)
           );
         },
@@ -109,7 +109,7 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
                 // thing here.
                 let oldMsgOpenSelectedMessages = win.MsgOpenSelectedMessages;
                 let msgHdrs = win.gFolderDisplay.selectedMessages;
-                msgHdrs = msgHdrs.map(hdr => messageManager.convert(hdr));
+                msgHdrs = msgHdrs.map((hdr) => messageManager.convert(hdr));
                 win.MsgOpenSelectedMessages = async () => {
                   let result = await fire
                     .async(id, msgHdrs)
@@ -131,7 +131,7 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
             monkeyPatchAllWindows(windowManager, patchDoubleClick);
             Services.ww.registerNotification(windowObserver);
 
-            return function() {
+            return function () {
               Services.ww.unregisterNotification(windowObserver);
               monkeyPatchAllWindows(windowManager, (win, id) => {
                 win.ThreadPaneDoubleClick = win.oldThreadPaneDoubleClick;
@@ -147,7 +147,7 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
             // Same thing for middle-click
             const patchMiddleClick = (win, id) => {
               win.oldTreeOnMouseDown = win.TreeOnMouseDown;
-              win.TreeOnMouseDown = async event => {
+              win.TreeOnMouseDown = async (event) => {
                 if (
                   event.target.parentNode.id !== "threadTree" ||
                   event.button != 1
@@ -164,7 +164,7 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
                 );
 
                 let msgHdrs = win.gFolderDisplay.selectedMessages;
-                msgHdrs = msgHdrs.map(hdr => messageManager.convert(hdr));
+                msgHdrs = msgHdrs.map((hdr) => messageManager.convert(hdr));
                 let result = await fire.async(id, msgHdrs).catch(console.error);
                 if (result && result.cancel) {
                   return;
@@ -180,7 +180,7 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
             monkeyPatchAllWindows(windowManager, patchMiddleClick);
             Services.ww.registerNotification(windowObserver);
 
-            return function() {
+            return function () {
               Services.ww.unregisterNotification(windowObserver);
               monkeyPatchAllWindows(windowManager, (win, id) => {
                 win.TreeOnMouseDown = win.oldTreeOnMouseDown;
@@ -200,7 +200,7 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
             monkeyPatchAllWindows(windowManager, specialPatches);
             Services.ww.registerNotification(windowObserver);
 
-            return function() {
+            return function () {
               Services.ww.unregisterNotification(windowObserver);
               monkeyPatchAllWindows(windowManager, (win, id) => {
                 for (const undo of win.conversationUndoFuncs) {
@@ -222,7 +222,7 @@ function getWindowFromId(windowManager, context, id) {
 }
 
 function waitForWindow(win) {
-  return new Promise(resolve => {
+  return new Promise((resolve) => {
     if (win.document.readyState == "complete") {
       resolve();
     } else {
@@ -253,7 +253,7 @@ const specialPatches = (win, id) => {
 
   // Because we're not even fetching the conversation when the message pane is
   //  hidden, we need to trigger it manually when it's un-hidden.
-  let unhideListener = function() {
+  let unhideListener = function () {
     win.summarizeThread(window.gFolderDisplay.selectedMessages);
   };
   win.addEventListener("messagepane-unhide", unhideListener, true);
@@ -266,7 +266,7 @@ const specialPatches = (win, id) => {
     aSelectedMessages,
     aListener
   ) {
-    win.gSummaryFrameManager.loadAndCallback(kMultiMessageUrl, function() {
+    win.gSummaryFrameManager.loadAndCallback(kMultiMessageUrl, function () {
       oldSummarizeMultipleSelection(aSelectedMessages, aListener);
     });
   };
@@ -280,7 +280,7 @@ const specialPatches = (win, id) => {
   //  a new tab). So we must find the message in the conversation and notify
   //  it if needed.
   win.oldOnMsgHasRemoteContent = win.messageHeaderSink.onMsgHasRemoteContent;
-  win.messageHeaderSink.onMsgHasRemoteContent = function(
+  win.messageHeaderSink.onMsgHasRemoteContent = function (
     msgHdr,
     contentURI,
     canOverride
@@ -297,7 +297,7 @@ const specialPatches = (win, id) => {
       }
       msgListeners.set(
         messageId,
-        listeners.filter(x => x.get() != null)
+        listeners.filter((x) => x.get() != null)
       );
     }
     // Wicked case: we have the conversation and another tab with a message

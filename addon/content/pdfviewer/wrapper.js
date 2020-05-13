@@ -39,7 +39,7 @@ Wrapper.prototype = {
     );
     let chunks = [];
 
-    return new Promise(resolve => {
+    return new Promise((resolve) => {
       let listener = {
         onStartRequest(aRequest) {},
 
@@ -101,7 +101,7 @@ Wrapper.prototype = {
   },
 };
 
-window.addEventListener("load", function(event) {
+window.addEventListener("load", function (event) {
   const params = new URL(document.location.href).searchParams;
   document.title = params.get("name");
 

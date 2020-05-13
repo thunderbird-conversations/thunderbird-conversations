@@ -293,7 +293,7 @@ class MessageIFrame extends React.Component {
           div.setAttribute("class", "link " + linkClass);
           div.addEventListener(
             "click",
-            event => {
+            (event) => {
               let h = this.toggleBlock(event, showText, hideText);
               iframe.style.height = parseFloat(iframe.style.height) + h + "px";
             },
@@ -427,7 +427,7 @@ class MessageIFrame extends React.Component {
     // TODO: See comment in componentDidMount
     // <iframe className={`iframe${this.index}`} type="content" ref={f => this.iframe = f}/>
     return (
-      <div className={`iframewrap${this.index}`} ref={d => (this.div = d)} />
+      <div className={`iframewrap${this.index}`} ref={(d) => (this.div = d)} />
     );
   }
 }

@@ -232,7 +232,7 @@ class Message extends React.PureComponent {
     return (
       <li
         className="message"
-        ref={li => {
+        ref={(li) => {
           this.li = li;
           this.props.setRef(li);
         }}
@@ -312,7 +312,7 @@ class Message extends React.PureComponent {
           )}
           {this.props.message.expanded && (
             <MessageTags
-              onTagsChange={tags => {
+              onTagsChange={(tags) => {
                 this.props.dispatch(
                   messageActions.setTags({
                     id: this.props.message.id,

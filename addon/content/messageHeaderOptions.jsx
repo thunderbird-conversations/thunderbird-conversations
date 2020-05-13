@@ -180,15 +180,15 @@ class MessageHeaderOptions extends React.PureComponent {
     event.preventDefault();
     event.stopPropagation();
     if (!this.clickListener) {
-      this.clickListener = event => {
+      this.clickListener = (event) => {
         this.clearMenu();
       };
-      this.keyListener = event => {
+      this.keyListener = (event) => {
         if (event.keyCode == KeyEvent.DOM_VK_ESCAPE) {
           this.clearMenu();
         }
       };
-      this.onBlur = event => {
+      this.onBlur = (event) => {
         this.clearMenu();
       };
       document.addEventListener("click", this.clickListener);
@@ -196,7 +196,7 @@ class MessageHeaderOptions extends React.PureComponent {
       document.addEventListener("blur", this.onBlur);
     }
 
-    this.setState(prevState => ({ expanded: !prevState.expanded }));
+    this.setState((prevState) => ({ expanded: !prevState.expanded }));
   }
 
   clearMenu() {

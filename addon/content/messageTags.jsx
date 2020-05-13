@@ -13,7 +13,9 @@
  */
 function isColorLight(color) {
   const rgb = color.substr(1) || "FFFFFF";
-  const [, r, g, b] = rgb.match(/(..)(..)(..)/).map(x => parseInt(x, 16) / 255);
+  const [, r, g, b] = rgb
+    .match(/(..)(..)(..)/)
+    .map((x) => parseInt(x, 16) / 255);
   const l = 0.2126 * r + 0.7152 * g + 0.0722 * b;
   return l > 0.8;
 }
@@ -45,7 +47,7 @@ MessageTag.propTypes = {
 
 function MessageTags({ expanded, tags = [], onTagsChange }) {
   function removeTag(tagId) {
-    const filtered = tags.filter(tag => tag.key !== tagId);
+    const filtered = tags.filter((tag) => tag.key !== tagId);
     if (filtered.length !== tags.length) {
       // Only trigger a change if we actually removed a tag
       onTagsChange(filtered);
@@ -155,7 +157,7 @@ function SpecialMessageTags({
             icon={tag.icon}
             key={i}
             name={tag.name}
-            onClick={tag.details && (event => onTagClick(event, tag))}
+            onClick={tag.details && ((event) => onTagClick(event, tag))}
             title={tag.title}
             tooltip={tag.tooltip}
           />
