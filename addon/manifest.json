@@ -10,7 +10,7 @@
   "name": "__MSG_extensionName__",
   "default_locale": "en",
   "description": "__MSG_extensionDescription__",
-  "version": "3.1pre",
+  "version": "3.2pre",
   "homepage_url": "http://github.com/protz/thunderbird-conversations/wiki",
   "background": {
     "page": "background.html"
