@@ -16,9 +16,15 @@ XPCOMUtils.defineLazyModuleGetters(this, {
 let hasLightning = false;
 let cal;
 try {
+  // Thunderbird 68
   cal = ChromeUtils.import("resource://calendar/modules/calUtils.jsm").cal;
   hasLightning = true;
-} catch (e) {}
+} catch (e) {
+  try {
+    cal = ChromeUtils.import("resource:///modules/calendar/calUtils.jsm").cal;
+    hasLightning = true;
+  } catch (ex) {}
+}
 
 // This is a version of setupOptions suitable for Conversations
 // see http://mxr.mozilla.org/comm-central/source/calendar/lightning/content/imip-bar.js#186
