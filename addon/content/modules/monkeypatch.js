@@ -411,6 +411,9 @@ MonkeyPatch.prototype = {
             window.Conversations.currentConversation &&
               window.Conversations.currentConversation.counter
           );
+          if (window.Conversations.currentConversation) {
+            window.Conversations.currentConversation.cleanup();
+          }
           window.Conversations.currentConversation = freshConversation;
           freshConversation.outputInto(htmlpane.contentWindow, async function(
             aConversation

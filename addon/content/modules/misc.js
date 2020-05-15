@@ -147,7 +147,7 @@ function topMail3Pane(aObj) {
   }
 
   let moveOut = function(w) {
-    if (w.frameElement) {
+    if (w && w.frameElement) {
       return w.frameElement.ownerGlobal;
     }
 
