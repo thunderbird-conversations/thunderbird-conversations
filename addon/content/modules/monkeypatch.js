@@ -322,7 +322,10 @@ MonkeyPatch.prototype = {
           // Invalidate the previous selection
           previouslySelectedUris = [];
           // Invalidate any remaining conversation
-          window.Conversations.currentConversation = null;
+          if (window.Conversations.currentConversation) {
+            window.Conversations.currentConversation.cleanup();
+            window.Conversations.currentConversation = null;
+          }
           // Make the stub aware of the Conversations object it's currently
           //  representing.
           htmlpane.contentWindow.Conversations = window.Conversations;

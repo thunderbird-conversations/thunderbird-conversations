@@ -260,6 +260,21 @@ function Conversation(
 }
 
 Conversation.prototype = {
+  // Cleans up the existing conversation, dropping the query so that we get
+  // garbage collected.
+  cleanup() {
+    delete this._query;
+    delete this._onComplete;
+    delete this._htmlPane;
+  },
+
+  dispatch(action) {
+    // If we don't have a htmlPane, we've probably been cleaned up.
+    if (this._htmlPane) {
+      this._htmlPane.conversationDispatch(action);
+    }
+  },
+
   getMessage(uri) {
     const msg = this.messages.find(m => m.message._uri == uri);
     if (msg) {
@@ -281,7 +296,7 @@ Conversation.prototype = {
     // We can't turn dispatch back straight away, so give it a moment.
     Services.tm.dispatchToMainThread(async () => {
       const msgData = await msg.toReactData();
-      this._htmlPane.conversationDispatch({
+      this.dispatch({
         type: "MSG_UPDATE_DATA",
         msgData,
       });
@@ -298,7 +313,7 @@ Conversation.prototype = {
     // We can't turn dispatch back straight away, so give it a moment.
     Services.tm.dispatchToMainThread(async () => {
       const msgData = await msg.toReactData();
-      this._htmlPane.conversationDispatch({
+      this.dispatch({
         type: "MSG_UPDATE_DATA",
         msgData,
       });
@@ -453,7 +468,7 @@ Conversation.prototype = {
         (async () => {
           try {
             const msgData = await message.toReactData();
-            this._htmlPane.conversationDispatch({
+            this.dispatch({
               type: "MSG_UPDATE_DATA",
               msgData,
             });
@@ -633,7 +648,7 @@ Conversation.prototype = {
     // from within a dispatch, then we have to dispatch this off to the main
     // thread.
     Services.tm.dispatchToMainThread(() => {
-      this._htmlPane.conversationDispatch({
+      this.dispatch({
         type: "REMOVE_MESSAGE_FROM_CONVERSATION",
         msgUri: msg._uri,
       });
@@ -699,7 +714,7 @@ Conversation.prototype = {
     // messages if required, not scroll to them.
     this._tellMeWhoToExpand(newMsgs, reactMsgData, -1);
 
-    this._htmlPane.conversationDispatch({
+    this.dispatch({
       type: "APPEND_MESSAGES",
       msgData: reactMsgData,
     });
@@ -801,7 +816,7 @@ Conversation.prototype = {
       }
     }
 
-    this._htmlPane.conversationDispatch({
+    this.dispatch({
       type: "REPLACE_CONVERSATION_DETAILS",
       summary: {
         conversation: { getMessage: uri => this.getMessage(uri) },
