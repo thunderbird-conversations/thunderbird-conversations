@@ -257,8 +257,6 @@ function Conversation(
   //  corresponding to the intermediate query, and the initially selected
   //  messages...
   this._intermediateResults = [];
-  // For timing purposes
-  this.t0 = Date.now();
 }
 
 Conversation.prototype = {
@@ -498,16 +496,6 @@ Conversation.prototype = {
     // This is just for the initial building of the conversation.
     if (this.messages.length) {
       return;
-    }
-    // Report!
-    let delta = Date.now() - this.t0;
-    try {
-      let h = Services.telemetry.getHistogramById(
-        "THUNDERBIRD_CONVERSATIONS_TIME_TO_2ND_GLODA_QUERY_MS"
-      );
-      h.add(delta);
-    } catch (e) {
-      Log.debug("Unable to report telemetry", e);
     }
     // That's XPConnect bug 547088, so remove the setTimeout when it's fixed and
     //  bump the version requirements in install.rdf.template (might be fixed in
