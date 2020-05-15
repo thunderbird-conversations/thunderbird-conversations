@@ -75,6 +75,10 @@ class _BrowserSim {
   // Async version of getBrowser that we can use in stub.xhtml and other places
   // we can do async directly rather than going back across the webextension
   // APIs.
+  // Note: this allows use of the event APIs.
+  // Important note: Only the messages API has schema validation performed on it
+  // due to the override below. Any other API that has optional parameters may
+  // need those parameters setting to null.
   async getBrowserAsync() {
     if (this._asyncBrowser) {
       return this._asyncBrowser;
@@ -87,6 +91,7 @@ class _BrowserSim {
     let { extension } = this._context;
 
     const browser = {};
+    const self = this;
     for (const apiName of SUPPORTED_BASE_APIS) {
       if (apiName == "i18n") {
         let api = extension.apiManager.getAPI(
@@ -95,6 +100,17 @@ class _BrowserSim {
           "addon_parent"
         );
         browser[apiName] = this._implementation(extension, api, apiName);
+      } else if (apiName == "messages") {
+        // For messages, we don't currently need the events API. Use the
+        // proxy set-up so that we can gain the benefit of the field validation
+        // that going through the APIs provides (namely setting unused fields
+        // to null) as this saves us being explicit about unused fields.
+        const subApiHandler = {
+          get(obj, prop) {
+            return self._browserListener.bind(null, apiName, prop);
+          },
+        };
+        browser[apiName] = new Proxy({}, subApiHandler);
       } else {
         const asyncAPI = await extension.apiManager.asyncGetAPI(
           // contacts and addressBooks are actually contained within the same
