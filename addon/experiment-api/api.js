@@ -36,8 +36,10 @@ const SIMPLE_STORAGE_TABLE_NAME = "conversations";
 const conversationModules = [
   "chrome://conversations/content/modules/plugins/dkimVerifier.js",
   "chrome://conversations/content/modules/plugins/enigmail.js",
-  "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
-  "chrome://conversations/content/modules/plugins/helpers.js",
+  // Don't unload these until we can find a way of unloading the attribute
+  // providers. Unloading these will break gloda when someone updates.
+  // "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
+  // "chrome://conversations/content/modules/plugins/helpers.js",
   "chrome://conversations/content/modules/plugins/lightning.js",
   "chrome://conversations/content/modules/assistant.js",
   "chrome://conversations/content/modules/browserSim.js",
