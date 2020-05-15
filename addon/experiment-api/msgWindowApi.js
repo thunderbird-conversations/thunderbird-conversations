@@ -240,7 +240,6 @@ function waitForWindow(win) {
 function monkeyPatchAllWindows(windowManager, callback) {
   for (const win of Services.wm.getEnumerator("mail:3pane")) {
     waitForWindow(win).then(() => {
-      console.log(win.document.location);
       callback(win, windowManager.getWrapper(win).id);
     });
   }
