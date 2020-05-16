@@ -92,11 +92,12 @@ function fixedCharAt(str, idx) {
 }
 
 // This is temporary code to allow using using this as both
-// an es-module and as-is with global variables. This code
+// an node module and as-is with global variables. This code
 // should be removed when the transition to a WebExtension is
 // complete.
 
-if (typeof window !== "undefined" && window.esExports) {
-  window.esExports.getInitials = getInitials;
-  window.esExports.freshColor = freshColor;
+/* global exports */
+if (typeof exports !== "undefined") {
+  exports.getInitials = getInitials;
+  exports.freshColor = freshColor;
 }

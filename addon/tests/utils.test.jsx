@@ -4,7 +4,6 @@
 /* eslint-env jest */
 
 // Standard imports for all tests
-const { esmImport } = require("./utils");
 
 // From https://gist.github.com/olmokramer/82ccce673f86db7cda5e
 function isValidColor(color) {
@@ -20,7 +19,7 @@ function isValidColor(color) {
 }
 
 // Import the functions we want to test
-const { getInitials, freshColor } = esmImport("../content/es-modules/utils.js");
+const { getInitials, freshColor } = require("../content/utils.js");
 
 describe("Test utility functions", () => {
   test("getInitials extracts initials from names", async () => {

@@ -2,8 +2,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals PropTypes, React */
+/* globals PropTypes:true, React */
 /* exported SvgIcon */
+
+if (typeof exports !== "undefined") {
+  /* global require */
+  PropTypes = require("../tests/utils").PropTypes;
+}
 
 /**
  * A basic SVG icon rendered using the `xlinkHref` ability
@@ -28,10 +33,11 @@ function SvgIcon({ fullPath, hash }) {
 SvgIcon.propTypes = { fullPath: PropTypes.string, hash: PropTypes.string };
 
 // This is temporary code to allow using using this as both
-// an es-module and as-is with global variables. This code
+// an node module and as-is with global variables. This code
 // should be removed when the transition to a WebExtension is
 // complete.
 
-if (window.esExports) {
-  window.esExports.SvgIcon = SvgIcon;
+/* global exports */
+if (typeof exports !== "undefined") {
+  exports.SvgIcon = SvgIcon;
 }

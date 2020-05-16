@@ -4,22 +4,26 @@
 /* eslint-env jest */
 
 // Standard imports for all tests
-const { esmImport, enzyme, React } = require("./utils");
+// const { enzyme, React } = require("./utils");
+/* global module */
+const esmImport = require("esm")(module, { cjs: true, force: true });
+const { React } = esmImport("react");
+const { mount } = require("enzyme/mount");
 
 // Import the components we want to test
-const { SvgIcon } = esmImport("../content/es-modules/components/svg-icon.js");
+const { SvgIcon } = require("../content/svgIcon.js");
 
 describe("SvgIcon test", () => {
   test("renders given a full path", async () => {
     const PATH = "/full/path/to/icon";
-    const wrapper = enzyme.mount(<SvgIcon fullPath={PATH} />);
+    const wrapper = mount(<SvgIcon fullPath={PATH} />);
 
     expect(wrapper.find("use").html()).toMatch(PATH);
   });
 
   test("renders given a hash", async () => {
     const HASH = "abc";
-    const wrapper = enzyme.mount(<SvgIcon hash={HASH} />);
+    const wrapper = mount(<SvgIcon hash={HASH} />);
 
     expect(wrapper.find("use").html()).toMatch("#" + HASH);
   });
