@@ -35,7 +35,8 @@
             "conversations"
           ]
         ],
-        "script": "experiment-api/api.js"
+        "script": "experiment-api/api.js",
+        "events": ["startup"]
       }
     },
     "convContacts": {

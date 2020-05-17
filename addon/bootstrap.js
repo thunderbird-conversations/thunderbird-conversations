@@ -143,7 +143,7 @@ function shutdown(aData, aReason) {
   );
 
   // No need to do extra work here
-  Log.debug("shutdown, aReason=", aReason);
+  // Log.debug("shutdown, aReason=", aReason);
   if (aReason == Config.BOOTSTRAP_REASONS.APP_SHUTDOWN) {
     return;
   }

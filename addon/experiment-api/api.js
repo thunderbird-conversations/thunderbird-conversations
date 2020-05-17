@@ -25,6 +25,31 @@ const SIMPLE_STORAGE_TABLE_NAME = "conversations";
 // otherwise the prefs might not get loaded correctly.
 let Log = null;
 
+// To help updates to apply successfully, we need to properly unload the modules
+// that Conversations loads.
+const conversationModules = [
+  "chrome://conversations/content/modules/plugins/dkimVerifier.js",
+  "chrome://conversations/content/modules/plugins/enigmail.js",
+  // Don't unload these until we can find a way of unloading the attribute
+  // providers. Unloading these will break gloda when someone updates.
+  // "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
+  // "chrome://conversations/content/modules/plugins/helpers.js",
+  "chrome://conversations/content/modules/plugins/lightning.js",
+  "chrome://conversations/content/modules/stdlib/compose.js",
+  "chrome://conversations/content/modules/stdlib/misc.js",
+  "chrome://conversations/content/modules/stdlib/msgHdrUtils.js",
+  "chrome://conversations/content/modules/assistant.js",
+  "chrome://conversations/content/modules/config.js",
+  "chrome://conversations/content/modules/contact.js",
+  "chrome://conversations/content/modules/conversation.js",
+  "chrome://conversations/content/modules/hook.js",
+  "chrome://conversations/content/modules/log.js",
+  "chrome://conversations/content/modules/message.js",
+  "chrome://conversations/content/modules/misc.js",
+  "chrome://conversations/content/modules/monkeypatch.js",
+  "chrome://conversations/content/modules/prefs.js",
+];
+
 function StreamListener(resolve, reject) {
   return {
     _data: "",
@@ -83,6 +108,20 @@ function prefType(name) {
 
 /* exported conversations */
 var conversations = class extends ExtensionCommon.ExtensionAPI {
+  onStartup() {}
+
+  onShutdown(isAppShutdown) {
+    if (isAppShutdown) {
+      return;
+    }
+
+    ConversationUtils.setBrowserListener(null);
+
+    for (const module of conversationModules) {
+      Cu.unload(module);
+    }
+    Services.obs.notifyObservers(null, "startupcache-invalidate");
+  }
   getAPI(context) {
     return {
       conversations: {
