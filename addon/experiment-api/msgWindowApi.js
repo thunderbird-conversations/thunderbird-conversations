@@ -251,6 +251,10 @@ const specialPatches = (win, id) => {
   const htmlpane = win.document.getElementById("multimessage");
   const messagepane = win.document.getElementById("messagepane");
 
+  win.document
+    .getElementById("multimessage")
+    .setAttribute("context", "mailContext");
+
   // Because we're not even fetching the conversation when the message pane is
   //  hidden, we need to trigger it manually when it's un-hidden.
   let unhideListener = function () {
