@@ -5,6 +5,11 @@
 export class UIHandler {
   init() {
     browser.commands.onCommand.addListener(this.onKeyCommand.bind(this));
+    browser.convContacts.onColumnHandler.addListener(
+      () => {},
+      browser.i18n.getMessage("between.columnName"),
+      browser.i18n.getMessage("between.columnTooltip")
+    );
   }
 
   onKeyCommand(command) {

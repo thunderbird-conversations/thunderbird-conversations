@@ -181,10 +181,62 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
             JSON.stringify(getIdentities(!includeNntpIdentities))
           );
         },
+        onColumnHandler: new ExtensionCommon.EventManager({
+          context,
+          name: "convContacts.onColumnHandler",
+          register(fire, columnName, columnTooltip) {
+            let callback = createColumn.bind(null, columnName, columnTooltip);
+            const windowObserver = new WindowObserverContacts(
+              windowManager,
+              callback
+            );
+            monkeyPatchAllWindows(windowManager, callback);
+            Services.ww.registerNotification(windowObserver);
+
+            return () => {
+              Services.ww.unregisterNotification(windowObserver);
+              monkeyPatchAllWindows(windowManager, (win) => {
+                win.document.getElementById("betweenCol").remove();
+                win.document.getElementById("betweenColSplitter").remove();
+              });
+            };
+          },
+        }).api(),
       },
     };
   }
 };
+
+function createColumn(columnName, columnTooltip, win, id) {
+  let treecol = win.document.createXULElement("treecol");
+  [
+    ["id", "betweenCol"],
+    ["flex", "4"],
+    ["persist", "width hidden ordinal"],
+    ["label", columnName],
+    ["tooltiptext", columnTooltip],
+  ].forEach(function ([k, v]) {
+    treecol.setAttribute(k, v);
+  });
+  // Work around for Thunderbird not managing to restore the column
+  // state properly any more for mixed-WebExtensions.
+  // This is coupled with the `unload` handler below.
+  win.setTimeout(() => {
+    if (
+      !Services.prefs.getBoolPref("conversations.betweenColumnVisible", true)
+    ) {
+      treecol.setAttribute("hidden", "true");
+    } else {
+      treecol.removeAttribute("hidden");
+    }
+  }, 1000);
+  let parent3 = win.document.getElementById("threadCols");
+  parent3.appendChild(treecol);
+  let splitter = win.document.createXULElement("splitter");
+  splitter.id = "betweenColSplitter";
+  splitter.classList.add("tree-splitter");
+  parent3.appendChild(splitter);
+}
 
 /**
  * Open a composition window for the given email address.
@@ -208,4 +260,57 @@ function composeMessageTo(aEmail, aDisplayedFolder) {
   }
   params.composeFields = fields;
   MailServices.compose.OpenComposeWindowWithParams(null, params);
+}
+
+class WindowObserverContacts {
+  constructor(windowManager, callback) {
+    this._windowManager = windowManager;
+    this._callback = callback;
+  }
+
+  observe(aSubject, aTopic, aData) {
+    if (aTopic == "domwindowopened") {
+      if (aSubject && "QueryInterface" in aSubject) {
+        const win = aSubject.QueryInterface(Ci.nsIDOMWindow).window;
+        waitForWindow(win).then(() => {
+          if (
+            win.document.location !=
+              "chrome://messenger/content/messenger.xul" &&
+            win.document.location !=
+              "chrome://messenger/content/messenger.xhtml"
+          ) {
+            return;
+          }
+          this._callback(
+            aSubject.window,
+            this._windowManager.getWrapper(aSubject.window).id
+          );
+        });
+      }
+    }
+  }
+}
+
+function waitForWindow(win) {
+  return new Promise((resolve) => {
+    if (win.document.readyState == "complete") {
+      resolve();
+    } else {
+      win.addEventListener(
+        "load",
+        () => {
+          resolve();
+        },
+        { once: true }
+      );
+    }
+  });
+}
+
+function monkeyPatchAllWindows(windowManager, callback) {
+  for (const win of Services.wm.getEnumerator("mail:3pane")) {
+    waitForWindow(win).then(() => {
+      callback(win, windowManager.getWrapper(win).id);
+    });
+  }
 }

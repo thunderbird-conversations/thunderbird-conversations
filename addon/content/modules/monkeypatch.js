@@ -59,43 +59,9 @@ MonkeyPatch.prototype = {
   },
 
   applyOverlay: function _MonkeyPatch_applyOverlay(window) {
-    // Wow! I love restartless! Now I get to create all the items by hand!
-
-    // 1) Get a context menu in the multimessage
     window.document
       .getElementById("multimessage")
       .setAttribute("context", "mailContext");
-
-    // 2) Tree column
-    let treecol = window.document.createXULElement("treecol");
-    [
-      ["id", "betweenCol"],
-      ["flex", "4"],
-      ["persist", "width hidden ordinal"],
-      ["label", browser.i18n.getMessage("between.columnName")],
-      ["tooltiptext", browser.i18n.getMessage("between.columnTooltip")],
-    ].forEach(function ([k, v]) {
-      treecol.setAttribute(k, v);
-    });
-    // Work around for Thunderbird not managing to restore the column
-    // state properly any more for mixed-WebExtensions.
-    // This is coupled with the `unload` handler below.
-    window.setTimeout(() => {
-      if (
-        !Services.prefs.getBoolPref("conversations.betweenColumnVisible", true)
-      ) {
-        treecol.setAttribute("hidden", "true");
-      } else {
-        treecol.removeAttribute("hidden");
-      }
-    }, 1000);
-    let parent3 = window.document.getElementById("threadCols");
-    parent3.appendChild(treecol);
-    this.pushUndo(() => parent3.removeChild(treecol));
-    let splitter = window.document.createXULElement("splitter");
-    splitter.classList.add("tree-splitter");
-    parent3.appendChild(splitter);
-    this.pushUndo(() => parent3.removeChild(splitter));
   },
 
   async registerColumn() {
