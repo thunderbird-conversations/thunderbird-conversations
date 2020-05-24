@@ -71,6 +71,10 @@
             "type": "object",
             "name": "showMessagesInvolvingProperties",
             "properties": {
+              "title": {
+                "type": "string",
+                "description": "The title for the new tab"
+              }
               "email": {
                 "type": "string",
                 "description": "The contact to find involved messages via."

@@ -688,8 +688,8 @@ const summaryActions = {
     return async () => {
       await browser.convContacts
         .showMessagesInvolving({
-          name,
           email,
+          title: browser.i18n.getMessage("involvingTabTitle", [name]),
         })
         .catch(console.error);
     };
