@@ -58,12 +58,6 @@ MonkeyPatch.prototype = {
     }
   },
 
-  applyOverlay: function _MonkeyPatch_applyOverlay(window) {
-    window.document
-      .getElementById("multimessage")
-      .setAttribute("context", "mailContext");
-  },
-
   async registerColumn() {
     // This has to be the first time that the documentation on MDC
     //  1) exists and
@@ -243,8 +237,6 @@ MonkeyPatch.prototype = {
 
   async apply() {
     let window = this._window;
-    // First of all: "apply" the "overlay"
-    this.applyOverlay(window);
 
     let self = this;
     let htmlpane = window.document.getElementById("multimessage");
