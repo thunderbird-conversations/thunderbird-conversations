@@ -76,18 +76,22 @@ MonkeyPatch.prototype = {
       const email = emailAddress.toLowerCase();
       return ids.some((ident) => ident.identity.email.toLowerCase() == email);
     }
+    const betweenMeAndSomeone = browser.i18n.getMessage(
+      "message.meBetweenMeAndSomeone"
+    );
+    const betweenSomeoneAndMe = browser.i18n.getMessage(
+      "message.meBetweenSomeoneAndMe"
+    );
 
     let participants = function (msgHdr) {
       try {
-        // The array of people involved in this email.
-        let people = [];
+        // The set of people involved in this email.
+        let people = new Set();
         // Helper for formatting; depending on the locale, we may need a different
         // for me as in "to me" or as in "from me".
         let format = function (x, p) {
           if (hasIdentity(identities, x.email)) {
-            let display = p
-              ? browser.i18n.getMessage("message.meBetweenMeAndSomeone")
-              : browser.i18n.getMessage("message.meBetweenSomeoneAndMe");
+            let display = p ? betweenMeAndSomeone : betweenSomeoneAndMe;
             if (multipleIdentities) {
               display += " (" + x.email + ")";
             }
@@ -98,24 +102,17 @@ MonkeyPatch.prototype = {
         // Add all the people found in one of the msgHdr's properties.
         let addPeople = function (prop, pos) {
           let line = msgHdr[prop];
-          parseMimeLine(line, true).forEach(function (x) {
-            people.push(format(x, pos));
-          });
+          for (let x of parseMimeLine(line, true)) {
+            people.add(format(x, pos));
+          }
         };
         // We add everyone
         addPeople("author", true);
         addPeople("recipients", false);
         addPeople("ccList", false);
         addPeople("bccList", false);
-        // Then remove duplicates
-        let seenAlready = {};
-        people = people.filter(function (x) {
-          let r = !(x in seenAlready);
-          seenAlready[x] = true;
-          return r;
-        });
         // And turn this into a human-readable line.
-        if (people.length) {
+        if (people.size) {
           return joinWordList(people);
         }
       } catch (ex) {

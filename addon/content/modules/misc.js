@@ -70,15 +70,17 @@ function groupArray(aItems, aFn) {
 // Joins together names and format them as "John, Jane and Julie"
 function joinWordList(aElements, aInsertHtml) {
   let wrap = aInsertHtml ? (x) => "<span>" + x + "</span>" : (x) => x;
-  let l = aElements.length;
+  let l = aElements.size;
   if (l == 0) {
     return "";
-  } else if (l == 1) {
-    return aElements[0];
+  }
+  let elements = [...aElements.values()];
+  if (l == 1) {
+    return elements[0];
   }
 
-  let hd = aElements.slice(0, l - 1);
-  let tl = aElements[l - 1];
+  let hd = elements.slice(0, l - 1);
+  let tl = elements[l - 1];
   return (
     hd.join(wrap(browser.i18n.getMessage("header.commaSeparator"))) +
     wrap(browser.i18n.getMessage("header.andSeparator")) +
