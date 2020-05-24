@@ -14,7 +14,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   Conversation: "chrome://conversations/content/modules/conversation.js",
   Customizations: "chrome://conversations/content/modules/assistant.js",
-  getIdentityForEmail: "chrome://conversations/content/modules/misc.js",
   getMail3Pane: "chrome://conversations/content/modules/misc.js",
   joinWordList: "chrome://conversations/content/modules/misc.js",
   msgHdrGetUri: "chrome://conversations/content/modules/misc.js",
@@ -71,8 +70,12 @@ MonkeyPatch.prototype = {
     // It isn't quite right to do this ahead of time, but it saves us having
     // to get the number of identities twice for every cell. Users don't often
     // add or remove identities/accounts anyway.
-    const multipleIdentities =
-      (await browser.convContacts.getIdentities()).length > 1;
+    const identities = await browser.convContacts.getIdentities();
+    const multipleIdentities = identities.length > 1;
+    function hasIdentity(ids, emailAddress) {
+      const email = emailAddress.toLowerCase();
+      return ids.some((ident) => ident.identity.email.toLowerCase() == email);
+    }
 
     let participants = function (msgHdr) {
       try {
@@ -81,7 +84,7 @@ MonkeyPatch.prototype = {
         // Helper for formatting; depending on the locale, we may need a different
         // for me as in "to me" or as in "from me".
         let format = function (x, p) {
-          if (getIdentityForEmail(x.email)) {
+          if (hasIdentity(identities, x.email)) {
             let display = p
               ? browser.i18n.getMessage("message.meBetweenMeAndSomeone")
               : browser.i18n.getMessage("message.meBetweenSomeoneAndMe");

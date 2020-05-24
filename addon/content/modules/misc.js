@@ -10,7 +10,6 @@ var EXPORTED_SYMBOLS = [
   "topMail3Pane",
   "folderName",
   "escapeHtml",
-  "getIdentityForEmail",
   "getIdentities",
   "parseMimeLine",
   "htmlToPlainText",
@@ -250,18 +249,6 @@ function getIdentities(aSkipNntpIdentities = true) {
     identities[0].isDefault = true;
   }
   return identities;
-}
-
-/*
- * Searches a given email address in all identities and returns the corresponding identity.
- * @param {String} anEmailAddress Email address to be searched in the identities
- * @returns {{Boolean} isDefault, {{nsIMsgIdentity} identity} if found, otherwise undefined
- */
-function getIdentityForEmail(anEmailAddress) {
-  return getIdentities(false).find(
-    (ident) =>
-      ident.identity.email.toLowerCase() == anEmailAddress.toLowerCase()
-  );
 }
 
 /**

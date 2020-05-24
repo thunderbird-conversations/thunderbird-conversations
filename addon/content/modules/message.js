@@ -13,7 +13,7 @@ const { XPCOMUtils } = ChromeUtils.import(
 XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   escapeHtml: "chrome://conversations/content/modules/misc.js",
-  getIdentityForEmail: "chrome://conversations/content/modules/misc.js",
+  getIdentities: "chrome://conversations/content/modules/misc.js",
   GlodaUtils: "resource:///modules/gloda/utils.js",
   htmlToPlainText: "chrome://conversations/content/modules/misc.js",
   makeFriendlyDateAgo: "resource:///modules/templateUtils.js",
@@ -855,6 +855,11 @@ class Message {
   }
 }
 
+function hasIdentity(ids, emailAddress) {
+  const email = emailAddress.toLowerCase();
+  return ids.some((ident) => ident.identity.email.toLowerCase() == email);
+}
+
 class MessageFromGloda extends Message {
   constructor(conversation, glodaMsg, lateAttachments) {
     super(conversation, glodaMsg.folderMessage);
@@ -907,17 +912,19 @@ class MessageFromGloda extends Message {
 
     this.isReplyListEnabled =
       "mailingLists" in this._glodaMsg && !!this._glodaMsg.mailingLists.length;
-    let seen = {};
+    let seen = new Set();
+    const identities = getIdentities(false);
     this.isReplyAllEnabled =
-      [this._glodaMsg.from]
-        .concat(this._glodaMsg.to)
-        .concat(this._glodaMsg.cc)
-        .concat(this._glodaMsg.bcc)
-        .filter(function (x) {
-          let r = !getIdentityForEmail(x.value) && !(x.value in seen);
-          seen[x.value] = null;
-          return r;
-        }).length > 1;
+      [
+        this._glodaMsg.from,
+        ...this._glodaMsg.to,
+        ...this._glodaMsg.cc,
+        ...this._glodaMsg.bcc,
+      ].filter(function (x) {
+        let r = !seen.has(x.value) && !hasIdentity(identities, x.value);
+        seen.add(x.value);
+        return r;
+      }).length > 1;
   }
 }
 
@@ -974,17 +981,19 @@ class MessageFromDbHdr extends Message {
               aMimeMsg &&
               aMimeMsg.has("list-post") &&
               RE_LIST_POST.exec(aMimeMsg.get("list-post"));
-            let seen = {};
+            let seen = new Set();
+            const identities = getIdentities(false);
             this.isReplyAllEnabled =
-              parseMimeLine(aMimeMsg.get("from"), true)
-                .concat(parseMimeLine(aMimeMsg.get("to"), true))
-                .concat(parseMimeLine(aMimeMsg.get("cc"), true))
-                .concat(parseMimeLine(aMimeMsg.get("bcc"), true))
-                .filter(function (x) {
-                  let r = !getIdentityForEmail(x.email) && !(x.email in seen);
-                  seen[x.email] = null;
-                  return r;
-                }).length > 1;
+              [
+                ...parseMimeLine(aMimeMsg.get("from"), true),
+                ...parseMimeLine(aMimeMsg.get("to"), true),
+                ...parseMimeLine(aMimeMsg.get("cc"), true),
+                ...parseMimeLine(aMimeMsg.get("bcc"), true),
+              ].filter(function (x) {
+                let r = !seen.has(x.value) && !hasIdentity(identities, x.value);
+                seen.add(x.value);
+                return r;
+              }).length > 1;
 
             let findIsEncrypted = (x) =>
               x.isEncrypted ||
