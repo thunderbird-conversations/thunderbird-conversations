@@ -7,7 +7,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   ExtensionCommon: "resource://gre/modules/ExtensionCommon.jsm",
   Services: "resource://gre/modules/Services.jsm",
   Gloda: "resource:///modules/gloda/gloda.js",
-  BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   MailServices: "resource:///modules/MailServices.jsm",
   getIdentities: "chrome://conversations/content/modules/misc.js",
 });
@@ -145,11 +144,9 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
             options.windowId
           );
 
-          const { name, email } = options;
-
           const collection = await glodaQuery({
             kind: "email",
-            value: email,
+            value: options.email,
             query: "NOUN_IDENTITY",
           });
           if (!collection.items.length) {
@@ -161,11 +158,10 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
             involvesItems: collection.items,
           });
 
-          const browser = BrowserSim.getBrowser();
           let tabmail = window.document.getElementById("tabmail");
           tabmail.openTab("glodaList", {
             query,
-            title: browser.i18n.getMessage("involvingTabTitle", [name]),
+            title: options.title,
             background: false,
           });
         },
