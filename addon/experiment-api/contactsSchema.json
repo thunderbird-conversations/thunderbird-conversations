@@ -74,14 +74,10 @@
               "title": {
                 "type": "string",
                 "description": "The title for the new tab"
-              }
+              },
               "email": {
                 "type": "string",
                 "description": "The contact to find involved messages via."
-              },
-              "name": {
-                "type": "string",
-                "description": "Name of the contact (displays in tab title)."
               },
               "windowId": {
                 "type": "integer",
@@ -161,6 +157,37 @@
             "default": {}
           }
         ]
+      }
+    ],
+    "events": [
+      {
+        "name": "onColumnHandler",
+        "type": "function",
+        "description": "Temporary. Creates a custom column and handles updates to it.",
+        "parameters": [
+        ],
+        "extraParameters": [
+          {
+            "name": "columnName",
+            "type": "string",
+            "description": "The name of the column to add."
+          },
+          {
+            "name": "columnTooltip",
+            "type": "string",
+            "description": "The tooltip for the column to display when the user might click it for sort."
+          }
+        ],
+        "returns": {
+          "type": "object",
+          "properties": {
+            "tbd": {
+              "type": "boolean",
+              "optional": true,
+              "description": "Cancels the middle click, e.g. the add-on has handled it."
+            }
+          }
+        }
       }
     ]
   }
