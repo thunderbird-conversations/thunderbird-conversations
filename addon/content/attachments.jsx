@@ -5,6 +5,43 @@
 /* globals PropTypes, React, SvgIcon, attachmentActions */
 /* exported Attachments */
 
+const ICON_MAPPING = new Map([
+  ["application/msword", "x-office-document"],
+  ["application/vnd.ms-excel", "x-office-spreadsheet"],
+  ["application/vnd.ms-powerpoint", "x-office-presentation"],
+  ["application/rtf", "x-office-document"],
+  ["application/zip", "package-x-generic"],
+  ["application/bzip2", "package-x-generic"],
+  ["application/x-gzip", "package-x-generic"],
+  ["application/x-tar", "package-x-generic"],
+  ["application/x-compressed", "package-x-generic"],
+  // "message/": "email",
+  ["text/x-vcalendar", "x-office-calendar"],
+  ["text/x-vcard", "x-office-address-book"],
+  ["text/html", "text-html"],
+  ["application/pdf", "application-pdf"],
+  ["application/x-pdf", "application-pdf"],
+  ["application/x-bzpdf", "application-pdf"],
+  ["application/x-gzpdf", "application-pdf"],
+]);
+
+const FALLBACK_ICON_MAPPING = new Map([
+  // Fallbacks, at the end.
+  ["video/", "video-x-generic"],
+  ["audio/", "audio-x-generic"],
+  ["image/", "image-x-generic"],
+  ["text/", "text-x-generic"],
+]);
+
+const PDF_MIME_TYPES = [
+  "application/pdf",
+  "application/x-pdf",
+  "application/x-bzpdf",
+  "application/x-gzpdf",
+];
+
+const RE_MSGKEY = /number=(\d+)/;
+
 class Attachment extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -16,13 +53,25 @@ class Attachment extends React.PureComponent {
     this.detachAttachment = this.detachAttachment.bind(this);
   }
 
+  isImage(contentType) {
+    return contentType.startsWith("image/");
+  }
+
+  isViewable(contentType) {
+    return this.isImage(contentType) || contentType.startsWith("text/");
+  }
+
+  isPdf(contentType) {
+    return PDF_MIME_TYPES.includes(contentType);
+  }
+
   preview() {
     this.props.dispatch(
       attachmentActions.previewAttachment({
         name: this.props.name,
         url: this.props.url,
-        isPdf: this.props.isPdf,
-        maybeViewable: this.props.maybeViewable,
+        isPdf: this.isPdf(this.props.contentType),
+        maybeViewable: this.isViewable(this.props.contentType),
       })
     );
   }
@@ -115,11 +164,36 @@ class Attachment extends React.PureComponent {
     );
   }
 
+  iconForMimeType(mimeType) {
+    if (ICON_MAPPING.has(mimeType)) {
+      return ICON_MAPPING.get(mimeType) + ".svg";
+    }
+    let split = mimeType.split("/");
+    if (split.length && FALLBACK_ICON_MAPPING.has(split[0] + "/")) {
+      return FALLBACK_ICON_MAPPING.get(split[0] + "/") + ".svg";
+    }
+    return "gtk-file.png";
+  }
+
   render() {
-    const enablePreview = this.props.isPdf || this.props.maybeViewable;
+    const isPdf = this.isPdf(this.props.contentType);
+    const enablePreview = isPdf || this.isViewable(this.props.contentType);
     const imgTitle = enablePreview
       ? browser.i18n.getMessage("attachments.viewAttachment.tooltip")
       : "";
+
+    let thumb;
+    let imgClass;
+    if (this.isImage(this.props.contentType)) {
+      thumb = this.props.url.replace(
+        RE_MSGKEY,
+        "number=" + this.props.messageKey
+      );
+      imgClass = "resize-me";
+    } else {
+      thumb = "icons/" + this.iconForMimeType(this.props.contentType);
+      imgClass = "mime-icon";
+    }
     // TODO: Drag n drop
 
     // Note: contextmenu is only supported in Gecko, though React will complain
@@ -140,17 +214,13 @@ class Attachment extends React.PureComponent {
           onClick={this.preview}
           onDragStart={this.onDragStart}
         >
-          <img
-            className={this.props.imgClass}
-            src={this.props.thumb}
-            title={imgTitle}
-          />
+          <img className={imgClass} src={thumb} title={imgTitle} />
         </div>
         <div className="attachmentInfo align">
           <span className="filename">{this.props.name}</span>
           <span className="filesize">{this.props.formattedSize}</span>
           <div className="attachActions">
-            {this.props.isPdf && (
+            {isPdf && (
               <a
                 className="icon-link preview-attachment"
                 title={browser.i18n.getMessage("attachments.preview.tooltip")}
@@ -204,14 +274,11 @@ Attachment.propTypes = {
   dispatch: PropTypes.func.isRequired,
   contentType: PropTypes.string.isRequired,
   formattedSize: PropTypes.string.isRequired,
-  imgClass: PropTypes.string.isRequired,
   isExternal: PropTypes.bool.isRequired,
-  isPdf: PropTypes.bool.isRequired,
-  maybeViewable: PropTypes.bool.isRequired,
+  messageKey: PropTypes.number.isRequired,
   msgUri: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   size: PropTypes.number.isRequired,
-  thumb: PropTypes.string.isRequired,
   url: PropTypes.string.isRequired,
 };
 
@@ -247,6 +314,9 @@ class Attachments extends React.PureComponent {
   }
 
   render() {
+    const showGalleryLink = this.props.attachments.some((a) =>
+      a.contentType.startsWith("image/")
+    );
     return (
       <ul className="attachments">
         <div className="attachHeader">
@@ -258,7 +328,7 @@ class Attachments extends React.PureComponent {
           >
             <SvgIcon hash={"file_download"} />
           </a>
-          {this.props.gallery && (
+          {showGalleryLink && (
             <a
               onClick={this.showGalleryView}
               className="icon-link view-all"
@@ -274,14 +344,11 @@ class Attachments extends React.PureComponent {
               key={attachment.anchor}
               contentType={attachment.contentType}
               isExternal={attachment.isExternal}
-              isPdf={attachment.isPdf}
               formattedSize={attachment.formattedSize}
-              imgClass={attachment.imgClass}
+              messageKey={this.props.messageKey}
               msgUri={this.props.msgUri}
               name={attachment.name}
               size={attachment.size}
-              thumb={attachment.thumb}
-              maybeViewable={attachment.maybeViewable}
               url={attachment.url}
             />
           ))}
@@ -295,6 +362,6 @@ Attachments.propTypes = {
   dispatch: PropTypes.func.isRequired,
   attachments: PropTypes.array.isRequired,
   attachmentsPlural: PropTypes.string.isRequired,
+  messageKey: PropTypes.number.isRequired,
   msgUri: PropTypes.string.isRequired,
-  gallery: PropTypes.bool.isRequired,
 };

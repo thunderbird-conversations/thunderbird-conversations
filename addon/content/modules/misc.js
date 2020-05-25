@@ -6,7 +6,6 @@ var EXPORTED_SYMBOLS = [
   "setupLogging",
   "groupArray",
   "joinWordList",
-  "iconForMimeType",
   "topMail3Pane",
   "folderName",
   "escapeHtml",
@@ -86,50 +85,6 @@ function joinWordList(aElements, aInsertHtml) {
     wrap(browser.i18n.getMessage("header.andSeparator")) +
     tl
   );
-}
-
-let mapping = [
-  ["application/msword", "x-office-document"],
-  ["application/vnd.ms-excel", "x-office-spreadsheet"],
-  ["application/vnd.ms-powerpoint", "x-office-presentation"],
-  ["application/rtf", "x-office-document"],
-  ["application/zip", "package-x-generic"],
-  ["application/bzip2", "package-x-generic"],
-  ["application/x-gzip", "package-x-generic"],
-  ["application/x-tar", "package-x-generic"],
-  ["application/x-compressed", "package-x-generic"],
-  // "message/": "email",
-  ["text/x-vcalendar", "x-office-calendar"],
-  ["text/x-vcard", "x-office-address-book"],
-  ["text/html", "text-html"],
-  ["application/pdf", "application-pdf"],
-  ["application/x-pdf", "application-pdf"],
-  ["application/x-bzpdf", "application-pdf"],
-  ["application/x-gzpdf", "application-pdf"],
-];
-
-let fallbackMapping = [
-  // Fallbacks, at the end.
-  ["video/", "video-x-generic"],
-  ["audio/", "audio-x-generic"],
-  ["image/", "image-x-generic"],
-  ["text/", "text-x-generic"],
-];
-
-function iconForMimeType(aMimeType) {
-  let idx = mapping.findIndex(function ([k]) {
-    return aMimeType == k;
-  });
-  if (idx != -1) {
-    return mapping[idx][1] + ".svg";
-  }
-  idx = fallbackMapping.findIndex(function ([k]) {
-    return aMimeType.startsWith(k);
-  });
-  if (idx != -1) {
-    return fallbackMapping[idx][1] + ".svg";
-  }
-  return "gtk-file.png";
 }
 
 /**

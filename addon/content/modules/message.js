@@ -65,7 +65,7 @@ const { Prefs } = ChromeUtils.import(
   "chrome://conversations/content/modules/prefs.js",
   {}
 );
-const { folderName, iconForMimeType, topMail3Pane } = ChromeUtils.import(
+const { folderName, topMail3Pane } = ChromeUtils.import(
   "chrome://conversations/content/modules/misc.js",
   {}
 );
@@ -82,14 +82,7 @@ XPCOMUtils.defineLazyGetter(this, "Log", () => {
 // bugzilla snippets.
 const kSnippetLength = 700;
 
-const pdfMimeTypes = [
-  "application/pdf",
-  "application/x-pdf",
-  "application/x-bzpdf",
-  "application/x-gzpdf",
-];
 const RE_BZ_COMMENT = /^--- Comment #\d+ from .* \d{4}.*? ---([\s\S]*)/m;
-const RE_MSGKEY = /number=(\d+)/;
 const RE_LIST_POST = /<mailto:([^>]+)>/;
 
 // Add in the global message listener table a weak reference to the given
@@ -466,7 +459,7 @@ class Message {
     //   }
     // }
 
-    data = { ...data, ...this.toTmplDataForAttachments(data) };
+    data = { ...data, ...(await this.toTmplDataForAttachments(data)) };
 
     data.fullDate = Prefs.no_friendly_date
       ? ""
@@ -494,7 +487,7 @@ class Message {
   }
 
   // Generate Attachment objects
-  toTmplDataForAttachments() {
+  async toTmplDataForAttachments() {
     let l = this._attachments.length;
     let [makePlural] = PluralForm.makeGetter(
       browser.i18n.getMessage("pluralForm")
@@ -505,26 +498,15 @@ class Message {
         l,
         browser.i18n.getMessage("attachments.numAttachments")
       ).replace("#1", l),
-      gallery: false,
+      messageKey: this._msgHdr.messageKey,
     };
     for (let i = 0; i < l; i++) {
       const att = this._attachments[i];
-      // Special treatment for images
-      let isImage = att.contentType.indexOf("image/") === 0;
-      if (isImage) {
-        result.gallery = true;
-      }
-      let isPdf = pdfMimeTypes.includes(att.contentType);
-      let key = this._msgHdr.messageKey;
-      let url = att.url.replace(RE_MSGKEY, "number=" + key);
-      let [thumb, imgClass] = isImage
-        ? [url, "resize-me"]
-        : ["icons/" + iconForMimeType(att.contentType), "mime-icon"];
       // This is bug 630011, remove when fixed
       let formattedSize = browser.i18n.getMessage("attachments.sizeUnknown");
       // -1 means size unknown
       if (att.size != -1) {
-        formattedSize = Services.mMessenger.formatFileSize(att.size);
+        formattedSize = await browser.conversations.formatFileSize(att.size);
       }
 
       // We've got the right data, push it!
@@ -532,17 +514,10 @@ class Message {
         size: att.size,
         contentType: att.contentType,
         formattedSize,
-        thumb,
-        imgClass,
         isExternal: att.isExternal,
         name: att.name,
         url: att.url,
         anchor: "msg" + this.initialPosition + "att" + i,
-        /* Only advertise the preview for PDFs (images have the gallery view). */
-        isPdf,
-        maybeViewable:
-          att.contentType.indexOf("image/") === 0 ||
-          att.contentType.indexOf("text/") === 0,
       });
     }
     return result;

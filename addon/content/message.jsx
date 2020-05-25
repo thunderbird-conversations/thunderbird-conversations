@@ -344,8 +344,8 @@ class Message extends React.PureComponent {
                 dispatch={this.props.dispatch}
                 attachments={this.props.message.attachments}
                 attachmentsPlural={this.props.message.attachmentsPlural}
+                messageKey={this.props.message.messageKey}
                 msgUri={this.props.message.msgUri}
-                gallery={this.props.message.gallery}
               />
             )}
         </div>
