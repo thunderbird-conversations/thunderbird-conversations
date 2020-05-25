@@ -176,6 +176,26 @@
             "name": "columnTooltip",
             "type": "string",
             "description": "The tooltip for the column to display when the user might click it for sort."
+          },
+          {
+            "name": "betweenMeAndSomeone",
+            "type": "string",
+            "description": "Temp additional string whilst we get the API working"
+          },
+          {
+            "name": "betweenSomeoneAndMe",
+            "type": "string",
+            "description": "Temp additional string whilst we get the API working"
+          },
+          {
+            "name": "commaSeparator",
+            "type": "string",
+            "description": "Temp additional string whilst we get the API working"
+          },
+          {
+            "name": "andSeparator",
+            "type": "string",
+            "description": "Temp additional string whilst we get the API working"
           }
         ],
         "returns": {

@@ -15,9 +15,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   Conversation: "chrome://conversations/content/modules/conversation.js",
   Customizations: "chrome://conversations/content/modules/assistant.js",
   getMail3Pane: "chrome://conversations/content/modules/misc.js",
-  joinWordList: "chrome://conversations/content/modules/misc.js",
   msgHdrGetUri: "chrome://conversations/content/modules/misc.js",
-  parseMimeLine: "chrome://conversations/content/modules/misc.js",
   Prefs: "chrome://conversations/content/modules/prefs.js",
   setupLogging: "chrome://conversations/content/modules/misc.js",
   Services: "resource://gre/modules/Services.jsm",
@@ -55,136 +53,6 @@ MonkeyPatch.prototype = {
         console.error("Failed to undo some customization", ex);
       }
     }
-  },
-
-  async registerColumn() {
-    // This has to be the first time that the documentation on MDC
-    //  1) exists and
-    //  2) is actually relevant!
-    //
-    //            OMG !
-    //
-    // https://developer.mozilla.org/en/Extensions/Thunderbird/Creating_a_Custom_Column
-    let window = this._window;
-
-    // It isn't quite right to do this ahead of time, but it saves us having
-    // to get the number of identities twice for every cell. Users don't often
-    // add or remove identities/accounts anyway.
-    const identities = await browser.convContacts.getIdentities();
-    const multipleIdentities = identities.length > 1;
-    function hasIdentity(ids, emailAddress) {
-      const email = emailAddress.toLowerCase();
-      return ids.some((ident) => ident.identity.email.toLowerCase() == email);
-    }
-    const betweenMeAndSomeone = browser.i18n.getMessage(
-      "message.meBetweenMeAndSomeone"
-    );
-    const betweenSomeoneAndMe = browser.i18n.getMessage(
-      "message.meBetweenSomeoneAndMe"
-    );
-
-    let participants = function (msgHdr) {
-      try {
-        // The set of people involved in this email.
-        let people = new Set();
-        // Helper for formatting; depending on the locale, we may need a different
-        // for me as in "to me" or as in "from me".
-        let format = function (x, p) {
-          if (hasIdentity(identities, x.email)) {
-            let display = p ? betweenMeAndSomeone : betweenSomeoneAndMe;
-            if (multipleIdentities) {
-              display += " (" + x.email + ")";
-            }
-            return display;
-          }
-          return x.name || x.email;
-        };
-        // Add all the people found in one of the msgHdr's properties.
-        let addPeople = function (prop, pos) {
-          let line = msgHdr[prop];
-          for (let x of parseMimeLine(line, true)) {
-            people.add(format(x, pos));
-          }
-        };
-        // We add everyone
-        addPeople("author", true);
-        addPeople("recipients", false);
-        addPeople("ccList", false);
-        addPeople("bccList", false);
-        // And turn this into a human-readable line.
-        if (people.size) {
-          return joinWordList(people);
-        }
-      } catch (ex) {
-        console.error("Error in the special column", ex);
-      }
-      return "-";
-    };
-
-    let columnHandler = {
-      getCellText(row, col) {
-        let msgHdr = window.gDBView.getMsgHdrAt(row);
-        return participants(msgHdr);
-      },
-      getSortStringForRow(msgHdr) {
-        return participants(msgHdr);
-      },
-      isString() {
-        return true;
-      },
-      getCellProperties(row, col, props) {},
-      getRowProperties(row, props) {},
-      getImageSrc(row, col) {
-        return null;
-      },
-      getSortLongForRow(hdr) {
-        return 0;
-      },
-    };
-
-    // The main window is loaded when the monkey-patch is applied
-    Services.obs.addObserver(
-      {
-        observe(aMsgFolder, aTopic, aData) {
-          window.gDBView.addColumnHandler("betweenCol", columnHandler);
-        },
-      },
-      "MsgCreateDBView"
-    );
-    try {
-      window.gDBView.addColumnHandler("betweenCol", columnHandler);
-    } catch (e) {
-      // This is really weird, but rkent does it for junquilla, and this solves
-      //  the issue of enigmail breaking us... don't wanna know why it works,
-      //  but it works.
-      // After investigating, it turns out that without enigmail, we have the
-      //  following sequence of events:
-      // - jsm load
-      // - onload
-      // - msgcreatedbview
-      // With enigmail, this sequence is modified
-      // - jsm load
-      // - msgcreatedbview
-      // - onload
-      // So our solution kinda works, but registering the thing at jsm load-time
-      //  would work as well.
-    }
-    this.pushUndo(() => window.gDBView.removeColumnHandler("betweenCol"));
-
-    window.addEventListener(
-      "unload",
-      () => {
-        let col = window.document.getElementById("betweenCol");
-        if (col) {
-          let isHidden = col.getAttribute("hidden");
-          Services.prefs.setBoolPref(
-            "conversations.betweenColumnVisible",
-            isHidden != "true"
-          );
-        }
-      },
-      { once: true }
-    );
   },
 
   clearTimer() {
@@ -241,9 +109,6 @@ MonkeyPatch.prototype = {
     let self = this;
     let htmlpane = window.document.getElementById("multimessage");
     let oldSummarizeThread = window.summarizeThread;
-
-    // Register our new column type
-    await this.registerColumn();
 
     // Undo all our customizations at uninstall-time
     this.registerUndoCustomizations();

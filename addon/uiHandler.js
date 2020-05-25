@@ -8,7 +8,11 @@ export class UIHandler {
     browser.convContacts.onColumnHandler.addListener(
       () => {},
       browser.i18n.getMessage("between.columnName"),
-      browser.i18n.getMessage("between.columnTooltip")
+      browser.i18n.getMessage("between.columnTooltip"),
+      browser.i18n.getMessage("message.meBetweenMeAndSomeone"),
+      browser.i18n.getMessage("message.meBetweenSomeoneAndMe"),
+      browser.i18n.getMessage("header.commaSeparator"),
+      browser.i18n.getMessage("header.andSeparator")
     );
   }
 

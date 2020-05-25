@@ -13,7 +13,6 @@ const { XPCOMUtils } = ChromeUtils.import(
 XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   escapeHtml: "chrome://conversations/content/modules/misc.js",
-  getIdentities: "chrome://conversations/content/modules/misc.js",
   GlodaUtils: "resource:///modules/gloda/utils.js",
   htmlToPlainText: "chrome://conversations/content/modules/misc.js",
   makeFriendlyDateAgo: "resource:///modules/templateUtils.js",
@@ -888,7 +887,9 @@ class MessageFromGloda extends Message {
     this.isReplyListEnabled =
       "mailingLists" in this._glodaMsg && !!this._glodaMsg.mailingLists.length;
     let seen = new Set();
-    const identities = getIdentities(false);
+    const identities = await browser.convContacts.getIdentities({
+      includeNntpIdentities: true,
+    });
     this.isReplyAllEnabled =
       [
         this._glodaMsg.from,
@@ -957,7 +958,9 @@ class MessageFromDbHdr extends Message {
               aMimeMsg.has("list-post") &&
               RE_LIST_POST.exec(aMimeMsg.get("list-post"));
             let seen = new Set();
-            const identities = getIdentities(false);
+            const identities = await browser.convContacts.getIdentities({
+              includeNntpIdentities: true,
+            });
             this.isReplyAllEnabled =
               [
                 ...parseMimeLine(aMimeMsg.get("from"), true),
