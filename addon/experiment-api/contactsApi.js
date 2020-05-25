@@ -5,10 +5,10 @@ var { XPCOMUtils } = ChromeUtils.import(
 XPCOMUtils.defineLazyModuleGetters(this, {
   DisplayNameUtils: "resource:///modules/DisplayNameUtils.jsm",
   ExtensionCommon: "resource://gre/modules/ExtensionCommon.jsm",
+  fixIterator: "resource:///modules/iteratorUtils.jsm",
   Services: "resource://gre/modules/Services.jsm",
   Gloda: "resource:///modules/gloda/gloda.js",
   MailServices: "resource:///modules/MailServices.jsm",
-  getIdentities: "chrome://conversations/content/modules/misc.js",
 });
 
 /**
@@ -172,19 +172,20 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
             : MailServices.headerParser.makeMimeAddress(name, email);
         },
         async getIdentities(options) {
-          const { includeNntpIdentities } = options;
-
-          // `getIdentities` returns NCPWrapper objects, but we want
-          // javascript objects. JSON.stringify is an easy way to convert
-          // to a serializable native object.
-          return JSON.parse(
-            JSON.stringify(getIdentities(!includeNntpIdentities))
-          );
+          return getIdentitiesImpl(options);
         },
         onColumnHandler: new ExtensionCommon.EventManager({
           context,
           name: "convContacts.onColumnHandler",
-          register(fire, columnName, columnTooltip) {
+          register(
+            fire,
+            columnName,
+            columnTooltip,
+            betweenMeAndSomeone,
+            betweenSomeoneAndMe,
+            commaSeparator,
+            andSeparator
+          ) {
             let callback = createColumn.bind(null, columnName, columnTooltip);
             const windowObserver = new WindowObserverContacts(
               windowManager,
@@ -193,9 +194,27 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
             monkeyPatchAllWindows(windowManager, callback);
             Services.ww.registerNotification(windowObserver);
 
+            const identities = getIdentities();
+            let callback2 = registerColumn.bind(
+              null,
+              identities,
+              betweenMeAndSomeone,
+              betweenSomeoneAndMe,
+              commaSeparator,
+              andSeparator
+            );
+            const windowObserver2 = new WindowObserverContacts(
+              windowManager,
+              callback2
+            );
+            monkeyPatchAllWindows(windowManager, callback2);
+            Services.ww.registerNotification(windowObserver2);
+
             return () => {
+              Services.ww.unregisterNotification(windowObserver2);
               Services.ww.unregisterNotification(windowObserver);
               monkeyPatchAllWindows(windowManager, (win) => {
+                win.gDBView.removeColumnHandler("betweenCol");
                 win.document.getElementById("betweenCol").remove();
                 win.document.getElementById("betweenColSplitter").remove();
               });
@@ -238,6 +257,182 @@ function createColumn(columnName, columnTooltip, win, id) {
   parent3.appendChild(splitter);
 }
 
+async function registerColumn(
+  identities,
+  betweenMeAndSomeone,
+  betweenSomeoneAndMe,
+  commaSeparator,
+  andSeparator,
+  win,
+  id
+) {
+  // This has to be the first time that the documentation on MDC
+  //  1) exists and
+  //  2) is actually relevant!
+  //
+  //            OMG !
+  //
+  // https://developer.mozilla.org/en/Extensions/Thunderbird/Creating_a_Custom_Column
+
+  // It isn't quite right to do this ahead of time, but it saves us having
+  // to get the number of identities twice for every cell. Users don't often
+  // add or remove identities/accounts anyway.
+  const multipleIdentities = identities.length > 1;
+  function hasIdentity(ids, emailAddress) {
+    const email = emailAddress.toLowerCase();
+    return ids.some((ident) => ident.identity.email.toLowerCase() == email);
+  }
+
+  let participants = function (msgHdr) {
+    try {
+      // The set of people involved in this email.
+      let people = new Set();
+      // Helper for formatting; depending on the locale, we may need a different
+      // for me as in "to me" or as in "from me".
+      let format = function (x, p) {
+        if (hasIdentity(identities, x.email)) {
+          let display = p ? betweenMeAndSomeone : betweenSomeoneAndMe;
+          if (multipleIdentities) {
+            display += " (" + x.email + ")";
+          }
+          return display;
+        }
+        return x.name || x.email;
+      };
+      // Add all the people found in one of the msgHdr's properties.
+      let addPeople = function (prop, pos) {
+        let line = msgHdr[prop];
+        for (let x of parseMimeLine(line, true)) {
+          people.add(format(x, pos));
+        }
+      };
+      // We add everyone
+      addPeople("author", true);
+      addPeople("recipients", false);
+      addPeople("ccList", false);
+      addPeople("bccList", false);
+      // And turn this into a human-readable line.
+      if (people.size) {
+        return joinWordList(people, commaSeparator, andSeparator);
+      }
+    } catch (ex) {
+      console.error("Error in the special column", ex);
+    }
+    return "-";
+  };
+
+  let columnHandler = {
+    getCellText(row, col) {
+      let msgHdr = win.gDBView.getMsgHdrAt(row);
+      return participants(msgHdr);
+    },
+    getSortStringForRow(msgHdr) {
+      return participants(msgHdr);
+    },
+    isString() {
+      return true;
+    },
+    getCellProperties(row, col, props) {},
+    getRowProperties(row, props) {},
+    getImageSrc(row, col) {
+      return null;
+    },
+    getSortLongForRow(hdr) {
+      return 0;
+    },
+  };
+
+  // The main window is loaded when the monkey-patch is applied
+  Services.obs.addObserver(
+    {
+      observe(aMsgFolder, aTopic, aData) {
+        win.gDBView.addColumnHandler("betweenCol", columnHandler);
+      },
+    },
+    "MsgCreateDBView"
+  );
+  try {
+    win.gDBView.addColumnHandler("betweenCol", columnHandler);
+  } catch (e) {
+    // This is really weird, but rkent does it for junquilla, and this solves
+    //  the issue of enigmail breaking us... don't wanna know why it works,
+    //  but it works.
+    // After investigating, it turns out that without enigmail, we have the
+    //  following sequence of events:
+    // - jsm load
+    // - onload
+    // - msgcreatedbview
+    // With enigmail, this sequence is modified
+    // - jsm load
+    // - msgcreatedbview
+    // - onload
+    // So our solution kinda works, but registering the thing at jsm load-time
+    //  would work as well.
+  }
+
+  win.addEventListener(
+    "unload",
+    () => {
+      let col = win.document.getElementById("betweenCol");
+      if (col) {
+        let isHidden = col.getAttribute("hidden");
+        Services.prefs.setBoolPref(
+          "conversations.betweenColumnVisible",
+          isHidden != "true"
+        );
+      }
+    },
+    { once: true }
+  );
+}
+
+// Joins together names and format them as "John, Jane and Julie"
+function joinWordList(aElements, commaSeparator, andSeparator) {
+  let l = aElements.size;
+  if (l == 0) {
+    return "";
+  }
+  let elements = [...aElements.values()];
+  if (l == 1) {
+    return elements[0];
+  }
+
+  let hd = elements.slice(0, l - 1);
+  let tl = elements[l - 1];
+  return hd.join(commaSeparator) + andSeparator + tl;
+}
+
+/**
+ * Wraps the low-level header parser stuff.
+ * @param {String} mimeLine
+ *   A line that looks like "John &lt;john@cheese.com&gt;, Jane &lt;jane@wine.com&gt;"
+ * @param {Boolean} [dontFix]
+ *   Defaults to false. Shall we return an empty array in case aMimeLine is empty?
+ * @return {Array}
+ *   A list of { email, name } objects
+ */
+function parseMimeLine(mimeLine, dontFix) {
+  if (mimeLine == null) {
+    console.debug("Empty aMimeLine?!!");
+    return [];
+  }
+  // The null here copes with pre-Thunderbird 71 compatibility.
+  let addresses = MailServices.headerParser.parseEncodedHeader(mimeLine, null);
+  if (addresses.length) {
+    return addresses.map((addr) => {
+      return {
+        email: addr.email,
+        name: addr.name,
+        fullName: addr.toString(),
+      };
+    });
+  }
+  if (dontFix) {
+    return [];
+  }
+  return [{ email: "", name: "-", fullName: "-" }];
+}
+
 /**
  * Open a composition window for the given email address.
  * @param aEmail {String}
@@ -260,6 +455,65 @@ function composeMessageTo(aEmail, aDisplayedFolder) {
   }
   params.composeFields = fields;
   MailServices.compose.OpenComposeWindowWithParams(null, params);
+}
+
+function getIdentitiesImpl(options = {}) {
+  const { includeNntpIdentities } = options;
+
+  // `getIdentities` returns NCPWrapper objects, but we want
+  // javascript objects. JSON.stringify is an easy way to convert
+  // to a serializable native object.
+  return JSON.parse(JSON.stringify(getIdentities(!includeNntpIdentities)));
+}
+
+/**
+ * Returns a list of all identities in the form [{ boolean isDefault; nsIMsgIdentity identity }].
+ * It is assured that there is exactly one default identity.
+ * If only the default identity is needed, getDefaultIdentity() can be used.
+ * @param aSkipNntpIdentities (default: true) Should we avoid including nntp identities in the list?
+ */
+function getIdentities(aSkipNntpIdentities = true) {
+  let identities = [];
+  // TB 68 has accounts as an nsIArray.
+  // TB 78 has accounts an an directly iterable array.
+  for (let account of fixIterator(
+    MailServices.accounts.accounts,
+    Ci.nsIMsgAccount
+  )) {
+    let server = account.incomingServer;
+    if (
+      aSkipNntpIdentities &&
+      (!server || (server.type != "pop3" && server.type != "imap"))
+    ) {
+      continue;
+    }
+    const defaultIdentity = MailServices.accounts.defaultAccount
+      ? MailServices.accounts.defaultAccount.defaultIdentity
+      : null;
+    // TB 68 has identities as an nsIArray.
+    // TB 78 has identities an an directly iterable array.
+    for (let currentIdentity of fixIterator(
+      account.identities,
+      Ci.nsIMsgIdentity
+    )) {
+      // We're only interested in identities that have a real email.
+      if (currentIdentity.email) {
+        identities.push({
+          isDefault: currentIdentity == defaultIdentity,
+          identity: currentIdentity,
+        });
+      }
+    }
+  }
+  if (!identities.length) {
+    console.warn("Didn't find any identities!");
+  } else if (!identities.some((x) => x.isDefault)) {
+    console.warn(
+      "Didn't find any default key - mark the first identity as default!"
+    );
+    identities[0].isDefault = true;
+  }
+  return identities;
 }
 
 class WindowObserverContacts {

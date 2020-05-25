@@ -5,11 +5,9 @@
 var EXPORTED_SYMBOLS = [
   "setupLogging",
   "groupArray",
-  "joinWordList",
   "topMail3Pane",
   "folderName",
   "escapeHtml",
-  "getIdentities",
   "parseMimeLine",
   "htmlToPlainText",
   "getMail3Pane",
@@ -22,15 +20,9 @@ const { XPCOMUtils } = ChromeUtils.import(
 );
 
 XPCOMUtils.defineLazyModuleGetters(this, {
-  BrowserSim: "chrome://conversations/content/modules/browserSim.js",
-  fixIterator: "resource:///modules/iteratorUtils.jsm",
   MailServices: "resource:///modules/MailServices.jsm",
   Prefs: "chrome://conversations/content/modules/prefs.js",
   Services: "resource://gre/modules/Services.jsm",
-});
-
-XPCOMUtils.defineLazyGetter(this, "browser", function () {
-  return BrowserSim.getBrowser();
 });
 
 XPCOMUtils.defineLazyGetter(this, "gMessenger", function () {
@@ -64,27 +56,6 @@ function groupArray(aItems, aFn) {
     }
   }
   return orderedIds.map((id) => groups[id]);
-}
-
-// Joins together names and format them as "John, Jane and Julie"
-function joinWordList(aElements, aInsertHtml) {
-  let wrap = aInsertHtml ? (x) => "<span>" + x + "</span>" : (x) => x;
-  let l = aElements.size;
-  if (l == 0) {
-    return "";
-  }
-  let elements = [...aElements.values()];
-  if (l == 1) {
-    return elements[0];
-  }
-
-  let hd = elements.slice(0, l - 1);
-  let tl = elements[l - 1];
-  return (
-    hd.join(wrap(browser.i18n.getMessage("header.commaSeparator"))) +
-    wrap(browser.i18n.getMessage("header.andSeparator")) +
-    tl
-  );
 }
 
 /**
@@ -156,56 +127,6 @@ function escapeHtml(s) {
         throw Error("Unexpected match");
     }
   });
-}
-
-/**
- * Returns a list of all identities in the form [{ boolean isDefault; nsIMsgIdentity identity }].
- * It is assured that there is exactly one default identity.
- * If only the default identity is needed, getDefaultIdentity() can be used.
- * @param aSkipNntpIdentities (default: true) Should we avoid including nntp identities in the list?
- */
-function getIdentities(aSkipNntpIdentities = true) {
-  let identities = [];
-  // TB 68 has accounts as an nsIArray.
-  // TB 78 has accounts an an directly iterable array.
-  for (let account of fixIterator(
-    MailServices.accounts.accounts,
-    Ci.nsIMsgAccount
-  )) {
-    let server = account.incomingServer;
-    if (
-      aSkipNntpIdentities &&
-      (!server || (server.type != "pop3" && server.type != "imap"))
-    ) {
-      continue;
-    }
-    const defaultIdentity = MailServices.accounts.defaultAccount
-      ? MailServices.accounts.defaultAccount.defaultIdentity
-      : null;
-    // TB 68 has identities as an nsIArray.
-    // TB 78 has identities an an directly iterable array.
-    for (let currentIdentity of fixIterator(
-      account.identities,
-      Ci.nsIMsgIdentity
-    )) {
-      // We're only interested in identities that have a real email.
-      if (currentIdentity.email) {
-        identities.push({
-          isDefault: currentIdentity == defaultIdentity,
-          identity: currentIdentity,
-        });
-      }
-    }
-  }
-  if (!identities.length) {
-    console.warn("Didn't find any identities!");
-  } else if (!identities.some((x) => x.isDefault)) {
-    console.warn(
-      "Didn't find any default key - mark the first identity as default!"
-    );
-    identities[0].isDefault = true;
-  }
-  return identities;
 }
 
 /**
