@@ -965,8 +965,8 @@ class MessageFromDbHdr extends Message {
                 ...parseMimeLine(aMimeMsg.get("cc"), true),
                 ...parseMimeLine(aMimeMsg.get("bcc"), true),
               ].filter(function (x) {
-                let r = !seen.has(x.value) && !hasIdentity(identities, x.value);
-                seen.add(x.value);
+                let r = !seen.has(x.email) && !hasIdentity(identities, x.email);
+                seen.add(x.email);
                 return r;
               }).length > 1;
 
