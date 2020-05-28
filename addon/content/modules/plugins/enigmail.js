@@ -191,9 +191,9 @@ function overrideUpdateSecurity(messagepane, w) {
     }
     let message;
     let msgHdr = uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
-    if (w._currentConversation) {
+    if (w.Conversations.currentConversation) {
       let uriSpec = msgHdrGetUri(msgHdr);
-      message = w._currentConversation.getMessage(uriSpec);
+      message = w.Conversations.currentConversation.getMessage(uriSpec);
     }
     if (!message) {
       console.error("Message for the security info not found!");
@@ -251,8 +251,8 @@ function overrideUpdateSecurity(messagepane, w) {
     let message;
     let msgHdr = uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
     let uriSpec = msgHdrGetUri(msgHdr);
-    if (w._currentConversation) {
-      for (let x of w._currentConversation.messages) {
+    if (w.Conversations.currentConversation) {
+      for (let x of w.Conversations.currentConversation.messages) {
         if (x.message._uri == uriSpec) {
           message = x.message;
           break;
@@ -565,18 +565,6 @@ function verifyAttachments(aMessage) {
   );
 }
 
-// Prepare for showing security info later
-function prepareForShowHdrIcons(aMessage) {
-  let w = topMail3Pane(aMessage);
-  let conversation = aMessage._conversation;
-
-  // w.Conversations.currentConversation is assigned when conversation
-  // _onComplete(), but we need currentConversation in
-  // updateSecurityStatus() which is possible to be called before
-  // _onComplete().
-  w._currentConversation = conversation;
-}
-
 // Update security info display of the message.
 function updateSecurityInfo(aMessage) {
   let w = topMail3Pane(aMessage);
@@ -706,7 +694,6 @@ let enigmailHook = {
       return "";
     };
     verifyAttachments(msg);
-    prepareForShowHdrIcons(msg);
     patchForShowSecurityInfo(w);
   },
 
