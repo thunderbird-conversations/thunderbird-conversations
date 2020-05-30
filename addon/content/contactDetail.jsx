@@ -140,7 +140,7 @@ class _ContactDetail extends React.PureComponent {
           >
             <SvgIcon hash={"history"} />
           </button>
-          {this.props.hasCard ? (
+          {this.props.contactId ? (
             <button
               className="editContact"
               title={browser.i18n.getMessage("contact.editContactTooltip")}
@@ -177,7 +177,7 @@ _ContactDetail.propTypes = {
   email: PropTypes.string.isRequired,
   realEmail: PropTypes.string.isRequired,
   avatar: PropTypes.string.isRequired,
-  hasCard: PropTypes.bool.isRequired,
+  contactId: PropTypes.string,
   parentSpan: PropTypes.object.isRequired,
 };
 
