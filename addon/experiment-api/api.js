@@ -452,6 +452,9 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             }
           }
         },
+        async invalidateCache() {
+          Services.obs.notifyObservers(null, "startupcache-invalidate");
+        },
         onCallAPI: new ExtensionCommon.EventManager({
           context,
           name: "conversations.onCallAPI",
