@@ -27,13 +27,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   Services: "resource://gre/modules/Services.jsm",
 });
 
-// It's not really nice to write into someone elses object but this is what the
-// Services object is for.  We prefix with the "m" to ensure we stay out of their
-// namespace.
-XPCOMUtils.defineLazyGetter(Services, "mMessenger", function () {
-  return Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
-});
-
 XPCOMUtils.defineLazyGetter(this, "browser", function () {
   return BrowserSim.getBrowser();
 });
@@ -606,7 +599,7 @@ class Message {
 
     const neckoUrl = msgHdrToNeckoURL(this._msgHdr).spec;
 
-    const messageService = Services.mMessenger.messageServiceFromURI(neckoUrl);
+    const messageService = gMessenger.messageServiceFromURI(neckoUrl);
     messageService.DisplayMessage(
       this._uri + "&markRead=false",
       docshell,
