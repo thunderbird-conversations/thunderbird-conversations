@@ -151,10 +151,9 @@ ContactFromAB.prototype = {
       extra = this._email;
     }
     const displayEmail = name != email ? email : "";
-    const hasCard = this._card != null;
     const skipEmail =
       !isDetail &&
-      hasCard &&
+      this._card &&
       (await browser.conversations.getCorePref("mail.showCondensedAddresses"));
     let tooltipName = this._name || this._email;
     if (identity != null) {
@@ -169,7 +168,7 @@ ContactFromAB.prototype = {
       email,
       avatar: this.avatar,
       avatarIsDefault: this.avatar.substr(0, 6) === "chrome",
-      hasCard,
+      contactId: this._card ? this._card.id : null,
       extra,
       // Parameter aUseColor is optional, and undefined means true
       colorStyle: useColor === false ? {} : { backgroundColor: this.color },

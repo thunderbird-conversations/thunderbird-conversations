@@ -141,7 +141,7 @@ class ContactLabel extends React.PureComponent {
             email={this.props.contact.displayEmail}
             realEmail={this.props.contact.email}
             avatar={this.props.contact.avatar}
-            hasCard={this.props.contact.hasCard}
+            contactId={this.props.contact.contactId}
           />
         </Fade>
         <span>{this.props.separator}</span>
@@ -153,7 +153,9 @@ class ContactLabel extends React.PureComponent {
             realemail={this.props.contact.email}
             avatar={this.props.contact.avatar}
           >
-            {this.props.detailView && this.props.contact.hasCard && "\u2605 "}
+            {this.props.detailView &&
+              !!this.props.contact.contactId &&
+              "\u2605 "}
             {this.props.contact.name.trim()}
             {this.props.contact.extra && (
               <label
