@@ -137,7 +137,7 @@ class JunkNotification extends React.PureComponent {
     this.props.dispatch({
       type: "MARK_AS_JUNK",
       isJunk: false,
-      msgUri: this.props.msgUri,
+      id: this.props.id,
     });
   }
 
@@ -157,7 +157,7 @@ class JunkNotification extends React.PureComponent {
 
 JunkNotification.propTypes = {
   dispatch: PropTypes.func.isRequired,
-  msgUri: PropTypes.string.isRequired,
+  id: PropTypes.number.isRequired,
 };
 
 class OutboxNotification extends React.PureComponent {
@@ -167,9 +167,7 @@ class OutboxNotification extends React.PureComponent {
   }
 
   onClick() {
-    this.props.dispatch({
-      type: "SEND_UNSENT",
-    });
+    this.props.dispatch(messageActions.sendUnsent());
   }
 
   render() {
@@ -243,10 +241,7 @@ class MessageNotification extends React.PureComponent {
     }
     if (this.props.canUnJunk) {
       return (
-        <JunkNotification
-          dispatch={this.props.dispatch}
-          msgUri={this.props.msgUri}
-        />
+        <JunkNotification dispatch={this.props.dispatch} id={this.props.id} />
       );
     }
     if (this.props.isOutbox) {
@@ -278,6 +273,7 @@ MessageNotification.propTypes = {
   hasRemoteContent: PropTypes.bool.isRequired,
   isPhishing: PropTypes.bool.isRequired,
   isOutbox: PropTypes.bool.isRequired,
+  id: PropTypes.number.isRequired,
   msgUri: PropTypes.string.isRequired,
   realFrom: PropTypes.string.isRequired,
 };

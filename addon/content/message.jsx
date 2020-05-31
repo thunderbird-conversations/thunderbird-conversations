@@ -298,6 +298,7 @@ class Message extends React.PureComponent {
             hasRemoteContent={this.props.message.hasRemoteContent}
             isPhishing={this.props.message.isPhishing}
             isOutbox={this.props.message.isOutbox}
+            id={this.props.message.id}
             msgUri={this.props.message.msgUri}
             realFrom={this.props.message.realFrom}
           />
@@ -306,10 +307,11 @@ class Message extends React.PureComponent {
           {this.props.message.expanded && (
             <SpecialMessageTags
               onFolderClick={() => {
-                this.props.dispatch({
-                  type: "SWITCH_TO_FOLDER",
-                  msgUri: this.props.message.msgUri,
-                });
+                this.props.dispatch(
+                  messageActions.switchToFolderAndMsg({
+                    id: this.props.message.id,
+                  })
+                );
               }}
               onTagClick={(event, tag) => {
                 this.props.dispatch(
