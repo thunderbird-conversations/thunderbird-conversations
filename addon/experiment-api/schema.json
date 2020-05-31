@@ -250,6 +250,32 @@
         "description": "Triggers sending of unsent messages.",
         "async": true,
         "parameters": []
+      },
+      {
+        "name": "openInSourceView",
+        "type": "function",
+        "description": "Opens a message source view.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "The message id to view source for."
+          }
+        ]
+      },
+      {
+        "name": "openInClassic",
+        "type": "function",
+        "description": "Opens a message in the classic view.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "The message id to view in classic mode."
+          }
+        ]
       }
     ],
     "events": [

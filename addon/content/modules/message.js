@@ -193,16 +193,6 @@ class _MessageUtils {
     msgHdr.folder.msgDatabase = null;
   }
 
-  openInClassic(win, msgUri) {
-    const msgHdr = msgUriToMsgHdr(msgUri);
-    const tabmail = win.document.getElementById("tabmail");
-    tabmail.openTab("message", { msgHdr, background: false });
-  }
-
-  openInSourceView(win, msgUri) {
-    win.ViewPageSource([msgUri]);
-  }
-
   getMsgHdrDetails(win, msgUri) {
     const msgHdr = msgUriToMsgHdr(msgUri);
     msgHdrGetHeaders(msgHdr, (headers) => {

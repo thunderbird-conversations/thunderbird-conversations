@@ -521,6 +521,20 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             win.SendUnsentMessages();
           }
         },
+        async openInSourceView(id) {
+          const win = Services.wm.getMostRecentWindow("mail:3pane");
+          const msgHdr = context.extension.messageManager.get(id);
+          if (!msgHdr) {
+            throw new Error("Could not find message");
+          }
+          win.ViewPageSource([msgHdr.folder.getUriForMsg(msgHdr)]);
+        },
+        async openInClassic(id) {
+          const win = Services.wm.getMostRecentWindow("mail:3pane");
+          const msgHdr = context.extension.messageManager.get(id);
+          const tabmail = win.document.getElementById("tabmail");
+          tabmail.openTab("message", { msgHdr, background: false });
+        },
         onCallAPI: new ExtensionCommon.EventManager({
           context,
           name: "conversations.onCallAPI",

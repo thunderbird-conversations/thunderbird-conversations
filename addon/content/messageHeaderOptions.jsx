@@ -126,6 +126,7 @@ class MessageHeaderOptions extends React.PureComponent {
     event.preventDefault();
 
     const payload = {
+      id: this.props.id,
       msgUri: this.props.msgUri,
       shiftKey: msg.shiftKey,
     };
