@@ -181,6 +181,42 @@
         "description": "Temporary, invalidates the startup cache.",
         "async": "true",
         "parameters": []
+      },
+      {
+        "name": "getLateAttachments",
+        "type": "function",
+        "description": "Gets the late attachmnent information for a message.",
+        "async": "true",
+        "parameters": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "The message id to get data for."
+          }
+        ]
+      },
+      {
+        "name": "makePlural",
+        "type": "function",
+        "description": "Extracts a plural from a l10n message string.",
+        "async": "true",
+        "parameters": [
+          {
+            "name": "pluralForm",
+            "type": "string",
+            "description": "The plural form to use."
+          },
+          {
+            "name": "message",
+            "type": "string",
+            "description": "The l10n message string."
+          },
+          {
+            "name": "value",
+            "type": "integer",
+            "description": "The value to insert into the string."
+          }
+        ]
       }
     ],
     "events": [

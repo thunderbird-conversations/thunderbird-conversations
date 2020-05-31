@@ -22,7 +22,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   mimeMsgToContentSnippetAndMeta: "resource:///modules/gloda/connotent.js",
   NetUtil: "resource://gre/modules/NetUtil.jsm",
   parseMimeLine: "chrome://conversations/content/modules/misc.js",
-  PluralForm: "resource://gre/modules/PluralForm.jsm",
   setupLogging: "chrome://conversations/content/modules/misc.js",
   Services: "resource://gre/modules/Services.jsm",
 });
@@ -287,6 +286,7 @@ class Message {
     this._uri = msgHdrGetUri(this._msgHdr);
     this._contacts = [];
     this._attachments = [];
+    this.needsLateAttachments = false;
     this.contentType = "";
     this.hasRemoteContent = false;
     this.isPhishing = false;
@@ -405,9 +405,11 @@ class Message {
       isJunk,
       isOutbox: messageFolderType == "outbox",
       isPhishing: this.isPhishing,
+      messageKey: this._msgHdr.messageKey,
       msgUri: this._uri,
       multipleRecipients: this.isReplyAllEnabled,
       neckoUrl: msgHdrToNeckoURL(this._msgHdr).spec,
+      needsLateAttachments: this.needsLateAttachments,
       read: this.read,
       realFrom: this._realFrom.email || this._from.email,
       recipientsIncludeLists: this.isReplyListEnabled,
@@ -481,16 +483,13 @@ class Message {
   // Generate Attachment objects
   async toTmplDataForAttachments() {
     let l = this._attachments.length;
-    let [makePlural] = PluralForm.makeGetter(
-      browser.i18n.getMessage("pluralForm")
-    );
     const result = {
       attachments: [],
-      attachmentsPlural: makePlural(
-        l,
-        browser.i18n.getMessage("attachments.numAttachments")
-      ).replace("#1", l),
-      messageKey: this._msgHdr.messageKey,
+      attachmentsPlural: await browser.conversations.makePlural(
+        browser.i18n.getMessage("pluralForm"),
+        browser.i18n.getMessage("attachments.numAttachments"),
+        l
+      ),
     };
     for (let i = 0; i < l; i++) {
       const att = this._attachments[i];

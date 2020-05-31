@@ -36,6 +36,7 @@ class Message extends React.PureComponent {
         this.onSelected();
       });
     }
+    this.checkLateAttachments();
   }
 
   componentDidUpdate(prevProps) {
@@ -61,10 +62,24 @@ class Message extends React.PureComponent {
         this.onSelected();
       });
     }
+    this.checkLateAttachments();
   }
 
   componentWillUnmount() {
     this.removeScrollListener();
+  }
+
+  checkLateAttachments() {
+    if (
+      this.props.message.expanded &&
+      this.props.message.needsLateAttachments
+    ) {
+      this.props.dispatch(
+        messageActions.getLateAttachments({
+          id: this.props.message.id,
+        })
+      );
+    }
   }
 
   removeScrollListener() {

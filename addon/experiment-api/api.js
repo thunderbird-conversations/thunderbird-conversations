@@ -9,8 +9,10 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   GlodaAttrProviders:
     "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
   MonkeyPatch: "chrome://conversations/content/modules/monkeypatch.js",
+  MsgHdrToMimeMessage: "resource:///modules/gloda/mimemsg.js",
   msgUriToMsgHdr: "chrome://conversations/content/modules/misc.js",
   NetUtil: "resource://gre/modules/NetUtil.jsm",
+  PluralForm: "resource://gre/modules/PluralForm.jsm",
   Prefs: "chrome://conversations/content/modules/prefs.js",
   Services: "resource://gre/modules/Services.jsm",
   setupLogging: "chrome://conversations/content/modules/misc.js",
@@ -454,6 +456,51 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
         },
         async invalidateCache() {
           Services.obs.notifyObservers(null, "startupcache-invalidate");
+        },
+        async getLateAttachments(id) {
+          return new Promise((resolve) => {
+            const msgHdr = context.extension.messageManager.get(id);
+            MsgHdrToMimeMessage(msgHdr, null, (msgHdr, mimeMsg) => {
+              if (!mimeMsg) {
+                resolve([]);
+                return;
+              }
+
+              let attachments;
+              if (Prefs.extra_attachments) {
+                attachments = [
+                  ...mimeMsg.allAttachments,
+                  ...mimeMsg.allUserAttachments,
+                ];
+                let seenMap = new Set();
+                attachments.filter((a) => {
+                  const seen = seenMap.has(a);
+                  seenMap.add(a);
+                  return !seen;
+                });
+              } else {
+                attachments = mimeMsg.allUserAttachments.filter(
+                  (a) => a.isRealAttachment
+                );
+              }
+              resolve(
+                attachments.map((a, i) => {
+                  return {
+                    size: a.size,
+                    contentType: a.contentType,
+                    isExternal: a.isExternal,
+                    name: a.name,
+                    url: a.url,
+                    anchor: "msg" + this.initialPosition + "att" + i,
+                  };
+                })
+              );
+            });
+          });
+        },
+        async makePlural(pluralForm, message, value) {
+          let [makePluralFn] = PluralForm.makeGetter(pluralForm);
+          return makePluralFn(value, message).replace("#1", value);
         },
         onCallAPI: new ExtensionCommon.EventManager({
           context,
