@@ -4,7 +4,7 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["Conversation", "ConversationUtils"];
+var EXPORTED_SYMBOLS = ["Conversation"];
 
 const { XPCOMUtils } = ChromeUtils.import(
   "resource://gre/modules/XPCOMUtils.jsm"
@@ -160,29 +160,6 @@ ViewWrapper.prototype = {
     return false;
   },
 };
-
-class _ConversationUtils {
-  markAsJunk(win, isJunk) {
-    win.JunkSelectedMessages(isJunk);
-    win.SetFocusThreadPane();
-  }
-
-  switchToFolderAndMsg(win, msgUri) {
-    const msgHdr = msgUriToMsgHdr(msgUri);
-    win.gFolderTreeView.selectFolder(msgHdr.folder, true);
-    win.gFolderDisplay.selectMessage(msgHdr);
-  }
-
-  sendUnsent(win) {
-    if (Services.io.offline) {
-      win.MailOfflineMgr.goOnlineToSendMessages(win.msgWindow);
-    } else {
-      win.SendUnsentMessages();
-    }
-  }
-}
-
-var ConversationUtils = new _ConversationUtils();
 
 // -- The actual conversation object
 

@@ -389,7 +389,7 @@ class Message {
       throw new Error("Message no longer exists");
     }
 
-    const messageFolderType = messageHeader.folderType;
+    const messageFolderType = messageHeader.folder.type;
     let isJunk;
     if (!("junk" in messageHeader)) {
       // Supports TB 68.

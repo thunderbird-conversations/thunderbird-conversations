@@ -16,7 +16,6 @@ const { XPCOMUtils } = ChromeUtils.import(
 XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   Conversation: "chrome://conversations/content/modules/conversation.js",
-  ConversationUtils: "chrome://conversations/content/modules/conversation.js",
   MessageUtils: "chrome://conversations/content/modules/message.js",
   Prefs: "chrome://conversations/content/modules/prefs.js",
   topMail3Pane: "chrome://conversations/content/modules/misc.js",
@@ -573,6 +572,16 @@ const messageActions = {
       msg.msgPluginTagClick(topMail3Pane(window), event, details);
     };
   },
+  switchToFolderAndMsg({ id }) {
+    return async () => {
+      browser.conversations.switchToFolderAndMsg(id).catch(console.error);
+    };
+  },
+  sendUnsent() {
+    return async () => {
+      browser.conversations.sendUnsent().catch(console.error);
+    };
+  },
 };
 
 function messages(state = initialMessages, action) {
@@ -636,11 +645,13 @@ function messages(state = initialMessages, action) {
       // This action should only be activated when the conversation is not a
       //  conversation in a tab AND there's only one message in the conversation,
       //  i.e. the currently selected message
-      ConversationUtils.markAsJunk(topMail3Pane(window), action.isJunk);
+      browser.conversations
+        .markSelectedAsJunk(action.isJunk)
+        .catch(console.error);
       if (!action.isJunk) {
         // TODO: We should possibly wait until we get the notification before
         // clearing the state here.
-        return modifyOnlyMsg(state, action.msgUri, (msg) => {
+        return modifyOnlyMsgId(state, action.id, (msg) => {
           const newMsg = { ...msg };
           newMsg.isJunk = action.isJunk;
           return newMsg;
@@ -825,17 +836,6 @@ function summary(state = initialSummary, action) {
     case "PRINT_CONVERSATION": {
       // TODO: Fix printing
       printConversation();
-      return state;
-    }
-    case "SEND_UNSENT": {
-      ConversationUtils.sendUnsent(topMail3Pane(window));
-      return state;
-    }
-    case "SWITCH_TO_FOLDER": {
-      ConversationUtils.switchToFolderAndMsg(
-        topMail3Pane(window),
-        action.msgUri
-      );
       return state;
     }
     case "MSG_STREAM_MSG": {

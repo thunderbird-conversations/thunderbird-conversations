@@ -93,7 +93,7 @@
         "name": "getMessageUriForId",
         "type": "function",
         "description": "Temporary. Gets the message uri for a given message id",
-        "async": "true",
+        "async": true,
         "parameters": [
           {
             "name": "id",
@@ -106,7 +106,7 @@
         "name": "getAttachmentBody",
         "type": "function",
         "description": "Temporary. Gets the attachment body for a particular message and part (xref bug 1606552)",
-        "async": "true",
+        "async": true,
         "parameters": [
           {
             "name": "id",
@@ -124,7 +124,7 @@
         "name": "formatFileSize",
         "type": "function",
         "description": "Temporary. Formats the file size (xref bug 1606575).",
-        "async": "true",
+        "async": true,
         "parameters": [
           {
             "name": "size",
@@ -137,7 +137,7 @@
         "name": "createTab",
         "type": "function",
         "description": "Temporary. Creates a content or chrome tab. What we'll need to replace with depends on Message Attachments API",
-        "async": "true",
+        "async": true,
         "parameters": [
           {
             "name": "createTabProperties",
@@ -159,7 +159,7 @@
         "name": "getIsJunk",
         "type": "function",
         "description": "Temporary for 68 only. Gets if a message is junk or not",
-        "async": "true",
+        "async": true,
         "parameters": [
           {
             "name": "id",
@@ -172,21 +172,21 @@
         "name": "resetMessagePane",
         "type": "function",
         "description": "Temporary, resets the message pane.",
-        "async": "true",
+        "async": true,
         "parameters": []
       },
       {
         "name": "invalidateCache",
         "type": "function",
         "description": "Temporary, invalidates the startup cache.",
-        "async": "true",
+        "async": true,
         "parameters": []
       },
       {
         "name": "getLateAttachments",
         "type": "function",
         "description": "Gets the late attachmnent information for a message.",
-        "async": "true",
+        "async": true,
         "parameters": [
           {
             "name": "id",
@@ -199,7 +199,7 @@
         "name": "makePlural",
         "type": "function",
         "description": "Extracts a plural from a l10n message string.",
-        "async": "true",
+        "async": true,
         "parameters": [
           {
             "name": "pluralForm",
@@ -217,6 +217,39 @@
             "description": "The value to insert into the string."
           }
         ]
+      },
+      {
+        "name": "markSelectedAsJunk",
+        "type": "function",
+        "description": "Marks the selected messages as junk. May be replaced once bug 1642225 is fixed.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "isJunk",
+            "type": "boolean",
+            "description": "To mark as junk or not."
+          }
+        ]
+      },
+      {
+        "name": "switchToFolderAndMsg",
+        "type": "function",
+        "description": "Switch to a particular folder/message combination.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "The message id to switch to."
+          }
+        ]
+      },
+      {
+        "name": "sendUnsent",
+        "type": "function",
+        "description": "Triggers sending of unsent messages.",
+        "async": true,
+        "parameters": []
       }
     ],
     "events": [

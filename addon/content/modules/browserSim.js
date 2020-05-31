@@ -5,7 +5,7 @@
 var EXPORTED_SYMBOLS = ["BrowserSim"];
 
 // This is a workaround whilst we still have stub.xhtml being loaded in the
-// privileged scope. _ConversationUtils.getBrowser() simulates APIs and passes
+// privileged scope. BrowserSim.getBrowser() simulates APIs and passes
 // them back to the webExtension process for handling by the real APIs.
 const SUPPORTED_BASE_APIS = [
   "convContacts",

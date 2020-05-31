@@ -502,6 +502,25 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           let [makePluralFn] = PluralForm.makeGetter(pluralForm);
           return makePluralFn(value, message).replace("#1", value);
         },
+        async markSelectedAsJunk(isJunk) {
+          const win = Services.wm.getMostRecentWindow("mail:3pane");
+          win.JunkSelectedMessages(isJunk);
+          win.SetFocusThreadPane();
+        },
+        async switchToFolderAndMsg(id) {
+          const msgHdr = context.extension.messageManager.get(id);
+          const win = Services.wm.getMostRecentWindow("mail:3pane");
+          win.gFolderTreeView.selectFolder(msgHdr.folder, true);
+          win.gFolderDisplay.selectMessage(msgHdr);
+        },
+        async sendUnsent() {
+          const win = Services.wm.getMostRecentWindow("mail:3pane");
+          if (Services.io.offline) {
+            win.MailOfflineMgr.goOnlineToSendMessages(win.msgWindow);
+          } else {
+            win.SendUnsentMessages();
+          }
+        },
         onCallAPI: new ExtensionCommon.EventManager({
           context,
           name: "conversations.onCallAPI",
