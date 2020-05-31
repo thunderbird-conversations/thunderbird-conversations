@@ -397,14 +397,14 @@ const messageActions = {
       browser.messages.delete([id]).catch(console.error);
     };
   },
-  openClassic({ msgUri }) {
+  openClassic({ id }) {
     return async () => {
-      MessageUtils.openInClassic(topMail3Pane(window), msgUri);
+      browser.conversations.openInClassic(id).catch(console.error);
     };
   },
-  openSource({ msgUri }) {
+  openSource({ id }) {
     return async () => {
-      MessageUtils.openInSourceView(topMail3Pane(window), msgUri);
+      browser.conversations.openInSourceView(id).catch(console.error);
     };
   },
   setTags({ id, tags }) {
