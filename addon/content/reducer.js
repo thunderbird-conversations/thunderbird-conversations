@@ -73,6 +73,20 @@ function modifyOnlyMsg(currentState, msgUri, modifier) {
   return newState;
 }
 
+function modifyOnlyMsgId(currentState, id, modifier) {
+  const newState = { ...currentState };
+  const newMsgData = [];
+  for (let i = 0; i < currentState.msgData.length; i++) {
+    if (currentState.msgData[i].id == id) {
+      newMsgData.push(modifier({ ...currentState.msgData[i] }));
+    } else {
+      newMsgData.push(currentState.msgData[i]);
+    }
+  }
+  newState.msgData = newMsgData;
+  return newState;
+}
+
 const attachmentActions = {
   previewAttachment({ name, url, isPdf, maybeViewable }) {
     return async () => {
@@ -299,6 +313,39 @@ const messageActions = {
       // } else if (params.get("quickCompose")) {
       //   masqueradeAsQuickCompose();
       // }
+    };
+  },
+
+  getLateAttachments({ id }) {
+    return async (dispatch) => {
+      const attachments = await browser.conversations.getLateAttachments(id);
+      const numAttachments = attachments.length;
+      // This is bug 630011, remove when fixed
+      const unknown = browser.i18n.getMessage("attachments.sizeUnknown");
+      for (let i = 0; i < numAttachments; i++) {
+        // -1 means size unknown
+        let formattedSize = unknown;
+        if (attachments[i].size != -1) {
+          formattedSize = await browser.conversations.formatFileSize(
+            attachments[i].size
+          );
+        }
+        attachments[i].formattedSize = formattedSize;
+      }
+
+      await dispatch({
+        type: "MSG_UPDATE_DATA_ID",
+        msgData: {
+          attachments,
+          attachmentsPlural: await browser.conversations.makePlural(
+            browser.i18n.getMessage("pluralForm"),
+            browser.i18n.getMessage("attachments.numAttachments"),
+            numAttachments
+          ),
+          id,
+          needsLateAttachments: false,
+        },
+      });
     };
   },
 
@@ -555,6 +602,11 @@ function messages(state = initialMessages, action) {
     }
     case "MSG_UPDATE_DATA": {
       return modifyOnlyMsg(state, action.msgData.msgUri, (msg) => {
+        return { ...msg, ...action.msgData };
+      });
+    }
+    case "MSG_UPDATE_DATA_ID": {
+      return modifyOnlyMsgId(state, action.msgData.id, (msg) => {
         return { ...msg, ...action.msgData };
       });
     }
