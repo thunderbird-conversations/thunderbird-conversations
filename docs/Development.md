@@ -1,6 +1,17 @@
 Development
 ===========
 
+Branches
+--------
+
+We always try to ensure support with the currently released major version of
+Thunderbird. Where a new version is close to release, we try to support that
+as well.
+
+Each major release of conversations typically has a release branch for that
+release (e.g. 3.1+). However, all changes should be landed on the master
+branch, and we may then decide to back-port them to the current release branch.
+
 Building
 --------
 
@@ -13,13 +24,27 @@ You will need to do the last step every time you change something.
 Running in Thunderbird
 ----------------------
 
-Note: At the moment when making changes, espeically to the modules, it is best
-to load the add-on via temporary, and restart Thunderbird which each change.
+Note: At the moment when making changes, especially to the modules, it is best
+to load the add-on via temporary mode, and restart Thunderbird which each change.
 
-1. Start (or restart) Thunderbird with `$ /path/to/thunderbird -purgecaches`
-2. Go to three-bar menu -> Tools -> Developer Tools -> Debug Add-ons
+1. Start Thunderbird
+2. Go to the three-bar menu -> Tools -> Developer Tools -> Debug Add-ons
 3. Select Load Temporary Add-on
-4. Navigate to the `dist` directory and select a file there.
+4. Navigate to the `dist` directory and select any file there.
+
+
+Debugging in Thunderbird
+------------------------
+
+If you go into the preferences for Conversations (found under Add-ons), you can
+turn on "Debugging" to enable output.
+
+This can be viewed in the Error Console, available under the three-bar menu ->
+Tools -> Developer Tools. Note, you may need to click the cog in the top-right
+corner, and enable "Show Content Messages" for the messages to show up.
+
+The Developer Toolbox, found in the same location, is also very useful for
+debugging.
 
 Development in the Browser
 --------------------------

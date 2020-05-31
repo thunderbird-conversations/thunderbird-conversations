@@ -1,7 +1,6 @@
 Releasing a new version
 =======================
 
-* Ensure L10n is up to date
 * Ensure the correct changeset is checked out
 * Ensure `npm ci` has been run
 * Ensure `npm test` has been run
@@ -26,4 +25,4 @@ Lastly:
 * Check that the xpi installs in Thunderbird and is the correct version
 * Upload the xpi to the add-ons site.
 
-Note: `npm run prod` is automatically run by the postversion npm routine.
+Note: `npm run prod` is automatically run by the `postversion` npm routine.
