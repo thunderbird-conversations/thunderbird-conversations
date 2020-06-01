@@ -137,14 +137,14 @@
         ]
       },
       {
-        "name": "getIdentities",
+        "name": "getIdentityEmails",
         "type": "function",
-        "description": "Temporary. Returns a list of identities",
+        "description": "Temporary. Returns an array of emails associated with the user's identities",
         "async": true,
         "parameters": [
           {
             "type": "object",
-            "name": "getIdentitiesProperties",
+            "name": "getIdentityEmailsProperties",
             "properties": {
               "includeNntpIdentities": {
                 "type": "boolean",
