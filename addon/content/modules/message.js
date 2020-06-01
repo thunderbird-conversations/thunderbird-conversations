@@ -811,9 +811,9 @@ class Message {
   }
 }
 
-function hasIdentity(ids, emailAddress) {
+function hasIdentity(identityEmails, emailAddress) {
   const email = emailAddress.toLowerCase();
-  return ids.some((ident) => ident.identity.email.toLowerCase() == email);
+  return identityEmails.some((e) => e.toLowerCase() == email);
 }
 
 class MessageFromGloda extends Message {
@@ -869,7 +869,7 @@ class MessageFromGloda extends Message {
     this.isReplyListEnabled =
       "mailingLists" in this._glodaMsg && !!this._glodaMsg.mailingLists.length;
     let seen = new Set();
-    const identities = await browser.convContacts.getIdentities({
+    const identityEmails = await browser.convContacts.getIdentityEmails({
       includeNntpIdentities: true,
     });
     this.isReplyAllEnabled =
@@ -879,7 +879,7 @@ class MessageFromGloda extends Message {
         ...this._glodaMsg.cc,
         ...this._glodaMsg.bcc,
       ].filter(function (x) {
-        let r = !seen.has(x.value) && !hasIdentity(identities, x.value);
+        let r = !seen.has(x.value) && !hasIdentity(identityEmails, x.value);
         seen.add(x.value);
         return r;
       }).length > 1;
@@ -940,9 +940,11 @@ class MessageFromDbHdr extends Message {
               aMimeMsg.has("list-post") &&
               RE_LIST_POST.exec(aMimeMsg.get("list-post"));
             let seen = new Set();
-            const identities = await browser.convContacts.getIdentities({
-              includeNntpIdentities: true,
-            });
+            const identityEmails = await browser.convContacts.getIdentityEmails(
+              {
+                includeNntpIdentities: true,
+              }
+            );
             this.isReplyAllEnabled =
               [
                 ...parseMimeLine(aMimeMsg.get("from"), true),
@@ -950,7 +952,8 @@ class MessageFromDbHdr extends Message {
                 ...parseMimeLine(aMimeMsg.get("cc"), true),
                 ...parseMimeLine(aMimeMsg.get("bcc"), true),
               ].filter(function (x) {
-                let r = !seen.has(x.email) && !hasIdentity(identities, x.email);
+                let r =
+                  !seen.has(x.email) && !hasIdentity(identityEmails, x.email);
                 seen.add(x.email);
                 return r;
               }).length > 1;

@@ -133,17 +133,16 @@ ContactFromAB.prototype = {
    * address book.
    */
   async toTmplData(useColor, position, email, isDetail) {
-    const identities = await browser.convContacts
-      .getIdentities({ includeNntpIdentities: false })
+    const identityEmails = await browser.convContacts
+      .getIdentityEmails({ includeNntpIdentities: false })
       .catch(console.error);
-    const identity = identities.find(
-      (ident) => ident.identity.email.toLowerCase() == this._email.toLowerCase()
-    );
+    const lcEmail = this._email.toLowerCase();
+    const hasIdentity = identityEmails.find((e) => e.toLowerCase() == lcEmail);
 
     // `name` and `extra` are the only attributes that depend on `position`
     let name = this._name || this._email;
     let extra = "";
-    if (!isDetail && identity != null) {
+    if (!isDetail && hasIdentity) {
       name =
         position === Contacts.kFrom
           ? browser.i18n.getMessage("message.meFromMeToSomeone")
@@ -156,7 +155,7 @@ ContactFromAB.prototype = {
       this._card &&
       (await browser.conversations.getCorePref("mail.showCondensedAddresses"));
     let tooltipName = this._name || this._email;
-    if (identity != null) {
+    if (hasIdentity) {
       tooltipName = browser.i18n.getMessage("message.meFromMeToSomeone");
     }
 

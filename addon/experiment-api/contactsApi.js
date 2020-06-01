@@ -171,8 +171,10 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
             ? email
             : MailServices.headerParser.makeMimeAddress(name, email);
         },
-        async getIdentities(options) {
-          return getIdentitiesImpl(options);
+        async getIdentityEmails(options) {
+          const { includeNntpIdentities } = options;
+
+          return getIdentityEmailsImpl(!includeNntpIdentities);
         },
         onColumnHandler: new ExtensionCommon.EventManager({
           context,
@@ -194,10 +196,10 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
             monkeyPatchAllWindows(windowManager, callback);
             Services.ww.registerNotification(windowObserver);
 
-            const identities = getIdentities();
+            const emails = getIdentityEmailsImpl();
             let callback2 = registerColumn.bind(
               null,
-              identities,
+              emails,
               betweenMeAndSomeone,
               betweenSomeoneAndMe,
               commaSeparator,
@@ -258,7 +260,7 @@ function createColumn(columnName, columnTooltip, win, id) {
 }
 
 async function registerColumn(
-  identities,
+  emails,
   betweenMeAndSomeone,
   betweenSomeoneAndMe,
   commaSeparator,
@@ -277,10 +279,10 @@ async function registerColumn(
   // It isn't quite right to do this ahead of time, but it saves us having
   // to get the number of identities twice for every cell. Users don't often
   // add or remove identities/accounts anyway.
-  const multipleIdentities = identities.length > 1;
-  function hasIdentity(ids, emailAddress) {
+  const multipleIdentities = emails.length > 1;
+  function hasIdentity(emails, emailAddress) {
     const email = emailAddress.toLowerCase();
-    return ids.some((ident) => ident.identity.email.toLowerCase() == email);
+    return emails.some((e) => e.toLowerCase() == email);
   }
 
   let participants = function (msgHdr) {
@@ -290,7 +292,7 @@ async function registerColumn(
       // Helper for formatting; depending on the locale, we may need a different
       // for me as in "to me" or as in "from me".
       let format = function (x, p) {
-        if (hasIdentity(identities, x.email)) {
+        if (hasIdentity(emails, x.email)) {
           let display = p ? betweenMeAndSomeone : betweenSomeoneAndMe;
           if (multipleIdentities) {
             display += " (" + x.email + ")";
@@ -457,23 +459,14 @@ function composeMessageTo(aEmail, aDisplayedFolder) {
   MailServices.compose.OpenComposeWindowWithParams(null, params);
 }
 
-function getIdentitiesImpl(options = {}) {
-  const { includeNntpIdentities } = options;
-
-  // `getIdentities` returns NCPWrapper objects, but we want
-  // javascript objects. JSON.stringify is an easy way to convert
-  // to a serializable native object.
-  return JSON.parse(JSON.stringify(getIdentities(!includeNntpIdentities)));
-}
-
 /**
  * Returns a list of all identities in the form [{ boolean isDefault; nsIMsgIdentity identity }].
  * It is assured that there is exactly one default identity.
  * If only the default identity is needed, getDefaultIdentity() can be used.
  * @param aSkipNntpIdentities (default: true) Should we avoid including nntp identities in the list?
  */
-function getIdentities(aSkipNntpIdentities = true) {
-  let identities = [];
+function getIdentityEmailsImpl(aSkipNntpIdentities = true) {
+  let emails = [];
   // TB 68 has accounts as an nsIArray.
   // TB 78 has accounts an an directly iterable array.
   for (let account of fixIterator(
@@ -487,9 +480,6 @@ function getIdentities(aSkipNntpIdentities = true) {
     ) {
       continue;
     }
-    const defaultIdentity = MailServices.accounts.defaultAccount
-      ? MailServices.accounts.defaultAccount.defaultIdentity
-      : null;
     // TB 68 has identities as an nsIArray.
     // TB 78 has identities an an directly iterable array.
     for (let currentIdentity of fixIterator(
@@ -498,22 +488,14 @@ function getIdentities(aSkipNntpIdentities = true) {
     )) {
       // We're only interested in identities that have a real email.
       if (currentIdentity.email) {
-        identities.push({
-          isDefault: currentIdentity == defaultIdentity,
-          identity: currentIdentity,
-        });
+        emails.push(currentIdentity.email);
       }
     }
   }
-  if (!identities.length) {
+  if (!emails.length) {
     console.warn("Didn't find any identities!");
-  } else if (!identities.some((x) => x.isDefault)) {
-    console.warn(
-      "Didn't find any default key - mark the first identity as default!"
-    );
-    identities[0].isDefault = true;
   }
-  return identities;
+  return emails;
 }
 
 class WindowObserverContacts {
