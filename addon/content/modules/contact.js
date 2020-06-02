@@ -29,32 +29,29 @@ const defaultPhotoURI =
   "chrome://messenger/skin/addressbook/icons/contact-generic.png";
 
 function ContactManager() {
-  this._cache = {};
-  this._colorCache = {};
-  this._count = 0;
+  this._cache = new Map();
+  this._colorCache = new Map();
 }
 
 ContactManager.prototype = {
-  getContactFromNameAndEmail(name, email) {
+  async getContactFromNameAndEmail(name, email) {
     // [name] and [email] are from the message header
-    let self = this;
     email = (email + "").toLowerCase();
     // Might change in the future... who knows? ...
     let key = email;
-    let cache = function _cache(name, contact) {
-      for (let email of contact.emails) {
-        email = (email + "").toLowerCase();
-        self._cache[key] = contact;
-      }
-    };
-    if (key in this._cache) {
+    if (this._cache.has(key)) {
       if (name) {
-        this._cache[key].enrichWithName(name);
+        this._cache.get(key).enrichWithName(name);
       }
-      return this._cache[key];
+      return this._cache.get(key);
     }
-
-    let contact = new ContactFromAB(this, name, email, this._colorCache[email]);
+    if (this._colorCache.has(key)) {
+      // It is in the color cache, so we know that we don't have an address
+      // book entry for it, so just form a contact from what we have.
+      return new ContactFromAB(name, email, this._colorCache.get(email));
+    }
+    const contact = new ContactFromAB(name, email, this._colorCache.get(email));
+    await contact.fetch();
     // Only cache contacts which are in the address book. This avoids weird
     //  phenomena such as a bug tracker sending emails with different names
     //  but with the same email address, resulting in people all sharing the
@@ -63,32 +60,39 @@ ContactManager.prototype = {
     //  display images, for instance), the user still has the option to uncheck
     //  "prefer display name over header name".
     if (contact._useCardName) {
-      cache(name, contact);
-    } else if (!(email in this._colorCache)) {
+      for (let email of contact.emails) {
+        email = (email + "").toLowerCase();
+        this._cache.set(key, contact);
+      }
+    } else if (!this._colorCache.has(email)) {
       // We still want to cache the color...
-      this._colorCache[email] = contact.color;
+      this._colorCache.set(email, contact.color);
     }
     return contact;
   },
 };
 
-function ContactFromAB(manager, name, email, color) {
-  this.emails = [];
+function ContactFromAB(name, email, color) {
+  // Initialise to the original email, but it may be changed in fetch().
+  this.emails = [email];
   this.color = color || freshColor(email);
 
-  this._manager = manager;
   this._name = name; // Initially, the displayed name. Might be enhanced later.
   this._email = email; // The original email. Use to pick a gravatar.
   this._card = null;
   this._useCardName = false;
-
-  this.fetch();
 }
 
 ContactFromAB.prototype = {
   async fetch() {
     const matchingCards = await browser.contacts.quickSearch(this._email);
-    let card = matchingCards.length !== 0 ? matchingCards[0].properties : null;
+    let card =
+      matchingCards.length !== 0
+        ? {
+            ...matchingCards[0].properties,
+            id: matchingCards[0],
+          }
+        : null;
     this._card = card;
     if (card) {
       // PreferDisplayName returns a literal string "0" or "1". We must convert it
