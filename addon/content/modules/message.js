@@ -355,13 +355,18 @@ class Message {
   }
 
   async getContactsFrom(detail) {
-    let contacts = detail.map((x) => [
-      this._conversation._contactManager.getContactFromNameAndEmail(
-        x.name,
-        x.email
-      ),
-      x.email,
-    ]);
+    let contacts = [];
+    for (const d of detail) {
+      // Not using Promise.all here as we want to let the contact manager
+      // get the data for the caching to work properly.
+      contacts.push([
+        await this._conversation._contactManager.getContactFromNameAndEmail(
+          d.name,
+          d.email
+        ),
+        d.email,
+      ]);
+    }
     this._contacts = this._contacts.concat(contacts);
     // false means "no colors"
     return Promise.all(
@@ -409,7 +414,7 @@ class Message {
 
     // 1) Generate Contact objects
     let contactFrom = [
-      this._conversation._contactManager.getContactFromNameAndEmail(
+      await this._conversation._contactManager.getContactFromNameAndEmail(
         this._from.name,
         this._from.email
       ),

@@ -87,9 +87,6 @@ function topMail3Pane(aObj) {
   } else if ("_htmlPane" in aObj) {
     // Conversation
     return moveOut(aObj._htmlPane);
-  } else if ("_manager" in aObj) {
-    // Contact
-    return moveOut(aObj._domNode.ownerGlobal);
   }
 
   // Standalone window, a tab, or in the htmlpane (common case)
