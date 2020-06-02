@@ -101,8 +101,14 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
           if (beginNewProperties.displayName !== null) {
             args.displayName = beginNewProperties.displayName;
           }
+          let dialog =
+            "chrome://messenger/content/addressbook/abNewCardDialog.xhtml";
+          if (Services.vc.compare(Services.appinfo.version, "77.0.0") < 0) {
+            dialog =
+              "chrome://messenger/content/addressbook/abNewCardDialog.xul";
+          }
           window.openDialog(
-            "chrome://messenger/content/addressbook/abNewCardDialog.xul",
+            dialog,
             "",
             "chrome,resizable=no,titlebar,modal,centerscreen",
             args
@@ -121,8 +127,14 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
             abURI: cardAndBook.book.URI,
             card: cardAndBook.card,
           };
+          let dialog =
+            "chrome://messenger/content/addressbook/abEditCardDialog.xhtml";
+          if (Services.vc.compare(Services.appinfo.version, "77.0.0") < 0) {
+            dialog =
+              "chrome://messenger/content/addressbook/abEditCardDialog.xul";
+          }
           window.openDialog(
-            "chrome://messenger/content/addressbook/abEditCardDialog.xul",
+            dialog,
             "",
             "chrome,modal,resizable=no,centerscreen",
             args
