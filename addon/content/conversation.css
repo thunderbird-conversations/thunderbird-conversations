@@ -12,8 +12,6 @@ body {
   font-family: sans-serif;
   font-size: 1.2rem;
   line-height: 1.8rem;
-  background-color: Window;
-  color: WindowText;
   margin: 0;
   padding: 0;
   overflow-y: scroll;
@@ -154,8 +152,6 @@ a img {
 
 .message {
   margin: 0 10px 1px;
-  background-color: -moz-default-background-color;
-  color: -moz-default-color;
   border: 1px solid ThreeDShadow;
   list-style-type: none;
 }
