@@ -297,19 +297,6 @@ Conversation.prototype = {
     });
   },
 
-  // Before the Gloda query returns, the user might change selection. Don't
-  // output a conversation unless we're really sure the user hasn't changed his
-  // mind.
-  // TODO: this logic is weird. Shouldn't we just compare a list of URLs?
-  _selectionChanged: function _Conversation_selectionChanged() {
-    let gFolderDisplay = topMail3Pane(this).gFolderDisplay;
-    let messageIds = this._initialSet.map((x) => x.messageId);
-    return (
-      !gFolderDisplay.selectedMessage ||
-      !messageIds.some((x) => x == gFolderDisplay.selectedMessage.messageId)
-    );
-  },
-
   // This function contains the logic that runs a Gloda query on the initial set
   //  of messages in order to obtain the conversation. It takes care of filling
   //  this.messages with the right set of messages, and then moves on to
@@ -700,14 +687,6 @@ Conversation.prototype = {
   // Once we're confident our set of messages is the right one, we actually
   // start outputting them inside the DOM element we were given.
   async _outputMessages() {
-    // TODO: I think this test is still valid because of the thread summary
-    // stabilization interval (we might have changed selection and still be
-    // waiting to fire the new conversation).
-    if (!this._isInTab && this._selectionChanged()) {
-      Log.debug("Selection changed, aborting...");
-      return;
-    }
-
     // Check to see if another conversation has started loading whilst we've
     // been creating. If so, abort and get out of here.
     if (this._window.Conversations.counter != this.counter) {
