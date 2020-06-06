@@ -150,6 +150,12 @@
               "type": {
                 "type": "string",
                 "description": "The type of tab to open."
+              },
+              "windowId": {
+                "type": "integer",
+                "optional": true,
+                "minimum": -2,
+                "description": "The window id to create the new tab in."
               }
             }
           }

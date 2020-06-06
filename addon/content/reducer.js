@@ -56,6 +56,7 @@ const initialSummary = {
   OS: "win",
   tenPxFactor: 0.7,
   subject: "",
+  windowId: null,
 };
 
 function modifyOnlyMsg(currentState, msgUri, modifier) {
@@ -88,13 +89,14 @@ function modifyOnlyMsgId(currentState, id, modifier) {
 
 const attachmentActions = {
   previewAttachment({ name, url, isPdf, maybeViewable }) {
-    return async () => {
+    return async (dispatch, getState) => {
       if (maybeViewable) {
         // Can't use browser.tabs.create because imap://user@bar/ is an
         // illegal url.
         browser.conversations.createTab({
           url,
           type: "contentTab",
+          windowId: getState().summary.windowId,
         });
       }
       if (isPdf) {
@@ -105,6 +107,7 @@ const attachmentActions = {
             "&name=" +
             encodeURIComponent(name),
           type: "chromeTab",
+          windowId: getState().summary.windowId,
         });
       }
     };
@@ -139,12 +142,10 @@ const attachmentActions = {
     };
   },
   showGalleryView({ msgUri }) {
-    return async () => {
+    return async (dispatch, getState) => {
       browser.tabs.create({
         url: "/gallery/index.html?uri=" + encodeURI(msgUri),
-        // For some reason, with how we're extending the API here we
-        // have to pass an explicit null.
-        windowId: null,
+        windowId: getState().summary.windowId,
       });
     };
   },
@@ -252,8 +253,9 @@ const messageActions = {
       const isInTab = params.has("urls");
 
       await dispatch({
-        type: "SET_IN_TAB",
+        type: "SET_CONVERSATION_STATE",
         isInTab,
+        windowId: BrowserSim.getWindowId(topMail3Pane(window)),
       });
 
       const platformInfo = await browser.runtime.getPlatformInfo();
@@ -484,7 +486,7 @@ const messageActions = {
         msgs = state.messages.msgData.map((msg) => msg.id);
       } else {
         msgs = await browser.convMsgWindow.selectedMessages(
-          topMail3Pane(window).conversationWindowId
+          state.summary.windowId
         );
         msgs = msgs.map((m) => m.id);
       }
@@ -499,7 +501,7 @@ const messageActions = {
         msgs = state.messages.msgData.map((msg) => msg.id);
       } else {
         msgs = await browser.convMsgWindow.selectedMessages(
-          topMail3Pane(window).conversationWindowId
+          state.summary.windowId
         );
         msgs = msgs.map((m) => m.id);
       }
@@ -511,7 +513,7 @@ const messageActions = {
           currentWindow: null,
           lastFocusedWindow: null,
           title: null,
-          windowId: topMail3Pane(window).conversationWindowId,
+          windowId: state.summary.windowId,
           windowType: null,
         });
         await browser.tabs.remove(currentTab[0].id);
@@ -542,15 +544,15 @@ const messageActions = {
   },
   detachTab() {
     return async (dispatch, getState) => {
-      const state = getState().messages;
+      const state = getState();
       // TODO: Fix re-enabling composition when expanded into new tab.
       // let willExpand = element.hasClass("expand") && startedEditing();
       // First, save the draft, and once it's saved, then move on to opening the
       // conversation in a new tab...
       // onSave(() => {
-      const urls = state.msgData.map((x) => x.msgUri);
+      const urls = state.messages.msgData.map((x) => x.msgUri);
       BrowserSim.callBackgroundFunc("_window", "openConversation", [
-        BrowserSim.getWindowId(window),
+        state.summary.windowId,
         urls,
         // "&willExpand=" + Number(willExpand);
       ]);
@@ -748,11 +750,12 @@ function messages(state = initialMessages, action) {
 
 const summaryActions = {
   showMessagesInvolving({ name, email }) {
-    return async () => {
+    return async (dispatch, getState) => {
       await browser.convContacts
         .showMessagesInvolving({
           email,
           title: browser.i18n.getMessage("involvingTabTitle", [name]),
+          windowId: getState().summary.windowId,
         })
         .catch(console.error);
     };
@@ -767,10 +770,11 @@ const summaryActions = {
 
 function summary(state = initialSummary, action) {
   switch (action.type) {
-    case "SET_IN_TAB": {
+    case "SET_CONVERSATION_STATE": {
       return {
         ...state,
         isInTab: action.isInTab,
+        windowId: action.windowId,
       };
     }
     case "SET_SYSTEM_OPTIONS": {
