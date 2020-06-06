@@ -430,8 +430,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           } else {
             params.chromePage = createTabProperties.url;
           }
-          Services.wm
-            .getMostRecentWindow("mail:3pane")
+          getWindowFromId(createTabProperties.windowId)
             .document.getElementById("tabmail")
             .openTab(createTabProperties.type, params);
         },
@@ -584,3 +583,9 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
     };
   }
 };
+
+function getWindowFromId(windowManager, context, id) {
+  return id !== null && id !== undefined
+    ? windowManager.get(id, context).window
+    : Services.wm.getMostRecentWindow("mail:3pane");
+}

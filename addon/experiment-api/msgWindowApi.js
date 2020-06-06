@@ -245,8 +245,7 @@ function monkeyPatchAllWindows(windowManager, callback) {
   }
 }
 
-const specialPatches = (win, id) => {
-  win.conversationWindowId = id;
+const specialPatches = (win) => {
   win.conversationUndoFuncs = [];
   const htmlpane = win.document.getElementById("multimessage");
   const messagepane = win.document.getElementById("messagepane");
