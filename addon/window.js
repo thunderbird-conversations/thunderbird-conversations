@@ -52,6 +52,8 @@ export class Window {
         };
       }
     );
+
+    browser.convMsgWindow.onSummarizeThread.addListener(async () => {});
   }
 
   async openConversation(windowId, urls) {

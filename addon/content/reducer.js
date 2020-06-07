@@ -204,7 +204,7 @@ async function setupConversationInTab(params, isInTab) {
     }
 
     freshConversation.outputInto(window, async function (aConversation) {
-      // This is a stripped-down version of what's in monkeypatch.js,
+      // This is a stripped-down version of what's in msgWindowApi.js,
       //  make sure the two are in sync!
       Conversations.currentConversation = aConversation;
       aConversation.completed = true;

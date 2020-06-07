@@ -27,10 +27,6 @@ class PrefManager {
       this.notifyStartupComplete();
     }
   }
-
-  get kStubUrl() {
-    return "chrome://conversations/content/stub.xhtml";
-  }
 }
 
 // Prefs is a singleton.

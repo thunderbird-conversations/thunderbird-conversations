@@ -123,6 +123,12 @@
         "type": "function",
         "description": "Temporary. Fake Listener, actually used for monkey patching various things (With automatic tidy up)",
         "parameters": []
+      },
+      {
+        "name": "onSummarizeThread",
+        "type": "function",
+        "description": "Temporary. Fake Listener, actually used for hooking into summarize thread.",
+        "parameters": []
       }
     ]
   }
