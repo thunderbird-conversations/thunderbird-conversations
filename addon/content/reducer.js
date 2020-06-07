@@ -286,8 +286,7 @@ const messageActions = {
           let mainWindow = topMail3Pane(window);
           if (
             mainWindow.Conversations &&
-            mainWindow.Conversations.monkeyPatch &&
-            mainWindow.Conversations.monkeyPatch.finishedStartup
+            mainWindow.Conversations.finishedStartup
           ) {
             resolve();
           } else {
