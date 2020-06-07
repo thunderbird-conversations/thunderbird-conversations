@@ -8,7 +8,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   ExtensionCommon: "resource://gre/modules/ExtensionCommon.jsm",
   GlodaAttrProviders:
     "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
-  MonkeyPatch: "chrome://conversations/content/modules/monkeypatch.js",
   MsgHdrToMimeMessage: "resource:///modules/gloda/mimemsg.js",
   msgUriToMsgHdr: "chrome://conversations/content/modules/misc.js",
   NetUtil: "resource://gre/modules/NetUtil.jsm",
@@ -50,7 +49,6 @@ const conversationModules = [
   "chrome://conversations/content/modules/hook.js",
   "chrome://conversations/content/modules/message.js",
   "chrome://conversations/content/modules/misc.js",
-  "chrome://conversations/content/modules/monkeypatch.js",
   "chrome://conversations/content/modules/prefs.js",
 ];
 
@@ -115,22 +113,19 @@ function prefType(name) {
   throw new Error(`Unexpected pref type ${name}`);
 }
 
-function monkeyPatchWindow(window, windowId) {
+function monkeyPatchWindow(win, windowId) {
   let doIt = async function () {
     try {
       if (
-        window.document.location !=
-          "chrome://messenger/content/messenger.xul" &&
-        window.document.location != "chrome://messenger/content/messenger.xhtml"
+        win.document.location != "chrome://messenger/content/messenger.xul" &&
+        win.document.location != "chrome://messenger/content/messenger.xhtml"
       ) {
         return;
       }
       Log.debug("The window looks like a mail:3pane, monkey-patching...");
 
       // Insert our own global Conversations object
-      window.Conversations = {
-        // These two belong here, use getMail3Pane().Conversations to access them
-        monkeyPatch: null,
+      win.Conversations = {
         // key: Message-ID
         // value: a list of listeners
         msgListeners: new Map(),
@@ -144,17 +139,9 @@ function monkeyPatchWindow(window, windowId) {
         counter: 0,
 
         createDraftListenerArrayForId(aId) {
-          window.Conversations.draftListeners[aId] = [];
+          win.Conversations.draftListeners[aId] = [];
         },
       };
-
-      // We instantiate the Monkey-Patch for the given Conversation object.
-      let monkeyPatch = new MonkeyPatch(window, windowId);
-      // And then we seize the window and insert our code into it
-      await monkeyPatch.apply();
-
-      // Used by the in-stub.html detachTab function
-      window.Conversations.monkeyPatch = monkeyPatch;
 
       // The modules below need to be loaded when a window exists, i.e. after
       // overlays have been properly loaded and applied
@@ -168,21 +155,19 @@ function monkeyPatchWindow(window, windowId) {
       ChromeUtils.import(
         "chrome://conversations/content/modules/plugins/dkimVerifier.js"
       );
-      monkeyPatch.finishedStartup = true;
+      win.Conversations.finishedStartup = true;
       /* eslint-enable no-unused-vars */
     } catch (e) {
       Cu.reportError(e);
     }
   };
 
-  if (window.document.readyState == "complete") {
+  if (win.document.readyState == "complete") {
     Log.debug("Document is ready...");
     doIt().catch(console.error);
   } else {
-    Log.debug(
-      `Document is not ready (${window.document.readyState}), waiting...`
-    );
-    window.addEventListener(
+    Log.debug(`Document is not ready (${win.document.readyState}), waiting...`);
+    win.addEventListener(
       "load",
       () => {
         doIt().catch(console.error);
@@ -239,11 +224,17 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
 
     Services.ww.unregisterNotification(windowObserver);
 
-    for (let w of Services.wm.getEnumerator("mail:3pane")) {
-      if ("Conversations" in w) {
-        w.Conversations.monkeyPatch.undo();
+    for (let win of Services.wm.getEnumerator("mail:3pane")) {
+      // Switch to a 3pane view (otherwise the "display threaded"
+      // customization is not reverted)
+      let tabmail = win.document.getElementById("tabmail");
+      if (tabmail.tabContainer.selectedIndex != 0) {
+        tabmail.tabContainer.selectedIndex = 0;
       }
     }
+
+    // We only need to do this on once, not for each window.
+    undoCustomizations();
 
     BrowserSim.setBrowserListener(null);
 
@@ -588,4 +579,22 @@ function getWindowFromId(windowManager, context, id) {
   return id !== null && id !== undefined
     ? windowManager.get(id, context).window
     : Services.wm.getMostRecentWindow("mail:3pane");
+}
+
+function undoCustomizations() {
+  let uninstallInfos = JSON.parse(Prefs.uninstall_infos);
+  for (let [k, v] of Object.entries(Customizations)) {
+    if (k in uninstallInfos) {
+      try {
+        Log.debug("Uninstalling", k, uninstallInfos[k]);
+        v.uninstall(uninstallInfos[k]);
+      } catch (ex) {
+        console.error("Failed to uninstall", k, ex);
+      }
+    }
+  }
+  // TODO: We may need to fix this to pass data back to local storage, but
+  // generally if we're being uninstalled, we'll be removing the local storage
+  // anyway, so maybe this is ok? Or do we need to handle the disable case?
+  // Prefs.setString("conversations.uninstall_infos", "{}");
 }
