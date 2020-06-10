@@ -99,17 +99,17 @@ ContactFromAB.prototype = {
       // to a boolean appropriately.
       this._useCardName =
         card.PreferDisplayName != null ? !!+card.PreferDisplayName : true;
-      this.emails = [card.primaryEmail, card.SecondEmail || ""];
+      this.emails = [card.PrimaryEmail, card.SecondEmail || ""];
       // Prefer:
       // - displayName
       // - firstName lastName (if one of these is non-empty)
       // - the parsed name
       // - the email
-      if (this._useCardName && card.displayName) {
-        this._name = card.displayName;
+      if (this._useCardName && card.DisplayName) {
+        this._name = card.DisplayName;
       }
-      if (this._useCardName && (card.firstName || card.lastName)) {
-        this._name = card.firstName + " " + card.lastName;
+      if (this._useCardName && (card.FirstName || card.LastName)) {
+        this._name = card.FirstName + " " + card.LastName;
       }
       if (!this._name) {
         this._name = this._email;
