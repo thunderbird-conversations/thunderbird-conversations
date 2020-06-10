@@ -229,6 +229,11 @@
     "description": "Title of the button to open the setup assistant."
   },
 
+  "message.movedOrDeletedConversation": {
+    "message": "We're sorry, but we can't display this conversation, because the messages have been moved or deleted.",
+    "description": "Error message for the conversation tab"
+  },
+
   "contact.copyEmailTooltip": {
     "message": "Copy email address to clipboard",
     "description": "Tooltip shown on the copy email to clipboard button"
