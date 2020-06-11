@@ -504,7 +504,11 @@ const messageActions = {
         );
         msgs = msgs.map((m) => m.id);
       }
-      browser.messages.delete(msgs).catch(console.error);
+      try {
+        await browser.messages.delete(msgs);
+      } catch (ex) {
+        console.error(ex);
+      }
       if (state.summary.isInTab) {
         // The additional nulls appear to be necessary due to our browser proxying.
         let currentTab = await browser.tabs.query({
@@ -846,9 +850,14 @@ function summary(state = initialSummary, action) {
       if (!action.dueToExpansion) {
         newState.iframesLoading++;
       }
-      state.conversation
-        .getMessage(action.msgUri)
-        .streamMessage(topMail3Pane(window).msgWindow, action.docshell);
+      let message = state.conversation.getMessage(action.msgUri);
+      // The message might not be found, if so it has probably been deleted from
+      // under us, so just continue and not blow up.
+      if (message) {
+        message.streamMessage(topMail3Pane(window).msgWindow, action.docshell);
+      } else {
+        console.warn("Could not find message for streaming", action.msgUri);
+      }
       return newState;
     }
     case "MSG_STREAM_LOAD_FINISHED": {
