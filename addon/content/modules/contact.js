@@ -85,7 +85,14 @@ function ContactFromAB(name, email, color) {
 
 ContactFromAB.prototype = {
   async fetch() {
-    const matchingCards = await browser.contacts.quickSearch(this._email);
+    let matchingCards = [];
+    // See #1492. This attempts to catch errors from quickSearch that can
+    // happen if there are broken address books.
+    try {
+      await browser.contacts.quickSearch(this._email);
+    } catch (ex) {
+      console.error(ex);
+    }
     let card =
       matchingCards.length !== 0
         ? {
