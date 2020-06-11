@@ -402,9 +402,7 @@ Conversation.prototype = {
         // We can sort now because we don't need the Message instance to be
         // fully created to get the date of a message.
         messages.sort(compare);
-        if (messages.length) {
-          this.appendMessages(messages).catch(console.error);
-        }
+        this.appendMessages(messages).catch(console.error);
       } catch (e) {
         console.error(e);
       }
@@ -629,6 +627,7 @@ Conversation.prototype = {
     //  whole thing and asks for a new ThreadSummary but the user hasn't
     //  actually changed selections.
     if (!newMsgs.length) {
+      Log.debug("No messages to append");
       return;
     }
 
