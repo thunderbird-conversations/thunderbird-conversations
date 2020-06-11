@@ -14,10 +14,15 @@
   }
 } */
 
+@media screen and (prefers-color-scheme: light) {
+  body {
+    background-color: var(--application-background-color);
+    color: var(--application-foreground-color);
+  }
+}
+
 body {
   direction: __MSG_@@bidi_dir__;
-  background-color: var(--application-background-color);
-  color: var(--application-foreground-color);
 }
 
 #preferencesGrid {
