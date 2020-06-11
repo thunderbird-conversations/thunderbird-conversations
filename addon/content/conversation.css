@@ -20,9 +20,14 @@
   padding: 0;
 }
 
+@media screen and (prefers-color-scheme: light) {
+  body {
+    background-color: var(--application-background-color);
+    color: var(--application-foreground-color);
+  }
+}
+
 body {
-  background-color: var(--application-background-color);
-  color: var(--application-foreground-color);
   font-family: sans-serif;
   font-size: 1.2rem;
   line-height: 1.8rem;
