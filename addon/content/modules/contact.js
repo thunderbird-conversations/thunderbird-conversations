@@ -89,7 +89,7 @@ ContactFromAB.prototype = {
     // See #1492. This attempts to catch errors from quickSearch that can
     // happen if there are broken address books.
     try {
-      await browser.contacts.quickSearch(this._email);
+      matchingCards = await browser.contacts.quickSearch(this._email);
     } catch (ex) {
       console.error(ex);
     }
