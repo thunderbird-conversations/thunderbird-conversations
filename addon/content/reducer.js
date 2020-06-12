@@ -412,7 +412,7 @@ const messageActions = {
     return async () => {
       browser.messages
         .update(id, {
-          tags: tags.map((t) => t.id),
+          tags: tags.map((t) => t.key),
         })
         .catch(console.error);
     };
