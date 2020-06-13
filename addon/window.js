@@ -41,7 +41,7 @@ export class Window {
         }
         const url = this.makeConversationUrl(
           urls,
-          await browser.convMsgWindow.isSelectionThreaded(self._windowId)
+          await browser.convMsgWindow.isSelectionThreaded(windowId)
         );
         await browser.conversations.createTab({
           url,
@@ -59,7 +59,7 @@ export class Window {
   async openConversation(windowId, urls) {
     const url = this.makeConversationUrl(
       urls,
-      await browser.convMsgWindow.isSelectionThreaded(self._windowId)
+      await browser.convMsgWindow.isSelectionThreaded(windowId)
     );
 
     switch (

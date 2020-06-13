@@ -292,7 +292,7 @@ const specialPatches = (win) => {
   // Because we're not even fetching the conversation when the message pane is
   //  hidden, we need to trigger it manually when it's un-hidden.
   let unhideListener = function () {
-    win.summarizeThread(window.gFolderDisplay.selectedMessages);
+    win.summarizeThread(win.gFolderDisplay.selectedMessages);
   };
   win.addEventListener("messagepane-unhide", unhideListener, true);
   win.conversationUndoFuncs.push(() =>
