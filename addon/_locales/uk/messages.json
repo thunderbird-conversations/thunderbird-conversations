@@ -48,15 +48,15 @@
     "description": "Options - title for if to show friendly dates."
   },
   "options.friendly_date_desc": {
-    "message": "У верхньому правому кутку використовувати звичайні дати, як у списку повідомлень, а не \"вчора\", \"минулого тижня\" та подібні.",
+    "message": "У верхньому правому кутку показувати звичайні дати, як у списку повідомлень, а не \"вчора\", \"минулого тижня\" та подібні.",
     "description": "Options - description for if to show friendly dates."
   },
   "options.tweak_chrome_title": {
-    "message": "Оптимізувати шрифти chrome",
+    "message": "Оптимізувати шрифти інтерфейсу",
     "description": "Options - title for tweaking chrome fonts."
   },
   "options.tweak_chrome_desc": {
-    "message": "Зменшувати розмір шрифту для розмов chrome (рекомендовано, необхідний перезапуск).",
+    "message": "Зменшувати розмір шрифту для інтерфейсу розмов (рекомендовано, необхідний перезапуск).",
     "description": "Options - description for tweaking chrome fonts."
   },
   "options.tweak_bodies_title": {
@@ -182,6 +182,10 @@
   "options.start_setup_assistant": {
     "message": "Запустити майстер налаштувань",
     "description": "Title of the button to open the setup assistant."
+  },
+  "message.movedOrDeletedConversation": {
+    "message": "Шкода, але ми не можемо показати цю розмову, тому що повідомлення переміщено або видалено.",
+    "description": "Error message for the conversation tab"
   },
   "contact.copyEmailTooltip": {
     "message": "Копіювати адресу е-пошти в буфер обміну",
@@ -354,7 +358,7 @@
     "description": "Header name displayed for the cc field"
   },
   "header.to": {
-    "message": "до",
+    "message": "кому",
     "description": "Used in the header, inserted in 'from me to you'."
   },
   "tags.jumpToFolder.tooltip": {
@@ -416,7 +420,7 @@
     "description": "This is used in messages, for the recipients, and the 'between' column as well. In English, space after the comma."
   },
   "header.andSeparator": {
-    "message": " і ",
+    "message": " та ",
     "description": "This is used in messages, for the recipients, and the 'between' column as well. In English, space after and before « and »."
   },
   "attachments.context.open": {
@@ -462,7 +466,7 @@
     "description": "One of four different strings are required to accomodate some languages which have specific declensions."
   },
   "message.meBetweenSomeoneAndMe": {
-    "message": "Мені",
+    "message": "Я",
     "description": "One of four different strings are required to accomodate some languages which have specific declensions."
   },
   "message.headerSubject": {
@@ -546,7 +550,7 @@
     "description": "Document title for composing an email in a new tab."
   },
   "between.columnName": {
-    "message": "Між",
+    "message": "Учасники",
     "description": "The displayed name of the between column."
   },
   "between.columnTooltip": {
