@@ -17,7 +17,7 @@
   },
   "options_ui": {
     "open_in_tab": true,
-    "page": "options.html"
+    "page": "options/options.html"
   },
   "permissions": [
     "accountsRead",

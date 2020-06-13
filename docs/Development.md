@@ -56,7 +56,7 @@ $ npm run dev
 ```
 
 and then browse to http://localhost:8126 and select a browser-compatible
-component file. For example, http://localhost:8126/options.html  
+component file. For example, http://localhost:8126/options/options.html  
 
 `npm run dev` will copy/compile all source files to the `build-dev-html`;
 it continues to watch files for changes and will automatically recopy/recompile

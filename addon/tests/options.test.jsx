@@ -21,7 +21,7 @@ const {
   Main,
   store,
   actions,
-} = esmImport("../options.js");
+} = esmImport("../options/options.js");
 
 describe("Option components have correct return values", () => {
   test("NumericOption always returns a numeric type", () => {
@@ -157,7 +157,7 @@ describe("Option full page tests", () => {
 
     expect(mockedTabCreate).toHaveBeenCalled();
     expect(mockedTabCreate.mock.calls[0][0]).toStrictEqual({
-      url: "assistant/assistant.html",
+      url: "../assistant/assistant.html",
     });
   });
 });
