@@ -6,8 +6,8 @@
 // however we currently aren't able to use sendMessage to send to both the
 // background script and to bootstrap.js.
 
-import { browser, i18n } from "./content/es-modules/thunderbird-compat.js";
-import { React, RTK, ReactRedux, PropTypes } from "./content/es-modules/ui.js";
+import { browser, i18n } from "../content/es-modules/thunderbird-compat.js";
+import { React, RTK, ReactRedux, PropTypes } from "../content/es-modules/ui.js";
 
 //
 // Create the redux store and appropriate actions/thunks
@@ -175,7 +175,7 @@ function localize(prefsInfo, i18n = browser.i18n) {
 
 function openSetupAssistant() {
   browser.tabs.create({
-    url: "assistant/assistant.html",
+    url: "../assistant/assistant.html",
   });
 }
 

@@ -24,9 +24,9 @@ module.exports = {
       excludedFiles: ["addon/bootstrap.js"],
       files: [
         "addon/*.js",
-        "addon/*.jsx",
         "addon/assistant/*.js",
         "addon/gallery/*.js*",
+        "addon/options/*.js*",
         "addon/content/es-modules/**/*.js",
         "addon/content/es-modules/**/*.jsx",
       ],
@@ -40,6 +40,16 @@ module.exports = {
       },
       excludedFiles: ["addon/content/modules/**/*.js"],
       files: ["addon/content/**/*.js", "addon/content/**/*.jsx"],
+    },
+    {
+      env: {
+        browser: false,
+      },
+      files: [
+        "addon/*.js",
+        "addon/experiment-api/*.js",
+        "addon/content/modules/**/*.js",
+      ],
     },
   ],
   plugins: ["mozilla", "html", "json", "react"],
