@@ -165,7 +165,7 @@
   },
 
   "assistant.settings": {
-    "message": "Settings",
+    "message": "Nastavitve",
     "description": "The settings section legend for the assistant."
   },
 
