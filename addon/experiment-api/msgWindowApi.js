@@ -12,7 +12,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
 });
 
 XPCOMUtils.defineLazyGetter(this, "Log", () => {
-  return setupLogging("Conversations.AssistantUI");
+  return setupLogging("Conversations.msgWindowApi");
 });
 
 XPCOMUtils.defineLazyGetter(this, "browser", function () {

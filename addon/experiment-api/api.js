@@ -55,7 +55,7 @@ const conversationModules = [
 // Note: we must not use any modules until after initialization of prefs,
 // otherwise the prefs might not get loaded correctly.
 XPCOMUtils.defineLazyGetter(this, "Log", () => {
-  return setupLogging("Conversations.AssistantUI");
+  return setupLogging("Conversations.api");
 });
 
 function StreamListener(resolve, reject) {
@@ -163,10 +163,8 @@ function monkeyPatchWindow(win, windowId) {
   };
 
   if (win.document.readyState == "complete") {
-    Log.debug("Document is ready...");
     doIt().catch(console.error);
   } else {
-    Log.debug(`Document is not ready (${win.document.readyState}), waiting...`);
     win.addEventListener(
       "load",
       () => {
