@@ -14,19 +14,24 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   getInitials: "chrome://conversations/content/utils.js",
   freshColor: "chrome://conversations/content/utils.js",
+  Services: "resource://gre/modules/Services.jsm",
 });
 
 XPCOMUtils.defineLazyGetter(this, "browser", function () {
   return BrowserSim.getBrowser();
 });
 
+XPCOMUtils.defineLazyGetter(this, "defaultPhotoURI", function () {
+  if (Services.vc.compare(Services.appinfo.version, "78.0.0") < 0) {
+    return "chrome://messenger/skin/addressbook/icons/contact-generic.png";
+  }
+  return "chrome://messenger/skin/addressbook/icons/contact-generic.svg";
+});
+
 var Contacts = {
   kFrom: 0,
   kTo: 1,
 };
-
-const defaultPhotoURI =
-  "chrome://messenger/skin/addressbook/icons/contact-generic.png";
 
 function ContactManager() {
   this._cache = new Map();
