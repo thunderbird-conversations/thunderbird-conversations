@@ -1,17 +1,5 @@
 var EXPORTED_SYMBOLS = ["registerHook", "getHooks", "removeHook"];
 
-const { XPCOMUtils } = ChromeUtils.import(
-  "resource://gre/modules/XPCOMUtils.jsm"
-);
-
-XPCOMUtils.defineLazyModuleGetters(this, {
-  setupLogging: "chrome://conversations/content/modules/misc.js",
-});
-
-XPCOMUtils.defineLazyGetter(this, "Log", () => {
-  return setupLogging("Conversations.hooks");
-});
-
 /* A hook is just a listener whose various methods get called at various stages
  *  of the conversation process.
  *
@@ -89,7 +77,6 @@ XPCOMUtils.defineLazyGetter(this, "Log", () => {
 let hooks = [];
 
 function registerHook(name, h) {
-  Log.debug(`Hook registered for ${name}`);
   hooks.push(h);
 }
 
