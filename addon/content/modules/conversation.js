@@ -601,7 +601,7 @@ Conversation.prototype = {
    * @param {Message} msg a Message as in modules/message.js
    */
   removeMessage(msg) {
-    Log.debug("Removing message", msg);
+    Log.debug("Removing message:", msg && msg._uri);
     // Move the quick reply to the previous message
     this.messages = this.messages.filter((x) => x.message != msg);
     this._initialSet = this._initialSet.filter((x) => x.message != msg);
@@ -631,7 +631,10 @@ Conversation.prototype = {
       return;
     }
 
-    Log.debug("Appending", newMsgs);
+    Log.debug(
+      "Appending",
+      newMsgs.map((x) => x.debug + " " + getMessageId(x)).join(" ")
+    );
 
     // All your messages are belong to us. This is especially important so
     //  that contacts query the right _contactManager through their parent
