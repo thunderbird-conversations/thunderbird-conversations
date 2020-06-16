@@ -461,7 +461,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
                   ...mimeMsg.allUserAttachments,
                 ];
                 let seenMap = new Set();
-                attachments.filter((a) => {
+                attachments = attachments.filter((a) => {
                   const seen = seenMap.has(a);
                   seenMap.add(a);
                   return !seen;
