@@ -114,89 +114,96 @@ function prefType(name) {
 }
 
 function monkeyPatchWindow(win, windowId) {
-  let doIt = async function () {
-    try {
-      if (
-        win.document.location != "chrome://messenger/content/messenger.xul" &&
-        win.document.location != "chrome://messenger/content/messenger.xhtml"
-      ) {
-        return;
-      }
-      Log.debug("The window looks like a mail:3pane, monkey-patching...");
+  Log.debug("monkey-patching...");
 
-      // Insert our own global Conversations object
-      win.Conversations = {
-        // key: Message-ID
-        // value: a list of listeners
-        msgListeners: new Map(),
-        // key: Gloda Conversation ID
-        // value: a list of listeners that have a onDraftChanged method
-        draftListeners: {},
+  // Insert our own global Conversations object
+  win.Conversations = {
+    // key: Message-ID
+    // value: a list of listeners
+    msgListeners: new Map(),
+    // key: Gloda Conversation ID
+    // value: a list of listeners that have a onDraftChanged method
+    draftListeners: {},
 
-        // These two are replicated in the case of a conversation tab, so use
-        //  Conversation._window.Conversations to access the right instance
-        currentConversation: null,
-        counter: 0,
+    // These two are replicated in the case of a conversation tab, so use
+    //  Conversation._window.Conversations to access the right instance
+    currentConversation: null,
+    counter: 0,
 
-        createDraftListenerArrayForId(aId) {
-          win.Conversations.draftListeners[aId] = [];
-        },
-      };
-
-      // The modules below need to be loaded when a window exists, i.e. after
-      // overlays have been properly loaded and applied
-      /* eslint-disable no-unused-vars */
-      ChromeUtils.import(
-        "chrome://conversations/content/modules/plugins/enigmail.js"
-      );
-      ChromeUtils.import(
-        "chrome://conversations/content/modules/plugins/lightning.js"
-      );
-      ChromeUtils.import(
-        "chrome://conversations/content/modules/plugins/dkimVerifier.js"
-      );
-      win.Conversations.finishedStartup = true;
-      /* eslint-enable no-unused-vars */
-    } catch (e) {
-      Cu.reportError(e);
-    }
+    createDraftListenerArrayForId(aId) {
+      win.Conversations.draftListeners[aId] = [];
+    },
   };
 
-  if (win.document.readyState == "complete") {
-    doIt().catch(console.error);
-  } else {
-    win.addEventListener(
-      "load",
-      () => {
-        doIt().catch(console.error);
-      },
-      { once: true }
-    );
-  }
+  // The modules below need to be loaded when a window exists, i.e. after
+  // overlays have been properly loaded and applied
+  /* eslint-disable no-unused-vars */
+  ChromeUtils.import(
+    "chrome://conversations/content/modules/plugins/enigmail.js"
+  );
+  ChromeUtils.import(
+    "chrome://conversations/content/modules/plugins/lightning.js"
+  );
+  ChromeUtils.import(
+    "chrome://conversations/content/modules/plugins/dkimVerifier.js"
+  );
+  win.Conversations.finishedStartup = true;
 }
 
-function monkeyPatchAllWindows(windowManager) {
-  for (let w of Services.wm.getEnumerator("mail:3pane")) {
-    monkeyPatchWindow(w, windowManager.getWrapper(w).id);
+class ApiWindowObserver {
+  constructor(windowManager, callback) {
+    this._windowManager = windowManager;
+    this._callback = callback;
   }
-}
 
-// This obserer is notified when a new window is created and injects our code
-let windowObserver = {
   observe(aSubject, aTopic, aData) {
     if (aTopic == "domwindowopened") {
       if (aSubject && "QueryInterface" in aSubject) {
-        aSubject.QueryInterface(Ci.nsIDOMWindow);
-        monkeyPatchWindow(
-          aSubject.window,
-          BrowserSim._context.extension.windowManager.getWrapper(
-            aSubject.window
-          ).id
-        );
+        const win = aSubject.QueryInterface(Ci.nsIDOMWindow).window;
+        apiWaitForWindow(win).then(() => {
+          if (
+            win.document.location !=
+              "chrome://messenger/content/messenger.xul" &&
+            win.document.location !=
+              "chrome://messenger/content/messenger.xhtml"
+          ) {
+            return;
+          }
+          this._callback(
+            aSubject.window,
+            this._windowManager.getWrapper(aSubject.window).id
+          );
+        });
       }
     }
-  },
-};
+  }
+}
+
+function apiWaitForWindow(win) {
+  return new Promise((resolve) => {
+    if (win.document.readyState == "complete") {
+      resolve();
+    } else {
+      win.addEventListener(
+        "load",
+        () => {
+          resolve();
+        },
+        { once: true }
+      );
+    }
+  });
+}
+
+function apiMonkeyPatchAllWindows(windowManager, callback) {
+  for (const win of Services.wm.getEnumerator("mail:3pane")) {
+    apiWaitForWindow(win).then(() => {
+      callback(win, windowManager.getWrapper(win).id);
+    });
+  }
+}
+
+let apiWindowObserver;
 
 /* exported conversations */
 var conversations = class extends ExtensionCommon.ExtensionAPI {
@@ -220,7 +227,9 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
       return;
     }
 
-    Services.ww.unregisterNotification(windowObserver);
+    if (apiWindowObserver) {
+      Services.ww.unregisterNotification(apiWindowObserver);
+    }
 
     for (let win of Services.wm.getEnumerator("mail:3pane")) {
       // Switch to a 3pane view (otherwise the "display threaded"
@@ -260,10 +269,12 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
               // Patch all existing windows when the UI is built; all locales should have been loaded here
               // Hook in the embedding and gloda attribute providers.
               GlodaAttrProviders.init();
-              monkeyPatchAllWindows(windowManager);
-
-              // Patch all future windows
-              Services.ww.registerNotification(windowObserver);
+              apiMonkeyPatchAllWindows(windowManager, monkeyPatchWindow);
+              apiWindowObserver = new ApiWindowObserver(
+                windowManager,
+                monkeyPatchWindow
+              );
+              Services.ww.registerNotification(apiWindowObserver);
             } catch (ex) {
               console.error(ex);
             }
