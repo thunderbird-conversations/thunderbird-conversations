@@ -240,9 +240,6 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
       }
     }
 
-    // We only need to do this on once, not for each window.
-    undoCustomizations();
-
     BrowserSim.setBrowserListener(null);
 
     for (const module of conversationModules) {
@@ -341,6 +338,19 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           }
 
           return JSON.stringify(uninstallInfos);
+        },
+        async undoCustomizations() {
+          let uninstallInfos = JSON.parse(Prefs.uninstall_infos);
+          for (let [k, v] of Object.entries(Customizations)) {
+            if (k in uninstallInfos) {
+              try {
+                Log.debug("Uninstalling", k, uninstallInfos[k]);
+                v.uninstall(uninstallInfos[k]);
+              } catch (ex) {
+                console.error("Failed to uninstall", k, ex);
+              }
+            }
+          }
         },
         async getLegacyStorageData() {
           const path = OS.Path.join(
@@ -588,22 +598,4 @@ function getWindowFromId(windowManager, context, id) {
   return id !== null && id !== undefined
     ? windowManager.get(id, context).window
     : Services.wm.getMostRecentWindow("mail:3pane");
-}
-
-function undoCustomizations() {
-  let uninstallInfos = JSON.parse(Prefs.uninstall_infos);
-  for (let [k, v] of Object.entries(Customizations)) {
-    if (k in uninstallInfos) {
-      try {
-        Log.debug("Uninstalling", k, uninstallInfos[k]);
-        v.uninstall(uninstallInfos[k]);
-      } catch (ex) {
-        console.error("Failed to uninstall", k, ex);
-      }
-    }
-  }
-  // TODO: We may need to fix this to pass data back to local storage, but
-  // generally if we're being uninstalled, we'll be removing the local storage
-  // anyway, so maybe this is ok? Or do we need to handle the disable case?
-  // Prefs.setString("conversations.uninstall_infos", "{}");
 }

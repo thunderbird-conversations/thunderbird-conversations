@@ -812,5 +812,20 @@
   "pdfViewer.previous": {
     "message": "Previous",
     "description": "Description for the previous page button."
+  },
+
+  "options.undoCustomizations": {
+    "message": "Undo Customizations",
+    "description": "Description for the undo customizations button."
+  },
+
+  "options.undoCustomizations.tooltip": {
+    "message": "Undo the customizations applied when originally installed.",
+    "description": "Tooltip for the undo customizations button."
+  },
+
+  "options.undoCustomizations.finished": {
+    "message": "Undo Customizations finished",
+    "description": "Message displayed once the customizations have been uninstalled."
   }
 }

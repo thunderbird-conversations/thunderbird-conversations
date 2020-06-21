@@ -91,4 +91,10 @@ if (!browser.tabs) {
   };
 }
 
+if (!browser.conversations) {
+  browser.conversations = {
+    undoCustomizations() {},
+  };
+}
+
 export { browser };

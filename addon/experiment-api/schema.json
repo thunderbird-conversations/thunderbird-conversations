@@ -70,6 +70,13 @@
         ]
       },
       {
+        "name": "undoCustomizations",
+        "type": "function",
+        "description": "Removes the installed customizations.",
+        "async": true,
+        "parameters": []
+      },
+      {
         "name": "getLegacyStorageData",
         "type": "function",
         "description": "Temporary. Gets the legacy storage data - namely the drafts information.",

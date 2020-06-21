@@ -151,7 +151,7 @@ describe("Option full page tests", () => {
 
     waitForComponentToPaint(main);
 
-    const button = main.find("button");
+    const button = main.find(".start");
 
     button.simulate("click");
 
@@ -159,5 +159,19 @@ describe("Option full page tests", () => {
     expect(mockedTabCreate.mock.calls[0][0]).toStrictEqual({
       url: "../assistant/assistant.html",
     });
+  });
+
+  test("Pressing the undo button runs the undo", async () => {
+    const mockedUndo = jest.spyOn(browser.conversations, "undoCustomizations");
+    window.alert = jest.fn();
+    const main = enzyme.mount(<Main />);
+
+    waitForComponentToPaint(main);
+
+    const button = main.find(".undo");
+
+    button.simulate("click");
+
+    expect(mockedUndo).toHaveBeenCalled();
   });
 });
