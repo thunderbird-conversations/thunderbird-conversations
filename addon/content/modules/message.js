@@ -822,72 +822,67 @@ function hasIdentity(identityEmails, emailAddress) {
 }
 
 class MessageFromGloda extends Message {
-  constructor(conversation, glodaMsg, lateAttachments) {
-    super(conversation, glodaMsg.folderMessage);
-    this._glodaMsg = glodaMsg;
+  constructor(conversation, msgHdr, lateAttachments) {
+    super(conversation, msgHdr);
     this.needsLateAttachments = lateAttachments;
   }
 
-  async init() {
+  async init(glodaMsg) {
     this._id = await browser.conversations.getMessageIdForUri(this._uri);
 
     // Our gloda plugin found something for us, thanks dude!
-    if (this._glodaMsg.alternativeSender) {
+    if (glodaMsg.alternativeSender) {
       this._realFrom = this._from;
-      this._from = this.parse(this._glodaMsg.alternativeSender)[0];
+      this._from = this.parse(glodaMsg.alternativeSender)[0];
     }
 
-    if (this._glodaMsg.bugzillaInfos) {
-      this.bugzillaInfos = JSON.parse(this._glodaMsg.bugzillaInfos);
+    if (glodaMsg.bugzillaInfos) {
+      this.bugzillaInfos = JSON.parse(glodaMsg.bugzillaInfos);
     }
 
     // FIXME messages that have no body end up with "..." as a snippet
-    this._snippet = this._glodaMsg._indexedBodyText
-      ? this._glodaMsg._indexedBodyText.substring(0, kSnippetLength - 1)
+    this._snippet = glodaMsg._indexedBodyText
+      ? glodaMsg._indexedBodyText.substring(0, kSnippetLength - 1)
       : "..."; // it's probably an Enigmail message
 
-    if ("attachmentInfos" in this._glodaMsg) {
-      this._attachments = this._glodaMsg.attachmentInfos;
+    if ("attachmentInfos" in glodaMsg) {
+      this._attachments = glodaMsg.attachmentInfos;
     }
 
-    if ("contentType" in this._glodaMsg) {
-      this.contentType = this._glodaMsg.contentType;
+    if ("contentType" in glodaMsg) {
+      this.contentType = glodaMsg.contentType;
     } else {
       this.contentType = "message/rfc822";
     }
 
-    if ("isEncrypted" in this._glodaMsg) {
-      this.isEncrypted = this._glodaMsg.isEncrypted;
+    if ("isEncrypted" in glodaMsg) {
+      this.isEncrypted = glodaMsg.isEncrypted;
     }
 
     if (
-      (this._glodaMsg.contentType + "").search(/^multipart\/encrypted(;|$)/i) ==
-      0
+      (glodaMsg.contentType + "").search(/^multipart\/encrypted(;|$)/i) == 0
     ) {
       this.isEncrypted = true;
     }
 
-    if ("mailingLists" in this._glodaMsg) {
-      this.mailingLists = this._glodaMsg.mailingLists.map((x) => x.value);
+    if ("mailingLists" in glodaMsg) {
+      this.mailingLists = glodaMsg.mailingLists.map((x) => x.value);
     }
 
     this.isReplyListEnabled =
-      "mailingLists" in this._glodaMsg && !!this._glodaMsg.mailingLists.length;
+      "mailingLists" in glodaMsg && !!glodaMsg.mailingLists.length;
     let seen = new Set();
     const identityEmails = await browser.convContacts.getIdentityEmails({
       includeNntpIdentities: true,
     });
     this.isReplyAllEnabled =
-      [
-        this._glodaMsg.from,
-        ...this._glodaMsg.to,
-        ...this._glodaMsg.cc,
-        ...this._glodaMsg.bcc,
-      ].filter(function (x) {
-        let r = !seen.has(x.value) && !hasIdentity(identityEmails, x.value);
-        seen.add(x.value);
-        return r;
-      }).length > 1;
+      [glodaMsg.from, ...glodaMsg.to, ...glodaMsg.cc, ...glodaMsg.bcc].filter(
+        function (x) {
+          let r = !seen.has(x.value) && !hasIdentity(identityEmails, x.value);
+          seen.add(x.value);
+          return r;
+        }
+      ).length > 1;
   }
 }
 

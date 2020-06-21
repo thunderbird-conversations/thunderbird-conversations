@@ -97,34 +97,41 @@ function msgDate({ type, message, msgHdr, glodaMsg }) {
   return new Date();
 }
 
-async function messageFromGlodaIfOffline(aSelf, aGlodaMsg, aDebug) {
-  let aMsgHdr = aGlodaMsg.folderMessage;
+async function messageFromGlodaIfOffline(conversation, glodaMsg, debug) {
+  let msgHdr = glodaMsg.folderMessage;
+  if (!msgHdr) {
+    return null;
+  }
   let needsLateAttachments =
-    (!(aMsgHdr.folder instanceof Ci.nsIMsgLocalMailFolder) &&
-      !(aMsgHdr.folder.flags & Ci.nsMsgFolderFlags.Offline)) || // online IMAP
-    aGlodaMsg.isEncrypted || // encrypted message
-    (aGlodaMsg.contentType + "").search(/^multipart\/encrypted(;|$)/i) == 0 || // encrypted message
+    (!(msgHdr.folder instanceof Ci.nsIMsgLocalMailFolder) &&
+      !(msgHdr.folder.flags & Ci.nsMsgFolderFlags.Offline)) || // online IMAP
+    glodaMsg.isEncrypted || // encrypted message
+    (glodaMsg.contentType + "").search(/^multipart\/encrypted(;|$)/i) == 0 || // encrypted message
     Prefs.extra_attachments; // user request
-  const message = new MessageFromGloda(aSelf, aGlodaMsg, needsLateAttachments);
-  await message.init();
+  const message = new MessageFromGloda(
+    conversation,
+    msgHdr,
+    needsLateAttachments
+  );
+  await message.init(glodaMsg);
   return {
     type: kMsgGloda,
     message,
-    glodaMsg: aGlodaMsg,
+    glodaMsg,
     msgHdr: null,
-    debug: aDebug,
+    debug,
   };
 }
 
-async function messageFromDbHdr(aSelf, aMsgHdr, aDebug) {
-  const message = new MessageFromDbHdr(aSelf, aMsgHdr);
+async function messageFromDbHdr(conversation, msgHdr, debug) {
+  const message = new MessageFromDbHdr(conversation, msgHdr);
   await message.init();
   return {
     type: kMsgDbHdr,
     message,
-    msgHdr: aMsgHdr,
+    msgHdr,
     glodaMsg: null,
-    debug: aDebug,
+    debug,
   };
 }
 
@@ -212,8 +219,6 @@ function Conversation(
   // Function provided by the monkey-patch to do cleanup
   this._onComplete = null;
   this.viewWrapper = null;
-  // Gloda conversation ID
-  this.id = null;
   // Set to true by the monkey-patch once the conversation is fully built.
   this.completed = false;
   // Ok, interesting bit. Thunderbird has that non-strict threading thing, i.e.
@@ -352,15 +357,14 @@ Conversation.prototype = {
     //  released, bug still isn't fixed.
     Services.tm.dispatchToMainThread(async () => {
       try {
-        // The MessageFromGloda constructor cannot work with gloda messages that
-        //  don't have a message header
-        aItems = aItems.filter((glodaMsg) => glodaMsg.folderMessage);
         // We want at least all messages from the Gloda collection
         let messages = await Promise.all(
           aItems.map((glodaMsg) =>
             messageFromGlodaIfOffline(this, glodaMsg, "GA")
           )
         );
+        // Filter out anything that doesn't have a message header.
+        messages = messages.filter((message) => message);
         Log.debug(
           "onItemsAdded",
           messages.map((x) => x.debug + " " + getMessageId(x)).join(" ")
@@ -479,28 +483,10 @@ Conversation.prototype = {
     //  time for Gecko 42, if we're lucky)
     Services.tm.dispatchToMainThread(async () => {
       try {
-        // The MessageFromGloda constructor cannot work with gloda messages that
-        //  don't have a message header
-        aCollection.items = aCollection.items.filter(
-          (glodaMsg) => glodaMsg.folderMessage
-        );
-        // In most cases, all messages share the same conversation id (i.e. they
-        //  all belong to the same gloda conversations). There are rare cases
-        //  where we lie about this: non-strictly threaded messages regrouped
-        //  together, special queries for GitHub and GetSatisfaction, etc..
-        // Don't really knows what happens in those cases.
-        // I've seen cases where we do have intermediate results for the message
-        // header but the final collection after filtering has zero items.
-        if (aCollection.items.length) {
-          this.id = aCollection.items[0].conversation.id;
-        }
         // Beware, some bad things might have happened in the meanwhile...
         this._initialSet = this._initialSet.filter(
           (msgHdr) =>
             msgHdr && msgHdr.folder.msgDatabase.ContainsKey(msgHdr.messageKey)
-        );
-        this._intermediateResults = this._intermediateResults.filter(
-          (glodaMsg) => glodaMsg.folderMessage
         );
         // We want at least all messages from the Gloda collection + all
         //  messages from the intermediate set (see rationale in the
@@ -508,10 +494,12 @@ Conversation.prototype = {
         let msgPromises = aCollection.items.map((glodaMsg) =>
           messageFromGlodaIfOffline(this, glodaMsg, "GF")
         );
-        let intermediateSet = this._intermediateResults
-          .filter((glodaMsg) => glodaMsg.folderMessage)
-          .map((glodaMsg) => messageFromGlodaIfOffline(this, glodaMsg, "GM"));
+        let intermediateSet = this._intermediateResults.map((glodaMsg) =>
+          messageFromGlodaIfOffline(this, glodaMsg, "GM")
+        );
         this.messages = await Promise.all([...msgPromises, ...intermediateSet]);
+        // Filter out anything that doesn't have a message header.
+        this.messages = this.messages.filter((message) => message);
         // Here's the message IDs we know
         let messageIds = {};
         for (let m of this.messages) {
