@@ -179,6 +179,18 @@ function openSetupAssistant() {
   });
 }
 
+function runUndoConversations() {
+  (async () => {
+    await browser.conversations.undoCustomizations();
+    const result = await browser.storage.local.get("preferences");
+
+    result.preferences.uninstall_infos = "{}";
+    await browser.storage.local.set({ preferences: result.preferences });
+
+    window.alert(localize("options.undoCustomizations.finished", i18n));
+  })().catch(console.error);
+}
+
 //
 // React components to render the options types
 //
@@ -357,9 +369,12 @@ function _ConversationOptions({
   localizedPrefsInfo,
   localizedName,
   localizedStartAssistant,
+  localizedUndoCustomizations,
+  localizedUndoCustomizationsTooltip,
   prefs,
   setPref,
   startSetupAssistant,
+  startUndoConversations,
 }) {
   return (
     <React.Fragment>
@@ -376,7 +391,16 @@ function _ConversationOptions({
           ))}
         </div>
       </form>
-      <button onClick={startSetupAssistant}>{localizedStartAssistant}</button>
+      <button className="start" onClick={startSetupAssistant}>
+        {localizedStartAssistant}
+      </button>
+      <button
+        className="undo"
+        onClick={startUndoConversations}
+        title={localizedUndoCustomizationsTooltip}
+      >
+        {localizedUndoCustomizations}
+      </button>
     </React.Fragment>
   );
 }
@@ -384,9 +408,12 @@ _ConversationOptions.propTypes = {
   localizedPrefsInfo: PropTypes.array.isRequired,
   localizedName: PropTypes.string.isRequired,
   localizedStartAssistant: PropTypes.string.isRequired,
+  localizedUndoCustomizations: PropTypes.string.isRequired,
+  localizedUndoCustomizationsTooltip: PropTypes.string.isRequired,
   prefs: PropTypes.object.isRequired,
   setPref: PropTypes.func.isRequired,
   startSetupAssistant: PropTypes.func.isRequired,
+  startUndoConversations: PropTypes.func.isRequired,
 };
 
 const ConversationOptions = ReactRedux.connect((state) => ({ prefs: state }), {
@@ -404,6 +431,14 @@ export function Main() {
   const [localizedStartAssistant, setLocalizedStartAssistant] = React.useState(
     localize("options.start_setup_assistant", i18n)
   );
+  const [
+    localizedUndoCustomizations,
+    setLocalizedUndoCustomizations,
+  ] = React.useState(localize("options.undoCustomizations", i18n));
+  const [
+    localizedUndoCustomizationsTooltip,
+    setLocalizedUndoCustomizationsTooltip,
+  ] = React.useState(localize("options.undoCustomizations.tooltip", i18n));
 
   // When the i18n library is loaded, we want to translate all
   // the localized strings.
@@ -421,6 +456,12 @@ export function Main() {
         setLocalizedStartAssistant(
           localize("options.start_setup_assistant", i18n)
         );
+        setLocalizedUndoCustomizations(
+          localize("options.undoCustomizations", i18n)
+        );
+        setLocalizedUndoCustomizationsTooltip(
+          localize("options.undoCustomizations.tooltip", i18n)
+        );
       })
       .catch((e) => {
         throw e;
@@ -433,7 +474,10 @@ export function Main() {
         localizedPrefsInfo={localizedPrefsInfo}
         localizedName={localizedName}
         localizedStartAssistant={localizedStartAssistant}
+        localizedUndoCustomizations={localizedUndoCustomizations}
+        localizedUndoCustomizationsTooltip={localizedUndoCustomizationsTooltip}
         startSetupAssistant={openSetupAssistant}
+        startUndoConversations={runUndoConversations}
       />
     </ReactRedux.Provider>
   );
