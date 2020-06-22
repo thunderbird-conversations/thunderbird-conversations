@@ -318,7 +318,7 @@ class MessageIFrame extends React.Component {
 
     let walk = _walk.bind(this);
 
-    walk(iframeDoc);
+    walk(iframeDoc.body);
   }
 
   detectQuotes(iframe) {
