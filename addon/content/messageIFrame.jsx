@@ -288,6 +288,12 @@ class MessageIFrame extends React.Component {
       for (let i = elt.childNodes.length - 1; i >= 0; --i) {
         let c = elt.childNodes[i];
 
+        // Skip iframes and tables, we shouldn't need to go into those at all.
+        let tagName = c.tagName && c.tagName.toLowerCase();
+        if (tagName == "iframe" || tagName == "table") {
+          continue;
+        }
+
         if (testNode(c)) {
           let div = iframeDoc.createElement("div");
           div.setAttribute("class", "link " + linkClass);
@@ -393,7 +399,10 @@ class MessageIFrame extends React.Component {
     ];
   }
 
-  _onDOMLoaded() {
+  _onDOMLoaded(event) {
+    if (event.target.documentURI == "about:blank") {
+      return;
+    }
     const iframeDoc = this.iframe.contentDocument;
     let styleRules = this.tweakFonts(iframeDoc);
     if (
