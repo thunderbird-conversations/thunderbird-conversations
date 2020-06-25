@@ -7,8 +7,17 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   ExtensionCommon: "resource://gre/modules/ExtensionCommon.jsm",
   fixIterator: "resource:///modules/iteratorUtils.jsm",
   Services: "resource://gre/modules/Services.jsm",
-  Gloda: "resource:///modules/gloda/gloda.js",
   MailServices: "resource:///modules/MailServices.jsm",
+});
+
+XPCOMUtils.defineLazyGetter(this, "Gloda", () => {
+  let tmp = {};
+  try {
+    ChromeUtils.import("resource:///modules/gloda/gloda.js", tmp);
+  } catch (ex) {
+    ChromeUtils.import("resource:///modules/gloda/Gloda.jsm", tmp);
+  }
+  return tmp.Gloda;
 });
 
 /**

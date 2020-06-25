@@ -8,7 +8,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   ExtensionCommon: "resource://gre/modules/ExtensionCommon.jsm",
   GlodaAttrProviders:
     "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
-  MsgHdrToMimeMessage: "resource:///modules/gloda/mimemsg.js",
   msgUriToMsgHdr: "chrome://conversations/content/modules/misc.js",
   NetUtil: "resource://gre/modules/NetUtil.jsm",
   PluralForm: "resource://gre/modules/PluralForm.jsm",

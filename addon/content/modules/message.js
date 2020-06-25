@@ -13,13 +13,10 @@ const { XPCOMUtils } = ChromeUtils.import(
 XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   escapeHtml: "chrome://conversations/content/modules/misc.js",
-  GlodaUtils: "resource:///modules/gloda/utils.js",
   htmlToPlainText: "chrome://conversations/content/modules/misc.js",
   makeFriendlyDateAgo: "resource:///modules/templateUtils.js",
   msgHdrGetUri: "chrome://conversations/content/modules/misc.js",
-  MsgHdrToMimeMessage: "resource:///modules/gloda/mimemsg.js",
   msgUriToMsgHdr: "chrome://conversations/content/modules/misc.js",
-  mimeMsgToContentSnippetAndMeta: "resource:///modules/gloda/connotent.js",
   NetUtil: "resource://gre/modules/NetUtil.jsm",
   parseMimeLine: "chrome://conversations/content/modules/misc.js",
   setupLogging: "chrome://conversations/content/modules/misc.js",
@@ -30,6 +27,16 @@ XPCOMUtils.defineLazyGetter(this, "browser", function () {
   return BrowserSim.getBrowser();
 });
 
+XPCOMUtils.defineLazyGetter(this, "GlodaUtils", () => {
+  let tmp = {};
+  try {
+    ChromeUtils.import("resource:///modules/gloda/utils.js", tmp);
+  } catch (ex) {
+    ChromeUtils.import("resource:///modules/gloda/GlodaUtils.jsm", tmp);
+  }
+  return tmp.GlodaUtils;
+});
+
 XPCOMUtils.defineLazyGetter(this, "MimeMessage", () => {
   let tmp = {};
   try {
@@ -38,6 +45,26 @@ XPCOMUtils.defineLazyGetter(this, "MimeMessage", () => {
     ChromeUtils.import("resource:///modules/gloda/MimeMessage.jsm", tmp);
   }
   return tmp.MimeMessage;
+});
+
+XPCOMUtils.defineLazyGetter(this, "MsgHdrToMimeMessage", () => {
+  let tmp = {};
+  try {
+    ChromeUtils.import("resource:///modules/gloda/mimemsg.js", tmp);
+  } catch (ex) {
+    ChromeUtils.import("resource:///modules/gloda/MimeMessage.jsm", tmp);
+  }
+  return tmp.MsgHdrToMimeMessage;
+});
+
+XPCOMUtils.defineLazyGetter(this, "mimeMsgToContentSnippetAndMeta", () => {
+  let tmp = {};
+  try {
+    ChromeUtils.import("rresource:///modules/gloda/connotent.js", tmp);
+  } catch (ex) {
+    ChromeUtils.import("resource:///modules/gloda/GlodaContent.jsm", tmp);
+  }
+  return tmp.mimeMsgToContentSnippetAndMeta;
 });
 
 XPCOMUtils.defineLazyGetter(this, "gMessenger", function () {
