@@ -37,6 +37,14 @@
         "events": ["startup"]
       }
     },
+    "convCompose": {
+      "schema": "experiment-api/composeSchema.json",
+      "parent": {
+        "scopes": ["addon_parent"],
+        "paths": [["convCompose"]],
+        "script": "experiment-api/composeApi.js"
+      }
+    },
     "convContacts": {
       "schema": "experiment-api/contactsSchema.json",
       "parent": {

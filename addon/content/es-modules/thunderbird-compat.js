@@ -25,7 +25,13 @@ if (browser.i18n) {
   i18n.isPolyfilled = false;
 } else {
   async function initializeI18n(resolve) {
-    const resp = await fetch("_locales/en/messages.json");
+    let resp;
+    try {
+      resp = await fetch("../_locales/en/messages.json");
+    } catch (ex) {
+      // For tests.
+      resp = await fetch("_locales/en/messages.json");
+    }
     const json = await resp.json();
     // Replace the `getMessage` function with one that retrieves
     // values from the loaded JSON.
@@ -87,13 +93,119 @@ if (!browser.storage) {
 
 if (!browser.tabs) {
   browser.tabs = {
-    create() {},
+    async create() {},
+    async getCurrent() {
+      return {
+        id: "135246",
+      };
+    },
+    async remove() {},
   };
 }
 
 if (!browser.conversations) {
   browser.conversations = {
     undoCustomizations() {},
+    send(details) {
+      console.log(details);
+    },
+  };
+}
+
+if (!browser.convCompose) {
+  browser.convCompose = {
+    send(details) {
+      console.log("Sending:", details);
+    },
+  };
+}
+
+if (!browser.accounts) {
+  browser.accounts = {
+    async list() {
+      return [
+        {
+          id: "ac1",
+          identities: [
+            {
+              id: `id3`,
+              email: `id3@example.com`,
+            },
+          ],
+        },
+        {
+          id: "ac2",
+          identities: [
+            {
+              id: `id4`,
+              email: `id4@example.com`,
+            },
+          ],
+        },
+      ];
+    },
+    async get(id) {
+      return {
+        id,
+        identities: [
+          {
+            id: `id${id}`,
+            email: `${id}@example.com`,
+          },
+        ],
+      };
+    },
+    async setDefaultIdentity() {},
+  };
+}
+
+if (!browser.messageDisplay) {
+  browser.messageDisplay = {
+    async getDisplayedMessages(tabId) {
+      return [
+        {
+          author: "author@example.com",
+          folder: {
+            accountId: "ac34",
+            path: "Inbox/test",
+          },
+          id: 123456,
+          read: false,
+        },
+      ];
+    },
+  };
+}
+
+if (!browser.windows) {
+  browser.windows = {
+    async create() {},
+    async getCurrent() {
+      return {
+        focused: true,
+        id: 1,
+        tabs: [
+          {
+            active: true,
+            highlighted: true,
+            id: 123,
+            index: 0,
+            selected: true,
+          },
+        ],
+        type: "normal",
+      };
+    },
+  };
+}
+
+if (!browser.runtime) {
+  browser.runtime = {
+    async getPlatformInfo() {
+      return {
+        os: "win",
+      };
+    },
   };
 }
 
