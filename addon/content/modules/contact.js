@@ -117,11 +117,21 @@ ContactFromAB.prototype = {
       // - firstName lastName (if one of these is non-empty)
       // - the parsed name
       // - the email
-      if (this._useCardName && card.DisplayName) {
-        this._name = card.DisplayName;
-      }
-      if (this._useCardName && (card.FirstName || card.LastName)) {
-        this._name = card.FirstName + " " + card.LastName;
+      if (this._useCardName) {
+        if (card.DisplayName) {
+          this._name = card.DisplayName;
+        } else {
+          if (card.FirstName) {
+            this._name = card.FirstName;
+          }
+          if (card.LastName) {
+            if (this._name) {
+              this._name += " " + card.LastName;
+            } else {
+              this._name = card.LastName;
+            }
+          }
+        }
       }
       if (!this._name) {
         this._name = this._email;
