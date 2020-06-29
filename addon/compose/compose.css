@@ -1,0 +1,6 @@
+.compose {
+  display: grid;
+  grid-template-columns: auto 1fr;
+  font-size: 1.2rem;
+  background-color: rgba(160, 160, 160, 0.1);
+}

@@ -25,7 +25,13 @@ if (browser.i18n) {
   i18n.isPolyfilled = false;
 } else {
   async function initializeI18n(resolve) {
-    const resp = await fetch("_locales/en/messages.json");
+    let resp;
+    try {
+      resp = await fetch("../_locales/en/messages.json");
+    } catch (ex) {
+      // For tests.
+      resp = await fetch("_locales/en/messages.json");
+    }
     const json = await resp.json();
     // Replace the `getMessage` function with one that retrieves
     // values from the loaded JSON.
@@ -94,6 +100,36 @@ if (!browser.tabs) {
 if (!browser.conversations) {
   browser.conversations = {
     undoCustomizations() {},
+    send(details) {
+      console.log(details);
+    },
+  };
+}
+
+if (!browser.convCompose) {
+  browser.convCompose = {
+    send(details) {
+      console.log("Sending:", details);
+    },
+  };
+}
+
+if (!browser.accounts) {
+  browser.accounts = {
+    list() {
+      return [{ id: 1 }, { id: 2 }];
+    },
+    get(id) {
+      return {
+        id,
+        identities: [
+          {
+            id: `id${id}`,
+            email: `${id}@example.com`,
+          },
+        ],
+      };
+    },
   };
 }
 

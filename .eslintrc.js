@@ -25,6 +25,7 @@ module.exports = {
       files: [
         "addon/*.js",
         "addon/assistant/*.js",
+        "addon/compose/*.js*",
         "addon/gallery/*.js*",
         "addon/options/*.js*",
         "addon/content/es-modules/**/*.js",

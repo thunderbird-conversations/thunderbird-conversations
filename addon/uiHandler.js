@@ -18,21 +18,29 @@ export class UIHandler {
 
   onKeyCommand(command) {
     if (command == "quick_compose") {
-      console.warn("Quick Compose is currently disabled");
+      this.openQuickCompose().catch(console.error);
+    }
+  }
+
+  async openQuickCompose() {
+    // Thunderbird 76+ only.
+    if ("setDefaultIdentity" in browser.accounts) {
       // The title/description for this pref is really confusing, we should
       // reconsider it when we re-enable.
-      // if (Prefs.compose_in_tab) {
-      //   window.openTab("chromeTab", {
-      //     chromePage:
-      //       "chrome://conversations/content/stub.xhtml?quickCompose=1",
-      //   });
-      // } else {
-      //   window.open(
-      //     "chrome://conversations/content/stub.xhtml?quickCompose=1",
-      //     "",
-      //     "chrome,width=1020,height=600"
-      //   );
-      // }
+      const result = await browser.storage.local.get("preferences");
+
+      if (result.preferences.compose_in_tab) {
+        browser.tabs.create({
+          url: "compose/compose.html",
+        });
+      } else {
+        browser.windows.create({
+          url: "compose/compose.html",
+          type: "popup",
+          width: 1024,
+          height: 600,
+        });
+      }
     }
   }
 }

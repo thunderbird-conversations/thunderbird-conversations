@@ -26,6 +26,7 @@ let Redux = null;
 let ReactRedux = null;
 let RTK = null;
 let PropTypes = null;
+let useState = null;
 
 if (typeof nodeRequire === "function") {
   /*global nodeRequire*/
@@ -41,6 +42,7 @@ if (typeof nodeRequire === "function") {
   ReactRedux = nodeRequire("react-redux");
   RTK = nodeRequire("@reduxjs/toolkit");
   PropTypes = nodeRequire("prop-types");
+  useState = nodeRequire("react").useState;
 } else {
   //
   // Browser/Thunderbird Environment
@@ -74,6 +76,7 @@ if (typeof nodeRequire === "function") {
   ReactRedux = initializedDeps["react-redux"];
   RTK = initializedDeps["redux-toolkit"];
   PropTypes = initializedDeps["prop-types"];
+  useState = initializedDeps.useState;
 }
 
-export { React, ReactDOM, Redux, ReactRedux, RTK, PropTypes };
+export { React, ReactDOM, Redux, ReactRedux, RTK, PropTypes, useState };
