@@ -1,0 +1,37 @@
+[
+  {
+    "namespace": "convCompose",
+    "functions": [
+      {
+        "name": "send",
+        "type": "function",
+        "description": "Sends an email",
+        "async": true,
+        "parameters": [
+          {
+            "type": "object",
+            "name": "sendProperties",
+            "properties": {
+              "from": {
+                "type": "string",
+                "description": "The id of an identity to send the email from."
+              },
+              "to": {
+                "type": "string",
+                "description": "The full header for sending the email to."
+              },
+              "subject": {
+                "type": "string",
+                "description": "The subject of the email."
+              },
+              "body": {
+                "type": "string",
+                "description": "The body of the email."
+              }
+            }
+          }
+        ]
+      }
+    ]
+  }
+]
