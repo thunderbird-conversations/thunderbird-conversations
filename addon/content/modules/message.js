@@ -60,7 +60,7 @@ XPCOMUtils.defineLazyGetter(this, "MsgHdrToMimeMessage", () => {
 XPCOMUtils.defineLazyGetter(this, "mimeMsgToContentSnippetAndMeta", () => {
   let tmp = {};
   try {
-    ChromeUtils.import("rresource:///modules/gloda/connotent.js", tmp);
+    ChromeUtils.import("resource:///modules/gloda/connotent.js", tmp);
   } catch (ex) {
     ChromeUtils.import("resource:///modules/gloda/GlodaContent.jsm", tmp);
   }
