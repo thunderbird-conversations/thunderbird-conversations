@@ -102,7 +102,7 @@ ContactFromAB.prototype = {
       matchingCards.length !== 0
         ? {
             ...matchingCards[0].properties,
-            id: matchingCards[0],
+            id: matchingCards[0].id,
           }
         : null;
     this._card = card;
@@ -158,7 +158,7 @@ ContactFromAB.prototype = {
    * different. This allows one to share a common color for a same card in the
    * address book.
    */
-  async toTmplData(useColor, position, email, isDetail) {
+  async toTmplData(position, email, isDetail) {
     const identityEmails = await browser.convContacts
       .getIdentityEmails({ includeNntpIdentities: false })
       .catch(console.error);
@@ -195,8 +195,7 @@ ContactFromAB.prototype = {
       avatarIsDefault: this.avatar.substr(0, 6) === "chrome",
       contactId: this._card ? this._card.id : null,
       extra,
-      // Parameter aUseColor is optional, and undefined means true
-      colorStyle: useColor === false ? {} : { backgroundColor: this.color },
+      colorStyle: { backgroundColor: this.color },
     };
     return data;
   },
