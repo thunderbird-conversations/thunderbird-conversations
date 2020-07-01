@@ -397,7 +397,7 @@ class Message {
     this._contacts = this._contacts.concat(contacts);
     // false means "no colors"
     return Promise.all(
-      contacts.map(([x, email]) => x.toTmplData(false, Contacts.kTo, email))
+      contacts.map(([x, email]) => x.toTmplData(Contacts.kTo, email))
     );
   }
 
@@ -449,11 +449,7 @@ class Message {
     ];
     this._contacts.push(contactFrom);
     // true means "with colors"
-    data.from = await contactFrom[0].toTmplData(
-      true,
-      Contacts.kFrom,
-      contactFrom[1]
-    );
+    data.from = await contactFrom[0].toTmplData(Contacts.kFrom, contactFrom[1]);
     data.from.separator = "";
 
     data.to = await this.getContactsFrom(this._to);
