@@ -155,12 +155,11 @@ class MessageIFrame extends React.Component {
   adjustHeight() {
     const iframeDoc = this.iframe.contentDocument;
 
-    // This is needed in case the timeout kicked in after the message
-    // was loaded but before we collapsed quotes. Then, the scrollheight
-    // is too big, so we need to make the iframe small, so that its
-    // scrollheight corresponds to its "real" height (there was an issue
-    // with offsetheight, don't remember what, though).
-    const scrollHeight = iframeDoc.body.scrollHeight;
+    // The +1 here is due to having occasionally seen issues on Mac where
+    // the frame just doesn't quite scroll properly. In this case,
+    // getComputedStyle(body).height is .2px greater than the scrollHeight.
+    // Hence we try to work around that here.
+    const scrollHeight = iframeDoc.body.scrollHeight + 1;
     this.iframe.style.height = scrollHeight + "px";
 
     // So now we might overflow horizontally, which causes a horizontal
