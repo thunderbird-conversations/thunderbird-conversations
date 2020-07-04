@@ -149,6 +149,8 @@ ContactFromAB.prototype = {
         return photoURI;
       }
     }
+    // It would be nice to return null here and let the UI sort out the default.
+    // However, with the current version comparisons, that makes it hard to do.
     return defaultPhotoURI;
   },
 
@@ -192,7 +194,6 @@ ContactFromAB.prototype = {
       tooltipName: tooltipName != email ? tooltipName : "",
       email,
       avatar: this.avatar,
-      avatarIsDefault: this.avatar.substr(0, 6) === "chrome",
       contactId: this._card ? this._card.id : null,
       extra,
       colorStyle: { backgroundColor: this.color },

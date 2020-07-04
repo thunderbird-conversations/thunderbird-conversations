@@ -146,13 +146,7 @@ class ContactLabel extends React.PureComponent {
         </Fade>
         <span>{this.props.separator}</span>
         <span className="tooltipWrapper contact">
-          <span
-            className="contactName"
-            name={this.props.contact.name}
-            email={this.props.contact.displayEmail}
-            realemail={this.props.contact.email}
-            avatar={this.props.contact.avatar}
-          >
+          <span className="contactName">
             {this.props.detailView &&
               !!this.props.contact.contactId &&
               "\u2605 "}
@@ -253,7 +247,7 @@ class MessageHeader extends React.PureComponent {
           >
             <SvgIcon hash={"star"} />
           </div>
-          {this.props.from.avatarIsDefault ? (
+          {this.props.from.avatar.startsWith("chrome:") ? (
             <abbr
               className="contactInitials"
               style={this.props.from.colorStyle}
