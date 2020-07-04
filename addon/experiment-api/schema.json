@@ -336,6 +336,12 @@
             "description": "The preference name to listen to."
           }
         ]
+      },
+      {
+        "name": "onSetConversationPreferences",
+        "type": "function",
+        "description": "Temporary. Actually used to set various preferences that we want to enforce whilst installed.",
+        "parameters": []
       }
     ]
   }

@@ -137,18 +137,6 @@ var Customizations = {
     { name: "mailnews.default_view_flags", type: kPrefInt, value: 1 },
   ]),
 
-  actionAttachmentsInline: new PrefCustomization({
-    name: "mail.inline_attachments",
-    type: kPrefBool,
-    value: false,
-  }),
-
-  actionDontExpand: new PrefCustomization({
-    name: "mailnews.scroll_to_new_message",
-    type: kPrefBool,
-    value: false,
-  }),
-
   actionEnableGloda: new PrefCustomization({
     name: "mailnews.database.global.indexer.enabled",
     type: kPrefBool,
