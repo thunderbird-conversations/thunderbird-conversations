@@ -35,6 +35,8 @@ class Background {
     browser.conversations.onCorePrefChanged.addListener(() => {
       browser.conversations.resetMessagePane().catch(console.error);
     }, "font.size.variable.x-western");
+
+    browser.conversations.onSetConversationPreferences.addListener(() => {});
   }
 }
 

@@ -230,15 +230,6 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
       Services.ww.unregisterNotification(apiWindowObserver);
     }
 
-    for (let win of Services.wm.getEnumerator("mail:3pane")) {
-      // Switch to a 3pane view (otherwise the "display threaded"
-      // customization is not reverted)
-      let tabmail = win.document.getElementById("tabmail");
-      if (tabmail.tabContainer.selectedIndex != 0) {
-        tabmail.tabContainer.selectedIndex = 0;
-      }
-    }
-
     BrowserSim.setBrowserListener(null);
 
     for (const module of conversationModules) {
@@ -339,6 +330,15 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           return JSON.stringify(uninstallInfos);
         },
         async undoCustomizations() {
+          for (let win of Services.wm.getEnumerator("mail:3pane")) {
+            // Switch to a 3pane view (otherwise the "display threaded"
+            // customization is not reverted)
+            let tabmail = win.document.getElementById("tabmail");
+            if (tabmail.tabContainer.selectedIndex != 0) {
+              tabmail.tabContainer.selectedIndex = 0;
+            }
+          }
+
           let uninstallInfos = JSON.parse(Prefs.uninstall_infos);
           for (let [k, v] of Object.entries(Customizations)) {
             if (k in uninstallInfos) {
@@ -585,6 +585,31 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             Services.prefs.addObserver(prefName, observer);
             return () => {
               Services.prefs.removeObserver(prefName, observer);
+            };
+          },
+        }).api(),
+        onSetConversationPreferences: new ExtensionCommon.EventManager({
+          context,
+          name: "conversations.onSetConversationPreferences",
+          register(fire) {
+            const overridePrefs = [
+              "mail.inline_attachments",
+              "mailnews.scroll_to_new_message",
+            ];
+            let oldValues = new Map();
+            for (let pref of overridePrefs) {
+              // Only try and change if we have to, so that we're toggling less.
+              if (Services.prefs.getBoolPref(pref, true)) {
+                oldValues.set(pref, true);
+                Services.prefs.setBoolPref(pref, false);
+              }
+            }
+            return () => {
+              for (let pref of overridePrefs) {
+                if (oldValues.has(pref)) {
+                  Services.prefs.setBoolPref(pref, oldValues.get(pref));
+                }
+              }
             };
           },
         }).api(),
