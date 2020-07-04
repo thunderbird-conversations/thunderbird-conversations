@@ -10,12 +10,12 @@
   },
 
   "options.expand_who": {
-    "message": "By default, expand:",
+    "message": "Zadano proširi:",
     "description": "Options - label for which messages should be expanded."
   },
 
   "options.expand_auto": {
-    "message": "Automatic",
+    "message": "Automatski",
     "description": "Options - label for automatically expanding messages."
   },
 
@@ -25,42 +25,42 @@
   },
 
   "options.expand_none": {
-    "message": "No messages",
+    "message": "Nijednu poruku",
     "description": "Options - label for not expanding messages."
   },
 
   "options.expand_all": {
-    "message": "All messages",
+    "message": "Sve poruke",
     "description": "Options - label for expanding all messages."
   },
 
   "options.quoting_title": {
-    "message": "Quoted text",
+    "message": "Citirani tekst",
     "description": "Options - title for quoted text."
   },
 
   "options.quoting_desc": {
-    "message": "Quotes higher than this number of lines will be collapsed.",
+    "message": "Citati duži od ovog broja linija bit će sažeti.",
     "description": "Options - description for quoted text."
   },
 
   "options.hide_sigs_title": {
-    "message": "Hide Signatures",
+    "message": "Sakrij potpise",
     "description": "Options - title for hiding signatures."
   },
 
   "options.hide_sigs_desc": {
-    "message": "Whether signatures are collapsed by default.",
+    "message": "Hoće li potpisi biti sakriveni prema zadanim postavkama.",
     "description": "Options - description for hiding signatures."
   },
 
   "options.friendly_date_title": {
-    "message": "No friendly dates",
+    "message": "Bez prijateljskih potpisa",
     "description": "Options - title for if to show friendly dates."
   },
 
   "options.friendly_date_desc": {
-    "message": "In the top right corner, use \"normal\" dates, just like the message list, instead of \"yesterday\" and others.",
+    "message": "U gornjem desnom kutu koristi \"normalne\" datume, kao u popisu poruka, umjesto \"jučer\" i sličnog.",
     "description": "Options - description for if to show friendly dates."
   },
 
@@ -85,17 +85,17 @@
   },
 
   "options.operate_on_conversations_title": {
-    "message": "Archive/delete behavior",
+    "message": "Ponašanje arhiviranja/brisanja",
     "description": "Options - title for archive/delete behavior."
   },
 
   "options.operate_on_conversations_desc": {
-    "message": "Toolbar buttons should archive and delete the entire conversation, not just selected messages.",
+    "message": "Tipke alatne trake trebaju arhivirati i brisati cijeli razgovor, ne samo odabrane poruke.",
     "description": "Options - description for archive/delete behavior."
   },
 
   "options.extra_attachments_title": {
-    "message": "I love attachments",
+    "message": "Volim priložene datoteke",
     "description": "Options - title for attachment settings."
   },
 
@@ -105,17 +105,17 @@
   },
 
   "options.compose_in_tab_title": {
-    "message": "Hidden composition window",
+    "message": "Sakriveni prozor za pisanje",
     "description": "Options - title for hidden compose window enabling."
   },
 
   "options.compose_in_tab_desc": {
-    "message": "Ctrl-Shift-N opens the hidden, unsupported composition window in a new tab",
+    "message": "Ctrl-Shift-N otvara sakriveni, nepodržati prozor za stvaranje u novoj kartici",
     "description": "Options - description for hidden compose window enabling."
   },
 
   "options.debugging_title": {
-    "message": "Debugging",
+    "message": "Uklanjanje grešaka",
     "description": "Options - title for debugging setting."
   },
 
@@ -135,17 +135,17 @@
   },
 
   "assistant.p1": {
-    "message": "Kako bi vam olakšali, čarobnjak će prilagoditi vaše Thunderbird postavke kako bi osigurali optimalno iskustvo. Ne želimo da se osjećate nezadovoljno!",
+    "message": "Kako bismo Vam olakšali stvari, čarobnjak će prilagoditi Vaše postavke za Thunderbird kako bismo osigurali optimalno iskustvo. Ne želimo da se osjećate nezadovoljno!",
     "description": "First detail paragraph for the assistant."
   },
 
   "assistant.p2": {
-    "message": "Ne brinite, sve prilagodbe koje smo napravili se mogu vratiti. Ukoliko nećete uživati u Thunderbird Conversations vratit ćemo sve postavke na početne vrijednosti čim uklonite dodatak.",
+    "message": "Ne brinite, sve prilagodbe koje smo napravili mogu se vratiti. Ukoliko nećete uživati u Thunderbird Conversations vratit ćemo sve postavke na početne vrijednosti čim uklonite dodatak.",
     "description": "Second detail paragraph for the assistant."
   },
 
   "assistant.p3": {
-    "message": "Ovo može potrajati. Možete pričekati da se ovaj prozor zatvori ili ga sami zatvoriti i pratiti napredak iz Alati > Upravitelj aktivnostima.",
+    "message": "Ovo može potrajati. Možete pričekati da se ovaj prozor zatvori ili možete ga sami zatvoriti i pratiti napredak iz izbornika Alati > Upravitelj aktivnostima.",
     "description": "Third detail paragraph for the assistant."
   },
 
@@ -165,12 +165,12 @@
   },
 
   "assistant.settings": {
-    "message": "Settings",
+    "message": "Postavke",
     "description": "The settings section legend for the assistant."
   },
 
   "assistant.actionEnableGloda": {
-    "message": "Provjerite da je globalno pretraživanje i indeksiranje uključeno.",
+    "message": "Provjerite je li globalno pretraživanje i indeksiranje uključeno.",
     "description": "Option text for enabling Gloda."
   },
 
@@ -180,12 +180,12 @@
   },
 
   "assistant.actionAttachmentsInline": {
-    "message": "Ne prikazuj privitke umetnuto (izrazito preporučeno).",
+    "message": "Ne prikazuj privitke unutar tijela poruke (izrazito preporučeno).",
     "description": "Option text for showing attachments inline."
   },
 
   "assistant.actionOfflineDownload": {
-    "message": "Primljena pošta i Poslano se sinkronizira za izvanmrežnu pohranu (izrazito preporučeno).",
+    "message": "Primljena pošta i Poslano sinkronizira se za izvanmrežnu pohranu (izrazito preporučeno).",
     "description": "Option text for allowing offline download."
   },
 
@@ -205,17 +205,17 @@
   },
 
   "assistant.actionEnsureMessagePaneVisible": {
-    "message": "Provjerite da li je okno poruka vidljivo.",
+    "message": "Provjerite je li okno poruka vidljivo.",
     "description": "Option text for ensuring the message pane is visible."
   },
 
   "assistant.settings2": {
-    "message": "Ukoliko želite promjeniti neke postavke kasnije, možete pristupiti ovom čarobnjaku kroz postavke dodatka, pod odjelom \"napredno\".",
+    "message": "Ukoliko želite promijeniti neke postavke kasnije, možete pristupiti ovom čarobnjaku kroz postavke dodatka, pod odjeljkom \"Napredno\".",
     "description": "Paragraph informing users of the ability to change settings later."
   },
 
   "gallery.messageMovedOrDeleted": {
-    "message": "Ne možemo prikazati ovu galeriju, poruke su premještene ili obrisane.",
+    "message": "Ne možemo prikazati ovu galeriju jer su poruke premještene ili obrisane.",
     "description": "Message displayed if the email that the gallery is trying to view cannot be found."
   },
 
@@ -230,7 +230,7 @@
   },
 
   "message.movedOrDeletedConversation": {
-    "message": "Ne možemo prikazati ovaj razgovor, poruke su premještene ili obrisane.",
+    "message": "Ne možemo prikazati ovaj razgovor jer su poruke premještene ili obrisane.",
     "description": "Error message for the conversation tab"
   },
 
@@ -310,7 +310,7 @@
   },
 
   "message.noSubject": {
-    "message": "(no subject)",
+    "message": "(bez predmeta)",
     "description": "Displayed when a message has no subject"
   },
 
@@ -441,7 +441,7 @@
   },
 
   "message.ccHeader": {
-    "message": "cc:",
+    "message": "kopija:",
     "description": "Header name displayed for the cc field"
   },
 
@@ -522,7 +522,7 @@
   },
 
   "header.andSeparator": {
-    "message": " i",
+    "message": " i ",
     "description": "This is used in messages, for the recipients, and the 'between' column as well. In English, space after and before « and »."
   },
 
@@ -583,7 +583,7 @@
   },
 
   "message.headerSubject": {
-    "message": "naslov",
+    "message": "predmet",
     "description": "Name for the Subject header that is displayed when you click the show details button."
   },
 
@@ -598,7 +598,7 @@
   },
 
   "involvingTabTitle": {
-    "message": "Uključen u poruka: $contactName$",
+    "message": "Uključen u porukama: $contactName$",
     "description": "This is used when we click on the \"recent conversations\" button in a contact tooltip. This is the title of the tab that opens.",
     "placeholders": {
       "contactName": {
@@ -634,7 +634,7 @@
   },
 
   "compose.sendAnEmptyMessage": {
-    "message": "Pošalji praznu poruku?",
+    "message": "Poslati praznu poruku?",
     "description": "Confirmation message for sending an empty email."
   },
 
@@ -670,7 +670,7 @@
   },
 
   "enigmail.attachmentsNotEncrypted": {
-    "message": "Privitci neće biti kriptirani koristeći umetnuti-PGP.\nUmjesto toga pošaljite poruku koristeći PGP/MIME?",
+    "message": "Privitci neće biti kriptirani koristeći umetnuti-PGP.\nUmjesto toga poslati poruku koristeći PGP/MIME?",
     "description": "For the enigmail plugin to indicate attachments are not encrypted on sending."
   },
 
@@ -740,12 +740,12 @@
   },
 
   "compose.fieldBcc": {
-    "message": "bcc:",
+    "message": "skrivena kopija:",
     "description": "Field name for the bcc field when composing messages."
   },
 
   "compose.fieldSubject": {
-    "message": "naslov:",
+    "message": "predmet:",
     "description": "Field name for the subject field when composing messages."
   },
 
