@@ -199,7 +199,7 @@ class Attachment extends React.PureComponent {
     // Note: contextmenu is only supported in Gecko, though React will complain
     // about it.
     // Hoping to turn this into WebExtension based context menus at some
-    // stage: https://github.com/protz/thunderbird-conversations/issues/1416
+    // stage: https://github.com/thunderbird-conversations/thunderbird-conversations/issues/1416
     /* eslint-disable react/no-unknown-property */
     return (
       <li

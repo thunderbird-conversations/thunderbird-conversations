@@ -350,7 +350,7 @@ class MessageIFrame extends React.Component {
       return false;
     }
 
-    // https://github.com/protz/thunderbird-conversations/issues#issue/179
+    // https://github.com/thunderbird-conversations/thunderbird-conversations/issues#issue/179
     // See link above for a rationale ^^
     if (this.props.initialPosition > 0) {
       this.detectBlocks(
