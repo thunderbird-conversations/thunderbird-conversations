@@ -4,10 +4,10 @@
   "description": "Thunderbird Conversations",
   "repository": {
     "type": "git",
-    "url": "git@github.com:protz/thunderbird-conversations.git"
+    "url": "git@github.com:thunderbird-conversations/thunderbird-conversations.git"
   },
   "bugs": {
-    "url": "https://github.com/protz/thunderbird-conversations/issues"
+    "url": "https://github.com/thunderbird-conversations/thunderbird-conversations/issues"
   },
   "engines": {
     "thunderbird": ">=68.0a1"

@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.com/protz/thunderbird-conversations.svg?branch=master)](https://travis-ci.com/protz/thunderbird-conversations)
+[![Build Status](https://travis-ci.com/thunderbird-conversations/thunderbird-conversations.svg?branch=master)](https://travis-ci.com/thunderbird-conversations/thunderbird-conversations)
 
 Thunderbird Conversations
 =========================
