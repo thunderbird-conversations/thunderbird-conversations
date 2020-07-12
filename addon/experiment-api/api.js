@@ -51,6 +51,8 @@ const conversationModules = [
   "chrome://conversations/content/modules/prefs.js",
 ];
 
+const kAllowRemoteContent = 2;
+
 // Note: we must not use any modules until after initialization of prefs,
 // otherwise the prefs might not get loaded correctly.
 XPCOMUtils.defineLazyGetter(this, "Log", () => {
@@ -542,6 +544,25 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           const msgHdr = context.extension.messageManager.get(id);
           const tabmail = win.document.getElementById("tabmail");
           tabmail.openTab("message", { msgHdr, background: false });
+        },
+        async showRemoteContent(id) {
+          const msgHdr = context.extension.messageManager.get(id);
+          msgHdr.setUint32Property("remoteContentPolicy", kAllowRemoteContent);
+        },
+        async alwaysShowRemoteContent(email) {
+          const uri = Services.io.newURI(
+            "chrome://messenger/content/email=" + email
+          );
+          // TB 78: If we have createContentPrincipal we're in the TB 78+ code.
+          if ("createContentPrincipal" in Services.scriptSecurityManager) {
+            Services.perms.addFromPrincipal(
+              Services.scriptSecurityManager.createContentPrincipal(uri, {}),
+              "image",
+              Services.perms.ALLOW_ACTION
+            );
+          } else {
+            Services.perms.add(uri, "image", Services.perms.ALLOW_ACTION);
+          }
         },
         onCallAPI: new ExtensionCommon.EventManager({
           context,

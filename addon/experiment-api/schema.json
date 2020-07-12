@@ -289,6 +289,32 @@
             "description": "The message id to view in classic mode."
           }
         ]
+      },
+      {
+        "name": "showRemoteContent",
+        "type": "function",
+        "description": "Enables showing remote content for a particular message.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "The message id to allow showing remote content for."
+          }
+        ]
+      },
+      {
+        "name": "alwaysShowRemoteContent",
+        "type": "function",
+        "description": "Enables always showing remote content for an email address.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "email",
+            "type": "string",
+            "description": "The email address to allow."
+          }
+        ]
       }
     ],
     "events": [

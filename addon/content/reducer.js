@@ -532,17 +532,34 @@ const messageActions = {
       }
     };
   },
-  showRemoteContent({ msgUri }) {
-    return async () => {
-      Conversations.currentConversation.showRemoteContent(msgUri);
+  showRemoteContent({ id }) {
+    return async (dispatch) => {
+      await browser.conversations.showRemoteContent(id);
+
+      const msg = Conversations.currentConversation.getMessageByApiId(id);
+      // Turn remote content message "off", as although it has it, it can be loaded.
+      msg.hasRemoteContent = false;
+      // We can't turn dispatch back straight away, so give it a moment.
+      const msgData = await msg.toReactData();
+      dispatch({
+        type: "MSG_UPDATE_DATA",
+        msgData,
+      });
     };
   },
-  alwaysShowRemoteContent({ msgUri, realFrom }) {
-    return async () => {
-      Conversations.currentConversation.alwaysShowRemoteContent(
-        realFrom,
-        msgUri
-      );
+  alwaysShowRemoteContent({ id, realFrom }) {
+    return async (dispatch) => {
+      await browser.conversations.alwaysShowRemoteContent(realFrom);
+
+      const msg = Conversations.currentConversation.getMessageByApiId(id);
+      // Turn remote content message "off", as although it has it, it can be loaded.
+      msg.hasRemoteContent = false;
+
+      const msgData = await msg.toReactData();
+      dispatch({
+        type: "MSG_UPDATE_DATA",
+        msgData,
+      });
     };
   },
   detachTab() {
