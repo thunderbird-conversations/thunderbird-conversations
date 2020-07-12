@@ -156,7 +156,6 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
           context,
           name: "convMsgWindow.onThreadPaneMiddleClick",
           register(fire) {
-            // Same thing for middle-click
             const patchMiddleClick = (win, id) => {
               win.oldTreeOnMouseDown = win.TreeOnMouseDown;
               win.TreeOnMouseDown = async (event) => {
@@ -195,8 +194,26 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
             return function () {
               Services.ww.unregisterNotification(windowObserver);
               monkeyPatchAllWindows(windowManager, (win, id) => {
+                // Try and ensure that whatever happens, we've cleaned up the
+                // old listener.
+                let folderTree = win.document.getElementById("folderTree");
+                folderTree.removeEventListener(
+                  "mousedown",
+                  win.TreeOnMouseDown,
+                  true
+                );
+                folderTree.removeEventListener(
+                  "mousedown",
+                  win.oldTreeOnMouseDown,
+                  true
+                );
                 win.TreeOnMouseDown = win.oldTreeOnMouseDown;
                 delete win.oldTreeOnMouseDown;
+                folderTree.addEventListener(
+                  "mousedown",
+                  win.TreeOnMouseDown,
+                  true
+                );
               });
             };
           },
