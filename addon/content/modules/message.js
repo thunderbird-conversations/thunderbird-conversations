@@ -307,6 +307,7 @@ class Message {
     this.contentType = "";
     this.hasRemoteContent = false;
     this.isPhishing = false;
+    this.smimeReload = false;
 
     // A list of email addresses
     this.mailingLists = [];
@@ -435,6 +436,7 @@ class Message {
       read: this.read,
       realFrom: this._realFrom.email || this._from.email,
       recipientsIncludeLists: this.isReplyListEnabled,
+      smimeReload: this.smimeReload,
       snippet: this._snippet,
       starred: messageHeader.flagged,
     };
@@ -542,6 +544,16 @@ class Message {
     this.hasRemoteContent = true;
     Log.debug("This message's remote content was blocked");
 
+    const msgData = await this.toReactData();
+    // TODO: make getting the window less ugly.
+    this._conversation._htmlPane.conversationDispatch({
+      type: "MSG_UPDATE_DATA",
+      msgData,
+    });
+  }
+
+  async setSmimeReload() {
+    this.smimeReload = true;
     const msgData = await this.toReactData();
     // TODO: make getting the window less ugly.
     this._conversation._htmlPane.conversationDispatch({
