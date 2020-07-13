@@ -348,6 +348,7 @@ class Message extends React.PureComponent {
             dispatch={this.props.dispatch}
             expanded={this.props.message.expanded}
             hasRemoteContent={this.props.message.hasRemoteContent}
+            smimeReload={this.props.message.smimeReload}
             initialPosition={this.props.message.initialPosition}
             msgUri={this.props.message.msgUri}
             neckoUrl={this.props.message.neckoUrl}

@@ -51,7 +51,8 @@ class MessageIFrame extends React.Component {
       this.iframe.classList.remove("hidden");
       if (
         this.currentUrl != this.props.msgUri ||
-        (prevProps.hasRemoteContent && !this.props.hasRemoteContent)
+        (prevProps.hasRemoteContent && !this.props.hasRemoteContent) ||
+        (!prevProps.smimeReload && this.props.smimeReload)
       ) {
         startLoad = true;
         if (this.dueToExpansion === undefined) {
@@ -450,6 +451,7 @@ MessageIFrame.propTypes = {
   initialPosition: PropTypes.number.isRequired,
   msgUri: PropTypes.string.isRequired,
   neckoUrl: PropTypes.string.isRequired,
+  smimeReload: PropTypes.bool.isRequired,
   tenPxFactor: PropTypes.number.isRequired,
   prefs: PropTypes.object.isRequired,
   realFrom: PropTypes.string.isRequired,

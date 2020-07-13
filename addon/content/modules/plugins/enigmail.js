@@ -264,7 +264,7 @@ function overrideUpdateSecurity(messagepane, w) {
       return;
     }
     w.EnigmailVerify.unregisterContentTypeHandler();
-    message._reloadMessage();
+    message.setSmimeReload().catch(console.error);
   };
 }
 
