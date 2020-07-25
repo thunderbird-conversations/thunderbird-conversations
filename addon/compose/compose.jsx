@@ -56,7 +56,7 @@ export const actions = {
           from: state.identityId,
           to: state.to,
           subject: state.subject,
-          body: state.body + "\n",
+          body: state.body,
         })
       );
     };

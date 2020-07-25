@@ -44,8 +44,7 @@ export function TextArea({ value = "", name, onChange = () => {} }) {
     <React.Fragment>
       <div></div>
       <div>
-        <input
-          type="textarea"
+        <textarea
           value={value}
           onChange={(e) => {
             onChange(name, e.target.value);

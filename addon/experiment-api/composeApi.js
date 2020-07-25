@@ -72,6 +72,11 @@ var convCompose = class extends ExtensionCommon.ExtensionAPI {
               },
             };
 
+            let body = details.body;
+            if (!body.endsWith("\n")) {
+              body += "\n";
+            }
+
             msgSend.createAndSendMessage(
               null,
               sendIdentity,
@@ -82,7 +87,7 @@ var convCompose = class extends ExtensionCommon.ExtensionAPI {
               Ci.nsIMsgSend.nsMsgDeliverNow,
               null,
               "text/plain",
-              details.body,
+              body,
               null,
               null,
               null,
