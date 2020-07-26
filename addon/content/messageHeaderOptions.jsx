@@ -132,6 +132,9 @@ class MessageHeaderOptions extends React.PureComponent {
     };
     let action = null;
     switch (msg.type) {
+      case "draft":
+        action = messageActions.editDraft(payload);
+        break;
       case "reply":
         action = messageActions.reply(payload);
         break;
