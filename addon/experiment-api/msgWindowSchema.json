@@ -33,17 +33,16 @@
         ]
       },
       {
-        "name": "selectedMessages",
+        "name": "getDisplayedMessages",
         "type": "function",
-        "description": "Returns the currently selected message headers.",
+        "description": "Returns an array of the currently selected message headers.",
         "async": true,
         "parameters": [
           {
-            "name": "windowId",
+            "name": "tabId",
             "type": "integer",
-            "optional": true,
-            "minimum": -2,
-            "description": "The window id."
+            "minimum": 1,
+            "description": "The tab id."
           }
         ]
       },

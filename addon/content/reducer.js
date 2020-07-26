@@ -54,6 +54,7 @@ const initialSummary = {
   iframesLoading: 0,
   isInTab: false,
   OS: "win",
+  tabId: null,
   tenPxFactor: 0.7,
   subject: "",
   windowId: null,
@@ -251,11 +252,12 @@ const messageActions = {
       const params = new URL(document.location).searchParams;
 
       const isInTab = params.has("urls");
-
+      const topWin = topMail3Pane(window);
       await dispatch({
         type: "SET_CONVERSATION_STATE",
         isInTab,
-        windowId: BrowserSim.getWindowId(topMail3Pane(window)),
+        tabId: BrowserSim.getTabId(topWin, window),
+        windowId: BrowserSim.getWindowId(topWin),
       });
 
       const platformInfo = await browser.runtime.getPlatformInfo();
@@ -484,9 +486,15 @@ const messageActions = {
       if (state.summary.isInTab || Prefs.operate_on_conversations) {
         msgs = state.messages.msgData.map((msg) => msg.id);
       } else {
-        msgs = await browser.convMsgWindow.selectedMessages(
-          state.summary.windowId
-        );
+        if ("getDisplayedMessages" in browser.messageDisplay) {
+          msgs = await browser.messageDisplay.getDisplayedMessages(
+            state.summary.tabId
+          );
+        } else {
+          msgs = await browser.convMsgWindow.getDisplayedMessages(
+            state.summary.tabId
+          );
+        }
         msgs = msgs.map((m) => m.id);
       }
       browser.messages.archive(msgs).catch(console.error);
@@ -499,9 +507,15 @@ const messageActions = {
       if (state.summary.isInTab || Prefs.operate_on_conversations) {
         msgs = state.messages.msgData.map((msg) => msg.id);
       } else {
-        msgs = await browser.convMsgWindow.selectedMessages(
-          state.summary.windowId
-        );
+        if ("getDisplayedMessages" in browser.messageDisplay) {
+          msgs = await browser.messageDisplay.getDisplayedMessages(
+            state.summary.tabId
+          );
+        } else {
+          msgs = await browser.convMsgWindow.getDisplayedMessages(
+            state.summary.tabId
+          );
+        }
         msgs = msgs.map((m) => m.id);
       }
       try {
@@ -794,6 +808,7 @@ function summary(state = initialSummary, action) {
       return {
         ...state,
         isInTab: action.isInTab,
+        tabId: action.tabId,
         windowId: action.windowId,
       };
     }
