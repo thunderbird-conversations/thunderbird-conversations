@@ -100,9 +100,9 @@ class MessageIFrame extends React.Component {
 
     const docShell = this.iframe.contentWindow.docShell;
     docShell.appType = Ci.nsIDocShell.APP_TYPE_MAIL;
+    docShell.charset = "UTF-8";
     const cv = docShell.contentViewer;
     cv.hintCharacterSet = "UTF-8";
-    cv.forceCharacterSet = "UTF-8";
     cv.hintCharacterSetSource = kCharsetFromChannel;
     this.registerListeners();
     if (this.props.expanded) {
