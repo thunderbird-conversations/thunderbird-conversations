@@ -12,6 +12,7 @@ const SUPPORTED_BASE_APIS = [
   "convMsgWindow",
   "conversations",
   "i18n",
+  "messageDisplay",
   "messages",
   "runtime",
   "tabs",
@@ -137,6 +138,12 @@ class _BrowserSim {
 
   getWindowId(win) {
     return this._context.extension.windowManager.convert(win).id;
+  }
+
+  getTabId(win, docWin) {
+    let tabmail = win.document.getElementById("tabmail");
+    let tab = tabmail.getTabForBrowser(docWin.frameElement);
+    return this._context.extension.tabManager.convert(tab).id;
   }
 
   _implementation(extension, api, name) {
