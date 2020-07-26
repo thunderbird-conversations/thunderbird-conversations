@@ -42,7 +42,7 @@ describe("Compose components have correct return values", () => {
       <TextArea onChange={callback} name="option_name" value={"first text"} />
     );
     option
-      .find("input")
+      .find("textarea")
       .simulate("change", { target: { value: "my special text" } });
 
     expect(callback.mock.calls[0][0]).toBe("option_name");
@@ -96,7 +96,7 @@ describe("Compose Reducer and Actions tests", () => {
       from: "id1",
       to: "me@example.com",
       subject: "Test",
-      body: "Hello\n",
+      body: "Hello",
     });
   });
 });
@@ -128,7 +128,7 @@ describe("Compose full page tests", () => {
 
     const textArea = main.find(TextArea).at(0);
     textArea
-      .find("input")
+      .find("textarea")
       .simulate("change", { target: { value: "testArea" } });
 
     const sendButton = main.find("button");
@@ -138,7 +138,7 @@ describe("Compose full page tests", () => {
       from: "id1",
       to: "to",
       subject: "subject",
-      body: "testArea\n",
+      body: "testArea",
     });
   });
 });
