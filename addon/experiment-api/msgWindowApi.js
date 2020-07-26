@@ -58,7 +58,7 @@ class WindowObserver {
 var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
   getAPI(context) {
     const { extension } = context;
-    const { messageManager, windowManager } = extension;
+    const { messageManager, tabManager, windowManager } = extension;
     return {
       convMsgWindow: {
         async isSelectionExpanded(windowId) {
@@ -95,12 +95,35 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
 
           return !(await this.isSelectionExpanded(windowId));
         },
-        async selectedMessages(windowId) {
-          const win = getWindowFromId(windowManager, context, windowId);
+        async getDisplayedMessages(tabId) {
+          let tab = tabManager.get(tabId);
+          let displayedMessages;
 
-          return win.gFolderDisplay.selectedMessages.map((hdr) =>
-            messageManager.convert(hdr)
-          );
+          if (tab.__proto__.constructor.name == "TabmailTab") {
+            if (
+              tab.active &&
+              ["folder", "glodaList", "message"].includes(
+                tab.nativeTab.mode.name
+              )
+            ) {
+              displayedMessages = tab.nativeTab.folderDisplay.selectedMessages;
+            }
+          } else if (tab.nativeTab.gMessageDisplay) {
+            displayedMessages = tab.nativeTab.folderDisplay.selectedMessages;
+          }
+
+          if (!displayedMessages) {
+            return [];
+          }
+
+          let result = [];
+          for (let msg of displayedMessages) {
+            let hdr = messageManager.convert(msg);
+            if (hdr) {
+              result.push(hdr);
+            }
+          }
+          return result;
         },
         async openNewWindow(url) {
           const win = getWindowFromId();
