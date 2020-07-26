@@ -24,16 +24,27 @@ const composeSlice = createSlice({
   },
 });
 export const actions = {
-  initCompose() {
+  initCompose(accountId, identityId) {
     return async function (dispatch) {
       // Set from to be the default account / identity.
-      let accounts = await browser.accounts.list();
-      let accountDetail = await browser.accounts.get(accounts[0].id);
+
+      let accountDetail;
+      if (!accountId) {
+        let accounts = await browser.accounts.list();
+        accountDetail = accounts[0];
+      } else {
+        accountDetail = await browser.accounts.get(accountId);
+      }
+
+      let identityDetail = identityId
+        ? accountDetail.identities.find((i) => i.id == identityId)
+        : accountDetail.identities[0];
+
       dispatch(
         composeSlice.actions.setFromDetails({
-          from: accountDetail.identities[0].email,
-          identityId: accountDetail.identities[0].id,
-          email: accountDetail.identities[0].email,
+          from: identityDetail.email,
+          identityId: identityDetail.id,
+          email: identityDetail.email,
         })
       );
     };

@@ -70,13 +70,13 @@ describe("Compose Reducer and Actions tests", () => {
     await store.dispatch(actions.initCompose());
 
     expect(mockedList).toHaveBeenCalled();
-    expect(mockedGet).toHaveBeenCalled();
+    expect(mockedGet).not.toHaveBeenCalled();
 
     // Should have correctly set up the initial values.
     expect(store.getState()).toStrictEqual({
-      from: "1@example.com",
-      identityId: "id1",
-      email: "1@example.com",
+      from: "id3@example.com",
+      identityId: "id3",
+      email: "id3@example.com",
     });
   });
 
@@ -93,7 +93,7 @@ describe("Compose Reducer and Actions tests", () => {
     await store.dispatch(actions.sendMessage("custom"));
 
     expect(mockedSend).toHaveBeenCalledWith({
-      from: "id1",
+      from: "id3",
       to: "me@example.com",
       subject: "Test",
       body: "Hello",
@@ -135,7 +135,7 @@ describe("Compose full page tests", () => {
     sendButton.simulate("click");
 
     expect(mockedSend).toHaveBeenCalledWith({
-      from: "id1",
+      from: "id3",
       to: "to",
       subject: "subject",
       body: "testArea",

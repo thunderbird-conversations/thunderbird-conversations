@@ -93,7 +93,7 @@ if (!browser.storage) {
 
 if (!browser.tabs) {
   browser.tabs = {
-    create() {},
+    async create() {},
   };
 }
 
@@ -116,10 +116,29 @@ if (!browser.convCompose) {
 
 if (!browser.accounts) {
   browser.accounts = {
-    list() {
-      return [{ id: 1 }, { id: 2 }];
+    async list() {
+      return [
+        {
+          id: "ac1",
+          identities: [
+            {
+              id: `id3`,
+              email: `id3@example.com`,
+            },
+          ],
+        },
+        {
+          id: "ac2",
+          identities: [
+            {
+              id: `id4`,
+              email: `id4@example.com`,
+            },
+          ],
+        },
+      ];
     },
-    get(id) {
+    async get(id) {
       return {
         id,
         identities: [
@@ -128,6 +147,47 @@ if (!browser.accounts) {
             email: `${id}@example.com`,
           },
         ],
+      };
+    },
+    async setDefaultIdentity() {},
+  };
+}
+
+if (!browser.messageDisplay) {
+  browser.messageDisplay = {
+    async getDisplayedMessages(tabId) {
+      return [
+        {
+          author: "author@example.com",
+          folder: {
+            accountId: "ac34",
+            path: "Inbox/test",
+          },
+          id: 123456,
+          read: false,
+        },
+      ];
+    },
+  };
+}
+
+if (!browser.windows) {
+  browser.windows = {
+    async create() {},
+    async getCurrent() {
+      return {
+        focused: true,
+        id: 1,
+        tabs: [
+          {
+            active: true,
+            highlighted: true,
+            id: 123,
+            index: 0,
+            selected: true,
+          },
+        ],
+        type: "normal",
       };
     },
   };

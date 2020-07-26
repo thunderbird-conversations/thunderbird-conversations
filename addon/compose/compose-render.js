@@ -11,4 +11,8 @@ ReactDOM.render(
   document.querySelector("#root")
 );
 
-store.dispatch(actions.initCompose());
+let params = new URLSearchParams(document.location.search);
+
+store.dispatch(
+  actions.initCompose(params.get("accountId"), params.get("identityId"))
+);

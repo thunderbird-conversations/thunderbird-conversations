@@ -21,7 +21,6 @@ module.exports = {
       env: {
         webextensions: true,
       },
-      excludedFiles: ["addon/bootstrap.js"],
       files: [
         "addon/*.js",
         "addon/assistant/*.js",
@@ -31,6 +30,9 @@ module.exports = {
         "addon/content/es-modules/**/*.js",
         "addon/content/es-modules/**/*.jsx",
       ],
+      globals: {
+        globalThis: false,
+      },
       parserOptions: {
         sourceType: "module",
       },
