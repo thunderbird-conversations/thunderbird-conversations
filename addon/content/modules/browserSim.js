@@ -143,6 +143,9 @@ class _BrowserSim {
   getTabId(win, docWin) {
     let tabmail = win.document.getElementById("tabmail");
     let tab = tabmail.getTabForBrowser(docWin.frameElement);
+    if (!tab) {
+      return null;
+    }
     return this._context.extension.tabManager.convert(tab).id;
   }
 
