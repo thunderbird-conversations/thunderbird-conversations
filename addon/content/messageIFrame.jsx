@@ -103,6 +103,10 @@ class MessageIFrame extends React.Component {
     docShell.charset = "UTF-8";
     const cv = docShell.contentViewer;
     cv.hintCharacterSet = "UTF-8";
+    // Support Thunderbird 68.
+    if ("forceCharacterSet" in cv) {
+      cv.forceCharacterSet = "UTF-8";
+    }
     cv.hintCharacterSetSource = kCharsetFromChannel;
     this.registerListeners();
     if (this.props.expanded) {
