@@ -164,7 +164,9 @@ class MessageIFrame extends React.Component {
     // the frame just doesn't quite scroll properly. In this case,
     // getComputedStyle(body).height is .2px greater than the scrollHeight.
     // Hence we try to work around that here.
-    const scrollHeight = iframeDoc.body.scrollHeight + 1;
+    // In #1517 made it +3 as occasional issues were still being seen with
+    // some messages.
+    const scrollHeight = iframeDoc.body.scrollHeight + 3;
     this.iframe.style.height = scrollHeight + "px";
 
     // So now we might overflow horizontally, which causes a horizontal
