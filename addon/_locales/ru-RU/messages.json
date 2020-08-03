@@ -275,7 +275,7 @@
   },
 
   "message.expand.tooltip": {
-    "message": "Развернуть/свернуть все сообщения",
+    "message": "Раскрыть/скрыть все сообщения",
     "description": "Tooltip for the expand button in the conversation header"
   },
 
@@ -497,22 +497,22 @@
   },
 
   "messageBody.hideQuotedText": {
-    "message": "Свернуть цитаты",
+    "message": "Скрыть цитаты",
     "description": "String displayed in a message body to collapse the quoted text."
   },
 
   "messageBody.showQuotedText": {
-    "message": "Развернуть цитаты",
+    "message": "Раскрыть цитаты",
     "description": "String displayed in a message body to expand the quoted text."
   },
 
   "messageBody.hideSigText": {
-    "message": "Свернуть подпись",
+    "message": "Скрыть подпись",
     "description": "String displayed in a message body to collapse the signature."
   },
 
   "messageBody.showSigText": {
-    "message": "Развернуть подпись",
+    "message": "Раскрыть подпись",
     "description": "String displayed in a message body to expand the signature."
   },
 
