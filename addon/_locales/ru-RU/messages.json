@@ -5,32 +5,32 @@
   },
 
   "extensionDescription": {
-    "message": "Привносит в Thunderbird возможность просматривать ваши сообщения и ответы на них в виде одной ветки сообщений.",
+    "message": "Привносит в Thunderbird возможность просматривать ваши сообщения вместе с историями ответов на них.",
     "description": "Description of the extension."
   },
 
   "options.expand_who": {
-    "message": "По умолчанию раскрывать:",
+    "message": "Способ раскрытия сообщений в ветке:",
     "description": "Options - label for which messages should be expanded."
   },
 
   "options.expand_auto": {
-    "message": "Автоматически",
+    "message": "Раскрывать автоматически",
     "description": "Options - label for automatically expanding messages."
   },
 
   "options.expand_auto.tooltip": {
-    "message": "Развернуть все непрочитанные сообщения (или последнее сообщение) из ветки, если она свернута, иначе развернуть только выбранное из списка сообщение.",
+    "message": "Раскрыть все непрочитанные сообщения (или последнее сообщение) из ветки, если она скрыта, иначе раскрыть только выбранное из списка сообщение.",
     "description": "Options - tooltip for automatically expanding messages."
   },
 
   "options.expand_none": {
-    "message": "Сообщений нет",
+    "message": "Ничего не раскрывать",
     "description": "Options - label for not expanding messages."
   },
 
   "options.expand_all": {
-    "message": "Все сообщения",
+    "message": "Раскрывать всё",
     "description": "Options - label for expanding all messages."
   },
 
@@ -80,7 +80,7 @@
   },
 
   "options.tweak_bodies_desc": {
-    "message": "Привести в соответствие шрифты для тела сообщения с внешними шрифтами (рекомендуется, требуется перезапуск).",
+    "message": "Привести в соответствие шрифты для тела сообщения с шрифтами для ветки сообщений (рекомендуется, требуется перезапуск).",
     "description": "Options - description for tweaking message body fonts."
   },
 
@@ -105,17 +105,17 @@
   },
 
   "options.compose_in_tab_title": {
-    "message": "Скрытое окно построения сообщений",
+    "message": "Скрытое окно создания сообщения",
     "description": "Options - title for hidden compose window enabling."
   },
 
   "options.compose_in_tab_desc": {
-    "message": "Открывать скрытое, неподдерживаемое окно построения сообщений в новой вкладке с помощью комбинации клавиш Ctrl+Shift+N.",
+    "message": "Открывать скрытое, неподдерживаемое окно создания сообщения в новой вкладке с помощью комбинации клавиш Ctrl+Shift+N.",
     "description": "Options - description for hidden compose window enabling."
   },
 
   "options.debugging_title": {
-    "message": "Отладка",
+    "message": "Отладочная информация",
     "description": "Options - title for debugging setting."
   },
 
@@ -135,7 +135,7 @@
   },
 
   "assistant.p1": {
-    "message": "Помощник настроит Thunderbird так, чтобы обеспечить для вас наиболее оптимальный режим работы. Мы не хотим, чтобы вы испытывали недовольство при работе!",
+    "message": "Помощник настроит Thunderbird так, чтобы обеспечить для вас наиболее оптимальный режим работы с сообщениями. Мы не хотим, чтобы вы испытывали недовольство при работе!",
     "description": "First detail paragraph for the assistant."
   },
 
@@ -150,7 +150,7 @@
   },
 
   "assistant.working": {
-    "message": "Вношу изменения...",
+    "message": "Применяются изменения...",
     "description": "An indication that the assistant is working."
   },
 
@@ -170,7 +170,7 @@
   },
 
   "assistant.actionEnableGloda": {
-    "message": "Убедитесь, что Глобальный поиск и Индексатор включены.",
+    "message": "Убедитесь, что в меню Настройки > Основные > Индексация включены глобальный поиск и индексация сообщений.",
     "description": "Option text for enabling Gloda."
   },
 
