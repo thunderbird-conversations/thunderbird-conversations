@@ -27,26 +27,29 @@ class WindowObserver {
     this._callback = callback;
   }
 
-  observe(aSubject, aTopic, aData) {
-    if (aTopic == "domwindowopened") {
-      if (aSubject && "QueryInterface" in aSubject) {
-        const win = aSubject.QueryInterface(Ci.nsIDOMWindow).window;
-        waitForWindow(win).then(() => {
-          if (
-            win.document.location !=
-              "chrome://messenger/content/messenger.xul" &&
-            win.document.location !=
-              "chrome://messenger/content/messenger.xhtml"
-          ) {
-            return;
-          }
-          this._callback(
-            aSubject.window,
-            this._windowManager.getWrapper(aSubject.window).id
-          );
-        });
-      }
+  observe(subject, topic, data) {
+    if (topic != "domwindowopened") {
+      return;
     }
+    let win;
+    if (subject && "QueryInterface" in subject) {
+      // Supports pre-TB 70.
+      win = subject.QueryInterface(Ci.nsIDOMWindow).window;
+    } else {
+      win = subject;
+    }
+    waitForWindow(win).then(() => {
+      if (
+        win.document.location != "chrome://messenger/content/messenger.xul" &&
+        win.document.location != "chrome://messenger/content/messenger.xhtml"
+      ) {
+        return;
+      }
+      this._callback(
+        subject.window,
+        this._windowManager.getWrapper(subject.window).id
+      );
+    });
   }
 }
 
