@@ -14,7 +14,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   escapeHtml: "chrome://conversations/content/modules/misc.js",
   htmlToPlainText: "chrome://conversations/content/modules/misc.js",
-  makeFriendlyDateAgo: "resource:///modules/templateUtils.js",
   msgHdrGetUri: "chrome://conversations/content/modules/misc.js",
   msgUriToMsgHdr: "chrome://conversations/content/modules/misc.js",
   NetUtil: "resource://gre/modules/NetUtil.jsm",
@@ -65,6 +64,16 @@ XPCOMUtils.defineLazyGetter(this, "mimeMsgToContentSnippetAndMeta", () => {
     ChromeUtils.import("resource:///modules/gloda/GlodaContent.jsm", tmp);
   }
   return tmp.mimeMsgToContentSnippetAndMeta;
+});
+
+XPCOMUtils.defineLazyGetter(this, "makeFriendlyDateAgo", () => {
+  let tmp = {};
+  try {
+    ChromeUtils.import("resource:///modules/templateUtils.js", tmp);
+  } catch (ex) {
+    ChromeUtils.import("resource:///modules/TemplateUtils.jsm", tmp);
+  }
+  return tmp.makeFriendlyDateAgo;
 });
 
 XPCOMUtils.defineLazyGetter(this, "gMessenger", function () {
@@ -1042,25 +1051,33 @@ class MessageFromDbHdr extends Message {
   }
 }
 
+XPCOMUtils.defineLazyGetter(this, "timeFormatter", () => {
+  return new Services.intl.DateTimeFormat(undefined, { timeStyle: "short" });
+});
+
+XPCOMUtils.defineLazyGetter(this, "dateAndTimeFormatter", () => {
+  return new Services.intl.DateTimeFormat(undefined, {
+    dateStyle: "short",
+    timeStyle: "short",
+  });
+});
+
 /**
  * A stupid formatting function that uses Services.intl
  * to format a date just like in the message list
- * @param {Date} aDate a javascript Date object
+ * @param {Date} date a javascript Date object
  * @return {String} a string containing the formatted date
  */
-function dateAsInMessageList(aDate) {
+function dateAsInMessageList(date) {
   const now = new Date();
   // Is it today?
   const isToday =
-    now.getFullYear() == aDate.getFullYear() &&
-    now.getMonth() == aDate.getMonth() &&
-    now.getDate() == aDate.getDate();
+    now.getFullYear() == date.getFullYear() &&
+    now.getMonth() == date.getMonth() &&
+    now.getDate() == date.getDate();
 
-  const format = isToday
-    ? { timeStyle: "short" }
-    : { dateStyle: "short", timeStyle: "short" };
-  const dateTimeFormatter = new Services.intl.DateTimeFormat(undefined, format);
-  return dateTimeFormatter.format(aDate);
+  const formatter = isToday ? timeFormatter : dateAndTimeFormatter;
+  return formatter.format(date);
 }
 
 /**
