@@ -49,6 +49,7 @@ const initialSummary = {
   browserBackgroundColor: "#FFFFFF",
   conversation: null,
   defaultFontSize: 15,
+  hasBuiltInPdf: false,
   // TODO: What is loading used for?
   loading: true,
   iframesLoading: 0,
@@ -261,6 +262,7 @@ const messageActions = {
       });
 
       const platformInfo = await browser.runtime.getPlatformInfo();
+      const browserInfo = await browser.runtime.getBrowserInfo();
       const defaultFontSize = await browser.conversations.getCorePref(
         "font.size.variable.x-western"
       );
@@ -276,6 +278,7 @@ const messageActions = {
         browserBackgroundColor,
         defaultFontSize,
         OS: platformInfo.os,
+        browserVersion: browserInfo.version,
       });
 
       if (!isInTab) {
@@ -820,11 +823,16 @@ function summary(state = initialSummary, action) {
         tenPxFactor = 0.7;
       }
 
+      let mainVersion =
+        action.browserVersion && action.browserVersion.split(".")[0];
+
       return {
         ...state,
         browserForegroundColor: action.browserForegroundColor,
         browserBackgroundColor: action.browserBackgroundColor,
         defaultFontSize: action.defaultFontSize,
+        // Thunderbird 81 has built-in PDF viewer.
+        hasBuiltInPdf: mainVersion >= 81,
         OS: action.OS,
         tenPxFactor,
       };

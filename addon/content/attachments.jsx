@@ -66,6 +66,12 @@ class Attachment extends React.PureComponent {
   }
 
   preview() {
+    // Keep similar capabilities as previous versions where the user
+    // can click the attachment to open the pdf.
+    if (this.isPdf(this.props.contentType) && this.props.hasBuiltInPdf) {
+      this.openAttachment();
+      return;
+    }
     this.props.dispatch(
       attachmentActions.previewAttachment({
         name: this.props.name,
@@ -220,7 +226,7 @@ class Attachment extends React.PureComponent {
           <span className="filename">{this.props.name}</span>
           <span className="filesize">{this.props.formattedSize}</span>
           <div className="attachActions">
-            {isPdf && (
+            {isPdf && !this.props.hasBuiltInPdf && (
               <a
                 className="icon-link preview-attachment"
                 title={browser.i18n.getMessage("attachments.preview.tooltip")}
@@ -274,6 +280,7 @@ Attachment.propTypes = {
   dispatch: PropTypes.func.isRequired,
   contentType: PropTypes.string.isRequired,
   formattedSize: PropTypes.string.isRequired,
+  hasBuiltInPdf: PropTypes.bool.isRequired,
   isExternal: PropTypes.bool.isRequired,
   messageKey: PropTypes.number.isRequired,
   msgUri: PropTypes.string.isRequired,
@@ -345,6 +352,7 @@ class Attachments extends React.PureComponent {
               contentType={attachment.contentType}
               isExternal={attachment.isExternal}
               formattedSize={attachment.formattedSize}
+              hasBuiltInPdf={this.props.hasBuiltInPdf}
               messageKey={this.props.messageKey}
               msgUri={this.props.msgUri}
               name={attachment.name}
@@ -362,6 +370,7 @@ Attachments.propTypes = {
   dispatch: PropTypes.func.isRequired,
   attachments: PropTypes.array.isRequired,
   attachmentsPlural: PropTypes.string.isRequired,
+  hasBuiltInPdf: PropTypes.bool.isRequired,
   messageKey: PropTypes.number.isRequired,
   msgUri: PropTypes.string.isRequired,
 };
