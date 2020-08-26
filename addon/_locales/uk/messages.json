@@ -656,5 +656,17 @@
   "pdfViewer.previous": {
     "message": "Назад",
     "description": "Description for the previous page button."
+  },
+  "options.undoCustomizations": {
+    "message": "Відновити параметри",
+    "description": "Description for the undo customizations button."
+  },
+  "options.undoCustomizations.tooltip": {
+    "message": "Відновити параметри, що були при першому встановленні.",
+    "description": "Tooltip for the undo customizations button."
+  },
+  "options.undoCustomizations.finished": {
+    "message": "Відновлення параметрів виконано",
+    "description": "Message displayed once the customizations have been uninstalled."
   }
 }
