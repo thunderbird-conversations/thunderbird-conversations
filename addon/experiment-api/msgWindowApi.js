@@ -152,7 +152,7 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
                   let result = await fire
                     .async(id, msgHdrs)
                     .catch(console.error);
-                  if (result && result.cancel) {
+                  if (result?.cancel) {
                     return;
                   }
                   oldMsgOpenSelectedMessages();
@@ -203,7 +203,7 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
                 let msgHdrs = win.gFolderDisplay.selectedMessages;
                 msgHdrs = msgHdrs.map((hdr) => messageManager.convert(hdr));
                 let result = await fire.async(id, msgHdrs).catch(console.error);
-                if (result && result.cancel) {
+                if (result?.cancel) {
                   return;
                 }
                 win.oldTreeOnMouseDown();
@@ -443,7 +443,7 @@ function summarizeThreadHandler(win, id) {
       "chrome://conversations/content/stub.xhtml",
       function (isRefresh) {
         // See issue #673
-        if (htmlpane.contentDocument && htmlpane.contentDocument.body) {
+        if (htmlpane.contentDocument?.body) {
           htmlpane.contentDocument.body.hidden = false;
         }
 

@@ -9,14 +9,14 @@
 class _Quoting {
   canInclude(aNode) {
     let v =
-      (aNode.tagName && aNode.tagName.toLowerCase() == "br") ||
+      aNode.tagName?.toLowerCase() == "br" ||
       (aNode.nodeType == aNode.TEXT_NODE && aNode.textContent.trim() === "");
     // if (v) dump("Including "+aNode+"\n");
     return v;
   }
 
   isBody(aNode) {
-    if (aNode.tagName && aNode.tagName.toLowerCase() == "body") {
+    if (aNode.tagName?.toLowerCase() == "body") {
       return true;
     }
     let count = 0;
@@ -144,7 +144,7 @@ class _Quoting {
           let ex = new Error();
           ex.found = true;
           throw ex;
-        } else if (m && m.length) {
+        } else if (m?.length) {
           // We only move on if we found the matching text in the parent's text
           // content, otherwise, there's no chance we'll find it in the child's
           // content.
@@ -170,12 +170,12 @@ class _Quoting {
       let isWhitespace = function (n) {
         return (
           n &&
-          ((n.tagName && n.tagName.toLowerCase() == "br") ||
+          (n.tagName?.toLowerCase() == "br" ||
             (n.nodeType == n.TEXT_NODE && n.textContent.match(/^\s*$/)))
         );
       };
       let isBlockquote = function (b) {
-        return b && b.tagName && b.tagName.toLowerCase() == "blockquote";
+        return b?.tagName?.toLowerCase() == "blockquote";
       };
       let blockquoteFollows = function (n) {
         return (

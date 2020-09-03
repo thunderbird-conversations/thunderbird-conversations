@@ -823,8 +823,7 @@ function summary(state = initialSummary, action) {
         tenPxFactor = 0.7;
       }
 
-      let mainVersion =
-        action.browserVersion && action.browserVersion.split(".")[0];
+      let mainVersion = action.browserVersion?.split(".")[0];
 
       return {
         ...state,
@@ -911,7 +910,7 @@ function summary(state = initialSummary, action) {
       // It might be that we're trying to send a message on unmount, but the
       // conversation/message has gone away. If that's the case, we just skip
       // and move on.
-      if (state.conversation && state.conversation.getMessage) {
+      if (state.conversation?.getMessage) {
         const msg = state.conversation.getMessage(action.msgUri);
         if (msg) {
           msg.postStreamMessage(topMail3Pane(window).msgWindow, action.iframe);
