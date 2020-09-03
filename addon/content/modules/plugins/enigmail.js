@@ -69,15 +69,15 @@ try {
 
 if (hasEnigmail) {
   XPCOMUtils.defineLazyModuleGetters(this, {
-    EnigmailConstants: "chrome://enigmail/content/modules/constants.jsm",
-    EnigmailCore: "chrome://enigmail/content/modules/core.jsm",
-    EnigmailData: "chrome://enigmail/content/modules/data.jsm",
-    EnigmailDecryption: "chrome://enigmail/content/modules/decryption.jsm",
-    EnigmailDialog: "chrome://enigmail/content/modules/dialog.jsm",
-    EnigmailFuncs: "chrome://enigmail/content/modules/funcs.jsm",
-    EnigmailLocale: "chrome://enigmail/content/modules/locale.jsm",
-    EnigmailPrefs: "chrome://enigmail/content/modules/prefs.jsm",
-    EnigmailRules: "chrome://enigmail/content/modules/rules.jsm",
+    EnigmailConstants: "chrome://openpgp/content/modules/constants.jsm",
+    EnigmailCore: "chrome://openpgp/content/modules/core.jsm",
+    EnigmailData: "chrome://openpgp/content/modules/data.jsm",
+    EnigmailDecryption: "chrome://openpgp/content/modules/decryption.jsm",
+    EnigmailDialog: "chrome://openpgp/content/modules/dialog.jsm",
+    EnigmailFuncs: "chrome://openpgp/content/modules/funcs.jsm",
+    EnigmailLocale: "chrome://openpgp/content/modules/locale.jsm",
+    EnigmailPrefs: "chrome://openpgp/content/modules/prefs.jsm",
+    EnigmailRules: "chrome://openpgp/content/modules/rules.jsm",
   });
 }
 
@@ -96,14 +96,12 @@ let getCurrentIdentity = function () {
   return Enigmail.msg.identity;
 };
 let global = this;
-let nsIEnigmail = {};
 // eslint-disable-next-line no-redeclare
 /* global window:true */
 let window;
 
 if (hasEnigmail) {
   window = getMail3Pane();
-  nsIEnigmail = EnigmailConstants;
   enigmailSvc = EnigmailCore.getService(window);
   if (!enigmailSvc) {
     Log.debug("Error loading the Enigmail service. Is Enigmail disabled?\n");
@@ -113,11 +111,11 @@ if (hasEnigmail) {
     let loader = Services.scriptloader;
     /* globals Enigmail, EnigmailMsgCompFields, EnigmailEncryption */
     loader.loadSubScript(
-      "chrome://enigmail/content/ui/enigmailMsgComposeOverlay.js",
+      `chrome://openpgp/content/ui/enigmailMsgComposeOverlay.js`,
       global
     );
     loader.loadSubScript(
-      "chrome://enigmail/content/ui/enigmailMsgComposeHelper.js",
+      `chrome://openpgp/content/ui/enigmailMsgComposeHelper.js`,
       global
     );
   } catch (e) {
@@ -175,6 +173,7 @@ function overrideUpdateSecurity(messagepane, w) {
     unusedUriSpec,
     exitCode,
     statusFlags,
+    extStatusFlags,
     keyId,
     userId,
     sigDetails,
@@ -208,7 +207,7 @@ function overrideUpdateSecurity(messagepane, w) {
     // Non-encrypted message may have decrypted labela since
     // message.isEncrypted is true for only signed pgp/mime message.
     // We reset decrypted label from decryption status.
-    if (statusFlags & nsIEnigmail.DECRYPTION_OKAY) {
+    if (statusFlags & EnigmailConstants.DECRYPTION_OKAY) {
       addEncryptedTag(message);
     } else {
       removeEncryptedTag(message);
@@ -226,6 +225,7 @@ function overrideUpdateSecurity(messagepane, w) {
       w.Enigmail.hdrView.updateHdrIcons(
         exitCode,
         statusFlags,
+        extStatusFlags,
         keyId,
         userId,
         sigDetails,
@@ -438,7 +438,7 @@ function tryEnigmail(aDocument, aMessage, aMsgWindow) {
         charset
       );
     }
-    if (blockSeparationObj.value.includes(" ")) {
+    if (blockSeparationObj.value?.includes(" ")) {
       let blocks = blockSeparationObj.value.split(/ /);
       let blockInfo = blocks[0].split(/:/);
       plainText =
@@ -513,6 +513,7 @@ function tryEnigmail(aDocument, aMessage, aMsgWindow) {
       w.Enigmail.hdrView.updateHdrIcons(
         exitCode,
         statusFlagsObj.value,
+        0,
         keyIdObj.value,
         userIdObj.value,
         sigDetailsObj.value,
@@ -632,14 +633,14 @@ function patchForShowSecurityInfo(aWindow) {
 function addSignedLabel(status, msg) {
   if (
     status &
-    (nsIEnigmail.BAD_SIGNATURE |
-      nsIEnigmail.GOOD_SIGNATURE |
-      nsIEnigmail.EXPIRED_KEY_SIGNATURE |
-      nsIEnigmail.EXPIRED_SIGNATURE |
-      nsIEnigmail.UNVERIFIED_SIGNATURE |
-      nsIEnigmail.REVOKED_KEY |
-      nsIEnigmail.EXPIRED_KEY_SIGNATURE |
-      nsIEnigmail.EXPIRED_SIGNATURE)
+    (EnigmailConstants.BAD_SIGNATURE |
+      EnigmailConstants.GOOD_SIGNATURE |
+      EnigmailConstants.EXPIRED_KEY_SIGNATURE |
+      EnigmailConstants.EXPIRED_SIGNATURE |
+      EnigmailConstants.UNVERIFIED_SIGNATURE |
+      EnigmailConstants.REVOKED_KEY |
+      EnigmailConstants.EXPIRED_KEY_SIGNATURE |
+      EnigmailConstants.EXPIRED_SIGNATURE)
   ) {
     msg.addSpecialTag({
       canClick: true,
@@ -651,7 +652,7 @@ function addSignedLabel(status, msg) {
         detail: "viewSecurityInfo",
       },
       title:
-        status & nsIEnigmail.UNVERIFIED_SIGNATURE
+        status & EnigmailConstants.UNVERIFIED_SIGNATURE
           ? browser.i18n.getMessage("enigmail.unknownGood")
           : browser.i18n.getMessage("enigmail.messageSignedLong"),
     });
@@ -701,7 +702,7 @@ let enigmailHook = {
     let iframeDoc = iframe.contentDocument;
     if (iframeDoc.body.textContent.length && hasEnigmail) {
       let status = tryEnigmail(iframeDoc, message, msgWindow);
-      if (status & nsIEnigmail.DECRYPTION_OKAY) {
+      if (status & EnigmailConstants.DECRYPTION_OKAY) {
         addEncryptedTag(message);
       }
       addSignedLabel(status, message);
@@ -714,7 +715,7 @@ let enigmailHook = {
     }
 
     if (extraData.detail == "viewSecurityInfo") {
-      win.Enigmail.msg.viewSecurityInfo(event);
+      win.showMessageReadSecurityInfo();
     }
   },
 
@@ -739,10 +740,10 @@ let enigmailHook = {
     // eslint-disable-next-line no-native-reassign, no-global-assign
     window = getMail3Pane();
 
-    const SIGN = nsIEnigmail.SEND_SIGNED;
-    const ENCRYPT = nsIEnigmail.SEND_ENCRYPTED;
+    const SIGN = EnigmailConstants.SEND_SIGNED;
+    const ENCRYPT = EnigmailConstants.SEND_ENCRYPTED;
 
-    let uiFlags = nsIEnigmail.UI_INTERACTIVE;
+    let uiFlags = EnigmailConstants.UI_INTERACTIVE;
 
     let identity = aAddress.params.identity;
     Enigmail.msg.identity = identity;
@@ -776,17 +777,17 @@ let enigmailHook = {
     let sendFlags = gotSendFlags;
     if (Enigmail.msg.sendPgpMime) {
       // Use PGP/MIME
-      sendFlags |= nsIEnigmail.SEND_PGP_MIME;
+      sendFlags |= EnigmailConstants.SEND_PGP_MIME;
     }
     let optSendFlags = 0;
     if (EnigmailPrefs.getPref("alwaysTrustSend")) {
-      optSendFlags |= nsIEnigmail.SEND_ALWAYS_TRUST;
+      optSendFlags |= EnigmailConstants.SEND_ALWAYS_TRUST;
     }
     if (
       EnigmailPrefs.getPref("encryptToSelf") ||
-      sendFlags & nsIEnigmail.SAVE_MESSAGE
+      sendFlags & EnigmailConstants.SAVE_MESSAGE
     ) {
-      optSendFlags |= nsIEnigmail.SEND_ENCRYPT_TO_SELF;
+      optSendFlags |= EnigmailConstants.SEND_ENCRYPT_TO_SELF;
     }
     sendFlags |= optSendFlags;
 
@@ -819,7 +820,8 @@ let enigmailHook = {
     try {
       let origText;
       let usingPGPMime =
-        sendFlags & nsIEnigmail.SEND_PGP_MIME && sendFlags & (ENCRYPT | SIGN);
+        sendFlags & EnigmailConstants.SEND_PGP_MIME &&
+        sendFlags & (ENCRYPT | SIGN);
 
       if (
         !usingPGPMime &&
@@ -838,7 +840,7 @@ let enigmailHook = {
           )
         ) {
           usingPGPMime = true;
-          sendFlags |= nsIEnigmail.SEND_PGP_MIME;
+          sendFlags |= EnigmailConstants.SEND_PGP_MIME;
         } else {
           aStatus.canceled = true;
           return aStatus;
@@ -846,7 +848,7 @@ let enigmailHook = {
       }
 
       if (usingPGPMime) {
-        uiFlags |= nsIEnigmail.UI_PGP_MIME;
+        uiFlags |= EnigmailConstants.UI_PGP_MIME;
 
         let newSecurityInfo = EnigmailMsgCompFields.createObject(
           gMsgCompose.compFields.securityInfo
@@ -930,7 +932,7 @@ let enigmailHook = {
       }
 
       if (
-        !(sendFlags & nsIEnigmail.SAVE_MESSAGE) &&
+        !(sendFlags & EnigmailConstants.SAVE_MESSAGE) &&
         EnigmailPrefs.getPref("confirmBeforeSending")
       ) {
         if (

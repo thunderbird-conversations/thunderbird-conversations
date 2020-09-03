@@ -767,6 +767,9 @@ function messages(state = initialMessages, action) {
     }
     case "MSG_REMOVE_SPECIAL_TAG": {
       return modifyOnlyMsg(state, action.uri, (msg) => {
+        if (!msg.specialTags) {
+          return msg;
+        }
         const newSpecialTags = [...msg.specialTags];
         return {
           ...msg,
