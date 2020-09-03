@@ -11,7 +11,7 @@ function QuickReply() {
       <small>
         <i>
           Quick Reply is temporarily disabled due to needing rewriting for
-          Thunderbird 68+.
+          Thunderbird 78+.
         </i>
       </small>
     </div>

@@ -5,7 +5,6 @@ var { XPCOMUtils } = ChromeUtils.import(
 XPCOMUtils.defineLazyModuleGetters(this, {
   DisplayNameUtils: "resource:///modules/DisplayNameUtils.jsm",
   ExtensionCommon: "resource://gre/modules/ExtensionCommon.jsm",
-  fixIterator: "resource:///modules/iteratorUtils.jsm",
   Services: "resource://gre/modules/Services.jsm",
   MailServices: "resource:///modules/MailServices.jsm",
 });
@@ -439,8 +438,7 @@ function parseMimeLine(mimeLine, dontFix) {
     console.debug("Empty aMimeLine?!!");
     return [];
   }
-  // The null here copes with pre-Thunderbird 71 compatibility.
-  let addresses = MailServices.headerParser.parseEncodedHeader(mimeLine, null);
+  let addresses = MailServices.headerParser.parseEncodedHeader(mimeLine);
   if (addresses.length) {
     return addresses.map((addr) => {
       return {
@@ -488,12 +486,7 @@ function composeMessageTo(aEmail, aDisplayedFolder) {
  */
 function getIdentityEmailsImpl(aSkipNntpIdentities = true) {
   let emails = [];
-  // TB 68 has accounts as an nsIArray.
-  // TB 78 has accounts an an directly iterable array.
-  for (let account of fixIterator(
-    MailServices.accounts.accounts,
-    Ci.nsIMsgAccount
-  )) {
+  for (let account of MailServices.accounts.accounts) {
     let server = account.incomingServer;
     if (
       aSkipNntpIdentities &&
@@ -501,12 +494,7 @@ function getIdentityEmailsImpl(aSkipNntpIdentities = true) {
     ) {
       continue;
     }
-    // TB 68 has identities as an nsIArray.
-    // TB 78 has identities an an directly iterable array.
-    for (let currentIdentity of fixIterator(
-      account.identities,
-      Ci.nsIMsgIdentity
-    )) {
+    for (let currentIdentity of account.identities) {
       // We're only interested in identities that have a real email.
       if (currentIdentity.email) {
         emails.push(currentIdentity.email);

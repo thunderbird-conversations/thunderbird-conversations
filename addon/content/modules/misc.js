@@ -140,8 +140,7 @@ function parseMimeLine(mimeLine, dontFix) {
     console.debug("Empty aMimeLine?!!");
     return [];
   }
-  // The null here copes with pre-Thunderbird 71 compatibility.
-  let addresses = MailServices.headerParser.parseEncodedHeader(mimeLine, null);
+  let addresses = MailServices.headerParser.parseEncodedHeader(mimeLine);
   if (addresses.length) {
     return addresses.map((addr) => {
       return {

@@ -448,13 +448,6 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             .document.getElementById("tabmail")
             .openTab(createTabProperties.type, params);
         },
-        async getIsJunk(id) {
-          const msgHdr = context.extension.messageManager.get(id);
-          return (
-            msgHdr.getStringProperty("junkscore") ==
-            Ci.nsIJunkMailPlugin.IS_SPAM_SCORE
-          );
-        },
         async resetMessagePane() {
           for (const win of Services.wm.getEnumerator("mail:3pane")) {
             const messagepane = win.document.getElementById("multimessage");

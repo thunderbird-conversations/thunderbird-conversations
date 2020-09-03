@@ -17,7 +17,6 @@ const { XPCOMUtils } = ChromeUtils.import(
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   getMail3Pane: "chrome://conversations/content/modules/misc.js",
-  fixIterator: "resource:///modules/iteratorUtils.jsm",
   MailUtils: "resource:///modules/MailUtils.jsm",
   setupLogging: "chrome://conversations/content/modules/misc.js",
   Services: "resource://gre/modules/Services.jsm",
@@ -298,17 +297,13 @@ var Customizations = {
 
       // Go through all accounts and through all folders, and add each one
       //  that's either an inbox or a sent folder to the global inbox.
-      for (let account of fixIterator(
-        msgAccountManager.accounts,
-        Ci.nsIMsgAccount
-      )) {
+      for (let account of msgAccountManager.accounts) {
         if (!account.incomingServer) {
           continue;
         }
 
         let rootFolder = account.incomingServer.rootFolder;
-        let allFolders = rootFolder.descendants;
-        for (let folder of fixIterator(allFolders, Ci.nsIMsgFolder)) {
+        for (let folder of rootFolder.descendants) {
           if (
             (folder.getFlag(nsMsgFolderFlags_SentMail) ||
               folder.getFlag(nsMsgFolderFlags_Inbox)) &&
@@ -355,10 +350,7 @@ var Customizations = {
       let changedFolders = [];
       let changedServers = [];
 
-      for (let account of fixIterator(
-        msgAccountManager.accounts,
-        Ci.nsIMsgAccount
-      )) {
+      for (let account of msgAccountManager.accounts) {
         if (!account.incomingServer) {
           continue;
         }
@@ -384,8 +376,7 @@ var Customizations = {
           changedServers.push(account.incomingServer.serverURI);
         }
         let rootFolder = account.incomingServer.rootFolder;
-        let allFolders = rootFolder.descendants;
-        for (let folder of fixIterator(allFolders, Ci.nsIMsgFolder)) {
+        for (let folder of rootFolder.descendants) {
           if (
             (folder.getFlag(nsMsgFolderFlags_SentMail) ||
               folder.getFlag(nsMsgFolderFlags_Inbox)) &&

@@ -422,19 +422,12 @@ class Message {
     }
 
     const messageFolderType = messageHeader.folder.type;
-    let isJunk;
-    if (!("junk" in messageHeader)) {
-      // Supports TB 68.
-      isJunk = await browser.conversations.getIsJunk(this._id);
-    } else {
-      isJunk = messageHeader.junk;
-    }
     let data = {
       id: this._id,
       date: this._date,
       hasRemoteContent: this.hasRemoteContent,
       isDraft: messageFolderType == "drafts",
-      isJunk,
+      isJunk: messageHeader.junk,
       isOutbox: messageFolderType == "outbox",
       isPhishing: this.isPhishing,
       messageKey: this._msgHdr.messageKey,

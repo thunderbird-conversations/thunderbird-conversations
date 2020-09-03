@@ -169,19 +169,6 @@
         ]
       },
       {
-        "name": "getIsJunk",
-        "type": "function",
-        "description": "Temporary for 68 only. Gets if a message is junk or not",
-        "async": true,
-        "parameters": [
-          {
-            "name": "id",
-            "type": "integer",
-            "description": "The message id to get"
-          }
-        ]
-      },
-      {
         "name": "resetMessagePane",
         "type": "function",
         "description": "Temporary, resets the message pane.",
