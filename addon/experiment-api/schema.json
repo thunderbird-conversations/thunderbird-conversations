@@ -169,6 +169,26 @@
         ]
       },
       {
+        "name": "createFilter",
+        "type": "function",
+        "description": "Temporary, resets the message pane.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "email",
+            "type": "string",
+            "description": "The email address to create a filter for."
+          },
+          {
+            "name": "windowId",
+            "type": "integer",
+            "optional": true,
+            "minimum": -2,
+            "description": "The window id to create the new tab in."
+          }
+        ]
+      },
+      {
         "name": "resetMessagePane",
         "type": "function",
         "description": "Temporary, resets the message pane.",

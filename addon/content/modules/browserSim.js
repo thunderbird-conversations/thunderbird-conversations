@@ -15,6 +15,7 @@ const SUPPORTED_BASE_APIS = [
   "messageDisplay",
   "messages",
   "runtime",
+  "storage",
   "tabs",
   "compose",
   "contacts",

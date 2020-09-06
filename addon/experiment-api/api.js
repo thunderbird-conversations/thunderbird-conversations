@@ -301,8 +301,9 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
               case "mail.showCondensedAddresses":
                 return Services.prefs.getBoolPref(name);
               case "font.size.variable.x-western":
-              case "mailnews.mark_message_read.delay.interval":
+              case "mail.forward_message_mode":
               case "mail.openMessageBehavior":
+              case "mailnews.mark_message_read.delay.interval":
                 return Services.prefs.getIntPref(name);
               case "browser.display.foreground_color":
               case "browser.display.background_color":
@@ -447,6 +448,9 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           getWindowFromId(createTabProperties.windowId)
             .document.getElementById("tabmail")
             .openTab(createTabProperties.type, params);
+        },
+        async createFilter(email, windowId) {
+          getWindowFromId(windowId).MsgFilters(email, null);
         },
         async resetMessagePane() {
           for (const win of Services.wm.getEnumerator("mail:3pane")) {

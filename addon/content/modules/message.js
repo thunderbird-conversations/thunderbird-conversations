@@ -196,32 +196,6 @@ class _MessageUtils {
     this._compose(win, Ci.nsIMsgCompType.Template, msgUri, shiftKey);
   }
 
-  reply(win, msgUri, shiftKey = false) {
-    this._compose(win, Ci.nsIMsgCompType.ReplyToSender, msgUri, shiftKey);
-  }
-
-  replyAll(win, msgUri, shiftKey = false) {
-    this._compose(win, Ci.nsIMsgCompType.ReplyAll, msgUri, shiftKey);
-  }
-
-  replyList(win, msgUri, shiftKey = false) {
-    this._compose(win, Ci.nsIMsgCompType.ReplyToList, msgUri, shiftKey);
-  }
-
-  forward(win, msgUri, shiftKey = false) {
-    let forwardType = Services.prefs.getIntPref("mail.forward_message_mode", 0);
-    if (forwardType == 0) {
-      this._compose(
-        win,
-        Ci.nsIMsgCompType.ForwardAsAttachment,
-        msgUri,
-        shiftKey
-      );
-    } else {
-      this._compose(win, Ci.nsIMsgCompType.ForwardInline, msgUri, shiftKey);
-    }
-  }
-
   ignorePhishing(msgUri) {
     const msgHdr = msgUriToMsgHdr(msgUri);
     msgHdr.setUint32Property("notAPhishMessage", 1);

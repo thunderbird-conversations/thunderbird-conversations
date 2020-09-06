@@ -110,7 +110,11 @@ export class Prefs {
 
   _addListener() {
     browser.storage.onChanged.addListener((changed, areaName) => {
-      if (areaName != "local" || !("preferences" in changed)) {
+      if (
+        areaName != "local" ||
+        !("preferences" in changed) ||
+        !("newValue" in changed.preferences)
+      ) {
         return;
       }
       for (const prefName of Object.getOwnPropertyNames(

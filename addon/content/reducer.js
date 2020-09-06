@@ -17,7 +17,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   Conversation: "chrome://conversations/content/modules/conversation.js",
   MessageUtils: "chrome://conversations/content/modules/message.js",
-  Prefs: "chrome://conversations/content/modules/prefs.js",
   topMail3Pane: "chrome://conversations/content/modules/misc.js",
 });
 
@@ -87,6 +86,11 @@ function modifyOnlyMsgId(currentState, id, modifier) {
   }
   newState.msgData = newMsgData;
   return newState;
+}
+
+async function getPreference(name, defaultValue) {
+  const prefs = await browser.storage.local.get("preferences");
+  return prefs?.preferences?.[name] ?? defaultValue;
 }
 
 const attachmentActions = {
@@ -373,24 +377,33 @@ const messageActions = {
       MessageUtils.editAsNew(topMail3Pane(window), msgUri, shiftKey);
     };
   },
-  reply({ msgUri, shiftKey }) {
+  reply({ id, shiftKey }) {
     return async () => {
-      MessageUtils.reply(topMail3Pane(window), msgUri, shiftKey);
+      browser.compose.beginReply(id, "replyToSender").catch(console.error);
     };
   },
-  replyAll({ msgUri, shiftKey }) {
+  replyAll({ id, shiftKey }) {
     return async () => {
-      MessageUtils.replyAll(topMail3Pane(window), msgUri, shiftKey);
+      browser.compose.beginReply(id, "replyToAll").catch(console.error);
     };
   },
-  replyList({ msgUri, shiftKey }) {
+  replyList({ id, shiftKey }) {
     return async () => {
-      MessageUtils.replyList(topMail3Pane(window), msgUri, shiftKey);
+      browser.compose.beginReply(id, "replyToList").catch(console.error);
     };
   },
-  forward({ msgUri, shiftKey }) {
+  forward({ id, shiftKey }) {
     return async () => {
-      MessageUtils.forward(topMail3Pane(window), msgUri, shiftKey);
+      let forwardMode =
+        (await browser.conversations.getCorePref(
+          "mail.forward_message_mode"
+        )) ?? 0;
+      browser.compose
+        .beginForward(
+          id,
+          forwardMode == 0 ? "forwardAsAttachment" : "forwardInline"
+        )
+        .catch(console.error);
     };
   },
   archive({ id }) {
@@ -486,7 +499,10 @@ const messageActions = {
     return async (dispatch, getState) => {
       const state = getState();
       let msgs;
-      if (state.summary.isInTab || Prefs.operate_on_conversations) {
+      if (
+        state.summary.isInTab ||
+        (await getPreference("operate_on_conversations", false))
+      ) {
         msgs = state.messages.msgData.map((msg) => msg.id);
       } else {
         if ("getDisplayedMessages" in browser.messageDisplay) {
@@ -507,7 +523,10 @@ const messageActions = {
     return async (dispatch, getState) => {
       const state = getState();
       let msgs;
-      if (state.summary.isInTab || Prefs.operate_on_conversations) {
+      if (
+        state.summary.isInTab ||
+        (await getPreference("operate_on_conversations", false))
+      ) {
         msgs = state.messages.msgData.map((msg) => msg.id);
       } else {
         if ("getDisplayedMessages" in browser.messageDisplay) {
@@ -803,6 +822,13 @@ const summaryActions = {
       await browser.convContacts.composeNew({ to: dest }).catch(console.error);
     };
   },
+  createFilter({ email }) {
+    return async (dispatch, getState) => {
+      browser.conversations
+        .createFilter(email, getState().summary.windowId)
+        .catch(console.error);
+    };
+  },
 };
 
 function summary(state = initialSummary, action) {
@@ -859,10 +885,6 @@ function summary(state = initialSummary, action) {
     }
     case "COPY_EMAIL": {
       navigator.clipboard.writeText(action.email);
-      return state;
-    }
-    case "CREATE_FILTER": {
-      topMail3Pane(window).MsgFilters(action.email, null);
       return state;
     }
     case "EDIT_CONTACT": {

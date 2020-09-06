@@ -13,6 +13,7 @@ class MessageFooter extends React.PureComponent {
 
   onActionButtonClick(msg) {
     const payload = {
+      id: this.props.id,
       msgUri: this.props.msgUri,
       shiftKey: msg.shiftKey,
     };
