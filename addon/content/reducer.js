@@ -366,30 +366,32 @@ const messageActions = {
     };
   },
 
-  editDraft({ msgUri, shiftKey }) {
+  editDraft({ id, shiftKey }) {
     return async () => {
-      MessageUtils.editDraft(topMail3Pane(window), msgUri, shiftKey);
+      browser.conversations.beginEdit(id, "editDraft").catch(console.error);
     };
   },
 
-  editAsNew({ msgUri, shiftKey }) {
+  editAsNew({ id, shiftKey }) {
     return async () => {
-      MessageUtils.editAsNew(topMail3Pane(window), msgUri, shiftKey);
+      browser.conversations.beginEdit(id, "editAsNew").catch(console.error);
     };
   },
   reply({ id, shiftKey }) {
     return async () => {
-      browser.compose.beginReply(id, "replyToSender").catch(console.error);
+      browser.conversations
+        .beginReply(id, "replyToSender")
+        .catch(console.error);
     };
   },
   replyAll({ id, shiftKey }) {
     return async () => {
-      browser.compose.beginReply(id, "replyToAll").catch(console.error);
+      browser.conversations.beginReply(id, "replyToAll").catch(console.error);
     };
   },
   replyList({ id, shiftKey }) {
     return async () => {
-      browser.compose.beginReply(id, "replyToList").catch(console.error);
+      browser.conversations.beginReply(id, "replyToList").catch(console.error);
     };
   },
   forward({ id, shiftKey }) {
@@ -398,7 +400,7 @@ const messageActions = {
         (await browser.conversations.getCorePref(
           "mail.forward_message_mode"
         )) ?? 0;
-      browser.compose
+      browser.conversations
         .beginForward(
           id,
           forwardMode == 0 ? "forwardAsAttachment" : "forwardInline"

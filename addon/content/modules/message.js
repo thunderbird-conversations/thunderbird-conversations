@@ -172,30 +172,6 @@ class _MessageUtils {
     this._getAttachmentInfo(win, msgUri, attachment).detach(shouldSave);
   }
 
-  _compose(win, compType, msgUri, shiftKey) {
-    const msgHdr = msgUriToMsgHdr(msgUri);
-    // if (shiftKey) {
-    //   win.ComposeMessage(
-    //     compType,
-    //     Ci.nsIMsgCompFormat.OppositeOfDefault,
-    //     msgHdr.folder,
-    //     [msgUri]
-    //   );
-    // } else {
-    win.ComposeMessage(compType, Ci.nsIMsgCompFormat.Default, msgHdr.folder, [
-      msgUri,
-    ]);
-    // }
-  }
-
-  editDraft(win, msgUri, shiftKey = false) {
-    this._compose(win, Ci.nsIMsgCompType.Draft, msgUri, shiftKey);
-  }
-
-  editAsNew(win, msgUri, shiftKey = false) {
-    this._compose(win, Ci.nsIMsgCompType.Template, msgUri, shiftKey);
-  }
-
   ignorePhishing(msgUri) {
     const msgHdr = msgUriToMsgHdr(msgUri);
     msgHdr.setUint32Property("notAPhishMessage", 1);

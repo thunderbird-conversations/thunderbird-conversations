@@ -322,6 +322,60 @@
             "description": "The email address to allow."
           }
         ]
+      },
+      {
+        "name": "beginReply",
+        "type": "function",
+        "description": "Echos equivalent compose API, needed due to bug 1663413.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "The message id to reply to."
+          },
+          {
+            "name": "type",
+            "type": "string",
+            "description": "The type of reply."
+          }
+        ]
+      },
+      {
+        "name": "beginFoward",
+        "type": "function",
+        "description": "Echos equivalent compose API, needed due to bug 1663413.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "The message id to forward."
+          },
+          {
+            "name": "type",
+            "type": "string",
+            "description": "The type of forward."
+          }
+        ]
+      },
+      {
+        "name": "beginEdit",
+        "type": "function",
+        "description": "Temporary until compose API available - bug 1663497.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "The message id to edit."
+          },
+          {
+            "name": "type",
+            "type": "string",
+            "description": "The type of edit."
+          }
+        ]
       }
     ],
     "events": [

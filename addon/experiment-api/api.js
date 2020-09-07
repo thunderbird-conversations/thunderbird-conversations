@@ -564,6 +564,59 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             Services.perms.add(uri, "image", Services.perms.ALLOW_ACTION);
           }
         },
+        async beginReply(id, type) {
+          let msgHdr = context.extension.messageManager.get(id);
+          let compType;
+          switch (type) {
+            case "replyToSender":
+              compType = Ci.nsIMsgCompType.ReplyToSender;
+              break;
+            case "replyToAll":
+              compType = Ci.nsIMsgCompType.ReplyAll;
+              break;
+            case "replyToList":
+              compType = Ci.nsIMsgCompType.ReplyToList;
+              break;
+          }
+          Services.wm
+            .getMostRecentWindow("mail:3pane")
+            .ComposeMessage(
+              compType,
+              Ci.nsIMsgCompFormat.Default,
+              msgHdr.folder,
+              [msgHdr.folder.getUriForMsg(msgHdr)]
+            );
+        },
+        async beginForward(id, type) {
+          let msgHdr = context.extension.messageManager.get(id);
+          let compType =
+            type == "forwardAsAttachment"
+              ? Ci.nsIMsgCompType.ForwardAsAttachment
+              : Ci.nsIMsgCompType.ForwardInline;
+          Services.wm
+            .getMostRecentWindow("mail:3pane")
+            .ComposeMessage(
+              compType,
+              Ci.nsIMsgCompFormat.Default,
+              msgHdr.folder,
+              [msgHdr.folder.getUriForMsg(msgHdr)]
+            );
+        },
+        async beginEdit(id, type) {
+          let msgHdr = context.extension.messageManager.get(id);
+          let compType =
+            type == "editAsNew"
+              ? Ci.nsIMsgCompType.Template
+              : Ci.nsIMsgCompType.Draft;
+          Services.wm
+            .getMostRecentWindow("mail:3pane")
+            .ComposeMessage(
+              compType,
+              Ci.nsIMsgCompFormat.Default,
+              msgHdr.folder,
+              [msgHdr.folder.getUriForMsg(msgHdr)]
+            );
+        },
         onCallAPI: new ExtensionCommon.EventManager({
           context,
           name: "conversations.onCallAPI",
