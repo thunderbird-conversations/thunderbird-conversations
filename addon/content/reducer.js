@@ -577,7 +577,6 @@ const messageActions = {
       const msg = Conversations.currentConversation.getMessageByApiId(id);
       // Turn remote content message "off", as although it has it, it can be loaded.
       msg.hasRemoteContent = false;
-      // We can't turn dispatch back straight away, so give it a moment.
       const msgData = await msg.toReactData();
       dispatch({
         type: "MSG_UPDATE_DATA",
@@ -640,6 +639,17 @@ const messageActions = {
   sendUnsent() {
     return async () => {
       browser.conversations.sendUnsent().catch(console.error);
+    };
+  },
+  ignorePhishing({ id }) {
+    return async (dispatch) => {
+      await browser.conversations.ignorePhishing(id);
+      await dispatch({
+        type: "MSG_UPDATE_DATA_ID",
+        msgData: {
+          isPhishing: false,
+        },
+      });
     };
   },
 };
@@ -718,14 +728,6 @@ function messages(state = initialMessages, action) {
         });
       }
       return state;
-    }
-    case "MSG_IGNORE_PHISHING": {
-      MessageUtils.ignorePhishing(action.msgUri);
-      return modifyOnlyMsg(state, action.msgUri, (msg) => {
-        const newMsg = { ...msg };
-        newMsg.isPhishing = false;
-        return newMsg;
-      });
     }
     case "MSG_SHOW_DETAILS": {
       const newState = { ...state };

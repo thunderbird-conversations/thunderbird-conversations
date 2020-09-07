@@ -376,6 +376,19 @@
             "description": "The type of edit."
           }
         ]
+      },
+      {
+        "name": "ignorePhishing",
+        "type": "function",
+        "description": "Temporary. Sets a flag on an email to ignore the phishing warning.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "The message id to edit."
+          }
+        ]
       }
     ],
     "events": [

@@ -172,13 +172,6 @@ class _MessageUtils {
     this._getAttachmentInfo(win, msgUri, attachment).detach(shouldSave);
   }
 
-  ignorePhishing(msgUri) {
-    const msgHdr = msgUriToMsgHdr(msgUri);
-    msgHdr.setUint32Property("notAPhishMessage", 1);
-    // Force a commit of the underlying msgDatabase.
-    msgHdr.folder.msgDatabase = null;
-  }
-
   getMsgHdrDetails(win, msgUri) {
     const msgHdr = msgUriToMsgHdr(msgUri);
     msgHdrGetHeaders(msgHdr, (headers) => {

@@ -617,6 +617,12 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
               [msgHdr.folder.getUriForMsg(msgHdr)]
             );
         },
+        async ignorePhishing(id) {
+          let msgHdr = context.extension.messageManager.get(id);
+          msgHdr.setUint32Property("notAPhishMessage", 1);
+          // Force a commit of the underlying msgDatabase.
+          msgHdr.folder.msgDatabase = null;
+        },
         onCallAPI: new ExtensionCommon.EventManager({
           context,
           name: "conversations.onCallAPI",

@@ -65,6 +65,7 @@ class MyComponent extends React.Component {
     document.title = browser.i18n.getMessage("gallery.title", [header.subject]);
 
     let messageParts = await browser.messages.getFull(id);
+    console.log(messageParts);
     messageParts = messageParts.parts[0].parts;
 
     messageParts = messageParts.filter(
