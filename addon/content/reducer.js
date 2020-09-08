@@ -58,6 +58,7 @@ const initialSummary = {
   tenPxFactor: 0.7,
   subject: "",
   windowId: null,
+  defaultDetailsShowing: false,
 };
 
 function modifyOnlyMsg(currentState, msgUri, modifier) {
@@ -276,10 +277,14 @@ const messageActions = {
       const browserBackgroundColor = await browser.conversations.getCorePref(
         "browser.display.background_color"
       );
+      const defaultDetailsShowing =
+        (await browser.conversations.getCorePref("mail.show_headers")) == 2;
+
       await dispatch({
         type: "SET_SYSTEM_OPTIONS",
         browserForegroundColor,
         browserBackgroundColor,
+        defaultDetailsShowing,
         defaultFontSize,
         OS: platformInfo.os,
         browserVersion: browserInfo.version,
@@ -652,6 +657,71 @@ const messageActions = {
       });
     };
   },
+  showMsgDetails({ id, detailsShowing }) {
+    return async (dispatch, getState) => {
+      if (!detailsShowing) {
+        await dispatch({
+          type: "MSG_HDR_DETAILS",
+          detailsShowing: false,
+          id,
+        });
+        return;
+      }
+      let currentMsg = getState().messages.msgData.find((msg) => msg.id == id);
+      // If we already have header information, don't get it again.
+      if (currentMsg?.extraLines?.length) {
+        await dispatch({
+          type: "MSG_HDR_DETAILS",
+          detailsShowing: true,
+          id,
+        });
+        return;
+      }
+      let msg = await browser.messages.getFull(id);
+      try {
+        let extraLines = [
+          {
+            key: browser.i18n.getMessage("message.headerFolder"),
+            value: currentMsg.folderName,
+          },
+        ];
+        const interestingHeaders = [
+          "mailed-by",
+          "x-mailer",
+          "mailer",
+          "date",
+          "user-agent",
+          "reply-to",
+        ];
+        for (const h of interestingHeaders) {
+          if (h in msg.headers) {
+            let key = h;
+            // Not all the header names are translated.
+            if (h == "date") {
+              key = browser.i18n.getMessage("message.headerDate");
+            }
+            extraLines.push({
+              key,
+              value: msg.headers[h],
+            });
+          }
+        }
+        extraLines.push({
+          key: browser.i18n.getMessage("message.headerSubject"),
+          value: currentMsg?.subject,
+        });
+
+        dispatch({
+          type: "MSG_HDR_DETAILS",
+          extraLines,
+          detailsShowing: true,
+          id,
+        });
+      } catch (ex) {
+        console.error(ex);
+      }
+    };
+  },
 };
 
 function messages(state = initialMessages, action) {
@@ -729,40 +799,15 @@ function messages(state = initialMessages, action) {
       }
       return state;
     }
-    case "MSG_SHOW_DETAILS": {
-      const newState = { ...state };
-      const newMsgData = [];
-      for (let i = 0; i < state.msgData.length; i++) {
-        if (state.msgData[i].msgUri == action.msgUri) {
-          newMsgData.push({ ...state.msgData[i], detailsShowing: action.show });
-          if (!newMsgData.hdrDetails) {
-            // Let this exit before we start the function.
-            setTimeout(() => {
-              MessageUtils.getMsgHdrDetails(window, action.msgUri);
-            }, 0);
-          }
-        } else {
-          newMsgData.push(state.msgData[i]);
-        }
-      }
-      newState.msgData = newMsgData;
-      return newState;
-    }
     case "MSG_HDR_DETAILS": {
-      const newState = { ...state };
-      const newMsgData = [];
-      for (let i = 0; i < state.msgData.length; i++) {
-        if (state.msgData[i].msgUri == action.msgUri) {
-          newMsgData.push({
-            ...state.msgData[i],
-            extraLines: action.extraLines,
-          });
-        } else {
-          newMsgData.push(state.msgData[i]);
+      return modifyOnlyMsgId(state, action.id, (msg) => {
+        const newMsg = { ...msg };
+        newMsg.detailsShowing = action.detailsShowing;
+        if ("extraLines" in action) {
+          newMsg.extraLines = action.extraLines;
         }
-      }
-      newState.msgData = newMsgData;
-      return newState;
+        return newMsg;
+      });
     }
     case "REMOVE_MESSAGE_FROM_CONVERSATION": {
       const newState = { ...state };
@@ -808,7 +853,31 @@ function messages(state = initialMessages, action) {
   }
 }
 
-const summaryActions = {
+var summaryActions = {
+  replaceConversation({ summary, messages }) {
+    return async (dispatch, getState) => {
+      let defaultShowing = getState().summary.defaultDetailsShowing;
+      for (let msg of messages.msgData) {
+        msg.detailsShowing = defaultShowing;
+      }
+      await dispatch({
+        type: "REPLACE_CONVERSATION_DETAILS",
+        summary,
+        messages,
+      });
+
+      if (defaultShowing) {
+        for (let msg of getState().messages.msgData) {
+          await dispatch(
+            messageActions.showMsgDetails({
+              id: msg.id,
+              detailsShowing: true,
+            })
+          );
+        }
+      }
+    };
+  },
   showMessagesInvolving({ name, email }) {
     return async (dispatch, getState) => {
       await browser.convContacts
@@ -860,6 +929,7 @@ function summary(state = initialSummary, action) {
         browserForegroundColor: action.browserForegroundColor,
         browserBackgroundColor: action.browserBackgroundColor,
         defaultFontSize: action.defaultFontSize,
+        defaultDetailsShowing: action.defaultDetailsShowing,
         // Thunderbird 81 has built-in PDF viewer.
         hasBuiltInPdf: mainVersion >= 81,
         OS: action.OS,

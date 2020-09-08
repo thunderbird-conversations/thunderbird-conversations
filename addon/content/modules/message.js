@@ -15,7 +15,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   escapeHtml: "chrome://conversations/content/modules/misc.js",
   htmlToPlainText: "chrome://conversations/content/modules/misc.js",
   msgHdrGetUri: "chrome://conversations/content/modules/misc.js",
-  msgUriToMsgHdr: "chrome://conversations/content/modules/misc.js",
   NetUtil: "resource://gre/modules/NetUtil.jsm",
   parseMimeLine: "chrome://conversations/content/modules/misc.js",
   setupLogging: "chrome://conversations/content/modules/misc.js",
@@ -24,16 +23,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
 
 XPCOMUtils.defineLazyGetter(this, "browser", function () {
   return BrowserSim.getBrowser();
-});
-
-XPCOMUtils.defineLazyGetter(this, "GlodaUtils", () => {
-  let tmp = {};
-  try {
-    ChromeUtils.import("resource:///modules/gloda/utils.js", tmp);
-  } catch (ex) {
-    ChromeUtils.import("resource:///modules/gloda/GlodaUtils.jsm", tmp);
-  }
-  return tmp.GlodaUtils;
 });
 
 XPCOMUtils.defineLazyGetter(this, "MimeMessage", () => {
@@ -92,7 +81,7 @@ const { Prefs } = ChromeUtils.import(
   "chrome://conversations/content/modules/prefs.js",
   {}
 );
-const { folderName, topMail3Pane } = ChromeUtils.import(
+const { topMail3Pane } = ChromeUtils.import(
   "chrome://conversations/content/modules/misc.js",
   {}
 );
@@ -170,54 +159,6 @@ class _MessageUtils {
 
   detachAttachment(win, msgUri, attachment, shouldSave) {
     this._getAttachmentInfo(win, msgUri, attachment).detach(shouldSave);
-  }
-
-  getMsgHdrDetails(win, msgUri) {
-    const msgHdr = msgUriToMsgHdr(msgUri);
-    msgHdrGetHeaders(msgHdr, (headers) => {
-      try {
-        let extraLines = [
-          {
-            key: browser.i18n.getMessage("message.headerFolder"),
-            value: folderName(msgHdr.folder)[1],
-          },
-        ];
-        const interestingHeaders = [
-          "mailed-by",
-          "x-mailer",
-          "mailer",
-          "date",
-          "user-agent",
-          "reply-to",
-        ];
-        for (const h of interestingHeaders) {
-          if (headers.has(h)) {
-            let key = h;
-            // Not all the header names are translated.
-            if (h == "date") {
-              key = browser.i18n.getMessage("message.headerDate");
-            }
-            extraLines.push({
-              key,
-              value: headers.get(h),
-            });
-          }
-        }
-        const subject = headers.get("subject");
-        extraLines.push({
-          key: browser.i18n.getMessage("message.headerSubject"),
-          value: subject ? GlodaUtils.deMime(subject) : "",
-        });
-
-        win.conversationDispatch({
-          type: "MSG_HDR_DETAILS",
-          extraLines,
-          msgUri,
-        });
-      } catch (ex) {
-        console.error(ex);
-      }
-    });
   }
 }
 
@@ -368,6 +309,7 @@ class Message {
     let data = {
       id: this._id,
       date: this._date,
+      folderName: await browser.conversations.getFolderName(this._id),
       hasRemoteContent: this.hasRemoteContent,
       isDraft: messageFolderType == "drafts",
       isJunk: messageHeader.junk,
@@ -382,6 +324,8 @@ class Message {
       realFrom: this._realFrom.email || this._from.email,
       recipientsIncludeLists: this.isReplyListEnabled,
       smimeReload: this.smimeReload,
+      shortFolderName: messageHeader.folder.name,
+      subject: messageHeader.subject,
       snippet: this._snippet,
       starred: messageHeader.flagged,
     };
@@ -423,10 +367,6 @@ class Message {
     data.fullDate = Prefs.no_friendly_date
       ? ""
       : dateAsInMessageList(new Date(this._msgHdr.date / 1000));
-
-    let [name, fullName] = folderName(this._msgHdr.folder);
-    data.folderName = fullName;
-    data.shortFolderName = name;
 
     const userTags = await browser.messages.listTags();
     data.tags = messageHeader.tags.map((tagKey) => {
@@ -1091,103 +1031,6 @@ function HeaderHandler(aHeaders) {
 HeaderHandler.prototype = {
   __proto__: MimeMessage.prototype.__proto__, // == HeaderHandlerBase
 };
-
-/**
- * Creates a stream listener that will call k once done, passing it the string
- * that has been read.
- */
-function createStreamListener(k) {
-  return {
-    _data: "",
-    _stream: null,
-
-    QueryInterface: ChromeUtils.generateQI([
-      Ci.nsIStreamListener,
-      Ci.nsIRequestObserver,
-    ]),
-
-    // nsIRequestObserver
-    onStartRequest(aRequest) {},
-    onStopRequest(aRequest, aStatusCode) {
-      try {
-        k(this._data);
-      } catch (e) {
-        dump("Error inside stream listener:\n" + e + "\n");
-      }
-    },
-
-    // nsIStreamListener
-    onDataAvailable(aRequest, aInputStream, aOffset, aCount) {
-      if (this._stream == null) {
-        this._stream = Cc[
-          "@mozilla.org/scriptableinputstream;1"
-        ].createInstance(Ci.nsIScriptableInputStream);
-        this._stream.init(aInputStream);
-      }
-      this._data += this._stream.read(aCount);
-    },
-  };
-}
-
-/**
- * @param aMsgHdr The message header whose headers you want
- * @param k A function that takes a HeaderHandler object (see mimemsg.js).
- *  Such an object has a get function, a has function. It has a header property,
- *  whose keys are lowercased header names, and whose values are list of
- *  strings corresponding to the multiple entries found for that header.
- */
-function msgHdrGetHeaders(aMsgHdr, k) {
-  let uri = msgHdrGetUri(aMsgHdr);
-  let messageService = gMessenger.messageServiceFromURI(uri);
-
-  let fallback = () =>
-    MsgHdrToMimeMessage(
-      aMsgHdr,
-      null,
-      function (aMsgHdr, aMimeMsg) {
-        k(aMimeMsg);
-      },
-      true,
-      {
-        partsOnDemand: true,
-      }
-    );
-
-  // This is intentionally disabled because there's a bug in Thunderbird that
-  // renders the supposedly-useful streamHeaders function unusable.
-  if (false && "streamHeaders" in messageService) {
-    try {
-      messageService.streamHeaders(
-        uri,
-        createStreamListener((aRawString) => {
-          let re = /\r?\n\s+/g;
-          let str = aRawString.replace(re, " ");
-          let lines = str.split(/\r?\n/);
-          let obj = {};
-          for (let line of lines) {
-            let i = line.indexOf(":");
-            if (i < 0) {
-              continue;
-            }
-            let k = line.substring(0, i).toLowerCase();
-            let v = line.substring(i + 1).trim();
-            if (!(k in obj)) {
-              obj[k] = [];
-            }
-            obj[k].push(v);
-          }
-          k(new HeaderHandler(obj));
-        }),
-        null,
-        true
-      );
-    } catch (e) {
-      fallback();
-    }
-  } else {
-    fallback();
-  }
-}
 
 /**
  * Get a nsIURI from a nsIMsgDBHdr

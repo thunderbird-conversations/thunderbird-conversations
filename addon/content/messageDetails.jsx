@@ -48,12 +48,11 @@ class MessageDetails extends React.PureComponent {
         )}
         {!!this.props.bcc.length && (
           <div className="detailsLine bccLine">
-            <u>{browser.i18n.getMessage("message.bccHeader")}</u>{" "}
+            <u>{browser.i18n.getMessage("compose.fieldBcc")}</u>{" "}
             <ContactLine className="bcc" contacts={this.props.bcc} />
           </div>
         )}
-        {this.props.extraLines &&
-          !!this.props.extraLines.length &&
+        {!!this.props.extraLines?.length &&
           this.props.extraLines.map((line, i) => {
             return (
               <div className="detailsLine" key={i}>
@@ -69,7 +68,7 @@ class MessageDetails extends React.PureComponent {
 MessageDetails.propTypes = {
   bcc: PropTypes.array.isRequired,
   cc: PropTypes.array.isRequired,
-  extraLines: PropTypes.array.isRequired,
+  extraLines: PropTypes.array,
   from: PropTypes.object.isRequired,
   to: PropTypes.array.isRequired,
 };

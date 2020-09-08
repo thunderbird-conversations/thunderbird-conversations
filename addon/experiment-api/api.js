@@ -304,6 +304,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
               case "mail.forward_message_mode":
               case "mail.openMessageBehavior":
               case "mailnews.mark_message_read.delay.interval":
+              case "mail.show_headers":
                 return Services.prefs.getIntPref(name);
               case "browser.display.foreground_color":
               case "browser.display.background_color":
@@ -622,6 +623,16 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           msgHdr.setUint32Property("notAPhishMessage", 1);
           // Force a commit of the underlying msgDatabase.
           msgHdr.folder.msgDatabase = null;
+        },
+        async getFolderName(id) {
+          let msgHdr = context.extension.messageManager.get(id);
+          let folderStr = msgHdr.folder.prettyName;
+          let folder = msgHdr.folder;
+          while (folder.parent) {
+            folder = folder.parent;
+            folderStr = folder.name + "/" + folderStr;
+          }
+          return folderStr;
         },
         onCallAPI: new ExtensionCommon.EventManager({
           context,

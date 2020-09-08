@@ -6,7 +6,6 @@ var EXPORTED_SYMBOLS = [
   "setupLogging",
   "groupArray",
   "topMail3Pane",
-  "folderName",
   "escapeHtml",
   "parseMimeLine",
   "htmlToPlainText",
@@ -91,16 +90,6 @@ function topMail3Pane(aObj) {
 
   // Standalone window, a tab, or in the htmlpane (common case)
   return aObj.top.opener || moveOut(aObj) || aObj.top;
-}
-
-function folderName(aFolder) {
-  let folderStr = aFolder.prettyName;
-  let folder = aFolder;
-  while (folder.parent) {
-    folder = folder.parent;
-    folderStr = folder.name + "/" + folderStr;
-  }
-  return [aFolder.prettyName, folderStr];
 }
 
 /**

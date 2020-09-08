@@ -389,6 +389,19 @@
             "description": "The message id to edit."
           }
         ]
+      },
+      {
+        "name": "getFolderName",
+        "type": "function",
+        "description": "Temporary. Gets the full folder path/name for a message.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "The message id to get the folder path/name for."
+          }
+        ]
       }
     ],
     "events": [

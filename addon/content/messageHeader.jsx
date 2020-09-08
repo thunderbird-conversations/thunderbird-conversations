@@ -320,7 +320,6 @@ class MessageHeader extends React.PureComponent {
           expanded={this.props.expanded}
           fullDate={this.props.fullDate}
           id={this.props.id}
-          msgUri={this.props.msgUri}
           attachments={this.props.attachments}
           multipleRecipients={this.props.multipleRecipients}
           recipientsIncludeLists={this.props.recipientsIncludeLists}

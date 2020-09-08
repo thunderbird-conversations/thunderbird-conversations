@@ -172,11 +172,12 @@ class MessageHeaderOptions extends React.PureComponent {
     event.stopPropagation();
     // Force a blur, so that the button looks correct after clicking.
     event.target.blur();
-    this.props.dispatch({
-      type: "MSG_SHOW_DETAILS",
-      msgUri: this.props.msgUri,
-      show: !this.props.detailsShowing,
-    });
+    this.props.dispatch(
+      messageActions.showMsgDetails({
+        id: this.props.id,
+        detailsShowing: !this.props.detailsShowing,
+      })
+    );
   }
 
   displayMenu(event) {
@@ -293,7 +294,6 @@ MessageHeaderOptions.propTypes = {
   expanded: PropTypes.bool.isRequired,
   fullDate: PropTypes.string.isRequired,
   id: PropTypes.number.isRequired,
-  msgUri: PropTypes.string.isRequired,
   attachments: PropTypes.array.isRequired,
   multipleRecipients: PropTypes.bool.isRequired,
   recipientsIncludeLists: PropTypes.bool.isRequired,
