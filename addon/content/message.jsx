@@ -364,7 +364,7 @@ class Message extends React.PureComponent {
                 attachmentsPlural={this.props.message.attachmentsPlural}
                 hasBuiltInPdf={this.props.hasBuiltInPdf}
                 messageKey={this.props.message.messageKey}
-                msgUri={this.props.message.msgUri}
+                id={this.props.message.id}
               />
             )}
         </div>

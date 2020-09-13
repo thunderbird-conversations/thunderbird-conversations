@@ -8,6 +8,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   ExtensionCommon: "resource://gre/modules/ExtensionCommon.jsm",
   GlodaAttrProviders:
     "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
+  msgHdrGetUri: "chrome://conversations/content/modules/misc.js",
   msgUriToMsgHdr: "chrome://conversations/content/modules/misc.js",
   NetUtil: "resource://gre/modules/NetUtil.jsm",
   PluralForm: "resource://gre/modules/PluralForm.jsm",
@@ -205,6 +206,21 @@ function apiMonkeyPatchAllWindows(windowManager, callback) {
       callback(win, windowManager.getWrapper(win).id);
     });
   }
+}
+
+function getAttachmentInfo(win, msgUri, attachment) {
+  const attInfo = new win.AttachmentInfo(
+    attachment.contentType,
+    attachment.url,
+    attachment.name,
+    msgUri,
+    attachment.isExternal
+  );
+  attInfo.size = attachment.size;
+  if (attInfo.size != -1) {
+    attInfo.sizeResolved = true;
+  }
+  return attInfo;
 }
 
 let apiWindowObserver;
@@ -633,6 +649,73 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             folderStr = folder.name + "/" + folderStr;
           }
           return folderStr;
+        },
+        async downloadAllAttachments(id) {
+          let msgHdr = context.extension.messageManager.get(id);
+          let attachments = await new Promise((resolve) => {
+            MsgHdrToMimeMessage(msgHdr, null, async (aMsgHdr, aMimeMsg) => {
+              if (!aMimeMsg) {
+                return;
+              }
+              resolve(
+                aMimeMsg.allUserAttachments.filter((x) => x.isRealAttachment)
+              );
+            });
+          });
+          const win = Services.wm.getMostRecentWindow("mail:3pane");
+          let msgUri = msgHdrGetUri(msgHdr);
+          win.HandleMultipleAttachments(
+            attachments.map((att) => getAttachmentInfo(win, msgUri, att)),
+            "save"
+          );
+        },
+        async downloadAttachment(id, attachmentUrl) {
+          let msgHdr = context.extension.messageManager.get(id);
+          let attachment = await new Promise((resolve) => {
+            MsgHdrToMimeMessage(msgHdr, null, async (aMsgHdr, aMimeMsg) => {
+              if (!aMimeMsg) {
+                return;
+              }
+              resolve(
+                aMimeMsg.allUserAttachments.find((x) => x.url == attachmentUrl)
+              );
+            });
+          });
+          const win = Services.wm.getMostRecentWindow("mail:3pane");
+          let msgUri = msgHdrGetUri(msgHdr);
+          getAttachmentInfo(win, msgUri, attachment).save();
+        },
+        async openAttachment(id, attachmentUrl) {
+          let msgHdr = context.extension.messageManager.get(id);
+          let attachment = await new Promise((resolve) => {
+            MsgHdrToMimeMessage(msgHdr, null, async (aMsgHdr, aMimeMsg) => {
+              if (!aMimeMsg) {
+                return;
+              }
+              resolve(
+                aMimeMsg.allUserAttachments.find((x) => x.url == attachmentUrl)
+              );
+            });
+          });
+          const win = Services.wm.getMostRecentWindow("mail:3pane");
+          let msgUri = msgHdrGetUri(msgHdr);
+          getAttachmentInfo(win, msgUri, attachment).open();
+        },
+        async detachAttachment(id, attachmentUrl, shouldSave) {
+          let msgHdr = context.extension.messageManager.get(id);
+          let attachment = await new Promise((resolve) => {
+            MsgHdrToMimeMessage(msgHdr, null, async (aMsgHdr, aMimeMsg) => {
+              if (!aMimeMsg) {
+                return;
+              }
+              resolve(
+                aMimeMsg.allUserAttachments.find((x) => x.url == attachmentUrl)
+              );
+            });
+          });
+          const win = Services.wm.getMostRecentWindow("mail:3pane");
+          let msgUri = msgHdrGetUri(msgHdr);
+          getAttachmentInfo(win, msgUri, attachment).detach(shouldSave);
         },
         onCallAPI: new ExtensionCommon.EventManager({
           context,

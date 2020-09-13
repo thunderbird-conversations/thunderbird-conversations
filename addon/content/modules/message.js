@@ -4,7 +4,7 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["MessageFromGloda", "MessageFromDbHdr", "MessageUtils"];
+var EXPORTED_SYMBOLS = ["MessageFromGloda", "MessageFromDbHdr"];
 
 const { XPCOMUtils } = ChromeUtils.import(
   "resource://gre/modules/XPCOMUtils.jsm"
@@ -125,44 +125,6 @@ function dateAccordingToPref(date) {
     return dateAsInMessageList(date);
   }
 }
-
-class _MessageUtils {
-  _getAttachmentInfo(win, msgUri, attachment) {
-    const attInfo = new win.AttachmentInfo(
-      attachment.contentType,
-      attachment.url,
-      attachment.name,
-      msgUri,
-      attachment.isExternal
-    );
-    attInfo.size = attachment.size;
-    if (attInfo.size != -1) {
-      attInfo.sizeResolved = true;
-    }
-    return attInfo;
-  }
-
-  downloadAllAttachments(win, msgUri, attachments) {
-    win.HandleMultipleAttachments(
-      attachments.map((att) => this._getAttachmentInfo(win, msgUri, att)),
-      "save"
-    );
-  }
-
-  downloadAttachment(win, msgUri, attachment) {
-    this._getAttachmentInfo(win, msgUri, attachment).save();
-  }
-
-  openAttachment(win, msgUri, attachment) {
-    this._getAttachmentInfo(win, msgUri, attachment).open();
-  }
-
-  detachAttachment(win, msgUri, attachment, shouldSave) {
-    this._getAttachmentInfo(win, msgUri, attachment).detach(shouldSave);
-  }
-}
-
-var MessageUtils = new _MessageUtils();
 
 class Message {
   constructor(aConversation, msgHdr) {

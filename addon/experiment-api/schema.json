@@ -402,6 +402,78 @@
             "description": "The message id to get the folder path/name for."
           }
         ]
+      },
+      {
+        "name": "downloadAllAttachments",
+        "type": "function",
+        "description": "Temporary. Triggers downloading all attachments for a message.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "The message id to download the attachments for."
+          }
+        ]
+      },
+      {
+        "name": "downloadAttachment",
+        "type": "function",
+        "description": "Temporary. Triggers downloading a single attachment for a message.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "The message id to download the attachment for."
+          },
+          {
+            "name": "attachmentUrl",
+            "type": "string",
+            "description": "The attachment Url to download the attachment for."
+          }
+        ]
+      },
+      {
+        "name": "openAttachment",
+        "type": "function",
+        "description": "Temporary. Triggers opening a single attachment for a message.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "The message id to open the attachment for."
+          },
+          {
+            "name": "attachmentUrl",
+            "type": "string",
+            "description": "The attachment Url to open the attachment for."
+          }
+        ]
+      },
+      {
+        "name": "detachAttachment",
+        "type": "function",
+        "description": "Temporary. Triggers detaching a single attachment for a message.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "The message id to detaching the attachment for."
+          },
+          {
+            "name": "attachmentUrl",
+            "type": "string",
+            "description": "The attachment Url to detaching the attachment for."
+          },
+          {
+            "name": "shouldSave",
+            "type": "boolean",
+            "description": "If the file being detached should be saved or not."
+          }
+        ]
       }
     ],
     "events": [

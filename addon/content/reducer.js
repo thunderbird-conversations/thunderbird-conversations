@@ -16,7 +16,6 @@ const { XPCOMUtils } = ChromeUtils.import(
 XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   Conversation: "chrome://conversations/content/modules/conversation.js",
-  MessageUtils: "chrome://conversations/content/modules/message.js",
   topMail3Pane: "chrome://conversations/content/modules/misc.js",
 });
 
@@ -119,38 +118,34 @@ const attachmentActions = {
       }
     };
   },
-  downloadAll({ msgUri, attachmentDetails }) {
+  downloadAll({ id }) {
     return async () => {
-      MessageUtils.downloadAllAttachments(
-        topMail3Pane(window),
-        msgUri,
-        attachmentDetails
-      );
+      await browser.conversations.downloadAllAttachments(id);
     };
   },
-  downloadAttachment({ msgUri, attachment }) {
+  downloadAttachment({ id, attachmentUrl }) {
     return async () => {
-      MessageUtils.downloadAttachment(topMail3Pane(window), msgUri, attachment);
+      await browser.conversations.downloadAttachment(id, attachmentUrl);
     };
   },
-  openAttachment({ msgUri, attachment }) {
+  openAttachment({ id, attachmentUrl }) {
     return async () => {
-      MessageUtils.openAttachment(topMail3Pane(window), msgUri, attachment);
+      await browser.conversations.openAttachment(id, attachmentUrl);
     };
   },
-  detachAttachment({ msgUri, attachment, shouldSave }) {
+  detachAttachment({ id, attachmentUrl, shouldSave }) {
     return async () => {
-      MessageUtils.detachAttachment(
-        topMail3Pane(window),
-        msgUri,
-        attachment,
+      await browser.conversations.detachAttachment(
+        id,
+        attachmentUrl,
         shouldSave
       );
     };
   },
-  showGalleryView({ msgUri }) {
+  showGalleryView({ id }) {
     return async (dispatch, getState) => {
-      browser.tabs.create({
+      let msgUri = await browser.conversations.getMessageUriForId(id);
+      await browser.tabs.create({
         url: "/gallery/index.html?uri=" + encodeURI(msgUri),
         windowId: getState().summary.windowId,
       });
