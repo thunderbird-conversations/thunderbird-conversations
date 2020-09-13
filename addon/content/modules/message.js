@@ -486,7 +486,7 @@ class Message {
     );
   }
 
-  postStreamMessage(msgWindow, iframe) {
+  postStreamMessage(mainWindow, iframe) {
     // Notify hooks that we just finished displaying a message. Must be
     //  performed now, not later. This gives plugins a chance to modify
     //  the DOM of the message (i.e. decrypt it) before we tweak the
@@ -495,7 +495,7 @@ class Message {
       for (let h of getHooks()) {
         try {
           if (typeof h.onMessageStreamed == "function") {
-            h.onMessageStreamed(this._msgHdr, iframe, msgWindow, this);
+            h.onMessageStreamed(this._msgHdr, iframe, mainWindow, this);
           }
         } catch (e) {
           console.error("Plugin returned an error:", e);

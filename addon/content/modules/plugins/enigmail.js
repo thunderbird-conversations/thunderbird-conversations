@@ -683,6 +683,7 @@ function removeEncryptedTag(msg) {
 let enigmailHook = {
   _domNode: null,
   _originalText: null, // for restoring original text when sending message is canceled
+  _oldMsg: null,
 
   onMessageBeforeStreaming(msg) {
     if (!enigmailSvc) {
@@ -690,6 +691,8 @@ let enigmailHook = {
     }
     let w = topMail3Pane(msg);
 
+    this._oldMsg = w.gMessageDisplay.displayedMessage;
+    w.gMessageDisplay.displayedMessage = msg.msgHdr;
     // Current message uri should be blank to decrypt all PGP/MIME messages.
     w.Enigmail.msg.getCurrentMsgUriSpec = function () {
       return "";
@@ -698,10 +701,12 @@ let enigmailHook = {
     patchForShowSecurityInfo(w);
   },
 
-  onMessageStreamed(msgHdr, iframe, msgWindow, message) {
+  onMessageStreamed(msgHdr, iframe, mainWindow, message) {
+    mainWindow.gMessageDisplay.displayedMessage = this._oldMsg;
+
     let iframeDoc = iframe.contentDocument;
     if (iframeDoc.body.textContent.length && hasEnigmail) {
-      let status = tryEnigmail(iframeDoc, message, msgWindow);
+      let status = tryEnigmail(iframeDoc, message, mainWindow.msgWindow);
       if (status & EnigmailConstants.DECRYPTION_OKAY) {
         addEncryptedTag(message);
       }

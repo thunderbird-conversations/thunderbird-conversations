@@ -116,10 +116,10 @@ function imipOptions(msgWindow, msg, itipItem, rc, actionFunc, foundItems) {
 }
 
 let lightningHook = {
-  onMessageStreamed(msgHdr, unused, msgWindow, msg) {
+  onMessageStreamed(msgHdr, unused, mainWindow, msg) {
     let itipItem = null;
     try {
-      let sinkProps = msgWindow.msgHeaderSink.properties;
+      let sinkProps = mainWindow.msgWindow.msgHeaderSink.properties;
       itipItem = sinkProps.getPropertyAsInterface("itipItem", Ci.calIItipItem);
     } catch (e) {}
 
@@ -141,7 +141,7 @@ let lightningHook = {
 
       cal.itip.processItipItem(
         itipItem,
-        imipOptions.bind(null, msgWindow, msg)
+        imipOptions.bind(null, mainWindow.msgWindow, msg)
       );
     }
   },
