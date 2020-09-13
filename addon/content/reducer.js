@@ -1007,7 +1007,7 @@ function summary(state = initialSummary, action) {
       if (state.conversation?.getMessage) {
         const msg = state.conversation.getMessage(action.msgUri);
         if (msg) {
-          msg.postStreamMessage(topMail3Pane(window).msgWindow, action.iframe);
+          msg.postStreamMessage(topMail3Pane(window), action.iframe);
         }
       }
       return newState;
