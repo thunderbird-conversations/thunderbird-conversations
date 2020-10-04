@@ -352,7 +352,8 @@ class MessageIFrame extends React.Component {
           // cannot get the computed style, BAD
         }
         if (style) {
-          let numLines = parseInt(style.height) / parseInt(style.lineHeight);
+          let numLines =
+            parseInt(style.height) / (parseInt(style.fontSize) * 1.5);
           if (numLines > this.props.prefs.hideQuoteLength) {
             return true;
           }
