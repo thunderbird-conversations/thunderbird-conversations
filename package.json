@@ -52,7 +52,7 @@
     "test": "npm-run-all test:*",
     "test:lint": "eslint --ext js,jsx,json .",
     "test:jest": "scripts/build-dev-html.sh && jest ./dist-dev-html/",
-    "preversion": "npm test",
+    "preversion": "npm ci && npm test",
     "version": "scripts/update-version.sh",
     "postversion": "npm run prod"
   },
