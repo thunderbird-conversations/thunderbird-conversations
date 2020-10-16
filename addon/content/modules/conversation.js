@@ -688,15 +688,30 @@ Conversation.prototype = {
       msg.updateTmplData(oldMsg);
     }
 
-    const reactMsgData = [];
+    let reactMsgData = [];
+    let skippedMessages = 0;
     for (let [i, m] of this.messages.entries()) {
-      const msgData = await m.message.toReactData();
+      let msgData;
+      try {
+        msgData = await m.message.toReactData();
+      } catch (ex) {
+        if (ex.message != "Message no longer exists") {
+          throw ex;
+        }
+        // Sometimes the message might have gone away before we get to render
+        // it, or the API is confused and is trying to give us a dead message.
+        reactMsgData.push(null);
+        skippedMessages++;
+        continue;
+      }
       // inView indicates if the message is currently in the message list
       // view or not. If it isn't we don't show the folder name.
       msgData.inView = this.viewWrapper.isInView(m);
-      msgData.initialPosition = i;
+      msgData.initialPosition = i - skippedMessages;
       reactMsgData.push(msgData);
     }
+    this.messages = this.messages.filter((m, i) => !!reactMsgData[i]);
+    reactMsgData = reactMsgData.filter((m) => m);
 
     // Move on to the next step
     this._expandAndScroll(this.messages, reactMsgData);
