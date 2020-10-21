@@ -1,5 +1,5 @@
 #!/bin/sh
-NOT='.sh$|^.git|.jsx$|^tests|^.eslint|^.travis|^package.json$|^package-lock.json$|^.prettierrc'
+NOT='.sh$|^.git|.jsx$|.js$|^tests|^.eslint|^.travis|^package.json$|^package-lock.json$|^.prettierrc'
 DIST=dist
 VENDOR_DIR=$DIST/content/vendor
 ADDON_DIR=addon
@@ -33,10 +33,7 @@ cp LICENSE README.md $DIST/
 
 pushd $ADDON_DIR
 
-for a in $(git ls-files | grep '.jsx$'); do
-  echo $a
-  babel --config-file=../babel.config.js $a --out-dir ../$DIST/$(dirname $a) &
-done
+npx babel --config-file=../babel.config.js . --out-dir ../$DIST/ &
 
 for a in $(git ls-files | egrep -v $NOT | egrep -v '^content/modules/stdlib'); do
   mkdir -p $(dirname "../${DIST}/${a}")
