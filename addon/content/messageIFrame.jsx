@@ -74,6 +74,15 @@ class MessageIFrame extends React.Component {
       this.iframe.classList.add("hidden");
     }
     if (startLoad) {
+      const docShell = this.iframe.contentWindow.docShell;
+      docShell.appType = Ci.nsIDocShell.APP_TYPE_MAIL;
+      docShell.charset = "UTF-8";
+      const cv = docShell.contentViewer;
+      cv.hintCharacterSet = "UTF-8";
+      // This used to be kCharsetFromChannel = 11, however in 79/80 the code changed.
+      // This still needs to be forced, because bug 829543 isn't fixed yet.
+      cv.hintCharacterSetSource = kCharsetFromUserForced;
+
       this.loading = true;
       this.currentUrl = this.props.msgUri;
       this.props.dispatch({
