@@ -38,13 +38,10 @@ cp LICENSE README.md $DIST/
 pushd $ADDON_DIR
 
 echo "    Watching JSX files"
-for a in $(git ls-files | grep '.jsx$'); do
-  echo "Compiling $a"
-  npx babel --verbose --config-file=../babel.config.js $a --out-dir ../$DIST/$(dirname $a) $WATCH_FLAG &
-done
+npx babel --verbose --config-file=../babel.config.js . --out-dir ../$DIST/ $WATCH_FLAG &
 
 echo "    Copying non-jsx files"
-npx cpx "**/*.{js,html,xhtml,css,svg,png,gif,ico,dtd,properties,json}" ../${DIST}/ --verbose $WATCH_FLAG &
+npx cpx "**/*.{html,xhtml,css,svg,png,gif,ico,dtd,properties,json}" ../${DIST}/ --verbose $WATCH_FLAG &
 
 popd
 
