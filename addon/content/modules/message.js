@@ -190,7 +190,7 @@ class Message {
   // This function is called before toReactData, and allows us to adjust our
   // template data according to the message that came before us.
   updateTmplData(aPrevMsg) {
-    let oldInfos = aPrevMsg?.bugzillaInfos;
+    let oldInfos = aPrevMsg && aPrevMsg.bugzillaInfos;
     if (!oldInfos) {
       oldInfos = {};
     }
@@ -222,11 +222,11 @@ class Message {
           items.push(key + ": " + makeArrow(oldInfos[k], infos[k]));
         }
       }
-      if (infos["changed-fields"]?.trim().length) {
+      if (infos["changed-fields"] && infos["changed-fields"].trim().length) {
         items.push("Changed: " + infos["changed-fields"]);
       }
       let m = this._snippet.match(RE_BZ_COMMENT);
-      if (m?.length && m[1].trim().length) {
+      if (m && m.length && m[1].trim().length) {
         items.push(m[1]);
       }
       if (!items.length) {
@@ -617,7 +617,7 @@ class Message {
         }
       }
       for (let x of node.querySelectorAll("blockquote, div")) {
-        if (x?.style.display == "none") {
+        if (x && x.style.display == "none") {
           x.remove();
         }
       }

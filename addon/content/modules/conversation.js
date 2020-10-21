@@ -451,8 +451,9 @@ Conversation.prototype = {
     Services.tm.dispatchToMainThread(async () => {
       try {
         // Beware, some bad things might have happened in the meanwhile...
-        this._initialSet = this._initialSet.filter((msgHdr) =>
-          msgHdr?.folder.msgDatabase.ContainsKey(msgHdr.messageKey)
+        this._initialSet = this._initialSet.filter(
+          (msgHdr) =>
+            msgHdr && msgHdr.folder.msgDatabase.ContainsKey(msgHdr.messageKey)
         );
         // We want at least all messages from the Gloda collection + all
         //  messages from the intermediate set (see rationale in the
@@ -555,7 +556,7 @@ Conversation.prototype = {
    * @param {Message} msg a Message as in modules/message.js
    */
   removeMessage(msg) {
-    Log.debug("Removing message:", msg?._uri);
+    Log.debug("Removing message:", msg && msg._uri);
     // Move the quick reply to the previous message
     this.messages = this.messages.filter((x) => x.message != msg);
     this._initialSet = this._initialSet.filter((x) => x.message != msg);
