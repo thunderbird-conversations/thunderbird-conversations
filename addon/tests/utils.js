@@ -11,7 +11,7 @@
 const esmImport = require("esm")(module, { cjs: true, force: true });
 const { act } = require("react-dom/test-utils");
 const enzyme = require("enzyme");
-const Adapter = require("enzyme-adapter-react-16");
+const Adapter = require("@wojtekmaj/enzyme-adapter-react-17");
 
 enzyme.configure({ adapter: new Adapter() });
 
