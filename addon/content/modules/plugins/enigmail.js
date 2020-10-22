@@ -636,27 +636,38 @@ function removeEncryptedTag(msg) {
 let enigmailHook = {
   _domNode: null,
   _originalText: null, // for restoring original text when sending message is canceled
-  _oldMsg: null,
+  _currentlyStreaming: [],
+  _oldIsCurrentMsgFn: null,
+  _oldGetCurrentMsgUriSpecFn: null,
 
   onMessageBeforeStreaming(msg) {
     if (!enigmailSvc) {
       return;
     }
     let w = topMail3Pane(msg);
+    if (!this._oldIsCurrentMsgFn) {
+      this._oldIsCurrentMsgFn = w.Enigmail.hdrView.headerPane.isCurrentMessage;
+      this._oldGetCurrentMsgUriSpecFn = w.Enigmail.msg.getCurrentMsgUriSpec;
+    }
 
-    this._oldMsg = w.gMessageDisplay.displayedMessage;
-    w.gMessageDisplay.displayedMessage = msg.msgHdr;
-    // Current message uri should be blank to decrypt all PGP/MIME messages.
-    w.Enigmail.msg.getCurrentMsgUriSpec = function () {
-      return "";
+    // Enigmail needs to know that the message we're currently streaming is the
+    // 'current' message.
+    this._oldIsCurrentMsgUriSpecFn = w.Enigmail.msg.getCurrentMsgUriSpec;
+    this._currentlyStreaming.push(msg._uri);
+    w.Enigmail.hdrView.headerPane.isCurrentMessage = (uri) => {
+      if (this._currentlyStreaming.includes(uri)) {
+        w.Enigmail.msg.getCurrentMsgUriSpec = function () {
+          return uri;
+        };
+      }
+      return this._oldIsCurrentMsgFn(uri);
     };
+
     verifyAttachments(msg);
     patchForShowSecurityInfo(w);
   },
 
   onMessageStreamed(msgHdr, iframe, mainWindow, message) {
-    mainWindow.gMessageDisplay.displayedMessage = this._oldMsg;
-
     let iframeDoc = iframe.contentDocument;
     if (iframeDoc.body.textContent.length && hasEnigmail) {
       let status = tryEnigmail(iframeDoc, message, mainWindow.msgWindow);
@@ -664,6 +675,15 @@ let enigmailHook = {
         addEncryptedTag(message);
       }
       addSignedLabel(status, message);
+    }
+    this._currentlyStreaming = this._currentlyStreaming.filter(
+      (uri) => uri == message._uri
+    );
+    if (!this._currentlyStreaming.length) {
+      mainWindow.Enigmail.hdrView.headerPane.isCurrentMessage = this._oldIsCurrentMsgFn;
+      mainWindow.Enigmail.msg.getCurrentMsgUriSpec = this._oldGetCurrentMsgUriSpecFn;
+      this._oldIsCurrentMsgFn = null;
+      this._oldGetCurrentMsgUriSpecFn = null;
     }
   },
 
