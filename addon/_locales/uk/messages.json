@@ -304,15 +304,15 @@
     "description": "Button title to send a message in the outbox"
   },
   "notification.remoteContentBlockedMsg": {
-    "message": "Віддалений вміст приховано:",
+    "message": "Зовнішній вміст приховано:",
     "description": "Notification message shown when remote content is blocked"
   },
   "notification.showRemote": {
-    "message": "Показати віддалений вміст",
+    "message": "Показати зовнішній вміст",
     "description": "Button title to show remote content"
   },
   "notification.alwaysShowRemote": {
-    "message": "Завжди показувати віддалений вміст від $fromEmail$",
+    "message": "Завжди показувати зовнішній вміст від $fromEmail$",
     "description": "Button title to always show remote content.",
     "placeholders": {
       "fromEmail": {
