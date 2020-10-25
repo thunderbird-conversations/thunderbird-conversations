@@ -647,6 +647,8 @@ let enigmailHook = {
     let w = topMail3Pane(msg);
     if (!this._oldIsCurrentMsgFn) {
       this._oldIsCurrentMsgFn = w.Enigmail.hdrView.headerPane.isCurrentMessage;
+    }
+    if (!this._oldGetCurrentMsgUriSpecFn) {
       this._oldGetCurrentMsgUriSpecFn = w.Enigmail.msg.getCurrentMsgUriSpec;
     }
 
@@ -680,8 +682,12 @@ let enigmailHook = {
       (uri) => uri == message._uri
     );
     if (!this._currentlyStreaming.length) {
-      mainWindow.Enigmail.hdrView.headerPane.isCurrentMessage = this._oldIsCurrentMsgFn;
-      mainWindow.Enigmail.msg.getCurrentMsgUriSpec = this._oldGetCurrentMsgUriSpecFn;
+      if (this._oldIsCurrentMsgFn) {
+        mainWindow.Enigmail.hdrView.headerPane.isCurrentMessage = this._oldIsCurrentMsgFn;
+      }
+      if (this._oldGetCurrentMsgUriSpecFn) {
+        mainWindow.Enigmail.msg.getCurrentMsgUriSpec = this._oldGetCurrentMsgUriSpecFn;
+      }
       this._oldIsCurrentMsgFn = null;
       this._oldGetCurrentMsgUriSpecFn = null;
     }
