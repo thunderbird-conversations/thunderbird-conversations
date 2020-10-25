@@ -167,7 +167,7 @@ function overrideUpdateSecurity(messagepane, w) {
     }
 
     let encToDetails = "";
-    if (extraDetails && extraDetails.length) {
+    if (extraDetails?.length) {
       let o = JSON.parse(extraDetails);
       if ("encryptedTo" in o) {
         encToDetails = o.encryptedTo;
@@ -340,7 +340,7 @@ function tryEnigmail(aDocument, aMessage, aMsgWindow) {
           subText = subText.substr(0, endOffset) + "\n";
 
           let matches = subText.match(/\nCharset: *(.*) *\n/i);
-          if (matches && matches.length > 1) {
+          if (matches?.length > 1) {
             // Override character set
             charset = matches[1];
             Log.debug("OVERRIDING charset=" + charset);
@@ -391,7 +391,7 @@ function tryEnigmail(aDocument, aMessage, aMsgWindow) {
         charset
       );
     }
-    if (blockSeparationObj.value && blockSeparationObj.value.includes(" ")) {
+    if (blockSeparationObj.value?.includes(" ")) {
       let blocks = blockSeparationObj.value.split(/ /);
       let blockInfo = blocks[0].split(/:/);
       plainText =
@@ -931,7 +931,7 @@ let enigmailHook = {
     } catch (ex) {
       console.error("Enigmail encrypt error:", errorMsgObj.value, ex);
       let msg = EnigmailLocale.getString("signFailed");
-      if (enigmailSvc && enigmailSvc.initializationError) {
+      if (enigmailSvc?.initializationError) {
         msg += "\n" + enigmailSvc.initializationError;
       }
       aStatus.canceled = !EnigmailDialog.confirmDlg(
@@ -1010,7 +1010,7 @@ let enigmailHook = {
         Enigmail.msg.signByRules = flagsObj.sign;
         Enigmail.msg.pgpmimeByRules = flagsObj.pgpMime;
 
-        if (matchedKeysObj.value && matchedKeysObj.value.length) {
+        if (matchedKeysObj.value?.length) {
           // replace addresses with results from rules
           toAddrList = matchedKeysObj.value.split(", ");
         }

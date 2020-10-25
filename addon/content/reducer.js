@@ -90,11 +90,7 @@ function modifyOnlyMsgId(currentState, id, modifier) {
 
 async function getPreference(name, defaultValue) {
   const prefs = await browser.storage.local.get("preferences");
-  let value = prefs && prefs.preferences && prefs.preferences[name];
-  if (value === undefined) {
-    return defaultValue;
-  }
-  return value;
+  return prefs?.preferences?.[name] ?? defaultValue;
 }
 
 const attachmentActions = {
@@ -400,10 +396,10 @@ const messageActions = {
   },
   forward({ id, shiftKey }) {
     return async () => {
-      let value = await browser.conversations.getCorePref(
-        "mail.forward_message_mode"
-      );
-      let forwardMode = value === undefined ? 0 : value;
+      let forwardMode =
+        (await browser.conversations.getCorePref(
+          "mail.forward_message_mode"
+        )) ?? 0;
       browser.conversations
         .beginForward(
           id,
@@ -668,7 +664,7 @@ const messageActions = {
       }
       let currentMsg = getState().messages.msgData.find((msg) => msg.id == id);
       // If we already have header information, don't get it again.
-      if (currentMsg && currentMsg.extraLines && currentMsg.extraLines.length) {
+      if (currentMsg?.extraLines?.length) {
         await dispatch({
           type: "MSG_HDR_DETAILS",
           detailsShowing: true,
@@ -707,7 +703,7 @@ const messageActions = {
         }
         extraLines.push({
           key: browser.i18n.getMessage("message.headerSubject"),
-          value: currentMsg && currentMsg.subject,
+          value: currentMsg?.subject,
         });
 
         dispatch({
@@ -924,8 +920,7 @@ function summary(state = initialSummary, action) {
         tenPxFactor = 0.7;
       }
 
-      let mainVersion =
-        action.browserVersion && action.browserVersion.split(".")[0];
+      let mainVersion = action.browserVersion?.split(".")[0];
 
       return {
         ...state,
@@ -1009,7 +1004,7 @@ function summary(state = initialSummary, action) {
       // It might be that we're trying to send a message on unmount, but the
       // conversation/message has gone away. If that's the case, we just skip
       // and move on.
-      if (state.conversation && state.conversation.getMessage) {
+      if (state.conversation?.getMessage) {
         const msg = state.conversation.getMessage(action.msgUri);
         if (msg) {
           msg.postStreamMessage(topMail3Pane(window), action.iframe);

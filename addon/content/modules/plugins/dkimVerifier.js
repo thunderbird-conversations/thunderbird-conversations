@@ -48,10 +48,9 @@ function displayResult(result, msg) {
     return;
   }
 
-  const warningsClassName =
-    result.dkim[0].warnings_str && result.dkim[0].warnings_str.length
-      ? "warnings"
-      : "";
+  const warningsClassName = result.dkim[0].warnings_str?.length
+    ? "warnings"
+    : "";
 
   msg.addSpecialTag({
     canClick: false,

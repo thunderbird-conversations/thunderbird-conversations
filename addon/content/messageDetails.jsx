@@ -52,8 +52,7 @@ class MessageDetails extends React.PureComponent {
             <ContactLine className="bcc" contacts={this.props.bcc} />
           </div>
         )}
-        {!!this.props.extraLines &&
-          !!this.props.extraLines.length &&
+        {!!this.props.extraLines?.length &&
           this.props.extraLines.map((line, i) => {
             return (
               <div className="detailsLine" key={i}>
