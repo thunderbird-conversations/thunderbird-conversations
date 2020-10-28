@@ -225,6 +225,23 @@ function getAttachmentInfo(win, msgUri, attachment) {
 
 let apiWindowObserver;
 
+function findAttachment(msgHdr, attachmentUrl) {
+  return new Promise((resolve) => {
+    MsgHdrToMimeMessage(msgHdr, null, async (aMsgHdr, aMimeMsg) => {
+      if (!aMimeMsg) {
+        return;
+      }
+
+      attachmentUrl = unescape(attachmentUrl);
+      resolve(
+        aMimeMsg.allUserAttachments.find(
+          (x) => unescape(x.url) == attachmentUrl
+        )
+      );
+    });
+  });
+}
+
 /* exported conversations */
 var conversations = class extends ExtensionCommon.ExtensionAPI {
   onStartup() {
@@ -671,48 +688,21 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
         },
         async downloadAttachment(id, attachmentUrl) {
           let msgHdr = context.extension.messageManager.get(id);
-          let attachment = await new Promise((resolve) => {
-            MsgHdrToMimeMessage(msgHdr, null, async (aMsgHdr, aMimeMsg) => {
-              if (!aMimeMsg) {
-                return;
-              }
-              resolve(
-                aMimeMsg.allUserAttachments.find((x) => x.url == attachmentUrl)
-              );
-            });
-          });
+          let attachment = await findAttachment(msgHdr, attachmentUrl);
           const win = Services.wm.getMostRecentWindow("mail:3pane");
           let msgUri = msgHdrGetUri(msgHdr);
           getAttachmentInfo(win, msgUri, attachment).save();
         },
         async openAttachment(id, attachmentUrl) {
           let msgHdr = context.extension.messageManager.get(id);
-          let attachment = await new Promise((resolve) => {
-            MsgHdrToMimeMessage(msgHdr, null, async (aMsgHdr, aMimeMsg) => {
-              if (!aMimeMsg) {
-                return;
-              }
-              resolve(
-                aMimeMsg.allUserAttachments.find((x) => x.url == attachmentUrl)
-              );
-            });
-          });
+          let attachment = await findAttachment(msgHdr, attachmentUrl);
           const win = Services.wm.getMostRecentWindow("mail:3pane");
           let msgUri = msgHdrGetUri(msgHdr);
           getAttachmentInfo(win, msgUri, attachment).open();
         },
         async detachAttachment(id, attachmentUrl, shouldSave) {
           let msgHdr = context.extension.messageManager.get(id);
-          let attachment = await new Promise((resolve) => {
-            MsgHdrToMimeMessage(msgHdr, null, async (aMsgHdr, aMimeMsg) => {
-              if (!aMimeMsg) {
-                return;
-              }
-              resolve(
-                aMimeMsg.allUserAttachments.find((x) => x.url == attachmentUrl)
-              );
-            });
-          });
+          let attachment = await findAttachment(msgHdr, attachmentUrl);
           const win = Services.wm.getMostRecentWindow("mail:3pane");
           let msgUri = msgHdrGetUri(msgHdr);
           getAttachmentInfo(win, msgUri, attachment).detach(shouldSave);
