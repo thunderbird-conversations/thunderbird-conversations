@@ -114,14 +114,14 @@
     "description": "Options - description for hiding the quick reply display."
   },
 
-  "options.compose_in_tab_title": {
-    "message": "Hidden composition window",
-    "description": "Options - title for hidden compose window enabling."
+  "options.compose_in_tab2_title": {
+    "message": "Enable composition tab",
+    "description": "Options - title for enabling the hidden compose in a tab option."
   },
 
-  "options.compose_in_tab_desc": {
-    "message": "Ctrl-Shift-N opens the hidden, unsupported composition window in a new tab",
-    "description": "Options - description for hidden compose window enabling."
+  "options.compose_in_tab2_desc": {
+    "message": "Ctrl-Shift-N opens the hidden composition in a new tab (experimental).",
+    "description": "Options - description for enabling the hidden compose in a tab option."
   },
 
   "options.debugging_title": {
