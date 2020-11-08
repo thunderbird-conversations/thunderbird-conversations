@@ -117,6 +117,14 @@ const PREFS_INFO = [
   },
   {
     props: {
+      title: "options.hide_quick_reply_title",
+      desc: "options.hide_quick_reply_desc",
+      name: "hide_quick_reply",
+    },
+    component: BinaryOption,
+  },
+  {
+    props: {
       title: "options.compose_in_tab_title",
       desc: "options.compose_in_tab_desc",
       name: "compose_in_tab",
