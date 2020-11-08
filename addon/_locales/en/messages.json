@@ -104,6 +104,16 @@
     "description": "Options - description for attachment settings."
   },
 
+  "options.hide_quick_reply_title": {
+    "message": "Hide Quick Reply",
+    "description": "Options - title for hiding quick reply display."
+  },
+
+  "options.hide_quick_reply_desc": {
+    "message": "Hide the quick reply box on conversations.",
+    "description": "Options - description for hiding the quick reply display."
+  },
+
   "options.compose_in_tab_title": {
     "message": "Hidden composition window",
     "description": "Options - title for hidden compose window enabling."

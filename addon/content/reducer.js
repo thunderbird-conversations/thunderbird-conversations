@@ -48,10 +48,11 @@ const initialSummary = {
   conversation: null,
   defaultFontSize: 15,
   hasBuiltInPdf: false,
-  // TODO: What is loading used for?
-  loading: true,
+  hideQuickReply: false,
   iframesLoading: 0,
   isInTab: false,
+  // TODO: What is loading used for?
+  loading: true,
   OS: "win",
   tabId: null,
   tenPxFactor: 0.7,
@@ -281,6 +282,7 @@ const messageActions = {
         browserBackgroundColor,
         defaultDetailsShowing,
         defaultFontSize,
+        hideQuickReply: await getPreference("hide_quick_reply", false),
         OS: platformInfo.os,
         browserVersion: browserInfo.version,
       });
@@ -930,6 +932,7 @@ function summary(state = initialSummary, action) {
         defaultDetailsShowing: action.defaultDetailsShowing,
         // Thunderbird 81 has built-in PDF viewer.
         hasBuiltInPdf: mainVersion >= 81,
+        hideQuickReply: action.hideQuickReply,
         OS: action.OS,
         tenPxFactor,
       };
