@@ -14,7 +14,10 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   escapeHtml: "chrome://conversations/content/modules/misc.js",
   htmlToPlainText: "chrome://conversations/content/modules/misc.js",
+  MimeMessage: "resource:///modules/gloda/MimeMessage.jsm",
+  mimeMsgToContentSnippetAndMeta: "resource:///modules/gloda/GlodaContent.jsm",
   msgHdrGetUri: "chrome://conversations/content/modules/misc.js",
+  MsgHdrToMimeMessage: "resource:///modules/gloda/MimeMessage.jsm",
   NetUtil: "resource://gre/modules/NetUtil.jsm",
   parseMimeLine: "chrome://conversations/content/modules/misc.js",
   setupLogging: "chrome://conversations/content/modules/misc.js",
@@ -23,36 +26,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
 
 XPCOMUtils.defineLazyGetter(this, "browser", function () {
   return BrowserSim.getBrowser();
-});
-
-XPCOMUtils.defineLazyGetter(this, "MimeMessage", () => {
-  let tmp = {};
-  try {
-    ChromeUtils.import("resource:///modules/gloda/mimemsg.js", tmp);
-  } catch (ex) {
-    ChromeUtils.import("resource:///modules/gloda/MimeMessage.jsm", tmp);
-  }
-  return tmp.MimeMessage;
-});
-
-XPCOMUtils.defineLazyGetter(this, "MsgHdrToMimeMessage", () => {
-  let tmp = {};
-  try {
-    ChromeUtils.import("resource:///modules/gloda/mimemsg.js", tmp);
-  } catch (ex) {
-    ChromeUtils.import("resource:///modules/gloda/MimeMessage.jsm", tmp);
-  }
-  return tmp.MsgHdrToMimeMessage;
-});
-
-XPCOMUtils.defineLazyGetter(this, "mimeMsgToContentSnippetAndMeta", () => {
-  let tmp = {};
-  try {
-    ChromeUtils.import("resource:///modules/gloda/connotent.js", tmp);
-  } catch (ex) {
-    ChromeUtils.import("resource:///modules/gloda/GlodaContent.jsm", tmp);
-  }
-  return tmp.mimeMsgToContentSnippetAndMeta;
 });
 
 XPCOMUtils.defineLazyGetter(this, "gMessenger", function () {

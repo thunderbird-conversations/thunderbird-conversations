@@ -5,18 +5,9 @@ var { XPCOMUtils } = ChromeUtils.import(
 XPCOMUtils.defineLazyModuleGetters(this, {
   DisplayNameUtils: "resource:///modules/DisplayNameUtils.jsm",
   ExtensionCommon: "resource://gre/modules/ExtensionCommon.jsm",
+  Gloda: "resource:///modules/gloda/Gloda.jsm",
   Services: "resource://gre/modules/Services.jsm",
   MailServices: "resource:///modules/MailServices.jsm",
-});
-
-XPCOMUtils.defineLazyGetter(this, "Gloda", () => {
-  let tmp = {};
-  try {
-    ChromeUtils.import("resource:///modules/gloda/gloda.js", tmp);
-  } catch (ex) {
-    ChromeUtils.import("resource:///modules/gloda/Gloda.jsm", tmp);
-  }
-  return tmp.Gloda;
 });
 
 /**

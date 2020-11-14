@@ -37,14 +37,8 @@ const { XPCOMUtils } = ChromeUtils.import(
   "resource://gre/modules/XPCOMUtils.jsm"
 );
 
-XPCOMUtils.defineLazyGetter(this, "Gloda", () => {
-  let tmp = {};
-  try {
-    ChromeUtils.import("resource:///modules/gloda/public.js", tmp);
-  } catch (ex) {
-    ChromeUtils.import("resource:///modules/gloda/GlodaPublic.jsm", tmp);
-  }
-  return tmp.Gloda;
+XPCOMUtils.defineLazyModuleGetters(this, {
+  Gloda: "resource:///modules/gloda/GlodaPublic.jsm",
 });
 
 let AlternativeSender = {
