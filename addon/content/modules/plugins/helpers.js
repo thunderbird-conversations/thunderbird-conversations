@@ -14,14 +14,8 @@ const { XPCOMUtils } = ChromeUtils.import(
   "resource://gre/modules/XPCOMUtils.jsm"
 );
 
-XPCOMUtils.defineLazyGetter(this, "GlodaUtils", () => {
-  let tmp = {};
-  try {
-    ChromeUtils.import("resource:///modules/gloda/utils.js", tmp);
-  } catch (ex) {
-    ChromeUtils.import("resource:///modules/gloda/GlodaUtils.jsm", tmp);
-  }
-  return tmp.GlodaUtils;
+XPCOMUtils.defineLazyModuleGetters(this, {
+  GlodaUtils: "resource:///modules/gloda/GlodaUtils.jsm",
 });
 
 var PluginHelpers = {

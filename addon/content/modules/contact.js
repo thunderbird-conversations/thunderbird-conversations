@@ -4,7 +4,7 @@
 
 "use strict";
 
-var EXPORTED_SYMBOLS = ["ContactManager", "Contacts", "defaultPhotoURI"];
+var EXPORTED_SYMBOLS = ["ContactManager", "Contacts"];
 
 const { XPCOMUtils } = ChromeUtils.import(
   "resource://gre/modules/XPCOMUtils.jsm"
@@ -14,18 +14,10 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   getInitials: "chrome://conversations/content/utils.js",
   freshColor: "chrome://conversations/content/utils.js",
-  Services: "resource://gre/modules/Services.jsm",
 });
 
 XPCOMUtils.defineLazyGetter(this, "browser", function () {
   return BrowserSim.getBrowser();
-});
-
-XPCOMUtils.defineLazyGetter(this, "defaultPhotoURI", function () {
-  if (Services.vc.compare(Services.appinfo.version, "78.0.0") < 0) {
-    return "chrome://messenger/skin/addressbook/icons/contact-generic.png";
-  }
-  return "chrome://messenger/skin/addressbook/icons/contact-generic.svg";
 });
 
 var Contacts = {
@@ -151,7 +143,7 @@ ContactFromAB.prototype = {
     }
     // It would be nice to return null here and let the UI sort out the default.
     // However, with the current version comparisons, that makes it hard to do.
-    return defaultPhotoURI;
+    return "chrome://messenger/skin/addressbook/icons/contact-generic.svg";
   },
 
   /**
