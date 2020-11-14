@@ -8,6 +8,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   ExtensionCommon: "resource://gre/modules/ExtensionCommon.jsm",
   GlodaAttrProviders:
     "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
+  makeFriendlyDateAgo: "resource:///modules/TemplateUtils.jsm",
   msgHdrGetUri: "chrome://conversations/content/modules/misc.js",
   msgUriToMsgHdr: "chrome://conversations/content/modules/misc.js",
   NetUtil: "resource://gre/modules/NetUtil.jsm",
@@ -706,6 +707,9 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           const win = Services.wm.getMostRecentWindow("mail:3pane");
           let msgUri = msgHdrGetUri(msgHdr);
           getAttachmentInfo(win, msgUri, attachment).detach(shouldSave);
+        },
+        async makeFriendlyDateAgo(date) {
+          return makeFriendlyDateAgo(new Date(date));
         },
         onCallAPI: new ExtensionCommon.EventManager({
           context,

@@ -474,6 +474,19 @@
             "description": "If the file being detached should be saved or not."
           }
         ]
+      },
+      {
+        "name": "makeFriendlyDateAgo",
+        "type": "function",
+        "description": "Makes a friendly date string.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "date",
+            "type": "integer",
+            "description": "The date in milliseconds."
+          }
+        ]
       }
     ],
     "events": [
