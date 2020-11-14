@@ -55,16 +55,6 @@ XPCOMUtils.defineLazyGetter(this, "mimeMsgToContentSnippetAndMeta", () => {
   return tmp.mimeMsgToContentSnippetAndMeta;
 });
 
-XPCOMUtils.defineLazyGetter(this, "makeFriendlyDateAgo", () => {
-  let tmp = {};
-  try {
-    ChromeUtils.import("resource:///modules/templateUtils.js", tmp);
-  } catch (ex) {
-    ChromeUtils.import("resource:///modules/TemplateUtils.jsm", tmp);
-  }
-  return tmp.makeFriendlyDateAgo;
-});
-
 XPCOMUtils.defineLazyGetter(this, "gMessenger", function () {
   return Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
 });
@@ -116,11 +106,11 @@ function addMsgListener(aMessage) {
   msgListeners.get(messageId).push(weakPtr);
 }
 
-function dateAccordingToPref(date) {
+async function dateAccordingToPref(date) {
   try {
     return Prefs.no_friendly_date
       ? dateAsInMessageList(date)
-      : makeFriendlyDateAgo(date);
+      : await browser.conversations.makeFriendlyDateAgo(date);
   } catch (e) {
     return dateAsInMessageList(date);
   }
@@ -134,7 +124,7 @@ class Message {
     this._snippet = "";
     this._conversation = aConversation;
 
-    this._date = dateAccordingToPref(new Date(this._msgHdr.date / 1000));
+    this._date = new Date(this._msgHdr.date / 1000);
     // This one is for display purposes. We should always parse the non-decoded
     // author because there's more information in the encoded form (see #602)
     this._from = this.parse(this._msgHdr.author)[0];
@@ -270,7 +260,7 @@ class Message {
     const messageFolderType = messageHeader.folder.type;
     let data = {
       id: this._id,
-      date: this._date,
+      date: await dateAccordingToPref(this._date),
       folderName: await browser.conversations.getFolderName(this._id),
       hasRemoteContent: this.hasRemoteContent,
       isDraft: messageFolderType == "drafts",
@@ -659,7 +649,7 @@ class Message {
     let authorEmail = this._from.email;
     let authorAvatar = this._contacts[0][0].avatar;
     let authorColor = this._contacts[0][0].color;
-    let date = dateAccordingToPref(new Date(this._msgHdr.date / 1000));
+    let date = await dateAccordingToPref(new Date(this._msgHdr.date / 1000));
     // We try to convert the bodies to plain text, to enhance the readability in
     // the forwarded conversation. Note: <pre> tags are not converted properly
     // it seems, need to investigate...
