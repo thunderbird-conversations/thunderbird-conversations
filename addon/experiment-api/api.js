@@ -443,7 +443,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           return new Promise((resolve, reject) => {
             MsgHdrToMimeMessage(
               msgHdr,
-              this,
+              null,
               (mimeHdr, aMimeMsg) => {
                 const attachments = aMimeMsg.allAttachments.filter(
                   (x) => x.partName == partName
