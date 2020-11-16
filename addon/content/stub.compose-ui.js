@@ -87,7 +87,7 @@ function registerQuickReply() {
         Log.debug("onDraftChanged", Conversations == mainWindow.Conversations);
         switch (aTopic) {
           case "modified":
-            newComposeSessionByDraftIf().catch(Cu.reportError);
+            newComposeSessionByDraftIf().catch(console.warn);
             break;
           case "removed":
             getActiveEditor().value = "";
@@ -249,7 +249,7 @@ function editFields(aFocusId) {
 
 function confirmDiscard(event) {
   if (!startedEditing() || confirm(strings.get("confirmDiscard"))) {
-    onDiscard().catch(Cu.reportError);
+    onDiscard().catch(console.warn);
   }
 }
 
@@ -1294,7 +1294,7 @@ function createStateListener(aComposeSession, aMsgHdrs, aId) {
         //  params might have changed in the meanwhile.
         if (aId) {
           SimpleStorage.remove(SIMPLE_STORAGE_TABLE_NAME, aId).catch(
-            Cu.reportError
+            console.warn
           );
         }
         // Do stuff to the message we replied to.
