@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* Below are hacks^W heuristics for finding quoted parts in a given email */
+/* Below are hacks heuristics for finding quoted parts in a given email */
 
 /* exported Quoting */
 
@@ -196,7 +196,7 @@ class _Quoting {
           blockquote.parentNode.removeChild(next);
           blockquotes.delete(next);
         } else {
-          Cu.reportError("What?!");
+          console.warn("What?!");
         }
       }
     }
