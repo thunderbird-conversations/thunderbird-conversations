@@ -209,7 +209,7 @@ function _Compose({
     window.document && window.document.body && window.document.body.parentNode;
   if (html) {
     // TODO: Maybe should handle the tweak chrome option here.
-    html.setAttribute("os", details.OS);
+    html.setAttribute("os", details.os);
   }
 
   return (
