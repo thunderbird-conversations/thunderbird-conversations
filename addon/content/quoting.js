@@ -7,7 +7,7 @@
 /* exported Quoting */
 
 class _Quoting {
-  canInclude(aNode) {
+  _canInclude(aNode) {
     let v =
       aNode.tagName?.toLowerCase() == "br" ||
       (aNode.nodeType == aNode.TEXT_NODE && aNode.textContent.trim() === "");
@@ -15,7 +15,7 @@ class _Quoting {
     return v;
   }
 
-  isBody(aNode) {
+  _isBody(aNode) {
     if (aNode.tagName?.toLowerCase() == "body") {
       return true;
     }
@@ -34,24 +34,24 @@ class _Quoting {
       }
     }
     // dump(count+"\n");
-    return count == 1 && this.isBody(aNode.parentNode);
+    return count == 1 && this._isBody(aNode.parentNode);
   }
 
-  implies(a, b) {
+  _implies(a, b) {
     return !a || (a && b);
   }
 
   /* Create a blockquote that encloses everything relevant, starting from marker.
    * Marker is included by default, remove it later if you need to. */
-  encloseInBlockquote(aDoc, marker) {
-    if (marker.previousSibling && this.canInclude(marker.previousSibling)) {
-      this.encloseInBlockquote(aDoc, marker.previousSibling);
-    } else if (!marker.previousSibling && !this.isBody(marker.parentNode)) {
-      this.encloseInBlockquote(aDoc, marker.parentNode);
+  _encloseInBlockquote(aDoc, marker) {
+    if (marker.previousSibling && this._canInclude(marker.previousSibling)) {
+      this._encloseInBlockquote(aDoc, marker.previousSibling);
+    } else if (!marker.previousSibling && !this._isBody(marker.parentNode)) {
+      this._encloseInBlockquote(aDoc, marker.parentNode);
     } else if (
-      this.implies(
+      this._implies(
         marker == marker.parentNode.firstChild,
-        !this.isBody(marker.parentNode)
+        !this._isBody(marker.parentNode)
       )
     ) {
       let blockquote = aDoc.createElement("blockquote");
@@ -63,10 +63,10 @@ class _Quoting {
     }
   }
 
-  trySel(aDoc, sel, remove) {
+  _trySel(aDoc, sel, remove) {
     let marker = aDoc.querySelector(sel);
     if (marker) {
-      this.encloseInBlockquote(aDoc, marker);
+      this._encloseInBlockquote(aDoc, marker);
       if (remove) {
         marker.remove();
       }
@@ -78,7 +78,7 @@ class _Quoting {
   convertHotmailQuotingToBlockquote1(aDoc) {
     /* We make the assumption that no one uses a <hr> in their emails except for
      * separating a quoted message from the rest */
-    this.trySel(
+    this._trySel(
       aDoc,
       "body > hr, \
        body > div > hr, \
@@ -90,13 +90,13 @@ class _Quoting {
   }
 
   convertMiscQuotingToBlockquote(aDoc) {
-    this.trySel(aDoc, ".yahoo_quoted");
+    this._trySel(aDoc, ".yahoo_quoted");
   }
 
   /* There's a special message header for that. */
   convertOutlookQuotingToBlockquote(aWin, aDoc) {
     /* Outlook uses a special thing for that */
-    this.trySel(aDoc, ".OutlookMessageHeader");
+    this._trySel(aDoc, ".OutlookMessageHeader");
     for (let div of aDoc.getElementsByTagName("div")) {
       let style = aWin.getComputedStyle(div);
       if (
@@ -107,7 +107,7 @@ class _Quoting {
         style.borderRightWidth == "0px" &&
         style.borderBottomWidth == "0px"
       ) {
-        this.encloseInBlockquote(aDoc, div);
+        this._encloseInBlockquote(aDoc, div);
         div.style.borderTopWidth = 0;
         break;
       }
@@ -140,7 +140,7 @@ class _Quoting {
           child.parentNode.insertBefore(tn1, child);
           child.parentNode.insertBefore(tn2, child);
           child.remove();
-          this.encloseInBlockquote(aDoc, tn2);
+          this._encloseInBlockquote(aDoc, tn2);
           let ex = new Error();
           ex.found = true;
           throw ex;
@@ -204,3 +204,12 @@ class _Quoting {
 }
 
 var Quoting = new _Quoting();
+
+// This is temporary code to allow using using this as both
+// an es-module and as-is with global variables. This code
+// should be removed when the transition to a WebExtension is
+// complete.
+
+if (window.esExports) {
+  window.esExports.Quoting = Quoting;
+}
