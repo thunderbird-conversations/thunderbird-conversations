@@ -625,10 +625,13 @@ Conversation.prototype = {
     // messages if required, not scroll to them.
     this._tellMeWhoToExpand(newMsgs, reactMsgData, -1);
 
-    this.dispatch({
-      type: "APPEND_MESSAGES",
-      msgData: reactMsgData,
-    });
+    this.dispatch(
+      this._htmlPane.summaryActions.appendMessages({
+        messages: {
+          msgData: reactMsgData,
+        },
+      })
+    );
   },
 
   // Once we're confident our set of messages is the right one, we actually

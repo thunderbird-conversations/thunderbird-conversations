@@ -729,6 +729,11 @@ function messages(state = initialMessages, action) {
         ...action.messages,
       };
     }
+    case "APPEND_MESSAGES": {
+      const newState = { ...state };
+      newState.msgData = newState.msgData.concat(action.messages.msgData);
+      return newState;
+    }
     case "MSG_EXPAND": {
       return modifyOnlyMsg(state, action.msgUri, (msg) => {
         const newMsg = { ...msg };
@@ -820,11 +825,6 @@ function messages(state = initialMessages, action) {
       newState.msgData = newMsgData;
       return newState;
     }
-    case "APPEND_MESSAGES": {
-      const newState = { ...state };
-      newState.msgData = newState.msgData.concat(action.msgData);
-      return newState;
-    }
     case "CLEAR_SCROLLTO": {
       return modifyOnlyMsgId(state, action.id, (msg) => {
         return { ...msg, scrollTo: false };
@@ -858,29 +858,46 @@ function messages(state = initialMessages, action) {
   }
 }
 
+async function handleShowDetails(messages, state, dispatch, updateFn) {
+  let defaultShowing = state.summary.defaultDetailsShowing;
+  for (let msg of messages.msgData) {
+    msg.detailsShowing = defaultShowing;
+  }
+
+  await updateFn();
+
+  if (defaultShowing) {
+    for (let msg of state.messages.msgData) {
+      await dispatch(
+        messageActions.showMsgDetails({
+          id: msg.id,
+          detailsShowing: true,
+        })
+      );
+    }
+  }
+}
+
 var summaryActions = {
   replaceConversation({ summary, messages }) {
     return async (dispatch, getState) => {
-      let defaultShowing = getState().summary.defaultDetailsShowing;
-      for (let msg of messages.msgData) {
-        msg.detailsShowing = defaultShowing;
-      }
-      await dispatch({
-        type: "REPLACE_CONVERSATION_DETAILS",
-        summary,
-        messages,
+      await handleShowDetails(messages, getState(), dispatch, () => {
+        return dispatch({
+          type: "REPLACE_CONVERSATION_DETAILS",
+          summary,
+          messages,
+        });
       });
-
-      if (defaultShowing) {
-        for (let msg of getState().messages.msgData) {
-          await dispatch(
-            messageActions.showMsgDetails({
-              id: msg.id,
-              detailsShowing: true,
-            })
-          );
-        }
-      }
+    };
+  },
+  appendMessages({ summary, messages }) {
+    return async (dispatch, getState) => {
+      await handleShowDetails(messages, getState(), dispatch, () => {
+        return dispatch({
+          type: "APPEND_MESSAGES",
+          messages,
+        });
+      });
     };
   },
   showMessagesInvolving({ name, email }) {
