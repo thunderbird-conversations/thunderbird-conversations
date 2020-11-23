@@ -132,6 +132,9 @@ export const actions = {
         composeSlice.actions.setSendStatus({
           sending: false,
           modified: false,
+          sendingMsg: success
+            ? ""
+            : i18n.getMessage("compose.couldntSendTheMessage"),
         })
       );
       if (success) {
