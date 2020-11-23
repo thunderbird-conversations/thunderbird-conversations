@@ -577,6 +577,8 @@ function summarizeThreadHandler(win, id) {
             // TODO: Re-enable this.
             // htmlpane.contentWindow.registerQuickReply();
 
+            win.gMessageDisplay.onLoadCompleted();
+
             // Make sure we respect the user's preferences.
             if (Services.prefs.getBoolPref("mailnews.mark_message_read.auto")) {
               win.conversationsMarkReadTimeout = win.setTimeout(
@@ -695,6 +697,7 @@ function summarizeThreadHandler(win, id) {
         // for this.folderDisplay.selectedCount and returns immediately if
         // selectedCount == 1
         this.singleMessageDisplay = false;
+        this.onDisplayingMessage(this.folderDisplay.selectedMessages[0]);
         win.summarizeThread(this.folderDisplay.selectedMessages, this);
         return true;
       }
