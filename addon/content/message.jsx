@@ -35,6 +35,10 @@ class Message extends React.PureComponent {
         );
         this.onSelected();
       });
+      this.props.dispatch({
+        type: "CLEAR_SCROLLTO",
+        id: this.props.message.id,
+      });
     }
     this.checkLateAttachments();
   }
@@ -60,6 +64,10 @@ class Message extends React.PureComponent {
           this.li.getBoundingClientRect().top + window.scrollY + 5 - 44
         );
         this.onSelected();
+      });
+      this.props.dispatch({
+        type: "CLEAR_SCROLLTO",
+        id: this.props.message.id,
       });
     }
     this.checkLateAttachments();
