@@ -825,6 +825,11 @@ function messages(state = initialMessages, action) {
       newState.msgData = newState.msgData.concat(action.msgData);
       return newState;
     }
+    case "CLEAR_SCROLLTO": {
+      return modifyOnlyMsgId(state, action.id, (msg) => {
+        return { ...msg, scrollTo: false };
+      });
+    }
     case "MSG_SHOW_NOTIFICATION": {
       return modifyOnlyMsg(state, action.msgData.msgUri, (msg) => {
         const newMsg = { ...msg };
