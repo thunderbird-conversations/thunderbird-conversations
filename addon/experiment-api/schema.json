@@ -87,7 +87,7 @@
         "name": "getMessageIdForUri",
         "type": "function",
         "description": "Temporary. Gets the WebExtension message ID for a message uri (xref bug 1606573)",
-        "async": "true",
+        "async": true,
         "parameters": [
           {
             "name": "uri",
