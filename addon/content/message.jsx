@@ -35,10 +35,9 @@ class Message extends React.PureComponent {
         );
         this.onSelected();
       });
-      this.props.dispatch({
-        type: "CLEAR_SCROLLTO",
-        id: this.props.message.id,
-      });
+      // For any time we're mounting a new message, we're going to be loading
+      // it as well. That means we don't need to clear the scrollTo flag here,
+      // we can leave that to componentDidUpdate.
     }
     this.checkLateAttachments();
   }
@@ -64,10 +63,15 @@ class Message extends React.PureComponent {
           this.li.getBoundingClientRect().top + window.scrollY + 5 - 44
         );
         this.onSelected();
-      });
-      this.props.dispatch({
-        type: "CLEAR_SCROLLTO",
-        id: this.props.message.id,
+        // Only clear scrollTo if we're now not loading any iframes for
+        // this message. This should generally mean we get to scroll to the
+        // right place most of the time.
+        if (!this.props.iframesLoading) {
+          this.props.dispatch({
+            type: "CLEAR_SCROLLTO",
+            id: this.props.message.id,
+          });
+        }
       });
     }
     this.checkLateAttachments();
