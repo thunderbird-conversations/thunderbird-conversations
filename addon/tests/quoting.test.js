@@ -27,19 +27,19 @@ const samples = {
           </style>
 
           <div class="moz-text-html" lang="x-western">
-            <div style="font-family: Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0)">This is really good to hear</div>
-            <div style="font-family: Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0)">
+            <div>This is really good to hear</div>
+            <div>
               <br />
             </div>
-            <div style="font-family: Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0)">Most likely going to move &nbsp;to meet you and catch up.</div>
-            <div style="font-family: Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0)">
+            <div>Most likely going to move &nbsp;to meet you and catch up.</div>
+            <div>
               <br />
             </div>
-            <div style="font-family: Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0)">Best Regards,&nbsp;</div>
-            <div style="font-family: Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0)">
+            <div>Best Regards,&nbsp;</div>
+            <div>
               <br />
             </div>
-            <div style="font-family: Calibri, Helvetica, sans-serif; font-size: 12pt; color: rgb(0, 0, 0)">Someone</div>
+            <div>Someone</div>
             <div>
               <hr tabindex="-1" style="display: inline-block; width: 98%" />
               <div id="divRplyFwdMsg" dir="ltr">
