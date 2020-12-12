@@ -659,7 +659,7 @@ function summarizeThreadHandler(win, id) {
         // summary extension) decides to redirect the code to _showSummary
         // in the case of selectedCount == 0 by monkey-patching
         // onSelectedMessagesChanged, we give it a chance to run.
-        win.originalOnSelectedMessagesChanged.call(this);
+        return win.originalOnSelectedMessagesChanged.call(this);
       } else if (selectedCount == 1) {
         // Here starts the part where we modify the original code.
         let msgHdr = this.folderDisplay.selectedMessage;
