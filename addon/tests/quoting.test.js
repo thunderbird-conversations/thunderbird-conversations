@@ -247,4 +247,22 @@ describe("Quoting test", () => {
       expect(prettyQuoted).toBe(prettyExpected);
     }
   });
+  test("Normalize blockquotes using all methods", async () => {
+    const allSampleEmails = [].concat(
+      samples.hotmail,
+      samples.disjoint,
+      samples.forward
+    );
+
+    const parser = new DOMParser();
+    for (const { unquoted, quoted } of allSampleEmails) {
+      const doc = parser.parseFromString(unquoted, "text/html");
+      Quoting.normalizeBlockquotes(doc);
+
+      const prettyQuoted = prettier.format(doc.body.outerHTML, PRETTIER_OPTS);
+      const prettyExpected = prettier.format(quoted, PRETTIER_OPTS);
+
+      expect(prettyQuoted).toBe(prettyExpected);
+    }
+  });
 });

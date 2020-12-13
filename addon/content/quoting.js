@@ -201,6 +201,39 @@ class _Quoting {
       }
     }
   }
+
+  /**
+   * Use heuristics to find common types of email quotes and
+   * wrap them in `<blockquote></blockquote>` tags.
+   *
+   * @param {HTMLDocument | string} doc
+   * @returns {HTMLDocument | string}
+   * @memberof _Quoting
+   */
+  normalizeBlockquotes(doc) {
+    // We want to return the same type of object that was passed to us. We allow
+    // both a string and an HTMLDom object.
+    const origType = typeof doc;
+    if (origType === "string") {
+      const parser = new DOMParser();
+      doc = parser.parseFromString(doc, "text/html");
+    }
+
+    try {
+      // These operations mutate the Dom
+      this.convertHotmailQuotingToBlockquote1(doc);
+      this.convertForwardedToBlockquote(doc);
+      this.convertMiscQuotingToBlockquote(doc);
+      this.fusionBlockquotes(doc);
+    } catch (e) {
+      console.log(e);
+    }
+
+    if (origType === "string") {
+      return doc.outerHTML;
+    }
+    return doc;
+  }
 }
 
 var Quoting = new _Quoting();
