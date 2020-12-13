@@ -388,7 +388,7 @@ async function registerColumn(
   }
 
   win.addEventListener(
-    "unload",
+    "beforeunload",
     () => {
       let col = win.document.getElementById("betweenCol");
       if (col) {
