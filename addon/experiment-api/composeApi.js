@@ -65,6 +65,9 @@ var convCompose = class extends ExtensionCommon.ExtensionAPI {
               onStopSending(aMsgID, aStatus, aMsg, aReturnFile) {
                 console.log("stop sending", aStatus);
                 sendStatus = aStatus;
+                if (aStatus) {
+                  reject(aStatus);
+                }
               },
               onGetDraftFolderURI(aFolderURI) {},
               onSendNotPerformed(aMsgID, aStatus) {
