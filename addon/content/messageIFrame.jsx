@@ -251,22 +251,10 @@ class MessageIFrame extends React.Component {
   }
 
   convertCommonQuotingToBlockquote(iframe) {
-    // Launch various crappy pieces of code^W^W^W^W heuristics to
-    //  convert most common quoting styles to real blockquotes. Spoiler:
-    //  most of them suck.
-    let iframeDoc = iframe.contentDocument;
-    try {
-      Quoting.convertOutlookQuotingToBlockquote(
-        iframe.contentWindow,
-        iframeDoc
-      );
-      Quoting.convertHotmailQuotingToBlockquote1(iframeDoc);
-      Quoting.convertForwardedToBlockquote(iframeDoc);
-      Quoting.convertMiscQuotingToBlockquote(iframeDoc);
-      Quoting.fusionBlockquotes(iframeDoc);
-    } catch (e) {
-      console.error(e);
-    }
+    // Launch various crappy pieces of code heuristics to
+    // convert most common quoting styles to real blockquotes. Spoiler:
+    // most of them suck.
+    Quoting.normalizeBlockquotes(iframe.contentDocument);
   }
 
   toggleBlock(event, showtext, hidetext) {
@@ -367,7 +355,7 @@ class MessageIFrame extends React.Component {
       return false;
     }
 
-    // https://github.com/thunderbird-conversations/thunderbird-conversations/issues#issue/179
+    // https://github.com/thunderbird-conversations/thunderbird-conversations/issues/179
     // See link above for a rationale ^^
     if (this.props.initialPosition > 0) {
       this.detectBlocks(
