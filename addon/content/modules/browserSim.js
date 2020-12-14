@@ -132,7 +132,7 @@ class _BrowserSim {
 
   // This is provided so that we can call background scripts from stub.html.
   // Really this should be using the ports and browser.runtime.connect, but they
-  // won't work until we're proper WeBextension page.
+  // won't work until we're proper WebExtension page.
   callBackgroundFunc(apiName, apiFunc, args) {
     return this._browserListener(apiName, apiFunc, ...args);
   }
