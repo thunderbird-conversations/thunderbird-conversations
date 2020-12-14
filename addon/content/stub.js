@@ -3,6 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 /* import-globals-from reducer.js */
+/* import-globals-from reducer-deps.js */
 /* global RTK, ReactDOM, React, ReactRedux, ConversationWrapper */
 
 const store = RTK.configureStore({
