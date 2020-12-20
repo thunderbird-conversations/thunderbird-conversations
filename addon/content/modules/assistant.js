@@ -20,7 +20,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   MailUtils: "resource:///modules/MailUtils.jsm",
   setupLogging: "chrome://conversations/content/modules/misc.js",
   Services: "resource://gre/modules/Services.jsm",
-  VirtualFolderHelper: "resource:///modules/virtualFolderWrapper.js",
+  VirtualFolderHelper: "resource:///modules/VirtualFolderWrapper.jsm",
 });
 
 XPCOMUtils.defineLazyGetter(this, "Log", () => {
