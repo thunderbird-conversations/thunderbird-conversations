@@ -5,6 +5,7 @@
 /* global $, showCc, showBcc, strings */
 /* import-globals-from quickReplyOld.js */
 /* import-globals-from reducer.js */
+/* import-globals-from reducer-deps.js */
 
 var { MailServices } = ChromeUtils.import(
   "resource:///modules/MailServices.jsm"
