@@ -2,8 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals React, PropTypes, Quoting, messageActions, summaryActions */
-/* exported MessageIFrame */
+import React from "react";
+import PropTypes from "prop-types";
+import { messageActions } from "./reducer-messages.js";
+import { summaryActions } from "./reducer-summary.js";
+import { Quoting } from "./quoting.js";
 
 let index = 0;
 
@@ -130,7 +133,7 @@ function toggleCallbackFactory(iframe) {
  * we start to render it, then expand it to the correct height once loaded,
  * which attempts to avoid a sub-scroll.
  */
-class MessageIFrame extends React.Component {
+export class MessageIFrame extends React.Component {
   constructor(props) {
     super(props);
     this.index = index++;

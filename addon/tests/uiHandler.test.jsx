@@ -3,10 +3,11 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 /* eslint-env jest */
 
-// Standard imports for all tests
-const { browser, esmImport } = require("./utils");
-
-const { UIHandler } = esmImport("../uiHandler.js");
+import { jest } from "@jest/globals";
+// This is so that utils.js defines fetch onto the global scope.
+// eslint-disable-next-line no-unused-vars
+import { enzyme } from "./utils.js";
+import { UIHandler } from "../uiHandler.js";
 
 describe("getDefaultIdentity", () => {
   let uiHandler;

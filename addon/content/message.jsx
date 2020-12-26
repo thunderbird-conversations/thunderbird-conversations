@@ -2,10 +2,17 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals React, PropTypes, Attachments, MessageHeader, MessageFooter,
-           MessageIFrame, SpecialMessageTags, MessageTags, QuickReply,
-           MessageDetails, MessageNotification, messageActions */
-/* exported Message */
+import React from "react";
+import PropTypes from "prop-types";
+import { Attachments } from "./attachments.jsx";
+import { messageActions } from "./reducer-messages.js";
+import { MessageDetails } from "./messageDetails.jsx";
+import { MessageFooter } from "./messageFooter.jsx";
+import { MessageHeader } from "./messageHeader.jsx";
+import { MessageIFrame } from "./messageIFrame.jsx";
+import { MessageNotification } from "./messageNotification.jsx";
+import { MessageTags, SpecialMessageTags } from "./messageTags.jsx";
+import { QuickReply } from "./quickReply.jsx";
 
 function isAccel(event) {
   if (window.navigator.platform.includes("Mac")) {
@@ -14,7 +21,7 @@ function isAccel(event) {
   return event.ctrlKey;
 }
 
-class Message extends React.PureComponent {
+export class Message extends React.PureComponent {
   constructor(props) {
     super(props);
     this.onSelected = this.onSelected.bind(this);

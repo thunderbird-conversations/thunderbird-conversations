@@ -4,7 +4,8 @@
 
 "use strict";
 
-import { React, PropTypes } from "../content/es-modules/ui.js";
+import React from "react";
+import PropTypes from "prop-types";
 
 export function TextBox({
   disabled = false,

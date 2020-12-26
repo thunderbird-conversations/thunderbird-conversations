@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals PropTypes, React */
-/* exported SvgIcon */
+import React from "react";
+import PropTypes from "prop-types";
 
 /**
  * A basic SVG icon rendered using the `xlinkHref` ability
@@ -12,7 +12,7 @@
  * @param {*} { fullPath, hash }
  * @returns {React.ReactNode}
  */
-function SvgIcon({ fullPath, hash }) {
+export function SvgIcon({ fullPath, hash }) {
   fullPath = fullPath || `material-icons.svg#${hash}`;
   return (
     <svg
@@ -26,12 +26,3 @@ function SvgIcon({ fullPath, hash }) {
   );
 }
 SvgIcon.propTypes = { fullPath: PropTypes.string, hash: PropTypes.string };
-
-// This is temporary code to allow using using this as both
-// an es-module and as-is with global variables. This code
-// should be removed when the transition to a WebExtension is
-// complete.
-
-if (window.esExports) {
-  window.esExports.SvgIcon = SvgIcon;
-}

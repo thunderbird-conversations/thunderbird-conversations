@@ -2,12 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* global Redux, messages, summarySlice */
-/* exported conversationApp */
+import * as Redux from "redux";
 
-"use strict";
+import { messages } from "./reducer-messages.js";
+import { summarySlice } from "./reducer-summary.js";
 
-const conversationApp = Redux.combineReducers({
+export const conversationApp = Redux.combineReducers({
   messages,
   summary: summarySlice.reducer,
 });

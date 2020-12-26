@@ -626,7 +626,7 @@ Conversation.prototype = {
     this._tellMeWhoToExpand(newMsgs, reactMsgData, -1);
 
     this.dispatch(
-      this._htmlPane.summaryActions.appendMessages({
+      this._htmlPane.conversationSummaryActions.appendMessages({
         messages: {
           msgData: reactMsgData,
         },
@@ -723,7 +723,7 @@ Conversation.prototype = {
     }
 
     this.dispatch(
-      this._htmlPane.summaryActions.replaceConversation({
+      this._htmlPane.conversationSummaryActions.replaceConversation({
         summary: {
           conversation: { getMessage: (uri) => this.getMessage(uri) },
           subject: this.messages[this.messages.length - 1].message.subject,

@@ -548,82 +548,85 @@ function summarizeThreadHandler(win, id) {
             win.Conversations.currentConversation.cleanup();
           }
           win.Conversations.currentConversation = freshConversation;
-          freshConversation.outputInto(htmlpane.contentWindow, async function (
-            aConversation
-          ) {
-            if (!aConversation.messages.length) {
-              Log.debug("0 messages in aConversation");
-              return;
-            }
-            // One nasty behavior of the folder tree view is that it calls us
-            //  every time a new message has been downloaded. So if you open
-            //  your inbox all of a sudden and select a conversation, it's not
-            //  uncommon to see the conversation being rebuilt 5 times in a
-            //  row because sumarizeThread is constantly re-called.
-            // To workaround this, even though we create a fresh conversation,
-            //  that conversation might end up recycling the old one as long
-            //  as the old conversation's message set is a prefix of that of
-            //  the new conversation. So because we're not sure
-            //  freshConversation will actually end up being used, we take the
-            //  new conversation as parameter.
-            Log.assert(
-              aConversation.isSelectionThreaded == isSelectionThreaded,
-              "Someone forgot to put the right scroll mode!"
-            );
-            // Here, put the final touches to our new conversation object.
-            // TODO: Maybe re-enable this.
-            // htmlpane.contentWindow.newComposeSessionByDraftIf();
-            aConversation.completed = true;
-            // TODO: Re-enable this.
-            // htmlpane.contentWindow.registerQuickReply();
-
-            win.gMessageDisplay.onLoadCompleted();
-
-            // Make sure we respect the user's preferences.
-            if (Services.prefs.getBoolPref("mailnews.mark_message_read.auto")) {
-              win.conversationsMarkReadTimeout = win.setTimeout(
-                async function () {
-                  // The idea is that usually, we're selecting a thread (so we
-                  //  have kScrollUnreadOrLast). This means we mark the whole
-                  //  conversation as read. However, sometimes the user selects
-                  //  individual messages. In that case, don't do something weird!
-                  //  Just mark the selected messages as read.
-                  if (isSelectionThreaded) {
-                    Log.debug("Marking the whole conversation as read");
-                    for (const m of aConversation.messages) {
-                      if (!m.message.read) {
-                        await browser.messages.update(m.message._id, {
-                          read: true,
-                        });
-                      }
-                    }
-                  } else {
-                    // We don't seem to have a reflow when the thread is expanded
-                    //  so no risk of silently marking conversations as read.
-                    Log.debug("Marking selected messages as read");
-                    for (const msgHdr of aSelectedMessages) {
-                      const id = await browser.conversations.getMessageIdForUri(
-                        msgHdrGetUri(msgHdr)
-                      );
-                      if (!msgHdr.read) {
-                        await browser.messages.update(id, {
-                          read: true,
-                        });
-                      }
-                    }
-                  }
-                  win.conversationsMarkReadTimeout = null;
-                },
-                Services.prefs.getIntPref(
-                  "mailnews.mark_message_read.delay.interval"
-                ) *
-                  Services.prefs.getBoolPref(
-                    "mailnews.mark_message_read.delay"
-                  ) *
-                  1000
+          freshConversation.outputInto(
+            htmlpane.contentWindow,
+            async function (aConversation) {
+              if (!aConversation.messages.length) {
+                Log.debug("0 messages in aConversation");
+                return;
+              }
+              // One nasty behavior of the folder tree view is that it calls us
+              //  every time a new message has been downloaded. So if you open
+              //  your inbox all of a sudden and select a conversation, it's not
+              //  uncommon to see the conversation being rebuilt 5 times in a
+              //  row because sumarizeThread is constantly re-called.
+              // To workaround this, even though we create a fresh conversation,
+              //  that conversation might end up recycling the old one as long
+              //  as the old conversation's message set is a prefix of that of
+              //  the new conversation. So because we're not sure
+              //  freshConversation will actually end up being used, we take the
+              //  new conversation as parameter.
+              Log.assert(
+                aConversation.isSelectionThreaded == isSelectionThreaded,
+                "Someone forgot to put the right scroll mode!"
               );
+              // Here, put the final touches to our new conversation object.
+              // TODO: Maybe re-enable this.
+              // htmlpane.contentWindow.newComposeSessionByDraftIf();
+              aConversation.completed = true;
+              // TODO: Re-enable this.
+              // htmlpane.contentWindow.registerQuickReply();
+
+              win.gMessageDisplay.onLoadCompleted();
+
+              // Make sure we respect the user's preferences.
+              if (
+                Services.prefs.getBoolPref("mailnews.mark_message_read.auto")
+              ) {
+                win.conversationsMarkReadTimeout = win.setTimeout(
+                  async function () {
+                    // The idea is that usually, we're selecting a thread (so we
+                    //  have kScrollUnreadOrLast). This means we mark the whole
+                    //  conversation as read. However, sometimes the user selects
+                    //  individual messages. In that case, don't do something weird!
+                    //  Just mark the selected messages as read.
+                    if (isSelectionThreaded) {
+                      Log.debug("Marking the whole conversation as read");
+                      for (const m of aConversation.messages) {
+                        if (!m.message.read) {
+                          await browser.messages.update(m.message._id, {
+                            read: true,
+                          });
+                        }
+                      }
+                    } else {
+                      // We don't seem to have a reflow when the thread is expanded
+                      //  so no risk of silently marking conversations as read.
+                      Log.debug("Marking selected messages as read");
+                      for (const msgHdr of aSelectedMessages) {
+                        const id = await browser.conversations.getMessageIdForUri(
+                          msgHdrGetUri(msgHdr)
+                        );
+                        if (!msgHdr.read) {
+                          await browser.messages.update(id, {
+                            read: true,
+                          });
+                        }
+                      }
+                    }
+                    win.conversationsMarkReadTimeout = null;
+                  },
+                  Services.prefs.getIntPref(
+                    "mailnews.mark_message_read.delay.interval"
+                  ) *
+                    Services.prefs.getBoolPref(
+                      "mailnews.mark_message_read.delay"
+                    ) *
+                    1000
+                );
+              }
             }
-          });
+          );
         })().catch(console.error);
       }
     );

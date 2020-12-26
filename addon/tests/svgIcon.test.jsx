@@ -3,11 +3,11 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 /* eslint-env jest */
 
-// Standard imports for all tests
-const { esmImport, enzyme, React } = require("./utils");
+import { enzyme } from "./utils.js";
+import React from "react";
 
 // Import the components we want to test
-const { SvgIcon } = esmImport("../content/es-modules/components/svg-icon.js");
+import { SvgIcon } from "../content/svgIcon.jsx";
 
 describe("SvgIcon test", () => {
   test("renders given a full path", async () => {

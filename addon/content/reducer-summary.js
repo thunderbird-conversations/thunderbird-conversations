@@ -2,14 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* global Conversations, getMail3Pane, messageActions, XPCOMUtils, printConversation, RTK */
-/* exported summaryActions, summary */
-
-"use strict";
-
-XPCOMUtils.defineLazyModuleGetters(this, {
-  topMail3Pane: "chrome://conversations/content/modules/misc.js",
-});
+/* global Conversations, getMail3Pane, topMail3Pane, printConversation */
+import * as RTK from "@reduxjs/toolkit";
+import { messageActions } from "./reducer-messages.js";
 
 const initialSummary = {
   browserForegroundColor: "#000000",
@@ -50,7 +45,7 @@ async function handleShowDetails(messages, state, dispatch, updateFn) {
   }
 }
 
-var summaryActions = {
+export var summaryActions = {
   replaceConversation({ summary, messages }) {
     return async (dispatch, getState) => {
       await handleShowDetails(messages, getState(), dispatch, () => {
@@ -176,7 +171,7 @@ var summaryActions = {
   },
 };
 
-const summarySlice = RTK.createSlice({
+export const summarySlice = RTK.createSlice({
   name: "summary",
   initialState: initialSummary,
   reducers: {
@@ -234,3 +229,5 @@ const summarySlice = RTK.createSlice({
     },
   },
 });
+
+globalThis.conversationSummaryActions = summaryActions;

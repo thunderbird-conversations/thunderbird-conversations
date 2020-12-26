@@ -2,8 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals PropTypes, React, SvgIcon, attachmentActions */
-/* exported Attachments */
+import React from "react";
+import PropTypes from "prop-types";
+import { attachmentActions } from "./reducer-attachments.js";
+import { SvgIcon } from "./svgIcon.jsx";
 
 const ICON_MAPPING = new Map([
   ["application/msword", "x-office-document"],
@@ -264,7 +266,7 @@ Attachment.propTypes = {
   id: PropTypes.number.isRequired,
 };
 
-class Attachments extends React.PureComponent {
+export class Attachments extends React.PureComponent {
   constructor() {
     super();
     this.showGalleryView = this.showGalleryView.bind(this);

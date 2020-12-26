@@ -7,15 +7,12 @@
 // background script and to bootstrap.js.
 
 import { browser, i18n } from "../content/es-modules/thunderbird-compat.js";
-import { React, RTK, ReactRedux, PropTypes } from "../content/es-modules/ui.js";
+import React from "react";
+import * as RTK from "@reduxjs/toolkit";
+import * as ReactRedux from "react-redux";
+import PropTypes from "prop-types";
 
-//
-// Create the redux store and appropriate actions/thunks
-// using Redux Toolkit (RTK)
-//
-const { createSlice, configureStore } = RTK;
-
-const prefsSlice = createSlice({
+const prefsSlice = RTK.createSlice({
   name: "prefs",
   initialState: {},
   reducers: {
@@ -40,7 +37,7 @@ export const actions = {
   },
 };
 
-export const store = configureStore({ reducer: prefsSlice.reducer });
+export const store = RTK.configureStore({ reducer: prefsSlice.reducer });
 store.dispatch(actions.initPrefs());
 
 // A list of all preferences that can be set via the GUI.

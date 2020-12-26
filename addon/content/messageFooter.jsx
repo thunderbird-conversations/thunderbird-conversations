@@ -2,10 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals PropTypes, React, ActionButton, messageActions */
-/* exported MessageFooter */
+import React from "react";
+import PropTypes from "prop-types";
+import { ActionButton } from "./messageActionButton.jsx";
+import { messageActions } from "./reducer-messages.js";
 
-class MessageFooter extends React.PureComponent {
+export class MessageFooter extends React.PureComponent {
   constructor(props) {
     super(props);
     this.onActionButtonClick = this.onActionButtonClick.bind(this);

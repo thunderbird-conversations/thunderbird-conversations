@@ -4,16 +4,13 @@
 /* eslint-env jest */
 
 // Standard imports for all tests
-const {
-  esmImport,
-  enzyme,
-  React,
-  waitForComponentToPaint,
-  browser,
-} = require("./utils");
+import { enzyme, waitForComponentToPaint } from "./utils.js";
+import React from "react";
+import { jest } from "@jest/globals";
+import { browser } from "../content/es-modules/thunderbird-compat.js";
 
 // Import the components we want to test
-const {
+import {
   BinaryOption,
   NumericOption,
   TextOption,
@@ -21,7 +18,7 @@ const {
   Main,
   store,
   actions,
-} = esmImport("../options/options.js");
+} from "../options/options.jsx";
 
 describe("Option components have correct return values", () => {
   test("NumericOption always returns a numeric type", () => {

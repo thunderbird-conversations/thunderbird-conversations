@@ -3,15 +3,12 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 /* eslint-env jest */
 
-// Standard imports for all tests
-const { esmImport } = require("./utils");
-
 // Prettier is used to normalize the html formatting so we can reliably use it to compare HTML with
 // text diffing.
-const prettier = require("prettier");
+import { default as prettier } from "prettier";
 
 // Import the components we want to test
-const { Quoting } = esmImport("../content/es-modules/quoting.js");
+import { Quoting } from "../content/quoting.js";
 
 const samples = {
   hotmail: [
@@ -87,7 +84,7 @@ const samples = {
               margin-bottom: 0;
             }
           </style>
-        
+
           <div class="moz-text-html" lang="x-western">
             <div>This is really good to hear</div>
             <div>
@@ -188,7 +185,7 @@ const samples = {
           <br />
           <br />
           <blockquote>A second quote</blockquote>
-          
+
           <blockquote>A third quote<blockquote>with a quote inside</blockquote></blockquote>
         </body>
       `,

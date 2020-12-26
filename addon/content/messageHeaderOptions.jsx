@@ -2,8 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals PropTypes, React, ActionButton, SvgIcon, messageActions */
-/* exported MessageHeaderOptions */
+import React from "react";
+import PropTypes from "prop-types";
+import { ActionButton } from "./messageActionButton.jsx";
+import { messageActions } from "./reducer-messages.js";
+import { SvgIcon } from "./svgIcon.jsx";
 
 class OptionsMoreMenu extends React.PureComponent {
   render() {
@@ -100,7 +103,7 @@ OptionsMoreMenu.propTypes = {
   msgSendAction: PropTypes.func.isRequired,
 };
 
-class MessageHeaderOptions extends React.PureComponent {
+export class MessageHeaderOptions extends React.PureComponent {
   constructor(props) {
     super(props);
     this.replyAction = this.replyAction.bind(this);

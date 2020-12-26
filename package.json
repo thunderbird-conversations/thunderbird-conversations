@@ -12,12 +12,23 @@
   "engines": {
     "thunderbird": ">=78.0a1"
   },
+  "jest": {
+    "transform": {
+      "\\.[jt]sx?$": "babel-jest"
+    },
+    "moduleFileExtensions": [
+      "js",
+      "jsx"
+    ]
+  },
+  "private": true,
+  "type": "module",
   "dependencies": {
-    "@reduxjs/toolkit": "1.4.0",
+    "@reduxjs/toolkit": "1.5.0",
     "pdfjs-dist": "^2.5.207",
     "react": "^17.0.0",
     "react-dom": "^17.0.0",
-    "react-redux": "7.2.1",
+    "react-redux": "7.2.2",
     "redux": "4.0.5"
   },
   "devDependencies": {
@@ -25,33 +36,36 @@
     "@babel/core": "^7.12.3",
     "@babel/preset-env": "^7.12.1",
     "@babel/preset-react": "^7.12.1",
-    "@wojtekmaj/enzyme-adapter-react-17": "0.1.1",
-    "cpx2": "^3.0.0",
+    "@wojtekmaj/enzyme-adapter-react-17": "0.4.1",
+    "babel-jest": "26.6.3",
+    "babel-loader": "8.2.2",
     "enzyme": "3.11.0",
     "eslint": "^7.11.0",
-    "eslint-config-prettier": "^6.13.0",
+    "eslint-config-prettier": "7.1.0",
     "eslint-plugin-fetch-options": "0.0.5",
     "eslint-plugin-html": "^6.1.0",
     "eslint-plugin-json": "2.1.2",
-    "eslint-plugin-mozilla": "2.8.0",
+    "eslint-plugin-mozilla": "2.9.1",
     "eslint-plugin-no-unsanitized": "^3.1.4",
-    "eslint-plugin-prettier": "3.1.4",
+    "eslint-plugin-prettier": "3.3.0",
     "eslint-plugin-react": "^7.21.5",
-    "esm": "3.2.25",
-    "jest": "25.3.0",
+    "html-webpack-plugin": "4.5.0",
+    "jest": "26.6.3",
     "npm-run-all": "4.1.5",
     "prettier": "^2.1.2",
     "prop-types": "15.7.2",
     "react-test-renderer": "^17.0.0",
-    "serve": "^11.3.2"
+    "serve": "^11.3.2",
+    "webpack": "5.11.1",
+    "webpack-cli": "4.3.1"
   },
   "scripts": {
     "dev": "(scripts/build-dev-html.sh --watch &) && sleep 4 && scripts/dev-html-serve.sh",
     "build": "./scripts/build.sh",
     "prod": "./scripts/build.sh --prod",
     "test": "npm-run-all test:*",
-    "test:lint": "eslint --ext js,jsx,json .",
-    "test:jest": "scripts/build-dev-html.sh && jest ./dist-dev-html/",
+    "test:lint": "eslint --ext cjs,mjs,js,jsx,json .",
+    "test:jest": "jest ./addon/tests/",
     "preversion": "npm ci && npm test",
     "version": "scripts/update-version.sh",
     "postversion": "npm run prod"
