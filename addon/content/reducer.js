@@ -3,7 +3,6 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 /* global Redux, messages, summary */
-// eslint-disable-next-line no-redeclare
 /* exported conversationApp */
 
 "use strict";
