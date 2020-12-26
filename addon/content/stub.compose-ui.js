@@ -10,6 +10,7 @@
 /* global Conversations, closeTab, Prefs, msgUriToMsgHdr, tmpl, Services, topMail3Pane */
 
 /* import-globals-from reducer.js */
+/* import-globals-from reducer-deps.js */
 /* import-globals-from stub.completion-ui.js */
 
 "use strict";
