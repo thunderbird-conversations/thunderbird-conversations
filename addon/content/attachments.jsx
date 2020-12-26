@@ -185,7 +185,7 @@ class Attachment extends React.PureComponent {
     /* eslint-disable react/no-unknown-property */
     return (
       <li
-        className="clearfix hbox attachment"
+        className="attachment"
         contextmenu={`attachmentMenu-${this.props.anchor}`}
       >
         <div

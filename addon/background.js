@@ -13,7 +13,7 @@ class Background {
     this._window = new Window();
   }
   async init() {
-    // Setup the temporary API caller that stub.xhtml uses.
+    // Setup the temporary API caller that stub.html uses.
     // Do this first to ensure it is set before bootstrap fires after
     // preference startup.
     browser.conversations.onCallAPI.addListener(
