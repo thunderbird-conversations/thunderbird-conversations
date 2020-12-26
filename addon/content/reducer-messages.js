@@ -2,16 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* global Conversations, XPCOMUtils, summarySlice */
-/* exported messages */
+/* global Conversations, Conversation, BrowserSim, topMail3Pane */
 
-"use strict";
-
-XPCOMUtils.defineLazyModuleGetters(this, {
-  BrowserSim: "chrome://conversations/content/modules/browserSim.js",
-  Conversation: "chrome://conversations/content/modules/conversation.js",
-  topMail3Pane: "chrome://conversations/content/modules/misc.js",
-});
+import { summarySlice } from "./reducer-summary.js";
 
 const initialMessages = {
   msgData: [],
@@ -144,7 +137,7 @@ async function setupConversationInTab(params, isInTab) {
   }
 }
 
-const messageActions = {
+export const messageActions = {
   waitForStartup() {
     return async (dispatch) => {
       const params = new URL(document.location).searchParams;
@@ -619,7 +612,7 @@ const messageActions = {
   },
 };
 
-function messages(state = initialMessages, action) {
+export function messages(state = initialMessages, action) {
   switch (action.type) {
     case "REPLACE_CONVERSATION_DETAILS": {
       return {

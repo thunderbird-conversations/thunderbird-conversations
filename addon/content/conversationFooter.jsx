@@ -2,8 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals PropTypes, React, ReactRedux, summaryActions */
-/* exported ConversationFooter */
+import React from "react";
+import * as ReactRedux from "react-redux";
+import PropTypes from "prop-types";
+import { summaryActions } from "./reducer-summary.js";
 
 class _ConversationFooter extends React.PureComponent {
   constructor(props) {
@@ -40,4 +42,4 @@ _ConversationFooter.propTypes = {
   dispatch: PropTypes.func.isRequired,
 };
 
-const ConversationFooter = ReactRedux.connect()(_ConversationFooter);
+export const ConversationFooter = ReactRedux.connect()(_ConversationFooter);

@@ -4,8 +4,6 @@
 
 /* Below are hacks heuristics for finding quoted parts in a given email */
 
-/* exported Quoting */
-
 class _Quoting {
   _canInclude(aNode) {
     let v =
@@ -215,13 +213,4 @@ class _Quoting {
   }
 }
 
-var Quoting = new _Quoting();
-
-// This is temporary code to allow using using this as both
-// an es-module and as-is with global variables. This code
-// should be removed when the transition to a WebExtension is
-// complete.
-
-if (window.esExports) {
-  window.esExports.Quoting = Quoting;
-}
+export var Quoting = new _Quoting();

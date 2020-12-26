@@ -7,7 +7,6 @@ module.exports = function (api) {
       // We don't want es modules to be bundled; we'll use native loading!
       {
         targets: { browsers: "Firefox >= 78.0" },
-        modules: false,
       },
     ],
     [

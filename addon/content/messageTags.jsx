@@ -2,8 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals React, PropTypes, SvgIcon */
-/* exported MessageTags, SpecialMessageTags */
+import React from "react";
+import PropTypes from "prop-types";
+import { SvgIcon } from "./svgIcon.jsx";
 
 /**
  * Determine if a background color is light enough to require dark text.
@@ -20,7 +21,7 @@ function isColorLight(color) {
   return l > 0.8;
 }
 
-function MessageTag({ onClickX, expanded, name, color }) {
+export function MessageTag({ onClickX, expanded, name, color }) {
   const isLight = isColorLight(color);
 
   return (
@@ -45,7 +46,7 @@ MessageTag.propTypes = {
   color: PropTypes.string.isRequired,
 };
 
-function MessageTags({ expanded, tags = [], onTagsChange }) {
+export function MessageTags({ expanded, tags = [], onTagsChange }) {
   function removeTag(tagId) {
     const filtered = tags.filter((tag) => tag.key !== tagId);
     if (filtered.length !== tags.length) {
@@ -98,7 +99,7 @@ function DkimTooltip({ strings }) {
 }
 DkimTooltip.propTypes = { strings: PropTypes.array.isRequired };
 
-function SpecialMessageTag({
+export function SpecialMessageTag({
   icon,
   name,
   title = "",
@@ -128,7 +129,7 @@ SpecialMessageTag.propTypes = {
   tooltip: PropTypes.object,
 };
 
-function SpecialMessageTags({
+export function SpecialMessageTags({
   onTagClick,
   onFolderClick = null,
   specialTags,
@@ -174,15 +175,3 @@ SpecialMessageTags.propTypes = {
   inView: PropTypes.bool.isRequired,
   specialTags: PropTypes.array,
 };
-
-// This is temporary code to allow using using this as both
-// an es-module and as-is with global variables. This code
-// should be removed when the transition to a WebExtension is
-// complete.
-
-if (window.esExports) {
-  window.esExports.MessageTag = MessageTag;
-  window.esExports.MessageTags = MessageTags;
-  window.esExports.SpecialMessageTag = SpecialMessageTag;
-  window.esExports.SpecialMessageTags = SpecialMessageTags;
-}

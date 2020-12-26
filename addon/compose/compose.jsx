@@ -5,8 +5,11 @@
 "use strict";
 
 import { browser, i18n } from "../content/es-modules/thunderbird-compat.js";
-import { React, RTK, ReactRedux, PropTypes } from "../content/es-modules/ui.js";
-import { TextArea, TextBox } from "./composeFields.js";
+import React from "react";
+import * as RTK from "@reduxjs/toolkit";
+import * as ReactRedux from "react-redux";
+import PropTypes from "prop-types";
+import { TextArea, TextBox } from "./composeFields.jsx";
 
 //
 // Create the redux store and appropriate actions/thunks

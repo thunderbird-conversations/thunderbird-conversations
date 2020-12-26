@@ -4,15 +4,17 @@
 /* eslint-env jest */
 
 // Standard imports for all tests
-const { esmImport, enzyme, React } = require("./utils");
+import { enzyme } from "./utils.js";
+import React from "react";
+import { jest } from "@jest/globals";
 
 // Import the components we want to test
-const {
+import {
   MessageTag,
   MessageTags,
   SpecialMessageTag,
   SpecialMessageTags,
-} = esmImport("../content/es-modules/components/message-tags.js");
+} from "../content/messageTags.jsx";
 
 describe("SpecialMessageTags test", () => {
   test("special-tag classes are applied", async () => {

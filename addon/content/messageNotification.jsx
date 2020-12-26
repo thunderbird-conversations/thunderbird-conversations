@@ -2,8 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals PropTypes, React, SvgIcon, messageActions */
-/* exported MessageNotification */
+import React from "react";
+import PropTypes from "prop-types";
+import { messageActions } from "./reducer-messages.js";
+import { SvgIcon } from "./svgIcon.jsx";
 
 class RemoteContentNotification extends React.PureComponent {
   constructor(props) {
@@ -221,7 +223,7 @@ PhishingNotification.propTypes = {
   id: PropTypes.number.isRequired,
 };
 
-class MessageNotification extends React.PureComponent {
+export class MessageNotification extends React.PureComponent {
   render() {
     if (this.props.isPhishing) {
       return (

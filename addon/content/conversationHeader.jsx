@@ -2,8 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals React, ReactRedux, PropTypes, SvgIcon, messageActions, summaryActions */
-/* exported ConversationHeader */
+import React from "react";
+import * as ReactRedux from "react-redux";
+import PropTypes from "prop-types";
+import { messageActions } from "./reducer-messages.js";
+import { summaryActions } from "./reducer-summary.js";
+import { SvgIcon } from "./svgIcon.jsx";
 
 const LINKS_REGEX = /((\w+):\/\/[^<>()'"\s]+|www(\.[-\w]+){2,})/;
 
@@ -239,7 +243,7 @@ _ConversationHeader.propTypes = {
   msgData: PropTypes.array.isRequired,
 };
 
-const ConversationHeader = ReactRedux.connect((state) => {
+export const ConversationHeader = ReactRedux.connect((state) => {
   return {
     loading: state.summary.loading,
     subject: state.summary.subject,

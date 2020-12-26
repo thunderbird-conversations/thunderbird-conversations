@@ -2,8 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals PropTypes, React, SvgIcon */
-/* exported ActionButton */
+import React from "react";
+import PropTypes from "prop-types";
+import { SvgIcon } from "./svgIcon.jsx";
 
 const ActionsToInfoMap = {
   draft: {
@@ -48,7 +49,7 @@ const ActionsToInfoMap = {
   },
 };
 
-function ActionButton({ type, callback, className, showString }) {
+export function ActionButton({ type, callback, className, showString }) {
   const info = ActionsToInfoMap[type];
   const title = browser.i18n.getMessage(info.title);
 

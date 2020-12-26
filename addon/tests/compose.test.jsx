@@ -3,18 +3,14 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 /* eslint-env jest */
 
-// Standard imports for all tests
-const {
-  esmImport,
-  enzyme,
-  React,
-  waitForComponentToPaint,
-  browser,
-} = require("./utils");
+import { enzyme, waitForComponentToPaint } from "./utils.js";
+import React from "react";
+import { jest } from "@jest/globals";
+import { browser } from "../content/es-modules/thunderbird-compat.js";
 
 // Import the components we want to test
-const { Main, store, actions } = esmImport("../compose/compose.js");
-const { TextArea, TextBox } = esmImport("../compose/composeFields.js");
+import { Main, store, actions } from "../compose/compose.jsx";
+import { TextArea, TextBox } from "../compose/composeFields.jsx";
 
 describe("Compose components have correct return values", () => {
   test("TextBox always returns a string type", () => {

@@ -2,8 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals React, ReactRedux, PropTypes, Message */
-/* exported MessageList */
+import React from "react";
+import * as ReactRedux from "react-redux";
+import PropTypes from "prop-types";
+import { Message } from "./message.jsx";
 
 function _MessageList(props) {
   // Keep a reference to child elements so `.focus()`
@@ -61,7 +63,7 @@ _MessageList.propTypes = {
   summary: PropTypes.object.isRequired,
 };
 
-const MessageList = ReactRedux.connect((state) => {
+export const MessageList = ReactRedux.connect((state) => {
   return {
     messages: state.messages,
     summary: state.summary,

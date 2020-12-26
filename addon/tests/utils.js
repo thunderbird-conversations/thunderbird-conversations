@@ -8,24 +8,19 @@
 
 /* eslint-env node */
 
-const esmImport = require("esm")(module, { cjs: true, force: true });
-const { act } = require("react-dom/test-utils");
-const enzyme = require("enzyme");
-const Adapter = require("@wojtekmaj/enzyme-adapter-react-17");
+import Enzyme from "enzyme";
+import Adapter from "@wojtekmaj/enzyme-adapter-react-17";
+import testUtils from "react-dom/test-utils";
+import fileSystem from "fs";
+import path from "path";
 
-enzyme.configure({ adapter: new Adapter() });
+Enzyme.configure({ adapter: new Adapter() });
 
-// Browser code expects window to be the global object
-global.window = global.globalThis = global;
-// We need to make a global nodeRequire function so that our module
-// loading will use native node module loading instead of the default.
-global.nodeRequire = require;
+export var enzyme = Enzyme;
 
 // Mock `fetch`, which is used to get localization info when running in the browser
-global.fetch = function (url) {
-  const fileSystem = require("fs");
-  const path = require("path");
-  const ROOT_PATH = path.join(__dirname, "..");
+globalThis.fetch = function (url) {
+  const ROOT_PATH = path.join(__dirname, "..", "addon");
   const filePath = path.join(ROOT_PATH, url);
 
   const data = fileSystem.readFileSync(filePath, "utf8");
@@ -38,36 +33,9 @@ global.fetch = function (url) {
 
 // Workaround for warnings about component not being wrapped in `act()`/
 // Taken from https://github.com/airbnb/enzyme/issues/2073#issuecomment-565736674
-const waitForComponentToPaint = async (wrapper) => {
-  await act(async () => {
+export const waitForComponentToPaint = async (wrapper) => {
+  await testUtils.act(async () => {
     await new Promise((resolve) => setTimeout(resolve, 0));
     wrapper.update();
   });
 };
-
-//
-// Load the modules for our tests. Since we are using native ESM
-// modules here, we need to use esmImport to load the files.
-//
-const { browser, i18n } = esmImport(
-  "../content/es-modules/thunderbird-compat.js"
-);
-// Import the same copy of React that the ui components are using
-// because multiple versions of react can cause trouble. ui components
-// import `ui.js`.
-const { React, ReactDOM, Redux, ReactRedux, RTK, PropTypes } = esmImport(
-  "../content/es-modules/ui.js"
-);
-
-exports.esmImport = esmImport;
-exports.act = act;
-exports.enzyme = enzyme;
-exports.waitForComponentToPaint = waitForComponentToPaint;
-exports.browser = browser;
-exports.i18n = i18n;
-exports.React = React;
-exports.ReactDOM = ReactDOM;
-exports.Redux = Redux;
-exports.ReactRedux = ReactRedux;
-exports.RTK = RTK;
-exports.PropTypes = PropTypes;

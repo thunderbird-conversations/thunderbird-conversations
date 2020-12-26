@@ -3,9 +3,6 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 /* eslint-env jest */
 
-// Standard imports for all tests
-const { esmImport } = require("./utils");
-
 // From https://gist.github.com/olmokramer/82ccce673f86db7cda5e
 function isValidColor(color) {
   if (color.charAt(0) === "#") {
@@ -20,7 +17,7 @@ function isValidColor(color) {
 }
 
 // Import the functions we want to test
-const { getInitials, freshColor } = esmImport("../content/es-modules/utils.js");
+import { getInitials, freshColor } from "../content/es-modules/utils.js";
 
 describe("Test utility functions", () => {
   test("getInitials extracts initials from names", async () => {

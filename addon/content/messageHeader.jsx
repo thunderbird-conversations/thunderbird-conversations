@@ -2,9 +2,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals React, PropTypes, MessageHeaderOptions, MessageTags
-           SpecialMessageTags, ContactDetail, SvgIcon, messageActions */
-/* exported MessageHeader */
+import React from "react";
+import PropTypes from "prop-types";
+import { ContactDetail } from "./contactDetail.jsx";
+import { messageActions } from "./reducer-messages.js";
+import { MessageHeaderOptions } from "./messageHeaderOptions.jsx";
+import { MessageTags, SpecialMessageTags } from "./messageTags.jsx";
+import { SvgIcon } from "./svgIcon.jsx";
 
 class Fade extends React.PureComponent {
   constructor(props) {
@@ -81,7 +85,7 @@ Fade.propTypes = {
   trigger: PropTypes.bool.isRequired,
 };
 
-class ContactLabel extends React.PureComponent {
+export class ContactLabel extends React.PureComponent {
   constructor(props) {
     super(props);
     this.onMouseOver = this.onMouseOver.bind(this);
@@ -186,7 +190,7 @@ ContactLabel.propTypes = {
   separator: PropTypes.string,
 };
 
-class MessageHeader extends React.PureComponent {
+export class MessageHeader extends React.PureComponent {
   constructor(props) {
     super(props);
     this.onClickHeader = this.onClickHeader.bind(this);

@@ -4,6 +4,9 @@
 /* eslint sort-keys: "error" */
 
 module.exports = {
+  env: {
+    es2020: true,
+  },
   extends: [
     "plugin:mozilla/recommended",
     "plugin:react/recommended",
@@ -21,18 +24,14 @@ module.exports = {
       env: {
         webextensions: true,
       },
-      files: [
-        "addon/*.js",
-        "addon/assistant/*.js",
-        "addon/compose/*.js*",
-        "addon/gallery/*.js*",
-        "addon/options/*.js*",
-        "addon/content/es-modules/**/*.js",
-        "addon/content/es-modules/**/*.jsx",
+      excludedFiles: [
+        "addon/content/modules/**",
+        "addon/content/pdfviewer/*.js",
+        "addon/content/stubGlobals.js",
+        "addon/content/utils.js",
+        "addon/experiment-api/**",
       ],
-      globals: {
-        globalThis: false,
-      },
+      files: ["addon/**/*.js*"],
       parserOptions: {
         sourceType: "module",
       },

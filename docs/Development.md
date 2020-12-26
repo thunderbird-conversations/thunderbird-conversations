@@ -72,11 +72,6 @@ fall back to mocked APIs.
 ### Module Importing
 
 `thunderbird-conversations` uses native ESM module importing (e.g. `import { x } from "y.js"`).
-These imports are not transpiled and must reference actual files. Because of the difficulty
-in importing UMD modules with as native ESM modules, a wrapper module has been created:
-`addon/content/es-modules/ui.js`. From `ui.js`, you can import `React` and friends. Since
-modules are only loaded once, you can import from `ui.js` multiple times and will always get
-the same copy of `React`.
 
 Testing
 -------

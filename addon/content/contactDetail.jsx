@@ -2,8 +2,12 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals PropTypes, React, ReactDOM, ReactRedux, SvgIcon, summaryActions */
-/* exported ContactDetail */
+import React from "react";
+import ReactDOM from "react-dom";
+import * as ReactRedux from "react-redux";
+import PropTypes from "prop-types";
+import { summaryActions } from "./reducer-summary.js";
+import { SvgIcon } from "./svgIcon.jsx";
 
 class _ContactDetail extends React.PureComponent {
   constructor(props) {
@@ -180,4 +184,4 @@ _ContactDetail.propTypes = {
   parentSpan: PropTypes.object.isRequired,
 };
 
-const ContactDetail = ReactRedux.connect()(_ContactDetail);
+export const ContactDetail = ReactRedux.connect()(_ContactDetail);

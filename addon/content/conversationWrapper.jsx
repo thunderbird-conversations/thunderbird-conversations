@@ -2,9 +2,13 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals ConversationHeader, ConversationFooter, MessageList,
-           React, ReactRedux, PropTypes, messageActions */
-/* exported ConversationWrapper */
+import React from "react";
+import * as ReactRedux from "react-redux";
+import PropTypes from "prop-types";
+import { ConversationFooter } from "./conversationFooter.jsx";
+import { ConversationHeader } from "./conversationHeader.jsx";
+import { messageActions } from "./reducer-messages.js";
+import { MessageList } from "./messageList.jsx";
 
 class _ConversationWrapper extends React.PureComponent {
   constructor(props) {
@@ -62,7 +66,7 @@ _ConversationWrapper.propTypes = {
   OS: PropTypes.string,
 };
 
-const ConversationWrapper = ReactRedux.connect((state) => {
+export const ConversationWrapper = ReactRedux.connect((state) => {
   return {
     tweakChrome: !!state.summary.prefs && state.summary.prefs.tweakChrome,
     OS: state.summary.OS,
