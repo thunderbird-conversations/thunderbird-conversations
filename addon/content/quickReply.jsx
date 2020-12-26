@@ -19,7 +19,7 @@ function QuickReply() {
 }
 QuickReply.propTypes = {};
 
-// These are the templates originally from stub.xhtml for quickReply. Moved here
+// These are the templates originally from stub.html for quickReply. Moved here
 // to help tidy that up and prepare.
 // The quick reply goes after the messaeFooter - if it is the last message
 // in the list.
@@ -72,21 +72,21 @@ QuickReply.propTypes = {};
              <li class="showBcc"><a onclick="showBcc(); editFields('bcc');" href="javascript:">{{str "addBcc"}}</a> |</li>
              <li class="addAttachment"><a onclick="addAttachment();" href="javascript:">{{str "addAttachment"}}</a></li>
            </ul>
-           <div class="editRecipientList editToList hbox">
+           <div class="editRecipientList editToList">
              <div class="label">{{str "fieldTo"}}</div>
-             <div class="boxFlex"><input type="text" id="to" /></div>
+             <div class="editInput"><input type="text" id="to" /></div>
            </div>
-           <div class="editRecipientList editCcList hbox" style="display: none">
+           <div class="editRecipientList editCcList" style="display: none">
              <div class="label">{{str "fieldCc"}}</div>
-             <div class="boxFlex"><input type="text" id="cc" /></div>
+             <div class="editInput"><input type="text" id="cc" /></div>
            </div>
-           <div class="editRecipientList editBccList hbox" style="display: none">
+           <div class="editRecipientList editBccList" style="display: none">
              <div class="label">{{str "fieldBcc"}}</div>
-             <div class="boxFlex"><input type="text" id="bcc" /></div>
+             <div class="editInput"><input type="text" id="bcc" /></div>
            </div>
-           <div class="editRecipientList editSubject hbox" style="display: none">
+           <div class="editRecipientList editSubject" style="display: none">
              <div class="label">{{str "fieldSubject"}}</div>
-             <div class="boxFlex"><input type="text" id="subject" /></div>
+             <div class="editInput"><input type="text" id="subject" /></div>
            </div>
            <ul class="recipientList toList">
              {{str "fieldTo"}}

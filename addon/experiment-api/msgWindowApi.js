@@ -444,7 +444,7 @@ function summarizeThreadHandler(win, id) {
     win.gMessageDisplay.singleMessageDisplay = false;
 
     win.gSummaryFrameManager.loadAndCallback(
-      "chrome://conversations/content/stub.xhtml",
+      "chrome://conversations/content/stub.html",
       function (isRefresh) {
         // See issue #673
         if (htmlpane.contentDocument?.body) {

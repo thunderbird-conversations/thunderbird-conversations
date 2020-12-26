@@ -92,6 +92,6 @@ export class Window {
     if (isSelectionThreaded) {
       queryString += "&isThreaded=" + (isSelectionThreaded ? 1 : 0);
     }
-    return `chrome://conversations/content/stub.xhtml${queryString}`;
+    return `chrome://conversations/content/stub.html${queryString}`;
   }
 }

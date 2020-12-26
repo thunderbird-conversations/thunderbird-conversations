@@ -599,7 +599,7 @@ class Message {
    * for printing.
    */
   dumpPlainTextForPrinting() {
-    // printConversation from content/stub.xhtml calls us, regardless of whether
+    // printConversation from content/stub.html calls us, regardless of whether
     // we've streamed the message yet, or not, so the iframe might not be ready
     // yet. That's ok, since we will print the snippet anyway.
     if (this.iframe) {

@@ -63,7 +63,7 @@ function groupArray(aItems, aFn) {
  * - if you're a Contact, use topMail3Pane(this)
  * - if you're a Message, use topMail3Pane(this)
  * - if you're a Conversation, use topMail3Pane(this)
- * - if you're in content/stub.xhtml, use topMail3Pane(window)
+ * - if you're in content/stub.html, use topMail3Pane(window)
  * - if you're in a standalone window, this function makes no sense, and returns
  *   a pointer to _any_ mail:3pane
  */

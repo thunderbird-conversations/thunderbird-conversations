@@ -4,7 +4,7 @@
 
 var EXPORTED_SYMBOLS = ["BrowserSim"];
 
-// This is a workaround whilst we still have stub.xhtml being loaded in the
+// This is a workaround whilst we still have stub.html being loaded in the
 // privileged scope. BrowserSim.getBrowser() simulates APIs and passes
 // them back to the webExtension process for handling by the real APIs.
 const SUPPORTED_BASE_APIS = [
@@ -74,7 +74,7 @@ class _BrowserSim {
     return browser;
   }
 
-  // Async version of getBrowser that we can use in stub.xhtml and other places
+  // Async version of getBrowser that we can use in stub.html and other places
   // we can do async directly rather than going back across the webextension
   // APIs.
   // Note: this allows use of the event APIs.
