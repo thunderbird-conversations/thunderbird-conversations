@@ -11,6 +11,114 @@ let index = 0;
 // const kCharsetFromChannel = 11;
 const kCharsetFromUserForced = 13;
 
+const domParser = new DOMParser();
+const TOGGLE_TEMPLATE = `<button
+    class="link"
+    style="cursor: pointer; user-select: none; background-color: inherit; border: inherit;"
+    show-text=""
+    hide-text=""
+  >
+    SHOW/HIDE
+  </button>`;
+
+/**
+ * Create a DOM node that, when clicked, will hide or unhide `node`.
+ * The returned DOM node is automatically attached to the DOM right before `node`.
+ *
+ * @param {*} node
+ * @param {*} {
+ *     showText,
+ *     hideText,
+ *     linkClass = "",
+ *     smallSize = 11,
+ *     linkColor = "orange",
+ *     startHidden = true,
+ *     onToggle = () => {},
+ *   }
+ * @returns
+ */
+function createToggleForNode(
+  node,
+  {
+    showText,
+    hideText,
+    linkClass = "",
+    smallSize = 11,
+    linkColor = "orange",
+    startHidden = true,
+    onToggle = () => {},
+  }
+) {
+  const toggle = domParser.parseFromString(TOGGLE_TEMPLATE, "text/html").body
+    .childNodes[0];
+  toggle.setAttribute("show-text", showText);
+  toggle.setAttribute("hide-text", hideText);
+  toggle.style.color = linkColor;
+  toggle.style.fontSize = smallSize;
+  toggle.classList.add(...linkClass.split(/\s/));
+
+  function show() {
+    toggle.textContent = `- ${toggle.getAttribute("hide-text")} -`;
+    toggle.setAttribute("state", "visible");
+    node.style.display = "";
+    // The callback may want to do something with the size of the revealed node, so call the callback after it's visible
+    onToggle(true, node);
+  }
+
+  function hide() {
+    toggle.textContent = `- ${toggle.getAttribute("show-text")} -`;
+    toggle.setAttribute("state", "hidden");
+    // The callback may want to do something with the size of the revealed node, so call the callback before it's hidden
+    onToggle(false, node);
+    node.style.display = "none";
+  }
+
+  toggle.addEventListener(
+    "click",
+    (event) => {
+      if (toggle.getAttribute("state") === "visible") {
+        hide();
+      } else {
+        show();
+      }
+    },
+    true
+  );
+
+  if (startHidden) {
+    hide();
+  } else {
+    show();
+  }
+
+  node.insertAdjacentElement("beforebegin", toggle);
+
+  return toggle;
+}
+
+/**
+ * Generate a callback for the `onToggle` function of a toggle element.
+ * The callback will automatically resize the supplied iframe to grow or
+ * shrink depending on whether the toggle is in the open state or closed state.
+ *
+ * @param {*} iframe
+ * @returns
+ */
+function toggleCallbackFactory(iframe) {
+  return (visible, node) => {
+    const cs = iframe.contentWindow.getComputedStyle(node);
+    const h =
+      node.getBoundingClientRect().height +
+      parseFloat(cs.marginTop) +
+      parseFloat(cs.marginBottom);
+    if (visible) {
+      iframe.style.height = parseFloat(iframe.style.height) + h + "px";
+    } else {
+      iframe.style.height = parseFloat(iframe.style.height) - h + "px";
+    }
+  };
+}
+
 /**
  * This class exists because we need to manually manage the iframe - we don't
  * want it reloading every time a prop changes.
@@ -250,122 +358,47 @@ class MessageIFrame extends React.Component {
     return styleRules;
   }
 
-  convertCommonQuotingToBlockquote(iframe) {
+  detectQuotes(iframe) {
     // Launch various crappy pieces of code heuristics to
     // convert most common quoting styles to real blockquotes. Spoiler:
     // most of them suck.
     Quoting.normalizeBlockquotes(iframe.contentDocument);
-  }
 
-  toggleBlock(event, showtext, hidetext) {
-    let link = event.target;
-    let div = link.nextSibling;
-    let cs = window.getComputedStyle(div);
-    if (div.style.display == "none") {
-      link.textContent = "- " + hidetext + " -";
-      div.style.display = "";
-      let h =
-        div.getBoundingClientRect().height +
-        parseFloat(cs.marginTop) +
-        parseFloat(cs.marginBottom);
-      return h;
-    }
-    let h = div.getBoundingClientRect().height;
-    h += parseFloat(cs.marginTop);
-    h += parseFloat(cs.marginBottom);
-    link.textContent = "- " + showtext + " -";
-    div.style.display = "none";
-    return -h;
-  }
-
-  detectBlocks(iframe, testNode, hideText, showText, linkClass, linkColor) {
-    let iframeDoc = iframe.contentDocument;
-
-    let smallSize = this.props.prefs.tweakChrome
-      ? this.props.defaultFontSize * this.props.tenPxFactor * 1.1
-      : Math.round((100 * this.props.defaultFontSize * 11) / 12) / 100;
-
-    // this function adds a show/hide block text link to every topmost
-    // block. Nested blocks are not taken into account.
-    function _walk(elt) {
-      for (let i = elt.childNodes.length - 1; i >= 0; --i) {
-        let c = elt.childNodes[i];
-
-        // Skip iframes and tables, we shouldn't need to go into those at all.
-        let tagName = c.tagName && c.tagName.toLowerCase();
-        if (tagName == "iframe" || tagName == "table") {
-          continue;
-        }
-
-        if (testNode(c)) {
-          let div = iframeDoc.createElement("div");
-          div.setAttribute("class", "link " + linkClass);
-          div.addEventListener(
-            "click",
-            (event) => {
-              let h = this.toggleBlock(event, showText, hideText);
-              iframe.style.height = parseFloat(iframe.style.height) + h + "px";
-            },
-            true
-          );
-          div.setAttribute(
-            "style",
-            "color: " +
-              linkColor +
-              "; cursor: pointer; font-size: " +
-              smallSize +
-              "px;"
-          );
-          div.appendChild(iframeDoc.createTextNode("- " + showText + " -"));
-          elt.insertBefore(div, c);
-          c.style.display = "none";
-        } else {
-          walk(c);
-        }
+    function getQuoteLength(node) {
+      try {
+        const style = iframe.contentWindow.getComputedStyle(node);
+        return parseInt(style.height) / (parseInt(style.fontSize) * 1.5);
+      } catch (e) {
+        // message arrived and window is not displayed, arg,
+        // cannot get the computed style, BAD
       }
+      return undefined;
     }
 
-    let walk = _walk.bind(this);
-
-    walk(iframeDoc.body);
-  }
-
-  detectQuotes(iframe) {
-    this.convertCommonQuotingToBlockquote(iframe);
-
-    function isBlockquote(node) {
-      if (node.tagName && node.tagName.toLowerCase() == "blockquote") {
-        // Compute the approximate number of lines while the element is still visible
-        let style;
-        try {
-          style = iframe.contentWindow.getComputedStyle(node);
-        } catch (e) {
-          // message arrived and window is not displayed, arg,
-          // cannot get the computed style, BAD
-        }
-        if (style) {
-          let numLines =
-            parseInt(style.height) / (parseInt(style.fontSize) * 1.5);
-          if (numLines > this.props.prefs.hideQuoteLength) {
-            return true;
-          }
-        }
-      }
-
-      return false;
-    }
-
+    // If the first email contains quoted text, it was probably forwarded to us
+    // and we don't have the previous email for reference. In this case, don't normalize
+    // the quote. See:
     // https://github.com/thunderbird-conversations/thunderbird-conversations/issues/179
-    // See link above for a rationale ^^
     if (this.props.initialPosition > 0) {
-      this.detectBlocks(
-        iframe,
-        isBlockquote.bind(this),
-        browser.i18n.getMessage("messageBody.hideQuotedText"),
-        browser.i18n.getMessage("messageBody.showQuotedText"),
-        "showhidequote",
-        "orange"
-      );
+      const win = iframe.contentWindow;
+      // We look for the first blockquote that is long enough to be hidden
+      for (const blockquote of win.document.querySelectorAll("blockquote")) {
+        if (getQuoteLength(blockquote) > this.props.prefs.hideQuoteLength) {
+          createToggleForNode(blockquote, {
+            hideText: browser.i18n.getMessage("messageBody.hideQuotedText"),
+            showText: browser.i18n.getMessage("messageBody.showQuotedText"),
+            linkClass: "showhidequote",
+            smallSize: this.props.prefs.tweakChrome
+              ? this.props.defaultFontSize * this.props.tenPxFactor * 1.1
+              : Math.round((100 * this.props.defaultFontSize * 11) / 12) / 100,
+            linkColor: "orange",
+            onToggle: toggleCallbackFactory(iframe),
+          });
+          // We only put a show/hide button on the first suitable quote,
+          // so if we've made it thus far, we're done.
+          break;
+        }
+      }
     }
   }
 
@@ -374,18 +407,21 @@ class MessageIFrame extends React.Component {
       return;
     }
 
-    function isSignature(node) {
-      return node.classList && node.classList.contains("moz-txt-sig");
-    }
+    const win = iframe.contentWindow;
+    const sigNode = win.document.querySelector(".moz-txt-sig");
 
-    this.detectBlocks(
-      iframe,
-      isSignature,
-      browser.i18n.getMessage("messageBody.hideSigText"),
-      browser.i18n.getMessage("messageBody.showSigText"),
-      "showhidesig",
-      "rgb(56, 117, 215)"
-    );
+    if (sigNode) {
+      createToggleForNode(sigNode, {
+        hideText: browser.i18n.getMessage("messageBody.hideSigText"),
+        showText: browser.i18n.getMessage("messageBody.showSigText"),
+        linkClass: "showhidesig",
+        smallSize: this.props.prefs.tweakChrome
+          ? this.props.defaultFontSize * this.props.tenPxFactor * 1.1
+          : Math.round((100 * this.props.defaultFontSize * 11) / 12) / 100,
+        linkColor: "rgb(56, 117, 215)",
+        onToggle: toggleCallbackFactory(iframe),
+      });
+    }
   }
 
   injectCss(iframeDoc) {
