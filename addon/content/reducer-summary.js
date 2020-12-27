@@ -3,8 +3,6 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 /* global Conversations, getMail3Pane, messageActions, XPCOMUtils, printConversation, RTK */
-// eslint-disable-next-line no-redeclare
-/* global browser:true */
 /* exported summaryActions, summary */
 
 "use strict";

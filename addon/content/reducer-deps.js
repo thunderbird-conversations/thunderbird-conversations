@@ -3,8 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 /* global Conversations */
-// eslint-disable-next-line no-redeclare
-/* exported XPCOMUtils, browser, initialize */
+/* exported initialize */
 
 "use strict";
 

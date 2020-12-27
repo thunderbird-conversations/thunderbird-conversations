@@ -19,12 +19,7 @@ const store = RTK.configureStore({
   // checks.
   middleware: RTK.getDefaultMiddleware({
     serializableCheck: {
-      ignoredActions: [
-        "MSG_STREAM_MSG",
-        "MSG_STREAM_LOAD_FINISHED",
-        "REPLACE_CONVERSATION_DETAILS",
-        "summary/replaceSummaryDetails",
-      ],
+      ignoredActions: ["summary/replaceSummaryDetails"],
       ignoredPaths: ["summary.conversation"],
     },
   }),
