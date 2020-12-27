@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* global Conversations, getMail3Pane, messageActions, XPCOMUtils, printConversation */
+/* global Conversations, getMail3Pane, messageActions, XPCOMUtils, printConversation, RTK */
 // eslint-disable-next-line no-redeclare
 /* global browser:true */
 /* exported summaryActions, summary */
@@ -56,9 +56,9 @@ var summaryActions = {
   replaceConversation({ summary, messages }) {
     return async (dispatch, getState) => {
       await handleShowDetails(messages, getState(), dispatch, () => {
+        dispatch(summarySlice.actions.replaceSummaryDetails(summary));
         return dispatch({
           type: "REPLACE_CONVERSATION_DETAILS",
-          summary,
           messages,
         });
       });
@@ -98,121 +98,141 @@ var summaryActions = {
         .catch(console.error);
     };
   },
-};
-
-function summary(state = initialSummary, action) {
-  switch (action.type) {
-    case "SET_CONVERSATION_STATE": {
-      return {
-        ...state,
-        isInTab: action.isInTab,
-        tabId: action.tabId,
-        windowId: action.windowId,
-      };
-    }
-    case "SET_SYSTEM_OPTIONS": {
-      let tenPxFactor = 0.625;
-      if (action.OS == "mac") {
-        tenPxFactor = 0.666;
-      } else if (action.OS == "win") {
-        tenPxFactor = 0.7;
-      }
-
-      let mainVersion = action.browserVersion?.split(".")[0];
-
-      return {
-        ...state,
-        browserForegroundColor: action.browserForegroundColor,
-        browserBackgroundColor: action.browserBackgroundColor,
-        defaultFontSize: action.defaultFontSize,
-        defaultDetailsShowing: action.defaultDetailsShowing,
-        // Thunderbird 81 has built-in PDF viewer.
-        hasBuiltInPdf: mainVersion >= 81,
-        hideQuickReply: action.hideQuickReply,
-        OS: action.OS,
-        tenPxFactor,
-      };
-    }
-    case "REPLACE_CONVERSATION_DETAILS": {
-      if (!("summary" in action)) {
-        return state;
-      }
-      return {
-        ...state,
-        ...action.summary,
-      };
-    }
-    case "ADD_CONTACT": {
+  copyEmail({ email }) {
+    return () => {
+      navigator.clipboard.writeText(email);
+    };
+  },
+  editContact({ email }) {
+    return () => {
+      browser.convContacts.beginEdit({
+        email,
+      });
+    };
+  },
+  addContact({ email, name }) {
+    return () => {
       browser.convContacts.beginNew({
-        email: action.email,
-        displayName: action.name,
+        email,
+        displayName: name,
       });
       // TODO: In theory we should be updating the store so that the button can
       // then be updated to indicate this is now in the address book. However,
       // until we start getting the full conversation messages hooked up, this
       // won't be easy. As this is only a small bit of hidden UI, we can punt on
       // this for now.
-      return state;
-    }
-    case "COPY_EMAIL": {
-      navigator.clipboard.writeText(action.email);
-      return state;
-    }
-    case "EDIT_CONTACT": {
-      browser.convContacts.beginEdit({
-        email: action.email,
-      });
-      return state;
-    }
-    case "FORWARD_CONVERSATION": {
-      Conversations.currentConversation.forward().catch(console.error);
-      return state;
-    }
-    case "OPEN_LINK": {
-      getMail3Pane().messenger.launchExternalURL(action.url);
-      return state;
-    }
-    case "PRINT_CONVERSATION": {
+    };
+  },
+  openLink({ url }) {
+    return () => {
+      getMail3Pane().messenger.launchExternalURL(url);
+    };
+  },
+  printConversation() {
+    return () => {
       // TODO: Fix printing
       printConversation();
-      return state;
-    }
-    case "MSG_STREAM_MSG": {
-      let newState = { ...state };
-      if (!action.dueToExpansion) {
-        newState.iframesLoading++;
+    };
+  },
+  forwardConversation() {
+    return async () => {
+      try {
+        await Conversations.currentConversation.forward();
+      } catch (e) {
+        console.error(e);
       }
-      let message = state.conversation.getMessage(action.msgUri);
-      // The message might not be found, if so it has probably been deleted from
-      // under us, so just continue and not blow up.
-      if (message) {
-        message.streamMessage(topMail3Pane(window).msgWindow, action.docshell);
-      } else {
-        console.warn("Could not find message for streaming", action.msgUri);
-      }
-      return newState;
-    }
-    case "MSG_STREAM_LOAD_FINISHED": {
-      let newState = { ...state };
-      if (!action.dueToExpansion) {
-        newState.iframesLoading--;
-        if (newState.iframesLoading < 0) {
-          newState.iframesLoading = 0;
-        }
+    };
+  },
+  msgStreamLoadFinished({ dueToExpansion, msgUri, iframe }) {
+    return async (dispatch, getState) => {
+      if (!dueToExpansion) {
+        dispatch(summarySlice.actions.decIframesLoading());
       }
       // It might be that we're trying to send a message on unmount, but the
       // conversation/message has gone away. If that's the case, we just skip
       // and move on.
-      if (state.conversation?.getMessage) {
-        const msg = state.conversation.getMessage(action.msgUri);
+      const { summary } = getState();
+      if (summary.conversation?.getMessage) {
+        const msg = summary.conversation.getMessage(msgUri);
         if (msg) {
-          msg.postStreamMessage(topMail3Pane(window), action.iframe);
+          msg.postStreamMessage(topMail3Pane(window), iframe);
         }
       }
-      return newState;
-    }
-    default: {
+    };
+  },
+  msgStreamMsg({ dueToExpansion, msgUri, docshell }) {
+    return async (dispatch, getState) => {
+      if (!dueToExpansion) {
+        dispatch(summarySlice.actions.incIframesLoading());
+      }
+      const { summary } = getState();
+      let message = summary.conversation.getMessage(msgUri);
+      // The message might not be found, if so it has probably been deleted from
+      // under us, so just continue and not blow up.
+      if (message) {
+        message.streamMessage(topMail3Pane(window).msgWindow, docshell);
+      } else {
+        console.warn("Could not find message for streaming", msgUri);
+      }
+    };
+  },
+};
+
+const summarySlice = RTK.createSlice({
+  name: "summary",
+  initialState: initialSummary,
+  reducers: {
+    incIframesLoading(state) {
+      return { ...state, iframesLoading: state.iframesLoading + 1 };
+    },
+    decIframesLoading(state) {
+      return {
+        ...state,
+        // Never decrement below zero
+        iframesLoading: Math.max(state.iframesLoading - 1, 0),
+      };
+    },
+    setConversationState(state, { payload }) {
+      const { isInTab, tabId, windowId } = payload;
+      return { ...state, isInTab, tabId, windowId };
+    },
+    setSystemOptions(state, { payload }) {
+      const {
+        OS,
+        browserForegroundColor,
+        browserBackgroundColor,
+        defaultFontSize,
+        defaultDetailsShowing,
+        browserVersion,
+        hideQuickReply,
+      } = payload;
+      let tenPxFactor = 0.625;
+      if (OS == "mac") {
+        tenPxFactor = 0.666;
+      } else if (OS == "win") {
+        tenPxFactor = 0.7;
+      }
+
+      let mainVersion = browserVersion?.split(".")[0];
+
+      return {
+        ...state,
+        browserForegroundColor,
+        browserBackgroundColor,
+        defaultFontSize,
+        defaultDetailsShowing,
+        // Thunderbird 81 has built-in PDF viewer.
+        hasBuiltInPdf: mainVersion >= 81,
+        hideQuickReply,
+        OS,
+        tenPxFactor,
+      };
+    },
+    replaceSummaryDetails(state, { payload }) {
+      if (payload) {
+        return { ...state, ...payload };
+      }
       return state;
-    }
-  }
-}
+    },
+  },
+});

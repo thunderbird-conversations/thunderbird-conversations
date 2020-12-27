@@ -25,11 +25,12 @@ class _ContactDetail extends React.PureComponent {
   addContact(event) {
     event.stopPropagation();
     event.preventDefault();
-    this.props.dispatch({
-      type: "ADD_CONTACT",
-      name: this.props.name,
-      email: this.props.realEmail,
-    });
+    this.props.dispatch(
+      summaryActions.addContact({
+        name: this.props.name,
+        email: this.props.realEmail,
+      })
+    );
   }
 
   createFilter(event) {
@@ -45,20 +46,17 @@ class _ContactDetail extends React.PureComponent {
   copyEmail(event) {
     event.stopPropagation();
     event.preventDefault();
-    this.props.dispatch({
-      type: "COPY_EMAIL",
-      email: this.props.realEmail,
-    });
+    this.props.dispatch(
+      summaryActions.copyEmail({ email: this.props.realEmail })
+    );
   }
 
   editContact(event) {
     event.stopPropagation();
     event.preventDefault();
-    this.props.dispatch({
-      type: "EDIT_CONTACT",
-      name: this.props.name,
-      email: this.props.realEmail,
-    });
+    this.props.dispatch(
+      summaryActions.editContact({ email: this.props.realEmail })
+    );
   }
 
   sendEmail(event) {
