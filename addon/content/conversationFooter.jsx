@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals PropTypes, React, ReactRedux */
+/* globals PropTypes, React, ReactRedux, summaryActions */
 /* exported ConversationFooter */
 
 class _ConversationFooter extends React.PureComponent {
@@ -13,15 +13,11 @@ class _ConversationFooter extends React.PureComponent {
   }
 
   forwardConversation() {
-    this.props.dispatch({
-      type: "FORWARD_CONVERSATION",
-    });
+    this.props.dispatch(summaryActions.forwardConversation());
   }
 
   printConversation() {
-    this.props.dispatch({
-      type: "PRINT_CONVERSATION",
-    });
+    this.props.dispatch(summaryActions.printConversation());
   }
 
   render() {

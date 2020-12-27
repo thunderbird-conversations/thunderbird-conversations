@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals React, PropTypes, Quoting, messageActions */
+/* globals React, PropTypes, Quoting, messageActions, summaryActions */
 /* exported MessageIFrame */
 
 let index = 0;
@@ -193,12 +193,13 @@ class MessageIFrame extends React.Component {
 
       this.loading = true;
       this.currentUrl = this.props.msgUri;
-      this.props.dispatch({
-        type: "MSG_STREAM_MSG",
-        docshell: this.iframe.contentWindow.docShell,
-        dueToExpansion: this.dueToExpansion,
-        msgUri: this.props.msgUri,
-      });
+      this.props.dispatch(
+        summaryActions.msgStreamMsg({
+          docshell: this.iframe.contentWindow.docShell,
+          dueToExpansion: this.dueToExpansion,
+          msgUri: this.props.msgUri,
+        })
+      );
     }
   }
 
@@ -230,11 +231,12 @@ class MessageIFrame extends React.Component {
       this.currentUrl = this.props.msgUri;
       this.loading = true;
       this.dueToExpansion = false;
-      this.props.dispatch({
-        type: "MSG_STREAM_MSG",
-        docshell: docShell,
-        msgUri: this.props.msgUri,
-      });
+      this.props.dispatch(
+        summaryActions.msgStreamMsg({
+          docshell: docShell,
+          msgUri: this.props.msgUri,
+        })
+      );
     } else {
       this.iframe.classList.add("hidden");
     }
@@ -242,10 +244,11 @@ class MessageIFrame extends React.Component {
 
   componentWillUnmount() {
     if (this.loading) {
-      this.props.dispatch({
-        type: "MSG_STREAM_LOAD_FINISHED",
-        dueToExpansion: this.dueToExpansion,
-      });
+      this.props.dispatch(
+        summaryActions.msgStreamLoadFinished({
+          dueToExpansion: this.dueToExpansion,
+        })
+      );
       this.loading = false;
     }
     if (!this._loadListener) {
@@ -306,12 +309,13 @@ class MessageIFrame extends React.Component {
 
     this.adjustHeight();
     this.loading = false;
-    this.props.dispatch({
-      type: "MSG_STREAM_LOAD_FINISHED",
-      dueToExpansion: this.dueToExpansion,
-      msgUri: this.props.msgUri,
-      iframe: this.iframe,
-    });
+    this.props.dispatch(
+      summaryActions.msgStreamLoadFinished({
+        dueToExpansion: this.dueToExpansion,
+        msgUri: this.props.msgUri,
+        iframe: this.iframe,
+      })
+    );
   }
 
   tweakFonts(iframeDoc) {
