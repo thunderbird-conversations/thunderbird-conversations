@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* globals React, ReactRedux, PropTypes, SvgIcon, messageActions */
+/* globals React, ReactRedux, PropTypes, SvgIcon, messageActions, summaryActions */
 /* exported ConversationHeader */
 
 const LINKS_REGEX = /((\w+):\/\/[^<>()'"\s]+|www(\.[-\w]+){2,})/;
@@ -14,10 +14,7 @@ class LinkifiedSubject extends React.PureComponent {
   }
 
   handleClick(event) {
-    this.props.dispatch({
-      type: "OPEN_LINK",
-      url: event.target.title,
-    });
+    this.props.dispatch(summaryActions.openLink({ url: event.target.title }));
     event.preventDefault();
   }
 

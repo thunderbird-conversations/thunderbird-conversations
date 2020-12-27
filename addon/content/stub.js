@@ -19,11 +19,7 @@ const store = RTK.configureStore({
   // checks.
   middleware: RTK.getDefaultMiddleware({
     serializableCheck: {
-      ignoredActions: [
-        "MSG_STREAM_MSG",
-        "MSG_STREAM_LOAD_FINISHED",
-        "REPLACE_CONVERSATION_DETAILS",
-      ],
+      ignoredActions: ["summary/replaceSummaryDetails"],
       ignoredPaths: ["summary.conversation"],
     },
   }),
@@ -37,7 +33,7 @@ function conversationDispatch(...args) {
 document.addEventListener(
   "DOMContentLoaded",
   () => {
-    // Call initalize to set up the `browser` variable before we do anything.
+    // Call initialize to set up the `browser` variable before we do anything.
     // Once we can potentially load in a WebExtension scope, then we should
     // be able to remove this.
     initialize()

@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* global Conversations, XPCOMUtils */
+/* global Conversations, XPCOMUtils, summarySlice */
 /* exported messages */
 
 "use strict";
@@ -151,12 +151,13 @@ const messageActions = {
 
       const isInTab = params.has("urls");
       const topWin = topMail3Pane(window);
-      await dispatch({
-        type: "SET_CONVERSATION_STATE",
-        isInTab,
-        tabId: BrowserSim.getTabId(topWin, window),
-        windowId: BrowserSim.getWindowId(topWin),
-      });
+      await dispatch(
+        summarySlice.actions.setConversationState({
+          isInTab,
+          tabId: BrowserSim.getTabId(topWin, window),
+          windowId: BrowserSim.getWindowId(topWin),
+        })
+      );
 
       const platformInfo = await browser.runtime.getPlatformInfo();
       const browserInfo = await browser.runtime.getBrowserInfo();
@@ -172,16 +173,17 @@ const messageActions = {
       const defaultDetailsShowing =
         (await browser.conversations.getCorePref("mail.show_headers")) == 2;
 
-      await dispatch({
-        type: "SET_SYSTEM_OPTIONS",
-        browserForegroundColor,
-        browserBackgroundColor,
-        defaultDetailsShowing,
-        defaultFontSize,
-        hideQuickReply: await getPreference("hide_quick_reply", false),
-        OS: platformInfo.os,
-        browserVersion: browserInfo.version,
-      });
+      await dispatch(
+        summarySlice.actions.setSystemOptions({
+          browserForegroundColor,
+          browserBackgroundColor,
+          defaultDetailsShowing,
+          defaultFontSize,
+          hideQuickReply: await getPreference("hide_quick_reply", false),
+          OS: platformInfo.os,
+          browserVersion: browserInfo.version,
+        })
+      );
 
       if (!isInTab) {
         return;

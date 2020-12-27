@@ -156,7 +156,7 @@ function localize(prefsInfo, i18n = browser.i18n) {
     return i18n.getMessage(prefsInfo);
   }
   // If `prefsInfo` is an array, it is an array of information used
-  // to render the prefernce setting GUI. Localize all `desc` and `title`
+  // to render the preference setting GUI. Localize all `desc` and `title`
   // properties
   if (Array.isArray(prefsInfo)) {
     return prefsInfo.map((pref) => {
@@ -452,7 +452,7 @@ export function Main() {
   // the localized strings.
   React.useEffect(() => {
     if (!i18n.isPolyfilled) {
-      // The native `browser.i18n` is syncronous, so if we're using
+      // The native `browser.i18n` is synchronous, so if we're using
       // that version, the translations have already been loaded; do
       // nothing here
       return;
