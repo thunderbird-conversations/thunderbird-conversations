@@ -485,9 +485,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
         async resetMessagePane() {
           for (const win of Services.wm.getEnumerator("mail:3pane")) {
             const messagepane = win.document.getElementById("multimessage");
-            if (
-              messagepane.contentDocument.documentURI.includes("stub.xhtml")
-            ) {
+            if (messagepane.contentDocument.documentURI.includes("stub.html")) {
               // The best we can do here is to clear via the summary manager,
               // so that we get re-loaded with the new correct size.
               win.gSummaryFrameManager.clear();

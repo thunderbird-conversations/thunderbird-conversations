@@ -53,14 +53,14 @@ class LinkifiedSubject extends React.PureComponent {
       }
 
       return (
-        <div className="subject boxFlex" title={this.props.subject}>
+        <div className="subject" title={this.props.subject}>
           <span>{contents}</span>
         </div>
       );
     }
 
     return (
-      <div className="subject boxFlex" title={this.props.subject}>
+      <div className="subject" title={this.props.subject}>
         {this.props.subject}
       </div>
     );
@@ -156,7 +156,7 @@ class _ConversationHeader extends React.PureComponent {
     document.title = this.props.subject;
     return (
       <div className="conversationHeaderWrapper">
-        <div className="conversationHeader hbox">
+        <div className="conversationHeader">
           <LinkifiedSubject
             dispatch={this.props.dispatch}
             loading={this.props.loading}

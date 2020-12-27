@@ -235,9 +235,7 @@ class MessageHeader extends React.PureComponent {
     // <span class="bzTo"> {{str "message.at"}} {{bugzillaUrl}}</span>
     return (
       <div
-        className={
-          "messageHeader hbox" + (this.props.expanded ? " expanded" : "")
-        }
+        className={"messageHeader" + (this.props.expanded ? " expanded" : "")}
         onClick={this.onClickHeader}
       >
         <div className="shrink-box">

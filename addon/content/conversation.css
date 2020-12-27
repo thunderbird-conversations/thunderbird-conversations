@@ -125,6 +125,8 @@ a img {
   background-color: Menu;
   border-bottom: 1px solid ThreeDShadow;
   color: MenuText;
+  display: flex;
+  flex-direction: row;
 }
 
 .subject {
@@ -135,6 +137,7 @@ a img {
   overflow: hidden;
   white-space: nowrap;
   text-overflow: ellipsis;
+  flex: 1;
 }
 
 .actions button {
@@ -190,7 +193,9 @@ a img {
   margin: 0 0 5px;
   padding: 0 10px;
   line-height: 3;
-  cursor: pointer
+  cursor: pointer;
+  display: flex;
+  flex-direction: row;
 }
 
 .collapsed .messageHeader {
@@ -641,10 +646,12 @@ html[dir="rtl"] .dropDown .arrow {
   border-top: 1px solid ThreeDShadow;
 }
 
-.attachments li {
+.attachment {
   margin: 10px 0 0 0;
   width: 100%;
   list-style-type: none;
+  display: flex;
+  flex-direction: row;
 }
 
 .attachmentThumb {
@@ -825,25 +832,6 @@ html[dir="rtl"] .dropDown .arrow {
   border-radius: 5px;
   width: -moz-max-content;
   z-index: 1000;
-}
-
-/* clearfix */
-
-.clearfix:after {
-  content: ".";
-  display: block;
-  clear: both;
-  visibility: hidden;
-  line-height: 0;
-  height: 0;
-}
-
-html[xmlns] .clearfix {
-  display: block;
-}
-
-* html .clearfix {
-  height: 1%;
 }
 
 .loader {

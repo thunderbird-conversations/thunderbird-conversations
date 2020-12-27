@@ -185,7 +185,7 @@ class Attachment extends React.PureComponent {
     /* eslint-disable react/no-unknown-property */
     return (
       <li
-        className="clearfix hbox attachment"
+        className="attachment"
         contextmenu={`attachmentMenu-${this.props.anchor}`}
       >
         <div
@@ -312,22 +312,22 @@ class Attachments extends React.PureComponent {
               <SvgIcon hash={"photo_library"} />
             </a>
           )}
-          {this.props.attachments.map((attachment) => (
-            <Attachment
-              anchor={attachment.anchor}
-              dispatch={this.props.dispatch}
-              key={attachment.anchor}
-              contentType={attachment.contentType}
-              formattedSize={attachment.formattedSize}
-              hasBuiltInPdf={this.props.hasBuiltInPdf}
-              messageKey={this.props.messageKey}
-              id={this.props.id}
-              name={attachment.name}
-              size={attachment.size}
-              url={attachment.url}
-            />
-          ))}
         </div>
+        {this.props.attachments.map((attachment) => (
+          <Attachment
+            anchor={attachment.anchor}
+            dispatch={this.props.dispatch}
+            key={attachment.anchor}
+            contentType={attachment.contentType}
+            formattedSize={attachment.formattedSize}
+            hasBuiltInPdf={this.props.hasBuiltInPdf}
+            messageKey={this.props.messageKey}
+            id={this.props.id}
+            name={attachment.name}
+            size={attachment.size}
+            url={attachment.url}
+          />
+        ))}
       </ul>
     );
   }
