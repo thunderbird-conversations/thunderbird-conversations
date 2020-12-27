@@ -93,27 +93,6 @@ class _Quoting {
     this._trySel(aDoc, ".yahoo_quoted");
   }
 
-  /* There's a special message header for that. */
-  convertOutlookQuotingToBlockquote(aWin, aDoc) {
-    /* Outlook uses a special thing for that */
-    this._trySel(aDoc, ".OutlookMessageHeader");
-    for (let div of aDoc.getElementsByTagName("div")) {
-      let style = aWin.getComputedStyle(div);
-      if (
-        (style.borderTopColor == "rgb(181, 196, 223)" ||
-          style.borderTopColor == "rgb(225, 225, 225)") &&
-        style.borderTopStyle == "solid" &&
-        style.borderLeftWidth == "0px" &&
-        style.borderRightWidth == "0px" &&
-        style.borderBottomWidth == "0px"
-      ) {
-        this._encloseInBlockquote(aDoc, div);
-        div.style.borderTopWidth = 0;
-        break;
-      }
-    }
-  }
-
   /* Stupid regexp that matches:
    * ----- Something that supposedly says the text below is quoted -----
    * Fails 9 times out of 10. */
