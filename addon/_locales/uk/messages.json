@@ -83,13 +83,21 @@
     "message": "В окремих випадках Thunderbird не зможе розпізнавати деякі вкладення. Цей параметр дозволяє обійти цей недолік Thunderbird і показати всі можливі вкладення. Використовуйте комбіновано з додатком Show All Body Parts.",
     "description": "Options - description for attachment settings."
   },
-  "options.compose_in_tab_title": {
-    "message": "Приховане вікно редактора",
-    "description": "Options - title for hidden compose window enabling."
+  "options.hide_quick_reply_title": {
+    "message": "Приховати швидку відповідь",
+    "description": "Options - title for hiding quick reply display."
   },
-  "options.compose_in_tab_desc": {
-    "message": "Ctrl-Shift-N відкриває приховане, непідтримуване вікно редактора в новій вкладці",
-    "description": "Options - description for hidden compose window enabling."
+  "options.hide_quick_reply_desc": {
+    "message": "Приховати панель швидкої відповіді в розмовах.",
+    "description": "Options - description for hiding the quick reply display."
+  },
+  "options.compose_in_tab2_title": {
+    "message": "Увімкнути вкладку редактора",
+    "description": "Options - title for enabling the hidden compose in a tab option."
+  },
+  "options.compose_in_tab2_desc": {
+    "message": "Ctrl-Shift-N відкриває прихований редактор у новій вкладці (експериментально).",
+    "description": "Options - description for enabling the hidden compose in a tab option."
   },
   "options.debugging_title": {
     "message": "Зневадження",
