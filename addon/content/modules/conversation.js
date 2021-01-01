@@ -743,9 +743,6 @@ Conversation.prototype = {
         },
       })
     );
-    // Invalidate the composition session so that compose-ui.js can setup the
-    //  fields next time.
-    this._htmlPane.gComposeSession = null;
 
     // Now tell the monkeypatch that we've queued everything up.
     Services.tm.dispatchToMainThread(() =>
