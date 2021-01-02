@@ -136,11 +136,12 @@ class JunkNotification extends React.PureComponent {
   }
 
   onClick() {
-    this.props.dispatch({
-      type: "MARK_AS_JUNK",
-      isJunk: false,
-      id: this.props.id,
-    });
+    this.props.dispatch(
+      messageActions.markAsJunk({
+        isJunk: false,
+        id: this.props.id,
+      })
+    );
   }
 
   render() {

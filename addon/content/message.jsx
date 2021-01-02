@@ -74,10 +74,11 @@ export class Message extends React.PureComponent {
         // this message. This should generally mean we get to scroll to the
         // right place most of the time.
         if (!this.props.iframesLoading) {
-          this.props.dispatch({
-            type: "CLEAR_SCROLLTO",
-            id: this.props.message.id,
-          });
+          this.props.dispatch(
+            messageActions.clearScrollto({
+              id: this.props.message.id,
+            })
+          );
         }
       });
     }
@@ -182,10 +183,12 @@ export class Message extends React.PureComponent {
         );
         break;
       case "o":
-        this.props.dispatch({
-          type: "MSG_EXPAND",
-          msgUri: this.props.message.msgUri,
-        });
+        this.props.dispatch(
+          messageActions.msgExpand({
+            msgUri: this.props.message.msgUri,
+            expand: !this.props.message.expanded,
+          })
+        );
         break;
       case "1":
       case "2":

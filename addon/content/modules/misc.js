@@ -12,6 +12,7 @@ var EXPORTED_SYMBOLS = [
   "getMail3Pane",
   "msgUriToMsgHdr",
   "msgHdrGetUri",
+  "messageActions",
 ];
 
 const { XPCOMUtils } = ChromeUtils.import(
@@ -203,3 +204,16 @@ function msgUriToMsgHdr(aUri) {
 function msgHdrGetUri(aMsg) {
   return aMsg.folder.getUriForMsg(aMsg);
 }
+
+/**
+ * We cannot import `messageActions` directly, so we fake the actions object
+ * until all non-web extension code is removed
+ */
+var messageActions = new Proxy(
+  {},
+  {
+    get(target, prop) {
+      return (payload) => ({ type: `messages/${prop}`, payload });
+    },
+  }
+);

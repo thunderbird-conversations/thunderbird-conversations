@@ -128,21 +128,23 @@ class _ConversationHeader extends React.PureComponent {
   }
 
   expandCollapse(event) {
-    this.props.dispatch({
-      type: "TOGGLE_CONVERSATION_EXPANDED",
-      expand: this.areSomeMessagesCollapsed,
-    });
+    this.props.dispatch(
+      messageActions.toggleConversationExpanded({
+        expand: this.areSomeMessagesCollapsed,
+      })
+    );
   }
 
   junkConversation(event) {
     // This callback is only activated when the conversation is not a
     //  conversation in a tab AND there's only one message in the conversation,
     //  i.e. the currently selected message
-    this.props.dispatch({
-      type: "MARK_AS_JUNK",
-      id: this.props.msgData[0].id,
-      isJunk: true,
-    });
+    this.props.dispatch(
+      messageActions.markAsJunk({
+        id: this.props.msgData[0].id,
+        isJunk: true,
+      })
+    );
   }
 
   // Mark the current conversation as read/unread. The conversation driver

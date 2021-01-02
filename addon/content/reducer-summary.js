@@ -45,25 +45,23 @@ async function handleShowDetails(messages, state, dispatch, updateFn) {
   }
 }
 
-export var summaryActions = {
+export const summaryActions = {
   replaceConversation({ summary, messages }) {
     return async (dispatch, getState) => {
       await handleShowDetails(messages, getState(), dispatch, () => {
         dispatch(summarySlice.actions.replaceSummaryDetails(summary));
-        return dispatch({
-          type: "REPLACE_CONVERSATION_DETAILS",
-          messages,
-        });
+        return dispatch(
+          messageActions.replaceConversationDetails({
+            messages,
+          })
+        );
       });
     };
   },
   appendMessages({ summary, messages }) {
     return async (dispatch, getState) => {
       await handleShowDetails(messages, getState(), dispatch, () => {
-        return dispatch({
-          type: "APPEND_MESSAGES",
-          messages,
-        });
+        return dispatch(messageActions.appendMessages({ messages }));
       });
     };
   },

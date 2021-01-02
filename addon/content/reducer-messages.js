@@ -5,37 +5,26 @@
 /* global Conversations, Conversation, BrowserSim, topMail3Pane */
 
 import { summaryActions } from "./reducer-summary.js";
+import * as RTK from "@reduxjs/toolkit";
 
 const initialMessages = {
   msgData: [],
 };
 
-function modifyOnlyMsg(currentState, msgUri, modifier) {
-  const newState = { ...currentState };
-  const newMsgData = [];
-  for (let i = 0; i < currentState.msgData.length; i++) {
-    if (currentState.msgData[i].msgUri == msgUri) {
-      newMsgData.push(modifier({ ...currentState.msgData[i] }));
-    } else {
-      newMsgData.push(currentState.msgData[i]);
-    }
-  }
-  newState.msgData = newMsgData;
-  return newState;
+function modifyOnlyMsg(state, msgUri, modifier) {
+  return {
+    ...state,
+    msgData: state.msgData.map((msg) =>
+      msg.msgUri == msgUri ? modifier(msg) : msg
+    ),
+  };
 }
 
-function modifyOnlyMsgId(currentState, id, modifier) {
-  const newState = { ...currentState };
-  const newMsgData = [];
-  for (let i = 0; i < currentState.msgData.length; i++) {
-    if (currentState.msgData[i].id == id) {
-      newMsgData.push(modifier({ ...currentState.msgData[i] }));
-    } else {
-      newMsgData.push(currentState.msgData[i]);
-    }
-  }
-  newState.msgData = newMsgData;
-  return newState;
+function modifyOnlyMsgId(state, id, modifier) {
+  return {
+    ...state,
+    msgData: state.msgData.map((msg) => (msg.id == id ? modifier(msg) : msg)),
+  };
 }
 
 async function getPreference(name, defaultValue) {
@@ -210,7 +199,7 @@ export const messageActions = {
 
       // We used to have a function for opening the window as a quick compose
       // in a tab. We'll need to figure out how to do this once we finish
-      // rewriting - it may be better to have a completely seperate message
+      // rewriting - it may be better to have a completely separate message
       // composition option.
       // } else if (params.get("quickCompose")) {
       //   masqueradeAsQuickCompose();
@@ -235,19 +224,20 @@ export const messageActions = {
         attachments[i].formattedSize = formattedSize;
       }
 
-      await dispatch({
-        type: "MSG_UPDATE_DATA_ID",
-        msgData: {
-          attachments,
-          attachmentsPlural: await browser.conversations.makePlural(
-            browser.i18n.getMessage("pluralForm"),
-            browser.i18n.getMessage("attachments.numAttachments"),
-            numAttachments
-          ),
-          id,
-          needsLateAttachments: false,
-        },
-      });
+      await dispatch(
+        messagesSlice.actions.msgUpdateDataId({
+          msgData: {
+            attachments,
+            attachmentsPlural: await browser.conversations.makePlural(
+              browser.i18n.getMessage("pluralForm"),
+              browser.i18n.getMessage("attachments.numAttachments"),
+              numAttachments
+            ),
+            id,
+            needsLateAttachments: false,
+          },
+        })
+      );
     };
   },
 
@@ -471,10 +461,11 @@ export const messageActions = {
       // Turn remote content message "off", as although it has it, it can be loaded.
       msg.hasRemoteContent = false;
       const msgData = await msg.toReactData();
-      dispatch({
-        type: "MSG_UPDATE_DATA",
-        msgData,
-      });
+      dispatch(
+        messagesSlice.actions.msgUpdateData({
+          msgData,
+        })
+      );
     };
   },
   alwaysShowRemoteContent({ id, realFrom }) {
@@ -486,10 +477,11 @@ export const messageActions = {
       msg.hasRemoteContent = false;
 
       const msgData = await msg.toReactData();
-      dispatch({
-        type: "MSG_UPDATE_DATA",
-        msgData,
-      });
+      dispatch(
+        messagesSlice.actions.msgUpdateData({
+          msgData,
+        })
+      );
     };
   },
   detachTab() {
@@ -537,32 +529,35 @@ export const messageActions = {
   ignorePhishing({ id }) {
     return async (dispatch) => {
       await browser.conversations.ignorePhishing(id);
-      await dispatch({
-        type: "MSG_UPDATE_DATA_ID",
-        msgData: {
-          isPhishing: false,
-        },
-      });
+      await dispatch(
+        messagesSlice.actions.msgUpdateDataId({
+          msgData: {
+            isPhishing: false,
+          },
+        })
+      );
     };
   },
   showMsgDetails({ id, detailsShowing }) {
     return async (dispatch, getState) => {
       if (!detailsShowing) {
-        await dispatch({
-          type: "MSG_HDR_DETAILS",
-          detailsShowing: false,
-          id,
-        });
+        await dispatch(
+          messagesSlice.actions.msgHdrDetails({
+            detailsShowing: false,
+            id,
+          })
+        );
         return;
       }
       let currentMsg = getState().messages.msgData.find((msg) => msg.id == id);
       // If we already have header information, don't get it again.
       if (currentMsg?.extraLines?.length) {
-        await dispatch({
-          type: "MSG_HDR_DETAILS",
-          detailsShowing: true,
-          id,
-        });
+        await dispatch(
+          messagesSlice.actions.msgHdrDetails({
+            detailsShowing: true,
+            id,
+          })
+        );
         return;
       }
       let msg = await browser.messages.getFull(id);
@@ -599,152 +594,137 @@ export const messageActions = {
           value: currentMsg?.subject,
         });
 
-        dispatch({
-          type: "MSG_HDR_DETAILS",
-          extraLines,
-          detailsShowing: true,
-          id,
-        });
+        dispatch(
+          messagesSlice.actions.msgHdrDetails({
+            extraLines,
+            detailsShowing: true,
+            id,
+          })
+        );
       } catch (ex) {
         console.error(ex);
       }
     };
   },
-};
-
-export function messages(state = initialMessages, action) {
-  switch (action.type) {
-    case "REPLACE_CONVERSATION_DETAILS": {
-      return {
-        ...state,
-        ...action.messages,
-      };
-    }
-    case "APPEND_MESSAGES": {
-      const newState = { ...state };
-      newState.msgData = newState.msgData.concat(action.messages.msgData);
-      return newState;
-    }
-    case "MSG_EXPAND": {
-      return modifyOnlyMsg(state, action.msgUri, (msg) => {
-        const newMsg = { ...msg };
-        newMsg.expanded = action.expand;
-        return newMsg;
-      });
-    }
-    case "TOGGLE_CONVERSATION_EXPANDED": {
-      const newState = { ...state };
-      const newMsgData = [];
-      for (let msg of newState.msgData) {
-        const newMsg = { ...msg, expanded: action.expand };
-        newMsgData.push(newMsg);
-      }
-      newState.msgData = newMsgData;
-      return newState;
-    }
-    case "MSG_UPDATE_DATA": {
-      return modifyOnlyMsg(state, action.msgData.msgUri, (msg) => {
-        return { ...msg, ...action.msgData };
-      });
-    }
-    case "MSG_UPDATE_DATA_ID": {
-      return modifyOnlyMsgId(state, action.msgData.id, (msg) => {
-        return { ...msg, ...action.msgData };
-      });
-    }
-    case "MSG_ADD_SPECIAL_TAG": {
-      return modifyOnlyMsg(state, action.uri, (msg) => {
-        let newSpecialTags;
-        if (!("specialTags" in msg)) {
-          newSpecialTags = [action.tagDetails];
-        } else {
-          newSpecialTags = [...msg.specialTags, action.tagDetails];
-        }
-        return { ...msg, specialTags: newSpecialTags };
-      });
-    }
-    case "MSG_REMOVE_SPECIAL_TAG": {
-      return modifyOnlyMsg(state, action.uri, (msg) => {
-        if (!msg.specialTags) {
-          return msg;
-        }
-        const newSpecialTags = [...msg.specialTags];
-        return {
-          ...msg,
-          specialTags: newSpecialTags.filter(
-            (t) => t.name != action.tagDetails.name
-          ),
-        };
-      });
-    }
-    case "MARK_AS_JUNK": {
+  markAsJunk(action) {
+    return async (dispatch) => {
       // This action should only be activated when the conversation is not a
       //  conversation in a tab AND there's only one message in the conversation,
       //  i.e. the currently selected message
-      browser.conversations
+      await browser.conversations
         .markSelectedAsJunk(action.isJunk)
         .catch(console.error);
-      if (!action.isJunk) {
-        // TODO: We should possibly wait until we get the notification before
-        // clearing the state here.
-        return modifyOnlyMsgId(state, action.id, (msg) => {
-          const newMsg = { ...msg };
-          newMsg.isJunk = action.isJunk;
-          return newMsg;
-        });
-      }
-      return state;
-    }
-    case "MSG_HDR_DETAILS": {
-      return modifyOnlyMsgId(state, action.id, (msg) => {
-        const newMsg = { ...msg };
-        newMsg.detailsShowing = action.detailsShowing;
-        if ("extraLines" in action) {
-          newMsg.extraLines = action.extraLines;
+      dispatch(messagesSlice.actions.msgSetIsJunk(action));
+    };
+  },
+};
+
+export const messagesSlice = RTK.createSlice({
+  name: "messages",
+  initialState: initialMessages,
+  reducers: {
+    replaceConversationDetails(state, { payload }) {
+      const { messages } = payload;
+      return { ...state, ...messages };
+    },
+    appendMessages(state, { payload }) {
+      const { messages } = payload;
+      return { ...state, msgData: state.msgData.concat(messages.msgData) };
+    },
+    msgExpand(state, { payload }) {
+      return modifyOnlyMsg(state, payload.msgUri, (msg) => ({
+        ...msg,
+        expanded: payload.expand,
+      }));
+    },
+    toggleConversationExpanded(state, { payload }) {
+      return {
+        ...state,
+        msgData: state.msgData.map((m) => ({ ...m, expanded: payload.expand })),
+      };
+    },
+    msgUpdateData(state, { payload }) {
+      return modifyOnlyMsg(state, payload.msgData.msgUri, (msg) => ({
+        ...msg,
+        ...payload.msgData,
+      }));
+    },
+    msgUpdateDataId(state, { payload }) {
+      return modifyOnlyMsgId(state, payload.msgData.id, (msg) => ({
+        ...msg,
+        ...payload.msgData,
+      }));
+    },
+    msgAddSpecialTag(state, { payload }) {
+      return modifyOnlyMsg(state, payload.uri, (msg) => ({
+        ...msg,
+        specialTags: (msg.specialTags || []).concat(payload.tagDetails),
+      }));
+    },
+    msgRemoveSpecialTag(state, { payload }) {
+      return modifyOnlyMsg(state, payload.uri, (msg) => {
+        if (msg.specialTags == null) {
+          return msg;
         }
-        return newMsg;
+        return {
+          ...msg,
+          specialTags: msg.specialTags.filter(
+            (t) => t.name != payload.tagDetails.name
+          ),
+        };
       });
-    }
-    case "REMOVE_MESSAGE_FROM_CONVERSATION": {
-      const newState = { ...state };
-      const newMsgData = [];
-      for (let i = 0; i < state.msgData.length; i++) {
-        if (state.msgData[i].msgUri != action.msgUri) {
-          newMsgData.push(state.msgData[i]);
+    },
+    msgSetIsJunk(state, { payload }) {
+      return payload.isJunk
+        ? state
+        : modifyOnlyMsgId(state, payload.id, (msg) => ({
+            ...msg,
+            isJunk: false,
+          }));
+    },
+    msgHdrDetails(state, { payload }) {
+      return modifyOnlyMsgId(state, payload.id, (msg) => {
+        if (payload.extraLines != null) {
+          return { ...msg, detailsShowing: payload.detailsShowing };
         }
-      }
-      newState.msgData = newMsgData;
-      return newState;
-    }
-    case "CLEAR_SCROLLTO": {
-      return modifyOnlyMsgId(state, action.id, (msg) => {
+        return {
+          ...msg,
+          detailsShowing: payload.detailsShowing,
+          extraLines: payload.extraLines,
+        };
+      });
+    },
+    removeMessageFromConversation(state, { payload }) {
+      return {
+        ...state,
+        msgData: state.msgData.filter((m) => m.msgUri === payload.msgUri),
+      };
+    },
+    clearScrollto(state, { payload }) {
+      return modifyOnlyMsgId(state, payload.id, (msg) => {
         return { ...msg, scrollTo: false };
       });
-    }
-    case "MSG_SHOW_NOTIFICATION": {
-      return modifyOnlyMsg(state, action.msgData.msgUri, (msg) => {
-        const newMsg = { ...msg };
-        if ("extraNotifications" in msg) {
-          let i = msg.extraNotifications.findIndex(
-            (n) => n.type == action.msgData.notification.type
-          );
-          if (i != -1) {
-            newMsg.extraNotifications = [...msg.extraNotifications];
-            newMsg.extraNotifications[i] = action.msgData.notification;
-          } else {
-            newMsg.extraNotifications = [
-              ...msg.extraNotifications,
-              action.msgData.notification,
-            ];
+    },
+    msgShowNotification(state, { payload }) {
+      return modifyOnlyMsg(state, payload.msgData.msgUri, (msg) => {
+        // We put the notification on the end of the `extraNotifications` list
+        // unless there is a notification with a matching type, in which case
+        // we update it in place.
+        let modifiedInPlace = false;
+        let extraNotifications = (msg.extraNotifications || []).map((n) => {
+          if (n.type === payload.msgData.notification.type) {
+            modifiedInPlace = true;
+            return payload.msgData.notification;
           }
-        } else {
-          newMsg.extraNotifications = [action.msgData.notification];
+          return n;
+        });
+        if (!modifiedInPlace) {
+          extraNotifications.push(payload.msgData.notification);
         }
-        return newMsg;
+        return { ...msg, extraNotifications };
       });
-    }
-    default: {
-      return state;
-    }
-  }
-}
+    },
+  },
+});
+
+Object.assign(messageActions, messagesSlice.actions);

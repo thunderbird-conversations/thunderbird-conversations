@@ -2,8 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-"use strict";
-
 var EXPORTED_SYMBOLS = ["MessageFromGloda", "MessageFromDbHdr"];
 
 const { XPCOMUtils } = ChromeUtils.import(
@@ -22,6 +20,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   parseMimeLine: "chrome://conversations/content/modules/misc.js",
   setupLogging: "chrome://conversations/content/modules/misc.js",
   Services: "resource://gre/modules/Services.jsm",
+  messageActions: "chrome://conversations/content/modules/misc.js",
 });
 
 XPCOMUtils.defineLazyGetter(this, "browser", function () {
@@ -356,20 +355,22 @@ class Message {
 
     const msgData = await this.toReactData();
     // TODO: make getting the window less ugly.
-    this._conversation._htmlPane.conversationDispatch({
-      type: "MSG_UPDATE_DATA",
-      msgData,
-    });
+    this._conversation._htmlPane.conversationDispatch(
+      messageActions.msgUpdateData({
+        msgData,
+      })
+    );
   }
 
   async setSmimeReload() {
     this.smimeReload = true;
     const msgData = await this.toReactData();
     // TODO: make getting the window less ugly.
-    this._conversation._htmlPane.conversationDispatch({
-      type: "MSG_UPDATE_DATA",
-      msgData,
-    });
+    this._conversation._htmlPane.conversationDispatch(
+      messageActions.msgUpdateData({
+        msgData,
+      })
+    );
   }
 
   // This function should be called whenever the message is selected
@@ -406,19 +407,21 @@ class Message {
   }
 
   addSpecialTag(tagDetails) {
-    this._conversation._htmlPane.conversationDispatch({
-      type: "MSG_ADD_SPECIAL_TAG",
-      tagDetails,
-      uri: this._uri,
-    });
+    this._conversation._htmlPane.conversationDispatch(
+      messageActions.msgAddSpecialTag({
+        tagDetails,
+        uri: this._uri,
+      })
+    );
   }
 
   removeSpecialTag(tagDetails) {
-    this._conversation._htmlPane.conversationDispatch({
-      type: "MSG_REMOVE_SPECIAL_TAG",
-      tagDetails,
-      uri: this._uri,
-    });
+    this._conversation._htmlPane.conversationDispatch(
+      messageActions.msgRemoveSpecialTag({
+        tagDetails,
+        uri: this._uri,
+      })
+    );
     // this._specialTags = this.specialTags.filter(t => t.name != tagDetails.name);
   }
 
@@ -555,10 +558,11 @@ class Message {
       this.isPhishing = true;
       const msgData = await this.toReactData();
       // TODO: make getting the window less ugly.
-      this._conversation._htmlPane.conversationDispatch({
-        type: "MSG_UPDATE_DATA",
-        msgData,
-      });
+      this._conversation._htmlPane.conversationDispatch(
+        messageActions.msgUpdateData({
+          msgData,
+        })
+      );
     }
   }
 
