@@ -230,4 +230,9 @@ export const summarySlice = RTK.createSlice({
   },
 });
 
+// We don't really care about drawing a distinction between
+// actions and thunks, so we make the actions and thunks
+// available from the same object.
+Object.assign(summaryActions, summarySlice.actions);
+
 globalThis.conversationSummaryActions = summaryActions;

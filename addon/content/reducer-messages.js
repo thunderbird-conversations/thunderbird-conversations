@@ -4,7 +4,7 @@
 
 /* global Conversations, Conversation, BrowserSim, topMail3Pane */
 
-import { summarySlice } from "./reducer-summary.js";
+import { summaryActions } from "./reducer-summary.js";
 
 const initialMessages = {
   msgData: [],
@@ -145,7 +145,7 @@ export const messageActions = {
       const isInTab = params.has("urls");
       const topWin = topMail3Pane(window);
       await dispatch(
-        summarySlice.actions.setConversationState({
+        summaryActions.setConversationState({
           isInTab,
           tabId: BrowserSim.getTabId(topWin, window),
           windowId: BrowserSim.getWindowId(topWin),
@@ -167,7 +167,7 @@ export const messageActions = {
         (await browser.conversations.getCorePref("mail.show_headers")) == 2;
 
       await dispatch(
-        summarySlice.actions.setSystemOptions({
+        summaryActions.setSystemOptions({
           browserForegroundColor,
           browserBackgroundColor,
           defaultDetailsShowing,
