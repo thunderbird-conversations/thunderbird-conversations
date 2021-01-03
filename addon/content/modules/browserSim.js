@@ -60,8 +60,8 @@ class _BrowserSim {
         // at this time as that's different to the actual API, so take the
         // slightly more expensive route of passing everything back through the
         // experiment API.
-        // const asnycAPI = await extension.apiManager.asyncGetAPI(apiName, extension, "addon_parent");
-        // return implementation(asnycAPI);
+        // const asyncAPI = await extension.apiManager.asyncGetAPI(apiName, extension, "addon_parent");
+        // return implementation(asyncAPI);
         const subApiHandler = {
           get(obj, prop) {
             return self._browserListener.bind(null, apiName, prop);
