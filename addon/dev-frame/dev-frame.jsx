@@ -5,7 +5,6 @@
 import React from "react";
 import * as RTK from "@reduxjs/toolkit";
 import * as ReactRedux from "react-redux";
-import PropTypes from "prop-types";
 import { Message } from "../content/message.jsx";
 
 const testSlice = RTK.createSlice({
