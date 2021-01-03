@@ -205,11 +205,12 @@ export class MessageHeader extends React.PureComponent {
       })
     );
     if (!this.props.expanded) {
-      this.props.dispatch({
-        type: "MARK_AS_READ",
-        expand: !this.props.expanded,
-        msgUri: this.props.msgUri,
-      });
+      this.props.dispatch(
+        messageActions.markAsRead({
+          expand: !this.props.expanded,
+          msgUri: this.props.msgUri,
+        })
+      );
     }
   }
 
