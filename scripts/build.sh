@@ -56,5 +56,5 @@ wait $(jobs -p)
 
 rm -f conversations.xpi
 pushd $DIST
-zip -r ../conversations.xpi * -x "tests/*"
+zip -r ../conversations.xpi * -x "tests/*" -x "dev-frame/*" -x "content/dev-frame.bundle.js"
 popd

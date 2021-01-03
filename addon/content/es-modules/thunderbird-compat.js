@@ -47,6 +47,8 @@ if (browser.i18n) {
     // `resolve(true)` when finished.
     initializeI18n(resolve).catch(reject);
   });
+
+  browser.i18n = i18n;
 }
 
 if (!browser.storage) {

@@ -2,13 +2,15 @@
 const HtmlWebpackPlugin = require("html-webpack-plugin");
 const path = require("path");
 
+const development = process.env.NODE_ENV === "development";
 module.exports = {
-  devtool: false,
+  devtool: development ? "eval-source-map" : false,
   entry: {
     compose: "./addon/compose/compose-render.js",
     gallery: "./addon/gallery/gallery.jsx",
     options: "./addon/options/options-render.js",
     stub: "./addon/content/stub.js",
+    "dev-frame": "./addon/dev-frame/dev-frame-render.js",
   },
   mode: "none",
   optimization: {
@@ -47,6 +49,12 @@ module.exports = {
       template: "./addon/content/stub.html",
       chunks: ["stub"],
       filename: "stub.html",
+    }),
+    new HtmlWebpackPlugin({
+      hash: false,
+      template: "./addon/dev-frame/dev-frame.html",
+      chunks: ["dev-frame"],
+      filename: "../dev-frame/dev-frame.html",
     }),
   ],
   resolve: {

@@ -21,6 +21,48 @@ function isAccel(event) {
   return event.ctrlKey;
 }
 
+/**
+ * Trap any errors in child component displaying an error
+ * message if any errors are encountered.
+ *
+ * Code taken from https://reactjs.org/blog/2017/07/26/error-handling-in-react-16.html
+ *
+ * @class ErrorBoundary
+ * @extends {React.Component}
+ */
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { error: null, errorInfo: null };
+  }
+
+  componentDidCatch(error, errorInfo) {
+    this.setState({
+      error,
+      errorInfo,
+    });
+  }
+
+  render() {
+    if (this.state.errorInfo) {
+      // Error path
+      return (
+        <div>
+          <h4>Error encountered while rendering.</h4>
+          <details style={{ whiteSpace: "pre-wrap" }}>
+            {this.state.error && this.state.error.toString()}
+            <br />
+            {this.state.errorInfo.componentStack}
+          </details>
+        </div>
+      );
+    }
+    // Normally, just render children
+    return this.props.children;
+  }
+}
+ErrorBoundary.propTypes = { children: PropTypes.any };
+
 export class Message extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -363,21 +405,23 @@ export class Message extends React.PureComponent {
               tags={this.props.message.tags}
             />
           )}
-          <MessageIFrame
-            browserBackgroundColor={this.props.browserBackgroundColor}
-            browserForegroundColor={this.props.browserForegroundColor}
-            defaultFontSize={this.props.defaultFontSize}
-            dispatch={this.props.dispatch}
-            expanded={this.props.message.expanded}
-            hasRemoteContent={this.props.message.hasRemoteContent}
-            smimeReload={this.props.message.smimeReload}
-            initialPosition={this.props.message.initialPosition}
-            msgUri={this.props.message.msgUri}
-            neckoUrl={this.props.message.neckoUrl}
-            tenPxFactor={this.props.tenPxFactor}
-            prefs={this.props.prefs}
-            realFrom={this.props.message.realFrom}
-          />
+          <ErrorBoundary>
+            <MessageIFrame
+              browserBackgroundColor={this.props.browserBackgroundColor}
+              browserForegroundColor={this.props.browserForegroundColor}
+              defaultFontSize={this.props.defaultFontSize}
+              dispatch={this.props.dispatch}
+              expanded={this.props.message.expanded}
+              hasRemoteContent={this.props.message.hasRemoteContent}
+              smimeReload={this.props.message.smimeReload}
+              initialPosition={this.props.message.initialPosition}
+              msgUri={this.props.message.msgUri}
+              neckoUrl={this.props.message.neckoUrl}
+              tenPxFactor={this.props.tenPxFactor}
+              prefs={this.props.prefs}
+              realFrom={this.props.message.realFrom}
+            />
+          </ErrorBoundary>
           {this.props.message.expanded &&
             !!this.props.message.attachments.length && (
               <Attachments

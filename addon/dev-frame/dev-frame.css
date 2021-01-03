@@ -1,0 +1,48 @@
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
+
+:root {
+  --application-background-color: white;
+  --application-foreground-color: black;
+}
+
+/* @media screen and (prefers-color-scheme: dark) {
+  :root {
+    --application-background-color: rgb(56, 56, 61);
+    --application-foreground-color: rgb(249, 249, 250);
+  }
+} */
+
+@media screen and (prefers-color-scheme: light) {
+  body {
+    background-color: var(--application-background-color);
+    color: var(--application-foreground-color);
+  }
+}
+
+#root > h2 {
+  text-align: center;
+  margin-top: 0.7em;
+  margin-bottom: 0.7em;
+}
+
+.three-pane-container {
+  display: flex;
+  flex-direction: row;
+}
+.three-pane-left {
+  min-width: 200px;
+  padding: 1em;
+}
+.three-pane-right {
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+}
+.three-pane-top {
+  min-height: 100px;
+}
+.three-pane-bottom {
+  border: 4px dashed gray;
+}
