@@ -207,8 +207,7 @@ export class MessageHeader extends React.PureComponent {
     if (!this.props.expanded) {
       this.props.dispatch(
         messageActions.markAsRead({
-          expand: !this.props.expanded,
-          msgUri: this.props.msgUri,
+          id: this.props.id,
         })
       );
     }
