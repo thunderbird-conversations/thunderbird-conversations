@@ -276,7 +276,6 @@ export class Attachments extends React.PureComponent {
   showGalleryView() {
     this.props.dispatch(
       attachmentActions.showGalleryView({
-        type: "SHOW_GALLERY_VIEW",
         id: this.props.id,
       })
     );
