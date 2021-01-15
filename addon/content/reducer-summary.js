@@ -12,6 +12,7 @@ const initialSummary = {
   conversation: null,
   defaultFontSize: 15,
   hasBuiltInPdf: false,
+  hasIdentityParamsForCompose: false,
   hideQuickReply: false,
   iframesLoading: 0,
   isInTab: false,
@@ -77,9 +78,33 @@ export const summaryActions = {
     };
   },
   sendEmail({ name, email }) {
-    return async () => {
-      const dest = await browser.convContacts.makeMimeAddress({ name, email });
-      await browser.convContacts.composeNew({ to: dest }).catch(console.error);
+    return async (dispatch, getState) => {
+      let state = getState();
+      let dest = await browser.convContacts.makeMimeAddress({
+        name,
+        email,
+      });
+      if (getState().summary.hasIdentityParamsForCompose) {
+        // Ideally we should use the displayed folder, but the displayed message
+        // works fine, as we'll only
+        let folder = await browser.convMsgWindow.getDisplayedFolder(
+          state.summary.tabId
+        );
+        let account = await browser.accounts.get(folder.accountId);
+        await browser.compose.beginNew({
+          identityId: account.identities[0].id,
+          to: dest,
+          // These are due to the way our API interface currently works.
+          body: null,
+          plainTextBody: null,
+          subject: null,
+          attachments: null,
+        });
+      } else {
+        await browser.convContacts
+          .composeNew({ to: dest })
+          .catch(console.error);
+      }
     };
   },
   createFilter({ email }) {
@@ -116,7 +141,11 @@ export const summaryActions = {
   },
   openLink({ url }) {
     return () => {
-      getMail3Pane().messenger.launchExternalURL(url);
+      if ("openDefaultBrowser" in browser.windows) {
+        browser.windows.openDefaultBrowser(url);
+      } else {
+        getMail3Pane().messenger.launchExternalURL(url);
+      }
     };
   },
   printConversation() {
@@ -204,7 +233,7 @@ export const summarySlice = RTK.createSlice({
         tenPxFactor = 0.7;
       }
 
-      let mainVersion = browserVersion?.split(".")[0];
+      let [mainVersion, minorVersion] = browserVersion?.split(".");
 
       return {
         ...state,
@@ -214,6 +243,8 @@ export const summarySlice = RTK.createSlice({
         defaultDetailsShowing,
         // Thunderbird 81 has built-in PDF viewer.
         hasBuiltInPdf: mainVersion >= 81,
+        hasIdentityParamsForCompose:
+          mainVersion > 78 || (mainVersion == 78 && minorVersion >= 6),
         hideQuickReply,
         OS,
         tenPxFactor,

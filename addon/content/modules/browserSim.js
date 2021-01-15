@@ -20,6 +20,8 @@ const SUPPORTED_BASE_APIS = [
   "compose",
   "contacts",
   "addressBooks",
+  "accounts",
+  "windows",
 ];
 
 class _BrowserSim {
