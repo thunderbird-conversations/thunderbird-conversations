@@ -24,6 +24,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   setupLogging: "chrome://conversations/content/modules/misc.js",
   Services: "resource://gre/modules/Services.jsm",
   topMail3Pane: "chrome://conversations/content/modules/misc.js",
+  messageActions: "chrome://conversations/content/modules/misc.js",
 });
 
 XPCOMUtils.defineLazyGetter(this, "browser", function () {
@@ -392,10 +393,11 @@ Conversation.prototype = {
         (async () => {
           try {
             const msgData = await message.toReactData();
-            this.dispatch({
-              type: "MSG_UPDATE_DATA",
-              msgData,
-            });
+            this.dispatch(
+              messageActions.msgUpdateData({
+                msgData,
+              })
+            );
           } catch (ex) {
             if (ex.message != "Message no longer exists") {
               throw ex;
@@ -555,10 +557,11 @@ Conversation.prototype = {
     // from within a dispatch, then we have to dispatch this off to the main
     // thread.
     Services.tm.dispatchToMainThread(() => {
-      this.dispatch({
-        type: "REMOVE_MESSAGE_FROM_CONVERSATION",
-        msgUri: msg._uri,
-      });
+      this.dispatch(
+        messageActions.removeMessageFromConversation({
+          msgUri: msg._uri,
+        })
+      );
     });
   },
 

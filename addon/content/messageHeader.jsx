@@ -198,17 +198,18 @@ export class MessageHeader extends React.PureComponent {
   }
 
   onClickHeader() {
-    this.props.dispatch({
-      type: "MSG_EXPAND",
-      expand: !this.props.expanded,
-      msgUri: this.props.msgUri,
-    });
-    if (!this.props.expanded) {
-      this.props.dispatch({
-        type: "MARK_AS_READ",
+    this.props.dispatch(
+      messageActions.msgExpand({
         expand: !this.props.expanded,
         msgUri: this.props.msgUri,
-      });
+      })
+    );
+    if (!this.props.expanded) {
+      this.props.dispatch(
+        messageActions.markAsRead({
+          id: this.props.id,
+        })
+      );
     }
   }
 

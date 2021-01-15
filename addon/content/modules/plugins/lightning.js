@@ -11,6 +11,7 @@ const { XPCOMUtils } = ChromeUtils.import(
 XPCOMUtils.defineLazyModuleGetters(this, {
   registerHook: "chrome://conversations/content/modules/hook.js",
   topMail3Pane: "chrome://conversations/content/modules/misc.js",
+  messageActions: "chrome://conversations/content/modules/misc.js",
 });
 
 let hasLightning = false;
@@ -35,17 +36,18 @@ function imipOptions(msgWindow, msg, itipItem, rc, actionFunc, foundItems) {
       onOperationComplete(aCalendar, aStatus, aOperationType, aId, aDetail) {
         let label = cal.itip.getCompleteText(aStatus, aOperationType);
 
-        msg._conversation._htmlPane.conversationDispatch({
-          type: "MSG_SHOW_NOTIFICATION",
-          msgData: {
-            msgUri: msg._uri,
-            notification: {
-              iconName: "calendar_today",
-              label,
-              type: "lightning",
+        msg._conversation._htmlPane.conversationDispatch(
+          messageActions.msgShowNotification({
+            msgData: {
+              msgUri: msg._uri,
+              notification: {
+                iconName: "calendar_today",
+                label,
+                type: "lightning",
+              },
             },
-          },
-        });
+          })
+        );
 
         // In case it's useful
         listener.onOperationComplete(
@@ -101,18 +103,19 @@ function imipOptions(msgWindow, msg, itipItem, rc, actionFunc, foundItems) {
   }
 
   // Update the Conversation UI
-  msg._conversation._htmlPane.conversationDispatch({
-    type: "MSG_SHOW_NOTIFICATION",
-    msgData: {
-      msgUri: msg._uri,
-      notification: {
-        buttons,
-        iconName: "calendar_today",
-        label: data.label,
-        type: "lightning",
+  msg._conversation._htmlPane.conversationDispatch(
+    messageActions.msgShowNotification({
+      msgData: {
+        msgUri: msg._uri,
+        notification: {
+          buttons,
+          iconName: "calendar_today",
+          label: data.label,
+          type: "lightning",
+        },
       },
-    },
-  });
+    })
+  );
 }
 
 let lightningHook = {
@@ -127,17 +130,18 @@ let lightningHook = {
       let method = msgHdr.getStringProperty("imip_method");
       let label = cal.itip.getMethodText(method);
       cal.itip.initItemFromMsgData(itipItem, method, msgHdr);
-      msg._conversation._htmlPane.conversationDispatch({
-        type: "MSG_SHOW_NOTIFICATION",
-        msgData: {
-          msgUri: msg._uri,
-          notification: {
-            iconName: "calendar_today",
-            type: "lightning",
-            label,
+      msg._conversation._htmlPane.conversationDispatch(
+        messageActions.msgShowNotification({
+          msgData: {
+            msgUri: msg._uri,
+            notification: {
+              iconName: "calendar_today",
+              type: "lightning",
+              label,
+            },
           },
-        },
-      });
+        })
+      );
 
       cal.itip.processItipItem(
         itipItem,
