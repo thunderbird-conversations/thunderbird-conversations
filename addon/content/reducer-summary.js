@@ -91,7 +91,7 @@ export const summaryActions = {
           state.summary.tabId
         );
         let account = await browser.accounts.get(folder.accountId);
-        await browser.compose.beginNew({
+        await browser.compose.beginNew(undefined, {
           identityId: account.identities[0].id,
           to: dest,
           // These are due to the way our API interface currently works.
