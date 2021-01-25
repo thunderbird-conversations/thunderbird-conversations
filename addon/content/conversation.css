@@ -112,7 +112,7 @@ a img {
 }
 
 .conversationHeaderWrapper {
-  position: fixed;
+  position: sticky;
   top: 0;
   left: 0;
   width: 100%;
@@ -169,7 +169,7 @@ a img {
 
 
 #messageList {
-  margin-top: 4.4rem;
+  margin-top: 10px;
 }
 
 .message {
