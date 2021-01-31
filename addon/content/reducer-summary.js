@@ -84,7 +84,7 @@ export const summaryActions = {
         name,
         email,
       });
-      if (getState().summary.hasIdentityParamsForCompose) {
+      if (state.summary.hasIdentityParamsForCompose) {
         // Ideally we should use the displayed folder, but the displayed message
         // works fine, as we'll only
         let folder = await browser.convMsgWindow.getDisplayedFolder(
