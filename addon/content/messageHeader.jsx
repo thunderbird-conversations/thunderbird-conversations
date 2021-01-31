@@ -9,6 +9,7 @@ import { messageActions } from "./reducer-messages.js";
 import { MessageHeaderOptions } from "./messageHeaderOptions.jsx";
 import { MessageTags, SpecialMessageTags } from "./messageTags.jsx";
 import { SvgIcon } from "./svgIcon.jsx";
+import { browser } from "./es-modules/thunderbird-compat.js";
 
 class Fade extends React.PureComponent {
   constructor(props) {

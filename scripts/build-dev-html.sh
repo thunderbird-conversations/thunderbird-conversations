@@ -4,6 +4,7 @@ DIST=dist-dev-html
 VENDOR_DIR=$DIST/content/vendor
 ADDON_DIR=addon
 DEV_SERVER_PORT=8126
+export NODE_ENV=development
 
 WATCH_FLAG=""
 if [ "$1" = "--watch" ]
