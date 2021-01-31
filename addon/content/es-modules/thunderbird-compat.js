@@ -8,6 +8,11 @@
 import { kPrefDefaults } from "../../prefs.js";
 
 // Make sure the browser object exists
+if (window.BrowserSim && !window.browser) {
+  // BrowserSim is a workaround until Conversations is converted to a webextension
+  // and has a native `browser` object available.
+  window.browser = window.BrowserSim.getBrowser();
+}
 const browser = window.browser || {};
 
 // `i18n` is a replacement for `browser.i18n`.  `getMessage` defaults
@@ -47,6 +52,8 @@ if (browser.i18n) {
     // `resolve(true)` when finished.
     initializeI18n(resolve).catch(reject);
   });
+
+  browser.i18n = i18n;
 }
 
 if (!browser.storage) {
