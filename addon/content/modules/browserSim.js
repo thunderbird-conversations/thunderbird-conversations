@@ -7,21 +7,30 @@ var EXPORTED_SYMBOLS = ["BrowserSim"];
 // This is a workaround whilst we still have stub.html being loaded in the
 // privileged scope. BrowserSim.getBrowser() simulates APIs and passes
 // them back to the webExtension process for handling by the real APIs.
+
+// For these APIs, we don't currently need the events API. Use the
+// proxy set-up so that we can gain the benefit of the field validation
+// that going through the APIs provides (namely setting unused fields
+// to null) as this saves us being explicit about unused fields.
+const SUPPORTED_APIS_NO_EVENTS = [
+  "accounts",
+  "addressBooks",
+  "compose",
+  "contacts",
+  "messageDisplay",
+  "messages",
+  "runtime",
+  "tabs",
+  "windows",
+];
+
 const SUPPORTED_BASE_APIS = [
+  ...SUPPORTED_APIS_NO_EVENTS,
   "convContacts",
   "convMsgWindow",
   "conversations",
   "i18n",
-  "messageDisplay",
-  "messages",
-  "runtime",
   "storage",
-  "tabs",
-  "compose",
-  "contacts",
-  "addressBooks",
-  "accounts",
-  "windows",
 ];
 
 class _BrowserSim {
@@ -104,11 +113,7 @@ class _BrowserSim {
           "addon_parent"
         );
         browser[apiName] = this._implementation(extension, api, apiName);
-      } else if (apiName == "messages") {
-        // For messages, we don't currently need the events API. Use the
-        // proxy set-up so that we can gain the benefit of the field validation
-        // that going through the APIs provides (namely setting unused fields
-        // to null) as this saves us being explicit about unused fields.
+      } else if (SUPPORTED_APIS_NO_EVENTS.includes(apiName)) {
         const subApiHandler = {
           get(obj, prop) {
             return self._browserListener.bind(null, apiName, prop);
