@@ -91,14 +91,9 @@ export const summaryActions = {
           state.summary.tabId
         );
         let account = await browser.accounts.get(folder.accountId);
-        await browser.compose.beginNew(undefined, {
+        await browser.compose.beginNew({
           identityId: account.identities[0].id,
           to: dest,
-          // These are due to the way our API interface currently works.
-          body: null,
-          plainTextBody: null,
-          subject: null,
-          attachments: null,
         });
       } else {
         await browser.convContacts
