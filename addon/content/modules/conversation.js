@@ -776,7 +776,10 @@ Conversation.prototype = {
     let fields = Cc[
       "@mozilla.org/messengercompose/composefields;1"
     ].createInstance(Ci.nsIMsgCompFields);
-    fields.characterSet = "UTF-8";
+    // Thunderbird 82 set this to UTF-8 by default and dropped the setting.
+    if ("characterSet" in fields) {
+      fields.characterSet = "UTF-8";
+    }
     fields.bodyIsAsciiOnly = false;
     fields.forcePlainText = false;
     fields.body = await this.exportAsHtml();

@@ -84,7 +84,7 @@ export const summaryActions = {
         name,
         email,
       });
-      if (getState().summary.hasIdentityParamsForCompose) {
+      if (state.summary.hasIdentityParamsForCompose) {
         // Ideally we should use the displayed folder, but the displayed message
         // works fine, as we'll only
         let folder = await browser.convMsgWindow.getDisplayedFolder(
@@ -94,11 +94,6 @@ export const summaryActions = {
         await browser.compose.beginNew({
           identityId: account.identities[0].id,
           to: dest,
-          // These are due to the way our API interface currently works.
-          body: null,
-          plainTextBody: null,
-          subject: null,
-          attachments: null,
         });
       } else {
         await browser.convContacts
