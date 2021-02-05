@@ -15,7 +15,7 @@
 } */
 
 * {
-  -moz-box-sizing: border-box;
+  box-sizing: border-box;
   margin: 0;
   padding: 0;
 }
@@ -40,15 +40,15 @@ html {
   font-size: 83.3%;
 }
 
-html[os=win] {
+html[os="win"] {
   font-size: 70%;
 }
 
-html[os=mac] {
+html[os="mac"] {
   font-size: 66.6%;
 }
 
-html[os=linux] {
+html[os="linux"] {
   font-size: 62.5%;
 }
 
@@ -90,7 +90,7 @@ a img {
   display: inline-block;
   fill: currentColor;
   height: 1.5em;
-  vertical-align: -.4em;
+  vertical-align: -0.4em;
   pointer-events: none;
 }
 .icon.active {
@@ -117,7 +117,7 @@ a img {
   left: 0;
   width: 100%;
   z-index: 150;
-  box-shadow: 0 0 2px rgba(0,0,0,0.25);
+  box-shadow: 0 0 2px rgba(0, 0, 0, 0.25);
 }
 
 .conversationHeader {
@@ -155,7 +155,7 @@ a img {
 
 .actions .expand {
   /* relatively scale arrow to match with other icons */
-  transform: scale(1.6,1.6);
+  transform: scale(1.6, 1.6);
 }
 
 .expand .expand-less,
@@ -166,7 +166,6 @@ a img {
 .expand.collapse .expand-less {
   display: initial;
 }
-
 
 #messageList {
   margin-top: 10px;
@@ -180,7 +179,7 @@ a img {
 
 .message:focus {
   border: 1px solid ThreeDShadow;
-  box-shadow: 0 0 8px rgba(0,0,0,0.25);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.25);
   /* force shadow to the front */
   position: relative;
 }
@@ -215,7 +214,7 @@ a img {
 
 .author {
   font-weight: bold;
-  margin-inline-end: .3rem;
+  margin-inline-end: 0.3rem;
 }
 
 .to,
@@ -223,15 +222,14 @@ a img {
   color: #888a85;
 }
 
-
 /* That's what makes the ellipsis appear */
 .shrink-box {
-  display:        inline-block;
-  white-space:    nowrap;
-  text-overflow:  ellipsis;
-  overflow:       hidden;
-  flex:           1;
-  margin-inline-end:   .4em;
+  display: inline-block;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  overflow: hidden;
+  flex: 1;
+  margin-inline-end: 0.4em;
 }
 
 .tooltipWrapper {
@@ -239,7 +237,7 @@ a img {
 }
 
 .contactTooltipWrapper {
-  position: absolute;  /* allow it to be moved over respective contact wrapper */
+  position: absolute; /* allow it to be moved over respective contact wrapper */
 }
 
 .tooltip {
@@ -251,7 +249,7 @@ a img {
   background-color: -moz-Field;
   color: -moz-FieldText;
   border: 1px solid ThreeDShadow;
-  box-shadow: 0 0 8px rgba(0,0,0,0.25);
+  box-shadow: 0 0 8px rgba(0, 0, 0, 0.25);
   z-index: 1000;
   line-height: 1.8;
 }
@@ -266,8 +264,12 @@ html[dir="rtl"] .tooltip {
 }
 
 @keyframes fadein {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 .transition-out > .tooltip {
@@ -275,8 +277,12 @@ html[dir="rtl"] .tooltip {
 }
 
 @keyframes fadeout {
-  from { opacity: 1; }
-  to { opacity: 0; }
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
 }
 
 .contactTooltipWrapper .tooltip {
@@ -379,12 +385,12 @@ html[dir="rtl"] .arrow {
 
 .dropDown .arrow {
   left: auto;
-  right: .5em;
+  right: 0.5em;
 }
 
 html[dir="rtl"] .dropDown .arrow {
   right: auto;
-  left: .5em;
+  left: 0.5em;
 }
 
 .arrow.inside {
@@ -427,7 +433,7 @@ html[dir="rtl"] .dropDown .arrow {
   font-weight: normal;
   font-size: 1.2rem;
   text-indent: 0;
-  min-width: 20.0rem;
+  min-width: 20rem;
   padding: 10px;
 }
 
@@ -530,11 +536,11 @@ html[dir="rtl"] .dropDown .arrow {
 
 .tags li {
   display: inline-block;
-  font-size: 1.0rem;
+  font-size: 1rem;
   line-height: 1.8;
-  padding: 0 .9em;
-  margin-inline-end: .4rem;
-  border-radius: .9em;
+  padding: 0 0.9em;
+  margin-inline-end: 0.4rem;
+  border-radius: 0.9em;
   color: #fff;
 }
 
@@ -545,9 +551,9 @@ html[dir="rtl"] .dropDown .arrow {
   font-weight: bold;
   width: 1.8em;
   margin-inline-end: -0.9em;
-  border-radius: .9em;
-  margin-inline-start: .5em;
-  background-color: rgba(255,255,255,0.4);
+  border-radius: 0.9em;
+  margin-inline-start: 0.5em;
+  background-color: rgba(255, 255, 255, 0.4);
 }
 
 .messageHeader .tag-x {
@@ -563,7 +569,7 @@ html[dir="rtl"] .dropDown .arrow {
 }
 
 .tags.special-tags li {
-  background-color: #3F5381;
+  background-color: #3f5381;
 }
 
 .tags.special-tags img {
@@ -659,7 +665,7 @@ html[dir="rtl"] .dropDown .arrow {
   padding: 4px;
   border: 1px solid ThreeDShadow;
   background-color: #fff;
-  background-image: linear-gradient(to bottom,#fff 0%,#f2f2f2 100%);
+  background-image: linear-gradient(to bottom, #fff 0%, #f2f2f2 100%);
   margin: 0 20px 0 0;
   display: flex;
   align-content: center;
@@ -689,7 +695,7 @@ html[dir="rtl"] .dropDown .arrow {
 
 .attachActions {
   display: inline-block;
-  margin-top: .5em;
+  margin-top: 0.5em;
   font-size: 150%;
 }
 
@@ -715,8 +721,7 @@ html[dir="rtl"] .dropDown .arrow {
   font-weight: bold;
 }
 
-.filesize
-.messageFooter {
+.filesize .messageFooter {
   padding: 2px 10px;
 }
 
@@ -796,12 +801,12 @@ html[dir="rtl"] .dropDown .arrow {
 
 .special-tag.enigmail-signed,
 .tag-decrypted {
-  background-color: #68AB57 !important;
+  background-color: #68ab57 !important;
 }
 
 /* DKIM Verifier plugin */
 .special-tag.dkim-signed.SUCCESS {
-  background-color: #68AB57 !important;
+  background-color: #68ab57 !important;
 }
 
 .special-tag.dkim-signed.SUCCESS.warnings {
@@ -809,7 +814,7 @@ html[dir="rtl"] .dropDown .arrow {
 }
 
 .special-tag.dkim-signed.PERMFAIL {
-  background-color: red!important;
+  background-color: red !important;
 }
 
 .dkim-signed {
@@ -817,7 +822,7 @@ html[dir="rtl"] .dropDown .arrow {
 }
 
 .dkim-signed span {
-  display:none;
+  display: none;
 }
 
 .dkim-signed:hover span {
@@ -828,7 +833,7 @@ html[dir="rtl"] .dropDown .arrow {
   color: #111;
   background-color: #fff;
   border: 1px solid #aaa;
-  box-shadow: 0 0 0 6px rgba(0,0,0,0.25);
+  box-shadow: 0 0 0 6px rgba(0, 0, 0, 0.25);
   border-radius: 5px;
   width: -moz-max-content;
   z-index: 1000;
