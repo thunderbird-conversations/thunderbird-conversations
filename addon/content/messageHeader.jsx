@@ -42,7 +42,12 @@ function HoverFade({ children, popup, ...rest }) {
     document.querySelector("#popup-container") || spanRef.current;
 
   // Calculate where to render the popup
-  const pos = (spanRef.current && spanRef.current.getBoundingClientRect()) || {
+  const pos = spanRef.current?.getBoundingClientRect() || {
+    left: 0,
+    top: 0,
+    bottom: 0,
+  };
+  const parentPos = popupParentNode?.getBoundingClientRect() || {
     left: 0,
     top: 0,
     bottom: 0,
@@ -68,8 +73,12 @@ function HoverFade({ children, popup, ...rest }) {
           <div
             className={`fade-popup ${isHovering ? "hover" : ""}`}
             style={{
-              left: window.scrollX + pos.left,
-              top: window.scrollY + pos.bottom,
+              //left: window.scrollX + pos.left,
+              //top: window.scrollY + pos.bottom,
+              //left: spanRef.current?.offsetLeft,
+              //top: spanRef.current?.offsetTop + spanRef.current?.offsetHeight,
+              left: pos.left - parentPos.left,
+              top: pos.bottom - parentPos.top,
             }}
           >
             {popup}
@@ -127,13 +136,11 @@ export function DetailedContactLabel({ contact, className }) {
       style={{ display: "inline-block" }}
     >
       <span className={className}>
-        <span className="tooltipWrapper contact">
-          <span className="contactName">
-            {star}
-            {contact.name.trim()}
-            {extraLabel}
-            {emailLabel}
-          </span>
+        <span className="contactName">
+          {star}
+          {contact.name.trim()}
+          {extraLabel}
+          {emailLabel}
         </span>
       </span>
     </HoverFade>
@@ -171,12 +178,10 @@ export function ContactLabel({ contact, className }) {
       }
     >
       <span className={className}>
-        <span className="tooltipWrapper contact">
-          <span className="contactName">
-            {contact.name.trim()}
-            {extraLabel}
-            {emailLabel}
-          </span>
+        <span className="contactName">
+          {contact.name.trim()}
+          {extraLabel}
+          {emailLabel}
         </span>
       </span>
     </HoverFade>

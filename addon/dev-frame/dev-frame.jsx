@@ -121,6 +121,7 @@ export function Main() {
           </div>
           <div className="three-pane-bottom">
             <div id="conversationWrapper">
+              <div id="popup-container"></div>
               <ReactRedux.Provider store={store}>
                 <ExampleMessage />
               </ReactRedux.Provider>

@@ -111,6 +111,10 @@ a img {
   text-decoration: underline;
 }
 
+#conversationWrapper {
+  position: relative;
+}
+
 .conversationHeaderWrapper {
   position: sticky;
   top: 0;
@@ -224,16 +228,11 @@ a img {
 
 /* That's what makes the ellipsis appear */
 .shrink-box {
-  display: inline-block;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
   flex: 1;
   margin-inline-end: 0.4em;
-}
-
-.tooltipWrapper {
-  position: relative;
 }
 
 .tooltip {
@@ -819,6 +818,7 @@ html[dir="rtl"] .dropDown .arrow {
   position: absolute;
   top: 50px;
   left: 0;
+  pointer-events: auto;
   transition: visibility 800ms, opacity 800ms;
   /* make sure the popup is in the foreground */
   z-index: 100;
@@ -830,4 +830,13 @@ html[dir="rtl"] .dropDown .arrow {
 .fade-popup:focus-within {
   opacity: 1;
   visibility: visible;
+}
+#popup-container {
+  width: 100%;
+  height: 100%;
+  top: 0px;
+  left: 0px;
+  position: absolute;
+  pointer-events: none;
+  overflow: hidden;
 }
