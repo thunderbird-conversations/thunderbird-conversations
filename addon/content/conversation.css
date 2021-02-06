@@ -236,10 +236,6 @@ a img {
   position: relative;
 }
 
-.contactTooltipWrapper {
-  position: absolute; /* allow it to be moved over respective contact wrapper */
-}
-
 .tooltip {
   position: absolute;
   min-width: 30.2rem;
@@ -255,43 +251,6 @@ a img {
 html[dir="rtl"] .tooltip {
   left: 0;
   right: 16px;
-}
-
-.transition-in > .tooltip {
-  animation: fadein 400ms ease-out;
-}
-
-@keyframes fadein {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-.transition-out > .tooltip {
-  animation: fadeout 400ms ease-in;
-}
-
-@keyframes fadeout {
-  from {
-    opacity: 1;
-  }
-  to {
-    opacity: 0;
-  }
-}
-
-.contactTooltipWrapper .tooltip {
-  /* override generic tooltip, so to look closer to contact name */
-  left: 0;
-}
-
-html[dir="rtl"] .contactTooltipWrapper .tooltip {
-  /* override generic tooltip, so to look closer to contact name */
-  left: 16px;
-  right: 0;
 }
 
 .createFilter {
