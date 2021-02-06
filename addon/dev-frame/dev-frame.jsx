@@ -6,6 +6,10 @@ import React from "react";
 import * as RTK from "@reduxjs/toolkit";
 import * as ReactRedux from "react-redux";
 import { Message } from "../content/message.jsx";
+import { browser, Services } from "../content/es-modules/thunderbird-compat.js";
+
+window.Services = Services;
+window.bb = browser;
 
 const testSlice = RTK.createSlice({
   name: "test",
@@ -103,21 +107,49 @@ function ExampleMessage() {
   );
 }
 
+function LocaleSelector() {
+  const locales = Services.locale.availableLocales;
+  const [locale, setLocale] = React.useState(Services.locale.requestedLocale);
+  return (
+    <select
+      name="locale"
+      value={locale}
+      onChange={(event) => {
+        const newLocale = event.target.value;
+        Services.locale.requestedLocale = newLocale;
+        setLocale(newLocale);
+      }}
+    >
+      {locales.map((l) => (
+        <option key={l} value={l}>
+          {l}
+        </option>
+      ))}
+    </select>
+  );
+}
+
 // The entry point
 export function Main() {
   return (
     <React.Fragment>
       <h2>Thunderbird Conversations Dev Frame</h2>
+      <div className="dev-frame-description">
+        The dev frame renders Conversations components in the browser for rapid
+        development. Some, but not all, thunderbird functions are mocked.
+      </div>
+      <div className="dev-frame-options">
+        <b style={{ marginRight: 5 }}>Dev Frame Options</b>
+        <i>
+          Locale: <LocaleSelector />
+        </i>
+      </div>
       <div className="three-pane-container">
         <div className="three-pane-left">
           <h4 className="faux-inbox">Inbox (200)</h4>
         </div>
         <div className="three-pane-right">
-          <div className="three-pane-top">
-            The dev frame renders Conversations components in the browser for
-            rapid development. Some, but not all, thunderbird functions are
-            mocked.
-          </div>
+          <div className="three-pane-top"></div>
           <div className="three-pane-bottom">
             <div id="conversationWrapper">
               <ReactRedux.Provider store={store}>
