@@ -27,6 +27,7 @@ export const i18n = {
 
 if (browser.i18n) {
   i18n.getMessage = browser.i18n.getMessage;
+  i18n.getUILanguage = browser.i18n.getUILanguage;
   i18n.isPolyfilled = false;
 } else {
   async function initializeI18n(resolve) {
@@ -43,6 +44,7 @@ if (browser.i18n) {
     i18n.getMessage = (messageName, substitutions) =>
       (json[messageName] || {}).message ||
       `<translation not found>${messageName}`;
+    i18n.getUILanguage = () => "en-US";
     resolve(true);
   }
 

@@ -13,20 +13,15 @@ import { SvgIcon } from "./svgIcon.jsx";
 import { browser } from "./es-modules/thunderbird-compat.js";
 
 /**
- * Returns a localized list separator which is based on the length of the list.
+ * Normalize a contact into a string (used for i18n formatting).
  *
- * @param {Number} index
- * @param {Number} length
- * @returns {string}
+ * @param {*} contact
+ * @returns
  */
-function _getSeparator(index, length) {
-  if (index == 0) {
-    return "";
-  }
-  if (index < length - 1) {
-    return browser.i18n.getMessage("header.commaSeparator");
-  }
-  return browser.i18n.getMessage("header.andSeparator");
+function contactToString(contact) {
+  return `${contact.name || ""} <${
+    contact.displayEmail || contact.email
+  }>`.trim();
 }
 
 /**
@@ -100,7 +95,7 @@ function Email({ email }) {
 }
 Email.propTypes = { email: PropTypes.string.isRequired };
 
-export function DetailedContactLabel({ separator, contact, className }) {
+export function DetailedContactLabel({ contact, className }) {
   // These components conditionally render
   let extraLabel = null;
   let emailLabel = null;
@@ -132,7 +127,6 @@ export function DetailedContactLabel({ separator, contact, className }) {
       style={{ display: "inline-block" }}
     >
       <span className={className}>
-        <span>{separator}</span>
         <span className="tooltipWrapper contact">
           <span className="contactName">
             {star}
@@ -148,9 +142,8 @@ export function DetailedContactLabel({ separator, contact, className }) {
 DetailedContactLabel.propTypes = {
   className: PropTypes.string.isRequired,
   contact: PropTypes.object.isRequired,
-  separator: PropTypes.string,
 };
-export function ContactLabel({ separator, contact, className }) {
+export function ContactLabel({ contact, className }) {
   // These components conditionally render
   let extraLabel = null;
   let emailLabel = null;
@@ -176,10 +169,8 @@ export function ContactLabel({ separator, contact, className }) {
           contactId={contact.contactId}
         />
       }
-      style={{ display: "inline-block" }}
     >
       <span className={className}>
-        <span>{separator}</span>
         <span className="tooltipWrapper contact">
           <span className="contactName">
             {contact.name.trim()}
@@ -194,7 +185,6 @@ export function ContactLabel({ separator, contact, className }) {
 ContactLabel.propTypes = {
   className: PropTypes.string.isRequired,
   contact: PropTypes.object.isRequired,
-  separator: PropTypes.string,
 };
 
 function Avatar({ url, initials, isDefault, style }) {
@@ -244,7 +234,6 @@ export function MessageHeader({
   to,
   specialTags,
 }) {
-  console.log("MHEAD", snippet);
   function onClickHeader() {
     dispatch(
       messageActions.msgExpand({
@@ -273,6 +262,10 @@ export function MessageHeader({
   }
 
   const allTo = [...to, ...cc, ...bcc];
+  const allToMap = new Map(
+    allTo.map((contact) => [contactToString(contact), contact])
+  );
+  const locale = browser.i18n.getUILanguage();
   // TODO: Maybe insert this after contacts but before snippet:
   // <span class="bzTo"> {{str "message.at"}} {{bugzillaUrl}}</span>
 
@@ -281,14 +274,21 @@ export function MessageHeader({
     extraContacts = (
       <React.Fragment>
         {browser.i18n.getMessage("header.to")}{" "}
-        {allTo.map((contact, index) => (
-          <ContactLabel
-            className="to"
-            contact={contact}
-            key={index}
-            separator={_getSeparator(index, allTo.length)}
-          />
-        ))}
+        {new Intl.ListFormat(locale, { style: "long", type: "conjunction" })
+          .formatToParts(allToMap.keys())
+          .map((item, i) => {
+            if (item.type === "literal") {
+              return (
+                <span className="to" key={i}>
+                  {item.value}
+                </span>
+              );
+            }
+            const contact = allToMap.get(item.value);
+            return (
+              <ContactLabel className="to" contact={contact} key={item.value} />
+            );
+          })}{" "}
       </React.Fragment>
     );
   }

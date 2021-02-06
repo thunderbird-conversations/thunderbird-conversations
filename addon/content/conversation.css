@@ -852,6 +852,7 @@ html[dir="rtl"] .dropDown .arrow {
 /* fading tool tip that appears directly below the container */
 .fade-parent {
   position: relative;
+  display: inline-block;
 }
 .fade-popup {
   opacity: 0;

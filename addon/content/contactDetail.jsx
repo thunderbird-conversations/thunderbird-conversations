@@ -84,7 +84,7 @@ function _ContactDetail({
   const contactEdit = contactId ? (
     <button
       className="editContact"
-      title={browser.i18n.getMessage("editCardAb")}
+      title={browser.i18n.getMessage("contact.editContactTooltip")}
       onClick={editContact}
     >
       <SvgIcon hash="edit" />
@@ -92,7 +92,7 @@ function _ContactDetail({
   ) : (
     <button
       className="addContact"
-      title={browser.i18n.getMessage("addToAb")}
+      title={browser.i18n.getMessage("contact.addContactTooltip")}
       onClick={addContact}
     >
       <SvgIcon hash="add" />
@@ -123,7 +123,7 @@ function _ContactDetail({
             </span>
             <button
               className="copyEmail"
-              title={browser.i18n.getMessage("copyEmail")}
+              title={browser.i18n.getMessage("contact.copyEmailTooltip")}
               onClick={copyEmail}
             >
               <SvgIcon hash="content_copy" />
@@ -138,14 +138,14 @@ function _ContactDetail({
       <div className="tipFooter">
         <button
           className="sendEmail"
-          title={browser.i18n.getMessage("sendEmail")}
+          title={browser.i18n.getMessage("contact.sendEmailTooltip")}
           onClick={sendEmail}
         >
           <SvgIcon hash="mail" />
         </button>
         <button
           className="showInvolving"
-          title={browser.i18n.getMessage("recentConversations")}
+          title={browser.i18n.getMessage("contact.recentConversationsTooltip")}
           onClick={showInvolving}
         >
           <SvgIcon hash="history" />
@@ -153,7 +153,9 @@ function _ContactDetail({
         {!expanded && (
           <button
             className="showInvolving"
-            title={browser.i18n.getMessage("more")}
+            title={browser.i18n.getMessage(
+              "contact.recentConversationsTooltip"
+            )}
             onClick={() => {
               setExpanded(true);
             }}
