@@ -3,178 +3,168 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import React from "react";
-import ReactDOM from "react-dom";
 import * as ReactRedux from "react-redux";
 import PropTypes from "prop-types";
 import { summaryActions } from "./reducer-summary.js";
 import { SvgIcon } from "./svgIcon.jsx";
 import { browser } from "./es-modules/thunderbird-compat.js";
 
-class _ContactDetail extends React.PureComponent {
-  constructor(props) {
-    super(props);
-    this.addContact = this.addContact.bind(this);
-    this.editContact = this.editContact.bind(this);
-    this.createFilter = this.createFilter.bind(this);
-    this.copyEmail = this.copyEmail.bind(this);
-    this.sendEmail = this.sendEmail.bind(this);
-    this.showInvolving = this.showInvolving.bind(this);
-    this.onGeneralClick = this.onGeneralClick.bind(this);
-  }
+function _ContactDetail({
+  name,
+  email,
+  realEmail,
+  avatar,
+  contactId,
+  dispatch,
+}) {
+  const [expanded, setExpanded] = React.useState(false);
 
-  onGeneralClick(event) {
+  function onGeneralClick(event) {
     event.stopPropagation();
     event.preventDefault();
   }
 
-  addContact(event) {
+  function addContact(event) {
     event.stopPropagation();
     event.preventDefault();
-    this.props.dispatch(
+    dispatch(
       summaryActions.addContact({
-        name: this.props.name,
-        email: this.props.realEmail,
+        name,
+        email: realEmail,
       })
     );
   }
 
-  createFilter(event) {
+  function createFilter(event) {
     event.stopPropagation();
     event.preventDefault();
-    this.props.dispatch(
+    dispatch(
       summaryActions.createFilter({
-        email: this.props.realEmail,
+        email: realEmail,
       })
     );
   }
 
-  copyEmail(event) {
+  function copyEmail(event) {
     event.stopPropagation();
     event.preventDefault();
-    this.props.dispatch(
-      summaryActions.copyEmail({ email: this.props.realEmail })
-    );
+    dispatch(summaryActions.copyEmail({ email: realEmail }));
   }
 
-  editContact(event) {
+  function editContact(event) {
     event.stopPropagation();
     event.preventDefault();
-    this.props.dispatch(
-      summaryActions.editContact({ email: this.props.realEmail })
-    );
+    dispatch(summaryActions.editContact({ email: realEmail }));
   }
 
-  sendEmail(event) {
+  function sendEmail(event) {
     event.stopPropagation();
     event.preventDefault();
-    this.props.dispatch(
+    dispatch(
       summaryActions.sendEmail({
-        name: this.props.name,
-        email: this.props.realEmail,
+        name,
+        email: realEmail,
       })
     );
   }
 
-  showInvolving(event) {
+  function showInvolving(event) {
     event.stopPropagation();
     event.preventDefault();
-    this.props.dispatch(
+    dispatch(
       summaryActions.showMessagesInvolving({
-        name: this.props.name,
-        email: this.props.realEmail,
+        name,
+        email: realEmail,
       })
     );
   }
 
-  render() {
-    const name = this.props.name;
-    const pos = (this.props.parentSpan &&
-      this.props.parentSpan.getBoundingClientRect()) || {
-      left: 0,
-      top: 0,
-      bottom: 0,
-    };
-    const elm = (
-      <div
-        className="tooltip"
-        style={{
-          left: pos.left,
-          top: pos.top + window.scrollY + (pos.bottom - pos.top) * 2,
-        }}
-        onClick={this.onGeneralClick}
-      >
-        <div className="arrow"></div>
-        <div className="arrow inside"></div>
-        <div className="authorInfoContainer">
-          <div className="authorInfo">
-            <span className="name" title={name}>
-              {name}
+  // If there is a card for the contact, provide the option to
+  // edit the card. Otherwise, provide an add button.
+  const contactEdit = contactId ? (
+    <button
+      className="editContact"
+      title={browser.i18n.getMessage("editCardAb")}
+      onClick={editContact}
+    >
+      <SvgIcon hash="edit" />
+    </button>
+  ) : (
+    <button
+      className="addContact"
+      title={browser.i18n.getMessage("addToAb")}
+      onClick={addContact}
+    >
+      <SvgIcon hash="add" />
+    </button>
+  );
+
+  const expandedInfo = (
+    <div className="tipFooter hiddenFooter">
+      <button className="createFilter" onClick={createFilter}>
+        {"createFilter"}
+      </button>
+      {contactEdit}
+    </div>
+  );
+
+  return (
+    <div className="tooltip" onClick={onGeneralClick}>
+      <div className="arrow"></div>
+      <div className="arrow inside"></div>
+      <div className="authorInfoContainer">
+        <div className="authorInfo">
+          <span className="name" title={name}>
+            {name}
+          </span>
+          <span className="authorEmail">
+            <span className="authorEmailAddress" title={realEmail}>
+              {realEmail}
             </span>
-            <span className="authorEmail">
-              <span className="authorEmailAddress" title={this.props.realEmail}>
-                {this.props.realEmail}
-              </span>
-              <button
-                className="copyEmail"
-                title={browser.i18n.getMessage("contact.copyEmailTooltip")}
-                onClick={this.copyEmail}
-              >
-                <SvgIcon hash={"content_copy"} />
-              </button>
-            </span>
-          </div>
-          <div className="authorPicture">
-            <img src={this.props.avatar} />
-          </div>
+            <button
+              className="copyEmail"
+              title={browser.i18n.getMessage("copyEmail")}
+              onClick={copyEmail}
+            >
+              <SvgIcon hash="content_copy" />
+            </button>
+          </span>
         </div>
-        <div className="tipFooter">
-          <button
-            className="sendEmail"
-            title={browser.i18n.getMessage("contact.sendEmailTooltip")}
-            onClick={this.sendEmail}
-          >
-            <SvgIcon hash={"mail"} />
-          </button>
-          <button
-            className="showInvolving"
-            title={browser.i18n.getMessage(
-              "contact.recentConversationsTooltip"
-            )}
-            onClick={this.showInvolving}
-          >
-            <SvgIcon hash={"history"} />
-          </button>
-          {this.props.contactId ? (
-            <button
-              className="editContact"
-              title={browser.i18n.getMessage("contact.editContactTooltip")}
-              onClick={this.editContact}
-            >
-              <SvgIcon hash={"edit"} />
-            </button>
-          ) : (
-            <button
-              className="addContact"
-              title={browser.i18n.getMessage("contact.addContactTooltip")}
-              onClick={this.addContact}
-            >
-              <SvgIcon hash={"add"} />
-            </button>
-          )}
-          <button className="createFilter" onClick={this.createFilter}>
-            {browser.i18n.getMessage("contact.createFilterTooltip")}
-          </button>
+        <div className="authorPicture">
+          <img src={avatar} />
         </div>
       </div>
-    );
-    // In TB 68, when an element with `tabIndex` gets focused,
-    // it gets set as the position parent. It shouldn't. To resolve
-    // this issue, reparent the popup to <body> so its parent will never
-    // change. See https://github.com/thunderbird-conversations/thunderbird-conversations/pull/1432
-    return ReactDOM.createPortal(elm, document.querySelector("body"));
-  }
+      {expanded && expandedInfo}
+      <div className="tipFooter">
+        <button
+          className="sendEmail"
+          title={browser.i18n.getMessage("sendEmail")}
+          onClick={sendEmail}
+        >
+          <SvgIcon hash="mail" />
+        </button>
+        <button
+          className="showInvolving"
+          title={browser.i18n.getMessage("recentConversations")}
+          onClick={showInvolving}
+        >
+          <SvgIcon hash="history" />
+        </button>
+        {!expanded && (
+          <button
+            className="showInvolving"
+            title={browser.i18n.getMessage("more")}
+            onClick={() => {
+              setExpanded(true);
+            }}
+          >
+            <SvgIcon hash="expand_more" />
+          </button>
+        )}
+      </div>
+    </div>
+  );
 }
-
 _ContactDetail.propTypes = {
   dispatch: PropTypes.func.isRequired,
   name: PropTypes.string.isRequired,
@@ -182,7 +172,6 @@ _ContactDetail.propTypes = {
   realEmail: PropTypes.string.isRequired,
   avatar: PropTypes.string.isRequired,
   contactId: PropTypes.string,
-  parentSpan: PropTypes.object.isRequired,
 };
 
 export const ContactDetail = ReactRedux.connect()(_ContactDetail);

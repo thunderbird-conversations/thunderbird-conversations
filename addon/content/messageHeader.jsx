@@ -3,6 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import React from "react";
+import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
 import { ContactDetail } from "./contactDetail.jsx";
 import { messageActions } from "./reducer-messages.js";
@@ -11,327 +12,356 @@ import { MessageTags, SpecialMessageTags } from "./messageTags.jsx";
 import { SvgIcon } from "./svgIcon.jsx";
 import { browser } from "./es-modules/thunderbird-compat.js";
 
-class Fade extends React.PureComponent {
-  constructor(props) {
-    super(props);
-    this.state = {
-      fadeIn: false,
-      fadeOut: false,
-    };
+/**
+ * Returns a localized list separator which is based on the length of the list.
+ *
+ * @param {Number} index
+ * @param {Number} length
+ * @returns {string}
+ */
+function _getSeparator(index, length) {
+  if (index == 0) {
+    return "";
   }
-
-  componentDidUpdate(prevProps) {
-    if (!prevProps.trigger && this.props.trigger) {
-      let stateUpdate = {};
-      if (this.fadeOutTimeout) {
-        clearTimeout(this.fadeOutTimeout);
-        delete this.fadeOutTimeout;
-        if (this.state.fadeOut) {
-          stateUpdate.fadeOut = false;
-        }
-        // Since we're already showing the tooltip, don't bother
-        // with fading it in again.
-        this.setState({
-          fadeIn: false,
-          fadeOut: false,
-        });
-        return;
-      }
-      stateUpdate.fadeIn = true;
-      this.setState(stateUpdate);
-      this.fadeInTimeout = setTimeout(() => {
-        this.setState({ fadeIn: false });
-        delete this.fadeInTimeout;
-      }, 400);
-    } else if (prevProps.trigger && !this.props.trigger) {
-      let stateUpdate = {};
-      if (this.fadeInTimeout) {
-        clearTimeout(this.fadeInTimeout);
-        delete this.fadeInTimeout;
-      }
-      stateUpdate.fadeOut = true;
-      this.setState(stateUpdate);
-      this.fadeOutTimeout = setTimeout(() => {
-        this.setState({ fadeOut: false });
-        delete this.fadeOutTimeout;
-      }, 400);
-    }
+  if (index < length - 1) {
+    return browser.i18n.getMessage("header.commaSeparator");
   }
-
-  componentWillUnmount() {
-    if (this.fadeInTimeout) {
-      clearTimeout(this.fadeInTimeout);
-      delete this.fadeInTimeout;
-    }
-    if (this.fadeOutTimeout) {
-      clearTimeout(this.fadeOutTimeout);
-      delete this.fadeOutTimeout;
-    }
-  }
-
-  render() {
-    if (this.props.trigger || this.state.fadeOut) {
-      let transition = this.state.fadeIn ? "transition-in" : "";
-      if (!transition && this.state.fadeOut) {
-        transition = "transition-out";
-      }
-      return <span className={transition}>{this.props.children}</span>;
-    }
-    return null;
-  }
+  return browser.i18n.getMessage("header.andSeparator");
 }
 
-Fade.propTypes = {
-  children: PropTypes.object.isRequired,
-  trigger: PropTypes.bool.isRequired,
+/**
+ * Opens `popup` when the child element(s) are hovered over,
+ * or they are focused. The children are surrounded by a <span>.
+ * Any additional props are passed to the surrounding <span>.
+ * An element with `id=popup-container` is assumed to exist somewhere
+ * near the root of the DOM. The children elements are rendered,
+ * absolutely positions, inside the popup-container.
+ *
+ * @param {*} { children, popup, ...rest }
+ * @returnType {React.Node}
+ */
+function HoverFade({ children, popup, ...rest }) {
+  const [isHovering, setIsHovering] = React.useState(false);
+  const spanRef = React.useRef(null);
+  const popupParentNode =
+    document.querySelector("#popup-container") || spanRef.current;
+
+  // Calculate where to render the popup
+  const pos = (spanRef.current && spanRef.current.getBoundingClientRect()) || {
+    left: 0,
+    top: 0,
+    bottom: 0,
+  };
+
+  return (
+    <>
+      <span
+        ref={spanRef}
+        className="fade-parent"
+        {...rest}
+        onMouseEnter={() => {
+          setIsHovering(true);
+        }}
+        onMouseLeave={() => {
+          setIsHovering(false);
+        }}
+      >
+        {children}
+      </span>
+      {popupParentNode &&
+        ReactDOM.createPortal(
+          <div
+            className={`fade-popup ${isHovering ? "hover" : ""}`}
+            style={{
+              left: window.scrollX + pos.left,
+              top: window.scrollY + pos.bottom,
+            }}
+          >
+            {popup}
+          </div>,
+          popupParentNode
+        )}
+    </>
+  );
+}
+HoverFade.propTypes = {
+  children: PropTypes.node,
+  popup: PropTypes.node,
 };
 
-export class ContactLabel extends React.PureComponent {
-  constructor(props) {
-    super(props);
-    this.onMouseOver = this.onMouseOver.bind(this);
-    this.onMouseOut = this.onMouseOut.bind(this);
-    this.state = {
-      hover: false,
-    };
+/**
+ * Display an email address wrapped in <...> braces.
+ *
+ * @param {*} { email }
+ * @returnType {React.Node}
+ */
+function Email({ email }) {
+  return `<${email.trim()}>`;
+}
+Email.propTypes = { email: PropTypes.string.isRequired };
+
+export function DetailedContactLabel({ separator, contact, className }) {
+  // These components conditionally render
+  let extraLabel = null;
+  let emailLabel = null;
+
+  // In a detail view, there is a star at the start of the contact
+  // info and a line break at the end.
+  const star = contact.contactId && "\u2605 ";
+  emailLabel = contact.email && (
+    <span className="smallEmail">
+      {" "}
+      <Email email={contact.email} />
+    </span>
+  );
+  if (contact.extra) {
+    extraLabel = `(${contact.extra})`;
   }
 
-  onMouseOver(event) {
-    if (this.fadeOutTimeout) {
-      clearTimeout(this.fadeOutTimeout);
-      delete this.fadeOutTimeout;
-      this.setState({ hover: true });
-      return;
-    }
-    this.timeout = setTimeout(() => {
-      this.setState({ hover: true });
-      delete this.timeout;
-    }, 400);
-  }
-
-  onMouseOut(event) {
-    if (this.timeout) {
-      clearTimeout(this.timeout);
-      delete this.timeout;
-    }
-    this.fadeOutTimeout = setTimeout(() => {
-      this.setState({ hover: false });
-      delete this.fadeOutTimeout;
-    }, 400);
-  }
-
-  componentWillUnmount() {
-    if (this.timeout) {
-      clearTimeout(this.timeout);
-      delete this.timeout;
-    }
-    if (this.fadeOutTimeout) {
-      clearTimeout(this.fadeOutTimeout);
-      delete this.fadeOutTimeout;
-    }
-  }
-
-  render() {
-    return (
-      <span
-        className={this.props.className}
-        onMouseOver={this.onMouseOver}
-        onMouseOut={this.onMouseOut}
-        ref={(s) => (this.span = s)}
-      >
-        <Fade trigger={this.state.hover}>
-          <ContactDetail
-            parentSpan={this.span}
-            name={this.props.contact.name}
-            email={this.props.contact.displayEmail}
-            realEmail={this.props.contact.email}
-            avatar={this.props.contact.avatar}
-            contactId={this.props.contact.contactId}
-          />
-        </Fade>
-        <span>{this.props.separator}</span>
+  return (
+    <HoverFade
+      popup={
+        <ContactDetail
+          name={contact.name}
+          email={contact.displayEmail}
+          realEmail={contact.email}
+          avatar={contact.avatar}
+          contactId={contact.contactId}
+        />
+      }
+      style={{ display: "inline-block" }}
+    >
+      <span className={className}>
+        <span>{separator}</span>
         <span className="tooltipWrapper contact">
           <span className="contactName">
-            {this.props.detailView &&
-              !!this.props.contact.contactId &&
-              "\u2605 "}
-            {this.props.contact.name.trim()}
-            {this.props.contact.extra && (
-              <label
-                xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
-                crop="center"
-                className="contactExtra"
-                value={`(${this.props.contact.extra})`}
-              />
-            )}
-            {!this.props.detailView && this.props.contact.displayEmail && (
-              <span className="smallEmail">
-                {" "}
-                &lt;{this.props.contact.displayEmail.trim()}&gt;
-              </span>
-            )}
-            {this.props.detailView && this.props.contact.email && (
-              <span className="smallEmail">
-                {" "}
-                &lt;{this.props.contact.email.trim()}&gt;
-              </span>
-            )}
-            {this.props.detailView && <br />}
+            {star}
+            {contact.name.trim()}
+            {extraLabel}
+            {emailLabel}
           </span>
         </span>
       </span>
-    );
-  }
+    </HoverFade>
+  );
 }
+DetailedContactLabel.propTypes = {
+  className: PropTypes.string.isRequired,
+  contact: PropTypes.object.isRequired,
+  separator: PropTypes.string,
+};
+export function ContactLabel({ separator, contact, className }) {
+  // These components conditionally render
+  let extraLabel = null;
+  let emailLabel = null;
 
+  emailLabel = contact.displayEmail && (
+    <span className="smallEmail">
+      {" "}
+      <Email email={contact.displayEmail} />
+    </span>
+  );
+  if (contact.extra) {
+    extraLabel = `(${contact.extra})`;
+  }
+
+  return (
+    <HoverFade
+      popup={
+        <ContactDetail
+          name={contact.name}
+          email={contact.displayEmail}
+          realEmail={contact.email}
+          avatar={contact.avatar}
+          contactId={contact.contactId}
+        />
+      }
+      style={{ display: "inline-block" }}
+    >
+      <span className={className}>
+        <span>{separator}</span>
+        <span className="tooltipWrapper contact">
+          <span className="contactName">
+            {contact.name.trim()}
+            {extraLabel}
+            {emailLabel}
+          </span>
+        </span>
+      </span>
+    </HoverFade>
+  );
+}
 ContactLabel.propTypes = {
   className: PropTypes.string.isRequired,
   contact: PropTypes.object.isRequired,
-  detailView: PropTypes.bool.isRequired,
   separator: PropTypes.string,
 };
 
-export class MessageHeader extends React.PureComponent {
-  constructor(props) {
-    super(props);
-    this.onClickHeader = this.onClickHeader.bind(this);
-    this.onClickStar = this.onClickStar.bind(this);
+function Avatar({ url, initials, isDefault, style }) {
+  if (isDefault) {
+    return (
+      <abbr className="contactInitials" style={style}>
+        {initials}
+      </abbr>
+    );
   }
+  return (
+    <span
+      className="contactAvatar"
+      style={{ backgroundImage: `url('${url}')` }}
+    >
+      {"\u00a0"}
+    </span>
+  );
+}
+Avatar.propTypes = {
+  url: PropTypes.string,
+  initials: PropTypes.string,
+  isDefault: PropTypes.bool,
+  style: PropTypes.object,
+};
 
-  onClickHeader() {
-    this.props.dispatch(
+export function MessageHeader({
+  starred,
+  expanded,
+  from,
+  msgUri,
+  id,
+  dispatch,
+  bcc,
+  cc,
+  date,
+  detailsShowing,
+  fullDate,
+  attachments,
+  multipleRecipients,
+  recipientsIncludeLists,
+  inView,
+  isDraft,
+  shortFolderName,
+  snippet,
+  tags,
+  to,
+  specialTags,
+}) {
+  console.log("MHEAD", snippet);
+  function onClickHeader() {
+    dispatch(
       messageActions.msgExpand({
-        expand: !this.props.expanded,
-        msgUri: this.props.msgUri,
+        expand: !expanded,
+        msgUri,
       })
     );
-    if (!this.props.expanded) {
-      this.props.dispatch(
+    if (!expanded) {
+      dispatch(
         messageActions.markAsRead({
-          id: this.props.id,
+          id,
         })
       );
     }
   }
 
-  onClickStar(event) {
+  function onClickStar(event) {
     event.stopPropagation();
     event.preventDefault();
-    this.props.dispatch(
+    dispatch(
       messageActions.setStarred({
-        id: this.props.id,
-        starred: !this.props.starred,
+        id,
+        starred: !starred,
       })
     );
   }
 
-  _getSeparator(index, length) {
-    if (index == 0) {
-      return "";
-    }
-    if (index < length - 1) {
-      return browser.i18n.getMessage("header.commaSeparator");
-    }
-    return browser.i18n.getMessage("header.andSeparator");
-  }
+  const allTo = [...to, ...cc, ...bcc];
+  // TODO: Maybe insert this after contacts but before snippet:
+  // <span class="bzTo"> {{str "message.at"}} {{bugzillaUrl}}</span>
 
-  render() {
-    const allTo = [...this.props.to, ...this.props.cc, ...this.props.bcc];
-    // TODO: Maybe insert this after contacts but before snippet:
-    // <span class="bzTo"> {{str "message.at"}} {{bugzillaUrl}}</span>
-    return (
-      <div
-        className={"messageHeader" + (this.props.expanded ? " expanded" : "")}
-        onClick={this.onClickHeader}
-      >
-        <div className="shrink-box">
-          <div
-            className={"star" + (this.props.starred ? " starred" : "")}
-            onClick={this.onClickStar}
-          >
-            <SvgIcon hash={"star"} />
-          </div>
-          {this.props.from.avatar.startsWith("chrome:") ? (
-            <abbr
-              className="contactInitials"
-              style={this.props.from.colorStyle}
-            >
-              {this.props.from.initials}
-            </abbr>
-          ) : (
-            <span
-              className="contactAvatar"
-              style={{ backgroundImage: `url('${this.props.from.avatar}')` }}
-            >
-              {"\u00a0"}
-            </span>
-          )}{" "}
+  let extraContacts = null;
+  if (expanded && !detailsShowing) {
+    extraContacts = (
+      <React.Fragment>
+        {browser.i18n.getMessage("header.to")}{" "}
+        {allTo.map((contact, index) => (
           <ContactLabel
-            className="author"
-            contact={this.props.from}
-            detailView={false}
+            className="to"
+            contact={contact}
+            key={index}
+            separator={_getSeparator(index, allTo.length)}
           />
-          {this.props.expanded &&
-            !this.props.detailsShowing &&
-            browser.i18n.getMessage("header.to") + " "}
-          {this.props.expanded &&
-            !this.props.detailsShowing &&
-            allTo.map((contact, index) => (
-              <ContactLabel
-                className="to"
-                contact={contact}
-                detailView={false}
-                key={index}
-                separator={this._getSeparator(index, allTo.length)}
-              />
-            ))}
-          {!this.props.expanded && (
-            <span className="snippet">
-              <MessageTags
-                onTagsChange={(tags) => {
-                  this.props.dispatch(
-                    messageActions.setTags({
-                      id: this.props.id,
-                      tags,
-                    })
-                  );
-                }}
-                expanded={false}
-                tags={this.props.tags}
-              />
-              <SpecialMessageTags
-                onTagClick={(event, tag) => {
-                  this.props.dispatch(
-                    messageActions.tagClick({
-                      event,
-                      msgUri: this.props.msgUri,
-                      details: tag.details,
-                    })
-                  );
-                }}
-                folderName={this.props.shortFolderName}
-                inView={this.props.inView}
-                specialTags={this.props.specialTags}
-              />
-              {this.props.snippet}
-            </span>
-          )}
-        </div>
-        <MessageHeaderOptions
-          dispatch={this.props.dispatch}
-          date={this.props.date}
-          detailsShowing={this.props.detailsShowing}
-          expanded={this.props.expanded}
-          fullDate={this.props.fullDate}
-          id={this.props.id}
-          attachments={this.props.attachments}
-          multipleRecipients={this.props.multipleRecipients}
-          recipientsIncludeLists={this.props.recipientsIncludeLists}
-          isDraft={this.props.isDraft}
-        />
-      </div>
+        ))}
+      </React.Fragment>
     );
   }
+  if (!expanded) {
+    extraContacts = <React.Fragment></React.Fragment>;
+  }
+
+  return (
+    <div
+      className={`messageHeader hbox ${expanded ? "expanded" : ""}`}
+      onClick={onClickHeader}
+    >
+      <div className="shrink-box">
+        <div
+          className={`star ${starred ? "starred" : ""}`}
+          onClick={onClickStar}
+        >
+          <SvgIcon hash="star" />
+        </div>
+        <Avatar
+          url={from.avatar}
+          style={from.colorStyle}
+          initials={from.initials}
+          isDefault={from.avatar.startsWith("chrome:")}
+        />{" "}
+        <ContactLabel className="author" contact={from} />
+        {extraContacts}
+        {!expanded && (
+          <span className="snippet">
+            <MessageTags
+              onTagsChange={(tags) => {
+                dispatch(
+                  messageActions.setTags({
+                    id,
+                    tags,
+                  })
+                );
+              }}
+              expanded={false}
+              tags={tags}
+            />
+            <SpecialMessageTags
+              onTagClick={(event, tag) => {
+                dispatch(
+                  messageActions.tagClick({
+                    event,
+                    msgUri,
+                    details: tag.details,
+                  })
+                );
+              }}
+              folderName={shortFolderName}
+              inView={inView}
+              specialTags={specialTags}
+            />
+            {snippet}
+          </span>
+        )}
+      </div>
+      <MessageHeaderOptions
+        dispatch={dispatch}
+        date={date}
+        detailsShowing={detailsShowing}
+        expanded={expanded}
+        fullDate={fullDate}
+        id={id}
+        attachments={attachments}
+        multipleRecipients={multipleRecipients}
+        recipientsIncludeLists={recipientsIncludeLists}
+        isDraft={isDraft}
+      />
+    </div>
+  );
 }
 
 MessageHeader.propTypes = {

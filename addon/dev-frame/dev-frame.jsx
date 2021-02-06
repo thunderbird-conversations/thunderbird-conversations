@@ -59,7 +59,8 @@ function ExampleMessage() {
         smimeReload: false,
         shortFolderName: "Inbox",
         subject: "Mozilla Add-ons: Mail Merge P 2.3 Updated",
-        snippet: "...",
+        snippet:
+          "This is a summary of the email and it is quite long so it will have to have ellipses to that it can all fit onto one line",
         starred: false,
         from: {
           name: "Thunderbird Add-ons",

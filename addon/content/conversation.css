@@ -244,8 +244,6 @@ a img {
   position: absolute;
   min-width: 30.2rem;
   max-width: 45rem;
-  top: 24px;
-  left: 16px;
   background-color: -moz-Field;
   color: -moz-FieldText;
   border: 1px solid ThreeDShadow;
@@ -373,7 +371,7 @@ html[dir="rtl"] .dropDown .tooltip {
   border-width: 7px;
   height: 0;
   left: 10px;
-  top: -14px;
+  top: -15px;
   position: absolute;
   width: 0;
 }
@@ -849,4 +847,27 @@ html[dir="rtl"] .dropDown .arrow {
 .messageBody > iframe {
   overflow-y: hidden;
   border: none;
+}
+
+/* fading tool tip that appears directly below the container */
+.fade-parent {
+  position: relative;
+}
+.fade-popup {
+  opacity: 0;
+  visibility: hidden;
+  position: absolute;
+  top: 50px;
+  left: 0;
+  transition: visibility 800ms, opacity 800ms;
+  /* make sure the popup is in the foreground */
+  z-index: 100;
+}
+.fade-parent:hover .fade-popup,
+.fade-popup.hover,
+.fade-popup:hover,
+.fade-parent:focus-within .fade-popup,
+.fade-popup:focus-within {
+  opacity: 1;
+  visibility: visible;
 }
