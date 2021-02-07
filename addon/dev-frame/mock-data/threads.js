@@ -33,6 +33,8 @@ function populateRequiredFields(message) {
   message.smimeReload = false;
   message.realFrom = message.from?.email;
   message.isPhishing = false;
+  message.isOutbox = false;
+  message.isJunk = false;
 }
 
 /**

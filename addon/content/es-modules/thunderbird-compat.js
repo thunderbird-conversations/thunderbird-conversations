@@ -13,6 +13,12 @@ if (window.BrowserSim && !window.browser) {
   // and has a native `browser` object available.
   window.browser = window.BrowserSim.getBrowser();
 }
+
+// If we have a `window.browser` object, we are running as a webextension as opposed to
+// running in the browser or in test mode. We suppress certain expected errors when we
+// know that we're not a webextension.
+export const isWebextension = !!window.browser;
+
 const browser = window.browser || {};
 
 // `i18n` is a replacement for `browser.i18n`.  `getMessage` defaults
