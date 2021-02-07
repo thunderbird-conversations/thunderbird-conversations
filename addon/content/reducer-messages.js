@@ -2,11 +2,14 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* global Conversations, Conversation, BrowserSim, topMail3Pane */
+/* global Conversation, BrowserSim, topMail3Pane */
 
 import { summaryActions } from "./reducer-summary.js";
 import * as RTK from "@reduxjs/toolkit";
-import { browser } from "./es-modules/thunderbird-compat.js";
+import { browser as _browser } from "./es-modules/thunderbird-compat.js";
+
+// Prefer the global browser object to the imported one.
+window.browser = window.browser || _browser;
 
 const initialMessages = {
   msgData: [],
@@ -76,7 +79,7 @@ async function setupConversationInTab(params, isInTab) {
       // teach Conversation how to handle those.
       msgUrls,
       isThreaded,
-      ++Conversations.counter,
+      ++window.Conversations.counter,
       isInTab
     );
     let browserFrame = window.frameElement;
@@ -88,7 +91,7 @@ async function setupConversationInTab(params, isInTab) {
     freshConversation.outputInto(window, async function (aConversation) {
       // This is a stripped-down version of what's in msgWindowApi.js,
       //  make sure the two are in sync!
-      Conversations.currentConversation = aConversation;
+      window.Conversations.currentConversation = aConversation;
       aConversation.completed = true;
       // TODO: Re-enable this.
       // registerQuickReply();
@@ -365,8 +368,8 @@ export const messageActions = {
   },
   selected({ msgUri }) {
     return async () => {
-      if (Conversations.currentConversation) {
-        const msg = Conversations.currentConversation.getMessage(msgUri);
+      if (window.Conversations?.currentConversation) {
+        const msg = window.Conversations.currentConversation.getMessage(msgUri);
         if (msg) {
           msg.onSelected();
         }
@@ -458,7 +461,9 @@ export const messageActions = {
     return async (dispatch) => {
       await browser.conversations.showRemoteContent(id);
 
-      const msg = Conversations.currentConversation.getMessageByApiId(id);
+      const msg = window.Conversations.currentConversation.getMessageByApiId(
+        id
+      );
       // Turn remote content message "off", as although it has it, it can be loaded.
       msg.hasRemoteContent = false;
       const msgData = await msg.toReactData();
@@ -473,7 +478,9 @@ export const messageActions = {
     return async (dispatch) => {
       await browser.conversations.alwaysShowRemoteContent(realFrom);
 
-      const msg = Conversations.currentConversation.getMessageByApiId(id);
+      const msg = window.Conversations.currentConversation.getMessageByApiId(
+        id
+      );
       // Turn remote content message "off", as although it has it, it can be loaded.
       msg.hasRemoteContent = false;
 
@@ -503,7 +510,7 @@ export const messageActions = {
   },
   notificationClick({ msgUri, notificationType, extraData }) {
     return async () => {
-      const msg = Conversations.currentConversation.getMessage(msgUri);
+      const msg = window.Conversations.currentConversation.getMessage(msgUri);
       msg.msgPluginNotification(
         topMail3Pane(window),
         notificationType,
@@ -513,7 +520,7 @@ export const messageActions = {
   },
   tagClick({ msgUri, event, details }) {
     return async () => {
-      const msg = Conversations.currentConversation.getMessage(msgUri);
+      const msg = window.Conversations.currentConversation.getMessage(msgUri);
       msg.msgPluginTagClick(topMail3Pane(window), event, details);
     };
   },
