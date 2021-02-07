@@ -3,110 +3,20 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import React from "react";
-import * as RTK from "@reduxjs/toolkit";
 import * as ReactRedux from "react-redux";
-import { Message } from "../content/message.jsx";
-import { browser, Services } from "../content/es-modules/thunderbird-compat.js";
+import { Services } from "../content/es-modules/thunderbird-compat.js";
+import {
+  ThreadView,
+  ThreePanelThunderbird,
+} from "./components/thunderbird.jsx";
+import { ConversationWrapper } from "../content/conversationWrapper.jsx";
+import { store } from "./reducer.js";
 
-window.Services = Services;
-window.bb = browser;
-
-const testSlice = RTK.createSlice({
-  name: "test",
-  initialState: {},
-  reducers: {},
-});
-const store = RTK.configureStore({ reducer: testSlice.reducer });
-
-function ExampleMessage() {
-  return (
-    <Message
-      autoMarkAsRead={false}
-      browserBackgroundColor={"white"}
-      browserForegroundColor={"black"}
-      defaultFontSize={11}
-      dispatch={(...args) => {
-        console.log("Dispatched Event:", ...args);
-      }}
-      displayingMultipleMsgs={false}
-      iframesLoading={0}
-      index={0}
-      isLastMessage={false}
-      hasBuiltInPdf={false}
-      hideQuickReply={true}
-      tenPxFactor={1}
-      setRef={() => {}}
-      advanceMessage={() => {}}
-      prefs={{
-        hideSigs: false,
-        hideQuoteLength: 5,
-        tweakBodies: true,
-        tweakChrome: true,
-      }}
-      message={{
-        id: 1,
-        date: "12/8/20, 3:22 PM",
-        folderName: "siefkenj@gmail.com/Inbox",
-        hasRemoteContent: false,
-        isDraft: false,
-        isJunk: false,
-        isOutbox: false,
-        isPhishing: false,
-        messageKey: 48042,
-        msgUri: "imap-message://INBOX#48042",
-        multipleRecipients: false,
-        neckoUrl: "imap://INBOX%3E48042",
-        needsLateAttachments: false,
-        read: true,
-        realFrom: "nobody@thunderbird.net",
-        recipientsIncludeLists: false,
-        smimeReload: false,
-        shortFolderName: "Inbox",
-        subject: "Mozilla Add-ons: Mail Merge P 2.3 Updated",
-        snippet: "...",
-        starred: false,
-        from: {
-          name: "Thunderbird Add-ons",
-          initials: "TO",
-          displayEmail: "nobody@thunderbird.net",
-          tooltipName: "Thunderbird Add-ons",
-          email: "nobody@thunderbird.net",
-          avatar:
-            "chrome://messenger/skin/addressbook/icons/contact-generic.svg",
-          contactId: null,
-          extra: "",
-          colorStyle: { backgroundColor: "hsl(174, 70%, 27%)" },
-          separator: "",
-        },
-        to: [
-          {
-            name: "Me",
-            initials: "ME",
-            displayEmail: "",
-            tooltipName: "Me",
-            email: "s@gmail.com",
-            avatar: "file:///home/l.png",
-            contactId: "86ff",
-            extra: "s@gmail.com",
-            colorStyle: { backgroundColor: "hsl(34, 70%, 34%)" },
-          },
-        ],
-        cc: [],
-        bcc: [],
-        attachments: [],
-        attachmentsPlural: " attachments",
-        fullDate: "12/8/20, 3:22 PM",
-        tags: [],
-        inView: true,
-        initialPosition: 0,
-        scrollTo: false,
-        expanded: true,
-        detailsShowing: false,
-      }}
-    />
-  );
-}
-
+/**
+ * Widget to select the active locale to be used by `browser.i18n.getMessage()`
+ *
+ * @returns
+ */
 function LocaleSelector() {
   const locales = Services.locale.availableLocales;
   const [locale, setLocale] = React.useState(Services.locale.requestedLocale);
@@ -144,21 +54,17 @@ export function Main() {
           Locale: <LocaleSelector />
         </i>
       </div>
-      <div className="three-pane-container">
-        <div className="three-pane-left">
-          <h4 className="faux-inbox">Inbox (200)</h4>
-        </div>
-        <div className="three-pane-right">
-          <div className="three-pane-top"></div>
-          <div className="three-pane-bottom">
+      <ReactRedux.Provider store={store}>
+        <ThreePanelThunderbird
+          left={<h4 className="faux-inbox">Inbox (200)</h4>}
+          topRight={<ThreadView />}
+          bottomRight={
             <div id="conversationWrapper">
-              <ReactRedux.Provider store={store}>
-                <ExampleMessage />
-              </ReactRedux.Provider>
+              <ConversationWrapper />
             </div>
-          </div>
-        </div>
-      </div>
+          }
+        />
+      </ReactRedux.Provider>
     </React.Fragment>
   );
 }

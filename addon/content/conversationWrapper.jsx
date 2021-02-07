@@ -9,6 +9,7 @@ import { ConversationFooter } from "./conversationFooter.jsx";
 import { ConversationHeader } from "./conversationHeader.jsx";
 import { messageActions } from "./reducer-messages.js";
 import { MessageList } from "./messageList.jsx";
+import { browser } from "./es-modules/thunderbird-compat.js";
 
 class _ConversationWrapper extends React.PureComponent {
   constructor(props) {

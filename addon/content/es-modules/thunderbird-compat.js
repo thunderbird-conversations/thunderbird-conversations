@@ -35,9 +35,25 @@ async function initializeI18n(resolve, locale = "en") {
   i18n._messages = await resp.json();
   // Replace the `getMessage` function with one that retrieves
   // values from the loaded JSON.
-  i18n.getMessage = (messageName, substitutions) =>
-    (i18n._messages[messageName] || {}).message ||
-    `<translation not found>${messageName}`;
+  i18n.getMessage = (messageName, substitutions) => {
+    let message =
+      (i18n._messages[messageName] || {}).message ||
+      `<translation not found>${messageName}`;
+    if (!substitutions || !i18n._messages[messageName]) {
+      return message;
+    }
+    // If we're here, we have a valid i18n object and we need to do
+    // some substitutions.
+    const placeholders = i18n._messages[messageName].placeholders;
+    // `placeholders` is an object with keys and values={ content: "$?" }.
+    // We need to substitute strings of the form `$key$` with the content at the `$?` position
+    // of the `substitutions` array.
+    for (const key in placeholders) {
+      const index = parseInt(placeholders[key].content.slice(1), 10) - 1;
+      message = message.replace(`$${key}$`, substitutions[index]);
+    }
+    return message;
+  };
   resolve(true);
 }
 
@@ -175,6 +191,35 @@ if (!browser.conversations) {
     undoCustomizations() {},
     send(details) {
       console.log(details);
+    },
+    async getLocaleDirection() {
+      // RTL languages taken from https://github.com/shadiabuhilal/rtl-detect/blob/master/lib/rtl-detect.js
+      const RTL_LANGUAGES = [
+        "ae" /* Avestan */,
+        "ar" /* 'العربية', Arabic */,
+        "arc" /* Aramaic */,
+        "bcc" /* 'بلوچی مکرانی', Southern Balochi */,
+        "bqi" /* 'بختياري', Bakthiari */,
+        "ckb" /* 'Soranî / کوردی', Sorani */,
+        "dv" /* Dhivehi */,
+        "fa" /* 'فارسی', Persian */,
+        "glk" /* 'گیلکی', Gilaki */,
+        "he" /* 'עברית', Hebrew */,
+        "ku" /* 'Kurdî / كوردی', Kurdish */,
+        "mzn" /* 'مازِرونی', Mazanderani */,
+        "nqo" /* N'Ko */,
+        "pnb" /* 'پنجابی', Western Punjabi */,
+        "ps" /* 'پښتو', Pashto, */,
+        "sd" /* 'سنڌي', Sindhi */,
+        "ug" /* 'Uyghurche / ئۇيغۇرچە', Uyghur */,
+        "ur" /* 'اردو', Urdu */,
+        "yi" /* 'ייִדיש', Yiddish */,
+      ];
+      const locale = Services.locale?.requestedLocale || "";
+      if (locale && RTL_LANGUAGES.some((l) => locale.startsWith(l))) {
+        return "rtl";
+      }
+      return "ltr";
     },
   };
 }

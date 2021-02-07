@@ -6,6 +6,7 @@
 
 import { summaryActions } from "./reducer-summary.js";
 import * as RTK from "@reduxjs/toolkit";
+import { browser } from "./es-modules/thunderbird-compat.js";
 
 const initialMessages = {
   msgData: [],
