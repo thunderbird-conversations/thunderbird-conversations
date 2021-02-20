@@ -123,6 +123,45 @@ function toggleCallbackFactory(iframe) {
 }
 
 /**
+ * Sleep for the specified number of milliseconds
+ *
+ * @param {Number} ms - milliseconds to sleep
+ * @returns
+ */
+async function sleep(ms) {
+  return new Promise((resolve, reject) => {
+    setTimeout(resolve, ms);
+  });
+}
+
+/**
+ * Runs `func()` asynchronously until `validator(func())` is truthy.
+ * Sets progressively longer timeouts between calls to `func()` until
+ * eventually erroring.
+ *
+ * @param {Function} func
+ * @param {Function} validator
+ * @returns
+ */
+async function runUntilValid(func, validator) {
+  const ret = func();
+  if (validator(ret)) {
+    return ret;
+  }
+  const TIMEOUTS = [0, 0, 10, 10, 10];
+  for (const timeout of TIMEOUTS) {
+    await sleep(timeout);
+    const ret = func();
+    if (validator(ret)) {
+      return ret;
+    }
+  }
+  throw new Error(
+    `Waited for intervals of ${TIMEOUTS} milliseconds, but validator never passed`
+  );
+}
+
+/**
  * This class exists because we need to manually manage the iframe - we don't
  * want it reloading every time a prop changes.
  *
@@ -140,6 +179,7 @@ export class MessageIFrame extends React.Component {
     this.currentUrl = null;
     this.loading = false;
     this.onClickIframe = this.onClickIframe.bind(this);
+    this._waitingForDom = false;
   }
 
   componentDidUpdate(prevProps) {
@@ -280,27 +320,46 @@ export class MessageIFrame extends React.Component {
     }
   }
 
-  adjustHeight() {
-    const iframeDoc = this.iframe.contentDocument;
+  async adjustHeight() {
+    const doAdjustment = () => {
+      const iframeDoc = this.iframe.contentDocument;
 
-    // The +1 here is due to having occasionally seen issues on Mac where
-    // the frame just doesn't quite scroll properly. In this case,
-    // getComputedStyle(body).height is .2px greater than the scrollHeight.
-    // Hence we try to work around that here.
-    // In #1517 made it +3 as occasional issues were still being seen with
-    // some messages.
-    const scrollHeight = iframeDoc.body.scrollHeight + 3;
-    this.iframe.style.height = scrollHeight + "px";
+      // The +1 here is due to having occasionally seen issues on Mac where
+      // the frame just doesn't quite scroll properly. In this case,
+      // getComputedStyle(body).height is .2px greater than the scrollHeight.
+      // Hence we try to work around that here.
+      // In #1517 made it +3 as occasional issues were still being seen with
+      // some messages.
+      const scrollHeight = iframeDoc.body.scrollHeight + 3;
+      this.iframe.style.height = scrollHeight + "px";
 
-    // So now we might overflow horizontally, which causes a horizontal
-    // scrollbar to appear, which narrows the vertical height available,
-    // which causes a vertical scrollbar to appear.
-    let iframeStyle = window.getComputedStyle(this.iframe);
-    let iframeExternalWidth = parseInt(iframeStyle.width);
-    // 20px is a completely arbitrary default value which I hope is
-    // greater
-    if (iframeDoc.body.scrollWidth > iframeExternalWidth) {
-      this.iframe.style.height = iframeDoc.body.scrollHeight + 20 + "px";
+      // So now we might overflow horizontally, which causes a horizontal
+      // scrollbar to appear, which narrows the vertical height available,
+      // which causes a vertical scrollbar to appear.
+      let iframeStyle = window.getComputedStyle(this.iframe);
+      let iframeExternalWidth = parseInt(iframeStyle.width);
+      // 20px is a completely arbitrary default value which I hope is
+      // greater
+      if (iframeDoc.body.scrollWidth > iframeExternalWidth) {
+        this.iframe.style.height = iframeDoc.body.scrollHeight + 20 + "px";
+      }
+    };
+    try {
+      // When blockquotes are detected, an async function is run to compute
+      // their height. We need to wait for this function to finish before we
+      // adjust the height of the whole iframe. This is accomplished by waiting
+      // for `this._waitingForDom` to be set to `false`.
+      await runUntilValid(
+        () => {},
+        () => !this._waitingForDom
+      );
+      doAdjustment();
+    } catch (e) {
+      console.warn(
+        "Possible race condition; timed out while trying to adjust iframe height",
+        e
+      );
+      doAdjustment();
     }
   }
 
@@ -365,22 +424,36 @@ export class MessageIFrame extends React.Component {
     return styleRules;
   }
 
-  detectQuotes(iframe) {
+  async detectQuotes(iframe) {
     // Launch various crappy pieces of code heuristics to
     // convert most common quoting styles to real blockquotes. Spoiler:
     // most of them suck.
     Quoting.normalizeBlockquotes(iframe.contentDocument);
 
-    function getQuoteLength(node) {
+    const getQuoteLength = async (node) => {
+      function heightFromStyle(style) {
+        return parseInt(style.height) / (parseInt(style.fontSize) * 1.5);
+      }
+
       try {
         const style = iframe.contentWindow.getComputedStyle(node);
-        return parseInt(style.height) / (parseInt(style.fontSize) * 1.5);
+        // If the computed height returned by `getQuoteLength` is NaN,
+        // that means the DOM hasn't had a chance to render it, and so it's
+        // size cannot be computed. In this case, we set a timeout to let
+        // the DOM render before we measure the height
+        this._waitingForDom = true;
+        const height = await runUntilValid(
+          () => heightFromStyle(style),
+          (val) => val && !Number.isNaN(val)
+        );
+        this._waitingForDom = false;
+        return height;
       } catch (e) {
         // message arrived and window is not displayed, arg,
         // cannot get the computed style, BAD
       }
       return undefined;
-    }
+    };
 
     // If the first email contains quoted text, it was probably forwarded to us
     // and we don't have the previous email for reference. In this case, don't normalize
@@ -390,7 +463,8 @@ export class MessageIFrame extends React.Component {
       const win = iframe.contentWindow;
       // We look for the first blockquote that is long enough to be hidden
       for (const blockquote of win.document.querySelectorAll("blockquote")) {
-        if (getQuoteLength(blockquote) > this.props.prefs.hideQuoteLength) {
+        const quoteLength = await getQuoteLength(blockquote);
+        if (quoteLength > this.props.prefs.hideQuoteLength) {
           createToggleForNode(blockquote, {
             hideText: browser.i18n.getMessage("messageBody.hideQuotedText"),
             showText: browser.i18n.getMessage("messageBody.showQuotedText"),
@@ -446,7 +520,7 @@ export class MessageIFrame extends React.Component {
     ];
   }
 
-  _onDOMLoaded(event) {
+  async _onDOMLoaded(event) {
     if (event.target.documentURI == "about:blank") {
       return;
     }
@@ -455,7 +529,7 @@ export class MessageIFrame extends React.Component {
     if (
       !(this.props.realFrom && this.props.realFrom.includes("bugzilla-daemon"))
     ) {
-      this.detectQuotes(this.iframe);
+      await this.detectQuotes(this.iframe);
     }
     this.detectSigs(this.iframe);
     styleRules = styleRules.concat(this.injectCss(iframeDoc));
