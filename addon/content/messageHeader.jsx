@@ -37,9 +37,32 @@ function contactToString(contact) {
  */
 function HoverFade({ children, popup, ...rest }) {
   const [isHovering, setIsHovering] = React.useState(false);
+  const [shouldShowPopup, setShouldShowPopup] = React.useState(false);
   const spanRef = React.useRef(null);
   const popupParentNode =
     document.querySelector("#popup-container") || spanRef.current;
+
+  React.useEffect(() => {
+    let timeoutId = null;
+    if (isHovering) {
+      // If we hover over the label, we delay showing the popup.
+      timeoutId = window.setTimeout(() => {
+        if (isHovering) {
+          setShouldShowPopup(true);
+        } else {
+          setShouldShowPopup(false);
+        }
+      }, 400);
+    } else {
+      // If we're not hovering, we don't delay hiding the popup.
+      setShouldShowPopup(false);
+    }
+    return () => {
+      if (timeoutId != null) {
+        window.clearTimeout(timeoutId);
+      }
+    };
+  }, [isHovering, setShouldShowPopup]);
 
   // Calculate where to render the popup
   const pos = spanRef.current?.getBoundingClientRect() || {
@@ -71,7 +94,7 @@ function HoverFade({ children, popup, ...rest }) {
       {popupParentNode &&
         ReactDOM.createPortal(
           <div
-            className={`fade-popup ${isHovering ? "hover" : ""}`}
+            className={`fade-popup ${shouldShowPopup ? "hover" : ""}`}
             style={{
               //left: window.scrollX + pos.left,
               //top: window.scrollY + pos.bottom,
