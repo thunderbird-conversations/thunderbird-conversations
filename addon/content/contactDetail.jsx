@@ -17,8 +17,6 @@ function _ContactDetail({
   contactId,
   dispatch,
 }) {
-  const [expanded, setExpanded] = React.useState(false);
-
   function onGeneralClick(event) {
     event.stopPropagation();
     event.preventDefault();
@@ -99,15 +97,6 @@ function _ContactDetail({
     </button>
   );
 
-  const expandedInfo = (
-    <div className="tipFooter hiddenFooter">
-      <button className="createFilter" onClick={createFilter}>
-        {"createFilter"}
-      </button>
-      {contactEdit}
-    </div>
-  );
-
   return (
     <div className="tooltip" onClick={onGeneralClick}>
       <div className="arrow"></div>
@@ -134,7 +123,6 @@ function _ContactDetail({
           <img src={avatar} />
         </div>
       </div>
-      {expanded && expandedInfo}
       <div className="tipFooter">
         <button
           className="sendEmail"
@@ -150,19 +138,10 @@ function _ContactDetail({
         >
           <SvgIcon hash="history" />
         </button>
-        {!expanded && (
-          <button
-            className="showInvolving"
-            title={browser.i18n.getMessage(
-              "contact.recentConversationsTooltip"
-            )}
-            onClick={() => {
-              setExpanded(true);
-            }}
-          >
-            <SvgIcon hash="expand_more" />
-          </button>
-        )}
+        {contactEdit}
+        <button className="createFilter" onClick={createFilter}>
+          {browser.i18n.getMessage("contact.createFilterTooltip")}
+        </button>
       </div>
     </div>
   );
