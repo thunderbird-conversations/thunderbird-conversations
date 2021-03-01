@@ -5,9 +5,9 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { ActionButton } from "./messageActionButton.jsx";
-import { messageActions } from "./reducer-messages.js";
-import { SvgIcon } from "./svgIcon.jsx";
-import { browser } from "./es-modules/thunderbird-compat.js";
+import { messageActions } from "../../reducer/reducer-messages.js";
+import { SvgIcon } from "../svgIcon.jsx";
+import { browser } from "../../es-modules/thunderbird-compat.js";
 class OptionsMoreMenu extends React.PureComponent {
   render() {
     return (

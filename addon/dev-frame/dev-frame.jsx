@@ -5,7 +5,7 @@
 import React from "react";
 import * as RTK from "@reduxjs/toolkit";
 import * as ReactRedux from "react-redux";
-import { Message } from "../content/message.jsx";
+import { Message } from "../content/components/message/message.jsx";
 
 const testSlice = RTK.createSlice({
   name: "test",

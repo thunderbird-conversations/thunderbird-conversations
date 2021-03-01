@@ -6,9 +6,9 @@ import React from "react";
 import ReactDOM from "react-dom";
 import * as ReactRedux from "react-redux";
 import PropTypes from "prop-types";
-import { summaryActions } from "./reducer-summary.js";
+import { summaryActions } from "../reducer/reducer-summary.js";
 import { SvgIcon } from "./svgIcon.jsx";
-import { browser } from "./es-modules/thunderbird-compat.js";
+import { browser } from "../es-modules/thunderbird-compat.js";
 
 class _ContactDetail extends React.PureComponent {
   constructor(props) {

@@ -7,8 +7,8 @@ import * as ReactRedux from "react-redux";
 import PropTypes from "prop-types";
 import { ConversationFooter } from "./conversationFooter.jsx";
 import { ConversationHeader } from "./conversationHeader.jsx";
-import { messageActions } from "./reducer-messages.js";
-import { MessageList } from "./messageList.jsx";
+import { messageActions } from "../../reducer/reducer-messages.js";
+import { MessageList } from "../message/messageList.jsx";
 
 class _ConversationWrapper extends React.PureComponent {
   constructor(props) {

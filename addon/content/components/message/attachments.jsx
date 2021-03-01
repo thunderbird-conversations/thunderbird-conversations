@@ -4,8 +4,8 @@
 
 import React from "react";
 import PropTypes from "prop-types";
-import { attachmentActions } from "./reducer-attachments.js";
-import { SvgIcon } from "./svgIcon.jsx";
+import { attachmentActions } from "../../reducer/reducer-attachments.js";
+import { SvgIcon } from "../svgIcon.jsx";
 
 const ICON_MAPPING = new Map([
   ["application/msword", "x-office-document"],

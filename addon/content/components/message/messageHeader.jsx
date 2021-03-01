@@ -4,12 +4,12 @@
 
 import React from "react";
 import PropTypes from "prop-types";
-import { ContactDetail } from "./contactDetail.jsx";
-import { messageActions } from "./reducer-messages.js";
+import { ContactDetail } from "../contactDetail.jsx";
+import { messageActions } from "../../reducer/reducer-messages.js";
 import { MessageHeaderOptions } from "./messageHeaderOptions.jsx";
 import { MessageTags, SpecialMessageTags } from "./messageTags.jsx";
-import { SvgIcon } from "./svgIcon.jsx";
-import { browser } from "./es-modules/thunderbird-compat.js";
+import { SvgIcon } from "../svgIcon.jsx";
+import { browser } from "../../es-modules/thunderbird-compat.js";
 
 class Fade extends React.PureComponent {
   constructor(props) {
