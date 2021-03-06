@@ -4,21 +4,28 @@
 
 import React from "react";
 import PropTypes from "prop-types";
-import { ContactLabel } from "./messageHeader.jsx";
+import { DetailedContactLabel } from "./messageHeader.jsx";
 
-class ContactLine extends React.PureComponent {
-  render() {
-    return this.props.contacts.map((to, i) => {
-      return (
-        <ContactLabel className="" contact={to} detailView={true} key={i} />
-      );
-    });
+function ContactList({ label, contacts, className = "" }) {
+  if (contacts.length === 0) {
+    return null;
   }
+  return (
+    <div className={className}>
+      <u>{label}</u>{" "}
+      {contacts.map((contact, i) => (
+        <React.Fragment key={i}>
+          <DetailedContactLabel className="" contact={contact} />
+          <br />
+        </React.Fragment>
+      ))}
+    </div>
+  );
 }
-
-ContactLine.propTypes = {
-  className: PropTypes.string.isRequired,
+ContactList.propTypes = {
+  label: PropTypes.string.isRequired,
   contacts: PropTypes.array.isRequired,
+  className: PropTypes.string,
 };
 
 export class MessageDetails extends React.PureComponent {
@@ -28,31 +35,24 @@ export class MessageDetails extends React.PureComponent {
         {!!this.props.from && (
           <div className="detailsLine fromLine">
             <u>{browser.i18n.getMessage("message.fromHeader")}</u>{" "}
-            <ContactLabel
-              className=""
-              contact={this.props.from}
-              detailView={true}
-            />
+            <DetailedContactLabel className="" contact={this.props.from} />
           </div>
         )}
-        {!!this.props.to.length && (
-          <div className="detailsLine toLine">
-            <u>{browser.i18n.getMessage("message.toHeader")}</u>{" "}
-            <ContactLine className="to" contacts={this.props.to} />
-          </div>
-        )}
-        {!!this.props.cc.length && (
-          <div className="detailsLine ccLine">
-            <u>{browser.i18n.getMessage("message.ccHeader")}</u>{" "}
-            <ContactLine className="cc" contacts={this.props.cc} />
-          </div>
-        )}
-        {!!this.props.bcc.length && (
-          <div className="detailsLine bccLine">
-            <u>{browser.i18n.getMessage("compose.fieldBcc")}</u>{" "}
-            <ContactLine className="bcc" contacts={this.props.bcc} />
-          </div>
-        )}
+        <ContactList
+          className="detailsLine toLine"
+          label={browser.i18n.getMessage("message.toHeader")}
+          contacts={this.props.to}
+        />
+        <ContactList
+          className="detailsLine ccLine"
+          label={browser.i18n.getMessage("message.ccHeader")}
+          contacts={this.props.cc}
+        />
+        <ContactList
+          className="detailsLine bccLine"
+          label={browser.i18n.getMessage("compose.fieldBcc")}
+          contacts={this.props.bcc}
+        />
         {!!this.props.extraLines?.length &&
           this.props.extraLines.map((line, i) => {
             return (
