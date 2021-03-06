@@ -65,8 +65,27 @@ async function initializeI18n(resolve, locale = "en") {
 
 if (browser.i18n) {
   i18n.getMessage = browser.i18n.getMessage;
+  i18n.getUILanguage = browser.i18n.getUILanguage;
   i18n.isPolyfilled = false;
 } else {
+  async function initializeI18n(resolve) {
+    let resp;
+    try {
+      resp = await fetch("../_locales/en/messages.json");
+    } catch (ex) {
+      // For tests.
+      resp = await fetch("_locales/en/messages.json");
+    }
+    const json = await resp.json();
+    // Replace the `getMessage` function with one that retrieves
+    // values from the loaded JSON.
+    i18n.getMessage = (messageName, substitutions) =>
+      (json[messageName] || {}).message ||
+      `<translation not found>${messageName}`;
+    i18n.getUILanguage = () => "en-US";
+    resolve(true);
+  }
+
   // Fake what we need from the i18n library
   i18n.isLoaded = new Promise((resolve, reject) => {
     // initializeI18n modifies the global i18n object and calls

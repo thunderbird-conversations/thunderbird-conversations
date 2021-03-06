@@ -51,12 +51,12 @@ class _ConversationWrapper extends React.PureComponent {
 
   render() {
     return (
-      <div>
-        <div className="hidden" id="tooltipContainer"></div>
+      <React.Fragment>
+        <div id="popup-container"></div>
         <ConversationHeader />
         <MessageList />
         <ConversationFooter />
-      </div>
+      </React.Fragment>
     );
   }
 }
