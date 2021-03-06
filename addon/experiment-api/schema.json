@@ -136,7 +136,7 @@
       {
         "name": "createTab",
         "type": "function",
-        "description": "Temporary. Creates a content or chrome tab. What we'll need to replace with depends on Message Attachments API",
+        "description": "Temporary. Creates a content or chrome tab. What we'll need to replace with depends on Message Attachments API, Bug 1696764",
         "async": true,
         "parameters": [
           {
@@ -247,7 +247,7 @@
       {
         "name": "switchToFolderAndMsg",
         "type": "function",
-        "description": "Switch to a particular folder/message combination.",
+        "description": "Switch to a particular folder/message combination. Bug 1696775.",
         "async": true,
         "parameters": [
           {
@@ -286,7 +286,7 @@
           {
             "name": "id",
             "type": "integer",
-            "description": "The message id to view in classic mode."
+            "description": "The message id to view in classic mode. Bug 1696764."
           }
         ]
       },
@@ -386,7 +386,7 @@
       {
         "name": "getFolderName",
         "type": "function",
-        "description": "Temporary. Gets the full folder path/name for a message.",
+        "description": "Temporary. Gets the full folder path/name for a message. Bug 1520427 needed for parent folders.",
         "async": true,
         "parameters": [
           {
@@ -399,7 +399,7 @@
       {
         "name": "downloadAllAttachments",
         "type": "function",
-        "description": "Temporary. Triggers downloading all attachments for a message.",
+        "description": "Temporary. Triggers downloading all attachments for a message. Bug 1696777",
         "async": true,
         "parameters": [
           {
@@ -412,7 +412,7 @@
       {
         "name": "downloadAttachment",
         "type": "function",
-        "description": "Temporary. Triggers downloading a single attachment for a message.",
+        "description": "Temporary. Triggers downloading a single attachment for a message. Bug 1696777",
         "async": true,
         "parameters": [
           {
@@ -430,7 +430,7 @@
       {
         "name": "openAttachment",
         "type": "function",
-        "description": "Temporary. Triggers opening a single attachment for a message.",
+        "description": "Temporary. Triggers opening a single attachment for a message. Bug 1696777",
         "async": true,
         "parameters": [
           {
@@ -448,7 +448,7 @@
       {
         "name": "detachAttachment",
         "type": "function",
-        "description": "Temporary. Triggers detaching a single attachment for a message.",
+        "description": "Temporary. Triggers detaching a single attachment for a message. Bug 1522828",
         "async": true,
         "parameters": [
           {
