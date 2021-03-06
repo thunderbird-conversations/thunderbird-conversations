@@ -83,27 +83,21 @@ export class Prefs {
       }
     }
 
-    if (currentMigration < 2) {
-      try {
-        const legacyData = await browser.conversations.getLegacyStorageData();
-        if (legacyData && legacyData.length) {
-          await browser.storage.local.set({ draftsData: legacyData });
-          // Stored in key/value format.
-          // The key is the gloda id. The value was generated from this:
-          // {
-          //   msgUri: msgHdrGetUri(gComposeSession.params.msgHdr),
-          //   from: gComposeSession.params.identity.email,
-          //   to: JSON.parse($("#to").val()).join(","),
-          //   cc: JSON.parse($("#cc").val()).join(","),
-          //   bcc: JSON.parse($("#bcc").val()).join(","),
-          //   body: getActiveEditor().value,
-          //   attachments: gComposeSession.attachmentList.save()
-          // }
-        }
-      } catch (ex) {
-        console.error("Couldn't migrate data: " + ex);
-      }
-    }
+    // Version 2 was the migration from the legacy storage format for saved
+    // quick reply drafts. It might be better just to drop these completely
+    // now, but in case we decide to keep & use the old data:
+    //
+    // Stored in key/value format in draftsData (top-level).
+    // The key is the gloda id. The value was generated from this:
+    // {
+    //   msgUri: msgHdrGetUri(gComposeSession.params.msgHdr),
+    //   from: gComposeSession.params.identity.email,
+    //   to: JSON.parse($("#to").val()).join(","),
+    //   cc: JSON.parse($("#cc").val()).join(","),
+    //   bcc: JSON.parse($("#bcc").val()).join(","),
+    //   body: getActiveEditor().value,
+    //   attachments: gComposeSession.attachmentList.save()
+    // }
 
     if (currentMigration < 3) {
       prefs.hide_quick_reply = false;

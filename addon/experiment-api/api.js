@@ -21,12 +21,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   Prefs: "chrome://conversations/content/modules/prefs.js",
   Services: "resource://gre/modules/Services.jsm",
   setupLogging: "chrome://conversations/content/modules/misc.js",
-  Sqlite: "resource://gre/modules/Sqlite.jsm",
-  OS: "resource://gre/modules/osfile.jsm",
 });
-
-const FILE_SIMPLE_STORAGE = "simple_storage.sqlite";
-const SIMPLE_STORAGE_TABLE_NAME = "conversations";
 
 // To help updates to apply successfully, we need to properly unload the modules
 // that Conversations loads.
@@ -386,39 +381,6 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
               }
             }
           }
-        },
-        async getLegacyStorageData() {
-          const path = OS.Path.join(
-            OS.Constants.Path.profileDir,
-            FILE_SIMPLE_STORAGE
-          );
-          const fileExists = await OS.File.exists(path);
-          if (!fileExists) {
-            return [];
-          }
-
-          const dbConnection = await Sqlite.openConnection({
-            path,
-          });
-
-          const exists = await dbConnection.tableExists(
-            SIMPLE_STORAGE_TABLE_NAME
-          );
-          if (!exists) {
-            return [];
-          }
-          let rows = await dbConnection.execute(
-            `SELECT key, value FROM ${SIMPLE_STORAGE_TABLE_NAME}`
-          );
-
-          await dbConnection.close();
-
-          return rows.map((row) => {
-            return {
-              key: row.getResultByName("key"),
-              value: JSON.parse(row.getResultByName("value")),
-            };
-          });
         },
         async getMessageIdForUri(uri) {
           const msgHdr = msgUriToMsgHdr(uri);
