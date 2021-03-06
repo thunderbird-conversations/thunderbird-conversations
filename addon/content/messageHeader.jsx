@@ -96,10 +96,6 @@ function HoverFade({ children, popup, ...rest }) {
           <div
             className={`fade-popup ${shouldShowPopup ? "hover" : ""}`}
             style={{
-              //left: window.scrollX + pos.left,
-              //top: window.scrollY + pos.bottom,
-              //left: spanRef.current?.offsetLeft,
-              //top: spanRef.current?.offsetTop + spanRef.current?.offsetHeight,
               left: pos.left - parentPos.left,
               top: pos.bottom - parentPos.top,
             }}
@@ -173,6 +169,7 @@ DetailedContactLabel.propTypes = {
   className: PropTypes.string.isRequired,
   contact: PropTypes.object.isRequired,
 };
+
 export function ContactLabel({ contact, className }) {
   // These components conditionally render
   let extraLabel = null;
