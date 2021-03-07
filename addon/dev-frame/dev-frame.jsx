@@ -4,7 +4,10 @@
 
 import React from "react";
 import * as ReactRedux from "react-redux";
-import { Services } from "../content/es-modules/thunderbird-compat.js";
+import {
+  initializeI18n,
+  browser,
+} from "../content/es-modules/thunderbird-compat.js";
 import {
   ThreadView,
   ThreePanelThunderbird,
@@ -18,15 +21,25 @@ import { store } from "./reducer.js";
  * @returns
  */
 function LocaleSelector() {
-  const locales = Services.locale.availableLocales;
-  const [locale, setLocale] = React.useState(Services.locale.requestedLocale);
+  const [locales, setLocales] = React.useState([]);
+  const [locale, setLocale] = React.useState("en");
+
+  // Asynchronously fetch a list of the available locales
+  React.useEffect(() => {
+    (async () => {
+      const locales = await browser.i18n.getAcceptLanguages();
+      setLocales(locales);
+    })();
+  });
+
   return (
     <select
       name="locale"
       value={locale}
       onChange={(event) => {
         const newLocale = event.target.value;
-        Services.locale.requestedLocale = newLocale;
+        // Propagate the locale change back to the mocked `browser.i18n` instance.
+        initializeI18n(() => {}, newLocale);
         setLocale(newLocale);
       }}
     >

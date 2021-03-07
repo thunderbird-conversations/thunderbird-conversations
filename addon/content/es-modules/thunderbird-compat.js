@@ -30,7 +30,47 @@ export const i18n = {
   isLoaded: Promise.resolve(true),
   isPolyfilled: true,
 };
-async function initializeI18n(resolve, locale = "en") {
+const ALL_LOCALES = [
+  "bg",
+  "ca",
+  "cs",
+  "da",
+  "de",
+  "el",
+  "en",
+  "es",
+  "eu",
+  "fi",
+  "fr",
+  "gl",
+  "he-IL",
+  "hr",
+  "it",
+  "ja-JP",
+  "lt",
+  "nl",
+  "pl",
+  "pt-BR",
+  "rm",
+  "ru-RU",
+  "sl",
+  "sr",
+  "sv-SE",
+  "tr",
+  "uk",
+  "zh-CN",
+  "zh-TW",
+];
+
+/**
+ * This function should only be used in the dev frame. It is exported
+ * to give the dev frame a way to mock a change to the UI language.
+ *
+ * @export
+ * @param {*} resolve
+ * @param {string} [locale="en"]
+ */
+export async function initializeI18n(resolve, locale = "en") {
   let resp;
   try {
     resp = await fetch(`../_locales/${locale}/messages.json`);
@@ -39,6 +79,7 @@ async function initializeI18n(resolve, locale = "en") {
     resp = await fetch(`_locales/${locale}/messages.json`);
   }
   i18n._messages = await resp.json();
+  i18n._currentLocale = locale;
   // Replace the `getMessage` function with one that retrieves
   // values from the loaded JSON.
   i18n.getMessage = (messageName, substitutions) => {
@@ -60,32 +101,17 @@ async function initializeI18n(resolve, locale = "en") {
     }
     return message;
   };
+  i18n.getUILanguage = async () => i18n._currentLocale;
+  i18n.getAcceptLanguages = async () => ALL_LOCALES;
   resolve(true);
 }
 
 if (browser.i18n) {
   i18n.getMessage = browser.i18n.getMessage;
   i18n.getUILanguage = browser.i18n.getUILanguage;
+  i18n.getAcceptLanguages = browser.i18n.getAcceptLanguages;
   i18n.isPolyfilled = false;
 } else {
-  async function initializeI18n(resolve) {
-    let resp;
-    try {
-      resp = await fetch("../_locales/en/messages.json");
-    } catch (ex) {
-      // For tests.
-      resp = await fetch("_locales/en/messages.json");
-    }
-    const json = await resp.json();
-    // Replace the `getMessage` function with one that retrieves
-    // values from the loaded JSON.
-    i18n.getMessage = (messageName, substitutions) =>
-      (json[messageName] || {}).message ||
-      `<translation not found>${messageName}`;
-    i18n.getUILanguage = () => "en-US";
-    resolve(true);
-  }
-
   // Fake what we need from the i18n library
   i18n.isLoaded = new Promise((resolve, reject) => {
     // initializeI18n modifies the global i18n object and calls
@@ -94,67 +120,6 @@ if (browser.i18n) {
   });
 
   browser.i18n = i18n;
-}
-
-export const Services = window.Services || {};
-if (!Services.locale) {
-  // These are the subdirectories of the `_locales` folder; this list
-  // needs to be manually kept in sync.
-  const ALL_LOCALES = [
-    "bg",
-    "ca",
-    "cs",
-    "da",
-    "de",
-    "el",
-    "en",
-    "es",
-    "eu",
-    "fi",
-    "fr",
-    "gl",
-    "he-IL",
-    "hr",
-    "it",
-    "ja-JP",
-    "lt",
-    "nl",
-    "pl",
-    "pt-BR",
-    "rm",
-    "ru-RU",
-    "sl",
-    "sr",
-    "sv-SE",
-    "tr",
-    "uk",
-    "zh-CN",
-    "zh-TW",
-  ];
-  // `Services.locale` is only available to extensions. However, we want
-  // the ability to switch between locales while in the browser.
-  Services.locale = {
-    availableLocales: ALL_LOCALES,
-    _currentLocale: "en",
-    get requestedLocale() {
-      return this._currentLocale;
-    },
-    set requestedLocale(val) {
-      if (!this.availableLocales.includes(val)) {
-        throw new Error(
-          `Locale '${val}' not found. Must be one of ${JSON.stringify(
-            this.availableLocales
-          )}`
-        );
-      }
-      this._currentLocale = val;
-      if (i18n.isPolyfilled) {
-        i18n.isLoaded = new Promise((resolve, reject) => {
-          initializeI18n(resolve, val).catch(reject);
-        });
-      }
-    },
-  };
 }
 
 if (!browser.storage) {
@@ -240,7 +205,7 @@ if (!browser.conversations) {
         "ur" /* 'اردو', Urdu */,
         "yi" /* 'ייִדיש', Yiddish */,
       ];
-      const locale = Services.locale?.requestedLocale || "";
+      const locale = await i18n.getUILanguage();
       if (locale && RTL_LANGUAGES.some((l) => locale.startsWith(l))) {
         return "rtl";
       }
