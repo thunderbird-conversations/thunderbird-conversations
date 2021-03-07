@@ -21,7 +21,7 @@ export function SvgIcon({ fullPath, hash }) {
       xmlns="http://www.w3.org/2000/svg"
       xmlnsXlink="http://www.w3.org/1999/xlink"
     >
-      <use xlinkHref={fullPath}></use>
+      <use xlinkHref={`icons/${fullPath}`}></use>
     </svg>
   );
 }
