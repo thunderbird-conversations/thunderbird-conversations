@@ -105,7 +105,7 @@ export class Message extends React.PureComponent {
       (prevProps.iframesLoading && !this.props.iframesLoading)
     ) {
       this.lastScrolledMsgUri = this.props.message.msgUri;
-      // The header is 44px high (yes, this is harcodeadly ugly).
+      // The header is 44px high (yes, this is hardcoded and ugly).
       window.requestAnimationFrame(() => {
         window.scrollTo(
           500,
