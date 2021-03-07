@@ -5,14 +5,14 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { Attachments } from "./attachments.jsx";
-import { messageActions } from "./reducer-messages.js";
+import { messageActions } from "../../reducer/reducer-messages.js";
 import { MessageDetails } from "./messageDetails.jsx";
 import { MessageFooter } from "./messageFooter.jsx";
 import { MessageHeader } from "./messageHeader.jsx";
 import { MessageIFrame } from "./messageIFrame.jsx";
 import { MessageNotification } from "./messageNotification.jsx";
 import { MessageTags, SpecialMessageTags } from "./messageTags.jsx";
-import { QuickReply } from "./quickReply.jsx";
+import { QuickReply } from "../quickreply/quickReply.jsx";
 
 function isAccel(event) {
   if (window.navigator.platform.includes("Mac")) {

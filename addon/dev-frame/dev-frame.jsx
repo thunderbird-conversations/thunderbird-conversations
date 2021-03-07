@@ -12,7 +12,7 @@ import {
   ThreadView,
   ThreePanelThunderbird,
 } from "./components/thunderbird.jsx";
-import { ConversationWrapper } from "../content/conversationWrapper.jsx";
+import { ConversationWrapper } from "../content/components/conversation/conversationWrapper.jsx";
 import { store } from "./reducer.js";
 
 /**
