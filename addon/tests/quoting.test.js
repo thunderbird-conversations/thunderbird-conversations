@@ -8,7 +8,7 @@
 import { default as prettier } from "prettier";
 
 // Import the components we want to test
-import { Quoting } from "../content/quoting.js";
+import { Quoting } from "../content/utils/quoting.js";
 
 const samples = {
   hotmail: [

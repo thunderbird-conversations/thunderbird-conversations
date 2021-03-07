@@ -4,8 +4,8 @@
 
 import React from "react";
 import PropTypes from "prop-types";
-import { SvgIcon } from "./svgIcon.jsx";
-import { browser } from "./es-modules/thunderbird-compat.js";
+import { SvgIcon } from "../svgIcon.jsx";
+import { browser } from "../../es-modules/thunderbird-compat.js";
 
 /**
  * Determine if a background color is light enough to require dark text.
