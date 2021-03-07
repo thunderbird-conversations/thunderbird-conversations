@@ -6,6 +6,7 @@ import React from "react";
 import * as ReactRedux from "react-redux";
 import PropTypes from "prop-types";
 import { summaryActions } from "./reducer-summary.js";
+import { browser } from "./es-modules/thunderbird-compat.js";
 
 class _ConversationFooter extends React.PureComponent {
   constructor(props) {

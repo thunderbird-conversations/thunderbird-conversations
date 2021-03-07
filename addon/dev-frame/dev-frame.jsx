@@ -3,104 +3,52 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import React from "react";
-import * as RTK from "@reduxjs/toolkit";
 import * as ReactRedux from "react-redux";
-import { Message } from "../content/message.jsx";
+import {
+  initializeI18n,
+  browser,
+} from "../content/es-modules/thunderbird-compat.js";
+import {
+  ThreadView,
+  ThreePanelThunderbird,
+} from "./components/thunderbird.jsx";
+import { ConversationWrapper } from "../content/conversationWrapper.jsx";
+import { store } from "./reducer.js";
 
-const testSlice = RTK.createSlice({
-  name: "test",
-  initialState: {},
-  reducers: {},
-});
-const store = RTK.configureStore({ reducer: testSlice.reducer });
+/**
+ * Widget to select the active locale to be used by `browser.i18n.getMessage()`
+ *
+ * @returns
+ */
+function LocaleSelector() {
+  const [locales, setLocales] = React.useState([]);
+  const [locale, setLocale] = React.useState("en");
 
-function ExampleMessage() {
+  // Asynchronously fetch a list of the available locales
+  React.useEffect(() => {
+    (async () => {
+      const locales = await browser.i18n.getAcceptLanguages();
+      setLocales(locales);
+    })();
+  });
+
   return (
-    <Message
-      autoMarkAsRead={false}
-      browserBackgroundColor={"white"}
-      browserForegroundColor={"black"}
-      defaultFontSize={11}
-      dispatch={(...args) => {
-        console.log("Dispatched Event:", ...args);
+    <select
+      name="locale"
+      value={locale}
+      onChange={(event) => {
+        const newLocale = event.target.value;
+        // Propagate the locale change back to the mocked `browser.i18n` instance.
+        initializeI18n(() => {}, newLocale);
+        setLocale(newLocale);
       }}
-      displayingMultipleMsgs={false}
-      iframesLoading={0}
-      index={0}
-      isLastMessage={false}
-      hasBuiltInPdf={false}
-      hideQuickReply={true}
-      tenPxFactor={1}
-      setRef={() => {}}
-      advanceMessage={() => {}}
-      prefs={{
-        hideSigs: false,
-        hideQuoteLength: 5,
-        tweakBodies: true,
-        tweakChrome: true,
-      }}
-      message={{
-        id: 1,
-        date: "12/8/20, 3:22 PM",
-        folderName: "siefkenj@gmail.com/Inbox",
-        hasRemoteContent: false,
-        isDraft: false,
-        isJunk: false,
-        isOutbox: false,
-        isPhishing: false,
-        messageKey: 48042,
-        msgUri: "imap-message://INBOX#48042",
-        multipleRecipients: false,
-        neckoUrl: "imap://INBOX%3E48042",
-        needsLateAttachments: false,
-        read: true,
-        realFrom: "nobody@thunderbird.net",
-        recipientsIncludeLists: false,
-        smimeReload: false,
-        shortFolderName: "Inbox",
-        subject: "Mozilla Add-ons: Mail Merge P 2.3 Updated",
-        snippet:
-          "This is a summary of the email and it is quite long so it will have to have ellipses to that it can all fit onto one line",
-        starred: false,
-        from: {
-          name: "Thunderbird Add-ons",
-          initials: "TO",
-          displayEmail: "nobody@thunderbird.net",
-          tooltipName: "Thunderbird Add-ons",
-          email: "nobody@thunderbird.net",
-          avatar:
-            "chrome://messenger/skin/addressbook/icons/contact-generic.svg",
-          contactId: null,
-          extra: "",
-          colorStyle: { backgroundColor: "hsl(174, 70%, 27%)" },
-          separator: "",
-        },
-        to: [
-          {
-            name: "Me",
-            initials: "ME",
-            displayEmail: "",
-            tooltipName: "Me",
-            email: "s@gmail.com",
-            avatar: "file:///home/l.png",
-            contactId: "86ff",
-            extra: "s@gmail.com",
-            colorStyle: { backgroundColor: "hsl(34, 70%, 34%)" },
-          },
-        ],
-        cc: [],
-        bcc: [],
-        attachments: [],
-        attachmentsPlural: " attachments",
-        fullDate: "12/8/20, 3:22 PM",
-        tags: [],
-        inView: true,
-        initialPosition: 0,
-        scrollTo: false,
-        expanded: true,
-        detailsShowing: false,
-      }}
-    />
+    >
+      {locales.map((l) => (
+        <option key={l} value={l}>
+          {l}
+        </option>
+      ))}
+    </select>
   );
 }
 
@@ -109,26 +57,27 @@ export function Main() {
   return (
     <React.Fragment>
       <h2>Thunderbird Conversations Dev Frame</h2>
-      <div className="three-pane-container">
-        <div className="three-pane-left">
-          <h4 className="faux-inbox">Inbox (200)</h4>
-        </div>
-        <div className="three-pane-right">
-          <div className="three-pane-top">
-            The dev frame renders Conversations components in the browser for
-            rapid development. Some, but not all, thunderbird functions are
-            mocked.
-          </div>
-          <div className="three-pane-bottom">
-            <div id="conversationWrapper">
-              <div id="popup-container"></div>
-              <ReactRedux.Provider store={store}>
-                <ExampleMessage />
-              </ReactRedux.Provider>
-            </div>
-          </div>
-        </div>
+      <div className="dev-frame-description">
+        The dev frame renders Conversations components in the browser for rapid
+        development. Some, but not all, thunderbird functions are mocked.
       </div>
+      <div className="dev-frame-options">
+        <b style={{ marginRight: 5 }}>Dev Frame Options</b>
+        <i>
+          Locale: <LocaleSelector />
+        </i>
+      </div>
+      <ReactRedux.Provider store={store}>
+        <ThreePanelThunderbird
+          left={<h4 className="faux-inbox">Inbox (200)</h4>}
+          topRight={<ThreadView />}
+          bottomRight={
+            <div id="conversationWrapper">
+              <ConversationWrapper />
+            </div>
+          }
+        />
+      </ReactRedux.Provider>
     </React.Fragment>
   );
 }

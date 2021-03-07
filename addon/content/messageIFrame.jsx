@@ -7,6 +7,7 @@ import PropTypes from "prop-types";
 import { messageActions } from "./reducer-messages.js";
 import { summaryActions } from "./reducer-summary.js";
 import { Quoting } from "./quoting.js";
+import { isWebextension } from "./es-modules/thunderbird-compat.js";
 
 let index = 0;
 
@@ -224,7 +225,7 @@ export class MessageIFrame extends React.Component {
       }
       this.iframe.classList.add("hidden");
     }
-    if (startLoad) {
+    if (startLoad && isWebextension) {
       const docShell = this.iframe.contentWindow.docShell;
       docShell.appType = Ci.nsIDocShell.APP_TYPE_MAIL;
       docShell.charset = "UTF-8";
@@ -247,6 +248,12 @@ export class MessageIFrame extends React.Component {
   }
 
   componentDidMount() {
+    if (!isWebextension) {
+      // If we are running in a test environment or in the browser, we cannot
+      // create iframes in the XUL namespace.
+      this.iframe = this.div.ownerDocument.createElement("iframe");
+      return;
+    }
     // TODO: Currently this must be an iframe created in the xul namespace,
     // otherwise remote content blocking doesn't work. Figure out why the normal
     // iframe has a originator location of `chrome://messenger/content/messenger.xul`

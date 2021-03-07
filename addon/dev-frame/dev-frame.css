@@ -21,28 +21,130 @@
   }
 }
 
+html,
+body {
+  width: 100%;
+  height: 100%;
+}
+
+#root {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
 #root > h2 {
   text-align: center;
   margin-top: 0.7em;
-  margin-bottom: 0.7em;
+  margin-bottom: 0.1em;
+}
+
+.dev-frame-description {
+  text-align: center;
+  margin-bottom: 0.5em;
+}
+
+.dev-frame-options {
+  padding: 4px;
+}
+.dev-frame-options > * {
+  margin-left: 4px;
 }
 
 .three-pane-container {
   display: flex;
   flex-direction: row;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
 }
 .three-pane-left {
   min-width: 200px;
   padding: 1em;
+  border-right: 1px solid #cecece;
 }
 .three-pane-right {
   display: flex;
   flex-direction: column;
   flex-grow: 1;
+  min-width: 0;
 }
 .three-pane-top {
   min-height: 100px;
+  border-bottom: 1px solid #cecece;
 }
 .three-pane-bottom {
-  border: 4px dashed gray;
+  flex-grow: 1;
+  overflow-y: scroll;
+}
+
+/* Mock Thunderbird surround */
+.mock-tb-frame {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  margin: 1em;
+  border: 1px solid rgb(133, 133, 133);
+  border-radius: 7px;
+  box-shadow: 0 0 5px 2px rgb(112, 123, 145);
+  overflow: hidden;
+}
+.mock-tb-toolbar {
+  background-color: rgb(202, 202, 202);
+}
+.mock-tb-window-buttons-container {
+  display: flex;
+  font-size: 20pt;
+  padding-bottom: 1px;
+}
+.mock-tb-close,
+.mock-tb-maximize,
+.mock-tb-minimize {
+  padding-left: 2px;
+}
+.mock-tb-close {
+  color: #ff605c;
+}
+.mock-tb-minimize {
+  color: #ffbd44;
+}
+.mock-tb-maximize {
+  color: #00ca4e;
+}
+.mock-tb-content {
+  position: relative;
+  flex-grow: 1;
+  flex-basis: 0;
+  min-height: 0;
+}
+
+.mock-tb-message-row {
+  cursor: pointer;
+  display: flex;
+}
+.mock-tb-message-row:hover {
+  background-color: #e7e7e7;
+}
+.mock-tb-star {
+  width: 15px;
+  font-weight: bold;
+  color: gray;
+  text-align: center;
+}
+.mock-tb-star.starred {
+  font-size: 1.1em;
+  color: goldenrod;
+}
+.mock-tb-expander {
+  font-size: 16px;
+  width: 15px;
+  text-align: center;
+  margin-top: -2px;
+}
+.mock-tb-message-indent {
+  width: 15px;
+}
+.mock-tb-message-row-subject.unread {
+  font-weight: bold;
 }

@@ -13,6 +13,12 @@ if (window.BrowserSim && !window.browser) {
   // and has a native `browser` object available.
   window.browser = window.BrowserSim.getBrowser();
 }
+
+// If we have a `window.browser` object, we are running as a webextension as opposed to
+// running in the browser or in test mode. We suppress certain expected errors when we
+// know that we're not a webextension.
+export const isWebextension = !!window.browser;
+
 const browser = window.browser || {};
 
 // `i18n` is a replacement for `browser.i18n`.  `getMessage` defaults
@@ -24,30 +30,88 @@ export const i18n = {
   isLoaded: Promise.resolve(true),
   isPolyfilled: true,
 };
+const ALL_LOCALES = [
+  "bg",
+  "ca",
+  "cs",
+  "da",
+  "de",
+  "el",
+  "en",
+  "es",
+  "eu",
+  "fi",
+  "fr",
+  "gl",
+  "he-IL",
+  "hr",
+  "it",
+  "ja-JP",
+  "lt",
+  "nl",
+  "pl",
+  "pt-BR",
+  "rm",
+  "ru-RU",
+  "sl",
+  "sr",
+  "sv-SE",
+  "tr",
+  "uk",
+  "zh-CN",
+  "zh-TW",
+];
+
+/**
+ * This function should only be used in the dev frame. It is exported
+ * to give the dev frame a way to mock a change to the UI language.
+ *
+ * @export
+ * @param {*} resolve
+ * @param {string} [locale="en"]
+ */
+export async function initializeI18n(resolve, locale = "en") {
+  let resp;
+  try {
+    resp = await fetch(`../_locales/${locale}/messages.json`);
+  } catch (ex) {
+    // For tests.
+    resp = await fetch(`_locales/${locale}/messages.json`);
+  }
+  i18n._messages = await resp.json();
+  i18n._currentLocale = locale;
+  // Replace the `getMessage` function with one that retrieves
+  // values from the loaded JSON.
+  i18n.getMessage = (messageName, substitutions) => {
+    let message =
+      (i18n._messages[messageName] || {}).message ||
+      `<translation not found>${messageName}`;
+    if (!substitutions || !i18n._messages[messageName]) {
+      return message;
+    }
+    // If we're here, we have a valid i18n object and we need to do
+    // some substitutions.
+    const placeholders = i18n._messages[messageName].placeholders;
+    // `placeholders` is an object with keys and values={ content: "$?" }.
+    // We need to substitute strings of the form `$key$` with the content at the `$?` position
+    // of the `substitutions` array.
+    for (const key in placeholders) {
+      const index = parseInt(placeholders[key].content.slice(1), 10) - 1;
+      message = message.replace(`$${key}$`, substitutions[index]);
+    }
+    return message;
+  };
+  i18n.getUILanguage = async () => i18n._currentLocale;
+  i18n.getAcceptLanguages = async () => ALL_LOCALES;
+  resolve(true);
+}
 
 if (browser.i18n) {
   i18n.getMessage = browser.i18n.getMessage;
   i18n.getUILanguage = browser.i18n.getUILanguage;
+  i18n.getAcceptLanguages = browser.i18n.getAcceptLanguages;
   i18n.isPolyfilled = false;
 } else {
-  async function initializeI18n(resolve) {
-    let resp;
-    try {
-      resp = await fetch("../_locales/en/messages.json");
-    } catch (ex) {
-      // For tests.
-      resp = await fetch("_locales/en/messages.json");
-    }
-    const json = await resp.json();
-    // Replace the `getMessage` function with one that retrieves
-    // values from the loaded JSON.
-    i18n.getMessage = (messageName, substitutions) =>
-      (json[messageName] || {}).message ||
-      `<translation not found>${messageName}`;
-    i18n.getUILanguage = () => "en-US";
-    resolve(true);
-  }
-
   // Fake what we need from the i18n library
   i18n.isLoaded = new Promise((resolve, reject) => {
     // initializeI18n modifies the global i18n object and calls
@@ -117,6 +181,35 @@ if (!browser.conversations) {
     undoCustomizations() {},
     send(details) {
       console.log(details);
+    },
+    async getLocaleDirection() {
+      // RTL languages taken from https://github.com/shadiabuhilal/rtl-detect/blob/master/lib/rtl-detect.js
+      const RTL_LANGUAGES = [
+        "ae" /* Avestan */,
+        "ar" /* 'العربية', Arabic */,
+        "arc" /* Aramaic */,
+        "bcc" /* 'بلوچی مکرانی', Southern Balochi */,
+        "bqi" /* 'بختياري', Bakthiari */,
+        "ckb" /* 'Soranî / کوردی', Sorani */,
+        "dv" /* Dhivehi */,
+        "fa" /* 'فارسی', Persian */,
+        "glk" /* 'گیلکی', Gilaki */,
+        "he" /* 'עברית', Hebrew */,
+        "ku" /* 'Kurdî / كوردی', Kurdish */,
+        "mzn" /* 'مازِرونی', Mazanderani */,
+        "nqo" /* N'Ko */,
+        "pnb" /* 'پنجابی', Western Punjabi */,
+        "ps" /* 'پښتو', Pashto, */,
+        "sd" /* 'سنڌي', Sindhi */,
+        "ug" /* 'Uyghurche / ئۇيغۇرچە', Uyghur */,
+        "ur" /* 'اردو', Urdu */,
+        "yi" /* 'ייִדיש', Yiddish */,
+      ];
+      const locale = await i18n.getUILanguage();
+      if (locale && RTL_LANGUAGES.some((l) => locale.startsWith(l))) {
+        return "rtl";
+      }
+      return "ltr";
     },
   };
 }
