@@ -4,8 +4,8 @@
 
 import React from "react";
 import PropTypes from "prop-types";
-import { messageActions } from "./reducer-messages.js";
-import { SvgIcon } from "./svgIcon.jsx";
+import { messageActions } from "../../reducer/reducer-messages.js";
+import { SvgIcon } from "../svgIcon.jsx";
 
 class RemoteContentNotification extends React.PureComponent {
   constructor(props) {

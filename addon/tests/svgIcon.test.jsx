@@ -7,7 +7,7 @@ import { enzyme } from "./utils.js";
 import React from "react";
 
 // Import the components we want to test
-import { SvgIcon } from "../content/svgIcon.jsx";
+import { SvgIcon } from "../content/components/svgIcon.jsx";
 
 describe("SvgIcon test", () => {
   test("renders given a full path", async () => {

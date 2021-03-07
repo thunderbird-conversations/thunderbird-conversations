@@ -14,7 +14,7 @@ import {
   MessageTags,
   SpecialMessageTag,
   SpecialMessageTags,
-} from "../content/messageTags.jsx";
+} from "../content/components/message/messageTags.jsx";
 
 describe("SpecialMessageTags test", () => {
   test("special-tag classes are applied", async () => {

@@ -1,7 +1,7 @@
 import * as RTK from "@reduxjs/toolkit";
-import { attachmentActions } from "../content/reducer-attachments.js";
-import { messageActions } from "../content/reducer-messages.js";
-import { summaryActions } from "../content/reducer-summary.js";
+import { attachmentActions } from "../content/reducer/reducer-attachments.js";
+import { messageActions } from "../content/reducer/reducer-messages.js";
+import { summaryActions } from "../content/reducer/reducer-summary.js";
 import { mockThreads } from "./mock-data/threads.js";
 
 /**

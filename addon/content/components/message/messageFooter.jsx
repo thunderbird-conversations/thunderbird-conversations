@@ -5,7 +5,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { ActionButton } from "./messageActionButton.jsx";
-import { messageActions } from "./reducer-messages.js";
+import { messageActions } from "../../reducer/reducer-messages.js";
 
 export class MessageFooter extends React.PureComponent {
   constructor(props) {
