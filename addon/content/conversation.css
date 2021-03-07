@@ -799,7 +799,7 @@ html[dir="rtl"] .dropDown .arrow {
   display: inline-block;
   width: 16px;
   height: 16px;
-  background-image: url(loader.gif);
+  background-image: url(icons/loader.gif);
 }
 
 .messageBody > iframe {

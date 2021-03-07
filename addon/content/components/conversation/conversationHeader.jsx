@@ -208,11 +208,11 @@ class _ConversationHeader extends React.PureComponent {
               >
                 <use
                   className="expand-more"
-                  xlinkHref="material-icons.svg#expand_more"
+                  xlinkHref="icons/material-icons.svg#expand_more"
                 ></use>
                 <use
                   className="expand-less"
-                  xlinkHref="material-icons.svg#expand_less"
+                  xlinkHref="icons/material-icons.svg#expand_less"
                 ></use>
               </svg>
             </button>
