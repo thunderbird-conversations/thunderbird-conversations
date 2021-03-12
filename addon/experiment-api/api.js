@@ -387,7 +387,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           if (!msgHdr) {
             return null;
           }
-          return context.extension.messageManager.convert(msgHdr).id;
+          return (await context.extension.messageManager.convert(msgHdr)).id;
         },
         async getMessageUriForId(id) {
           const msgHdr = context.extension.messageManager.get(id);
