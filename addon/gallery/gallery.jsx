@@ -83,10 +83,26 @@ class MyComponent extends React.Component {
   async output(attachments, id) {
     let i = 1;
     for (const attachment of attachments) {
-      attachment.url = await browser.conversations.getAttachmentBody(
-        id,
-        attachment.partName
-      );
+      if ("getAttachmentFile" in browser.messages) {
+        let file = await browser.messages.getAttachmentFile(
+          id,
+          attachment.partName
+        );
+        let reader = new FileReader();
+        attachment.url = await new Promise((resolve) => {
+          reader.onload = (e) => {
+            resolve(e.target.result);
+          };
+          reader.readAsDataURL(file);
+        });
+      } else {
+        attachment.url = await browser.conversations.getAttachmentBody(
+          id,
+          attachment.partName
+        );
+        attachment.url =
+          "data:" + attachment.contentType + ";base64," + btoa(attachment.url);
+      }
       attachment.size = await browser.conversations.formatFileSize(
         attachment.size
       );
@@ -97,11 +113,7 @@ class MyComponent extends React.Component {
           index: i++,
           name: attachment.name,
           size: attachment.size,
-          src:
-            "data:" +
-            attachment.contentType +
-            ";base64," +
-            btoa(attachment.url),
+          src: attachment.url,
         };
       }),
     });
