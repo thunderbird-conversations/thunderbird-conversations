@@ -5,12 +5,29 @@
 import { Prefs } from "./prefs.js";
 import { UIHandler } from "./uiHandler.js";
 import { Window } from "./window.js";
+import { contactManager } from "./content/es-modules/contact-manager.js";
 
+//
+const requestHandlers = [];
 class Background {
   constructor() {
     this._prefs = new Prefs();
     this._uiHandler = new UIHandler();
     this._window = new Window();
+    this._background = {
+      // This is a special method to allow the background script to send messages to itself.
+      // It is needed because we're not a full webextension yet. Basically, to imitate access
+      // to the `browser` object, we pass around the background scripts `browser` object. That
+      // means we cannot use `postMessage` from the "content script" to send the background
+      // script data because there is effectively no content script.
+      async request(message) {
+        // Send the request to all request handlers and return the first one that gives
+        // a non-null response.
+        return (
+          await Promise.all(requestHandlers.map((handler) => handler(message)))
+        ).find((response) => response != null);
+      },
+    };
   }
   async init() {
     // Setup the temporary API caller that stub.html uses.
@@ -57,4 +74,11 @@ browser.runtime.onInstalled.addListener((details) => {
     // caching jsms that we didn't want it to.
     browser.conversations.invalidateCache().catch(console.error);
   }
+});
+
+requestHandlers.push(async (msg) => {
+  if (msg.type !== "contactDetails") {
+    return null;
+  }
+  return contactManager.getContactFromNameAndEmail(msg.payload);
 });

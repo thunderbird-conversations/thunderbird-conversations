@@ -4,6 +4,7 @@
 
 /* global Conversations, getMail3Pane, topMail3Pane, printConversation */
 import * as RTK from "@reduxjs/toolkit";
+import { mergeContactDetails } from "./contacts.js";
 import { messageActions } from "./reducer-messages.js";
 
 const initialSummary = {
@@ -49,7 +50,10 @@ async function handleShowDetails(messages, state, dispatch, updateFn) {
 export const summaryActions = {
   replaceConversation({ summary, messages }) {
     return async (dispatch, getState) => {
-      await handleShowDetails(messages, getState(), dispatch, () => {
+      await handleShowDetails(messages, getState(), dispatch, async () => {
+        // The messages inside `msgData` don't come with filled in `to`/`from`/ect. fields.
+        // We need to fill them in ourselves.
+        await mergeContactDetails(messages.msgData);
         dispatch(summarySlice.actions.replaceSummaryDetails(summary));
         return dispatch(
           messageActions.replaceConversationDetails({

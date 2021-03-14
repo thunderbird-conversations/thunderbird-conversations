@@ -46,6 +46,8 @@ done
 # Now copy a few other select files that we need.
 mkdir -p ../$DIST/content/es-modules/
 cp content/es-modules/thunderbird-compat.js ../$DIST/content/es-modules/thunderbird-compat.js
+cp content/es-modules/contact-manager.js ../$DIST/content/es-modules/contact-manager.js
+cp content/es-modules/utils.js ../$DIST/content/es-modules/utils.js
 cp content/utils.js ../$DIST/content/utils.js
 cp content/stubGlobals.js ../$DIST/content/stubGlobals.js
 

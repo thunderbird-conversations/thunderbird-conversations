@@ -2,25 +2,85 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/*
- * This is a temporary wrapper. Privileged code doesn't allow es-modules, but
- * eventually all components should be exported as es-modules. This code
- * "re-exports" globals as es-modules, which enables them to be imported
- * (e.g. for tests) or used as globals.
+/**
+ * Take a name and extract initials from it.
+ * If `name` is an email address, get the part before the @.
+ * Then, capitalize the first letter of the first and last word (or the first
+ * two letters of the first word if only one exists).
  *
- * When the switch to a WebExtension is done, the actual code should be migrated
- * here and the global variable workarounds should be removed.
+ * @param {string} name
+ * @returns {string}
  */
+export function getInitials(name) {
+  name = name.trim().split("@")[0];
+  let words = name.split(/[ .\-_]/).filter(function (word) {
+    return word;
+  });
+  let initials = "??";
+  let n = words.length;
+  if (n == 1) {
+    initials = words[0].substr(0, 2);
+  } else if (n > 1) {
+    initials = fixedCharAt(words[0], 0) + fixedCharAt(words[n - 1], 0);
+  }
+  return initials.toUpperCase();
+}
 
-/* globals require */
+/**
+ * Hash an email address to produce a color. The same email address will
+ * always return the same color.
+ *
+ * @param {string} email
+ * @returns {string} - valid css hsl(...) string
+ */
+export function freshColor(email) {
+  let hash = 0;
+  for (let i = 0; i < email.length; i++) {
+    let chr = email.charCodeAt(i);
+    hash = (hash << 5) - hash + chr;
+    hash &= 0xffff;
+  }
+  let hue = Math.floor((360 * hash) / 0xffff);
 
-// Set up an object for the make-shift module emulation
-window.esExports = {};
+  // try to provide a consistent lightness across hues
+  let lightnessStops = [48, 25, 28, 27, 62, 42];
+  let j = Math.floor(hue / 60);
+  let l1 = lightnessStops[j];
+  let l2 = lightnessStops[(j + 1) % 6];
+  let lightness = Math.floor((hue / 60 - j) * (l2 - l1) + l1);
 
-// The node.js `esm` loader won't share globals. Since this is only used
-// by tests at the moment, which are run by node.js, use the `require`
-// function as a fallback
-require("../utils.js");
+  return "hsl(" + hue + ", 70%, " + Math.floor(lightness) + "%)";
+}
 
-export const getInitials = window.esExports.getInitials;
-export const freshColor = window.esExports.freshColor;
+// Taken from
+// https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/charAt#Fixing_charAt()_to_support_non-Basic-Multilingual-Plane_(BMP)_characters
+function fixedCharAt(str, idx) {
+  var ret = "";
+  str += "";
+  var end = str.length;
+
+  var surrogatePairs = /[\uD800-\uDBFF][\uDC00-\uDFFF]/g;
+  while (surrogatePairs.exec(str) != null) {
+    var li = surrogatePairs.lastIndex;
+    if (li - 2 < idx) {
+      idx++;
+    } else {
+      break;
+    }
+  }
+
+  if (idx >= end || idx < 0) {
+    return "";
+  }
+
+  ret += str.charAt(idx);
+
+  if (
+    /[\uD800-\uDBFF]/.test(ret) &&
+    /[\uDC00-\uDFFF]/.test(str.charAt(idx + 1))
+  ) {
+    // Go one further, since one of the "characters" is part of a surrogate pair
+    ret += str.charAt(idx + 1);
+  }
+  return ret;
+}
