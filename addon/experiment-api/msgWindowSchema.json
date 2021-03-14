@@ -47,20 +47,6 @@
         ]
       },
       {
-        "name": "getDisplayedFolder",
-        "type": "function",
-        "description": "Returns the currently displayed folder.",
-        "async": true,
-        "parameters": [
-          {
-            "name": "tabId",
-            "type": "integer",
-            "minimum": 1,
-            "description": "The tab id."
-          }
-        ]
-      },
-      {
         "name": "openNewWindow",
         "type": "function",
         "description": "Opens a new window with the specified url.",
