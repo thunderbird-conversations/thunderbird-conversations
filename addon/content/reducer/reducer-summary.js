@@ -87,10 +87,13 @@ export const summaryActions = {
       if (state.summary.hasIdentityParamsForCompose) {
         // Ideally we should use the displayed folder, but the displayed message
         // works fine, as we'll only
-        let folder = await browser.convMsgWindow.getDisplayedFolder(
-          state.summary.tabId
+        let tab = await browser.mailTabs.query({
+          active: true,
+          currentWindow: true,
+        });
+        let account = await browser.accounts.get(
+          tab[0].displayedFolder.accountId
         );
-        let account = await browser.accounts.get(folder.accountId);
         await browser.compose.beginNew({
           identityId: account.identities[0].id,
           to: dest,

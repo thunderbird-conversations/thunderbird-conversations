@@ -61,12 +61,7 @@ class WindowObserver {
 var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
   getAPI(context) {
     const { extension } = context;
-    const {
-      messageManager,
-      tabManager,
-      windowManager,
-      folderManager,
-    } = extension;
+    const { messageManager, tabManager, windowManager } = extension;
     return {
       convMsgWindow: {
         async isSelectionExpanded(windowId) {
@@ -132,11 +127,6 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
             }
           }
           return result;
-        },
-        async getDisplayedFolder(tabId) {
-          let tab = tabManager.get(tabId);
-          let folder = tab.nativeTab.folderDisplay.displayedFolder;
-          return folderManager.convert(folder);
         },
         async openNewWindow(url) {
           const win = getWindowFromId();

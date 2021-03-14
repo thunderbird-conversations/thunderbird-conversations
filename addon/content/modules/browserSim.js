@@ -17,6 +17,7 @@ const SUPPORTED_APIS_NO_EVENTS = [
   "addressBooks",
   "compose",
   "contacts",
+  "mailTabs",
   "messageDisplay",
   "messages",
   "runtime",
