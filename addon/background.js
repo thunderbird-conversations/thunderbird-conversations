@@ -7,7 +7,6 @@ import { UIHandler } from "./uiHandler.js";
 import { Window } from "./window.js";
 import { contactManager } from "./content/es-modules/contact-manager.js";
 
-//
 const requestHandlers = [];
 class Background {
   constructor() {
@@ -76,6 +75,8 @@ browser.runtime.onInstalled.addListener((details) => {
   }
 });
 
+// Request handler for getting contact details.
+// Accessible through browser._background.request({ type: "contactDetails", payload: contact })
 requestHandlers.push(async (msg) => {
   if (msg.type !== "contactDetails") {
     return null;
