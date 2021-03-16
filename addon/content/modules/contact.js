@@ -159,15 +159,13 @@ ContactFromAB.prototype = {
     const lcEmail = this._email.toLowerCase();
     const hasIdentity = identityEmails.find((e) => e.toLowerCase() == lcEmail);
 
-    // `name` and `extra` are the only attributes that depend on `position`
+    // `name` are the only attributes that depend on `position`
     let name = this._name || this._email;
-    let extra = "";
     if (!isDetail && hasIdentity) {
       name =
         position === Contacts.kFrom
           ? browser.i18n.getMessage("message.meFromMeToSomeone")
           : browser.i18n.getMessage("message.meFromSomeoneToMe");
-      extra = this._email;
     }
     const displayEmail = name != email ? email : "";
     const skipEmail =
@@ -187,7 +185,6 @@ ContactFromAB.prototype = {
       email,
       avatar: this.avatar,
       contactId: this._card ? this._card.id : null,
-      extra,
       colorStyle: { backgroundColor: this.color },
     };
     return data;
