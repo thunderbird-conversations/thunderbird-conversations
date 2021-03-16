@@ -256,11 +256,6 @@ html[dir="rtl"] .tooltip {
   height: 1.86em;
 }
 
-.contactExtra {
-  max-width: 12em;
-  display: inline;
-}
-
 .options > .details-hidden {
   color: -moz-CellHighlight;
 }
