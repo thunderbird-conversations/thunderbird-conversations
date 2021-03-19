@@ -431,7 +431,10 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           return messenger.formatFileSize(size);
         },
         async createTab(createTabProperties) {
-          const params = {};
+          const params = {
+            url: createTabProperties.url,
+          };
+          // contentPage/chromePage support the Thunderbird 78 series.
           if (createTabProperties.type == "contentTab") {
             params.contentPage = createTabProperties.url;
           } else {

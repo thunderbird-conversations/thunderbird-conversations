@@ -72,7 +72,7 @@ export class Window {
       case 2:
         await browser.conversations.createTab({
           url,
-          type: "chromeTab",
+          type: "contentTab",
         });
         break;
     }
