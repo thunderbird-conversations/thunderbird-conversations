@@ -256,11 +256,6 @@ html[dir="rtl"] .tooltip {
   height: 1.86em;
 }
 
-.contactExtra {
-  max-width: 12em;
-  display: inline;
-}
-
 .options > .details-hidden {
   color: -moz-CellHighlight;
 }
@@ -810,7 +805,6 @@ html[dir="rtl"] .dropDown .arrow {
 /* fading tool tip that appears directly below the container */
 .fade-parent {
   position: relative;
-  display: inline-block;
 }
 .fade-popup {
   opacity: 0;
@@ -822,6 +816,8 @@ html[dir="rtl"] .dropDown .arrow {
   transition: visibility 800ms, opacity 800ms;
   /* make sure the popup is in the foreground */
   z-index: 100;
+  /* 7px for .arrow, plus 2px for borders */
+  margin-top: 9px;
 }
 .fade-parent:hover .fade-popup,
 .fade-popup.hover,

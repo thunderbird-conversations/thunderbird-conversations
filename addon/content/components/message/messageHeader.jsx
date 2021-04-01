@@ -124,22 +124,16 @@ function Email({ email }) {
 Email.propTypes = { email: PropTypes.string.isRequired };
 
 export function DetailedContactLabel({ contact, className }) {
-  // These components conditionally render
-  let extraLabel = null;
-  let emailLabel = null;
-
+  // This component conditionally renders.
   // In a detail view, there is a star at the start of the contact
   // info and a line break at the end.
   const star = contact.contactId && "\u2605 ";
-  emailLabel = contact.email && (
+  let emailLabel = contact.email && (
     <span className="smallEmail">
       {" "}
       <Email email={contact.email} />
     </span>
   );
-  if (contact.extra) {
-    extraLabel = `(${contact.extra})`;
-  }
 
   return (
     <HoverFade
@@ -158,7 +152,6 @@ export function DetailedContactLabel({ contact, className }) {
         <span className="contactName">
           {star}
           {contact.name.trim()}
-          {extraLabel}
           {emailLabel}
         </span>
       </span>
@@ -171,19 +164,13 @@ DetailedContactLabel.propTypes = {
 };
 
 export function ContactLabel({ contact, className }) {
-  // These components conditionally render
-  let extraLabel = null;
-  let emailLabel = null;
-
-  emailLabel = contact.displayEmail && (
+  // This component conditionally renders.
+  let emailLabel = contact.displayEmail && (
     <span className="smallEmail">
       {" "}
       <Email email={contact.displayEmail} />
     </span>
   );
-  if (contact.extra) {
-    extraLabel = `(${contact.extra})`;
-  }
 
   return (
     <HoverFade
@@ -200,7 +187,6 @@ export function ContactLabel({ contact, className }) {
       <span className={className}>
         <span className="contactName">
           {contact.name.trim()}
-          {extraLabel}
           {emailLabel}
         </span>
       </span>

@@ -18,15 +18,13 @@ async function toTmplData(position, contact, email) {
   const lcEmail = contact._email.toLowerCase();
   const hasIdentity = identityEmails.find((e) => e.toLowerCase() == lcEmail);
 
-  // `name` and `extra` are the only attributes that depend on `position`
+  // `name` is the only attribute that depend on `position`
   let name = contact._name || contact._email;
-  let extra = "";
   if (hasIdentity) {
     name =
       position === "from"
         ? browser.i18n.getMessage("message.meFromMeToSomeone")
         : browser.i18n.getMessage("message.meFromSomeoneToMe");
-    extra = contact._email;
   }
   const displayEmail = name != email ? email : "";
   const skipEmail =
@@ -44,7 +42,6 @@ async function toTmplData(position, contact, email) {
     email,
     avatar: contact.avatar,
     contactId: contact._card ? contact._card.id : null,
-    extra,
     colorStyle: { backgroundColor: contact.color },
   };
   return data;
