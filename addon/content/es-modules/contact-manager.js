@@ -11,7 +11,7 @@ class ContactManager {
     // We may ask for the same contact twice in rapid succession. In this
     // case, we don't want to do queries multiple times. Instead we want to wait
     // for the first query to finish. So, we keep track of all active queries.
-    this._activeFetch = new Map();
+    this._activeFetches = new Map();
   }
   async getContactFromNameAndEmail({ name, email }) {
     // [name] and [email] are from the message header
@@ -38,11 +38,11 @@ class ContactManager {
       };
     }
 
-    if (this._activeFetch.has(key)) {
+    if (this._activeFetches.has(key)) {
       // If there's an active fetch going on for this contact,
       // caching, etc. will be taken care of by the process that spawned the
       // fetch. Therefore, we can safely return the result of the promise directly.
-      const contact = await this._activeFetch.get(key);
+      const contact = await this._activeFetches.get(key);
       return contact;
     }
 
@@ -52,9 +52,12 @@ class ContactManager {
       this._colorCache.get(email)
     );
     // Cache the promise until it's completed
-    this._activeFetch.set(key, contactPromise);
+    this._activeFetches.set(key, contactPromise);
     const contact = await contactPromise;
-    this._activeFetch.delete(key);
+    if (name) {
+      this._enrichWithName(key, name);
+    }
+    this._activeFetches.delete(key);
 
     // Only cache contacts which are in the address book. This avoids weird
     //  phenomena such as a bug tracker sending emails with different names
