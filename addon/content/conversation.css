@@ -201,10 +201,6 @@ a img {
   flex-direction: row;
 }
 
-.collapsed .messageHeader {
-  margin: 0;
-}
-
 .messageHeader img {
   vertical-align: text-top;
 }
@@ -446,16 +442,6 @@ html[dir="rtl"] .dropDown .arrow {
 
 .message.bugzilla .to {
   display: none;
-}
-
-.message.collapsed .bzTo,
-.message.collapsed .messageBody,
-.message.collapsed .quickReply,
-.message.collapsed .smallEmail,
-.message.collapsed p,
-.message.collapsed iframe,
-.message.collapsed .detailsLine {
-  display: none !important;
 }
 
 .snippet {
