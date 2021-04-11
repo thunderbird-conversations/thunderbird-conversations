@@ -705,7 +705,7 @@ export const messagesSlice = RTK.createSlice({
     removeMessageFromConversation(state, { payload }) {
       return {
         ...state,
-        msgData: state.msgData.filter((m) => m.msgUri === payload.msgUri),
+        msgData: state.msgData.filter((m) => m.msgUri !== payload.msgUri),
       };
     },
     clearScrollto(state, { payload }) {
