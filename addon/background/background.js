@@ -2,10 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import { Prefs } from "./prefs.js";
+import { Prefs } from "../prefs.js";
 import { UIHandler } from "./uiHandler.js";
 import { Window } from "./window.js";
-import { contactManager } from "./content/es-modules/contact-manager.js";
+import { contactManager } from "./contact-manager.js";
 
 const requestHandlers = [];
 class Background {

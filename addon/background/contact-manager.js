@@ -2,8 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import { freshColor } from "./utils.js";
-
 class ContactManager {
   constructor() {
     this._cache = new Map();
@@ -173,3 +171,29 @@ class ContactManager {
 }
 
 export const contactManager = new ContactManager();
+
+/**
+ * Hash an email address to produce a color. The same email address will
+ * always return the same color.
+ *
+ * @param {string} email
+ * @returns {string} - valid css hsl(...) string
+ */
+export function freshColor(email) {
+  let hash = 0;
+  for (let i = 0; i < email.length; i++) {
+    let chr = email.charCodeAt(i);
+    hash = (hash << 5) - hash + chr;
+    hash &= 0xffff;
+  }
+  let hue = Math.floor((360 * hash) / 0xffff);
+
+  // try to provide a consistent lightness across hues
+  let lightnessStops = [48, 25, 28, 27, 62, 42];
+  let j = Math.floor(hue / 60);
+  let l1 = lightnessStops[j];
+  let l2 = lightnessStops[(j + 1) % 6];
+  let lightness = Math.floor((hue / 60 - j) * (l2 - l1) + l1);
+
+  return "hsl(" + hue + ", 70%, " + Math.floor(lightness) + "%)";
+}

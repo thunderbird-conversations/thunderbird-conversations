@@ -17,7 +17,8 @@ function isValidColor(color) {
 }
 
 // Import the functions we want to test
-import { getInitials, freshColor } from "../content/es-modules/utils.js";
+import { getInitials } from "../content/es-modules/utils.js";
+import { freshColor } from "../background/contact-manager.js";
 
 describe("Test utility functions", () => {
   test("getInitials extracts initials from names", async () => {
