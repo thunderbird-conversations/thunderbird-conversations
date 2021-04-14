@@ -58,7 +58,7 @@ export class UIHandler {
     // The title/description for this pref is really confusing, we should
     // reconsider it when we re-enable.
     const result = await browser.storage.local.get("preferences");
-    const url = `compose/compose.html?accountId=${accountId}&identityId=${identityId}`;
+    const url = `../compose/compose.html?accountId=${accountId}&identityId=${identityId}`;
     if (result.preferences.compose_in_tab) {
       browser.tabs.create({
         url,

@@ -76,7 +76,7 @@ describe("openQuickCompose", () => {
     await uiHandler.openQuickCompose();
 
     expect(mockedTabCreate).toHaveBeenCalledWith({
-      url: "compose/compose.html?accountId=ac1&identityId=id3",
+      url: "../compose/compose.html?accountId=ac1&identityId=id3",
     });
     expect(mockedWindowCreate).not.toHaveBeenCalled();
   });
@@ -100,7 +100,7 @@ describe("openQuickCompose", () => {
 
     expect(mockedTabCreate).not.toHaveBeenCalled();
     expect(mockedWindowCreate).toHaveBeenCalledWith({
-      url: "compose/compose.html?accountId=ac1&identityId=id3",
+      url: "../compose/compose.html?accountId=ac1&identityId=id3",
       type: "popup",
       width: 1024,
       height: 600,
@@ -113,7 +113,7 @@ describe("openQuickCompose", () => {
     await uiHandler.openQuickCompose();
 
     expect(mockedTabCreate).toHaveBeenCalledWith({
-      url: "compose/compose.html?accountId=ac34&identityId=idac34",
+      url: "../compose/compose.html?accountId=ac34&identityId=idac34",
     });
     expect(mockedWindowCreate).not.toHaveBeenCalled();
   });
