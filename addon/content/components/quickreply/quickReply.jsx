@@ -3,8 +3,18 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import React from "react";
+import { ComposeWidget } from "../compose/ComposeWidget.jsx";
+import PropTypes from "prop-types";
 
-export function QuickReply() {
+export function QuickReply({ dispatch }) {
+  if (true) {
+    return (
+      <div className="quickReply">
+        <ComposeWidget dispatch={dispatch} />
+      </div>
+    );
+  }
+
   return (
     <div className="quickReply disabled" dir="ltr">
       <small>
@@ -16,7 +26,9 @@ export function QuickReply() {
     </div>
   );
 }
-QuickReply.propTypes = {};
+QuickReply.propTypes = {
+  dispatch: PropTypes.func.isRequired,
+};
 
 // These are the templates originally from stub.html for quickReply. Moved here
 // to help tidy that up and prepare.

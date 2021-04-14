@@ -1,7 +1,17 @@
 import * as RTK from "@reduxjs/toolkit";
 import { attachmentActions } from "../content/reducer/reducer-attachments.js";
-import { messageActions } from "../content/reducer/reducer-messages.js";
-import { summaryActions } from "../content/reducer/reducer-summary.js";
+import {
+  initialCompose,
+  composeActions,
+} from "../content/reducer/reducer-compose.js";
+import {
+  initialMessages,
+  messageActions,
+} from "../content/reducer/reducer-messages.js";
+import {
+  initialSummary,
+  summaryActions,
+} from "../content/reducer/reducer-summary.js";
 import { mockThreads } from "./mock-data/threads.js";
 
 /**
@@ -58,6 +68,7 @@ messageActions.waitForStartup = () => async () => {};
 
 // We'd like to log all the `thunks` we execute, so wrap all method access in
 // logger functions.
+makeAttrsLogging(composeActions, createThunkLogger("composeActions"));
 makeAttrsLogging(messageActions, createThunkLogger("messageActions"));
 makeAttrsLogging(summaryActions, createThunkLogger("summaryActions"));
 makeAttrsLogging(attachmentActions, createThunkLogger("attachmentActions"));
@@ -65,32 +76,9 @@ makeAttrsLogging(attachmentActions, createThunkLogger("attachmentActions"));
 export const devframeSlice = RTK.createSlice({
   name: "testing",
   initialState: {
-    summary: {
-      browserForegroundColor: "#000000",
-      browserBackgroundColor: "#FFFFFF",
-      conversation: {},
-      defaultFontSize: 16,
-      hasBuiltInPdf: false,
-      hasIdentityParamsForCompose: true,
-      hideQuickReply: false,
-      iframesLoading: 0,
-      isInTab: false,
-      loading: false,
-      OS: "linux",
-      tabId: 1,
-      tenPxFactor: 0.625,
-      subject: "(Click a message to get started)",
-      windowId: 3,
-      defaultDetailsShowing: false,
-      prefs: {
-        hideSigs: false,
-        hideQuoteLength: 5,
-        tweakBodies: true,
-        tweakChrome: true,
-      },
-      autoMarkAsRead: false,
-    },
-    messages: { msgData: [] },
+    compose: { ...initialCompose },
+    summary: { ...initialSummary },
+    messages: { ...initialMessages },
     threads: {
       selectedThread: 0,
       threadData: mockThreads,

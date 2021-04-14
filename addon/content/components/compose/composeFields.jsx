@@ -17,7 +17,7 @@ export function TextBox({
   return (
     <React.Fragment>
       <div>
-        <label>{title}</label>
+        <label>{browser.i18n.getMessage(title)}</label>
       </div>
       <div>
         <input

@@ -9,7 +9,7 @@ import { jest } from "@jest/globals";
 import { browser } from "../content/es-modules/thunderbird-compat.js";
 
 // Import the components we want to test
-import { Main, store, actions } from "../compose/compose.jsx";
+import { Main, store, actions } from "../compose/ComposeWidget.jsx";
 import { TextArea, TextBox } from "../compose/composeFields.jsx";
 
 describe("Compose components have correct return values", () => {
