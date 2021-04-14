@@ -37,10 +37,6 @@ const { PluginHelpers } = ChromeUtils.import(
   "chrome://conversations/content/modules/plugins/helpers.js",
   {}
 );
-const { Contacts } = ChromeUtils.import(
-  "chrome://conversations/content/modules/contact.js",
-  {}
-);
 const { Prefs } = ChromeUtils.import(
   "chrome://conversations/content/modules/prefs.js",
   {}
@@ -120,7 +116,6 @@ class Message {
     this.subject = this._msgHdr.mime2DecodedSubject;
 
     this._uri = msgHdrGetUri(this._msgHdr);
-    this._contacts = [];
     this._attachments = [];
     this.needsLateAttachments = false;
     this.contentType = "";
@@ -201,26 +196,6 @@ class Message {
     }
   }
 
-  async getContactsFrom(detail) {
-    let contacts = [];
-    for (const d of detail) {
-      // Not using Promise.all here as we want to let the contact manager
-      // get the data for the caching to work properly.
-      contacts.push([
-        await this._conversation._contactManager.getContactFromNameAndEmail(
-          d.name,
-          d.email
-        ),
-        d.email,
-      ]);
-    }
-    this._contacts = this._contacts.concat(contacts);
-    // false means "no colors"
-    return Promise.all(
-      contacts.map(([x, email]) => x.toTmplData(Contacts.kTo, email))
-    );
-  }
-
   async toReactData() {
     // Ok, brace ourselves for notifications happening during the message load
     //  process.
@@ -254,24 +229,15 @@ class Message {
       subject: messageHeader.subject,
       snippet: this._snippet,
       starred: messageHeader.flagged,
+      // We look up info on each contact in the Redux reducer;
+      // pass this information along so we know what to look up.
+      _contactsData: {
+        from: [this._from],
+        to: this._to,
+        cc: this._cc,
+        bcc: this._bcc,
+      },
     };
-
-    // 1) Generate Contact objects
-    let contactFrom = [
-      await this._conversation._contactManager.getContactFromNameAndEmail(
-        this._from.name,
-        this._from.email
-      ),
-      this._from.email,
-    ];
-    this._contacts.push(contactFrom);
-    // true means "with colors"
-    data.from = await contactFrom[0].toTmplData(Contacts.kFrom, contactFrom[1]);
-    data.from.separator = "";
-
-    data.to = await this.getContactsFrom(this._to);
-    data.cc = await this.getContactsFrom(this._cc);
-    data.bcc = await this.getContactsFrom(this._bcc);
 
     // Don't show "to me" if this is a bugzilla email
     // TODO: Make this work again?
@@ -624,10 +590,14 @@ class Message {
    * do our best to give this. We're trying not to stream it once more!
    */
   async exportAsHtml() {
-    let author = escapeHtml(this._contacts[0][0]._name);
+    const authorContact = await browser._background.request({
+      type: "contactDetails",
+      payload: this._from,
+    });
+    let author = escapeHtml(authorContact._name);
     let authorEmail = this._from.email;
-    let authorAvatar = this._contacts[0][0].avatar;
-    let authorColor = this._contacts[0][0].color;
+    let authorAvatar = authorContact.avatar;
+    let authorColor = authorContact.color;
     let date = await dateAccordingToPref(new Date(this._msgHdr.date / 1000));
     // We try to convert the bodies to plain text, to enhance the readability in
     // the forwarded conversation. Note: <pre> tags are not converted properly

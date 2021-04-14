@@ -23,6 +23,8 @@ const SUPPORTED_APIS_NO_EVENTS = [
   "runtime",
   "tabs",
   "windows",
+  // This is a temporary workaround so that we can "message" the background script.
+  "_background",
 ];
 
 const SUPPORTED_BASE_APIS = [

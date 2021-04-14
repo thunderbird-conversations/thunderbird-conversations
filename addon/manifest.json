@@ -13,7 +13,7 @@
   "version": "3.3pre",
   "homepage_url": "http://github.com/thunderbird-conversations/thunderbird-conversations/wiki",
   "background": {
-    "page": "background.html"
+    "page": "background/background.html"
   },
   "options_ui": {
     "open_in_tab": true,

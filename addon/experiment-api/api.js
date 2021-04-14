@@ -35,7 +35,6 @@ const conversationModules = [
   "chrome://conversations/content/modules/plugins/lightning.js",
   "chrome://conversations/content/modules/assistant.js",
   "chrome://conversations/content/modules/browserSim.js",
-  "chrome://conversations/content/modules/contact.js",
   "chrome://conversations/content/modules/conversation.js",
   "chrome://conversations/content/modules/hook.js",
   "chrome://conversations/content/modules/message.js",
