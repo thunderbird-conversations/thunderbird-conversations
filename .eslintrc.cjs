@@ -28,7 +28,6 @@ module.exports = {
         "addon/content/modules/**",
         "addon/content/pdfviewer/*.js",
         "addon/content/stubGlobals.js",
-        "addon/content/utils.js",
         "addon/experiment-api/**",
       ],
       files: ["addon/**/*.js*"],
