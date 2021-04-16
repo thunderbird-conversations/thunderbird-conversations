@@ -5,7 +5,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { useDispatch, useSelector } from "react-redux";
-import { devframeSlice } from "../reducer";
+import { devFrameActions } from "../reducer";
 
 function WindowButtons() {
   return (
@@ -143,7 +143,7 @@ function Thread({ thread, position = 0 }) {
 
   function onClick(index) {
     dispatch(
-      devframeSlice.actions.setActiveThread({
+      devFrameActions.setActiveThread({
         thread: position,
         message: index,
       })
