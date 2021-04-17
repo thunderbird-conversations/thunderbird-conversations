@@ -6,6 +6,7 @@
 
 import React from "react";
 import PropTypes from "prop-types";
+import { browser } from "../../es-modules/thunderbird-compat.js";
 
 export function TextBox({
   disabled = false,
