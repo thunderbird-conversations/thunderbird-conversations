@@ -626,13 +626,20 @@ export const messagesSlice = RTK.createSlice({
   name: "messages",
   initialState: initialMessages,
   reducers: {
-    replaceConversationDetails(state, { payload }) {
-      const { messages } = payload;
+    /**
+     * Update the message list either replacing or appending the messages.
+     *
+     * @param {object} messages
+     *   The messages to insert or append.
+     * @param {boolean} append
+     *   Set to true to append messages, false to replace the current conversation.
+     */
+    updateConversation(state, { payload }) {
+      const { messages, append } = payload;
+      if (append) {
+        return { ...state, msgData: state.msgData.concat(messages.msgData) };
+      }
       return { ...state, ...messages };
-    },
-    appendMessages(state, { payload }) {
-      const { messages } = payload;
-      return { ...state, msgData: state.msgData.concat(messages.msgData) };
     },
     msgExpand(state, { payload }) {
       return modifyOnlyMsg(state, payload.msgUri, (msg) => ({
