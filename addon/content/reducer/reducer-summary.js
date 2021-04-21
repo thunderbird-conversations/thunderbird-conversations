@@ -48,25 +48,29 @@ async function handleShowDetails(messages, state, dispatch, updateFn) {
 }
 
 export const summaryActions = {
-  replaceConversation({ summary, messages }) {
+  /**
+   * Update a conversation either replacing or appending the messages.
+   *
+   * @param {object} [summary]
+   *   Only applies to replacing a conversation, the summary details to update.
+   * @param {object} messages
+   *   The messages to insert or append.
+   * @param {boolean} append
+   *   Set to true to append messages, false to replace the current conversation.
+   */
+  updateConversation({ summary, messages, append }) {
     return async (dispatch, getState) => {
       await handleShowDetails(messages, getState(), dispatch, async () => {
         // The messages inside `msgData` don't come with filled in `to`/`from`/ect. fields.
         // We need to fill them in ourselves.
         await mergeContactDetails(messages.msgData);
-        dispatch(summarySlice.actions.replaceSummaryDetails(summary));
+
+        if (!append) {
+          dispatch(summarySlice.actions.replaceSummaryDetails(summary));
+        }
         return dispatch(
-          messageActions.replaceConversationDetails({
-            messages,
-          })
+          messageActions.updateConversation({ messages, append })
         );
-      });
-    };
-  },
-  appendMessages({ summary, messages }) {
-    return async (dispatch, getState) => {
-      await handleShowDetails(messages, getState(), dispatch, () => {
-        return dispatch(messageActions.appendMessages({ messages }));
       });
     };
   },
