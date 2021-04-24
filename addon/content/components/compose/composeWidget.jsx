@@ -9,8 +9,7 @@ import { TextArea, TextBox } from "./composeFields.jsx";
 
 export function ComposeWidget() {
   const dispatch = ReactRedux.useDispatch();
-  const { OS, composeState } = ReactRedux.useSelector((state) => ({
-    OS: state.summary.OS,
+  const { composeState } = ReactRedux.useSelector((state) => ({
     composeState: state.compose,
   }));
 
@@ -35,15 +34,6 @@ export function ComposeWidget() {
       window.removeEventListener("beforeunload", checkBeforeUnload);
     };
   });
-
-  // TODO: We may need to be able to jest before we can remove these
-  // undefined checks.
-  const html =
-    window.document && window.document.body && window.document.body.parentNode;
-  if (html) {
-    // TODO: Maybe should handle the tweak chrome option here.
-    html.setAttribute("os", OS);
-  }
 
   return (
     <div className="compose">
