@@ -13,6 +13,10 @@ import {
   initialSummary,
   summaryActions,
 } from "../content/reducer/reducer-summary.js";
+import {
+  quickReplyActions,
+  quickReplySlice,
+} from "../content/reducer/reducer-quickReply.js";
 import { mockThreads } from "./mock-data/threads.js";
 
 /**
@@ -73,6 +77,7 @@ makeAttrsLogging(composeActions, createThunkLogger("composeActions"));
 makeAttrsLogging(messageActions, createThunkLogger("messageActions"));
 makeAttrsLogging(summaryActions, createThunkLogger("summaryActions"));
 makeAttrsLogging(attachmentActions, createThunkLogger("attachmentActions"));
+makeAttrsLogging(quickReplyActions, createThunkLogger("quickReplyActions"));
 
 export const fakeSummarySlice = RTK.createSlice({
   name: "summary",
@@ -132,5 +137,6 @@ export const devFrameApp = Redux.combineReducers({
   summary: fakeSummarySlice.reducer,
   messages: fakeMessagesSlice.reducer,
   threads: devframeSlice.reducer,
+  quickReply: quickReplySlice.reducer,
 });
 export const store = RTK.configureStore({ reducer: devFrameApp });

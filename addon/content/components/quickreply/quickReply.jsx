@@ -3,28 +3,50 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import React from "react";
-import { ComposeWidget } from "../compose/ComposeWidget.jsx";
+import * as ReactRedux from "react-redux";
 import PropTypes from "prop-types";
+import { ComposeWidget } from "../compose/composeWidget.jsx";
+import { quickReplyActions } from "../../reducer/reducer-quickReply.js";
 
-export function QuickReply({ dispatch }) {
+export function QuickReply() {
+  // Not ready to enable yet.
   if (true) {
     return (
-      <div className="quickReply">
-        <ComposeWidget dispatch={dispatch} />
+      <div className="quickReply disabled" dir="ltr">
+        <small>
+          <i>
+            Quick Reply is temporarily disabled due to needing rewriting for
+            Thunderbird 78+.
+          </i>
+        </small>
       </div>
     );
   }
 
-  return (
-    <div className="quickReply disabled" dir="ltr">
-      <small>
-        <i>
-          Quick Reply is temporarily disabled due to needing rewriting for
-          Thunderbird 78+.
-        </i>
-      </small>
+  const dispatch = ReactRedux.useDispatch();
+  const { quickReplyState } = ReactRedux.useSelector((state) => ({
+    quickReplyState: state.quickReply,
+  }));
+
+  function expand() {
+    return dispatch(quickReplyActions.expand());
+  }
+  function discard() {
+    return dispatch(quickReplyActions.discard());
+  }
+
+  let body = quickReplyState.expanded ? (
+    <div>
+      <ComposeWidget dispatch={dispatch} />
+      <a className="link" onClick={discard}>
+        {browser.i18n.getMessage("compose.discard")}
+      </a>
     </div>
+  ) : (
+    <textarea onClick={expand} />
   );
+
+  return <div className="quickReply">{body}</div>;
 }
 QuickReply.propTypes = {
   dispatch: PropTypes.func.isRequired,
