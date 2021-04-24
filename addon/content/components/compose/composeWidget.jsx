@@ -2,49 +2,18 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-"use strict";
-
 import { composeActions } from "../../reducer/reducer-compose.js";
 import React from "react";
 import * as ReactRedux from "react-redux";
-import PropTypes from "prop-types";
 import { TextArea, TextBox } from "./composeFields.jsx";
 
-const INPUT_FIELDS = [
-  {
-    props: {
-      name: "from",
-      title: "message.fromHeader",
-      disabled: true,
-    },
-    component: TextBox,
-  },
-  {
-    props: {
-      name: "to",
-      title: "message.toHeader",
-      disabled: false,
-    },
-    component: TextBox,
-  },
-  {
-    props: {
-      name: "subject",
-      title: "compose.fieldSubject",
-      disabled: false,
-    },
-    component: TextBox,
-  },
-  {
-    props: {
-      name: "body",
-      disabled: false,
-    },
-    component: TextArea,
-  },
-];
+export function ComposeWidget() {
+  const dispatch = ReactRedux.useDispatch();
+  const { OS, composeState } = ReactRedux.useSelector((state) => ({
+    OS: state.summary.OS,
+    composeState: state.compose,
+  }));
 
-function _ComposeWidget({ OS, composeDetails, dispatch }) {
   function onSend() {
     dispatch(composeActions.sendMessage());
   }
@@ -55,7 +24,7 @@ function _ComposeWidget({ OS, composeDetails, dispatch }) {
 
   // Warn about unloading
   function checkBeforeUnload(event) {
-    if (composeDetails.modified) {
+    if (composeState.modified) {
       event.preventDefault();
     }
   }
@@ -78,25 +47,41 @@ function _ComposeWidget({ OS, composeDetails, dispatch }) {
 
   return (
     <div className="compose">
-      {INPUT_FIELDS.map((Item, i) => (
-        <Item.component
-          {...Item.props}
-          disabled={Item.props.disabled || composeDetails.sending}
-          key={i}
-          value={composeDetails[Item.props.name]}
-          sending={composeDetails.sending}
-          onChange={setValue}
-        />
-      ))}
+      <TextBox
+        name="from"
+        title="message.fromHeader"
+        disabled={true}
+        value={composeState.from}
+        sending={composeState.sending}
+        onChange={setValue}
+      />
+      <TextBox
+        name="to"
+        title="message.toHeader"
+        value={composeState.to}
+        sending={composeState.sending}
+        onChange={setValue}
+      />
+      <TextBox
+        name="subject"
+        title="compose.fieldSubject"
+        value={composeState.subject}
+        sending={composeState.sending}
+        onChange={setValue}
+      />
+      <TextArea
+        name="body"
+        value={composeState.body}
+        sending={composeState.sending}
+        onChange={setValue}
+      />
       <div></div>
-      <div id="sendStatus">{composeDetails.sendingMsg}</div>
+      <div id="sendStatus">{composeState.sendingMsg}</div>
       <button
         id="send"
         onClick={onSend}
         disabled={
-          composeDetails.sending ||
-          !composeDetails.to ||
-          !composeDetails.subject
+          composeState.sending || !composeState.to || !composeState.subject
         }
       >
         {browser.i18n.getMessage("compose.send")}
@@ -104,15 +89,3 @@ function _ComposeWidget({ OS, composeDetails, dispatch }) {
     </div>
   );
 }
-_ComposeWidget.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-  OS: PropTypes.string,
-  composeDetails: PropTypes.object.isRequired,
-};
-
-export const ComposeWidget = ReactRedux.connect((state) => {
-  return {
-    OS: state.summary.OS,
-    composeDetails: state.compose,
-  };
-})(_ComposeWidget);

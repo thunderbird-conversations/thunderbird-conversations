@@ -18,6 +18,7 @@ describe("Compose components have correct return values", () => {
     const callback = jest.fn();
     const option = enzyme.shallow(
       <TextBox
+        title="foo"
         disabled={false}
         onChange={callback}
         name="option_name"
