@@ -3,20 +3,50 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import React from "react";
+import * as ReactRedux from "react-redux";
+import { ComposeWidget } from "../compose/composeWidget.jsx";
+import { quickReplyActions } from "../../reducer/reducer-quickReply.js";
 
 export function QuickReply() {
-  return (
-    <div className="quickReply disabled" dir="ltr">
-      <small>
-        <i>
-          Quick Reply is temporarily disabled due to needing rewriting for
-          Thunderbird 78+.
-        </i>
-      </small>
+  // Not ready to enable yet.
+  if (true) {
+    return (
+      <div className="quickReply disabled" dir="ltr">
+        <small>
+          <i>
+            Quick Reply is temporarily disabled due to needing rewriting for
+            Thunderbird 78+.
+          </i>
+        </small>
+      </div>
+    );
+  }
+
+  const dispatch = ReactRedux.useDispatch();
+  const { quickReplyState } = ReactRedux.useSelector((state) => ({
+    quickReplyState: state.quickReply,
+  }));
+
+  function expand() {
+    return dispatch(quickReplyActions.expand());
+  }
+  function discard() {
+    return dispatch(quickReplyActions.discard());
+  }
+
+  let body = quickReplyState.expanded ? (
+    <div>
+      <ComposeWidget dispatch={dispatch} />
+      <a className="link" onClick={discard}>
+        {browser.i18n.getMessage("compose.discard")}
+      </a>
     </div>
+  ) : (
+    <textarea onClick={expand} />
   );
+
+  return <div className="quickReply">{body}</div>;
 }
-QuickReply.propTypes = {};
 
 // These are the templates originally from stub.html for quickReply. Moved here
 // to help tidy that up and prepare.

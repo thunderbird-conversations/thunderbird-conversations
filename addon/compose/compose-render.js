@@ -4,7 +4,8 @@
 
 import React from "react";
 import ReactDOM from "react-dom";
-import { Main, actions, store } from "./compose.jsx";
+import { Main, store } from "./compose.jsx";
+import { composeActions } from "../content/reducer/reducer-compose.js";
 
 // Render the options to the root of the page
 ReactDOM.render(
@@ -15,5 +16,5 @@ ReactDOM.render(
 let params = new URLSearchParams(document.location.search);
 
 store.dispatch(
-  actions.initCompose(params.get("accountId"), params.get("identityId"))
+  composeActions.initCompose(params.get("accountId"), params.get("identityId"))
 );

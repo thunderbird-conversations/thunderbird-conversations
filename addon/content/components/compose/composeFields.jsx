@@ -2,10 +2,9 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-"use strict";
-
 import React from "react";
 import PropTypes from "prop-types";
+import { browser } from "../../es-modules/thunderbird-compat.js";
 
 export function TextBox({
   disabled = false,
@@ -17,7 +16,7 @@ export function TextBox({
   return (
     <React.Fragment>
       <div>
-        <label>{title}</label>
+        <label>{browser.i18n.getMessage(title)}</label>
       </div>
       <div>
         <input
@@ -33,8 +32,8 @@ export function TextBox({
   );
 }
 TextBox.propTypes = {
-  disabled: PropTypes.bool.isRequired,
-  title: PropTypes.string,
+  disabled: PropTypes.bool,
+  title: PropTypes.string.isRequired,
   value: PropTypes.string,
   name: PropTypes.string.isRequired,
   onChange: PropTypes.func.isRequired,

@@ -11,7 +11,7 @@ import { browser as _browser } from "../es-modules/thunderbird-compat.js";
 // Prefer the global browser object to the imported one.
 window.browser = window.browser || _browser;
 
-const initialMessages = {
+export const initialMessages = {
   msgData: [],
 };
 
