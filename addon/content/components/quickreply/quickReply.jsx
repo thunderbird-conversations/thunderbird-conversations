@@ -4,7 +4,6 @@
 
 import React from "react";
 import * as ReactRedux from "react-redux";
-import PropTypes from "prop-types";
 import { ComposeWidget } from "../compose/composeWidget.jsx";
 import { quickReplyActions } from "../../reducer/reducer-quickReply.js";
 
@@ -48,9 +47,6 @@ export function QuickReply() {
 
   return <div className="quickReply">{body}</div>;
 }
-QuickReply.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-};
 
 // These are the templates originally from stub.html for quickReply. Moved here
 // to help tidy that up and prepare.

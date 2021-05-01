@@ -446,9 +446,7 @@ export class Message extends React.PureComponent {
         )}
         {this.props.isLastMessage &&
           this.props.message.expanded &&
-          !this.props.hideQuickReply && (
-            <QuickReply dispatch={this.props.dispatch} />
-          )}
+          !this.props.hideQuickReply && <QuickReply />}
       </li>
     );
   }
