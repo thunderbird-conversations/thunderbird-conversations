@@ -197,14 +197,6 @@ export const messageActions = {
       await dispatch(
         messageActions.initializeMessageThread({ isInTab: true, params })
       );
-
-      // We used to have a function for opening the window as a quick compose
-      // in a tab. We'll need to figure out how to do this once we finish
-      // rewriting - it may be better to have a completely separate message
-      // composition option.
-      // } else if (params.get("quickCompose")) {
-      //   masqueradeAsQuickCompose();
-      // }
     };
   },
 
