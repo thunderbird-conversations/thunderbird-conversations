@@ -1,7 +1,22 @@
 import * as RTK from "@reduxjs/toolkit";
+import * as Redux from "redux";
 import { attachmentActions } from "../content/reducer/reducer-attachments.js";
-import { messageActions } from "../content/reducer/reducer-messages.js";
-import { summaryActions } from "../content/reducer/reducer-summary.js";
+import {
+  composeSlice,
+  composeActions,
+} from "../content/reducer/reducer-compose.js";
+import {
+  initialMessages,
+  messageActions,
+} from "../content/reducer/reducer-messages.js";
+import {
+  initialSummary,
+  summaryActions,
+} from "../content/reducer/reducer-summary.js";
+import {
+  quickReplyActions,
+  quickReplySlice,
+} from "../content/reducer/reducer-quickReply.js";
 import { mockThreads } from "./mock-data/threads.js";
 
 /**
@@ -58,53 +73,70 @@ messageActions.waitForStartup = () => async () => {};
 
 // We'd like to log all the `thunks` we execute, so wrap all method access in
 // logger functions.
+makeAttrsLogging(composeActions, createThunkLogger("composeActions"));
 makeAttrsLogging(messageActions, createThunkLogger("messageActions"));
 makeAttrsLogging(summaryActions, createThunkLogger("summaryActions"));
 makeAttrsLogging(attachmentActions, createThunkLogger("attachmentActions"));
+makeAttrsLogging(quickReplyActions, createThunkLogger("quickReplyActions"));
 
-export const devframeSlice = RTK.createSlice({
-  name: "testing",
-  initialState: {
-    summary: {
-      browserForegroundColor: "#000000",
-      browserBackgroundColor: "#FFFFFF",
-      conversation: {},
-      defaultFontSize: 16,
-      hasBuiltInPdf: false,
-      hasIdentityParamsForCompose: true,
-      hideQuickReply: false,
-      iframesLoading: 0,
-      isInTab: false,
-      loading: false,
-      OS: "linux",
-      tabId: 1,
-      tenPxFactor: 0.625,
-      subject: "(Click a message to get started)",
-      windowId: 3,
-      defaultDetailsShowing: false,
-      prefs: {
-        hideSigs: false,
-        hideQuoteLength: 5,
-        tweakBodies: true,
-        tweakChrome: true,
-      },
-      autoMarkAsRead: false,
-    },
-    messages: { msgData: [] },
-    threads: {
-      selectedThread: 0,
-      threadData: mockThreads,
-    },
-  },
+export const fakeSummarySlice = RTK.createSlice({
+  name: "summary",
+  initialState: initialSummary,
   reducers: {
-    setActiveThread(state, { payload }) {
-      const { thread, message } = payload;
-      state.threads.selectedThread = thread;
-      state.messages.msgData = state.threads.threadData[thread];
-      state.messages.msgData[message].expanded = true;
-      const messageData = state.messages.msgData[message];
-      state.summary.subject = messageData.subject;
+    replaceSummaryDetails(state, { payload }) {
+      if (payload) {
+        return { ...state, ...payload };
+      }
+      return state;
     },
   },
 });
-export const store = RTK.configureStore({ reducer: devframeSlice.reducer });
+export const fakeMessagesSlice = RTK.createSlice({
+  name: "messages",
+  initialState: initialMessages,
+  reducers: {
+    replaceConversationDetails(state, { payload }) {
+      const { messages } = payload;
+      return { ...state, ...messages };
+    },
+  },
+});
+
+export const devFrameActions = {
+  setActiveThread({ thread, message }) {
+    return async (dispatch, getState) => {
+      let messages = [...getState().threads.threadData[thread]];
+      messages[message] = { ...messages[message] };
+      messages[message].expanded = true;
+      await dispatch(
+        fakeSummarySlice.actions.replaceSummaryDetails({
+          subject: messages[message].subject,
+        })
+      );
+      await dispatch(
+        fakeMessagesSlice.actions.replaceConversationDetails({
+          messages: {
+            msgData: messages,
+          },
+        })
+      );
+    };
+  },
+};
+
+export const devframeSlice = RTK.createSlice({
+  name: "threads",
+  initialState: {
+    threadData: mockThreads,
+  },
+  reducers: {},
+});
+
+export const devFrameApp = Redux.combineReducers({
+  compose: composeSlice.reducer,
+  summary: fakeSummarySlice.reducer,
+  messages: fakeMessagesSlice.reducer,
+  threads: devframeSlice.reducer,
+  quickReply: quickReplySlice.reducer,
+});
+export const store = RTK.configureStore({ reducer: devFrameApp });

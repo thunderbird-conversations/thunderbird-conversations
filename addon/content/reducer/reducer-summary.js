@@ -7,7 +7,7 @@ import * as RTK from "@reduxjs/toolkit";
 import { mergeContactDetails } from "./contacts.js";
 import { messageActions } from "./reducer-messages.js";
 
-const initialSummary = {
+export const initialSummary = {
   browserForegroundColor: "#000000",
   browserBackgroundColor: "#FFFFFF",
   conversation: null,

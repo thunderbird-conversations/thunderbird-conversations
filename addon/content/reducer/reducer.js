@@ -4,10 +4,14 @@
 
 import * as Redux from "redux";
 
+import { composeSlice } from "./reducer-compose.js";
 import { messagesSlice } from "./reducer-messages.js";
 import { summarySlice } from "./reducer-summary.js";
+import { quickReplySlice } from "./reducer-quickReply.js";
 
 export const conversationApp = Redux.combineReducers({
+  compose: composeSlice.reducer,
   messages: messagesSlice.reducer,
   summary: summarySlice.reducer,
+  quickReply: quickReplySlice.reducer,
 });
