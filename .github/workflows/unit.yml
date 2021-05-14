@@ -1,4 +1,4 @@
-name: JavaScript linting
+name: Unit Tests
 
 on:
   push:
@@ -6,31 +6,27 @@ on:
       - main
       - '[0-9]*'
     paths:
-      - '**.jsx?'
-      - '**.cjs'
-      - '**.mjs'
-      - '**.json'
+      - addon/**
+      - scripts/**
+      - babel.config.cjs
       - package*.json
-      - '.*eslint*'
-      - '.*prettier*'
-      - .github/workflows/lint.yml
+      - webpack.config.cjs
+      - .github/workflows/unit.yml
   pull_request:
     branches:
       - main
       - '[0-9]*'
     paths:
-      - '**.jsx?'
-      - '**.cjs'
-      - '**.mjs'
-      - '**.json'
+      - addon/**
+      - scripts/**
+      - babel.config.cjs
       - package*.json
-      - '.*eslint*'
-      - '.*prettier*'
-      - .github/workflows/lint.yml
+      - webpack.config.cjs
+      - .github/workflows/unit.yml
 
 jobs:
   eslint:
-    name: eslint
+    name: unittests
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
@@ -39,5 +35,5 @@ jobs:
           node-version: '14'
       - name: Install dependencies
         run: npm ci
-      - name: eslint
-        run: npm run test:lint
+      - name: Run jest tests
+        run: npm run test:jest
