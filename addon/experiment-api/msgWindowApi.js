@@ -484,9 +484,8 @@ function summarizeThreadHandler(win, id) {
           //  the gloda query is updating messages just fine, so we should not
           //  worry about messages which are not in the view.
           let newlySelectedUris = aSelectedMessages.map((m) => msgHdrGetUri(m));
-          let isSelectionThreaded = await browser.convMsgWindow.isSelectionThreaded(
-            this._windowId
-          );
+          let isSelectionThreaded =
+            await browser.convMsgWindow.isSelectionThreaded(this._windowId);
 
           function isSubSetOrEqual(a1, a2) {
             if (!a1.length || !a2.length || a1.length > a2.length) {
@@ -604,9 +603,10 @@ function summarizeThreadHandler(win, id) {
                       //  so no risk of silently marking conversations as read.
                       Log.debug("Marking selected messages as read");
                       for (const msgHdr of aSelectedMessages) {
-                        const id = await browser.conversations.getMessageIdForUri(
-                          msgHdrGetUri(msgHdr)
-                        );
+                        const id =
+                          await browser.conversations.getMessageIdForUri(
+                            msgHdrGetUri(msgHdr)
+                          );
                         if (!msgHdr.read) {
                           await browser.messages.update(id, {
                             read: true,
@@ -641,78 +641,81 @@ function summarizeThreadHandler(win, id) {
   //  much.
   win.originalOnSelectedMessagesChanged =
     win.MessageDisplayWidget.prototype.onSelectedMessagesChanged;
-  win.MessageDisplayWidget.prototype.onSelectedMessagesChanged = function _onSelectedMessagesChanged_patched() {
-    try {
-      if (!this.active) {
-        return true;
-      }
-      win.ClearPendingReadTimer();
-      clearTimer(win);
-
-      let selectedCount = this.folderDisplay.selectedCount;
-      Log.debug(
-        "Intercepted message load,",
-        selectedCount,
-        "message(s) selected"
-      );
-
-      if (selectedCount == 0) {
-        // So we're not copying the code here. This changes nothing, and the
-        // execution stays the same. But if someone (say, the account
-        // summary extension) decides to redirect the code to _showSummary
-        // in the case of selectedCount == 0 by monkey-patching
-        // onSelectedMessagesChanged, we give it a chance to run.
-        return win.originalOnSelectedMessagesChanged.call(this);
-      } else if (selectedCount == 1) {
-        // Here starts the part where we modify the original code.
-        let msgHdr = this.folderDisplay.selectedMessage;
-        // We can't display NTTP messages and RSS messages properly yet, so
-        // leave it up to the standard message reader. If the user explicitely
-        // asked for the old message reader, we give up as well.
-        if (msgHdrIsRss(msgHdr) || msgHdrIsNntp(msgHdr)) {
-          // Use the default pref.
-          if (Services.prefs.getBoolPref("mailnews.mark_message_read.auto")) {
-            win.conversationsMarkReadTimeout = win.setTimeout(
-              async function () {
-                Log.debug("Marking as read:", msgHdr);
-                const id = await browser.conversations.getMessageIdForUri(
-                  msgHdrGetUri(msgHdr)
-                );
-                if (!msgHdr.read) {
-                  await browser.messages.update(id, {
-                    read: true,
-                  });
-                }
-                win.conversationsMarkReadTimeout = null;
-              },
-              Services.prefs.getIntPref(
-                "mailnews.mark_message_read.delay.interval"
-              ) *
-                Services.prefs.getBoolPref("mailnews.mark_message_read.delay") *
-                1000
-            );
-          }
-          this.singleMessageDisplay = true;
-          return false;
+  win.MessageDisplayWidget.prototype.onSelectedMessagesChanged =
+    function _onSelectedMessagesChanged_patched() {
+      try {
+        if (!this.active) {
+          return true;
         }
-        // Otherwise, we create a thread summary.
-        // We don't want to call this._showSummary because it has a built-in check
-        // for this.folderDisplay.selectedCount and returns immediately if
-        // selectedCount == 1
-        this.singleMessageDisplay = false;
-        this.onDisplayingMessage(this.folderDisplay.selectedMessages[0]);
-        win.summarizeThread(this.folderDisplay.selectedMessages, this);
-        return true;
-      }
+        win.ClearPendingReadTimer();
+        clearTimer(win);
 
-      // Else defer to showSummary to work it out based on thread selection.
-      // (This might be a MultiMessageSummary after all!)
-      return this._showSummary();
-    } catch (ex) {
-      console.error(ex);
-    }
-    return false;
-  };
+        let selectedCount = this.folderDisplay.selectedCount;
+        Log.debug(
+          "Intercepted message load,",
+          selectedCount,
+          "message(s) selected"
+        );
+
+        if (selectedCount == 0) {
+          // So we're not copying the code here. This changes nothing, and the
+          // execution stays the same. But if someone (say, the account
+          // summary extension) decides to redirect the code to _showSummary
+          // in the case of selectedCount == 0 by monkey-patching
+          // onSelectedMessagesChanged, we give it a chance to run.
+          return win.originalOnSelectedMessagesChanged.call(this);
+        } else if (selectedCount == 1) {
+          // Here starts the part where we modify the original code.
+          let msgHdr = this.folderDisplay.selectedMessage;
+          // We can't display NTTP messages and RSS messages properly yet, so
+          // leave it up to the standard message reader. If the user explicitely
+          // asked for the old message reader, we give up as well.
+          if (msgHdrIsRss(msgHdr) || msgHdrIsNntp(msgHdr)) {
+            // Use the default pref.
+            if (Services.prefs.getBoolPref("mailnews.mark_message_read.auto")) {
+              win.conversationsMarkReadTimeout = win.setTimeout(
+                async function () {
+                  Log.debug("Marking as read:", msgHdr);
+                  const id = await browser.conversations.getMessageIdForUri(
+                    msgHdrGetUri(msgHdr)
+                  );
+                  if (!msgHdr.read) {
+                    await browser.messages.update(id, {
+                      read: true,
+                    });
+                  }
+                  win.conversationsMarkReadTimeout = null;
+                },
+                Services.prefs.getIntPref(
+                  "mailnews.mark_message_read.delay.interval"
+                ) *
+                  Services.prefs.getBoolPref(
+                    "mailnews.mark_message_read.delay"
+                  ) *
+                  1000
+              );
+            }
+            this.singleMessageDisplay = true;
+            return false;
+          }
+          // Otherwise, we create a thread summary.
+          // We don't want to call this._showSummary because it has a built-in check
+          // for this.folderDisplay.selectedCount and returns immediately if
+          // selectedCount == 1
+          this.singleMessageDisplay = false;
+          this.onDisplayingMessage(this.folderDisplay.selectedMessages[0]);
+          win.summarizeThread(this.folderDisplay.selectedMessages, this);
+          return true;
+        }
+
+        // Else defer to showSummary to work it out based on thread selection.
+        // (This might be a MultiMessageSummary after all!)
+        return this._showSummary();
+      } catch (ex) {
+        console.error(ex);
+      }
+      return false;
+    };
 }
 
 /**
