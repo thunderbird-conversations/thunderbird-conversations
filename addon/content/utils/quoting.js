@@ -95,7 +95,8 @@ class _Quoting {
    * ----- Something that supposedly says the text below is quoted -----
    * Fails 9 times out of 10. */
   convertForwardedToBlockquote(aDoc) {
-    const re = /^\s*(-{5,15})(?:\s*)(?:[^ \f\n\r\t\v\u00A0\u2028\u2029-]+\s+)*[^ \f\n\r\t\v\u00A0\u2028\u2029-]+(\s*)\1\s*/gm;
+    const re =
+      /^\s*(-{5,15})(?:\s*)(?:[^ \f\n\r\t\v\u00A0\u2028\u2029-]+\s+)*[^ \f\n\r\t\v\u00A0\u2028\u2029-]+(\s*)\1\s*/gm;
     const walk = (aNode) => {
       for (const child of aNode.childNodes) {
         const txt = child.textContent;
