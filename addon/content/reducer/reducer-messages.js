@@ -63,11 +63,8 @@ async function setupConversationInTab(params, isInTab) {
   }
   // It might happen that there are no messages left...
   if (!msgIds.length) {
-    document.getElementById(
-      "messageList"
-    ).textContent = browser.i18n.getMessage(
-      "message.movedOrDeletedConversation"
-    );
+    document.getElementById("messageList").textContent =
+      browser.i18n.getMessage("message.movedOrDeletedConversation");
   } else {
     window.Conversations = {
       currentConversation: null,
@@ -453,9 +450,8 @@ export const messageActions = {
     return async (dispatch) => {
       await browser.conversations.showRemoteContent(id);
 
-      const msg = window.Conversations.currentConversation.getMessageByApiId(
-        id
-      );
+      const msg =
+        window.Conversations.currentConversation.getMessageByApiId(id);
       // Turn remote content message "off", as although it has it, it can be loaded.
       msg.hasRemoteContent = false;
       const msgData = await msg.toReactData();
@@ -470,9 +466,8 @@ export const messageActions = {
     return async (dispatch) => {
       await browser.conversations.alwaysShowRemoteContent(realFrom);
 
-      const msg = window.Conversations.currentConversation.getMessageByApiId(
-        id
-      );
+      const msg =
+        window.Conversations.currentConversation.getMessageByApiId(id);
       // Turn remote content message "off", as although it has it, it can be loaded.
       msg.hasRemoteContent = false;
 

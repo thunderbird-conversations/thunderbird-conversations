@@ -481,9 +481,8 @@ class Message {
     }
 
     // If the message contains forms with action attributes, warn the user.
-    let formNodes = iframe.contentWindow.document.querySelectorAll(
-      "form[action]"
-    );
+    let formNodes =
+      iframe.contentWindow.document.querySelectorAll("form[action]");
 
     const neckoUrl = msgHdrToNeckoURL(this._msgHdr).spec;
     const url = Services.io
@@ -577,9 +576,8 @@ class Message {
     if (this.iframe) {
       // Fill the text node that will end up being printed. We can't
       // really print iframes, they don't wrap...
-      let bodyContainer = this._domNode.getElementsByClassName(
-        "body-container"
-      )[0];
+      let bodyContainer =
+        this._domNode.getElementsByClassName("body-container")[0];
       bodyContainer.textContent = this.bodyAsText;
     }
   }

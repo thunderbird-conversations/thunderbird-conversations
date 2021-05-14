@@ -23,8 +23,9 @@ XPCOMUtils.defineLazyGetter(this, "browser", function () {
 let hasDKIMVerifier = false;
 var AuthVerifier;
 try {
-  AuthVerifier = ChromeUtils.import("resource://dkim_verifier/AuthVerifier.jsm")
-    .AuthVerifier;
+  AuthVerifier = ChromeUtils.import(
+    "resource://dkim_verifier/AuthVerifier.jsm"
+  ).AuthVerifier;
   if (AuthVerifier.version.match(/^[0-9]+/)[0] === "1") {
     hasDKIMVerifier = true;
   }

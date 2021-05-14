@@ -436,10 +436,8 @@ export function Main() {
   const [localizedStartAssistant, setLocalizedStartAssistant] = React.useState(
     localize("options.start_setup_assistant", i18n)
   );
-  const [
-    localizedUndoCustomizations,
-    setLocalizedUndoCustomizations,
-  ] = React.useState(localize("options.undoCustomizations", i18n));
+  const [localizedUndoCustomizations, setLocalizedUndoCustomizations] =
+    React.useState(localize("options.undoCustomizations", i18n));
   const [
     localizedUndoCustomizationsTooltip,
     setLocalizedUndoCustomizationsTooltip,

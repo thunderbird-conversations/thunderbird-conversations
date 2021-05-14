@@ -683,10 +683,12 @@ let enigmailHook = {
     );
     if (!this._currentlyStreaming.length) {
       if (this._oldIsCurrentMsgFn) {
-        mainWindow.Enigmail.hdrView.headerPane.isCurrentMessage = this._oldIsCurrentMsgFn;
+        mainWindow.Enigmail.hdrView.headerPane.isCurrentMessage =
+          this._oldIsCurrentMsgFn;
       }
       if (this._oldGetCurrentMsgUriSpecFn) {
-        mainWindow.Enigmail.msg.getCurrentMsgUriSpec = this._oldGetCurrentMsgUriSpecFn;
+        mainWindow.Enigmail.msg.getCurrentMsgUriSpec =
+          this._oldGetCurrentMsgUriSpecFn;
       }
       this._oldIsCurrentMsgFn = null;
       this._oldGetCurrentMsgUriSpecFn = null;
@@ -1120,12 +1122,8 @@ let enigmailHook = {
     };
     waitLoadingBody(function () {
       // eslint-disable-next-line no-unsanitized/property
-      aEditor.node.contentDocument.querySelector(
-        "blockquote"
-      ).innerHTML = escapeHtml(aMessage.decryptedText).replace(
-        /\r?\n/g,
-        "<br>"
-      );
+      aEditor.node.contentDocument.querySelector("blockquote").innerHTML =
+        escapeHtml(aMessage.decryptedText).replace(/\r?\n/g, "<br>");
     });
   },
 
