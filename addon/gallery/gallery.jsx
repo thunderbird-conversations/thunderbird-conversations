@@ -6,23 +6,17 @@ import React from "react";
 import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
 
-class Photo extends React.Component {
-  render() {
-    return (
-      <div className="photoWrap">
-        <img src={this.props.src} />
-        <div className="informationline">
-          <div className="filename">{this.props.name}</div>
-          <div className="size">{this.props.size}</div>
-          <div className="count">
-            {this.props.index + " / " + this.props.length}
-          </div>
-        </div>
-      </div>
-    );
-  }
-}
-
+const Photo = React.forwardRef(({ index, length, name, size, src }, ref) => (
+  <div className="photoWrap" ref={ref}>
+    <img src={src} />
+    <div className="informationline">
+      <div className="filename">{name}</div>
+      <div className="size">{size}</div>
+      <div className="count">{index + " / " + length}</div>
+    </div>
+  </div>
+));
+Photo.displayName = "Photo";
 Photo.propTypes = {
   index: PropTypes.number.isRequired,
   length: PropTypes.number.isRequired,
@@ -36,23 +30,32 @@ class MyComponent extends React.Component {
     super(props);
     this.state = {
       images: [],
+      scrollToPartName: null,
     };
+    this.scrollTo = React.createRef();
   }
 
   componentDidMount() {
-    // Parse URL components
-    let param = "?uri="; // only one param
-    let url = document.location.href;
-    let uri = url.substr(url.indexOf(param) + param.length, url.length);
+    let params = new URLSearchParams(document.location.search);
+    let uri = params.get("msgUri");
+    let scrollToPartName = params.get("partName");
+    this.load(uri, scrollToPartName).catch(console.error);
+  }
 
-    this.load(decodeURI(uri)).catch(console.error);
+  componentDidUpdate(prevProps, prevState) {
+    if (this.state.scrollToPartName && !prevState.scrollToPartName) {
+      setTimeout(
+        () => this.scrollTo.current.scrollIntoView({ behavior: "smooth" }),
+        100
+      );
+    }
   }
 
   /**
    * This function takes care of obtaining a full representation of the message,
    *  and then taking all its attachments, to just keep track of the image ones.
    */
-  async load(uri) {
+  async load(uri, scrollToPartName) {
     const id = await browser.conversations.getMessageIdForUri(uri);
     if (!id) {
       // TODO: Render this in react.
@@ -71,7 +74,7 @@ class MyComponent extends React.Component {
       (p) => p.contentType.indexOf("image/") == 0
     );
 
-    await this.output(messageParts, id);
+    await this.output(messageParts, id, scrollToPartName);
   }
 
   /**
@@ -80,7 +83,7 @@ class MyComponent extends React.Component {
    * It runs the handlebars template and then appends the result to the root
    *  DOM node.
    */
-  async output(attachments, id) {
+  async output(attachments, id, scrollToPartName) {
     let i = 1;
     for (const attachment of attachments) {
       if ("getAttachmentFile" in browser.messages) {
@@ -88,13 +91,7 @@ class MyComponent extends React.Component {
           id,
           attachment.partName
         );
-        let reader = new FileReader();
-        attachment.url = await new Promise((resolve) => {
-          reader.onload = (e) => {
-            resolve(e.target.result);
-          };
-          reader.readAsDataURL(file);
-        });
+        attachment.url = URL.createObjectURL(file);
       } else {
         attachment.url = await browser.conversations.getAttachmentBody(
           id,
@@ -112,10 +109,12 @@ class MyComponent extends React.Component {
         return {
           index: i++,
           name: attachment.name,
+          partName: attachment.partName,
           size: attachment.size,
           src: attachment.url,
         };
       }),
+      scrollToPartName,
     });
   }
 
@@ -125,6 +124,9 @@ class MyComponent extends React.Component {
         index={image.index}
         key={image.index}
         name={image.name}
+        ref={
+          this.state.scrollToPartName == image.partName ? this.scrollTo : null
+        }
         size={image.size}
         src={image.src}
         className="gallery"

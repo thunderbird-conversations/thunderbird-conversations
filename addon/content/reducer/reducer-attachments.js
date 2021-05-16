@@ -3,18 +3,19 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 export const attachmentActions = {
-  previewAttachment({ name, url, isPdf, maybeViewable }) {
+  previewAttachment({ id, name, partName, url, isPdf, maybeViewable }) {
     return async (dispatch, getState) => {
       if (maybeViewable) {
-        // Can't use browser.tabs.create because imap://user@bar/ is an
-        // illegal url.
-        browser.conversations.createTab({
-          url,
-          type: "contentTab",
+        let msgUri = await browser.conversations.getMessageUriForId(id);
+        let searchParams = new URLSearchParams({
+          msgUri,
+          partName,
+        });
+        await browser.tabs.create({
+          url: `/gallery/index.html?${searchParams.toString()}`,
           windowId: getState().summary.windowId,
         });
-      }
-      if (isPdf) {
+      } else if (isPdf) {
         browser.conversations.createTab({
           url:
             "chrome://conversations/content/pdfviewer/wrapper.xhtml?uri=" +
@@ -55,7 +56,7 @@ export const attachmentActions = {
     return async (dispatch, getState) => {
       let msgUri = await browser.conversations.getMessageUriForId(id);
       await browser.tabs.create({
-        url: "/gallery/index.html?uri=" + encodeURI(msgUri),
+        url: "/gallery/index.html?msgUri=" + encodeURIComponent(msgUri),
         windowId: getState().summary.windowId,
       });
     };
