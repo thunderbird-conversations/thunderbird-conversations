@@ -80,6 +80,8 @@ class Attachment extends React.PureComponent {
         url: this.props.url,
         isPdf: this.isPdf(this.props.contentType),
         maybeViewable: this.isViewable(this.props.contentType),
+        id: this.props.id,
+        partName: this.props.partName,
       })
     );
   }
@@ -262,6 +264,7 @@ Attachment.propTypes = {
   messageKey: PropTypes.number.isRequired,
   name: PropTypes.string.isRequired,
   size: PropTypes.number.isRequired,
+  partName: PropTypes.string.isRequired,
   url: PropTypes.string.isRequired,
   id: PropTypes.number.isRequired,
 };
@@ -325,6 +328,7 @@ export class Attachments extends React.PureComponent {
             messageKey={this.props.messageKey}
             id={this.props.id}
             name={attachment.name}
+            partName={attachment.partName}
             size={attachment.size}
             url={attachment.url}
           />

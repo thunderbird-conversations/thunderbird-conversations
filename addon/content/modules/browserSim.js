@@ -20,7 +20,6 @@ const SUPPORTED_APIS_NO_EVENTS = [
   "convCompose",
   "mailTabs",
   "messageDisplay",
-  "messages",
   "runtime",
   "tabs",
   "windows",
@@ -34,6 +33,7 @@ const SUPPORTED_BASE_APIS = [
   "convMsgWindow",
   "conversations",
   "i18n",
+  "messages",
   "storage",
 ];
 

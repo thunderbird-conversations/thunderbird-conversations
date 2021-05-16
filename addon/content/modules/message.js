@@ -304,6 +304,7 @@ class Message {
         formattedSize,
         isExternal: att.isExternal,
         name: att.name,
+        partName: att._part,
         url: att.url,
         anchor: "msg" + this.initialPosition + "att" + i,
       });
