@@ -52,8 +52,10 @@ export const composeSlice = RTK.createSlice({
 });
 
 export const composeActions = {
-  initCompose(accountId, identityId) {
+  initCompose({ accountId, identityId, to, subject }) {
     return async function (dispatch) {
+      await dispatch(composeSlice.actions.resetStore());
+
       // Set from to be the default account / identity.
       let accountDetail;
       if (!accountId) {
@@ -73,6 +75,8 @@ export const composeActions = {
           from: identityDetail.email,
           identityId: identityDetail.id,
           email: identityDetail.email,
+          to,
+          subject,
         })
       );
     };
@@ -128,10 +132,16 @@ export const composeActions = {
         })
       );
       if (success) {
-        let currentTab = await browser.tabs.getCurrent();
-        setTimeout(() => browser.tabs.remove(currentTab.id), 0);
+        await dispatch(composeActions.close());
       }
     };
+  },
+  /**
+   * A generic close action that is designed to be overriden by compose in a
+   * new tab, or by quick reply, so that it may be handled correctly.
+   */
+  close() {
+    return async function (dispatch, getState) {};
   },
 };
 

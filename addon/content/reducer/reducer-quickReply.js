@@ -27,13 +27,30 @@ export const quickReplySlice = RTK.createSlice({
 });
 
 export const quickReplyActions = {
-  expand() {
+  expand({ id }) {
     return async function (dispatch, getState) {
+      let msg = await browser.messages.get(id);
+      let accountDetail = await browser.accounts.get(msg.folder.accountId);
+      let accountId;
+      let identityId;
+      if (accountDetail && accountDetail.identities.length) {
+        accountId = accountDetail.id;
+        identityId = accountDetail.identities[0].id;
+      }
+      let to = msg.author;
+      let subject = msg.subject;
+      if (!subject.toLowerCase().includes("re:")) {
+        subject = "Re: " + subject;
+      }
+      // Initialise the compose section first, to avoid flicker, and ensure
+      // the compose widget has the correct information to set focus correctly
+      // on first render.
+      await dispatch(
+        composeActions.initCompose({ accountId, identityId, to, subject })
+      );
       await dispatch(
         quickReplySlice.actions.setExpandedState({ expanded: true })
       );
-      // TODO: Add proper account/identity set-up.
-      await dispatch(composeActions.initCompose());
     };
   },
   discard() {
@@ -43,6 +60,14 @@ export const quickReplyActions = {
       );
     };
   },
+};
+
+composeActions.close = () => {
+  return async function (dispatch) {
+    await dispatch(
+      quickReplySlice.actions.setExpandedState({ expanded: false })
+    );
+  };
 };
 
 Object.assign(quickReplyActions, quickReplySlice.actions);

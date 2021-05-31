@@ -6,6 +6,8 @@
 import * as RTK from "@reduxjs/toolkit";
 import { mergeContactDetails } from "./contacts.js";
 import { messageActions } from "./reducer-messages.js";
+import { composeSlice } from "./reducer-compose.js";
+import { quickReplySlice } from "./reducer-quickReply.js";
 
 export const initialSummary = {
   browserForegroundColor: "#000000",
@@ -66,7 +68,11 @@ export const summaryActions = {
         await mergeContactDetails(messages.msgData);
 
         if (!append) {
-          dispatch(summarySlice.actions.replaceSummaryDetails(summary));
+          await dispatch(composeSlice.actions.resetStore());
+          await dispatch(
+            quickReplySlice.actions.setExpandedState({ expanded: false })
+          );
+          await dispatch(summarySlice.actions.replaceSummaryDetails(summary));
         }
         return dispatch(
           messageActions.updateConversation({ messages, append })

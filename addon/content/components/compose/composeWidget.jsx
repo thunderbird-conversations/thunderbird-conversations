@@ -12,6 +12,16 @@ export function ComposeWidget() {
   const { composeState } = ReactRedux.useSelector((state) => ({
     composeState: state.compose,
   }));
+  const bodyInput = React.createRef();
+  const subjectInput = React.createRef();
+
+  React.useEffect(() => {
+    if (composeState.subject) {
+      bodyInput.current.focus();
+    } else {
+      subjectInput.current.focus();
+    }
+  }, []);
 
   function onSend() {
     dispatch(composeActions.sendMessage());
@@ -54,6 +64,7 @@ export function ComposeWidget() {
       />
       <TextBox
         name="subject"
+        ref={subjectInput}
         title="compose.fieldSubject"
         value={composeState.subject}
         sending={composeState.sending}
@@ -61,6 +72,7 @@ export function ComposeWidget() {
       />
       <TextArea
         name="body"
+        ref={bodyInput}
         value={composeState.body}
         sending={composeState.sending}
         onChange={setValue}
