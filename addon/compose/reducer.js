@@ -4,8 +4,18 @@
 
 import * as Redux from "redux";
 
-import { composeSlice } from "../content/reducer/reducer-compose.js";
+import {
+  composeActions,
+  composeSlice,
+} from "../content/reducer/reducer-compose.js";
 import { summarySlice } from "../content/reducer/reducer-summary.js";
+
+composeActions.close = () => {
+  return async function (dispatch) {
+    let currentTab = await browser.tabs.getCurrent();
+    setTimeout(() => browser.tabs.remove(currentTab.id), 0);
+  };
+};
 
 export const composeApp = Redux.combineReducers({
   compose: composeSlice.reducer,

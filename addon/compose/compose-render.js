@@ -16,5 +16,8 @@ ReactDOM.render(
 let params = new URLSearchParams(document.location.search);
 
 store.dispatch(
-  composeActions.initCompose(params.get("accountId"), params.get("identityId"))
+  composeActions.initCompose({
+    accountId: params.get("accountId"),
+    identityId: params.get("identityId"),
+  })
 );

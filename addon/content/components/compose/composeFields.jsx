@@ -6,31 +6,29 @@ import React from "react";
 import PropTypes from "prop-types";
 import { browser } from "../../es-modules/thunderbird-compat.js";
 
-export function TextBox({
-  disabled = false,
-  title,
-  value = "",
-  name,
-  onChange = () => {},
-}) {
-  return (
-    <React.Fragment>
-      <div>
-        <label>{browser.i18n.getMessage(title)}</label>
-      </div>
-      <div>
-        <input
-          type="text"
-          value={value}
-          onChange={(e) => {
-            onChange(name, e.target.value);
-          }}
-          disabled={disabled}
-        />
-      </div>
-    </React.Fragment>
-  );
-}
+export const TextBox = React.forwardRef(
+  ({ disabled = false, title, value = "", name, onChange = () => {} }, ref) => {
+    return (
+      <React.Fragment>
+        <div>
+          <label>{browser.i18n.getMessage(title)}</label>
+        </div>
+        <div>
+          <input
+            type="text"
+            ref={ref}
+            value={value}
+            onChange={(e) => {
+              onChange(name, e.target.value);
+            }}
+            disabled={disabled}
+          />
+        </div>
+      </React.Fragment>
+    );
+  }
+);
+TextBox.displayName = "TextBox";
 TextBox.propTypes = {
   disabled: PropTypes.bool,
   title: PropTypes.string.isRequired,
@@ -39,21 +37,25 @@ TextBox.propTypes = {
   onChange: PropTypes.func.isRequired,
 };
 
-export function TextArea({ value = "", name, onChange = () => {} }) {
-  return (
-    <React.Fragment>
-      <div></div>
-      <div>
-        <textarea
-          value={value}
-          onChange={(e) => {
-            onChange(name, e.target.value);
-          }}
-        />
-      </div>
-    </React.Fragment>
-  );
-}
+export const TextArea = React.forwardRef(
+  ({ value = "", name, onChange = () => {} }, ref) => {
+    return (
+      <React.Fragment>
+        <div></div>
+        <div>
+          <textarea
+            ref={ref}
+            value={value}
+            onChange={(e) => {
+              onChange(name, e.target.value);
+            }}
+          />
+        </div>
+      </React.Fragment>
+    );
+  }
+);
+TextArea.displayName = "TextArea";
 TextArea.propTypes = {
   value: PropTypes.string,
   name: PropTypes.string.isRequired,

@@ -26,7 +26,7 @@ describe("Compose full page tests", () => {
 
     waitForComponentToPaint(main);
 
-    await store.dispatch(composeActions.initCompose());
+    await store.dispatch(composeActions.initCompose({}));
   });
 
   afterEach(() => {

@@ -6,8 +6,9 @@ import React from "react";
 import * as ReactRedux from "react-redux";
 import { ComposeWidget } from "../compose/composeWidget.jsx";
 import { quickReplyActions } from "../../reducer/reducer-quickReply.js";
+import PropTypes from "prop-types";
 
-export function QuickReply() {
+export function QuickReply({ id }) {
   // Not ready to enable yet.
   if (true) {
     return (
@@ -28,7 +29,7 @@ export function QuickReply() {
   }));
 
   function expand() {
-    return dispatch(quickReplyActions.expand());
+    return dispatch(quickReplyActions.expand({ id }));
   }
   function discard() {
     return dispatch(quickReplyActions.discard());
@@ -47,6 +48,9 @@ export function QuickReply() {
 
   return <div className="quickReply">{body}</div>;
 }
+QuickReply.propTypes = {
+  id: PropTypes.number.isRequired,
+};
 
 // These are the templates originally from stub.html for quickReply. Moved here
 // to help tidy that up and prepare.
