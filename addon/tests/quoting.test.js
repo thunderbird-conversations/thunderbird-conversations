@@ -1,7 +1,6 @@
 /* This Source Code Form is subject to the terms of the Mozilla Public
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
-/* eslint-env jest */
 
 // Prettier is used to normalize the html formatting so we can reliably use it to compare HTML with
 // text diffing.

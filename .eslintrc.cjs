@@ -52,6 +52,12 @@ module.exports = {
         "addon/content/modules/**/*.js",
       ],
     },
+    {
+      env: {
+        jest: true,
+      },
+      files: "addon/tests/*.test.js*",
+    },
   ],
   plugins: ["mozilla", "html", "json", "react"],
   root: true,
