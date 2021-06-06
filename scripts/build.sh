@@ -1,6 +1,5 @@
 #!/bin/bash
 
-NOT='.sh$|^.git|.jsx$|.js$|.html$|.xhtml^tests|^.eslint|^.travis|^package.json$|^package-lock.json$|^.prettierrc'
 DIST=dist
 VENDOR_DIR=$DIST/content/vendor
 ADDON_DIR=addon
@@ -26,30 +25,22 @@ npx webpack --mode=$MODE
 if [ $? -ne 0 ]; then
   exit 1;
 fi
-
+#
 pushd $ADDON_DIR
-# Copy most things, apart from the excluded files.
-for a in $(git ls-files | egrep -v $NOT); do
+# Copy the top-level add-on files.
+for a in $(git ls-files ':!:**/**'); do
   mkdir -p $(dirname "../${DIST}/${a}")
   cp $a ../$DIST/$a
 done
-# Now copy html/js files that we don't use webpack for.
-for a in $(git ls-files | egrep '.js$|.html$' | egrep '^assistant|^content/modules|^content/pdfviewer|^experiment-api'); do
+# Other items we need that aren't handled by webpack.
+for a in $(git ls-files \
+'::_locales' \
+'::assistant' \
+'::content/icons' '::content/modules' '::content/pdfviewer' 'content/stubGlobals.js' \
+'::experiment-api' '::*.css' ); do
   mkdir -p $(dirname "../${DIST}/${a}")
   cp $a ../$DIST/$a
 done
-for a in $(git ls-files ./*.* | egrep '.js$|.html$'); do
-  mkdir -p $(dirname "../${DIST}/${a}")
-  cp $a ../$DIST/$a
-done
-
-# Now copy a few other select files that we need.
-mkdir -p ../$DIST/content/es-modules/
-cp content/es-modules/thunderbird-compat.js ../$DIST/content/es-modules/thunderbird-compat.js
-cp content/es-modules/contact-manager.js ../$DIST/content/es-modules/contact-manager.js
-cp content/es-modules/utils.js ../$DIST/content/es-modules/utils.js
-cp content/utils.js ../$DIST/content/utils.js
-cp content/stubGlobals.js ../$DIST/content/stubGlobals.js
 
 popd
 
