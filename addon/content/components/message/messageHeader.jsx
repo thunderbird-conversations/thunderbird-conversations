@@ -272,16 +272,17 @@ export function MessageHeader({
     );
   }
 
-  const allTo = [...to, ...cc, ...bcc];
-  const allToMap = new Map(
-    allTo.map((contact) => [contactToString(contact), contact])
-  );
-  const locale = browser.i18n.getUILanguage();
   // TODO: Maybe insert this after contacts but before snippet:
   // <span class="bzTo"> {{str "message.at"}} {{bugzillaUrl}}</span>
 
   let extraContacts = null;
   if (expanded && !detailsShowing) {
+    const allTo = [...to, ...cc, ...bcc];
+    const allToMap = new Map(
+      allTo.map((contact) => [contactToString(contact), contact])
+    );
+    const locale = browser.i18n.getUILanguage();
+
     extraContacts = (
       <React.Fragment>
         {browser.i18n.getMessage("header.to")}{" "}
