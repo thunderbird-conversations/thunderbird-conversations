@@ -311,4 +311,53 @@ if (!browser.runtime) {
   };
 }
 
+if (!browser.contacts) {
+  browser.contacts = {
+    async quickSearch(email) {
+      if (["foo@example.com", "bar@example.com"].includes(email)) {
+        return [
+          {
+            id: "135246",
+            type: "contact",
+            properties: {
+              PrimaryEmail: "foo@example.com",
+              SecondEmail: "bar@example.com",
+              DisplayName: "display name",
+              PreferDisplayName: "1",
+              PhotoURI: undefined,
+            },
+          },
+        ];
+      } else if (email == "id4@example.com") {
+        return [
+          {
+            id: "15263748",
+            type: "contact",
+            properties: {
+              PrimaryEmail: "id4@example.com",
+              DisplayName: "id4 card",
+              PreferDisplayName: "1",
+              PhotoURI: undefined,
+            },
+          },
+        ];
+      } else if (email == "extra@example.com") {
+        return [
+          {
+            id: "75312468",
+            type: "contact",
+            properties: {
+              PrimaryEmail: "extra@example.com",
+              DisplayName: "extra card",
+              PreferDisplayName: "0",
+              PhotoURI: "https://example.com/fake",
+            },
+          },
+        ];
+      }
+      return [];
+    },
+  };
+}
+
 export { browser };

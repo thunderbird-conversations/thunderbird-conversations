@@ -199,7 +199,7 @@ ContactLabel.propTypes = {
 };
 
 function Avatar({ url, initials, isDefault, style }) {
-  if (isDefault) {
+  if (!url) {
     return (
       <abbr className="contactInitials" style={style}>
         {initials}
@@ -324,7 +324,6 @@ export function MessageHeader({
           url={from.avatar}
           style={from.colorStyle}
           initials={from.initials}
-          isDefault={from.avatar.startsWith("chrome:")}
         />{" "}
         <ContactLabel className="author" contact={from} />
         {extraContacts}
