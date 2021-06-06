@@ -77,7 +77,13 @@ export async function mergeContactDetails(msgData) {
       );
       const formattedData = await Promise.all(
         contactData.map(([contact, email, name]) =>
-          enrichWithDisplayData({ contact, email, field, name, showCondensed })
+          enrichWithDisplayData({
+            contact,
+            email,
+            field,
+            nameFromEmail: name,
+            showCondensed,
+          })
         )
       );
       // There is only ever one email in the `from` field. All the others are arrays.
