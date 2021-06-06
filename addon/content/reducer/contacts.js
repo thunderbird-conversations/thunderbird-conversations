@@ -30,15 +30,10 @@ async function toTmplData(position, contact, email) {
   const skipEmail =
     contact._card &&
     (await browser.conversations.getCorePref("mail.showCondensedAddresses"));
-  let tooltipName = contact._name || contact._email;
-  if (hasIdentity) {
-    tooltipName = browser.i18n.getMessage("message.meFromMeToSomeone");
-  }
   let data = {
     name,
     initials: getInitials(name),
     displayEmail: skipEmail ? "" : displayEmail,
-    tooltipName: tooltipName != email ? tooltipName : "",
     email,
     avatar: contact.avatar,
     contactId: contact._card ? contact._card.id : null,

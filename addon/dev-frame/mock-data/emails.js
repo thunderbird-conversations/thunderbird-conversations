@@ -11,7 +11,6 @@ export const mockSelfEmail = {
   email: "me@thunderbird.net",
   avatar: "chrome://messenger/skin/addressbook/icons/contact-generic.svg",
   displayEmail: "",
-  tooltipName: "My Self",
   colorStyle: {
     backgroundColor: "#8b3a24",
   },
@@ -26,7 +25,6 @@ export const mockEmails = [
     avatar:
       "https://robohash.org/veritatisnemosuscipit.png?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#0019a9",
     },
@@ -39,7 +37,6 @@ export const mockEmails = [
     avatar:
       "https://robohash.org/suscipitconsequaturconsequuntur.bmp?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#546079",
     },
@@ -51,7 +48,6 @@ export const mockEmails = [
     email: "dvedishchevf@cnbc.com",
     avatar: "https://robohash.org/atquiiure.jpg?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#418f70",
     },
@@ -63,7 +59,6 @@ export const mockEmails = [
     email: "mmelag@eventbrite.com",
     avatar: "https://robohash.org/utestsint.png?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#0e86b8",
     },
@@ -75,7 +70,6 @@ export const mockEmails = [
     email: "rtizardh@ucsd.edu",
     avatar: "https://robohash.org/velitnamet.jpg?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#70bc37",
     },
@@ -87,7 +81,6 @@ export const mockEmails = [
     email: "mmoresidej@exblog.jp",
     avatar: "https://robohash.org/architectovelitest.png?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#ea2ac3",
     },
@@ -99,7 +92,6 @@ export const mockEmails = [
     email: "rkrellem@wunderground.com",
     avatar: "https://robohash.org/etipsaest.jpg?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#330e28",
     },
@@ -111,7 +103,6 @@ export const mockEmails = [
     email: "jlowreso@ebay.co.uk",
     avatar: "https://robohash.org/remquasexcepturi.bmp?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#c4e764",
     },
@@ -123,7 +114,6 @@ export const mockEmails = [
     email: "jgrevattq@youtube.com",
     avatar: "https://robohash.org/cupiditateeiusqui.bmp?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#137464",
     },
@@ -135,7 +125,6 @@ export const mockEmails = [
     email: "vbodycoter@smh.com.au",
     avatar: "https://robohash.org/liberomolestiaeet.bmp?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#d2e5c5",
     },
@@ -148,7 +137,6 @@ export const mockEmails = [
     avatar:
       "https://robohash.org/voluptasdoloreslaboriosam.bmp?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#f5fdc9",
     },
@@ -160,7 +148,6 @@ export const mockEmails = [
     email: "imencov@e-recht24.de",
     avatar: "https://robohash.org/temporenobisdolorem.png?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#e79c79",
     },
@@ -172,7 +159,6 @@ export const mockEmails = [
     email: "csurrw@disqus.com",
     avatar: "https://robohash.org/dolorespariaturearum.bmp?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#fa9092",
     },
@@ -185,7 +171,6 @@ export const mockEmails = [
     avatar:
       "https://robohash.org/consequaturimpeditquasi.jpg?size=50x50&set=set1",
     displayEmail: "LWORGY@WIKIPEDIA.ORG",
-    tooltipName: "LELAH WORG",
     colorStyle: {
       backgroundColor: "#c34395",
     },
@@ -197,7 +182,6 @@ export const mockEmails = [
     email: "rrussamz@printfriendly.com",
     avatar: "https://robohash.org/doloresquiacorrupti.jpg?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#6640e4",
     },
@@ -209,7 +193,6 @@ export const mockEmails = [
     email: "khakonsson12@senate.gov",
     avatar: "https://robohash.org/architectoinquae.bmp?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#bff566",
     },
@@ -221,7 +204,6 @@ export const mockEmails = [
     email: "ssisse13@moonfruit.com",
     avatar: "https://robohash.org/velitinnemo.bmp?size=50x50&set=set1",
     displayEmail: "SSISSE13@MOONFRUIT.COM",
-    tooltipName: "SALVATORE SISSE",
     colorStyle: {
       backgroundColor: "#98ecf3",
     },
@@ -233,7 +215,6 @@ export const mockEmails = [
     email: "ggribbell17@accuweather.com",
     avatar: "https://robohash.org/nonquodunde.png?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#ac665e",
     },
@@ -245,7 +226,6 @@ export const mockEmails = [
     email: "hcheston1d@webs.com",
     avatar: "https://robohash.org/quieoset.png?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#9481ef",
     },
@@ -258,7 +238,6 @@ export const mockEmails = [
     avatar:
       "https://robohash.org/dolorsimiliquepraesentium.jpg?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#2e861c",
     },
@@ -270,7 +249,6 @@ export const mockEmails = [
     email: "ltofts1h@eventbrite.com",
     avatar: "https://robohash.org/rerumatqueporro.bmp?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#7db7f3",
     },
@@ -282,7 +260,6 @@ export const mockEmails = [
     email: "lmival1l@skyrock.com",
     avatar: "https://robohash.org/aliquaminciduntmodi.png?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#7e0399",
     },
@@ -294,7 +271,6 @@ export const mockEmails = [
     email: "mvan1p@parallels.com",
     avatar: "https://robohash.org/natusaterror.png?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#66ee52",
     },
@@ -307,7 +283,6 @@ export const mockEmails = [
     avatar:
       "https://robohash.org/praesentiumquaesuscipit.png?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#304f4b",
     },
@@ -319,7 +294,6 @@ export const mockEmails = [
     email: "cmattheus1t@canalblog.com",
     avatar: "https://robohash.org/euminventorequae.bmp?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#92486d",
     },
@@ -332,7 +306,6 @@ export const mockEmails = [
     avatar:
       "https://robohash.org/voluptatemautpraesentium.png?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#ab964e",
     },
@@ -344,7 +317,6 @@ export const mockEmails = [
     email: "lsegebrecht1w@reference.com",
     avatar: "https://robohash.org/repudiandaequianihil.jpg?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#b3d320",
     },
@@ -356,7 +328,6 @@ export const mockEmails = [
     email: "cmcmanamon1y@dell.com",
     avatar: "https://robohash.org/etrerumrerum.bmp?size=50x50&set=set1",
     displayEmail: "CMCMANAMON1Y@DELL.COM",
-    tooltipName: "CRIN MCMANAMON",
     colorStyle: {
       backgroundColor: "#2723b0",
     },
@@ -369,7 +340,6 @@ export const mockEmails = [
     avatar:
       "https://robohash.org/recusandaetemporamaxime.bmp?size=50x50&set=set1",
     displayEmail: "DWOOLLIN21@LINKEDIN.COM",
-    tooltipName: "DULCEA WOOLLIN",
     colorStyle: {
       backgroundColor: "#f9e2d0",
     },
@@ -382,7 +352,6 @@ export const mockEmails = [
     avatar:
       "https://robohash.org/providentconsequunturvoluptatem.bmp?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#f3ff6e",
     },
@@ -395,7 +364,6 @@ export const mockEmails = [
     avatar:
       "https://robohash.org/delectusporrocorrupti.bmp?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#642abc",
     },
@@ -407,7 +375,6 @@ export const mockEmails = [
     email: "nwestmoreland25@boston.com",
     avatar: "https://robohash.org/faciliseligendinam.png?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#a15795",
     },
@@ -419,7 +386,6 @@ export const mockEmails = [
     email: "cpaslow27@state.gov",
     avatar: "https://robohash.org/nostrumeligendiunde.png?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#742b33",
     },
@@ -431,7 +397,6 @@ export const mockEmails = [
     email: "sgresley29@google.cn",
     avatar: "https://robohash.org/quoidfugiat.bmp?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#bc688d",
     },
@@ -443,7 +408,6 @@ export const mockEmails = [
     email: "rspuffard2a@uol.com.br",
     avatar: "https://robohash.org/quipariaturmolestiae.bmp?size=50x50&set=set1",
     displayEmail: "RSPUFFARD2A@UOL.COM.BR",
-    tooltipName: "RAFAEL SPUFFARD",
     colorStyle: {
       backgroundColor: "#159241",
     },
@@ -455,7 +419,6 @@ export const mockEmails = [
     email: "jgiannini2e@behance.net",
     avatar: "https://robohash.org/fugiatiustoid.bmp?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#b4d7c1",
     },
@@ -468,7 +431,6 @@ export const mockEmails = [
     avatar:
       "https://robohash.org/hicconsecteturdoloremque.jpg?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#f3c47b",
     },
@@ -480,7 +442,6 @@ export const mockEmails = [
     email: "tblunsum2k@apple.com",
     avatar: "https://robohash.org/maioresautest.bmp?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#9303dc",
     },
@@ -492,7 +453,6 @@ export const mockEmails = [
     email: "wstrawbridge2o@about.com",
     avatar: "https://robohash.org/eligendietveritatis.png?size=50x50&set=set1",
     displayEmail: "WSTRAWBRIDGE2O@ABOUT.COM",
-    tooltipName: "WANDA STRAWBRIDGE",
     colorStyle: {
       backgroundColor: "#c4a240",
     },
@@ -505,7 +465,6 @@ export const mockEmails = [
     avatar:
       "https://robohash.org/laboriosamvoluptatemalias.jpg?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#0f2a34",
     },
@@ -517,7 +476,6 @@ export const mockEmails = [
     email: "nborghese1a@mediafire.com",
     avatar: "https://robohash.org/utetvelit.jpg?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#55c44a",
     },
@@ -530,7 +488,6 @@ export const mockEmails = [
     avatar:
       "https://robohash.org/earumdoloresreprehenderit.png?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#823678",
     },
@@ -542,7 +499,6 @@ export const mockEmails = [
     email: "jbiaggioni1b@tamu.edu",
     avatar: "https://robohash.org/ipsametcorrupti.bmp?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#f99fb9",
     },
@@ -554,7 +510,6 @@ export const mockEmails = [
     email: "aandreial@delicious.com",
     avatar: "https://robohash.org/nobisanimicum.jpg?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#6f693e",
     },
@@ -566,7 +521,6 @@ export const mockEmails = [
     email: "llangstaffn@blogger.com",
     avatar: "https://robohash.org/quoducimusanimi.png?size=50x50&set=set1",
     displayEmail: "LLANGSTAFFN@BLOGGER.COM",
-    tooltipName: "LINN LANGSTAFF",
     colorStyle: {
       backgroundColor: "#f88be4",
     },
@@ -578,7 +532,6 @@ export const mockEmails = [
     email: "rtitmarsh7@epa.gov",
     avatar: "https://robohash.org/perferendisestrerum.bmp?size=50x50&set=set1",
     displayEmail: "RTITMARSH7@EPA.GOV",
-    tooltipName: "RAYNA TITMARSH",
     colorStyle: {
       backgroundColor: "#f2da2d",
     },
@@ -590,7 +543,6 @@ export const mockEmails = [
     email: "mblanchette0@miitbeian.gov.cn",
     avatar: "https://robohash.org/quamperferendisodit.png?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#6a9ae5",
     },
@@ -603,7 +555,6 @@ export const mockEmails = [
     avatar:
       "https://robohash.org/omnisminusrepudiandae.bmp?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#087980",
     },
@@ -615,7 +566,6 @@ export const mockEmails = [
     email: "wscud26@topsy.com",
     avatar: "https://robohash.org/ducimusesseut.png?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#24738d",
     },
@@ -628,7 +578,6 @@ export const mockEmails = [
     avatar:
       "https://robohash.org/commodipraesentiumvoluptatem.jpg?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#f4fb86",
     },
@@ -640,7 +589,6 @@ export const mockEmails = [
     email: "blivocki@trellian.com",
     avatar: "https://robohash.org/nisinamillum.jpg?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#f8c765",
     },
@@ -652,7 +600,6 @@ export const mockEmails = [
     email: "jgissop1j@about.com",
     avatar: "https://robohash.org/dolorevenietoptio.jpg?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#646b3c",
     },
@@ -664,7 +611,6 @@ export const mockEmails = [
     email: "dbauduin1i@indiegogo.com",
     avatar: "https://robohash.org/odioiurerem.bmp?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#7ce404",
     },
@@ -676,7 +622,6 @@ export const mockEmails = [
     email: "mmcorkill2d@hubpages.com",
     avatar: "https://robohash.org/faceresequivoluptate.jpg?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#c0d1c8",
     },
@@ -689,7 +634,6 @@ export const mockEmails = [
     avatar:
       "https://robohash.org/quiadoloribusrepudiandae.png?size=50x50&set=set1",
     displayEmail: "AMUGFORD5@SOGOU.COM",
-    tooltipName: "ARLEN MUGFORD",
     colorStyle: {
       backgroundColor: "#ec6de1",
     },
@@ -701,7 +645,6 @@ export const mockEmails = [
     email: "pbiesingerx@goodreads.com",
     avatar: "https://robohash.org/corporissedest.bmp?size=50x50&set=set1",
     displayEmail: "PBIESINGERX@GOODREADS.COM",
-    tooltipName: "PANCHITO BIESINGER",
     colorStyle: {
       backgroundColor: "#4d934b",
     },
@@ -714,7 +657,6 @@ export const mockEmails = [
     avatar:
       "https://robohash.org/exercitationemcumvoluptates.bmp?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#797957",
     },
@@ -726,7 +668,6 @@ export const mockEmails = [
     email: "cdeakin1u@nifty.com",
     avatar: "https://robohash.org/totamquiquis.png?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#49fa33",
     },
@@ -738,7 +679,6 @@ export const mockEmails = [
     email: "gbritch2i@newsvine.com",
     avatar: "https://robohash.org/sitdolorquibusdam.jpg?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#e295f2",
     },
@@ -750,7 +690,6 @@ export const mockEmails = [
     email: "crallin2l@mayoclinic.com",
     avatar: "https://robohash.org/assumendaquiquia.jpg?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#c195d9",
     },
@@ -762,7 +701,6 @@ export const mockEmails = [
     email: "mde1x@privacy.gov.au",
     avatar: "https://robohash.org/placeatvoluptasminus.png?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#025726",
     },
@@ -774,7 +712,6 @@ export const mockEmails = [
     email: "dyosevitzc@nationalgeographic.com",
     avatar: "https://robohash.org/voluptatemquiipsam.bmp?size=50x50&set=set1",
     displayEmail: "DYOSEVITZC@NATIONALGEOGRAPHIC.COM",
-    tooltipName: "DELPHINIA YOSEVITZ",
     colorStyle: {
       backgroundColor: "#0e0a86",
     },
@@ -786,7 +723,6 @@ export const mockEmails = [
     email: "sridd2f@sitemeter.com",
     avatar: "https://robohash.org/abevenietplaceat.bmp?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#9d9032",
     },
@@ -798,7 +734,6 @@ export const mockEmails = [
     email: "bwiddowesk@sourceforge.net",
     avatar: "https://robohash.org/abquaeratipsa.jpg?size=50x50&set=set1",
     displayEmail: "BWIDDOWESK@SOURCEFORGE.NET",
-    tooltipName: "BLANCH WIDDOWES",
     colorStyle: {
       backgroundColor: "#28ab5e",
     },
@@ -810,7 +745,6 @@ export const mockEmails = [
     email: "okeyson1c@admin.ch",
     avatar: "https://robohash.org/dolorquisdolores.jpg?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#b80b22",
     },
@@ -823,7 +757,6 @@ export const mockEmails = [
     avatar:
       "https://robohash.org/veniamaccusantiumenim.png?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#f9dec3",
     },
@@ -835,7 +768,6 @@ export const mockEmails = [
     email: "jtorn15@ameblo.jp",
     avatar: "https://robohash.org/etnemoest.jpg?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#d5380d",
     },
@@ -847,7 +779,6 @@ export const mockEmails = [
     email: "rbryan11@reference.com",
     avatar: "https://robohash.org/atundenemo.png?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#f19f6d",
     },
@@ -859,7 +790,6 @@ export const mockEmails = [
     email: "gveldens1r@illinois.edu",
     avatar: "https://robohash.org/aliquamquameum.jpg?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#dd8193",
     },
@@ -871,7 +801,6 @@ export const mockEmails = [
     email: "rpottberry2q@microsoft.com",
     avatar: "https://robohash.org/errorvelquas.bmp?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#af7c11",
     },
@@ -884,7 +813,6 @@ export const mockEmails = [
     avatar:
       "https://robohash.org/excepturiaspernaturconsequuntur.png?size=50x50&set=set1",
     displayEmail: "AMATUSZKIEWICZT@UCLA.EDU",
-    tooltipName: "AERIEL MATUSZKIEWICZ",
     colorStyle: {
       backgroundColor: "#b76061",
     },
@@ -897,7 +825,6 @@ export const mockEmails = [
     avatar:
       "https://robohash.org/temporibusrationefacilis.png?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#8dc5d7",
     },
@@ -909,7 +836,6 @@ export const mockEmails = [
     email: "msmithin23@soundcloud.com",
     avatar: "https://robohash.org/repellatnihilfugiat.jpg?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#c94928",
     },
@@ -921,7 +847,6 @@ export const mockEmails = [
     email: "dpikesley1f@house.gov",
     avatar: "https://robohash.org/vitaeomnisut.png?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#654c2b",
     },
@@ -933,7 +858,6 @@ export const mockEmails = [
     email: "vpahlsson9@java.com",
     avatar: "https://robohash.org/dictaenimearum.png?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#92bf6d",
     },
@@ -945,7 +869,6 @@ export const mockEmails = [
     email: "bfifield8@va.gov",
     avatar: "https://robohash.org/expeditaetquaerat.jpg?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#5e47f4",
     },
@@ -957,7 +880,6 @@ export const mockEmails = [
     email: "tbonnick19@bbb.org",
     avatar: "https://robohash.org/utquaerepudiandae.bmp?size=50x50&set=set1",
     displayEmail: "TBONNICK19@BBB.ORG",
-    tooltipName: "TALLIE BONNICK",
     colorStyle: {
       backgroundColor: "#f7c114",
     },
@@ -969,7 +891,6 @@ export const mockEmails = [
     email: "cvan1e@over-blog.com",
     avatar: "https://robohash.org/omnisquifugit.jpg?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#ddbf47",
     },
@@ -981,7 +902,6 @@ export const mockEmails = [
     email: "bmenichinis@accuweather.com",
     avatar: "https://robohash.org/utidcommodi.png?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#b5137e",
     },
@@ -993,7 +913,6 @@ export const mockEmails = [
     email: "tbozier10@naver.com",
     avatar: "https://robohash.org/nobisanimirecusandae.jpg?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#ef7fd3",
     },
@@ -1005,7 +924,6 @@ export const mockEmails = [
     email: "zaylesbury1o@cdbaby.com",
     avatar: "https://robohash.org/esthicrecusandae.png?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#254779",
     },
@@ -1017,7 +935,6 @@ export const mockEmails = [
     email: "hcomport1z@skype.com",
     avatar: "https://robohash.org/suntfaceremodi.png?size=50x50&set=set1",
     displayEmail: "HCOMPORT1Z@SKYPE.COM",
-    tooltipName: "HANS COMPORT",
     colorStyle: {
       backgroundColor: "#f63ba1",
     },
@@ -1030,7 +947,6 @@ export const mockEmails = [
     avatar:
       "https://robohash.org/laboriosammolestiaeanimi.jpg?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#8fe7fb",
     },
@@ -1043,7 +959,6 @@ export const mockEmails = [
     avatar:
       "https://robohash.org/consequaturquisquamnon.bmp?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#0a678e",
     },
@@ -1055,7 +970,6 @@ export const mockEmails = [
     email: "ddeancy3@sina.com.cn",
     avatar: "https://robohash.org/nesciuntetvero.jpg?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#694baf",
     },
@@ -1067,7 +981,6 @@ export const mockEmails = [
     email: "bmalia2b@scribd.com",
     avatar: "https://robohash.org/quiautharum.png?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#856895",
     },
@@ -1079,7 +992,6 @@ export const mockEmails = [
     email: "etomasian16@mysql.com",
     avatar: "https://robohash.org/minimamolestiaequia.jpg?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#d61f6b",
     },
@@ -1091,7 +1003,6 @@ export const mockEmails = [
     email: "bring18@pinterest.com",
     avatar: "https://robohash.org/omnisautaliquid.jpg?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#de69bb",
     },
@@ -1103,7 +1014,6 @@ export const mockEmails = [
     email: "lwindross2j@eepurl.com",
     avatar: "https://robohash.org/sequivitaeveniam.png?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#8247e7",
     },
@@ -1116,7 +1026,6 @@ export const mockEmails = [
     avatar:
       "https://robohash.org/omnisdolorvoluptatibus.png?size=50x50&set=set1",
     displayEmail: "RLANNING1N@MEETUP.COM",
-    tooltipName: "ROONEY LANNING",
     colorStyle: {
       backgroundColor: "#c5b3d5",
     },
@@ -1129,7 +1038,6 @@ export const mockEmails = [
     avatar:
       "https://robohash.org/explicabonihilmolestiae.png?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#a4c085",
     },
@@ -1141,7 +1049,6 @@ export const mockEmails = [
     email: "rsandlin1m@twitter.com",
     avatar: "https://robohash.org/voluptatumsedoptio.bmp?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#41923e",
     },
@@ -1153,7 +1060,6 @@ export const mockEmails = [
     email: "ccochern6@histats.com",
     avatar: "https://robohash.org/assumendaestofficiis.png?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#268367",
     },
@@ -1165,7 +1071,6 @@ export const mockEmails = [
     email: "rrands14@vistaprint.com",
     avatar: "https://robohash.org/facereipsaaut.png?size=50x50&set=set1",
     displayEmail: "RRANDS14@VISTAPRINT.COM",
-    tooltipName: "ROMONDA RANDS",
     colorStyle: {
       backgroundColor: "#6e9d28",
     },
@@ -1178,7 +1083,6 @@ export const mockEmails = [
     avatar:
       "https://robohash.org/officiaarchitectorepudiandae.jpg?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#4cea29",
     },
@@ -1190,7 +1094,6 @@ export const mockEmails = [
     email: "tcharltonp@rakuten.co.jp",
     avatar: "https://robohash.org/sequirepudiandaeet.jpg?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#91a894",
     },
@@ -1203,7 +1106,6 @@ export const mockEmails = [
     avatar:
       "https://robohash.org/quasicupiditatereprehenderit.jpg?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#96cb13",
     },
@@ -1216,7 +1118,6 @@ export const mockEmails = [
     avatar:
       "https://robohash.org/perspiciatissuntveritatis.png?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#9fde5f",
     },
@@ -1228,7 +1129,6 @@ export const mockEmails = [
     email: "bswainsbury2@npr.org",
     avatar: "https://robohash.org/dolorenobisaut.jpg?size=50x50&set=set1",
     displayEmail: "",
-    tooltipName: "",
     colorStyle: {
       backgroundColor: "#4654f8",
     },
