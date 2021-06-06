@@ -97,6 +97,9 @@ function _ContactDetail({
     </button>
   );
 
+  let avatarURI =
+    avatar ?? "chrome://messenger/skin/addressbook/icons/contact-generic.svg";
+
   return (
     <div className="tooltip" onClick={onGeneralClick}>
       <div className="arrow"></div>
@@ -120,7 +123,7 @@ function _ContactDetail({
           </span>
         </div>
         <div className="authorPicture">
-          <img src={avatar} />
+          <img src={avatarURI} />
         </div>
       </div>
       <div className="tipFooter">
@@ -151,7 +154,7 @@ _ContactDetail.propTypes = {
   name: PropTypes.string.isRequired,
   email: PropTypes.string.isRequired,
   realEmail: PropTypes.string.isRequired,
-  avatar: PropTypes.string.isRequired,
+  avatar: PropTypes.string,
   contactId: PropTypes.string,
 };
 

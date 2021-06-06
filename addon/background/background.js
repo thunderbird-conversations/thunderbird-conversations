@@ -5,7 +5,7 @@
 import { Prefs } from "../prefs.js";
 import { UIHandler } from "./uiHandler.js";
 import { Window } from "./window.js";
-import { contactManager } from "./contact-manager.js";
+import { contactManager } from "./contactManager.js";
 
 const requestHandlers = [];
 class Background {
@@ -81,5 +81,5 @@ requestHandlers.push(async (msg) => {
   if (msg.type !== "contactDetails") {
     return null;
   }
-  return contactManager.getContactFromNameAndEmail(msg.payload);
+  return contactManager.get(msg.payload.email);
 });
