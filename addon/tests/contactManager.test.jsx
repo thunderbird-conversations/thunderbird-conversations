@@ -283,5 +283,31 @@ describe("Test ContactManager", () => {
     });
   });
 
-  test.todo("should limit the size of the cache");
+  test("should limit the size of the cache", async () => {
+    contactManager.HARD_MAX_CACHE_SIZE = 10;
+    contactManager.CACHE_CLEANUP_AMOUNT = 5;
+    for (let i = 0; i < 10; i++) {
+      await contactManager.get(`${i}@example.com`);
+    }
+
+    expect(contactManager._cache.size).toBe(10);
+
+    // Access a couple of the older addresses.
+    await contactManager.get("1@example.com");
+    await contactManager.get("3@example.com");
+    // And access one more to trigger the reduction.
+    await contactManager.get("10@example.com");
+
+    // Let the reduction run.
+    await new Promise((r) => setTimeout(r, 0));
+    expect(contactManager._cache.size).toBe(5);
+
+    expect(Array.from(contactManager._cache.keys())).toStrictEqual([
+      "1@example.com",
+      "3@example.com",
+      "8@example.com",
+      "9@example.com",
+      "10@example.com",
+    ]);
+  });
 });
