@@ -357,6 +357,15 @@ if (!browser.contacts) {
       }
       return [];
     },
+    onCreated: {
+      addListener() {},
+    },
+    onUpdated: {
+      addListener() {},
+    },
+    onDeleted: {
+      addListener() {},
+    },
   };
 }
 
