@@ -35,6 +35,26 @@ class ExtendedContact {
     this.identityId = identityId;
     this.name = name;
     this.photoURI = photoURI;
+    /**
+     * The time when the contact was last accessed in the cache, used for
+     * clearing out the cache.
+     *
+     * @type {number}
+     */
+    this.lastAccessed = performance.now();
+
+    /**
+     * Hard limit to the maximumsize of the cache for contacts - when we hit this
+     * we will cleanup straight away.
+     *
+     * @type {number}
+     */
+    this.HARD_MAX_CACHE_SIZE = 1000;
+    /**
+     * When we do a soft cleanup, we'll cleanup by this amount of contacts.
+     * @type {number}
+     */
+    this.CACHE_CLEANUP_AMOUNT = 750;
   }
 
   /**
@@ -96,6 +116,7 @@ export class ContactManager {
   async get(email) {
     let cachedValue = this._cache.get(email);
     if (cachedValue) {
+      cachedValue.lastAccessed = performance.now();
       return cachedValue.clone();
     }
 
@@ -112,6 +133,12 @@ export class ContactManager {
 
     for (let email of emails) {
       this._cache.set(email, contact);
+    }
+
+    let cacheSize = this._cache.size;
+    if (cacheSize >= this.HARD_MAX_CACHE_SIZE) {
+      // Schedule a cleanup after the current events.
+      setTimeout(this._cleanupCache.bind(this), 0);
     }
     this._activeFetches.delete(email);
 
@@ -219,19 +246,63 @@ export class ContactManager {
     return emails;
   }
 
+  /**
+   * Listener function for when a contact is created.
+   *
+   * @param {ContactNode} node
+   *   The added contact.
+   */
   _contactCreated(node) {
     this._cache.delete(node.properties.PrimaryEmail);
     this._cache.delete(node.properties.SecondEmail);
   }
 
+  /**
+   * Listener function for when a contact is updated.
+   *
+   * @param {ContactNode} node
+   *   The updated contact.
+   */
   _contactUpdated(node) {
     this._cache.delete(node.properties.PrimaryEmail);
     this._cache.delete(node.properties.SecondEmail);
   }
 
+  /**
+   * Listener function for when a contact is deleted.
+   *
+   * @param {string} parentId
+   *   The parent id of the contact.
+   * @param {string} id
+   *   The id of the contact that was deleted.
+   */
   _contactDeleted(parentId, id) {
     for (let [key, value] of this._cache.entries()) {
       if (value.contactId == id) {
+        this._cache.delete(key);
+      }
+    }
+  }
+
+  /**
+   * Removes old contacts from the cache to avoid it getting too large.
+   */
+  _cleanupCache() {
+    let amountToRemove = this._cache.size - this.CACHE_CLEANUP_AMOUNT - 1;
+    if (amountToRemove <= 0) {
+      return;
+    }
+
+    let times = new Array(this._cache.size);
+    let i = 0;
+    for (let value of this._cache.values()) {
+      times[i++] = value.lastAccessed;
+    }
+
+    times.sort((a, b) => a - b);
+
+    for (let [key, value] of this._cache.entries()) {
+      if (value.lastAccessed <= times[amountToRemove]) {
         this._cache.delete(key);
       }
     }
