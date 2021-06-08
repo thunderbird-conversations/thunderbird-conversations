@@ -35,13 +35,21 @@ describe("Test utility functions", () => {
 describe("Test ContactManager", () => {
   let contactManager;
   let spy;
+  let onCreatedSpy;
+  let onUpdatedSpy;
+  let onDeletedSpy;
+
   beforeEach(() => {
-    contactManager = new ContactManager();
     spy = jest.spyOn(browser.contacts, "quickSearch");
+    onCreatedSpy = jest.spyOn(browser.contacts.onCreated, "addListener");
+    onUpdatedSpy = jest.spyOn(browser.contacts.onUpdated, "addListener");
+    onDeletedSpy = jest.spyOn(browser.contacts.onDeleted, "addListener");
+
+    contactManager = new ContactManager();
   });
 
   afterEach(() => {
-    spy.mockRestore();
+    jest.restoreAllMocks();
   });
 
   test("should return an empty contact if none found", async () => {
@@ -168,11 +176,112 @@ describe("Test ContactManager", () => {
     expect(spy).toHaveBeenCalledTimes(1);
   });
 
-  test.todo("should update when a new contact is added");
+  test("should update when a new contact is added", async () => {
+    let contact = await contactManager.get("invalid@example.com");
 
-  test.todo("should update when a contact is updated");
+    expect(contact).toMatchObject({
+      contactId: undefined,
+      identityId: undefined,
+      name: undefined,
+      photoURI: undefined,
+    });
 
-  test.todo("should update when a new contact is deleted");
+    let listener = onCreatedSpy.mock.calls[0][0];
+    listener({
+      properties: {
+        PrimaryEmail: "invalid@example.com",
+      },
+    });
+
+    spy.mockResolvedValueOnce([
+      {
+        id: "14327658",
+        type: "contact",
+        properties: {
+          PrimaryEmail: "invalid@example.com",
+          SecondEmail: "bar@example.com",
+          DisplayName: "invalid name",
+          PreferDisplayName: "1",
+          PhotoURI: undefined,
+        },
+      },
+    ]);
+
+    contact = await contactManager.get("invalid@example.com");
+
+    expect(contact).toMatchObject({
+      contactId: "14327658",
+      identityId: undefined,
+      name: "invalid name",
+      photoURI: undefined,
+    });
+  });
+
+  test("should update when a contact is updated", async () => {
+    let contact = await contactManager.get("foo@example.com");
+
+    expect(contact).toMatchObject({
+      contactId: "135246",
+      identityId: undefined,
+      name: "display name",
+      photoURI: undefined,
+    });
+
+    let listener = onUpdatedSpy.mock.calls[0][0];
+    listener({
+      properties: {
+        PrimaryEmail: "foo@example.com",
+      },
+    });
+
+    spy.mockResolvedValueOnce([
+      {
+        id: "135246",
+        type: "contact",
+        properties: {
+          PrimaryEmail: "foo@example.com",
+          SecondEmail: "bar@example.com",
+          DisplayName: "updated name",
+          PreferDisplayName: "1",
+          PhotoURI: undefined,
+        },
+      },
+    ]);
+
+    contact = await contactManager.get("foo@example.com");
+
+    expect(contact).toMatchObject({
+      contactId: "135246",
+      identityId: undefined,
+      name: "updated name",
+      photoURI: undefined,
+    });
+  });
+
+  test("should update when a new contact is deleted", async () => {
+    let contact = await contactManager.get("foo@example.com");
+
+    expect(contact).toMatchObject({
+      contactId: "135246",
+      identityId: undefined,
+      name: "display name",
+      photoURI: undefined,
+    });
+
+    let listener = onDeletedSpy.mock.calls[0][0];
+    listener("1", "135246");
+
+    spy.mockResolvedValueOnce([]);
+
+    contact = await contactManager.get("foo@example.com");
+
+    expect(contact).toMatchObject({
+      contactId: undefined,
+      identityId: undefined,
+      name: undefined,
+      photoURI: undefined,
+    });
+  });
 
   test.todo("should limit the size of the cache");
 });

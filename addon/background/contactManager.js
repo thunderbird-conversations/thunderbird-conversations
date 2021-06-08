@@ -79,6 +79,10 @@ export class ContactManager {
      * @type {Map<string, Promise>}
      */
     this._activeFetches = new Map();
+
+    browser.contacts.onCreated.addListener(this._contactCreated.bind(this));
+    browser.contacts.onUpdated.addListener(this._contactUpdated.bind(this));
+    browser.contacts.onDeleted.addListener(this._contactDeleted.bind(this));
   }
 
   /**
@@ -171,7 +175,7 @@ export class ContactManager {
       emails.push(email);
     }
 
-    let identityEmails = await this.getIdentityEmails();
+    let identityEmails = await this._getIdentityEmails();
     let identityId = identityEmails.get(email);
 
     return [
@@ -195,7 +199,7 @@ export class ContactManager {
    * @returns {string[]}
    *   An array of emails.
    */
-  async getIdentityEmails() {
+  async _getIdentityEmails() {
     if (this._identityEmails) {
       return this._identityEmails;
     }
@@ -213,6 +217,24 @@ export class ContactManager {
     }
     this._identityEmails = emails;
     return emails;
+  }
+
+  _contactCreated(node) {
+    this._cache.delete(node.properties.PrimaryEmail);
+    this._cache.delete(node.properties.SecondEmail);
+  }
+
+  _contactUpdated(node) {
+    this._cache.delete(node.properties.PrimaryEmail);
+    this._cache.delete(node.properties.SecondEmail);
+  }
+
+  _contactDeleted(parentId, id) {
+    for (let [key, value] of this._cache.entries()) {
+      if (value.contactId == id) {
+        this._cache.delete(key);
+      }
+    }
   }
 }
 
