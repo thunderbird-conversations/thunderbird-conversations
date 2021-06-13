@@ -35,6 +35,9 @@ function populateRequiredFields(message) {
   message.isPhishing = false;
   message.isOutbox = false;
   message.isJunk = false;
+  message.folder = {
+    accountId: "account1",
+  };
 }
 
 /**

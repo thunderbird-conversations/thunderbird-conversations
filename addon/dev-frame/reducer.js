@@ -124,6 +124,31 @@ export const devFrameActions = {
   },
 };
 
+browser.messages = {
+  async get(msgId) {
+    // Adjusts the from field to an author field. `from` is the structured
+    // contact data we use in the stores. `author` is the name and email that
+    // the WebExtension API returns.
+    function adjustFrom(msg) {
+      let newMsg = { ...msg };
+      newMsg.author = newMsg.from.name
+        ? `${newMsg.from.name} <${newMsg.from.email}>`
+        : newMsg.from.email;
+      delete newMsg.from;
+      return newMsg;
+    }
+
+    for (let thread of mockThreads) {
+      for (let msg of thread) {
+        if (msg.id == msgId) {
+          return adjustFrom(msg);
+        }
+      }
+    }
+    return undefined;
+  },
+};
+
 export const devframeSlice = RTK.createSlice({
   name: "threads",
   initialState: {
