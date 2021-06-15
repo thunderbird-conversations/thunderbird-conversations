@@ -80,7 +80,7 @@ async function dateAccordingToPref(date) {
   try {
     return Prefs.no_friendly_date
       ? dateAsInMessageList(date)
-      : await browser.conversations.makeFriendlyDateAgo(date);
+      : await browser.conversations.makeFriendlyDateAgo(date.getTime());
   } catch (e) {
     return dateAsInMessageList(date);
   }
@@ -258,7 +258,7 @@ class Message {
 
     data.fullDate = Prefs.no_friendly_date
       ? ""
-      : dateAsInMessageList(new Date(this._msgHdr.date / 1000));
+      : dateAsInMessageList(this._date);
 
     const userTags = await browser.messages.listTags();
     data.tags = messageHeader.tags.map((tagKey) => {
@@ -597,7 +597,7 @@ class Message {
     let authorEmail = this._from.email;
     let authorAvatar = authorContact.avatar;
     let authorColor = authorContact.color;
-    let date = await dateAccordingToPref(new Date(this._msgHdr.date / 1000));
+    let date = await dateAccordingToPref(this._date);
     // We try to convert the bodies to plain text, to enhance the readability in
     // the forwarded conversation. Note: <pre> tags are not converted properly
     // it seems, need to investigate...
