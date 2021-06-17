@@ -109,7 +109,7 @@ export const summaryActions = {
           tab[0].displayedFolder.accountId
         );
         await browser.compose.beginNew({
-          identityId: account.identities[0].id,
+          identityId: account.identities[0]?.id,
           to: dest,
         });
       } else {
