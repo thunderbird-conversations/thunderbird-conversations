@@ -638,7 +638,28 @@ class Message {
 
 function hasIdentity(identityEmails, emailAddress) {
   const email = emailAddress.toLowerCase();
-  return identityEmails.some((e) => e.toLowerCase() == email);
+  return identityEmails.some((e) => e == email);
+}
+
+async function shouldEnableReplyAll(emails, propName) {
+  let seen = new Set();
+  let identityEmails = [];
+  for (let account of await browser.accounts.list()) {
+    if (!["imap", "pop3", "nntp"].includes(account.type)) {
+      continue;
+    }
+    for (let identity of account.identities) {
+      identityEmails.push(identity.email.toLowerCase());
+    }
+  }
+  return (
+    emails.filter((x) => {
+      let r =
+        !seen.has(x[propName]) && !hasIdentity(identityEmails, x[propName]);
+      seen.add(x[propName]);
+      return r;
+    }).length > 1
+  );
 }
 
 class MessageFromGloda extends Message {
@@ -691,18 +712,10 @@ class MessageFromGloda extends Message {
 
     this.isReplyListEnabled =
       "mailingLists" in glodaMsg && !!glodaMsg.mailingLists.length;
-    let seen = new Set();
-    const identityEmails = await browser.convContacts.getIdentityEmails({
-      includeNntpIdentities: true,
-    });
-    this.isReplyAllEnabled =
-      [glodaMsg.from, ...glodaMsg.to, ...glodaMsg.cc, ...glodaMsg.bcc].filter(
-        function (x) {
-          let r = !seen.has(x.value) && !hasIdentity(identityEmails, x.value);
-          seen.add(x.value);
-          return r;
-        }
-      ).length > 1;
+    this.isReplyAllEnabled = await shouldEnableReplyAll(
+      [glodaMsg.from, ...glodaMsg.to, ...glodaMsg.cc, ...glodaMsg.bcc],
+      "value"
+    );
   }
 }
 
@@ -759,24 +772,15 @@ class MessageFromDbHdr extends Message {
               aMimeMsg &&
               aMimeMsg.has("list-post") &&
               RE_LIST_POST.exec(aMimeMsg.get("list-post"));
-            let seen = new Set();
-            const identityEmails = await browser.convContacts.getIdentityEmails(
-              {
-                includeNntpIdentities: true,
-              }
-            );
-            this.isReplyAllEnabled =
+            this.isReplyAllEnabled = await shouldEnableReplyAll(
               [
                 ...parseMimeLine(aMimeMsg.get("from"), true),
                 ...parseMimeLine(aMimeMsg.get("to"), true),
                 ...parseMimeLine(aMimeMsg.get("cc"), true),
                 ...parseMimeLine(aMimeMsg.get("bcc"), true),
-              ].filter(function (x) {
-                let r =
-                  !seen.has(x.email) && !hasIdentity(identityEmails, x.email);
-                seen.add(x.email);
-                return r;
-              }).length > 1;
+              ],
+              "email"
+            );
 
             let findIsEncrypted = (x) =>
               x.isEncrypted ||
