@@ -135,28 +135,6 @@
             }
           }
         ]
-      },
-      {
-        "name": "getIdentityEmails",
-        "type": "function",
-        "description": "Temporary. Returns an array of emails associated with the user's identities",
-        "async": true,
-        "parameters": [
-          {
-            "type": "object",
-            "name": "getIdentityEmailsProperties",
-            "properties": {
-              "includeNntpIdentities": {
-                "type": "boolean",
-                "description": "Whether or not to include NNTP identities",
-                "optional": true,
-                "default": false
-              }
-            },
-            "optional": true,
-            "default": {}
-          }
-        ]
       }
     ],
     "events": [

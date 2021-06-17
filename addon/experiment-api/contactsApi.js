@@ -186,11 +186,6 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
             ? email
             : MailServices.headerParser.makeMimeAddress(name, email);
         },
-        async getIdentityEmails(options) {
-          const { includeNntpIdentities } = options;
-
-          return getIdentityEmailsImpl(!includeNntpIdentities);
-        },
         onColumnHandler: new ExtensionCommon.EventManager({
           context,
           name: "convContacts.onColumnHandler",
@@ -211,7 +206,7 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
             monkeyPatchAllWindows(windowManager, callback);
             Services.ww.registerNotification(windowObserver);
 
-            const emails = getIdentityEmailsImpl();
+            const emails = getIdentityEmails();
             let callback2 = registerColumn.bind(
               null,
               emails,
@@ -474,19 +469,13 @@ function composeMessageTo(aEmail, aDisplayedFolder) {
 }
 
 /**
- * Returns a list of all identities in the form [{ boolean isDefault; nsIMsgIdentity identity }].
- * It is assured that there is exactly one default identity.
- * If only the default identity is needed, getDefaultIdentity() can be used.
- * @param aSkipNntpIdentities (default: true) Should we avoid including nntp identities in the list?
+ * Returns a list of all identities.
  */
-function getIdentityEmailsImpl(aSkipNntpIdentities = true) {
+function getIdentityEmails() {
   let emails = [];
   for (let account of MailServices.accounts.accounts) {
     let server = account.incomingServer;
-    if (
-      aSkipNntpIdentities &&
-      (!server || (server.type != "pop3" && server.type != "imap"))
-    ) {
+    if (!server || (server.type != "pop3" && server.type != "imap")) {
       continue;
     }
     for (let currentIdentity of account.identities) {
