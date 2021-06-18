@@ -211,6 +211,13 @@ if (!browser.conversations) {
       }
       return "ltr";
     },
+    async getCorePref(name) {
+      switch (name) {
+        case "mail.showCondensedAddresses":
+          return false;
+      }
+      throw new Error("Unexpected pref");
+    },
   };
 }
 

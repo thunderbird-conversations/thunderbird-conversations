@@ -591,20 +591,6 @@ Conversation.prototype = {
     }
     this.messages = this.messages.concat(newMsgs);
 
-    for (let i = 0; i < newMsgs.length; i++) {
-      let oldMsg;
-      if (i == 0) {
-        if (this.messages.length) {
-          oldMsg = this.messages[this.messages.length - 1].message;
-        } else {
-          oldMsg = null;
-        }
-      } else {
-        oldMsg = newMsgs[i - 1].message;
-      }
-      let msg = newMsgs[i].message;
-      msg.updateTmplData(oldMsg);
-    }
     // Update initialPosition
     for (
       let i = this.messages.length - newMsgs.length;
@@ -680,9 +666,6 @@ Conversation.prototype = {
       // We need to set this before the call to reactMsgData.
       let msg = this.messages[i].message;
       msg.initialPosition = i;
-
-      let oldMsg = i > 0 ? this.messages[i - 1].message : null;
-      msg.updateTmplData(oldMsg);
     }
 
     let reactMsgData = [];
