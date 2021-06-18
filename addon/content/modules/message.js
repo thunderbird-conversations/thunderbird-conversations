@@ -23,6 +23,8 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   setupLogging: "chrome://conversations/content/modules/misc.js",
   Services: "resource://gre/modules/Services.jsm",
   messageActions: "chrome://conversations/content/modules/misc.js",
+  GlodaAttrProviders:
+    "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
 });
 
 XPCOMUtils.defineLazyGetter(this, "browser", function () {
@@ -33,10 +35,6 @@ XPCOMUtils.defineLazyGetter(this, "gMessenger", function () {
   return Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
 });
 
-const { PluginHelpers } = ChromeUtils.import(
-  "chrome://conversations/content/modules/plugins/helpers.js",
-  {}
-);
 const { Prefs } = ChromeUtils.import(
   "chrome://conversations/content/modules/prefs.js",
   {}
@@ -58,7 +56,6 @@ XPCOMUtils.defineLazyGetter(this, "Log", () => {
 // bugzilla snippets.
 const kSnippetLength = 700;
 
-const RE_BZ_COMMENT = /^--- Comment #\d+ from .* \d{4}.*? ---([\s\S]*)/m;
 const RE_LIST_POST = /<mailto:([^>]+)>/;
 
 // Add in the global message listener table a weak reference to the given
@@ -89,6 +86,8 @@ async function dateAccordingToPref(date) {
 class Message {
   constructor(aConversation, msgHdr) {
     this._msgHdr = msgHdr;
+    // Type of message, e.g. normal or bugzilla.
+    this._type = "normal";
     this._id = null;
     this._domNode = null;
     this._snippet = "";
@@ -128,7 +127,6 @@ class Message {
     this.isReplyListEnabled = false;
     this.isReplyAllEnabled = false;
     this.isEncrypted = false;
-    this.bugzillaInfos = {};
     this.notifiedRemoteContentAlready = false;
 
     // Filled by the conversation, useful to know whether we were initially the
@@ -144,56 +142,6 @@ class Message {
   //  @return a list of { email, name } objects
   parse(aMimeLine) {
     return parseMimeLine(aMimeLine);
-  }
-
-  // This function is called before toReactData, and allows us to adjust our
-  // template data according to the message that came before us.
-  updateTmplData(aPrevMsg) {
-    let oldInfos = aPrevMsg?.bugzillaInfos;
-    if (!oldInfos) {
-      oldInfos = {};
-    }
-    let infos = this.bugzillaInfos;
-    let makeArrow = function (oldValue, newValue) {
-      if (oldValue) {
-        return oldValue + " \u21d2 " + newValue;
-      }
-
-      return newValue;
-    };
-    if (Object.keys(infos).length) {
-      let items = [];
-      for (let k of [
-        "product",
-        "component",
-        "keywords",
-        "severity",
-        "status",
-        "priority",
-        "assigned-to",
-        "target-milestone",
-      ]) {
-        if ((!aPrevMsg || k in oldInfos) && oldInfos[k] != infos[k]) {
-          let key = k
-            .split("-")
-            .map((x) => x.charAt(0).toUpperCase() + x.slice(1))
-            .join(" ");
-          items.push(key + ": " + makeArrow(oldInfos[k], infos[k]));
-        }
-      }
-      if (infos["changed-fields"]?.trim().length) {
-        items.push("Changed: " + infos["changed-fields"]);
-      }
-      let m = this._snippet.match(RE_BZ_COMMENT);
-      if (m?.length && m[1].trim().length) {
-        items.push(m[1]);
-      }
-      if (!items.length) {
-        items.push(this._snippet);
-      }
-
-      this._snippet = items.join("; ");
-    }
   }
 
   async toReactData() {
@@ -229,6 +177,7 @@ class Message {
       subject: messageHeader.subject,
       snippet: this._snippet,
       starred: messageHeader.flagged,
+      type: this._type,
       // We look up info on each contact in the Redux reducer;
       // pass this information along so we know what to look up.
       _contactsData: {
@@ -238,21 +187,6 @@ class Message {
         bcc: this._bcc,
       },
     };
-
-    // Don't show "to me" if this is a bugzilla email
-    // TODO: Make this work again?
-    // if (Object.keys(this.bugzillaInfos).length) {
-    //   extraClasses.push("bugzilla");
-    //   try {
-    //     let url = this.bugzillaInfos.url;
-    //     data.bugzillaUrl = url;
-    //   } catch (e) {
-    //     if (e.result != Cr.NS_ERROR_MALFORMED_URI) {
-    //       throw e;
-    //     }
-    //     // why not?
-    //   }
-    // }
 
     data = { ...data, ...(await this.toTmplDataForAttachments(data)) };
 
@@ -675,10 +609,7 @@ class MessageFromGloda extends Message {
     if (glodaMsg.alternativeSender) {
       this._realFrom = this._from;
       this._from = this.parse(glodaMsg.alternativeSender)[0];
-    }
-
-    if (glodaMsg.bugzillaInfos) {
-      this.bugzillaInfos = JSON.parse(glodaMsg.bugzillaInfos);
+      this._type = "bugzilla";
     }
 
     // FIXME messages that have no body end up with "..." as a snippet
@@ -742,17 +673,15 @@ class MessageFromDbHdr extends Message {
               kSnippetLength
             );
             this._snippet = text;
-            let alternativeSender = PluginHelpers.alternativeSender({
+            let alternativeSender = GlodaAttrProviders.alternativeSender({
               mime: aMimeMsg,
               header: aMsgHdr,
             });
             if (alternativeSender) {
+              this._type = "bugzilla";
               this._realFrom = this._from;
               this._from = this.parse(alternativeSender)[0];
             }
-
-            this.bugzillaInfos =
-              PluginHelpers.bugzilla({ mime: aMimeMsg, header: aMsgHdr }) || {};
 
             this._attachments = aMimeMsg.allUserAttachments.filter(
               (x) => x.isRealAttachment

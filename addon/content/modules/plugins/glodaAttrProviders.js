@@ -30,9 +30,6 @@ var EXPORTED_SYMBOLS = ["GlodaAttrProviders"];
  *  subject, hence this Gloda plugin
  */
 
-const { PluginHelpers } = ChromeUtils.import(
-  "chrome://conversations/content/modules/plugins/helpers.js"
-);
 const { XPCOMUtils } = ChromeUtils.import(
   "resource://gre/modules/XPCOMUtils.jsm"
 );
@@ -66,7 +63,7 @@ let AlternativeSender = {
     aCallbackHandle
   ) {
     try {
-      let alternativeSender = PluginHelpers.alternativeSender(aRawReps);
+      let alternativeSender = GlodaAttrProviders.alternativeSender(aRawReps);
       if (alternativeSender) {
         aGlodaMessage.alternativeSender = alternativeSender;
       }
@@ -77,8 +74,6 @@ let AlternativeSender = {
     yield Gloda.kWorkDone;
   },
 };
-
-AlternativeSender.init();
 
 let ContentType = {
   init: function _ContentType_init() {
@@ -116,54 +111,13 @@ let ContentType = {
   },
 };
 
-ContentType.init();
-
-let Bugzilla = {
-  init: function _Bugzilla_init() {
-    this.defineAttributes();
-  },
-
-  defineAttributes: function _Bugzilla_defineAttributes() {
-    this._bugzillaAttribute = Gloda.defineAttribute({
-      provider: this,
-      extensionName: "bugzilla-infos",
-      attributeType: Gloda.kAttrDerived,
-      attributeName: "bugzillaInfos",
-      bind: true,
-      singular: true,
-      subjectNouns: [Gloda.NOUN_MESSAGE],
-      objectNoun: Gloda.NOUN_STRING,
-    });
-  },
-
-  process: function* _Bugzilla_process(
-    aGlodaMessage,
-    aRawReps,
-    aIsNew,
-    aCallbackHandle
-  ) {
-    try {
-      let bugzilla = PluginHelpers.bugzilla(aRawReps);
-      if (bugzilla) {
-        aGlodaMessage.bugzillaInfos = JSON.stringify(bugzilla);
-      }
-    } catch (e) {
-      dump(e + "\n" + e.stack + "\n");
-    }
-
-    yield Gloda.kWorkDone;
-  },
-};
-
-Bugzilla.init();
-
 let ConversationSubject = {
   init: function _ConversationSubject_init() {
     this.defineAttributes();
   },
 
   defineAttributes: function _ConversationSubject_defineAttributes() {
-    this._alternativeSenderAttribute = Gloda.defineAttribute({
+    this._conversationSubjectAttribute = Gloda.defineAttribute({
       provider: this,
       extensionName: "conversation-subject",
       attributeType: Gloda.kAttrDerived,
@@ -191,5 +145,20 @@ let ConversationSubject = {
 var GlodaAttrProviders = {
   init() {
     ConversationSubject.init();
+    ContentType.init();
+    AlternativeSender.init();
+  },
+
+  // About to do more special-casing here? Please check out the corresponding
+  //  code in contact.js and make sure you modify it too.
+  alternativeSender(aRawReps) {
+    const aMimeMsg = aRawReps.mime;
+
+    // This header is a bare email address
+    if (aMimeMsg && "x-bugzilla-who" in aMimeMsg.headers) {
+      return aMimeMsg.headers["x-bugzilla-who"];
+    }
+
+    return null;
   },
 };
