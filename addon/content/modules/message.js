@@ -14,7 +14,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   escapeHtml: "chrome://conversations/content/modules/misc.js",
   htmlToPlainText: "chrome://conversations/content/modules/misc.js",
-  MimeMessage: "resource:///modules/gloda/MimeMessage.jsm",
   mimeMsgToContentSnippetAndMeta: "resource:///modules/gloda/GlodaContent.jsm",
   msgHdrGetUri: "chrome://conversations/content/modules/misc.js",
   MsgHdrToMimeMessage: "resource:///modules/gloda/MimeMessage.jsm",
@@ -853,17 +852,6 @@ function quoteMsgHdr(aMsgHdr) {
     quoter.quoteMessage(msgUri, false, listener, "", false, aMsgHdr);
   });
 }
-
-/**
- * Recycling the HeaderHandlerBase from mimemsg.js
- */
-function HeaderHandler(aHeaders) {
-  this.headers = aHeaders;
-}
-
-HeaderHandler.prototype = {
-  __proto__: MimeMessage.prototype.__proto__, // == HeaderHandlerBase
-};
 
 /**
  * Get a nsIURI from a nsIMsgDBHdr
