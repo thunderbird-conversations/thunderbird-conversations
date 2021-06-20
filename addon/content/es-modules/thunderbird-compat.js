@@ -66,7 +66,6 @@ const ALL_LOCALES = [
  * This function should only be used in the dev frame. It is exported
  * to give the dev frame a way to mock a change to the UI language.
  *
- * @export
  * @param {*} resolve
  * @param {string} [locale="en"]
  */

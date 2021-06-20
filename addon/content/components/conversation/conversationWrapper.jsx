@@ -11,6 +11,10 @@ import { messageActions } from "../../reducer/reducer-messages.js";
 import { MessageList } from "../message/messageList.jsx";
 import { browser } from "../../es-modules/thunderbird-compat.js";
 
+/**
+ * This is a wrapper class around the whole conversation. It also kicks off
+ * the message loading routines.
+ */
 class _ConversationWrapper extends React.PureComponent {
   constructor(props) {
     super(props);

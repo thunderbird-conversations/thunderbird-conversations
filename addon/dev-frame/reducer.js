@@ -47,7 +47,7 @@ function makeAttrsLogging(obj, logFunc = () => {}) {
  * Logging is formatted as `${namespace}.${attr_name} ...`
  *
  * @param {*} namespace
- * @returns
+ * @returns {Function}
  */
 function createThunkLogger(namespace) {
   return (name, args) => {

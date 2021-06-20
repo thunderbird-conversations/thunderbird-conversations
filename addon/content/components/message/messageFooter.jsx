@@ -7,6 +7,9 @@ import PropTypes from "prop-types";
 import { ActionButton } from "./messageActionButton.jsx";
 import { messageActions } from "../../reducer/reducer-messages.js";
 
+/**
+ * Handles display for the footer of a message.
+ */
 export class MessageFooter extends React.PureComponent {
   constructor(props) {
     super(props);

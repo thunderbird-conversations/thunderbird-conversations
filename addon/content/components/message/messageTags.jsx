@@ -22,6 +22,15 @@ function isColorLight(color) {
   return l > 0.8;
 }
 
+/**
+ * Handles display of a single message tag.
+ *
+ * @param {object} root0
+ * @param {Function} root0.onClickX
+ * @param {boolean} root0.expanded
+ * @param {string} root0.name
+ * @param {string} root0.color
+ */
 export function MessageTag({ onClickX, expanded, name, color }) {
   const isLight = isColorLight(color);
 
@@ -47,6 +56,14 @@ MessageTag.propTypes = {
   color: PropTypes.string.isRequired,
 };
 
+/**
+ * Handles display of message tags within a message.
+ *
+ * @param {object} root0
+ * @param {boolean} root0.expanded
+ * @param {object[]} root0.tags
+ * @param {Function} root0.onTagsChange
+ */
 export function MessageTags({ expanded, tags = [], onTagsChange }) {
   function removeTag(tagId) {
     const filtered = tags.filter((tag) => tag.key !== tagId);
@@ -78,6 +95,12 @@ MessageTags.propTypes = {
   onTagsChange: PropTypes.func.isRequired,
 };
 
+/**
+ * Handles display of the DKIM tooltip.
+ *
+ * @param {object} root0
+ * @param {string[]} root0.strings
+ */
 function DkimTooltip({ strings }) {
   const [primaryString, secondaryStrings = []] = strings;
   const primaryTooltip = <div>{primaryString}</div>;
@@ -100,6 +123,17 @@ function DkimTooltip({ strings }) {
 }
 DkimTooltip.propTypes = { strings: PropTypes.array.isRequired };
 
+/**
+ * A generic handler for display of message tags.
+ *
+ * @param {object} root0
+ * @param {string} root0.icon
+ * @param {string} root0.name
+ * @param {string} root0.title
+ * @param {string} root0.tooltip
+ * @param {Function} root0.onClick
+ * @param {string} root0.classNames
+ */
 export function SpecialMessageTag({
   icon,
   name,
@@ -130,6 +164,16 @@ SpecialMessageTag.propTypes = {
   tooltip: PropTypes.object,
 };
 
+/**
+ * Handles display of all tags for a message.
+ *
+ * @param {object} root0
+ * @param {Function} root0.onTagClick
+ * @param {Function} root0.onFolderClick
+ * @param {object[]} root0.specialTags
+ * @param {boolean} root0.inView
+ * @param {string} root0.folderName
+ */
 export function SpecialMessageTags({
   onTagClick,
   onFolderClick = null,

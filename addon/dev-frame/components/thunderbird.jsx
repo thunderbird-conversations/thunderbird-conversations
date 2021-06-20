@@ -34,13 +34,11 @@ MockThunderbird.propTypes = {
 /**
  * A mock thunderbird UI using the three-panel view.
  *
- * @export
- * @param {*} {
- *   left = null,
- *   topRight = null,
- *   bottomRight = null,
- * }
- * @returns
+ * @param {object} root0
+ * @param {object} root0.left
+ * @param {object} root0.topRight
+ * @param {object} root0.bottomRight
+ * @returns {object}
  */
 export function ThreePanelThunderbird({
   left = null,
@@ -69,13 +67,12 @@ ThreePanelThunderbird.propTypes = {
  * Display a message row for the thread view. This component will be indented
  * depending on its position in the thread.
  *
- * @param {*} {
- *   message,
- *   position = 0,
- *   numMessages = 1,
- *   onClick = () => {},
- * }
- * @returns
+ * @param {object} root0
+ * @param {object} root0.message
+ * @param {number} root0.position
+ * @param {number} root0.numMessages
+ * @param {Function} root0.onClick
+ * @returns {object}
  */
 function MessageRow({
   message,
@@ -135,8 +132,10 @@ MessageRow.propTypes = {
 /**
  * Display a thread of messages, successively indenting each one in the chain.
  *
- * @param {*} { thread }
- * @returns
+ * @param {object}root0
+ * @param {object[]} root0.thread
+ * @param {number} root0.position
+ * @returns {React.Fragment}
  */
 function Thread({ thread, position = 0 }) {
   const dispatch = useDispatch();
@@ -172,8 +171,7 @@ Thread.propTypes = {
  * Display a threaded view of all the threads in `state.threads.threadData`
  * in the Redux store.
  *
- * @export
- * @returns
+ * @returns {React.Fragment}
  */
 export function ThreadView() {
   const threads = useSelector((state) => state.threads.threadData);

@@ -8,15 +8,16 @@ import { getInitials } from "../es-modules/utils.js";
 /**
  * Adds necessary information for display contacts.
  *
- * @param {object} contact
+ * @param {object} root0
+ * @param {object} root0.contact
  *   The contact details from the ContactManager.
- * @param {string} email
+ * @param {string} root0.email
  *   The associated email for the contact.
- * @param {string} field
+ * @param {string} root0.field
  *   The field of the email the contact is in, e.g. from, to, cc etc.
- * @param {string} nameFromEmail
+ * @param {string} root0.nameFromEmail
  *   The name from the email address.
- * @param {boolean} showCondensed
+ * @param {boolean} root0.showCondensed
  *   Whether or not to show condensed names.
  */
 async function enrichWithDisplayData({
@@ -53,8 +54,7 @@ async function enrichWithDisplayData({
  * each contact. When the details are fetched, merge them into the
  * message object itself.
  *
- * @export
- * @param {[object]} msgData
+ * @param {object[]} msgData
  */
 export async function mergeContactDetails(msgData) {
   let showCondensed = await browser.conversations.getCorePref(

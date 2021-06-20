@@ -28,6 +28,9 @@ ContactList.propTypes = {
   className: PropTypes.string,
 };
 
+/**
+ * Handles display of the extended details for a message - the header lines.
+ */
 export class MessageDetails extends React.PureComponent {
   render() {
     return (

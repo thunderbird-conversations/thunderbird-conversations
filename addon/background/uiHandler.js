@@ -8,6 +8,10 @@ if (!globalThis.browser) {
   globalThis.browser = CompatBrowser;
 }
 
+/**
+ * This class handles setting up hooks into the Thunderbird UI for display of
+ * columns, handling key presses etc.
+ */
 export class UIHandler {
   init() {
     browser.commands.onCommand.addListener(this.onKeyCommand.bind(this));

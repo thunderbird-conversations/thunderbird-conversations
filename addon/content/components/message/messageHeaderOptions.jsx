@@ -8,6 +8,10 @@ import { ActionButton } from "./messageActionButton.jsx";
 import { messageActions } from "../../reducer/reducer-messages.js";
 import { SvgIcon } from "../svgIcon.jsx";
 import { browser } from "../../es-modules/thunderbird-compat.js";
+
+/**
+ * Handles display of the options menu.
+ */
 class OptionsMoreMenu extends React.PureComponent {
   render() {
     return (
@@ -103,6 +107,9 @@ OptionsMoreMenu.propTypes = {
   msgSendAction: PropTypes.func.isRequired,
 };
 
+/**
+ * Handles display of options in the message header.
+ */
 export class MessageHeaderOptions extends React.PureComponent {
   constructor(props) {
     super(props);

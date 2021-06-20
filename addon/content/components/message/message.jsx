@@ -26,9 +26,6 @@ function isAccel(event) {
  * message if any errors are encountered.
  *
  * Code taken from https://reactjs.org/blog/2017/07/26/error-handling-in-react-16.html
- *
- * @class ErrorBoundary
- * @extends {React.Component}
  */
 class ErrorBoundary extends React.Component {
   constructor(props) {
@@ -63,6 +60,9 @@ class ErrorBoundary extends React.Component {
 }
 ErrorBoundary.propTypes = { children: PropTypes.any };
 
+/**
+ * Handles display of an individual message.
+ */
 export class Message extends React.PureComponent {
   constructor(props) {
     super(props);

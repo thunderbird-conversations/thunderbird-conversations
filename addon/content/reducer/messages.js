@@ -72,7 +72,7 @@ export let messageEnricher = new (class {
    * to format a date just like in the message list
    *
    * @param {Date} date a javascript Date object
-   * @return {String} a string containing the formatted date
+   * @returns {string} a string containing the formatted date
    */
   dateAsInMessageList(date) {
     const now = new Date();

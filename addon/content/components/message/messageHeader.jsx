@@ -15,8 +15,8 @@ import { browser } from "../../es-modules/thunderbird-compat.js";
 /**
  * Normalize a contact into a string (used for i18n formatting).
  *
- * @param {*} contact
- * @returns
+ * @param {object} contact
+ * @returns {string}
  */
 function contactToString(contact) {
   return `${contact.name || ""} <${
@@ -32,8 +32,10 @@ function contactToString(contact) {
  * near the root of the DOM. The children elements are rendered,
  * absolutely positions, inside the popup-container.
  *
- * @param {*} { children, popup, ...rest }
- * @returnType {React.Node}
+ * @param {object} root0
+ * @param {object} root0.children
+ * @param {object} root0.popup
+ * @returns {React.Node}
  */
 function HoverFade({ children, popup, ...rest }) {
   const [isHovering, setIsHovering] = React.useState(false);
@@ -115,8 +117,9 @@ HoverFade.propTypes = {
 /**
  * Display an email address wrapped in <...> braces.
  *
- * @param {*} { email }
- * @returnType {React.Node}
+ * @param {object} root0
+ * @param {string} root0.email
+ * @returns {React.Node}
  */
 function Email({ email }) {
   return `<${email.trim()}>`;
@@ -222,6 +225,10 @@ Avatar.propTypes = {
   style: PropTypes.object,
 };
 
+// eslint-disable-next-line jsdoc/require-param
+/**
+ * Handles display for the header of a message.
+ */
 export function MessageHeader({
   starred,
   expanded,

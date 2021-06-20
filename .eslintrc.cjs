@@ -10,6 +10,7 @@ module.exports = {
   extends: [
     "plugin:mozilla/recommended",
     "plugin:react/recommended",
+    "plugin:jsdoc/recommended",
     "plugin:json/recommended",
   ],
   overrides: [
@@ -59,9 +60,25 @@ module.exports = {
       files: "addon/tests/*.test.js*",
     },
   ],
-  plugins: ["mozilla", "html", "json", "react"],
+  plugins: ["mozilla", "html", "jsdoc", "json", "react"],
   root: true,
   rules: {
+    "jsdoc/check-tag-names": "error",
+    "jsdoc/check-types": "error",
+    "jsdoc/newline-after-description": "error",
+    "jsdoc/no-undefined-types": "error",
+    "jsdoc/require-jsdoc": [
+      "error",
+      { require: { ClassDeclaration: true, FunctionDeclaration: false } },
+    ],
+    "jsdoc/require-param": "error",
+    "jsdoc/require-param-description": "off",
+    "jsdoc/require-param-type": "error",
+    "jsdoc/require-property": "off",
+    "jsdoc/require-returns": "off",
+    "jsdoc/require-returns-description": "off",
+    "jsdoc/require-returns-type": "error",
+    "jsdoc/valid-types": "error",
     // We want to check the global scope everywhere.
     "no-unused-vars": [
       "error",

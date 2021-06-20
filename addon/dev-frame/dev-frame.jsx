@@ -18,7 +18,7 @@ import { store } from "./reducer.js";
 /**
  * Widget to select the active locale to be used by `browser.i18n.getMessage()`
  *
- * @returns
+ * @returns {object}
  */
 function LocaleSelector() {
   const [locales, setLocales] = React.useState([]);

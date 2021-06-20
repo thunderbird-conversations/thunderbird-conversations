@@ -7,6 +7,9 @@ import PropTypes from "prop-types";
 import { messageActions } from "../../reducer/reducer-messages.js";
 import { SvgIcon } from "../svgIcon.jsx";
 
+/**
+ * Handles display of the remote content notification.
+ */
 class RemoteContentNotification extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -59,6 +62,9 @@ RemoteContentNotification.propTypes = {
   realFrom: PropTypes.string.isRequired,
 };
 
+/**
+ * A generic handler for single-button notifications.
+ */
 class GenericSingleButtonNotification extends React.PureComponent {
   render() {
     return (
@@ -83,6 +89,9 @@ GenericSingleButtonNotification.propTypes = {
   notificationText: PropTypes.string.isRequired,
 };
 
+/**
+ * A generic handler for multiple button notifications.
+ */
 class GenericMultiButtonNotification extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -129,6 +138,9 @@ GenericMultiButtonNotification.propTypes = {
   type: PropTypes.string.isRequired,
 };
 
+/**
+ * Handles display of the junk notification bar.
+ */
 class JunkNotification extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -163,6 +175,9 @@ JunkNotification.propTypes = {
   id: PropTypes.number.isRequired,
 };
 
+/**
+ * Handles display of the outbox notification bar for sending unsent messages.
+ */
 class OutboxNotification extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -191,6 +206,9 @@ OutboxNotification.propTypes = {
   dispatch: PropTypes.func.isRequired,
 };
 
+/**
+ * Handles display of the phishing notification bar.
+ */
 class PhishingNotification extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -224,6 +242,9 @@ PhishingNotification.propTypes = {
   id: PropTypes.number.isRequired,
 };
 
+/**
+ * Handles display of message notification bars for a message.
+ */
 export class MessageNotification extends React.PureComponent {
   render() {
     if (this.props.isPhishing) {

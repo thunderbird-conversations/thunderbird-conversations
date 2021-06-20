@@ -4,10 +4,6 @@
 
 var EXPORTED_SYMBOLS = ["BrowserSim"];
 
-// This is a workaround whilst we still have stub.html being loaded in the
-// privileged scope. BrowserSim.getBrowser() simulates APIs and passes
-// them back to the webExtension process for handling by the real APIs.
-
 // For these APIs, we don't currently need the events API. Use the
 // proxy set-up so that we can gain the benefit of the field validation
 // that going through the APIs provides (namely setting unused fields
@@ -37,6 +33,13 @@ const SUPPORTED_BASE_APIS = [
   "storage",
 ];
 
+/**
+ * This class manages a WebExtension browser-like object that is used
+ * to make WebExtension APIs available to the privileged parts of the add-on.
+ *
+ * This is a workaround whilst we still have stub.html being loaded in the
+ * privileged scope.
+ */
 class _BrowserSim {
   setBrowserListener(listener, context) {
     if (!listener) {

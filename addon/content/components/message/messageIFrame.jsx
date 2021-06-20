@@ -29,17 +29,16 @@ const TOGGLE_TEMPLATE = `<button
  * Create a DOM node that, when clicked, will hide or unhide `node`.
  * The returned DOM node is automatically attached to the DOM right before `node`.
  *
- * @param {*} node
- * @param {*} {
- *     showText,
- *     hideText,
- *     linkClass = "",
- *     smallSize = 11,
- *     linkColor = "orange",
- *     startHidden = true,
- *     onToggle = () => {},
- *   }
- * @returns
+ * @param {object} node
+ * @param {object} root0
+ * @param {string} root0.showText
+ * @param {string} root0.hideText
+ * @param {string} [root0.linkClass]
+ * @param {number} [root0.smallSize]
+ * @param {string} [root0.linkColor]
+ * @param {boolean} [root0.startHidden]
+ * @param {Function} [root0.onToggle]
+ * @returns {object}
  */
 function createToggleForNode(
   node,
@@ -106,7 +105,7 @@ function createToggleForNode(
  * shrink depending on whether the toggle is in the open state or closed state.
  *
  * @param {*} iframe
- * @returns
+ * @returns {Function}
  */
 function toggleCallbackFactory(iframe) {
   return (visible, node) => {
@@ -126,8 +125,7 @@ function toggleCallbackFactory(iframe) {
 /**
  * Sleep for the specified number of milliseconds
  *
- * @param {Number} ms - milliseconds to sleep
- * @returns
+ * @param {number} ms - milliseconds to sleep
  */
 async function sleep(ms) {
   return new Promise((resolve, reject) => {
@@ -142,7 +140,7 @@ async function sleep(ms) {
  *
  * @param {Function} func
  * @param {Function} validator
- * @returns
+ * @returns {*}
  */
 async function runUntilValid(func, validator) {
   const ret = func();

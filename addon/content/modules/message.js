@@ -34,6 +34,15 @@ XPCOMUtils.defineLazyGetter(this, "gMessenger", function () {
   return Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
 });
 
+/**
+ * @typedef nsIMsgDBHdr
+ * @see https://searchfox.org/comm-central/rev/9d9fac50cddfd9606a51c4ec3059728c33d58028/mailnews/base/public/nsIMsgHdr.idl#14
+ */
+/**
+ * @typedef nsIURI
+ * @see https://searchfox.org/mozilla-central/rev/ac36d76c7aea37a18afc9dd094d121f40f7c5441/netwerk/base/nsIURI.idl
+ */
+
 const { Prefs } = ChromeUtils.import(
   "chrome://conversations/content/modules/prefs.js",
   {}
@@ -82,6 +91,9 @@ async function dateAccordingToPref(date) {
   }
 }
 
+/**
+ * Handles the gathering of data for an individual message.
+ */
 class Message {
   constructor(aConversation, msgHdr) {
     this._msgHdr = msgHdr;
@@ -588,6 +600,10 @@ async function shouldEnableReplyAll(emails, propName) {
   );
 }
 
+/**
+ * Handles the gathering of data for a message whose details have been received
+ * from queries on the global database.
+ */
 class MessageFromGloda extends Message {
   constructor(conversation, msgHdr, lateAttachments) {
     super(conversation, msgHdr);
@@ -642,6 +658,10 @@ class MessageFromGloda extends Message {
   }
 }
 
+/**
+ * Handles the gathering of data for a message whose details have been received
+ * via message headers.
+ */
 class MessageFromDbHdr extends Message {
   constructor(conversation, msgHdr) {
     super(conversation, msgHdr);
@@ -766,8 +786,9 @@ XPCOMUtils.defineLazyGetter(this, "dateAndTimeFormatter", () => {
 /**
  * A stupid formatting function that uses Services.intl
  * to format a date just like in the message list
+ *
  * @param {Date} date a javascript Date object
- * @return {String} a string containing the formatted date
+ * @returns {string} a string containing the formatted date
  */
 function dateAsInMessageList(date) {
   const now = new Date();
@@ -785,8 +806,9 @@ function dateAsInMessageList(date) {
  * Use the mailnews component to stream a message, and process it in a way
  *  that's suitable for quoting (strip signature, remove images, stuff like
  *  that).
+ *
  * @param {nsIMsgDBHdr} aMsgHdr The message header that you want to quote
- * @return {Promise}
+ * @returns {Promise}
  *   Returns a quoted string suitable for insertion in an HTML editor.
  *   You can pass this to htmlToPlainText if you're running a plaintext editor
  */
@@ -795,6 +817,7 @@ function quoteMsgHdr(aMsgHdr) {
     let chunks = [];
     const decoder = new TextDecoder();
     let listener = {
+      /* eslint-disable jsdoc/require-param */
       /** @ignore*/
       setMimeHeaders() {},
 
@@ -821,6 +844,7 @@ function quoteMsgHdr(aMsgHdr) {
         // Yay, good to go!
         chunks.push(decoder.decode(Uint8Array.from(array)));
       },
+      /* eslint-enable jsdoc/require-param */
 
       QueryInterface: ChromeUtils.generateQI([
         Ci.nsIStreamListener,
@@ -848,8 +872,9 @@ function quoteMsgHdr(aMsgHdr) {
 
 /**
  * Get a nsIURI from a nsIMsgDBHdr
- * @param {nsIMsgDbHdr} aMsgHdr The message header
- * @return {nsIURI}
+ *
+ * @param {nsIMsgDBHdr} aMsgHdr The message header
+ * @returns {nsIURI}
  */
 function msgHdrToNeckoURL(aMsgHdr) {
   let uri = aMsgHdr.folder.getUriForMsg(aMsgHdr);
@@ -866,9 +891,11 @@ function msgHdrToNeckoURL(aMsgHdr) {
 
 /**
  * Get a string containing the body of a messsage.
- * @param {nsIMsgDbHdr} aMessageHeader The message header
- * @param {bool} aStripHtml Keep html?
- * @return {string}
+ *
+ * @param {nsIMsgDBHdr} aMessageHeader The message header
+ * @param {boolean} aStripHtml Keep html?
+ * @param {number} aLength
+ * @returns {string}
  */
 function msgHdrToMessageBody(aMessageHeader, aStripHtml, aLength) {
   let messenger = Cc["@mozilla.org/messenger;1"].createInstance(

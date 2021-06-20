@@ -20,6 +20,10 @@ export const kPrefDefaults = {
   hide_sigs: false,
 };
 
+/**
+ * Handles loading of the preferences, and any migration routines that are
+ * necessary.
+ */
 export class Prefs {
   async init() {
     try {

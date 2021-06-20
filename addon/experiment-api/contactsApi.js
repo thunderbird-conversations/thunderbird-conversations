@@ -15,14 +15,14 @@ XPCOMUtils.defineLazyModuleGetters(this, {
 });
 
 /**
+ * @typedef nsIMsgFolder
+ * @see https://searchfox.org/comm-central/rev/9d9fac50cddfd9606a51c4ec3059728c33d58028/mailnews/base/public/nsIMsgFolder.idl
+ */
+
+/**
  * Creates a Gloda query object
  *
- * @param {string} [options={
- *     kind: "email",
- *     value: null,
- *     query: "NOUN_IDENTITY",
- *     involvesItems: null,
- *   }]
+ * @param {object} [options]
  * @returns {object}
  */
 function getQuery(
@@ -49,13 +49,7 @@ function getQuery(
 /**
  * Runs a Gloda query and returns a promise.
  *
- * @param {string} [options={
- *     kind: "email",
- *     value: null,
- *     query: "NOUN_IDENTITY",
- *     involvesItems: null,
- *   }]
- * @returns
+ * @param {object} [options]
  */
 async function glodaQuery(
   options = {
@@ -416,11 +410,12 @@ function joinWordList(aElements, commaSeparator, andSeparator) {
 
 /**
  * Wraps the low-level header parser stuff.
- * @param {String} mimeLine
+ *
+ * @param {string} mimeLine
  *   A line that looks like "John &lt;john@cheese.com&gt;, Jane &lt;jane@wine.com&gt;"
- * @param {Boolean} [dontFix]
+ * @param {boolean} [dontFix]
  *   Defaults to false. Shall we return an empty array in case aMimeLine is empty?
- * @return {Array}
+ * @returns {Array}
  *   A list of { email, name } objects
  */
 function parseMimeLine(mimeLine, dontFix) {
@@ -446,8 +441,10 @@ function parseMimeLine(mimeLine, dontFix) {
 
 /**
  * Open a composition window for the given email address.
- * @param aEmail {String}
- * @param aDisplayedFolder {nsIMsgFolder} pass gFolderDisplay.displayedFolder
+ *
+ * @param {string} aEmail
+ * @param {nsIMsgFolder} aDisplayedFolder
+ *   pass gFolderDisplay.displayedFolder
  */
 function composeMessageTo(aEmail, aDisplayedFolder) {
   let fields = Cc[
@@ -491,6 +488,9 @@ function getIdentityEmails() {
   return emails;
 }
 
+/**
+ * Handles observing updates on windows.
+ */
 class WindowObserverContacts {
   constructor(windowManager, callback) {
     this._windowManager = windowManager;

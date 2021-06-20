@@ -9,7 +9,9 @@ import PropTypes from "prop-types";
  * A basic SVG icon rendered using the `xlinkHref` ability
  * of SVGs. You can specify the full path, or just the hash.
  *
- * @param {*} { fullPath, hash }
+ * @param {object} root0
+ * @param {string} [root0.fullPath]
+ * @param {string} [root0.hash]
  * @returns {React.ReactNode}
  */
 export function SvgIcon({ fullPath, hash }) {

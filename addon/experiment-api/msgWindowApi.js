@@ -25,6 +25,14 @@ XPCOMUtils.defineLazyGetter(this, "browser", function () {
 
 const kMultiMessageUrl = "chrome://messenger/content/multimessageview.xhtml";
 
+/**
+ * @typedef nsIMsgDBHdr
+ * @see https://searchfox.org/comm-central/rev/9d9fac50cddfd9606a51c4ec3059728c33d58028/mailnews/base/public/nsIMsgHdr.idl#14
+ */
+
+/**
+ * Handles observing updates on windows.
+ */
 class WindowObserver {
   constructor(windowManager, callback) {
     this._windowManager = windowManager;
@@ -719,18 +727,20 @@ function summarizeThreadHandler(win, id) {
 }
 
 /**
- * Tell if a message is an RSS feed iteme
- * @param {nsIMsgDbHdr} msgHdr The message header
- * @return {Bool}
+ * Tell if a message is an RSS feed item.
+ *
+ * @param {nsIMsgDBHdr} msgHdr The message header
+ * @returns {boolean}
  */
 function msgHdrIsRss(msgHdr) {
   return msgHdr.folder.server instanceof Ci.nsIRssIncomingServer;
 }
 
 /**
- * Tell if a message is a NNTP message
- * @param {nsIMsgDbHdr} msgHdr The message header
- * @return {Bool}
+ * Tell if a message is a NNTP message.
+ *
+ * @param {nsIMsgDBHdr} msgHdr The message header
+ * @returns {boolean}
  */
 function msgHdrIsNntp(msgHdr) {
   return msgHdr.folder.server instanceof Ci.nsINntpIncomingServer;
