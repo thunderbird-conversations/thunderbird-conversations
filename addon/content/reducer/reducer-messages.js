@@ -610,13 +610,14 @@ export const messagesSlice = RTK.createSlice({
      *
      * @param {object} state
      * @param {object} payload
-     * @param {object} payload.messages
+     * @param {object} payload.payload
+     * @param {object} payload.payload.messages
      *   The messages to insert or append.
-     * @param {string} payload.mode
+     * @param {string} payload.payload.mode
      *   Can be "append", "replaceAll" or "replaceMsg". replaceMsg will replace
      *   only a single message.
      */
-    updateConversation(state, { messages, mode }) {
+    updateConversation(state, { payload: { messages, mode } }) {
       if (mode == "append") {
         return { ...state, msgData: state.msgData.concat(messages.msgData) };
       }
