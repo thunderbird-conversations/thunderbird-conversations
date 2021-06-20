@@ -381,6 +381,7 @@ Conversation.prototype = {
     for (const x of this.messages) {
       byMessageId.set(getMessageId(x), x.message);
     }
+    const htmlPane = this._htmlPane;
     for (const glodaMsg of aItems) {
       // If you see big failures coming from the lines below, don't worry: it's
       //  just that an old conversation hasn't been GC'd and still receives
@@ -390,10 +391,13 @@ Conversation.prototype = {
       if (message) {
         (async () => {
           try {
-            const msgData = await message.toReactData();
+            const data = await message.toReactData();
             this.dispatch(
-              messageActions.msgUpdateData({
-                msgData,
+              htmlPane.conversationSummaryActions.updateConversation({
+                messages: {
+                  msgData: [data],
+                },
+                mode: "replaceMsg",
               })
             );
           } catch (ex) {
@@ -615,7 +619,7 @@ Conversation.prototype = {
 
     this.dispatch(
       this._htmlPane.conversationSummaryActions.updateConversation({
-        append: true,
+        mode: "append",
         messages: {
           msgData: reactMsgData,
         },
@@ -710,7 +714,7 @@ Conversation.prototype = {
 
     this.dispatch(
       this._htmlPane.conversationSummaryActions.updateConversation({
-        append: false,
+        mode: "replaceAll",
         summary: {
           conversation: { getMessage: (uri) => this.getMessage(uri) },
           subject: this.messages[this.messages.length - 1].message.subject,

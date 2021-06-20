@@ -160,11 +160,12 @@ export const messageActions = {
         summaryActions.setSystemOptions({
           browserForegroundColor,
           browserBackgroundColor,
+          browserVersion: browserInfo.version,
           defaultDetailsShowing,
           defaultFontSize,
           hideQuickReply: await getPreference("hide_quick_reply", false),
+          noFriendlyDate: await getPreference("no_friendly_date", false),
           OS: platformInfo.os,
-          browserVersion: browserInfo.version,
         })
       );
 
@@ -218,17 +219,15 @@ export const messageActions = {
       }
 
       await dispatch(
-        messagesSlice.actions.msgUpdateDataId({
-          msgData: {
-            attachments,
-            attachmentsPlural: await browser.conversations.makePlural(
-              browser.i18n.getMessage("pluralForm"),
-              browser.i18n.getMessage("attachments.numAttachments"),
-              numAttachments
-            ),
-            id,
-            needsLateAttachments: false,
-          },
+        messagesSlice.actions.updateAttachmentData({
+          id,
+          attachments,
+          attachmentsPlural: await browser.conversations.makePlural(
+            browser.i18n.getMessage("pluralForm"),
+            browser.i18n.getMessage("attachments.numAttachments"),
+            numAttachments
+          ),
+          needsLateAttachments: false,
         })
       );
     };
@@ -454,10 +453,10 @@ export const messageActions = {
         window.Conversations.currentConversation.getMessageByApiId(id);
       // Turn remote content message "off", as although it has it, it can be loaded.
       msg.hasRemoteContent = false;
-      const msgData = await msg.toReactData();
       dispatch(
-        messagesSlice.actions.msgUpdateData({
-          msgData,
+        messagesSlice.actions.setHasRemoteContent({
+          id,
+          hasRemoteContent: false,
         })
       );
     };
@@ -471,10 +470,10 @@ export const messageActions = {
       // Turn remote content message "off", as although it has it, it can be loaded.
       msg.hasRemoteContent = false;
 
-      const msgData = await msg.toReactData();
       dispatch(
-        messagesSlice.actions.msgUpdateData({
-          msgData,
+        messagesSlice.actions.setHasRemoteContent({
+          id,
+          hasRemoteContent: false,
         })
       );
     };
@@ -525,10 +524,9 @@ export const messageActions = {
     return async (dispatch) => {
       await browser.conversations.ignorePhishing(id);
       await dispatch(
-        messagesSlice.actions.msgUpdateDataId({
-          msgData: {
-            isPhishing: false,
-          },
+        messagesSlice.actions.setPhishing({
+          id,
+          isPhishing: false,
         })
       );
     };
@@ -623,13 +621,24 @@ export const messagesSlice = RTK.createSlice({
      *
      * @param {object} messages
      *   The messages to insert or append.
-     * @param {boolean} append
-     *   Set to true to append messages, false to replace the current conversation.
+     * @param {string} mode
+     *   Can be "append", "replaceAll" or "replaceMsg". replaceMsg will replace
+     *   only a single message.
      */
     updateConversation(state, { payload }) {
-      const { messages, append } = payload;
-      if (append) {
+      const { messages, mode } = payload;
+      if (mode == "append") {
         return { ...state, msgData: state.msgData.concat(messages.msgData) };
+      }
+      if (mode == "replaceMsg") {
+        return modifyOnlyMsgId(
+          state,
+          payload.messages.msgData[0].id,
+          (msg) => ({
+            ...msg,
+            ...payload.messages.msgData[0],
+          })
+        );
       }
       return { ...state, ...messages };
     },
@@ -645,16 +654,30 @@ export const messagesSlice = RTK.createSlice({
         msgData: state.msgData.map((m) => ({ ...m, expanded: payload.expand })),
       };
     },
-    msgUpdateData(state, { payload }) {
-      return modifyOnlyMsg(state, payload.msgData.msgUri, (msg) => ({
+    setHasRemoteContent(state, { payload }) {
+      return modifyOnlyMsgId(state, payload.id, (msg) => ({
         ...msg,
-        ...payload.msgData,
+        hasRemoteContent: payload.hasRemoteContent,
       }));
     },
-    msgUpdateDataId(state, { payload }) {
-      return modifyOnlyMsgId(state, payload.msgData.id, (msg) => ({
+    setPhishing(state, { payload }) {
+      return modifyOnlyMsgId(state, payload.id, (msg) => ({
         ...msg,
-        ...payload.msgData,
+        isPhishing: payload.isPhishing,
+      }));
+    },
+    setSmimeReload(state, { payload }) {
+      return modifyOnlyMsgId(state, payload.id, (msg) => ({
+        ...msg,
+        smimeReload: payload.smimeReload,
+      }));
+    },
+    updateAttachmentData(state, { payload }) {
+      return modifyOnlyMsgId(state, payload.id, (msg) => ({
+        ...msg,
+        attachments: payload.attachments,
+        attachmentsPlural: payload.attachmentsPlural,
+        needsLateAttachments: payload.needsLateAttachments,
       }));
     },
     msgAddSpecialTag(state, { payload }) {

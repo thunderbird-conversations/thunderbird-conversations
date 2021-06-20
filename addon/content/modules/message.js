@@ -156,7 +156,7 @@ class Message {
     const messageFolderType = messageHeader.folder.type;
     let data = {
       id: this._id,
-      date: await dateAccordingToPref(this._date),
+      date: this._date.getTime(),
       folderName: await browser.conversations.getFolderName(this._id),
       hasRemoteContent: this.hasRemoteContent,
       isDraft: messageFolderType == "drafts",
@@ -188,10 +188,6 @@ class Message {
     };
 
     data = { ...data, ...(await this.toTmplDataForAttachments(data)) };
-
-    data.fullDate = Prefs.no_friendly_date
-      ? ""
-      : dateAsInMessageList(this._date);
 
     const userTags = await browser.messages.listTags();
     data.tags = messageHeader.tags.map((tagKey) => {
@@ -255,22 +251,20 @@ class Message {
     this.hasRemoteContent = true;
     Log.debug("This message's remote content was blocked");
 
-    const msgData = await this.toReactData();
-    // TODO: make getting the window less ugly.
     this._conversation._htmlPane.conversationDispatch(
-      messageActions.msgUpdateData({
-        msgData,
+      messageActions.setHasRemoteContent({
+        id: this._id,
+        hasRemoteContent: true,
       })
     );
   }
 
   async setSmimeReload() {
     this.smimeReload = true;
-    const msgData = await this.toReactData();
-    // TODO: make getting the window less ugly.
     this._conversation._htmlPane.conversationDispatch(
-      messageActions.msgUpdateData({
-        msgData,
+      messageActions.setSmimeReload({
+        id: this._id,
+        smimeReload: true,
       })
     );
   }
@@ -457,11 +451,10 @@ class Message {
       formNodes.length
     ) {
       this.isPhishing = true;
-      const msgData = await this.toReactData();
-      // TODO: make getting the window less ugly.
       this._conversation._htmlPane.conversationDispatch(
-        messageActions.msgUpdateData({
-          msgData,
+        messageActions.setPhishing({
+          id: this._id,
+          isPhishing: true,
         })
       );
     }

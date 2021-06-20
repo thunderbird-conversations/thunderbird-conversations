@@ -5,7 +5,7 @@
 /* global Conversations, getMail3Pane, topMail3Pane, printConversation */
 import * as RTK from "@reduxjs/toolkit";
 import { mergeContactDetails } from "./contacts.js";
-import { enrichMessageData } from "./messages.js";
+import { messageEnricher } from "./messages.js";
 import { messageActions } from "./reducer-messages.js";
 import { composeSlice } from "./reducer-compose.js";
 import { quickReplySlice } from "./reducer-quickReply.js";
@@ -22,6 +22,7 @@ export const initialSummary = {
   isInTab: false,
   // TODO: What is loading used for?
   loading: true,
+  noFriendlyDate: false,
   OS: "win",
   tabId: null,
   tenPxFactor: 0.7,
@@ -58,29 +59,28 @@ export const summaryActions = {
    *   Only applies to replacing a conversation, the summary details to update.
    * @param {object} messages
    *   The messages to insert or append.
-   * @param {boolean} append
-   *   Set to true to append messages, false to replace the current conversation.
+   * @param {string} mode
+   *   Can be "append", "replaceAll" or "replaceMsg". replaceMsg will replace
+   *   only a single message.
    */
-  updateConversation({ summary, messages, append }) {
+  updateConversation({ summary, messages, mode }) {
     return async (dispatch, getState) => {
       await handleShowDetails(messages, getState(), dispatch, async () => {
         // The messages need some more filling out and tweaking.
-        await enrichMessageData(messages.msgData);
+        await messageEnricher.enrich(messages.msgData, getState().summary);
 
         // The messages inside `msgData` don't come with filled in `to`/`from`/ect. fields.
         // We need to fill them in ourselves.
         await mergeContactDetails(messages.msgData);
 
-        if (!append) {
+        if (mode == "replaceAll") {
           await dispatch(composeSlice.actions.resetStore());
           await dispatch(
             quickReplySlice.actions.setExpandedState({ expanded: false })
           );
           await dispatch(summarySlice.actions.replaceSummaryDetails(summary));
         }
-        return dispatch(
-          messageActions.updateConversation({ messages, append })
-        );
+        return dispatch(messageActions.updateConversation({ messages, mode }));
       });
     };
   },
@@ -241,6 +241,7 @@ export const summarySlice = RTK.createSlice({
         defaultDetailsShowing,
         browserVersion,
         hideQuickReply,
+        noFriendlyDate,
       } = payload;
       let tenPxFactor = 0.625;
       if (OS == "mac") {
@@ -262,6 +263,7 @@ export const summarySlice = RTK.createSlice({
         hasIdentityParamsForCompose:
           mainVersion > 78 || (mainVersion == 78 && minorVersion >= 6),
         hideQuickReply,
+        noFriendlyDate,
         OS,
         tenPxFactor,
       };
