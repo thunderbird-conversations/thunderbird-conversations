@@ -31,11 +31,6 @@ function modifyOnlyMsgId(state, id, modifier) {
   };
 }
 
-async function getPreference(name, defaultValue) {
-  const prefs = await browser.storage.local.get("preferences");
-  return prefs?.preferences?.[name] ?? defaultValue;
-}
-
 // TODO: Once the WebExtension parts work themselves out a bit more,
 // determine if this is worth sharing via a shared module with the background
 // scripts, or if it doesn't need it.
@@ -142,6 +137,8 @@ export const messageActions = {
         })
       );
 
+      await dispatch(summaryActions.setupUserPreferences());
+
       const platformInfo = await browser.runtime.getPlatformInfo();
       const browserInfo = await browser.runtime.getBrowserInfo();
       const defaultFontSize = await browser.conversations.getCorePref(
@@ -163,8 +160,6 @@ export const messageActions = {
           browserVersion: browserInfo.version,
           defaultDetailsShowing,
           defaultFontSize,
-          hideQuickReply: await getPreference("hide_quick_reply", false),
-          noFriendlyDate: await getPreference("no_friendly_date", false),
           OS: platformInfo.os,
         })
       );
@@ -376,10 +371,7 @@ export const messageActions = {
     return async (dispatch, getState) => {
       const state = getState();
       let msgs;
-      if (
-        state.summary.isInTab ||
-        (await getPreference("operate_on_conversations", false))
-      ) {
+      if (state.summary.isInTab || state.summary.operateOnConversations) {
         msgs = state.messages.msgData.map((msg) => msg.id);
       } else {
         if ("getDisplayedMessages" in browser.messageDisplay) {
@@ -400,10 +392,7 @@ export const messageActions = {
     return async (dispatch, getState) => {
       const state = getState();
       let msgs;
-      if (
-        state.summary.isInTab ||
-        (await getPreference("operate_on_conversations", false))
-      ) {
+      if (state.summary.isInTab || state.summary.operateOnConversations) {
         msgs = state.messages.msgData.map((msg) => msg.id);
       } else {
         if ("getDisplayedMessages" in browser.messageDisplay) {

@@ -53,6 +53,41 @@ async function handleShowDetails(messages, state, dispatch, updateFn) {
 
 export const summaryActions = {
   /**
+   * Sets up getting user preferences for a conversation.
+   */
+  setupUserPreferences() {
+    return async (dispatch, getState) => {
+      const prefs = await browser.storage.local.get("preferences");
+
+      function setPrefs(newPrefs = {}) {
+        return dispatch(
+          summarySlice.actions.setUserPreferences({
+            hideQuickReply: newPrefs.preferences?.hide_quick_reply ?? false,
+            noFriendlyDate: newPrefs.preferences?.no_friendly_date ?? false,
+            operateOnConversations:
+              newPrefs.preferences?.operate_on_conversations ?? false,
+          })
+        );
+      }
+
+      browser.storage.onChanged.addListener(async (changed, areaName) => {
+        if (
+          areaName != "local" ||
+          !("preferences" in changed) ||
+          !("newValue" in changed.preferences)
+        ) {
+          return;
+        }
+
+        const newPrefs = await browser.storage.local.get("preferences");
+        setPrefs(newPrefs);
+      });
+
+      await setPrefs(prefs);
+    };
+  },
+
+  /**
    * Update a conversation either replacing or appending the messages.
    *
    * @param {object} [summary]
@@ -240,8 +275,6 @@ export const summarySlice = RTK.createSlice({
         defaultFontSize,
         defaultDetailsShowing,
         browserVersion,
-        hideQuickReply,
-        noFriendlyDate,
       } = payload;
       let tenPxFactor = 0.625;
       if (OS == "mac") {
@@ -262,10 +295,14 @@ export const summarySlice = RTK.createSlice({
         hasBuiltInPdf: mainVersion >= 81,
         hasIdentityParamsForCompose:
           mainVersion > 78 || (mainVersion == 78 && minorVersion >= 6),
-        hideQuickReply,
-        noFriendlyDate,
         OS,
         tenPxFactor,
+      };
+    },
+    setUserPreferences(state, { payload }) {
+      return {
+        ...state,
+        ...payload,
       };
     },
     replaceSummaryDetails(state, { payload }) {
