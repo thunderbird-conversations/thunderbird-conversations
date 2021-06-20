@@ -44,8 +44,11 @@ function populateRequiredFields(message) {
  * Populate a message's to/cc/bcc fields. `mockSelfEmail` is always
  * the first email in the `to` field.
  *
- * @param {*} message
- * @param {*} { to, cc, bcc } - the number of to/cc/bcc recipients
+ * @param {object} message
+ * @param {object} root0
+ * @param {number} root0.to
+ * @param {number} root0.cc
+ * @param {number} root0.bcc
  */
 function populateEmailFields(message, { to, cc, bcc }) {
   message.to = [mockSelfEmail];

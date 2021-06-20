@@ -29,6 +29,11 @@ XPCOMUtils.defineLazyGetter(this, "gMessenger", function () {
   return Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
 });
 
+/**
+ * @typedef nsIMsgDBHdr
+ * @see https://searchfox.org/comm-central/rev/9d9fac50cddfd9606a51c4ec3059728c33d58028/mailnews/base/public/nsIMsgHdr.idl#14
+ */
+
 function setupLogging(name) {
   return console.createInstance({
     prefix: name,
@@ -38,9 +43,10 @@ function setupLogging(name) {
 
 /**
  * Group some array elements according to a key function
- * @param aItems The array elements (or anything Iterable)
- * @param aFn The function that take an element from the array and returns an id
- * @return an array of arrays, with each inner array containing all elements
+ *
+ * @param {object[]} aItems The array elements (or anything Iterable)
+ * @param {Function} aFn The function that take an element from the array and returns an id
+ * @returns {object[][]} an array of arrays, with each inner array containing all elements
  *  sharing the same key
  */
 function groupArray(aItems, aFn) {
@@ -67,6 +73,8 @@ function groupArray(aItems, aFn) {
  * - if you're in content/stub.html, use topMail3Pane(window)
  * - if you're in a standalone window, this function makes no sense, and returns
  *   a pointer to _any_ mail:3pane
+ *
+ * @param {object} aObj
  */
 function topMail3Pane(aObj) {
   if (!aObj) {
@@ -96,8 +104,9 @@ function topMail3Pane(aObj) {
 /**
  * Helper function to escape some XML chars, so they display properly in
  *  innerHTML.
- * @param {String} s input text
- * @return {String} The string with &lt;, &gt;, and &amp; replaced by the corresponding entities.
+ *
+ * @param {string} s input text
+ * @returns {string} The string with &lt;, &gt;, and &amp; replaced by the corresponding entities.
  */
 function escapeHtml(s) {
   s += "";
@@ -118,11 +127,12 @@ function escapeHtml(s) {
 
 /**
  * Wraps the low-level header parser stuff.
- * @param {String} mimeLine
+ *
+ * @param {string} mimeLine
  *   A line that looks like "John &lt;john@cheese.com&gt;, Jane &lt;jane@wine.com&gt;"
- * @param {Boolean} [dontFix]
+ * @param {boolean} [dontFix]
  *   Defaults to false. Shall we return an empty array in case aMimeLine is empty?
- * @return {Array}
+ * @returns {Array}
  *   A list of { email, name } objects
  */
 function parseMimeLine(mimeLine, dontFix) {
@@ -156,8 +166,9 @@ function parseMimeLine(mimeLine, dontFix) {
  *  your own, and then pass this to simpleWrap, it should "just work" (unless
  *  the user has edited a quoted line and made it longer than 990 characters, of
  *  course).
- * @param {String} aHtml A string containing the HTML that's to be converted.
- * @return {String} A text/plain string suitable for insertion in a mail body.
+ *
+ * @param {string} aHtml A string containing the HTML that's to be converted.
+ * @returns {string} A text/plain string suitable for insertion in a mail body.
  */
 function htmlToPlainText(aHtml) {
   // Yes, this is ridiculous, we're instanciating composition fields just so
@@ -175,7 +186,8 @@ function htmlToPlainText(aHtml) {
 /**
  * Get the main Thunderbird window. Used heavily to get a reference to globals
  *  that are defined in mail/base/content/.
- * @return The window object for the main window.
+ *
+ * @returns {object} The window object for the main window.
  */
 function getMail3Pane() {
   return Services.wm.getMostRecentWindow("mail:3pane");
@@ -183,8 +195,9 @@ function getMail3Pane() {
 
 /**
  * Get a msgHdr from a message URI (msgHdr.URI).
- * @param {String} aUri The URI of the message
- * @return {nsIMsgDbHdr}
+ *
+ * @param {string} aUri The URI of the message
+ * @returns {nsIMsgDBHdr}
  */
 function msgUriToMsgHdr(aUri) {
   try {
@@ -198,8 +211,9 @@ function msgUriToMsgHdr(aUri) {
 
 /**
  * Get a given message header's uri.
- * @param {nsIMsgDbHdr} aMsg The message
- * @return {String}
+ *
+ * @param {nsIMsgDBHdr} aMsg The message
+ * @returns {string}
  */
 function msgHdrGetUri(aMsg) {
   return aMsg.folder.getUriForMsg(aMsg);

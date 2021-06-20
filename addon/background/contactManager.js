@@ -9,6 +9,11 @@ if (!globalThis.browser) {
 }
 
 /**
+ * @typedef {object} ContactNode
+ * @see https://webextension-api.thunderbird.net/en/latest/contacts.html#contacts-contactnode
+ */
+
+/**
  * @typedef {object} Contact
  * @property {string} color
  *   A string denoting the color to use for this contact,, the same email address
@@ -52,6 +57,7 @@ class ExtendedContact {
     this.HARD_MAX_CACHE_SIZE = 1000;
     /**
      * When we do a soft cleanup, we'll cleanup by this amount of contacts.
+     *
      * @type {number}
      */
     this.CACHE_CLEANUP_AMOUNT = 750;

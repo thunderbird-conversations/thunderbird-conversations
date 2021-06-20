@@ -2,6 +2,10 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
+/**
+ * This class handles hooking into the Thunderbird message window to be able
+ * to manage the message preview correctly.
+ */
 export class Window {
   async init() {
     // Set up our monkey patches which aren't really listeners, but this
@@ -83,7 +87,7 @@ export class Window {
    *
    * @param {Array} urls
    *   An array of urls to be opened.
-   * @param {Boolean} [isSelectionThreaded]
+   * @param {boolean} [isSelectionThreaded]
    *   Is the selection threaded
    */
   makeConversationUrl(urls, isSelectionThreaded) {

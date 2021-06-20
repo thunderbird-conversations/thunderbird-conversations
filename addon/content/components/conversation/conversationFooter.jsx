@@ -8,6 +8,9 @@ import PropTypes from "prop-types";
 import { summaryActions } from "../../reducer/reducer-summary.js";
 import { browser } from "../../es-modules/thunderbird-compat.js";
 
+/**
+ * Handles display for the footer of the conversation.
+ */
 class _ConversationFooter extends React.PureComponent {
   constructor(props) {
     super(props);

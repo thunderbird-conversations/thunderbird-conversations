@@ -12,6 +12,9 @@ import { browser } from "../../es-modules/thunderbird-compat.js";
 
 const LINKS_REGEX = /((\w+):\/\/[^<>()'"\s]+|www(\.[-\w]+){2,})/;
 
+/**
+ * Handles inserting links into the subject of a message.
+ */
 class LinkifiedSubject extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -78,6 +81,9 @@ LinkifiedSubject.propTypes = {
   subject: PropTypes.string.isRequired,
 };
 
+/**
+ * Handles display for the header of the conversation.
+ */
 class _ConversationHeader extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -101,6 +107,8 @@ class _ConversationHeader extends React.PureComponent {
    * This function gathers various information, encodes it in a URL query
    * string, and then opens a regular chrome tab that contains our
    * conversation.
+   *
+   * @param {Event} event
    */
   detachTab(event) {
     this.props.dispatch(messageActions.detachTab());

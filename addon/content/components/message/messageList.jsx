@@ -7,6 +7,11 @@ import * as ReactRedux from "react-redux";
 import PropTypes from "prop-types";
 import { Message } from "./message.jsx";
 
+/**
+ * Handles display of the list of messages.
+ *
+ * @param {object} props
+ */
 function _MessageList(props) {
   // Keep a reference to child elements so `.focus()`
   // can be called on them in response to a `advanceMessage()`

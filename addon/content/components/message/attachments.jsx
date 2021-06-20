@@ -44,6 +44,9 @@ const PDF_MIME_TYPES = [
 
 const RE_MSGKEY = /number=(\d+)/;
 
+/**
+ * Handles display of an individual attachment.
+ */
 class Attachment extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -269,6 +272,10 @@ Attachment.propTypes = {
   id: PropTypes.number.isRequired,
 };
 
+/**
+ * Handles display of attachments within a message, including options that
+ * apply to all attachments.
+ */
 export class Attachments extends React.PureComponent {
   constructor() {
     super();

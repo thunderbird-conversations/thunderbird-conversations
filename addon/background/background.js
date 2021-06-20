@@ -8,6 +8,11 @@ import { Window } from "./window.js";
 import { contactManager } from "./contactManager.js";
 
 const requestHandlers = [];
+
+/**
+ * The initial background handler, responsible for setting up other background
+ * objects.
+ */
 class Background {
   constructor() {
     this._prefs = new Prefs();

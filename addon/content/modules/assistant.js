@@ -43,6 +43,9 @@ function getSmartFolderNamed(aFolderName) {
   return smartInbox;
 }
 
+/**
+ * Handles install and uninstall of a simple customization.
+ */
 class SimpleCustomization {
   constructor(aDesiredValue, aGetter, aSetter) {
     this.desiredValue = aDesiredValue;
@@ -68,6 +71,9 @@ class SimpleCustomization {
   }
 }
 
+/**
+ * Handles a core preference customization.
+ */
 class PrefCustomization extends SimpleCustomization {
   constructor({ name, type, value }) {
     super(value);
@@ -103,6 +109,9 @@ class PrefCustomization extends SimpleCustomization {
   }
 }
 
+/**
+ * Handles a multiple customizations in one group.
+ */
 class MultipleCustomization {
   constructor(aParams) {
     this.customizations = aParams

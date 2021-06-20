@@ -1146,9 +1146,10 @@ let enigmailHook = {
  *  otherwise, and the current textarea doesn't provide this.
  * This function, when breaking lines, will do space-stuffing per the RFC if
  *  after the break the text starts with From or &gt;.
- * @param {String} txt The text that should be wrapped.
- * @param {Number} width (optional) The width we should wrap to. Default to 72.
- * @return {String} The text with non-quoted lines wrapped. This is suitable for
+ *
+ * @param {string} txt The text that should be wrapped.
+ * @param {number} width (optional) The width we should wrap to. Default to 72.
+ * @returns {string} The text with non-quoted lines wrapped. This is suitable for
  *  sending as format=flowed.
  */
 function simpleWrap(txt, width) {
@@ -1165,8 +1166,9 @@ function simpleWrap(txt, width) {
 
   /**
    * That function takes a (long) line, and splits it into many lines.
-   * @param soFar {Array String} an accumulator of the lines we've wrapped already
-   * @param remaining {String} the remaining string to wrap
+   *
+   * @param {string[]} soFar an accumulator of the lines we've wrapped already
+   * @param {string} remaining the remaining string to wrap
    */
   function splitLongLine(soFar, remaining) {
     if (remaining.length > width) {

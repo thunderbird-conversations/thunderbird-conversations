@@ -34,6 +34,16 @@ XPCOMUtils.defineLazyGetter(this, "Log", () => {
   return setupLogging("Conversations.Conversation");
 });
 
+/**
+ * @typedef Message
+ * @see message.js
+ */
+
+/**
+ * @typedef nsIMsgDBHdr
+ * @see https://searchfox.org/comm-central/rev/9d9fac50cddfd9606a51c4ec3059728c33d58028/mailnews/base/public/nsIMsgHdr.idl#14
+ */
+
 const kMsgDbHdr = 0;
 const kMsgGloda = 1;
 
@@ -217,7 +227,7 @@ function Conversation(
   //  underlying conversation,
   //  - merge the results for the conversations with the initially selected set,
   //  - re-stream all other messages except for the first one, because we only
-  //  have their nsIMsgDbHdr.
+  //  have their nsIMsgDBHdr.
   // That's sub-optimal, because we actually have the other message's Gloda
   //  representations at hand, it's just that because the headers do not set the
   //  threading, gloda hasn't attached them to the first message.
@@ -547,6 +557,7 @@ Conversation.prototype = {
 
   /**
    * Remove a given message from the conversation.
+   *
    * @param {Message} msg a Message as in modules/message.js
    */
   removeMessage(msg) {
@@ -885,8 +896,9 @@ Conversation.prototype = {
 
 /**
  * Tells if the message is an archived message
- * @param {nsIMsgDbHdr} msgHdr The message header to examine
- * @return {bool}
+ *
+ * @param {nsIMsgDBHdr} msgHdr The message header to examine
+ * @returns {boolean}
  */
 function msgHdrIsArchive(msgHdr) {
   return msgHdr.folder.getFlag(nsMsgFolderFlags_Archive);
@@ -894,8 +906,9 @@ function msgHdrIsArchive(msgHdr) {
 
 /**
  * Tells if the message is a draft message
- * @param {nsIMsgDbHdr} msgHdr The message header to examine
- * @return {bool}
+ *
+ * @param {nsIMsgDBHdr} msgHdr The message header to examine
+ * @returns {boolean}
  */
 function msgHdrIsDraft(msgHdr) {
   return msgHdr.folder.getFlag(nsMsgFolderFlags_Drafts);
@@ -903,8 +916,9 @@ function msgHdrIsDraft(msgHdr) {
 
 /**
  * Tells if the message is in the account's inbox
- * @param {nsIMsgDbHdr} msgHdr The message header to examine
- * @return {bool}
+ *
+ * @param {nsIMsgDBHdr} msgHdr The message header to examine
+ * @returns {boolean}
  */
 function msgHdrIsInbox(msgHdr) {
   return msgHdr.folder.getFlag(nsMsgFolderFlags_Inbox);
@@ -912,8 +926,9 @@ function msgHdrIsInbox(msgHdr) {
 
 /**
  * Tells if the message is a sent message
- * @param {nsIMsgDbHdr} msgHdr The message header to examine
- * @return {bool}
+ *
+ * @param {nsIMsgDBHdr} msgHdr The message header to examine
+ * @returns {boolean}
  */
 function msgHdrIsSent(msgHdr) {
   return msgHdr.folder.getFlag(nsMsgFolderFlags_SentMail);

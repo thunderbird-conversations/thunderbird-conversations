@@ -142,6 +142,9 @@ function monkeyPatchWindow(win, windowId) {
   win.Conversations.finishedStartup = true;
 }
 
+/**
+ * Handles observing updates on windows.
+ */
 class ApiWindowObserver {
   constructor(windowManager, callback) {
     this._windowManager = windowManager;

@@ -90,11 +90,12 @@ export const summaryActions = {
   /**
    * Update a conversation either replacing or appending the messages.
    *
-   * @param {object} [summary]
+   * @param {object} root0
+   * @param {object} [root0.summary]
    *   Only applies to replacing a conversation, the summary details to update.
-   * @param {object} messages
+   * @param {object} root0.messages
    *   The messages to insert or append.
-   * @param {string} mode
+   * @param {string} root0.mode
    *   Can be "append", "replaceAll" or "replaceMsg". replaceMsg will replace
    *   only a single message.
    */

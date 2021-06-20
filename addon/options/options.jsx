@@ -143,6 +143,7 @@ const PREFS_INFO = [
  * `i18n.getMessage(...)`
  *
  * @param {(string | object[])} prefsInfo
+ * @param {object} [i18n]
  * @returns {(string | object[])}
  */
 function localize(prefsInfo, i18n = browser.i18n) {
@@ -362,13 +363,17 @@ BinaryOption.propTypes = {
  * `localizedPrefsInfo`. And, `setPref` should be a function that accepts
  * `(name, value)` pairs and saves them as preferences.
  *
- * @param {*} {
- *   localizedPrefsInfo,
- *   localizedName,
- *   prefs,
- *   setPref,
- * }
- * @returnType {React.Node}
+ * @param {object} root0
+ * @param {object[]} root0.localizedPrefsInfo
+ * @param {string} root0.localizedName
+ * @param  {string}root0.localizedStartAssistant
+ * @param {string} root0.localizedUndoCustomizations
+ * @param {string} root0.localizedUndoCustomizationsTooltip
+ * @param {object} root0.prefs
+ * @param {Function} root0.setPref
+ * @param {Function} root0.startSetupAssistant
+ * @param {Function} root0.startUndoConversations
+ * @returns {React.Node}
  */
 function _ConversationOptions({
   localizedPrefsInfo,
