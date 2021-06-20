@@ -218,6 +218,9 @@ if (!browser.conversations) {
       }
       throw new Error("Unexpected pref");
     },
+    async makeFriendlyDateAgo() {
+      return "yesterday";
+    },
   };
 }
 

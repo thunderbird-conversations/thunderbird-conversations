@@ -25,12 +25,16 @@ const store = RTK.configureStore({ reducer: summaryApp });
 function createFakeMessageData({
   id = 1,
   bugzilla = false,
+  date = Date.now(),
+  fullDate = "",
   snippet = "",
   detailsShowing,
 } = {}) {
   let data = {
     id,
     bugzilla,
+    date,
+    fullDate,
     snippet,
     _contactsData: [],
   };
@@ -52,41 +56,16 @@ describe("Summary Reducer and Actions tests", () => {
       jest.restoreAllMocks();
     });
 
-    test("Adjusts the snippet for better output from bugzilla", async () => {
-      const msgSnippets = [
-        {
-          actual: "My message snippet",
-          expected: "My message snippet",
-        },
-        {
-          actual:
-            "https://bugzilla.mozilla.org/show_bug.cgi?id=1199577\n\nSausages <sausages@example.com> changed:\n",
-          expected: "\n\nSausages <sausages@example.com> changed:\n",
-        },
-        {
-          actual: `https://bugzilla.mozilla.org/show_bug.cgi?id=1712565
-
-Petruta Horea [:phorea] <petruta.rasa@softvision.com> changed:
-
-           What    |Removed                     |Added
-----------------------------------------------------------------------------
-             Status|RESOLVED                    |VERIFIED
-   status-firefox91|fixed                       |verified
-
---- Comment #5 from Petruta Horea [:phorea] <petruta.rasa@softvision.com> 2021-06-03 11:25:00 BST ---
-Updating`,
-          expected: "\nUpdating",
-        },
-      ];
-      const fakeMsgs = msgSnippets.map((snippet) =>
-        createFakeMessageData({ snippet: snippet.actual })
-      );
+    test("Enriches message data", async () => {
+      let now = new Date();
+      let fakeMsg = createFakeMessageData({
+        date: now,
+        snippet: "My message snippet",
+      });
       await store.dispatch(
         summaryActions.updateConversation({
           messages: {
-            msgData: fakeMsgs.map((m) => {
-              return { ...m };
-            }),
+            msgData: [fakeMsg],
           },
           append: false,
         })
@@ -95,14 +74,16 @@ Updating`,
       expect(messageActions.updateConversation).toHaveBeenCalled();
       let msgData =
         messageActions.updateConversation.mock.calls[0][0].messages.msgData;
-      for (let [i, fakeMsg] of fakeMsgs.entries()) {
-        fakeMsg.detailsShowing = false;
-        let expected = createFakeMessageData({
-          detailsShowing: false,
-          snippet: msgSnippets[i].expected,
-        });
-        expect(msgData[i]).toStrictEqual(expected);
-      }
+
+      let expected = createFakeMessageData({
+        detailsShowing: false,
+        date: "yesterday",
+        fullDate: new Intl.DateTimeFormat(undefined, {
+          timeStyle: "short",
+        }).format(new Date()),
+        snippet: "My message snippet",
+      });
+      expect(msgData[0]).toStrictEqual(expected);
     });
   });
 });
