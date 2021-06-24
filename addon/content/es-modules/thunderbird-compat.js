@@ -363,6 +363,42 @@ if (!browser.contacts) {
             },
           },
         ];
+      } else if (["arch@example.com", "cond@example.com"].includes(email)) {
+        return [
+          {
+            id: "1357924680",
+            type: "contact",
+            properties: {
+              PrimaryEmail: "search@example.com",
+              SecondEmail: "second@example.com",
+              DisplayName: "search name",
+              PreferDisplayName: "1",
+              PhotoURI: undefined,
+            },
+          },
+          {
+            id: "3216549870",
+            type: "contact",
+            properties: {
+              PrimaryEmail: "arch@example.com",
+              SecondEmail: "other@example.com",
+              DisplayName: "arch test",
+              PreferDisplayName: "1",
+              PhotoURI: undefined,
+            },
+          },
+          {
+            id: "9753124680",
+            type: "contact",
+            properties: {
+              PrimaryEmail: "another@example.com",
+              SecondEmail: "cond@example.com",
+              DisplayName: "cond test",
+              PreferDisplayName: "1",
+              PhotoURI: undefined,
+            },
+          },
+        ];
       }
       return [];
     },

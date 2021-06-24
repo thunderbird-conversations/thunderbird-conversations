@@ -100,6 +100,30 @@ describe("Test ContactManager", () => {
     expect(isValidColor(extra.color)).toBe(true);
   });
 
+  test("should return a contact with exact match of email address", async () => {
+    let contact = await contactManager.get("arch@example.com");
+
+    expect(contact).toMatchObject({
+      contactId: "3216549870",
+      identityId: undefined,
+      name: "arch test",
+      photoURI: undefined,
+    });
+    expect(isValidColor(contact.color)).toBe(true);
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    contact = await contactManager.get("cond@example.com");
+
+    expect(contact).toMatchObject({
+      contactId: "9753124680",
+      identityId: undefined,
+      name: "cond test",
+      photoURI: undefined,
+    });
+    expect(isValidColor(contact.color)).toBe(true);
+    expect(spy).toHaveBeenCalledTimes(2);
+  });
+
   test("should only fetch a contact once if a fetch is already in progress", async () => {
     let resolveFn;
     let promise = new Promise((resolve) => {

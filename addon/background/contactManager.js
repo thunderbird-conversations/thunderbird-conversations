@@ -120,6 +120,7 @@ export class ContactManager {
    *   The contact information.
    */
   async get(email) {
+    email = email.toLocaleLowerCase();
     let cachedValue = this._cache.get(email);
     if (cachedValue) {
       cachedValue.lastAccessed = performance.now();
@@ -167,6 +168,15 @@ export class ContactManager {
     } catch (ex) {
       console.error(ex);
     }
+
+    // The search is only a quick search, therefore it might match email
+    // addresses with prefixes or suffixes. Hence, we refine the matching cards
+    // further here.
+    matchingCards = matchingCards.filter(
+      (c) =>
+        c.properties.PrimaryEmail?.toLocaleLowerCase() == email ||
+        c.properties.SecondEmail?.toLocaleLowerCase() == email
+    );
 
     let contactId = undefined;
     let emails = [];
