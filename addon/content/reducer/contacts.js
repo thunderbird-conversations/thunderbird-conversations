@@ -60,16 +60,42 @@ export async function mergeContactDetails(msgData) {
   let showCondensed = await browser.conversations.getCorePref(
     "mail.showCondensedAddresses"
   );
+
+  // Build a map of all the contacts in the thread and de-dupe to avoid
+  // hitting the cross-process messaging more than necessary.
+  let contactMap = new Map();
+  for (const message of msgData) {
+    for (const contacts of Object.values(message._contactsData)) {
+      for (const contact of contacts) {
+        if (contactMap.has(contact.email)) {
+          continue;
+        }
+        contactMap.set(
+          contact.email,
+          // This is designed to not await on the request. However, in the
+          // Thunderbird betas around TB 90 / 91, performing multiple requests
+          // at the same time would break if an LDAP address book is loaded due
+          // to https://bugzilla.mozilla.org/show_bug.cgi?id=1716861
+          //
+          // Once that is fixed, we should investigate making these happen
+          // in parallel again. The performance impact probably isn't massive,
+          // but did seem to be more stable.
+          await browser._background.request({
+            type: "contactDetails",
+            payload: contact,
+          })
+        );
+      }
+    }
+  }
+
   for (const message of msgData) {
     // We want to fetch the detailed data about every contact in the `_contactsData` object.
     // So fetch all the data upfront.
     for (const [field, contacts] of Object.entries(message._contactsData)) {
       const contactData = await Promise.all(
         contacts.map(async (contact) => [
-          await browser._background.request({
-            type: "contactDetails",
-            payload: contact,
-          }),
+          await contactMap.get(contact.email),
           // We need to keep the raw email around to format the data correctly
           contact.email,
           contact.name,
