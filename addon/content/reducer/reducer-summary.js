@@ -66,6 +66,7 @@ export const summaryActions = {
             noFriendlyDate: newPrefs.preferences?.no_friendly_date ?? false,
             operateOnConversations:
               newPrefs.preferences?.operate_on_conversations ?? false,
+            loggingEnabled: newPrefs.preferences?.logging_enabled ?? false,
           })
         );
       }
@@ -101,9 +102,10 @@ export const summaryActions = {
    */
   updateConversation({ summary, messages, mode }) {
     return async (dispatch, getState) => {
-      await handleShowDetails(messages, getState(), dispatch, async () => {
+      const state = getState();
+      await handleShowDetails(messages, state, dispatch, async () => {
         // The messages need some more filling out and tweaking.
-        await messageEnricher.enrich(messages.msgData, getState().summary);
+        await messageEnricher.enrich(messages.msgData, state.summary);
 
         // The messages inside `msgData` don't come with filled in `to`/`from`/ect. fields.
         // We need to fill them in ourselves.
@@ -116,7 +118,13 @@ export const summaryActions = {
           );
           await dispatch(summarySlice.actions.replaceSummaryDetails(summary));
         }
-        return dispatch(messageActions.updateConversation({ messages, mode }));
+        await dispatch(messageActions.updateConversation({ messages, mode }));
+        if (state.summary.loggingEnabled) {
+          console.log(
+            "Load took (ms):",
+            Date.now() - summary.loadingStartedTime
+          );
+        }
       });
     };
   },
