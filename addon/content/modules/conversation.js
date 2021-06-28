@@ -183,6 +183,8 @@ function Conversation(
   // This is set by the monkey-patch which knows whether we were viewing a
   //  message inside a thread or viewing a closed thread.
   this.isSelectionThreaded = isSelectionThreaded;
+  this._loadingStartedTime = Date.now();
+
   // We have the COOL invariant that this._initialSet is a subset of
   //   this.messages.map(x => toMsgHdr(x))
   // This is actually trickier than it seems because of the different view modes
@@ -730,6 +732,7 @@ Conversation.prototype = {
           conversation: { getMessage: (uri) => this.getMessage(uri) },
           subject: this.messages[this.messages.length - 1].message.subject,
           loading: false,
+          loadingStartedTime: this._loadingStartedTime,
           prefs: {
             hideSigs: Prefs.hide_sigs,
             hideQuoteLength: Prefs.hide_quote_length,
