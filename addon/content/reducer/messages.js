@@ -22,6 +22,11 @@ export let messageEnricher = new (class {
       dateStyle: "short",
       timeStyle: "short",
     });
+    this.pluralForm = browser.i18n.getMessage("pluralForm");
+    this.numAttachmentsString = browser.i18n.getMessage(
+      "attachments.numAttachments"
+    );
+    this.sizeUnknownString = browser.i18n.getMessage("attachments.sizeUnknown");
   }
 
   /**
@@ -35,10 +40,105 @@ export let messageEnricher = new (class {
    *   The current state summary section from the store.
    */
   async enrich(msgData, summary) {
-    for (const message of msgData) {
-      messageEnricher._adjustSnippetForBugzilla(message);
-      await messageEnricher._setDates(message, summary);
+    const userTags = await browser.messages.listTags();
+
+    await Promise.all(
+      msgData.map(async (message) => {
+        try {
+          await this._addDetailsFromHeader(message, userTags);
+          await this._addDetailsFromAttachments(message);
+          this._adjustSnippetForBugzilla(message);
+          await messageEnricher._setDates(message, summary);
+        } catch (ex) {
+          console.error("Could not process message:", ex);
+          message.invalid = true;
+        }
+      })
+    );
+    msgData.filter((m) => !m.invalid);
+  }
+
+  /**
+   * Obtains the message header and adds the details of the message to it.
+   *
+   * @param {object} message
+   *   The message to get the additional details for.
+   * @param {Array} userTags
+   *   An array of the current tags the user has defined in Thunderbird.
+   */
+  async _addDetailsFromHeader(message, userTags) {
+    const messageHeader = await browser.messages.get(message.id);
+    if (!messageHeader) {
+      throw new Error("Message no longer exists");
     }
+    const messageFolderType = messageHeader.folder.type;
+
+    message.date = messageHeader.date.getTime();
+
+    message.isDraft = messageFolderType == "drafts";
+    message.isJunk = messageHeader.junk;
+    message.isOutbox = messageFolderType == "outbox";
+    message.read = messageHeader.read;
+    message.shortFolderName = messageHeader.folder.name;
+    message.subject = messageHeader.subject;
+    message.starred = messageHeader.flagged;
+
+    message.tags = messageHeader.tags.map((tagKey) => {
+      // The fallback here shouldn't ever happen, but just in case...
+      const tagDetails = userTags.find((t) => t.key == tagKey) || {
+        color: "#FFFFFF",
+        name: "unknown",
+      };
+      return {
+        color: tagDetails.color,
+        key: tagDetails.key,
+        name: tagDetails.tag,
+      };
+    });
+
+    message.folderName = await browser.conversations.getFolderName(message.id);
+  }
+
+  /**
+   * Obtains attachment details and adds them to the message.
+   *
+   * @param {object} message
+   *   The message to get the additional details for.
+   */
+  async _addDetailsFromAttachments(message) {
+    let attachments = message.attachments;
+    let l = attachments.length;
+    let newAttachments = [];
+
+    for (let i = 0; i < l; i++) {
+      const att = attachments[i];
+      // This is bug 630011, remove when fixed
+      let formattedSize = this.sizeUnknownString;
+      // -1 means size unknown
+      if (att.size != -1) {
+        formattedSize = await browser.conversations.formatFileSize(att.size);
+      }
+
+      // We've got the right data, push it!
+      newAttachments.push({
+        size: att.size,
+        contentType: att.contentType,
+        formattedSize,
+        isExternal: att.isExternal,
+        name: att.name,
+        partName: att.partName,
+        url: att.url,
+        anchor: "msg" + message.initialPosition + "att" + i,
+      });
+    }
+    message.attachments = newAttachments;
+    message.attachmentsPlural = l
+      ? await browser.conversations.makePlural(
+          this.pluralForm,
+          this.numAttachmentsString,
+          l
+        )
+      : "";
   }
 
   /**

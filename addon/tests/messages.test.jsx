@@ -3,43 +3,180 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 // Need to import utils.js to set up the fetch stub.
-// eslint-disable-next-line no-unused-vars
-import { enzyme } from "./utils.js";
+import { createFakeData, createFakeSummaryData } from "./utils.js";
 import { jest } from "@jest/globals";
+import { browser } from "../content/es-modules/thunderbird-compat.js";
 import { messageEnricher } from "../content/reducer/messages.js";
 
-function createFakeMessageData({
-  id = 1,
-  bugzilla = false,
-  snippet = "",
-  detailsShowing,
-} = {}) {
-  let data = {
-    id,
-    bugzilla,
-    date: Date.now(),
-    snippet,
-    _contactsData: [],
-  };
-  if (detailsShowing !== undefined) {
-    data.detailsShowing = detailsShowing;
-  }
-  return data;
-}
-
-function createFakeSummaryData(options) {
-  return {
-    noFriendlyDate: false,
-    ...options,
-  };
-}
-
 describe("messageEnricher", () => {
-  describe("snippets", () => {
-    afterEach(() => {
-      jest.restoreAllMocks();
+  let fakeMessageHeaderData;
+
+  beforeEach(() => {
+    fakeMessageHeaderData = new Map();
+    jest
+      .spyOn(browser.messages, "get")
+      .mockImplementation(async (id) => fakeMessageHeaderData.get(id));
+  });
+
+  afterEach(() => {
+    jest.restoreAllMocks();
+  });
+
+  describe("Header Details", () => {
+    test("Fills out the message with details from the header", async () => {
+      let fakeMsg = createFakeData({}, fakeMessageHeaderData);
+
+      await messageEnricher.enrich(
+        [fakeMsg],
+        createFakeSummaryData({ noFriendlyDate: true })
+      );
+
+      expect(fakeMsg).toMatchObject({
+        isDraft: false,
+        isJunk: false,
+        isOutbox: false,
+        read: false,
+        shortFolderName: "Inbox",
+        folderName: "Fake/Folder",
+        subject: "Fake Msg",
+        starred: false,
+        tags: [],
+      });
     });
 
+    test("Correctly sets flags with details from the header", async () => {
+      let tests = [
+        {
+          source: {
+            id: 1,
+            folderType: "drafts",
+            folderName: "Drafts",
+            read: true,
+            subject: "A draft",
+            flagged: true,
+          },
+          expected: {
+            isDraft: true,
+            isJunk: false,
+            isOutbox: false,
+            read: true,
+            shortFolderName: "Drafts",
+            folderName: "Fake/Folder",
+            subject: "A draft",
+            starred: true,
+            tags: [],
+          },
+        },
+        {
+          source: {
+            id: 2,
+            folderType: "outbox",
+            folderName: "Outbox",
+          },
+          expected: {
+            isDraft: false,
+            isJunk: false,
+            isOutbox: true,
+            shortFolderName: "Outbox",
+          },
+        },
+        {
+          source: {
+            id: 3,
+            folderType: "inbox",
+            junk: true,
+          },
+          expected: {
+            isDraft: false,
+            isJunk: true,
+            isOutbox: false,
+          },
+        },
+      ];
+
+      for (let test of tests) {
+        let fakeMsg = createFakeData(test.source, fakeMessageHeaderData);
+
+        await messageEnricher.enrich(
+          [fakeMsg],
+          createFakeSummaryData({ noFriendlyDate: true })
+        );
+
+        expect(fakeMsg).toMatchObject(test.expected);
+      }
+    });
+
+    test("Obtains the informaiton for tags", async () => {
+      let fakeMsg = createFakeData(
+        {
+          tags: ["$label1", "$label3"],
+        },
+        fakeMessageHeaderData
+      );
+
+      await messageEnricher.enrich(
+        [fakeMsg],
+        createFakeSummaryData({ noFriendlyDate: true })
+      );
+
+      expect(fakeMsg).toMatchObject({
+        tags: [
+          {
+            color: "#ff2600",
+            key: "$label1",
+            name: "Important",
+          },
+          {
+            color: "#009900",
+            key: "$label3",
+            name: "Personal",
+          },
+        ],
+      });
+    });
+  });
+
+  describe("Attachments", () => {
+    test("Extends the information for attachments", async () => {
+      let fakeMsg = createFakeData(
+        {
+          attachments: [
+            {
+              contentType: "application/pdf",
+              isExternal: false,
+              name: "foo.pdf",
+              partName: "1.2",
+              size: 634031,
+              url: "imap://fakeurl",
+            },
+          ],
+        },
+        fakeMessageHeaderData
+      );
+
+      await messageEnricher.enrich(
+        [fakeMsg],
+        createFakeSummaryData({ noFriendlyDate: true })
+      );
+
+      expect(fakeMsg).toMatchObject({
+        attachments: [
+          {
+            anchor: "msg0att0",
+            contentType: "application/pdf",
+            formattedSize: "634031 bars",
+            isExternal: false,
+            name: "foo.pdf",
+            partName: "1.2",
+            size: 634031,
+            url: "imap://fakeurl",
+          },
+        ],
+      });
+    });
+  });
+
+  describe("Snippets", () => {
     test("Adjusts the snippet for better output from bugzilla", async () => {
       const msgSnippets = [
         {
@@ -66,8 +203,14 @@ Updating`,
           expected: "\nUpdating",
         },
       ];
-      const fakeMsgs = msgSnippets.map((snippet) =>
-        createFakeMessageData({ snippet: snippet.actual })
+      const fakeMsgs = msgSnippets.map((snippet, index) =>
+        createFakeData(
+          {
+            id: index + 1,
+            snippet: snippet.actual,
+          },
+          fakeMessageHeaderData
+        )
       );
       await messageEnricher.enrich(fakeMsgs, createFakeSummaryData());
 
@@ -77,10 +220,10 @@ Updating`,
     });
   });
 
-  describe("dates", () => {
+  describe("Dates", () => {
     test("Sets the dates for displaying friendly dates", async () => {
       let now = Date.now();
-      let fakeMsg = createFakeMessageData({ date: now });
+      let fakeMsg = createFakeData({ date: now }, fakeMessageHeaderData);
 
       await messageEnricher.enrich([fakeMsg], createFakeSummaryData());
 
@@ -94,7 +237,7 @@ Updating`,
 
     test("Sets the dates for not displaying friendly dates", async () => {
       let now = Date.now();
-      let fakeMsg = createFakeMessageData({ date: now });
+      let fakeMsg = createFakeData({ date: now }, fakeMessageHeaderData);
 
       await messageEnricher.enrich(
         [fakeMsg],

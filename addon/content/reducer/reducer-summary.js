@@ -112,14 +112,19 @@ export const summaryActions = {
         await mergeContactDetails(messages.msgData);
 
         if (mode == "replaceAll") {
+          summary.subject =
+            messages.msgData[messages.msgData.length - 1]?.subject;
+
           await dispatch(composeSlice.actions.resetStore());
           await dispatch(
             quickReplySlice.actions.setExpandedState({ expanded: false })
           );
           await dispatch(summarySlice.actions.replaceSummaryDetails(summary));
         }
+
         await dispatch(messageActions.updateConversation({ messages, mode }));
-        if (state.summary.loggingEnabled) {
+
+        if (mode == "replaceAll" && state.summary.loggingEnabled) {
           console.log(
             "Load took (ms):",
             Date.now() - summary.loadingStartedTime

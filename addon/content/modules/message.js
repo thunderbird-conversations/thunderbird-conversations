@@ -123,7 +123,6 @@ class Message {
     this._bcc = this._msgHdr.bccList.length
       ? this.parse(this._msgHdr.bccList)
       : [];
-    this.subject = this._msgHdr.mime2DecodedSubject;
 
     this._uri = msgHdrGetUri(this._msgHdr);
     this._attachments = [];
@@ -155,39 +154,25 @@ class Message {
     return parseMimeLine(aMimeLine);
   }
 
-  async toReactData() {
+  toReactData() {
     // Ok, brace ourselves for notifications happening during the message load
     //  process.
     addMsgListener(this);
 
-    const messageHeader = await browser.messages.get(this._id);
-    if (!messageHeader) {
-      throw new Error("Message no longer exists");
-    }
-
-    const messageFolderType = messageHeader.folder.type;
-    let data = {
+    return {
       id: this._id,
-      date: this._date.getTime(),
-      folderName: await browser.conversations.getFolderName(this._id),
+      attachments: this._attachments,
       hasRemoteContent: this.hasRemoteContent,
-      isDraft: messageFolderType == "drafts",
-      isJunk: messageHeader.junk,
-      isOutbox: messageFolderType == "outbox",
       isPhishing: this.isPhishing,
       messageKey: this._msgHdr.messageKey,
       msgUri: this._uri,
       multipleRecipients: this.isReplyAllEnabled,
       neckoUrl: msgHdrToNeckoURL(this._msgHdr).spec,
       needsLateAttachments: this.needsLateAttachments,
-      read: this.read,
       realFrom: this._realFrom.email || this._from.email,
       recipientsIncludeLists: this.isReplyListEnabled,
       smimeReload: this.smimeReload,
-      shortFolderName: messageHeader.folder.name,
-      subject: messageHeader.subject,
       snippet: this._snippet,
-      starred: messageHeader.flagged,
       type: this._type,
       // We look up info on each contact in the Redux reducer;
       // pass this information along so we know what to look up.
@@ -198,59 +183,6 @@ class Message {
         bcc: this._bcc,
       },
     };
-
-    data = { ...data, ...(await this.toTmplDataForAttachments(data)) };
-
-    const userTags = await browser.messages.listTags();
-    data.tags = messageHeader.tags.map((tagKey) => {
-      // The fallback here shouldn't ever happen, but just in case...
-      const tagDetails = userTags.find((t) => t.key == tagKey) || {
-        color: "#FFFFFF",
-        name: "unknown",
-      };
-      return {
-        color: tagDetails.color,
-        key: tagDetails.key,
-        name: tagDetails.tag,
-      };
-    });
-
-    return data;
-  }
-
-  // Generate Attachment objects
-  async toTmplDataForAttachments() {
-    let l = this._attachments.length;
-    const result = {
-      attachments: [],
-      attachmentsPlural: await browser.conversations.makePlural(
-        browser.i18n.getMessage("pluralForm"),
-        browser.i18n.getMessage("attachments.numAttachments"),
-        l
-      ),
-    };
-    for (let i = 0; i < l; i++) {
-      const att = this._attachments[i];
-      // This is bug 630011, remove when fixed
-      let formattedSize = browser.i18n.getMessage("attachments.sizeUnknown");
-      // -1 means size unknown
-      if (att.size != -1) {
-        formattedSize = await browser.conversations.formatFileSize(att.size);
-      }
-
-      // We've got the right data, push it!
-      result.attachments.push({
-        size: att.size,
-        contentType: att.contentType,
-        formattedSize,
-        isExternal: att.isExternal,
-        name: att.name,
-        partName: att._part,
-        url: att.url,
-        anchor: "msg" + this.initialPosition + "att" + i,
-      });
-    }
-    return result;
   }
 
   // The global monkey-patch finds us through the weak pointer table and
@@ -601,6 +533,24 @@ async function shouldEnableReplyAll(emails, propName) {
 }
 
 /**
+ * Simple function to extra just the parts of the attachment information
+ * that we need into their own object. This simplifies managing the data.
+ *
+ * @param {object} attachment
+ */
+function simplifyAttachment(attachment) {
+  return {
+    contentType: attachment.contentType,
+    isExternal: attachment.isExternal,
+    name: attachment.name,
+    // Fall back to _part for gloda attachments.
+    partName: attachment.partName ?? attachment._part,
+    size: attachment.size,
+    url: attachment.url,
+  };
+}
+
+/**
  * Handles the gathering of data for a message whose details have been received
  * from queries on the global database.
  */
@@ -626,7 +576,7 @@ class MessageFromGloda extends Message {
       : "..."; // it's probably an Enigmail message
 
     if ("attachmentInfos" in glodaMsg) {
-      this._attachments = glodaMsg.attachmentInfos;
+      this._attachments = glodaMsg.attachmentInfos.map(simplifyAttachment);
     }
 
     if ("contentType" in glodaMsg) {
@@ -695,9 +645,9 @@ class MessageFromDbHdr extends Message {
               this._from = this.parse(alternativeSender)[0];
             }
 
-            this._attachments = aMimeMsg.allUserAttachments.filter(
-              (x) => x.isRealAttachment
-            );
+            this._attachments = aMimeMsg.allUserAttachments
+              .filter((x) => x.isRealAttachment)
+              .map(simplifyAttachment);
             this.contentType =
               aMimeMsg.headers["content-type"] || "message/rfc822";
             let listPost = aMimeMsg.get("list-post");
