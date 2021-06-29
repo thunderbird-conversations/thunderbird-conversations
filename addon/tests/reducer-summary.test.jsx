@@ -3,8 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 // Need to import utils.js to set up the fetch stub.
-// eslint-disable-next-line no-unused-vars
-import { enzyme } from "./utils.js";
+import { createFakeData } from "./utils.js";
 import { jest } from "@jest/globals";
 import * as RTK from "@reduxjs/toolkit";
 import * as Redux from "redux";
@@ -22,29 +21,16 @@ const summaryApp = Redux.combineReducers({
 
 const store = RTK.configureStore({ reducer: summaryApp });
 
-function createFakeMessageData({
-  id = 1,
-  bugzilla = false,
-  date = Date.now(),
-  fullDate = "",
-  snippet = "",
-  detailsShowing,
-} = {}) {
-  let data = {
-    id,
-    bugzilla,
-    date,
-    fullDate,
-    snippet,
-    _contactsData: [],
-  };
-  if (detailsShowing !== undefined) {
-    data.detailsShowing = detailsShowing;
-  }
-  return data;
-}
-
 describe("Summary Reducer and Actions tests", () => {
+  let fakeMessageHeaderData;
+
+  beforeEach(() => {
+    fakeMessageHeaderData = new Map();
+    jest
+      .spyOn(browser.messages, "get")
+      .mockImplementation(async (id) => fakeMessageHeaderData.get(id));
+  });
+
   describe("updateConversation", () => {
     beforeEach(() => {
       messageActions.updateConversation = jest.fn(() => {
@@ -58,10 +44,13 @@ describe("Summary Reducer and Actions tests", () => {
 
     test("Enriches message data", async () => {
       let now = new Date();
-      let fakeMsg = createFakeMessageData({
-        date: now,
-        snippet: "My message snippet",
-      });
+      let fakeMsg = createFakeData(
+        {
+          date: now,
+          snippet: "My message snippet",
+        },
+        fakeMessageHeaderData
+      );
       await store.dispatch(
         summaryActions.updateConversation({
           messages: {
@@ -75,15 +64,40 @@ describe("Summary Reducer and Actions tests", () => {
       let msgData =
         messageActions.updateConversation.mock.calls[0][0].messages.msgData;
 
-      let expected = createFakeMessageData({
-        detailsShowing: false,
+      let date = new Intl.DateTimeFormat(undefined, {
+        timeStyle: "short",
+      }).format(new Date());
+
+      createFakeData(
+        {
+          detailsShowing: false,
+          date: "yesterday",
+          fullDate: date,
+          snippet: "My message snippet",
+        },
+        fakeMessageHeaderData
+      );
+      expect(msgData[0]).toStrictEqual({
+        _contactsData: [],
+        attachments: [],
+        attachmentsPlural: "",
+        bugzilla: false,
         date: "yesterday",
-        fullDate: new Intl.DateTimeFormat(undefined, {
-          timeStyle: "short",
-        }).format(new Date()),
+        detailsShowing: false,
+        folderName: "Fake/Folder",
+        fullDate: date,
+        id: 1,
+        initialPosition: 0,
+        isDraft: false,
+        isJunk: false,
+        isOutbox: false,
+        read: false,
+        shortFolderName: "Inbox",
         snippet: "My message snippet",
+        starred: false,
+        subject: "Fake Msg",
+        tags: [],
       });
-      expect(msgData[0]).toStrictEqual(expected);
     });
   });
 });

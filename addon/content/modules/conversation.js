@@ -690,7 +690,7 @@ Conversation.prototype = {
     for (let [i, m] of this.messages.entries()) {
       let msgData;
       try {
-        msgData = await m.message.toReactData();
+        msgData = m.message.toReactData();
       } catch (ex) {
         if (ex.message != "Message no longer exists") {
           throw ex;
@@ -730,7 +730,6 @@ Conversation.prototype = {
         mode: "replaceAll",
         summary: {
           conversation: { getMessage: (uri) => this.getMessage(uri) },
-          subject: this.messages[this.messages.length - 1].message.subject,
           loading: false,
           loadingStartedTime: this._loadingStartedTime,
           prefs: {

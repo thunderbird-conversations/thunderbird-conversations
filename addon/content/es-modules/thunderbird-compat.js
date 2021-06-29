@@ -217,8 +217,17 @@ if (!browser.conversations) {
       }
       throw new Error("Unexpected pref");
     },
+    async getFolderName(name) {
+      return "Fake/Folder";
+    },
     async makeFriendlyDateAgo() {
       return "yesterday";
+    },
+    async formatFileSize(size) {
+      return `${size} bars`;
+    },
+    async makePlural(form, string, count) {
+      return `${string} ${count}`;
     },
   };
 }
@@ -284,6 +293,36 @@ if (!browser.messageDisplay) {
           read: false,
         },
       ];
+    },
+  };
+}
+
+if (!browser.messages) {
+  browser.messages = {
+    async listTags() {
+      return [
+        {
+          key: "$label1",
+          tag: "Important",
+          color: "#ff2600",
+          ordinal: "",
+        },
+        {
+          key: "$label2",
+          tag: "Work",
+          color: "#FF9900",
+          ordinal: "",
+        },
+        {
+          color: "#009900",
+          key: "$label3",
+          ordinal: "",
+          tag: "Personal",
+        },
+      ];
+    },
+    async get(id) {
+      return {};
     },
   };
 }

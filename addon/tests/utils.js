@@ -39,3 +39,57 @@ export const waitForComponentToPaint = async (wrapper) => {
     wrapper.update();
   });
 };
+
+export function createFakeData(
+  {
+    id = 1,
+    attachments = [],
+    bugzilla = false,
+    detailsShowing,
+    flagged = false,
+    folderType = "inbox",
+    folderName = "Inbox",
+    initialPosition = 0,
+    junk = false,
+    read = false,
+    subject = "Fake Msg",
+    snippet = "",
+    tags = [],
+  } = {},
+  fakeMessageHeaderData
+) {
+  let data = {
+    id,
+    attachments,
+    bugzilla,
+    date: Date.now(),
+    initialPosition,
+    snippet,
+    _contactsData: [],
+  };
+  if (detailsShowing !== undefined) {
+    data.detailsShowing = detailsShowing;
+  }
+
+  fakeMessageHeaderData.set(id, {
+    date: new Date(data.date),
+    flagged,
+    folder: {
+      type: folderType,
+      name: folderName,
+    },
+    junk,
+    read,
+    subject,
+    tags,
+  });
+
+  return data;
+}
+
+export function createFakeSummaryData(options) {
+  return {
+    noFriendlyDate: false,
+    ...options,
+  };
+}
