@@ -45,6 +45,7 @@ async function enrichWithDisplayData({
     avatar: contact.photoURI,
     contactId: contact.contactId,
     colorStyle: { backgroundColor: contact.color },
+    readOnly: contact.readOnly,
   };
   return data;
 }

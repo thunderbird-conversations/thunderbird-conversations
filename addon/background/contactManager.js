@@ -28,18 +28,21 @@ if (!globalThis.browser) {
  *   the contact.
  * @property {string} photoURI
  *   A uri to use for the avator photo for the contact (if any).
+ * @property {boolean} readOnly
+ *   True if the card is read-only.
  */
 
 /**
  * Extended Contact information that is cached.
  */
 class ExtendedContact {
-  constructor({ contactId, email, identityId, name, photoURI }) {
+  constructor({ contactId, email, identityId, name, photoURI, readOnly }) {
     this.color = freshColor(email);
     this.contactId = contactId;
     this.identityId = identityId;
     this.name = name;
     this.photoURI = photoURI;
+    this.readOnly = readOnly;
     /**
      * The time when the contact was last accessed in the cache, used for
      * clearing out the cache.
@@ -75,6 +78,7 @@ class ExtendedContact {
       identityId: this.identityId,
       name: this.name,
       photoURI: this.photoURI,
+      readOnly: this.readOnly,
     };
   }
 }
@@ -183,11 +187,13 @@ export class ContactManager {
     let name = undefined;
     let photoURI = undefined;
     let emailAddressForColor = email;
+    let readOnly = false;
 
     if (matchingCards.length) {
       // We only look at the first contact.
       let card = matchingCards[0].properties;
       contactId = matchingCards[0].id;
+      readOnly = !!matchingCards[0].readOnly;
 
       // PreferDisplayName returns a literal string "0" or "1". We must convert it
       // to a boolean appropriately.
@@ -229,6 +235,7 @@ export class ContactManager {
         identityId,
         name,
         photoURI,
+        readOnly,
       }),
     ];
   }

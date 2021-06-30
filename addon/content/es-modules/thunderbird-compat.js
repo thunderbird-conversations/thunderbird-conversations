@@ -400,6 +400,7 @@ if (!browser.contacts) {
               PreferDisplayName: "0",
               PhotoURI: "https://example.com/fake",
             },
+            readOnly: true,
           },
         ];
       } else if (["arch@example.com", "cond@example.com"].includes(email)) {

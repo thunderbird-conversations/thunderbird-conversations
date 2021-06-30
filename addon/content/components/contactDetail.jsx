@@ -15,6 +15,7 @@ function _ContactDetail({
   realEmail,
   avatar,
   contactId,
+  contactIsReadOnly,
   dispatch,
 }) {
   function onGeneralClick(event) {
@@ -79,23 +80,36 @@ function _ContactDetail({
 
   // If there is a card for the contact, provide the option to
   // edit the card. Otherwise, provide an add button.
-  const contactEdit = contactId ? (
-    <button
-      className="editContact"
-      title={browser.i18n.getMessage("contact.editContactTooltip")}
-      onClick={editContact}
-    >
-      <SvgIcon hash="edit" />
-    </button>
-  ) : (
-    <button
-      className="addContact"
-      title={browser.i18n.getMessage("contact.addContactTooltip")}
-      onClick={addContact}
-    >
-      <SvgIcon hash="add" />
-    </button>
-  );
+  let contactEdit;
+  if (contactId) {
+    contactEdit = contactIsReadOnly ? (
+      <button
+        className="viewContact"
+        title={browser.i18n.getMessage("contact.viewContactTooltip")}
+        onClick={editContact}
+      >
+        <SvgIcon hash="person" />
+      </button>
+    ) : (
+      <button
+        className="editContact"
+        title={browser.i18n.getMessage("contact.editContactTooltip")}
+        onClick={editContact}
+      >
+        <SvgIcon hash="edit" />
+      </button>
+    );
+  } else {
+    contactEdit = (
+      <button
+        className="addContact"
+        title={browser.i18n.getMessage("contact.addContactTooltip")}
+        onClick={addContact}
+      >
+        <SvgIcon hash="add" />
+      </button>
+    );
+  }
 
   let avatarURI =
     avatar ?? "chrome://messenger/skin/addressbook/icons/contact-generic.svg";
@@ -156,6 +170,7 @@ _ContactDetail.propTypes = {
   realEmail: PropTypes.string.isRequired,
   avatar: PropTypes.string,
   contactId: PropTypes.string,
+  contactIsReadOnly: PropTypes.boolean,
 };
 
 export const ContactDetail = ReactRedux.connect()(_ContactDetail);

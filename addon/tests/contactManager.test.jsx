@@ -96,6 +96,7 @@ describe("Test ContactManager", () => {
       identityId: undefined,
       name: undefined,
       photoURI: "https://example.com/fake",
+      readOnly: true,
     });
     expect(isValidColor(extra.color)).toBe(true);
   });
