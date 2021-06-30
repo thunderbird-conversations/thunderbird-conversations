@@ -264,6 +264,11 @@
     "description": "Tooltip shown on the edit contact button"
   },
 
+  "contact.viewContactTooltip": {
+    "message": "View contact in address book",
+    "description": "Tooltip shown on the view contact button for read-only contacts"
+  },
+
   "contact.sendEmailTooltip": {
     "message": "send email",
     "description": "Tooltip shown on the send email button"

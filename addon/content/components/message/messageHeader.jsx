@@ -147,6 +147,7 @@ export function DetailedContactLabel({ contact, className }) {
           realEmail={contact.email}
           avatar={contact.avatar}
           contactId={contact.contactId}
+          contactIsReadOnly={contact.readOnly}
         />
       }
       style={{ display: "inline-block" }}
@@ -184,6 +185,7 @@ export function ContactLabel({ contact, className }) {
           realEmail={contact.email}
           avatar={contact.avatar}
           contactId={contact.contactId}
+          contactIsReadOnly={contact.readOnly}
         />
       }
     >
