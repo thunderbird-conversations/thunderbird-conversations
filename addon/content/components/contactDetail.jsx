@@ -170,7 +170,7 @@ _ContactDetail.propTypes = {
   realEmail: PropTypes.string.isRequired,
   avatar: PropTypes.string,
   contactId: PropTypes.string,
-  contactIsReadOnly: PropTypes.boolean,
+  contactIsReadOnly: PropTypes.bool,
 };
 
 export const ContactDetail = ReactRedux.connect()(_ContactDetail);
