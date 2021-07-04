@@ -8,12 +8,11 @@ var { XPCOMUtils } = ChromeUtils.import(
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
-  Customizations: "chrome://conversations/content/modules/assistant.js",
   ExtensionCommon: "resource://gre/modules/ExtensionCommon.jsm",
   GlodaAttrProviders:
     "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
-  makeFriendlyDateAgo: "resource:///modules/TemplateUtils.jsm",
   MailServices: "resource:///modules/MailServices.jsm",
+  makeFriendlyDateAgo: "resource:///modules/TemplateUtils.jsm",
   MsgHdrToMimeMessage: "resource:///modules/gloda/MimeMessage.jsm",
   msgHdrGetUri: "chrome://conversations/content/modules/misc.js",
   msgUriToMsgHdr: "chrome://conversations/content/modules/misc.js",
@@ -36,7 +35,6 @@ const conversationModules = [
   // Don't unload these until we can find a way of unloading the attribute
   // providers. Unloading these will break gloda when someone updates.
   // "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
-  "chrome://conversations/content/modules/assistant.js",
   "chrome://conversations/content/modules/browserSim.js",
   "chrome://conversations/content/modules/conversation.js",
   "chrome://conversations/content/modules/message.js",
@@ -278,12 +276,16 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
               case "mail.phishing.detection.enabled":
               case "mail.phishing.detection.disallow_form_actions":
               case "mail.showCondensedAddresses":
+              case "mailnews.database.global.indexer.enabled":
                 return Services.prefs.getBoolPref(name);
               case "font.size.variable.x-western":
               case "mail.forward_message_mode":
               case "mail.openMessageBehavior":
               case "mailnews.mark_message_read.delay.interval":
               case "mail.show_headers":
+              case "mailnews.default_sort_order":
+              case "mailnews.default_sort_type":
+              case "mailnews.default_view_flags":
                 return Services.prefs.getIntPref(name);
               case "browser.display.foreground_color":
               case "browser.display.background_color":
@@ -294,48 +296,24 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           }
           return undefined;
         },
+        async setCorePref(name, value) {
+          try {
+            switch (name) {
+              case "mailnews.database.global.indexer.enabled":
+                Services.prefs.setBoolPref(name, value);
+                break;
+              case "mailnews.default_sort_order":
+              case "mailnews.default_sort_type":
+              case "mailnews.default_view_flags":
+                Services.prefs.setIntPref(name, value);
+                break;
+            }
+          } catch (ex) {
+            console.error(ex);
+          }
+        },
         async getLocaleDirection() {
           return Services.locale.isAppLocaleRTL ? "rtl" : "ltr";
-        },
-        async installCustomisations(ids, uninstallInfos) {
-          uninstallInfos = JSON.parse(uninstallInfos ?? "{}");
-          for (const id of ids) {
-            if (!(id in Customizations)) {
-              Log.error("Couldn't find a suitable customization for", id);
-            } else {
-              try {
-                Log.debug("Installing customization", id);
-                let uninstallInfo = await Customizations[id].install();
-                uninstallInfos[id] = uninstallInfo;
-              } catch (ex) {
-                console.error("Error in customization", id, ex);
-              }
-            }
-          }
-
-          return JSON.stringify(uninstallInfos);
-        },
-        async undoCustomizations(uninstallInfos) {
-          for (let win of Services.wm.getEnumerator("mail:3pane")) {
-            // Switch to a 3pane view (otherwise the "display threaded"
-            // customization is not reverted)
-            let tabmail = win.document.getElementById("tabmail");
-            if (tabmail.tabContainer.selectedIndex != 0) {
-              tabmail.tabContainer.selectedIndex = 0;
-            }
-          }
-
-          uninstallInfos = JSON.parse(uninstallInfos);
-          for (let [k, v] of Object.entries(Customizations)) {
-            if (k in uninstallInfos) {
-              try {
-                Log.debug("Uninstalling", k, uninstallInfos[k]);
-                v.uninstall(uninstallInfos[k]);
-              } catch (ex) {
-                console.error("Failed to uninstall", k, ex);
-              }
-            }
-          }
         },
         async getMessageIdForUri(uri) {
           const msgHdr = msgUriToMsgHdr(uri);
@@ -790,6 +768,34 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
         convertSnippetToPlainText(accountId, path, text) {
           let msgFolder = context.extension.folderManager.get(accountId, path);
           return msgFolder.convertMsgSnippetToPlainText(text);
+        },
+        async getAccountOfflineDownload(accountId) {
+          let account = MailServices.accounts.getAccount(accountId);
+          return account?.incomingServer.QueryInterface(
+            Ci.nsIImapIncomingServer
+          ).offlineDownload;
+        },
+        async setAccountOfflineDownload(accountId, value) {
+          let account = MailServices.accounts.getAccount(accountId);
+          if (account) {
+            account.incomingServer.QueryInterface(
+              Ci.nsIImapIncomingServer
+            ).offlineDownload = value;
+          }
+        },
+        async getFolderOfflineDownload(accountId, path) {
+          let folder = extension.folderManager.get(accountId, path);
+          return folder.getFlag(Ci.nsMsgFolderFlags.Offline);
+        },
+        async setFolderOfflineDownload(accountId, path, value) {
+          let folder = extension.folderManager.get(accountId, path);
+          if (folder) {
+            if (value) {
+              folder.setFlag(Ci.nsMsgFolderFlags.Offline);
+            } else {
+              folder.clearFlag(Ci.nsMsgFolderFlags.Offline);
+            }
+          }
         },
         onCallAPI: new ExtensionCommon.EventManager({
           context,

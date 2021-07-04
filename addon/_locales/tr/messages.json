@@ -129,34 +129,9 @@
     "description": "The document title of the assistant page."
   },
 
-  "assistant.intro": {
-    "message": "Merhaba, Thunderbird Conversations eklentisine hoş geldiniz!",
-    "description": "Introduction paragraph for the assistant."
-  },
-
-  "assistant.p1": {
-    "message": "Bu yardımcı, thunderbird ayalarını yaparken iyi bir deneyim yaşamanız için size yardımcı olacak. Memnuniyetsizlik duymanızı istemeyiz!",
-    "description": "First detail paragraph for the assistant."
-  },
-
-  "assistant.p2": {
-    "message": "Yapılan ayarların hepsi eski haline geri döndürülebilir, bu yüzden endişelenmeyin: Herhangi bir seçeneği tersine çevirdiğimizde, Thunderbird Conversations eklentisinden memnun kalmazsak onu tıpkı kaldırıp yeniden yüklenmiş hale çevirebiliriz.",
-    "description": "Second detail paragraph for the assistant."
-  },
-
-  "assistant.p3": {
-    "message": "Bu biraz zaman alabilir. Bu pencerenin kapanmasını bekleyebilir veya kendiniz kapatıp ilerleyişi Etkinlik Yöneticisinden takip edebilirsiniz.",
-    "description": "Third detail paragraph for the assistant."
-  },
-
   "assistant.working": {
     "message": "Çalışıyor...",
     "description": "An indication that the assistant is working."
-  },
-
-  "assistant.review": {
-    "message": "Değişikleri gözden geçir",
-    "description": "The review button title for the assistant."
   },
 
   "assistant.apply": {
@@ -164,44 +139,14 @@
     "description": "The apply button title for the assistant."
   },
 
-  "assistant.settings": {
-    "message": "Settings",
-    "description": "The settings section legend for the assistant."
-  },
-
   "assistant.actionEnableGloda": {
     "message": "Genel Arama ve dizin oluşturucunun etkin olduğundan emin ol.",
     "description": "Option text for enabling Gloda."
   },
 
-  "assistant.actionDontExpand": {
-    "message": "Mesaj listesinde, okunmamış mesajları içeren konuları genişletme.",
-    "description": "Option text for not expanding message threads."
-  },
-
-  "assistant.actionAttachmentsInline": {
-    "message": "Satır içinde ekleri gösterme (şiddetle önerilir).",
-    "description": "Option text for showing attachments inline."
-  },
-
   "assistant.actionOfflineDownload": {
     "message": "Gelen Kutusu ve Gönderilenleri çevrimdışı depolama için eşitle (şiddetle önerilir).",
     "description": "Option text for allowing offline download."
-  },
-
-  "assistant.actionUnifiedInboxSearchesSent": {
-    "message": "Birleşik Gelen Kutusu aynı zamanda Gönderilen klasörlerini de arasın (şiddetle önerilir).",
-    "description": "Option text for adding sent to the unified inbox."
-  },
-
-  "assistant.actionSetupView": {
-    "message": "Genel gelen kutusuna geçiş yap, parçalı görünüme geç, tarihe göre sırala, okunmadı ve arasında sütunlarını etkinleştir (şiddetle önerilir).",
-    "description": "Option text for how the view is set."
-  },
-
-  "assistant.actionSetupViewDefaults": {
-    "message": "Tüm klasörler için bu özel sıralama ayarları kullan",
-    "description": "Option text for setting the view defaults."
   },
 
   "assistant.actionEnsureMessagePaneVisible": {

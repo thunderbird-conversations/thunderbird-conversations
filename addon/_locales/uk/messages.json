@@ -111,65 +111,21 @@
     "message": "Помічник першого запуску",
     "description": "The document title of the assistant page."
   },
-  "assistant.intro": {
-    "message": "Привіт! Це Thunderbird Conversations!",
-    "description": "Introduction paragraph for the assistant."
-  },
-  "assistant.p1": {
-    "message": "Щоб спростити ваше життя, цей помічник змінить налаштування Thunderbird для вдосконалення вашої роботи. Ми хочемо, щоб ви почувалися задоволено!",
-    "description": "First detail paragraph for the assistant."
-  },
-  "assistant.p2": {
-    "message": "Всі зроблені зміни можна відновити, тому вам не варто хвилюватися: якщо вам не сподобається Thunderbird Conversations, ми відновимо будь-які налаштування, зроблені розширенням, одразу після його видалення.",
-    "description": "Second detail paragraph for the assistant."
-  },
-  "assistant.p3": {
-    "message": "Це може тривати деякий час. Ви можете зачекати доки закриється це вікно, або закрити його власноруч й стежити за виконанням в меню Інструменти > Менеджер процесів.",
-    "description": "Third detail paragraph for the assistant."
-  },
   "assistant.working": {
     "message": "Обробка...",
     "description": "An indication that the assistant is working."
-  },
-  "assistant.review": {
-    "message": "Переглянути зміни",
-    "description": "The review button title for the assistant."
   },
   "assistant.apply": {
     "message": "Застосувати зміни",
     "description": "The apply button title for the assistant."
   },
-  "assistant.settings": {
-    "message": "Налаштування",
-    "description": "The settings section legend for the assistant."
-  },
   "assistant.actionEnableGloda": {
     "message": "Переконайтеся, що глобальний пошук та індексування увімкнено.",
     "description": "Option text for enabling Gloda."
   },
-  "assistant.actionDontExpand": {
-    "message": "В списку повідомлень не розгортати розмови, що містять непрочитані повідомлення.",
-    "description": "Option text for not expanding message threads."
-  },
-  "assistant.actionAttachmentsInline": {
-    "message": "Не показувати вбудовані вкладення (рекомендовано).",
-    "description": "Option text for showing attachments inline."
-  },
   "assistant.actionOfflineDownload": {
     "message": "Вхідні й Надіслані синхронізуються для автономного сховища (рекомендовано).",
     "description": "Option text for allowing offline download."
-  },
-  "assistant.actionUnifiedInboxSearchesSent": {
-    "message": "При пошуку в Усіх вхідних також шукати в теках Надіслані (рекомендовано).",
-    "description": "Option text for adding sent to the unified inbox."
-  },
-  "assistant.actionSetupView": {
-    "message": "Перемкнути на Глобальні Вхідні, показати подання розмовами, впорядкувати за датою, увімкнути стовпчик непрочитаних повідомлень та новий стовпчик \"між\" (рекомендовано).",
-    "description": "Option text for how the view is set."
-  },
-  "assistant.actionSetupViewDefaults": {
-    "message": "Використовувати ці параметри впорядкування для всіх тек.",
-    "description": "Option text for setting the view defaults."
   },
   "assistant.actionEnsureMessagePaneVisible": {
     "message": "Переконайтеся, що панель повідомлення видима.",

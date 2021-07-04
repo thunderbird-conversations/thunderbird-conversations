@@ -4,8 +4,6 @@
 
 var EXPORTED_SYMBOLS = [
   "setupLogging",
-  "topMail3Pane",
-  "getMail3Pane",
   "msgUriToMsgHdr",
   "msgHdrGetUri",
   "messageActions",
@@ -15,10 +13,6 @@ var EXPORTED_SYMBOLS = [
 const { XPCOMUtils } = ChromeUtils.import(
   "resource://gre/modules/XPCOMUtils.jsm"
 );
-
-XPCOMUtils.defineLazyModuleGetters(this, {
-  Services: "resource://gre/modules/Services.jsm",
-});
 
 XPCOMUtils.defineLazyGetter(this, "gMessenger", function () {
   return Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
@@ -40,16 +34,6 @@ function setupLogging(name) {
     prefix: name,
     maxLogLevel: gLoggingEnabled ? "Debug" : "Warn",
   });
-}
-
-/**
- * Get the main Thunderbird window. Used heavily to get a reference to globals
- *  that are defined in mail/base/content/.
- *
- * @returns {object} The window object for the main window.
- */
-function getMail3Pane() {
-  return Services.wm.getMostRecentWindow("mail:3pane");
 }
 
 /**

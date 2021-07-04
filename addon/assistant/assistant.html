@@ -12,61 +12,50 @@
 </head>
 
 <body>
-  <div id="wrapper">
-    <div class="main">
-      <h1 class="title" data-i18n="extensionName"></h1>
-      <div class="text">
-        <p data-i18n="assistant.intro">
-        </p>
-        <p class="p1" data-i18n="assistant.p1">
-        </p>
-        <p class="p3 orange" data-i18n="assistant.p3">
-        </p>
-        <p class="working hidden" style="text-align: left; margin-top: 50px"
-           data-i18n="assistant.working">
-          <img src="loader.gif" />
-        </p>
-      </div>
+  <h1 class="title" data-i18n="extensionName"></h1>
+  <div id="intro" class="text">
+    <p data-i18n="assistant.intro2"></p>
+  </div>
+  <div class="settings">
+    <h2 data-i18n="assistant.settingsBetweenTitle"></h2>
+    <p data-i18n="assistant.settingsBetweenDetail"></p>
+    <div class="betweenInset">
+      <img id="betweenColumnImage" src="betweenColumn.png" />
     </div>
-
-    <div class="buttonBox">
-      <button id="review" data-i18n="assistant.review"></button>
-      <button id="applyButton" class="applyChanges" data-i18n="assistant.apply"></button>
+    <div class="betweenInset">
+      <input type="checkbox" id="actionEnableBetween">
+      <label for="actionEnableBetween" data-i18n="assistant.actionEnableBetween"></label>
     </div>
+    <p data-i18n="assistant.settingsColumnInfo"></p>
+  </div>
+  <div class="settings">
+    <p><h2 data-i18n="assistant.otherSettingsTitle"></h2></p>
+    <p class="otherSettings">
+      <input type="checkbox" disabled="disabled" checked="checked" id="actionEnableGloda" />
+      <label for="actionEnableGloda" data-i18n="assistant.actionEnableGloda"></label>
+      <br/>
+      <input type="checkbox" checked="checked" id="actionEnsureMessagePaneVisible" />
+      <label for="actionEnsureMessagePaneVisible" data-i18n="assistant.actionEnsureMessagePaneVisible"></label>
+      <br/>
+      <input type="checkbox" checked="checked" id="actionOfflineDownload" />
+      <label for="actionOfflineDownload" data-i18n="assistant.actionOfflineDownload"></label>
+      <br/>
+      <input type="checkbox" checked="checked" id="actionSetupView" />
+      <label for="actionSetupView" data-i18n="assistant.actionSetupMessageViews"></label>
+    </p>
+    <p data-i18n="assistant.settings2">
+    </p>
 
-    <div id="more">
-      <fieldset class="settings">
-        <legend data-i18n="assistant.settings"></legend>
-        <input type="checkbox" disabled="disabled" checked="checked" id="actionEnableGloda" />
-        <label for="actionEnableGloda" data-i18n="assistant.actionEnableGloda"></label>
-        <br/>
-        <input type="checkbox" checked="checked" id="actionOfflineDownload" />
-        <label for="actionOfflineDownload" data-i18n="assistant.actionOfflineDownload"></label>
-        <br/>
-        <input type="checkbox" checked="checked" id="actionUnifiedInboxSearchesSent" />
-        <label for="actionUnifiedInboxSearchesSent" data-i18n="assistant.actionUnifiedInboxSearchesSent"></label>
-        <br/>
-        <input type="checkbox" checked="checked" id="actionSetupView" />
-        <label for="actionSetupView" data-i18n="assistant.actionSetupView"></label>
-        <br/>
-        <input type="checkbox" checked="checked" id="actionSetupViewDefaults" />
-        <label for="actionSetupViewDefaults" data-i18n="assistant.actionSetupViewDefaults"></label>
-        <br/>
-        <input type="checkbox" checked="checked" id="actionEnsureMessagePaneVisible" />
-        <label for="actionEnsureMessagePaneVisible" data-i18n="assistant.actionEnsureMessagePaneVisible"></label>
-      </fieldset>
+  </div>
+  <div class="working hidden">
+    <p data-i18n="assistant.working">
+      <img id="workingImg" src="loader.gif" />
+    </p>
+    <p data-i18n="assistant.workingText"></p>
+  </div>
 
-      <p data-i18n="assistant.settings2">
-      </p>
-
-      <p class="working hidden" data-i18n="assistant.working">
-        <img src="loader.gif" />
-      </p>
-
-      <div id="footer">
-      </div>
-    </div>
-
+  <div class="buttonBox">
+    <button id="applyButton" class="applyChanges" data-i18n="assistant.apply"></button>
   </div>
 </body>
 

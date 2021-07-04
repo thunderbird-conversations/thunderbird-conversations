@@ -139,24 +139,34 @@
     "description": "The document title of the assistant page."
   },
 
-  "assistant.intro": {
-    "message": "Hi, this is Thunderbird Conversations!",
+  "assistant.intro2": {
+    "message": "This assistant will tweak your Thunderbird setup to ensure you enjoy the optimal experience.",
     "description": "Introduction paragraph for the assistant."
   },
 
-  "assistant.p1": {
-    "message": "In order to make your life easier, this assistant will tweak your Thunderbird setup to ensure you enjoy the optimal experience. We don't want you to feel dissatisfied!",
-    "description": "First detail paragraph for the assistant."
+  "assistant.settingsBetweenTitle": {
+    "message": "Would you like to display the Between column by default?",
+    "description": "Title for the section for enabling the between column."
   },
 
-  "assistant.p2": {
-    "message": "The tweaks we make are all reversible, so don't worry: should you not enjoy Thunderbird Conversations, we will revert any preference change we made as soon as you uninstall the extension.",
-    "description": "Second detail paragraph for the assistant."
+  "assistant.settingsBetweenDetail": {
+    "message": "This adds a column in the message list to show you the names of everyone involved in the conversation.",
+    "description": "Details for the section for enabling the between column."
   },
 
-  "assistant.p3": {
-    "message": "This may take quite some time. You can either wait for this window to close, or close the window yourself, and check the progress from Tools > Activity Manager.",
-    "description": "Third detail paragraph for the assistant."
+  "assistant.actionEnableBetween": {
+    "message": "Enable Between column",
+    "description": "Label for the checkbox for enabling the between column."
+  },
+
+  "assistant.settingsColumnInfo": {
+    "message": "You can always right-click on the column headers to enable and disable them.",
+    "description": "Information after the between column about how to enable and disable columns."
+  },
+
+  "assistant.otherSettingsTitle": {
+    "message": "Other Settings",
+    "description": "Title for the other settings."
   },
 
   "assistant.working": {
@@ -164,9 +174,9 @@
     "description": "An indication that the assistant is working."
   },
 
-  "assistant.review": {
-    "message": "Review changes",
-    "description": "The review button title for the assistant."
+  "assistant.workingText": {
+    "message": "This may take some time. You can either wait for this tab to close, or close the tab yourself, and check the progress from Tools > Activity Manager.",
+    "description": "Third detail paragraph for the assistant."
   },
 
   "assistant.apply": {
@@ -174,24 +184,9 @@
     "description": "The apply button title for the assistant."
   },
 
-  "assistant.settings": {
-    "message": "Settings",
-    "description": "The settings section legend for the assistant."
-  },
-
   "assistant.actionEnableGloda": {
     "message": "Make sure Global Search and Indexer is enabled.",
     "description": "Option text for enabling Gloda."
-  },
-
-  "assistant.actionDontExpand": {
-    "message": "In the message list, don't expand threads containing unread messages.",
-    "description": "Option text for not expanding message threads."
-  },
-
-  "assistant.actionAttachmentsInline": {
-    "message": "Don't display attachments inline (strongly recommended).",
-    "description": "Option text for showing attachments inline."
   },
 
   "assistant.actionOfflineDownload": {
@@ -199,19 +194,9 @@
     "description": "Option text for allowing offline download."
   },
 
-  "assistant.actionUnifiedInboxSearchesSent": {
-    "message": "The Unified Inbox also searches Sent folders (strongly recommended).",
-    "description": "Option text for adding sent to the unified inbox."
-  },
-
-  "assistant.actionSetupView": {
-    "message": "Switch to Global Inbox, make display threaded, sort by date, enable unread count column and new \"between\" column (strongly recommended).",
+  "assistant.actionSetupMessageViews": {
+    "message": "Make the message list display threaded and sort it by date. Apply to all folders (strongly recommended).",
     "description": "Option text for how the view is set."
-  },
-
-  "assistant.actionSetupViewDefaults": {
-    "message": "Use these custom sort settings for all folders.",
-    "description": "Option text for setting the view defaults."
   },
 
   "assistant.actionEnsureMessagePaneVisible": {

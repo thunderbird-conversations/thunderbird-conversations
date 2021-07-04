@@ -158,8 +158,13 @@ describe("Option full page tests", () => {
   });
 
   test("Pressing the undo button runs the undo", async () => {
-    const mockedUndo = jest.spyOn(browser.conversations, "undoCustomizations");
-    window.alert = jest.fn();
+    const spy = jest.fn();
+    jest.spyOn(browser.runtime, "connect").mockImplementation(() => {
+      return {
+        postMessage: spy,
+      };
+    });
+
     const main = enzyme.mount(<Main />);
 
     await waitForComponentToPaint(main);
@@ -167,10 +172,6 @@ describe("Option full page tests", () => {
     const button = main.find(".undo");
     button.simulate("click");
 
-    while (!window.alert.mock.calls.length) {
-      await new Promise((r) => setTimeout(r, 10));
-    }
-
-    expect(mockedUndo).toHaveBeenCalled();
+    expect(spy).toHaveBeenCalled();
   });
 });

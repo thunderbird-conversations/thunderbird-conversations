@@ -129,34 +129,9 @@
     "description": "The document title of the assistant page."
   },
 
-  "assistant.intro": {
-    "message": "Sveiki, jus sveikina Thunderbird Conversations!",
-    "description": "Introduction paragraph for the assistant."
-  },
-
-  "assistant.p1": {
-    "message": "Norėdamas palengvinti jūsų gyvenimą, šis padėjėjas nustatys jūsų Thunderbird nustatymus, kad būtų užtikrintas optimalus darbas. Mes nenorime jog jūs nusiviltumėte!",
-    "description": "First detail paragraph for the assistant."
-  },
-
-  "assistant.p2": {
-    "message": "Patobulinimai kuriuos mes padarome yra atšaukiami, nesijaudinkite: kai tik išdiegsite Thunderbird Conversations plėtinį visi pakeitimai bus atkeisti į prieš tai buvusį būvį.",
-    "description": "Second detail paragraph for the assistant."
-  },
-
-  "assistant.p3": {
-    "message": "Tai gali užtrukti. Galite palaukti kol langas užsidarys arba patys uždaryti šį langą ir stebėti pažangą iš Priemonės > Veiklų tvarkytuvė.",
-    "description": "Third detail paragraph for the assistant."
-  },
-
   "assistant.working": {
     "message": "Vykdoma...",
     "description": "An indication that the assistant is working."
-  },
-
-  "assistant.review": {
-    "message": "Peržiūrėti keitimus",
-    "description": "The review button title for the assistant."
   },
 
   "assistant.apply": {
@@ -164,44 +139,14 @@
     "description": "The apply button title for the assistant."
   },
 
-  "assistant.settings": {
-    "message": "Settings",
-    "description": "The settings section legend for the assistant."
-  },
-
   "assistant.actionEnableGloda": {
     "message": "Įsitikinkite jog Globali paieška ir indeksavimas yra įjungti.",
     "description": "Option text for enabling Gloda."
   },
 
-  "assistant.actionDontExpand": {
-    "message": "Laiškų sąraše, neišskleisti temų kuriose yra neskaitytų laiškų.",
-    "description": "Option text for not expanding message threads."
-  },
-
-  "assistant.actionAttachmentsInline": {
-    "message": "Nerodyti priedų šalia (labai rekomenduotina).",
-    "description": "Option text for showing attachments inline."
-  },
-
   "assistant.actionOfflineDownload": {
     "message": "„Gauti laiškai“ ir „Išsiųsti laiškai“ yra sinchronizuoti darbui atsijungus (labai rekomenduotina).",
     "description": "Option text for allowing offline download."
-  },
-
-  "assistant.actionUnifiedInboxSearchesSent": {
-    "message": "Suvestinių aplankų gautieji taipogi ieško Išsiųstųjų aplankų (labai rekomenduotina).",
-    "description": "Option text for adding sent to the unified inbox."
-  },
-
-  "assistant.actionSetupView": {
-    "message": "Persijungti į globalų gautųjų aplanką, rodyti temomis, rikiuoti pagal datą, įjungti neskaitytų skaičiaus stulpelį ir „tarp“ stulpelį (labai rekomenduotina).",
-    "description": "Option text for how the view is set."
-  },
-
-  "assistant.actionSetupViewDefaults": {
-    "message": "Šiuos pasirinktinius rikiavimo nustatymus naudoti visiems aplankams.",
-    "description": "Option text for setting the view defaults."
   },
 
   "assistant.actionEnsureMessagePaneVisible": {

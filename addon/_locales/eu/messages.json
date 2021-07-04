@@ -129,34 +129,9 @@
     "description": "The document title of the assistant page."
   },
 
-  "assistant.intro": {
-    "message": "Kaixo, hau Thunderbird Conversations da!",
-    "description": "Introduction paragraph for the assistant."
-  },
-
-  "assistant.p1": {
-    "message": "Zure bizitza errazteko asmoz, laguntzaile honek Thunderbird moldatuko dizu erabilerarik egokiena ziurtatzeko. Ez dugu nahi zu atsekabeturik sentitzea!",
-    "description": "First detail paragraph for the assistant."
-  },
-
-  "assistant.p2": {
-    "message": "Moldaketa guztiak itzulgarriak dira, beraz ez larritu: ez bazaizu Thunderbird Conversations atsegin, atzera botako ditugu moldaketa guztiak gehigarria kentzen duzunean.",
-    "description": "Second detail paragraph for the assistant."
-  },
-
-  "assistant.p3": {
-    "message": "Honek bere denbora har dezake. Leihoa ixtera itxaron dezakezu edo zuk zeuk itxi, eta aurrerapena ikuskatu Tresnak> jarduera-kudeatzailea aukeratuz.",
-    "description": "Third detail paragraph for the assistant."
-  },
-
   "assistant.working": {
     "message": "Lanean...",
     "description": "An indication that the assistant is working."
-  },
-
-  "assistant.review": {
-    "message": "Berrikusi aldaketak",
-    "description": "The review button title for the assistant."
   },
 
   "assistant.apply": {
@@ -164,44 +139,14 @@
     "description": "The apply button title for the assistant."
   },
 
-  "assistant.settings": {
-    "message": "Settings",
-    "description": "The settings section legend for the assistant."
-  },
-
   "assistant.actionEnableGloda": {
     "message": "Bilaketa orokorra eta indexatzailea gaituak egon behar dute.",
     "description": "Option text for enabling Gloda."
   },
 
-  "assistant.actionDontExpand": {
-    "message": "Mezuen zerrendan, ez zabaldu mezu irakurri gabeak dituzten hariak.",
-    "description": "Option text for not expanding message threads."
-  },
-
-  "assistant.actionAttachmentsInline": {
-    "message": "Ez erakutsi eranskinak barnean(oso gomendatua).",
-    "description": "Option text for showing attachments inline."
-  },
-
   "assistant.actionOfflineDownload": {
     "message": "Lineaz kanpoko sarrera eta bidalitakoen karpetak sinkronizatuak (oso gomendatua).",
     "description": "Option text for allowing offline download."
-  },
-
-  "assistant.actionUnifiedInboxSearchesSent": {
-    "message": "Elkartutako karpetak bidalitakoetan ere bilatzen du(oso gomendatua).",
-    "description": "Option text for adding sent to the unified inbox."
-  },
-
-  "assistant.actionSetupView": {
-    "message": "Aldatu sarrera globala, erakutsi hariak, dataz ordenatu,gaitu irakurri gabeen zutabea eta zutabe berria \"Parte-hartzaileak\" sartu (oso gomendatua).",
-    "description": "Option text for how the view is set."
-  },
-
-  "assistant.actionSetupViewDefaults": {
-    "message": "Erabili ordenatze aukera pertsonalizatu hauek karpeta guztietan.",
-    "description": "Option text for setting the view defaults."
   },
 
   "assistant.actionEnsureMessagePaneVisible": {

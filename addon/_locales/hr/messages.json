@@ -129,34 +129,9 @@
     "description": "The document title of the assistant page."
   },
 
-  "assistant.intro": {
-    "message": "Pozdrav, ovo je Thunderbird Conversations!",
-    "description": "Introduction paragraph for the assistant."
-  },
-
-  "assistant.p1": {
-    "message": "Kako bismo Vam olakšali stvari, čarobnjak će prilagoditi Vaše postavke za Thunderbird kako bismo osigurali optimalno iskustvo. Ne želimo da se osjećate nezadovoljno!",
-    "description": "First detail paragraph for the assistant."
-  },
-
-  "assistant.p2": {
-    "message": "Ne brinite, sve prilagodbe koje smo napravili mogu se vratiti. Ukoliko nećete uživati u Thunderbird Conversations vratit ćemo sve postavke na početne vrijednosti čim uklonite dodatak.",
-    "description": "Second detail paragraph for the assistant."
-  },
-
-  "assistant.p3": {
-    "message": "Ovo može potrajati. Možete pričekati da se ovaj prozor zatvori ili možete ga sami zatvoriti i pratiti napredak iz izbornika Alati > Upravitelj aktivnostima.",
-    "description": "Third detail paragraph for the assistant."
-  },
-
   "assistant.working": {
     "message": "Obrada...",
     "description": "An indication that the assistant is working."
-  },
-
-  "assistant.review": {
-    "message": "Pregled promjena",
-    "description": "The review button title for the assistant."
   },
 
   "assistant.apply": {
@@ -164,44 +139,14 @@
     "description": "The apply button title for the assistant."
   },
 
-  "assistant.settings": {
-    "message": "Postavke",
-    "description": "The settings section legend for the assistant."
-  },
-
   "assistant.actionEnableGloda": {
     "message": "Provjerite je li globalno pretraživanje i indeksiranje uključeno.",
     "description": "Option text for enabling Gloda."
   },
 
-  "assistant.actionDontExpand": {
-    "message": "U popisu poruka ne proširuj teme koje sadrže nepročitane poruke.",
-    "description": "Option text for not expanding message threads."
-  },
-
-  "assistant.actionAttachmentsInline": {
-    "message": "Ne prikazuj privitke unutar tijela poruke (izrazito preporučeno).",
-    "description": "Option text for showing attachments inline."
-  },
-
   "assistant.actionOfflineDownload": {
     "message": "Primljena pošta i Poslano sinkronizira se za izvanmrežnu pohranu (izrazito preporučeno).",
     "description": "Option text for allowing offline download."
-  },
-
-  "assistant.actionUnifiedInboxSearchesSent": {
-    "message": "Zajednička Primljena pošta također pretražuje mape Poslano (izrazito preporučeno).",
-    "description": "Option text for adding sent to the unified inbox."
-  },
-
-  "assistant.actionSetupView": {
-    "message": "Prebacite se na Globalnu primljenu poštu, sortirajte po datumu, omogućite stupac za brojanje nepročitanih poruka i novi stupac \"između\" (izrazito preporučeno).",
-    "description": "Option text for how the view is set."
-  },
-
-  "assistant.actionSetupViewDefaults": {
-    "message": "Koristi ove prilagođene postavke za sortiranje za sve mape.",
-    "description": "Option text for setting the view defaults."
   },
 
   "assistant.actionEnsureMessagePaneVisible": {

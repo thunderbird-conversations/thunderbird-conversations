@@ -129,34 +129,9 @@
     "description": "The document title of the assistant page."
   },
 
-  "assistant.intro": {
-    "message": "Vítejte v Konverzacích pro Thunderbird!",
-    "description": "Introduction paragraph for the assistant."
-  },
-
-  "assistant.p1": {
-    "message": "Abychom vám usnadnili život, tento pomocník upraví některá nastavení Thunderbirdu, aby vše klapalo. Nechceme, abyste se cítili zklamaně.",
-    "description": "First detail paragraph for the assistant."
-  },
-
-  "assistant.p2": {
-    "message": "Pokud byste si náhodou Konverzace pro Thuderbird neužívali tak, jak jste doufali, nezoufejte! Všechny provedené změny se vrátí zpět, jakmile toto rozšíření odinstalujete.",
-    "description": "Second detail paragraph for the assistant."
-  },
-
-  "assistant.p3": {
-    "message": "Nastavování může chvilku trvat. Můžete buď počkat až se okno zavře samo, nebo jej můžete zavřít ručně a stav uplatňování změn zkontrolovat v nabídce Nástroje > Správce aktivit.",
-    "description": "Third detail paragraph for the assistant."
-  },
-
   "assistant.working": {
     "message": "Pracuje se ...",
     "description": "An indication that the assistant is working."
-  },
-
-  "assistant.review": {
-    "message": "Zobrazit změny",
-    "description": "The review button title for the assistant."
   },
 
   "assistant.apply": {
@@ -164,44 +139,14 @@
     "description": "The apply button title for the assistant."
   },
 
-  "assistant.settings": {
-    "message": "Settings",
-    "description": "The settings section legend for the assistant."
-  },
-
   "assistant.actionEnableGloda": {
     "message": "Aktivovat globální vyhledávání a indexaci.",
     "description": "Option text for enabling Gloda."
   },
 
-  "assistant.actionDontExpand": {
-    "message": "V seznamu zpráv nerozbalovat vlákna, která obsahují nepřečtené zprávy.",
-    "description": "Option text for not expanding message threads."
-  },
-
-  "assistant.actionAttachmentsInline": {
-    "message": "Nezobrazovat přílohy v jednom řádku (silně doporučeno).",
-    "description": "Option text for showing attachments inline."
-  },
-
   "assistant.actionOfflineDownload": {
     "message": "Doručená a odeslaná pošta je ukládána offline (silně doporučeno).",
     "description": "Option text for allowing offline download."
-  },
-
-  "assistant.actionUnifiedInboxSearchesSent": {
-    "message": "V zobrazení Jednotné složky lze prohledávat i složky s odeslanou poštou (silně doporučeno).",
-    "description": "Option text for adding sent to the unified inbox."
-  },
-
-  "assistant.actionSetupView": {
-    "message": "Po spuštění přepnout do zobrazení Všechny složky, zobrazit zprávy jako vlákna, seřadit podle data, zobrazit sloupec Nepřečtené a nový sloupec \"Mezi\" (silně doporučeno).",
-    "description": "Option text for how the view is set."
-  },
-
-  "assistant.actionSetupViewDefaults": {
-    "message": "Použít tato nastavení řazení pro všechny složky.",
-    "description": "Option text for setting the view defaults."
   },
 
   "assistant.actionEnsureMessagePaneVisible": {

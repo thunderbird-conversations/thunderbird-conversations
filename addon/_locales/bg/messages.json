@@ -129,34 +129,9 @@
     "description": "The document title of the assistant page."
   },
 
-  "assistant.intro": {
-    "message": "Здравейте в Thunderbird Разговори!",
-    "description": "Introduction paragraph for the assistant."
-  },
-
-  "assistant.p1": {
-    "message": "За да направим живота Ви по-лесен, този помощник ще промени Вашите настройки на Thunderbird, така че да сме сигурни, че ще получите най-доброто и няма да бъдете разочаровани!",
-    "description": "First detail paragraph for the assistant."
-  },
-
-  "assistant.p2": {
-    "message": "Промените, които ще направим, са обратими, така че не се притеснявайте – ако Thunderbird Разговори не Ви хареса, ние ще възстановим всички настройки, които сме променили, когато деинсталирате разширението.",
-    "description": "Second detail paragraph for the assistant."
-  },
-
-  "assistant.p3": {
-    "message": "Това може да отнеме известно време. Можете да почакате този прозорец да се затвори или да го затворите сами и да следите напредъка в Инструменти > Управление на активността.",
-    "description": "Third detail paragraph for the assistant."
-  },
-
   "assistant.working": {
     "message": "В процес на работа...",
     "description": "An indication that the assistant is working."
-  },
-
-  "assistant.review": {
-    "message": "Преглед на промените",
-    "description": "The review button title for the assistant."
   },
 
   "assistant.apply": {
@@ -164,44 +139,14 @@
     "description": "The apply button title for the assistant."
   },
 
-  "assistant.settings": {
-    "message": "Settings",
-    "description": "The settings section legend for the assistant."
-  },
-
   "assistant.actionEnableGloda": {
     "message": "Увери се, че глобалното търсене и индексиране е включено.",
     "description": "Option text for enabling Gloda."
   },
 
-  "assistant.actionDontExpand": {
-    "message": "В списъка със съобщения, не разгъвай разговорите, съдържащи непрочетени съобщения.",
-    "description": "Option text for not expanding message threads."
-  },
-
-  "assistant.actionAttachmentsInline": {
-    "message": "Не показвай притурките в самите писма (силно препоръчително).",
-    "description": "Option text for showing attachments inline."
-  },
-
   "assistant.actionOfflineDownload": {
     "message": "Входящите и изходящите съобщение се синхронизират за локално съхранение (силно препоръчително).",
     "description": "Option text for allowing offline download."
-  },
-
-  "assistant.actionUnifiedInboxSearchesSent": {
-    "message": "Обединената папка „входящи“ претърсва и изходящите папки (силно препоръчително).",
-    "description": "Option text for adding sent to the unified inbox."
-  },
-
-  "assistant.actionSetupView": {
-    "message": "Превключи към обединена папка „входящи“, направи изгледа по теми, подреди по дата, включи колоната за брой непрочетени и новата колона „между“ (силно препоръчително).",
-    "description": "Option text for how the view is set."
-  },
-
-  "assistant.actionSetupViewDefaults": {
-    "message": "Използвай тези настройки за подреждане при всички папки.",
-    "description": "Option text for setting the view defaults."
   },
 
   "assistant.actionEnsureMessagePaneVisible": {

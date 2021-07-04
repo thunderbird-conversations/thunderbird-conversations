@@ -129,34 +129,9 @@
     "description": "The document title of the assistant page."
   },
 
-  "assistant.intro": {
-    "message": "שלום, זהשיחות תנדרברד!",
-    "description": "Introduction paragraph for the assistant."
-  },
-
-  "assistant.p1": {
-    "message": "בכדי לסייע לך, אשף זה יסדר את הגדרות תנדרברד כך שתקבל את החוויה המירבית.",
-    "description": "First detail paragraph for the assistant."
-  },
-
-  "assistant.p2": {
-    "message": "כל השינויים הם הפיכים, ונחזיר אותם במידה ותסיר את שיחות תנדרברד.‏",
-    "description": "Second detail paragraph for the assistant."
-  },
-
-  "assistant.p3": {
-    "message": "פעולה זאת עלולה להמשך זמן רב. ניתן לחכות עד שחלון זה נסגר, או לסגור אותו ולבדוק את התקדמות הפעולה בתפריט \"כלים -> מנהל פעולות\".‏",
-    "description": "Third detail paragraph for the assistant."
-  },
-
   "assistant.working": {
     "message": "עובד...‏",
     "description": "An indication that the assistant is working."
-  },
-
-  "assistant.review": {
-    "message": "עבור על השינויים",
-    "description": "The review button title for the assistant."
   },
 
   "assistant.apply": {
@@ -164,44 +139,14 @@
     "description": "The apply button title for the assistant."
   },
 
-  "assistant.settings": {
-    "message": "Settings",
-    "description": "The settings section legend for the assistant."
-  },
-
   "assistant.actionEnableGloda": {
     "message": "נא לוודא שהופעל חיפוש גלובאלי.‏",
     "description": "Option text for enabling Gloda."
   },
 
-  "assistant.actionDontExpand": {
-    "message": "ברשימת ההודעות, אל תפרוש חוטים הכוללים הודעות שטרם נקראו.",
-    "description": "Option text for not expanding message threads."
-  },
-
-  "assistant.actionAttachmentsInline": {
-    "message": "אל הראה מצורפים בגוף ההודעה (מומלץ בחום).‏",
-    "description": "Option text for showing attachments inline."
-  },
-
   "assistant.actionOfflineDownload": {
     "message": "לסנכרן תקייות כניסה ונשלחו לאחסון בלתי-מכוון (מומלץ בחום).‏",
     "description": "Option text for allowing offline download."
-  },
-
-  "assistant.actionUnifiedInboxSearchesSent": {
-    "message": "תקיית כניסה המאוחדת מבצעת חיפושים גם בתקיית נשלחו (מומלץ בחום).‏",
-    "description": "Option text for adding sent to the unified inbox."
-  },
-
-  "assistant.actionSetupView": {
-    "message": "העבר לתקיית כניסה עולמית, תצוגה מחוטטת, מיין לפי תאריך, האפשר תור המציג כמות הודעות בלתי-קרואות, ותור חדש לציון משתתפי השיחה. (מומלץ בחום).‏",
-    "description": "Option text for how the view is set."
-  },
-
-  "assistant.actionSetupViewDefaults": {
-    "message": "ההשתמש בהגדרות מיון אלו עבור כל תיקיה.‏",
-    "description": "Option text for setting the view defaults."
   },
 
   "assistant.actionEnsureMessagePaneVisible": {

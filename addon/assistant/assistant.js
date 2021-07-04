@@ -27,9 +27,11 @@ async function onFinish() {
   for (const item of workingItems) {
     item.classList.remove("hidden");
   }
-  const applyButton = document.getElementById("applyButton");
-  applyButton.disabled = true;
-  applyButton.textContent = workingItems[0].innerText;
+  for (const item of document.getElementsByClassName("settings")) {
+    item.classList.add("hidden");
+  }
+  document.getElementById("intro").classList.add("hidden");
+  document.getElementById("applyButton").classList.add("hidden");
 
   const checkboxes = document.querySelectorAll('input[type="checkbox"]');
   const itemsToInstall = [];
@@ -38,28 +40,12 @@ async function onFinish() {
       itemsToInstall.push(checkbox.id);
     }
   }
-  const result = await browser.storage.local.get("preferences");
-  let originalUninstallInfo = result.preferences.uninstall_infos;
 
-  const uninstallInfos = await browser.conversations.installCustomisations(
+  let port = browser.runtime.connect({ name: "assistant" });
+  port.postMessage({
     itemsToInstall,
-    originalUninstallInfo
-  );
-
-  if (originalUninstallInfo == "{}") {
-    result.preferences.uninstall_infos = uninstallInfos;
-    await browser.storage.local.set({ preferences: result.preferences });
-  } else {
-    console.warn("Uninstall information already there, not overwriting...");
-  }
-  finish();
-}
-
-function onCustomSetup(event) {
-  const more = document.getElementById("more");
-  more.setAttribute("show", true);
-  more.scrollIntoView({ alignToTop: false });
-  event.target.classList.add("hidden");
+    tabId: (await browser.tabs.getCurrent()).id,
+  });
 }
 
 window.addEventListener(
@@ -74,7 +60,6 @@ window.addEventListener(
         ? (node[attr] = text)
         : node.appendChild(document.createTextNode(text));
     }
-    document.getElementById("review").onclick = onCustomSetup;
     document.getElementById("applyButton").onclick = onFinish;
   },
   { once: true }

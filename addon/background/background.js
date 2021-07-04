@@ -2,10 +2,11 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
+import { Assistant } from "./assistant.js";
+import { contactManager } from "./contactManager.js";
 import { Prefs } from "../prefs.js";
 import { UIHandler } from "./uiHandler.js";
 import { Window } from "./window.js";
-import { contactManager } from "./contactManager.js";
 
 const requestHandlers = [];
 
@@ -15,6 +16,7 @@ const requestHandlers = [];
  */
 class Background {
   constructor() {
+    this._assistant = new Assistant();
     this._prefs = new Prefs();
     this._uiHandler = new UIHandler();
     this._window = new Window();
@@ -46,6 +48,7 @@ class Background {
       }
     );
 
+    await this._assistant.init();
     await this._prefs.init();
     await this._uiHandler.init();
     await this._window.init();

@@ -129,34 +129,9 @@
     "description": "The document title of the assistant page."
   },
 
-  "assistant.intro": {
-    "message": "Hallo, dit is Thunderbird Conversations!",
-    "description": "Introduction paragraph for the assistant."
-  },
-
-  "assistant.p1": {
-    "message": "Om uw leven gemakkelijker te maken, zal deze assistent uw Thunderbird tweaken zodat u een optimale ervaring geniet. We willen niet dat u zich ontevreden voelt!",
-    "description": "First detail paragraph for the assistant."
-  },
-
-  "assistant.p2": {
-    "message": "De tweaks die wij maken zijn alle terug te draaien, dus maak u geen zorgen. Als u niet geniet van Thunderbird Conversations, dan zullen we elke instelling die wij maken ongedaan maken, zodra u deze add-on verwijdert.",
-    "description": "Second detail paragraph for the assistant."
-  },
-
-  "assistant.p3": {
-    "message": "Dit kan even duren. U kunt wachten totdat het scherm sluit, of het scherm zelf sluiten en controleer het proces vanuit Taakbeheer Manager.",
-    "description": "Third detail paragraph for the assistant."
-  },
-
   "assistant.working": {
     "message": "Bezig...",
     "description": "An indication that the assistant is working."
-  },
-
-  "assistant.review": {
-    "message": "Wijzigingen herzien",
-    "description": "The review button title for the assistant."
   },
 
   "assistant.apply": {
@@ -164,44 +139,14 @@
     "description": "The apply button title for the assistant."
   },
 
-  "assistant.settings": {
-    "message": "Settings",
-    "description": "The settings section legend for the assistant."
-  },
-
   "assistant.actionEnableGloda": {
     "message": "Controleer dat Global Search en Indexer ingeschakeld zijn.",
     "description": "Option text for enabling Gloda."
   },
 
-  "assistant.actionDontExpand": {
-    "message": "In de berichtenlijst, geen onderwerpen uitvouwen met ongelezen berichten.",
-    "description": "Option text for not expanding message threads."
-  },
-
-  "assistant.actionAttachmentsInline": {
-    "message": "Toon bijlagen niet inline (zeer aanbevolen).",
-    "description": "Option text for showing attachments inline."
-  },
-
   "assistant.actionOfflineDownload": {
     "message": "Postvak IN en Verzonden items gesynchroniseerd voor offline opslag (zeer aanbevolen).",
     "description": "Option text for allowing offline download."
-  },
-
-  "assistant.actionUnifiedInboxSearchesSent": {
-    "message": "Dezelfde Postvak IN als zoeken in Verzonden items mappen (zeer aanbevolen).",
-    "description": "Option text for adding sent to the unified inbox."
-  },
-
-  "assistant.actionSetupView": {
-    "message": "Wijzig naar Globale Postvak IN, onderwerpen weergave maken, sorteer op datum, schakel aantal ongelezen kolom en \"tussen\" kolom in (zeer aanbevolen).",
-    "description": "Option text for how the view is set."
-  },
-
-  "assistant.actionSetupViewDefaults": {
-    "message": "Gebruik deze sorteerinstelling voor alle mappen.",
-    "description": "Option text for setting the view defaults."
   },
 
   "assistant.actionEnsureMessagePaneVisible": {

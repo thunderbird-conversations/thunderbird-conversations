@@ -129,34 +129,9 @@
     "description": "The document title of the assistant page."
   },
 
-  "assistant.intro": {
-    "message": "Ueila, quai è Thunderbird Conversations!",
-    "description": "Introduction paragraph for the assistant."
-  },
-
-  "assistant.p1": {
-    "message": "Per simplifitgar la midada a Thunderbird Conversations vegn quest assistent far las midadas necessarias per che tut possia funcziunar optimal. Nus na vulain betg che ti sajas trumpà dal program.",
-    "description": "First detail paragraph for the assistant."
-  },
-
-  "assistant.p2": {
-    "message": "Las midadas che nus faschain pos ti revocar tuttas, nagina tema: Sche Thunderbird Conversations na ta plascha betg, po quest assistent revocar tut las midadas ch'el fa sche ti deinstalleschas quest supplement.",
-    "description": "Second detail paragraph for the assistant."
-  },
-
-  "assistant.p3": {
-    "message": "Quai po cuzzar in mument. Ti pos u spetgar enfin che questa fanestra vegn serrada automaticamain ni che ti pos serrar la fanestra ed observar il progress dal menu Utensils > Activitads.",
-    "description": "Third detail paragraph for the assistant."
-  },
-
   "assistant.working": {
     "message": "Lavurar…",
     "description": "An indication that the assistant is working."
-  },
-
-  "assistant.review": {
-    "message": "Controllar las midadas",
-    "description": "The review button title for the assistant."
   },
 
   "assistant.apply": {
@@ -164,44 +139,14 @@
     "description": "The apply button title for the assistant."
   },
 
-  "assistant.settings": {
-    "message": "Settings",
-    "description": "The settings section legend for the assistant."
-  },
-
   "assistant.actionEnableGloda": {
     "message": "Controllar che la tschertga globala ed l'indexer èn activads.",
     "description": "Option text for enabling Gloda."
   },
 
-  "assistant.actionDontExpand": {
-    "message": "Betg extender temas che cuntegnan messadis betg legids en la glista da messadis.",
-    "description": "Option text for not expanding message threads."
-  },
-
-  "assistant.actionAttachmentsInline": {
-    "message": "Betg mussar las agiuntas cun incorporar (fermamain recummandà).",
-    "description": "Option text for showing attachments inline."
-  },
-
   "assistant.actionOfflineDownload": {
     "message": "Sincronisar la posta entrada ed ils e-mails tramess per la memoria offline (fermamain recummandà).",
     "description": "Option text for allowing offline download."
-  },
-
-  "assistant.actionUnifiedInboxSearchesSent": {
-    "message": "La posta entrada unifitgada tschertga era en ordinaturs cun e-mails tramess (fermamain recummandà).",
-    "description": "Option text for adding sent to the unified inbox."
-  },
-
-  "assistant.actionSetupView": {
-    "message": "Midar a la posta entrada globala, activar la vista gruppada, zavrar tenor data, activar la colonna cun il dumber dad e-mails nunlegids ed la nova colonna \"tranter\" (fermamain recummandà).",
-    "description": "Option text for how the view is set."
-  },
-
-  "assistant.actionSetupViewDefaults": {
-    "message": "Utilisar questas preferenzas da zavrar persunalisadas per tut ils ordinaturs.",
-    "description": "Option text for setting the view defaults."
   },
 
   "assistant.actionEnsureMessagePaneVisible": {

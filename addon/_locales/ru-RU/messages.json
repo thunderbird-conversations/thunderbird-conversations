@@ -129,34 +129,9 @@
     "description": "The document title of the assistant page."
   },
 
-  "assistant.intro": {
-    "message": "Привет, это Thunderbird Conversations!",
-    "description": "Introduction paragraph for the assistant."
-  },
-
-  "assistant.p1": {
-    "message": "Помощник настроит Thunderbird так, чтобы обеспечить для вас наиболее оптимальный режим работы с сообщениями. Мы не хотим, чтобы вы испытывали недовольство при работе!",
-    "description": "First detail paragraph for the assistant."
-  },
-
-  "assistant.p2": {
-    "message": "Не беспокойтесь, все изменения в настройках, которые мы сделаем, будут обратимы: мы отменим все изменения, как только вы удалите дополнение Thunderbird Conversations.",
-    "description": "Second detail paragraph for the assistant."
-  },
-
-  "assistant.p3": {
-    "message": "Процесс настройки может занять довольно много времени. После запуска процесса вы можете либо дождаться закрытия этой вкладки, либо закрыть её самостоятельно и проверить ход выполнения в меню \"Инструменты > Диспетчер работы\".",
-    "description": "Third detail paragraph for the assistant."
-  },
-
   "assistant.working": {
     "message": "Применяются изменения...",
     "description": "An indication that the assistant is working."
-  },
-
-  "assistant.review": {
-    "message": "Просмотр изменений",
-    "description": "The review button title for the assistant."
   },
 
   "assistant.apply": {
@@ -164,44 +139,14 @@
     "description": "The apply button title for the assistant."
   },
 
-  "assistant.settings": {
-    "message": "Настройки",
-    "description": "The settings section legend for the assistant."
-  },
-
   "assistant.actionEnableGloda": {
     "message": "Убедитесь, что в меню \"Настройки > Основные > Индексация\" включены глобальный поиск и индексация сообщений.",
     "description": "Option text for enabling Gloda."
   },
 
-  "assistant.actionDontExpand": {
-    "message": "Не раскрывать в списке сообщений ветки, содержащие непрочитанные сообщения.",
-    "description": "Option text for not expanding message threads."
-  },
-
-  "assistant.actionAttachmentsInline": {
-    "message": "Не показывать вложения, встроенные в тело сообщения (настоятельно рекомендуется).",
-    "description": "Option text for showing attachments inline."
-  },
-
   "assistant.actionOfflineDownload": {
     "message": "Загружать содержимое папок \"Входящие\" и \"Отправленные\" для работы в автономном режиме (настоятельно рекомендуется).",
     "description": "Option text for allowing offline download."
-  },
-
-  "assistant.actionUnifiedInboxSearchesSent": {
-    "message": "Объединённая папка \"Входящие\" производит поиск также и в папке \"Отправленные\" (настоятельно рекомендуется).",
-    "description": "Option text for adding sent to the unified inbox."
-  },
-
-  "assistant.actionSetupView": {
-    "message": "Переключиться в объединённую папку \"Входящие\", показать ветки сообщений, сортировать по дате, показывать колонку с количеством непрочитанных сообщений и новую колонку \"Между\" (настоятельно рекомендуется).",
-    "description": "Option text for how the view is set."
-  },
-
-  "assistant.actionSetupViewDefaults": {
-    "message": "Использовать эти настройки сортировки для всех папок.",
-    "description": "Option text for setting the view defaults."
   },
 
   "assistant.actionEnsureMessagePaneVisible": {

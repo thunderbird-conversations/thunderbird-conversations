@@ -129,34 +129,9 @@
     "description": "The document title of the assistant page."
   },
 
-  "assistant.intro": {
-    "message": "Witamy w Thunderbird Conversations!",
-    "description": "Introduction paragraph for the assistant."
-  },
-
-  "assistant.p1": {
-    "message": "Aby ułatwić ci życie, asystent konfiguracji wybierze optymalne ustawienia Thunderbirda.",
-    "description": "First detail paragraph for the assistant."
-  },
-
-  "assistant.p2": {
-    "message": "Dokonane zmiany są całkowicie odwracalne. Jeśli Thunderbird Conversation nie spełni twoich oczekiwań, wszystkie dokonane zmiany ustawień po dezinstalacji dodatku zostaną przywrócone do stanu sprzed instalacji.",
-    "description": "Second detail paragraph for the assistant."
-  },
-
-  "assistant.p3": {
-    "message": "Konfiguracja może zająć trochę czasu. Możesz czekać na zamknięcie tego okna lub zamknąć je teraz i sprawdzić postęp z poziomu menu Narzędzia » Monitor aktywności.",
-    "description": "Third detail paragraph for the assistant."
-  },
-
   "assistant.working": {
     "message": "Konfigurowanie…",
     "description": "An indication that the assistant is working."
-  },
-
-  "assistant.review": {
-    "message": "Przejrzyj zmiany",
-    "description": "The review button title for the assistant."
   },
 
   "assistant.apply": {
@@ -164,44 +139,14 @@
     "description": "The apply button title for the assistant."
   },
 
-  "assistant.settings": {
-    "message": "Settings",
-    "description": "The settings section legend for the assistant."
-  },
-
   "assistant.actionEnableGloda": {
     "message": "Sprawdź, czy jest włączone wyszukiwanie globalne i indeksowanie.",
     "description": "Option text for enabling Gloda."
   },
 
-  "assistant.actionDontExpand": {
-    "message": "Na liście wiadomości nie rozwijaj wątków zawierających nieprzeczytane wiadomości.",
-    "description": "Option text for not expanding message threads."
-  },
-
-  "assistant.actionAttachmentsInline": {
-    "message": "Nie wyświetlaj załączników w tekście (zalecane).",
-    "description": "Option text for showing attachments inline."
-  },
-
   "assistant.actionOfflineDownload": {
     "message": "Synchronizuj foldery Wysłane i Odebrane przechowywane offline (zalecane).",
     "description": "Option text for allowing offline download."
-  },
-
-  "assistant.actionUnifiedInboxSearchesSent": {
-    "message": "Skrzynka odbiorcza Pogrupowane przeszukuje również foldery Wysłane (zalecane).",
-    "description": "Option text for adding sent to the unified inbox."
-  },
-
-  "assistant.actionSetupView": {
-    "message": "Przełącz do globalnej skrzynki odbiorczej, wyświetlaj powątkowane, sortuj wg daty, włącz kolumnę liczby nieprzeczytanych i nową kolumnę „pomiędzy” (zalecane).",
-    "description": "Option text for how the view is set."
-  },
-
-  "assistant.actionSetupViewDefaults": {
-    "message": "Stosuj te ustawienia sortowania we wszystkich folderach.",
-    "description": "Option text for setting the view defaults."
   },
 
   "assistant.actionEnsureMessagePaneVisible": {

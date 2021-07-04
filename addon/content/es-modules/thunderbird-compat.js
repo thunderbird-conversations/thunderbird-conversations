@@ -179,7 +179,6 @@ if (!browser.tabs) {
 
 if (!browser.conversations) {
   browser.conversations = {
-    undoCustomizations() {},
     send(details) {
       console.log(details);
     },
@@ -399,6 +398,9 @@ if (!browser.runtime) {
       return {
         os: "win",
       };
+    },
+    connect() {
+      return {};
     },
   };
 }

@@ -129,34 +129,9 @@
     "description": "The document title of the assistant page."
   },
 
-  "assistant.intro": {
-    "message": "Hei, tämä on Thunderbird Conversations!",
-    "description": "Introduction paragraph for the assistant."
-  },
-
-  "assistant.p1": {
-    "message": "Tämä asennusvelho helpottaa elämääsi ja muokkaa Thunderbirdin asetukset mieleiseksesi, optimaalisen käyttäjäkokemuksen saavuttamiseksi. Emme halua että tunnet itsesi tyytymättömäksi.",
-    "description": "First detail paragraph for the assistant."
-  },
-
-  "assistant.p2": {
-    "message": "Kaikki tekemämme muutokset ovat peruttavissa, joten älä huolestu. Jos et pidä Thunderbird Conversationista, niin palautamme kaikki asetukset välittömästi ennalleen laajennuksen poiston jälkeen.",
-    "description": "Second detail paragraph for the assistant."
-  },
-
-  "assistant.p3": {
-    "message": "Tämä voi kestää hetken aikaa. Voit odottaa tämän ikkunan sulkeutumista, tai sulkea ikkunan itse ja tarkastaa etenemisen valikosta Työkalut > Toimintojen hallinta.",
-    "description": "Third detail paragraph for the assistant."
-  },
-
   "assistant.working": {
     "message": "Työskentelen...",
     "description": "An indication that the assistant is working."
-  },
-
-  "assistant.review": {
-    "message": "Katsele muutokset",
-    "description": "The review button title for the assistant."
   },
 
   "assistant.apply": {
@@ -164,44 +139,14 @@
     "description": "The apply button title for the assistant."
   },
 
-  "assistant.settings": {
-    "message": "Settings",
-    "description": "The settings section legend for the assistant."
-  },
-
   "assistant.actionEnableGloda": {
     "message": "Varmista, että yleinen haku ja indekstointi ovat otettu käyttöön.",
     "description": "Option text for enabling Gloda."
   },
 
-  "assistant.actionDontExpand": {
-    "message": "Älä laajenna lukemattomia viestejä.",
-    "description": "Option text for not expanding message threads."
-  },
-
-  "assistant.actionAttachmentsInline": {
-    "message": "Älä näytä liitteitä avoimina.",
-    "description": "Option text for showing attachments inline."
-  },
-
   "assistant.actionOfflineDownload": {
     "message": "Saapuneet ja lähetetyt synkronoidaan yhteydetöntä tilaa varten.",
     "description": "Option text for allowing offline download."
-  },
-
-  "assistant.actionUnifiedInboxSearchesSent": {
-    "message": "Yhdistetty postilaatikko etsii myös lähetetyistä. (vahvasti suositeltu).",
-    "description": "Option text for adding sent to the unified inbox."
-  },
-
-  "assistant.actionSetupView": {
-    "message": "Vaihda yleiseen saapuneet kansioon, ketjuta viestit, järjestele päivän mukaan, ota käyttöön lukemattomien viestien lukumäärän näyttö ja uusi \"väli\" palsta(vahvasti suositeltu).",
-    "description": "Option text for how the view is set."
-  },
-
-  "assistant.actionSetupViewDefaults": {
-    "message": "Käytä näitä muokattuja lajittelu asetuksia kaikkiin kansioihin.",
-    "description": "Option text for setting the view defaults."
   },
 
   "assistant.actionEnsureMessagePaneVisible": {

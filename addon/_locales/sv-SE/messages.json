@@ -129,34 +129,9 @@
     "description": "The document title of the assistant page."
   },
 
-  "assistant.intro": {
-    "message": "Hej, det här är Thunderbird Conversations!",
-    "description": "Introduction paragraph for the assistant."
-  },
-
-  "assistant.p1": {
-    "message": "För att kunna göra ditt liv enklare, så kommer denna guide att finjustera din Thunderbird-konfiguration för att säkerställa att du får en så bra upplevelse som möjligt. Vi vill ju inte att du skall känna dig otillfredsställd!",
-    "description": "First detail paragraph for the assistant."
-  },
-
-  "assistant.p2": {
-    "message": "Justeringarna vi gör är alla reversibla, så var inte orolig: Skulle du inte uppskatta Thunderbird Conversations, så återställer vi alla inställningsändringar vi har gjort så snart du avinstallerar tillägget.",
-    "description": "Second detail paragraph for the assistant."
-  },
-
-  "assistant.p3": {
-    "message": "Det här kan ta ett tag. Du kan antingen vänta tills det här fönstret stängs eller stänga fönstret själv och följa förloppet via Verktyg > Aktiviteter.",
-    "description": "Third detail paragraph for the assistant."
-  },
-
   "assistant.working": {
     "message": "Arbetar…",
     "description": "An indication that the assistant is working."
-  },
-
-  "assistant.review": {
-    "message": "Granska ändringar",
-    "description": "The review button title for the assistant."
   },
 
   "assistant.apply": {
@@ -164,44 +139,14 @@
     "description": "The apply button title for the assistant."
   },
 
-  "assistant.settings": {
-    "message": "Settings",
-    "description": "The settings section legend for the assistant."
-  },
-
   "assistant.actionEnableGloda": {
     "message": "Säkerställ att global sökning och indexeraren är aktiverade.",
     "description": "Option text for enabling Gloda."
   },
 
-  "assistant.actionDontExpand": {
-    "message": "Expandera inte trådar i meddelandelistan som innehåller olästa meddelanden.",
-    "description": "Option text for not expanding message threads."
-  },
-
-  "assistant.actionAttachmentsInline": {
-    "message": "Visa inte bilagor infogade (rekommenderas starkt).",
-    "description": "Option text for showing attachments inline."
-  },
-
   "assistant.actionOfflineDownload": {
     "message": "Inkorgen och Skickat synkroniseras för offlinelagring (rekommenderas starkt).",
     "description": "Option text for allowing offline download."
-  },
-
-  "assistant.actionUnifiedInboxSearchesSent": {
-    "message": "Den gemensamma inkorgen söker även igenom Skickat-mappar (rekommenderas starkt).",
-    "description": "Option text for adding sent to the unified inbox."
-  },
-
-  "assistant.actionSetupView": {
-    "message": "Byt till global inkorg, gör visningen trådad, sortera efter datum, aktivera en \"Antal olästa\"-kolumn och en ny \"Mellan\"-kolumn (rekommenderas starkt).",
-    "description": "Option text for how the view is set."
-  },
-
-  "assistant.actionSetupViewDefaults": {
-    "message": "Använd dessa anpassade sorteringsinställningar för alla mappar.",
-    "description": "Option text for setting the view defaults."
   },
 
   "assistant.actionEnsureMessagePaneVisible": {

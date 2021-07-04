@@ -186,16 +186,8 @@ function openSetupAssistant() {
 }
 
 async function runUndoConversations() {
-  const result = await browser.storage.local.get("preferences");
-
-  await browser.conversations.undoCustomizations(
-    result.preferences.uninstall_infos
-  );
-
-  result.preferences.uninstall_infos = "{}";
-  await browser.storage.local.set({ preferences: result.preferences });
-
-  window.alert(localize("options.undoCustomizations.finished", i18n));
+  let port = browser.runtime.connect({ name: "assistant" });
+  port.postMessage({});
 }
 
 //

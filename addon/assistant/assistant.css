@@ -1,20 +1,29 @@
-html, body {
-  margin: 0;
-  padding: 0;
+/* This Source Code Form is subject to the terms of the Mozilla Public
+ * License, v. 2.0. If a copy of the MPL was not distributed with this
+ * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
+
+:root {
+  --application-background-color: white;
+  --application-foreground-color: black;
+}
+
+@media screen and (prefers-color-scheme: dark) {
+  :root {
+    --application-background-color: rgb(56, 56, 61);
+    --application-foreground-color: rgb(249, 249, 250);
+  }
 }
 
 body {
+  background-color: var(--application-background-color);
+  color: var(--application-foreground-color);
   font-family: "DejaVu Sans", "Lucida Grande", "Tahoma", sans;
-  background-color: white;
-  color: #4b4742;
-  font-size: 12px;
   direction: __MSG_@@bidi_dir__;
+  margin: 20px;
 }
 
-#wrapper {
-  background-image: url("feature-background.jpg");
-  background-position: center top;
-  background-repeat: no-repeat;
+h1 {
+  text-align: center;
 }
 
 .hidden {
@@ -25,63 +34,30 @@ body {
   margin-top: 0;
 }
 
-.orange {
-  color: #c2550a;
-}
-
-.main {
-  height: 300px;
-  padding: 20px;
-  padding-bottom: 60px;
-}
-
-#more fieldset, #more p {
+.settings {
   margin: 20px;
 }
 
-#more ul {
-  list-style-type: none;
+.otherSettings {
+  padding-inline: 20px;
 }
 
-.buttonBox {
-  padding: 20px;
-  padding-bottom: 60px;
+.betweenInset {
+  padding-inline: 20px;
 }
 
-.p1 {
-  width: 500px;
-}
-
-.p2 {
-  width: 400px;
-}
-
-.p3 {
+#betweenColumnImage {
   width: 300px;
 }
 
-#more {
-  display: none;
-}
-
-#more[show="true"] {
-  display: block;
-  animation: fadein .4s;
-}
-
-@keyframes fadein {
-    from { opacity: 0; }
-    to   { opacity: 1; }
-}
-
 .working {
-  text-align: right;
+  text-align: left;
 }
 
-#footer {
-  background: url("tile.jpg") repeat-x scroll center top #394345;
-  clear: both;
-  color: #EEEEEE;
-  min-height: 34px;
-  text-align: center;
+#workingImg {
+  width: 16px;
+}
+
+#actionEnableBetween {
+  margin-top: 15px;
 }

@@ -16,6 +16,24 @@
         ]
       },
       {
+        "name": "setCorePref",
+        "type": "function",
+        "description": "Temporary. Sets a core preference.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "name",
+            "type": "string",
+            "description": "The preference name"
+          },
+          {
+            "name": "value",
+            "type": "any",
+            "description": "The preference value"
+          }
+        ]
+      },
+      {
         "name": "getPref",
         "type": "function",
         "description": "Temporary. Gets a conversation preference.",
@@ -47,42 +65,6 @@
         "description": "Temporary. Gets the current locale direction.",
         "async": true,
         "parameters": []
-      },
-      {
-        "name": "installCustomisations",
-        "type": "function",
-        "description": "Temporary. Sets initial customisations",
-        "async": true,
-        "parameters": [
-          {
-            "name": "ids",
-            "type": "array",
-            "description": "The customizations to enable",
-            "items": {
-              "type": "string"
-            }
-          },
-          {
-            "name": "uninstallInfos",
-            "type": "string",
-            "description": "Any existing uninstall information",
-            "optional": true
-          }
-        ]
-      },
-      {
-        "name": "undoCustomizations",
-        "type": "function",
-        "description": "Removes the installed customizations.",
-        "async": true,
-        "parameters": [
-          {
-            "name": "uninstallInfos",
-            "type": "string",
-            "description": "Any existing uninstall information",
-            "optional": true
-          }
-        ]
       },
       {
         "name": "getMessageIdForUri",
@@ -477,6 +459,19 @@
         ]
       },
       {
+        "name": "getAccountOfflineDownload",
+        "type": "function",
+        "description": "Temporary. Gets the account download offline preference.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "accountId",
+            "type": "string",
+            "description": "The id of the account."
+          }
+        ]
+      },
+      {
         "name": "streamMessage",
         "type": "function",
         "description": "Get a displayed message body as text",
@@ -509,6 +504,24 @@
         ]
       },
       {
+        "name": "setAccountOfflineDownload",
+        "type": "function",
+        "description": "Temporary. Gets the account download offline preference.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "accountId",
+            "type": "string",
+            "description": "The id of the account."
+          },
+          {
+            "name": "value",
+            "type": "boolean",
+            "description": "Whether or not to enable the offline download."
+          }
+        ]
+      },
+      {
         "name": "parseMimeLine",
         "type": "function",
         "description": "Extracts contact details from a mime line.",
@@ -518,6 +531,24 @@
             "name": "mimeLine",
             "type": "string",
             "description": "The line to parse for contact details."
+          }
+        ]
+      },
+      {
+        "name": "getFolderOfflineDownload",
+        "type": "function",
+        "description": "Temporary. Gets the folder download offline preference.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "accountId",
+            "type": "string",
+            "description": "The id of the account."
+          },
+          {
+            "name": "path",
+            "type": "string",
+            "description": "The path of the folder."
           }
         ]
       },
@@ -541,6 +572,29 @@
             "name": "text",
             "type": "string",
             "description": "The text to convert"
+          }
+        ]
+      },
+      {
+        "name": "setFolderOfflineDownload",
+        "type": "function",
+        "description": "Temporary. Gets the folder download offline preference.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "accountId",
+            "type": "string",
+            "description": "The id of the account."
+          },
+          {
+            "name": "path",
+            "type": "string",
+            "description": "The path of the folder."
+          },
+          {
+            "name": "value",
+            "type": "boolean",
+            "description": "Whether or not to enable the offline download."
           }
         ]
       }

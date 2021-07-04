@@ -129,34 +129,9 @@
     "description": "The document title of the assistant page."
   },
 
-  "assistant.intro": {
-    "message": "Hi, 這是Thunderbird Conversations!",
-    "description": "Introduction paragraph for the assistant."
-  },
-
-  "assistant.p1": {
-    "message": "為了讓日子過得再輕鬆些，此輔助工具將對你的Thunderbird進行微調，以便獲得更好的使用體驗。",
-    "description": "First detail paragraph for the assistant."
-  },
-
-  "assistant.p2": {
-    "message": "所有的調整都是可恢複的。隱藏不必擔心：一旦你卸載了此擴展程序，所有本程序修改的設置項都將恢複原樣（到安裝本程序以前）。",
-    "description": "Second detail paragraph for the assistant."
-  },
-
-  "assistant.p3": {
-    "message": "此操作將花費一些時間。你可以等待此視窗關閉，也可以直接關閉，並在「工具」菜單中「活動管理器」裏查看進度",
-    "description": "Third detail paragraph for the assistant."
-  },
-
   "assistant.working": {
     "message": "操作中……",
     "description": "An indication that the assistant is working."
-  },
-
-  "assistant.review": {
-    "message": "檢查變更項目",
-    "description": "The review button title for the assistant."
   },
 
   "assistant.apply": {
@@ -164,44 +139,14 @@
     "description": "The apply button title for the assistant."
   },
 
-  "assistant.settings": {
-    "message": "Settings",
-    "description": "The settings section legend for the assistant."
-  },
-
   "assistant.actionEnableGloda": {
     "message": "請確認全部檢索和索引已經啟動",
     "description": "Option text for enabling Gloda."
   },
 
-  "assistant.actionDontExpand": {
-    "message": "在郵件列表中，不要展開含有未讀郵件的對話",
-    "description": "Option text for not expanding message threads."
-  },
-
-  "assistant.actionAttachmentsInline": {
-    "message": "不要嵌入顯示附件(強烈推薦).",
-    "description": "Option text for showing attachments inline."
-  },
-
   "assistant.actionOfflineDownload": {
     "message": "收件箱和已發郵件箱相同步使用離線存儲(強烈推薦).",
     "description": "Option text for allowing offline download."
-  },
-
-  "assistant.actionUnifiedInboxSearchesSent": {
-    "message": "統一收件箱同樣檢索已發送文件夾（推薦）.",
-    "description": "Option text for adding sent to the unified inbox."
-  },
-
-  "assistant.actionSetupView": {
-    "message": "切換至全部收件箱，按日期排序顯示對話，啟動未讀技術欄和新\"參與者\"欄（推薦）.",
-    "description": "Option text for how the view is set."
-  },
-
-  "assistant.actionSetupViewDefaults": {
-    "message": "對所有文件夾使用自定義排序設置.",
-    "description": "Option text for setting the view defaults."
   },
 
   "assistant.actionEnsureMessagePaneVisible": {
