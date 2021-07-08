@@ -659,7 +659,25 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           let attachment = await findAttachment(msgHdr, attachmentUrl);
           const win = Services.wm.getMostRecentWindow("mail:3pane");
           let msgUri = msgHdrGetUri(msgHdr);
-          getAttachmentInfo(win, msgUri, attachment).open();
+
+          // Older versions of Thunderbird require the old way of opening.
+          if (Services.vc.compare(Services.appinfo.version, "89.0a1") < 0) {
+            getAttachmentInfo(win, msgUri, attachment).open();
+            return;
+          }
+          let url = Services.io.newURI(msgUri);
+          let msgService = Cc[
+            `@mozilla.org/messenger/messageservice;1?type=${url.scheme}`
+          ].createInstance(Ci.nsIMsgMessageService);
+          msgService.openAttachment(
+            attachment.contentType,
+            attachment.name,
+            attachment.url,
+            msgUri,
+            win.docShell,
+            win.msgWindow,
+            null
+          );
         },
         async detachAttachment(id, attachmentUrl, shouldSave) {
           let msgHdr = context.extension.messageManager.get(id);
