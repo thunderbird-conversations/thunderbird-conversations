@@ -91,6 +91,7 @@ describe("Summary Reducer and Actions tests", () => {
         isDraft: false,
         isJunk: false,
         isOutbox: false,
+        multipleRecipients: false,
         read: false,
         shortFolderName: "Inbox",
         snippet: "My message snippet",

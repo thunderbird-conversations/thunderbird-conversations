@@ -38,13 +38,14 @@ async function enrichWithDisplayData({
   const displayEmail = name != email ? email : "";
   const skipEmail = contact.contactId !== undefined && showCondensed;
   let data = {
-    name,
-    initials: getInitials(name),
+    avatar: contact.photoURI,
+    colorStyle: { backgroundColor: contact.color },
+    contactId: contact.contactId,
     displayEmail: skipEmail ? "" : displayEmail,
     email,
-    avatar: contact.photoURI,
-    contactId: contact.contactId,
-    colorStyle: { backgroundColor: contact.color },
+    identityId: contact.identityId,
+    initials: getInitials(name),
+    name,
     readOnly: contact.readOnly,
   };
   return data;
@@ -120,5 +121,35 @@ export async function mergeContactDetails(msgData) {
         message[field] = formattedData;
       }
     }
+
+    message.multipleRecipients = hasMultipleRecipients(message);
   }
+}
+
+/**
+ * Determines if a message has multiple recipients or not. Filters out contacts
+ * which have an identity, as they are from the active user.
+ *
+ * @param {object} message
+ *   The message to check the contacts within.
+ * @returns {boolean}
+ *   Returns true if there is more than one recipient.
+ */
+function hasMultipleRecipients(message) {
+  let seen = new Set();
+  let count = 0;
+  for (let field of ["from", "to", "cc", "bcc"]) {
+    // TODO: The ?? and subsequent !contact currently helps some of the tests to pass.
+    let contacts = (field == "from" ? [message[field]] : message[field]) ?? [];
+    for (let contact of contacts) {
+      if (!contact || contact.identityId) {
+        continue;
+      }
+      if (!seen.has(contact.email)) {
+        count++;
+      }
+      seen.add(contact.email);
+    }
+  }
+  return count > 1;
 }

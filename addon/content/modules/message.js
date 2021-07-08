@@ -107,7 +107,7 @@ class Message {
     this._date = new Date(this._msgHdr.date / 1000);
     // This one is for display purposes. We should always parse the non-decoded
     // author because there's more information in the encoded form (see #602)
-    this._from = this.parse(this._msgHdr.author)[0];
+    this._from = parseMimeLine(this._msgHdr.author)[0];
     // Might be filled to something more meaningful later, in case we replace the
     //  sender with something more relevant, like X-Bugzilla-Who.
     this._realFrom = "";
@@ -115,13 +115,13 @@ class Message {
     // header, and we don't want to display the information twice, then.
     this._to =
       this._msgHdr.recipients != this._msgHdr.ccList
-        ? this.parse(this._msgHdr.recipients)
+        ? parseMimeLine(this._msgHdr.recipients)
         : [];
     this._cc = this._msgHdr.ccList.length
-      ? this.parse(this._msgHdr.ccList)
+      ? parseMimeLine(this._msgHdr.ccList)
       : [];
     this._bcc = this._msgHdr.bccList.length
-      ? this.parse(this._msgHdr.bccList)
+      ? parseMimeLine(this._msgHdr.bccList)
       : [];
 
     this._uri = msgHdrGetUri(this._msgHdr);
@@ -135,7 +135,6 @@ class Message {
     // A list of email addresses
     this.mailingLists = [];
     this.isReplyListEnabled = false;
-    this.isReplyAllEnabled = false;
     this.isEncrypted = false;
     this.notifiedRemoteContentAlready = false;
 
@@ -145,13 +144,6 @@ class Message {
 
     // Selected state for onSelected function
     this._selected = false;
-  }
-
-  // Wraps the low-level header parser stuff.
-  //  @param aMimeLine a line that looks like "John <john@cheese.com>, Jane <jane@wine.com>"
-  //  @return a list of { email, name } objects
-  parse(aMimeLine) {
-    return parseMimeLine(aMimeLine);
   }
 
   toReactData() {
@@ -166,7 +158,6 @@ class Message {
       isPhishing: this.isPhishing,
       messageKey: this._msgHdr.messageKey,
       msgUri: this._uri,
-      multipleRecipients: this.isReplyAllEnabled,
       neckoUrl: msgHdrToNeckoURL(this._msgHdr).spec,
       needsLateAttachments: this.needsLateAttachments,
       realFrom: this._realFrom.email || this._from.email,
@@ -506,32 +497,6 @@ class Message {
   }
 }
 
-function hasIdentity(identityEmails, emailAddress) {
-  const email = emailAddress.toLowerCase();
-  return identityEmails.some((e) => e == email);
-}
-
-async function shouldEnableReplyAll(emails, propName) {
-  let seen = new Set();
-  let identityEmails = [];
-  for (let account of await browser.accounts.list()) {
-    if (!["imap", "pop3", "nntp"].includes(account.type)) {
-      continue;
-    }
-    for (let identity of account.identities) {
-      identityEmails.push(identity.email.toLowerCase());
-    }
-  }
-  return (
-    emails.filter((x) => {
-      let r =
-        !seen.has(x[propName]) && !hasIdentity(identityEmails, x[propName]);
-      seen.add(x[propName]);
-      return r;
-    }).length > 1
-  );
-}
-
 /**
  * Simple function to extra just the parts of the attachment information
  * that we need into their own object. This simplifies managing the data.
@@ -566,7 +531,7 @@ class MessageFromGloda extends Message {
     // Our gloda plugin found something for us, thanks dude!
     if (glodaMsg.alternativeSender) {
       this._realFrom = this._from;
-      this._from = this.parse(glodaMsg.alternativeSender)[0];
+      this._from = parseMimeLine(glodaMsg.alternativeSender)[0];
       this._type = "bugzilla";
     }
 
@@ -601,10 +566,6 @@ class MessageFromGloda extends Message {
 
     this.isReplyListEnabled =
       "mailingLists" in glodaMsg && !!glodaMsg.mailingLists.length;
-    this.isReplyAllEnabled = await shouldEnableReplyAll(
-      [glodaMsg.from, ...glodaMsg.to, ...glodaMsg.cc, ...glodaMsg.bcc],
-      "value"
-    );
   }
 }
 
@@ -642,7 +603,7 @@ class MessageFromDbHdr extends Message {
             if (alternativeSender) {
               this._type = "bugzilla";
               this._realFrom = this._from;
-              this._from = this.parse(alternativeSender)[0];
+              this._from = parseMimeLine(alternativeSender)[0];
             }
 
             this._attachments = aMimeMsg.allUserAttachments
@@ -663,15 +624,6 @@ class MessageFromDbHdr extends Message {
               aMimeMsg &&
               aMimeMsg.has("list-post") &&
               RE_LIST_POST.exec(aMimeMsg.get("list-post"));
-            this.isReplyAllEnabled = await shouldEnableReplyAll(
-              [
-                ...parseMimeLine(aMimeMsg.get("from"), true),
-                ...parseMimeLine(aMimeMsg.get("to"), true),
-                ...parseMimeLine(aMimeMsg.get("cc"), true),
-                ...parseMimeLine(aMimeMsg.get("bcc"), true),
-              ],
-              "email"
-            );
 
             let findIsEncrypted = (x) =>
               x.isEncrypted ||
