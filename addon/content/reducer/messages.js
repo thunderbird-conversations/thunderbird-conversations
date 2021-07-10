@@ -96,7 +96,12 @@ export let messageEnricher = new (class {
       };
     });
 
-    message.folderName = await browser.conversations.getFolderName(message.id);
+    // Only need to do this if the message is not in the current view.
+    if (!message.inView) {
+      message.folderName = await browser.conversations.getFolderName(
+        message.id
+      );
+    }
   }
 
   /**

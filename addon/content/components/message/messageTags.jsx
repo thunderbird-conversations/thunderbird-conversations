@@ -216,7 +216,7 @@ export function SpecialMessageTags({
 SpecialMessageTags.propTypes = {
   onTagClick: PropTypes.func.isRequired,
   onFolderClick: PropTypes.func,
-  folderName: PropTypes.string.isRequired,
+  folderName: PropTypes.string,
   inView: PropTypes.bool.isRequired,
   specialTags: PropTypes.array,
 };
