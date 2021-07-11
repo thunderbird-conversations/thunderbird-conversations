@@ -36,15 +36,6 @@ function modifyOnlyMsgId(state, id, modifier) {
 // scripts, or if it doesn't need it.
 
 async function setupConversationInTab(params, isInTab) {
-  let isThreaded = params.get("isThreaded");
-  isThreaded = !!parseInt(isThreaded);
-
-  // If we start up Thunderbird with a saved conversation tab, then we
-  // have no selected message. Fallback to the usual mode.
-  if (!isThreaded && !topMail3Pane(window).gFolderDisplay.selectedMessage) {
-    isThreaded = true;
-  }
-
   if (window.frameElement) {
     window.frameElement.setAttribute("tooltip", "aHTMLTooltip");
   }
@@ -70,7 +61,6 @@ async function setupConversationInTab(params, isInTab) {
       // TODO: This should really become ids at some stage, but we need to
       // teach Conversation how to handle those.
       msgUrls,
-      isThreaded,
       ++window.Conversations.counter,
       isInTab
     );
@@ -140,6 +130,7 @@ export const messageActions = {
         })
       );
 
+      await dispatch(summaryActions.setupListeners());
       await dispatch(summaryActions.setupUserPreferences());
 
       const platformInfo = await browser.runtime.getPlatformInfo();

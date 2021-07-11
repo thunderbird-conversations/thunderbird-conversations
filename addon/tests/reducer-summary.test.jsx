@@ -86,7 +86,7 @@ describe("Summary Reducer and Actions tests", () => {
         detailsShowing: false,
         folderName: "Fake/Folder",
         fullDate: date,
-        id: 1,
+        id: 0,
         initialPosition: 0,
         isDraft: false,
         isJunk: false,

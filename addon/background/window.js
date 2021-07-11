@@ -43,10 +43,7 @@ export class Window {
         for (const hdr of msgHdrs) {
           urls.push(await browser.conversations.getMessageUriForId(hdr.id));
         }
-        const url = this.makeConversationUrl(
-          urls,
-          await browser.convMsgWindow.isSelectionThreaded(windowId)
-        );
+        const url = this.makeConversationUrl(urls);
         await browser.conversations.createTab({
           url,
           type: "chromeTab",
@@ -61,10 +58,7 @@ export class Window {
   }
 
   async openConversation(windowId, urls) {
-    const url = this.makeConversationUrl(
-      urls,
-      await browser.convMsgWindow.isSelectionThreaded(windowId)
-    );
+    const url = this.makeConversationUrl(urls);
 
     switch (
       await browser.conversations.getCorePref("mail.openMessageBehavior")
@@ -87,15 +81,9 @@ export class Window {
    *
    * @param {Array} urls
    *   An array of urls to be opened.
-   * @param {boolean} [isSelectionThreaded]
-   *   Is the selection threaded
    */
-  makeConversationUrl(urls, isSelectionThreaded) {
+  makeConversationUrl(urls) {
     let queryString = "?urls=" + encodeURIComponent(urls.join(","));
-
-    if (isSelectionThreaded) {
-      queryString += "&isThreaded=" + (isSelectionThreaded ? 1 : 0);
-    }
     return `chrome://conversations/content/stub.html${queryString}`;
   }
 }

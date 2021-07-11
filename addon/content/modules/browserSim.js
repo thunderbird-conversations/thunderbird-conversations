@@ -15,7 +15,6 @@ const SUPPORTED_APIS_NO_EVENTS = [
   "contacts",
   "convCompose",
   "mailTabs",
-  "messageDisplay",
   // If "messages" is moved to SUPPORTED_BASE_APIS, then the various interfaces
   // MUST be tested very carefully. Last time this was tried, it would end up
   // clearing the starred flag when marking a message as read.
@@ -33,6 +32,7 @@ const SUPPORTED_BASE_APIS = [
   "convMsgWindow",
   "conversations",
   "i18n",
+  "messageDisplay",
   "storage",
 ];
 

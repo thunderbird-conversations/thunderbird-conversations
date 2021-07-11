@@ -29,7 +29,10 @@ export const initialSummary = {
   subject: "",
   windowId: null,
   defaultDetailsShowing: false,
+  initialSet: [],
 };
+
+let markAsReadTimer;
 
 async function handleShowDetails(messages, state, dispatch, updateFn) {
   let defaultShowing = state.summary.defaultDetailsShowing;
@@ -53,6 +56,36 @@ async function handleShowDetails(messages, state, dispatch, updateFn) {
 
 export const summaryActions = {
   /**
+   * Sets up any listeners required.
+   */
+  setupListeners() {
+    return async (dispatch, getState) => {
+      let state = getState();
+      function selectionChangedListener(tab) {
+        if (state.summary.tabId != tab.id) {
+          return;
+        }
+        if (markAsReadTimer) {
+          clearTimeout(markAsReadTimer);
+          markAsReadTimer = null;
+        }
+      }
+
+      browser.messageDisplay.onMessagesDisplayed.addListener(
+        selectionChangedListener
+      );
+      window.addEventListener(
+        "unload",
+        () => {
+          browser.messageDisplay.onMessagesDisplayed.removeListener(
+            selectionChangedListener
+          );
+        },
+        { once: true }
+      );
+    };
+  },
+  /**
    * Sets up getting user preferences for a conversation.
    */
   setupUserPreferences() {
@@ -67,6 +100,8 @@ export const summaryActions = {
             operateOnConversations:
               newPrefs.preferences?.operate_on_conversations ?? false,
             loggingEnabled: newPrefs.preferences?.logging_enabled ?? false,
+            // Default is expand auto.
+            expandWho: newPrefs.preferences?.expand_who ?? 4,
           })
         );
       }
@@ -105,7 +140,7 @@ export const summaryActions = {
       const state = getState();
       await handleShowDetails(messages, state, dispatch, async () => {
         // The messages need some more filling out and tweaking.
-        await messageEnricher.enrich(messages.msgData, state.summary);
+        await messageEnricher.enrich(mode, messages.msgData, state.summary);
 
         // The messages inside `msgData` don't come with filled in `to`/`from`/ect. fields.
         // We need to fill them in ourselves.
@@ -124,11 +159,14 @@ export const summaryActions = {
 
         await dispatch(messageActions.updateConversation({ messages, mode }));
 
-        if (mode == "replaceAll" && state.summary.loggingEnabled) {
-          console.log(
-            "Load took (ms):",
-            Date.now() - summary.loadingStartedTime
-          );
+        if (mode == "replaceAll") {
+          if (state.summary.loggingEnabled) {
+            console.debug(
+              "Load took (ms):",
+              Date.now() - summary.loadingStartedTime
+            );
+          }
+          await dispatch(summaryActions.setMarkAsRead());
         }
       });
     };
@@ -258,6 +296,54 @@ export const summaryActions = {
         message.streamMessage(topMail3Pane(window).msgWindow, docshell);
       } else {
         console.warn("Could not find message for streaming", msgUri);
+      }
+    };
+  },
+  setMarkAsRead() {
+    return async (dispatch, getState) => {
+      let state = getState();
+
+      let autoMarkRead = await browser.conversations.getCorePref(
+        "mailnews.mark_message_read.auto"
+      );
+      if (autoMarkRead) {
+        let delay = 0;
+        let shouldDelay = await browser.conversations.getCorePref(
+          "mailnews.mark_message_read.delay"
+        );
+        if (shouldDelay) {
+          delay =
+            (await browser.conversations.getCorePref(
+              "mailnews.mark_message_read.delay.interval"
+            )) * 1000;
+        }
+        markAsReadTimer = setTimeout(async function () {
+          markAsReadTimer = null;
+
+          if (state.summary.initialSet.length > 1) {
+            // If we're selecting a thread, mark thee whole conversation as read.
+            // Note: if two or more in different threads are selected, then
+            // the conversation UI is not used. Hence why this is ok to do here.
+            if (state.summary.loggingEnabled) {
+              console.debug("Marking the whole conversation as read");
+            }
+            for (let msg of state.messages.msgData) {
+              if (!msg.read) {
+                await dispatch(messageActions.markAsRead({ id: msg.id }));
+              }
+            }
+          } else {
+            // We only have a single message selected, mark that as read.
+            if (state.summary.loggingEnabled) {
+              console.debug("Marking selected message as read");
+            }
+            // We use the selection from the initial set, just in case something
+            // changed before we hit the timer.
+            await dispatch(
+              messageActions.markAsRead({ id: state.summary.initialSet[0] })
+            );
+          }
+        }, delay);
       }
     };
   },

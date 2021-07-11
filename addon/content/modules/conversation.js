@@ -170,18 +170,9 @@ ViewWrapper.prototype = {
 // matches exactly the DOM nodes with class "message" inside the displayed
 // message list.
 // So the i-th _message is also the i-th DOM node.
-function Conversation(
-  win,
-  selectedMessages,
-  isSelectionThreaded,
-  counter,
-  isInTab = false
-) {
+function Conversation(win, selectedMessages, counter, isInTab = false) {
   this._window = win;
   this._isInTab = isInTab;
-  // This is set by the monkey-patch which knows whether we were viewing a
-  //  message inside a thread or viewing a closed thread.
-  this.isSelectionThreaded = isSelectionThreaded;
   this._loadingStartedTime = Date.now();
 
   // We have the COOL invariant that this._initialSet is a subset of
@@ -625,10 +616,6 @@ Conversation.prototype = {
       reactMsgData.push(msgData);
     }
 
-    // We don't want to disturb the user's viewing, so only expand the new
-    // messages if required, not scroll to them.
-    this._tellMeWhoToExpand(newMsgs, reactMsgData, -1);
-
     this.dispatch(
       this._htmlPane.conversationSummaryActions.updateConversation({
         mode: "append",
@@ -709,9 +696,6 @@ Conversation.prototype = {
     this.messages = this.messages.filter((m, i) => !!reactMsgData[i]);
     reactMsgData = reactMsgData.filter((m) => m);
 
-    // Move on to the next step
-    this._expandAndScroll(this.messages, reactMsgData);
-
     // Final check to see if another conversation has started loading whilst
     // we've been creating. If so, abort and get out of here.
     if (this._window.Conversations.counter != this.counter) {
@@ -722,6 +706,13 @@ Conversation.prototype = {
         this._window.Conversations.counter
       );
       return;
+    }
+
+    let initialSet = [];
+    for (let msg of this._initialSet) {
+      initialSet.push(
+        await browser.conversations.getMessageIdForUri(msgHdrGetUri(msg))
+      );
     }
 
     this.dispatch(
@@ -740,6 +731,7 @@ Conversation.prototype = {
           autoMarkAsRead:
             Services.prefs.getBoolPref("mailnews.mark_message_read.auto") &&
             !Services.prefs.getBoolPref("mailnews.mark_message_read.delay"),
+          initialSet,
         },
         messages: {
           msgData: reactMsgData,
@@ -751,17 +743,6 @@ Conversation.prototype = {
     Services.tm.dispatchToMainThread(() =>
       this._onComplete().catch(console.error)
     );
-  },
-
-  // Do all the penible stuff about scrolling to the right message and expanding
-  // the right message
-  _expandAndScroll(messages, reactMsgData, aStart) {
-    if (aStart === undefined) {
-      aStart = 0;
-    }
-    let focusThis = this._tellMeWhoToScroll(messages);
-    reactMsgData[focusThis].scrollTo = true;
-    this._tellMeWhoToExpand(messages, reactMsgData, focusThis);
   },
 
   // This is the starting point, this is where the Monkey-Patched threadSummary
@@ -816,82 +797,6 @@ Conversation.prototype = {
       "</div>";
     Log.debug("The HTML: ---------\n", html, "\n\n");
     return html;
-  },
-
-  // Go through all the messages and determine which one is going to be focused
-  //  according to the prefs
-  _tellMeWhoToScroll(messages) {
-    // Determine which message is going to be scrolled into view
-    let needsScroll = -1;
-    if (this.isSelectionThreaded) {
-      needsScroll = messages.length - 1;
-      for (let i = 0; i < messages.length; ++i) {
-        if (!messages[i].message.read) {
-          needsScroll = i;
-          break;
-        }
-      }
-    } else {
-      let gFolderDisplay = topMail3Pane(this).gFolderDisplay;
-      let key = msgHdrGetUri(gFolderDisplay.selectedMessage);
-      for (let i = 0; i < messages.length; ++i) {
-        if (messages[i].message._uri == key) {
-          needsScroll = i;
-          break;
-        }
-      }
-      // I can't see why we wouldn't break at some point in the loop below, but
-      //  just in case...
-      if (needsScroll < 0) {
-        Log.error("kScrollSelected && didn't find the selected message");
-        needsScroll = messages.length - 1;
-      }
-    }
-
-    return needsScroll;
-  },
-
-  // Go through all the messages and for each one of them, give the expected
-  //  action
-  _tellMeWhoToExpand(messages, reactMsgData, aNeedsFocus) {
-    switch (Prefs.expand_who) {
-      default:
-        Log.error(
-          false,
-          `Unknown value '${Prefs.expand_who}' for pref expand_who, try changing in the add-on preferences.`
-        );
-      // Falls through so we can default to the same as the pref and keep going.
-      case Prefs.kExpandAuto: {
-        if (this.isSelectionThreaded) {
-          // In this mode, we scroll to the first unread message (or the last
-          //  message if all messages are read), and we expand all unread messages
-          //  + the last one (which will probably be unread as well).
-          for (const [i, { message }] of messages.entries()) {
-            reactMsgData[i].expanded =
-              !message.read || i == messages.length - 1;
-          }
-        } else {
-          // In this mode, we scroll to the selected message, and we only expand
-          //  the selected message.
-          for (const [i] of messages.entries()) {
-            reactMsgData[i].expanded = i == aNeedsFocus;
-          }
-        }
-        break;
-      }
-      case Prefs.kExpandAll: {
-        for (const msgData of reactMsgData) {
-          msgData.expanded = true;
-        }
-        break;
-      }
-      case Prefs.kExpandNone: {
-        for (const msgData of reactMsgData) {
-          msgData.expanded = false;
-        }
-        break;
-      }
-    }
   },
 };
 

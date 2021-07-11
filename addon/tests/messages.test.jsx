@@ -10,12 +10,20 @@ import { messageEnricher } from "../content/reducer/messages.js";
 
 describe("messageEnricher", () => {
   let fakeMessageHeaderData;
+  let displayedMessagesSpy;
 
   beforeEach(() => {
     fakeMessageHeaderData = new Map();
     jest
       .spyOn(browser.messages, "get")
       .mockImplementation(async (id) => fakeMessageHeaderData.get(id));
+    displayedMessagesSpy = jest.spyOn(
+      browser.messageDisplay,
+      "getDisplayedMessages"
+    );
+    displayedMessagesSpy.mockImplementation(async () => {
+      return [{ id: fakeMessageHeaderData.size - 1 }];
+    });
   });
 
   afterEach(() => {
@@ -27,6 +35,7 @@ describe("messageEnricher", () => {
       let fakeMsg = createFakeData({}, fakeMessageHeaderData);
 
       await messageEnricher.enrich(
+        "replaceAll",
         [fakeMsg],
         createFakeSummaryData({ noFriendlyDate: true })
       );
@@ -96,8 +105,12 @@ describe("messageEnricher", () => {
 
       for (let test of tests) {
         let fakeMsg = createFakeData(test.source, fakeMessageHeaderData);
+        displayedMessagesSpy.mockImplementation(async () => {
+          return [{ id: test.source.id }];
+        });
 
         await messageEnricher.enrich(
+          "replaceAll",
           [fakeMsg],
           createFakeSummaryData({ noFriendlyDate: true })
         );
@@ -115,6 +128,7 @@ describe("messageEnricher", () => {
       );
 
       await messageEnricher.enrich(
+        "replaceAll",
         [fakeMsg],
         createFakeSummaryData({ noFriendlyDate: true })
       );
@@ -132,6 +146,136 @@ describe("messageEnricher", () => {
             name: "Personal",
           },
         ],
+      });
+    });
+  });
+
+  describe("Expansion and Scroll To", () => {
+    test("Expands all messages when expand is set to all", async () => {
+      let fakeMsgs = [];
+      for (let i = 0; i < 5; i++) {
+        fakeMsgs.push(createFakeData({ id: i }, fakeMessageHeaderData));
+      }
+
+      await messageEnricher.enrich(
+        "replaceAll",
+        fakeMsgs,
+        createFakeSummaryData({ expandWho: 3 })
+      );
+
+      for (let i = 0; i < 5; i++) {
+        expect(fakeMsgs[i].expanded).toBe(true);
+        if (i < 4) {
+          expect("scrollTo" in fakeMsgs[i]).toBe(false);
+        } else {
+          expect(fakeMsgs[i].scrollTo).toBe(true);
+        }
+      }
+    });
+
+    test("Expands no messages when expand is set to none", async () => {
+      let fakeMsgs = [];
+      for (let i = 0; i < 5; i++) {
+        fakeMsgs.push(createFakeData({ id: i }, fakeMessageHeaderData));
+      }
+
+      await messageEnricher.enrich(
+        "replaceAll",
+        fakeMsgs,
+        createFakeSummaryData({ expandWho: 1 })
+      );
+
+      for (let i = 0; i < 5; i++) {
+        expect(fakeMsgs[i].expanded).toBe(false);
+        if (i < 4) {
+          expect("scrollTo" in fakeMsgs[i]).toBe(false);
+        } else {
+          expect(fakeMsgs[i].scrollTo).toBe(true);
+        }
+      }
+    });
+
+    describe("Expansion Auto", () => {
+      test("Single, all read - expand and select selection", async () => {
+        let fakeMsgs = [];
+        for (let i = 0; i < 5; i++) {
+          fakeMsgs.push(
+            createFakeData({ id: i, read: true }, fakeMessageHeaderData)
+          );
+        }
+        displayedMessagesSpy.mockImplementation(async () => {
+          return [{ id: 3 }];
+        });
+
+        await messageEnricher.enrich(
+          "replaceAll",
+          fakeMsgs,
+          createFakeSummaryData()
+        );
+
+        for (let i = 0; i < 5; i++) {
+          expect(fakeMsgs[i].expanded).toBe(i == 3);
+          if (i != 3) {
+            expect("scrollTo" in fakeMsgs[i]).toBe(false);
+          } else {
+            expect(fakeMsgs[i].scrollTo).toBe(true);
+          }
+        }
+      });
+
+      test("Single, multi unread  - expand single and scroll it", async () => {
+        let fakeMsgs = [];
+        for (let i = 0; i < 5; i++) {
+          fakeMsgs.push(
+            createFakeData({ id: i, read: i <= 2 }, fakeMessageHeaderData)
+          );
+        }
+        displayedMessagesSpy.mockImplementation(async () => {
+          return [{ id: 3 }];
+        });
+
+        await messageEnricher.enrich(
+          "replaceAll",
+          fakeMsgs,
+          createFakeSummaryData()
+        );
+
+        for (let i = 0; i < 5; i++) {
+          expect(fakeMsgs[i].expanded).toBe(i == 3);
+          if (i != 3) {
+            expect("scrollTo" in fakeMsgs[i]).toBe(false);
+          } else {
+            expect(fakeMsgs[i].scrollTo).toBe(true);
+          }
+        }
+      });
+
+      test("Multi, unread - expand unread, select first", async () => {
+        let fakeMsgs = [];
+        for (let i = 0; i < 5; i++) {
+          fakeMsgs.push(
+            createFakeData({ id: i, read: i <= 2 }, fakeMessageHeaderData)
+          );
+        }
+        displayedMessagesSpy.mockImplementation(async () => {
+          return [{ id: 3 }, { id: 4 }];
+        });
+
+        await messageEnricher.enrich(
+          "replaceAll",
+          fakeMsgs,
+          createFakeSummaryData()
+        );
+
+        for (let i = 0; i < 5; i++) {
+          expect(fakeMsgs[i].expanded).toBe(i > 2);
+          // Should have selected the first unread.
+          if (i != 3) {
+            expect("scrollTo" in fakeMsgs[i]).toBe(false);
+          } else {
+            expect(fakeMsgs[i].scrollTo).toBe(true);
+          }
+        }
       });
     });
   });
@@ -155,6 +299,7 @@ describe("messageEnricher", () => {
       );
 
       await messageEnricher.enrich(
+        "replaceAll",
         [fakeMsg],
         createFakeSummaryData({ noFriendlyDate: true })
       );
@@ -212,7 +357,11 @@ Updating`,
           fakeMessageHeaderData
         )
       );
-      await messageEnricher.enrich(fakeMsgs, createFakeSummaryData());
+      await messageEnricher.enrich(
+        "replaceAll",
+        fakeMsgs,
+        createFakeSummaryData()
+      );
 
       for (let [i, fakeMsg] of fakeMsgs.entries()) {
         expect(fakeMsg.snippet).toBe(msgSnippets[i].expected);
@@ -225,7 +374,11 @@ Updating`,
       let now = Date.now();
       let fakeMsg = createFakeData({ date: now }, fakeMessageHeaderData);
 
-      await messageEnricher.enrich([fakeMsg], createFakeSummaryData());
+      await messageEnricher.enrich(
+        "replaceAll",
+        [fakeMsg],
+        createFakeSummaryData()
+      );
 
       expect(fakeMsg.date).toBe("yesterday");
       expect(fakeMsg.fullDate).toBe(
@@ -240,6 +393,7 @@ Updating`,
       let fakeMsg = createFakeData({ date: now }, fakeMessageHeaderData);
 
       await messageEnricher.enrich(
+        "replaceAll",
         [fakeMsg],
         createFakeSummaryData({ noFriendlyDate: true })
       );
