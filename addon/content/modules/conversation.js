@@ -22,7 +22,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   Prefs: "chrome://conversations/content/modules/prefs.js",
   setupLogging: "chrome://conversations/content/modules/misc.js",
   Services: "resource://gre/modules/Services.jsm",
-  topMail3Pane: "chrome://conversations/content/modules/misc.js",
   messageActions: "chrome://conversations/content/modules/misc.js",
 });
 
@@ -132,8 +131,8 @@ async function messageFromDbHdr(conversation, msgHdr, debug) {
   };
 }
 
-function ViewWrapper(aConversation) {
-  this.mainWindow = topMail3Pane(aConversation);
+function ViewWrapper(mainWindow) {
+  this.mainWindow = mainWindow;
   // The trick is, if a thread is collapsed, this._initialSet contains all the
   //  messages in the thread. We want these to be selected. If a thread is
   //  expanded, we want messages which are in the current view to be selected.
@@ -520,7 +519,7 @@ Conversation.prototype = {
   //  current view.
   _filterOutDuplicates() {
     let messages = this.messages;
-    this.viewWrapper = new ViewWrapper(this);
+    this.viewWrapper = new ViewWrapper(this._window);
     // Wicked cases, when we're asked to display a draft that's half-saved...
     messages = messages.filter((x) => toMsgHdr(x) && getMessageId(x));
     messages = groupArray(this.messages, getMessageId);
@@ -616,7 +615,7 @@ Conversation.prototype = {
     ) {
       this.messages[i].message.initialPosition = i;
     }
-    this.viewWrapper = new ViewWrapper(this);
+    this.viewWrapper = new ViewWrapper(this._window);
     const reactMsgData = [];
     for (const m of newMsgs) {
       const msgData = await m.message.toReactData();

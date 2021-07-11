@@ -92,9 +92,6 @@ function topMail3Pane(aObj) {
   if ("_conversation" in aObj) {
     // Message
     return moveOut(aObj._conversation._htmlPane);
-  } else if ("_htmlPane" in aObj) {
-    // Conversation
-    return moveOut(aObj._htmlPane);
   }
 
   // Standalone window, a tab, or in the htmlpane (common case)
