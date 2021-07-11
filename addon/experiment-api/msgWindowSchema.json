@@ -3,36 +3,6 @@
     "namespace": "convMsgWindow",
     "functions": [
       {
-        "name": "isSelectionExpanded",
-        "type": "function",
-        "description": "Temporary. Returns true if the selection is expanded in the window.",
-        "async": true,
-        "parameters": [
-          {
-            "name": "windowId",
-            "type": "integer",
-            "optional": true,
-            "minimum": -2,
-            "description": "The window id."
-          }
-        ]
-      },
-      {
-        "name": "isSelectionThreaded",
-        "type": "function",
-        "description": "Determines if the selection in the view is threaded and it is not on an expanded thread.",
-        "async": true,
-        "parameters": [
-          {
-            "name": "windowId",
-            "type": "integer",
-            "optional": true,
-            "minimum": -2,
-            "description": "The window id."
-          }
-        ]
-      },
-      {
         "name": "getDisplayedMessages",
         "type": "function",
         "description": "Returns an array of the currently selected message headers.",

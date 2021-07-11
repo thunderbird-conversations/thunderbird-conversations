@@ -127,6 +127,7 @@ if (!browser.storage) {
     // DEFAULT_PREFS is only used when browser.storage does not exist. I.e.,
     // when running in the browser in dev mode. Turn on logging in this case.
     logging_enabled: true,
+    expand_who: 4,
   };
 
   // Fake what we need from the browser storage library

@@ -42,7 +42,7 @@ export const waitForComponentToPaint = async (wrapper) => {
 
 export function createFakeData(
   {
-    id = 1,
+    id = 0,
     attachments = [],
     bugzilla = false,
     detailsShowing,
@@ -87,9 +87,10 @@ export function createFakeData(
   return data;
 }
 
-export function createFakeSummaryData(options) {
+export function createFakeSummaryData(options = {}) {
   return {
     noFriendlyDate: false,
+    expandWho: 4,
     ...options,
   };
 }

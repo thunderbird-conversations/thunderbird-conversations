@@ -7,6 +7,10 @@ import { browser } from "../es-modules/thunderbird-compat.js";
 const RE_BZ_BUG_LINK = /^https:\/\/.*?\/show_bug.cgi\?id=[0-9]*/;
 const RE_BZ_COMMENT = /^--- Comment #\d+ from .* \d{4}.*? ---([\s\S]*)/m;
 
+const kExpandNone = 1;
+const kExpandAll = 3;
+const kExpandAuto = 4;
+
 /**
  * Used to enrich basic message data with additional information for display.
  *
@@ -34,12 +38,15 @@ export let messageEnricher = new (class {
    * each message. When the details are fetched, merge them into the
    * message object itself.
    *
+   * @param {string} mode
+   *   Can be "append", "replaceAll" or "replaceMsg". replaceMsg will replace
+   *   only a single message.
    * @param {object[]} msgData
    *   The message details.
    * @param {object} summary
    *   The current state summary section from the store.
    */
-  async enrich(msgData, summary) {
+  async enrich(mode, msgData, summary) {
     const userTags = await browser.messages.listTags();
 
     await Promise.all(
@@ -55,7 +62,142 @@ export let messageEnricher = new (class {
         }
       })
     );
+
+    // Do expansion and scrolling after gathering the message data
+    // as this relies on the message read information.
+    if (mode == "replaceAll" || mode == "append") {
+      let selectedMessages = await browser.messageDisplay.getDisplayedMessages(
+        summary.tabId
+      );
+      if (mode == "replaceAll") {
+        this._expandAndScroll(
+          msgData,
+          selectedMessages,
+          summary.tabId,
+          summary.expandWho
+        );
+      } else {
+        this._markMsgsToExpand(
+          msgData,
+          selectedMessages,
+          -1,
+          summary.expandWho
+        );
+      }
+    }
+
     msgData.filter((m) => !m.invalid);
+  }
+
+  /**
+   * Figure out which messages need expanding, and which one we'll scroll to.
+   *
+   * @param {object[]} msgData
+   *   The message details.
+   * @param {object[]} selectedMessages
+   *   The currently selected messages in the UI.
+   * @param {number} tabId
+   *   The current tab id.
+   * @param {number} expandWho
+   *   The value of the expandWho preference.
+   */
+  _expandAndScroll(msgData, selectedMessages, tabId, expandWho) {
+    let focusThis = this._whereToScroll(msgData, selectedMessages);
+    msgData[focusThis].scrollTo = true;
+    this._markMsgsToExpand(msgData, selectedMessages, focusThis, expandWho);
+  }
+
+  /**
+   * Figure out which messages we should scroll to.
+   *
+   * @param {object[]} msgData
+   *   The message details.
+   * @param {object[]} selectedMessages
+   *   The currently selected messages in the UI.
+   */
+  _whereToScroll(msgData, selectedMessages) {
+    let needsScroll = -1;
+
+    // Conversations stub UI is only displayed when a thread is selected,
+    // or a single message. If different messages across threads are selected,
+    // then Thunderbird's multi-select UI is displayed. Hence, if there's more
+    // than one selected message, we know that we are in a threaded selection.
+    if (selectedMessages.length > 1) {
+      needsScroll = msgData.length - 1;
+      for (let i = 0; i < msgData.length; ++i) {
+        if (!msgData[i].read) {
+          needsScroll = i;
+          break;
+        }
+      }
+    } else {
+      let msgId = selectedMessages[0].id;
+      for (let i = 0; i < msgData.length; ++i) {
+        if (msgData[i].id == msgId) {
+          needsScroll = i;
+          break;
+        }
+      }
+      // I can't see why we wouldn't break at some point in the loop below, but
+      //  just in case...
+      if (needsScroll < 0) {
+        console.error("kScrollSelected && didn't find the selected message");
+        needsScroll = msgData.length - 1;
+      }
+    }
+    return needsScroll;
+  }
+
+  /**
+   * Figure out which messages we should expand and mark them.
+   *
+   * @param {object[]} msgData
+   *   The message details.
+   * @param {object[]} selectedMessages
+   *   The currently selected messages in the UI.
+   * @param {number} focusIndex
+   *   The message in the array to focus.
+   * @param {number} expandWho
+   *   The value of the expandWho preference.
+   */
+  _markMsgsToExpand(msgData, selectedMessages, focusIndex, expandWho) {
+    switch (expandWho) {
+      default:
+        console.error(
+          false,
+          `Unknown value '${expandWho}' for pref expandWho, try changing in the add-on preferences.`
+        );
+      // Falls through so we can default to the same as the pref and keep going.
+      case kExpandAuto: {
+        if (selectedMessages.length > 1) {
+          // In this mode, we scroll to the first unread message (or the last
+          //  message if all messages are read), and we expand all unread messages
+          //  + the last one (which will probably be unread as well).
+          for (let i = 0; i < msgData.length; i++) {
+            msgData[i].expanded = !msgData[i].read || i == msgData.length - 1;
+          }
+        } else {
+          // In this mode, we scroll to the selected message, and we only expand
+          //  the selected message.
+          for (let i = 0; i < msgData.length; i++) {
+            msgData[i].expanded = i == focusIndex;
+          }
+        }
+        break;
+      }
+      case kExpandAll: {
+        for (const msg of msgData) {
+          msg.expanded = true;
+        }
+        break;
+      }
+      case kExpandNone: {
+        for (const msg of msgData) {
+          msg.expanded = false;
+        }
+        break;
+      }
+    }
   }
 
   /**

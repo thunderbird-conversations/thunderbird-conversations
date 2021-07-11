@@ -10,9 +10,6 @@ var EXPORTED_SYMBOLS = ["Prefs"];
  */
 class PrefManager {
   constructor() {
-    this.kExpandNone = 1;
-    this.kExpandAll = 3;
-    this.kExpandAuto = 4;
     this.initialized = new Promise((resolve) => {
       this.notifyStartupComplete = resolve;
     });

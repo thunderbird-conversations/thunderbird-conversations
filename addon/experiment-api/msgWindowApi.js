@@ -7,7 +7,6 @@ var { XPCOMUtils } = ChromeUtils.import(
 );
 
 XPCOMUtils.defineLazyModuleGetters(this, {
-  BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   Conversation: "chrome://conversations/content/modules/conversation.js",
   ExtensionCommon: "resource://gre/modules/ExtensionCommon.jsm",
   msgHdrGetUri: "chrome://conversations/content/modules/misc.js",
@@ -17,10 +16,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
 
 XPCOMUtils.defineLazyGetter(this, "Log", () => {
   return setupLogging("Conversations.msgWindowApi");
-});
-
-XPCOMUtils.defineLazyGetter(this, "browser", function () {
-  return BrowserSim.getBrowser();
 });
 
 const kMultiMessageUrl = "chrome://messenger/content/multimessageview.xhtml";
@@ -72,40 +67,6 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
     const { messageManager, tabManager, windowManager } = extension;
     return {
       convMsgWindow: {
-        async isSelectionExpanded(windowId) {
-          const win = getWindowFromId(windowManager, context, windowId);
-          const msgIndex = win.gFolderDisplay
-            ? win.gFolderDisplay.selectedIndices[0]
-            : -1;
-          if (msgIndex >= 0) {
-            try {
-              let viewThread = win.gDBView.getThreadContainingIndex(msgIndex);
-              let rootIndex = win.gDBView.findIndexOfMsgHdr(
-                viewThread.getChildHdrAt(0),
-                false
-              );
-              if (rootIndex >= 0) {
-                return (
-                  win.gDBView.isContainer(rootIndex) &&
-                  !win.gFolderDisplay.view.isCollapsedThreadAtIndex(rootIndex)
-                );
-              }
-            } catch (ex) {
-              console.error("Error in the onLocationChange handler", ex);
-            }
-          }
-          return false;
-        },
-        async isSelectionThreaded(windowId) {
-          const win = getWindowFromId(windowManager, context, windowId);
-          // If we're not showing threaded, then we only worry about how many
-          // messages are selected.
-          if (!win.gFolderDisplay.view.showThreaded) {
-            return false;
-          }
-
-          return !(await this.isSelectionExpanded(windowId));
-        },
         async getDisplayedMessages(tabId) {
           let tab = tabManager.get(tabId);
           let displayedMessages;
@@ -420,12 +381,38 @@ const specialPatches = (win) => {
   htmlpane.docShell.allowDNSPrefetch = false;
 };
 
-function clearTimer(win) {
-  // If we changed conversations fast, clear the timeout
-  if (win.conversationsMarkReadTimeout) {
-    win.clearTimeout(win.conversationsMarkReadTimeout);
-    delete win.conversationsMarkReadTimeout;
+function isSelectionExpanded(win) {
+  const msgIndex = win.gFolderDisplay
+    ? win.gFolderDisplay.selectedIndices[0]
+    : -1;
+  if (msgIndex >= 0) {
+    try {
+      let viewThread = win.gDBView.getThreadContainingIndex(msgIndex);
+      let rootIndex = win.gDBView.findIndexOfMsgHdr(
+        viewThread.getChildHdrAt(0),
+        false
+      );
+      if (rootIndex >= 0) {
+        return (
+          win.gDBView.isContainer(rootIndex) &&
+          !win.gFolderDisplay.view.isCollapsedThreadAtIndex(rootIndex)
+        );
+      }
+    } catch (ex) {
+      console.error("Error in the onLocationChange handler", ex);
+    }
   }
+  return false;
+}
+
+async function determineIfSelectionIsThreaded(win) {
+  // If we're not showing threaded, then we only worry about how many
+  // messages are selected.
+  if (!win.gFolderDisplay.view.showThreaded) {
+    return false;
+  }
+
+  return !isSelectionExpanded(win);
 }
 
 function summarizeThreadHandler(win, id) {
@@ -492,8 +479,7 @@ function summarizeThreadHandler(win, id) {
           //  the gloda query is updating messages just fine, so we should not
           //  worry about messages which are not in the view.
           let newlySelectedUris = aSelectedMessages.map((m) => msgHdrGetUri(m));
-          let isSelectionThreaded =
-            await browser.convMsgWindow.isSelectionThreaded(this._windowId);
+          let isSelectionThreaded = determineIfSelectionIsThreaded(win);
 
           function isSubSetOrEqual(a1, a2) {
             if (!a1.length || !a2.length || a1.length > a2.length) {
@@ -541,7 +527,6 @@ function summarizeThreadHandler(win, id) {
           let freshConversation = new Conversation(
             win,
             aSelectedMessages,
-            isSelectionThreaded,
             ++win.Conversations.counter
           );
           Log.debug(
@@ -573,10 +558,7 @@ function summarizeThreadHandler(win, id) {
               //  the new conversation. So because we're not sure
               //  freshConversation will actually end up being used, we take the
               //  new conversation as parameter.
-              Log.assert(
-                aConversation.isSelectionThreaded == isSelectionThreaded,
-                "Someone forgot to put the right scroll mode!"
-              );
+
               // Here, put the final touches to our new conversation object.
               // TODO: Maybe re-enable this.
               // htmlpane.contentWindow.newComposeSessionByDraftIf();
@@ -585,54 +567,6 @@ function summarizeThreadHandler(win, id) {
               // htmlpane.contentWindow.registerQuickReply();
 
               win.gMessageDisplay.onLoadCompleted();
-
-              // Make sure we respect the user's preferences.
-              if (
-                Services.prefs.getBoolPref("mailnews.mark_message_read.auto")
-              ) {
-                win.conversationsMarkReadTimeout = win.setTimeout(
-                  async function () {
-                    // The idea is that usually, we're selecting a thread (so we
-                    //  have kScrollUnreadOrLast). This means we mark the whole
-                    //  conversation as read. However, sometimes the user selects
-                    //  individual messages. In that case, don't do something weird!
-                    //  Just mark the selected messages as read.
-                    if (isSelectionThreaded) {
-                      Log.debug("Marking the whole conversation as read");
-                      for (const m of aConversation.messages) {
-                        if (!m.message.read) {
-                          await browser.messages.update(m.message._id, {
-                            read: true,
-                          });
-                        }
-                      }
-                    } else {
-                      // We don't seem to have a reflow when the thread is expanded
-                      //  so no risk of silently marking conversations as read.
-                      Log.debug("Marking selected messages as read");
-                      for (const msgHdr of aSelectedMessages) {
-                        const id =
-                          await browser.conversations.getMessageIdForUri(
-                            msgHdrGetUri(msgHdr)
-                          );
-                        if (!msgHdr.read) {
-                          await browser.messages.update(id, {
-                            read: true,
-                          });
-                        }
-                      }
-                    }
-                    win.conversationsMarkReadTimeout = null;
-                  },
-                  Services.prefs.getIntPref(
-                    "mailnews.mark_message_read.delay.interval"
-                  ) *
-                    Services.prefs.getBoolPref(
-                      "mailnews.mark_message_read.delay"
-                    ) *
-                    1000
-                );
-              }
             }
           );
         })().catch(console.error);
@@ -656,7 +590,6 @@ function summarizeThreadHandler(win, id) {
           return true;
         }
         win.ClearPendingReadTimer();
-        clearTimer(win);
 
         let selectedCount = this.folderDisplay.selectedCount;
         Log.debug(
@@ -679,30 +612,6 @@ function summarizeThreadHandler(win, id) {
           // leave it up to the standard message reader. If the user explicitely
           // asked for the old message reader, we give up as well.
           if (msgHdrIsRss(msgHdr) || msgHdrIsNntp(msgHdr)) {
-            // Use the default pref.
-            if (Services.prefs.getBoolPref("mailnews.mark_message_read.auto")) {
-              win.conversationsMarkReadTimeout = win.setTimeout(
-                async function () {
-                  Log.debug("Marking as read:", msgHdr);
-                  const id = await browser.conversations.getMessageIdForUri(
-                    msgHdrGetUri(msgHdr)
-                  );
-                  if (!msgHdr.read) {
-                    await browser.messages.update(id, {
-                      read: true,
-                    });
-                  }
-                  win.conversationsMarkReadTimeout = null;
-                },
-                Services.prefs.getIntPref(
-                  "mailnews.mark_message_read.delay.interval"
-                ) *
-                  Services.prefs.getBoolPref(
-                    "mailnews.mark_message_read.delay"
-                  ) *
-                  1000
-              );
-            }
             this.singleMessageDisplay = true;
             return false;
           }
