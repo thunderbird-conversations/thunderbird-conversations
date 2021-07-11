@@ -43,7 +43,7 @@ function _MessageList(props) {
             dispatch={props.dispatch}
             displayingMultipleMsgs={!!props.messages.length}
             hasBuiltInPdf={props.summary.hasBuiltInPdf}
-            hideQuickReply={props.summary.hideQuickReply}
+            hideQuickReply={props.summary.prefs.hideQuickReply}
             iframesLoading={props.summary.iframesLoading}
             index={index}
             isLastMessage={index == props.messages.msgData.length - 1}

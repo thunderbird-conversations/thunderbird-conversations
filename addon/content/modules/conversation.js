@@ -19,7 +19,6 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   MessageFromGloda: "chrome://conversations/content/modules/message.js",
   msgHdrGetUri: "chrome://conversations/content/modules/misc.js",
   msgUriToMsgHdr: "chrome://conversations/content/modules/misc.js",
-  Prefs: "chrome://conversations/content/modules/prefs.js",
   setupLogging: "chrome://conversations/content/modules/misc.js",
   Services: "resource://gre/modules/Services.jsm",
   messageActions: "chrome://conversations/content/modules/misc.js",
@@ -102,8 +101,7 @@ async function messageFromGlodaIfOffline(conversation, glodaMsg, debug) {
     (!(msgHdr.folder instanceof Ci.nsIMsgLocalMailFolder) &&
       !(msgHdr.folder.flags & Ci.nsMsgFolderFlags.Offline)) || // online IMAP
     glodaMsg.isEncrypted || // encrypted message
-    (glodaMsg.contentType + "").search(/^multipart\/encrypted(;|$)/i) == 0 || // encrypted message
-    Prefs.extra_attachments; // user request
+    (glodaMsg.contentType + "").search(/^multipart\/encrypted(;|$)/i) == 0; // encrypted message
   const message = new MessageFromGloda(
     conversation,
     msgHdr,
@@ -722,12 +720,6 @@ Conversation.prototype = {
           conversation: { getMessage: (uri) => this.getMessage(uri) },
           loading: false,
           loadingStartedTime: this._loadingStartedTime,
-          prefs: {
-            hideSigs: Prefs.hide_sigs,
-            hideQuoteLength: Prefs.hide_quote_length,
-            tweakBodies: Prefs.tweak_bodies,
-            tweakChrome: Prefs.tweak_chrome,
-          },
           autoMarkAsRead:
             Services.prefs.getBoolPref("mailnews.mark_message_read.auto") &&
             !Services.prefs.getBoolPref("mailnews.mark_message_read.delay"),
