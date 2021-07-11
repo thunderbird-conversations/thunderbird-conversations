@@ -87,10 +87,12 @@ export function createFakeData(
   return data;
 }
 
-export function createFakeSummaryData(options = {}) {
+export function createFakeSummaryData(prefs = {}) {
   return {
-    noFriendlyDate: false,
-    expandWho: 4,
-    ...options,
+    prefs: {
+      noFriendlyDate: false,
+      expandWho: 4,
+      ...prefs,
+    },
   };
 }

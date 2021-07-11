@@ -17,12 +17,10 @@ export const initialSummary = {
   defaultFontSize: 15,
   hasBuiltInPdf: false,
   hasIdentityParamsForCompose: false,
-  hideQuickReply: false,
   iframesLoading: 0,
   isInTab: false,
   // TODO: What is loading used for?
   loading: true,
-  noFriendlyDate: false,
   OS: "win",
   tabId: null,
   tenPxFactor: 0.7,
@@ -30,6 +28,18 @@ export const initialSummary = {
   windowId: null,
   defaultDetailsShowing: false,
   initialSet: [],
+  prefs: {
+    expandWho: 4,
+    extraAttachments: false,
+    hideQuickReply: false,
+    hideQuoteLength: 5,
+    hideSigs: false,
+    loggingEnabled: false,
+    noFriendlyDate: false,
+    operateOnConversations: false,
+    tweakBodies: true,
+    tweakChrome: true,
+  },
 };
 
 let markAsReadTimer;
@@ -95,13 +105,18 @@ export const summaryActions = {
       function setPrefs(newPrefs = {}) {
         return dispatch(
           summarySlice.actions.setUserPreferences({
+            // Default is expand auto.
+            expandWho: newPrefs.preferences?.expand_who ?? 4,
+            extraAttachments: newPrefs.preferences?.extra_attachments ?? false,
             hideQuickReply: newPrefs.preferences?.hide_quick_reply ?? false,
+            hideQuoteLength: newPrefs.preferences?.hide_quote_length ?? 5,
+            hideSigs: newPrefs.preferences?.hide_sigs ?? false,
+            loggingEnabled: newPrefs.preferences?.logging_enabled ?? false,
             noFriendlyDate: newPrefs.preferences?.no_friendly_date ?? false,
             operateOnConversations:
               newPrefs.preferences?.operate_on_conversations ?? false,
-            loggingEnabled: newPrefs.preferences?.logging_enabled ?? false,
-            // Default is expand auto.
-            expandWho: newPrefs.preferences?.expand_who ?? 4,
+            tweakBodies: newPrefs.preferences?.tweak_bodies ?? true,
+            tweakChrome: newPrefs.preferences?.tweak_chrome ?? true,
           })
         );
       }
@@ -160,7 +175,7 @@ export const summaryActions = {
         await dispatch(messageActions.updateConversation({ messages, mode }));
 
         if (mode == "replaceAll") {
-          if (state.summary.loggingEnabled) {
+          if (state.summary.prefs.loggingEnabled) {
             console.debug(
               "Load took (ms):",
               Date.now() - summary.loadingStartedTime
@@ -324,7 +339,7 @@ export const summaryActions = {
             // If we're selecting a thread, mark thee whole conversation as read.
             // Note: if two or more in different threads are selected, then
             // the conversation UI is not used. Hence why this is ok to do here.
-            if (state.summary.loggingEnabled) {
+            if (state.summary.prefs.loggingEnabled) {
               console.debug("Marking the whole conversation as read");
             }
             for (let msg of state.messages.msgData) {
@@ -334,7 +349,7 @@ export const summaryActions = {
             }
           } else {
             // We only have a single message selected, mark that as read.
-            if (state.summary.loggingEnabled) {
+            if (state.summary.prefs.loggingEnabled) {
               console.debug("Marking selected message as read");
             }
             // We use the selection from the initial set, just in case something
@@ -402,7 +417,10 @@ export const summarySlice = RTK.createSlice({
     setUserPreferences(state, { payload }) {
       return {
         ...state,
-        ...payload,
+        prefs: {
+          ...state.prefs,
+          ...payload,
+        },
       };
     },
     replaceSummaryDetails(state, { payload }) {

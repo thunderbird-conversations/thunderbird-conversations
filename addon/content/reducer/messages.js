@@ -53,7 +53,10 @@ export let messageEnricher = new (class {
       msgData.map(async (message) => {
         try {
           await this._addDetailsFromHeader(message, userTags);
-          await this._addDetailsFromAttachments(message);
+          await this._addDetailsFromAttachments(
+            message,
+            summary.prefs.extraAttachments
+          );
           this._adjustSnippetForBugzilla(message);
           await messageEnricher._setDates(message, summary);
         } catch (ex) {
@@ -74,14 +77,14 @@ export let messageEnricher = new (class {
           msgData,
           selectedMessages,
           summary.tabId,
-          summary.expandWho
+          summary.prefs.expandWho
         );
       } else {
         this._markMsgsToExpand(
           msgData,
           selectedMessages,
           -1,
-          summary.expandWho
+          summary.prefs.expandWho
         );
       }
     }
@@ -251,8 +254,14 @@ export let messageEnricher = new (class {
    *
    * @param {object} message
    *   The message to get the additional details for.
+   * @param {boolean} extraAttachments
+   *   Whether or not the user wants to display extra attachments.
    */
-  async _addDetailsFromAttachments(message) {
+  async _addDetailsFromAttachments(message, extraAttachments) {
+    if (message.fromGloda && extraAttachments) {
+      message.needsLateAttachments = true;
+    }
+
     let attachments = message.attachments;
     let l = attachments.length;
     let newAttachments = [];
@@ -344,7 +353,7 @@ export let messageEnricher = new (class {
    */
   async _setDates(message, summary) {
     let date = new Date(message.date);
-    if (summary.noFriendlyDate) {
+    if (summary.prefs.noFriendlyDate) {
       message.date = this.dateAsInMessageList(date);
       message.fullDate = "";
     } else {

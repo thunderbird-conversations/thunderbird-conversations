@@ -362,7 +362,7 @@ export const messageActions = {
     return async (dispatch, getState) => {
       const state = getState();
       let msgs;
-      if (state.summary.isInTab || state.summary.operateOnConversations) {
+      if (state.summary.isInTab || state.summary.prefs.operateOnConversations) {
         msgs = state.messages.msgData.map((msg) => msg.id);
       } else {
         if ("getDisplayedMessages" in browser.messageDisplay) {
@@ -383,7 +383,7 @@ export const messageActions = {
     return async (dispatch, getState) => {
       const state = getState();
       let msgs;
-      if (state.summary.isInTab || state.summary.operateOnConversations) {
+      if (state.summary.isInTab || state.summary.prefs.operateOnConversations) {
         msgs = state.messages.msgData.map((msg) => msg.id);
       } else {
         if ("getDisplayedMessages" in browser.messageDisplay) {

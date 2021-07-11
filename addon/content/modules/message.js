@@ -126,6 +126,7 @@ class Message {
 
     this._uri = msgHdrGetUri(this._msgHdr);
     this._attachments = [];
+    this._fromGloda = false;
     this.needsLateAttachments = false;
     this.contentType = "";
     this.hasRemoteContent = false;
@@ -154,6 +155,7 @@ class Message {
     return {
       id: this._id,
       attachments: this._attachments,
+      fromGloda: this._fromGloda,
       hasRemoteContent: this.hasRemoteContent,
       isPhishing: this.isPhishing,
       messageKey: this._msgHdr.messageKey,
@@ -527,6 +529,7 @@ class MessageFromGloda extends Message {
 
   async init(glodaMsg) {
     this._id = await browser.conversations.getMessageIdForUri(this._uri);
+    this._fromGloda = true;
 
     // Our gloda plugin found something for us, thanks dude!
     if (glodaMsg.alternativeSender) {
