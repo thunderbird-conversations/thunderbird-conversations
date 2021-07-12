@@ -10,7 +10,6 @@ const { XPCOMUtils } = ChromeUtils.import(
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   registerHook: "chrome://conversations/content/modules/hook.js",
-  topMail3Pane: "chrome://conversations/content/modules/misc.js",
   messageActions: "chrome://conversations/content/modules/misc.js",
 });
 
@@ -23,13 +22,12 @@ try {
 
 // This is a version of setupOptions suitable for Conversations
 // see http://mxr.mozilla.org/comm-central/source/calendar/lightning/content/imip-bar.js#186
-function imipOptions(msgWindow, msg, itipItem, rc, actionFunc, foundItems) {
+function imipOptions(win, msg, itipItem, rc, actionFunc, foundItems) {
   let data = cal.itip.getOptionsText(itipItem, rc, actionFunc);
-  let w = topMail3Pane(msg);
 
   // Set the right globals so that actionFunc works properly.
-  w.ltnImipBar.itipItem = itipItem;
-  w.ltnImipBar.actionFunc = function (listener, actionMethod) {
+  win.ltnImipBar.itipItem = itipItem;
+  win.ltnImipBar.actionFunc = function (listener, actionMethod) {
     // Short-circuit the listeners so that we can add our own routines for
     // adding the buttons, etc.
     let newListener = {
@@ -77,7 +75,7 @@ function imipOptions(msgWindow, msg, itipItem, rc, actionFunc, foundItems) {
     if (buttons.find((b) => b.id == c)) {
       return;
     }
-    let originalButtonElement = w.document.getElementById(c);
+    let originalButtonElement = win.document.getElementById(c);
     buttons.push({
       id: c,
       actionParams: {
@@ -145,7 +143,7 @@ let lightningHook = {
 
       cal.itip.processItipItem(
         itipItem,
-        imipOptions.bind(null, mainWindow.msgWindow, msg)
+        imipOptions.bind(null, mainWindow, msg)
       );
     }
   },
