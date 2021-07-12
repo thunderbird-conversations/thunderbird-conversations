@@ -201,7 +201,7 @@ function msgUriToMsgHdr(aUri) {
     let messageService = gMessenger.messageServiceFromURI(aUri);
     return messageService.messageURIToMsgHdr(aUri);
   } catch (e) {
-    dump("Unable to get " + aUri + " — returning null instead");
+    console.error("Unable to get ", aUri, " — returning null instead");
     return null;
   }
 }
