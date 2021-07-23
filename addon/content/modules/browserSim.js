@@ -160,7 +160,19 @@ class _BrowserSim {
 
   getTabId(win, docWin) {
     let tabmail = win.document.getElementById("tabmail");
-    let tab = tabmail.getTabForBrowser(docWin.frameElement);
+
+    let browserElement;
+    if (docWin.Conversations.currentConversation._htmlPane.browsingContext) {
+      // Thunderbird 91+
+      browserElement =
+        docWin.Conversations.currentConversation._htmlPane.browsingContext
+          .embedderElement;
+    } else {
+      // Thunderbird 78
+      browserElement = docWin.frameElement;
+    }
+
+    let tab = tabmail.getTabForBrowser(browserElement);
     if (!tab) {
       return null;
     }
