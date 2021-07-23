@@ -361,8 +361,10 @@ if (!browser.runtime) {
 
 if (!browser.contacts) {
   browser.contacts = {
-    async quickSearch(email) {
-      if (["foo@example.com", "bar@example.com"].includes(email)) {
+    async quickSearch(queryInfo) {
+      if (
+        ["foo@example.com", "bar@example.com"].includes(queryInfo.searchString)
+      ) {
         return [
           {
             id: "135246",
@@ -376,7 +378,7 @@ if (!browser.contacts) {
             },
           },
         ];
-      } else if (email == "id4@example.com") {
+      } else if (queryInfo.searchString == "id4@example.com") {
         return [
           {
             id: "15263748",
@@ -389,7 +391,7 @@ if (!browser.contacts) {
             },
           },
         ];
-      } else if (email == "extra@example.com") {
+      } else if (queryInfo.searchString == "extra@example.com") {
         return [
           {
             id: "75312468",
@@ -403,7 +405,11 @@ if (!browser.contacts) {
             readOnly: true,
           },
         ];
-      } else if (["arch@example.com", "cond@example.com"].includes(email)) {
+      } else if (
+        ["arch@example.com", "cond@example.com"].includes(
+          queryInfo.searchString
+        )
+      ) {
         return [
           {
             id: "1357924680",
