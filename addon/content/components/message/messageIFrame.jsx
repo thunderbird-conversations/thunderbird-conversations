@@ -226,11 +226,11 @@ export class MessageIFrame extends React.Component {
     if (startLoad && isWebextension) {
       const docShell = this.iframe.contentWindow.docShell;
       docShell.appType = Ci.nsIDocShell.APP_TYPE_MAIL;
-      docShell.charset = "UTF-8";
       const cv = docShell.contentViewer;
       // Not needed after Gecko 90.
       if ("hintCharacterSet" in cv) {
         cv.hintCharacterSet = "UTF-8";
+        docShell.charset = "UTF-8";
         // This used to be kCharsetFromChannel = 11, however in 79/80 the code changed.
         // This still needs to be forced, because bug 829543 isn't fixed yet.
         cv.hintCharacterSetSource = kCharsetFromUserForced;
@@ -270,11 +270,11 @@ export class MessageIFrame extends React.Component {
 
     const docShell = this.iframe.contentWindow.docShell;
     docShell.appType = Ci.nsIDocShell.APP_TYPE_MAIL;
-    docShell.charset = "UTF-8";
     const cv = docShell.contentViewer;
     // Not needed after Gecko 90.
     if ("hintCharacterSet" in cv) {
       cv.hintCharacterSet = "UTF-8";
+      docShell.charset = "UTF-8";
       // This used to be kCharsetFromChannel = 11, however in 79/80 the code changed.
       // This still needs to be forced, because bug 829543 isn't fixed yet.
       cv.hintCharacterSetSource = kCharsetFromUserForced;
