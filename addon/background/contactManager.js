@@ -168,9 +168,21 @@ export class ContactManager {
     // See #1492. This attempts to catch errors from quickSearch that can
     // happen if there are broken address books.
     try {
-      matchingCards = await browser.contacts.quickSearch(email);
+      matchingCards = await browser.contacts.quickSearch({
+        includeRemote: false,
+        searchString: email,
+      });
     } catch (ex) {
-      console.error(ex);
+      if (ex.message.includes("Incorrect argument types")) {
+        try {
+          // Try again, this is for Thunderbird 78.
+          matchingCards = await browser.contacts.quickSearch(email);
+        } catch (ex) {
+          console.error(ex);
+        }
+      } else {
+        console.error(ex);
+      }
     }
 
     // The search is only a quick search, therefore it might match email
