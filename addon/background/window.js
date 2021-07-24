@@ -55,6 +55,18 @@ export class Window {
     );
 
     browser.convMsgWindow.onSummarizeThread.addListener(async () => {});
+
+    browser.runtime.onConnectExternal.addListener(async (port) => {
+      port.onMessage.addListener((msg) => {
+        if (msg.type != "addPill") {
+          return;
+        }
+        browser.convMsgWindow.addSpecialTag({
+          msgId: msg.msgId,
+          message: msg.message,
+        });
+      });
+    });
   }
 
   async openConversation(windowId, urls) {
