@@ -169,7 +169,7 @@ class _BrowserSim {
     // Alternately, we need to complete the switch to loading as a WebExtension
     // page, but that's a lot more work at the moment.
     let tab = tabmail.getTabForBrowser(
-      win.document.getElementById("multimessage")
+      docWin.browsingContext?.embedderElement || docWin.frameElement
     );
     if (!tab) {
       return null;
