@@ -119,6 +119,9 @@ export const messageActions = {
 
       const isInTab = params.has("urls");
       const topWin = topMail3Pane(window);
+      // Note: Moving this to after the check for started below is dangerous,
+      // since it introduces races where `Conversation` doesn't wait for the
+      // page to startup, and hence tab id isn't set.
       await dispatch(
         summaryActions.setConversationState({
           isInTab,
