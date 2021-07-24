@@ -20,14 +20,18 @@ try {
   hasLightning = true;
 } catch (ex) {}
 
+function getImipBar(win) {
+  return win.ltnImipBar ?? win.calImipBar;
+}
+
 // This is a version of setupOptions suitable for Conversations
 // see http://mxr.mozilla.org/comm-central/source/calendar/lightning/content/imip-bar.js#186
 function imipOptions(win, msg, itipItem, rc, actionFunc, foundItems) {
   let data = cal.itip.getOptionsText(itipItem, rc, actionFunc);
 
   // Set the right globals so that actionFunc works properly.
-  win.ltnImipBar.itipItem = itipItem;
-  win.ltnImipBar.actionFunc = function (listener, actionMethod) {
+  getImipBar(win).itipItem = itipItem;
+  getImipBar(win).actionFunc = function (listener, actionMethod) {
     // Short-circuit the listeners so that we can add our own routines for
     // adding the buttons, etc.
     let newListener = {
@@ -153,7 +157,7 @@ let lightningHook = {
       return;
     }
 
-    win.ltnImipBar.executeAction(extraData.execute);
+    getImipBar(win).executeAction(extraData.execute);
   },
 };
 
