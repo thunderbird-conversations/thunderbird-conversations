@@ -665,6 +665,44 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             getAttachmentInfo(win, msgUri, attachment).open();
             return;
           }
+          if (attachment.contentType == "application/pdf") {
+            let mimeService = Cc["@mozilla.org/mime;1"].getService(
+              Ci.nsIMIMEService
+            );
+            let handlerInfo = mimeService.getFromTypeAndExtension(
+              attachment.contentType,
+              null
+            );
+            // Only open a new tab for pdfs if we are handling them internally.
+            if (
+              !handlerInfo.alwaysAskBeforeHandling &&
+              handlerInfo.preferredAction == Ci.nsIHandlerInfo.handleInternally
+            ) {
+              // Add the content type to avoid a "how do you want to open this?"
+              // dialog. The type may already be there, but that doesn't matter.
+              let url = attachmentUrl;
+              if (!url.includes("type=")) {
+                url += url.includes("?") ? "&" : "?";
+                url += "type=application/pdf";
+              }
+              let tabmail = win.document.getElementById("tabmail");
+              if (!tabmail) {
+                // If no tabmail available in this window, try and find it in
+                // another.
+                let win = Services.wm.getMostRecentWindow("mail:3pane");
+                tabmail = win && win.document.getElementById("tabmail");
+              }
+              if (tabmail) {
+                tabmail.openTab("contentTab", {
+                  url,
+                  background: false,
+                  linkHandler: "single-page",
+                });
+                return;
+              }
+              // If no tabmail, open PDF same as other attachments.
+            }
+          }
           let url = Services.io.newURI(msgUri);
           let msgService = Cc[
             `@mozilla.org/messenger/messageservice;1?type=${url.scheme}`
