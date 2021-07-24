@@ -54,6 +54,28 @@
             "description": "The iframe id."
           }
         ]
+      },
+      {
+        "name": "addSpecialTag",
+        "type": "function",
+        "description": "Adds a special tag to a message.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "tagDetails",
+            "type": "object",
+            "properties": {
+              "msgId": {
+                "type": "number",
+                "description": "The message id to add the tag to."
+              },
+              "message": {
+                "type": "string",
+                "description": "The message for the tag."
+              }
+            }
+          }
+        ]
       }
     ],
     "events": [
