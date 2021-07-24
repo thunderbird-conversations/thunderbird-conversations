@@ -160,19 +160,17 @@ class _BrowserSim {
 
   getTabId(win, docWin) {
     let tabmail = win.document.getElementById("tabmail");
-
-    let browserElement;
-    if (docWin.Conversations.currentConversation._htmlPane.browsingContext) {
-      // Thunderbird 91+
-      browserElement =
-        docWin.Conversations.currentConversation._htmlPane.browsingContext
-          .embedderElement;
-    } else {
-      // Thunderbird 78
-      browserElement = docWin.frameElement;
-    }
-
-    let tab = tabmail.getTabForBrowser(browserElement);
+    // We assume for now (certainly TB 91) that we can get the current
+    // multi-message browser and that will be in the expected tab. This generally
+    // as the multi-message browser is shared across tabs, however, we should
+    // see if we can find a way to get the browser for the current document
+    // window (docWin), and avoid the winodw lookup altogether.
+    //
+    // Alternately, we need to complete the switch to loading as a WebExtension
+    // page, but that's a lot more work at the moment.
+    let tab = tabmail.getTabForBrowser(
+      win.document.getElementById("multimessage")
+    );
     if (!tab) {
       return null;
     }
