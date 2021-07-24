@@ -312,9 +312,19 @@ export class MessageIFrame extends React.Component {
       capture: true,
     });
     delete this._loadListener;
-    this.iframe.removeEventListener("DOMContentLoaded", this._domloadListener, {
-      capture: true,
-    });
+    if (window.browsingContext) {
+      // Thunderbird 91
+      window.browsingContext.embedderElement.removeEventListener(
+        "DOMContentLoaded",
+        this._domloadListener,
+        { capture: true }
+      );
+    } else {
+      // Thunderbird 78
+      window.removeEventListener("DOMContentLoaded", this._domloadListener, {
+        capture: true,
+      });
+    }
     delete this._domloadListener;
   }
 
@@ -325,9 +335,20 @@ export class MessageIFrame extends React.Component {
         capture: true,
       });
       this._domloadListener = this._onDOMLoaded.bind(this);
-      this.iframe.addEventListener("DOMContentLoaded", this._domloadListener, {
-        capture: true,
-      });
+      if (window.browsingContext) {
+        // Thunderbird 91 - this is due to the type=content change on multimessage,
+        // we must break out to the parent browser and listen there.
+        window.browsingContext.embedderElement.addEventListener(
+          "DOMContentLoaded",
+          this._domloadListener,
+          { capture: true }
+        );
+      } else {
+        // Thunderbird 78.
+        window.addEventListener("DOMContentLoaded", this._domloadListener, {
+          capture: true,
+        });
+      }
     }
   }
 
@@ -532,7 +553,10 @@ export class MessageIFrame extends React.Component {
   }
 
   async _onDOMLoaded(event) {
-    if (event.target.documentURI == "about:blank") {
+    if (
+      event.target != this.iframe.contentDocument ||
+      event.target.documentURI == "about:blank"
+    ) {
       return;
     }
     const iframeDoc = this.iframe.contentDocument;
