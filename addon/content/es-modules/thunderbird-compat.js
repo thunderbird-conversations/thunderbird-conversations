@@ -215,6 +215,10 @@ if (!browser.conversations) {
       switch (name) {
         case "mail.showCondensedAddresses":
           return false;
+        case "mailnews.mark_message_read.auto":
+          return true;
+        case "mailnews.mark_message_read.delay":
+          return false;
       }
       throw new Error("Unexpected pref");
     },
