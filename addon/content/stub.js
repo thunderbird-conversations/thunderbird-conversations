@@ -16,21 +16,7 @@ document.addEventListener(
   () => {
     conversationStore = RTK.configureStore({
       reducer: conversationApp,
-      // XXX bug #1461. Remove this code when that bug is resolved.
-      //
-      // By default RTK includes the serializableCheck
-      // Redux middleware which makes sure the Redux state
-      // and all Redux actions are serializable. We want this to
-      // be the case in the long run, but there are a few places
-      // where it will take more work to eliminate the non-serializable
-      // data. As a temporary workaround, exclude that data from the
-      // checks.
-      middleware: RTK.getDefaultMiddleware({
-        serializableCheck: {
-          ignoredActions: ["summary/replaceSummaryDetails"],
-          ignoredPaths: ["summary.conversation"],
-        },
-      }),
+      middleware: RTK.getDefaultMiddleware(),
     });
 
     // Once we can potentially load in a WebExtension scope, then we should
