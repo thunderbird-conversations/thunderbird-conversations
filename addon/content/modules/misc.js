@@ -4,7 +4,6 @@
 
 var EXPORTED_SYMBOLS = [
   "setupLogging",
-  "groupArray",
   "topMail3Pane",
   "escapeHtml",
   "parseMimeLine",
@@ -39,29 +38,6 @@ function setupLogging(name) {
     prefix: name,
     maxLogLevel: Prefs.logging_enabled ? "Debug" : "Warn",
   });
-}
-
-/**
- * Group some array elements according to a key function
- *
- * @param {object[]} aItems The array elements (or anything Iterable)
- * @param {Function} aFn The function that take an element from the array and returns an id
- * @returns {object[][]} an array of arrays, with each inner array containing all elements
- *  sharing the same key
- */
-function groupArray(aItems, aFn) {
-  let groups = {};
-  let orderedIds = [];
-  for (let item of aItems) {
-    let id = aFn(item);
-    if (!groups[id]) {
-      groups[id] = [item];
-      orderedIds.push(id);
-    } else {
-      groups[id].push(item);
-    }
-  }
-  return orderedIds.map((id) => groups[id]);
 }
 
 /**

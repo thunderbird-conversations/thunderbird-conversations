@@ -200,6 +200,147 @@ describe("messageEnricher", () => {
     });
   });
 
+  describe("De-duplicates messages when they have the same ids", () => {
+    beforeEach(() => {
+      isInViewSpy.mockReturnValue(false);
+    });
+
+    test("Prefers in-view messages", async () => {
+      let fakeMsgs = [
+        createFakeData(
+          { id: 1, glodaMessageId: 1, folderType: "trash" },
+          fakeMessageHeaderData
+        ),
+        createFakeData(
+          { id: 2, glodaMessageId: 1, folderType: "archives" },
+          fakeMessageHeaderData
+        ),
+        createFakeData(
+          { id: 3, glodaMessageId: 1, folderType: "sent" },
+          fakeMessageHeaderData
+        ),
+        createFakeData(
+          { id: 4, glodaMessageId: 1, folderType: "inbox" },
+          fakeMessageHeaderData
+        ),
+        createFakeData(
+          { id: 5, glodaMessageId: 1, folderType: "junk" },
+          fakeMessageHeaderData
+        ),
+      ];
+      isInViewSpy.mockImplementation((tabId, msgId) => msgId == 5);
+
+      await messageEnricher.enrich(
+        "replaceAll",
+        fakeMsgs,
+        createFakeSummaryData({ expandWho: 3 })
+      );
+
+      expect(fakeMsgs.length).toBe(1);
+      expect(fakeMsgs[0].id).toBe(5);
+    });
+
+    test("Next messages in inbox", async () => {
+      let fakeMsgs = [
+        createFakeData(
+          { id: 1, glodaMessageId: 1, folderType: "trash" },
+          fakeMessageHeaderData
+        ),
+        createFakeData(
+          { id: 2, glodaMessageId: 1, folderType: "archives" },
+          fakeMessageHeaderData
+        ),
+        createFakeData(
+          { id: 3, glodaMessageId: 1, folderType: "sent" },
+          fakeMessageHeaderData
+        ),
+        createFakeData(
+          { id: 4, glodaMessageId: 1, folderType: "inbox" },
+          fakeMessageHeaderData
+        ),
+      ];
+
+      await messageEnricher.enrich(
+        "replaceAll",
+        fakeMsgs,
+        createFakeSummaryData({ expandWho: 3 })
+      );
+
+      expect(fakeMsgs.length).toBe(1);
+      expect(fakeMsgs[0].id).toBe(4);
+    });
+
+    test("Next messages in sent", async () => {
+      let fakeMsgs = [
+        createFakeData(
+          { id: 1, glodaMessageId: 1, folderType: "trash" },
+          fakeMessageHeaderData
+        ),
+        createFakeData(
+          { id: 2, glodaMessageId: 1, folderType: "archives" },
+          fakeMessageHeaderData
+        ),
+        createFakeData(
+          { id: 3, glodaMessageId: 1, folderType: "sent" },
+          fakeMessageHeaderData
+        ),
+      ];
+
+      await messageEnricher.enrich(
+        "replaceAll",
+        fakeMsgs,
+        createFakeSummaryData({ expandWho: 3 })
+      );
+
+      expect(fakeMsgs.length).toBe(1);
+      expect(fakeMsgs[0].id).toBe(3);
+    });
+
+    test("Next messages in archives", async () => {
+      let fakeMsgs = [
+        createFakeData(
+          { id: 1, glodaMessageId: 1, folderType: "trash" },
+          fakeMessageHeaderData
+        ),
+        createFakeData(
+          { id: 2, glodaMessageId: 1, folderType: "archives" },
+          fakeMessageHeaderData
+        ),
+      ];
+
+      await messageEnricher.enrich(
+        "replaceAll",
+        fakeMsgs,
+        createFakeSummaryData({ expandWho: 3 })
+      );
+
+      expect(fakeMsgs.length).toBe(1);
+      expect(fakeMsgs[0].id).toBe(2);
+    });
+
+    test("Lastly, the first of other messages", async () => {
+      let fakeMsgs = [
+        createFakeData(
+          { id: 1, glodaMessageId: 1, folderType: "trash" },
+          fakeMessageHeaderData
+        ),
+        createFakeData(
+          { id: 2, glodaMessageId: 1, folderType: "junk" },
+          fakeMessageHeaderData
+        ),
+      ];
+
+      await messageEnricher.enrich(
+        "replaceAll",
+        fakeMsgs,
+        createFakeSummaryData({ expandWho: 3 })
+      );
+
+      expect(fakeMsgs.length).toBe(1);
+      expect(fakeMsgs[0].id).toBe(1);
+    });
+  });
+
   describe("Expansion and Scroll To", () => {
     test("Expands all messages when expand is set to all", async () => {
       let fakeMsgs = [];

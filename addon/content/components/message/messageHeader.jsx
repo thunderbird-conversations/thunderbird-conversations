@@ -397,7 +397,7 @@ MessageHeader.propTypes = {
   multipleRecipients: PropTypes.bool.isRequired,
   recipientsIncludeLists: PropTypes.bool.isRequired,
   isDraft: PropTypes.bool.isRequired,
-  shortFolderName: PropTypes.string.isRequired,
+  shortFolderName: PropTypes.string,
   snippet: PropTypes.string.isRequired,
   starred: PropTypes.bool.isRequired,
   tags: PropTypes.array.isRequired,
