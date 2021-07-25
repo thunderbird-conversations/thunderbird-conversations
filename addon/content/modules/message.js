@@ -126,7 +126,8 @@ class Message {
 
     this._uri = msgHdrGetUri(this._msgHdr);
     this._attachments = [];
-    this._fromGloda = false;
+    this._messageHeaderId = null;
+    this._glodaMessageId = null;
     this.needsLateAttachments = false;
     this.contentType = "";
     this.hasRemoteContent = false;
@@ -155,7 +156,8 @@ class Message {
     return {
       id: this._id,
       attachments: this._attachments,
-      fromGloda: this._fromGloda,
+      messageHeaderId: this._messageHeaderId,
+      glodaMessageId: this._glodaMessageId,
       hasRemoteContent: this.hasRemoteContent,
       isPhishing: this.isPhishing,
       messageKey: this._msgHdr.messageKey,
@@ -529,7 +531,7 @@ class MessageFromGloda extends Message {
 
   async init(glodaMsg) {
     this._id = await browser.conversations.getMessageIdForUri(this._uri);
-    this._fromGloda = true;
+    this._glodaMessageId = glodaMsg.headerMessageID;
 
     // Our gloda plugin found something for us, thanks dude!
     if (glodaMsg.alternativeSender) {
@@ -648,6 +650,7 @@ class MessageFromDbHdr extends Message {
 
   async init() {
     this._id = await browser.conversations.getMessageIdForUri(this._uri);
+    this._messageHeaderId = this._msgHdr.messageId;
     // Gloda is not with us, so stream the message... the MimeMsg API says that
     //  the streaming will fail and the underlying exception will be re-thrown in
     //  case the message is not on disk. In that case, the fallback is to just get

@@ -79,6 +79,8 @@ export let messageEnricher = new (class {
     // as this relies on the message read information.
     if (mode == "replaceAll" || mode == "append") {
       if (mode == "replaceAll") {
+        this._filterOutDuplicatesAndInvalids(msgData);
+
         this._expandAndScroll(
           msgData,
           selectedMessages,
@@ -94,8 +96,73 @@ export let messageEnricher = new (class {
         );
       }
     }
+  }
 
-    msgData.filter((m) => !m.invalid);
+  /**
+   * Figure out if there are duplicate or invalid messages and filter them out.
+   * It decides which messages to keep and which messages to filter out.
+   * This is needed because Gloda might return many copies of a single
+   * message, each in a different folder.
+   *
+   * For different candidates for a single message id, we need to pick the
+   * best one, giving precedence to those which are selected and/or in the
+   * current view.
+   *
+   * Note: the array is modified in-place to avoid the need to re-update
+   * state and dispatch messages. In future, we might want to make this
+   * explicit.
+   *
+   * @param {object[]} msgData
+   *   The message details.
+   */
+  _filterOutDuplicatesAndInvalids(msgData) {
+    // First group the messages by the keys.
+    let groupedMessages = new Map();
+    for (let message of msgData) {
+      if (message.invalid) {
+        continue;
+      }
+      let id = message.glodaMessageId ?? message.messageHeaderId;
+      let items = groupedMessages.get(id);
+      if (!items) {
+        groupedMessages.set(id, [message]);
+      } else {
+        items.push(message);
+      }
+    }
+
+    // Now filter the groups.
+    let i = 0;
+    msgData.length = groupedMessages.size;
+    for (let group of groupedMessages.values()) {
+      if (group.length < 1) {
+        msgData[i++] = group[0];
+        continue;
+      }
+
+      function findForCriterion(criterion) {
+        for (let msg of group) {
+          if (criterion(msg)) {
+            return msg;
+          }
+        }
+        return null;
+      }
+
+      let msg =
+        // If it doesn't have a folderName it is in view.
+        findForCriterion((msg) => !msg.folderName) ||
+        findForCriterion((msg) => msg.isInbox) ||
+        findForCriterion((msg) => msg.isSent) ||
+        findForCriterion((msg) => msg.isArchives) ||
+        // Worst case, fallback to the first one.
+        group[0];
+
+      // The message that's selected has the highest priority to avoid
+      //  inconsistencies in case multiple identical messages are present in the
+      //  same thread (e.g. message from to me).
+      msgData[i++] = msg;
+    }
   }
 
   /**
@@ -230,8 +297,11 @@ export let messageEnricher = new (class {
 
     message.date = messageHeader.date.getTime();
 
+    message.isArchives = messageFolderType == "archives";
     message.isDraft = messageFolderType == "drafts";
+    message.isInbox = messageFolderType == "inbox";
     message.isJunk = messageHeader.junk;
+    message.isSent = messageFolderType == "sent";
     message.isOutbox = messageFolderType == "outbox";
     message.read = messageHeader.read;
     message.subject = messageHeader.subject;
@@ -271,7 +341,7 @@ export let messageEnricher = new (class {
    *   Whether or not the user wants to display extra attachments.
    */
   async _addDetailsFromAttachments(message, extraAttachments) {
-    if (message.fromGloda && extraAttachments) {
+    if (message.glodaMessageId && extraAttachments) {
       message.needsLateAttachments = true;
     }
 

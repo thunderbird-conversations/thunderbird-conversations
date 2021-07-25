@@ -43,6 +43,7 @@ export const waitForComponentToPaint = async (wrapper) => {
 export function createFakeData(
   {
     id = 0,
+    glodaMessageId = null,
     attachments = [],
     bugzilla = false,
     detailsShowing,
@@ -60,6 +61,8 @@ export function createFakeData(
 ) {
   let data = {
     id,
+    // Set the glodaMessageId to avoid filtering out duplicates due to no id.
+    glodaMessageId: glodaMessageId ?? id,
     attachments,
     bugzilla,
     date: Date.now(),

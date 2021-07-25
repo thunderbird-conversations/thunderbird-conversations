@@ -13,7 +13,6 @@ const { XPCOMUtils } = ChromeUtils.import(
 XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   Gloda: "resource:///modules/gloda/GlodaPublic.jsm",
-  groupArray: "chrome://conversations/content/modules/misc.js",
   MailServices: "resource:///modules/MailServices.jsm",
   MessageFromDbHdr: "chrome://conversations/content/modules/message.js",
   MessageFromGloda: "chrome://conversations/content/modules/message.js",
@@ -45,13 +44,8 @@ XPCOMUtils.defineLazyGetter(this, "Log", () => {
 const kMsgDbHdr = 0;
 const kMsgGloda = 1;
 
-const nsMsgViewIndex_None = 0xffffffff;
-
 // from mailnews/base/public/nsMsgFolderFlags.idl
-const nsMsgFolderFlags_SentMail = 0x00000200;
 const nsMsgFolderFlags_Drafts = 0x00000400;
-const nsMsgFolderFlags_Archive = 0x00004000;
-const nsMsgFolderFlags_Inbox = 0x00001000;
 
 // -- Some helpers for our message type
 
@@ -129,39 +123,6 @@ async function messageFromDbHdr(conversation, msgHdr, debug) {
   };
 }
 
-function ViewWrapper(mainWindow) {
-  this.mainWindow = mainWindow;
-  // The trick is, if a thread is collapsed, this._initialSet contains all the
-  //  messages in the thread. We want these to be selected. If a thread is
-  //  expanded, we want messages which are in the current view to be selected.
-  // We cannot compare messages by message-id (they have the same!), we cannot
-  //  compare them by messageKey (not reliable), but URLs should be enough.
-  this.byUri = {};
-  if (this.mainWindow.gFolderDisplay.selectedMessages) {
-    this.mainWindow.gFolderDisplay.selectedMessages.map(
-      (x) => (this.byUri[msgHdrGetUri(x)] = true)
-    );
-  }
-}
-
-ViewWrapper.prototype = {
-  isInView(aMsg) {
-    if (this.mainWindow.gDBView) {
-      let msgHdr = toMsgHdr(aMsg);
-      if (!msgHdr) {
-        return false;
-      }
-      let r =
-        msgHdrGetUri(msgHdr) in this.byUri ||
-        this.mainWindow.gDBView.findIndexOfMsgHdr(msgHdr, false) !=
-          nsMsgViewIndex_None;
-      return r;
-    }
-
-    return false;
-  },
-};
-
 // -- The actual conversation object
 
 // We maintain the invariant that, once the conversation is built, this.messages
@@ -177,8 +138,7 @@ function Conversation(win, selectedMessages, counter, isInTab = false) {
   //   this.messages.map(x => toMsgHdr(x))
   // This is actually trickier than it seems because of the different view modes
   //  and because we can't directly tell whether a message is in the view if
-  //  it's under a collapsed thread. See the lengthy discussion in
-  //  _filterOutDuplicates
+  //  it's under a collapsed thread.
   // The invariant doesn't hold if the same message is present twice in the
   //  thread (like, you sent a message to yourself so it appears twice in your
   //  inbox that also searches sent folders). But we handle that case well.
@@ -495,53 +455,7 @@ Conversation.prototype = {
   // This is the function that waits for everyone to be ready (that was a useful
   //  comment)
   _whenReady(n) {
-    this._filterOutDuplicates();
     this._outputMessages().catch(console.error);
-  },
-
-  // This is a core function. It decides which messages to keep and which
-  //  messages to filter out. Because Gloda might return many copies of a single
-  //  message, each in a different folder, we use the messageId as the key.
-  // Then, for different candidates for a single message id, we need to pick the
-  //  best one, giving precedence to those which are selected and/or in the
-  //  current view.
-  _filterOutDuplicates() {
-    let messages = this.messages;
-    let viewWrapper = new ViewWrapper(this._window);
-    // Wicked cases, when we're asked to display a draft that's half-saved...
-    messages = messages.filter((x) => toMsgHdr(x) && getMessageId(x));
-    messages = groupArray(this.messages, getMessageId);
-    // The message that's selected has the highest priority to avoid
-    //  inconsistencies in case multiple identical messages are present in the
-    //  same thread (e.g. message from to me).
-    let selectRightMessage = (aSimilarMessages) => {
-      let findForCriterion = (aCriterion) => {
-        let bestChoice;
-        for (let msg of aSimilarMessages) {
-          if (!toMsgHdr(msg)) {
-            continue;
-          }
-          if (aCriterion(msg)) {
-            bestChoice = msg;
-            break;
-          }
-        }
-        return bestChoice;
-      };
-      let r =
-        findForCriterion((aMsg) => viewWrapper.isInView(aMsg)) ||
-        findForCriterion((aMsg) => msgHdrIsInbox(toMsgHdr(aMsg))) ||
-        findForCriterion((aMsg) => msgHdrIsSent(toMsgHdr(aMsg))) ||
-        findForCriterion((aMsg) => !msgHdrIsArchive(toMsgHdr(aMsg))) ||
-        aSimilarMessages[0];
-      return r;
-    };
-    // Select right message will try to pick the message that has an
-    //  existing msgHdr.
-    messages = messages.map((group) => selectRightMessage(group));
-    // But sometimes it just fails, and gloda remembers dead messages...
-    messages = messages.filter(toMsgHdr);
-    this.messages = messages;
   },
 
   /**
@@ -785,16 +699,6 @@ Conversation.prototype = {
 };
 
 /**
- * Tells if the message is an archived message
- *
- * @param {nsIMsgDBHdr} msgHdr The message header to examine
- * @returns {boolean}
- */
-function msgHdrIsArchive(msgHdr) {
-  return msgHdr.folder.getFlag(nsMsgFolderFlags_Archive);
-}
-
-/**
  * Tells if the message is a draft message
  *
  * @param {nsIMsgDBHdr} msgHdr The message header to examine
@@ -802,24 +706,4 @@ function msgHdrIsArchive(msgHdr) {
  */
 function msgHdrIsDraft(msgHdr) {
   return msgHdr.folder.getFlag(nsMsgFolderFlags_Drafts);
-}
-
-/**
- * Tells if the message is in the account's inbox
- *
- * @param {nsIMsgDBHdr} msgHdr The message header to examine
- * @returns {boolean}
- */
-function msgHdrIsInbox(msgHdr) {
-  return msgHdr.folder.getFlag(nsMsgFolderFlags_Inbox);
-}
-
-/**
- * Tells if the message is a sent message
- *
- * @param {nsIMsgDBHdr} msgHdr The message header to examine
- * @returns {boolean}
- */
-function msgHdrIsSent(msgHdr) {
-  return msgHdr.folder.getFlag(nsMsgFolderFlags_SentMail);
 }
