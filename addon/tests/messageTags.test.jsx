@@ -21,12 +21,11 @@ describe("SpecialMessageTags test", () => {
     const tagData = [
       {
         canClick: false,
-        classNames: "dkim-signed SUCCESS",
+        classNames: "success",
         icon: "material-icons.svg#edit",
         name: "DKIM signed",
         tooltip: {
-          type: "dkim",
-          strings: ["Valid (Signed by example.com)", []],
+          strings: ["Valid (Signed by example.com)"],
         },
       },
     ];
@@ -44,7 +43,7 @@ describe("SpecialMessageTags test", () => {
     // There should be one react child `SpecialMessageTag`
     expect(wrapper.find(SpecialMessageTag)).toHaveLength(1);
     // That child should have all relevant classes applied
-    expect(wrapper.find(".dkim-signed.SUCCESS.special-tag")).toHaveLength(1);
+    expect(wrapper.find(".success.special-tag")).toHaveLength(1);
   });
 
   test("Clicking of special-tags", async () => {
@@ -52,22 +51,20 @@ describe("SpecialMessageTags test", () => {
     const tagData = [
       {
         details: null,
-        classNames: "dkim-signed SUCCESS",
+        classNames: "success",
         icon: "material-icons.svg#edit",
         name: "DKIM signed",
         tooltip: {
-          type: "dkim",
-          strings: ["Valid (Signed by example.com)", []],
+          strings: ["Valid (Signed by example.com)"],
         },
       },
       {
         details: true,
-        classNames: "dkim-signed SUCCESS",
+        classNames: "success",
         icon: "material-icons.svg#edit",
         name: "DKIM signed",
         tooltip: {
-          type: "dkim",
-          strings: ["Valid (Signed by example.com)", []],
+          strings: ["Valid (Signed by example.com)"],
         },
       },
     ];

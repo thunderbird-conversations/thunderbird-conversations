@@ -69,9 +69,24 @@
                 "type": "number",
                 "description": "The message id to add the tag to."
               },
+              "classNames": {
+                "type": "string",
+                "description": "The class for the tag."
+              },
+              "icon": {
+                "type": "string",
+                "description": "The icon for the tag."
+              },
               "message": {
                 "type": "string",
                 "description": "The message for the tag."
+              },
+              "tooltip": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                },
+                "description": "The optional tooltip for the tag."
               }
             }
           }

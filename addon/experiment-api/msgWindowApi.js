@@ -88,7 +88,7 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
           win.PrintUtils.startPrintWindow(messageIframe.browsingContext, {
             printFrameOnly: true,
           });
-        async addSpecialTag({ msgId, message }) {
+        async addSpecialTag({ msgId, icon, classNames, message, tooltip }) {
           for (const win of Services.wm.getEnumerator("mail:3pane")) {
             let multimessage = win.document.getElementById("multimessage");
             if (
@@ -100,7 +100,12 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
             multimessage.contentWindow.Conversations.currentConversation.dispatch(
               messageActions.msgAddSpecialTag({
                 tagDetails: {
+                  classNames,
+                  icon,
                   name: message,
+                  tooltip: {
+                    strings: tooltip,
+                  },
                 },
                 msgId,
               })
