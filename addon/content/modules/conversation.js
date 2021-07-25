@@ -239,7 +239,7 @@ Conversation.prototype = {
               messageFromDbHdr(self, msgHdr, "MI+NG")
             );
             self.messages = await Promise.all(messagePromises);
-            self._whenReady();
+            self._outputMessages().catch(console.error);
           } else {
             self._intermediateResults = aItems;
             self._query = aItems[0].conversation.getMessagesCollection(
@@ -352,7 +352,7 @@ Conversation.prototype = {
           try {
             const data = await message.toReactData();
             this.dispatch(
-              htmlPane.conversationSummaryActions.updateConversation({
+              htmlPane.conversationControllerActions.updateConversation({
                 messages: {
                   msgData: [data],
                 },
@@ -445,17 +445,11 @@ Conversation.prototype = {
         // We can sort now because we don't need the Message instance to be
         // fully created to get the date of a message.
         this.messages.sort(compare);
-        this._whenReady();
+        this._outputMessages();
       } catch (e) {
         console.error(e);
       }
     });
-  },
-
-  // This is the function that waits for everyone to be ready (that was a useful
-  //  comment)
-  _whenReady(n) {
-    this._outputMessages().catch(console.error);
   },
 
   /**
@@ -523,7 +517,7 @@ Conversation.prototype = {
     }
 
     this.dispatch(
-      this._htmlPane.conversationSummaryActions.updateConversation({
+      this._htmlPane.conversationControllerActions.updateConversation({
         mode: "append",
         messages: {
           msgData: reactMsgData,
@@ -621,7 +615,7 @@ Conversation.prototype = {
     }
 
     this.dispatch(
-      this._htmlPane.conversationSummaryActions.updateConversation({
+      this._htmlPane.conversationControllerActions.updateConversation({
         mode: "replaceAll",
         summary: {
           loading: false,

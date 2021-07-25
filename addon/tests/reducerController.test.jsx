@@ -9,11 +9,9 @@ import * as RTK from "@reduxjs/toolkit";
 import * as Redux from "redux";
 
 // Import the components we want to test
-import {
-  summarySlice,
-  summaryActions,
-} from "../content/reducer/reducer-summary.js";
+import { controllerActions } from "../content/reducer/controllerActions.js";
 import { messageActions } from "../content/reducer/reducer-messages.js";
+import { summarySlice } from "../content/reducer/reducer-summary.js";
 
 const summaryApp = Redux.combineReducers({
   summary: summarySlice.reducer,
@@ -21,7 +19,7 @@ const summaryApp = Redux.combineReducers({
 
 const store = RTK.configureStore({ reducer: summaryApp });
 
-describe("Summary Reducer and Actions tests", () => {
+describe("Controller Actions tests", () => {
   let fakeMessageHeaderData;
 
   beforeEach(() => {
@@ -52,7 +50,7 @@ describe("Summary Reducer and Actions tests", () => {
         fakeMessageHeaderData
       );
       await store.dispatch(
-        summaryActions.updateConversation({
+        controllerActions.updateConversation({
           messages: {
             msgData: [fakeMsg],
           },
