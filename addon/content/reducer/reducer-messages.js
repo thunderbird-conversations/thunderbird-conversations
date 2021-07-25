@@ -56,7 +56,7 @@ async function setupConversationInTab(params, isInTab) {
       currentConversation: null,
       counter: 0,
     };
-    console.log(msgUrls);
+
     let freshConversation = new Conversation(
       window,
       // TODO: This should really become ids at some stage, but we need to
@@ -120,6 +120,7 @@ export const messageActions = {
 
       const isInTab = params.has("urls");
       const topWin = topMail3Pane(window);
+
       // Note: Moving this to after the check for started below is dangerous,
       // since it introduces races where `Conversation` doesn't wait for the
       // page to startup, and hence tab id isn't set.
