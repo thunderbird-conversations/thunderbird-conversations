@@ -204,7 +204,6 @@ function Conversation(win, selectedMessages, counter, isInTab = false) {
   this._query = null;
   // Function provided by the monkey-patch to do cleanup
   this._onComplete = null;
-  this.viewWrapper = null;
   // Set to true by the monkey-patch once the conversation is fully built.
   this.completed = false;
   // Ok, interesting bit. Thunderbird has that non-strict threading thing, i.e.
@@ -508,7 +507,7 @@ Conversation.prototype = {
   //  current view.
   _filterOutDuplicates() {
     let messages = this.messages;
-    this.viewWrapper = new ViewWrapper(this._window);
+    let viewWrapper = new ViewWrapper(this._window);
     // Wicked cases, when we're asked to display a draft that's half-saved...
     messages = messages.filter((x) => toMsgHdr(x) && getMessageId(x));
     messages = groupArray(this.messages, getMessageId);
@@ -530,7 +529,7 @@ Conversation.prototype = {
         return bestChoice;
       };
       let r =
-        findForCriterion((aMsg) => this.viewWrapper.isInView(aMsg)) ||
+        findForCriterion((aMsg) => viewWrapper.isInView(aMsg)) ||
         findForCriterion((aMsg) => msgHdrIsInbox(toMsgHdr(aMsg))) ||
         findForCriterion((aMsg) => msgHdrIsSent(toMsgHdr(aMsg))) ||
         findForCriterion((aMsg) => !msgHdrIsArchive(toMsgHdr(aMsg))) ||
@@ -604,7 +603,6 @@ Conversation.prototype = {
     ) {
       this.messages[i].message.initialPosition = i;
     }
-    this.viewWrapper = new ViewWrapper(this._window);
     const reactMsgData = [];
     for (const m of newMsgs) {
       reactMsgData.push(await m.message.toReactData());
