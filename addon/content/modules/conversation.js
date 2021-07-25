@@ -717,7 +717,6 @@ Conversation.prototype = {
       this._htmlPane.conversationSummaryActions.updateConversation({
         mode: "replaceAll",
         summary: {
-          conversation: { getMessage: (uri) => this.getMessage(uri) },
           loading: false,
           loadingStartedTime: this._loadingStartedTime,
           autoMarkAsRead:

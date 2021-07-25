@@ -289,9 +289,8 @@ export const summaryActions = {
       // It might be that we're trying to send a message on unmount, but the
       // conversation/message has gone away. If that's the case, we just skip
       // and move on.
-      const { summary } = getState();
-      if (summary.conversation?.getMessage) {
-        const msg = summary.conversation.getMessage(msgUri);
+      if (Conversations.currentConversation?.getMessage) {
+        let msg = Conversations.currentConversation.getMessage(msgUri);
         if (msg) {
           msg.postStreamMessage(topMail3Pane(window), iframe);
         }
@@ -303,12 +302,11 @@ export const summaryActions = {
       if (!dueToExpansion) {
         dispatch(summarySlice.actions.incIframesLoading());
       }
-      const { summary } = getState();
-      let message = summary.conversation.getMessage(msgUri);
+      let msg = Conversations.currentConversation.getMessage(msgUri);
       // The message might not be found, if so it has probably been deleted from
       // under us, so just continue and not blow up.
-      if (message) {
-        message.streamMessage(topMail3Pane(window).msgWindow, docshell);
+      if (msg) {
+        msg.streamMessage(topMail3Pane(window).msgWindow, docshell);
       } else {
         console.warn("Could not find message for streaming", msgUri);
       }
