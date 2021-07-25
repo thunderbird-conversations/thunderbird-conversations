@@ -106,7 +106,7 @@ function overrideUpdateSecurity(messagepane, w) {
     mimePartNumber
   ) {
     // Use original if the classic reader is used.
-    if (messagepane.contentDocument.location.href !== "about:blank?") {
+    if (messagepane.contentDocument?.location.href !== "about:blank?") {
       originalUpdateSecurityStatus.apply(this, arguments);
       return;
     }
@@ -166,7 +166,7 @@ function overrideUpdateSecurity(messagepane, w) {
   let originalHandleSMimeMessage = headerSink.handleSMimeMessage;
   headerSink.handleSMimeMessage = function (uri) {
     // Use original if the classic reader is used.
-    if (messagepane.contentDocument.location.href !== "about:blank?") {
+    if (messagepane.contentDocument?.location.href !== "about:blank?") {
       originalHandleSMimeMessage.apply(this, arguments);
       return;
     }
@@ -559,7 +559,10 @@ function addSignedLabel(status, msg) {
       EnigmailConstants.GOOD_SIGNATURE |
       EnigmailConstants.EXPIRED_KEY_SIGNATURE |
       EnigmailConstants.EXPIRED_SIGNATURE |
+      // Thunderbird 78
       EnigmailConstants.UNVERIFIED_SIGNATURE |
+      // Thunderbird 91
+      EnigmailConstants.UNCERTAIN_SIGNATURE |
       EnigmailConstants.REVOKED_KEY |
       EnigmailConstants.EXPIRED_KEY_SIGNATURE |
       EnigmailConstants.EXPIRED_SIGNATURE)
