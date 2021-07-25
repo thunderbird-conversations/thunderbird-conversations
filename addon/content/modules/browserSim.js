@@ -172,7 +172,12 @@ class _BrowserSim {
       docWin.browsingContext?.embedderElement || docWin.frameElement
     );
     if (!tab) {
-      return null;
+      // We are probably in a window all by ourselves in Thunderbird 91,
+      // fallback to getting the selected tab.
+      //
+      // To fix this properly we'll need to be able to drop 91 and load
+      // messages in a content tab but in its own window.
+      tab = tabmail.selectedTab;
     }
     return this._context.extension.tabManager.convert(tab).id;
   }
