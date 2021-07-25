@@ -230,6 +230,9 @@ if (!browser.conversations) {
     async makePlural(form, string, count) {
       return `${string} ${count}`;
     },
+    async isInView() {
+      return true;
+    },
   };
 }
 

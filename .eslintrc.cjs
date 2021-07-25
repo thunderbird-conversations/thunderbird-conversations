@@ -66,7 +66,7 @@ module.exports = {
     "jsdoc/check-tag-names": "error",
     "jsdoc/check-types": "error",
     "jsdoc/newline-after-description": "error",
-    "jsdoc/no-undefined-types": "error",
+    "jsdoc/no-undefined-types": ["error", { definedTypes: ["MessageHeader"] }],
     "jsdoc/require-jsdoc": [
       "error",
       { require: { ClassDeclaration: true, FunctionDeclaration: false } },

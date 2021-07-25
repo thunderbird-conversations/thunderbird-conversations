@@ -607,11 +607,7 @@ Conversation.prototype = {
     this.viewWrapper = new ViewWrapper(this._window);
     const reactMsgData = [];
     for (const m of newMsgs) {
-      const msgData = await m.message.toReactData();
-      // inView indicates if the message is currently in the message list
-      // view or not. If it isn't we don't show the folder tags.
-      m.message.inView = this.viewWrapper.isInView(m);
-      reactMsgData.push(msgData);
+      reactMsgData.push(await m.message.toReactData());
     }
 
     this.dispatch(
@@ -687,7 +683,6 @@ Conversation.prototype = {
       }
       // inView indicates if the message is currently in the message list
       // view or not. If it isn't we don't show the folder name.
-      msgData.inView = this.viewWrapper.isInView(m);
       msgData.initialPosition = i - skippedMessages;
       reactMsgData.push(msgData);
     }

@@ -171,18 +171,16 @@ SpecialMessageTag.propTypes = {
  * @param {Function} root0.onTagClick
  * @param {Function} root0.onFolderClick
  * @param {object[]} root0.specialTags
- * @param {boolean} root0.inView
  * @param {string} root0.folderName
  */
 export function SpecialMessageTags({
   onTagClick,
   onFolderClick = null,
   specialTags,
-  inView,
   folderName,
 }) {
   let folderItem = null;
-  if (folderName && !inView) {
+  if (folderName) {
     folderItem = (
       <li
         className="in-folder"
@@ -217,6 +215,5 @@ SpecialMessageTags.propTypes = {
   onTagClick: PropTypes.func.isRequired,
   onFolderClick: PropTypes.func,
   folderName: PropTypes.string,
-  inView: PropTypes.bool.isRequired,
   specialTags: PropTypes.array,
 };

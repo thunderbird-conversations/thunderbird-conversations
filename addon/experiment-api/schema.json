@@ -480,6 +480,24 @@
             "description": "The date in milliseconds."
           }
         ]
+      },
+      {
+        "name": "isInView",
+        "type": "function",
+        "description": "Determines if the message is in the view for the current tab.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "tabId",
+            "type": "integer",
+            "description": "The tab id."
+          },
+          {
+            "name": "msgId",
+            "type": "integer",
+            "description": "The message id."
+          }
+        ]
       }
     ],
     "events": [

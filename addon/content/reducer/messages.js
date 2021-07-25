@@ -49,10 +49,19 @@ export let messageEnricher = new (class {
   async enrich(mode, msgData, summary) {
     const userTags = await browser.messages.listTags();
 
+    let selectedMessages = await browser.messageDisplay.getDisplayedMessages(
+      summary.tabId
+    );
+
     await Promise.all(
       msgData.map(async (message) => {
         try {
-          await this._addDetailsFromHeader(message, userTags);
+          await this._addDetailsFromHeader(
+            summary.tabId,
+            message,
+            userTags,
+            selectedMessages
+          );
           await this._addDetailsFromAttachments(
             message,
             summary.prefs.extraAttachments
@@ -69,9 +78,6 @@ export let messageEnricher = new (class {
     // Do expansion and scrolling after gathering the message data
     // as this relies on the message read information.
     if (mode == "replaceAll" || mode == "append") {
-      let selectedMessages = await browser.messageDisplay.getDisplayedMessages(
-        summary.tabId
-      );
       if (mode == "replaceAll") {
         this._expandAndScroll(
           msgData,
@@ -206,12 +212,16 @@ export let messageEnricher = new (class {
   /**
    * Obtains the message header and adds the details of the message to it.
    *
+   * @param {number} tabId
+   *   The id of the current tab.
    * @param {object} message
    *   The message to get the additional details for.
    * @param {Array} userTags
    *   An array of the current tags the user has defined in Thunderbird.
+   * @param {MessageHeader[]} selectedMessages
+   *   An array of the currently selected messages.
    */
-  async _addDetailsFromHeader(message, userTags) {
+  async _addDetailsFromHeader(tabId, message, userTags, selectedMessages) {
     const messageHeader = await browser.messages.get(message.id);
     if (!messageHeader) {
       throw new Error("Message no longer exists");
@@ -224,7 +234,6 @@ export let messageEnricher = new (class {
     message.isJunk = messageHeader.junk;
     message.isOutbox = messageFolderType == "outbox";
     message.read = messageHeader.read;
-    message.shortFolderName = messageHeader.folder.name;
     message.subject = messageHeader.subject;
     message.starred = messageHeader.flagged;
 
@@ -242,10 +251,14 @@ export let messageEnricher = new (class {
     });
 
     // Only need to do this if the message is not in the current view.
-    if (!message.inView) {
+    let isInView =
+      selectedMessages.some((m) => m.id == message.id) ||
+      (await browser.conversations.isInView(tabId, message.id));
+    if (!isInView) {
       message.folderName = await browser.conversations.getFolderName(
         message.id
       );
+      message.shortFolderName = messageHeader.folder.name;
     }
   }
 

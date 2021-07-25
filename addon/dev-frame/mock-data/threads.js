@@ -27,7 +27,6 @@ function populateRequiredFields(message) {
   message.detailsShowing = false;
   message.expanded = false;
   message.recipientsIncludeLists = false;
-  message.inView = true;
   message.tags = [];
   message.hasRemoteContent = false;
   message.smimeReload = false;
