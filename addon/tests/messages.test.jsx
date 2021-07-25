@@ -11,6 +11,7 @@ import { messageEnricher } from "../content/reducer/messages.js";
 describe("messageEnricher", () => {
   let fakeMessageHeaderData;
   let displayedMessagesSpy;
+  let isInViewSpy;
 
   beforeEach(() => {
     fakeMessageHeaderData = new Map();
@@ -21,8 +22,20 @@ describe("messageEnricher", () => {
       browser.messageDisplay,
       "getDisplayedMessages"
     );
-    displayedMessagesSpy.mockImplementation(async () => {
-      return [{ id: fakeMessageHeaderData.size - 1 }];
+    displayedMessagesSpy.mockReturnValue([
+      { id: fakeMessageHeaderData.size - 1 },
+    ]);
+    isInViewSpy = jest.spyOn(browser.conversations, "isInView");
+    isInViewSpy.mockReturnValue(true);
+    let originalConsoleError = console.error;
+    // We expect some errors due to how the tests are run with single messages
+    // only.
+    jest.spyOn(console, "error").mockImplementation((message) => {
+      if (
+        !message.includes("kScrollSelected && didn't find the selected message")
+      ) {
+        originalConsoleError(message);
+      }
     });
   });
 
@@ -45,12 +58,48 @@ describe("messageEnricher", () => {
         isJunk: false,
         isOutbox: false,
         read: false,
-        shortFolderName: "Inbox",
-        folderName: "Fake/Folder",
         subject: "Fake Msg",
         starred: false,
         tags: [],
       });
+      expect(fakeMsg).not.toHaveProperty("folderName");
+      expect(fakeMsg).not.toHaveProperty("shortFolderName");
+    });
+
+    test("Fills out folder name if the message is not selected nor in view", async () => {
+      let fakeMsg = createFakeData({}, fakeMessageHeaderData);
+      displayedMessagesSpy.mockReturnValue([
+        { id: fakeMessageHeaderData.size },
+      ]);
+      isInViewSpy.mockReturnValue(false);
+
+      await messageEnricher.enrich(
+        "replaceAll",
+        [fakeMsg],
+        createFakeSummaryData({ noFriendlyDate: true })
+      );
+
+      expect(fakeMsg).toMatchObject({
+        folderName: "Fake/Folder",
+        shortFolderName: "Inbox",
+      });
+    });
+
+    test("Does not fill out folder name if the message is not selected but in view", async () => {
+      let fakeMsg = createFakeData({}, fakeMessageHeaderData);
+      displayedMessagesSpy.mockReturnValue([
+        { id: fakeMessageHeaderData.size },
+      ]);
+      isInViewSpy.mockReturnValue(true);
+
+      await messageEnricher.enrich(
+        "replaceAll",
+        [fakeMsg],
+        createFakeSummaryData({ noFriendlyDate: true })
+      );
+
+      expect(fakeMsg).not.toHaveProperty("folderName");
+      expect(fakeMsg).not.toHaveProperty("shortFolderName");
     });
 
     test("Correctly sets flags with details from the header", async () => {
@@ -86,6 +135,7 @@ describe("messageEnricher", () => {
             isDraft: false,
             isJunk: false,
             isOutbox: true,
+            folderName: "Fake/Folder",
             shortFolderName: "Outbox",
           },
         },
@@ -103,11 +153,11 @@ describe("messageEnricher", () => {
         },
       ];
 
+      displayedMessagesSpy.mockReturnValue([{ id: 3 }]);
+      isInViewSpy.mockReturnValue(false);
+
       for (let test of tests) {
         let fakeMsg = createFakeData(test.source, fakeMessageHeaderData);
-        displayedMessagesSpy.mockImplementation(async () => {
-          return [{ id: test.source.id }];
-        });
 
         await messageEnricher.enrich(
           "replaceAll",

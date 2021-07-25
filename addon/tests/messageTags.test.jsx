@@ -35,7 +35,6 @@ describe("SpecialMessageTags test", () => {
       <SpecialMessageTags
         onTagClick={callback}
         folderName="n/a"
-        inView={true}
         specialTags={tagData}
       />
     );
@@ -77,7 +76,6 @@ describe("SpecialMessageTags test", () => {
       <SpecialMessageTags
         onTagClick={callback}
         folderName="n/a"
-        inView={true}
         specialTags={tagData}
       />
     );
