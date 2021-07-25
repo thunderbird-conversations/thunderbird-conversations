@@ -543,10 +543,6 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
   background-color: #3f5381;
 }
 
-.tags.special-tags img {
-  vertical-align: middle;
-}
-
 .tags li.can-click {
   cursor: pointer;
 }
@@ -772,28 +768,32 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
   background-color: #68ab57 !important;
 }
 
-/* DKIM Verifier plugin */
-.special-tag.dkim-signed.SUCCESS {
+/* General pills */
+.special-tag.success {
   background-color: #68ab57 !important;
 }
 
-.special-tag.dkim-signed.SUCCESS.warnings {
+.special-tag.warning {
   background-color: orange !important;
 }
 
-.special-tag.dkim-signed.PERMFAIL {
+.special-tag.error {
   background-color: red !important;
 }
 
-.dkim-signed {
+.special-tag-ext-icon {
+  margin-inline-end: 0.2em;
+}
+
+.special-tag {
   position: relative;
 }
 
-.dkim-signed span {
+.special-tag span {
   display: none;
 }
 
-.dkim-signed:hover span {
+.special-tag:hover span {
   display: inline;
   position: absolute;
   top: 24px;

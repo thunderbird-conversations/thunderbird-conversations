@@ -96,32 +96,36 @@ MessageTags.propTypes = {
 };
 
 /**
+ * A basic icon from e.g. a different extension.
+ *
+ * @param {object} root0
+ * @param {string} [root0.fullPath]
+ * @returns {React.ReactNode}
+ */
+export function SpecialMessageTagIcon({ fullPath }) {
+  return <img className="icon special-tag-ext-icon" src={fullPath} />;
+}
+SpecialMessageTagIcon.propTypes = { fullPath: PropTypes.string };
+
+/**
  * Handles display of the DKIM tooltip.
  *
  * @param {object} root0
  * @param {string[]} root0.strings
  */
-function DkimTooltip({ strings }) {
-  const [primaryString, secondaryStrings = []] = strings;
-  const primaryTooltip = <div>{primaryString}</div>;
-  const secondaryTooltip = secondaryStrings.length ? (
+function SpecialMessageTagTooltip({ strings }) {
+  const tooltip = strings.length ? (
     <React.Fragment>
-      <hr />
-      {secondaryStrings.map((s, i) => (
+      {strings.map((s, i) => (
         <div key={i}>{s}</div>
       ))}
       <div />
     </React.Fragment>
   ) : null;
 
-  return (
-    <span>
-      {primaryTooltip}
-      {secondaryTooltip}
-    </span>
-  );
+  return <span>{tooltip}</span>;
 }
-DkimTooltip.propTypes = { strings: PropTypes.array.isRequired };
+SpecialMessageTagTooltip.propTypes = { strings: PropTypes.array.isRequired };
 
 /**
  * A generic handler for display of message tags.
@@ -148,9 +152,15 @@ export function SpecialMessageTag({
       title={title}
       onClick={onClick}
     >
-      <SvgIcon fullPath={icon} />
+      {icon.startsWith("moz-extension://") ? (
+        <SpecialMessageTagIcon fullPath={icon} />
+      ) : (
+        <SvgIcon fullPath={icon} />
+      )}
       {name}
-      {tooltip.type === "dkim" && <DkimTooltip strings={tooltip.strings} />}
+      {tooltip.strings && !!tooltip.strings.length && (
+        <SpecialMessageTagTooltip strings={tooltip.strings} />
+      )}
     </li>
   );
 }
