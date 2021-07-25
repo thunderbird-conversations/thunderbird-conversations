@@ -93,11 +93,11 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
             let multimessage = win.document.getElementById("multimessage");
             if (
               !multimessage ||
-              !multimessage.contentDocument?.Conversations?.currentConversation
+              !multimessage.contentWindow?.Conversations?.currentConversation
             ) {
               continue;
             }
-            multimessage.contentDocument.Conversations.currentConversation.dispatch(
+            multimessage.contentWindow.Conversations.currentConversation.dispatch(
               messageActions.msgAddSpecialTag({
                 tagDetails: {
                   name: message,
