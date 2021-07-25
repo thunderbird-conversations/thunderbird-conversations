@@ -523,7 +523,7 @@ function summarizeThreadHandler(win, id) {
           // conversation again whilst the previous one is still in progress.
           previouslySelectedUris = newlySelectedUris;
           previousIsSelectionThreaded = isSelectionThreaded;
-
+          console.log(aSelectedMessages);
           let freshConversation = new Conversation(
             win,
             aSelectedMessages,

@@ -10,7 +10,6 @@ import { messageEnricher } from "../content/reducer/messages.js";
 
 describe("messageEnricher", () => {
   let fakeMessageHeaderData;
-  let displayedMessagesSpy;
   let isInViewSpy;
 
   beforeEach(() => {
@@ -18,13 +17,6 @@ describe("messageEnricher", () => {
     jest
       .spyOn(browser.messages, "get")
       .mockImplementation(async (id) => fakeMessageHeaderData.get(id));
-    displayedMessagesSpy = jest.spyOn(
-      browser.messageDisplay,
-      "getDisplayedMessages"
-    );
-    displayedMessagesSpy.mockReturnValue([
-      { id: fakeMessageHeaderData.size - 1 },
-    ]);
     isInViewSpy = jest.spyOn(browser.conversations, "isInView");
     isInViewSpy.mockReturnValue(true);
     let originalConsoleError = console.error;
@@ -50,7 +42,8 @@ describe("messageEnricher", () => {
       await messageEnricher.enrich(
         "replaceAll",
         [fakeMsg],
-        createFakeSummaryData({ noFriendlyDate: true })
+        createFakeSummaryData({ noFriendlyDate: true }),
+        [fakeMessageHeaderData.size - 1]
       );
 
       expect(fakeMsg).toMatchObject({
@@ -68,15 +61,13 @@ describe("messageEnricher", () => {
 
     test("Fills out folder name if the message is not selected nor in view", async () => {
       let fakeMsg = createFakeData({}, fakeMessageHeaderData);
-      displayedMessagesSpy.mockReturnValue([
-        { id: fakeMessageHeaderData.size },
-      ]);
       isInViewSpy.mockReturnValue(false);
 
       await messageEnricher.enrich(
         "replaceAll",
         [fakeMsg],
-        createFakeSummaryData({ noFriendlyDate: true })
+        createFakeSummaryData({ noFriendlyDate: true }),
+        [fakeMessageHeaderData.size]
       );
 
       expect(fakeMsg).toMatchObject({
@@ -87,15 +78,13 @@ describe("messageEnricher", () => {
 
     test("Does not fill out folder name if the message is not selected but in view", async () => {
       let fakeMsg = createFakeData({}, fakeMessageHeaderData);
-      displayedMessagesSpy.mockReturnValue([
-        { id: fakeMessageHeaderData.size },
-      ]);
       isInViewSpy.mockReturnValue(true);
 
       await messageEnricher.enrich(
         "replaceAll",
         [fakeMsg],
-        createFakeSummaryData({ noFriendlyDate: true })
+        createFakeSummaryData({ noFriendlyDate: true }),
+        [fakeMessageHeaderData.size]
       );
 
       expect(fakeMsg).not.toHaveProperty("folderName");
@@ -153,7 +142,6 @@ describe("messageEnricher", () => {
         },
       ];
 
-      displayedMessagesSpy.mockReturnValue([{ id: 3 }]);
       isInViewSpy.mockReturnValue(false);
 
       for (let test of tests) {
@@ -162,7 +150,8 @@ describe("messageEnricher", () => {
         await messageEnricher.enrich(
           "replaceAll",
           [fakeMsg],
-          createFakeSummaryData({ noFriendlyDate: true })
+          createFakeSummaryData({ noFriendlyDate: true }),
+          [3]
         );
 
         expect(fakeMsg).toMatchObject(test.expected);
@@ -180,7 +169,8 @@ describe("messageEnricher", () => {
       await messageEnricher.enrich(
         "replaceAll",
         [fakeMsg],
-        createFakeSummaryData({ noFriendlyDate: true })
+        createFakeSummaryData({ noFriendlyDate: true }),
+        [fakeMessageHeaderData.size - 1]
       );
 
       expect(fakeMsg).toMatchObject({
@@ -233,7 +223,8 @@ describe("messageEnricher", () => {
       await messageEnricher.enrich(
         "replaceAll",
         fakeMsgs,
-        createFakeSummaryData({ expandWho: 3 })
+        createFakeSummaryData({ expandWho: 3 }),
+        []
       );
 
       expect(fakeMsgs.length).toBe(1);
@@ -263,7 +254,8 @@ describe("messageEnricher", () => {
       await messageEnricher.enrich(
         "replaceAll",
         fakeMsgs,
-        createFakeSummaryData({ expandWho: 3 })
+        createFakeSummaryData({ expandWho: 3 }),
+        []
       );
 
       expect(fakeMsgs.length).toBe(1);
@@ -289,7 +281,8 @@ describe("messageEnricher", () => {
       await messageEnricher.enrich(
         "replaceAll",
         fakeMsgs,
-        createFakeSummaryData({ expandWho: 3 })
+        createFakeSummaryData({ expandWho: 3 }),
+        []
       );
 
       expect(fakeMsgs.length).toBe(1);
@@ -311,7 +304,8 @@ describe("messageEnricher", () => {
       await messageEnricher.enrich(
         "replaceAll",
         fakeMsgs,
-        createFakeSummaryData({ expandWho: 3 })
+        createFakeSummaryData({ expandWho: 3 }),
+        []
       );
 
       expect(fakeMsgs.length).toBe(1);
@@ -333,7 +327,8 @@ describe("messageEnricher", () => {
       await messageEnricher.enrich(
         "replaceAll",
         fakeMsgs,
-        createFakeSummaryData({ expandWho: 3 })
+        createFakeSummaryData({ expandWho: 3 }),
+        []
       );
 
       expect(fakeMsgs.length).toBe(1);
@@ -351,7 +346,8 @@ describe("messageEnricher", () => {
       await messageEnricher.enrich(
         "replaceAll",
         fakeMsgs,
-        createFakeSummaryData({ expandWho: 3 })
+        createFakeSummaryData({ expandWho: 3 }),
+        [fakeMessageHeaderData.size - 1]
       );
 
       for (let i = 0; i < 5; i++) {
@@ -373,7 +369,8 @@ describe("messageEnricher", () => {
       await messageEnricher.enrich(
         "replaceAll",
         fakeMsgs,
-        createFakeSummaryData({ expandWho: 1 })
+        createFakeSummaryData({ expandWho: 1 }),
+        [fakeMessageHeaderData.size - 1]
       );
 
       for (let i = 0; i < 5; i++) {
@@ -394,14 +391,12 @@ describe("messageEnricher", () => {
             createFakeData({ id: i, read: true }, fakeMessageHeaderData)
           );
         }
-        displayedMessagesSpy.mockImplementation(async () => {
-          return [{ id: 3 }];
-        });
 
         await messageEnricher.enrich(
           "replaceAll",
           fakeMsgs,
-          createFakeSummaryData()
+          createFakeSummaryData(),
+          [3]
         );
 
         for (let i = 0; i < 5; i++) {
@@ -421,14 +416,12 @@ describe("messageEnricher", () => {
             createFakeData({ id: i, read: i <= 2 }, fakeMessageHeaderData)
           );
         }
-        displayedMessagesSpy.mockImplementation(async () => {
-          return [{ id: 3 }];
-        });
 
         await messageEnricher.enrich(
           "replaceAll",
           fakeMsgs,
-          createFakeSummaryData()
+          createFakeSummaryData(),
+          [3]
         );
 
         for (let i = 0; i < 5; i++) {
@@ -448,14 +441,12 @@ describe("messageEnricher", () => {
             createFakeData({ id: i, read: i <= 2 }, fakeMessageHeaderData)
           );
         }
-        displayedMessagesSpy.mockImplementation(async () => {
-          return [{ id: 3 }, { id: 4 }];
-        });
 
         await messageEnricher.enrich(
           "replaceAll",
           fakeMsgs,
-          createFakeSummaryData()
+          createFakeSummaryData(),
+          [3, 4]
         );
 
         for (let i = 0; i < 5; i++) {
@@ -492,7 +483,8 @@ describe("messageEnricher", () => {
       await messageEnricher.enrich(
         "replaceAll",
         [fakeMsg],
-        createFakeSummaryData({ noFriendlyDate: true })
+        createFakeSummaryData({ noFriendlyDate: true }),
+        [fakeMessageHeaderData.size - 1]
       );
 
       expect(fakeMsg).toMatchObject({
@@ -551,7 +543,8 @@ Updating`,
       await messageEnricher.enrich(
         "replaceAll",
         fakeMsgs,
-        createFakeSummaryData()
+        createFakeSummaryData(),
+        [fakeMessageHeaderData.size - 1]
       );
 
       for (let [i, fakeMsg] of fakeMsgs.entries()) {
@@ -568,7 +561,8 @@ Updating`,
       await messageEnricher.enrich(
         "replaceAll",
         [fakeMsg],
-        createFakeSummaryData()
+        createFakeSummaryData(),
+        [fakeMessageHeaderData.size - 1]
       );
 
       expect(fakeMsg.date).toBe("yesterday");
@@ -586,7 +580,8 @@ Updating`,
       await messageEnricher.enrich(
         "replaceAll",
         [fakeMsg],
-        createFakeSummaryData({ noFriendlyDate: true })
+        createFakeSummaryData({ noFriendlyDate: true }),
+        [fakeMessageHeaderData.size - 1]
       );
 
       expect(fakeMsg.date).toBe(

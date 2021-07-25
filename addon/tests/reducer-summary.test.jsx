@@ -56,7 +56,10 @@ describe("Summary Reducer and Actions tests", () => {
           messages: {
             msgData: [fakeMsg],
           },
-          append: false,
+          mode: "replaceAll",
+          summary: {
+            initialSet: [fakeMsg.id],
+          },
         })
       );
 
@@ -84,6 +87,7 @@ describe("Summary Reducer and Actions tests", () => {
         bugzilla: false,
         date: "yesterday",
         detailsShowing: false,
+        expanded: true,
         fullDate: date,
         glodaMessageId: 0,
         id: 0,
@@ -96,6 +100,7 @@ describe("Summary Reducer and Actions tests", () => {
         isOutbox: false,
         multipleRecipients: false,
         read: false,
+        scrollTo: true,
         snippet: "My message snippet",
         starred: false,
         subject: "Fake Msg",

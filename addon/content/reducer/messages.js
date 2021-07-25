@@ -45,13 +45,11 @@ export let messageEnricher = new (class {
    *   The message details.
    * @param {object} summary
    *   The current state summary section from the store.
+   * @param {number[]} selectedMessages
+   *   The messages that are currently selected.
    */
-  async enrich(mode, msgData, summary) {
+  async enrich(mode, msgData, summary, selectedMessages) {
     const userTags = await browser.messages.listTags();
-
-    let selectedMessages = await browser.messageDisplay.getDisplayedMessages(
-      summary.tabId
-    );
 
     await Promise.all(
       msgData.map(async (message) => {
@@ -207,7 +205,7 @@ export let messageEnricher = new (class {
         }
       }
     } else {
-      let msgId = selectedMessages[0].id;
+      let msgId = selectedMessages[0];
       for (let i = 0; i < msgData.length; ++i) {
         if (msgData[i].id == msgId) {
           needsScroll = i;
@@ -322,7 +320,7 @@ export let messageEnricher = new (class {
 
     // Only need to do this if the message is not in the current view.
     let isInView =
-      selectedMessages.some((m) => m.id == message.id) ||
+      selectedMessages.some((id) => id == message.id) ||
       (await browser.conversations.isInView(tabId, message.id));
     if (!isInView) {
       message.folderName = await browser.conversations.getFolderName(

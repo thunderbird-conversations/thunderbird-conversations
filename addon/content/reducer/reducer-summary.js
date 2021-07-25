@@ -155,7 +155,12 @@ export const summaryActions = {
       const state = getState();
       await handleShowDetails(messages, state, dispatch, async () => {
         // The messages need some more filling out and tweaking.
-        await messageEnricher.enrich(mode, messages.msgData, state.summary);
+        await messageEnricher.enrich(
+          mode,
+          messages.msgData,
+          state.summary,
+          mode == "replaceAll" ? summary.initialSet : state.summary.initialSet
+        );
 
         // The messages inside `msgData` don't come with filled in `to`/`from`/ect. fields.
         // We need to fill them in ourselves.

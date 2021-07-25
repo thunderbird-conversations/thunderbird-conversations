@@ -56,6 +56,7 @@ async function setupConversationInTab(params, isInTab) {
       currentConversation: null,
       counter: 0,
     };
+    console.log(msgUrls);
     let freshConversation = new Conversation(
       window,
       // TODO: This should really become ids at some stage, but we need to
