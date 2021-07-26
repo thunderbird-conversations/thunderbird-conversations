@@ -614,6 +614,11 @@ Conversation.prototype = {
       );
     }
 
+    // We've completed the queries and we've only got the rendering left,
+    // but we do want to receive the updates from gloda, so set this as
+    // complete now to avoid potentially loosing data.
+    this.completed = true;
+
     this.dispatch(
       this._htmlPane.conversationControllerActions.updateConversation({
         mode: "replaceAll",

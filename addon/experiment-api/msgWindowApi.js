@@ -405,7 +405,7 @@ function isSelectionExpanded(win) {
   return false;
 }
 
-async function determineIfSelectionIsThreaded(win) {
+function determineIfSelectionIsThreaded(win) {
   // If we're not showing threaded, then we only worry about how many
   // messages are selected.
   if (!win.gFolderDisplay.view.showThreaded) {
@@ -472,104 +472,81 @@ function summarizeThreadHandler(win, id) {
           });
         }
 
-        (async () => {
-          // Should cancel most intempestive view refreshes, but only after we
-          //  made sure the multimessage pane is shown. The logic behind this
-          //  is the conversation in the message pane is already alive, and
-          //  the gloda query is updating messages just fine, so we should not
-          //  worry about messages which are not in the view.
-          let newlySelectedUris = aSelectedMessages.map((m) => msgHdrGetUri(m));
-          let isSelectionThreaded = determineIfSelectionIsThreaded(win);
+        // Should cancel most intempestive view refreshes, but only after we
+        //  made sure the multimessage pane is shown. The logic behind this
+        //  is the conversation in the message pane is already alive, and
+        //  the gloda query is updating messages just fine, so we should not
+        //  worry about messages which are not in the view.
+        let newlySelectedUris = aSelectedMessages.map((m) => msgHdrGetUri(m));
+        let isSelectionThreaded = determineIfSelectionIsThreaded(win);
 
-          function isSubSetOrEqual(a1, a2) {
-            if (!a1.length || !a2.length || a1.length > a2.length) {
-              return false;
-            }
-
-            return a1.every((v, i) => {
-              return v == a2[i];
-            });
+        function isSubSetOrEqual(a1, a2) {
+          if (!a1.length || !a2.length || a1.length > a2.length) {
+            return false;
           }
-          // If the selection is still threaded (or still not threaded), then
-          // avoid redisplaying if we're displaying the same set or super-set.
-          //
-          // We avoid redisplay for the same set, as sometimes Thunderbird will
-          // call the selection update twice when it hasn't changed.
-          //
-          // We avoid redisplay for the case when the previous set is a subset
-          // as this can occur when:
-          // - we've received a new message(s), but Gloda hasn't told us about
-          //   it yet, and we pick it up in a future onItemsAddedn notification.
-          // - the user has expended the selection. We won't update the
-          //   expanded state of messages in this case, but that's probably okay
-          //   since the user is probably selecting them to move them or
-          //   something, rather than getting them expanded in the conversation
-          //   view.
-          //
-          // In both cases, we should be safe to avoid regenerating the
-          // conversation. If we find issues, we might need to revisit this
-          // assumption.
-          if (
-            isSubSetOrEqual(previouslySelectedUris, newlySelectedUris) &&
-            previousIsSelectionThreaded == isSelectionThreaded
-          ) {
-            Log.debug(
-              "Hey, know what? The selection hasn't changed, so we're good!"
-            );
-            return;
-          }
-          // Remember the previously selected URIs now, so that if we get
-          // a duplicate conversation, we don't try to start rending the same
-          // conversation again whilst the previous one is still in progress.
-          previouslySelectedUris = newlySelectedUris;
-          previousIsSelectionThreaded = isSelectionThreaded;
 
-          let freshConversation = new Conversation(
-            win,
-            aSelectedMessages,
-            ++win.Conversations.counter
-          );
+          return a1.every((v, i) => {
+            return v == a2[i];
+          });
+        }
+        // If the selection is still threaded (or still not threaded), then
+        // avoid redisplaying if we're displaying the same set or super-set.
+        //
+        // We avoid redisplay for the same set, as sometimes Thunderbird will
+        // call the selection update twice when it hasn't changed.
+        //
+        // We avoid redisplay for the case when the previous set is a subset
+        // as this can occur when:
+        // - we've received a new message(s), but Gloda hasn't told us about
+        //   it yet, and we pick it up in a future onItemsAddedn notification.
+        // - the user has expended the selection. We won't update the
+        //   expanded state of messages in this case, but that's probably okay
+        //   since the user is probably selecting them to move them or
+        //   something, rather than getting them expanded in the conversation
+        //   view.
+        //
+        // In both cases, we should be safe to avoid regenerating the
+        // conversation. If we find issues, we might need to revisit this
+        // assumption.
+        if (
+          isSubSetOrEqual(previouslySelectedUris, newlySelectedUris) &&
+          previousIsSelectionThreaded == isSelectionThreaded
+        ) {
           Log.debug(
-            "New conversation:",
-            freshConversation.counter,
-            "Old conversation:",
-            win.Conversations.currentConversation &&
-              win.Conversations.currentConversation.counter
+            "Hey, know what? The selection hasn't changed, so we're good!"
           );
-          if (win.Conversations.currentConversation) {
-            win.Conversations.currentConversation.cleanup();
-          }
-          win.Conversations.currentConversation = freshConversation;
-          freshConversation.outputInto(
-            htmlpane.contentWindow,
-            async function (aConversation) {
-              if (!aConversation.messages.length) {
-                Log.debug("0 messages in aConversation");
-                return;
-              }
-              // One nasty behavior of the folder tree view is that it calls us
-              //  every time a new message has been downloaded. So if you open
-              //  your inbox all of a sudden and select a conversation, it's not
-              //  uncommon to see the conversation being rebuilt 5 times in a
-              //  row because sumarizeThread is constantly re-called.
-              // To workaround this, even though we create a fresh conversation,
-              //  that conversation might end up recycling the old one as long
-              //  as the old conversation's message set is a prefix of that of
-              //  the new conversation. So because we're not sure
-              //  freshConversation will actually end up being used, we take the
-              //  new conversation as parameter.
+          return;
+        }
+        // Remember the previously selected URIs now, so that if we get
+        // a duplicate conversation, we don't try to start rending the same
+        // conversation again whilst the previous one is still in progress.
+        previouslySelectedUris = newlySelectedUris;
+        previousIsSelectionThreaded = isSelectionThreaded;
 
-              // Here, put the final touches to our new conversation object.
-              // TODO: Maybe re-enable this.
-              // htmlpane.contentWindow.newComposeSessionByDraftIf();
-              aConversation.completed = true;
-              // TODO: Re-enable this.
-              // htmlpane.contentWindow.registerQuickReply();
-
-              win.gMessageDisplay.onLoadCompleted();
+        let freshConversation = new Conversation(
+          win,
+          aSelectedMessages,
+          ++win.Conversations.counter
+        );
+        Log.debug(
+          "New conversation:",
+          freshConversation.counter,
+          "Old conversation:",
+          win.Conversations.currentConversation?.counter
+        );
+        win.Conversations.currentConversation?.cleanup();
+        win.Conversations.currentConversation = freshConversation;
+        freshConversation.outputInto(
+          htmlpane.contentWindow,
+          async function (aConversation) {
+            if (!aConversation.messages.length) {
+              Log.debug("0 messages in aConversation");
+              return;
             }
-          );
-        })().catch(console.error);
+
+            win.gMessageDisplay.onLoadCompleted();
+          }
+        );
       }
     );
   };
