@@ -80,15 +80,6 @@ async function setupConversationInTab(params, isInTab) {
       // This is a stripped-down version of what's in msgWindowApi.js,
       //  make sure the two are in sync!
       window.Conversations.currentConversation = aConversation;
-      aConversation.completed = true;
-      // TODO: Re-enable this.
-      // registerQuickReply();
-      // That's why we saved it before...
-      // newComposeSessionByDraftIf();
-      // TODO: expandQuickReply isn't defined anywhere. Should it be?
-      // let willExpand = parseInt(params.get("willExpand"));
-      // if (willExpand)
-      //   expandQuickReply();
       // Create a new rule that will override the default rule, so that
       // the expanded quick reply is twice higher.
       document.body.classList.add("inTab");
