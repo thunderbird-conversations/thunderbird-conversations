@@ -27,6 +27,7 @@
     "addressBooks",
     "messagesRead",
     "messagesMove",
+    "messagesDelete",
     "storage",
     "tabs"
   ],
