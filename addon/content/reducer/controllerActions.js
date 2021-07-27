@@ -111,7 +111,7 @@ async function setupConversationInTab(params, isInTab) {
 
 export const controllerActions = {
   waitForStartup() {
-    return async (dispatch) => {
+    return async (dispatch, getState) => {
       const params = new URL(document.location).searchParams;
 
       const isInTab = params.has("urls");
@@ -155,6 +155,10 @@ export const controllerActions = {
           OS: platformInfo.os,
         })
       );
+
+      if (getState().summary.prefs.loggingEnabled) {
+        console.debug(`Initializing ${isInTab ? "tab" : "message pane"} view.`);
+      }
 
       if (!isInTab) {
         return;
