@@ -265,6 +265,7 @@ export class MessageIFrame extends React.Component {
     );
     this.iframe.setAttribute("style", "height: 20px; overflow-y: hidden");
     this.iframe.setAttribute("type", "content");
+    // Thunderbird 78.
     this.iframe.addEventListener("click", this.onClickIframe);
     this.div.appendChild(this.iframe);
 
@@ -294,6 +295,14 @@ export class MessageIFrame extends React.Component {
     } else {
       this.iframe.classList.add("hidden");
     }
+
+    // Thunderbird 91.
+    if (window.browsingContext) {
+      window.browsingContext.embedderElement.addEventListener(
+        "click",
+        this.onClickIframe
+      );
+    }
   }
 
   componentWillUnmount() {
@@ -314,6 +323,10 @@ export class MessageIFrame extends React.Component {
     delete this._loadListener;
     if (window.browsingContext) {
       // Thunderbird 91
+      window.browsingContext.embedderElement.removeEventListener(
+        "click",
+        this.onClickIframe
+      );
       window.browsingContext.embedderElement.removeEventListener(
         "DOMContentLoaded",
         this._domloadListener,
@@ -581,6 +594,13 @@ export class MessageIFrame extends React.Component {
   }
 
   onClickIframe(event) {
+    // Only take clicks for this particular iframe and Thunderbird 91
+    if (
+      window.browsingContext &&
+      event.target.ownerDocument.URL != this.iframe.contentDocument.URL
+    ) {
+      return;
+    }
     this.props.dispatch(
       messageActions.clickIframe({
         event,
