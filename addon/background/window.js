@@ -63,14 +63,28 @@ export class Window {
     ) {
       case 0: // fall-through
       case 1: {
-        const url = this.makeConversationUrl(urls, true);
-        browser.convMsgWindow.openNewWindow(url);
+        if ("getCurrent" in browser.mailTabs) {
+          // Thunderbird 91
+          browser.convMsgWindow.openNewWindow(
+            "chrome://conversations/content/stubWrapper.xhtml",
+            this.getQueryString(urls)
+          );
+        } else {
+          // Thunderbird 78
+          browser.convMsgWindow.openNewWindow(
+            `chrome://conversations/content/stub.html${this.getQueryString(
+              urls
+            )}`
+          );
+        }
+
         break;
       }
       case 2: {
-        const url = this.makeConversationUrl(urls, false);
         await browser.conversations.createTab({
-          url,
+          url: `chrome://conversations/content/stub.html${this.getQueryString(
+            urls
+          )}`,
           type: "contentTab",
         });
         break;
@@ -79,20 +93,13 @@ export class Window {
   }
 
   /**
-   * Makes a conversation url for opening in new windows/tabs.
+   * Returns a string of parameters for us in URLs when opening stub windows.
    *
    * @param {string[]} urls
    *   An array of urls to be opened.
-   * @param {boolean} useWrapper
-   *  Set to true to use the wrapper around the stub page (for opening new windows).
+   * @returns {string}
    */
-  makeConversationUrl(urls, useWrapper) {
-    let queryString = "?urls=" + encodeURIComponent(urls.join(","));
-
-    // Thunderbird 91 only.
-    if (useWrapper && "getCurrent" in browser.mailTabs) {
-      return `chrome://conversations/content/stubWrapper.xhtml${queryString}`;
-    }
-    return `chrome://conversations/content/stub.html${queryString}`;
+  getQueryString(urls) {
+    return "?urls=" + encodeURIComponent(urls.join(","));
   }
 }
