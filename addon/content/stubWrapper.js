@@ -9,7 +9,6 @@ const { Services } = ChromeUtils.import("resource://gre/modules/Services.jsm");
 window.addEventListener(
   "load",
   function (event) {
-    const params = new URL(document.location.href).searchParams;
     let browser = document.getElementById("multimessage");
 
     browser.addEventListener(
@@ -29,7 +28,7 @@ window.addEventListener(
     );
 
     browser.loadURI(
-      `chrome://conversations/content/stub.html?${params.toString()}`,
+      `chrome://conversations/content/stub.html${window.arguments[0].params}`,
       {
         triggeringPrincipal:
           Services.scriptSecurityManager.getSystemPrincipal(),

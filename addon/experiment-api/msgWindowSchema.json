@@ -26,6 +26,12 @@
             "name": "url",
             "type": "string",
             "description": "The url to load in the window."
+          },
+          {
+            "name": "params",
+            "type": "string",
+            "description": "Extra URL params to pass to the window.",
+            "optional": true
           }
         ]
       }
