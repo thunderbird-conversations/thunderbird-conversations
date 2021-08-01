@@ -35,7 +35,7 @@ for a in $(git ls-files \
 '::_locales' \
 '::assistant' \
 '::content/icons' '::content/modules' '::content/pdfviewer' 'content/stubGlobals.js' \
-'::dev-frame/icons' \
+'content/stubWrapper.*' '::dev-frame/icons' \
 '::experiment-api' '::*.css' ); do
   mkdir -p $(dirname "../${DIST}/${a}")
   cp $a ../$DIST/$a

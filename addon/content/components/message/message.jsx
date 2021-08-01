@@ -414,6 +414,7 @@ export class Message extends React.PureComponent {
               expanded={this.props.message.expanded}
               hasRemoteContent={this.props.message.hasRemoteContent}
               smimeReload={this.props.message.smimeReload}
+              isInTab={this.props.isInTab}
               initialPosition={this.props.message.initialPosition}
               msgUri={this.props.message.msgUri}
               neckoUrl={this.props.message.neckoUrl}
@@ -463,6 +464,7 @@ Message.propTypes = {
   displayingMultipleMsgs: PropTypes.bool.isRequired,
   iframesLoading: PropTypes.number.isRequired,
   index: PropTypes.number.isRequired,
+  isInTab: PropTypes.bool.isRequired,
   isLastMessage: PropTypes.bool.isRequired,
   hasBuiltInPdf: PropTypes.bool.isRequired,
   hideQuickReply: PropTypes.bool.isRequired,

@@ -265,8 +265,6 @@ export class MessageIFrame extends React.Component {
     );
     this.iframe.setAttribute("style", "height: 20px; overflow-y: hidden");
     this.iframe.setAttribute("type", "content");
-    // Thunderbird 78.
-    this.iframe.addEventListener("click", this.onClickIframe);
     this.div.appendChild(this.iframe);
 
     const docShell = this.iframe.contentWindow.docShell;
@@ -274,11 +272,27 @@ export class MessageIFrame extends React.Component {
     const cv = docShell.contentViewer;
     // Not needed after Gecko 90.
     if ("hintCharacterSet" in cv) {
+      // Thunderbird 78
+      this._isTB91 = false;
       cv.hintCharacterSet = "UTF-8";
       docShell.charset = "UTF-8";
       // This used to be kCharsetFromChannel = 11, however in 79/80 the code changed.
       // This still needs to be forced, because bug 829543 isn't fixed yet.
       cv.hintCharacterSetSource = kCharsetFromUserForced;
+      // Thunderbird 78.
+      this.iframe.addEventListener("click", this.onClickIframe);
+    } else {
+      // Thunderbird 91.
+
+      // We don't apply the click listener when in a tab as Thunderbird's
+      // click handling already manages that.
+      if (!this.isInTab && window.browsingContext) {
+        window.browsingContext.embedderElement.addEventListener(
+          "click",
+          this.onClickIframe
+        );
+      }
+      this._isTB91 = true;
     }
 
     this.registerListeners();
@@ -294,14 +308,6 @@ export class MessageIFrame extends React.Component {
       );
     } else {
       this.iframe.classList.add("hidden");
-    }
-
-    // Thunderbird 91.
-    if (window.browsingContext) {
-      window.browsingContext.embedderElement.addEventListener(
-        "click",
-        this.onClickIframe
-      );
     }
   }
 
@@ -321,7 +327,7 @@ export class MessageIFrame extends React.Component {
       capture: true,
     });
     delete this._loadListener;
-    if (window.browsingContext) {
+    if (this._isTB91) {
       // Thunderbird 91
       window.browsingContext.embedderElement.removeEventListener(
         "click",
@@ -348,7 +354,7 @@ export class MessageIFrame extends React.Component {
         capture: true,
       });
       this._domloadListener = this._onDOMLoaded.bind(this);
-      if (window.browsingContext) {
+      if (this._isTB91) {
         // Thunderbird 91 - this is due to the type=content change on multimessage,
         // we must break out to the parent browser and listen there.
         window.browsingContext.embedderElement.addEventListener(
@@ -596,7 +602,7 @@ export class MessageIFrame extends React.Component {
   onClickIframe(event) {
     // Only take clicks for this particular iframe and Thunderbird 91
     if (
-      window.browsingContext &&
+      this._isTB91 &&
       event.target.ownerDocument.URL != this.iframe.contentDocument.URL
     ) {
       return;
@@ -624,6 +630,7 @@ MessageIFrame.propTypes = {
   dispatch: PropTypes.func.isRequired,
   expanded: PropTypes.bool.isRequired,
   hasRemoteContent: PropTypes.bool.isRequired,
+  isInTab: PropTypes.bool.isRequired,
   initialPosition: PropTypes.number.isRequired,
   msgUri: PropTypes.string.isRequired,
   neckoUrl: PropTypes.string.isRequired,

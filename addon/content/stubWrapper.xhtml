@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<!-- This Source Code Form is subject to the terms of the Mozilla Public
+   - License, v. 2.0. If a copy of the MPL was not distributed with this
+   - file, You can obtain one at https://mozilla.org/MPL/2.0/. -->
+
+<?xml-stylesheet href="chrome://messenger/skin/messenger.css" type="text/css"?>
+
+<html id="conversationMessageWindow"
+      xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:xul="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul"
+      xmlns:html="http://www.w3.org/1999/xhtml"
+      icon="messengerWindow"
+      scrolling="false"
+      macanimationtype="document"
+      fullscreenbutton="true"
+      windowtype="conversation:messageWindow">
+  <head>
+    <script src="stubWrapper.js" type="application/javascript" charset="utf-8"></script>
+  </head>
+  <html:body xmlns="http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul">
+    <vbox flex="1">
+      <browser contextmenu="pageContextMenu"
+               flex="1"
+               id="multimessage"
+               disablesecurity="true"
+               disablehistory="true"
+               style="height: 100%"
+               tooltip="aHTMLTooltip"
+               type="content"/>
+    </vbox>
+  </html:body>
+</html>

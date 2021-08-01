@@ -46,6 +46,7 @@ function _MessageList(props) {
             hideQuickReply={props.summary.prefs.hideQuickReply}
             iframesLoading={props.summary.iframesLoading}
             index={index}
+            isInTab={props.summary.isInTab}
             isLastMessage={index == props.messages.msgData.length - 1}
             message={message}
             tenPxFactor={props.summary.tenPxFactor}
