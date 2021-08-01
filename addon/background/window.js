@@ -58,32 +58,41 @@ export class Window {
   }
 
   async openConversation(windowId, urls) {
-    const url = this.makeConversationUrl(urls);
-
     switch (
       await browser.conversations.getCorePref("mail.openMessageBehavior")
     ) {
       case 0: // fall-through
-      case 1:
+      case 1: {
+        const url = this.makeConversationUrl(urls, true);
         browser.convMsgWindow.openNewWindow(url);
         break;
-      case 2:
+      }
+      case 2: {
+        const url = this.makeConversationUrl(urls, false);
         await browser.conversations.createTab({
           url,
           type: "contentTab",
         });
         break;
+      }
     }
   }
 
   /**
    * Makes a conversation url for opening in new windows/tabs.
    *
-   * @param {Array} urls
+   * @param {string[]} urls
    *   An array of urls to be opened.
+   * @param {boolean} useWrapper
+   *  Set to true to use the wrapper around the stub page (for opening new windows).
    */
-  makeConversationUrl(urls) {
+  makeConversationUrl(urls, useWrapper) {
     let queryString = "?urls=" + encodeURIComponent(urls.join(","));
+
+    // Thunderbird 91 only.
+    if (useWrapper && "getCurrent" in browser.mailTabs) {
+      return `chrome://conversations/content/stubWrapper.xhtml${queryString}`;
+    }
     return `chrome://conversations/content/stub.html${queryString}`;
   }
 }
