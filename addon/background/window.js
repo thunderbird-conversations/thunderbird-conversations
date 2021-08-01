@@ -67,7 +67,7 @@ export class Window {
           // Thunderbird 91
           browser.convMsgWindow.openNewWindow(
             "chrome://conversations/content/stubWrapper.xhtml",
-            this.getQueryString(urls)
+            this.getQueryString(urls) + "&standalone=1"
           );
         } else {
           // Thunderbird 78

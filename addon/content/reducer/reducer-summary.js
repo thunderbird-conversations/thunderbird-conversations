@@ -15,6 +15,7 @@ export const initialSummary = {
   hasIdentityParamsForCompose: false,
   iframesLoading: 0,
   isInTab: false,
+  isStandalone: false,
   // TODO: What is loading used for?
   loading: true,
   OS: "win",
@@ -304,8 +305,8 @@ export const summarySlice = RTK.createSlice({
       };
     },
     setConversationState(state, { payload }) {
-      const { isInTab, tabId, windowId } = payload;
-      return { ...state, isInTab, tabId, windowId };
+      const { isInTab, isStandalone, tabId, windowId } = payload;
+      return { ...state, isInTab, isStandalone, tabId, windowId };
     },
     setSystemOptions(state, { payload }) {
       const {

@@ -286,7 +286,10 @@ export class MessageIFrame extends React.Component {
 
       // We don't apply the click listener when in a tab as Thunderbird's
       // click handling already manages that.
-      if (!this.isInTab && window.browsingContext) {
+      if (
+        (!this.props.isInTab || this.props.isStandalone) &&
+        window.browsingContext
+      ) {
         window.browsingContext.embedderElement.addEventListener(
           "click",
           this.onClickIframe
@@ -631,6 +634,7 @@ MessageIFrame.propTypes = {
   expanded: PropTypes.bool.isRequired,
   hasRemoteContent: PropTypes.bool.isRequired,
   isInTab: PropTypes.bool.isRequired,
+  isStandalone: PropTypes.bool.isRequired,
   initialPosition: PropTypes.number.isRequired,
   msgUri: PropTypes.string.isRequired,
   neckoUrl: PropTypes.string.isRequired,

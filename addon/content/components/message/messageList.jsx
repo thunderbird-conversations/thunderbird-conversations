@@ -48,6 +48,7 @@ function _MessageList(props) {
             index={index}
             isInTab={props.summary.isInTab}
             isLastMessage={index == props.messages.msgData.length - 1}
+            isStandalone={props.summary.isStandalone}
             message={message}
             tenPxFactor={props.summary.tenPxFactor}
             prefs={props.summary.prefs}
