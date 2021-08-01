@@ -115,6 +115,7 @@ export const controllerActions = {
       const params = new URL(document.location).searchParams;
 
       const isInTab = params.has("urls");
+      const isStandalone = params.has("standalone");
       const topWin = topMail3Pane(window);
 
       // Note: Moving this to after the check for started below is dangerous,
@@ -123,6 +124,7 @@ export const controllerActions = {
       await dispatch(
         summaryActions.setConversationState({
           isInTab,
+          isStandalone,
           tabId: BrowserSim.getTabId(topWin, window),
           windowId: BrowserSim.getWindowId(topWin),
         })

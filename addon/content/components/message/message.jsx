@@ -416,6 +416,7 @@ export class Message extends React.PureComponent {
               smimeReload={this.props.message.smimeReload}
               isInTab={this.props.isInTab}
               initialPosition={this.props.message.initialPosition}
+              isStandalone={this.props.isStandalone}
               msgUri={this.props.message.msgUri}
               neckoUrl={this.props.message.neckoUrl}
               tenPxFactor={this.props.tenPxFactor}
@@ -466,6 +467,7 @@ Message.propTypes = {
   index: PropTypes.number.isRequired,
   isInTab: PropTypes.bool.isRequired,
   isLastMessage: PropTypes.bool.isRequired,
+  isStandalone: PropTypes.bool.isRequired,
   hasBuiltInPdf: PropTypes.bool.isRequired,
   hideQuickReply: PropTypes.bool.isRequired,
   message: PropTypes.object.isRequired,
