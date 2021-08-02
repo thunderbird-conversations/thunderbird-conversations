@@ -758,6 +758,7 @@ function quoteMsgHdr(aMsgHdr) {
         Ci.nsIStreamListener,
         Ci.nsIMsgQuotingOutputStreamListener,
         Ci.nsIRequestObserver,
+        Ci.nsISupportsWeakReference,
       ]),
     };
     // Here's what we want to stream...
