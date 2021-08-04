@@ -360,6 +360,25 @@ describe("messageEnricher", () => {
       }
     });
 
+    test("Expands all appended messages when expand is set to all", async () => {
+      let fakeMsgs = [];
+      for (let i = 0; i < 5; i++) {
+        fakeMsgs.push(createFakeData({ id: i }, fakeMessageHeaderData));
+      }
+
+      await messageEnricher.enrich(
+        "append",
+        fakeMsgs.slice(2, 5),
+        createFakeSummaryData({ expandWho: 3 }),
+        [1]
+      );
+
+      for (let i = 2; i < 5; i++) {
+        expect(fakeMsgs[i].expanded).toBe(true);
+        expect("scrollTo" in fakeMsgs[i]).toBe(false);
+      }
+    });
+
     test("Expands no messages when expand is set to none", async () => {
       let fakeMsgs = [];
       for (let i = 0; i < 5; i++) {
@@ -380,6 +399,25 @@ describe("messageEnricher", () => {
         } else {
           expect(fakeMsgs[i].scrollTo).toBe(true);
         }
+      }
+    });
+
+    test("Expands no appended messages when expand is set to none", async () => {
+      let fakeMsgs = [];
+      for (let i = 0; i < 5; i++) {
+        fakeMsgs.push(createFakeData({ id: i }, fakeMessageHeaderData));
+      }
+
+      await messageEnricher.enrich(
+        "append",
+        fakeMsgs.slice(2, 5),
+        createFakeSummaryData({ expandWho: 1 }),
+        [1]
+      );
+
+      for (let i = 2; i < 5; i++) {
+        expect(fakeMsgs[i].expanded).toBe(false);
+        expect("scrollTo" in fakeMsgs[i]).toBe(false);
       }
     });
 
@@ -457,6 +495,27 @@ describe("messageEnricher", () => {
           } else {
             expect(fakeMsgs[i].scrollTo).toBe(true);
           }
+        }
+      });
+
+      test("Multi unread append", async () => {
+        let fakeMsgs = [];
+        for (let i = 0; i < 5; i++) {
+          fakeMsgs.push(
+            createFakeData({ id: i, read: i <= 2 }, fakeMessageHeaderData)
+          );
+        }
+
+        await messageEnricher.enrich(
+          "append",
+          fakeMsgs.slice(2, 5),
+          createFakeSummaryData(),
+          [1]
+        );
+
+        for (let i = 2; i < 5; i++) {
+          expect(fakeMsgs[i].expanded).toBe(true);
+          expect("scrollTo" in fakeMsgs[i]).toBe(false);
         }
       });
     });
