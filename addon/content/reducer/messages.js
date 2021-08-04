@@ -75,7 +75,7 @@ export let messageEnricher = new (class {
 
     // Do expansion and scrolling after gathering the message data
     // as this relies on the message read information.
-    if (mode == "replaceAll" || mode == "append") {
+    if (mode != "replaceMsg") {
       if (mode == "replaceAll") {
         this._filterOutDuplicatesAndInvalids(msgData);
 
@@ -90,7 +90,8 @@ export let messageEnricher = new (class {
           msgData,
           selectedMessages,
           -1,
-          summary.prefs.expandWho
+          summary.prefs.expandWho,
+          mode
         );
       }
     }
@@ -178,7 +179,13 @@ export let messageEnricher = new (class {
   _expandAndScroll(msgData, selectedMessages, tabId, expandWho) {
     let focusThis = this._whereToScroll(msgData, selectedMessages);
     msgData[focusThis].scrollTo = true;
-    this._markMsgsToExpand(msgData, selectedMessages, focusThis, expandWho);
+    this._markMsgsToExpand(
+      msgData,
+      selectedMessages,
+      focusThis,
+      expandWho,
+      "expandAll"
+    );
   }
 
   /**
@@ -233,8 +240,11 @@ export let messageEnricher = new (class {
    *   The message in the array to focus.
    * @param {number} expandWho
    *   The value of the expandWho preference.
+   * @param {string} mode
+   *   Can be "append", "replaceAll" or "replaceMsg". replaceMsg will replace
+   *   only a single message.
    */
-  _markMsgsToExpand(msgData, selectedMessages, focusIndex, expandWho) {
+  _markMsgsToExpand(msgData, selectedMessages, focusIndex, expandWho, mode) {
     switch (expandWho) {
       default:
         console.error(
@@ -243,7 +253,12 @@ export let messageEnricher = new (class {
         );
       // Falls through so we can default to the same as the pref and keep going.
       case kExpandAuto: {
-        if (selectedMessages.length > 1) {
+        if (mode == "append") {
+          // For all new appended messages, we expand them.
+          for (let msg of msgData) {
+            msg.expanded = true;
+          }
+        } else if (selectedMessages.length > 1) {
           // In this mode, we scroll to the first unread message (or the last
           //  message if all messages are read), and we expand all unread messages
           //  + the last one (which will probably be unread as well).
