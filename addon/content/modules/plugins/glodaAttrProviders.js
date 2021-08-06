@@ -19,15 +19,6 @@ var EXPORTED_SYMBOLS = ["GlodaAttrProviders"];
  *  lookup in the MimeMessage's headers.
  * We guarantee alternativeSender to be parsable as:
  *  Sender Name <xx@xx.xx>
- *
- * The second one is a plugin that exposes a new subject noun on Gloda
- *  Conversations. This is slightly more advanced, in the sense that it exposes
- *  a column (subject) that's present in the conversation table as a new
- *  attribute that can be queried.
- * We need that for GitHub and GetSatisfaction, who seem to never have heard
- *  about any kind of References: header. As it is very, very irritating, we
- *  launch a different query that tries to find other messages through the
- *  subject, hence this Gloda plugin
  */
 
 const { XPCOMUtils } = ChromeUtils.import(
@@ -39,11 +30,11 @@ XPCOMUtils.defineLazyModuleGetters(this, {
 });
 
 let AlternativeSender = {
-  init: function _AlternativeSender_init() {
+  init() {
     this.defineAttributes();
   },
 
-  defineAttributes: function _AlternativeSender_defineAttributes() {
+  defineAttributes() {
     this._alternativeSenderAttribute = Gloda.defineAttribute({
       provider: this,
       extensionName: "bugzilla-alternative-sender",
@@ -76,11 +67,11 @@ let AlternativeSender = {
 };
 
 let ContentType = {
-  init: function _ContentType_init() {
+  init() {
     this.defineAttributes();
   },
 
-  defineAttributes: function _ContentType_defineAttributes() {
+  defineAttributes() {
     this._bugzillaAttribute = Gloda.defineAttribute({
       provider: this,
       extensionName: "content-type",
@@ -111,40 +102,8 @@ let ContentType = {
   },
 };
 
-let ConversationSubject = {
-  init: function _ConversationSubject_init() {
-    this.defineAttributes();
-  },
-
-  defineAttributes: function _ConversationSubject_defineAttributes() {
-    this._conversationSubjectAttribute = Gloda.defineAttribute({
-      provider: this,
-      extensionName: "conversation-subject",
-      attributeType: Gloda.kAttrDerived,
-      attributeName: "subject",
-      bind: true,
-      singular: true,
-      special: Gloda.kSpecialString,
-      specialColumnName: "subject",
-      subjectNouns: [Gloda.NOUN_CONVERSATION],
-      objectNoun: Gloda.NOUN_STRING,
-      canQuery: true,
-    });
-  },
-
-  process: function* _ConversationSubject_process(
-    aGlodaMessage,
-    aRawReps,
-    aIsNew,
-    aCallbackHandle
-  ) {
-    yield Gloda.kWorkDone;
-  },
-};
-
 var GlodaAttrProviders = {
   init() {
-    ConversationSubject.init();
     ContentType.init();
     AlternativeSender.init();
   },
