@@ -4,6 +4,7 @@
 
 /* global Conversations, getMail3Pane, topMail3Pane, printConversation */
 import * as RTK from "@reduxjs/toolkit";
+import { conversationUtils } from "./conversationUtils.js";
 import { messageActions } from "./reducer-messages.js";
 
 export const initialSummary = {
@@ -133,8 +134,6 @@ export const summaryActions = {
         email,
       });
       if (state.summary.hasIdentityParamsForCompose) {
-        // Ideally we should use the displayed folder, but the displayed message
-        // works fine, as we'll only
         let tab = await browser.mailTabs.query({
           active: true,
           currentWindow: true,
@@ -201,9 +200,13 @@ export const summaryActions = {
     };
   },
   forwardConversation() {
-    return async () => {
+    return async (dispay, getState) => {
       try {
-        await Conversations.currentConversation.forward();
+        let state = getState();
+        await conversationUtils.forward(
+          state.summary.tabId,
+          state.messages.msgData
+        );
       } catch (e) {
         console.error(e);
       }

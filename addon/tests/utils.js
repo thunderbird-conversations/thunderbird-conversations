@@ -50,6 +50,8 @@ export function createFakeData(
     flagged = false,
     folderType = "inbox",
     folderName = "Inbox",
+    fullDate = "",
+    from = null,
     initialPosition = 0,
     junk = false,
     read = false,
@@ -69,6 +71,8 @@ export function createFakeData(
     initialPosition,
     snippet,
     _contactsData: [],
+    from,
+    fullDate,
   };
   if (detailsShowing !== undefined) {
     data.detailsShowing = detailsShowing;

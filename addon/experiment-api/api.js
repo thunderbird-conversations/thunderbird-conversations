@@ -23,6 +23,8 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   setupLogging: "chrome://conversations/content/modules/misc.js",
 });
 
+XPCOMUtils.defineLazyGlobalGetters(this, ["TextDecoder"]);
+
 // To help updates to apply successfully, we need to properly unload the modules
 // that Conversations loads.
 const conversationModules = [
@@ -41,6 +43,11 @@ const conversationModules = [
   "chrome://conversations/content/modules/misc.js",
   "chrome://conversations/content/modules/prefs.js",
 ];
+
+/**
+ * @typedef nsIMsgDBHdr
+ * @see https://searchfox.org/comm-central/rev/9d9fac50cddfd9606a51c4ec3059728c33d58028/mailnews/base/public/nsIMsgHdr.idl#14
+ */
 
 const kAllowRemoteContent = 2;
 const nsMsgViewIndex_None = 0xffffffff;
@@ -745,6 +752,74 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           return (
             win.gDBView?.findIndexOfMsgHdr(msgHdr, false) != nsMsgViewIndex_None
           );
+        },
+        /**
+         * Use the mailnews component to stream a message, and process it in a way
+         *  that's suitable for quoting (strip signature, remove images, stuff like
+         *  that).
+         *
+         * @param {id} id The message id that you want to quote
+         * @returns {Promise}
+         *   Returns a quoted string suitable for insertion in an HTML editor.
+         */
+        quoteMsgHdr(id) {
+          const msgHdr = context.extension.messageManager.get(id);
+          return new Promise((resolve) => {
+            let chunks = [];
+            const decoder = new TextDecoder();
+            let listener = {
+              /* eslint-disable jsdoc/require-param */
+              /** @ignore*/
+              setMimeHeaders() {},
+
+              /** @ignore*/
+              onStartRequest(aRequest) {},
+
+              /** @ignore*/
+              onStopRequest(aRequest, aStatusCode) {
+                let data = chunks.join("");
+                resolve(data);
+              },
+
+              /** @ignore*/
+              onDataAvailable(aRequest, aStream, aOffset, aCount) {
+                // Fortunately, we have in Gecko 2.0 a nice wrapper
+                let data = NetUtil.readInputStreamToString(aStream, aCount);
+                // Now each character of the string is actually to be understood as a byte
+                //  of a UTF-8 string.
+                // So charCodeAt is what we want here...
+                let array = [];
+                for (let i = 0; i < data.length; ++i) {
+                  array[i] = data.charCodeAt(i);
+                }
+                // Yay, good to go!
+                chunks.push(decoder.decode(Uint8Array.from(array)));
+              },
+              /* eslint-enable jsdoc/require-param */
+
+              QueryInterface: ChromeUtils.generateQI([
+                Ci.nsIStreamListener,
+                Ci.nsIMsgQuotingOutputStreamListener,
+                Ci.nsIRequestObserver,
+                Ci.nsISupportsWeakReference,
+              ]),
+            };
+            // Here's what we want to stream...
+            let msgUri = msgHdrGetUri(msgHdr);
+            /**
+             * Quote a particular message specified by its URI.
+             *
+             * @param charset optional parameter - if set, force the message to be
+             *                quoted using this particular charset
+             */
+            //   void quoteMessage(in string msgURI, in boolean quoteHeaders,
+            //                     in nsIMsgQuotingOutputStreamListener streamListener,
+            //                     in string charset, in boolean headersOnly);
+            let quoter = Cc[
+              "@mozilla.org/messengercompose/quoting;1"
+            ].createInstance(Ci.nsIMsgQuote);
+            quoter.quoteMessage(msgUri, false, listener, "", false, msgHdr);
+          });
         },
         onCallAPI: new ExtensionCommon.EventManager({
           context,

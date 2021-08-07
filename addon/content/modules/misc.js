@@ -5,7 +5,6 @@
 var EXPORTED_SYMBOLS = [
   "setupLogging",
   "topMail3Pane",
-  "escapeHtml",
   "parseMimeLine",
   "htmlToPlainText",
   "getMail3Pane",
@@ -72,30 +71,6 @@ function topMail3Pane(aObj) {
 
   // Standalone window, a tab, or in the htmlpane (common case)
   return aObj.top.opener || moveOut(aObj) || aObj.top;
-}
-
-/**
- * Helper function to escape some XML chars, so they display properly in
- *  innerHTML.
- *
- * @param {string} s input text
- * @returns {string} The string with &lt;, &gt;, and &amp; replaced by the corresponding entities.
- */
-function escapeHtml(s) {
-  s += "";
-  // stolen from selectionsummaries.js (thanks davida!)
-  return s.replace(/[<>&]/g, function (s) {
-    switch (s) {
-      case "<":
-        return "&lt;";
-      case ">":
-        return "&gt;";
-      case "&":
-        return "&amp;";
-      default:
-        throw Error("Unexpected match");
-    }
-  });
 }
 
 /**
