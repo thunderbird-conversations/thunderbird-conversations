@@ -32,8 +32,11 @@ function modifyOnlyMsgId(state, id, modifier) {
 
 export const messageActions = {
   getLateAttachments({ id }) {
-    return async (dispatch) => {
-      const attachments = await browser.conversations.getLateAttachments(id);
+    return async (dispatch, getState) => {
+      const attachments = await browser.conversations.getLateAttachments(
+        id,
+        getState().summary.prefs.extraAttachments
+      );
       const numAttachments = attachments.length;
       // This is bug 630011, remove when fixed
       const unknown = browser.i18n.getMessage("attachments.sizeUnknown");

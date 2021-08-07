@@ -18,8 +18,8 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   msgUriToMsgHdr: "chrome://conversations/content/modules/misc.js",
   NetUtil: "resource://gre/modules/NetUtil.jsm",
   PluralForm: "resource://gre/modules/PluralForm.jsm",
-  Prefs: "chrome://conversations/content/modules/prefs.js",
   Services: "resource://gre/modules/Services.jsm",
+  setLogState: "chrome://conversations/content/modules/misc.js",
   setupLogging: "chrome://conversations/content/modules/misc.js",
 });
 
@@ -33,7 +33,6 @@ const conversationModules = [
   // Don't unload these until we can find a way of unloading the attribute
   // providers. Unloading these will break gloda when someone updates.
   // "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
-  // "chrome://conversations/content/modules/plugins/helpers.js",
   "chrome://conversations/content/modules/plugins/lightning.js",
   "chrome://conversations/content/modules/assistant.js",
   "chrome://conversations/content/modules/browserSim.js",
@@ -41,7 +40,6 @@ const conversationModules = [
   "chrome://conversations/content/modules/hook.js",
   "chrome://conversations/content/modules/message.js",
   "chrome://conversations/content/modules/misc.js",
-  "chrome://conversations/content/modules/prefs.js",
 ];
 
 /**
@@ -285,25 +283,23 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
     const { windowManager } = extension;
     return {
       conversations: {
-        async setPref(name, value) {
-          Prefs[name] = value;
+        async startup(loggingEnabled) {
+          setLogState(loggingEnabled);
 
-          if (name == "finishedStartup") {
-            Log.debug("startup");
+          Log.debug("startup");
 
-            try {
-              // Patch all existing windows when the UI is built; all locales should have been loaded here
-              // Hook in the embedding and gloda attribute providers.
-              GlodaAttrProviders.init();
-              apiMonkeyPatchAllWindows(windowManager, monkeyPatchWindow);
-              apiWindowObserver = new ApiWindowObserver(
-                windowManager,
-                monkeyPatchWindow
-              );
-              Services.ww.registerNotification(apiWindowObserver);
-            } catch (ex) {
-              console.error(ex);
-            }
+          try {
+            // Patch all existing windows when the UI is built; all locales should have been loaded here
+            // Hook in the embedding and gloda attribute providers.
+            GlodaAttrProviders.init();
+            apiMonkeyPatchAllWindows(windowManager, monkeyPatchWindow);
+            apiWindowObserver = new ApiWindowObserver(
+              windowManager,
+              monkeyPatchWindow
+            );
+            Services.ww.registerNotification(apiWindowObserver);
+          } catch (ex) {
+            console.error(ex);
           }
         },
         async getPref(name) {
@@ -352,8 +348,8 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
         async getLocaleDirection() {
           return Services.locale.isAppLocaleRTL ? "rtl" : "ltr";
         },
-        async installCustomisations(ids) {
-          let uninstallInfos = JSON.parse(Prefs.uninstall_infos);
+        async installCustomisations(ids, uninstallInfos) {
+          uninstallInfos = JSON.parse(uninstallInfos ?? "{}");
           for (const id of ids) {
             if (!(id in Customizations)) {
               Log.error("Couldn't find a suitable customization for", id);
@@ -370,7 +366,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
 
           return JSON.stringify(uninstallInfos);
         },
-        async undoCustomizations() {
+        async undoCustomizations(uninstallInfos) {
           for (let win of Services.wm.getEnumerator("mail:3pane")) {
             // Switch to a 3pane view (otherwise the "display threaded"
             // customization is not reverted)
@@ -380,7 +376,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             }
           }
 
-          let uninstallInfos = JSON.parse(Prefs.uninstall_infos);
+          uninstallInfos = JSON.parse(uninstallInfos);
           for (let [k, v] of Object.entries(Customizations)) {
             if (k in uninstallInfos) {
               try {
@@ -470,7 +466,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
         async invalidateCache() {
           Services.obs.notifyObservers(null, "startupcache-invalidate");
         },
-        async getLateAttachments(id) {
+        async getLateAttachments(id, extraAttachments) {
           return new Promise((resolve) => {
             const msgHdr = context.extension.messageManager.get(id);
             MsgHdrToMimeMessage(msgHdr, null, (msgHdr, mimeMsg) => {
@@ -480,7 +476,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
               }
 
               let attachments;
-              if (Prefs.extra_attachments) {
+              if (extraAttachments) {
                 attachments = [
                   ...mimeMsg.allAttachments,
                   ...mimeMsg.allUserAttachments,

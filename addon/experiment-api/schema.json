@@ -29,20 +29,15 @@
         ]
       },
       {
-        "name": "setPref",
+        "name": "startup",
         "type": "function",
-        "description": "Temporary. Sets a conversation preference.",
+        "description": "Temporary. Does the necessary work to start conversations",
         "async": true,
         "parameters": [
           {
-            "name": "name",
-            "type": "string",
-            "description": "The preference name"
-          },
-          {
-            "name": "value",
-            "type": "any",
-            "description": "The preference value"
+            "name": "loggingEnabled",
+            "type": "boolean",
+            "description": "Whether or not to enable logging."
           }
         ]
       },
@@ -66,6 +61,12 @@
             "items": {
               "type": "string"
             }
+          },
+          {
+            "name": "uninstallInfos",
+            "type": "string",
+            "description": "Any existing uninstall information",
+            "optional": true
           }
         ]
       },
@@ -74,7 +75,14 @@
         "type": "function",
         "description": "Removes the installed customizations.",
         "async": true,
-        "parameters": []
+        "parameters": [
+          {
+            "name": "uninstallInfos",
+            "type": "string",
+            "description": "Any existing uninstall information",
+            "optional": true
+          }
+        ]
       },
       {
         "name": "getMessageIdForUri",
@@ -205,6 +213,11 @@
             "name": "id",
             "type": "integer",
             "description": "The message id to get data for."
+          },
+          {
+            "name": "extraAttachments",
+            "type": "boolean",
+            "description": "Whether or not to include extra attachments"
           }
         ]
       },

@@ -124,7 +124,7 @@ describe("Option full page tests", () => {
   test("Toggling an option changes the setting in browser.storage.local", async () => {
     const main = enzyme.mount(<Main />);
 
-    waitForComponentToPaint(main);
+    await waitForComponentToPaint(main);
 
     const option = main.find(BinaryOption).at(0);
     const input = option.find("input");
@@ -145,7 +145,7 @@ describe("Option full page tests", () => {
     const mockedTabCreate = jest.spyOn(browser.tabs, "create");
     const main = enzyme.mount(<Main />);
 
-    waitForComponentToPaint(main);
+    await waitForComponentToPaint(main);
 
     const button = main.find(".start");
 
@@ -162,11 +162,14 @@ describe("Option full page tests", () => {
     window.alert = jest.fn();
     const main = enzyme.mount(<Main />);
 
-    waitForComponentToPaint(main);
+    await waitForComponentToPaint(main);
 
     const button = main.find(".undo");
-
     button.simulate("click");
+
+    while (!window.alert.mock.calls.length) {
+      await new Promise((r) => setTimeout(r, 10));
+    }
 
     expect(mockedUndo).toHaveBeenCalled();
   });

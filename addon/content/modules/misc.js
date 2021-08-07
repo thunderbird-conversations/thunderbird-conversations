@@ -11,6 +11,7 @@ var EXPORTED_SYMBOLS = [
   "msgUriToMsgHdr",
   "msgHdrGetUri",
   "messageActions",
+  "setLogState",
 ];
 
 const { XPCOMUtils } = ChromeUtils.import(
@@ -19,13 +20,18 @@ const { XPCOMUtils } = ChromeUtils.import(
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   MailServices: "resource:///modules/MailServices.jsm",
-  Prefs: "chrome://conversations/content/modules/prefs.js",
   Services: "resource://gre/modules/Services.jsm",
 });
 
 XPCOMUtils.defineLazyGetter(this, "gMessenger", function () {
   return Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
 });
+
+let gLoggingEnabled = false;
+
+function setLogState(state) {
+  gLoggingEnabled = state;
+}
 
 /**
  * @typedef nsIMsgDBHdr
@@ -35,7 +41,7 @@ XPCOMUtils.defineLazyGetter(this, "gMessenger", function () {
 function setupLogging(name) {
   return console.createInstance({
     prefix: name,
-    maxLogLevel: Prefs.logging_enabled ? "Debug" : "Warn",
+    maxLogLevel: gLoggingEnabled ? "Debug" : "Warn",
   });
 }
 
