@@ -128,6 +128,7 @@ if (!browser.storage) {
     // when running in the browser in dev mode. Turn on logging in this case.
     logging_enabled: true,
     expand_who: 4,
+    uninstall_infos: "{}",
   };
 
   // Fake what we need from the browser storage library

@@ -185,16 +185,17 @@ function openSetupAssistant() {
   });
 }
 
-function runUndoConversations() {
-  (async () => {
-    await browser.conversations.undoCustomizations();
-    const result = await browser.storage.local.get("preferences");
+async function runUndoConversations() {
+  const result = await browser.storage.local.get("preferences");
 
-    result.preferences.uninstall_infos = "{}";
-    await browser.storage.local.set({ preferences: result.preferences });
+  await browser.conversations.undoCustomizations(
+    result.preferences.uninstall_infos
+  );
 
-    window.alert(localize("options.undoCustomizations.finished", i18n));
-  })().catch(console.error);
+  result.preferences.uninstall_infos = "{}";
+  await browser.storage.local.set({ preferences: result.preferences });
+
+  window.alert(localize("options.undoCustomizations.finished", i18n));
 }
 
 //

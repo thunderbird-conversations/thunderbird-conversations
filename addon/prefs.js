@@ -42,13 +42,8 @@ export class Prefs {
           updatePrefs = true;
           results.preferences[prefName] = kPrefDefaults[prefName];
         }
-        await browser.conversations.setPref(
-          prefName,
-          results.preferences[prefName]
-        );
       }
-      // Set a special pref so bootstrap knows it can continue.
-      await browser.conversations.setPref("finishedStartup", true);
+      await browser.conversations.startup(results.preferences.logging_enabled);
 
       if (updatePrefs) {
         try {
@@ -60,8 +55,6 @@ export class Prefs {
     } else {
       console.error("Could not find the preferences to send to the API.");
     }
-
-    this._addListener();
   }
 
   async _migrate() {
@@ -109,34 +102,5 @@ export class Prefs {
 
     prefs.migratedLegacy = kCurrentLegacyMigration;
     await browser.storage.local.set({ preferences: prefs });
-  }
-
-  _addListener() {
-    browser.storage.onChanged.addListener((changed, areaName) => {
-      if (
-        areaName != "local" ||
-        !("preferences" in changed) ||
-        !("newValue" in changed.preferences)
-      ) {
-        return;
-      }
-      for (const prefName of Object.getOwnPropertyNames(
-        changed.preferences.newValue
-      )) {
-        if (prefName == "migratedLegacy") {
-          continue;
-        }
-        if (
-          !changed.preferences.oldValue ||
-          changed.preferences.oldValue[prefName] !=
-            changed.preferences.newValue[prefName]
-        ) {
-          browser.conversations.setPref(
-            prefName,
-            changed.preferences.newValue[prefName]
-          );
-        }
-      }
-    });
   }
 }

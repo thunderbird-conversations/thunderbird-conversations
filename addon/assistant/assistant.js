@@ -38,12 +38,15 @@ async function onFinish() {
       itemsToInstall.push(checkbox.id);
     }
   }
-  const uninstallInfos = await browser.conversations.installCustomisations(
-    itemsToInstall
-  );
   const result = await browser.storage.local.get("preferences");
+  let originalUninstallInfo = result.preferences.uninstall_infos;
 
-  if (result.preferences.uninstall_infos == "{}") {
+  const uninstallInfos = await browser.conversations.installCustomisations(
+    itemsToInstall,
+    originalUninstallInfo
+  );
+
+  if (originalUninstallInfo == "{}") {
     result.preferences.uninstall_infos = uninstallInfos;
     await browser.storage.local.set({ preferences: result.preferences });
   } else {

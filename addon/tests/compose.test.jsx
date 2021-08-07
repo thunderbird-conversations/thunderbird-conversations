@@ -23,7 +23,7 @@ describe("Compose full page tests", () => {
     mockedSend = jest.spyOn(browser.convCompose, "send");
     main = enzyme.mount(<Main />);
 
-    waitForComponentToPaint(main);
+    await waitForComponentToPaint(main);
 
     await store.dispatch(composeActions.initCompose({}));
   });
