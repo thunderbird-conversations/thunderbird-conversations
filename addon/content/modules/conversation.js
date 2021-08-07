@@ -13,7 +13,6 @@ const { XPCOMUtils } = ChromeUtils.import(
 XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   Gloda: "resource:///modules/gloda/GlodaPublic.jsm",
-  MailServices: "resource:///modules/MailServices.jsm",
   MessageFromDbHdr: "chrome://conversations/content/modules/message.js",
   MessageFromGloda: "chrome://conversations/content/modules/message.js",
   msgHdrGetUri: "chrome://conversations/content/modules/misc.js",
@@ -648,52 +647,6 @@ Conversation.prototype = {
     this._htmlPane = aHtmlPane;
     this._onComplete = () => k(this);
     this._fetchMessages();
-  },
-
-  async forward() {
-    let fields = Cc[
-      "@mozilla.org/messengercompose/composefields;1"
-    ].createInstance(Ci.nsIMsgCompFields);
-    // Thunderbird 82 set this to UTF-8 by default and dropped the setting.
-    if ("characterSet" in fields) {
-      fields.characterSet = "UTF-8";
-    }
-    fields.bodyIsAsciiOnly = false;
-    fields.forcePlainText = false;
-    fields.body = await this.exportAsHtml();
-    let params = Cc[
-      "@mozilla.org/messengercompose/composeparams;1"
-    ].createInstance(Ci.nsIMsgComposeParams);
-    params.format = Ci.nsIMsgCompFormat.HTML;
-    params.composeFields = fields;
-    return MailServices.compose.OpenComposeWindowWithParams(null, params);
-  },
-
-  // For the "forward conversation" action
-  async exportAsHtml() {
-    // Somehow this seems to be needed... why? Dunno.
-    let start = "<html><body>";
-    let hr =
-      '<div style="border-top: 1px solid #888; height: 15px; width: 70%; margin: 0 auto; margin-top: 15px">&nbsp;</div>';
-    let html =
-      start +
-      "<p>" +
-      browser.i18n.getMessage("conversation.forwardFillInText") +
-      "</p>" +
-      hr;
-    let promises = [];
-    for (const msg of this.messages) {
-      promises.push(msg.message.exportAsHtml());
-    }
-
-    let messagesHtml = await Promise.all(promises);
-
-    html +=
-      '<div style="font-family: sans-serif !important;">' +
-      messagesHtml.join(hr) +
-      "</div>";
-    Log.debug("The HTML: ---------\n", html, "\n\n");
-    return html;
   },
 };
 

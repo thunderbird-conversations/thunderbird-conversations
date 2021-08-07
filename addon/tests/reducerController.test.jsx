@@ -86,6 +86,7 @@ describe("Controller Actions tests", () => {
         date: "yesterday",
         detailsShowing: false,
         expanded: true,
+        from: null,
         fullDate: date,
         glodaMessageId: 0,
         id: 0,

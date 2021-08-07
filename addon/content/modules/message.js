@@ -12,12 +12,10 @@ const { XPCOMUtils } = ChromeUtils.import(
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
-  escapeHtml: "chrome://conversations/content/modules/misc.js",
   htmlToPlainText: "chrome://conversations/content/modules/misc.js",
   mimeMsgToContentSnippetAndMeta: "resource:///modules/gloda/GlodaContent.jsm",
   msgHdrGetUri: "chrome://conversations/content/modules/misc.js",
   MsgHdrToMimeMessage: "resource:///modules/gloda/MimeMessage.jsm",
-  NetUtil: "resource://gre/modules/NetUtil.jsm",
   parseMimeLine: "chrome://conversations/content/modules/misc.js",
   setupLogging: "chrome://conversations/content/modules/misc.js",
   Services: "resource://gre/modules/Services.jsm",
@@ -43,10 +41,6 @@ XPCOMUtils.defineLazyGetter(this, "gMessenger", function () {
  * @see https://searchfox.org/mozilla-central/rev/ac36d76c7aea37a18afc9dd094d121f40f7c5441/netwerk/base/nsIURI.idl
  */
 
-const { Prefs } = ChromeUtils.import(
-  "chrome://conversations/content/modules/prefs.js",
-  {}
-);
 const { topMail3Pane } = ChromeUtils.import(
   "chrome://conversations/content/modules/misc.js",
   {}
@@ -79,16 +73,6 @@ function addMsgListener(aMessage) {
     msgListeners.set(messageId, []);
   }
   msgListeners.get(messageId).push(weakPtr);
-}
-
-async function dateAccordingToPref(date) {
-  try {
-    return Prefs.no_friendly_date
-      ? dateAsInMessageList(date)
-      : await browser.conversations.makeFriendlyDateAgo(date.getTime());
-  } catch (e) {
-    return dateAsInMessageList(date);
-  }
 }
 
 /**
@@ -447,58 +431,6 @@ class Message {
       bodyContainer.textContent = this.bodyAsText;
     }
   }
-
-  /**
-   * This function is called for the "Forward conversation" action. The idea is
-   * that we want to forward a plaintext version of the message, so we try and
-   * do our best to give this. We're trying not to stream it once more!
-   */
-  async exportAsHtml() {
-    const authorContact = await browser._background.request({
-      type: "contactDetails",
-      payload: this._from,
-    });
-    let author = escapeHtml(authorContact._name);
-    let authorEmail = this._from.email;
-    let authorAvatar = authorContact.avatar;
-    let authorColor = authorContact.color;
-    let date = await dateAccordingToPref(this._date);
-    // We try to convert the bodies to plain text, to enhance the readability in
-    // the forwarded conversation. Note: <pre> tags are not converted properly
-    // it seems, need to investigate...
-    let body = await quoteMsgHdr(this._msgHdr);
-
-    // UGLY HACK. I don't even wanna dig into the internals of the composition
-    // window to figure out why this results in an extra <br> being added, so
-    // let's just stay sane and use a hack.
-    body = body.replace(/\r?\n<br>/g, "<br>");
-    body = body.replace(/<br>\r?\n/g, "<br>");
-    if (!(body.indexOf("<pre wrap>") === 0)) {
-      body = "<br>" + body;
-    }
-    let html = [
-      '<div style="overflow: auto">',
-      '<img src="',
-      authorAvatar,
-      '" style="float: left; height: 48px; margin-right: 5px" />',
-      '<b><span><a style="color: ',
-      authorColor,
-      ' !important; text-decoration: none !important; font-weight: bold" href="mailto:',
-      authorEmail,
-      '">',
-      author,
-      "</a></span></b><br />",
-      '<span style="color: #666">',
-      date,
-      "</span>",
-      "</div>",
-      '<div style="color: #666">',
-      body,
-      "</div>",
-    ].join("");
-
-    return html;
-  }
 }
 
 /**
@@ -678,105 +610,6 @@ class MessageFromDbHdr extends Message {
     Log.debug("Body is", body);
     this._snippet = body.substring(0, kSnippetLength - 1);
   }
-}
-
-XPCOMUtils.defineLazyGetter(this, "timeFormatter", () => {
-  return new Services.intl.DateTimeFormat(undefined, { timeStyle: "short" });
-});
-
-XPCOMUtils.defineLazyGetter(this, "dateAndTimeFormatter", () => {
-  return new Services.intl.DateTimeFormat(undefined, {
-    dateStyle: "short",
-    timeStyle: "short",
-  });
-});
-
-/**
- * A stupid formatting function that uses Services.intl
- * to format a date just like in the message list
- *
- * @param {Date} date a javascript Date object
- * @returns {string} a string containing the formatted date
- */
-function dateAsInMessageList(date) {
-  const now = new Date();
-  // Is it today?
-  const isToday =
-    now.getFullYear() == date.getFullYear() &&
-    now.getMonth() == date.getMonth() &&
-    now.getDate() == date.getDate();
-
-  const formatter = isToday ? timeFormatter : dateAndTimeFormatter;
-  return formatter.format(date);
-}
-
-/**
- * Use the mailnews component to stream a message, and process it in a way
- *  that's suitable for quoting (strip signature, remove images, stuff like
- *  that).
- *
- * @param {nsIMsgDBHdr} aMsgHdr The message header that you want to quote
- * @returns {Promise}
- *   Returns a quoted string suitable for insertion in an HTML editor.
- *   You can pass this to htmlToPlainText if you're running a plaintext editor
- */
-function quoteMsgHdr(aMsgHdr) {
-  return new Promise((resolve) => {
-    let chunks = [];
-    const decoder = new TextDecoder();
-    let listener = {
-      /* eslint-disable jsdoc/require-param */
-      /** @ignore*/
-      setMimeHeaders() {},
-
-      /** @ignore*/
-      onStartRequest(aRequest) {},
-
-      /** @ignore*/
-      onStopRequest(aRequest, aStatusCode) {
-        let data = chunks.join("");
-        resolve(data);
-      },
-
-      /** @ignore*/
-      onDataAvailable(aRequest, aStream, aOffset, aCount) {
-        // Fortunately, we have in Gecko 2.0 a nice wrapper
-        let data = NetUtil.readInputStreamToString(aStream, aCount);
-        // Now each character of the string is actually to be understood as a byte
-        //  of a UTF-8 string.
-        // So charCodeAt is what we want here...
-        let array = [];
-        for (let i = 0; i < data.length; ++i) {
-          array[i] = data.charCodeAt(i);
-        }
-        // Yay, good to go!
-        chunks.push(decoder.decode(Uint8Array.from(array)));
-      },
-      /* eslint-enable jsdoc/require-param */
-
-      QueryInterface: ChromeUtils.generateQI([
-        Ci.nsIStreamListener,
-        Ci.nsIMsgQuotingOutputStreamListener,
-        Ci.nsIRequestObserver,
-        Ci.nsISupportsWeakReference,
-      ]),
-    };
-    // Here's what we want to stream...
-    let msgUri = msgHdrGetUri(aMsgHdr);
-    /**
-     * Quote a particular message specified by its URI.
-     *
-     * @param charset optional parameter - if set, force the message to be
-     *                quoted using this particular charset
-     */
-    //   void quoteMessage(in string msgURI, in boolean quoteHeaders,
-    //                     in nsIMsgQuotingOutputStreamListener streamListener,
-    //                     in string charset, in boolean headersOnly);
-    let quoter = Cc["@mozilla.org/messengercompose/quoting;1"].createInstance(
-      Ci.nsIMsgQuote
-    );
-    quoter.quoteMessage(msgUri, false, listener, "", false, aMsgHdr);
-  });
 }
 
 /**

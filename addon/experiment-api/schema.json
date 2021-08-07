@@ -498,6 +498,19 @@
             "description": "The message id."
           }
         ]
+      },
+      {
+        "name": "quoteMsgHdr",
+        "type": "function",
+        "description": "Use the mailnews component to stream a message, and process it in a way that's suitable for quoting (strip signature, remove images, stuff like that).",
+        "async": true,
+        "parameters": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "The message id to quote."
+          }
+        ]
       }
     ],
     "events": [

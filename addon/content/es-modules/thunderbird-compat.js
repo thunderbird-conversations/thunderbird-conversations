@@ -237,6 +237,9 @@ if (!browser.conversations) {
     async isInView() {
       return true;
     },
+    async quoteMsgHdr() {
+      return "MsgBody";
+    },
   };
 }
 
@@ -245,6 +248,12 @@ if (!browser.convCompose) {
     send(details) {
       console.log("Sending:", details);
     },
+  };
+}
+
+if (!browser.compose) {
+  browser.compose = {
+    async beginNew() {},
   };
 }
 
