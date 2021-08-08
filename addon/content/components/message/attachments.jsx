@@ -6,6 +6,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { attachmentActions } from "../../reducer/reducer-attachments.js";
 import { SvgIcon } from "../svgIcon.jsx";
+import { ActionButton } from "./messageActionButton.jsx";
 
 const ICON_MAPPING = new Map([
   ["application/msword", "x-office-document"],
@@ -44,6 +45,37 @@ const PDF_MIME_TYPES = [
 
 const RE_MSGKEY = /number=(\d+)/;
 
+function AttachmentMoreMenu({ detachCallback, deleteCallback }) {
+  return (
+    <div className="tooltip tooltip-menu menu">
+      <div className="arrow"></div>
+      <div className="arrow inside"></div>
+      <ul>
+        <li className="action-detach">
+          <ActionButton
+            callback={detachCallback}
+            className="optionsButton"
+            showString={true}
+            type="detachAttachment"
+          />
+        </li>
+        <li className="action-delete">
+          <ActionButton
+            callback={deleteCallback}
+            className="optionsButton"
+            showString={true}
+            type="deleteAttachment"
+          />
+        </li>
+      </ul>
+    </div>
+  );
+}
+AttachmentMoreMenu.propTypes = {
+  detachCallback: PropTypes.func.isRequired,
+  deleteCallback: PropTypes.func.isRequired,
+};
+
 /**
  * Handles display of an individual attachment.
  */
@@ -56,6 +88,10 @@ class Attachment extends React.PureComponent {
     this.openAttachment = this.openAttachment.bind(this);
     this.deleteAttachment = this.deleteAttachment.bind(this);
     this.detachAttachment = this.detachAttachment.bind(this);
+    this.displayMenu = this.displayMenu.bind(this);
+    this.state = {
+      displayMenu: false,
+    };
   }
 
   isImage(contentType) {
@@ -153,6 +189,40 @@ class Attachment extends React.PureComponent {
     );
   }
 
+  displayMenu(event) {
+    event.preventDefault();
+    event.stopPropagation();
+    if (!this.clickListener) {
+      this.clickListener = (event) => {
+        this.clearMenu();
+      };
+      this.keyListener = (event) => {
+        if (event.keyCode == KeyEvent.DOM_VK_ESCAPE) {
+          this.clearMenu();
+        }
+      };
+      this.onBlur = (event) => {
+        this.clearMenu();
+      };
+      document.addEventListener("click", this.clickListener);
+      document.addEventListener("keypress", this.keyListener);
+      document.addEventListener("blur", this.onBlur);
+    }
+
+    this.setState((prevState) => ({ displayMenu: !prevState.displayMenu }));
+  }
+
+  clearMenu() {
+    this.setState({ displayMenu: false });
+    if (this.clickListener) {
+      document.removeEventListener("click", this.clickListener);
+      document.removeEventListener("keypress", this.keyListener);
+      document.removeEventListener("blur", this.keyListener);
+      this.clickListener = null;
+      this.keyListener = null;
+    }
+  }
+
   iconForMimeType(mimeType) {
     if (ICON_MAPPING.has(mimeType)) {
       return ICON_MAPPING.get(mimeType) + ".svg";
@@ -184,17 +254,8 @@ class Attachment extends React.PureComponent {
       imgClass = "mime-icon";
     }
     // TODO: Drag n drop
-
-    // Note: contextmenu is only supported in Gecko, though React will complain
-    // about it.
-    // Hoping to turn this into WebExtension based context menus at some
-    // stage: https://github.com/thunderbird-conversations/thunderbird-conversations/issues/1416
-    /* eslint-disable react/no-unknown-property */
     return (
-      <li
-        className="attachment"
-        contextmenu={`attachmentMenu-${this.props.anchor}`}
-      >
+      <li className="attachment">
         <div
           className={
             "attachmentThumb" + (enablePreview ? " view-attachment" : "")
@@ -215,7 +276,7 @@ class Attachment extends React.PureComponent {
                 title={browser.i18n.getMessage("attachments.preview.tooltip")}
                 onClick={this.preview}
               >
-                <SvgIcon hash={"visibility"} />
+                <SvgIcon hash="visibility" />
               </a>
             )}
             <a
@@ -223,38 +284,34 @@ class Attachment extends React.PureComponent {
               title={browser.i18n.getMessage("attachments.download.tooltip")}
               onClick={this.downloadAttachment}
             >
-              <SvgIcon hash={"file_download"} />
+              <SvgIcon hash="file_download" />
             </a>
             <a
               className="icon-link open-attachment"
               title={browser.i18n.getMessage("attachments.open.tooltip")}
               onClick={this.openAttachment}
             >
-              <SvgIcon hash={"search"} />
+              <SvgIcon hash="search" />
             </a>
+            <span className="attachmentsDropDown">
+              <a
+                className="icon-link more-attachment"
+                title={browser.i18n.getMessage("message.moreMenu.tooltip")}
+                onClick={this.displayMenu}
+              >
+                <SvgIcon hash="more_vert" />
+              </a>
+              {this.state.displayMenu && (
+                <AttachmentMoreMenu
+                  detachCallback={this.detachAttachment}
+                  deleteCallback={this.deleteAttachment}
+                />
+              )}
+            </span>
           </div>
         </div>
-        <menu id={`attachmentMenu-${this.props.anchor}`} type="context">
-          <menuitem
-            label={browser.i18n.getMessage("attachments.context.open")}
-            onClick={this.openAttachment}
-          ></menuitem>
-          <menuitem
-            label={browser.i18n.getMessage("attachments.context.save")}
-            onClick={this.downloadAttachment}
-          ></menuitem>
-          <menuitem
-            label={browser.i18n.getMessage("attachments.context.detach")}
-            onClick={this.detachAttachment}
-          ></menuitem>
-          <menuitem
-            label={browser.i18n.getMessage("attachments.context.delete")}
-            onClick={this.deleteAttachment}
-          ></menuitem>
-        </menu>
       </li>
     );
-    /* eslint-enable react/no-unknown-property */
   }
 }
 

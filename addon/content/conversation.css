@@ -207,6 +207,7 @@ a img {
 
 .mainActionButton > .icon-link,
 .dropDown > .icon-link,
+.attachmentsDropDown > .icon-link,
 .optionsButton {
   background: none;
   border: 0;
@@ -265,11 +266,12 @@ html[dir="rtl"] .tooltip {
   padding-inline-end: 0.5ch;
 }
 
-.dropDown {
+.dropDown, .attachmentsDropDown {
   position: relative;
 }
 
-.dropDown > .tooltip-menu button {
+.dropDown > .tooltip-menu button,
+.attachmentsDropDown > .tooltip-menu button {
   width: 100%;
   height: 100%;
   text-align: start;
@@ -283,30 +285,51 @@ html[dir="rtl"] .tooltip {
   line-height: 1.8;
 }
 
+.attachmentsDropDown > .tooltip {
+  min-width: 15.2em;
+  font-size: 1.2rem;
+  left: 0;
+  right: auto;
+  top: 2.5rem;
+  line-height: 1.8;
+}
+
 html[dir="rtl"] .dropDown .tooltip {
   left: -0.2em;
   right: auto;
 }
 
-.dropDown ul {
+html[dir="rtl"] .attachmentsDropDown .tooltip {
+  left: auto;
+  right: 0;
+}
+
+.dropDown ul,
+.attachmentsDropDown ul {
   margin-top: 0;
   list-style-type: none;
   font-size: 1.1rem;
 }
 
-.dropDown li {
+.dropDown li,
+.attachmentsDropDown li {
   white-space: nowrap;
 }
 
 .dropDown li:hover,
+.attachmentsDropDown li:hover,
 .dropDown li:nth-child(2n):hover,
+.attachmentsDropDown li:nth-child(2n):hover,
 .dropDown li:focus,
-.dropDown li:nth-child(2n):focus {
+.attachmentsDropDown li:focus,
+.dropDown li:nth-child(2n):focus,
+.attachmentsDropDown li:nth-child(2n):focus {
   background-color: -moz-CellHighlight;
   color: -moz-CellHighlightText;
 }
 
-.dropDown li:nth-child(2n) {
+.dropDown li:nth-child(2n),
+.attachmentsDropDown li:nth-child(2n)  {
   background-color: -moz-OddTreeRow;
 }
 
@@ -340,12 +363,23 @@ html[dir="rtl"] .dropDown .arrow {
   left: 0.5em;
 }
 
+.attachmentsDropDown .arrow {
+  left: 0.5em;
+  right: auto;
+}
+
+html[dir="rtl"] .attachmentsDropDown .arrow {
+  right: 0.5em;
+  left: auto;
+}
+
 .arrow.inside {
   border-color: transparent transparent -moz-Field transparent;
   top: -13px;
 }
 
-.dropDown li:hover .arrow.inside {
+.dropDown li:hover .arrow.inside,
+.attachmentsDropDown li:hover .arrow.inside {
   border-color: transparent transparent -moz-CellHighlight transparent;
 }
 

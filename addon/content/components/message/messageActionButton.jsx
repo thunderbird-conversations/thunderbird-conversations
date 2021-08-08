@@ -48,6 +48,14 @@ const ActionsToInfoMap = {
     title: "action.viewSource",
     icon: "code",
   },
+  deleteAttachment: {
+    title: "attachments.context.delete",
+    icon: "delete_forever",
+  },
+  detachAttachment: {
+    title: "attachments.context.detach",
+    icon: "save_alt",
+  },
 };
 
 export function ActionButton({ type, callback, className, showString }) {

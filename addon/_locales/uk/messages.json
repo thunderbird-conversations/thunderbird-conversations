@@ -431,14 +431,6 @@
     "message": " та ",
     "description": "This is used in messages, for the recipients, and the 'between' column as well. In English, space after and before « and »."
   },
-  "attachments.context.open": {
-    "message": "Відкрити вкладений файл",
-    "description": "Context menu item to open an attachment."
-  },
-  "attachments.context.save": {
-    "message": "Зберегти вкладення",
-    "description": "Context menu item to save an attachment."
-  },
   "attachments.context.detach": {
     "message": "Від’єднати вкладення",
     "description": "Context menu item to detach an attachment."
