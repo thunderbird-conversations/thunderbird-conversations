@@ -726,7 +726,18 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           let attachment = await findAttachment(msgHdr, attachmentUrl);
           const win = Services.wm.getMostRecentWindow("mail:3pane");
           let msgUri = msgHdrGetUri(msgHdr);
-          getAttachmentInfo(win, msgUri, attachment).detach(shouldSave);
+          let messenger = Cc["@mozilla.org/messenger;1"].createInstance(
+            Ci.nsIMessenger
+          );
+          messenger.setWindow(win, win.msgWindow);
+          let info = getAttachmentInfo(win, msgUri, attachment);
+          messenger.detachAttachment(
+            info.contentType,
+            info.url,
+            encodeURIComponent(info.name),
+            info.uri,
+            shouldSave
+          );
         },
         async makeFriendlyDateAgo(date) {
           return makeFriendlyDateAgo(new Date(date));
