@@ -536,16 +536,6 @@
     "description": "Context menu item to delete an attachment."
   },
 
-  "attachments.context.open": {
-    "message": "Ouvrir la pièce jointe",
-    "description": "Context menu item to open an attachment."
-  },
-
-  "attachments.context.save": {
-    "message": "Enregistrer la pièce jointe",
-    "description": "Context menu item to save an attachment."
-  },
-
   "pluralForm": {
     "message": "2",
     "description": "Please make sure you read and understood https://developer.mozilla.org/en/Localization_and_Plurals. pluralForm corresponds to the 'pluralRule' variable that's described in the page, it's just a mistake if the name doesn't match the MDC page."
