@@ -40,6 +40,8 @@ for a in $(git ls-files \
   mkdir -p $(dirname "../${DIST}/${a}")
   cp $a ../$DIST/$a
 done
+# Additional icon copying.
+cp content/icons/* ../${DIST}/dev-frame/icons
 
 popd
 

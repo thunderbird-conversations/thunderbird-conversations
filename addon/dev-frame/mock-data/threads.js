@@ -75,6 +75,24 @@ function populateEmailFields(message, { to, cc, bcc }) {
   }
 }
 
+function populateAttachmentFields(message, numAttachments) {
+  message.attachments = [];
+  for (let i = 0; i < numAttachments; i++) {
+    message.attachments.push({
+      size: (i + 1) * 1024,
+      contentType: "text/plain",
+      formattedSize: `${(i + 1) * 1024}KB`,
+      isExternal: false,
+      name: `attachment ${i}`,
+      partName: `part1.${i + 1}`,
+      url: `url`,
+      anchor: "msgatt" + i,
+    });
+  }
+  message.attachmentsPlural =
+    numAttachments == 1 ? "1 attachment" : `${numAttachments} attachments`;
+}
+
 // Create threads of various lengths. When we create threads,
 // we insert to and from, etc. information into them.
 const THREAD_INFO = [
@@ -85,12 +103,15 @@ const THREAD_INFO = [
     to: [1],
     cc: [0],
     bcc: [0],
+    // If fake attachments are required
+    attachments: [1],
   },
   {
     length: 4,
     to: [3, 3, 3, 3],
     cc: [2, 1, 5, 6],
     bcc: [2, 1, 2, 2],
+    attachments: [0, 0, 0, 2],
   },
 ];
 
@@ -105,6 +126,7 @@ for (const info of THREAD_INFO) {
     cc: info.cc[0],
     bcc: info.bcc[0],
   });
+  populateAttachmentFields(rootMessage, info.attachments[0]);
   rootMessage.initialPosition = 0;
   thread.push(rootMessage);
 
@@ -123,6 +145,7 @@ for (const info of THREAD_INFO) {
       cc: info.cc[i],
       bcc: info.bcc[i],
     });
+    populateAttachmentFields(newMessage, info.attachments[i]);
     newMessage.initialPosition = i;
     thread.push(newMessage);
   }
