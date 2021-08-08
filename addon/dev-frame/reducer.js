@@ -125,6 +125,7 @@ export const devFrameActions = {
 };
 
 browser.messages = {
+  ...browser.messages,
   async get(msgId) {
     // Adjusts the from field to an author field. `from` is the structured
     // contact data we use in the stores. `author` is the name and email that

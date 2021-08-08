@@ -342,6 +342,7 @@ if (!browser.messages) {
     async get(id) {
       return {};
     },
+    async update(id) {},
   };
 }
 
