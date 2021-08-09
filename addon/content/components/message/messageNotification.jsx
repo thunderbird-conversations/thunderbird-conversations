@@ -100,7 +100,7 @@ class GenericMultiButtonNotification extends React.PureComponent {
   onClick(actionParams) {
     this.props.dispatch(
       messageActions.notificationClick({
-        msgUri: this.props.msgUri,
+        id: this.props.id,
         notificationType: this.props.type,
         ...actionParams,
       })
@@ -133,7 +133,7 @@ GenericMultiButtonNotification.propTypes = {
   dispatch: PropTypes.func.isRequired,
   hideIcon: PropTypes.bool,
   iconName: PropTypes.string.isRequired,
-  msgUri: PropTypes.string.isRequired,
+  id: PropTypes.number.isRequired,
   notificationText: PropTypes.string.isRequired,
   type: PropTypes.string.isRequired,
 };
@@ -281,7 +281,7 @@ export class MessageNotification extends React.PureComponent {
           buttons={notification.buttons || []}
           iconName={notification.iconName}
           dispatch={this.props.dispatch}
-          msgUri={this.props.msgUri}
+          id={this.props.id}
           notificationText={notification.label}
           type={notification.type}
         />
@@ -299,6 +299,5 @@ MessageNotification.propTypes = {
   isPhishing: PropTypes.bool.isRequired,
   isOutbox: PropTypes.bool.isRequired,
   id: PropTypes.number.isRequired,
-  msgUri: PropTypes.string.isRequired,
   realFrom: PropTypes.string.isRequired,
 };

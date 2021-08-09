@@ -75,7 +75,6 @@ export class MessageFooter extends React.PureComponent {
 MessageFooter.propTypes = {
   dispatch: PropTypes.func.isRequired,
   id: PropTypes.number.isRequired,
-  msgUri: PropTypes.string.isRequired,
   multipleRecipients: PropTypes.bool.isRequired,
   recipientsIncludeLists: PropTypes.bool.isRequired,
   isDraft: PropTypes.bool.isRequired,

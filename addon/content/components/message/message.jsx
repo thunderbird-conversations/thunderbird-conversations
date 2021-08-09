@@ -72,10 +72,10 @@ export class Message extends React.PureComponent {
 
   componentDidMount() {
     if (
-      this.lastScrolledMsgUri != this.props.message.msgUri &&
+      this.lastScrolledId != this.props.message.id &&
       this.props.message.scrollTo
     ) {
-      this.lastScrolledMsgUri = this.props.message.msgUri;
+      this.lastScrolledId = this.props.message.id;
       // The header is 44px high (yes, this is hard coded and ugly).
       window.requestAnimationFrame(() => {
         window.scrollTo(
@@ -101,10 +101,10 @@ export class Message extends React.PureComponent {
       return;
     }
     if (
-      this.lastScrolledMsgUri != this.props.message.msgUri ||
+      this.lastScrolledId != this.props.message.id ||
       (prevProps.iframesLoading && !this.props.iframesLoading)
     ) {
-      this.lastScrolledMsgUri = this.props.message.msgUri;
+      this.lastScrolledId = this.props.message.id;
       // The header is 44px high (yes, this is hardcoded and ugly).
       window.requestAnimationFrame(() => {
         window.scrollTo(
@@ -178,7 +178,7 @@ export class Message extends React.PureComponent {
   onSelected() {
     this.props.dispatch(
       messageActions.selected({
-        msgUri: this.props.message.msgUri,
+        id: this.props.message.id,
       })
     );
   }
@@ -197,7 +197,7 @@ export class Message extends React.PureComponent {
       case "accel-R":
         this.props.dispatch(
           messageActions.reply({
-            msgUri: this.props.message.msgUri,
+            id: this.props.message.id,
             shiftKey,
           })
         );
@@ -206,14 +206,14 @@ export class Message extends React.PureComponent {
       case "accel-l":
         this.props.dispatch(
           messageActions.forward({
-            msgUri: this.props.message.msgUri,
+            id: this.props.message.id,
           })
         );
         break;
       case "accel-u":
         this.props.dispatch(
           messageActions.openSource({
-            msgUri: this.props.message.msgUri,
+            id: this.props.message.id,
           })
         );
         break;
@@ -227,7 +227,7 @@ export class Message extends React.PureComponent {
       case "o":
         this.props.dispatch(
           messageActions.msgExpand({
-            msgUri: this.props.message.msgUri,
+            id: this.props.message.id,
             expand: !this.props.message.expanded,
           })
         );
@@ -331,7 +331,6 @@ export class Message extends React.PureComponent {
           to={this.props.message.to}
           fullDate={this.props.message.fullDate}
           id={this.props.message.id}
-          msgUri={this.props.message.msgUri}
           attachments={this.props.message.attachments}
           multipleRecipients={this.props.message.multipleRecipients}
           recipientsIncludeLists={this.props.message.recipientsIncludeLists}
@@ -363,7 +362,6 @@ export class Message extends React.PureComponent {
             isPhishing={this.props.message.isPhishing}
             isOutbox={this.props.message.isOutbox}
             id={this.props.message.id}
-            msgUri={this.props.message.msgUri}
             realFrom={this.props.message.realFrom}
           />
         )}
@@ -381,7 +379,7 @@ export class Message extends React.PureComponent {
                 this.props.dispatch(
                   messageActions.tagClick({
                     event,
-                    msgUri: this.props.message.msgUri,
+                    id: this.props.message.id,
                     details: tag.details,
                   })
                 );
@@ -414,10 +412,10 @@ export class Message extends React.PureComponent {
               expanded={this.props.message.expanded}
               hasRemoteContent={this.props.message.hasRemoteContent}
               smimeReload={this.props.message.smimeReload}
+              id={this.props.message.id}
               isInTab={this.props.isInTab}
               initialPosition={this.props.message.initialPosition}
               isStandalone={this.props.isStandalone}
-              msgUri={this.props.message.msgUri}
               neckoUrl={this.props.message.neckoUrl}
               tenPxFactor={this.props.tenPxFactor}
               prefs={this.props.prefs}
@@ -440,7 +438,6 @@ export class Message extends React.PureComponent {
           <MessageFooter
             dispatch={this.props.dispatch}
             id={this.props.message.id}
-            msgUri={this.props.message.msgUri}
             multipleRecipients={this.props.message.multipleRecipients}
             recipientsIncludeLists={this.props.message.recipientsIncludeLists}
             isDraft={this.props.message.isDraft}

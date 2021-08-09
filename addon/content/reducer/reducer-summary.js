@@ -212,7 +212,7 @@ export const summaryActions = {
       }
     };
   },
-  msgStreamLoadFinished({ dueToExpansion, msgUri, iframe }) {
+  msgStreamLoadFinished({ dueToExpansion, id, iframe }) {
     return async (dispatch, getState) => {
       if (!dueToExpansion) {
         dispatch(summarySlice.actions.decIframesLoading());
@@ -221,25 +221,25 @@ export const summaryActions = {
       // conversation/message has gone away. If that's the case, we just skip
       // and move on.
       if (Conversations.currentConversation?.getMessage) {
-        let msg = Conversations.currentConversation.getMessage(msgUri);
+        let msg = Conversations.currentConversation.getMessageByApiId(id);
         if (msg) {
           msg.postStreamMessage(topMail3Pane(window), iframe);
         }
       }
     };
   },
-  msgStreamMsg({ dueToExpansion, msgUri, docshell }) {
+  msgStreamMsg({ dueToExpansion, id, docshell }) {
     return async (dispatch, getState) => {
       if (!dueToExpansion) {
         dispatch(summarySlice.actions.incIframesLoading());
       }
-      let msg = Conversations.currentConversation.getMessage(msgUri);
+      let msg = Conversations.currentConversation.getMessageByApiId(id);
       // The message might not be found, if so it has probably been deleted from
       // under us, so just continue and not blow up.
       if (msg) {
         msg.streamMessage(topMail3Pane(window).msgWindow, docshell);
       } else {
-        console.warn("Could not find message for streaming", msgUri);
+        console.warn("Could not find message for streaming", id);
       }
     };
   },

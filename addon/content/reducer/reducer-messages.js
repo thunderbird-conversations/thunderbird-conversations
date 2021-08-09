@@ -179,10 +179,11 @@ export const messageActions = {
       browser.messages.update(id, { read: true }).catch(console.error);
     };
   },
-  selected({ msgUri }) {
+  selected({ id }) {
     return async () => {
       if (window.Conversations?.currentConversation) {
-        const msg = window.Conversations.currentConversation.getMessage(msgUri);
+        const msg =
+          window.Conversations.currentConversation.getMessageByApiId(id);
         if (msg) {
           msg.onSelected();
         }
@@ -313,9 +314,10 @@ export const messageActions = {
       ]);
     };
   },
-  notificationClick({ msgUri, notificationType, extraData }) {
+  notificationClick({ id, notificationType, extraData }) {
     return async () => {
-      const msg = window.Conversations.currentConversation.getMessage(msgUri);
+      const msg =
+        window.Conversations.currentConversation.getMessageByApiId(id);
       msg.msgPluginNotification(
         topMail3Pane(window),
         notificationType,
@@ -323,9 +325,10 @@ export const messageActions = {
       );
     };
   },
-  tagClick({ msgUri, event, details }) {
+  tagClick({ id, event, details }) {
     return async () => {
-      const msg = window.Conversations.currentConversation.getMessage(msgUri);
+      const msg =
+        window.Conversations.currentConversation.getMessageByApiId(id);
       msg.msgPluginTagClick(topMail3Pane(window), event, details);
     };
   },
@@ -460,7 +463,7 @@ export const messagesSlice = RTK.createSlice({
       return { ...state, ...messages };
     },
     msgExpand(state, { payload }) {
-      return modifyOnlyMsg(state, payload.msgUri, (msg) => ({
+      return modifyOnlyMsgId(state, payload.id, (msg) => ({
         ...msg,
         expanded: payload.expand,
       }));

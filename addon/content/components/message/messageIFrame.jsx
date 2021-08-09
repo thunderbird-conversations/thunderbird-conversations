@@ -175,7 +175,7 @@ export class MessageIFrame extends React.Component {
   constructor(props) {
     super(props);
     this.index = index++;
-    this.currentUrl = null;
+    this.currentId = null;
     this.loading = false;
     this.onClickIframe = this.onClickIframe.bind(this);
     this._waitingForDom = false;
@@ -201,7 +201,7 @@ export class MessageIFrame extends React.Component {
     if (this.props.expanded) {
       this.iframe.classList.remove("hidden");
       if (
-        this.currentUrl != this.props.msgUri ||
+        this.currentId != this.props.id ||
         (prevProps.hasRemoteContent && !this.props.hasRemoteContent) ||
         (!prevProps.smimeReload && this.props.smimeReload)
       ) {
@@ -219,7 +219,7 @@ export class MessageIFrame extends React.Component {
       // notifications are sent.
       if (prevProps.neckoUrl != this.props.neckoUrl) {
         this.iframe.src = "about:blank";
-        this.currentUrl = "about:blank";
+        this.currentId = null;
       }
       this.iframe.classList.add("hidden");
     }
@@ -237,12 +237,12 @@ export class MessageIFrame extends React.Component {
       }
 
       this.loading = true;
-      this.currentUrl = this.props.msgUri;
+      this.currentId = this.props.id;
       this.props.dispatch(
         summaryActions.msgStreamMsg({
           docshell: this.iframe.contentWindow.docShell,
           dueToExpansion: this.dueToExpansion,
-          msgUri: this.props.msgUri,
+          id: this.props.id,
         })
       );
     }
@@ -300,13 +300,13 @@ export class MessageIFrame extends React.Component {
 
     this.registerListeners();
     if (this.props.expanded) {
-      this.currentUrl = this.props.msgUri;
+      this.currentId = this.props.id;
       this.loading = true;
       this.dueToExpansion = false;
       this.props.dispatch(
         summaryActions.msgStreamMsg({
           docshell: docShell,
-          msgUri: this.props.msgUri,
+          id: this.props.id,
         })
       );
     } else {
@@ -428,7 +428,7 @@ export class MessageIFrame extends React.Component {
     this.props.dispatch(
       summaryActions.msgStreamLoadFinished({
         dueToExpansion: this.dueToExpansion,
-        msgUri: this.props.msgUri,
+        id: this.props.id,
         iframe: this.iframe,
       })
     );
@@ -633,10 +633,10 @@ MessageIFrame.propTypes = {
   dispatch: PropTypes.func.isRequired,
   expanded: PropTypes.bool.isRequired,
   hasRemoteContent: PropTypes.bool.isRequired,
+  id: PropTypes.number.isRequired,
   isInTab: PropTypes.bool.isRequired,
   isStandalone: PropTypes.bool.isRequired,
   initialPosition: PropTypes.number.isRequired,
-  msgUri: PropTypes.string.isRequired,
   neckoUrl: PropTypes.string.isRequired,
   smimeReload: PropTypes.bool.isRequired,
   tenPxFactor: PropTypes.number.isRequired,

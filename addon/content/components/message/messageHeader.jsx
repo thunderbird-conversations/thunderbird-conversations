@@ -235,7 +235,6 @@ export function MessageHeader({
   starred,
   expanded,
   from,
-  msgUri,
   id,
   dispatch,
   bcc,
@@ -257,7 +256,7 @@ export function MessageHeader({
     dispatch(
       messageActions.msgExpand({
         expand: !expanded,
-        msgUri,
+        id,
       })
     );
     if (!expanded) {
@@ -354,7 +353,7 @@ export function MessageHeader({
                 dispatch(
                   messageActions.tagClick({
                     event,
-                    msgUri,
+                    id,
                     details: tag.details,
                   })
                 );
@@ -392,7 +391,6 @@ MessageHeader.propTypes = {
   from: PropTypes.object.isRequired,
   fullDate: PropTypes.string.isRequired,
   id: PropTypes.number.isRequired,
-  msgUri: PropTypes.string.isRequired,
   attachments: PropTypes.array.isRequired,
   multipleRecipients: PropTypes.bool.isRequired,
   recipientsIncludeLists: PropTypes.bool.isRequired,
