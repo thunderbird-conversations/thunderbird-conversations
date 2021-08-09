@@ -88,7 +88,6 @@ class Message {
     this._snippet = "";
     this._conversation = aConversation;
 
-    this._date = new Date(this._msgHdr.date / 1000);
     // This one is for display purposes. We should always parse the non-decoded
     // author because there's more information in the encoded form (see #602)
     this._from = parseMimeLine(this._msgHdr.author)[0];
@@ -199,7 +198,7 @@ class Message {
     }
 
     // We run below code only for the first time after messages selected.
-    Log.debug("A message is selected:", this._uri);
+    Log.debug("A message is selected:", this._id);
     for (let { message } of this._conversation.messages) {
       message._selected = message == this;
     }
@@ -228,7 +227,7 @@ class Message {
     this._conversation._htmlPane.conversationDispatch(
       messageActions.msgAddSpecialTag({
         tagDetails,
-        uri: this._uri,
+        id: this._id,
       })
     );
   }
@@ -237,7 +236,7 @@ class Message {
     this._conversation._htmlPane.conversationDispatch(
       messageActions.msgRemoveSpecialTag({
         tagDetails,
-        uri: this._uri,
+        id: this._id,
       })
     );
     // this._specialTags = this.specialTags.filter(t => t.name != tagDetails.name);

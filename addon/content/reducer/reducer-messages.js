@@ -501,13 +501,13 @@ export const messagesSlice = RTK.createSlice({
       }));
     },
     msgAddSpecialTag(state, { payload }) {
-      return modifyOnlyMsg(state, payload.uri, (msg) => ({
+      return modifyOnlyMsgId(state, payload.id, (msg) => ({
         ...msg,
         specialTags: (msg.specialTags || []).concat(payload.tagDetails),
       }));
     },
     msgRemoveSpecialTag(state, { payload }) {
-      return modifyOnlyMsg(state, payload.uri, (msg) => {
+      return modifyOnlyMsg(state, payload.id, (msg) => {
         if (msg.specialTags == null) {
           return msg;
         }
