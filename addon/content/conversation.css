@@ -249,10 +249,6 @@ html[dir="rtl"] .tooltip {
   right: 16px;
 }
 
-.createFilter {
-  height: 1.86em;
-}
-
 .options > .details-hidden {
   color: -moz-CellHighlight;
 }
@@ -468,6 +464,10 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
   padding: 0 5px;
   float: inline-start;
   margin: 0 3px 0 0;
+  background-color: white;
+  border: 1px solid ThreeDShadow;
+  height: 1.86em;
+  border-radius: 7px;
 }
 
 .message:not(.bugzilla) .bzTo {
