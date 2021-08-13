@@ -309,9 +309,17 @@ export const messageActions = {
     };
   },
   notificationClick({ id, notificationType, extraData }) {
-    return async () => {
+    return async (dispatch, getState) => {
       const msg =
         window.Conversations.currentConversation.getMessageByApiId(id);
+
+      if (notificationType == "calendar") {
+        await browser.convCalendar.onMessageNotification(
+          getState().summary.tabId,
+          extraData.execute
+        );
+        return;
+      }
       msg.msgPluginNotification(
         topMail3Pane(window),
         notificationType,

@@ -1,0 +1,43 @@
+[
+  {
+    "namespace": "convCalendar",
+    "functions": [
+      {
+        "name": "onMessageStreamed",
+        "type": "function",
+        "description": "Handles calendar notifications on messages.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "tabId",
+            "type": "number",
+            "description": "The id of the tab."
+          },
+          {
+            "name": "msgId",
+            "type": "number",
+            "description": "The id of the message."
+          }
+        ]
+      },
+      {
+        "name": "onMessageNotification",
+        "type": "function",
+        "description": "Handles clicks on notifications on messages.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "tabId",
+            "type": "number",
+            "description": "The id of the tab."
+          },
+          {
+            "name": "action",
+            "type": "string",
+            "description": "The action to take."
+          }
+        ]
+      }
+    ]
+  }
+]

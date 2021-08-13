@@ -41,6 +41,14 @@
         "events": ["startup"]
       }
     },
+    "convCalendar": {
+      "schema": "experiment-api/calendarSchema.json",
+      "parent": {
+        "scopes": ["addon_parent"],
+        "paths": [["convCalendar"]],
+        "script": "experiment-api/calendarApi.js"
+      }
+    },
     "convCompose": {
       "schema": "experiment-api/composeSchema.json",
       "parent": {

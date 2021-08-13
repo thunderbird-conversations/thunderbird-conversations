@@ -13,6 +13,7 @@ const SUPPORTED_APIS_NO_EVENTS = [
   "addressBooks",
   "compose",
   "contacts",
+  "convCalendar",
   "convCompose",
   "mailTabs",
   // If "messages" is moved to SUPPORTED_BASE_APIS, then the various interfaces

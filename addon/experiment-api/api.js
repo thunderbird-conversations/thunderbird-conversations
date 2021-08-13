@@ -33,7 +33,6 @@ const conversationModules = [
   // Don't unload these until we can find a way of unloading the attribute
   // providers. Unloading these will break gloda when someone updates.
   // "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
-  "chrome://conversations/content/modules/plugins/lightning.js",
   "chrome://conversations/content/modules/assistant.js",
   "chrome://conversations/content/modules/browserSim.js",
   "chrome://conversations/content/modules/conversation.js",
@@ -138,9 +137,6 @@ function monkeyPatchWindow(win, windowId) {
   /* eslint-disable no-unused-vars */
   ChromeUtils.import(
     "chrome://conversations/content/modules/plugins/enigmail.js"
-  );
-  ChromeUtils.import(
-    "chrome://conversations/content/modules/plugins/lightning.js"
   );
   ChromeUtils.import(
     "chrome://conversations/content/modules/plugins/dkimVerifier.js"

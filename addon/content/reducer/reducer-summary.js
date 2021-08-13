@@ -226,6 +226,10 @@ export const summaryActions = {
           msg.postStreamMessage(topMail3Pane(window), iframe);
         }
       }
+      await browser.convCalendar.onMessageStreamed(
+        getState().summary.tabId,
+        id
+      );
     };
   },
   msgStreamMsg({ dueToExpansion, id, docshell }) {
