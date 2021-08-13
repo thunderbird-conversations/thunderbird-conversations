@@ -135,7 +135,7 @@ let lightningHook = {
       msg._conversation._htmlPane.conversationDispatch(
         messageActions.msgShowNotification({
           msgData: {
-            msgUri: msg._uri,
+            id: msg._id,
             notification: {
               iconName: "calendar_today",
               type: "lightning",

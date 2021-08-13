@@ -291,7 +291,7 @@ Conversation.prototype = {
         for (let message of this.messages) {
           if (!toMsgHdr(message)) {
             Log.debug("Removing a message with no msgHdr");
-            this.removeMessage(message.message);
+            await this.removeMessage(message.message);
           }
         }
         this.messages.map((m) => {
@@ -309,7 +309,7 @@ Conversation.prototype = {
             let draft = this.messages.filter(
               (y) => getMessageId(y) == newMessageId
             )[0];
-            this.removeMessage(draft.message);
+            await this.removeMessage(draft.message);
             delete messageIds[newMessageId];
           }
         }
@@ -368,7 +368,7 @@ Conversation.prototype = {
     }
   },
 
-  onItemsRemoved(aItems) {
+  async onItemsRemoved(aItems) {
     Log.debug("Updating conversation", this.counter, "global state...");
     if (!this.completed) {
       return;
@@ -386,7 +386,7 @@ Conversation.prototype = {
         msgId in byMessageId &&
         byMessageId[msgId]._msgHdr.messageKey == glodaMsg.messageKey
       ) {
-        this.removeMessage(byMessageId[msgId]);
+        await this.removeMessage(byMessageId[msgId]);
       }
     }
   },
@@ -456,21 +456,19 @@ Conversation.prototype = {
    *
    * @param {Message} msg a Message as in modules/message.js
    */
-  removeMessage(msg) {
+  async removeMessage(msg) {
     Log.debug("Removing message:", msg?._uri);
     // Move the quick reply to the previous message
     this.messages = this.messages.filter((x) => x.message != msg);
     this._initialSet = this._initialSet.filter((x) => x.message != msg);
 
+    let id = await browser.conversations.getMessageIdForUri(msgHdrGetUri(msg));
+
     // TODO As everything is synchronous but react doesn't let us dispatch
     // from within a dispatch, then we have to dispatch this off to the main
     // thread.
     Services.tm.dispatchToMainThread(() => {
-      this.dispatch(
-        messageActions.removeMessageFromConversation({
-          msgUri: msg._uri,
-        })
-      );
+      this.dispatch(messageActions.removeMessageFromConversation({ id }));
     });
   },
 

@@ -14,16 +14,7 @@ export const initialMessages = {
   msgData: [],
 };
 
-function modifyOnlyMsg(state, msgUri, modifier) {
-  return {
-    ...state,
-    msgData: state.msgData.map((msg) =>
-      msg.msgUri == msgUri ? modifier(msg) : msg
-    ),
-  };
-}
-
-function modifyOnlyMsgId(state, id, modifier) {
+function modifyOnlyMsg(state, id, modifier) {
   return {
     ...state,
     msgData: state.msgData.map((msg) => (msg.id == id ? modifier(msg) : msg)),
@@ -306,7 +297,10 @@ export const messageActions = {
       // First, save the draft, and once it's saved, then move on to opening the
       // conversation in a new tab...
       // onSave(() => {
-      const urls = state.messages.msgData.map((x) => x.msgUri);
+      let urls = [];
+      for (let m of state.messages.msgData) {
+        urls.push(await browser.conversations.getMessageUriForId(m.id));
+      }
       BrowserSim.callBackgroundFunc("_window", "openConversation", [
         state.summary.windowId,
         urls,
@@ -455,7 +449,7 @@ export const messagesSlice = RTK.createSlice({
         return { ...state, msgData: state.msgData.concat(messages.msgData) };
       }
       if (mode == "replaceMsg") {
-        return modifyOnlyMsgId(state, messages.msgData[0].id, (msg) => ({
+        return modifyOnlyMsg(state, messages.msgData[0].id, (msg) => ({
           ...msg,
           ...messages.msgData[0],
         }));
@@ -463,7 +457,7 @@ export const messagesSlice = RTK.createSlice({
       return { ...state, ...messages };
     },
     msgExpand(state, { payload }) {
-      return modifyOnlyMsgId(state, payload.id, (msg) => ({
+      return modifyOnlyMsg(state, payload.id, (msg) => ({
         ...msg,
         expanded: payload.expand,
       }));
@@ -475,25 +469,25 @@ export const messagesSlice = RTK.createSlice({
       };
     },
     setHasRemoteContent(state, { payload }) {
-      return modifyOnlyMsgId(state, payload.id, (msg) => ({
+      return modifyOnlyMsg(state, payload.id, (msg) => ({
         ...msg,
         hasRemoteContent: payload.hasRemoteContent,
       }));
     },
     setPhishing(state, { payload }) {
-      return modifyOnlyMsgId(state, payload.id, (msg) => ({
+      return modifyOnlyMsg(state, payload.id, (msg) => ({
         ...msg,
         isPhishing: payload.isPhishing,
       }));
     },
     setSmimeReload(state, { payload }) {
-      return modifyOnlyMsgId(state, payload.id, (msg) => ({
+      return modifyOnlyMsg(state, payload.id, (msg) => ({
         ...msg,
         smimeReload: payload.smimeReload,
       }));
     },
     updateAttachmentData(state, { payload }) {
-      return modifyOnlyMsgId(state, payload.id, (msg) => ({
+      return modifyOnlyMsg(state, payload.id, (msg) => ({
         ...msg,
         attachments: payload.attachments,
         attachmentsPlural: payload.attachmentsPlural,
@@ -501,7 +495,7 @@ export const messagesSlice = RTK.createSlice({
       }));
     },
     msgAddSpecialTag(state, { payload }) {
-      return modifyOnlyMsgId(state, payload.id, (msg) => ({
+      return modifyOnlyMsg(state, payload.id, (msg) => ({
         ...msg,
         specialTags: (msg.specialTags || []).concat(payload.tagDetails),
       }));
@@ -522,13 +516,13 @@ export const messagesSlice = RTK.createSlice({
     msgSetIsJunk(state, { payload }) {
       return payload.isJunk
         ? state
-        : modifyOnlyMsgId(state, payload.id, (msg) => ({
+        : modifyOnlyMsg(state, payload.id, (msg) => ({
             ...msg,
             isJunk: false,
           }));
     },
     msgHdrDetails(state, { payload }) {
-      return modifyOnlyMsgId(state, payload.id, (msg) => {
+      return modifyOnlyMsg(state, payload.id, (msg) => {
         if (payload.extraLines != null) {
           return { ...msg, detailsShowing: payload.detailsShowing };
         }
@@ -542,16 +536,16 @@ export const messagesSlice = RTK.createSlice({
     removeMessageFromConversation(state, { payload }) {
       return {
         ...state,
-        msgData: state.msgData.filter((m) => m.msgUri !== payload.msgUri),
+        msgData: state.msgData.filter((m) => m.id !== payload.id),
       };
     },
     clearScrollto(state, { payload }) {
-      return modifyOnlyMsgId(state, payload.id, (msg) => {
+      return modifyOnlyMsg(state, payload.id, (msg) => {
         return { ...msg, scrollTo: false };
       });
     },
     msgShowNotification(state, { payload }) {
-      return modifyOnlyMsg(state, payload.msgData.msgUri, (msg) => {
+      return modifyOnlyMsg(state, payload.msgData.id, (msg) => {
         // We put the notification on the end of the `extraNotifications` list
         // unless there is a notification with a matching type, in which case
         // we update it in place.
