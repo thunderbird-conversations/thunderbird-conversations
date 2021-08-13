@@ -41,7 +41,7 @@ function imipOptions(win, msg, itipItem, rc, actionFunc, foundItems) {
         msg._conversation._htmlPane.conversationDispatch(
           messageActions.msgShowNotification({
             msgData: {
-              msgUri: msg._uri,
+              id: msg._id,
               notification: {
                 iconName: "calendar_today",
                 label,
@@ -108,7 +108,7 @@ function imipOptions(win, msg, itipItem, rc, actionFunc, foundItems) {
   msg._conversation._htmlPane.conversationDispatch(
     messageActions.msgShowNotification({
       msgData: {
-        msgUri: msg._uri,
+        id: msg._id,
         notification: {
           buttons,
           iconName: "calendar_today",

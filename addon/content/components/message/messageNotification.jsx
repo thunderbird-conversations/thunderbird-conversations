@@ -129,7 +129,7 @@ class GenericMultiButtonNotification extends React.PureComponent {
 
 GenericMultiButtonNotification.propTypes = {
   barClassName: PropTypes.string.isRequired,
-  buttons: PropTypes.object.isRequired,
+  buttons: PropTypes.array.isRequired,
   dispatch: PropTypes.func.isRequired,
   hideIcon: PropTypes.bool,
   iconName: PropTypes.string.isRequired,
