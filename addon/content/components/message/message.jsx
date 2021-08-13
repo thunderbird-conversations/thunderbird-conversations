@@ -105,24 +105,29 @@ export class Message extends React.PureComponent {
       (prevProps.iframesLoading && !this.props.iframesLoading)
     ) {
       this.lastScrolledMsgUri = this.props.message.msgUri;
-      // The header is 44px high (yes, this is hardcoded and ugly).
-      window.requestAnimationFrame(() => {
-        window.scrollTo(
-          500,
-          this.li.getBoundingClientRect().top + window.scrollY + 5 - 44
-        );
-        this.onSelected();
-        // Only clear scrollTo if we're now not loading any iframes for
-        // this message. This should generally mean we get to scroll to the
-        // right place most of the time.
-        if (!this.props.iframesLoading) {
-          this.props.dispatch(
-            messageActions.clearScrollto({
-              id: this.props.message.id,
-            })
+      // The additional setTimeout gives slightly longer for the event queue
+      // to flush, and the message body to finish displaying - this helps the
+      // conversation-in-tab view to scroll properly.
+      setTimeout(() => {
+        window.requestAnimationFrame(() => {
+          window.scrollTo(
+            0,
+            // The header is 44px high (yes, this is hardcoded and ugly).
+            this.li.getBoundingClientRect().top + window.scrollY + 5 - 44
           );
-        }
-      });
+          this.onSelected();
+          // Only clear scrollTo if we're now not loading any iframes for
+          // this message. This should generally mean we get to scroll to the
+          // right place most of the time.
+          if (!this.props.iframesLoading) {
+            this.props.dispatch(
+              messageActions.clearScrollto({
+                id: this.props.message.id,
+              })
+            );
+          }
+        });
+      }, 0);
     }
     this.checkLateAttachments();
   }
