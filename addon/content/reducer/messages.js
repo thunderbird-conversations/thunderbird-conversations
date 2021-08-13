@@ -73,6 +73,7 @@ export let messageEnricher = new (class {
       })
     );
 
+    console.log(mode);
     // Do expansion and scrolling after gathering the message data
     // as this relies on the message read information.
     if (mode != "replaceMsg") {
