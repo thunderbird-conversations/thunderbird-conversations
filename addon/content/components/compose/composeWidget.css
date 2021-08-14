@@ -1,0 +1,81 @@
+.from > span {
+  color: #575656;
+  margin-bottom: 5px;
+}
+
+.compose label {
+  border-radius: 3px 0 0 3px;
+  background-color: -moz-Dialog;
+  color: -moz-DialogText;
+  border-color: ThreeDShadow;
+  border-style: solid;
+  border-width: 1px 0 1px 1px;
+  padding-inline-end: 5px;
+  text-align: end;
+  width: 7.5rem;
+}
+
+.compose .headerField {
+  display: flex;
+  line-height: 2.4rem;
+  margin-top: 5px;
+  margin-bottom: 5px;
+}
+
+.compose .headerEntry {
+  flex: 1;
+  overflow: hidden;
+  width: 100%;
+  border: 1px solid ThreeDShadow;
+  cursor: text;
+  background-color: -moz-field;
+  color: -moz-fieldtext;
+}
+
+.headerEntry > input {
+  padding-inline-start: 5px;
+  height: 100%;
+  width: 100%;
+  border: none;
+}
+
+textarea:focus, input:focus {
+  outline: none;
+  border-color: lightblue;
+}
+
+.compose > .bodyWrapper {
+  display: flex;
+}
+
+.compose > .bodyWrapper > .body {
+  flex: 1;
+  border: 1px solid ThreeDShadow;
+  height: 162px;
+  padding: 5px 5px 5px 20px;
+  resize: vertical;
+  background-color: Canvas;
+  color: CanvasText;
+  display: block;
+  position: relative;
+  outline: none;
+  overflow: auto;
+}
+
+.compose > .buttons {
+  margin-top: 10px;
+}
+
+.compose > .buttons > button {
+  padding: 0 5px;
+  margin-inline-end: 3px;
+  background-color: white;
+  border: 1px solid ThreeDShadow;
+  height: 1.86em;
+  border-radius: 7px;
+}
+
+
+#send {
+  float: inline-end;
+}

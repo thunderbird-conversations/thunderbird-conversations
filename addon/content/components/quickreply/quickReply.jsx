@@ -37,10 +37,7 @@ export function QuickReply({ id }) {
 
   let body = quickReplyState.expanded ? (
     <div>
-      <ComposeWidget dispatch={dispatch} />
-      <a className="link" onClick={discard}>
-        {browser.i18n.getMessage("compose.discard")}
-      </a>
+      <ComposeWidget dispatch={dispatch} discard={discard} />
     </div>
   ) : (
     <textarea onClick={expand} />

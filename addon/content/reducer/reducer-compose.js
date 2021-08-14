@@ -12,6 +12,7 @@ export const initialCompose = {
   modified: false,
   sending: false,
   sendingMsg: "",
+  showSubject: false,
 };
 
 export const composeSlice = RTK.createSlice({
@@ -52,7 +53,7 @@ export const composeSlice = RTK.createSlice({
 });
 
 export const composeActions = {
-  initCompose({ accountId, identityId, to, subject }) {
+  initCompose({ accountId, identityId, to, subject, showSubject }) {
     return async function (dispatch) {
       await dispatch(composeSlice.actions.resetStore());
 
@@ -77,6 +78,7 @@ export const composeActions = {
           email: identityDetail.email,
           to,
           subject,
+          showSubject,
         })
       );
     };

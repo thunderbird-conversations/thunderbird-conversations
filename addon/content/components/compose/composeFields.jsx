@@ -10,19 +10,19 @@ export const TextBox = React.forwardRef(
   ({ disabled = false, title, value = "", name, onChange = () => {} }, ref) => {
     return (
       <React.Fragment>
-        <div>
+        <div className="headerField">
           <label>{browser.i18n.getMessage(title)}</label>
-        </div>
-        <div>
-          <input
-            type="text"
-            ref={ref}
-            value={value}
-            onChange={(e) => {
-              onChange(name, e.target.value);
-            }}
-            disabled={disabled}
-          />
+          <div className="headerEntry">
+            <input
+              type="text"
+              ref={ref}
+              value={value}
+              onChange={(e) => {
+                onChange(name, e.target.value);
+              }}
+              disabled={disabled}
+            />
+          </div>
         </div>
       </React.Fragment>
     );
@@ -41,9 +41,9 @@ export const TextArea = React.forwardRef(
   ({ value = "", name, onChange = () => {} }, ref) => {
     return (
       <React.Fragment>
-        <div></div>
-        <div>
+        <div className={`${name}Wrapper`}>
           <textarea
+            className={name}
             ref={ref}
             value={value}
             onChange={(e) => {

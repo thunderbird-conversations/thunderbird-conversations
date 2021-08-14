@@ -6,8 +6,9 @@ import { composeActions } from "../../reducer/reducer-compose.js";
 import React from "react";
 import * as ReactRedux from "react-redux";
 import { TextArea, TextBox } from "./composeFields.jsx";
+import PropTypes from "prop-types";
 
-export function ComposeWidget() {
+export function ComposeWidget({ discard }) {
   const dispatch = ReactRedux.useDispatch();
   const { composeState } = ReactRedux.useSelector((state) => ({
     composeState: state.compose,
@@ -16,7 +17,7 @@ export function ComposeWidget() {
   const subjectInput = React.createRef();
 
   React.useEffect(() => {
-    if (composeState.subject) {
+    if (composeState.subject || !composeState.showSubject) {
       bodyInput.current.focus();
     } else {
       subjectInput.current.focus();
@@ -47,14 +48,10 @@ export function ComposeWidget() {
 
   return (
     <div className="compose">
-      <TextBox
-        name="from"
-        title="message.fromHeader"
-        disabled={true}
-        value={composeState.from}
-        sending={composeState.sending}
-        onChange={setValue}
-      />
+      <div className="from">
+        {browser.i18n.getMessage("message.fromHeader")}{" "}
+        <span>{composeState.from}</span>
+      </div>
       <TextBox
         name="to"
         title="message.toHeader"
@@ -62,14 +59,16 @@ export function ComposeWidget() {
         sending={composeState.sending}
         onChange={setValue}
       />
-      <TextBox
-        name="subject"
-        ref={subjectInput}
-        title="compose.fieldSubject"
-        value={composeState.subject}
-        sending={composeState.sending}
-        onChange={setValue}
-      />
+      {composeState.showSubject && (
+        <TextBox
+          name="subject"
+          ref={subjectInput}
+          title="compose.fieldSubject"
+          value={composeState.subject}
+          sending={composeState.sending}
+          onChange={setValue}
+        />
+      )}
       <TextArea
         name="body"
         ref={bodyInput}
@@ -77,17 +76,26 @@ export function ComposeWidget() {
         sending={composeState.sending}
         onChange={setValue}
       />
-      <div></div>
       <div id="sendStatus">{composeState.sendingMsg}</div>
-      <button
-        id="send"
-        onClick={onSend}
-        disabled={
-          composeState.sending || !composeState.to || !composeState.subject
-        }
-      >
-        {browser.i18n.getMessage("compose.send")}
-      </button>
+      <div className="buttons">
+        {discard && (
+          <a className="link" onClick={discard}>
+            {browser.i18n.getMessage("compose.discard")}
+          </a>
+        )}
+        <button
+          id="send"
+          onClick={onSend}
+          disabled={
+            composeState.sending || !composeState.to || !composeState.subject
+          }
+        >
+          {browser.i18n.getMessage("compose.send")}
+        </button>
+      </div>
     </div>
   );
 }
+ComposeWidget.propTypes = {
+  discard: PropTypes.func,
+};

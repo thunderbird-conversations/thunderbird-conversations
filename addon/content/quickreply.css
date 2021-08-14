@@ -7,7 +7,7 @@
 
 .quickReply {
   font-size: 1.2rem;
-  background-color: rgba(160, 160, 160, 0.1);
+  background-color: rgba(160, 160, 160, 0.06);
   border-top: 1px solid ThreeDShadow;
   padding: 10px;
   position: relative;
@@ -18,7 +18,7 @@
   border-top: none;
   padding: 0;
 }
-
+/*
 .quickReply ul.inputs {
   list-style-type: none;
   display: flex;
@@ -72,7 +72,7 @@
   min-height: 54px;
   height: 54px;
   padding: 0 0 0 100%; /* weird difference between iframe mozframetype="content" and iframe */
-  font-size: 1.2rem;
+  /* font-size: 1.2rem;
   resize: none;
   background-color: transparent;
   display: block;
@@ -125,7 +125,7 @@ body.inTab .quickReply li.selected .textarea {
 }
 
 /* Quick reply */
-
+/*
 .quickReplyRecipients,
 .quickReplyAttachments {
   width: 100%;
@@ -238,7 +238,7 @@ body.inTab .quickReply li.selected .textarea {
 }
 
 /* misc */
-
+/*
 .autocomplete-thumb {
   height: 22px;
   vertical-align: middle;
@@ -246,11 +246,11 @@ body.inTab .quickReply li.selected .textarea {
 
 .token-input-list-facebook {
   width: 100%;
-}
+} */
 
 
 /* Quick compose */
-
+/*
 #messageList.quickCompose {
   position: fixed;
   top: 0; right: 0; bottom: 0; left: 0;
@@ -325,7 +325,7 @@ body.inTab .quickReply li.selected .textarea {
 .popularEmail,
 .popularName {
   /* 300px - 32px - 4px */
-  width: 260px;
+  /* width: 260px;
   text-overflow: ellipsis;
   white-space: nowrap;
   overflow: hidden;
@@ -344,4 +344,4 @@ body.inTab .quickReply li.selected .textarea {
 
 .quickReplyContactsMoreLink {
   cursor: pointer;
-}
+} */

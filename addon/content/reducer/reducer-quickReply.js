@@ -46,7 +46,13 @@ export const quickReplyActions = {
       // the compose widget has the correct information to set focus correctly
       // on first render.
       await dispatch(
-        composeActions.initCompose({ accountId, identityId, to, subject })
+        composeActions.initCompose({
+          accountId,
+          identityId,
+          to,
+          subject,
+          showSubject: false,
+        })
       );
       await dispatch(
         quickReplySlice.actions.setExpandedState({ expanded: true })

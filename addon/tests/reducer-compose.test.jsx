@@ -37,7 +37,7 @@ describe("Compose Reducer and Actions tests", () => {
   });
 
   test("initCompose() retrieves the default identity information", async () => {
-    await store.dispatch(composeActions.initCompose({}));
+    await store.dispatch(composeActions.initCompose({ showSubject: false }));
 
     expect(mockedList).toHaveBeenCalled();
     expect(mockedGet).not.toHaveBeenCalled();
@@ -51,6 +51,7 @@ describe("Compose Reducer and Actions tests", () => {
         modified: false,
         sending: false,
         sendingMsg: "",
+        showSubject: false,
         subject: undefined,
         to: undefined,
       },
@@ -60,7 +61,7 @@ describe("Compose Reducer and Actions tests", () => {
   test("initCompose() resets the store", async () => {
     await store.dispatch(composeActions.setValue("subject", "test"));
 
-    await store.dispatch(composeActions.initCompose({}));
+    await store.dispatch(composeActions.initCompose({ showSubject: true }));
 
     expect(store.getState()).toStrictEqual({
       compose: {
@@ -70,6 +71,7 @@ describe("Compose Reducer and Actions tests", () => {
         modified: false,
         sending: false,
         sendingMsg: "",
+        showSubject: true,
         subject: undefined,
         to: undefined,
       },

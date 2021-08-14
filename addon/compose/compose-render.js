@@ -19,5 +19,6 @@ store.dispatch(
   composeActions.initCompose({
     accountId: params.get("accountId"),
     identityId: params.get("identityId"),
+    showSubject: true,
   })
 );

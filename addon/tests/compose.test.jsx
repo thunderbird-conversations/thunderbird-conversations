@@ -23,9 +23,9 @@ describe("Compose full page tests", () => {
     mockedSend = jest.spyOn(browser.convCompose, "send");
     main = enzyme.mount(<Main />);
 
-    await waitForComponentToPaint(main);
+    await store.dispatch(composeActions.initCompose({ showSubject: true }));
 
-    await store.dispatch(composeActions.initCompose({}));
+    await waitForComponentToPaint(main);
   });
 
   afterEach(() => {
@@ -46,8 +46,7 @@ describe("Compose full page tests", () => {
     textArea
       .find("textarea")
       .simulate("change", { target: { value: "testArea" } });
-
-    const sendButton = main.find("button");
+    const sendButton = main.find("#send");
     sendButton.simulate("click");
 
     await new Promise((resolve) => {
@@ -83,13 +82,14 @@ describe("Compose full page tests", () => {
 
     // Should have correctly set up the initial values.
     expect(store.getState().compose).toStrictEqual({
-      from: "a",
+      from: undefined,
       body: undefined,
       modified: true,
       subject: undefined,
-      to: undefined,
+      to: "a",
       sending: false,
       sendingMsg: "",
+      showSubject: false,
     });
   });
 });
