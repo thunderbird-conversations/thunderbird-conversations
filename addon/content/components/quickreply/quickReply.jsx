@@ -6,6 +6,7 @@ import React from "react";
 import * as ReactRedux from "react-redux";
 import { ComposeWidget } from "../compose/composeWidget.jsx";
 import { quickReplyActions } from "../../reducer/reducer-quickReply.js";
+import { SvgIcon } from "../svgIcon.jsx";
 import PropTypes from "prop-types";
 
 export function QuickReply({ id }) {
@@ -35,15 +36,25 @@ export function QuickReply({ id }) {
     return dispatch(quickReplyActions.discard());
   }
 
-  let body = quickReplyState.expanded ? (
-    <div>
-      <ComposeWidget dispatch={dispatch} discard={discard} />
-    </div>
-  ) : (
-    <textarea onClick={expand} />
-  );
+  if (quickReplyState.expanded) {
+    return (
+      <div className="quickReply">
+        <div>
+          <ComposeWidget dispatch={dispatch} discard={discard} />
+        </div>
+      </div>
+    );
+  }
 
-  return <div className="quickReply">{body}</div>;
+  return (
+    <div className="quickReply">
+      <div className="quickReplyIcon">
+        <span>Reply</span>
+        <SvgIcon hash="reply" />
+      </div>
+      <textarea className="body collapsed" onClick={expand} />
+    </div>
+  );
 }
 QuickReply.propTypes = {
   id: PropTypes.number.isRequired,

@@ -18,6 +18,37 @@
   border-top: none;
   padding: 0;
 }
+
+.quickReply > .body.collapsed {
+  width: 100%;
+  border: 1px solid ThreeDShadow;
+  min-height: 54px;
+  height: 54px;
+  padding: 0 0 0 100%;
+  font-size: 1.2rem;
+  resize: none;
+  background-color: transparent;
+  display: block;
+  position: relative;
+  outline: none;
+  overflow: hidden;
+  color: transparent;
+  font-size: 1.4rem;
+  cursor: pointer;
+}
+
+.quickReplyIcon {
+  position: absolute;
+  width: calc(100% - 20px);
+  height: 54px;
+  line-height: 54px;
+  background-color: Canvas;
+  color: -moz-nativehyperlinktext;
+  text-align: center;
+  white-space: nowrap;
+  overflow: hidden;
+}
+
 /*
 .quickReply ul.inputs {
   list-style-type: none;
