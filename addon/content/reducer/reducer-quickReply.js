@@ -27,7 +27,7 @@ export const quickReplySlice = RTK.createSlice({
 });
 
 export const quickReplyActions = {
-  expand({ id }) {
+  expand({ id, type }) {
     return async function (dispatch, getState) {
       let msg = await browser.messages.get(id);
       let accountDetail = await browser.accounts.get(msg.folder.accountId);
@@ -37,7 +37,43 @@ export const quickReplyActions = {
         accountId = accountDetail.id;
         identityId = accountDetail.identities[0].id;
       }
-      let to = msg.author;
+
+      let to;
+      switch (type) {
+        case "reply": {
+          to = msg.author;
+          break;
+        }
+        case "replyAll": {
+          let recipients = [msg.author];
+          let identityEmail = accountDetail?.identities[0].email;
+          for (let section of ["to", "ccList", "bccList"]) {
+            if (!(section in msg)) {
+              continue;
+            }
+            for (let contact of msg[section]) {
+              if (contact.includes(identityEmail)) {
+                continue;
+              }
+              recipients.push(contact);
+            }
+          }
+          to = recipients.join(", ");
+          break;
+        }
+        case "replyList": {
+          let msg = await browser.messages.getFull(id);
+          let listPost = msg.headers["list-post"][0];
+          let match = listPost?.match(/<mailto:(.*?)>/);
+          if (!match) {
+            console.error("Could not find list-post header or match it");
+            break;
+          }
+          to = match[1];
+          break;
+        }
+      }
+
       let subject = msg.subject;
       if (!subject.toLowerCase().includes("re:")) {
         subject = "Re: " + subject;

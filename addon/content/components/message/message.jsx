@@ -189,6 +189,12 @@ export class Message extends React.PureComponent {
   }
 
   onKeyDown(event = {}) {
+    if (
+      event.target.nodeName == "TEXTAREA" ||
+      event.target.nodeName == "INPUT"
+    ) {
+      return;
+    }
     const { key, shiftKey } = event;
     const shortcut = `${isAccel(event) ? "accel-" : ""}${key}`;
     function stopEvent() {
@@ -451,7 +457,11 @@ export class Message extends React.PureComponent {
         {this.props.isLastMessage &&
           this.props.message.expanded &&
           !this.props.hideQuickReply && (
-            <QuickReply id={this.props.message.id} />
+            <QuickReply
+              id={this.props.message.id}
+              multipleRecipients={this.props.message.multipleRecipients}
+              recipientsIncludeLists={this.props.message.recipientsIncludeLists}
+            />
           )}
       </li>
     );

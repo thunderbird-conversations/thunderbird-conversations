@@ -130,19 +130,38 @@ browser.messages = {
     // Adjusts the from field to an author field. `from` is the structured
     // contact data we use in the stores. `author` is the name and email that
     // the WebExtension API returns.
-    function adjustFrom(msg) {
+    function adjustContact(contact) {
+      return contact.name
+        ? `${contact.name} <${contact.email}>`
+        : contact.email;
+    }
+
+    function adjustSection(msg, orig, newSection) {
+      if (!(orig in msg)) {
+        return;
+      }
+      let newContacts = [];
+      for (let contact of msg[orig]) {
+        newContacts.push(adjustContact(contact));
+      }
+      delete msg[orig];
+      msg[newSection] = newContacts;
+    }
+
+    function adjustMsg(msg) {
       let newMsg = { ...msg };
-      newMsg.author = newMsg.from.name
-        ? `${newMsg.from.name} <${newMsg.from.email}>`
-        : newMsg.from.email;
+      newMsg.author = adjustContact(newMsg.from);
       delete newMsg.from;
+      adjustSection(newMsg, "to", "to");
+      adjustSection(newMsg, "cc", "ccList");
+      adjustSection(newMsg, "bcc", "bccList");
       return newMsg;
     }
 
     for (let thread of mockThreads) {
       for (let msg of thread) {
         if (msg.id == msgId) {
-          return adjustFrom(msg);
+          return adjustMsg(msg);
         }
       }
     }
