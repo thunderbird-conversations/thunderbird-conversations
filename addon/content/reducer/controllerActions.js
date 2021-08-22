@@ -146,9 +146,17 @@ export const controllerActions = {
       );
       const defaultDetailsShowing =
         (await browser.conversations.getCorePref("mail.show_headers")) == 2;
+      const autoMarkAsRead =
+        (await browser.conversations.getCorePref(
+          "mailnews.mark_message_read.auto"
+        )) &&
+        (await browser.conversations.getCorePref(
+          "mailnews.mark_message_read.delay"
+        ));
 
       await dispatch(
         summaryActions.setSystemOptions({
+          autoMarkAsRead,
           browserForegroundColor,
           browserBackgroundColor,
           browserVersion: browserInfo.version,

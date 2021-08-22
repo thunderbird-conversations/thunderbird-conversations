@@ -622,9 +622,6 @@ Conversation.prototype = {
         summary: {
           loading: false,
           loadingStartedTime: this._loadingStartedTime,
-          autoMarkAsRead:
-            Services.prefs.getBoolPref("mailnews.mark_message_read.auto") &&
-            !Services.prefs.getBoolPref("mailnews.mark_message_read.delay"),
           initialSet,
         },
         messages: {

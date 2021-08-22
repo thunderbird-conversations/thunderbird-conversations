@@ -8,6 +8,7 @@ import { conversationUtils } from "./conversationUtils.js";
 import { messageActions } from "./reducer-messages.js";
 
 export const initialSummary = {
+  autoMarkAsRead: true,
   browserForegroundColor: "#000000",
   browserBackgroundColor: "#FFFFFF",
   conversation: null,
@@ -317,6 +318,7 @@ export const summarySlice = RTK.createSlice({
     setSystemOptions(state, { payload }) {
       const {
         OS,
+        autoMarkAsRead,
         browserForegroundColor,
         browserBackgroundColor,
         defaultFontSize,
@@ -334,6 +336,7 @@ export const summarySlice = RTK.createSlice({
 
       return {
         ...state,
+        autoMarkAsRead,
         browserForegroundColor,
         browserBackgroundColor,
         defaultFontSize,
