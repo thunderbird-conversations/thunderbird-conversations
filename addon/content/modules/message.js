@@ -144,7 +144,6 @@ class Message {
       hasRemoteContent: this.hasRemoteContent,
       isPhishing: this.isPhishing,
       messageKey: this._msgHdr.messageKey,
-      neckoUrl: msgHdrToNeckoURL(this._msgHdr).spec,
       needsLateAttachments: this.needsLateAttachments,
       realFrom: this._realFrom.email || this._from.email,
       recipientsIncludeLists: this.isReplyListEnabled,

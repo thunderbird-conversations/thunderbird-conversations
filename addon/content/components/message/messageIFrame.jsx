@@ -188,7 +188,7 @@ export class MessageIFrame extends React.Component {
     // want to scroll the message to view, since the user may be viewing somewhere
     // else.
     this.dueToExpansion = undefined;
-    if (prevProps.neckoUrl != this.props.neckoUrl && this.props.expanded) {
+    if (prevProps.id != this.props.id && this.props.expanded) {
       // This is a hack which ensures that the iframe is a minimal height, so
       // that when the message loads, the scroll height is set correctly, rather
       // than to the potential height of the previously loaded message.
@@ -217,7 +217,7 @@ export class MessageIFrame extends React.Component {
       // If we're changing URL, then also force the iframe to be about:blank.
       // This ensures that if the message is subsequently expanded, the proper
       // notifications are sent.
-      if (prevProps.neckoUrl != this.props.neckoUrl) {
+      if (prevProps.id != this.props.id) {
         this.iframe.src = "about:blank";
         this.currentId = null;
       }
@@ -637,7 +637,6 @@ MessageIFrame.propTypes = {
   isInTab: PropTypes.bool.isRequired,
   isStandalone: PropTypes.bool.isRequired,
   initialPosition: PropTypes.number.isRequired,
-  neckoUrl: PropTypes.string.isRequired,
   smimeReload: PropTypes.bool.isRequired,
   tenPxFactor: PropTypes.number.isRequired,
   prefs: PropTypes.object.isRequired,

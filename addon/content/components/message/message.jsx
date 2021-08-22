@@ -427,7 +427,6 @@ export class Message extends React.PureComponent {
               isInTab={this.props.isInTab}
               initialPosition={this.props.message.initialPosition}
               isStandalone={this.props.isStandalone}
-              neckoUrl={this.props.message.neckoUrl}
               tenPxFactor={this.props.tenPxFactor}
               prefs={this.props.prefs}
               realFrom={this.props.message.realFrom}
