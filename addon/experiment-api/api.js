@@ -55,37 +55,6 @@ XPCOMUtils.defineLazyGetter(this, "Log", () => {
   return setupLogging("Conversations.api");
 });
 
-function StreamListener(resolve, reject) {
-  return {
-    _data: "",
-    _stream: null,
-
-    QueryInterface: ChromeUtils.generateQI([
-      Ci.nsIStreamListener,
-      Ci.nsIRequestObserver,
-    ]),
-
-    onStartRequest(aRequest) {},
-    onStopRequest(aRequest, aStatusCode) {
-      try {
-        resolve(this._data);
-      } catch (e) {
-        reject("Error inside stream listener:\n" + e + "\n");
-      }
-    },
-
-    onDataAvailable(aRequest, aInputStream, aOffset, aCount) {
-      if (this._stream == null) {
-        this._stream = Cc["@mozilla.org/binaryinputstream;1"].createInstance(
-          Ci.nsIBinaryInputStream
-        );
-        this._stream.setInputStream(aInputStream);
-      }
-      this._data += this._stream.readBytes(aCount);
-    },
-  };
-}
-
 function prefType(name) {
   switch (name) {
     case "no_friendly_date":
@@ -387,34 +356,6 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           }
           return msgHdr.folder.getUriForMsg(msgHdr);
         },
-        async getAttachmentBody(id, partName) {
-          const msgHdr = context.extension.messageManager.get(id);
-          return new Promise((resolve, reject) => {
-            MsgHdrToMimeMessage(
-              msgHdr,
-              null,
-              (mimeHdr, aMimeMsg) => {
-                const attachments = aMimeMsg.allAttachments.filter(
-                  (x) => x.partName == partName
-                );
-                const msgUri = Services.io.newURI(attachments[0].url);
-                const tmpChannel = NetUtil.newChannel({
-                  uri: msgUri,
-                  loadUsingSystemPrincipal: true,
-                });
-                tmpChannel.asyncOpen(
-                  new StreamListener(resolve, reject),
-                  msgUri
-                );
-              },
-              true,
-              {
-                partsOnDemand: false,
-                examineEncryptedParts: true,
-              }
-            );
-          });
-        },
         async formatFileSize(size) {
           const messenger = Cc["@mozilla.org/messenger;1"].createInstance(
             Ci.nsIMessenger
@@ -592,16 +533,6 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           // Force a commit of the underlying msgDatabase.
           msgHdr.folder.msgDatabase = null;
         },
-        async getFolderName(id) {
-          let msgHdr = context.extension.messageManager.get(id);
-          let folderStr = msgHdr.folder.prettyName;
-          let folder = msgHdr.folder;
-          while (folder.parent) {
-            folder = folder.parent;
-            folderStr = folder.name + "/" + folderStr;
-          }
-          return folderStr;
-        },
         async downloadAllAttachments(id) {
           let msgHdr = context.extension.messageManager.get(id);
           let attachments = await new Promise((resolve) => {
@@ -634,11 +565,6 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           const win = Services.wm.getMostRecentWindow("mail:3pane");
           let msgUri = msgHdrGetUri(msgHdr);
 
-          // Older versions of Thunderbird require the old way of opening.
-          if (Services.vc.compare(Services.appinfo.version, "89.0a1") < 0) {
-            getAttachmentInfo(win, msgUri, attachment).open();
-            return;
-          }
           if (attachment.contentType == "application/pdf") {
             let mimeService = Cc["@mozilla.org/mime;1"].getService(
               Ci.nsIMIMEService

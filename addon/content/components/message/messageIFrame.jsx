@@ -11,10 +11,6 @@ import { isWebextension } from "../../es-modules/thunderbird-compat.js";
 
 let index = 0;
 
-// From https://searchfox.org/mozilla-central/rev/ec806131cb7bcd1c26c254d25cd5ab8a61b2aeb6/parser/nsCharsetSource.h
-// const kCharsetFromChannel = 11;
-const kCharsetFromUserForced = 13;
-
 const domParser = new DOMParser();
 const TOGGLE_TEMPLATE = `<button
     class="link"
@@ -226,15 +222,6 @@ export class MessageIFrame extends React.Component {
     if (startLoad && isWebextension) {
       const docShell = this.iframe.contentWindow.docShell;
       docShell.appType = Ci.nsIDocShell.APP_TYPE_MAIL;
-      const cv = docShell.contentViewer;
-      // Not needed after Gecko 90.
-      if ("hintCharacterSet" in cv) {
-        cv.hintCharacterSet = "UTF-8";
-        docShell.charset = "UTF-8";
-        // This used to be kCharsetFromChannel = 11, however in 79/80 the code changed.
-        // This still needs to be forced, because bug 829543 isn't fixed yet.
-        cv.hintCharacterSetSource = kCharsetFromUserForced;
-      }
 
       this.loading = true;
       this.currentId = this.props.id;

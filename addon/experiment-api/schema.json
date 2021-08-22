@@ -111,24 +111,6 @@
         ]
       },
       {
-        "name": "getAttachmentBody",
-        "type": "function",
-        "description": "Temporary. Gets the attachment body for a particular message and part, getAttachmentFile added in TB 88.",
-        "async": true,
-        "parameters": [
-          {
-            "name": "id",
-            "type": "integer",
-            "description": "The message id"
-          },
-          {
-            "name": "partName",
-            "type": "string",
-            "description": "The part name"
-          }
-        ]
-      },
-      {
         "name": "formatFileSize",
         "type": "function",
         "description": "Temporary. Formats the file size (xref bug 1606575).",
@@ -172,7 +154,7 @@
       {
         "name": "createFilter",
         "type": "function",
-        "description": "Temporary, resets the message pane.",
+        "description": "Temporary, creates a new filter.",
         "async": true,
         "parameters": [
           {
@@ -393,19 +375,6 @@
             "name": "id",
             "type": "integer",
             "description": "The message id to edit."
-          }
-        ]
-      },
-      {
-        "name": "getFolderName",
-        "type": "function",
-        "description": "Temporary. Gets the full folder path/name for a message. Bug 1520427 needed for parent folders.",
-        "async": true,
-        "parameters": [
-          {
-            "name": "id",
-            "type": "integer",
-            "description": "The message id to get the folder path/name for."
           }
         ]
       },

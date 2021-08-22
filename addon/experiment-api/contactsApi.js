@@ -98,14 +98,8 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
           if (beginNewProperties.displayName !== null) {
             args.displayName = beginNewProperties.displayName;
           }
-          let dialog =
-            "chrome://messenger/content/addressbook/abNewCardDialog.xhtml";
-          if (Services.vc.compare(Services.appinfo.version, "77.0.0") < 0) {
-            dialog =
-              "chrome://messenger/content/addressbook/abNewCardDialog.xul";
-          }
           window.openDialog(
-            dialog,
+            "chrome://messenger/content/addressbook/abNewCardDialog.xhtml",
             "",
             "chrome,resizable=no,titlebar,modal,centerscreen",
             args
@@ -124,27 +118,12 @@ var convContacts = class extends ExtensionCommon.ExtensionAPI {
             abURI: cardAndBook.book.URI,
             card: cardAndBook.card,
           };
-          let dialog =
-            "chrome://messenger/content/addressbook/abEditCardDialog.xhtml";
-          if (Services.vc.compare(Services.appinfo.version, "77.0.0") < 0) {
-            dialog =
-              "chrome://messenger/content/addressbook/abEditCardDialog.xul";
-          }
           window.openDialog(
-            dialog,
+            "chrome://messenger/content/addressbook/abEditCardDialog.xhtml",
             "",
             "chrome,modal,resizable=no,centerscreen",
             args
           );
-        },
-        async composeNew(properties) {
-          const window = getWindowFromId(
-            windowManager,
-            context,
-            properties.windowId
-          );
-          const { to } = properties;
-          composeMessageTo(to, window.gFolderDisplay.displayedFolder);
         },
         async showMessagesInvolving(options) {
           const window = getWindowFromId(
@@ -437,32 +416,6 @@ function parseMimeLine(mimeLine, dontFix) {
     return [];
   }
   return [{ email: "", name: "-", fullName: "-" }];
-}
-
-/**
- * Open a composition window for the given email address.
- *
- * @param {string} aEmail
- * @param {nsIMsgFolder} aDisplayedFolder
- *   pass gFolderDisplay.displayedFolder
- */
-function composeMessageTo(aEmail, aDisplayedFolder) {
-  let fields = Cc[
-    "@mozilla.org/messengercompose/composefields;1"
-  ].createInstance(Ci.nsIMsgCompFields);
-  let params = Cc[
-    "@mozilla.org/messengercompose/composeparams;1"
-  ].createInstance(Ci.nsIMsgComposeParams);
-  fields.to = aEmail;
-  params.type = Ci.nsIMsgCompType.New;
-  params.format = Ci.nsIMsgCompFormat.Default;
-  if (aDisplayedFolder) {
-    params.identity = MailServices.accounts.getFirstIdentityForServer(
-      aDisplayedFolder.server
-    );
-  }
-  params.composeFields = fields;
-  MailServices.compose.OpenComposeWindowWithParams(null, params);
 }
 
 /**

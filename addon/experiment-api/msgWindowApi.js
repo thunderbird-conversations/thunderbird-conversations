@@ -66,39 +66,9 @@ class WindowObserver {
 var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
   getAPI(context) {
     const { extension } = context;
-    const { messageManager, tabManager, windowManager } = extension;
+    const { messageManager, windowManager } = extension;
     return {
       convMsgWindow: {
-        async getDisplayedMessages(tabId) {
-          let tab = tabManager.get(tabId);
-          let displayedMessages;
-
-          if (tab.__proto__.constructor.name == "TabmailTab") {
-            if (
-              tab.active &&
-              ["folder", "glodaList", "message"].includes(
-                tab.nativeTab.mode.name
-              )
-            ) {
-              displayedMessages = tab.nativeTab.folderDisplay.selectedMessages;
-            }
-          } else if (tab.nativeTab.gMessageDisplay) {
-            displayedMessages = tab.nativeTab.folderDisplay.selectedMessages;
-          }
-
-          if (!displayedMessages) {
-            return [];
-          }
-
-          let result = [];
-          for (let msg of displayedMessages) {
-            let hdr = messageManager.convert(msg);
-            if (hdr) {
-              result.push(hdr);
-            }
-          }
-          return result;
-        },
         async openNewWindow(url, params) {
           const win = getWindowFromId();
           const args = { params };

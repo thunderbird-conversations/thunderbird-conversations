@@ -39,12 +39,7 @@ export class UIHandler {
     if (win.type == "normal") {
       let [tab] = win.tabs.filter((t) => t.active);
       if (tab) {
-        let msgs;
-        if ("getDisplayedMessages" in browser.messageDisplay) {
-          msgs = await browser.messageDisplay.getDisplayedMessages(tab.id);
-        } else {
-          msgs = await browser.convMsgWindow.getDisplayedMessages(tab.id);
-        }
+        let msgs = await browser.messageDisplay.getDisplayedMessages(tab.id);
         if (msgs && msgs.length) {
           let accountDetail = await browser.accounts.get(
             msgs[0].folder.accountId

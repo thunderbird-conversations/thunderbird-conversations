@@ -223,9 +223,6 @@ if (!browser.conversations) {
       }
       throw new Error("Unexpected pref");
     },
-    async getFolderName(name) {
-      return "Fake/Folder";
-    },
     async makeFriendlyDateAgo() {
       return "yesterday";
     },
@@ -296,6 +293,20 @@ if (!browser.accounts) {
       };
     },
     async setDefaultIdentity() {},
+  };
+}
+
+if (!browser.folders) {
+  browser.folders = {
+    async getParentFolders(folder) {
+      return [
+        {
+          accountId: folder.accountId,
+          name: "Fake",
+          path: "/Fake",
+        },
+      ];
+    },
   };
 }
 

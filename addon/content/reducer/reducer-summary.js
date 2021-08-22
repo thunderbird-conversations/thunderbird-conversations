@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* global Conversations, getMail3Pane, topMail3Pane, printConversation */
+/* global Conversations, topMail3Pane, printConversation */
 import * as RTK from "@reduxjs/toolkit";
 import { conversationUtils } from "./conversationUtils.js";
 import { messageActions } from "./reducer-messages.js";
@@ -178,11 +178,7 @@ export const summaryActions = {
   },
   openLink({ url }) {
     return () => {
-      if ("openDefaultBrowser" in browser.windows) {
-        browser.windows.openDefaultBrowser(url);
-      } else {
-        getMail3Pane().messenger.launchExternalURL(url);
-      }
+      browser.windows.openDefaultBrowser(url);
     };
   },
   printConversation() {

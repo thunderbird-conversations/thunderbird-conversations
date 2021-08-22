@@ -71,7 +71,7 @@ describe("messageEnricher", () => {
       );
 
       expect(fakeMsg).toMatchObject({
-        folderName: "Fake/Folder",
+        folderName: "Fake/Inbox",
         shortFolderName: "Inbox",
       });
     });
@@ -108,7 +108,7 @@ describe("messageEnricher", () => {
             isOutbox: false,
             read: true,
             shortFolderName: "Drafts",
-            folderName: "Fake/Folder",
+            folderName: "Fake/Drafts",
             subject: "A draft",
             starred: true,
             tags: [],
@@ -124,7 +124,7 @@ describe("messageEnricher", () => {
             isDraft: false,
             isJunk: false,
             isOutbox: true,
-            folderName: "Fake/Folder",
+            folderName: "Fake/Outbox",
             shortFolderName: "Outbox",
           },
         },

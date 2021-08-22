@@ -3,20 +3,6 @@
     "namespace": "convMsgWindow",
     "functions": [
       {
-        "name": "getDisplayedMessages",
-        "type": "function",
-        "description": "Returns an array of the currently selected message headers.",
-        "async": true,
-        "parameters": [
-          {
-            "name": "tabId",
-            "type": "integer",
-            "minimum": 1,
-            "description": "The tab id."
-          }
-        ]
-      },
-      {
         "name": "openNewWindow",
         "type": "function",
         "description": "Opens a new window with the specified url.",

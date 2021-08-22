@@ -196,15 +196,9 @@ export const messageActions = {
       if (state.summary.isInTab || state.summary.prefs.operateOnConversations) {
         msgs = state.messages.msgData.map((msg) => msg.id);
       } else {
-        if ("getDisplayedMessages" in browser.messageDisplay) {
-          msgs = await browser.messageDisplay.getDisplayedMessages(
-            state.summary.tabId
-          );
-        } else {
-          msgs = await browser.convMsgWindow.getDisplayedMessages(
-            state.summary.tabId
-          );
-        }
+        msgs = await browser.messageDisplay.getDisplayedMessages(
+          state.summary.tabId
+        );
         msgs = msgs.map((m) => m.id);
       }
       browser.messages.archive(msgs).catch(console.error);
@@ -217,15 +211,9 @@ export const messageActions = {
       if (state.summary.isInTab || state.summary.prefs.operateOnConversations) {
         msgs = state.messages.msgData.map((msg) => msg.id);
       } else {
-        if ("getDisplayedMessages" in browser.messageDisplay) {
-          msgs = await browser.messageDisplay.getDisplayedMessages(
-            state.summary.tabId
-          );
-        } else {
-          msgs = await browser.convMsgWindow.getDisplayedMessages(
-            state.summary.tabId
-          );
-        }
+        msgs = await browser.messageDisplay.getDisplayedMessages(
+          state.summary.tabId
+        );
         msgs = msgs.map((m) => m.id);
       }
       try {

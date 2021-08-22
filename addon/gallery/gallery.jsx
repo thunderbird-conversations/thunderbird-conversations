@@ -96,20 +96,11 @@ class MyComponent extends React.Component {
   async output(attachments, id, scrollToPartName) {
     let i = 1;
     for (const attachment of attachments) {
-      if ("getAttachmentFile" in browser.messages) {
-        let file = await browser.messages.getAttachmentFile(
-          id,
-          attachment.partName
-        );
-        attachment.url = URL.createObjectURL(file);
-      } else {
-        attachment.url = await browser.conversations.getAttachmentBody(
-          id,
-          attachment.partName
-        );
-        attachment.url =
-          "data:" + attachment.contentType + ";base64," + btoa(attachment.url);
-      }
+      let file = await browser.messages.getAttachmentFile(
+        id,
+        attachment.partName
+      );
+      attachment.url = URL.createObjectURL(file);
       attachment.size = await browser.conversations.formatFileSize(
         attachment.size
       );

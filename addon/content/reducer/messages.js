@@ -354,9 +354,14 @@ export let messageEnricher = new (class {
       selectedMessages.some((id) => id == message.id) ||
       (await browser.conversations.isInView(tabId, message.id));
     if (!isInView) {
-      message.folderName = await browser.conversations.getFolderName(
-        message.id
+      let parentFolders = await browser.folders.getParentFolders(
+        messageHeader.folder
       );
+      let folderName = messageHeader.folder.name;
+      for (let folder of parentFolders) {
+        folderName = folder.name + "/" + folderName;
+      }
+      message.folderName = folderName;
       message.shortFolderName = messageHeader.folder.name;
     }
   }
