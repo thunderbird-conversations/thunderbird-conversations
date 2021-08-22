@@ -10,7 +10,7 @@ import { jest } from "@jest/globals";
 import { conversationApp } from "../content/reducer/reducer.js";
 
 // Import the components we want to test
-import { QuickReply } from "../content/components/quickReply/quickReply.jsx";
+import { QuickReply } from "../content/components/quickreply/quickReply.jsx";
 import { ComposeWidget } from "../content/components/compose/composeWidget.jsx";
 import { quickReplyActions } from "../content/reducer/reducer-quickReply.js";
 
