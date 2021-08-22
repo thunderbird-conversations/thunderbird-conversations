@@ -3,7 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 export const attachmentActions = {
-  previewAttachment({ id, name, partName, url, isPdf, maybeViewable }) {
+  previewAttachment({ id, name, partName, url, maybeViewable }) {
     return async (dispatch, getState) => {
       if (maybeViewable) {
         let msgUri = await browser.conversations.getMessageUriForId(id);
@@ -13,16 +13,6 @@ export const attachmentActions = {
         });
         await browser.tabs.create({
           url: `/gallery/index.html?${searchParams.toString()}`,
-          windowId: getState().summary.windowId,
-        });
-      } else if (isPdf) {
-        browser.conversations.createTab({
-          url:
-            "chrome://conversations/content/pdfviewer/wrapper.xhtml?uri=" +
-            encodeURIComponent(url) +
-            "&name=" +
-            encodeURIComponent(name),
-          type: "chromeTab",
           windowId: getState().summary.windowId,
         });
       }

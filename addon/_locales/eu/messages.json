@@ -777,20 +777,5 @@
   "enigmail.unknownGood": {
     "message": "Sinadura ezezaguna",
     "description": "Tooltip displayed when a signature is good but unverified."
-  },
-
-  "pdfViewer.loading": {
-    "message": "Kargatzen...",
-    "description": "Description displayed when a pdf is loading."
-  },
-
-  "pdfViewer.next": {
-    "message": "Hurrengoa",
-    "description": "Description for the next page button."
-  },
-
-  "pdfViewer.previous": {
-    "message": "Aurrekoa",
-    "description": "Description for the previous page button."
   }
 }

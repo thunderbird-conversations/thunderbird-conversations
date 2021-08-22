@@ -12,7 +12,6 @@ export const initialSummary = {
   browserBackgroundColor: "#FFFFFF",
   conversation: null,
   defaultFontSize: 15,
-  hasBuiltInPdf: false,
   hasIdentityParamsForCompose: false,
   iframesLoading: 0,
   isInTab: false,
@@ -339,8 +338,6 @@ export const summarySlice = RTK.createSlice({
         browserBackgroundColor,
         defaultFontSize,
         defaultDetailsShowing,
-        // Thunderbird 81 has built-in PDF viewer.
-        hasBuiltInPdf: mainVersion >= 81,
         hasIdentityParamsForCompose:
           mainVersion > 78 || (mainVersion == 78 && minorVersion >= 6),
         OS,

@@ -27,7 +27,6 @@ module.exports = {
       },
       excludedFiles: [
         "addon/content/modules/**",
-        "addon/content/pdfviewer/*.js",
         "addon/content/stubGlobals.js",
         "addon/experiment-api/**",
       ],

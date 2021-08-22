@@ -777,20 +777,5 @@
   "enigmail.unknownGood": {
     "message": "neznámý platný podpis",
     "description": "Tooltip displayed when a signature is good but unverified."
-  },
-
-  "pdfViewer.loading": {
-    "message": "Načítá se...",
-    "description": "Description displayed when a pdf is loading."
-  },
-
-  "pdfViewer.next": {
-    "message": "Další",
-    "description": "Description for the next page button."
-  },
-
-  "pdfViewer.previous": {
-    "message": "Předchozí",
-    "description": "Description for the previous page button."
   }
 }

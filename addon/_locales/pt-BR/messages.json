@@ -777,20 +777,5 @@
   "enigmail.unknownGood": {
     "message": "assinatura boa desconhecida",
     "description": "Tooltip displayed when a signature is good but unverified."
-  },
-
-  "pdfViewer.loading": {
-    "message": "Carregando...",
-    "description": "Description displayed when a pdf is loading."
-  },
-
-  "pdfViewer.next": {
-    "message": "Próxima",
-    "description": "Description for the next page button."
-  },
-
-  "pdfViewer.previous": {
-    "message": "Anterior",
-    "description": "Description for the previous page button."
   }
 }

@@ -777,20 +777,5 @@
   "enigmail.unknownGood": {
     "message": "未知的有效簽名",
     "description": "Tooltip displayed when a signature is good but unverified."
-  },
-
-  "pdfViewer.loading": {
-    "message": "Loading...",
-    "description": "Description displayed when a pdf is loading."
-  },
-
-  "pdfViewer.next": {
-    "message": "Next",
-    "description": "Description for the next page button."
-  },
-
-  "pdfViewer.previous": {
-    "message": "Previous",
-    "description": "Description for the previous page button."
   }
 }

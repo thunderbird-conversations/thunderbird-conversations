@@ -15,9 +15,6 @@ fi
 rm -rf $DIST
 mkdir -p $VENDOR_DIR
 
-cp node_modules/pdfjs-dist/build/pdf.js $VENDOR_DIR
-cp node_modules/pdfjs-dist/build/pdf.worker.js $VENDOR_DIR
-
 cp LICENSE README.md $DIST/
 
 echo "    Watching webpack files"
@@ -34,7 +31,7 @@ done
 for a in $(git ls-files \
 '::_locales' \
 '::assistant' \
-'::content/icons' '::content/modules' '::content/pdfviewer' 'content/stubGlobals.js' \
+'::content/icons' '::content/modules' 'content/stubGlobals.js' \
 'content/stubWrapper.*' '::dev-frame/icons' \
 '::experiment-api' '::*.css' ); do
   mkdir -p $(dirname "../${DIST}/${a}")

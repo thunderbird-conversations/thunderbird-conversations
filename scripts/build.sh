@@ -10,12 +10,8 @@ mkdir -p $VENDOR_DIR
 if [ "$1" == "--prod" ]
 then
   MODE="production"
-  cp node_modules/pdfjs-dist/build/pdf.min.js $VENDOR_DIR/pdf.js
-  cp node_modules/pdfjs-dist/build/pdf.worker.min.js $VENDOR_DIR/pdf.worker.js
 else
   MODE="development"
-  cp node_modules/pdfjs-dist/build/pdf.js $VENDOR_DIR/pdf.js
-  cp node_modules/pdfjs-dist/build/pdf.worker.js $VENDOR_DIR/pdf.worker.js
 fi
 
 cp LICENSE README.md $DIST/
@@ -36,7 +32,7 @@ done
 for a in $(git ls-files \
 '::_locales' \
 '::assistant' \
-'::content/icons' '::content/modules' '::content/pdfviewer' 'content/stubGlobals.js' \
+'::content/icons' '::content/modules' 'content/stubGlobals.js' \
 'content/stubWrapper.*' \
 '::experiment-api' '::*.css' ); do
   mkdir -p $(dirname "../${DIST}/${a}")

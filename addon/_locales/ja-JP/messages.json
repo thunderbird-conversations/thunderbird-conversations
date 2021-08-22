@@ -777,20 +777,5 @@
   "enigmail.unknownGood": {
     "message": "未知の正しい署名",
     "description": "Tooltip displayed when a signature is good but unverified."
-  },
-
-  "pdfViewer.loading": {
-    "message": "読み込み中...",
-    "description": "Description displayed when a pdf is loading."
-  },
-
-  "pdfViewer.next": {
-    "message": "次へ",
-    "description": "Description for the next page button."
-  },
-
-  "pdfViewer.previous": {
-    "message": "前へ",
-    "description": "Description for the previous page button."
   }
 }

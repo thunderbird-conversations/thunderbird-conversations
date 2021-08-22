@@ -15,8 +15,6 @@ directory, and then `scripts/build.sh` is used to copy the vendor files out of
 The original repositories and their relevant npmjs hosting locations are given
 below:
 
-* https://github.com/mozilla/pdfjs-dist
-  * https://www.npmjs.com/package/pdfjs-dist
 * https://github.com/facebook/prop-types
   * https://www.npmjs.com/package/prop-types
 * https://github.com/facebook/react

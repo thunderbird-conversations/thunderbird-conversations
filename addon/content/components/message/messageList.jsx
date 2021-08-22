@@ -42,7 +42,6 @@ function _MessageList(props) {
             defaultFontSize={props.summary.defaultFontSize}
             dispatch={props.dispatch}
             displayingMultipleMsgs={!!props.messages.length}
-            hasBuiltInPdf={props.summary.hasBuiltInPdf}
             hideQuickReply={props.summary.prefs.hideQuickReply}
             iframesLoading={props.summary.iframesLoading}
             index={index}

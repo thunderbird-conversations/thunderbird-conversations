@@ -777,20 +777,5 @@
   "enigmail.unknownGood": {
     "message": "nežinomas geras parašas",
     "description": "Tooltip displayed when a signature is good but unverified."
-  },
-
-  "pdfViewer.loading": {
-    "message": "Įkraunama...",
-    "description": "Description displayed when a pdf is loading."
-  },
-
-  "pdfViewer.next": {
-    "message": "Kitas",
-    "description": "Description for the next page button."
-  },
-
-  "pdfViewer.previous": {
-    "message": "Ankstesnis",
-    "description": "Description for the previous page button."
   }
 }

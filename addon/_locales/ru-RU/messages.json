@@ -777,20 +777,5 @@
   "enigmail.unknownGood": {
     "message": "Неподтверждённая подпись",
     "description": "Tooltip displayed when a signature is good but unverified."
-  },
-
-  "pdfViewer.loading": {
-    "message": "Загрузка...",
-    "description": "Description displayed when a pdf is loading."
-  },
-
-  "pdfViewer.next": {
-    "message": "Вперёд",
-    "description": "Description for the next page button."
-  },
-
-  "pdfViewer.previous": {
-    "message": "Назад",
-    "description": "Description for the previous page button."
   }
 }

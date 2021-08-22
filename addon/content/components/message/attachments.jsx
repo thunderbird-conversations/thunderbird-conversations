@@ -99,7 +99,7 @@ class Attachment extends React.PureComponent {
   }
 
   isViewable(contentType) {
-    return this.isImage(contentType) || contentType.startsWith("text/");
+    return this.isImage(contentType);
   }
 
   isPdf(contentType) {
@@ -109,7 +109,7 @@ class Attachment extends React.PureComponent {
   preview() {
     // Keep similar capabilities as previous versions where the user
     // can click the attachment to open the pdf.
-    if (this.isPdf(this.props.contentType) && this.props.hasBuiltInPdf) {
+    if (this.isPdf(this.props.contentType)) {
       this.openAttachment();
       return;
     }
@@ -117,7 +117,6 @@ class Attachment extends React.PureComponent {
       attachmentActions.previewAttachment({
         name: this.props.name,
         url: this.props.url,
-        isPdf: this.isPdf(this.props.contentType),
         maybeViewable: this.isViewable(this.props.contentType),
         id: this.props.id,
         partName: this.props.partName,
@@ -270,7 +269,7 @@ class Attachment extends React.PureComponent {
           <span className="filename">{this.props.name}</span>
           <span className="filesize">{this.props.formattedSize}</span>
           <div className="attachActions">
-            {isPdf && !this.props.hasBuiltInPdf && (
+            {enablePreview && !isPdf && (
               <a
                 className="icon-link preview-attachment"
                 title={browser.i18n.getMessage("attachments.preview.tooltip")}
@@ -320,7 +319,6 @@ Attachment.propTypes = {
   dispatch: PropTypes.func.isRequired,
   contentType: PropTypes.string.isRequired,
   formattedSize: PropTypes.string.isRequired,
-  hasBuiltInPdf: PropTypes.bool.isRequired,
   messageKey: PropTypes.number.isRequired,
   name: PropTypes.string.isRequired,
   size: PropTypes.number.isRequired,
@@ -388,7 +386,6 @@ export class Attachments extends React.PureComponent {
             key={attachment.anchor}
             contentType={attachment.contentType}
             formattedSize={attachment.formattedSize}
-            hasBuiltInPdf={this.props.hasBuiltInPdf}
             messageKey={this.props.messageKey}
             id={this.props.id}
             name={attachment.name}
@@ -406,7 +403,6 @@ Attachments.propTypes = {
   dispatch: PropTypes.func.isRequired,
   attachments: PropTypes.array.isRequired,
   attachmentsPlural: PropTypes.string.isRequired,
-  hasBuiltInPdf: PropTypes.bool.isRequired,
   messageKey: PropTypes.number.isRequired,
   id: PropTypes.number.isRequired,
 };

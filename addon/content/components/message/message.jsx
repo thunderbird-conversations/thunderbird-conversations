@@ -439,7 +439,6 @@ export class Message extends React.PureComponent {
                 dispatch={this.props.dispatch}
                 attachments={this.props.message.attachments}
                 attachmentsPlural={this.props.message.attachmentsPlural}
-                hasBuiltInPdf={this.props.hasBuiltInPdf}
                 messageKey={this.props.message.messageKey}
                 id={this.props.message.id}
               />
@@ -480,7 +479,6 @@ Message.propTypes = {
   isInTab: PropTypes.bool.isRequired,
   isLastMessage: PropTypes.bool.isRequired,
   isStandalone: PropTypes.bool.isRequired,
-  hasBuiltInPdf: PropTypes.bool.isRequired,
   hideQuickReply: PropTypes.bool.isRequired,
   message: PropTypes.object.isRequired,
   tenPxFactor: PropTypes.number.isRequired,
