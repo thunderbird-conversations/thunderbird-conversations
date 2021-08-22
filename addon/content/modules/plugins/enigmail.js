@@ -559,9 +559,6 @@ function addSignedLabel(status, msg) {
       EnigmailConstants.GOOD_SIGNATURE |
       EnigmailConstants.EXPIRED_KEY_SIGNATURE |
       EnigmailConstants.EXPIRED_SIGNATURE |
-      // Thunderbird 78
-      EnigmailConstants.UNVERIFIED_SIGNATURE |
-      // Thunderbird 91
       EnigmailConstants.UNCERTAIN_SIGNATURE |
       EnigmailConstants.REVOKED_KEY |
       EnigmailConstants.EXPIRED_KEY_SIGNATURE |

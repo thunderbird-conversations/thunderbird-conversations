@@ -425,12 +425,6 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           const params = {
             url: createTabProperties.url,
           };
-          // contentPage/chromePage support the Thunderbird 78 series.
-          if (createTabProperties.type == "contentTab") {
-            params.contentPage = createTabProperties.url;
-          } else {
-            params.chromePage = createTabProperties.url;
-          }
           getWindowFromId(createTabProperties.windowId)
             .document.getElementById("tabmail")
             .openTab(createTabProperties.type, params);
@@ -537,16 +531,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           const uri = Services.io.newURI(
             "chrome://messenger/content/email=" + email
           );
-          // TB 78: If we have createContentPrincipal we're in the TB 78+ code.
-          if ("createContentPrincipal" in Services.scriptSecurityManager) {
-            Services.perms.addFromPrincipal(
-              Services.scriptSecurityManager.createContentPrincipal(uri, {}),
-              "image",
-              Services.perms.ALLOW_ACTION
-            );
-          } else {
-            Services.perms.add(uri, "image", Services.perms.ALLOW_ACTION);
-          }
+          Services.perms.add(uri, "image", Services.perms.ALLOW_ACTION);
         },
         async beginReply(id, type) {
           let msgHdr = context.extension.messageManager.get(id);

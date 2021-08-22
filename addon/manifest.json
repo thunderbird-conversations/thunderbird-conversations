@@ -3,7 +3,7 @@
   "applications": {
     "gecko": {
       "id": "gconversation@xulforum.org",
-      "strict_min_version": "78.0a1"
+      "strict_min_version": "91.0a1"
     }
   },
   "author": "Jonathan Protzenko",

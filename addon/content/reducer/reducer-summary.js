@@ -13,7 +13,6 @@ export const initialSummary = {
   browserBackgroundColor: "#FFFFFF",
   conversation: null,
   defaultFontSize: 15,
-  hasIdentityParamsForCompose: false,
   iframesLoading: 0,
   isInTab: false,
   isStandalone: false,
@@ -128,28 +127,21 @@ export const summaryActions = {
   },
   sendEmail({ name, email }) {
     return async (dispatch, getState) => {
-      let state = getState();
       let dest = await browser.convContacts.makeMimeAddress({
         name,
         email,
       });
-      if (state.summary.hasIdentityParamsForCompose) {
-        let tab = await browser.mailTabs.query({
-          active: true,
-          currentWindow: true,
-        });
-        let account = await browser.accounts.get(
-          tab[0].displayedFolder.accountId
-        );
-        await browser.compose.beginNew({
-          identityId: account.identities[0]?.id,
-          to: dest,
-        });
-      } else {
-        await browser.convContacts
-          .composeNew({ to: dest })
-          .catch(console.error);
-      }
+      let tab = await browser.mailTabs.query({
+        active: true,
+        currentWindow: true,
+      });
+      let account = await browser.accounts.get(
+        tab[0].displayedFolder.accountId
+      );
+      await browser.compose.beginNew({
+        identityId: account.identities[0]?.id,
+        to: dest,
+      });
     };
   },
   createFilter({ email }) {
@@ -323,7 +315,6 @@ export const summarySlice = RTK.createSlice({
         browserBackgroundColor,
         defaultFontSize,
         defaultDetailsShowing,
-        browserVersion,
       } = payload;
       let tenPxFactor = 0.625;
       if (OS == "mac") {
@@ -332,8 +323,6 @@ export const summarySlice = RTK.createSlice({
         tenPxFactor = 0.7;
       }
 
-      let [mainVersion, minorVersion] = browserVersion?.split(".");
-
       return {
         ...state,
         autoMarkAsRead,
@@ -341,8 +330,6 @@ export const summarySlice = RTK.createSlice({
         browserBackgroundColor,
         defaultFontSize,
         defaultDetailsShowing,
-        hasIdentityParamsForCompose:
-          mainVersion > 78 || (mainVersion == 78 && minorVersion >= 6),
         OS,
         tenPxFactor,
       };

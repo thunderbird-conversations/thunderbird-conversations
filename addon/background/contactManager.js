@@ -173,16 +173,7 @@ export class ContactManager {
         searchString: email,
       });
     } catch (ex) {
-      if (ex.message.includes("Incorrect argument types")) {
-        try {
-          // Try again, this is for Thunderbird 78.
-          matchingCards = await browser.contacts.quickSearch(email);
-        } catch (ex) {
-          console.error(ex);
-        }
-      } else {
-        console.error(ex);
-      }
+      console.error(ex);
     }
 
     // The search is only a quick search, therefore it might match email

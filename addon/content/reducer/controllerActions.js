@@ -144,7 +144,6 @@ export const controllerActions = {
       await dispatch(summaryActions.setupUserPreferences());
 
       const platformInfo = await browser.runtime.getPlatformInfo();
-      const browserInfo = await browser.runtime.getBrowserInfo();
       const defaultFontSize = await browser.conversations.getCorePref(
         "font.size.variable.x-western"
       );
@@ -169,7 +168,6 @@ export const controllerActions = {
           autoMarkAsRead,
           browserForegroundColor,
           browserBackgroundColor,
-          browserVersion: browserInfo.version,
           defaultDetailsShowing,
           defaultFontSize,
           OS: platformInfo.os,

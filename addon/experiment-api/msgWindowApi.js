@@ -101,15 +101,8 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
         },
         async openNewWindow(url, params) {
           const win = getWindowFromId();
-          // Counting some extra pixels for window decorations.
-          let height = Math.min(win.screen.availHeight - 30, 1024);
           const args = { params };
           let features = "chrome,resizable,titlebar,minimizable";
-          if (!params) {
-            // In Thunderbird 78, we do not have the capability to persist the
-            // size, so we force it.
-            features += ",width=640,height=" + height;
-          }
           win.openDialog(url, "_blank", features, args);
         },
         onThreadPaneDoubleClick: new ExtensionCommon.EventManager({

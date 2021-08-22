@@ -269,33 +269,17 @@ export class MessageIFrame extends React.Component {
 
     const docShell = this.iframe.contentWindow.docShell;
     docShell.appType = Ci.nsIDocShell.APP_TYPE_MAIL;
-    const cv = docShell.contentViewer;
-    // Not needed after Gecko 90.
-    if ("hintCharacterSet" in cv) {
-      // Thunderbird 78
-      this._isTB91 = false;
-      cv.hintCharacterSet = "UTF-8";
-      docShell.charset = "UTF-8";
-      // This used to be kCharsetFromChannel = 11, however in 79/80 the code changed.
-      // This still needs to be forced, because bug 829543 isn't fixed yet.
-      cv.hintCharacterSetSource = kCharsetFromUserForced;
-      // Thunderbird 78.
-      this.iframe.addEventListener("click", this.onClickIframe);
-    } else {
-      // Thunderbird 91.
 
-      // We don't apply the click listener when in a tab as Thunderbird's
-      // click handling already manages that.
-      if (
-        (!this.props.isInTab || this.props.isStandalone) &&
-        window.browsingContext
-      ) {
-        window.browsingContext.embedderElement.addEventListener(
-          "click",
-          this.onClickIframe
-        );
-      }
-      this._isTB91 = true;
+    // We don't apply the click listener when in a tab as Thunderbird's
+    // click handling already manages that.
+    if (
+      (!this.props.isInTab || this.props.isStandalone) &&
+      window.browsingContext
+    ) {
+      window.browsingContext.embedderElement.addEventListener(
+        "click",
+        this.onClickIframe
+      );
     }
 
     this.registerListeners();
@@ -330,23 +314,15 @@ export class MessageIFrame extends React.Component {
       capture: true,
     });
     delete this._loadListener;
-    if (this._isTB91) {
-      // Thunderbird 91
-      window.browsingContext.embedderElement.removeEventListener(
-        "click",
-        this.onClickIframe
-      );
-      window.browsingContext.embedderElement.removeEventListener(
-        "DOMContentLoaded",
-        this._domloadListener,
-        { capture: true }
-      );
-    } else {
-      // Thunderbird 78
-      window.removeEventListener("DOMContentLoaded", this._domloadListener, {
-        capture: true,
-      });
-    }
+    window.browsingContext.embedderElement.removeEventListener(
+      "click",
+      this.onClickIframe
+    );
+    window.browsingContext.embedderElement.removeEventListener(
+      "DOMContentLoaded",
+      this._domloadListener,
+      { capture: true }
+    );
     delete this._domloadListener;
   }
 
@@ -357,20 +333,11 @@ export class MessageIFrame extends React.Component {
         capture: true,
       });
       this._domloadListener = this._onDOMLoaded.bind(this);
-      if (this._isTB91) {
-        // Thunderbird 91 - this is due to the type=content change on multimessage,
-        // we must break out to the parent browser and listen there.
-        window.browsingContext.embedderElement.addEventListener(
-          "DOMContentLoaded",
-          this._domloadListener,
-          { capture: true }
-        );
-      } else {
-        // Thunderbird 78.
-        window.addEventListener("DOMContentLoaded", this._domloadListener, {
-          capture: true,
-        });
-      }
+      window.browsingContext.embedderElement.addEventListener(
+        "DOMContentLoaded",
+        this._domloadListener,
+        { capture: true }
+      );
     }
   }
 
@@ -603,11 +570,8 @@ export class MessageIFrame extends React.Component {
   }
 
   onClickIframe(event) {
-    // Only take clicks for this particular iframe and Thunderbird 91
-    if (
-      this._isTB91 &&
-      event.target.ownerDocument.URL != this.iframe.contentDocument.URL
-    ) {
+    // Only take clicks for this particular iframe.
+    if (event.target.ownerDocument.URL != this.iframe.contentDocument.URL) {
       return;
     }
     this.props.dispatch(

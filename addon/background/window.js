@@ -63,21 +63,11 @@ export class Window {
     ) {
       case 0: // fall-through
       case 1: {
-        if ("getCurrent" in browser.mailTabs) {
-          // Thunderbird 91
-          browser.convMsgWindow.openNewWindow(
-            "chrome://conversations/content/stubWrapper.xhtml",
-            this.getQueryString(urls) + "&standalone=1"
-          );
-        } else {
-          // Thunderbird 78
-          browser.convMsgWindow.openNewWindow(
-            `chrome://conversations/content/stub.html${this.getQueryString(
-              urls
-            )}`
-          );
-        }
-
+        // Thunderbird 91
+        browser.convMsgWindow.openNewWindow(
+          "chrome://conversations/content/stubWrapper.xhtml",
+          this.getQueryString(urls) + "&standalone=1"
+        );
         break;
       }
       case 2: {
