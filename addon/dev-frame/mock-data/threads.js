@@ -77,15 +77,16 @@ function populateEmailFields(message, { to, cc, bcc }) {
 
 function populateAttachmentFields(message, numAttachments) {
   message.attachments = [];
+  const contentTypes = ["text/plain", "application/pdf", "image/png"];
   for (let i = 0; i < numAttachments; i++) {
     message.attachments.push({
       size: (i + 1) * 1024,
-      contentType: "text/plain",
+      contentType: contentTypes[i % numAttachments],
       formattedSize: `${(i + 1) * 1024}KB`,
       isExternal: false,
       name: `attachment ${i}`,
       partName: `part1.${i + 1}`,
-      url: `url`,
+      url: `../icon.png`,
       anchor: "msgatt" + i,
     });
   }
@@ -111,7 +112,7 @@ const THREAD_INFO = [
     to: [3, 3, 3, 3],
     cc: [2, 1, 5, 6],
     bcc: [2, 1, 2, 2],
-    attachments: [0, 0, 0, 2],
+    attachments: [0, 0, 0, 3],
   },
 ];
 

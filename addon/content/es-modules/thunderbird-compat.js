@@ -241,6 +241,8 @@ if (!browser.conversations) {
     async quoteMsgHdr() {
       return "MsgBody";
     },
+    async openAttachment() {},
+    async previewAttachment() {},
   };
 }
 

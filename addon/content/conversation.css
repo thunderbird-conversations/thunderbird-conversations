@@ -642,6 +642,7 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
   align-content: center;
   justify-content: center;
   line-height: 0; /* Needed, otherwise there's an extra padding at the bottom... */
+  cursor: pointer;
 }
 
 .attachmentThumb img {
@@ -672,10 +673,6 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
 
 .view-all {
   font-weight: bold;
-}
-
-.view-attachment {
-  cursor: pointer;
 }
 
 .attachmentInfo {

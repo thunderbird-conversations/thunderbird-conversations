@@ -3,19 +3,17 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 export const attachmentActions = {
-  previewAttachment({ id, name, partName, url, maybeViewable }) {
+  previewAttachment({ id, name, partName, url }) {
     return async (dispatch, getState) => {
-      if (maybeViewable) {
-        let msgUri = await browser.conversations.getMessageUriForId(id);
-        let searchParams = new URLSearchParams({
-          msgUri,
-          partName,
-        });
-        await browser.tabs.create({
-          url: `/gallery/index.html?${searchParams.toString()}`,
-          windowId: getState().summary.windowId,
-        });
-      }
+      let msgUri = await browser.conversations.getMessageUriForId(id);
+      let searchParams = new URLSearchParams({
+        msgUri,
+        partName,
+      });
+      await browser.tabs.create({
+        url: `/gallery/index.html?${searchParams.toString()}`,
+        windowId: getState().summary.windowId,
+      });
     };
   },
   downloadAll({ id }) {

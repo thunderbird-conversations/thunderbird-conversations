@@ -36,13 +36,6 @@ const FALLBACK_ICON_MAPPING = new Map([
   ["text/", "text-x-generic"],
 ]);
 
-const PDF_MIME_TYPES = [
-  "application/pdf",
-  "application/x-pdf",
-  "application/x-bzpdf",
-  "application/x-gzpdf",
-];
-
 const RE_MSGKEY = /number=(\d+)/;
 
 function AttachmentMoreMenu({ detachCallback, deleteCallback }) {
@@ -98,26 +91,11 @@ class Attachment extends React.PureComponent {
     return contentType.startsWith("image/");
   }
 
-  isViewable(contentType) {
-    return this.isImage(contentType);
-  }
-
-  isPdf(contentType) {
-    return PDF_MIME_TYPES.includes(contentType);
-  }
-
   preview() {
-    // Keep similar capabilities as previous versions where the user
-    // can click the attachment to open the pdf.
-    if (this.isPdf(this.props.contentType)) {
-      this.openAttachment();
-      return;
-    }
     this.props.dispatch(
       attachmentActions.previewAttachment({
         name: this.props.name,
         url: this.props.url,
-        maybeViewable: this.isViewable(this.props.contentType),
         id: this.props.id,
         partName: this.props.partName,
       })
@@ -234,15 +212,14 @@ class Attachment extends React.PureComponent {
   }
 
   render() {
-    const isPdf = this.isPdf(this.props.contentType);
-    const enablePreview = isPdf || this.isViewable(this.props.contentType);
-    const imgTitle = enablePreview
+    const isImage = this.isImage(this.props.contentType);
+    const imgTitle = isImage
       ? browser.i18n.getMessage("attachments.viewAttachment.tooltip")
-      : "";
+      : browser.i18n.getMessage("attachments.open.tooltip");
 
     let thumb;
     let imgClass;
-    if (this.isImage(this.props.contentType)) {
+    if (isImage) {
       thumb = this.props.url.replace(
         RE_MSGKEY,
         "number=" + this.props.messageKey
@@ -256,11 +233,9 @@ class Attachment extends React.PureComponent {
     return (
       <li className="attachment">
         <div
-          className={
-            "attachmentThumb" + (enablePreview ? " view-attachment" : "")
-          }
+          className="attachmentThumb"
           draggable="true"
-          onClick={this.preview}
+          onClick={isImage ? this.preview : this.openAttachment}
           onDragStart={this.onDragStart}
         >
           <img className={imgClass} src={thumb} title={imgTitle} />
@@ -269,7 +244,7 @@ class Attachment extends React.PureComponent {
           <span className="filename">{this.props.name}</span>
           <span className="filesize">{this.props.formattedSize}</span>
           <div className="attachActions">
-            {enablePreview && !isPdf && (
+            {isImage && (
               <a
                 className="icon-link preview-attachment"
                 title={browser.i18n.getMessage("attachments.preview.tooltip")}
