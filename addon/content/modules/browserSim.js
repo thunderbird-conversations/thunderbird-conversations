@@ -16,6 +16,7 @@ const SUPPORTED_APIS_NO_EVENTS = [
   "convCalendar",
   "convCompose",
   "folders",
+  "identities",
   "mailTabs",
   // If "messages" is moved to SUPPORTED_BASE_APIS, then the various interfaces
   // MUST be tested very carefully. Last time this was tried, it would end up

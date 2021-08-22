@@ -82,6 +82,7 @@ export function createFakeData(
     date: new Date(data.date),
     flagged,
     folder: {
+      accountId: "id1",
       type: folderType,
       name: folderName,
     },

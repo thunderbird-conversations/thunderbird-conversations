@@ -21,6 +21,33 @@ function modifyOnlyMsg(state, id, modifier) {
   };
 }
 
+async function getParamsForCompose(msg, shiftKey) {
+  let identityId = -1;
+  for (let contact of [...msg.to, ...msg.cc, ...msg.bcc]) {
+    if (contact.identityId) {
+      identityId = contact.identityId;
+      break;
+    }
+  }
+
+  if (identityId == -1) {
+    let account = await browser.accounts.get(msg.folderAccountId);
+    if (!account) {
+      identityId = (await browser.accounts.list())[0].identityId;
+    }
+    identityId = account.identities[0]?.id;
+  }
+
+  let params = {
+    identityId,
+  };
+  if (shiftKey) {
+    let identity = await browser.identities.get(identityId);
+    params.isPlainText = identity.composeHtml;
+  }
+  return params;
+}
+
 export const messageActions = {
   getLateAttachments({ id }) {
     return async (dispatch, getState) => {
@@ -56,45 +83,43 @@ export const messageActions = {
       );
     };
   },
-
   editDraft({ id, shiftKey }) {
-    return async () => {
+    return async (dispatch, getState) => {
       browser.conversations.beginEdit(id, "editDraft").catch(console.error);
     };
   },
-
   editAsNew({ id, shiftKey }) {
-    return async () => {
-      browser.conversations.beginEdit(id, "editAsNew").catch(console.error);
+    return async (dispatch, getState) => {
+      let msg = getState().messages.msgData.find((m) => m.id == id);
+      let params = await getParamsForCompose(msg, shiftKey);
+      browser.compose.beginNew(id, params);
     };
   },
-  reply({ id, shiftKey }) {
-    return async () => {
-      browser.conversations
-        .beginReply(id, "replyToSender")
-        .catch(console.error);
-    };
-  },
-  replyAll({ id, shiftKey }) {
-    return async () => {
-      browser.conversations.beginReply(id, "replyToAll").catch(console.error);
-    };
-  },
-  replyList({ id, shiftKey }) {
-    return async () => {
-      browser.conversations.beginReply(id, "replyToList").catch(console.error);
+  reply({ id, type, shiftKey }) {
+    return async (dispatch, getState) => {
+      const mode = {
+        reply: "replyToSender",
+        replyAll: "replyToAll",
+        replyList: "replyToList",
+      };
+      let msg = getState().messages.msgData.find((m) => m.id == id);
+      let params = await getParamsForCompose(msg, shiftKey);
+      browser.compose.beginReply(id, mode[type], params).catch(console.error);
     };
   },
   forward({ id, shiftKey }) {
-    return async () => {
+    return async (dispatch, getState) => {
       let forwardMode =
         (await browser.conversations.getCorePref(
           "mail.forward_message_mode"
         )) ?? 0;
-      browser.conversations
+      let msg = getState().messages.msgData.find((m) => m.id == id);
+      let params = await getParamsForCompose(msg, shiftKey);
+      browser.compose
         .beginForward(
           id,
-          forwardMode == 0 ? "forwardAsAttachment" : "forwardInline"
+          forwardMode == 0 ? "forwardAsAttachment" : "forwardInline",
+          params
         )
         .catch(console.error);
     };

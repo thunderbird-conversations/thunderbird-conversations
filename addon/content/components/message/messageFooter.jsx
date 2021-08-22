@@ -27,13 +27,10 @@ export class MessageFooter extends React.PureComponent {
         action = messageActions.editDraft(payload);
         break;
       case "reply":
-        action = messageActions.reply(payload);
-        break;
       case "replyAll":
-        action = messageActions.replyAll(payload);
-        break;
       case "replyList":
-        action = messageActions.replyList(payload);
+        payload.type = msg.type;
+        action = messageActions.reply(payload);
         break;
       case "forward":
         action = messageActions.forward(payload);
