@@ -259,12 +259,7 @@ export const messageActions = {
   showRemoteContent({ id }) {
     return async (dispatch) => {
       await browser.conversations.showRemoteContent(id);
-
-      const msg =
-        window.Conversations.currentConversation.getMessageByApiId(id);
-      // Turn remote content message "off", as although it has it, it can be loaded.
-      msg.hasRemoteContent = false;
-      dispatch(
+      await dispatch(
         messagesSlice.actions.setHasRemoteContent({
           id,
           hasRemoteContent: false,
@@ -275,13 +270,7 @@ export const messageActions = {
   alwaysShowRemoteContent({ id, realFrom }) {
     return async (dispatch) => {
       await browser.conversations.alwaysShowRemoteContent(realFrom);
-
-      const msg =
-        window.Conversations.currentConversation.getMessageByApiId(id);
-      // Turn remote content message "off", as although it has it, it can be loaded.
-      msg.hasRemoteContent = false;
-
-      dispatch(
+      await dispatch(
         messagesSlice.actions.setHasRemoteContent({
           id,
           hasRemoteContent: false,

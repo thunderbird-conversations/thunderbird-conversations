@@ -89,6 +89,7 @@ describe("Controller Actions tests", () => {
         from: null,
         fullDate: date,
         glodaMessageId: 0,
+        hasRemoteContent: false,
         id: 0,
         initialPosition: 0,
         isArchives: false,

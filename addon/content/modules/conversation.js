@@ -347,23 +347,15 @@ Conversation.prototype = {
       //  calls fail.
       const message = byMessageId.get(glodaMsg.headerMessageID);
       if (message) {
-        (async () => {
-          try {
-            const data = await message.toReactData();
-            this.dispatch(
-              htmlPane.conversationControllerActions.updateConversation({
-                messages: {
-                  msgData: [data],
-                },
-                mode: "replaceMsg",
-              })
-            );
-          } catch (ex) {
-            if (ex.message != "Message no longer exists") {
-              throw ex;
-            }
-          }
-        })();
+        const data = message.reactData;
+        this.dispatch(
+          htmlPane.conversationControllerActions.updateConversation({
+            messages: {
+              msgData: [data],
+            },
+            mode: "replaceMsg",
+          })
+        );
       }
     }
   },
@@ -510,7 +502,7 @@ Conversation.prototype = {
     }
     const reactMsgData = [];
     for (const m of newMsgs) {
-      reactMsgData.push(await m.message.toReactData());
+      reactMsgData.push(m.message.reactData);
     }
 
     this.dispatch(
@@ -569,24 +561,12 @@ Conversation.prototype = {
     }
 
     let reactMsgData = [];
-    let skippedMessages = 0;
     for (let [i, m] of this.messages.entries()) {
-      let msgData;
-      try {
-        msgData = m.message.toReactData();
-      } catch (ex) {
-        if (ex.message != "Message no longer exists") {
-          throw ex;
-        }
-        // Sometimes the message might have gone away before we get to render
-        // it, or the API is confused and is trying to give us a dead message.
-        reactMsgData.push(null);
-        skippedMessages++;
-        continue;
-      }
+      let msgData = m.message.reactData;
+
       // inView indicates if the message is currently in the message list
       // view or not. If it isn't we don't show the folder name.
-      msgData.initialPosition = i - skippedMessages;
+      msgData.initialPosition = i;
       reactMsgData.push(msgData);
     }
     this.messages = this.messages.filter((m, i) => !!reactMsgData[i]);

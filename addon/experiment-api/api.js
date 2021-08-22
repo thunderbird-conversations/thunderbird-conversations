@@ -115,21 +115,10 @@ function monkeyPatchWindow(win, windowId) {
 
   // Insert our own global Conversations object
   win.Conversations = {
-    // key: Message-ID
-    // value: a list of listeners
-    msgListeners: new Map(),
-    // key: Gloda Conversation ID
-    // value: a list of listeners that have a onDraftChanged method
-    draftListeners: {},
-
     // These two are replicated in the case of a conversation tab, so use
     //  Conversation._window.Conversations to access the right instance
     currentConversation: null,
     counter: 0,
-
-    createDraftListenerArrayForId(aId) {
-      win.Conversations.draftListeners[aId] = [];
-    },
   };
 
   // The modules below need to be loaded when a window exists, i.e. after

@@ -29,9 +29,10 @@ const kMultiMessageUrl = "chrome://messenger/content/multimessageview.xhtml";
  * Handles observing updates on windows.
  */
 class WindowObserver {
-  constructor(windowManager, callback) {
+  constructor(windowManager, callback, context) {
     this._windowManager = windowManager;
     this._callback = callback;
+    this._context = context;
   }
 
   observe(subject, topic, data) {
@@ -54,7 +55,8 @@ class WindowObserver {
       }
       this._callback(
         subject.window,
-        this._windowManager.getWrapper(subject.window).id
+        this._windowManager.getWrapper(subject.window).id,
+        this._context
       );
     });
   }
@@ -243,7 +245,7 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
         }).api(),
         onSummarizeThread: new ExtensionCommon.EventManager({
           context,
-          name: "convMsgWindow.onMonkeyPatch",
+          name: "convMsgWindow.onSummarizeThread",
           register(fire) {
             const windowObserver = new WindowObserver(
               windowManager,
@@ -264,10 +266,40 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
             };
           },
         }).api(),
+        onMsgHasRemoteContent: new ExtensionCommon.EventManager({
+          context,
+          name: "convMsgWindow.onMsgHasRemoteContent",
+          register(fire) {
+            if (remoteContentListeners.size == 0) {
+              remoteContentWindowListener = new WindowObserver(
+                windowManager,
+                remoteContentPatch,
+                context
+              );
+              monkeyPatchAllWindows(windowManager, remoteContentPatch, context);
+              Services.ww.registerNotification(remoteContentWindowListener);
+            }
+            remoteContentListeners.add(fire);
+
+            return function () {
+              remoteContentListeners.delete(fire);
+              if (remoteContentListeners.size == 0) {
+                Services.ww.unregisterNotification(remoteContentWindowListener);
+                monkeyPatchAllWindows(windowManager, (win, id) => {
+                  win.messageHeaderSink.onMsgHasRemoteContent =
+                    win.oldOnMsgHasRemoteContent;
+                });
+              }
+            };
+          },
+        }).api(),
       },
     };
   }
 };
+
+let remoteContentListeners = new Set();
+let remoteContentWindowListener = null;
 
 function getWindowFromId(windowManager, context, id) {
   return id !== null && id !== undefined
@@ -291,13 +323,35 @@ function waitForWindow(win) {
   });
 }
 
-function monkeyPatchAllWindows(windowManager, callback) {
+function monkeyPatchAllWindows(windowManager, callback, context) {
   for (const win of Services.wm.getEnumerator("mail:3pane")) {
     waitForWindow(win).then(() => {
-      callback(win, windowManager.getWrapper(win).id);
+      callback(win, windowManager.getWrapper(win).id, context);
     });
   }
 }
+
+const remoteContentPatch = (win, id, context) => {
+  // Ok, this is slightly tricky. The C++ code notifies the global msgWindow
+  //  when content has been blocked, and we can't really afford to just
+  //  replace the code, because that would defeat the standard reader (e.g. in
+  //  a new tab). So we must find the message in the conversation and notify
+  //  it if needed.
+  win.oldOnMsgHasRemoteContent = win.messageHeaderSink.onMsgHasRemoteContent;
+  win.messageHeaderSink.onMsgHasRemoteContent = async function (
+    msgHdr,
+    contentURI,
+    canOverride
+  ) {
+    let id = (await context.extension.messageManager.convert(msgHdr)).id;
+    for (let listener of remoteContentListeners) {
+      listener.async(id);
+    }
+    // Wicked case: we have the conversation and another tab with a message
+    //  from the conversation in that tab. So to be safe, forward the call.
+    win.oldOnMsgHasRemoteContent(msgHdr, contentURI, canOverride);
+  };
+};
 
 const specialPatches = (win) => {
   win.conversationUndoFuncs = [];
@@ -329,42 +383,6 @@ const specialPatches = (win) => {
   };
   win.conversationUndoFuncs.push(
     () => (win.summarizeMultipleSelection = oldSummarizeMultipleSelection)
-  );
-
-  // Ok, this is slightly tricky. The C++ code notifies the global msgWindow
-  //  when content has been blocked, and we can't really afford to just
-  //  replace the code, because that would defeat the standard reader (e.g. in
-  //  a new tab). So we must find the message in the conversation and notify
-  //  it if needed.
-  win.oldOnMsgHasRemoteContent = win.messageHeaderSink.onMsgHasRemoteContent;
-  win.messageHeaderSink.onMsgHasRemoteContent = function (
-    msgHdr,
-    contentURI,
-    canOverride
-  ) {
-    const msgListeners = win.Conversations.msgListeners;
-    const messageId = msgHdr.messageId;
-    if (msgListeners.has(messageId)) {
-      const listeners = msgListeners.get(messageId);
-      for (const listener of listeners) {
-        const obj = listener.get();
-        if (obj) {
-          obj.onMsgHasRemoteContent();
-        }
-      }
-      msgListeners.set(
-        messageId,
-        listeners.filter((x) => x.get() != null)
-      );
-    }
-    // Wicked case: we have the conversation and another tab with a message
-    //  from the conversation in that tab. So to be safe, forward the call.
-    win.oldOnMsgHasRemoteContent(msgHdr, contentURI, canOverride);
-  };
-  win.conversationUndoFuncs.push(
-    () =>
-      (win.messageHeaderSink.onMsgHasRemoteContent =
-        win.oldOnMsgHasRemoteContent)
   );
 
   function fightAboutBlank() {

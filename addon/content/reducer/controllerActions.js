@@ -109,6 +109,15 @@ async function setupConversationInTab(params, isInTab) {
   }
 }
 
+function onMsgHasRemoteContent(dispatch, id) {
+  dispatch(
+    messageActions.setHasRemoteContent({
+      id,
+      hasRemoteContent: true,
+    })
+  );
+}
+
 export const controllerActions = {
   waitForStartup() {
     return async (dispatch, getState) => {
@@ -121,12 +130,13 @@ export const controllerActions = {
       // Note: Moving this to after the check for started below is dangerous,
       // since it introduces races where `Conversation` doesn't wait for the
       // page to startup, and hence tab id isn't set.
+      let windowId = BrowserSim.getWindowId(topWin);
       await dispatch(
         summaryActions.setConversationState({
           isInTab,
           isStandalone,
           tabId: BrowserSim.getTabId(topWin, window),
-          windowId: BrowserSim.getWindowId(topWin),
+          windowId,
         })
       );
 
@@ -169,6 +179,22 @@ export const controllerActions = {
       if (getState().summary.prefs.loggingEnabled) {
         console.debug(`Initializing ${isInTab ? "tab" : "message pane"} view.`);
       }
+
+      let remoteContentListener = onMsgHasRemoteContent.bind(this, dispatch);
+      browser.convMsgWindow.onMsgHasRemoteContent.addListener(
+        remoteContentListener,
+        windowId
+      );
+      window.addEventListener(
+        "unload",
+        () => {
+          browser.convMsgWindow.onMsgHasRemoteContent.removeListener(
+            remoteContentListener,
+            windowId
+          );
+        },
+        { once: true }
+      );
 
       if (!isInTab) {
         return;

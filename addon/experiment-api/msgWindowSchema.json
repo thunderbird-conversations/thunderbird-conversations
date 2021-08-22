@@ -104,6 +104,18 @@
         "type": "function",
         "description": "Temporary. Fake Listener, actually used for hooking into summarize thread.",
         "parameters": []
+      },
+      {
+        "name": "onMsgHasRemoteContent",
+        "type": "function",
+        "description": "Temporary. Used for listening to if messages have remote content or not.",
+        "parameters": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "The message id."
+          }
+        ]
       }
     ]
   }

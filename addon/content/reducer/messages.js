@@ -56,6 +56,7 @@ export let messageEnricher = new (class {
         try {
           await this._addDetailsFromHeader(
             summary.tabId,
+            mode,
             message,
             userTags,
             selectedMessages
@@ -294,6 +295,9 @@ export let messageEnricher = new (class {
    *
    * @param {number} tabId
    *   The id of the current tab.
+   * @param {string} mode
+   *   Can be "append", "replaceAll" or "replaceMsg". replaceMsg will replace
+   *   only a single message.
    * @param {object} message
    *   The message to get the additional details for.
    * @param {Array} userTags
@@ -301,7 +305,13 @@ export let messageEnricher = new (class {
    * @param {MessageHeader[]} selectedMessages
    *   An array of the currently selected messages.
    */
-  async _addDetailsFromHeader(tabId, message, userTags, selectedMessages) {
+  async _addDetailsFromHeader(
+    tabId,
+    mode,
+    message,
+    userTags,
+    selectedMessages
+  ) {
     const messageHeader = await browser.messages.get(message.id);
     if (!messageHeader) {
       throw new Error("Message no longer exists");
@@ -309,7 +319,13 @@ export let messageEnricher = new (class {
     const messageFolderType = messageHeader.folder.type;
 
     message.date = messageHeader.date.getTime();
-
+    // Only set hasRemoteContent for new messages, otherwise we cause a reload
+    // of content each time when a message already has remote content.
+    if (mode != "replaceMsg") {
+      // We don't actually know until we load the message, so default to false,
+      // we'll get notified if it should be true.
+      message.hasRemoteContent = false;
+    }
     message.isArchives = messageFolderType == "archives";
     message.isDraft = messageFolderType == "drafts";
     message.isInbox = messageFolderType == "inbox";

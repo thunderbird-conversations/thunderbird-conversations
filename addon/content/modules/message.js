@@ -41,10 +41,6 @@ XPCOMUtils.defineLazyGetter(this, "gMessenger", function () {
  * @see https://searchfox.org/mozilla-central/rev/ac36d76c7aea37a18afc9dd094d121f40f7c5441/netwerk/base/nsIURI.idl
  */
 
-const { topMail3Pane } = ChromeUtils.import(
-  "chrome://conversations/content/modules/misc.js",
-  {}
-);
 const { getHooks } = ChromeUtils.import(
   "chrome://conversations/content/modules/hook.js",
   {}
@@ -59,21 +55,6 @@ XPCOMUtils.defineLazyGetter(this, "Log", () => {
 const kSnippetLength = 700;
 
 const RE_LIST_POST = /<mailto:([^>]+)>/;
-
-// Add in the global message listener table a weak reference to the given
-//  Message object. The monkey-patch which intercepts the "remote content
-//  blocked" notification will then look for a suitable listener and notify it
-//  of the aforementioned event.
-function addMsgListener(aMessage) {
-  let window = topMail3Pane(aMessage);
-  let weakPtr = Cu.getWeakReference(aMessage);
-  let msgListeners = window.Conversations.msgListeners;
-  let messageId = aMessage._msgHdr.messageId;
-  if (!msgListeners.has(messageId)) {
-    msgListeners.set(messageId, []);
-  }
-  msgListeners.get(messageId).push(weakPtr);
-}
 
 /**
  * Handles the gathering of data for an individual message.
@@ -113,7 +94,6 @@ class Message {
     this._glodaMessageId = null;
     this.needsLateAttachments = false;
     this.contentType = "";
-    this.hasRemoteContent = false;
     this.isPhishing = false;
     this.smimeReload = false;
 
@@ -131,17 +111,12 @@ class Message {
     this._selected = false;
   }
 
-  toReactData() {
-    // Ok, brace ourselves for notifications happening during the message load
-    //  process.
-    addMsgListener(this);
-
+  get reactData() {
     return {
       id: this._id,
       attachments: this._attachments,
       messageHeaderId: this._messageHeaderId,
       glodaMessageId: this._glodaMessageId,
-      hasRemoteContent: this.hasRemoteContent,
       isPhishing: this.isPhishing,
       messageKey: this._msgHdr.messageKey,
       needsLateAttachments: this.needsLateAttachments,
@@ -159,24 +134,6 @@ class Message {
         bcc: this._bcc,
       },
     };
-  }
-
-  // The global monkey-patch finds us through the weak pointer table and
-  //  notifies us.
-  async onMsgHasRemoteContent() {
-    if (this.notifiedRemoteContentAlready) {
-      return;
-    }
-    this.notifiedRemoteContentAlready = true;
-    this.hasRemoteContent = true;
-    Log.debug("This message's remote content was blocked");
-
-    this._conversation._htmlPane.conversationDispatch(
-      messageActions.setHasRemoteContent({
-        id: this._id,
-        hasRemoteContent: true,
-      })
-    );
   }
 
   async setSmimeReload() {
@@ -252,8 +209,6 @@ class Message {
         console.error("Plugin returned an error:", e);
       }
     }
-
-    addMsgListener(this);
 
     const neckoUrl = msgHdrToNeckoURL(this._msgHdr).spec;
 
