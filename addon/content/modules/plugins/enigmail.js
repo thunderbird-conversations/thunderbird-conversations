@@ -11,6 +11,12 @@ const { XPCOMUtils } = ChromeUtils.import(
 XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   getMail3Pane: "chrome://conversations/content/modules/misc.js",
+  EnigmailConstants: "chrome://openpgp/content/modules/constants.jsm",
+  EnigmailCore: "chrome://openpgp/content/modules/core.jsm",
+  EnigmailData: "chrome://openpgp/content/modules/data.jsm",
+  EnigmailDecryption: "chrome://openpgp/content/modules/decryption.jsm",
+  EnigmailFuncs: "chrome://openpgp/content/modules/funcs.jsm",
+  EnigmailLocale: "chrome://openpgp/content/modules/locale.jsm",
   msgHdrGetUri: "chrome://conversations/content/modules/misc.js",
   registerHook: "chrome://conversations/content/modules/hook.js",
   setupLogging: "chrome://conversations/content/modules/misc.js",
@@ -21,64 +27,38 @@ let Log = setupLogging("Conversations.Modules.Enigmail");
 
 // Enigmail support, thanks to Patrick Brunschwig!
 
-let hasEnigmail;
-
-try {
-  hasEnigmail = true;
-  ChromeUtils.import("chrome://openpgp/content/modules/constants.jsm");
-} catch (ex) {
-  hasEnigmail = false;
-}
-
-if (hasEnigmail) {
-  XPCOMUtils.defineLazyModuleGetters(this, {
-    EnigmailConstants: "chrome://openpgp/content/modules/constants.jsm",
-    EnigmailCore: "chrome://openpgp/content/modules/core.jsm",
-    EnigmailData: "chrome://openpgp/content/modules/data.jsm",
-    EnigmailDecryption: "chrome://openpgp/content/modules/decryption.jsm",
-    EnigmailFuncs: "chrome://openpgp/content/modules/funcs.jsm",
-    EnigmailLocale: "chrome://openpgp/content/modules/locale.jsm",
-  });
-}
-
 XPCOMUtils.defineLazyGetter(this, "browser", function () {
   return BrowserSim.getBrowser();
 });
 
-let enigmailSvc;
 // eslint-disable-next-line no-redeclare
 /* global window:true */
-let window;
+let window = getMail3Pane();
 
-if (hasEnigmail) {
-  window = getMail3Pane();
-  enigmailSvc = EnigmailCore.getService(window);
-  if (!enigmailSvc) {
-    Log.debug("Error loading the Enigmail service. Is Enigmail disabled?\n");
-    hasEnigmail = false;
-  }
+XPCOMUtils.defineLazyGetter(this, "enigmailSvc", () => {
+  return EnigmailCore.getService(window);
+});
 
-  // Override updateSecurityStatus in load event handler.
-  let messagepane = getMail3Pane().document.getElementById("messagepane");
-  messagepane.addEventListener(
-    "load",
-    function _overrideUpdateSecurity() {
-      let w = getMail3Pane();
-      if (w.Enigmail.hdrView) {
-        overrideUpdateSecurity(messagepane, w);
-      } else {
-        w.addEventListener(
-          "load-enigmail",
-          () => {
-            overrideUpdateSecurity(messagepane, w);
-          },
-          { once: true, capture: true }
-        );
-      }
-    },
-    { once: true, capture: true }
-  );
-}
+// Override updateSecurityStatus in load event handler.
+let messagepane = getMail3Pane().document.getElementById("messagepane");
+messagepane.addEventListener(
+  "load",
+  function _overrideUpdateSecurity() {
+    let w = getMail3Pane();
+    if (w.Enigmail.hdrView) {
+      overrideUpdateSecurity(messagepane, w);
+    } else {
+      w.addEventListener(
+        "load-enigmail",
+        () => {
+          overrideUpdateSecurity(messagepane, w);
+        },
+        { once: true, capture: true }
+      );
+    }
+  },
+  { once: true, capture: true }
+);
 
 // Override updateSecurityStatus for showing security info properly
 // when plural messages in a thread are streamed at one time.
@@ -651,7 +631,7 @@ let enigmailHook = {
 
   onMessageStreamed(msgHdr, iframe, mainWindow, message) {
     let iframeDoc = iframe.contentDocument;
-    if (iframeDoc.body.textContent.length && hasEnigmail) {
+    if (iframeDoc.body.textContent.length) {
       let status = tryEnigmail(iframeDoc, message, mainWindow.msgWindow);
       if (status & EnigmailConstants.DECRYPTION_OKAY) {
         addEncryptedTag(message);
@@ -687,9 +667,7 @@ let enigmailHook = {
 
   // Update security info when the message is selected.
   onMessageSelected(aMessage) {
-    if (hasEnigmail) {
-      updateSecurityInfo(aMessage);
-    }
+    updateSecurityInfo(aMessage);
   },
 };
 
