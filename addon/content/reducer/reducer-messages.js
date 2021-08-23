@@ -312,9 +312,6 @@ export const messageActions = {
   },
   notificationClick({ id, notificationType, extraData }) {
     return async (dispatch, getState) => {
-      const msg =
-        window.Conversations.currentConversation.getMessageByApiId(id);
-
       if (notificationType == "calendar") {
         await browser.convCalendar.onMessageNotification(
           getState().summary.tabId,
@@ -322,10 +319,9 @@ export const messageActions = {
         );
         return;
       }
-      msg.msgPluginNotification(
-        topMail3Pane(window),
-        notificationType,
-        extraData
+      console.error(
+        "Received notificationClick for unknown type",
+        notificationType
       );
     };
   },

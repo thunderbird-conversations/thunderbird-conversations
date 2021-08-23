@@ -243,20 +243,6 @@ class Message {
     });
   }
 
-  msgPluginNotification(win, notificationType, extraData) {
-    Services.tm.dispatchToMainThread(() => {
-      for (let h of getHooks()) {
-        try {
-          if (typeof h.onMessageNotification == "function") {
-            h.onMessageNotification(win, notificationType, extraData);
-          }
-        } catch (ex) {
-          console.error("Plugin returned an error:", ex);
-        }
-      }
-    });
-  }
-
   msgPluginTagClick(win, event, ...extraData) {
     let newEvent = {
       button: event.button,
