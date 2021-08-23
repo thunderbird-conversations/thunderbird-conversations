@@ -704,11 +704,6 @@
     "description": "Tooltip displayed when a message has been decrypted."
   },
 
-  "dkimVerifier.messageDKIMSigned": {
-    "message": "DKIM 署名済み",
-    "description": "Tag description displayed when a message is DKIM signed."
-  },
-
   "compose.addCc": {
     "message": "Cc を追加",
     "description": "Link to click to add a cc when composing messages."

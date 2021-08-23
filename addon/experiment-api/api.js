@@ -28,7 +28,6 @@ XPCOMUtils.defineLazyGlobalGetters(this, ["TextDecoder"]);
 // To help updates to apply successfully, we need to properly unload the modules
 // that Conversations loads.
 const conversationModules = [
-  "chrome://conversations/content/modules/plugins/dkimVerifier.js",
   "chrome://conversations/content/modules/plugins/enigmail.js",
   // Don't unload these until we can find a way of unloading the attribute
   // providers. Unloading these will break gloda when someone updates.
@@ -95,9 +94,6 @@ function monkeyPatchWindow(win, windowId) {
   /* eslint-disable no-unused-vars */
   ChromeUtils.import(
     "chrome://conversations/content/modules/plugins/enigmail.js"
-  );
-  ChromeUtils.import(
-    "chrome://conversations/content/modules/plugins/dkimVerifier.js"
   );
   win.Conversations.finishedStartup = true;
 }

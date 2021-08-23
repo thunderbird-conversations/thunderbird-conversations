@@ -577,10 +577,6 @@
     "message": "Це повідомлення розшифроване для його показу",
     "description": "Tooltip displayed when a message has been decrypted."
   },
-  "dkimVerifier.messageDKIMSigned": {
-    "message": "DKIM підпис",
-    "description": "Tag description displayed when a message is DKIM signed."
-  },
   "compose.addCc": {
     "message": "Копія",
     "description": "Link to click to add a cc when composing messages."
