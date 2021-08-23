@@ -47,7 +47,7 @@
     "eslint-plugin-json": "3.1.0",
     "eslint-plugin-mozilla": "2.10.0",
     "eslint-plugin-no-unsanitized": "3.1.5",
-    "eslint-plugin-prettier": "3.4.0",
+    "eslint-plugin-prettier": "3.4.1",
     "eslint-plugin-react": "7.24.0",
     "html-webpack-plugin": "5.3.2",
     "jest": "27.0.6",
@@ -56,8 +56,8 @@
     "prop-types": "15.7.2",
     "react-test-renderer": "17.0.2",
     "serve": "12.0.0",
-    "webpack": "5.50.0",
-    "webpack-cli": "4.7.2"
+    "webpack": "5.51.1",
+    "webpack-cli": "4.8.0"
   },
   "scripts": {
     "dev": "(scripts/build-dev-html.sh --watch &) && sleep 4 && scripts/dev-html-serve.sh",
