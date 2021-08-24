@@ -372,7 +372,7 @@ export class MessageIFrame extends React.Component {
   }
 
   _onLoad(event) {
-    if (event.target.documentURI == "about:blank") {
+    if (event.target.browsingContext?.currentURI?.spec == "about:blank") {
       return;
     }
     // TODO: Handle BIDI
@@ -529,10 +529,7 @@ export class MessageIFrame extends React.Component {
   }
 
   async _onDOMLoaded(event) {
-    if (
-      event.target != this.iframe.contentDocument ||
-      event.target.documentURI == "about:blank"
-    ) {
+    if (event.target != this.iframe.contentDocument) {
       return;
     }
     const iframeDoc = this.iframe.contentDocument;
