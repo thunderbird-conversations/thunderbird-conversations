@@ -354,6 +354,7 @@ export class Message extends React.PureComponent {
             cc={this.props.message.cc}
             extraLines={this.props.message.extraLines}
             from={this.props.message.from}
+            id={this.props.message.id}
             to={this.props.message.to}
           />
         )}

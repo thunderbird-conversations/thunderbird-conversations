@@ -17,6 +17,7 @@ function _ContactDetail({
   contactId,
   contactIsReadOnly,
   dispatch,
+  msgId,
 }) {
   function onGeneralClick(event) {
     event.stopPropagation();
@@ -61,6 +62,7 @@ function _ContactDetail({
     event.preventDefault();
     dispatch(
       summaryActions.sendEmail({
+        msgId,
         name,
         email: realEmail,
       })
@@ -164,13 +166,14 @@ function _ContactDetail({
   );
 }
 _ContactDetail.propTypes = {
-  dispatch: PropTypes.func.isRequired,
-  name: PropTypes.string.isRequired,
-  email: PropTypes.string.isRequired,
-  realEmail: PropTypes.string.isRequired,
   avatar: PropTypes.string,
   contactId: PropTypes.string,
   contactIsReadOnly: PropTypes.bool,
+  dispatch: PropTypes.func.isRequired,
+  email: PropTypes.string.isRequired,
+  msgId: PropTypes.number.isRequired,
+  name: PropTypes.string.isRequired,
+  realEmail: PropTypes.string.isRequired,
 };
 
 export const ContactDetail = ReactRedux.connect()(_ContactDetail);
