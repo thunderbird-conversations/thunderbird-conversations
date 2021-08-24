@@ -326,10 +326,12 @@ export const messageActions = {
     };
   },
   tagClick({ id, event, details }) {
-    return async () => {
-      const msg =
-        window.Conversations.currentConversation.getMessageByApiId(id);
-      msg.msgPluginTagClick(topMail3Pane(window), event, details);
+    return async (dispatch, getState) => {
+      if (details.type == "enigmail") {
+        await browser.convOpenPgp.handleTagClick(getState().summary.tabId, id);
+        return;
+      }
+      console.error("Unsupported click type", details.type);
     };
   },
   switchToFolderAndMsg({ id }) {
@@ -507,10 +509,15 @@ export const messagesSlice = RTK.createSlice({
       }));
     },
     msgAddSpecialTag(state, { payload }) {
-      return modifyOnlyMsg(state, payload.id, (msg) => ({
-        ...msg,
-        specialTags: (msg.specialTags || []).concat(payload.tagDetails),
-      }));
+      return modifyOnlyMsg(state, payload.id, (msg) => {
+        if (msg.specialTags?.find((t) => t.type == payload.tagDetails.type)) {
+          return msg;
+        }
+        return {
+          ...msg,
+          specialTags: (msg.specialTags || []).concat(payload.tagDetails),
+        };
+      });
     },
     msgRemoveSpecialTag(state, { payload }) {
       return modifyOnlyMsg(state, payload.id, (msg) => {

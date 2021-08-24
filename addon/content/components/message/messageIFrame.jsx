@@ -196,6 +196,7 @@ export class MessageIFrame extends React.Component {
       startLoad = true;
       this.dueToExpansion = false;
     }
+    let dueToReload = false;
     if (this.props.expanded) {
       this.iframe.classList.remove("hidden");
       if (
@@ -206,6 +207,9 @@ export class MessageIFrame extends React.Component {
         startLoad = true;
         if (this.dueToExpansion === undefined) {
           this.dueToExpansion = true;
+        }
+        if (!prevProps.smimeReload && this.props.smimeReload) {
+          dueToReload = true;
         }
         this.iframe.style.height = "20px";
       }
@@ -232,6 +236,7 @@ export class MessageIFrame extends React.Component {
           docshell: this.iframe.contentWindow.docShell,
           dueToExpansion: this.dueToExpansion,
           id: this.props.id,
+          dueToReload,
         })
       );
     }

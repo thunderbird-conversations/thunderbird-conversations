@@ -33,6 +33,7 @@ const SUPPORTED_BASE_APIS = [
   ...SUPPORTED_APIS_NO_EVENTS,
   "convContacts",
   "convMsgWindow",
+  "convOpenPgp",
   "conversations",
   "i18n",
   "messageDisplay",

@@ -243,13 +243,24 @@ export const summaryActions = {
         getState().summary.tabId,
         id
       );
+      await browser.convOpenPgp.handleMessageStreamed(
+        getState().summary.tabId,
+        id
+      );
     };
   },
-  msgStreamMsg({ dueToExpansion, id, docshell }) {
+  msgStreamMsg({ dueToExpansion, id, docshell, dueToReload = false }) {
     return async (dispatch, getState) => {
       if (!dueToExpansion) {
         dispatch(summarySlice.actions.incIframesLoading());
       }
+
+      await browser.convOpenPgp.beforeStreamingMessage(
+        getState().summary.tabId,
+        id,
+        dueToReload
+      );
+
       let msg = Conversations.currentConversation.getMessageByApiId(id);
       // The message might not be found, if so it has probably been deleted from
       // under us, so just continue and not blow up.

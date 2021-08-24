@@ -198,17 +198,6 @@ class Message {
   }
 
   streamMessage(msgWindow, docshell) {
-    // Pre msg loading.
-    for (let h of getHooks()) {
-      try {
-        if (typeof h.onMessageBeforeStreaming == "function") {
-          h.onMessageBeforeStreaming(this);
-        }
-      } catch (e) {
-        console.error("Plugin returned an error:", e);
-      }
-    }
-
     const neckoUrl = msgHdrToNeckoURL(this._msgHdr).spec;
 
     const messageService = gMessenger.messageServiceFromURI(neckoUrl);
@@ -228,34 +217,7 @@ class Message {
     //  the DOM of the message (i.e. decrypt it) before we tweak the
     //  fonts and stuff.
     Services.tm.dispatchToMainThread(() => {
-      for (let h of getHooks()) {
-        try {
-          if (typeof h.onMessageStreamed == "function") {
-            h.onMessageStreamed(this._msgHdr, iframe, mainWindow, this);
-          }
-        } catch (e) {
-          console.error("Plugin returned an error:", e);
-        }
-      }
-
       this._checkForPhishing(iframe).catch(console.error);
-    });
-  }
-
-  msgPluginTagClick(win, event, ...extraData) {
-    let newEvent = {
-      button: event.button,
-    };
-    Services.tm.dispatchToMainThread(() => {
-      for (let h of getHooks()) {
-        try {
-          if (typeof h.onMessageTagClick == "function") {
-            h.onMessageTagClick(win, newEvent, ...extraData);
-          }
-        } catch (ex) {
-          console.error("Plugin returned an error:", ex);
-        }
-      }
     });
   }
 

@@ -73,6 +73,14 @@
         "paths": [["convMsgWindow"]],
         "script": "experiment-api/msgWindowApi.js"
       }
+    },
+    "convOpenPgp": {
+      "schema": "experiment-api/openPgpSchema.json",
+      "parent": {
+        "scopes": ["addon_parent"],
+        "paths": [["convOpenPgp"]],
+        "script": "experiment-api/openPgpApi.js"
+      }
     }
   },
   "commands": {

@@ -1,0 +1,116 @@
+[
+  {
+    "namespace": "convOpenPgp",
+    "functions": [
+      {
+        "name": "beforeStreamingMessage",
+        "type": "function",
+        "description": "Handles OpenPGP notifications on messages.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "tabId",
+            "type": "number",
+            "description": "The id of the tab."
+          },
+          {
+            "name": "msgId",
+            "type": "number",
+            "description": "The id of the message."
+          },
+          {
+            "name": "dueToReload",
+            "type": "boolean",
+            "description": "If this is a reload due to SMIME.",
+            "optional": true
+          }
+        ]
+      },
+      {
+        "name": "handleMessageStreamed",
+        "type": "function",
+        "description": "Handles message stream completion.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "tabId",
+            "type": "number",
+            "description": "The id of the tab."
+          },
+          {
+            "name": "msgId",
+            "type": "number",
+            "description": "The id of the message."
+          }
+        ]
+      },
+      {
+        "name": "handleTagClick",
+        "type": "function",
+        "description": "Handles clicks on notifications on messages.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "tabId",
+            "type": "number",
+            "description": "The id of the tab."
+          },
+          {
+            "name": "msgId",
+            "type": "number",
+            "description": "The id of the message."
+          }
+        ]
+      }
+    ],
+    "events": [
+      {
+        "name": "onUpdateSecurityStatus",
+        "type": "function",
+        "description": "Temporary. Used for listening to security updates on messages.",
+        "parameters": [
+          {
+            "type": "object",
+            "properties": [
+              {
+                "name": "id",
+                "type": "integer",
+                "description": "The message id."
+              },
+              {
+                "name": "signedStatus",
+                "type": "string",
+                "description": "The signed status of the message.",
+                "optional": true
+              },
+              {
+                "name": "encryptionStatus",
+                "type": "string",
+                "description": "The encryption status of the message, e.g. good, bad.",
+                "optional": true
+              },
+              {
+                "name": "encryptionNotification",
+                "type": "string",
+                "description": "Specified if a notification should be displayed of the encryption status.",
+                "optional": true
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "name": "onSMIMEReload",
+        "type": "function",
+        "description": "Temporary. Used for listening to SMIME reload alerts.",
+        "parameters": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "The message id."
+          }
+        ]
+      }
+    ]
+  }
+]

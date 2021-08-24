@@ -28,7 +28,6 @@ XPCOMUtils.defineLazyGlobalGetters(this, ["TextDecoder"]);
 // To help updates to apply successfully, we need to properly unload the modules
 // that Conversations loads.
 const conversationModules = [
-  "chrome://conversations/content/modules/plugins/enigmail.js",
   // Don't unload these until we can find a way of unloading the attribute
   // providers. Unloading these will break gloda when someone updates.
   // "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
@@ -89,12 +88,6 @@ function monkeyPatchWindow(win, windowId) {
     counter: 0,
   };
 
-  // The modules below need to be loaded when a window exists, i.e. after
-  // overlays have been properly loaded and applied
-  /* eslint-disable no-unused-vars */
-  ChromeUtils.import(
-    "chrome://conversations/content/modules/plugins/enigmail.js"
-  );
   win.Conversations.finishedStartup = true;
 }
 

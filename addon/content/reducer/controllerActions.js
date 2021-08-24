@@ -90,6 +90,90 @@ function onMsgHasRemoteContent(dispatch, id) {
   );
 }
 
+async function onUpdateSecurityStatus(
+  dispatch,
+  { id, signedStatus, encryptionStatus, encryptionNotification }
+) {
+  console.log(
+    "onUpdateSecurityStatus",
+    id,
+    signedStatus,
+    encryptionStatus,
+    encryptionNotification
+  );
+  if (signedStatus) {
+    await dispatch(
+      messageActions.msgAddSpecialTag({
+        id,
+        tagDetails: {
+          // canClick: true,
+          classNames: "enigmail-signed",
+          icon: "material-icons.svg#edit",
+          name: browser.i18n.getMessage("enigmail.messageSigned"),
+          details: {
+            type: "enigmail",
+            detail: "viewSecurityInfo",
+          },
+          title:
+            signedStatus == "warn"
+              ? browser.i18n.getMessage("enigmail.unknownGood")
+              : browser.i18n.getMessage("enigmail.messageSignedLong"),
+          type: "openPgpSigned",
+        },
+      })
+    );
+  }
+  if (!encryptionStatus) {
+    return;
+  }
+
+  if (encryptionStatus == "good") {
+    dispatch(
+      messageActions.msgAddSpecialTag({
+        id,
+        tagDetails: {
+          // canClick: true,
+          classNames: "enigmail-decrypted",
+          icon: "material-icons.svg#vpn_key",
+          name: browser.i18n.getMessage("enigmail.messageDecrypted"),
+          details: {
+            type: "enigmail",
+            detail: "viewSecurityInfo",
+          },
+          title: browser.i18n.getMessage("enigmail.messageDecryptedLong"),
+        },
+      })
+    );
+    return;
+  }
+  if (encryptionStatus == "bad") {
+    if (encryptionNotification) {
+      dispatch(
+        messageActions.msgShowNotification({
+          msgData: {
+            id,
+            notification: {
+              iconName: "dangerous",
+              label: encryptionNotification,
+              type: "openpgp",
+            },
+          },
+        })
+      );
+    }
+  }
+}
+
+function onSmimeReload(dispatch, id) {
+  console.log("smimeReloadListener", id);
+  dispatch(
+    messageActions.setSmimeReload({
+      id,
+      smimeReload: true,
+    })
+  );
+}
+
 export const controllerActions = {
   waitForStartup() {
     return async (dispatch, getState) => {
@@ -155,11 +239,32 @@ export const controllerActions = {
         remoteContentListener,
         windowId
       );
+      let updateSecurityStatusListener = onUpdateSecurityStatus.bind(
+        this,
+        dispatch
+      );
+      let smimeReloadListener = onSmimeReload.bind(this, dispatch);
+      browser.convOpenPgp.onUpdateSecurityStatus.addListener(
+        updateSecurityStatusListener,
+        windowId
+      );
+      browser.convOpenPgp.onSMIMEReload.addListener(
+        smimeReloadListener,
+        windowId
+      );
       window.addEventListener(
         "unload",
         () => {
           browser.convMsgWindow.onMsgHasRemoteContent.removeListener(
             remoteContentListener,
+            windowId
+          );
+          browser.convOpenPgp.onUpdateSecurityStatus.removeListener(
+            updateSecurityStatusListener,
+            windowId
+          );
+          browser.convOpenPgp.onSMIMEReload.removeListener(
+            smimeReloadListener,
             windowId
           );
         },

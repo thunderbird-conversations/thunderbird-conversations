@@ -557,13 +557,13 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
   color: black;
 }
 
-.phishingBar,
-.enigmailBar.notok {
-  background-color: #ed6666;
+.openpgpBar {
+  background-color: rgb(215, 0, 34);
+  color: white;
 }
 
-.enigmailBar.ok {
-  background-color: rgb(204, 255, 204);
+.phishingBar {
+  background-color: #ed6666;
 }
 
 .notificationBar button {
@@ -578,15 +578,15 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
   cursor: pointer;
 }
 
-.notificationBar .icon {
+.notificationBar > .icon {
   font-size: 1.8em;
 }
 
-.calendarImipButton {
-  float: inline-end;
+.openpgpBar > .icon {
+  font-size: 1em;
 }
 
-.enigmailBar .enigmailDetails {
+.calendarImipButton {
   float: inline-end;
 }
 
