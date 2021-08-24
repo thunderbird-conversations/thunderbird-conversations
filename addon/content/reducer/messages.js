@@ -310,6 +310,7 @@ export let messageEnricher = new (class {
 
     message.date = messageHeader.date.getTime();
 
+    message.folderAccountId = messageHeader.folder.accountId;
     message.isArchives = messageFolderType == "archives";
     message.isDraft = messageFolderType == "drafts";
     message.isInbox = messageFolderType == "inbox";
