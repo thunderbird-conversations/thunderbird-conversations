@@ -23,6 +23,10 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   topMail3Pane: "chrome://conversations/content/modules/misc.js",
 });
 
+XPCOMUtils.defineLazyGetter(this, "gMessenger", function () {
+  return Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
+});
+
 let Log = setupLogging("Conversations.Modules.Enigmail");
 
 // Enigmail support, thanks to Patrick Brunschwig!
@@ -593,10 +597,17 @@ function removeEncryptedTag(msg) {
   });
 }
 
+function msgHdrToNeckoURL(aMsgHdr) {
+  let uri = aMsgHdr.folder.getUriForMsg(aMsgHdr);
+  let msgService = gMessenger.messageServiceFromURI(uri);
+
+  return msgService.getUrlForUri(uri);
+}
+
 let enigmailHook = {
   _domNode: null,
   _originalText: null, // for restoring original text when sending message is canceled
-  _currentlyStreaming: [],
+  _currentlyStreaming: new Map(),
   _oldIsCurrentMsgFn: null,
   _oldGetCurrentMsgUriSpecFn: null,
 
@@ -614,12 +625,13 @@ let enigmailHook = {
 
     // Enigmail needs to know that the message we're currently streaming is the
     // 'current' message.
-    this._oldIsCurrentMsgUriSpecFn = w.Enigmail.msg.getCurrentMsgUriSpec;
-    this._currentlyStreaming.push(msg._uri);
+    const neckoUrl = msgHdrToNeckoURL(msg._msgHdr).spec;
+    this._currentlyStreaming.set(neckoUrl, msg._uri);
     w.Enigmail.hdrView.headerPane.isCurrentMessage = (uri) => {
-      if (this._currentlyStreaming.includes(uri)) {
+      let msgUri = this._currentlyStreaming.get(uri.spec);
+      if (msgUri) {
         w.Enigmail.msg.getCurrentMsgUriSpec = function () {
-          return uri;
+          return msgUri;
         };
       }
       return this._oldIsCurrentMsgFn(uri);
@@ -638,9 +650,8 @@ let enigmailHook = {
       }
       addSignedLabel(status, message);
     }
-    this._currentlyStreaming = this._currentlyStreaming.filter(
-      (uri) => uri == message._uri
-    );
+    const neckoUrl = msgHdrToNeckoURL(msgHdr).spec;
+    this._currentlyStreaming.delete(neckoUrl);
     if (!this._currentlyStreaming.length) {
       if (this._oldIsCurrentMsgFn) {
         mainWindow.Enigmail.hdrView.headerPane.isCurrentMessage =
