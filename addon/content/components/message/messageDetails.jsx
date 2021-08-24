@@ -6,7 +6,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import { DetailedContactLabel } from "./messageHeader.jsx";
 
-function ContactList({ label, contacts, className = "" }) {
+function ContactList({ label, contacts, className = "", msgId }) {
   if (contacts.length === 0) {
     return null;
   }
@@ -15,7 +15,7 @@ function ContactList({ label, contacts, className = "" }) {
       <u>{label}</u>{" "}
       {contacts.map((contact, i) => (
         <React.Fragment key={i}>
-          <DetailedContactLabel className="" contact={contact} />
+          <DetailedContactLabel className="" contact={contact} msgId={msgId} />
           <br />
         </React.Fragment>
       ))}
@@ -26,6 +26,7 @@ ContactList.propTypes = {
   label: PropTypes.string.isRequired,
   contacts: PropTypes.array.isRequired,
   className: PropTypes.string,
+  msgId: PropTypes.number.isRequired,
 };
 
 /**
@@ -38,23 +39,30 @@ export class MessageDetails extends React.PureComponent {
         {!!this.props.from && (
           <div className="detailsLine fromLine">
             <u>{browser.i18n.getMessage("message.fromHeader")}</u>{" "}
-            <DetailedContactLabel className="" contact={this.props.from} />
+            <DetailedContactLabel
+              className=""
+              contact={this.props.from}
+              msgId={this.props.id}
+            />
           </div>
         )}
         <ContactList
           className="detailsLine toLine"
           label={browser.i18n.getMessage("message.toHeader")}
           contacts={this.props.to}
+          msgId={this.props.id}
         />
         <ContactList
           className="detailsLine ccLine"
           label={browser.i18n.getMessage("message.ccHeader")}
           contacts={this.props.cc}
+          msgId={this.props.id}
         />
         <ContactList
           className="detailsLine bccLine"
           label={browser.i18n.getMessage("compose.fieldBcc")}
           contacts={this.props.bcc}
+          msgId={this.props.id}
         />
         {!!this.props.extraLines?.length &&
           this.props.extraLines.map((line, i) => {
@@ -74,5 +82,6 @@ MessageDetails.propTypes = {
   cc: PropTypes.array.isRequired,
   extraLines: PropTypes.array,
   from: PropTypes.object.isRequired,
+  id: PropTypes.number.isRequired,
   to: PropTypes.array.isRequired,
 };

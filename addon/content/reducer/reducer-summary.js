@@ -125,21 +125,22 @@ export const summaryActions = {
         .catch(console.error);
     };
   },
-  sendEmail({ name, email }) {
+  sendEmail({ msgId, name, email }) {
     return async (dispatch, getState) => {
       let dest = await browser.convContacts.makeMimeAddress({
         name,
         email,
       });
-      let tab = await browser.mailTabs.query({
-        active: true,
-        currentWindow: true,
-      });
-      let account = await browser.accounts.get(
-        tab[0].displayedFolder.accountId
-      );
+      let msg = getState().messages.msgData.find((m) => m.id == msgId);
+      let account = await browser.accounts.get(msg.folderAccountId);
+      let identityId;
+      if (!account) {
+        identityId = (await browser.accounts.list())[0].identityId;
+      } else {
+        identityId = account.identities[0]?.id;
+      }
       await browser.compose.beginNew({
-        identityId: account.identities[0]?.id,
+        identityId,
         to: dest,
       });
     };

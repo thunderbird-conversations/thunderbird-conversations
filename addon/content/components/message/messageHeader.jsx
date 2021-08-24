@@ -126,7 +126,7 @@ function Email({ email }) {
 }
 Email.propTypes = { email: PropTypes.string.isRequired };
 
-export function DetailedContactLabel({ contact, className }) {
+export function DetailedContactLabel({ contact, className, msgId }) {
   // This component conditionally renders.
   // In a detail view, there is a star at the start of the contact
   // info and a line break at the end.
@@ -144,6 +144,7 @@ export function DetailedContactLabel({ contact, className }) {
         <ContactDetail
           name={contact.name}
           email={contact.displayEmail}
+          msgId={msgId}
           realEmail={contact.email}
           avatar={contact.avatar}
           contactId={contact.contactId}
@@ -165,9 +166,10 @@ export function DetailedContactLabel({ contact, className }) {
 DetailedContactLabel.propTypes = {
   className: PropTypes.string.isRequired,
   contact: PropTypes.object.isRequired,
+  msgId: PropTypes.number.isRequired,
 };
 
-export function ContactLabel({ contact, className }) {
+export function ContactLabel({ contact, className, msgId }) {
   // This component conditionally renders.
   let emailLabel = contact.displayEmail && (
     <span className="smallEmail">
@@ -182,6 +184,7 @@ export function ContactLabel({ contact, className }) {
         <ContactDetail
           name={contact.name}
           email={contact.displayEmail}
+          msgId={msgId}
           realEmail={contact.email}
           avatar={contact.avatar}
           contactId={contact.contactId}
@@ -201,6 +204,7 @@ export function ContactLabel({ contact, className }) {
 ContactLabel.propTypes = {
   className: PropTypes.string.isRequired,
   contact: PropTypes.object.isRequired,
+  msgId: PropTypes.number.isRequired,
 };
 
 function Avatar({ url, initials, isDefault, style }) {
@@ -305,7 +309,12 @@ export function MessageHeader({
             }
             const contact = allToMap.get(item.value);
             return (
-              <ContactLabel className="to" contact={contact} key={item.value} />
+              <ContactLabel
+                className="to"
+                contact={contact}
+                key={item.value}
+                msgId={id}
+              />
             );
           })}{" "}
       </React.Fragment>
@@ -332,7 +341,7 @@ export function MessageHeader({
           style={from.colorStyle}
           initials={from.initials}
         />{" "}
-        <ContactLabel className="author" contact={from} />
+        <ContactLabel className="author" contact={from} msgId={id} />
         {extraContacts}
         {!expanded && (
           <span className="snippet">
