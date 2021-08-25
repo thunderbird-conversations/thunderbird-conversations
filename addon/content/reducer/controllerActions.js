@@ -159,7 +159,7 @@ export const controllerActions = {
         (await browser.conversations.getCorePref(
           "mailnews.mark_message_read.auto"
         )) &&
-        (await browser.conversations.getCorePref(
+        !(await browser.conversations.getCorePref(
           "mailnews.mark_message_read.delay"
         ));
 
