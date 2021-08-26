@@ -82,7 +82,7 @@ export class Window {
         /** @type {AddPillMessage} */
         const pillMessage = msg;
         browser.convMsgWindow.addSpecialTag({
-          msgId: pillMessage.msgId,
+          id: pillMessage.msgId,
           icon: pillMessage.icon ?? "material-icons.svg#edit",
           classNames: pillMessage.severity,
           message: pillMessage.message,

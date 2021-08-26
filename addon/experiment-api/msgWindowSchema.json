@@ -65,7 +65,7 @@
             "name": "tagDetails",
             "type": "object",
             "properties": {
-              "msgId": {
+              "id": {
                 "type": "number",
                 "description": "The message id to add the tag to."
               },
