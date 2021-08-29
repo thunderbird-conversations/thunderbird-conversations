@@ -65,14 +65,14 @@ export class Window {
      *  The type of the received message.
      * @property {number} msgId
      *   The id of the associated Message from the WebExtension APIs.
-     * @property {string?} icon
-     *   The optional icon of the pill.
+     * @property {Severity} [severity]
+     *   The severity of the pill. Defaults to normal.
+     * @property {string} [icon]
+     *   The optional icon of the pill. Musst be an "moz-extension://" url.
      * @property {string} message
      *   The text of the pill.
-     * @property {string[]} tooltip
-     *   The tooltip of the pill.
-     * @property {Severity} severity
-     *   The severity of the pill.
+     * @property {string[]} [tooltip]
+     *   The optional tooltip of the pill.
      */
     browser.runtime.onConnectExternal.addListener(async (port) => {
       port.onMessage.addListener((msg) => {
@@ -81,12 +81,20 @@ export class Window {
         }
         /** @type {AddPillMessage} */
         const pillMessage = msg;
+
+        if (
+          pillMessage.icon &&
+          !pillMessage.icon.startsWith("moz-extension://")
+        ) {
+          pillMessage.icon = undefined;
+        }
+
         browser.convMsgWindow.addSpecialTag({
           id: pillMessage.msgId,
+          classNames: pillMessage.severity ?? "normal",
           icon: pillMessage.icon ?? "material-icons.svg#edit",
-          classNames: pillMessage.severity,
           message: pillMessage.message,
-          tooltip: pillMessage.tooltip,
+          tooltip: pillMessage.tooltip ?? [],
         });
       });
     });
