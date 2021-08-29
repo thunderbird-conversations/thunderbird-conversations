@@ -785,6 +785,11 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
   margin-inline-end: 0.2em;
 }
 
+.messageHeader img {
+  /* Override ".messageHeader img" to default ".icon" */
+  vertical-align: -0.4em;
+}
+
 .special-tag {
   position: relative;
 }
