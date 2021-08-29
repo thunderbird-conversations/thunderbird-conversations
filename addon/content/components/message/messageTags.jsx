@@ -108,7 +108,7 @@ export function SpecialMessageTagIcon({ fullPath }) {
 SpecialMessageTagIcon.propTypes = { fullPath: PropTypes.string };
 
 /**
- * Handles display of the DKIM tooltip.
+ * Handles display of the SpecialMessageTag tooltip.
  *
  * @param {object} root0
  * @param {string[]} root0.strings
@@ -131,20 +131,20 @@ SpecialMessageTagTooltip.propTypes = { strings: PropTypes.array.isRequired };
  * A generic handler for display of message tags.
  *
  * @param {object} root0
+ * @param {string} root0.classNames
  * @param {string} root0.icon
  * @param {string} root0.name
  * @param {string} root0.title
  * @param {string} root0.tooltip
  * @param {Function} root0.onClick
- * @param {string} root0.classNames
  */
 export function SpecialMessageTag({
+  classNames,
   icon,
   name,
   title = "",
   tooltip = {},
   onClick = null,
-  classNames,
 }) {
   return (
     <li
