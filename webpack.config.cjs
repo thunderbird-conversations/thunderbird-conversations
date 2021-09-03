@@ -4,7 +4,7 @@ const path = require("path");
 
 const development = process.env.NODE_ENV === "development";
 module.exports = {
-  devtool: development ? "eval-source-map" : false,
+  devtool: development ? "source-map" : false,
   entry: {
     compose: "./addon/compose/compose-render.js",
     gallery: "./addon/gallery/gallery.jsx",

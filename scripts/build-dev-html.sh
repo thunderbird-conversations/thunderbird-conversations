@@ -12,7 +12,6 @@ then
   WATCH_FLAG="--watch"
 fi
 
-rm -rf $DIST
 mkdir -p $VENDOR_DIR
 
 cp LICENSE README.md $DIST/
