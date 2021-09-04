@@ -64,11 +64,9 @@ export const summaryActions = {
           return;
         }
         if (!state.messages.msgData.find((m) => m.id == msgId)) {
-          console.log("could not find");
           return;
         }
-        console.log("print", winId, msgId);
-        browser.convMsgWindow.print(winId, "msg");
+        browser.convMsgWindow.print(winId, `convIframe${msgId}`);
       }
 
       browser.messageDisplay.onMessagesDisplayed.addListener(
