@@ -6,3 +6,4 @@ conversations.xpi
 dist
 dist-dev-html
 node_modules
+web-ext-artifacts
