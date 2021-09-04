@@ -34,6 +34,25 @@
             "optional": true
           }
         ]
+      },
+      {
+        "name": "print",
+        "type": "function",
+        "description": "Prints an iframe in the multimessage view of the given window.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "window",
+            "type": "integer",
+            "minimum": -2,
+            "description": "The window id."
+          },
+          {
+            "name": "iframeId",
+            "type": "string",
+            "description": "The iframe id."
+          }
+        ]
       }
     ],
     "events": [
@@ -104,6 +123,25 @@
         "type": "function",
         "description": "Temporary. Fake Listener, actually used for hooking into summarize thread.",
         "parameters": []
+      },
+      {
+        "name": "onPrint",
+        "type": "function",
+        "description": "Temporary. Used for hooking into the print menu.",
+        "parameters": [
+          {
+            "name": "window",
+            "type": "integer",
+            "optional": true,
+            "minimum": -2,
+            "description": "The window id."
+          },
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "The message id."
+          }
+        ]
       }
     ]
   }
