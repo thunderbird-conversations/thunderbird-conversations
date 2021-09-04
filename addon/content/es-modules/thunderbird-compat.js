@@ -251,6 +251,12 @@ if (!browser.convCompose) {
   };
 }
 
+if (!browser.convMsgWindow) {
+  browser.convMsgWindow = {
+    async fireLoadCompleted() {},
+  };
+}
+
 if (!browser.compose) {
   browser.compose = {
     async beginNew() {},
