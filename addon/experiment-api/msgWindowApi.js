@@ -322,7 +322,6 @@ const remoteContentPatch = (win, id, context) => {
 
 const specialPatches = (win) => {
   win.conversationUndoFuncs = [];
-  const htmlpane = win.document.getElementById("multimessage");
   const messagepane = win.document.getElementById("messagepane");
 
   win.document
@@ -364,9 +363,6 @@ const specialPatches = (win) => {
     messagepane.removeEventListener("load", fightAboutBlank, true)
   );
   fightAboutBlank();
-
-  // Never allow prefetch, as we don't want to leak for pages.
-  htmlpane.docShell.allowDNSPrefetch = false;
 };
 
 function isSelectionExpanded(win) {
