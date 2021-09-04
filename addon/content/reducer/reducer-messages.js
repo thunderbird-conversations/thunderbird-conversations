@@ -196,15 +196,8 @@ export const messageActions = {
     };
   },
   selected({ id }) {
-    return async () => {
-      if (window.Conversations?.currentConversation) {
-        const msg =
-          window.Conversations.currentConversation.getMessageByApiId(id);
-        if (msg) {
-          msg.onSelected();
-        }
-      }
-    };
+    // TODO: Do we still need this.
+    return async () => {};
   },
   toggleConversationRead({ read }) {
     return async (dispatch, getState) => {

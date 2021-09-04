@@ -40,11 +40,6 @@ XPCOMUtils.defineLazyGetter(this, "gMessenger", function () {
  * @see https://searchfox.org/mozilla-central/rev/ac36d76c7aea37a18afc9dd094d121f40f7c5441/netwerk/base/nsIURI.idl
  */
 
-const { getHooks } = ChromeUtils.import(
-  "chrome://conversations/content/modules/hook.js",
-  {}
-);
-
 XPCOMUtils.defineLazyGetter(this, "Log", () => {
   return setupLogging("Conversations.Message");
 });
@@ -105,9 +100,6 @@ class Message {
     // Filled by the conversation, useful to know whether we were initially the
     //  first message in the conversation or not...
     this.initialPosition = -1;
-
-    // Selected state for onSelected function
-    this._selected = false;
   }
 
   get reactData() {
@@ -143,30 +135,6 @@ class Message {
         smimeReload: true,
       })
     );
-  }
-
-  // This function should be called whenever the message is selected
-  // by focus, click, scrollNodeIntoView, etc.
-  onSelected() {
-    if (this._selected) {
-      return;
-    }
-
-    // We run below code only for the first time after messages selected.
-    Log.debug("A message is selected:", this._id);
-    for (let { message } of this._conversation.messages) {
-      message._selected = message == this;
-    }
-
-    try {
-      for (let h of getHooks()) {
-        if (typeof h.onMessageSelected == "function") {
-          h.onMessageSelected(this);
-        }
-      }
-    } catch (e) {
-      console.error("Plugin returned an error:", e);
-    }
   }
 
   get iframe() {
