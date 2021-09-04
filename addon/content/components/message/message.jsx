@@ -420,6 +420,7 @@ export class Message extends React.PureComponent {
               expanded={this.props.message.expanded}
               hasRemoteContent={this.props.message.hasRemoteContent}
               smimeReload={this.props.message.smimeReload}
+              id={this.props.message.id}
               isInTab={this.props.isInTab}
               initialPosition={this.props.message.initialPosition}
               isStandalone={this.props.isStandalone}

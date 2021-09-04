@@ -73,17 +73,20 @@ export const summaryActions = {
       browser.messageDisplay.onMessagesDisplayed.addListener(
         selectionChangedListener
       );
-      browser.convMsgWindow.onPrint.addListener(printListener);
-      window.addEventListener(
-        "unload",
-        () => {
-          browser.messageDisplay.onMessagesDisplayed.removeListener(
-            selectionChangedListener
-          );
-          browser.convMsgWindow.onPrint.removeListener(printListener);
-        },
-        { once: true }
-      );
+      if (getState().summary.hasBuiltInPdf) {
+        // Only override print on TB 91 and later.
+        browser.convMsgWindow.onPrint.addListener(printListener);
+        window.addEventListener(
+          "unload",
+          () => {
+            browser.messageDisplay.onMessagesDisplayed.removeListener(
+              selectionChangedListener
+            );
+            browser.convMsgWindow.onPrint.removeListener(printListener);
+          },
+          { once: true }
+        );
+      }
     };
   },
   /**
@@ -350,6 +353,8 @@ export const summarySlice = RTK.createSlice({
         defaultFontSize,
         defaultDetailsShowing,
         // Thunderbird 81 has built-in PDF viewer.
+        // Note: the logic here is the wrong way around, but not bothering
+        // to change that on the 3.2+ branch.
         hasBuiltInPdf: mainVersion >= 81,
         hasIdentityParamsForCompose:
           mainVersion > 78 || (mainVersion == 78 && minorVersion >= 6),

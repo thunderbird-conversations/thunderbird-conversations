@@ -130,7 +130,6 @@ export const controllerActions = {
         })
       );
 
-      await dispatch(summaryActions.setupListeners());
       await dispatch(summaryActions.setupUserPreferences());
 
       const platformInfo = await browser.runtime.getPlatformInfo();
@@ -157,6 +156,7 @@ export const controllerActions = {
           OS: platformInfo.os,
         })
       );
+      await dispatch(summaryActions.setupListeners());
 
       if (getState().summary.prefs.loggingEnabled) {
         console.debug(`Initializing ${isInTab ? "tab" : "message pane"} view.`);

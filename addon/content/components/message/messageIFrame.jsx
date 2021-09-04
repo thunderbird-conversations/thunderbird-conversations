@@ -634,6 +634,7 @@ MessageIFrame.propTypes = {
   dispatch: PropTypes.func.isRequired,
   expanded: PropTypes.bool.isRequired,
   hasRemoteContent: PropTypes.bool.isRequired,
+  id: PropTypes.number.isRequired,
   isInTab: PropTypes.bool.isRequired,
   isStandalone: PropTypes.bool.isRequired,
   initialPosition: PropTypes.number.isRequired,
