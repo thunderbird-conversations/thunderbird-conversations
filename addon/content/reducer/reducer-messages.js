@@ -486,6 +486,12 @@ export const messagesSlice = RTK.createSlice({
         isPhishing: payload.isPhishing,
       }));
     },
+    setPrintBody(state, { payload }) {
+      return modifyOnlyMsg(state, payload.id, (msg) => ({
+        ...msg,
+        printBody: payload.printBody,
+      }));
+    },
     setSmimeReload(state, { payload }) {
       return modifyOnlyMsg(state, payload.id, (msg) => ({
         ...msg,

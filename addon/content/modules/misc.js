@@ -6,7 +6,6 @@ var EXPORTED_SYMBOLS = [
   "setupLogging",
   "topMail3Pane",
   "parseMimeLine",
-  "htmlToPlainText",
   "getMail3Pane",
   "msgUriToMsgHdr",
   "msgHdrGetUri",
@@ -108,33 +107,6 @@ function parseMimeLine(mimeLine, dontFix) {
     return [];
   }
   return [{ email: "", name: "-", fullName: "-" }];
-}
-
-/**
- * Convert HTML into text/plain suitable for insertion right away in the mail
- *  body. If there is text with &gt;'s at the beginning of lines, these will be
- *  space-stuffed, and the same goes for Froms. &lt;blockquote&gt;s will be converted
- *  with the suitable &gt;'s at the beginning of the line, and so on...
- * This function also takes care of rewrapping at 72 characters, so your quoted
- *  lines will be properly wrapped too. This means that you can add some text of
- *  your own, and then pass this to simpleWrap, it should "just work" (unless
- *  the user has edited a quoted line and made it longer than 990 characters, of
- *  course).
- *
- * @param {string} aHtml A string containing the HTML that's to be converted.
- * @returns {string} A text/plain string suitable for insertion in a mail body.
- */
-function htmlToPlainText(aHtml) {
-  // Yes, this is ridiculous, we're instanciating composition fields just so
-  //  that they call ConvertBufPlainText for us. But ConvertBufToPlainText
-  //  really isn't easily scriptable, so...
-  let fields = Cc[
-    "@mozilla.org/messengercompose/composefields;1"
-  ].createInstance(Ci.nsIMsgCompFields);
-  fields.body = aHtml;
-  fields.forcePlainText = true;
-  fields.ConvertBodyToPlainText();
-  return fields.body;
 }
 
 /**

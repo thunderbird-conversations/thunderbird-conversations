@@ -184,6 +184,8 @@ export class MessageIFrame extends React.Component {
     // want to scroll the message to view, since the user may be viewing somewhere
     // else.
     this.dueToExpansion = undefined;
+    this.iframe.classList.remove(`convIframe${prevProps.id}`);
+    this.iframe.classList.add(`convIframe${this.props.id}`);
     if (prevProps.id != this.props.id && this.props.expanded) {
       // This is a hack which ensures that the iframe is a minimal height, so
       // that when the message loads, the scroll height is set correctly, rather
@@ -252,7 +254,7 @@ export class MessageIFrame extends React.Component {
     );
     this.iframe.setAttribute("style", "height: 20px; overflow-y: hidden");
     this.iframe.setAttribute("type", "content");
-    this.iframe.setAttribute("id", `convIframe${this.props.id}`);
+    this.iframe.classList.add(`convIframe${this.props.id}`);
     this.div.appendChild(this.iframe);
 
     const docShell = this.iframe.contentWindow.docShell;

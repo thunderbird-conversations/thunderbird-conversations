@@ -12,7 +12,6 @@ const { XPCOMUtils } = ChromeUtils.import(
 
 XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
-  htmlToPlainText: "chrome://conversations/content/modules/misc.js",
   mimeMsgToContentSnippetAndMeta: "resource:///modules/gloda/GlodaContent.jsm",
   msgHdrGetUri: "chrome://conversations/content/modules/misc.js",
   MsgHdrToMimeMessage: "resource:///modules/gloda/MimeMessage.jsm",
@@ -318,55 +317,6 @@ class Message {
           isPhishing: true,
         })
       );
-    }
-  }
-
-  /**
-   * Returns the message's text, assuming it's been streamed already (i.e.
-   * expanded). We're extracting a plaintext version of the body from what's in
-   * the <iframe>, modulo a few cosmetic cleanups. The collapsed quoted parts
-   * are *not* included.
-   */
-  get bodyAsText() {
-    // This function tries to clean up the email's body by removing hidden
-    // blockquotes, removing signatures, etc. Note: sometimes there's a little
-    // quoted text left over, need to investigate why...
-    let prepare = function (aNode) {
-      let node = aNode.cloneNode(true);
-      for (let x of node.getElementsByClassName("moz-txt-sig")) {
-        if (x) {
-          x.remove();
-        }
-      }
-      for (let x of node.querySelectorAll("blockquote, div")) {
-        if (x?.style.display == "none") {
-          x.remove();
-        }
-      }
-      return node.innerHTML;
-    };
-    let body = htmlToPlainText(
-      prepare(this.iframe.contentWindow.document.body)
-    );
-    // Remove trailing newlines, it gives a bad appearance.
-    body = body.replace(/[\n\r]*$/, "");
-    return body;
-  }
-
-  /**
-   * Fills the bodyContainer <div> with the plaintext contents of the message
-   * for printing.
-   */
-  dumpPlainTextForPrinting() {
-    // printConversation from content/stub.html calls us, regardless of whether
-    // we've streamed the message yet, or not, so the iframe might not be ready
-    // yet. That's ok, since we will print the snippet anyway.
-    if (this.iframe) {
-      // Fill the text node that will end up being printed. We can't
-      // really print iframes, they don't wrap...
-      let bodyContainer =
-        this._domNode.getElementsByClassName("body-container")[0];
-      bodyContainer.textContent = this.bodyAsText;
     }
   }
 }

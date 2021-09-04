@@ -83,7 +83,7 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
           let win = getWindowFromId(winId);
           let multimessage = win.document.getElementById("multimessage");
           let messageIframe =
-            multimessage.contentDocument.getElementById(iframeId);
+            multimessage.contentDocument.getElementsByClassName(iframeId)[0];
           win.PrintUtils.startPrintWindow(messageIframe.browsingContext, {
             printFrameOnly: true,
           });

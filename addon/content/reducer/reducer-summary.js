@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* global Conversations, topMail3Pane, printConversation */
+/* global Conversations, topMail3Pane */
 import * as RTK from "@reduxjs/toolkit";
 import { conversationUtils } from "./conversationUtils.js";
 import { messageActions } from "./reducer-messages.js";
@@ -196,13 +196,24 @@ export const summaryActions = {
     };
   },
   printConversation() {
-    return () => {
-      // TODO: Fix printing
-      printConversation();
+    return async (dispatch, getState) => {
+      let state = getState();
+      let winId = state.summary.windowId;
+      for (let msg of state.messages.msgData) {
+        if (msg.expanded) {
+          await dispatch(
+            messageActions.setPrintBody({
+              id: msg.id,
+              printBody: await browser.conversations.bodyAsText(winId, msg.id),
+            })
+          );
+        }
+      }
+      window.print();
     };
   },
   forwardConversation() {
-    return async (dispay, getState) => {
+    return async (dispatch, getState) => {
       try {
         let state = getState();
         await conversationUtils.forward(

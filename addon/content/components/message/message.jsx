@@ -315,10 +315,6 @@ export class Message extends React.PureComponent {
   }
 
   render() {
-    // TODO: For printing, we used to have a container in-between the iframe
-    // and attachments container. Need to figure out how to get that back in
-    // and working.
-    // <div class="body-container"></div>
     return (
       <li
         className="message"
@@ -414,6 +410,9 @@ export class Message extends React.PureComponent {
               expanded={true}
               tags={this.props.message.tags}
             />
+          )}
+          {this.props.message.expanded && this.props.message.printBody && (
+            <div className="body-container">{this.props.message.printBody}</div>
           )}
           <ErrorBoundary>
             <MessageIFrame

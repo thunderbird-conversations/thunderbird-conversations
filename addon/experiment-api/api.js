@@ -682,6 +682,37 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             quoter.quoteMessage(msgUri, false, listener, "", false, msgHdr);
           });
         },
+        async bodyAsText(winId, msgId) {
+          // This function tries to clean up the email's body by removing hidden
+          // blockquotes, removing signatures, etc. Note: sometimes there's a little
+          // quoted text left over, need to investigate why...
+          let win = getWindowFromId(winId);
+          let prepare = function (aNode) {
+            let node = aNode.cloneNode(true);
+            for (let x of node.getElementsByClassName("moz-txt-sig")) {
+              if (x) {
+                x.remove();
+              }
+            }
+            for (let x of node.querySelectorAll("blockquote, div")) {
+              if (x?.style.display == "none") {
+                x.remove();
+              }
+            }
+            return node.innerHTML;
+          };
+          let multimessage = win.document.getElementById("multimessage");
+          let messageIframe =
+            multimessage.contentDocument.getElementsByClassName(
+              `convIframe${msgId}`
+            )[0];
+          let body = htmlToPlainText(
+            prepare(messageIframe.contentDocument.body)
+          );
+          // Remove trailing newlines, it gives a bad appearance.
+          body = body.replace(/[\n\r]*$/, "");
+          return body;
+        },
         onCallAPI: new ExtensionCommon.EventManager({
           context,
           name: "conversations.onCallAPI",
@@ -761,4 +792,31 @@ function getWindowFromId(windowManager, context, id) {
   return id !== null && id !== undefined
     ? windowManager.get(id, context).window
     : Services.wm.getMostRecentWindow("mail:3pane");
+}
+
+/**
+ * Convert HTML into text/plain suitable for insertion right away in the mail
+ *  body. If there is text with &gt;'s at the beginning of lines, these will be
+ *  space-stuffed, and the same goes for Froms. &lt;blockquote&gt;s will be converted
+ *  with the suitable &gt;'s at the beginning of the line, and so on...
+ * This function also takes care of rewrapping at 72 characters, so your quoted
+ *  lines will be properly wrapped too. This means that you can add some text of
+ *  your own, and then pass this to simpleWrap, it should "just work" (unless
+ *  the user has edited a quoted line and made it longer than 990 characters, of
+ *  course).
+ *
+ * @param {string} aHtml A string containing the HTML that's to be converted.
+ * @returns {string} A text/plain string suitable for insertion in a mail body.
+ */
+function htmlToPlainText(aHtml) {
+  // Yes, this is ridiculous, we're instanciating composition fields just so
+  //  that they call ConvertBufPlainText for us. But ConvertBufToPlainText
+  //  really isn't easily scriptable, so...
+  let fields = Cc[
+    "@mozilla.org/messengercompose/composefields;1"
+  ].createInstance(Ci.nsIMsgCompFields);
+  fields.body = aHtml;
+  fields.forcePlainText = true;
+  fields.ConvertBodyToPlainText();
+  return fields.body;
 }

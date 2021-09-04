@@ -457,6 +457,24 @@
             "description": "The message id to quote."
           }
         ]
+      },
+      {
+        "name": "bodyAsText",
+        "type": "function",
+        "description": "Get a displayed message body as text",
+        "async": true,
+        "parameters": [
+          {
+            "name": "windowId",
+            "type": "integer",
+            "description": "The window the message is displayed within."
+          },
+          {
+            "name": "msgId",
+            "type": "integer",
+            "description": "The message id to get the body for."
+          }
+        ]
       }
     ],
     "events": [

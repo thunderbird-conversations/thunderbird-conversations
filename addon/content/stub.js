@@ -2,18 +2,19 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* global conversationStore:true */
+/* global conversationStore:true, BrowserSim */
 import React from "react";
 import ReactDOM from "react-dom";
 import * as RTK from "@reduxjs/toolkit";
 import * as ReactRedux from "react-redux";
 import { conversationApp } from "./reducer/reducer.js";
-import { initialize } from "./reducer/reducer-deps.js";
 import { ConversationWrapper } from "./components/conversation/conversationWrapper.jsx";
 
 document.addEventListener(
   "DOMContentLoaded",
-  () => {
+  async () => {
+    globalThis.browser = await BrowserSim.getBrowserAsync();
+
     conversationStore = RTK.configureStore({
       reducer: conversationApp,
       middleware: RTK.getDefaultMiddleware(),
@@ -21,21 +22,17 @@ document.addEventListener(
 
     // Once we can potentially load in a WebExtension scope, then we should
     // be able to remove this.
-    initialize()
-      .then(() => {
-        const conversationContainer = document.getElementById(
-          "conversationWrapper"
-        );
-        ReactDOM.render(
-          React.createElement(
-            ReactRedux.Provider,
-            { store: conversationStore },
-            React.createElement(ConversationWrapper)
-          ),
-          conversationContainer
-        );
-      })
-      .catch(console.error);
+    const conversationContainer = document.getElementById(
+      "conversationWrapper"
+    );
+    ReactDOM.render(
+      React.createElement(
+        ReactRedux.Provider,
+        { store: conversationStore },
+        React.createElement(ConversationWrapper)
+      ),
+      conversationContainer
+    );
   },
   { once: true }
 );

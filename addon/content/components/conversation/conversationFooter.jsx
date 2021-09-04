@@ -32,13 +32,12 @@ class _ConversationFooter extends React.PureComponent {
         <a className="link" onClick={this.forwardConversation}>
           {browser.i18n.getMessage("message.forwardConversation")}
         </a>{" "}
+        –{" "}
+        <a className="link" onClick={this.printConversation}>
+          {browser.i18n.getMessage("message.printConversation")}
+        </a>
       </div>
     );
-    // TODO: Get printing working again.
-    // –{" "}
-    // <a className="link" onClick={this.printConversation}>
-    //   {browser.i18n.getMessage("message.printConversation")}
-    // </a>
   }
 }
 
