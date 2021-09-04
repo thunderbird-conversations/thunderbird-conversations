@@ -252,6 +252,7 @@ export class MessageIFrame extends React.Component {
     );
     this.iframe.setAttribute("style", "height: 20px; overflow-y: hidden");
     this.iframe.setAttribute("type", "content");
+    this.iframe.setAttribute("id", "msg");
     this.div.appendChild(this.iframe);
 
     const docShell = this.iframe.contentWindow.docShell;

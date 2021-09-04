@@ -35,6 +35,25 @@
             "description": "The window id."
           }
         ]
+      },
+      {
+        "name": "print",
+        "type": "function",
+        "description": "Prints an iframe in the multimessage view of the given window.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "window",
+            "type": "integer",
+            "minimum": -2,
+            "description": "The window id."
+          },
+          {
+            "name": "iframeId",
+            "type": "string",
+            "description": "The iframe id."
+          }
+        ]
       }
     ],
     "events": [
@@ -111,6 +130,25 @@
         "type": "function",
         "description": "Temporary. Used for listening to if messages have remote content or not.",
         "parameters": [
+          {
+            "name": "id",
+            "type": "integer",
+            "description": "The message id."
+          }
+        ]
+      },
+      {
+        "name": "onPrint",
+        "type": "function",
+        "description": "Temporary. Used for hooking into the print menu.",
+        "parameters": [
+          {
+            "name": "window",
+            "type": "integer",
+            "optional": true,
+            "minimum": -2,
+            "description": "The window id."
+          },
           {
             "name": "id",
             "type": "integer",

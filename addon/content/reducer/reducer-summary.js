@@ -47,8 +47,8 @@ export const summaryActions = {
    */
   setupListeners() {
     return async (dispatch, getState) => {
-      let state = getState();
       function selectionChangedListener(tab) {
+        let state = getState();
         if (state.summary.tabId != tab.id) {
           return;
         }
@@ -58,15 +58,30 @@ export const summaryActions = {
         }
       }
 
+      function printListener(winId, msgId) {
+        let state = getState();
+        if (state.summary.windowId != winId) {
+          return;
+        }
+        if (!state.messages.msgData.find((m) => m.id == msgId)) {
+          console.log("could not find");
+          return;
+        }
+        console.log("print", winId, msgId);
+        browser.convMsgWindow.print(winId, "msg");
+      }
+
       browser.messageDisplay.onMessagesDisplayed.addListener(
         selectionChangedListener
       );
+      browser.convMsgWindow.onPrint.addListener(printListener);
       window.addEventListener(
         "unload",
         () => {
           browser.messageDisplay.onMessagesDisplayed.removeListener(
             selectionChangedListener
           );
+          browser.convMsgWindow.onPrint.removeListener(printListener);
         },
         { once: true }
       );
