@@ -76,36 +76,8 @@ async function setupConversationInTab(params, isInTab) {
       browserFrame.setAttribute("context", "mailContext");
     }
 
-    freshConversation.outputInto(window, async function (aConversation) {
-      // This is a stripped-down version of what's in msgWindowApi.js,
-      //  make sure the two are in sync!
-      window.Conversations.currentConversation = aConversation;
-      // Create a new rule that will override the default rule, so that
-      // the expanded quick reply is twice higher.
-      document.body.classList.add("inTab");
-      // Do this now so as to not defeat the whole expand/collapse
-      // logic.
-      if (
-        await browser.conversations.getCorePref(
-          "mailnews.mark_message_read.auto"
-        )
-      ) {
-        const markAsReadAfterDelay = await browser.conversations.getCorePref(
-          "mailnews.mark_message_read.delay"
-        );
-        let markAsReadDelay = 0;
-        if (markAsReadAfterDelay) {
-          markAsReadDelay = await browser.conversations.getCorePref(
-            "mailnews.mark_message_read.delay.interval"
-          );
-        }
-        setTimeout(function () {
-          for (const id of msgIds) {
-            browser.messages.update(id, { read: true }).catch(console.error);
-          }
-        }, markAsReadDelay * 1000);
-      }
-    });
+    window.Conversations.currentConversation = freshConversation;
+    freshConversation.outputInto(window);
   }
 }
 
@@ -282,7 +254,8 @@ export const controllerActions = {
               Date.now() - summary.loadingStartedTime
             );
           }
-          await dispatch(summaryActions.setMarkAsRead());
+          await browser.convMsgWindow.fireLoadCompleted();
+          await dispatch(summaryActions.maybeSetMarkAsRead());
         }
       });
     };

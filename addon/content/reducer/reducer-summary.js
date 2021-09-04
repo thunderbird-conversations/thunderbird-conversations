@@ -236,7 +236,7 @@ export const summaryActions = {
       }
     };
   },
-  setMarkAsRead() {
+  maybeSetMarkAsRead() {
     return async (dispatch, getState) => {
       let state = getState();
 

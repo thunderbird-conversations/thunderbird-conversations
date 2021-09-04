@@ -75,6 +75,10 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
           let features = "chrome,resizable,titlebar,minimizable";
           win.openDialog(url, "_blank", features, args);
         },
+        async fireLoadCompleted(winId) {
+          let win = getWindowFromId(winId);
+          win.gMessageDisplay.onLoadCompleted();
+        },
         onThreadPaneDoubleClick: new ExtensionCommon.EventManager({
           context,
           name: "convMsgWindow.onThreadPaneDoubleClick",
@@ -520,17 +524,7 @@ function summarizeThreadHandler(win, id) {
         );
         win.Conversations.currentConversation?.cleanup();
         win.Conversations.currentConversation = freshConversation;
-        freshConversation.outputInto(
-          htmlpane.contentWindow,
-          async function (aConversation) {
-            if (!aConversation.messages.length) {
-              Log.debug("0 messages in aConversation");
-              return;
-            }
-
-            win.gMessageDisplay.onLoadCompleted();
-          }
-        );
+        freshConversation.outputInto(htmlpane.contentWindow);
       }
     );
   };

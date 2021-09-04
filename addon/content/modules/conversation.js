@@ -161,8 +161,6 @@ function Conversation(win, selectedMessages, counter, isInTab = false) {
   this.counter = counter; // RO
   // The Gloda query, so that it's not collected.
   this._query = null;
-  // Function provided by the monkey-patch to do cleanup
-  this._onComplete = null;
   // Set to true by the monkey-patch once the conversation is fully built.
   this.completed = false;
   // Ok, interesting bit. Thunderbird has that non-strict threading thing, i.e.
@@ -190,7 +188,6 @@ Conversation.prototype = {
   // garbage collected.
   cleanup() {
     delete this._query;
-    delete this._onComplete;
     delete this._htmlPane;
   },
 
@@ -609,18 +606,12 @@ Conversation.prototype = {
         },
       })
     );
-
-    // Now tell the monkeypatch that we've queued everything up.
-    Services.tm.dispatchToMainThread(() =>
-      this._onComplete().catch(console.error)
-    );
   },
 
   // This is the starting point, this is where the Monkey-Patched threadSummary
   // or the event handlers ask for a conversation.
   outputInto(aHtmlPane, k) {
     this._htmlPane = aHtmlPane;
-    this._onComplete = () => k(this);
     this._fetchMessages();
   },
 };

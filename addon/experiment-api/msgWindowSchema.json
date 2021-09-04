@@ -20,6 +20,21 @@
             "optional": true
           }
         ]
+      },
+      {
+        "name": "fireLoadCompleted",
+        "type": "function",
+        "description": "Fires onLoadCompleted in the given window.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "window",
+            "type": "integer",
+            "optional": true,
+            "minimum": -2,
+            "description": "The window id."
+          }
+        ]
       }
     ],
     "events": [
