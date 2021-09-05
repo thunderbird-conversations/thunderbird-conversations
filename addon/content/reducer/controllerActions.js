@@ -254,7 +254,11 @@ export const controllerActions = {
               Date.now() - summary.loadingStartedTime
             );
           }
-          await browser.convMsgWindow.fireLoadCompleted();
+          // TODO: Fix this for the standalone message view, so that we send
+          // the correct notifications.
+          if (!state.summary.isInTab) {
+            await browser.convMsgWindow.fireLoadCompleted();
+          }
           await dispatch(summaryActions.maybeSetMarkAsRead());
         }
       });
