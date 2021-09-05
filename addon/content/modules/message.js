@@ -178,39 +178,6 @@ class Message {
     return this._msgHdr.isRead;
   }
 
-  addSpecialTag(tagDetails) {
-    this._conversation._htmlPane.conversationDispatch(
-      messageActions.msgAddSpecialTag({
-        tagDetails,
-        id: this._id,
-      })
-    );
-  }
-
-  removeSpecialTag(tagDetails) {
-    this._conversation._htmlPane.conversationDispatch(
-      messageActions.msgRemoveSpecialTag({
-        tagDetails,
-        id: this._id,
-      })
-    );
-    // this._specialTags = this.specialTags.filter(t => t.name != tagDetails.name);
-  }
-
-  streamMessage(msgWindow, docshell) {
-    const neckoUrl = msgHdrToNeckoURL(this._msgHdr).spec;
-
-    const messageService = gMessenger.messageServiceFromURI(neckoUrl);
-    messageService.DisplayMessage(
-      this._uri + "&markRead=false",
-      docshell,
-      msgWindow,
-      undefined,
-      undefined,
-      {}
-    );
-  }
-
   postStreamMessage(mainWindow, iframe) {
     // Notify hooks that we just finished displaying a message. Must be
     //  performed now, not later. This gives plugins a chance to modify

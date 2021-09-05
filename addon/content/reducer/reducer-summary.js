@@ -254,21 +254,15 @@ export const summaryActions = {
       if (!dueToExpansion) {
         dispatch(summarySlice.actions.incIframesLoading());
       }
-
+      let state = getState();
       await browser.convOpenPgp.beforeStreamingMessage(
-        getState().summary.tabId,
+        state.summary.tabId,
         id,
         dueToReload
       );
-
-      let msg = Conversations.currentConversation.getMessageByApiId(id);
-      // The message might not be found, if so it has probably been deleted from
-      // under us, so just continue and not blow up.
-      if (msg) {
-        msg.streamMessage(topMail3Pane(window).msgWindow, docshell);
-      } else {
-        console.warn("Could not find message for streaming", id);
-      }
+      await browser.conversations
+        .streamMessage(state.summary.windowId, id, `convIframe${id}`)
+        .catch(console.error);
     };
   },
   maybeSetMarkAsRead() {

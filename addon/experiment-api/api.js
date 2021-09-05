@@ -25,6 +25,10 @@ XPCOMUtils.defineLazyModuleGetters(this, {
 
 XPCOMUtils.defineLazyGlobalGetters(this, ["TextDecoder"]);
 
+XPCOMUtils.defineLazyGetter(this, "messenger", () =>
+  Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger)
+);
+
 // To help updates to apply successfully, we need to properly unload the modules
 // that Conversations loads.
 const conversationModules = [
@@ -42,6 +46,10 @@ const conversationModules = [
 /**
  * @typedef nsIMsgDBHdr
  * @see https://searchfox.org/comm-central/rev/9d9fac50cddfd9606a51c4ec3059728c33d58028/mailnews/base/public/nsIMsgHdr.idl#14
+ */
+/**
+ * @typedef nsIURI
+ * @see https://searchfox.org/mozilla-central/rev/ac36d76c7aea37a18afc9dd094d121f40f7c5441/netwerk/base/nsIURI.idl
  */
 
 const kAllowRemoteContent = 2;
@@ -346,9 +354,6 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           return msgHdr.folder.getUriForMsg(msgHdr);
         },
         async formatFileSize(size) {
-          const messenger = Cc["@mozilla.org/messenger;1"].createInstance(
-            Ci.nsIMessenger
-          );
           return messenger.formatFileSize(size);
         },
         async createTab(createTabProperties) {
@@ -705,6 +710,27 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           // Remove trailing newlines, it gives a bad appearance.
           body = body.replace(/[\n\r]*$/, "");
           return body;
+        },
+        async streamMessage(winId, msgId, iframeClass) {
+          let msgHdr = context.extension.messageManager.get(msgId);
+          let win = getWindowFromId(winId);
+          let uri = msgHdr.folder.getUriForMsg(msgHdr);
+          let msgService = messenger.messageServiceFromURI(uri);
+
+          let multimessage = win.document.getElementById("multimessage");
+          let messageIframe =
+            multimessage.contentDocument.getElementsByClassName(iframeClass)[0];
+          let docShell = messageIframe.contentWindow.docShell;
+          docShell.appType = Ci.nsIDocShell.APP_TYPE_MAIL;
+
+          msgService.DisplayMessage(
+            uri + "&markRead=false",
+            docShell,
+            win.msgWindow,
+            undefined,
+            undefined,
+            {}
+          );
         },
         onCallAPI: new ExtensionCommon.EventManager({
           context,
