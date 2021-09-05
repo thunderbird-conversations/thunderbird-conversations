@@ -443,7 +443,6 @@ class MessageFromDbHdr extends Message {
                 this.mailingLists = [r[1]];
               }
             }
-            Log.debug(this.mailingLists);
 
             this.isReplyListEnabled =
               aMimeMsg &&
@@ -495,7 +494,6 @@ class MessageFromDbHdr extends Message {
   async _fallbackSnippet() {
     Log.debug("Using the default streaming code...");
     let body = msgHdrToMessageBody(this._msgHdr, true, kSnippetLength);
-    Log.debug("Body is", body);
     this._snippet = body.substring(0, kSnippetLength - 1);
   }
 }
