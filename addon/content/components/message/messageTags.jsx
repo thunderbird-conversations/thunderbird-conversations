@@ -127,12 +127,44 @@ function SpecialMessageTagTooltip({ strings }) {
 }
 SpecialMessageTagTooltip.propTypes = { strings: PropTypes.array.isRequired };
 
+function DisplayInfo({ info }) {
+  return (
+    <div className="tooltip extraDetails">
+      <div>
+        <strong>{info.signatureLabel}</strong>
+        <p>{info.signatureExplanation}</p>
+        <p>
+          <strong>{info.signatureKeyIdLabel}</strong>
+        </p>
+        <strong>{info.encryptionLabel}</strong>
+        <p>{info.encryptionExplanation}</p>
+        <p>
+          <strong>{info.encryptionKeyIdLabel}</strong>
+        </p>
+        <p>{info.otherKeysLabel}</p>
+        {info.otherKeys &&
+          info.otherKeys.map((key, i) => (
+            <div key={i}>
+              {key.name}
+              <br />
+              {key.id}
+            </div>
+          ))}
+      </div>
+    </div>
+  );
+}
+DisplayInfo.propTypes = {
+  info: PropTypes.object.isRequired,
+};
+
 /**
  * A generic handler for display of message tags.
  *
  * @param {object} root0
  * @param {string} root0.classNames
  * @param {string} root0.icon
+ * @param {object} root0.displayInfo
  * @param {string} root0.name
  * @param {string} root0.title
  * @param {string} root0.tooltip
@@ -141,17 +173,55 @@ SpecialMessageTagTooltip.propTypes = { strings: PropTypes.array.isRequired };
 export function SpecialMessageTag({
   classNames,
   icon,
+  displayInfo,
   name,
   title = "",
   tooltip = {},
   onClick = null,
 }) {
+  const [detailsExpanded, setDetailsExpanded] = React.useState(false);
+  let closeExpandedDetails = React.useCallback(() => {
+    setDetailsExpanded(false);
+  });
+  let closeExpandedKeypress = React.useCallback((event) => {
+    if (event.keyCode == KeyEvent.DOM_VK_ESCAPE) {
+      setDetailsExpanded(false);
+    }
+  });
+
+  React.useEffect(() => {
+    document.addEventListener("blur", closeExpandedDetails);
+    document.addEventListener("click", closeExpandedDetails);
+    document.addEventListener("keypress", closeExpandedKeypress);
+
+    return () => {
+      document.removeEventListener("blur", closeExpandedDetails);
+      document.removeEventListener("click", closeExpandedDetails);
+      document.removeEventListener("keypress", closeExpandedKeypress);
+    };
+  }, []);
+
+  function onInternalClick(event) {
+    if (!displayInfo) {
+      onClick(event);
+      return;
+    }
+    event.preventDefault();
+    event.stopPropagation();
+    if (detailsExpanded) {
+      setDetailsExpanded(false);
+    } else {
+      setDetailsExpanded(true);
+    }
+  }
+
   return (
     <li
       className={classNames + " special-tag" + (onClick ? " can-click" : "")}
       title={title}
-      onClick={onClick}
+      onClick={onInternalClick}
     >
+      {detailsExpanded && displayInfo && <DisplayInfo info={displayInfo} />}
       {icon.startsWith("moz-extension://") ? (
         <SpecialMessageTagIcon fullPath={icon} />
       ) : (
@@ -167,6 +237,7 @@ export function SpecialMessageTag({
 
 SpecialMessageTag.propTypes = {
   classNames: PropTypes.string.isRequired,
+  displayInfo: PropTypes.object,
   icon: PropTypes.string.isRequired,
   name: PropTypes.string.isRequired,
   title: PropTypes.string,
@@ -208,10 +279,11 @@ export function SpecialMessageTags({
         specialTags.map((tag, i) => (
           <SpecialMessageTag
             classNames={tag.classNames}
+            displayInfo={tag.details?.displayInfo}
             icon={tag.icon}
             key={i}
             name={tag.name}
-            onClick={tag.details && ((event) => onTagClick(event, tag))}
+            onClick={(event) => tag.details && onTagClick(event, tag)}
             title={tag.title}
             tooltip={tag.tooltip}
           />

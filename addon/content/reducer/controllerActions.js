@@ -92,15 +92,8 @@ function onMsgHasRemoteContent(dispatch, id) {
 
 async function onUpdateSecurityStatus(
   dispatch,
-  { id, signedStatus, encryptionStatus, encryptionNotification }
+  { id, signedStatus, encryptionStatus, encryptionNotification, details }
 ) {
-  console.log(
-    "onUpdateSecurityStatus",
-    id,
-    signedStatus,
-    encryptionStatus,
-    encryptionNotification
-  );
   if (signedStatus) {
     await dispatch(
       messageActions.msgAddSpecialTag({
@@ -113,6 +106,7 @@ async function onUpdateSecurityStatus(
           details: {
             type: "enigmail",
             detail: "viewSecurityInfo",
+            displayInfo: details,
           },
           title:
             signedStatus == "warn"
@@ -132,13 +126,13 @@ async function onUpdateSecurityStatus(
       messageActions.msgAddSpecialTag({
         id,
         tagDetails: {
-          // canClick: true,
           classNames: "enigmail-decrypted",
           icon: "material-icons.svg#vpn_key",
           name: browser.i18n.getMessage("enigmail.messageDecrypted"),
           details: {
             type: "enigmail",
             detail: "viewSecurityInfo",
+            displayInfo: details,
           },
           title: browser.i18n.getMessage("enigmail.messageDecryptedLong"),
         },

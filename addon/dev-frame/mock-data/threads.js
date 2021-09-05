@@ -22,12 +22,44 @@ function cyclicPic(list, index) {
   return list[index % list.length];
 }
 
-function populateRequiredFields(message) {
+function populateRequiredFields(message, includeOpenPgpTags = false) {
   message.attachments = [];
   message.detailsShowing = false;
   message.expanded = false;
   message.recipientsIncludeLists = false;
   message.tags = [];
+  if (includeOpenPgpTags) {
+    message.specialTags = [
+      {
+        // canClick: true,
+        classNames: "enigmail-signed",
+        icon: "material-icons.svg#edit",
+        name: "Signed!",
+        details: {
+          type: "enigmail",
+          detail: "viewSecurityInfo",
+          displayInfo: {
+            signatureLabel: "Signature Label",
+            signatureExplanation: "This signature was / was not very good.",
+            signatureKeyIdLabel: "Key id: 0x00000000",
+            encryptionLabel: "Encryption Label",
+            encryptionExplanation: "This encryption was / was not very good.",
+            encryptionKeyIdLabel: "Enc id: 0x00000000",
+            otherKeysLabel:
+              "The message was encrypted to the owners of the following keys:",
+            otherKeys: [
+              {
+                name: "Me <me@example.com>",
+                id: "0x1234567890123455 (0x123456789012345)",
+              },
+            ],
+          },
+        },
+        title: "Definitely Signed!",
+        type: "openPgpSigned",
+      },
+    ];
+  }
   message.hasRemoteContent = false;
   message.smimeReload = false;
   message.realFrom = message.from?.email;
@@ -138,7 +170,7 @@ for (const info of THREAD_INFO) {
     const newMessage = { ...availableMessages.pop() };
     // Pick `from` to be from the recipients in the original email.
     newMessage.from = cyclicPic(recipients, i);
-    populateRequiredFields(newMessage);
+    populateRequiredFields(newMessage, i == info.length - 1);
     // Make the subject a never-ending chain of `Re: ...`
     newMessage.subject = "Re: " + thread[thread.length - 1].subject;
     populateEmailFields(newMessage, {

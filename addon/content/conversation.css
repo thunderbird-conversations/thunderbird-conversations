@@ -535,12 +535,33 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
   border: 1px solid black;
 }
 
+.tags.special-tags {
+  position: relative;
+}
+
+.special-tags .tooltip {
+  top: 1.8em;
+  line-height: 1.4rem;
+}
+
 .tags.special-tags li {
   background-color: #3f5381;
 }
 
 .tags li.can-click {
   cursor: pointer;
+}
+
+.extraDetails {
+  min-width: 50rem;
+}
+
+.extraDetails > div {
+  margin: 15px;
+}
+
+.extraDetails > div > p {
+  margin: 1rem;
 }
 
 .in-folder {

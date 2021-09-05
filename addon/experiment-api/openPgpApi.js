@@ -234,7 +234,6 @@ const securityStatusPatch = (win, id, context) => {
     extraDetails,
     mimePartNumber
   ) {
-    console.log(statusFlags);
     // Use original if the classic reader is used. If the contentDocument
     // does not exist, then the single view message pane hasn't been loaded
     // yet, so therefore the message must be loading in our window.
@@ -284,43 +283,259 @@ const securityStatusPatch = (win, id, context) => {
         encryptionStatus = "bad";
       }
 
-      // let encToDetails = "";
-      // if (extraDetails?.length) {
-      //   let o = JSON.parse(extraDetails);
-      //   if ("encryptedTo" in o) {
-      //     encToDetails = o.encryptedTo;
-      //   }
-      // }
+      let encToDetails = "";
+      if (extraDetails?.length) {
+        let o = JSON.parse(extraDetails);
+        if ("encryptedTo" in o) {
+          encToDetails = o.encryptedTo;
+        }
+      }
       //
       // let updateHdrIcons = function () {
-      //   win.Enigmail.hdrView.updateHdrIcons(
-      //     exitCode,
-      //     statusFlags,
-      //     extStatusFlags,
-      //     keyId,
-      //     userId,
-      //     sigDetails,
-      //     errorMsg,
-      //     blockSeparation,
-      //     encToDetails,
-      //     null
-      //   ); // xtraStatus
+      win.Enigmail.hdrView.updateHdrIcons(
+        exitCode,
+        statusFlags,
+        extStatusFlags,
+        keyId,
+        userId,
+        sigDetails,
+        errorMsg,
+        blockSeparation,
+        encToDetails,
+        null
+      ); // xtraStatus
       // };
       // showHdrIconsOnStreamed(message, updateHdrIcons);
-
-      // Maybe show signed label of encrypted and signed pgp/mime.
-      let signedStatus = getSignedStatus(statusFlags);
-      for (let listener of securityListeners) {
-        listener.async({
-          id,
-          signedStatus,
-          encryptionStatus,
-          encryptionNotification,
-        });
-      }
+      loadOpenPgpMessageSecurityInfo(win).then((details) => {
+        // Maybe show signed label of encrypted and signed pgp/mime.
+        let signedStatus = getSignedStatus(statusFlags);
+        for (let listener of securityListeners) {
+          listener.async({
+            id,
+            signedStatus,
+            encryptionStatus,
+            encryptionNotification,
+            details,
+          });
+        }
+      });
+      // win.Enigmail.hdrView.displayStatusBar();
     })();
   };
 };
+
+/**
+ * Populate the message security popup panel with OpenPGP data.
+ *
+ * This is a custom version of the one in Thunderbird from
+ * https://searchfox.org/comm-central/rev/66f17f6f4d6f0509fe3672081e3b912513a19f0a/mailnews/extensions/smime/msgReadSMIMEOverlay.js#306
+ *
+ * @param {object} win
+ *   The window the security info is being obtained from.
+ */
+async function loadOpenPgpMessageSecurityInfo(win) {
+  let sBundle = win.document.getElementById("bundle_smime_read_info");
+
+  if (!sBundle) {
+    return null;
+  }
+
+  let hdrView = win.Enigmail.hdrView;
+  let l10n = win.document.l10n;
+
+  let hasAnySig = true;
+  let sigInfoLabel = null;
+  let sigInfo = null;
+
+  switch (hdrView.msgSignatureState) {
+    case EnigmailConstants.MSG_SIG_NONE:
+      sigInfoLabel = "openpgp-no-sig";
+      sigInfo = "SINone";
+      hasAnySig = false;
+      break;
+
+    case EnigmailConstants.MSG_SIG_UNCERTAIN_KEY_UNAVAILABLE:
+      sigInfoLabel = "openpgp-uncertain-sig";
+      sigInfo = "openpgp-sig-uncertain-no-key";
+      break;
+
+    case EnigmailConstants.MSG_SIG_UNCERTAIN_UID_MISMATCH:
+      sigInfoLabel = "openpgp-uncertain-sig";
+      sigInfo = "openpgp-sig-uncertain-uid-mismatch";
+      break;
+
+    case EnigmailConstants.MSG_SIG_UNCERTAIN_KEY_NOT_ACCEPTED:
+      sigInfoLabel = "openpgp-uncertain-sig";
+      sigInfo = "openpgp-sig-uncertain-not-accepted";
+      break;
+
+    case EnigmailConstants.MSG_SIG_INVALID_KEY_REJECTED:
+      sigInfoLabel = "openpgp-invalid-sig";
+      sigInfo = "openpgp-sig-invalid-rejected";
+      break;
+
+    case EnigmailConstants.MSG_SIG_INVALID:
+      sigInfoLabel = "openpgp-invalid-sig";
+      sigInfo = "openpgp-sig-invalid-technical-problem";
+      break;
+
+    case EnigmailConstants.MSG_SIG_VALID_KEY_UNVERIFIED:
+      sigInfoLabel = "openpgp-good-sig";
+      sigInfo = "openpgp-sig-valid-unverified";
+      break;
+
+    case EnigmailConstants.MSG_SIG_VALID_KEY_VERIFIED:
+      sigInfoLabel = "openpgp-good-sig";
+      sigInfo = "openpgp-sig-valid-verified";
+      break;
+
+    case EnigmailConstants.MSG_SIG_VALID_SELF:
+      sigInfoLabel = "openpgp-good-sig";
+      sigInfo = "openpgp-sig-valid-own-key";
+      break;
+
+    default:
+      console.error(
+        "Unexpected msgSignatureState: " + hdrView.msgSignatureState
+      );
+  }
+
+  let encInfoLabel = null;
+  let encInfo = null;
+
+  switch (hdrView.msgEncryptionState) {
+    case EnigmailConstants.MSG_ENC_NONE:
+      encInfoLabel = "EINoneLabel2";
+      encInfo = "EINone";
+      break;
+
+    case EnigmailConstants.MSG_ENC_NO_SECRET_KEY:
+      encInfoLabel = "EIInvalidLabel";
+      encInfo = "EIInvalidHeader";
+      break;
+
+    case EnigmailConstants.MSG_ENC_FAILURE:
+      encInfoLabel = "EIInvalidLabel";
+      encInfo = "EIClueless";
+      break;
+
+    case EnigmailConstants.MSG_ENC_OK:
+      encInfoLabel = "EIValidLabel";
+      encInfo = "EIValid";
+      break;
+
+    default:
+      console.error(
+        "Unexpected msgEncryptionState: " + hdrView.msgEncryptionState
+      );
+  }
+
+  let details = {
+    signatureLabel: await l10n.formatValue(sigInfoLabel),
+    signatureExplanation: hasAnySig
+      ? // eslint-disable-next-line mozilla/prefer-formatValues
+        await l10n.formatValue(sigInfo)
+      : sBundle.getString(sigInfo),
+    encryptionLabel: sBundle.getString(encInfoLabel),
+    encryptionExplanation: sBundle.getString(encInfo),
+  };
+
+  let signatureKey = hdrView.msgSignatureKeyId;
+  if (signatureKey) {
+    let sigKeyInfo = win.EnigmailKeyRing.getKeyById(hdrView.msgSignatureKeyId);
+
+    if (sigKeyInfo && sigKeyInfo.keyId != signatureKey) {
+      details.signatureKeyIdLabel = await l10n.formatValue(
+        "openpgp-sig-key-id-with-subkey-id",
+        {
+          key: `0x${sigKeyInfo.keyId}`,
+          subkey: `0x${signatureKey}`,
+        }
+      );
+      details.enableViewSignatureKey = true;
+    } else {
+      details.signatureKeyIdLabel = await l10n.formatValue(
+        "openpgp-sig-key-id",
+        {
+          key: `0x${signatureKey}`,
+        }
+      );
+    }
+  }
+
+  let myIdToSkipInList;
+  let encryptionKeyId = hdrView.msgEncryptionKeyId?.keyId;
+  if (encryptionKeyId) {
+    myIdToSkipInList = encryptionKeyId;
+
+    // If we were given a separate primaryKeyId, it means keyId is a subkey.
+    let primaryId = hdrView.msgEncryptionKeyId.primaryKeyId;
+    let havePrimaryId = !!primaryId;
+    if (havePrimaryId) {
+      details.encryptionKeyIdLabel = await l10n.formatValue(
+        "openpgp-enc-key-with-subkey-id",
+        {
+          key: `0x${primaryId}`,
+          subkey: `0x${encryptionKeyId}`,
+        }
+      );
+    } else {
+      details.encryptionKeyIdLabel = await l10n.formatValue(
+        "openpgp-enc-key-id",
+        {
+          key: `0x${encryptionKeyId}`,
+        }
+      );
+    }
+
+    if (win.EnigmailKeyRing.getKeyById(encryptionKeyId)) {
+      details.enableViewEncryptionKey = true;
+    }
+  }
+
+  if (myIdToSkipInList) {
+    details.otherKeysLabel = await l10n.formatValue(
+      "openpgp-other-enc-all-key-ids"
+    );
+  } else {
+    details.otherKeysLabel = await l10n.formatValue(
+      "openpgp-other-enc-additional-key-ids"
+    );
+  }
+
+  if (!hdrView.msgEncryptionAllKeyIds) {
+    return details;
+  }
+
+  details.otherKeys = [];
+
+  for (let key of hdrView.msgEncryptionAllKeyIds) {
+    if (key.keyId == myIdToSkipInList) {
+      continue;
+    }
+
+    let havePrimaryId2 = !!key.primaryKeyId;
+    let keyInfo = win.EnigmailKeyRing.getKeyById(
+      havePrimaryId2 ? key.primaryKeyId : key.keyId
+    );
+
+    let name;
+    // Use textContent for label XUl elements to enable text wrapping.
+    if (keyInfo) {
+      name = keyInfo.userId;
+    } else {
+      name = await l10n.formatValue("openpgp-other-enc-all-key-ids");
+    }
+
+    let id = havePrimaryId2
+      ? ` 0x${key.primaryKeyId} (0x${key.keyId})`
+      : ` 0x${key.keyId}`;
+
+    details.otherKeys.push({ id, name });
+  }
+
+  return details;
+}
 
 // Add signed label and click action to a signed message.
 function getSignedStatus(statusFlags) {
