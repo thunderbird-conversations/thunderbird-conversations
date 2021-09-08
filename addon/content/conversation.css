@@ -201,10 +201,6 @@ a img {
   flex-direction: row;
 }
 
-.messageHeader img {
-  vertical-align: text-top;
-}
-
 .mainActionButton > .icon-link,
 .dropDown > .icon-link,
 .attachmentsDropDown > .icon-link,
@@ -783,11 +779,6 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
 
 .special-tag-ext-icon {
   margin-inline-end: 0.2em;
-}
-
-.messageHeader img {
-  /* Override ".messageHeader img" to default ".icon" */
-  vertical-align: -0.4em;
 }
 
 .special-tag {
