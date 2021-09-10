@@ -368,7 +368,6 @@ export function MessageHeader({
                 );
               }}
               folderName={shortFolderName}
-              specialTags={specialTags}
             />
             {snippet}
           </span>
