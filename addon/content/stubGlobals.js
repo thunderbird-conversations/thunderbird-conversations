@@ -10,7 +10,6 @@ const { XPCOMUtils } = ChromeUtils.import(
 XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
   Conversation: "chrome://conversations/content/modules/conversation.js",
-  topMail3Pane: "chrome://conversations/content/modules/misc.js",
 });
 /* eslint-enable no-unused-vars */
 

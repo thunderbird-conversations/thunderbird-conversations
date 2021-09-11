@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* global BrowserSim, topMail3Pane */
+/* global BrowserSim */
 
 import * as RTK from "@reduxjs/toolkit";
 import { browser as _browser } from "../es-modules/thunderbird-compat.js";
@@ -256,7 +256,7 @@ export const messageActions = {
   clickIframe({ event }) {
     return () => {
       // Hand this off to Thunderbird's content clicking algorithm as that's simplest.
-      if (!topMail3Pane(window).contentAreaClick(event)) {
+      if (!window.browsingContext.topChromeWindow.contentAreaClick(event)) {
         event.preventDefault();
         event.stopPropagation();
       }

@@ -45,40 +45,6 @@ function setupLogging(name) {
 }
 
 /**
- * This is a super-polymorphic function that allows you to get the topmost
- * mail:3pane window from anywhere in the conversation code.
- * - if you're a Contact, use topMail3Pane(this)
- * - if you're a Message, use topMail3Pane(this)
- * - if you're a Conversation, use topMail3Pane(this)
- * - if you're in content/stub.html, use topMail3Pane(window)
- * - if you're in a standalone window, this function makes no sense, and returns
- *   a pointer to _any_ mail:3pane
- *
- * @param {object} aObj
- */
-function topMail3Pane(aObj) {
-  if (!aObj) {
-    throw Error("Bad usage for topMail3Pane");
-  }
-
-  let moveOut = function (w) {
-    if (w?.frameElement) {
-      return w.frameElement.ownerGlobal;
-    }
-
-    return getMail3Pane();
-  };
-
-  if ("_conversation" in aObj) {
-    // Message
-    return moveOut(aObj._conversation._htmlPane);
-  }
-
-  // Standalone window, a tab, or in the htmlpane (common case)
-  return aObj.top.opener || moveOut(aObj) || aObj.top;
-}
-
-/**
  * Wraps the low-level header parser stuff.
  *
  * @param {string} mimeLine

@@ -8,7 +8,7 @@
  * subsequent display.
  */
 
-/* global Conversation, BrowserSim, topMail3Pane */
+/* global Conversation, BrowserSim */
 import { mergeContactDetails } from "./contacts.js";
 import { messageEnricher } from "./messages.js";
 import { messageActions } from "./reducer-messages.js";
@@ -179,7 +179,7 @@ export const controllerActions = {
 
       const isInTab = params.has("urls");
       const isStandalone = params.has("standalone");
-      const topWin = topMail3Pane(window);
+      const topWin = window.browsingContext.topChromeWindow;
 
       // Note: Moving this to after the check for started below is dangerous,
       // since it introduces races where `Conversation` doesn't wait for the
@@ -277,7 +277,7 @@ export const controllerActions = {
       await new Promise((resolve, reject) => {
         let tries = 0;
         function checkStarted() {
-          let mainWindow = topMail3Pane(window);
+          let mainWindow = window.browsingContext.topChromeWindow;
           if (
             mainWindow.Conversations &&
             mainWindow.Conversations.finishedStartup
