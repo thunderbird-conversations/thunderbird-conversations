@@ -102,10 +102,12 @@ describe("Controller Actions tests", () => {
         multipleRecipients: false,
         read: false,
         scrollTo: true,
+        smimeReload: false,
         snippet: "My message snippet",
         starred: false,
         subject: "Fake Msg",
         tags: [],
+        type: "normal",
       });
     });
   });

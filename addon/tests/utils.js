@@ -58,6 +58,7 @@ export function createFakeData(
     subject = "Fake Msg",
     snippet = "",
     tags = [],
+    type = "normal",
   } = {},
   fakeMessageHeaderData
 ) {
@@ -73,6 +74,7 @@ export function createFakeData(
     _contactsData: [],
     from,
     fullDate,
+    type,
   };
   if (detailsShowing !== undefined) {
     data.detailsShowing = detailsShowing;

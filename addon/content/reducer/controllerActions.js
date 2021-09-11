@@ -16,6 +16,8 @@ import { composeSlice } from "./reducer-compose.js";
 import { summaryActions } from "./reducer-summary.js";
 import { quickReplySlice } from "./reducer-quickReply.js";
 
+let loggingEnabled = false;
+
 async function handleShowDetails(messages, state, dispatch, updateFn) {
   let defaultShowing = state.summary.defaultDetailsShowing;
   for (let msg of messages.msgData) {
@@ -159,7 +161,9 @@ async function onUpdateSecurityStatus(
 }
 
 function onSmimeReload(dispatch, id) {
-  console.log("smimeReloadListener", id);
+  if (loggingEnabled) {
+    console.log("smimeReloadListener", id);
+  }
   dispatch(
     messageActions.setSmimeReload({
       id,
@@ -225,6 +229,7 @@ export const controllerActions = {
       );
 
       if (getState().summary.prefs.loggingEnabled) {
+        loggingEnabled = true;
         console.debug(`Initializing ${isInTab ? "tab" : "message pane"} view.`);
       }
 
@@ -347,7 +352,7 @@ export const controllerActions = {
         await dispatch(messageActions.updateConversation({ messages, mode }));
 
         if (mode == "replaceAll") {
-          if (state.summary.prefs.loggingEnabled) {
+          if (loggingEnabled) {
             console.debug(
               "Load took (ms):",
               Date.now() - summary.loadingStartedTime

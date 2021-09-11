@@ -59,7 +59,6 @@ class Message {
     // Type of message, e.g. normal or bugzilla.
     this._type = "normal";
     this._id = null;
-    this._domNode = null;
     this._snippet = "";
     this._conversation = aConversation;
 
@@ -89,7 +88,6 @@ class Message {
     this.needsLateAttachments = false;
     this.contentType = "";
     this.isPhishing = false;
-    this.smimeReload = false;
 
     // A list of email addresses
     this.mailingLists = [];
@@ -113,7 +111,6 @@ class Message {
       needsLateAttachments: this.needsLateAttachments,
       realFrom: this._realFrom.email || this._from.email,
       recipientsIncludeLists: this.isReplyListEnabled,
-      smimeReload: this.smimeReload,
       snippet: this._snippet,
       type: this._type,
       // We look up info on each contact in the Redux reducer;
@@ -125,20 +122,6 @@ class Message {
         bcc: this._bcc,
       },
     };
-  }
-
-  async setSmimeReload() {
-    this.smimeReload = true;
-    this._conversation._htmlPane.conversationDispatch(
-      messageActions.setSmimeReload({
-        id: this._id,
-        smimeReload: true,
-      })
-    );
-  }
-
-  get iframe() {
-    return this._domNode.getElementsByTagName("iframe")[0];
   }
 
   // Convenience properties

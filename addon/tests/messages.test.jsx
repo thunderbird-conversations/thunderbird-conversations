@@ -595,6 +595,7 @@ Updating`,
           {
             id: index + 1,
             snippet: snippet.actual,
+            type: "bugzilla",
           },
           fakeMessageHeaderData
         )

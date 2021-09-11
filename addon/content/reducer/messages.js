@@ -326,6 +326,8 @@ export let messageEnricher = new (class {
       // we'll get notified if it should be true.
       message.hasRemoteContent = false;
     }
+    message.smimeReload = false;
+
     message.folderAccountId = messageHeader.folder.accountId;
     message.isArchives = messageFolderType == "archives";
     message.isDraft = messageFolderType == "drafts";
@@ -423,7 +425,7 @@ export let messageEnricher = new (class {
    *   The message for which to simplify the snippet.
    */
   _adjustSnippetForBugzilla(message) {
-    if (!message.type == "bugzilla") {
+    if (message.type != "bugzilla") {
       return;
     }
 
