@@ -53,6 +53,9 @@ const conversationModules = [
 
 const kAllowRemoteContent = 2;
 const nsMsgViewIndex_None = 0xffffffff;
+// This is high because we want enough snippet to extract relevant data from
+// bugzilla snippets.
+const kSnippetLength = 700;
 
 // Note: we must not use any modules until after initialization of prefs,
 // otherwise the prefs might not get loaded correctly.
@@ -763,6 +766,29 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             undefined,
             {}
           );
+        },
+        async getMessageSnippet(msgId) {
+          // Note: this only seems to work currently for local messages.
+          // However it is only used in fallback cases.
+          let msgHdr = context.extension.messageManager.get(msgId);
+          let listener = Cc[
+            "@mozilla.org/network/sync-stream-listener;1"
+          ].createInstance(Ci.nsISyncStreamListener);
+          let uri = msgHdr.folder.getUriForMsg(msgHdr);
+          messenger
+            .messageServiceFromURI(uri)
+            .streamMessage(uri, listener, null, null, false, "");
+          let folder = msgHdr.folder;
+          let body = folder.getMsgTextFromStream(
+            listener.inputStream,
+            msgHdr.Charset,
+            2 * kSnippetLength,
+            kSnippetLength,
+            false,
+            true, // stripHtml
+            {}
+          );
+          return body.substring(0, kSnippetLength - 1);
         },
         onCallAPI: new ExtensionCommon.EventManager({
           context,

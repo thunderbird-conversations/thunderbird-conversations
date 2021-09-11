@@ -507,6 +507,19 @@
             }
           }
         ]
+      },
+      {
+        "name": "getMessageSnippet",
+        "type": "function",
+        "description": "Get a message snippet",
+        "async": true,
+        "parameters": [
+          {
+            "name": "msgId",
+            "type": "integer",
+            "description": "The message id to get the snippet for."
+          }
+        ]
       }
     ],
     "events": [

@@ -209,7 +209,10 @@ class MessageFromDbHdr extends Message {
         async (aMsgHdr, aMimeMsg) => {
           try {
             if (aMimeMsg == null) {
-              await this._fallbackSnippet();
+              this._snippet = await browser.conversations.getMessageSnippet(
+                this._id
+              );
+              resolve();
               return;
             }
 
@@ -285,49 +288,7 @@ class MessageFromDbHdr extends Message {
       // death trap, can't fight it until we reach level 3 and gain 1200 exp
       // points, so keep training)
       Log.warn("Gloda failed to stream the message properly, this is VERY BAD");
-      await this._fallbackSnippet();
+      this._snippet = await browser.conversations.getMessageSnippet(this._id);
     }
   }
-
-  async _fallbackSnippet() {
-    Log.debug("Using the default streaming code...");
-    let body = msgHdrToMessageBody(this._msgHdr, kSnippetLength);
-    this._snippet = body.substring(0, kSnippetLength - 1);
-  }
-}
-
-/**
- * Get a string containing the body of a messsage.
- *
- * @param {nsIMsgDBHdr} aMessageHeader The message header
- * @param {number} aLength
- * @returns {string}
- */
-function msgHdrToMessageBody(aMessageHeader, aLength) {
-  let messenger = Cc["@mozilla.org/messenger;1"].createInstance(
-    Ci.nsIMessenger
-  );
-  let listener = Cc[
-    "@mozilla.org/network/sync-stream-listener;1"
-  ].createInstance(Ci.nsISyncStreamListener);
-  let uri = aMessageHeader.folder.getUriForMsg(aMessageHeader);
-  messenger
-    .messageServiceFromURI(uri)
-    .streamMessage(uri, listener, null, null, false, "");
-  let folder = aMessageHeader.folder;
-  /*
-   * AUTF8String getMsgTextFromStream(in nsIInputStream aStream, in ACString aCharset,
-                                      in unsigned long aBytesToRead, in unsigned long aMaxOutputLen,
-                                      in boolean aCompressQuotes, in boolean aStripHTMLTags,
-                                      out ACString aContentType);
-  */
-  return folder.getMsgTextFromStream(
-    listener.inputStream,
-    aMessageHeader.Charset,
-    2 * aLength,
-    aLength,
-    false,
-    true, // stripHtml
-    {}
-  );
 }
