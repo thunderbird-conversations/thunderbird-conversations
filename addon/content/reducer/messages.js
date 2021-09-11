@@ -333,6 +333,7 @@ export let messageEnricher = new (class {
     message.isDraft = messageFolderType == "drafts";
     message.isInbox = messageFolderType == "inbox";
     message.isJunk = messageHeader.junk;
+    message.isTemplate = messageFolderType == "templates";
     message.isSent = messageFolderType == "sent";
     message.isOutbox = messageFolderType == "outbox";
     message.read = messageHeader.read;

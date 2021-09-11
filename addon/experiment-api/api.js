@@ -278,6 +278,8 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             switch (name) {
               case "mailnews.mark_message_read.auto":
               case "mailnews.mark_message_read.delay":
+              case "mail.phishing.detection.enabled":
+              case "mail.phishing.detection.disallow_form_actions":
               case "mail.showCondensedAddresses":
                 return Services.prefs.getBoolPref(name);
               case "font.size.variable.x-western":

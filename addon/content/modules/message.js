@@ -17,18 +17,12 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   MsgHdrToMimeMessage: "resource:///modules/gloda/MimeMessage.jsm",
   parseMimeLine: "chrome://conversations/content/modules/misc.js",
   setupLogging: "chrome://conversations/content/modules/misc.js",
-  Services: "resource://gre/modules/Services.jsm",
-  messageActions: "chrome://conversations/content/modules/misc.js",
   GlodaAttrProviders:
     "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
 });
 
 XPCOMUtils.defineLazyGetter(this, "browser", function () {
   return BrowserSim.getBrowser();
-});
-
-XPCOMUtils.defineLazyGetter(this, "gMessenger", function () {
-  return Cc["@mozilla.org/messenger;1"].createInstance(Ci.nsIMessenger);
 });
 
 /**
@@ -122,82 +116,6 @@ class Message {
         bcc: this._bcc,
       },
     };
-  }
-
-  // Convenience properties
-  get read() {
-    return this._msgHdr.isRead;
-  }
-
-  postStreamMessage(mainWindow, iframe) {
-    // Notify hooks that we just finished displaying a message. Must be
-    //  performed now, not later. This gives plugins a chance to modify
-    //  the DOM of the message (i.e. decrypt it) before we tweak the
-    //  fonts and stuff.
-    Services.tm.dispatchToMainThread(() => {
-      this._checkForPhishing(iframe).catch(console.error);
-    });
-  }
-
-  async _checkForPhishing(iframe) {
-    if (!Services.prefs.getBoolPref("mail.phishing.detection.enabled")) {
-      return;
-    }
-
-    if (this._msgHdr.getUint32Property("notAPhishMessage")) {
-      return;
-    }
-
-    // If the message contains forms with action attributes, warn the user.
-    let formNodes =
-      iframe.contentWindow.document.querySelectorAll("form[action]");
-
-    const neckoUrl = msgHdrToNeckoURL(this._msgHdr).spec;
-    const url = Services.io
-      .newURI(neckoUrl)
-      .QueryInterface(Ci.nsIMsgMailNewsUrl);
-
-    try {
-      // nsIMsgMailNewsUrl.folder can throw an NS_ERROR_FAILURE, especially if
-      // we are opening an .eml file.
-      var folder = url.folder;
-
-      // Ignore nntp and RSS messages.
-      if (folder.server.type == "nntp" || folder.server.type == "rss") {
-        return;
-      }
-
-      // Also ignore messages in Sent/Drafts/Templates/Outbox.
-      let outgoingFlags =
-        Ci.nsMsgFolderFlags.SentMail |
-        Ci.nsMsgFolderFlags.Drafts |
-        Ci.nsMsgFolderFlags.Templates |
-        Ci.nsMsgFolderFlags.Queue;
-      if (folder.isSpecialFolder(outgoingFlags, true)) {
-        return;
-      }
-    } catch (ex) {
-      if (
-        ex.result != Cr.NS_ERROR_FAILURE &&
-        ex.result != Cr.NS_ERROR_ILLEGAL_VALUE
-      ) {
-        throw ex;
-      }
-    }
-    if (
-      Services.prefs.getBoolPref(
-        "mail.phishing.detection.disallow_form_actions"
-      ) &&
-      formNodes.length
-    ) {
-      this.isPhishing = true;
-      this._conversation._htmlPane.conversationDispatch(
-        messageActions.setPhishing({
-          id: this._id,
-          isPhishing: true,
-        })
-      );
-    }
   }
 }
 
@@ -376,19 +294,6 @@ class MessageFromDbHdr extends Message {
     let body = msgHdrToMessageBody(this._msgHdr, true, kSnippetLength);
     this._snippet = body.substring(0, kSnippetLength - 1);
   }
-}
-
-/**
- * Get a nsIURI from a nsIMsgDBHdr
- *
- * @param {nsIMsgDBHdr} aMsgHdr The message header
- * @returns {nsIURI}
- */
-function msgHdrToNeckoURL(aMsgHdr) {
-  let uri = aMsgHdr.folder.getUriForMsg(aMsgHdr);
-  let msgService = gMessenger.messageServiceFromURI(uri);
-
-  return msgService.getUrlForUri(uri);
 }
 
 /**

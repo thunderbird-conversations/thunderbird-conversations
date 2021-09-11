@@ -140,6 +140,21 @@ describe("messageEnricher", () => {
             isOutbox: false,
           },
         },
+        {
+          source: {
+            id: 4,
+            folderType: "templates",
+            folderName: "Templates",
+          },
+          expected: {
+            isDraft: false,
+            isJunk: false,
+            isOutbox: false,
+            isTemplate: true,
+            folderName: "Fake/Templates",
+            shortFolderName: "Templates",
+          },
+        },
       ];
 
       isInViewSpy.mockReturnValue(false);

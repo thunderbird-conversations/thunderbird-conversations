@@ -2,7 +2,6 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-/* global Conversations, topMail3Pane */
 import * as RTK from "@reduxjs/toolkit";
 import { conversationUtils } from "./conversationUtils.js";
 import { messageActions } from "./reducer-messages.js";
@@ -40,6 +39,35 @@ export const initialSummary = {
 };
 
 let markAsReadTimer;
+
+async function isPhishing(iframe, msg) {
+  // If this message has form nodes, it could be phishing, so see if we
+  // should warn the user.
+  if (
+    !iframe.contentWindow.document.querySelectorAll("form[action]").length ||
+    !browser.conversations.getCorePref("mail.phishing.detection.enabled")
+  ) {
+    return false;
+  }
+
+  // Conversations doesn't display for nntp/rss, so we assume we don't
+  // need to filter out those messages.
+
+  // If it is an outgoing message, don't notify about it.
+  if (
+    msg.isArchives ||
+    msg.isDraft ||
+    msg.isOutbox ||
+    msg.isSent ||
+    msg.isTemplate
+  ) {
+    return false;
+  }
+
+  return browser.conversations.getCorePref(
+    "mail.phishing.detection.disallow_form_actions"
+  );
+}
 
 export const summaryActions = {
   /**
@@ -230,15 +258,19 @@ export const summaryActions = {
       if (!dueToExpansion) {
         dispatch(summarySlice.actions.decIframesLoading());
       }
-      // It might be that we're trying to send a message on unmount, but the
-      // conversation/message has gone away. If that's the case, we just skip
-      // and move on.
-      if (Conversations.currentConversation?.getMessage) {
-        let msg = Conversations.currentConversation.getMessageByApiId(id);
-        if (msg) {
-          msg.postStreamMessage(topMail3Pane(window), iframe);
-        }
+
+      let state = getState();
+      let msg = state.messages.msgData.find((m) => m.id == id);
+
+      if (await isPhishing(iframe, msg)) {
+        dispatch(
+          messageActions.setPhishing({
+            id,
+            isPhishing: true,
+          })
+        );
       }
+
       await browser.convCalendar.onMessageStreamed(
         getState().summary.tabId,
         id

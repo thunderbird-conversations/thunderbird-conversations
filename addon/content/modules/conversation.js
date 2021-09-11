@@ -198,22 +198,6 @@ Conversation.prototype = {
     }
   },
 
-  getMessage(uri) {
-    const msg = this.messages.find((m) => m.message._uri == uri);
-    if (msg) {
-      return msg.message;
-    }
-    return null;
-  },
-
-  getMessageByApiId(id) {
-    const msg = this.messages.find((m) => m.message._id == id);
-    if (msg) {
-      return msg.message;
-    }
-    return null;
-  },
-
   // This function contains the logic that runs a Gloda query on the initial set
   //  of messages in order to obtain the conversation. It takes care of filling
   //  this.messages with the right set of messages, and then moves on to
