@@ -293,7 +293,7 @@ export const summaryActions = {
         dueToReload
       );
       await browser.conversations
-        .streamMessage(state.summary.windowId, id, `convIframe${id}`)
+        .streamMessage(state.summary.tabId, id, `convIframe${id}`)
         .catch(console.error);
     };
   },

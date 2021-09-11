@@ -483,9 +483,9 @@
         "async": true,
         "parameters": [
           {
-            "name": "windowId",
+            "name": "tabId",
             "type": "integer",
-            "description": "The window the message is displayed within."
+            "description": "The tab the message is displayed within."
           },
           {
             "name": "msgId",

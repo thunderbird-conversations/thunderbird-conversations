@@ -712,15 +712,32 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           body = body.replace(/[\n\r]*$/, "");
           return body;
         },
-        async streamMessage(winId, msgId, iframeClass) {
+        async streamMessage(tabId, msgId, iframeClass) {
           let msgHdr = context.extension.messageManager.get(msgId);
-          let win = getWindowFromId(winId);
+          let tabObject = context.extension.tabManager.get(tabId);
+          if (!tabObject.nativeTab) {
+            throw new Error("Failed to find tab to stream to.");
+          }
+          let win = Cu.getGlobalForObject(tabObject.nativeTab);
+          if (!win) {
+            throw new Error("Failed to extract window from tab for streaming");
+          }
           let uri = msgHdr.folder.getUriForMsg(msgHdr);
           let msgService = messenger.messageServiceFromURI(uri);
 
-          let multimessage = win.document.getElementById("multimessage");
-          let messageIframe =
-            multimessage.contentDocument.getElementsByClassName(iframeClass)[0];
+          let messageIframe;
+          if (tabObject.nativeTab.mode.type == "contentTab") {
+            messageIframe =
+              tabObject.browser.contentDocument.getElementsByClassName(
+                iframeClass
+              )[0];
+          } else {
+            let multimessage = win.document.getElementById("multimessage");
+            messageIframe =
+              multimessage.contentDocument.getElementsByClassName(
+                iframeClass
+              )[0];
+          }
           let docShell = messageIframe.contentWindow.docShell;
           docShell.appType = Ci.nsIDocShell.APP_TYPE_MAIL;
 
