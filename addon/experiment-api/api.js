@@ -712,32 +712,46 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           body = body.replace(/[\n\r]*$/, "");
           return body;
         },
-        async streamMessage(tabId, msgId, iframeClass) {
+        async streamMessage({ winId, tabId, msgId, iframeClass }) {
           let msgHdr = context.extension.messageManager.get(msgId);
-          let tabObject = context.extension.tabManager.get(tabId);
-          if (!tabObject.nativeTab) {
-            throw new Error("Failed to find tab to stream to.");
-          }
-          let win = Cu.getGlobalForObject(tabObject.nativeTab);
-          if (!win) {
-            throw new Error("Failed to extract window from tab for streaming");
-          }
-          let uri = msgHdr.folder.getUriForMsg(msgHdr);
-          let msgService = messenger.messageServiceFromURI(uri);
-
+          let win;
           let messageIframe;
-          if (tabObject.nativeTab.mode.type == "contentTab") {
-            messageIframe =
-              tabObject.browser.contentDocument.getElementsByClassName(
-                iframeClass
-              )[0];
-          } else {
+          if (!tabId) {
+            // windowManager only recognises Thunderbird windows, so we can't
+            // use getWindowFromId.
+            win = Services.wm.getOuterWindowWithId(winId);
             let multimessage = win.document.getElementById("multimessage");
             messageIframe =
               multimessage.contentDocument.getElementsByClassName(
                 iframeClass
               )[0];
+          } else {
+            let tabObject = context.extension.tabManager.get(tabId);
+            if (!tabObject.nativeTab) {
+              throw new Error("Failed to find tab to stream to.");
+            }
+            win = Cu.getGlobalForObject(tabObject.nativeTab);
+            if (!win) {
+              throw new Error(
+                "Failed to extract window from tab for streaming"
+              );
+            }
+            if (tabObject.nativeTab.mode.type == "contentTab") {
+              messageIframe =
+                tabObject.browser.contentDocument.getElementsByClassName(
+                  iframeClass
+                )[0];
+            } else {
+              let multimessage = win.document.getElementById("multimessage");
+              messageIframe =
+                multimessage.contentDocument.getElementsByClassName(
+                  iframeClass
+                )[0];
+            }
           }
+
+          let uri = msgHdr.folder.getUriForMsg(msgHdr);
+          let msgService = messenger.messageServiceFromURI(uri);
           let docShell = messageIframe.contentWindow.docShell;
           docShell.appType = Ci.nsIDocShell.APP_TYPE_MAIL;
 

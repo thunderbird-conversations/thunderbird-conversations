@@ -483,19 +483,28 @@
         "async": true,
         "parameters": [
           {
-            "name": "tabId",
-            "type": "integer",
-            "description": "The tab the message is displayed within."
-          },
-          {
-            "name": "msgId",
-            "type": "integer",
-            "description": "The message id to get the body for."
-          },
-          {
-            "name": "iframeClass",
-            "type": "string",
-            "description": "The iframe to stream the message to."
+            "name": "streamMessageProperties",
+            "type": "object",
+            "properties": {
+              "winId" : {
+                "type": "integer",
+                "optional": true,
+                "description": "The window the message is displayed within."
+              },
+              "tabId" : {
+                "type": "integer",
+                "optional": true,
+                "description": "The tab the message is displayed within."
+              },
+              "msgId": {
+                "type": "integer",
+                "description": "The message id to get the body for."
+              },
+              "iframeClass": {
+                "type": "string",
+                "description": "The iframe to stream the message to."
+              }
+            }
           }
         ]
       }

@@ -91,6 +91,10 @@ var convOpenPgp = class extends ExtensionCommon.ExtensionAPI {
     return {
       convOpenPgp: {
         beforeStreamingMessage(tabId, msgId, dueToReload) {
+          // Can't do anything in the custom standalone message window at the moment.
+          if (tabId == -1) {
+            return;
+          }
           console.log("beforeStreamingMessage", msgId, dueToReload);
           if (!dueToReload) {
             let win = getWindow(context, tabId);

@@ -189,7 +189,7 @@ export const controllerActions = {
         summaryActions.setConversationState({
           isInTab,
           isStandalone,
-          tabId: BrowserSim.getTabId(topWin, window),
+          tabId: isStandalone ? -1 : BrowserSim.getTabId(topWin, window),
           windowId,
         })
       );
@@ -277,7 +277,9 @@ export const controllerActions = {
       await new Promise((resolve, reject) => {
         let tries = 0;
         function checkStarted() {
-          let mainWindow = window.browsingContext.topChromeWindow;
+          let mainWindow = isStandalone
+            ? window.browsingContext.topChromeWindow.opener
+            : window.browsingContext.topChromeWindow;
           if (
             mainWindow.Conversations &&
             mainWindow.Conversations.finishedStartup

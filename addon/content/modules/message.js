@@ -291,7 +291,7 @@ class MessageFromDbHdr extends Message {
 
   async _fallbackSnippet() {
     Log.debug("Using the default streaming code...");
-    let body = msgHdrToMessageBody(this._msgHdr, true, kSnippetLength);
+    let body = msgHdrToMessageBody(this._msgHdr, kSnippetLength);
     this._snippet = body.substring(0, kSnippetLength - 1);
   }
 }
@@ -300,11 +300,10 @@ class MessageFromDbHdr extends Message {
  * Get a string containing the body of a messsage.
  *
  * @param {nsIMsgDBHdr} aMessageHeader The message header
- * @param {boolean} aStripHtml Keep html?
  * @param {number} aLength
  * @returns {string}
  */
-function msgHdrToMessageBody(aMessageHeader, aStripHtml, aLength) {
+function msgHdrToMessageBody(aMessageHeader, aLength) {
   let messenger = Cc["@mozilla.org/messenger;1"].createInstance(
     Ci.nsIMessenger
   );
@@ -328,7 +327,7 @@ function msgHdrToMessageBody(aMessageHeader, aStripHtml, aLength) {
     2 * aLength,
     aLength,
     false,
-    aStripHtml,
+    true, // stripHtml
     {}
   );
 }

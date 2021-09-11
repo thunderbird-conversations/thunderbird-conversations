@@ -292,9 +292,16 @@ export const summaryActions = {
         id,
         dueToReload
       );
-      await browser.conversations
-        .streamMessage(state.summary.tabId, id, `convIframe${id}`)
-        .catch(console.error);
+      let options = {
+        msgId: id,
+        iframeClass: `convIframe${id}`,
+      };
+      if (state.summary.isStandalone) {
+        options.winId = state.summary.windowId;
+      } else {
+        options.tabId = state.summary.tabId;
+      }
+      await browser.conversations.streamMessage(options).catch(console.error);
     };
   },
   maybeSetMarkAsRead() {
