@@ -13,6 +13,7 @@ XPCOMUtils.defineLazyModuleGetters(this, {
   GlodaAttrProviders:
     "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
   makeFriendlyDateAgo: "resource:///modules/TemplateUtils.jsm",
+  MailServices: "resource:///modules/MailServices.jsm",
   MsgHdrToMimeMessage: "resource:///modules/gloda/MimeMessage.jsm",
   msgHdrGetUri: "chrome://conversations/content/modules/misc.js",
   msgUriToMsgHdr: "chrome://conversations/content/modules/misc.js",
@@ -53,9 +54,6 @@ const conversationModules = [
 
 const kAllowRemoteContent = 2;
 const nsMsgViewIndex_None = 0xffffffff;
-// This is high because we want enough snippet to extract relevant data from
-// bugzilla snippets.
-const kSnippetLength = 700;
 
 // Note: we must not use any modules until after initialization of prefs,
 // otherwise the prefs might not get loaded correctly.
@@ -177,19 +175,15 @@ function getAttachmentInfo(win, msgUri, attachment) {
 
 let apiWindowObserver;
 
-function findAttachment(msgHdr, attachmentUrl) {
+function findAttachment(msgHdr, partName) {
   return new Promise((resolve) => {
     MsgHdrToMimeMessage(msgHdr, null, async (aMsgHdr, aMimeMsg) => {
       if (!aMimeMsg) {
         return;
       }
 
-      attachmentUrl = unescape(attachmentUrl);
-      resolve(
-        aMimeMsg.allUserAttachments.find(
-          (x) => unescape(x.url) == attachmentUrl
-        )
-      );
+      // attachmentUrl = unescape(attachmentUrl);
+      resolve(aMimeMsg.allUserAttachments.find((x) => x.partName == partName));
     });
   });
 }
@@ -415,8 +409,8 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
                   return {
                     size: a.size,
                     contentType: a.contentType,
-                    isExternal: a.isExternal,
                     name: a.name,
+                    partName: a.partName,
                     url: a.url,
                     anchor: "msg" + this.initialPosition + "att" + i,
                   };
@@ -512,16 +506,16 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             "save"
           );
         },
-        async downloadAttachment(id, attachmentUrl) {
+        async downloadAttachment(id, partName) {
           let msgHdr = context.extension.messageManager.get(id);
-          let attachment = await findAttachment(msgHdr, attachmentUrl);
+          let attachment = await findAttachment(msgHdr, partName);
           const win = Services.wm.getMostRecentWindow("mail:3pane");
           let msgUri = msgHdrGetUri(msgHdr);
           getAttachmentInfo(win, msgUri, attachment).save();
         },
-        async openAttachment(id, attachmentUrl) {
+        async openAttachment(id, partName) {
           let msgHdr = context.extension.messageManager.get(id);
-          let attachment = await findAttachment(msgHdr, attachmentUrl);
+          let attachment = await findAttachment(msgHdr, partName);
           const win = Services.wm.getMostRecentWindow("mail:3pane");
           let msgUri = msgHdrGetUri(msgHdr);
 
@@ -540,7 +534,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             ) {
               // Add the content type to avoid a "how do you want to open this?"
               // dialog. The type may already be there, but that doesn't matter.
-              let url = attachmentUrl;
+              let url = attachment.url;
               if (!url.includes("type=")) {
                 url += url.includes("?") ? "&" : "?";
                 url += "type=application/pdf";
@@ -577,9 +571,9 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             null
           );
         },
-        async detachAttachment(id, attachmentUrl, shouldSave) {
+        async detachAttachment(id, partName, shouldSave) {
           let msgHdr = context.extension.messageManager.get(id);
-          let attachment = await findAttachment(msgHdr, attachmentUrl);
+          let attachment = await findAttachment(msgHdr, partName);
           const win = Services.wm.getMostRecentWindow("mail:3pane");
           let msgUri = msgHdrGetUri(msgHdr);
           let messenger = Cc["@mozilla.org/messenger;1"].createInstance(
@@ -767,28 +761,35 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
             {}
           );
         },
-        async getMessageSnippet(msgId) {
-          // Note: this only seems to work currently for local messages.
-          // However it is only used in fallback cases.
-          let msgHdr = context.extension.messageManager.get(msgId);
-          let listener = Cc[
-            "@mozilla.org/network/sync-stream-listener;1"
-          ].createInstance(Ci.nsISyncStreamListener);
-          let uri = msgHdr.folder.getUriForMsg(msgHdr);
-          messenger
-            .messageServiceFromURI(uri)
-            .streamMessage(uri, listener, null, null, false, "");
-          let folder = msgHdr.folder;
-          let body = folder.getMsgTextFromStream(
-            listener.inputStream,
-            msgHdr.Charset,
-            2 * kSnippetLength,
-            kSnippetLength,
-            false,
-            true, // stripHtml
-            {}
-          );
-          return body.substring(0, kSnippetLength - 1);
+        /**
+         * Wraps the low-level header parser stuff.
+         *
+         * @param {string} mimeLine
+         *   A line that looks like "John &lt;john@cheese.com&gt;, Jane &lt;jane@wine.com&gt;"
+         * @returns {Array}
+         *   A list of { email, name, fullName } objects
+         */
+        parseMimeLine(mimeLine) {
+          if (mimeLine == null) {
+            console.warn("Empty aMimeLine?!!");
+            return [{ email: "", name: "-", fullName: "-" }];
+          }
+          let addresses =
+            MailServices.headerParser.parseEncodedHeader(mimeLine);
+          if (addresses.length) {
+            return addresses.map((addr) => {
+              return {
+                email: addr.email,
+                name: addr.name,
+                fullName: addr.toString(),
+              };
+            });
+          }
+          return [{ email: "", name: "-", fullName: "-" }];
+        },
+        convertSnippetToPlainText(accountId, path, text) {
+          let msgFolder = context.extension.folderManager.get(accountId, path);
+          return msgFolder.convertMsgSnippetToPlainText(text);
         },
         onCallAPI: new ExtensionCommon.EventManager({
           context,

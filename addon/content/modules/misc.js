@@ -5,7 +5,6 @@
 var EXPORTED_SYMBOLS = [
   "setupLogging",
   "topMail3Pane",
-  "parseMimeLine",
   "getMail3Pane",
   "msgUriToMsgHdr",
   "msgHdrGetUri",
@@ -18,7 +17,6 @@ const { XPCOMUtils } = ChromeUtils.import(
 );
 
 XPCOMUtils.defineLazyModuleGetters(this, {
-  MailServices: "resource:///modules/MailServices.jsm",
   Services: "resource://gre/modules/Services.jsm",
 });
 
@@ -42,37 +40,6 @@ function setupLogging(name) {
     prefix: name,
     maxLogLevel: gLoggingEnabled ? "Debug" : "Warn",
   });
-}
-
-/**
- * Wraps the low-level header parser stuff.
- *
- * @param {string} mimeLine
- *   A line that looks like "John &lt;john@cheese.com&gt;, Jane &lt;jane@wine.com&gt;"
- * @param {boolean} [dontFix]
- *   Defaults to false. Shall we return an empty array in case aMimeLine is empty?
- * @returns {Array}
- *   A list of { email, name } objects
- */
-function parseMimeLine(mimeLine, dontFix) {
-  if (mimeLine == null) {
-    console.debug("Empty aMimeLine?!!");
-    return [];
-  }
-  let addresses = MailServices.headerParser.parseEncodedHeader(mimeLine);
-  if (addresses.length) {
-    return addresses.map((addr) => {
-      return {
-        email: addr.email,
-        name: addr.name,
-        fullName: addr.toString(),
-      };
-    });
-  }
-  if (dontFix) {
-    return [];
-  }
-  return [{ email: "", name: "-", fullName: "-" }];
 }
 
 /**

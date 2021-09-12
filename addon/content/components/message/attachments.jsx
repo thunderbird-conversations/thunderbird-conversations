@@ -76,7 +76,7 @@ class Attachment extends React.PureComponent {
   constructor(props) {
     super(props);
     this.preview = this.preview.bind(this);
-    this.onDragStart = this.onDragStart.bind(this);
+    // this.onDragStart = this.onDragStart.bind(this);
     this.downloadAttachment = this.downloadAttachment.bind(this);
     this.openAttachment = this.openAttachment.bind(this);
     this.deleteAttachment = this.deleteAttachment.bind(this);
@@ -95,44 +95,44 @@ class Attachment extends React.PureComponent {
     this.props.dispatch(
       attachmentActions.previewAttachment({
         name: this.props.name,
-        url: this.props.url,
         id: this.props.id,
         partName: this.props.partName,
       })
     );
   }
 
-  onDragStart(event) {
-    let info;
-    if (/(^file:|&filename=)/.test(this.props.url)) {
-      info = this.props.url;
-    } else {
-      info =
-        this.props.url +
-        "&type=" +
-        this.props.contentType +
-        "&filename=" +
-        encodeURIComponent(this.props.name);
-    }
-    event.dataTransfer.setData(
-      "text/x-moz-url",
-      `${info}\n${this.props.name}\n${this.props.size}`
-    );
-    event.dataTransfer.setData("text/x-moz-url-data", this.props.url);
-    event.dataTransfer.setData("text/x-moz-url-desc", this.props.name);
-    event.dataTransfer.setData(
-      "application/x-moz-file-promise-url",
-      this.props.url
-    );
-    event.dataTransfer.setData("application/x-moz-file-promise", null);
-    event.stopPropagation();
-  }
+  // TODO: Fix drag n drop of attachments.
+  // onDragStart(event) {
+  //   let info;
+  //   if (/(^file:|&filename=)/.test(this.props.url)) {
+  //     info = this.props.url;
+  //   } else {
+  //     info =
+  //       this.props.url +
+  //       "&type=" +
+  //       this.props.contentType +
+  //       "&filename=" +
+  //       encodeURIComponent(this.props.name);
+  //   }
+  //   event.dataTransfer.setData(
+  //     "text/x-moz-url",
+  //     `${info}\n${this.props.name}\n${this.props.size}`
+  //   );
+  //   event.dataTransfer.setData("text/x-moz-url-data", this.props.url);
+  //   event.dataTransfer.setData("text/x-moz-url-desc", this.props.name);
+  //   event.dataTransfer.setData(
+  //     "application/x-moz-file-promise-url",
+  //     this.props.url
+  //   );
+  //   event.dataTransfer.setData("application/x-moz-file-promise", null);
+  //   event.stopPropagation();
+  // }
 
   downloadAttachment() {
     this.props.dispatch(
       attachmentActions.downloadAttachment({
         id: this.props.id,
-        attachmentUrl: this.props.url,
+        partName: this.props.partName,
       })
     );
   }
@@ -141,7 +141,7 @@ class Attachment extends React.PureComponent {
     this.props.dispatch(
       attachmentActions.openAttachment({
         id: this.props.id,
-        attachmentUrl: this.props.url,
+        partName: this.props.partName,
       })
     );
   }
@@ -150,7 +150,7 @@ class Attachment extends React.PureComponent {
     this.props.dispatch(
       attachmentActions.detachAttachment({
         id: this.props.id,
-        attachmentUrl: this.props.url,
+        partName: this.props.partName,
         shouldSave: true,
       })
     );
@@ -160,7 +160,7 @@ class Attachment extends React.PureComponent {
     this.props.dispatch(
       attachmentActions.detachAttachment({
         id: this.props.id,
-        attachmentUrl: this.props.url,
+        partName: this.props.partName,
         shouldSave: false,
       })
     );
@@ -220,6 +220,9 @@ class Attachment extends React.PureComponent {
     let thumb;
     let imgClass;
     if (isImage) {
+      // TODO: Can we load images separately and make them available later,
+      // so that we're not relying on having the url here. This would
+      // mean we can use browser.messages.listAttachments.
       thumb = this.props.url.replace(
         RE_MSGKEY,
         "number=" + this.props.messageKey
@@ -230,13 +233,13 @@ class Attachment extends React.PureComponent {
       imgClass = "mime-icon";
     }
     // TODO: Drag n drop
+    // onDragStart={this.onDragStart}
     return (
       <li className="attachment">
         <div
           className="attachmentThumb"
-          draggable="true"
+          draggable="false"
           onClick={isImage ? this.preview : this.openAttachment}
-          onDragStart={this.onDragStart}
         >
           <img className={imgClass} src={thumb} title={imgTitle} />
         </div>

@@ -78,16 +78,23 @@ describe("Controller Actions tests", () => {
         },
         fakeMessageHeaderData
       );
+
+      // jest doesn't seem to work properly with an object within an array, and
+      // we don't need to test for _contactsData anyway as that is more internal.
+      delete msgData[0]._contactsData;
+
       expect(msgData[0]).toStrictEqual({
-        _contactsData: [],
         attachments: [],
+        bcc: [],
         attachmentsPlural: "",
         bugzilla: false,
+        cc: [],
         date: "yesterday",
         detailsShowing: false,
         expanded: true,
         folderAccountId: "id1",
-        from: null,
+        folderPath: undefined,
+        from: undefined,
         fullDate: date,
         glodaMessageId: 0,
         hasRemoteContent: false,
@@ -103,12 +110,14 @@ describe("Controller Actions tests", () => {
         isTemplate: false,
         multipleRecipients: false,
         read: false,
+        realFrom: "",
         scrollTo: true,
         smimeReload: false,
         snippet: "My message snippet",
         starred: false,
         subject: "Fake Msg",
         tags: [],
+        to: [],
         type: "normal",
       });
     });

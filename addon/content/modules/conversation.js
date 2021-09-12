@@ -95,8 +95,15 @@ async function messageFromGlodaIfOffline(glodaMsg, debug) {
       !(msgHdr.folder.flags & Ci.nsMsgFolderFlags.Offline)) || // online IMAP
     glodaMsg.isEncrypted || // encrypted message
     (glodaMsg.contentType + "").search(/^multipart\/encrypted(;|$)/i) == 0; // encrypted message
-  const message = new MessageFromGloda(msgHdr, needsLateAttachments);
-  await message.init(glodaMsg);
+  let uri = msgHdrGetUri(msgHdr);
+  let msgId = await browser.conversations.getMessageIdForUri(uri);
+
+  const message = new MessageFromGloda(
+    msgId,
+    msgHdr,
+    glodaMsg,
+    needsLateAttachments
+  );
   return {
     type: kMsgGloda,
     message,
@@ -107,8 +114,19 @@ async function messageFromGlodaIfOffline(glodaMsg, debug) {
 }
 
 async function messageFromDbHdr(msgHdr, debug) {
-  const message = new MessageFromDbHdr(msgHdr);
-  await message.init();
+  // Gloda is not with us, so stream the message... the MimeMsg API says that
+  //  the streaming will fail and the underlying exception will be re-thrown in
+  //  case the message is not on disk. In that case, the fallback is to just get
+  //  the body text and wait for it to be ready. This can be SLOW (like, real
+  //  slow). But at least it works. (Setting the fourth parameter to true just
+  //  leads to an empty snippet).
+  Log.warn(
+    "Streaming the message because Gloda has not indexed it, this will be slower"
+  );
+
+  let uri = msgHdrGetUri(msgHdr);
+  let msgId = await browser.conversations.getMessageIdForUri(uri);
+  let message = new MessageFromDbHdr(msgId, msgHdr);
   return {
     type: kMsgDbHdr,
     message,
@@ -351,7 +369,7 @@ Conversation.prototype = {
       let msgId = glodaMsg.headerMessageID;
       if (
         msgId in byMessageId &&
-        byMessageId[msgId]._msgHdr.messageKey == glodaMsg.messageKey
+        byMessageId[msgId].data.messageKey == glodaMsg.messageKey
       ) {
         await this.removeMessage(byMessageId[msgId]);
       }
@@ -424,18 +442,18 @@ Conversation.prototype = {
    * @param {Message} msg a Message as in modules/message.js
    */
   async removeMessage(msg) {
-    Log.debug("Removing message:", msg?._uri);
+    Log.debug("Removing message:", msg.data.id);
     // Move the quick reply to the previous message
     this.messages = this.messages.filter((x) => x.message != msg);
     this._initialSet = this._initialSet.filter((x) => x.message != msg);
-
-    let id = await browser.conversations.getMessageIdForUri(msgHdrGetUri(msg));
 
     // TODO As everything is synchronous but react doesn't let us dispatch
     // from within a dispatch, then we have to dispatch this off to the main
     // thread.
     Services.tm.dispatchToMainThread(() => {
-      this.dispatch(messageActions.removeMessageFromConversation({ id }));
+      this.dispatch(
+        messageActions.removeMessageFromConversation({ id: msg.data.id })
+      );
     });
   },
 

@@ -115,7 +115,6 @@ function populateAttachmentFields(message, numAttachments) {
       size: (i + 1) * 1024,
       contentType: contentTypes[i % numAttachments],
       formattedSize: `${(i + 1) * 1024}KB`,
-      isExternal: false,
       name: `attachment ${i}`,
       partName: `part1.${i + 1}`,
       url: `../icon.png`,

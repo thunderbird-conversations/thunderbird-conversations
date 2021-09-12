@@ -54,7 +54,7 @@ let AlternativeSender = {
     aCallbackHandle
   ) {
     try {
-      let alternativeSender = GlodaAttrProviders.alternativeSender(aRawReps);
+      let alternativeSender = this.alternativeSender(aRawReps);
       if (alternativeSender) {
         aGlodaMessage.alternativeSender = alternativeSender;
       }
@@ -63,6 +63,19 @@ let AlternativeSender = {
     }
 
     yield Gloda.kWorkDone;
+  },
+
+  // About to do more special-casing here? Please check out the corresponding
+  //  code in contact.js and make sure you modify it too.
+  alternativeSender(aRawReps) {
+    const aMimeMsg = aRawReps.mime;
+
+    // This header is a bare email address
+    if (aMimeMsg && "x-bugzilla-who" in aMimeMsg.headers) {
+      return aMimeMsg.headers["x-bugzilla-who"];
+    }
+
+    return null;
   },
 };
 
@@ -106,18 +119,5 @@ var GlodaAttrProviders = {
   init() {
     ContentType.init();
     AlternativeSender.init();
-  },
-
-  // About to do more special-casing here? Please check out the corresponding
-  //  code in contact.js and make sure you modify it too.
-  alternativeSender(aRawReps) {
-    const aMimeMsg = aRawReps.mime;
-
-    // This header is a bare email address
-    if (aMimeMsg && "x-bugzilla-who" in aMimeMsg.headers) {
-      return aMimeMsg.headers["x-bugzilla-who"];
-    }
-
-    return null;
   },
 };

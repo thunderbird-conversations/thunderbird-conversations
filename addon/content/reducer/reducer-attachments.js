@@ -3,7 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 export const attachmentActions = {
-  previewAttachment({ id, name, partName, url }) {
+  previewAttachment({ id, name, partName }) {
     return async (dispatch, getState) => {
       let msgUri = await browser.conversations.getMessageUriForId(id);
       let searchParams = new URLSearchParams({
@@ -21,23 +21,19 @@ export const attachmentActions = {
       await browser.conversations.downloadAllAttachments(id);
     };
   },
-  downloadAttachment({ id, attachmentUrl }) {
+  downloadAttachment({ id, partName }) {
     return async () => {
-      await browser.conversations.downloadAttachment(id, attachmentUrl);
+      await browser.conversations.downloadAttachment(id, partName);
     };
   },
-  openAttachment({ id, attachmentUrl }) {
+  openAttachment({ id, partName }) {
     return async () => {
-      await browser.conversations.openAttachment(id, attachmentUrl);
+      await browser.conversations.openAttachment(id, partName);
     };
   },
-  detachAttachment({ id, attachmentUrl, shouldSave }) {
+  detachAttachment({ id, partName, shouldSave }) {
     return async () => {
-      await browser.conversations.detachAttachment(
-        id,
-        attachmentUrl,
-        shouldSave
-      );
+      await browser.conversations.detachAttachment(id, partName, shouldSave);
     };
   },
   showGalleryView({ id }) {

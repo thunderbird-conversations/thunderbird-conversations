@@ -509,15 +509,38 @@
         ]
       },
       {
-        "name": "getMessageSnippet",
+        "name": "parseMimeLine",
         "type": "function",
-        "description": "Get a message snippet",
+        "description": "Extracts contact details from a mime line.",
         "async": true,
         "parameters": [
           {
-            "name": "msgId",
-            "type": "integer",
-            "description": "The message id to get the snippet for."
+            "name": "mimeLine",
+            "type": "string",
+            "description": "The line to parse for contact details."
+          }
+        ]
+      },
+      {
+        "name": "convertSnippetToPlainText",
+        "type": "function",
+        "description": "Converts a message snippet to plain text.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "accountId",
+            "type": "string",
+            "description": "The account id"
+          },
+          {
+            "name": "path",
+            "type": "string",
+            "description": "The path of the folder"
+          },
+          {
+            "name": "text",
+            "type": "string",
+            "description": "The text to convert"
           }
         ]
       }

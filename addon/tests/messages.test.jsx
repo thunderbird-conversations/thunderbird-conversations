@@ -543,7 +543,6 @@ describe("messageEnricher", () => {
           attachments: [
             {
               contentType: "application/pdf",
-              isExternal: false,
               name: "foo.pdf",
               partName: "1.2",
               size: 634031,
@@ -567,7 +566,6 @@ describe("messageEnricher", () => {
             anchor: "msg0att0",
             contentType: "application/pdf",
             formattedSize: "634031 bars",
-            isExternal: false,
             name: "foo.pdf",
             partName: "1.2",
             size: 634031,

@@ -6,10 +6,15 @@ import { browser } from "../es-modules/thunderbird-compat.js";
 
 const RE_BZ_BUG_LINK = /^https:\/\/.*?\/show_bug.cgi\?id=[0-9]*/;
 const RE_BZ_COMMENT = /^--- Comment #\d+ from .* \d{4}.*? ---([\s\S]*)/m;
+const RE_LIST_POST = /<mailto:([^>]+)>/;
 
 const kExpandNone = 1;
 const kExpandAll = 3;
 const kExpandAuto = 4;
+
+// This is high because we want enough snippet to extract relevant data from
+// bugzilla snippets.
+const kSnippetLength = 700;
 
 /**
  * Used to enrich basic message data with additional information for display.
@@ -61,6 +66,10 @@ export let messageEnricher = new (class {
             userTags,
             selectedMessages
           );
+          await this._parseMimeLines(message);
+          if (message.getFullRequired) {
+            await this._getFullDetails(message);
+          }
           await this._addDetailsFromAttachments(
             message,
             summary.prefs.extraAttachments
@@ -330,6 +339,7 @@ export let messageEnricher = new (class {
     message.isPhishing = false;
 
     message.folderAccountId = messageHeader.folder.accountId;
+    message.folderPath = messageHeader.folder.path;
     message.isArchives = messageFolderType == "archives";
     message.isDraft = messageFolderType == "drafts";
     message.isInbox = messageFolderType == "inbox";
@@ -372,6 +382,99 @@ export let messageEnricher = new (class {
   }
 
   /**
+   * Get full details of a message. We typically need to do this for messages
+   * not indexed by gloda, or for getting extra details for display (e.g.
+   * headers).
+   *
+   * @param {object} message
+   *   The message to get the full details for.
+   */
+  async _getFullDetails(message) {
+    const msg = await browser.messages.getFull(message.id);
+
+    if (
+      "list-post" in msg.headers &&
+      RE_LIST_POST.exec(msg.headers["list-post"])
+    ) {
+      message.recipientsIncludeLists = true;
+    }
+
+    if ("x-bugzilla-who" in msg.headers) {
+      message.realFrom = message._contactsData.from[0]?.email;
+      message._contactsData.from = await browser.conversations.parseMimeLine(
+        msg.headers["x-bugzilla-who"][0]
+      );
+    }
+
+    function checkPart(msgPart) {
+      switch (msgPart.contentType) {
+        case "text/html":
+          return { body: msgPart.body, html: true };
+        case "text/plain":
+          return { body: msgPart.body, html: false };
+        case "multipart/alternative":
+        case "multipart/related":
+        case "multipart/mixed":
+          for (let part of msgPart.parts.reverse()) {
+            let info = checkPart(part);
+            if (info.body?.length) {
+              return info;
+            }
+          }
+          break;
+      }
+      return { body: msgPart.body, html: true };
+    }
+
+    let info = checkPart(msg.parts[0]);
+    if (info.html) {
+      message.snippet = await browser.conversations.convertSnippetToPlainText(
+        message.folderAccountId,
+        message.folderPath,
+        info.body
+      );
+    } else {
+      message.snippet = info.body;
+    }
+
+    message.snippet = message.snippet.substring(0, kSnippetLength);
+
+    // TODO: Attachment display currently relies on having the URI for the
+    // preview of the attachment. Since listAttachments doesn't give us that,
+    // then we use getLateAttachments for now. If we can delay load the image
+    // and insert it later, that'd probably be good enough.
+    // let attachments = await browser.messages.listAttachments(message.id);
+    // message.attachments = attachments.map((a) => {
+    //   return {
+    //     contentType: a.contentType,
+    //     name: a.name,
+    //     partName: a.partName,
+    //     size: a.size,
+    //   };
+    // });
+    message.attachments = await browser.conversations.getLateAttachments(
+      message.id,
+      false
+    );
+  }
+
+  /**
+   * Handles parsing of the mime (to/cc/bcc/from) lines of a message.
+   *
+   * @param {object} message
+   *   The message to get the additional details for.
+   */
+  async _parseMimeLines(message) {
+    for (let line of ["from", "to", "cc", "bcc"]) {
+      message._contactsData[line] = message._contactsData[line]
+        ? await browser.conversations.parseMimeLine(message._contactsData[line])
+        : [];
+    }
+    let real = await browser.conversations.parseMimeLine(message.realFrom);
+    message.realFrom = real?.[0].email;
+  }
+
+  /**
    * Obtains attachment details and adds them to the message.
    *
    * @param {object} message
@@ -402,7 +505,6 @@ export let messageEnricher = new (class {
         size: att.size,
         contentType: att.contentType,
         formattedSize,
-        isExternal: att.isExternal,
         name: att.name,
         partName: att.partName,
         url: att.url,

@@ -240,6 +240,12 @@ if (!browser.conversations) {
     },
     async openAttachment() {},
     async previewAttachment() {},
+    async parseMimeLine() {
+      return [{ email: "", name: "-", fullName: "-" }];
+    },
+    async convertSnippetToPlainText() {
+      return "short snippet";
+    },
   };
 }
 
