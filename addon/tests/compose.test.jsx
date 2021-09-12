@@ -85,6 +85,7 @@ describe("Compose full page tests", () => {
       from: undefined,
       body: undefined,
       modified: true,
+      replyOnTop: null,
       subject: undefined,
       to: "a",
       sending: false,

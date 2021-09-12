@@ -31,6 +31,9 @@ export let messageEnricher = new (class {
       dateStyle: "short",
       timeStyle: "short",
     });
+    this.dateFormatter = new Intl.DateTimeFormat(undefined, {
+      dateStyle: "short",
+    });
     this.pluralForm = browser.i18n.getMessage("pluralForm");
     this.numAttachmentsString = browser.i18n.getMessage(
       "attachments.numAttachments"

@@ -5,6 +5,7 @@
 import * as RTK from "@reduxjs/toolkit";
 import { browser as _browser } from "../es-modules/thunderbird-compat.js";
 import { composeActions } from "./reducer-compose.js";
+import { messageEnricher } from "./messages.js";
 
 // Prefer the global browser object to the imported one.
 window.browser = window.browser || _browser;
@@ -36,6 +37,10 @@ export const quickReplyActions = {
       if (accountDetail && accountDetail.identities.length) {
         accountId = accountDetail.id;
         identityId = accountDetail.identities[0].id;
+      } else {
+        // Use the default identity.
+        accountId = await browser.accounts.getDefault();
+        identityId = await browser.identities.getDefault(accountId);
       }
 
       let to;
@@ -74,6 +79,24 @@ export const quickReplyActions = {
         }
       }
 
+      let replyOnTop = await browser.conversations.getReplyOnTop(identityId);
+
+      let citation =
+        browser.i18n.getMessage("compose.reply_header_citation", [
+          msg.author,
+          messageEnricher.dateFormatter.format(msg.date),
+          messageEnricher.timeFormatter.format(msg.date),
+        ]) + "\n";
+      let body = await browser.conversations.quoteMsgHdr(msg.id, true);
+      body =
+        (replyOnTop == 1 ? "\n\n" : "") +
+        citation +
+        body
+          .split("\n")
+          .map((l) => `> ${l}`)
+          .join("\n") +
+        (replyOnTop == 0 ? "\n\n" : "");
+
       let subject = msg.subject;
       if (!subject.toLowerCase().includes("re:")) {
         subject = "Re: " + subject;
@@ -87,7 +110,9 @@ export const quickReplyActions = {
           identityId,
           to,
           subject,
+          body,
           showSubject: false,
+          replyOnTop,
         })
       );
       await dispatch(

@@ -246,6 +246,9 @@ if (!browser.conversations) {
     async convertSnippetToPlainText() {
       return "short snippet";
     },
+    async getReplyOnTop() {
+      return 1;
+    },
   };
 }
 

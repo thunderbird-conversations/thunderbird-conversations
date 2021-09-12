@@ -437,6 +437,11 @@
             "name": "id",
             "type": "integer",
             "description": "The message id to quote."
+          },
+          {
+            "name": "plainText",
+            "type": "boolean",
+            "description": "True if the returned message should be plain text."
           }
         ]
       },
@@ -595,6 +600,19 @@
             "name": "value",
             "type": "boolean",
             "description": "Whether or not to enable the offline download."
+          }
+        ]
+      },
+      {
+        "name": "getReplyOnTop",
+        "type": "function",
+        "description": "Temporary. Gets the reply on top preference.",
+        "async": true,
+        "parameters": [
+          {
+            "name": "identityId",
+            "type": "string",
+            "description": "The identity to get the preference from."
           }
         ]
       }

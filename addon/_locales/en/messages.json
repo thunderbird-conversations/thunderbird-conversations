@@ -797,5 +797,24 @@
   "options.undoCustomizations.finished": {
     "message": "Undo Customizations finished",
     "description": "Message displayed once the customizations have been uninstalled."
+  },
+
+  "compose.reply_header_citation": {
+    "message": "On $date$ $time$, $author$ wrote:",
+    "description": "Citation header when replying to a message.",
+    "placeholders": {
+      "author": {
+        "content": "$1",
+        "example": "John Smith"
+      },
+      "date": {
+        "content": "$2",
+        "example": "12/01/21"
+      },
+      "time": {
+        "content": "$3",
+        "example": "12:14"
+      }
+    }
   }
 }

@@ -45,10 +45,12 @@ describe("Compose Reducer and Actions tests", () => {
     // Should have correctly set up the initial values.
     expect(store.getState()).toStrictEqual({
       compose: {
+        body: undefined,
         from: "id3@example.com",
         identityId: "id3",
         email: "id3@example.com",
         modified: false,
+        replyOnTop: null,
         sending: false,
         sendingMsg: "",
         showSubject: false,
@@ -65,10 +67,12 @@ describe("Compose Reducer and Actions tests", () => {
 
     expect(store.getState()).toStrictEqual({
       compose: {
+        body: undefined,
         from: "id3@example.com",
         identityId: "id3",
         email: "id3@example.com",
         modified: false,
+        replyOnTop: null,
         sending: false,
         sendingMsg: "",
         showSubject: true,

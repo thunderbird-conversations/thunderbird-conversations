@@ -594,10 +594,11 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
          *  that).
          *
          * @param {id} id The message id that you want to quote
+         * @param {boolean} plainText True if to return the message in plain text format.
          * @returns {Promise}
          *   Returns a quoted string suitable for insertion in an HTML editor.
          */
-        quoteMsgHdr(id) {
+        quoteMsgHdr(id, plainText) {
           const msgHdr = context.extension.messageManager.get(id);
           return new Promise((resolve) => {
             let chunks = [];
@@ -613,7 +614,35 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
               /** @ignore*/
               onStopRequest(aRequest, aStatusCode) {
                 let data = chunks.join("");
-                resolve(data);
+                if (!plainText) {
+                  resolve(data);
+                  return;
+                }
+                let parser = Cc["@mozilla.org/parserutils;1"].createInstance(
+                  Ci.nsIParserUtils
+                );
+                let wrapWidth = Services.prefs.getIntPref(
+                  "mailnews.wraplength",
+                  72
+                );
+                if (wrapWidth == 0 || wrapWidth > 990) {
+                  wrapWidth = 990;
+                } else if (wrapWidth < 10) {
+                  wrapWidth = 10;
+                }
+                let flags =
+                  Ci.nsIDocumentEncoder.OutputPersistNBSP |
+                  Ci.nsIDocumentEncoder.OutputFormatted;
+
+                if (
+                  Services.prefs.getBoolPref(
+                    "mailnews.send_plaintext_flowed",
+                    false
+                  )
+                ) {
+                  flags |= Ci.nsIDocumentEncoder.OutputFormatFlowed;
+                }
+                resolve(parser.convertToPlainText(data, flags, wrapWidth));
               },
 
               /** @ignore*/
@@ -796,6 +825,10 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
               folder.clearFlag(Ci.nsMsgFolderFlags.Offline);
             }
           }
+        },
+        async getReplyOnTop(identityId) {
+          let identity = MailServices.accounts.getIdentity(identityId);
+          return identity.replyOnTop;
         },
         onCallAPI: new ExtensionCommon.EventManager({
           context,

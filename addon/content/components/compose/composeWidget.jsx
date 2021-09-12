@@ -24,6 +24,29 @@ export function ComposeWidget({ discard }) {
     }
   }, []);
 
+  React.useEffect(() => {
+    if (composeState.replyOnTop === null) {
+      return;
+    }
+
+    switch (composeState.replyOnTop) {
+      case 0: {
+        let textLength = composeState.body.length;
+        bodyInput.current.setSelectionRange(textLength, textLength);
+        break;
+      }
+      case 1: {
+        bodyInput.current.setSelectionRange(0, 0);
+        break;
+      }
+      case 2: {
+        let textLength = composeState.body.length;
+        bodyInput.current.setSelectionRange(0, textLength);
+        break;
+      }
+    }
+  }, [composeState.replyOnTop]);
+
   function onSend() {
     dispatch(composeActions.sendMessage());
   }
