@@ -327,14 +327,15 @@ export let messageEnricher = new (class {
       message.hasRemoteContent = false;
     }
     message.smimeReload = false;
+    message.isPhishing = false;
 
     message.folderAccountId = messageHeader.folder.accountId;
     message.isArchives = messageFolderType == "archives";
     message.isDraft = messageFolderType == "drafts";
     message.isInbox = messageFolderType == "inbox";
     message.isJunk = messageHeader.junk;
-    message.isTemplate = messageFolderType == "templates";
     message.isSent = messageFolderType == "sent";
+    message.isTemplate = messageFolderType == "templates";
     message.isOutbox = messageFolderType == "outbox";
     message.read = messageHeader.read;
     message.subject = messageHeader.subject;

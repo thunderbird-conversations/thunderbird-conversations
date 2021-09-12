@@ -85,7 +85,7 @@ function msgDate({ type, message, msgHdr, glodaMsg }) {
   return new Date();
 }
 
-async function messageFromGlodaIfOffline(conversation, glodaMsg, debug) {
+async function messageFromGlodaIfOffline(glodaMsg, debug) {
   let msgHdr = glodaMsg.folderMessage;
   if (!msgHdr) {
     return null;
@@ -95,11 +95,7 @@ async function messageFromGlodaIfOffline(conversation, glodaMsg, debug) {
       !(msgHdr.folder.flags & Ci.nsMsgFolderFlags.Offline)) || // online IMAP
     glodaMsg.isEncrypted || // encrypted message
     (glodaMsg.contentType + "").search(/^multipart\/encrypted(;|$)/i) == 0; // encrypted message
-  const message = new MessageFromGloda(
-    conversation,
-    msgHdr,
-    needsLateAttachments
-  );
+  const message = new MessageFromGloda(msgHdr, needsLateAttachments);
   await message.init(glodaMsg);
   return {
     type: kMsgGloda,
@@ -110,8 +106,8 @@ async function messageFromGlodaIfOffline(conversation, glodaMsg, debug) {
   };
 }
 
-async function messageFromDbHdr(conversation, msgHdr, debug) {
-  const message = new MessageFromDbHdr(conversation, msgHdr);
+async function messageFromDbHdr(msgHdr, debug) {
+  const message = new MessageFromDbHdr(msgHdr);
   await message.init();
   return {
     type: kMsgDbHdr,
@@ -202,7 +198,7 @@ Conversation.prototype = {
   //  of messages in order to obtain the conversation. It takes care of filling
   //  this.messages with the right set of messages, and then moves on to
   //  _outputMessages.
-  _fetchMessages: function _Conversation_fetchMessages() {
+  _fetchMessages() {
     let self = this;
     // This is a "classic query", i.e. the one we use all the time: just obtain
     //  a GlodaMessage for the selected message headers, and then pick the
@@ -216,7 +212,7 @@ Conversation.prototype = {
             Log.warn("Warning: gloda query returned no messages");
             // M = msgHdr, I = Initial, NG = there was no gloda query
             const messagePromises = self._initialSet.map((msgHdr) =>
-              messageFromDbHdr(self, msgHdr, "MI+NG")
+              messageFromDbHdr(msgHdr, "MI+NG")
             );
             self.messages = await Promise.all(messagePromises);
             self._outputMessages().catch(console.error);
@@ -255,9 +251,7 @@ Conversation.prototype = {
       try {
         // We want at least all messages from the Gloda collection
         let messages = await Promise.all(
-          aItems.map((glodaMsg) =>
-            messageFromGlodaIfOffline(this, glodaMsg, "GA")
-          )
+          aItems.map((glodaMsg) => messageFromGlodaIfOffline(glodaMsg, "GA"))
         );
         // Filter out anything that doesn't have a message header.
         messages = messages.filter((message) => message);
@@ -384,10 +378,10 @@ Conversation.prototype = {
         //  messages from the intermediate set (see rationale in the
         //  initialization of this._intermediateResults).
         let msgPromises = aCollection.items.map((glodaMsg) =>
-          messageFromGlodaIfOffline(this, glodaMsg, "GF")
+          messageFromGlodaIfOffline(glodaMsg, "GF")
         );
         let intermediateSet = this._intermediateResults.map((glodaMsg) =>
-          messageFromGlodaIfOffline(this, glodaMsg, "GM")
+          messageFromGlodaIfOffline(glodaMsg, "GM")
         );
         this.messages = await Promise.all([...msgPromises, ...intermediateSet]);
         // Filter out anything that doesn't have a message header.
@@ -408,7 +402,7 @@ Conversation.prototype = {
           //  represents the sent message has been replaced in the meanwhile
           //  with the real header...
           if (!(msgHdr.messageId in messageIds)) {
-            this.messages.push(await messageFromDbHdr(this, msgHdr, "MI+G"));
+            this.messages.push(await messageFromDbHdr(msgHdr, "MI+G"));
           }
         }
         // Sort all the messages according to the date so that they are inserted
@@ -464,13 +458,6 @@ Conversation.prototype = {
       newMsgs.map((x) => x.debug + " " + getMessageId(x)).join(" ")
     );
 
-    // All your messages are belong to us. This is especially important so
-    //  that contacts query the right _contactManager through their parent
-    //  Message. (Update: contactManager is now globally persistent via the
-    //  background script, so there is only one to pick from.)
-    for (let x of newMsgs) {
-      x.message._conversation = this;
-    }
     this.messages = this.messages.concat(newMsgs);
 
     // Update initialPosition
@@ -481,16 +468,12 @@ Conversation.prototype = {
     ) {
       this.messages[i].message.initialPosition = i;
     }
-    const reactMsgData = [];
-    for (const m of newMsgs) {
-      reactMsgData.push(m.message.reactData);
-    }
 
     this.dispatch(
       this._htmlPane.conversationControllerActions.updateConversation({
         mode: "append",
         messages: {
-          msgData: reactMsgData,
+          msgData: newMsgs.map((m) => m.message.reactData),
         },
       })
     );
@@ -511,35 +494,10 @@ Conversation.prototype = {
       return;
     }
 
-    if (this._window.Conversations.currentConversation) {
-      // Gotta save the quick reply, if there's one! Please note that
-      //  contentWindow.Conversations is still wired onto the old
-      //  conversation. Updating the global Conversations object and loading
-      //  the new conversation's draft is not our responsibility, it's that of
-      //  the monkey-patch, and it's done at the very end of the process.
-      // This call actually starts the save process off the main thread, but
-      //  we're not doing anything besides saving the quick reply, so we don't
-      //  need for this call to complete before going on.
-      try {
-        // TODO: Re-enable this.
-        // this._htmlPane.onSave();
-      } catch (e) {
-        console.error(e);
-      }
-    }
-
     Log.debug(
       "Outputting",
       this.messages.map((x) => x.debug)
     );
-
-    // Fill in the HTML right away. The has the nice side-effect of erasing the
-    // previous conversation (but not the conversation-wide event handlers!)
-    for (let i = 0; i < this.messages.length; i++) {
-      // We need to set this before the call to reactMsgData.
-      let msg = this.messages[i].message;
-      msg.initialPosition = i;
-    }
 
     let reactMsgData = [];
     for (let [i, m] of this.messages.entries()) {
@@ -550,8 +508,6 @@ Conversation.prototype = {
       msgData.initialPosition = i;
       reactMsgData.push(msgData);
     }
-    this.messages = this.messages.filter((m, i) => !!reactMsgData[i]);
-    reactMsgData = reactMsgData.filter((m) => m);
 
     // Final check to see if another conversation has started loading whilst
     // we've been creating. If so, abort and get out of here.

@@ -98,6 +98,7 @@ describe("Controller Actions tests", () => {
         isInbox: true,
         isJunk: false,
         isOutbox: false,
+        isPhishing: false,
         isSent: false,
         isTemplate: false,
         multipleRecipients: false,

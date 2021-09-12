@@ -48,13 +48,14 @@ const RE_LIST_POST = /<mailto:([^>]+)>/;
  * Handles the gathering of data for an individual message.
  */
 class Message {
-  constructor(aConversation, msgHdr) {
+  constructor(msgHdr) {
     this._msgHdr = msgHdr;
+    this._uri = msgHdrGetUri(this._msgHdr);
+
     // Type of message, e.g. normal or bugzilla.
     this._type = "normal";
     this._id = null;
     this._snippet = "";
-    this._conversation = aConversation;
 
     // This one is for display purposes. We should always parse the non-decoded
     // author because there's more information in the encoded form (see #602)
@@ -75,23 +76,15 @@ class Message {
       ? parseMimeLine(this._msgHdr.bccList)
       : [];
 
-    this._uri = msgHdrGetUri(this._msgHdr);
     this._attachments = [];
     this._messageHeaderId = null;
     this._glodaMessageId = null;
     this.needsLateAttachments = false;
     this.contentType = "";
-    this.isPhishing = false;
 
     // A list of email addresses
     this.mailingLists = [];
     this.isReplyListEnabled = false;
-    this.isEncrypted = false;
-    this.notifiedRemoteContentAlready = false;
-
-    // Filled by the conversation, useful to know whether we were initially the
-    //  first message in the conversation or not...
-    this.initialPosition = -1;
   }
 
   get reactData() {
@@ -100,7 +93,6 @@ class Message {
       attachments: this._attachments,
       messageHeaderId: this._messageHeaderId,
       glodaMessageId: this._glodaMessageId,
-      isPhishing: this.isPhishing,
       messageKey: this._msgHdr.messageKey,
       needsLateAttachments: this.needsLateAttachments,
       realFrom: this._realFrom.email || this._from.email,
@@ -142,8 +134,8 @@ function simplifyAttachment(attachment) {
  * from queries on the global database.
  */
 class MessageFromGloda extends Message {
-  constructor(conversation, msgHdr, lateAttachments) {
-    super(conversation, msgHdr);
+  constructor(msgHdr, lateAttachments) {
+    super(msgHdr);
     this.needsLateAttachments = lateAttachments;
   }
 
@@ -173,16 +165,6 @@ class MessageFromGloda extends Message {
       this.contentType = "message/rfc822";
     }
 
-    if ("isEncrypted" in glodaMsg) {
-      this.isEncrypted = glodaMsg.isEncrypted;
-    }
-
-    if (
-      (glodaMsg.contentType + "").search(/^multipart\/encrypted(;|$)/i) == 0
-    ) {
-      this.isEncrypted = true;
-    }
-
     if ("mailingLists" in glodaMsg) {
       this.mailingLists = glodaMsg.mailingLists.map((x) => x.value);
     }
@@ -197,8 +179,8 @@ class MessageFromGloda extends Message {
  * via message headers.
  */
 class MessageFromDbHdr extends Message {
-  constructor(conversation, msgHdr) {
-    super(conversation, msgHdr);
+  constructor(msgHdr) {
+    super(msgHdr);
   }
 
   toMimeMsg() {
@@ -249,11 +231,6 @@ class MessageFromDbHdr extends Message {
               aMimeMsg &&
               aMimeMsg.has("list-post") &&
               RE_LIST_POST.exec(aMimeMsg.get("list-post"));
-
-            let findIsEncrypted = (x) =>
-              x.isEncrypted ||
-              (x.parts ? x.parts.some(findIsEncrypted) : false);
-            this.isEncrypted = findIsEncrypted(aMimeMsg);
             resolve();
           } catch (e) {
             reject(e);
