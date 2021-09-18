@@ -95,7 +95,7 @@ var convOpenPgp = class extends ExtensionCommon.ExtensionAPI {
           if (tabId == -1) {
             return;
           }
-          console.log("beforeStreamingMessage", msgId, dueToReload);
+
           if (!dueToReload) {
             let win = getWindow(context, tabId);
             // TODO: This might not be necessary once decryption handling is
@@ -105,11 +105,8 @@ var convOpenPgp = class extends ExtensionCommon.ExtensionAPI {
           // Not sure if we need this or not.
           // win.EnigmailVerify.lastMsgWindow = win.msgWindow;
         },
-        handleMessageStreamed(tabId, msgId) {
-          console.log("onMessageStreamed", msgId);
-        },
+        handleMessageStreamed(tabId, msgId) {},
         handleTagClick(tabId, msgId) {
-          console.log("handleTagClick", tabId, msgId);
           let win = getWindow(context, tabId);
           win.showMessageReadSecurityInfo();
         },
@@ -248,25 +245,12 @@ const securityStatusPatch = (win, id, context) => {
       win.oldOnUpdateSecurityStatus.apply(this, arguments);
       return;
     }
-    // let message;
+
     let msgHdr = uri.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
     let id = context.extension.messageManager.convert(msgHdr).id;
-    // if (win.Conversations.currentConversation) {
-    //   let uriSpec = msgHdrGetUri(msgHdr);
-    //   message = w.Conversations.currentConversation.getMessage(uriSpec);
-    // }
-    // if (!message) {
-    //   console.error("Message for the security info not found!");
-    //   return;
-    // }
-    // if (message._updateHdrIcons) {
-    //   // _updateHdrIcons is assigned if this is called before.
-    //   // This function will be called twice a PGP/MIME encrypted message.
-    //   return;
-    // }
 
     (async () => {
-      // Non-encrypted message may have decrypted labela since
+      // Non-encrypted message may have decrypted label since
       // message.isEncrypted is true for only signed pgp/mime message.
       // We reset decrypted label from decryption status.
       let encryptionStatus;
@@ -294,8 +278,6 @@ const securityStatusPatch = (win, id, context) => {
           encToDetails = o.encryptedTo;
         }
       }
-      //
-      // let updateHdrIcons = function () {
       win.Enigmail.hdrView.updateHdrIcons(
         exitCode,
         statusFlags,
@@ -308,8 +290,7 @@ const securityStatusPatch = (win, id, context) => {
         encToDetails,
         null
       ); // xtraStatus
-      // };
-      // showHdrIconsOnStreamed(message, updateHdrIcons);
+
       loadOpenPgpMessageSecurityInfo(win).then((details) => {
         // Maybe show signed label of encrypted and signed pgp/mime.
         let signedStatus = getSignedStatus(statusFlags);
@@ -323,7 +304,6 @@ const securityStatusPatch = (win, id, context) => {
           });
         }
       });
-      // win.Enigmail.hdrView.displayStatusBar();
     })();
   };
 };
