@@ -56,30 +56,35 @@ export let messageEnricher = new (class {
   async enrich(mode, msgData, summary, selectedMessages) {
     const userTags = await browser.messages.listTags();
 
-    await Promise.all(
+    let msgs = await Promise.all(
       msgData.map(async (message) => {
+        let msg = {};
         try {
-          await this._addDetailsFromHeader(
+          msg = await this._addDetailsFromHeader(
             summary.tabId,
             mode,
             message,
             userTags,
             selectedMessages
           );
-          await this._parseMimeLines(message);
+
+          await this._parseMimeLines(message, msg);
+
           if (message.getFullRequired) {
-            await this._getFullDetails(message);
+            await this._getFullDetails(message, msg);
           }
           await this._addDetailsFromAttachments(
             message,
+            msg,
             summary.prefs.extraAttachments
           );
-          this._adjustSnippetForBugzilla(message);
-          await messageEnricher._setDates(message, summary);
+          this._adjustSnippetForBugzilla(message, msg);
+          await messageEnricher._setDates(msg, summary);
         } catch (ex) {
           console.error("Could not process message:", ex);
-          message.invalid = true;
+          msg.invalid = true;
         }
+        return msg;
       })
     );
 
@@ -87,17 +92,17 @@ export let messageEnricher = new (class {
     // as this relies on the message read information.
     if (mode != "replaceMsg") {
       if (mode == "replaceAll") {
-        this._filterOutDuplicatesAndInvalids(msgData);
+        this._filterOutDuplicatesAndInvalids(msgs);
 
         this._expandAndScroll(
-          msgData,
+          msgs,
           selectedMessages,
           summary.tabId,
           summary.prefs.expandWho
         );
       } else {
         this._markMsgsToExpand(
-          msgData,
+          msgs,
           selectedMessages,
           -1,
           summary.prefs.expandWho,
@@ -105,6 +110,7 @@ export let messageEnricher = new (class {
         );
       }
     }
+    return msgs;
   }
 
   /**
@@ -321,37 +327,45 @@ export let messageEnricher = new (class {
     userTags,
     selectedMessages
   ) {
+    let msg = {
+      id: message.id,
+      initialPosition: message.initialPosition,
+      type: message.type,
+      glodaMessageId: message.glodaMessageId,
+      detailsShowing: message.detailsShowing,
+      recipientsIncludeLists: message.recipientsIncludeLists,
+    };
     const messageHeader = await browser.messages.get(message.id);
     if (!messageHeader) {
       throw new Error("Message no longer exists");
     }
     const messageFolderType = messageHeader.folder.type;
 
-    message.date = messageHeader.date.getTime();
+    msg.date = messageHeader.date.getTime();
     // Only set hasRemoteContent for new messages, otherwise we cause a reload
     // of content each time when a message already has remote content.
     if (mode != "replaceMsg") {
       // We don't actually know until we load the message, so default to false,
       // we'll get notified if it should be true.
-      message.hasRemoteContent = false;
+      msg.hasRemoteContent = false;
     }
-    message.smimeReload = false;
-    message.isPhishing = false;
+    msg.smimeReload = false;
+    msg.isPhishing = false;
 
-    message.folderAccountId = messageHeader.folder.accountId;
-    message.folderPath = messageHeader.folder.path;
-    message.isArchives = messageFolderType == "archives";
-    message.isDraft = messageFolderType == "drafts";
-    message.isInbox = messageFolderType == "inbox";
-    message.isJunk = messageHeader.junk;
-    message.isSent = messageFolderType == "sent";
-    message.isTemplate = messageFolderType == "templates";
-    message.isOutbox = messageFolderType == "outbox";
-    message.read = messageHeader.read;
-    message.subject = messageHeader.subject;
-    message.starred = messageHeader.flagged;
+    msg.folderAccountId = messageHeader.folder.accountId;
+    msg.folderPath = messageHeader.folder.path;
+    msg.isArchives = messageFolderType == "archives";
+    msg.isDraft = messageFolderType == "drafts";
+    msg.isInbox = messageFolderType == "inbox";
+    msg.isJunk = messageHeader.junk;
+    msg.isSent = messageFolderType == "sent";
+    msg.isTemplate = messageFolderType == "templates";
+    msg.isOutbox = messageFolderType == "outbox";
+    msg.read = messageHeader.read;
+    msg.subject = messageHeader.subject;
+    msg.starred = messageHeader.flagged;
 
-    message.tags = messageHeader.tags.map((tagKey) => {
+    msg.tags = messageHeader.tags.map((tagKey) => {
       // The fallback here shouldn't ever happen, but just in case...
       const tagDetails = userTags.find((t) => t.key == tagKey) || {
         color: "#FFFFFF",
@@ -376,9 +390,10 @@ export let messageEnricher = new (class {
       for (let folder of parentFolders) {
         folderName = folder.name + "/" + folderName;
       }
-      message.folderName = folderName;
-      message.shortFolderName = messageHeader.folder.name;
+      msg.folderName = folderName;
+      msg.shortFolderName = messageHeader.folder.name;
     }
+    return msg;
   }
 
   /**
@@ -388,21 +403,23 @@ export let messageEnricher = new (class {
    *
    * @param {object} message
    *   The message to get the full details for.
+   * @param {object} msg
+   *   The new message to put the details into.
    */
-  async _getFullDetails(message) {
-    const msg = await browser.messages.getFull(message.id);
+  async _getFullDetails(message, msg) {
+    const fullMsg = await browser.messages.getFull(message.id);
 
     if (
-      "list-post" in msg.headers &&
-      RE_LIST_POST.exec(msg.headers["list-post"])
+      "list-post" in fullMsg.headers &&
+      RE_LIST_POST.exec(fullMsg.headers["list-post"])
     ) {
-      message.recipientsIncludeLists = true;
+      msg.recipientsIncludeLists = true;
     }
 
-    if ("x-bugzilla-who" in msg.headers) {
-      message.realFrom = message._contactsData.from[0]?.email;
-      message._contactsData.from = await browser.conversations.parseMimeLine(
-        msg.headers["x-bugzilla-who"][0]
+    if ("x-bugzilla-who" in fullMsg.headers) {
+      msg.realFrom = message.parsedLines.from[0]?.email;
+      msg.parsedLines.from = await browser.conversations.parseMimeLine(
+        fullMsg.headers["x-bugzilla-who"][0]
       );
     }
 
@@ -426,18 +443,18 @@ export let messageEnricher = new (class {
       return { body: msgPart.body, html: true };
     }
 
-    let info = checkPart(msg.parts[0]);
+    let info = checkPart(fullMsg.parts[0]);
     if (info.html) {
-      message.snippet = await browser.conversations.convertSnippetToPlainText(
+      msg.snippet = await browser.conversations.convertSnippetToPlainText(
         message.folderAccountId,
         message.folderPath,
         info.body
       );
     } else {
-      message.snippet = info.body;
+      msg.snippet = info.body;
     }
 
-    message.snippet = message.snippet.substring(0, kSnippetLength);
+    msg.snippet = message.snippet.substring(0, kSnippetLength);
 
     // TODO: Attachment display currently relies on having the URI for the
     // preview of the attachment. Since listAttachments doesn't give us that,
@@ -452,7 +469,7 @@ export let messageEnricher = new (class {
     //     size: a.size,
     //   };
     // });
-    message.attachments = await browser.conversations.getLateAttachments(
+    msg.attachments = await browser.conversations.getLateAttachments(
       message.id,
       false
     );
@@ -463,15 +480,21 @@ export let messageEnricher = new (class {
    *
    * @param {object} message
    *   The message to get the additional details for.
+   * @param {object} msg
+   *   The new message to put the details into.
    */
-  async _parseMimeLines(message) {
+  async _parseMimeLines(message, msg) {
+    if (!message._contactsData) {
+      return;
+    }
+    msg.parsedLines = {};
     for (let line of ["from", "to", "cc", "bcc"]) {
-      message._contactsData[line] = message._contactsData[line]
+      msg.parsedLines[line] = message._contactsData[line]
         ? await browser.conversations.parseMimeLine(message._contactsData[line])
         : [];
     }
     let real = await browser.conversations.parseMimeLine(message.realFrom);
-    message.realFrom = real?.[0].email;
+    msg.realFrom = real?.[0].email;
   }
 
   /**
@@ -479,12 +502,14 @@ export let messageEnricher = new (class {
    *
    * @param {object} message
    *   The message to get the additional details for.
+   * @param {object} msg
+   *   The new message to put the details into.
    * @param {boolean} extraAttachments
    *   Whether or not the user wants to display extra attachments.
    */
-  async _addDetailsFromAttachments(message, extraAttachments) {
+  async _addDetailsFromAttachments(message, msg, extraAttachments) {
     if (message.glodaMessageId && extraAttachments) {
-      message.needsLateAttachments = true;
+      msg.needsLateAttachments = true;
     }
 
     let attachments = message.attachments;
@@ -511,8 +536,8 @@ export let messageEnricher = new (class {
         anchor: "msg" + message.initialPosition + "att" + i,
       });
     }
-    message.attachments = newAttachments;
-    message.attachmentsPlural = l
+    msg.attachments = newAttachments;
+    msg.attachmentsPlural = l
       ? await browser.conversations.makePlural(
           this.pluralForm,
           this.numAttachmentsString,
@@ -527,9 +552,12 @@ export let messageEnricher = new (class {
    *
    * @param {object} message
    *   The message for which to simplify the snippet.
+   * @param {object} msg
+   *   The new message to put the details into.
    */
-  _adjustSnippetForBugzilla(message) {
+  _adjustSnippetForBugzilla(message, msg) {
     if (message.type != "bugzilla") {
+      msg.snippet = message.snippet;
       return;
     }
 
@@ -544,7 +572,7 @@ export let messageEnricher = new (class {
       snippet = m[1];
     }
 
-    message.snippet = snippet;
+    msg.snippet = snippet;
   }
 
   /**
@@ -570,21 +598,21 @@ export let messageEnricher = new (class {
    * Sets dates in a message for display, setting according to the
    * no_friendly_date preference.
    *
-   * @param {object} message
-   *   The message to set the dates for.
+   * @param {object} msg
+   *   The new message to put the details into.
    * @param {object} summary
    *   The current summary details from the store state.
    */
-  async _setDates(message, summary) {
-    let date = new Date(message.date);
+  async _setDates(msg, summary) {
+    let date = new Date(msg.date);
     if (summary.prefs.noFriendlyDate) {
-      message.date = this.dateAsInMessageList(date);
-      message.fullDate = "";
+      msg.date = this.dateAsInMessageList(date);
+      msg.fullDate = "";
     } else {
-      message.date = await browser.conversations.makeFriendlyDateAgo(
+      msg.date = await browser.conversations.makeFriendlyDateAgo(
         date.getTime()
       );
-      message.fullDate = this.dateAsInMessageList(date);
+      msg.fullDate = this.dateAsInMessageList(date);
     }
   }
 })();

@@ -447,15 +447,15 @@ export const messagesSlice = RTK.createSlice({
      */
     updateConversation(state, { payload: { messages, mode } }) {
       if (mode == "append") {
-        return { ...state, msgData: state.msgData.concat(messages.msgData) };
+        return { ...state, msgData: state.msgData.concat(messages) };
       }
       if (mode == "replaceMsg") {
-        return modifyOnlyMsg(state, messages.msgData[0].id, (msg) => ({
+        return modifyOnlyMsg(state, messages[0].id, (msg) => ({
           ...msg,
-          ...messages.msgData[0],
+          ...messages[0],
         }));
       }
-      return { ...state, ...messages };
+      return { ...state, msgData: messages };
     },
     msgExpand(state, { payload }) {
       return modifyOnlyMsg(state, payload.id, (msg) => ({

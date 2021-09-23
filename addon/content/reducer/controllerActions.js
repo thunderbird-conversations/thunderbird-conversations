@@ -329,7 +329,7 @@ export const controllerActions = {
       const state = getState();
       await handleShowDetails(messages, state, dispatch, async () => {
         // The messages need some more filling out and tweaking.
-        await messageEnricher.enrich(
+        let enrichedMsgs = await messageEnricher.enrich(
           mode,
           messages.msgData,
           state.summary,
@@ -338,11 +338,10 @@ export const controllerActions = {
 
         // The messages inside `msgData` don't come with filled in `to`/`from`/ect. fields.
         // We need to fill them in ourselves.
-        await mergeContactDetails(messages.msgData);
+        await mergeContactDetails(enrichedMsgs);
 
         if (mode == "replaceAll") {
-          summary.subject =
-            messages.msgData[messages.msgData.length - 1]?.subject;
+          summary.subject = enrichedMsgs[enrichedMsgs.length - 1]?.subject;
 
           await dispatch(composeSlice.actions.resetStore());
           await dispatch(
@@ -351,7 +350,9 @@ export const controllerActions = {
           await dispatch(summaryActions.replaceSummaryDetails(summary));
         }
 
-        await dispatch(messageActions.updateConversation({ messages, mode }));
+        await dispatch(
+          messageActions.updateConversation({ messages: enrichedMsgs, mode })
+        );
 
         if (mode == "replaceAll") {
           if (loggingEnabled) {

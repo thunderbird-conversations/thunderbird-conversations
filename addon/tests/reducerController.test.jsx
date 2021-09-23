@@ -62,8 +62,7 @@ describe("Controller Actions tests", () => {
       );
 
       expect(messageActions.updateConversation).toHaveBeenCalled();
-      let msgData =
-        messageActions.updateConversation.mock.calls[0][0].messages.msgData;
+      let msgData = messageActions.updateConversation.mock.calls[0][0].messages;
 
       let date = new Intl.DateTimeFormat(undefined, {
         timeStyle: "short",
@@ -81,13 +80,12 @@ describe("Controller Actions tests", () => {
 
       // jest doesn't seem to work properly with an object within an array, and
       // we don't need to test for _contactsData anyway as that is more internal.
-      delete msgData[0]._contactsData;
+      delete msgData[0].parsedLines;
 
       expect(msgData[0]).toStrictEqual({
         attachments: [],
         bcc: [],
         attachmentsPlural: "",
-        bugzilla: false,
         cc: [],
         date: "yesterday",
         detailsShowing: false,
@@ -111,6 +109,7 @@ describe("Controller Actions tests", () => {
         multipleRecipients: false,
         read: false,
         realFrom: "",
+        recipientsIncludeLists: false,
         scrollTo: true,
         smimeReload: false,
         snippet: "My message snippet",

@@ -45,7 +45,6 @@ export function createFakeData(
     id = 0,
     glodaMessageId = null,
     attachments = [],
-    bugzilla = false,
     detailsShowing,
     flagged = false,
     folderType = "inbox",
@@ -67,9 +66,9 @@ export function createFakeData(
     // Set the glodaMessageId to avoid filtering out duplicates due to no id.
     glodaMessageId: glodaMessageId ?? id,
     attachments,
-    bugzilla,
     date: Date.now(),
     initialPosition,
+    recipientsIncludeLists: false,
     snippet,
     _contactsData: [],
     from,

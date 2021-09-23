@@ -67,7 +67,11 @@ export async function mergeContactDetails(msgData) {
   // hitting the cross-process messaging more than necessary.
   let contactMap = new Map();
   for (const message of msgData) {
-    for (const contacts of Object.values(message._contactsData)) {
+    if (!("parsedLines" in message)) {
+      continue;
+    }
+
+    for (const contacts of Object.values(message.parsedLines)) {
       for (const contact of contacts) {
         if (contactMap.has(contact.email)) {
           continue;
@@ -92,9 +96,12 @@ export async function mergeContactDetails(msgData) {
   }
 
   for (const message of msgData) {
-    // We want to fetch the detailed data about every contact in the `_contactsData` object.
+    if (!("parsedLines" in message)) {
+      continue;
+    }
+    // We want to fetch the detailed data about every contact in the `parsedLines` object.
     // So fetch all the data upfront.
-    for (const [field, contacts] of Object.entries(message._contactsData)) {
+    for (const [field, contacts] of Object.entries(message.parsedLines)) {
       const contactData = await Promise.all(
         contacts.map(async (contact) => [
           await contactMap.get(contact.email),
