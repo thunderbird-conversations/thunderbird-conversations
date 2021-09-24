@@ -22,11 +22,11 @@ describe("messageEnricher", () => {
     let originalConsoleError = console.error;
     // We expect some errors due to how the tests are run with single messages
     // only.
-    jest.spyOn(console, "error").mockImplementation((message) => {
+    jest.spyOn(console, "error").mockImplementation((...args) => {
       if (
-        !message.includes("kScrollSelected && didn't find the selected message")
+        !args[0].includes("kScrollSelected && didn't find the selected message")
       ) {
-        originalConsoleError(message);
+        originalConsoleError(...args);
       }
     });
   });
@@ -623,6 +623,58 @@ Updating`,
       for (let [i, fakeMsg] of msgs.entries()) {
         expect(fakeMsg.snippet).toBe(msgSnippets[i].expected);
       }
+    });
+
+    test("Uses the snippet from getFull if getting full message (text)", async () => {
+      jest.spyOn(browser.messages, "getFull").mockReturnValue({
+        headers: [],
+        parts: [
+          {
+            contentType: "text/plain",
+            body: "should be used",
+          },
+        ],
+      });
+
+      let fakeMsg = createFakeData(
+        { snippet: "should not be used", getFullRequired: true },
+        fakeMessageHeaderData
+      );
+
+      let msgs = await messageEnricher.enrich(
+        "replaceAll",
+        [fakeMsg],
+        createFakeSummaryData(),
+        [fakeMessageHeaderData.size - 1]
+      );
+
+      expect(msgs[0].snippet).toBe("should be used");
+    });
+
+    test("Uses the snippet from getFull if getting full message (html)", async () => {
+      jest.spyOn(browser.messages, "getFull").mockReturnValue({
+        headers: [],
+        parts: [
+          {
+            contentType: "text/html",
+            body: "should not be used (html is translated to plain)",
+          },
+        ],
+      });
+
+      let fakeMsg = createFakeData(
+        { snippet: "should not be used", getFullRequired: true },
+        fakeMessageHeaderData
+      );
+
+      let msgs = await messageEnricher.enrich(
+        "replaceAll",
+        [fakeMsg],
+        createFakeSummaryData(),
+        [fakeMessageHeaderData.size - 1]
+      );
+
+      expect(msgs[0].snippet).toBe("short snippet");
     });
   });
 

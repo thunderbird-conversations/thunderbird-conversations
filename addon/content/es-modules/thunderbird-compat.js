@@ -239,6 +239,7 @@ if (!browser.conversations) {
     },
     async openAttachment() {},
     async previewAttachment() {},
+    async getLateAttachments() {},
     async parseMimeLine() {
       return [{ email: "", name: "-", fullName: "-" }];
     },
@@ -365,6 +366,12 @@ if (!browser.messages) {
     },
     async get(id) {
       return {};
+    },
+    async getFull(id) {
+      return {
+        headers: [],
+        parts: [{}],
+      };
     },
     async update(id) {},
   };

@@ -408,7 +408,6 @@ export let messageEnricher = new (class {
    */
   async _getFullDetails(message, msg) {
     const fullMsg = await browser.messages.getFull(message.id);
-
     if (
       "list-post" in fullMsg.headers &&
       RE_LIST_POST.exec(fullMsg.headers["list-post"])
@@ -446,15 +445,15 @@ export let messageEnricher = new (class {
     let info = checkPart(fullMsg.parts[0]);
     if (info.html) {
       msg.snippet = await browser.conversations.convertSnippetToPlainText(
-        message.folderAccountId,
-        message.folderPath,
+        msg.folderAccountId,
+        msg.folderPath,
         info.body
       );
     } else {
       msg.snippet = info.body;
     }
 
-    msg.snippet = message.snippet.substring(0, kSnippetLength);
+    msg.snippet = msg.snippet.substring(0, kSnippetLength);
 
     // TODO: Attachment display currently relies on having the URI for the
     // preview of the attachment. Since listAttachments doesn't give us that,
@@ -556,6 +555,11 @@ export let messageEnricher = new (class {
    *   The new message to put the details into.
    */
   _adjustSnippetForBugzilla(message, msg) {
+    if (msg.snippet) {
+      // If we already have a snippet, we probably got it whilst looking at
+      // the full message, or from gloda.
+      return;
+    }
     if (message.type != "bugzilla") {
       msg.snippet = message.snippet;
       return;
