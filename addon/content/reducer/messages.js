@@ -416,7 +416,7 @@ export let messageEnricher = new (class {
     }
 
     if ("x-bugzilla-who" in fullMsg.headers) {
-      msg.realFrom = message.parsedLines.from[0]?.email;
+      msg.realFrom = msg.parsedLines.from[0]?.email;
       msg.parsedLines.from = await browser.conversations.parseMimeLine(
         fullMsg.headers["x-bugzilla-who"][0]
       );

@@ -33,7 +33,8 @@ describe("conversationUtils", () => {
             },
             fullDate: "2021-08-07 18:14",
           },
-          new Map()
+          new Map(),
+          true
         ),
       ]);
 

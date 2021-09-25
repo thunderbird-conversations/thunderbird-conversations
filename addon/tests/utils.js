@@ -60,7 +60,8 @@ export function createFakeData(
     tags = [],
     type = "normal",
   } = {},
-  fakeMessageHeaderData
+  fakeMessageHeaderData,
+  postProcessing = false
 ) {
   let data = {
     id,
@@ -73,12 +74,18 @@ export function createFakeData(
     recipientsIncludeLists: false,
     snippet,
     _contactsData: [],
-    from,
     fullDate,
     type,
   };
   if (detailsShowing !== undefined) {
     data.detailsShowing = detailsShowing;
+  }
+  if (from) {
+    if (postProcessing) {
+      data.from = from;
+    } else {
+      data._contactsData.from = from;
+    }
   }
 
   fakeMessageHeaderData.set(id, {

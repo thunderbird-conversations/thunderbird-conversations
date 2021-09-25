@@ -576,6 +576,49 @@ describe("messageEnricher", () => {
     });
   });
 
+  describe("getFullDetails", () => {
+    test("Adjusts the from lines for Bugzilla messages", async () => {
+      jest.spyOn(browser.messages, "getFull").mockReturnValue({
+        headers: {
+          "x-bugzilla-who": ["actualFrom@invalid.com"],
+        },
+        parts: [
+          {
+            contentType: "text/plain",
+            body: "should be used",
+          },
+        ],
+      });
+      jest
+        .spyOn(browser.conversations, "parseMimeLine")
+        .mockImplementation((line) => [
+          {
+            email: line,
+            name: "-",
+            fullName: "-",
+          },
+        ]);
+
+      let fakeMsg = createFakeData(
+        {
+          snippet: "should not be used",
+          getFullRequired: true,
+          from: "realEmail@invalid.com",
+        },
+        fakeMessageHeaderData
+      );
+
+      let msgs = await messageEnricher.enrich(
+        "replaceAll",
+        [fakeMsg],
+        createFakeSummaryData(),
+        [fakeMessageHeaderData.size - 1]
+      );
+      expect(msgs[0].parsedLines.from[0].email).toBe("actualFrom@invalid.com");
+      expect(msgs[0].realFrom).toBe("realEmail@invalid.com");
+    });
+  });
+
   describe("Snippets", () => {
     test("Adjusts the snippet for better output from bugzilla", async () => {
       const msgSnippets = [
