@@ -100,6 +100,29 @@
         ]
       },
       {
+        "name": "onSignedStatus",
+        "type": "function",
+        "description": "Temporary. Used for listening to security updates on messages.",
+        "parameters": [
+          {
+            "type": "object",
+            "properties": [
+              {
+                "name": "id",
+                "type": "integer",
+                "description": "The message id."
+              },
+              {
+                "name": "signedStatus",
+                "type": "string",
+                "description": "The signed status of the message.",
+                "optional": true
+              }
+            ]
+          }
+        ]
+      },
+      {
         "name": "onSMIMEReload",
         "type": "function",
         "description": "Temporary. Used for listening to SMIME reload alerts.",

@@ -136,6 +136,22 @@ function DisplayInfo({ info }) {
         <p>
           <strong>{info.signatureKeyIdLabel}</strong>
         </p>
+        {info.signerCert && (
+          <p>
+            <strong>{browser.i18n.getMessage("openpgp.signedByLabel")}</strong>{" "}
+            {info.signerCert.name}
+            <br />
+            <strong>
+              {browser.i18n.getMessage("openpgp.signedByEmailLabel")}
+            </strong>{" "}
+            {info.signerCert.email}
+            <br />
+            <strong>
+              {browser.i18n.getMessage("openpgp.certificateIssuedByLabel")}
+            </strong>{" "}
+            {info.signerCert.issuerName}
+          </p>
+        )}
         <strong>{info.encryptionLabel}</strong>
         <p>{info.encryptionExplanation}</p>
         <p>

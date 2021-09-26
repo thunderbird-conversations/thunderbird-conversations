@@ -694,6 +694,16 @@
     "description": "Tooltip displayed when a signature is good and verified."
   },
 
+  "enigmail.messageBadSignature": {
+    "message": "bad signature",
+    "description": "Tag description displayed when a message is signed but has a bad signature"
+  },
+
+  "enigmail.messageBadSignatureLong": {
+    "message": "This message has been signed but the signature is bad",
+    "description": "Tooltip displayed when a signature is bad."
+  },
+
   "enigmail.messageDecrypted": {
     "message": "decrypted",
     "description": "Tag description displayed when a message has been decrypted."
@@ -702,6 +712,21 @@
   "enigmail.messageDecryptedLong": {
     "message": "This message has been decrypted before display",
     "description": "Tooltip displayed when a message has been decrypted."
+  },
+
+  "openpgp.signedByLabel": {
+    "message": "Signed by:",
+    "description": "Label displayed for a SMIME certificate to label who it was signed by."
+  },
+
+  "openpgp.signedByEmailLabel": {
+    "message": "Email address:",
+    "description": "Label displayed for a SMIME certificate to label who it was signed by."
+  },
+
+  "openpgp.certificateIssuedByLabel": {
+    "message": "Certificate issued by:",
+    "description": "Label displayed for a SMIME certificate to label who it was signed by."
   },
 
   "compose.addCc": {

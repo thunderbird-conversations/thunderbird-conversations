@@ -775,16 +775,6 @@ html[dir="rtl"] .attachmentsDropDown .arrow {
   display: none;
 }
 
-/* signed / decrypted */
-.message:not(.decrypted) .tag-decrypted {
-  display: none;
-}
-
-.special-tag.enigmail-signed,
-.tag-decrypted {
-  background-color: #68ab57 !important;
-}
-
 /* General pills */
 .special-tag.success {
   background-color: #68ab57 !important;

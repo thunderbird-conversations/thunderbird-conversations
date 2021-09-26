@@ -16,6 +16,8 @@ let securityListeners = new Set();
 let securityWindowListener = null;
 let smimeReloadListeners = new Set();
 let smimeReloadWindowListener = null;
+let signedStatusListeners = new Set();
+let signedStatusListener = null;
 
 function openPgpWaitForWindow(win) {
   return new Promise((resolve) => {
@@ -144,6 +146,37 @@ var convOpenPgp = class extends ExtensionCommon.ExtensionAPI {
             };
           },
         }).api(),
+        onSignedStatus: new ExtensionCommon.EventManager({
+          context,
+          name: "convMsgWindow.onSignedStatus",
+          register(fire) {
+            if (signedStatusListeners.size == 0) {
+              signedStatusListener = new OpenPgPWindowObserver(
+                windowManager,
+                signedStatusPatch,
+                context
+              );
+              openPgpMonkeyPatchAllWindows(
+                windowManager,
+                signedStatusPatch,
+                context
+              );
+              Services.ww.registerNotification(signedStatusListener);
+            }
+            signedStatusListeners.add(fire);
+
+            return function () {
+              signedStatusListeners.delete(fire);
+              if (signedStatusListeners.size == 0) {
+                Services.ww.unregisterNotification(signedStatusListener);
+                openPgpMonkeyPatchAllWindows(windowManager, (win, id) => {
+                  let headerSink = win.smimeHeaderSink;
+                  headerSink.signedStatus = win.oldSignedStatus;
+                });
+              }
+            };
+          },
+        }).api(),
         onSMIMEReload: new ExtensionCommon.EventManager({
           context,
           name: "convMsgWindow.onSMIMEReload",
@@ -206,6 +239,42 @@ const smimeReloadPatch = (win, id, context) => {
     for (let listener of smimeReloadListeners) {
       listener.async(id);
     }
+  };
+};
+
+const signedStatusPatch = (win, id, context) => {
+  let headerSink = win.smimeHeaderSink;
+  win.oldSignedStatus = headerSink.signedStatus.bind(headerSink);
+  headerSink.signedStatus = function (
+    nestingLevel,
+    signatureStatus,
+    signerCert,
+    msgNeckoURL
+  ) {
+    if (nestingLevel > 1) {
+      return;
+    }
+    let neckoURL = Services.io.newURI(msgNeckoURL);
+    let msgHdr = neckoURL.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
+    let id = context.extension.messageManager.convert(msgHdr).id;
+
+    let signedStatus = "bad";
+    if (signatureStatus == Ci.nsICMSMessageErrors.SUCCESS) {
+      signedStatus = "good";
+    }
+    let details = loadSmimeMessageSecurityInfo(
+      win,
+      signatureStatus,
+      signerCert
+    );
+    for (let listener of signedStatusListeners) {
+      listener.async({
+        id,
+        signedStatus,
+        details,
+      });
+    }
+    win.oldSignedStatus(nestingLevel, signatureStatus, signerCert, msgNeckoURL);
   };
 };
 
@@ -307,6 +376,114 @@ const securityStatusPatch = (win, id, context) => {
     })();
   };
 };
+
+/**
+ * Populate the message security popup panel with SMIME data.
+ *
+ * This is a custom version of the one in Thunderbird from
+ * https://searchfox.org/comm-esr91/rev/71dc348f732115af9f342e514e3b6f0e2a5f1808/mailnews/extensions/smime/msgReadSMIMEOverlay.js#49
+ *
+ * @param {object} win
+ *   The window the security info is being obtained from.
+ * @param {number} signatureStatus
+ * @param {object} signerCert
+ */
+function loadSmimeMessageSecurityInfo(win, signatureStatus, signerCert) {
+  let sBundle = win.document.getElementById("bundle_smime_read_info");
+
+  if (!sBundle) {
+    return null;
+  }
+
+  let sigInfoLabel = null;
+  let sigInfoHeader = null;
+  let sigInfo = null;
+  let sigInfo_clueless = false;
+
+  switch (signatureStatus) {
+    case -1:
+    case Ci.nsICMSMessageErrors.VERIFY_NOT_SIGNED:
+      sigInfoLabel = "SINoneLabel";
+      sigInfo = "SINone";
+      break;
+
+    case Ci.nsICMSMessageErrors.SUCCESS:
+      sigInfoLabel = "SIValidLabel";
+      sigInfo = "SIValid";
+      break;
+
+    case Ci.nsICMSMessageErrors.VERIFY_BAD_SIGNATURE:
+    case Ci.nsICMSMessageErrors.VERIFY_DIGEST_MISMATCH:
+      sigInfoLabel = "SIInvalidLabel";
+      sigInfoHeader = "SIInvalidHeader";
+      sigInfo = "SIContentAltered";
+      break;
+
+    case Ci.nsICMSMessageErrors.VERIFY_UNKNOWN_ALGO:
+    case Ci.nsICMSMessageErrors.VERIFY_UNSUPPORTED_ALGO:
+      sigInfoLabel = "SIInvalidLabel";
+      sigInfoHeader = "SIInvalidHeader";
+      sigInfo = "SIInvalidCipher";
+      break;
+
+    case Ci.nsICMSMessageErrors.VERIFY_HEADER_MISMATCH:
+      sigInfoLabel = "SIPartiallyValidLabel";
+      sigInfoHeader = "SIPartiallyValidHeader";
+      sigInfo = "SIHeaderMismatch";
+      break;
+
+    case Ci.nsICMSMessageErrors.VERIFY_CERT_WITHOUT_ADDRESS:
+      sigInfoLabel = "SIPartiallyValidLabel";
+      sigInfoHeader = "SIPartiallyValidHeader";
+      sigInfo = "SICertWithoutAddress";
+      break;
+
+    case Ci.nsICMSMessageErrors.VERIFY_UNTRUSTED:
+      sigInfoLabel = "SIInvalidLabel";
+      sigInfoHeader = "SIInvalidHeader";
+      sigInfo = "SIUntrustedCA";
+      // XXX Need to extend to communicate better errors
+      // might also be:
+      // SIExpired SIRevoked SINotYetValid SIUnknownCA SIExpiredCA SIRevokedCA SINotYetValidCA
+      break;
+
+    case Ci.nsICMSMessageErrors.VERIFY_NOT_YET_ATTEMPTED:
+    case Ci.nsICMSMessageErrors.GENERAL_ERROR:
+    case Ci.nsICMSMessageErrors.VERIFY_NO_CONTENT_INFO:
+    case Ci.nsICMSMessageErrors.VERIFY_BAD_DIGEST:
+    case Ci.nsICMSMessageErrors.VERIFY_NOCERT:
+    case Ci.nsICMSMessageErrors.VERIFY_ERROR_UNVERIFIED:
+    case Ci.nsICMSMessageErrors.VERIFY_ERROR_PROCESSING:
+    case Ci.nsICMSMessageErrors.VERIFY_MALFORMED_SIGNATURE:
+      sigInfoLabel = "SIInvalidLabel";
+      sigInfoHeader = "SIInvalidHeader";
+      sigInfo_clueless = true;
+      break;
+    default:
+      Cu.reportError("Unexpected gSignatureStatus: " + signatureStatus);
+  }
+
+  let signatureExplanation = "";
+  if (sigInfoHeader) {
+    signatureExplanation += sBundle.getString(sigInfoHeader);
+  }
+  if (sigInfo) {
+    signatureExplanation += "\n" + sBundle.getString(sigInfo);
+  } else if (sigInfo_clueless) {
+    signatureExplanation +=
+      "\n" + sBundle.getString("SIClueless") + " (" + signatureStatus + ")";
+  }
+
+  return {
+    signatureLabel: sBundle.getString(sigInfoLabel),
+    signatureExplanation,
+    signerCert: {
+      name: signerCert.commonName,
+      email: signerCert.emailAddress,
+      issuerName: signerCert.issuerCommonName,
+    },
+  };
+}
 
 /**
  * Populate the message security popup panel with OpenPGP data.

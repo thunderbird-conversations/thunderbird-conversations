@@ -97,23 +97,40 @@ async function onUpdateSecurityStatus(
   { id, signedStatus, encryptionStatus, encryptionNotification, details }
 ) {
   if (signedStatus) {
+    let classNames = "";
+    let title = "";
+    let name = "";
+    switch (signedStatus) {
+      case "good":
+        classNames = "success";
+        name = browser.i18n.getMessage("enigmail.messageSigned");
+        title = browser.i18n.getMessage("enigmail.messageSignedLong");
+        break;
+      case "warn":
+        classNames = "warning";
+        name = browser.i18n.getMessage("enigmail.messageSigned");
+        title = browser.i18n.getMessage("enigmail.unknownGood");
+        break;
+      case "bad":
+        classNames = "error";
+        name = browser.i18n.getMessage("enigmail.messageBadSignature");
+        title = browser.i18n.getMessage("enigmail.messageBadSignatureLong");
+        break;
+    }
     await dispatch(
       messageActions.msgAddSpecialTag({
         id,
         tagDetails: {
           // canClick: true,
-          classNames: "enigmail-signed",
+          classNames,
           icon: "material-icons.svg#edit",
-          name: browser.i18n.getMessage("enigmail.messageSigned"),
+          name,
           details: {
             type: "enigmail",
             detail: "viewSecurityInfo",
             displayInfo: details,
           },
-          title:
-            signedStatus == "warn"
-              ? browser.i18n.getMessage("enigmail.unknownGood")
-              : browser.i18n.getMessage("enigmail.messageSignedLong"),
+          title,
           type: "openPgpSigned",
         },
       })
@@ -128,7 +145,7 @@ async function onUpdateSecurityStatus(
       messageActions.msgAddSpecialTag({
         id,
         tagDetails: {
-          classNames: "enigmail-decrypted",
+          classNames: "success",
           icon: "material-icons.svg#vpn_key",
           name: browser.i18n.getMessage("enigmail.messageDecrypted"),
           details: {
@@ -247,6 +264,10 @@ export const controllerActions = {
         updateSecurityStatusListener,
         windowId
       );
+      browser.convOpenPgp.onSignedStatus.addListener(
+        updateSecurityStatusListener,
+        windowId
+      );
       browser.convOpenPgp.onSMIMEReload.addListener(
         smimeReloadListener,
         windowId
@@ -259,6 +280,10 @@ export const controllerActions = {
             windowId
           );
           browser.convOpenPgp.onUpdateSecurityStatus.removeListener(
+            updateSecurityStatusListener,
+            windowId
+          );
+          browser.convOpenPgp.onSignedStatus.removeListener(
             updateSecurityStatusListener,
             windowId
           );

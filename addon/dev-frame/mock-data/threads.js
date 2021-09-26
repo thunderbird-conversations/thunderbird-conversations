@@ -32,7 +32,7 @@ function populateRequiredFields(message, includeOpenPgpTags = false) {
     message.specialTags = [
       {
         // canClick: true,
-        classNames: "enigmail-signed",
+        classNames: "success",
         icon: "material-icons.svg#edit",
         name: "Signed!",
         details: {
