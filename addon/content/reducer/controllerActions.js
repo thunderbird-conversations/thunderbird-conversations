@@ -154,6 +154,7 @@ async function onUpdateSecurityStatus(
             displayInfo: details,
           },
           title: browser.i18n.getMessage("enigmail.messageDecryptedLong"),
+          type: "openPgpEncrypted",
         },
       })
     );

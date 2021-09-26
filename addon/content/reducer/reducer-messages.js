@@ -504,7 +504,15 @@ export const messagesSlice = RTK.createSlice({
     msgAddSpecialTag(state, { payload }) {
       return modifyOnlyMsg(state, payload.id, (msg) => {
         if (msg.specialTags?.find((t) => t.type == payload.tagDetails.type)) {
-          return msg;
+          return {
+            ...msg,
+            specialTags: [...msg.specialTags].map((t) => {
+              if (t.type == payload.tagDetails.type) {
+                return payload.tagDetails;
+              }
+              return t;
+            }),
+          };
         }
         return {
           ...msg,

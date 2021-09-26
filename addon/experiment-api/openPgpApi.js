@@ -325,7 +325,6 @@ const securityStatusPatch = (win, id, context) => {
       let encryptionStatus;
       let encryptionNotification;
       if (statusFlags & EnigmailConstants.DECRYPTION_OKAY) {
-        console.log("encrypted OK!");
         encryptionStatus = "good";
         // addEncryptedTag(message);
       } else if (statusFlags & EnigmailConstants.NO_SECKEY) {
@@ -360,19 +359,25 @@ const securityStatusPatch = (win, id, context) => {
         null
       ); // xtraStatus
 
-      loadOpenPgpMessageSecurityInfo(win).then((details) => {
-        // Maybe show signed label of encrypted and signed pgp/mime.
-        let signedStatus = getSignedStatus(statusFlags);
-        for (let listener of securityListeners) {
-          listener.async({
-            id,
-            signedStatus,
-            encryptionStatus,
-            encryptionNotification,
-            details,
-          });
+      loadOpenPgpMessageSecurityInfo(win).then(
+        ({ encyptDetails, signedDetails }) => {
+          // Maybe show signed label of encrypted and signed pgp/mime.
+          let signedStatus = getSignedStatus(statusFlags);
+          for (let listener of securityListeners) {
+            listener.async({
+              id,
+              encryptionStatus,
+              encryptionNotification,
+              details: encyptDetails,
+            });
+            listener.async({
+              id,
+              signedStatus,
+              details: signedDetails,
+            });
+          }
         }
-      });
+      );
     })();
   };
 };
@@ -591,12 +596,14 @@ async function loadOpenPgpMessageSecurityInfo(win) {
       );
   }
 
-  let details = {
+  let signedDetails = {
     signatureLabel: await l10n.formatValue(sigInfoLabel),
     signatureExplanation: hasAnySig
       ? // eslint-disable-next-line mozilla/prefer-formatValues
         await l10n.formatValue(sigInfo)
       : sBundle.getString(sigInfo),
+  };
+  let encyptDetails = {
     encryptionLabel: sBundle.getString(encInfoLabel),
     encryptionExplanation: sBundle.getString(encInfo),
   };
@@ -606,16 +613,16 @@ async function loadOpenPgpMessageSecurityInfo(win) {
     let sigKeyInfo = win.EnigmailKeyRing.getKeyById(hdrView.msgSignatureKeyId);
 
     if (sigKeyInfo && sigKeyInfo.keyId != signatureKey) {
-      details.signatureKeyIdLabel = await l10n.formatValue(
+      signedDetails.signatureKeyIdLabel = await l10n.formatValue(
         "openpgp-sig-key-id-with-subkey-id",
         {
           key: `0x${sigKeyInfo.keyId}`,
           subkey: `0x${signatureKey}`,
         }
       );
-      details.enableViewSignatureKey = true;
+      signedDetails.enableViewSignatureKey = true;
     } else {
-      details.signatureKeyIdLabel = await l10n.formatValue(
+      signedDetails.signatureKeyIdLabel = await l10n.formatValue(
         "openpgp-sig-key-id",
         {
           key: `0x${signatureKey}`,
@@ -633,7 +640,7 @@ async function loadOpenPgpMessageSecurityInfo(win) {
     let primaryId = hdrView.msgEncryptionKeyId.primaryKeyId;
     let havePrimaryId = !!primaryId;
     if (havePrimaryId) {
-      details.encryptionKeyIdLabel = await l10n.formatValue(
+      encyptDetails.encryptionKeyIdLabel = await l10n.formatValue(
         "openpgp-enc-key-with-subkey-id",
         {
           key: `0x${primaryId}`,
@@ -641,7 +648,7 @@ async function loadOpenPgpMessageSecurityInfo(win) {
         }
       );
     } else {
-      details.encryptionKeyIdLabel = await l10n.formatValue(
+      encyptDetails.encryptionKeyIdLabel = await l10n.formatValue(
         "openpgp-enc-key-id",
         {
           key: `0x${encryptionKeyId}`,
@@ -650,25 +657,25 @@ async function loadOpenPgpMessageSecurityInfo(win) {
     }
 
     if (win.EnigmailKeyRing.getKeyById(encryptionKeyId)) {
-      details.enableViewEncryptionKey = true;
+      encyptDetails.enableViewEncryptionKey = true;
     }
   }
 
   if (myIdToSkipInList) {
-    details.otherKeysLabel = await l10n.formatValue(
+    encyptDetails.otherKeysLabel = await l10n.formatValue(
       "openpgp-other-enc-all-key-ids"
     );
   } else {
-    details.otherKeysLabel = await l10n.formatValue(
+    encyptDetails.otherKeysLabel = await l10n.formatValue(
       "openpgp-other-enc-additional-key-ids"
     );
   }
 
   if (!hdrView.msgEncryptionAllKeyIds) {
-    return details;
+    return { signedDetails, encyptDetails };
   }
 
-  details.otherKeys = [];
+  encyptDetails.otherKeys = [];
 
   for (let key of hdrView.msgEncryptionAllKeyIds) {
     if (key.keyId == myIdToSkipInList) {
@@ -692,10 +699,10 @@ async function loadOpenPgpMessageSecurityInfo(win) {
       ? ` 0x${key.primaryKeyId} (0x${key.keyId})`
       : ` 0x${key.keyId}`;
 
-    details.otherKeys.push({ id, name });
+    encyptDetails.otherKeys.push({ id, name });
   }
 
-  return details;
+  return { signedDetails, encyptDetails };
 }
 
 // Add signed label and click action to a signed message.
