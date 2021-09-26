@@ -108,6 +108,7 @@ export const quickReplyActions = {
         composeActions.initCompose({
           accountId,
           identityId,
+          inReplyTo: id,
           to,
           subject,
           body,

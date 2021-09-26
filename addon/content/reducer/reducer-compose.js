@@ -57,6 +57,7 @@ export const composeActions = {
   initCompose({
     accountId,
     identityId,
+    inReplyTo,
     to,
     subject,
     body,
@@ -84,6 +85,7 @@ export const composeActions = {
           userModified: false,
           from: identityDetail.email,
           identityId: identityDetail.id,
+          inReplyTo,
           email: identityDetail.email,
           to,
           subject,
@@ -130,6 +132,7 @@ export const composeActions = {
           to: state.to,
           subject: state.subject,
           body: state.body || "",
+          originalMsgId: state.inReplyTo,
         });
       } catch (ex) {
         console.error(ex);

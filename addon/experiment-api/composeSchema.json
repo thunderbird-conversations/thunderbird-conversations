@@ -27,6 +27,11 @@
               "body": {
                 "type": "string",
                 "description": "The body of the email."
+              },
+              "originalMsgId": {
+                "type": "number",
+                "description": "The message id of the message being replied to.",
+                "optional": true
               }
             }
           }

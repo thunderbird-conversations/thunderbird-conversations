@@ -9,6 +9,7 @@ var { XPCOMUtils } = ChromeUtils.import(
 XPCOMUtils.defineLazyModuleGetters(this, {
   ExtensionCommon: "resource://gre/modules/ExtensionCommon.jsm",
   MailServices: "resource:///modules/MailServices.jsm",
+  msgHdrGetUri: "chrome://conversations/content/modules/misc.js",
 });
 
 /**
@@ -53,6 +54,28 @@ var convCompose = class extends ExtensionCommon.ExtensionAPI {
           compFields.from = sendIdentity.email;
           compFields.to = details.to;
           compFields.subject = details.subject;
+
+          let msgUri;
+          if (
+            details.originalMsgId !== undefined &&
+            details.originalMsgId !== null
+          ) {
+            let msgHdr = context.extension.messageManager.get(
+              details.originalMsgId
+            );
+            if (!msgHdr) {
+              throw new Error("could not find the specified message");
+            }
+            msgUri = msgHdrGetUri(msgHdr);
+
+            let numRef = msgHdr.numReferences;
+            let references = [];
+            for (let i = 0; i < numRef; i++) {
+              references.push(`<${msgHdr.getStringReference(i)}>`);
+            }
+            references.push(`<${msgHdr.messageId}>`);
+            compFields.references = references.join(" ");
+          }
 
           return new Promise((resolve, reject) => {
             let sendStatus;
@@ -138,6 +161,18 @@ var convCompose = class extends ExtensionCommon.ExtensionAPI {
               onContentBlockingEvent() {
                 console.log("onContentBlockingEvent");
               },
+              showStatusString(status) {
+                console.log(status);
+              },
+              startMeteors() {},
+              stopMeteors() {},
+              showProgress(percent) {},
+              setStatusString(status) {},
+              setWrappedStatusFeedback() {},
+              QueryInterface: ChromeUtils.generateQI([
+                "nsIMsgProgress",
+                "nsIMsgStatusFeedback",
+              ]),
             };
 
             let body = details.body || "";
@@ -158,12 +193,10 @@ var convCompose = class extends ExtensionCommon.ExtensionAPI {
                 "text/plain",
                 body,
                 null,
-                null,
-                null,
                 msgProgress,
                 copyListener,
                 null,
-                "",
+                msgUri,
                 Ci.nsIMsgCompType.New
               );
             } catch (ex) {
