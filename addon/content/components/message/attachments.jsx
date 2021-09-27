@@ -36,8 +36,6 @@ const FALLBACK_ICON_MAPPING = new Map([
   ["text/", "text-x-generic"],
 ]);
 
-const RE_MSGKEY = /number=(\d+)/;
-
 function AttachmentMoreMenu({ detachCallback, deleteCallback }) {
   return (
     <div className="tooltip tooltip-menu menu">
@@ -223,10 +221,7 @@ class Attachment extends React.PureComponent {
       // TODO: Can we load images separately and make them available later,
       // so that we're not relying on having the url here. This would
       // mean we can use browser.messages.listAttachments.
-      thumb = this.props.url.replace(
-        RE_MSGKEY,
-        "number=" + this.props.messageKey
-      );
+      thumb = this.props.url;
       imgClass = "resize-me";
     } else {
       thumb = "icons/" + this.iconForMimeType(this.props.contentType);
@@ -297,7 +292,6 @@ Attachment.propTypes = {
   dispatch: PropTypes.func.isRequired,
   contentType: PropTypes.string.isRequired,
   formattedSize: PropTypes.string.isRequired,
-  messageKey: PropTypes.number.isRequired,
   name: PropTypes.string.isRequired,
   size: PropTypes.number.isRequired,
   partName: PropTypes.string.isRequired,
@@ -364,7 +358,6 @@ export class Attachments extends React.PureComponent {
             key={attachment.anchor}
             contentType={attachment.contentType}
             formattedSize={attachment.formattedSize}
-            messageKey={this.props.messageKey}
             id={this.props.id}
             name={attachment.name}
             partName={attachment.partName}
@@ -381,6 +374,5 @@ Attachments.propTypes = {
   dispatch: PropTypes.func.isRequired,
   attachments: PropTypes.array.isRequired,
   attachmentsPlural: PropTypes.string.isRequired,
-  messageKey: PropTypes.number.isRequired,
   id: PropTypes.number.isRequired,
 };

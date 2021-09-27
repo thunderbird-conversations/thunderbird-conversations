@@ -15,13 +15,13 @@ const kSnippetLength = 700;
  */
 class Message {
   constructor(msgId, msgHdr) {
+    this.messageKey = msgHdr.messageKey;
     this.data = {
       id: msgId,
       messageHeaderId: null,
       glodaMessageId: null,
       attachments: [],
       getFullRequired: false,
-      messageKey: msgHdr.messageKey,
       needsLateAttachments: false,
       // The from can be overridden, e.g. in the case of bugzilla, so this field
       // is always the email address this was originally from.

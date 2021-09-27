@@ -438,7 +438,6 @@ export class Message extends React.PureComponent {
                 dispatch={this.props.dispatch}
                 attachments={this.props.message.attachments}
                 attachmentsPlural={this.props.message.attachmentsPlural}
-                messageKey={this.props.message.messageKey}
                 id={this.props.message.id}
               />
             )}

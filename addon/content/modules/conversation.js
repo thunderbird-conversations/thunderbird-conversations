@@ -332,12 +332,15 @@ Conversation.prototype = {
     for (const x of this.messages) {
       byMessageId.set(getMessageId(x), x.message);
     }
+    // If you see big failures coming from the lines below, don't worry: it's
+    //  just that an old conversation hasn't been GC'd and still receives
+    //  notifications from Gloda. However, its DOM nodes are long gone, so the
+    //  calls fail.
     const htmlPane = this._htmlPane;
+    if (!htmlPane) {
+      return;
+    }
     for (const glodaMsg of aItems) {
-      // If you see big failures coming from the lines below, don't worry: it's
-      //  just that an old conversation hasn't been GC'd and still receives
-      //  notifications from Gloda. However, its DOM nodes are long gone, so the
-      //  calls fail.
       const message = byMessageId.get(glodaMsg.headerMessageID);
       if (message) {
         const data = message.reactData;
@@ -369,7 +372,7 @@ Conversation.prototype = {
       let msgId = glodaMsg.headerMessageID;
       if (
         msgId in byMessageId &&
-        byMessageId[msgId].data.messageKey == glodaMsg.messageKey
+        byMessageId[msgId].messageKey == glodaMsg.messageKey
       ) {
         await this.removeMessage(byMessageId[msgId]);
       }
@@ -476,16 +479,10 @@ Conversation.prototype = {
       newMsgs.map((x) => x.debug + " " + getMessageId(x)).join(" ")
     );
 
-    this.messages = this.messages.concat(newMsgs);
-
-    // Update initialPosition
-    for (
-      let i = this.messages.length - newMsgs.length;
-      i < this.messages.length;
-      i++
-    ) {
-      this.messages[i].message.initialPosition = i;
+    for (let [i, m] of newMsgs.entries()) {
+      m.message.reactData.initialPosition = i + this.messages.length;
     }
+    this.messages = this.messages.concat(newMsgs);
 
     this.dispatch(
       this._htmlPane.conversationControllerActions.updateConversation({
@@ -520,9 +517,6 @@ Conversation.prototype = {
     let reactMsgData = [];
     for (let [i, m] of this.messages.entries()) {
       let msgData = m.message.reactData;
-
-      // inView indicates if the message is currently in the message list
-      // view or not. If it isn't we don't show the folder name.
       msgData.initialPosition = i;
       reactMsgData.push(msgData);
     }
