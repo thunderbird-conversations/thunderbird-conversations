@@ -37,6 +37,7 @@ class LinkifiedSubject extends React.PureComponent {
     if (LINKS_REGEX.test(this.props.subject)) {
       let contents = [];
       let text = subject;
+      let i = 0;
       while (text && LINKS_REGEX.test(text)) {
         let matches = LINKS_REGEX.exec(text);
         let [pre, ...post] = text.split(matches[1]);
@@ -46,6 +47,7 @@ class LinkifiedSubject extends React.PureComponent {
             title={matches[1]}
             className="link"
             onClick={this.handleClick}
+            key={i++}
           >
             {matches[1]}
           </a>
