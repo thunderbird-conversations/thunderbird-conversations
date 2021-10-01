@@ -623,7 +623,7 @@ function msgHdrToNeckoURL(aMsgHdr) {
   let msgService = gMessenger.messageServiceFromURI(uri);
 
   // Thunderbird 78 and older support.
-  if ("GetUrlForUri" in msgService) {
+  if ("nsIAbListener" in Ci) {
     let neckoURL = {};
     msgService.GetUrlForUri(uri, neckoURL, null);
     return neckoURL.value;
