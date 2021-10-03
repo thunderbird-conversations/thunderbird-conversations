@@ -441,6 +441,7 @@
           {
             "name": "plainText",
             "type": "boolean",
+            "optional": true,
             "description": "True if the returned message should be plain text."
           }
         ]
