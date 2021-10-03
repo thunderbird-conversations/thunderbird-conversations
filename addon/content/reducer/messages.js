@@ -434,6 +434,14 @@ export let messageEnricher = new (class {
         case "multipart/alternative":
         case "multipart/related":
         case "multipart/mixed":
+          // Sometimes we have seen that msgPart.parts might not exist when
+          // initially loading a message. HAndle the error and continue so that
+          // we can hopefully display something of the message even if we don't
+          // have a summary.
+          if (!msgPart.parts) {
+            console.error("msgPart did not contain sub-parts");
+            return { body: "", html: false };
+          }
           for (let part of msgPart.parts.reverse()) {
             let info = checkPart(part);
             if (info.body?.length) {
