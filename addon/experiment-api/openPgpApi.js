@@ -16,8 +16,8 @@ let securityListeners = new Set();
 let securityWindowListener = null;
 let smimeReloadListeners = new Set();
 let smimeReloadWindowListener = null;
-let signedStatusListeners = new Set();
-let signedStatusListener = null;
+let smimeStatusListeners = new Set();
+let smimeStatusListener = null;
 
 function openPgpWaitForWindow(win) {
   return new Promise((resolve) => {
@@ -146,32 +146,33 @@ var convOpenPgp = class extends ExtensionCommon.ExtensionAPI {
             };
           },
         }).api(),
-        onSignedStatus: new ExtensionCommon.EventManager({
+        onSMIMEStatus: new ExtensionCommon.EventManager({
           context,
-          name: "convMsgWindow.onSignedStatus",
+          name: "convMsgWindow.onSMIMEStatus",
           register(fire) {
-            if (signedStatusListeners.size == 0) {
-              signedStatusListener = new OpenPgPWindowObserver(
+            if (smimeStatusListeners.size == 0) {
+              smimeStatusListener = new OpenPgPWindowObserver(
                 windowManager,
-                signedStatusPatch,
+                smimeStatusPatch,
                 context
               );
               openPgpMonkeyPatchAllWindows(
                 windowManager,
-                signedStatusPatch,
+                smimeStatusPatch,
                 context
               );
-              Services.ww.registerNotification(signedStatusListener);
+              Services.ww.registerNotification(smimeStatusListener);
             }
-            signedStatusListeners.add(fire);
+            smimeStatusListeners.add(fire);
 
             return function () {
-              signedStatusListeners.delete(fire);
-              if (signedStatusListeners.size == 0) {
-                Services.ww.unregisterNotification(signedStatusListener);
+              smimeStatusListeners.delete(fire);
+              if (smimeStatusListeners.size == 0) {
+                Services.ww.unregisterNotification(smimeStatusListener);
                 openPgpMonkeyPatchAllWindows(windowManager, (win, id) => {
                   let headerSink = win.smimeHeaderSink;
                   headerSink.signedStatus = win.oldSignedStatus;
+                  headerSink.encryptionStatus = win.oldEncyrptionStatus;
                 });
               }
             };
@@ -242,9 +243,10 @@ const smimeReloadPatch = (win, id, context) => {
   };
 };
 
-const signedStatusPatch = (win, id, context) => {
+const smimeStatusPatch = (win, id, context) => {
   let headerSink = win.smimeHeaderSink;
   win.oldSignedStatus = headerSink.signedStatus.bind(headerSink);
+  win.oldEncyrptionStatus = headerSink.encryptionStatus.bind(headerSink);
   headerSink.signedStatus = function (
     nestingLevel,
     signatureStatus,
@@ -267,7 +269,7 @@ const signedStatusPatch = (win, id, context) => {
       signatureStatus,
       signerCert
     );
-    for (let listener of signedStatusListeners) {
+    for (let listener of smimeStatusListeners) {
       listener.async({
         id,
         signedStatus,
@@ -275,6 +277,42 @@ const signedStatusPatch = (win, id, context) => {
       });
     }
     win.oldSignedStatus(nestingLevel, signatureStatus, signerCert, msgNeckoURL);
+  };
+  headerSink.encryptionStatus = function (
+    nestingLevel,
+    encryptionStatus,
+    recipientCert,
+    msgNeckoURL
+  ) {
+    if (nestingLevel > 1) {
+      return;
+    }
+    let neckoURL = Services.io.newURI(msgNeckoURL);
+    let msgHdr = neckoURL.QueryInterface(Ci.nsIMsgMessageUrl).messageHeader;
+    let id = context.extension.messageManager.convert(msgHdr).id;
+
+    let encryptedStatus = "bad";
+    if (encryptionStatus == Ci.nsICMSMessageErrors.SUCCESS) {
+      encryptedStatus = "good";
+    }
+    let details = loadSmimeMessageEncryptionInfo(
+      win,
+      encryptionStatus,
+      recipientCert
+    );
+    for (let listener of smimeStatusListeners) {
+      listener.async({
+        id,
+        encryptedStatus,
+        details,
+      });
+    }
+    win.oldEncyrptionStatus(
+      nestingLevel,
+      encryptionStatus,
+      recipientCert,
+      msgNeckoURL
+    );
   };
 };
 
@@ -465,7 +503,7 @@ function loadSmimeMessageSecurityInfo(win, signatureStatus, signerCert) {
       sigInfo_clueless = true;
       break;
     default:
-      Cu.reportError("Unexpected gSignatureStatus: " + signatureStatus);
+      console.error("Unexpected signatureStatus: " + signatureStatus);
   }
 
   let signatureExplanation = "";
@@ -487,6 +525,60 @@ function loadSmimeMessageSecurityInfo(win, signatureStatus, signerCert) {
       email: signerCert.emailAddress,
       issuerName: signerCert.issuerCommonName,
     },
+  };
+}
+
+function loadSmimeMessageEncryptionInfo(win, encryptionStatus, recipientCert) {
+  let sBundle = win.document.getElementById("bundle_smime_read_info");
+
+  if (!sBundle) {
+    return null;
+  }
+
+  let encInfoLabel = null;
+  let encInfoHeader = null;
+  let encInfo = null;
+  let encInfo_clueless = false;
+
+  switch (encryptionStatus) {
+    case -1:
+      encInfoLabel = "EINoneLabel2";
+      encInfo = "EINone";
+      break;
+
+    case Ci.nsICMSMessageErrors.SUCCESS:
+      encInfoLabel = "EIValidLabel";
+      encInfo = "EIValid";
+      break;
+
+    case Ci.nsICMSMessageErrors.ENCRYPT_INCOMPLETE:
+      encInfoLabel = "EIInvalidLabel";
+      encInfo = "EIContentAltered";
+      break;
+
+    case Ci.nsICMSMessageErrors.GENERAL_ERROR:
+      encInfoLabel = "EIInvalidLabel";
+      encInfoHeader = "EIInvalidHeader";
+      encInfo_clueless = 1;
+      break;
+    default:
+      console.error("Unexpected encryptionStatus: " + encryptionStatus);
+  }
+
+  let encryptionExplanation = "";
+  if (encInfoHeader) {
+    encryptionExplanation += sBundle.getString(encInfoHeader);
+  }
+
+  if (encInfo) {
+    encryptionExplanation += "\n" + sBundle.getString(encInfo);
+  } else if (encInfo_clueless) {
+    encryptionExplanation += "\n" + sBundle.getString("EIClueless");
+  }
+
+  return {
+    encryptionLabel: sBundle.getString(encInfoLabel),
+    encryptionExplanation,
   };
 }
 

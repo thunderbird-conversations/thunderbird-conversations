@@ -265,7 +265,7 @@ export const controllerActions = {
         updateSecurityStatusListener,
         windowId
       );
-      browser.convOpenPgp.onSignedStatus.addListener(
+      browser.convOpenPgp.onSMIMEStatus.addListener(
         updateSecurityStatusListener,
         windowId
       );
@@ -284,7 +284,7 @@ export const controllerActions = {
             updateSecurityStatusListener,
             windowId
           );
-          browser.convOpenPgp.onSignedStatus.removeListener(
+          browser.convOpenPgp.onSMIMEStatus.removeListener(
             updateSecurityStatusListener,
             windowId
           );

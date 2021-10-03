@@ -100,7 +100,7 @@
         ]
       },
       {
-        "name": "onSignedStatus",
+        "name": "onSMIMEStatus",
         "type": "function",
         "description": "Temporary. Used for listening to security updates on messages.",
         "parameters": [
