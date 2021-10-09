@@ -239,7 +239,9 @@ if (!browser.conversations) {
     },
     async openAttachment() {},
     async previewAttachment() {},
-    async getLateAttachments() {},
+    async getLateAttachments() {
+      return [];
+    },
     async parseMimeLine() {
       return [{ email: "", name: "-", fullName: "-" }];
     },
