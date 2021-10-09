@@ -106,6 +106,7 @@ describe("Controller Actions tests", () => {
         isPhishing: false,
         isSent: false,
         isTemplate: false,
+        messageHeaderId: undefined,
         multipleRecipients: false,
         read: false,
         realFrom: "",
