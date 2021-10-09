@@ -75,12 +75,13 @@ export let messageEnricher = new (class {
 
           if (message.getFullRequired) {
             await this._getFullDetails(message, msg);
+          } else {
+            await this._addDetailsFromAttachments(
+              message,
+              msg,
+              summary.prefs.extraAttachments
+            );
           }
-          await this._addDetailsFromAttachments(
-            message,
-            msg,
-            summary.prefs.extraAttachments
-          );
           this._adjustSnippetForBugzilla(message, msg);
           await messageEnricher._setDates(msg, summary);
         } catch (ex) {
@@ -479,9 +480,16 @@ export let messageEnricher = new (class {
     //     size: a.size,
     //   };
     // });
-    msg.attachments = await browser.conversations.getLateAttachments(
-      message.id,
-      false
+
+    this._addDetailsFromAttachments(
+      {
+        attachments: await browser.conversations.getLateAttachments(
+          message.id,
+          false
+        ),
+        initialPosition: message.initialPosition,
+      },
+      msg
     );
   }
 
@@ -512,17 +520,26 @@ export let messageEnricher = new (class {
    *
    * @param {object} message
    *   The message to get the additional details for.
+   * @param {number} message.initialPosition
+   *   The initial position of the message.
+   * @param {number} message.glodaMessageId
+   *   The gloda message id.
+   * @param {object[]} message.attachments
+   *   The attachment data already extracted for the message.
    * @param {object} msg
    *   The new message to put the details into.
    * @param {boolean} extraAttachments
    *   Whether or not the user wants to display extra attachments.
    */
-  async _addDetailsFromAttachments(message, msg, extraAttachments) {
-    if (message.glodaMessageId && extraAttachments) {
+  async _addDetailsFromAttachments(
+    { initialPosition, glodaMessageId, attachments },
+    msg,
+    extraAttachments
+  ) {
+    if (glodaMessageId && extraAttachments) {
       msg.needsLateAttachments = true;
     }
 
-    let attachments = message.attachments;
     let l = attachments.length;
     let newAttachments = [];
 
@@ -543,7 +560,7 @@ export let messageEnricher = new (class {
         name: att.name,
         partName: att.partName,
         url: att.url,
-        anchor: "msg" + message.initialPosition + "att" + i,
+        anchor: "msg" + initialPosition + "att" + i,
       });
     }
     msg.attachments = newAttachments;
