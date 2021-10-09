@@ -335,6 +335,8 @@ export let messageEnricher = new (class {
       id: message.id,
       initialPosition: message.initialPosition,
       type: message.type,
+      // Needed to avoid de-duplicating at the wrong times.
+      messageHeaderId: message.messageHeaderId,
       glodaMessageId: message.glodaMessageId,
       detailsShowing: message.detailsShowing,
       recipientsIncludeLists: message.recipientsIncludeLists,
