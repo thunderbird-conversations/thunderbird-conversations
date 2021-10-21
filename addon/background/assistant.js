@@ -91,7 +91,7 @@ const installActions = {
           original.sortType = mailTab.sortType;
           original.sortOrder = mailTab.sortOrder;
 
-          newParams.sortType = "data";
+          newParams.sortType = "date";
           newParams.sortOrder = "ascending";
         }
 
