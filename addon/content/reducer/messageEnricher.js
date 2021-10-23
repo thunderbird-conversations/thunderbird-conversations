@@ -338,7 +338,7 @@ export let messageEnricher = new (class {
     }
     const messageFolderType = messageHeader.folder.type;
 
-    msg.date = messageHeader.date.getTime();
+    msg.rawDate = messageHeader.date.getTime();
     // Only set hasRemoteContent for new messages, otherwise we cause a reload
     // of content each time when a message already has remote content.
     if (mode != "replaceMsg") {
@@ -631,7 +631,7 @@ export let messageEnricher = new (class {
    *   The current summary details from the store state.
    */
   async _setDates(msg, summary) {
-    let date = new Date(msg.date);
+    let date = new Date(msg.rawDate);
     if (summary.prefs.noFriendlyDate) {
       msg.date = this.dateAsInMessageList(date);
       msg.fullDate = "";

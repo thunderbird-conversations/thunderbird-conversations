@@ -6,6 +6,7 @@
 
 import * as RTK from "@reduxjs/toolkit";
 import { browser as _browser } from "../es-modules/thunderbird-compat.js";
+import { messageUtils } from "./messageUtils.js";
 
 // Prefer the global browser object to the imported one.
 window.browser = window.browser || _browser;
@@ -22,22 +23,7 @@ function modifyOnlyMsg(state, id, modifier) {
 }
 
 async function getParamsForCompose(msg, shiftKey) {
-  let identityId = -1;
-  for (let contact of [...msg.to, ...msg.cc, ...msg.bcc]) {
-    if (contact.identityId) {
-      identityId = contact.identityId;
-      break;
-    }
-  }
-
-  if (identityId == -1) {
-    let account = await browser.accounts.get(msg.folderAccountId);
-    if (!account) {
-      identityId = (await browser.accounts.list())[0].identityId;
-    }
-    identityId = account.identities[0]?.id;
-  }
-
+  let identityId = await messageUtils.getBestIdentityForReply(msg);
   let params = {
     identityId,
   };
