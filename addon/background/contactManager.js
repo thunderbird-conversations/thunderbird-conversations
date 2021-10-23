@@ -265,7 +265,7 @@ export class ContactManager {
       }
 
       for (let identity of account.identities) {
-        emails.set(identity.email, identity.id);
+        emails.set(identity.email.toLocaleLowerCase(), identity.id);
       }
     }
     this._identityEmails = emails;

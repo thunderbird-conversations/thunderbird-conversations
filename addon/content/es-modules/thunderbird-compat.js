@@ -283,7 +283,8 @@ if (!browser.accounts) {
           identities: [
             {
               id: `id3`,
-              email: `id3@example.com`,
+              // Intentionally part-upper case to test lower case compare.
+              email: `id3@EXAMPLE.com`,
             },
           ],
         },

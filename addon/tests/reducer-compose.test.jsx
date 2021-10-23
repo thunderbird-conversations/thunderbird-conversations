@@ -46,10 +46,10 @@ describe("Compose Reducer and Actions tests", () => {
     expect(store.getState()).toStrictEqual({
       compose: {
         body: undefined,
-        from: "id3@example.com",
+        from: "id3@EXAMPLE.com",
         identityId: "id3",
         inReplyTo: undefined,
-        email: "id3@example.com",
+        email: "id3@EXAMPLE.com",
         modified: false,
         replyOnTop: null,
         sending: false,
@@ -69,10 +69,10 @@ describe("Compose Reducer and Actions tests", () => {
     expect(store.getState()).toStrictEqual({
       compose: {
         body: undefined,
-        from: "id3@example.com",
+        from: "id3@EXAMPLE.com",
         identityId: "id3",
         inReplyTo: undefined,
-        email: "id3@example.com",
+        email: "id3@EXAMPLE.com",
         modified: false,
         replyOnTop: null,
         sending: false,
