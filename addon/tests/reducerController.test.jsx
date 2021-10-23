@@ -108,6 +108,7 @@ describe("Controller Actions tests", () => {
         isTemplate: false,
         messageHeaderId: undefined,
         multipleRecipients: false,
+        rawDate: now.getTime(),
         read: false,
         realFrom: "",
         recipientsIncludeLists: false,

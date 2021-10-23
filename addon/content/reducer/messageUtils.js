@@ -15,4 +15,32 @@ export let messageUtils = new (class {
       dateStyle: "short",
     });
   }
+
+  /**
+   * Returns the best identity to use when replying to a message.
+   *
+   * @param {object} msg
+   *   The message data from the store to respond to.
+   * @returns {number}
+   *   The identity id to use for the message.
+   */
+  async getBestIdentityForReply(msg) {
+    let identityId = -1;
+    for (let contact of [...msg.to, ...msg.cc, ...msg.bcc]) {
+      if (contact.identityId) {
+        identityId = contact.identityId;
+        break;
+      }
+    }
+
+    if (identityId == -1) {
+      let account = await browser.accounts.get(msg.folderAccountId);
+      if (!account) {
+        identityId = (await browser.accounts.list())[0].identityId;
+      }
+      identityId = account.identities[0]?.id;
+    }
+
+    return identityId;
+  }
 })();

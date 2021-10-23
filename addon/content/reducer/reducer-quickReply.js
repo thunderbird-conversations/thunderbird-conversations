@@ -30,33 +30,27 @@ export const quickReplySlice = RTK.createSlice({
 export const quickReplyActions = {
   expand({ id, type }) {
     return async function (dispatch, getState) {
-      let msg = await browser.messages.get(id);
-      let accountDetail = await browser.accounts.get(msg.folder.accountId);
-      let accountId;
-      let identityId;
-      if (accountDetail && accountDetail.identities.length) {
-        accountId = accountDetail.id;
-        identityId = accountDetail.identities[0].id;
-      } else {
-        // Use the default identity.
-        accountId = await browser.accounts.getDefault();
-        identityId = await browser.identities.getDefault(accountId);
-      }
-
+      let msg = getState().messages.msgData.find((m) => m.id == id);
+      let identityId = await messageUtils.getBestIdentityForReply(msg);
+      let identity = await browser.identities.get(identityId);
       let to;
+
+      // For now cheat and use the WebExtension message which has properly formed
+      // addresses.
+      let webExtMsg = await browser.messages.get(id);
       switch (type) {
         case "reply": {
-          to = msg.author;
+          to = webExtMsg.author;
           break;
         }
         case "replyAll": {
-          let recipients = [msg.author];
-          let identityEmail = accountDetail?.identities[0].email;
-          for (let section of ["to", "ccList", "bccList"]) {
-            if (!(section in msg)) {
+          let recipients = [webExtMsg.author];
+          let identityEmail = identity.email;
+          for (let section of ["recipients", "ccList", "bccList"]) {
+            if (!(section in webExtMsg)) {
               continue;
             }
-            for (let contact of msg[section]) {
+            for (let contact of webExtMsg[section]) {
               if (contact.includes(identityEmail)) {
                 continue;
               }
@@ -83,9 +77,9 @@ export const quickReplyActions = {
 
       let citation =
         browser.i18n.getMessage("compose.reply_header_citation", [
-          msg.author,
-          messageUtils.dateFormatter.format(msg.date),
-          messageUtils.timeFormatter.format(msg.date),
+          webExtMsg.author,
+          messageUtils.dateFormatter.format(msg.rawDate),
+          messageUtils.timeFormatter.format(msg.rawDate),
         ]) + "\n";
       let body = await browser.conversations.quoteMsgHdr(msg.id, true);
       body =
@@ -106,7 +100,7 @@ export const quickReplyActions = {
       // on first render.
       await dispatch(
         composeActions.initCompose({
-          accountId,
+          accountId: identity.accountId,
           identityId,
           inReplyTo: id,
           to,
