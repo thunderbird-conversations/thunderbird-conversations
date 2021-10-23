@@ -5,7 +5,7 @@
 import * as RTK from "@reduxjs/toolkit";
 import { browser as _browser } from "../es-modules/thunderbird-compat.js";
 import { composeActions } from "./reducer-compose.js";
-import { messageEnricher } from "./messages.js";
+import { messageUtils } from "./messageUtils.js";
 
 // Prefer the global browser object to the imported one.
 window.browser = window.browser || _browser;
@@ -84,8 +84,8 @@ export const quickReplyActions = {
       let citation =
         browser.i18n.getMessage("compose.reply_header_citation", [
           msg.author,
-          messageEnricher.dateFormatter.format(msg.date),
-          messageEnricher.timeFormatter.format(msg.date),
+          messageUtils.dateFormatter.format(msg.date),
+          messageUtils.timeFormatter.format(msg.date),
         ]) + "\n";
       let body = await browser.conversations.quoteMsgHdr(msg.id, true);
       body =
