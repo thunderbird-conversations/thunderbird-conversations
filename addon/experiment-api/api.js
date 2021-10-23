@@ -442,7 +442,11 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           const uri = Services.io.newURI(
             "chrome://messenger/content/email=" + email
           );
-          Services.perms.add(uri, "image", Services.perms.ALLOW_ACTION);
+          Services.perms.addFromPrincipal(
+            Services.scriptSecurityManager.createContentPrincipal(uri, {}),
+            "image",
+            Services.perms.ALLOW_ACTION
+          );
         },
         async beginEdit(id, type) {
           let msgHdr = context.extension.messageManager.get(id);
