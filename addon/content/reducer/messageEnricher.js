@@ -3,6 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import { browser } from "../es-modules/thunderbird-compat.js";
+import { messageUtils } from "./messageUtils.js";
 
 const RE_BZ_BUG_LINK = /^https:\/\/.*?\/show_bug.cgi\?id=[0-9]*/;
 const RE_BZ_COMMENT = /^--- Comment #\d+ from .* \d{4}.*? ---([\s\S]*)/m;
@@ -24,16 +25,6 @@ const kSnippetLength = 700;
  */
 export let messageEnricher = new (class {
   constructor() {
-    this.timeFormatter = new Intl.DateTimeFormat(undefined, {
-      timeStyle: "short",
-    });
-    this.dateAndTimeFormatter = new Intl.DateTimeFormat(undefined, {
-      dateStyle: "short",
-      timeStyle: "short",
-    });
-    this.dateFormatter = new Intl.DateTimeFormat(undefined, {
-      dateStyle: "short",
-    });
     this.pluralForm = browser.i18n.getMessage("pluralForm");
     this.numAttachmentsString = browser.i18n.getMessage(
       "attachments.numAttachments"
@@ -624,7 +615,9 @@ export let messageEnricher = new (class {
       now.getMonth() == date.getMonth() &&
       now.getDate() == date.getDate();
 
-    const formatter = isToday ? this.timeFormatter : this.dateAndTimeFormatter;
+    const formatter = isToday
+      ? messageUtils.timeFormatter
+      : messageUtils.dateAndTimeFormatter;
     return formatter.format(date);
   }
 

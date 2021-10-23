@@ -6,7 +6,7 @@
 import { createFakeData, createFakeSummaryData } from "./utils.js";
 import { jest } from "@jest/globals";
 import { browser } from "../content/es-modules/thunderbird-compat.js";
-import { messageEnricher } from "../content/reducer/messages.js";
+import { messageEnricher } from "../content/reducer/messageEnricher.js";
 
 describe("messageEnricher", () => {
   let fakeMessageHeaderData;

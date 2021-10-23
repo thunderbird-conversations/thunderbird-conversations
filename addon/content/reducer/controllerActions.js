@@ -10,7 +10,7 @@
 
 /* global Conversation, BrowserSim */
 import { mergeContactDetails } from "./contacts.js";
-import { messageEnricher } from "./messages.js";
+import { messageEnricher } from "./messageEnricher.js";
 import { messageActions } from "./reducer-messages.js";
 import { composeSlice } from "./reducer-compose.js";
 import { summaryActions } from "./reducer-summary.js";
