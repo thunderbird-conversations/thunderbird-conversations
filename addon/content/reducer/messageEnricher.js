@@ -448,14 +448,14 @@ export let messageEnricher = new (class {
     }
 
     let info = checkPart(fullMsg.parts[0]);
-    if (info.html) {
+    if (info.html && info.body) {
       msg.snippet = await browser.conversations.convertSnippetToPlainText(
         msg.folderAccountId,
         msg.folderPath,
         info.body
       );
     } else {
-      msg.snippet = info.body;
+      msg.snippet = info.body ?? "";
     }
 
     msg.snippet = msg.snippet.substring(0, kSnippetLength);
@@ -474,7 +474,7 @@ export let messageEnricher = new (class {
     //   };
     // });
 
-    this._addDetailsFromAttachments(
+    await this._addDetailsFromAttachments(
       {
         attachments: await browser.conversations.getLateAttachments(
           message.id,
