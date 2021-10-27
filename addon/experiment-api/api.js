@@ -378,9 +378,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
                   return !seen;
                 });
               } else {
-                attachments = mimeMsg.allUserAttachments.filter(
-                  (a) => a.isRealAttachment
-                );
+                attachments = mimeMsg.allUserAttachments;
               }
               resolve(
                 attachments.map((a, i) => {
@@ -476,9 +474,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
               if (!aMimeMsg) {
                 return;
               }
-              resolve(
-                aMimeMsg.allUserAttachments.filter((x) => x.isRealAttachment)
-              );
+              resolve(aMimeMsg.allUserAttachments);
             });
           });
           const win = Services.wm.getMostRecentWindow("mail:3pane");
@@ -545,7 +541,7 @@ var conversations = class extends ExtensionCommon.ExtensionAPI {
           ].createInstance(Ci.nsIMsgMessageService);
           msgService.openAttachment(
             attachment.contentType,
-            attachment.name,
+            encodeURIComponent(attachment.name),
             attachment.url,
             msgUri,
             win.docShell,
