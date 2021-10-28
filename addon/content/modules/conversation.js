@@ -511,7 +511,7 @@ Conversation.prototype = {
 
     Log.debug(
       "Outputting",
-      this.messages.map((x) => x.debug)
+      this.messages.map((x) => x.debug + " " + getMessageId(x))
     );
 
     let reactMsgData = [];

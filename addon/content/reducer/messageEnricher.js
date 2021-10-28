@@ -48,6 +48,8 @@ export let messageEnricher = new (class {
    *   The messages that are currently selected.
    */
   async enrich(mode, msgData, summary, selectedMessages) {
+    this.loggingEnabled = summary.prefs.loggingEnabled;
+
     const userTags = await browser.messages.listTags();
 
     let msgs = await Promise.all(
@@ -145,9 +147,20 @@ export let messageEnricher = new (class {
     let i = 0;
     msgData.length = groupedMessages.size;
     for (let group of groupedMessages.values()) {
-      if (group.length < 1) {
+      if (!group.length) {
+        console.error("Should not have empty group when filtering duplicates.");
+        continue;
+      }
+      if (group.length == 1) {
         msgData[i++] = group[0];
         continue;
+      }
+
+      if (this.loggingEnabled) {
+        console.log(
+          "Filtering out duplicates:",
+          group.map((m) => m.glodaMessageId ?? m.messageHeaderId)
+        );
       }
 
       function findForCriterion(criterion) {
