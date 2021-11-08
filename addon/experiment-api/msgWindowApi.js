@@ -395,7 +395,7 @@ const printPatch = (win, winId, context) => {
           return (
             tabmail.selectedTab.mode?.type == "folder" ||
             (tabmail.selectedTab.mode?.type == "contentTab" &&
-              tabmail.selectedBrowser.browsingContext.currentURI.spec.startsWith(
+              tabmail.selectedBrowser?.browsingContext.currentURI.spec.startsWith(
                 "chrome://conversations/content/stub.html"
               ))
           );
