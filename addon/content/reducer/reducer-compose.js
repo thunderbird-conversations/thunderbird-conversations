@@ -55,7 +55,6 @@ export const composeSlice = RTK.createSlice({
 
 export const composeActions = {
   initCompose({
-    accountId,
     identityId,
     inReplyTo,
     to,
@@ -67,18 +66,13 @@ export const composeActions = {
     return async function (dispatch) {
       await dispatch(composeSlice.actions.resetStore());
 
-      // Set from to be the default account / identity.
-      let accountDetail;
-      if (!accountId) {
-        let accounts = await browser.accounts.list();
-        accountDetail = accounts[0];
+      let identityDetail;
+      if (identityId) {
+        identityDetail = await browser.identities.get(identityId);
       } else {
-        accountDetail = await browser.accounts.get(accountId);
+        let defaultAccount = await browser.accounts.getDefault();
+        identityDetail = await browser.identities.getDefault(defaultAccount.id);
       }
-
-      let identityDetail = identityId
-        ? accountDetail.identities.find((i) => i.id == identityId)
-        : accountDetail.identities[0];
 
       await dispatch(
         composeSlice.actions.setFromDetails({

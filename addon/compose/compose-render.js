@@ -17,7 +17,6 @@ let params = new URLSearchParams(document.location.search);
 
 store.dispatch(
   composeActions.initCompose({
-    accountId: params.get("accountId"),
     identityId: params.get("identityId"),
     showSubject: true,
   })

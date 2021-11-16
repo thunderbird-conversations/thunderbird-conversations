@@ -22,13 +22,13 @@ const composeApp = Redux.combineReducers({
 const store = RTK.configureStore({ reducer: composeApp });
 
 describe("Compose Reducer and Actions tests", () => {
-  let mockedList;
+  let mockedAccountDefault;
   let mockedGet;
   let mockedSend;
 
   beforeEach(() => {
-    mockedList = jest.spyOn(browser.accounts, "list");
-    mockedGet = jest.spyOn(browser.accounts, "get");
+    mockedAccountDefault = jest.spyOn(browser.accounts, "getDefault");
+    mockedGet = jest.spyOn(browser.identities, "getDefault");
     mockedSend = jest.spyOn(browser.convCompose, "send");
   });
 
@@ -39,8 +39,8 @@ describe("Compose Reducer and Actions tests", () => {
   test("initCompose() retrieves the default identity information", async () => {
     await store.dispatch(composeActions.initCompose({ showSubject: false }));
 
-    expect(mockedList).toHaveBeenCalled();
-    expect(mockedGet).not.toHaveBeenCalled();
+    expect(mockedAccountDefault).toHaveBeenCalled();
+    expect(mockedGet).toHaveBeenCalled();
 
     // Should have correctly set up the initial values.
     expect(store.getState()).toStrictEqual({

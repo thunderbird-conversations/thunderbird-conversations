@@ -22,26 +22,32 @@ describe("getDefaultIdentity", () => {
   test("should get the default identity", async () => {
     let defaultId = await uiHandler.getDefaultIdentity();
 
-    expect(defaultId).toStrictEqual(["ac1", "id3"]);
+    expect(defaultId).toStrictEqual("id3");
   });
 
   test("should get the default identity with different setup", async () => {
-    jest.spyOn(browser.accounts, "list").mockImplementation(async () => {
-      return [
-        {
-          id: "ac5",
-          identities: [
-            {
-              id: `id5`,
-              email: `id5@example.com`,
-            },
-          ],
-        },
-      ];
+    jest.spyOn(browser.accounts, "getDefault").mockImplementation(async () => {
+      return {
+        id: "ac5",
+        identities: [
+          {
+            id: `id5`,
+            email: `id5@example.com`,
+          },
+        ],
+      };
     });
+    jest
+      .spyOn(browser.identities, "getDefault")
+      .mockImplementation(async () => {
+        return {
+          id: "id5",
+          email: `id5@example.com`,
+        };
+      });
     let defaultId = await uiHandler.getDefaultIdentity();
 
-    expect(defaultId).toStrictEqual(["ac5", "id5"]);
+    expect(defaultId).toBe("id5");
   });
 });
 
@@ -75,7 +81,7 @@ describe("openQuickCompose", () => {
     await uiHandler.openQuickCompose();
 
     expect(mockedTabCreate).toHaveBeenCalledWith({
-      url: "../compose/compose.html?accountId=ac1&identityId=id3",
+      url: "../compose/compose.html?identityId=id3",
     });
     expect(mockedWindowCreate).not.toHaveBeenCalled();
   });
@@ -99,7 +105,7 @@ describe("openQuickCompose", () => {
 
     expect(mockedTabCreate).not.toHaveBeenCalled();
     expect(mockedWindowCreate).toHaveBeenCalledWith({
-      url: "../compose/compose.html?accountId=ac1&identityId=id3",
+      url: "../compose/compose.html?identityId=id3",
       type: "popup",
       width: 1024,
       height: 600,
@@ -112,7 +118,7 @@ describe("openQuickCompose", () => {
     await uiHandler.openQuickCompose();
 
     expect(mockedTabCreate).toHaveBeenCalledWith({
-      url: "../compose/compose.html?accountId=ac34&identityId=idac34",
+      url: "../compose/compose.html?identityId=id4",
     });
     expect(mockedWindowCreate).not.toHaveBeenCalled();
   });

@@ -310,7 +310,36 @@ if (!browser.accounts) {
         ],
       };
     },
-    async setDefaultIdentity() {},
+    async getDefault() {
+      return {
+        id: "ac1",
+        identities: [
+          {
+            id: `id3`,
+            // Intentionally part-upper case to test lower case compare.
+            email: `id3@EXAMPLE.com`,
+          },
+        ],
+      };
+    },
+  };
+}
+
+if (!browser.identities) {
+  browser.identities = {
+    async getDefault(accountId) {
+      if (accountId == "ac1") {
+        return {
+          id: `id3`,
+          // Intentionally part-upper case to test lower case compare.
+          email: `id3@EXAMPLE.com`,
+        };
+      }
+      return {
+        id: `id4`,
+        email: `id4@example.com`,
+      };
+    },
   };
 }
 
