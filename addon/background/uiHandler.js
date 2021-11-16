@@ -35,7 +35,6 @@ export class UIHandler {
   async openQuickCompose() {
     let win = await browser.windows.getCurrent({ populate: true });
     let identityId;
-    let accountId;
     if (win.type == "normal") {
       let [tab] = win.tabs.filter((t) => t.active);
       if (tab) {
@@ -44,20 +43,20 @@ export class UIHandler {
           let accountDetail = await browser.accounts.get(
             msgs[0].folder.accountId
           );
-          if (accountDetail && accountDetail.identities.length) {
-            accountId = accountDetail.id;
-            identityId = accountDetail.identities[0].id;
+          let identity = await browser.identities.getDefault(accountDetail.id);
+          if (identity) {
+            identityId = identity.id;
           }
         }
       }
     }
     if (!identityId) {
-      [accountId, identityId] = await this.getDefaultIdentity();
+      identityId = await this.getDefaultIdentity();
     }
     // The title/description for this pref is really confusing, we should
     // reconsider it when we re-enable.
     const result = await browser.storage.local.get("preferences");
-    const url = `../compose/compose.html?accountId=${accountId}&identityId=${identityId}`;
+    const url = `../compose/compose.html?identityId=${identityId}`;
     if (result.preferences.compose_in_tab) {
       browser.tabs.create({
         url,
@@ -73,7 +72,8 @@ export class UIHandler {
   }
 
   async getDefaultIdentity() {
-    let accounts = await browser.accounts.list();
-    return [accounts[0].id, accounts[0].identities[0].id];
+    let defaultAccount = await browser.accounts.getDefault();
+    let identity = await browser.identities.getDefault(defaultAccount.id);
+    return identity.id;
   }
 }

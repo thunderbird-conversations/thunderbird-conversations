@@ -100,7 +100,6 @@ export const quickReplyActions = {
       // on first render.
       await dispatch(
         composeActions.initCompose({
-          accountId: identity.accountId,
           identityId,
           inReplyTo: id,
           to,
