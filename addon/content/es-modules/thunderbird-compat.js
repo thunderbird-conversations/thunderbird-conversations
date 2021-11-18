@@ -297,6 +297,15 @@ if (!browser.accounts) {
             },
           ],
         },
+        {
+          id: "ac3",
+          identities: [
+            {
+              id: "id5",
+              email: "id5@example.com",
+            },
+          ],
+        },
       ];
     },
     async get(id) {
@@ -334,10 +343,20 @@ if (!browser.identities) {
           // Intentionally part-upper case to test lower case compare.
           email: `id3@EXAMPLE.com`,
         };
+      } else if (accountId == "ac2") {
+        return {
+          id: "id4",
+          email: "id4@example.com",
+        };
+      } else if (accountId == "ac34") {
+        return {
+          id: "idac34",
+          email: "ac34@example.com",
+        };
       }
       return {
-        id: `id4`,
-        email: `id4@example.com`,
+        id: "id5",
+        email: "id5@example.com",
       };
     },
   };
@@ -474,6 +493,20 @@ if (!browser.contacts) {
             properties: {
               PrimaryEmail: "id4@example.com",
               DisplayName: "id4 card",
+              PreferDisplayName: "1",
+              PhotoURI: undefined,
+            },
+          },
+        ];
+      } else if (queryInfo.searchString == "id5@example.com") {
+        return [
+          {
+            id: "15263748",
+            type: "contact",
+            properties: {
+              PrimaryEmail: "id5@example.com",
+              SecondEmail: "id5second@example.com",
+              DisplayName: "id5 card",
               PreferDisplayName: "1",
               PhotoURI: undefined,
             },

@@ -118,7 +118,7 @@ describe("openQuickCompose", () => {
     await uiHandler.openQuickCompose();
 
     expect(mockedTabCreate).toHaveBeenCalledWith({
-      url: "../compose/compose.html?identityId=id4",
+      url: "../compose/compose.html?identityId=idac34",
     });
     expect(mockedWindowCreate).not.toHaveBeenCalled();
   });

@@ -36,7 +36,14 @@ if (!globalThis.browser) {
  * Extended Contact information that is cached.
  */
 class ExtendedContact {
-  constructor({ contactId, email, identityId, name, photoURI, readOnly }) {
+  constructor({
+    contactId,
+    email,
+    identityId = undefined,
+    name,
+    photoURI,
+    readOnly,
+  }) {
     this.color = freshColor(email);
     this.contactId = contactId;
     this.identityId = identityId;
@@ -50,20 +57,6 @@ class ExtendedContact {
      * @type {number}
      */
     this.lastAccessed = performance.now();
-
-    /**
-     * Hard limit to the maximumsize of the cache for contacts - when we hit this
-     * we will cleanup straight away.
-     *
-     * @type {number}
-     */
-    this.HARD_MAX_CACHE_SIZE = 1000;
-    /**
-     * When we do a soft cleanup, we'll cleanup by this amount of contacts.
-     *
-     * @type {number}
-     */
-    this.CACHE_CLEANUP_AMOUNT = 750;
   }
 
   /**
@@ -76,6 +69,7 @@ class ExtendedContact {
       color: this.color,
       contactId: this.contactId,
       identityId: this.identityId,
+      lastAccessed: this.lastAccessed,
       name: this.name,
       photoURI: this.photoURI,
       readOnly: this.readOnly,
@@ -92,6 +86,20 @@ class ExtendedContact {
  */
 export class ContactManager {
   constructor() {
+    /**
+     * Hard limit to the maximumsize of the cache for contacts - when we hit this
+     * we will cleanup straight away.
+     *
+     * @type {number}
+     */
+    this.HARD_MAX_CACHE_SIZE = 1000;
+    /**
+     * When we do a soft cleanup, we'll cleanup by this amount of contacts.
+     *
+     * @type {number}
+     */
+    this.CACHE_CLEANUP_AMOUNT = 750;
+
     /**
      * This is a cache for the contacts, so that we don't keep re-requesting
      * them. The key is the email address.
@@ -128,12 +136,14 @@ export class ContactManager {
     let cachedValue = this._cache.get(email);
     if (cachedValue) {
       cachedValue.lastAccessed = performance.now();
-      return cachedValue.clone();
+      return cachedValue;
     }
 
+    let identityEmails = await this._getIdentityEmails();
     let activeFetch = this._activeFetches.get(email);
     if (activeFetch) {
       let [, contact] = await activeFetch;
+      contact.identityId = identityEmails.get(email);
       return contact.clone();
     }
 
@@ -141,9 +151,18 @@ export class ContactManager {
     this._activeFetches.set(email, fetchPromise);
 
     let [emails, contact] = await fetchPromise;
+    let contactResult = contact.clone();
 
-    for (let email of emails) {
-      this._cache.set(email, contact);
+    for (let contactEmail of emails) {
+      let identityId = identityEmails.get(contactEmail);
+      if (contactEmail == email) {
+        contactResult.identityId = identityId;
+        this._cache.set(contactEmail, contactResult);
+      } else {
+        let newContact = contact.clone();
+        newContact.identityId = identityId;
+        this._cache.set(contactEmail, newContact);
+      }
     }
 
     let cacheSize = this._cache.size;
@@ -153,7 +172,7 @@ export class ContactManager {
     }
     this._activeFetches.delete(email);
 
-    return contact.clone();
+    return contactResult;
   }
 
   /**
@@ -227,15 +246,11 @@ export class ContactManager {
       emails.push(email);
     }
 
-    let identityEmails = await this._getIdentityEmails();
-    let identityId = identityEmails.get(email);
-
     return [
       emails,
       new ExtendedContact({
         contactId,
         email: emailAddressForColor,
-        identityId,
         name,
         photoURI,
         readOnly,
