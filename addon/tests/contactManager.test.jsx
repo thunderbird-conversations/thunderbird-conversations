@@ -201,6 +201,42 @@ describe("Test ContactManager", () => {
     expect(spy).toHaveBeenCalledTimes(1);
   });
 
+  test("should only apply identity data to the matching email in the address book", async () => {
+    let contact = await contactManager.get("id5@example.com");
+
+    expect(contact).toMatchObject({
+      contactId: "15263748",
+      identityId: "id5",
+      name: "id5 card",
+      photoURI: undefined,
+    });
+    expect(isValidColor(contact.color)).toBe(true);
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    // Get it again from the cache.
+    contact = await contactManager.get("id5@example.com");
+
+    expect(contact).toMatchObject({
+      contactId: "15263748",
+      identityId: "id5",
+      name: "id5 card",
+      photoURI: undefined,
+    });
+    expect(isValidColor(contact.color)).toBe(true);
+    expect(spy).toHaveBeenCalledTimes(1);
+
+    contact = await contactManager.get("id5second@example.com");
+
+    expect(contact).toMatchObject({
+      contactId: "15263748",
+      identityId: undefined,
+      name: "id5 card",
+      photoURI: undefined,
+    });
+    expect(isValidColor(contact.color)).toBe(true);
+    expect(spy).toHaveBeenCalledTimes(1);
+  });
+
   test("should update when a new contact is added", async () => {
     let contact = await contactManager.get("invalid@example.com");
 
