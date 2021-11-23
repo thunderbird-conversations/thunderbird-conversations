@@ -59,7 +59,10 @@ function msgUriToMsgHdr(aUri) {
  * @returns {string}
  */
 function msgHdrGetUri(aMsg) {
-  return aMsg.folder.getUriForMsg(aMsg);
+  // console.log(toUTF8(toBytes(aMsg.folder.getUriForMsg(aMsg))));
+  // if folder name contains non latin character, it fails to get message from URI
+  // so here we're trying to fix encoding..
+  return toUTF8(toBytes(aMsg.folder.getUriForMsg(aMsg)));
 }
 
 /**
@@ -74,3 +77,39 @@ var messageActions = new Proxy(
     },
   }
 );
+
+function toBytes(str) {
+  var byteArray = [];
+  for (var i = 0; i < str.length; i++) {
+    // Node's code seems to be doing this and not & 0x7F..
+    byteArray.push(str.charCodeAt(i) & 0xff);
+  }
+
+  return byteArray;
+}
+
+function toUTF8(bytes) {
+  var res = "";
+  var tmp = "";
+  var i = 0;
+  while (i < bytes.length) {
+    if (bytes[i] <= 0x7f) {
+      res += decodeUtf8Char(tmp) + String.fromCharCode(bytes[i]);
+      tmp = "";
+    } else {
+      tmp += "%" + bytes[i].toString(16);
+    }
+
+    i++;
+  }
+
+  return res + decodeUtf8Char(tmp);
+}
+
+function decodeUtf8Char(str) {
+  try {
+    return decodeURIComponent(str);
+  } catch (err) {
+    return String.fromCharCode(0xfffd); // UTF 8 invalid char
+  }
+}
