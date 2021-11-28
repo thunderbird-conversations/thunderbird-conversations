@@ -302,6 +302,28 @@ export class MessageIFrame extends React.Component {
       );
       this.loading = false;
     }
+    this.unregisterListeners();
+  }
+
+  registerListeners() {
+    if (!this._loadListener) {
+      this._loadListener = this._onLoad.bind(this);
+      this.iframe.addEventListener("load", this._loadListener, {
+        capture: true,
+      });
+      this._domloadListener = this._onDOMLoaded.bind(this);
+      window.browsingContext.embedderElement.addEventListener(
+        "DOMContentLoaded",
+        this._domloadListener,
+        { capture: true }
+      );
+    }
+    window.addEventListener("unload", () => this.unregisterListeners(), {
+      once: true,
+    });
+  }
+
+  unregisterListeners() {
     if (!this._loadListener) {
       return;
     }
@@ -319,21 +341,6 @@ export class MessageIFrame extends React.Component {
       { capture: true }
     );
     delete this._domloadListener;
-  }
-
-  registerListeners() {
-    if (!this._loadListener) {
-      this._loadListener = this._onLoad.bind(this);
-      this.iframe.addEventListener("load", this._loadListener, {
-        capture: true,
-      });
-      this._domloadListener = this._onDOMLoaded.bind(this);
-      window.browsingContext.embedderElement.addEventListener(
-        "DOMContentLoaded",
-        this._domloadListener,
-        { capture: true }
-      );
-    }
   }
 
   async adjustHeight() {
