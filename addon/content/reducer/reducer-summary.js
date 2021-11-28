@@ -108,6 +108,7 @@ export const summaryActions = {
             selectionChangedListener
           );
           browser.convMsgWindow.onPrint.removeListener(printListener);
+          window.Conversations?.currentConversation?.cleanup();
         },
         { once: true }
       );
@@ -139,7 +140,7 @@ export const summaryActions = {
         );
       }
 
-      browser.storage.onChanged.addListener(async (changed, areaName) => {
+      async function prefListener(changed, areaName) {
         if (
           areaName != "local" ||
           !("preferences" in changed) ||
@@ -150,7 +151,15 @@ export const summaryActions = {
 
         const newPrefs = await browser.storage.local.get("preferences");
         setPrefs(newPrefs);
-      });
+      }
+      browser.storage.onChanged.addListener(prefListener);
+      window.addEventListener(
+        "unload",
+        () => {
+          browser.storage.onChanged.removeListener(prefListener);
+        },
+        { once: true }
+      );
 
       await setPrefs(prefs);
     };
