@@ -66,13 +66,11 @@ describe("Controller Actions tests", () => {
 
       let date = new Intl.DateTimeFormat(undefined, {
         timeStyle: "short",
-      }).format(new Date());
+      }).format(now);
 
       createFakeData(
         {
           detailsShowing: false,
-          date: "yesterday",
-          fullDate: date,
           snippet: "My message snippet",
         },
         fakeMessageHeaderData

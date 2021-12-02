@@ -45,6 +45,7 @@ export function createFakeData(
     id = 0,
     glodaMessageId = null,
     attachments = [],
+    date = new Date(),
     detailsShowing,
     flagged = false,
     folderType = "inbox",
@@ -68,13 +69,11 @@ export function createFakeData(
     // Set the glodaMessageId to avoid filtering out duplicates due to no id.
     glodaMessageId: glodaMessageId ?? id,
     attachments,
-    date: Date.now(),
     initialPosition,
     getFullRequired,
     recipientsIncludeLists: false,
     snippet,
     _contactsData: [],
-    fullDate,
     type,
   };
   if (detailsShowing !== undefined) {
@@ -89,7 +88,7 @@ export function createFakeData(
   }
 
   fakeMessageHeaderData.set(id, {
-    date: new Date(data.date),
+    date,
     flagged,
     folder: {
       accountId: "id1",

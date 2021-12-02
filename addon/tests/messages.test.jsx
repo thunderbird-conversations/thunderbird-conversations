@@ -723,7 +723,7 @@ Updating`,
 
   describe("Dates", () => {
     test("Sets the dates for displaying friendly dates", async () => {
-      let now = Date.now();
+      let now = new Date();
       let fakeMsg = createFakeData({ date: now }, fakeMessageHeaderData);
 
       let msgs = await messageEnricher.enrich(
@@ -742,7 +742,7 @@ Updating`,
     });
 
     test("Sets the dates for not displaying friendly dates", async () => {
-      let now = Date.now();
+      let now = new Date();
       let fakeMsg = createFakeData({ date: now }, fakeMessageHeaderData);
 
       let msgs = await messageEnricher.enrich(
