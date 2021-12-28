@@ -14,8 +14,11 @@ XPCOMUtils.defineLazyModuleGetters(this, {
 /* eslint-enable no-unused-vars */
 
 globalThis.conversationStore = {
-  dispatch() {
+  pendingActions: [],
+
+  dispatch(action) {
     console.log("old dispatch");
+    this.pendingActions.push(action);
   },
 };
 
