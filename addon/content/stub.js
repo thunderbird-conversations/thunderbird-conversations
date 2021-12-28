@@ -15,6 +15,7 @@ document.addEventListener(
   async () => {
     globalThis.browser = await BrowserSim.getBrowserAsync();
 
+    let earlyActions = conversationStore.pendingActions;
     conversationStore = RTK.configureStore({
       reducer: conversationApp,
       middleware: RTK.getDefaultMiddleware(),
@@ -33,6 +34,9 @@ document.addEventListener(
       ),
       conversationContainer
     );
+    for (let action of earlyActions) {
+      conversationStore.dispatch(action);
+    }
   },
   { once: true }
 );
