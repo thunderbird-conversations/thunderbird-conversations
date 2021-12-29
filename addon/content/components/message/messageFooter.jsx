@@ -5,7 +5,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { ActionButton } from "./messageActionButton.jsx";
-import { messageActions } from "../../reducer/reducer-messages.js";
+import { messageActions } from "../../reducer/reducerMessages.js";
 
 /**
  * Handles display for the footer of a message.

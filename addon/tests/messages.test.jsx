@@ -5,7 +5,7 @@
 // Need to import utils.js to set up the fetch stub.
 import { createFakeData, createFakeSummaryData } from "./utils.js";
 import { jest } from "@jest/globals";
-import { browser } from "../content/es-modules/thunderbird-compat.js";
+import { browser } from "../content/esmodules/thunderbirdCompat.js";
 import { messageEnricher } from "../content/reducer/messageEnricher.js";
 
 describe("messageEnricher", () => {

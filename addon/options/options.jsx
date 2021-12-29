@@ -6,7 +6,7 @@
 // however we currently aren't able to use sendMessage to send to both the
 // background script and to bootstrap.js.
 
-import { browser, i18n } from "../content/es-modules/thunderbird-compat.js";
+import { browser, i18n } from "../content/esmodules/thunderbirdCompat.js";
 import React from "react";
 import * as RTK from "@reduxjs/toolkit";
 import * as ReactRedux from "react-redux";

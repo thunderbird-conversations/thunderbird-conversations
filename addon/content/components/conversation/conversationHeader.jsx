@@ -5,10 +5,10 @@
 import React from "react";
 import * as ReactRedux from "react-redux";
 import PropTypes from "prop-types";
-import { messageActions } from "../../reducer/reducer-messages.js";
-import { summaryActions } from "../../reducer/reducer-summary.js";
+import { messageActions } from "../../reducer/reducerMessages.js";
+import { summaryActions } from "../../reducer/reducerSummary.js";
 import { SvgIcon } from "../svgIcon.jsx";
-import { browser } from "../../es-modules/thunderbird-compat.js";
+import { browser } from "../../esmodules/thunderbirdCompat.js";
 
 const LINKS_REGEX = /((\w+):\/\/[^<>()'"\s]+|www(\.[-\w]+){2,})/;
 

@@ -4,7 +4,7 @@
 
 import { createFakeData } from "./utils.js";
 import { jest } from "@jest/globals";
-import { browser } from "../content/es-modules/thunderbird-compat.js";
+import { browser } from "../content/esmodules/thunderbirdCompat.js";
 import { conversationUtils } from "../content/reducer/conversationUtils.js";
 
 describe("conversationUtils", () => {

@@ -2,8 +2,8 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import { browser } from "../es-modules/thunderbird-compat.js";
-import { getInitials } from "../es-modules/utils.js";
+import { browser } from "../esmodules/thunderbirdCompat.js";
+import { getInitials } from "../esmodules/utils.js";
 
 /**
  * Adds necessary information for display contacts.

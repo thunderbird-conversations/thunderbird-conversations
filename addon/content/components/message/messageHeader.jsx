@@ -6,11 +6,11 @@ import React from "react";
 import ReactDOM from "react-dom";
 import PropTypes from "prop-types";
 import { ContactDetail } from "../contactDetail.jsx";
-import { messageActions } from "../../reducer/reducer-messages.js";
+import { messageActions } from "../../reducer/reducerMessages.js";
 import { MessageHeaderOptions } from "./messageHeaderOptions.jsx";
 import { MessageTags, SpecialMessageTags } from "./messageTags.jsx";
 import { SvgIcon } from "../svgIcon.jsx";
-import { browser } from "../../es-modules/thunderbird-compat.js";
+import { browser } from "../../esmodules/thunderbirdCompat.js";
 
 /**
  * Normalize a contact into a string (used for i18n formatting).

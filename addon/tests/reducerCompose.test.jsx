@@ -13,7 +13,7 @@ import * as Redux from "redux";
 import {
   composeSlice,
   composeActions,
-} from "../content/reducer/reducer-compose.js";
+} from "../content/reducer/reducerCompose.js";
 
 const composeApp = Redux.combineReducers({
   compose: composeSlice.reducer,

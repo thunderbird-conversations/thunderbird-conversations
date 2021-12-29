@@ -5,7 +5,7 @@
 import React from "react";
 import ReactDOM from "react-dom";
 import { Main, store } from "./compose.jsx";
-import { composeActions } from "../content/reducer/reducer-compose.js";
+import { composeActions } from "../content/reducer/reducerCompose.js";
 
 // Render the options to the root of the page
 ReactDOM.render(

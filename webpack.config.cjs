@@ -6,9 +6,9 @@ const development = process.env.NODE_ENV === "development";
 module.exports = {
   devtool: development ? "source-map" : false,
   entry: {
-    compose: "./addon/compose/compose-render.js",
+    compose: "./addon/compose/composeRender.js",
     gallery: "./addon/gallery/gallery.jsx",
-    options: "./addon/options/options-render.js",
+    options: "./addon/options/optionsRender.js",
     stub: "./addon/content/stub.js",
     background: "./addon/background/background.js",
     "dev-frame": "./addon/dev-frame/dev-frame-render.js",

@@ -4,10 +4,10 @@
 
 import React from "react";
 import PropTypes from "prop-types";
-import { messageActions } from "../../reducer/reducer-messages.js";
-import { summaryActions } from "../../reducer/reducer-summary.js";
+import { messageActions } from "../../reducer/reducerMessages.js";
+import { summaryActions } from "../../reducer/reducerSummary.js";
 import { Quoting } from "../../utils/quoting.js";
-import { isWebextension } from "../../es-modules/thunderbird-compat.js";
+import { isWebextension } from "../../esmodules/thunderbirdCompat.js";
 
 let index = 0;
 

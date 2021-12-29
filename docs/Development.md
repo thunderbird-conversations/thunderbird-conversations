@@ -65,8 +65,8 @@ files that change.
 ### Missing Thunderbird APIs
 
 The browser lacks some of Thunderbird's APIs. These are mocked in
-`addon/content/es-modules/thunderbird-compat.js`. All components may import
-from `thunderbird-compat.js`, which will use native APIs if available, otherwise
+`addon/content/esmodules/thunderbirdCompat.js`. All components may import
+from `thunderbirdCompat.js`, which will use native APIs if available, otherwise
 fall back to mocked APIs.
 
 ### Module Importing

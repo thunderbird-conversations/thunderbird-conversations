@@ -3,8 +3,8 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import * as RTK from "@reduxjs/toolkit";
-import { browser as _browser } from "../es-modules/thunderbird-compat.js";
-import { composeActions } from "./reducer-compose.js";
+import { browser as _browser } from "../esmodules/thunderbirdCompat.js";
+import { composeActions } from "./reducerCompose.js";
 import { messageUtils } from "./messageUtils.js";
 
 // Prefer the global browser object to the imported one.

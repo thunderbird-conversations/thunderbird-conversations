@@ -7,7 +7,7 @@ import * as ReactRedux from "react-redux";
 import {
   initializeI18n,
   browser,
-} from "../content/es-modules/thunderbird-compat.js";
+} from "../content/esmodules/thunderbirdCompat.js";
 import {
   ThreadView,
   ThreePanelThunderbird,

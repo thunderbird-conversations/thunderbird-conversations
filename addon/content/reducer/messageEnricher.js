@@ -2,7 +2,7 @@
  * License, v. 2.0. If a copy of the MPL was not distributed with this
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
-import { browser } from "../es-modules/thunderbird-compat.js";
+import { browser } from "../esmodules/thunderbirdCompat.js";
 import { messageUtils } from "./messageUtils.js";
 
 const RE_BZ_BUG_LINK = /^https:\/\/.*?\/show_bug.cgi\?id=[0-9]*/;

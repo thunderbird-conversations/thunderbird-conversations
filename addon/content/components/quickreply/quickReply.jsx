@@ -5,7 +5,7 @@
 import React from "react";
 import * as ReactRedux from "react-redux";
 import { ComposeWidget } from "../compose/composeWidget.jsx";
-import { quickReplyActions } from "../../reducer/reducer-quickReply.js";
+import { quickReplyActions } from "../../reducer/reducerQuickReply.js";
 import { SvgIcon } from "../svgIcon.jsx";
 import PropTypes from "prop-types";
 

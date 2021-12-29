@@ -5,7 +5,7 @@
 // This defines fetch() which is needed for thunderbird-compat import.
 // eslint-disable-next-line no-unused-vars
 import { waitForComponentToPaint } from "./utils.js";
-import { browser } from "../content/es-modules/thunderbird-compat.js";
+import { browser } from "../content/esmodules/thunderbirdCompat.js";
 import { ContactManager, freshColor } from "../background/contactManager.js";
 
 // From https://gist.github.com/olmokramer/82ccce673f86db7cda5e

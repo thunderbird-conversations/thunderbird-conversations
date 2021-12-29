@@ -4,7 +4,7 @@
 
 import React from "react";
 import PropTypes from "prop-types";
-import { browser } from "../../es-modules/thunderbird-compat.js";
+import { browser } from "../../esmodules/thunderbirdCompat.js";
 
 export const TextBox = React.forwardRef(
   ({ disabled = false, title, value = "", name, onChange = () => {} }, ref) => {
