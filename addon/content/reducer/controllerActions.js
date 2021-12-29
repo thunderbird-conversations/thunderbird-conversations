@@ -13,10 +13,11 @@ import { mergeContactDetails } from "./contacts.js";
 import { messageEnricher } from "./messageEnricher.js";
 import { messageActions } from "./reducer-messages.js";
 import { composeSlice } from "./reducer-compose.js";
-import { summaryActions } from "./reducer-summary.js";
+import { summaryActions, summarySlice } from "./reducer-summary.js";
 import { quickReplySlice } from "./reducer-quickReply.js";
 
 let loggingEnabled = false;
+let markAsReadTimer;
 
 async function handleShowDetails(messages, state, dispatch, updateFn) {
   let defaultShowing = state.summary.defaultDetailsShowing;
@@ -212,8 +213,8 @@ export const controllerActions = {
         })
       );
 
-      await dispatch(summaryActions.setupListeners());
-      await dispatch(summaryActions.setupUserPreferences());
+      await dispatch(this.setupListeners());
+      await dispatch(this.setupUserPreferences());
 
       const platformInfo = await browser.runtime.getPlatformInfo();
       const defaultFontSize = await browser.conversations.getCorePref(
@@ -330,6 +331,102 @@ export const controllerActions = {
     };
   },
 
+  /**
+   * Sets up any listeners required.
+   */
+  setupListeners() {
+    return async (dispatch, getState) => {
+      function selectionChangedListener(tab) {
+        let state = getState();
+        if (state.summary.tabId != tab.id) {
+          return;
+        }
+        if (markAsReadTimer) {
+          clearTimeout(markAsReadTimer);
+          markAsReadTimer = null;
+        }
+      }
+
+      function printListener(winId, msgId) {
+        let state = getState();
+        if (state.summary.windowId != winId) {
+          return;
+        }
+        if (!state.messages.msgData.find((m) => m.id == msgId)) {
+          return;
+        }
+        browser.convMsgWindow.print(winId, `convIframe${msgId}`);
+      }
+
+      browser.messageDisplay.onMessagesDisplayed.addListener(
+        selectionChangedListener
+      );
+      browser.convMsgWindow.onPrint.addListener(printListener);
+      window.addEventListener(
+        "unload",
+        () => {
+          browser.messageDisplay.onMessagesDisplayed.removeListener(
+            selectionChangedListener
+          );
+          browser.convMsgWindow.onPrint.removeListener(printListener);
+          window.Conversations?.currentConversation?.cleanup();
+        },
+        { once: true }
+      );
+    };
+  },
+
+  /**
+   * Sets up getting user preferences for a conversation.
+   */
+  setupUserPreferences() {
+    return async (dispatch, getState) => {
+      const prefs = await browser.storage.local.get("preferences");
+
+      function setPrefs(newPrefs = {}) {
+        return dispatch(
+          summarySlice.actions.setUserPreferences({
+            // Default is expand auto.
+            expandWho: newPrefs.preferences?.expand_who ?? 4,
+            extraAttachments: newPrefs.preferences?.extra_attachments ?? false,
+            hideQuickReply: newPrefs.preferences?.hide_quick_reply ?? false,
+            hideQuoteLength: newPrefs.preferences?.hide_quote_length ?? 5,
+            hideSigs: newPrefs.preferences?.hide_sigs ?? false,
+            loggingEnabled: newPrefs.preferences?.logging_enabled ?? false,
+            noFriendlyDate: newPrefs.preferences?.no_friendly_date ?? false,
+            operateOnConversations:
+              newPrefs.preferences?.operate_on_conversations ?? false,
+            tweakBodies: newPrefs.preferences?.tweak_bodies ?? true,
+            tweakChrome: newPrefs.preferences?.tweak_chrome ?? true,
+          })
+        );
+      }
+
+      async function prefListener(changed, areaName) {
+        if (
+          areaName != "local" ||
+          !("preferences" in changed) ||
+          !("newValue" in changed.preferences)
+        ) {
+          return;
+        }
+
+        const newPrefs = await browser.storage.local.get("preferences");
+        setPrefs(newPrefs);
+      }
+      browser.storage.onChanged.addListener(prefListener);
+      window.addEventListener(
+        "unload",
+        () => {
+          browser.storage.onChanged.removeListener(prefListener);
+        },
+        { once: true }
+      );
+
+      await setPrefs(prefs);
+    };
+  },
+
   initializeMessageThread({ isInTab, params }) {
     return async (dispatch, getState) => {
       if (getState().summary.isInTab) {
@@ -392,9 +489,61 @@ export const controllerActions = {
           if (!state.summary.isInTab) {
             await browser.convMsgWindow.fireLoadCompleted();
           }
-          await dispatch(summaryActions.maybeSetMarkAsRead());
+          await dispatch(this.maybeSetMarkAsRead());
         }
       });
+    };
+  },
+
+  /**
+   * Handles potentially marking a conversation as read.
+   */
+  maybeSetMarkAsRead() {
+    return async (dispatch, getState) => {
+      let state = getState();
+
+      let autoMarkRead = await browser.conversations.getCorePref(
+        "mailnews.mark_message_read.auto"
+      );
+      if (autoMarkRead) {
+        let delay = 0;
+        let shouldDelay = await browser.conversations.getCorePref(
+          "mailnews.mark_message_read.delay"
+        );
+        if (shouldDelay) {
+          delay =
+            (await browser.conversations.getCorePref(
+              "mailnews.mark_message_read.delay.interval"
+            )) * 1000;
+        }
+        markAsReadTimer = setTimeout(async function () {
+          markAsReadTimer = null;
+
+          if (state.summary.initialSet.length > 1) {
+            // If we're selecting a thread, mark thee whole conversation as read.
+            // Note: if two or more in different threads are selected, then
+            // the conversation UI is not used. Hence why this is ok to do here.
+            if (state.summary.prefs.loggingEnabled) {
+              console.debug("Marking the whole conversation as read");
+            }
+            for (let msg of state.messages.msgData) {
+              if (!msg.read) {
+                await dispatch(messageActions.markAsRead({ id: msg.id }));
+              }
+            }
+          } else {
+            // We only have a single message selected, mark that as read.
+            if (state.summary.prefs.loggingEnabled) {
+              console.debug("Marking selected message as read");
+            }
+            // We use the selection from the initial set, just in case something
+            // changed before we hit the timer.
+            await dispatch(
+              messageActions.markAsRead({ id: state.summary.initialSet[0] })
+            );
+          }
+        }, delay);
+      }
     };
   },
 };
