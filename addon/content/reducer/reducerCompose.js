@@ -3,7 +3,7 @@
  * file, You can obtain one at https://mozilla.org/MPL/2.0/. */
 
 import * as RTK from "@reduxjs/toolkit";
-import { browser as _browser } from "../es-modules/thunderbird-compat.js";
+import { browser as _browser } from "../esmodules/thunderbirdCompat.js";
 
 // Prefer the global browser object to the imported one.
 window.browser = window.browser || _browser;

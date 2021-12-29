@@ -11,10 +11,10 @@
 /* global Conversation, BrowserSim */
 import { mergeContactDetails } from "./contacts.js";
 import { messageEnricher } from "./messageEnricher.js";
-import { messageActions } from "./reducer-messages.js";
-import { composeSlice } from "./reducer-compose.js";
-import { summaryActions, summarySlice } from "./reducer-summary.js";
-import { quickReplySlice } from "./reducer-quickReply.js";
+import { messageActions } from "./reducerMessages.js";
+import { composeSlice } from "./reducerCompose.js";
+import { summaryActions, summarySlice } from "./reducerSummary.js";
+import { quickReplySlice } from "./reducerQuickReply.js";
 
 let loggingEnabled = false;
 let markAsReadTimer;

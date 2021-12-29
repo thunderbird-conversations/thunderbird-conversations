@@ -12,7 +12,7 @@ import { conversationApp } from "../content/reducer/reducer.js";
 // Import the components we want to test
 import { QuickReply } from "../content/components/quickreply/quickReply.jsx";
 import { ComposeWidget } from "../content/components/compose/composeWidget.jsx";
-import { quickReplyActions } from "../content/reducer/reducer-quickReply.js";
+import { quickReplyActions } from "../content/reducer/reducerQuickReply.js";
 
 describe("Quick Reply tests", () => {
   let store;

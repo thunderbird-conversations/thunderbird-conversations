@@ -4,7 +4,7 @@
 
 import * as RTK from "@reduxjs/toolkit";
 import { conversationUtils } from "./conversationUtils.js";
-import { messageActions } from "./reducer-messages.js";
+import { messageActions } from "./reducerMessages.js";
 
 export const initialSummary = {
   autoMarkAsRead: true,

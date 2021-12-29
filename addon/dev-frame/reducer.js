@@ -1,22 +1,22 @@
 import * as RTK from "@reduxjs/toolkit";
 import * as Redux from "redux";
-import { attachmentActions } from "../content/reducer/reducer-attachments.js";
+import { attachmentActions } from "../content/reducer/reducerAttachments.js";
 import {
   composeSlice,
   composeActions,
-} from "../content/reducer/reducer-compose.js";
+} from "../content/reducer/reducerCompose.js";
 import {
   initialMessages,
   messageActions,
-} from "../content/reducer/reducer-messages.js";
+} from "../content/reducer/reducerMessages.js";
 import {
   initialSummary,
   summaryActions,
-} from "../content/reducer/reducer-summary.js";
+} from "../content/reducer/reducerSummary.js";
 import {
   quickReplyActions,
   quickReplySlice,
-} from "../content/reducer/reducer-quickReply.js";
+} from "../content/reducer/reducerQuickReply.js";
 import { mockThreads } from "./mock-data/threads.js";
 
 /**

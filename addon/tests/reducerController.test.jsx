@@ -10,8 +10,8 @@ import * as Redux from "redux";
 
 // Import the components we want to test
 import { controllerActions } from "../content/reducer/controllerActions.js";
-import { messageActions } from "../content/reducer/reducer-messages.js";
-import { summarySlice } from "../content/reducer/reducer-summary.js";
+import { messageActions } from "../content/reducer/reducerMessages.js";
+import { summarySlice } from "../content/reducer/reducerSummary.js";
 
 const summaryApp = Redux.combineReducers({
   summary: summarySlice.reducer,
