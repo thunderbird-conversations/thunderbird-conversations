@@ -63,6 +63,9 @@ class WindowObserver {
   }
 }
 
+let selectedMessages = [];
+let msgsChangedListeners = new WeakMap();
+
 /* exported convMsgWindow */
 var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
   getAPI(context) {
@@ -70,6 +73,13 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
     const { messageManager, windowManager } = extension;
     return {
       convMsgWindow: {
+        async getSelectedMessages() {
+          let result = [];
+          for (let m of selectedMessages) {
+            result.push((await context.extension.messageManager.convert(m)).id);
+          }
+          return result;
+        },
         async openNewWindow(url, params) {
           const win = getWindowFromId();
           const args = { params };
@@ -113,6 +123,17 @@ var convMsgWindow = class extends ExtensionCommon.ExtensionAPI {
             );
           }
         },
+        onSelectedMessagesChanged: new ExtensionCommon.EventManager({
+          context,
+          name: "convMsgWindow.onSelectedMessagesChanged",
+          register(fire, winId) {
+            const win = getWindowFromId(winId);
+            msgsChangedListeners.set(win, fire);
+            return function () {
+              msgsChangedListeners.delete(win);
+            };
+          },
+        }).api(),
         onThreadPaneDoubleClick: new ExtensionCommon.EventManager({
           context,
           name: "convMsgWindow.onThreadPaneDoubleClick",
@@ -581,6 +602,10 @@ function summarizeThreadHandler(win, id) {
 
     win.gMessageDisplay.singleMessageDisplay = false;
 
+    // Save the newly selected messages as early as possible, so that we
+    // definitely have them as soon as stub.html loads.
+    selectedMessages = [...aSelectedMessages];
+
     win.gSummaryFrameManager.loadAndCallback(
       "chrome://conversations/content/stub.html",
       function (isRefresh) {
@@ -666,20 +691,22 @@ function summarizeThreadHandler(win, id) {
         previouslySelectedUris = newlySelectedUris;
         previousIsSelectionThreaded = isSelectionThreaded;
 
-        let freshConversation = new Conversation(
-          win,
-          aSelectedMessages,
-          ++win.Conversations.counter
-        );
-        Log.debug(
-          "New conversation:",
-          freshConversation.counter,
-          "Old conversation:",
-          win.Conversations.currentConversation?.counter
-        );
-        win.Conversations.currentConversation?.cleanup();
-        win.Conversations.currentConversation = freshConversation;
-        freshConversation.outputInto(htmlpane.contentWindow);
+        msgsChangedListeners.get(win)?.async();
+
+        // let freshConversation = new Conversation(
+        //   win,
+        //   aSelectedMessages,
+        //   ++win.Conversations.counter
+        // );
+        // Log.debug(
+        //   "New conversation:",
+        //   freshConversation.counter,
+        //   "Old conversation:",
+        //   win.Conversations.currentConversation?.counter
+        // );
+        // win.Conversations.currentConversation?.cleanup();
+        // win.Conversations.currentConversation = freshConversation;
+        // freshConversation.outputInto(htmlpane.contentWindow);
       }
     );
   };

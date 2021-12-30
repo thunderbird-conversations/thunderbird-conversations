@@ -9,6 +9,7 @@
  */
 
 /* global Conversation, BrowserSim */
+import { conversationActions } from "./reducerConversation.js";
 import { mergeContactDetails } from "./contacts.js";
 import { MessageEnricher } from "./messageEnricher.js";
 import { messageActions } from "./reducerMessages.js";
@@ -44,12 +45,15 @@ async function handleShowDetails(messages, state, dispatch, updateFn) {
 // determine if this is worth sharing via a shared module with the background
 // scripts, or if it doesn't need it.
 
-async function setupConversationInTab(params, isInTab) {
+// TODO: remove isInTab?
+async function setupConversationInTab(params, isInTab, dispatch) {
   if (window.frameElement) {
     window.frameElement.setAttribute("tooltip", "aHTMLTooltip");
   }
   const msgUrls = params.get("urls").split(",");
   const msgIds = [];
+  // TODO: The params should become ids at some stage, but we don't currently
+  // have a firm API for easily persisting message idnetifiers across restarts.
   for (const url of msgUrls) {
     const id = await browser.conversations.getMessageIdForUri(url);
     if (id) {
@@ -61,27 +65,26 @@ async function setupConversationInTab(params, isInTab) {
     document.getElementById("messageList").textContent =
       browser.i18n.getMessage("message.movedOrDeletedConversation");
   } else {
-    window.Conversations = {
-      currentConversation: null,
-      counter: 0,
-    };
-
-    let freshConversation = new Conversation(
-      window,
-      // TODO: This should really become ids at some stage, but we need to
-      // teach Conversation how to handle those.
-      msgUrls,
-      ++window.Conversations.counter,
-      isInTab
-    );
+    dispatch(conversationActions.showConversation({ msgIds }));
+    // window.Conversations = {
+    //   currentConversation: null,
+    //   counter: 0,
+    // };
+    //
+    // let freshConversation = new Conversation(
+    //   window,
+    //   msgUrls,
+    //   ++window.Conversations.counter,
+    //   isInTab
+    // );
     let browserFrame = window.frameElement;
     // Because Thunderbird still hasn't fixed that...
     if (browserFrame) {
       browserFrame.setAttribute("context", "mailContext");
     }
-
-    window.Conversations.currentConversation = freshConversation;
-    freshConversation.outputInto(window);
+    //
+    // window.Conversations.currentConversation = freshConversation;
+    // freshConversation.outputInto(window);
   }
 }
 
@@ -146,34 +149,38 @@ export const controllerActions = {
         console.debug(`Initializing ${isInTab ? "tab" : "message pane"} view.`);
       }
 
-      if (!isInTab) {
-        return;
-      }
+      // if (!isInTab) {
+      //   return;
+      // }
 
-      await new Promise((resolve, reject) => {
-        let tries = 0;
-        function checkStarted() {
-          let mainWindow = isStandalone
-            ? window.browsingContext.topChromeWindow.opener
-            : window.browsingContext.topChromeWindow;
-          if (
-            mainWindow.Conversations &&
-            mainWindow.Conversations.finishedStartup
-          ) {
-            resolve();
-          } else {
-            // Wait up to 10 seconds, if it is that slow we're in trouble.
-            if (tries >= 100) {
-              console.error("Failed waiting for monkeypatch to finish startup");
-              reject();
-              return;
+      let mainWindow = isStandalone
+        ? window.browsingContext.topChromeWindow.opener
+        : window.browsingContext.topChromeWindow;
+      if (!mainWindow.Conversations?.finishedStartup) {
+        await new Promise((resolve, reject) => {
+          let tries = 0;
+          function checkStarted() {
+            if (
+              mainWindow.Conversations &&
+              mainWindow.Conversations.finishedStartup
+            ) {
+              resolve();
+            } else {
+              // Wait up to 10 seconds, if it is that slow we're in trouble.
+              if (tries >= 100) {
+                console.error(
+                  "Failed waiting for monkeypatch to finish startup"
+                );
+                reject();
+                return;
+              }
+              tries++;
+              setTimeout(checkStarted, 100);
             }
-            tries++;
-            setTimeout(checkStarted, 100);
           }
-        }
-        checkStarted();
-      });
+          checkStarted();
+        });
+      }
       await dispatch(
         controllerActions.initializeMessageThread({ isInTab: true, params })
       );
@@ -183,7 +190,34 @@ export const controllerActions = {
   initializeMessageThread({ isInTab, params }) {
     return async (dispatch, getState) => {
       if (getState().summary.isInTab) {
-        setupConversationInTab(params, isInTab).catch(console.error);
+        console.log("conversation in tab");
+        setupConversationInTab(params, isInTab, dispatch).catch(console.error);
+      } else {
+        let msgIds = await browser.convMsgWindow.getSelectedMessages(
+          getState().summary.tabId
+        );
+        // let selectedMessages = [];
+        // for (let id of initialMessages) {
+        //   selectedMessages.push(await browser.conversations.getMessageUriForId(id));
+        // }
+
+        dispatch(conversationActions.showConversation({ msgIds }));
+        // TODO: window should be mainWindow?
+        // let freshConversation = new Conversation(
+        //   window,
+        //   selectedMessages,
+        //   ++window.Conversations.counter
+        // );
+        // // TODO: log-only
+        // console.debug(
+        //   "New conversation:",
+        //   freshConversation.counter,
+        //   "Old conversation:",
+        //   window.Conversations.currentConversation?.counter
+        // );
+        // window.Conversations.currentConversation?.cleanup();
+        // window.Conversations.currentConversation = freshConversation;
+        // freshConversation.outputInto(window);
       }
     };
   },
@@ -425,6 +459,13 @@ function onSmimeReload(dispatch, id) {
 function setupListeners(dispatch, getState) {
   let windowId = getState().summary.windowId;
 
+  async function msgSelectionChanged() {
+    let msgIds = await browser.convMsgWindow.getSelectedMessages(
+      getState().summary.tabId
+    );
+    dispatch(conversationActions.showConversation({ msgIds }));
+  }
+
   function selectionChangedListener(tab) {
     let state = getState();
     if (state.summary.tabId != tab.id) {
@@ -447,6 +488,10 @@ function setupListeners(dispatch, getState) {
     browser.convMsgWindow.print(winId, `convIframe${msgId}`);
   }
 
+  browser.convMsgWindow.onSelectedMessagesChanged.addListener(
+    msgSelectionChanged,
+    windowId
+  );
   browser.messageDisplay.onMessagesDisplayed.addListener(
     selectionChangedListener
   );
@@ -470,6 +515,10 @@ function setupListeners(dispatch, getState) {
   window.addEventListener(
     "unload",
     () => {
+      browser.convMsgWindow.onSelectedMessagesChanged.removeListener(
+        msgSelectionChanged,
+        windowId
+      );
       browser.messageDisplay.onMessagesDisplayed.removeListener(
         selectionChangedListener
       );

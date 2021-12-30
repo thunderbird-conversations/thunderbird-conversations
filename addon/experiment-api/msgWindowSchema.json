@@ -3,6 +3,13 @@
     "namespace": "convMsgWindow",
     "functions": [
       {
+        "name": "getSelectedMessages",
+        "type": "function",
+        "description": "Gets the currently selected messages according to the view backend.",
+        "async": true,
+        "parameters": []
+      },
+      {
         "name": "openNewWindow",
         "type": "function",
         "description": "Opens a new window with the specified url.",
@@ -94,6 +101,20 @@
       }
     ],
     "events": [
+      {
+        "name": "onSelectedMessagesChanged",
+        "type": "function",
+        "description": "Temporary. Listens for selection changes on the thread pane.",
+        "parameters": [
+          {
+            "name": "window",
+            "type": "integer",
+            "optional": true,
+            "minimum": -2,
+            "description": "The window id."
+          }
+        ]
+      },
       {
         "name": "onThreadPaneDoubleClick",
         "type": "function",
