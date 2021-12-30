@@ -84,113 +84,6 @@ async function setupConversationInTab(params, isInTab) {
   }
 }
 
-function onMsgHasRemoteContent(dispatch, id) {
-  dispatch(
-    messageActions.setHasRemoteContent({
-      id,
-      hasRemoteContent: true,
-    })
-  );
-}
-
-async function onUpdateSecurityStatus(
-  dispatch,
-  { id, signedStatus, encryptionStatus, encryptionNotification, details }
-) {
-  if (signedStatus) {
-    let classNames = "";
-    let title = "";
-    let name = "";
-    switch (signedStatus) {
-      case "good":
-        classNames = "success";
-        name = browser.i18n.getMessage("enigmail.messageSigned");
-        title = browser.i18n.getMessage("enigmail.messageSignedLong");
-        break;
-      case "warn":
-        classNames = "warning";
-        name = browser.i18n.getMessage("enigmail.messageSigned");
-        title = browser.i18n.getMessage("enigmail.unknownGood");
-        break;
-      case "bad":
-        classNames = "error";
-        name = browser.i18n.getMessage("enigmail.messageBadSignature");
-        title = browser.i18n.getMessage("enigmail.messageBadSignatureLong");
-        break;
-    }
-    await dispatch(
-      messageActions.msgAddSpecialTag({
-        id,
-        tagDetails: {
-          // canClick: true,
-          classNames,
-          icon: "material-icons.svg#edit",
-          name,
-          details: {
-            type: "enigmail",
-            detail: "viewSecurityInfo",
-            displayInfo: details,
-          },
-          title,
-          type: "openPgpSigned",
-        },
-      })
-    );
-  }
-  if (!encryptionStatus) {
-    return;
-  }
-
-  if (encryptionStatus == "good") {
-    dispatch(
-      messageActions.msgAddSpecialTag({
-        id,
-        tagDetails: {
-          classNames: "success",
-          icon: "material-icons.svg#vpn_key",
-          name: browser.i18n.getMessage("enigmail.messageDecrypted"),
-          details: {
-            type: "enigmail",
-            detail: "viewSecurityInfo",
-            displayInfo: details,
-          },
-          title: browser.i18n.getMessage("enigmail.messageDecryptedLong"),
-          type: "openPgpEncrypted",
-        },
-      })
-    );
-    return;
-  }
-  if (encryptionStatus == "bad") {
-    if (encryptionNotification) {
-      dispatch(
-        messageActions.msgShowNotification({
-          msgData: {
-            id,
-            notification: {
-              iconName: "dangerous",
-              label: encryptionNotification,
-              type: "openpgp",
-            },
-          },
-        })
-      );
-    }
-  }
-}
-
-function onSmimeReload(dispatch, id) {
-  if (loggingEnabled) {
-    console.log("smimeReloadListener", id);
-  }
-  dispatch(
-    messageActions.setSmimeReload({
-      id,
-      smimeReload: true,
-    })
-  );
-}
-
 export const controllerActions = {
   waitForStartup() {
     return async (dispatch, getState) => {
@@ -213,8 +106,8 @@ export const controllerActions = {
         })
       );
 
-      await dispatch(this.setupListeners());
-      await dispatch(this.setupUserPreferences());
+      setupListeners(dispatch, getState);
+      await setupUserPreferences(dispatch, getState);
 
       const platformInfo = await browser.runtime.getPlatformInfo();
       const defaultFontSize = await browser.conversations.getCorePref(
@@ -252,51 +145,6 @@ export const controllerActions = {
         console.debug(`Initializing ${isInTab ? "tab" : "message pane"} view.`);
       }
 
-      let remoteContentListener = onMsgHasRemoteContent.bind(this, dispatch);
-      browser.convMsgWindow.onMsgHasRemoteContent.addListener(
-        remoteContentListener,
-        windowId
-      );
-      let updateSecurityStatusListener = onUpdateSecurityStatus.bind(
-        this,
-        dispatch
-      );
-      let smimeReloadListener = onSmimeReload.bind(this, dispatch);
-      browser.convOpenPgp.onUpdateSecurityStatus.addListener(
-        updateSecurityStatusListener,
-        windowId
-      );
-      browser.convOpenPgp.onSMIMEStatus.addListener(
-        updateSecurityStatusListener,
-        windowId
-      );
-      browser.convOpenPgp.onSMIMEReload.addListener(
-        smimeReloadListener,
-        windowId
-      );
-      window.addEventListener(
-        "unload",
-        () => {
-          browser.convMsgWindow.onMsgHasRemoteContent.removeListener(
-            remoteContentListener,
-            windowId
-          );
-          browser.convOpenPgp.onUpdateSecurityStatus.removeListener(
-            updateSecurityStatusListener,
-            windowId
-          );
-          browser.convOpenPgp.onSMIMEStatus.removeListener(
-            updateSecurityStatusListener,
-            windowId
-          );
-          browser.convOpenPgp.onSMIMEReload.removeListener(
-            smimeReloadListener,
-            windowId
-          );
-        },
-        { once: true }
-      );
-
       if (!isInTab) {
         return;
       }
@@ -328,102 +176,6 @@ export const controllerActions = {
       await dispatch(
         controllerActions.initializeMessageThread({ isInTab: true, params })
       );
-    };
-  },
-
-  /**
-   * Sets up any listeners required.
-   */
-  setupListeners() {
-    return async (dispatch, getState) => {
-      function selectionChangedListener(tab) {
-        let state = getState();
-        if (state.summary.tabId != tab.id) {
-          return;
-        }
-        if (markAsReadTimer) {
-          clearTimeout(markAsReadTimer);
-          markAsReadTimer = null;
-        }
-      }
-
-      function printListener(winId, msgId) {
-        let state = getState();
-        if (state.summary.windowId != winId) {
-          return;
-        }
-        if (!state.messages.msgData.find((m) => m.id == msgId)) {
-          return;
-        }
-        browser.convMsgWindow.print(winId, `convIframe${msgId}`);
-      }
-
-      browser.messageDisplay.onMessagesDisplayed.addListener(
-        selectionChangedListener
-      );
-      browser.convMsgWindow.onPrint.addListener(printListener);
-      window.addEventListener(
-        "unload",
-        () => {
-          browser.messageDisplay.onMessagesDisplayed.removeListener(
-            selectionChangedListener
-          );
-          browser.convMsgWindow.onPrint.removeListener(printListener);
-          window.Conversations?.currentConversation?.cleanup();
-        },
-        { once: true }
-      );
-    };
-  },
-
-  /**
-   * Sets up getting user preferences for a conversation.
-   */
-  setupUserPreferences() {
-    return async (dispatch, getState) => {
-      const prefs = await browser.storage.local.get("preferences");
-
-      function setPrefs(newPrefs = {}) {
-        return dispatch(
-          summarySlice.actions.setUserPreferences({
-            // Default is expand auto.
-            expandWho: newPrefs.preferences?.expand_who ?? 4,
-            extraAttachments: newPrefs.preferences?.extra_attachments ?? false,
-            hideQuickReply: newPrefs.preferences?.hide_quick_reply ?? false,
-            hideQuoteLength: newPrefs.preferences?.hide_quote_length ?? 5,
-            hideSigs: newPrefs.preferences?.hide_sigs ?? false,
-            loggingEnabled: newPrefs.preferences?.logging_enabled ?? false,
-            noFriendlyDate: newPrefs.preferences?.no_friendly_date ?? false,
-            operateOnConversations:
-              newPrefs.preferences?.operate_on_conversations ?? false,
-            tweakBodies: newPrefs.preferences?.tweak_bodies ?? true,
-            tweakChrome: newPrefs.preferences?.tweak_chrome ?? true,
-          })
-        );
-      }
-
-      async function prefListener(changed, areaName) {
-        if (
-          areaName != "local" ||
-          !("preferences" in changed) ||
-          !("newValue" in changed.preferences)
-        ) {
-          return;
-        }
-
-        const newPrefs = await browser.storage.local.get("preferences");
-        setPrefs(newPrefs);
-      }
-      browser.storage.onChanged.addListener(prefListener);
-      window.addEventListener(
-        "unload",
-        () => {
-          browser.storage.onChanged.removeListener(prefListener);
-        },
-        { once: true }
-      );
-
-      await setPrefs(prefs);
     };
   },
 
@@ -547,5 +299,253 @@ export const controllerActions = {
     };
   },
 };
+
+function onMsgHasRemoteContent(dispatch, id) {
+  dispatch(
+    messageActions.setHasRemoteContent({
+      id,
+      hasRemoteContent: true,
+    })
+  );
+}
+
+async function onUpdateSecurityStatus(
+  dispatch,
+  { id, signedStatus, encryptionStatus, encryptionNotification, details }
+) {
+  if (signedStatus) {
+    let classNames = "";
+    let title = "";
+    let name = "";
+    switch (signedStatus) {
+      case "good":
+        classNames = "success";
+        name = browser.i18n.getMessage("enigmail.messageSigned");
+        title = browser.i18n.getMessage("enigmail.messageSignedLong");
+        break;
+      case "warn":
+        classNames = "warning";
+        name = browser.i18n.getMessage("enigmail.messageSigned");
+        title = browser.i18n.getMessage("enigmail.unknownGood");
+        break;
+      case "bad":
+        classNames = "error";
+        name = browser.i18n.getMessage("enigmail.messageBadSignature");
+        title = browser.i18n.getMessage("enigmail.messageBadSignatureLong");
+        break;
+    }
+    await dispatch(
+      messageActions.msgAddSpecialTag({
+        id,
+        tagDetails: {
+          // canClick: true,
+          classNames,
+          icon: "material-icons.svg#edit",
+          name,
+          details: {
+            type: "enigmail",
+            detail: "viewSecurityInfo",
+            displayInfo: details,
+          },
+          title,
+          type: "openPgpSigned",
+        },
+      })
+    );
+  }
+  if (!encryptionStatus) {
+    return;
+  }
+
+  if (encryptionStatus == "good") {
+    dispatch(
+      messageActions.msgAddSpecialTag({
+        id,
+        tagDetails: {
+          classNames: "success",
+          icon: "material-icons.svg#vpn_key",
+          name: browser.i18n.getMessage("enigmail.messageDecrypted"),
+          details: {
+            type: "enigmail",
+            detail: "viewSecurityInfo",
+            displayInfo: details,
+          },
+          title: browser.i18n.getMessage("enigmail.messageDecryptedLong"),
+          type: "openPgpEncrypted",
+        },
+      })
+    );
+    return;
+  }
+  if (encryptionStatus == "bad") {
+    if (encryptionNotification) {
+      dispatch(
+        messageActions.msgShowNotification({
+          msgData: {
+            id,
+            notification: {
+              iconName: "dangerous",
+              label: encryptionNotification,
+              type: "openpgp",
+            },
+          },
+        })
+      );
+    }
+  }
+}
+
+function onSmimeReload(dispatch, id) {
+  if (loggingEnabled) {
+    console.log("smimeReloadListener", id);
+  }
+  dispatch(
+    messageActions.setSmimeReload({
+      id,
+      smimeReload: true,
+    })
+  );
+}
+
+/**
+ * Sets up any listeners required.
+ *
+ * @param {Function} dispatch
+ *   The action dispatcher.
+ * @param {Function} getState
+ *   Function to get the current store state.
+ */
+function setupListeners(dispatch, getState) {
+  let windowId = getState().summary.windowId;
+
+  function selectionChangedListener(tab) {
+    let state = getState();
+    if (state.summary.tabId != tab.id) {
+      return;
+    }
+    if (markAsReadTimer) {
+      clearTimeout(markAsReadTimer);
+      markAsReadTimer = null;
+    }
+  }
+
+  function printListener(winId, msgId) {
+    if (windowId != winId) {
+      return;
+    }
+    let state = getState();
+    if (!state.messages.msgData.find((m) => m.id == msgId)) {
+      return;
+    }
+    browser.convMsgWindow.print(winId, `convIframe${msgId}`);
+  }
+
+  browser.messageDisplay.onMessagesDisplayed.addListener(
+    selectionChangedListener
+  );
+  browser.convMsgWindow.onPrint.addListener(printListener);
+
+  let remoteContentListener = onMsgHasRemoteContent.bind(this, dispatch);
+  browser.convMsgWindow.onMsgHasRemoteContent.addListener(
+    remoteContentListener,
+    windowId
+  );
+  let updateSecurityStatusListener = onUpdateSecurityStatus.bind(
+    this,
+    dispatch
+  );
+  let smimeReloadListener = onSmimeReload.bind(this, dispatch);
+  browser.convOpenPgp.onUpdateSecurityStatus.addListener(
+    updateSecurityStatusListener,
+    windowId
+  );
+  browser.convOpenPgp.onSMIMEStatus.addListener(
+    updateSecurityStatusListener,
+    windowId
+  );
+  browser.convOpenPgp.onSMIMEReload.addListener(smimeReloadListener, windowId);
+
+  window.addEventListener(
+    "unload",
+    () => {
+      browser.messageDisplay.onMessagesDisplayed.removeListener(
+        selectionChangedListener
+      );
+      browser.convMsgWindow.onPrint.removeListener(printListener);
+      browser.convMsgWindow.onMsgHasRemoteContent.removeListener(
+        remoteContentListener,
+        windowId
+      );
+      browser.convOpenPgp.onUpdateSecurityStatus.removeListener(
+        updateSecurityStatusListener,
+        windowId
+      );
+      browser.convOpenPgp.onSMIMEStatus.removeListener(
+        updateSecurityStatusListener,
+        windowId
+      );
+      browser.convOpenPgp.onSMIMEReload.removeListener(
+        smimeReloadListener,
+        windowId
+      );
+      window.Conversations?.currentConversation?.cleanup();
+    },
+    { once: true }
+  );
+}
+
+/**
+ * Sets up getting user preferences for a conversation.
+ *
+ * @param {Function} dispatch
+ *   The action dispatcher.
+ * @param {Function} getState
+ *   Function to get the current store state.
+ */
+async function setupUserPreferences(dispatch, getState) {
+  const prefs = await browser.storage.local.get("preferences");
+
+  function setPrefs(newPrefs = {}) {
+    return dispatch(
+      summarySlice.actions.setUserPreferences({
+        // Default is expand auto.
+        expandWho: newPrefs.preferences?.expand_who ?? 4,
+        extraAttachments: newPrefs.preferences?.extra_attachments ?? false,
+        hideQuickReply: newPrefs.preferences?.hide_quick_reply ?? false,
+        hideQuoteLength: newPrefs.preferences?.hide_quote_length ?? 5,
+        hideSigs: newPrefs.preferences?.hide_sigs ?? false,
+        loggingEnabled: newPrefs.preferences?.logging_enabled ?? false,
+        noFriendlyDate: newPrefs.preferences?.no_friendly_date ?? false,
+        operateOnConversations:
+          newPrefs.preferences?.operate_on_conversations ?? false,
+        tweakBodies: newPrefs.preferences?.tweak_bodies ?? true,
+        tweakChrome: newPrefs.preferences?.tweak_chrome ?? true,
+      })
+    );
+  }
+
+  async function prefListener(changed, areaName) {
+    if (
+      areaName != "local" ||
+      !("preferences" in changed) ||
+      !("newValue" in changed.preferences)
+    ) {
+      return;
+    }
+
+    const newPrefs = await browser.storage.local.get("preferences");
+    setPrefs(newPrefs);
+  }
+  browser.storage.onChanged.addListener(prefListener);
+  window.addEventListener(
+    "unload",
+    () => {
+      browser.storage.onChanged.removeListener(prefListener);
+    },
+    { once: true }
+  );
+
+  await setPrefs(prefs);
+}
 
 globalThis.conversationControllerActions = controllerActions;
