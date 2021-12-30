@@ -8,7 +8,7 @@
  * subsequent display.
  */
 
-/* global Conversation, BrowserSim */
+/* global BrowserSim */
 import { conversationActions } from "./reducerConversation.js";
 import { mergeContactDetails } from "./contacts.js";
 import { MessageEnricher } from "./messageEnricher.js";

@@ -9,7 +9,7 @@ const { XPCOMUtils } = ChromeUtils.import(
 /* eslint-disable no-unused-vars */
 XPCOMUtils.defineLazyModuleGetters(this, {
   BrowserSim: "chrome://conversations/content/modules/browserSim.js",
-  Conversation: "chrome://conversations/content/modules/conversation.js",
+  // Conversation: "chrome://conversations/content/modules/conversation.js",
 });
 /* eslint-enable no-unused-vars */
 

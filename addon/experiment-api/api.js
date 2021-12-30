@@ -36,8 +36,8 @@ const conversationModules = [
   // providers. Unloading these will break gloda when someone updates.
   // "chrome://conversations/content/modules/plugins/glodaAttrProviders.js",
   "chrome://conversations/content/modules/browserSim.js",
-  "chrome://conversations/content/modules/conversation.js",
-  "chrome://conversations/content/modules/message.js",
+  // "chrome://conversations/content/modules/conversation.js",
+  // "chrome://conversations/content/modules/message.js",
   "chrome://conversations/content/modules/misc.js",
 ];
 

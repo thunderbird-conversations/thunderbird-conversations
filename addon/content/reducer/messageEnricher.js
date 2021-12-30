@@ -63,8 +63,6 @@ export class MessageEnricher {
             selectedMessages
           );
 
-          await this._parseMimeLines(message, msg);
-
           if (message.getFullRequired) {
             await this._getFullDetails(message, msg);
           } else {
@@ -350,6 +348,20 @@ export class MessageEnricher {
     }
     const messageFolderType = messageHeader.folder.type;
 
+    await this._parseContactLines(
+      {
+        from: messageHeader.author,
+        to: messageHeader.recipients,
+        cc: messageHeader.ccList,
+        bcc: messageHeader.bccList,
+      },
+      msg
+    );
+    if (message.realFrom) {
+      let real = await browser.conversations.parseMimeLine(message.realFrom);
+      msg.realFrom = real?.[0].email;
+    }
+
     msg.rawDate = messageHeader.date.getTime();
     // Only set hasRemoteContent for new messages, otherwise we cause a reload
     // of content each time when a message already has remote content.
@@ -501,23 +513,28 @@ export class MessageEnricher {
   /**
    * Handles parsing of the mime (to/cc/bcc/from) lines of a message.
    *
-   * @param {object} message
-   *   The message to get the additional details for.
+   * @param {object} contactData
+   *   The contact data for the message.
    * @param {object} msg
    *   The new message to put the details into.
    */
-  async _parseMimeLines(message, msg) {
-    if (!message._contactsData) {
-      return;
+  async _parseContactLines(contactData, msg) {
+    msg.parsedLines = {
+      from: contactData.from
+        ? await browser.conversations.parseMimeLine(contactData.from)
+        : [],
+    };
+    for (let line of ["to", "cc", "bcc"]) {
+      msg.parsedLines[line] = [];
+      let item = contactData[line];
+      if (!item.length) {
+        continue;
+      }
+      for (let i of item) {
+        let data = i ? await browser.conversations.parseMimeLine(i) : [];
+        msg.parsedLines[line] = msg.parsedLines[line].concat(data);
+      }
     }
-    msg.parsedLines = {};
-    for (let line of ["from", "to", "cc", "bcc"]) {
-      msg.parsedLines[line] = message._contactsData[line]
-        ? await browser.conversations.parseMimeLine(message._contactsData[line])
-        : [];
-    }
-    let real = await browser.conversations.parseMimeLine(message.realFrom);
-    msg.realFrom = real?.[0].email;
   }
 
   /**
