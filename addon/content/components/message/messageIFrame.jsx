@@ -226,14 +226,10 @@ export class MessageIFrame extends React.Component {
       this.iframe.classList.add("hidden");
     }
     if (startLoad && isWebextension) {
-      const docShell = this.iframe.contentWindow.docShell;
-      docShell.appType = Ci.nsIDocShell.APP_TYPE_MAIL;
-
       this.loading = true;
       this.currentId = this.props.id;
       this.props.dispatch(
         summaryActions.msgStreamMsg({
-          docshell: this.iframe.contentWindow.docShell,
           dueToExpansion: this.dueToExpansion,
           id: this.props.id,
           dueToReload,
@@ -243,39 +239,11 @@ export class MessageIFrame extends React.Component {
   }
 
   componentDidMount() {
-    if (!isWebextension) {
-      // If we are running in a test environment or in the browser, we cannot
-      // create iframes in the XUL namespace.
-      this.iframe = this.div.ownerDocument.createElement("iframe");
-      return;
-    }
-    // TODO: Currently this must be an iframe created in the xul namespace,
-    // otherwise remote content blocking doesn't work. Figure out why the normal
-    // iframe has a originator location of `chrome://messenger/content/messenger.xul`
-    // rather than imap://.... (or whatever).
-    this.iframe = this.div.ownerDocument.createElementNS(
-      "http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul",
-      "iframe"
-    );
+    this.iframe = this.div.ownerDocument.createElement("iframe");
     this.iframe.setAttribute("style", "height: 20px; overflow-y: hidden");
     this.iframe.setAttribute("type", "content");
     this.iframe.classList.add(`convIframe${this.props.id}`);
     this.div.appendChild(this.iframe);
-
-    const docShell = this.iframe.contentWindow.docShell;
-    docShell.appType = Ci.nsIDocShell.APP_TYPE_MAIL;
-
-    // We don't apply the click listener when in a tab as Thunderbird's
-    // click handling already manages that.
-    if (
-      (!this.props.isInTab || this.props.isStandalone) &&
-      window.browsingContext
-    ) {
-      window.browsingContext.embedderElement.addEventListener(
-        "click",
-        this.onClickIframe
-      );
-    }
 
     this.registerListeners();
     if (this.props.expanded) {
@@ -284,7 +252,6 @@ export class MessageIFrame extends React.Component {
       this.dueToExpansion = false;
       this.props.dispatch(
         summaryActions.msgStreamMsg({
-          docshell: docShell,
           id: this.props.id,
         })
       );
@@ -312,11 +279,24 @@ export class MessageIFrame extends React.Component {
         capture: true,
       });
       this._domloadListener = this._onDOMLoaded.bind(this);
-      window.browsingContext.embedderElement.addEventListener(
-        "DOMContentLoaded",
-        this._domloadListener,
-        { capture: true }
-      );
+      if (window.browsingContext) {
+        // We don't apply the click listener when in a tab as Thunderbird's
+        // click handling already manages that.
+        if (!this.props.isInTab || this.props.isStandalone) {
+          window.browsingContext.embedderElement.addEventListener(
+            "click",
+            this.onClickIframe
+          );
+        }
+
+        window.browsingContext.embedderElement.addEventListener(
+          "DOMContentLoaded",
+          this._domloadListener,
+          { capture: true }
+        );
+      } else {
+        console.warn("Not adding DOM loaded/click listeners for iframe");
+      }
     }
     window.addEventListener("unload", () => this.unregisterListeners(), {
       once: true,
@@ -331,15 +311,17 @@ export class MessageIFrame extends React.Component {
       capture: true,
     });
     delete this._loadListener;
-    window.browsingContext.embedderElement.removeEventListener(
-      "click",
-      this.onClickIframe
-    );
-    window.browsingContext.embedderElement.removeEventListener(
-      "DOMContentLoaded",
-      this._domloadListener,
-      { capture: true }
-    );
+    if (window.browsingContext?.embedderElement) {
+      window.browsingContext.embedderElement.removeEventListener(
+        "click",
+        this.onClickIframe
+      );
+      window.browsingContext.embedderElement.removeEventListener(
+        "DOMContentLoaded",
+        this._domloadListener,
+        { capture: true }
+      );
+    }
     delete this._domloadListener;
   }
 
