@@ -447,8 +447,7 @@ function setupListeners(dispatch, getState) {
 
   let remoteContentListener = onMsgHasRemoteContent.bind(this, dispatch);
   browser.convMsgWindow.onMsgHasRemoteContent.addListener(
-    remoteContentListener,
-    windowId
+    remoteContentListener
   );
   let updateSecurityStatusListener = onUpdateSecurityStatus.bind(
     this,
@@ -456,14 +455,10 @@ function setupListeners(dispatch, getState) {
   );
   let smimeReloadListener = onSmimeReload.bind(this, dispatch);
   browser.convOpenPgp.onUpdateSecurityStatus.addListener(
-    updateSecurityStatusListener,
-    windowId
+    updateSecurityStatusListener
   );
-  browser.convOpenPgp.onSMIMEStatus.addListener(
-    updateSecurityStatusListener,
-    windowId
-  );
-  browser.convOpenPgp.onSMIMEReload.addListener(smimeReloadListener, windowId);
+  browser.convOpenPgp.onSMIMEStatus.addListener(updateSecurityStatusListener);
+  browser.convOpenPgp.onSMIMEReload.addListener(smimeReloadListener);
 
   window.addEventListener(
     "unload",
@@ -473,21 +468,15 @@ function setupListeners(dispatch, getState) {
       );
       browser.convMsgWindow.onPrint.removeListener(printListener);
       browser.convMsgWindow.onMsgHasRemoteContent.removeListener(
-        remoteContentListener,
-        windowId
+        remoteContentListener
       );
       browser.convOpenPgp.onUpdateSecurityStatus.removeListener(
-        updateSecurityStatusListener,
-        windowId
+        updateSecurityStatusListener
       );
       browser.convOpenPgp.onSMIMEStatus.removeListener(
-        updateSecurityStatusListener,
-        windowId
+        updateSecurityStatusListener
       );
-      browser.convOpenPgp.onSMIMEReload.removeListener(
-        smimeReloadListener,
-        windowId
-      );
+      browser.convOpenPgp.onSMIMEReload.removeListener(smimeReloadListener);
       window.Conversations?.currentConversation?.cleanup();
     },
     { once: true }
