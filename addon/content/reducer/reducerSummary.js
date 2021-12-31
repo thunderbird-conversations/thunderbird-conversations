@@ -194,7 +194,7 @@ export const summaryActions = {
       );
     };
   },
-  msgStreamMsg({ dueToExpansion, id, docshell, dueToReload = false }) {
+  msgStreamMsg({ dueToExpansion, id, dueToReload = false }) {
     return async (dispatch, getState) => {
       if (!dueToExpansion) {
         dispatch(summarySlice.actions.incIframesLoading());
